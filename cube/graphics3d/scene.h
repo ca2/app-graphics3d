@@ -3,30 +3,30 @@
 #pragma once
 
 
-#include "app-cube/cube/application.h"
 #include "apex/platform/app_consumer.h"
-#include "scene_object.h"
+#include "app-cube/cube/graphics3d/scene_object.h"
 
 
-namespace cube
+namespace graphics3d
 {
 
 
    class CLASS_DECL_CUBE scene :
-      virtual public ::app_consumer < application >
+      virtual public ::app_consumer < ::cube::application >
    {
    public:
 
 
-      ::pointer < impact >       m_pimpact;
-      ::string                   m_strName;
-      scene_object::map				m_mapObjects;
+      ::pointer < ::cube::impact >     m_pimpact;
+      ::string                         m_strName;
+      scene_object::map				      m_mapObjects;
+
 
       scene();
       ~scene() override;
 
 
-      virtual ::cube::camera get_default_camera();
+      virtual ::graphics3d::camera get_default_camera();
 
 
       virtual void on_load_scene();
@@ -40,16 +40,16 @@ namespace cube
       
 
 
-      virtual ::pointer<model> create_model_from_file(const ::file::path& path);
+      virtual ::pointer<::graphics3d::model> create_model_from_file(const ::file::path& path);
       virtual scene_object & create_object(const ::file::path& path);
 
-      virtual void add_object(::cube::scene_object* pobject);
+      virtual void add_object(::graphics3d::scene_object* pobject);
 
 
    };
 
 
-} // namespace cube
+} // namespace graphics3d
 
 
 

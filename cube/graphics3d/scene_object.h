@@ -2,8 +2,8 @@
 // by camilo on 2025-05-17 03:54 <3ThomasBorregaardSorensen!!
 #pragma once
 
-#include "model.h"
-#include "app-cube/cube/types.h"
+#include "app-cube/cube/graphics3d/model.h"
+#include "app-cube/cube/graphics3d/types.h"
 
 #include "acme/prototype/collection/map.h"
 // libs
@@ -14,7 +14,7 @@
 #include <unordered_map>
 
 
-namespace cube
+namespace graphics3d
 {
 
 
@@ -96,7 +96,7 @@ namespace cube
 	};
 
 
-} // cube
+} // namespace graphics3d
 
 
 

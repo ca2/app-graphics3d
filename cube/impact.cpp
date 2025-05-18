@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "impact.h"
 #include "application.h"
-#include "engine.h"
+#include "graphics3d/engine.h"
 #include "acme/constant/message.h"
 #include "acme/graphics/image/image32.h"
 #include "acme/handler/topic.h"
@@ -699,11 +699,11 @@ namespace cube
    }
 
 
-   ::pointer < ::cube::key_map > impact::get_default_key_map()
+   ::pointer < ::graphics3d::key_map > impact::get_default_key_map()
    {
 
-      auto pmap = __create_new < ::cube::key_map>();
-
+      auto pmap = __create_new < ::graphics3d::key_map>();
+      using namespace ::graphics3d;
 
       pmap->map(e_key_moveLeft, ::user::e_key_a);
       pmap->map(e_key_moveRight, ::user::e_key_d);

@@ -9,16 +9,15 @@ namespace graphics3d
    class container;
 
 
-   class application;
-
-   class context;
-   class model;
-
+   class engine;
 
    class camera;
-
    class engine;
-   class application_object;
+   class model;
+   class context;
+
+   class scene;
+   class scene_object;
 
 
 } // namespace graphics3d

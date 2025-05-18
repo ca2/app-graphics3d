@@ -4,7 +4,7 @@
 #include "scene_object.h"
 
 
-namespace cube
+namespace graphics3d
 {
 
 	interlocked_long_long scene_object::s_interlockedll;
@@ -87,5 +87,8 @@ namespace cube
 
 	}
 
-} // namespace cube
+
+} // namespace graphics3d
+
+
 

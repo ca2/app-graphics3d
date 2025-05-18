@@ -3,7 +3,7 @@
 #pragma once
 
 
-namespace cube
+namespace graphics3d
 {
 
 
@@ -94,6 +94,6 @@ namespace cube
    };
 
 
-}  // namespace cube_vulkan
+}  // namespace graphics3d
 
 

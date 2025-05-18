@@ -24,16 +24,16 @@ namespace cube
 { 
    class application;
    
-   class camera;
+   class frame;
    //class container;
-   class engine;
-   class model;
-   class context;
    class impact;
+   class document;
+   //class context;
+   //class impact;
 
 
-   class scene;
-   class scene_object;
+   //class scene;
+   //class scene_object;
 
 
 }//namespace cube

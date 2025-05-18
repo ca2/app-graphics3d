@@ -5,12 +5,12 @@
 #include "impact.h"
 
 
-namespace cube
+namespace graphics3d
 {
 
 
 
-   ::user::enum_key_state key_map::key(::cube::enum_key ekey)
+   ::user::enum_key_state key_map::key(::graphics3d::enum_key ekey)
    {
 
       return m_pimpact->get_key_state(m_ekeya[ekey]);
@@ -18,6 +18,6 @@ namespace cube
    }
 
 
-} // namespace cube
+} // namespace graphics3d
 
 

@@ -22,6 +22,12 @@
     <Filter Include="Header Files\include">
       <UniqueIdentifier>{fb21971a-983b-4337-9bf9-838884db6957}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\graphics3d">
+      <UniqueIdentifier>{204799a6-3a64-4293-9fb5-1e8a3c7308ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics3d">
+      <UniqueIdentifier>{ddfda2c9-09b6-40f6-9e25-1ec933baa2ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -33,9 +39,6 @@
     <ClInclude Include="include\_.h">
       <Filter>Header Files\include</Filter>
     </ClInclude>
-    <ClInclude Include="id.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="_.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -43,30 +46,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="scene_object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="console.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="library.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="document.h">
@@ -78,14 +57,35 @@
     <ClInclude Include="impact.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="types.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="graphics3d\utilities.h">
+      <Filter>Header Files\graphics3d</Filter>
     </ClInclude>
-    <ClInclude Include="scene.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="graphics3d\types.h">
+      <Filter>Header Files\graphics3d</Filter>
     </ClInclude>
-    <ClInclude Include="key_map.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="graphics3d\scene_object.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\scene.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\model.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\key_map.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\engine.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\context.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\camera.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\_.h">
+      <Filter>Header Files\graphics3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -101,18 +101,6 @@
     <ClCompile Include="application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="scene_object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="document.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -122,14 +110,26 @@
     <ClCompile Include="impact.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="context.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="graphics3d\camera.cpp">
+      <Filter>Source Files\graphics3d</Filter>
     </ClCompile>
-    <ClCompile Include="scene.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="graphics3d\context.cpp">
+      <Filter>Source Files\graphics3d</Filter>
     </ClCompile>
-    <ClCompile Include="key_map.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="graphics3d\engine.cpp">
+      <Filter>Source Files\graphics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics3d\key_map.cpp">
+      <Filter>Source Files\graphics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics3d\model.cpp">
+      <Filter>Source Files\graphics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics3d\scene.cpp">
+      <Filter>Source Files\graphics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics3d\scene_object.cpp">
+      <Filter>Source Files\graphics3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

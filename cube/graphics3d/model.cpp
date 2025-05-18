@@ -22,7 +22,7 @@
 #include <unordered_set>
 
 
-namespace cube
+namespace graphics3d
 {
 
 
@@ -40,7 +40,7 @@ namespace cube
    }
 
 
-   void model::initialize_model(::cube::context* pcontext, const model::Builder& builder) 
+   void model::initialize_model(::graphics3d::context* pcontext, const model::Builder& builder)
    {
 
       //m_pcontext = pcontext;
@@ -191,7 +191,7 @@ namespace cube
 //   }
 
 
-   void model::Builder::loadModel(::cube::context* pcontext, const ::file::path & path) 
+   void model::Builder::loadModel(::graphics3d::context* pcontext, const ::file::path & path)
    {
 
       tinyobj::attrib_t attrib;
@@ -262,4 +262,8 @@ namespace cube
 
    }
 
-}  // namespace graphics3d_vulkan
+
+}  // namespace graphics3d
+
+
+

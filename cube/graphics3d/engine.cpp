@@ -6,9 +6,8 @@
 #include "acme/exception/interface_only.h"
 
 
-namespace cube
+namespace graphics3d
 {
-
 
 
 	engine::engine()
@@ -64,7 +63,7 @@ namespace cube
 
 
 
-	void engine::add_scene(::cube::scene* pscene)
+	void engine::add_scene(::graphics3d::scene* pscene)
 	{
 
 		m_mapScene[pscene->m_strName] = pscene;
@@ -72,7 +71,7 @@ namespace cube
 	}
 
 
-	void engine::set_current_scene(::cube::scene* pscene)
+	void engine::set_current_scene(::graphics3d::scene* pscene)
 	{
 
 		m_pscene = pscene;
@@ -81,6 +80,6 @@ namespace cube
 
 
 
-} // namespace cube
+} // namespace graphics3d
 
 

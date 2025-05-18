@@ -7,7 +7,7 @@
 #include "scene.h"
 
 
-namespace cube
+namespace graphics3d
 {
 
 
@@ -24,7 +24,7 @@ namespace cube
    }
 
 
-   ::cube::camera scene::get_default_camera()
+   ::graphics3d::camera scene::get_default_camera()
    {
 
       return {};
@@ -39,7 +39,7 @@ namespace cube
    }
 
 
-   void scene::add_object(::cube::scene_object *pobject)
+   void scene::add_object(::graphics3d::scene_object *pobject)
    {
 
       m_mapObjects[pobject->m_iId] = pobject;
@@ -62,7 +62,7 @@ namespace cube
       
       auto pmodel = create_model_from_file(path);
       
-      auto pobject = __øcreate < ::cube::scene_object>();
+      auto pobject = __øcreate < ::graphics3d::scene_object>();
 
       add_object(pobject);
 
@@ -73,7 +73,7 @@ namespace cube
    }
 
 
-} // namespace cube
+} // namespace graphics3d
 
 
 

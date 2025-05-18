@@ -11,7 +11,7 @@
 
 
 
-namespace cube
+namespace graphics3d
 {
 
 	// from: https://stackoverflow.com/a/57595105
@@ -21,5 +21,5 @@ namespace cube
 		(hash_combine(seed, rest), ...);
 	};
 
-}  // namespace cube
+}  // namespace graphics3d
 

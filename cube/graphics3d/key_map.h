@@ -4,10 +4,10 @@
 
 
 #include "acme/constant/user_key.h"
-#include "app-cube/cube/types.h"
+#include "app-cube/cube/graphics3d/types.h"
 
 
-namespace cube
+namespace graphics3d
 {
 
    enum enum_key
@@ -33,7 +33,7 @@ namespace cube
 
       ::user::e_key m_ekeya[e_key_count];
 
-      void map(::cube::enum_key ekeyCube, ::user::e_key ekey)
+      void map(::graphics3d::enum_key ekeyCube, ::user::e_key ekey)
       {
 
          m_ekeya[ekeyCube] = ekey;
@@ -57,10 +57,10 @@ namespace cube
    {
    public:
 
-      ::pointer < impact > m_pimpact;
+      ::pointer < ::cube::impact > m_pimpact;
 
 
-      ::user::enum_key_state key(::cube::enum_key ekey);
+      ::user::enum_key_state key(::graphics3d::enum_key ekey);
 
 
 
@@ -69,6 +69,6 @@ namespace cube
 
 
 
-} // namespace cube
+} // namespace graphics3d
 
 

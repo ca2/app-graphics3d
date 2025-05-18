@@ -4,7 +4,7 @@
 
 
 #include "apex/platform/app_consumer.h"
-#include "scene_object.h"
+#include "app-cube/cube/graphics3d/scene_object.h"
 
 
 // libs
@@ -15,18 +15,18 @@
 #include <unordered_map>
 
 
-namespace cube
+namespace graphics3d
 {
 
 
 
 	class CLASS_DECL_CUBE engine :
-		virtual public ::app_consumer < application, ::object >
+		virtual public ::app_consumer < ::cube::application, ::object >
 	{
 	public:
 
 
-		::pointer < ::cube::context >				m_pcontext;
+		::pointer < ::graphics3d::context >		m_pcontext;
 
 		::string_map < ::pointer < scene > >	m_mapScene;
 		//::pointer < ::cube::application >			m_p3dapplication;
@@ -49,9 +49,9 @@ namespace cube
 
 		virtual ::pointer<model> create_model_from_file(const ::file::path& path);
 
-		virtual void add_scene(::cube::scene* pscene);
+		virtual void add_scene(::graphics3d::scene* pscene);
 
-		virtual void set_current_scene(::cube::scene* pscene);
+		virtual void set_current_scene(::graphics3d::scene* pscene);
 
 
 	};

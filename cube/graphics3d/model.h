@@ -5,7 +5,8 @@
 
 //#include "device.h"
 //#include "buffer.h"
-#include "utilities.h"
+#include "app-cube/cube/graphics3d/utilities.h"
+#include "app-cube/cube/graphics3d/types.h"
 
 #define GLM_FORCE_RADIANS	
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -20,7 +21,7 @@
 
 
 
-namespace cube
+namespace graphics3d
 {
 
 
@@ -49,7 +50,7 @@ namespace cube
          std::vector<Vertex> vertices{};
          std::vector<uint32_t> indices{};
 
-         void loadModel(::cube::context* pcontext, const ::file::path & path);
+         void loadModel(::graphics3d::context* pcontext, const ::file::path & path);
 
       };
 
@@ -63,7 +64,7 @@ namespace cube
       ~model();
 
 
-      virtual void initialize_model(::cube::context * pcontext, const model::Builder& builder);
+      virtual void initialize_model(::graphics3d::context * pcontext, const model::Builder& builder);
 
       virtual void draw(void * posdata);
       virtual void bind(void * posdata);
@@ -85,7 +86,7 @@ namespace cube
    };
 
 
-}  // namespace cube
+}  // namespace graphics3d
 
 
 
@@ -93,10 +94,10 @@ namespace cube
 
 namespace std {
    template <>
-   struct hash<::cube::model::Vertex> {
-      size_t operator()(::cube::model::Vertex const& vertex) const {
+   struct hash<::graphics3d::model::Vertex> {
+      size_t operator()(::graphics3d::model::Vertex const& vertex) const {
          size_t seed = 0;
-         ::cube::hash_combine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+         ::graphics3d::hash_combine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
          return seed;
       }
    };

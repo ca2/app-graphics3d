@@ -3,9 +3,9 @@
 
 #include "base/user/user/impact.h"
 #include "app-cube/cube/application.h"
-#include "app-cube/cube/engine.h"
-#include "app-cube/cube/key_map.h"
-#include "app-cube/cube/types.h"
+#include "app-cube/cube/graphics3d/engine.h"
+#include "app-cube/cube/graphics3d/key_map.h"
+#include "app-cube/cube/graphics3d/types.h"
 #include "apex/platform/app_consumer.h"
 
 
@@ -22,19 +22,19 @@ namespace cube
       //memory m_memory;
       //int m_i;
 
-      ::pointer < engine >			m_pengine;
+      ::pointer < ::graphics3d::engine >			m_pengine;
 
-      ::pointer < ::cube::key_map >			m_pkeymap;
-      ::task_pointer             m_ptaskEngine;
-
-
-      ::function < void(void*, int, int, int)> m_callbackOffscreen;
+      ::pointer < ::graphics3d::key_map >			m_pkeymap;
+      ::task_pointer                            m_ptaskEngine;
 
 
-      ::cube::mouse_state     m_mousestate;
-      ::image::image_pointer        m_pimage;
+      ::function < void(void*, int, int, int)>  m_callbackOffscreen;
 
-      ::particle_pointer            m_pparticleImageSynchronization;
+
+      ::cube::mouse_state                       m_mousestate;
+      ::image::image_pointer                    m_pimage;
+
+      ::particle_pointer                        m_pparticleImageSynchronization;
 
       //::function < void(void*, int, int, int)> m_callbackOffscreen;
 
@@ -142,7 +142,7 @@ namespace cube
       }
 
 
-      virtual ::pointer < ::cube::key_map > get_default_key_map();
+      virtual ::pointer < ::graphics3d::key_map > get_default_key_map();
 
    };
 

@@ -3,7 +3,7 @@
 
 
 #include "core/platform/application.h"
-#include "app-cube/cube/camera.h"
+#include "app-cube/cube/graphics3d/camera.h"
 
 
 namespace cube
@@ -27,7 +27,7 @@ namespace cube
       ~application();
 
 
-      virtual ::cube::camera get_default_camera();
+      //virtual ::graphics3d::camera get_default_camera();
 
 
       virtual ::file::path assets_folder();

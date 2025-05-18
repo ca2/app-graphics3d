@@ -12,7 +12,8 @@
 #include <cassert>
 #include <limits>
 
-namespace cube
+
+namespace graphics3d
 {
 
 
@@ -268,6 +269,6 @@ namespace cube
    }
 
 
-}  // namespace cube
+}  // namespace graphics3d
 
 

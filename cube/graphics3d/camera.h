@@ -1,8 +1,12 @@
 // From V0idsEmbrace@Twich continuum project
 // by camilo on 2025-05-17 20:12 <3ThomasBorregaardSorensen!!
 #pragma once 
-#include "app-cube/cube/types.h"
-namespace cube
+
+
+#include "app-cube/cube/graphics3d/types.h"
+
+
+namespace graphics3d
 {
 
 
@@ -82,7 +86,7 @@ namespace cube
 	};
 
 
-} // namespace cube
+} // namespace graphics3d
 
 
 

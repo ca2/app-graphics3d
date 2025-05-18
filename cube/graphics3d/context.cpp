@@ -4,7 +4,7 @@
 #include "context.h"
 
 
-namespace cube
+namespace graphics3d
 {
 
 
@@ -28,6 +28,6 @@ namespace cube
    }
 
 
-}  // namespace cube
+}  // namespace graphics3d
 
 

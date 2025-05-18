@@ -1,8 +1,8 @@
 #include "framework.h"
 #include "application.h"
 //#include "container.h"
-#include "engine.h"
-#include "model.h"
+#include "graphics3d/engine.h"
+#include "graphics3d/model.h"
 
 
 namespace cube
@@ -23,12 +23,12 @@ namespace cube
    }
 
 
-   ::cube::camera application::get_default_camera()
-   {
+   //::graphics3d::camera application::get_default_camera()
+   //{
 
-      return{};
+   //   return{};
 
-   }
+   //}
 
 
    //#if !(defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_METAL_EXT))
