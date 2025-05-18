@@ -10,7 +10,7 @@
 #include "acme/platform/application.h"
 #include "apex/database/client.h"
 #include "apex/database/stream.h"
-
+#include <chrono>
 
 namespace graphics3d
 {
@@ -166,7 +166,7 @@ namespace graphics3d
 
       }
 
-      auto pimpact = papp->m_pimpact;
+      auto pimpact = m_pimpact;
 
       auto currentTime = std::chrono::high_resolution_clock::now();
       //while (!_window.shouldClose())
