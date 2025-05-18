@@ -338,11 +338,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
+    <ClInclude Include="key_map.h" />
     <ClInclude Include="scene_object.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="console.h" />
     <ClInclude Include="const\idpool.h" />
-    <ClInclude Include="context.h" />
     <ClInclude Include="document.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="frame.h" />
@@ -361,6 +361,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
+    <ClCompile Include="key_map.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene_object.cpp" />
     <ClCompile Include="camera.cpp" />

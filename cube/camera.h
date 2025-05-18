@@ -1,25 +1,7 @@
 // From V0idsEmbrace@Twich continuum project
 // by camilo on 2025-05-17 20:12 <3ThomasBorregaardSorensen!!
 #pragma once 
-// libs
-#define GLM_FORCE_RADIANS	
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-namespace cube
-{
-
-	namespace geometry = glm;
-
-	using pole = glm::vec3;
-	using location = glm::vec3;
-	using quad_matrix = glm::mat4;
-
-
-
-} // namespace geometry
-
-
-
+#include "app-cube/cube/types.h"
 namespace cube
 {
 

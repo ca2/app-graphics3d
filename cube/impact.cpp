@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "impact.h"
 #include "application.h"
+#include "engine.h"
 #include "acme/constant/message.h"
 #include "acme/graphics/image/image32.h"
 #include "acme/handler/topic.h"
@@ -174,7 +175,7 @@ namespace cube
 
       pmessage->m_bRet = true;
 
-      if (get_app()->m_bCubeInitialized)
+      if (m_pengine)
       {
 
          auto point = pmouse->m_pointHost;
@@ -223,22 +224,127 @@ namespace cube
 
          track_mouse_leave();
 
-         m_pengine->handle_mouse_move(xCursor, yCursor);
+         m_pengine->on_mouse_move(xCursor, yCursor);
 
       }
 
    }
 
 
-   void impact::initialize_cube(::cube::impact* pimpact)
+   void impact::defer_initialize_engine()
    {
 
-      __øconstruct(m_pengine);
+      if (!m_pengine)
+      {
 
-      m_pengine->m_p3dapplication = this;
+         ::string strImplementation = get_app()->graphics3d_get_implementation_name();
+
+         auto pfactoryGraphics3d = system()->factory("graphics3d", strImplementation);
+
+         pfactoryGraphics3d->merge_to_global_factory();
+
+         m_pkeymap = get_default_key_map();
+
+         m_pkeymap->m_pimpact = this;
+
+         __øconstruct(m_pengine);
+
+
+
+         if (!m_callbackOffscreen)
+         {
+
+            m_callbackOffscreen =
+               [this](void* p, int w, int h, int stride)
+               {
+
+                  {
+
+                     _synchronous_lock synchronouslock(m_pparticleImageSynchronization);
+
+                     m_pimage->image32()->copy(m_pimage->size().minimum(::int_size(w, h)), m_pimage->m_iScan, (image32_t*)p, stride);
+
+                     for (int y = 0; y < h; y++)
+                     {
+
+                        auto p = (unsigned char*)(m_pimage->image32() + (y * m_pimage->m_iScan) / 4);
+
+                        for (int x = 0; x < w; x++)
+                        {
+
+                           //p[0] = p[0] * p[3] / 255;
+                           //p[1] = p[1] * p[3] / 255;
+                           //p[2] = p[2] * p[3] / 255;
+
+                           auto r = p[0];
+                           auto g = p[1];
+                           auto b = p[2];
+                           auto a = p[3];
+                           p[0] = b;
+                           p[2] = r;
+                           //p[3] = 255;
+
+                           /*         if (r > a)
+                                    {
+
+                                       information("What a red!!"_ansi);
+
+                                    }
+
+                                    if (g > a)
+                                    {
+
+                                       information("What a green!!"_ansi);
+
+                                    }
+
+                                    if (b > a)
+                                    {
+
+                                       information("What a blue!!"_ansi);
+
+                                    }*/
+
+                           p += 4;
+
+                        }
+
+                     }
+
+                  }
+
+
+                  set_need_redraw();
+                  post_redraw();
+               };
+
+         }
+
+         m_ptaskEngine = fork([this]()
+            {
+
+               //            run_vulkan_example();
+
+
+               on_load_engine();
+
+               m_pengine->run();
+
+               m_ptaskEngine.release();
+
+            });
+
+
+      }
 
    }
 
+
+   void impact::on_load_engine()
+   {
+
+
+   }
 
 
    void impact::on_message_mouse_leave(::message::message* pmessage)
@@ -353,7 +459,7 @@ namespace cube
    }
 
 
-   void impact::on_timer(::timer * ptimer)
+   void impact::on_timer(::timer* ptimer)
    {
 
    }
@@ -364,7 +470,7 @@ namespace cube
 
       if (ptopic->id() == id_initial_update)
       {
-         
+
          //::pointer<::userex::pane_tab_impact>ppaneimpact = get_typed_parent < ::userex::pane_tab_impact >();
          ////if(ppaneimpact.is_set())
          ////{
@@ -501,29 +607,33 @@ namespace cube
 
       m_iHeight = rectangleX.height();
 
-      get_app()->on_layout_cube(m_iWidth, m_iHeight);
+      defer_initialize_engine();
+
+      m_pengine->on_layout(m_iWidth, m_iHeight);
 
       reset_mouse_last_position();
 
    }
 
-   void container::initWindow() {
-      //glfwInit();
-      //glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-      //glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+   //
+   //void container::initWindow() 
+   //{
+   //   //glfwInit();
+   //   //glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+   //   //glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-      //window = glfwCreateWindow(m_iWidth, m_iHeight, windowName.c_str(), nullptr, nullptr);
-      //glfwSetWindowUserPointer(window, this);
-      //glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-   }
+   //   //window = glfwCreateWindow(m_iWidth, m_iHeight, windowName.c_str(), nullptr, nullptr);
+   //   //glfwSetWindowUserPointer(window, this);
+   //   //glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+   //}
 
 
-   ::user::enum_key_state container::get_key_state(::user::e_key ekey)
-   {
+   //::user::enum_key_state impact::get_key_state(::user::e_key ekey)
+   //{
 
-      return ::user::e_key_state_none;
+   //   return ::user::e_key_state_none;
 
-   }
+   //}
 
 
    //bool container::is_absolute_mouse_position()
@@ -548,7 +658,7 @@ namespace cube
    }*/
 
 
-   bool container::is_absolute_mouse_position()
+   bool impact::is_absolute_mouse_position()
    {
 
       return false;
@@ -556,7 +666,7 @@ namespace cube
    }
 
 
-   bool container::shouldClose()
+   bool impact::shouldClose()
    {
 
       return m_bShouldClose;
@@ -564,15 +674,15 @@ namespace cube
    }
 
 
-   ::int_size container::size()
-   {
+   //::int_size container::size()
+   //{
 
-      return {};
+   //   return {};
 
-   }
+   //}
 
 
-   bool container::wasWindowResized()
+   bool impact::wasWindowResized()
    {
 
       return m_bFrameBufferResized;
@@ -581,10 +691,33 @@ namespace cube
    }
 
 
-   void container::resetWindowResizedFlag()
+   void impact::resetWindowResizedFlag()
    {
 
       m_bFrameBufferResized = false;
+
+   }
+
+
+   ::pointer < ::cube::key_map > impact::get_default_key_map()
+   {
+
+      auto pmap = __create_new < ::cube::key_map>();
+
+
+      pmap->map(e_key_moveLeft, ::user::e_key_a);
+      pmap->map(e_key_moveRight, ::user::e_key_d);
+      pmap->map(e_key_moveForward, ::user::e_key_w);
+      pmap->map(e_key_moveBackward, ::user::e_key_s);
+      pmap->map(e_key_moveUp, ::user::e_key_e);
+      pmap->map(e_key_moveDown, ::user::e_key_q);
+      pmap->map(e_key_lookLeft, ::user::e_key_left);
+      pmap->map(e_key_lookRight, ::user::e_key_right);
+      pmap->map(e_key_lookUp, ::user::e_key_up);
+      pmap->map(e_key_lookDown, ::user::e_key_down);
+      pmap->map(e_key_Exit, ::user::e_key_escape);
+
+      return pmap;
 
    }
 

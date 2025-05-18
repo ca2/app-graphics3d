@@ -3,6 +3,7 @@
 #pragma once
 
 #include "model.h"
+#include "app-cube/cube/types.h"
 
 #include "acme/prototype/collection/map.h"
 // libs
@@ -49,15 +50,34 @@ namespace cube
 
 		::pointer<model> m_pmodel;
 
-		using map = index_map < ::pointer < application_object > >;
+		using map = index_map < ::pointer < scene_object > >;
 
 		static interlocked_long_long s_interlockedll;
+
+
 		scene_object() :
 			m_iId{ s_interlockedll++ }
 		{
 
 		}
 
+		scene_object& translate(const location& locationOffset)
+		{
+
+			m_transform.translation += locationOffset;
+
+			return *this;
+
+		}
+
+		scene_object& scale(const pole& poleScaling)
+		{
+
+			m_transform.scale *= poleScaling;
+
+			return *this;
+
+		}
 	};
 
 

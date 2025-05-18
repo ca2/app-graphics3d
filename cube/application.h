@@ -16,16 +16,11 @@ namespace cube
    public:
 
       
-      int m_iWidth;
+      //int m_iWidth;
 
-      int m_iHeight;
+      //int m_iHeight;
 
       ::pointer<impact> m_pimpact;
-
-      ::task_pointer m_ptask3dApp;
-
-
-      ::function < void(void*, int, int, int)> m_callbackOffscreen;
 
 
       application();
@@ -45,6 +40,8 @@ namespace cube
       //virtual void run_application();
 
       //virtual void on_layout_cube(int cx, int cy);
+
+      virtual ::string graphics3d_get_implementation_name();
 
 
    };

@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "frame.h"
 #include "application.h"
+#include "impact.h"
 #include <math.h>
 
 
@@ -58,12 +59,19 @@ namespace cube
       if (papp)
       {
 
-         auto ptask = papp->m_ptask3dApp;
+         auto pimpact = papp->m_pimpact;
 
-         if (ptask)
+         if (pimpact)
          {
 
-            ptask->set_finish();
+            auto ptask = pimpact->m_ptaskEngine;
+
+            if (ptask)
+            {
+
+               ptask->set_finish();
+
+            }
 
          }
 

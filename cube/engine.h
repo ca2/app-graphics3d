@@ -26,12 +26,12 @@ namespace cube
 	public:
 
 
-		::pointer < ::cube::context > m_pcontext;
+		::pointer < ::cube::context >				m_pcontext;
 
-
+		::string_map < ::pointer < scene > >	m_mapScene;
 		//::pointer < ::cube::application >			m_p3dapplication;
 
-		
+		::pointer < scene >							m_pscene;
 
 
 
@@ -42,7 +42,16 @@ namespace cube
 		void run() override;
 
 
-		::pointer<model> create_model_from_file(const ::file::path& path)
+
+		virtual void on_layout(int cx, int cy);
+
+		virtual void on_mouse_move(int x, int y);
+
+		virtual ::pointer<model> create_model_from_file(const ::file::path& path);
+
+		virtual void add_scene(::cube::scene* pscene);
+
+		virtual void set_current_scene(::cube::scene* pscene);
 
 
 	};

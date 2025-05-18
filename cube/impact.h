@@ -3,7 +3,8 @@
 
 #include "base/user/user/impact.h"
 #include "app-cube/cube/application.h"
-#include "app-cube/cube/container.h"
+#include "app-cube/cube/engine.h"
+#include "app-cube/cube/key_map.h"
 #include "app-cube/cube/types.h"
 #include "apex/platform/app_consumer.h"
 
@@ -23,6 +24,11 @@ namespace cube
 
       ::pointer < engine >			m_pengine;
 
+      ::pointer < ::cube::key_map >			m_pkeymap;
+      ::task_pointer             m_ptaskEngine;
+
+
+      ::function < void(void*, int, int, int)> m_callbackOffscreen;
 
 
       ::cube::mouse_state     m_mousestate;
@@ -30,7 +36,7 @@ namespace cube
 
       ::particle_pointer            m_pparticleImageSynchronization;
 
-      ::function < void(void*, int, int, int)> m_callbackOffscreen;
+      //::function < void(void*, int, int, int)> m_callbackOffscreen;
 
       double   m_dCursorX;
       double   m_dCursorY;
@@ -108,14 +114,35 @@ namespace cube
       //virtual ::int_size size();
       virtual bool wasWindowResized();
       virtual void resetWindowResizedFlag();
+//
+  //    virtual ::user::enum_key_state get_key_state(::user::e_key ekey);
 
-      //virtual ::user::enum_key_state get_key_state(::user::e_key ekey);
-
-      virtual void initWindow();
+      //virtual void initWindow();
 
 
-      void initialize_cube();
+      virtual void defer_initialize_engine();
 
+      virtual void on_load_engine();
+
+
+      template < typename SCENE >
+      ::pointer < SCENE> add_scene(const ::scoped_string& scopedstrName)
+      {
+
+         auto pscene = __create_new < SCENE>();
+
+         pscene->m_strName = scopedstrName;
+
+         pscene->m_pimpact = this;
+
+         m_pengine->add_scene(pscene);
+
+         return pscene;
+
+      }
+
+
+      virtual ::pointer < ::cube::key_map > get_default_key_map();
 
    };
 
