@@ -107,6 +107,7 @@ namespace cube
    impact::impact()
    {
 
+      m_bAbsoluteMousePosition = false;
       m_bShouldClose = false;
       m_dCursorX = 0.;
       m_dCursorY = 0.;

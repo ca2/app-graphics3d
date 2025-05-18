@@ -44,7 +44,8 @@ namespace graphics3d
    };
 
    class CLASS_DECL_CUBE input :
-      virtual public input_t
+      virtual public input_t,
+      virtual public ::particle
    {
    public:
 

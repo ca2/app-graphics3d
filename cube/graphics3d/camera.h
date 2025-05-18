@@ -18,10 +18,9 @@ namespace graphics3d
 		RIGHT
 	};
 
-	
-	class CLASS_DECL_CUBE camera
+
+	struct camera_t
 	{
-	public:
 
 		//void calculateMouseOffset(float xoffset, float yoffset);
 //private:
@@ -45,11 +44,29 @@ namespace graphics3d
 
 		// Euler angles
 		float				m_fYaw = 0.0f;
-		float				m_fPitch = glm::radians(- 90.0f);
+		float				m_fPitch = glm::radians(-90.0f);
 
 		// Camera options
 		float				m_fZoom;
 		float				m_fMovementSpeed;  // Added movement speed
+
+		::block as_block()
+		{
+
+			return as_memory_block(*this);
+
+		}
+
+	};
+
+	
+	class CLASS_DECL_CUBE camera :
+		virtual public camera_t,
+		virtual public ::particle
+	{
+	public:
+
+
 
 		camera() {};
 		camera(location position, float yaw, float pitch);
