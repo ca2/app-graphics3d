@@ -341,6 +341,7 @@
     <ClInclude Include="graphics3d\camera.h" />
     <ClInclude Include="graphics3d\context.h" />
     <ClInclude Include="graphics3d\engine.h" />
+    <ClInclude Include="graphics3d\input.h" />
     <ClInclude Include="graphics3d\key_map.h" />
     <ClInclude Include="graphics3d\model.h" />
     <ClInclude Include="graphics3d\scene.h" />
@@ -362,6 +363,7 @@
     <ClCompile Include="graphics3d\camera.cpp" />
     <ClCompile Include="graphics3d\context.cpp" />
     <ClCompile Include="graphics3d\engine.cpp" />
+    <ClCompile Include="graphics3d\input.cpp" />
     <ClCompile Include="graphics3d\key_map.cpp" />
     <ClCompile Include="graphics3d\model.cpp" />
     <ClCompile Include="graphics3d\scene.cpp" />
