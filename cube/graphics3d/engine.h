@@ -49,7 +49,7 @@ namespace graphics3d
 
 		virtual void on_mouse_move(int x, int y);
 
-		virtual void on_render_frame();
+		virtual void on_render_frame(float frameTime);
 
 		virtual void on_update_frame(TransformComponent& transform, float frameTime);
 

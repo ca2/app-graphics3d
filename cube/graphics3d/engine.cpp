@@ -29,8 +29,9 @@ namespace graphics3d
 	}
 
 
-   void engine::on_render_frame()
+   void engine::on_render_frame(float frameTime)
    {
+
 
 
    }
@@ -48,6 +49,13 @@ namespace graphics3d
       //cameraController.moveInPlaneXZ(m_pimpact, frameTime, viewerObject);
 
       m_pcamera->setViewYXZ(transform.translation, transform.rotation);
+
+
+      float aspect = m_pimpact->getAspectRatio();
+
+      m_pcamera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+
+
 
    }
 
@@ -182,20 +190,9 @@ namespace graphics3d
 
          currentTime = newTime;
 
-         on_update_camera(transform, frameTime);
+         on_update_frame(transform, frameTime);
 
-
-         if (m_prenderer->m_pvkcrenderpass->width() > 0
-            && m_prenderer->m_pvkcrenderpass->height() > 0)
-         {
-
-            float aspect = m_prenderer->getAspectRatio();
-
-            camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
-
-            on_render_frame();
-
-         }
+         on_render_frame(frameTime);
 
       }
 

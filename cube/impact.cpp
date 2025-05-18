@@ -250,7 +250,7 @@ namespace cube
 
          __øconstruct(m_pengine);
 
-
+         m_pengine->m_pimpact = this;
 
          if (!m_callbackOffscreen)
          {
@@ -719,6 +719,23 @@ namespace cube
       pmap->map(e_key_Exit, ::user::e_key_escape);
 
       return pmap;
+
+   }
+   
+   
+   float impact::getAspectRatio()
+   {
+
+      auto fH = fabs(static_cast<float>(this->height()));
+
+      if (fH <= 0.00001)
+      {
+
+         return 1.0f;
+
+      }
+
+      return static_cast<float>(this->width()) / fH;
 
    }
 

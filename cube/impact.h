@@ -146,7 +146,7 @@ namespace cube
 
 
       virtual ::pointer < ::graphics3d::key_map > get_default_key_map();
-
+      virtual float getAspectRatio();
    };
 
 
