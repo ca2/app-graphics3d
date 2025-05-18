@@ -44,7 +44,8 @@ namespace graphics3d
    };
 
    class CLASS_DECL_CUBE input :
-      virtual public input_t
+      virtual public input_t,
+      virtual public ::particle
    {
    public:
 
@@ -54,8 +55,8 @@ namespace graphics3d
 
       //void moveInPlaneXZ(::cube::impact * pimpact, float dt, application_object& gameObject);
 
-      void updateMovement(float dt, ::graphics3d::scene_object* pobject);
-      void updateLook(float xOffset, float yOffset, ::graphics3d::scene_object* pobject);
+      void updateMovement(float dt, TransformComponent& transform);
+      void updateLook(float xOffset, float yOffset, TransformComponent& transform);
 
       void processMouseMovement(float xOffset, float yOffset);
       void processKeyboardInput(float deltaTime);

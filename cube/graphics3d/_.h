@@ -11,13 +11,15 @@ namespace graphics3d
 
    class engine;
 
-   class camera;
    class engine;
    class model;
    class context;
 
    class scene;
    class scene_object;
+
+   class input;
+   class camera;
 
 
 } // namespace graphics3d

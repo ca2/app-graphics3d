@@ -24,7 +24,7 @@ namespace graphics3d
    }
 
 
-   ::graphics3d::camera scene::get_default_camera()
+   ::pointer < ::graphics3d::camera > scene::get_default_camera()
    {
 
       return {};

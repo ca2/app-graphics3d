@@ -26,7 +26,7 @@ namespace graphics3d
       ~scene() override;
 
 
-      virtual ::graphics3d::camera get_default_camera();
+      virtual ::pointer < ::graphics3d::camera > get_default_camera();
 
 
       virtual void on_load_scene();

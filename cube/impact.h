@@ -31,7 +31,7 @@ namespace cube
       ::function < void(void*, int, int, int)>  m_callbackOffscreen;
 
 
-      ::cube::mouse_state                       m_mousestate;
+      ::graphics3d::mouse_state                 m_mousestate;
       ::image::image_pointer                    m_pimage;
 
       ::particle_pointer                        m_pparticleImageSynchronization;
