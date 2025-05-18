@@ -27,13 +27,14 @@ namespace graphics3d
 
 
 		::pointer < ::graphics3d::context >		m_pcontext;
-
+		::pointer < ::cube::impact >				m_pimpact;
 		::string_map < ::pointer < scene > >	m_mapScene;
 		//::pointer < ::cube::application >			m_p3dapplication;
 
 		::pointer < scene >							m_pscene;
 
-
+		::pointer < ::graphics3d::input >		m_pinput;
+		::pointer < ::graphics3d::camera >		m_pcamera;
 
 		engine();
 		~engine() override;
@@ -42,10 +43,15 @@ namespace graphics3d
 		void run() override;
 
 
+		virtual void on_start_engine();
 
 		virtual void on_layout(int cx, int cy);
 
 		virtual void on_mouse_move(int x, int y);
+
+		virtual void on_render_frame();
+
+		virtual void on_update_frame(TransformComponent& transform, float frameTime);
 
 		virtual ::pointer<model> create_model_from_file(const ::file::path& path);
 

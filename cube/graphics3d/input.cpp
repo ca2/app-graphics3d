@@ -103,15 +103,15 @@ namespace graphics3d
    //}
 
 
-   void input::updateLook(float xOffset, float yOffset, ::graphics3d::scene_object* pobject)
+   void input::updateLook(float xOffset, float yOffset, TransformComponent & transform)
    {
 
       xOffset *= _sensitivity;
       yOffset *= _sensitivity;
 
       // limit pitch values between about +/- 85ish degrees
-      pobject->m_transform.rotation.x = glm::clamp(pobject->m_transform.rotation.x, -1.5f, 1.5f);
-      pobject->m_transform.rotation.y = glm::mod(pobject->m_transform.rotation.y, glm::two_pi<float>());
+      transform.rotation.x = glm::clamp(transform.rotation.x, -1.5f, 1.5f);
+      transform.rotation.y = glm::mod(transform.rotation.y, glm::two_pi<float>());
 
       if (m_pimpact->is_absolute_mouse_position())
       {
@@ -135,16 +135,16 @@ namespace graphics3d
       if (_yaw > 360.0f) _yaw -= 360.0f;
       if (_yaw < 0.0f) _yaw += 360.0f;
 
-      pobject->m_transform.rotation.x = glm::radians(_pitch);
-      pobject->m_transform.rotation.y = glm::radians(_yaw);
+      transform.rotation.x = glm::radians(_pitch);
+      transform.rotation.y = glm::radians(_yaw);
 
    }
 
 
-   void input::updateMovement(float dt, ::graphics3d::scene_object* pobject)
+   void input::updateMovement(float dt, TransformComponent& transform)
    {
 
-      float yaw = pobject->m_transform.rotation.y;
+      float yaw = transform.rotation.y;
       const glm::vec3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
       const glm::vec3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
       const glm::vec3 upDir{ 0.f, -1.f, 0.f };
@@ -159,12 +159,16 @@ namespace graphics3d
          if (key(e_key_moveUp) == ::user::e_key_state_pressed) moveDir += upDir;
          if (key(e_key_moveDown) == ::user::e_key_state_pressed) moveDir -= upDir;
 
-         if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon()) {
-            pobject->m_transform.translation += moveSpeed * dt * glm::normalize(moveDir);
+         if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon()) 
+         {
+
+            transform.translation += moveSpeed * dt * glm::normalize(moveDir);
+
          }
 
          if (key(e_key_Exit) == ::user::e_key_state_pressed)
          {
+
             m_pimpact->m_bShouldClose = true;
 
          }
@@ -173,10 +177,16 @@ namespace graphics3d
 
    }
 
+   glm::vec3 input::getCameraDirection() const 
+   { 
+      return _cameraDirection; 
+   }
 
-   glm::vec3 input::getCameraDirection() const { return _cameraDirection; }
 
-   glm::vec3 input::getCameraPosition() const { return _cameraPosition; }
+   glm::vec3 input::getCameraPosition() const
+   {
+      return _cameraPosition; 
+   }
 
    void input::handleMouseInput()
    {
