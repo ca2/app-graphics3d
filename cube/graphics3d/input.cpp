@@ -5,6 +5,7 @@
 #include "scene_object.h"
 #include "app-cube/cube/impact.h"
 #include "app-cube/cube/graphics3d/types.h"
+#include "aura/platform/session.h"
 #include <limits>
 
 
@@ -205,7 +206,7 @@ namespace graphics3d
    }
 
 
-   void input::_001ProcessKeyboardInput()
+   void input::process_keyboard_input_updateMovement()
    {
 
       auto& transform = m_pengine->m_transform;
@@ -242,6 +243,131 @@ namespace graphics3d
          }
 
       }
+
+   }
+
+   ::user::enum_key_state  input::get_key_state(::user::e_key ekey)
+         {
+      //int state = glfwGetKey(m_pimpact, key);
+      //return state == GLFW_PRESS || state == GLFW_REPEAT;
+
+
+      if (session()->is_key_pressed(ekey))
+      {
+
+
+         return ::user::e_key_state_pressed;
+
+      }
+
+      return ::user::e_key_state_none;
+   }
+   bool input::IsKeyPressed(::user::e_key ekey)
+{
+   return get_key_state(ekey) & ::user::e_key_state_pressed;
+}
+
+   bool input::IsKeyReleased(::user::e_key ekey) 
+   {
+      return !get_key_state(ekey);
+   }
+
+      // Check if any movement keys are pressed (W, A, S, D)
+   bool input::IsAnyKeyPressed() {
+      return IsKeyPressed(::user::e_key_w) ||
+         IsKeyPressed(::user::e_key_a) ||
+         IsKeyPressed(::user::e_key_s) ||
+         IsKeyPressed(::user::e_key_d);
+   }
+
+   void input::process_keyboard_input_spaceExplorer()
+   {
+
+      if (key(e_key_moveForward) == ::user::e_key_state_pressed)
+      {
+
+         m_pengine->m_pcamera->ProcessKeyboardInput(e_key_moveForward, m_pengine->dt());
+
+         if (IsKeyPressed(::user::e_key_left_shift))
+         {
+
+            m_pengine->m_pcamera->TeleportInDirection(e_key_moveForward);
+
+         }
+
+      }
+
+      if (key(e_key_moveBackward)==::user::e_key_state_pressed)
+      {
+
+         m_pengine->m_pcamera->ProcessKeyboardInput(e_key_moveBackward, m_pengine->dt());
+
+         if (IsKeyPressed(::user::e_key_left_shift))
+         {
+
+            m_pengine->m_pcamera->TeleportInDirection(e_key_moveBackward);
+
+         }
+
+      }
+
+      if (key(e_key_moveLeft) == ::user::e_key_state_pressed)
+      {
+
+         m_pengine->m_pcamera->ProcessKeyboardInput(e_key_moveLeft, m_pengine->dt());
+
+         if (IsKeyPressed(::user::e_key_left_shift))
+         {
+
+            m_pengine->m_pcamera->TeleportInDirection(e_key_moveLeft);
+
+         }
+
+      }
+
+      if (key(e_key_moveRight) == ::user::e_key_state_pressed)
+      {
+
+         m_pengine->m_pcamera->ProcessKeyboardInput(e_key_moveRight, m_pengine->dt());
+
+         if (IsKeyPressed(::user::e_key_left_shift))
+         {
+
+            m_pengine->m_pcamera->TeleportInDirection(e_key_moveRight);
+
+         }
+      }
+
+      if (IsKeyPressed(::user::e_key_escape))
+      {
+
+         m_pimpact->m_bShouldClose = true;
+
+      }
+
+      if (IsKeyPressed(::user::e_key_4))
+      {
+         m_pengine->m_bWireframeMode = !m_pengine->m_bWireframeMode;
+
+      }
+      // Check for jump (Space key)
+      if (IsKeyPressed(::user::e_key_space))
+      {
+         float jumpHeight = 0.20f;  // Define how high the jump should be
+         m_pengine->m_pcamera->Jump(jumpHeight);
+      }
+      //// Teleport down (Left Control key)
+      //if (IsKeyPressed(::user::e_key_left_shift))
+      //{
+      //   float teleportDistance = 0.1081f;  // Define the downward distance
+      //   m_pengine->m_pcamera->TeleportDownward(teleportDistance);
+      //}
+
+      // Idle movement
+      if (!IsAnyKeyPressed()) { // You might want to implement IsAnyKeyPressed to check for movement keys
+         // m_pcamera->UpdateIdleMovement(deltaTime);
+      }
+
 
    }
 

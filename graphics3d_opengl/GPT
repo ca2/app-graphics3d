@@ -1,0 +1,66 @@
+#include "GLFW/glfw3.h"
+#include <vector>
+#include <map>
+#include "OpenGL/GLError.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/Types/Mesh.hpp"
+#include "Shader/Shader.h"
+#include "Light/Light.h"  // Example header for handling lights
+
+Renderer::Renderer()
+{
+}
+
+Renderer::~Renderer()
+{
+}
+
+void Renderer::Clear() const
+{
+    GLCheckError();  // Checks for any OpenGL errors before execution
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    GLCheckError();  // Checks for any OpenGL errors after execution
+}
+
+void Renderer::Draw(const std::vector<std::shared_ptr<Mesh>>& meshes, const std::vector<std::shared_ptr<Shader>>& shaders) const
+{
+    GLCheckError();  // Error check before draw call
+
+    // Iterate over each shader and mesh pair
+    for (size_t i = 0; i < shaders.size(); ++i)
+    {
+        const auto& shader = shaders[i];
+        const auto& mesh = meshes[i];
+
+        // Bind the shader program
+        shader->Bind();
+
+        // Set up lighting for the shader
+        shader->SetUniform("lightCount", static_cast<int>(m_Lights.size()));
+        for (size_t j = 0; j < m_Lights.size(); ++j)
+        {
+            const auto& light = m_Lights[j];
+            // Assuming your shader has uniform locations for light parameters
+            shader->SetUniform("lights[" + std::to_string(j) + "].position", light->GetPosition());
+            shader->SetUniform("lights[" + std::to_string(j) + "].color", light->GetColor());
+        }
+
+        // Bind the mesh (vertex array object)
+        mesh->Bind();
+
+        // Draw the mesh using glDrawElements (assumes the mesh is set up for indexed drawing)
+        glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+
+        // Unbind the mesh and shader for good practice
+        mesh->Unbind();
+        shader->Unbind();
+
+        GLCheckError();  // Error check after draw call
+    }
+}
+
+void Renderer::AddLight(const std::shared_ptr<Light>& light)
+{
+    m_Lights.push_back(light);
+}

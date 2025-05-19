@@ -39,6 +39,7 @@ namespace graphics3d
 		TransformComponent							m_transform;
 		float												m_fFrameTime;
 
+		bool m_bWireframeMode = false;
 
 		engine();
 		~engine() override;

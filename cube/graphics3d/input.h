@@ -74,7 +74,8 @@ namespace graphics3d
       void processKeyboardInput(float deltaTime);
       //void handleMouseInput();
 
-      void _001ProcessKeyboardInput();
+      void process_keyboard_input_updateMovement();
+      void process_keyboard_input_spaceExplorer();
 
       void reset_mouse_last_position();
    
@@ -92,6 +93,13 @@ namespace graphics3d
          return m_pkeymap->key(ekey);
 
       }
+
+      // from MyPlace2025@V0idsEmbrace@Twitch
+      ::user::enum_key_state  get_key_state(::user::e_key ekey);
+      bool IsKeyPressed(::user::e_key ekey); // New method for released keys
+      bool IsKeyReleased(::user::e_key ekey); // New method for released keys
+      bool IsAnyKeyPressed(); // New method to check if any keys are pressed
+      // End from MyPlace2025@V0idsEmbrace@Twitch
 
       //public:
           //double lastX = 400.0;

@@ -110,6 +110,7 @@ namespace cube
    {
 
       m_emouse = e_mouse_updateLook;
+      m_ekeyboard = e_keyboard_updateMovement;
       //m_bAbsoluteMousePosition = false;
       m_bShouldClose = false;
       m_bFrameBufferResized = false;
@@ -751,10 +752,16 @@ namespace cube
    void impact::process_keyboard_input()
    {
 
-      if (m_emouse == e_mouse_updateLook)
+      if (m_ekeyboard == e_keyboard_updateMovement)
       {
 
-         m_pengine->m_pinput->_001ProcessKeyboardInput();
+         m_pengine->m_pinput->process_keyboard_input_updateMovement();
+
+      }
+      else if (m_ekeyboard == e_keyboard_spaceExplorer)
+      {
+
+         m_pengine->m_pinput->process_keyboard_input_spaceExplorer();
 
       }
 

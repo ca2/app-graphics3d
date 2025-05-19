@@ -100,6 +100,19 @@ namespace graphics3d
 		// Update camera vectors
 		void UpdateCameraVectors();
 
+
+		// from MyPlace2025@V0idsEmbrace@Twitch
+      void UpdateIdleMovement(float deltaTime); // Add this line
+      //// Get zoom (field of view)
+      //float GetZoom() const;
+      //// Set movement speed
+      //void SetMovementSpeed(float speed);
+      void Jump(float jumpHeight);
+      void TeleportDownward(float distance); // Moves the camera down
+      void TeleportInDirection(int direction);
+		// END from MyPlace2025@V0idsEmbrace@Twitch
+
+
 	};
 
 

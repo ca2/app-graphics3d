@@ -268,6 +268,51 @@ namespace graphics3d
 
    }
 
+      void ::graphics3d::camera::Jump(float jumpHeight) {
+         m_locationPosition.y += jumpHeight;  // Move up by jumpHeight units
+   }
+
+   void ::graphics3d::camera::TeleportDownward(float distance) {
+      m_locationPosition.y -= distance;  // Move down by the specified distance
+   }
+
+   void ::graphics3d::camera::TeleportInDirection(int direction) 
+   {
+      const float teleportDistance = 0.40f; // Set teleport distance to 50 units
+
+      if (direction == FORWARD) {
+         m_locationPosition += m_poleFront * teleportDistance;
+      }
+      else if (direction == BACKWARD) {
+         m_locationPosition -= m_poleFront * teleportDistance;
+      }
+      else if (direction == LEFT) {
+         m_locationPosition -= m_poleRight * teleportDistance;
+      }
+      else if (direction == RIGHT) {
+         m_locationPosition += m_poleRight * teleportDistance;
+      }
+   }
+
+   // Function to update idle movement
+   void ::graphics3d::camera::UpdateIdleMovement(float deltaTime)
+   {
+      static float elapsedTime = 0.0f;
+      elapsedTime += deltaTime;
+
+      // Subtle oscillation parameters
+      float amplitude = 0.1f; // Amplitude of the movement
+      float frequency = 1.0f; // Frequency of the oscillation
+
+      // Calculate oscillation
+      float offsetX = amplitude * sin(frequency * elapsedTime);
+      float offsetY = amplitude * cos(frequency * elapsedTime);
+
+      // Apply the oscillation to the camera position
+      m_locationPosition.x += offsetX;
+      m_locationPosition.y += offsetY;
+   }
+
 
 }  // namespace graphics3d
 

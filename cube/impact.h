@@ -17,6 +17,12 @@ namespace cube
       e_mouse_none = 0,
       e_mouse_updateLook
    };
+   enum enum_keyboard
+   {
+      e_keyboard_none = 0,
+      e_keyboard_updateMovement,
+      e_keyboard_spaceExplorer
+   };
 
    class CLASS_DECL_CUBE impact :
       virtual public ::app_consumer < application, ::user::impact>
@@ -27,6 +33,7 @@ namespace cube
       //int m_i;
 
       enum_mouse                                m_emouse;
+      enum_keyboard                             m_ekeyboard;
       //bool                                      m_bAbsoluteMousePosition;
 
       ::pointer < ::graphics3d::engine >			m_pengine;
