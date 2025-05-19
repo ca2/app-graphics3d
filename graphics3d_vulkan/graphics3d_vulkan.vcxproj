@@ -35,7 +35,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{928E4E5F-E062-43D3-8073-F3826381A2E1}</ProjectGuid>
+    <ProjectGuid>{14BE1858-637E-4577-A1F3-DAED81D5D9DF}</ProjectGuid>
     <RootNamespace>vulkan_land</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>graphics3d_vulkan</ProjectName>
