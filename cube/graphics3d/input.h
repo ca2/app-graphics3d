@@ -16,8 +16,6 @@ namespace graphics3d
    struct input_t
    {
       //KeyMappings keys{};
-      float moveSpeed{ 3.f };
-      float lookSpeed{ 1.5f };
       bool   m_bMouseAbsolute;
 
       double m_dMouseLastX = 0.0;
@@ -25,10 +23,16 @@ namespace graphics3d
       double m_Δx = 0.;
       double m_Δy = 0.;
 
+      double   m_dCursorX;
+      double   m_dCursorY;
+      bool		m_bFirstMouse;
+      bool		m_bLastMouse;
 
+      float    m_fMoveSpeed{ 3.f };
+      float    m_fLookSpeed{ 1.5f };
 
-
-      float _sensitivity;  // Sensitivity factor for mouse movement
+      bool  m_b_001AbsoluteMousePosition;
+      float m_f_001UpdateLookSensitivity;  // Sensitivity factor for mouse movement
       float _yaw;          // Camera yaw (horizontal rotation)
       float _pitch;        // Camera pitch (vertical rotation)
       glm::vec3 _cameraDirection; // Camera direction vector
@@ -55,18 +59,31 @@ namespace graphics3d
 
       //void moveInPlaneXZ(::cube::impact * pimpact, float dt, application_object& gameObject);
 
-      void updateMovement(float dt, TransformComponent& transform);
-      void updateLook(float xOffset, float yOffset, TransformComponent& transform);
+      void prepare_mouse_input();
+      void process_mouse_input();
+      void process_keyboard_input();
 
-      void processMouseMovement(float xOffset, float yOffset);
+
+      void _001OnMouseMove(const ::int_point & point);
+      void _001OnMouseOut();
+      void _001PrepareMouseInput();
+      void process_mouse_input_updateLook();
+      void _001UpdateLook();
+
+      //void processMouseMovement(float xOffset, float yOffset);
       void processKeyboardInput(float deltaTime);
-      void handleMouseInput();
+      //void handleMouseInput();
 
+      void _001ProcessKeyboardInput();
+
+      void reset_mouse_last_position();
+   
       glm::vec3 getCameraDirection() const;
       glm::vec3 getCameraPosition() const;
 
 
       ::pointer<::cube::impact > m_pimpact;
+      ::pointer<::graphics3d::engine > m_pengine;
       ::pointer<::graphics3d::key_map > m_pkeymap;
 
       auto key(auto ekey)

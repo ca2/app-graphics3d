@@ -29,7 +29,7 @@ namespace graphics3d
 	}
 
 
-   void engine::on_render_frame(float frameTime)
+   void engine::on_render_frame()
    {
 
 
@@ -37,18 +37,22 @@ namespace graphics3d
    }
 
 
-   void engine::on_update_frame(TransformComponent & transform, float frameTime)
+   void engine::on_update_frame()
    {
 
-      m_pinput->handleMouseInput();
+      //m_fFrameTime = fFrameTime;
 
-      m_pinput->updateLook(m_pinput->getX(), m_pinput->getY(), transform);
+      m_pinput->prepare_mouse_input();
 
-      m_pinput->updateMovement(frameTime, transform);
+      m_pinput->process_mouse_input();
+
+      //m_pinput->updateLook(m_pinput->getX(), m_pinput->getY(), transform);
+
+      m_pinput->process_keyboard_input();
 
       //cameraController.moveInPlaneXZ(m_pimpact, frameTime, viewerObject);
 
-      m_pcamera->setViewYXZ(transform.translation, transform.rotation);
+      m_pcamera->setViewYXZ(m_transform.translation, m_transform.rotation);
 
 
       float aspect = m_pimpact->getAspectRatio();
@@ -154,10 +158,11 @@ namespace graphics3d
       //papp->m_pimpact->m_bLastMouse = true;
       //viewerObject->m_transform.translation.z = -2.5f;
 
-      TransformComponent transform;
+      //TransformComponent transform;
       
       m_pinput = __allocate ::graphics3d::input();
       m_pinput->m_pimpact = m_pimpact;
+      m_pinput->m_pengine = this;
       m_pinput->m_pkeymap = m_pimpact->m_pkeymap;
       /*    glfwSetInputMode(_window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
           glfwSetWindowUserPointer(_window.getGLFWwindow(), &cameraController);*/
@@ -169,7 +174,7 @@ namespace graphics3d
       {
 
          pdatabaseclient->datastream()->get_block("camera", m_pcamera->as_block());
-         pdatabaseclient->datastream()->get_block("transform", as_memory_block(transform));
+         pdatabaseclient->datastream()->get_block("transform", as_memory_block(m_transform));
          pdatabaseclient->datastream()->get_block("input", m_pinput->as_block());
 
       }
@@ -190,9 +195,11 @@ namespace graphics3d
 
          currentTime = newTime;
 
-         on_update_frame(transform, frameTime);
+         m_fFrameTime = frameTime;
 
-         on_render_frame(frameTime);
+         on_update_frame();
+
+         on_render_frame();
 
       }
 
@@ -200,7 +207,7 @@ namespace graphics3d
       {
 
          pdatabaseclient->datastream()->set("input", m_pinput->as_block());
-         pdatabaseclient->datastream()->set("transform", as_memory_block(transform));
+         pdatabaseclient->datastream()->set("transform", as_memory_block(m_transform));
          pdatabaseclient->datastream()->set("camera", m_pcamera->as_block());
 
       }

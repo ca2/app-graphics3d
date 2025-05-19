@@ -14,7 +14,13 @@ namespace graphics3d
 
    input::input(float sensitivity, float yaw, float pitch)
    {
-      _sensitivity = sensitivity;
+
+      m_dCursorX = 0.;
+      m_dCursorY = 0.;
+      m_bFirstMouse = true;
+      m_bLastMouse = false;
+
+      m_f_001UpdateLookSensitivity = sensitivity;
       _yaw = yaw;
       _pitch = pitch;
       _cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -60,31 +66,62 @@ namespace graphics3d
    //    }
    //}
 
-
-
-   void input::processMouseMovement(float xOffset, float yOffset)
+   
+   void input::_001OnMouseOut()
    {
-      // Apply sensitivity factor
-      xOffset *= _sensitivity;
-      yOffset *= _sensitivity;
 
-      // Update yaw and pitch based on offsets
-      _yaw += xOffset;
-      _pitch += yOffset;
+      reset_mouse_last_position();
 
-      // Constrain the pitch if necessary
-      if (_pitch > 89.0f)
-         _pitch = 89.0f;
-      if (_pitch < -89.0f)
-         _pitch = -89.0f;
-
-      // Update camera direction based on yaw and pitch
-      glm::vec3 direction;
-      direction.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-      direction.y = sin(glm::radians(_pitch));
-      direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-      _cameraDirection = glm::normalize(direction);
    }
+
+
+   void input::reset_mouse_last_position()
+   {
+
+
+
+      if (m_b_001AbsoluteMousePosition)
+      {
+
+         m_dCursorX = 0.;
+         m_dCursorY = 0.;
+
+      }
+
+      m_bLastMouse = true;
+
+   }
+
+
+   //void input::process_mouse_input_updateLook()
+   //{
+
+   //   auto xOffset = m_Δx;
+   //   auto yOffset = m_Δy;
+
+   //   // Apply sensitivity factor
+   //   xOffset *= m_f_001UpdateLookSensitivity;
+   //   yOffset *= m_f_001UpdateLookSensitivity;
+
+   //   // Update yaw and pitch based on offsets
+   //   _yaw += xOffset;
+   //   _pitch += yOffset;
+
+   //   // Constrain the pitch if necessary
+   //   if (_pitch > 89.0f)
+   //      _pitch = 89.0f;
+   //   if (_pitch < -89.0f)
+   //      _pitch = -89.0f;
+
+   //   // Update camera direction based on yaw and pitch
+   //   glm::vec3 direction;
+   //   direction.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+   //   direction.y = sin(glm::radians(_pitch));
+   //   direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+   //   _cameraDirection = glm::normalize(direction);
+
+   //}
+
    //void input::processKeyboardInput(GLFWwindow* window, float deltaTime) {
    //    float cameraSpeed = 2.5f * deltaTime; // adjust speed as necessary
 
@@ -103,17 +140,20 @@ namespace graphics3d
    //}
 
 
-   void input::updateLook(float xOffset, float yOffset, TransformComponent & transform)
+   void input::process_mouse_input_updateLook()
    {
 
-      xOffset *= _sensitivity;
-      yOffset *= _sensitivity;
+      auto xOffset = m_Δx;
+      auto yOffset = m_Δy;
+
+      xOffset *= m_f_001UpdateLookSensitivity;
+      yOffset *= m_f_001UpdateLookSensitivity;
 
       // limit pitch values between about +/- 85ish degrees
-      transform.rotation.x = glm::clamp(transform.rotation.x, -1.5f, 1.5f);
-      transform.rotation.y = glm::mod(transform.rotation.y, glm::two_pi<float>());
+      m_pengine->m_transform.rotation.x = glm::clamp(m_pengine->m_transform.rotation.x, -1.5f, 1.5f);
+      m_pengine->m_transform.rotation.y = glm::mod(m_pengine->m_transform.rotation.y, glm::two_pi<float>());
 
-      if (m_pimpact->is_absolute_mouse_position())
+      if (m_b_001AbsoluteMousePosition)
       {
 
          _yaw = xOffset;
@@ -135,38 +175,66 @@ namespace graphics3d
       if (_yaw > 360.0f) _yaw -= 360.0f;
       if (_yaw < 0.0f) _yaw += 360.0f;
 
-      transform.rotation.x = glm::radians(_pitch);
-      transform.rotation.y = glm::radians(_yaw);
+      m_pengine->m_transform.rotation.x = glm::radians(_pitch);
+      m_pengine->m_transform.rotation.y = glm::radians(_yaw);
 
    }
 
 
-   void input::updateMovement(float dt, TransformComponent& transform)
+   void input::prepare_mouse_input()
    {
+
+      m_pimpact->prepare_mouse_input();
+
+   }
+
+
+   void input::process_mouse_input()
+   {
+
+      m_pimpact->process_mouse_input();
+
+   }
+
+
+   void input::process_keyboard_input()
+   {
+
+      m_pimpact->process_keyboard_input();
+
+   }
+
+
+   void input::_001ProcessKeyboardInput()
+   {
+
+      auto& transform = m_pengine->m_transform;
 
       float yaw = transform.rotation.y;
       const glm::vec3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
       const glm::vec3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
       const glm::vec3 upDir{ 0.f, -1.f, 0.f };
 
+      auto pinput = m_pengine->m_pinput;
+
       glm::vec3 moveDir{ 0.f };
       {
          using namespace ::graphics3d;
-         if (key(e_key_moveForward) == ::user::e_key_state_pressed) moveDir += forwardDir;
-         if (key(e_key_moveBackward) == ::user::e_key_state_pressed) moveDir -= forwardDir;
-         if (key(e_key_moveRight) == ::user::e_key_state_pressed) moveDir += rightDir;
-         if (key(e_key_moveLeft) == ::user::e_key_state_pressed) moveDir -= rightDir;
-         if (key(e_key_moveUp) == ::user::e_key_state_pressed) moveDir += upDir;
-         if (key(e_key_moveDown) == ::user::e_key_state_pressed) moveDir -= upDir;
+         if (pinput->key(e_key_moveForward) == ::user::e_key_state_pressed) moveDir += forwardDir;
+         if (pinput->key(e_key_moveBackward) == ::user::e_key_state_pressed) moveDir -= forwardDir;
+         if (pinput->key(e_key_moveRight) == ::user::e_key_state_pressed) moveDir += rightDir;
+         if (pinput->key(e_key_moveLeft) == ::user::e_key_state_pressed) moveDir -= rightDir;
+         if (pinput->key(e_key_moveUp) == ::user::e_key_state_pressed) moveDir += upDir;
+         if (pinput->key(e_key_moveDown) == ::user::e_key_state_pressed) moveDir -= upDir;
 
-         if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon()) 
+         if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon())
          {
 
-            transform.translation += moveSpeed * dt * glm::normalize(moveDir);
+            transform.translation += m_fMoveSpeed * m_pengine->dt() * glm::normalize(moveDir);
 
          }
 
-         if (key(e_key_Exit) == ::user::e_key_state_pressed)
+         if (pinput->key(e_key_Exit) == ::user::e_key_state_pressed)
          {
 
             m_pimpact->m_bShouldClose = true;
@@ -176,6 +244,7 @@ namespace graphics3d
       }
 
    }
+
 
    glm::vec3 input::getCameraDirection() const 
    { 
@@ -188,24 +257,75 @@ namespace graphics3d
       return _cameraPosition; 
    }
 
-   void input::handleMouseInput()
+
+   void input::_001OnMouseMove(const ::int_point & point)
    {
 
-      double x, y;
-      double newx, newy;
+      //m_mousestate.position.x = point.x();
+//m_mousestate.position.y = point.y();
+//m_mousestate.m_buttons.left = true;
+//         pmouse->m_p
 
-      if (m_pimpact->is_absolute_mouse_position())
+      double w = m_pimpact->m_iWidth;
+      double h = m_pimpact->m_iHeight;
+
+      if (m_bLastMouse)
       {
 
-         newx = m_pimpact->m_dCursorX * 1.25 * MATH_PI;
-         newy = m_pimpact->m_dCursorY * 1.25 * MATH_PI / 2.0;
+         m_bLastMouse = false;
+         m_bFirstMouse = true;
+
+      }
+
+      double xCursor;
+      double yCursor;
+
+      if (m_b_001AbsoluteMousePosition)
+      {
+
+         xCursor = ((point.x() - (w / 2.0)) * 2.0);
+         yCursor = ((point.y() - (h / 2.0)) * 2.0);
 
       }
       else
       {
 
-         newx = m_pimpact->m_dCursorX;
-         newy = m_pimpact->m_dCursorY;
+         //xCursor = point.x();
+         //yCursor = point.y();
+
+         xCursor = point.x();
+         yCursor = point.y();
+
+      }
+
+      m_dCursorX = xCursor;
+      m_dCursorY = yCursor;
+
+      m_pimpact->track_mouse_leave();
+
+      m_pimpact->m_pengine->on_mouse_move(xCursor, yCursor);
+
+   }
+
+   
+   void input::_001PrepareMouseInput()
+   {
+
+      double x, y;
+      double newx, newy;
+
+      if (m_b_001AbsoluteMousePosition)
+      {
+
+         newx = m_dCursorX * 1.25 * MATH_PI;
+         newy = m_dCursorY * 1.25 * MATH_PI / 2.0;
+
+      }
+      else
+      {
+
+         newx = m_dCursorX;
+         newy = m_dCursorY;
 
       }
       //glfwGetCursorPos(window, &xpos, &ypos);
@@ -218,20 +338,20 @@ namespace graphics3d
       //   ypos = _lastY;
       //}
       //else
-      if (!m_pimpact->is_absolute_mouse_position())
+      if (!m_b_001AbsoluteMousePosition)
       {
 
-         if (m_pimpact->m_bFirstMouse)
+         if (m_bFirstMouse)
          {
             m_dMouseLastX = newx;
             m_dMouseLastY = newy;
-            m_pimpact->m_bFirstMouse = false;
+            m_bFirstMouse = false;
 
          }
 
       }
 
-      if (m_pimpact->is_absolute_mouse_position())
+      if (m_b_001AbsoluteMousePosition)
       {
 
          x = m_dMouseLastX + (newx - m_dMouseLastX) * 0.05;

@@ -36,8 +36,15 @@ namespace graphics3d
 		::pointer < ::graphics3d::input >		m_pinput;
 		::pointer < ::graphics3d::camera >		m_pcamera;
 
+		TransformComponent							m_transform;
+		float												m_fFrameTime;
+
+
 		engine();
 		~engine() override;
+
+
+		float dt() { return m_fFrameTime; }
 
 
 		void run() override;
@@ -49,9 +56,9 @@ namespace graphics3d
 
 		virtual void on_mouse_move(int x, int y);
 
-		virtual void on_render_frame(float frameTime);
+		virtual void on_render_frame();
 
-		virtual void on_update_frame(TransformComponent& transform, float frameTime);
+		virtual void on_update_frame();
 
 		virtual ::pointer<model> create_model_from_file(const ::file::path& path);
 

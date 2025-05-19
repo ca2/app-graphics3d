@@ -2,6 +2,7 @@
 #include "impact.h"
 #include "application.h"
 #include "graphics3d/engine.h"
+#include "graphics3d/input.h"
 #include "acme/constant/message.h"
 #include "acme/graphics/image/image32.h"
 #include "acme/handler/topic.h"
@@ -13,6 +14,7 @@
 #include "aura/graphics/image/image.h"
 #include "aura/graphics/image/drawing.h"
 #include "aura/message/user.h"
+#include "app-cube/cube/graphics3d/types.h"
 //#include "vulkan/vk_container.h"
 
 
@@ -109,10 +111,6 @@ namespace cube
 
       m_bAbsoluteMousePosition = false;
       m_bShouldClose = false;
-      m_dCursorX = 0.;
-      m_dCursorY = 0.;
-      m_bFirstMouse = true;
-      m_bLastMouse = false;
       m_bFrameBufferResized = false;
 
    }
@@ -183,49 +181,29 @@ namespace cube
 
          host_to_client()(point);
 
-         //m_mousestate.position.x = point.x();
-         //m_mousestate.position.y = point.y();
-         //m_mousestate.m_buttons.left = true;
-         //         pmouse->m_p
+         on_mouse_move(point);
 
-         double w = m_iWidth;
-         double h = m_iHeight;
+      }
 
-         if (m_bLastMouse)
+   }
+
+
+   void impact::on_mouse_move(const int_point & point)
+   {
+
+      auto pengine = m_pengine;
+
+      if (pengine)
+      {
+
+         auto pinput = pengine->m_pinput;
+
+         if (pinput)
          {
 
-            m_bLastMouse = false;
-            m_bFirstMouse = true;
+            pinput->_001OnMouseMove(point);
 
          }
-
-         double xCursor;
-         double yCursor;
-
-         if (is_absolute_mouse_position())
-         {
-
-            xCursor = ((point.x() - (w / 2.0)) * 2.0);
-            yCursor = ((point.y() - (h / 2.0)) * 2.0);
-
-         }
-         else
-         {
-
-            //xCursor = point.x();
-            //yCursor = point.y();
-
-            xCursor = point.x();
-            yCursor = point.y();
-
-         }
-
-         m_dCursorX = xCursor;
-         m_dCursorY = yCursor;
-
-         track_mouse_leave();
-
-         m_pengine->on_mouse_move(xCursor, yCursor);
 
       }
 
@@ -344,6 +322,8 @@ namespace cube
    void impact::on_load_engine()
    {
 
+      m_pengine->m_pinput->m_fMoveSpeed = 3.f;
+      m_pengine->m_pinput->m_fLookSpeed =  1.5f;
 
    }
 
@@ -351,25 +331,20 @@ namespace cube
    void impact::on_message_mouse_leave(::message::message* pmessage)
    {
 
-      reset_mouse_last_position();
+      on_mouse_out();
 
    }
 
 
-   void impact::reset_mouse_last_position()
+   void impact::on_mouse_out()
    {
 
-      if (is_absolute_mouse_position())
-      {
-
-         m_dCursorX = 0.;
-         m_dCursorY = 0.;
-
-      }
-
-      m_bLastMouse = true;
+      m_pengine->m_pinput->_001OnMouseOut();
 
    }
+
+
+
 
 
    void impact::on_message_left_button_down(::message::message* pmessage)
@@ -612,7 +587,7 @@ namespace cube
 
       m_pengine->on_layout(m_iWidth, m_iHeight);
 
-      reset_mouse_last_position();
+      //reset_mouse_last_position();
 
    }
 
@@ -659,12 +634,12 @@ namespace cube
    }*/
 
 
-   bool impact::is_absolute_mouse_position()
-   {
+   //bool impact::is_absolute_mouse_position()
+   //{
 
-      return false;
+   //   return false;
 
-   }
+   //}
 
 
    bool impact::shouldClose()
@@ -736,6 +711,31 @@ namespace cube
       }
 
       return static_cast<float>(this->width()) / fH;
+
+   }
+
+
+   void impact::prepare_mouse_input()
+   {
+
+      m_pengine->m_pinput->_001PrepareMouseInput();
+
+   }
+
+
+   void impact::process_mouse_input()
+   {
+
+      m_pengine->m_pinput->process_mouse_input_updateLook();
+
+   }
+
+
+
+   void impact::process_keyboard_input()
+   {
+
+      m_pengine->m_pinput->_001ProcessKeyboardInput();
 
    }
 

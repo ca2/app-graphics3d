@@ -41,10 +41,6 @@ namespace cube
 
       //::function < void(void*, int, int, int)> m_callbackOffscreen;
 
-      double   m_dCursorX;
-      double   m_dCursorY;
-      bool		m_bFirstMouse;
-      bool		m_bLastMouse;
 
 
       bool		m_bShouldClose;
@@ -65,6 +61,10 @@ namespace cube
 
 
       void install_message_routing(::channel * pchannel) override;
+
+
+      virtual void on_mouse_move(const int_point& point);
+      virtual void on_mouse_out();
 
       virtual ::user::enum_key_state get_key_state(::user::e_key ekey) ;
       void _001OnNcClip(::draw2d::graphics_pointer & pgraphics) override;
@@ -97,7 +97,7 @@ namespace cube
 
       void on_timer(::timer * ptimer) override;
 
-      void reset_mouse_last_position();
+      //void reset_mouse_last_position();
 
 
       long long increment_reference_count() override
@@ -111,7 +111,7 @@ namespace cube
       bool keyboard_focus_is_focusable() override;
 
 
-      virtual bool is_absolute_mouse_position();
+      //virtual bool is_absolute_mouse_position();
 
       virtual bool shouldClose();
       //virtual ::int_size size();
@@ -147,6 +147,13 @@ namespace cube
 
       virtual ::pointer < ::graphics3d::key_map > get_default_key_map();
       virtual float getAspectRatio();
+
+      virtual void prepare_mouse_input();
+      virtual void process_mouse_input();
+
+      virtual void process_keyboard_input();
+
+
    };
 
 
