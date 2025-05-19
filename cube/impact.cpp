@@ -109,7 +109,8 @@ namespace cube
    impact::impact()
    {
 
-      m_bAbsoluteMousePosition = false;
+      m_emouse = e_mouse_updateLook;
+      //m_bAbsoluteMousePosition = false;
       m_bShouldClose = false;
       m_bFrameBufferResized = false;
 
@@ -339,7 +340,12 @@ namespace cube
    void impact::on_mouse_out()
    {
 
-      m_pengine->m_pinput->_001OnMouseOut();
+      if (m_emouse == e_mouse_updateLook)
+      {
+
+         m_pengine->m_pinput->_001OnMouseOut();
+
+      }
 
    }
 
@@ -718,7 +724,12 @@ namespace cube
    void impact::prepare_mouse_input()
    {
 
-      m_pengine->m_pinput->_001PrepareMouseInput();
+      if (m_emouse == e_mouse_updateLook)
+      {
+
+         m_pengine->m_pinput->_001PrepareMouseInput();
+
+      }
 
    }
 
@@ -726,7 +737,12 @@ namespace cube
    void impact::process_mouse_input()
    {
 
-      m_pengine->m_pinput->process_mouse_input_updateLook();
+      if (m_emouse == e_mouse_updateLook)
+      {
+
+         m_pengine->m_pinput->process_mouse_input_updateLook();
+
+      }
 
    }
 
@@ -735,7 +751,12 @@ namespace cube
    void impact::process_keyboard_input()
    {
 
-      m_pengine->m_pinput->_001ProcessKeyboardInput();
+      if (m_emouse == e_mouse_updateLook)
+      {
+
+         m_pengine->m_pinput->_001ProcessKeyboardInput();
+
+      }
 
    }
 

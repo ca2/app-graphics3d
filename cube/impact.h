@@ -12,7 +12,11 @@
 
 namespace cube
 {
-
+   enum enum_mouse
+   {
+      e_mouse_none = 0,
+      e_mouse_updateLook
+   };
 
    class CLASS_DECL_CUBE impact :
       virtual public ::app_consumer < application, ::user::impact>
@@ -22,8 +26,8 @@ namespace cube
       //memory m_memory;
       //int m_i;
 
-
-      bool                                      m_bAbsoluteMousePosition;
+      enum_mouse                                m_emouse;
+      //bool                                      m_bAbsoluteMousePosition;
 
       ::pointer < ::graphics3d::engine >			m_pengine;
 
