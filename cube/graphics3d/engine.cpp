@@ -3,8 +3,12 @@
 #include "application.h"
 #include "engine.h"
 #include "input.h"
+#include "renderer.h"
 #include "scene.h"
+#include "shader.h"
 #include "types.h"
+//#include "system/point_light_system.h"
+//#include "system/simple_render_system.h"
 #include "app-cube/cube/impact.h"
 #include "acme/exception/interface_only.h"
 #include "acme/platform/application.h"
@@ -19,8 +23,8 @@ namespace graphics3d
 	engine::engine()
 	{
 
-
 	} 
+
 
 	engine::~engine()
 	{
@@ -29,13 +33,77 @@ namespace graphics3d
 	}
 
 
+   void engine::initialize_engine(::cube::impact* pimpact)
+   {
+
+      m_pimpact = pimpact;
+
+      m_pimpact->m_pengine = this;
+
+      m_pinput = __allocate::graphics3d::input();
+      m_pinput->m_pimpact = m_pimpact;
+      m_pinput->m_pengine = this;
+      m_pinput->m_pkeymap = m_pimpact->m_pkeymap;
+
+   }
+
+
    void engine::on_render_frame()
    {
 
+      ::cast < renderer > prenderer = m_prenderer;
+
+      if (prenderer->width() <= 0 || prenderer->height() <= 0)
+      {
+
+         return;
+
+      }
+
+
+      if (auto pframe = m_prenderer->beginFrame())
+      {
+
+         on_begin_frame();
+         // render
+         m_prenderer->on_begin_render(pframe);
+
+         if (m_pimpact->global_ubo_block().size() > 0)
+         {
+
+            update_global_ubo();
+
+         }
+
+         m_pscene->on_render(m_pcontext);
+
+         m_prenderer->on_end_render(pframe);
+
+         m_prenderer->endFrame();
+
+      }
 
 
    }
 
+
+   void engine::create_global_ubo()
+   {
+
+   }
+
+
+   ::file::path engine::_translate_shader_path(const ::file::path& pathShader)
+   {
+
+      return pathShader;
+
+   }
+   void engine::on_begin_frame()
+   {
+
+
+   }
 
    void engine::on_update_frame()
    {
@@ -68,6 +136,8 @@ namespace graphics3d
 	{
 
       on_start_engine();
+
+
 
       //auto papp = get_app();
 
@@ -137,7 +207,7 @@ namespace graphics3d
 
       //}
 
-      //SimpleRenderSystem simpleRenderSystem{
+      //simple_render_system simpleRenderSystem{
       //    pcontext,
       //    m_prenderer->getRenderPass(),
       //    globalSetLayout->getDescriptorSetLayout() };
@@ -157,16 +227,12 @@ namespace graphics3d
       //auto viewerObject = __øcreate <::graphics3d::scene_object>();
       //papp->m_pimpact->m_bLastMouse = true;
       //viewerObject->m_transform.translation.z = -2.5f;
-
+      m_transform.translation.z = -2.5f;
       //TransformComponent transform;
       
-      m_pinput = __allocate ::graphics3d::input();
-      m_pinput->m_pimpact = m_pimpact;
-      m_pinput->m_pengine = this;
-      m_pinput->m_pkeymap = m_pimpact->m_pkeymap;
       /*    glfwSetInputMode(_window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
           glfwSetWindowUserPointer(_window.getGLFWwindow(), &cameraController);*/
-      m_pinput->m_bMouseAbsolute;
+      //m_pinput->m_bMouseAbsolute;
 
       ::pointer <::database::client> pdatabaseclient = m_papplication;
 
@@ -222,6 +288,35 @@ namespace graphics3d
 	}
 
 
+   void engine::defer_start()
+   {
+
+
+      m_pimpact->m_ptaskEngine = fork([this]()
+         {
+
+            //            run_vulkan_example();
+
+
+            m_pimpact->on_load_engine();
+
+            run();
+
+            m_pimpact->m_ptaskEngine.release();
+
+         });
+
+   }
+
+
+   void engine::update_global_ubo()
+   {
+
+
+   }
+
+
+
    void engine::on_start_engine()
    {
 
@@ -244,10 +339,10 @@ namespace graphics3d
 	}
 
 
-	::pointer<model> engine::create_model_from_file(const ::file::path& path)
+	::pointer<model> engine::create_tinyobjloader_model(const ::file::path& path)
 	{
 
-		model::Builder builder{};
+		model::tinyobjloader_Builder builder{};
 
 		builder.loadModel(m_pcontext, path);
 
@@ -268,6 +363,25 @@ namespace graphics3d
 		m_mapScene[pscene->m_strName] = pscene;
 
 	}
+
+
+
+   ::pointer<shader> engine::create_shader(
+      ::graphics3d::context* pcontext,
+      const ::file::path& pathVert,
+      const ::file::path& pathFrag,
+      const ::graphics3d::property* pproperties,
+      ::graphics3d::shader::enum_flag eflag)
+   {
+
+      auto pshader = __øcreate < shader >();
+
+      pshader->initialize_shader(pcontext, pathVert, pathFrag, pproperties, eflag);
+
+      return pshader;
+
+   }
+
 
 
 	void engine::set_current_scene(::graphics3d::scene* pscene)

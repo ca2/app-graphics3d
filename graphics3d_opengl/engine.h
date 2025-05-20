@@ -4,8 +4,8 @@
 #include "app-cube/cube/graphics3d/engine.h"
 
 
-#include <memory>
-#include <vector>
+//#include <memory>
+//#include <vector>
 //#include "Core/Window.h"
 #include "input.h"
 #include "renderer.h"
@@ -19,15 +19,16 @@
 
 namespace graphics3d_opengl
 {
-
+	class SimpleRenderSystem;
+	class point_light_system;
 
 	class engine :
 		virtual public ::graphics3d::engine
 	{
 	public:
 
-
-		::pointer < ::cube::impact > m_pimpact;
+		void defer_start() override;
+		//::pointer < ::cube::impact > m_pimpact;
 		::pointer < ::graphics3d_opengl::renderer > m_prenderer;
 		::pointer < ::graphics3d::camera > m_pcamera;
 		//::pointer < glc::Application > m_pglcapplication;  // Game object that manages the scenes
@@ -46,7 +47,8 @@ namespace graphics3d_opengl
 		bool m_Running;
 
 		//bool m_bWireframeMode = false;
-
+		//::pointer < SimpleRenderSystem > m_psimpleRenderSystem;
+		//::pointer < point_light_system > m_ppointLightSystem;
 
 		::memory m_memoryBuffer;
 
@@ -58,16 +60,24 @@ namespace graphics3d_opengl
 
 		//::pointer<::gpu::context>             m_pgpucontext;
 
+		GLuint m_globalUBO;
+
 		engine();
 		~engine();
 
+		
+		::file::path _translate_shader_path(const ::file::path& pathShader) override;
 
+		void on_start_engine() override;
 
+		void on_begin_frame() override;
+
+		void create_global_ubo() override;
 		//Application();
 		//~Application();
 
-		void Init();       // Initialize the game and load the first scene
-		void Update(float deltaTime, ::graphics3d::camera* pcamera);  // Update game logic
+		//void Init();       // Initialize the game and load the first scene
+		///void Update(float deltaTime, ::graphics3d::camera* pcamera);  // Update game logic
 		void Render(renderer* prenderer, ::graphics3d::camera* pcamera);
 
 		//void run_application() override;
@@ -78,7 +88,7 @@ namespace graphics3d_opengl
 
 		void on_initialize_particle() override;
 
-		void run() override;
+		//void run() override;
 
 		//private:
 		//void ProcessInput(float deltaTime);
@@ -93,6 +103,9 @@ namespace graphics3d_opengl
 		virtual void on_layout(int cx, int cy) override;
 
 		virtual void on_mouse_move(int x, int y) override;
+
+
+		void on_render_frame() override;
 
 
 	};

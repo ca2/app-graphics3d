@@ -23,7 +23,7 @@ namespace graphics3d_vulkan
       const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
       void* pUserData) {
       std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-
+      warning() << "validation layer: " << pCallbackData->pMessage;
       return VK_FALSE;
    }
 
@@ -95,6 +95,17 @@ namespace graphics3d_vulkan
    {
 
       m_pimpact = pimpact;
+
+
+      validationLayers.push_back("VK_LAYER_KHRONOS_validation");
+
+      if (m_papplication->m_bUseDraw2dProtoWindow)
+      {
+       
+         deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+      }
+
 
    }
 
@@ -717,6 +728,21 @@ namespace graphics3d_vulkan
       vkDestroyFence(m_vkdevice, fence, nullptr);
    }
 
+
+   //void context::submitSamplingWork(VkCommandBuffer cmdBuffer, VkQueue queue)
+   //{
+   //   VkSubmitInfo submitInfo = initializers::submit_info();
+   //   submitInfo.commandBufferCount = 1;
+   //   submitInfo.pCommandBuffers = &cmdBuffer;
+   //   //m_submitInfo.commandBufferCount = 1;
+   //   //m_submitInfo.pCommandBuffers = &cmdBuffer;
+   //   VkFenceCreateInfo fenceInfo = initializers::fence_create_info();
+   //   VkFence fence;
+   //   VK_CHECK_RESULT(vkCreateFence(m_vkdevice, &fenceInfo, nullptr, &fence));
+   //   VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
+   //   VK_CHECK_RESULT(vkWaitForFences(m_vkdevice, 1, &fence, VK_TRUE, UINT64_MAX));
+   //   vkDestroyFence(m_vkdevice, fence, nullptr);
+   //}
 
 } // namespace graphics3d_vulkan
 

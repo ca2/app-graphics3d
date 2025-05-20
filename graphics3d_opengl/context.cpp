@@ -5,6 +5,7 @@
 #include "context.h"
 //#include "initializers.h"
 #include "tools.h"
+#include "aura/graphics/gpu/approach.h"
 #include "app-cube/cube/impact.h"
 // std headers
 #include <cstring>
@@ -65,7 +66,6 @@ namespace graphics3d_opengl
       //m_vkqueuePresent = nullptr;
       //m_vkqueueGraphics = nullptr;
 
-      createInstance();
       //setupDebugMessenger();
       //createSurface();
       //pickPhysicalDevice();
@@ -98,12 +98,24 @@ namespace graphics3d_opengl
 
       m_pimpact = pimpact;
 
+
+      createInstance();
+
    }
 
 
    void context::createInstance()
    {
 
+      auto pfactoryGpu = factory("gpu", "opengl");
+
+      pfactoryGpu->merge_to_global_factory();
+
+      auto pgpu = system()->get_gpu();
+
+      m_pgpucontext = pgpu->create_context(this);
+
+      //m_pgpucontext->create_context();
       //if (enableValidationLayers && !checkValidationLayerSupport()) {
       //   throw std::runtime_error("validation layers requested, but not available!");
       //}

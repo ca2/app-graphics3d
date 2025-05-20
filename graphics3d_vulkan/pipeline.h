@@ -43,9 +43,9 @@ namespace graphics3d_vulkan
 
 		pipeline();
 		virtual void initialize_pipeline(
-			context * pvkcdevice,
-			const std::string& vertFilepath,
-			const std::string& fragFilepath,
+			::graphics3d::context * pcontext,
+			const ::file::path& pathVert,
+			const ::file::path& pathFrag,
 			const PipelineConfigInfo& configInfo);
 		~pipeline();
 
@@ -59,8 +59,8 @@ namespace graphics3d_vulkan
 		static std::vector<char> readFile(const std::string& filepath);
 
 		void createGraphicsPipeline(
-			const std::string& vertFilepath,
-			const std::string& fragFilepath,
+			const ::file::path& pathVert,
+			const ::file::path& pathFrag,
 			const PipelineConfigInfo& configInfo);
 
 		void createShaderModule(const ::block & block, VkShaderModule* shaderModule);

@@ -3,7 +3,7 @@
 #include "descriptors.h"
 #include "buffer.h"
 #include "engine.h"
-#include "frame_info.h"
+#include "frame.h"
 #include "input.h"
 #include "offscreen_render_pass.h"
 #include "renderer.h"
@@ -12,8 +12,8 @@
 #include "app-cube/cube/impact.h"
 #include "app-cube/cube/graphics3d/camera.h"
 #include "app-cube/cube/graphics3d/scene.h"
-#include "system/basic_render_system.h"
-#include "system/point_light_system.h"
+//#include "app-cube/cube/graphics3d/system/simple_render_system.h"
+//#include "app-cube/cube/graphics3d/system/point_light_system.h"
 #include "acme/platform/application.h"
 #include "apex/database/client.h"
 #include "apex/database/stream.h"
@@ -52,7 +52,9 @@ namespace graphics3d_vulkan
 
       __construct_new(m_prenderer);
 
-      m_prenderer->initialize_renderer(papp->m_pimpact, m_pcontext);
+      ::graphics3d::engine::m_prenderer = m_prenderer;
+
+      m_prenderer->initialize_renderer(m_pcontext);
 
       auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
 
@@ -69,107 +71,147 @@ namespace graphics3d_vulkan
       //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .build();
-      m_pscene->on_load_scene();
 
       //pcontext = __allocate context(m_pvulkandevice);
 
-      m_uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
+      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
 
-      ::cast < context > pcontext = m_pcontext;
-
-      for (int i = 0; i < m_uboBuffers.size(); i++)
+      if (iGlobalUboSize > 0)
       {
 
-         m_uboBuffers[i] = __allocate buffer();
+         m_uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
 
-         m_uboBuffers[i]->initialize_buffer(
-            pcontext,
-            sizeof(GlobalUbo),
-            1,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+         ::cast < context > pcontext = m_pcontext;
 
-         m_uboBuffers[i]->map();
+         for (int i = 0; i < m_uboBuffers.size(); i++)
+         {
+
+            m_uboBuffers[i] = __allocate buffer();
+
+            m_uboBuffers[i]->initialize_buffer(
+               pcontext,
+               iGlobalUboSize,
+               1,
+               VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+            m_uboBuffers[i]->map();
+
+         }
+         m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pcontext)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
+            .build();
+
+         //auto globalSetLayout = m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+
+
+         m_globalDescriptorSets.resize(render_pass::MAX_FRAMES_IN_FLIGHT);
+
+         for (int i = 0; i < m_globalDescriptorSets.size(); i++)
+         {
+
+            auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
+
+            descriptor_writer(*m_psetdescriptorlayoutGlobal, *m_pglobalpool)
+               .writeBuffer(0, &bufferInfo)
+               .build(m_globalDescriptorSets[i]);
+
+         }
 
       }
-      auto globalSetLayout = set_descriptor_layout::Builder(pcontext)
-         .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
-         .build();
 
 
-      m_globalDescriptorSets.resize(render_pass::MAX_FRAMES_IN_FLIGHT);
+//          m_prenderer->getRenderPass(),
+  //        globalSetLayout->getDescriptorSetLayout()
+    //  };
 
-      for (int i = 0; i < m_globalDescriptorSets.size(); i++)
-      {
+      m_pscene->on_load_scene(m_pcontext);
 
-         auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
-
-         descriptor_writer(*globalSetLayout, *m_pglobalpool)
-            .writeBuffer(0, &bufferInfo)
-            .build(m_globalDescriptorSets[i]);
-
-      }
-
-      m_psimpleRenderSystem=__allocate SimpleRenderSystem{
-          pcontext,
-          m_prenderer->getRenderPass(),
-          globalSetLayout->getDescriptorSetLayout() };
-
-      m_ppointLightSystem = __allocate point_light_system{
-          pcontext,
-          m_prenderer->getRenderPass(),
-          globalSetLayout->getDescriptorSetLayout()
-      };
 
    }
 
 
-   void engine::on_render_frame()
+   void engine::on_begin_frame()
    {
 
-      ::cast < renderer > prenderer = m_prenderer;
+      int frameIndex = m_prenderer->getFrameIndex();
 
-      if (prenderer->m_pvkcrenderpass->width() <= 0
-   || prenderer->m_pvkcrenderpass->height() <= 0)
-{
+      //FrameInfo frameInfo{ frameIndex, dt(), commandBuffer,
+      //   *m_pcamera, m_globalDescriptorSets[frameIndex],
+      //   m_pscene->m_mapObjects };
 
-         return;
+      // update
+      //::graphics3d::GlobalUbo ubo{};
+      //ubo.projection = m_pcamera->getProjection();
+      //ubo.view = m_pcamera->getView();
+      //ubo.inverseView = m_pcamera->getInverseView();
+      //m_ppointlightsystem->update(m_pscene, ubo);
+      //m_uboBuffers[frameIndex]->writeToBuffer(&ubo);
+      //m_uboBuffers[frameIndex]->flush();
 
-}
 
 
-      if (auto commandBuffer = m_prenderer->beginFrame())
+   }
+
+
+   void engine::update_global_ubo()
+   {
+
+      if (m_pimpact->global_ubo_block().size() > 0)
       {
+
+         m_pscene->on_update_global_ubo();
 
          int frameIndex = m_prenderer->getFrameIndex();
 
-         FrameInfo frameInfo{ frameIndex, dt(), commandBuffer,
-            *m_pcamera, m_globalDescriptorSets[frameIndex],
-            m_pscene->m_mapObjects};
-
-         // update
-         GlobalUbo ubo{};
-         ubo.projection = m_pcamera->getProjection();
-         ubo.view = m_pcamera->getView();
-         ubo.inverseView = m_pcamera->getInverseView();
-         m_ppointLightSystem->update(frameInfo, ubo);
-         m_uboBuffers[frameIndex]->writeToBuffer(&ubo);
+         m_uboBuffers[frameIndex]->writeToBuffer(m_pimpact->global_ubo_block().data());
          m_uboBuffers[frameIndex]->flush();
-
-         // render
-         m_prenderer->beginRenderPass(commandBuffer);
-
-         m_psimpleRenderSystem->renderGameObjects(frameInfo);
-         m_ppointLightSystem->render(frameInfo);
-
-         m_prenderer->endRenderPass(commandBuffer);
-         m_prenderer->endFrame();
 
       }
 
-
    }
 
+   ////void engine::on_render_frame()
+   ////{
+
+   ////   ::cast < renderer > prenderer = m_prenderer;
+
+   ////   if (prenderer->m_pvkcrenderpass->width() <= 0
+   ////      || prenderer->m_pvkcrenderpass->height() <= 0)
+   ////   {
+
+   ////      return;
+
+   ////   }
+
+
+   ////   if (auto commandBuffer = m_prenderer->beginFrame())
+   ////   {
+
+   ////      on_begin_frame();
+   ////      // render
+   ////      m_prenderer->beginRenderPass(commandBuffer);
+
+   ////      m_psimplerendersystem->renderGameObjects(m_pscene);
+   ////      m_ppointlightsystem->render(m_pscene);
+
+   ////      m_prenderer->endRenderPass(commandBuffer);
+   ////      m_prenderer->endFrame();
+
+   ////   }
+
+
+   ////}
+
+
+   ::file::path engine::_translate_shader_path(const ::file::path& pathShader)
+   {
+
+      auto pathFolder = pathShader.folder();
+
+      return pathFolder / "vulkan/SpirV" / (pathShader.name() + ".spv");
+
+   }
 
    void engine::run()
    {
@@ -367,6 +409,14 @@ namespace graphics3d_vulkan
 
 
    }
+
+
+   VkDescriptorSet engine::getcurrentDescriptorSet()
+   {
+      return m_globalDescriptorSets[m_prenderer->getFrameIndex()];
+
+   }
+
 
 
 } // graphics3d_vulkan

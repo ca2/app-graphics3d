@@ -69,7 +69,7 @@ namespace cube
 //      // void dump(dump_context & dumpcontext) const override;
       //::int_size size() override;
 
-
+      virtual ::block global_ubo_block();
 
       void install_message_routing(::channel * pchannel) override;
 
@@ -147,7 +147,7 @@ namespace cube
 
          pscene->m_strName = scopedstrName;
 
-         pscene->m_pimpact = this;
+         pscene->initialize_scene(m_pengine);
 
          m_pengine->add_scene(pscene);
 

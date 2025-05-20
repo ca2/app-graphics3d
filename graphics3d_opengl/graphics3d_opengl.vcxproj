@@ -496,7 +496,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)../..core/ca2/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ktx.lib;imgui.lib;opengl-1.lib;windowscodecs.lib;gdiplus.lib;winmm.lib;version.lib;vfw32.lib;opengl32.lib;glu32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ktx.lib;glad.lib;imgui.lib;opengl32.lib;windowscodecs.lib;gdiplus.lib;winmm.lib;version.lib;vfw32.lib;opengl32.lib;glu32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(OutDir);$(__operating_system)third-windows/thirdparty/library/$(PlatformName)/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -816,21 +816,18 @@
     <ClInclude Include="model.h" />
     <ClInclude Include="model_mesh.h" />
     <ClInclude Include="model_shader.h" />
-    <ClInclude Include="player.h" />
     <ClInclude Include="render_data.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="scene.h" />
     <ClInclude Include="scene_object.h" />
     <ClInclude Include="buffer.h" />
     <ClInclude Include="descriptors.h" />
     <ClInclude Include="context.h" />
-    <ClInclude Include="frame_info.h" />
+    <ClInclude Include="frame.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shapes.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="texture.h" />
-    <ClInclude Include="transform.h" />
     <ClInclude Include="vkengine.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">true</ExcludedFromBuild>

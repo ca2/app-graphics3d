@@ -20,15 +20,16 @@ namespace graphics3d_vulkan
 
 	}
 	
+
 	void pipeline::initialize_pipeline(
-		context * pvkcdevice,
-		const std::string& vertFilepath,
-		const std::string& fragFilepath,
+		::graphics3d::context * pcontext,
+		const ::file::path & pathVert,
+		const ::file::path & pathFrag,
 		const PipelineConfigInfo& configInfo)
 	{
-		initialize(pvkcdevice);
-		m_pcontext = pvkcdevice;
-		createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
+		initialize(pcontext);
+		m_pcontext = pcontext;
+		createGraphicsPipeline(pathVert, pathFrag, configInfo);
 	}
 
  
@@ -62,8 +63,8 @@ namespace graphics3d_vulkan
 		return buffer;
 	}
 	void pipeline::createGraphicsPipeline(
-		const std::string& vertFilepath,
-		const std::string& fragFilepath,
+		const ::file::path& pathVert,
+		const ::file::path& pathFrag,
 		const PipelineConfigInfo& configInfo)
 	{
 
@@ -74,8 +75,8 @@ namespace graphics3d_vulkan
 			configInfo.renderPass != VK_NULL_HANDLE &&
 			"Cannot create graphics pipeline: no renderPass provided in configInfo");
 
-		auto vertCode = file()->as_memory(vertFilepath.c_str());
-		auto fragCode = file()->as_memory(fragFilepath.c_str());
+		auto vertCode = file()->as_memory(pathVert);
+		auto fragCode = file()->as_memory(pathFrag);
 
 		createShaderModule(vertCode, &vertShaderModule);
 		createShaderModule(fragCode, &fragShaderModule);

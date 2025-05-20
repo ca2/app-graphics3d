@@ -19,8 +19,8 @@ namespace graphics3d
 
 
 
-	struct CLASS_DECL_CUBE PointLightComponent :
-		virtual public ::particle {
+	struct CLASS_DECL_CUBE PointLightComponent
+	{
 		float lightIntensity = 1.0f;
 	};
 

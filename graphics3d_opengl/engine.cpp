@@ -3,6 +3,7 @@
 #include "engine.h"
 //#include "Core/Window.h"
 #include "app-cube/cube/graphics3d/input.h"
+#include "app-cube/cube/graphics3d/scene.h"
 #include "renderer.h"
 #include "mesh.h"
 #include "shader.h"
@@ -11,6 +12,9 @@
 #include "aura/graphics/gpu/approach.h"
 #include "aura/graphics/gpu/context.h"
 //#include "AppCore/Application.h"
+#include "system/basic_render_system.h"
+#include "system/point_light_system.h"
+
 #include "app-cube/cube/impact.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -31,32 +35,34 @@ namespace graphics3d_opengl
       : m_Running(true)
       //,m_Window("My Universe", 1100, 600),
    {
+
+      m_globalUBO = 0;
       m_bInitRenderData = true;
       //m_bRunEngine = true;
    }
 
-   
+
    void engine::on_initialize_particle()
    {
 
-      ::particle::on_initialize_particle();
+      ::graphics3d::engine::on_initialize_particle();
 
-//      gladLoadGL();
-
-
-//      m_pcamera->initialize(this);
+      //      gladLoadGL();
 
 
+      //      m_pcamera->initialize(this);
 
-      
 
-      // Set the window for input management
-      //input::SetGLFWWindow(m_Window.GetGLFWWindow());
 
-      // Set up mouse callback and user pointer
-      //glfwSetWindowUserPointer(m_Window.GetGLFWWindow(), this);
-      //glfwSetCursorPosCallback(m_Window.GetGLFWWindow(), MouseCallback);
-      //glfwSetInputMode(m_Window.GetGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // Hide cursor
+
+
+            // Set the window for input management
+            //input::SetGLFWWindow(m_Window.GetGLFWWindow());
+
+            // Set up mouse callback and user pointer
+            //glfwSetWindowUserPointer(m_Window.GetGLFWWindow(), this);
+            //glfwSetCursorPosCallback(m_Window.GetGLFWWindow(), MouseCallback);
+            //glfwSetInputMode(m_Window.GetGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // Hide cursor
 
 
    }
@@ -70,162 +76,416 @@ namespace graphics3d_opengl
    void engine::initialize_engine(::cube::impact* pimpact)
    {
 
+      ::graphics3d::engine::initialize_engine(pimpact);
 
    }
 
 
-   // engine Run
-   void engine::run() 
+   //void engine::on_update_frame()
+   //{
+   //   
+   //   //ProcessInput(deltaTime);
+
+   //}
+
+   void engine::on_render_frame()
    {
-       //return true;
 
-      float lastFrame = 0.0f;
-
-      // Main loop
-      while (m_Running && !m_pimpact->m_bShouldClose)
-      {
-
-         ::task_iteration();
-
-      //{
-
-      auto containerW = m_pimpact->m_iWidth;
-
-      auto containerH = m_pimpact->m_iHeight;
-
-      if (containerW <= 0 || containerH <= 0)
-      {
-
-         continue;
-
-      }
-
-      auto rectangle = m_pimpact->host_rectangle();
-
-      auto sizeHost = m_pimpact->top_level()->raw_rectangle().size();
-
-      auto rectangleW = rectangle.width();
-
-      auto rectangleH = rectangle.height();
-
-      glPushMatrix();
-      glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-      glViewport(rectangle.left(), sizeHost.cy() - rectangleH - rectangle.top(), rectangleW, rectangleH);
-
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-
-      //glOrtho(0.0f, rectangleW, 0, rectangleH, -1.0f, 1.0f);  // Flip Y
-
-      glEnable(GL_DEPTH_TEST);
+      ::graphics3d::engine::on_render_frame();
 
 
-      glDepthFunc(GL_LESS);
-
-
-          // Frame Logic
-          float currentFrame = ::time::now().floating_second();
-          float deltaTime = currentFrame - lastFrame;
-          lastFrame = currentFrame;
-
-          deltaTime = minimum_maximum(deltaTime, 0.001, 0.016666666);
-
-          ProcessInput(deltaTime);
-
-          // Toggle wireframe mode
-          if (m_bWireframeMode) {
-              glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Enable wireframe mode
-          }
-          else {
-              glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Enable solid mode
-          }
-
-          // Clear the screen
+      // Clear the screen
 //          m_prenderer->Clear();
 
           // Update and render the game (and the current scene)
-          Update(deltaTime, m_pcamera);
-          Render(m_prenderer, m_pcamera);
+      //Update(this->dt(), m_pcamera);
+      Render(m_prenderer, m_pcamera);
 
-          // Swap buffers and poll for events
-          //m_Window.SwapBuffers();
-          //m_pimpact->present();
-          // 
-          // 
+      // Swap buffers and poll for events
+      //m_Window.SwapBuffers();
+      //m_pimpact->present();
+      // 
+      // 
 
-          glDisable(GL_DEPTH_TEST);
+      glDisable(GL_DEPTH_TEST);
 
       //}
 
 //            glDepthFunc(GL_LESS);
 
-            glPopAttrib();
-            glPopMatrix();
+      glPopAttrib();
+      glPopMatrix();
 
 
-            if (!m_papplication->m_bUseDraw2dProtoWindow
-                && m_pimpact->m_callbackOffscreen)
-            {
-               void* p = nullptr;
-               int w = m_pimpact->m_iWidth;
-               int h = m_pimpact->m_iHeight;
-               int stride = w * 4;
-               m_memoryBuffer.set_size(stride * h);
-               if (glReadnPixels)
-               {
-                  glReadnPixels(
-                     0, 0,
-                     w, h,
-                     GL_BGRA,
-                     GL_UNSIGNED_BYTE,
-                     m_memoryBuffer.size(),
-                     m_memoryBuffer.data());
-               }
-               else
-               {
-                  glReadPixels(
-                     0, 0,
-                     w, h,
-                     GL_BGRA,
-                     GL_UNSIGNED_BYTE,
-                     m_memoryBuffer.data());
+      if (!m_papplication->m_bUseDraw2dProtoWindow
+         && m_pimpact->m_callbackOffscreen)
+      {
+         void* p = nullptr;
+         int w = m_pimpact->m_iWidth;
+         int h = m_pimpact->m_iHeight;
+         int stride = w * 4;
+         m_memoryBuffer.set_size(stride * h);
+         if (glReadnPixels)
+         {
+            glReadnPixels(
+               0, 0,
+               w, h,
+               GL_BGRA,
+               GL_UNSIGNED_BYTE,
+               m_memoryBuffer.size(),
+               m_memoryBuffer.data());
+         }
+         else
+         {
+            glReadPixels(
+               0, 0,
+               w, h,
+               GL_BGRA,
+               GL_UNSIGNED_BYTE,
+               m_memoryBuffer.data());
 
-               }
+         }
 
-               m_pimpact->m_callbackOffscreen(
-                  m_memoryBuffer.data(),
-                  w,
-                  h,
-                  stride);
+         m_pimpact->m_callbackOffscreen(
+            m_memoryBuffer.data(),
+            w,
+            h,
+            stride);
 
-            }
-            else
-            {
-
-
-                m_pimpact->m_callbackOffscreen(
-                    nullptr,
-                    0,
-                    0,
-                    0);
-            }
-
-            //glViewport(0, 0, m_sizeHost.cx(), m_sizeHost.cy());
+      }
+      else
+      {
 
 
-            //return true;
-
-         //}
-
-      //   //)
-
-      //   //m_Window.PollEvents();
-      //   ::task_iteration();
+         m_pimpact->m_callbackOffscreen(
+            nullptr,
+            0,
+            0,
+            0);
       }
 
    }
 
+
+   void engine::defer_start()
+   {
+
+
+      auto papp = get_app();
+
+      __øconstruct(m_pcontext);
+
+      m_pcontext->initialize_context(papp->m_pimpact);
+
+      //::cast < context > pcontext = m_pcontext;
+
+      //pcontext->m_pgpucontext->post([this]()
+      //   {
+
+      //      //            run_vulkan_example();
+
+
+      //   });
+
+   }
+
+
+
+   void engine::on_start_engine()
+   {
+
+
+      auto papp = get_app();
+
+      __construct_new(m_prenderer);
+
+      m_prenderer->initialize_renderer(m_pcontext);
+
+      ::graphics3d::engine::m_prenderer = m_prenderer;
+
+      //auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
+
+      //pglobalpoolbuilder->initialize_builder(m_pcontext);
+      //pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
+      //pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, render_pass::MAX_FRAMES_IN_FLIGHT);
+
+      //m_pglobalpool = pglobalpoolbuilder->build();
+
+      //m_pglobalpool->initialize_pool(pcontext);
+
+      //= __allocate
+      //   descriptor_pool::Builder(pcontext)
+      //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
+      //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
+      //   .build();
+      m_pscene->on_load_scene(m_pcontext);
+
+      //pcontext = __allocate context(m_pvulkandevice);
+
+      //m_uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
+
+      ::cast < context > pcontext = m_pcontext;
+
+      //for (int i = 0; i < m_uboBuffers.size(); i++)
+      //{
+
+      //   m_uboBuffers[i] = __allocate buffer();
+
+      //   m_uboBuffers[i]->initialize_buffer(
+      //      pcontext,
+      //      sizeof(GlobalUbo),
+      //      1,
+      //      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+      //      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+      //   m_uboBuffers[i]->map();
+
+      //}
+      //auto globalSetLayout = set_descriptor_layout::Builder(pcontext)
+      //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
+      //   .build();
+
+
+      //m_globalDescriptorSets.resize(render_pass::MAX_FRAMES_IN_FLIGHT);
+
+      //for (int i = 0; i < m_globalDescriptorSets.size(); i++)
+      //{
+
+      //   auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
+
+      //   descriptor_writer(*globalSetLayout, *m_pglobalpool)
+      //      .writeBuffer(0, &bufferInfo)
+      //      .build(m_globalDescriptorSets[i]);
+
+      //}
+
+      //m_psimpleRenderSystem = __allocate SimpleRenderSystem{
+      //    pcontext };//,
+      //    //m_prenderer->getRenderPass(),
+      //    //globalSetLayout->getDescriptorSetLayout() };
+
+      //m_ppointLightSystem = __allocate point_light_system{
+      //    pcontext };
+      //,
+        //  m_prenderer->getRenderPass(),
+          //globalSetLayout->getDescriptorSetLayout()
+      //};
+
+   }
+
+
+   ::file::path engine::_translate_shader_path(const ::file::path& pathShader)
+   {
+
+      auto pathFolder = pathShader.folder();
+
+      return pathFolder / "opengl" / pathShader.name();
+
+   }
+
+
+   void engine::create_global_ubo()
+   {
+
+      ::graphics3d::engine::create_global_ubo();
+
+      auto globalUboSize = m_pimpact->global_ubo_block().size();
+
+      // Create the UBO
+      glGenBuffers(1, &m_globalUBO);
+      glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
+      glBufferData(GL_UNIFORM_BUFFER, globalUboSize, NULL, GL_DYNAMIC_DRAW); // For 2 mat4s = 2 * sizeof(float) * 16
+      glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+      unsigned int uUboBindingPoint = 0;
+
+      // Bind to a binding point
+      glBindBufferBase(GL_UNIFORM_BUFFER, uUboBindingPoint, m_globalUBO);
+
+      //return globalUBO;
+
+   }
+
+
+   void engine::on_begin_frame()
+   {
+
+      //// Must match the same binding point as in your C++ side using glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboBuffer)
+      //layout(std140) uniform GlobalUbo {
+      //   mat4 projection;
+      //   mat4 view;
+      //   mat4 invView;
+      //   vec4 ambientLightColor;
+      //   PointLight pointLights[10];
+      //   int numLights; // Needs to be padded to 16 bytes in std140 layout
+      //   // Add padding to align to 16 bytes
+      //   int padding1;
+      //   int padding2;
+      //   int padding3;
+      //};
+
+   }
+
+
+   void engine::on_mouse_move(int x, int y)
+   {
+
+
+   }
+
+
+//   // engine Run
+//   void engine::run()
+//   {
+//      //return true;
+//
+//      float lastFrame = 0.0f;
+//
+//      // Main loop
+//      while (m_Running && !m_pimpact->m_bShouldClose)
+//      {
+//
+//         ::task_iteration();
+//
+//         //{
+//
+//         auto containerW = m_pimpact->m_iWidth;
+//
+//         auto containerH = m_pimpact->m_iHeight;
+//
+//         if (containerW <= 0 || containerH <= 0)
+//         {
+//
+//            continue;
+//
+//         }
+//
+////         auto rectangle = m_pimpact->host_rectangle();
+////
+////         auto sizeHost = m_pimpact->top_level()->raw_rectangle().size();
+////
+////         auto rectangleW = rectangle.width();
+////
+////         auto rectangleH = rectangle.height();
+////
+////         glPushMatrix();
+////         glPushAttrib(GL_ALL_ATTRIB_BITS);
+////
+////         glViewport(rectangle.left(), sizeHost.cy() - rectangleH - rectangle.top(), rectangleW, rectangleH);
+////
+////         glMatrixMode(GL_MODELVIEW);
+////         glLoadIdentity();
+////
+////         //glOrtho(0.0f, rectangleW, 0, rectangleH, -1.0f, 1.0f);  // Flip Y
+////
+////         glEnable(GL_DEPTH_TEST);
+////
+////
+////         glDepthFunc(GL_LESS);
+////
+////
+////         // Frame Logic
+////         float currentFrame = ::time::now().floating_second();
+////         float deltaTime = currentFrame - lastFrame;
+////         lastFrame = currentFrame;
+////
+////         deltaTime = minimum_maximum(deltaTime, 0.001, 0.016666666);
+////
+////         ProcessInput(deltaTime);
+////
+////         // Toggle wireframe mode
+////         if (m_bWireframeMode) {
+////            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Enable wireframe mode
+////         }
+////         else {
+////            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Enable solid mode
+////         }
+////
+////         // Clear the screen
+//////          m_prenderer->Clear();
+////
+////          // Update and render the game (and the current scene)
+////         Update(deltaTime, m_pcamera);
+////         Render(m_prenderer, m_pcamera);
+////
+////         // Swap buffers and poll for events
+////         //m_Window.SwapBuffers();
+////         //m_pimpact->present();
+////         // 
+////         // 
+////
+////         glDisable(GL_DEPTH_TEST);
+////
+////         //}
+////
+////   //            glDepthFunc(GL_LESS);
+////
+////         glPopAttrib();
+////         glPopMatrix();
+////
+////
+////         if (!m_papplication->m_bUseDraw2dProtoWindow
+////            && m_pimpact->m_callbackOffscreen)
+////         {
+////            void* p = nullptr;
+////            int w = m_pimpact->m_iWidth;
+////            int h = m_pimpact->m_iHeight;
+////            int stride = w * 4;
+////            m_memoryBuffer.set_size(stride * h);
+////            if (glReadnPixels)
+////            {
+////               glReadnPixels(
+////                  0, 0,
+////                  w, h,
+////                  GL_BGRA,
+////                  GL_UNSIGNED_BYTE,
+////                  m_memoryBuffer.size(),
+////                  m_memoryBuffer.data());
+////            }
+////            else
+////            {
+////               glReadPixels(
+////                  0, 0,
+////                  w, h,
+////                  GL_BGRA,
+////                  GL_UNSIGNED_BYTE,
+////                  m_memoryBuffer.data());
+////
+////            }
+////
+////            m_pimpact->m_callbackOffscreen(
+////               m_memoryBuffer.data(),
+////               w,
+////               h,
+////               stride);
+////
+////         }
+////         else
+////         {
+////
+////
+////            m_pimpact->m_callbackOffscreen(
+////               nullptr,
+////               0,
+////               0,
+////               0);
+////         }
+//
+//         //glViewport(0, 0, m_sizeHost.cx(), m_sizeHost.cy());
+//
+//
+//         //return true;
+//
+//      //}
+//
+//   //   //)
+//
+//   //   //m_Window.PollEvents();
+//   //   ::task_iteration();
+//      }
+//
+//   }
+//
 
    //void task::run_loop()
    //{
@@ -245,6 +505,13 @@ namespace graphics3d_opengl
 
       ::cast < context > pcontext = m_pcontext;
 
+      if (!pcontext || !pcontext->m_pgpucontext)
+      {
+
+         return;
+
+      }
+
       pcontext->m_pgpucontext->post([this, cx, cy]
          {
 
@@ -253,43 +520,50 @@ namespace graphics3d_opengl
             if (!m_prenderer)
             {
 
-               m_pinput = __allocate ::graphics3d::input();
+               pcontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
 
-               m_pinput->m_pimpact = m_pimpact;
+               m_pimpact->on_load_engine();
 
-               m_pcamera = __allocate ::graphics3d::camera(glm::vec3(0.0f, 3.0f, 3.0f), -90.0f, 0.0f);
+               run();
 
-               //m_pcamera->m_pimpact
+               m_pimpact->m_ptaskEngine.release();
 
-               //m_pglcapplication = m_pimpact->start_opengl_application();
-               //__øconstruct(m_pcontext);
+               return;
 
-               if (!m_papplication->m_bUseDraw2dProtoWindow)
-               {
-                   
-                  pcontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
 
-               }
+               //m_pinput = __allocate::graphics3d::input();
 
-               m_prenderer = __allocate ::graphics3d_opengl::renderer();
+               //m_pinput->m_pimpact = m_pimpact;
 
-               //return;
-               // Initialize the game logic and scene data
-               Init();
+               //m_pcamera = __allocate::graphics3d::camera(glm::vec3(0.0f, 3.0f, 3.0f), -90.0f, 0.0f);
 
-               pcontext->m_pgpucontext->m_timeSample = 1_s/ 60.0;
+               ////m_pcamera->m_pimpact
+
+               ////m_pglcapplication = m_pimpact->start_opengl_application();
+               ////__øconstruct(m_pcontext);
+
+               //if (!m_papplication->m_bUseDraw2dProtoWindow)
+               //{
+
+               //   pcontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
+
+               //}
+
+               //m_prenderer = __allocate::graphics3d_opengl::renderer();
+
+               ////return;
+               //// Initialize the game logic and scene data
+               ////Init();
+
+               //pcontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
 
                //m_pgpucontext->m_rendera.add_unique(this);
 
             }
-            else
-            {
 
-               pcontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
+            pcontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
 
-            }
-
-            on_layout(cx, cy);
+            //on_layout(cx, cy);
 
             m_pimpact->m_iWidth = cx;
             m_pimpact->m_iHeight = cy;
@@ -391,79 +665,79 @@ namespace graphics3d_opengl
    //}
 
 
-   // Mouse event listeners
-   void engine::handleMouseMove(double dCursorX, double dCursorY)
-   {
+   //// Mouse event listeners
+   //void engine::handleMouseMove(double dCursorX, double dCursorY)
+   //{
 
-      double x, y;
-      double newx, newy;
+   //   double x, y;
+   //   double newx, newy;
 
-      if (m_pimpact->is_absolute_mouse_position())
-      {
+   //   if (m_pimpact->is_absolute_mouse_position())
+   //   {
 
-         newx = dCursorX * 1.25 * MATH_PI;
-         newy = dCursorY * 1.25 * MATH_PI / 2.0;
+   //      newx = dCursorX * 1.25 * MATH_PI;
+   //      newy = dCursorY * 1.25 * MATH_PI / 2.0;
 
-      }
-      else
-      {
+   //   }
+   //   else
+   //   {
 
-         newx = dCursorX;
-         newy = dCursorY;
+   //      newx = dCursorX;
+   //      newy = dCursorY;
 
-      }
-      //glfwGetCursorPos(window, &xpos, &ypos);
+   //   }
+   //   //glfwGetCursorPos(window, &xpos, &ypos);
 
-      //if (pvkcontainer->m_bFirstMouse) {
-      //   _lastX = newx;
-      //   _lastY = newy;
-      //   pvkcontainer->m_bFirstMouse = false;
-      //   xpos = _lastX;
-      //   ypos = _lastY;
-      //}
-      //else
-      if (!m_pimpact->is_absolute_mouse_position())
-      {
+   //   //if (pvkcontainer->m_bFirstMouse) {
+   //   //   _lastX = newx;
+   //   //   _lastY = newy;
+   //   //   pvkcontainer->m_bFirstMouse = false;
+   //   //   xpos = _lastX;
+   //   //   ypos = _lastY;
+   //   //}
+   //   //else
+   //   if (!m_pimpact->is_absolute_mouse_position())
+   //   {
 
-         if (m_pimpact->m_bFirstMouse)
-         {
-            
-            m_dMouseLastX = newx;
-            m_dMouseLastY = newy;
+   //      if (m_pimpact->m_bFirstMouse)
+   //      {
+   //         
+   //         m_dMouseLastX = newx;
+   //         m_dMouseLastY = newy;
 
-            m_pimpact->m_bFirstMouse = false;
+   //         m_pimpact->m_bFirstMouse = false;
 
-         }
+   //      }
 
-      }
+   //   }
 
-      if (m_pimpact->is_absolute_mouse_position())
-      {
+   //   if (m_pimpact->is_absolute_mouse_position())
+   //   {
 
-         x = m_dMouseLastX + (newx - m_dMouseLastX) * 0.05;
-         y = m_dMouseLastY + (newy - m_dMouseLastY) * 0.05;
-         m_Δx = x;
-         m_Δy = -y;  // reversed Y
+   //      x = m_dMouseLastX + (newx - m_dMouseLastX) * 0.05;
+   //      y = m_dMouseLastY + (newy - m_dMouseLastY) * 0.05;
+   //      m_Δx = x;
+   //      m_Δy = -y;  // reversed Y
 
-      }
-      else
-      {
+   //   }
+   //   else
+   //   {
 
-         x = newx;
-         y = newy;
+   //      x = newx;
+   //      y = newy;
 
-         m_Δx = m_Δx + static_cast<float>(x - m_dMouseLastX - m_Δx) * 0.05;
-         m_Δy = m_Δy + static_cast<float>(m_dMouseLastY - y - m_Δy) * 0.05;  // reversed Y
+   //      m_Δx = m_Δx + static_cast<float>(x - m_dMouseLastX - m_Δx) * 0.05;
+   //      m_Δy = m_Δy + static_cast<float>(m_dMouseLastY - y - m_Δy) * 0.05;  // reversed Y
 
 
-      }
+   //   }
 
-      m_dMouseLastX = x;
-      m_dMouseLastY = y;
+   //   m_dMouseLastX = x;
+   //   m_dMouseLastY = y;
 
-      m_pcamera->ProcessMouseMovement(m_Δx, m_Δy);
+   //   m_pcamera->ProcessMouseMovement(m_Δx, m_Δy);
 
-   }
+   //}
    //{
 
    //   double xpos, ypos;
@@ -558,41 +832,41 @@ namespace graphics3d_opengl
 
 
 
-   ::pointer<::opengl::engine > start_opengl_engine(::::cube::impact* pimpact, mouseState* pmousestate)
-   {
+   //::pointer<::opengl::engine > start_opengl_engine(::::cube::impact* pimpact, mouseState* pmousestate)
+   //{
 
-      auto popenglengine = pimpact->__create_new <::opengl::engine >();
+   //   auto popenglengine = pimpact->__create_new <::opengl::engine >();
 
-      popenglengine->m_pimpact = pimpact;
+   //   popenglengine->m_pimpact = pimpact;
 
-      return popenglengine;
+   //   return popenglengine;
 
-      }
-
-
-   void Application::Init()
-   {
-
-      // Create and initialize the first scene  *** EVENTUALLY ADD ACTUAL SCENE CLASS TO MANAGE MULTIPLE UNIQUE RENDER DATA IE SCENE DATA
-      m_prenderdataCurrentScene = __create_new<render_data>();
-
-      m_bInitRenderData = true;
-
-   }
+   //   }
 
 
-   void Application::Update(float deltaTime, ::graphics3d::camera* pcamera)
-   {
+   //void Application::Init()
+   //{
 
-      if (m_prenderdataCurrentScene)
-      {
+   //   // Create and initialize the first scene  *** EVENTUALLY ADD ACTUAL SCENE CLASS TO MANAGE MULTIPLE UNIQUE RENDER DATA IE SCENE DATA
+   //   m_prenderdataCurrentScene = __create_new<render_data>();
 
-         glm::vec3 cameraPosition = pcamera->GetPosition(); // Get the camera's current position
-         m_prenderdataCurrentScene->Update(deltaTime); // Pass both delta time and camera position
+   //   m_bInitRenderData = true;
 
-      }
+   //}
 
-   }
+
+   //void Application::Update(float deltaTime, ::graphics3d::camera* pcamera)
+   //{
+
+   //   if (m_prenderdataCurrentScene)
+   //   {
+
+   //      glm::vec3 cameraPosition = pcamera->GetPosition(); // Get the camera's current position
+   //      m_prenderdataCurrentScene->Update(deltaTime); // Pass both delta time and camera position
+
+   //   }
+
+   //}
 
 
    //void Application::run_application()
@@ -603,43 +877,43 @@ namespace graphics3d_opengl
    //}
 
 
-   void Application::Render(Renderer* prenderer, ::graphics3d::camera* pcamera)
+   void engine::Render(renderer* prenderer, ::graphics3d::camera* pcamera)
    {
 
-      if (m_prenderdataCurrentScene)
-      {
+      //if (m_prenderdataCurrentScene)
+      //{
 
-         m_prenderdataCurrentScene->Render(prenderer, pcamera);  // Call the scene's render function
+      //   m_prenderdataCurrentScene->Render(prenderer, pcamera);  // Call the scene's render function
 
-      }
+      //}
 
 
    }
 
 
-   ::pointer<::opengl::application > start_opengl_application(::glc::GlContainer* pvkcontainer, mouseState* pmousestate)
-   {
+   //::pointer<::opengl::application > start_opengl_application(::glc::GlContainer* pvkcontainer, mouseState* pmousestate)
+   //{
 
-      auto pglapplication = pvkcontainer->__create_new < Application>();
+   //   auto pglapplication = pvkcontainer->__create_new < Application>();
 
-      return pglapplication;
+   //   return pglapplication;
 
-   }
+   //}
 
 
-   void Application::resize(int cx, int cy)
-   {
+   //void engine::on_layout(int cx, int cy)
+   //{
 
-      if (m_bInitRenderData && m_prenderdataCurrentScene)
-      {
+   //   //if (m_bInitRenderData && m_prenderdataCurrentScene)
+   //   //{
 
-         m_bInitRenderData = false;
+   //   //   m_bInitRenderData = false;
 
-         m_prenderdataCurrentScene->Init();  // Initialize scene-specific assets like shaders, meshes, etc.
+   //   //   m_prenderdataCurrentScene->Init();  // Initialize scene-specific assets like shaders, meshes, etc.
 
-      }
+   //   //}
 
-   }
+   //}
 
 
 } // namespace graphics3d_opengl

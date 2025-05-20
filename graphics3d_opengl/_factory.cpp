@@ -1,9 +1,12 @@
 // Created by camilo on 2025-05-17 02:54 <3ThomasBorregaardSorensen!!
 #include "framework.h"
+#include "context.h"
 #include "engine.h"
+#include "frame.h"
 #include "model.h"
+#include "shader.h"
 #include "app-cube/cube/application.h"
-#include "app-cube/cube/scene_object.h"
+#include "app-cube/cube/graphics3d/scene_object.h"
 //#include "networking.h"
 //#include "apex/networking/http/message.h"
 //#include "sockets/basic/socket_handler.h"
@@ -14,13 +17,17 @@
 IMPLEMENT_FACTORY(graphics3d_opengl)
 {
 
-   pfactory->add_factory_item < ::graphics3d_opengl::model, ::cube::model >();
+   pfactory->add_factory_item < ::graphics3d_opengl::frame, ::graphics3d::frame >();
 
-   pfactory->add_factory_item < ::graphics3d_opengl::engine, ::cube::engine >();
+   pfactory->add_factory_item < ::graphics3d_opengl::model, ::graphics3d::model >();
 
-   pfactory->add_factory_item < ::graphics3d_opengl::context, ::cube::context >();
+   pfactory->add_factory_item < ::graphics3d_opengl::shader, ::graphics3d::shader >();
 
-   pfactory->add_factory_item < ::cube::scene_object >();
+   pfactory->add_factory_item < ::graphics3d_opengl::engine, ::graphics3d::engine >();
+
+   pfactory->add_factory_item < ::graphics3d_opengl::context, ::graphics3d::context >();
+
+   pfactory->add_factory_item < ::graphics3d::scene_object >();
 
 }
 

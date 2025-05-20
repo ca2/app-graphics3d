@@ -130,11 +130,11 @@ namespace graphics3d_vulkan
       VkSubmitInfo submitInfo = {};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-  //    VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
-      // VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-      // submitInfo.waitSemaphoreCount = 1;
-      // submitInfo.pWaitSemaphores = waitSemaphores;
-//      submitInfo.pWaitDstStageMask = waitStages;
+      VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
+      VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+      submitInfo.waitSemaphoreCount = 1;
+      submitInfo.pWaitSemaphores = waitSemaphores;
+      submitInfo.pWaitDstStageMask = waitStages;
 
       submitInfo.commandBufferCount = 1;
       submitInfo.pCommandBuffers = buffers;
@@ -152,7 +152,68 @@ namespace graphics3d_vulkan
          
       }
 
-      //VK_CHECK(vkWaitForFences(m_pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX));
+      VK_CHECK(vkWaitForFences(m_pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX));
+
+      //VkPresentInfoKHR presentInfo = {};
+      //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+      //presentInfo.waitSemaphoreCount = 1;
+      //presentInfo.pWaitSemaphores = signalSemaphores;
+
+      //VkSwapchainKHR swapChains[] = { swapChain };
+      //presentInfo.swapchainCount = 1;
+      //presentInfo.pSwapchains = swapChains;
+
+      //presentInfo.pImageIndices = imageIndex;
+
+      //auto result = vkQueuePresentKHR(m_pcontext->presentQueue(), &presentInfo);
+
+      //currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+
+      return VK_SUCCESS;
+
+   }
+
+
+
+   VkResult offscreen_render_pass::submitSamplingWork(const VkCommandBuffer buffer, uint32_t* imageIndex)
+   {
+
+      if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
+      {
+
+         vkWaitForFences(m_pcontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+
+      }
+
+      imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
+
+      VkSubmitInfo submitInfo = {};
+      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+      VkSemaphore waitSemaphores[] = { renderFinishedSemaphores[currentFrame] };
+      VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+      submitInfo.waitSemaphoreCount = 1;
+      submitInfo.pWaitSemaphores = waitSemaphores;
+      submitInfo.pWaitDstStageMask = waitStages;
+
+      submitInfo.commandBufferCount = 1;
+      submitInfo.pCommandBuffers = &buffer;
+
+      VkSemaphore signalSemaphores[] = { imageAvailableSemaphores[currentFrame] };
+      submitInfo.signalSemaphoreCount = 1;
+      submitInfo.pSignalSemaphores = signalSemaphores;
+
+      vkResetFences(m_pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
+
+      if (vkQueueSubmit(m_pcontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS)
+      {
+
+         throw std::runtime_error("failed to submit draw command buffer!");
+
+      }
+
+      VK_CHECK(vkWaitForFences(m_pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX));
 
       //VkPresentInfoKHR presentInfo = {};
       //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -265,7 +326,8 @@ namespace graphics3d_vulkan
       image.samples = VK_SAMPLE_COUNT_1_BIT;
       image.tiling = VK_IMAGE_TILING_OPTIMAL;
       //// We will sample directly from the color attachment
-      image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+      image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+         VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 
       //VkMemoryAllocateInfo memAlloc = initializers::memory_allocate_info();
       //VkMemoryRequirements memReqs;
@@ -469,68 +531,69 @@ namespace graphics3d_vulkan
    void offscreen_render_pass::createRenderPass()
    {
 
-      render_pass::createRenderPass();
 
+      VkAttachmentDescription depthAttachment{};
+      depthAttachment.format = findDepthFormat();
+      depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+      depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+      depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+      depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+      depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-      //VkAttachmentDescription depthAttachment{};
-      //depthAttachment.format = findDepthFormat();
-      //depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-      //depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-      //depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      //depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-      //depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      //depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      //depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+      VkAttachmentReference depthAttachmentRef{};
+      depthAttachmentRef.attachment = 1;
+      depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-      //VkAttachmentReference depthAttachmentRef{};
-      //depthAttachmentRef.attachment = 1;
-      //depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-      //VkAttachmentDescription colorAttachment = {};
-      //colorAttachment.format = getImageFormat();
-      //colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-      //colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-      //colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-      //colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      //colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-      //colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      VkAttachmentDescription colorAttachment = {};
+      colorAttachment.format = getImageFormat();
+      colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+      colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+      colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
       //colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+      colorAttachment.finalLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 
-      //VkAttachmentReference colorAttachmentRef = {};
-      //colorAttachmentRef.attachment = 0;
-      //colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+      VkAttachmentReference colorAttachmentRef = {};
+      colorAttachmentRef.attachment = 0;
+      colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-      //VkSubpassDescription subpass = {};
-      //subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-      //subpass.colorAttachmentCount = 1;
-      //subpass.pColorAttachments = &colorAttachmentRef;
-      //subpass.pDepthStencilAttachment = &depthAttachmentRef;
+      VkSubpassDescription subpass = {};
+      subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+      subpass.colorAttachmentCount = 1;
+      subpass.pColorAttachments = &colorAttachmentRef;
+      subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
-      //VkSubpassDependency dependency = {};
-      //dependency.dstSubpass = 0;
-      //dependency.dstAccessMask =
-      //   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      //dependency.dstStageMask =
-      //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-      //dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-      //dependency.srcAccessMask = 0;
-      //dependency.srcStageMask =
-      //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      VkSubpassDependency dependency = {};
+      dependency.dstSubpass = 0;
+      dependency.dstAccessMask =
+         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      dependency.dstStageMask =
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+      dependency.srcAccessMask = 0;
+      dependency.srcStageMask =
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
 
-      //std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
-      //VkRenderPassCreateInfo renderPassInfo = {};
-      //renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-      //renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-      //renderPassInfo.pAttachments = attachments.data();
-      //renderPassInfo.subpassCount = 1;
-      //renderPassInfo.pSubpasses = &subpass;
-      //renderPassInfo.dependencyCount = 1;
-      //renderPassInfo.pDependencies = &dependency;
+      std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+      VkRenderPassCreateInfo renderPassInfo = {};
+      renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+      renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+      renderPassInfo.pAttachments = attachments.data();
+      renderPassInfo.subpassCount = 1;
+      renderPassInfo.pSubpasses = &subpass;
+      renderPassInfo.dependencyCount = 1;
+      renderPassInfo.pDependencies = &dependency;
 
-      //if (vkCreateRenderPass(m_pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) {
-      //   throw std::runtime_error("failed to create render pass!");
-      //}
+      if (vkCreateRenderPass(m_pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) 
+      {
+         throw std::runtime_error("failed to create render pass!");
+      }
+
    }
 
    void offscreen_render_pass::createFramebuffers()

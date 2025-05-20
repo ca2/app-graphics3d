@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "frame.h"
 #include "renderer.h"
 #include "offscreen_render_pass.h"
 #include "swap_chain_render_pass.h"
@@ -22,16 +23,34 @@ namespace graphics3d_vulkan
    }
 
 
-   void renderer::initialize_renderer(::cube::impact* pimpact, ::graphics3d::context* pcontext)
+   int renderer::width()
    {
 
-      m_pimpact = pimpact;
+      return m_pvkcrenderpass->width();
+
+   }
+
+   int renderer::height()
+   {
+
+      return m_pvkcrenderpass->height();
+
+   }
+
+   void renderer::initialize_renderer(::graphics3d::context* pcontext)
+   {
+
+      ::graphics3d::renderer::initialize_renderer(pcontext);
 
       m_pcontext = pcontext;
+
+      m_pimpact = pcontext->m_pimpact;
 
       __construct_new(m_poffscreensampler);
 
       m_poffscreensampler->initialize_offscreen_sampler(pcontext);
+
+      m_poffscreensampler->m_prenderer = this;
 
       defer_layout();
 
@@ -117,7 +136,7 @@ namespace graphics3d_vulkan
       commandBuffers.clear();
    }
 
-   VkCommandBuffer renderer::beginFrame()
+   ::pointer < ::graphics3d::frame > renderer::beginFrame()
    {
 
       defer_layout();
@@ -147,7 +166,10 @@ namespace graphics3d_vulkan
          if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
             throw std::runtime_error("failed to begin recording command buffer!");
          }
-         return commandBuffer;
+         auto pframe = __create_new < frame >();
+         pframe->commandBuffer = commandBuffer;
+         m_pframe = pframe;
+         return m_pframe;
 
       }
       //else
@@ -349,7 +371,14 @@ namespace graphics3d_vulkan
 
       VK_CHECK_RESULT(vkEndCommandBuffer(copyCmd));
 
-      m_pcontext->submitWork(copyCmd, m_pcontext->graphicsQueue());
+      ::cast < offscreen_render_pass > ppass = m_prenderer->m_pvkcrenderpass;
+
+      ppass->submitSamplingWork(copyCmd, &m_prenderer->currentImageIndex);
+
+      vkQueueWaitIdle(m_pcontext->graphicsQueue());
+
+      vkFreeCommandBuffers(m_pcontext->logicalDevice(), m_pcontext->m_vkcommandpool, 1, &copyCmd);
+
 
    }
 
@@ -632,8 +661,12 @@ namespace graphics3d_vulkan
    }
 
 
-   void renderer::beginRenderPass(VkCommandBuffer commandBuffer)
+   void renderer::on_begin_render(::graphics3d::frame * pframeParam)
    {
+
+      ::cast < frame > pframe = pframeParam;
+
+      auto commandBuffer = pframe->commandBuffer;
 
       //if (m_bOffScreen)
       {
@@ -712,8 +745,12 @@ namespace graphics3d_vulkan
    }
 
 
-   void renderer::endRenderPass(VkCommandBuffer commandBuffer)
+   void renderer::on_end_render(::graphics3d::frame* pframeParam)
    {
+
+      ::cast < frame > pframe = pframeParam;
+
+      auto commandBuffer = pframe->commandBuffer;
 
       assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
       assert(

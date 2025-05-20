@@ -5,7 +5,8 @@
 
 #include "apex/platform/app_consumer.h"
 #include "app-cube/cube/graphics3d/scene_object.h"
-
+#include "app-cube/cube/graphics3d/properties.h"
+#include "app-cube/cube/graphics3d/shader.h"
 
 // libs
 #include <glm/gtc/matrix_transform.hpp>
@@ -30,7 +31,7 @@ namespace graphics3d
 		::pointer < ::cube::impact >				m_pimpact;
 		::string_map < ::pointer < scene > >	m_mapScene;
 		//::pointer < ::cube::application >			m_p3dapplication;
-
+		::pointer < ::graphics3d::renderer >				m_prenderer;
 		::pointer < scene >							m_pscene;
 
 		::pointer < ::graphics3d::input >		m_pinput;
@@ -41,13 +42,27 @@ namespace graphics3d
 
 		bool m_bWireframeMode = false;
 
+
 		engine();
 		~engine() override;
 
 
+		virtual void initialize_engine(::cube::impact* pimpact);
+
+
+		virtual void create_global_ubo();
+
+		virtual ::file::path _translate_shader_path(const ::file::path& pathShader);
+
+		virtual void on_begin_frame();
+		virtual void defer_start();
+
+
+		virtual void update_global_ubo();
+
 		float dt() { return m_fFrameTime; }
 
-
+		//void on_begin_frame() override;
 		void run() override;
 
 
@@ -61,7 +76,14 @@ namespace graphics3d
 
 		virtual void on_update_frame();
 
-		virtual ::pointer<model> create_model_from_file(const ::file::path& path);
+		virtual ::pointer<model> create_tinyobjloader_model(const ::file::path& path);
+
+		virtual ::pointer<shader> create_shader(
+			::graphics3d::context* pcontext,
+			const ::file::path& pathVert,
+			const ::file::path& pathFrag,
+			const ::graphics3d::property * pproperties,
+			::graphics3d::shader::enum_flag eflag = ::graphics3d::shader::e_flag_none);
 
 		virtual void add_scene(::graphics3d::scene* pscene);
 

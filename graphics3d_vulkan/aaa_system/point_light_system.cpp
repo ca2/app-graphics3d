@@ -18,12 +18,6 @@ namespace graphics3d_vulkan
 {
 
 
-   struct PointLightPushConstants {
-      glm::vec4 position{};
-      glm::vec4 color{};
-      float radius;
-   };
-
    point_light_system::point_light_system(
       context* pvkcdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
       : m_pcontext{ pvkcdevice }
@@ -43,7 +37,15 @@ namespace graphics3d_vulkan
    }
 
 
-   void point_light_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
+   void point_light_system::createPipelineLayout() {
+
+      
+      VkDescriptorSetLayout globalSetLayout
+      m_pshader = m_pengine->create_shader()
+      {
+
+      }
+
       VkPushConstantRange pushConstantRange{};
       pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
       pushConstantRange.offset = 0;

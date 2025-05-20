@@ -3,13 +3,15 @@
 // camilo on 2025-05-17 03:00 <3ThomasBorregaardSorensen!!
 #pragma once
 
+
+#include "aura/graphics/gpu/context.h"
 #include "app-cube/cube/graphics3d/context.h"
 //#include "window.h"
 //#include "opengl-cube/graphics3d_opengl/context.h"
-#include "opengl-graphics3d/graphics3d_opengl/_opengl.h"
+#include "app-cube/graphics3d_opengl/_opengl.h"
 // std lib headers
-#include <string>
-#include <vector>
+//#include <string>
+//#include <vector>
 
 
 namespace graphics3d_opengl
@@ -117,7 +119,7 @@ namespace graphics3d_opengl
       //VkInstance m_vkinstance;
       //VkDebugUtilsMessengerEXT debugMessenger;
       //VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-      ::pointer < ::cube::impact > m_pimpact;
+      //::pointer < ::cube::impact > m_pimpact;
 
       //VkCommandPool m_vkcommandpool;
 

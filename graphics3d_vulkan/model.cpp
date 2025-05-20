@@ -4,7 +4,10 @@
 #include "model.h"
 #include "utilities.h"
 #include "context.h"
-#include "frame_info.h"
+#include "engine.h"
+#include "frame.h"
+#include "renderer.h"
+#include "app-cube/cube/impact.h"
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/path_system.h"
 
@@ -74,7 +77,7 @@ namespace graphics3d_vulkan
     //}
 
 
-    void model::createVertexBuffers(const std::vector<Vertex>& vertices) {
+    void model::createVertexBuffers(const std::vector<::graphics3d::Vertex>& vertices) {
         vertexCount = static_cast<uint32_t>(vertices.size());
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
@@ -145,41 +148,50 @@ namespace graphics3d_vulkan
     }
 
 
-    void model::draw(void * p) {
-        auto pframeinfo = (FrameInfo* )p;
+    void model::draw(::graphics3d::context* pcontext)
+    {
+       ::cast <engine> pengine = pcontext->m_pimpact->m_pengine;
+
+       auto commandBuffer = pengine->m_prenderer->getCurrentCommandBuffer();
+
         if (hasIndexBuffer) {
-            vkCmdDrawIndexed(pframeinfo->commandBuffer, indexCount, 1, 0, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
         }
         else {
-            vkCmdDraw(pframeinfo->commandBuffer, vertexCount, 1, 0, 0);
+            vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
         }
     }
 
-    void model::bind(void *p) {
-       auto pframeinfo = (FrameInfo*)p;
+    void model::bind(::graphics3d::context* pcontext) 
+    {
+       ::cast <engine> pengine = pcontext->m_pimpact->m_pengine;
+
+       auto commandBuffer = pengine->m_prenderer->getCurrentCommandBuffer();
+
+
         VkBuffer buffers[] = { vertexBuffer->getBuffer() };
         VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(pframeinfo->commandBuffer, 0, 1, buffers, offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 
         if (hasIndexBuffer) {
-            vkCmdBindIndexBuffer(pframeinfo->commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+            vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
         }
     }
     std::vector<VkVertexInputBindingDescription> model::getVertexBindingDescriptions() {
         std::vector<VkVertexInputBindingDescription> bindingDescriptions(1, VkVertexInputBindingDescription{});
 
         bindingDescriptions[0].binding = 0;
-        bindingDescriptions[0].stride = sizeof(Vertex);
+        bindingDescriptions[0].stride = sizeof(::graphics3d::Vertex);
         bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
         return bindingDescriptions;
     }
     std::vector<VkVertexInputAttributeDescription> model::getVertexAttributeDescriptions() {
         std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
 
-        attributeDescriptions.push_back({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position) });
-        attributeDescriptions.push_back({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color) });
-        attributeDescriptions.push_back({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal) });
-        attributeDescriptions.push_back({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv) });
+        attributeDescriptions.push_back({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::graphics3d::Vertex, position) });
+        attributeDescriptions.push_back({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::graphics3d::Vertex, color) });
+        attributeDescriptions.push_back({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::graphics3d::Vertex, normal) });
+        attributeDescriptions.push_back({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(::graphics3d::Vertex, uv) });
 
         return attributeDescriptions;
     }

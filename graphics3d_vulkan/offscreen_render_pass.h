@@ -63,6 +63,8 @@ namespace graphics3d_vulkan
 		void createFramebuffers();
 		void createSyncObjects();
 
+		VkResult submitSamplingWork(const VkCommandBuffer buffer, uint32_t* imageIndex);
+
 		//// Helper functions
 		//VkSurfaceFormatKHR chooseSwapSurfaceFormat(
 		//	const std::vector<VkSurfaceFormatKHR>& availableFormats);

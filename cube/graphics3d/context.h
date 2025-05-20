@@ -13,6 +13,7 @@ namespace graphics3d
    public:
 
 
+      ::pointer < ::cube::impact > m_pimpact;
       
       context();
       ~context();

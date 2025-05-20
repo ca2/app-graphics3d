@@ -2,6 +2,7 @@
 // by camilo on 2025-05-18 04:11 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "application.h"
+#include "context.h"
 #include "engine.h"
 #include "impact.h"
 #include "scene.h"
@@ -24,6 +25,23 @@ namespace graphics3d
    }
 
 
+   void scene::on_initialize_scene()
+   {
+
+
+   }
+
+
+   void scene::initialize_scene(::graphics3d::engine * pengine)
+   {
+
+      m_pengine = pengine;
+
+      on_initialize_scene();
+
+   }
+
+
    ::pointer < ::graphics3d::camera > scene::get_default_camera()
    {
 
@@ -32,7 +50,7 @@ namespace graphics3d
    }
 
 
-   void scene::on_load_scene()
+   void scene::on_load_scene(::graphics3d::context* pcontext)
    {
 
 
@@ -47,20 +65,35 @@ namespace graphics3d
    }
 
 
-   ::pointer<model> scene::create_model_from_file(const ::file::path& path)
+   void scene::on_update_global_ubo()
    {
 
-      auto pmodel = m_pimpact->m_pengine->create_model_from_file(path);
+
+
+   }
+
+
+   void scene::on_render(::graphics3d::context * pcontext)
+   {
+
+
+   }
+
+
+   ::pointer<model> scene::create_tinyobjloader_model(const ::file::path& path)
+   {
+
+      auto pmodel = m_pengine->create_tinyobjloader_model(path);
 
       return pmodel;
 
    }
 
 
-   scene_object & scene::create_object(const ::file::path& path)
+   scene_object & scene::tinyobjloader_object(const ::file::path& path)
    {
       
-      auto pmodel = create_model_from_file(path);
+      auto pmodel = create_tinyobjloader_model(path);
       
       auto pobject = __øcreate < ::graphics3d::scene_object>();
 

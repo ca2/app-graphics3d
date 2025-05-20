@@ -9,7 +9,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL
 
-#pragma once
+
 #pragma warning(push, 0)
 #define GLM_FORCE_SILENT_WARNINGS
 #define GLM_ENABLE_EXPERIMENTAL
@@ -186,29 +186,27 @@ struct Node :
 
 #define MAX_BONE_INFLUENCE 4
 
-namespace graphics3d_opengl
-{
-   struct Vertex {
-      //float Position[3];
-      //float Color[4];
-      //float TexCoords[2];
-      //float TexID;
+   //struct Vertex {
+   //   //float Position[3];
+   //   //float Color[4];
+   //   //float TexCoords[2];
+   //   //float TexID;
 
-            // position
-      glm::vec3 Position;
-      // normal
-      glm::vec3 Normal;
-      // texCoords
-      glm::vec2 TexCoords;
-      // tangent
-      glm::vec3 Tangent;
-      // bitangent
-      glm::vec3 Bitangent;
-      //bone indexes which will influence this vertex
-      int m_BoneIDs[MAX_BONE_INFLUENCE];
-      //weights from each bone
-      float m_Weights[MAX_BONE_INFLUENCE];
-   };
+   //         // position
+   //   glm::vec3 Position;
+   //   // normal
+   //   glm::vec3 Normal;
+   //   // texCoords
+   //   glm::vec2 TexCoords;
+   //   // tangent
+   //   glm::vec3 Tangent;
+   //   // bitangent
+   //   glm::vec3 Bitangent;
+   //   //bone indexes which will influence this vertex
+   //   int m_BoneIDs[MAX_BONE_INFLUENCE];
+   //   //weights from each bone
+   //   float m_Weights[MAX_BONE_INFLUENCE];
+   //};
    //struct Vertex {
    //   // position
    //   glm::vec3 Position;

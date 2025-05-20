@@ -36,6 +36,12 @@ namespace graphics3d_opengl
    class shader;
    class texture;
 
+   class mesh;
+
+   class simple_render_system;
+   class point_light_system;
+
+
 } // namespace graphics3d_opengl
 
 

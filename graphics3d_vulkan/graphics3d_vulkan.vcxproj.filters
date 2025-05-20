@@ -11,7 +11,7 @@
     <Filter Include="Header Files\system">
       <UniqueIdentifier>{25f2e7e8-ee34-48d0-b575-ea265b4fb5bc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\system">
+    <Filter Include="Source Files\aaa_system">
       <UniqueIdentifier>{7549d886-8d19-4c0d-aefb-fd4011a475ad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -67,13 +67,16 @@
     <ClCompile Include="scene_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="system\basic_render_system.cpp">
-      <Filter>Source Files\system</Filter>
-    </ClCompile>
-    <ClCompile Include="system\point_light_system.cpp">
-      <Filter>Source Files\system</Filter>
-    </ClCompile>
     <ClCompile Include="_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="aaa_system\basic_render_system.cpp">
+      <Filter>Source Files\aaa_system</Filter>
+    </ClCompile>
+    <ClCompile Include="aaa_system\point_light_system.cpp">
+      <Filter>Source Files\aaa_system</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -100,9 +103,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="frame_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="engine.h">
@@ -149,6 +149,15 @@
     </ClInclude>
     <ClInclude Include="system\point_light_system.h">
       <Filter>Header Files\system</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aaa_system\point_light_system.h">
+      <Filter>Header Files\system</Filter>
+    </ClInclude>
+    <ClInclude Include="frame.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

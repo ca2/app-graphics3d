@@ -31,24 +31,18 @@ namespace graphics3d
    public:
 
 
-      struct Vertex 
-      {
+      
 
-         glm::vec3 position{};
-         glm::vec3 color{};
-         glm::vec3 normal{};
-         glm::vec2 uv{};
-
-         //static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
-         //static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
-
-         bool operator==(const Vertex& other) const { return position == other.position && normal == other.normal && uv == other.uv; }
-      };
-
-      struct Builder 
+      struct Builder
       {
          std::vector<Vertex> vertices{};
          std::vector<uint32_t> indices{};
+
+      };
+
+      struct tinyobjloader_Builder :
+         public Builder
+      {
 
          void loadModel(::graphics3d::context* pcontext, const ::file::path & path);
 
@@ -66,8 +60,8 @@ namespace graphics3d
 
       virtual void initialize_model(::graphics3d::context * pcontext, const model::Builder& builder);
 
-      virtual void draw(void * posdata);
-      virtual void bind(void * posdata);
+      virtual void draw(::graphics3d::context* pcontext);
+      virtual void bind(::graphics3d::context* pcontext);
 
    //private:
    //   void createVertexBuffers(const std::vector<Vertex>& vertices);
@@ -94,8 +88,8 @@ namespace graphics3d
 
 namespace std {
    template <>
-   struct hash<::graphics3d::model::Vertex> {
-      size_t operator()(::graphics3d::model::Vertex const& vertex) const {
+   struct hash<::graphics3d::Vertex> {
+      size_t operator()(::graphics3d::Vertex const& vertex) const {
          size_t seed = 0;
          ::graphics3d::hash_combine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
          return seed;

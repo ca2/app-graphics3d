@@ -50,7 +50,7 @@ namespace graphics3d
    }
 
 
-   void model::draw(void* posdata)
+   void model::draw(::graphics3d::context* pcontext)
    {
 
 
@@ -58,7 +58,7 @@ namespace graphics3d
 
 
 
-   void model::bind(void* posdata)
+   void model::bind(::graphics3d::context* pcontext)
    {
 
 
@@ -191,7 +191,7 @@ namespace graphics3d
 //   }
 
 
-   void model::Builder::loadModel(::graphics3d::context* pcontext, const ::file::path & path)
+   void model::tinyobjloader_Builder::loadModel(::graphics3d::context* pcontext, const ::file::path & path)
    {
 
       tinyobj::attrib_t attrib;

@@ -6,7 +6,7 @@
 //#include "offscreen.h"
 //#include "swapchain.h"
 #include "render_pass.h"
-
+#include "app-cube/cube/graphics3d/renderer.h"
 
 
 #include <memory>
@@ -21,7 +21,7 @@ namespace graphics3d_vulkan
 
 
 	class CLASS_DECL_GRAPHICS3D_VULKAN renderer:
-	virtual public ::particle
+	virtual public ::graphics3d::renderer
 	{
 	public:
 		bool m_bOffScreen = true;
@@ -30,9 +30,10 @@ namespace graphics3d_vulkan
 		~renderer();
 
 
-		virtual void initialize_renderer(::cube::impact * pimpact,  ::graphics3d::context* pcontext);
+		void initialize_renderer(::graphics3d::context * pcontext) override;
 
-
+		int width()  override;
+		int height() override;
 
 		VkRenderPass getRenderPass() const 
 		{
@@ -78,10 +79,10 @@ namespace graphics3d_vulkan
 			return currentFrameIndex;
 		}
 
-		VkCommandBuffer beginFrame();
-		void endFrame();
-		void beginRenderPass(VkCommandBuffer commandBuffer);
-		void endRenderPass(VkCommandBuffer commandBuffer);
+		::pointer < ::graphics3d::frame> beginFrame() override;
+		void endFrame() override;
+		void on_begin_render(::graphics3d::frame * pframe) override;
+		void on_end_render(::graphics3d::frame* pframe) override;
 	public:
 		void createCommandBuffers();
 
@@ -100,7 +101,7 @@ namespace graphics3d_vulkan
 			VkImage				m_vkimage;
 
 			::pointer < context > m_pcontext;
-
+			::pointer < renderer > m_prenderer;
 
 
 

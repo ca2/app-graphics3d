@@ -28,6 +28,12 @@
     <Filter Include="Source Files\graphics3d">
       <UniqueIdentifier>{ddfda2c9-09b6-40f6-9e25-1ec933baa2ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\graphics3d\aaa_system">
+      <UniqueIdentifier>{e93f697b-2951-4de6-bac4-5804deb1e696}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics3d\aaa_system">
+      <UniqueIdentifier>{d7ee6963-507e-447e-a1d4-484868dc7ca3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -93,6 +99,21 @@
     <ClInclude Include="graphics3d\shader.h">
       <Filter>Header Files\graphics3d</Filter>
     </ClInclude>
+    <ClInclude Include="graphics3d\properties.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\renderer.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\frame.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\aaa_system\point_light_system.h">
+      <Filter>Header Files\graphics3d\aaa_system</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\aaa_system\simple_render_system.h">
+      <Filter>Header Files\graphics3d\aaa_system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="const\idpool.cpp">
@@ -139,6 +160,21 @@
     </ClCompile>
     <ClCompile Include="graphics3d\input.cpp">
       <Filter>Source Files\graphics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics3d\shader.cpp">
+      <Filter>Source Files\graphics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics3d\system\simple_render_system.cpp">
+      <Filter>Source Files\graphics3d\aaa_system</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics3d\renderer.cpp">
+      <Filter>Source Files\graphics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics3d\frame.cpp">
+      <Filter>Source Files\graphics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics3d\aaa_system\point_light_system.cpp">
+      <Filter>Source Files\graphics3d\aaa_system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

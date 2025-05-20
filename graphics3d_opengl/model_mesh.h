@@ -12,7 +12,7 @@
 
 
 #define MAX_BONE_INFLUENCE 4
-using namespace std;
+//using namespace std;
 
 namespace graphics3d_opengl
 {

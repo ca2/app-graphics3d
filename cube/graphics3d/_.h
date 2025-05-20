@@ -21,6 +21,16 @@ namespace graphics3d
    class input;
    class camera;
 
+   class shader;
+
+   class simple_render_system;
+   class point_light_system;
+
+   class renderer;
+
+
+   class frame;
+
 
 } // namespace graphics3d
 

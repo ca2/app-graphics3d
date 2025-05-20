@@ -40,6 +40,20 @@ namespace user
 namespace graphics3d
 {
 
+
+	struct Vertex
+	{
+
+		glm::vec3 position{};
+		glm::vec3 color{};
+		glm::vec3 normal{};
+		glm::vec2 uv{};
+
+		//static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
+		//static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+
+		bool operator==(const Vertex& other) const { return position == other.position && normal == other.normal && uv == other.uv; }
+	};
 	/** @brief State of mouse/touch input */
 	struct mouse_state
 	{

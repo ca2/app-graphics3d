@@ -122,7 +122,12 @@ namespace cube
    {
 
    }
+   ::block impact::global_ubo_block()
+   {
 
+      return {};
+
+   }
 
    void impact::install_message_routing(::channel* pchannel)
    {
@@ -230,7 +235,7 @@ namespace cube
 
          __øconstruct(m_pengine);
 
-         m_pengine->m_pimpact = this;
+         m_pengine->initialize_engine(this);
 
          if (!m_callbackOffscreen)
          {
@@ -301,19 +306,8 @@ namespace cube
 
          }
 
-         m_ptaskEngine = fork([this]()
-            {
+         m_pengine->defer_start();
 
-               //            run_vulkan_example();
-
-
-               on_load_engine();
-
-               m_pengine->run();
-
-               m_ptaskEngine.release();
-
-            });
 
 
       }

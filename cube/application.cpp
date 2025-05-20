@@ -133,7 +133,7 @@ namespace cube
 
       ////   }
 
-      ////   SimpleRenderSystem simpleRenderSystem{
+      ////   simple_render_system simpleRenderSystem{
       ////       m_pvkcdevice,
       ////       m_prenderer->getRenderPass(),
       ////       globalSetLayout->getDescriptorSetLayout() };

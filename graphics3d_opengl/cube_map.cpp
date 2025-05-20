@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "cube_map.h"
 #include "acme/filesystem/filesystem/file_context.h"
-#include <stb_image.h>
+#include <stb/stb_image.h>
 #include <iostream>
 
 

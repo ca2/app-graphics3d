@@ -1,4 +1,6 @@
 #include "framework.h"
+#include "context.h"
+#include "frame.h"
 #include "glad.h"
 //#include "GLFW/glfw3.h"
 #include <vector>
@@ -6,6 +8,7 @@
 //#include "GLError.h"
 #include "renderer.h"
 #include "mesh.h"
+#include "app-cube/cube/impact.h"
 
 
 namespace graphics3d_opengl
@@ -25,6 +28,85 @@ namespace graphics3d_opengl
    {
    }
 
+
+   int renderer::width()
+   {
+
+      auto rectangle = m_pcontext->m_pimpact->host_rectangle();
+
+      auto sizeHost = m_pcontext->m_pimpact->top_level()->raw_rectangle().size();
+
+      auto rectangleW = rectangle.width();
+
+      return rectangleW;
+
+
+   }
+
+
+   int renderer::height()
+   {
+
+      auto rectangle = m_pcontext->m_pimpact->host_rectangle();
+
+      auto sizeHost = m_pcontext->m_pimpact->top_level()->raw_rectangle().size();
+
+      auto rectangleH = rectangle.height();
+
+      return rectangleH;
+
+
+   }
+
+
+   ::pointer < ::graphics3d::frame > renderer::beginFrame()
+   {
+
+      auto rectangle = m_pcontext->m_pimpact->host_rectangle();
+
+      auto sizeHost = m_pcontext->m_pimpact->top_level()->raw_rectangle().size();
+
+      auto rectangleW = rectangle.width();
+
+      auto rectangleH = rectangle.height();
+
+      glPushMatrix();
+      glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+      glViewport(rectangle.left(), sizeHost.cy() - rectangleH - rectangle.top(), rectangleW, rectangleH);
+
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
+
+      //glOrtho(0.0f, rectangleW, 0, rectangleH, -1.0f, 1.0f);  // Flip Y
+
+      glEnable(GL_DEPTH_TEST);
+
+
+      glDepthFunc(GL_LESS);
+
+
+      //// Frame Logic
+      //float currentFrame = ::time::now().floating_second();
+      //float deltaTime = currentFrame - lastFrame;
+      //lastFrame = currentFrame;
+
+      //deltaTime = minimum_maximum(deltaTime, 0.001, 0.016666666);
+
+      //ProcessInput(deltaTime);
+
+      // Toggle wireframe mode
+      if (m_pcontext->m_pimpact->m_pengine->m_bWireframeMode) {
+         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Enable wireframe mode
+      }
+      else {
+         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Enable solid mode
+      }
+      __defer_construct(m_pframe);
+      return ::graphics3d::renderer::beginFrame();
+
+   }
+
    void renderer::Clear() const
    {
 
@@ -42,14 +124,14 @@ namespace graphics3d_opengl
       glDepthFunc(GL_LEQUAL);
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      pshader->Bind();
+      pshader->bind();
 
       pskyboxMesh->Bind();
       glDrawElements(GL_TRIANGLES, pskyboxMesh->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
       pskyboxMesh->Unbind();
 
       glDepthFunc(GL_LESS);
-      pshader->Unbind();
+      pshader->unbind();
       GLCheckError();
    }
 
@@ -68,6 +150,148 @@ namespace graphics3d_opengl
 
    void renderer::DrawModel(const std::vector<mesh*>& mehses, const shader *pshader)
    {
+
+   }
+
+
+   void renderer::endFrame()
+   {
+      
+      if (m_papplication->m_bUseDraw2dProtoWindow)
+      {
+
+         _swap();
+         
+      }
+      else
+      {
+         
+         _sample();
+
+      }
+
+   }
+
+
+   void renderer::_sample()
+   {
+
+
+      //m_pixmap.map();
+
+      auto cx = m_pixmap.m_size.cx();
+
+      auto cy = m_pixmap.m_size.cy();
+
+      //auto sizeNeeded = cx * cy * 4;
+
+      //m_pixmap.create(m_memory, sizeNeeded);
+
+      auto data = m_memory.data();
+
+#if defined(__APPLE__) || defined(__ANDROID__)
+
+      if (data != nullptr)
+      {
+         glReadBuffer(GL_FRONT);
+
+         //if(0)
+         {
+            glReadPixels(
+               0, 0,
+               cx, cy,
+               GL_RGBA,
+               GL_UNSIGNED_BYTE,
+               data);
+
+         }
+
+      }
+
+      //m_pixmap.mult_alpha();
+      information() << "after glReadPixels cx,cy : " << cx << ", " << cy;
+
+      //::memory_set(m_pixmap.m_pimage32Raw, 127, cx * cy * 4);
+
+#elif defined(LINUX) || defined(__BSD__)
+
+      glReadBuffer(GL_FRONT);
+
+
+      glReadPixels(
+         0, 0,
+         cx, cy,
+         GL_BGRA,
+         GL_UNSIGNED_BYTE,
+         m_pixmap.m_pimage32Raw);
+
+      //m_pixmap.mult_alpha();
+
+#else
+
+
+      glReadBuffer(GL_FRONT);
+
+      //if (m_pgpucontext->is_mesa())
+      if (!glReadnPixels)
+      {
+
+         glReadPixels(
+            0, 0,
+            cx, cy,
+            GL_BGRA,
+            GL_UNSIGNED_BYTE,
+            m_pixmap.m_pimage32Raw);
+
+      }
+      else
+      {
+
+         glReadnPixels(
+            0, 0,
+            cx, cy,
+            GL_BGRA,
+            GL_UNSIGNED_BYTE,
+            cx * cy * 4,
+            data);
+
+      }
+
+      int iError = glGetError();
+
+      if (iError != 0)
+      {
+
+         printf("glReadnPixels error");
+
+      }
+
+      //::memory_set(m_pixmap.m_pimage32Raw, 127, cx * cy * 4);
+
+#endif
+
+      {
+
+         auto dst = (unsigned char*)data;
+         auto size = cx * cy;
+
+         while (size > 0)
+         {
+            dst[0] = byte_clip(((int)dst[0] * (int)dst[3]) / 255);
+            dst[1] = byte_clip(((int)dst[1] * (int)dst[3]) / 255);
+            dst[2] = byte_clip(((int)dst[2] * (int)dst[3]) / 255);
+            dst += 4;
+            size--;
+         }
+
+      }
+
+   }
+
+
+   void renderer::_swap()
+   {
+
 
    }
 

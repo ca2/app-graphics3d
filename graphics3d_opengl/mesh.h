@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+//#include <vector>
 #include <glm/glm.hpp>
 
 namespace graphics3d_opengl

@@ -48,6 +48,22 @@ namespace graphics3d_vulkan
       const bool enableValidationLayers = true;
 #endif
 
+      VkInstance m_vkinstance;
+      VkDebugUtilsMessengerEXT debugMessenger;
+      VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+      //::pointer < ::cube::impact > m_pimpact;
+
+      VkCommandPool m_vkcommandpool;
+
+      VkDevice m_vkdevice;
+      VkSurfaceKHR m_vksurfacekhr;
+      VkQueue m_vkqueueGraphics;
+      VkQueue m_vkqueuePresent;
+
+      std::vector<const char*> validationLayers;
+      std::vector<const char*> deviceExtensions;
+
+
       //context(VkWindow& window);
       //context(VkPhysicalDevice physicalDevice);
       //context(::graphics3d_vulkan::VulkanDevice * pdevice);
@@ -94,7 +110,8 @@ namespace graphics3d_vulkan
 
       void submitWork(VkCommandBuffer cmdBuffer, VkQueue queue);
 
-   public:
+
+   //public:
       void createInstance();
       void setupDebugMessenger();
       void createSurface();
@@ -111,21 +128,6 @@ namespace graphics3d_vulkan
       void hasGflwRequiredInstanceExtensions();
       bool checkDeviceExtensionSupport(VkPhysicalDevice pvkcdevice);
       SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice pvkcdevice);
-
-      VkInstance m_vkinstance;
-      VkDebugUtilsMessengerEXT debugMessenger;
-      VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-      ::pointer < ::cube::impact > m_pimpact;
-
-      VkCommandPool m_vkcommandpool;
-
-      VkDevice m_vkdevice;
-      VkSurfaceKHR m_vksurfacekhr;
-      VkQueue m_vkqueueGraphics;
-      VkQueue m_vkqueuePresent;
-
-      const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
-      const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
    };
 

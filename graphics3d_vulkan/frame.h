@@ -1,56 +1,48 @@
 #pragma once
 
+#include "app-cube/cube/graphics3d/camera.h"
+#include "app-cube/cube/graphics3d/frame.h"
+#include "scene_object.h"
 
-#include "base/user/simple/frame_window.h"
+// lib
+//#include "_vulkan/vulkan.h>
 
-
-namespace vulkan_land_landen
+namespace graphics3d_vulkan 
 {
 
 
-   class CLASS_DECL_VULKAN_LAND_LANDEN frame :
-      virtual public simple_frame_window
-   {
-   public:
+#define MAX_LIGHTS 10
+
+	struct PointLight {
+		glm::vec4 position{};  // ignore w
+		glm::vec4 color{};     // w is intensity
+	};
 
 
-      bool                       m_bExplicitTranslucency;
-      ::user::enum_translucency      m_etranslucency;
+	//struct GlobalUbo {
+	//	glm::mat4 projection{ 1.f };
+	//	glm::mat4 view{ 1.f };
+	//	glm::mat4 inverseView{ 1.f };
+	//	glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .02f };
+	//	PointLight pointLights[MAX_LIGHTS];
+	//	int numLights;
+	//};
+
+	class frame :
+		virtual public ::graphics3d::frame
+	{
+	public:
+
+		//int frameIndex;
+		//float frameTime;
+		VkCommandBuffer commandBuffer;
+		//::graphics3d::camera &camera;
+		//VkDescriptorSet globalDescriptorSet;
+		//::graphics3d::scene_object::map& gameObjects;
+	};
 
 
-      frame();
-      ~frame() override;
-
-      void install_message_routing(::channel* pchannel) override;
-	   // void assert_ok() const override;
-	   // void dump(dump_context & dumpcontext) const override;
-
-      void _001OnNcClip(::draw2d::graphics_pointer & pgraphics) override;
-      void _001OnClip(::draw2d::graphics_pointer & pgraphics) override;
-
-      void _001OnNcDraw(::draw2d::graphics_pointer & pgraphics) override;
-      void _001OnDraw(::draw2d::graphics_pointer & pgraphics) override;
-
-
-
-      ::user::enum_translucency get_translucency(::user::style * pstyle) override;
-      using simple_frame_window::frame_experience;
-      ::pointer < ::experience::frame > frame_experience() override;
-
-      DECLARE_MESSAGE_HANDLER(on_message_close);
-   };
-
-
-} // namespace app_core_vulken
-
-
-
-
-
-
-
-
-
+} // namespace graphics3d_vulkan 
 
 
 
