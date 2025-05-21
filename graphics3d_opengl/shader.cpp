@@ -261,7 +261,11 @@ namespace graphics3d_opengl
       }
    }
 
-  
+   void shader::draw()
+   {
+
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+  }
 
 
 

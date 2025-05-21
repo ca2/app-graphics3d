@@ -306,8 +306,11 @@ namespace graphics3d_vulkan
       m_extent.width = windowExtent.width;
       m_extent.height = windowExtent.height;
 
+#ifdef WINDOWS_DESKTOP
+      m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+#else
       m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
-
+#endif
 
       //// Find a suitable depth format
       VkFormat fbDepthFormat;

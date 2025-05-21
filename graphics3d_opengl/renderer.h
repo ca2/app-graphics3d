@@ -30,6 +30,8 @@ namespace graphics3d_opengl
 
       ::pointer < ::graphics3d::frame > beginFrame() override;
 
+      virtual void on_begin_render(::graphics3d::frame* pframe);
+
       void Clear() const;
 
       // Draws the skybox using the given mesh and shader
@@ -42,9 +44,9 @@ namespace graphics3d_opengl
 
       void endFrame() override;
 
-      //virtual void _sample();
+      virtual void _sample();
 
-      //virtual void _swap();
+      virtual void _swap();
 
       //virtual void on_layout(int cx, int cy);
 

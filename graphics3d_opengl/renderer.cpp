@@ -1,5 +1,7 @@
 #include "framework.h"
 #include "context.h"
+#include "gpu_opengl/context.h"
+#include "gpu_opengl/cpu_buffer.h"
 #include "frame.h"
 #include "glad.h"
 //#include "GLFW/glfw3.h"
@@ -107,15 +109,21 @@ namespace graphics3d_opengl
 
    }
 
-   void renderer::Clear() const
+   void renderer::on_begin_render(::graphics3d::frame* pframe)
    {
 
-      // Clear the screen 
-      GLCheckError();
-      glClearColor(0.678f, 0.847f, 0.902f, 1.0f);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      GLCheckError();
+
    }
+
+   //void renderer::Clear() const
+   //{
+
+   //   // Clear the screen 
+   //   GLCheckError();
+   //   glClearColor(0.678f, 0.847f, 0.902f, 1.0f);
+   //   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   //   GLCheckError();
+   //}
 
    // sky_box
    void renderer::DrawSkybox(const mesh *pskyboxMesh, const shader *pshader) const {
@@ -156,6 +164,20 @@ namespace graphics3d_opengl
 
    void renderer::endFrame()
    {
+
+
+      //glDisable(GL_DEPTH_TEST);
+      
+      
+      //}
+      
+//            glDepthFunc(GL_LESS);
+      
+      glPopAttrib();
+      glPopMatrix();
+
+      //glFlush();
+
       
       if (m_papplication->m_bUseDraw2dProtoWindow)
       {
@@ -176,116 +198,158 @@ namespace graphics3d_opengl
    void renderer::_sample()
    {
 
+//      glDisable(GL_DEPTH_TEST);
+//
+//
+//      //}
+//
+////            glDepthFunc(GL_LESS);
+//
+//      glPopAttrib();
+//      glPopMatrix();
 
-      //m_pixmap.map();
 
-      auto cx = m_pixmap.m_size.cx();
+      ::cast<context>pcontext = m_pcontext;
 
-      auto cy = m_pixmap.m_size.cy();
-
-      //auto sizeNeeded = cx * cy * 4;
-
-      //m_pixmap.create(m_memory, sizeNeeded);
-
-      auto data = m_memory.data();
-
-#if defined(__APPLE__) || defined(__ANDROID__)
-
-      if (data != nullptr)
+      if (pcontext)
       {
-         glReadBuffer(GL_FRONT);
 
-         //if(0)
+         ::cast<::gpu_opengl::context> pgpucontext = pcontext->m_pgpucontext;
+
+         if (pgpucontext)
          {
-            glReadPixels(
-               0, 0,
-               cx, cy,
-               GL_RGBA,
-               GL_UNSIGNED_BYTE,
-               data);
+
+            auto pcpubuffer = pgpucontext->m_pcpubuffer;
+
+            if (pcpubuffer)
+            {
+
+               pcpubuffer->gpu_read();
+
+               auto callback = pcontext->m_pimpact->m_callbackOffscreen;
+
+               auto data = pcpubuffer->m_pixmap.data();
+               auto width = pcpubuffer->m_pixmap.width();
+               auto height = pcpubuffer->m_pixmap.height();
+               auto scan = pcpubuffer->m_pixmap.m_iScan;
+
+               callback(data, width, height, scan);
+
+            }
 
          }
 
       }
 
-      //m_pixmap.mult_alpha();
-      information() << "after glReadPixels cx,cy : " << cx << ", " << cy;
-
-      //::memory_set(m_pixmap.m_pimage32Raw, 127, cx * cy * 4);
-
-#elif defined(LINUX) || defined(__BSD__)
-
-      glReadBuffer(GL_FRONT);
-
-
-      glReadPixels(
-         0, 0,
-         cx, cy,
-         GL_BGRA,
-         GL_UNSIGNED_BYTE,
-         m_pixmap.m_pimage32Raw);
-
-      //m_pixmap.mult_alpha();
-
-#else
-
-
-      glReadBuffer(GL_FRONT);
-
-      //if (m_pgpucontext->is_mesa())
-      if (!glReadnPixels)
-      {
-
-         glReadPixels(
-            0, 0,
-            cx, cy,
-            GL_BGRA,
-            GL_UNSIGNED_BYTE,
-            m_pixmap.m_pimage32Raw);
-
-      }
-      else
-      {
-
-         glReadnPixels(
-            0, 0,
-            cx, cy,
-            GL_BGRA,
-            GL_UNSIGNED_BYTE,
-            cx * cy * 4,
-            data);
-
-      }
-
-      int iError = glGetError();
-
-      if (iError != 0)
-      {
-
-         printf("glReadnPixels error");
-
-      }
-
-      //::memory_set(m_pixmap.m_pimage32Raw, 127, cx * cy * 4);
-
-#endif
-
-      {
-
-         auto dst = (unsigned char*)data;
-         auto size = cx * cy;
-
-         while (size > 0)
-         {
-            dst[0] = byte_clip(((int)dst[0] * (int)dst[3]) / 255);
-            dst[1] = byte_clip(((int)dst[1] * (int)dst[3]) / 255);
-            dst[2] = byte_clip(((int)dst[2] * (int)dst[3]) / 255);
-            dst += 4;
-            size--;
-         }
-
-      }
-
+//      //m_pixmap.map();
+//
+//      auto cx = m_pixmap.m_size.cx();
+//
+//      auto cy = m_pixmap.m_size.cy();
+//
+//      //auto sizeNeeded = cx * cy * 4;
+//
+//      //m_pixmap.create(m_memory, sizeNeeded);
+//
+//      auto data = m_memory.data();
+//
+//#if defined(__APPLE__) || defined(__ANDROID__)
+//
+//      if (data != nullptr)
+//      {
+//         glReadBuffer(GL_FRONT);
+//
+//         //if(0)
+//         {
+//            glReadPixels(
+//               0, 0,
+//               cx, cy,
+//               GL_RGBA,
+//               GL_UNSIGNED_BYTE,
+//               data);
+//
+//         }
+//
+//      }
+//
+//      //m_pixmap.mult_alpha();
+//      information() << "after glReadPixels cx,cy : " << cx << ", " << cy;
+//
+//      //::memory_set(m_pixmap.m_pimage32Raw, 127, cx * cy * 4);
+//
+//#elif defined(LINUX) || defined(__BSD__)
+//
+//      glReadBuffer(GL_FRONT);
+//
+//
+//      glReadPixels(
+//         0, 0,
+//         cx, cy,
+//         GL_BGRA,
+//         GL_UNSIGNED_BYTE,
+//         m_pixmap.m_pimage32Raw);
+//
+//      //m_pixmap.mult_alpha();
+//
+//#else
+//
+//
+//      glReadBuffer(GL_FRONT);
+//
+//      //if (m_pgpucontext->is_mesa())
+//      if (!glReadnPixels)
+//      {
+//
+//         glReadPixels(
+//            0, 0,
+//            cx, cy,
+//            GL_BGRA,
+//            GL_UNSIGNED_BYTE,
+//            m_pixmap.m_pimage32Raw);
+//
+//      }
+//      else
+//      {
+//
+//         glReadnPixels(
+//            0, 0,
+//            cx, cy,
+//            GL_BGRA,
+//            GL_UNSIGNED_BYTE,
+//            cx * cy * 4,
+//            data);
+//
+//      }
+//
+//      int iError = glGetError();
+//
+//      if (iError != 0)
+//      {
+//
+//         printf("glReadnPixels error");
+//
+//      }
+//
+//      //::memory_set(m_pixmap.m_pimage32Raw, 127, cx * cy * 4);
+//
+//#endif
+//
+//      {
+//
+//         auto dst = (unsigned char*)data;
+//         auto size = cx * cy;
+//
+//         while (size > 0)
+//         {
+//            dst[0] = byte_clip(((int)dst[0] * (int)dst[3]) / 255);
+//            dst[1] = byte_clip(((int)dst[1] * (int)dst[3]) / 255);
+//            dst[2] = byte_clip(((int)dst[2] * (int)dst[3]) / 255);
+//            dst += 4;
+//            size--;
+//         }
+//
+//      }
+//
    }
 
 

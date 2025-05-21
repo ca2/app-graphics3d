@@ -1,14 +1,32 @@
 #include "framework.h"
-//#include "::graphics3d::camera.h"
+#include "camera.h"
 //#include <glm/glm.hpp>
 //#include <glm/gtc/matrix_transform.hpp>
 //#include <glm/gtc/type_ptr.hpp>
 //#include <cmath> // For sin and cos functions
 //
 //
-//namespace graphics3d_opengl
-//{
+namespace graphics3d_opengl
+{
 //
+// 
+// 
+// 
+//     assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
+   void camera::setPerspectiveProjection(float fovy, float aspect, float fNear, float fFar)
+   {
+
+      ::graphics3d::camera::setPerspectiveProjection(fovy, aspect, fNear, fFar);
+      //const float tanHalfFovy = tan(fovy / 2.f);
+
+      //m_matrixProjection = glm::mat4{ 0.0f };
+      //m_matrixProjection[0][0] = 1.f / (aspect * tanHalfFovy);
+      //m_matrixProjection[1][1] = 1.f / (tanHalfFovy);
+      //m_matrixProjection[2][2] = (fFar + fNear) / (fNear - fFar);      // <-- key change
+      //m_matrixProjection[2][3] = -1.f;                                 // <-- sign flipped
+      //m_matrixProjection[3][2] = (2.f * fFar * fNear) / (fNear - fFar); // <-- sign flipped
+
+   }
 //
 //   // Constructor
 //   ::graphics3d::camera::::graphics3d::camera(glc::GlContainer* pimpact, glm::vec3 position, float fYaw, float fPitch)
@@ -175,7 +193,7 @@
 //
 //
 //
-//} // namespace graphics3d_opengl
+} // namespace graphics3d_opengl
 //
 //
 //

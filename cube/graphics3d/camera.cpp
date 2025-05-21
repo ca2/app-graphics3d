@@ -17,7 +17,7 @@ namespace graphics3d
 {
 
 
-   camera::camera(glm::vec3 position, float yaw, float pitch)
+   void camera::initialize_camera(glm::vec3 position, float yaw, float pitch)
    {
       
       m_locationPosition = position;
@@ -37,7 +37,7 @@ namespace graphics3d
    }
 
 
-   camera::camera(glm::vec3 position, glm::vec3 to, glm::vec3 from)
+   void camera::initialize_camera(glm::vec3 position, glm::vec3 to, glm::vec3 from)
    {
 
       m_locationPosition = position;

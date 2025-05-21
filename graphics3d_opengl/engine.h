@@ -73,6 +73,7 @@ namespace graphics3d_opengl
 		void on_begin_frame() override;
 
 		void create_global_ubo() override;
+		void update_global_ubo() override;
 		//Application();
 		//~Application();
 

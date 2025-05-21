@@ -3,9 +3,11 @@
 //#include <glm/glm.hpp>
 ////#include "Core/gl_container.h"
 //
+// 
+#include "app-cube/cube/graphics3d/camera.h"
 //
-//namespace graphics3d_opengl
-//{
+namespace graphics3d_opengl
+{
 //
 //
 //   enum CameraMovement 
@@ -44,11 +46,13 @@
 //
 //   };
 //
-//   class ::graphics3d::camera :
-//      virtual public ::particle,
+   class camera :
+      virtual public ::graphics3d::camera
 //      virtual public camera_t
-//   {
-//   public:
+   {
+   public:
+
+      void setPerspectiveProjection(float fovy, float aspect, float near, float far) override;
 //
 //      ::pointer < ::glc::GlContainer > m_pimpact;
 //
@@ -91,9 +95,9 @@
 //
 //      // Update camera vectors
 //      void UpdateCameraVectors();
-//   };
+   };
 //
 //
-//} // namespace graphics3d_opengl
+} // namespace graphics3d_opengl
 //
 //

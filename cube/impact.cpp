@@ -244,64 +244,67 @@ namespace cube
                [this](void* p, int w, int h, int stride)
                {
 
-                  {
+                  //{
 
                      _synchronous_lock synchronouslock(m_pparticleImageSynchronization);
 
-                     m_pimage->image32()->copy(m_pimage->size().minimum(::int_size(w, h)), m_pimage->m_iScan, (image32_t*)p, stride);
+                     auto s = m_pimage->size().minimum(::int_size(w, h));
 
-                     for (int y = 0; y < h; y++)
-                     {
+                     m_pimage->image32()->copy(s, m_pimage->m_iScan, (image32_t*)p, stride);
 
-                        auto p = (unsigned char*)(m_pimage->image32() + (y * m_pimage->m_iScan) / 4);
+                  //   for (int y = 0; y < h; y++)
+                  //   {
 
-                        for (int x = 0; x < w; x++)
-                        {
+                  //      auto p = (unsigned char*)(m_pimage->image32() + (y * m_pimage->m_iScan) / 4);
 
-                           //p[0] = p[0] * p[3] / 255;
-                           //p[1] = p[1] * p[3] / 255;
-                           //p[2] = p[2] * p[3] / 255;
+                  //      for (int x = 0; x < w; x++)
+                  //      {
 
-                           auto r = p[0];
-                           auto g = p[1];
-                           auto b = p[2];
-                           auto a = p[3];
-                           p[0] = b;
-                           p[2] = r;
-                           //p[3] = 255;
+                  //         //p[0] = p[0] * p[3] / 255;
+                  //         //p[1] = p[1] * p[3] / 255;
+                  //         //p[2] = p[2] * p[3] / 255;
 
-                           /*         if (r > a)
-                                    {
+                  //         auto r = p[0];
+                  //         auto g = p[1];
+                  //         auto b = p[2];
+                  //         auto a = p[3];
+                  //         //p[0] = b;
+                  //         //p[2] = r;
+                  //         //p[3] = 255;
 
-                                       information("What a red!!"_ansi);
+                  //         /*         if (r > a)
+                  //                  {
 
-                                    }
+                  //                     information("What a red!!"_ansi);
 
-                                    if (g > a)
-                                    {
+                  //                  }
 
-                                       information("What a green!!"_ansi);
+                  //                  if (g > a)
+                  //                  {
 
-                                    }
+                  //                     information("What a green!!"_ansi);
 
-                                    if (b > a)
-                                    {
+                  //                  }
 
-                                       information("What a blue!!"_ansi);
+                  //                  if (b > a)
+                  //                  {
 
-                                    }*/
+                  //                     information("What a blue!!"_ansi);
 
-                           p += 4;
+                  //                  }*/
 
-                        }
+                  //         p += 4;
 
-                     }
+                  //      }
 
-                  }
+                  //   }
 
+                  //}
 
                   set_need_redraw();
+
                   post_redraw();
+
                };
 
          }

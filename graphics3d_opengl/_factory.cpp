@@ -1,5 +1,6 @@
 // Created by camilo on 2025-05-17 02:54 <3ThomasBorregaardSorensen!!
 #include "framework.h"
+#include "camera.h"
 #include "context.h"
 #include "engine.h"
 #include "frame.h"
@@ -18,6 +19,8 @@ IMPLEMENT_FACTORY(graphics3d_opengl)
 {
 
    pfactory->add_factory_item < ::graphics3d_opengl::frame, ::graphics3d::frame >();
+
+   pfactory->add_factory_item < ::graphics3d_opengl::camera, ::graphics3d::camera >();
 
    pfactory->add_factory_item < ::graphics3d_opengl::model, ::graphics3d::model >();
 

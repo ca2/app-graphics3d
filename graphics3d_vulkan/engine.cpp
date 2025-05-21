@@ -73,6 +73,51 @@ namespace graphics3d_vulkan
       //   .build();
 
       //pcontext = __allocate context(m_pvulkandevice);
+      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
+
+      if (iGlobalUboSize > 0)
+      {
+
+         create_global_ubo();
+
+      }
+
+
+//          m_prenderer->getRenderPass(),
+  //        globalSetLayout->getDescriptorSetLayout()
+    //  };
+
+      m_pscene->on_load_scene(m_pcontext);
+
+
+   }
+
+
+   void engine::on_begin_frame()
+   {
+
+      int frameIndex = m_prenderer->getFrameIndex();
+
+      //FrameInfo frameInfo{ frameIndex, dt(), commandBuffer,
+      //   *m_pcamera, m_globalDescriptorSets[frameIndex],
+      //   m_pscene->m_mapObjects };
+
+      // update
+      //::graphics3d::GlobalUbo ubo{};
+      //ubo.projection = m_pcamera->getProjection();
+      //ubo.view = m_pcamera->getView();
+      //ubo.inverseView = m_pcamera->getInverseView();
+      //m_ppointlightsystem->update(m_pscene, ubo);
+      //m_uboBuffers[frameIndex]->writeToBuffer(&ubo);
+      //m_uboBuffers[frameIndex]->flush();
+
+
+
+   }
+
+
+   void engine::create_global_ubo()
+   {
 
       int iGlobalUboSize = m_pimpact->global_ubo_block().size();
 
@@ -119,37 +164,6 @@ namespace graphics3d_vulkan
          }
 
       }
-
-
-//          m_prenderer->getRenderPass(),
-  //        globalSetLayout->getDescriptorSetLayout()
-    //  };
-
-      m_pscene->on_load_scene(m_pcontext);
-
-
-   }
-
-
-   void engine::on_begin_frame()
-   {
-
-      int frameIndex = m_prenderer->getFrameIndex();
-
-      //FrameInfo frameInfo{ frameIndex, dt(), commandBuffer,
-      //   *m_pcamera, m_globalDescriptorSets[frameIndex],
-      //   m_pscene->m_mapObjects };
-
-      // update
-      //::graphics3d::GlobalUbo ubo{};
-      //ubo.projection = m_pcamera->getProjection();
-      //ubo.view = m_pcamera->getView();
-      //ubo.inverseView = m_pcamera->getInverseView();
-      //m_ppointlightsystem->update(m_pscene, ubo);
-      //m_uboBuffers[frameIndex]->writeToBuffer(&ubo);
-      //m_uboBuffers[frameIndex]->flush();
-
-
 
    }
 

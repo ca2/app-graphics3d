@@ -53,6 +53,7 @@ namespace graphics3d_vulkan
 		void on_begin_frame() override;
 		void on_start_engine() override;
 
+		void create_global_ubo() override;
 		void update_global_ubo() override;
 		//void on_render_frame() override;
 

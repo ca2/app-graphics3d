@@ -2,6 +2,7 @@
 
 
 #include "app-cube/cube/_.h"
+#include "gpu_opengl/_.h"
 #include "_opengl.h"
 
 

@@ -89,7 +89,7 @@ namespace graphics3d_opengl
 		glBindVertexArray(m_gluVAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_gluVBO);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(::graphics3d::Vertex), vertices.data(), GL_STATIC_DRAW);
 
 	}
 
@@ -135,10 +135,24 @@ namespace graphics3d_opengl
 		m_cIndexes = indices.size();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_cIndexes, indices.data(), GL_STATIC_DRAW);
 
-		// Vertex layout
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-		glEnableVertexAttribArray(0);
+		//// Vertex layout
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+		//glEnableVertexAttribArray(0);
 
+			// vertex positions
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(::graphics3d::Vertex), (void*)offsetof(::graphics3d::Vertex, position));
+		// vertex color
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(::graphics3d::Vertex), (void*)offsetof(::graphics3d::Vertex, color));
+		// vertex normals
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(::graphics3d::Vertex), (void*)offsetof(::graphics3d::Vertex, normal));
+		// vertex texture coords
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(::graphics3d::Vertex), (void*)offsetof(::graphics3d::Vertex, uv));
+
+		glBindVertexArray(0);
 	}
 
 	

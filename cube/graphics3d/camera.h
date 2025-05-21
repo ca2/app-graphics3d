@@ -69,8 +69,11 @@ namespace graphics3d
 
 
 		camera() {};
-		camera(location position, float yaw, float pitch);
-		camera(location position, location to, location from);
+		//camera(location position, float yaw, float pitch);
+		//camera(location position, location to, location from);
+
+		virtual void initialize_camera(location position, float yaw, float pitch);
+		virtual void initialize_camera(location position, location to, location from);
 
 		void setOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
 		void setViewDirection(location position, pole direction, pole up = pole{ 0.f, -1.f, 0.f });
@@ -78,7 +81,7 @@ namespace graphics3d
 
 		void setViewYXZ(location position, pole rotation);
 
-		void setPerspectiveProjection(float fovy, float aspect, float near, float far);
+		virtual void setPerspectiveProjection(float fovy, float aspect, float near, float far);
 		const quad_matrix& getProjection() const { return m_matrixProjection; }
 		const quad_matrix& getView() const { return m_matrixImpact; }
 		const quad_matrix& getInverseView() const { return m_matrixAntImpact; }

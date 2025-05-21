@@ -47,7 +47,11 @@ namespace graphics3d_opengl
       void link_shaders(GLuint vertexShader, GLuint fragmentShader);
 
 
-      void push_properties();
+      void push_properties() override;
+
+      void draw() override;
+
+
    };
 
 

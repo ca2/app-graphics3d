@@ -99,7 +99,7 @@ namespace graphics3d_opengl
 
           // Update and render the game (and the current scene)
       //Update(this->dt(), m_pcamera);
-      Render(m_prenderer, m_pcamera);
+      //Render(m_prenderer, m_pcamera);
 
       // Swap buffers and poll for events
       //m_Window.SwapBuffers();
@@ -107,62 +107,63 @@ namespace graphics3d_opengl
       // 
       // 
 
-      glDisable(GL_DEPTH_TEST);
+//      glDisable(GL_DEPTH_TEST);
+//
+//
+//      //}
+//
+////            glDepthFunc(GL_LESS);
+//
+//      glPopAttrib();
+//      glPopMatrix();
+
+
+      //if (!m_papplication->m_bUseDraw2dProtoWindow
+      //   && m_pimpact->m_callbackOffscreen)
+      //{
+      //   void* p = nullptr;
+      //   int w = m_pimpact->m_iWidth;
+      //   int h = m_pimpact->m_iHeight;
+      //   int stride = w * 4;
+      //   m_memoryBuffer.set_size(stride * h);
+      //   if (glReadnPixels)
+      //   {
+      //      glReadnPixels(
+      //         0, 0,
+      //         w, h,
+      //         GL_BGRA,
+      //         GL_UNSIGNED_BYTE,
+      //         m_memoryBuffer.size(),
+      //         m_memoryBuffer.data());
+      //   }
+      //   else
+      //   {
+      //      glReadPixels(
+      //         0, 0,
+      //         w, h,
+      //         GL_BGRA,
+      //         GL_UNSIGNED_BYTE,
+      //         m_memoryBuffer.data());
+
+      //   }
+
+      //   m_pimpact->m_callbackOffscreen(
+      //      m_memoryBuffer.data(),
+      //      w,
+      //      h,
+      //      stride);
 
       //}
-
-//            glDepthFunc(GL_LESS);
-
-      glPopAttrib();
-      glPopMatrix();
+      //else
+      //{
 
 
-      if (!m_papplication->m_bUseDraw2dProtoWindow
-         && m_pimpact->m_callbackOffscreen)
-      {
-         void* p = nullptr;
-         int w = m_pimpact->m_iWidth;
-         int h = m_pimpact->m_iHeight;
-         int stride = w * 4;
-         m_memoryBuffer.set_size(stride * h);
-         if (glReadnPixels)
-         {
-            glReadnPixels(
-               0, 0,
-               w, h,
-               GL_BGRA,
-               GL_UNSIGNED_BYTE,
-               m_memoryBuffer.size(),
-               m_memoryBuffer.data());
-         }
-         else
-         {
-            glReadPixels(
-               0, 0,
-               w, h,
-               GL_BGRA,
-               GL_UNSIGNED_BYTE,
-               m_memoryBuffer.data());
-
-         }
-
-         m_pimpact->m_callbackOffscreen(
-            m_memoryBuffer.data(),
-            w,
-            h,
-            stride);
-
-      }
-      else
-      {
-
-
-         m_pimpact->m_callbackOffscreen(
-            nullptr,
-            0,
-            0,
-            0);
-      }
+      //   m_pimpact->m_callbackOffscreen(
+      //      nullptr,
+      //      0,
+      //      0,
+      //      0);
+      //}
 
    }
 
@@ -203,6 +204,8 @@ namespace graphics3d_opengl
 
       ::graphics3d::engine::m_prenderer = m_prenderer;
 
+
+
       //auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
 
       //pglobalpoolbuilder->initialize_builder(m_pcontext);
@@ -218,6 +221,15 @@ namespace graphics3d_opengl
       //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .build();
+      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
+
+      if (iGlobalUboSize > 0)
+      {
+
+         create_global_ubo();
+
+      }
+
       m_pscene->on_load_scene(m_pcontext);
 
       //pcontext = __allocate context(m_pvulkandevice);
@@ -295,15 +307,45 @@ namespace graphics3d_opengl
       glGenBuffers(1, &m_globalUBO);
       glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
       glBufferData(GL_UNIFORM_BUFFER, globalUboSize, NULL, GL_DYNAMIC_DRAW); // For 2 mat4s = 2 * sizeof(float) * 16
+      unsigned int uUboBindingPoint = 0;
+      glBindBufferBase(GL_UNIFORM_BUFFER, uUboBindingPoint, m_globalUBO);
       glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-      unsigned int uUboBindingPoint = 0;
 
       // Bind to a binding point
-      glBindBufferBase(GL_UNIFORM_BUFFER, uUboBindingPoint, m_globalUBO);
 
       //return globalUBO;
 
+   }
+
+
+   void engine::update_global_ubo()
+   {
+
+      m_pscene->on_update_global_ubo();
+
+      glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
+
+      // Map the entire buffer for writing
+      void* ptr = glMapBufferRange(
+         GL_UNIFORM_BUFFER,
+         0,
+         2 * sizeof(glm::mat4),
+         GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT
+      );
+
+      if (ptr) {
+         // Cast to float* and copy matrices sequentially
+         float* fptr = (float*)ptr;
+         memcpy(fptr, m_pimpact->global_ubo_block().data(), m_pimpact->global_ubo_block().size());
+         //memcpy(fptr + 16, glm::value_ptr(projection), sizeof(glm::mat4));
+         glUnmapBuffer(GL_UNIFORM_BUFFER);
+      }
+      else {
+         fprintf(stderr, "Failed to map UBO\n");
+      }
+
+      glBindBuffer(GL_UNIFORM_BUFFER, 0);
    }
 
 

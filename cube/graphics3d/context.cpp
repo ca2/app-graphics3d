@@ -29,6 +29,14 @@ namespace graphics3d
    }
 
 
+   void context::clear(const ::color::color & color)
+   {
+
+
+
+   }
+
+
 }  // namespace graphics3d
 
 

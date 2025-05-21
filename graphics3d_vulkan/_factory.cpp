@@ -1,5 +1,6 @@
 // Created by camilo on 2025-05-17 02:54 <3ThomasBorregaardSorensen!!
 #include "framework.h"
+#include "camera.h"
 #include "engine.h"
 #include "frame.h"
 #include "model.h"
@@ -18,6 +19,8 @@ IMPLEMENT_FACTORY(graphics3d_vulkan)
 
    pfactory->add_factory_item < ::graphics3d_vulkan::frame, ::graphics3d::frame >();
 
+   pfactory->add_factory_item < ::graphics3d_vulkan::camera, ::graphics3d::camera >();
+
    pfactory->add_factory_item < ::graphics3d_vulkan::model, ::graphics3d::model >();
 
    pfactory->add_factory_item < ::graphics3d_vulkan::shader, ::graphics3d::shader >();
@@ -27,6 +30,7 @@ IMPLEMENT_FACTORY(graphics3d_vulkan)
    pfactory->add_factory_item < ::graphics3d_vulkan::context, ::graphics3d::context >();
 
    pfactory->add_factory_item < ::graphics3d::scene_object >();
+
 
 }
 
