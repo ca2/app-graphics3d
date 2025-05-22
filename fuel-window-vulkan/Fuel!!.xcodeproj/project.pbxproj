@@ -14,7 +14,7 @@
 		0739E14F1B6FC48700E80295 /* libaxis_image_jpeg.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 07D1B0B11B6FBEA3004E8E35 /* libaxis_image_jpeg.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		073D67691B6E7B1000B8AC34 /* libdraw2d_quartz2d.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 076A24961B6E772400BF6C7D /* libdraw2d_quartz2d.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		073D69651B6E7B2A00B8AC34 /* libexperience_lite.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 076A249F1B6E772400BF6C7D /* libexperience_lite.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		073D69661B6E7B2A00B8AC34 /* libapp_core_hellomultiverse.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 076A24B71B6E773B00BF6C7D /* libapp_core_hellomultiverse.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		073D69661B6E7B2A00B8AC34 /* libapp_cube_hellomultiverse.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 076A24B71B6E773B00BF6C7D /* libapp_cube_hellomultiverse.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		073D6D201B6E7B5D00B8AC34 /* libaxisopenssl.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 076A246C1B6E772400BF6C7D /* libaxisopenssl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		073D6D281B6E7B5D00B8AC34 /* libaxisfreeimage.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 076A24561B6E772400BF6C7D /* libaxisfreeimage.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		073D6D381B6E7B5E00B8AC34 /* libaxis.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 076A24481B6E772400BF6C7D /* libaxis.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -329,24 +329,24 @@
 		};
 		076A24B61B6E773B00BF6C7D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 076A24B01B6E773B00BF6C7D /* app_core_hellomultiverse.xcodeproj */;
+			containerPortal = 076A24B01B6E773B00BF6C7D /* app_cube_hellomultiverse.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9AEB75A316F78DF10085103B;
-			remoteInfo = app_core_hellomultiverse;
+			remoteInfo = app_cube_hellomultiverse;
 		};
 		076A24B81B6E773B00BF6C7D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 076A24B01B6E773B00BF6C7D /* app_core_hellomultiverse.xcodeproj */;
+			containerPortal = 076A24B01B6E773B00BF6C7D /* app_cube_hellomultiverse.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9AE24E8A1904CFFD001AEFFB;
-			remoteInfo = ios_app_core_hellomultiverse;
+			remoteInfo = ios_app_cube_hellomultiverse;
 		};
 		076A24BA1B6E773B00BF6C7D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 076A24B01B6E773B00BF6C7D /* app_core_hellomultiverse.xcodeproj */;
+			containerPortal = 076A24B01B6E773B00BF6C7D /* app_cube_hellomultiverse.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9AE24E991904CFFD001AEFFB;
-			remoteInfo = app_core_hellomultiverse_iosTests;
+			remoteInfo = app_cube_hellomultiverse_iosTests;
 		};
 		076A24BC1B6E776300BF6C7D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -511,10 +511,10 @@
 		};
 		07AF892E1B7233E300150CC2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 076A24B01B6E773B00BF6C7D /* app_core_hellomultiverse.xcodeproj */;
+			containerPortal = 076A24B01B6E773B00BF6C7D /* app_cube_hellomultiverse.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9AEB75A216F78DF10085103B;
-			remoteInfo = app_core_hellomultiverse;
+			remoteInfo = app_cube_hellomultiverse;
 		};
 		07D1B0A41B6FBE9C004E8E35 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -598,7 +598,7 @@
 				073D6D591B6E7D1800B8AC34 /* libaxiscrypto.dylib in CopyFiles */,
 				073D67691B6E7B1000B8AC34 /* libdraw2d_quartz2d.dylib in CopyFiles */,
 				073D69651B6E7B2A00B8AC34 /* libexperience_lite.dylib in CopyFiles */,
-				073D69661B6E7B2A00B8AC34 /* libapp_core_hellomultiverse.dylib in CopyFiles */,
+				073D69661B6E7B2A00B8AC34 /* libapp_cube_hellomultiverse.dylib in CopyFiles */,
 				073D6D201B6E7B5D00B8AC34 /* libaxisopenssl.dylib in CopyFiles */,
 				073D6D281B6E7B5D00B8AC34 /* libaxisfreeimage.dylib in CopyFiles */,
 				073D6D3C1B6E7B5E00B8AC34 /* libaxisbzip2.dylib in CopyFiles */,
@@ -629,7 +629,7 @@
 		076A24291B6E772400BF6C7D /* aura.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = aura.xcodeproj; path = ../../app/aura/.xcodeproj; sourceTree = SOURCE_ROOT; };
 		076A242C1B6E772400BF6C7D /* draw2d_quartz2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = draw2d_quartz2d.xcodeproj; path = ../../app/draw2d_quartz2d/draw2d_quartz2d.xcodeproj; sourceTree = SOURCE_ROOT; };
 		076A242F1B6E772400BF6C7D /* experience_lite.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = experience_lite.xcodeproj; path = ../../app/experience_lite/experience_lite.xcodeproj; sourceTree = SOURCE_ROOT; };
-		076A24B01B6E773B00BF6C7D /* app_core_hellomultiverse.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = app_core_hellomultiverse.xcodeproj; sourceTree = SOURCE_ROOT; };
+		076A24B01B6E773B00BF6C7D /* app_cube_hellomultiverse.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = app_cube_hellomultiverse.xcodeproj; sourceTree = SOURCE_ROOT; };
 		076FB49B1C9F8F4000C73C4E /* axiswinpr.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = axiswinpr.xcodeproj; path = ../../app/axis/winpr/axiswinpr.xcodeproj; sourceTree = SOURCE_ROOT; };
 		076FB4CD1C9F90E000C73C4E /* gcom.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gcom.xcodeproj; path = ../gcom/gcom.xcodeproj; sourceTree = SOURCE_ROOT; };
 		076FB4DF1C9F920600C73C4E /* pcre.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = pcre.xcodeproj; path = /macos/platform/seed/metaseed/../../app/pcre/pcre.xcodeproj; sourceTree = "<absolute>"; };
@@ -675,7 +675,7 @@
 		070B8EE11B6E53F900D26137 = {
 			isa = PBXGroup;
 			children = (
-				076A24B01B6E773B00BF6C7D /* app_core_hellomultiverse.xcodeproj */,
+				076A24B01B6E773B00BF6C7D /* app_cube_hellomultiverse.xcodeproj */,
 				076A24081B6E772400BF6C7D /* aura.xcodeproj */,
 				073D6D5B1B6E7E8E00B8AC34 /* auracharguess.xcodeproj */,
 				070561DB1C412ADA004085DF /* aurapcre.xcodeproj */,
@@ -888,9 +888,9 @@
 		076A24B11B6E773B00BF6C7D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				076A24B71B6E773B00BF6C7D /* libapp_core_hellomultiverse.dylib */,
-				076A24B91B6E773B00BF6C7D /* libapp_core_hellomultiverse.dylib */,
-				076A24BB1B6E773B00BF6C7D /* app_core_hellomultiverse_iosTests.xctest */,
+				076A24B71B6E773B00BF6C7D /* libapp_cube_hellomultiverse.dylib */,
+				076A24B91B6E773B00BF6C7D /* libapp_cube_hellomultiverse.dylib */,
+				076A24BB1B6E773B00BF6C7D /* app_cube_hellomultiverse_iosTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1035,7 +1035,7 @@
 			projectReferences = (
 				{
 					ProductGroup = 076A24B11B6E773B00BF6C7D /* Products */;
-					ProjectRef = 076A24B01B6E773B00BF6C7D /* app_core_hellomultiverse.xcodeproj */;
+					ProjectRef = 076A24B01B6E773B00BF6C7D /* app_cube_hellomultiverse.xcodeproj */;
 				},
 				{
 					ProductGroup = 076A24091B6E772400BF6C7D /* Products */;
@@ -1412,24 +1412,24 @@
 			remoteRef = 076A24A21B6E772400BF6C7D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		076A24B71B6E773B00BF6C7D /* libapp_core_hellomultiverse.dylib */ = {
+		076A24B71B6E773B00BF6C7D /* libapp_cube_hellomultiverse.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
-			path = libapp_core_hellomultiverse.dylib;
+			path = libapp_cube_hellomultiverse.dylib;
 			remoteRef = 076A24B61B6E773B00BF6C7D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		076A24B91B6E773B00BF6C7D /* libapp_core_hellomultiverse.dylib */ = {
+		076A24B91B6E773B00BF6C7D /* libapp_cube_hellomultiverse.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libapp_core_hellomultiverse.dylib;
+			path = libapp_cube_hellomultiverse.dylib;
 			remoteRef = 076A24B81B6E773B00BF6C7D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		076A24BB1B6E773B00BF6C7D /* app_core_hellomultiverse_iosTests.xctest */ = {
+		076A24BB1B6E773B00BF6C7D /* app_cube_hellomultiverse_iosTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = app_core_hellomultiverse_iosTests.xctest;
+			path = app_cube_hellomultiverse_iosTests.xctest;
 			remoteRef = 076A24BA1B6E773B00BF6C7D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1653,7 +1653,7 @@
 		};
 		07AF892F1B7233E300150CC2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = app_core_hellomultiverse;
+			name = app_cube_hellomultiverse;
 			targetProxy = 07AF892E1B7233E300150CC2 /* PBXContainerItemProxy */;
 		};
 		07D1B1111B6FC1BD004E8E35 /* PBXTargetDependency */ = {
@@ -1767,7 +1767,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				INFOPLIST_FILE = "$(SRCROOT)/macos/Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = "$(BUILD_MACHINE_MACOS_DEPLOYMENT_TARGET)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.ca2.app-core-hellomultiverse";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ca2.app-cube-hellomultiverse";
 				PRODUCT_NAME = "Hello Multiverse!!";
 			};
 			name = Debug;
@@ -1780,7 +1780,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				INFOPLIST_FILE = "$(SRCROOT)/macos/Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = "$(BUILD_MACHINE_MACOS_DEPLOYMENT_TARGET)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.ca2.app-core-hellomultiverse";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ca2.app-cube-hellomultiverse";
 				PRODUCT_NAME = "Hello Multiverse!!";
 			};
 			name = Release;

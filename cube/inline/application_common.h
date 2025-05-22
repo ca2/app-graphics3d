@@ -1,6 +1,6 @@
 #include "acme/_start.h"
 #include "aqua/_.h"
-#include "apex/platform/app_core.h"
+#include "apex/platform/app_cube.h"
 #include "apex/platform/system_setup.h"
 #include "aqua/_defer.h"
 

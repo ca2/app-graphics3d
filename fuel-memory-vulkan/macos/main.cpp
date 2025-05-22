@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
       return -1;
 
 
-   int iResult = base_main_command_line(": app=app-core/hellomultiverse"_ansi, argc, argv);
+   int iResult = base_main_command_line(": app=app-cube/hellomultiverse"_ansi, argc, argv);
    
    try
    {

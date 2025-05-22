@@ -3,7 +3,7 @@
 #include "acme/platform/release_time.h"
 
 
-__BEGIN_RELEASE_TIME(app_core_fuel_memory_opengl)
+__BEGIN_RELEASE_TIME(app_cube_fuel_memory_opengl)
 #include "release_time.txt"
 __END_RELEASE_TIME()
 

@@ -4,11 +4,11 @@
 #include "base/user/user/show.h"
 
 
-namespace app_core_fuel
+namespace app_cube_fuel
 {
 
 
-   class CLASS_DECL_APP_CORE_FUEL toggle_impact:
+   class CLASS_DECL_APP_CUBE_FUEL toggle_impact:
       virtual public ::user::show < ::user::button >
    {
    public:
@@ -33,7 +33,7 @@ namespace app_core_fuel
    };
 
 
-} // namespace app_core_fuel
+} // namespace app_cube_fuel
 
 
 

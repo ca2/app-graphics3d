@@ -22,7 +22,7 @@
     <None Include=".\winmetro_hellomultiverse.pfx">
       <Filter>Metrowin</Filter>
     </None>
-    <None Include="winmetro_app_core_hellomultiverse_TemporaryKey.pfx" />
+    <None Include="winmetro_app_cube_hellomultiverse_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

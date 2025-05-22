@@ -50,7 +50,7 @@ namespace graphics3d_vulkan
    //   pvulkanexample->m_pmousestate = pmousestate;
    //   //pvulkanexample->initVulkan();
 
-   //   // VulkanExample->setupWindow(::GetModuleHandleW(L"app_core_vulken.dll"_ansi), WndProc);
+   //   // VulkanExample->setupWindow(::GetModuleHandleW(L"app_cube_vulken.dll"_ansi), WndProc);
    //   //pvulkanexample->prepare();
    //   //   pvulkanexample->renderLoop20(callback);
    //      //delete(VulkanExample);

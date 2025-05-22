@@ -3,7 +3,7 @@
 #include "aura/graphics/draw2d/graphics.h"
 
 
-namespace app_core_fuel
+namespace app_cube_fuel
 {
 
 
@@ -83,7 +83,7 @@ namespace app_core_fuel
    }
 
 
-} // namespace app_core_fuel
+} // namespace app_cube_fuel
 
 
 

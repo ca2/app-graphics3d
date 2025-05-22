@@ -75,9 +75,9 @@
 		9ACBD9DB2C57311A00480D13 /* VulkanTools.h in Headers */ = {isa = PBXBuildFile; fileRef = 9ACBD9AB2C57311900480D13 /* VulkanTools.h */; };
 		9ACBD9DC2C57311A00480D13 /* VulkanUIOverlay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9ACBD9AC2C57311900480D13 /* VulkanUIOverlay.cpp */; };
 		9ACBD9DD2C57311A00480D13 /* VulkanUIOverlay.h in Headers */ = {isa = PBXBuildFile; fileRef = 9ACBD9AD2C57311900480D13 /* VulkanUIOverlay.h */; };
-		9AE24EA11904CFFD001AEFFB /* libios_app_core_hellomultiverse.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AE24E8A1904CFFD001AEFFB /* libios_app_core_hellomultiverse.dylib */; };
+		9AE24EA11904CFFD001AEFFB /* libios_app_cube_hellomultiverse.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AE24E8A1904CFFD001AEFFB /* libios_app_cube_hellomultiverse.dylib */; };
 		9AE24EA71904CFFD001AEFFB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9AE24EA51904CFFD001AEFFB /* InfoPlist.strings */; };
-		9AE24EA91904CFFD001AEFFB /* app_core_hellomultiverse_iosTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AE24EA81904CFFD001AEFFB /* app_core_hellomultiverse_iosTests.m */; };
+		9AE24EA91904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AE24EA81904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.m */; };
 		9AEB75DD16F78E600085103B /* framework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AEB75BE16F78E600085103B /* framework.cpp */; };
 		9AEB75DE16F78E600085103B /* framework.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AEB75BF16F78E600085103B /* framework.h */; };
 /* End PBXBuildFile section */
@@ -137,7 +137,7 @@
 			containerPortal = 9AEB759B16F78DF10085103B /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 9AE24E891904CFFD001AEFFB;
-			remoteInfo = app_core_hellomultiverse_ios;
+			remoteInfo = app_cube_hellomultiverse_ios;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -224,12 +224,12 @@
 		9ACBD9AB2C57311900480D13 /* VulkanTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VulkanTools.h; sourceTree = "<group>"; };
 		9ACBD9AC2C57311900480D13 /* VulkanUIOverlay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VulkanUIOverlay.cpp; sourceTree = "<group>"; };
 		9ACBD9AD2C57311900480D13 /* VulkanUIOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VulkanUIOverlay.h; sourceTree = "<group>"; };
-		9AE24E8A1904CFFD001AEFFB /* libios_app_core_hellomultiverse.dylib */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libios_app_core_hellomultiverse.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		9AE24E991904CFFD001AEFFB /* app_core_hellomultiverse_iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = app_core_hellomultiverse_iosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		9AE24EA41904CFFD001AEFFB /* app_core_hellomultiverse_iosTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "app_core_hellomultiverse_iosTests-Info.plist"; sourceTree = "<group>"; };
+		9AE24E8A1904CFFD001AEFFB /* libios_app_cube_hellomultiverse.dylib */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libios_app_cube_hellomultiverse.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE24E991904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = app_cube_hellomultiverse_iosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE24EA41904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "app_cube_hellomultiverse_iosTests-Info.plist"; sourceTree = "<group>"; };
 		9AE24EA61904CFFD001AEFFB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		9AE24EA81904CFFD001AEFFB /* app_core_hellomultiverse_iosTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = app_core_hellomultiverse_iosTests.m; sourceTree = "<group>"; };
-		9AEB75A316F78DF10085103B /* libapp_core_vulken.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libapp_core_vulken.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE24EA81904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = app_cube_hellomultiverse_iosTests.m; sourceTree = "<group>"; };
+		9AEB75A316F78DF10085103B /* libapp_cube_vulken.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libapp_cube_vulken.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AEB75BE16F78E600085103B /* framework.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = framework.cpp; sourceTree = "<group>"; };
 		9AEB75BF16F78E600085103B /* framework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = framework.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -246,7 +246,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9AE24EA11904CFFD001AEFFB /* libios_app_core_hellomultiverse.dylib in Frameworks */,
+				9AE24EA11904CFFD001AEFFB /* libios_app_cube_hellomultiverse.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,19 +355,19 @@
 			path = vulkan;
 			sourceTree = "<group>";
 		};
-		9AE24EA21904CFFD001AEFFB /* app_core_hellomultiverse_iosTests */ = {
+		9AE24EA21904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests */ = {
 			isa = PBXGroup;
 			children = (
-				9AE24EA81904CFFD001AEFFB /* app_core_hellomultiverse_iosTests.m */,
+				9AE24EA81904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.m */,
 				9AE24EA31904CFFD001AEFFB /* Supporting Files */,
 			);
-			path = app_core_hellomultiverse_iosTests;
+			path = app_cube_hellomultiverse_iosTests;
 			sourceTree = "<group>";
 		};
 		9AE24EA31904CFFD001AEFFB /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				9AE24EA41904CFFD001AEFFB /* app_core_hellomultiverse_iosTests-Info.plist */,
+				9AE24EA41904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests-Info.plist */,
 				9AE24EA51904CFFD001AEFFB /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
@@ -383,7 +383,7 @@
 				9ACBD9692C57309100480D13 /* core.xcodeproj */,
 				070533CB1C90B2A100F31B3F /* gcom.xcodeproj */,
 				9AEB75AA16F78E600085103B /* vulken */,
-				9AE24EA21904CFFD001AEFFB /* app_core_hellomultiverse_iosTests */,
+				9AE24EA21904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests */,
 				9AEB75A416F78DF10085103B /* Products */,
 				9ACBD9742C5730B400480D13 /* Frameworks */,
 			);
@@ -392,9 +392,9 @@
 		9AEB75A416F78DF10085103B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9AEB75A316F78DF10085103B /* libapp_core_vulken.dylib */,
-				9AE24E8A1904CFFD001AEFFB /* libios_app_core_hellomultiverse.dylib */,
-				9AE24E991904CFFD001AEFFB /* app_core_hellomultiverse_iosTests.xctest */,
+				9AEB75A316F78DF10085103B /* libapp_cube_vulken.dylib */,
+				9AE24E8A1904CFFD001AEFFB /* libios_app_cube_hellomultiverse.dylib */,
+				9AE24E991904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -470,9 +470,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		9AE24E891904CFFD001AEFFB /* ios_app_core_hellomultiverse */ = {
+		9AE24E891904CFFD001AEFFB /* ios_app_cube_hellomultiverse */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9AE24EBA1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "ios_app_core_hellomultiverse" */;
+			buildConfigurationList = 9AE24EBA1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "ios_app_cube_hellomultiverse" */;
 			buildPhases = (
 				9AE24E861904CFFD001AEFFB /* Sources */,
 				9AE24E871904CFFD001AEFFB /* Frameworks */,
@@ -482,14 +482,14 @@
 			);
 			dependencies = (
 			);
-			name = ios_app_core_hellomultiverse;
-			productName = app_core_hellomultiverse_ios;
-			productReference = 9AE24E8A1904CFFD001AEFFB /* libios_app_core_hellomultiverse.dylib */;
+			name = ios_app_cube_hellomultiverse;
+			productName = app_cube_hellomultiverse_ios;
+			productReference = 9AE24E8A1904CFFD001AEFFB /* libios_app_cube_hellomultiverse.dylib */;
 			productType = "com.apple.product-type.library.static";
 		};
-		9AE24E981904CFFD001AEFFB /* app_core_hellomultiverse_iosTests */ = {
+		9AE24E981904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9AE24EBB1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "app_core_hellomultiverse_iosTests" */;
+			buildConfigurationList = 9AE24EBB1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "app_cube_hellomultiverse_iosTests" */;
 			buildPhases = (
 				9AE24E951904CFFD001AEFFB /* Sources */,
 				9AE24E961904CFFD001AEFFB /* Frameworks */,
@@ -500,14 +500,14 @@
 			dependencies = (
 				9AE24EA01904CFFD001AEFFB /* PBXTargetDependency */,
 			);
-			name = app_core_hellomultiverse_iosTests;
-			productName = app_core_hellomultiverse_iosTests;
-			productReference = 9AE24E991904CFFD001AEFFB /* app_core_hellomultiverse_iosTests.xctest */;
+			name = app_cube_hellomultiverse_iosTests;
+			productName = app_cube_hellomultiverse_iosTests;
+			productReference = 9AE24E991904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		9AEB75A216F78DF10085103B /* app_core_vulken */ = {
+		9AEB75A216F78DF10085103B /* app_cube_vulken */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9AEB75A716F78DF10085103B /* Build configuration list for PBXNativeTarget "app_core_vulken" */;
+			buildConfigurationList = 9AEB75A716F78DF10085103B /* Build configuration list for PBXNativeTarget "app_cube_vulken" */;
 			buildPhases = (
 				9AEB759F16F78DF10085103B /* Sources */,
 				9AEB75A016F78DF10085103B /* Frameworks */,
@@ -520,9 +520,9 @@
 				9ACBD9732C5730A700480D13 /* PBXTargetDependency */,
 				070533EE1C90B2B900F31B3F /* PBXTargetDependency */,
 			);
-			name = app_core_vulken;
-			productName = app_core_hellomultiverse;
-			productReference = 9AEB75A316F78DF10085103B /* libapp_core_vulken.dylib */;
+			name = app_cube_vulken;
+			productName = app_cube_hellomultiverse;
+			productReference = 9AEB75A316F78DF10085103B /* libapp_cube_vulken.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
@@ -544,7 +544,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 9AEB759E16F78DF10085103B /* Build configuration list for PBXProject "app_core_vulken" */;
+			buildConfigurationList = 9AEB759E16F78DF10085103B /* Build configuration list for PBXProject "app_cube_vulken" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -567,9 +567,9 @@
 			);
 			projectRoot = "";
 			targets = (
-				9AEB75A216F78DF10085103B /* app_core_vulken */,
-				9AE24E891904CFFD001AEFFB /* ios_app_core_hellomultiverse */,
-				9AE24E981904CFFD001AEFFB /* app_core_hellomultiverse_iosTests */,
+				9AEB75A216F78DF10085103B /* app_cube_vulken */,
+				9AE24E891904CFFD001AEFFB /* ios_app_cube_hellomultiverse */,
+				9AE24E981904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests */,
 			);
 		};
 /* End PBXProject section */
@@ -659,7 +659,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9AE24EA91904CFFD001AEFFB /* app_core_hellomultiverse_iosTests.m in Sources */,
+				9AE24EA91904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -708,7 +708,7 @@
 		};
 		9AE24EA01904CFFD001AEFFB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9AE24E891904CFFD001AEFFB /* ios_app_core_hellomultiverse */;
+			target = 9AE24E891904CFFD001AEFFB /* ios_app_cube_hellomultiverse */;
 			targetProxy = 9AE24E9F1904CFFD001AEFFB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -728,7 +728,7 @@
 		9AE24EAA1904CFFD001AEFFB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DSTROOT = /tmp/app_core_hellomultiverse_ios.dst;
+				DSTROOT = /tmp/app_cube_hellomultiverse_ios.dst;
 				EXECUTABLE_EXTENSION = dylib;
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				MACH_O_TYPE = mh_dylib;
@@ -740,7 +740,7 @@
 		9AE24EAB1904CFFD001AEFFB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DSTROOT = /tmp/app_core_hellomultiverse_ios.dst;
+				DSTROOT = /tmp/app_cube_hellomultiverse_ios.dst;
 				EXECUTABLE_EXTENSION = dylib;
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				MACH_O_TYPE = mh_dylib;
@@ -753,7 +753,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/libapp_core_hellomultiverse.dylib";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/libapp_cube_hellomultiverse.dylib";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -765,7 +765,7 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "app_core_hellomultiverse_ios/app_core_hellomultiverse_ios-Prefix.pch";
+				GCC_PREFIX_HEADER = "app_cube_hellomultiverse_ios/app_cube_hellomultiverse_ios-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -774,7 +774,7 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = "app_core_hellomultiverse_iosTests/app_core_hellomultiverse_iosTests-Info.plist";
+				INFOPLIST_FILE = "app_cube_hellomultiverse_iosTests/app_cube_hellomultiverse_iosTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "ca2.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -788,7 +788,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/libapp_core_hellomultiverse.dylib";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/libapp_cube_hellomultiverse.dylib";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -801,12 +801,12 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "app_core_hellomultiverse_ios/app_core_hellomultiverse_ios-Prefix.pch";
+				GCC_PREFIX_HEADER = "app_cube_hellomultiverse_ios/app_cube_hellomultiverse_ios-Prefix.pch";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = "app_core_hellomultiverse_iosTests/app_core_hellomultiverse_iosTests-Info.plist";
+				INFOPLIST_FILE = "app_cube_hellomultiverse_iosTests/app_cube_hellomultiverse_iosTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "ca2.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1041,7 +1041,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9AE24EBA1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "ios_app_core_hellomultiverse" */ = {
+		9AE24EBA1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "ios_app_cube_hellomultiverse" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9AE24EAA1904CFFD001AEFFB /* Debug */,
@@ -1050,7 +1050,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9AE24EBB1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "app_core_hellomultiverse_iosTests" */ = {
+		9AE24EBB1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "app_cube_hellomultiverse_iosTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9AE24EAC1904CFFD001AEFFB /* Debug */,
@@ -1059,7 +1059,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9AEB759E16F78DF10085103B /* Build configuration list for PBXProject "app_core_vulken" */ = {
+		9AEB759E16F78DF10085103B /* Build configuration list for PBXProject "app_cube_vulken" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9AEB75A516F78DF10085103B /* Debug */,
@@ -1068,7 +1068,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9AEB75A716F78DF10085103B /* Build configuration list for PBXNativeTarget "app_core_vulken" */ = {
+		9AEB75A716F78DF10085103B /* Build configuration list for PBXNativeTarget "app_cube_vulken" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9AEB75A816F78DF10085103B /* Debug */,

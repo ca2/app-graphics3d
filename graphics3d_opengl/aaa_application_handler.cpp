@@ -50,7 +50,7 @@ namespace graphics3d_opengl
    //   popenglexample->m_pmousestate = pmousestate;
    //   //popenglexample->initOpenGL();
 
-   //   // OpenGLExample->setupWindow(::GetModuleHandleW(L"app_core_vulken.dll"_ansi), WndProc);
+   //   // OpenGLExample->setupWindow(::GetModuleHandleW(L"app_cube_vulken.dll"_ansi), WndProc);
    //   //popenglexample->prepare();
    //   //   popenglexample->renderLoop20(callback);
    //      //delete(OpenGLExample);

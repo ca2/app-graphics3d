@@ -2,7 +2,7 @@
 
 
 #include "aura/_.h"
-#include "aura/platform/app_core.h"
+#include "aura/platform/app_cube.h"
 
 
 class CLASS_DECL_AURA application :

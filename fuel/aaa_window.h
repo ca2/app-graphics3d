@@ -4,11 +4,11 @@
 #include "aura/user/user/interaction.h"
 
 
-namespace app_core_fuel
+namespace app_cube_fuel
 {
 
 
-   class CLASS_DECL_APP_CORE_FUEL window :
+   class CLASS_DECL_APP_CUBE_FUEL window :
       virtual public ::user::interaction
    {
    public:
@@ -36,7 +36,7 @@ namespace app_core_fuel
    };
 
 
-} // namespace app_core_fuel
+} // namespace app_cube_fuel
 
 
 

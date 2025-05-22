@@ -3,7 +3,7 @@
 #include "aura/graphics/draw2d/graphics.h"
 
 
-namespace app_core_vulken
+namespace app_cube_vulken
 {
 
 
@@ -83,7 +83,7 @@ namespace app_core_vulken
    }
 
 
-} // namespace app_core_vulken
+} // namespace app_cube_vulken
 
 
 

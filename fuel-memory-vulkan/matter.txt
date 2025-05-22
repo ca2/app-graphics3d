@@ -1,2 +1,2 @@
 app/main
-app-core/fuel-memory-vulkan
+app-cube/fuel-memory-vulkan

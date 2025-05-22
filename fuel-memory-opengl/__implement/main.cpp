@@ -1,15 +1,15 @@
 #include "framework.h"
-#define APPLICATION_NAMESPACE app_core_fuel_memory_opengl
+#define APPLICATION_NAMESPACE app_cube_fuel_memory_opengl
 #include "acme/inline/application/main.inl"
 
 
-// //app_core_fuel_memory_opengl::application g_app_core_fuel;
+// //app_cube_fuel_memory_opengl::application g_app_cube_fuel;
 
 
 // //int __implement()
 // //{
 // //
-// //   auto papp = ___new app_core_hello_multiverse::application ();
+// //   auto papp = ___new app_cube_hello_multiverse::application ();
 // //
 // //   int iExitCode = papp->__implement();
 // //
@@ -26,7 +26,7 @@
 // void application_main(::platform::system * psystem)
 // {
 
-//    app_core_fuel_memory_opengl::application application;
+//    app_cube_fuel_memory_opengl::application application;
 
 //    application.application_main();
 

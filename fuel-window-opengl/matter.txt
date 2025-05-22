@@ -1,2 +1,2 @@
 app/main
-app-core/fuel-window-opengl
+app-cube/fuel-window-opengl

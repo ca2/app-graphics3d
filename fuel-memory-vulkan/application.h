@@ -1,16 +1,16 @@
 #pragma once
 
 
-#include "app-core/fuel/application.h"
+#include "app-cube/fuel/application.h"
 
 
-namespace app_core_fuel_memory_vulkan
-//  namespace app_core_fuel_window_vulkan
+namespace app_cube_fuel_memory_vulkan
+//  namespace app_cube_fuel_window_vulkan
 {
 
 
-   class CLASS_DECL_APP_CORE_FUEL_MEMORY_VULKAN application :
-      virtual public ::app_core_fuel::application
+   class CLASS_DECL_APP_CUBE_FUEL_MEMORY_VULKAN application :
+      virtual public ::app_cube_fuel::application
    {
    public:
 
@@ -40,7 +40,7 @@ namespace app_core_fuel_memory_vulkan
    };
 
 
-} // namespace app_core_fuel_memory_vulkan
+} // namespace app_cube_fuel_memory_vulkan
 
 
 

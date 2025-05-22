@@ -11,7 +11,7 @@
 #include "core/user/user/user.h"
 
 
-namespace app_core_fuel
+namespace app_cube_fuel
 {
 
 
@@ -302,7 +302,7 @@ namespace app_core_fuel
 
 
 
-} // namespace app_core_fuel
+} // namespace app_cube_fuel
 
 
 

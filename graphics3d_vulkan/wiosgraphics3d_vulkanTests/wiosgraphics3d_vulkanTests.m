@@ -1,6 +1,6 @@
 //
-//  wiosapp_core_hellomultiverseTests.m
-//  wiosapp_core_hellomultiverseTests
+//  wiosapp_cube_hellomultiverseTests.m
+//  wiosapp_cube_hellomultiverseTests
 //
 //  Created by Camilo Sasuke Tsumanuma on 12/05/14.
 //  Copyright (c) 2014 Camilo Sasuke Tsumanuma. All rights reserved.
@@ -8,11 +8,11 @@
 
 #import <XCTest/XCTest.h>
 
-@interface wiosapp_core_hellomultiverseTests : XCTestCase
+@interface wiosapp_cube_hellomultiverseTests : XCTestCase
 
 @end
 
-@implementation wiosapp_core_hellomultiverseTests
+@implementation wiosapp_cube_hellomultiverseTests
 
 - (void)setUp
 {

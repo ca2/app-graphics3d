@@ -5,14 +5,14 @@
 
 
 
-#if defined(_app_core_fuel_project)
-   #define CLASS_DECL_APP_CORE_FUEL  CLASS_DECL_EXPORT
+#if defined(_app_cube_fuel_project)
+   #define CLASS_DECL_APP_CUBE_FUEL  CLASS_DECL_EXPORT
 #else
-   #define CLASS_DECL_APP_CORE_FUEL  CLASS_DECL_IMPORT
+   #define CLASS_DECL_APP_CUBE_FUEL  CLASS_DECL_IMPORT
 #endif
 
 
-namespace app_core_fuel
+namespace app_cube_fuel
 {
 
 

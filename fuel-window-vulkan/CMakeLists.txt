@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(app_core_fuel_window_vulkan CXX)
+project(app_cube_fuel_window_vulkan CXX)
 
 
 list(APPEND library_source

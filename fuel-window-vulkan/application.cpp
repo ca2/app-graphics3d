@@ -5,11 +5,11 @@
 #include "base/user/user/single_document_template.h"
 
 
-__IMPLEMENT_APPLICATION_RELEASE_TIME(app_core_fuel_window_vulkan);
-IMPLEMENT_APPLICATION_FACTORY(app_core_fuel_window_vulkan);
+__IMPLEMENT_APPLICATION_RELEASE_TIME(app_cube_fuel_window_vulkan);
+IMPLEMENT_APPLICATION_FACTORY(app_cube_fuel_window_vulkan);
 
 
-namespace app_core_fuel_window_vulkan
+namespace app_cube_fuel_window_vulkan
 {
 
 
@@ -18,9 +18,9 @@ namespace app_core_fuel_window_vulkan
 
       m_bUseDraw2dProtoWindow = true;
 
-      m_strAppId              = "app-core/fuel-window-vulkan";
-      m_strAppName            = "app-core/fuel-window-vulkan";
-      m_strBaseSupportId      = "app-core/fuel-window-vulkan";
+      m_strAppId              = "app-cube/fuel-window-vulkan";
+      m_strAppName            = "app-cube/fuel-window-vulkan";
+      m_strBaseSupportId      = "app-cube/fuel-window-vulkan";
       m_bLicense              = false;
 
    }
@@ -35,7 +35,7 @@ namespace app_core_fuel_window_vulkan
    void application::init_instance()
    {
 
-      ::app_core_fuel::application::init_instance();
+      ::app_cube_fuel::application::init_instance();
 
    }
 
@@ -43,7 +43,7 @@ namespace app_core_fuel_window_vulkan
    void application::term_instance()
    {
 
-      ::app_core_fuel::application::term_instance();
+      ::app_cube_fuel::application::term_instance();
 
    }
 
@@ -51,7 +51,7 @@ namespace app_core_fuel_window_vulkan
    void application::on_request(::request * prequest)
    {
 
-      ::app_core_fuel::application::on_request(prequest);
+      ::app_cube_fuel::application::on_request(prequest);
 
    }
 
@@ -62,7 +62,7 @@ namespace app_core_fuel_window_vulkan
    long long application::increment_reference_count()
    {
 
-      return ::app_core_fuel::application::increment_reference_count();
+      return ::app_cube_fuel::application::increment_reference_count();
 
    }
 
@@ -70,7 +70,7 @@ namespace app_core_fuel_window_vulkan
    long long application::decrement_reference_count()
    {
 
-      return ::app_core_fuel::application::decrement_reference_count();
+      return ::app_cube_fuel::application::decrement_reference_count();
 
    }
 
@@ -86,7 +86,7 @@ namespace app_core_fuel_window_vulkan
    }
 
 
-} // namespace app_core_fuel_window_vulkan
+} // namespace app_cube_fuel_window_vulkan
 
 
 

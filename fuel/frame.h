@@ -4,11 +4,11 @@
 #include "base/user/simple/frame_window.h"
 
 
-namespace app_core_fuel
+namespace app_cube_fuel
 {
 
 
-   class CLASS_DECL_APP_CORE_FUEL frame :
+   class CLASS_DECL_APP_CUBE_FUEL frame :
       virtual public simple_frame_window
    {
    public:
@@ -40,7 +40,7 @@ namespace app_core_fuel
    };
 
 
-} // namespace app_core_fuel
+} // namespace app_cube_fuel
 
 
 

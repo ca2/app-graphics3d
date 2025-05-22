@@ -3,7 +3,7 @@
 #include "main_impact.h"
 
 
-namespace app_core_fuel
+namespace app_cube_fuel
 {
 
 
@@ -56,7 +56,7 @@ namespace app_core_fuel
 
       initialize_split_layout();
 
-      m_pimpact = create_pane_impact < ::app_core_fuel::impact >(0, "fuel_impact");
+      m_pimpact = create_pane_impact < ::app_cube_fuel::impact >(0, "fuel_impact");
 
       if(m_pimpact == nullptr)
       {
@@ -98,7 +98,7 @@ namespace app_core_fuel
    //}
 
 
-} // namespace app_core_fuel
+} // namespace app_cube_fuel
 
 
 

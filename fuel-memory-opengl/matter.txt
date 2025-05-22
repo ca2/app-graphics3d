@@ -1,2 +1,2 @@
 app/main
-app-core/fuel-memory-opengl
+app-cube/fuel-memory-opengl

@@ -7,7 +7,7 @@
 #include "aura/message/user.h"
 
 
-namespace app_core_fuel
+namespace app_cube_fuel
 {
 
 
@@ -61,7 +61,7 @@ namespace app_core_fuel
       if(m_ptopimpact == nullptr)
          return;
 
-      impact * pimpact = dynamic_cast < ::app_core_fuel::impact * > (m_ptopimpact->get_typed_parent<::user::split_impact>()->get_child_by_id("fuel_impact"));
+      impact * pimpact = dynamic_cast < ::app_cube_fuel::impact * > (m_ptopimpact->get_typed_parent<::user::split_impact>()->get_child_by_id("fuel_impact"));
 
       if(pimpact != nullptr)
       {
@@ -103,7 +103,7 @@ namespace app_core_fuel
 
 
    */
-} // namespace app_core_fuel
+} // namespace app_cube_fuel
 
 
 

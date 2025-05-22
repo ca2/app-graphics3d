@@ -23,8 +23,8 @@
     <Keyword>Android</Keyword>
     <ApplicationType>Android</ApplicationType>
     <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
-    <ProjectName>app_core_hellomultiverse</ProjectName>
-    <RootNamespace>app_core_hellomultiverse</RootNamespace>
+    <ProjectName>app_cube_hellomultiverse</ProjectName>
+    <RootNamespace>app_cube_hellomultiverse</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">

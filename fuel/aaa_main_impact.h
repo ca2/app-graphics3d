@@ -4,18 +4,18 @@
 #include "base/user/user/split_impact.h"
 
 
-namespace app_core_fuel
+namespace app_cube_fuel
 {
 
 
-   class CLASS_DECL_APP_CORE_FUEL main_impact:
+   class CLASS_DECL_APP_CUBE_FUEL main_impact:
       virtual public ::user::split_impact
    {
    public:
 
 
-      ::pointer < ::app_core_fuel::top_impact >  m_ptopimpact;
-      ::pointer < ::app_core_fuel::impact >      m_pimpact;
+      ::pointer < ::app_cube_fuel::top_impact >  m_ptopimpact;
+      ::pointer < ::app_cube_fuel::impact >      m_pimpact;
 
 
       main_impact();
@@ -38,7 +38,7 @@ namespace app_core_fuel
    };
 
 
-} // namespace app_core_fuel
+} // namespace app_cube_fuel
 
 
 

@@ -16,11 +16,11 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BE11EBA6-C53A-4370-8F72-C6407FD72002}</ProjectGuid>
-    <RootNamespace>winmetro_app_core_hellomultiverse</RootNamespace>
+    <RootNamespace>winmetro_app_cube_hellomultiverse</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
-    <ProjectName>winmetro_app_core_hellomultiverse</ProjectName>
+    <ProjectName>winmetro_app_cube_hellomultiverse</ProjectName>
     <ApplicationType>Windows Store</ApplicationType>
     <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
   </PropertyGroup>
@@ -60,7 +60,7 @@
     <IncludePath>$(VCInstallDir)include;$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageCertificateKeyFile>winmetro_app_core_hellomultiverse_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>winmetro_app_cube_hellomultiverse_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>AEFCCC9B786F5E741A8504E435DDE525A4B5615E</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
@@ -149,7 +149,7 @@
     </None>
     <None Include="..\..\..\Release\x86\experience_lite.dll" />
     <None Include=".\winmetro_hellomultiverse.pfx" />
-    <None Include="winmetro_app_core_hellomultiverse_TemporaryKey.pfx" />
+    <None Include="winmetro_app_cube_hellomultiverse_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="winmetro_hellomultiverse.cpp" />

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(_app_core_fuel CXX)
+project(_app_cube_fuel CXX)
 
 
 
@@ -40,7 +40,7 @@ list(APPEND executable_references
    base
    bred
    core
-   app_core_fuel_memory_vulkan)
+   app_cube_fuel_memory_vulkan)
 
 
 if (MSVC)

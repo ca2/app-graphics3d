@@ -146,7 +146,7 @@ console::console(int argc, char * argv[])
 
    system()->construct_system(this, argc, argv, pszCommandLine);
 
-   //m_pmaindata->m_pappcore = __allocate app_core(m_pmaindata);
+   //m_pmaindata->m_pappcore = __allocate app_cube(m_pmaindata);
 
    if (!system()->system_beg())
    {

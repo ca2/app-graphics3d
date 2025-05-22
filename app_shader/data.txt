@@ -1,1 +1,1 @@
-app-core/simple_shader
+app-cube/simple_shader
