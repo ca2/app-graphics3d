@@ -352,14 +352,7 @@ namespace gpu
 
       m_eoutput = eoutput;
 
-      branch_synchronously();
-
-      _send([this]()
-         {
-
-            on_create_context();
-
-         });
+      on_create_context();
 
    }
 

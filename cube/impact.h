@@ -39,7 +39,7 @@ namespace cube
       ::pointer < ::graphics3d::engine >			m_pengine;
 
       ::pointer < ::graphics3d::key_map >			m_pkeymap;
-      ::task_pointer                            m_ptaskEngine;
+      //::task_pointer                            m_ptaskEngine;
 
 
       ::function < void(void*, int, int, int)>  m_callbackOffscreen;

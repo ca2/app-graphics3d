@@ -46,29 +46,6 @@ namespace graphics3d_vulkan
    void engine::start_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      auto papp = get_app();
-
-      __øconstruct(m_pgpucontext);
-
-      ::gpu::enum_output eoutput;
-
-      if (m_papplication->m_bUseDraw2dProtoWindow)
-      {
-
-         eoutput = ::gpu::e_output_none;
-
-      }
-      else
-      {
-
-         eoutput = ::gpu::e_output_cpu_buffer;
-
-         m_pgpucontext->m_callbackOffscreen = m_pimpact->m_callbackOffscreen;
-
-      }
-
-      m_pgpucontext->initialize_gpu_context(m_papproach, eoutput);
-
       __construct_new(m_prenderer);
 
       //::graphics3d::engine::m_prenderer = m_prenderer;

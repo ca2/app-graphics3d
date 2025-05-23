@@ -2,6 +2,7 @@
 #include "frame.h"
 #include "application.h"
 #include "impact.h"
+#include "gpu/context.h"
 #include <math.h>
 
 
@@ -64,12 +65,19 @@ namespace cube
          if (pimpact)
          {
 
-            auto ptask = pimpact->m_ptaskEngine;
+            auto pengine = pimpact->m_pengine;
 
-            if (ptask)
+            if (pengine)
             {
 
-               ptask->set_finish();
+               auto pgpucontext = pengine->m_pgpucontext;
+
+               if (pgpucontext)
+               {
+
+                  pgpucontext->set_finish();
+
+               }
 
             }
 

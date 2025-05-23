@@ -111,6 +111,7 @@ namespace graphics3d
 
    }
 
+
    void engine::on_update_frame()
    {
 
@@ -297,9 +298,33 @@ namespace graphics3d
    void engine::defer_start(const ::int_rectangle& rectanglePlacement)
    {
 
+      auto papp = get_app();
 
-      m_pimpact->m_ptaskEngine = fork([this, rectanglePlacement]()
+      __øconstruct(m_pgpucontext);
+
+      ::gpu::enum_output eoutput;
+
+      if (m_papplication->m_bUseDraw2dProtoWindow)
+      {
+
+         eoutput = ::gpu::e_output_none;
+
+      }
+      else
+      {
+
+         eoutput = ::gpu::e_output_cpu_buffer;
+
+         m_pgpucontext->m_callbackOffscreen = m_pimpact->m_callbackOffscreen;
+
+      }
+
+      m_pgpucontext->branch_synchronously();
+
+      m_pgpucontext->_post([this, rectanglePlacement, eoutput]()
          {
+
+            m_pgpucontext->initialize_gpu_context(m_papproach, eoutput);
 
             //            run_vulkan_example();
 
@@ -310,7 +335,7 @@ namespace graphics3d
 
             run();
 
-            m_pimpact->m_ptaskEngine.release();
+            //m_pimpact->m_ptaskEngine.release();
 
          });
 

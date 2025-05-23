@@ -62,7 +62,7 @@ namespace graphics3d
 		float dt() { return m_fFrameTime; }
 
 		//void on_begin_frame() override;
-		void run() override;
+		virtual void run();
 
 
 		virtual void start_engine(const ::int_rectangle & rectangle);

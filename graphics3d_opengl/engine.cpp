@@ -537,72 +537,72 @@ namespace graphics3d_opengl
    void engine::on_layout(int cx, int cy)
    {
 
-      ::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
+      //::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
 
-      if (!pgpucontext)
-      {
+      //if (!pgpucontext)
+      //{
 
-         return;
+      //   return;
 
-      }
+      //}
 
-      pgpucontext->post([this, cx, cy]
-         {
+      //pgpucontext->post([this, cx, cy]
+      //   {
 
-            ::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
+      //      ::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
 
-            if (!m_prenderer)
-            {
+      //      if (!m_prenderer)
+      //      {
 
-               pgpucontext->resize_offscreen_buffer({ cx, cy });
+      //         pgpucontext->resize_offscreen_buffer({ cx, cy });
 
-               m_pimpact->on_load_engine();
+      //         m_pimpact->on_load_engine();
 
-               run();
+      //         run();
 
-               m_pimpact->m_ptaskEngine.release();
+      //         //m_pimpact->m_ptaskEngine.release();
 
-               return;
+      //         return;
 
 
-               //m_pinput = __allocate::graphics3d::input();
+      //         //m_pinput = __allocate::graphics3d::input();
 
-               //m_pinput->m_pimpact = m_pimpact;
+      //         //m_pinput->m_pimpact = m_pimpact;
 
-               //m_pcamera = __allocate::graphics3d::camera(glm::vec3(0.0f, 3.0f, 3.0f), -90.0f, 0.0f);
+      //         //m_pcamera = __allocate::graphics3d::camera(glm::vec3(0.0f, 3.0f, 3.0f), -90.0f, 0.0f);
 
-               ////m_pcamera->m_pimpact
+      //         ////m_pcamera->m_pimpact
 
-               ////m_pglcapplication = m_pimpact->start_opengl_application();
-               ////__øconstruct(m_pgpucontext);
+      //         ////m_pglcapplication = m_pimpact->start_opengl_application();
+      //         ////__øconstruct(m_pgpucontext);
 
-               //if (!m_papplication->m_bUseDraw2dProtoWindow)
-               //{
+      //         //if (!m_papplication->m_bUseDraw2dProtoWindow)
+      //         //{
 
-               //   pgpucontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
+      //         //   pgpucontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
 
-               //}
+      //         //}
 
-               //m_prenderer = __allocate::graphics3d_opengl::renderer();
+      //         //m_prenderer = __allocate::graphics3d_opengl::renderer();
 
-               ////return;
-               //// Initialize the game logic and scene data
-               ////Init();
+      //         ////return;
+      //         //// Initialize the game logic and scene data
+      //         ////Init();
 
-               //pgpucontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
+      //         //pgpucontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
 
-               //m_pgpucontext->m_rendera.add_unique(this);
+      //         //m_pgpucontext->m_rendera.add_unique(this);
 
-            }
+      //      }
 
-            pgpucontext->resize_offscreen_buffer({ cx, cy });
+      //      pgpucontext->resize_offscreen_buffer({ cx, cy });
 
-            //on_layout(cx, cy);
+      //      //on_layout(cx, cy);
 
-            m_pimpact->m_iWidth = cx;
-            m_pimpact->m_iHeight = cy;
+      //      m_pimpact->m_iWidth = cx;
+      //      m_pimpact->m_iHeight = cy;
 
-         });
+      //   });
 
    }
 
