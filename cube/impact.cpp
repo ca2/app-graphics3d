@@ -20,9 +20,9 @@
 
 int run_vulkan_example();
 
-int run_vulkan_example2(const ::function < void(void*, int, int, int)>& callback);
+int run_vulkan_example2(const ::image32_callback& callback);
 
-int run_vulkan_example5(::graphics3d::mouse_state* pmousestate, const ::function < void(void*, int, int, int)>& callback);
+int run_vulkan_example5(::graphics3d::mouse_state* pmousestate, const ::image32_callback& callback);
 
 
 //namespace vulkan
@@ -241,11 +241,11 @@ namespace cube
 
          m_pengine->initialize_engine(this);
 
-         if (!m_callbackOffscreen)
+         if (!m_callbackImage32CpuBuffer)
          {
 
-            m_callbackOffscreen =
-               [this](void* p, int w, int h, int stride)
+            m_callbackImage32CpuBuffer =
+               [this](const ::image32_t * pimage32, int w, int h, int stride)
                {
 
                   //{
@@ -254,7 +254,7 @@ namespace cube
 
                      auto s = m_pimage->size().minimum(::int_size(w, h));
 
-                     m_pimage->image32()->copy(s, m_pimage->m_iScan, (image32_t*)p, stride);
+                     m_pimage->image32()->copy(s, m_pimage->m_iScan, pimage32, stride);
 
                   //   for (int y = 0; y < h; y++)
                   //   {

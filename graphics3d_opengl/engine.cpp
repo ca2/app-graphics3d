@@ -119,7 +119,7 @@ namespace graphics3d_opengl
 
 
       //if (!m_papplication->m_bUseDraw2dProtoWindow
-      //   && m_pimpact->m_callbackOffscreen)
+      //   && m_pimpact->m_callbackImage32CpuBuffer)
       //{
       //   void* p = nullptr;
       //   int w = m_pimpact->m_iWidth;
@@ -147,7 +147,7 @@ namespace graphics3d_opengl
 
       //   }
 
-      //   m_pimpact->m_callbackOffscreen(
+      //   m_pimpact->m_callbackImage32CpuBuffer(
       //      m_memoryBuffer.data(),
       //      w,
       //      h,
@@ -158,7 +158,7 @@ namespace graphics3d_opengl
       //{
 
 
-      //   m_pimpact->m_callbackOffscreen(
+      //   m_pimpact->m_callbackImage32CpuBuffer(
       //      nullptr,
       //      0,
       //      0,
@@ -460,7 +460,7 @@ namespace graphics3d_opengl
 ////
 ////
 ////         if (!m_papplication->m_bUseDraw2dProtoWindow
-////            && m_pimpact->m_callbackOffscreen)
+////            && m_pimpact->m_callbackImage32CpuBuffer)
 ////         {
 ////            void* p = nullptr;
 ////            int w = m_pimpact->m_iWidth;
@@ -488,7 +488,7 @@ namespace graphics3d_opengl
 ////
 ////            }
 ////
-////            m_pimpact->m_callbackOffscreen(
+////            m_pimpact->m_callbackImage32CpuBuffer(
 ////               m_memoryBuffer.data(),
 ////               w,
 ////               h,
@@ -499,7 +499,7 @@ namespace graphics3d_opengl
 ////         {
 ////
 ////
-////            m_pimpact->m_callbackOffscreen(
+////            m_pimpact->m_callbackImage32CpuBuffer(
 ////               nullptr,
 ////               0,
 ////               0,

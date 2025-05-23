@@ -1,7 +1,7 @@
 #pragma once
 
 
-////#include "acme/prototype/prototype/object.h"
+#include "acme/graphics/image/image32.h"
 
 
 namespace gpu
@@ -50,12 +50,13 @@ namespace gpu
 
       virtual void defer_shader_memory(::memory & memory, const ::file::path& pathShader);
 
+      virtual ::pointer < ::gpu::context > allocate_context(::particle* pparticle);
 
-      virtual ::pointer < ::gpu::context > create_offscreen_context(::particle * pparticle, const ::int_rectangle& rectanglePlacement);
+      virtual ::pointer < ::gpu::context > start_cpu_buffer_context(::particle * pparticle, const ::image32_callback & callbackImage32CpuBuffer, const ::int_rectangle& rectanglePlacement);
 
-      virtual ::pointer < ::gpu::context > create_window_context(::particle* pparticle, ::windowing::window * pwindow);
+      virtual ::pointer < ::gpu::context > start_swap_chain_context(::particle* pparticle, ::windowing::window * pwindow);
 
-      virtual ::pointer < ::gpu::context > _create_context(::particle* pparticle, ::gpu::enum_output eoutput, ::windowing::window* pwindow, const ::int_rectangle& rectanglePlacement);
+      virtual ::pointer < ::gpu::context > start_gpu_context(const start_context_t & startcontext);
 
       virtual void defer_init_gpu_library();
 

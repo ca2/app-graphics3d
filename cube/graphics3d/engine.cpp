@@ -300,48 +300,40 @@ namespace graphics3d
 
       auto papp = get_app();
 
-      __øconstruct(m_pgpucontext);
+      auto pgpu = papp->get_gpu();
 
-      ::gpu::enum_output eoutput;
+      ::pointer < ::gpu::context > pgpucontext;
 
       if (m_papplication->m_bUseDraw2dProtoWindow)
       {
 
-         eoutput = ::gpu::e_output_none;
+         auto pwindow = m_pimpact->window();
+
+         pgpucontext = pgpu->start_swap_chain_context(this, pwindow);
 
       }
       else
       {
 
-         eoutput = ::gpu::e_output_cpu_buffer;
+         auto callbackImage32CpuBuffer = m_pimpact->m_callbackImage32CpuBuffer;
 
-         m_pgpucontext->m_callbackOffscreen = m_pimpact->m_callbackOffscreen;
+         pgpucontext = pgpu->start_cpu_buffer_context(this, callbackImage32CpuBuffer, rectanglePlacement);
 
       }
 
-      m_pgpucontext->branch_synchronously();
-
-      m_pgpucontext->_post([this, rectanglePlacement, eoutput]()
+      pgpucontext->post([this, pgpucontext, rectanglePlacement]()
          {
 
-            m_pgpucontext->initialize_gpu_context(
-               m_papproach, 
-               eoutput, 
-               m_pimpact->window(),
-               rectanglePlacement);
-
-            //            run_vulkan_example();
-
-
             m_pimpact->on_load_engine();
+
+            m_pgpucontext = pgpucontext;
 
             start_engine(rectanglePlacement);
 
             run();
 
-            //m_pimpact->m_ptaskEngine.release();
-
          });
+
 
    }
 

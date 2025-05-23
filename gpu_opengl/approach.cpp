@@ -117,7 +117,7 @@ namespace gpu_opengl
    }
 
 
-   ::pointer < ::gpu::context > approach::_create_context(::particle * pparticle, ::gpu::enum_output eoutput, ::windowing::window* pwindow, const ::int_rectangle& rectanglePlacement)
+   ::pointer < ::gpu::context > approach::allocate_context(::particle* pparticle)
    {
 
       ::pointer < ::gpu::context > pgpucontext;
@@ -127,15 +127,15 @@ namespace gpu_opengl
       pgpucontext = allocate_system_context(pparticle);
 
 #elif defined(__APPLE__)
-      
+
 #if 1
 
       pgpucontext = allocate_fbo_context(pparticle);
-      
+
 #else
-      
+
       pgpucontext = allocate_cgl_context(pparticle);
-      
+
 #endif
 
 #elif defined(__ANDROID__)
@@ -146,7 +146,7 @@ namespace gpu_opengl
 
       string strWaylandDisplay(getenv("WAYLAND_DISPLAY"));
 
-      if(strWaylandDisplay.has_character())
+      if (strWaylandDisplay.has_character())
       {
 
          pgpucontext = allocate_egl_context(pparticle);
@@ -161,14 +161,12 @@ namespace gpu_opengl
 
 #endif
 
-      if(!pgpucontext)
+      if (!pgpucontext)
       {
 
          return nullptr;
 
       }
-
-      pgpucontext->initialize_gpu_context(this, eoutput, pwindow, rectanglePlacement);
 
       return pgpucontext;
 

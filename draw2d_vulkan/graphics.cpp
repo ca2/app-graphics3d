@@ -176,19 +176,25 @@ namespace draw2d_vulkan
    }
 
 
-   void graphics::create_memory_graphics(const ::int_size& sizeParam)
+   void graphics::create_memory_graphics(const ::int_size& size)
    {
 
-      ::int_size size(sizeParam);
+      ::int_rectangle rectanglePlacement;
 
-      if (sizeParam.is_empty())
+      if (size.is_empty())
       {
 
-         size = { 1920, 1080 };
+         rectanglePlacement.set_size({1920, 1080});
+
+      }
+      else
+      {
+
+         rectanglePlacement.set_size(size);
 
       }
 
-      vulkan_create_offscreen_buffer(size);
+      vulkan_create_offscreen_buffer(rectanglePlacement);
 
    }
 
@@ -223,17 +229,14 @@ namespace draw2d_vulkan
       //   return false;
       //}
 
-
       if (!m_pgpucontext)
       {
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->create_offscreen_context(this, rectanglePlacement);
+         m_pgpucontext = pgpu->start_cpu_buffer_context(this, m_callbackImage32CpuBuffer, rectanglePlacement);
 
       }
-
-
 
       if (!m_pgpucontext)
       {
@@ -442,7 +445,7 @@ namespace draw2d_vulkan
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->create_window_context(this, pwindow);
+         m_pgpucontext = pgpu->start_swap_chain_context(this, pwindow);
 
       }
 
@@ -5933,10 +5936,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      if (m_callbackOffscreen)
+      if (m_callbackImage32CpuBuffer)
       {
 
-         m_pgpucontext->m_callbackOffscreen = m_callbackOffscreen;
+         m_pgpucontext->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
 
       }
 

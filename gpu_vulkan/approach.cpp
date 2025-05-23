@@ -460,64 +460,64 @@ namespace gpu_vulkan
    }
 
 
-   ::pointer < ::gpu::context > approach::_create_context(::particle * pparticle, ::gpu::enum_output eoutput, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
-   {
-
-      ::pointer < ::gpu_vulkan::context > pgpucontext;
-
-#ifdef WINDOWS_DESKTOP
-
-      pgpucontext = allocate_system_context(pparticle);
-
-#elif defined(__APPLE__)
-      
-#if 1
-
-      pgpucontext = allocate_fbo_context(pparticle);
-      
-#else
-      
-      pgpucontext = allocate_cgl_context(pparticle);
-      
-#endif
-
-#elif defined(__ANDROID__)
-
-      pgpucontext = allocate_egl_context(pparticle);
-
-#else
-
-      string strWaylandDisplay(getenv("WAYLAND_DISPLAY"));
-
-      if(strWaylandDisplay.has_character())
-      {
-
-         pgpucontext = allocate_egl_context(pparticle);
-
-      }
-      // else
-      // {
-      //
-      //    pgpucontext = allocate_glx_context(pparticle);
-      //
-      // }
-
-#endif
-
-      if(!pgpucontext)
-      {
-
-         return nullptr;
-
-      }
-
-      pgpucontext->m_pphysicaldevice = m_pphysicaldevice;
-
-      pgpucontext->initialize_gpu_context(this, eoutput, pwindow, rectanglePlacement);
-
-      return pgpucontext;
-
-   }
+//   ::pointer < ::gpu::context > approach::_create_context(const ::gpu::start_context_t & startcontext)
+//   {
+//
+//      ::pointer < ::gpu_vulkan::context > pgpucontext;
+//
+//#ifdef WINDOWS_DESKTOP
+//
+//      pgpucontext = allocate_system_context(pparticle);
+//
+//#elif defined(__APPLE__)
+//      
+//#if 1
+//
+//      pgpucontext = allocate_fbo_context(pparticle);
+//      
+//#else
+//      
+//      pgpucontext = allocate_cgl_context(pparticle);
+//      
+//#endif
+//
+//#elif defined(__ANDROID__)
+//
+//      pgpucontext = allocate_egl_context(pparticle);
+//
+//#else
+//
+//      string strWaylandDisplay(getenv("WAYLAND_DISPLAY"));
+//
+//      if(strWaylandDisplay.has_character())
+//      {
+//
+//         pgpucontext = allocate_egl_context(pparticle);
+//
+//      }
+//      // else
+//      // {
+//      //
+//      //    pgpucontext = allocate_glx_context(pparticle);
+//      //
+//      // }
+//
+//#endif
+//
+//      if(!pgpucontext)
+//      {
+//
+//         return nullptr;
+//
+//      }
+//
+//      pgpucontext->m_pphysicaldevice = m_pphysicaldevice;
+//
+//      pgpucontext->initialize_gpu_context(this, eoutput, pwindow, rectanglePlacement);
+//
+//      return pgpucontext;
+//
+//   }
 
 
    void approach::defer_init_gpu_library()

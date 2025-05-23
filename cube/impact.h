@@ -42,7 +42,7 @@ namespace cube
       //::task_pointer                            m_ptaskEngine;
 
 
-      ::function < void(void*, int, int, int)>  m_callbackOffscreen;
+      ::image32_callback                        m_callbackImage32CpuBuffer;
 
 
       ::graphics3d::mouse_state                 m_mousestate;
@@ -50,7 +50,7 @@ namespace cube
 
       ::particle_pointer                        m_pparticleImageSynchronization;
 
-      //::function < void(void*, int, int, int)> m_callbackOffscreen;
+      //::image32_callback m_callbackImage32CpuBuffer;
 
 
 

@@ -3,6 +3,7 @@
 #include "approach.h"
 #include "cpu_buffer.h"
 #include "app-cube/cube/gpu/approach.h"
+#include "app-cube/cube/gpu/types.h"
 #include "aura/graphics/image/image.h"
 #include "acme/platform/application.h"
 #include "aura/platform/system.h"
@@ -48,21 +49,22 @@ namespace gpu_opengl
    }
 
 
-   void context_win32::on_create_context(::windowing::window * pwindow, const ::int_rectangle& rectanglePlacement)
+   void context_win32::on_create_context(const ::gpu::start_context_t & startcontext)
    {
 
-      if (m_eoutput == ::gpu::e_output_cpu_buffer)
+      if (startcontext.m_eoutput == ::gpu::e_output_cpu_buffer)
       {
 
-         ASSERT(m_callbackOffscreen);
+         ASSERT(startcontext.m_callbackImage32CpuBuffer);
+         ASSERT(!startcontext.m_rectanglePlacement.is_empty());
 
-         create_offscreen_buffer(rectanglePlacement.size());
+         create_offscreen_buffer(startcontext.m_rectanglePlacement.size());
 
       }
       else
       {
 
-         defer_create_window_context(pwindow);
+         defer_create_window_context(startcontext.m_pwindow);
 
       }
 

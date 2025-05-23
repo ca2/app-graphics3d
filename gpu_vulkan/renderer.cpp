@@ -426,9 +426,9 @@ namespace gpu_vulkan
 
       //auto pimpact = m_pgpucontext->m_pimpact;
 
-      //auto callback = pimpact->m_callbackOffscreen;
+      //auto callback = pimpact->m_callbackImage32CpuBuffer;
 
-      //auto callback = m_prenderer->m_callbackOffscreen;
+      //auto callback = m_prenderer->m_callbackImage32CpuBuffer;
 
       // Get layout of the image (including row pitch)
       VkImageSubresource subResource{};
@@ -453,8 +453,8 @@ namespace gpu_vulkan
       //::array<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
       //const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
       {
-         m_pgpucontext->m_callbackOffscreen(
-            (void*)imagedata,
+         m_pgpucontext->m_callbackImage32CpuBuffer(
+            (const ::image32_t *)imagedata,
             m_vkextent2d.width,
             m_vkextent2d.height,
             subResourceLayout.rowPitch);
@@ -486,7 +486,7 @@ namespace gpu_vulkan
    void renderer::sample()
    {
 
-      //auto callback = m_callbackOffscreen;
+      //auto callback = m_callbackImage32CpuBuffer;
 
 //      if (callback)
       {

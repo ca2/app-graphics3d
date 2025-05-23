@@ -13,8 +13,69 @@
 #include <functional>
 
 
+#include "acme/graphics/image/image32.h"
+
+
 namespace gpu
 {
+
+
+
+   struct start_context_t
+   {
+
+      ::particle* m_pparticle;
+      ::gpu::approach * m_papproach;
+      enum_output m_eoutput;
+      ::windowing::window* m_pwindow;
+      ::image32_callback m_callbackImage32CpuBuffer;
+      ::int_rectangle m_rectanglePlacement;
+
+      start_context_t(::particle* pparticle, ::gpu::approach* papproach, const image32_callback& callbackImage32CpuBuffer, const ::int_rectangle rectanglePlacement) :
+         m_pparticle(pparticle),
+         m_papproach(papproach),
+         m_eoutput(e_output_cpu_buffer),
+         m_callbackImage32CpuBuffer(callbackImage32CpuBuffer),
+         m_rectanglePlacement(rectanglePlacement),
+         m_pwindow(nullptr)
+      {
+
+      }
+      start_context_t(::particle* pparticle, ::gpu::approach* papproach, ::windowing::window* pwindow) :
+         m_eoutput(e_output_swap_chain),
+         m_pwindow(pwindow),
+         m_callbackImage32CpuBuffer{},
+         m_rectanglePlacement{}
+      {
+
+      }
+
+   };
+
+
+   struct start_cpu_buffer_context_t :
+      public start_context_t
+   {
+
+      start_cpu_buffer_context_t(::particle* pparticle, ::gpu::approach* papproach, const image32_callback& callbackImage32CpuBuffer, const ::int_rectangle rectanglePlacement) :
+         start_context_t(pparticle, papproach, callbackImage32CpuBuffer, rectanglePlacement)
+      {
+      }
+
+   };
+
+
+   struct start_swap_chain_context_t :
+      public start_context_t
+   {
+
+      start_swap_chain_context_t(::particle * pparticle, ::gpu::approach* papproach, ::windowing::window* pwindow) :
+         start_context_t(pparticle, papproach, pwindow)
+      {
+      }
+
+   };
+
 
 
 	// from: https://stackoverflow.com/a/57595105

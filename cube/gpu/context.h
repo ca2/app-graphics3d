@@ -7,6 +7,7 @@
 #include "aura/graphics/draw3d/matrix.h"
 #include "apex/parallelization/thread.h"
 #include "app-cube/cube/gpu/shader.h"
+#include "acme/graphics/image/image32.h"
 
 
 namespace gpu
@@ -51,7 +52,6 @@ namespace gpu
    };
 
 
-
    class CLASS_DECL_CUBE context :
       virtual public ::thread
    {
@@ -93,7 +93,7 @@ namespace gpu
       ::pointer < ::gpu::renderer >          m_prenderer;
       ::pointer_array < ::gpu::render >      m_rendera;
 
-      ::function< void(void *, int, int, int) > m_callbackOffscreen;
+      ::image32_callback                     m_callbackImage32CpuBuffer;
 
       //::pointer < ::mutex >                  m_pmutexOffscreen;
       //::int_size                             m_sizeOffscreen;
@@ -105,9 +105,11 @@ namespace gpu
       ~context() override;
 
 
-      virtual void initialize_gpu_context(::gpu::approach * pgpuapproach, enum_output eoutput, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement);
+      virtual void start_gpu_context(const start_context_t & startcontext);
 
-      virtual void on_create_context(::windowing::window * pwindow, const ::int_rectangle& rectanglePlacement);
+      virtual void initialize_gpu_context(const start_context_t& startcontext);
+
+      virtual void on_create_context(const start_context_t& startcontext);
 
       bool task_iteration() override;
 

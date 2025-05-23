@@ -365,7 +365,7 @@ namespace graphics3d_opengl
 
       auto pimpact = m_pgpucontext->m_pimpact;
 
-      auto callback = pimpact->m_callbackOffscreen;
+      auto callback = pimpact->m_callbackImage32CpuBuffer;
 
       // Get layout of the image (including row pitch)
       VkImageSubresource subResource{};
@@ -403,7 +403,7 @@ namespace graphics3d_opengl
    void renderer::sample()
    {
 
-      auto callback = m_pimpact->m_callbackOffscreen;
+      auto callback = m_pimpact->m_callbackImage32CpuBuffer;
 
       if (callback)
       {

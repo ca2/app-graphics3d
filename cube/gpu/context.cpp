@@ -4,7 +4,7 @@
 #include "cpu_buffer.h"
 #include "render.h"
 #include "renderer.h"
-//#include "_.h"
+#include "types.h"
 //#include "_gpu.h"
 #include "acme/exception/interface_only.h"
 #include "acme/parallelization/synchronous_lock.h"
@@ -345,19 +345,54 @@ namespace gpu
    }
 
 
-   void context::initialize_gpu_context(::gpu::approach* pgpuapproach, enum_output eoutput, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
+   void context::start_gpu_context(const start_context_t & startcontext)
    {
 
-      m_papproach = pgpuapproach;
+      branch_synchronously();
 
-      m_eoutput = eoutput;
+      _send([this, &startcontext]()
+         {
 
-      on_create_context(pwindow, rectanglePlacement);
+            initialize_gpu_context(startcontext);
+
+            //            run_vulkan_example();
+
+
+
+            //m_pimpact->m_ptaskEngine.release();
+
+         });
+      //pgpucontext->initialize_gpu_context(this, eoutput, pwindow, rectanglePlacement);
+
+      //return pgpucontext;
 
    }
 
 
-   void context::on_create_context(::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
+   void context::initialize_gpu_context(const start_context_t& startcontext)
+   {
+
+      ASSERT(is_current_task());
+
+      m_papproach = startcontext.m_papproach;
+
+      m_eoutput = startcontext.m_eoutput;
+
+      if (m_eoutput == ::gpu::e_output_cpu_buffer
+         && startcontext.m_callbackImage32CpuBuffer
+         && !m_callbackImage32CpuBuffer)
+      {
+
+         m_callbackImage32CpuBuffer = startcontext.m_callbackImage32CpuBuffer;
+
+      }
+
+      on_create_context(startcontext);
+
+   }
+
+
+   void context::on_create_context(const start_context_t& startcontext)
    {
 
 
@@ -449,7 +484,7 @@ namespace gpu
    }
 
 
-   ::gpu::renderer * context::get_renderer()
+   ::gpu::renderer* context::get_renderer()
    {
 
       if (!m_prenderer)

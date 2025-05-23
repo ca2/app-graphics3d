@@ -1,5 +1,7 @@
 #include "framework.h"
 #include "approach.h"
+#include "context.h"
+#include "types.h"
 #include "acme/exception/interface_only.h"
 #include "acme/filesystem/filesystem/file_context.h"
 //#include "_.h"
@@ -60,32 +62,64 @@ namespace gpu
    }
 
 
-   ::pointer < ::gpu::context > approach::create_offscreen_context(::particle* pparticle, const ::int_rectangle& rectanglePlacement)
+   ::pointer < ::gpu::context > approach::allocate_context(::particle* pparticle)
    {
 
-      auto pgpucontext = _create_context(pparticle, ::gpu::e_output_cpu_buffer, nullptr, rectanglePlacement);
+      auto pgpucontext = pparticle->__øcreate< ::gpu::context >();
 
       return pgpucontext;
 
    }
 
 
-   ::pointer < ::gpu::context > approach::create_window_context(::particle* pparticle, ::windowing::window* pwindow)
+   ::pointer < ::gpu::context > approach::start_cpu_buffer_context(::particle* pparticle, const ::image32_callback & callbackImage32CpuBuffer, const ::int_rectangle& rectanglePlacement)
    {
 
-      auto pgpucontext = _create_context(pparticle, ::gpu::e_output_swap_chain, pwindow, {});
+      auto pgpucontext = start_gpu_context(
+         start_cpu_buffer_context_t
+         {
+            pparticle, 
+            this,
+            callbackImage32CpuBuffer, 
+            rectanglePlacement
+         });
 
       return pgpucontext;
 
    }
 
 
-   ::pointer < ::gpu::context > approach::_create_context(::particle * pparticle, ::gpu::enum_output eoutput, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
+   ::pointer < ::gpu::context > approach::start_swap_chain_context(::particle* pparticle, ::windowing::window* pwindow)
    {
 
-      throw ::interface_only();
+      auto pgpucontext = start_gpu_context(
+         start_swap_chain_context_t
+         {
+            pparticle, 
+            this,
+            pwindow
+         });
 
-      return nullptr;
+      return pgpucontext;
+
+   }
+
+
+   ::pointer < ::gpu::context > approach::start_gpu_context(const start_context_t & startcontext)
+   {
+
+      auto pgpucontext = allocate_context(startcontext.m_pparticle);
+
+      if (!pgpucontext)
+      {
+
+         throw ::exception(error_resource);
+
+      }
+
+      pgpucontext->start_gpu_context(startcontext);
+
+      return pgpucontext;
 
    }
 

@@ -227,7 +227,7 @@ namespace draw2d_opengl
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->create_offscreen_context(this, rectanglePlacement);
+         m_pgpucontext = pgpu->start_cpu_buffer_context(this, m_callbackImage32CpuBuffer, rectanglePlacement);
 
       }
 
@@ -437,7 +437,7 @@ namespace draw2d_opengl
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->create_window_context(this, pwindow);
+         m_pgpucontext = pgpu->start_swap_chain_context(this, pwindow);
 
       }
 

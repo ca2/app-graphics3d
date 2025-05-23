@@ -228,7 +228,7 @@
 //
 //            pcpubuffer->gpu_read();
 //
-//            auto callback = pgpucontext->m_callbackOffscreen;
+//            auto callback = pgpucontext->m_callbackImage32CpuBuffer;
 //
 //            auto data = pcpubuffer->m_pixmap.data();
 //            auto width = pcpubuffer->m_pixmap.width();
