@@ -99,7 +99,8 @@ namespace gpu
       virtual void on_global_transform();
       virtual void on_draw();
       //virtual void render();
-
+      virtual int get_frame_index();
+      virtual int get_frame_count();
       
       virtual ::pointer < frame > beginFrame();
 

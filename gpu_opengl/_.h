@@ -131,3 +131,26 @@
 CLASS_DECL_GPU_OPENGL const char * opengl_error_string(int iError);
 
 
+
+#define GLCheckError() GLError::CheckError(__FILE__, __LINE__)
+
+class GLError
+{
+public:
+
+
+   static void CheckError(const char* file, int line)
+   {
+
+      GLenum err;
+
+      while ((err = glGetError()) != GL_NO_ERROR)
+      {
+
+         warning() << "OpenGL error: " << err << " in " << file << " at line " << line;
+
+      }
+
+   }
+
+};

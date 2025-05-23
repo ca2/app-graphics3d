@@ -42,6 +42,8 @@ namespace gpu_opengl
    approach::approach()
    {
 
+      m_globalUBO = 0;
+
       m_bGpuLibraryInit = false;
 
 #ifdef WINDOWS_DESKTOP
@@ -350,6 +352,51 @@ namespace gpu_opengl
       }
 
       return pathShader;
+
+   }
+
+
+   void approach::create_global_ubo(::gpu::context* pgpucontext, int iGlobalUboSize, int iFrameCount)
+   {
+
+      // Create the UBO
+      glGenBuffers(1, &m_globalUBO);
+      glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
+      glBufferData(GL_UNIFORM_BUFFER, iGlobalUboSize, NULL, GL_DYNAMIC_DRAW); // For 2 mat4s = 2 * sizeof(float) * 16
+      unsigned int uUboBindingPoint = 0;
+      glBindBufferBase(GL_UNIFORM_BUFFER, uUboBindingPoint, m_globalUBO);
+      glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+   }
+
+
+   void approach::update_global_ubo(::gpu::context* pgpucontext, const ::block& block)
+   {
+
+      glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
+
+      // Map the entire buffer for writing
+      void* p = glMapBufferRange(
+         GL_UNIFORM_BUFFER,
+         0, block.size(),
+         GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+
+      if (p) 
+      {
+
+         memcpy(p, block.data(), block.size());
+
+         glUnmapBuffer(GL_UNIFORM_BUFFER);
+
+      }
+      else 
+      {
+
+         warning() << "Failed to map UBO";
+
+      }
+
+      glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
    }
 

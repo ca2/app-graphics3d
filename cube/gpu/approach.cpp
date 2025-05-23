@@ -149,7 +149,7 @@ namespace gpu
    }
 
 
-   void approach::update_global_ubo(::gpu::context* pgpucontext, int iFrameIndex, const ::block& block)
+   void approach::update_global_ubo(::gpu::context* pgpucontext, const ::block& block)
    {
 
 

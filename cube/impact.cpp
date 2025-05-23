@@ -591,9 +591,18 @@ namespace cube
 
       m_iHeight = size.height();
 
-      defer_initialize_engine(size);
+      if (!m_pengine)
+      {
 
-      m_pengine->on_layout(m_iWidth, m_iHeight);
+         defer_initialize_engine(size);
+
+      }
+      else if(m_pengine->has_ok_flag())
+      {
+
+         m_pengine->on_layout(m_iWidth, m_iHeight);
+
+      }
 
       //reset_mouse_last_position();
 

@@ -5,6 +5,7 @@
 #include "shader.h"
 #include "cpu_buffer.h"
 #include "object.h"
+#include "renderer.h"
 
 
 //BEGIN_FACTORY(gpu_opengl)
@@ -23,6 +24,7 @@ __FACTORY_EXPORT void gpu_opengl_factory(::factory::factory * pfactory)
    //pfactory->add_factory_item < ::gpu_opengl::program, ::gpu::program >();
    pfactory->add_factory_item < ::gpu_opengl::shader, ::gpu::shader >();
    pfactory->add_factory_item < ::gpu_opengl::cpu_buffer, ::gpu::cpu_buffer >();
+   pfactory->add_factory_item < ::gpu_opengl::renderer, ::gpu::renderer >();
 
    pfactory->add_factory_item < ::gpu_opengl::object, ::gpu::object >();
 

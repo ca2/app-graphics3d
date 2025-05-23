@@ -2177,7 +2177,6 @@ namespace gpu_vulkan
    //}
 
 
-
 } // namespace gpu_vulkan
 
 

@@ -65,6 +65,9 @@ namespace gpu_opengl
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;
 
 
+      void clear(const ::color::color& color) override;
+
+
    };
 
 

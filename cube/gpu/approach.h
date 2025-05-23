@@ -73,7 +73,7 @@ namespace gpu
 
       virtual ::gpu::payload load_dds(const ::scoped_string & scopedstrImagePath);
       virtual void create_global_ubo(::gpu::context* pgpucontext, int iSize, int iFrameCount);
-      virtual void update_global_ubo(::gpu::context* pgpucontext, int iFrameIndex, const ::block& block);
+      virtual void update_global_ubo(::gpu::context* pgpucontext, const ::block& block);
 
 
    };

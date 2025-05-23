@@ -38,6 +38,11 @@ namespace gpu_opengl
       //unsigned int                  VAO;
       //unsigned int                  VBO;
 
+
+      GLuint m_globalUBO;
+
+
+
       approach();
       ~approach() override;
 
@@ -70,6 +75,9 @@ namespace gpu_opengl
 
 
       ::gpu::payload load_dds(const ::scoped_string & scopedstrImagePath) override;
+
+      void create_global_ubo(::gpu::context* pgpucontext, int iSize, int iFrameCount) override;
+      void update_global_ubo(::gpu::context* pgpucontext, const ::block& block) override;
 
 
    };

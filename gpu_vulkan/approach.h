@@ -286,7 +286,7 @@ namespace gpu_vulkan
       ::gpu_vulkan::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);
 
       void create_global_ubo(::gpu::context * pgpucontext, int iSize, int iFrameCount) override;
-      void update_global_ubo(::gpu::context* pgpucontext, int iFrameIndex, const ::block& block) override;
+      void update_global_ubo(::gpu::context* pgpucontext, const ::block& block) override;
 
    };
 

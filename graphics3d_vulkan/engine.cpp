@@ -46,38 +46,40 @@ namespace graphics3d_vulkan
    void engine::start_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      __construct_new(m_prenderer);
+      ::graphics3d::engine::start_engine(rectanglePlacement);
 
-      //::graphics3d::engine::m_prenderer = m_prenderer;
-
-      m_prenderer->initialize_renderer(m_pgpucontext);
-
-
-      m_prenderer->set_placement(rectanglePlacement);
-      //m_pglobalpool->initialize_pool(pgpucontext);
-
-      //= __allocate
-      //   descriptor_pool::Builder(pgpucontext)
-      //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
-      //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
-      //   .build();
-
-      //pgpucontext = __allocate context(m_pvulkandevice);
-      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
-
-      if (iGlobalUboSize > 0)
-      {
-
-         create_global_ubo(m_pgpucontext);
-
-      }
-
-
-//          m_prenderer->getRenderPass(),
-  //        globalSetLayout->getDescriptorSetLayout()
-    //  };
-
-      m_pscene->on_load_scene(m_pgpucontext);
+//      __construct_new(m_prenderer);
+//
+//      //::graphics3d::engine::m_prenderer = m_prenderer;
+//
+//      m_prenderer->initialize_renderer(m_pgpucontext);
+//
+//
+//      m_prenderer->set_placement(rectanglePlacement);
+//      //m_pglobalpool->initialize_pool(pgpucontext);
+//
+//      //= __allocate
+//      //   descriptor_pool::Builder(pgpucontext)
+//      //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
+//      //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
+//      //   .build();
+//
+//      //pgpucontext = __allocate context(m_pvulkandevice);
+//      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
+//
+//      if (iGlobalUboSize > 0)
+//      {
+//
+//         create_global_ubo(m_pgpucontext);
+//
+//      }
+//
+//
+////          m_prenderer->getRenderPass(),
+//  //        globalSetLayout->getDescriptorSetLayout()
+//    //  };
+//
+//      m_pscene->on_load_scene(m_pgpucontext);
 
 
    }
@@ -86,7 +88,7 @@ namespace graphics3d_vulkan
    void engine::on_begin_frame()
    {
 
-      int frameIndex = m_prenderer->getFrameIndex();
+      //int frameIndex = m_prenderer->getFrameIndex();
 
       //FrameInfo frameInfo{ frameIndex, dt(), commandBuffer,
       //   *m_pcamera, m_globalDescriptorSets[frameIndex],
@@ -106,36 +108,34 @@ namespace graphics3d_vulkan
    }
 
 
-   void engine::create_global_ubo(::gpu::context * pgpucontext)
-   {
+   //void engine::create_global_ubo(::gpu::context * pgpucontext)
+   //{
 
-      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
+   //   int iGlobalUboSize = m_pimpact->global_ubo_block().size();
 
-      if (iGlobalUboSize > 0)
-      {
+   //   if (iGlobalUboSize > 0)
+   //   {
 
-         m_papproach->create_global_ubo(pgpucontext,  iGlobalUboSize, ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT);
+   //      m_papproach->create_global_ubo(pgpucontext,  iGlobalUboSize, ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT);
 
-      }
+   //   }
 
-   }
+   //}
 
 
-   void engine::update_global_ubo(::gpu::context* pgpucontext)
-   {
+   //void engine::update_global_ubo(::gpu::context* pgpucontext)
+   //{
 
-      if (m_pimpact->global_ubo_block().size() > 0)
-      {
+   //   if (m_pimpact->global_ubo_block().size() > 0)
+   //   {
 
-         m_pscene->on_update_global_ubo(pgpucontext);
+   //      m_pscene->on_update_global_ubo(pgpucontext);
 
-         int frameIndex = m_prenderer->getFrameIndex();
+   //      m_papproach->update_global_ubo(pgpucontext, m_pimpact->global_ubo_block());
 
-         m_papproach->update_global_ubo(pgpucontext, frameIndex, m_pimpact->global_ubo_block());
+   //   }
 
-      }
-
-   }
+   //}
 
    ////void engine::on_render_frame()
    ////{

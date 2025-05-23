@@ -36,7 +36,6 @@ namespace graphics3d_opengl
       //,m_Window("My Universe", 1100, 600),
    {
 
-      m_globalUBO = 0;
       m_bInitRenderData = true;
       //m_bRunEngine = true;
    }
@@ -196,150 +195,137 @@ namespace graphics3d_opengl
    void engine::start_engine(const ::int_rectangle& rectanglePlacement)
    {
 
+      ::graphics3d::engine::start_engine(rectanglePlacement);
 
-      auto papp = get_app();
+      //auto papp = get_app();
 
-      __construct_new(m_prenderer);
+      //__construct_new(m_prenderer);
 
-      m_prenderer->initialize_renderer(m_pgpucontext);
+      //m_prenderer->initialize_renderer(m_pgpucontext);
 
-      //::graphics3d::engine::m_prenderer = m_prenderer;
+      ////::graphics3d::engine::m_prenderer = m_prenderer;
 
 
 
-      //auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
+      ////auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
 
-      //pglobalpoolbuilder->initialize_builder(m_pgpucontext);
-      //pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
-      //pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, render_pass::MAX_FRAMES_IN_FLIGHT);
+      ////pglobalpoolbuilder->initialize_builder(m_pgpucontext);
+      ////pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
+      ////pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, render_pass::MAX_FRAMES_IN_FLIGHT);
 
-      //m_pglobalpool = pglobalpoolbuilder->build();
+      ////m_pglobalpool = pglobalpoolbuilder->build();
 
-      //m_pglobalpool->initialize_pool(pgpucontext);
+      ////m_pglobalpool->initialize_pool(pgpucontext);
 
-      //= __allocate
-      //   descriptor_pool::Builder(pgpucontext)
-      //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
-      //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
-      //   .build();
-      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
+      ////= __allocate
+      ////   descriptor_pool::Builder(pgpucontext)
+      ////   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
+      ////   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
+      ////   .build();
+      //int iGlobalUboSize = m_pimpact->global_ubo_block().size();
 
-      if (iGlobalUboSize > 0)
-      {
-
-         create_global_ubo(m_pgpucontext);
-
-      }
-
-      m_pscene->on_load_scene(m_pgpucontext);
-
-      //pgpucontext = __allocate context(m_pvulkandevice);
-
-      //m_uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
-
-      ::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
-
-      //for (int i = 0; i < m_uboBuffers.size(); i++)
+      //if (iGlobalUboSize > 0)
       //{
 
-      //   m_uboBuffers[i] = __allocate buffer();
-
-      //   m_uboBuffers[i]->initialize_buffer(
-      //      pgpucontext,
-      //      sizeof(GlobalUbo),
-      //      1,
-      //      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-      //      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-
-      //   m_uboBuffers[i]->map();
-
-      //}
-      //auto globalSetLayout = set_descriptor_layout::Builder(pgpucontext)
-      //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
-      //   .build();
-
-
-      //m_globalDescriptorSets.resize(render_pass::MAX_FRAMES_IN_FLIGHT);
-
-      //for (int i = 0; i < m_globalDescriptorSets.size(); i++)
-      //{
-
-      //   auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
-
-      //   descriptor_writer(*globalSetLayout, *m_pglobalpool)
-      //      .writeBuffer(0, &bufferInfo)
-      //      .build(m_globalDescriptorSets[i]);
+      //   create_global_ubo(m_pgpucontext);
 
       //}
 
-      //m_psimpleRenderSystem = __allocate SimpleRenderSystem{
-      //    pgpucontext };//,
-      //    //m_prenderer->getRenderPass(),
-      //    //globalSetLayout->getDescriptorSetLayout() };
+      //m_pscene->on_load_scene(m_pgpucontext);
 
-      //m_ppointLightSystem = __allocate point_light_system{
-      //    pgpucontext };
-      //,
-        //  m_prenderer->getRenderPass(),
-          //globalSetLayout->getDescriptorSetLayout()
-      //};
+      ////pgpucontext = __allocate context(m_pvulkandevice);
+
+      ////m_uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
+
+      //::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
+
+      ////for (int i = 0; i < m_uboBuffers.size(); i++)
+      ////{
+
+      ////   m_uboBuffers[i] = __allocate buffer();
+
+      ////   m_uboBuffers[i]->initialize_buffer(
+      ////      pgpucontext,
+      ////      sizeof(GlobalUbo),
+      ////      1,
+      ////      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+      ////      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+      ////   m_uboBuffers[i]->map();
+
+      ////}
+      ////auto globalSetLayout = set_descriptor_layout::Builder(pgpucontext)
+      ////   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
+      ////   .build();
+
+
+      ////m_globalDescriptorSets.resize(render_pass::MAX_FRAMES_IN_FLIGHT);
+
+      ////for (int i = 0; i < m_globalDescriptorSets.size(); i++)
+      ////{
+
+      ////   auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
+
+      ////   descriptor_writer(*globalSetLayout, *m_pglobalpool)
+      ////      .writeBuffer(0, &bufferInfo)
+      ////      .build(m_globalDescriptorSets[i]);
+
+      ////}
+
+      ////m_psimpleRenderSystem = __allocate SimpleRenderSystem{
+      ////    pgpucontext };//,
+      ////    //m_prenderer->getRenderPass(),
+      ////    //globalSetLayout->getDescriptorSetLayout() };
+
+      ////m_ppointLightSystem = __allocate point_light_system{
+      ////    pgpucontext };
+      ////,
+      //  //  m_prenderer->getRenderPass(),
+      //    //globalSetLayout->getDescriptorSetLayout()
+      ////};
 
    }
 
 
 
 
-   void engine::create_global_ubo(::gpu::context* pgpucontext)
-   {
+   //void engine::create_global_ubo(::gpu::context* pgpucontext)
+   //{
 
-      ::graphics3d::engine::create_global_ubo(pgpucontext);
-
-      auto globalUboSize = m_pimpact->global_ubo_block().size();
-
-      // Create the UBO
-      glGenBuffers(1, &m_globalUBO);
-      glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
-      glBufferData(GL_UNIFORM_BUFFER, globalUboSize, NULL, GL_DYNAMIC_DRAW); // For 2 mat4s = 2 * sizeof(float) * 16
-      unsigned int uUboBindingPoint = 0;
-      glBindBufferBase(GL_UNIFORM_BUFFER, uUboBindingPoint, m_globalUBO);
-      glBindBuffer(GL_UNIFORM_BUFFER, 0);
+   //   ::graphics3d::engine::create_global_ubo(pgpucontext);
 
 
-      // Bind to a binding point
-
-      //return globalUBO;
-
-   }
+   //}
 
 
-   void engine::update_global_ubo(::gpu::context* pgpucontext)
-   {
+   //void engine::update_global_ubo(::gpu::context* pgpucontext)
+   //{
 
-      m_pscene->on_update_global_ubo(pgpucontext);
+   //   m_pscene->on_update_global_ubo(pgpucontext);
 
-      glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
+   //   glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
 
-      // Map the entire buffer for writing
-      void* ptr = glMapBufferRange(
-         GL_UNIFORM_BUFFER,
-         0,
-         2 * sizeof(glm::mat4),
-         GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT
-      );
+   //   // Map the entire buffer for writing
+   //   void* ptr = glMapBufferRange(
+   //      GL_UNIFORM_BUFFER,
+   //      0,
+   //      2 * sizeof(glm::mat4),
+   //      GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT
+   //   );
 
-      if (ptr) {
-         // Cast to float* and copy matrices sequentially
-         float* fptr = (float*)ptr;
-         memcpy(fptr, m_pimpact->global_ubo_block().data(), m_pimpact->global_ubo_block().size());
-         //memcpy(fptr + 16, glm::value_ptr(projection), sizeof(glm::mat4));
-         glUnmapBuffer(GL_UNIFORM_BUFFER);
-      }
-      else {
-         fprintf(stderr, "Failed to map UBO\n");
-      }
+   //   if (ptr) {
+   //      // Cast to float* and copy matrices sequentially
+   //      float* fptr = (float*)ptr;
+   //      memcpy(fptr, m_pimpact->global_ubo_block().data(), m_pimpact->global_ubo_block().size());
+   //      //memcpy(fptr + 16, glm::value_ptr(projection), sizeof(glm::mat4));
+   //      glUnmapBuffer(GL_UNIFORM_BUFFER);
+   //   }
+   //   else {
+   //      fprintf(stderr, "Failed to map UBO\n");
+   //   }
 
-      glBindBuffer(GL_UNIFORM_BUFFER, 0);
-   }
+   //   glBindBuffer(GL_UNIFORM_BUFFER, 0);
+   //}
 
 
    void engine::on_begin_frame()
@@ -537,6 +523,8 @@ namespace graphics3d_opengl
 
    void engine::on_layout(int cx, int cy)
    {
+
+      ::graphics3d::engine::on_layout(cx, cy);
 
       //::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
 

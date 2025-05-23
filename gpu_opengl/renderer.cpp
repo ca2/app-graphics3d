@@ -107,7 +107,14 @@ namespace gpu_opengl
       //else {
       //   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Enable solid mode
       //}
-      __defer_construct(m_pframe);
+      
+      if (!m_pframe)
+      {
+
+         m_pframe = __create_new < ::gpu_opengl::frame >();
+
+      }
+
       return ::gpu::renderer::beginFrame();
 
    }

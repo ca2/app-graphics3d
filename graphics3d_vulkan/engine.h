@@ -31,7 +31,7 @@ namespace graphics3d_vulkan
 
 
 		//::pointer < context >             m_pgpucontext;
-		::pointer < ::gpu_vulkan::renderer >		m_prenderer;
+		//::pointer < ::gpu_vulkan::renderer >		m_prenderer;
 
 
 
@@ -47,8 +47,8 @@ namespace graphics3d_vulkan
 
 		void on_begin_frame() override;
 
-		void create_global_ubo(::gpu::context* pgpucontext) override;
-		void update_global_ubo(::gpu::context* pgpucontext) override;
+		//void create_global_ubo(::gpu::context* pgpucontext) override;
+		//void update_global_ubo(::gpu::context* pgpucontext) override;
 		//void on_render_frame() override;
 
 

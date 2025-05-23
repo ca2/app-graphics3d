@@ -6,9 +6,6 @@
 #include "app-cube/cube/gpu/types.h"
 
 
-
-
-
 namespace gpu_opengl
 {
 
@@ -136,33 +133,33 @@ namespace gpu_opengl
 //      
 //#endif
 
-      m_uId = glCreateProgram();
+      m_ProgramID = glCreateProgram();
 
-      glAttachShader(m_uId, uVertex);
+      glAttachShader(m_ProgramID, uVertex);
 
-      glAttachShader(m_uId, uFragment);
+      glAttachShader(m_ProgramID, uFragment);
       
 //#if !defined(__APPLE__) && !defined(__ANDROID__)
 //
 //      if (bGeometry)
 //      {
 //
-//         glAttachShader(m_uId, uGeometry);
+//         glAttachShader(m_ProgramID, uGeometry);
 //
 //      }
 //      
 //#endif
 
-      glLinkProgram(m_uId);
+      glLinkProgram(m_ProgramID);
       
       // Validate program
-//      glValidateProgram(m_uId);
+//      glValidateProgram(m_ProgramID);
 
       string strSummary;
 
       ///::e_status estatus =
       
-      program_compile_errors(m_uId, strSummary);
+      program_compile_errors(m_ProgramID, strSummary);
 
       //if(estatus.succeeded())
       //{
@@ -199,7 +196,7 @@ namespace gpu_opengl
    void shader::bind()
    {
       
-      glUseProgram(m_uId);
+      glUseProgram(m_ProgramID);
       
    }
 
@@ -258,7 +255,7 @@ namespace gpu_opengl
 ////   void shader::setVec2(const ::scoped_string & scopedstrName, const glm::vec2& value)
 ////   {
 ////
-////      GLint i = glGetUniformLocation(m_uId, pszName);
+////      GLint i = glGetUniformLocation(m_ProgramID, pszName);
 ////
 ////      glUniform2fv(i, 1, &value[0]);
 ////
@@ -285,7 +282,7 @@ namespace gpu_opengl
 ////   void shader::setVec3(const ::scoped_string & scopedstrName, const glm::vec3& value)
 ////   {
 ////
-////      GLint i = glGetUniformLocation(m_uId, pszName);
+////      GLint i = glGetUniformLocation(m_ProgramID, pszName);
 ////
 ////      glUniform3fv(i, 1, &value[0]);
 ////
@@ -312,7 +309,7 @@ namespace gpu_opengl
 ////   void shader::setVec4(const ::scoped_string & scopedstrName, const glm::vec4& value)
 ////   {
 ////
-////      GLint i = glGetUniformLocation(m_uId, pszName);
+////      GLint i = glGetUniformLocation(m_ProgramID, pszName);
 ////
 ////      glUniform4fv(i, 1, &value[0]);
 ////
@@ -612,7 +609,7 @@ namespace gpu_opengl
 
    //      ::gpu::payload payload;
 
-   //      payload.m_iUniform = glGetUniformLocation(m_uId, scopedstrUniform);
+   //      payload.m_iUniform = glGetUniformLocation(m_ProgramID, scopedstrUniform);
 
    //      m_mapLayout.set_at(scopedstrUniform, payload);
    //      
@@ -624,6 +621,14 @@ namespace gpu_opengl
 
    //}
 
+
+   
+   void shader::draw()
+   {
+
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+
+   }
 
 } // namespace gpu_opengl
 

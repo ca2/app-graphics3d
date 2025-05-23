@@ -28,7 +28,7 @@ namespace gpu
       };
 
 
-      unsigned int               m_uId;
+      //unsigned int               m_uId;
 
       string                     m_strError;
 

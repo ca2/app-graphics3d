@@ -111,6 +111,8 @@ namespace gpu_vulkan
 
       void swap_buffers() override;
 
+      //void clear(const ::color::color& color);
+
       //virtual void create_offscreen_buffer(const ::int_size& size);
       //virtual void _create_offscreen_buffer(const ::int_size& size);
 

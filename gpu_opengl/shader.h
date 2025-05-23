@@ -86,6 +86,8 @@ namespace gpu_opengl
 
       void push_properties() override;
 
+      void draw() override;
+
 
    };
 

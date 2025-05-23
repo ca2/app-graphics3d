@@ -72,6 +72,8 @@ namespace gpu
    {
 
       m_pgpucontext = pgpucontext;
+
+      m_pgpucontext->m_prenderer = this;
       //::particle::initialize(pparticle);
 
       //m_pgpucontext = system()->get_gpu()->create_context(this);
@@ -469,6 +471,21 @@ namespace gpu
 
    }
 
+
+   int renderer::get_frame_index()
+   {
+
+      return -1;
+
+   }
+
+
+   int renderer::get_frame_count()
+   {
+
+      return -1;
+
+   }
 
    ::pointer < frame > renderer::beginFrame()
    {

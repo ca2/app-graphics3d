@@ -29,7 +29,7 @@ namespace graphics3d_opengl
 	public:
 
 		//::pointer < ::cube::impact > m_pimpact;
-		::pointer < ::gpu_opengl::renderer > m_prenderer;
+		//::pointer < ::gpu_opengl::renderer > m_prenderer;
 		::pointer < ::graphics3d::camera > m_pcamera;
 		//::pointer < glc::Application > m_pglcapplication;  // Game object that manages the scenes
 		::pointer < ::graphics3d::input > m_pinput;
@@ -60,8 +60,6 @@ namespace graphics3d_opengl
 
 		//::pointer<::gpu::context>             m_pgpucontext;
 
-		GLuint m_globalUBO;
-
 		engine();
 		~engine();
 
@@ -72,8 +70,8 @@ namespace graphics3d_opengl
 
 		void on_begin_frame() override;
 
-		void create_global_ubo(::gpu::context* pgpucontext) override;
-		void update_global_ubo(::gpu::context* pgpucontext) override;
+		//void create_global_ubo(::gpu::context* pgpucontext) override;
+		//void update_global_ubo(::gpu::context* pgpucontext) override;
 		//Application();
 		//~Application();
 

@@ -107,6 +107,7 @@ namespace gpu_opengl
             0, 0,
             cx, cy,
             GL_BGRA,
+            //GL_RGBA,
             GL_UNSIGNED_BYTE,
             data);
 
@@ -117,7 +118,7 @@ namespace gpu_opengl
       if(iError != 0)
       {
 
-         printf("glReadnPixels error");
+         warningf("glReadnPixels error %d = \"%s\"", iError, opengl_error_string(iError));
 
       }
 

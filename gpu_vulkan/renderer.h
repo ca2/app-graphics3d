@@ -121,10 +121,8 @@ namespace gpu_vulkan
          return commandBuffers[currentFrameIndex];
       }
 
-      int getFrameIndex() const {
-         assert(isFrameStarted && "Cannot get frame index when frame not in progress");
-         return currentFrameIndex;
-      }
+      int get_frame_index() override;
+      int get_frame_count() override;
 
       //::pointer < ::graphics3d::frame> beginFrame() override;
       //void endFrame() override;

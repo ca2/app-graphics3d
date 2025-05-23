@@ -704,7 +704,7 @@ namespace gpu_vulkan
    VkDescriptorSet approach::getCurrentDescriptorSet(::gpu_vulkan::renderer* prenderer)
    {
 
-      return m_globalDescriptorSets[prenderer->getFrameIndex()];
+      return m_globalDescriptorSets[prenderer->get_frame_index()];
 
    }
 
@@ -773,10 +773,13 @@ namespace gpu_vulkan
    }
 
 
-   void approach::update_global_ubo(::gpu::context* pgpucontext, int iFrameIndex, const ::block& block)
+   void approach::update_global_ubo(::gpu::context* pgpucontext, const ::block& block)
    {
 
+      auto iFrameIndex = pgpucontext->m_prenderer->get_frame_index();
+
       m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
+
       m_uboBuffers[iFrameIndex]->flush();
 
    }

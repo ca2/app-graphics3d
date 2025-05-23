@@ -94,6 +94,15 @@ namespace graphics3d
    void engine::create_global_ubo(::gpu::context* pgpucontext)
    {
 
+      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
+
+      if (iGlobalUboSize > 0)
+      {
+
+         m_papproach->create_global_ubo(pgpucontext, iGlobalUboSize, pgpucontext->m_prenderer->get_frame_count());
+
+      }
+
    }
 
 
@@ -256,6 +265,8 @@ namespace graphics3d
 
       auto currentTime = std::chrono::high_resolution_clock::now();
       //while (!_window.shouldClose())
+
+      set_ok_flag();
       while (!pimpact->m_bShouldClose && task_get_run())
       {
 
@@ -341,6 +352,14 @@ namespace graphics3d
    void engine::update_global_ubo(::gpu::context* pgpucontext)
    {
 
+      if (m_pimpact->global_ubo_block().size() > 0)
+      {
+
+         m_pscene->on_update_global_ubo(pgpucontext);
+
+         m_papproach->update_global_ubo(pgpucontext, m_pimpact->global_ubo_block());
+
+      }
 
    }
 
@@ -348,12 +367,113 @@ namespace graphics3d
    void engine::start_engine(const ::int_rectangle& rectanglePlacement)
    {
 
+      __øconstruct(m_prenderer);
+
+      //::graphics3d::engine::m_prenderer = m_prenderer;
+
+      m_prenderer->initialize_renderer(m_pgpucontext);
+
+
+      m_prenderer->set_placement(rectanglePlacement);
+      //m_pglobalpool->initialize_pool(pgpucontext);
+
+      //= __allocate
+      //   descriptor_pool::Builder(pgpucontext)
+      //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
+      //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
+      //   .build();
+
+      //pgpucontext = __allocate context(m_pvulkandevice);
+      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
+
+      if (iGlobalUboSize > 0)
+      {
+
+         create_global_ubo(m_pgpucontext);
+
+      }
+
+
+      //          m_prenderer->getRenderPass(),
+        //        globalSetLayout->getDescriptorSetLayout()
+          //  };
+
+      m_pscene->on_load_scene(m_pgpucontext);
 
    }
 
 
 	void engine::on_layout(int cx, int cy)
 	{
+
+      auto pgpucontext = m_pgpucontext;
+
+if (!pgpucontext)
+{
+
+   return;
+
+}
+
+pgpucontext->post([this, cx, cy]
+   {
+
+      auto pgpucontext = m_pgpucontext;
+
+      if (pgpucontext->m_prenderer)
+      {
+
+         pgpucontext->m_prenderer->set_placement({cx, cy});
+
+         //m_pimpact->on_load_engine();
+
+         //run();
+
+         //m_pimpact->m_ptaskEngine.release();
+
+         //return;
+
+
+         //m_pinput = __allocate::graphics3d::input();
+
+         //m_pinput->m_pimpact = m_pimpact;
+
+         //m_pcamera = __allocate::graphics3d::camera(glm::vec3(0.0f, 3.0f, 3.0f), -90.0f, 0.0f);
+
+         ////m_pcamera->m_pimpact
+
+         ////m_pglcapplication = m_pimpact->start_opengl_application();
+         ////__øconstruct(m_pgpucontext);
+
+         //if (!m_papplication->m_bUseDraw2dProtoWindow)
+         //{
+
+         //   pgpucontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
+
+         //}
+
+         //m_prenderer = __allocate::graphics3d_opengl::renderer();
+
+         ////return;
+         //// Initialize the game logic and scene data
+         ////Init();
+
+         //pgpucontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
+
+         //m_pgpucontext->m_rendera.add_unique(this);
+
+      }
+
+      //pgpucontext->resize_offscreen_buffer({ cx, cy });
+
+      ////on_layout(cx, cy);
+
+      //m_pimpact->m_iWidth = cx;
+      //m_pimpact->m_iHeight = cy;
+
+   });
+
+
 
    }
 

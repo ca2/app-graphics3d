@@ -74,6 +74,24 @@ namespace gpu_vulkan
    }
 
 
+   int renderer::get_frame_index()
+   {
+      
+      assert(isFrameStarted && "Cannot get frame index when frame not in progress");
+
+      return currentFrameIndex;
+
+   }
+
+
+   int renderer::get_frame_count()
+   {
+
+      return ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT;
+
+   }
+
+
    void renderer::set_placement(const ::int_rectangle& rectanglePlacement)
    {
 
