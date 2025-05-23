@@ -33,16 +33,16 @@ namespace graphics3d
       virtual ::pointer < ::graphics3d::camera > get_default_camera();
 
 
-      virtual void on_load_scene(::graphics3d::context* pcontext);
+      virtual void on_load_scene(::gpu::context* pgpucontext);
 
 
       //virtual void handle_mouse_move(int x, int y);
 
-      //virtual ::pointer<model> createModelFromFile(::cube::context* pcontext, const ::file::path& path);
+      //virtual ::pointer<model> createModelFromFile(::cube::context* pgpucontext, const ::file::path& path);
 
-      virtual void on_update_global_ubo();
+      virtual void on_update_global_ubo(::gpu::context* pgpucontext);
 
-      virtual void on_render(::graphics3d::context * pcontext);
+      virtual void on_render(::gpu::context * pgpucontext);
 
 
       virtual ::pointer<::graphics3d::model> create_tinyobjloader_model(const ::file::path& path);

@@ -15,23 +15,23 @@
 namespace graphics3d_opengl
 {
 
-   // renderer::renderer(VkWindow& window, context* pvkcdevice) : vkcWindow{ window }, m_pcontext{ pvkcdevice } 
+   // renderer::renderer(VkWindow& window, context* pvkcdevice) : vkcWindow{ window }, m_pgpucontext{ pvkcdevice } 
    renderer::renderer()
    {
 
    }
 
 
-   void renderer::initialize_renderer(::cube::impact* pimpact, ::cube::context* pcontext)
+   void renderer::initialize_renderer(::cube::impact* pimpact, ::cube::context* pgpucontext)
    {
 
       m_pimpact = pimpact;
 
-      m_pcontext = pcontext;
+      m_pgpucontext = pgpucontext;
 
       __construct_new(m_poffscreensampler);
 
-      m_poffscreensampler->initialize_offscreen_sampler(pcontext);
+      m_poffscreensampler->initialize_offscreen_sampler(pgpucontext);
 
       defer_layout();
 
@@ -64,7 +64,7 @@ namespace graphics3d_opengl
       if (m_bOffScreen)
       {
 
-         m_pvkcrenderpass = __allocate offscreen_render_pass(m_pcontext, m_extentRenderer, m_pvkcrenderpass);
+         m_pvkcrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
 
       }
 
@@ -74,14 +74,14 @@ namespace graphics3d_opengl
       //while (extent.width == 0 || extent.height == 0) {
       //	glfwWaitEvents();
       //}
-      //vkDeviceWaitIdle(m_pcontext->logicalDevice());
+      //vkDeviceWaitIdle(m_pgpucontext->logicalDevice());
 
       //if (vkcSwapChain == nullptr) {
-      //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pcontext, extent);
+      //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pgpucontext, extent);
       //}
       //else {
       //	::pointer<swap_chain_render_pass> oldSwapChain = std::move(vkcSwapChain);
-      //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pcontext, extent, oldSwapChain);
+      //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pgpucontext, extent, oldSwapChain);
       //	if (!oldSwapChain->compareSwapFormats(*vkcSwapChain.get())) {
       //		throw std::runtime_error("Swap chain image(or depth) format has changed!");
       //	}
@@ -95,10 +95,10 @@ namespace graphics3d_opengl
       VkCommandBufferAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
       allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      allocInfo.commandPool = m_pcontext->getCommandPool();
+      allocInfo.commandPool = m_pgpucontext->getCommandPool();
       allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
-      if (vkAllocateCommandBuffers(m_pcontext->logicalDevice(), &allocInfo, commandBuffers.data()) !=
+      if (vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &allocInfo, commandBuffers.data()) !=
          VK_SUCCESS) {
          throw std::runtime_error("failed to allocate command buffers!");
       }
@@ -107,8 +107,8 @@ namespace graphics3d_opengl
 
    void renderer::freeCommandBuffers() {
       vkFreeCommandBuffers(
-         m_pcontext->logicalDevice(),
-         m_pcontext->getCommandPool(),
+         m_pgpucontext->logicalDevice(),
+         m_pgpucontext->getCommandPool(),
          static_cast<float>(commandBuffers.size()),
          commandBuffers.data());
       commandBuffers.clear();
@@ -193,10 +193,10 @@ namespace graphics3d_opengl
    }
 
 
-   void renderer::OffScreenSampler::initialize_offscreen_sampler(::cube::context* pcontext)
+   void renderer::OffScreenSampler::initialize_offscreen_sampler(::cube::context* pgpucontext)
    {
 
-      m_pcontext = pcontext;
+      m_pgpucontext = pgpucontext;
 
    }
 
@@ -250,16 +250,16 @@ namespace graphics3d_opengl
       imgCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
       // Create the image
       VkImage dstImage;
-      VK_CHECK_RESULT(vkCreateImage(m_pcontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
+      VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
       // Create memory to back up the image
       VkMemoryRequirements memRequirements;
       VkMemoryAllocateInfo memAllocInfo(initializers::memory_allocate_info());
-      vkGetImageMemoryRequirements(m_pcontext->logicalDevice(), m_vkimage, &memRequirements);
+      vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_vkimage, &memRequirements);
       memAllocInfo.allocationSize = memRequirements.size;
       // Memory must be host visible to copy from
-      memAllocInfo.memoryTypeIndex = m_pcontext->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-      VK_CHECK_RESULT(vkAllocateMemory(m_pcontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
-      VK_CHECK_RESULT(vkBindImageMemory(m_pcontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
+      memAllocInfo.memoryTypeIndex = m_pgpucontext->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+      VK_CHECK_RESULT(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
+      VK_CHECK_RESULT(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
 
 
    }
@@ -271,8 +271,8 @@ namespace graphics3d_opengl
       if (m_vkdevicememory)
       {
 
-         vkFreeMemory(m_pcontext->logicalDevice(), m_vkdevicememory, nullptr);
-         vkDestroyImage(m_pcontext->logicalDevice(), m_vkimage, nullptr);
+         vkFreeMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory, nullptr);
+         vkDestroyImage(m_pgpucontext->logicalDevice(), m_vkimage, nullptr);
 
          clear();
 
@@ -295,9 +295,9 @@ namespace graphics3d_opengl
       // Create the linear tiled destination image to copy to and to read the memory from
 
 // Do the actual blit from the offscreen image to our host visible destination image
-      VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::command_buffer_allocate_info(m_pcontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+      VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::command_buffer_allocate_info(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
       VkCommandBuffer copyCmd;
-      VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pcontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
+      VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
       VkCommandBufferBeginInfo cmdBufInfo = initializers::command_buffer_begin_info();
       VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
 
@@ -346,7 +346,7 @@ namespace graphics3d_opengl
 
       VK_CHECK_RESULT(vkEndCommandBuffer(copyCmd));
 
-      m_pcontext->submitWork(copyCmd, m_pcontext->graphicsQueue());
+      m_pgpucontext->submitWork(copyCmd, m_pgpucontext->graphicsQueue());
 
 
 
@@ -363,7 +363,7 @@ namespace graphics3d_opengl
 
       }
 
-      auto pimpact = m_pcontext->m_pimpact;
+      auto pimpact = m_pgpucontext->m_pimpact;
 
       auto callback = pimpact->m_callbackOffscreen;
 
@@ -372,11 +372,11 @@ namespace graphics3d_opengl
       subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       VkSubresourceLayout subResourceLayout;
 
-      vkGetImageSubresourceLayout(m_pcontext->logicalDevice(), m_vkimage, &subResource, &subResourceLayout);
+      vkGetImageSubresourceLayout(m_pgpucontext->logicalDevice(), m_vkimage, &subResource, &subResourceLayout);
 
       const char* imagedata = nullptr;
       // Map image memory so we can start copying from it
-      vkMapMemory(m_pcontext->logicalDevice(), m_vkdevicememory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
+      vkMapMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
       imagedata += subResourceLayout.offset;
 
       /*
@@ -387,7 +387,7 @@ namespace graphics3d_opengl
 
       //mem.set_size(m_width * m_height * 4);
 
-      //std::vector<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
+      //::array<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
       //const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
       callback((void*)imagedata,
          m_vkextent2d.width,
@@ -395,7 +395,7 @@ namespace graphics3d_opengl
          subResourceLayout.rowPitch);
 
 
-      vkUnmapMemory(m_pcontext->logicalDevice(), m_vkdevicememory);
+      vkUnmapMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory);
 
    }
 
@@ -420,9 +420,9 @@ namespace graphics3d_opengl
             //// Create the linear tiled destination image to copy to and to read the memory from
 
             //// Do the actual blit from the offscreen image to our host visible destination image
-            //VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pcontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+            //VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
             //VkCommandBuffer copyCmd;
-            //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pcontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
+            //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
             //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
             //VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
 
@@ -483,10 +483,10 @@ namespace graphics3d_opengl
             //subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             //VkSubresourceLayout subResourceLayout;
 
-            //vkGetImageSubresourceLayout(m_pcontext->logicalDevice(), dstImage, &subResource, &subResourceLayout);
+            //vkGetImageSubresourceLayout(m_pgpucontext->logicalDevice(), dstImage, &subResource, &subResourceLayout);
 
             //// Map image memory so we can start copying from it
-            //vkMapMemory(m_pcontext->logicalDevice(), dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
+            //vkMapMemory(m_pgpucontext->logicalDevice(), dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
             //imagedata += subResourceLayout.offset;
 
             m_poffscreensampler->send_sample();
@@ -499,7 +499,7 @@ namespace graphics3d_opengl
 
             ////mem.set_size(m_width * m_height * 4);
 
-            ////std::vector<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
+            ////::array<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
             ////const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
             //if (callback)
             //{
@@ -542,7 +542,7 @@ namespace graphics3d_opengl
 
                //// If source is BGR (destination is always RGB) and we can't use blit (which does automatic conversion), we'hi have to manually swizzle color components
                //// Check if source is BGR and needs swizzle
-               //std::vector<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
+               //::array<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
                //const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
 
                //// ppm binary pixel data
@@ -570,7 +570,7 @@ namespace graphics3d_opengl
 
 
       }
-       vkQueueWaitIdle(m_pcontext->graphicsQueue());
+       vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
 
    }

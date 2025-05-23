@@ -4,12 +4,14 @@
 #include "acme/platform/application.h"
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/file_context.h"
-
+#include <assert.h>
 //// std
 //#include <fstream>
 //#include <stdexcept>
 //#include <iostream>
 //#include <cassert>
+
+using namespace vulkan;
 
 namespace gpu_vulkan
 {
@@ -22,49 +24,49 @@ namespace gpu_vulkan
 
 
    void pipeline::initialize_pipeline(
-      ::graphics3d::context * pcontext,
-      const ::file::path & pathVert,
-      const ::file::path & pathFrag,
+      ::gpu::context * pgpucontext,
+      const ::block & blockVertex,
+      const ::block & blockFragment,
       const PipelineConfigInfo & configInfo)
    {
-      initialize(pcontext);
-      m_pcontext = pcontext;
-      createGraphicsPipeline(pathVert, pathFrag, configInfo);
+      initialize(pgpucontext);
+      m_pgpucontext = pgpucontext;
+      createGraphicsPipeline(blockVertex, blockFragment, configInfo);
    }
 
 
 
    pipeline::~pipeline() {
-      vkDestroyShaderModule(m_pcontext->logicalDevice(), vertShaderModule, nullptr);
-      vkDestroyShaderModule(m_pcontext->logicalDevice(), fragShaderModule, nullptr);
-      vkDestroyPipeline(m_pcontext->logicalDevice(), graphicsPipeline, nullptr);
+      vkDestroyShaderModule(m_pgpucontext->logicalDevice(), vertShaderModule, nullptr);
+      vkDestroyShaderModule(m_pgpucontext->logicalDevice(), fragShaderModule, nullptr);
+      vkDestroyPipeline(m_pgpucontext->logicalDevice(), graphicsPipeline, nullptr);
    }
 
    void pipeline::bind(VkCommandBuffer commandBuffer) {
       vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
    }
 
-   ::array<char> pipeline::readFile(const std::string & filepath) {
+   //::array<char> pipeline::readFile(const ::string & filepath) {
 
 
-      std::ifstream file{ filepath, std::ios::ate | std::ios::binary };
+   //   std::ifstream file{ filepath, std::ios::ate | std::ios::binary };
 
-      if (!file.is_open()) {
-         throw::std::runtime_error("failed to open file: " + filepath);
-      }
+   //   if (!file.is_open()) {
+   //      throw::exception(error_failed, "failed to open file: " + filepath);
+   //   }
 
-      size_t fileSize = static_cast<size_t>(file.tellg());
-      ::array<char> buffer(fileSize);
+   //   size_t fileSize = static_cast<size_t>(file.tellg());
+   //   ::array<char> buffer(fileSize);
 
-      file.seekg(0);
-      file.read(buffer.data(), fileSize);
+   //   file.seekg(0);
+   //   file.read(buffer.data(), fileSize);
 
-      file.close();
-      return buffer;
-   }
+   //   file.close();
+   //   return buffer;
+   //}
    void pipeline::createGraphicsPipeline(
-      const ::file::path & pathVert,
-      const ::file::path & pathFrag,
+      const ::block & blockVertex,
+      const ::block & blockFragment,
       const PipelineConfigInfo & configInfo)
    {
 
@@ -75,8 +77,8 @@ namespace gpu_vulkan
          configInfo.renderPass != VK_NULL_HANDLE &&
          "Cannot create graphics pipeline: no renderPass provided in configInfo");
 
-      auto vertCode = file()->as_memory(pathVert);
-      auto fragCode = file()->as_memory(pathFrag);
+      auto vertCode = blockVertex;
+      auto fragCode = blockFragment;
 
       createShaderModule(vertCode, &vertShaderModule);
       createShaderModule(fragCode, &fragShaderModule);
@@ -129,13 +131,13 @@ namespace gpu_vulkan
 
 
       if (vkCreateGraphicsPipelines(
-         m_pcontext->logicalDevice(),
+         m_pgpucontext->logicalDevice(),
          VK_NULL_HANDLE,
          1,
          &pipelineInfo,
          nullptr,
          &graphicsPipeline) != VK_SUCCESS) {
-         throw std::runtime_error("Failed to create graphics pipeline");
+         throw ::exception(error_failed, "Failed to create graphics pipeline");
       }
    }
    void pipeline::createShaderModule(const block & block, VkShaderModule * shaderModule)
@@ -145,8 +147,8 @@ namespace gpu_vulkan
       createInfo.codeSize = block.size();
       createInfo.pCode = reinterpret_cast<const uint32_t *>(block.data());
 
-      if (vkCreateShaderModule(m_pcontext->logicalDevice(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
-         throw std::runtime_error("failed to create shader module");
+      if (vkCreateShaderModule(m_pgpucontext->logicalDevice(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
+         throw ::exception(error_failed, "failed to create shader module");
       }
    }
    void pipeline::defaultPipelineConfigInfo(PipelineConfigInfo & configInfo) {
@@ -221,8 +223,8 @@ namespace gpu_vulkan
       configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
       configInfo.dynamicStateInfo.flags = 0;
 
-      configInfo.bindingDescriptions = model::getVertexBindingDescriptions();
-      configInfo.attributeDescriptions = model::getVertexAttributeDescriptions();
+      configInfo.bindingDescriptions = _001GetVertexBindingDescriptions();
+      configInfo.attributeDescriptions = _001GetVertexAttributeDescriptions();
    }
 
 

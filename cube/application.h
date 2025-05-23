@@ -22,10 +22,18 @@ namespace cube
 
       ::pointer<impact> m_pimpact;
 
+      ::pointer<::gpu::approach>                        m_pgpu;
+
+
+
 
       application();
       ~application();
 
+
+      virtual ::gpu::approach* get_gpu();
+      virtual ::gpu::approach* gpu();
+      virtual void create_gpu();
 
       //virtual ::graphics3d::camera get_default_camera();
 

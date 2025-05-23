@@ -28,34 +28,36 @@ namespace graphics3d_vulkan
       virtual public ::graphics3d::model
    {
    public:
+
+
       bool hasIndexBuffer = false;
-      ::pointer < context > m_pcontext;
+      ::pointer < ::gpu_vulkan::context > m_pgpucontext;
 
 
-      ::pointer<buffer> vertexBuffer;
+      ::pointer<::gpu_vulkan::buffer> m_pbufferVertex;
       uint32_t vertexCount;
 
-      ::pointer<buffer> indexBuffer;
+      ::pointer<::gpu_vulkan::buffer> m_pbufferIndex;
       uint32_t indexCount;
 
-   
-         static std::vector<VkVertexInputBindingDescription> getVertexBindingDescriptions();
-         static std::vector<VkVertexInputAttributeDescription> getVertexAttributeDescriptions();
+
+      static ::array<VkVertexInputBindingDescription> getVertexBindingDescriptions();
+      static ::array<VkVertexInputAttributeDescription> getVertexAttributeDescriptions();
 
 
-      //static ::pointer<model> createModelFromFile(context* pvkcdevice, const std::string& filepath);
+      //static ::pointer<model> createModelFromFile(::gpu::context * pgpucontext, const std::string& filepath);
 
 
       model();
       ~model();
 
-      void initialize_model(::graphics3d::context* pcontext, const ::graphics3d::model::Builder& builder) override;
+      void initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder) override;
 
-      void draw(::graphics3d::context* pcontext) override;
-      void bind(::graphics3d::context* pcontext) override;
+      void draw(::gpu::context* pgpucontext) override;
+      void bind(::gpu::context* pgpucontext) override;
 
-      void createVertexBuffers(const std::vector<::graphics3d::Vertex>& vertices);
-      void createIndexBuffers(const std::vector<uint32_t>& indices);
+      void createVertexBuffers(const ::array<::gpu::Vertex>& vertices);
+      void createIndexBuffers(const ::array<uint32_t>& indices);
 
 
    };

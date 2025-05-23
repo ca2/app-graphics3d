@@ -150,6 +150,10 @@ namespace vulkan
    CLASS_DECL_GPU_VULKAN VkDeviceSize alignedVkSize(VkDeviceSize value, VkDeviceSize alignment);
 
 
+   CLASS_DECL_GPU_VULKAN ::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions();
+   CLASS_DECL_GPU_VULKAN ::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions();
+
+
 } // namespace vulkan
 
 

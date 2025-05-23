@@ -19,7 +19,7 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
 {
 
    pfactory->add_factory_item < ::gpu_vulkan::approach, ::gpu::approach >();
-   pfactory->add_factory_item < ::gpu_vulkan::program, ::gpu::program >();
+   //pfactory->add_factory_item < ::gpu_vulkan::program, ::gpu::program >();
    pfactory->add_factory_item < ::gpu_vulkan::shader, ::gpu::shader >();
    pfactory->add_factory_item < ::gpu_vulkan::cpu_buffer, ::gpu::cpu_buffer >();
    pfactory->add_factory_item < ::gpu_vulkan::renderer, ::gpu::renderer >();

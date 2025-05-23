@@ -44,10 +44,10 @@ namespace cube
    //}
 
 
-   //void frame::dump(dump_context & dumpcontext) const
+   //void frame::dump(dump_context & dumpgpucontext) const
    //{
 
-   //   simple_frame_window::dump(dumpcontext);
+   //   simple_frame_window::dump(dumpgpucontext);
 
    //}
 

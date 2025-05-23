@@ -3,14 +3,14 @@
 //#include "GLFW/glfw3.h"  
 #include "mesh.h"
 #include "texture.h"
-#include "shader.h"
+#include "app-cube/gpu_opengl/shader.h"
 #include <vector>
 
 
 namespace graphics3d_opengl
 {
 
-   mesh::mesh(const std::vector<float>& vertices, const std::vector<unsigned int>& indices,
+   mesh::mesh(const ::array<float>& vertices, const ::array<unsigned int>& indices,
       unsigned int vertexOffset, unsigned int indexOffset, unsigned int indexCount)
       : m_Vertices(vertices), m_Indices(indices), m_VertexOffset(vertexOffset),
       m_IndexOffset(indexOffset), m_IndexCount(indexCount) 
@@ -32,8 +32,9 @@ namespace graphics3d_opengl
 
 
    // render the mesh
-   void mesh::Draw(shader *pshader)
+   void mesh::Draw(::gpu::shader *pshader)
    {
+
       // bind appropriate textures
       unsigned int diffuseNr = 1;
       unsigned int specularNr = 1;
@@ -55,7 +56,8 @@ namespace graphics3d_opengl
             number = std::to_string(heightNr++); // transfer unsigned int to string
 
          // now set the sampler to the correct texture unit
-         glUniform1i(glGetUniformLocation(pshader->m_ProgramID, (name + number).c_str()), i);
+         //glUniform1i(glGetUniformLocation(pshader->m_ProgramID, (name + number).c_str()), i);
+         pshader->set_int((name + number).c_str(), i);
          // and finally bind the texture
          glBindTexture(GL_TEXTURE_2D, m_texturea[i]->m_TextureID);
       }
@@ -100,7 +102,7 @@ namespace graphics3d_opengl
       glBindVertexArray(0);
    }
 
-   void mesh::SetInstanceModelMatrices(const std::vector<glm::mat4>& modelMatrices) {
+   void mesh::SetInstanceModelMatrices(const ::array<glm::mat4>& modelMatrices) {
       // Bind VAO
       glBindVertexArray(m_VAO);
 
@@ -117,7 +119,7 @@ namespace graphics3d_opengl
 
       glBindVertexArray(0);  // Unbind VAO
    }
-   void mesh::UpdateInstanceModelMatrices(const std::vector<glm::mat4>& modelMatrices) {
+   void mesh::UpdateInstanceModelMatrices(const ::array<glm::mat4>& modelMatrices) {
       glBindVertexArray(m_VAO);
       glBindBuffer(GL_ARRAY_BUFFER, m_InstanceVBO);
       glBufferSubData(GL_ARRAY_BUFFER, 0, modelMatrices.size() * sizeof(glm::mat4), modelMatrices.data());

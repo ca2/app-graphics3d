@@ -50,7 +50,7 @@ namespace graphics3d
    }
 
 
-   void scene::on_load_scene(::graphics3d::context* pcontext)
+   void scene::on_load_scene(::gpu::context* pgpucontext)
    {
 
 
@@ -65,7 +65,7 @@ namespace graphics3d
    }
 
 
-   void scene::on_update_global_ubo()
+   void scene::on_update_global_ubo(::gpu::context* pgpucontext)
    {
 
 
@@ -73,7 +73,7 @@ namespace graphics3d
    }
 
 
-   void scene::on_render(::graphics3d::context * pcontext)
+   void scene::on_render(::gpu::context * pgpucontext)
    {
 
 

@@ -50,12 +50,12 @@ namespace graphics3d_opengl
     }
 
 
-    void model::initialize_model(::cube::context * pcontext, const ::cube::model::Builder& builder)
+    void model::initialize_model(::cube::context * pgpucontext, const ::cube::model::Builder& builder)
     {
 
-       m_pcontext = pcontext;
+       m_pgpucontext = pgpucontext;
        
-       initialize(pcontext);
+       initialize(pgpucontext);
        
        createVertexBuffers(builder.vertices);
 
@@ -74,7 +74,7 @@ namespace graphics3d_opengl
     //}
 
 
-    void model::createVertexBuffers(const std::vector<Vertex>& vertices) {
+    void model::createVertexBuffers(const ::array<Vertex>& vertices) {
         vertexCount = static_cast<uint32_t>(vertices.size());
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
@@ -83,7 +83,7 @@ namespace graphics3d_opengl
         buffer stagingBuffer;
         
         stagingBuffer.initialize_buffer(
-            m_pcontext,
+            m_pgpucontext,
             vertexSize,
             vertexCount,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -96,7 +96,7 @@ namespace graphics3d_opengl
         vertexBuffer = __allocate buffer;
         
            vertexBuffer->initialize_buffer(
-            m_pcontext,
+            m_pgpucontext,
             vertexSize,
             vertexCount,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
@@ -104,12 +104,12 @@ namespace graphics3d_opengl
         );
 
 
-        m_pcontext->copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
+        m_pgpucontext->copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 
 
     }
 
-    void model::createIndexBuffers(const std::vector<uint32_t>& indices) {
+    void model::createIndexBuffers(const ::array<uint32_t>& indices) {
         indexCount = static_cast<uint32_t>(indices.size());
         hasIndexBuffer = indexCount > 0;
 
@@ -122,7 +122,7 @@ namespace graphics3d_opengl
 
         buffer stagingBuffer;
         stagingBuffer.initialize_buffer(
-            m_pcontext,
+            m_pgpucontext,
             indexSize,
             indexCount,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -135,13 +135,13 @@ namespace graphics3d_opengl
         indexBuffer = __allocate buffer();
         
         indexBuffer->initialize_buffer(
-            m_pcontext,
+            m_pgpucontext,
             indexSize,
             indexCount,
             VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-        m_pcontext->copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
+        m_pgpucontext->copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
     }
 
 
@@ -165,16 +165,16 @@ namespace graphics3d_opengl
             vkCmdBindIndexBuffer(pframeinfo->commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
         }
     }
-    std::vector<VkVertexInputBindingDescription> model::getVertexBindingDescriptions() {
-        std::vector<VkVertexInputBindingDescription> bindingDescriptions(1, VkVertexInputBindingDescription{});
+    ::array<VkVertexInputBindingDescription> model::getVertexBindingDescriptions() {
+        ::array<VkVertexInputBindingDescription> bindingDescriptions(1, VkVertexInputBindingDescription{});
 
         bindingDescriptions[0].binding = 0;
         bindingDescriptions[0].stride = sizeof(Vertex);
         bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
         return bindingDescriptions;
     }
-    std::vector<VkVertexInputAttributeDescription> model::getVertexAttributeDescriptions() {
-        std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
+    ::array<VkVertexInputAttributeDescription> model::getVertexAttributeDescriptions() {
+        ::array<VkVertexInputAttributeDescription> attributeDescriptions{};
 
         attributeDescriptions.push_back({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position) });
         attributeDescriptions.push_back({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color) });
@@ -185,10 +185,10 @@ namespace graphics3d_opengl
     }
 
 
-    //void model::Builder::loadModel(::cube::context * pcontext, const std::string& filepath) {
+    //void model::Builder::loadModel(::cube::context * pgpucontext, const std::string& filepath) {
     //    tinyobj::attrib_t attrib;
-    //    std::vector<tinyobj::shape_t> shapes;
-    //    std::vector<tinyobj::material_t> materials;
+    //    ::array<tinyobj::shape_t> shapes;
+    //    ::array<tinyobj::material_t> materials;
     //    std::string warn, err;
 
     //    
@@ -205,7 +205,7 @@ namespace graphics3d_opengl
     //    indices.clear();
 
 
-    //    std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+    //    ::map<Vertex, uint32_t> uniqueVertices{};
     //    for (const auto& shape : shapes) {
     //        for (const auto& index : shape.mesh.indices) {
     //            Vertex vertex{};

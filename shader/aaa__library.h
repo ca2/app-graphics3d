@@ -4,7 +4,7 @@
 ////#include "aura/user/user/_component.h"
 
 
-#include "aura/graphics/gpu/_gpu.h"
+#include "app-cube/cube/gpu/_gpu.h"
 
 
 #include "render.h"

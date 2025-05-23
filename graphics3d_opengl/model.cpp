@@ -2,6 +2,7 @@
 #include "model.h"
 #include <stb/stb_image.h>
 #include "context.h"
+#include "app-cube/cube/gpu/context.h"
 //#include <iostream>
 
 
@@ -27,12 +28,12 @@ namespace graphics3d_opengl
 	}
 
 
-	void model::initialize_model(::graphics3d::context* pcontext, const ::graphics3d::model::Builder& builder)
+	void model::initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder)
 	{
 
-		m_pcontext = pcontext;
+		m_pgpucontext = pgpucontext;
 
-		initialize(pcontext);
+		initialize(pgpucontext);
 
 		createVertexBuffers(builder.vertices);
 
@@ -49,7 +50,7 @@ namespace graphics3d_opengl
 	//}
 
 
-	void model::createVertexBuffers(const std::vector<::graphics3d::Vertex>& vertices) 
+	void model::createVertexBuffers(const ::array<::gpu::Vertex>& vertices) 
 	{
 		/*vertexCount = static_cast<uint32_t>(vertices.size());
 		assert(vertexCount >= 3 && "Vertex count must be at least 3");
@@ -59,7 +60,7 @@ namespace graphics3d_opengl
 		buffer stagingBuffer;
 
 		stagingBuffer.initialize_buffer(
-			m_pcontext,
+			m_pgpucontext,
 			vertexSize,
 			vertexCount,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -72,7 +73,7 @@ namespace graphics3d_opengl
 		vertexBuffer = __allocate buffer;
 
 		vertexBuffer->initialize_buffer(
-			m_pcontext,
+			m_pgpucontext,
 			vertexSize,
 			vertexCount,
 			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
@@ -80,7 +81,7 @@ namespace graphics3d_opengl
 		);
 
 
-		m_pcontext->copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);*/
+		m_pgpucontext->copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);*/
 
 
 		glGenVertexArrays(1, &m_gluVAO);
@@ -89,12 +90,12 @@ namespace graphics3d_opengl
 		glBindVertexArray(m_gluVAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_gluVBO);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(::graphics3d::Vertex), vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(::gpu::Vertex), vertices.data(), GL_STATIC_DRAW);
 
 	}
 
 
-	void model::createIndexBuffers(const std::vector<uint32_t>& indices) {
+	void model::createIndexBuffers(const ::array<uint32_t>& indices) {
 		//indexCount = static_cast<uint32_t>(indices.size());
 		//hasIndexBuffer = indexCount > 0;
 
@@ -107,7 +108,7 @@ namespace graphics3d_opengl
 
 		//buffer stagingBuffer;
 		//stagingBuffer.initialize_buffer(
-		//	m_pcontext,
+		//	m_pgpucontext,
 		//	indexSize,
 		//	indexCount,
 		//	VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -120,13 +121,13 @@ namespace graphics3d_opengl
 		//indexBuffer = __allocate buffer();
 
 		//indexBuffer->initialize_buffer(
-		//	m_pcontext,
+		//	m_pgpucontext,
 		//	indexSize,
 		//	indexCount,
 		//	VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 		//	VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		//m_pcontext->copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
+		//m_pgpucontext->copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 		glGenBuffers(1, &m_gluEBO);
 
 		// Upload indices (from f lines)
@@ -141,22 +142,22 @@ namespace graphics3d_opengl
 
 			// vertex positions
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(::graphics3d::Vertex), (void*)offsetof(::graphics3d::Vertex, position));
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(::gpu::Vertex), (void*)offsetof(::gpu::Vertex, position));
 		// vertex color
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(::graphics3d::Vertex), (void*)offsetof(::graphics3d::Vertex, color));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(::gpu::Vertex), (void*)offsetof(::gpu::Vertex, color));
 		// vertex normals
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(::graphics3d::Vertex), (void*)offsetof(::graphics3d::Vertex, normal));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(::gpu::Vertex), (void*)offsetof(::gpu::Vertex, normal));
 		// vertex texture coords
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(::graphics3d::Vertex), (void*)offsetof(::graphics3d::Vertex, uv));
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(::gpu::Vertex), (void*)offsetof(::gpu::Vertex, uv));
 
 		glBindVertexArray(0);
 	}
 
 	
-	void model::bind(::graphics3d::context* pcontext)
+	void model::bind(::gpu::context* pgpucontext)
 	{
 		glBindVertexArray(m_gluVAO);
 		//auto pframeinfo = (FrameInfo*)p;
@@ -170,7 +171,7 @@ namespace graphics3d_opengl
 	}
 
 
-	void model::draw(::graphics3d::context* pcontext)
+	void model::draw(::gpu::context* pgpucontext)
 	{
 
 		glDrawElements(GL_TRIANGLES, m_cIndexes, GL_UNSIGNED_INT, 0);
@@ -217,9 +218,9 @@ namespace graphics3d_opengl
 	//// Processes an individual mesh and extracts vertex, index, and texture data
 	//ModelMesh model::processMesh(aiMesh* mesh, const aiScene* scene)
 	//{
-	//	std::vector<Vertex> vertices;
-	//	std::vector<unsigned int> indices;
-	//	std::vector<ModelTexture> textures;
+	//	::array<Vertex> vertices;
+	//	::array<unsigned int> indices;
+	//	::array<ModelTexture> textures;
 
 	//	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	//	{
@@ -270,22 +271,22 @@ namespace graphics3d_opengl
 	//	}
 
 	//	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-	//	std::vector<ModelTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+	//	::array<ModelTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 	//	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-	//	std::vector<ModelTexture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+	//	::array<ModelTexture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 	//	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-	//	std::vector<ModelTexture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+	//	::array<ModelTexture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
 	//	textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-	//	std::vector<ModelTexture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+	//	::array<ModelTexture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
 	//	textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 	//	return ModelMesh(vertices, indices, textures);
 	//}
 
 	//// Loads material textures, ensuring each is only loaded once
-	//std::vector<ModelTexture> model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+	//::array<ModelTexture> model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
 	//{
-	//	std::vector<ModelTexture> textures;
+	//	::array<ModelTexture> textures;
 	//	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
 	//	{
 	//		aiString str;

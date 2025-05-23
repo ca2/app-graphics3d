@@ -49,7 +49,7 @@ namespace graphics3d
 
 		}
 
-		scene_object& translate(const location& locationOffset)
+		scene_object& translate(const glm::vec3& locationOffset)
 		{
 
 			m_transform.translation += locationOffset;
@@ -58,7 +58,7 @@ namespace graphics3d
 
 		}
 
-		scene_object& scale(const pole& poleScaling)
+		scene_object& scale(const glm::vec3& poleScaling)
 		{
 
 			m_transform.scale *= poleScaling;

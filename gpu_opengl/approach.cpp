@@ -1,8 +1,8 @@
 #include "framework.h"
-#include "opengl.h"
+#include "approach.h"
 #include "acme/filesystem/file/file.h"
 #include "acme/filesystem/filesystem/file_context.h"
-#include "aura/graphics/gpu/context.h"
+#include "app-cube/cube/gpu/context.h"
 
 
 //#if defined(FREEBSD) || defined(OPENBSD)
@@ -39,7 +39,7 @@ namespace gpu_opengl
 #endif
 
 
-   opengl::opengl()
+   approach::approach()
    {
 
       m_bGpuLibraryInit = false;
@@ -53,7 +53,7 @@ namespace gpu_opengl
    }
 
 
-   opengl::~opengl()
+   approach::~approach()
    {
 
    }
@@ -73,7 +73,7 @@ namespace gpu_opengl
 #endif // WINDOWS_DESKTOP
 
 
-   void opengl::initialize(::particle * pparticle)
+   void approach::initialize(::particle * pparticle)
    {
 
       //::e_status estatus =
@@ -117,7 +117,7 @@ namespace gpu_opengl
    }
 
 
-   ::pointer < ::gpu::context > opengl::create_context(::particle * pparticle)
+   ::pointer < ::gpu::context > approach::create_context(::particle * pparticle, ::gpu::enum_output eoutput)
    {
 
       ::pointer < ::gpu::context > pgpucontext;
@@ -168,14 +168,14 @@ namespace gpu_opengl
 
       }
 
-      pgpucontext->create_context();
+      pgpucontext->initialize_gpu_context(this, eoutput);
 
       return pgpucontext;
 
    }
 
 
-   void opengl::defer_init_gpu_library()
+   void approach::defer_init_gpu_library()
    {
 
       if (m_bGpuLibraryInit)
@@ -230,7 +230,7 @@ namespace gpu_opengl
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
 #define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
 
-   int opengl::fread(void* data, int c, int s, ::file::file* pfile)
+   int approach::fread(void* data, int c, int s, ::file::file* pfile)
    {
 
       return (int) (pfile->read(data,s * c) / c);
@@ -238,7 +238,7 @@ namespace gpu_opengl
    }
 
    
-   ::gpu::payload opengl::load_dds(const ::scoped_string & scopedstrImagePath) 
+   ::gpu::payload approach::load_dds(const ::scoped_string & scopedstrImagePath) 
    {
 
       auto fp = file()->get_reader(scopedstrImagePath);
@@ -335,6 +335,23 @@ namespace gpu_opengl
 
       return payload;
 
+
+   }
+
+
+   ::file::path approach::shader_path(const ::file::path& pathShader)
+   {
+
+      if (pathShader.begins("matter://shaders/"))
+      {
+
+         auto pathFolder = pathShader.folder();
+
+         return pathFolder / "opengl" / pathShader.name();
+
+      }
+
+      return pathShader;
 
    }
 

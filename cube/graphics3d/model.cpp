@@ -1,6 +1,6 @@
 // Created by camilo on 2025-05-17 02:45s <3ThomasBorregaardSorensen!!
 #include "framework.h"
-#include "context.h"
+#include "app-cube/cube/gpu/context.h"
 #include "model.h"
 #include "utilities.h"
 #include "acme/filesystem/filesystem/directory_context.h"
@@ -40,17 +40,17 @@ namespace graphics3d
    }
 
 
-   void model::initialize_model(::graphics3d::context* pcontext, const model::Builder& builder)
+   void model::initialize_model(::gpu::context* pgpucontext, const model::Builder& builder)
    {
 
-      //m_pcontext = pcontext;
+      m_pgpucontext = pgpucontext;
       // initialize(pvkcdevice);
       //createVertexBuffers(builder.vertices);
       //createIndexBuffers(builder.indices);
    }
 
 
-   void model::draw(::graphics3d::context* pcontext)
+   void model::draw(::gpu::context* pgpucontext)
    {
 
 
@@ -58,7 +58,7 @@ namespace graphics3d
 
 
 
-   void model::bind(::graphics3d::context* pcontext)
+   void model::bind(::gpu::context* pgpucontext)
    {
 
 
@@ -66,7 +66,7 @@ namespace graphics3d
    }
 
 
-   //::pointer<model> model::createModelFromFile(::graphics::context* pcontext, const ::file::path & path)
+   //::pointer<model> model::createModelFromFile(::graphics::context* pgpucontext, const ::file::path & path)
    //{
 
    //   return {};
@@ -182,16 +182,16 @@ namespace graphics3d
 //   std::vector<VkVertexInputAttributeDescription> model::Vertex::getAttributeDescriptions() {
 //      std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
 //
-//      attributeDescriptions.push_back({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position) });
-//      attributeDescriptions.push_back({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color) });
-//      attributeDescriptions.push_back({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal) });
-//      attributeDescriptions.push_back({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv) });
+//      attributeDescriptions.add({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position) });
+//      attributeDescriptions.add({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color) });
+//      attributeDescriptions.add({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal) });
+//      attributeDescriptions.add({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv) });
 //
 //      return attributeDescriptions;
 //   }
 
 
-   void model::tinyobjloader_Builder::loadModel(::graphics3d::context* pcontext, const ::file::path & path)
+   void model::tinyobjloader_Builder::loadModel(::gpu::context* pgpucontext, const ::file::path & path)
    {
 
       tinyobj::attrib_t attrib;
@@ -199,7 +199,7 @@ namespace graphics3d
       std::vector<tinyobj::material_t> materials;
       std::string warn, err;
 
-      auto pathFile = pcontext->directory()->defer_get_file_system_file(path.c_str(), true);
+      auto pathFile = pgpucontext->directory()->defer_get_file_system_file(path.c_str(), true);
 
       ::string str(::system()->path_system()->shell_path(pathFile));
 
@@ -214,10 +214,10 @@ namespace graphics3d
       indices.clear();
 
 
-      std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+      ::map<::gpu::Vertex, uint32_t> uniqueVertices{};
       for (const auto& shape : shapes) {
          for (const auto& index : shape.mesh.indices) {
-            Vertex vertex{};
+            ::gpu::Vertex vertex{};
 
             if (index.vertex_index >= 0) {
                vertex.position = {
@@ -251,10 +251,10 @@ namespace graphics3d
 
             if (uniqueVertices.count(vertex) == 0) {
                uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-               vertices.push_back(vertex);
+               vertices.add(vertex);
             }
 
-            indices.push_back(uniqueVertices[vertex]);
+            indices.add(uniqueVertices[vertex]);
 
          }
 

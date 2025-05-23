@@ -30,7 +30,7 @@ namespace graphics3d_opengl
 		~renderer();
 
 
-		virtual void initialize_renderer(::cube::impact * pimpact,  ::cube::context* pcontext);
+		virtual void initialize_renderer(::cube::impact * pimpact,  ::cube::context* pgpucontext);
 
 
 
@@ -99,7 +99,7 @@ namespace graphics3d_opengl
 			VkDeviceMemory		m_vkdevicememory;
 			VkImage				m_vkimage;
 
-			::pointer < context > m_pcontext;
+			::pointer < context > m_pgpucontext;
 
 
 
@@ -109,7 +109,7 @@ namespace graphics3d_opengl
 			~OffScreenSampler();
 
 
-			void initialize_offscreen_sampler(::cube::context* pcontext);
+			void initialize_offscreen_sampler(::cube::context* pgpucontext);
 
 			void clear();
 			void update(VkExtent2D vkextent2d);
@@ -122,12 +122,12 @@ namespace graphics3d_opengl
 		};
 
 		::pointer < ::cube::impact >	m_pimpact;
-		::pointer < context >				m_pcontext;
+		::pointer < context >				m_pgpucontext;
 		::pointer < OffScreenSampler >	m_poffscreensampler;
 		//::pointer<swap_chain_render_pass>			m_pvkcswapchain;
 		//::pointer<offscreen_render_pass>			m_pvkcoffscreen;
 		::pointer<render_pass>			m_pvkcrenderpass;
-		std::vector<VkCommandBuffer>	commandBuffers;
+		::array<VkCommandBuffer>	commandBuffers;
 		VkExtent2D m_extentRenderer;
 		uint32_t currentImageIndex;
 		int currentFrameIndex = 0;

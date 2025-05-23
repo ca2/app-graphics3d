@@ -17,17 +17,17 @@
 IMPLEMENT_FACTORY(graphics3d_vulkan)
 {
 
-   pfactory->add_factory_item < ::graphics3d_vulkan::frame, ::graphics3d::frame >();
+   //pfactory->add_factory_item < ::graphics3d_vulkan::frame, ::graphics3d::frame >();
 
    pfactory->add_factory_item < ::graphics3d_vulkan::camera, ::graphics3d::camera >();
 
    pfactory->add_factory_item < ::graphics3d_vulkan::model, ::graphics3d::model >();
 
-   pfactory->add_factory_item < ::graphics3d_vulkan::shader, ::graphics3d::shader >();
+   //pfactory->add_factory_item < ::graphics3d_vulkan::shader, ::graphics3d::shader >();
 
    pfactory->add_factory_item < ::graphics3d_vulkan::engine, ::graphics3d::engine >();
 
-   pfactory->add_factory_item < ::graphics3d_vulkan::context, ::graphics3d::context >();
+   //pfactory->add_factory_item < ::graphics3d_vulkan::context, ::gpu::context >();
 
    pfactory->add_factory_item < ::graphics3d::scene_object >();
 

@@ -43,7 +43,7 @@
 //        VkMemoryPropertyFlags memoryPropertyFlags,
 //        VkDeviceSize minOffsetAlignment)
 //    {
-//       m_pcontext = pvkcdevice;
+//       m_pgpucontext = pvkcdevice;
 //       m_instanceSize = instanceSize;
 //       m_instanceCount = instanceCount;
 //       m_usageFlags = usageFlags;
@@ -57,8 +57,8 @@
 //    buffer::~buffer() {
 //        unmap();
 //
-//        vkDestroyBuffer(m_pcontext->logicalDevice(), m_buffer, nullptr);
-//        vkFreeMemory(m_pcontext->logicalDevice(), m_memory, nullptr);
+//        vkDestroyBuffer(m_pgpucontext->logicalDevice(), m_buffer, nullptr);
+//        vkFreeMemory(m_pgpucontext->logicalDevice(), m_memory, nullptr);
 //     
 //    }
 //
@@ -73,7 +73,7 @@
 //     */
 //    VkResult buffer::map(VkDeviceSize size, VkDeviceSize offset) {
 //        assert(m_buffer && m_memory && "Called map on buffer before create");
-//        return vkMapMemory(m_pcontext->logicalDevice(), m_memory, offset, size, 0, &m_mapped);
+//        return vkMapMemory(m_pgpucontext->logicalDevice(), m_memory, offset, size, 0, &m_mapped);
 //    }
 //
 //    /**
@@ -83,7 +83,7 @@
 //     */
 //    void buffer::unmap() {
 //        if (m_mapped) {
-//            vkUnmapMemory(m_pcontext->logicalDevice(), m_memory);
+//            vkUnmapMemory(m_pgpucontext->logicalDevice(), m_memory);
 //            m_mapped = nullptr;
 //        }
 //    }
@@ -127,7 +127,7 @@
 //        mappedRange.memory = m_memory;
 //        mappedRange.offset = offset;
 //        mappedRange.size = size;
-//        return vkFlushMappedMemoryRanges(m_pcontext->logicalDevice(), 1, &mappedRange);
+//        return vkFlushMappedMemoryRanges(m_pgpucontext->logicalDevice(), 1, &mappedRange);
 //    }
 //
 //    /**
@@ -147,7 +147,7 @@
 //        mappedRange.memory = m_memory;
 //        mappedRange.offset = offset;
 //        mappedRange.size = size;
-//        return vkInvalidateMappedMemoryRanges(m_pcontext->logicalDevice(), 1, &mappedRange);
+//        return vkInvalidateMappedMemoryRanges(m_pgpucontext->logicalDevice(), 1, &mappedRange);
 //    }
 //
 //    /**

@@ -20,39 +20,40 @@ using namespace vulkan;
 namespace gpu_vulkan
 {
 
-   // renderer::renderer(VkWindow& window, context* pvkcdevice) : vkcWindow{ window }, m_pcontext{ pvkcdevice } 
+   // renderer::renderer(VkWindow& window, context* pvkcdevice) : vkcWindow{ window }, m_pgpucontext{ pvkcdevice } 
    renderer::renderer()
    {
 
    }
 
 
-   int renderer::width()
+   //int renderer::width()
+   //{
+
+   //   return m_pvkcrenderpass->width();
+
+   //}
+
+   //int renderer::height()
+   //{
+
+   //   return m_pvkcrenderpass->height();
+
+   //}
+
+
+   void renderer::initialize_renderer(::gpu::context* pgpucontext)
    {
 
-      return m_pvkcrenderpass->width();
+      ::gpu::renderer::initialize_renderer(pgpucontext);
 
-   }
+      m_pgpucontext = pgpucontext;
 
-   int renderer::height()
-   {
-
-      return m_pvkcrenderpass->height();
-
-   }
-
-   void renderer::initialize_renderer(::gpu::context * pcontext)
-   {
-
-      ::gpu::renderer::initialize_renderer(pcontext);
-
-      m_pcontext = pcontext;
-
-      //m_pimpact = pcontext->m_pimpact;
+      //m_pimpact = pgpucontext->m_pimpact;
 
       __construct_new(m_poffscreensampler);
 
-      m_poffscreensampler->initialize_offscreen_sampler(pcontext);
+      m_poffscreensampler->initialize_offscreen_sampler(pgpucontext);
 
       m_poffscreensampler->m_prenderer = this;
 
@@ -87,10 +88,10 @@ namespace gpu_vulkan
       m_extentRenderer.width = size.width();
       m_extentRenderer.height = size.height();
 
-      if (m_bOffScreen)
+      if (m_pgpucontext->m_bOffscreen)
       {
 
-         m_pvkcrenderpass = __allocate offscreen_render_pass(m_pcontext, m_extentRenderer, m_pvkcrenderpass);
+         m_pvkcrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
 
       }
 
@@ -100,16 +101,16 @@ namespace gpu_vulkan
       //while (extent.width == 0 || extent.height == 0) {
       //	glfwWaitEvents();
       //}
-      //vkDeviceWaitIdle(m_pcontext->logicalDevice());
+      //vkDeviceWaitIdle(m_pgpucontext->logicalDevice());
 
       //if (vkcSwapChain == nullptr) {
-      //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pcontext, extent);
+      //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pgpucontext, extent);
       //}
       //else {
       //	::pointer<swap_chain_render_pass> oldSwapChain = std::move(vkcSwapChain);
-      //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pcontext, extent, oldSwapChain);
+      //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pgpucontext, extent, oldSwapChain);
       //	if (!oldSwapChain->compareSwapFormats(*vkcSwapChain.get())) {
-      //		throw std::runtime_error("Swap chain image(or depth) format has changed!");
+      //		throw ::exception(error_failed, "Swap chain image(or depth) format has changed!");
       //	}
 
       //}
@@ -121,20 +122,20 @@ namespace gpu_vulkan
       VkCommandBufferAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
       allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      allocInfo.commandPool = m_pcontext->getCommandPool();
+      allocInfo.commandPool = m_pgpucontext->getCommandPool();
       allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
-      if (vkAllocateCommandBuffers(m_pcontext->logicalDevice(), &allocInfo, commandBuffers.data()) !=
+      if (vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &allocInfo, commandBuffers.data()) !=
          VK_SUCCESS) {
-         throw std::runtime_error("failed to allocate command buffers!");
+         throw ::exception(error_failed, "failed to allocate command buffers!");
       }
 
    }
 
    void renderer::freeCommandBuffers() {
       vkFreeCommandBuffers(
-         m_pcontext->logicalDevice(),
-         m_pcontext->getCommandPool(),
+         m_pgpucontext->logicalDevice(),
+         m_pgpucontext->getCommandPool(),
          static_cast<float>(commandBuffers.size()),
          commandBuffers.data());
       commandBuffers.clear();
@@ -159,7 +160,7 @@ namespace gpu_vulkan
             return;
          }
          if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-            throw std::runtime_error("Failed to aquire swap chain image");
+            throw ::exception(error_failed, "Failed to aquire swap chain image");
          }
 
          isFrameStarted = true;
@@ -170,7 +171,7 @@ namespace gpu_vulkan
          beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
          if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-            throw std::runtime_error("failed to begin recording command buffer!");
+            throw ::exception(error_failed, "failed to begin recording command buffer!");
          }
 
          //m_
@@ -191,7 +192,7 @@ namespace gpu_vulkan
       //		return nullptr;
       //	}
       //	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-      //		throw std::runtime_error("Failed to aquire swap chain image");
+      //		throw ::exception(error_failed, "Failed to aquire swap chain image");
       //	}
 
       //	isFrameStarted = true;
@@ -202,7 +203,7 @@ namespace gpu_vulkan
       //	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
       //	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-      //		throw std::runtime_error("failed to begin recording command buffer!");
+      //		throw ::exception(error_failed, "failed to begin recording command buffer!");
       //	}
       //	return commandBuffer;
 
@@ -229,10 +230,10 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::OffScreenSampler::initialize_offscreen_sampler(::gpu::context * pcontext)
+   void renderer::OffScreenSampler::initialize_offscreen_sampler(::gpu::context * pgpucontext)
    {
 
-      m_pcontext = pcontext;
+      m_pgpucontext = pgpucontext;
 
    }
 
@@ -286,16 +287,16 @@ namespace gpu_vulkan
       imgCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
       // Create the image
       VkImage dstImage;
-      VK_CHECK_RESULT(vkCreateImage(m_pcontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
+      VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
       // Create memory to back up the image
       VkMemoryRequirements memRequirements;
       VkMemoryAllocateInfo memAllocInfo(initializers::memoryAllocateInfo());
-      vkGetImageMemoryRequirements(m_pcontext->logicalDevice(), m_vkimage, &memRequirements);
+      vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_vkimage, &memRequirements);
       memAllocInfo.allocationSize = memRequirements.size;
       // Memory must be host visible to copy from
-      memAllocInfo.memoryTypeIndex = m_pcontext->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-      VK_CHECK_RESULT(vkAllocateMemory(m_pcontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
-      VK_CHECK_RESULT(vkBindImageMemory(m_pcontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
+      memAllocInfo.memoryTypeIndex = m_pgpucontext->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+      VK_CHECK_RESULT(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
+      VK_CHECK_RESULT(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
 
 
    }
@@ -307,8 +308,8 @@ namespace gpu_vulkan
       if (m_vkdevicememory)
       {
 
-         vkFreeMemory(m_pcontext->logicalDevice(), m_vkdevicememory, nullptr);
-         vkDestroyImage(m_pcontext->logicalDevice(), m_vkimage, nullptr);
+         vkFreeMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory, nullptr);
+         vkDestroyImage(m_pgpucontext->logicalDevice(), m_vkimage, nullptr);
 
          clear();
 
@@ -331,9 +332,9 @@ namespace gpu_vulkan
       // Create the linear tiled destination image to copy to and to read the memory from
 
 // Do the actual blit from the offscreen image to our host visible destination image
-      VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pcontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+      VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
       VkCommandBuffer copyCmd;
-      VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pcontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
+      VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
       VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
       VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
 
@@ -386,9 +387,9 @@ namespace gpu_vulkan
 
       ppass->submitSamplingWork(copyCmd, &m_prenderer->currentImageIndex);
 
-      vkQueueWaitIdle(m_pcontext->graphicsQueue());
+      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
-      vkFreeCommandBuffers(m_pcontext->logicalDevice(), m_pcontext->m_vkcommandpool, 1, &copyCmd);
+      vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &copyCmd);
 
 
    }
@@ -404,7 +405,7 @@ namespace gpu_vulkan
 
       }
 
-      //auto pimpact = m_pcontext->m_pimpact;
+      //auto pimpact = m_pgpucontext->m_pimpact;
 
       //auto callback = pimpact->m_callbackOffscreen;
 
@@ -415,11 +416,11 @@ namespace gpu_vulkan
       subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       VkSubresourceLayout subResourceLayout;
 
-      vkGetImageSubresourceLayout(m_pcontext->logicalDevice(), m_vkimage, &subResource, &subResourceLayout);
+      vkGetImageSubresourceLayout(m_pgpucontext->logicalDevice(), m_vkimage, &subResource, &subResourceLayout);
 
       const char * imagedata = nullptr;
       // Map image memory so we can start copying from it
-      vkMapMemory(m_pcontext->logicalDevice(), m_vkdevicememory, 0, VK_WHOLE_SIZE, 0, (void **)&imagedata);
+      vkMapMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory, 0, VK_WHOLE_SIZE, 0, (void **)&imagedata);
       imagedata += subResourceLayout.offset;
 
       /*
@@ -433,18 +434,18 @@ namespace gpu_vulkan
       //::array<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
       //const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
       {
-         m_pcontext->m_callbackOffscreen(
+         m_pgpucontext->m_callbackOffscreen(
          (void *)imagedata,
             m_vkextent2d.width,
             m_vkextent2d.height,
             subResourceLayout.rowPitch);
-         //_synchronous_lock synchronouslock(m_pcontext->m_pmutexOffscreen);
-         //   m_pcontext->m_sizeOffscreen.cx() = m_vkextent2d.width;
-         //m_pcontext->m_sizeOffscreen.cy() = m_vkextent2d.height;
-         //m_pcontext->m_iScanOffscreen = subResourceLayout.rowPitch;
-         //auto area = m_pcontext->m_iScanOffscreen * m_pcontext->m_sizeOffscreen.cy();
-         //m_pcontext->m_memoryOffscreen.set_size(area);
-         //m_pcontext->m_memoryOffscreen.assign(imagedata, area);
+         //_synchronous_lock synchronouslock(m_pgpucontext->m_pmutexOffscreen);
+         //   m_pgpucontext->m_sizeOffscreen.cx() = m_vkextent2d.width;
+         //m_pgpucontext->m_sizeOffscreen.cy() = m_vkextent2d.height;
+         //m_pgpucontext->m_iScanOffscreen = subResourceLayout.rowPitch;
+         //auto area = m_pgpucontext->m_iScanOffscreen * m_pgpucontext->m_sizeOffscreen.cy();
+         //m_pgpucontext->m_memoryOffscreen.set_size(area);
+         //m_pgpucontext->m_memoryOffscreen.assign(imagedata, area);
          //callback((void *)imagedata,
            // m_vkextent2d.width,
             //m_vkextent2d.height,
@@ -458,7 +459,7 @@ namespace gpu_vulkan
       //}
 
 
-      vkUnmapMemory(m_pcontext->logicalDevice(), m_vkdevicememory);
+      vkUnmapMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory);
 
    }
 
@@ -483,9 +484,9 @@ namespace gpu_vulkan
             //// Create the linear tiled destination image to copy to and to read the memory from
 
             //// Do the actual blit from the offscreen image to our host visible destination image
-            //VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pcontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+            //VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
             //VkCommandBuffer copyCmd;
-            //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pcontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
+            //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
             //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
             //VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
 
@@ -546,10 +547,10 @@ namespace gpu_vulkan
             //subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             //VkSubresourceLayout subResourceLayout;
 
-            //vkGetImageSubresourceLayout(m_pcontext->logicalDevice(), dstImage, &subResource, &subResourceLayout);
+            //vkGetImageSubresourceLayout(m_pgpucontext->logicalDevice(), dstImage, &subResource, &subResourceLayout);
 
             //// Map image memory so we can start copying from it
-            //vkMapMemory(m_pcontext->logicalDevice(), dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
+            //vkMapMemory(m_pgpucontext->logicalDevice(), dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
             //imagedata += subResourceLayout.offset;
 
             m_poffscreensampler->send_sample();
@@ -633,7 +634,7 @@ namespace gpu_vulkan
 
 
       }
-      vkQueueWaitIdle(m_pcontext->graphicsQueue());
+      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
 
    }
@@ -648,7 +649,7 @@ namespace gpu_vulkan
          assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
          auto commandBuffer = getCurrentCommandBuffer();
          if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-            throw std::runtime_error("failed to record command buffer!");
+            throw ::exception(error_failed, "failed to record command buffer!");
          }
          auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
          //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
@@ -659,7 +660,7 @@ namespace gpu_vulkan
          //}
          //else 
          //	if (result != VK_SUCCESS) {
-         //	throw std::runtime_error("failed to present swap chain image!");
+         //	throw ::exception(error_failed, "failed to present swap chain image!");
          //}
          sample();
          isFrameStarted = false;
@@ -673,7 +674,7 @@ namespace gpu_vulkan
       //	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
       //	auto commandBuffer = getCurrentCommandBuffer();
       //	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-      //		throw std::runtime_error("failed to record command buffer!");
+      //		throw ::exception(error_failed, "failed to record command buffer!");
       //	}
       //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
       //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
@@ -684,7 +685,7 @@ namespace gpu_vulkan
       //	//}
       //	//else 
       //	//	if (result != VK_SUCCESS) {
-      //	//	throw std::runtime_error("failed to present swap chain image!");
+      //	//	throw ::exception(error_failed, "failed to present swap chain image!");
       //	//}
       //	isFrameStarted = false;
       //	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT;

@@ -10,6 +10,8 @@
 //#include "system/point_light_system.h"
 //#include "system/simple_render_system.h"
 #include "app-cube/cube/impact.h"
+#include "app-cube/cube/gpu/context.h"
+#include "app-cube/cube/gpu/renderer.h"
 #include "acme/exception/interface_only.h"
 #include "acme/platform/application.h"
 #include "apex/database/client.h"
@@ -51,35 +53,34 @@ namespace graphics3d
    void engine::on_render_frame()
    {
 
-      ::cast < renderer > prenderer = m_prenderer;
+      auto prenderer = m_pgpucontext->m_prenderer;
 
-      if (prenderer->width() <= 0 || prenderer->height() <= 0)
+      if (prenderer->rectangle().area() <= 0)
       {
 
          return;
 
       }
 
-
-      if (auto pframe = m_prenderer->beginFrame())
+      if (auto pframe = prenderer->beginFrame())
       {
 
          on_begin_frame();
          // render
-         m_prenderer->on_begin_render(pframe);
+         prenderer->on_begin_render(pframe);
 
          if (m_pimpact->global_ubo_block().size() > 0)
          {
 
-            update_global_ubo();
+            update_global_ubo(m_pgpucontext);
 
          }
 
-         m_pscene->on_render(m_pcontext);
+         m_pscene->on_render(m_pgpucontext);
 
-         m_prenderer->on_end_render(pframe);
+         prenderer->on_end_render(pframe);
 
-         m_prenderer->endFrame();
+         prenderer->endFrame();
 
       }
 
@@ -87,18 +88,20 @@ namespace graphics3d
    }
 
 
-   void engine::create_global_ubo()
+   void engine::create_global_ubo(::gpu::context* pgpucontext)
    {
 
    }
 
 
-   ::file::path engine::_translate_shader_path(const ::file::path& pathShader)
-   {
+   //::file::path engine::shader_path(const ::file::path& pathShader)
+   //{
 
-      return pathShader;
+   //   return pathShader;
 
-   }
+   //}
+
+
    void engine::on_begin_frame()
    {
 
@@ -141,38 +144,38 @@ namespace graphics3d
 
       //auto papp = get_app();
 
-      //__øconstruct(m_pcontext);
+      //__øconstruct(m_pgpucontext);
 
-      //m_pcontext->initialize_context(papp->m_pimpact);
+      //m_pgpucontext->initialize_context(papp->m_pimpact);
 
       //__construct_new(m_prenderer);
 
-      //m_prenderer->initialize_renderer(papp->m_pimpact, m_pcontext);
+      //m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontext);
 
       //auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
 
-      //pglobalpoolbuilder->initialize_builder(m_pcontext);
+      //pglobalpoolbuilder->initialize_builder(m_pgpucontext);
       //pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
       //pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, render_pass::MAX_FRAMES_IN_FLIGHT);
 
       //m_pglobalpool = pglobalpoolbuilder->build();
 
-      ////m_pglobalpool->initialize_pool(pcontext);
+      ////m_pglobalpool->initialize_pool(pgpucontext);
 
       ////= __allocate
-      ////   descriptor_pool::Builder(pcontext)
+      ////   descriptor_pool::Builder(pgpucontext)
       ////   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       ////   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       ////   .build();
       //m_pscene->on_load_scene();
 
-      ////pcontext = __allocate context(m_pvulkandevice);
+      ////pgpucontext = __allocate context(m_pvulkandevice);
 
       //::pointer_array<buffer> uboBuffers;
 
       //uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
 
-      //::cast < context > pcontext = m_pcontext;
+      //::cast < context > pgpucontext = m_pgpucontext;
 
       //for (int i = 0; i < uboBuffers.size(); i++)
       //{
@@ -180,7 +183,7 @@ namespace graphics3d
       //   uboBuffers[i] = __allocate buffer();
 
       //   uboBuffers[i]->initialize_buffer(
-      //      pcontext,
+      //      pgpucontext,
       //      sizeof(GlobalUbo),
       //      1,
       //      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -189,7 +192,7 @@ namespace graphics3d
       //   uboBuffers[i]->map();
 
       //}
-      //auto globalSetLayout = set_descriptor_layout::Builder(pcontext)
+      //auto globalSetLayout = set_descriptor_layout::Builder(pgpucontext)
       //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
       //   .build();
 
@@ -208,12 +211,12 @@ namespace graphics3d
       //}
 
       //simple_render_system simpleRenderSystem{
-      //    pcontext,
+      //    pgpucontext,
       //    m_prenderer->getRenderPass(),
       //    globalSetLayout->getDescriptorSetLayout() };
 
       //point_light_system pointLightSystem{
-      //    pcontext,
+      //    pgpucontext,
       //    m_prenderer->getRenderPass(),
       //    globalSetLayout->getDescriptorSetLayout()
       //};
@@ -278,10 +281,10 @@ namespace graphics3d
 
       }
 
-      //if (pcontext->logicalDevice() != VK_NULL_HANDLE)
+      //if (pgpucontext->logicalDevice() != VK_NULL_HANDLE)
       //{
 
-      //   vkDeviceWaitIdle(pcontext->logicalDevice());
+      //   vkDeviceWaitIdle(pgpucontext->logicalDevice());
 
       //}
 
@@ -309,12 +312,11 @@ namespace graphics3d
    }
 
 
-   void engine::update_global_ubo()
+   void engine::update_global_ubo(::gpu::context* pgpucontext)
    {
 
 
    }
-
 
 
    void engine::on_start_engine()
@@ -344,11 +346,11 @@ namespace graphics3d
 
 		model::tinyobjloader_Builder builder{};
 
-		builder.loadModel(m_pcontext, path);
+		builder.loadModel(m_pgpucontext, path);
 
 		auto pmodel = __øcreate < model>();
 
-		pmodel->initialize_model(m_pcontext, builder);
+		pmodel->initialize_model(m_pgpucontext, builder);
 
 		return pmodel;
 
@@ -365,22 +367,6 @@ namespace graphics3d
 	}
 
 
-
-   ::pointer<shader> engine::create_shader(
-      ::graphics3d::context* pcontext,
-      const ::file::path& pathVert,
-      const ::file::path& pathFrag,
-      const ::graphics3d::property* pproperties,
-      ::graphics3d::shader::enum_flag eflag)
-   {
-
-      auto pshader = __øcreate < shader >();
-
-      pshader->initialize_shader(pcontext, pathVert, pathFrag, pproperties, eflag);
-
-      return pshader;
-
-   }
 
 
 

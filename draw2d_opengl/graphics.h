@@ -2,7 +2,7 @@
 
 
 #include "aura/graphics/draw2d/graphics.h"
-#include "aura/graphics/gpu/renderer.h"
+#include "app-cube/cube/gpu/renderer.h"
 
 
 //struct OffscreenContext
@@ -17,7 +17,9 @@
 namespace draw2d_opengl
 {
 
+   
    class draw2d;
+
 
    class CLASS_DECL_DRAW2D_OPENGL graphics :
       virtual public ::draw2d::graphics,
@@ -32,12 +34,12 @@ namespace draw2d_opengl
       //HGLRC                         m_hglrc;
       //HDC                           m_hdc;
       //HWND                          m_hwnd;
-      ::int_size                        m_size;
+      ::int_size                          m_size;
       //HDC                           m_hdcGraphics;
-      float                         m_z;
-      int_point                         m_pointTranslate;
+      float                               m_z;
+      int_point                           m_pointTranslate;
       // bool                                      m_bFont;
-      ::int_size                    m_sizeWindow;
+      ::int_size                          m_sizeWindow;
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextOpenGL;
@@ -70,7 +72,7 @@ namespace draw2d_opengl
       void * detach() override;
 
 
-      void defer_add_gpu_render(::gpu::render * pgpurender) override;
+      //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
       //virtual bool Attach(HDC hdc);   // attach/detach affects only the Output DC
       //virtual HDC Detach();

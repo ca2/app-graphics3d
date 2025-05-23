@@ -8,6 +8,9 @@
 #include "frame.h"
 #include "renderer.h"
 #include "app-cube/cube/impact.h"
+#include "app-cube/gpu_vulkan/buffer.h"
+#include "app-cube/gpu_vulkan/context.h"
+#include "app-cube/gpu_vulkan/renderer.h"
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/path_system.h"
 
@@ -21,11 +24,11 @@
 #include <glm/gtx/hash.hpp>
 
 // std
-#include <cassert>
-#include <cstring>
-#include <stdexcept>
-#include <unordered_map>
-#include <unordered_set>
+//#include <cassert>
+//#include <cstring>
+//#include <stdexcept>
+//#include <unordered_map>
+//#include <unordered_set>
 
 
 //
@@ -41,224 +44,226 @@
 //}  // namespace std
 //
 
-namespace graphics3d_vulkan 
+namespace graphics3d_vulkan
 
 {
    model::model()
    {
 
-    }
-    model::~model()
-    {
-    }
+   
+   }
 
 
-    void model::initialize_model(::graphics3d::context * pcontext, const ::graphics3d::model::Builder& builder)
-    {
-
-       m_pcontext = pcontext;
-       
-       initialize(pcontext);
-       
-       createVertexBuffers(builder.vertices);
-
-       createIndexBuffers(builder.indices);
-
-    }
+   model::~model()
+   {
 
 
-    //::pointer<model> model::createModelFromFile(context * pvkcdevice, const std::string& filepath) {
-    //    Builder builder{};
-    //    builder.loadModel(pvkcdevice, filepath);
-
-    //    __refdbg_this(pvkcdevice);
-
-    //    return __allocate model(pvkcdevice, builder);
-    //}
+   }
 
 
-    void model::createVertexBuffers(const std::vector<::graphics3d::Vertex>& vertices) {
-        vertexCount = static_cast<uint32_t>(vertices.size());
-        assert(vertexCount >= 3 && "Vertex count must be at least 3");
-        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
-        uint32_t vertexSize = sizeof(vertices[0]);
+   void model::initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder)
+   {
 
-        buffer stagingBuffer;
-        
-        stagingBuffer.initialize_buffer(
-            m_pcontext,
-            vertexSize,
-            vertexCount,
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        );
+      m_pgpucontext = pgpucontext;
 
-        stagingBuffer.map();
-        stagingBuffer.writeToBuffer((void*)vertices.data());
+      initialize(pgpucontext);
 
-        vertexBuffer = __allocate buffer;
-        
-           vertexBuffer->initialize_buffer(
-            m_pcontext,
-            vertexSize,
-            vertexCount,
-            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-        );
+      createVertexBuffers(builder.vertices);
+
+      createIndexBuffers(builder.indices);
+
+   }
 
 
-        m_pcontext->copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
+   //::pointer<model> model::createModelFromFile(::gpu::context * pgpucontext, const std::string& filepath) {
+   //    Builder builder{};
+   //    builder.loadModel(pgpucontext, filepath);
+
+   //    __refdbg_this(pgpucontext);
+
+   //    return __allocate model(pgpucontext, builder);
+   //}
 
 
-    }
+   void model::createVertexBuffers(const ::array<::gpu::Vertex>& vertices)
+   {
 
-    void model::createIndexBuffers(const std::vector<uint32_t>& indices) {
-        indexCount = static_cast<uint32_t>(indices.size());
-        hasIndexBuffer = indexCount > 0;
+      vertexCount = static_cast<uint32_t>(vertices.size());
+      assert(vertexCount >= 3 && "Vertex count must be at least 3");
+      VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+      uint32_t vertexSize = sizeof(vertices[0]);
 
-        if (!hasIndexBuffer) {
-            return;
-        }
+      auto pbufferStaging = __create_new < ::gpu_vulkan::buffer >();
 
-        VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
-        uint32_t indexSize = sizeof(indices[0]);
+      pbufferStaging->initialize_buffer(
+         m_pgpucontext,
+         vertexSize,
+         vertexCount,
+         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+      );
 
-        buffer stagingBuffer;
-        stagingBuffer.initialize_buffer(
-            m_pcontext,
-            indexSize,
-            indexCount,
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-        ;
+      pbufferStaging->map();
+      pbufferStaging->writeToBuffer((void*)vertices.data());
 
-        stagingBuffer.map();
-        stagingBuffer.writeToBuffer((void*)indices.data());
+      m_pbufferVertex = __create_new < ::gpu_vulkan::buffer>();
 
-        indexBuffer = __allocate buffer();
-        
-        indexBuffer->initialize_buffer(
-            m_pcontext,
-            indexSize,
-            indexCount,
-            VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-        m_pcontext->copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
-    }
+      m_pbufferVertex->initialize_buffer(
+         m_pgpucontext,
+         vertexSize,
+         vertexCount,
+         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+      );
 
 
-    void model::draw(::graphics3d::context* pcontext)
-    {
-       ::cast <engine> pengine = pcontext->m_pimpact->m_pengine;
-
-       auto commandBuffer = pengine->m_prenderer->getCurrentCommandBuffer();
-
-        if (hasIndexBuffer) {
-            vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
-        }
-        else {
-            vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
-        }
-    }
-
-    void model::bind(::graphics3d::context* pcontext) 
-    {
-       ::cast <engine> pengine = pcontext->m_pimpact->m_pengine;
-
-       auto commandBuffer = pengine->m_prenderer->getCurrentCommandBuffer();
+      m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferVertex->getBuffer(), bufferSize);
 
 
-        VkBuffer buffers[] = { vertexBuffer->getBuffer() };
-        VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
-
-        if (hasIndexBuffer) {
-            vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
-        }
-    }
-    std::vector<VkVertexInputBindingDescription> model::getVertexBindingDescriptions() {
-        std::vector<VkVertexInputBindingDescription> bindingDescriptions(1, VkVertexInputBindingDescription{});
-
-        bindingDescriptions[0].binding = 0;
-        bindingDescriptions[0].stride = sizeof(::graphics3d::Vertex);
-        bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-        return bindingDescriptions;
-    }
-    std::vector<VkVertexInputAttributeDescription> model::getVertexAttributeDescriptions() {
-        std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
-
-        attributeDescriptions.push_back({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::graphics3d::Vertex, position) });
-        attributeDescriptions.push_back({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::graphics3d::Vertex, color) });
-        attributeDescriptions.push_back({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::graphics3d::Vertex, normal) });
-        attributeDescriptions.push_back({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(::graphics3d::Vertex, uv) });
-
-        return attributeDescriptions;
-    }
+   }
 
 
-    //void model::Builder::loadModel(::cube::context * pcontext, const std::string& filepath) {
-    //    tinyobj::attrib_t attrib;
-    //    std::vector<tinyobj::shape_t> shapes;
-    //    std::vector<tinyobj::material_t> materials;
-    //    std::string warn, err;
+   void model::createIndexBuffers(const ::array<uint32_t>& indices) 
+   {
 
-    //    
+      indexCount = static_cast<uint32_t>(indices.size());
+      hasIndexBuffer = indexCount > 0;
 
-    //    auto path = pparticle->directory()->defer_get_file_system_file(filepath.c_str(), true);
+      if (!hasIndexBuffer) {
+         return;
+      }
 
-    //    ::string str(::system()->path_system()->shell_path(path));
+      VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
+      uint32_t indexSize = sizeof(indices[0]);
 
-    //    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, str.c_str())) {
-    //        throw std::runtime_error(warn + err);
-    //    }
+      auto pbufferStaging = __create_new < ::gpu_vulkan::buffer>();
 
-    //    vertices.clear();
-    //    indices.clear();
+      pbufferStaging->initialize_buffer(
+         m_pgpucontext,
+         indexSize,
+         indexCount,
+         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+         ;
+
+      pbufferStaging->map();
+      pbufferStaging->writeToBuffer((void*)indices.data());
+
+      m_pbufferIndex = __create_new < ::gpu_vulkan::buffer>();
+
+      m_pbufferIndex->initialize_buffer(
+         m_pgpucontext,
+         indexSize,
+         indexCount,
+         VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+      m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferIndex->getBuffer(), bufferSize);
+
+   }
 
 
-    //    std::unordered_map<Vertex, uint32_t> uniqueVertices{};
-    //    for (const auto& shape : shapes) {
-    //        for (const auto& index : shape.mesh.indices) {
-    //            Vertex vertex{};
+   void model::draw(::gpu::context* pgpucontext)
+   {
 
-    //            if (index.vertex_index >= 0) {
-    //                vertex.position = {
-    //                    attrib.vertices[3 * index.vertex_index + 0],
-    //                    attrib.vertices[3 * index.vertex_index + 1],
-    //                    attrib.vertices[3 * index.vertex_index + 2],
-    //                };
+      ::cast <::gpu_vulkan::renderer> prenderer = pgpucontext->m_prenderer;
 
-    //                vertex.color = {
-    //                attrib.colors[3 * index.vertex_index + 0],
-    //                attrib.colors[3 * index.vertex_index + 1],
-    //                attrib.colors[3 * index.vertex_index + 2],
-    //                };
+      auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
-    //            }
+      if (hasIndexBuffer) {
+         vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+      }
+      else {
+         vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
+      }
+   }
 
-    //            if (index.normal_index >= 0) {
-    //                vertex.normal = {
-    //                    attrib.normals[3 * index.normal_index + 0],
-    //                    attrib.normals[3 * index.normal_index + 1],
-    //                    attrib.normals[3 * index.normal_index + 2],
-    //                };
-    //            }
+   
+   void model::bind(::gpu::context* pgpucontext)
+   {
 
-    //            if (index.texcoord_index >= 0) {
-    //                vertex.uv = {
-    //                    attrib.texcoords[2 * index.texcoord_index + 0],
-    //                    attrib.texcoords[2 * index.texcoord_index + 1],
-    //                };
-    //            }
+      ::cast <::gpu_vulkan::renderer> prenderer = pgpucontext->m_prenderer;
 
-    //            if (uniqueVertices.count(vertex) == 0) {
-    //                uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-    //                vertices.push_back(vertex);
-    //            }
-    //            indices.push_back(uniqueVertices[vertex]);
+      auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
-    //        }
-    //    }
-    //}
+
+      VkBuffer buffers[] = { m_pbufferVertex->getBuffer() };
+      VkDeviceSize offsets[] = { 0 };
+      vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
+
+      if (hasIndexBuffer) 
+      {
+
+         vkCmdBindIndexBuffer(commandBuffer, m_pbufferIndex->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+      }
+
+   }
+
+
+
+   //void model::Builder::loadModel(::cube::gpu::context * pgpucontext, const std::string& filepath) {
+   //    tinyobj::attrib_t attrib;
+   //    ::array<tinyobj::shape_t> shapes;
+   //    ::array<tinyobj::material_t> materials;
+   //    std::string warn, err;
+
+   //    
+
+   //    auto path = pparticle->directory()->defer_get_file_system_file(filepath.c_str(), true);
+
+   //    ::string str(::system()->path_system()->shell_path(path));
+
+   //    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, str.c_str())) {
+   //        throw std::runtime_error(warn + err);
+   //    }
+
+   //    vertices.clear();
+   //    indices.clear();
+
+
+   //    ::map<Vertex, uint32_t> uniqueVertices{};
+   //    for (const auto& shape : shapes) {
+   //        for (const auto& index : shape.mesh.indices) {
+   //            Vertex vertex{};
+
+   //            if (index.vertex_index >= 0) {
+   //                vertex.position = {
+   //                    attrib.vertices[3 * index.vertex_index + 0],
+   //                    attrib.vertices[3 * index.vertex_index + 1],
+   //                    attrib.vertices[3 * index.vertex_index + 2],
+   //                };
+
+   //                vertex.color = {
+   //                attrib.colors[3 * index.vertex_index + 0],
+   //                attrib.colors[3 * index.vertex_index + 1],
+   //                attrib.colors[3 * index.vertex_index + 2],
+   //                };
+
+   //            }
+
+   //            if (index.normal_index >= 0) {
+   //                vertex.normal = {
+   //                    attrib.normals[3 * index.normal_index + 0],
+   //                    attrib.normals[3 * index.normal_index + 1],
+   //                    attrib.normals[3 * index.normal_index + 2],
+   //                };
+   //            }
+
+   //            if (index.texcoord_index >= 0) {
+   //                vertex.uv = {
+   //                    attrib.texcoords[2 * index.texcoord_index + 0],
+   //                    attrib.texcoords[2 * index.texcoord_index + 1],
+   //                };
+   //            }
+
+   //            if (uniqueVertices.count(vertex) == 0) {
+   //                uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+   //                vertices.add(vertex);
+   //            }
+   //            indices.add(uniqueVertices[vertex]);
+
+   //        }
+   //    }
+   //}
 }  // namespace graphics3d_vulkan

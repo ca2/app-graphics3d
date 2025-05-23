@@ -46,7 +46,7 @@ namespace bred
 //
 //#include "bred/platform/system.h"
 
-
+#include "app-cube/cube/gpu/_.h"
 #include "app-cube/cube/graphics3d/_.h"
 
 

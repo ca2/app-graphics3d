@@ -21,7 +21,7 @@
 //      ::pointer < ::cube::impact> m_pimpact;
 //      bool m_IsFullscreen;
 //
-//      //std::unordered_map<::user::e_key, bool> m_KeyPressed; // Store the state of each key
+//      //::map<::user::e_key, bool> m_KeyPressed; // Store the state of each key
 //      //static int m_WindowedWidth, m_WindowedHeight;
 //      //static int m_WindowedPosX, m_WindowedPosY;
 //

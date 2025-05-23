@@ -1,8 +1,8 @@
 #include "framework.h"
 #include "context_win32.h"
-#include "opengl.h"
+#include "approach.h"
 #include "cpu_buffer.h"
-#include "aura/graphics/gpu/approach.h"
+#include "app-cube/cube/gpu/approach.h"
 #include "aura/graphics/image/image.h"
 #include "acme/platform/application.h"
 #include "aura/platform/system.h"
@@ -120,13 +120,9 @@ namespace gpu_opengl
       if (!m_hdc || !m_hrc)
       {
 
-         auto psystem = system();
+         ::cast < approach > papproach = m_papproach;
 
-         auto pgpu = psystem->get_gpu();
-
-         ::pointer < ::gpu_opengl::opengl > popengl = pgpu;
-
-         if (!popengl->m_atomClass)
+         if (!papproach->m_atomClass)
          {
 
             informationf("MS GDI - RegisterClass failed");
@@ -230,8 +226,7 @@ namespace gpu_opengl
 
          }
 
-
-         popengl->defer_init_gpu_library();
+         papproach->defer_init_gpu_library();
 
          auto pszVersion = (const char *)glGetString(GL_VERSION);
          //::e_status estatus = 
@@ -284,11 +279,7 @@ namespace gpu_opengl
       if (!m_hdc || !m_hrc)
       {
 
-         auto psystem = system();
-
-         auto pgpu = psystem->get_gpu();
-
-         ::pointer < ::gpu_opengl::opengl > popengl = pgpu;
+         ::cast < approach > papproach = m_papproach;
 
          //if (!popengl->m_atomClass)
          //{
@@ -419,8 +410,7 @@ namespace gpu_opengl
 
             }
 
-
-            popengl->defer_init_gpu_library();
+            papproach->defer_init_gpu_library();
 
             auto pszVersion = (const char *)glGetString(GL_VERSION);
             //::e_status estatus = 

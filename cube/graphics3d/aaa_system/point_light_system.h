@@ -16,10 +16,10 @@ namespace graphics3d
    //   float radius;
    //};
 
-   inline ::graphics3d::properties point_light_properties()
+   inline ::gpu::properties point_light_properties()
    {
 
-      static ::graphics3d::property s_properties[] =
+      static ::gpu::property s_properties[] =
       {
          {"position", ::gpu::e_type_seq4},
          {"color", ::gpu::e_type_seq4},
@@ -34,9 +34,9 @@ namespace graphics3d
 
 
 
-   //inline ::graphics3d::properties global_ubo_properties()
+   //inline ::gpu::properties global_ubo_properties()
    //{
-   //   ::graphics3d::property s_properties[] = {
+   //   ::gpu::property s_properties[] = {
    //      "projection", ::gpu::e_type_mat4,
    //      "view", ::gpu::e_type_mat4,
    //      "inverseVew", ::gpu::e_type_mat4,
@@ -54,7 +54,7 @@ namespace graphics3d
    public:
 
 
-      ::pointer < ::graphics3d::context >      m_pcontext;
+      ::pointer < ::gpu::context >      m_pgpucontext;
 
       ::pointer < ::graphics3d::shader >        m_pshader;
       //::pointer < ::graphics3d::engine >        m_pengine;
@@ -64,7 +64,7 @@ namespace graphics3d
       ~point_light_system();
 
       
-      void initialize_point_light_system(::graphics3d::context* pcontext);
+      void initialize_point_light_system(::gpu::context* pgpucontext);
 
 
       virtual void render(::graphics3d::scene * pscene);

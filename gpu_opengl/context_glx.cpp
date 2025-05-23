@@ -46,7 +46,7 @@ namespace gpu_opengl
 
       auto psystem = system();
 
-      auto pgpu = psystem->get_gpu();
+      auto pgpu = application()->get_gpu();
 
       ::pointer<::opengl::opengl>popengl = pgpu;
 

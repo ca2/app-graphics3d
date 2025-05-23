@@ -9,7 +9,7 @@ namespace graphics3d_opengl
 {
 
    // Constructor
-   sky_box::sky_box(::particle * pparticle, const std::vector<std::string>& faces)
+   sky_box::sky_box(::particle * pparticle, const ::array<std::string>& faces)
       : facesCubemap(faces)
    {
       initialize(pparticle);

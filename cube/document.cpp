@@ -29,10 +29,10 @@ namespace cube
    //}
 
 
-   //void document::dump(dump_context & dumpcontext) const
+   //void document::dump(dump_context & dumpgpucontext) const
    //{
 
-   //   ::user::document::dump(dumpcontext);
+   //   ::user::document::dump(dumpgpucontext);
 
    //}
 

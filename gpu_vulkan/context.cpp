@@ -379,7 +379,7 @@ namespace gpu_vulkan
    //void context::create_offscreen_buffer(const ::int_size& size)
    //{
 
-   //   auto pgpu = psystem->get_gpu();
+   //   auto pgpu = application()->get_gpu();
 
    //   if (::is_null(pgpu))
    //   {
@@ -712,7 +712,7 @@ namespace gpu_vulkan
       //createLogicalDevice();
       //createCommandPool();
 
-      ::cast < approach > papproach = system()->get_gpu();
+      ::cast < approach > papproach = m_papproach;
 
       if (!papproach)
       {
@@ -784,7 +784,7 @@ namespace gpu_vulkan
    VkQueueFlags requestedQueueTypes)
    {
 
-      ::cast < approach > papproach = ::system()->get_gpu();
+      ::cast < approach > papproach = application()->get_gpu();
 
       ::cast < physical_device > pphysicaldevice = papproach->m_pphysicaldevice;
 
@@ -893,7 +893,7 @@ namespace gpu_vulkan
       // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
       if (extensionSupported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
       {
-         deviceExtensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+         deviceExtensions.add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
       }
 #endif
 
@@ -983,7 +983,7 @@ namespace gpu_vulkan
 
    //      auto psystem = system();
 
-   //      auto pgpu = psystem->get_gpu();
+   //      auto pgpu = application()->get_gpu();
 
    //      ::pointer < ::vulkan::vulkan > pvulkan = pgpu;
 
@@ -1147,7 +1147,7 @@ namespace gpu_vulkan
 
       //      auto psystem = system();
 
-      //      auto pgpu = psystem->get_gpu();
+      //      auto pgpu = application()->get_gpu();
 
       //      ::pointer < ::vulkan::vulkan > pvulkan = pgpu;
 
@@ -1633,12 +1633,12 @@ namespace gpu_vulkan
    //   m_pimpact = pimpact;
 
 
-   //   validationLayers.push_back("VK_LAYER_KHRONOS_validation");
+   //   validationLayers.add("VK_LAYER_KHRONOS_validation");
 
    //   if (m_papplication->m_bUseDraw2dProtoWindow)
    //   {
 
-   //      deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+   //      deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
    //   }
 
@@ -1658,7 +1658,7 @@ namespace gpu_vulkan
    //   appInfo.pApplicationName = "LittleVulkanEngine App";
    //   appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
    //   appInfo.pEngineName = "No Engine";
-   //   appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+   //   appInfo.approachVersion = VK_MAKE_VERSION(1, 0, 0);
    //   appInfo.apiVersion = VK_API_VERSION_1_0;
 
    //   VkInstanceCreateInfo createInfo = {};
@@ -1741,7 +1741,7 @@ namespace gpu_vulkan
    //      queueCreateInfo.queueFamilyIndex = queueFamily;
    //      queueCreateInfo.queueCount = 1;
    //      queueCreateInfo.pQueuePriorities = &queuePriority;
-   //      queueCreateInfos.push_back(queueCreateInfo);
+   //      queueCreateInfos.add(queueCreateInfo);
    //   }
 
    //   VkPhysicalDeviceFeatures deviceFeatures = {};
@@ -1922,7 +1922,7 @@ namespace gpu_vulkan
 
    //   if (enableValidationLayers)
    //   {
-   //      extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+   //      extensions.add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
    //   }
 
    //   return extensions;

@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "app-cube/cube/graphics3d/context.h"
 #include "app-cube/cube/graphics3d/scene.h"
-#include "app-cube/cube/graphics3d/shader.h"
+#include "app-cube/cube/gpu/shader.h"
 #include "app-cube/cube/impact.h"
 #include "point_light_system.h"
 
@@ -36,11 +36,11 @@ namespace graphics3d
    }
 
 
-   void point_light_system::initialize_point_light_system(::graphics3d::context * pcontext)
+   void point_light_system::initialize_point_light_system(::gpu::context * pgpucontext)
       //context* pvkcdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
-      //: m_pcontext{ pvkcdevice }
+      //: m_pgpucontext{ pvkcdevice }
    {
-      m_pcontext = pcontext;
+      m_pgpucontext = pgpucontext;
       //createPipelineLayout(globalSetLayout);
       //createPipeline(renderPass);
 
@@ -52,7 +52,7 @@ namespace graphics3d
    point_light_system::~point_light_system()
    {
 
-      //vkDestroyPipelineLayout(m_pcontext->logicalDevice(), pipelineLayout, nullptr);
+      //vkDestroyPipelineLayout(m_pgpucontext->logicalDevice(), pipelineLayout, nullptr);
 
    }
 
@@ -60,8 +60,8 @@ namespace graphics3d
    void point_light_system::prepare()//(VkDescriptorSetLayout globalSetLayout) 
    {
 
-      m_pshader = m_pcontext->m_pimpact->m_pengine->create_shader(
-         m_pcontext,
+      m_pshader = m_pgpucontext->m_pimpact->m_pengine->create_shader(
+         m_pgpucontext,
          "matter://Shaders/point_light.vert",
          "matter://Shaders/point_light.frag",
          point_light_properties(),
@@ -83,7 +83,7 @@ namespace graphics3d
       //pipelineLayoutInfo.pushConstantRangeCount = 1;
       //pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
       ////pipelineLayoutInfo.pPushConstantRanges = nullptr;
-      //if (vkCreatePipelineLayout(m_pcontext->logicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
+      //if (vkCreatePipelineLayout(m_pgpucontext->logicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
       //   VK_SUCCESS) {
       //   throw std::runtime_error("failed to create pipeline layout!");
       //}
@@ -106,7 +106,7 @@ namespace graphics3d
    //   m_ppipeline = __allocate pipeline();
 
    //   m_ppipeline->initialize_pipeline(
-   //      m_pcontext,
+   //      m_pgpucontext,
    //      vertShaderPath.c_str(),
    //      fragShaderPath.c_str(),
    //      pipelineConfig
@@ -123,7 +123,7 @@ namespace graphics3d
          if (ppointlight == nullptr) continue;
 
          // calculate distance
-         auto offset = m_pcontext->m_pimpact->m_pengine->m_pcamera->GetPosition() - obj->m_transform.translation;
+         auto offset = m_pgpucontext->m_pimpact->m_pengine->m_pcamera->GetPosition() - obj->m_transform.translation;
          float disSquared = glm::dot(offset, offset);
          sorted[disSquared] = obj->m_iId;
       }
@@ -164,7 +164,7 @@ namespace graphics3d
    void point_light_system::update(::graphics3d::scene* pscene)
    {
 
-      auto dt = m_pcontext->m_pimpact->m_pengine->dt();
+      auto dt = m_pgpucontext->m_pimpact->m_pengine->dt();
       auto rotateLight = glm::rotate(glm::mat4(1.f), 0.5f * dt, { 0.f, -1.f, 0.f });
 
       int lightIndex = 0;

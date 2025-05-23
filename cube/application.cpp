@@ -1,6 +1,6 @@
 #include "framework.h"
 #include "application.h"
-//#include "container.h"
+#include "app-cube/cube/gpu/approach.h"
 #include "graphics3d/engine.h"
 #include "graphics3d/model.h"
 
@@ -59,7 +59,75 @@ namespace cube
    //#endif
 
 
+   ::gpu::approach* application::get_gpu()
+   {
 
+      if (!m_pgpu)
+      {
+
+         create_gpu();
+
+      }
+      
+      return m_pgpu.get();
+
+   }
+
+
+   ::gpu::approach* application::gpu()
+   { 
+      
+      return m_pgpu.get(); 
+   
+   }
+
+
+   //#ifdef _OPENGL
+   void application::create_gpu()
+   {
+
+      if (m_pgpu)
+      {
+
+         return;
+
+      }
+
+      //load_library("gpu_opengl");
+
+      ::string strImplementation = m_papplication->draw2d_get_default_implementation_name();
+
+      auto& pfactoryGpu = factory("gpu", strImplementation);
+
+      //get_library("gpu_opengl");
+
+
+
+      //if (!pfactoryGpu)
+      //{
+
+      //   error() <<"gpu_opengl ([a-z0-9_]+)_factory has failed";
+
+      //   return pfactoryGpu;
+
+      //}
+
+      pfactoryGpu->merge_to_global_factory();
+
+      //auto estatus =
+
+      pfactoryGpu->__øconstruct(this, m_pgpu);
+
+      //if (!estatus)
+      //{
+
+      //   return estatus;
+
+      //}
+
+      //return ::success;
+
+   }
 
       //void application::run_application()
       //{

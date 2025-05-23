@@ -2,11 +2,11 @@
 #include "render.h"
 #include "application.h"
 #include "acme/parallelization/single_lock.h"
-#include "aura/graphics/gpu/shader.h"
-#include "aura/graphics/gpu/approach.h"
-#include "aura/graphics/gpu/context.h"
-#include "aura/graphics/gpu/program.h"
-#include "aura/graphics/gpu/cpu_buffer.h"
+#include "app-cube/cube/gpu/shader.h"
+#include "app-cube/cube/gpu/approach.h"
+#include "app-cube/cube/gpu/context.h"
+#include "app-cube/cube/gpu/program.h"
+#include "app-cube/cube/gpu/cpu_buffer.h"
 #include <math.h>
 #include "aura/graphics/draw2d/brush.h"
 #include "aura/graphics/image/image.h"
@@ -180,12 +180,12 @@ namespace app_cube_shader
 
       m_pgpucontext->make_current();
 
-      if (!m_pgpuprogram)
+      if (!m_pshader)
       {
 
          //estatus = 
          
-         __øconstruct(m_pgpuprogram);
+         __øconstruct(m_pshader);
 
       }
 
@@ -197,7 +197,7 @@ namespace app_cube_shader
       //{
 
          //estatus = 
-         m_pgpuprogram->create_program(this, strProjection, strFragment);
+         m_pshader->initialize_shader(m_pgpucontext, strProjection, strFragment);
 
       //}
 

@@ -1,6 +1,7 @@
 // Created by camilo on 2025-05-21 04:47 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "initializers.h"
+#include "app-cube/cube/gpu/types.h"
 /*
  * Assorted commonly used Vulkan helper functions
  *
@@ -451,7 +452,24 @@ namespace vulkan
       return (value + alignment - 1) & ~(alignment - 1);
    }
 
+   ::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions() {
+      ::array<VkVertexInputBindingDescription> bindingDescriptions(1, VkVertexInputBindingDescription{});
 
+      bindingDescriptions[0].binding = 0;
+      bindingDescriptions[0].stride = sizeof(::gpu::Vertex);
+      bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+      return bindingDescriptions;
+   }
+   ::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions() {
+      ::array<VkVertexInputAttributeDescription> attributeDescriptions{};
+
+      attributeDescriptions.add({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu::Vertex, position) });
+      attributeDescriptions.add({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu::Vertex, color) });
+      attributeDescriptions.add({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu::Vertex, normal) });
+      attributeDescriptions.add({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(::gpu::Vertex, uv) });
+
+      return attributeDescriptions;
+   }
 } // namespace vulkan
 
 

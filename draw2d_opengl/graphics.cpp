@@ -10,9 +10,9 @@
 #include "acme/parallelization/task.h"
 #include "acme/platform/application.h"
 #include "acme/prototype/mathematics/mathematics.h"
-#include "aura/graphics/gpu/approach.h"
-#include "aura/graphics/gpu/cpu_buffer.h"
-#include "aura/graphics/gpu/render.h"
+#include "app-cube/cube/gpu/approach.h"
+#include "app-cube/cube/gpu/cpu_buffer.h"
+#include "app-cube/cube/gpu/render.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #include "windowing_win32/window.h"
@@ -43,7 +43,7 @@ namespace opengl
 }
 
 
-BOOL CALLBACK draw2d_opengl_EnumFamCallBack(LPLOGFONT lplf,LPNEWTEXTMETRIC lpntm,unsigned int FontType,LPVOID p);
+BOOL CALLBACK draw2d_opengl_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p);
 
 
 class draw2d_opengl_enum_fonts
@@ -54,7 +54,7 @@ public:
    ::write_text::font_enumeration_item_array& m_itema;
 
 
-   draw2d_opengl_enum_fonts(::write_text::font_enumeration_item_array& itema):
+   draw2d_opengl_enum_fonts(::write_text::font_enumeration_item_array& itema) :
       m_itema(itema)
    {
 
@@ -69,14 +69,14 @@ namespace draw2d_opengl
 
    //ATOM class_atom = NULL;
 
-   graphics * thread_graphics()
+   graphics* thread_graphics()
    {
 
       return ::get_task()->payload("draw2d_opengl::graphics").cast < graphics >();
 
    }
 
-   void thread_graphics(graphics * pgraphics)
+   void thread_graphics(graphics* pgraphics)
    {
 
       ::get_task()->payload("draw2d_opengl::graphics") = pgraphics;
@@ -161,21 +161,21 @@ namespace draw2d_opengl
    //}
 
 
-   bool graphics::CreateDC(const ::scoped_string & lpszDriverName, const ::scoped_string & lpszDeviceName, const char * lpszOutput, const void* lpInitData)
+   bool graphics::CreateDC(const ::scoped_string& lpszDriverName, const ::scoped_string& lpszDeviceName, const char* lpszOutput, const void* lpInitData)
    {
       //return Attach(::CreateDC(lpszDriverName, lpszDeviceName, lpszOutput, (const DEVMODE*)lpInitData));
       return false;
    }
 
 
-   bool graphics::CreateIC(const ::scoped_string & lpszDriverName, const ::scoped_string & lpszDeviceName, const char * lpszOutput, const void* lpInitData)
+   bool graphics::CreateIC(const ::scoped_string& lpszDriverName, const ::scoped_string& lpszDeviceName, const char* lpszOutput, const void* lpInitData)
    {
       //return Attach(::CreateIC(lpszDriverName, lpszDeviceName, lpszOutput, (const DEVMODE*) lpInitData));
       return false;
    }
 
 
-   void graphics::create_memory_graphics(const ::int_size & sizeParam)
+   void graphics::create_memory_graphics(const ::int_size& sizeParam)
    {
 
       ::int_size size(sizeParam);
@@ -192,9 +192,9 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::create_window_graphics(::windowing::window * pwindow)
+   void graphics::create_window_graphics(::windowing::window* pwindow)
    {
-      
+
       m_pwindow = pwindow;
 
       opengl_defer_create_window_context(pwindow);
@@ -204,7 +204,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::CreateCompatibleDC(::draw2d::graphics * pgraphics)
+   void graphics::CreateCompatibleDC(::draw2d::graphics* pgraphics)
    {
 
       opengl_create_offscreen_buffer({ 1920, 1080 });
@@ -213,7 +213,7 @@ namespace draw2d_opengl
    }
 
 
-   bool graphics::opengl_create_offscreen_buffer(const ::int_size & size)
+   bool graphics::opengl_create_offscreen_buffer(const ::int_size& size)
    {
 
       //if (!draw2d_opengl()->m_popenglcontext) {
@@ -222,26 +222,22 @@ namespace draw2d_opengl
       //   return false;
       //}
 
+      if (!m_pgpucontext)
+      {
 
-       if (!m_pgpucontext)
-       {
+         auto pgpu = application()->get_gpu();
 
-           auto psystem = system();
+         m_pgpucontext = pgpu->create_context(this, ::gpu::e_output_cpu_buffer);
 
-           auto pgpu = psystem->get_gpu();
-
-           m_pgpucontext = pgpu->create_context(this);
-
-       }
-
-
+      }
 
       if (!m_pgpucontext)
       {
+
          return false;
          //auto psystem = system();
 
-         //auto pgpu = psystem->get_gpu();
+         //auto pgpu = application()->get_gpu();
 
          //m_pgpucontextOpenGL = pgpu->create_context(this);
 
@@ -257,7 +253,7 @@ namespace draw2d_opengl
       //if (__defer_construct(m_pgpucontextOpenGL))
       //{
 
-         m_pgpucontext->create_offscreen_buffer(size);
+      m_pgpucontext->create_offscreen_buffer(size);
 
       //}
 
@@ -425,7 +421,7 @@ namespace draw2d_opengl
    }
 
 
-   bool graphics::opengl_defer_create_window_context(::windowing::window * pwindow)
+   bool graphics::opengl_defer_create_window_context(::windowing::window* pwindow)
    {
 
       //if (!m_pgpucontext)
@@ -436,23 +432,19 @@ namespace draw2d_opengl
       //}
 
 
-       if (!m_pgpucontext)
-       {
+      if (!m_pgpucontext)
+      {
 
-           auto psystem = system();
+         auto pgpu = application()->get_gpu();
 
-           auto pgpu = psystem->get_gpu();
+         m_pgpucontext = pgpu->create_context(this, ::gpu::e_output_swap_chain);
 
-           m_pgpucontext = pgpu->create_context(this);
-
-       }
-
-
+      }
 
 
       m_pgpucontext->defer_create_window_context(pwindow);
 
-//      ::opengl::resize(size);
+      //      ::opengl::resize(size);
 
       return true;
 
@@ -460,7 +452,7 @@ namespace draw2d_opengl
 
 
 
-   int graphics::ExcludeUpdateRgn(::user::interaction_base * pwindow)
+   int graphics::ExcludeUpdateRgn(::user::interaction_base* pwindow)
    {
       // ASSERT(m_hdc != nullptr);
       //throw ::interface_only();
@@ -491,7 +483,7 @@ namespace draw2d_opengl
       return point;
    }
 
-   int_point graphics::SetBrushOrg(const ::int_point & point)
+   int_point graphics::SetBrushOrg(const ::int_point& point)
    {
       // ASSERT(m_hdc != nullptr);
       //VERIFY(::SetBrushOrgEx(m_hdc, point.x(), point.y(), &point));
@@ -506,7 +498,7 @@ namespace draw2d_opengl
       return 0;
    }
 
-   ::draw2d::bitmap * graphics::SelectObject(::draw2d::bitmap * pbitmap)
+   ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pbitmap)
    {
 
       if (m_pbitmap == pbitmap)
@@ -600,10 +592,10 @@ namespace draw2d_opengl
    //   return nullptr;
    //}
 
-   
+
    color32_t graphics::GetNearestColor(color32_t crColor) const
    {
-      
+
       //return ::GetNearestColor(m_hdc, crColor);
       return color::transparent;
 
@@ -621,35 +613,35 @@ namespace draw2d_opengl
       //::UpdateColors(m_hdc);
    }
 
-   
+
    int graphics::GetPolyFillMode() const
    {
       //return ::GetPolyFillMode(m_hdc);
       return 0;
    }
 
-   
+
    int graphics::GetROP2() const
    {
       //return ::GetROP2(m_hdc);
       return 0;
    }
 
-   
+
    int graphics::GetStretchBltMode() const
    {
       //return ::GetStretchBltMode(m_hdc);
       return 0;
    }
 
-   
+
    int graphics::GetMapMode() const
    {
       //return ::GetMapMode(m_hdc);
       return 0;
    }
 
-   
+
    int graphics::GetGraphicsMode() const
    {
       //return ::GetGraphicsMode(m_hdc);
@@ -703,7 +695,7 @@ namespace draw2d_opengl
    }
 
    // non-virtual helpers calling virtual mapping functions
-   int_point graphics::set_origin(const ::int_point & point)
+   int_point graphics::set_origin(const ::int_point& point)
    {
 
       return set_origin(point.x(), point.y());
@@ -715,32 +707,32 @@ namespace draw2d_opengl
    //   return set_context_extents(size.cx(), size.cy());
    //}
 
-   int_point graphics::SetWindowOrg(const ::int_point & point)
+   int_point graphics::SetWindowOrg(const ::int_point& point)
    {
       return SetWindowOrg(point.x(), point.y());
    }
 
-   int_size graphics::set_window_ext(const ::int_size & size)
+   int_size graphics::set_window_ext(const ::int_size& size)
    {
       return set_window_ext(size.cx(), size.cy());
    }
 
-   void graphics::DPtoLP(::double_point * lpPoints, ::collection::count nCount)
+   void graphics::DPtoLP(::double_point* lpPoints, ::collection::count nCount)
    {
       //::DPtoLP(m_hdc, lpPoints, (int) nCount);
    }
 
-   void graphics::DPtoLP(::double_rectangle * prectangle)
+   void graphics::DPtoLP(::double_rectangle* prectangle)
    {
       //::DPtoLP(m_hdc, (::double_point *)rectangle, 2);
    }
 
-   void graphics::LPtoDP(::double_point * lpPoints,::collection::count nCount)
+   void graphics::LPtoDP(::double_point* lpPoints, ::collection::count nCount)
    {
       //::LPtoDP(m_hdc, lpPoints, (int)  nCount);
    }
 
-   void graphics::LPtoDP(::double_rectangle * prectangle)
+   void graphics::LPtoDP(::double_rectangle* prectangle)
    {
       //::LPtoDP(m_hdc, (::double_point *)rectangle, 2);
    }
@@ -753,7 +745,7 @@ namespace draw2d_opengl
 
    }
 
-   
+
    bool graphics::FrameRgn(::draw2d::region* pRgn, ::draw2d::brush* pBrush, int nWidth, int nHeight)
    {
 
@@ -797,9 +789,9 @@ namespace draw2d_opengl
    }
 
 
-   bool graphics::PtVisible(const ::int_point & point) const
+   bool graphics::PtVisible(const ::int_point& point) const
    {
-   
+
       // ASSERT(m_hdc != nullptr);   // call virtual
       return PtVisible(point.x(), point.y());
 
@@ -826,7 +818,7 @@ namespace draw2d_opengl
    //   return ::draw2d::graphics::G;
    //}
 
-   void graphics::polyline(const ::double_point* lpPoints,::collection::count nCount)
+   void graphics::polyline(const ::double_point* lpPoints, ::collection::count nCount)
    {
 
       if (nCount <= 0)
@@ -871,17 +863,17 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::arc(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4)
+   void graphics::arc(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
    {
 
       auto pmathematics = mathematics();
 
-      double centerx    = (x2 + x1) / 2.0;
-      double centery    = (y2 + y1) / 2.0;
+      double centerx = (x2 + x1) / 2.0;
+      double centery = (y2 + y1) / 2.0;
 
-      double start      = atan2(y3 - centery,x3 - centerx) * 180.0 / π;
-      double end        = atan2(y4 - centery,x4 - centerx) * 180.0 / π;
-      double sweep      = fabs(end - start);
+      double start = atan2(y3 - centery, x3 - centerx) * 180.0 / π;
+      double end = atan2(y4 - centery, x4 - centerx) * 180.0 / π;
+      double sweep = fabs(end - start);
 
       /*if(GetArcDirection() == AD_COUNTERCLOCKWISE)
       {
@@ -889,7 +881,7 @@ namespace draw2d_opengl
       }
       */
 
-      return arc(x1,y1,x2-x1,y2-y1,start,sweep);
+      return arc(x1, y1, x2 - x1, y2 - y1, start, sweep);
 
    }
 
@@ -915,7 +907,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::arc(double x1,double y1,double w,double h,double start, double extends)
+   void graphics::arc(double x1, double y1, double w, double h, double start, double extends)
    {
 
       //::plusplus::double_rectangle ::double_rectangle(x1,y1,w,h);
@@ -939,7 +931,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::fill_rectangle(const ::double_rectangle & rectangle, ::draw2d::brush* pbrush)
+   void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
    {
 
       glBegin(GL_QUADS);
@@ -955,7 +947,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::frame_rectangle(const ::double_rectangle & rectangleParam,::draw2d::brush* pBrush)
+   void graphics::frame_rectangle(const ::double_rectangle& rectangleParam, ::draw2d::brush* pBrush)
    {
 
       //// ASSERT(m_hdc != nullptr);
@@ -965,7 +957,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::invert_rectangle(const ::double_rectangle & rectangleParam)
+   void graphics::invert_rectangle(const ::double_rectangle& rectangleParam)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -1246,7 +1238,7 @@ namespace draw2d_opengl
    }
 
 
-   bool graphics::Chord(const ::int_rectangle & rectangleParam,const ::int_point & pointStart,const ::int_point & pointEnd)
+   bool graphics::Chord(const ::int_rectangle& rectangleParam, const ::int_point& pointStart, const ::int_point& pointEnd)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -1258,8 +1250,8 @@ namespace draw2d_opengl
 
    }
 
-   
-   void graphics::DrawFocusRect(const ::int_rectangle & rectangleParam)
+
+   void graphics::DrawFocusRect(const ::int_rectangle& rectangleParam)
    {
       // ASSERT(m_hdc != nullptr);
       //::DrawFocusRect(m_hdc,&rectangleParam);
@@ -1278,7 +1270,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::draw_ellipse(const ::double_rectangle &  rectangleParam)
+   void graphics::draw_ellipse(const ::double_rectangle& rectangleParam)
    {
 
       //set_smooth_mode(::draw2d::e_smooth_mode_high);
@@ -1302,7 +1294,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::fill_ellipse(const ::double_rectangle &  rectangleParam)
+   void graphics::fill_ellipse(const ::double_rectangle& rectangleParam)
    {
 
       //set_smooth_mode(::draw2d::e_smooth_mode_high);
@@ -1389,7 +1381,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::fill_polygon(const ::double_point * lpPoints,::collection::count nCount)
+   void graphics::fill_polygon(const ::double_point* lpPoints, ::collection::count nCount)
    {
 
       //   if(nCount <= 0)
@@ -1480,7 +1472,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::draw_polygon(const ::double_point* lpPoints,::collection::count nCount)
+   void graphics::draw_polygon(const ::double_point* lpPoints, ::collection::count nCount)
    {
 
       //if (nCount <= 0)
@@ -1569,7 +1561,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::polygon(const ::double_point* lpPoints,::collection::count nCount)
+   void graphics::polygon(const ::double_point* lpPoints, ::collection::count nCount)
    {
 
       //if(nCount <= 0)
@@ -1621,7 +1613,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::poly_polygon(const ::double_point* lpPoints, const int * lpPolyCounts,::collection::count nCount)
+   void graphics::poly_polygon(const ::double_point* lpPoints, const int* lpPolyCounts, ::collection::count nCount)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -1710,8 +1702,8 @@ namespace draw2d_opengl
 
    //}
 
-   
-   void graphics::rectangle(const ::double_rectangle &  rectangleParam)
+
+   void graphics::rectangle(const ::double_rectangle& rectangleParam)
    {
 
       fill_rectangle(rectangleParam);
@@ -1743,9 +1735,9 @@ namespace draw2d_opengl
          ::opengl::color(ppen->m_color);
 
       }
-      
+
       ::opengl::vertex2f(rectangle);
-      
+
       glEnd();
 
       //return true;
@@ -1753,7 +1745,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::draw_rectangle(const ::double_rectangle & rectangle)
+   void graphics::draw_rectangle(const ::double_rectangle& rectangle)
    {
 
       draw_rectangle(rectangle, m_ppen);
@@ -1763,14 +1755,14 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::fill_rectangle(const ::double_rectangle & rectangle)
+   void graphics::fill_rectangle(const ::double_rectangle& rectangle)
    {
 
       fill_rectangle(rectangle, m_pbrush);
 
    }
 
-   
+
    //void graphics::round_rectangle(double x1, double y1, double x2, double y2, double x3, double y3)
    //{
    //
@@ -1782,7 +1774,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::round_rectangle(const ::double_rectangle & rectangleParam,const ::int_point & point)
+   void graphics::round_rectangle(const ::double_rectangle& rectangleParam, const ::int_point& point)
    {
       //// ASSERT(m_hdc != nullptr);
       //return ::RoundRect(m_hdc, rectangleParam.left(), rectangleParam.top(),
@@ -1793,122 +1785,122 @@ namespace draw2d_opengl
    }
 
 
-//   bool graphics::PatBlt(double x, double y, double nWidth, double nHeight)
-//   {
-//      //// ASSERT(m_hdc != nullptr);
-//      //return ::PatBlt(m_hdc, x, y, nWidth, nHeight, dwRop) != false;
-//
-//      return false;
-//
-//   }
-//
-//
-//   bool graphics::BitBltRaw(double x, double y, double nWidth, double nHeight, ::draw2d::graphics * pgraphicsSrc, double xSrc, double ySrc)
-//   {
-////      if (m_pgraphics == nullptr)
-////         return false;
-////
-////      if (::draw2d::graphics::BitBlt(x, y, nWidth, nHeight, pgraphicsSrc, xSrc, ySrc, dwRop))
-////         return true;
-////
-//      try
-//      {
-//
-//         if(pgraphicsSrc == nullptr)
-//            return false;
-//
-//         if (pgraphicsSrc->get_current_bitmap() == nullptr)
-//            return false;
-//
-//         if (pgraphicsSrc->get_current_bitmap()->get_os_data() == nullptr)
-//            return false;
-//
-//         ::pointer<bitmap>pbitmap = pgraphicsSrc->get_current_bitmap();
-//
-//         //pbitmap->create_texture(0);
-//
-//         //glBegin(GL_QUADS);
-//         //// Front Face
-//         //glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);
-//         //glTexCoord2f(1.0f, 0.0f); glVertex3f(1.0f, -1.0f, 1.0f);
-//         //glTexCoord2f(1.0f, 1.0f); glVertex3f(1.0f, 1.0f, 1.0f);
-//         //glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, 1.0f, 1.0f);
-//
-//
-////
-////
-////         return m_pgraphics->DrawImage(
-////                   (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data(),
-////                   x, y, xSrc + pgraphicsSrc->get_origin().x(), ySrc + pgraphicsSrc->get_origin().y(), nWidth, nHeight, plusplus::UnitPixel) == plusplus::Status::Ok;
-////
-//      }
-//      catch(...)
-//      {
-//         return false;
-//      }
-////
-////      //return ::BitBlt(m_hdc, x, y, nWidth, nHeight, GL2D_HDC(pgraphicsSrc), xSrc, ySrc);
-////
-////gdi_fallback:
-////
-////      HDC hdcDst = get_hdc();
-////
-////      if(hdcDst == nullptr)
-////         return false;
-////
-////      HDC hdcSrc = GL2D_GRAPHICS(pgraphicsSrc)->get_hdc();
-////
-////      if(hdcSrc == nullptr)
-////      {
-////
-////         release_hdc(hdcDst);
-////
-////         return false;
-////
-////      }
-////
-////      bool bOk = ::BitBlt(hdcDst, x, y, nWidth, nHeight, hdcSrc, x, y, dwRop) != false;
-////
-////      GL2D_GRAPHICS(pgraphicsSrc)->release_hdc(hdcSrc);
-////
-////      release_hdc(hdcDst);
-////
-////      return bOk;
-//
-//      return true;
-//
-//   }
-//
-//
-//   bool graphics::StretchBltRaw(double xDst, double yDst, double nDstWidth, double nDstHeight, ::draw2d::graphics * pgraphicsSrc, double xSrc, double ySrc, double nSrcWidth, double nSrcHeight)
-//   {
-//
-//      //if(pgraphicsSrc == nullptr)
-//      //   return false;
-//
-//      //plusplus::rectF dstRect((plusplus::REAL) xDst, (plusplus::REAL) yDst, (plusplus::REAL) nDstWidth, (plusplus::REAL) nDstHeight);
-//
-//      //plusplus::rectF srcRect((plusplus::REAL) xSrc, (plusplus::REAL) ySrc, (plusplus::REAL) nSrcWidth, (plusplus::REAL) nSrcHeight);
-//
-//      //if(pgraphicsSrc == nullptr || pgraphicsSrc->get_current_bitmap() == nullptr)
-//      //   return false;
-//
-//      //try
-//      //{
-//      //   return m_pgraphics->DrawImage((plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data(),  dstRect, srcRect, plusplus::UnitPixel) == plusplus::Status::Ok;
-//      //}
-//      //catch(...)
-//      //{
-//
-//      //}
-//
-//      //return false;
-//
-//      ////return ::StretchBlt(m_hdc, x, y, nWidth, nHeight, GL2D_HDC(pgraphicsSrc), xSrc, ySrc, nSrcWidth, nSrcHeight);
-//
-//      return true;
-//
-//   }
+   //   bool graphics::PatBlt(double x, double y, double nWidth, double nHeight)
+   //   {
+   //      //// ASSERT(m_hdc != nullptr);
+   //      //return ::PatBlt(m_hdc, x, y, nWidth, nHeight, dwRop) != false;
+   //
+   //      return false;
+   //
+   //   }
+   //
+   //
+   //   bool graphics::BitBltRaw(double x, double y, double nWidth, double nHeight, ::draw2d::graphics * pgraphicsSrc, double xSrc, double ySrc)
+   //   {
+   ////      if (m_pgraphics == nullptr)
+   ////         return false;
+   ////
+   ////      if (::draw2d::graphics::BitBlt(x, y, nWidth, nHeight, pgraphicsSrc, xSrc, ySrc, dwRop))
+   ////         return true;
+   ////
+   //      try
+   //      {
+   //
+   //         if(pgraphicsSrc == nullptr)
+   //            return false;
+   //
+   //         if (pgraphicsSrc->get_current_bitmap() == nullptr)
+   //            return false;
+   //
+   //         if (pgraphicsSrc->get_current_bitmap()->get_os_data() == nullptr)
+   //            return false;
+   //
+   //         ::pointer<bitmap>pbitmap = pgraphicsSrc->get_current_bitmap();
+   //
+   //         //pbitmap->create_texture(0);
+   //
+   //         //glBegin(GL_QUADS);
+   //         //// Front Face
+   //         //glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);
+   //         //glTexCoord2f(1.0f, 0.0f); glVertex3f(1.0f, -1.0f, 1.0f);
+   //         //glTexCoord2f(1.0f, 1.0f); glVertex3f(1.0f, 1.0f, 1.0f);
+   //         //glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, 1.0f, 1.0f);
+   //
+   //
+   ////
+   ////
+   ////         return m_pgraphics->DrawImage(
+   ////                   (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data(),
+   ////                   x, y, xSrc + pgraphicsSrc->get_origin().x(), ySrc + pgraphicsSrc->get_origin().y(), nWidth, nHeight, plusplus::UnitPixel) == plusplus::Status::Ok;
+   ////
+   //      }
+   //      catch(...)
+   //      {
+   //         return false;
+   //      }
+   ////
+   ////      //return ::BitBlt(m_hdc, x, y, nWidth, nHeight, GL2D_HDC(pgraphicsSrc), xSrc, ySrc);
+   ////
+   ////gdi_fallback:
+   ////
+   ////      HDC hdcDst = get_hdc();
+   ////
+   ////      if(hdcDst == nullptr)
+   ////         return false;
+   ////
+   ////      HDC hdcSrc = GL2D_GRAPHICS(pgraphicsSrc)->get_hdc();
+   ////
+   ////      if(hdcSrc == nullptr)
+   ////      {
+   ////
+   ////         release_hdc(hdcDst);
+   ////
+   ////         return false;
+   ////
+   ////      }
+   ////
+   ////      bool bOk = ::BitBlt(hdcDst, x, y, nWidth, nHeight, hdcSrc, x, y, dwRop) != false;
+   ////
+   ////      GL2D_GRAPHICS(pgraphicsSrc)->release_hdc(hdcSrc);
+   ////
+   ////      release_hdc(hdcDst);
+   ////
+   ////      return bOk;
+   //
+   //      return true;
+   //
+   //   }
+   //
+   //
+   //   bool graphics::StretchBltRaw(double xDst, double yDst, double nDstWidth, double nDstHeight, ::draw2d::graphics * pgraphicsSrc, double xSrc, double ySrc, double nSrcWidth, double nSrcHeight)
+   //   {
+   //
+   //      //if(pgraphicsSrc == nullptr)
+   //      //   return false;
+   //
+   //      //plusplus::rectF dstRect((plusplus::REAL) xDst, (plusplus::REAL) yDst, (plusplus::REAL) nDstWidth, (plusplus::REAL) nDstHeight);
+   //
+   //      //plusplus::rectF srcRect((plusplus::REAL) xSrc, (plusplus::REAL) ySrc, (plusplus::REAL) nSrcWidth, (plusplus::REAL) nSrcHeight);
+   //
+   //      //if(pgraphicsSrc == nullptr || pgraphicsSrc->get_current_bitmap() == nullptr)
+   //      //   return false;
+   //
+   //      //try
+   //      //{
+   //      //   return m_pgraphics->DrawImage((plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data(),  dstRect, srcRect, plusplus::UnitPixel) == plusplus::Status::Ok;
+   //      //}
+   //      //catch(...)
+   //      //{
+   //
+   //      //}
+   //
+   //      //return false;
+   //
+   //      ////return ::StretchBlt(m_hdc, x, y, nWidth, nHeight, GL2D_HDC(pgraphicsSrc), xSrc, ySrc, nSrcWidth, nSrcHeight);
+   //
+   //      return true;
+   //
+   //   }
 
 
    ::color::color graphics::GetPixel(int x, int y) const
@@ -1920,7 +1912,7 @@ namespace draw2d_opengl
    }
 
 
-   ::color::color graphics::GetPixel(const ::int_point & point) const
+   ::color::color graphics::GetPixel(const ::int_point& point) const
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetPixel(m_hdc, point.x(), point.y());
@@ -1931,13 +1923,13 @@ namespace draw2d_opengl
 
    ::color::color graphics::SetPixel(double x, double y, ::color::color crColor)
    {
-      
+
       return color::transparent;
 
    }
 
 
-   ::color::color graphics::SetPixel(const ::int_point & point, ::color::color crColor)
+   ::color::color graphics::SetPixel(const ::int_point& point, ::color::color crColor)
    {
 
       //fill_solid_rect_coord(point.x(),point.y(),1,1,crColor);
@@ -1946,79 +1938,79 @@ namespace draw2d_opengl
 
    }
 
-   
-//   bool graphics::FloodFill(double x, double y, color32_t crColor)
-//   {
-//
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::FloodFill(m_hdc, x, y, crColor) != false;
-//      return 0;
-//
-//   }
-//
-//
-//   bool graphics::ExtFloodFill(double x, double y, color32_t crColor, unsigned int nFillType)
-//   {
-//
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::ExtFloodFill(m_hdc, x, y, crColor, nFillType) != false;
-//
-//      return 0;
-//
-//   }
+
+   //   bool graphics::FloodFill(double x, double y, color32_t crColor)
+   //   {
+   //
+   //      // ASSERT(m_hdc != nullptr);
+   //      //return ::FloodFill(m_hdc, x, y, crColor) != false;
+   //      return 0;
+   //
+   //   }
+   //
+   //
+   //   bool graphics::ExtFloodFill(double x, double y, color32_t crColor, unsigned int nFillType)
+   //   {
+   //
+   //      // ASSERT(m_hdc != nullptr);
+   //      //return ::ExtFloodFill(m_hdc, x, y, crColor, nFillType) != false;
+   //
+   //      return 0;
+   //
+   //   }
 
 
-   //int_size graphics::GetTabbedTextExtent(const ::string & lpszString, character_count nCount, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
-   //{
+      //int_size graphics::GetTabbedTextExtent(const ::string & lpszString, character_count nCount, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
+      //{
 
-   //   // ASSERT(m_hdc != nullptr);
+      //   // ASSERT(m_hdc != nullptr);
 
-   //   return nullptr;
+      //   return nullptr;
 
-   //}
-
-
-   //int_size graphics::GetTabbedTextExtent(const ::string & str, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
-   //{
-
-   //   // ASSERT(m_hdc != nullptr);
-
-   //   return nullptr;
-
-   //}
+      //}
 
 
-   //int_size graphics::GetOutputTabbedTextExtent(const ::string & lpszString, character_count nCount, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
-   //{
+      //int_size graphics::GetTabbedTextExtent(const ::string & str, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
+      //{
 
-   //   // ASSERT(m_hdc != nullptr);
+      //   // ASSERT(m_hdc != nullptr);
 
-   //   //return ::GetTabbedTextExtent(m_hdc, lpszString, (double) nCount, (int) nTabPositions, lpnTabStopPositions);
-   //   return nullptr;
+      //   return nullptr;
 
-   //}
-
-
-   //int_size graphics::GetOutputTabbedTextExtent(const ::string & str, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
-   //{
-
-   //   // ASSERT(m_hdc != nullptr);
-
-   //   //return ::GetTabbedTextExtent(m_hdc, str, (double) str.length(), (int) nTabPositions, lpnTabStopPositions);
-   //   return nullptr;
-
-   //}
+      //}
 
 
-   //bool graphics::GrayString(::draw2d::brush* pBrush, bool (CALLBACK* lpfnOutput)(HDC, LPARAM, double), LPARAM lpData, double nCount,double x, double y, double nWidth, double nHeight)
-   //{
+      //int_size graphics::GetOutputTabbedTextExtent(const ::string & lpszString, character_count nCount, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
+      //{
 
-   //   // ASSERT(m_hdc != nullptr);
+      //   // ASSERT(m_hdc != nullptr);
 
-   //   //return ::GrayString(m_hdc, (HBRUSH)pBrush->get_os_data(),(GRAYSTRINGPROC)lpfnOutput, lpData, nCount, x, y, nWidth, nHeight) != false;
-   //   return false;
+      //   //return ::GetTabbedTextExtent(m_hdc, lpszString, (double) nCount, (int) nTabPositions, lpnTabStopPositions);
+      //   return nullptr;
 
-   //}
+      //}
+
+
+      //int_size graphics::GetOutputTabbedTextExtent(const ::string & str, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
+      //{
+
+      //   // ASSERT(m_hdc != nullptr);
+
+      //   //return ::GetTabbedTextExtent(m_hdc, str, (double) str.length(), (int) nTabPositions, lpnTabStopPositions);
+      //   return nullptr;
+
+      //}
+
+
+      //bool graphics::GrayString(::draw2d::brush* pBrush, bool (CALLBACK* lpfnOutput)(HDC, LPARAM, double), LPARAM lpData, double nCount,double x, double y, double nWidth, double nHeight)
+      //{
+
+      //   // ASSERT(m_hdc != nullptr);
+
+      //   //return ::GrayString(m_hdc, (HBRUSH)pBrush->get_os_data(),(GRAYSTRINGPROC)lpfnOutput, lpData, nCount, x, y, nWidth, nHeight) != false;
+      //   return false;
+
+      //}
 
 
    unsigned int graphics::GetTextAlign()
@@ -2057,7 +2049,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::get_text_metrics(::write_text::text_metric * lpMetrics)
+   void graphics::get_text_metrics(::write_text::text_metric* lpMetrics)
    {
 
       set(m_pfont);
@@ -2132,7 +2124,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::get_output_text_metrics(::write_text::text_metric * lpMetrics)
+   void graphics::get_output_text_metrics(::write_text::text_metric* lpMetrics)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -2230,7 +2222,7 @@ namespace draw2d_opengl
 
 
    // Printer Escape Functions
-   int graphics::Escape(int nEscape, int nCount, const ::scoped_string & lpszInData, LPVOID lpOutData)
+   int graphics::Escape(int nEscape, int nCount, const ::scoped_string& lpszInData, LPVOID lpOutData)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::Escape(m_hdc, nEscape, nCount, lpszInData, lpOutData);
@@ -2240,7 +2232,7 @@ namespace draw2d_opengl
 
 
    // graphics 3.1 Specific functions
-   unsigned int graphics::SetBoundsRect(const ::double_rectangle & rectangleBounds, unsigned int flags)
+   unsigned int graphics::SetBoundsRect(const ::double_rectangle& rectangleBounds, unsigned int flags)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::SetBoundsRect(m_hdc, &rectangleBounds, flags);
@@ -2249,7 +2241,7 @@ namespace draw2d_opengl
    }
 
 
-   unsigned int graphics::GetBoundsRect(::double_rectangle * rectangleBounds, unsigned int flags)
+   unsigned int graphics::GetBoundsRect(::double_rectangle* rectangleBounds, unsigned int flags)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetBoundsRect(m_hdc, rectangleBounds, flags);
@@ -2258,7 +2250,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::resize(const ::int_size & sizeWindow)
+   void graphics::resize(const ::int_size& sizeWindow)
    {
 
       m_sizeWindow = sizeWindow;
@@ -2402,53 +2394,53 @@ namespace draw2d_opengl
    }
 
 
-//   bool graphics::MaskBlt(double x, double y, double nWidth, double nHeight, ::draw2d::graphics * pgraphicsSrc,
-//                          double xSrc, double ySrc, ::draw2d::bitmap& maskBitmap, double xMask, double yMask)
-//   {
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::MaskBlt(m_hdc, x, y, nWidth, nHeight, GL2D_HDC(pgraphicsSrc),
-//        //               xSrc, ySrc,  (HBITMAP)maskBitmap.get_os_data(), xMask, yMask, dwRop) != false;
-//      return 0;
-//
-//   }
-//
-//
-//   bool graphics::PlgBlt(::double_point * lpPoint, ::draw2d::graphics * pgraphicsSrc, double xSrc, double ySrc,
-//                         double nWidth, double nHeight, ::draw2d::bitmap& maskBitmap, double xMask, double yMask)
-//   {
-//
-//      /*try
-//      {
-//
-//         if(pgraphicsSrc == nullptr)
-//            return false;
-//
-//         if(pgraphicsSrc->get_current_bitmap() == nullptr)
-//            return false;
-//
-//         if(pgraphicsSrc->get_current_bitmap()->get_os_data() == nullptr)
-//            return false;
-//
-//         plusplus::Point p[3];
-//
-//         p[0].X = lpPoint[0].x();
-//         p[0].Y = lpPoint[0].y();
-//         p[1].X = lpPoint[1].x();
-//         p[1].Y = lpPoint[1].y();
-//         p[2].X = lpPoint[2].x();
-//         p[2].Y = lpPoint[2].y();
-//
-//         return m_pgraphics->DrawImage((plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data(), p, 3) == plusplus::Status::Ok;
-//
-//      }
-//      catch(...)
-//      {
-//         return false;
-//      }
-//      */
-//      return true;
-//
-//   }
+   //   bool graphics::MaskBlt(double x, double y, double nWidth, double nHeight, ::draw2d::graphics * pgraphicsSrc,
+   //                          double xSrc, double ySrc, ::draw2d::bitmap& maskBitmap, double xMask, double yMask)
+   //   {
+   //      // ASSERT(m_hdc != nullptr);
+   //      //return ::MaskBlt(m_hdc, x, y, nWidth, nHeight, GL2D_HDC(pgraphicsSrc),
+   //        //               xSrc, ySrc,  (HBITMAP)maskBitmap.get_os_data(), xMask, yMask, dwRop) != false;
+   //      return 0;
+   //
+   //   }
+   //
+   //
+   //   bool graphics::PlgBlt(::double_point * lpPoint, ::draw2d::graphics * pgraphicsSrc, double xSrc, double ySrc,
+   //                         double nWidth, double nHeight, ::draw2d::bitmap& maskBitmap, double xMask, double yMask)
+   //   {
+   //
+   //      /*try
+   //      {
+   //
+   //         if(pgraphicsSrc == nullptr)
+   //            return false;
+   //
+   //         if(pgraphicsSrc->get_current_bitmap() == nullptr)
+   //            return false;
+   //
+   //         if(pgraphicsSrc->get_current_bitmap()->get_os_data() == nullptr)
+   //            return false;
+   //
+   //         plusplus::Point p[3];
+   //
+   //         p[0].X = lpPoint[0].x();
+   //         p[0].Y = lpPoint[0].y();
+   //         p[1].X = lpPoint[1].x();
+   //         p[1].Y = lpPoint[1].y();
+   //         p[2].X = lpPoint[2].x();
+   //         p[2].Y = lpPoint[2].y();
+   //
+   //         return m_pgraphics->DrawImage((plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data(), p, 3) == plusplus::Status::Ok;
+   //
+   //      }
+   //      catch(...)
+   //      {
+   //         return false;
+   //      }
+   //      */
+   //      return true;
+   //
+   //   }
 
 
 
@@ -2461,7 +2453,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::SetPixelV(const ::int_point & point, ::color::color crColor)
+   void graphics::SetPixelV(const ::int_point& point, ::color::color crColor)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::SetPixelV(m_hdc, point.x(), point.y(), crColor) != false;
@@ -2480,7 +2472,7 @@ namespace draw2d_opengl
 
 
 
-   void graphics::arc_to(const ::int_rectangle & rectangleParam,const ::int_point & pointStart,const ::int_point & pointEnd)
+   void graphics::arc_to(const ::int_rectangle& rectangleParam, const ::int_point& pointStart, const ::int_point& pointEnd)
    {
       // ASSERT(m_hdc != nullptr);
       //return ArcTo(rectangleParam.left(), rectangleParam.top(), rectangleParam.right(),
@@ -2500,7 +2492,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::poly_polyline(const ::double_point* lpPoints, const int * lpPolyPoints, ::collection::count nCount)
+   void graphics::poly_polyline(const ::double_point* lpPoints, const int* lpPolyPoints, ::collection::count nCount)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -2520,14 +2512,14 @@ namespace draw2d_opengl
    }
 
 
-   ::draw2d::pen * graphics::get_current_pen()
+   ::draw2d::pen* graphics::get_current_pen()
    {
 
       return m_ppen;
 
    }
 
-   ::draw2d::brush * graphics::get_current_brush()
+   ::draw2d::brush* graphics::get_current_brush()
    {
 
       return m_pbrush;
@@ -2541,14 +2533,14 @@ namespace draw2d_opengl
 
    //}
 
-   ::write_text::font * graphics::get_current_font()
+   ::write_text::font* graphics::get_current_font()
    {
 
       return m_pfont;
 
    }
 
-   ::draw2d::bitmap * graphics::get_current_bitmap()
+   ::draw2d::bitmap* graphics::get_current_bitmap()
    {
 
       return m_pbitmap;
@@ -2567,7 +2559,7 @@ namespace draw2d_opengl
    }
 
 
-   int graphics::DrawEscape(int nEscape, int nInputSize, const ::scoped_string & lpszInputData)
+   int graphics::DrawEscape(int nEscape, int nInputSize, const ::scoped_string& lpszInputData)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -2579,7 +2571,7 @@ namespace draw2d_opengl
    }
 
 
-   int graphics::Escape(int nEscape, int nInputSize, __in_bcount(nInputSize) const char * lpszInputData,  int nOutputSize, __out_bcount(nOutputSize) char * lpszOutputData)
+   int graphics::Escape(int nEscape, int nInputSize, __in_bcount(nInputSize) const char* lpszInputData, int nOutputSize, __out_bcount(nOutputSize) char* lpszOutputData)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::ExtEscape(m_hdc, nEscape, nInputSize, lpszInputData, nOutputSize, lpszOutputData);
@@ -2626,9 +2618,9 @@ namespace draw2d_opengl
 
            m_ppath = ___new plusplus::GraphicsPath ();
       */
-//      return m_ppath != nullptr;
+      //      return m_ppath != nullptr;
 
-      //return true;
+            //return true;
 
    }
 
@@ -2667,12 +2659,12 @@ namespace draw2d_opengl
 
    void graphics::flatten_path()
    {
-//      return m_ppath->Flatten() == plusplus::Status::Ok;
-      //return true;
+      //      return m_ppath->Flatten() == plusplus::Status::Ok;
+            //return true;
 
    }
 
-   
+
    void graphics::stroke_and_fill_path()
    {
 
@@ -2690,7 +2682,7 @@ namespace draw2d_opengl
    void graphics::widen_path()
    {
 
-      
+
    }
 
 
@@ -2760,7 +2752,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::draw(::draw2d::path * ppath)
+   void graphics::draw(::draw2d::path* ppath)
    {
 
       //m_pgraphics->SetSmoothingMode(plusplus::SmoothingModeAntiAlias);
@@ -2773,7 +2765,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::draw(::draw2d::path * ppath, ::draw2d::pen * ppen)
+   void graphics::draw(::draw2d::path* ppath, ::draw2d::pen* ppen)
    {
 
       //return m_pgraphics->DrawPath((::plusplus::Pen *) ppen->get_os_data(),(dynamic_cast < ::draw2d_opengl::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
@@ -2783,7 +2775,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::fill(::draw2d::path * ppath)
+   void graphics::fill(::draw2d::path* ppath)
    {
 
       //return m_pgraphics->FillPath(gl2d_brush(),(dynamic_cast < ::draw2d_opengl::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
@@ -2793,7 +2785,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::fill(::draw2d::path * ppath, ::draw2d::brush * pbrush)
+   void graphics::fill(::draw2d::path* ppath, ::draw2d::brush* pbrush)
    {
 
       //return m_pgraphics->FillPath((::plusplus::Brush *) pbrush->get_os_data(),(dynamic_cast < ::draw2d_opengl::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
@@ -2850,8 +2842,8 @@ namespace draw2d_opengl
       graphics.DrawImage(pMeta, Point(0, 150));
       delete pMeta;;
    }*/
-   
-   
+
+
    //bool graphics::PlayMetaFile(HENHMETAFILE hEnhMF, const ::double_rectangle & rectangleBounds)
    //{
 
@@ -3206,77 +3198,77 @@ namespace draw2d_opengl
 
 #define HIMETRIC_INCH   2540    // HIMETRIC units per inch
 
-   void graphics::DPtoHIMETRIC(::double_size * psize)
+   void graphics::DPtoHIMETRIC(::double_size* psize)
    {
-//      ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
-//
-//      double nMapMode;
-//      if (this != nullptr && (nMapMode = GetMapMode()) < MM_ISOTROPIC &&
-//            nMapMode != MM_TEXT)
-//      {
-//         // when using a constrained map mode, map against physical inch
-//         ((::draw2d::graphics *)this)->SetMapMode(MM_HIMETRIC);
-//         DPtoLP(LPSIZE32);
-//         ((::draw2d::graphics *)this)->SetMapMode(nMapMode);
-//      }
-//      else
-//      {
-//         
-//         double cxPerInch, cyPerInch;
-//         if (this != nullptr)
-//         {
-//            ASSERT_VALID(this);
-//            // ASSERT(m_hdc != nullptr);  // no HDC attached or created?
-//            cxPerInch = GetDeviceCaps(LOGPIXELSX);
-//            cyPerInch = GetDeviceCaps(LOGPIXELSY);
-//         }
-//         else
-//         {
+      //      ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
+      //
+      //      double nMapMode;
+      //      if (this != nullptr && (nMapMode = GetMapMode()) < MM_ISOTROPIC &&
+      //            nMapMode != MM_TEXT)
+      //      {
+      //         // when using a constrained map mode, map against physical inch
+      //         ((::draw2d::graphics *)this)->SetMapMode(MM_HIMETRIC);
+      //         DPtoLP(LPSIZE32);
+      //         ((::draw2d::graphics *)this)->SetMapMode(nMapMode);
+      //      }
+      //      else
+      //      {
+      //         
+      //         double cxPerInch, cyPerInch;
+      //         if (this != nullptr)
+      //         {
+      //            ASSERT_VALID(this);
+      //            // ASSERT(m_hdc != nullptr);  // no HDC attached or created?
+      //            cxPerInch = GetDeviceCaps(LOGPIXELSX);
+      //            cyPerInch = GetDeviceCaps(LOGPIXELSY);
+      //         }
+      //         else
+      //         {
 
-//         }
-//         ASSERT(cxPerInch != 0 && cyPerInch != 0);
-//         LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), HIMETRIC_INCH, cxPerInch);
-//         LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), HIMETRIC_INCH, cyPerInch);
-//      }
+      //         }
+      //         ASSERT(cxPerInch != 0 && cyPerInch != 0);
+      //         LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), HIMETRIC_INCH, cxPerInch);
+      //         LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), HIMETRIC_INCH, cyPerInch);
+      //      }
    }
 
 
-   void graphics::HIMETRICtoDP(::double_size * psize)
+   void graphics::HIMETRICtoDP(::double_size* psize)
    {
-//      ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
-//
-//      double nMapMode;
-//      if (this != nullptr && (nMapMode = GetMapMode()) < MM_ISOTROPIC &&
-//            nMapMode != MM_TEXT)
-//      {
-//         // when using a constrained map mode, map against physical inch
-//         ((::draw2d::graphics *)this)->SetMapMode(MM_HIMETRIC);
-//         LPtoDP(LPSIZE32);
-//         ((::draw2d::graphics *)this)->SetMapMode(nMapMode);
-//      }
-//      else
-//      {
-//         
-//         double cxPerInch, cyPerInch;
-//         if (this != nullptr)
-//         {
-//            ASSERT_VALID(this);
-//            // ASSERT(m_hdc != nullptr);  // no HDC attached or created?
-//            cxPerInch = GetDeviceCaps(LOGPIXELSX);
-//            cyPerInch = GetDeviceCaps(LOGPIXELSY);
-//         }
-//         else
-//         {
+      //      ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
+      //
+      //      double nMapMode;
+      //      if (this != nullptr && (nMapMode = GetMapMode()) < MM_ISOTROPIC &&
+      //            nMapMode != MM_TEXT)
+      //      {
+      //         // when using a constrained map mode, map against physical inch
+      //         ((::draw2d::graphics *)this)->SetMapMode(MM_HIMETRIC);
+      //         LPtoDP(LPSIZE32);
+      //         ((::draw2d::graphics *)this)->SetMapMode(nMapMode);
+      //      }
+      //      else
+      //      {
+      //         
+      //         double cxPerInch, cyPerInch;
+      //         if (this != nullptr)
+      //         {
+      //            ASSERT_VALID(this);
+      //            // ASSERT(m_hdc != nullptr);  // no HDC attached or created?
+      //            cxPerInch = GetDeviceCaps(LOGPIXELSX);
+      //            cyPerInch = GetDeviceCaps(LOGPIXELSY);
+      //         }
+      //         else
+      //         {
 
-//         }
-//         ASSERT(cxPerInch != 0 && cyPerInch != 0);
-//         LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), cxPerInch, HIMETRIC_INCH);
-//         LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), cyPerInch, HIMETRIC_INCH);
-//      }
+      //         }
+      //         ASSERT(cxPerInch != 0 && cyPerInch != 0);
+      //         LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), cxPerInch, HIMETRIC_INCH);
+      //         LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), cyPerInch, HIMETRIC_INCH);
+      //      }
    }
 
 
-   void graphics::LPtoHIMETRIC(::double_size * psize)
+   void graphics::LPtoHIMETRIC(::double_size* psize)
    {
       //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
 
@@ -3285,7 +3277,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::HIMETRICtoLP(::double_size * psize)
+   void graphics::HIMETRICtoLP(::double_size* psize)
    {
       //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
 
@@ -3320,7 +3312,7 @@ namespace draw2d_opengl
       return nullptr;
    }
 
-   
+
    //void graphics::DrawDragRect(const ::double_rectangle & rectangle, const ::int_size & size, const ::double_rectangle & lpRectLast, const ::int_size & sizeLast, ::draw2d::brush* pBrush, ::draw2d::brush* pBrushLast)
    //{
 
@@ -3414,53 +3406,53 @@ namespace draw2d_opengl
    }
 */
 
-   /*
+/*
 
-   void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t clr)
-   {
-      ::SetBkColor(m_hdc, clr);
-      ::double_rectangle rectangle(x, y, x + cx, y + cy);
-      ::ExtTextOut(m_hdc, 0, 0, ETO_OPAQUE, &rectangle, nullptr, 0, nullptr);
-   }
+void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t clr)
+{
+   ::SetBkColor(m_hdc, clr);
+   ::double_rectangle rectangle(x, y, x + cx, y + cy);
+   ::ExtTextOut(m_hdc, 0, 0, ETO_OPAQUE, &rectangle, nullptr, 0, nullptr);
+}
 
-   */
-
-   
-   //void graphics::draw_inset_3d_rectangle(const ::double_rectangle & rectangleParam,
-   //                          const ::color::color & clrTopLeft, const ::color::color & clrBottomRight,
-   //   const ::e_border & eborder)
-   //{
-
-   //   //draw3d_rectangle(rectangleParam.left(), rectangleParam.top(), rectangleParam.right() - rectangleParam.left(),
-   //     //         rectangleParam.bottom() - rectangleParam.top(), clrTopLeft, clrBottomRight);
-
-   //}
-
-   //
-   //void graphics::draw_inset_rectangle(const ::double_rectangle & rectangle, const ::color::color & color, const ::e_border & eborder)
-   //{
+*/
 
 
-   //}
+//void graphics::draw_inset_3d_rectangle(const ::double_rectangle & rectangleParam,
+//                          const ::color::color & clrTopLeft, const ::color::color & clrBottomRight,
+//   const ::e_border & eborder)
+//{
+
+//   //draw3d_rectangle(rectangleParam.left(), rectangleParam.top(), rectangleParam.right() - rectangleParam.left(),
+//     //         rectangleParam.bottom() - rectangleParam.top(), clrTopLeft, clrBottomRight);
+
+//}
+
+//
+//void graphics::draw_inset_rectangle(const ::double_rectangle & rectangle, const ::color::color & color, const ::e_border & eborder)
+//{
 
 
-   //void graphics::Draw3dRect(double x, double y, double cx, double cy,
-   //                          color32_t clrTopLeft, color32_t clrBottomRight)
-   //{
-   //   fill_solid_rect_coord(x, y, cx - 1, 1, clrTopLeft);
-   //   fill_solid_rect_coord(x, y, 1, cy - 1, clrTopLeft);
-   //   fill_solid_rect_coord(x + cx - 1, y, 1, cy, clrBottomRight);
-   //   fill_solid_rect_coord(x, y + cy - 1, cx, 1, clrBottomRight);
-   //}
+//}
 
 
+//void graphics::Draw3dRect(double x, double y, double cx, double cy,
+//                          color32_t clrTopLeft, color32_t clrBottomRight)
+//{
+//   fill_solid_rect_coord(x, y, cx - 1, 1, clrTopLeft);
+//   fill_solid_rect_coord(x, y, 1, cy - 1, clrTopLeft);
+//   fill_solid_rect_coord(x + cx - 1, y, 1, cy, clrBottomRight);
+//   fill_solid_rect_coord(x, y + cy - 1, cx, 1, clrBottomRight);
+//}
 
 
 
-   //::draw2d::graphics * ::draw2d_opengl::graphics::from_handle(HDC hDC)
-   //{
-   //hdc_map* pMap = ::windows_definition::MapHDC(true); //create map if not exist
-   //ASSERT(pMap != nullptr);
+
+
+//::draw2d::graphics * ::draw2d_opengl::graphics::from_handle(HDC hDC)
+//{
+//hdc_map* pMap = ::windows_definition::MapHDC(true); //create map if not exist
+//ASSERT(pMap != nullptr);
 //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)pMap->from_handle(hDC);
    //    ASSERT(pgraphics == nullptr || (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc == hDC);
    //  return pgraphics;
@@ -3683,49 +3675,49 @@ namespace draw2d_opengl
    }
 
 
-//   void graphics::SetAttribDC(HDC hDC)  // set the Attribute DC
-//   {
-////      set_handle2(hDC);
-//   }
-//
-//
-//   void graphics::SetOutputDC(HDC hDC)  // set the Output DC
-//   {
-//#ifdef _DEBUG
-//      /*      hdc_map* pMap = ::windows_definition::MapHDC();
-//            if (pMap != nullptr && pMap->lookup_permanent(m_hdc) == this)
-//            {
-//               information(trace_category_appmsg, 0, "Cannot set Output hDC on Attached graphics.\n");
-//               ASSERT(false);
-//            }*/
-//#endif
-//      //    set_handle1(hDC);
-//   }
-//
-//
-//   void graphics::ReleaseAttribDC()     // Release the Attribute DC
-//   {
-////      set_handle2(nullptr);
-//   }
-//
-//
-//   void graphics::ReleaseOutputDC()     // Release the Output DC
-//   {
-//#ifdef _DEBUG
-//      /*      hdc_map* pMap = ::windows_definition::MapHDC();
-//            if (pMap != nullptr && pMap->lookup_permanent(m_hdc) == this)
-//            {
-//               information(trace_category_appmsg, 0, "Cannot Release Output hDC on Attached graphics.\n");
-//               ASSERT(false);
-//            }*/
-//#endif
-//      //set_handle1(nullptr);
-//   }
+   //   void graphics::SetAttribDC(HDC hDC)  // set the Attribute DC
+   //   {
+   ////      set_handle2(hDC);
+   //   }
+   //
+   //
+   //   void graphics::SetOutputDC(HDC hDC)  // set the Output DC
+   //   {
+   //#ifdef _DEBUG
+   //      /*      hdc_map* pMap = ::windows_definition::MapHDC();
+   //            if (pMap != nullptr && pMap->lookup_permanent(m_hdc) == this)
+   //            {
+   //               information(trace_category_appmsg, 0, "Cannot set Output hDC on Attached graphics.\n");
+   //               ASSERT(false);
+   //            }*/
+   //#endif
+   //      //    set_handle1(hDC);
+   //   }
+   //
+   //
+   //   void graphics::ReleaseAttribDC()     // Release the Attribute DC
+   //   {
+   ////      set_handle2(nullptr);
+   //   }
+   //
+   //
+   //   void graphics::ReleaseOutputDC()     // Release the Output DC
+   //   {
+   //#ifdef _DEBUG
+   //      /*      hdc_map* pMap = ::windows_definition::MapHDC();
+   //            if (pMap != nullptr && pMap->lookup_permanent(m_hdc) == this)
+   //            {
+   //               information(trace_category_appmsg, 0, "Cannot Release Output hDC on Attached graphics.\n");
+   //               ASSERT(false);
+   //            }*/
+   //#endif
+   //      //set_handle1(nullptr);
+   //   }
 
-   /////////////////////////////////////////////////////////////////////////////
-   // Out-of-line routines
+      /////////////////////////////////////////////////////////////////////////////
+      // Out-of-line routines
 
-   int graphics::StartDoc(const ::scoped_string & lpszDocName)
+   int graphics::StartDoc(const ::scoped_string& lpszDocName)
    {
       //DOCINFO di;
       //memory_set(&di, 0, sizeof(DOCINFO));
@@ -3735,15 +3727,15 @@ namespace draw2d_opengl
       return -1;
    }
 
-   
+
    int graphics::save_graphics_context()
    {
-//      return m_pgraphics->Save();
+      //      return m_pgraphics->Save();
       return 0;
 
    }
 
-   
+
    void graphics::restore_graphics_context(int iSavedContext)
    {
 
@@ -3752,14 +3744,14 @@ namespace draw2d_opengl
 
    }
 
-//   ::draw2d::object* graphics::SelectGdiObject(::particle * pparticle, HDC hDC, HGDIOBJ h)
-   // {
-//      return ::draw2d_opengl::object::from_handle(papp, ::SelectObject(hDC, h));
-   //}
-   ::draw2d_opengl::draw2d * graphics::draw2d_opengl()
+   //   ::draw2d::object* graphics::SelectGdiObject(::particle * pparticle, HDC hDC, HGDIOBJ h)
+      // {
+   //      return ::draw2d_opengl::object::from_handle(papp, ::SelectObject(hDC, h));
+      //}
+   ::draw2d_opengl::draw2d* graphics::draw2d_opengl()
    {
 
-      return dynamic_cast < ::draw2d_opengl::draw2d * >(system()->draw2d());
+      return dynamic_cast <::draw2d_opengl::draw2d*>(system()->draw2d());
 
    }
 
@@ -3823,16 +3815,16 @@ namespace draw2d_opengl
                hOldObj = ::SelectObject(m_hdc, pFont->get_os_data());
             return dynamic_cast < ::write_text::font * > (::draw2d_opengl::object::from_handle(get_app(), hOldObj));*/
 
-      /*ASSERT(pFont != nullptr);
+            /*ASSERT(pFont != nullptr);
 
-      if(pFont == nullptr)
-         return nullptr;
+            if(pFont == nullptr)
+               return nullptr;
 
-      m_fontxyz = *pFont;
-      return &m_fontxyz;*/
+            m_fontxyz = *pFont;
+            return &m_fontxyz;*/
 
-      //if(!set(pfont))
-        // return nullptr;
+            //if(!set(pfont))
+              // return nullptr;
 
       set(pfont);
 
@@ -3856,7 +3848,7 @@ namespace draw2d_opengl
    ::draw2d::palette* graphics::SelectPalette(::draw2d::palette* pPalette, bool bForceBackground)
    {
       return nullptr;
-//      return dynamic_cast < ::draw2d::palette * > (::draw2d_opengl::object::from_handle(get_app(), ::SelectPalette(m_hdc, (HPALETTE)pPalette->get_os_data(), bForceBackground)));
+      //      return dynamic_cast < ::draw2d::palette * > (::draw2d_opengl::object::from_handle(get_app(), ::SelectPalette(m_hdc, (HPALETTE)pPalette->get_os_data(), bForceBackground)));
    }
 
 
@@ -3921,7 +3913,7 @@ namespace draw2d_opengl
 
    int graphics::SetGraphicsMode(int iMode)
    {
-   
+
       int nRetVal = 0;
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //{
@@ -3960,7 +3952,7 @@ namespace draw2d_opengl
    }
 
 
-   bool graphics::ModifyWorldTransform(const XFORM* pXform,unsigned int iMode)
+   bool graphics::ModifyWorldTransform(const XFORM* pXform, unsigned int iMode)
    {
       bool nRetVal = 0;
       //if(m_hdc != nullptr && m_hdc != m_hdc)
@@ -4018,7 +4010,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::_set(const ::geometry2d::matrix & matrix)
+   void graphics::_set(const ::geometry2d::matrix& matrix)
    {
 
       thread_select();
@@ -4026,13 +4018,13 @@ namespace draw2d_opengl
       glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
 
-///      GLdouble m[16];
-      
-      //glGetDoublev(GL_MODELVIEW_MATRIX, m);
+      ///      GLdouble m[16];
 
-      //glTranslatef(matrix.c1, matrix.c2, 0.f);
+            //glGetDoublev(GL_MODELVIEW_MATRIX, m);
 
-      //glGetDoublev(GL_MODELVIEW_MATRIX, m);
+            //glTranslatef(matrix.c1, matrix.c2, 0.f);
+
+            //glGetDoublev(GL_MODELVIEW_MATRIX, m);
 
 
       GLdouble m[16];
@@ -4042,24 +4034,24 @@ namespace draw2d_opengl
       //m[2] = matrix.c1;
       m[2] = 0.0;
       m[3] = 0.0;
-      
+
       m[4] = matrix.a2;
       m[5] = matrix.b2;
       //m[6] = matrix.c2;
       m[6] = 0.0;
       m[7] = 0.0;
-      
+
       m[8] = 0.0;
       m[9] = 0.0;
       m[10] = 1.0;
       m[11] = 0.0;
-      
+
       m[12] = matrix.c1;
       m[13] = matrix.c2;
       m[14] = 0.0;
       m[15] = 1.0;
 
-      glLoadMatrixd((const GLdouble *) m);
+      glLoadMatrixd((const GLdouble*)m);
 
       //return false;
 
@@ -4111,10 +4103,10 @@ namespace draw2d_opengl
    //   //return size;
    //}
 
-   
+
    int_point graphics::SetWindowOrg(int x, int y)
    {
-      
+
       ::int_point point;
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::SetWindowOrgEx(m_hdc, x, y, &point);
@@ -4124,10 +4116,10 @@ namespace draw2d_opengl
 
    }
 
-   
+
    int_point graphics::offset_window_org(int nWidth, int nHeight)
    {
-      
+
       ::int_point point;
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::OffsetWindowOrgEx(m_hdc, nWidth, nHeight, &point);
@@ -4137,10 +4129,10 @@ namespace draw2d_opengl
 
    }
 
-   
+
    int_size graphics::set_window_ext(int x, int y)
    {
-   
+
       int_size size(0, 0);
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::SetWindowExtEx(m_hdc, x, y, &size);
@@ -4153,7 +4145,7 @@ namespace draw2d_opengl
 
    int_size graphics::scale_window_ext(int xNum, int xDenom, int yNum, int yDenom)
    {
-   
+
       int_size size(0, 0);
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::ScaleWindowExtEx(m_hdc, xNum, xDenom, yNum, yDenom, &size);
@@ -4164,7 +4156,7 @@ namespace draw2d_opengl
    }
 
 
-   int graphics::get_clip_box(::double_rectangle * prectangle) const
+   int graphics::get_clip_box(::double_rectangle* prectangle) const
    {
 
       //plusplus::double_rectangle ::double_rectangle;
@@ -4181,7 +4173,7 @@ namespace draw2d_opengl
    }
 
 
-   int graphics::SelectClipRgn(::draw2d::region * pregion)
+   int graphics::SelectClipRgn(::draw2d::region* pregion)
    {
 
       //if(pregion == nullptr)
@@ -4220,9 +4212,9 @@ namespace draw2d_opengl
    }
 
 
-   int graphics::ExcludeClipRect(const ::int_rectangle & rectangleParam)
+   int graphics::ExcludeClipRect(const ::int_rectangle& rectangleParam)
    {
-      
+
       //double nRetVal = ERROR;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
@@ -4241,7 +4233,7 @@ namespace draw2d_opengl
 
    int graphics::IntersectClipRect(int x1, int y1, int x2, int y2)
    {
-      
+
       //double nRetVal = ERROR;
 
       int nRetVal = 0;
@@ -4256,9 +4248,9 @@ namespace draw2d_opengl
    }
 
 
-   int graphics::IntersectClipRect(const ::int_rectangle & rectangleBounds)
+   int graphics::IntersectClipRect(const ::int_rectangle& rectangleBounds)
    {
-      
+
       int nRetVal = 0;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
@@ -4273,7 +4265,7 @@ namespace draw2d_opengl
 
    int graphics::OffsetClipRgn(int x, int y)
    {
-      
+
       int nRetVal = 0;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
@@ -4286,10 +4278,10 @@ namespace draw2d_opengl
    }
 
 
-   int graphics::OffsetClipRgn(const ::int_size & size)
+   int graphics::OffsetClipRgn(const ::int_size& size)
    {
-      
-      int nRetVal =0;
+
+      int nRetVal = 0;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   nRetVal = ::OffsetClipRgn(m_hdc, size.cx(), size.cy());
@@ -4303,7 +4295,7 @@ namespace draw2d_opengl
 
    unsigned int graphics::SetTextAlign(unsigned int nFlags)
    {
-      
+
       unsigned int nRetVal = GDI_ERROR;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
@@ -4370,7 +4362,7 @@ namespace draw2d_opengl
 
    unsigned int graphics::GetLayout() const
    {
-      
+
       HINSTANCE hInst = ::GetModuleHandleA("GDI32.DLL");
 
       ASSERT(hInst != nullptr);
@@ -4388,7 +4380,7 @@ namespace draw2d_opengl
                set_last_error(ERROR_CALL_NOT_IMPLEMENTED);
             }*/
 
-      //return dwGetLayout;
+            //return dwGetLayout;
 
       return 0;
 
@@ -4508,7 +4500,7 @@ namespace draw2d_opengl
       return bResult;
    }
 
-   
+
    void graphics::poly_bezier_to(const ::double_point* lpPoints, ::collection::count nCount)
    {
       // ASSERT(m_hdc != nullptr);
@@ -4603,111 +4595,111 @@ namespace draw2d_opengl
    // Special handling for metafile playback
 
    double CALLBACK __enum_meta_file_procedure(HDC hDC,
-         HANDLETABLE* pHandleTable, METARECORD* pMetaRec, double nHandles, LPARAM lParam)
+      HANDLETABLE* pHandleTable, METARECORD* pMetaRec, double nHandles, LPARAM lParam)
    {
       return 1;
-//      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)lParam;
-//      ASSERT_VALID(pgraphics);
-//
-//      switch (pMetaRec->rdFunction)
-//      {
-//      // these records have effects different for each graphics derived class
-//      case META_SETMAPMODE:
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
-//         break;
-//      case META_SETWINDOWEXT:
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_window_ext(
-//         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-//         break;
-//      case META_SETWINDOWORG:
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SetWindowOrg(
-//         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-//         break;
-//      case META_SETVIEWPORTEXT:
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_context_extents(
-//         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-//         break;
-//      case META_SETVIEWPORTORG:
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_origin(
-//         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-//         break;
-//      case META_SCALEWINDOWEXT:
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->scale_window_ext(
-//         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
-//         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-//         break;
-//      case META_SCALEVIEWPORTEXT:
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->scale_context_extents(
-//         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
-//         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-//         break;
-//      case META_OFFSETVIEWPORTORG:
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->offset_origin(
-//         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-//         break;
-//      case META_SAVEDC:
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SaveDC();
-//         break;
-//      case META_RESTOREDC:
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
-//         break;
-//      case META_SETBKCOLOR:
-//      {
-//         auto pbrush = __øcreate < ::draw2d::brush >();
-//         
-//         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
-//      }
-//      break;
-//      case META_SETTEXTCOLOR:
-//      {
-//         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
-//         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
-//      }
-//      break;
-//
-//      // need to watch out for SelectObject(HFONT), for custom font mapping
-//      case META_SELECTOBJECT:
-//      {
-//         HGDIOBJ hObject = pHandleTable->objectHandle[pMetaRec->rdParm[0]];
-//         unsigned int nObjType = GetObjectType(hObject);
-//         if (nObjType == 0)
-//         {
-//            // object type is unknown, determine if it is a font
-//            HFONT hStockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
-//            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hStockFont);
-//            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hObject);
-//            if (hObjOld == hStockFont)
-//            {
-//               // got the stock object back, so must be selecting a font
-//               throw ::not_implemented();
-////                  (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
-//               break;  // don't play the default record
-//            }
-//            else
-//            {
-//               // didn't get the stock object back, so restore everything
-//               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hFontOld);
-//               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hObjOld);
-//            }
-//            // and fall through to PlayMetaFileRecord...
-//         }
-//         else if (nObjType == OBJ_FONT)
-//         {
-//            // play back as graphics::SelectObject(::write_text::font*)
-////               (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
-//            throw ::not_implemented();
-//            break;  // don't play the default record
-//         }
-//      }
-//      // fall through...
-//
-//      default:
-//         ::PlayMetaFileRecord(hDC, pHandleTable, pMetaRec, nHandles);
-//         break;
-//      }
-//
-//      return 1;
+      //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)lParam;
+      //      ASSERT_VALID(pgraphics);
+      //
+      //      switch (pMetaRec->rdFunction)
+      //      {
+      //      // these records have effects different for each graphics derived class
+      //      case META_SETMAPMODE:
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
+      //         break;
+      //      case META_SETWINDOWEXT:
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_window_ext(
+      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+      //         break;
+      //      case META_SETWINDOWORG:
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SetWindowOrg(
+      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+      //         break;
+      //      case META_SETVIEWPORTEXT:
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_context_extents(
+      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+      //         break;
+      //      case META_SETVIEWPORTORG:
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_origin(
+      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+      //         break;
+      //      case META_SCALEWINDOWEXT:
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->scale_window_ext(
+      //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
+      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+      //         break;
+      //      case META_SCALEVIEWPORTEXT:
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->scale_context_extents(
+      //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
+      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+      //         break;
+      //      case META_OFFSETVIEWPORTORG:
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->offset_origin(
+      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+      //         break;
+      //      case META_SAVEDC:
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SaveDC();
+      //         break;
+      //      case META_RESTOREDC:
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
+      //         break;
+      //      case META_SETBKCOLOR:
+      //      {
+      //         auto pbrush = __øcreate < ::draw2d::brush >();
+      //         
+      //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
+      //      }
+      //      break;
+      //      case META_SETTEXTCOLOR:
+      //      {
+      //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
+      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
+      //      }
+      //      break;
+      //
+      //      // need to watch out for SelectObject(HFONT), for custom font mapping
+      //      case META_SELECTOBJECT:
+      //      {
+      //         HGDIOBJ hObject = pHandleTable->objectHandle[pMetaRec->rdParm[0]];
+      //         unsigned int nObjType = GetObjectType(hObject);
+      //         if (nObjType == 0)
+      //         {
+      //            // object type is unknown, determine if it is a font
+      //            HFONT hStockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
+      //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hStockFont);
+      //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hObject);
+      //            if (hObjOld == hStockFont)
+      //            {
+      //               // got the stock object back, so must be selecting a font
+      //               throw ::not_implemented();
+      ////                  (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+      //               break;  // don't play the default record
+      //            }
+      //            else
+      //            {
+      //               // didn't get the stock object back, so restore everything
+      //               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hFontOld);
+      //               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hObjOld);
+      //            }
+      //            // and fall through to PlayMetaFileRecord...
+      //         }
+      //         else if (nObjType == OBJ_FONT)
+      //         {
+      //            // play back as graphics::SelectObject(::write_text::font*)
+      ////               (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+      //            throw ::not_implemented();
+      //            break;  // don't play the default record
+      //         }
+      //      }
+      //      // fall through...
+      //
+      //      default:
+      //         ::PlayMetaFileRecord(hDC, pHandleTable, pMetaRec, nHandles);
+      //         break;
+      //      }
+      //
+      //      return 1;
    }
 
 
@@ -4729,8 +4721,8 @@ namespace draw2d_opengl
    /////////////////////////////////////////////////////////////////////////////
    // Coordinate transforms
 
-   
-   void graphics::LPtoDP(::double_size *LPSIZE32) 
+
+   void graphics::LPtoDP(::double_size* LPSIZE32)
    {
 
       //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
@@ -4743,7 +4735,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::DPtoLP(::double_size  * psize)
+   void graphics::DPtoLP(::double_size* psize)
    {
 
       //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
@@ -4756,7 +4748,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::draw_text(const ::scoped_string & str,const ::double_rectangle & rectangle, const ::e_align & ealign, const ::e_draw_text & edrawtext)
+   void graphics::draw_text(const ::scoped_string& str, const ::double_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
    {
 
       //::double_rectangle rectangle;
@@ -4769,7 +4761,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::draw_text(const ::scoped_string & str, const ::int_rectangle & rectangle, const ::e_align & ealign, const ::e_draw_text & edrawtext)
+   void graphics::draw_text(const ::scoped_string& str, const ::int_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
    {
 
       //try
@@ -4913,7 +4905,7 @@ namespace draw2d_opengl
 
 
    //double_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
-   double_size graphics::get_text_extent(const ::scoped_string & lpszString)
+   double_size graphics::get_text_extent(const ::scoped_string& lpszString)
    {
 
       //if(lpszString.is_empty())
@@ -5179,7 +5171,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::draw_line(const int_point& point1, const int_point& point2, ::draw2d::pen * ppen)
+   void graphics::draw_line(const int_point& point1, const int_point& point2, ::draw2d::pen* ppen)
    {
 
       ::opengl::line(point1.x(), point1.y(), point2.x(), point2.y(), (float)(ppen->m_dWidth),
@@ -5205,7 +5197,7 @@ namespace draw2d_opengl
 
    }
 
-   
+
    void graphics::line_to(double x, double y)
    {
 
@@ -5238,7 +5230,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::text_out(double x, double y, const ::scoped_string & scopedstr)
+   void graphics::text_out(double x, double y, const ::scoped_string& scopedstr)
    {
 
       if (m_pfont.is_null())
@@ -5293,7 +5285,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::set(::draw2d::pen * ppen)
+   void graphics::set(::draw2d::pen* ppen)
    {
 
       //glLineWidth(ppen->m_dWidth);
@@ -5306,18 +5298,18 @@ namespace draw2d_opengl
 
 
 
-   void graphics::set(::draw2d::brush * pbrush)
+   void graphics::set(::draw2d::brush* pbrush)
    {
 
       ::opengl::color(pbrush->m_color);
-      
+
       //return ::success;
 
    }
 
 
 
-   void graphics::set(::write_text::font * pfont)
+   void graphics::set(::write_text::font* pfont)
    {
 
       if (::is_null(pfont))
@@ -5403,7 +5395,7 @@ namespace draw2d_opengl
          //   return;
 
          ::draw2d::graphics::set_alpha_mode(ealphamode);
-         if(m_ealphamode == ::draw2d::e_alpha_mode_blend)
+         if (m_ealphamode == ::draw2d::e_alpha_mode_blend)
          {
             //glColorMask(false, false, false, true);
             //glColorMask(true, true, true, false);
@@ -5417,14 +5409,14 @@ namespace draw2d_opengl
             //glDisable(GL_DEPTH_TEST);
             //glDepthFunc(GL_NEVER);
          }
-         else if(m_ealphamode == ::draw2d::e_alpha_mode_set)
+         else if (m_ealphamode == ::draw2d::e_alpha_mode_set)
          {
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ZERO);
          }
 
       }
-      catch(...)
+      catch (...)
       {
          //return false;
 
@@ -5435,7 +5427,7 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::_draw_raw(const ::double_rectangle & rectangleTarget, ::image::image *pimage, const ::image::image_drawing_options & imagedrawingoptionsParam, const ::double_point & pointSrc)
+   void graphics::_draw_raw(const ::double_rectangle& rectangleTarget, ::image::image* pimage, const ::image::image_drawing_options& imagedrawingoptionsParam, const ::double_point& pointSrc)
    {
 
 
@@ -5444,7 +5436,7 @@ namespace draw2d_opengl
 
    void graphics::set_text_rendering_hint(::write_text::enum_rendering etextrendering)
    {
-      
+
       m_ewritetextrendering = etextrendering;
 
       //return true;
@@ -5452,82 +5444,82 @@ namespace draw2d_opengl
    }
 
 
-//   void * graphics::get_os_data() const
-//   {
-//
-////      return (void *) m_pgraphics;
-//
-//      if (!m_hglrc)
-//      {
-//         return (void *) (iptr)1;
-//      }
-//
-//      return m_hglrc;
-//
-//   }
+   //   void * graphics::get_os_data() const
+   //   {
+   //
+   ////      return (void *) m_pgraphics;
+   //
+   //      if (!m_hglrc)
+   //      {
+   //         return (void *) (iptr)1;
+   //      }
+   //
+   //      return m_hglrc;
+   //
+   //   }
 
 
-   //void graphics::fill_rectangle(const double_rectangle& rectangle, color32_t color32)
-   //{
+      //void graphics::fill_rectangle(const double_rectangle& rectangle, color32_t color32)
+      //{
 
 
 
-   //}
+      //}
 
-//   void * graphics::get_os_data_ex(int i) const
-//   {
-//
-//      if(i == 1)
-//      {
-////         return m_pgraphics->GetHDC();
-//      }
-//      else
-//      {
-//         return ::draw2d::graphics::get_os_data(i);
-//      }
-//
-//      return nullptr;
-//
-//   }
-
-
-//   void graphics::release_os_data_ex(int i,void * p)
-//   {
-//      if(i == 1)
-//      {
-////         m_pgraphics->ReleaseHDC((HDC)p);
-//      }
-//      else
-//      {
-//
-//         //::draw2d::graphics::release_os_data(i, p);
-//
-//      }
-//
-//   }
+   //   void * graphics::get_os_data_ex(int i) const
+   //   {
+   //
+   //      if(i == 1)
+   //      {
+   ////         return m_pgraphics->GetHDC();
+   //      }
+   //      else
+   //      {
+   //         return ::draw2d::graphics::get_os_data(i);
+   //      }
+   //
+   //      return nullptr;
+   //
+   //   }
 
 
-   /*HDC graphics::get_handle() const
-   {
+   //   void graphics::release_os_data_ex(int i,void * p)
+   //   {
+   //      if(i == 1)
+   //      {
+   ////         m_pgraphics->ReleaseHDC((HDC)p);
+   //      }
+   //      else
+   //      {
+   //
+   //         //::draw2d::graphics::release_os_data(i, p);
+   //
+   //      }
+   //
+   //   }
 
-      return m_hdc;
 
-   }
+      /*HDC graphics::get_handle() const
+      {
 
+         return m_hdc;
 
-   HDC graphics::m_hdc const
-   {
-
-      return get_handle();
-
-   }
+      }
 
 
-   HDC graphics::m_hdc const
-   {
-      return get_handle();
-   }
-*/
+      HDC graphics::m_hdc const
+      {
+
+         return get_handle();
+
+      }
+
+
+      HDC graphics::m_hdc const
+      {
+         return get_handle();
+      }
+   */
 
    //bool graphics::attach(void * pdata)
    //{
@@ -5559,7 +5551,7 @@ namespace draw2d_opengl
    //}
 
 
-   void * graphics::detach()
+   void* graphics::detach()
    {
 
       //plusplus::Graphics * pgraphics = m_pgraphics;
@@ -5633,8 +5625,8 @@ namespace draw2d_opengl
    //   return plusplus::FillModeWinding;
    //}
 
-   
-   bool graphics::blur(bool bExpand, double dRadius,const ::int_rectangle & rectangleParam)
+
+   bool graphics::blur(bool bExpand, double dRadius, const ::int_rectangle& rectangleParam)
    {
 
       //   // Commented Out for Running in cosan machine running Windows 2008
@@ -5714,9 +5706,9 @@ namespace draw2d_opengl
 
       synchronous_lock synchronouslock(this->synchronization());
 
-//      m_pgraphics->Flush();
+      //      m_pgraphics->Flush();
 
-      //return true;
+            //return true;
 
    }
 
@@ -5885,7 +5877,7 @@ namespace draw2d_opengl
 
    //}
 
-   void graphics::do_on_context(const ::procedure & procedure)
+   void graphics::do_on_context(const ::procedure& procedure)
    {
 
       m_pgpucontext->send(procedure);
@@ -5945,15 +5937,15 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::defer_add_gpu_render(::gpu::render * pgpurender)
-   {
+   //void graphics::defer_add_graphics_render(::graphics::render * pgraphicsrender)
+   //{
 
-      m_pgpucontext->m_rendera.add_unique(pgpurender);
+   //   m_pgpucontext->m_rendera.add_unique(pgraphicsrender);
 
-   }
+   //}
 
 
-   void graphics::initialize(::particle * pparticle)
+   void graphics::initialize(::particle* pparticle)
    {
 
       ::draw2d::graphics::initialize(pparticle);
@@ -5993,7 +5985,7 @@ namespace draw2d_opengl
       //glDisable(GL_BLEND);
 
 
-      
+
 
       //SwapBuffers(m_hdc);
 
@@ -6003,7 +5995,7 @@ namespace draw2d_opengl
 
       if (m_papplication->m_bUseDraw2dProtoWindow)
       {
-         
+
          //m_pgpucontext->swap_buffers();
 
          //m_pwindow->m_timeLastDrawGuard1.Now();
@@ -6072,14 +6064,14 @@ namespace draw2d_opengl
 
 
 
-   void graphics::intersect_clip(const ::double_rectangle & rectangle)
+   void graphics::intersect_clip(const ::double_rectangle& rectangle)
    {
 
 
    }
 
 
-   void graphics::intersect_clip(const ::draw2d::clip_group & clipgroup)
+   void graphics::intersect_clip(const ::draw2d::clip_group& clipgroup)
    {
 
 
@@ -6093,19 +6085,19 @@ namespace draw2d_opengl
 
 
 
-BOOL CALLBACK draw2d_opengl_EnumFamCallBack(LPLOGFONT lplf,LPNEWTEXTMETRIC lpntm,unsigned int FontType,LPVOID p)
+BOOL CALLBACK draw2d_opengl_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p)
 {
 
-   draw2d_opengl_enum_fonts * pfonts = (draw2d_opengl_enum_fonts *) p;
+   draw2d_opengl_enum_fonts* pfonts = (draw2d_opengl_enum_fonts*)p;
 
-   if(FontType & RASTER_FONTTYPE)
+   if (FontType & RASTER_FONTTYPE)
    {
 
    }
-   else if(FontType & TRUETYPE_FONTTYPE)
+   else if (FontType & TRUETYPE_FONTTYPE)
    {
 
-      pfonts->m_itema.add(__allocate ::write_text::font_enumeration_item(lplf->lfFaceName));
+      pfonts->m_itema.add(__allocate::write_text::font_enumeration_item(lplf->lfFaceName));
 
    }
    else
@@ -6220,7 +6212,7 @@ namespace opengl
       glEnd();
    }
 
-   
+
 
 } // namespace opengl
 

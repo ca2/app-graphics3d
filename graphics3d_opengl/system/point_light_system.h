@@ -31,7 +31,7 @@
 //        //void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
 //        //void createPipeline(VkRenderPass renderPass);
 //
-//        ::pointer < context > m_pcontext;
+//        ::pointer < context > m_pgpucontext;
 //
 //        //::pointer < pipeline> m_ppipeline;
 //

@@ -14,7 +14,7 @@
 //   public:
 //
 //
-//      context* m_pcontext;
+//      context* m_pgpucontext;
 //      void* m_mapped = nullptr;
 //      VkBuffer m_buffer = VK_NULL_HANDLE;
 //      VkDeviceMemory m_memory = VK_NULL_HANDLE;

@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "app-cube/cube/_.h"
+#include "app-cube/gpu_vulkan/_.h"
 #include "_vulkan.h"
 
 
@@ -18,19 +18,19 @@ namespace graphics3d_vulkan
 
    class application_handler;
 
-   class renderer;
+   //class renderer;
    class application_object;
 
 
    class model;
-   class context;
+   //class context;
    class input;
    //class camera;
    class pipeline;
 
    class engine;
 
-   class descriptor_pool;
+   //class descriptor_pool;
 
 } // namespace graphics3d_vulkan
 

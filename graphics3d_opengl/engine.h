@@ -14,7 +14,8 @@
 #include "camera.h" // Include the ::graphics3d::camera header
 //#include "application.h"
 //#include "apex/platform/app_consumer.h"
-#include "aura/graphics/gpu/render.h"
+#include "app-cube/cube/gpu/render.h"
+#include "app-cube/gpu_opengl/renderer.h"
 
 
 namespace graphics3d_opengl
@@ -27,9 +28,8 @@ namespace graphics3d_opengl
 	{
 	public:
 
-		void defer_start() override;
 		//::pointer < ::cube::impact > m_pimpact;
-		::pointer < ::graphics3d_opengl::renderer > m_prenderer;
+		::pointer < ::gpu_opengl::renderer > m_prenderer;
 		::pointer < ::graphics3d::camera > m_pcamera;
 		//::pointer < glc::Application > m_pglcapplication;  // Game object that manages the scenes
 		::pointer < ::graphics3d::input > m_pinput;
@@ -65,15 +65,15 @@ namespace graphics3d_opengl
 		engine();
 		~engine();
 
-		
-		::file::path _translate_shader_path(const ::file::path& pathShader) override;
+		void defer_start() override;
+
 
 		void on_start_engine() override;
 
 		void on_begin_frame() override;
 
-		void create_global_ubo() override;
-		void update_global_ubo() override;
+		void create_global_ubo(::gpu::context* pgpucontext) override;
+		void update_global_ubo(::gpu::context* pgpucontext) override;
 		//Application();
 		//~Application();
 

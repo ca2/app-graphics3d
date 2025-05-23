@@ -88,7 +88,7 @@ namespace gpu_vulkan
 		//::array<VkImage> swapChainImages;
 		//::array<VkImageView> swapChainImageViews;
 
-		//context* m_pcontext;
+		//context* m_pgpucontext;
 		//VkExtent2D windowExtent;
 
 		////VkSwapchainKHR swapChain;

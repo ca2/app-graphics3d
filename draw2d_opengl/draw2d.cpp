@@ -2,6 +2,7 @@
 #include "_opengl.h"
 #include "draw2d.h"
 #include "acme/exception/resource.h"
+#include "acme/platform/application.h"
 #include "acme/prototype/prototype/memory.h"
 
 
@@ -55,7 +56,7 @@ namespace draw2d_opengl
       ::draw2d::draw2d::initialize(pparticle);
 
 
-      system()->create_gpu();
+      application()->create_gpu();
       //if (!estatus)
       //{
 

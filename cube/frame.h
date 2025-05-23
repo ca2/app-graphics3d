@@ -23,7 +23,7 @@ namespace cube
 
       void install_message_routing(::channel* pchannel) override;
 	   // void assert_ok() const override;
-	   // void dump(dump_context & dumpcontext) const override;
+	   // void dump(dump_context & dumpgpucontext) const override;
 
       void _001OnNcClip(::draw2d::graphics_pointer & pgraphics) override;
       void _001OnClip(::draw2d::graphics_pointer & pgraphics) override;

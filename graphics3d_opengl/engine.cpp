@@ -9,8 +9,8 @@
 #include "shader.h"
 #include <iostream>
 #include "camera.h"
-#include "aura/graphics/gpu/approach.h"
-#include "aura/graphics/gpu/context.h"
+#include "app-cube/cube/gpu/approach.h"
+#include "app-cube/gpu_opengl/context.h"
 //#include "AppCore/Application.h"
 #include "system/basic_render_system.h"
 #include "system/point_light_system.h"
@@ -174,13 +174,13 @@ namespace graphics3d_opengl
 
       auto papp = get_app();
 
-      __øconstruct(m_pcontext);
+      __øconstruct(m_pgpucontext);
 
-      m_pcontext->initialize_context(papp->m_pimpact);
+      //m_pgpucontext->initialize_context(papp->m_pimpact);
 
-      //::cast < context > pcontext = m_pcontext;
+      //::cast < context > pgpucontext = m_pgpucontext;
 
-      //pcontext->m_pgpucontext->post([this]()
+      //pgpucontext->m_pgpucontext->post([this]()
       //   {
 
       //      //            run_vulkan_example();
@@ -200,24 +200,24 @@ namespace graphics3d_opengl
 
       __construct_new(m_prenderer);
 
-      m_prenderer->initialize_renderer(m_pcontext);
+      m_prenderer->initialize_renderer(m_pgpucontext);
 
-      ::graphics3d::engine::m_prenderer = m_prenderer;
+      //::graphics3d::engine::m_prenderer = m_prenderer;
 
 
 
       //auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
 
-      //pglobalpoolbuilder->initialize_builder(m_pcontext);
+      //pglobalpoolbuilder->initialize_builder(m_pgpucontext);
       //pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
       //pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, render_pass::MAX_FRAMES_IN_FLIGHT);
 
       //m_pglobalpool = pglobalpoolbuilder->build();
 
-      //m_pglobalpool->initialize_pool(pcontext);
+      //m_pglobalpool->initialize_pool(pgpucontext);
 
       //= __allocate
-      //   descriptor_pool::Builder(pcontext)
+      //   descriptor_pool::Builder(pgpucontext)
       //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .build();
@@ -226,17 +226,17 @@ namespace graphics3d_opengl
       if (iGlobalUboSize > 0)
       {
 
-         create_global_ubo();
+         create_global_ubo(m_pgpucontext);
 
       }
 
-      m_pscene->on_load_scene(m_pcontext);
+      m_pscene->on_load_scene(m_pgpucontext);
 
-      //pcontext = __allocate context(m_pvulkandevice);
+      //pgpucontext = __allocate context(m_pvulkandevice);
 
       //m_uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
 
-      ::cast < context > pcontext = m_pcontext;
+      ::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
 
       //for (int i = 0; i < m_uboBuffers.size(); i++)
       //{
@@ -244,7 +244,7 @@ namespace graphics3d_opengl
       //   m_uboBuffers[i] = __allocate buffer();
 
       //   m_uboBuffers[i]->initialize_buffer(
-      //      pcontext,
+      //      pgpucontext,
       //      sizeof(GlobalUbo),
       //      1,
       //      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -253,7 +253,7 @@ namespace graphics3d_opengl
       //   m_uboBuffers[i]->map();
 
       //}
-      //auto globalSetLayout = set_descriptor_layout::Builder(pcontext)
+      //auto globalSetLayout = set_descriptor_layout::Builder(pgpucontext)
       //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
       //   .build();
 
@@ -272,12 +272,12 @@ namespace graphics3d_opengl
       //}
 
       //m_psimpleRenderSystem = __allocate SimpleRenderSystem{
-      //    pcontext };//,
+      //    pgpucontext };//,
       //    //m_prenderer->getRenderPass(),
       //    //globalSetLayout->getDescriptorSetLayout() };
 
       //m_ppointLightSystem = __allocate point_light_system{
-      //    pcontext };
+      //    pgpucontext };
       //,
         //  m_prenderer->getRenderPass(),
           //globalSetLayout->getDescriptorSetLayout()
@@ -286,20 +286,12 @@ namespace graphics3d_opengl
    }
 
 
-   ::file::path engine::_translate_shader_path(const ::file::path& pathShader)
+
+
+   void engine::create_global_ubo(::gpu::context* pgpucontext)
    {
 
-      auto pathFolder = pathShader.folder();
-
-      return pathFolder / "opengl" / pathShader.name();
-
-   }
-
-
-   void engine::create_global_ubo()
-   {
-
-      ::graphics3d::engine::create_global_ubo();
+      ::graphics3d::engine::create_global_ubo(pgpucontext);
 
       auto globalUboSize = m_pimpact->global_ubo_block().size();
 
@@ -319,10 +311,10 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::update_global_ubo()
+   void engine::update_global_ubo(::gpu::context* pgpucontext)
    {
 
-      m_pscene->on_update_global_ubo();
+      m_pscene->on_update_global_ubo(pgpucontext);
 
       glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
 
@@ -545,24 +537,24 @@ namespace graphics3d_opengl
    void engine::on_layout(int cx, int cy)
    {
 
-      ::cast < context > pcontext = m_pcontext;
+      ::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
 
-      if (!pcontext || !pcontext->m_pgpucontext)
+      if (!pgpucontext)
       {
 
          return;
 
       }
 
-      pcontext->m_pgpucontext->post([this, cx, cy]
+      pgpucontext->post([this, cx, cy]
          {
 
-            ::cast < context > pcontext = m_pcontext;
+            ::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
 
             if (!m_prenderer)
             {
 
-               pcontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
+               pgpucontext->resize_offscreen_buffer({ cx, cy });
 
                m_pimpact->on_load_engine();
 
@@ -582,12 +574,12 @@ namespace graphics3d_opengl
                ////m_pcamera->m_pimpact
 
                ////m_pglcapplication = m_pimpact->start_opengl_application();
-               ////__øconstruct(m_pcontext);
+               ////__øconstruct(m_pgpucontext);
 
                //if (!m_papplication->m_bUseDraw2dProtoWindow)
                //{
 
-               //   pcontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
+               //   pgpucontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
 
                //}
 
@@ -597,13 +589,13 @@ namespace graphics3d_opengl
                //// Initialize the game logic and scene data
                ////Init();
 
-               //pcontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
+               //pgpucontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
 
                //m_pgpucontext->m_rendera.add_unique(this);
 
             }
 
-            pcontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
+            pgpucontext->resize_offscreen_buffer({ cx, cy });
 
             //on_layout(cx, cy);
 
@@ -874,7 +866,7 @@ namespace graphics3d_opengl
 
 
 
-   //::pointer<::opengl::engine > start_opengl_engine(::::cube::impact* pimpact, mouseState* pmousestate)
+   //::pointer<::opengl::engine > start_opengl_engine(::cube::impact* pimpact, mouseState* pmousestate)
    //{
 
    //   auto popenglengine = pimpact->__create_new <::opengl::engine >();

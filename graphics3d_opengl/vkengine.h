@@ -27,11 +27,11 @@ namespace graphics3d_opengl
 	public:
 
 
-		//::pointer < context >             m_pcontext;
+		//::pointer < context >             m_pgpucontext;
 		::pointer < renderer >				m_prenderer;
 
 
-		::pointer <descriptor_pool>		m_pglobalpool;
+		//::pointer <descriptor_pool>		m_pglobalpool;
 
 		//::cube::application_object::map				m_mapObjects;
 
@@ -42,6 +42,7 @@ namespace graphics3d_opengl
 
 
 		void run() override;
+
 
 		
 	};

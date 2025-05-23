@@ -42,15 +42,15 @@ namespace gpu_vulkan
 
 
       pipeline();
+      //virtual void initialize_pipeline(
+      //   ::gpu::context * pgpucontext,
+      //   const ::file::path & pathVert,
+      //   const ::file::path & pathFrag,
+      //   const PipelineConfigInfo & configInfo);
       virtual void initialize_pipeline(
-         ::gpu::context * pcontext,
-         const ::file::path & pathVert,
-         const ::file::path & pathFrag,
-         const PipelineConfigInfo & configInfo);
-      virtual void initialize_pipeline_with_block(
-         ::gpu::context * pcontext,
-         const ::block & blockVert,
-         const ::block & blockFrag,
+         ::gpu::context * pgpucontext,
+         const ::block & blockVertex,
+         const ::block & blockFragment,
          const PipelineConfigInfo & configInfo);
       ~pipeline();
 
@@ -60,17 +60,17 @@ namespace gpu_vulkan
       void bind(VkCommandBuffer commandBuffer);
 
       static void defaultPipelineConfigInfo(PipelineConfigInfo & configInfo);
-   private:
-      static ::array<char> readFile(const std::string & filepath);
+   //private:
+      //static ::array<char> readFile(const ::string & filepath);
 
       void createGraphicsPipeline(
-         const ::file::path & pathVert,
-         const ::file::path & pathFrag,
+         const ::block & blockVertex,
+         const ::block & blockFragment,
          const PipelineConfigInfo & configInfo);
 
       void createShaderModule(const ::block & block, VkShaderModule * shaderModule);
 
-      ::pointer < context > m_pcontext;
+      ::pointer < context > m_pgpucontext;
       VkPipeline graphicsPipeline;
       VkShaderModule vertShaderModule;
       VkShaderModule fragShaderModule;

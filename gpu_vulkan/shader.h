@@ -4,7 +4,7 @@
 
 
 
-#include "aura/graphics/gpu/shader.h"
+#include "app-cube/cube/gpu/shader.h"
 
 
 namespace gpu_vulkan
@@ -28,11 +28,11 @@ namespace gpu_vulkan
 
       ///static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
    ///private:
-///		static ::array<char> readFile(const std::string& filepath);
+///		static ::array<char> readFile(const ::string& filepath);
 
       /*void createGraphicsPipeline(
-         const std::string& vertFilepath,
-         const std::string& fragFilepath,
+         const ::string& vertFilepath,
+         const ::string& fragFilepath,
          const PipelineConfigInfo& configInfo);
 
       void createShaderModule(const ::block& block, VkShaderModule* shaderModule);*/
@@ -49,10 +49,10 @@ namespace gpu_vulkan
       void draw() override;
 
       //void initialize_shader(
-      //	::graphics3d::context* pcontext,
+      //	::gpu::context* pgpucontext,
       //	const ::file::path& pathVert,
       //	const ::file::path& pathFrag,
-      //	const ::graphics3d::property* pproperties) override;
+      //	const ::gpu::property* pproperties) override;
 
       void on_initialize_shader() override;
 
@@ -74,7 +74,7 @@ namespace gpu_vulkan
 //#pragma once
 //
 //
-//#include "aura/graphics/gpu/shader.h"
+//#include "app-cube/cube/gpu/shader.h"
 //
 //
 //namespace gpu_vulkan

@@ -1,14 +1,14 @@
 #pragma once
 
 
-#include "aura/graphics/gpu/approach.h"
+#include "app-cube/cube/gpu/approach.h"
 
 
 namespace gpu_opengl
 {
 
 
-   class CLASS_DECL_GPU_OPENGL opengl :
+   class CLASS_DECL_GPU_OPENGL approach :
       virtual public ::gpu::approach
    {
    public:
@@ -38,14 +38,17 @@ namespace gpu_opengl
       //unsigned int                  VAO;
       //unsigned int                  VBO;
 
-      opengl();
-      virtual ~opengl();
+      approach();
+      ~approach() override;
 
 
-      virtual void initialize(::particle * pparticle) override;
+      void initialize(::particle * pparticle) override;
 
 
-      ::pointer < ::gpu::context > create_context(::particle * pparticle) override;
+      ::file::path shader_path(const ::file::path& pathShader) override;
+
+
+      ::pointer < ::gpu::context > create_context(::particle * pparticle, ::gpu::enum_output eoutput) override;
 
 
       int fread(void * data, int c, int s ,::file::file* pfile);

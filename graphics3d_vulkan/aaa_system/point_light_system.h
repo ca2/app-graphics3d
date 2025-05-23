@@ -18,7 +18,7 @@ namespace graphics3d_vulkan
 
 
         point_light_system(
-            context *pdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
+            ::gpu::context *pdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
         ~point_light_system();
 
         point_light_system(const point_light_system&) = delete;
@@ -32,7 +32,7 @@ namespace graphics3d_vulkan
         void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void createPipeline(VkRenderPass renderPass);
 
-        ::pointer < context > m_pcontext;
+        ::pointer < context > m_pgpucontext;
 
         ::pointer < pipeline> m_ppipeline;
 

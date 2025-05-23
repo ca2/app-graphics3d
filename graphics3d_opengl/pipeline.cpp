@@ -27,23 +27,23 @@
 //		const PipelineConfigInfo& configInfo)
 //	{
 //		initialize(pvkcdevice);
-//		m_pcontext = pvkcdevice;
+//		m_pgpucontext = pvkcdevice;
 //		createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
 //	}
 //
 // 
 //
 //	pipeline::~pipeline() {
-//		vkDestroyShaderModule(m_pcontext->logicalDevice(), vertShaderModule, nullptr);
-//		vkDestroyShaderModule(m_pcontext->logicalDevice(), fragShaderModule, nullptr);
-//		vkDestroyPipeline(m_pcontext->logicalDevice(), graphicsPipeline, nullptr);
+//		vkDestroyShaderModule(m_pgpucontext->logicalDevice(), vertShaderModule, nullptr);
+//		vkDestroyShaderModule(m_pgpucontext->logicalDevice(), fragShaderModule, nullptr);
+//		vkDestroyPipeline(m_pgpucontext->logicalDevice(), graphicsPipeline, nullptr);
 //	}
 //
 //	void pipeline::bind(VkCommandBuffer commandBuffer) {
 //		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 //	}
 //
-//	std::vector<char> pipeline::readFile(const std::string& filepath) {
+//	::array<char> pipeline::readFile(const std::string& filepath) {
 //		
 //
 //		std::ifstream file{ filepath, std::ios::ate | std::ios::binary };
@@ -53,7 +53,7 @@
 //		}
 //
 //		size_t fileSize = static_cast<size_t>(file.tellg());
-//		std::vector<char> buffer(fileSize);
+//		::array<char> buffer(fileSize);
 //
 //		file.seekg(0);
 //		file.read(buffer.data(), fileSize);
@@ -128,7 +128,7 @@
 //
 //
 //		if (vkCreateGraphicsPipelines(
-//			m_pcontext->logicalDevice(),
+//			m_pgpucontext->logicalDevice(),
 //			VK_NULL_HANDLE,
 //			1,
 //			&pipelineInfo,
@@ -144,7 +144,7 @@
 //		createInfo.codeSize = block.size();
 //		createInfo.pCode = reinterpret_cast<const uint32_t*>(block.data());
 //
-//		if (vkCreateShaderModule(m_pcontext->logicalDevice(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
+//		if (vkCreateShaderModule(m_pgpucontext->logicalDevice(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
 //			throw std::runtime_error("failed to create shader module");
 //		}
 //	}

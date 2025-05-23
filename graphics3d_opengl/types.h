@@ -146,7 +146,7 @@ struct Node :
 
     // parent pointer must be a weak pointer to avoid circular dependencies
     std::weak_ptr<Node> parent;
-    std::vector<::pointer<Node>> children;
+    ::array<::pointer<Node>> children;
 
     glm::mat4 localTransform;
     glm::mat4 worldTransform;

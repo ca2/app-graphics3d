@@ -21,7 +21,7 @@ namespace gpu_vulkan
       class Builder
       {
       public:
-         Builder(context * pvkcDevice) : m_pcontext{ pvkcDevice } {}
+         Builder(::gpu::context * pgpucontext) : m_pgpucontext{ pgpucontext } {}
 
          Builder & addBinding(
              uint32_t binding,
@@ -31,7 +31,7 @@ namespace gpu_vulkan
          ::pointer<set_descriptor_layout> build() const;
 
       private:
-         ::pointer < context > m_pcontext;
+         ::pointer < context > m_pgpucontext;
          ::map < unsigned int, VkDescriptorSetLayoutBinding> bindings{};
       };
 
@@ -41,7 +41,7 @@ namespace gpu_vulkan
 
       VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
 
-      ::pointer < context > m_pcontext;
+      ::pointer < context > m_pgpucontext;
       VkDescriptorSetLayout descriptorSetLayout;
       ::map<unsigned int, VkDescriptorSetLayoutBinding> bindings;
 
@@ -59,11 +59,11 @@ namespace gpu_vulkan
       {
       public:
 
-         //Builder(context& m_pcontext) : m_pcontext{ m_pcontext } {}
+         //Builder(context& m_pgpucontext) : m_pgpucontext{ m_pgpucontext } {}
          Builder() {}
-         void initialize_builder(::gpu::context * pcontext)
+         void initialize_builder(::gpu::context * pgpucontext)
          {
-            m_pcontext = pcontext;
+            m_pgpucontext = pgpucontext;
 
          }
          Builder & addPoolSize(VkDescriptorType descriptorType, uint32_t count);
@@ -72,7 +72,7 @@ namespace gpu_vulkan
          ::pointer<descriptor_pool> build() const;
 
       private:
-         ::pointer < context > m_pcontext;
+         ::pointer < context > m_pgpucontext;
          ::array<VkDescriptorPoolSize> poolSizes{};
          uint32_t maxSets = 1000;
          VkDescriptorPoolCreateFlags poolFlags = 0;
@@ -94,7 +94,7 @@ namespace gpu_vulkan
 
       void resetPool();
 
-      ::pointer < context > m_pcontext;
+      ::pointer < context > m_pgpucontext;
       VkDescriptorPool descriptorPool;
 
    };

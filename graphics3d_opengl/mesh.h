@@ -13,7 +13,7 @@ namespace graphics3d_opengl
    public:
 
 
-      mesh(const std::vector<float>& vertices, const std::vector<unsigned int>& indices,
+      mesh(const ::array<float>& vertices, const ::array<unsigned int>& indices,
          unsigned int vertexOffset, unsigned int indexOffset, unsigned int indexCount);
       ~mesh() override;
 
@@ -22,23 +22,23 @@ namespace graphics3d_opengl
       void Unbind() const;
       unsigned int GetIndexCount() const;
       unsigned int GetIndexOffset() const;
-      void SetInstanceModelMatrices(const std::vector<glm::mat4>& modelmatricies);
-      void UpdateInstanceModelMatrices(const std::vector<glm::mat4>& modelMatrices);
+      void SetInstanceModelMatrices(const ::array<glm::mat4>& modelmatricies);
+      void UpdateInstanceModelMatrices(const ::array<glm::mat4>& modelMatrices);
 
 
 
-      void Draw(shader * pshader);
+      void Draw(::gpu::shader * pshader);
    //private:
       void SetupMesh();
 
       ::pointer_array<texture>      m_texturea;
-      std::vector<float> m_Vertices;
-      std::vector<unsigned int> m_Indices;
+      ::array<float> m_Vertices;
+      ::array<unsigned int> m_Indices;
       unsigned int m_VAO, m_VBO, m_EBO;
       unsigned int m_IndexOffset;
       unsigned int m_IndexCount;
       unsigned int m_VertexOffset;
-      std::vector<glm::mat4> m_ModelMatrices;
+      ::array<glm::mat4> m_ModelMatrices;
       // New instance buffer
       unsigned int m_InstanceVBO;
 

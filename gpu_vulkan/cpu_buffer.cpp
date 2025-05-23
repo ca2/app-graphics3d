@@ -2,7 +2,7 @@
 #include "cpu_buffer.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "aura/graphics/image/image.h"
-#include "aura/graphics/gpu/context.h"
+#include "app-cube/cube/gpu/context.h"
 
 
 namespace gpu_vulkan

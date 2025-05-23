@@ -20,7 +20,7 @@ namespace gpu_vulkan
 
 
    render_pass::render_pass(context* pvkcdeviceRef, VkExtent2D extent)
-      : m_pcontext(pvkcdeviceRef), windowExtent(extent)
+      : m_pgpucontext(pvkcdeviceRef), windowExtent(extent)
    {
       //init();
       //m_pvkcrenderpassOld = nullptr;
@@ -28,7 +28,7 @@ namespace gpu_vulkan
 
    
    render_pass::render_pass(context* pvkcdeviceRef, VkExtent2D extent, ::pointer<render_pass> previous)
-      : m_pcontext{ pvkcdeviceRef }, windowExtent{ extent }, m_pvkcrenderpassOld{ previous } 
+      : m_pgpucontext{ pvkcdeviceRef }, windowExtent{ extent }, m_pvkcrenderpassOld{ previous } 
    {
       //init();
       // Cleans up old swap chain since it's no longer needed after resizing
@@ -55,35 +55,35 @@ namespace gpu_vulkan
    {
       for (auto imageView : m_imageviews) 
       {
-         vkDestroyImageView(m_pcontext->device(), imageView, nullptr);
+         vkDestroyImageView(m_pgpucontext->device(), imageView, nullptr);
       }
       m_imageviews.clear();
 
       //if (swapChain != nullptr) {
-      //   vkDestroySwapchainKHR(m_pcontext->device(), swapChain, nullptr);
+      //   vkDestroySwapchainKHR(m_pgpucontext->device(), swapChain, nullptr);
       //   swapChain = nullptr;
       //}
 
       for (int i = 0; i < depthImages.size(); i++) 
       {
-         vkDestroyImageView(m_pcontext->device(), depthImageViews[i], nullptr);
-         vkDestroyImage(m_pcontext->device(), depthImages[i], nullptr);
-         vkFreeMemory(m_pcontext->device(), depthImageMemorys[i], nullptr);
+         vkDestroyImageView(m_pgpucontext->device(), depthImageViews[i], nullptr);
+         vkDestroyImage(m_pgpucontext->device(), depthImages[i], nullptr);
+         vkFreeMemory(m_pgpucontext->device(), depthImageMemorys[i], nullptr);
       }
 
       for (auto framebuffer : m_framebuffers)
       {
-         vkDestroyFramebuffer(m_pcontext->device(), framebuffer, nullptr);
+         vkDestroyFramebuffer(m_pgpucontext->device(), framebuffer, nullptr);
       }
 
-      vkDestroyRenderPass(m_pcontext->device(), m_vkrenderpass, nullptr);
+      vkDestroyRenderPass(m_pgpucontext->device(), m_vkrenderpass, nullptr);
 
       // cleanup synchronization objects
       for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
       {
-         vkDestroySemaphore(m_pcontext->device(), renderFinishedSemaphores[i], nullptr);
-         vkDestroySemaphore(m_pcontext->device(), imageAvailableSemaphores[i], nullptr);
-         vkDestroyFence(m_pcontext->device(), inFlightFences[i], nullptr);
+         vkDestroySemaphore(m_pgpucontext->device(), renderFinishedSemaphores[i], nullptr);
+         vkDestroySemaphore(m_pgpucontext->device(), imageAvailableSemaphores[i], nullptr);
+         vkDestroyFence(m_pgpucontext->device(), inFlightFences[i], nullptr);
       }
    }
 
@@ -92,14 +92,14 @@ namespace gpu_vulkan
    {
 
       //vkWaitForFences(
-      //   m_pcontext->device(),
+      //   m_pgpucontext->device(),
       //   1,
       //   &inFlightFences[currentFrame],
       //   VK_TRUE,
       //   std::numeric_limits<uint64_t>::max());
 
       //VkResult result = vkAcquireNextImageKHR(
-      //   m_pcontext->device(),
+      //   m_pgpucontext->device(),
       //   swapChain,
       //   std::numeric_limits<uint64_t>::max(),
       //   imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
@@ -116,7 +116,7 @@ namespace gpu_vulkan
    {
 
       //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
-      //   vkWaitForFences(m_pcontext->device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+      //   vkWaitForFences(m_pgpucontext->device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
       //}
       //imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
 
@@ -136,8 +136,8 @@ namespace gpu_vulkan
       //submitInfo.signalSemaphoreCount = 1;
       //submitInfo.pSignalSemaphores = signalSemaphores;
 
-      //vkResetFences(m_pcontext->device(), 1, &inFlightFences[currentFrame]);
-      //if (vkQueueSubmit(m_pcontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
+      //vkResetFences(m_pgpucontext->device(), 1, &inFlightFences[currentFrame]);
+      //if (vkQueueSubmit(m_pgpucontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
       //   VK_SUCCESS) {
       //   throw ::exception(error_failed,"failed to submit draw command buffer!");
       //}
@@ -154,7 +154,7 @@ namespace gpu_vulkan
 
       //presentInfo.pImageIndices = imageIndex;
 
-      //auto result = vkQueuePresentKHR(m_pcontext->presentQueue(), &presentInfo);
+      //auto result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
 
       //currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
@@ -168,7 +168,7 @@ namespace gpu_vulkan
    void render_pass::createRenderPassImpl() 
    {
 
-      //SwapChainSupportDetails swapChainSupport = m_pcontext->getSwapChainSupport();
+      //SwapChainSupportDetails swapChainSupport = m_pgpucontext->getSwapChainSupport();
 
       //VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
       //VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -182,7 +182,7 @@ namespace gpu_vulkan
 
       //VkSwapchainCreateInfoKHR createInfo = {};
       //createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-      //createInfo.surface = m_pcontext->surface();
+      //createInfo.surface = m_pgpucontext->surface();
 
       //createInfo.minImageCount = imageCount;
       //createInfo.imageFormat = surfaceFormat.format;
@@ -191,7 +191,7 @@ namespace gpu_vulkan
       //createInfo.imageArrayLayers = 1;
       //createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-      //QueueFamilyIndices indices = m_pcontext->findPhysicalQueueFamilies();
+      //QueueFamilyIndices indices = m_pgpucontext->findPhysicalQueueFamilies();
       //uint32_t queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
 
       //if (indices.graphicsFamily != indices.presentFamily) {
@@ -213,7 +213,7 @@ namespace gpu_vulkan
 
       //createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
-      //if (vkCreateSwapchainKHR(m_pcontext->device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
+      //if (vkCreateSwapchainKHR(m_pgpucontext->device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
       //   throw ::exception(error_failed,"failed to create swap chain!");
       //}
 
@@ -221,9 +221,9 @@ namespace gpu_vulkan
       //// allowed to create a swap chain with more. That's why we'll first query the final number of
       //// images with vkGetSwapchainImagesKHR, then resize the container and finally call it again to
       //// retrieve the handles.
-      //vkGetSwapchainImagesKHR(m_pcontext->device(), swapChain, &imageCount, nullptr);
+      //vkGetSwapchainImagesKHR(m_pgpucontext->device(), swapChain, &imageCount, nullptr);
       //swapChainImages.resize(imageCount);
-      //vkGetSwapchainImagesKHR(m_pcontext->device(), swapChain, &imageCount, swapChainImages.data());
+      //vkGetSwapchainImagesKHR(m_pgpucontext->device(), swapChain, &imageCount, swapChainImages.data());
 
       //swapChainImageFormat = surfaceFormat.format;
       //extent = extent;
@@ -250,7 +250,7 @@ namespace gpu_vulkan
          viewInfo.subresourceRange.baseArrayLayer = 0;
          viewInfo.subresourceRange.layerCount = 1;
 
-         if (vkCreateImageView(m_pcontext->device(), &viewInfo, nullptr, &m_imageviews[i]) !=
+         if (vkCreateImageView(m_pgpucontext->device(), &viewInfo, nullptr, &m_imageviews[i]) !=
             VK_SUCCESS) 
          {
             throw ::exception(error_failed,"failed to create texture image view!");
@@ -320,7 +320,7 @@ namespace gpu_vulkan
       renderPassInfo.dependencyCount = 1;
       renderPassInfo.pDependencies = &dependency;
 
-      if (vkCreateRenderPass(m_pcontext->device(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) 
+      if (vkCreateRenderPass(m_pgpucontext->device(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) 
       {
 
          throw ::exception(error_failed,"failed to create render pass!");
@@ -351,7 +351,7 @@ namespace gpu_vulkan
          framebufferInfo.layers = 1;
 
          if (vkCreateFramebuffer(
-            m_pcontext->device(),
+            m_pgpucontext->device(),
             &framebufferInfo,
             nullptr,
             &m_framebuffers[i]) != VK_SUCCESS) 
@@ -398,7 +398,7 @@ namespace gpu_vulkan
          imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
          imageInfo.flags = 0;
 
-         m_pcontext->createImageWithInfo(
+         m_pgpucontext->createImageWithInfo(
             imageInfo,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             depthImages[i],
@@ -415,7 +415,7 @@ namespace gpu_vulkan
          viewInfo.subresourceRange.baseArrayLayer = 0;
          viewInfo.subresourceRange.layerCount = 1;
 
-         if (vkCreateImageView(m_pcontext->device(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) 
+         if (vkCreateImageView(m_pgpucontext->device(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) 
          {
             throw ::exception(error_failed,"failed to create texture image view!");
          }
@@ -444,11 +444,11 @@ namespace gpu_vulkan
       for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) 
       {
          imageAvailable[i] = 0;
-         if (vkCreateSemaphore(m_pcontext->device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
+         if (vkCreateSemaphore(m_pgpucontext->device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
             VK_SUCCESS ||
-            vkCreateSemaphore(m_pcontext->device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
+            vkCreateSemaphore(m_pgpucontext->device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
             VK_SUCCESS ||
-            vkCreateFence(m_pcontext->device(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) 
+            vkCreateFence(m_pgpucontext->device(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) 
          {
             throw ::exception(error_failed,"failed to create synchronization objects for a frame!");
          }
@@ -508,7 +508,7 @@ namespace gpu_vulkan
    VkFormat render_pass::findDepthFormat() 
    {
 
-      return m_pcontext->m_pphysicaldevice->findSupportedFormat(
+      return m_pgpucontext->m_pphysicaldevice->findSupportedFormat(
          { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
          VK_IMAGE_TILING_OPTIMAL,
          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);

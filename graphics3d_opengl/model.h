@@ -41,14 +41,14 @@ namespace graphics3d_opengl
       ::pointer_array<texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
       ::pointer_array<mesh>    meshes;
       ::std::string directory;
-      ::pointer < context > m_pcontext;
+      //::pointer < context > m_pgpucontext;
 
       GLuint m_gluVBO;
       GLuint m_gluVAO;
       GLuint m_gluEBO;
       ::collection::count m_cIndexes;
-      void bind(::graphics3d::context* pcontext) override;
-      void draw(::graphics3d::context* pcontext) override;
+      void bind(::gpu::context* pgpucontext) override;
+      void draw(::gpu::context* pgpucontext) override;
       bool gammaCorrection;
 
       // constructor, expects a filepath to a 3D model.
@@ -60,14 +60,14 @@ namespace graphics3d_opengl
        ~model();
 
 
-       void initialize_model(::graphics3d::context* pcontext, const ::graphics3d::model::Builder& builder);
+       void initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder);
 
 
-       void createVertexBuffers(const std::vector<graphics3d::Vertex>& vertices);
-       void createIndexBuffers(const std::vector<uint32_t>& indices);
+       void createVertexBuffers(const ::array<gpu::Vertex>& vertices);
+       void createIndexBuffers(const ::array<uint32_t>& indices);
 
       // draws the model, and thus all its meshes
-      void Draw(shader* pshader);
+      void Draw(::gpu::shader* pshader);
 
    //private:
       //// loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
@@ -111,9 +111,9 @@ namespace graphics3d_opengl
       //::pointer < mesh > processMesh(aiMesh* mesh, const aiScene* scene)
       //{
       //   // data to fill
-      //   ::std::vector<::graphics3d::Vertex> vertices;
-      //   ::std::vector<unsigned int> indices;
-      //   ::std::vector<texture> textures;
+      //   ::array<::gpu::Vertex> vertices;
+      //   ::array<unsigned int> indices;
+      //   ::array<texture> textures;
 
       //   // walk through each of the mesh's vertices
       //   for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -182,10 +182,10 @@ namespace graphics3d_opengl
       //   vector<texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
       //   textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
       //   // 3. normal maps
-      //   std::vector<texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+      //   ::array<texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
       //   textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
       //   // 4. height maps
-      //   std::vector<texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+      //   ::array<texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
       //   textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
       //   // return a mesh object created from the extracted mesh data
@@ -194,9 +194,9 @@ namespace graphics3d_opengl
 
       //// checks all material textures of a given type and loads the textures if they're not loaded yet.
       //// the required info is returned as a texture struct.
-      //::std::vector<texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+      //::array<texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
       //{
-      //   ::std::vector<texture> textures;
+      //   ::array<texture> textures;
       //   for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
       //   {
       //      aiString str;

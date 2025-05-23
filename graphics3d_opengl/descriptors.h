@@ -21,7 +21,7 @@
 //        class Builder  
 //        {
 //        public:
-//            Builder(context *pvkcDevice) : m_pcontext{ pvkcDevice } {}
+//            Builder(context *pvkcDevice) : m_pgpucontext{ pvkcDevice } {}
 //
 //            Builder& addBinding(
 //                uint32_t binding,
@@ -31,12 +31,12 @@
 //            ::pointer<set_descriptor_layout> build() const;
 //
 //        private:
-//            ::pointer < context > m_pcontext;
-//            std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
+//            ::pointer < context > m_pgpucontext;
+//            ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
 //        };
 //
 //        set_descriptor_layout(
-//            context * pvkcdevice, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
+//            context * pvkcdevice, ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
 //        ~set_descriptor_layout();
 //        set_descriptor_layout(const set_descriptor_layout&) = delete;
 //        set_descriptor_layout& operator=(const set_descriptor_layout&) = delete;
@@ -44,9 +44,9 @@
 //        VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
 //
 //    private:
-//        ::pointer < context > m_pcontext;
+//        ::pointer < context > m_pgpucontext;
 //        VkDescriptorSetLayout descriptorSetLayout;
-//        std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings;
+//        ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings;
 //
 //        friend class descriptor_writer;
 //    };
@@ -57,11 +57,11 @@
 //        class Builder :
 //        virtual public ::particle{
 //        public:
-//            //Builder(context& m_pcontext) : m_pcontext{ m_pcontext } {}
+//            //Builder(context& m_pgpucontext) : m_pgpucontext{ m_pgpucontext } {}
 //            Builder() {}
-//            void initialize_builder(::cube::context * pcontext)
+//            void initialize_builder(::cube::context * pgpucontext)
 //            {
-//               m_pcontext = pcontext;
+//               m_pgpucontext = pgpucontext;
 //
 //            }
 //            Builder& addPoolSize(VkDescriptorType descriptorType, uint32_t count);
@@ -70,8 +70,8 @@
 //            ::pointer<descriptor_pool> build() const;
 //
 //        private:
-//            ::pointer < context > m_pcontext;
-//            std::vector<VkDescriptorPoolSize> poolSizes{};
+//            ::pointer < context > m_pgpucontext;
+//            ::array<VkDescriptorPoolSize> poolSizes{};
 //            uint32_t maxSets = 1000;
 //            VkDescriptorPoolCreateFlags poolFlags = 0;
 //        };
@@ -80,7 +80,7 @@
 //            context * pvkcdevice,
 //            uint32_t maxSets,
 //            VkDescriptorPoolCreateFlags poolFlags,
-//            const std::vector<VkDescriptorPoolSize>& poolSizes);
+//            const ::array<VkDescriptorPoolSize>& poolSizes);
 //        ~descriptor_pool();
 //        descriptor_pool(const descriptor_pool&) = delete;
 //        descriptor_pool& operator=(const descriptor_pool&) = delete;
@@ -88,12 +88,12 @@
 //        bool allocateDescriptor(
 //            const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
 //
-//        void freeDescriptors(std::vector<VkDescriptorSet>& descriptors) const;
+//        void freeDescriptors(::array<VkDescriptorSet>& descriptors) const;
 //
 //        void resetPool();
 //
 //    private:
-//        ::pointer < context > m_pcontext;
+//        ::pointer < context > m_pgpucontext;
 //        VkDescriptorPool descriptorPool;
 //
 //        friend class descriptor_writer;
@@ -114,7 +114,7 @@
 //    private:
 //        set_descriptor_layout& setLayout;
 //        descriptor_pool& pool;
-//        std::vector<VkWriteDescriptorSet> writes;
+//        ::array<VkWriteDescriptorSet> writes;
 //    };
 //
 //

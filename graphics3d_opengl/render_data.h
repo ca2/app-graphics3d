@@ -14,7 +14,7 @@ namespace graphics3d_opengl
 {
 
    class renderer;
-   class shader;
+   //class shader;
    class mesh;
    //class Camera;
    class sky_box;
@@ -67,7 +67,7 @@ namespace graphics3d_opengl
       ::pointer<mesh> m_WallMesh;
 
       // Models
-      std::vector<::pointer<mesh>> m_Meshes;
+      ::array<::pointer<mesh>> m_Meshes;
 
       //Instances
       int m_PlaneInstanceCount = 1;
@@ -77,9 +77,9 @@ namespace graphics3d_opengl
 
 
       // Misc
-      std::vector<glm::mat4> boxModelMatrices; // Declare as a member variable
-      std::vector<glm::mat4> wallModelMatrices;
-      std::vector<glm::vec3> wallPositions;
+      ::array<glm::mat4> boxModelMatrices; // Declare as a member variable
+      ::array<glm::mat4> wallModelMatrices;
+      ::array<glm::vec3> wallPositions;
 
 
 

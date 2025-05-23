@@ -1,6 +1,5 @@
 // From application_object by camilo on 2025-05-17 01:10 <3ThomasBorregaardSorensen!!
 #include "framework.h"
-#include "descriptors.h"
 #include "buffer.h"
 #include "engine.h"
 #include "frame.h"
@@ -10,6 +9,10 @@
 #include "swap_chain_render_pass.h"
 #include "app-cube/cube/application.h"
 #include "app-cube/cube/impact.h"
+#include "app-cube/gpu_vulkan/approach.h"
+#include "app-cube/gpu_vulkan/context.h"
+#include "app-cube/gpu_vulkan/descriptors.h"
+#include "app-cube/gpu_vulkan/renderer.h"
 #include "app-cube/cube/graphics3d/camera.h"
 #include "app-cube/cube/graphics3d/scene.h"
 //#include "app-cube/cube/graphics3d/system/simple_render_system.h"
@@ -43,42 +46,49 @@ namespace graphics3d_vulkan
    void engine::on_start_engine()
    {
 
-
       auto papp = get_app();
 
-      __øconstruct(m_pcontext);
+      __øconstruct(m_pgpucontext);
 
-      m_pcontext->initialize_context(papp->m_pimpact);
+      ::gpu::enum_output eoutput;
+
+      if (m_papplication->m_bUseDraw2dProtoWindow)
+      {
+
+         eoutput = ::gpu::e_output_none;
+
+      }
+      else
+      {
+
+         eoutput = ::gpu::e_output_cpu_buffer;
+
+      }
+
+      m_pgpucontext->initialize_gpu_context(m_papproach, eoutput);
 
       __construct_new(m_prenderer);
 
-      ::graphics3d::engine::m_prenderer = m_prenderer;
+      //::graphics3d::engine::m_prenderer = m_prenderer;
 
-      m_prenderer->initialize_renderer(m_pcontext);
+      m_prenderer->initialize_renderer(m_pgpucontext);
 
-      auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
 
-      pglobalpoolbuilder->initialize_builder(m_pcontext);
-      pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
-      pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, render_pass::MAX_FRAMES_IN_FLIGHT);
-
-      m_pglobalpool = pglobalpoolbuilder->build();
-
-      //m_pglobalpool->initialize_pool(pcontext);
+      //m_pglobalpool->initialize_pool(pgpucontext);
 
       //= __allocate
-      //   descriptor_pool::Builder(pcontext)
+      //   descriptor_pool::Builder(pgpucontext)
       //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .build();
 
-      //pcontext = __allocate context(m_pvulkandevice);
+      //pgpucontext = __allocate context(m_pvulkandevice);
       int iGlobalUboSize = m_pimpact->global_ubo_block().size();
 
       if (iGlobalUboSize > 0)
       {
 
-         create_global_ubo();
+         create_global_ubo(m_pgpucontext);
 
       }
 
@@ -87,7 +97,7 @@ namespace graphics3d_vulkan
   //        globalSetLayout->getDescriptorSetLayout()
     //  };
 
-      m_pscene->on_load_scene(m_pcontext);
+      m_pscene->on_load_scene(m_pgpucontext);
 
 
    }
@@ -116,7 +126,7 @@ namespace graphics3d_vulkan
    }
 
 
-   void engine::create_global_ubo()
+   void engine::create_global_ubo(::gpu::context * pgpucontext)
    {
 
       int iGlobalUboSize = m_pimpact->global_ubo_block().size();
@@ -124,62 +134,24 @@ namespace graphics3d_vulkan
       if (iGlobalUboSize > 0)
       {
 
-         m_uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
-
-         ::cast < context > pcontext = m_pcontext;
-
-         for (int i = 0; i < m_uboBuffers.size(); i++)
-         {
-
-            m_uboBuffers[i] = __allocate buffer();
-
-            m_uboBuffers[i]->initialize_buffer(
-               pcontext,
-               iGlobalUboSize,
-               1,
-               VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-
-            m_uboBuffers[i]->map();
-
-         }
-         m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pcontext)
-            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
-            .build();
-
-         //auto globalSetLayout = m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-
-
-         m_globalDescriptorSets.resize(render_pass::MAX_FRAMES_IN_FLIGHT);
-
-         for (int i = 0; i < m_globalDescriptorSets.size(); i++)
-         {
-
-            auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
-
-            descriptor_writer(*m_psetdescriptorlayoutGlobal, *m_pglobalpool)
-               .writeBuffer(0, &bufferInfo)
-               .build(m_globalDescriptorSets[i]);
-
-         }
+         m_papproach->create_global_ubo(pgpucontext,  iGlobalUboSize, ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT);
 
       }
 
    }
 
 
-   void engine::update_global_ubo()
+   void engine::update_global_ubo(::gpu::context* pgpucontext)
    {
 
       if (m_pimpact->global_ubo_block().size() > 0)
       {
 
-         m_pscene->on_update_global_ubo();
+         m_pscene->on_update_global_ubo(pgpucontext);
 
          int frameIndex = m_prenderer->getFrameIndex();
 
-         m_uboBuffers[frameIndex]->writeToBuffer(m_pimpact->global_ubo_block().data());
-         m_uboBuffers[frameIndex]->flush();
+         m_papproach->update_global_ubo(pgpucontext, frameIndex, m_pimpact->global_ubo_block());
 
       }
 
@@ -218,14 +190,14 @@ namespace graphics3d_vulkan
    ////}
 
 
-   ::file::path engine::_translate_shader_path(const ::file::path& pathShader)
-   {
+   //::file::path engine::_translate_shader_path(const ::file::path& pathShader)
+   //{
 
-      auto pathFolder = pathShader.folder();
+   //   auto pathFolder = pathShader.folder();
 
-      return pathFolder / "vulkan/SpirV" / (pathShader.name() + ".spv");
+   //   return pathFolder / "vulkan/SpirV" / (pathShader.name() + ".spv");
 
-   }
+   //}
 
    void engine::run()
    {
@@ -234,38 +206,38 @@ namespace graphics3d_vulkan
 
       //auto papp = get_app();
 
-      //__øconstruct(m_pcontext);
+      //__øconstruct(m_pgpucontext);
 
-      //m_pcontext->initialize_context(papp->m_pimpact);
+      //m_pgpucontext->initialize_context(papp->m_pimpact);
 
       //__construct_new(m_prenderer);
 
-      //m_prenderer->initialize_renderer(papp->m_pimpact, m_pcontext);
+      //m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontext);
 
       //auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
 
-      //pglobalpoolbuilder->initialize_builder(m_pcontext);
+      //pglobalpoolbuilder->initialize_builder(m_pgpucontext);
       //pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
       //pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, render_pass::MAX_FRAMES_IN_FLIGHT);
 
       //m_pglobalpool = pglobalpoolbuilder->build();
 
-      ////m_pglobalpool->initialize_pool(pcontext);
+      ////m_pglobalpool->initialize_pool(pgpucontext);
 
       ////= __allocate
-      ////   descriptor_pool::Builder(pcontext)
+      ////   descriptor_pool::Builder(pgpucontext)
       ////   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       ////   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       ////   .build();
       //m_pscene->on_load_scene();
 
-      ////pcontext = __allocate context(m_pvulkandevice);
+      ////pgpucontext = __allocate context(m_pvulkandevice);
 
       //::pointer_array<buffer> uboBuffers;
 
       //uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
 
-      //::cast < context > pcontext = m_pcontext;
+      //::cast < context > pgpucontext = m_pgpucontext;
 
       //for (int i = 0; i < uboBuffers.size(); i++)
       //{
@@ -273,7 +245,7 @@ namespace graphics3d_vulkan
       //   uboBuffers[i] = __allocate buffer();
 
       //   uboBuffers[i]->initialize_buffer(
-      //      pcontext,
+      //      pgpucontext,
       //      sizeof(GlobalUbo),
       //      1,
       //      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -282,12 +254,12 @@ namespace graphics3d_vulkan
       //   uboBuffers[i]->map();
 
       //}
-      //auto globalSetLayout = set_descriptor_layout::Builder(pcontext)
+      //auto globalSetLayout = set_descriptor_layout::Builder(pgpucontext)
       //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
       //   .build();
 
 
-      //std::vector<VkDescriptorSet> globalDescriptorSets(render_pass::MAX_FRAMES_IN_FLIGHT);
+      //::array<VkDescriptorSet> globalDescriptorSets(render_pass::MAX_FRAMES_IN_FLIGHT);
 
       //for (int i = 0; i < globalDescriptorSets.size(); i++)
       //{
@@ -301,12 +273,12 @@ namespace graphics3d_vulkan
       //}
 
       //SimpleRenderSystem simpleRenderSystem{
-      //    pcontext,
+      //    pgpucontext,
       //    m_prenderer->getRenderPass(),
       //    globalSetLayout->getDescriptorSetLayout() };
 
       //point_light_system pointLightSystem{
-      //    pcontext,
+      //    pgpucontext,
       //    m_prenderer->getRenderPass(),
       //    globalSetLayout->getDescriptorSetLayout()
       //};
@@ -413,10 +385,10 @@ namespace graphics3d_vulkan
 
       //}
 
-      //if (pcontext->logicalDevice() != VK_NULL_HANDLE)
+      //if (pgpucontext->logicalDevice() != VK_NULL_HANDLE)
       //{
 
-      //   vkDeviceWaitIdle(pcontext->logicalDevice());
+      //   vkDeviceWaitIdle(pgpucontext->logicalDevice());
 
       //}
 
@@ -425,11 +397,6 @@ namespace graphics3d_vulkan
    }
 
 
-   VkDescriptorSet engine::getcurrentDescriptorSet()
-   {
-      return m_globalDescriptorSets[m_prenderer->getFrameIndex()];
-
-   }
 
 
 

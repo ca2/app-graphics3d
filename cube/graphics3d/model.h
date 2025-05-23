@@ -35,8 +35,8 @@ namespace graphics3d
 
       struct Builder
       {
-         std::vector<Vertex> vertices{};
-         std::vector<uint32_t> indices{};
+         ::array<gpu::Vertex> vertices{};
+         ::array<uint32_t> indices{};
 
       };
 
@@ -44,31 +44,31 @@ namespace graphics3d
          public Builder
       {
 
-         void loadModel(::graphics3d::context* pcontext, const ::file::path & path);
+         void loadModel(::gpu::context* pgpucontext, const ::file::path & path);
 
       };
 
 
+      ::pointer < ::gpu::context >        m_pgpucontext;
 
-
-      //static ::pointer<model> createModelFromFile(::cube::context * pcontext, const ::file::path & path);
+      //static ::pointer<model> createModelFromFile(::cube::context * pgpucontext, const ::file::path & path);
 
 
       model();
       ~model();
 
 
-      virtual void initialize_model(::graphics3d::context * pcontext, const model::Builder& builder);
+      virtual void initialize_model(::gpu::context * pgpucontext, const model::Builder& builder);
 
-      virtual void draw(::graphics3d::context* pcontext);
-      virtual void bind(::graphics3d::context* pcontext);
+      virtual void draw(::gpu::context* pgpucontext);
+      virtual void bind(::gpu::context* pgpucontext);
 
    //private:
-   //   void createVertexBuffers(const std::vector<Vertex>& vertices);
-   //   void createIndexBuffers(const std::vector<uint32_t>& indices);
+   //   void createVertexBuffers(const ::array<Vertex>& vertices);
+   //   void createIndexBuffers(const ::array<uint32_t>& indices);
 
    //   bool hasIndexBuffer = false;
-   //   ::pointer < context > m_pcontext;
+   //   ::pointer < context > m_pgpucontext;
 
 
    //   ::pointer<buffer> vertexBuffer;
@@ -86,15 +86,16 @@ namespace graphics3d
 
 
 
-namespace std {
-   template <>
-   struct hash<::graphics3d::Vertex> {
-      size_t operator()(::graphics3d::Vertex const& vertex) const {
-         size_t seed = 0;
-         ::graphics3d::hash_combine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
-         return seed;
-      }
-   };
-}  // namespace std
+//namespace std {
+//   template <>
+//   struct hash<::gpu::Vertex>
+//   {
 
+
+
+
+//   };
+//
+//}  // namespace std
+//
 

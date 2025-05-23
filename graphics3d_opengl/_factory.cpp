@@ -18,17 +18,17 @@
 IMPLEMENT_FACTORY(graphics3d_opengl)
 {
 
-   pfactory->add_factory_item < ::graphics3d_opengl::frame, ::graphics3d::frame >();
+   //pfactory->add_factory_item < ::graphics3d_opengl::frame, ::graphics3d::frame >();
 
    pfactory->add_factory_item < ::graphics3d_opengl::camera, ::graphics3d::camera >();
 
    pfactory->add_factory_item < ::graphics3d_opengl::model, ::graphics3d::model >();
 
-   pfactory->add_factory_item < ::graphics3d_opengl::shader, ::graphics3d::shader >();
+   //pfactory->add_factory_item < ::graphics3d_opengl::shader, ::graphics3d::shader >();
 
    pfactory->add_factory_item < ::graphics3d_opengl::engine, ::graphics3d::engine >();
 
-   pfactory->add_factory_item < ::graphics3d_opengl::context, ::graphics3d::context >();
+   //pfactory->add_factory_item < ::graphics3d_opengl::context, ::gpu::context >();
 
    pfactory->add_factory_item < ::graphics3d::scene_object >();
 

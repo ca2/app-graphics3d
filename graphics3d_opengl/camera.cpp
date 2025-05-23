@@ -29,7 +29,7 @@ namespace graphics3d_opengl
    }
 //
 //   // Constructor
-//   ::graphics3d::camera::::graphics3d::camera(glc::GlContainer* pimpact, glm::vec3 position, float fYaw, float fPitch)
+//   ::graphics3d::camera::graphics3d::camera(glc::GlContainer* pimpact, glm::vec3 position, float fYaw, float fPitch)
 //   {
 //
 //      m_pimpact = pimpact;

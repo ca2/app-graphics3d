@@ -1,11 +1,11 @@
 #include "framework.h"
 // Co-creating with V0idsEmbrace@Twitch with
 // camilo on 2025-05-19 04:59 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "approach.h"
 #include "shader.h"
 #include "context.h"
 #include "descriptors.h"
-//#include "engine.h"
+//#include "approach.h"
 #include "pipeline.h"
 #include "renderer.h"
 //#include "app-cube/cube/impact.h"
@@ -26,9 +26,9 @@ namespace gpu_vulkan
    shader::~shader()
    {
 
-      ::cast < context > pcontext = m_pcontext;
+      ::cast < context > pgpucontext = m_pgpucontext;
 
-      vkDestroyPipelineLayout(pcontext->logicalDevice(), m_vkpipelinelayout, nullptr);
+      vkDestroyPipelineLayout(pgpucontext->logicalDevice(), m_vkpipelinelayout, nullptr);
 
    }
 
@@ -36,9 +36,9 @@ namespace gpu_vulkan
    void shader::_create_pipeline_layout(int iSize)
    {
 
-      ::cast < context > pcontext = m_pcontext;
+      ::cast < context > pgpucontext = m_pgpucontext;
 
-      ::cast < engine > pengine = pcontext->m_pimpact->m_pengine;
+      ::cast < approach > papproach = pgpucontext->m_papproach;
 
       VkPushConstantRange pushConstantRange{};
       pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -46,7 +46,7 @@ namespace gpu_vulkan
       //pushConstantRange.size = sizeof(PointLightPushConstants);
       pushConstantRange.size = iSize;
 
-      auto globalSetLayout = pengine->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+      auto globalSetLayout = papproach->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
 
       ::array<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
 
@@ -58,7 +58,7 @@ namespace gpu_vulkan
       pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
       //pipelineLayoutInfo.pPushConstantRanges = nullptr;
       if (vkCreatePipelineLayout(
-         pcontext->logicalDevice(),
+         pgpucontext->logicalDevice(),
          &pipelineLayoutInfo,
          nullptr,
          &m_vkpipelinelayout) !=
@@ -77,7 +77,11 @@ namespace gpu_vulkan
 
       __construct_new(m_ppipeline);
 
-      ::cast <engine> pengine = m_pcontext->m_pimpact->m_pengine;
+      ::cast <context> pgpucontext = m_pgpucontext;
+
+      ::cast <approach> papproach = m_pgpucontext->m_papproach;
+
+      ::cast <renderer> prenderer = m_pgpucontext->m_prenderer;
 
       PipelineConfigInfo pipelineConfig{};
       pipeline::defaultPipelineConfigInfo(pipelineConfig);
@@ -86,29 +90,35 @@ namespace gpu_vulkan
          pipelineConfig.attributeDescriptions.clear();
          pipelineConfig.bindingDescriptions.clear();
       }
-      pipelineConfig.renderPass = pengine->m_prenderer->m_pvkcrenderpass->m_vkrenderpass;
+      pipelineConfig.renderPass = prenderer->m_pvkcrenderpass->m_vkrenderpass;
       pipelineConfig.pipelineLayout = m_vkpipelinelayout;
 
+      papproach->defer_shader_memory(m_memoryVertex, m_pathVertex);
+      papproach->defer_shader_memory(m_memoryFragment, m_pathFragment);
 
-      m_ppipeline->initialize_pipeline(m_pcontext,
-         pengine->_translate_shader_path(m_pathVert),
-         pengine->_translate_shader_path(m_pathFrag),
+      m_ppipeline->initialize_pipeline(m_pgpucontext,
+         m_memoryVertex,
+         m_memoryFragment,
          pipelineConfig);
 
 
    }
 
 
-   void shader::bind() const
+   void shader::bind()
    {
 
-      ::cast <engine> pengine = m_pcontext->m_pimpact->m_pengine;
+      ::cast <approach> papproach = m_pgpucontext->m_papproach;
 
-      auto commandBuffer = pengine->m_prenderer->getCurrentCommandBuffer();
+      ::cast <context> pgpucontext = m_pgpucontext;
+
+      ::cast <renderer> prenderer = pgpucontext->m_prenderer;
+
+      auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
       m_ppipeline->bind(commandBuffer);
 
-      auto globalDescriptorSet = pengine->getcurrentDescriptorSet();
+      auto globalDescriptorSet = papproach->getCurrentDescriptorSet();
 
       vkCmdBindDescriptorSets(
          commandBuffer,
@@ -126,9 +136,9 @@ namespace gpu_vulkan
    void shader::push_properties()
    {
 
-      ::cast <engine> pengine = m_pcontext->m_pimpact->m_pengine;
+      ::cast < renderer > prenderer = m_pgpucontext->m_prenderer;
 
-      auto commandBuffer = pengine->m_prenderer->getCurrentCommandBuffer();
+      auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
       vkCmdPushConstants(
          commandBuffer,
@@ -144,9 +154,9 @@ namespace gpu_vulkan
    void shader::draw()
    {
 
-      ::cast <engine> pengine = m_pcontext->m_pimpact->m_pengine;
+      ::cast < renderer > prenderer = m_pgpucontext->m_prenderer;
 
-      auto commandBuffer = pengine->m_prenderer->getCurrentCommandBuffer();
+      auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
       vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 

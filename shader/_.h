@@ -1,8 +1,7 @@
 #pragma once
 
 
-#include "aura/_.h"
-#include "aura/graphics/gpu/_.h"
+#include "app-cube/cube/_.h"
 
 
 #if defined(_app_cube_shader_project)

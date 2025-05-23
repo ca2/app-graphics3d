@@ -15,7 +15,7 @@
 //   //int input::m_WindowedHeight = 720;
 //   //int input::m_WindowedPosX = 100;
 //   //int input::m_WindowedPosY = 100;
-//   //std::unordered_map<::user::e_key, bool> input::m_KeyPressed;
+//   //::map<::user::e_key, bool> input::m_KeyPressed;
 //   input::input(::cube::impact* pimpact) :
 //      m_pimpact(pimpact)
 //   {

@@ -45,38 +45,38 @@ namespace graphics3d_opengl
 
       auto papp = get_app();
 
-      __øconstruct(m_pcontext);
+      __øconstruct(m_pgpucontext);
 
-      m_pcontext->initialize_context(papp->m_pimpact);
+      m_pgpucontext->initialize_context(papp->m_pimpact);
 
       __construct_new(m_prenderer);
 
-      m_prenderer->initialize_renderer(papp->m_pimpact, m_pcontext);
+      m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontext);
 
       auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
 
-      pglobalpoolbuilder->initialize_builder(m_pcontext);
+      pglobalpoolbuilder->initialize_builder(m_pgpucontext);
       pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
       pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, render_pass::MAX_FRAMES_IN_FLIGHT);
 
       m_pglobalpool = pglobalpoolbuilder->build();
 
-      //m_pglobalpool->initialize_pool(pcontext);
+      //m_pglobalpool->initialize_pool(pgpucontext);
 
       //= __allocate
-      //   descriptor_pool::Builder(pcontext)
+      //   descriptor_pool::Builder(pgpucontext)
       //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .build();
       m_pscene->on_load_scene();
 
-      //pcontext = __allocate context(m_popengldevice);
+      //pgpucontext = __allocate context(m_popengldevice);
 
       ::pointer_array<buffer> uboBuffers;
 
       uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
 
-      ::cast < context > pcontext = m_pcontext;
+      ::cast < context > pgpucontext = m_pgpucontext;
 
       for (int i = 0; i < uboBuffers.size(); i++)
       {
@@ -84,7 +84,7 @@ namespace graphics3d_opengl
          uboBuffers[i] = __allocate buffer();
 
          uboBuffers[i]->initialize_buffer(
-            pcontext,
+            pgpucontext,
             sizeof(GlobalUbo),
             1,
             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -93,12 +93,12 @@ namespace graphics3d_opengl
          uboBuffers[i]->map();
 
       }
-      auto globalSetLayout = set_descriptor_layout::Builder(pcontext)
+      auto globalSetLayout = set_descriptor_layout::Builder(pgpucontext)
          .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
          .build();
 
 
-      std::vector<VkDescriptorSet> globalDescriptorSets(render_pass::MAX_FRAMES_IN_FLIGHT);
+      ::array<VkDescriptorSet> globalDescriptorSets(render_pass::MAX_FRAMES_IN_FLIGHT);
 
       for (int i = 0; i < globalDescriptorSets.size(); i++)
       {
@@ -112,12 +112,12 @@ namespace graphics3d_opengl
       }
 
       SimpleRenderSystem simpleRenderSystem{
-          pcontext,
+          pgpucontext,
           m_prenderer->getRenderPass(),
           globalSetLayout->getDescriptorSetLayout() };
 
       point_light_system pointLightSystem{
-          pcontext,
+          pgpucontext,
           m_prenderer->getRenderPass(),
           globalSetLayout->getDescriptorSetLayout()
       };
@@ -224,10 +224,10 @@ namespace graphics3d_opengl
 
       }
 
-      if (pcontext->logicalDevice() != VK_NULL_HANDLE)
+      if (pgpucontext->logicalDevice() != VK_NULL_HANDLE)
       {
 
-         vkDeviceWaitIdle(pcontext->logicalDevice());
+         vkDeviceWaitIdle(pgpucontext->logicalDevice());
 
       }
 

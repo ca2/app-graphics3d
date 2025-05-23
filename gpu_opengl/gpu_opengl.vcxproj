@@ -695,9 +695,11 @@
     <ClInclude Include="context_egl.h" />
     <ClInclude Include="context_glx.h" />
     <ClInclude Include="context_win32.h" />
+    <ClInclude Include="frame.h" />
     <ClInclude Include="object.h" />
-    <ClInclude Include="opengl.h" />
+    <ClInclude Include="approach.h" />
     <ClInclude Include="program.h" />
+    <ClInclude Include="renderer.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="_.h" />
     <ClInclude Include="factory_exchange.h" />
@@ -730,6 +732,7 @@
     </ClCompile>
     <ClCompile Include="context_win32.cpp" />
     <ClCompile Include="object.cpp" />
+    <ClCompile Include="renderer.cpp" />
     <ClCompile Include="_factory.cpp" />
     <ClCompile Include="framework.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -742,7 +745,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="image_opengl.cpp" />
-    <ClCompile Include="opengl.cpp" />
+    <ClCompile Include="approach.cpp" />
     <ClCompile Include="program.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="_.cpp" />
@@ -751,17 +754,32 @@
     <ResourceCompile Include="deployment.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\acme\acme.vcxproj">
+    <ProjectReference Include="..\..\app\acme\acme.vcxproj">
       <Project>{638b242f-0f21-41c3-9f66-724660046133}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\apex\apex.vcxproj">
+    <ProjectReference Include="..\..\app\apex\apex.vcxproj">
       <Project>{e000ffaf-392f-4e32-bf51-777ca238991f}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\aqua\aqua.vcxproj">
+    <ProjectReference Include="..\..\app\aqua\aqua.vcxproj">
       <Project>{1b06fe5f-f783-41a1-ac68-0e02880dbbac}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\aura\aura.vcxproj">
+    <ProjectReference Include="..\..\app\aura\aura.vcxproj">
       <Project>{e000ffaf-392f-4e32-bf51-fd7ed638991f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\axis\axis.vcxproj">
+      <Project>{a2cbd4ed-ed0f-482b-9b16-f48f21c32835}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\base\base.vcxproj">
+      <Project>{a216abd4-26c4-4746-96b3-9d30ed28cf92}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\bred\bred.vcxproj">
+      <Project>{dfbf067f-aff9-4bd6-a5e1-72af984d1476}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\core\core.vcxproj">
+      <Project>{29c1eb5b-060e-4021-ae12-d1bcfb1b1359}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\cube\cube.vcxproj">
+      <Project>{c5fadcf3-ca08-483d-b5f9-2ce2d2beccbe}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

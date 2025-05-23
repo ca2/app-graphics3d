@@ -1,11 +1,13 @@
 #include "framework.h"
 #include "approach.h"
+#include "buffer.h"
 #include "context.h"
 #include "debug.h"
+#include "descriptors.h"
 #include "physical_device.h"
 #include "acme/filesystem/file/file.h"
 #include "acme/filesystem/filesystem/file_context.h"
-#include "aura/graphics/gpu/context.h"
+#include "app-cube/cube/gpu/context.h"
 #include "acme/platform/application.h"
 
 
@@ -457,7 +459,7 @@ namespace gpu_vulkan
    }
 
 
-   ::pointer < ::gpu::context > approach::create_context(::particle * pparticle)
+   ::pointer < ::gpu::context > approach::create_context(::particle * pparticle, ::gpu::enum_output eoutput)
    {
 
       ::pointer < ::gpu_vulkan::context > pgpucontext;
@@ -510,7 +512,7 @@ namespace gpu_vulkan
 
       pgpucontext->m_pphysicaldevice = m_pphysicaldevice;
 
-      pgpucontext->create_context();
+      pgpucontext->initialize_gpu_context(this, eoutput);
 
       return pgpucontext;
 
@@ -564,6 +566,23 @@ namespace gpu_vulkan
 //      }
 
       //return ::success;
+
+   }
+
+
+   ::file::path approach::shader_path(const ::file::path& pathShader)
+   {
+
+      if (pathShader.begins("matter://shaders/"))
+      {
+
+         auto pathFolder = pathShader.folder();
+
+         return pathFolder / "vulkan/SpirV" / (pathShader.name() + ".spv");
+
+      }
+
+      return pathShader;
 
    }
 
@@ -677,6 +696,88 @@ namespace gpu_vulkan
 
       return {};
 
+
+   }
+
+
+   VkDescriptorSet approach::getCurrentDescriptorSet()
+   {
+
+      //return m_globalDescriptorSets[m_prenderer->getFrameIndex()];
+      return{};
+
+   }
+
+
+   ::gpu_vulkan::descriptor_pool* approach::get_global_pool(::gpu::context* pgpucontext, int iFrameCount)
+   {
+
+      if (!m_pglobalpool)
+      {
+
+         auto pglobalpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+
+         pglobalpoolbuilder->initialize_builder(pgpucontext);
+         pglobalpoolbuilder->setMaxSets(iFrameCount);
+         pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount);
+
+         m_pglobalpool = pglobalpoolbuilder->build();
+
+      }
+
+      return m_pglobalpool;
+
+   }
+
+
+   void approach::create_global_ubo(::gpu::context* pgpucontext, int iGlobalUboSize, int iFrameCount)
+   {
+
+      m_uboBuffers.set_size(iFrameCount);
+
+      for (int i = 0; i < m_uboBuffers.size(); i++)
+      {
+
+         m_uboBuffers[i] = __allocate buffer();
+
+         m_uboBuffers[i]->initialize_buffer(
+            pgpucontext,
+            iGlobalUboSize,
+            1,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+         m_uboBuffers[i]->map();
+
+      }
+
+      m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pgpucontext)
+         .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
+         .build();
+
+      //auto globalSetLayout = m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+
+      m_globalDescriptorSets.resize(iFrameCount);
+
+      for (int i = 0; i < m_globalDescriptorSets.size(); i++)
+      {
+
+         auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
+
+         descriptor_writer(*m_psetdescriptorlayoutGlobal, *get_global_pool(pgpucontext, iFrameCount))
+            .writeBuffer(0, &bufferInfo)
+            .build(m_globalDescriptorSets[i]);
+
+      }
+
+   }
+
+
+   void approach::update_global_ubo(::gpu::context* pgpucontext, int iFrameIndex, const ::block& block)
+   {
+
+      m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
+      m_uboBuffers[iFrameIndex]->flush();
 
    }
 

@@ -3,7 +3,7 @@
 
 
 #include "acme/operating_system.h"
-#include "aura/graphics/gpu/_gpu.h"
+#include "app-cube/cube/gpu/_gpu.h"
 
 #ifdef __ANDROID__
 

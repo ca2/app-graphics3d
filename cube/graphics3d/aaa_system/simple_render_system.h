@@ -25,10 +25,10 @@ namespace graphics3d
 	//};
 
 
-	inline ::graphics3d::properties simple_render_properties()
+	inline ::gpu::properties simple_render_properties()
 	{
 
-		static ::graphics3d::property s_properties[] =
+		static ::gpu::property s_properties[] =
 		{
 			{"modelMatrix", ::gpu::e_type_mat4},
 			{"normalMatrix", ::gpu::e_type_mat4},
@@ -47,7 +47,7 @@ namespace graphics3d
 	public:
 		
 
-		::pointer < ::graphics3d::context> m_pcontext;
+		::pointer < ::gpu::context> m_pgpucontext;
 		//::pointer < ::graphics3d::engine> m_pengine;
 
 
@@ -60,7 +60,7 @@ namespace graphics3d
 		~simple_render_system();
 
 
-		virtual void initialize_simple_render_system(::graphics3d::context* pcontext);
+		virtual void initialize_simple_render_system(::gpu::context* pgpucontext);
 
 
 

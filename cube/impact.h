@@ -66,7 +66,7 @@ namespace cube
       ~impact() override;
 
 //      // void assert_ok() const override;
-//      // void dump(dump_context & dumpcontext) const override;
+//      // void dump(dump_context & dumpgpucontext) const override;
       //::int_size size() override;
 
       virtual ::block global_ubo_block();

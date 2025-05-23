@@ -75,7 +75,7 @@ namespace graphics3d_vulkan
       {
          // Since all depth formats may be optional, we need to find a suitable depth format to use
          // Start with the highest precision packed format
-         std::vector<VkFormat> formatList = {
+         ::array<VkFormat> formatList = {
             VK_FORMAT_D32_SFLOAT_S8_UINT,
             VK_FORMAT_D32_SFLOAT,
             VK_FORMAT_D24_UNORM_S8_UINT,
@@ -99,7 +99,7 @@ namespace graphics3d_vulkan
 
       VkBool32 getSupportedDepthStencilFormat(VkPhysicalDevice m_vkphysicaldevice, VkFormat* depthStencilFormat)
       {
-         std::vector<VkFormat> formatList = {
+         ::array<VkFormat> formatList = {
             VK_FORMAT_D32_SFLOAT_S8_UINT,
             VK_FORMAT_D24_UNORM_S8_UINT,
             VK_FORMAT_D16_UNORM_S8_UINT,
@@ -122,7 +122,7 @@ namespace graphics3d_vulkan
 
       VkBool32 formatHasStencil(VkFormat format)
       {
-         std::vector<VkFormat> stencilFormats = {
+         ::array<VkFormat> stencilFormats = {
             VK_FORMAT_S8_UINT,
             VK_FORMAT_D16_UNORM_S8_UINT,
             VK_FORMAT_D24_UNORM_S8_UINT,

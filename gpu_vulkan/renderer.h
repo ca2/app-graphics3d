@@ -6,7 +6,7 @@
 //#include "offscreen.h"
 //#include "swapchain.h"
 #include "render_pass.h"
-#include "aura/graphics/gpu/renderer.h"
+#include "app-cube/cube/gpu/renderer.h"
 
 
 #include <memory>
@@ -24,16 +24,18 @@ namespace gpu_vulkan
       virtual public ::gpu::renderer
    {
    public:
-      bool m_bOffScreen = true;
+
+      //bool m_bOffScreen = true;
       //renderer(VkWindow &window, context * pvkcdevice);
+
       renderer();
       ~renderer();
 
 
-      void initialize_renderer(::gpu::context * pcontext) override;
+      void initialize_renderer(::gpu::context* pgpucontext) override;
 
-      int width()  override;
-      int height() override;
+      //int width()  override;
+      //int height() override;
 
       VkRenderPass getRenderPass() const
       {
@@ -105,7 +107,7 @@ namespace gpu_vulkan
          VkDeviceMemory		m_vkdevicememory;
          VkImage				m_vkimage;
 
-         ::pointer < context > m_pcontext;
+         ::pointer < context > m_pgpucontext;
          ::pointer < renderer > m_prenderer;
 
 
@@ -115,7 +117,7 @@ namespace gpu_vulkan
          ~OffScreenSampler();
 
 
-         void initialize_offscreen_sampler(::gpu::context * pcontext);
+         void initialize_offscreen_sampler(::gpu::context * pgpucontext);
 
          void clear();
          void update(VkExtent2D vkextent2d);
@@ -128,7 +130,7 @@ namespace gpu_vulkan
       };
 
       //::pointer < ::cube::impact >	m_pimpact;
-      ::pointer < context >				m_pcontext;
+      ::pointer < context >				m_pgpucontext;
       ::pointer < OffScreenSampler >	m_poffscreensampler;
       //::pointer<swap_chain_render_pass>			m_pvkcswapchain;
       //::pointer<offscreen_render_pass>			m_pvkcoffscreen;

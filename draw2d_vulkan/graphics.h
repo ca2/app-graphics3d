@@ -2,7 +2,7 @@
 
 
 #include "aura/graphics/draw2d/graphics.h"
-#include "aura/graphics/gpu/renderer.h"
+#include "app-cube/cube/gpu/renderer.h"
 
 
 //struct OffscreenContext
@@ -70,7 +70,7 @@ namespace draw2d_vulkan
       void * detach() override;
 
 
-      void defer_add_gpu_render(::gpu::render * pgpurender) override;
+      //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
       //virtual bool Attach(HDC hdc);   // attach/detach affects only the Output DC
       //virtual HDC Detach();

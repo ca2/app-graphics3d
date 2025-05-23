@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "app-cube/cube/graphics3d/context.h"
 #include "app-cube/cube/graphics3d/scene.h"
-#include "app-cube/cube/graphics3d/shader.h"
+#include "app-cube/cube/gpu/shader.h"
 #include "app-cube/cube/impact.h"
 #include "simple_render_system.h"
 // libs

@@ -24,9 +24,9 @@ namespace graphics3d
 
 		//void calculateMouseOffset(float xoffset, float yoffset);
 //private:
-		quad_matrix		m_matrixProjection{ 1.f };
-		quad_matrix		m_matrixImpact{ 1.f };
-		quad_matrix		m_matrixAntImpact{ 1.f };
+		glm::mat4		m_matrixProjection{ 1.f };
+		glm::mat4		m_matrixImpact{ 1.f };
+		glm::mat4		m_matrixAntImpact{ 1.f };
 
 		//float m_LastX; // Last mouse x position
 		//float m_LastY; // Last mouse y position
@@ -34,13 +34,13 @@ namespace graphics3d
 		// Deadzone
 		float				m_MouseDeadZone;
 		// Inertia
-		pole				m_poleVelocity;
+		glm::vec3				m_poleVelocity;
 		// Camera attributes
-		location			m_locationPosition;
-		pole				m_poleFront{ 0.0f, 0.0f, -1.0f };  // Camera direction (forward vector)
-		pole				m_poleUp{ 0.0f, 1.0f, 0.0f };     // Up vector
-		pole				m_poleRight{ 1.0f, 0.0f, 0.0f };   // Right vector (cross product)
-		pole				m_poleWorldUp;
+		glm::vec3			m_locationPosition;
+		glm::vec3				m_poleFront{ 0.0f, 0.0f, -1.0f };  // Camera direction (forward vector)
+		glm::vec3				m_poleUp{ 0.0f, 1.0f, 0.0f };     // Up vector
+		glm::vec3				m_poleRight{ 1.0f, 0.0f, 0.0f };   // Right vector (cross product)
+		glm::vec3				m_poleWorldUp;
 
 		// Euler angles
 		float				m_fYaw = 0.0f;
@@ -69,30 +69,30 @@ namespace graphics3d
 
 
 		camera() {};
-		//camera(location position, float yaw, float pitch);
-		//camera(location position, location to, location from);
+		//camera(glm::vec3 position, float yaw, float pitch);
+		//camera(glm::vec3 position, glm::vec3 to, glm::vec3 from);
 
-		virtual void initialize_camera(location position, float yaw, float pitch);
-		virtual void initialize_camera(location position, location to, location from);
+		virtual void initialize_camera(glm::vec3 position, float yaw, float pitch);
+		virtual void initialize_camera(glm::vec3 position, glm::vec3 to, glm::vec3 from);
 
 		void setOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
-		void setViewDirection(location position, pole direction, pole up = pole{ 0.f, -1.f, 0.f });
-		void setViewTarget(location position, location target, pole up = pole{ 0.f, -1.f, 0.f });
+		void setViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up = glm::vec3{ 0.f, -1.f, 0.f });
+		void setViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up = glm::vec3{ 0.f, -1.f, 0.f });
 
-		void setViewYXZ(location position, pole rotation);
+		void setViewYXZ(glm::vec3 position, glm::vec3 rotation);
 
 		virtual void setPerspectiveProjection(float fovy, float aspect, float near, float far);
-		const quad_matrix& getProjection() const { return m_matrixProjection; }
-		const quad_matrix& getView() const { return m_matrixImpact; }
-		const quad_matrix& getInverseView() const { return m_matrixAntImpact; }
+		const glm::mat4& getProjection() const { return m_matrixProjection; }
+		const glm::mat4& getView() const { return m_matrixImpact; }
+		const glm::mat4& getInverseView() const { return m_matrixAntImpact; }
 
 		// Get zoom (field of view)
 		float GetZoom() const;
 		// Get the view matrix
-		quad_matrix GetViewMatrix() const;
+		glm::mat4 GetViewMatrix() const;
 
 
-		location GetPosition() const;
+		glm::vec3 GetPosition() const;
 		// Set movement speed
 		void SetMovementSpeed(float speed);
 		// new shit

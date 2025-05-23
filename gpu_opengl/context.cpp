@@ -140,10 +140,10 @@ namespace gpu_opengl
 
       //glClear(GL_COLOR_BUFFER_BIT);
 
-      if (m_pprogram && m_pprogram->m_pshader)
+      if (m_pshader)
       {
 
-         m_pprogram->m_pshader->use();
+         m_pshader->bind();
 
       }
       // Use our shader
@@ -354,7 +354,7 @@ namespace gpu_opengl
    //void context::create_offscreen_buffer(const ::int_size& size)
    //{
 
-   //   auto pgpu = psystem->get_gpu();
+   //   auto pgpu = application()->get_gpu();
 
    //   if (::is_null(pgpu))
    //   {

@@ -2,16 +2,17 @@
 #pragma once
 
 
-#include "aura/graphics/gpu/_.h"
+#include "app-cube/cube/gpu/_.h"
 #include <glm/glm.hpp>
 
 
-namespace graphics3d
+namespace gpu
 {
 
 
-	struct property
+	class property
 	{
+	public:
 
 		const char* m_pszName;
 		::gpu::enum_type		m_etype;
@@ -88,23 +89,23 @@ namespace graphics3d
 	{
 	public:
 		memory    m_memory;
-		const ::graphics3d::property* m_pproperties;
+		const ::gpu::property* m_pproperties;
 		properties()
 		{
 			m_pproperties = nullptr;
 
 		}
-		properties(const ::graphics3d::properties & properties) :
+		properties(const ::gpu::properties & properties) :
 			m_pproperties(properties.m_pproperties)
 		{
 			m_memory.copy(properties.m_memory);
 
 		}
-		properties(const ::graphics3d::property* pproperties)
+		properties(const ::gpu::property* pproperties)
 		{
 			set(pproperties);
 		}
-		void set(const ::graphics3d::property* pproperties)
+		void set(const ::gpu::property* pproperties)
 		{
 			m_pproperties = pproperties;
 			m_memory.set_size(m_pproperties->get_size());
@@ -126,7 +127,7 @@ namespace graphics3d
 		glm::mat2& mat2(const char* pszName) { return as<glm::mat2>(pszName); }
 		glm::mat3& mat3(const char* pszName) { return as<glm::mat3>(pszName); }
 		glm::mat4& mat4(const char* pszName){return as<glm::mat4>(pszName);}
-		operator const ::graphics3d::property* ()
+		operator const ::gpu::property* ()
 		{
 			return m_pproperties;
 
@@ -134,9 +135,7 @@ namespace graphics3d
 	};
 
 
-		
-
-} // namespace graphics3d
+} // namespace gpu
 
 
 

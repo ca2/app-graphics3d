@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "app-cube/gpu_vulkan/context.h"
 /*
  * Encapsulates a vulkan buffer
  *
@@ -35,15 +36,17 @@ namespace graphics3d_vulkan
     {
 
     }
+
+
     void buffer::initialize_buffer(
-        context * pvkcdevice,
+        ::gpu::context * pgpucontext,
         VkDeviceSize instanceSize,
         uint32_t instanceCount,
         VkBufferUsageFlags usageFlags,
         VkMemoryPropertyFlags memoryPropertyFlags,
         VkDeviceSize minOffsetAlignment)
     {
-       m_pcontext = pvkcdevice;
+       m_pgpucontext = dynamic_cast < ::gpu_vulkan::context * >(pgpucontext);
        m_instanceSize = instanceSize;
        m_instanceCount = instanceCount;
        m_usageFlags = usageFlags;
@@ -51,14 +54,14 @@ namespace graphics3d_vulkan
 
        m_alignmentSize = getAlignment(instanceSize, minOffsetAlignment);
        m_bufferSize = m_alignmentSize * instanceCount;
-        pvkcdevice->createBuffer(m_bufferSize, m_usageFlags, m_memoryPropertyFlags, m_buffer, m_memory);
+       m_pgpucontext->createBuffer(m_bufferSize, m_usageFlags, m_memoryPropertyFlags, m_buffer, m_memory);
     }
 
     buffer::~buffer() {
         unmap();
 
-        vkDestroyBuffer(m_pcontext->logicalDevice(), m_buffer, nullptr);
-        vkFreeMemory(m_pcontext->logicalDevice(), m_memory, nullptr);
+        vkDestroyBuffer(m_pgpucontext->logicalDevice(), m_buffer, nullptr);
+        vkFreeMemory(m_pgpucontext->logicalDevice(), m_memory, nullptr);
      
     }
 
@@ -73,7 +76,7 @@ namespace graphics3d_vulkan
      */
     VkResult buffer::map(VkDeviceSize size, VkDeviceSize offset) {
         assert(m_buffer && m_memory && "Called map on buffer before create");
-        return vkMapMemory(m_pcontext->logicalDevice(), m_memory, offset, size, 0, &m_mapped);
+        return vkMapMemory(m_pgpucontext->logicalDevice(), m_memory, offset, size, 0, &m_mapped);
     }
 
     /**
@@ -83,7 +86,7 @@ namespace graphics3d_vulkan
      */
     void buffer::unmap() {
         if (m_mapped) {
-            vkUnmapMemory(m_pcontext->logicalDevice(), m_memory);
+            vkUnmapMemory(m_pgpucontext->logicalDevice(), m_memory);
             m_mapped = nullptr;
         }
     }
@@ -111,7 +114,7 @@ namespace graphics3d_vulkan
     }
 
     /**
-     * Flush a memory range of the buffer to make it visible to the pvkcdevice
+     * Flush a memory range of the buffer to make it visible to the pgpucontext
      *
      * @note Only required for non-coherent memory
      *
@@ -127,7 +130,7 @@ namespace graphics3d_vulkan
         mappedRange.memory = m_memory;
         mappedRange.offset = offset;
         mappedRange.size = size;
-        return vkFlushMappedMemoryRanges(m_pcontext->logicalDevice(), 1, &mappedRange);
+        return vkFlushMappedMemoryRanges(m_pgpucontext->logicalDevice(), 1, &mappedRange);
     }
 
     /**
@@ -147,7 +150,7 @@ namespace graphics3d_vulkan
         mappedRange.memory = m_memory;
         mappedRange.offset = offset;
         mappedRange.size = size;
-        return vkInvalidateMappedMemoryRanges(m_pcontext->logicalDevice(), 1, &mappedRange);
+        return vkInvalidateMappedMemoryRanges(m_pgpucontext->logicalDevice(), 1, &mappedRange);
     }
 
     /**
@@ -178,7 +181,7 @@ namespace graphics3d_vulkan
     }
 
     /**
-     *  Flush the memory range at index * alignmentSize of the buffer to make it visible to the pvkcdevice
+     *  Flush the memory range at index * alignmentSize of the buffer to make it visible to the pgpucontext
      *
      * @param index Used in offset calculation
      *

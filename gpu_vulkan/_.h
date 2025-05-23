@@ -2,8 +2,8 @@
 #pragma once
 
 
-#include "aura/_.h"
-#include "aura/graphics/gpu/_.h"
+#include "app-cube/cube/_.h"
+
 
 #if defined(WINDOWS_DESKTOP)
 #include "windowing_win32/_.h"
@@ -42,7 +42,11 @@ namespace gpu_vulkan
 
    class pipeline;
 
-   //class camera;
+   class renderer;
+
+   class descriptor_pool;
+
+   class buffer;
 
 
 } // namespace gpu_vulkan

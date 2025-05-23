@@ -13,7 +13,7 @@ namespace graphics3d_opengl
    
    {
    public:
-      sky_box(::particle * pparticle, const std::vector<std::string>& faces);
+      sky_box(::particle * pparticle, const ::array<std::string>& faces);
       ~sky_box();
 
       void SetupSkybox();
@@ -22,7 +22,7 @@ namespace graphics3d_opengl
    private:
       unsigned int skyboxVAO, skyboxVBO, skyboxEBO;
       unsigned int cubemapTexture;
-      std::vector<std::string> facesCubemap;
+      ::array<std::string> facesCubemap;
 
       void LoadCubemapTextures();
    };

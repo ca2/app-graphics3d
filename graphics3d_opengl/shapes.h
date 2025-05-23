@@ -19,8 +19,8 @@ namespace graphics3d_opengl
    class ShapeFactory {
    public:
       struct ShapeData {
-         std::vector<float> vertices;  // Positions, colors, texture coordinates, and normals
-         std::vector<unsigned int> indices;
+         ::array<float> vertices;  // Positions, colors, texture coordinates, and normals
+         ::array<unsigned int> indices;
       };
 
       // Generate a cube with position, color, texture coordinates, and normals

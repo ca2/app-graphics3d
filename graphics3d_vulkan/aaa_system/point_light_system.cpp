@@ -19,8 +19,8 @@ namespace graphics3d_vulkan
 
 
    point_light_system::point_light_system(
-      context* pvkcdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
-      : m_pcontext{ pvkcdevice }
+      ::gpu::context * pgpucontext, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
+      : m_pgpucontext{ pgpucontext }
    {
 
       createPipelineLayout(globalSetLayout);
@@ -32,7 +32,7 @@ namespace graphics3d_vulkan
    point_light_system::~point_light_system()
    {
 
-      vkDestroyPipelineLayout(m_pcontext->logicalDevice(), pipelineLayout, nullptr);
+      vkDestroyPipelineLayout(m_pgpucontext->logicalDevice(), pipelineLayout, nullptr);
 
    }
 
@@ -51,7 +51,7 @@ namespace graphics3d_vulkan
       pushConstantRange.offset = 0;
       pushConstantRange.size = sizeof(PointLightPushConstants);
 
-      std::vector<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+      ::array<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
 
       VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
       pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -60,7 +60,7 @@ namespace graphics3d_vulkan
       pipelineLayoutInfo.pushConstantRangeCount = 1;
       pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
       //pipelineLayoutInfo.pPushConstantRanges = nullptr;
-      if (vkCreatePipelineLayout(m_pcontext->logicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
+      if (vkCreatePipelineLayout(m_pgpucontext->logicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
          VK_SUCCESS) {
          throw std::runtime_error("failed to create pipeline layout!");
       }
@@ -83,7 +83,7 @@ namespace graphics3d_vulkan
       m_ppipeline = __allocate pipeline();
 
       m_ppipeline->initialize_pipeline(
-         m_pcontext,
+         m_pgpucontext,
          vertShaderPath.c_str(),
          fragShaderPath.c_str(),
          pipelineConfig

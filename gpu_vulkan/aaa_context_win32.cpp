@@ -3,7 +3,7 @@
 #include "approach.h"
 #include "cpu_buffer.h"
 #include "physical_device.h"
-#include "aura/graphics/gpu/approach.h"
+#include "app-cube/cube/gpu/approach.h"
 #include "aura/graphics/image/image.h"
 #include "acme/platform/application.h"
 #include "aura/platform/system.h"
@@ -313,7 +313,7 @@ namespace gpu_vulkan
       // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
       if (extensionSupported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
       {
-         deviceExtensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+         deviceExtensions.add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
       }
 #endif
 
@@ -393,7 +393,7 @@ namespace gpu_vulkan
 
    //      auto psystem = system();
 
-   //      auto pgpu = psystem->get_gpu();
+   //      auto pgpu = application()->get_gpu();
 
    //      ::pointer < ::vulkan::vulkan > pvulkan = pgpu;
 
@@ -557,7 +557,7 @@ namespace gpu_vulkan
 
    //      auto psystem = system();
 
-   //      auto pgpu = psystem->get_gpu();
+   //      auto pgpu = application()->get_gpu();
 
    //      ::pointer < ::vulkan::vulkan > pvulkan = pgpu;
 

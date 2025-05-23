@@ -6,7 +6,7 @@
 #include "acme/filesystem/file/text_reader.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "assimp.h"
-#include "opengl.h"
+#include "approach.h"
 
 //#include <GLUT/GLUT.h>
 

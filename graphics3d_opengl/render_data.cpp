@@ -51,7 +51,7 @@
 //         //m_SphereTexture -> initialize(this);
 //         //m_Misc -> initialize(this);
 //      // sky_box textures
-//      std::vector<std::string> facesCubemap = {
+//      ::array<std::string> facesCubemap = {
 //
 //         // Cloudy skybox
 //        /* "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_ft.jpg",
@@ -94,9 +94,9 @@
 //      //m_Skybox->initialize(this);
 //      //m_SkyboxShader->initialize(this);
 //
-//      std::vector<glm::mat4> planeModelMatrices(m_PlaneInstanceCount);
-//      std::vector<glm::mat4> sphereModelMatrices(m_SphereInstanceCount);
-//      std::vector<glm::mat4> wallModelMatricies(m_WallInstanceCount);
+//      ::array<glm::mat4> planeModelMatrices(m_PlaneInstanceCount);
+//      ::array<glm::mat4> sphereModelMatrices(m_SphereInstanceCount);
+//      ::array<glm::mat4> wallModelMatricies(m_WallInstanceCount);
 //
 //      // Model instances
 //      // Create a random number generator
@@ -191,8 +191,8 @@
 //      size_t cubeIndexCount = cube.indices.size();
 //
 //      // Combine the cube data and prepare offsets for the plane
-//      std::vector<float> combinedVertices = cube.vertices;  // Start with cube's vertices
-//      std::vector<unsigned int> combinedIndices = cube.indices;  // Start with cube's indices
+//      ::array<float> combinedVertices = cube.vertices;  // Start with cube's vertices
+//      ::array<unsigned int> combinedIndices = cube.indices;  // Start with cube's indices
 //
 //      size_t planeVertexOffset = combinedVertices.size() / 8;  // Calculate vertex offset for plane
 //      size_t planeIndexOffset = combinedIndices.size();         // Calculate index offset for plane

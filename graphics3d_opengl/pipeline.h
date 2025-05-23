@@ -19,8 +19,8 @@
 //		PipelineConfigInfo& operator=(const PipelineConfigInfo&) = delete;
 //
 //
-//		std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
-//		std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
+//		::array<VkVertexInputBindingDescription> bindingDescriptions{};
+//		::array<VkVertexInputAttributeDescription> attributeDescriptions{};
 //		VkPipelineViewportStateCreateInfo viewportInfo;
 //		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 //		VkPipelineRasterizationStateCreateInfo rasterizationInfo;
@@ -28,7 +28,7 @@
 //		VkPipelineColorBlendAttachmentState colorBlendAttachment;
 //		VkPipelineColorBlendStateCreateInfo colorBlendInfo;
 //		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
-//		std::vector<VkDynamicState> dynamicStateEnables;
+//		::array<VkDynamicState> dynamicStateEnables;
 //		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 //		VkPipelineLayout pipelineLayout = nullptr;
 //		VkRenderPass renderPass = nullptr;
@@ -56,7 +56,7 @@
 //		
 //		static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
 //	private:
-//		static std::vector<char> readFile(const std::string& filepath);
+//		static ::array<char> readFile(const std::string& filepath);
 //
 //		void createGraphicsPipeline(
 //			const std::string& vertFilepath,
@@ -65,7 +65,7 @@
 //
 //		void createShaderModule(const ::block & block, VkShaderModule* shaderModule);
 //
-//		::pointer < context > m_pcontext;
+//		::pointer < context > m_pgpucontext;
 //		VkPipeline graphicsPipeline;
 //		VkShaderModule vertShaderModule;
 //		VkShaderModule fragShaderModule;

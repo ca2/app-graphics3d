@@ -16,7 +16,7 @@
 //		~SimpleRenderSystem();
 //
 //
-//		virtual void initialize_simple_render_system(::graphics3d::context* pcontext, ::graphics3d::engine* pengine);
+//		virtual void initialize_simple_render_system(::gpu::context* pgpucontext, ::graphics3d::engine* pengine);
 //
 //
 //		virtual void renderGameObjects();
@@ -26,7 +26,7 @@
 //		//void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
 //		//void createPipeline(VkRenderPass renderPass);
 //
-//		//context* m_pcontext;
+//		//context* m_pgpucontext;
 //
 //
 //		//::pointer<pipeline> m_ppipeline;

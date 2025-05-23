@@ -30,8 +30,8 @@ namespace graphics3d_opengl
    public:
 
    
-         static std::vector<VkVertexInputBindingDescription> getVertexBindingDescriptions();
-         static std::vector<VkVertexInputAttributeDescription> getVertexAttributeDescriptions();
+         static ::array<VkVertexInputBindingDescription> getVertexBindingDescriptions();
+         static ::array<VkVertexInputAttributeDescription> getVertexAttributeDescriptions();
 
 
       //static ::pointer<model> createModelFromFile(context* pvkcdevice, const std::string& filepath);
@@ -40,16 +40,16 @@ namespace graphics3d_opengl
       model();
       ~model();
 
-      void initialize_model(::cube::context* pcontext, const ::cube::model::Builder& builder) override;
+      void initialize_model(::cube::context* pgpucontext, const ::cube::model::Builder& builder) override;
 
       void draw(void * pframeinfo) override;
       void bind(void* pframeinfo) override;
 
-      void createVertexBuffers(const std::vector<Vertex>& vertices);
-      void createIndexBuffers(const std::vector<uint32_t>& indices);
+      void createVertexBuffers(const ::array<Vertex>& vertices);
+      void createIndexBuffers(const ::array<uint32_t>& indices);
 
       bool hasIndexBuffer = false;
-      ::pointer < context > m_pcontext;
+      ::pointer < context > m_pgpucontext;
 
 
       ::pointer<buffer> vertexBuffer;

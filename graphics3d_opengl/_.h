@@ -1,8 +1,7 @@
 #pragma once
 
 
-#include "app-cube/cube/_.h"
-#include "gpu_opengl/_.h"
+#include "app-cube/gpu_opengl/_.h"
 #include "_opengl.h"
 
 
@@ -26,7 +25,7 @@ namespace graphics3d_opengl
 
 
    class model;
-   class context;
+   //class context;
    class input;
    //class camera;
    class pipeline;
@@ -34,7 +33,7 @@ namespace graphics3d_opengl
    
    class descriptor_pool;
 
-   class shader;
+   //class shader;
    class texture;
 
    class mesh;

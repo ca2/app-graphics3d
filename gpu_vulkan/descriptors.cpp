@@ -29,19 +29,19 @@ namespace gpu_vulkan
 
    ::pointer<set_descriptor_layout> set_descriptor_layout::Builder::build() const
    {
-      auto pvkcdevice = this->m_pcontext.m_p;
+      auto pvkcdevice = this->m_pgpucontext.m_p;
       __refdbg_this(pvkcdevice);
-      return __allocate set_descriptor_layout(m_pcontext, bindings);
+      return __allocate set_descriptor_layout(m_pgpucontext, bindings);
    }
 
    // *************** Descriptor Set Layout *********************
 
    set_descriptor_layout::set_descriptor_layout(
-       context * pvkcdevice, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings)
-      : m_pcontext{ pvkcdevice }, bindings{ bindings } {
+       context * pvkcdevice, ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings)
+      : m_pgpucontext{ pvkcdevice }, bindings{ bindings } {
       ::array<VkDescriptorSetLayoutBinding> setLayoutBindings{};
       for (auto kv : bindings) {
-         setLayoutBindings.push_back(kv.second);
+         setLayoutBindings.add(kv.m_element2);
       }
 
       VkDescriptorSetLayoutCreateInfo descriptorSetLayoutInfo{};
@@ -50,17 +50,17 @@ namespace gpu_vulkan
       descriptorSetLayoutInfo.pBindings = setLayoutBindings.data();
 
       if (vkCreateDescriptorSetLayout(
-         m_pcontext->logicalDevice(),
+         m_pgpucontext->logicalDevice(),
          &descriptorSetLayoutInfo,
          nullptr,
          &descriptorSetLayout) != VK_SUCCESS) {
-         throw std::runtime_error("failed to create descriptor set layout!");
+         throw ::exception(error_failed, "failed to create descriptor set layout!");
       }
    }
 
    set_descriptor_layout::~set_descriptor_layout() {
       if (descriptorSetLayout != VK_NULL_HANDLE) {
-         vkDestroyDescriptorSetLayout(m_pcontext->logicalDevice(), descriptorSetLayout, nullptr);
+         vkDestroyDescriptorSetLayout(m_pgpucontext->logicalDevice(), descriptorSetLayout, nullptr);
          descriptorSetLayout = VK_NULL_HANDLE;
       }
    }
@@ -69,7 +69,7 @@ namespace gpu_vulkan
 
    descriptor_pool::Builder & descriptor_pool::Builder::addPoolSize(
        VkDescriptorType descriptorType, uint32_t count) {
-      poolSizes.push_back({ descriptorType, count });
+      poolSizes.add({ descriptorType, count });
       return *this;
    }
 
@@ -84,7 +84,7 @@ namespace gpu_vulkan
    }
 
    ::pointer <descriptor_pool> descriptor_pool::Builder::build() const {
-      return __allocate descriptor_pool(m_pcontext, maxSets, poolFlags, poolSizes);
+      return __allocate descriptor_pool(m_pgpucontext, maxSets, poolFlags, poolSizes);
    }
 
    // *************** Descriptor Pool *********************
@@ -94,7 +94,7 @@ namespace gpu_vulkan
        uint32_t maxSets,
        VkDescriptorPoolCreateFlags poolFlags,
        const ::array<VkDescriptorPoolSize> & poolSizes)
-      : m_pcontext{ pvkcdevice } {
+      : m_pgpucontext{ pvkcdevice } {
       VkDescriptorPoolCreateInfo descriptorPoolInfo{};
       descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
       descriptorPoolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
@@ -102,15 +102,15 @@ namespace gpu_vulkan
       descriptorPoolInfo.maxSets = maxSets;
       descriptorPoolInfo.flags = poolFlags;
 
-      if (vkCreateDescriptorPool(m_pcontext->logicalDevice(), &descriptorPoolInfo, nullptr, &descriptorPool) !=
+      if (vkCreateDescriptorPool(m_pgpucontext->logicalDevice(), &descriptorPoolInfo, nullptr, &descriptorPool) !=
           VK_SUCCESS) {
-         throw std::runtime_error("failed to create descriptor pool!");
+         throw ::exception(error_failed, "failed to create descriptor pool!");
       }
    }
 
    descriptor_pool::~descriptor_pool() {
       if (descriptorPool != VK_NULL_HANDLE) {
-         vkDestroyDescriptorPool(m_pcontext->logicalDevice(), descriptorPool, nullptr);
+         vkDestroyDescriptorPool(m_pgpucontext->logicalDevice(), descriptorPool, nullptr);
          descriptorPool = VK_NULL_HANDLE;
       }
    }
@@ -125,7 +125,7 @@ namespace gpu_vulkan
 
       // Might want to create a "DescriptorPoolManager" class that handles this case, and builds
       // a new pool whenever an old pool fills up. But this is beyond our current scope
-      if (vkAllocateDescriptorSets(m_pcontext->logicalDevice(), &allocInfo, &descriptor) != VK_SUCCESS) {
+      if (vkAllocateDescriptorSets(m_pgpucontext->logicalDevice(), &allocInfo, &descriptor) != VK_SUCCESS) {
          return false;
       }
       return true;
@@ -133,14 +133,14 @@ namespace gpu_vulkan
 
    void descriptor_pool::freeDescriptors(::array<VkDescriptorSet> & descriptors) const {
       vkFreeDescriptorSets(
-          m_pcontext->logicalDevice(),
+          m_pgpucontext->logicalDevice(),
           descriptorPool,
           static_cast<uint32_t>(descriptors.size()),
           descriptors.data());
    }
 
    void descriptor_pool::resetPool() {
-      vkResetDescriptorPool(m_pcontext->logicalDevice(), descriptorPool, 0);
+      vkResetDescriptorPool(m_pgpucontext->logicalDevice(), descriptorPool, 0);
    }
 
    // *************** Descriptor Writer *********************
@@ -166,7 +166,7 @@ namespace gpu_vulkan
       write.pBufferInfo = bufferInfo;
       write.descriptorCount = 1;
 
-      writes.push_back(write);
+      writes.add(write);
       return *this;
    }
 
@@ -187,7 +187,7 @@ namespace gpu_vulkan
       write.pImageInfo = imageInfo;
       write.descriptorCount = 1;
 
-      writes.push_back(write);
+      writes.add(write);
       return *this;
    }
 
@@ -204,7 +204,7 @@ namespace gpu_vulkan
       for (auto & write : writes) {
          write.dstSet = set;
       }
-      vkUpdateDescriptorSets(pool.m_pcontext->logicalDevice(), writes.size(), writes.data(), 0, nullptr);
+      vkUpdateDescriptorSets(pool.m_pgpucontext->logicalDevice(), writes.size(), writes.data(), 0, nullptr);
    }
 
 
