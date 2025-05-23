@@ -208,13 +208,13 @@ namespace draw2d_vulkan
    void graphics::CreateCompatibleDC(::draw2d::graphics* pgraphics)
    {
 
-      vulkan_create_offscreen_buffer({ 1920, 1080 });
+      vulkan_create_offscreen_buffer({ 0, 0, 1920, 1080 });
       //vulkan_create_offscreen_buffer(pgraphics->m_pimage->size());
 
    }
 
 
-   bool graphics::vulkan_create_offscreen_buffer(const ::int_size& size)
+   bool graphics::vulkan_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement)
    {
 
       //if (!draw2d_vulkan()->m_pvulkancontext) {
@@ -229,7 +229,7 @@ namespace draw2d_vulkan
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->create_context(this, ::gpu::e_output_cpu_buffer);
+         m_pgpucontext = pgpu->create_offscreen_context(this, rectanglePlacement);
 
       }
 
@@ -256,7 +256,7 @@ namespace draw2d_vulkan
       //if (__defer_construct(m_pgpucontextVulkan))
       //{
 
-      m_pgpucontext->create_offscreen_buffer(size);
+      m_pgpucontext->create_offscreen_buffer(rectanglePlacement.size());
 
       //}
 
@@ -394,7 +394,7 @@ namespace draw2d_vulkan
 
       bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
 
-      ::vulkan::resize(size, bYSwap);
+      ::vulkan::resize(rectanglePlacement.size(), bYSwap);
 
       return true;
 
@@ -442,7 +442,7 @@ namespace draw2d_vulkan
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->create_context(this, ::gpu::e_output_swap_chain);
+         m_pgpucontext = pgpu->create_window_context(this, pwindow);
 
       }
 

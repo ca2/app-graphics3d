@@ -117,7 +117,7 @@ namespace gpu_opengl
    }
 
 
-   ::pointer < ::gpu::context > approach::create_context(::particle * pparticle, ::gpu::enum_output eoutput)
+   ::pointer < ::gpu::context > approach::_create_context(::particle * pparticle, ::gpu::enum_output eoutput, ::windowing::window* pwindow, const ::int_rectangle& rectanglePlacement)
    {
 
       ::pointer < ::gpu::context > pgpucontext;
@@ -168,7 +168,7 @@ namespace gpu_opengl
 
       }
 
-      pgpucontext->initialize_gpu_context(this, eoutput);
+      pgpucontext->initialize_gpu_context(this, eoutput, pwindow, rectanglePlacement);
 
       return pgpucontext;
 

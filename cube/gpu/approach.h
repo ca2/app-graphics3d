@@ -51,8 +51,11 @@ namespace gpu
       virtual void defer_shader_memory(::memory & memory, const ::file::path& pathShader);
 
 
-      virtual ::pointer < ::gpu::context > create_context(::particle * pparticle, ::gpu::enum_output eoutput);
+      virtual ::pointer < ::gpu::context > create_offscreen_context(::particle * pparticle, const ::int_rectangle& rectanglePlacement);
 
+      virtual ::pointer < ::gpu::context > create_window_context(::particle* pparticle, ::windowing::window * pwindow);
+
+      virtual ::pointer < ::gpu::context > _create_context(::particle* pparticle, ::gpu::enum_output eoutput, ::windowing::window* pwindow, const ::int_rectangle& rectanglePlacement);
 
       virtual void defer_init_gpu_library();
 

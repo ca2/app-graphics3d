@@ -171,22 +171,23 @@ namespace graphics3d_opengl
    void engine::defer_start(const ::int_rectangle & rectanglePlacement)
    {
 
+      ::graphics3d::engine::defer_start(rectanglePlacement);
 
-      auto papp = get_app();
+      //auto papp = get_app();
 
-      __øconstruct(m_pgpucontext);
+      //__øconstruct(m_pgpucontext);
 
-      //m_pgpucontext->initialize_context(papp->m_pimpact);
+      ////m_pgpucontext->initialize_context(papp->m_pimpact);
 
-      //::cast < context > pgpucontext = m_pgpucontext;
+      ////::cast < context > pgpucontext = m_pgpucontext;
 
-      //pgpucontext->m_pgpucontext->post([this]()
-      //   {
+      ////pgpucontext->m_pgpucontext->post([this]()
+      ////   {
 
-      //      //            run_vulkan_example();
+      ////      //            run_vulkan_example();
 
 
-      //   });
+      ////   });
 
    }
 

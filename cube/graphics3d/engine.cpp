@@ -324,7 +324,11 @@ namespace graphics3d
       m_pgpucontext->_post([this, rectanglePlacement, eoutput]()
          {
 
-            m_pgpucontext->initialize_gpu_context(m_papproach, eoutput);
+            m_pgpucontext->initialize_gpu_context(
+               m_papproach, 
+               eoutput, 
+               m_pimpact->window(),
+               rectanglePlacement);
 
             //            run_vulkan_example();
 

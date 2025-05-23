@@ -25,6 +25,9 @@ namespace gpu_opengl
       ~context_win32() override;
 
 
+
+      void on_create_context(::windowing::window * pwindow, const ::int_rectangle& rectanglePlacement) override; 
+
       virtual void _create_offscreen_window(const ::int_size & size);
 
       void defer_create_window_context(::windowing::window * pwindow) override;

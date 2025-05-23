@@ -207,13 +207,13 @@ namespace draw2d_opengl
    void graphics::CreateCompatibleDC(::draw2d::graphics* pgraphics)
    {
 
-      opengl_create_offscreen_buffer({ 1920, 1080 });
+      opengl_create_offscreen_buffer({ 0, 0, 1920, 1080 });
       //opengl_create_offscreen_buffer(pgraphics->m_pimage->size());
 
    }
 
 
-   bool graphics::opengl_create_offscreen_buffer(const ::int_size& size)
+   bool graphics::opengl_create_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
    {
 
       //if (!draw2d_opengl()->m_popenglcontext) {
@@ -227,7 +227,7 @@ namespace draw2d_opengl
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->create_context(this, ::gpu::e_output_cpu_buffer);
+         m_pgpucontext = pgpu->create_offscreen_context(this, rectanglePlacement);
 
       }
 
@@ -253,7 +253,7 @@ namespace draw2d_opengl
       //if (__defer_construct(m_pgpucontextOpenGL))
       //{
 
-      m_pgpucontext->create_offscreen_buffer(size);
+      m_pgpucontext->create_offscreen_buffer(rectanglePlacement.size());
 
       //}
 
@@ -391,7 +391,7 @@ namespace draw2d_opengl
 
       bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
 
-      ::opengl::resize(size, bYSwap);
+      ::opengl::resize(rectanglePlacement.size(), bYSwap);
 
       return true;
 
@@ -437,7 +437,7 @@ namespace draw2d_opengl
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->create_context(this, ::gpu::e_output_swap_chain);
+         m_pgpucontext = pgpu->create_window_context(this, pwindow);
 
       }
 

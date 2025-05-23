@@ -123,7 +123,7 @@ namespace draw2d_opengl
       void create_window_graphics(::windowing::window * pwindow) override;
       void CreateCompatibleDC(::draw2d::graphics * pgraphics) override;
 
-      virtual bool opengl_create_offscreen_buffer(const ::int_size & size);
+      virtual bool opengl_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement);
       virtual bool opengl_delete_offscreen_buffer();
 
       virtual bool opengl_defer_create_window_context(::windowing::window * pwindow);

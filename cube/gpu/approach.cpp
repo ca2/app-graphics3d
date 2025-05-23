@@ -60,8 +60,30 @@ namespace gpu
    }
 
 
-   ::pointer < ::gpu::context > approach::create_context(::particle * pparticle, ::gpu::enum_output eoutput)
+   ::pointer < ::gpu::context > approach::create_offscreen_context(::particle* pparticle, const ::int_rectangle& rectanglePlacement)
    {
+
+      auto pgpucontext = _create_context(pparticle, ::gpu::e_output_cpu_buffer, nullptr, rectanglePlacement);
+
+      return pgpucontext;
+
+   }
+
+
+   ::pointer < ::gpu::context > approach::create_window_context(::particle* pparticle, ::windowing::window* pwindow)
+   {
+
+      auto pgpucontext = _create_context(pparticle, ::gpu::e_output_swap_chain, pwindow, {});
+
+      return pgpucontext;
+
+   }
+
+
+   ::pointer < ::gpu::context > approach::_create_context(::particle * pparticle, ::gpu::enum_output eoutput, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
+   {
+
+      throw ::interface_only();
 
       return nullptr;
 

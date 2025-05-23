@@ -121,7 +121,7 @@ namespace draw2d_vulkan
       void create_window_graphics(::windowing::window * pwindow) override;
       void CreateCompatibleDC(::draw2d::graphics * pgraphics) override;
 
-      virtual bool vulkan_create_offscreen_buffer(const ::int_size & size);
+      virtual bool vulkan_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement);
       virtual bool vulkan_delete_offscreen_buffer();
 
       virtual bool vulkan_defer_create_window_context(::windowing::window * pwindow);

@@ -47,9 +47,32 @@ namespace gpu_opengl
 
    }
 
+
+   void context_win32::on_create_context(::windowing::window * pwindow, const ::int_rectangle& rectanglePlacement)
+   {
+
+      if (m_eoutput == ::gpu::e_output_cpu_buffer)
+      {
+
+         ASSERT(m_callbackOffscreen);
+
+         create_offscreen_buffer(rectanglePlacement.size());
+
+      }
+      else
+      {
+
+         defer_create_window_context(pwindow);
+
+      }
+
+
+   }
+
    
    void context_win32::_create_offscreen_window(const ::int_size & size)
    {
+
       if (::IsWindow(m_hwnd))
       {
 

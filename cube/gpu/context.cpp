@@ -345,19 +345,19 @@ namespace gpu
    }
 
 
-   void context::initialize_gpu_context(::gpu::approach* pgpuapproach, enum_output eoutput)
+   void context::initialize_gpu_context(::gpu::approach* pgpuapproach, enum_output eoutput, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
    {
 
       m_papproach = pgpuapproach;
 
       m_eoutput = eoutput;
 
-      on_create_context();
+      on_create_context(pwindow, rectanglePlacement);
 
    }
 
 
-   void context::on_create_context()
+   void context::on_create_context(::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
    {
 
 

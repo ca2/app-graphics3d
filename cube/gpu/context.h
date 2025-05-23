@@ -105,9 +105,9 @@ namespace gpu
       ~context() override;
 
 
-      virtual void initialize_gpu_context(::gpu::approach * pgpuapproach, enum_output eoutput);
+      virtual void initialize_gpu_context(::gpu::approach * pgpuapproach, enum_output eoutput, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement);
 
-      virtual void on_create_context();
+      virtual void on_create_context(::windowing::window * pwindow, const ::int_rectangle& rectanglePlacement);
 
       bool task_iteration() override;
 

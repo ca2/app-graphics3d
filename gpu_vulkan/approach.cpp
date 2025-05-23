@@ -460,7 +460,7 @@ namespace gpu_vulkan
    }
 
 
-   ::pointer < ::gpu::context > approach::create_context(::particle * pparticle, ::gpu::enum_output eoutput)
+   ::pointer < ::gpu::context > approach::_create_context(::particle * pparticle, ::gpu::enum_output eoutput, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
    {
 
       ::pointer < ::gpu_vulkan::context > pgpucontext;
@@ -513,7 +513,7 @@ namespace gpu_vulkan
 
       pgpucontext->m_pphysicaldevice = m_pphysicaldevice;
 
-      pgpucontext->initialize_gpu_context(this, eoutput);
+      pgpucontext->initialize_gpu_context(this, eoutput, pwindow, rectanglePlacement);
 
       return pgpucontext;
 

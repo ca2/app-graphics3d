@@ -770,8 +770,11 @@ namespace gpu_vulkan
    }
 
 
-   void context::on_create_context()
+   void context::on_create_context(::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
    {
+
+      UNREFERENCED_PARAMETER(pwindow);
+      UNREFERENCED_PARAMETER(rectanglePlacement);
 
       _create_context_win32();
 

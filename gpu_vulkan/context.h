@@ -134,7 +134,7 @@ namespace gpu_vulkan
 
       virtual void _create_context_win32();
 
-      void on_create_context() override;
+      void on_create_context(::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement) override;
 
 
       VkDevice device() const

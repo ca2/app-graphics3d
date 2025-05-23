@@ -48,7 +48,7 @@ namespace gpu_opengl
       ::file::path shader_path(const ::file::path& pathShader) override;
 
 
-      ::pointer < ::gpu::context > create_context(::particle * pparticle, ::gpu::enum_output eoutput) override;
+      ::pointer < ::gpu::context > _create_context(::particle * pparticle, ::gpu::enum_output eoutput, ::windowing::window* pwindow, const ::int_rectangle& rectanglePlacement) override;
 
 
       int fread(void * data, int c, int s ,::file::file* pfile);
