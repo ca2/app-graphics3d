@@ -43,7 +43,7 @@ namespace graphics3d_vulkan
    }
 
 
-   void engine::on_start_engine()
+   void engine::start_engine(const ::int_rectangle& rectanglePlacement)
    {
 
       auto papp = get_app();
@@ -63,6 +63,8 @@ namespace graphics3d_vulkan
 
          eoutput = ::gpu::e_output_cpu_buffer;
 
+         m_pgpucontext->m_callbackOffscreen = m_pimpact->m_callbackOffscreen;
+
       }
 
       m_pgpucontext->initialize_gpu_context(m_papproach, eoutput);
@@ -74,6 +76,7 @@ namespace graphics3d_vulkan
       m_prenderer->initialize_renderer(m_pgpucontext);
 
 
+      m_prenderer->set_placement(rectanglePlacement);
       //m_pglobalpool->initialize_pool(pgpucontext);
 
       //= __allocate

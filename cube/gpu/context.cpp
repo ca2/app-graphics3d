@@ -3,6 +3,7 @@
 #include "context.h"
 #include "cpu_buffer.h"
 #include "render.h"
+#include "renderer.h"
 //#include "_.h"
 //#include "_gpu.h"
 #include "acme/exception/interface_only.h"
@@ -347,6 +348,8 @@ namespace gpu
    void context::initialize_gpu_context(::gpu::approach* pgpuapproach, enum_output eoutput)
    {
 
+      m_papproach = pgpuapproach;
+
       m_eoutput = eoutput;
 
       branch_synchronously();
@@ -449,6 +452,23 @@ namespace gpu
    {
 
       return m_size;
+
+   }
+
+
+   ::gpu::renderer * context::get_renderer()
+   {
+
+      if (!m_prenderer)
+      {
+
+         __øconstruct(m_prenderer);
+
+         m_prenderer->initialize_renderer(this);
+
+      }
+
+      return m_prenderer;
 
    }
 

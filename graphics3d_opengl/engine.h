@@ -65,10 +65,10 @@ namespace graphics3d_opengl
 		engine();
 		~engine();
 
-		void defer_start() override;
+		void defer_start(const ::int_rectangle& rectanglePlacement) override;
 
 
-		void on_start_engine() override;
+		void start_engine(const ::int_rectangle& rectanglePlacement) override;
 
 		void on_begin_frame() override;
 

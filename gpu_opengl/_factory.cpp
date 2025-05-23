@@ -1,5 +1,6 @@
 #include "framework.h"
 #include "approach.h"
+#include "context.h"
 #include "program.h"
 #include "shader.h"
 #include "cpu_buffer.h"
@@ -18,6 +19,7 @@ __FACTORY_EXPORT void gpu_opengl_factory(::factory::factory * pfactory)
 {
 
    pfactory->add_factory_item < ::gpu_opengl::approach, ::gpu::approach >();
+   pfactory->add_factory_item < ::gpu_opengl::context, ::gpu::context >();
    //pfactory->add_factory_item < ::gpu_opengl::program, ::gpu::program >();
    pfactory->add_factory_item < ::gpu_opengl::shader, ::gpu::shader >();
    pfactory->add_factory_item < ::gpu_opengl::cpu_buffer, ::gpu::cpu_buffer >();

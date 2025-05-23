@@ -134,7 +134,7 @@ namespace cube
       //virtual void initWindow();
 
 
-      virtual void defer_initialize_engine();
+      virtual void defer_initialize_engine(const ::int_size & size);
 
       virtual void on_load_engine();
 

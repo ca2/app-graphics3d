@@ -280,7 +280,7 @@ namespace gpu_vulkan
       ::gpu::payload load_dds(const ::scoped_string & scopedstrImagePath) override;
 
 
-      virtual VkDescriptorSet getCurrentDescriptorSet();
+      virtual VkDescriptorSet getCurrentDescriptorSet(::gpu_vulkan::renderer * prenderer);
 
 
       ::gpu_vulkan::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);

@@ -5943,7 +5943,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (m_egraphics & e_graphics_draw)
       {
 
-         m_pgpucontext->m_prenderer->on_begin_draw(size);
+         m_pgpucontext->m_prenderer->on_begin_draw();
 
       }
 

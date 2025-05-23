@@ -86,7 +86,9 @@ namespace gpu
 
       //virtual void draw();
 
-      virtual void on_begin_draw(const ::int_size & size);
+      virtual void set_placement(const ::int_rectangle & rectanglePlacement);
+
+      virtual void on_begin_draw();
       virtual void on_end_draw();
 
       virtual void draw();

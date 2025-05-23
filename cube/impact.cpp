@@ -217,13 +217,17 @@ namespace cube
    }
 
 
-   void impact::defer_initialize_engine()
+   void impact::defer_initialize_engine(const ::int_size & size)
    {
 
       if (!m_pengine)
       {
 
          ::string strImplementation = get_app()->graphics3d_get_implementation_name();
+
+         auto pfactoryGpu = system()->factory("gpu", strImplementation);
+
+         pfactoryGpu->merge_to_global_factory();
 
          auto pfactoryGraphics3d = system()->factory("graphics3d", strImplementation);
 
@@ -309,9 +313,7 @@ namespace cube
 
          }
 
-         m_pengine->defer_start();
-
-
+         m_pengine->defer_start(size);
 
       }
 
@@ -583,11 +585,13 @@ namespace cube
 
       }
 
-      m_iWidth = rectangleX.width();
+      auto size = rectangleX.size();
 
-      m_iHeight = rectangleX.height();
+      m_iWidth = size.width();
 
-      defer_initialize_engine();
+      m_iHeight = size.height();
+
+      defer_initialize_engine(size);
 
       m_pengine->on_layout(m_iWidth, m_iHeight);
 

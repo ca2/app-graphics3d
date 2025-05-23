@@ -117,7 +117,15 @@ namespace gpu
    //}
 
 
-   void renderer::on_begin_draw(const ::int_size & size)
+   void renderer::set_placement(const ::int_rectangle& rectanglePlacement)
+   {
+
+      m_rectangle = rectanglePlacement;
+
+   }
+
+
+   void renderer::on_begin_draw()
    {
 
 

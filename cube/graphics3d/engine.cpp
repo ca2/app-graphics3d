@@ -10,6 +10,7 @@
 //#include "system/point_light_system.h"
 //#include "system/simple_render_system.h"
 #include "app-cube/cube/impact.h"
+#include "app-cube/cube/gpu/approach.h"
 #include "app-cube/cube/gpu/context.h"
 #include "app-cube/cube/gpu/renderer.h"
 #include "acme/exception/interface_only.h"
@@ -41,6 +42,8 @@ namespace graphics3d
       m_pimpact = pimpact;
 
       m_pimpact->m_pengine = this;
+
+      m_papproach = m_papplication->get_gpu();
 
       m_pinput = __allocate::graphics3d::input();
       m_pinput->m_pimpact = m_pimpact;
@@ -138,7 +141,7 @@ namespace graphics3d
 	void engine::run()
 	{
 
-      on_start_engine();
+      
 
 
 
@@ -291,17 +294,19 @@ namespace graphics3d
 	}
 
 
-   void engine::defer_start()
+   void engine::defer_start(const ::int_rectangle& rectanglePlacement)
    {
 
 
-      m_pimpact->m_ptaskEngine = fork([this]()
+      m_pimpact->m_ptaskEngine = fork([this, rectanglePlacement]()
          {
 
             //            run_vulkan_example();
 
 
             m_pimpact->on_load_engine();
+
+            start_engine(rectanglePlacement);
 
             run();
 
@@ -319,7 +324,7 @@ namespace graphics3d
    }
 
 
-   void engine::on_start_engine()
+   void engine::start_engine(const ::int_rectangle& rectanglePlacement)
    {
 
 
@@ -329,9 +334,7 @@ namespace graphics3d
 	void engine::on_layout(int cx, int cy)
 	{
 
-
-
-	}
+   }
 
 
 	void engine::on_mouse_move(int x, int y)

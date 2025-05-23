@@ -31,7 +31,7 @@ namespace gpu_vulkan
 
       //memory                           m_memorySwap;
 
-      bool                                m_bOffscreen;
+      //bool                                m_bOffscreen;
       bool                             m_bMesa;
       //HGLRC                            m_hrc;
       //HDC                              m_hdc;

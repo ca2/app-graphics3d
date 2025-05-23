@@ -81,7 +81,7 @@ namespace gpu_vulkan
 
       ::cast <approach> papproach = m_pgpucontext->m_papproach;
 
-      ::cast <renderer> prenderer = m_pgpucontext->m_prenderer;
+      ::cast <renderer> prenderer = m_pgpucontext->get_renderer();
 
       PipelineConfigInfo pipelineConfig{};
       pipeline::defaultPipelineConfigInfo(pipelineConfig);
@@ -90,7 +90,8 @@ namespace gpu_vulkan
          pipelineConfig.attributeDescriptions.clear();
          pipelineConfig.bindingDescriptions.clear();
       }
-      pipelineConfig.renderPass = prenderer->m_pvkcrenderpass->m_vkrenderpass;
+      auto prenderpass = prenderer->m_pvkcrenderpass;
+      pipelineConfig.renderPass =prenderpass->m_vkrenderpass;
       pipelineConfig.pipelineLayout = m_vkpipelinelayout;
 
       papproach->defer_shader_memory(m_memoryVertex, m_pathVertex);
@@ -112,13 +113,13 @@ namespace gpu_vulkan
 
       ::cast <context> pgpucontext = m_pgpucontext;
 
-      ::cast <renderer> prenderer = pgpucontext->m_prenderer;
+      ::cast <renderer> prenderer = pgpucontext->get_renderer();
 
       auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
       m_ppipeline->bind(commandBuffer);
 
-      auto globalDescriptorSet = papproach->getCurrentDescriptorSet();
+      auto globalDescriptorSet = papproach->getCurrentDescriptorSet(prenderer);
 
       vkCmdBindDescriptorSets(
          commandBuffer,
@@ -136,7 +137,7 @@ namespace gpu_vulkan
    void shader::push_properties()
    {
 
-      ::cast < renderer > prenderer = m_pgpucontext->m_prenderer;
+      ::cast < renderer > prenderer = m_pgpucontext->get_renderer();
 
       auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
@@ -154,7 +155,7 @@ namespace gpu_vulkan
    void shader::draw()
    {
 
-      ::cast < renderer > prenderer = m_pgpucontext->m_prenderer;
+      ::cast < renderer > prenderer = m_pgpucontext->get_renderer();
 
       auto commandBuffer = prenderer->getCurrentCommandBuffer();
 

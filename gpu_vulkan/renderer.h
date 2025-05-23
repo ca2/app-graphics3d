@@ -25,6 +25,51 @@ namespace gpu_vulkan
    {
    public:
 
+
+
+      struct OffScreenSampler :
+         virtual public ::particle
+      {
+
+         VkExtent2D			m_vkextent2d;
+         VkDeviceMemory		m_vkdevicememory;
+         VkImage				m_vkimage;
+
+         ::pointer < context > m_pgpucontext;
+         ::pointer < renderer > m_prenderer;
+
+
+
+
+         OffScreenSampler();
+         ~OffScreenSampler();
+
+
+         void initialize_offscreen_sampler(::gpu::context* pgpucontext);
+
+         void clear();
+         void update(VkExtent2D vkextent2d);
+         void destroy();
+
+         void sample(VkImage vkimage);
+
+         void send_sample();
+
+      };
+
+      //::pointer < ::cube::impact >	m_pimpact;
+      ::pointer < context >				m_pgpucontext;
+      ::pointer < OffScreenSampler >	m_poffscreensampler;
+      //::pointer<swap_chain_render_pass>			m_pvkcswapchain;
+      //::pointer<offscreen_render_pass>			m_pvkcoffscreen;
+      ::pointer<render_pass>			m_pvkcrenderpass;
+      ::array<VkCommandBuffer>	commandBuffers;
+      VkExtent2D m_extentRenderer;
+      uint32_t currentImageIndex;
+      int currentFrameIndex = 0;
+      bool isFrameStarted = false;
+
+
       //bool m_bOffScreen = true;
       //renderer(VkWindow &window, context * pvkcdevice);
 
@@ -86,60 +131,28 @@ namespace gpu_vulkan
       //void on_begin_render(::graphics3d::frame * pframe) override;
       //void on_end_render(::graphics3d::frame * pframe) override;
 
-      void on_begin_draw(const ::int_size & size) override;
+      void set_placement(const ::int_rectangle& rectanglePlacement) override;
+
+      void on_begin_draw() override;
       virtual void _on_begin_render();
       virtual void _on_end_render();
       void on_end_draw() override;
-   public:
+
+   //public:
+
       void createCommandBuffers();
 
       void freeCommandBuffers();
       //void recreateSwapchain();
-      void set_size(const ::int_size & size);
+      //void set_size(const ::int_size & size) override;
 
       //void prepareOffScreen();
 
-      struct OffScreenSampler :
-         virtual public ::particle
-      {
+      ::pointer < ::gpu::frame > beginFrame() override;
+      void on_begin_render(::gpu::frame* pframeParam) override;
+      void on_end_render(::gpu::frame* pframeParam) override;
+      void endFrame() override;
 
-         VkExtent2D			m_vkextent2d;
-         VkDeviceMemory		m_vkdevicememory;
-         VkImage				m_vkimage;
-
-         ::pointer < context > m_pgpucontext;
-         ::pointer < renderer > m_prenderer;
-
-
-
-
-         OffScreenSampler();
-         ~OffScreenSampler();
-
-
-         void initialize_offscreen_sampler(::gpu::context * pgpucontext);
-
-         void clear();
-         void update(VkExtent2D vkextent2d);
-         void destroy();
-
-         void sample(VkImage vkimage);
-
-         void send_sample();
-
-      };
-
-      //::pointer < ::cube::impact >	m_pimpact;
-      ::pointer < context >				m_pgpucontext;
-      ::pointer < OffScreenSampler >	m_poffscreensampler;
-      //::pointer<swap_chain_render_pass>			m_pvkcswapchain;
-      //::pointer<offscreen_render_pass>			m_pvkcoffscreen;
-      ::pointer<render_pass>			m_pvkcrenderpass;
-      ::array<VkCommandBuffer>	commandBuffers;
-      VkExtent2D m_extentRenderer;
-      uint32_t currentImageIndex;
-      int currentFrameIndex = 0;
-      bool isFrameStarted = false;
 
    };
 

@@ -19,7 +19,8 @@ namespace gpu_vulkan
 
    context::context()
    {
-      m_bOffscreen = true;
+
+      //m_bOffscreen = true;
       //      m_emode = e_mode_none;
             //m_itaskGpu = 0;
             //m_iLastBitmap1Scan = -1;
@@ -724,8 +725,9 @@ namespace gpu_vulkan
       auto pphysicaldevice = papproach->m_pphysicaldevice;
 
       assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
-      //this->m_physicaldevice = physicalDevice;
-
+      
+      m_pphysicaldevice = pphysicaldevice;
+   
       auto physicaldevice = pphysicaldevice->m_physicaldevice;
 
       // Get list of supported extensions
@@ -1978,10 +1980,6 @@ namespace gpu_vulkan
 
    //   return requiredExtensions.empty();
    //}
-
-
-
-
 
 
    void context::createBuffer(

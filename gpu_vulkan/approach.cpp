@@ -5,6 +5,7 @@
 #include "debug.h"
 #include "descriptors.h"
 #include "physical_device.h"
+#include "renderer.h"
 #include "acme/filesystem/file/file.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "app-cube/cube/gpu/context.h"
@@ -700,11 +701,10 @@ namespace gpu_vulkan
    }
 
 
-   VkDescriptorSet approach::getCurrentDescriptorSet()
+   VkDescriptorSet approach::getCurrentDescriptorSet(::gpu_vulkan::renderer* prenderer)
    {
 
-      //return m_globalDescriptorSets[m_prenderer->getFrameIndex()];
-      return{};
+      return m_globalDescriptorSets[prenderer->getFrameIndex()];
 
    }
 

@@ -95,9 +95,18 @@ namespace cube
 
       //load_library("gpu_opengl");
 
-      ::string strImplementation = m_papplication->draw2d_get_default_implementation_name();
+      auto pfactoryGpu = component_factory("gpu");
 
-      auto& pfactoryGpu = factory("gpu", strImplementation);
+      if (!pfactoryGpu)
+      {
+
+         ::string strImplementation = m_papplication->draw2d_get_default_implementation_name();
+
+         pfactoryGpu = factory("gpu", strImplementation);
+
+         pfactoryGpu->merge_to_global_factory();
+
+      }
 
       //get_library("gpu_opengl");
 
@@ -111,8 +120,6 @@ namespace cube
       //   return pfactoryGpu;
 
       //}
-
-      pfactoryGpu->merge_to_global_factory();
 
       //auto estatus =
 

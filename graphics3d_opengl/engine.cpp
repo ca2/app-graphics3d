@@ -168,7 +168,7 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::defer_start()
+   void engine::defer_start(const ::int_rectangle & rectanglePlacement)
    {
 
 
@@ -192,7 +192,7 @@ namespace graphics3d_opengl
 
 
 
-   void engine::on_start_engine()
+   void engine::start_engine(const ::int_rectangle& rectanglePlacement)
    {
 
 

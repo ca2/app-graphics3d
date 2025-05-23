@@ -124,6 +124,8 @@ namespace gpu
          ::gpu::shader::enum_flag eflag = ::gpu::shader::e_flag_none);
 
 
+      virtual ::gpu::renderer* get_renderer();
+
       virtual ::int_size size();
 
 

@@ -53,9 +53,9 @@ namespace graphics3d
 
 		virtual void create_global_ubo(::gpu::context * pgpucontext);
 
-		virtual void on_begin_frame();
-		virtual void defer_start();
+		virtual void defer_start(const ::int_rectangle& rectangle);
 
+		virtual void on_begin_frame();
 
 		virtual void update_global_ubo(::gpu::context* pgpucontext);
 
@@ -65,7 +65,7 @@ namespace graphics3d
 		void run() override;
 
 
-		virtual void on_start_engine();
+		virtual void start_engine(const ::int_rectangle & rectangle);
 
 		virtual void on_layout(int cx, int cy);
 
