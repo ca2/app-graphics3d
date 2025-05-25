@@ -12,6 +12,7 @@
 #include "app-cube/cube/impact.h"
 #include "app-cube/cube/gpu/approach.h"
 #include "app-cube/cube/gpu/context.h"
+#include "app-cube/cube/gpu/cpu_buffer.h"
 #include "app-cube/cube/gpu/renderer.h"
 #include "acme/exception/interface_only.h"
 #include "acme/platform/application.h"
@@ -23,17 +24,19 @@ namespace graphics3d
 {
 
 
-	engine::engine()
-	{
+   engine::engine()
+   {
 
-	} 
+      m_bCreatedGlobalUbo = false;
 
-
-	engine::~engine()
-	{
+   }
 
 
-	}
+   engine::~engine()
+   {
+
+
+   }
 
 
    void engine::initialize_engine(::cube::impact* pimpact)
@@ -64,6 +67,8 @@ namespace graphics3d
          return;
 
       }
+
+      //return;
 
       if (auto pframe = prenderer->beginFrame())
       {
@@ -136,22 +141,28 @@ namespace graphics3d
 
       //cameraController.moveInPlaneXZ(m_pimpact, frameTime, viewerObject);
 
-      m_pcamera->setViewYXZ(m_transform.translation, m_transform.rotation);
+      //m_pcamera->setViewYXZ(m_transform.translation, m_transform.rotation);
 
 
       float aspect = m_pimpact->getAspectRatio();
 
       m_pcamera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
 
+      m_pcamera->UpdateCameraVectors();
 
+      m_pcamera->m_matrixImpact = glm::lookAt(m_pcamera->m_locationPosition,
+         m_pcamera->m_locationPosition + m_pcamera->m_poleFront,
+         m_pcamera->m_poleWorldUp);
+
+      m_pcamera->m_matrixAntImpact = glm::inverse(m_pcamera->m_matrixImpact);
 
    }
 
 
-	void engine::run()
-	{
+   void engine::run()
+   {
 
-      
+
 
 
 
@@ -236,56 +247,38 @@ namespace graphics3d
 
       //camera camera{ glm::vec3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
       //{ glm::vec3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
-      m_pcamera = m_pscene->get_default_camera();
+      //m_pcamera = m_pscene->get_default_camera();
 
-      //VkcCamera camera(glm::vec3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
+      ////VkcCamera camera(glm::vec3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
 
-      //auto viewerObject = __øcreate <::graphics3d::scene_object>();
-      //papp->m_pimpact->m_bLastMouse = true;
-      //viewerObject->m_transform.translation.z = -2.5f;
-      m_transform.translation.z = -2.5f;
+      ////auto viewerObject = __øcreate <::graphics3d::scene_object>();
+      ////papp->m_pimpact->m_bLastMouse = true;
+      ////viewerObject->m_transform.translation.z = -2.5f;
+      //m_transform.translation.z = -2.5f;
       //TransformComponent transform;
-      
+
       /*    glfwSetInputMode(_window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
           glfwSetWindowUserPointer(_window.getGLFWwindow(), &cameraController);*/
-      //m_pinput->m_bMouseAbsolute;
-
-      ::pointer <::database::client> pdatabaseclient = m_papplication;
-
-      if (pdatabaseclient)
-      {
-
-         pdatabaseclient->datastream()->get_block("camera", m_pcamera->as_block());
-         pdatabaseclient->datastream()->get_block("transform", as_memory_block(m_transform));
-         pdatabaseclient->datastream()->get_block("input", m_pinput->as_block());
-
-      }
+          //m_pinput->m_bMouseAbsolute;
 
       auto pimpact = m_pimpact;
 
-      auto currentTime = std::chrono::high_resolution_clock::now();
+      m_stdtimepoint = std::chrono::high_resolution_clock::now();
       //while (!_window.shouldClose())
 
       set_ok_flag();
+
       while (!pimpact->m_bShouldClose && task_get_run())
       {
 
          task_iteration();
          //glfwPollEvents();
 
-         auto newTime = std::chrono::high_resolution_clock::now();
-
-         float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
-
-         currentTime = newTime;
-
-         m_fFrameTime = frameTime;
-
-         on_update_frame();
-
-         on_render_frame();
+         do_frame_step();
 
       }
+
+      ::pointer <::database::client> pdatabaseclient = m_papplication;
 
       if (pdatabaseclient)
       {
@@ -303,7 +296,7 @@ namespace graphics3d
 
       //}
 
-	}
+   }
 
 
    void engine::defer_start(const ::int_rectangle& rectanglePlacement)
@@ -339,12 +332,18 @@ namespace graphics3d
 
             m_pgpucontext = pgpucontext;
 
-            start_engine(rectanglePlacement);
+            pgpucontext->m_pengine = this;
 
-            run();
+            if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+            {
+
+               run();
+
+            }
 
          });
 
+      m_rectanglePlacementNew = rectanglePlacement;
 
    }
 
@@ -364,14 +363,155 @@ namespace graphics3d
    }
 
 
-   void engine::start_engine(const ::int_rectangle& rectanglePlacement)
+
+   void engine::do_frame_step()
    {
 
-      __øconstruct(m_prenderer);
+      _prepare_frame();
 
-      //::graphics3d::engine::m_prenderer = m_prenderer;
+      _do_frame_step();
 
-      m_prenderer->initialize_renderer(m_pgpucontext);
+   }
+
+
+   void engine::_prepare_frame()
+   {
+
+      if (!m_pcamera)
+      {
+
+         m_pcamera = m_pscene->get_default_camera();
+
+         m_transform.translation = m_pcamera->m_locationPosition;
+
+         m_transform.rotation.x = m_pcamera->m_fPitch;
+
+         m_transform.rotation.y = m_pcamera->m_fYaw;
+
+         //VkcCamera camera(glm::vec3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
+
+         //auto viewerObject = __øcreate <::graphics3d::scene_object>();
+         //papp->m_pimpact->m_bLastMouse = true;
+         //viewerObject->m_transform.translation.z = -2.5f;
+         //m_transform.translation.z = -2.5f;
+
+         ::pointer <::database::client> pdatabaseclient = m_papplication;
+
+         if (pdatabaseclient)
+         {
+
+            //pdatabaseclient->datastream()->get_block("camera", m_pcamera->as_block());
+            //pdatabaseclient->datastream()->get_block("transform", as_memory_block(m_transform));
+            //pdatabaseclient->datastream()->get_block("input", m_pinput->as_block());
+
+         }
+
+
+
+
+      }
+
+      if (!m_rectanglePlacementNew.is_empty())
+      {
+
+         if (m_rectanglePlacementNew != m_rectanglePlacement)
+         {
+
+            m_rectanglePlacement = m_rectanglePlacementNew;
+
+            defer_update_engine(m_rectanglePlacement);
+
+            auto pgpucontext = m_pgpucontext;
+
+            if (pgpucontext->m_prenderer)
+            {
+
+               //pgpucontext->create_offscreen_buffer(m_rectanglePlacement.size());
+
+               pgpucontext->m_prenderer->set_placement(m_rectanglePlacement);
+
+               //m_pimpact->on_load_engine();
+
+               //run();
+
+               //m_pimpact->m_ptaskEngine.release();
+
+               //return;
+
+
+               //m_pinput = __allocate::graphics3d::input();
+
+               //m_pinput->m_pimpact = m_pimpact;
+
+               //m_pcamera = __allocate::graphics3d::camera(glm::vec3(0.0f, 3.0f, 3.0f), -90.0f, 0.0f);
+
+               ////m_pcamera->m_pimpact
+
+               ////m_pglcapplication = m_pimpact->start_opengl_application();
+               ////__øconstruct(m_pgpucontext);
+
+               //if (!m_papplication->m_bUseDraw2dProtoWindow)
+               //{
+
+               //   pgpucontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
+
+               //}
+
+               //m_prenderer = __allocate::graphics3d_opengl::renderer();
+
+               ////return;
+               //// Initialize the game logic and scene data
+               ////Init();
+
+               //pgpucontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
+
+               //m_pgpucontext->m_rendera.add_unique(this);
+
+            }
+
+         }
+
+      }
+
+   }
+
+
+   void engine::_do_frame_step()
+   {
+
+      auto newTime = std::chrono::high_resolution_clock::now();
+
+      float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - m_stdtimepoint).count();
+
+      m_stdtimepoint = newTime;
+
+      m_fFrameTime = frameTime;
+
+      if (!m_rectanglePlacement.is_empty())
+      {
+
+         on_update_frame();
+
+         on_render_frame();
+
+      }
+
+   }
+
+
+   void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
+   {
+
+      if (!m_prenderer)
+      {
+
+         __øconstruct(m_prenderer);
+
+         //::graphics3d::engine::m_prenderer = m_prenderer;
+
+         m_prenderer->initialize_renderer(m_pgpucontext);
+
+      }
 
 
       m_prenderer->set_placement(rectanglePlacement);
@@ -384,142 +524,152 @@ namespace graphics3d
       //   .build();
 
       //pgpucontext = __allocate context(m_pvulkandevice);
-      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
 
-      if (iGlobalUboSize > 0)
+      if (!m_bCreatedGlobalUbo)
       {
 
-         create_global_ubo(m_pgpucontext);
+         m_bCreatedGlobalUbo = true;
+
+         int iGlobalUboSize = m_pimpact->global_ubo_block().size();
+
+         if (iGlobalUboSize > 0)
+         {
+
+            create_global_ubo(m_pgpucontext);
+
+         }
+
 
       }
-
 
       //          m_prenderer->getRenderPass(),
         //        globalSetLayout->getDescriptorSetLayout()
           //  };
 
-      m_pscene->on_load_scene(m_pgpucontext);
+      m_pscene->defer_load_scene(m_pgpucontext);
 
    }
 
 
-	void engine::on_layout(int cx, int cy)
-	{
-
-      auto pgpucontext = m_pgpucontext;
-
-if (!pgpucontext)
-{
-
-   return;
-
-}
-
-pgpucontext->post([this, cx, cy]
+   void engine::on_layout(const ::int_rectangle& rectanglePlacement)
    {
 
-      auto pgpucontext = m_pgpucontext;
+      m_rectanglePlacementNew = rectanglePlacement;
 
-      if (pgpucontext->m_prenderer)
-      {
-
-         pgpucontext->m_prenderer->set_placement({cx, cy});
-
-         //m_pimpact->on_load_engine();
-
-         //run();
-
-         //m_pimpact->m_ptaskEngine.release();
-
-         //return;
-
-
-         //m_pinput = __allocate::graphics3d::input();
-
-         //m_pinput->m_pimpact = m_pimpact;
-
-         //m_pcamera = __allocate::graphics3d::camera(glm::vec3(0.0f, 3.0f, 3.0f), -90.0f, 0.0f);
-
-         ////m_pcamera->m_pimpact
-
-         ////m_pglcapplication = m_pimpact->start_opengl_application();
-         ////__øconstruct(m_pgpucontext);
-
-         //if (!m_papplication->m_bUseDraw2dProtoWindow)
-         //{
-
-         //   pgpucontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
-
-         //}
-
-         //m_prenderer = __allocate::graphics3d_opengl::renderer();
-
-         ////return;
-         //// Initialize the game logic and scene data
-         ////Init();
-
-         //pgpucontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
-
-         //m_pgpucontext->m_rendera.add_unique(this);
-
-      }
-
-      //pgpucontext->resize_offscreen_buffer({ cx, cy });
-
-      ////on_layout(cx, cy);
-
-      //m_pimpact->m_iWidth = cx;
-      //m_pimpact->m_iHeight = cy;
-
-   });
-
+      //      auto pgpucontext = m_pgpucontext;
+      //
+      //if (!pgpucontext)
+      //{
+      //
+      //   return;
+      //
+      //}
+      //
+      //pgpucontext->post([this, cx, cy]
+      //   {
+      //
+      //      auto pgpucontext = m_pgpucontext;
+      //
+      //      if (pgpucontext->m_prenderer)
+      //      {
+      //
+      //         pgpucontext->m_prenderer->set_placement({cx, cy});
+      //
+      //         //m_pimpact->on_load_engine();
+      //
+      //         //run();
+      //
+      //         //m_pimpact->m_ptaskEngine.release();
+      //
+      //         //return;
+      //
+      //
+      //         //m_pinput = __allocate::graphics3d::input();
+      //
+      //         //m_pinput->m_pimpact = m_pimpact;
+      //
+      //         //m_pcamera = __allocate::graphics3d::camera(glm::vec3(0.0f, 3.0f, 3.0f), -90.0f, 0.0f);
+      //
+      //         ////m_pcamera->m_pimpact
+      //
+      //         ////m_pglcapplication = m_pimpact->start_opengl_application();
+      //         ////__øconstruct(m_pgpucontext);
+      //
+      //         //if (!m_papplication->m_bUseDraw2dProtoWindow)
+      //         //{
+      //
+      //         //   pgpucontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
+      //
+      //         //}
+      //
+      //         //m_prenderer = __allocate::graphics3d_opengl::renderer();
+      //
+      //         ////return;
+      //         //// Initialize the game logic and scene data
+      //         ////Init();
+      //
+      //         //pgpucontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
+      //
+      //         //m_pgpucontext->m_rendera.add_unique(this);
+      //
+      //      }
+      //
+      //      //pgpucontext->resize_offscreen_buffer({ cx, cy });
+      //
+      //      ////on_layout(cx, cy);
+      //
+      //      //m_pimpact->m_iWidth = cx;
+      //      //m_pimpact->m_iHeight = cy;
+      //
+      //   });
+      //
 
 
    }
 
 
-	void engine::on_mouse_move(int x, int y)
-	{
+   void engine::on_mouse_move(int x, int y)
+   {
 
 
-	}
+   }
 
 
-	::pointer<model> engine::create_tinyobjloader_model(const ::file::path& path)
-	{
+   ::pointer<model> engine::create_tinyobjloader_model(const ::file::path& path)
+   {
 
-		model::tinyobjloader_Builder builder{};
+      model::tinyobjloader_Builder builder{};
 
-		builder.loadModel(m_pgpucontext, path);
+      builder.loadModel(m_pgpucontext, path);
 
-		auto pmodel = __øcreate < model>();
+      auto pmodel = __øcreate < model>();
 
-		pmodel->initialize_model(m_pgpucontext, builder);
+      pmodel->initialize_model(m_pgpucontext, builder);
 
-		return pmodel;
+      return pmodel;
 
-	}
-
-
-
-
-	void engine::add_scene(::graphics3d::scene* pscene)
-	{
-
-		m_mapScene[pscene->m_strName] = pscene;
-
-	}
+   }
 
 
 
 
+   void engine::add_scene(::graphics3d::scene* pscene)
+   {
 
-	void engine::set_current_scene(::graphics3d::scene* pscene)
-	{
+      m_mapScene[pscene->m_strName] = pscene;
 
-		m_pscene = pscene;
+   }
 
-	}
+
+
+
+
+   void engine::set_current_scene(::graphics3d::scene* pscene)
+   {
+
+      m_pscene = pscene;
+
+   }
 
 
 

@@ -938,7 +938,7 @@ namespace draw2d_opengl
 
       set(pbrush);
 
-      ::opengl::vertex2f(rectangle);
+      ::opengl::vertex2f(rectangle, m_z);
 
       glEnd();
 
@@ -1736,7 +1736,7 @@ namespace draw2d_opengl
 
       }
 
-      ::opengl::vertex2f(rectangle);
+      ::opengl::vertex2f(rectangle, m_z);
 
       glEnd();
 
@@ -5217,8 +5217,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      glVertex2f((float)(m_point.x()), (float)(m_point.y()));
-      glVertex2f((float)(x), (float)(y));
+      glVertex3f((float)(m_point.x()), (float)(m_point.y()), m_z);
+      glVertex3f((float)(x), (float)(y), m_z);
 
       glEnd();
 
@@ -5915,12 +5915,23 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
 
-      ::opengl::resize(size, bYSwap);
-
-      m_z = 0.f;
-
+      //glEnable(GL_BLEND);
+      //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+      //glEnable(GL_BLEND);
+      //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glDepthMask(GL_TRUE); // Enable writing to depth
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      glDepthMask(GL_FALSE); // Disable writing to depth
+
+      glEnable(GL_BLEND);
+      glDisable(GL_DEPTH_TEST);
+      //glDepthFunc(GL_LEQUAL);
+
+      ::opengl::resize(size, bYSwap);
+
+      m_z = 0.0f;
+
       //glLoadIdentity();
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       //glClear(GL_COLOR_BUFFER_BIT);
@@ -5996,7 +6007,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (m_papplication->m_bUseDraw2dProtoWindow)
       {
 
-         //m_pgpucontext->swap_buffers();
+         //if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
+         //{
+
+         //   m_pgpucontext->swap_buffers();
+
+         //}
 
          //m_pwindow->m_timeLastDrawGuard1.Now();
 
@@ -6123,21 +6139,15 @@ namespace opengl
       //double d = 200.0 / 72.0;
 
       //double d = 1.0;
-
       ////glViewport(0, 0, size.cx() * d, size.cy() * d);
       glViewport(0, 0, size.cx(), size.cy());
-
-      //glMatrixMode(GL_PROJECTION);
-      //glLoadIdentity();
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
       ////glOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
       ////glOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
       //////glOrtho(0, size.cx() * d, 0.0f, size.cy() * d, 000.0f, 1000.0f);
       ////glOrtho(0, size.cx(), size.cy(), 0.0f, -1000.0f, 1000.0f);
       //glOrtho(0.f, size.cx(), 0.f, -size.cy(), -1.0f, 1.0f);
-
-
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
       if (bYSwap)
       {
          glOrtho(0.0f, size.cx(), size.cy(), 0, -1.0f, 1.0f);  // Flip Y
@@ -6146,6 +6156,8 @@ namespace opengl
       {
          glOrtho(0.0f, size.cx(), 0, size.cy(), -1.0f, 1.0f);  // Flip Y
       }
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
       //auto left = 0.;
       //auto right = (double) size.cx();
       //auto bottom = 0.;
@@ -6176,14 +6188,17 @@ namespace opengl
       //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+      //glDisable(GL_DEPTH_TEST);
+
       // Translate to inside of pixel (otherwise inaccuracies can occur on certain gl implementations)
       //if (OpenGL::accuracyTweak())
       glTranslatef(0.5f, 0.5f, 0);
 
    }
 
+
    //https://community.khronos.org/t/draw-an-arc-in-opengl/57994/2
-   inline void draw_arc(float cx, float cy, float r, float start_angle, float arc_angle, int num_segments)
+   inline void draw_arc(float cx, float cy, float r, float start_angle, float arc_angle, int num_segments, float fZ)
    {
       float theta = arc_angle / float(num_segments - 1);//theta is now calculated from the arc angle instead, the - 1 bit comes from the fact that the arc is open
 
@@ -6198,7 +6213,7 @@ namespace opengl
       glBegin(GL_LINE_STRIP);//since the arc is not a closed curve, this is a strip now
       for (int ii = 0; ii < num_segments; ii++)
       {
-         glVertex2f(x + cx, y + cy);
+         glVertex3f(x + cx, y + cy, fZ);
 
          float tx = -y;
          float ty = x;

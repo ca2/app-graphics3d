@@ -37,20 +37,20 @@ namespace graphics3d
    }
 
 
-   void camera::initialize_camera(glm::vec3 position, glm::vec3 to, glm::vec3 from)
+   void camera::initialize_camera(glm::vec3 target, glm::vec3 camera)
    {
 
-      m_locationPosition = position;
+      m_locationPosition = camera;
 
-      auto direction = glm::normalize(to - from);
+      auto direction = glm::normalize(target - camera);
 
-      m_fYaw = atan2(direction.x, direction.z);
+      m_fYaw = atan2(direction.z, direction.x);
 
-      m_fPitch = asin(-direction.y);
+      m_fPitch = asin(direction.y);
 
       m_poleWorldUp = { 0.0f, 1.0f, 0.0f };
       
-      m_fZoom = 75.0f;
+      m_fZoom = glm::radians(75.0f);
       
       m_fMovementSpeed = 8.0f;
 
@@ -117,14 +117,16 @@ namespace graphics3d
    void camera::setPerspectiveProjection(float fovy, float aspect, float fNear, float fFar) 
    {
 
-      assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
+      m_matrixProjection = glm::perspective(fovy, aspect, fNear, fFar);
+
+      /*assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
       const float tanHalfFovy = tan(fovy / 2.f);
       m_matrixProjection = glm::mat4{ 0.0f };
       m_matrixProjection[0][0] = 1.f / (aspect * tanHalfFovy);
       m_matrixProjection[1][1] = 1.f / (tanHalfFovy);
       m_matrixProjection[2][2] = fFar / (fFar - fNear);
       m_matrixProjection[2][3] = 1.f;
-      m_matrixProjection[3][2] = -(fFar * fNear) / (fFar - fNear);
+      m_matrixProjection[3][2] = -(fFar * fNear) / (fFar - fNear);*/
 
    }
 
@@ -174,47 +176,22 @@ namespace graphics3d
    }
 
 
-   void camera::setViewYXZ(glm::vec3 position, glm::vec3 rotation) 
-   {
+   //void camera::setViewYXZ(glm::vec3 position, glm::vec3 rotation) 
+   //{
 
-      const float c3 = glm::cos(rotation.z);
-      const float s3 = glm::sin(rotation.z);
-      const float c2 = glm::cos(rotation.x);
-      const float s2 = glm::sin(rotation.x);
-      const float c1 = glm::cos(rotation.y);
-      const float s1 = glm::sin(rotation.y);
-      const glm::vec3 u{ (c1 * c3 + s1 * s2 * s3), (c2 * s3), (c1 * s2 * s3 - c3 * s1) };
-      const glm::vec3 v{ (c3 * s1 * s2 - c1 * s3), (c2 * c3), (c1 * c3 * s2 + s1 * s3) };
-      const glm::vec3 w{ (c2 * s1), (-s2), (c1 * c2) };
-      m_matrixImpact = glm::mat4{ 1.f };
-      m_matrixImpact[0][0] = u.x;
-      m_matrixImpact[1][0] = u.y;
-      m_matrixImpact[2][0] = u.z;
-      m_matrixImpact[0][1] = v.x;
-      m_matrixImpact[1][1] = v.y;
-      m_matrixImpact[2][1] = v.z;
-      m_matrixImpact[0][2] = w.x;
-      m_matrixImpact[1][2] = w.y;
-      m_matrixImpact[2][2] = w.z;
-      m_matrixImpact[3][0] = -glm::dot(u, position);
-      m_matrixImpact[3][1] = -glm::dot(v, position);
-      m_matrixImpact[3][2] = -glm::dot(w, position);
+   //   m_locationPosition = position;
 
-      m_matrixAntImpact = glm::mat4{ 1.f };
-      m_matrixAntImpact[0][0] = u.x;
-      m_matrixAntImpact[0][1] = u.y;
-      m_matrixAntImpact[0][2] = u.z;
-      m_matrixAntImpact[1][0] = v.x;
-      m_matrixAntImpact[1][1] = v.y;
-      m_matrixAntImpact[1][2] = v.z;
-      m_matrixAntImpact[2][0] = w.x;
-      m_matrixAntImpact[2][1] = w.y;
-      m_matrixAntImpact[2][2] = w.z;
-      m_matrixAntImpact[3][0] = position.x;
-      m_matrixAntImpact[3][1] = position.y;
-      m_matrixAntImpact[3][2] = position.z;
+   //   m_fPitch = rotation.x;
 
-   }
+   //   m_fYaw = rotation.y;
+
+   //   UpdateCameraVectors();
+
+   //   m_matrixImpact = GetViewMatrix();
+
+   //   m_matrixAntImpact = glm::inverse(m_matrixImpact);
+
+   //}
 
 
    void camera::UpdateCameraVectors()
@@ -222,13 +199,13 @@ namespace graphics3d
 
       // Calculate the new front vector based on yaw and pitch
       glm::vec3 front;
-      front.x = cos(glm::radians(m_fYaw)) * cos(glm::radians(m_fPitch));
-      front.y = sin(glm::radians(m_fPitch));
-      front.z = sin(glm::radians(m_fYaw)) * cos(glm::radians(m_fPitch));
+      front.x = cos(m_fPitch) * cos(m_fYaw);
+      front.y = sin(m_fPitch);
+      front.z = cos(m_fPitch) * sin(m_fYaw);
       this->m_poleFront = glm::normalize(front);
 
       // Re-calculate the right and up vector
-      this->m_poleRight = glm::normalize(glm::cross(this->m_poleFront, this->m_poleUp));
+      this->m_poleRight = glm::normalize(glm::cross(this->m_poleFront, m_poleWorldUp));
       this->m_poleUp = glm::normalize(glm::cross(this->m_poleRight, this->m_poleFront));
 
    }

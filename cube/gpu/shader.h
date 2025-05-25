@@ -56,14 +56,14 @@ namespace gpu
          ::gpu::context* pgpucontext,
          const ::file::path & pathVertex, 
          const ::file::path & pathFragment, 
-         const ::gpu::property* pproperties,
+         const ::gpu::property* pproperties = nullptr,
          enum_flag eflag = e_flag_none);
 
       virtual void initialize_shader_with_block(
          ::gpu::context* pgpucontext,
          const ::block & blockVertex, 
          const ::block & blockFragment,
-         const ::gpu::property* pproperties,
+         const ::gpu::property* pproperties = nullptr,
          enum_flag eflag = e_flag_none);
 
       virtual void on_initialize_shader();

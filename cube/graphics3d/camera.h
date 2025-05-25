@@ -36,7 +36,7 @@ namespace graphics3d
 		// Inertia
 		glm::vec3				m_poleVelocity;
 		// Camera attributes
-		glm::vec3			m_locationPosition;
+		glm::vec3				m_locationPosition;
 		glm::vec3				m_poleFront{ 0.0f, 0.0f, -1.0f };  // Camera direction (forward vector)
 		glm::vec3				m_poleUp{ 0.0f, 1.0f, 0.0f };     // Up vector
 		glm::vec3				m_poleRight{ 1.0f, 0.0f, 0.0f };   // Right vector (cross product)
@@ -73,13 +73,13 @@ namespace graphics3d
 		//camera(glm::vec3 position, glm::vec3 to, glm::vec3 from);
 
 		virtual void initialize_camera(glm::vec3 position, float yaw, float pitch);
-		virtual void initialize_camera(glm::vec3 position, glm::vec3 to, glm::vec3 from);
+		virtual void initialize_camera(glm::vec3 target, glm::vec3 camera);
 
 		void setOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
 		void setViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up = glm::vec3{ 0.f, -1.f, 0.f });
 		void setViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up = glm::vec3{ 0.f, -1.f, 0.f });
 
-		void setViewYXZ(glm::vec3 position, glm::vec3 rotation);
+//		void setViewYXZ(glm::vec3 position, glm::vec3 rotation);
 
 		virtual void setPerspectiveProjection(float fovy, float aspect, float near, float far);
 		const glm::mat4& getProjection() const { return m_matrixProjection; }

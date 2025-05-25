@@ -19,9 +19,9 @@ namespace opengl
       //auto f32Red = (float)(u8Red * u8Opacity) / (255.f * 255.f);
       //auto f32Green = (float)(u8Green * u8Opacity) / (255.f * 255.f);
       //auto f32Blue = (float)(u8Blue * u8Opacity) / (255.f * 255.f);
-      auto f32Red = (float)(u8Red) / (255.f);
-      auto f32Green = (float)(u8Green) / (255.f);
-      auto f32Blue = (float)(u8Blue) / (255.f);
+      auto f32Red = (float)(u8Red * u8Opacity) / (255.f * 255.f);
+      auto f32Green = (float)(u8Green * u8Opacity) / (255.f * 255.f);
+      auto f32Blue = (float)(u8Blue * u8Opacity) / (255.f*255.f);
       auto f32Opacity = (float)u8Opacity / 255.f;
 
       ::glColor4f(f32Red, f32Green, f32Blue, f32Opacity);

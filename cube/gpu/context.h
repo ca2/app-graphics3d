@@ -91,6 +91,7 @@ namespace gpu
       ::draw3d::matrix                       m_matrixProjection;
       ::draw3d::matrix                       m_matrixImpact;
       ::pointer < ::gpu::renderer >          m_prenderer;
+      ::pointer < ::graphics3d::engine >     m_pengine;
       ::pointer_array < ::gpu::render >      m_rendera;
 
       ::image32_callback                     m_callbackImage32CpuBuffer;

@@ -154,3 +154,15 @@ public:
    }
 
 };
+
+
+namespace gpu_opengl
+{
+
+
+   class frame_buffer;
+
+
+} // namespace gpu_opengl
+
+

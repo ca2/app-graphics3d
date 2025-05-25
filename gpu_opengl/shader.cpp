@@ -201,6 +201,15 @@ namespace gpu_opengl
    }
 
 
+
+   void shader::unbind()
+   {
+
+      glUseProgram(0);
+
+   }
+
+
 //   void shader::setBool(const ::scoped_string & scopedstrName, bool value)
 //   {
 //

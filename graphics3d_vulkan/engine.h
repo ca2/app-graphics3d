@@ -41,11 +41,14 @@ namespace graphics3d_vulkan
 
 		//::file::path _translate_shader_path(const ::file::path& pathShader);
 
-		void start_engine(const ::int_rectangle& rectanglePlacement) override;
+		void defer_update_engine(const ::int_rectangle& rectanglePlacement) override;
 
 		void run() override;
 
 		void on_begin_frame() override;
+
+
+		void on_render_frame() override;
 
 		//void create_global_ubo(::gpu::context* pgpucontext) override;
 		//void update_global_ubo(::gpu::context* pgpucontext) override;

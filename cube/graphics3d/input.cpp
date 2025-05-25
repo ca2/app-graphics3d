@@ -67,7 +67,7 @@ namespace graphics3d
    //    }
    //}
 
-   
+
    void input::_001OnMouseOut()
    {
 
@@ -151,8 +151,13 @@ namespace graphics3d
       yOffset *= m_f_001UpdateLookSensitivity;
 
       // limit pitch values between about +/- 85ish degrees
-      m_pengine->m_transform.rotation.x = glm::clamp(m_pengine->m_transform.rotation.x, -1.5f, 1.5f);
-      m_pengine->m_transform.rotation.y = glm::mod(m_pengine->m_transform.rotation.y, glm::two_pi<float>());
+      _yaw = m_pengine->m_pcamera->m_fYaw;
+      _pitch = m_pengine->m_pcamera->m_fPitch;
+
+      if (_yaw > glm::two_pi<float>()) _yaw -= glm::two_pi<float>();
+      if (_yaw < 0.0f) _yaw += glm::two_pi<float>();
+
+      _pitch = glm::clamp(_pitch, -1.5f, 1.5f);
 
       if (m_b_001AbsoluteMousePosition)
       {
@@ -169,15 +174,16 @@ namespace graphics3d
 
       }
 
-      // Clamp pitch to avoid flipping
-      _pitch = glm::clamp(_pitch, -89.0f, 89.0f);
-
       // Optional: wrap yaw
-      if (_yaw > 360.0f) _yaw -= 360.0f;
-      if (_yaw < 0.0f) _yaw += 360.0f;
+      if (_yaw > glm::two_pi<float>()) _yaw -= glm::two_pi<float>();
+      if (_yaw < 0.0f) _yaw += glm::two_pi<float>();
 
-      m_pengine->m_transform.rotation.x = glm::radians(_pitch);
-      m_pengine->m_transform.rotation.y = glm::radians(_yaw);
+      // Clamp pitch to avoid flipping
+      _pitch = glm::clamp(_pitch, -1.5f, 1.5f);
+
+
+      m_pengine->m_pcamera->m_fPitch = _pitch;
+      m_pengine->m_pcamera->m_fYaw = _yaw;
 
    }
 
@@ -209,10 +215,10 @@ namespace graphics3d
    void input::process_keyboard_input_updateMovement()
    {
 
-      auto& transform = m_pengine->m_transform;
+      //auto& transform = m_pengine->m_transform;
 
-      float yaw = transform.rotation.y;
-      const glm::vec3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
+      float yaw = m_pengine->m_pcamera->m_fYaw;
+      const glm::vec3 forwardDir{ cos(yaw), 0.f, sin(yaw) };
       const glm::vec3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
       const glm::vec3 upDir{ 0.f, -1.f, 0.f };
 
@@ -231,7 +237,7 @@ namespace graphics3d
          if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon())
          {
 
-            transform.translation += m_fMoveSpeed * m_pengine->dt() * glm::normalize(moveDir);
+            m_pengine->m_pcamera->m_locationPosition += m_fMoveSpeed * m_pengine->dt() * glm::normalize(moveDir);
 
          }
 
@@ -247,7 +253,7 @@ namespace graphics3d
    }
 
    ::user::enum_key_state  input::get_key_state(::user::e_key ekey)
-         {
+   {
       //int state = glfwGetKey(m_pimpact, key);
       //return state == GLFW_PRESS || state == GLFW_REPEAT;
 
@@ -263,16 +269,16 @@ namespace graphics3d
       return ::user::e_key_state_none;
    }
    bool input::IsKeyPressed(::user::e_key ekey)
-{
-   return get_key_state(ekey) & ::user::e_key_state_pressed;
-}
+   {
+      return get_key_state(ekey) & ::user::e_key_state_pressed;
+   }
 
-   bool input::IsKeyReleased(::user::e_key ekey) 
+   bool input::IsKeyReleased(::user::e_key ekey)
    {
       return !get_key_state(ekey);
    }
 
-      // Check if any movement keys are pressed (W, A, S, D)
+   // Check if any movement keys are pressed (W, A, S, D)
    bool input::IsAnyKeyPressed() {
       return IsKeyPressed(::user::e_key_w) ||
          IsKeyPressed(::user::e_key_a) ||
@@ -297,7 +303,7 @@ namespace graphics3d
 
       }
 
-      if (key(e_key_moveBackward)==::user::e_key_state_pressed)
+      if (key(e_key_moveBackward) == ::user::e_key_state_pressed)
       {
 
          m_pengine->m_pcamera->ProcessKeyboardInput(e_key_moveBackward, m_pengine->dt());
@@ -372,19 +378,19 @@ namespace graphics3d
    }
 
 
-   glm::vec3 input::getCameraDirection() const 
-   { 
-      return _cameraDirection; 
+   glm::vec3 input::getCameraDirection() const
+   {
+      return _cameraDirection;
    }
 
 
    glm::vec3 input::getCameraPosition() const
    {
-      return _cameraPosition; 
+      return _cameraPosition;
    }
 
 
-   void input::_001OnMouseMove(const ::int_point & point)
+   void input::_001OnMouseMove(const ::int_point& point)
    {
 
       //m_mousestate.position.x = point.x();
@@ -433,7 +439,7 @@ namespace graphics3d
 
    }
 
-   
+
    void input::_001PrepareMouseInput()
    {
 
@@ -467,39 +473,74 @@ namespace graphics3d
       if (!m_b_001AbsoluteMousePosition)
       {
 
-         if (m_bFirstMouse)
+         //if (m_bFirstMouse)
+         if (!m_bWasLeft && m_mousestate.m_buttons.left)
          {
             m_dMouseLastX = newx;
             m_dMouseLastY = newy;
-            m_bFirstMouse = false;
+            m_bWasLeft = true;
+
+         }
+         else if (m_bWasLeft && !m_mousestate.m_buttons.left)
+         {
+
+            m_bWasLeft = false;
 
          }
 
       }
 
-      if (m_b_001AbsoluteMousePosition)
+      if (m_mousestate.m_buttons.left)
       {
 
-         x = m_dMouseLastX + (newx - m_dMouseLastX) * 0.05;
-         y = m_dMouseLastY + (newy - m_dMouseLastY) * 0.05;
-         m_Δx = x;
-         m_Δy = -y;  // reversed Y
+         if (m_b_001AbsoluteMousePosition)
+         {
+
+            x = m_dMouseLastX + (newx - m_dMouseLastX) * 0.05;
+            y = m_dMouseLastY + (newy - m_dMouseLastY) * 0.05;
+
+         }
+         else
+         {
+
+            x = newx;
+            y = newy;
+
+         }
+
+         if (m_b_001AbsoluteMousePosition)
+         {
+
+            m_Δx = x;
+            m_Δy = -y;  // reversed Y
+
+         }
+         else
+         {
+
+            //m_Δx = x - m_dMouseLastX;
+            //m_Δy = m_dMouseLastY - y;  // reversed Y
+            m_Δx = m_Δx + static_cast<float>(m_dMouseLastX -x - m_Δx) * 0.1;
+            m_Δy = m_Δy + static_cast<float>(y- m_dMouseLastY  - m_Δy) * 0.1;  // reversed Y
+
+         }
+
+         m_dMouseLastX = x;
+         m_dMouseLastY = y;
 
       }
       else
       {
+         
+         if (!m_b_001AbsoluteMousePosition)
+         {
 
-         x = newx;
-         y = newy;
+            m_Δx *= 0.90;
+            m_Δy *= 0.90;
 
-         m_Δx = m_Δx + static_cast<float>(x - m_dMouseLastX - m_Δx) * 0.05;
-         m_Δy = m_Δy + static_cast<float>(m_dMouseLastY - y - m_Δy) * 0.05;  // reversed Y
-
+         }
 
       }
-
-      m_dMouseLastX = x;
-      m_dMouseLastY = y;
 
    }
 

@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "impact.h"
 #include "application.h"
+#include "gpu/context.h"
 #include "graphics3d/engine.h"
 #include "graphics3d/input.h"
 #include "acme/constant/message.h"
@@ -217,7 +218,7 @@ namespace cube
    }
 
 
-   void impact::defer_initialize_engine(const ::int_size & size)
+   void impact::defer_initialize_engine(const ::int_rectangle& rectanglePlacement)
    {
 
       if (!m_pengine)
@@ -252,9 +253,13 @@ namespace cube
 
                      _synchronous_lock synchronouslock(m_pparticleImageSynchronization);
 
-                     auto s = m_pimage->size().minimum(::int_size(w, h));
+                     ::int_size sFullHD{ 1920,1080 };
 
-                     m_pimage->image32()->copy(s, m_pimage->m_iScan, pimage32, stride);
+                     auto s = sFullHD.minimum(::int_size(w, h));
+
+                     m_pimage->create(s);
+
+                     m_pimage->image32()->vertical_swap_copy(s, m_pimage->m_iScan, pimage32, stride);
 
                   //   for (int y = 0; y < h; y++)
                   //   {
@@ -313,7 +318,7 @@ namespace cube
 
          }
 
-         m_pengine->defer_start(size);
+         m_pengine->defer_start(rectanglePlacement);
 
       }
 
@@ -364,9 +369,11 @@ namespace cube
 
       host_to_client()(point);
 
-      m_mousestate.m_position.x = point.x();
-      m_mousestate.m_position.y = point.y();
-      m_mousestate.m_buttons.left = true;
+      m_pengine->m_pinput->m_mousestate.m_position.x = point.x();
+      m_pengine->m_pinput->m_mousestate.m_position.y = point.y();
+      m_pengine->m_pinput->m_mousestate.m_buttons.left = true;
+
+      set_mouse_capture();
 
    }
 
@@ -378,13 +385,17 @@ namespace cube
 
       pmessage->m_bRet = true;
 
+      release_mouse_capture();
+
       auto point = pmouse->m_pointHost;
 
       host_to_client()(point);
 
-      m_mousestate.m_position.x = point.x();
-      m_mousestate.m_position.y = point.y();
-      m_mousestate.m_buttons.left = false;
+      m_pengine->m_pinput->m_mousestate.m_position.x = point.x();
+      m_pengine->m_pinput->m_mousestate.m_position.y = point.y();
+      m_pengine->m_pinput->m_mousestate.m_buttons.left = false;
+
+      
 
    }
 
@@ -522,21 +533,34 @@ namespace cube
       //pgraphics->draw_line(::double_point(300.0, 0.0), ::double_point(100.0, 300.0));
 
       //pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
-
-      if (::is_ok(m_pimage))
+      if (m_pengine)
       {
+         if (m_pengine->m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+         {
+            if (::is_ok(m_pimage))
+            {
 
-         pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
+               pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
-         _synchronous_lock synchronouslock(m_pparticleImageSynchronization);
+               _synchronous_lock synchronouslock(m_pparticleImageSynchronization);
 
-         ::image::image_source imagesource(m_pimage, m_pimage->rectangle());
+               ::image::image_source imagesource(m_pimage, m_pimage->rectangle());
 
-         ::image::image_drawing_options imagedrawingoptions(m_pimage->rectangle());
+               ::image::image_drawing_options imagedrawingoptions(m_pimage->rectangle());
 
-         ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
+               ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
 
-         pgraphics->draw(imagedrawing);
+               pgraphics->draw(imagedrawing);
+
+            }
+
+         }
+         else
+         {
+
+            m_pengine->do_frame_step();
+
+         }
 
       }
 
@@ -594,13 +618,13 @@ namespace cube
       if (!m_pengine)
       {
 
-         defer_initialize_engine(size);
+         defer_initialize_engine(this->host_rectangle());
 
       }
       else if(m_pengine->has_ok_flag())
       {
 
-         m_pengine->on_layout(m_iWidth, m_iHeight);
+         m_pengine->on_layout(this->host_rectangle());
 
       }
 

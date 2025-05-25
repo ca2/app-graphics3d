@@ -66,6 +66,14 @@ namespace graphics3d
    }
 
 
+   void model::unbind(::gpu::context* pgpucontext)
+   {
+
+
+
+   }
+
+
    //::pointer<model> model::createModelFromFile(::graphics::context* pgpucontext, const ::file::path & path)
    //{
 

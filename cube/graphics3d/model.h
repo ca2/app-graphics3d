@@ -62,6 +62,7 @@ namespace graphics3d
 
       virtual void draw(::gpu::context* pgpucontext);
       virtual void bind(::gpu::context* pgpucontext);
+      virtual void unbind(::gpu::context* pgpucontext);
 
    //private:
    //   void createVertexBuffers(const ::array<Vertex>& vertices);

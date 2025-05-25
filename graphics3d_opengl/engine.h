@@ -23,6 +23,7 @@ namespace graphics3d_opengl
 	class SimpleRenderSystem;
 	class point_light_system;
 
+
 	class engine :
 		virtual public ::graphics3d::engine
 	{
@@ -34,7 +35,8 @@ namespace graphics3d_opengl
 		//::pointer < glc::Application > m_pglcapplication;  // Game object that manages the scenes
 		::pointer < ::graphics3d::input > m_pinput;
 		//::pointer<::graphics3d_opengl::render_data> m_prenderdataCurrentScene;
-
+		::pointer < ::gpu_opengl::frame_buffer	 >		m_pframebuffer;
+		::pointer < ::gpu::shader	 >		m_pshaderBlend;
 		//double m_Δx;
 		//double m_Δy;
 
@@ -43,6 +45,7 @@ namespace graphics3d_opengl
 		double m_Δx = 0.;
 		double m_Δy = 0.;
 
+		GLuint m_vaoQuad, m_vboQuad;
 
 		bool m_Running;
 
@@ -60,13 +63,14 @@ namespace graphics3d_opengl
 
 		//::pointer<::gpu::context>             m_pgpucontext;
 
+
 		engine();
 		~engine();
 
 		void defer_start(const ::int_rectangle& rectanglePlacement) override;
 
 
-		void start_engine(const ::int_rectangle& rectanglePlacement) override;
+		void defer_update_engine(const ::int_rectangle& rectanglePlacement) override;
 
 		void on_begin_frame() override;
 
@@ -82,7 +86,7 @@ namespace graphics3d_opengl
 		//void run_application() override;
 		//void resize(int cx, int cy) override;
 
-
+		void do_frame_step() override;
 		//void Init();
 
 		void on_initialize_particle() override;
@@ -99,7 +103,7 @@ namespace graphics3d_opengl
 		//
 		//void on_layout(int cx, int cy) override;
 
-		virtual void on_layout(int cx, int cy) override;
+		virtual void on_layout(const ::int_rectangle & rectanglePlacement) override;
 
 		virtual void on_mouse_move(int x, int y) override;
 

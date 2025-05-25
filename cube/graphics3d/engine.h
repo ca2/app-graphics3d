@@ -16,6 +16,9 @@
 //#include <unordered_map>
 
 
+#include <chrono>
+
+
 namespace graphics3d
 {
 
@@ -43,6 +46,11 @@ namespace graphics3d
 
 		bool												m_bWireframeMode = false;
 
+		::std::chrono::steady_clock::time_point	m_stdtimepoint;
+		bool	m_bCreatedGlobalUbo;
+		::int_rectangle								m_rectanglePlacementNew;
+		::int_rectangle								m_rectanglePlacement;
+
 
 		engine();
 		~engine() override;
@@ -64,10 +72,15 @@ namespace graphics3d
 		//void on_begin_frame() override;
 		virtual void run();
 
+		virtual void do_frame_step();
 
-		virtual void start_engine(const ::int_rectangle & rectangle);
+		virtual void _prepare_frame();
 
-		virtual void on_layout(int cx, int cy);
+		virtual void _do_frame_step();
+
+		virtual void defer_update_engine(const ::int_rectangle & rectangle);
+
+		virtual void on_layout(const ::int_rectangle & rectanglePlacement);
 
 		virtual void on_mouse_move(int x, int y);
 

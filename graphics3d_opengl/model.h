@@ -49,6 +49,7 @@ namespace graphics3d_opengl
       ::collection::count m_cIndexes;
       void bind(::gpu::context* pgpucontext) override;
       void draw(::gpu::context* pgpucontext) override;
+      void unbind(::gpu::context* pgpucontext) override;
       bool gammaCorrection;
 
       // constructor, expects a filepath to a 3D model.

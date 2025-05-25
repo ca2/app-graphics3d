@@ -53,7 +53,10 @@ namespace gpu
       m_pgpucontext = pgpucontext;
       m_pathVertex = pathVertex;
       m_pathFragment = pathFragment;
-      m_properties.set(pproperties);
+      if (pproperties)
+      {
+         m_properties.set(pproperties);
+      }
       m_eflag = eflag;
 
       on_initialize_shader();
@@ -72,7 +75,11 @@ namespace gpu
       m_pgpucontext = pgpucontext;
       m_memoryVertex = blockVertex;
       m_memoryFragment = blockFragment;
-      m_properties.set(pproperties);
+      if (pproperties)
+      {
+         m_properties.set(pproperties);
+
+      }
       m_eflag = eflag;
 
       on_initialize_shader();

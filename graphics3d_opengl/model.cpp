@@ -187,6 +187,15 @@ namespace graphics3d_opengl
 		//	vkCmdBindIndexBuffer(pframeinfo->commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		//}
 	}
+
+
+	void model::unbind(::gpu::context* pgpucontext)
+	{
+
+		glBindVertexArray(0);
+
+	}
+
 	//// Loads a model from file and stores the resulting meshes
 	//void model::loadModel(std::string const& path)
 	//{

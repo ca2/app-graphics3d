@@ -42,6 +42,8 @@ namespace gpu
 
       }
       start_context_t(::particle* pparticle, ::gpu::approach* papproach, ::windowing::window* pwindow) :
+         m_pparticle(pparticle),
+         m_papproach(papproach),
          m_eoutput(e_output_swap_chain),
          m_pwindow(pwindow),
          m_callbackImage32CpuBuffer{},

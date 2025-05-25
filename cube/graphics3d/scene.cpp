@@ -15,6 +15,7 @@ namespace graphics3d
    scene::scene()
    {
 
+      m_bLoaded = false;
 
    }
 
@@ -46,6 +47,21 @@ namespace graphics3d
    {
 
       return {};
+
+   }
+
+   
+   void scene::defer_load_scene(::gpu::context* pgpucontext)
+   {
+
+      if (!m_bLoaded)
+      {
+
+         m_bLoaded = true;
+
+         on_load_scene(pgpucontext);
+
+      }
 
    }
 

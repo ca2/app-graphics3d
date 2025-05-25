@@ -45,7 +45,6 @@ namespace cube
       ::image32_callback                        m_callbackImage32CpuBuffer;
 
 
-      ::graphics3d::mouse_state                 m_mousestate;
       ::image::image_pointer                    m_pimage;
 
       ::particle_pointer                        m_pparticleImageSynchronization;
@@ -134,7 +133,7 @@ namespace cube
       //virtual void initWindow();
 
 
-      virtual void defer_initialize_engine(const ::int_size & size);
+      virtual void defer_initialize_engine(const ::int_rectangle & rectangle);
 
       virtual void on_load_engine();
 

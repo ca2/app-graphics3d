@@ -23,6 +23,11 @@ namespace graphics3d
       double m_Δx = 0.;
       double m_Δy = 0.;
 
+      bool m_bWasLeft = false;
+
+      ::graphics3d::mouse_state                 m_mousestate;
+
+
       double   m_dCursorX;
       double   m_dCursorY;
       bool		m_bFirstMouse;
@@ -55,7 +60,7 @@ namespace graphics3d
 
 
 
-      input(float sensitivity = 0.1f, float yaw = -90.0f, float pitch = 0.0f);
+      input(float sensitivity = 0.001f, float yaw = glm::radians(- 90.0f), float pitch = glm::radians(0.0f));
 
       //void moveInPlaneXZ(::cube::impact * pimpact, float dt, application_object& gameObject);
 

@@ -20,6 +20,7 @@ namespace graphics3d
       ::pointer < ::graphics3d::engine >     m_pengine;
       ::string                               m_strName;
       scene_object::map				            m_mapObjects;
+      bool                                   m_bLoaded;
 
 
       scene();
@@ -32,6 +33,7 @@ namespace graphics3d
 
       virtual ::pointer < ::graphics3d::camera > get_default_camera();
 
+      virtual void defer_load_scene(::gpu::context* pgpucontext);
 
       virtual void on_load_scene(::gpu::context* pgpucontext);
 

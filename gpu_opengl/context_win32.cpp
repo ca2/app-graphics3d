@@ -55,10 +55,16 @@ namespace gpu_opengl
       if (startcontext.m_eoutput == ::gpu::e_output_cpu_buffer)
       {
 
-         ASSERT(startcontext.m_callbackImage32CpuBuffer);
-         ASSERT(!startcontext.m_rectanglePlacement.is_empty());
+         if (startcontext.m_callbackImage32CpuBuffer
+            && !startcontext.m_rectanglePlacement.is_empty())
+         {
 
-         create_offscreen_buffer(startcontext.m_rectanglePlacement.size());
+            ASSERT(startcontext.m_callbackImage32CpuBuffer);
+            ASSERT(!startcontext.m_rectanglePlacement.is_empty());
+
+            create_offscreen_buffer(startcontext.m_rectanglePlacement.size());
+
+         }
 
       }
       else

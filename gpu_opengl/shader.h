@@ -27,6 +27,7 @@ namespace gpu_opengl
 
 
       void bind() override;
+      void unbind() override;
       
       //virtual void initialize_shader(
       //   ::gpu::context* pgpucontext,

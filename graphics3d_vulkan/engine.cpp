@@ -43,10 +43,10 @@ namespace graphics3d_vulkan
    }
 
 
-   void engine::start_engine(const ::int_rectangle& rectanglePlacement)
+   void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::graphics3d::engine::start_engine(rectanglePlacement);
+      ::graphics3d::engine::defer_update_engine(rectanglePlacement);
 
 //      __construct_new(m_prenderer);
 //
@@ -137,8 +137,14 @@ namespace graphics3d_vulkan
 
    //}
 
-   ////void engine::on_render_frame()
-   ////{
+   void engine::on_render_frame()
+   {
+
+      m_pcamera->m_matrixProjection[1][1] *= -1.0f;
+
+      graphics3d::engine::on_render_frame();
+
+   }
 
    ////   ::cast < renderer > prenderer = m_prenderer;
 

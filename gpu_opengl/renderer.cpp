@@ -67,28 +67,118 @@ namespace gpu_opengl
    ::pointer < ::gpu::frame > renderer::beginFrame()
    {
 
+      //glEnable(GL_DEPTH_TEST);
+      //glDepthMask(GL_TRUE);
+      //glDisable(GL_BLEND);
+      glDepthFunc(GL_LESS);
+
+      //glClear(GL_DEPTH_BUFFER_BIT);
+
+
+
+
+
+      //glPushMatrix();
+      //glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+
+
+
+
+
       //auto rectangle = m_pgpucontext->m_pimpact->host_rectangle();
 
-      //auto sizeHost = m_pgpucontext->m_pimpact->top_level()->raw_rectangle().size();
+      ::cast < context > pcontext = m_pgpucontext;
 
-      auto sizeHost = m_pgpucontext->size();
+      auto sizeHost = pcontext->m_pengine->m_pimpact->top_level()->raw_rectangle().size();
+
+      //auto sizeHost = m_pgpucontext->size();
 
       auto r = this->rectangle();
 
-      glPushMatrix();
-      glPushAttrib(GL_ALL_ATTRIB_BITS);
+      //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      //glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
+      //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+      //glBlendFunc(GL_ZERO, GL_SRC_ALPHA);
+      //glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+      // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+      //glEnable(GL_BLEND);
 
-      glViewport(r.left(), sizeHost.cy() - r.height() - r.top(), r.width(), r.height());
+
+      int left;
+
+      int top;
+
+      int width;
+
+      int height;
+
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      {
+
+         left = 0;
+
+         top = 0;
+
+         width = r.width();
+
+         height = r.height();
+
+         //glViewport(left, top, width, height);
+
+         m_pgpucontext->clear(::color::transparent);
+
+      }
+      else
+      {
+
+         left = r.left();
+
+         top = sizeHost.cy() - r.height() - r.top();
+         
+         width = r.width();
+
+         height = r.height();
+
+         //glScissor(left, top, width, height);
+         //glEnable(GL_SCISSOR_TEST);
+         //glViewport(left, top, width, height);
+
+         //glOrtho(0.0f, width, height, 0, -1.0f, 1.0f);  // Flip Y
+
+         //m_pgpucontext->clear(color::transparent);
+
+         //glMatrixMode(GL_MODELVIEW);
+         //glMatrixMode(GL_PROJECTION);
+         //glLoadIdentity();
+
+         //glOrtho(0.0f, width, 0, height, -1.0f, 1.0f);  // Flip Y
+
+      }
+
+      //glScissor(left, top, width, height);
+      //glEnable(GL_SCISSOR_TEST);
+
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
 
       glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
 
-      //glOrtho(0.0f, rectangleW, 0, rectangleH, -1.0f, 1.0f);  // Flip Y
-
-      glEnable(GL_DEPTH_TEST);
 
 
-      glDepthFunc(GL_LESS);
+      //if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      //{
+
+      ////   glOrtho(0.0f, r.width(), 0, r.height(), -1.0f, 1.0f);  // Flip Y
+
+      //}
+      //else
+      //{
+
+       //glOrtho(0.0f, r.width()/3, r.height()/3, 0, -1.0f, 1.0f);  // Flip Y
+
+      //}
 
 
       //// Frame Logic
@@ -188,8 +278,15 @@ namespace gpu_opengl
 
 //            glDepthFunc(GL_LESS);
 
-      glPopAttrib();
-      glPopMatrix();
+      //glPopAttrib();
+      //glPopMatrix();
+
+
+      //glDisable(GL_DEPTH_TEST);
+      //glDepthMask(GL_FALSE);
+      //glEnable(GL_BLEND);
+      //glDisable(GL_SCISSOR_TEST);
+
 
       //glFlush();
 
