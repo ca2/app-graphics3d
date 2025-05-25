@@ -140,8 +140,6 @@ namespace graphics3d_vulkan
    void engine::on_render_frame()
    {
 
-      m_pcamera->m_matrixProjection[1][1] *= -1.0f;
-
       graphics3d::engine::on_render_frame();
 
    }

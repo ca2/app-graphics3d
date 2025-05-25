@@ -60,7 +60,10 @@ namespace graphics3d_vulkan {
     //    projectionMatrix[3][2] = -fNear / (fFar - fNear);
     //}
     //// This is the method being used below as opposed to ortho ^
-    //void camera::setPerspectiveProjection(float fovy, float aspect, float fNear, float fFar) {
+   //void camera::setPerspectiveProjection(float fovy, float aspect, float fNear, float fFar) {
+   //   m_matrixProjection = ::glm::perspectiveFov(fovy, aspect, fNear, fFar);
+
+   //}
     //    assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
     //    const float tanHalfFovy = tan(fovy / 2.f);
     //    projectionMatrix = glm::mat4{ 0.0f };
