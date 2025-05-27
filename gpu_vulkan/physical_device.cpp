@@ -10,12 +10,12 @@ namespace gpu_vulkan
 
    physical_device::physical_device()
    {
-
+      
+      m_vksurfacekhr = nullptr;
       m_physicaldevice = VK_NULL_HANDLE;
       m_physicaldeviceproperties = {};
       m_physicaldevicefeatures = {};
       m_physicaldevicememoryproperties = {};
-      m_vksurfacekhr = nullptr;
 
    }
 
@@ -127,92 +127,6 @@ namespace gpu_vulkan
    }
 
 
-   vulkan::QueueFamilyIndices physical_device::findQueueFamilies()
-   {
-
-      vulkan::QueueFamilyIndices indices;
-
-      uint32_t queueFamilyCount = 0;
-      vkGetPhysicalDeviceQueueFamilyProperties(m_physicaldevice, &queueFamilyCount, nullptr);
-
-      ::array<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-      vkGetPhysicalDeviceQueueFamilyProperties(m_physicaldevice, &queueFamilyCount, queueFamilies.data());
-
-      int i = 0;
-      for (const auto & queueFamily : queueFamilies)
-      {
-         if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-         {
-            indices.graphicsFamily = i;
-            indices.graphicsFamilyHasValue = true;
-         }
-         if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
-         {
-            indices.computeFamily = i;
-            indices.computeFamilyHasValue = true;
-         }
-         if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT)
-         {
-            indices.transferFamily = i;
-            indices.transferFamilyHasValue = true;
-         }
-         if (m_vksurfacekhr)
-         {
-            VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(m_physicaldevice, i, m_vksurfacekhr, &presentSupport);
-            if (queueFamily.queueCount > 0 && presentSupport)
-            {
-               indices.presentFamily = i;
-               indices.presentFamilyHasValue = true;
-            }
-         }
-         //if (indices.isComplete()) {
-           // break;
-         //}
-
-         i++;
-      }
-
-      return indices;
-
-   }
-
-
-   SwapChainSupportDetails physical_device::querySwapChainSupport()
-   {
-
-      SwapChainSupportDetails details{};
-
-      if (m_vksurfacekhr)
-      {
-
-         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_physicaldevice, m_vksurfacekhr, &details.capabilities);
-
-         uint32_t formatCount;
-         vkGetPhysicalDeviceSurfaceFormatsKHR(m_physicaldevice, m_vksurfacekhr, &formatCount, nullptr);
-
-         if (formatCount != 0) {
-            details.formats.resize(formatCount);
-            vkGetPhysicalDeviceSurfaceFormatsKHR(m_physicaldevice, m_vksurfacekhr, &formatCount, details.formats.data());
-         }
-
-         uint32_t presentModeCount;
-         vkGetPhysicalDeviceSurfacePresentModesKHR(m_physicaldevice, m_vksurfacekhr, &presentModeCount, nullptr);
-
-         if (presentModeCount != 0) {
-            details.presentModes.resize(presentModeCount);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(
-               m_physicaldevice,
-               m_vksurfacekhr,
-               &presentModeCount,
-               details.presentModes.data());
-         }
-
-      }
-
-      return details;
-
-   }
 
 
    VkFormat physical_device::findSupportedFormat(

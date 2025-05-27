@@ -23,23 +23,23 @@ namespace gpu_vulkan
 
 #ifdef WINDOWS_DESKTOP
 
-   ::pointer <::gpu::context > allocate_system_context(::particle * pparticle);
+   ::pointer <::gpu::context > allocate_system_context(::particle* pparticle);
 
 #elif defined(__APPLE__)
 
 #if 1
 
-   ::pointer <::gpu::context > allocate_fbo_context(::particle * pparticle);
+   ::pointer <::gpu::context > allocate_fbo_context(::particle* pparticle);
 
 #else
 
-   ::pointer <::gpu::context > allocate_cgl_context(::particle * pparticle);
+   ::pointer <::gpu::context > allocate_cgl_context(::particle* pparticle);
 
 #endif
 
 #else
 
-   ::pointer <::gpu::context > allocate_egl_context(::particle * pparticle);
+   ::pointer <::gpu::context > allocate_egl_context(::particle* pparticle);
 
    //::pointer <::gpu::context > allocate_glx_context(::particle * pparticle);
 
@@ -98,48 +98,12 @@ namespace gpu_vulkan
 #endif // WINDOWS_DESKTOP
 
 
-   void approach::initialize(::particle * pparticle)
+   void approach::initialize(::particle* pparticle)
    {
 
       //::e_status estatus =
-      
+
       ::object::initialize(pparticle);
-
-      //if (!estatus)
-      //{
-
-      //   return estatus;
-
-      //}
-
-#ifdef WINDOWS_DESKTOP
-
-      if (!m_atomClass)
-      {
-
-         WNDCLASSW wndclass = {};
-
-         wndclass.style = CS_OWNDC;
-         wndclass.lpfnWndProc = &Draw2VulkanWndProc;
-         wndclass.hInstance = ::GetModuleHandleW(L"gpu_vulkan.dll");
-         wndclass.lpszClassName = L"draw2d_vulkan_offscreen_buffer_window";
-
-         m_atomClass = RegisterClassW(&wndclass);
-
-         if (!m_atomClass)
-         {
-
-            throw ::exception(error_failed);
-
-         }
-
-      }
-
-#endif
-
-      initialize_gpu_approach();
-
-      //return estatus;
 
    }
 
@@ -147,144 +111,146 @@ namespace gpu_vulkan
    void approach::initialize_gpu_approach()
    {
 
-         // Instead of checking for the command line switch, validation can be forced via a define
+      ::gpu::approach::initialize_gpu_approach();
+
+      // Instead of checking for the command line switch, validation can be forced via a define
 #if defined(_VALIDATION)
-         this->settings.validation = true;
+      this->settings.validation = true;
 #endif
 
-         // Create the instance
-         VkResult result = createInstance();
-         if (result != VK_SUCCESS) {
-            auto str = "Could not create Vulkan instance : \n" + errorString(result);
-            throw ::exception(error_failed);
-         }
+      // Create the instance
+      VkResult result = createInstance();
+      if (result != VK_SUCCESS) {
+         auto str = "Could not create Vulkan instance : \n" + errorString(result);
+         throw ::exception(error_failed);
+      }
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-         vks::android::loadVulkanFunctions(instance);
+      vks::android::loadVulkanFunctions(instance);
 #endif
 
-         // If requested, we enable the default validation layers for debugging
-         if (settings.validation)
-         {
-            
-            debug::setupDebugging(m_vkinstance);
+      // If requested, we enable the default validation layers for debugging
+      if (settings.validation)
+      {
 
-         }
+         debug::setupDebugging(m_vkinstance);
 
-         // Physical device
-         uint32_t gpuCount = 0;
-         // Get number of available physical devices
-         VK_CHECK_RESULT(vkEnumeratePhysicalDevices(m_vkinstance, &gpuCount, nullptr));
-         if (gpuCount == 0) {
-            exitFatal("No device with Vulkan support found", -1);
-            throw ::exception(error_failed);
-         }
-         // Enumerate devices
-         ::array<VkPhysicalDevice> physicalDevices;
-         
-         physicalDevices.set_size(gpuCount);
-         result = vkEnumeratePhysicalDevices(m_vkinstance, &gpuCount, physicalDevices.data());
-         if (result != VK_SUCCESS) {
-            exitFatal("Could not enumerate physical devices : \n" + errorString(result), result);
-            throw ::exception(error_failed);
-         }
+      }
 
-         // GPU selection
+      // Physical device
+      uint32_t gpuCount = 0;
+      // Get number of available physical devices
+      VK_CHECK_RESULT(vkEnumeratePhysicalDevices(m_vkinstance, &gpuCount, nullptr));
+      if (gpuCount == 0) {
+         exitFatal("No device with Vulkan support found", -1);
+         throw ::exception(error_failed);
+      }
+      // Enumerate devices
+      ::array<VkPhysicalDevice> physicalDevices;
 
-         // Select physical device to be used for the Vulkan example
-         // Defaults to the first device unless specified by command line
-         uint32_t selectedDevice = 0;
+      physicalDevices.set_size(gpuCount);
+      result = vkEnumeratePhysicalDevices(m_vkinstance, &gpuCount, physicalDevices.data());
+      if (result != VK_SUCCESS) {
+         exitFatal("Could not enumerate physical devices : \n" + errorString(result), result);
+         throw ::exception(error_failed);
+      }
 
-//#if !defined(VK_USE_PLATFORM_ANDROID_KHR)
-//         // GPU selection via command line argument
-//         if (commandLineParser.isSet("gpuselection")) {
-//            uint32_t index = commandLineParser.getValueAsInt("gpuselection", 0);
-//            if (index > gpuCount - 1) {
-//               std::cerr << "Selected device index " << index << " is out of range, reverting to device 0 (use -listgpus to show available Vulkan devices)" << "\n";
-//            }
-//            else {
-//               selectedDevice = index;
-//            }
-//         }
-//         if (commandLineParser.isSet("gpulist")) {
-//            std::cout << "Available Vulkan devices" << "\n";
-//            for (uint32_t i = 0; i < gpuCount; i++) {
-//               VkPhysicalDeviceProperties deviceProperties;
-//               vkGetPhysicalDeviceProperties(physicalDevices[i], &deviceProperties);
-//               std::cout << "Device [" << i << "] : " << deviceProperties.deviceName << std::endl;
-//               std::cout << " Type: " << physicalDeviceTypeString(deviceProperties.deviceType) << "\n";
-//               std::cout << " API: " << (deviceProperties.apiVersion >> 22) << "." << ((deviceProperties.apiVersion >> 12) & 0x3ff) << "." << (deviceProperties.apiVersion & 0xfff) << "\n";
-//            }
-//         }
-//#endif
+      // GPU selection
 
-         auto physicaldevice = physicalDevices[selectedDevice];
+      // Select physical device to be used for the Vulkan example
+      // Defaults to the first device unless specified by command line
+      uint32_t selectedDevice = 0;
 
-         auto pphysicaldevice = __create_new < physical_device >();
+      //#if !defined(VK_USE_PLATFORM_ANDROID_KHR)
+      //         // GPU selection via command line argument
+      //         if (commandLineParser.isSet("gpuselection")) {
+      //            uint32_t index = commandLineParser.getValueAsInt("gpuselection", 0);
+      //            if (index > gpuCount - 1) {
+      //               std::cerr << "Selected device index " << index << " is out of range, reverting to device 0 (use -listgpus to show available Vulkan devices)" << "\n";
+      //            }
+      //            else {
+      //               selectedDevice = index;
+      //            }
+      //         }
+      //         if (commandLineParser.isSet("gpulist")) {
+      //            std::cout << "Available Vulkan devices" << "\n";
+      //            for (uint32_t i = 0; i < gpuCount; i++) {
+      //               VkPhysicalDeviceProperties deviceProperties;
+      //               vkGetPhysicalDeviceProperties(physicalDevices[i], &deviceProperties);
+      //               std::cout << "Device [" << i << "] : " << deviceProperties.deviceName << std::endl;
+      //               std::cout << " Type: " << physicalDeviceTypeString(deviceProperties.deviceType) << "\n";
+      //               std::cout << " API: " << (deviceProperties.apiVersion >> 22) << "." << ((deviceProperties.apiVersion >> 12) & 0x3ff) << "." << (deviceProperties.apiVersion & 0xfff) << "\n";
+      //            }
+      //         }
+      //#endif
 
-         pphysicaldevice->_initialize_physical_device(this, physicaldevice);
+      auto physicaldevice = physicalDevices[selectedDevice];
 
-         m_pphysicaldevice = pphysicaldevice;
+      auto pphysicaldevice = __create_new < physical_device >();
 
-         //m_physicaldevice = physicalDevices[selectedDevice];
+      pphysicaldevice->_initialize_physical_device(this, physicaldevice);
 
-         //// Store properties (including limits), features and memory properties of the physical device (so that examples can check against them)
-         //vkGetPhysicalDeviceProperties(m_physicaldevice, &m_physicaldeviceproperties);
-         //vkGetPhysicalDeviceFeatures(m_physicaldevice, &m_physicaldevicefeatures);
-         //vkGetPhysicalDeviceMemoryProperties(m_physicaldevice, &m_physicaldevicememoryproperties);
+      m_pphysicaldevice = pphysicaldevice;
 
-         // Derived examples can override this to set actual features (based on above readings) to enable for logical device creation
-         getEnabledFeatures();
+      //m_physicaldevice = physicalDevices[selectedDevice];
 
-         //// Vulkan device creation
-         //// This is handled by a separate class that gets a logical device representation
-         //// and encapsulates functions related to a device
-         //m_pgpudevice = new vks::VulkanDevice(physicalDevice);
+      //// Store properties (including limits), features and memory properties of the physical device (so that examples can check against them)
+      //vkGetPhysicalDeviceProperties(m_physicaldevice, &m_physicaldeviceproperties);
+      //vkGetPhysicalDeviceFeatures(m_physicaldevice, &m_physicaldevicefeatures);
+      //vkGetPhysicalDeviceMemoryProperties(m_physicaldevice, &m_physicaldevicememoryproperties);
 
-         //// Derived examples can enable extensions based on the list of supported extensions read from the physical device
-         //getEnabledExtensions();
+      // Derived examples can override this to set actual features (based on above readings) to enable for logical device creation
+      getEnabledFeatures();
 
-         //result = vulkanDevice->createLogicalDevice(enabledFeatures, enabledDeviceExtensions, deviceCreatepNextChain);
-         //if (result != VK_SUCCESS) {
-         //   exitFatal("Could not create Vulkan device: \n" + errorString(result), result);
-         //   throw ::exception(error_failed);
-         //}
-         //device = vulkanDevice->logicalDevice;
+      //// Vulkan device creation
+      //// This is handled by a separate class that gets a logical device representation
+      //// and encapsulates functions related to a device
+      //m_pgpudevice = new vks::VulkanDevice(physicalDevice);
 
-         //// Get a graphics queue from the device
-         //vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.graphics, 0, &queue);
+      //// Derived examples can enable extensions based on the list of supported extensions read from the physical device
+      //getEnabledExtensions();
 
-         //// Find a suitable depth and/or stencil format
-         //VkBool32 validFormat{ false };
-         //// Samples that make use of stencil will require a depth + stencil format, so we select from a different list
-         //if (requiresStencil) {
-         //   validFormat = getSupportedDepthStencilFormat(physicalDevice, &depthFormat);
-         //}
-         //else {
-         //   validFormat = getSupportedDepthFormat(physicalDevice, &depthFormat);
-         //}
-         //assert(validFormat);
+      //result = vulkanDevice->createLogicalDevice(enabledFeatures, enabledDeviceExtensions, deviceCreatepNextChain);
+      //if (result != VK_SUCCESS) {
+      //   exitFatal("Could not create Vulkan device: \n" + errorString(result), result);
+      //   throw ::exception(error_failed);
+      //}
+      //device = vulkanDevice->logicalDevice;
 
-         //swapChain.setContext(instance, physicalDevice, device);
+      //// Get a graphics queue from the device
+      //vkGetDeviceQueue(device, vulkanDevice->queueFamilyIndices.graphics, 0, &queue);
 
-         //// Create synchronization objects
-         //VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::semaphoreCreateInfo();
-         //// Create a semaphore used to synchronize image presentation
-         //// Ensures that the image is displayed before we start submitting new commands to the queue
-         //VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.presentComplete));
-         //// Create a semaphore used to synchronize command submission
-         //// Ensures that the image is not presented until all commands have been submitted and executed
-         //VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.renderComplete));
+      //// Find a suitable depth and/or stencil format
+      //VkBool32 validFormat{ false };
+      //// Samples that make use of stencil will require a depth + stencil format, so we select from a different list
+      //if (requiresStencil) {
+      //   validFormat = getSupportedDepthStencilFormat(physicalDevice, &depthFormat);
+      //}
+      //else {
+      //   validFormat = getSupportedDepthFormat(physicalDevice, &depthFormat);
+      //}
+      //assert(validFormat);
 
-         //// Set up submit info structure
-         //// Semaphores will stay the same during application lifetime
-         //// Command buffer submission info is set by each example
-         //submitInfo = vks::initializers::submitInfo();
-         //submitInfo.pWaitDstStageMask = &submitPipelineStages;
-         //submitInfo.waitSemaphoreCount = 1;
-         //submitInfo.pWaitSemaphores = &semaphores.presentComplete;
-         //submitInfo.signalSemaphoreCount = 1;
-         //submitInfo.pSignalSemaphores = &semaphores.renderComplete;
+      //swapChain.setContext(instance, physicalDevice, device);
+
+      //// Create synchronization objects
+      //VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::semaphoreCreateInfo();
+      //// Create a semaphore used to synchronize image presentation
+      //// Ensures that the image is displayed before we start submitting new commands to the queue
+      //VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.presentComplete));
+      //// Create a semaphore used to synchronize command submission
+      //// Ensures that the image is not presented until all commands have been submitted and executed
+      //VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.renderComplete));
+
+      //// Set up submit info structure
+      //// Semaphores will stay the same during application lifetime
+      //// Command buffer submission info is set by each example
+      //submitInfo = vks::initializers::submitInfo();
+      //submitInfo.pWaitDstStageMask = &submitPipelineStages;
+      //submitInfo.waitSemaphoreCount = 1;
+      //submitInfo.pWaitSemaphores = &semaphores.presentComplete;
+      //submitInfo.signalSemaphoreCount = 1;
+      //submitInfo.pSignalSemaphores = &semaphores.renderComplete;
 
    }
 
@@ -299,9 +265,9 @@ namespace gpu_vulkan
 
    VkResult approach::createInstance()
    {
-      
-      ::array<const char *> instanceExtensions;
-      
+
+      ::array<const char*> instanceExtensions;
+
       if (m_papplication->m_bUseDraw2dProtoWindow)
       {
 
@@ -342,7 +308,7 @@ namespace gpu_vulkan
          ::array<VkExtensionProperties> extensions(extCount);
          if (vkEnumerateInstanceExtensionProperties(nullptr, &extCount, extensions.data()) == VK_SUCCESS)
          {
-            for (VkExtensionProperties & extension : extensions)
+            for (VkExtensionProperties& extension : extensions)
             {
                m_straSupportedInstanceExtensions.add(extension.extensionName);
             }
@@ -361,15 +327,15 @@ namespace gpu_vulkan
       // Enabled requested instance extensions
       //if (m_pszaEnabledDeviceExtensions.has_element())
       //{
-         for (const char * enabledExtension : m_pszaEnabledDeviceExtensions)
+      for (const char* enabledExtension : m_pszaEnabledDeviceExtensions)
+      {
+         // Output message if requested extension is not available
+         if (!m_straSupportedInstanceExtensions.contains(enabledExtension))
          {
-            // Output message if requested extension is not available
-            if (!m_straSupportedInstanceExtensions.contains(enabledExtension))
-            {
-               warning() << "Enabled instance extension \"" << enabledExtension << "\" is not present at instance level";
-            }
-            instanceExtensions.add(enabledExtension);
+            warning() << "Enabled instance extension \"" << enabledExtension << "\" is not present at instance level";
          }
+         instanceExtensions.add(enabledExtension);
+      }
       //}
 
       VkApplicationInfo appInfo{};
@@ -383,7 +349,7 @@ namespace gpu_vulkan
       instanceCreateInfo.pApplicationInfo = &appInfo;
 
       VkDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCI{};
-      if (settings.validation) 
+      if (settings.validation)
       {
          debug::setupDebugingMessengerCreateInfo(debugUtilsMessengerCI);
          debugUtilsMessengerCI.pNext = instanceCreateInfo.pNext;
@@ -412,7 +378,7 @@ namespace gpu_vulkan
 
       // The VK_LAYER_KHRONOS_validation contains all current validation functionality.
       // Note that on Android this layer requires at least NDK r20
-      const char * validationLayerName = "VK_LAYER_KHRONOS_validation";
+      const char* validationLayerName = "VK_LAYER_KHRONOS_validation";
       if (settings.validation) {
          // Check if this layer is available at instance level
          uint32_t instanceLayerCount;
@@ -420,7 +386,7 @@ namespace gpu_vulkan
          ::array<VkLayerProperties> instanceLayerProperties(instanceLayerCount);
          vkEnumerateInstanceLayerProperties(&instanceLayerCount, instanceLayerProperties.data());
          bool validationLayerPresent = false;
-         for (VkLayerProperties & layer : instanceLayerProperties) {
+         for (VkLayerProperties& layer : instanceLayerProperties) {
             if (strcmp(layer.layerName, validationLayerName) == 0) {
                validationLayerPresent = true;
                break;
@@ -439,7 +405,7 @@ namespace gpu_vulkan
       // Layer settings are typically used to activate specific features of a layer, such as the Validation Layer's
       // printf feature, or to configure specific capabilities of drivers such as MoltenVK on macOS and/or iOS.
       VkLayerSettingsCreateInfoEXT layerSettingsCreateInfo{ VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT };
-      if (m_layersettingsEnabled.has_element()) 
+      if (m_layersettingsEnabled.has_element())
       {
          layerSettingsCreateInfo.settingCount = static_cast<uint32_t>(m_layersettingsEnabled.size());
          layerSettingsCreateInfo.pSettings = m_layersettingsEnabled.data();
@@ -450,7 +416,7 @@ namespace gpu_vulkan
       VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &m_vkinstance);
 
       // If the debug utils extension is present we set up debug functions, so samples can label objects for debugging
-      if (m_straSupportedInstanceExtensions.contains(VK_EXT_DEBUG_UTILS_EXTENSION_NAME)) 
+      if (m_straSupportedInstanceExtensions.contains(VK_EXT_DEBUG_UTILS_EXTENSION_NAME))
       {
          debugutils::setup(m_vkinstance);
       }
@@ -461,64 +427,64 @@ namespace gpu_vulkan
 
 
 
-//   ::pointer < ::gpu::context > approach::_create_context(const ::gpu::start_context_t & startcontext)
-//   {
-//
-//      ::pointer < ::gpu_vulkan::context > pgpucontext;
-//
-//#ifdef WINDOWS_DESKTOP
-//
-//      pgpucontext = allocate_system_context(pparticle);
-//
-//#elif defined(__APPLE__)
-//      
-//#if 1
-//
-//      pgpucontext = allocate_fbo_context(pparticle);
-//      
-//#else
-//      
-//      pgpucontext = allocate_cgl_context(pparticle);
-//      
-//#endif
-//
-//#elif defined(__ANDROID__)
-//
-//      pgpucontext = allocate_egl_context(pparticle);
-//
-//#else
-//
-//      string strWaylandDisplay(getenv("WAYLAND_DISPLAY"));
-//
-//      if(strWaylandDisplay.has_character())
-//      {
-//
-//         pgpucontext = allocate_egl_context(pparticle);
-//
-//      }
-//      // else
-//      // {
-//      //
-//      //    pgpucontext = allocate_glx_context(pparticle);
-//      //
-//      // }
-//
-//#endif
-//
-//      if(!pgpucontext)
-//      {
-//
-//         return nullptr;
-//
-//      }
-//
-//      pgpucontext->m_pphysicaldevice = m_pphysicaldevice;
-//
-//      pgpucontext->initialize_gpu_context(this, eoutput, pwindow, rectanglePlacement);
-//
-//      return pgpucontext;
-//
-//   }
+   //   ::pointer < ::gpu::context > approach::_create_context(const ::gpu::start_context_t & startcontext)
+   //   {
+   //
+   //      ::pointer < ::gpu_vulkan::context > pgpucontext;
+   //
+   //#ifdef WINDOWS_DESKTOP
+   //
+   //      pgpucontext = allocate_system_context(pparticle);
+   //
+   //#elif defined(__APPLE__)
+   //      
+   //#if 1
+   //
+   //      pgpucontext = allocate_fbo_context(pparticle);
+   //      
+   //#else
+   //      
+   //      pgpucontext = allocate_cgl_context(pparticle);
+   //      
+   //#endif
+   //
+   //#elif defined(__ANDROID__)
+   //
+   //      pgpucontext = allocate_egl_context(pparticle);
+   //
+   //#else
+   //
+   //      string strWaylandDisplay(getenv("WAYLAND_DISPLAY"));
+   //
+   //      if(strWaylandDisplay.has_character())
+   //      {
+   //
+   //         pgpucontext = allocate_egl_context(pparticle);
+   //
+   //      }
+   //      // else
+   //      // {
+   //      //
+   //      //    pgpucontext = allocate_glx_context(pparticle);
+   //      //
+   //      // }
+   //
+   //#endif
+   //
+   //      if(!pgpucontext)
+   //      {
+   //
+   //         return nullptr;
+   //
+   //      }
+   //
+   //      pgpucontext->m_pphysicaldevice = m_pphysicaldevice;
+   //
+   //      pgpucontext->initialize_gpu_context(this, eoutput, pwindow, rectanglePlacement);
+   //
+   //      return pgpucontext;
+   //
+   //   }
 
 
    void approach::defer_init_gpu_library()
@@ -539,35 +505,35 @@ namespace gpu_vulkan
 
 #endif
 
-//      if (!m_bGlewInit)
-//      {
-//         
-//#if !defined(__APPLE__) && !defined(__ANDROID__)
-//
-//         glewExperimental = GL_TRUE;
-//
-//         GLenum err = glewInit();
-//
-//         if (err != GLEW_OK)
-//         {
-//
-//            const ::ansi_character * pszErrorString = (const char *) glewGetErrorString(err);
-//
-//            //throw ::exception(error_resource);
-//            // Problem: glewInit failed, something is seriously wrong.
-//            informationf("glewInit failed: %s (%d)\n", pszErrorString, err);
-//
-//            throw ::exception(error_failed);
-//
-//         }
-//         
-//#endif
-//
-//         m_bGlewInit = true;
+      //      if (!m_bGlewInit)
+      //      {
+      //         
+      //#if !defined(__APPLE__) && !defined(__ANDROID__)
+      //
+      //         glewExperimental = GL_TRUE;
+      //
+      //         GLenum err = glewInit();
+      //
+      //         if (err != GLEW_OK)
+      //         {
+      //
+      //            const ::ansi_character * pszErrorString = (const char *) glewGetErrorString(err);
+      //
+      //            //throw ::exception(error_resource);
+      //            // Problem: glewInit failed, something is seriously wrong.
+      //            informationf("glewInit failed: %s (%d)\n", pszErrorString, err);
+      //
+      //            throw ::exception(error_failed);
+      //
+      //         }
+      //         
+      //#endif
+      //
+      //         m_bGlewInit = true;
 
-//      }
+      //      }
 
-      //return ::success;
+            //return ::success;
 
    }
 
@@ -596,12 +562,12 @@ namespace gpu_vulkan
    int approach::fread(void* data, int c, int s, ::file::file* pfile)
    {
 
-      return (int) (pfile->read(data,s * c) / c);
+      return (int)(pfile->read(data, s * c) / c);
 
    }
 
 
-   ::gpu::payload approach::load_dds(const ::scoped_string & scopedstrImagePath) 
+   ::gpu::payload approach::load_dds(const ::scoped_string& scopedstrImagePath)
    {
 
       auto fp = file()->get_reader(scopedstrImagePath);
@@ -628,18 +594,18 @@ namespace gpu_vulkan
       /* get the surface desc */
       fread(&header, 124, 1, fp);
 
-      unsigned int height = *(unsigned int *)&(header[8]);
-      unsigned int width = *(unsigned int *)&(header[12]);
-      unsigned int linearSize = *(unsigned int *)&(header[16]);
-      unsigned int mipMapCount = *(unsigned int *)&(header[24]);
-      unsigned int fourCC = *(unsigned int *)&(header[80]);
+      unsigned int height = *(unsigned int*)&(header[8]);
+      unsigned int width = *(unsigned int*)&(header[12]);
+      unsigned int linearSize = *(unsigned int*)&(header[16]);
+      unsigned int mipMapCount = *(unsigned int*)&(header[24]);
+      unsigned int fourCC = *(unsigned int*)&(header[80]);
 
 
-      unsigned char * buffer;
+      unsigned char* buffer;
       unsigned int bufsize;
       /* how big is it going to be including all mipmaps? */
       bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
-      buffer = (unsigned char *)malloc(bufsize * sizeof(unsigned char));
+      buffer = (unsigned char*)malloc(bufsize * sizeof(unsigned char));
       fread(buffer, 1, bufsize, fp);
       /* close the file pointer */
       //fclose(fp);
@@ -707,18 +673,18 @@ namespace gpu_vulkan
 
 
 
-//   set_descriptor_layout* approach::get_set_descriptor_layout(::gpu::context* pgpucontext)
-  // {
+   //   set_descriptor_layout* approach::get_set_descriptor_layout(::gpu::context* pgpucontext)
+     // {
 
-    //  if (!m_psetdescriptorlayoutGlobal)
-      //{
+       //  if (!m_psetdescriptorlayoutGlobal)
+         //{
 
+
+         //}
+
+         //return m_psetdescriptorlayoutGlobal;
 
       //}
-
-      //return m_psetdescriptorlayoutGlobal;
-
-   //}
 
 
 

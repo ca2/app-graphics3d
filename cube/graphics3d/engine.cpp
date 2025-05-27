@@ -300,14 +300,14 @@ namespace graphics3d
    }
 
 
-   void engine::defer_start(const ::int_rectangle& rectanglePlacement)
+   void engine::defer_start(::windowing::window * pwindow, const ::int_rectangle& rectanglePlacement)
    {
 
       auto papp = get_app();
 
       auto pgpu = papp->get_gpu();
 
-      ::cast < ::gpu::device > pgpudevice = pgpu->get_device();
+      ::cast < ::gpu::device > pgpudevice = pgpu->get_device(pwindow);
 
       ::pointer < ::gpu::context > pgpucontext;
 

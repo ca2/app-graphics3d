@@ -15,7 +15,7 @@
 #include "acme/filesystem/filesystem/file_context.h"
 #include "aura/platform/system.h"
 #include "aura/graphics/image/context.h"
-//#include "_defer.h"
+#include "aura/windowing/window.h"
 
 
 namespace gpu
@@ -36,10 +36,14 @@ namespace gpu
    }
 
 
-   void device::initialize_gpu_device(::gpu::approach  * pgpuapproach, bool bAddSwapChainSupport)
+   void device::initialize_gpu_device(::gpu::approach  * pgpuapproach, ::windowing::window* pwindow, bool bAddSwapChainSupport)
    {
 
       m_pgpuapproach = pgpuapproach;
+
+      m_pwindow = pwindow;
+
+
       //::e_status estatus = 
       //::particle::initialize(pparticle);
 

@@ -6,6 +6,7 @@ namespace gpu_vulkan
 {
 
 
+
    struct SwapChainSupportDetails
    {
 
@@ -14,7 +15,6 @@ namespace gpu_vulkan
       ::array<VkPresentModeKHR> presentModes;
 
    };
-
 
 
 
@@ -50,8 +50,8 @@ namespace gpu_vulkan
       physical_device();
       ~physical_device() override;
 
-      VkSurfaceKHR surface() { return m_vksurfacekhr; }
 
+      VkSurfaceKHR surface() { return m_vksurfacekhr; }
 
       VkResult createWindowSurface(::windowing::window* pwindow);
 
@@ -64,12 +64,10 @@ namespace gpu_vulkan
 
       uint32_t getQueueFamilyIndex(VkQueueFlags queueFlags) const;
 
-      //SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(); }
-      //vulkan::QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(); }
-
-
-      vulkan::QueueFamilyIndices findQueueFamilies();
       SwapChainSupportDetails querySwapChainSupport();
+      vulkan::QueueFamilyIndices findQueueFamilies();
+
+
 
 
    };

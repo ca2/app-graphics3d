@@ -27,6 +27,8 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item < ::gpu_vulkan::object, ::gpu::object >();
 
+   pfactory->add_factory_item < ::gpu_vulkan::device, ::gpu::device >();
+
 }
 
 

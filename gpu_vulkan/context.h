@@ -10,8 +10,6 @@ namespace gpu_vulkan
 {
 
 
-
-
    class CLASS_DECL_GPU_VULKAN context :
       virtual public ::gpu::context
    {
@@ -100,8 +98,6 @@ namespace gpu_vulkan
       ::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
       ::pointer_array<::gpu_vulkan::buffer>							m_uboBuffers;
       ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolGlobal;
-
-
 
       context();
       ~context() override;
@@ -260,7 +256,6 @@ namespace gpu_vulkan
 
 
       void engine_on_frame_context_initialization();
-
 
    };
 

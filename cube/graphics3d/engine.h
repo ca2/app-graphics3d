@@ -62,7 +62,7 @@ namespace graphics3d
 
 		virtual void create_global_ubo(::gpu::context * pgpucontext);
 
-		virtual void defer_start(const ::int_rectangle& rectangle);
+		virtual void defer_start(::windowing::window * pwindow, const ::int_rectangle& rectangle);
 
 		virtual void on_begin_frame();
 

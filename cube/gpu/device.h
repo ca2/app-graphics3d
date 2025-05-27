@@ -25,7 +25,7 @@ namespace gpu
    
 
       ::pointer < ::gpu::approach >          m_pgpuapproach;
-
+      ::pointer < ::windowing::window >      m_pwindow;
       //::int_size                             m_sizeNew;
       //::int_size                             m_size;
       //float                                  m_z;
@@ -63,7 +63,7 @@ namespace gpu
       virtual void unlock_context();
 
 
-      virtual void initialize_gpu_device(::gpu::approach * papproach, bool bAddSwapChainSupport);
+      virtual void initialize_gpu_device(::gpu::approach * papproach, ::windowing::window * pwindow, bool bAddSwapChainSupport);
 
 
       virtual ::pointer < ::gpu::context > allocate_context(::particle* pparticle);

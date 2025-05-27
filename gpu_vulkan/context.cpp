@@ -24,6 +24,8 @@ namespace gpu_vulkan
 
    context::context()
    {
+      
+
       m_vksampler001 = nullptr;
       //m_bOffscreen = true;
       //      m_emode = e_mode_none;
@@ -839,6 +841,8 @@ namespace gpu_vulkan
 
    void context::on_create_context(const ::gpu::start_context_t & startcontext)
    {
+
+      m_itaskGpu = ::current_itask();
 
       m_pgpudevice = startcontext.m_pgpudevice;
 
@@ -2352,8 +2356,7 @@ namespace gpu_vulkan
       return m_descriptorsetsGlobal[prenderer->get_frame_index()];
 
    }
-
-
+      
 
 } // namespace gpu_vulkan
 

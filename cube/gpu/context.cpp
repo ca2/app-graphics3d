@@ -352,6 +352,7 @@ namespace gpu
       _send([this, &startcontext]()
          {
 
+
             initialize_gpu_context(startcontext);
 
             //            run_vulkan_example();

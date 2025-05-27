@@ -318,7 +318,7 @@ namespace cube
 
          }
 
-         m_pengine->defer_start(rectanglePlacement);
+         m_pengine->defer_start(window(), rectanglePlacement);
 
       }
 

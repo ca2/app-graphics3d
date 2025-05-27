@@ -163,13 +163,15 @@ namespace gpu_vulkan
    void renderer::defer_update_render_pass()
    {
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      auto eoutput = m_pgpucontext->m_eoutput;
+
+      if (eoutput == ::gpu::e_output_cpu_buffer)
       {
 
          m_pvkcrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
 
       }
-      else if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
+      else if (eoutput == ::gpu::e_output_swap_chain)
       {
 
          m_pvkcrenderpass = __allocate swap_chain_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
@@ -1072,41 +1074,39 @@ namespace gpu_vulkan
       //      //
       //      //         }
 
-            {
+      //if(1)
+      //      {
 
 
-               VkImageMemoryBarrier barrier =
-               {
-                  .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                  .pNext = nullptr,
-                  .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                  .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-                  .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                  .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                  .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                  .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                  .image = image,
-                  .subresourceRange =
-                     {
-                        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                        .baseMipLevel = 0,
-                        .levelCount = 1,
-                        .baseArrayLayer = 0,
-                        .layerCount = 1,
-                     },
-               };
+      //   VkImageMemoryBarrier barrier = {
+      //       .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      //       .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      //       .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+      //       .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //       .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      //       .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //       .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //       .image = image,
+      //       .subresourceRange = {
+      //           .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //           .baseMipLevel = 0,
+      //           .levelCount = 1,
+      //           .baseArrayLayer = 0,
+      //           .layerCount = 1
+      //       },
+      //   };
 
-               vkCmdPipelineBarrier(
-                  commandBuffer,
-                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                  0,
-                  0, NULL,
-                  0, NULL,
-                  1, &barrier
-               );
+      //   vkCmdPipelineBarrier(
+      //      commandBuffer,
+      //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      //      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+      //      0,
+      //      0, NULL,
+      //      0, NULL,
+      //      1, &barrier
+      //   );
 
-            }
+      //      }
 
       /*   }
          );*/
@@ -1283,7 +1283,7 @@ namespace gpu_vulkan
 
             std::array<VkClearValue, 2> clearValues{};
             //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-            clearValues[0].color = { 0.5f, 0.75f, 1.0f, 1.0f };
+            clearValues[0].color = { 0.f, 0.0f, 0.0f, 0.0f };
             clearValues[1].depthStencil = { 1.0f, 0 };
             renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
             renderPassInfo.pClearValues = clearValues.data();
@@ -1367,7 +1367,7 @@ namespace gpu_vulkan
 
             std::array<VkClearValue, 2> clearValues{};
             //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-            clearValues[0].color = { 0.5f, 0.75f, 1.0f, 1.0f };
+            clearValues[0].color = { 0.0f, 0.0f, 0.0f, 0.0f };
             clearValues[1].depthStencil = { 1.0f, 0 };
             renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
             renderPassInfo.pClearValues = clearValues.data();
@@ -1594,6 +1594,41 @@ namespace gpu_vulkan
 
          set_placement(rectangle);
 
+         if (1)
+         {
+            auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+
+            VkImageMemoryBarrier barrier = {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+                .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .image = image,
+                .subresourceRange = {
+                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                    .baseMipLevel = 0,
+                    .levelCount = 1,
+                    .baseArrayLayer = 0,
+                    .layerCount = 1
+                },
+            };
+
+            vkCmdPipelineBarrier(
+               cmdBuffer,
+               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+               0,
+               0, NULL,
+               0, NULL,
+               1, &barrier
+            );
+            m_pgpucontext->endSingleTimeCommands(cmdBuffer);
+         }
+
+
          if (auto pframe = beginFrame())
          {
 
@@ -1616,11 +1651,44 @@ namespace gpu_vulkan
 
             on_end_render(pframe);
 
-            
-
             endFrame();
 
          }
+
+         if (1)
+         {
+            auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+
+            VkImageMemoryBarrier barrier = {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                .srcAccessMask = VK_ACCESS_SHADER_READ_BIT,
+               .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+               .oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .image = image,
+                .subresourceRange = {
+                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                    .baseMipLevel = 0,
+                    .levelCount = 1,
+                    .baseArrayLayer = 0,
+                    .layerCount = 1
+                },
+            };
+
+            vkCmdPipelineBarrier(
+               cmdBuffer,
+               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+               0,
+               0, NULL,
+               0, NULL,
+               1, &barrier
+            );
+            m_pgpucontext->endSingleTimeCommands(cmdBuffer);
+         }
+
 
       }
 

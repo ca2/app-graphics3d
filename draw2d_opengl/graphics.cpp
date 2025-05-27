@@ -228,7 +228,9 @@ namespace draw2d_opengl
 
          auto pgpu = application()->get_gpu();
 
-         auto pgpudevice = pgpu->get_device();
+         ASSERT(m_puserinteraction);
+
+         auto pgpudevice = pgpu->get_device(m_puserinteraction->window());
 
          m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, m_callbackImage32CpuBuffer, rectanglePlacement);
 
@@ -440,7 +442,7 @@ namespace draw2d_opengl
 
          auto pgpu = application()->get_gpu();
 
-         auto pgpudevice = pgpu->get_device();
+         auto pgpudevice = pgpu->get_device(pwindow);
 
          m_pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
 

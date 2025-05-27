@@ -125,6 +125,9 @@ namespace cube
 
       pfactoryGpu->__øconstruct(this, m_pgpu);
 
+
+      m_pgpu->initialize_gpu_approach();
+
       //if (!estatus)
       //{
 

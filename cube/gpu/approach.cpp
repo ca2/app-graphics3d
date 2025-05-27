@@ -41,15 +41,20 @@ namespace gpu
    void approach::initialize_gpu_approach()
    {
 
-      __øconstruct(m_pgpudevice);
-
-      m_pgpudevice->initialize_gpu_device(this, m_papplication->m_bUseDraw2dProtoWindow);
-
    }
 
 
-   ::gpu::device* approach::get_device()
+   ::gpu::device* approach::get_device(::windowing::window * pwindow)
    {
+
+      if (!m_pgpudevice)
+      {
+
+         __øconstruct(m_pgpudevice);
+
+         m_pgpudevice->initialize_gpu_device(this, pwindow, m_papplication->m_bUseDraw2dProtoWindow);
+
+      }
 
       return m_pgpudevice;
 

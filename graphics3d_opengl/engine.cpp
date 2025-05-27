@@ -179,10 +179,10 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::defer_start(const ::int_rectangle & rectanglePlacement)
+   void engine::defer_start(::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
    {
 
-      ::graphics3d::engine::defer_start(rectanglePlacement);
+      ::graphics3d::engine::defer_start(pwindow, rectanglePlacement);
 
       //auto papp = get_app();
 

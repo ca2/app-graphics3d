@@ -159,7 +159,13 @@ namespace gpu_vulkan
    void swap_chain_render_pass::createRenderPassImpl() 
    {
    
-      auto swapchainSupport = m_pgpucontext->m_pgpudevice->m_pphysicaldevice->querySwapChainSupport();
+      auto pgpucontext = m_pgpucontext;
+
+      auto pgpudevice = pgpucontext->m_pgpudevice;
+
+      auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
+
+      auto swapchainSupport = pphysicaldevice->querySwapChainSupport();
 
       VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapchainSupport.formats);
       VkPresentModeKHR presentMode = chooseSwapPresentMode(swapchainSupport.presentModes);
@@ -278,17 +284,31 @@ namespace gpu_vulkan
       subpass.pColorAttachments = &colorAttachmentRef;
       subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
-      VkSubpassDependency dependency = {};
-      dependency.dstSubpass = 0;
-      dependency.dstAccessMask =
+      VkSubpassDependency dependency[2]{};
+      dependency[0].dstSubpass = 0;
+      dependency[0].dstAccessMask =
          VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      dependency.dstStageMask =
+      dependency[0].dstStageMask =
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-      dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-      dependency.srcAccessMask = 0;
-      dependency.srcStageMask =
+      dependency[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+      dependency[0].srcAccessMask = 0;
+      dependency[0].srcStageMask =
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
+
+      
+      dependency[1].srcSubpass = 0;
+      dependency[1].dstSubpass = 0;
+      //dependency[1].srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
+      //dependency[1].dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT;
+      //dependency[1].srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+      //dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+      dependency[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      dependency[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+      dependency[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+      dependency[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;// if needed
+      
 
       std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
       VkRenderPassCreateInfo renderPassInfo = {};
@@ -298,7 +318,7 @@ namespace gpu_vulkan
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;
       renderPassInfo.dependencyCount = 1;
-      renderPassInfo.pDependencies = &dependency;
+      renderPassInfo.pDependencies = dependency;
 
       if (vkCreateRenderPass(m_pgpucontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) {
          throw ::exception(error_failed,"failed to create render pass!");

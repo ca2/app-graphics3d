@@ -767,8 +767,9 @@ namespace gpu_vulkan
    }
 
 
-   void device::initialize_gpu_device(::gpu::approach * pgpuapproachParam, bool bAddSwapChainSupport)
+   void device::initialize_gpu_device(::gpu::approach* pgpuapproachParam, ::windowing::window * pwindow, bool bAddSwapChainSupport)
    {
+
 
       //createInstance();
       //setupDebugMessenger();
@@ -793,6 +794,15 @@ namespace gpu_vulkan
       assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
 
       m_pphysicaldevice = pphysicaldevice;
+
+      if (m_papplication->m_bUseDraw2dProtoWindow)
+      {
+
+         m_pphysicaldevice->createWindowSurface(pwindow);
+
+      }
+
+
 
       //if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
       //{
@@ -2238,6 +2248,96 @@ namespace gpu_vulkan
    //   VK_CHECK_RESULT(vkWaitForFences(m_vkdevice, 1, &fence, VK_TRUE, UINT64_MAX));
    //   vkDestroyFence(m_vkdevice, fence, nullptr);
    //}
+
+
+   vulkan::QueueFamilyIndices physical_device::findQueueFamilies()
+   {
+
+      vulkan::QueueFamilyIndices indices;
+
+      uint32_t queueFamilyCount = 0;
+      vkGetPhysicalDeviceQueueFamilyProperties(m_physicaldevice, &queueFamilyCount, nullptr);
+
+      ::array<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+      vkGetPhysicalDeviceQueueFamilyProperties(m_physicaldevice, &queueFamilyCount, queueFamilies.data());
+
+      int i = 0;
+      for (const auto& queueFamily : queueFamilies)
+      {
+         if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+         {
+            indices.graphicsFamily = i;
+            indices.graphicsFamilyHasValue = true;
+         }
+         if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
+         {
+            indices.computeFamily = i;
+            indices.computeFamilyHasValue = true;
+         }
+         if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT)
+         {
+            indices.transferFamily = i;
+            indices.transferFamilyHasValue = true;
+         }
+         if (m_vksurfacekhr)
+         {
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(m_physicaldevice, i, m_vksurfacekhr, &presentSupport);
+            if (queueFamily.queueCount > 0 && presentSupport)
+            {
+               indices.presentFamily = i;
+               indices.presentFamilyHasValue = true;
+            }
+         }
+         //if (indices.isComplete()) {
+           // break;
+         //}
+
+         i++;
+      }
+
+      return indices;
+
+   }
+
+
+   SwapChainSupportDetails physical_device::querySwapChainSupport()
+   {
+
+      if (!m_vksurfacekhr)
+      {
+
+         throw ::exception(error_wrong_state, "querying swap chain support but no vksurfacekhr");
+
+      }
+
+      SwapChainSupportDetails details{};
+
+      vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_physicaldevice, m_vksurfacekhr, &details.capabilities);
+
+      uint32_t formatCount;
+      vkGetPhysicalDeviceSurfaceFormatsKHR(m_physicaldevice, m_vksurfacekhr, &formatCount, nullptr);
+
+      if (formatCount != 0) {
+         details.formats.resize(formatCount);
+         vkGetPhysicalDeviceSurfaceFormatsKHR(m_physicaldevice, m_vksurfacekhr, &formatCount, details.formats.data());
+      }
+
+      uint32_t presentModeCount;
+      vkGetPhysicalDeviceSurfacePresentModesKHR(m_physicaldevice, m_vksurfacekhr, &presentModeCount, nullptr);
+
+      if (presentModeCount != 0) {
+         details.presentModes.resize(presentModeCount);
+         vkGetPhysicalDeviceSurfacePresentModesKHR(
+            m_physicaldevice,
+            m_vksurfacekhr,
+            &presentModeCount,
+            details.presentModes.data());
+      }
+
+      return details;
+
+   }
 
 
 } // namespace gpu_vulkan

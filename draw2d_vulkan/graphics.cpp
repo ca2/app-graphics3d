@@ -236,7 +236,16 @@ namespace draw2d_vulkan
 
          auto pgpu = application()->get_gpu();
 
-         auto pgpudevice = pgpu->get_device();
+         if (!m_puserinteraction)
+         {
+
+            m_puserinteraction = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+
+         }
+
+         ASSERT(m_puserinteraction);
+
+         auto pgpudevice = pgpu->get_device(m_puserinteraction->window());
 
          m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, m_callbackImage32CpuBuffer, rectanglePlacement);
 
@@ -263,7 +272,7 @@ namespace draw2d_vulkan
       //if (__defer_construct(m_pgpucontextVulkan))
       //{
 
-      m_pgpucontext->create_offscreen_buffer(rectanglePlacement.size());
+      //m_pgpucontext->create_offscreen_buffer(rectanglePlacement.size());
 
 
       auto psystem = system();
@@ -478,12 +487,11 @@ namespace draw2d_vulkan
    bool graphics::vulkan_defer_create_window_context(::windowing::window* pwindow)
    {
 
-
       auto psystem = system();
 
       auto pgpu = application()->get_gpu();
 
-      auto pgpudevice = pgpu->get_device();
+      auto pgpudevice = pgpu->get_device(pwindow);
 
       if (!m_pgpucontext)
       {
@@ -6430,6 +6438,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          //m_pgpucontext->m_prenderer->on_end_draw();
 
+         vkvg_flush(m_pdc);
+
          VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
 
 
@@ -6456,7 +6466,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 
-            m_pgpucontextOutput = m_papplication->get_gpu()->get_device()->start_swap_chain_context(this, pwindow);
+            m_pgpucontextOutput = m_papplication->get_gpu()->get_device(pwindow)->start_swap_chain_context(this, pwindow);
 
             //m_pgpucontextOutput->create_window_buffer(pwindow);
 
