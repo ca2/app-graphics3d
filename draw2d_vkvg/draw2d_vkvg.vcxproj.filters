@@ -12,12 +12,6 @@
     <Filter Include="Resource Files">
       <UniqueIdentifier>{7fb03002-ba56-49f7-9de5-4194cdd31e41}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\shader">
-      <UniqueIdentifier>{72e2acd4-a129-4576-b241-e2109c952551}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\shader">
-      <UniqueIdentifier>{f7b01db7-750d-4d90-a710-96fe3baddfab}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -135,24 +129,10 @@
     <None Include="draw2d_vulkan.def">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="shader\rectangle.frag.spv.inl">
-      <Filter>Header Files\shader</Filter>
-    </None>
-    <None Include="shader\rectangle.vert.spv.inl">
-      <Filter>Header Files\shader</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="draw2d_vulkan.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="shader\rectangle.frag">
-      <Filter>Source Files\shader</Filter>
-    </CustomBuild>
-    <CustomBuild Include="shader\rectangle.vert">
-      <Filter>Source Files\shader</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

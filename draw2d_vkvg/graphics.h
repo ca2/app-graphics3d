@@ -3,8 +3,7 @@
 
 #include "acme/graphics/image/image32.h"
 #include "aura/graphics/draw2d/graphics.h"
-#include "app-cube/gpu_vulkan/renderer.h"
-#include "app-cube/gpu_vulkan/shader.h"
+#include "app-cube/cube/gpu/renderer.h"
 
 
 //struct OffscreenContext
@@ -26,9 +25,10 @@ namespace draw2d_vulkan
       virtual public ::gpu::renderer
    {
    public:
-      //VkvgDevice                       m_vkvgdevice;
-      //VkvgSurface                      m_vkvgsurface;
-      //VkvgContext                      m_pdc;
+
+      VkvgDevice                       m_vkvgdevice;
+      VkvgSurface                      m_vkvgsurface;
+      VkvgContext                      m_pdc;
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
       //::plusplus::GraphicsPath *     m_ppath;
@@ -46,18 +46,6 @@ namespace draw2d_vulkan
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       ::pointer<::gpu::context>             m_pgpucontextOutput;
-      ::pointer < ::gpu::frame > m_pframe;
-
-
-      struct RectangleVertex {
-         float pos[2];    // x, y
-         float color[4];  // r, g, b, a
-      };
-      ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutRectangle;
-      ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolRectangle;
-      ::pointer <::gpu_vulkan::renderer::model >               m_pmodelRectangle;
-      ::pointer < ::gpu_vulkan::shader > m_pshaderRectangle;
-
 
       graphics();
       ~graphics() override;

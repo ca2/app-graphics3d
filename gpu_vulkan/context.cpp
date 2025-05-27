@@ -869,14 +869,23 @@ namespace gpu_vulkan
    void context::endSingleTimeCommands(VkCommandBuffer commandBuffer)
    {
 
-      vkEndCommandBuffer(commandBuffer);
-
       VkSubmitInfo submitInfo{};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
       submitInfo.commandBufferCount = 1;
       submitInfo.pCommandBuffers = &commandBuffer;
 
-      vkQueueSubmit(m_vkqueueGraphics, 1, &submitInfo, VK_NULL_HANDLE);
+      endSingleTimeCommands(commandBuffer,1, &submitInfo);
+
+   }
+
+
+   void context::endSingleTimeCommands(VkCommandBuffer commandBuffer, int iSubmitCount, VkSubmitInfo* psubmitinfo)
+   {
+
+      vkEndCommandBuffer(commandBuffer);
+     
+      vkQueueSubmit(m_vkqueueGraphics, 1, psubmitinfo, VK_NULL_HANDLE);
+
       vkQueueWaitIdle(m_vkqueueGraphics);
 
       vkFreeCommandBuffers(this->logicalDevice(), m_pgpudevice->getCommandPool(), 1, &commandBuffer);

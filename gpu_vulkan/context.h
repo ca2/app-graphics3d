@@ -208,6 +208,7 @@ namespace gpu_vulkan
          VkDeviceMemory & bufferMemory);
       VkCommandBuffer beginSingleTimeCommands();
       void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+      void endSingleTimeCommands(VkCommandBuffer commandBuffer, int iSubmitCount, VkSubmitInfo * psubmitinfo);
       void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
       void copyBufferToImage(
          VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);

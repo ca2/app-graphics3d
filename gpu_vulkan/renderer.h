@@ -37,7 +37,7 @@ namespace gpu_vulkan
 
 
 
-      struct OffScreenSampler :
+      struct CLASS_DECL_GPU_VULKAN OffScreenSampler :
          virtual public ::particle
       {
 
@@ -191,6 +191,9 @@ namespace gpu_vulkan
 
       void _blend_image(VkImage image, const ::int_rectangle& rectangle);
       void _on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle);
+
+      void _blend_renderer(::gpu_vulkan::renderer* prendererSrc);
+      void _on_graphics_end_draw(::gpu_vulkan::renderer * prendererSrc);
 
 
       ::gpu::shader * get_image_blend_shader();

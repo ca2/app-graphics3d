@@ -30,6 +30,8 @@ namespace gpu_vulkan
       ::array<VkFramebuffer> m_framebuffers;
       VkRenderPass m_vkrenderpass;
 
+      ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
+
       ::array<VkImage> depthImages;
       ::array<VkDeviceMemory> depthImageMemorys;
       ::array<VkImageView> depthImageViews;

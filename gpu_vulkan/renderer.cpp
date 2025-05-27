@@ -85,6 +85,8 @@ namespace gpu_vulkan
 
       m_poffscreensampler->m_prenderer = this;
 
+      //m_poffscreensampler->set_storing_flag
+
       //defer_layout();
 
       createCommandBuffers();
@@ -163,28 +165,39 @@ namespace gpu_vulkan
    void renderer::defer_update_render_pass()
    {
 
-      auto eoutput = m_pgpucontext->m_eoutput;
-
-      if (eoutput == ::gpu::e_output_cpu_buffer)
+      if (!m_pvkcrenderpass)
       {
 
-         m_pvkcrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
+         auto eoutput = m_pgpucontext->m_eoutput;
+
+         if (eoutput == ::gpu::e_output_cpu_buffer)
+         {
+
+            m_pvkcrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
+
+         }
+         else if (eoutput == ::gpu::e_output_swap_chain)
+         {
+
+            m_pvkcrenderpass = __allocate swap_chain_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
+
+         }
+         else if (eoutput == ::gpu::e_output_gpu_buffer)
+         {
+
+            m_pvkcrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
+
+         }
+         else
+         {
+
+            throw ::exception(error_wrong_state, "Unexpected gpu e_output");
+
+         }
+
+         m_pvkcrenderpass->init();
 
       }
-      else if (eoutput == ::gpu::e_output_swap_chain)
-      {
-
-         m_pvkcrenderpass = __allocate swap_chain_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
-
-      }
-      else
-      {
-
-         throw ::exception(error_wrong_state, "Unexpected gpu e_output");
-
-      }
-
-      m_pvkcrenderpass->init();
 
       m_bNeedToRecreateSwapChain = false;
 
@@ -364,7 +377,7 @@ namespace gpu_vulkan
 
       VkImageCreateInfo imgCreateInfo(initializers::imageCreateInfo());
       imgCreateInfo.imageType = VK_IMAGE_TYPE_2D;
-      imgCreateInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+      imgCreateInfo.format = VK_FORMAT_B8G8R8A8_UNORM;
       imgCreateInfo.extent.width = m_vkextent2d.width;
       imgCreateInfo.extent.height = m_vkextent2d.height;
       imgCreateInfo.extent.depth = 1;
@@ -373,7 +386,9 @@ namespace gpu_vulkan
       imgCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
       imgCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
       imgCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
-      imgCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+      imgCreateInfo.usage =
+         VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+         VK_IMAGE_USAGE_SAMPLED_BIT;
       // Create the image
       //VkImage dstImage;
       VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
@@ -386,6 +401,40 @@ namespace gpu_vulkan
       memAllocInfo.memoryTypeIndex = m_pgpucontext->m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
       VK_CHECK_RESULT(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
       VK_CHECK_RESULT(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
+
+      if (1)
+      {
+         auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+
+         VkImageMemoryBarrier barrier = {
+             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+             .srcAccessMask = 0,
+            .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+            .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+             .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+             .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+             .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+             .image = m_vkimage,
+             .subresourceRange = {
+                 .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                 .baseMipLevel = 0,
+                 .levelCount = 1,
+                 .baseArrayLayer = 0,
+                 .layerCount = 1
+             },
+         };
+
+         vkCmdPipelineBarrier(
+            cmdBuffer,
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            0,
+            0, NULL,
+            0, NULL,
+            1, &barrier
+         );
+         m_pgpucontext->endSingleTimeCommands(cmdBuffer);
+      }
 
 
    }
@@ -981,11 +1030,13 @@ namespace gpu_vulkan
             .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
             .build();
 
+         int iFrameCount = get_frame_count();
+
          auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
 
          pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
-         pdescriptorpoolbuilder->setMaxSets(get_frame_count());
-         pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, get_frame_count());
+         pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+         pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
 
          m_pdescriptorpoolImageBlend = pdescriptorpoolbuilder->build();
 
@@ -1252,6 +1303,18 @@ namespace gpu_vulkan
 
       //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &commandBuffer);
 
+
+         }
+
+
+         void renderer::_blend_renderer(::gpu_vulkan::renderer* prendererSrc)
+         {
+
+            VkImage image = prendererSrc->m_pvkcrenderpass->m_images[prendererSrc->currentImageIndex];
+
+            auto rectanglePlacement = prendererSrc->m_rectangle;
+
+            _blend_image(image, rectanglePlacement);
 
          }
 
@@ -1648,6 +1711,128 @@ namespace gpu_vulkan
             //m_pscene->on_render(m_pgpucontext);
 
             _blend_image(image, rectangle);
+
+            on_end_render(pframe);
+
+            endFrame();
+
+         }
+
+         if (1)
+         {
+            auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+
+            VkImageMemoryBarrier barrier = {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                .srcAccessMask = VK_ACCESS_SHADER_READ_BIT,
+               .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+               .oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .image = image,
+                .subresourceRange = {
+                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                    .baseMipLevel = 0,
+                    .levelCount = 1,
+                    .baseArrayLayer = 0,
+                    .layerCount = 1
+                },
+            };
+
+            vkCmdPipelineBarrier(
+               cmdBuffer,
+               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+               0,
+               0, NULL,
+               0, NULL,
+               1, &barrier
+            );
+            m_pgpucontext->endSingleTimeCommands(cmdBuffer);
+         }
+
+
+      }
+
+
+      void renderer::_on_graphics_end_draw(::gpu_vulkan::renderer * prendererSrc)
+      {
+
+         // set_placement(rectangle);
+
+         VkImage image = prendererSrc->m_pvkcrenderpass->m_images[prendererSrc->currentImageIndex];
+
+         if (1)
+         {
+            auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+
+            VkImageMemoryBarrier barrier = {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+                .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                .image = image,
+                .subresourceRange = {
+                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                    .baseMipLevel = 0,
+                    .levelCount = 1,
+                    .baseArrayLayer = 0,
+                    .layerCount = 1
+                },
+            };
+
+            vkCmdPipelineBarrier(
+               cmdBuffer,
+               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+               0,
+               0, NULL,
+               0, NULL,
+               1, &barrier
+            );
+
+            VkSubmitInfo submitInfo = {};
+            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+            VkSemaphore waitSemaphores[] = { prendererSrc->m_pvkcrenderpass->renderFinishedSemaphores[prendererSrc->m_pvkcrenderpass->currentFrame] };
+            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = waitSemaphores;
+            submitInfo.pWaitDstStageMask = waitStages;
+
+            submitInfo.commandBufferCount = 1;
+            submitInfo.pCommandBuffers = &cmdBuffer;
+
+            m_pgpucontext->endSingleTimeCommands(cmdBuffer,1, &submitInfo);
+
+         }
+
+         if (auto pframe = beginFrame())
+         {
+
+            m_pvkcrenderpass->m_semaphoreaSignalOnSubmit.add(prendererSrc->m_pvkcrenderpass->imageAvailableSemaphores[prendererSrc->m_pvkcrenderpass->currentFrame]);
+
+
+            //on_begin_frame();
+            // render
+            on_begin_render(pframe);
+
+
+
+            //if (m_pimpact->global_ubo_block().size() > 0)
+            //{
+
+              // update_global_ubo(m_pgpucontext);
+
+            //}
+
+            //m_pscene->on_render(m_pgpucontext);
+
+            _blend_renderer(prendererSrc);
 
             on_end_render(pframe);
 

@@ -147,9 +147,12 @@ namespace gpu_vulkan
       submitInfo.commandBufferCount = 1;
       submitInfo.pCommandBuffers = buffers;
 
-      VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
-      submitInfo.signalSemaphoreCount = 1;
-      submitInfo.pSignalSemaphores = signalSemaphores;
+      ::array<VkSemaphore> signalSemaphores;
+      
+      signalSemaphores.add(renderFinishedSemaphores[currentFrame]);
+      signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
+      submitInfo.signalSemaphoreCount = signalSemaphores.count();
+      submitInfo.pSignalSemaphores = signalSemaphores.data();
 
       vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
 
@@ -576,7 +579,7 @@ namespace gpu_vulkan
       colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
       colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
       //colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-      colorAttachment.finalLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+      colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
       VkAttachmentReference colorAttachmentRef = {};
       colorAttachmentRef.attachment = 0;
