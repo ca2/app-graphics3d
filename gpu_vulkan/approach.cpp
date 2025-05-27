@@ -239,7 +239,7 @@ namespace gpu_vulkan
          //// Vulkan device creation
          //// This is handled by a separate class that gets a logical device representation
          //// and encapsulates functions related to a device
-         //m_pdevice = new vks::VulkanDevice(physicalDevice);
+         //m_pgpudevice = new vks::VulkanDevice(physicalDevice);
 
          //// Derived examples can enable extensions based on the list of supported extensions read from the physical device
          //getEnabledExtensions();
@@ -458,6 +458,7 @@ namespace gpu_vulkan
       return result;
 
    }
+
 
 
 //   ::pointer < ::gpu::context > approach::_create_context(const ::gpu::start_context_t & startcontext)
@@ -701,88 +702,26 @@ namespace gpu_vulkan
    }
 
 
-   VkDescriptorSet approach::getCurrentDescriptorSet(::gpu_vulkan::renderer* prenderer)
-   {
-
-      return m_globalDescriptorSets[prenderer->get_frame_index()];
-
-   }
 
 
-   ::gpu_vulkan::descriptor_pool* approach::get_global_pool(::gpu::context* pgpucontext, int iFrameCount)
-   {
-
-      if (!m_pglobalpool)
-      {
-
-         auto pglobalpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
-
-         pglobalpoolbuilder->initialize_builder(pgpucontext);
-         pglobalpoolbuilder->setMaxSets(iFrameCount);
-         pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount);
-
-         m_pglobalpool = pglobalpoolbuilder->build();
-
-      }
-
-      return m_pglobalpool;
-
-   }
 
 
-   void approach::create_global_ubo(::gpu::context* pgpucontext, int iGlobalUboSize, int iFrameCount)
-   {
 
-      m_uboBuffers.set_size(iFrameCount);
+//   set_descriptor_layout* approach::get_set_descriptor_layout(::gpu::context* pgpucontext)
+  // {
 
-      for (int i = 0; i < m_uboBuffers.size(); i++)
-      {
-
-         m_uboBuffers[i] = __allocate buffer();
-
-         m_uboBuffers[i]->initialize_buffer(
-            pgpucontext,
-            iGlobalUboSize,
-            1,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-
-         m_uboBuffers[i]->map();
-
-      }
-
-      m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pgpucontext)
-         .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
-         .build();
-
-      //auto globalSetLayout = m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-
-      m_globalDescriptorSets.resize(iFrameCount);
-
-      for (int i = 0; i < m_globalDescriptorSets.size(); i++)
-      {
-
-         auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
-
-         descriptor_writer(*m_psetdescriptorlayoutGlobal, *get_global_pool(pgpucontext, iFrameCount))
-            .writeBuffer(0, &bufferInfo)
-            .build(m_globalDescriptorSets[i]);
-
-      }
-
-   }
+    //  if (!m_psetdescriptorlayoutGlobal)
+      //{
 
 
-   void approach::update_global_ubo(::gpu::context* pgpucontext, const ::block& block)
-   {
+      //}
 
-      auto iFrameIndex = pgpucontext->m_prenderer->get_frame_index();
+      //return m_psetdescriptorlayoutGlobal;
 
-      m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
+   //}
 
-      m_uboBuffers[iFrameIndex]->flush();
 
-   }
+
 
 
 } // namespace gpu_vulkan

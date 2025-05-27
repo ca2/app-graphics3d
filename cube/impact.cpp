@@ -533,32 +533,38 @@ namespace cube
       //pgraphics->draw_line(::double_point(300.0, 0.0), ::double_point(100.0, 300.0));
 
       //pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
-      if (m_pengine)
+
+      if (0)
       {
-         if (m_pengine->m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+
+         if (m_pengine)
          {
-            if (::is_ok(m_pimage))
+            if (m_pengine->m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
             {
+               if (::is_ok(m_pimage))
+               {
 
-               pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
+                  pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
-               _synchronous_lock synchronouslock(m_pparticleImageSynchronization);
+                  _synchronous_lock synchronouslock(m_pparticleImageSynchronization);
 
-               ::image::image_source imagesource(m_pimage, m_pimage->rectangle());
+                  ::image::image_source imagesource(m_pimage, m_pimage->rectangle());
 
-               ::image::image_drawing_options imagedrawingoptions(m_pimage->rectangle());
+                  ::image::image_drawing_options imagedrawingoptions(m_pimage->rectangle());
 
-               ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
+                  ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
 
-               pgraphics->draw(imagedrawing);
+                  pgraphics->draw(imagedrawing);
+
+               }
 
             }
+            else
+            {
 
-         }
-         else
-         {
+               m_pengine->do_frame_step();
 
-            m_pengine->do_frame_step();
+            }
 
          }
 

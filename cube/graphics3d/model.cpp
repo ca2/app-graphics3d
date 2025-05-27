@@ -96,7 +96,7 @@ namespace graphics3d
    //   buffer stagingBuffer;
 
    //   stagingBuffer.initialize_buffer(
-   //      m_pdevice,
+   //      m_pgpudevice,
    //      vertexSize,
    //      vertexCount,
    //      VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -109,7 +109,7 @@ namespace graphics3d
    //   vertexBuffer = __allocate buffer;
 
    //   vertexBuffer->initialize_buffer(
-   //      m_pdevice,
+   //      m_pgpudevice,
    //      vertexSize,
    //      vertexCount,
    //      VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
@@ -117,7 +117,7 @@ namespace graphics3d
    //   );
 
 
-   //   m_pdevice->copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
+   //   m_pgpudevice->copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 
 
    //}
@@ -135,7 +135,7 @@ namespace graphics3d
 
    //   buffer stagingBuffer;
    //   stagingBuffer.initialize_buffer(
-   //      m_pdevice,
+   //      m_pgpudevice,
    //      indexSize,
    //      indexCount,
    //      VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -148,13 +148,13 @@ namespace graphics3d
    //   indexBuffer = __allocate buffer();
 
    //   indexBuffer->initialize_buffer(
-   //      m_pdevice,
+   //      m_pgpudevice,
    //      indexSize,
    //      indexCount,
    //      VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
    //      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-   //   m_pdevice->copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
+   //   m_pgpudevice->copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
    //}
 
 

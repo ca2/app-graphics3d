@@ -342,6 +342,7 @@
     <ClInclude Include="gpu\approach.h" />
     <ClInclude Include="gpu\context.h" />
     <ClInclude Include="gpu\cpu_buffer.h" />
+    <ClInclude Include="gpu\device.h" />
     <ClInclude Include="gpu\frame.h" />
     <ClInclude Include="gpu\object.h" />
     <ClInclude Include="gpu\program.h" />
@@ -383,6 +384,7 @@
     <ClCompile Include="gpu\approach.cpp" />
     <ClCompile Include="gpu\context.cpp" />
     <ClCompile Include="gpu\cpu_buffer.cpp" />
+    <ClCompile Include="gpu\device.cpp" />
     <ClCompile Include="gpu\frame.cpp" />
     <ClCompile Include="gpu\object.cpp" />
     <ClCompile Include="gpu\program.cpp" />

@@ -23,6 +23,33 @@ namespace gpu_vulkan
    public:
 
 
+      VkFormat m_formatImage;
+      VkFormat m_formatDepth;
+      VkExtent2D m_extent;
+
+      ::array<VkFramebuffer> m_framebuffers;
+      VkRenderPass m_vkrenderpass;
+
+      ::array<VkImage> depthImages;
+      ::array<VkDeviceMemory> depthImageMemorys;
+      ::array<VkImageView> depthImageViews;
+      ::array<VkImage> m_images;
+      ::array<VkImageView> m_imageviews;
+
+      context* m_pgpucontext;
+      VkExtent2D windowExtent;
+
+      //VkSwapchainKHR swapChain;
+      ::pointer<render_pass> m_pvkcrenderpassOld;
+
+      ::int_array imageAvailable;
+      ::array<VkSemaphore> imageAvailableSemaphores;
+      ::array<VkSemaphore> renderFinishedSemaphores;
+      ::array<VkFence> inFlightFences;
+      ::array<VkFence> imagesInFlight;
+      size_t currentFrame = 0;
+
+
       static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
       render_pass(context* pvkcdeviceRef, VkExtent2D windowExtent);
@@ -69,31 +96,6 @@ namespace gpu_vulkan
       //   const ::array<VkPresentModeKHR>& availablePresentModes);
       //VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
-      VkFormat m_formatImage;
-      VkFormat m_formatDepth;
-      VkExtent2D m_extent;
-
-      ::array<VkFramebuffer> m_framebuffers;
-      VkRenderPass m_vkrenderpass;
-
-      ::array<VkImage> depthImages;
-      ::array<VkDeviceMemory> depthImageMemorys;
-      ::array<VkImageView> depthImageViews;
-      ::array<VkImage> m_images;
-      ::array<VkImageView> m_imageviews;
-
-      context* m_pgpucontext;
-      VkExtent2D windowExtent;
-
-      //VkSwapchainKHR swapChain;
-      ::pointer<render_pass> m_pvkcrenderpassOld;
-
-      ::int_array imageAvailable;
-      ::array<VkSemaphore> imageAvailableSemaphores;
-      ::array<VkSemaphore> renderFinishedSemaphores;
-      ::array<VkFence> inFlightFences;
-      ::array<VkFence> imagesInFlight;
-      size_t currentFrame = 0;
    };
 
 

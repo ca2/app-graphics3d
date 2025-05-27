@@ -39,10 +39,6 @@ namespace gpu_opengl
       //unsigned int                  VBO;
 
 
-      GLuint m_globalUBO;
-
-
-
       approach();
       ~approach() override;
 
@@ -52,8 +48,6 @@ namespace gpu_opengl
 
       ::file::path shader_path(const ::file::path& pathShader) override;
 
-
-      ::pointer < ::gpu::context > allocate_context(::particle* pparticle) override;
 
 
       //::pointer < ::gpu::context > _create_context(::particle * pparticle, ::gpu::enum_output eoutput, ::windowing::window* pwindow, const ::int_rectangle& rectanglePlacement) override;
@@ -75,9 +69,6 @@ namespace gpu_opengl
 
 
       ::gpu::payload load_dds(const ::scoped_string & scopedstrImagePath) override;
-
-      void create_global_ubo(::gpu::context* pgpucontext, int iSize, int iFrameCount) override;
-      void update_global_ubo(::gpu::context* pgpucontext, const ::block& block) override;
 
 
    };

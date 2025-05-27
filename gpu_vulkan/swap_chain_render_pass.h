@@ -12,6 +12,10 @@ namespace gpu_vulkan
       virtual public render_pass
    {
    public:
+
+      VkSwapchainKHR m_vkswapchain;
+
+
       static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
       swap_chain_render_pass(context* pvkcdeviceRef, VkExtent2D windowExtent);
@@ -43,7 +47,7 @@ namespace gpu_vulkan
       //      m_swapchain.swapChainImageFormat == swapChainImageFormat;
       //}
 
-   public:
+   //public:
       void init();
       void createRenderPassImpl();
       void createImageViews();
@@ -75,7 +79,6 @@ namespace gpu_vulkan
       ::pointer < context > m_pgpucontext;
       VkExtent2D windowExtent;*/
 
-      VkSwapchainKHR m_vkswapchain;
       //::pointer<swap_chain_render_pass> oldSwapChain;
 
       //::array<VkSemaphore> imageAvailableSemaphores;

@@ -3,6 +3,7 @@
 
 #include "app-cube/cube/gpu/context.h"
 #include "acme/prototype/prototype/memory.h"
+#include "app-cube/gpu_vulkan/device.h"
 
 
 namespace gpu_vulkan
@@ -18,7 +19,7 @@ namespace gpu_vulkan
 
 
       itask									m_itaskGpu;
-
+      VkSampler m_vksampler001;
 
       //unsigned int                     m_VAO;
       //unsigned int                     m_VBO;
@@ -40,58 +41,65 @@ namespace gpu_vulkan
 
          /** @brief Physical device representation */
       //VkPhysicalDevice m_physicaldevice;
-      ::pointer < physical_device >       m_pphysicaldevice;
-      /** @brief Logical device representation (application's view of the device) */
-      VkDevice m_vkdevice;
-      ///** @brief Properties of the physical device including limits that the application can check against */
-      //VkPhysicalDeviceProperties m_physicaldeviceproperties;
-      ///** @brief Features of the physical device that an application can use to check if a feature is supported */
-      //VkPhysicalDeviceFeatures m_physicaldevicefeatures;
-      /** @brief Features that have been enabled for use on the physical device */
-      VkPhysicalDeviceFeatures m_physicaldevicefeaturesCreate;
-      /** @brief Features that have been enabled for use on the physical device */
-      VkPhysicalDeviceFeatures m_physicaldevicefeaturesEnabled;
-      ///** @brief Memory types and heaps of the physical device */
-      //VkPhysicalDeviceMemoryProperties m_physicaldevicememoryproperties;
-      ///** @brief Queue family properties of the physical device */
-      //::array<VkQueueFamilyProperties> m_queuefamilypropertya;
-      /** @brief List of extensions supported by the device */
-      string_array m_straSupportedExtensions;
-      ///** @brief Default command pool for the graphics queue family index */
-      VkCommandPool m_vkcommandpool;
-
-      /** @brief Contains queue family indices */
-      vulkan::QueueFamilyIndices m_queuefamilyindices;
-      //struct
-      //{
-      //   uint32_t graphics;
-      //   uint32_t compute;
-      //   uint32_t transfer;
-      //} m_queuefamilyindices;
-
-
-
-      //graphics3d_vulkan::context
-#if defined(NDEBUG)
-      const bool enableValidationLayers = false;
-#else
-      const bool enableValidationLayers = true;
-#endif
-
-      VkInstance m_vkinstance;
-      VkDebugUtilsMessengerEXT debugMessenger;
-      //VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-      //::pointer < ::cube::impact > m_pimpact;
-
-      //VkCommandPool m_vkcommandpool;
-
-      //VkDevice m_vkdevice;
-      //VkSurfaceKHR m_vksurfacekhr;
+      ::pointer < device >                m_pgpudevice;
+//      /** @brief Logical device representation (application's view of the device) */
+//      VkDevice m_vkdevice;
+//      ///** @brief Properties of the physical device including limits that the application can check against */
+//      //VkPhysicalDeviceProperties m_physicaldeviceproperties;
+//      ///** @brief Features of the physical device that an application can use to check if a feature is supported */
+//      //VkPhysicalDeviceFeatures m_physicaldevicefeatures;
+//      /** @brief Features that have been enabled for use on the physical device */
+//      VkPhysicalDeviceFeatures m_physicaldevicefeaturesCreate;
+//      /** @brief Features that have been enabled for use on the physical device */
+//      VkPhysicalDeviceFeatures m_physicaldevicefeaturesEnabled;
+//      ///** @brief Memory types and heaps of the physical device */
+//      //VkPhysicalDeviceMemoryProperties m_physicaldevicememoryproperties;
+//      ///** @brief Queue family properties of the physical device */
+//      //::array<VkQueueFamilyProperties> m_queuefamilypropertya;
+//      /** @brief List of extensions supported by the device */
+//      string_array m_straSupportedExtensions;
+//      ///** @brief Default command pool for the graphics queue family index */
+//      VkCommandPool m_vkcommandpool;
+//
+//      /** @brief Contains queue family indices */
+//      vulkan::QueueFamilyIndices m_queuefamilyindices;
+//      //struct
+//      //{
+//      //   uint32_t graphics;
+//      //   uint32_t compute;
+//      //   uint32_t transfer;
+//      //} m_queuefamilyindices;
+//
+//
+//
+//
+//
+//      //graphics3d_vulkan::context
+//#if defined(NDEBUG)
+//      const bool enableValidationLayers = false;
+//#else
+//      const bool enableValidationLayers = true;
+//#endif
+//
+//      VkInstance m_vkinstance;
+//      VkDebugUtilsMessengerEXT debugMessenger;
+//      //VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+//      //::pointer < ::cube::impact > m_pimpact;
+//
+//      //VkCommandPool m_vkcommandpool;
+//
+//      //VkDevice m_vkdevice;
+//      //VkSurfaceKHR m_vksurfacekhr;
       VkQueue m_vkqueueGraphics;
       VkQueue m_vkqueuePresent;
 
-      ::array<const char *> validationLayers;
-      ::array<const char *> deviceExtensions;
+      //::array<const char *> validationLayers;
+      //::array<const char *> deviceExtensions;
+
+      ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutGlobal;
+      ::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
+      ::pointer_array<::gpu_vulkan::buffer>							m_uboBuffers;
+      ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolGlobal;
 
 
 
@@ -110,6 +118,16 @@ namespace gpu_vulkan
       void set_bitmap_1(::image::image *pimage) override;
 
       void swap_buffers() override;
+
+      VkSampler _001VkSampler();
+
+      //set_descriptor_layout* get_set_descriptor_layout();
+      //virtual VkDescriptorSet getCurrentDescriptorSet(::gpu_vulkan::renderer* prenderer);
+
+      //::gpu_vulkan::descriptor_pool* get_global_pool(int iFrameCount);
+
+      //virtual void create_global_ubo(int iSize, int iFrameCount);
+      //virtual void update_global_ubo(const ::block& block);
 
       //void clear(const ::color::color& color);
 
@@ -134,27 +152,22 @@ namespace gpu_vulkan
 
 
 
-      virtual void _create_context_win32();
+      virtual void _create_context_win32(const ::gpu::start_context_t& startcontext);
 
       void on_create_context(const ::gpu::start_context_t & startcontext) override;
 
 
-      VkDevice device() const
-      {
+      VkDevice logicalDevice();
 
-         return m_vkdevice;
-
-      }
-
-      virtual VkResult createLogicalDevice(
-         VkPhysicalDeviceFeatures enabledFeatures,
-         ::array<const char *> enabledExtensions,
-         void * pNextChain,
-         bool useSwapChain = true,
-         VkQueueFlags requestedQueueTypes = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT);
-      //virtual uint32_t getQueueFamilyIndex(VkQueueFlags queueFlags) const;
-      virtual VkCommandPool createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-      virtual bool isExtensionSupported(const ::scoped_string & scopedstrExtension);
+      //virtual VkResult createLogicalDevice(
+      //   VkPhysicalDeviceFeatures enabledFeatures,
+      //   ::array<const char *> enabledExtensions,
+      //   void * pNextChain,
+      //   bool useSwapChain = true,
+      //   VkQueueFlags requestedQueueTypes = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT);
+      ////virtual uint32_t getQueueFamilyIndex(VkQueueFlags queueFlags) const;
+      //virtual VkCommandPool createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+      //virtual bool isExtensionSupported(const ::scoped_string & scopedstrExtension);
 
       virtual void _create_offscreen_window(const ::int_size & size);
 
@@ -183,8 +196,8 @@ namespace gpu_vulkan
       //graphics3d_vulkan::context
 
 
-      VkCommandPool getCommandPool() { return m_vkcommandpool; }
-      VkDevice logicalDevice() { return m_vkdevice; }
+      //VkCommandPool getCommandPool() { return m_vkcommandpool; }
+      //VkDevice logicalDevice() { return m_vkdevice; }
 
       VkQueue graphicsQueue() { return m_vkqueueGraphics; }
       VkQueue presentQueue() { return m_vkqueuePresent; }
@@ -202,7 +215,6 @@ namespace gpu_vulkan
       void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
       void copyBufferToImage(
          VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
-
       void createImageWithInfo(
          const VkImageCreateInfo & imageInfo,
          VkMemoryPropertyFlags properties,
@@ -226,11 +238,28 @@ namespace gpu_vulkan
       // helper functions
       //bool isDeviceSuitable(VkPhysicalDevice pvkcdevice);
       //::array<const char *> getRequiredExtensions();
-      bool checkValidationLayerSupport();
-      void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT & createInfo);
+      //bool checkValidationLayerSupport();
+      //void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT & createInfo);
       //void hasGflwRequiredInstanceExtensions();
       //bool checkDeviceExtensionSupport(VkPhysicalDevice pvkcdevice);
 
+            //set_descriptor_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
+      virtual VkDescriptorSet getGlobalDescriptorSet(::gpu_vulkan::renderer* prenderer);
+
+      ::gpu_vulkan::descriptor_pool* get_global_pool(int iFrameCount);
+
+
+      ////set_descriptor_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
+      //virtual VkDescriptorSet getGlobalDescriptorSet(::gpu::context* pgpucontext, ::gpu_vulkan::renderer* prenderer);
+
+      //::gpu_vulkan::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);
+
+
+      void create_global_ubo(int iSize, int iFrameCount) override;
+      void update_global_ubo(const ::block& block) override;
+
+
+      void engine_on_frame_context_initialization();
 
 
    };

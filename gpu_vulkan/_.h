@@ -48,6 +48,8 @@ namespace gpu_vulkan
 
    class buffer;
 
+   class set_descriptor_layout;
+
 
 } // namespace gpu_vulkan
 

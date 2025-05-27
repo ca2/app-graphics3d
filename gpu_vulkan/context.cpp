@@ -1,11 +1,16 @@
 #include "framework.h"
 #include "approach.h"
+#include "buffer.h"
 #include "context.h"
+#include "device.h"
 #include "physical_device.h"
 #include "program.h"
+#include "renderer.h"
 #include "shader.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
+#include "app-cube/cube/gpu/types.h"
+#include "app-cube/gpu_vulkan/descriptors.h"
 #include "glm/mat4x4.hpp"
 #include "initializers.h"
 
@@ -19,7 +24,7 @@ namespace gpu_vulkan
 
    context::context()
    {
-
+      m_vksampler001 = nullptr;
       //m_bOffscreen = true;
       //      m_emode = e_mode_none;
             //m_itaskGpu = 0;
@@ -31,14 +36,14 @@ namespace gpu_vulkan
 
       m_bMesa = false;
 
-      m_emode = e_mode_system;
+      //m_emode = e_mode_system;
 
       m_estatus = error_not_initialized;
 
-      m_physicaldevicefeaturesCreate = {};
-      m_physicaldevicefeaturesEnabled = {};
-      m_vkdevice = VK_NULL_HANDLE;
-      m_vkcommandpool = VK_NULL_HANDLE;
+      //m_physicaldevicefeaturesCreate = {};
+      //m_physicaldevicefeaturesEnabled = {};
+      //this->logicalDevice() = VK_NULL_HANDLE;
+      //m_vkcommandpool = VK_NULL_HANDLE;
 
       m_vkqueuePresent = nullptr;
       m_vkqueueGraphics = nullptr;
@@ -376,6 +381,47 @@ namespace gpu_vulkan
    }
 
 
+   VkSampler context::_001VkSampler()
+   {
+
+      if (!m_vksampler001)
+      {
+
+         VkSamplerCreateInfo samplerInfo = {
+   .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+   .magFilter = VK_FILTER_LINEAR,
+   .minFilter = VK_FILTER_LINEAR,
+      .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
+
+   .addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+   .addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+   .addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+   .mipLodBias = 0.0f,
+   .anisotropyEnable = VK_FALSE,
+   .maxAnisotropy = 1.0f,
+   .compareEnable = VK_FALSE,
+   .compareOp = VK_COMPARE_OP_ALWAYS,
+   .minLod = 0.0f,
+   .maxLod = 0.0f,
+      .borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+   .unnormalizedCoordinates = VK_FALSE,
+
+         };
+
+
+         if (vkCreateSampler(this->logicalDevice(), &samplerInfo, NULL, &m_vksampler001) != VK_SUCCESS) {
+            // Handle error
+         }
+
+      }
+
+      return m_vksampler001;
+
+   }
+
+
+
+
 
    //void context::create_offscreen_buffer(const ::int_size& size)
    //{
@@ -703,7 +749,10 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_context_win32()
+
+
+
+   void context::_create_context_win32(const ::gpu::start_context_t& startcontext)
    {
 
       //createInstance();
@@ -713,57 +762,75 @@ namespace gpu_vulkan
       //createLogicalDevice();
       //createCommandPool();
 
-      ::cast < approach > papproach = m_papproach;
+      ::cast < device > pgpudevice = m_pgpudevice;
 
-      if (!papproach)
+      if (!pgpudevice)
       {
 
          throw ::exception(error_failed);
 
       }
 
-      auto pphysicaldevice = papproach->m_pphysicaldevice;
+//      auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
+//
+//      assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
+//      
+//      m_pphysicaldevice = pphysicaldevice;
+//
+//      if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
+//      {
+//
+//         m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
+//
+//      }
+//   
+//      auto physicaldevice = pphysicaldevice->m_physicaldevice;
+//
+//      // Get list of supported extensions
+//      uint32_t extCount = 0;
+//      vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
+//      if (extCount > 0)
+//      {
+//         ::array<VkExtensionProperties> extensions(extCount);
+//         if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
+//         {
+//            for (auto & ext : extensions)
+//            {
+//               m_straSupportedExtensions.add(ext.extensionName);
+//            }
+//         }
+//      }
+//
+//      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
+//      //getEnabledExtensions();
+//
+//      bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
+//
+//      m_itaskGpu = ::current_itask();
+//
+//      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
+//.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
+//      .scalarBlockLayout = TRUE};
+//      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
+//      m_physicaldevicefeaturesCreate.logicOp = TRUE;
+//
+//      VkResult result = createLogicalDevice(
+//         m_physicaldevicefeaturesCreate,
+//         pgpuapproach->m_pszaEnabledDeviceExtensions,
+//         pgpuapproach->m_pDeviceCreatepNextChain,
+//         useSwapChain);
+//
+//      if (result != VK_SUCCESS)
+//      {
+//
+//         m_itaskGpu = {};
+//
+//         exitFatal("Could not create Vulkan device: \n" + errorString(result) + " VkResult=" + ::as_string(result), result);
+//
+//         throw ::exception(error_failed);
+//
+//      }
 
-      assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
-      
-      m_pphysicaldevice = pphysicaldevice;
-   
-      auto physicaldevice = pphysicaldevice->m_physicaldevice;
-
-      // Get list of supported extensions
-      uint32_t extCount = 0;
-      vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
-      if (extCount > 0)
-      {
-         ::array<VkExtensionProperties> extensions(extCount);
-         if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
-         {
-            for (auto & ext : extensions)
-            {
-               m_straSupportedExtensions.add(ext.extensionName);
-            }
-         }
-      }
-
-      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
-      //getEnabledExtensions();
-
-      bool useSwapChain = m_papplication->m_bUseDraw2dProtoWindow;
-
-      VkResult result = createLogicalDevice(
-         m_physicaldevicefeaturesCreate,
-         papproach->m_pszaEnabledDeviceExtensions,
-         papproach->m_pDeviceCreatepNextChain,
-         useSwapChain);
-
-      if (result != VK_SUCCESS)
-      {
-
-         exitFatal("Could not create Vulkan device: \n" + errorString(result) + " VkResult=" + ::as_string(result), result);
-
-         throw ::exception(error_failed);
-
-      }
 
       //device = vulkanDevice->logicalDevice;
 
@@ -773,210 +840,254 @@ namespace gpu_vulkan
    void context::on_create_context(const ::gpu::start_context_t & startcontext)
    {
 
-      UNREFERENCED_PARAMETER(startcontext);
+      m_pgpudevice = startcontext.m_pgpudevice;
 
-      _create_context_win32();
+      if (m_pgpudevice->m_queuefamilyindices.graphicsFamily >= 0)
+      {
+
+         vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
+
+      }
+
+      if (m_pgpudevice->m_queuefamilyindices.presentFamily >= 0)
+      {
+
+         vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
+
+      }
+
+      _create_context_win32(startcontext);
 
    }
 
 
-   VkResult context::createLogicalDevice(
-   VkPhysicalDeviceFeatures enabledFeatures,
-   ::array<const char *> enabledExtensions,
-   void * pNextChain,
-   bool useSwapChain,
-   VkQueueFlags requestedQueueTypes)
+
+   void context::endSingleTimeCommands(VkCommandBuffer commandBuffer)
    {
 
-      ::cast < approach > papproach = application()->get_gpu();
+      vkEndCommandBuffer(commandBuffer);
 
-      ::cast < physical_device > pphysicaldevice = papproach->m_pphysicaldevice;
+      VkSubmitInfo submitInfo{};
+      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+      submitInfo.commandBufferCount = 1;
+      submitInfo.pCommandBuffers = &commandBuffer;
 
-      // Desired queues need to be requested upon logical device creation
-      // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application
-      // requests different queue types
+      vkQueueSubmit(m_vkqueueGraphics, 1, &submitInfo, VK_NULL_HANDLE);
+      vkQueueWaitIdle(m_vkqueueGraphics);
 
-      ::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
-
-      // Get queue family indices for the requested queue family types
-      // Note that the indices may overlap depending on the implementation
-
-      const float defaultQueuePriority(0.0f);
-
-      m_queuefamilyindices = pphysicaldevice->findQueueFamilies();
-
-      // Graphics queue
-      if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT
-         && m_queuefamilyindices.graphicsFamilyHasValue)
-      {
-         //m_queuefamilyindices.graphics = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
-         VkDeviceQueueCreateInfo queueInfo{};
-         queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-         queueInfo.queueFamilyIndex = m_queuefamilyindices.graphicsFamily;
-         queueInfo.queueCount = 1;
-         queueInfo.pQueuePriorities = &defaultQueuePriority;
-         queueCreateInfos.add(queueInfo);
-      }
-      else
-      {
-         m_queuefamilyindices.graphicsFamily = 0;
-      }
-
-      // Dedicated compute queue
-      if (requestedQueueTypes & VK_QUEUE_COMPUTE_BIT
-         && m_queuefamilyindices.computeFamilyHasValue)
-      {
-         //m_queuefamilyindices.compute = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
-         if (m_queuefamilyindices.computeFamily != m_queuefamilyindices.graphicsFamily)
-         {
-            // If compute family index differs, we need an additional queue create info for the compute queue
-            VkDeviceQueueCreateInfo queueInfo{};
-            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queueInfo.queueFamilyIndex = m_queuefamilyindices.computeFamily;
-            queueInfo.queueCount = 1;
-            queueInfo.pQueuePriorities = &defaultQueuePriority;
-            queueCreateInfos.add(queueInfo);
-         }
-      }
-      else
-      {
-         // Else we use the same queue
-         m_queuefamilyindices.computeFamily = m_queuefamilyindices.graphicsFamily;
-      }
-
-      // Dedicated transfer queue
-      if (requestedQueueTypes & VK_QUEUE_TRANSFER_BIT
-         && m_queuefamilyindices.transferFamilyHasValue)
-      {
-         //m_queuefamilyindices.transfer = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_TRANSFER_BIT);
-         if ((m_queuefamilyindices.transferFamily != m_queuefamilyindices.graphicsFamily)
-            && (m_queuefamilyindices.transferFamily != m_queuefamilyindices.computeFamily))
-         {
-            // If transfer family index differs, we need an additional queue create info for the transfer queue
-            VkDeviceQueueCreateInfo queueInfo{};
-            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queueInfo.queueFamilyIndex = m_queuefamilyindices.transferFamily;
-            queueInfo.queueCount = 1;
-            queueInfo.pQueuePriorities = &defaultQueuePriority;
-            queueCreateInfos.add(queueInfo);
-         }
-      }
-      else
-      {
-         // Else we use the same queue
-         m_queuefamilyindices.transferFamily = m_queuefamilyindices.graphicsFamily;
-      }
-
-      // Create the logical device representation
-      ::array<const char *> deviceExtensions(enabledExtensions);
-      if (useSwapChain)
-      {
-
-         // If the device will be used for presenting to a display via a swapchain we need to request the swapchain extension
-         deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-
-      }
-
-      VkDeviceCreateInfo deviceCreateInfo = {};
-      deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-      deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());;
-      deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
-      deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
-
-      // If a pNext(Chain) has been passed, we need to add it to the device creation info
-      VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
-      if (pNextChain) {
-         physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-         physicalDeviceFeatures2.features = enabledFeatures;
-         physicalDeviceFeatures2.pNext = pNextChain;
-         deviceCreateInfo.pEnabledFeatures = nullptr;
-         deviceCreateInfo.pNext = &physicalDeviceFeatures2;
-      }
-
-#if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_METAL_EXT)) && defined(VK_KHR_portability_subset)
-      // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
-      if (extensionSupported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
-      {
-         deviceExtensions.add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-      }
-#endif
-
-      if (deviceExtensions.size() > 0)
-      {
-         for (const char * enabledExtension : deviceExtensions)
-         {
-            if (!isExtensionSupported(enabledExtension)) {
-               information() << "Enabled device extension \"" << enabledExtension << "\" is not present at device level\n";
-            }
-         }
-
-         deviceCreateInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
-         deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
-      }
-
-      this->m_physicaldevicefeaturesEnabled = enabledFeatures;
-
-      auto physicaldevice = pphysicaldevice->m_physicaldevice;
-
-      VkResult result = vkCreateDevice(physicaldevice, &deviceCreateInfo, nullptr, &m_vkdevice);
-      if (result != VK_SUCCESS)
-      {
-         return result;
-      }
-
-      if (m_queuefamilyindices.graphicsFamily >= 0)
-      {
-         vkGetDeviceQueue(m_vkdevice, m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
-      }
-      if (m_queuefamilyindices.presentFamily >= 0)
-      {
-         vkGetDeviceQueue(m_vkdevice, m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
-      }
-
-
-      // Create a default command pool for graphics command buffers
-      m_vkcommandpool = createCommandPool(m_queuefamilyindices.graphicsFamily);
-
-      return result;
+      vkFreeCommandBuffers(this->logicalDevice(), m_pgpudevice->getCommandPool(), 1, &commandBuffer);
 
    }
 
 
-   /**
-   * Create a command pool for allocation command buffers from
-   *
-   * @param queueFamilyIndex Family index of the queue to create the command pool for
-   * @param createFlags (Optional) Command pool creation flags (Defaults to VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
-   *
-   * @note Command buffers allocated from the created pool can only be submitted to a queue with the same family index
-   *
-   * @return A handle to the created command buffer
-   */
-   VkCommandPool context::createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags)
+
+   VkDevice context::logicalDevice() 
    {
-      VkCommandPoolCreateInfo cmdPoolInfo = {};
-      cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-      cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
-      cmdPoolInfo.flags = createFlags;
-      VkCommandPool cmdPool;
-      VK_CHECK_RESULT(vkCreateCommandPool(m_vkdevice, &cmdPoolInfo, nullptr, &cmdPool));
-      return cmdPool;
-   }
+      
+      ::cast < device > pgpudevice = m_pgpudevice;
 
-
-   /**
-   * Check if an extension is supported by the (physical device)
-   *
-   * @param extension Name of the extension to check
-   *
-   * @return True if the extension is supported (present in the list read at device creation time)
-   */
-   bool context::isExtensionSupported(const ::scoped_string & scopedstrExtension)
-   {
-
-      return m_straSupportedExtensions.contains(scopedstrExtension);
+      return pgpudevice->logicalDevice();
 
    }
+
+
+//   VkResult context::createLogicalDevice(
+//   VkPhysicalDeviceFeatures enabledFeatures,
+//   ::array<const char *> enabledExtensions,
+//   void * pNextChain,
+//   bool useSwapChain,
+//   VkQueueFlags requestedQueueTypes)
+//   {
+//
+//      ::cast < approach > pgpuapproach = application()->get_gpu();
+//
+//      ::cast < physical_device > pphysicaldevice = pgpuapproach->m_pphysicaldevice;
+//
+//      // Desired queues need to be requested upon logical device creation
+//      // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application
+//      // requests different queue types
+//
+//      ::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
+//
+//      // Get queue family indices for the requested queue family types
+//      // Note that the indices may overlap depending on the implementation
+//
+//      const float defaultQueuePriority(0.0f);
+//
+//      m_queuefamilyindices = pphysicaldevice->findQueueFamilies();
+//
+//      // Graphics queue
+//      if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT
+//         && m_queuefamilyindices.graphicsFamilyHasValue)
+//      {
+//         //m_queuefamilyindices.graphics = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
+//         VkDeviceQueueCreateInfo queueInfo{};
+//         queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+//         queueInfo.queueFamilyIndex = m_queuefamilyindices.graphicsFamily;
+//         queueInfo.queueCount = 1;
+//         queueInfo.pQueuePriorities = &defaultQueuePriority;
+//         queueCreateInfos.add(queueInfo);
+//      }
+//      else
+//      {
+//         m_queuefamilyindices.graphicsFamily = 0;
+//      }
+//
+//      // Dedicated compute queue
+//      if (requestedQueueTypes & VK_QUEUE_COMPUTE_BIT
+//         && m_queuefamilyindices.computeFamilyHasValue)
+//      {
+//         //m_queuefamilyindices.compute = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
+//         if (m_queuefamilyindices.computeFamily != m_queuefamilyindices.graphicsFamily)
+//         {
+//            // If compute family index differs, we need an additional queue create info for the compute queue
+//            VkDeviceQueueCreateInfo queueInfo{};
+//            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+//            queueInfo.queueFamilyIndex = m_queuefamilyindices.computeFamily;
+//            queueInfo.queueCount = 1;
+//            queueInfo.pQueuePriorities = &defaultQueuePriority;
+//            queueCreateInfos.add(queueInfo);
+//         }
+//      }
+//      else
+//      {
+//         // Else we use the same queue
+//         m_queuefamilyindices.computeFamily = m_queuefamilyindices.graphicsFamily;
+//      }
+//
+//      // Dedicated transfer queue
+//      if (requestedQueueTypes & VK_QUEUE_TRANSFER_BIT
+//         && m_queuefamilyindices.transferFamilyHasValue)
+//      {
+//         //m_queuefamilyindices.transfer = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_TRANSFER_BIT);
+//         if ((m_queuefamilyindices.transferFamily != m_queuefamilyindices.graphicsFamily)
+//            && (m_queuefamilyindices.transferFamily != m_queuefamilyindices.computeFamily))
+//         {
+//            // If transfer family index differs, we need an additional queue create info for the transfer queue
+//            VkDeviceQueueCreateInfo queueInfo{};
+//            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+//            queueInfo.queueFamilyIndex = m_queuefamilyindices.transferFamily;
+//            queueInfo.queueCount = 1;
+//            queueInfo.pQueuePriorities = &defaultQueuePriority;
+//            queueCreateInfos.add(queueInfo);
+//         }
+//      }
+//      else
+//      {
+//         // Else we use the same queue
+//         m_queuefamilyindices.transferFamily = m_queuefamilyindices.graphicsFamily;
+//      }
+//
+//      // Create the logical device representation
+//      ::array<const char *> deviceExtensions(enabledExtensions);
+//      if (useSwapChain)
+//      {
+//
+//         // If the device will be used for presenting to a display via a swapchain we need to request the swapchain extension
+//         deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+//
+//      }
+//
+//      VkDeviceCreateInfo deviceCreateInfo = {};
+//      deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+//      deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());;
+//      deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
+//      deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
+//
+//      // If a pNext(Chain) has been passed, we need to add it to the device creation info
+//      VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
+//      if (pNextChain) {
+//         physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+//         physicalDeviceFeatures2.features = enabledFeatures;
+//         physicalDeviceFeatures2.pNext = pNextChain;
+//         deviceCreateInfo.pEnabledFeatures = nullptr;
+//         deviceCreateInfo.pNext = &physicalDeviceFeatures2;
+//      }
+//
+//#if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_METAL_EXT)) && defined(VK_KHR_portability_subset)
+//      // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
+//      if (extensionSupported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
+//      {
+//         deviceExtensions.add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+//      }
+//#endif
+//
+//      if (deviceExtensions.size() > 0)
+//      {
+//         for (const char * enabledExtension : deviceExtensions)
+//         {
+//            if (!isExtensionSupported(enabledExtension)) {
+//               information() << "Enabled device extension \"" << enabledExtension << "\" is not present at device level\n";
+//            }
+//         }
+//
+//         deviceCreateInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
+//         deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+//      }
+//
+//      this->m_physicaldevicefeaturesEnabled = enabledFeatures;
+//
+//      auto physicaldevice = pphysicaldevice->m_physicaldevice;
+//
+//      VkResult result = vkCreateDevice(physicaldevice, &deviceCreateInfo, nullptr, &this->logicalDevice());
+//      if (result != VK_SUCCESS)
+//      {
+//         return result;
+//      }
+//
+//      if (m_queuefamilyindices.graphicsFamily >= 0)
+//      {
+//         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
+//      }
+//      if (m_queuefamilyindices.presentFamily >= 0)
+//      {
+//         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
+//      }
+//
+//
+//      // Create a default command pool for graphics command buffers
+//      m_vkcommandpool = createCommandPool(m_queuefamilyindices.graphicsFamily);
+//
+//      return result;
+//
+//   }
+//
+//
+//   /**
+//   * Create a command pool for allocation command buffers from
+//   *
+//   * @param queueFamilyIndex Family index of the queue to create the command pool for
+//   * @param createFlags (Optional) Command pool creation flags (Defaults to VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
+//   *
+//   * @note Command buffers allocated from the created pool can only be submitted to a queue with the same family index
+//   *
+//   * @return A handle to the created command buffer
+//   */
+//   VkCommandPool context::createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags)
+//   {
+//      VkCommandPoolCreateInfo cmdPoolInfo = {};
+//      cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+//      cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
+//      cmdPoolInfo.flags = createFlags;
+//      VkCommandPool cmdPool;
+//      VK_CHECK_RESULT(vkCreateCommandPool(this->logicalDevice(), &cmdPoolInfo, nullptr, &cmdPool));
+//      return cmdPool;
+//   }
+//
+//
+//   /**
+//   * Check if an extension is supported by the (physical device)
+//   *
+//   * @param extension Name of the extension to check
+//   *
+//   * @return True if the extension is supported (present in the list read at device creation time)
+//   */
+//   bool context::isExtensionSupported(const ::scoped_string & scopedstrExtension)
+//   {
+//
+//      return m_straSupportedExtensions.contains(scopedstrExtension);
+//
+//   }
 
 
    //void context::_create_window_buffer()
@@ -1143,6 +1254,8 @@ namespace gpu_vulkan
 
    void context::_create_window_context(::windowing::window * pwindowParam)
    {
+
+      m_itaskGpu = ::current_itask();
 
       //   ::cast < ::windowing_win32::window > pwindow = pwindowParam;
 
@@ -1556,48 +1669,10 @@ namespace gpu_vulkan
    }
 
 
-   // local callback functions
-   static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-      VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-      VkDebugUtilsMessageTypeFlagsEXT messageType,
-      const VkDebugUtilsMessengerCallbackDataEXT * pCallbackData,
-      void * pUserData) {
-      //std::cerr << "validation layer: " << pCallbackData->pMessage;
-      warning() << "validation layer: " << pCallbackData->pMessage;
-      return VK_FALSE;
-   }
 
-   VkResult CreateDebugUtilsMessengerEXT(
-      VkInstance m_vkinstance,
-      const VkDebugUtilsMessengerCreateInfoEXT * pCreateInfo,
-      const VkAllocationCallbacks * pAllocator,
-      VkDebugUtilsMessengerEXT * pDebugMessenger)
-   {
-      auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-         m_vkinstance,
-         "vkCreateDebugUtilsMessengerEXT");
-      if (func != nullptr) {
-         return func(m_vkinstance, pCreateInfo, pAllocator, pDebugMessenger);
-      }
-      else {
-         return VK_ERROR_EXTENSION_NOT_PRESENT;
-      }
-   }
-
-   void DestroyDebugUtilsMessengerEXT(
-      VkInstance m_vkinstance,
-      VkDebugUtilsMessengerEXT debugMessenger,
-      const VkAllocationCallbacks * pAllocator) {
-      auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-         m_vkinstance,
-         "vkDestroyDebugUtilsMessengerEXT");
-      if (func != nullptr) {
-         func(m_vkinstance, debugMessenger, pAllocator);
-      }
-   }
 
    //// class member functions
-   ////context::context(::graphics3d_vulkan::VulkanDevice* pdevice) : m_vkdevice{pdevice->logicalDevice} {
+   ////context::context(::graphics3d_vulkan::VulkanDevice* pgpudevice) : this->logicalDevice(){pgpudevice->logicalDevice} {
    //context::context()
    //{
 
@@ -1615,8 +1690,8 @@ namespace gpu_vulkan
 
    //context::~context()
    //{
-   //   vkDestroyCommandPool(m_vkdevice, m_vkcommandpool, nullptr);
-   //   vkDestroyDevice(m_vkdevice, nullptr);
+   //   vkDestroyCommandPool(this->logicalDevice(), m_vkcommandpool, nullptr);
+   //   vkDestroyDevice(this->logicalDevice(), nullptr);
 
    //   if (enableValidationLayers) {
    //      DestroyDebugUtilsMessengerEXT(m_vkinstance, debugMessenger, nullptr);
@@ -1773,17 +1848,17 @@ namespace gpu_vulkan
    //      createInfo.enabledLayerCount = 0;
    //   }
 
-   //   if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &m_vkdevice) != VK_SUCCESS)
+   //   if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &this->logicalDevice()) != VK_SUCCESS)
    //   {
    //      throw ::exception(error_failed,"failed to create logical pvkcdevice!");
    //   }
    //   if (indices.graphicsFamilyHasValue)
    //   {
-   //      vkGetDeviceQueue(m_vkdevice, indices.graphicsFamily, 0, &m_vkqueueGraphics);
+   //      vkGetDeviceQueue(this->logicalDevice(), indices.graphicsFamily, 0, &m_vkqueueGraphics);
    //   }
    //   if (indices.presentFamilyHasValue)
    //   {
-   //      vkGetDeviceQueue(m_vkdevice, indices.presentFamily, 0, &m_vkqueuePresent);
+   //      vkGetDeviceQueue(this->logicalDevice(), indices.presentFamily, 0, &m_vkqueuePresent);
    //   }
    //}
 
@@ -1798,7 +1873,7 @@ namespace gpu_vulkan
    //   poolInfo.flags =
    //      VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-   //   if (vkCreateCommandPool(m_vkdevice, &poolInfo, nullptr, &m_vkcommandpool) != VK_SUCCESS) {
+   //   if (vkCreateCommandPool(this->logicalDevice(), &poolInfo, nullptr, &m_vkcommandpool) != VK_SUCCESS) {
    //      throw ::exception(error_failed,"failed to create command pool!");
    //   }
    //}
@@ -1840,21 +1915,21 @@ namespace gpu_vulkan
    //}
 
 
-   void context::populateDebugMessengerCreateInfo(
-      VkDebugUtilsMessengerCreateInfoEXT & createInfo)
-   {
+   //void context::populateDebugMessengerCreateInfo(
+   //   VkDebugUtilsMessengerCreateInfoEXT & createInfo)
+   //{
 
-      createInfo = {};
-      createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-      createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-         VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-      createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-         VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-         VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-      createInfo.pfnUserCallback = debugCallback;
-      createInfo.pUserData = nullptr;  // Optional
+   //   createInfo = {};
+   //   createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+   //   createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+   //      VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+   //   createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+   //      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+   //      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+   //   createInfo.pfnUserCallback = debugCallback;
+   //   createInfo.pUserData = nullptr;  // Optional
 
-   }
+   //}
 
 
    //void context::setupDebugMessenger()
@@ -1881,38 +1956,38 @@ namespace gpu_vulkan
    //}
 
 
-   bool context::checkValidationLayerSupport()
-   {
-      uint32_t layerCount;
-      vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+   //bool context::checkValidationLayerSupport()
+   //{
+   //   uint32_t layerCount;
+   //   vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
-      ::array<VkLayerProperties> availableLayers(layerCount);
-      vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+   //   ::array<VkLayerProperties> availableLayers(layerCount);
+   //   vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-      for (const char * layerName : validationLayers)
-      {
-         bool layerFound = false;
+   //   for (const char * layerName : validationLayers)
+   //   {
+   //      bool layerFound = false;
 
 
-         printf_line("checking for validation layer : %s", layerName);
-         for (const auto & layerProperties : availableLayers)
-         {
-            printf_line("an available layer : %s", layerProperties.layerName);
-            if (strcmp(layerName, layerProperties.layerName) == 0)
-            {
-               layerFound = true;
-               break;
-            }
-         }
+   //      printf_line("checking for validation layer : %s", layerName);
+   //      for (const auto & layerProperties : availableLayers)
+   //      {
+   //         printf_line("an available layer : %s", layerProperties.layerName);
+   //         if (strcmp(layerName, layerProperties.layerName) == 0)
+   //         {
+   //            layerFound = true;
+   //            break;
+   //         }
+   //      }
 
-         if (!layerFound) {
-            return false;
-         }
-      }
+   //      if (!layerFound) {
+   //         return false;
+   //      }
+   //   }
 
-      return true;
+   //   return true;
 
-   }
+   //}
 
 
    //::array<const char *> context::getRequiredExtensions()
@@ -1998,7 +2073,7 @@ namespace gpu_vulkan
       bufferInfo.usage = usage;
       bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-      if (vkCreateBuffer(m_vkdevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
+      if (vkCreateBuffer(this->logicalDevice(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed, "failed to create vertex buffer!");
@@ -2006,21 +2081,21 @@ namespace gpu_vulkan
       }
 
       VkMemoryRequirements memRequirements;
-      vkGetBufferMemoryRequirements(m_vkdevice, buffer, &memRequirements);
+      vkGetBufferMemoryRequirements(this->logicalDevice(), buffer, &memRequirements);
 
       VkMemoryAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
       allocInfo.allocationSize = memRequirements.size;
-      allocInfo.memoryTypeIndex = m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
+      allocInfo.memoryTypeIndex = m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
 
-      if (vkAllocateMemory(m_vkdevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
+      if (vkAllocateMemory(this->logicalDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed, "failed to allocate vertex buffer memory!");
 
       }
 
-      vkBindBufferMemory(m_vkdevice, buffer, bufferMemory, 0);
+      vkBindBufferMemory(this->logicalDevice(), buffer, bufferMemory, 0);
 
    }
 
@@ -2031,11 +2106,11 @@ namespace gpu_vulkan
       VkCommandBufferAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
       allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      allocInfo.commandPool = m_vkcommandpool;
+      allocInfo.commandPool = m_pgpudevice->getCommandPool();
       allocInfo.commandBufferCount = 1;
 
       VkCommandBuffer commandBuffer;
-      vkAllocateCommandBuffers(m_vkdevice, &allocInfo, &commandBuffer);
+      vkAllocateCommandBuffers(this->logicalDevice(), &allocInfo, &commandBuffer);
 
       VkCommandBufferBeginInfo beginInfo{};
       beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -2047,22 +2122,22 @@ namespace gpu_vulkan
    }
 
 
-   void context::endSingleTimeCommands(VkCommandBuffer commandBuffer)
-   {
+   //void context::endSingleTimeCommands(VkCommandBuffer commandBuffer)
+   //{
 
-      vkEndCommandBuffer(commandBuffer);
+   //   vkEndCommandBuffer(commandBuffer);
 
-      VkSubmitInfo submitInfo{};
-      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-      submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = &commandBuffer;
+   //   VkSubmitInfo submitInfo{};
+   //   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+   //   submitInfo.commandBufferCount = 1;
+   //   submitInfo.pCommandBuffers = &commandBuffer;
 
-      vkQueueSubmit(m_vkqueueGraphics, 1, &submitInfo, VK_NULL_HANDLE);
-      vkQueueWaitIdle(m_vkqueueGraphics);
+   //   vkQueueSubmit(m_vkqueueGraphics, 1, &submitInfo, VK_NULL_HANDLE);
+   //   vkQueueWaitIdle(m_vkqueueGraphics);
 
-      vkFreeCommandBuffers(m_vkdevice, m_vkcommandpool, 1, &commandBuffer);
+   //   vkFreeCommandBuffers(this->logicalDevice(), m_pgpudevice->getCommandPool(), 1, &commandBuffer);
 
-   }
+   //}
 
 
    void context::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
@@ -2119,7 +2194,7 @@ namespace gpu_vulkan
       VkDeviceMemory & imageMemory)
    {
 
-      if (vkCreateImage(m_vkdevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
+      if (vkCreateImage(this->logicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed, "failed to create image!");
@@ -2127,21 +2202,23 @@ namespace gpu_vulkan
       }
 
       VkMemoryRequirements memRequirements;
-      vkGetImageMemoryRequirements(m_vkdevice, image, &memRequirements);
+      vkGetImageMemoryRequirements(this->logicalDevice(), image, &memRequirements);
 
       VkMemoryAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
       allocInfo.allocationSize = memRequirements.size;
-      allocInfo.memoryTypeIndex = m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
+      allocInfo.memoryTypeIndex = m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
 
-      if (vkAllocateMemory(m_vkdevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
+      if (vkAllocateMemory(this->logicalDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
          throw ::exception(error_failed, "failed to allocate image memory!");
       }
 
-      if (vkBindImageMemory(m_vkdevice, image, imageMemory, 0) != VK_SUCCESS) {
+      if (vkBindImageMemory(this->logicalDevice(), image, imageMemory, 0) != VK_SUCCESS) {
          throw ::exception(error_failed, "failed to bind image memory!");
       }
    }
+
+
 
 
 
@@ -2154,10 +2231,10 @@ namespace gpu_vulkan
       //m_submitInfo.pCommandBuffers = &cmdBuffer;
       VkFenceCreateInfo fenceInfo = initializers::fenceCreateInfo();
       VkFence fence;
-      VK_CHECK_RESULT(vkCreateFence(m_vkdevice, &fenceInfo, nullptr, &fence));
+      VK_CHECK_RESULT(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
       VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-      VK_CHECK_RESULT(vkWaitForFences(m_vkdevice, 1, &fence, VK_TRUE, UINT64_MAX));
-      vkDestroyFence(m_vkdevice, fence, nullptr);
+      VK_CHECK_RESULT(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX));
+      vkDestroyFence(this->logicalDevice(), fence, nullptr);
    }
 
 
@@ -2170,11 +2247,112 @@ namespace gpu_vulkan
    //   //m_submitInfo.pCommandBuffers = &cmdBuffer;
    //   VkFenceCreateInfo fenceInfo = initializers::fence_create_info();
    //   VkFence fence;
-   //   VK_CHECK_RESULT(vkCreateFence(m_vkdevice, &fenceInfo, nullptr, &fence));
+   //   VK_CHECK_RESULT(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
    //   VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-   //   VK_CHECK_RESULT(vkWaitForFences(m_vkdevice, 1, &fence, VK_TRUE, UINT64_MAX));
-   //   vkDestroyFence(m_vkdevice, fence, nullptr);
+   //   VK_CHECK_RESULT(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX));
+   //   vkDestroyFence(this->logicalDevice(), fence, nullptr);
    //}
+
+   ::gpu_vulkan::descriptor_pool* context::get_global_pool(int iFrameCount)
+   {
+
+      return m_pdescriptorpoolGlobal;
+
+   }
+
+
+   void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
+   {
+
+      m_uboBuffers.set_size(iFrameCount);
+
+      for (int i = 0; i < m_uboBuffers.size(); i++)
+      {
+
+         m_uboBuffers[i] = __allocate buffer();
+
+         m_uboBuffers[i]->initialize_buffer(
+            this,
+            iGlobalUboSize,
+            1,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+         m_uboBuffers[i]->map();
+
+      }
+
+      //auto globalSetLayout = m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+
+   }
+
+
+   void context::update_global_ubo(const ::block& block)
+   {
+
+      auto iFrameIndex = m_prenderer->get_frame_index();
+
+      m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
+
+      m_uboBuffers[iFrameIndex]->flush();
+
+   }
+
+
+   void context::engine_on_frame_context_initialization()
+   {
+
+      // Global UBO descriptors
+      if (!m_psetdescriptorlayoutGlobal)
+      {
+
+         m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(this)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
+            .build();
+
+         auto iFrameCount = m_prenderer->get_frame_count();
+
+         m_descriptorsetsGlobal.resize(iFrameCount);
+
+         auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+
+         pdescriptorpoolbuilder->initialize_builder(this);
+         pdescriptorpoolbuilder->setMaxSets(iFrameCount);
+         pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount);
+
+         m_pdescriptorpoolGlobal = pdescriptorpoolbuilder->build();
+
+         for (int i = 0; i < m_descriptorsetsGlobal.size(); i++)
+         {
+
+            auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
+
+            descriptor_writer(*m_psetdescriptorlayoutGlobal, *m_pdescriptorpoolGlobal)
+               .writeBuffer(0, &bufferInfo)
+               .build(m_descriptorsetsGlobal[i]);
+
+         }
+
+      }
+
+
+
+   }
+
+
+   VkDescriptorSet context::getGlobalDescriptorSet(::gpu_vulkan::renderer* prenderer)
+   {
+
+      //if (m_globalDescriptorSets.is_empty())
+      //{
+
+
+      //}
+
+      return m_descriptorsetsGlobal[prenderer->get_frame_index()];
+
+   }
+
 
 
 } // namespace gpu_vulkan

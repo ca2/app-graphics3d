@@ -13,6 +13,7 @@
 #include "app-cube/cube/gpu/approach.h"
 #include "app-cube/cube/gpu/context.h"
 #include "app-cube/cube/gpu/cpu_buffer.h"
+#include "app-cube/cube/gpu/device.h"
 #include "app-cube/cube/gpu/renderer.h"
 #include "acme/exception/interface_only.h"
 #include "acme/platform/application.h"
@@ -104,7 +105,7 @@ namespace graphics3d
       if (iGlobalUboSize > 0)
       {
 
-         m_papproach->create_global_ubo(pgpucontext, iGlobalUboSize, pgpucontext->m_prenderer->get_frame_count());
+         m_pgpucontext->create_global_ubo(iGlobalUboSize, pgpucontext->m_prenderer->get_frame_count());
 
       }
 
@@ -306,6 +307,8 @@ namespace graphics3d
 
       auto pgpu = papp->get_gpu();
 
+      ::cast < ::gpu::device > pgpudevice = pgpu->get_device();
+
       ::pointer < ::gpu::context > pgpucontext;
 
       if (m_papplication->m_bUseDraw2dProtoWindow)
@@ -313,7 +316,7 @@ namespace graphics3d
 
          auto pwindow = m_pimpact->window();
 
-         pgpucontext = pgpu->start_swap_chain_context(this, pwindow);
+         pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
 
       }
       else
@@ -321,7 +324,7 @@ namespace graphics3d
 
          auto callbackImage32CpuBuffer = m_pimpact->m_callbackImage32CpuBuffer;
 
-         pgpucontext = pgpu->start_cpu_buffer_context(this, callbackImage32CpuBuffer, rectanglePlacement);
+         pgpucontext = pgpudevice->start_cpu_buffer_context(this, callbackImage32CpuBuffer, rectanglePlacement);
 
       }
 
@@ -356,7 +359,7 @@ namespace graphics3d
 
          m_pscene->on_update_global_ubo(pgpucontext);
 
-         m_papproach->update_global_ubo(pgpucontext, m_pimpact->global_ubo_block());
+         m_pgpucontext->update_global_ubo(m_pimpact->global_ubo_block());
 
       }
 
@@ -370,6 +373,14 @@ namespace graphics3d
       _prepare_frame();
 
       _do_frame_step();
+
+   }
+
+
+   void engine::_engine_on_frame_context_initialization()
+   {
+
+
 
    }
 
@@ -470,6 +481,15 @@ namespace graphics3d
             }
 
          }
+
+      }
+
+      if (!m_bEngineOnFrameContextInitialization)
+      {
+
+         m_bEngineOnFrameContextInitialization = true;
+
+         _engine_on_frame_context_initialization();
 
       }
 

@@ -55,35 +55,35 @@ namespace gpu_vulkan
    {
       for (auto imageView : m_imageviews) 
       {
-         vkDestroyImageView(m_pgpucontext->device(), imageView, nullptr);
+         vkDestroyImageView(m_pgpucontext->logicalDevice(), imageView, nullptr);
       }
       m_imageviews.clear();
 
       //if (swapChain != nullptr) {
-      //   vkDestroySwapchainKHR(m_pgpucontext->device(), swapChain, nullptr);
+      //   vkDestroySwapchainKHR(m_pgpucontext->logicalDevice(), swapChain, nullptr);
       //   swapChain = nullptr;
       //}
 
       for (int i = 0; i < depthImages.size(); i++) 
       {
-         vkDestroyImageView(m_pgpucontext->device(), depthImageViews[i], nullptr);
-         vkDestroyImage(m_pgpucontext->device(), depthImages[i], nullptr);
-         vkFreeMemory(m_pgpucontext->device(), depthImageMemorys[i], nullptr);
+         vkDestroyImageView(m_pgpucontext->logicalDevice(), depthImageViews[i], nullptr);
+         vkDestroyImage(m_pgpucontext->logicalDevice(), depthImages[i], nullptr);
+         vkFreeMemory(m_pgpucontext->logicalDevice(), depthImageMemorys[i], nullptr);
       }
 
       for (auto framebuffer : m_framebuffers)
       {
-         vkDestroyFramebuffer(m_pgpucontext->device(), framebuffer, nullptr);
+         vkDestroyFramebuffer(m_pgpucontext->logicalDevice(), framebuffer, nullptr);
       }
 
-      vkDestroyRenderPass(m_pgpucontext->device(), m_vkrenderpass, nullptr);
+      vkDestroyRenderPass(m_pgpucontext->logicalDevice(), m_vkrenderpass, nullptr);
 
       // cleanup synchronization objects
       for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
       {
-         vkDestroySemaphore(m_pgpucontext->device(), renderFinishedSemaphores[i], nullptr);
-         vkDestroySemaphore(m_pgpucontext->device(), imageAvailableSemaphores[i], nullptr);
-         vkDestroyFence(m_pgpucontext->device(), inFlightFences[i], nullptr);
+         vkDestroySemaphore(m_pgpucontext->logicalDevice(), renderFinishedSemaphores[i], nullptr);
+         vkDestroySemaphore(m_pgpucontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
+         vkDestroyFence(m_pgpucontext->logicalDevice(), inFlightFences[i], nullptr);
       }
    }
 
@@ -92,14 +92,14 @@ namespace gpu_vulkan
    {
 
       //vkWaitForFences(
-      //   m_pgpucontext->device(),
+      //   m_pgpucontext->logicalDevice(),
       //   1,
       //   &inFlightFences[currentFrame],
       //   VK_TRUE,
       //   std::numeric_limits<uint64_t>::max());
 
       //VkResult result = vkAcquireNextImageKHR(
-      //   m_pgpucontext->device(),
+      //   m_pgpucontext->logicalDevice(),
       //   swapChain,
       //   std::numeric_limits<uint64_t>::max(),
       //   imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
@@ -116,7 +116,7 @@ namespace gpu_vulkan
    {
 
       //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
-      //   vkWaitForFences(m_pgpucontext->device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+      //   vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
       //}
       //imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
 
@@ -136,7 +136,7 @@ namespace gpu_vulkan
       //submitInfo.signalSemaphoreCount = 1;
       //submitInfo.pSignalSemaphores = signalSemaphores;
 
-      //vkResetFences(m_pgpucontext->device(), 1, &inFlightFences[currentFrame]);
+      //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
       //if (vkQueueSubmit(m_pgpucontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
       //   VK_SUCCESS) {
       //   throw ::exception(error_failed,"failed to submit draw command buffer!");
@@ -213,7 +213,7 @@ namespace gpu_vulkan
 
       //createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
-      //if (vkCreateSwapchainKHR(m_pgpucontext->device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
+      //if (vkCreateSwapchainKHR(m_pgpucontext->logicalDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
       //   throw ::exception(error_failed,"failed to create swap chain!");
       //}
 
@@ -221,9 +221,9 @@ namespace gpu_vulkan
       //// allowed to create a swap chain with more. That's why we'll first query the final number of
       //// images with vkGetSwapchainImagesKHR, then resize the container and finally call it again to
       //// retrieve the handles.
-      //vkGetSwapchainImagesKHR(m_pgpucontext->device(), swapChain, &imageCount, nullptr);
+      //vkGetSwapchainImagesKHR(m_pgpucontext->logicalDevice(), swapChain, &imageCount, nullptr);
       //swapChainImages.resize(imageCount);
-      //vkGetSwapchainImagesKHR(m_pgpucontext->device(), swapChain, &imageCount, swapChainImages.data());
+      //vkGetSwapchainImagesKHR(m_pgpucontext->logicalDevice(), swapChain, &imageCount, swapChainImages.data());
 
       //swapChainImageFormat = surfaceFormat.format;
       //extent = extent;
@@ -250,7 +250,7 @@ namespace gpu_vulkan
          viewInfo.subresourceRange.baseArrayLayer = 0;
          viewInfo.subresourceRange.layerCount = 1;
 
-         if (vkCreateImageView(m_pgpucontext->device(), &viewInfo, nullptr, &m_imageviews[i]) !=
+         if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, nullptr, &m_imageviews[i]) !=
             VK_SUCCESS) 
          {
             throw ::exception(error_failed,"failed to create texture image view!");
@@ -320,7 +320,7 @@ namespace gpu_vulkan
       renderPassInfo.dependencyCount = 1;
       renderPassInfo.pDependencies = &dependency;
 
-      if (vkCreateRenderPass(m_pgpucontext->device(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) 
+      if (vkCreateRenderPass(m_pgpucontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) 
       {
 
          throw ::exception(error_failed,"failed to create render pass!");
@@ -351,7 +351,7 @@ namespace gpu_vulkan
          framebufferInfo.layers = 1;
 
          if (vkCreateFramebuffer(
-            m_pgpucontext->device(),
+            m_pgpucontext->logicalDevice(),
             &framebufferInfo,
             nullptr,
             &m_framebuffers[i]) != VK_SUCCESS) 
@@ -415,7 +415,7 @@ namespace gpu_vulkan
          viewInfo.subresourceRange.baseArrayLayer = 0;
          viewInfo.subresourceRange.layerCount = 1;
 
-         if (vkCreateImageView(m_pgpucontext->device(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) 
+         if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) 
          {
             throw ::exception(error_failed,"failed to create texture image view!");
          }
@@ -444,11 +444,11 @@ namespace gpu_vulkan
       for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) 
       {
          imageAvailable[i] = 0;
-         if (vkCreateSemaphore(m_pgpucontext->device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
+         if (vkCreateSemaphore(m_pgpucontext->logicalDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
             VK_SUCCESS ||
-            vkCreateSemaphore(m_pgpucontext->device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
+            vkCreateSemaphore(m_pgpucontext->logicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
             VK_SUCCESS ||
-            vkCreateFence(m_pgpucontext->device(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) 
+            vkCreateFence(m_pgpucontext->logicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) 
          {
             throw ::exception(error_failed,"failed to create synchronization objects for a frame!");
          }
@@ -508,7 +508,7 @@ namespace gpu_vulkan
    VkFormat render_pass::findDepthFormat() 
    {
 
-      return m_pgpucontext->m_pphysicaldevice->findSupportedFormat(
+      return m_pgpucontext->m_pgpudevice->m_pphysicaldevice->findSupportedFormat(
          { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
          VK_IMAGE_TILING_OPTIMAL,
          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);

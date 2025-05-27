@@ -95,7 +95,7 @@ namespace gpu_vulkan
    }
 
 
-   //void object::prepare(::gpu::approach * papproach)
+   //void object::prepare(::gpu::approach * pgpuapproach)
    //{
 
    //   if (m_bPrepared)
@@ -105,14 +105,14 @@ namespace gpu_vulkan
 
    //   }
 
-   //   _prepare(papproach);
+   //   _prepare(pgpuapproach);
 
    //   m_bPrepared = true;
 
    //}
 
 
-   void object::_prepare(::gpu::approach * papproach)
+   void object::_prepare(::gpu::approach * pgpuapproach)
    {
 
 //      // Dark blue background
@@ -276,9 +276,9 @@ namespace gpu_vulkan
 //      //auto pszError15 = (const char *)gluErrorString(iError15);
 //
 //      // Load the texture
-//      m_uniformTexture = papproach->load_dds(m_path+ ".uvmap.DDS");
-//      //m_uniformTexture = papproach->load_dds(m_path + ".uvmap.DDS");
-//      //m_uniformTexture = papproach->load_normal_map(m_path.folder() / (m_path.title() + ".png"));
+//      m_uniformTexture = pgpuapproach->load_dds(m_path+ ".uvmap.DDS");
+//      //m_uniformTexture = pgpuapproach->load_dds(m_path + ".uvmap.DDS");
+//      //m_uniformTexture = pgpuapproach->load_normal_map(m_path.folder() / (m_path.title() + ".png"));
 
    }
 

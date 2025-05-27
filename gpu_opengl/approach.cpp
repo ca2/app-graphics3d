@@ -14,35 +14,8 @@ namespace gpu_opengl
 {
 
 
-#ifdef WINDOWS_DESKTOP
-
-   ::pointer <::gpu::context > allocate_system_context(::particle * pparticle);
-
-#elif defined(__APPLE__)
-
-#if 1
-
-   ::pointer <::gpu::context > allocate_fbo_context(::particle * pparticle);
-
-#else
-
-   ::pointer <::gpu::context > allocate_cgl_context(::particle * pparticle);
-
-#endif
-
-#else
-
-   ::pointer <::gpu::context > allocate_egl_context(::particle * pparticle);
-
-   //::pointer <::gpu::context > allocate_glx_context(::particle * pparticle);
-
-#endif
-
-
    approach::approach()
    {
-
-      m_globalUBO = 0;
 
       m_bGpuLibraryInit = false;
 
@@ -119,60 +92,6 @@ namespace gpu_opengl
    }
 
 
-   ::pointer < ::gpu::context > approach::allocate_context(::particle* pparticle)
-   {
-
-      ::pointer < ::gpu::context > pgpucontext;
-
-#ifdef WINDOWS_DESKTOP
-
-      pgpucontext = allocate_system_context(pparticle);
-
-#elif defined(__APPLE__)
-
-#if 1
-
-      pgpucontext = allocate_fbo_context(pparticle);
-
-#else
-
-      pgpucontext = allocate_cgl_context(pparticle);
-
-#endif
-
-#elif defined(__ANDROID__)
-
-      pgpucontext = allocate_egl_context(pparticle);
-
-#else
-
-      string strWaylandDisplay(getenv("WAYLAND_DISPLAY"));
-
-      if (strWaylandDisplay.has_character())
-      {
-
-         pgpucontext = allocate_egl_context(pparticle);
-
-      }
-      // else
-      // {
-      //
-      //    pgpucontext = allocate_glx_context(pparticle);
-      //
-      // }
-
-#endif
-
-      if (!pgpucontext)
-      {
-
-         return nullptr;
-
-      }
-
-      return pgpucontext;
-
-   }
 
 
    void approach::defer_init_gpu_library()
@@ -356,49 +275,7 @@ namespace gpu_opengl
    }
 
 
-   void approach::create_global_ubo(::gpu::context* pgpucontext, int iGlobalUboSize, int iFrameCount)
-   {
 
-      // Create the UBO
-      glGenBuffers(1, &m_globalUBO);
-      glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
-      glBufferData(GL_UNIFORM_BUFFER, iGlobalUboSize, NULL, GL_DYNAMIC_DRAW); // For 2 mat4s = 2 * sizeof(float) * 16
-      unsigned int uUboBindingPoint = 0;
-      glBindBufferBase(GL_UNIFORM_BUFFER, uUboBindingPoint, m_globalUBO);
-      glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-   }
-
-
-   void approach::update_global_ubo(::gpu::context* pgpucontext, const ::block& block)
-   {
-
-      glBindBuffer(GL_UNIFORM_BUFFER, m_globalUBO);
-
-      // Map the entire buffer for writing
-      void* p = glMapBufferRange(
-         GL_UNIFORM_BUFFER,
-         0, block.size(),
-         GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-
-      if (p) 
-      {
-
-         memcpy(p, block.data(), block.size());
-
-         glUnmapBuffer(GL_UNIFORM_BUFFER);
-
-      }
-      else 
-      {
-
-         warning() << "Failed to map UBO";
-
-      }
-
-      glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-   }
 
 
 } // namespace gpu_opengl

@@ -695,6 +695,7 @@
     <ClInclude Include="context_egl.h" />
     <ClInclude Include="context_glx.h" />
     <ClInclude Include="context_win32.h" />
+    <ClInclude Include="device.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="frame_buffer.h" />
     <ClInclude Include="object.h" />
@@ -731,6 +732,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="context_win32.cpp" />
+    <ClCompile Include="device.cpp" />
     <ClCompile Include="frame_buffer.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="renderer.cpp" />

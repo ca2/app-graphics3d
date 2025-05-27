@@ -24,7 +24,7 @@ namespace gpu_vulkan
    public:
 
 
-      ::pointer < approach >           m_papproach;
+      ::pointer < approach >           m_pgpuapproach;
       // Physical device (GPU) that Vulkan will use
       VkPhysicalDevice                 m_physicaldevice;
       // Stores physical device properties (for e.g. checking device limits)
@@ -52,17 +52,20 @@ namespace gpu_vulkan
 
       VkSurfaceKHR surface() { return m_vksurfacekhr; }
 
+
+      VkResult createWindowSurface(::windowing::window* pwindow);
+
       uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
       VkFormat findSupportedFormat(
          const ::array<VkFormat> & candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
       
-      virtual void _initialize_physical_device(approach * papproach, VkPhysicalDevice physicaldevice);
+      virtual void _initialize_physical_device(approach * pgpuapproach, VkPhysicalDevice physicaldevice);
 
       uint32_t getQueueFamilyIndex(VkQueueFlags queueFlags) const;
 
-      SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(); }
-      vulkan::QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(); }
+      //SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(); }
+      //vulkan::QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(); }
 
 
       vulkan::QueueFamilyIndices findQueueFamilies();

@@ -22,9 +22,6 @@ namespace gpu_vulkan
 
 
       //::cube::application_object::map				m_mapObjects;
-      ::pointer_array<::gpu_vulkan::buffer>							m_uboBuffers;
-
-      ::pointer <::gpu_vulkan::descriptor_pool> m_pglobalpool;
 
 
 
@@ -93,7 +90,10 @@ namespace gpu_vulkan
       ::pointer < benchmark >          m_pbenchmark;
 
       /** @brief Encapsulated physical and logical vulkan device */
-      ::pointer < device >             m_pdevice;
+      ::pointer < device >             m_pgpudevice;
+
+
+
 
       /** @brief Example settings that can be changed e.g. by command line arguments */
       struct Settings {
@@ -222,8 +222,6 @@ namespace gpu_vulkan
 #endif
       bool                          m_bGpuLibraryInit;
 
-      ::pointer<set_descriptor_layout> m_psetdescriptorlayoutGlobal;
-
 
       //HGLRC                         m_hrc;
       //HDC                           m_hdc;
@@ -237,8 +235,6 @@ namespace gpu_vulkan
       //::pointer<::vulkan::program> m_pprogram;
       //unsigned int                  VAO;
       //unsigned int                  VBO;
-
-      ::array<VkDescriptorSet> m_globalDescriptorSets;
 
 
       approach();
@@ -276,17 +272,12 @@ namespace gpu_vulkan
 
       //virtual void make_current();
 
+//      void engine_on_frame_context_initialization(::gpu::context* pgpucontext) override;
 
       ::gpu::payload load_dds(const ::scoped_string & scopedstrImagePath) override;
 
 
-      virtual VkDescriptorSet getCurrentDescriptorSet(::gpu_vulkan::renderer * prenderer);
 
-
-      ::gpu_vulkan::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);
-
-      void create_global_ubo(::gpu::context * pgpucontext, int iSize, int iFrameCount) override;
-      void update_global_ubo(::gpu::context* pgpucontext, const ::block& block) override;
 
    };
 

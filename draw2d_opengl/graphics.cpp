@@ -12,6 +12,7 @@
 #include "acme/prototype/mathematics/mathematics.h"
 #include "app-cube/cube/gpu/approach.h"
 #include "app-cube/cube/gpu/cpu_buffer.h"
+#include "app-cube/cube/gpu/device.h"
 #include "app-cube/cube/gpu/render.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
@@ -227,7 +228,9 @@ namespace draw2d_opengl
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->start_cpu_buffer_context(this, m_callbackImage32CpuBuffer, rectanglePlacement);
+         auto pgpudevice = pgpu->get_device();
+
+         m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, m_callbackImage32CpuBuffer, rectanglePlacement);
 
       }
 
@@ -437,7 +440,9 @@ namespace draw2d_opengl
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->start_swap_chain_context(this, pwindow);
+         auto pgpudevice = pgpu->get_device();
+
+         m_pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
 
       }
 

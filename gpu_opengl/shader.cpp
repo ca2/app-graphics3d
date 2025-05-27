@@ -3,6 +3,7 @@
 #include "acme/filesystem/filesystem/file_context.h"
 #include "app-cube/cube/gpu/approach.h"
 #include "app-cube/cube/gpu/context.h"
+#include "app-cube/cube/gpu/device.h"
 #include "app-cube/cube/gpu/types.h"
 
 
@@ -103,14 +104,14 @@ namespace gpu_opengl
       if (m_memoryVertex.is_empty())
       {
 
-         m_memoryVertex = file()->as_memory(m_pgpucontext->m_papproach->shader_path(m_pathVertex));
+         m_memoryVertex = file()->as_memory(m_pgpucontext->m_pgpudevice->m_pgpuapproach->shader_path(m_pathVertex));
 
       }
 
       if (m_memoryFragment.is_empty())
       {
 
-         m_memoryFragment = file()->as_memory(m_pgpucontext->m_papproach->shader_path(m_pathFragment));
+         m_memoryFragment = file()->as_memory(m_pgpucontext->m_pgpudevice->m_pgpuapproach->shader_path(m_pathFragment));
 
       }
 

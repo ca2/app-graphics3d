@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "approach.h"
 #include "context.h"
+#include "device.h"
 #include "cpu_buffer.h"
 #include "render.h"
 #include "renderer.h"
@@ -25,8 +26,6 @@ namespace gpu
    {
 
       m_bCreated = false;
-      m_emode = e_mode_none;
-      //m_bSimpleMessageLoop = false;
 
    }
 
@@ -37,22 +36,22 @@ namespace gpu
    }
 
 
-   void context::initialize(::particle* pparticle)
-   {
+   //void context::initialize(::particle* pparticle)
+   //{
 
-      //::e_status estatus = 
-      ::object::initialize(pparticle);
+   //   //::e_status estatus = 
+   //   ::object::initialize(pparticle);
 
-      //if (!estatus)
-      //{
+   //   //if (!estatus)
+   //   //{
 
-      //   return estatus;
+   //   //   return estatus;
 
-      //}
+   //   //}
 
-      //return estatus;
+   //   //return estatus;
 
-   }
+   //}
 
 
    void context::draw()
@@ -176,9 +175,9 @@ namespace gpu
    void context::create_window_buffer(void* pHwnd)
    {
 
-      ::cast < approach > papproach = m_papproach;
+      ::cast < device > pgpudevice = m_pgpudevice;
 
-      if (::is_null(papproach))
+      if (::is_null(pgpudevice))
       {
 
          throw ::exception(error_null_pointer);
@@ -224,9 +223,9 @@ namespace gpu
       send([this, size]()
          {
 
-            ::cast < approach > papproach = m_papproach;
+            ::cast < device > pgpudevice = m_pgpudevice;
 
-            if (::is_null(papproach))
+            if (::is_null(pgpudevice))
             {
 
                throw ::exception(error_null_pointer);
@@ -374,7 +373,7 @@ namespace gpu
 
       ASSERT(is_current_task());
 
-      m_papproach = startcontext.m_papproach;
+      m_pgpudevice = startcontext.m_pgpudevice;
 
       m_eoutput = startcontext.m_eoutput;
 
@@ -461,13 +460,16 @@ namespace gpu
    ::pointer<::gpu::shader> context::create_shader(
       const ::file::path& pathVert,
       const ::file::path& pathFrag,
+      const ::array<::gpu::shader::enum_descriptor_set_slot>& eslota,
+      const ::particle_pointer& pLocalDescriptorSet,
+      const ::particle_pointer& pVertexInput,
       const ::gpu::property* pproperties,
       ::gpu::shader::enum_flag eflag)
    {
 
       auto pshader = __øcreate < ::gpu::shader >();
 
-      pshader->initialize_shader(this, pathVert, pathFrag, pproperties, eflag);
+      pshader->initialize_shader(this, pathVert, pathFrag, eslota, pLocalDescriptorSet, pVertexInput,pproperties, eflag);
 
       return pshader;
 
@@ -749,6 +751,21 @@ namespace gpu
 
 
    }
+
+
+   void context::create_global_ubo(int iSize, int iFrameCount)
+   {
+
+
+   }
+
+
+   void context::update_global_ubo(const ::block& block)
+   {
+
+
+   }
+
 
 
 } // namespace gpu

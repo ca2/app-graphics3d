@@ -27,10 +27,10 @@ namespace gpu_vulkan
    }
 
    
-   void physical_device::_initialize_physical_device(approach * papproach, VkPhysicalDevice physicaldevice)
+   void physical_device::_initialize_physical_device(approach * pgpuapproach, VkPhysicalDevice physicaldevice)
    {
 
-      m_papproach = papproach;
+      m_pgpuapproach = pgpuapproach;
 
       m_physicaldevice = physicaldevice;
 

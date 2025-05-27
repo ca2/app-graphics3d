@@ -63,24 +63,8 @@ namespace gpu
       enum_output m_eoutput;
 
 
-      enum enum_mode
-      {
-
-
-         e_mode_none,
-         e_mode_system,
-         e_mode_egl,
-         e_mode_glx,
-         e_mode_cgl,
-         e_mode_fbo,
-
-
-      };
-
-
-      enum_mode                              m_emode;
-      ::pointer < ::gpu::approach >          m_papproach;
-
+      ::pointer<::gpu::device>               m_pgpudevice;
+      
       ::int_size                             m_sizeNew;
       ::int_size                             m_size;
       float                                  m_z;
@@ -117,13 +101,16 @@ namespace gpu
       virtual void lock_context();
       virtual void unlock_context();
 
-      virtual void initialize(::particle * pparticle) override;
+      //virtual void initialize(::particle * pparticle) override;
 
 
       virtual ::pointer<::gpu::shader> create_shader(
          const ::file::path& pathVert,
          const ::file::path& pathFrag,
-         const ::gpu::property* pproperties,
+         const ::array<::gpu::shader::enum_descriptor_set_slot>& eslota = {},
+         const ::particle_pointer& pLocalDescriptorSet = {},
+         const ::particle_pointer& pVertexInput = {},
+         const ::gpu::property* pproperties = nullptr,
          ::gpu::shader::enum_flag eflag = ::gpu::shader::e_flag_none);
 
 
@@ -184,6 +171,11 @@ namespace gpu
 
 
       virtual void clear(const ::color::color& color);
+
+
+      virtual void create_global_ubo(int iSize, int iFrameCount);
+      virtual void update_global_ubo(const ::block& block);
+
 
 
    };

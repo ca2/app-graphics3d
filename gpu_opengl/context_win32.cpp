@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "context_win32.h"
 #include "approach.h"
+#include "device.h"
 #include "cpu_buffer.h"
 #include "app-cube/cube/gpu/approach.h"
 #include "app-cube/cube/gpu/types.h"
@@ -28,7 +29,7 @@ namespace gpu_opengl
 
       m_bMesa = false;
 
-      m_emode = e_mode_system;
+      //m_emode = e_mode_system;
 
       m_estatus = error_not_initialized;
 
@@ -151,9 +152,11 @@ namespace gpu_opengl
       if (!m_hdc || !m_hrc)
       {
 
-         ::cast < approach > papproach = m_papproach;
+         ::cast < device > pgpudevice = m_pgpudevice;
 
-         if (!papproach->m_atomClass)
+         ::cast < approach > pgpuapproach = pgpudevice->m_pgpuapproach;
+
+         if (!pgpuapproach->m_atomClass)
          {
 
             informationf("MS GDI - RegisterClass failed");
@@ -257,7 +260,7 @@ namespace gpu_opengl
 
          }
 
-         papproach->defer_init_gpu_library();
+         pgpuapproach->defer_init_gpu_library();
 
          auto pszVersion = (const char *)glGetString(GL_VERSION);
          //::e_status estatus = 
@@ -310,7 +313,7 @@ namespace gpu_opengl
       if (!m_hdc || !m_hrc)
       {
 
-         ::cast < approach > papproach = m_papproach;
+         ::cast < approach > pgpuapproach = m_pgpudevice->m_pgpuapproach;
 
          //if (!popengl->m_atomClass)
          //{
@@ -441,7 +444,7 @@ namespace gpu_opengl
 
             }
 
-            papproach->defer_init_gpu_library();
+            m_pgpudevice->m_pgpuapproach->defer_init_gpu_library();
 
             auto pszVersion = (const char *)glGetString(GL_VERSION);
             //::e_status estatus = 

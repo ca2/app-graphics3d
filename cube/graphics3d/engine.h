@@ -50,6 +50,7 @@ namespace graphics3d
 		bool	m_bCreatedGlobalUbo;
 		::int_rectangle								m_rectanglePlacementNew;
 		::int_rectangle								m_rectanglePlacement;
+		bool m_bEngineOnFrameContextInitialization = false;
 
 
 		engine();
@@ -75,6 +76,8 @@ namespace graphics3d
 		virtual void do_frame_step();
 
 		virtual void _prepare_frame();
+
+		virtual void _engine_on_frame_context_initialization();
 
 		virtual void _do_frame_step();
 

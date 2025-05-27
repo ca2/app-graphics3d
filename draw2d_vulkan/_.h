@@ -7,6 +7,9 @@
 #include "acme/_operating_system.h"
 #endif
 #include "gpu_vulkan/_.h"
+#define VKVG_SHARED_LINKING
+#include <vkh.h>
+#include <vkvg.h>
 
 
 #ifdef _DRAW2D_VULKAN_STATIC

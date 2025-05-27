@@ -36,7 +36,12 @@ namespace gpu_vulkan
 
 
 
-   pipeline::~pipeline() {
+   pipeline::~pipeline() 
+   {
+
+
+      ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
       vkDestroyShaderModule(m_pgpucontext->logicalDevice(), vertShaderModule, nullptr);
       vkDestroyShaderModule(m_pgpucontext->logicalDevice(), fragShaderModule, nullptr);
       vkDestroyPipeline(m_pgpucontext->logicalDevice(), graphicsPipeline, nullptr);
@@ -129,7 +134,7 @@ namespace gpu_vulkan
       pipelineInfo.basePipelineIndex = -1;
       pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-
+      ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
       if (vkCreateGraphicsPipelines(
          m_pgpucontext->logicalDevice(),
          VK_NULL_HANDLE,
@@ -139,19 +144,27 @@ namespace gpu_vulkan
          &graphicsPipeline) != VK_SUCCESS) {
          throw ::exception(error_failed, "Failed to create graphics pipeline");
       }
+
    }
+
+
    void pipeline::createShaderModule(const block & block, VkShaderModule * shaderModule)
    {
+
       VkShaderModuleCreateInfo createInfo{};
       createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
       createInfo.codeSize = block.size();
       createInfo.pCode = reinterpret_cast<const uint32_t *>(block.data());
-
+      ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
       if (vkCreateShaderModule(m_pgpucontext->logicalDevice(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
          throw ::exception(error_failed, "failed to create shader module");
       }
+
    }
-   void pipeline::defaultPipelineConfigInfo(PipelineConfigInfo & configInfo) {
+   
+   
+   void pipeline::defaultPipelineConfigInfo(PipelineConfigInfo & configInfo)
+   {
 
       configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
       configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -223,8 +236,13 @@ namespace gpu_vulkan
       configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
       configInfo.dynamicStateInfo.flags = 0;
 
-      configInfo.bindingDescriptions = _001GetVertexBindingDescriptions();
-      configInfo.attributeDescriptions = _001GetVertexAttributeDescriptions();
+      if (configInfo.attributeDescriptions.is_empty())
+      {
+
+         configInfo.bindingDescriptions = _001GetVertexBindingDescriptions();
+         configInfo.attributeDescriptions = _001GetVertexAttributeDescriptions();
+
+      }
    }
 
 

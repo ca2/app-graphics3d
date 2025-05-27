@@ -26,6 +26,9 @@ namespace draw2d_vulkan
    {
    public:
 
+      VkvgDevice                       m_vkvgdevice;
+      VkvgSurface                      m_vkvgsurface;
+      VkvgContext                      m_pdc;
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
       //::plusplus::GraphicsPath *     m_ppath;
@@ -42,7 +45,7 @@ namespace draw2d_vulkan
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
-
+      ::pointer<::gpu::context>             m_pgpucontextOutput;
 
       graphics();
       ~graphics() override;
@@ -63,6 +66,8 @@ namespace draw2d_vulkan
       //}
       //oswindow get_window_handle() const;
 //      ::windowing::window * GetWindow() const;
+
+      bool is_gpu_oriented() override;
 
       virtual void thread_select();
       void do_on_context(const ::procedure & procedure) override;
@@ -521,6 +526,12 @@ namespace draw2d_vulkan
       void fill(::draw2d::path * ppath, ::draw2d::brush * pbrush);
 
 
+      bool fill(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool _fill1(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool _fill2(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
+
+
+      bool _set(::draw2d::brush* pbrush, double x = 0.0, double y = 0.0);
       //float GetMiterLimit() const;
       //bool SetMiterLimit(float fMiterLimit);
       //int GetPath(::int_point * lpPoints, LPBYTE lpTypes,::collection::count nCount) const;

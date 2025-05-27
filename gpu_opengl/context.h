@@ -19,6 +19,10 @@ namespace gpu_opengl
       itask									m_itaskGpu;
 
 
+
+      GLuint m_globalUBO;
+
+
       unsigned int                     m_VAO;
       unsigned int                     m_VBO;
 
@@ -66,6 +70,9 @@ namespace gpu_opengl
 
 
       void clear(const ::color::color& color) override;
+      void create_global_ubo(int iSize, int iFrameCount) override;
+      void update_global_ubo(const ::block& block) override;
+
 
 
    };

@@ -41,11 +41,13 @@ namespace gpu
    }
 
 
-
    void shader::initialize_shader(
       ::gpu::context* pgpucontext,
       const ::file::path& pathVertex,
       const ::file::path& pathFragment,
+      const ::array<enum_descriptor_set_slot>& eslota,
+      const ::particle_pointer& pLocalDescriptorSet,
+      const ::particle_pointer& pVertexInput,
       const ::gpu::property* pproperties,
       enum_flag eflag)
    {
@@ -53,6 +55,9 @@ namespace gpu
       m_pgpucontext = pgpucontext;
       m_pathVertex = pathVertex;
       m_pathFragment = pathFragment;
+      m_edescriptorsetslota.copy(eslota);
+      m_pLocalDescriptorSet = pLocalDescriptorSet;
+      m_pVertexInput = pVertexInput;
       if (pproperties)
       {
          m_properties.set(pproperties);
@@ -68,6 +73,9 @@ namespace gpu
       ::gpu::context* pgpucontext,
       const ::block& blockVertex,
       const ::block& blockFragment,
+      const ::array<enum_descriptor_set_slot>& eslota,
+      const ::particle_pointer& pLocalDescriptorSet,
+      const ::particle_pointer& pVertexInput,
       const ::gpu::property* pproperties,
       enum_flag eflag)
    {
@@ -75,6 +83,9 @@ namespace gpu
       m_pgpucontext = pgpucontext;
       m_memoryVertex = blockVertex;
       m_memoryFragment = blockFragment;
+      m_edescriptorsetslota.copy(eslota);
+      m_pLocalDescriptorSet = pLocalDescriptorSet;
+      m_pVertexInput = pVertexInput;
       if (pproperties)
       {
          m_properties.set(pproperties);

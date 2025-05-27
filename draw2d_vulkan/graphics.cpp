@@ -11,7 +11,9 @@
 #include "acme/parallelization/task.h"
 #include "acme/platform/application.h"
 #include "acme/prototype/mathematics/mathematics.h"
-#include "app-cube/cube/gpu/approach.h"
+#include "app-cube/gpu_vulkan/approach.h"
+#include "app-cube/gpu_vulkan/physical_device.h"
+#include "app-cube/gpu_vulkan/renderer.h"
 #include "app-cube/cube/gpu/cpu_buffer.h"
 #include "app-cube/cube/gpu/render.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
@@ -234,7 +236,9 @@ namespace draw2d_vulkan
 
          auto pgpu = application()->get_gpu();
 
-         m_pgpucontext = pgpu->start_cpu_buffer_context(this, m_callbackImage32CpuBuffer, rectanglePlacement);
+         auto pgpudevice = pgpu->get_device();
+
+         m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, m_callbackImage32CpuBuffer, rectanglePlacement);
 
       }
 
@@ -260,6 +264,50 @@ namespace draw2d_vulkan
       //{
 
       m_pgpucontext->create_offscreen_buffer(rectanglePlacement.size());
+
+
+      auto psystem = system();
+
+      auto pgpu = application()->get_gpu();
+
+      //if (!m_pgpucontext)
+      //{
+
+      //   m_pgpucontext = pgpu->start_swap_chain_context(this, pwindow);
+
+      //}
+
+
+      //m_pgpucontext->defer_create_window_context(pwindow);
+
+      ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontext;
+      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpu;
+
+      vkvg_device_create_info_t createinfo;
+      createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      createinfo.deferredResolve = true;
+      createinfo.inst = papproachVulkan->m_vkinstance;
+      createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
+      createinfo.vkdev = pcontextVulkan->logicalDevice();
+      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
+      createinfo.qIndex = 0;
+      createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+
+      m_vkvgdevice = vkvg_device_create(&createinfo);
+      m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, rectanglePlacement.width(),
+         rectanglePlacement.height());
+
+      m_pdc = vkvg_create(m_vkvgsurface);
+      //if (!m_pgpucontext)
+      //{
+
+      //   return false;
+
+      //}
+
+
+      //      ::vulkan::resize(size);
+
 
       //}
 
@@ -430,6 +478,41 @@ namespace draw2d_vulkan
    bool graphics::vulkan_defer_create_window_context(::windowing::window* pwindow)
    {
 
+
+      auto psystem = system();
+
+      auto pgpu = application()->get_gpu();
+
+      auto pgpudevice = pgpu->get_device();
+
+      if (!m_pgpucontext)
+      {
+
+         m_pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
+
+      }
+
+
+      m_pgpucontext->defer_create_window_context(pwindow);
+
+      ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontext;
+      ::cast < ::gpu_vulkan::approach > papproachVulkan =pgpu;
+
+      vkvg_device_create_info_t createinfo;
+      createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      createinfo.deferredResolve = true;
+      createinfo.inst = papproachVulkan->m_vkinstance;
+      createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
+      createinfo.vkdev = pcontextVulkan->logicalDevice();
+      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
+      createinfo.qIndex = 0;
+      createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+
+      m_vkvgdevice = vkvg_device_create(&createinfo);
+      m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, pwindow->m_sizeWindow.cx(),
+         pwindow->m_sizeWindow.cy());
+
+      m_pdc = vkvg_create(m_vkvgsurface);
       //if (!m_pgpucontext)
       //{
 
@@ -437,20 +520,6 @@ namespace draw2d_vulkan
 
       //}
 
-
-      if (!m_pgpucontext)
-      {
-
-         auto psystem = system();
-
-         auto pgpu = application()->get_gpu();
-
-         m_pgpucontext = pgpu->start_swap_chain_context(this, pwindow);
-
-      }
-
-
-      m_pgpucontext->defer_create_window_context(pwindow);
 
       //      ::vulkan::resize(size);
 
@@ -939,9 +1008,389 @@ namespace draw2d_vulkan
    //}
 
 
+   bool graphics::fill(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   {
+
+      //_synchronous_lock ml(::draw2d_cairo::mutex());
+
+      if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+      {
+
+         return true;
+
+      }
+
+      _fill1(pbrush, xOrg, yOrg);
+
+      vkvg_fill(m_pdc);
+
+      _fill2(pbrush, xOrg, yOrg);
+
+      return true;
+
+   }
+
+
+   bool graphics::_fill1(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   {
+
+      if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+      {
+
+         return true;
+
+      }
+
+      //vkvg todo if (m_pregion.is_set() && !m_pregion.cast<region>()->is_simple_positive_region())
+      //{
+
+      //   cairo_set_antialias(m_pdc, CAIRO_ANTIALIAS_BEST);
+
+      //   cairo_push_group(m_pdc);
+
+      //   _set(pbrush, xOrg, yOrg);
+
+      //}
+      //else
+      {
+
+         _set(pbrush, xOrg, yOrg);
+
+      }
+
+      return true;
+
+   }
+
+   bool graphics::_set(::draw2d::brush* pbrush, double x, double y)
+   {
+
+      //_synchronous_lock ml(::draw2d_cairo::mutex());
+
+      //vkvg todo if (pbrush->m_ebrush == ::draw2d::e_brush_radial_gradient_color)
+      //{
+
+      //   cairo_pattern_t* ppattern = cairo_pattern_create_radial(pbrush->m_point.x() - x, pbrush->m_point.y() - y, 0,
+      //      pbrush->m_point.x() - x, pbrush->m_point.y() - y,
+      //      maximum(pbrush->m_size.cx(), pbrush->m_size.cy()));
+
+      //   cairo_pattern_add_color_stop_rgba(ppattern, 0., __expand_float_rgba(pbrush->m_color1));
+
+      //   cairo_pattern_add_color_stop_rgba(ppattern, 1., __expand_float_rgba(pbrush->m_color2));
+
+      //   cairo_set_source(m_pdc, ppattern);
+
+      //   cairo_pattern_destroy(ppattern);
+
+      //}
+      //else if (pbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
+      //{
+
+      //   double x0 = pbrush->m_point1.x() - x;
+
+      //   double y0 = pbrush->m_point1.y() - y;
+
+      //   double x1 = pbrush->m_point2.x() - x;
+
+      //   double y1 = pbrush->m_point2.y() - y;
+
+      //   cairo_pattern_t* ppattern = cairo_pattern_create_linear(x0, y0, x1, y1);
+
+      //   cairo_pattern_add_color_stop_rgba(ppattern, 0., __expand_double_rgba(pbrush->m_color1));
+
+      //   cairo_pattern_add_color_stop_rgba(ppattern, 1., __expand_double_rgba(pbrush->m_color2));
+
+      //   cairo_set_source(m_pdc, ppattern);
+
+      //   // cairo_pattern_destroy(ppattern);
+
+
+      //}
+      //else if (pbrush->m_ebrush == ::draw2d::e_brush_box_gradient)
+      //{
+
+      //   double_rectangle outer(pbrush->m_point, pbrush->m_size);
+      //   double_rectangle inner(outer);
+      //   inner.deflate(pbrush->m_dRadius);
+      //   double K = 0.5522847498; // For HalfPi arc (90 degrees)
+      //   double KR = K * pbrush->m_dRadius;
+
+
+      //   //https://stackoverflow.com/questions/734076/how-to-best-approximate-a-geometrical-arc-with-a-bezier-curve
+      //   //p0 = [0, radius]
+      //   //p1 = [radius * K, radius]
+      //   //p2 = [radius, radius * K]
+      //   //p3 = [radius, 0]
+      //   //where K is a so-called "magic number", which is an non-rational number. It can be approximated as follows:
+      //   //K = 0.5522847498
+      //   //https://stackoverflow.com/users/615243/nic
+
+      //   // clockwise top-right
+      //   //p0 = [innerright, outertop]
+      //   //p1 = [innerright + radius * K, outertop]
+      //   //p2 = [outerright, innertop - radius * K]
+      //   //p3 = [outerright, innertop]
+      //   //center = innerright, innertop
+
+
+      //   cairo_pattern_t* ppattern = cairo_pattern_create_mesh();
+
+      //   /* Add a Coons patch */
+      //   cairo_mesh_pattern_begin_patch(ppattern);
+      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.top());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), outer.top());
+      //   cairo_mesh_pattern_curve_to(ppattern, inner.right() + KR, outer.top(), outer.right(), inner.top() - KR, outer.right(),
+      //      inner.top());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
+      //   //cairo_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
+      //   //cairo_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
+      //   //cairo_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_end_patch(ppattern);
+      //   int iStatus = cairo_pattern_status(ppattern);
+
+
+      //   cairo_mesh_pattern_begin_patch(ppattern);
+      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.top());
+      //   cairo_mesh_pattern_line_to(ppattern, outer.right(), inner.top());
+      //   cairo_mesh_pattern_line_to(ppattern, outer.right(), inner.bottom());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_end_patch(ppattern);
+
+      //   ///* Add a Coons patch */
+      //   //      cairo_mesh_pattern_begin_patch (pattern);
+      //   //      cairo_mesh_pattern_move_to (pattern, 0, 0);
+      //   //      cairo_mesh_pattern_curve_to (pattern, 30, -30,  60,  30, 100, 0);
+      //   //      cairo_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
+      //   //      cairo_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
+      //   //      cairo_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
+      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
+      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
+      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 1);
+      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 3, 1, 1, 0);
+      //   //      cairo_mesh_pattern_end_patch (pattern);
+
+      //   ///* Add a Gouraud-shaded triangle */
+      //   //      cairo_mesh_pattern_begin_patch (pattern)
+      //   //      cairo_mesh_pattern_move_to (pattern, 100, 100);
+      //   //      cairo_mesh_pattern_line_to (pattern, 130, 130);
+      //   //      cairo_mesh_pattern_line_to (pattern, 130,  70);
+      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
+      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
+      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 1);
+      //   //      cairo_mesh_pattern_end_patch (pattern)
+
+
+      //            // clockwise bottom-right
+      //            //p0 = [outerright, innerbottom]
+      //            //p1 = [outerright, innerbottom + radius * K]
+      //            //p2 = [innerright + radius * K, outerbottom]
+      //            //p3 = [innerbottom, outerbottom]
+      //            //center = innerright, innerbottom
+
+
+      //   cairo_mesh_pattern_begin_patch(ppattern);
+      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.bottom());
+      //   cairo_mesh_pattern_line_to(ppattern, outer.right(), inner.bottom());
+      //   cairo_mesh_pattern_curve_to(ppattern, outer.right(), inner.bottom() + KR, inner.right() + KR, outer.bottom(),
+      //      inner.right(), outer.bottom());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_end_patch(ppattern);
+
+
+      //   cairo_mesh_pattern_begin_patch(ppattern);
+      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.bottom());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), outer.bottom());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), outer.bottom());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_end_patch(ppattern);
+
+
+      //   cairo_mesh_pattern_begin_patch(ppattern);
+      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_end_patch(ppattern);
+
+      //   // clockwise bottom-left
+      //   //p0 = [innerleft, outerbottom]
+      //   //p1 = [innerleft - radius * K, outerbottom]
+      //   //p2 = [outerleft, innerbottom + radius * K]
+      //   //p3 = [outerleft, innerbottom]
+      //   //center = innerleft, innerbottom
+
+
+      //   cairo_mesh_pattern_begin_patch(ppattern);
+      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.bottom());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), outer.bottom());
+      //   cairo_mesh_pattern_curve_to(ppattern, inner.left() - KR, outer.bottom(), outer.left(), inner.bottom() + KR, outer.left(),
+      //      inner.bottom());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_end_patch(ppattern);
+
+
+      //   cairo_mesh_pattern_begin_patch(ppattern);
+      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
+      //   cairo_mesh_pattern_line_to(ppattern, outer.left(), inner.top());
+      //   cairo_mesh_pattern_line_to(ppattern, outer.left(), inner.bottom());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_end_patch(ppattern);
+
+
+      //   // clockwise top-left
+      //   //p0 = [outerleft, innertop]
+      //   //p1 = [outerleft, innertop - radius * K]
+      //   //p2 = [innerleft - radius * K, outertop]
+      //   //p3 = [innerleft, outertop]
+      //   //center = innerleft, innertop
+
+
+
+
+      //   cairo_mesh_pattern_begin_patch(ppattern);
+      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
+      //   cairo_mesh_pattern_line_to(ppattern, outer.left(), inner.top());
+      //   cairo_mesh_pattern_curve_to(ppattern, outer.left(), inner.top() - KR, inner.left() - KR, outer.top(), inner.left(),
+      //      outer.top());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.top());
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_end_patch(ppattern);
+
+
+      //   cairo_mesh_pattern_begin_patch(ppattern);
+      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), outer.top());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), outer.top());
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_end_patch(ppattern);
+
+
+      //   cairo_set_source(m_pdc, ppattern);
+
+
+      //}
+      //else if (pbrush->m_ebrush == ::draw2d::e_brush_pattern)
+      //{
+
+      //   if (pbrush->m_pimage.nok())
+      //   {
+
+      //      return false;
+
+      //   }
+
+      //   cairo_surface_t* psurface = cairo_get_target((cairo_t*)pbrush->m_pimage->g()->get_os_data());
+
+      //   if (psurface == nullptr)
+      //   {
+
+      //      return false;
+
+      //   }
+
+      //   cairo_pattern_t* ppattern = cairo_pattern_create_for_surface(psurface);
+
+      //   cairo_status_t status = cairo_pattern_status(ppattern);
+
+      //   if (status == CAIRO_STATUS_SUCCESS)
+      //   {
+
+      //      cairo_pattern_set_extend(ppattern, CAIRO_EXTEND_REPEAT);
+
+      //      cairo_set_source(m_pdc, ppattern);
+
+      //   }
+
+      //   cairo_pattern_destroy(ppattern);
+
+      //   if (status != CAIRO_STATUS_SUCCESS)
+      //   {
+
+      //      return false;
+
+      //   }
+
+      //}
+      //else
+      {
+
+         vkvg_set_source_rgba(m_pdc, __expand_double_rgba(pbrush->m_color));
+
+      }
+
+      return true;
+
+   }
+
+
+
+   bool graphics::_fill2(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   {
+
+      if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+      {
+
+         return true;
+
+      }
+
+      //vkvg todo if (m_pregion.is_set() && !m_pregion.cast<region>()->is_simple_positive_region())
+      //{
+
+      //   cairo_pop_group_to_source(m_pdc);
+
+      //   m_pregion.cast<region>()->mask_fill(m_pdc);
+
+      //}
+
+      return true;
+
+   }
+
+
    void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
    {
 
+
+      vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
+         rectangle.bottom() - rectangle.top());
+
+      fill(pbrush);
       //vkBegin(VK_QUADS);
 
       //set(pbrush);
@@ -4018,6 +4467,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
+   bool graphics::is_gpu_oriented()
+   {
+
+      return true;
+
+   }
+
+
    void graphics::_set(const ::geometry2d::matrix& matrix)
    {
 
@@ -5893,37 +6350,36 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   //void graphics::on_begin_draw(oswindow wnd, const ::int_size & sz)
    void graphics::on_begin_draw()
    {
 
       thread_select();
 
-      ::int_size size;
+      ::int_rectangle rectangle;
 
-      if (!m_puserinteraction && m_papplication->m_bUseDraw2dProtoWindow)
+      if (!m_puserinteraction && m_pwindow && m_papplication->m_bUseDraw2dProtoWindow)
       {
 
          m_puserinteraction = dynamic_cast <::user::interaction*>(m_pwindow->m_pacmeuserinteraction.m_p);
 
       }
 
-      if (m_puserinteraction && !m_puserinteraction->size().is_empty())
+      if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
       {
 
-         size = m_puserinteraction->size();
+         rectangle = m_puserinteraction->host_rectangle();
 
       }
       else
       {
 
-         size = { 1920, 1080 };
+         rectangle = { 0, 0, 1920, 1080 };
 
       }
 
       bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
 
-      ::vulkan::resize(size, bYSwap);
+      ::vulkan::resize(rectangle.size(), bYSwap);
 
       m_z = 0.f;
 
@@ -5942,28 +6398,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          m_pgpucontext->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
 
       }
-
-      if (m_egraphics & e_graphics_draw)
-      {
-
-         m_pgpucontext->m_prenderer->on_begin_draw();
-
-      }
-
-      //vkClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-      //vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
-      ////vkLoadIdentity();
-      ////vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
-      ////vkClear(VK_COLOR_BUFFER_BIT);
-      ////vkEnable(VK_BLEND);
-      ////vkBlendFunc(VK_SRC_ALPHA, VK_ONE_MINUS_SRC_ALPHA);
-      ////::memory_copy(&m_pgpucontext->m_pbuffer->m_pixmap, (::pixmap *)m_pimage, sizeof(::pixmap));
-
-      ////vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
-
-      ////m_pgpucontext->start_drawing();
-
-      /////vkEnable(VK_DEPTH_TEST);
 
    }
 
@@ -5991,7 +6425,52 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (m_egraphics & e_graphics_draw)
       {
 
-         m_pgpucontext->m_prenderer->on_end_draw();
+
+         //vkvg_surface_resolve(m_vkvgsurface);
+
+         //m_pgpucontext->m_prenderer->on_end_draw();
+
+         VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
+
+
+
+         ::int_rectangle rectangle;
+
+         if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
+         {
+
+            rectangle = m_puserinteraction->host_rectangle();
+
+         }
+         else
+         {
+
+            rectangle = { 0, 0, 1920, 1080 };
+
+         }
+
+         if (!m_pgpucontextOutput)
+         {
+
+            __øconstruct(m_pgpucontextOutput);
+
+            ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
+
+            m_pgpucontextOutput = m_papplication->get_gpu()->get_device()->start_swap_chain_context(this, pwindow);
+
+            //m_pgpucontextOutput->create_window_buffer(pwindow);
+
+         }
+
+         ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontextOutput->get_renderer();
+
+         //m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
+
+         prenderer->_on_graphics_end_draw(vkimage, rectangle);
+
+         //prenderer->_blend_image(vkimage, rectangle);
+
+
 
       }
 

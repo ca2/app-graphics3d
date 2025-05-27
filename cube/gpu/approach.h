@@ -13,6 +13,23 @@ namespace gpu
    {
    public:
 
+
+
+      enum enum_mode
+      {
+
+
+         e_mode_none,
+         e_mode_system,
+         e_mode_egl,
+         e_mode_glx,
+         e_mode_cgl,
+         e_mode_fbo,
+
+
+      };
+
+
 //
 //#ifdef WINDOWS_DESKTOP
 //
@@ -35,6 +52,12 @@ namespace gpu
 //      //unsigned int                  VAO;
 //      //unsigned int                  VBO;
 
+      enum_mode                              m_emode;
+
+
+      ::pointer < device >       m_pgpudevice;
+
+
       approach();
       ~approach() override;
 
@@ -45,18 +68,15 @@ namespace gpu
       virtual void initialize_gpu_approach();
 
 
+      virtual ::gpu::device* get_device();
+
+
+      virtual void engine_on_frame_context_initialization(::gpu::context* pgpucontext);
+
+
       virtual ::file::path shader_path(const ::file::path& pathShader);
 
 
-      virtual void defer_shader_memory(::memory & memory, const ::file::path& pathShader);
-
-      virtual ::pointer < ::gpu::context > allocate_context(::particle* pparticle);
-
-      virtual ::pointer < ::gpu::context > start_cpu_buffer_context(::particle * pparticle, const ::image32_callback & callbackImage32CpuBuffer, const ::int_rectangle& rectanglePlacement);
-
-      virtual ::pointer < ::gpu::context > start_swap_chain_context(::particle* pparticle, ::windowing::window * pwindow);
-
-      virtual ::pointer < ::gpu::context > start_gpu_context(const start_context_t & startcontext);
 
       virtual void defer_init_gpu_library();
 
@@ -72,10 +92,7 @@ namespace gpu
 
 
       virtual ::gpu::payload load_dds(const ::scoped_string & scopedstrImagePath);
-      virtual void create_global_ubo(::gpu::context* pgpucontext, int iSize, int iFrameCount);
-      virtual void update_global_ubo(::gpu::context* pgpucontext, const ::block& block);
-
-
+    
    };
 
 

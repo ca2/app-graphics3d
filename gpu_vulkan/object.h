@@ -46,10 +46,10 @@ namespace gpu_vulkan
       void load(const ::file::path & path) override;
 
 
-      //void prepare(::gpu::approach * papproach) override;
+      //void prepare(::gpu::approach * pgpuapproach) override;
 
 
-      void _prepare(::gpu::approach * papproach) override;
+      void _prepare(::gpu::approach * pgpuapproach) override;
 
 
       void draw() override;

@@ -126,16 +126,16 @@ namespace gpu_vulkan
    void context_win32::_create_context_win32()
    {
 
-      ::cast < approach > papproach = system()->get_gpu();
+      ::cast < approach > pgpuapproach = system()->get_gpu();
 
-      if (!papproach)
+      if (!pgpuapproach)
       {
 
          throw ::exception(error_failed);
 
       }
 
-      auto pphysicaldevice = papproach->m_pphysicaldevice;
+      auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
 
       assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
       //this->m_physicaldevice = physicalDevice;
@@ -162,10 +162,14 @@ namespace gpu_vulkan
 
       bool useSwapChain = m_papplication->m_bUseDraw2dProtoWindow;
 
+      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
+    .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES };
+      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
+
       VkResult result = createLogicalDevice(
          m_physicaldevicefeaturesCreate,
-         papproach->m_pszaEnabledDeviceExtensions,
-         papproach->m_pDeviceCreatepNextChain,
+         pgpuapproach->m_pszaEnabledDeviceExtensions,
+         pgpuapproach->m_pDeviceCreatepNextChain,
          useSwapChain);
 
       if (result != VK_SUCCESS)
@@ -187,9 +191,9 @@ namespace gpu_vulkan
 
       _create_context_win32();
 
-      ::cast < approach > papproach = system()->get_gpu();
+      ::cast < approach > pgpuapproach = system()->get_gpu();
 
-      if (!papproach)
+      if (!pgpuapproach)
       {
 
          throw ::exception(error_failed);
@@ -209,9 +213,9 @@ namespace gpu_vulkan
    VkQueueFlags requestedQueueTypes)
    {
 
-      ::cast < approach > papproach = ::system()->get_gpu();
+      ::cast < approach > pgpuapproach = ::system()->get_gpu();
 
-      ::cast < physical_device > pphysicaldevice = papproach->m_pphysicaldevice;
+      ::cast < physical_device > pphysicaldevice = pgpuapproach->m_pphysicaldevice;
 
       // Desired queues need to be requested upon logical device creation
       // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application

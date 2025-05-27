@@ -1,10 +1,13 @@
 #include "framework.h"
+#include "approach.h"
+#include "descriptors.h"
 #include "frame.h"
 #include "renderer.h"
 #include "offscreen_render_pass.h"
 #include "physical_device.h"
 #include "swap_chain_render_pass.h"
 #include "initializers.h"
+#include "app-cube/gpu_vulkan/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 //#include "tools.h"
 //#include "app-cube/cube/impact.h"
@@ -20,6 +23,29 @@ using namespace vulkan;
 namespace gpu_vulkan
 {
 
+
+   // Fragment shader (GLSL -> SPIR-V):
+   // layout(set = 0, binding = 0) uniform sampler2D srcImage;
+   // layout(location = 0) in vec2 fragUV;
+   // layout(location = 0) out vec4 outColor;
+   // void main() {
+   //     outColor = texture(srcImage, fragUV);
+   // }
+   static unsigned int g_uaImageBlendFragmentShader[] = {
+#include "shader/image_blend.frag.spv.inl"
+   };
+   // 
+   // Vertex shader (GLSL -> SPIR-V):
+   // layout(location = 0) in vec2 inPos;
+   // layout(location = 1) in vec2 inUV;
+   // layout(location = 0) out vec2 fragUV;
+   // void main() {
+   //     fragUV = inUV;
+   //     gl_Position = vec4(inPos, 0.0, 1.0);
+   // }
+   static unsigned int g_uaImageBlendVertexShader[] = {
+#include "shader/image_blend.vert.spv.inl"
+   };
    // renderer::renderer(VkWindow& window, context* pvkcdevice) : vkcWindow{ window }, m_pgpucontext{ pvkcdevice } 
    renderer::renderer()
    {
@@ -76,7 +102,7 @@ namespace gpu_vulkan
 
    int renderer::get_frame_index()
    {
-      
+
       assert(isFrameStarted && "Cannot get frame index when frame not in progress");
 
       return currentFrameIndex;
@@ -107,17 +133,12 @@ namespace gpu_vulkan
 
       }
 
+      m_bNeedToRecreateSwapChain = true;
+
       m_extentRenderer.width = m_rectangle.width();
       m_extentRenderer.height = m_rectangle.height();
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
-      {
-
-         m_pvkcrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
-
-      }
-
-      m_pvkcrenderpass->init();
+      defer_update_render_pass();
 
       //auto extent = vkcWindow.getExtent();
       //while (extent.width == 0 || extent.height == 0) {
@@ -139,6 +160,35 @@ namespace gpu_vulkan
    }
 
 
+   void renderer::defer_update_render_pass()
+   {
+
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      {
+
+         m_pvkcrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
+
+      }
+      else if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
+      {
+
+         m_pvkcrenderpass = __allocate swap_chain_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
+
+      }
+      else
+      {
+
+         throw ::exception(error_wrong_state, "Unexpected gpu e_output");
+
+      }
+
+      m_pvkcrenderpass->init();
+
+      m_bNeedToRecreateSwapChain = false;
+
+   }
+
+
    void renderer::createCommandBuffers()
    {
 
@@ -147,7 +197,7 @@ namespace gpu_vulkan
       VkCommandBufferAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
       allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      allocInfo.commandPool = m_pgpucontext->getCommandPool();
+      allocInfo.commandPool = m_pgpucontext->m_pgpudevice->getCommandPool();
       allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
       if (vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &allocInfo, commandBuffers.data()) !=
@@ -163,7 +213,7 @@ namespace gpu_vulkan
 
       vkFreeCommandBuffers(
          m_pgpucontext->logicalDevice(),
-         m_pgpucontext->getCommandPool(),
+         m_pgpucontext->m_pgpudevice->getCommandPool(),
          static_cast<float>(commandBuffers.size()),
          commandBuffers.data());
       commandBuffers.clear();
@@ -323,7 +373,7 @@ namespace gpu_vulkan
       imgCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
       imgCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
       // Create the image
-      VkImage dstImage;
+      //VkImage dstImage;
       VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
       // Create memory to back up the image
       VkMemoryRequirements memRequirements;
@@ -331,7 +381,7 @@ namespace gpu_vulkan
       vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_vkimage, &memRequirements);
       memAllocInfo.allocationSize = memRequirements.size;
       // Memory must be host visible to copy from
-      memAllocInfo.memoryTypeIndex = m_pgpucontext->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+      memAllocInfo.memoryTypeIndex = m_pgpucontext->m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
       VK_CHECK_RESULT(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
       VK_CHECK_RESULT(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
 
@@ -369,7 +419,7 @@ namespace gpu_vulkan
       // Create the linear tiled destination image to copy to and to read the memory from
 
 // Do the actual blit from the offscreen image to our host visible destination image
-      VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+      VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->m_pgpudevice->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
       VkCommandBuffer copyCmd;
       VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
       VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
@@ -426,7 +476,7 @@ namespace gpu_vulkan
 
       vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
-      vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &copyCmd);
+      vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_pgpudevice->getCommandPool(), 1, &copyCmd);
 
 
    }
@@ -472,7 +522,7 @@ namespace gpu_vulkan
       //const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
       {
          m_pgpucontext->m_callbackImage32CpuBuffer(
-            (const ::image32_t *)imagedata,
+            (const ::image32_t*)imagedata,
             m_vkextent2d.width,
             m_vkextent2d.height,
             subResourceLayout.rowPitch);
@@ -676,34 +726,82 @@ namespace gpu_vulkan
 
    }
 
+   void renderer::swap_chain()
+   {
+
+
+
+      assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
+      auto commandBuffer = getCurrentCommandBuffer();
+      if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+         throw ::exception(error_failed, "failed to record command buffer!");
+      }
+      auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+      if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+         m_bNeedToRecreateSwapChain)
+      {
+         m_bNeedToRecreateSwapChain = false;
+         defer_update_render_pass();
+      }
+      else if (result != VK_SUCCESS)
+      {
+         throw ::exception(error_failed, "failed to present swap chain image!");
+      }
+
+
+      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+
+
+   }
+
+
 
    void renderer::on_end_draw()
    {
       _on_end_render();
-      //if (m_bOffScreen)
+
+      for (auto& procedure : m_procedureaAfterEndRender)
       {
 
-         assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-         auto commandBuffer = getCurrentCommandBuffer();
-         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-            throw ::exception(error_failed, "failed to record command buffer!");
-         }
-         auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
-         //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-         //	vkcWindow.wasWindowResized()) 
-         //{
-         //	vkcWindow.resetWindowResizedFlag();
-         //	recreateSwapchain();
-         //}
-         //else 
-         //	if (result != VK_SUCCESS) {
-         //	throw ::exception(error_failed, "failed to present swap chain image!");
-         //}
-         sample();
-         isFrameStarted = false;
-         currentFrameIndex = (currentFrameIndex + 1) % render_pass::MAX_FRAMES_IN_FLIGHT;
+         procedure();
 
       }
+
+      m_procedureaAfterEndRender.clear();
+      //if (m_bOffScreen)
+      //{
+
+      //   assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
+      //   auto commandBuffer = getCurrentCommandBuffer();
+      //   if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+      //      throw ::exception(error_failed, "failed to record command buffer!");
+      //   }
+      //   auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+      //   //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+      //   //	vkcWindow.wasWindowResized()) 
+      //   //{
+      //   //	vkcWindow.resetWindowResizedFlag();
+      //   //	recreateSwapchain();
+      //   //}
+      //   //else 
+      //   //	if (result != VK_SUCCESS) {
+      //   //	throw ::exception(error_failed, "failed to present swap chain image!");
+      //   //}
+
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      {
+         sample();
+      }
+      else if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
+      {
+         swap_chain();
+
+
+      }
+      isFrameStarted = false;
+      //currentFrameIndex = (currentFrameIndex + 1) % render_pass::MAX_FRAMES_IN_FLIGHT;
+
+      //}
       //else
       //{
 
@@ -731,334 +829,803 @@ namespace gpu_vulkan
 
    }
 
-
-   void renderer::_on_begin_render()
+   ::gpu::shader* renderer::get_image_blend_shader()
    {
 
-      //::cast < frame > pframe = pframeParam;
+      if (!m_pshaderImageBlend)
+      {
 
-      //auto commandBuffer = pframe->commandBuffer;
+         auto pshadervertexinput = __allocate  shader_vertex_input();
+
+         pshadervertexinput->m_bindings.add(
+            {
+               .binding = 0,
+               .stride = sizeof(float) * 4,
+               .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+            });
+
+         pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
+         pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
+
+         auto pshaderImageBlend = __create_new<::gpu_vulkan::shader>();
+
+         m_pshaderImageBlend = pshaderImageBlend;
+
+         //VkDescriptorSetLayoutBinding samplerLayoutBinding = {
+         //   .binding = 0,
+         //   .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+         //   .descriptorCount = 1,
+         //   .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+         //   .pImmutableSamplers = NULL,
+         //};
+
+         //VkDescriptorSetLayoutCreateInfo layoutInfo =
+         //{
+         //   .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+         //   .bindingCount = 1,
+         //   .pBindings = &samplerLayoutBinding,
+         //};
+
+         //VkDescriptorSetLayout descriptorSetLayout;
+         //if (vkCreateDescriptorSetLayout(device, &layoutInfo, NULL, &descriptorSetLayout) != VK_SUCCESS) 
+         //{
+         //   // Handle error
+         //}
+
+         ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+         pshaderImageBlend->initialize_shader_with_block(
+            m_pgpucontext,
+            as_memory_block(g_uaImageBlendVertexShader),
+            as_memory_block(g_uaImageBlendFragmentShader),
+            { ::gpu::shader::e_descriptor_set_slot_local },
+            m_psetdescriptorlayoutImageBlend,
+            pshadervertexinput);
+
+      }
+
+      return m_pshaderImageBlend;
+
+   }
+   // Fullscreen quad vertex data
+   float quadVertices[] = {
+      // pos     // uv
+      -1.0f, -1.0f, 0.0f, 0.0f,
+       1.0f, -1.0f, 1.0f, 0.0f,
+       1.0f,  1.0f, 1.0f, 1.0f,
+      -1.0f,  1.0f, 0.0f, 1.0f,
+   };
+   uint16_t quadIndices[] = {
+       0, 1, 2,
+       2, 3, 0
+   };
+
+   // Create vertex and index buffers
+   void create_quad_buffers(VkDevice device, VkPhysicalDevice physicalDevice,
+      VkBuffer* vertexBuffer, VkDeviceMemory* vertexMemory,
+      VkBuffer* indexBuffer, VkDeviceMemory* indexMemory)
+   {
+
+      VkDeviceSize vertexSize = sizeof(quadVertices);
+      VkDeviceSize indexSize = sizeof(quadIndices);
+
+      VkBufferCreateInfo bufferInfo = {
+          .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+          .size = vertexSize,
+          .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+          .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+      };
+      vkCreateBuffer(device, &bufferInfo, NULL, vertexBuffer);
+
+      VkMemoryRequirements memReq;
+      vkGetBufferMemoryRequirements(device, *vertexBuffer, &memReq);
+
+      VkMemoryAllocateInfo allocInfo = {
+          .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+          .allocationSize = memReq.size,
+          .memoryTypeIndex = 0
+      };
+
+      VkPhysicalDeviceMemoryProperties memProps;
+      vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
+      for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+         if ((memReq.memoryTypeBits & (1 << i)) &&
+            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
+            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            allocInfo.memoryTypeIndex = i;
+            break;
+         }
+      }
+
+      vkAllocateMemory(device, &allocInfo, NULL, vertexMemory);
+      vkBindBufferMemory(device, *vertexBuffer, *vertexMemory, 0);
+
+      void* data;
+      vkMapMemory(device, *vertexMemory, 0, vertexSize, 0, &data);
+      memcpy(data, quadVertices, (size_t)vertexSize);
+      vkUnmapMemory(device, *vertexMemory);
+
+      // Index buffer
+      bufferInfo.size = indexSize;
+      bufferInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+      vkCreateBuffer(device, &bufferInfo, NULL, indexBuffer);
+      vkGetBufferMemoryRequirements(device, *indexBuffer, &memReq);
+      allocInfo.allocationSize = memReq.size;
+
+      for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+         if ((memReq.memoryTypeBits & (1 << i)) &&
+            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
+            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            allocInfo.memoryTypeIndex = i;
+            break;
+         }
+      }
+
+      vkAllocateMemory(device, &allocInfo, NULL, indexMemory);
+      vkBindBufferMemory(device, *indexBuffer, *indexMemory, 0);
+      vkMapMemory(device, *indexMemory, 0, indexSize, 0, &data);
+      memcpy(data, quadIndices, (size_t)indexSize);
+      vkUnmapMemory(device, *indexMemory);
+   }
+
+   void renderer::_blend_image(VkImage image, const ::int_rectangle& rectangle)
+   {
+
+      // Image Blend descriptors
+      if (!m_psetdescriptorlayoutImageBlend)
+      {
+
+         m_psetdescriptorlayoutImageBlend = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+            .build();
+
+         auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+
+         pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
+         pdescriptorpoolbuilder->setMaxSets(get_frame_count());
+         pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, get_frame_count());
+
+         m_pdescriptorpoolImageBlend = pdescriptorpoolbuilder->build();
+
+      }
+
+      //vkCmdBeginRenderPass(...);
 
       auto commandBuffer = this->getCurrentCommandBuffer();
 
-      //if (m_bOffScreen)
+      //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+
+      //VkCommandBuffer commandBuffer;
+      //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &commandBuffer));
+      //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
+      //VK_CHECK_RESULT(vkBeginCommandBuffer(commandBuffer, &cmdBufInfo));
+
+
+      //m_procedureaAfterEndRender.add(
+      //   [this, image, commandBuffer]()
+      //   {
+
+      //      //            {
+      //      //            VkImageMemoryBarrier barrier = {
+      //      //.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      //      //.pNext = nullptr,
+      //      //   .srcAccessMask = VK_ACCESS_SHADER_READ_BIT,
+      //      //.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      //      //
+      //      //.oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      //      //.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //      //.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //      //.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //      //.image = image,
+      //      //.subresourceRange = {
+      //      //    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //      //    .baseMipLevel = 0,
+      //      //    .levelCount = 1,
+      //      //    .baseArrayLayer = 0,
+      //      //    .layerCount = 1,
+      //      //},
+      //      //            };
+      //      //
+      //      //            vkCmdPipelineBarrier(
+      //      //               commandBuffer,
+      //      //               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+      //      //               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      //      //               0,
+      //      //               0, NULL,
+      //      //               0, NULL,
+      //      //               1, &barrier
+      //      //            );
+      //      //
+      //      //         }
+      //      //            {
+      //      //               VkImageMemoryBarrier barrier = {
+      //      //         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      //      //         .pNext = nullptr,
+      //      //         .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      //      //         .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+      //      //
+      //      //         .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //      //         .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      //      //         .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //      //         .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //      //         .image = image,  // <-- your VkImage here
+      //      //         .subresourceRange = {
+      //      //             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //      //             .baseMipLevel = 0,
+      //      //             .levelCount = 1,
+      //      //             .baseArrayLayer = 0,
+      //      //             .layerCount = 1,
+      //      //         },
+      //      //               };
+      //      //
+      //      //               vkCmdPipelineBarrier(
+      //      //                  commandBuffer,
+      //      //                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // srcStageMask
+      //      //                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,         // dstStageMask
+      //      //                  0,
+      //      //                  0, NULL,
+      //      //                  0, NULL,
+      //      //                  1, &barrier
+      //      //               );
+      //      //
+      //      //            }
+      //      //
+      //      //         }
+
+            {
+
+
+               VkImageMemoryBarrier barrier =
+               {
+                  .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                  .pNext = nullptr,
+                  .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                  .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+                  .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                  .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                  .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                  .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+                  .image = image,
+                  .subresourceRange =
+                     {
+                        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                        .baseMipLevel = 0,
+                        .levelCount = 1,
+                        .baseArrayLayer = 0,
+                        .layerCount = 1,
+                     },
+               };
+
+               vkCmdPipelineBarrier(
+                  commandBuffer,
+                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                  0,
+                  0, NULL,
+                  0, NULL,
+                  1, &barrier
+               );
+
+            }
+
+      /*   }
+         );*/
+
+      auto& pmodel = m_imagemodel[image];
+
+      if (__defer_construct_new(pmodel))
       {
 
-         assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
-         assert(
-            commandBuffer == getCurrentCommandBuffer() &&
-            "Can't begin render pass on command buffer from a different frame");
-
-         VkRenderPassBeginInfo renderPassInfo{};
-         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-         renderPassInfo.renderPass = m_pvkcrenderpass->getRenderPass();
-         renderPassInfo.framebuffer = m_pvkcrenderpass->getFrameBuffer(currentImageIndex);
-
-         renderPassInfo.renderArea.offset = { 0, 0 };
-         renderPassInfo.renderArea.extent = m_pvkcrenderpass->getExtent();
-
-         std::array<VkClearValue, 2> clearValues{};
-         //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-         clearValues[0].color = { 0.5f, 0.75f, 1.0f, 1.0f };
-         clearValues[1].depthStencil = { 1.0f, 0 };
-         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-         renderPassInfo.pClearValues = clearValues.data();
-
-         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-         VkViewport viewport{};
-         viewport.x = 0.0f;
-         viewport.y = 0.0f;
-         viewport.width = static_cast<float>(m_pvkcrenderpass->getExtent().width);
-         viewport.height = static_cast<float>(m_pvkcrenderpass->getExtent().height);
-         viewport.minDepth = 0.0f;
-         viewport.maxDepth = 1.0f;
-         VkRect2D scissor{ {0, 0}, m_pvkcrenderpass->getExtent() };
-         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+         create_quad_buffers(m_pgpucontext->logicalDevice(),
+            m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+            &pmodel->m_vertexBuffer,
+            &pmodel->m_vertexMemory,
+            &pmodel->m_indexBuffer,
+            &pmodel->m_indexMemory);
 
       }
-      //else
-      //{
 
-      //	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
-      //	assert(
-      //		commandBuffer == getCurrentCommandBuffer() &&
-      //		"Can't begin render pass on command buffer from a different frame");
+      auto pshader = get_image_blend_shader();
 
-      //	VkRenderPassBeginInfo renderPassInfo{};
-      //	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-      //	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
-      //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(currentImageIndex);
+      pshader->bind();
 
-      //	renderPassInfo.renderArea.offset = { 0, 0 };
-      //	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
+      auto& pdescriptor = m_imagedescriptor[image];
 
-      //	std::array<VkClearValue, 2> clearValues{};
-      //	clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-      //	clearValues[1].depthStencil = { 1.0f, 0 };
-      //	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-      //	renderPassInfo.pClearValues = clearValues.data();
-
-      //	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-      //	VkViewport viewport{};
-      //	viewport.x = 0.0f;
-      //	viewport.y = 0.0f;
-      //	viewport.width = static_cast<float>(vkcSwapChain->getSwapChainExtent().width);
-      //	viewport.height = static_cast<float>(vkcSwapChain->getSwapChainExtent().height);
-      //	viewport.minDepth = 0.0f;
-      //	viewport.maxDepth = 1.0f;
-      //	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
-      //	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-      //	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-
-      //}
-   }
-
-
-   void renderer::on_begin_render(::gpu::frame* pframeParam)
-   {
-
-      ::cast < frame > pframe = pframeParam;
-
-      auto commandBuffer = pframe->commandBuffer;
-
-      //if (m_bOffScreen)
+      if (__defer_construct_new(pdescriptor))
       {
 
-         assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
-         assert(
-            commandBuffer == getCurrentCommandBuffer() &&
-            "Can't begin render pass on command buffer from a different frame");
+         pdescriptor->m_descriptorsets.set_size(get_frame_count());
 
-         VkRenderPassBeginInfo renderPassInfo{};
-         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-         renderPassInfo.renderPass = m_pvkcrenderpass->getRenderPass();
-         renderPassInfo.framebuffer = m_pvkcrenderpass->getFrameBuffer(currentImageIndex);
+         VkImageViewCreateInfo viewInfo = {
+    .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+    .image = image,  // <-- Your existing VkImage
+    .viewType = VK_IMAGE_VIEW_TYPE_2D,
+    .format = VK_FORMAT_B8G8R8A8_UNORM,  // <-- Match your image's format
+    .components = {
+        .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+        .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+        .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+        .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+    },
+    .subresourceRange = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .baseMipLevel = 0,
+        .levelCount = 1,
+        .baseArrayLayer = 0,
+        .layerCount = 1,
+    },
+         };
 
-         renderPassInfo.renderArea.offset = { 0, 0 };
-         renderPassInfo.renderArea.extent = m_pvkcrenderpass->getExtent();
+         VkImageView imageView;
+         if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, NULL, &imageView) != VK_SUCCESS) {
+            // Handle error
+         }
 
-         std::array<VkClearValue, 2> clearValues{};
-         //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-         clearValues[0].color = { 0.5f, 0.75f, 1.0f, 1.0f };
-         clearValues[1].depthStencil = { 1.0f, 0 };
-         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-         renderPassInfo.pClearValues = clearValues.data();
+         ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
-         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+         for (int i = 0; i < get_frame_count(); i++)
+         {
+            VkDescriptorImageInfo imageinfo;
 
-         VkViewport viewport{};
-         viewport.x = 0.0f;
-         viewport.y = 0.0f;
-         viewport.width = static_cast<float>(m_pvkcrenderpass->getExtent().width);
-         viewport.height = static_cast<float>(m_pvkcrenderpass->getExtent().height);
-         viewport.minDepth = 0.0f;
-         viewport.maxDepth = 1.0f;
-         VkRect2D scissor{ {0, 0}, m_pvkcrenderpass->getExtent() };
-         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+            imageinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageinfo.imageView = imageView;
+            imageinfo.sampler = m_pgpucontext->_001VkSampler();
+
+            auto& playout = m_psetdescriptorlayoutImageBlend;
+
+            auto& ppool = m_pdescriptorpoolImageBlend;
+
+            descriptor_writer(*playout, *ppool)
+               .writeImage(0, &imageinfo)
+               .build(pdescriptor->m_descriptorsets[i]);
+
+         }
+
+         auto descriptorSetLayout = m_psetdescriptorlayoutImageBlend->getDescriptorSetLayout();
+
+         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+    .setLayoutCount = 1,
+    .pSetLayouts = &descriptorSetLayout,
+         };
+
+         //VkPipelineLayout pipelineLayout;
+         if (vkCreatePipelineLayout(m_pgpucontext->logicalDevice(), &pipelineLayoutInfo, NULL, &pdescriptor->m_vkpipelinelayout) != VK_SUCCESS) {
+            // Handle error
+         }
 
       }
-      //else
-      //{
 
-      //	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
-      //	assert(
-      //		commandBuffer == getCurrentCommandBuffer() &&
-      //		"Can't begin render pass on command buffer from a different frame");
+      //auto commandBuffer = this->getCurrentCommandBuffer();
 
-      //	VkRenderPassBeginInfo renderPassInfo{};
-      //	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-      //	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
-      //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(currentImageIndex);
-
-      //	renderPassInfo.renderArea.offset = { 0, 0 };
-      //	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
-
-      //	std::array<VkClearValue, 2> clearValues{};
-      //	clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-      //	clearValues[1].depthStencil = { 1.0f, 0 };
-      //	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-      //	renderPassInfo.pClearValues = clearValues.data();
-
-      //	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-      //	VkViewport viewport{};
-      //	viewport.x = 0.0f;
-      //	viewport.y = 0.0f;
-      //	viewport.width = static_cast<float>(vkcSwapChain->getSwapChainExtent().width);
-      //	viewport.height = static_cast<float>(vkcSwapChain->getSwapChainExtent().height);
-      //	viewport.minDepth = 0.0f;
-      //	viewport.maxDepth = 1.0f;
-      //	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
-      //	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-      //	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+      // Bind pipeline and descriptor sets
+//      vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+  //    vkCmdBindDescriptorSets(commandBuffer, ...);
+      vkCmdBindDescriptorSets(
+         commandBuffer,
+         VK_PIPELINE_BIND_POINT_GRAPHICS,   // Bind point
+         pdescriptor->m_vkpipelinelayout,                     // Layout used when pipeline was created
+         0,                                  // First set (set = 0)
+         1,                                  // Descriptor set count
+         &pdescriptor->m_descriptorsets[get_frame_index()],                     // Pointer to descriptor set
+         0,                                  // Dynamic offset count
+         NULL                                // Dynamic offsets
+      );
 
 
-      //}
-   }
 
 
-   void renderer::on_end_render(::gpu::frame* pframeParam)
-   {
+      VkDeviceSize offsets[] = { 0 };
+      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
+      vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
-      ::cast < frame > pframe = pframeParam;
-
-      auto commandBuffer = pframe->commandBuffer;
-
-      assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
-      assert(
-         commandBuffer == getCurrentCommandBuffer() &&
-         "Can't end render pass on command buffer from a different frame");
-      vkCmdEndRenderPass(commandBuffer);
-   }
-
-
-   //void renderer::on_end_render(::graphics3d::frame * pframeParam)
-   void renderer::_on_end_render()
-   {
-
-      //::cast < frame > pframe = pframeParam;
-
-      //auto commandBuffer = pframe->commandBuffer;
-
-      auto commandBuffer = getCurrentCommandBuffer();
-
-      assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
-      assert(
-         commandBuffer == getCurrentCommandBuffer() &&
-         "Can't end render pass on command buffer from a different frame");
-      vkCmdEndRenderPass(commandBuffer);
-   }
+      VkViewport vp = {
+         (float)rectangle.left(),
+         (float)rectangle.top(),
+         (float)rectangle.width(),
+         (float)rectangle.height(),
+         0.0f, 1.0f };
+      VkRect2D sc = {
+         {
+         (float)rectangle.left(),
+         (float)rectangle.top(),
+         },
+         {
+                     (float)rectangle.width(),
+         (float)rectangle.height(),
 
 
-   ::pointer < ::gpu::frame > renderer::beginFrame()
-   {
+      }
+      };
+      vkCmdSetViewport(commandBuffer, 0, 1, &vp);
+      vkCmdSetScissor(commandBuffer, 0, 1, &sc);
 
-      //defer_layout();
+      vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+      // Draw full-screen quad
+      //vkCmdDraw(commandBuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
-      assert(!isFrameStarted && "Can't call beginFrame while already in progress");
+      pshader->unbind();
 
-      //if (m_bOffScreen)
+      //vkCmdEndRenderPass(...);
+
+      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+
+      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &commandBuffer);
+
+
+         }
+
+
+         void renderer::_on_begin_render()
       {
 
-         auto result = m_pvkcrenderpass->acquireNextImage(&currentImageIndex);
+         //::cast < frame > pframe = pframeParam;
 
-         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-            //defer_layout();
-            throw ::exception(todo, "resize happened?!?!");
-            return nullptr;
-         }
-         if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-            throw std::runtime_error("Failed to aquire swap chain image");
-         }
+         //auto commandBuffer = pframe->commandBuffer;
 
-         isFrameStarted = true;
+         auto commandBuffer = this->getCurrentCommandBuffer();
+
+         //if (m_bOffScreen)
+         {
+
+            assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
+            assert(
+               commandBuffer == getCurrentCommandBuffer() &&
+               "Can't begin render pass on command buffer from a different frame");
+
+            VkRenderPassBeginInfo renderPassInfo{};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            renderPassInfo.renderPass = m_pvkcrenderpass->getRenderPass();
+            renderPassInfo.framebuffer = m_pvkcrenderpass->getFrameBuffer(currentImageIndex);
+
+            renderPassInfo.renderArea.offset = { 0, 0 };
+            renderPassInfo.renderArea.extent = m_pvkcrenderpass->getExtent();
+
+            std::array<VkClearValue, 2> clearValues{};
+            //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
+            clearValues[0].color = { 0.5f, 0.75f, 1.0f, 1.0f };
+            clearValues[1].depthStencil = { 1.0f, 0 };
+            renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+            renderPassInfo.pClearValues = clearValues.data();
+
+            vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+            VkViewport viewport{};
+            viewport.x = 0.0f;
+            viewport.y = 0.0f;
+            viewport.width = static_cast<float>(m_pvkcrenderpass->getExtent().width);
+            viewport.height = static_cast<float>(m_pvkcrenderpass->getExtent().height);
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+            VkRect2D scissor{ {0, 0}, m_pvkcrenderpass->getExtent() };
+            vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+            vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+         }
+         //else
+         //{
+
+         //	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
+         //	assert(
+         //		commandBuffer == getCurrentCommandBuffer() &&
+         //		"Can't begin render pass on command buffer from a different frame");
+
+         //	VkRenderPassBeginInfo renderPassInfo{};
+         //	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+         //	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
+         //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(currentImageIndex);
+
+         //	renderPassInfo.renderArea.offset = { 0, 0 };
+         //	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
+
+         //	std::array<VkClearValue, 2> clearValues{};
+         //	clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
+         //	clearValues[1].depthStencil = { 1.0f, 0 };
+         //	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+         //	renderPassInfo.pClearValues = clearValues.data();
+
+         //	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+         //	VkViewport viewport{};
+         //	viewport.x = 0.0f;
+         //	viewport.y = 0.0f;
+         //	viewport.width = static_cast<float>(vkcSwapChain->getSwapChainExtent().width);
+         //	viewport.height = static_cast<float>(vkcSwapChain->getSwapChainExtent().height);
+         //	viewport.minDepth = 0.0f;
+         //	viewport.maxDepth = 1.0f;
+         //	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
+         //	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+         //	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+
+         //}
+      }
+
+
+      void renderer::on_begin_render(::gpu::frame * pframeParam)
+      {
+
+         ::cast < frame > pframe = pframeParam;
+
+         auto commandBuffer = pframe->commandBuffer;
+
+         //if (m_bOffScreen)
+         {
+
+            assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
+            assert(
+               commandBuffer == getCurrentCommandBuffer() &&
+               "Can't begin render pass on command buffer from a different frame");
+
+            VkRenderPassBeginInfo renderPassInfo{};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            renderPassInfo.renderPass = m_pvkcrenderpass->getRenderPass();
+            renderPassInfo.framebuffer = m_pvkcrenderpass->getFrameBuffer(currentImageIndex);
+
+            renderPassInfo.renderArea.offset = { 0, 0 };
+            renderPassInfo.renderArea.extent = m_pvkcrenderpass->getExtent();
+
+            std::array<VkClearValue, 2> clearValues{};
+            //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
+            clearValues[0].color = { 0.5f, 0.75f, 1.0f, 1.0f };
+            clearValues[1].depthStencil = { 1.0f, 0 };
+            renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+            renderPassInfo.pClearValues = clearValues.data();
+
+            vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+            VkViewport viewport{};
+            viewport.x = 0.0f;
+            viewport.y = 0.0f;
+            viewport.width = static_cast<float>(m_pvkcrenderpass->getExtent().width);
+            viewport.height = static_cast<float>(m_pvkcrenderpass->getExtent().height);
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+            VkRect2D scissor{ {0, 0}, m_pvkcrenderpass->getExtent() };
+            vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+            vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+         }
+         //else
+         //{
+
+         //	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
+         //	assert(
+         //		commandBuffer == getCurrentCommandBuffer() &&
+         //		"Can't begin render pass on command buffer from a different frame");
+
+         //	VkRenderPassBeginInfo renderPassInfo{};
+         //	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+         //	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
+         //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(currentImageIndex);
+
+         //	renderPassInfo.renderArea.offset = { 0, 0 };
+         //	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
+
+         //	std::array<VkClearValue, 2> clearValues{};
+         //	clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
+         //	clearValues[1].depthStencil = { 1.0f, 0 };
+         //	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+         //	renderPassInfo.pClearValues = clearValues.data();
+
+         //	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+         //	VkViewport viewport{};
+         //	viewport.x = 0.0f;
+         //	viewport.y = 0.0f;
+         //	viewport.width = static_cast<float>(vkcSwapChain->getSwapChainExtent().width);
+         //	viewport.height = static_cast<float>(vkcSwapChain->getSwapChainExtent().height);
+         //	viewport.minDepth = 0.0f;
+         //	viewport.maxDepth = 1.0f;
+         //	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
+         //	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+         //	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+
+         //}
+      }
+
+
+      void renderer::on_end_render(::gpu::frame * pframeParam)
+      {
+
+         ::cast < frame > pframe = pframeParam;
+
+         auto commandBuffer = pframe->commandBuffer;
+
+         assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
+         assert(
+            commandBuffer == getCurrentCommandBuffer() &&
+            "Can't end render pass on command buffer from a different frame");
+         vkCmdEndRenderPass(commandBuffer);
+      }
+
+
+      //void renderer::on_end_render(::graphics3d::frame * pframeParam)
+      void renderer::_on_end_render()
+      {
+
+         //::cast < frame > pframe = pframeParam;
+
+         //auto commandBuffer = pframe->commandBuffer;
 
          auto commandBuffer = getCurrentCommandBuffer();
 
-         VkCommandBufferBeginInfo beginInfo{};
-         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-            throw std::runtime_error("failed to begin recording command buffer!");
-         }
-         auto pframe = __create_new < ::gpu_vulkan::frame >();
-         pframe->commandBuffer = commandBuffer;
-         m_pframe = pframe;
-         return m_pframe;
-
+         assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
+         assert(
+            commandBuffer == getCurrentCommandBuffer() &&
+            "Can't end render pass on command buffer from a different frame");
+         vkCmdEndRenderPass(commandBuffer);
       }
-      //else
-      //{
 
 
-      //	auto result = m_pvkcswapchain->acquireNextImage(&currentImageIndex);
-
-      //	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-      //		recreateRenderPass();
-      //		return nullptr;
-      //	}
-      //	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-      //		throw std::runtime_error("Failed to aquire swap chain image");
-      //	}
-
-      //	isFrameStarted = true;
-
-      //	auto commandBuffer = getCurrentCommandBuffer();
-
-      //	VkCommandBufferBeginInfo beginInfo{};
-      //	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-      //	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-      //		throw std::runtime_error("failed to begin recording command buffer!");
-      //	}
-      //	return commandBuffer;
-
-      //}
-   }
-
-
-   void renderer::endFrame()
-   {
-
-      //if (m_bOffScreen)
+      ::pointer < ::gpu::frame > renderer::beginFrame()
       {
+
+         //defer_layout();
+
+         assert(!isFrameStarted && "Can't call beginFrame while already in progress");
+
+         //if (m_bOffScreen)
+         {
+
+            auto result = m_pvkcrenderpass->acquireNextImage(&currentImageIndex);
+
+            if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+               //defer_layout();
+               throw ::exception(todo, "resize happened?!?!");
+               return nullptr;
+            }
+            if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+               throw std::runtime_error("Failed to aquire swap chain image");
+            }
+
+            isFrameStarted = true;
+
+            auto commandBuffer = getCurrentCommandBuffer();
+
+            VkCommandBufferBeginInfo beginInfo{};
+            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+            if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+               throw std::runtime_error("failed to begin recording command buffer!");
+            }
+            auto pframe = __create_new < ::gpu_vulkan::frame >();
+            pframe->commandBuffer = commandBuffer;
+            m_pframe = pframe;
+            return m_pframe;
+
+         }
+         //else
+         //{
+
+
+         //	auto result = m_pvkcswapchain->acquireNextImage(&currentImageIndex);
+
+         //	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+         //		recreateRenderPass();
+         //		return nullptr;
+         //	}
+         //	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+         //		throw std::runtime_error("Failed to aquire swap chain image");
+         //	}
+
+         //	isFrameStarted = true;
+
+         //	auto commandBuffer = getCurrentCommandBuffer();
+
+         //	VkCommandBufferBeginInfo beginInfo{};
+         //	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+         //	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+         //		throw std::runtime_error("failed to begin recording command buffer!");
+         //	}
+         //	return commandBuffer;
+
+         //}
+      }
+
+
+      void renderer::endFrame()
+      {
+
+         //if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+         //{
 
          assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
          auto commandBuffer = getCurrentCommandBuffer();
-         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-            throw std::runtime_error("failed to record command buffer!");
+         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+         {
+            throw ::exception(error_failed, "failed to record command buffer!");
          }
+
          auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
-         //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-         //	vkcWindow.wasWindowResized()) 
-         //{
-         //	vkcWindow.resetWindowResizedFlag();
-         //	recreateSwapchain();
-         //}
-         //else 
-         //	if (result != VK_SUCCESS) {
-         //	throw std::runtime_error("failed to present swap chain image!");
-         //}
-         sample();
+
+         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+            m_bNeedToRecreateSwapChain)
+         {
+            m_bNeedToRecreateSwapChain = false;
+            defer_update_render_pass();
+         }
+         else if (result != VK_SUCCESS)
+         {
+            throw ::exception(error_failed, "failed to present swap chain image!");
+         }
+         if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+         {
+            sample();
+
+         }
          isFrameStarted = false;
-         currentFrameIndex = (currentFrameIndex + 1) % render_pass::MAX_FRAMES_IN_FLIGHT;
+         //rrentImageIndex = m_pvkcrenderpass->currentFrame;
+         currentFrameIndex = (currentFrameIndex + 1) % ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT;
+
+         //}
+         //else
+         //{
+
+
+         //	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
+         //	auto commandBuffer = getCurrentCommandBuffer();
+         //	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+         //		throw std::runtime_error("failed to record command buffer!");
+         //	}
+         //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+         //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+         //	//	vkcWindow.wasWindowResized()) 
+         //	//{
+         //	//	vkcWindow.resetWindowResizedFlag();
+         //	//	recreateSwapchain();
+         //	//}
+         //	//else 
+         //	//	if (result != VK_SUCCESS) {
+         //	//	throw std::runtime_error("failed to present swap chain image!");
+         //	//}
+         //	isFrameStarted = false;
+         //	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT;
+
+         //}
 
       }
-      //else
-      //{
 
 
-      //	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-      //	auto commandBuffer = getCurrentCommandBuffer();
-      //	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-      //		throw std::runtime_error("failed to record command buffer!");
-      //	}
-      //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
-      //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-      //	//	vkcWindow.wasWindowResized()) 
-      //	//{
-      //	//	vkcWindow.resetWindowResizedFlag();
-      //	//	recreateSwapchain();
-      //	//}
-      //	//else 
-      //	//	if (result != VK_SUCCESS) {
-      //	//	throw std::runtime_error("failed to present swap chain image!");
-      //	//}
-      //	isFrameStarted = false;
-      //	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT;
+      void renderer::_on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle)
+      {
 
-      //}
+         set_placement(rectangle);
 
-   }
+         if (auto pframe = beginFrame())
+         {
+
+            //on_begin_frame();
+            // render
+            on_begin_render(pframe);
 
 
 
-} // namespace gpu_vulkan
+            //if (m_pimpact->global_ubo_block().size() > 0)
+            //{
+
+              // update_global_ubo(m_pgpucontext);
+
+            //}
+
+            //m_pscene->on_render(m_pgpucontext);
+
+            _blend_image(image, rectangle);
+
+            on_end_render(pframe);
+
+            
+
+            endFrame();
+
+         }
+
+      }
+
+
+   } // namespace gpu_vulkan
 
 
 

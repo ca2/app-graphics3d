@@ -31,7 +31,7 @@ namespace gpu_vulkan
       ~buffer();
 
 
-      void initialize_buffer(::gpu::context* pdevice,
+      void initialize_buffer(::gpu::context* pgpudevice,
          VkDeviceSize instanceSize,
          uint32_t instanceCount,
          VkBufferUsageFlags usageFlags,

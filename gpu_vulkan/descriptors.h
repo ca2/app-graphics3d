@@ -18,7 +18,7 @@ namespace gpu_vulkan
       virtual public ::particle
    {
    public:
-      class Builder
+      class CLASS_DECL_GPU_VULKAN Builder
       {
       public:
          Builder(::gpu::context * pgpucontext) : m_pgpucontext{ pgpucontext } {}
@@ -54,7 +54,7 @@ namespace gpu_vulkan
    public:
 
 
-      class Builder :
+      class CLASS_DECL_GPU_VULKAN Builder :
          virtual public ::particle
       {
       public:

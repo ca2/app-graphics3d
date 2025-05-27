@@ -35,6 +35,8 @@ namespace graphics3d_vulkan
 
 
 
+
+
 		engine();
 		~engine() override;
 
@@ -42,6 +44,10 @@ namespace graphics3d_vulkan
 		//::file::path _translate_shader_path(const ::file::path& pathShader);
 
 		void defer_update_engine(const ::int_rectangle& rectanglePlacement) override;
+
+		void _engine_on_frame_context_initialization() override;
+
+		void _prepare_frame() override;
 
 		void run() override;
 

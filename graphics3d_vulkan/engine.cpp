@@ -183,6 +183,32 @@ namespace graphics3d_vulkan
 
    //}
 
+
+   void engine::_engine_on_frame_context_initialization()
+   {
+
+      ::cast < ::gpu_vulkan::approach> papproach=m_papplication->get_gpu();
+
+      papproach->engine_on_frame_context_initialization(m_pgpucontext);
+
+      //m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pgpucontext)
+      //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
+      //   .build();
+
+
+
+   }
+
+
+   void engine::_prepare_frame()
+   {
+
+      ::graphics3d::engine::_prepare_frame();
+
+
+   }
+
+
    void engine::run()
    {
 

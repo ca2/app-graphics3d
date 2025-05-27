@@ -38,7 +38,7 @@ namespace gpu_vulkan
 
       ::cast < context > pgpucontext = m_pgpucontext;
 
-      ::cast < approach > papproach = pgpucontext->m_papproach;
+      ::cast < device > pgpudevice = pgpucontext->m_pgpudevice;
 
       VkPushConstantRange pushConstantRange{};
       pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -46,17 +46,49 @@ namespace gpu_vulkan
       //pushConstantRange.size = sizeof(PointLightPushConstants);
       pushConstantRange.size = iSize;
 
-      auto globalSetLayout = papproach->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+      ::array<VkDescriptorSetLayout> descriptorSetLayouts;
+      
+      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      {
 
-      ::array<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+         auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+
+         descriptorSetLayouts.add(globalSetLayout);
+
+      }
+
+      if (m_pLocalDescriptorSet)
+      {
+
+         ::cast < ::gpu_vulkan::set_descriptor_layout > pset = m_pLocalDescriptorSet;
+
+         auto setLayout = pset->getDescriptorSetLayout();
+
+         descriptorSetLayouts.add(setLayout);
+
+      }
 
       VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
       pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
       pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
       pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-      pipelineLayoutInfo.pushConstantRangeCount = 1;
-      pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
+
+      if (iSize > 0)
+      {
+         pipelineLayoutInfo.pushConstantRangeCount = 1;
+         pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
+      }
+      else
+      {
+         pipelineLayoutInfo.pushConstantRangeCount = 0;
+         pipelineLayoutInfo.pPushConstantRanges = NULL;
+
+
+      }
+
+      
       //pipelineLayoutInfo.pPushConstantRanges = nullptr;
+
       if (vkCreatePipelineLayout(
          pgpucontext->logicalDevice(),
          &pipelineLayoutInfo,
@@ -64,7 +96,9 @@ namespace gpu_vulkan
          &m_vkpipelinelayout) !=
          VK_SUCCESS)
       {
+         
          throw ::exception(error_failed, "failed to create pipeline layout!");
+
       }
 
    }
@@ -79,23 +113,38 @@ namespace gpu_vulkan
 
       ::cast <context> pgpucontext = m_pgpucontext;
 
-      ::cast <approach> papproach = m_pgpucontext->m_papproach;
+      ::cast <device> pgpudevice = m_pgpucontext->m_pgpudevice;
 
       ::cast <renderer> prenderer = m_pgpucontext->get_renderer();
 
       PipelineConfigInfo pipelineConfig{};
+
+      ::cast < shader_vertex_input > pshadervertexinput = m_pVertexInput;
+
+      if (pshadervertexinput)
+      {
+
+         pipelineConfig.bindingDescriptions.copy(pshadervertexinput->m_bindings);
+         pipelineConfig.attributeDescriptions.copy(pshadervertexinput->m_attribs);
+
+      }
+
       pipeline::defaultPipelineConfigInfo(pipelineConfig);
+
       if (m_eflag & e_flag_clear_default_bindings_and_attributes_descriptions)
       {
+
          pipelineConfig.attributeDescriptions.clear();
          pipelineConfig.bindingDescriptions.clear();
+
       }
+
       auto prenderpass = prenderer->m_pvkcrenderpass;
       pipelineConfig.renderPass =prenderpass->m_vkrenderpass;
       pipelineConfig.pipelineLayout = m_vkpipelinelayout;
 
-      papproach->defer_shader_memory(m_memoryVertex, m_pathVertex);
-      papproach->defer_shader_memory(m_memoryFragment, m_pathFragment);
+      pgpudevice->defer_shader_memory(m_memoryVertex, m_pathVertex);
+      pgpudevice->defer_shader_memory(m_memoryFragment, m_pathFragment);
 
       m_ppipeline->initialize_pipeline(m_pgpucontext,
          m_memoryVertex,
@@ -109,7 +158,7 @@ namespace gpu_vulkan
    void shader::bind()
    {
 
-      ::cast <approach> papproach = m_pgpucontext->m_papproach;
+      ::cast <device> pgpudevice = m_pgpucontext->m_pgpudevice;
 
       ::cast <context> pgpucontext = m_pgpucontext;
 
@@ -119,17 +168,22 @@ namespace gpu_vulkan
 
       m_ppipeline->bind(commandBuffer);
 
-      auto globalDescriptorSet = papproach->getCurrentDescriptorSet(prenderer);
+      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      {
 
-      vkCmdBindDescriptorSets(
-         commandBuffer,
-         VK_PIPELINE_BIND_POINT_GRAPHICS,
-         m_vkpipelinelayout,
-         0,
-         1,
-         &globalDescriptorSet,
-         0,
-         nullptr);
+         auto globalDescriptorSet = pgpucontext->getGlobalDescriptorSet(prenderer);
+
+         vkCmdBindDescriptorSets(
+            commandBuffer,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            m_vkpipelinelayout,
+            0,
+            1,
+            &globalDescriptorSet,
+            0,
+            nullptr);
+
+      }
 
    }
 

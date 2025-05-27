@@ -19,6 +19,16 @@ constexpr unsigned int FRAME_OVERLAP = 2;
 namespace gpu_vulkan
 {
 
+   class CLASS_DECL_GPU_VULKAN shader_vertex_input :
+      virtual public ::particle
+   {
+   public:
+
+      ::array < VkVertexInputBindingDescription >     m_bindings;
+      ::array < VkVertexInputAttributeDescription >   m_attribs;
+
+   };
+
 
    class CLASS_DECL_GPU_VULKAN renderer :
       virtual public ::gpu::renderer
@@ -57,21 +67,46 @@ namespace gpu_vulkan
 
       };
 
+      class descriptor :
+         virtual public ::particle
+      {
+      public:
+         ::array<VkDescriptorSet>   m_descriptorsets;
+         VkPipelineLayout		      m_vkpipelinelayout = nullptr;
+      };
+
+      class model :
+         virtual public ::particle
+      {
+      public:
+         VkBuffer m_vertexBuffer;
+         VkDeviceMemory m_vertexMemory;
+         VkBuffer m_indexBuffer;
+         VkDeviceMemory m_indexMemory;
+      };
+
+      ::pointer<::gpu::shader>                        m_pshaderImageBlend;
+      map < VkImage, ::pointer < descriptor > >       m_imagedescriptor;
+      map < VkImage, ::pointer < model > >       m_imagemodel;
       //::pointer < ::cube::impact >	m_pimpact;
-      ::pointer < context >				m_pgpucontext;
-      ::pointer < OffScreenSampler >	m_poffscreensampler;
+      ::pointer < context >				               m_pgpucontext;
+      ::pointer < OffScreenSampler >	               m_poffscreensampler;
       //::pointer<swap_chain_render_pass>			m_pvkcswapchain;
       //::pointer<offscreen_render_pass>			m_pvkcoffscreen;
-      ::pointer<render_pass>			m_pvkcrenderpass;
+      ::pointer<render_pass>			                  m_pvkcrenderpass;
       ::array<VkCommandBuffer>	commandBuffers;
       VkExtent2D m_extentRenderer;
       uint32_t currentImageIndex;
       int currentFrameIndex = 0;
       bool isFrameStarted = false;
 
-
+      bool m_bNeedToRecreateSwapChain = false;
       //bool m_bOffScreen = true;
       //renderer(VkWindow &window, context * pvkcdevice);
+
+      ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutImageBlend;
+      ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolImageBlend;
+      ::procedure_array m_procedureaAfterEndRender;
 
       renderer();
       ~renderer();
@@ -93,6 +128,7 @@ namespace gpu_vulkan
       }
 
       void sample();
+      void swap_chain();
 
       float getAspectRatio() const
       {
@@ -124,6 +160,8 @@ namespace gpu_vulkan
       int get_frame_index() override;
       int get_frame_count() override;
 
+      void defer_update_render_pass();
+
       //::pointer < ::graphics3d::frame> beginFrame() override;
       //void endFrame() override;
       //void on_begin_render(::graphics3d::frame * pframe) override;
@@ -151,6 +189,11 @@ namespace gpu_vulkan
       void on_end_render(::gpu::frame* pframeParam) override;
       void endFrame() override;
 
+      void _blend_image(VkImage image, const ::int_rectangle& rectangle);
+      void _on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle);
+
+
+      ::gpu::shader * get_image_blend_shader();
 
    };
 

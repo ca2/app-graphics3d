@@ -74,9 +74,15 @@ namespace gpu_vulkan
     *
     * @return VkResult of the buffer mapping call
     */
-   VkResult buffer::map(VkDeviceSize size, VkDeviceSize offset) {
+   VkResult buffer::map(VkDeviceSize size, VkDeviceSize offset)
+   {
+
       assert(m_buffer && m_memory && "Called map on buffer before create");
+
+      ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
       return vkMapMemory(m_pgpucontext->logicalDevice(), m_memory, offset, size, 0, &m_mapped);
+
    }
 
    /**
@@ -86,6 +92,8 @@ namespace gpu_vulkan
     */
    void buffer::unmap() {
       if (m_mapped) {
+
+         ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
          vkUnmapMemory(m_pgpucontext->logicalDevice(), m_memory);
          m_mapped = nullptr;
       }
@@ -124,12 +132,14 @@ namespace gpu_vulkan
     *
     * @return VkResult of the flush call
     */
-   VkResult buffer::flush(VkDeviceSize size, VkDeviceSize offset) {
+   VkResult buffer::flush(VkDeviceSize size, VkDeviceSize offset)
+   {
       VkMappedMemoryRange mappedRange = {};
       mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
       mappedRange.memory = m_memory;
       mappedRange.offset = offset;
       mappedRange.size = size;
+      ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
       return vkFlushMappedMemoryRanges(m_pgpucontext->logicalDevice(), 1, &mappedRange);
    }
 
@@ -144,12 +154,14 @@ namespace gpu_vulkan
     *
     * @return VkResult of the invalidate call
     */
-   VkResult buffer::invalidate(VkDeviceSize size, VkDeviceSize offset) {
+   VkResult buffer::invalidate(VkDeviceSize size, VkDeviceSize offset) 
+   {
       VkMappedMemoryRange mappedRange = {};
       mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
       mappedRange.memory = m_memory;
       mappedRange.offset = offset;
       mappedRange.size = size;
+      ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
       return vkInvalidateMappedMemoryRanges(m_pgpucontext->logicalDevice(), 1, &mappedRange);
    }
 

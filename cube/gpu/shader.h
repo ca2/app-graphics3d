@@ -27,6 +27,25 @@ namespace gpu
 
       };
 
+      /// Trying to following suggestion from:
+      /// https://vkguide.dev/docs/chapter-4/descriptors/ "Mental Model"
+      /// The descriptor set number 0 will be used for engine - global
+      /// resources, and bound once per frame.The descriptor set number 1 will
+      /// be used for per - pass resources, and bound once per pass.
+      /// The descriptor set number 2 will be used for material resources,
+      /// and the number 3 will be used for per - object resources.
+      /// This way, the inner render loops will only be binding 
+      /// descriptor sets 2 and 3, and performance will be high.
+
+      enum enum_descriptor_set_slot
+      {
+         e_descriptor_set_slot_global,
+         e_descriptor_set_slot_per_pass,
+         e_descriptor_set_slot_material,
+         e_descriptor_set_slot_local,
+
+      };
+
 
       //unsigned int               m_uId;
 
@@ -47,6 +66,9 @@ namespace gpu
       ::gpu::properties          m_properties;
 
       enum_flag                  m_eflag;
+      ::comparable_array<enum_descriptor_set_slot>   m_edescriptorsetslota;
+      ::particle_pointer         m_pLocalDescriptorSet;
+      ::particle_pointer         m_pVertexInput;
 
       shader();
       ~shader() override;
@@ -54,8 +76,11 @@ namespace gpu
       
       virtual void initialize_shader(
          ::gpu::context* pgpucontext,
-         const ::file::path & pathVertex, 
-         const ::file::path & pathFragment, 
+         const ::file::path& pathVertex,
+         const ::file::path& pathFragment,
+         const ::array<enum_descriptor_set_slot>& eslota = {},
+         const ::particle_pointer& pLocalDescriptorSet = {},
+         const ::particle_pointer& pVertexInput = {},
          const ::gpu::property* pproperties = nullptr,
          enum_flag eflag = e_flag_none);
 
@@ -63,6 +88,9 @@ namespace gpu
          ::gpu::context* pgpucontext,
          const ::block & blockVertex, 
          const ::block & blockFragment,
+         const ::array<enum_descriptor_set_slot>& eslota = {},
+         const ::particle_pointer& pLocalDescriptorSet = {},
+         const ::particle_pointer& pVertexInput = {},
          const ::gpu::property* pproperties = nullptr,
          enum_flag eflag = e_flag_none);
 

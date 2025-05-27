@@ -48,7 +48,7 @@ namespace gpu_vulkan
       descriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
       descriptorSetLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
       descriptorSetLayoutInfo.pBindings = setLayoutBindings.data();
-
+      ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
       if (vkCreateDescriptorSetLayout(
          m_pgpucontext->logicalDevice(),
          &descriptorSetLayoutInfo,
@@ -60,6 +60,7 @@ namespace gpu_vulkan
 
    set_descriptor_layout::~set_descriptor_layout() {
       if (descriptorSetLayout != VK_NULL_HANDLE) {
+         ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
          vkDestroyDescriptorSetLayout(m_pgpucontext->logicalDevice(), descriptorSetLayout, nullptr);
          descriptorSetLayout = VK_NULL_HANDLE;
       }
