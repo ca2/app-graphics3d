@@ -1,3 +1,5 @@
+// From offscreen_render_pass by
+//    camilo on 2025-05-27 15:49 <3ThomasBorregaardSorensen!!
 // From vk_swapchain by camilo on 2025-05-09 <3ThomasBorregaardSorensen!!
 #pragma once
 
@@ -18,17 +20,25 @@ namespace gpu_vulkan
 {
 
 
-	class CLASS_DECL_GPU_VULKAN offscreen_render_pass :
+	class CLASS_DECL_GPU_VULKAN accumulation_render_pass :
 		virtual public render_pass
 	{
 	public:
 
 
+		::array<VkImage>				m_imagesAlphaAccumulation;
+		::array<VkDeviceMemory>		m_imagememoriesAlphaAccumulation;
+		::array<VkImageView>			m_imageviewsAlphaAccumulation;
+		VkFormat							m_formatAlphaAccumulation;
+
 		static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-		offscreen_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent);
-		offscreen_render_pass(renderer * pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
-		~offscreen_render_pass();
+		accumulation_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent);
+		accumulation_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
+		~accumulation_render_pass();
+
+		
+		void on_before_begin_render(frame* pframe) override;
 
 
 		//VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
@@ -56,14 +66,14 @@ namespace gpu_vulkan
 	public:
 		void init();
 		void createRenderPassImpl();
+		void createAlphaAccumulation();
 		void createImageViews();
 		void createDepthResources();
 		void createRenderPass();
 		void createFramebuffers();
 		void createSyncObjects();
 
-		//VkResult submitSamplingWork(const VkCommandBuffer buffer, uint32_t* imageIndex);
-		VkResult submitSamplingWork(const VkCommandBuffer buffer);
+		VkResult submitSamplingWork(const VkCommandBuffer buffer, uint32_t* imageIndex);
 
 		//// Helper functions
 		//VkSurfaceFormatKHR chooseSwapSurfaceFormat(
@@ -83,7 +93,7 @@ namespace gpu_vulkan
 		//::array<VkDeviceMemory> depthImageMemorys;
 		//::array<VkImageView> depthImageViews;
 		VkSampler m_vksampler;
-		 ::array<VkDeviceMemory> m_imagememories;
+		::array<VkDeviceMemory> m_imagememories;
 		//::array<VkImage> swapChainImages;
 		//::array<VkImageView> swapChainImageViews;
 

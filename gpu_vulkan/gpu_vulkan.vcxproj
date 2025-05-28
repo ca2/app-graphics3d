@@ -689,6 +689,7 @@
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="accumulation_render_pass.h" />
     <ClInclude Include="assimp.h" />
     <ClInclude Include="buffer.h" />
     <ClInclude Include="cpu_buffer.h" />
@@ -720,6 +721,7 @@
     <ClInclude Include="_gpu_vulkan.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="accumulation_render_pass.cpp" />
     <ClCompile Include="assimp.cpp" />
     <ClCompile Include="buffer.cpp" />
     <ClCompile Include="cpu_buffer.cpp" />
@@ -918,6 +920,34 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
   <ItemGroup>
     <None Include="shader\image_blend.frag.spv.inl" />
     <None Include="shader\image_blend.vert.spv.inl" />
+    <CustomBuild Include="shader\resolve.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator -V "%(FullPath)" -o "$(ProjectDir)/shader/%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filename)%(Extension).spv" "$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">glslangValidator -V "%(FullPath)" -o "$(ProjectDir)/shader/%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filename)%(Extension).spv" "$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator -V "%(FullPath)" -o "$(ProjectDir)/shader/%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filename)%(Extension).spv" "$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">glslangValidator -V "%(FullPath)" -o "$(ProjectDir)/shader/%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filename)%(Extension).spv" "$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">glslangValidator -V "%(FullPath)" -o "$(ProjectDir)/shader/%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filename)%(Extension).spv" "$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">glslangValidator -V "%(FullPath)" -o "$(ProjectDir)/shader/%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filename)%(Extension).spv" "$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">glslangValidator -V "%(FullPath)" -o "$(ProjectDir)/shader/%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filename)%(Extension).spv" "$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">glslangValidator -V "%(FullPath)" -o "$(ProjectDir)/shader/%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filename)%(Extension).spv" "$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+    </CustomBuild>
+    <None Include="shader\resolve.frag.spv.inl" />
     <None Include="shader\shader.frag.spv.inl" />
     <None Include="shader\shader.vert.spv.inl" />
   </ItemGroup>

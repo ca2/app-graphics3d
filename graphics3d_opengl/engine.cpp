@@ -471,7 +471,7 @@ namespace graphics3d_opengl
 
 
          m_pshaderBlend->initialize_shader_with_block(
-            m_pgpucontext,
+            m_pgpucontext->m_pgpurenderer,
             quad_vertex_shader,
             blend_fragment_shader);
 

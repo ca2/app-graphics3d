@@ -70,6 +70,23 @@ namespace gpu
    }
 
 
+   ::pointer < ::gpu::context > device::start_gpu_output_context(::particle* pparticle, const ::gpu::enum_output& eoutput, const ::int_rectangle& rectanglePlacement)
+   {
+
+      auto pgpucontext = start_gpu_context(
+         start_gpu_output_context_t
+         {
+            pparticle,
+            this,
+            eoutput,
+            rectanglePlacement
+         });
+
+      return pgpucontext;
+
+   }
+
+
    ::pointer < ::gpu::context > device::start_cpu_buffer_context(::particle* pparticle, const ::image32_callback& callbackImage32CpuBuffer, const ::int_rectangle& rectanglePlacement)
    {
 

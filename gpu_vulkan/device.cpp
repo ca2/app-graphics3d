@@ -842,7 +842,7 @@ namespace gpu_vulkan
       .scalarBlockLayout = TRUE };
       pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
       m_physicaldevicefeaturesCreate.logicOp = TRUE;
-
+      m_physicaldevicefeaturesCreate.independentBlend = TRUE;
       VkResult result = createLogicalDevice(
          m_physicaldevicefeaturesCreate,
          pgpuapproach->m_pszaEnabledDeviceExtensions,

@@ -21,7 +21,7 @@
 #include "graphics.h"
 
 
-#define VK2D_GRAPHICS(pgraphics) (dynamic_cast < ::draw2d_vulkan::graphics * > (pgraphics))
+#define VK2D_GRAPHICS(pgraphics) (dynamic_cast < ::draw2d_vkvg::graphics * > (pgraphics))
 #define VK2D_HDC(pgraphics) (VK2D_GRAPHICS(pgraphics)->m_hdc)
 
 
@@ -39,14 +39,14 @@ namespace vulkan
 
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
 
    class draw2d;
 
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg
 
 
 

@@ -15,12 +15,12 @@
 //   int height;
 //   //fbo_t* fbo;
 //};
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
    class draw2d;
 
-   class CLASS_DECL_DRAW2D_VULKAN graphics :
+   class CLASS_DECL_DRAW2d_VKVG graphics :
       virtual public ::draw2d::graphics,
       virtual public ::gpu::renderer
    {
@@ -156,7 +156,7 @@ namespace draw2d_vulkan
       // Type-safe selection helpers
    public:
 
-      ::draw2d_vulkan::draw2d * draw2d_vulkan();
+      ::draw2d_vkvg::draw2d * draw2d_vkvg();
 
 
       virtual ::draw2d::object* SelectStockObject(int nIndex);
@@ -627,12 +627,12 @@ namespace draw2d_vulkan
    };
 
 
-   CLASS_DECL_DRAW2D_VULKAN graphics * thread_graphics();
+   CLASS_DECL_DRAW2d_VKVG graphics * thread_graphics();
 
-   CLASS_DECL_DRAW2D_VULKAN void thread_graphics(graphics * graphics);
+   CLASS_DECL_DRAW2d_VKVG void thread_graphics(graphics * graphics);
 
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg
 
 
 

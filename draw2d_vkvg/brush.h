@@ -4,11 +4,11 @@
 #include "aura/graphics/draw2d/brush.h"
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
 
-   class CLASS_DECL_DRAW2D_VULKAN brush : 
+   class CLASS_DECL_DRAW2d_VKVG brush : 
       virtual public ::draw2d::brush
    {
    public:
@@ -24,6 +24,6 @@ namespace draw2d_vulkan
    };
 
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg
 
 

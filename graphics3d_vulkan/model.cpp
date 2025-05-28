@@ -168,9 +168,9 @@ namespace graphics3d_vulkan
    void model::draw(::gpu::context* pgpucontext)
    {
 
-      ::cast <::gpu_vulkan::renderer> prenderer = pgpucontext->m_prenderer;
+      ::cast <::gpu_vulkan::renderer> pgpurenderer = pgpucontext->m_pgpurenderer;
 
-      auto commandBuffer = prenderer->getCurrentCommandBuffer();
+      auto commandBuffer = pgpurenderer->getCurrentCommandBuffer();
 
       if (hasIndexBuffer) {
          vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
@@ -184,7 +184,7 @@ namespace graphics3d_vulkan
    void model::bind(::gpu::context* pgpucontext)
    {
 
-      ::cast <::gpu_vulkan::renderer> prenderer = pgpucontext->m_prenderer;
+      ::cast <::gpu_vulkan::renderer> prenderer = pgpucontext->m_pgpurenderer;
 
       auto commandBuffer = prenderer->getCurrentCommandBuffer();
 

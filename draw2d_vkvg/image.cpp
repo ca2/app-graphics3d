@@ -4,7 +4,7 @@
 #include "acme/platform/application.h"
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
 
@@ -193,7 +193,7 @@ namespace draw2d_vulkan
    void image::create(::draw2d::graphics * pgraphics)
    {
 
-      ::draw2d::bitmap * pbitmap = (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->get_current_bitmap();
+      ::draw2d::bitmap * pbitmap = (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->get_current_bitmap();
 
       if (pbitmap == nullptr)
       {
@@ -2939,7 +2939,7 @@ namespace draw2d_vulkan
    }
 
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg
 
 
 

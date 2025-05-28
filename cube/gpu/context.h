@@ -74,7 +74,7 @@ namespace gpu
       bool                                   m_bCreated;
       ::draw3d::matrix                       m_matrixProjection;
       ::draw3d::matrix                       m_matrixImpact;
-      ::pointer < ::gpu::renderer >          m_prenderer;
+      ::pointer < ::gpu::renderer >          m_pgpurenderer;
       ::pointer < ::graphics3d::engine >     m_pengine;
       ::pointer_array < ::gpu::render >      m_rendera;
 
@@ -104,14 +104,6 @@ namespace gpu
       //virtual void initialize(::particle * pparticle) override;
 
 
-      virtual ::pointer<::gpu::shader> create_shader(
-         const ::file::path& pathVert,
-         const ::file::path& pathFrag,
-         const ::array<::gpu::shader::enum_descriptor_set_slot>& eslota = {},
-         const ::particle_pointer& pLocalDescriptorSet = {},
-         const ::particle_pointer& pVertexInput = {},
-         const ::gpu::property* pproperties = nullptr,
-         ::gpu::shader::enum_flag eflag = ::gpu::shader::e_flag_none);
 
 
       virtual ::gpu::renderer* get_renderer();

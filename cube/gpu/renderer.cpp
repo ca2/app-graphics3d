@@ -4,6 +4,7 @@
 #include "context.h"
 #include "cpu_buffer.h"
 #include "renderer.h"
+#include "acme/exception/interface_only.h"
 #include "acme/prototype/geometry2d/matrix.h"
 #include "aura/graphics/draw2d/graphics.h"
 #include "aura/graphics/image/drawing.h"
@@ -68,12 +69,49 @@ namespace gpu
    }
 
 
-   void renderer::initialize_renderer(::gpu::context * pgpucontext)
+   void renderer::on_happening(enum_happening ehappening)
+   {
+
+      switch (ehappening)
+      {
+      case e_happening_reset_frame_counter:
+         m_estate = e_state_initial;
+         break;
+      case e_happening_new_frame:
+         ASSERT(m_estate == e_state_initial || m_estate == e_state_ended_frame);
+         m_estate = e_state_new_frame;
+         break;
+      case e_happening_begin_frame:
+         ASSERT(m_estate == e_state_new_frame);
+         m_estate = e_state_began_frame;
+         break;
+      case e_happening_begin_render:
+         ASSERT(m_estate == e_state_began_frame);
+         m_estate = e_state_began_render;
+         break;
+      case e_happening_end_render:
+         ASSERT(m_estate == e_state_began_render);
+         m_estate = e_state_ended_render;
+         break;
+      case e_happening_end_frame:
+         ASSERT(m_estate == e_state_ended_render);
+         m_estate = e_state_ended_frame;
+         break;
+      default:
+         throw ::exception(error_unexpected_situation);
+      };
+
+   }
+
+
+   void renderer::initialize_renderer(::gpu::context * pgpucontext, ::gpu::enum_output eoutput)
    {
 
       m_pgpucontext = pgpucontext;
 
-      m_pgpucontext->m_prenderer = this;
+      //m_pgpucontext->m_prenderer = this;
+
+      m_eoutput = eoutput;
       //::particle::initialize(pparticle);
 
       //m_pgpucontext = system()->get_gpu()->create_context(this);
@@ -82,6 +120,26 @@ namespace gpu
 
 
    }
+
+
+   ::pointer<::gpu::shader> renderer::create_shader(
+      const ::file::path& pathVert,
+      const ::file::path& pathFrag,
+      const ::array<::gpu::shader::enum_descriptor_set_slot>& eslota,
+      const ::particle_pointer& pLocalDescriptorSet,
+      const ::particle_pointer& pVertexInput,
+      const ::gpu::property* pproperties,
+      ::gpu::shader::enum_flag eflag)
+   {
+
+      auto pshader = __øcreate < ::gpu::shader >();
+
+      pshader->initialize_shader(this, pathVert, pathFrag, eslota, pLocalDescriptorSet, pVertexInput, pproperties, eflag);
+
+      return pshader;
+
+   }
+
 
 
    //void renderer::initialize_render(::user::interaction * puserinteraction)
@@ -472,20 +530,25 @@ namespace gpu
    }
 
 
-   int renderer::get_frame_index()
+   int renderer::get_frame_index() const
    {
+
+      throw ::interface_only();
 
       return -1;
 
    }
 
 
-   int renderer::get_frame_count()
+   int renderer::get_frame_count() const
    {
+
+      throw ::interface_only();
 
       return -1;
 
    }
+
 
    ::pointer < frame > renderer::beginFrame()
    {

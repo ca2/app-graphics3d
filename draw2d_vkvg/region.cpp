@@ -3,7 +3,7 @@
 #include "region.h"
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
    //region::region(const region & rectangle) :
@@ -310,4 +310,4 @@ namespace draw2d_vulkan
 
    //}
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg

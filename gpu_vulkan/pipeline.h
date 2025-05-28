@@ -25,7 +25,7 @@ namespace gpu_vulkan
       VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
       VkPipelineRasterizationStateCreateInfo rasterizationInfo;
       VkPipelineMultisampleStateCreateInfo multisampleInfo;
-      VkPipelineColorBlendAttachmentState colorBlendAttachment;
+      ::array < VkPipelineColorBlendAttachmentState > colorBlendAttachments;
       VkPipelineColorBlendStateCreateInfo colorBlendInfo;
       VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
       ::array<VkDynamicState> dynamicStateEnables;
@@ -41,6 +41,13 @@ namespace gpu_vulkan
    public:
 
 
+      ::pointer < renderer > m_pgpurenderer;
+      VkPipeline graphicsPipeline;
+      VkShaderModule vertShaderModule;
+      VkShaderModule fragShaderModule;
+
+
+
       pipeline();
       //virtual void initialize_pipeline(
       //   ::gpu::context * pgpucontext,
@@ -48,14 +55,12 @@ namespace gpu_vulkan
       //   const ::file::path & pathFrag,
       //   const PipelineConfigInfo & configInfo);
       virtual void initialize_pipeline(
-         ::gpu::context * pgpucontext,
+         ::gpu::renderer * pgpurenderer,
          const ::block & blockVertex,
          const ::block & blockFragment,
          const PipelineConfigInfo & configInfo);
       ~pipeline();
 
-      pipeline(const pipeline &) = delete;
-      void operator=(const pipeline &) = delete;
 
       void bind(VkCommandBuffer commandBuffer);
 
@@ -70,10 +75,6 @@ namespace gpu_vulkan
 
       void createShaderModule(const ::block & block, VkShaderModule * shaderModule);
 
-      ::pointer < context > m_pgpucontext;
-      VkPipeline graphicsPipeline;
-      VkShaderModule vertShaderModule;
-      VkShaderModule fragShaderModule;
    };
 
 

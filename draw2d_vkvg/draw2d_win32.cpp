@@ -4,7 +4,7 @@
 //xxxopengl>>>>vulkan #include "vkad_wgl.h"
 #include <dwmapi.h>
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
    //// Helper to create dummy Vulkan context
    //HGLRC CreateDummyContext(HDC hdc) {
@@ -178,4 +178,4 @@ namespace draw2d_vulkan
 
 
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg

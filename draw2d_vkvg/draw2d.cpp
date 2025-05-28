@@ -6,11 +6,11 @@
 #include "acme/prototype/prototype/memory.h"
 
 
-//CLASS_DECL_DRAW2D_VULKAN void initialize_vulkan();
-//CLASS_DECL_DRAW2D_VULKAN void terminate_vulkan();
+//CLASS_DECL_DRAW2d_VKVG void initialize_vulkan();
+//CLASS_DECL_DRAW2d_VKVG void terminate_vulkan();
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
 
@@ -209,7 +209,7 @@ namespace draw2d_vulkan
       //wc.style = CS_OWNDC;
       //wc.lpfnWndProc = vulkan_window_proc;
       //wc.hInstance = (HINSTANCE) system()->m_hinstanceThis;
-      //wc.lpszClassName = L"draw2d_vulkan_offscreen_buffer_window";
+      //wc.lpszClassName = L"draw2d_vkvg_offscreen_buffer_window";
       //m_atomClass = RegisterClassW(&wc);
 
       //if (!m_atomClass)
@@ -226,7 +226,7 @@ namespace draw2d_vulkan
    }
 
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg
 
 
 

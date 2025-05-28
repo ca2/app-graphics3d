@@ -12,12 +12,12 @@
 #include <vkvg.h>
 
 
-#ifdef _DRAW2D_VULKAN_STATIC
-#define CLASS_DECL_DRAW2D_VULKAN
-#elif defined(_draw2d_vulkan_project)
-#define CLASS_DECL_DRAW2D_VULKAN  CLASS_DECL_EXPORT
+#ifdef _DRAW2d_VKVG_STATIC
+#define CLASS_DECL_DRAW2d_VKVG
+#elif defined(_draw2d_vkvg_project)
+#define CLASS_DECL_DRAW2d_VKVG  CLASS_DECL_EXPORT
 #else
-#define CLASS_DECL_DRAW2D_VULKAN  CLASS_DECL_IMPORT
+#define CLASS_DECL_DRAW2d_VKVG  CLASS_DECL_IMPORT
 #endif
 
 

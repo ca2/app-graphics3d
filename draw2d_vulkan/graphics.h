@@ -47,16 +47,17 @@ namespace draw2d_vulkan
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       ::pointer<::gpu::context>             m_pgpucontextOutput;
       ::pointer < ::gpu::frame > m_pframe;
-
+      ::geometry2d::matrix m_m1;
 
       struct RectangleVertex {
-         float pos[2];    // x, y
+         float pos[3];    // x, y, z
          float color[4];  // r, g, b, a
       };
       ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutRectangle;
       ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolRectangle;
       ::pointer <::gpu_vulkan::renderer::model >               m_pmodelRectangle;
-      ::pointer < ::gpu_vulkan::shader > m_pshaderRectangle;
+      ::pointer < ::gpu_vulkan::shader >                       m_pshaderBlendRectangle;
+      ::pointer < ::gpu_vulkan::shader >                       m_pshaderSourceRectangle;
 
 
       graphics();

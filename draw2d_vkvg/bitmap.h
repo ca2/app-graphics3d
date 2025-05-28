@@ -92,11 +92,11 @@
 //#define TEXTURE_HEIGHT  64
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
 
-   class CLASS_DECL_DRAW2D_VULKAN bitmap : 
+   class CLASS_DECL_DRAW2d_VKVG bitmap : 
       virtual public ::draw2d::bitmap
    {
    public:
@@ -204,7 +204,7 @@ namespace draw2d_vulkan
    };
 
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg
 
 
 

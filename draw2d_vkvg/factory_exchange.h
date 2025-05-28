@@ -1,11 +1,11 @@
 #pragma once
 
 
-//namespace draw2d_vulkan
+//namespace draw2d_vkvg
 //{
 //
 //
-//   class CLASS_DECL_DRAW2D_VULKAN factory_exchange :
+//   class CLASS_DECL_DRAW2d_VKVG factory_exchange :
 //      virtual public ::object
 //   {
 //   public:
@@ -18,7 +18,7 @@
 //   };
 //
 //
-//} // namespace draw2d_vulkan
+//} // namespace draw2d_vkvg
 
 
 

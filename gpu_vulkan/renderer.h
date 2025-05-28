@@ -79,13 +79,14 @@ namespace gpu_vulkan
          virtual public ::particle
       {
       public:
-         VkBuffer m_vertexBuffer;
-         VkDeviceMemory m_vertexMemory;
-         VkBuffer m_indexBuffer;
-         VkDeviceMemory m_indexMemory;
+         VkBuffer m_vertexBuffer = nullptr;
+         VkDeviceMemory m_vertexMemory = nullptr;
+         VkBuffer m_indexBuffer = nullptr;
+         VkDeviceMemory m_indexMemory = nullptr;
       };
 
       ::pointer<::gpu::shader>                        m_pshaderImageBlend;
+      ::pointer<::gpu::shader>                        m_pshaderImageSet;
       map < VkImage, ::pointer < descriptor > >       m_imagedescriptor;
       map < VkImage, ::pointer < model > >       m_imagemodel;
       //::pointer < ::cube::impact >	m_pimpact;
@@ -94,28 +95,49 @@ namespace gpu_vulkan
       //::pointer<swap_chain_render_pass>			m_pvkcswapchain;
       //::pointer<offscreen_render_pass>			m_pvkcoffscreen;
       ::pointer<render_pass>			                  m_pvkcrenderpass;
+      ::pointer<renderer>			                     m_prendererResolve;
+      ::pointer<::gpu::shader>                        m_pshaderResolve;
+      ::pointer<model>                                m_pmodelResolve;
+
       ::array<VkCommandBuffer>	commandBuffers;
       VkExtent2D m_extentRenderer;
-      uint32_t currentImageIndex;
-      int currentFrameIndex = 0;
+      //int currentFrameIndex = 0;
       bool isFrameStarted = false;
-
       bool m_bNeedToRecreateSwapChain = false;
       //bool m_bOffScreen = true;
       //renderer(VkWindow &window, context * pvkcdevice);
 
       ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutImageBlend;
       ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolImageBlend;
+
+
+      ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutResolve;
+      ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolResolve;
+      ::pointer < descriptor >                                 m_pdescriptorResolve;
+
       ::procedure_array m_procedureaAfterEndRender;
+
+      ::collection::index m_iCurrentFrame2 = -1;
+      ::collection::index m_iFrameSerial2 = -1;
+
 
       renderer();
       ~renderer();
 
 
-      void initialize_renderer(::gpu::context* pgpucontext) override;
+      virtual void restart_frame_counter();
+      virtual void on_new_frame();
+      void initialize_renderer(::gpu::context* pgpucontext, ::gpu::enum_output eoutput) override;
 
       //int width()  override;
       //int height() override;
+
+      bool is_starting_frame()const
+      {
+
+         return m_iFrameSerial2 == m_iCurrentFrame2;
+
+      }
 
       VkRenderPass getRenderPass() const
       {
@@ -128,6 +150,8 @@ namespace gpu_vulkan
       }
 
       void sample();
+      void resolve_color_and_alpha_accumulation_buffers();
+      void _resolve_color_and_alpha_accumulation_buffers();
       void swap_chain();
 
       float getAspectRatio() const
@@ -154,11 +178,11 @@ namespace gpu_vulkan
 
       VkCommandBuffer getCurrentCommandBuffer() const {
          assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
-         return commandBuffers[currentFrameIndex];
+         return commandBuffers[get_frame_index()];
       }
 
-      int get_frame_index() override;
-      int get_frame_count() override;
+      int get_frame_index() const override;
+      int get_frame_count() const override;
 
       void defer_update_render_pass();
 
@@ -189,6 +213,9 @@ namespace gpu_vulkan
       void on_end_render(::gpu::frame* pframeParam) override;
       void endFrame() override;
 
+
+      void _set_image(VkImage image, const ::int_rectangle& rectangle);
+
       void _blend_image(VkImage image, const ::int_rectangle& rectangle);
       void _on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle);
 
@@ -197,6 +224,8 @@ namespace gpu_vulkan
 
 
       ::gpu::shader * get_image_blend_shader();
+
+      ::gpu::shader* get_image_set_shader();
 
    };
 

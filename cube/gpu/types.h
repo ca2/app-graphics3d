@@ -31,6 +31,17 @@ namespace gpu
       ::image32_callback m_callbackImage32CpuBuffer;
       ::int_rectangle m_rectanglePlacement;
 
+      start_context_t(::particle* pparticle, ::gpu::device* pgpudevice, const enum_output & eoutput, const ::int_rectangle rectanglePlacement):
+         m_pparticle(pparticle),
+         m_pgpudevice(pgpudevice),
+         m_eoutput(eoutput),
+         m_rectanglePlacement(rectanglePlacement),
+         m_pwindow(nullptr)
+      {
+
+
+      }
+
       start_context_t(::particle* pparticle, ::gpu::device* pgpudevice, const image32_callback& callbackImage32CpuBuffer, const ::int_rectangle rectanglePlacement) :
          m_pparticle(pparticle),
          m_pgpudevice(pgpudevice),
@@ -50,6 +61,18 @@ namespace gpu
          m_rectanglePlacement{}
       {
 
+      }
+
+   };
+
+
+   struct start_gpu_output_context_t :
+      public start_context_t
+   {
+
+      start_gpu_output_context_t(::particle* pparticle, ::gpu::device* pgpudevice, const enum_output & eoutput, const ::int_rectangle rectanglePlacement) :
+         start_context_t(pparticle, pgpudevice, eoutput, rectanglePlacement)
+      {
       }
 
    };

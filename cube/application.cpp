@@ -102,6 +102,13 @@ namespace cube
 
          ::string strImplementation = m_papplication->draw2d_get_default_implementation_name();
 
+         if (strImplementation == "vkvg")
+         {
+
+            strImplementation = "vulkan";
+
+         }
+
          pfactoryGpu = factory("gpu", strImplementation);
 
          pfactoryGpu->merge_to_global_factory();

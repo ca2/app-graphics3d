@@ -50,6 +50,8 @@ namespace gpu_vulkan
 
    class set_descriptor_layout;
 
+   class frame;
+
 
 } // namespace gpu_vulkan
 

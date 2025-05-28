@@ -9,7 +9,7 @@
 
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
 

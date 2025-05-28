@@ -458,24 +458,6 @@ namespace gpu
    }
 
 
-   ::pointer<::gpu::shader> context::create_shader(
-      const ::file::path& pathVert,
-      const ::file::path& pathFrag,
-      const ::array<::gpu::shader::enum_descriptor_set_slot>& eslota,
-      const ::particle_pointer& pLocalDescriptorSet,
-      const ::particle_pointer& pVertexInput,
-      const ::gpu::property* pproperties,
-      ::gpu::shader::enum_flag eflag)
-   {
-
-      auto pshader = __øcreate < ::gpu::shader >();
-
-      pshader->initialize_shader(this, pathVert, pathFrag, eslota, pLocalDescriptorSet, pVertexInput,pproperties, eflag);
-
-      return pshader;
-
-   }
-
 
 
 
@@ -490,16 +472,16 @@ namespace gpu
    ::gpu::renderer* context::get_renderer()
    {
 
-      if (!m_prenderer)
+      if (!m_pgpurenderer)
       {
 
-         __øconstruct(m_prenderer);
+         __øconstruct(m_pgpurenderer);
 
-         m_prenderer->initialize_renderer(this);
+         m_pgpurenderer->initialize_renderer(this, m_eoutput);
 
       }
 
-      return m_prenderer;
+      return m_pgpurenderer;
 
    }
 

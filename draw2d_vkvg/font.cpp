@@ -3,7 +3,7 @@
 #include "font.h"
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
 
@@ -49,7 +49,7 @@ namespace draw2d_vulkan
 
    void font::construct(const ::write_text::font & pfontParam)
    {
-      //class font & font = const_cast < ::draw2d_vulkan::font & > (dynamic_cast < const ::draw2d_vulkan::font & > (pfontParam));
+      //class font & font = const_cast < ::draw2d_vkvg::font & > (dynamic_cast < const ::draw2d_vkvg::font & > (pfontParam));
       //if(font.m_pfont == nullptr)
       //{
       //   if(m_pfont != nullptr)
@@ -142,4 +142,4 @@ namespace draw2d_vulkan
 
    //}
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg

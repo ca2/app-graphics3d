@@ -13,17 +13,18 @@ namespace gpu_vulkan
    {
    public:
 
-      VkSwapchainKHR m_vkswapchain;
+      VkSwapchainKHR       m_vkswapchain;
+      uint32_t             currentImageIndex;
 
 
       static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-      swap_chain_render_pass(context* pvkcdeviceRef, VkExtent2D windowExtent);
-      swap_chain_render_pass(context* pvkcdeviceRef, VkExtent2D windowExtent, ::pointer <render_pass>previous);
+      swap_chain_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent);
+      swap_chain_render_pass(renderer * pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
       ~swap_chain_render_pass();
 
-      swap_chain_render_pass(const swap_chain_render_pass&) = delete;
-      swap_chain_render_pass& operator=(const swap_chain_render_pass&) = delete;
+      //swap_chain_render_pass(const swap_chain_render_pass&) = delete;
+      //swap_chain_render_pass& operator=(const swap_chain_render_pass&) = delete;
 
       //VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
       //VkRenderPass getRenderPass() { return m_vkrenderpass; }
@@ -39,9 +40,9 @@ namespace gpu_vulkan
       //}
       VkFormat findDepthFormat();
 
-      VkResult acquireNextImage(uint32_t* imageIndex);
-      VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
-
+      VkResult acquireNextImage() override;
+      VkResult submitCommandBuffers(const VkCommandBuffer* buffers) override;
+      int get_image_index() const override;
       //bool compareSwapFormats(const swap_chain_render_pass& m_swapchain) const {
       //   return m_swapchain.swapChainDepthFormat == swapChainDepthFormat &&
       //      m_swapchain.swapChainImageFormat == swapChainImageFormat;

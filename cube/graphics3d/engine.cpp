@@ -60,7 +60,7 @@ namespace graphics3d
    void engine::on_render_frame()
    {
 
-      auto prenderer = m_pgpucontext->m_prenderer;
+      auto prenderer = m_pgpucontext->m_pgpurenderer;
 
       if (prenderer->rectangle().area() <= 0)
       {
@@ -105,7 +105,7 @@ namespace graphics3d
       if (iGlobalUboSize > 0)
       {
 
-         m_pgpucontext->create_global_ubo(iGlobalUboSize, pgpucontext->m_prenderer->get_frame_count());
+         m_pgpucontext->create_global_ubo(iGlobalUboSize, pgpucontext->m_pgpurenderer->get_frame_count());
 
       }
 
@@ -434,12 +434,12 @@ namespace graphics3d
 
             auto pgpucontext = m_pgpucontext;
 
-            if (pgpucontext->m_prenderer)
+            if (pgpucontext->m_pgpurenderer)
             {
 
                //pgpucontext->create_offscreen_buffer(m_rectanglePlacement.size());
 
-               pgpucontext->m_prenderer->set_placement(m_rectanglePlacement);
+               pgpucontext->m_pgpurenderer->set_placement(m_rectanglePlacement);
 
                //m_pimpact->on_load_engine();
 
@@ -529,7 +529,7 @@ namespace graphics3d
 
          //::graphics3d::engine::m_prenderer = m_prenderer;
 
-         m_prenderer->initialize_renderer(m_pgpucontext);
+         m_prenderer->initialize_renderer(m_pgpucontext, m_pgpucontext->m_eoutput);
 
       }
 

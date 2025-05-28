@@ -30,8 +30,11 @@ namespace gpu_vulkan
       ::array<VkFramebuffer> m_framebuffers;
       VkRenderPass m_vkrenderpass;
 
-      ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
+      ::pointer < renderer >  m_pgpurenderer;
 
+      ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
+      ::array < VkSemaphore> m_semaphoreaWaitToSubmit;
+      ::procedure_array m_procedureaOnAfterSubmit;
       ::array<VkImage> depthImages;
       ::array<VkDeviceMemory> depthImageMemorys;
       ::array<VkImageView> depthImageViews;
@@ -47,21 +50,21 @@ namespace gpu_vulkan
       ::int_array imageAvailable;
       ::array<VkSemaphore> imageAvailableSemaphores;
       ::array<VkSemaphore> renderFinishedSemaphores;
-      ::array<VkFence> inFlightFences;
-      ::array<VkFence> imagesInFlight;
-      size_t currentFrame = 0;
+      ::array<VkFence>     inFlightFences;
+      ::array<VkFence>     imagesInFlight;
 
 
       static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-      render_pass(context* pvkcdeviceRef, VkExtent2D windowExtent);
-      render_pass(context* pvkcdeviceRef, VkExtent2D windowExtent, ::pointer <render_pass>previous);
+      render_pass(renderer * prenderer, VkExtent2D windowExtent);
+      render_pass(renderer * prenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
       ~render_pass();
 
-      render_pass(const render_pass&) = delete;
-      render_pass& operator=(const render_pass&) = delete;
+      virtual void on_before_begin_render(frame* pframe);
 
       VkFramebuffer getFrameBuffer(int index) { return m_framebuffers[index]; }
+      VkFramebuffer getCurrentFrameBuffer() { return m_framebuffers[get_image_index()]; }
+      virtual int get_image_index() const;
       VkRenderPass getRenderPass() { return m_vkrenderpass; }
       VkImageView getImageView(int index) { return m_imageviews[index]; }
       size_t imageCount() { return m_images.size(); }
@@ -75,13 +78,16 @@ namespace gpu_vulkan
       }
       virtual VkFormat findDepthFormat();
 
-      virtual VkResult acquireNextImage(uint32_t* imageIndex);
-      virtual VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
+      //virtual VkResult acquireNextImage(uint32_t* imageIndex);
+      //virtual VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
+      virtual VkResult acquireNextImage();
+      virtual VkResult submitCommandBuffers(const VkCommandBuffer* buffers);
 
       bool compareFormats(const render_pass& renderpass) const {
          return renderpass.m_formatDepth == m_formatDepth &&
             renderpass.m_formatImage == m_formatImage;
       }
+
 
       virtual void init();
       virtual void createRenderPassImpl();

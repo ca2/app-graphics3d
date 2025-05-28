@@ -35,7 +35,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{076C9F8E-50E3-4D37-BD53-A2814F9C8C23}</ProjectGuid>
+    <ProjectGuid>{E7CC85F8-7072-4916-9259-116E882F0DCE}</ProjectGuid>
     <RootNamespace>draw2d_vulkan</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
@@ -778,7 +778,7 @@
     <None Include="draw2d_vulkan.def" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="draw2d_vulkan.rc" />
+    <ResourceCompile Include="draw2d_vkvg.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\app\acme\acme.vcxproj">

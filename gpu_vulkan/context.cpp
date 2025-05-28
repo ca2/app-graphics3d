@@ -2303,7 +2303,7 @@ namespace gpu_vulkan
    void context::update_global_ubo(const ::block& block)
    {
 
-      auto iFrameIndex = m_prenderer->get_frame_index();
+      auto iFrameIndex = m_pgpurenderer->get_frame_index();
 
       m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
 
@@ -2323,7 +2323,7 @@ namespace gpu_vulkan
             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
             .build();
 
-         auto iFrameCount = m_prenderer->get_frame_count();
+         auto iFrameCount = m_pgpurenderer->get_frame_count();
 
          m_descriptorsetsGlobal.resize(iFrameCount);
 

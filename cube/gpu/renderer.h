@@ -3,6 +3,7 @@
 
 
 #include "acme/prototype/geometry2d/rectangle.h"
+#include "app-cube/cube/gpu/shader.h"
 
 
 namespace gpu
@@ -14,7 +15,32 @@ namespace gpu
    {
    public:
 
+      enum enum_state
+      {
+         e_state_initial,
+         e_state_new_frame,
+         e_state_began_frame,
+         e_state_began_render,
+         e_state_ended_render,
+         e_state_ended_frame,
 
+      };
+
+
+      enum enum_happening
+      {
+         
+         e_happening_reset_frame_counter,
+         e_happening_new_frame,
+         e_happening_begin_frame,
+         e_happening_begin_render,
+         e_happening_end_render,
+         e_happening_end_frame,
+
+      };
+
+
+      ::gpu::enum_output                    m_eoutput;
       //bool                                m_bPendingShaderUpdate;
       //string                              m_strProjection;
       //string                              m_strFragment;
@@ -37,7 +63,7 @@ namespace gpu
       //::string                            m_strRender;
 
       ::pointer < frame > m_pframe;
-
+      enum_state m_estate = e_state_initial;
 
       renderer();
       ~renderer() override;
@@ -48,19 +74,28 @@ namespace gpu
       long long decrement_reference_count() override;
 #endif
 
-
+      virtual void on_happening(enum_happening ehappening);
       virtual ::int_rectangle rectangle();
       //virtual int height();
 
       virtual bool render_step();
 
-      virtual void initialize_renderer(::gpu::context * pgpucontext);
+      virtual void initialize_renderer(::gpu::context * pgpucontext, ::gpu::enum_output eoutput);
 
       //virtual void initialize_render(::user::interaction * puserinteraction);
       ///// Initialization routines
       //virtual void set_vertex_source_code(const string & strVertexSourceCode);
       //virtual void set_fragment_source_code(const string & strFragmentSourceCode);
       //virtual void set_model_path(const ::payload & payloadFile);
+
+      virtual ::pointer<::gpu::shader> create_shader(
+         const ::file::path& pathVert,
+         const ::file::path& pathFrag,
+         const ::array<::gpu::shader::enum_descriptor_set_slot>& eslota = {},
+         const ::particle_pointer& pLocalDescriptorSet = {},
+         const ::particle_pointer& pVertexInput = {},
+         const ::gpu::property* pproperties = nullptr,
+         ::gpu::shader::enum_flag eflag = ::gpu::shader::e_flag_none);
 
 
       //string get_font();
@@ -99,8 +134,8 @@ namespace gpu
       virtual void on_global_transform();
       virtual void on_draw();
       //virtual void render();
-      virtual int get_frame_index();
-      virtual int get_frame_count();
+      virtual int get_frame_index() const;
+      virtual int get_frame_count() const;
       
       virtual ::pointer < frame > beginFrame();
 

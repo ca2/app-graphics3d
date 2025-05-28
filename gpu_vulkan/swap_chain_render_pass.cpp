@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "swap_chain_render_pass.h"
 #include "physical_device.h"
+#include "renderer.h"
 // std
 #include <array>
 #include <cstdlib>
@@ -16,28 +17,35 @@
 namespace gpu_vulkan
 {
 
-   swap_chain_render_pass::swap_chain_render_pass(context* pvkcdeviceRef, VkExtent2D extent)
-      : render_pass(pvkcdeviceRef, extent)
+   swap_chain_render_pass::swap_chain_render_pass(renderer* pgpurenderer, VkExtent2D extent)
+      : render_pass(pgpurenderer, extent)
    {
       init();
    }
 
-   swap_chain_render_pass::swap_chain_render_pass(context* pvkcdeviceRef, VkExtent2D extent, ::pointer<render_pass> previous)
-      : render_pass( pvkcdeviceRef , extent ,  previous)
+   swap_chain_render_pass::swap_chain_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
+      : render_pass(pgpurenderer, extent ,  previous)
    {
       //init();
       // Cleans up old swap chain since it's no longer needed after resizing
       //oldSwapChain = nullptr;
    }
 
-   void swap_chain_render_pass::init() {
+   
+   void swap_chain_render_pass::init()
+   {
+
+      m_pgpurenderer->restart_frame_counter();
+
       createRenderPassImpl();
       createImageViews();
       createRenderPass();
       createDepthResources();
       createFramebuffers();
       createSyncObjects();
+
    }
+
 
    swap_chain_render_pass::~swap_chain_render_pass() 
    {
@@ -69,23 +77,33 @@ namespace gpu_vulkan
       //   vkDestroySemaphore(m_pgpucontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
       //   vkDestroyFence(m_pgpucontext->logicalDevice(), inFlightFences[i], nullptr);
       //}
+      for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+      {
+         vkDestroyFence(m_pgpucontext->logicalDevice(), inFlightFences[i], nullptr);
+      }
+
+
    }
 
-   VkResult swap_chain_render_pass::acquireNextImage(uint32_t* imageIndex) {
-      vkWaitForFences(
-         m_pgpucontext->logicalDevice(),
-         1,
-         &inFlightFences[currentFrame],
-         VK_TRUE,
-         std::numeric_limits<uint64_t>::max());
+   
+   VkResult swap_chain_render_pass::acquireNextImage()
+   {
+
+      uint32_t* imageIndex = &currentImageIndex;
+
+      auto currentFrame = m_pgpurenderer->get_frame_index();
+
+      // Wait for the fence of the current frame first (prevents CPU running too fast)
+      vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
       VkResult result = vkAcquireNextImageKHR(
          m_pgpucontext->logicalDevice(),
          m_vkswapchain,
-         std::numeric_limits<uint64_t>::max(),
-         imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
+         UINT64_MAX,
+         imageAvailableSemaphores[currentFrame],  // signal semaphore
          VK_NULL_HANDLE,
          imageIndex);
+
       if (result == VK_ERROR_OUT_OF_DATE_KHR) {
          // Swapchain needs to be recreated - handle outside
          return result;
@@ -101,20 +119,53 @@ namespace gpu_vulkan
 
       // Mark this image as now being in use by current frame
       imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
+
       return result;
+      //vkWaitForFences(
+      //   m_pgpucontext->logicalDevice(),
+      //   1,
+      //   &inFlightFences[m_pgpurenderer->get_frame_index()],
+      //   VK_TRUE,
+      //   std::numeric_limits<uint64_t>::max());
+
+      //VkResult result = vkAcquireNextImageKHR(
+      //   m_pgpucontext->logicalDevice(),
+      //   m_vkswapchain,
+      //   std::numeric_limits<uint64_t>::max(),
+      //   imageAvailableSemaphores[m_pgpurenderer->get_frame_index()],  // must be a not signaled semaphore
+      //   VK_NULL_HANDLE,
+      //   imageIndex);
+      //if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+      //   // Swapchain needs to be recreated - handle outside
+      //   return result;
+      //}
+      //else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+      //   throw std::runtime_error("failed to acquire swap chain image!");
+      //}
+
+      //// If the image we acquired is already being used (fence not signaled), wait for it
+      //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
+      //   vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+      //}
+
+      //// Mark this image as now being in use by current frame
+      //imagesInFlight[*imageIndex] = inFlightFences[m_pgpurenderer->get_frame_index()];
+      //return result;
    }
 
-   VkResult swap_chain_render_pass::submitCommandBuffers(
-      const VkCommandBuffer* buffers, uint32_t* imageIndex) {
-      //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
-        // vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
-      //}
-      //imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
+   VkResult swap_chain_render_pass::submitCommandBuffers(const VkCommandBuffer* buffers)
+   {
 
+
+      uint32_t* imageIndex = &currentImageIndex;
+
+      auto currentFrame = m_pgpurenderer->get_frame_index();
+
+      // Use currentFrame to access per-frame sync objects
       vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
       vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
 
-      VkSubmitInfo submitInfo = {};
+      VkSubmitInfo submitInfo{};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
       VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
@@ -130,29 +181,79 @@ namespace gpu_vulkan
       submitInfo.signalSemaphoreCount = 1;
       submitInfo.pSignalSemaphores = signalSemaphores;
 
-      //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
-      if (vkQueueSubmit(m_pgpucontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
-         VK_SUCCESS) {
-         throw ::exception(error_failed,"failed to submit draw command buffer!");
+      VkResult vkresult = vkQueueSubmit(m_pgpucontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]);
+      if (vkresult != VK_SUCCESS) {
+         throw std::runtime_error("failed to submit draw command buffer!");
       }
 
-      VkPresentInfoKHR presentInfo = {};
+      VkPresentInfoKHR presentInfo{};
       presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
       presentInfo.waitSemaphoreCount = 1;
       presentInfo.pWaitSemaphores = signalSemaphores;
-
-      VkSwapchainKHR m_vkswapchains[] = { m_vkswapchain };
       presentInfo.swapchainCount = 1;
-      presentInfo.pSwapchains = m_vkswapchains;
-
+      presentInfo.pSwapchains = &m_vkswapchain;
       presentInfo.pImageIndices = imageIndex;
 
-      auto result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
+      VkResult result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
 
-      currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+      //currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
       return result;
+
+      ////if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
+      //  // vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+      ////}
+      ////imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
+
+      //vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX);
+      //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
+
+      //VkSubmitInfo submitInfo = {};
+      //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+      //VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[m_pgpurenderer->get_frame_index()] };
+      //VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+      //submitInfo.waitSemaphoreCount = 1;
+      //submitInfo.pWaitSemaphores = waitSemaphores;
+      //submitInfo.pWaitDstStageMask = waitStages;
+
+      //submitInfo.commandBufferCount = 1;
+      //submitInfo.pCommandBuffers = buffers;
+
+      //VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[m_pgpurenderer->get_frame_index()] };
+      //submitInfo.signalSemaphoreCount = 1;
+      //submitInfo.pSignalSemaphores = signalSemaphores;
+
+      ////vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
+      //if (vkQueueSubmit(m_pgpucontext->graphicsQueue(), 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) !=
+      //   VK_SUCCESS) {
+      //   throw ::exception(error_failed,"failed to submit draw command buffer!");
+      //}
+
+      //VkPresentInfoKHR presentInfo = {};
+      //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+      //presentInfo.waitSemaphoreCount = 1;
+      //presentInfo.pWaitSemaphores = signalSemaphores;
+
+      //VkSwapchainKHR m_vkswapchains[] = { m_vkswapchain };
+      //presentInfo.swapchainCount = 1;
+      //presentInfo.pSwapchains = m_vkswapchains;
+
+      //presentInfo.pImageIndices = imageIndex;
+
+      //auto result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
+
+      //return result;
+
+   }
+
+
+   int swap_chain_render_pass::get_image_index() const 
+   { 
+      
+      return currentImageIndex;
+   
    }
 
 
@@ -405,34 +506,36 @@ namespace gpu_vulkan
    }
 
    void swap_chain_render_pass::createSyncObjects() {
-      imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-      renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-      inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-      imagesInFlight.resize(imageCount(), VK_NULL_HANDLE);
+      //imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+      //renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 
-      VkSemaphoreCreateInfo semaphoreInfo = {};
-      semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+      render_pass::createSyncObjects();
 
-      VkFenceCreateInfo fenceInfo = {};
-      fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-      fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-      for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-         if (vkCreateSemaphore(m_pgpucontext->logicalDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
-            VK_SUCCESS ||
-            vkCreateSemaphore(m_pgpucontext->logicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
-            VK_SUCCESS ||
-            vkCreateFence(m_pgpucontext->logicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) {
-            throw ::exception(error_failed,"failed to create synchronization objects for a frame!");
-         }
-      }
+      //inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+      //imagesInFlight.resize(imageCount(), VK_NULL_HANDLE);
+
+      ////VkSemaphoreCreateInfo semaphoreInfo = {};
+      ////semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+      //VkFenceCreateInfo fenceInfo = {};
+      //fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+      //fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+      //for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+      //   if (vkCreateFence(m_pgpucontext->logicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS)
+      //   {
+      //      throw ::exception(error_failed,"failed to create synchronization objects for a frame!");
+      //   }
+      //}
    }
 
    VkSurfaceFormatKHR swap_chain_render_pass::chooseSwapSurfaceFormat(
       const ::array<VkSurfaceFormatKHR>& availableFormats) {
       for (const auto& availableFormat : availableFormats) {
          // SRGB can be changed to "UNORM" instead
-         if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
+         //if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
+         if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
             availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
             return availableFormat;
          }

@@ -3,7 +3,7 @@
 #include "brush.h"
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
 
@@ -195,6 +195,6 @@ namespace draw2d_vulkan
 
    //}
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg
 
 

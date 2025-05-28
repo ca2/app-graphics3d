@@ -19,7 +19,11 @@ namespace gpu_vulkan
 
       ::pointer < pipeline > m_ppipeline;
 
-
+      bool m_bDisableDepthTest = false;
+      bool m_bDepthTestButNoDepthWrite = false;
+      bool m_bEnableBlend = false;
+      bool m_bAccumulationEnable = false;
+      int m_iColorAttachmentCount = 1;
       shader();
       ~shader();
 

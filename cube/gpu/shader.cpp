@@ -1,5 +1,6 @@
 #include "framework.h"
 #include "context.h"
+#include "renderer.h"
 #include "shader.h"
 //#include "_.h"
 //#include "_gpu.h"
@@ -42,7 +43,7 @@ namespace gpu
 
 
    void shader::initialize_shader(
-      ::gpu::context* pgpucontext,
+      ::gpu::renderer * pgpurenderer,
       const ::file::path& pathVertex,
       const ::file::path& pathFragment,
       const ::array<enum_descriptor_set_slot>& eslota,
@@ -52,7 +53,7 @@ namespace gpu
       enum_flag eflag)
    {
 
-      m_pgpucontext = pgpucontext;
+      m_pgpurenderer = pgpurenderer;
       m_pathVertex = pathVertex;
       m_pathFragment = pathFragment;
       m_edescriptorsetslota.copy(eslota);
@@ -70,7 +71,7 @@ namespace gpu
 
 
    void shader::initialize_shader_with_block(
-      ::gpu::context* pgpucontext,
+      ::gpu::renderer * pgpurenderer,
       const ::block& blockVertex,
       const ::block& blockFragment,
       const ::array<enum_descriptor_set_slot>& eslota,
@@ -80,7 +81,7 @@ namespace gpu
       enum_flag eflag)
    {
 
-      m_pgpucontext = pgpucontext;
+      m_pgpurenderer = pgpurenderer;
       m_memoryVertex = blockVertex;
       m_memoryFragment = blockFragment;
       m_edescriptorsetslota.copy(eslota);

@@ -1,6 +1,6 @@
 #include "framework.h"
 #include "pipeline.h"
-//#include "model.h"
+#include "renderer.h"
 #include "acme/platform/application.h"
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/file_context.h"
@@ -24,13 +24,13 @@ namespace gpu_vulkan
 
 
    void pipeline::initialize_pipeline(
-      ::gpu::context * pgpucontext,
+      ::gpu::renderer * pgpurenderer,
       const ::block & blockVertex,
       const ::block & blockFragment,
       const PipelineConfigInfo & configInfo)
    {
-      initialize(pgpucontext);
-      m_pgpucontext = pgpucontext;
+      initialize(pgpurenderer);
+      m_pgpurenderer = pgpurenderer;
       createGraphicsPipeline(blockVertex, blockFragment, configInfo);
    }
 
@@ -39,12 +39,13 @@ namespace gpu_vulkan
    pipeline::~pipeline() 
    {
 
+      ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-      ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
+      ::cast < device > pgpudevice = pgpucontext->m_pgpudevice;
 
-      vkDestroyShaderModule(m_pgpucontext->logicalDevice(), vertShaderModule, nullptr);
-      vkDestroyShaderModule(m_pgpucontext->logicalDevice(), fragShaderModule, nullptr);
-      vkDestroyPipeline(m_pgpucontext->logicalDevice(), graphicsPipeline, nullptr);
+      vkDestroyShaderModule(pgpucontext->logicalDevice(), vertShaderModule, nullptr);
+      vkDestroyShaderModule(pgpucontext->logicalDevice(), fragShaderModule, nullptr);
+      vkDestroyPipeline(pgpucontext->logicalDevice(), graphicsPipeline, nullptr);
    }
 
    void pipeline::bind(VkCommandBuffer commandBuffer) {
@@ -133,10 +134,10 @@ namespace gpu_vulkan
 
       pipelineInfo.basePipelineIndex = -1;
       pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-
-      ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
+      ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < device > pgpudevice = pgpucontext->m_pgpudevice;
       if (vkCreateGraphicsPipelines(
-         m_pgpucontext->logicalDevice(),
+         pgpucontext->logicalDevice(),
          VK_NULL_HANDLE,
          1,
          &pipelineInfo,
@@ -155,8 +156,9 @@ namespace gpu_vulkan
       createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
       createInfo.codeSize = block.size();
       createInfo.pCode = reinterpret_cast<const uint32_t *>(block.data());
-      ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
-      if (vkCreateShaderModule(m_pgpucontext->logicalDevice(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
+      ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < device > pgpudevice = pgpucontext->m_pgpudevice;
+      if (vkCreateShaderModule(pgpucontext->logicalDevice(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
          throw ::exception(error_failed, "failed to create shader module");
       }
 
@@ -197,37 +199,28 @@ namespace gpu_vulkan
       configInfo.multisampleInfo.pSampleMask = nullptr;             // Optional
       configInfo.multisampleInfo.alphaToCoverageEnable = VK_FALSE;  // Optional
       configInfo.multisampleInfo.alphaToOneEnable = VK_FALSE;       // Optional
+      configInfo.colorBlendAttachments.clear();
+      
+      
+      VkPipelineColorBlendAttachmentState state;
+      state.colorWriteMask =
+         VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+         VK_COLOR_COMPONENT_A_BIT;
+      state.blendEnable = VK_FALSE;
+      state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
+      state.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
+      state.colorBlendOp = VK_BLEND_OP_ADD;              // Optional
+      state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
+      state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
+      state.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
+      configInfo.colorBlendAttachments.add(state);
 
-      //configInfo.colorBlendAttachment.colorWriteMask =
-      //   VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-      //   VK_COLOR_COMPONENT_A_BIT;
-      //configInfo.colorBlendAttachment.blendEnable = VK_FALSE;
-      //configInfo.colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
-      //configInfo.colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
-      //configInfo.colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;              // Optional
-      //configInfo.colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
-      //configInfo.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
-      //configInfo.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
 
-
-      //VkPipelineColorBlendAttachmentState blendAttachment = {
-      configInfo.colorBlendAttachment.blendEnable = VK_TRUE;
-         configInfo.colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-         configInfo.colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-         configInfo.colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-         configInfo.colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-         configInfo.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-         configInfo.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-       configInfo.colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-                      VK_COLOR_COMPONENT_G_BIT |
-                      VK_COLOR_COMPONENT_B_BIT |
-                      VK_COLOR_COMPONENT_A_BIT
-      ;
       configInfo.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
       configInfo.colorBlendInfo.logicOpEnable = VK_FALSE;
       configInfo.colorBlendInfo.logicOp = VK_LOGIC_OP_COPY;  // Optional
       configInfo.colorBlendInfo.attachmentCount = 1;
-      configInfo.colorBlendInfo.pAttachments = &configInfo.colorBlendAttachment;
+      configInfo.colorBlendInfo.pAttachments = configInfo.colorBlendAttachments.data();
       configInfo.colorBlendInfo.blendConstants[0] = 0.0f;  // Optional
       configInfo.colorBlendInfo.blendConstants[1] = 0.0f;  // Optional
       configInfo.colorBlendInfo.blendConstants[2] = 0.0f;  // Optional

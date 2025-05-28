@@ -2,7 +2,7 @@
 #include "framework.h"
 #include "physical_device.h"
 #include "render_pass.h"
-
+#include "renderer.h"
 // std
 #include <array>
 #include <cstdlib>
@@ -19,26 +19,29 @@ namespace gpu_vulkan
 {
 
 
-   render_pass::render_pass(context* pvkcdeviceRef, VkExtent2D extent)
-      : m_pgpucontext(pvkcdeviceRef), windowExtent(extent)
+   render_pass::render_pass(renderer* pgpurenderer, VkExtent2D extent)
+      : m_pgpurenderer(pgpurenderer), windowExtent(extent)
    {
+      m_pgpucontext = pgpurenderer->m_pgpucontext;
       //init();
       //m_pvkcrenderpassOld = nullptr;
    }
 
    
-   render_pass::render_pass(context* pvkcdeviceRef, VkExtent2D extent, ::pointer<render_pass> previous)
-      : m_pgpucontext{ pvkcdeviceRef }, windowExtent{ extent }, m_pvkcrenderpassOld{ previous } 
+   render_pass::render_pass(renderer * pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
+      : m_pgpurenderer{ pgpurenderer }, windowExtent{ extent }, m_pvkcrenderpassOld{ previous }
    {
+      m_pgpucontext = pgpurenderer->m_pgpucontext;
       //init();
       // Cleans up old swap chain since it's no longer needed after resizing
       //m_pvkcrenderpassOld = nullptr;
    }
+   
+   
 
    
    void render_pass::init() 
    {
-
       createRenderPassImpl();
       createImageViews();
       createRenderPass();
@@ -83,12 +86,27 @@ namespace gpu_vulkan
       {
          vkDestroySemaphore(m_pgpucontext->logicalDevice(), renderFinishedSemaphores[i], nullptr);
          vkDestroySemaphore(m_pgpucontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
-         vkDestroyFence(m_pgpucontext->logicalDevice(), inFlightFences[i], nullptr);
       }
    }
 
+
+   void render_pass::on_before_begin_render(frame* pframe)
+   {
+
+
+   }
+
+
+   int render_pass::get_image_index() const
+   {
+      
+      return m_pgpurenderer->get_frame_index(); 
    
-   VkResult render_pass::acquireNextImage(uint32_t* imageIndex) 
+   }
+
+
+   
+   VkResult render_pass::acquireNextImage() 
    {
 
       //vkWaitForFences(
@@ -111,8 +129,7 @@ namespace gpu_vulkan
    }
 
 
-   VkResult render_pass::submitCommandBuffers(
-      const VkCommandBuffer* buffers, uint32_t* imageIndex)
+   VkResult render_pass::submitCommandBuffers(const VkCommandBuffer* buffers)
    {
 
       //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
@@ -434,6 +451,7 @@ namespace gpu_vulkan
       inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
       imagesInFlight.resize(imageCount(), VK_NULL_HANDLE);
 
+
       VkSemaphoreCreateInfo semaphoreInfo = {};
       semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -447,8 +465,9 @@ namespace gpu_vulkan
          if (vkCreateSemaphore(m_pgpucontext->logicalDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
             VK_SUCCESS ||
             vkCreateSemaphore(m_pgpucontext->logicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
-            VK_SUCCESS ||
-            vkCreateFence(m_pgpucontext->logicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) 
+            VK_SUCCESS 
+            ||        vkCreateFence(m_pgpucontext->logicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS
+             ) 
          {
             throw ::exception(error_failed,"failed to create synchronization objects for a frame!");
          }

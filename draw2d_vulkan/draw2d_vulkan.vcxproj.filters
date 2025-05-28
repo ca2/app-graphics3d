@@ -141,6 +141,12 @@
     <None Include="shader\rectangle.vert.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
+    <None Include="shader\accumulation.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\resolve.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="draw2d_vulkan.rc">
@@ -152,6 +158,12 @@
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
     <CustomBuild Include="shader\rectangle.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\accumulation.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\resolve.frag">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -46,10 +46,10 @@ namespace vulkan
 }
 
 
-BOOL CALLBACK draw2d_vulkan_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p);
+BOOL CALLBACK draw2d_vkvg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p);
 
 
-class draw2d_vulkan_enum_fonts
+class draw2d_vkvg_enum_fonts
 {
 public:
 
@@ -57,7 +57,7 @@ public:
    ::write_text::font_enumeration_item_array& m_itema;
 
 
-   draw2d_vulkan_enum_fonts(::write_text::font_enumeration_item_array& itema) :
+   draw2d_vkvg_enum_fonts(::write_text::font_enumeration_item_array& itema) :
       m_itema(itema)
    {
 
@@ -67,7 +67,7 @@ public:
 };
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
    //ATOM class_atom = NULL;
@@ -75,14 +75,14 @@ namespace draw2d_vulkan
    graphics* thread_graphics()
    {
 
-      return ::get_task()->payload("draw2d_vulkan::graphics").cast < graphics >();
+      return ::get_task()->payload("draw2d_vkvg::graphics").cast < graphics >();
 
    }
 
    void thread_graphics(graphics* pgraphics)
    {
 
-      ::get_task()->payload("draw2d_vulkan::graphics") = pgraphics;
+      ::get_task()->payload("draw2d_vkvg::graphics") = pgraphics;
 
    }
 
@@ -225,7 +225,7 @@ namespace draw2d_vulkan
    bool graphics::vulkan_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement)
    {
 
-      //if (!draw2d_vulkan()->m_pvulkancontext) {
+      //if (!draw2d_vkvg()->m_pvulkancontext) {
       //   informationf("MS GDI - RegisterClass failed");
       //   informationf("last-error code: %d\n", GetLastError());
       //   return false;
@@ -320,8 +320,8 @@ namespace draw2d_vulkan
 
       //}
 
-      //LPCTSTR lpClassName = L"draw2d_vulkan_offscreen_buffer_window";
-      //LPCTSTR lpWindowName = L"draw2d_vulkan_offscreen_buffer_window";
+      //LPCTSTR lpClassName = L"draw2d_vkvg_offscreen_buffer_window";
+      //LPCTSTR lpWindowName = L"draw2d_vkvg_offscreen_buffer_window";
       ////unsigned int dwStyle = WS_CAPTION | WS_POPUPWINDOW; // | WS_VISIBLE
       //unsigned int dwExStyle = 0;
       //unsigned int dwStyle = WS_OVERLAPPEDWINDOW;
@@ -442,9 +442,9 @@ namespace draw2d_vulkan
       //wglMakeCurrent(nullptr, nullptr);
       //wglDeleteContext(hglrcTime);
       //   wglMakeCurrent(hdc, m_hglrc);
-      ////draw2d_vulkan()->defer_initialize_glew();
+      ////draw2d_vkvg()->defer_initialize_glew();
       //
-      ////draw2d_vulkan()->defer_initialize_glew();
+      ////draw2d_vkvg()->defer_initialize_glew();
 
 
       //m_hwnd = window;
@@ -640,7 +640,7 @@ namespace draw2d_vulkan
    //      if(m_pbitmap.is_null())
    //         return nullptr;
 
-   //      //(dynamic_cast < ::draw2d_vulkan::bitmap * > (m_pbitmap.m_p))->m_pbitmap = ___new plusplus::Bitmap (hbitmap, nullptr);
+   //      //(dynamic_cast < ::draw2d_vkvg::bitmap * > (m_pbitmap.m_p))->m_pbitmap = ___new plusplus::Bitmap (hbitmap, nullptr);
 
    //      //if(m_pgraphics != nullptr)
    //      //{
@@ -3224,7 +3224,7 @@ namespace draw2d_vulkan
       //m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
 
 
-      //return m_pgraphics->DrawPath(vk2d_pen(),(dynamic_cast < ::draw2d_vulkan::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      //return m_pgraphics->DrawPath(vk2d_pen(),(dynamic_cast < ::draw2d_vkvg::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
       //return true;
 
    }
@@ -3233,7 +3233,7 @@ namespace draw2d_vulkan
    void graphics::draw(::draw2d::path* ppath, ::draw2d::pen* ppen)
    {
 
-      //return m_pgraphics->DrawPath((::plusplus::Pen *) ppen->get_os_data(),(dynamic_cast < ::draw2d_vulkan::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      //return m_pgraphics->DrawPath((::plusplus::Pen *) ppen->get_os_data(),(dynamic_cast < ::draw2d_vkvg::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
 
       //return true;
 
@@ -3243,7 +3243,7 @@ namespace draw2d_vulkan
    void graphics::fill(::draw2d::path* ppath)
    {
 
-      //return m_pgraphics->FillPath(vk2d_brush(),(dynamic_cast < ::draw2d_vulkan::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      //return m_pgraphics->FillPath(vk2d_brush(),(dynamic_cast < ::draw2d_vkvg::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
 
       //return true;
 
@@ -3253,7 +3253,7 @@ namespace draw2d_vulkan
    void graphics::fill(::draw2d::path* ppath, ::draw2d::brush* pbrush)
    {
 
-      //return m_pgraphics->FillPath((::plusplus::Brush *) pbrush->get_os_data(),(dynamic_cast < ::draw2d_vulkan::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      //return m_pgraphics->FillPath((::plusplus::Brush *) pbrush->get_os_data(),(dynamic_cast < ::draw2d_vkvg::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
 
       //return true;
 
@@ -3773,7 +3773,7 @@ namespace draw2d_vulkan
                gen_WingdixTerm = (char)!atexit(&__win_gdi_x_term);
             ::aura::UnlockGlobals(CRIT_HALFTONEBRUSH);
 
-      //      return ::draw2d_vulkan::brush::from_handle(papp, gen_HalftoneBrush);*/
+      //      return ::draw2d_vkvg::brush::from_handle(papp, gen_HalftoneBrush);*/
       return nullptr;
    }
 
@@ -3914,12 +3914,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 
 
-//::draw2d::graphics * ::draw2d_vulkan::graphics::from_handle(HDC hDC)
+//::draw2d::graphics * ::draw2d_vkvg::graphics::from_handle(HDC hDC)
 //{
 //hdc_map* pMap = ::windows_definition::MapHDC(true); //create map if not exist
 //ASSERT(pMap != nullptr);
 //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)pMap->from_handle(hDC);
-   //    ASSERT(pgraphics == nullptr || (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc == hDC);
+   //    ASSERT(pgraphics == nullptr || (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->m_hdc == hDC);
    //  return pgraphics;
    // return nullptr;
    //}
@@ -4211,12 +4211,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //   ::draw2d::object* graphics::SelectGdiObject(::particle * pparticle, HDC hDC, HGDIOBJ h)
       // {
-   //      return ::draw2d_vulkan::object::from_handle(papp, ::SelectObject(hDC, h));
+   //      return ::draw2d_vkvg::object::from_handle(papp, ::SelectObject(hDC, h));
       //}
-   ::draw2d_vulkan::draw2d* graphics::draw2d_vulkan()
+   ::draw2d_vkvg::draw2d* graphics::draw2d_vkvg()
    {
 
-      return dynamic_cast <::draw2d_vulkan::draw2d*>(system()->draw2d());
+      return dynamic_cast <::draw2d_vkvg::draw2d*>(system()->draw2d());
 
    }
 
@@ -4229,7 +4229,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
                hOldObj = ::SelectObject(m_hdc, hObject);
             if(m_hdc != nullptr)
                hOldObj = ::SelectObject(m_hdc, hObject);
-            return ::draw2d_vulkan::object::from_handle(get_app(), hOldObj);*/
+            return ::draw2d_vkvg::object::from_handle(get_app(), hOldObj);*/
 
       return nullptr;
 
@@ -4245,7 +4245,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          hOldObj = ::SelectObject(m_hdc, pPen->get_os_data());
       if(m_hdc != nullptr)
          hOldObj = ::SelectObject(m_hdc, pPen->get_os_data());
-      return dynamic_cast < pen * > (::draw2d_vulkan::object::from_handle(get_app(), hOldObj));*/
+      return dynamic_cast < pen * > (::draw2d_vkvg::object::from_handle(get_app(), hOldObj));*/
       m_ppen = pPen;
       return m_ppen;
 
@@ -4261,7 +4261,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
                hOldObj = ::SelectObject(m_hdc, pBrush->get_os_data());
             if(m_hdc != nullptr)
                hOldObj = ::SelectObject(m_hdc, pBrush->get_os_data());
-            return dynamic_cast < ::draw2d::brush * > (::draw2d_vulkan::object::from_handle(get_app(), hOldObj));*/
+            return dynamic_cast < ::draw2d::brush * > (::draw2d_vkvg::object::from_handle(get_app(), hOldObj));*/
       m_pbrush = pBrush;
 
       return m_pbrush;
@@ -4278,7 +4278,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
                hOldObj = ::SelectObject(m_hdc, pFont->get_os_data());
             if(m_hdc != nullptr)
                hOldObj = ::SelectObject(m_hdc, pFont->get_os_data());
-            return dynamic_cast < ::write_text::font * > (::draw2d_vulkan::object::from_handle(get_app(), hOldObj));*/
+            return dynamic_cast < ::write_text::font * > (::draw2d_vkvg::object::from_handle(get_app(), hOldObj));*/
 
             /*ASSERT(pFont != nullptr);
 
@@ -4313,7 +4313,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    ::draw2d::palette* graphics::SelectPalette(::draw2d::palette* pPalette, bool bForceBackground)
    {
       return nullptr;
-      //      return dynamic_cast < ::draw2d::palette * > (::draw2d_vulkan::object::from_handle(get_app(), ::SelectPalette(m_hdc, (HPALETTE)pPalette->get_os_data(), bForceBackground)));
+      //      return dynamic_cast < ::draw2d::palette * > (::draw2d_vkvg::object::from_handle(get_app(), ::SelectPalette(m_hdc, (HPALETTE)pPalette->get_os_data(), bForceBackground)));
    }
 
 
@@ -5078,56 +5078,56 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //      {
       //      // these records have effects different for each graphics derived class
       //      case META_SETMAPMODE:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SETWINDOWEXT:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->set_window_ext(
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->set_window_ext(
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SETWINDOWORG:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SetWindowOrg(
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->SetWindowOrg(
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SETVIEWPORTEXT:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->set_context_extents(
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->set_context_extents(
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SETVIEWPORTORG:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->set_origin(
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->set_origin(
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SCALEWINDOWEXT:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->scale_window_ext(
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->scale_window_ext(
       //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SCALEVIEWPORTEXT:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->scale_context_extents(
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->scale_context_extents(
       //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_OFFSETVIEWPORTORG:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->offset_origin(
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->offset_origin(
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SAVEDC:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SaveDC();
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->SaveDC();
       //         break;
       //      case META_RESTOREDC:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SETBKCOLOR:
       //      {
       //         auto pbrush = __øcreate < ::draw2d::brush >();
       //         
       //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SelectObject(brush);
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->SelectObject(brush);
       //      }
       //      break;
       //      case META_SETTEXTCOLOR:
       //      {
-      //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SelectObject(brush);
+      //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
+      //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->SelectObject(brush);
       //      }
       //      break;
       //
@@ -5140,27 +5140,27 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //         {
       //            // object type is unknown, determine if it is a font
       //            HFONT hStockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
-      //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc, hStockFont);
-      //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc, hObject);
+      //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->m_hdc, hStockFont);
+      //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->m_hdc, hObject);
       //            if (hObjOld == hStockFont)
       //            {
       //               // got the stock object back, so must be selecting a font
       //               throw ::not_implemented();
-      ////                  (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SelectObject(::draw2d_vulkan::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+      ////                  (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->SelectObject(::draw2d_vkvg::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
       //               break;  // don't play the default record
       //            }
       //            else
       //            {
       //               // didn't get the stock object back, so restore everything
-      //               ::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc, hFontOld);
-      //               ::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc, hObjOld);
+      //               ::SelectObject((dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->m_hdc, hFontOld);
+      //               ::SelectObject((dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->m_hdc, hObjOld);
       //            }
       //            // and fall through to PlayMetaFileRecord...
       //         }
       //         else if (nObjType == OBJ_FONT)
       //         {
       //            // play back as graphics::SelectObject(::write_text::font*)
-      ////               (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SelectObject(::draw2d_vulkan::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+      ////               (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->SelectObject(::draw2d_vkvg::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
       //            throw ::not_implemented();
       //            break;  // don't play the default record
       //         }
@@ -6234,11 +6234,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //   synchronous_lock synchronouslock(this->synchronization());
 
-   //   draw2d_vulkan_enum_fonts fonts(itema);
+   //   draw2d_vkvg_enum_fonts fonts(itema);
 
    //   //HDC hdc = ::CreateCompatibleDC(nullptr);
 
-   //   //::EnumFontFamilies(hdc,(LPCTSTR)nullptr,(FONTENUMPROC)draw2d_vulkan_EnumFamCallBack,(LPARAM)&fonts);
+   //   //::EnumFontFamilies(hdc,(LPCTSTR)nullptr,(FONTENUMPROC)draw2d_vkvg_EnumFamCallBack,(LPARAM)&fonts);
 
    //   //::DeleteDC(hdc);
 
@@ -6394,12 +6394,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       m_z = 0.f;
 
-      if (!m_pgpucontext->m_prenderer)
+      if (!m_pgpucontext->m_pgpurenderer)
       {
 
-         __øconstruct(m_pgpucontext->m_prenderer);
+         __øconstruct(m_pgpucontext->m_pgpurenderer);
 
-         m_pgpucontext->m_prenderer->initialize_renderer(m_pgpucontext);
+         m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer);
 
       }
 
@@ -6445,7 +6445,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          fill_solid_rectangle(r, argb(255, 100, 200, 240));
 
-         ::double_rectangle r2{ 100.0, 100.0, 1920.0, 1980.0 };
+         ::double_rectangle r2{ 100.0, 100.0, 192.0, 198.0 };
 
          set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
@@ -6648,16 +6648,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg
 
 
 
 
 
-BOOL CALLBACK draw2d_vulkan_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p)
+BOOL CALLBACK draw2d_vkvg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p)
 {
 
-   draw2d_vulkan_enum_fonts* pfonts = (draw2d_vulkan_enum_fonts*)p;
+   draw2d_vkvg_enum_fonts* pfonts = (draw2d_vkvg_enum_fonts*)p;
 
    if (FontType & RASTER_FONTTYPE)
    {

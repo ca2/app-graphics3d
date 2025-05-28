@@ -53,7 +53,7 @@ namespace gpu
 
       //string_map < payload >     m_mapLayout;
 
-      ::pointer < context >      m_pgpucontext;
+      ::pointer < renderer >     m_pgpurenderer;
 
       ::file::path               m_pathVertex;
       ::file::path               m_pathFragment;
@@ -75,7 +75,7 @@ namespace gpu
 
       
       virtual void initialize_shader(
-         ::gpu::context* pgpucontext,
+         ::gpu::renderer * pgpurenderer,
          const ::file::path& pathVertex,
          const ::file::path& pathFragment,
          const ::array<enum_descriptor_set_slot>& eslota = {},
@@ -85,7 +85,7 @@ namespace gpu
          enum_flag eflag = e_flag_none);
 
       virtual void initialize_shader_with_block(
-         ::gpu::context* pgpucontext,
+         ::gpu::renderer * pgpurenderer,
          const ::block & blockVertex, 
          const ::block & blockFragment,
          const ::array<enum_descriptor_set_slot>& eslota = {},

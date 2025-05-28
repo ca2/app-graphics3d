@@ -3,7 +3,7 @@
 #include "object.h"
 
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
    object::object()
@@ -101,7 +101,7 @@ namespace draw2d_vulkan
    }
 
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg
 
 
 

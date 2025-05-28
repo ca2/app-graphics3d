@@ -57,7 +57,7 @@ float LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.00f };
 #else verify(expr) expr
 #endif
 
-namespace draw2d_vulkan
+namespace draw2d_vkvg
 {
 
 
@@ -823,7 +823,7 @@ namespace draw2d_vulkan
 
 
 
-} // namespace draw2d_vulkan
+} // namespace draw2d_vkvg
 
 
 void resizeBilinear(memory & m, int w2, int h2, int * pixels, int w, int h)
