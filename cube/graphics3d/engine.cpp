@@ -105,7 +105,7 @@ namespace graphics3d
       if (iGlobalUboSize > 0)
       {
 
-         m_pgpucontext->create_global_ubo(iGlobalUboSize, pgpucontext->m_pgpurenderer->get_frame_count());
+         m_pgpucontext->create_global_ubo(iGlobalUboSize, pgpucontext->get_renderer()->get_frame_count());
 
       }
 

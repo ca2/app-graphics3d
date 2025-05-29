@@ -275,6 +275,13 @@ namespace gpu_vulkan
    }
 
 
+   void offscreen_render_pass::defer_resize(const ::int_size& size)
+   {
+
+
+   }
+
+
    void offscreen_render_pass::createRenderPassImpl()
    {
 

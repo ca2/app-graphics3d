@@ -202,12 +202,18 @@ namespace gpu_vulkan
          {
             VkPipelineColorBlendAttachmentState state;
             state.blendEnable = VK_TRUE;
-            state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // use alpha blending
+            state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
             state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             state.colorBlendOp = VK_BLEND_OP_ADD;
             state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-            state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+            state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
             state.alphaBlendOp = VK_BLEND_OP_ADD;
+            //state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // use alpha blending
+            //state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+            //state.colorBlendOp = VK_BLEND_OP_ADD;
+            //state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+            //state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+            //state.alphaBlendOp = VK_BLEND_OP_ADD;
             state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
                VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
             pipelineConfig.colorBlendAttachments.add(state);

@@ -220,6 +220,29 @@ namespace draw2d_vulkan
    }
 
 
+   //void graphics::defer_resize_memory_graphics(const ::int_size& size)
+   //{
+
+   //    ::int_rectangle rectanglePlacement;
+
+   //    if (size.is_empty())
+   //    {
+
+   //        rectanglePlacement.set_size({ 1920, 1080 });
+
+   //    }
+   //    else
+   //    {
+
+   //        rectanglePlacement.set_size(size);
+
+   //    }
+
+   //    vulkan_create_offscreen_buffer(rectanglePlacement);
+
+   //}
+
+
    void graphics::create_window_graphics(::windowing::window* pwindow)
    {
 
@@ -488,6 +511,83 @@ namespace draw2d_vulkan
       return true;
 
    }
+
+
+   //bool graphics::vulkan_resize_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
+   //{
+
+   //    //if (!draw2d_vulkan()->m_pvulkancontext) {
+   //    //   informationf("MS GDI - RegisterClass failed");
+   //    //   informationf("last-error code: %d\n", GetLastError());
+   //    //   return false;
+   //    //}
+
+   //    if (!m_pgpucontext)
+   //    {
+
+   //        auto pgpu = application()->get_gpu();
+
+   //        if (!m_puserinteraction)
+   //        {
+
+   //            m_puserinteraction = dynamic_cast <::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+
+   //        }
+
+   //        ASSERT(m_puserinteraction);
+
+   //        //auto pgpudevice = pgpu->get_device(m_puserinteraction->window());
+
+   //        ////::gpu::start_context_t startcontext;
+   //        ////startcontext.m_pparticle = this;
+   //        ////startcontext.m_pgpudevice = pgpudevice;
+   //        ////startcontext.m_eoutput = ::gpu::e_output_color_and_alpha_accumulation_buffers;
+   //        ////startcontext.m_rectanglePlacement = rectanglePlacement;
+
+   //        //m_pgpucontext = pgpudevice->start_gpu_output_context(
+   //        //    this,
+   //        //    ::gpu::e_output_color_and_alpha_accumulation_buffers,
+   //        //    rectanglePlacement
+   //        //);
+
+   //    }
+
+   //    if (!m_pgpucontext)
+   //    {
+   //        return false;
+   //        //auto psystem = system();
+
+   //        //auto pgpu = application()->get_gpu();
+
+   //        //m_pgpucontextVulkan = pgpu->create_context(this);
+
+   //        //if (m_pgpucontextVulkan)
+   //        //{
+
+   //        //   m_pgpucontextVulkan->initialize(this);
+
+   //        //}
+
+   //    }
+
+   //    m_pgpucontext->resize_offscreen_buffer(rectanglePlacement.size());
+
+
+   //    //auto psystem = system();
+
+   //    //auto pgpu = application()->get_gpu();
+
+   //    //::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontext;
+   //    //::cast < ::gpu_vulkan::approach > papproachVulkan = pgpu;
+
+
+   //    //bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
+
+   //    //::vulkan::resize(rectanglePlacement.size(), bYSwap);
+
+   //    return true;
+
+   //}
 
 
    bool graphics::vulkan_delete_offscreen_buffer()
@@ -6711,14 +6811,17 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          //prenderer->m_poffscreensampler->update({ (uint32_t)rectangle.width(),(uint32_t)rectangle.height() });
 
-         
+      }
+      else
+      {
+
 
       }
 
       if (m_egraphics == e_graphics_draw)
       {
 
-         ::cast < ::gpu_vulkan::renderer >pgpurenderer = m_pgpucontext->m_pgpurenderer;
+         ::cast < ::gpu_vulkan::renderer > pgpurenderer = m_pgpucontext->m_pgpurenderer;
 
          pgpurenderer->set_placement(rectangle);
 

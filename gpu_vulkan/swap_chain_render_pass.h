@@ -15,7 +15,7 @@ namespace gpu_vulkan
 
       VkSwapchainKHR       m_vkswapchain;
       uint32_t             currentImageIndex;
-
+      
 
       static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 

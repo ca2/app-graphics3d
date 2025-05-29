@@ -52,7 +52,7 @@ namespace gpu_vulkan
       ::array<VkSemaphore> renderFinishedSemaphores;
       ::array<VkFence>     inFlightFences;
       ::array<VkFence>     imagesInFlight;
-
+      bool                 m_bNeedRebuild;
 
       static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -96,6 +96,8 @@ namespace gpu_vulkan
       virtual void createRenderPass();
       virtual void createFramebuffers();
       virtual void createSyncObjects();
+
+
       //virtual void defer_layout();
       //// Helper functions
       //VkSurfaceFormatKHR chooseSwapSurfaceFormat(

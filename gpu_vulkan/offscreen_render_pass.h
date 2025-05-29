@@ -53,7 +53,7 @@ namespace gpu_vulkan
 		//		swapChain.imageFormat == imageFormat;
 		//}
 
-	public:
+	//public:
 		void init();
 		void createRenderPassImpl();
 		void createImageViews();
@@ -64,6 +64,9 @@ namespace gpu_vulkan
 
 		//VkResult submitSamplingWork(const VkCommandBuffer buffer, uint32_t* imageIndex);
 		VkResult submitSamplingWork(const VkCommandBuffer buffer);
+
+
+		virtual void defer_resize(const ::int_size& size);
 
 		//// Helper functions
 		//VkSurfaceFormatKHR chooseSwapSurfaceFormat(

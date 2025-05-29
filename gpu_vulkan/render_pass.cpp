@@ -22,6 +22,7 @@ namespace gpu_vulkan
    render_pass::render_pass(renderer* pgpurenderer, VkExtent2D extent)
       : m_pgpurenderer(pgpurenderer), windowExtent(extent)
    {
+       m_bNeedRebuild = false;
       m_pgpucontext = pgpurenderer->m_pgpucontext;
       //init();
       //m_pvkcrenderpassOld = nullptr;
@@ -31,6 +32,7 @@ namespace gpu_vulkan
    render_pass::render_pass(renderer * pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
       : m_pgpurenderer{ pgpurenderer }, windowExtent{ extent }, m_pvkcrenderpassOld{ previous }
    {
+       m_bNeedRebuild = false;
       m_pgpucontext = pgpurenderer->m_pgpucontext;
       //init();
       // Cleans up old swap chain since it's no longer needed after resizing
@@ -474,6 +476,7 @@ namespace gpu_vulkan
       }
    }
 
+   
    //VkSurfaceFormatKHR render_pass::chooseSwapSurfaceFormat(
    //   const ::array<VkSurfaceFormatKHR>& availableFormats) {
    //   for (const auto& availableFormat : availableFormats) {
