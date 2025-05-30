@@ -216,6 +216,15 @@ namespace gpu_opengl
 
    }
 
+
+   int renderer::get_frame_count() const
+   {
+
+      return 0;
+
+   }
+
+
    //void renderer::Clear() const
    //{
 

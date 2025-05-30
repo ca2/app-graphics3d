@@ -30,6 +30,8 @@ namespace gpu_opengl
 
       void Clear() const;
 
+
+      int get_frame_count() const override;
       // Draws the skybox using the given mesh and shader
       //void DrawSkybox(const mesh *pskyboxMesh, ::gpu::shader * pshader) const;
 

@@ -223,6 +223,16 @@ namespace draw2d_opengl
       //   return false;
       //}
 
+      if(m_puserinteraction == nullptr)
+      {
+         m_puserinteraction = dynamic_cast <::user::interaction *>(application()->m_pacmeuserinteractionMain.m_p);
+         if (m_puserinteraction == nullptr)
+         {
+            informationf("No user interaction available for OpenGL offscreen buffer creation.");
+            return false;
+         }
+      }
+
       if (!m_pgpucontext)
       {
 
