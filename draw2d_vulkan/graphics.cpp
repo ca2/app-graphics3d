@@ -74,19 +74,19 @@ namespace draw2d_vulkan
 
 
    static unsigned int g_uaRectangleFragmentShader[] = {
-#include "shader/rectangle.frag.spv.inl"
+ #include "shader/rectangle.frag.spv.inl"
    };
    static unsigned int g_uaRectangleVertexShader[] = {
-#include "shader/rectangle.vert.spv.inl"
+ #include "shader/rectangle.vert.spv.inl"
    };
 
    static unsigned int g_uaAccumulationFragmentShader[] = {
-#include "shader/accumulation.frag.spv.inl"
+ #include "shader/accumulation.frag.spv.inl"
    };
 
 
    static unsigned int g_uaResolveFragmentShader[] = {
-#include "shader/resolve.frag.spv.inl"
+ #include "shader/resolve.frag.spv.inl"
    };
 
    //ATOM class_atom = NULL;
@@ -205,7 +205,7 @@ namespace draw2d_vulkan
       if (size.is_empty())
       {
 
-         rectanglePlacement.set_size({1920, 1080});
+         rectanglePlacement.set_size({ 1920, 1080 });
 
       }
       else
@@ -264,7 +264,7 @@ namespace draw2d_vulkan
    }
 
 
-   bool graphics::vulkan_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement)
+   bool graphics::vulkan_create_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
    {
 
       //if (!draw2d_vulkan()->m_pvulkancontext) {
@@ -281,7 +281,7 @@ namespace draw2d_vulkan
          if (!m_puserinteraction)
          {
 
-            m_puserinteraction = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+            m_puserinteraction = dynamic_cast <::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
 
          }
 
@@ -299,7 +299,7 @@ namespace draw2d_vulkan
             this,
             ::gpu::e_output_color_and_alpha_accumulation_buffers,
             rectanglePlacement
-            );
+         );
 
       }
 
@@ -633,7 +633,7 @@ namespace draw2d_vulkan
       m_pgpucontext->defer_create_window_context(pwindow);
 
       ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontext;
-      ::cast < ::gpu_vulkan::approach > papproachVulkan =pgpu;
+      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpu;
 
       //vkvg_device_create_info_t createinfo;
       //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -748,7 +748,7 @@ namespace draw2d_vulkan
    {
       /*      // ASSERT(m_hdc != nullptr);
          if(pObject == nullptr)
-            return nullptr;
+           return nullptr;
          return SelectGdiObject(get_app(), m_hdc, pObject->get_os_data()); */
       return nullptr;
    }
@@ -1521,112 +1521,112 @@ namespace draw2d_vulkan
    float g_z = 0.0;
 
    VkBuffer createRectVertexBuffer(
-       VkDevice device,
-       VkPhysicalDevice physicalDevice,
-       VkDeviceMemory* outMemory,
-       const ::double_rectangle & rectangle,
-       const  ::color::color& color,
-       const ::double_size& size)
+      VkDevice device,
+      VkPhysicalDevice physicalDevice,
+      VkDeviceMemory* outMemory,
+      const ::double_rectangle& rectangle,
+      const  ::color::color& color,
+      const ::double_size& size)
    {
-       VkBuffer vertexBuffer;
+      VkBuffer vertexBuffer;
 
 
 
 
-       //static const graphics::RectangleVertex quadVertices[] = {
-       //   // Triangle 1
-       //   {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 0.5f}}, // Red
-       //   {{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 0.5f}}, // Green
-       //   {{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f, 0.5f}}, // Blue
-       //   // Triangle 2
-       //   {{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 0.5f}}, // Green
-       //   {{ 0.5f,  0.5f}, {1.0f, 1.0f, 0.0f, 0.5f}}, // Yellow
-       //   {{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f, 0.5f}}, // Blue
-       //};
+      //static const graphics::RectangleVertex quadVertices[] = {
+      //   // Triangle 1
+      //   {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 0.5f}}, // Red
+      //   {{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 0.5f}}, // Green
+      //   {{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f, 0.5f}}, // Blue
+      //   // Triangle 2
+      //   {{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 0.5f}}, // Green
+      //   {{ 0.5f,  0.5f}, {1.0f, 1.0f, 0.0f, 0.5f}}, // Yellow
+      //   {{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f, 0.5f}}, // Blue
+      //};
 
-       float fA = color.f32_opacity();
-       //float fR = color.f32_red();
-       //float fG = color.f32_green();
-       //float fB = color.f32_blue();
-       float fR = color.f32_red() * fA;
-       float fG = color.f32_green() * fA;
-       float fB = color.f32_blue() * fA;
-
-
-       //rectangle is x0 y0 w100 h100;
-       // size(100, 100) l = (0 - 100 / 2) / 100 = -0.5
-       // size(100, 100) r = (100 - 100 / 2) / 100 = 0.5
-
-       float l = (float) (2.* (rectangle.left() - size.cx()/2.)/ (size.cx()));
-       float r = (float)(2. * (rectangle.right() - size.cx()/2.) / (size.cx()));
-       float t = (float)(2. * (rectangle.bottom() - size.cy()/2.) / (size.cy()));
-       float b = (float)(2. * (rectangle.top() - size.cy()/2.) / (size.cy()));
-
-       //  0 l,t
-       //  1 r,t
-       //  2 r,b
-       //  3 l,b
-       //graphics::RectangleVertex quadVertices[] = {
-       //    // Triangle 1
-       //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Red
-       //    {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, // Green
-       //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Blue
-       //    // Triangle 2
-       //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Green
-       //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Yellow
-       //    {{(float)points[3].x(), (float)points[3].y(), g_z}, {fR, fG, fB, fA}}, // Blue
-       //};
+      float fA = color.f32_opacity();
+      //float fR = color.f32_red();
+      //float fG = color.f32_green();
+      //float fB = color.f32_blue();
+      float fR = color.f32_red() * fA;
+      float fG = color.f32_green() * fA;
+      float fB = color.f32_blue() * fA;
 
 
-       graphics::RectangleVertex quadVertices[] = {
-          // Triangle 1
-          {{l, t, g_z}, {fR, fG, fB, fA}}, // Red
-          {{ r, t, g_z}, {fR, fG, fB, fA}}, // Green
-          {{r,  b, g_z}, {fR, fG, fB, fA}}, // Blue
-          // Triangle 2
-          {{ l, t, g_z}, {fR, fG, fB, fA}}, // Green
-          {{ r,  b, g_z}, {fR, fG, fB, fA}}, // Yellow
-          {{l,  b, g_z}, {fR, fG, fB, fA}}, // Blue
-       };
+      //rectangle is x0 y0 w100 h100;
+      // size(100, 100) l = (0 - 100 / 2) / 100 = -0.5
+      // size(100, 100) r = (100 - 100 / 2) / 100 = 0.5
+
+      float l = (float)(2. * (rectangle.left() - size.cx() / 2.) / (size.cx()));
+      float r = (float)(2. * (rectangle.right() - size.cx() / 2.) / (size.cx()));
+      float t = (float)(2. * (rectangle.bottom() - size.cy() / 2.) / (size.cy()));
+      float b = (float)(2. * (rectangle.top() - size.cy() / 2.) / (size.cy()));
+
+      //  0 l,t
+      //  1 r,t
+      //  2 r,b
+      //  3 l,b
+      //graphics::RectangleVertex quadVertices[] = {
+      //    // Triangle 1
+      //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Red
+      //    {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, // Green
+      //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+      //    // Triangle 2
+      //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Green
+      //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Yellow
+      //    {{(float)points[3].x(), (float)points[3].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+      //};
 
 
-       VkBufferCreateInfo bufferInfo = {
-           .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-           .size = sizeof(quadVertices),
-           .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-           .sharingMode = VK_SHARING_MODE_EXCLUSIVE
-       };
-       vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
+      graphics::RectangleVertex quadVertices[] = {
+         // Triangle 1
+         {{l, t, g_z}, {fR, fG, fB, fA}}, // Red
+         {{ r, t, g_z}, {fR, fG, fB, fA}}, // Green
+         {{r,  b, g_z}, {fR, fG, fB, fA}}, // Blue
+         // Triangle 2
+         {{ l, t, g_z}, {fR, fG, fB, fA}}, // Green
+         {{ r,  b, g_z}, {fR, fG, fB, fA}}, // Yellow
+         {{l,  b, g_z}, {fR, fG, fB, fA}}, // Blue
+      };
 
-       VkMemoryRequirements memReq;
-       vkGetBufferMemoryRequirements(device, vertexBuffer, &memReq);
 
-       uint32_t memTypeIndex = 0;
-       VkPhysicalDeviceMemoryProperties memProps;
-       vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
-       for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
-           if ((memReq.memoryTypeBits & (1 << i)) &&
-               (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
-               (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-               memTypeIndex = i;
-               break;
-           }
-       }
+      VkBufferCreateInfo bufferInfo = {
+         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+         .size = sizeof(quadVertices),
+         .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+      };
+      vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
 
-       VkMemoryAllocateInfo allocInfo = {
-           .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-           .allocationSize = memReq.size,
-           .memoryTypeIndex = memTypeIndex
-       };
-       vkAllocateMemory(device, &allocInfo, NULL, outMemory);
-       vkBindBufferMemory(device, vertexBuffer, *outMemory, 0);
+      VkMemoryRequirements memReq;
+      vkGetBufferMemoryRequirements(device, vertexBuffer, &memReq);
 
-       void* data;
-       vkMapMemory(device, *outMemory, 0, bufferInfo.size, 0, &data);
-       memcpy(data, quadVertices, sizeof(quadVertices));
-       vkUnmapMemory(device, *outMemory);
+      uint32_t memTypeIndex = 0;
+      VkPhysicalDeviceMemoryProperties memProps;
+      vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
+      for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+         if ((memReq.memoryTypeBits & (1 << i)) &&
+            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
+            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            memTypeIndex = i;
+            break;
+         }
+      }
 
-       return vertexBuffer;
+      VkMemoryAllocateInfo allocInfo = {
+         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+         .allocationSize = memReq.size,
+         .memoryTypeIndex = memTypeIndex
+      };
+      vkAllocateMemory(device, &allocInfo, NULL, outMemory);
+      vkBindBufferMemory(device, vertexBuffer, *outMemory, 0);
+
+      void* data;
+      vkMapMemory(device, *outMemory, 0, bufferInfo.size, 0, &data);
+      memcpy(data, quadVertices, sizeof(quadVertices));
+      vkUnmapMemory(device, *outMemory);
+
+      return vertexBuffer;
    }
 
 
@@ -1636,7 +1636,111 @@ namespace draw2d_vulkan
       VkDeviceMemory* outMemory,
       const ::double_point points1[4],
       const  ::color::color& color,
-      const ::double_size & size)
+      const ::double_size& size)
+   {
+      VkBuffer vertexBuffer;
+
+
+      //  0 l,t
+     //  1 r,t
+     //  2 r,b
+      //  3 l,b
+
+      ::geometry2d::matrix m;
+      m.scale(2.0 / size.cx(), 2.0 / size.cy());
+      m.translate(-1.0, -1.0);
+
+      ::double_point points[4];
+
+      points[0] = points1[0]; // top-left
+      points[1] = points1[1]; // top-right
+      points[2] = points1[2]; // bottom-right
+      points[3] = points1[3]; // bottom-left
+
+      m.transform(points[0]);
+      m.transform(points[1]);
+      m.transform(points[2]);
+      m.transform(points[3]);
+
+      float fA = color.f32_opacity();
+      //float fR = color.f32_red();
+      //float fG = color.f32_green();
+      //float fB = color.f32_blue();
+      float fR = color.f32_red() * fA;
+      float fG = color.f32_green() * fA;
+      float fB = color.f32_blue() * fA;
+
+
+      graphics::RectangleVertex quadVertices[] = {
+         // Triangle 1
+         {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Red
+         {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, // Green
+         {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+         // Triangle 2
+         {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Green
+         {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Yellow
+         {{(float)points[3].x(), (float)points[3].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+      };
+
+
+
+      VkBufferCreateInfo bufferInfo = {
+         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+         .size = sizeof(quadVertices),
+         .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+      };
+      vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
+
+      VkMemoryRequirements memReq;
+      vkGetBufferMemoryRequirements(device, vertexBuffer, &memReq);
+
+      uint32_t memTypeIndex = 0;
+      VkPhysicalDeviceMemoryProperties memProps;
+      vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
+      for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+         if ((memReq.memoryTypeBits & (1 << i)) &&
+            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
+            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            memTypeIndex = i;
+            break;
+         }
+      }
+
+      //VkBufferCreateInfo bufferInfo = {
+      //    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+      //    .size = sizeof(quadVertices),
+      //    .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+      //    .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+      //};
+      //vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
+
+
+      VkMemoryAllocateInfo allocInfo = {
+          .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+          .allocationSize = memReq.size,
+          .memoryTypeIndex = memTypeIndex
+      };
+      vkAllocateMemory(device, &allocInfo, NULL, outMemory);
+      vkBindBufferMemory(device, vertexBuffer, *outMemory, 0);
+
+      void* data;
+      vkMapMemory(device, *outMemory, 0, bufferInfo.size, 0, &data);
+      memcpy(data, quadVertices, sizeof(quadVertices));
+      vkUnmapMemory(device, *outMemory);
+
+      return vertexBuffer;
+   }
+
+
+   VkBuffer createLineVertexBuffer(
+      VkDevice device,
+      VkPhysicalDevice physicalDevice,
+      VkDeviceMemory* outMemory,
+      const ::double_point & pointA,
+      const ::double_point& pointB,
+      const  ::color::color& color,
+      const ::double_size& size)
    {
       VkBuffer vertexBuffer;
 
@@ -1673,36 +1777,26 @@ namespace draw2d_vulkan
       //float b = (float)(2. * (rectangle.top() - size.cy()/2.) / (size.cy()));
 
       //  0 l,t
-	  //  1 r,t
-	  //  2 r,b
+      //  1 r,t
+      //  2 r,b
       //  3 l,b
 
       ::geometry2d::matrix m;
-	  m.scale(2.0 / size.cx(), 2.0/size.cy());
+      m.scale(2.0 / size.cx(), 2.0 / size.cy());
       m.translate(-1.0, -1.0);
-      
-      ::double_point points[4];
 
-	  points[0] = points1[0]; // top-left
-	  points[1] = points1[1]; // top-right
-	  points[2] = points1[2]; // bottom-right
-	  points[3] = points1[3]; // bottom-left
+      ::double_point points[2];
+
+      points[0] = pointA;
+      points[1] = pointB;
 
       m.transform(points[0]);
       m.transform(points[1]);
-      m.transform(points[2]);
-      m.transform(points[3]);
 
 
-            graphics::RectangleVertex quadVertices[] = {
-         // Triangle 1
-         {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Red
-         {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, // Green
-         {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Blue
-         // Triangle 2
-         {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Green
-         {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Yellow
-         {{(float)points[3].x(), (float)points[3].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+      graphics::RectangleVertex lineVertices[] = {
+         {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, 
+         {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, 
       };
 
 
@@ -1719,10 +1813,10 @@ namespace draw2d_vulkan
 
 
       VkBufferCreateInfo bufferInfo = {
-          .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-          .size = sizeof(quadVertices),
-          .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-          .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+         .size = sizeof(lineVertices),
+         .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
       };
       vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
 
@@ -1742,209 +1836,209 @@ namespace draw2d_vulkan
       }
 
       VkMemoryAllocateInfo allocInfo = {
-          .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-          .allocationSize = memReq.size,
-          .memoryTypeIndex = memTypeIndex
+         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+         .allocationSize = memReq.size,
+         .memoryTypeIndex = memTypeIndex
       };
       vkAllocateMemory(device, &allocInfo, NULL, outMemory);
       vkBindBufferMemory(device, vertexBuffer, *outMemory, 0);
 
       void* data;
       vkMapMemory(device, *outMemory, 0, bufferInfo.size, 0, &data);
-      memcpy(data, quadVertices, sizeof(quadVertices));
+      memcpy(data, lineVertices, sizeof(lineVertices));
       vkUnmapMemory(device, *outMemory);
 
       return vertexBuffer;
    }
 
 
-   void graphics::_fill_quad(const ::double_point points[4], const ::color::color & color)
+   void graphics::_fill_quad(const ::double_point points[4], const ::color::color& color)
    {
 
-       ::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontext;
-       ::cast < ::gpu_vulkan::renderer >prenderer = pgpucontext->m_pgpurenderer;
+      ::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontext;
+      ::cast < ::gpu_vulkan::renderer >prenderer = pgpucontext->m_pgpurenderer;
 
-       //// Rectangle descriptors
-       //if (!m_psetdescriptorlayoutRectangle)
-       //{
+      //// Rectangle descriptors
+      //if (!m_psetdescriptorlayoutRectangle)
+      //{
 
-       //   int iFrameCount = prenderer->get_frame_count();
+      //   int iFrameCount = prenderer->get_frame_count();
 
-       //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
-       //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-       //      .build();
+      //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+      //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      //      .build();
 
-       //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+      //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
 
-       //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
-       //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
-       //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
+      //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
+      //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+      //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
 
-       //   m_psetdescriptorlayoutRectangle = pdescriptorpoolbuilder->build();
+      //   m_psetdescriptorlayoutRectangle = pdescriptorpoolbuilder->build();
 
-       //}
+      //}
 
-       //// Rectangle descriptors
-       //if (!m_psetdescriptorlayoutRectangle)
-       //{
+      //// Rectangle descriptors
+      //if (!m_psetdescriptorlayoutRectangle)
+      //{
 
-       //   int iFrameCount = prenderer->get_frame_count();
+      //   int iFrameCount = prenderer->get_frame_count();
 
-       //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
-       //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-       //      .build();
+      //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+      //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      //      .build();
 
-       //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+      //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
 
-       //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
-       //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
-       //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
+      //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
+      //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+      //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
 
-       //   m_psetdescriptorlayoutRectangle = pdescriptorpoolbuilder->build();
+      //   m_psetdescriptorlayoutRectangle = pdescriptorpoolbuilder->build();
 
-       //}
+      //}
 
-       ::gpu_vulkan::shader* pshader = nullptr;
+      ::gpu_vulkan::shader* pshader = nullptr;
 
-       //if(m_ealphamode == ::draw2d::e_alpha_mode_set)
-       //{
-       //   if (!m_pshaderSourceRectangle)
-       //   {
+      //if(m_ealphamode == ::draw2d::e_alpha_mode_set)
+      //{
+      //   if (!m_pshaderSourceRectangle)
+      //   {
 
-       //      auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+      //      auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
 
-       //      pshadervertexinput->m_bindings.add(
-       //         {
-       //            .binding = 0,
-       //            .stride = sizeof(RectangleVertex),
-       //            .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-       //         });
+      //      pshadervertexinput->m_bindings.add(
+      //         {
+      //            .binding = 0,
+      //            .stride = sizeof(RectangleVertex),
+      //            .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+      //         });
 
-       //      pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
-       //      pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
+      //      pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
+      //      pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-       //      auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
+      //      auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
 
-       //      m_pshaderSourceRectangle = pshaderRectangle;
-       //      //m_pshaderRectangle->m_bDisableDepthTest = true;
-       //      //m_pshaderRectangle->m_bDepthTestButNoDepthWrite = true;
-       //      //m_pshaderRectangle->m_iColorAttachmentCount = 2;
-       //      m_pshaderSourceRectangle->m_bEnableBlend = true;
-       //      //m_pshaderRectangle->m_bAccumulationEnable = true;
+      //      m_pshaderSourceRectangle = pshaderRectangle;
+      //      //m_pshaderRectangle->m_bDisableDepthTest = true;
+      //      //m_pshaderRectangle->m_bDepthTestButNoDepthWrite = true;
+      //      //m_pshaderRectangle->m_iColorAttachmentCount = 2;
+      //      m_pshaderSourceRectangle->m_bEnableBlend = true;
+      //      //m_pshaderRectangle->m_bAccumulationEnable = true;
 
-       //      ::cast < ::gpu_vulkan::device > pgpudevice = m_pgpucontext->m_pgpudevice;
-       //      pshaderRectangle->initialize_shader_with_block(
-       //         m_pgpucontext->m_pgpurenderer,
-       //         as_memory_block(g_uaRectangleVertexShader),
-       //         //as_memory_block(g_uaAccumulationFragmentShader),
-       //         as_memory_block(g_uaRectangleFragmentShader),
-       //         { },
-       //         m_psetdescriptorlayoutRectangle,
-       //         pshadervertexinput);
-
-
-       //   }
-       //   pshader = m_pshaderSourceRectangle;
-
-       //}
-       //else
-       {
-
-           if (!m_pshaderBlendRectangle)
-           {
-
-               auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
-
-               pshadervertexinput->m_bindings.add(
-                   {
-                      .binding = 0,
-                      .stride = sizeof(RectangleVertex),
-                      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-                   });
-
-               pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
-               pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
-
-               auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
-
-               m_pshaderBlendRectangle = pshaderRectangle;
-               //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
-               m_pshaderBlendRectangle->m_bDepthTestButNoDepthWrite = true;
-               //m_pshaderRectangle->m_iColorAttachmentCount = 2;
-               m_pshaderBlendRectangle->m_bEnableBlend = true;
-               //m_pshaderRectangle->m_bAccumulationEnable = true;
-
-               ::cast < ::gpu_vulkan::device > pgpudevice = m_pgpucontext->m_pgpudevice;
-               pshaderRectangle->initialize_shader_with_block(
-                   m_pgpucontext->m_pgpurenderer,
-                   as_memory_block(g_uaRectangleVertexShader),
-                   //as_memory_block(g_uaAccumulationFragmentShader),
-                   as_memory_block(g_uaRectangleFragmentShader),
-                   { },
-                   m_psetdescriptorlayoutRectangle,
-                   pshadervertexinput);
-
-           }
-
-           pshader = m_pshaderBlendRectangle;
-
-       }
+      //      ::cast < ::gpu_vulkan::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+      //      pshaderRectangle->initialize_shader_with_block(
+      //         m_pgpucontext->m_pgpurenderer,
+      //         as_memory_block(g_uaRectangleVertexShader),
+      //         //as_memory_block(g_uaAccumulationFragmentShader),
+      //         as_memory_block(g_uaRectangleFragmentShader),
+      //         { },
+      //         m_psetdescriptorlayoutRectangle,
+      //         pshadervertexinput);
 
 
-       auto pmodel = m_pmodelRectangle;
+      //   }
+      //   pshader = m_pshaderSourceRectangle;
 
-       __construct_new(pmodel);
+      //}
+      //else
+      {
 
-       double_point quad[4];
+         if (!m_pshaderBlendRectangle)
+         {
 
-       quad[0] = points[0];
-       m_m1.transform(quad[0]);
-       quad[1] = points[1];
-       m_m1.transform(quad[1]);
-       quad[2] = points[2];
-       m_m1.transform(quad[2]);
-       quad[3] = points[3];
-       m_m1.transform(quad[3]);
+            auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+
+            pshadervertexinput->m_bindings.add(
+               {
+                  .binding = 0,
+                  .stride = sizeof(RectangleVertex),
+                  .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+               });
+
+            pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
+            pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
+
+            auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
+
+            m_pshaderBlendRectangle = pshaderRectangle;
+            //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
+            m_pshaderBlendRectangle->m_bDepthTestButNoDepthWrite = true;
+            //m_pshaderRectangle->m_iColorAttachmentCount = 2;
+            m_pshaderBlendRectangle->m_bEnableBlend = true;
+            //m_pshaderRectangle->m_bAccumulationEnable = true;
+
+            ::cast < ::gpu_vulkan::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+            pshaderRectangle->initialize_shader_with_block(
+               m_pgpucontext->m_pgpurenderer,
+               as_memory_block(g_uaRectangleVertexShader),
+               //as_memory_block(g_uaAccumulationFragmentShader),
+               as_memory_block(g_uaRectangleFragmentShader),
+               { },
+               m_psetdescriptorlayoutRectangle,
+               pshadervertexinput);
+
+         }
+
+         pshader = m_pshaderBlendRectangle;
+
+      }
 
 
-       {
+      auto pmodel = m_pmodelRectangle;
 
-           ::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontext;
+      __construct_new(pmodel);
 
-           pmodel->m_vertexBuffer = createQuadVertexBuffer(pgpucontext->logicalDevice(),
-               pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-               &pmodel->m_vertexMemory, quad, color, m_pgpucontext->m_size);
+      double_point quad[4];
 
-           pmodel->m_indexBuffer = nullptr;
-           pmodel->m_indexMemory = nullptr;
-
-       }
-
-       pshader->bind();
-
-       //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-       auto commandBuffer = prenderer->getCurrentCommandBuffer();
-       VkDeviceSize offset = 0;
-       ///vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-       vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
-       vkCmdDraw(commandBuffer, 6, 1, 0, 0); // 6 vertices for two triangles
-       //vkCmdEndRenderPass(cmd);
+      quad[0] = points[0];
+      m_m1.transform(quad[0]);
+      quad[1] = points[1];
+      m_m1.transform(quad[1]);
+      quad[2] = points[2];
+      m_m1.transform(quad[2]);
+      quad[3] = points[3];
+      m_m1.transform(quad[3]);
 
 
-       pshader->unbind();
-       //vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
-         // rectangle.bottom() - rectangle.top());
+      {
 
-       auto logicalDevice = pgpucontext->logicalDevice();
-       prenderer->m_pvkcrenderpass->m_procedureaOnAfterSubmit.add([this, logicalDevice, pmodel]()
-           {
+         ::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontext;
 
-               vkDestroyBuffer(logicalDevice, pmodel->m_vertexBuffer, nullptr);
-               vkFreeMemory(logicalDevice, pmodel->m_vertexMemory, nullptr);
+         pmodel->m_vertexBuffer = createQuadVertexBuffer(pgpucontext->logicalDevice(),
+            pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+            &pmodel->m_vertexMemory, quad, color, m_pgpucontext->m_size);
 
-           });
+         pmodel->m_indexBuffer = nullptr;
+         pmodel->m_indexMemory = nullptr;
 
-       //g_z += 0.0001;
+      }
+
+      pshader->bind();
+
+      //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+      auto commandBuffer = prenderer->getCurrentCommandBuffer();
+      VkDeviceSize offset = 0;
+      ///vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
+      vkCmdDraw(commandBuffer, 6, 1, 0, 0); // 6 vertices for two triangles
+      //vkCmdEndRenderPass(cmd);
+
+
+      pshader->unbind();
+      //vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
+        // rectangle.bottom() - rectangle.top());
+
+      auto logicalDevice = pgpucontext->logicalDevice();
+      prenderer->m_pvkcrenderpass->m_procedureaOnAfterSubmit.add([this, logicalDevice, pmodel]()
+         {
+
+            vkDestroyBuffer(logicalDevice, pmodel->m_vertexBuffer, nullptr);
+            vkFreeMemory(logicalDevice, pmodel->m_vertexMemory, nullptr);
+
+         });
+
+      //g_z -= 0.0001;
 
    }
 
@@ -1952,16 +2046,16 @@ namespace draw2d_vulkan
    void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pBrush)
    {
 
-//       _fill_rectangle_2025_05_29(rectangle, pBrush);
+      //       _fill_rectangle_2025_05_29(rectangle, pBrush);
 
-       double_point quad[4] = {
-           {rectangle.top_left()},
-           {rectangle.top_right()},
-           {rectangle.bottom_right()},
-           {rectangle.bottom_left()} 
-       };
+      double_point quad[4] = {
+         {rectangle.top_left()},
+         {rectangle.top_right()},
+         {rectangle.bottom_right()},
+         {rectangle.bottom_left()}
+      };
 
-	   _fill_quad(quad, pBrush->m_color);
+      _fill_quad(quad, pBrush->m_color);
 
    }
 
@@ -2124,7 +2218,7 @@ namespace draw2d_vulkan
 
       //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
       auto commandBuffer = prenderer->getCurrentCommandBuffer();
-         VkDeviceSize offset = 0;
+      VkDeviceSize offset = 0;
       ///vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
       vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
       vkCmdDraw(commandBuffer, 6, 1, 0, 0); // 6 vertices for two triangles
@@ -2343,103 +2437,103 @@ namespace draw2d_vulkan
 
    //}
 
-//   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, HBITMAP hBitmap, unsigned int nFlags, HBRUSH hBrush)
-//   {
-//
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hBitmap, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
-//      return false;
-//
-//   }
+ //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, HBITMAP hBitmap, unsigned int nFlags, HBRUSH hBrush)
+ //   {
+ //
+ //      // ASSERT(m_hdc != nullptr);
+ //      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hBitmap, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
+ //      return false;
+ //
+ //   }
 
-//   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, ::draw2d::bitmap* pBitmap, unsigned int nFlags, ::draw2d::brush* pBrush)
-//   {
-//
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)pBitmap->get_os_data(), 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
-//
-//      return false;
-//
-//   }
-//
-//   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, HICON hIcon, unsigned int nFlags, HBRUSH hBrush)
-//   {
-//
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hIcon, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_ICON) != false;
-//
-//      return false;
-//
-//   }
-//
-//
-//   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, HICON hIcon, unsigned int nFlags, ::draw2d::brush* pBrush)
-//   {
-//
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)hIcon, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_ICON) != false;
-//      return false;
-//
-//   }
-//
-//
-//   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, const ::string & lpszText, unsigned int nFlags, bool bPrefixText, double nTextLen, HBRUSH hBrush)
-//   {
-//
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, hBrush,  nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x(), point.y(), size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
-//      return false;
-//
-//   }
-//
-//
-//   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, const ::string & lpszText, unsigned int nFlags, bool bPrefixText, double nTextLen, ::draw2d::brush* pBrush)
-//   {
-//
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x(), point.y(), size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
-//      return false;
-//
-//   }
-//
-//
-//   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, DRAWSTATEPROC lpDrawProc, LPARAM lData, unsigned int nFlags, HBRUSH hBrush)
-//   {
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, hBrush,
-//          //               lpDrawProc, lData, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
-//      return false;
-//
-//   }
-//
-//
-//   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, DRAWSTATEPROC lpDrawProc, LPARAM lData, unsigned int nFlags, ::draw2d::brush* pBrush)
-//   {
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(),
-//        //                 lpDrawProc, lData, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
-//      return false;
-//
-//   }
-//
+ //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, ::draw2d::bitmap* pBitmap, unsigned int nFlags, ::draw2d::brush* pBrush)
+ //   {
+ //
+ //      // ASSERT(m_hdc != nullptr);
+ //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)pBitmap->get_os_data(), 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
+ //
+ //      return false;
+ //
+ //   }
+ //
+ //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, HICON hIcon, unsigned int nFlags, HBRUSH hBrush)
+ //   {
+ //
+ //      // ASSERT(m_hdc != nullptr);
+ //      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hIcon, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_ICON) != false;
+ //
+ //      return false;
+ //
+ //   }
+ //
+ //
+ //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, HICON hIcon, unsigned int nFlags, ::draw2d::brush* pBrush)
+ //   {
+ //
+ //      // ASSERT(m_hdc != nullptr);
+ //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)hIcon, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_ICON) != false;
+ //      return false;
+ //
+ //   }
+ //
+ //
+ //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, const ::string & lpszText, unsigned int nFlags, bool bPrefixText, double nTextLen, HBRUSH hBrush)
+ //   {
+ //
+ //      // ASSERT(m_hdc != nullptr);
+ //      //return ::DrawState(m_hdc, hBrush,  nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x(), point.y(), size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
+ //      return false;
+ //
+ //   }
+ //
+ //
+ //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, const ::string & lpszText, unsigned int nFlags, bool bPrefixText, double nTextLen, ::draw2d::brush* pBrush)
+ //   {
+ //
+ //      // ASSERT(m_hdc != nullptr);
+ //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x(), point.y(), size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
+ //      return false;
+ //
+ //   }
+ //
+ //
+ //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, DRAWSTATEPROC lpDrawProc, LPARAM lData, unsigned int nFlags, HBRUSH hBrush)
+ //   {
+ //      // ASSERT(m_hdc != nullptr);
+ //      //return ::DrawState(m_hdc, hBrush,
+ //          //               lpDrawProc, lData, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
+ //      return false;
+ //
+ //   }
+ //
+ //
+ //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, DRAWSTATEPROC lpDrawProc, LPARAM lData, unsigned int nFlags, ::draw2d::brush* pBrush)
+ //   {
+ //      // ASSERT(m_hdc != nullptr);
+ //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(),
+ //        //                 lpDrawProc, lData, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
+ //      return false;
+ //
+ //   }
+ //
 
-//   bool graphics::DrawEdge(const ::double_rectangle & rectangleParam,unsigned int nEdge,unsigned int nFlags)
-//   {
-//
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawEdge(m_hdc,(::double_rectangle *)&rectangleParam,nEdge,nFlags) != false;
-//      return false;
-//
-//   }
-//
+ //   bool graphics::DrawEdge(const ::double_rectangle & rectangleParam,unsigned int nEdge,unsigned int nFlags)
+ //   {
+ //
+ //      // ASSERT(m_hdc != nullptr);
+ //      //return ::DrawEdge(m_hdc,(::double_rectangle *)&rectangleParam,nEdge,nFlags) != false;
+ //      return false;
+ //
+ //   }
+ //
 
-//   bool graphics::DrawFrameControl(const ::double_rectangle & rectangleParam,unsigned int nType,unsigned int nState)
-//   {
-//      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawFrameControl(m_hdc,(::double_rectangle *) &rectangleParam,nType,nState) != false;
-//      return false;
-//
-//   }
+ //   bool graphics::DrawFrameControl(const ::double_rectangle & rectangleParam,unsigned int nType,unsigned int nState)
+ //   {
+ //      // ASSERT(m_hdc != nullptr);
+ //      //return ::DrawFrameControl(m_hdc,(::double_rectangle *) &rectangleParam,nType,nState) != false;
+ //      return false;
+ //
+ //   }
 
 
    bool graphics::Chord(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
@@ -2512,7 +2606,7 @@ namespace draw2d_vulkan
 
       //set_smooth_mode(::draw2d::e_smooth_mode_high);
 
-//      return (m_pgraphics->FillEllipse(vk2d_brush(), rectangleParam.left(), rectangleParam.top(), rectangleParam.right() - rectangleParam.left(), rectangleParam.bottom() - rectangleParam.top())) == plusplus::Status::Ok;
+  //      return (m_pgraphics->FillEllipse(vk2d_brush(), rectangleParam.left(), rectangleParam.top(), rectangleParam.right() - rectangleParam.left(), rectangleParam.bottom() - rectangleParam.top())) == plusplus::Status::Ok;
 
       //return true;
 
@@ -3827,13 +3921,13 @@ namespace draw2d_vulkan
    {
 
       /*     if(m_ppath != nullptr)
-              delete m_ppath;
+            delete m_ppath;
 
-           m_ppath = ___new plusplus::GraphicsPath ();
+          m_ppath = ___new plusplus::GraphicsPath ();
       */
       //      return m_ppath != nullptr;
 
-            //return true;
+           //return true;
 
    }
 
@@ -3873,7 +3967,7 @@ namespace draw2d_vulkan
    void graphics::flatten_path()
    {
       //      return m_ppath->Flatten() == plusplus::Status::Ok;
-            //return true;
+           //return true;
 
    }
 
@@ -3945,14 +4039,14 @@ namespace draw2d_vulkan
    //}
 
 
-//   void graphics::StrokePath()
-//   {
-//
-////      return m_pgraphics->DrawPath(vk2d_pen(), m_ppathPaint) == plusplus::Status::Ok;
-//
-//      //return true;
-//
-//   }
+ //   void graphics::StrokePath()
+ //   {
+ //
+ ////      return m_pgraphics->DrawPath(vk2d_pen(), m_ppathPaint) == plusplus::Status::Ok;
+ //
+ //      //return true;
+ //
+ //   }
 
 
    //void graphics::WidenPath()
@@ -4040,9 +4134,9 @@ namespace draw2d_vulkan
       // Create a Metafile object from an existing disk metafile.
       Metafile* pMeta = ___new Metafile(L"SampleMetafile.emf", hdc);
       {
-         // Fill a ::double_rectangle and an ellipse in pMeta.
-         Graphics metaGraphics(pMeta);
-         metaGraphics.FillRectangle(&SolidBrush(Color(255, 0, 0, 0)), 0, 0, 100, 100);
+        // Fill a ::double_rectangle and an ellipse in pMeta.
+        Graphics metaGraphics(pMeta);
+        metaGraphics.FillRectangle(&SolidBrush(Color(255, 0, 0, 0)), 0, 0, 100, 100);
      metaGraphics.FillEllipse(&SolidBrush(Color(255, 255, 0, 0)), 100, 0, 200, 100);
       }
       // Enumerate pMeta to the destination rectangle, passing pMeta as the callback data.
@@ -4083,135 +4177,135 @@ namespace draw2d_vulkan
    // double blend
    // COLOR_DEST = SRC_ALPHA * BLEND_ALPHA * COLOR_SRC  + (1 - SRC_ALPHA * BLEND_ALPHA) * COLOR_DST
 
-// Thank you
-// Jiju George T
-// Web Developer
-// India India
-// Member
+ // Thank you
+ // Jiju George T
+ // Web Developer
+ // India India
+ // Member
 
 
-//   void graphics::alpha_blend(double xDest, double yDest, double nDestWidth, double nDestHeight, ::draw2d::graphics * pgraphicsSrc, double xSrc, double ySrc, double nSrcWidth, double nSrcHeight, double dRate)
-//   {
-//
-////      if (m_pgraphics == nullptr)
-////         return false;
-////
-////      if(m_pimageAlphaBlend->is_set())
-////      {
-////
-////
-////         ::double_rectangle rectangleIntersect(m_pointAlphaBlend, m_pimageAlphaBlend->size());
-////
-////
-////         ::image::image_pointer pimageWork = nullptr;
-////         ::image::image_pointer pimageWork2 = nullptr;
-//////         ::image::image_pointer pimageWork3 = nullptr;
-////         ::image::image_pointer pimageWork4 = nullptr;
-////
-////
-////         ::int_point pointSrc(xSrc, ySrc);
-////         ::int_point ptDest(xDest, yDest);
-////         ::int_size size(nDestWidth, nDestHeight);
-////
-////
-////
-////         ::image::image_pointer pimage;
-////         if(imageWork == nullptr)
-////         {
-////            pimage->create(this);
-////            imageWork = pimage;
-////         }
-////         if(imageWork == nullptr)
-////            return false;
-////         if(!imageWork = create_image(size))
-////            return false;
-////         if(!imageWork.from(::int_point(), pgraphicsSrc, pointSrc, size))
-////            return false;
-////
-////
-////
-////
-////         ::image::image_pointer pimage2;
-////         if(imageWork2 == nullptr)
-////         {
-////            pimage2->create(this);
-////            imageWork2 = pimage2;
-////         }
-////
-////
-////         ::image::image_pointer pimage4;
-////         if(imageWork4 == nullptr)
-////         {
-////            image4.create(this);
-////            imageWork4 = image4;
-////         }
-////         if(imageWork4 == nullptr)
-////            return false;
-////         if(!imageWork4 = create_image(size))
-////            return false;
-////
-////
-////         imageWork4.Fill(255, 0, 0, 0);
-////
-////         imageWork4.from(int_point(maximum(0, m_pointAlphaBlend.x() - xDest), maximum(0, m_pointAlphaBlend.y() - yDest)),
-////                         m_pimageAlphaBlend->get_graphics(), int_point(maximum(0, xDest - m_pointAlphaBlend.x()), maximum(0, yDest - m_pointAlphaBlend.y())), size);
-////
-////         imageWork.channel_multiply(::color::e_channel_opacity, imageWork4);
-////
-////
-////         keep < image > keep(&m_pimageAlphaBlend, nullptr, m_pimageAlphaBlend, true);
-////
-////
-////         return BitBlt(ptDest.x(), ptDest.y(), size.cx(), size.cy(), imageWork.get_graphics(), pointSrc.x(), pointSrc.y());
-////
-////
-////      }
-////
-////
-////      float fA = (float) dRate;
-////
-////      plusplus::ColorMatrix matrix = {
-////         1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-////         0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-////         0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-////         0.0f, 0.0f, 0.0f, fA  , 0.0f,
-////         0.0f, 0.0f, 0.0f, 0.0f, 1.0f
-////      };
-////
-////      plusplus::ImageAttributes attributes;
-////
-////      attributes.SetColorMatrix(&matrix, plusplus::ColorMatrixFlagsDefault, plusplus::ColorAdjustTypeBitmap);
-////
-////      plusplus::rectF dstRect((plusplus::REAL) xDest, (plusplus::REAL) yDest, (plusplus::REAL) nDestWidth, (plusplus::REAL) nDestHeight);
-////
-////      if(pgraphicsSrc == nullptr)
-////         return false;
-////
-////      if(pgraphicsSrc->get_current_bitmap() == nullptr)
-////         return false;
-////
-////      plusplus::Bitmap * pbitmap = nullptr;
-////
-////      try
-////      {
-////
-////         pbitmap = (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data();
-////
-////      }
-////      catch(...)
-////      {
-////      }
-////
-////      if(pbitmap != nullptr)
-////      {
-////
-////         m_pgraphics->DrawImage(pbitmap,dstRect,(plusplus::REAL) xSrc,(plusplus::REAL) ySrc,(plusplus::REAL) nSrcWidth,(plusplus::REAL) nSrcHeight,plusplus::UnitPixel,&attributes);
-////
-////      }
-////
-//      //return true;
-//
-//   }
+ //   void graphics::alpha_blend(double xDest, double yDest, double nDestWidth, double nDestHeight, ::draw2d::graphics * pgraphicsSrc, double xSrc, double ySrc, double nSrcWidth, double nSrcHeight, double dRate)
+ //   {
+ //
+ ////      if (m_pgraphics == nullptr)
+ ////         return false;
+ ////
+ ////      if(m_pimageAlphaBlend->is_set())
+ ////      {
+ ////
+ ////
+ ////         ::double_rectangle rectangleIntersect(m_pointAlphaBlend, m_pimageAlphaBlend->size());
+ ////
+ ////
+ ////         ::image::image_pointer pimageWork = nullptr;
+ ////         ::image::image_pointer pimageWork2 = nullptr;
+ //////         ::image::image_pointer pimageWork3 = nullptr;
+ ////         ::image::image_pointer pimageWork4 = nullptr;
+ ////
+ ////
+ ////         ::int_point pointSrc(xSrc, ySrc);
+ ////         ::int_point ptDest(xDest, yDest);
+ ////         ::int_size size(nDestWidth, nDestHeight);
+ ////
+ ////
+ ////
+ ////         ::image::image_pointer pimage;
+ ////         if(imageWork == nullptr)
+ ////         {
+ ////            pimage->create(this);
+ ////            imageWork = pimage;
+ ////         }
+ ////         if(imageWork == nullptr)
+ ////            return false;
+ ////         if(!imageWork = create_image(size))
+ ////            return false;
+ ////         if(!imageWork.from(::int_point(), pgraphicsSrc, pointSrc, size))
+ ////            return false;
+ ////
+ ////
+ ////
+ ////
+ ////         ::image::image_pointer pimage2;
+ ////         if(imageWork2 == nullptr)
+ ////         {
+ ////            pimage2->create(this);
+ ////            imageWork2 = pimage2;
+ ////         }
+ ////
+ ////
+ ////         ::image::image_pointer pimage4;
+ ////         if(imageWork4 == nullptr)
+ ////         {
+ ////            image4.create(this);
+ ////            imageWork4 = image4;
+ ////         }
+ ////         if(imageWork4 == nullptr)
+ ////            return false;
+ ////         if(!imageWork4 = create_image(size))
+ ////            return false;
+ ////
+ ////
+ ////         imageWork4.Fill(255, 0, 0, 0);
+ ////
+ ////         imageWork4.from(int_point(maximum(0, m_pointAlphaBlend.x() - xDest), maximum(0, m_pointAlphaBlend.y() - yDest)),
+ ////                         m_pimageAlphaBlend->get_graphics(), int_point(maximum(0, xDest - m_pointAlphaBlend.x()), maximum(0, yDest - m_pointAlphaBlend.y())), size);
+ ////
+ ////         imageWork.channel_multiply(::color::e_channel_opacity, imageWork4);
+ ////
+ ////
+ ////         keep < image > keep(&m_pimageAlphaBlend, nullptr, m_pimageAlphaBlend, true);
+ ////
+ ////
+ ////         return BitBlt(ptDest.x(), ptDest.y(), size.cx(), size.cy(), imageWork.get_graphics(), pointSrc.x(), pointSrc.y());
+ ////
+ ////
+ ////      }
+ ////
+ ////
+ ////      float fA = (float) dRate;
+ ////
+ ////      plusplus::ColorMatrix matrix = {
+ ////         1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+ ////         0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+ ////         0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+ ////         0.0f, 0.0f, 0.0f, fA  , 0.0f,
+ ////         0.0f, 0.0f, 0.0f, 0.0f, 1.0f
+ ////      };
+ ////
+ ////      plusplus::ImageAttributes attributes;
+ ////
+ ////      attributes.SetColorMatrix(&matrix, plusplus::ColorMatrixFlagsDefault, plusplus::ColorAdjustTypeBitmap);
+ ////
+ ////      plusplus::rectF dstRect((plusplus::REAL) xDest, (plusplus::REAL) yDest, (plusplus::REAL) nDestWidth, (plusplus::REAL) nDestHeight);
+ ////
+ ////      if(pgraphicsSrc == nullptr)
+ ////         return false;
+ ////
+ ////      if(pgraphicsSrc->get_current_bitmap() == nullptr)
+ ////         return false;
+ ////
+ ////      plusplus::Bitmap * pbitmap = nullptr;
+ ////
+ ////      try
+ ////      {
+ ////
+ ////         pbitmap = (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data();
+ ////
+ ////      }
+ ////      catch(...)
+ ////      {
+ ////      }
+ ////
+ ////      if(pbitmap != nullptr)
+ ////      {
+ ////
+ ////         m_pgraphics->DrawImage(pbitmap,dstRect,(plusplus::REAL) xSrc,(plusplus::REAL) ySrc,(plusplus::REAL) nSrcWidth,(plusplus::REAL) nSrcHeight,plusplus::UnitPixel,&attributes);
+ ////
+ ////      }
+ ////
+ //      //return true;
+ //
+ //   }
 
 
    /*bool graphics::alpha_blend(double xDest, double yDest, double nDestWidth, double nDestHeight,
@@ -4220,83 +4314,83 @@ namespace draw2d_vulkan
 
       throw ::interface_only();
       //if(m_hdc == nullptr)
-        // return false;
+       // return false;
 
 
       if(m_pimageAlphaBlend->is_set())
       {
 
 
-         ::double_rectangle rectangleIntersect(m_pointAlphaBlend, m_pimageAlphaBlend->size());
+        ::double_rectangle rectangleIntersect(m_pointAlphaBlend, m_pimageAlphaBlend->size());
 
 
-         ::image::image_pointer pimageWork = nullptr;
-         ::image::image_pointer pimageWork2 = nullptr;
+        ::image::image_pointer pimageWork = nullptr;
+        ::image::image_pointer pimageWork2 = nullptr;
    //         ::image::image_pointer pimageWork3 = nullptr;
-         ::image::image_pointer pimageWork4 = nullptr;
+        ::image::image_pointer pimageWork4 = nullptr;
 
 
-         ::int_point pointSrc(xSrc, ySrc);
-         ::int_point ptDest(xDest, yDest);
-         ::int_size size(nDestWidth, nDestHeight);
-
-
-
-         ::image::image_pointer pimage;
-         if(imageWork == nullptr)
-         {
-            pimage->create(this);
-            imageWork = pimage;
-         }
-         if(imageWork == nullptr)
-            return false;
-         if(!imageWork = create_image(size))
-            return false;
-         if(!imageWork.from(::int_point(), pgraphicsSrc, pointSrc, size))
-            return false;
+        ::int_point pointSrc(xSrc, ySrc);
+        ::int_point ptDest(xDest, yDest);
+        ::int_size size(nDestWidth, nDestHeight);
 
 
 
-
-         ::image::image_pointer pimage2;
-         if(imageWork2 == nullptr)
-         {
-            pimage2->create(this);
-            imageWork2 = pimage2;
-         }
-
-
-         ::image::image_pointer pimage4;
-         if(imageWork4 == nullptr)
-         {
-            image4.create(this);
-            imageWork4 = image4;
-         }
-         if(imageWork4 == nullptr)
-            return false;
-         if(!imageWork4 = create_image(size))
-            return false;
+        ::image::image_pointer pimage;
+        if(imageWork == nullptr)
+        {
+          pimage->create(this);
+          imageWork = pimage;
+        }
+        if(imageWork == nullptr)
+          return false;
+        if(!imageWork = create_image(size))
+          return false;
+        if(!imageWork.from(::int_point(), pgraphicsSrc, pointSrc, size))
+          return false;
 
 
-         imageWork4.Fill(255, 0, 0, 0);
-
-         imageWork4.from(int_point(maximum(0, m_pointAlphaBlend.x() - xDest), maximum(0, m_pointAlphaBlend.y() - yDest)),
-            m_pimageAlphaBlend->get_graphics(), int_point(maximum(0, xDest - m_pointAlphaBlend.x()), maximum(0, yDest - m_pointAlphaBlend.y())), size);
-
-         imageWork.channel_multiply(::color::e_channel_opacity, imageWork4);
 
 
-         keep < image > keep(&m_pimageAlphaBlend, nullptr, m_pimageAlphaBlend, true);
+        ::image::image_pointer pimage2;
+        if(imageWork2 == nullptr)
+        {
+          pimage2->create(this);
+          imageWork2 = pimage2;
+        }
 
 
-         return psystem->imaging().true_blend(this, ptDest, size, imageWork.get_graphics(), pointSrc);
+        ::image::image_pointer pimage4;
+        if(imageWork4 == nullptr)
+        {
+          image4.create(this);
+          imageWork4 = image4;
+        }
+        if(imageWork4 == nullptr)
+          return false;
+        if(!imageWork4 = create_image(size))
+          return false;
+
+
+        imageWork4.Fill(255, 0, 0, 0);
+
+        imageWork4.from(int_point(maximum(0, m_pointAlphaBlend.x() - xDest), maximum(0, m_pointAlphaBlend.y() - yDest)),
+          m_pimageAlphaBlend->get_graphics(), int_point(maximum(0, xDest - m_pointAlphaBlend.x()), maximum(0, yDest - m_pointAlphaBlend.y())), size);
+
+        imageWork.channel_multiply(::color::e_channel_opacity, imageWork4);
+
+
+        keep < image > keep(&m_pimageAlphaBlend, nullptr, m_pimageAlphaBlend, true);
+
+
+        return psystem->imaging().true_blend(this, ptDest, size, imageWork.get_graphics(), pointSrc);
 
 
       }
 
       return ::AlphaBlend(m_hdc, xDest, yDest,
-         nDestWidth, nDestHeight, VK2D_HDC(pgraphicsSrc), xSrc, ySrc, nSrcWidth,
-         nSrcHeight, blend) != false;
+        nDestWidth, nDestHeight, VK2D_HDC(pgraphicsSrc), xSrc, ySrc, nSrcWidth,
+        nSrcHeight, blend) != false;
    }*/
 
 
@@ -4505,21 +4599,21 @@ namespace draw2d_vulkan
    ::draw2d::brush* graphics::GetHalftoneBrush()
    {
       /*      ::aura::LockGlobals(CRIT_HALFTONEBRUSH);
-            if (gen_HalftoneBrush == nullptr)
-            {
-               unsigned short grayPattern[8];
-               for (double i = 0; i < 8; i++)
-                  grayPattern[i] = (unsigned short)(0x5555 << (i & 1));
-               HBITMAP grayBitmap = CreateBitmap(8, 8, 1, 1, grayPattern);
-               if (grayBitmap != nullptr)
-               {
-                  gen_HalftoneBrush = ::CreatePatternBrush(grayBitmap);
-                  ::DeleteObject(grayBitmap);
-               }
-            }
-            if (!gen_WingdixTerm)
-               gen_WingdixTerm = (char)!atexit(&__win_gdi_x_term);
-            ::aura::UnlockGlobals(CRIT_HALFTONEBRUSH);
+           if (gen_HalftoneBrush == nullptr)
+           {
+             unsigned short grayPattern[8];
+             for (double i = 0; i < 8; i++)
+               grayPattern[i] = (unsigned short)(0x5555 << (i & 1));
+             HBITMAP grayBitmap = CreateBitmap(8, 8, 1, 1, grayPattern);
+             if (grayBitmap != nullptr)
+             {
+               gen_HalftoneBrush = ::CreatePatternBrush(grayBitmap);
+               ::DeleteObject(grayBitmap);
+             }
+           }
+           if (!gen_WingdixTerm)
+             gen_WingdixTerm = (char)!atexit(&__win_gdi_x_term);
+           ::aura::UnlockGlobals(CRIT_HALFTONEBRUSH);
 
       //      return ::draw2d_vulkan::brush::from_handle(papp, gen_HalftoneBrush);*/
       return nullptr;
@@ -4617,56 +4711,56 @@ namespace draw2d_vulkan
       copy(rect32, rectangle);
       FillSolidRect(rect32, clr);
    }
-*/
+ */
 
-/*
+ /*
 
-void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t clr)
-{
+ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t clr)
+ {
    ::SetBkColor(m_hdc, clr);
    ::double_rectangle rectangle(x, y, x + cx, y + cy);
    ::ExtTextOut(m_hdc, 0, 0, ETO_OPAQUE, &rectangle, nullptr, 0, nullptr);
-}
+ }
 
-*/
-
-
-//void graphics::draw_inset_3d_rectangle(const ::double_rectangle & rectangleParam,
-//                          const ::color::color & clrTopLeft, const ::color::color & clrBottomRight,
-//   const ::e_border & eborder)
-//{
-
-//   //draw3d_rectangle(rectangleParam.left(), rectangleParam.top(), rectangleParam.right() - rectangleParam.left(),
-//     //         rectangleParam.bottom() - rectangleParam.top(), clrTopLeft, clrBottomRight);
-
-//}
-
-//
-//void graphics::draw_inset_rectangle(const ::double_rectangle & rectangle, const ::color::color & color, const ::e_border & eborder)
-//{
+ */
 
 
-//}
+ //void graphics::draw_inset_3d_rectangle(const ::double_rectangle & rectangleParam,
+ //                          const ::color::color & clrTopLeft, const ::color::color & clrBottomRight,
+ //   const ::e_border & eborder)
+ //{
+
+ //   //draw3d_rectangle(rectangleParam.left(), rectangleParam.top(), rectangleParam.right() - rectangleParam.left(),
+ //     //         rectangleParam.bottom() - rectangleParam.top(), clrTopLeft, clrBottomRight);
+
+ //}
+
+ //
+ //void graphics::draw_inset_rectangle(const ::double_rectangle & rectangle, const ::color::color & color, const ::e_border & eborder)
+ //{
 
 
-//void graphics::Draw3dRect(double x, double y, double cx, double cy,
-//                          color32_t clrTopLeft, color32_t clrBottomRight)
-//{
-//   fill_solid_rect_coord(x, y, cx - 1, 1, clrTopLeft);
-//   fill_solid_rect_coord(x, y, 1, cy - 1, clrTopLeft);
-//   fill_solid_rect_coord(x + cx - 1, y, 1, cy, clrBottomRight);
-//   fill_solid_rect_coord(x, y + cy - 1, cx, 1, clrBottomRight);
-//}
+ //}
 
 
+ //void graphics::Draw3dRect(double x, double y, double cx, double cy,
+ //                          color32_t clrTopLeft, color32_t clrBottomRight)
+ //{
+ //   fill_solid_rect_coord(x, y, cx - 1, 1, clrTopLeft);
+ //   fill_solid_rect_coord(x, y, 1, cy - 1, clrTopLeft);
+ //   fill_solid_rect_coord(x + cx - 1, y, 1, cy, clrBottomRight);
+ //   fill_solid_rect_coord(x, y + cy - 1, cx, 1, clrBottomRight);
+ //}
 
 
 
-//::draw2d::graphics * ::draw2d_vulkan::graphics::from_handle(HDC hDC)
-//{
-//hdc_map* pMap = ::windows_definition::MapHDC(true); //create map if not exist
-//ASSERT(pMap != nullptr);
-//      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)pMap->from_handle(hDC);
+
+
+ //::draw2d::graphics * ::draw2d_vulkan::graphics::from_handle(HDC hDC)
+ //{
+ //hdc_map* pMap = ::windows_definition::MapHDC(true); //create map if not exist
+ //ASSERT(pMap != nullptr);
+ //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)pMap->from_handle(hDC);
    //    ASSERT(pgraphics == nullptr || (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc == hDC);
    //  return pgraphics;
    // return nullptr;
@@ -4971,13 +5065,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    ::draw2d::object* graphics::SelectStockObject(int nIndex)
    {
       /*      HGDIOBJ hObject = ::GetStockObject(nIndex);
-            HGDIOBJ hOldObj = nullptr;
-            ASSERT(hObject != nullptr);
-            if(m_hdc != nullptr && m_hdc != m_hdc)
-               hOldObj = ::SelectObject(m_hdc, hObject);
-            if(m_hdc != nullptr)
-               hOldObj = ::SelectObject(m_hdc, hObject);
-            return ::draw2d_vulkan::object::from_handle(get_app(), hOldObj);*/
+           HGDIOBJ hOldObj = nullptr;
+           ASSERT(hObject != nullptr);
+           if(m_hdc != nullptr && m_hdc != m_hdc)
+             hOldObj = ::SelectObject(m_hdc, hObject);
+           if(m_hdc != nullptr)
+             hOldObj = ::SelectObject(m_hdc, hObject);
+           return ::draw2d_vulkan::object::from_handle(get_app(), hOldObj);*/
 
       return nullptr;
 
@@ -5003,13 +5097,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    ::draw2d::brush* graphics::SelectObject(::draw2d::brush* pBrush)
    {
       /*      HGDIOBJ hOldObj = nullptr;
-            if(pBrush == nullptr)
-               return nullptr;
-            if(m_hdc != nullptr && m_hdc != m_hdc)
-               hOldObj = ::SelectObject(m_hdc, pBrush->get_os_data());
-            if(m_hdc != nullptr)
-               hOldObj = ::SelectObject(m_hdc, pBrush->get_os_data());
-            return dynamic_cast < ::draw2d::brush * > (::draw2d_vulkan::object::from_handle(get_app(), hOldObj));*/
+           if(pBrush == nullptr)
+             return nullptr;
+           if(m_hdc != nullptr && m_hdc != m_hdc)
+             hOldObj = ::SelectObject(m_hdc, pBrush->get_os_data());
+           if(m_hdc != nullptr)
+             hOldObj = ::SelectObject(m_hdc, pBrush->get_os_data());
+           return dynamic_cast < ::draw2d::brush * > (::draw2d_vulkan::object::from_handle(get_app(), hOldObj));*/
       m_pbrush = pBrush;
 
       return m_pbrush;
@@ -5020,24 +5114,24 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    ::write_text::font* graphics::SelectObject(::write_text::font* pfont)
    {
       /*      HGDIOBJ hOldObj = nullptr;
-            if(pFont == nullptr)
-               return nullptr;
-            if(m_hdc != nullptr && m_hdc != m_hdc)
-               hOldObj = ::SelectObject(m_hdc, pFont->get_os_data());
-            if(m_hdc != nullptr)
-               hOldObj = ::SelectObject(m_hdc, pFont->get_os_data());
-            return dynamic_cast < ::write_text::font * > (::draw2d_vulkan::object::from_handle(get_app(), hOldObj));*/
+           if(pFont == nullptr)
+             return nullptr;
+           if(m_hdc != nullptr && m_hdc != m_hdc)
+             hOldObj = ::SelectObject(m_hdc, pFont->get_os_data());
+           if(m_hdc != nullptr)
+             hOldObj = ::SelectObject(m_hdc, pFont->get_os_data());
+           return dynamic_cast < ::write_text::font * > (::draw2d_vulkan::object::from_handle(get_app(), hOldObj));*/
 
-            /*ASSERT(pFont != nullptr);
+           /*ASSERT(pFont != nullptr);
 
-            if(pFont == nullptr)
-               return nullptr;
+           if(pFont == nullptr)
+             return nullptr;
 
-            m_fontxyz = *pFont;
-            return &m_fontxyz;*/
+           m_fontxyz = *pFont;
+           return &m_fontxyz;*/
 
-            //if(!set(pfont))
-              // return nullptr;
+           //if(!set(pfont))
+            // return nullptr;
 
       set(pfont);
 
@@ -5240,7 +5334,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //vkMatrixMode(VK_MODELVIEW);
       //vkLoadIdentity();
 
-///      VKdouble m[16];
+  ///      VKdouble m[16];
 
       //vkGetDoublev(VK_MODELVIEW_MATRIX, m);
 
@@ -5410,11 +5504,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       return 0;
 
       /*      double nRetVal = ERROR;
-            if(m_hdc != nullptr && m_hdc != m_hdc)
-               nRetVal = ::SelectClipRgn(m_hdc, pRgn == nullptr ? nullptr : (HRGN) pRgn->get_os_data());
-            if(m_hdc != nullptr)
-               nRetVal = ::SelectClipRgn(m_hdc, pRgn == nullptr ? nullptr : (HRGN) pRgn->get_os_data());
-            return nRetVal;*/
+           if(m_hdc != nullptr && m_hdc != m_hdc)
+             nRetVal = ::SelectClipRgn(m_hdc, pRgn == nullptr ? nullptr : (HRGN) pRgn->get_os_data());
+           if(m_hdc != nullptr)
+             nRetVal = ::SelectClipRgn(m_hdc, pRgn == nullptr ? nullptr : (HRGN) pRgn->get_os_data());
+           return nRetVal;*/
    }
 
 
@@ -5590,19 +5684,19 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       ASSERT(hInst != nullptr);
 
       /*      unsigned int dwGetLayout = LAYOUT_LTR;
-            __GDIGETLAYOUTPROC pfn;
-            pfn = (__GDIGETLAYOUTPROC) GetProcAddress(hInst, "GetLayout");
-            // if they API is available, just call it. If it is not
-            // available, indicate an error.
-            if (pfn != nullptr)
-               dwGetLayout = (*pfn)(m_hdc);
-            else
-            {
-               dwGetLayout = GDI_ERROR;
-               set_last_error(ERROR_CALL_NOT_IMPLEMENTED);
-            }*/
+           __GDIGETLAYOUTPROC pfn;
+           pfn = (__GDIGETLAYOUTPROC) GetProcAddress(hInst, "GetLayout");
+           // if they API is available, just call it. If it is not
+           // available, indicate an error.
+           if (pfn != nullptr)
+             dwGetLayout = (*pfn)(m_hdc);
+           else
+           {
+             dwGetLayout = GDI_ERROR;
+             set_last_error(ERROR_CALL_NOT_IMPLEMENTED);
+           }*/
 
-            //return dwGetLayout;
+           //return dwGetLayout;
 
       return 0;
 
@@ -6179,13 +6273,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-  /* double_size graphics::get_text_extent(const ::scoped_string & str)
+   /* double_size graphics::get_text_extent(const ::scoped_string & str)
    {
 
       ::double_size size;
 
       if(!get_text_extent(size, str, (double) str.length(), 0))
-         return ::int_size(0, 0);
+        return ::int_size(0, 0);
 
       return ::int_size((long) size.cx(), (long) size.cy());
 
@@ -6219,140 +6313,140 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //}
 
-//
-//   bool graphics::get_text_extent(double_size & size, const ::string & lpszString, character_count nCount, character_count iIndex)
-//   {
-//
-//      //// ASSERT(m_hdc != nullptr);
-//
-//      set(m_pfont);
-//
-//      ::pointer<font>pfont = m_pfont;
-//
-//      ::int_size s;
-//
-//      wstring wstr = utf8_to_unicode(string(&lpszString[iIndex], nCount));
-//
-//      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
-////         return false;
-//
-//      //// FreeType
-//      //FT_Library ft;
-//      //// All functions return a value different than 0 whenever an error occurred
-//      //if (FT_Init_FreeType(&ft))
-//      //   std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-//
-//      //// Load font as face
-//      //FT_Face face;
-//      //if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
-//      //   std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-//
-//      //// Set int_size to load vkyphs as
-//      //FT_Set_Pixel_Sizes(face, 0, 48);
-//
-//      //// Disable unsigned char-alignment restriction
-//      //vkPixelStorei(VK_UNPACK_ALIGNMENT, 1);
-//
-//      //// Load first 128 characters of ASCII set
-//      //for (VKubyte c = 0; c < 128; c++)
-//      //{
-//      //   // Load character vkyph 
-//      //   if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-//      //   {
-//      //      std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-//      //      continue;
-//      //   }
-//      //   // Generate texture
-//      //   VKuint texture;
-//      //   vkGenTextures(1, &texture);
-//      //   vkBindTexture(VK_TEXTURE_2D, texture);
-//      //   vkTexImage2D(
-//      //      VK_TEXTURE_2D,
-//      //      0,
-//      //      VK_RED,
-//      //      face->vkyph->bitmap.width,
-//      //      face->vkyph->bitmap.rows,
-//      //      0,
-//      //      VK_RED,
-//      //      VK_UNSIGNED_BYTE,
-//      //      face->vkyph->bitmap.buffer
-//      //   );
-//      //   // Set texture options
-//      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_WRAP_S, VK_CLAMP_TO_EDGE);
-//      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_WRAP_T, VK_CLAMP_TO_EDGE);
-//      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MIN_FILTER, VK_LINEAR);
-//      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MAG_FILTER, VK_LINEAR);
-//      //   // Now store character for later use
-//      //   Character character = {
-//      //       texture,
-//      //       vkm::ivec2(face->vkyph->bitmap.width, face->vkyph->bitmap.rows),
-//      //       vkm::ivec2(face->vkyph->bitmap_left, face->vkyph->bitmap_top),
-//      //       face->vkyph->advance.x()
-//      //   };
-//      //   Characters.insert(std::pair<VKchar, Character>(c, character));
-//      //}
-//      //vkBindTexture(VK_TEXTURE_2D, 0);
-//      //// Destroy FreeType once we're finished
-//      //FT_Done_Face(face);
-//      //FT_Done_FreeType(ft);
-//
-//      size.cx() = s.cx();
-//
-//      size.cy() = s.cy();
-//
-//      return true;
-//
-//   }
-//
-//
-//   bool graphics::get_text_extent(double_size & size, const ::string & lpszString, character_count nCount)
-//   {
-//
-//      //// ASSERT(m_hdc != nullptr);
-//
-//      set(m_pfont);
-//
-//      ::pointer<font>pfont = m_pfont;
-//
-//      ::int_size s;
-//
-//      wstring wstr = utf8_to_unicode(lpszString, nCount);
-//
-//      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
-//        // return false;
-//
-//      size.cx() = s.cx();
-//
-//      size.cy() = s.cy();
-//
-//      return true;
-//
-//   }
-//
-//
-//   bool graphics::get_text_extent(double_size & size, const ::string & str)
-//   {
-//
-//      //// ASSERT(m_hdc != nullptr);
-//
-//      set(m_pfont);
-//
-//      ::pointer<font>pfont = m_pfont;
-//
-//      ::int_size s;
-//
-//      wstring wstr = utf8_to_unicode(str);
-//
-//      //if (::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
-//        // return false;
-//
-//      size.cx() = s.cx();
-//
-//      size.cy() = s.cy();
-//
-//      return true;
-//
-//   }
+ //
+ //   bool graphics::get_text_extent(double_size & size, const ::string & lpszString, character_count nCount, character_count iIndex)
+ //   {
+ //
+ //      //// ASSERT(m_hdc != nullptr);
+ //
+ //      set(m_pfont);
+ //
+ //      ::pointer<font>pfont = m_pfont;
+ //
+ //      ::int_size s;
+ //
+ //      wstring wstr = utf8_to_unicode(string(&lpszString[iIndex], nCount));
+ //
+ //      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
+ ////         return false;
+ //
+ //      //// FreeType
+ //      //FT_Library ft;
+ //      //// All functions return a value different than 0 whenever an error occurred
+ //      //if (FT_Init_FreeType(&ft))
+ //      //   std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+ //
+ //      //// Load font as face
+ //      //FT_Face face;
+ //      //if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
+ //      //   std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+ //
+ //      //// Set int_size to load vkyphs as
+ //      //FT_Set_Pixel_Sizes(face, 0, 48);
+ //
+ //      //// Disable unsigned char-alignment restriction
+ //      //vkPixelStorei(VK_UNPACK_ALIGNMENT, 1);
+ //
+ //      //// Load first 128 characters of ASCII set
+ //      //for (VKubyte c = 0; c < 128; c++)
+ //      //{
+ //      //   // Load character vkyph 
+ //      //   if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+ //      //   {
+ //      //      std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+ //      //      continue;
+ //      //   }
+ //      //   // Generate texture
+ //      //   VKuint texture;
+ //      //   vkGenTextures(1, &texture);
+ //      //   vkBindTexture(VK_TEXTURE_2D, texture);
+ //      //   vkTexImage2D(
+ //      //      VK_TEXTURE_2D,
+ //      //      0,
+ //      //      VK_RED,
+ //      //      face->vkyph->bitmap.width,
+ //      //      face->vkyph->bitmap.rows,
+ //      //      0,
+ //      //      VK_RED,
+ //      //      VK_UNSIGNED_BYTE,
+ //      //      face->vkyph->bitmap.buffer
+ //      //   );
+ //      //   // Set texture options
+ //      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_WRAP_S, VK_CLAMP_TO_EDGE);
+ //      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_WRAP_T, VK_CLAMP_TO_EDGE);
+ //      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MIN_FILTER, VK_LINEAR);
+ //      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MAG_FILTER, VK_LINEAR);
+ //      //   // Now store character for later use
+ //      //   Character character = {
+ //      //       texture,
+ //      //       vkm::ivec2(face->vkyph->bitmap.width, face->vkyph->bitmap.rows),
+ //      //       vkm::ivec2(face->vkyph->bitmap_left, face->vkyph->bitmap_top),
+ //      //       face->vkyph->advance.x()
+ //      //   };
+ //      //   Characters.insert(std::pair<VKchar, Character>(c, character));
+ //      //}
+ //      //vkBindTexture(VK_TEXTURE_2D, 0);
+ //      //// Destroy FreeType once we're finished
+ //      //FT_Done_Face(face);
+ //      //FT_Done_FreeType(ft);
+ //
+ //      size.cx() = s.cx();
+ //
+ //      size.cy() = s.cy();
+ //
+ //      return true;
+ //
+ //   }
+ //
+ //
+ //   bool graphics::get_text_extent(double_size & size, const ::string & lpszString, character_count nCount)
+ //   {
+ //
+ //      //// ASSERT(m_hdc != nullptr);
+ //
+ //      set(m_pfont);
+ //
+ //      ::pointer<font>pfont = m_pfont;
+ //
+ //      ::int_size s;
+ //
+ //      wstring wstr = utf8_to_unicode(lpszString, nCount);
+ //
+ //      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
+ //        // return false;
+ //
+ //      size.cx() = s.cx();
+ //
+ //      size.cy() = s.cy();
+ //
+ //      return true;
+ //
+ //   }
+ //
+ //
+ //   bool graphics::get_text_extent(double_size & size, const ::string & str)
+ //   {
+ //
+ //      //// ASSERT(m_hdc != nullptr);
+ //
+ //      set(m_pfont);
+ //
+ //      ::pointer<font>pfont = m_pfont;
+ //
+ //      ::int_size s;
+ //
+ //      wstring wstr = utf8_to_unicode(str);
+ //
+ //      //if (::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
+ //        // return false;
+ //
+ //      size.cx() = s.cx();
+ //
+ //      size.cy() = s.cy();
+ //
+ //      return true;
+ //
+ //   }
 
 
    //void graphics::fill_rectangle(const double_rectangle& rectangle, color32_t color32)
@@ -6423,31 +6517,127 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::line_to(double x, double y)
    {
 
-      //if (::is_set(m_ppen))
-      //{
+      //auto distance = ::sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
 
-      //   vkLineWidth((float)(m_ppen->m_dWidth));
+      //auto sinangle = (y1 - y0) / distance;
+      //auto cosangle = (x1 - x0) / distance;
 
-      //}
+      //double_point points[4];
 
-      //vkBegin(VK_LINES);
+      //points[0].x() = x0 - cosangle * m_ppen->m_dWidth / 2.0;
+      //points[0].y() = y0 - sinangle * m_ppen->m_dWidth / 2.0;
+      //points[1].x() = x0 + cosangle * m_ppen->m_dWidth / 2.0;
+      //points[1].y() = y0 + sinangle * m_ppen->m_dWidth / 2.0;
+      //points[2].x() = x1 + cosangle * m_ppen->m_dWidth / 2.0;
+      //points[2].y() = y1 + sinangle * m_ppen->m_dWidth / 2.0;
+      //points[3].x() = x1 - cosangle * m_ppen->m_dWidth / 2.0;
+      //points[3].y() = y1 - sinangle * m_ppen->m_dWidth / 2.0;
 
-      //if (::is_set(m_ppen))
-      //{
+      //_fill_quad(points, m_ppen->m_color);
 
-      //   ::vulkan::color(m_ppen->m_color);
+      {
 
-      //}
+         if (!m_pshaderLine)
+         {
 
-      //vkVertex2f((float)(m_point.x()), (float)(m_point.y()));
-      //vkVertex2f((float)(x), (float)(y));
+            auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
 
-      //vkEnd();
+            pshadervertexinput->m_bindings.add(
+               {
+                  .binding = 0,
+                  .stride = sizeof(RectangleVertex),
+                  .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+               });
 
-      m_point.x() = x;
-      m_point.y() = y;
+            pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
+            pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-      //return true;
+            auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
+
+            m_pshaderLine = pshaderRectangle;
+            //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
+            m_pshaderLine->m_bDepthTestButNoDepthWrite = true;
+            //m_pshaderRectangle->m_iColorAttachmentCount = 2;
+            m_pshaderLine->m_bEnableBlend = true;
+            //m_pshaderRectangle->m_bAccumulationEnable = true;
+
+            m_pshaderLine->m_vktopology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+            m_pshaderLine->m_dynamicstateaEnable.add(VK_DYNAMIC_STATE_LINE_WIDTH);
+
+            ::cast < ::gpu_vulkan::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+            pshaderRectangle->initialize_shader_with_block(
+               m_pgpucontext->m_pgpurenderer,
+               as_memory_block(g_uaRectangleVertexShader),
+               //as_memory_block(g_uaAccumulationFragmentShader),
+               as_memory_block(g_uaRectangleFragmentShader),
+               { },
+               m_psetdescriptorlayoutRectangle,
+               pshadervertexinput);
+
+         }
+
+         //pshader = m_pshaderBlendRectangle;
+
+      }
+
+
+      auto x0 = m_point.x();
+      auto y0 = m_point.y();
+      auto x1 = x;
+      auto y1 = y;
+
+      auto color = m_ppen->m_color;
+
+      double_point points[2];
+
+      points[0] = m_point;
+      points[1].x() = x;
+      points[1].y() = y;
+
+
+      m_m1.transform(points[0]);
+      m_m1.transform(points[1]);
+
+      auto pmodel = __create_new< ::gpu_vulkan::renderer::model>();
+
+      {
+
+         ::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontext;
+
+         pmodel->m_vertexBuffer = createLineVertexBuffer(pgpucontext->logicalDevice(),
+            pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+            &pmodel->m_vertexMemory, points[0], points[1],
+            color, m_pgpucontext->m_size);
+
+         pmodel->m_indexBuffer = nullptr;
+         pmodel->m_indexMemory = nullptr;
+
+      }
+
+      m_pshaderLine->bind();
+
+      ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontext;
+
+      ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontext->m_pgpurenderer;
+
+      auto commandBuffer = prenderer->getCurrentCommandBuffer();
+      vkCmdSetLineWidth(commandBuffer, m_ppen->m_dWidth);
+      VkDeviceSize offset = 0;
+      //vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
+      vkCmdDraw(commandBuffer, 2, 1, 0, 0); // draw 2 vertices as 1 line
+
+      m_pshaderLine->unbind();
+
+      auto logicalDevice = pcontextVulkan->logicalDevice();
+      prenderer->m_pvkcrenderpass->m_procedureaOnAfterSubmit.add([this, logicalDevice, pmodel]()
+         {
+
+            vkDestroyBuffer(logicalDevice, pmodel->m_vertexBuffer, nullptr);
+            vkFreeMemory(logicalDevice, pmodel->m_vertexMemory, nullptr);
+
+         });
+
 
    }
 
@@ -6510,9 +6700,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::set(::draw2d::pen* ppen)
    {
 
+      m_ppen = ppen;
+
       //vkLineWidth(ppen->m_dWidth);
 
-      ::vulkan::color(ppen->m_color);
+      //::vulkan::color(ppen->m_color);
 
       //return ::success;
 
@@ -6727,7 +6919,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       /*HDC graphics::get_handle() const
       {
 
-         return m_hdc;
+        return m_hdc;
 
       }
 
@@ -6735,14 +6927,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       HDC graphics::m_hdc const
       {
 
-         return get_handle();
+        return get_handle();
 
       }
 
 
       HDC graphics::m_hdc const
       {
-         return get_handle();
+        return get_handle();
       }
    */
 
@@ -6933,7 +7125,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //      m_pgraphics->Flush();
 
-            //return true;
+           //return true;
 
    }
 
@@ -7066,7 +7258,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //   return false;
       //}
 
-//      return true;
+  //      return true;
       //return false;
 
    }
@@ -7238,7 +7430,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          //VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
 
-         
+
          ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontext->m_pgpurenderer;
 
          prenderer->on_end_render(m_pframe);
@@ -7340,9 +7532,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          //m_pgpucontext->swap_buffers();
 
-      //}
-      //else
-      //{
+       //}
+       //else
+       //{
 
          read_to_cpu_buffer();
 
@@ -7428,14 +7620,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       };
 
       std::vector<Vertex> vertices = {
-          {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}}, // Bottom-left
-          {{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}}, // Bottom-right
-          {{ 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}, // Top-right
-          {{-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}}, // Top-left
+         {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}}, // Bottom-left
+         {{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}}, // Bottom-right
+         {{ 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}, // Top-right
+         {{-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}}, // Top-left
       };
 
       std::vector<uint16_t> indices = {
-          0, 1, 2, 2, 3, 0 // Two triangles
+         0, 1, 2, 2, 3, 0 // Two triangles
       };
 
    }

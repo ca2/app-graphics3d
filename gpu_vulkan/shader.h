@@ -24,6 +24,10 @@ namespace gpu_vulkan
       bool m_bEnableBlend = false;
       bool m_bAccumulationEnable = false;
       int m_iColorAttachmentCount = 1;
+      VkPrimitiveTopology m_vktopology;
+
+      ::comparable_array<VkDynamicState> m_dynamicstateaEnable;
+
       shader();
       ~shader();
 

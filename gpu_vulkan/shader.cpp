@@ -18,7 +18,7 @@ namespace gpu_vulkan
    shader::shader()
    {
 
-
+      m_vktopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
    }
 
@@ -85,7 +85,6 @@ namespace gpu_vulkan
 
 
       }
-
 
       //pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
@@ -251,6 +250,9 @@ namespace gpu_vulkan
 
       }
 
+      pipelineConfig.inputAssemblyInfo.topology = m_vktopology;
+      pipelineConfig.dynamicStateEnables.append_unique(m_dynamicstateaEnable);
+      pipelineConfig.dynamicStateInfo.dynamicStateCount = pipelineConfig.dynamicStateEnables.size();
       auto prenderpass = prenderer->m_pvkcrenderpass;
       pipelineConfig.renderPass = prenderpass->m_vkrenderpass;
       pipelineConfig.pipelineLayout = m_vkpipelinelayout;

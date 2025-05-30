@@ -59,6 +59,8 @@ namespace draw2d_vulkan
       ::pointer < ::gpu_vulkan::shader >                       m_pshaderBlendRectangle;
       ::pointer < ::gpu_vulkan::shader >                       m_pshaderSourceRectangle;
 
+      ::pointer < ::gpu_vulkan::shader >                       m_pshaderLine;
+
 
       graphics();
       ~graphics() override;

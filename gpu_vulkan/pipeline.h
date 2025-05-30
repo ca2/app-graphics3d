@@ -11,12 +11,6 @@ namespace gpu_vulkan
    struct PipelineConfigInfo
    {
 
-
-      PipelineConfigInfo() = default;
-      PipelineConfigInfo(const PipelineConfigInfo &) = delete;
-      PipelineConfigInfo & operator=(const PipelineConfigInfo &) = delete;
-
-
       ::array<VkVertexInputBindingDescription> bindingDescriptions{};
       ::array<VkVertexInputAttributeDescription> attributeDescriptions{};
       VkPipelineViewportStateCreateInfo viewportInfo;
@@ -26,7 +20,7 @@ namespace gpu_vulkan
       ::array < VkPipelineColorBlendAttachmentState > colorBlendAttachments;
       VkPipelineColorBlendStateCreateInfo colorBlendInfo;
       VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
-      ::array<VkDynamicState> dynamicStateEnables;
+      ::comparable_array<VkDynamicState> dynamicStateEnables;
       VkPipelineDynamicStateCreateInfo dynamicStateInfo;
       VkPipelineLayout pipelineLayout = nullptr;
       VkRenderPass renderPass = nullptr;
