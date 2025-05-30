@@ -17,6 +17,8 @@ namespace gpu_opengl
 
 
       GLuint m_fboID;
+      GLuint m_texID;
+      ::int_size m_sizeTex;
 
       ::int_size                    m_sizeHost;
       //bool m_bMesa;

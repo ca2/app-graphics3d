@@ -741,6 +741,21 @@ namespace gpu_opengl
                context_guard guard(this);
 
                glGenFramebuffers(1, &m_fboID);
+               glBindFramebuffer(GL_FRAMEBUFFER, m_fboID);
+
+               glGenTextures(1, &m_texID);
+               glBindTexture(GL_TEXTURE_2D, m_texID);
+               glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, r.width(), r.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+               glBindTexture(GL_TEXTURE_2D, 0);
+
+               // attach it to currently bound framebuffer object
+               glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texID, 0);
+               if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+                  warning() << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!";
+               glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
             });
       }

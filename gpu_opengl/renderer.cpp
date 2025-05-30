@@ -309,13 +309,13 @@ namespace gpu_opengl
       //glDepthMask(GL_FALSE);
       //glEnable(GL_BLEND);
       //glDisable(GL_SCISSOR_TEST);
+      glFlush();
 
       GLint drawFboId = 0, readFboId = 0;
 
       glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
       glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
 
-      glFlush();
       int iGlError1 = glGetError();
 
       int iGlError2 = -1;
@@ -725,11 +725,15 @@ void main() {
 
                glActiveTexture(GL_TEXTURE0);
 
+               int iGlError1 = glGetError();
+
                ::cast < context > pcontext = prenderer->m_pgpucontext;
                
                GLuint fboID = pcontext->m_fboID;
 
                glBindTexture(GL_TEXTURE_2D, fboID);
+
+               int iGlError2 = glGetError();
 
                m_pshaderBlend->_set_int("uTexture", 0);
 
@@ -742,7 +746,11 @@ void main() {
 
                glBindVertexArray(m_VAOFullScreenQuad);
 
+               int iGlError00 = glGetError();
+
                glDrawArrays(GL_TRIANGLES, 0, 6); // assuming 2 triangles (quad)
+
+               int iGlError01 = glGetError();
 
                glBindVertexArray(0);
 

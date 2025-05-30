@@ -6049,15 +6049,17 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             //m_pgpucontext->m_prenderer->on_end_draw();
 
-            ::double_rectangle r{ 0.0, 0.0, 1920.0, 1080.0 };
+            //::double_rectangle r{ 0.0, 0.0, 1920.0, 1080.0 };
 
-            fill_solid_rectangle(r, argb(255, 100, 200, 240));
+            //fill_solid_rectangle(r, argb(255, 100, 200, 240));
 
-            ::double_rectangle r2{ 100.0, 100.0, 1920.0, 1980.0 };
+            //::double_rectangle r2{ 100.0, 100.0, 1920.0, 1980.0 };
 
-            set_alpha_mode(::draw2d::e_alpha_mode_blend);
+            //set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
-            fill_solid_rectangle(r2, argb(155, 120, 40, 100));
+            //fill_solid_rectangle(r2, argb(155, 120, 40, 100));
+
+            //m_pgpucontext->clear(::argb(100, 80, 120, 160));
 
             //vkvg_flush(m_pdc);
 

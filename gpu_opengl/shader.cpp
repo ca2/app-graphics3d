@@ -480,6 +480,12 @@ namespace gpu_opengl
          return;
       }
       glUniform1i(location, i);
+      int iGlErrorSetInt = glGetError();
+      if (iGlErrorSetInt != 0)
+      {
+         warning() << "Uniform " << name << " not set!";
+
+      }
    }
    void shader::_set_float(const char* name, float value) const
    {
