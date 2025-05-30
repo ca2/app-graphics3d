@@ -767,7 +767,7 @@ namespace gpu_vulkan
    }
 
 
-   void device::initialize_gpu_device(::gpu::approach* pgpuapproachParam, ::windowing::window * pwindow, bool bAddSwapChainSupport)
+   void device::initialize_gpu_device(::gpu::approach* pgpuapproachParam, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement, bool bAddSwapChainSupport)
    {
 
 

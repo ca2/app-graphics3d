@@ -18,6 +18,10 @@ namespace gpu_opengl
    {
    public:
 
+      GLuint m_VAOFullScreenQuad;
+      GLuint m_VBOFullScreenQuad;
+      ::pointer < ::gpu_opengl::shader > m_pshaderBlend; 
+
       //memory m_memory;
       //pixmap m_pixmap;
       renderer();
@@ -45,6 +49,8 @@ namespace gpu_opengl
       virtual void _sample();
 
       virtual void _swap();
+
+      virtual void _on_graphics_end_draw(::gpu_opengl::renderer* prendererSrc);
 
       //virtual void on_layout(int cx, int cy);
 

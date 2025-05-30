@@ -3,6 +3,7 @@
 #include "approach.h"
 #include "device.h"
 #include "cpu_buffer.h"
+#include "renderer.h"
 #include "app-cube/cube/gpu/approach.h"
 #include "app-cube/cube/gpu/types.h"
 #include "aura/graphics/image/image.h"
@@ -26,7 +27,7 @@ namespace gpu_opengl
 
    context_win32::context_win32()
    {
-
+      m_fboID = 0;
       m_bMesa = false;
 
       //m_emode = e_mode_system;
@@ -68,11 +69,27 @@ namespace gpu_opengl
          }
 
       }
-      else
+      else if(startcontext.m_eoutput == ::gpu::e_output_swap_chain)
       {
 
          defer_create_window_context(startcontext.m_pwindow);
 
+      }
+      else 
+      {
+
+         auto r = startcontext.m_rectanglePlacement;
+
+         send([this, r]()
+            {
+
+               _create_offscreen_buffer(r.size());
+
+               make_current();
+
+               glGenFramebuffers(1, &m_fboID);
+
+            });
       }
 
 
@@ -296,6 +313,8 @@ namespace gpu_opengl
       m_size = { rectClient.right - rectClient.left,
          rectClient.bottom - rectClient.top };
 
+      get_renderer()->set_placement({0, 0, m_size.cx(), m_size.cy()});
+
       m_itaskGpu = ::current_itask();
 
       m_estatus = ::success;
@@ -429,7 +448,9 @@ namespace gpu_opengl
 
             }
 
-            bool bMakeCurrentOk = wglMakeCurrent(hdc, pwindow->m_hglrcProto);
+            auto hglrcProto = pwindow->m_hglrcProto;
+
+            bool bMakeCurrentOk = wglMakeCurrent(hdc, hglrcProto);
 
             if (!bMakeCurrentOk)
             {
@@ -471,6 +492,8 @@ namespace gpu_opengl
             m_hdc = hdc;
             m_hrc = pwindow->m_hglrcProto;
 
+            wglMakeCurrent(nullptr, nullptr);
+
          }
 
       }
@@ -486,7 +509,7 @@ namespace gpu_opengl
       {
          m_size = sizeNew;
 
-
+         m_sizeHost = sizeNew;
          //HDC pdcDIB;                      // контекст устройства в памяти
          //HBITMAP hbmpDIB;                 // и его текущий битмапvoid *pBitsDIB(NULL);            // содержимое битмапаint cxDIB(200); int cyDIB(300);  // его размеры (например для окна 200х300)
          //auto &BIH=pwindow->m_bitmapinfoheaderProto;            // и заголовок// …// создаем DIB section// создаем структуру BITMAPINFOHEADER, описывающую наш DIBint iSize = sizeof(BITMAPINFOHEADER);  // размер
@@ -613,22 +636,54 @@ namespace gpu_opengl
    void context_win32::make_current()
    {
 
-      ASSERT(m_itaskGpu == ::current_itask());
+      if (m_itaskGpu != ::current_itask())
+      {
+
+         ASSERT(FALSE);
+
+      }
 
       ::e_status estatus = ::success;
 
-      bool bMakeCurrentOk = wglMakeCurrent(m_hdc, m_hrc);
+      bool bMadeCurrentNow = false;
 
-      if (!bMakeCurrentOk)
+      if (wglGetCurrentContext() != m_hrc || wglGetCurrentDC() != m_hdc)
       {
 
-         informationf("MS WGL - wglMakeCurrent failed");
+         bool bMakeCurrentOk = wglMakeCurrent(m_hdc, m_hrc);
 
-         informationf("last-error code: %d\n", GetLastError());
+         if (!bMakeCurrentOk)
+         {
 
-         throw ::exception(error_failed);
+            informationf("MS WGL - wglMakeCurrent failed");
+
+            informationf("last-error code: %d\n", GetLastError());
+
+            throw ::exception(error_failed);
+
+         }
+
+         bMadeCurrentNow = true;
 
       }
+
+      GLint drawFboId = 0, readFboId = 0;
+
+      glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
+      glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
+
+      if (drawFboId != m_fboID)
+      {
+
+         glBindFramebuffer(GL_FRAMEBUFFER, m_fboID);
+
+      }
+
+      if(drawFboId != m_fboID || bMadeCurrentNow)
+      {
+         glViewport(0, 0, m_size.cx(), m_size.cy());
+      }
+      //glBindFramebuffer(GL_FRAMEBUFFER, m_fboID);
 
       //return estatus;
 

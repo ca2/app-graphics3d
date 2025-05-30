@@ -68,7 +68,7 @@ namespace gpu
       virtual void initialize_gpu_approach();
 
 
-      virtual ::gpu::device* get_device(::windowing::window * pwindow);
+      virtual ::gpu::device* get_device(::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement);
 
 
       virtual void engine_on_frame_context_initialization(::gpu::context* pgpucontext);

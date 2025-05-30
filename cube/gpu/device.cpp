@@ -36,7 +36,7 @@ namespace gpu
    }
 
 
-   void device::initialize_gpu_device(::gpu::approach  * pgpuapproach, ::windowing::window* pwindow, bool bAddSwapChainSupport)
+   void device::initialize_gpu_device(::gpu::approach  * pgpuapproach, ::windowing::window* pwindow, const ::int_rectangle & rectanglePlacement, bool bAddSwapChainSupport)
    {
 
       m_pgpuapproach = pgpuapproach;

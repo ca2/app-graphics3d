@@ -103,7 +103,7 @@ namespace gpu_vulkan
       ~device() override;
 
 
-      void initialize_gpu_device(::gpu::approach* pgpuapproach, ::windowing::window *pwindow,  bool bAddSwapChainSupport) override;
+      void initialize_gpu_device(::gpu::approach* pgpuapproach, ::windowing::window *pwindow, const ::int_rectangle & rectanglePlacement, bool bAddSwapChainSupport) override;
 
       //string _001GetIntroProjection() override;
       //string _001GetIntroFragment() override;

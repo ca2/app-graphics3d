@@ -307,7 +307,7 @@ namespace graphics3d
 
       auto pgpu = papp->get_gpu();
 
-      ::cast < ::gpu::device > pgpudevice = pgpu->get_device(pwindow);
+      ::cast < ::gpu::device > pgpudevice = pgpu->get_device(pwindow, rectanglePlacement);
 
       ::pointer < ::gpu::context > pgpucontext;
 

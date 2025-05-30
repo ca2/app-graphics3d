@@ -26,7 +26,7 @@ namespace draw2d_opengl
       virtual public ::gpu::renderer
    {
    public:
-
+      
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
       //::plusplus::GraphicsPath *     m_ppath;
@@ -34,16 +34,18 @@ namespace draw2d_opengl
       //HGLRC                         m_hglrc;
       //HDC                           m_hdc;
       //HWND                          m_hwnd;
+      ::gpu::enum_output                  m_eoutputOnEndDraw;
       ::int_size                          m_size;
       //HDC                           m_hdcGraphics;
       float                               m_z;
       int_point                           m_pointTranslate;
+      ::pointer < ::gpu::frame > m_pframe;
       // bool                                      m_bFont;
       ::int_size                          m_sizeWindow;
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextOpenGL;
-
+      ::pointer<::gpu::context>             m_pgpucontextOutput;
 
       graphics();
       ~graphics() override;
@@ -122,6 +124,8 @@ namespace draw2d_opengl
       void create_memory_graphics(const ::int_size & size = {}) override;
       void create_window_graphics(::windowing::window * pwindow) override;
       void CreateCompatibleDC(::draw2d::graphics * pgraphics) override;
+
+      void set_hint_window_output() override;
 
       virtual bool opengl_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement);
       virtual bool opengl_delete_offscreen_buffer();

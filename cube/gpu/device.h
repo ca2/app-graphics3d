@@ -63,7 +63,7 @@ namespace gpu
       virtual void unlock_context();
 
 
-      virtual void initialize_gpu_device(::gpu::approach * papproach, ::windowing::window * pwindow, bool bAddSwapChainSupport);
+      virtual void initialize_gpu_device(::gpu::approach * papproach, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement, bool bAddSwapChainSupport);
 
 
       virtual ::pointer < ::gpu::context > allocate_context(::particle* pparticle);

@@ -162,6 +162,14 @@ namespace gpu_opengl
 
    class frame_buffer;
 
+   class device;
+
+#if defined(WINDOWS_DESKTOP)
+
+   class device_win32;
+
+#endif
+
 
 } // namespace gpu_opengl
 

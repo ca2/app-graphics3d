@@ -534,7 +534,7 @@ namespace cube
 
       //pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
 
-      if (1)
+      if (0)
       {
 
          if (m_pengine)

@@ -37,11 +37,17 @@ namespace gpu_opengl
 
 
 
-      ::pointer < ::gpu::context > allocate_context(::particle* pparticle) override;
+      //::pointer < ::gpu::context > allocate_context(::particle* pparticle) override;
 
 
+      /// <summary>
+      /// 
+      /// </summary>
+      /// <returns>true if changed to make current</returns>
+      virtual bool _make_current();
+      virtual void _swap_buffers();
 
-
+      virtual void _release_current();
       //string _001GetIntroProjection() override;
       //string _001GetIntroFragment() override;
 

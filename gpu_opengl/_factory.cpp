@@ -2,6 +2,7 @@
 #include "approach.h"
 #include "context.h"
 #include "device.h"
+#include "device_win32.h"
 #include "program.h"
 #include "shader.h"
 #include "cpu_buffer.h"
@@ -29,7 +30,11 @@ __FACTORY_EXPORT void gpu_opengl_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item < ::gpu_opengl::object, ::gpu::object >();
 
-   pfactory->add_factory_item < ::gpu_opengl::device, ::gpu::device >();
+#if defined(WINDOWS_DESKTOP)
+
+   pfactory->add_factory_item < ::gpu_opengl::device_win32, ::gpu::device >();
+
+#endif
 
 }
 

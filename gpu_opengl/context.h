@@ -16,9 +16,10 @@ namespace gpu_opengl
    public:
 
 
-      itask									m_itaskGpu;
+      GLuint m_fboID;
 
-
+      ::int_size                    m_sizeHost;
+      //bool m_bMesa;
 
       GLuint m_globalUBO;
 
@@ -65,6 +66,20 @@ namespace gpu_opengl
       // virtual string load_fragment(const ::string & pszPath, enum_shader_source& eshadersource);
 
       //virtual string get_shader_version_text();
+
+      virtual void _create_offscreen_window(const ::int_size & size);
+
+      void on_create_context(const ::gpu::start_context_t& startcontext) override;
+
+      void defer_create_window_context(::windowing::window * pwindow) override;
+      void _defer_create_window_context(::windowing::window * pwindow) override;
+      virtual void _create_window_context(::windowing::window * pwindow);
+
+      virtual void _create_window_buffer();
+      void _create_offscreen_buffer(const ::int_size& size) override;
+      void resize_offscreen_buffer(const ::int_size& size) override;
+      void destroy_offscreen_buffer() override;
+
       
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;
 
@@ -74,6 +89,46 @@ namespace gpu_opengl
       void update_global_ubo(const ::block& block) override;
 
 
+      
+      void make_current() override;
+
+
+      virtual void _release_current();
+
+      //bool is_mesa() override;
+
+      //void render();
+
+      string get_shader_version_text() override;
+
+      void _translate_shader(string_array & straFragment) override;
+
+      //void swap_buffers() override;
+
+
+   };
+
+
+   class CLASS_DECL_GPU_OPENGL context_guard
+   {
+   public:
+
+      context* m_pcontext;
+
+      context_guard(context* pcontext) :
+         m_pcontext(pcontext)
+      {
+
+         m_pcontext->make_current();
+
+      }
+
+      ~context_guard()
+      {
+
+         m_pcontext->_release_current();
+
+      }
 
    };
 

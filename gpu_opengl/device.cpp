@@ -57,61 +57,26 @@ namespace gpu_opengl
 
 
 
-   ::pointer < ::gpu::context > device::allocate_context(::particle* pparticle)
+   bool device::_make_current()
    {
 
-      ::pointer < ::gpu::context > pgpucontext;
-
-#ifdef WINDOWS_DESKTOP
-
-      pgpucontext = allocate_system_context(pparticle);
-
-#elif defined(__APPLE__)
-
-#if 1
-
-      pgpucontext = allocate_fbo_context(pparticle);
-
-#else
-
-      pgpucontext = allocate_cgl_context(pparticle);
-
-#endif
-
-#elif defined(__ANDROID__)
-
-      pgpucontext = allocate_egl_context(pparticle);
-
-#else
-
-      string strWaylandDisplay(getenv("WAYLAND_DISPLAY"));
-
-      if (strWaylandDisplay.has_character())
-      {
-
-         pgpucontext = allocate_egl_context(pparticle);
-
-      }
-      // else
-      // {
-      //
-      //    pgpucontext = allocate_glx_context(pparticle);
-      //
-      // }
-
-#endif
-
-      if (!pgpucontext)
-      {
-
-         return nullptr;
-
-      }
-
-      return pgpucontext;
+      return false;
 
    }
 
+
+   void device::_swap_buffers()
+   {
+
+
+   }
+
+
+   void device::_release_current()
+   {
+
+
+   }
 
    //void device::initialize(::particle * pparticle)
    //{

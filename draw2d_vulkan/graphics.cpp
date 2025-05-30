@@ -287,7 +287,7 @@ namespace draw2d_vulkan
 
          ASSERT(m_puserinteraction);
 
-         auto pgpudevice = pgpu->get_device(m_puserinteraction->window());
+         auto pgpudevice = pgpu->get_device(m_puserinteraction->window(), rectanglePlacement);
 
          //::gpu::start_context_t startcontext;
          //startcontext.m_pparticle = this;
@@ -620,7 +620,7 @@ namespace draw2d_vulkan
 
       auto pgpu = application()->get_gpu();
 
-      auto pgpudevice = pgpu->get_device(pwindow);
+      auto pgpudevice = pgpu->get_device(pwindow, pwindow->get_window_rectangle());
 
       if (!m_pgpucontext)
       {
@@ -7464,7 +7464,7 @@ namespace draw2d_vulkan
 
             ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 
-            m_pgpucontextOutput = m_papplication->get_gpu()->get_device(pwindow)->start_swap_chain_context(this, pwindow);
+            m_pgpucontextOutput = m_papplication->get_gpu()->get_device(pwindow, pwindow->get_window_rectangle())->start_swap_chain_context(this, pwindow);
 
             //m_pgpucontextOutput->create_window_buffer(pwindow);
 

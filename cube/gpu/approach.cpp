@@ -44,7 +44,7 @@ namespace gpu
    }
 
 
-   ::gpu::device* approach::get_device(::windowing::window * pwindow)
+   ::gpu::device* approach::get_device(::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement)
    {
 
       if (!m_pgpudevice)
@@ -52,7 +52,7 @@ namespace gpu
 
          __øconstruct(m_pgpudevice);
 
-         m_pgpudevice->initialize_gpu_device(this, pwindow, m_papplication->m_bUseDraw2dProtoWindow);
+         m_pgpudevice->initialize_gpu_device(this, pwindow, rectanglePlacement, m_papplication->m_bUseDraw2dProtoWindow);
 
       }
 
