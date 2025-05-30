@@ -21,9 +21,6 @@
     <Filter Include="Header Files\shader">
       <UniqueIdentifier>{bcc98f30-5e91-4bb2-a66d-b15d8d0c7e75}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\shader\NewFilter1">
-      <UniqueIdentifier>{0c95cfcc-98cb-4225-a255-7c60e2821f19}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -33,9 +30,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="_.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="aaa_context_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="approach.h">
@@ -86,12 +80,6 @@
     <ClInclude Include="swap_chain_render_pass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shader.frag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shader.vert.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -102,12 +90,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="frame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="image_blend.frag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="image_blend.vert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="device.h">

@@ -114,7 +114,7 @@
 //      vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
 //      if (vkQueueSubmit(m_pgpucontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
 //         VK_SUCCESS) {
-//         throw std::runtime_error("failed to submit draw command buffer!");
+//         throw ::exception(error_failed, "failed to submit draw command buffer!");
 //      }
 //
 //      VkPresentInfoKHR presentInfo = {};
@@ -185,7 +185,7 @@
 //      createInfo.oldSwapchain = pswapchainOld == nullptr ? VK_NULL_HANDLE : pswapchainOld->m_vkswapchain;
 //
 //      if (vkCreateSwapchainKHR(m_pgpucontext->logicalDevice(), &createInfo, nullptr, &m_vkswapchain) != VK_SUCCESS) {
-//         throw std::runtime_error("failed to create swap chain!");
+//         throw ::exception(error_failed, "failed to create swap chain!");
 //      }
 //
 //      // we only specified a minimum number of images in the swap chain, so the implementation is
@@ -216,7 +216,7 @@
 //
 //         if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, nullptr, &m_imageviews[i]) !=
 //            VK_SUCCESS) {
-//            throw std::runtime_error("failed to create texture image view!");
+//            throw ::exception(error_failed, "failed to create texture image view!");
 //         }
 //      }
 //   }
@@ -279,7 +279,7 @@
 //      renderPassInfo.pDependencies = &dependency;
 //
 //      if (vkCreateRenderPass(m_pgpucontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) {
-//         throw std::runtime_error("failed to create render pass!");
+//         throw ::exception(error_failed, "failed to create render pass!");
 //      }
 //   }
 //
@@ -305,7 +305,7 @@
 //      //      &framebufferInfo,
 //      //      nullptr,
 //      //      &swapChainFramebuffers[i]) != VK_SUCCESS) {
-//      //      throw std::runtime_error("failed to create framebuffer!");
+//      //      throw ::exception(error_failed, "failed to create framebuffer!");
 //      //   }
 //      //}
 //   }
@@ -357,7 +357,7 @@
 //      //   viewInfo.subresourceRange.layerCount = 1;
 //
 //      //   if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) {
-//      //      throw std::runtime_error("failed to create texture image view!");
+//      //      throw ::exception(error_failed, "failed to create texture image view!");
 //      //   }
 //      //}
 //   }
@@ -381,7 +381,7 @@
 //            vkCreateSemaphore(m_pgpucontext->logicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
 //            VK_SUCCESS ||
 //            vkCreateFence(m_pgpucontext->logicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) {
-//            throw std::runtime_error("failed to create synchronization objects for a frame!");
+//            throw ::exception(error_failed, "failed to create synchronization objects for a frame!");
 //         }
 //      }
 //   }

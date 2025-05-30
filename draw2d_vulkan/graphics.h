@@ -313,6 +313,11 @@ namespace draw2d_vulkan
       void poly_bezier(const ::double_point * lpPoints,::collection::count nCount);
       void poly_bezier_to(const ::double_point * lpPoints,::collection::count nCount);
 
+
+      virtual void _fill_quad(const ::double_point points[4], const ::color::color & color);
+      virtual void _fill_rectangle_2025_05_29(const ::double_rectangle& rectangle, ::draw2d::brush* pBrush);
+
+
       // Simple Drawing Functions
       void fill_rectangle(const ::double_rectangle &  rectangle, ::draw2d::brush* pBrush) override;
       void frame_rectangle(const ::double_rectangle & rectangle, ::draw2d::brush* pBrush) override;

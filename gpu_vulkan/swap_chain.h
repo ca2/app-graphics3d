@@ -10,22 +10,8 @@
 #pragma once
 
 
-//#include <stdlib.h>
-//#include <string>
-//#include <assert.h>
-//#include <stdio.h>
-//#include <vector>
-
-//#include <vulkan/vulkan.h>
 #include "_gpu_vulkan.h"
 
-//#ifdef __ANDROID__
-//#include "VulkanAndroid.h"
-//#endif
-//
-//#ifdef __APPLE__
-//#include <sys/utsname.h>
-//#endif
 
 namespace gpu_vulkan
 {

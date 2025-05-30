@@ -669,7 +669,7 @@ namespace cube
 
    //void container::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface) {
    //	if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) {
-   //		throw std::runtime_error("Failed to create window surface");
+   //		throw ::exception(error_failed, "Failed to create window surface");
    //	}
    //}
 

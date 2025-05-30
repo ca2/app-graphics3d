@@ -4,11 +4,6 @@
 #include "context.h"
 #include "acme/prototype/collection/map.h"
 
-//// std
-//#include <memory>
-//#include <unordered_map>
-//#include <vector>
-
 
 namespace gpu_vulkan
 {

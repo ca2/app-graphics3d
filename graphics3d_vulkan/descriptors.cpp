@@ -54,7 +54,7 @@
 //            &descriptorSetLayoutInfo,
 //            nullptr,
 //            &descriptorSetLayout) != VK_SUCCESS) {
-//            throw std::runtime_error("failed to create descriptor set layout!");
+//            throw ::exception(error_failed, "failed to create descriptor set layout!");
 //        }
 //    }
 //
@@ -104,7 +104,7 @@
 //
 //        if (vkCreateDescriptorPool(m_pgpucontext->logicalDevice(), &descriptorPoolInfo, nullptr, &descriptorPool) !=
 //            VK_SUCCESS) {
-//            throw std::runtime_error("failed to create descriptor pool!");
+//            throw ::exception(error_failed, "failed to create descriptor pool!");
 //        }
 //    }
 //

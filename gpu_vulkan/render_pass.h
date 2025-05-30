@@ -7,10 +7,6 @@
 // vulkan headers
 #include "_gpu_vulkan.h"
 
-// std lib headers
-#include <string>
-#include <vector>
-#include <memory>
 
 
 namespace gpu_vulkan

@@ -5,11 +5,6 @@
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include <assert.h>
-//// std
-//#include <fstream>
-//#include <stdexcept>
-//#include <iostream>
-//#include <cassert>
 
 using namespace vulkan;
 

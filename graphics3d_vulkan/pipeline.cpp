@@ -50,7 +50,7 @@
 //		std::ifstream file{ filepath, std::ios::ate | std::ios::binary };
 //
 //		if (!file.is_open()) {
-//			throw::std::runtime_error("failed to open file: " + filepath);
+//			throw::::exception(error_failed, "failed to open file: " + filepath);
 //		}
 //
 //		size_t fileSize = static_cast<size_t>(file.tellg());
@@ -135,7 +135,7 @@
 //			&pipelineInfo,
 //			nullptr,
 //			&graphicsPipeline) != VK_SUCCESS) {
-//			throw std::runtime_error("Failed to create graphics pipeline");
+//			throw ::exception(error_failed, "Failed to create graphics pipeline");
 //		}
 //	}
 //	void pipeline::createShaderModule(const block & block, VkShaderModule* shaderModule)
@@ -146,7 +146,7 @@
 //		createInfo.pCode = reinterpret_cast<const uint32_t*>(block.data());
 //
 //		if (vkCreateShaderModule(m_pgpucontext->logicalDevice(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
-//			throw std::runtime_error("failed to create shader module");
+//			throw ::exception(error_failed, "failed to create shader module");
 //		}
 //	}
 //	void pipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo) {

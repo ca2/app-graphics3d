@@ -7,21 +7,8 @@
 
 using namespace vulkan;
 
-//#include "tools.h"
 
-// std
-#include <array>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <limits>
-#include <set>
-#include <stdexcept>
-#undef min
-#undef max
-
-
-#define VK_CHECK(x) do { VkResult err = x; if (err) { std::cerr << "Detected Vulkan error: " << err << std::endl; abort(); } } while (0)
+#define VK_CHECK(x) do { VkResult err = x; if (err) { warning() << "Detected Vulkan error: " <<  (int)  err; abort(); } } while (0)
 
 
 namespace gpu_vulkan
@@ -626,11 +613,11 @@ namespace gpu_vulkan
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
 
-      std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+      VkAttachmentDescription attachments[2] = {colorAttachment, depthAttachment};
       VkRenderPassCreateInfo renderPassInfo = {};
       renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-      renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-      renderPassInfo.pAttachments = attachments.data();
+      renderPassInfo.attachmentCount = 2;
+      renderPassInfo.pAttachments = attachments;
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;
       renderPassInfo.dependencyCount = 1;
@@ -767,19 +754,19 @@ namespace gpu_vulkan
    //   const ::array<VkPresentModeKHR>& availablePresentModes) {
    //   for (const auto& availablePresentMode : availablePresentModes) {
    //      if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-   //         std::cout << "Present mode: Mailbox" << std::endl;
+   //         debug() << "Present mode: Mailbox";
    //         return availablePresentMode;
    //      }
    //   }
 
    //   // for (const auto &availablePresentMode : availablePresentModes) {
    //   //   if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
-   //   //     std::cout << "Present mode: Immediate" << std::endl;
+   //   //     debug() << "Present mode: Immediate";
    //   //     return availablePresentMode;
    //   //   }
    //   // }
 
-   //   std::cout << "Present mode: V-Sync" << std::endl;
+   //   debug() << "Present mode: V-Sync";
    //   return VK_PRESENT_MODE_FIFO_KHR;
    //}
 

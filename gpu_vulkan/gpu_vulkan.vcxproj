@@ -694,13 +694,10 @@
     <ClInclude Include="buffer.h" />
     <ClInclude Include="cpu_buffer.h" />
     <ClInclude Include="context.h" />
-    <ClInclude Include="aaa_context_win32.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="descriptors.h" />
     <ClInclude Include="device.h" />
     <ClInclude Include="frame.h" />
-    <ClInclude Include="image_blend.frag.h" />
-    <ClInclude Include="image_blend.vert.h" />
     <ClInclude Include="initializers.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="approach.h" />
@@ -710,9 +707,7 @@
     <ClInclude Include="program.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_pass.h" />
-    <ClInclude Include="shader.frag.h" />
     <ClInclude Include="shader.h" />
-    <ClInclude Include="shader.vert.h" />
     <ClInclude Include="swap_chain.h" />
     <ClInclude Include="swap_chain_render_pass.h" />
     <ClInclude Include="_.h" />
@@ -830,7 +825,7 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
@@ -857,7 +852,7 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
@@ -884,7 +879,7 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
@@ -911,7 +906,7 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
@@ -942,7 +937,7 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/shader/%(Filename)%(Extension).spv.inl</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">$(ProjectDir)%(Filename)%(Extension).spv.h</Outputs>

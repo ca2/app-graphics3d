@@ -26,7 +26,7 @@
 //
 //	//void VkWindow::createWindowSurface(VkInstance m_vkinstance, VkSurfaceKHR* surface) {
 //	//	if (glfwCreateWindowSurface(m_vkinstance, window, nullptr, surface) != VK_SUCCESS) {
-//	//		throw std::runtime_error("Failed to create window surface");
+//	//		throw ::exception(error_failed, "Failed to create window surface");
 //	//	}
 //	//}
 //

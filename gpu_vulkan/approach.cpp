@@ -173,13 +173,13 @@ namespace gpu_vulkan
       //            }
       //         }
       //         if (commandLineParser.isSet("gpulist")) {
-      //            std::cout << "Available Vulkan devices" << "\n";
+      //            debug() << "Available Vulkan devices" << "\n";
       //            for (uint32_t i = 0; i < gpuCount; i++) {
       //               VkPhysicalDeviceProperties deviceProperties;
       //               vkGetPhysicalDeviceProperties(physicalDevices[i], &deviceProperties);
-      //               std::cout << "Device [" << i << "] : " << deviceProperties.deviceName << std::endl;
-      //               std::cout << " Type: " << physicalDeviceTypeString(deviceProperties.deviceType) << "\n";
-      //               std::cout << " API: " << (deviceProperties.apiVersion >> 22) << "." << ((deviceProperties.apiVersion >> 12) & 0x3ff) << "." << (deviceProperties.apiVersion & 0xfff) << "\n";
+      //               debug() << "Device [" << i << "] : " << deviceProperties.deviceName;
+      //               debug() << " Type: " << physicalDeviceTypeString(deviceProperties.deviceType) << "\n";
+      //               debug() << " API: " << (deviceProperties.apiVersion >> 22) << "." << ((deviceProperties.apiVersion >> 12) & 0x3ff) << "." << (deviceProperties.apiVersion & 0xfff) << "\n";
       //            }
       //         }
       //#endif

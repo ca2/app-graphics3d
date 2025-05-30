@@ -13,10 +13,10 @@
 //#include "tools.h"
 //#include "app-cube/cube/impact.h"
 
-#include <array>
-#include <cassert>
-#include <stdexcept>
-
+//#include <array>
+//#include <cassert>
+//#include <stdexcept>
+//
 
 using namespace vulkan;
 
@@ -2367,12 +2367,12 @@ namespace gpu_vulkan
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent = m_pvkcrenderpass->getExtent();
 
-			std::array<VkClearValue, 2> clearValues{};
+			VkClearValue clearValues[2];
 			//clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
 			clearValues[0].color = { 0.f, 0.0f, 0.0f, 0.0f };
 			clearValues[1].depthStencil = { 1.0f, 0 };
-			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-			renderPassInfo.pClearValues = clearValues.data();
+			renderPassInfo.clearValueCount = 2;
+			renderPassInfo.pClearValues = clearValues;
 
 			vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -2458,12 +2458,12 @@ namespace gpu_vulkan
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent = m_pvkcrenderpass->getExtent();
 
-			std::array<VkClearValue, 2> clearValues{};
+			VkClearValue clearValues[2];
 			//clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
 			clearValues[0].color = { 0.0f, 0.0f, 0.0f, 0.0f };
 			clearValues[1].depthStencil = { 1.0f, 0 };
-			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-			renderPassInfo.pClearValues = clearValues.data();
+			renderPassInfo.clearValueCount = 2;
+			renderPassInfo.pClearValues = clearValues;
 
 			vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -2574,7 +2574,7 @@ namespace gpu_vulkan
 				return nullptr;
 			}
 			if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-				throw std::runtime_error("Failed to aquire swap chain image");
+				throw ::exception(error_failed, "Failed to aquire swap chain image");
 			}
 
 			isFrameStarted = true;
@@ -2585,7 +2585,7 @@ namespace gpu_vulkan
 			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
 			if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-				throw std::runtime_error("failed to begin recording command buffer!");
+				throw ::exception(error_failed, "failed to begin recording command buffer!");
 			}
 			auto pframe = __create_new < ::gpu_vulkan::frame >();
 			pframe->commandBuffer = commandBuffer;
@@ -2605,7 +2605,7 @@ namespace gpu_vulkan
 		//		return nullptr;
 		//	}
 		//	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-		//		throw std::runtime_error("Failed to aquire swap chain image");
+		//		throw ::exception(error_failed, "Failed to aquire swap chain image");
 		//	}
 
 		//	isFrameStarted = true;
@@ -2616,7 +2616,7 @@ namespace gpu_vulkan
 		//	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
 		//	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-		//		throw std::runtime_error("failed to begin recording command buffer!");
+		//		throw ::exception(error_failed, "failed to begin recording command buffer!");
 		//	}
 		//	return commandBuffer;
 
@@ -2678,7 +2678,7 @@ namespace gpu_vulkan
 		//	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
 		//	auto commandBuffer = getCurrentCommandBuffer();
 		//	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-		//		throw std::runtime_error("failed to record command buffer!");
+		//		throw ::exception(error_failed, "failed to record command buffer!");
 		//	}
 		//	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
 		//	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
@@ -2689,7 +2689,7 @@ namespace gpu_vulkan
 		//	//}
 		//	//else 
 		//	//	if (result != VK_SUCCESS) {
-		//	//	throw std::runtime_error("failed to present swap chain image!");
+		//	//	throw ::exception(error_failed, "failed to present swap chain image!");
 		//	//}
 		//	isFrameStarted = false;
 		//	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT;

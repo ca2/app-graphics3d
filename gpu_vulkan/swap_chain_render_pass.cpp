@@ -2,20 +2,10 @@
 #include "swap_chain_render_pass.h"
 #include "physical_device.h"
 #include "renderer.h"
-// std
-#include <array>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <limits>
-#include <set>
-#include <stdexcept>
-#undef min
-#undef max
-
 
 namespace gpu_vulkan
 {
+
 
 	swap_chain_render_pass::swap_chain_render_pass(renderer* pgpurenderer, VkExtent2D extent)
 		: render_pass(pgpurenderer, extent)
@@ -111,7 +101,7 @@ namespace gpu_vulkan
 			return result;
 		}
 		else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-			throw std::runtime_error("failed to acquire swap chain image!");
+			throw ::exception(error_failed, "failed to acquire swap chain image!");
 		}
 
 		// If the image we acquired is already being used (fence not signaled), wait for it
@@ -142,7 +132,7 @@ namespace gpu_vulkan
 		//   return result;
 		//}
 		//else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-		//   throw std::runtime_error("failed to acquire swap chain image!");
+		//   throw ::exception(error_failed, "failed to acquire swap chain image!");
 		//}
 
 		//// If the image we acquired is already being used (fence not signaled), wait for it
@@ -154,6 +144,7 @@ namespace gpu_vulkan
 		//imagesInFlight[*imageIndex] = inFlightFences[m_pgpurenderer->get_frame_index()];
 		//return result;
 	}
+
 
 	VkResult swap_chain_render_pass::submitCommandBuffers(const VkCommandBuffer* buffers)
 	{
@@ -185,7 +176,7 @@ namespace gpu_vulkan
 
 		VkResult vkresult = vkQueueSubmit(m_pgpucontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]);
 		if (vkresult != VK_SUCCESS) {
-			throw std::runtime_error("failed to submit draw command buffer!");
+			throw ::exception(error_failed, "failed to submit draw command buffer!");
 		}
 
 		VkPresentInfoKHR presentInfo{};
@@ -306,8 +297,8 @@ namespace gpu_vulkan
 		}
 
 		createInfo.preTransform = swapchainSupport.capabilities.currentTransform;
-		//createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-		createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR;
+		createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+		//createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR;
 
 		createInfo.presentMode = presentMode;
 		createInfo.clipped = VK_TRUE;
@@ -357,7 +348,10 @@ namespace gpu_vulkan
 		}
 	}
 
-	void swap_chain_render_pass::createRenderPass() {
+
+	void swap_chain_render_pass::createRenderPass() 
+	{
+
 		VkAttachmentDescription depthAttachment{};
 		depthAttachment.format = findDepthFormat();
 		depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -411,18 +405,18 @@ namespace gpu_vulkan
 		//dependency[1].dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT;
 		//dependency[1].srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
 		//dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		dependency[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-			dependency[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-			dependency[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-			dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-			dependency[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;// if needed
+		dependency[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependency[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		dependency[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+		dependency[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;// if needed
 
 
-		std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+		VkAttachmentDescription attachments[2] = {colorAttachment, depthAttachment};
 		VkRenderPassCreateInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-		renderPassInfo.pAttachments = attachments.data();
+		renderPassInfo.attachmentCount = 2;
+		renderPassInfo.pAttachments = attachments;
 		renderPassInfo.subpassCount = 1;
 		renderPassInfo.pSubpasses = &subpass;
 		renderPassInfo.dependencyCount = 1;
@@ -431,7 +425,9 @@ namespace gpu_vulkan
 		if (vkCreateRenderPass(m_pgpucontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) {
 			throw ::exception(error_failed, "failed to create render pass!");
 		}
+
 	}
+
 
 	void swap_chain_render_pass::createFramebuffers()
 	{
@@ -459,6 +455,7 @@ namespace gpu_vulkan
 		//   }
 		//}
 	}
+
 
 	void swap_chain_render_pass::createDepthResources()
 	{
@@ -512,7 +509,9 @@ namespace gpu_vulkan
 		//}
 	}
 
-	void swap_chain_render_pass::createSyncObjects() {
+
+	void swap_chain_render_pass::createSyncObjects() 
+	{
 		//imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		//renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 
@@ -537,8 +536,10 @@ namespace gpu_vulkan
 		//}
 	}
 
-	VkSurfaceFormatKHR swap_chain_render_pass::chooseSwapSurfaceFormat(
-		const ::array<VkSurfaceFormatKHR>& availableFormats) {
+
+	VkSurfaceFormatKHR swap_chain_render_pass::chooseSwapSurfaceFormat(const ::array<VkSurfaceFormatKHR>& availableFormats) 
+	{
+
 		for (const auto& availableFormat : availableFormats) {
 			// SRGB can be changed to "UNORM" instead
 			//if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
@@ -553,24 +554,24 @@ namespace gpu_vulkan
 
 	VkPresentModeKHR swap_chain_render_pass::chooseSwapPresentMode(const ::array<VkPresentModeKHR>& availablePresentModes)
 	{
-		for (const auto& availablePresentMode : availablePresentModes) 
+		for (const auto& availablePresentMode : availablePresentModes)
 		{
 
-			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) 
+			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
 			{
-				std::cout << "Present mode: Mailbox" << std::endl;
+				debug() << "Present mode: Mailbox";
 				return availablePresentMode;
 			}
 		}
 
-		 for (const auto &availablePresentMode : availablePresentModes) {
-		   if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
-		     std::cout << "Present mode: Immediate" << std::endl;
-		     return availablePresentMode;
-		   }
-		 }
+		for (const auto& availablePresentMode : availablePresentModes) {
+			if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
+				debug() << "Present mode: Immediate";
+				return availablePresentMode;
+			}
+		}
 
-		std::cout << "Present mode: V-Sync" << std::endl;
+		debug() << "Present mode: V-Sync";
 		return VK_PRESENT_MODE_FIFO_KHR;
 	}
 

@@ -51,7 +51,7 @@
 //	//	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 //	//	if (vkCreatePipelineLayout(m_pgpucontext->logicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
 //	//		VK_SUCCESS) {
-//	//		throw std::runtime_error("Failed to create pipeline layout");
+//	//		throw ::exception(error_failed, "Failed to create pipeline layout");
 //	//	}
 //
 //	//}

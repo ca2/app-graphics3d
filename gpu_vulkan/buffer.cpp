@@ -9,9 +9,6 @@
 
 #include "buffer.h"
 
- // std
-#include <cassert>
-#include <cstring>
 
 namespace gpu_vulkan
 {

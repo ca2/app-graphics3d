@@ -9,10 +9,6 @@
 #include "app-cube/cube/gpu/renderer.h"
 
 
-#include <memory>
-#include <vector>
-#include <cassert>
-
 constexpr unsigned int FRAME_OVERLAP = 2;
 
 

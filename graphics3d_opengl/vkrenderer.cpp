@@ -83,7 +83,7 @@ namespace graphics3d_opengl
       //	::pointer<swap_chain_render_pass> oldSwapChain = std::move(vkcSwapChain);
       //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pgpucontext, extent, oldSwapChain);
       //	if (!oldSwapChain->compareSwapFormats(*vkcSwapChain.get())) {
-      //		throw std::runtime_error("Swap chain image(or depth) format has changed!");
+      //		throw ::exception(error_failed, "Swap chain image(or depth) format has changed!");
       //	}
 
       //}
@@ -100,7 +100,7 @@ namespace graphics3d_opengl
 
       if (vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &allocInfo, commandBuffers.data()) !=
          VK_SUCCESS) {
-         throw std::runtime_error("failed to allocate command buffers!");
+         throw ::exception(error_failed, "failed to allocate command buffers!");
       }
 
    }
@@ -131,7 +131,7 @@ namespace graphics3d_opengl
             return nullptr;
          }
          if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-            throw std::runtime_error("Failed to aquire swap chain image");
+            throw ::exception(error_failed, "Failed to aquire swap chain image");
          }
 
          isFrameStarted = true;
@@ -142,7 +142,7 @@ namespace graphics3d_opengl
          beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
          if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-            throw std::runtime_error("failed to begin recording command buffer!");
+            throw ::exception(error_failed, "failed to begin recording command buffer!");
          }
          return commandBuffer;
 
@@ -158,7 +158,7 @@ namespace graphics3d_opengl
       //		return nullptr;
       //	}
       //	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-      //		throw std::runtime_error("Failed to aquire swap chain image");
+      //		throw ::exception(error_failed, "Failed to aquire swap chain image");
       //	}
 
       //	isFrameStarted = true;
@@ -169,7 +169,7 @@ namespace graphics3d_opengl
       //	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
       //	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-      //		throw std::runtime_error("failed to begin recording command buffer!");
+      //		throw ::exception(error_failed, "failed to begin recording command buffer!");
       //	}
       //	return commandBuffer;
 
@@ -585,7 +585,7 @@ namespace graphics3d_opengl
          assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
          auto commandBuffer = getCurrentCommandBuffer();
          if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-            throw std::runtime_error("failed to record command buffer!");
+            throw ::exception(error_failed, "failed to record command buffer!");
          }
          auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
          //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
@@ -596,7 +596,7 @@ namespace graphics3d_opengl
          //}
          //else 
          //	if (result != VK_SUCCESS) {
-         //	throw std::runtime_error("failed to present swap chain image!");
+         //	throw ::exception(error_failed, "failed to present swap chain image!");
          //}
          sample();
          isFrameStarted = false;
@@ -610,7 +610,7 @@ namespace graphics3d_opengl
       //	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
       //	auto commandBuffer = getCurrentCommandBuffer();
       //	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-      //		throw std::runtime_error("failed to record command buffer!");
+      //		throw ::exception(error_failed, "failed to record command buffer!");
       //	}
       //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
       //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
@@ -621,7 +621,7 @@ namespace graphics3d_opengl
       //	//}
       //	//else 
       //	//	if (result != VK_SUCCESS) {
-      //	//	throw std::runtime_error("failed to present swap chain image!");
+      //	//	throw ::exception(error_failed, "failed to present swap chain image!");
       //	//}
       //	isFrameStarted = false;
       //	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT;

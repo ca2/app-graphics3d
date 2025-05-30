@@ -1,9 +1,6 @@
 #include "framework.h"
 #include "descriptors.h"
 
-// std
-#include <cassert>
-#include <stdexcept>
 
 
 namespace gpu_vulkan

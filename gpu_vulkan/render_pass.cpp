@@ -3,16 +3,16 @@
 #include "physical_device.h"
 #include "render_pass.h"
 #include "renderer.h"
-// std
-#include <array>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <limits>
-#include <set>
-#include <stdexcept>
-#undef min
-#undef max
+//// std
+//#include <array>
+//#include <cstdlib>
+//#include <cstring>
+//#include <iostream>
+//#include <limits>
+//#include <set>
+//#include <stdexcept>
+//#undef min
+//#undef max
 
 
 namespace gpu_vulkan
@@ -329,11 +329,11 @@ namespace gpu_vulkan
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
 
-      std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+      VkAttachmentDescription attachments[2] = {colorAttachment, depthAttachment};
       VkRenderPassCreateInfo renderPassInfo = {};
       renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-      renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-      renderPassInfo.pAttachments = attachments.data();
+      renderPassInfo.attachmentCount = 2;
+      renderPassInfo.pAttachments = attachments;
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;
       renderPassInfo.dependencyCount = 1;
@@ -357,14 +357,14 @@ namespace gpu_vulkan
       for (size_t i = 0; i < imageCount(); i++) 
       {
 
-         std::array<VkImageView, 2> attachments = { m_imageviews[i], depthImageViews[i] };
+         VkImageView attachments[2] = {m_imageviews[i], depthImageViews[i]};
 
          VkExtent2D extent = getExtent();
          VkFramebufferCreateInfo framebufferInfo = {};
          framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
          framebufferInfo.renderPass = m_vkrenderpass;
-         framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-         framebufferInfo.pAttachments = attachments.data();
+         framebufferInfo.attachmentCount = 2;
+         framebufferInfo.pAttachments = attachments;
          framebufferInfo.width = extent.width;
          framebufferInfo.height = extent.height;
          framebufferInfo.layers = 1;
@@ -494,19 +494,19 @@ namespace gpu_vulkan
    //   const ::array<VkPresentModeKHR>& availablePresentModes) {
    //   for (const auto& availablePresentMode : availablePresentModes) {
    //      if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-   //         std::cout << "Present mode: Mailbox" << std::endl;
+   //         debug() << "Present mode: Mailbox";
    //         return availablePresentMode;
    //      }
    //   }
 
    //   // for (const auto &availablePresentMode : availablePresentModes) {
    //   //   if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
-   //   //     std::cout << "Present mode: Immediate" << std::endl;
+   //   //     debug() << "Present mode: Immediate";
    //   //     return availablePresentMode;
    //   //   }
    //   // }
 
-   //   std::cout << "Present mode: V-Sync" << std::endl;
+   //   debug() << "Present mode: V-Sync";
    //   return VK_PRESENT_MODE_FIFO_KHR;
    //}
 

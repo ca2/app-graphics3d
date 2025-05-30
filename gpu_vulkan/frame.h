@@ -1,11 +1,8 @@
 #pragma once
 
-//#include "app-cube/cube/graphics3d/camera.h"
-#include "app-cube/cube/gpu/frame.h"
-//#include "scene_object.h"
 
-// lib
-//#include "_vulkan/vulkan.h>
+#include "app-cube/cube/gpu/frame.h"
+
 
 namespace gpu_vulkan
 {

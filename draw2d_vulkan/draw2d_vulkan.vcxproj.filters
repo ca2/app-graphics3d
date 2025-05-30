@@ -135,13 +135,13 @@
     <None Include="draw2d_vulkan.def">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="shader\accumulation.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
     <None Include="shader\rectangle.frag.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
     <None Include="shader\rectangle.vert.spv.inl">
-      <Filter>Header Files\shader</Filter>
-    </None>
-    <None Include="shader\accumulation.frag.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
     <None Include="shader\resolve.frag.spv.inl">

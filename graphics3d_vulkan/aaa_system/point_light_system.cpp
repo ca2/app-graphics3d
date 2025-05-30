@@ -62,7 +62,7 @@ namespace graphics3d_vulkan
       //pipelineLayoutInfo.pPushConstantRanges = nullptr;
       if (vkCreatePipelineLayout(m_pgpucontext->logicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
          VK_SUCCESS) {
-         throw std::runtime_error("failed to create pipeline layout!");
+         throw ::exception(error_failed, "failed to create pipeline layout!");
       }
    }
 
