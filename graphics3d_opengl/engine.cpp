@@ -435,136 +435,144 @@ namespace graphics3d_opengl
 
       //m_pframebuffer->unbind();
 
-      if (pcontextUpper)
+      if (1)
       {
 
-         pcontextUpper->make_current();
-
-         glPopAttrib();
-         glPopMatrix();
-
-         glViewport(0, 0, wHost, hHost);
-
-         glDisable(GL_DEPTH_TEST);
-         glDepthMask(GL_FALSE);
-
-         glEnable(GL_BLEND);
-
-
-
-         glMatrixMode(GL_PROJECTION);
-         glLoadIdentity();
-         ////glOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
-         ////glOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
-         //////glOrtho(0, size.cx() * d, 0.0f, size.cy() * d, 000.0f, 1000.0f);
-         ////glOrtho(0, size.cx(), size.cy(), 0.0f, -1000.0f, 1000.0f);
-         //glOrtho(0.f, size.cx(), 0.f, -size.cy(), -1.0f, 1.0f);
-         auto bYSwap = true;
-         if (bYSwap)
-         {
-            glOrtho(0.0f, wHost, hHost, 0, -1.0f, 1.0f);  // Flip Y
-         }
-         else
-         {
-            glOrtho(0.0f, wHost, 0, hHost, -1.0f, 1.0f);  // Flip Y
-         }
-         glMatrixMode(GL_MODELVIEW);
-         glLoadIdentity();
-
-         if (!m_pshaderBlend)
+         if (pcontextUpper)
          {
 
-            __øconstruct(m_pshaderBlend);
+            pcontextUpper->make_current();
 
+            //return;
 
-            const char* quad_vertex_shader = "#version 330 core\n"
-               "layout(location = 0) in vec2 pos;\n"
-               "layout(location = 1) in vec2 texCoord;\n"
-               "out vec2 uv;\n"
-               "void main() {\n"
-               "    uv = texCoord;\n"
-               "    gl_Position = vec4(pos, 0.0, 1.0);\n"
-               "}";
+            glPopAttrib();
+            glPopMatrix();
 
-            const char* blend_fragment_shader = "#version 330 core\n"
-               "in vec2 uv;\n"
-               "uniform sampler2D tex;\n"
-               "out vec4 FragColor;\n"
-               "void main() {\n"
-               "    FragColor = texture(tex, uv);\n"
-               "}";
+            glViewport(0, 0, wHost, hHost);
 
+            glDisable(GL_DEPTH_TEST);
+            glDepthMask(GL_FALSE);
 
-            m_pshaderBlend->initialize_shader_with_block(
-               m_pgpucontext->m_pgpurenderer,
-               quad_vertex_shader,
-               blend_fragment_shader);
-
-            glGenVertexArrays(1, &m_vaoQuad);
-            glGenBuffers(1, &m_vboQuad);
-            glBindVertexArray(m_vaoQuad);
-            glBindBuffer(GL_ARRAY_BUFFER, m_vboQuad);
-            glBufferData(GL_ARRAY_BUFFER, 4 * 4 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
-            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-
-         }
-
-         float WIDTH = wHost;
-         float HEIGHT = hHost;
-
-         float w = rectangle.width();
-         float h = rectangle.height();
-         float x = rectangle.left();
-         float y = hHost - rectangle.bottom();
-
-         // 3. Composite scene texture at 1:1 into UI FBO at position (200, 150)
-         //float x = 200.0f, y = 150.0f, w = SCENE_W, h = SCENE_H;
-
-         float l, r, b, t;
-
-         if (1)
-         {
-            l = (x / WIDTH) * 2.0f - 1.0f;
-            r = ((x + w) / WIDTH) * 2.0f - 1.0f;
-            b = (y / HEIGHT) * 2.0f - 1.0f;
-            t = ((y + h) / HEIGHT) * 2.0f - 1.0f;
-         }
-         else
-         {
-            l = rectangle.left();
-            r = rectangle.right();
-            b = rectangle.bottom();
-            t = rectangle.top();
-         }
-         float quad[] = {
-                l, b,  0.0f, 0.0f,
-                r, b,  1.0f, 0.0f,
-                l, t,  0.0f, 1.0f,
-                r, t,  1.0f, 1.0f
-         };
-
-         if (1)
-         {
-
-            //glUseProgram(blendShader);
-            m_pshaderBlend->bind();
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, pgpucontext->m_pframebuffer->m_tex);
-            //glUniform1i(glGetUniformLocation(blendShader, "tex"), 0);
-            ::cast < gpu_opengl::shader > pshader = m_pshaderBlend;
-            pshader->_set_int("tex", 0);
-
-            glBindBuffer(GL_ARRAY_BUFFER, m_vboQuad);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quad), quad);
-            glBindVertexArray(m_vaoQuad);
             glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-            m_pshaderBlend->unbind();
-            //}
+
+
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            ////glOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
+            ////glOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
+            //////glOrtho(0, size.cx() * d, 0.0f, size.cy() * d, 000.0f, 1000.0f);
+            ////glOrtho(0, size.cx(), size.cy(), 0.0f, -1000.0f, 1000.0f);
+            //glOrtho(0.f, size.cx(), 0.f, -size.cy(), -1.0f, 1.0f);
+            auto bYSwap = true;
+            if (bYSwap)
+            {
+               glOrtho(0.0f, wHost, hHost, 0, -1.0f, 1.0f);  // Flip Y
+            }
+            else
+            {
+               glOrtho(0.0f, wHost, 0, hHost, -1.0f, 1.0f);  // Flip Y
+            }
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+
+            if (!m_pshaderBlend)
+            {
+
+               __øconstruct(m_pshaderBlend);
+
+
+               const char* quad_vertex_shader = "#version 330 core\n"
+                  "layout(location = 0) in vec2 pos;\n"
+                  "layout(location = 1) in vec2 texCoord;\n"
+                  "out vec2 uv;\n"
+                  "void main() {\n"
+                  "    uv = texCoord;\n"
+                  "    gl_Position = vec4(pos, 0.0, 1.0);\n"
+                  "}";
+
+               const char* blend_fragment_shader = "#version 330 core\n"
+                  "in vec2 uv;\n"
+                  "uniform sampler2D tex;\n"
+                  "out vec4 FragColor;\n"
+                  "void main() {\n"
+                  "    FragColor = texture(tex, uv);\n"
+                  "}";
+
+
+               m_pshaderBlend->initialize_shader_with_block(
+                  m_pgpucontext->m_pgpurenderer,
+                  quad_vertex_shader,
+                  blend_fragment_shader);
+
+               glGenVertexArrays(1, &m_vaoQuad);
+               glGenBuffers(1, &m_vboQuad);
+               glBindVertexArray(m_vaoQuad);
+               glBindBuffer(GL_ARRAY_BUFFER, m_vboQuad);
+               glBufferData(GL_ARRAY_BUFFER, 4 * 4 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+               glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+               glEnableVertexAttribArray(0);
+               glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+               glEnableVertexAttribArray(1);
+
+            }
+
+            float WIDTH = wHost;
+            float HEIGHT = hHost;
+
+            float w = rectangle.width();
+            float h = rectangle.height();
+            float x = rectangle.left();
+            float y = hHost - rectangle.bottom();
+
+            // 3. Composite scene texture at 1:1 into UI FBO at position (200, 150)
+            //float x = 200.0f, y = 150.0f, w = SCENE_W, h = SCENE_H;
+
+            float l, r, b, t;
+
+            if (1)
+            {
+               l = (x / WIDTH) * 2.0f - 1.0f;
+               r = ((x + w) / WIDTH) * 2.0f - 1.0f;
+               b = (y / HEIGHT) * 2.0f - 1.0f;
+               t = ((y + h) / HEIGHT) * 2.0f - 1.0f;
+            }
+            else
+            {
+               l = rectangle.left();
+               r = rectangle.right();
+               b = rectangle.bottom();
+               t = rectangle.top();
+            }
+            float quad[] = {
+                   l, b,  0.0f, 0.0f,
+                   r, b,  1.0f, 0.0f,
+                   l, t,  0.0f, 1.0f,
+                   r, t,  1.0f, 1.0f
+            };
+
+            if (1)
+            {
+
+               //glUseProgram(blendShader);
+               m_pshaderBlend->bind();
+               glActiveTexture(GL_TEXTURE0);
+               auto texture = pgpucontext->m_pframebuffer->m_tex;
+               glBindTexture(GL_TEXTURE_2D, texture);
+               //glUniform1i(glGetUniformLocation(blendShader, "tex"), 0);
+               ::cast < gpu_opengl::shader > pshader = m_pshaderBlend;
+               pshader->_set_int("tex", 0);
+
+               glBindBuffer(GL_ARRAY_BUFFER, m_vboQuad);
+               glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quad), quad);
+               glBindVertexArray(m_vaoQuad);
+               glEnable(GL_BLEND);
+               glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+               glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+               m_pshaderBlend->unbind();
+               //}
+
+            }
 
          }
 

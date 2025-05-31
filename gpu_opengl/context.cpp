@@ -1412,6 +1412,26 @@ namespace gpu_opengl
          m_pframebuffer->bind();
 
       }
+      else if(m_eoutput == ::gpu::e_output_swap_chain)
+      {
+         
+         // If using swap chain, no need to bind framebuffer
+
+         GLint drawFboId = 0, readFboId = 0;
+
+         glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
+         glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
+
+         if (drawFboId != 0)
+         {
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            glViewport(0, 0, m_rectangle.width(), m_rectangle.height());
+
+         }
+
+      }
 
       pgpudevice->m_pgpucontextCurrent = this;
 

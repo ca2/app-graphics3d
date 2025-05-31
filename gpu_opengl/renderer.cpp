@@ -347,14 +347,15 @@ namespace gpu_opengl
 
       //}
 
+      auto eoutput = m_pgpucontext->m_eoutput;
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
+      if (eoutput == ::gpu::e_output_swap_chain)
       {
 
          _swap();
 
       }
-      else if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      else if (eoutput == ::gpu::e_output_cpu_buffer)
       {
 
          _sample();
