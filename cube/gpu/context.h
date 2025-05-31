@@ -96,6 +96,8 @@ namespace gpu
 
       virtual void on_create_context(const start_context_t& startcontext);
 
+      virtual void engine_on_frame_context_initialization();
+
       bool task_iteration() override;
 
       virtual void lock_context();

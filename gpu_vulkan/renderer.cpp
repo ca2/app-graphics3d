@@ -211,7 +211,6 @@ namespace gpu_vulkan
 
 		m_extentRenderer.height = m_pgpucontext->rectangle().height();
 
-
 		auto eoutput = m_eoutput;
 
 		if (eoutput == ::gpu::e_output_cpu_buffer)
@@ -578,7 +577,7 @@ namespace gpu_vulkan
 
 		}
 
-
+		
 		// Create the linear tiled destination image to copy to and to read the memory from
 
   // Do the actual blit from the offscreen image to our host visible destination image
@@ -587,6 +586,18 @@ namespace gpu_vulkan
 		VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
 		VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
 		VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
+
+		// Transition source image to transfer destination layout
+		insertImageMemoryBarrier(
+			copyCmd,
+			vkimage,
+			0,
+			VK_ACCESS_TRANSFER_WRITE_BIT,
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+			VK_PIPELINE_STAGE_TRANSFER_BIT,
+			VK_PIPELINE_STAGE_TRANSFER_BIT,
+			VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
 		// Transition destination image to transfer destination layout
 		insertImageMemoryBarrier(

@@ -138,6 +138,9 @@ namespace gpu
       //virtual void render();
       virtual int get_frame_index() const;
       virtual int get_frame_count() const;
+
+
+      virtual void on_new_frame();
       
       virtual ::pointer < frame > beginFrame();
 

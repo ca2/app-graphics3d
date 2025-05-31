@@ -556,6 +556,13 @@ namespace gpu
    }
 
 
+   void renderer::on_new_frame()
+   {
+
+
+   }
+
+
    ::pointer < frame > renderer::beginFrame()
    {
 

@@ -35,7 +35,7 @@ namespace graphics3d
 		::pointer < ::cube::impact >				m_pimpact;
 		::string_map < ::pointer < scene > >	m_mapScene;
 		//::pointer < ::cube::application >			m_p3dapplication;
-		::pointer < ::gpu::renderer >				m_prenderer;
+		//::pointer < ::gpu::renderer >				m_prenderer;
 		::pointer < scene >							m_pscene;
 
 		::pointer < ::graphics3d::input >		m_pinput;

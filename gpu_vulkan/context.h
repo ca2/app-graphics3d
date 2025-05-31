@@ -256,7 +256,7 @@ namespace gpu_vulkan
       void update_global_ubo(const ::block& block) override;
 
 
-      void engine_on_frame_context_initialization();
+      void engine_on_frame_context_initialization() override;
 
    };
 

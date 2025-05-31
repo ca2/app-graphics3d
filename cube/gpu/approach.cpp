@@ -64,6 +64,7 @@ namespace gpu
    void approach::engine_on_frame_context_initialization(::gpu::context* pgpucontext)
    {
 
+      pgpucontext->engine_on_frame_context_initialization();
 
    }
 

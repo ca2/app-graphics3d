@@ -2293,6 +2293,12 @@ namespace gpu_vulkan
 
          m_uboBuffers[i]->map();
 
+         auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
+
+         descriptor_writer(*m_psetdescriptorlayoutGlobal, *m_pdescriptorpoolGlobal)
+            .writeBuffer(0, &bufferInfo)
+            .build(m_descriptorsetsGlobal[i]);
+
       }
 
       //auto globalSetLayout = m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
@@ -2319,11 +2325,13 @@ namespace gpu_vulkan
       if (!m_psetdescriptorlayoutGlobal)
       {
 
+         auto pgpurenderer = get_renderer();
+
          m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(this)
             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
             .build();
 
-         auto iFrameCount = m_pgpurenderer->get_frame_count();
+         auto iFrameCount = pgpurenderer->get_frame_count();
 
          m_descriptorsetsGlobal.resize(iFrameCount);
 
@@ -2334,17 +2342,6 @@ namespace gpu_vulkan
          pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount);
 
          m_pdescriptorpoolGlobal = pdescriptorpoolbuilder->build();
-
-         for (int i = 0; i < m_descriptorsetsGlobal.size(); i++)
-         {
-
-            auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
-
-            descriptor_writer(*m_psetdescriptorlayoutGlobal, *m_pdescriptorpoolGlobal)
-               .writeBuffer(0, &bufferInfo)
-               .build(m_descriptorsetsGlobal[i]);
-
-         }
 
       }
 

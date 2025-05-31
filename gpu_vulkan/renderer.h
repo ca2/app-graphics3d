@@ -122,7 +122,7 @@ namespace gpu_vulkan
 
 
       virtual void restart_frame_counter();
-      virtual void on_new_frame();
+      void on_new_frame() override;
       void initialize_renderer(::gpu::context* pgpucontext, ::gpu::enum_output eoutput) override;
 
       //int width()  override;

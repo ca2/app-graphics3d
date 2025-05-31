@@ -60,16 +60,18 @@ namespace graphics3d
    void engine::on_render_frame()
    {
 
-      auto prenderer = m_pgpucontext->get_renderer();
-
-      if (m_pgpucontext->rectangle().is_empty())
+      if (m_rectanglePlacementNew.is_empty())
       {
 
          return;
 
       }
 
-      //return;
+      auto prenderer = m_pgpucontext->get_renderer();
+
+      _prepare_frame();
+
+      prenderer->on_new_frame();
 
       if (auto pframe = prenderer->beginFrame())
       {
@@ -129,6 +131,37 @@ namespace graphics3d
 
    void engine::on_update_frame()
    {
+
+      if (!m_pcamera)
+      {
+
+         m_pcamera = m_pscene->get_default_camera();
+
+         m_transform.translation = m_pcamera->m_locationPosition;
+
+         m_transform.rotation.x = m_pcamera->m_fPitch;
+
+         m_transform.rotation.y = m_pcamera->m_fYaw;
+
+         //VkcCamera camera(glm::vec3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
+
+         //auto viewerObject = __øcreate <::graphics3d::scene_object>();
+         //papp->m_pimpact->m_bLastMouse = true;
+         //viewerObject->m_transform.translation.z = -2.5f;
+         //m_transform.translation.z = -2.5f;
+
+         ::pointer <::database::client> pdatabaseclient = m_papplication;
+
+         if (pdatabaseclient)
+         {
+
+            //pdatabaseclient->datastream()->get_block("camera", m_pcamera->as_block());
+            //pdatabaseclient->datastream()->get_block("transform", as_memory_block(m_transform));
+            //pdatabaseclient->datastream()->get_block("input", m_pinput->as_block());
+
+         }
+
+      }
 
       //m_fFrameTime = fFrameTime;
 
@@ -383,8 +416,6 @@ namespace graphics3d
    void engine::do_frame_step()
    {
 
-      _prepare_frame();
-
       _do_frame_step();
 
    }
@@ -401,37 +432,12 @@ namespace graphics3d
    void engine::_prepare_frame()
    {
 
-      if (!m_pcamera)
+      if (!m_bEngineOnFrameContextInitialization)
       {
 
-         m_pcamera = m_pscene->get_default_camera();
+         m_bEngineOnFrameContextInitialization = true;
 
-         m_transform.translation = m_pcamera->m_locationPosition;
-
-         m_transform.rotation.x = m_pcamera->m_fPitch;
-
-         m_transform.rotation.y = m_pcamera->m_fYaw;
-
-         //VkcCamera camera(glm::vec3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
-
-         //auto viewerObject = __øcreate <::graphics3d::scene_object>();
-         //papp->m_pimpact->m_bLastMouse = true;
-         //viewerObject->m_transform.translation.z = -2.5f;
-         //m_transform.translation.z = -2.5f;
-
-         ::pointer <::database::client> pdatabaseclient = m_papplication;
-
-         if (pdatabaseclient)
-         {
-
-            //pdatabaseclient->datastream()->get_block("camera", m_pcamera->as_block());
-            //pdatabaseclient->datastream()->get_block("transform", as_memory_block(m_transform));
-            //pdatabaseclient->datastream()->get_block("input", m_pinput->as_block());
-
-         }
-
-
-
+         _engine_on_frame_context_initialization();
 
       }
 
@@ -443,69 +449,62 @@ namespace graphics3d
 
             m_rectanglePlacement = m_rectanglePlacementNew;
 
-            defer_update_engine(m_rectanglePlacement);
-
             auto pgpucontext = m_pgpucontext;
 
-            if (pgpucontext->m_pgpurenderer)
-            {
+            pgpucontext->set_placement(m_rectanglePlacement);
 
-               //pgpucontext->create_offscreen_buffer(m_rectanglePlacement.size());
+            defer_update_engine(m_rectanglePlacement);
 
-               pgpucontext->set_placement(m_rectanglePlacement);
+            //if (pgpucontext->m_pgpurenderer)
+            //{
 
-               //m_pimpact->on_load_engine();
+            //   //pgpucontext->create_offscreen_buffer(m_rectanglePlacement.size());
 
-               //run();
+            //   
+            //   //m_pimpact->on_load_engine();
 
-               //m_pimpact->m_ptaskEngine.release();
+            //   //run();
 
-               //return;
+            //   //m_pimpact->m_ptaskEngine.release();
+
+            //   //return;
 
 
-               //m_pinput = __allocate::graphics3d::input();
+            //   //m_pinput = __allocate::graphics3d::input();
 
-               //m_pinput->m_pimpact = m_pimpact;
+            //   //m_pinput->m_pimpact = m_pimpact;
 
-               //m_pcamera = __allocate::graphics3d::camera(glm::vec3(0.0f, 3.0f, 3.0f), -90.0f, 0.0f);
+            //   //m_pcamera = __allocate::graphics3d::camera(glm::vec3(0.0f, 3.0f, 3.0f), -90.0f, 0.0f);
 
-               ////m_pcamera->m_pimpact
+            //   ////m_pcamera->m_pimpact
 
-               ////m_pglcapplication = m_pimpact->start_opengl_application();
-               ////__øconstruct(m_pgpucontext);
+            //   ////m_pglcapplication = m_pimpact->start_opengl_application();
+            //   ////__øconstruct(m_pgpucontext);
 
-               //if (!m_papplication->m_bUseDraw2dProtoWindow)
-               //{
+            //   //if (!m_papplication->m_bUseDraw2dProtoWindow)
+            //   //{
 
-               //   pgpucontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
+            //   //   pgpucontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });
 
-               //}
+            //   //}
 
-               //m_prenderer = __allocate::graphics3d_opengl::renderer();
+            //   //m_prenderer = __allocate::graphics3d_opengl::renderer();
 
-               ////return;
-               //// Initialize the game logic and scene data
-               ////Init();
+            //   ////return;
+            //   //// Initialize the game logic and scene data
+            //   ////Init();
 
-               //pgpucontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
+            //   //pgpucontext->m_pgpucontext->m_timeSample = 1_s / 60.0;
 
-               //m_pgpucontext->m_rendera.add_unique(this);
+            //   //m_pgpucontext->m_rendera.add_unique(this);
 
-            }
+            //}
 
          }
 
       }
 
-      if (!m_bEngineOnFrameContextInitialization)
-      {
-
-         m_bEngineOnFrameContextInitialization = true;
-
-         _engine_on_frame_context_initialization();
-
-      }
-
+ 
    }
 
 
@@ -520,7 +519,7 @@ namespace graphics3d
 
       m_fFrameTime = frameTime;
 
-      if (!m_rectanglePlacement.is_empty())
+      if (!m_rectanglePlacementNew.is_empty())
       {
 
          on_update_frame();
@@ -535,16 +534,16 @@ namespace graphics3d
    void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      if (!m_prenderer)
-      {
+      //if (!m_prenderer)
+      //{
 
-         __øconstruct(m_prenderer);
+      //   __øconstruct(m_prenderer);
 
-         //::graphics3d::engine::m_prenderer = m_prenderer;
+      //   //::graphics3d::engine::m_prenderer = m_prenderer;
 
-         m_prenderer->initialize_renderer(m_pgpucontext, m_pgpucontext->m_eoutput);
+      //   m_prenderer->initialize_renderer(m_pgpucontext, m_pgpucontext->m_eoutput);
 
-      }
+      //}
 
 
       //m_prenderer->on_context_resize();

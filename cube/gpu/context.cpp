@@ -399,6 +399,14 @@ namespace gpu
    }
 
 
+   void context::engine_on_frame_context_initialization()
+   {
+
+
+
+   }
+
+
    bool context::task_iteration()
    {
 
