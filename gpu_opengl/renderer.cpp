@@ -3,6 +3,7 @@
 #include "gpu_opengl/context.h"
 #include "gpu_opengl/cpu_buffer.h"
 #include "frame.h"
+#include "frame_buffer.h"
 #include "glad.h"
 //#include "GLFW/glfw3.h"
 #include <vector>
@@ -65,17 +66,17 @@ namespace gpu_opengl
    //}
 
 
-   void renderer::set_placement(const ::int_rectangle& rectanglePlacement)
+   void renderer::on_context_resize()
    {
 
-      ::gpu::renderer::set_placement(rectanglePlacement);
+      //::gpu::renderer::set_placement(rectanglePlacement);
 
       ::cast < context > pgpucontext = m_pgpucontext;
 
       if (pgpucontext)
       {
 
-         pgpucontext->update_framebuffer(rectanglePlacement.size());
+         pgpucontext->update_framebuffer(pgpucontext->rectangle().size());
 
       }
 
@@ -85,12 +86,12 @@ namespace gpu_opengl
    ::pointer < ::gpu::frame > renderer::beginFrame()
    {
 
-      if(m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
-      {
-         
-         set_placement(m_pgpucontext->size());
+      //if(m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
+      //{
+      //   
+      //   set_placement(m_pgpucontext->size());
 
-      }  
+      //}  
 
       //context_guard guard(this);
 
@@ -116,11 +117,11 @@ namespace gpu_opengl
 
       //auto rectangle = m_pgpucontext->m_pimpact->host_rectangle();
 
-      ::cast < context > pcontext = m_pgpucontext;
+      ::cast < context > pgpucontext = m_pgpucontext;
 
       //auto sizeHost = m_pgpucontext->size();
 
-      auto r = this->rectangle();
+      auto r = pgpucontext->rectangle();
 
       //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       //glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
@@ -158,7 +159,7 @@ namespace gpu_opengl
       else
       {
 
-         auto sizeHost = pcontext->m_sizeHost;
+         auto sizeHost = pgpucontext->m_sizeHost;
 
 
          left = r.left();
@@ -580,7 +581,9 @@ namespace gpu_opengl
 
       prenderer = prendererSrc;
 
-      set_placement(prenderer->m_rectangle);
+      auto rectangle = prenderer->m_pgpucontext->rectangle();
+
+      m_pgpucontext->set_placement(rectangle);
 
       //VkImage image = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
 
@@ -747,9 +750,9 @@ void main() {
 
                ::cast < context > pcontext = prenderer->m_pgpucontext;
                
-               GLuint fboID = pcontext->m_fboID;
+               GLuint tex = pcontext->m_pframebuffer->m_tex;
 
-               glBindTexture(GL_TEXTURE_2D, fboID);
+               glBindTexture(GL_TEXTURE_2D, tex);
 
                int iGlError2 = glGetError();
 

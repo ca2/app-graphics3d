@@ -2007,7 +2007,7 @@ namespace draw2d_vulkan
 
          pmodel->m_vertexBuffer = createQuadVertexBuffer(pgpucontext->logicalDevice(),
             pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-            &pmodel->m_vertexMemory, quad, color, m_pgpucontext->m_size);
+            &pmodel->m_vertexMemory, quad, color, m_pgpucontext->rectangle().size());
 
          pmodel->m_indexBuffer = nullptr;
          pmodel->m_indexMemory = nullptr;
@@ -2207,7 +2207,7 @@ namespace draw2d_vulkan
 
          pmodel->m_vertexBuffer = createRectVertexBuffer(pgpucontext->logicalDevice(),
             pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-            &pmodel->m_vertexMemory, r, pbrush->m_color, m_pgpucontext->m_size);
+            &pmodel->m_vertexMemory, r, pbrush->m_color, m_pgpucontext->rectangle().size());
 
          pmodel->m_indexBuffer = nullptr;
          pmodel->m_indexMemory = nullptr;
@@ -6607,7 +6607,7 @@ namespace draw2d_vulkan
          pmodel->m_vertexBuffer = createLineVertexBuffer(pgpucontext->logicalDevice(),
             pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
             &pmodel->m_vertexMemory, points[0], points[1],
-            color, m_pgpucontext->m_size);
+            color, m_pgpucontext->rectangle().size());
 
          pmodel->m_indexBuffer = nullptr;
          pmodel->m_indexMemory = nullptr;
@@ -7366,7 +7366,7 @@ namespace draw2d_vulkan
 
          ::cast < ::gpu_vulkan::renderer > pgpurenderer = m_pgpucontext->m_pgpurenderer;
 
-         pgpurenderer->set_placement(rectangle);
+         m_pgpucontext->set_placement(rectangle);
 
          pgpurenderer->defer_update_render_pass();
 

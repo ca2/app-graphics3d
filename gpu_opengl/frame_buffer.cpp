@@ -43,17 +43,37 @@ namespace gpu_opengl
 
       }
 
-      destroy();
+      //destroy();
 
-      glGenFramebuffers(1, &m_fbo);
+      if (!m_fbo)
+      {
+
+         glGenFramebuffers(1, &m_fbo);
+
+      }
       glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
-      glGenTextures(1, &m_tex);
-      glBindTexture(GL_TEXTURE_2D, m_tex);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sizeNew.width(), sizeNew.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex, 0);
+      if (!m_tex)
+      {
+         glGenTextures(1, &m_tex);
+         int iGlError = glGetError();
+         if (iGlError != 0)
+         {
+
+            warning() << "glGenTextures : " << opengl_error_string(iGlError);
+
+         }
+         glBindTexture(GL_TEXTURE_2D, m_tex);
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sizeNew.width(), sizeNew.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_tex, 0);
+      }
+      else
+      {
+         glBindTexture(GL_TEXTURE_2D, m_tex);
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sizeNew.width(), sizeNew.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      }
 
       if (bWithDepthBuffer)
       {
@@ -66,11 +86,12 @@ namespace gpu_opengl
 
       }
 
+      auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
-      if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+      if (status != GL_FRAMEBUFFER_COMPLETE)
       {
 
-         printf("Framebuffer not complete!\n");
+         printf("Framebuffer not complete! %d\n", status);
 
       }
 
@@ -84,7 +105,25 @@ namespace gpu_opengl
    void frame_buffer::bind()
    {
 
-      glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+      GLint drawFboId = 0, readFboId = 0;
+
+      glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
+      glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
+
+      if (drawFboId != m_fbo)
+      {
+
+         glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+      }
+
+      if (drawFboId != m_fbo)
+      {
+
+         glViewport(0, 0, m_size.cx(), m_size.cy());
+
+      }
+      //glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
    }
 
@@ -92,11 +131,12 @@ namespace gpu_opengl
    void frame_buffer::unbind()
    {
 
-      GLint framebuffer = 0;
+      GLint drawFboId = 0, readFboId = 0;
 
-      glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer);
+      glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
+      glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
 
-      if (framebuffer != m_fbo)
+      if (drawFboId != m_fbo)
       {
 
          throw ::exception(error_wrong_state);

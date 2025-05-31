@@ -35,7 +35,7 @@ namespace graphics3d_opengl
 		//::pointer < glc::Application > m_pglcapplication;  // Game object that manages the scenes
 		::pointer < ::graphics3d::input > m_pinput;
 		//::pointer<::graphics3d_opengl::render_data> m_prenderdataCurrentScene;
-		::pointer < ::gpu_opengl::frame_buffer	 >		m_pframebuffer;
+		//::pointer < ::gpu_opengl::frame_buffer	 >		m_pframebuffer;
 		::pointer < ::gpu::shader	 >		m_pshaderBlend;
 		//double m_Δx;
 		//double m_Δy;
@@ -88,6 +88,10 @@ namespace graphics3d_opengl
 		//void resize(int cx, int cy) override;
 
 		void do_frame_step() override;
+
+
+		//virtual void _do_frame_step();
+
 		//void Init();
 
 		void on_initialize_particle() override;

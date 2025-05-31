@@ -5986,20 +5986,20 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::cast < ::gpu_opengl::renderer >prenderer = m_pgpucontext->get_renderer();
 
-      prenderer->set_placement({ int_point{}, size });
+      m_pgpucontext->set_placement({ int_point{}, size });
 
       if (m_egraphics & e_graphics_draw)
       {
 
          ::cast < ::gpu_opengl::context >pgpucontext = m_pgpucontext;
 
-         pgpucontext->m_size = size;
+         //pgpucontext->m_size = size;
 
-         pgpucontext->m_sizeNew = size;
+         //pgpucontext->m_sizeNew = size;
 
          pgpucontext->m_sizeHost = size;
 
-         pgpucontext->update_framebuffer(size);
+         pgpucontext->make_current();
 
          m_pframe = prenderer->beginFrame();
 
@@ -6117,15 +6117,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
                auto rectanglePlacement = pwindow->get_window_rectangle();
 
-               m_pgpucontextOutput->m_sizeNew = rectanglePlacement.size();
+               m_pgpucontextOutput->set_placement(rectanglePlacement);
 
-               m_pgpucontextOutput->m_size = rectanglePlacement.size();
+               //m_pgpucontextOutput->m_size = rectanglePlacement.size();
 
                ::cast < ::gpu_opengl::context > pgpucontextOpenGL = m_pgpucontextOutput;
 
                pgpucontextOpenGL->m_sizeHost = rectanglePlacement.size();
 
-               prendererOutput->set_placement(rectanglePlacement);
+               pgpucontextOpenGL->set_placement(rectanglePlacement);
 
                //m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
 

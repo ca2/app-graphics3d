@@ -16,9 +16,13 @@ namespace gpu_opengl
    public:
 
 
-      GLuint m_fboID;
-      GLuint m_texID;
-      ::int_size m_sizeTex;
+      //GLuint m_fboID;
+      //GLuint m_texID;
+      //::int_size m_sizeTex;
+
+      bool     m_bDepthBuffer = true;
+
+      ::pointer < ::gpu_opengl::frame_buffer >   m_pframebuffer;
 
       ::int_size                    m_sizeHost;
       //bool m_bMesa;

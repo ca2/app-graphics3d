@@ -242,14 +242,17 @@ namespace cube
 
          m_pengine->initialize_engine(this);
 
-         if (!m_callbackImage32CpuBuffer)
+         if (!m_papp->m_bUseDraw2dProtoWindow)
          {
 
-            m_callbackImage32CpuBuffer =
-               [this](const ::image32_t * pimage32, int w, int h, int stride)
-               {
+            if (!m_callbackImage32CpuBuffer)
+            {
 
-                  //{
+               m_callbackImage32CpuBuffer =
+                  [this](const ::image32_t* pimage32, int w, int h, int stride)
+                  {
+
+                     //{
 
                      _synchronous_lock synchronouslock(m_pparticleImageSynchronization);
 
@@ -261,60 +264,62 @@ namespace cube
 
                      m_pimage->image32()->vertical_swap_copy(s, m_pimage->m_iScan, pimage32, stride);
 
-                  //   for (int y = 0; y < h; y++)
-                  //   {
+                     //   for (int y = 0; y < h; y++)
+                     //   {
 
-                  //      auto p = (unsigned char*)(m_pimage->image32() + (y * m_pimage->m_iScan) / 4);
+                     //      auto p = (unsigned char*)(m_pimage->image32() + (y * m_pimage->m_iScan) / 4);
 
-                  //      for (int x = 0; x < w; x++)
-                  //      {
+                     //      for (int x = 0; x < w; x++)
+                     //      {
 
-                  //         //p[0] = p[0] * p[3] / 255;
-                  //         //p[1] = p[1] * p[3] / 255;
-                  //         //p[2] = p[2] * p[3] / 255;
+                     //         //p[0] = p[0] * p[3] / 255;
+                     //         //p[1] = p[1] * p[3] / 255;
+                     //         //p[2] = p[2] * p[3] / 255;
 
-                  //         auto r = p[0];
-                  //         auto g = p[1];
-                  //         auto b = p[2];
-                  //         auto a = p[3];
-                  //         //p[0] = b;
-                  //         //p[2] = r;
-                  //         //p[3] = 255;
+                     //         auto r = p[0];
+                     //         auto g = p[1];
+                     //         auto b = p[2];
+                     //         auto a = p[3];
+                     //         //p[0] = b;
+                     //         //p[2] = r;
+                     //         //p[3] = 255;
 
-                  //         /*         if (r > a)
-                  //                  {
+                     //         /*         if (r > a)
+                     //                  {
 
-                  //                     information("What a red!!"_ansi);
+                     //                     information("What a red!!"_ansi);
 
-                  //                  }
+                     //                  }
 
-                  //                  if (g > a)
-                  //                  {
+                     //                  if (g > a)
+                     //                  {
 
-                  //                     information("What a green!!"_ansi);
+                     //                     information("What a green!!"_ansi);
 
-                  //                  }
+                     //                  }
 
-                  //                  if (b > a)
-                  //                  {
+                     //                  if (b > a)
+                     //                  {
 
-                  //                     information("What a blue!!"_ansi);
+                     //                     information("What a blue!!"_ansi);
 
-                  //                  }*/
+                     //                  }*/
 
-                  //         p += 4;
+                     //         p += 4;
 
-                  //      }
+                     //      }
 
-                  //   }
+                     //   }
 
-                  //}
+                     //}
 
-                  set_need_redraw();
+                     set_need_redraw();
 
-                  post_redraw();
+                     post_redraw();
 
-               };
+                  };
+
+            }
 
          }
 

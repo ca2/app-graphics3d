@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "context.h"
 #include "device_win32.h"
+#include "frame_buffer.h"
 #include "program.h"
 #include "shader.h"
 #include "aura/graphics/image/image.h"
@@ -17,8 +18,8 @@ namespace gpu_opengl
 
       m_globalUBO = 0;
 
-      m_fboID = 0;
-      m_texID = 0;
+      //m_fboID = 0;
+      //m_texID = 0;
       //m_bMesa = false;
 
       //m_emode = e_mode_system;
@@ -280,7 +281,7 @@ namespace gpu_opengl
          glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
             GL_TEXTURE_2D, m_gluTextureBitmap1, 0);
          glBlitFramebuffer(0, 0, m_sizeBitmap1.cx(), m_sizeBitmap1.cy(),
-            0, 0, m_size.cx(), m_size.cy(),
+            0, 0, m_rectangle.width(), m_rectangle.height(),
             GL_COLOR_BUFFER_BIT, GL_LINEAR);
          glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
          glDeleteFramebuffers(1, &readFboId);
@@ -400,89 +401,96 @@ namespace gpu_opengl
 
       }
 
-      make_current();
+      __defer_construct(m_pframebuffer);
 
-      if (!m_fboID)
+      if (size.area() > 0)
       {
 
-         glGenFramebuffers(1, &m_fboID);
+         m_pframebuffer->create(size, m_bDepthBuffer);
 
       }
 
-      if (size == m_sizeTex)
-      {
-
-         return;
-
-      }
-
-      glBindFramebuffer(GL_FRAMEBUFFER, m_fboID);
-
-      if (m_texID == 0)
-      {
-         glGenTextures(1, &m_texID);
-         auto iError = glGetError();
-         if (iError != 0)
-         {
-            auto pszError = opengl_error_string(iError);
-            warning() << "error generating texture " << pszError;
-         }
-         glBindTexture(GL_TEXTURE_2D, m_texID);
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-         glBindTexture(GL_TEXTURE_2D, 0);
-
-         // attach it to currently bound framebuffer object
-         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texID, 0);
-
-      }
-      else
-      {
-
-         glBindTexture(GL_TEXTURE_2D, m_texID);
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-         glBindTexture(GL_TEXTURE_2D, 0);
-
-      }
-
-      auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-      if (status != GL_FRAMEBUFFER_COMPLETE)
-      {
-       
-         warning() << "ERROR::FRAMEBUFFER:: Framebuffer is not complete! " << status;
-
-      }
-      else
-      {
-
-         m_sizeTex = size;
-
-      }
-
-      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      glClear(GL_COLOR_BUFFER_BIT);
-
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-      //if (oldTexID)
+      //if (!m_fboID)
       //{
 
-      //   glDeleteTextures(1, &oldTexID);
-
-      //   auto iError = glGetError();
-
-      //   if (iError != 0)
-      //   {
-
-      //      auto pszError = opengl_error_string(iError);
-
-      //      warning() << "error generating texture " << pszError;
-
-      //   }
+      //   glGenFramebuffers(1, &m_fboID);
 
       //}
+
+      //if (size == m_sizeTex)
+      //{
+
+      //   return;
+
+      //}
+
+      //glBindFramebuffer(GL_FRAMEBUFFER, m_fboID);
+
+      //if (m_texID == 0)
+      //{
+      //   glGenTextures(1, &m_texID);
+      //   auto iError = glGetError();
+      //   if (iError != 0)
+      //   {
+      //      auto pszError = opengl_error_string(iError);
+      //      warning() << "error generating texture " << pszError;
+      //   }
+      //   glBindTexture(GL_TEXTURE_2D, m_texID);
+      //   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      //   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      //   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      //   glBindTexture(GL_TEXTURE_2D, 0);
+
+      //   // attach it to currently bound framebuffer object
+      //   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texID, 0);
+
+      //}
+      //else
+      //{
+
+      //   glBindTexture(GL_TEXTURE_2D, m_texID);
+      //   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      //   glBindTexture(GL_TEXTURE_2D, 0);
+
+      //}
+
+      //auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+      //if (status != GL_FRAMEBUFFER_COMPLETE)
+      //{
+      // 
+      //   warning() << "ERROR::FRAMEBUFFER:: Framebuffer is not complete! " << status;
+
+      //}
+      //else
+      //{
+
+      //   m_sizeTex = size;
+
+      //}
+
+      //glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      ////glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      //glClear(GL_COLOR_BUFFER_BIT);
+
+      //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+      ////if (oldTexID)
+      ////{
+
+      ////   glDeleteTextures(1, &oldTexID);
+
+      ////   auto iError = glGetError();
+
+      ////   if (iError != 0)
+      ////   {
+
+      ////      auto pszError = opengl_error_string(iError);
+
+      ////      warning() << "error generating texture " << pszError;
+
+      ////   }
+
+      ////}
 
    }
 
@@ -837,8 +845,6 @@ namespace gpu_opengl
 
                context_guard guard(this);
 
-               update_framebuffer(r.size());
-
             });
       }
 
@@ -922,7 +928,7 @@ namespace gpu_opengl
 
       ::cast < device_win32 > pdevice = m_pgpudevice;
 
-      pdevice->_create_device(m_size);
+      pdevice->_create_device(m_rectangle.size());
 
       //if (!m_hdc || !m_hrc)
       //{
@@ -1398,24 +1404,17 @@ namespace gpu_opengl
 
       auto bMadeCurrentNow = pgpudevice->_make_current();
 
-      GLint drawFboId = 0, readFboId = 0;
+      update_framebuffer(m_rectangle.size());
 
-      glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
-      glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
-
-      if (drawFboId != m_fboID)
+      if (m_pframebuffer)
       {
 
-         glBindFramebuffer(GL_FRAMEBUFFER, m_fboID);
+         m_pframebuffer->bind();
 
       }
 
-      if (drawFboId != m_fboID || bMadeCurrentNow)
-      {
+      pgpudevice->m_pgpucontextCurrent = this;
 
-         glViewport(0, 0, m_size.cx(), m_size.cy());
-
-      }
       //glBindFramebuffer(GL_FRAMEBUFFER, m_fboID);
 
       //return estatus;
@@ -1445,9 +1444,11 @@ namespace gpu_opengl
 
       }
 
-      ::e_status estatus = ::success;
+      m_pframebuffer.release();
 
-      ::glDeleteFramebuffers(1, &m_fboID);
+      //::e_status estatus = ::success;
+
+      //::glDeleteFramebuffers(1, &m_fboID);
    
    }
 

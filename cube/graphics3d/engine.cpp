@@ -62,7 +62,7 @@ namespace graphics3d
 
       auto prenderer = m_pgpucontext->m_pgpurenderer;
 
-      if (prenderer->rectangle().area() <= 0)
+      if (m_pgpucontext->rectangle().is_empty())
       {
 
          return;
@@ -311,20 +311,31 @@ namespace graphics3d
 
       ::pointer < ::gpu::context > pgpucontext;
 
-      if (m_papplication->m_bUseDraw2dProtoWindow)
-      {
+      //if (m_papplication->m_bUseDraw2dProtoWindow)
+      //{
 
-         auto pwindow = m_pimpact->window();
+      //   auto pwindow = m_pimpact->window();
 
-         pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
+      //   pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
 
-      }
-      else
+      //}
+      //else
       {
 
          auto callbackImage32CpuBuffer = m_pimpact->m_callbackImage32CpuBuffer;
 
-         pgpucontext = pgpudevice->start_cpu_buffer_context(this, callbackImage32CpuBuffer, rectanglePlacement);
+         if (callbackImage32CpuBuffer)
+         {
+
+            pgpucontext = pgpudevice->start_cpu_buffer_context(this, callbackImage32CpuBuffer, rectanglePlacement);
+
+         }
+         else
+         {
+
+            pgpucontext = pgpudevice->start_gpu_output_context(this, ::gpu::e_output_gpu_buffer, rectanglePlacement);
+
+         }
 
       }
 
@@ -439,7 +450,7 @@ namespace graphics3d
 
                //pgpucontext->create_offscreen_buffer(m_rectanglePlacement.size());
 
-               pgpucontext->m_pgpurenderer->set_placement(m_rectanglePlacement);
+               pgpucontext->set_placement(m_rectanglePlacement);
 
                //m_pimpact->on_load_engine();
 
@@ -534,7 +545,7 @@ namespace graphics3d
       }
 
 
-      m_prenderer->set_placement(rectanglePlacement);
+      //m_prenderer->on_context_resize();
       //m_pglobalpool->initialize_pool(pgpucontext);
 
       //= __allocate

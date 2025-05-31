@@ -53,12 +53,12 @@ namespace gpu
 #endif
 
 
-   ::int_rectangle renderer::rectangle()
-   {
+   //::int_rectangle renderer::rectangle()
+   //{
 
-      return m_rectangle;
+   //   return m_rectangle;
 
-   }
+   //}
 
 
    bool renderer::render_step()
@@ -177,10 +177,16 @@ namespace gpu
    //}
 
 
-   void renderer::set_placement(const ::int_rectangle& rectanglePlacement)
+   //void renderer::set_placement(const ::int_rectangle& rectanglePlacement)
+   //{
+
+   //   m_rectangle = rectanglePlacement;
+
+   //}
+
+   void renderer::on_context_resize()
    {
 
-      m_rectangle = rectanglePlacement;
 
    }
 

@@ -91,9 +91,9 @@ namespace gpu_vulkan
       //::pointer<swap_chain_render_pass>			m_pvkcswapchain;
       //::pointer<offscreen_render_pass>			m_pvkcoffscreen;
       ::pointer<render_pass>			                  m_pvkcrenderpass;
-      ::pointer<renderer>			                     m_prendererResolve;
-      ::pointer<::gpu::shader>                        m_pshaderResolve;
-      ::pointer<model>                                m_pmodelResolve;
+      //::pointer<renderer>			                     m_prendererResolve;
+      //::pointer<::gpu::shader>                        m_pshaderResolve;
+      //::pointer<model>                                m_pmodelResolve;
 
       ::array<VkCommandBuffer>	commandBuffers;
       VkExtent2D m_extentRenderer;
@@ -146,8 +146,8 @@ namespace gpu_vulkan
       }
 
       void sample();
-      void resolve_color_and_alpha_accumulation_buffers();
-      void _resolve_color_and_alpha_accumulation_buffers();
+      //void resolve_color_and_alpha_accumulation_buffers();
+      //void _resolve_color_and_alpha_accumulation_buffers();
       void swap_chain();
 
       float getAspectRatio() const
@@ -187,7 +187,7 @@ namespace gpu_vulkan
       //void on_begin_render(::graphics3d::frame * pframe) override;
       //void on_end_render(::graphics3d::frame * pframe) override;
 
-      void set_placement(const ::int_rectangle& rectanglePlacement) override;
+      void on_context_resize() override;
 
       void on_begin_draw() override;
       virtual void _on_begin_render();

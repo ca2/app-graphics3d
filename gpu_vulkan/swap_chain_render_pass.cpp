@@ -323,11 +323,14 @@ namespace gpu_vulkan
 
 		m_formatImage = surfaceFormat.format;
 		m_extent = extent;
-		m_pgpurenderer->m_rectangle.set_size({ (int)extent.width, (int)extent.height });
+		m_pgpucontext->m_rectangle.set_size({ (int)extent.width, (int)extent.height });
 
 	}
 
-	void swap_chain_render_pass::createImageViews() {
+
+	void swap_chain_render_pass::createImageViews() 
+	{
+
 		m_imageviews.resize(m_images.size());
 		for (size_t i = 0; i < m_images.size(); i++) {
 			VkImageViewCreateInfo viewInfo{};

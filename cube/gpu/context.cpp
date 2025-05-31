@@ -458,13 +458,20 @@ namespace gpu
    }
 
 
-
-
-
-   ::int_size context::size()
+   ::int_rectangle context::rectangle()
    {
 
-      return m_size;
+      return m_rectangle;
+
+   }
+
+
+   void context::set_placement(const ::int_rectangle& rectanglePlacement)
+   {
+
+      m_rectangle = rectanglePlacement;
+
+      //get_renderer()->on_context_resize();
 
    }
 

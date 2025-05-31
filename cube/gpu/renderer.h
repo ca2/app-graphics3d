@@ -48,7 +48,7 @@ namespace gpu
       //::pointer<::gpu::approach>            m_papproach;
       //::image::image_pointer                m_pimageFromGpu;
       ///::pointer<::gpu::shader>              m_pshader;
-      int_rectangle                         m_rectangle;
+      //int_rectangle                         m_rectangle;
       //int_size                              m_sizeHost;
       //string                              m_strFont1;
       //string_map < ::image::image_pointer >      m_pimagemap;
@@ -75,7 +75,7 @@ namespace gpu
 #endif
 
       virtual void on_happening(enum_happening ehappening);
-      virtual ::int_rectangle rectangle();
+      //virtual ::int_rectangle rectangle();
       //virtual int height();
 
       virtual bool render_step();
@@ -121,7 +121,9 @@ namespace gpu
 
       //virtual void draw();
 
-      virtual void set_placement(const ::int_rectangle & rectanglePlacement);
+      //virtual void set_placement(const ::int_rectangle & rectanglePlacement);
+
+      virtual void on_context_resize();
 
       virtual void on_begin_draw();
       virtual void on_end_draw();

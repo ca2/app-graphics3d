@@ -26,6 +26,7 @@ namespace gpu
 
       ::pointer < ::gpu::approach >          m_pgpuapproach;
       ::pointer < ::windowing::window >      m_pwindow;
+      ::pointer < ::gpu::context >           m_pgpucontextCurrent;
       //::int_size                             m_sizeNew;
       //::int_size                             m_size;
       //float                                  m_z;

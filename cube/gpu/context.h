@@ -65,8 +65,8 @@ namespace gpu
 
       ::pointer<::gpu::device>               m_pgpudevice;
       
-      ::int_size                             m_sizeNew;
-      ::int_size                             m_size;
+      //::int_rectangle                        m_rectangleNew;
+      ::int_rectangle                        m_rectangle;
       float                                  m_z;
       int_point                              m_pointTranslate;
       ::pointer<::gpu::cpu_buffer>           m_pcpubuffer;
@@ -108,7 +108,8 @@ namespace gpu
 
       virtual ::gpu::renderer* get_renderer();
 
-      virtual ::int_size size();
+      virtual ::int_rectangle rectangle();
+      virtual void set_placement(const ::int_rectangle & rectanglePlacement);
 
 
       virtual string _001GetIntroProjection();
