@@ -329,23 +329,23 @@ namespace gpu_opengl
       //glDisable(GL_SCISSOR_TEST);
       glFlush();
 
-      GLint drawFboId = 0, readFboId = 0;
+      //GLint drawFboId = 0, readFboId = 0;
 
-      glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
-      glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
+      //glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
+      //glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
 
-      int iGlError1 = glGetError();
+      //int iGlError1 = glGetError();
 
-      int iGlError2 = -1;
+      //int iGlError2 = -1;
 
-      if (drawFboId != 0)
-      {
+      //if (drawFboId != 0)
+      //{
 
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      //   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-         iGlError2 = glGetError();
+      //   iGlError2 = glGetError();
 
-      }
+      //}
 
 
       if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
@@ -391,6 +391,8 @@ namespace gpu_opengl
 
          if (pcpubuffer)
          {
+
+            pcpubuffer->set_size(pgpucontext->m_rectangle.size());
 
             pcpubuffer->gpu_read();
 

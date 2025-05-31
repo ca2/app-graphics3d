@@ -60,7 +60,7 @@ namespace graphics3d
    void engine::on_render_frame()
    {
 
-      auto prenderer = m_pgpucontext->m_pgpurenderer;
+      auto prenderer = m_pgpucontext->get_renderer();
 
       if (m_pgpucontext->rectangle().is_empty())
       {
