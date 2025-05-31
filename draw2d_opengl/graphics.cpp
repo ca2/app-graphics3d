@@ -5999,6 +5999,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          pgpucontext->m_sizeHost = size;
 
+         pgpucontext->update_framebuffer(size);
+
          m_pframe = prenderer->beginFrame();
 
          prenderer->on_begin_render(m_pframe);

@@ -28,6 +28,8 @@ namespace gpu_opengl
       ~renderer();
 
 
+      void set_placement(const ::int_rectangle& rectanglePlacement);
+
       ::pointer < ::gpu::frame > beginFrame() override;
 
       virtual void on_begin_render(::gpu::frame* pframe);

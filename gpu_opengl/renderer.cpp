@@ -65,6 +65,23 @@ namespace gpu_opengl
    //}
 
 
+   void renderer::set_placement(const ::int_rectangle& rectanglePlacement)
+   {
+
+      ::gpu::renderer::set_placement(rectanglePlacement);
+
+      ::cast < context > pgpucontext = m_pgpucontext;
+
+      if (pgpucontext)
+      {
+
+         pgpucontext->update_framebuffer(rectanglePlacement.size());
+
+      }
+
+   }
+
+
    ::pointer < ::gpu::frame > renderer::beginFrame()
    {
 
@@ -509,7 +526,7 @@ namespace gpu_opengl
    }
    GLuint createFullscreenQuad(GLuint& quadVBO) {
       // Vertex data: (x, y, u, v)
-#if 0
+#if 1
       float quadVertices[] = {
          //  Position   TexCoords
          -1.0f,  1.0f,  0.0f, 1.0f, // Top-left
@@ -662,7 +679,8 @@ m_pgpucontext->send([this, prenderer]()
          // render
          on_begin_render(pframe);
 
-         m_pgpucontext->clear(::argb(127, 140 / 2, 220 / 2, 240 / 2));
+         //m_pgpucontext->clear(::argb(127, 140 / 2, 220 / 2, 240 / 2));
+         m_pgpucontext->clear(::color::transparent);
 
 
          if (1)

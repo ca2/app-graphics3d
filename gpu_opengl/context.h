@@ -53,6 +53,9 @@ namespace gpu_opengl
 
       void swap_buffers() override;
 
+
+      virtual void update_framebuffer(const ::int_size& size);
+
       //virtual void create_offscreen_buffer(const ::int_size& size);
       //virtual void _create_offscreen_buffer(const ::int_size& size);
 
