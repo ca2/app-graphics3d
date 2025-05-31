@@ -1,8 +1,7 @@
 #pragma once
 
 
-#include "aura/graphics/draw2d/graphics.h"
-#include "app-cube/cube/gpu/renderer.h"
+#include "app-cube/cube/draw2d/graphics.h"
 
 
 //struct OffscreenContext
@@ -22,10 +21,10 @@ namespace draw2d_opengl
 
 
    class CLASS_DECL_DRAW2D_OPENGL graphics :
-      virtual public ::draw2d::graphics,
-      virtual public ::gpu::renderer
+      virtual public ::draw2d_gpu::graphics
    {
    public:
+
       
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
@@ -38,13 +37,11 @@ namespace draw2d_opengl
       //HDC                           m_hdcGraphics;
       float                               m_z;
       int_point                           m_pointTranslate;
-      ::pointer < ::gpu::frame > m_pframe;
       // bool                                      m_bFont;
       ::int_size                          m_sizeWindow;
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextOpenGL;
-      ::pointer<::gpu::context>             m_pgpucontextOutput;
 
       graphics();
       ~graphics() override;
@@ -124,7 +121,7 @@ namespace draw2d_opengl
       void create_window_graphics(::windowing::window * pwindow) override;
       void CreateCompatibleDC(::draw2d::graphics * pgraphics) override;
 
-      void set_hint_window_output() override;
+      //void set_hint_window_output() override;
 
       virtual bool opengl_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement);
       virtual bool opengl_delete_offscreen_buffer();
@@ -607,8 +604,8 @@ namespace draw2d_opengl
       //void _add_clipping_shape(const ::double_rectangle & rectangle, ::draw2d::region * pregion) override;
 
 
-      void on_begin_draw() override;
-      void on_end_draw() override;
+      //void on_begin_draw() override;
+      //void on_end_draw() override;
       //void on_end_draw() override;
       void on_present() override;
 

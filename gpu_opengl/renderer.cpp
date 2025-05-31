@@ -1,5 +1,7 @@
 #include "framework.h"
+#include "approach.h"
 #include "context.h"
+#include "device.h"
 #include "gpu_opengl/context.h"
 #include "gpu_opengl/cpu_buffer.h"
 #include "frame.h"
@@ -12,6 +14,7 @@
 #include "renderer.h"
 //#include "mesh.h"
 #include "app-cube/cube/impact.h"
+#include "aura/windowing/window.h"
 
 
 namespace gpu_opengl
@@ -362,11 +365,97 @@ namespace gpu_opengl
 
       }
 
-      ::cast < ::gpu_opengl::context > pgpucontext = m_pgpucontext;
-
-      pgpucontext->_release_current();
+      m_pgpucontext->release_current();
 
    }
+
+
+   //void renderer::endDraw(::user::interaction * puserinteraction)
+   //{
+   //   //prenderer->_blend_image(vkimage, rectangle);
+
+   //   if (m_eoutputOnEndDraw == ::gpu::e_output_swap_chain)
+   //   {
+
+   //      //m_pgpucontext->swap_buffers();
+
+   //      //m_pwindow->m_timeLastDrawGuard1.Now();
+
+
+   //   //VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->currentImageIndex];
+
+   //      ::int_rectangle rectangle;
+
+   //      if (puserinteraction && !puserinteraction->host_rectangle().size().is_empty())
+   //      {
+
+   //         rectangle = puserinteraction->host_rectangle();
+
+   //      }
+   //      else
+   //      {
+
+   //         rectangle = { 0, 0, 1920, 1080 };
+
+   //      }
+
+   //      ::cast < ::windowing::window > pwindow = puserinteraction->m_pacmewindowingwindow;
+
+   //      if (!m_pgpucontextOutput)
+   //      {
+
+   //         __øconstruct(m_pgpucontextOutput);
+
+   //         m_pgpucontextOutput = m_papplication->get_gpu()->get_device(pwindow, pwindow->get_window_rectangle())->start_swap_chain_context(this, pwindow);
+
+   //         //m_pgpucontextOutput->create_window_buffer(pwindow);
+
+   //      }
+
+   //      ::cast < ::gpu_opengl::renderer > prendererOutput = m_pgpucontextOutput->get_renderer();
+
+   //      auto rectanglePlacement = pwindow->get_window_rectangle();
+
+   //      m_pgpucontextOutput->set_placement(rectanglePlacement);
+
+   //      //m_pgpucontextOutput->m_size = rectanglePlacement.size();
+
+   //      ::cast < ::gpu_opengl::context > pgpucontextOpenGL = m_pgpucontextOutput;
+
+   //      pgpucontextOpenGL->m_sizeHost = rectanglePlacement.size();
+
+   //      pgpucontextOpenGL->set_placement(rectanglePlacement);
+
+   //      //m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
+
+   //      //prendererOutput->defer_update_render_pass();
+
+   //      prendererOutput->_on_graphics_end_draw(this);
+
+
+   //   }
+   //   else if (m_eoutputOnEndDraw == ::gpu::e_output_cpu_buffer)
+   //   {
+
+   //      //m_pgpucontext->swap_buffers();
+
+   //    //}
+   //    //else
+   //    //{
+
+   //      read_to_cpu_buffer();
+
+   //      throw ::exception(error_not_implemented, "renderer::endDraw() not implemented for e_output_cpu_buffer");
+
+   //      /*m_pimage->map();
+
+   //      m_pimage->copy(&m_pgpucontext->m_pcpubuffer->m_pixmap);*/
+
+   //   }
+
+
+
+   //}
 
 
    void renderer::_sample()
@@ -577,12 +666,10 @@ namespace gpu_opengl
    }
 
 
-   void renderer::_on_graphics_end_draw(::gpu_opengl::renderer* prendererSrc)
+   void renderer::endDraw(::user::interaction * puserinteraction, ::gpu::renderer* pgpurendererSrc)
    {
 
-      ::gpu_opengl::renderer* prenderer;
-
-      prenderer = prendererSrc;
+      ::cast < ::gpu_opengl::renderer > prenderer = pgpurendererSrc;
 
       auto rectangle = prenderer->m_pgpucontext->rectangle();
 

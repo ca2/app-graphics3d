@@ -50,11 +50,13 @@ namespace gpu_opengl
 
       void endFrame() override;
 
+      //void endDraw(::user::interaction * puserinteraction) override;
+
       virtual void _sample();
 
       virtual void _swap();
 
-      virtual void _on_graphics_end_draw(::gpu_opengl::renderer* prendererSrc);
+      void endDraw(::user::interaction * puserinteraction, ::gpu::renderer * pgpurendererSrc) override;
 
       //virtual void on_layout(int cx, int cy);
 

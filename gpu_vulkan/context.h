@@ -16,7 +16,7 @@ namespace gpu_vulkan
    public:
 
 
-      itask									m_itaskGpu;
+      //itask									m_itaskGpu;
       VkSampler m_vksampler001;
 
       //unsigned int                     m_VAO;

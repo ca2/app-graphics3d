@@ -378,17 +378,19 @@ namespace graphics3d_opengl
       ::cast < ::gpu_opengl::device_win32 > pgpudevice = pgpucontext->m_pgpudevice;
 
       if (pgpudevice
-         && pgpudevice->m_pgpucontextCurrent
-         && pgpudevice->m_pgpucontextCurrent != m_pgpucontext)
+         && pgpudevice->m_pgpucontextCurrent2
+         && pgpudevice->m_pgpucontextCurrent2 != m_pgpucontext)
       {
 
-         pcontextUpper = pgpudevice->m_pgpucontextCurrent;
+         pcontextUpper = pgpudevice->m_pgpucontextCurrent2;
 
       }
 
       m_pgpucontext->set_placement(m_rectanglePlacementNew);
 
-      m_pgpucontext->make_current();
+      ::gpu::rear_guard rear_guard(pcontextUpper);
+
+      ::gpu::context_guard guard(m_pgpucontext);
 
       _prepare_frame();
 

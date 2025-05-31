@@ -102,7 +102,7 @@ namespace gpu_opengl
       void make_current() override;
 
 
-      virtual void _release_current();
+      void release_current() override;
 
       //bool is_mesa() override;
 
@@ -117,29 +117,6 @@ namespace gpu_opengl
 
    };
 
-
-   class CLASS_DECL_GPU_OPENGL context_guard
-   {
-   public:
-
-      context* m_pcontext;
-
-      context_guard(context* pcontext) :
-         m_pcontext(pcontext)
-      {
-
-         m_pcontext->make_current();
-
-      }
-
-      ~context_guard()
-      {
-
-         m_pcontext->_release_current();
-
-      }
-
-   };
 
 
 } // namespace gpu

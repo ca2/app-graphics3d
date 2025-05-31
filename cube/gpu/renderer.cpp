@@ -20,6 +20,7 @@ namespace gpu
    renderer::renderer()
    {
 
+      m_eoutput = ::gpu::e_output_none;
 
    }
 
@@ -586,6 +587,27 @@ namespace gpu
 
    }
 
+   
+   void renderer::endDraw(::user::interaction * puserinteraction, ::gpu::renderer * pgpurenderer)
+   {
+
+
+   }
+
+
+   void renderer::defer_update_render_pass()
+   {
+
+
+   }
+
+
+   //void renderer::endDraw(::user::interaction* puserinteraction)
+   //{
+
+
+
+   //}
 
 
 } // namespace gpu

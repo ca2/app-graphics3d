@@ -13,6 +13,7 @@ namespace gpu_opengl
 {
 
 
+
    context::context()
    {
 
@@ -65,7 +66,7 @@ namespace gpu_opengl
 
       ::cast < device_win32 > pgpudevice = m_pgpudevice;
 
-      if (pgpudevice->m_itaskHglrc != ::current_itask())
+      if (pgpudevice->m_itaskCurrentGpuContext != ::current_itask())
       {
 
          ASSERT(false);
@@ -150,7 +151,7 @@ namespace gpu_opengl
 
       ::cast < device_win32 > pgpudevice = m_pgpudevice;
 
-      if (pgpudevice->m_itaskHglrc != ::current_itask())
+      if (pgpudevice->m_itaskCurrentGpuContext != ::current_itask())
       {
 
          ASSERT(false);
@@ -241,7 +242,7 @@ namespace gpu_opengl
 
       ::cast < device_win32 > pgpudevice = m_pgpudevice;
 
-      if (pgpudevice->m_itaskHglrc != ::current_itask())
+      if (pgpudevice->m_itaskCurrentGpuContext != ::current_itask())
       {
 
          ASSERT(false);
@@ -309,7 +310,7 @@ namespace gpu_opengl
 
       ::cast < device_win32 > pgpudevice = m_pgpudevice;
 
-      if (pgpudevice->m_itaskHglrc != ::current_itask())
+      if (pgpudevice->m_itaskCurrentGpuContext != ::current_itask())
       {
 
          ASSERT(false);
@@ -837,15 +838,18 @@ namespace gpu_opengl
       {
 
          auto r = startcontext.m_rectanglePlacement;
+         
+         ::gpu::rear_guard guard(this);
 
          send([this, r]()
             {
 
                _create_offscreen_buffer(r.size());
 
-               context_guard guard(this);
+               ::gpu::context_guard guard(this);
 
             });
+
       }
 
 
@@ -1402,7 +1406,7 @@ namespace gpu_opengl
 
       ::cast < device_win32 > pgpudevice = m_pgpudevice;
 
-      auto bMadeCurrentNow = pgpudevice->_make_current();
+      auto bMadeCurrentNow = pgpudevice->make_current(this);
 
       update_framebuffer(m_rectangle.size());
 
@@ -1433,7 +1437,7 @@ namespace gpu_opengl
 
       }
 
-      pgpudevice->m_pgpucontextCurrent = this;
+      //pgpudevice->m_pgpucontextCurrent = this;
 
       //glBindFramebuffer(GL_FRAMEBUFFER, m_fboID);
 
@@ -1442,12 +1446,12 @@ namespace gpu_opengl
    }
 
 
-   void context::_release_current()
+   void context::release_current()
    {
 
       ::cast < device_win32 > pgpudevice = m_pgpudevice;
 
-      pgpudevice->_release_current();
+      pgpudevice->release_current(this);
 
    }
 
@@ -1457,7 +1461,7 @@ namespace gpu_opengl
 
       ::cast < device_win32 > pgpudevice = m_pgpudevice;
 
-      if (pgpudevice->m_itaskHglrc != ::current_itask())
+      if (pgpudevice->m_itaskCurrentGpuContext != ::current_itask())
       {
 
          ASSERT(false);

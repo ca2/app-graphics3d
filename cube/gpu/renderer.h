@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include "acme/constant/gpu_output.h"
 #include "acme/prototype/geometry2d/rectangle.h"
 #include "app-cube/cube/gpu/shader.h"
 
@@ -45,6 +46,8 @@ namespace gpu
       //string                              m_strProjection;
       //string                              m_strFragment;
       ::pointer<::gpu::context>             m_pgpucontext;
+      //::pointer<::gpu::context>             m_pgpucontextOutput;
+
       //::pointer<::gpu::approach>            m_papproach;
       //::image::image_pointer                m_pimageFromGpu;
       ///::pointer<::gpu::shader>              m_pshader;
@@ -149,6 +152,12 @@ namespace gpu
       virtual void on_end_render(frame* pframe);
 
       virtual void endFrame();
+      virtual void endDraw(::user::interaction * puserinteraction, ::gpu::renderer * prendererSrc);
+
+
+      virtual void defer_update_render_pass();
+
+      //virtual void on_graphics_end_draw(::user::interaction * puserinteraction);
 
 
    };

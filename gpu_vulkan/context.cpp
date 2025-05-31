@@ -83,7 +83,7 @@ namespace gpu_vulkan
    void context::draw()
    {
 
-      ASSERT(m_itaskGpu == ::current_itask());
+      ASSERT(is_current_task());
 
       //      if (m_VAO != 0)
       //      {
@@ -164,7 +164,7 @@ namespace gpu_vulkan
 
 
 
-      //ASSERT(m_itaskGpu == ::current_itask());
+      //ASSERT(is_current_task());
 
       ////      glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
@@ -248,7 +248,7 @@ namespace gpu_vulkan
    void context::render()
    {
 
-      ASSERT(m_itaskGpu == ::current_itask());
+      ASSERT(is_current_task());
 
       //      //#ifdef __APPLE__
       //
@@ -309,7 +309,7 @@ namespace gpu_vulkan
    void context::set_bitmap_1(::image::image * pimage)
    {
 
-      ASSERT(m_itaskGpu == ::current_itask());
+      ASSERT(is_current_task());
 
       //      if (!m_gluTextureBitmap1)
       //      {
@@ -842,7 +842,7 @@ namespace gpu_vulkan
    void context::on_create_context(const ::gpu::start_context_t & startcontext)
    {
 
-      m_itaskGpu = ::current_itask();
+      //m_itaskGpu = ::current_itask();
 
       m_pgpudevice = startcontext.m_pgpudevice;
 
@@ -1268,7 +1268,7 @@ namespace gpu_vulkan
    void context::_create_window_context(::windowing::window * pwindowParam)
    {
 
-      m_itaskGpu = ::current_itask();
+      //m_itaskGpu = ::current_itask();
 
       //   ::cast < ::windowing_win32::window > pwindow = pwindowParam;
 
@@ -1497,7 +1497,7 @@ namespace gpu_vulkan
 
       //_create_window_buffer();
 
-      m_itaskGpu = ::current_itask();
+      //m_itaskGpu = ::current_itask();
 
    }
 
@@ -1582,7 +1582,7 @@ namespace gpu_vulkan
    void context::make_current()
    {
 
-      if (m_itaskGpu != ::current_itask())
+      if (!is_current_task())
       {
 
          ASSERT(FALSE);
@@ -1612,7 +1612,7 @@ namespace gpu_vulkan
    void context::destroy_offscreen_buffer()
    {
 
-      //ASSERT(m_itaskGpu == ::current_itask());
+      //ASSERT(is_current_task());
 
       //::e_status estatus = ::success;
 

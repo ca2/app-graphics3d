@@ -21,6 +21,99 @@
 namespace gpu
 {
 
+   context_guard::context_guard(context* pcontext) :
+      m_pcontext(pcontext)
+   {
+
+      m_pcontext->make_current();
+
+   }
+
+
+   context_guard::~context_guard()
+   {
+
+      m_pcontext->release_current();
+
+   }
+
+
+   rear_guard::rear_guard(context* pcontext)
+   {
+
+      if(::is_null(pcontext))
+      {
+
+         m_itaskUpper = {};
+
+         m_pcontextUpper = nullptr;
+         
+         return;
+
+      }
+
+      if (::is_null(pcontext->m_pgpudevice))
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      auto pcontextUpper = pcontext->m_pgpudevice->m_pgpucontextCurrent2.m_p;
+
+      auto itaskUpperCurrent = pcontext->m_pgpudevice->m_itaskCurrentGpuContext;
+
+      if (pcontextUpper
+         && pcontextUpper->m_itask == itaskUpperCurrent)
+      {
+
+         m_pcontextUpper = pcontextUpper;
+
+         m_itaskUpper = pcontext->m_pgpudevice->m_itaskCurrentGpuContext;
+
+         if (m_itaskUpper != ::current_itask())
+         {
+
+            throw ::exception(error_wrong_state);
+
+         }
+
+         m_pcontextUpper->release_current();
+
+      }
+      else
+      {
+
+         m_pcontextUpper = nullptr;
+
+      }
+
+   }
+
+
+   rear_guard::~rear_guard()
+   {
+
+      if (m_pcontextUpper)
+      {
+
+         if (m_itaskUpper != ::current_itask())
+         {
+
+            warning() << "rear_guard::~rear_guard() - m_itaskUpper != ::current_itask()";
+            //throw ::exception(error_wrong_state);
+
+         }
+
+         //m_pcontextUpper->m_pgpudevice->m_itaskCurrentGpuContext = m_itaskUpper;
+
+         m_pcontextUpper->make_current();
+
+      }
+
+
+   }
+
 
    context::context()
    {
@@ -349,6 +442,8 @@ namespace gpu
 
       branch_synchronously();
 
+      rear_guard guard(this);
+
       _send([this, &startcontext]()
          {
 
@@ -454,6 +549,12 @@ namespace gpu
    {
 
       //return ::success_none;
+
+   }
+
+
+   void context::release_current()
+   {
 
    }
 

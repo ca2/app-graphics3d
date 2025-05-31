@@ -244,7 +244,7 @@ namespace graphics3d_vulkan
             if (1)
             {
 
-               if (pcontextUpper && m_pgpucontext->m_eout)
+               if (pcontextUpper)
                {
 
                   pcontextUpper->make_current();

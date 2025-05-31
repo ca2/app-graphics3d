@@ -2,7 +2,7 @@
 
 
 #include "acme/graphics/image/image32.h"
-#include "aura/graphics/draw2d/graphics.h"
+#include "app-cube/cube/draw2d/graphics.h"
 #include "app-cube/gpu_vulkan/renderer.h"
 #include "app-cube/gpu_vulkan/shader.h"
 
@@ -22,8 +22,8 @@ namespace draw2d_vulkan
    class draw2d;
 
    class CLASS_DECL_DRAW2D_VULKAN graphics :
-      virtual public ::draw2d::graphics,
-      virtual public ::gpu::renderer
+      virtual public ::draw2d_gpu::graphics//,
+      //virtual public ::gpu::renderer
    {
    public:
       //VkvgDevice                       m_vkvgdevice;
@@ -46,7 +46,7 @@ namespace draw2d_vulkan
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       ::pointer<::gpu::context>             m_pgpucontextOutput;
-      ::pointer < ::gpu::frame > m_pframe;
+      //::pointer < ::gpu::frame > m_pframe;
       ::geometry2d::matrix m_m1;
 
       struct RectangleVertex {
@@ -634,8 +634,8 @@ namespace draw2d_vulkan
       //void _add_clipping_shape(const ::double_rectangle & rectangle, ::draw2d::region * pregion) override;
 
 
-      void on_begin_draw() override;
-      void on_end_draw() override;
+      //void on_begin_draw() override;
+      //void on_end_draw() override;
       //void on_end_draw() override;
       void on_present() override;
 

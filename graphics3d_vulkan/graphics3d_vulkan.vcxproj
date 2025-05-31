@@ -792,14 +792,12 @@
     <ClInclude Include="scene_object.h" />
     <ClInclude Include="buffer.h" />
     <ClInclude Include="descriptors.h" />
-    <ClInclude Include="context.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="initializers.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="offscreen_render_pass.h" />
     <ClInclude Include="pipeline.h" />
-    <ClInclude Include="renderer.h" />
     <ClInclude Include="render_pass.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="swap_chain_render_pass.h" />

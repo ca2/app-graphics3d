@@ -10,6 +10,9 @@
 #include "initializers.h"
 #include "app-cube/gpu_vulkan/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
+#include "acme/platform/application.h"
+#include "aura/user/user/interaction.h"
+#include "aura/windowing/window.h"
 //#include "tools.h"
 //#include "app-cube/cube/impact.h"
 
@@ -2986,6 +2989,29 @@ namespace gpu_vulkan
 		//   m_pgpucontext->endSingleTimeCommands(cmdBuffer);
 		//}
 
+
+	}
+
+
+	void renderer::endDraw(::user::interaction * puserinteraction, ::gpu::renderer* pgpurendererSrc)
+	{
+
+		//VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->currentImageIndex];
+
+		//::int_rectangle rectangle;
+
+		//if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
+		//{
+
+		//	rectangle = m_puserinteraction->host_rectangle();
+
+		//}
+		//else
+		//{
+
+		//	rectangle = { 0, 0, 1920, 1080 };
+
+		//}
 
 	}
 

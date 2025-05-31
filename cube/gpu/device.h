@@ -4,6 +4,7 @@
 
 
 ////#include "acme/exception/exception.h"
+#include "acme/constant/gpu_output.h"
 #include "acme/prototype/geometry2d/size.h"
 #include "acme/prototype/prototype/memory.h"
 #include "aura/graphics/draw3d/matrix.h"
@@ -22,11 +23,12 @@ namespace gpu
    public:
 
 
-   
+      itask									         m_itaskCurrentGpuContext;
+
 
       ::pointer < ::gpu::approach >          m_pgpuapproach;
       ::pointer < ::windowing::window >      m_pwindow;
-      ::pointer < ::gpu::context >           m_pgpucontextCurrent;
+      ::pointer < ::gpu::context >           m_pgpucontextCurrent2;
       //::int_size                             m_sizeNew;
       //::int_size                             m_size;
       //float                                  m_z;

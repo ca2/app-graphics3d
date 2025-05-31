@@ -40,6 +40,12 @@
     <Filter Include="Source Files\gpu">
       <UniqueIdentifier>{363134e4-0ada-430e-824e-8de1e7e5986d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\draw2d">
+      <UniqueIdentifier>{58b418b3-64f5-4a1d-a11a-781fb147b491}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\draw2d">
+      <UniqueIdentifier>{762c01e5-a13b-4a79-8501-3b5920684bc3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -90,9 +96,6 @@
     <ClInclude Include="graphics3d\engine.h">
       <Filter>Header Files\graphics3d</Filter>
     </ClInclude>
-    <ClInclude Include="graphics3d\context.h">
-      <Filter>Header Files\graphics3d</Filter>
-    </ClInclude>
     <ClInclude Include="graphics3d\camera.h">
       <Filter>Header Files\graphics3d</Filter>
     </ClInclude>
@@ -141,9 +144,6 @@
     <ClInclude Include="gpu\approach.h">
       <Filter>Header Files\gpu</Filter>
     </ClInclude>
-    <ClInclude Include="gpu\aaaa_gpu.h">
-      <Filter>Header Files\gpu</Filter>
-    </ClInclude>
     <ClInclude Include="gpu\_constant.h">
       <Filter>Header Files\gpu</Filter>
     </ClInclude>
@@ -164,6 +164,9 @@
     </ClInclude>
     <ClInclude Include="gpu\device.h">
       <Filter>Header Files\gpu</Filter>
+    </ClInclude>
+    <ClInclude Include="draw2d\graphics.h">
+      <Filter>Header Files\draw2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -262,6 +265,9 @@
     </ClCompile>
     <ClCompile Include="gpu\device.cpp">
       <Filter>Source Files\gpu</Filter>
+    </ClCompile>
+    <ClCompile Include="draw2d\graphics.cpp">
+      <Filter>Source Files\draw2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

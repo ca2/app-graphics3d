@@ -132,6 +132,8 @@ namespace gpu
 
       }
 
+      pgpucontext->m_pgpudevice = this;
+
       pgpucontext->start_gpu_context(startcontext);
 
       return pgpucontext;

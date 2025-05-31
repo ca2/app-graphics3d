@@ -208,6 +208,7 @@ namespace gpu_vulkan
       void on_begin_render(::gpu::frame* pframeParam) override;
       void on_end_render(::gpu::frame* pframeParam) override;
       void endFrame() override;
+      void endDraw(::user::interaction * puserinteraction, ::gpu::renderer* pgpurendererSrc) override;
 
 
       void _set_image(VkImage image, const ::int_rectangle& rectangle);
@@ -222,6 +223,8 @@ namespace gpu_vulkan
       ::gpu::shader * get_image_blend_shader();
 
       ::gpu::shader* get_image_set_shader();
+
+
 
    };
 

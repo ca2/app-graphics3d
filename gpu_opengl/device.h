@@ -20,7 +20,6 @@ namespace gpu_opengl
 
       ///itask									m_itaskGpu;
 
-
       //unsigned int                     m_VAO;
       //unsigned int                     m_VBO;
 
@@ -44,10 +43,9 @@ namespace gpu_opengl
       /// 
       /// </summary>
       /// <returns>true if changed to make current</returns>
-      virtual bool _make_current();
+      virtual bool make_current(::gpu::context * pgpucontext);
+      virtual void release_current(::gpu::context* pgpucontext);
       virtual void _swap_buffers();
-
-      virtual void _release_current();
       //string _001GetIntroProjection() override;
       //string _001GetIntroFragment() override;
 

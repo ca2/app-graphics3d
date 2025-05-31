@@ -295,7 +295,7 @@ namespace gpu_opengl
 
       wglMakeCurrent(nullptr, nullptr);
 
-      m_itaskHglrc = {};
+      m_itaskCurrentGpuContext = {};
 
       RECT rectClient;
 
@@ -682,17 +682,25 @@ namespace gpu_opengl
 
 
 
-   bool device_win32::_make_current()
+   bool device_win32::make_current(::gpu::context* pgpucontext)
    {
 
-      if (m_itaskHglrc == ::current_itask())
+      if (m_itaskCurrentGpuContext == ::current_itask()
+         && m_pgpucontextCurrent2 == pgpucontext)
       {
 
          return false;
 
       }
 
-      if (m_itaskHglrc.is_set())
+      if (::is_set(m_pgpucontextCurrent2))
+      {
+
+         throw ::exception(error_wrong_state, "device is in use by other context");
+
+      }
+
+      if (m_itaskCurrentGpuContext.is_set())
       {
 
          throw ::exception(error_wrong_state, "HGLRC is in use in other thread");
@@ -713,7 +721,9 @@ namespace gpu_opengl
 
             informationf("MS WGL - wglMakeCurrent failed");
 
-            informationf("last-error code: %d\n", GetLastError());
+            int iLastError = GetLastError();
+
+            informationf("last-error code: %d\n", iLastError);
 
             throw ::exception(error_failed);
 
@@ -723,23 +733,33 @@ namespace gpu_opengl
 
       }
 
-      m_itaskHglrc = ::current_itask();
+      m_pgpucontextCurrent2 = pgpucontext;
+
+      m_itaskCurrentGpuContext = ::current_itask();
 
       return bMadeCurrentNow;
 
    }
 
 
-   void device_win32::_release_current()
+   void device_win32::release_current(::gpu::context * pgpucontext)
    {
 
-      if (!m_itaskHglrc)
+      if (!m_pgpucontextCurrent2)
+      {
+
+         // There is no active context in the device, no nothing to release;
+
+         return;
+
+      }
+      else if (!m_itaskCurrentGpuContext)
       {
 
          throw ::exception(error_wrong_state, "HGLRC is in use in other thread");
 
       }
-      else if (m_itaskHglrc != ::current_itask())
+      else if (m_itaskCurrentGpuContext != ::current_itask())
       {
 
          throw ::exception(error_wrong_state, "HGLRC is taken by other thread");
@@ -765,7 +785,9 @@ namespace gpu_opengl
 
       }
 
-      m_itaskHglrc = {};
+      m_itaskCurrentGpuContext = {};
+
+      m_pgpucontextCurrent2.release();
 
    }
 

@@ -195,12 +195,19 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::set_hint_window_output()
-   {
+   //void graphics::set_hint_window_output()
+   //{
 
-      m_eoutputOnEndDraw = ::gpu::e_output_swap_chain;
+   //   if(!m_pgpucontext)
+   //   {
 
-   }
+   //      throw ::exception(error_wrong_state, "No GPU context available for setting hint window output.");
+
+   //   }
+
+   //   m_pgpucontext->m_pgpurenderer->m_eoutputOnEndDraw = ::gpu::e_output_swap_chain;
+
+   //}
 
 
    void graphics::create_window_graphics(::windowing::window* pwindow)
@@ -5948,318 +5955,240 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::draw2d::graphics::initialize(pparticle);
 
-      ::gpu::renderer::initialize(pparticle);
+      //::gpu::renderer::initialize(pparticle);
 
    }
 
 
-   //void graphics::on_begin_draw(oswindow wnd, const ::int_size & sz)
-   void graphics::on_begin_draw()
-   {
+   ////void graphics::on_begin_draw(oswindow wnd, const ::int_size & sz)
+   //void graphics::on_begin_draw()
+   //{
 
-      //thread_select();
+   //   //thread_select();
 
-      ::int_size size;
+   //   ::int_size size;
 
-      if (!m_puserinteraction && m_papplication->m_bUseDraw2dProtoWindow)
-      {
+   //   if (!m_puserinteraction && m_papplication->m_bUseDraw2dProtoWindow)
+   //   {
 
-         m_puserinteraction = dynamic_cast <::user::interaction*>(m_pwindow->m_pacmeuserinteraction.m_p);
+   //      m_puserinteraction = dynamic_cast <::user::interaction*>(m_pwindow->m_pacmeuserinteraction.m_p);
 
-      }
+   //   }
 
-      if (m_puserinteraction && !m_puserinteraction->size().is_empty())
-      {
+   //   if (m_puserinteraction && !m_puserinteraction->size().is_empty())
+   //   {
 
-         size = m_puserinteraction->size();
+   //      size = m_puserinteraction->size();
 
-      }
-      else
-      {
+   //   }
+   //   else
+   //   {
 
-         size = { 1920, 1080 };
+   //      size = { 1920, 1080 };
 
-      }
+   //   }
 
-      bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
+   //   bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
 
-      ::cast < ::gpu_opengl::renderer >prenderer = m_pgpucontext->get_renderer();
+   //   ::cast < ::gpu_opengl::renderer >prenderer = m_pgpucontext->get_renderer();
 
-      m_pgpucontext->set_placement({ int_point{}, size });
+   //   m_pgpucontext->set_placement({ int_point{}, size });
 
-      if (m_egraphics & e_graphics_draw)
-      {
+   //   if (m_egraphics & e_graphics_draw)
+   //   {
 
-         ::cast < ::gpu_opengl::context >pgpucontext = m_pgpucontext;
+   //      ::cast < ::gpu_opengl::context >pgpucontext = m_pgpucontext;
 
-         //pgpucontext->m_size = size;
+   //      //pgpucontext->m_size = size;
 
-         //pgpucontext->m_sizeNew = size;
+   //      //pgpucontext->m_sizeNew = size;
 
-         pgpucontext->m_sizeHost = size;
+   //      pgpucontext->m_sizeHost = size;
 
-         pgpucontext->make_current();
+   //      pgpucontext->make_current();
 
-         m_pframe = prenderer->beginFrame();
+   //      m_pframe = prenderer->beginFrame();
 
-         prenderer->on_begin_render(m_pframe);
-         //glEnable(GL_BLEND);
-         //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-         //glEnable(GL_BLEND);
-         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-         glDepthMask(GL_TRUE); // Enable writing to depth
-         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         glDepthMask(GL_FALSE); // Disable writing to depth
+   //      prenderer->on_begin_render(m_pframe);
+   //      //glEnable(GL_BLEND);
+   //      //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+   //      //glEnable(GL_BLEND);
+   //      //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   //      glDepthMask(GL_TRUE); // Enable writing to depth
+   //      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+   //      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   //      glDepthMask(GL_FALSE); // Disable writing to depth
 
-         glEnable(GL_BLEND);
-         glDisable(GL_DEPTH_TEST);
-         //glDepthFunc(GL_LEQUAL);
+   //      glEnable(GL_BLEND);
+   //      glDisable(GL_DEPTH_TEST);
+   //      //glDepthFunc(GL_LEQUAL);
 
-         ::opengl::resize(size, bYSwap);
+   //      ::opengl::resize(size, bYSwap);
 
-         m_z = 0.0f;
+   //      m_z = 0.0f;
 
-         //glLoadIdentity();
-         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         //glClear(GL_COLOR_BUFFER_BIT);
-         //glEnable(GL_BLEND);
-         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-         //::memory_copy(&m_pgpucontext->m_pbuffer->m_pixmap, (::pixmap *)m_pimage, sizeof(::pixmap));
+   //      //glLoadIdentity();
+   //      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   //      //glClear(GL_COLOR_BUFFER_BIT);
+   //      //glEnable(GL_BLEND);
+   //      //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   //      //::memory_copy(&m_pgpucontext->m_pbuffer->m_pixmap, (::pixmap *)m_pimage, sizeof(::pixmap));
 
-         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   //      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-         //m_pgpucontext->start_drawing();
+   //      //m_pgpucontext->start_drawing();
 
-         ///glEnable(GL_DEPTH_TEST);
+   //      ///glEnable(GL_DEPTH_TEST);
 
-      }
+   //   }
 
-   }
+   //}
 
 
-   void graphics::on_end_draw()
-   {
+   //void graphics::on_end_draw()
+   //{
 
-      {
+   //   {
 
-         if (m_egraphics & e_graphics_draw)
-         {
+   //      if (m_egraphics & e_graphics_draw)
+   //      {
 
-            //vkvg_surface_resolve(m_vkvgsurface);
+   //         //vkvg_surface_resolve(m_vkvgsurface);
 
-            //m_pgpucontext->m_prenderer->on_end_draw();
+   //         //m_pgpucontext->m_prenderer->on_end_draw();
 
-            //::double_rectangle r{ 0.0, 0.0, 1920.0, 1080.0 };
+   //         //::double_rectangle r{ 0.0, 0.0, 1920.0, 1080.0 };
 
-            //fill_solid_rectangle(r, argb(255, 100, 200, 240));
+   //         //fill_solid_rectangle(r, argb(255, 100, 200, 240));
 
-            //::double_rectangle r2{ 100.0, 100.0, 1920.0, 1980.0 };
+   //         //::double_rectangle r2{ 100.0, 100.0, 1920.0, 1980.0 };
 
-            //set_alpha_mode(::draw2d::e_alpha_mode_blend);
+   //         //set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
-            //fill_solid_rectangle(r2, argb(155, 120, 40, 100));
+   //         //fill_solid_rectangle(r2, argb(155, 120, 40, 100));
 
-            //m_pgpucontext->clear(::argb(100, 80, 120, 160));
+   //         //m_pgpucontext->clear(::argb(100, 80, 120, 160));
 
-            //vkvg_flush(m_pdc);
+   //         //vkvg_flush(m_pdc);
 
-            //VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
+   //         //VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
 
-            ::cast < ::gpu_opengl::renderer >prenderer = m_pgpucontext->get_renderer();
+   //         ::cast < ::gpu_opengl::renderer >prenderer = m_pgpucontext->get_renderer();
 
-            prenderer->on_end_render(m_pframe);
+   //         prenderer->on_end_render(m_pframe);
 
-            prenderer->endFrame();
+   //         prenderer->endFrame();
 
-            //prenderer->_blend_image(vkimage, rectangle);
+   //         prenderer->endDraw(m_puserinteraction);
 
-            if (m_eoutputOnEndDraw == ::gpu::e_output_swap_chain)
-            {
+   //      }
 
-               //m_pgpucontext->swap_buffers();
+   //      ////vkPushMatrix();
 
-               //m_pwindow->m_timeLastDrawGuard1.Now();
+   //      ////vkColor3f(0, 1, 1);
+   //      //vkBegin(VK_TRIANGLES);                              // Drawing Using Triangles
+   //      //
 
+   //      //vkColor4f(1.0f, 0.0f, 0.0f, 0.5f);                      // Set The Color To Red
+   //      //vkVertex3f(100.0f, -2000.0f, 0.0f);                  // Top
+   //      //
 
-            //VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->currentImageIndex];
+   //      //vkColor3f(0.0f, 1.0f, 0.0f);                      // Set The Color To Green
+   //      //vkVertex3f(0.0f, 200.0f, 0.0f);                  // Bottom Left
 
-               ::int_rectangle rectangle;
 
-               if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
-               {
+   //      //vkColor3f(0.0f, 0.0f, 1.0f);                      // Set The Color To Blue
+   //      //vkVertex3f(2000.0f, 2000.0f, 0.0f);                  // Bottom Right
 
-                  rectangle = m_puserinteraction->host_rectangle();
+   //      //vkEnd();
 
-               }
-               else
-               {
+   //      //vkPopMatrix();
 
-                  rectangle = { 0, 0, 1920, 1080 };
 
-               }
+   //      //vkFlush();
+   //      //vkFinish();
+   //      //vkDisable(VK_BLEND);
 
-               ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 
-               if (!m_pgpucontextOutput)
-               {
 
-                  __øconstruct(m_pgpucontextOutput);
 
-                  m_pgpucontextOutput = m_papplication->get_gpu()->get_device(pwindow, pwindow->get_window_rectangle())->start_swap_chain_context(this, pwindow);
+   //      //SwapBuffers(m_hdc);
 
-                  //m_pgpucontextOutput->create_window_buffer(pwindow);
+   //      //m_pgpucontextVulkan->render
 
-               }
+   //      //dr();
 
-               ::cast < ::gpu_opengl::renderer > prendererOutput = m_pgpucontextOutput->get_renderer();
 
-               auto rectanglePlacement = pwindow->get_window_rectangle();
+   //   }
 
-               m_pgpucontextOutput->set_placement(rectanglePlacement);
+   //   ////m_pgpucontext->make_current();
 
-               //m_pgpucontextOutput->m_size = rectanglePlacement.size();
+   //   //////glPushMatrix();
 
-               ::cast < ::gpu_opengl::context > pgpucontextOpenGL = m_pgpucontextOutput;
+   //   //////glColor3f(0, 1, 1);
+   //   ////glBegin(GL_TRIANGLES);                              // Drawing Using Triangles
+   //   ////
 
-               pgpucontextOpenGL->m_sizeHost = rectanglePlacement.size();
+   //   ////glColor4f(1.0f, 0.0f, 0.0f, 0.5f);                      // Set The Color To Red
+   //   ////glVertex3f(100.0f, -2000.0f, 0.0f);                  // Top
+   //   ////
 
-               pgpucontextOpenGL->set_placement(rectanglePlacement);
+   //   ////glColor3f(0.0f, 1.0f, 0.0f);                      // Set The Color To Green
+   //   ////glVertex3f(0.0f, 200.0f, 0.0f);                  // Bottom Left
 
-               //m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
 
-               //prendererOutput->defer_update_render_pass();
+   //   ////glColor3f(0.0f, 0.0f, 1.0f);                      // Set The Color To Blue
+   //   ////glVertex3f(2000.0f, 2000.0f, 0.0f);                  // Bottom Right
 
-               prendererOutput->_on_graphics_end_draw(prenderer);
+   //   ////glEnd();
 
+   //   ////glPopMatrix();
 
-            }
-            else if(m_eoutputOnEndDraw == ::gpu::e_output_cpu_buffer)
-            {
+   //   ////glClearColor(0.5f, 0.9f, 0.95f, 1.0f);
+   //   ////glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-               //m_pgpucontext->swap_buffers();
+   //   //glFlush();
+   //   ////glFinish();
+   //   ////glDisable(GL_BLEND);
 
-             //}
-             //else
-             //{
 
-               read_to_cpu_buffer();
+   //   ////SwapBuffers(m_hdc);
 
-               m_pimage->map();
+   //   ////m_pgpucontextOpenGL->render
 
-               m_pimage->copy(&m_pgpucontext->m_pcpubuffer->m_pixmap);
+   //   ////dr();
 
-            }
+   //   //if (m_papplication->m_bUseDraw2dProtoWindow)
+   //   //{
 
+   //   //   //if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
+   //   //   //{
 
-         }
+   //   //   //m_pgpucontext->swap_buffers();
 
-         ////vkPushMatrix();
+   //   //   //}
 
-         ////vkColor3f(0, 1, 1);
-         //vkBegin(VK_TRIANGLES);                              // Drawing Using Triangles
-         //
+   //   //   //m_pwindow->m_timeLastDrawGuard1.Now();
 
-         //vkColor4f(1.0f, 0.0f, 0.0f, 0.5f);                      // Set The Color To Red
-         //vkVertex3f(100.0f, -2000.0f, 0.0f);                  // Top
-         //
+   //   //}
+   //   //else
+   //   //{
 
-         //vkColor3f(0.0f, 1.0f, 0.0f);                      // Set The Color To Green
-         //vkVertex3f(0.0f, 200.0f, 0.0f);                  // Bottom Left
+   //   //   //m_pgpucontext->swap_buffers();
 
+   //   ////}
+   //   ////else
+   //   ////{
 
-         //vkColor3f(0.0f, 0.0f, 1.0f);                      // Set The Color To Blue
-         //vkVertex3f(2000.0f, 2000.0f, 0.0f);                  // Bottom Right
+   //   //   read_to_cpu_buffer();
 
-         //vkEnd();
+   //   //   m_pimage->map();
 
-         //vkPopMatrix();
+   //   //   m_pimage->copy(&m_pgpucontext->m_pcpubuffer->m_pixmap);
 
+   //   //}
 
-         //vkFlush();
-         //vkFinish();
-         //vkDisable(VK_BLEND);
-
-
-
-
-         //SwapBuffers(m_hdc);
-
-         //m_pgpucontextVulkan->render
-
-         //dr();
-
-
-      }
-
-      ////m_pgpucontext->make_current();
-
-      //////glPushMatrix();
-
-      //////glColor3f(0, 1, 1);
-      ////glBegin(GL_TRIANGLES);                              // Drawing Using Triangles
-      ////
-
-      ////glColor4f(1.0f, 0.0f, 0.0f, 0.5f);                      // Set The Color To Red
-      ////glVertex3f(100.0f, -2000.0f, 0.0f);                  // Top
-      ////
-
-      ////glColor3f(0.0f, 1.0f, 0.0f);                      // Set The Color To Green
-      ////glVertex3f(0.0f, 200.0f, 0.0f);                  // Bottom Left
-
-
-      ////glColor3f(0.0f, 0.0f, 1.0f);                      // Set The Color To Blue
-      ////glVertex3f(2000.0f, 2000.0f, 0.0f);                  // Bottom Right
-
-      ////glEnd();
-
-      ////glPopMatrix();
-
-      ////glClearColor(0.5f, 0.9f, 0.95f, 1.0f);
-      ////glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      //glFlush();
-      ////glFinish();
-      ////glDisable(GL_BLEND);
-
-
-      ////SwapBuffers(m_hdc);
-
-      ////m_pgpucontextOpenGL->render
-
-      ////dr();
-
-      //if (m_papplication->m_bUseDraw2dProtoWindow)
-      //{
-
-      //   //if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
-      //   //{
-
-      //   //m_pgpucontext->swap_buffers();
-
-      //   //}
-
-      //   //m_pwindow->m_timeLastDrawGuard1.Now();
-
-      //}
-      //else
-      //{
-
-      //   //m_pgpucontext->swap_buffers();
-
-      ////}
-      ////else
-      ////{
-
-      //   read_to_cpu_buffer();
-
-      //   m_pimage->map();
-
-      //   m_pimage->copy(&m_pgpucontext->m_pcpubuffer->m_pixmap);
-
-      //}
-
-   }
+   //}
 
 
    void graphics::on_present()
@@ -6301,8 +6230,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       return ::is_set(this) && m_pgpucontext;
 
    }
-
-
 
 
    void graphics::intersect_clip(const ::double_rectangle& rectangle)

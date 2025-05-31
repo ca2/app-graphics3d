@@ -24,7 +24,7 @@ namespace gpu_opengl
       ::pointer < ::windowing::window >   m_pwindow;
       bool                                m_bAddSwapChainSupport;
       ::int_rectangle                     m_rectangleWin32;
-      itask									      m_itaskHglrc;
+      
 
 
       device_win32();
@@ -56,9 +56,9 @@ namespace gpu_opengl
       //void resize_offscreen_buffer(const ::int_size& size) override;
       //void destroy_offscreen_buffer() override;
 
-      bool _make_current() override;
+      bool make_current(::gpu::context* pgpucontext) override;
 
-      void _release_current() override;
+      void release_current(::gpu::context* pgpucontext) override;
 
       void _swap_buffers() override;
 

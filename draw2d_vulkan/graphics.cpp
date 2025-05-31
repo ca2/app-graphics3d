@@ -7302,90 +7302,90 @@ namespace draw2d_vulkan
    }
 
 
-   void graphics::on_begin_draw()
-   {
+   //void graphics::on_begin_draw()
+   //{
 
-      thread_select();
+   //   thread_select();
 
-      g_z = -0.5;
+   //   g_z = -0.5;
 
-      ::int_rectangle rectangle;
+   //   ::int_rectangle rectangle;
 
-      if (!m_puserinteraction && m_pwindow && m_papplication->m_bUseDraw2dProtoWindow)
-      {
+   //   if (!m_puserinteraction && m_pwindow && m_papplication->m_bUseDraw2dProtoWindow)
+   //   {
 
-         m_puserinteraction = dynamic_cast <::user::interaction*>(m_pwindow->m_pacmeuserinteraction.m_p);
+   //      m_puserinteraction = dynamic_cast <::user::interaction*>(m_pwindow->m_pacmeuserinteraction.m_p);
 
-      }
+   //   }
 
-      if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
-      {
+   //   if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
+   //   {
 
-         rectangle = m_puserinteraction->host_rectangle();
+   //      rectangle = m_puserinteraction->host_rectangle();
 
-      }
-      else
-      {
+   //   }
+   //   else
+   //   {
 
-         rectangle = { 0, 0, 1920, 1080 };
+   //      rectangle = { 0, 0, 1920, 1080 };
 
-      }
+   //   }
 
-      bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
+   //   bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
 
-      ::vulkan::resize(rectangle.size(), bYSwap);
+   //   ::vulkan::resize(rectangle.size(), bYSwap);
 
-      m_z = 0.f;
+   //   m_z = 0.f;
 
-      if (!m_pgpucontext->m_pgpurenderer)
-      {
+   //   if (!m_pgpucontext->m_pgpurenderer)
+   //   {
 
-         __øconstruct(m_pgpucontext->m_pgpurenderer);
+   //      __øconstruct(m_pgpucontext->m_pgpurenderer);
 
-         m_pgpucontext->m_eoutput = ::gpu::e_output_color_and_alpha_accumulation_buffers;
+   //      m_pgpucontext->m_eoutput = ::gpu::e_output_color_and_alpha_accumulation_buffers;
 
-         //m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_color_and_alpha_accumulation_buffers);
+   //      //m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_color_and_alpha_accumulation_buffers);
 
-         m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer);
+   //      m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer);
 
-         //::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontext->m_prenderer;
+   //      //::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontext->m_prenderer;
 
-         //prenderer->m_poffscreensampler->initialize_offscreen_sampler(m_pgpucontext);
+   //      //prenderer->m_poffscreensampler->initialize_offscreen_sampler(m_pgpucontext);
 
-         //prenderer->m_poffscreensampler->update({ (uint32_t)rectangle.width(),(uint32_t)rectangle.height() });
+   //      //prenderer->m_poffscreensampler->update({ (uint32_t)rectangle.width(),(uint32_t)rectangle.height() });
 
-      }
-      else
-      {
+   //   }
+   //   else
+   //   {
 
 
-      }
+   //   }
 
-      if (m_egraphics == e_graphics_draw)
-      {
+   //   if (m_egraphics == e_graphics_draw)
+   //   {
 
-         ::cast < ::gpu_vulkan::renderer > pgpurenderer = m_pgpucontext->m_pgpurenderer;
+   //      ::cast < ::gpu_vulkan::renderer > pgpurenderer = m_pgpucontext->m_pgpurenderer;
 
-         m_pgpucontext->set_placement(rectangle);
+   //      m_pgpucontext->set_placement(rectangle);
 
-         pgpurenderer->defer_update_render_pass();
+   //      pgpurenderer->defer_update_render_pass();
 
-         pgpurenderer->on_new_frame();
+   //      pgpurenderer->on_new_frame();
 
-         m_pframe = pgpurenderer->beginFrame();
+   //      m_pframe = pgpurenderer->beginFrame();
 
-         pgpurenderer->on_begin_render(m_pframe);
+   //      pgpurenderer->on_begin_render(m_pframe);
 
-      }
+   //   }
 
-      if (m_callbackImage32CpuBuffer)
-      {
+   //   if (m_callbackImage32CpuBuffer)
+   //   {
 
-         m_pgpucontext->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
+   //      m_pgpucontext->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
 
-      }
+   //   }
 
-   }
+   //}
 
 
    //void graphics::defer_add_gpu_render(::gpu::render * pgpurender)
@@ -7401,150 +7401,109 @@ namespace draw2d_vulkan
 
       ::draw2d::graphics::initialize(pparticle);
 
-      ::gpu::renderer::initialize(pparticle);
+      //::gpu::renderer::initialize(pparticle);
 
    }
 
-   void graphics::on_end_draw()
-   {
 
-      if (m_egraphics & e_graphics_draw)
-      {
+   //void graphics::on_end_draw()
+   //{
 
+   //   if (m_egraphics & e_graphics_draw)
+   //   {
 
-         //vkvg_surface_resolve(m_vkvgsurface);
 
-         //m_pgpucontext->m_prenderer->on_end_draw();
+   //      //vkvg_surface_resolve(m_vkvgsurface);
 
-         //::double_rectangle r{ 0.0, 0.0, 1920.0, 1080.0 };
+   //      //m_pgpucontext->m_prenderer->on_end_draw();
 
-         //fill_solid_rectangle(r, argb(255, 100, 200, 240));
+   //      //::double_rectangle r{ 0.0, 0.0, 1920.0, 1080.0 };
 
-         //::double_rectangle r2{ 100.0, 100.0, 1920.0, 1980.0 };
+   //      //fill_solid_rectangle(r, argb(255, 100, 200, 240));
 
-         //set_alpha_mode(::draw2d::e_alpha_mode_blend);
+   //      //::double_rectangle r2{ 100.0, 100.0, 1920.0, 1980.0 };
 
-         //fill_solid_rectangle(r2, argb(155, 120, 40, 100));
+   //      //set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
-         //vkvg_flush(m_pdc);
+   //      //fill_solid_rectangle(r2, argb(155, 120, 40, 100));
 
-         //VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
+   //      //vkvg_flush(m_pdc);
 
+   //      //VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
 
-         ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontext->m_pgpurenderer;
 
-         prenderer->on_end_render(m_pframe);
+   //      ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontext->m_pgpurenderer;
 
-         prenderer->endFrame();
+   //      prenderer->on_end_render(m_pframe);
 
+   //      prenderer->endFrame();
 
-         //VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->currentImageIndex];
+   //      prenderer->endDraw(m_puserinteraction);
 
 
+   //   }
 
-         ::int_rectangle rectangle;
+   //   ////vkPushMatrix();
 
-         if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
-         {
+   //   ////vkColor3f(0, 1, 1);
+   //   //vkBegin(VK_TRIANGLES);                              // Drawing Using Triangles
+   //   //
 
-            rectangle = m_puserinteraction->host_rectangle();
+   //   //vkColor4f(1.0f, 0.0f, 0.0f, 0.5f);                      // Set The Color To Red
+   //   //vkVertex3f(100.0f, -2000.0f, 0.0f);                  // Top
+   //   //
 
-         }
-         else
-         {
+   //   //vkColor3f(0.0f, 1.0f, 0.0f);                      // Set The Color To Green
+   //   //vkVertex3f(0.0f, 200.0f, 0.0f);                  // Bottom Left
 
-            rectangle = { 0, 0, 1920, 1080 };
 
-         }
+   //   //vkColor3f(0.0f, 0.0f, 1.0f);                      // Set The Color To Blue
+   //   //vkVertex3f(2000.0f, 2000.0f, 0.0f);                  // Bottom Right
 
-         if (!m_pgpucontextOutput)
-         {
+   //   //vkEnd();
 
-            __øconstruct(m_pgpucontextOutput);
+   //   //vkPopMatrix();
 
-            ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 
-            m_pgpucontextOutput = m_papplication->get_gpu()->get_device(pwindow, pwindow->get_window_rectangle())->start_swap_chain_context(this, pwindow);
+   //   //vkFlush();
+   //   //vkFinish();
+   //   //vkDisable(VK_BLEND);
 
-            //m_pgpucontextOutput->create_window_buffer(pwindow);
 
-         }
 
-         ::cast < ::gpu_vulkan::renderer > prendererOutput = m_pgpucontextOutput->get_renderer();
 
-         //m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
+   //   //SwapBuffers(m_hdc);
 
-         prendererOutput->defer_update_render_pass();
+   //   //m_pgpucontextVulkan->render
 
-         prendererOutput->_on_graphics_end_draw(prenderer);
+   //   //dr();
 
-         //prenderer->_blend_image(vkimage, rectangle);
+   //   if (m_papplication->m_bUseDraw2dProtoWindow)
+   //   {
 
+   //      //m_pgpucontext->swap_buffers();
 
+   //      //m_pwindow->m_timeLastDrawGuard1.Now();
 
-      }
+   //   }
+   //   else
+   //   {
 
-      ////vkPushMatrix();
+   //      //m_pgpucontext->swap_buffers();
 
-      ////vkColor3f(0, 1, 1);
-      //vkBegin(VK_TRIANGLES);                              // Drawing Using Triangles
-      //
+   //    //}
+   //    //else
+   //    //{
 
-      //vkColor4f(1.0f, 0.0f, 0.0f, 0.5f);                      // Set The Color To Red
-      //vkVertex3f(100.0f, -2000.0f, 0.0f);                  // Top
-      //
+   //      read_to_cpu_buffer();
 
-      //vkColor3f(0.0f, 1.0f, 0.0f);                      // Set The Color To Green
-      //vkVertex3f(0.0f, 200.0f, 0.0f);                  // Bottom Left
+   //      m_pimage->map();
 
+   //      m_pimage->copy(&m_pgpucontext->m_pcpubuffer->m_pixmap);
 
-      //vkColor3f(0.0f, 0.0f, 1.0f);                      // Set The Color To Blue
-      //vkVertex3f(2000.0f, 2000.0f, 0.0f);                  // Bottom Right
+   //   }
 
-      //vkEnd();
-
-      //vkPopMatrix();
-
-
-      //vkFlush();
-      //vkFinish();
-      //vkDisable(VK_BLEND);
-
-
-
-
-      //SwapBuffers(m_hdc);
-
-      //m_pgpucontextVulkan->render
-
-      //dr();
-
-      if (m_papplication->m_bUseDraw2dProtoWindow)
-      {
-
-         //m_pgpucontext->swap_buffers();
-
-         //m_pwindow->m_timeLastDrawGuard1.Now();
-
-      }
-      else
-      {
-
-         //m_pgpucontext->swap_buffers();
-
-       //}
-       //else
-       //{
-
-         read_to_cpu_buffer();
-
-         m_pimage->map();
-
-         m_pimage->copy(&m_pgpucontext->m_pcpubuffer->m_pixmap);
-
-      }
-
-   }
+   //}
 
 
    void graphics::on_present()

@@ -2,6 +2,7 @@
 
 
 ////#include "acme/exception/exception.h"
+#include "acme/constant/gpu_output.h"
 #include "acme/prototype/geometry2d/size.h"
 #include "acme/prototype/prototype/memory.h"
 #include "aura/graphics/draw3d/matrix.h"
@@ -60,7 +61,7 @@ namespace gpu
 
       //bool m_bOffscreen = true;
 
-      enum_output m_eoutput;
+      ::gpu::enum_output m_eoutput;
 
 
       ::pointer<::gpu::device>               m_pgpudevice;
@@ -153,6 +154,7 @@ namespace gpu
       virtual void _translate_shader(string_array& stra);
 
       virtual void make_current();
+      virtual void release_current();
 
       virtual string load_fragment(const ::string & pszPath, enum_shader_source & eshadersource);
 
@@ -227,6 +229,37 @@ namespace gpu
          }
          
       }
+
+
+   };
+
+
+   class CLASS_DECL_CUBE context_guard
+   {
+   public:
+
+
+      context* m_pcontext;
+
+
+      context_guard(context* pcontext);
+      ~context_guard();
+
+
+   };
+
+
+   class CLASS_DECL_CUBE rear_guard
+   {
+   public:
+
+
+      ::itask           m_itaskUpper;
+      ::gpu::context *  m_pcontextUpper;
+
+
+      rear_guard(context* pcontext);
+      ~rear_guard();
 
 
    };
