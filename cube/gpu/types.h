@@ -2,6 +2,9 @@
 #pragma once
 
 
+#include "acme/constant/gpu_output.h"
+
+
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS	
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -26,7 +29,7 @@ namespace gpu
 
       ::particle* m_pparticle;
       ::gpu::device * m_pgpudevice;
-      enum_output m_eoutput;
+      ::gpu::enum_output m_eoutput;
       ::windowing::window* m_pwindow;
       ::image32_callback m_callbackImage32CpuBuffer;
       ::int_rectangle m_rectanglePlacement;

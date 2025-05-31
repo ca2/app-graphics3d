@@ -90,7 +90,6 @@ namespace draw2d_opengl
    graphics::graphics()
    {
 
-      m_eoutputOnEndDraw == ::gpu::e_output_none;
       //m_hrc = nullptr;
       //m_hwnd = nullptr;
       //m_hglrc = nullptr;

@@ -1582,7 +1582,12 @@ namespace gpu_vulkan
    void context::make_current()
    {
 
-      ASSERT(m_itaskGpu == ::current_itask());
+      if (m_itaskGpu != ::current_itask())
+      {
+
+         ASSERT(FALSE);
+
+      }
 
       ::e_status estatus = ::success;
 

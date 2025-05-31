@@ -49,6 +49,8 @@ namespace graphics3d_vulkan
 
 		void _prepare_frame() override;
 
+		void do_frame_step() override;
+
 		void run() override;
 
 		void on_begin_frame() override;

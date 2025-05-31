@@ -2839,6 +2839,8 @@ namespace gpu_vulkan
 
 		VkImage image = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
 
+		defer_update_render_pass();
+
 		on_new_frame();
 
 		if (1)

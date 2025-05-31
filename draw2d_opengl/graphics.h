@@ -34,7 +34,6 @@ namespace draw2d_opengl
       //HGLRC                         m_hglrc;
       //HDC                           m_hdc;
       //HWND                          m_hwnd;
-      ::gpu::enum_output                  m_eoutputOnEndDraw;
       ::int_size                          m_size;
       //HDC                           m_hdcGraphics;
       float                               m_z;
