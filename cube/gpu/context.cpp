@@ -585,7 +585,7 @@ namespace gpu
    }
 
 
-   ::gpu::renderer* context::get_renderer()
+   ::gpu::renderer* context::get_renderer(::gpu::enum_scene escene)
    {
 
       if (!m_pgpurenderer)
@@ -593,7 +593,7 @@ namespace gpu
 
          __øconstruct(m_pgpurenderer);
 
-         m_pgpurenderer->initialize_renderer(this, m_eoutput);
+         m_pgpurenderer->initialize_renderer(this, m_eoutput, escene);
 
       }
 

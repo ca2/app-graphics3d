@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "acme/constant/gpu_output.h"
+#include "acme/constant/gpu.h"
 #include "acme/prototype/geometry2d/rectangle.h"
 #include "app-cube/cube/gpu/shader.h"
 
@@ -42,6 +42,7 @@ namespace gpu
 
 
       ::gpu::enum_output                    m_eoutput;
+      ::gpu::enum_scene                     m_escene;
       //bool                                m_bPendingShaderUpdate;
       //string                              m_strProjection;
       //string                              m_strFragment;
@@ -83,7 +84,7 @@ namespace gpu
 
       virtual bool render_step();
 
-      virtual void initialize_renderer(::gpu::context * pgpucontext, ::gpu::enum_output eoutput);
+      virtual void initialize_renderer(::gpu::context * pgpucontext, ::gpu::enum_output eoutput, ::gpu::enum_scene escene);
 
       //virtual void initialize_render(::user::interaction * puserinteraction);
       ///// Initialization routines

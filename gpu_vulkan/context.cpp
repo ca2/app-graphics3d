@@ -2330,7 +2330,7 @@ namespace gpu_vulkan
       if (!m_psetdescriptorlayoutGlobal)
       {
 
-         auto pgpurenderer = get_renderer();
+         auto pgpurenderer = get_renderer(::gpu::e_scene_3d);
 
          m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(this)
             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)

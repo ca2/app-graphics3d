@@ -544,8 +544,10 @@ namespace cube
 
          if (m_pengine)
          {
+
             if (m_pengine->m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
             {
+
                if (::is_ok(m_pimage))
                {
 

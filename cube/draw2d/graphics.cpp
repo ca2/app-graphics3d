@@ -83,7 +83,7 @@ namespace draw2d_gpu
 
          //m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_color_and_alpha_accumulation_buffers);
 
-         m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer);
+         m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer, ::gpu::e_scene_2d);
 
          //::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontext->m_prenderer;
 
@@ -149,8 +149,6 @@ namespace draw2d_gpu
 
             }
 
-            //auto rectangle = m_pgpucontext->rectangle();
-
             ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 
             if (!m_pgpucontextOutput)
@@ -186,7 +184,7 @@ namespace draw2d_gpu
 
             ::int_rectangle rectangle;
 
-            if (m_puserinteraction->host_rectangle().size().is_empty())
+            if (!m_puserinteraction->host_rectangle().size().is_empty())
             {
 
                rectangle = m_puserinteraction->host_rectangle();
@@ -230,7 +228,7 @@ namespace draw2d_gpu
 
             //prendererOutput->defer_update_render_pass();
 
-            auto prendererOutput = m_pgpucontextOutput->get_renderer();
+            auto prendererOutput = m_pgpucontextOutput->get_renderer(::gpu::e_scene_2d);
 
             prendererOutput->endDraw(m_puserinteraction, pgpurenderer);
 

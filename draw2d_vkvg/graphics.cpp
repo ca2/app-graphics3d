@@ -6399,7 +6399,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          __øconstruct(m_pgpucontext->m_pgpurenderer);
 
-         m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer);
+         m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer, ::gpu::e_scene_2d);
 
       }
 
@@ -6485,7 +6485,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          }
 
-         ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontextOutput->get_renderer();
+         ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontextOutput->get_renderer(::gpu::e_scene_2d);
 
          //m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
 

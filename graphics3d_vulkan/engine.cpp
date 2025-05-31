@@ -5,7 +5,7 @@
 #include "frame.h"
 #include "input.h"
 #include "offscreen_render_pass.h"
-#include "renderer.h"
+//#include "renderer.h"
 #include "swap_chain_render_pass.h"
 #include "app-cube/cube/application.h"
 #include "app-cube/cube/impact.h"
@@ -205,11 +205,11 @@ namespace graphics3d_vulkan
       ::cast < ::gpu_vulkan::device > pgpudevice = pgpucontext->m_pgpudevice;
 
       if (pgpudevice
-         && pgpudevice->m_pgpucontextCurrent
-         && pgpudevice->m_pgpucontextCurrent != m_pgpucontext)
+         && pgpudevice->m_pgpucontextCurrent2
+         && pgpudevice->m_pgpucontextCurrent2 != m_pgpucontext)
       {
 
-         pcontextUpper = pgpudevice->m_pgpucontextCurrent;
+         pcontextUpper = pgpudevice->m_pgpucontextCurrent2;
 
       }
 

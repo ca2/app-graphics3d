@@ -67,7 +67,7 @@ namespace graphics3d
 
       }
 
-      auto prenderer = m_pgpucontext->get_renderer();
+      auto prenderer = m_pgpucontext->get_renderer(::gpu::e_scene_3d);
 
       _prepare_frame();
 
@@ -107,7 +107,7 @@ namespace graphics3d
       if (iGlobalUboSize > 0)
       {
 
-         m_pgpucontext->create_global_ubo(iGlobalUboSize, pgpucontext->get_renderer()->get_frame_count());
+         m_pgpucontext->create_global_ubo(iGlobalUboSize, pgpucontext->get_renderer(::gpu::e_scene_3d)->get_frame_count());
 
       }
 

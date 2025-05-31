@@ -4,7 +4,7 @@
 
 
 ////#include "acme/exception/exception.h"
-#include "acme/constant/gpu_output.h"
+#include "acme/constant/gpu.h"
 #include "acme/prototype/geometry2d/size.h"
 #include "acme/prototype/prototype/memory.h"
 #include "aura/graphics/draw3d/matrix.h"

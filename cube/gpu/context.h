@@ -2,7 +2,7 @@
 
 
 ////#include "acme/exception/exception.h"
-#include "acme/constant/gpu_output.h"
+#include "acme/constant/gpu.h"
 #include "acme/prototype/geometry2d/size.h"
 #include "acme/prototype/prototype/memory.h"
 #include "aura/graphics/draw3d/matrix.h"
@@ -107,9 +107,8 @@ namespace gpu
       //virtual void initialize(::particle * pparticle) override;
 
 
+      virtual ::gpu::renderer* get_renderer(::gpu::enum_scene escene);
 
-
-      virtual ::gpu::renderer* get_renderer();
 
       virtual ::int_rectangle rectangle();
       virtual void set_placement(const ::int_rectangle & rectanglePlacement);

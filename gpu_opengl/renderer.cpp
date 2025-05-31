@@ -102,7 +102,7 @@ namespace gpu_opengl
       //glEnable(GL_DEPTH_TEST);
       //glDepthMask(GL_TRUE);
       //glDisable(GL_BLEND);
-      glDepthFunc(GL_LESS);
+      //glDepthFunc(GL_LESS);
 
       //glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -159,7 +159,7 @@ namespace gpu_opengl
          //m_pgpucontext->clear(::color::transparent);
 
       }
-      else
+      else if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
       {
 
          auto sizeHost = pgpucontext->m_sizeHost;
@@ -168,71 +168,25 @@ namespace gpu_opengl
          left = r.left();
 
          top = sizeHost.cy() - r.height() - r.top();
-         
+
          width = r.width();
 
          height = r.height();
 
-         //glScissor(left, top, width, height);
-         //glEnable(GL_SCISSOR_TEST);
-         //glViewport(left, top, width, height);
+      }
+      else
+      {
 
-         //glOrtho(0.0f, width, height, 0, -1.0f, 1.0f);  // Flip Y
+         left = 0;
 
-         //m_pgpucontext->clear(color::transparent);
+         top = 0;
 
-         //glMatrixMode(GL_MODELVIEW);
-         //glMatrixMode(GL_PROJECTION);
-         //glLoadIdentity();
+         width = r.width();
 
-         //glOrtho(0.0f, width, 0, height, -1.0f, 1.0f);  // Flip Y
+         height = r.height();
 
       }
 
-      //m_pgpucontext->clear(argb(0.5f, 0.2f, 0.4f, 0.5f));
-
-      //glScissor(left, top, width, height);
-      //glEnable(GL_SCISSOR_TEST);
-
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
-
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-
-
-
-      //if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
-      //{
-
-      ////   glOrtho(0.0f, r.width(), 0, r.height(), -1.0f, 1.0f);  // Flip Y
-
-      //}
-      //else
-      //{
-
-       //glOrtho(0.0f, r.width()/3, r.height()/3, 0, -1.0f, 1.0f);  // Flip Y
-
-      //}
-
-
-      //// Frame Logic
-      //float currentFrame = ::time::now().floating_second();
-      //float deltaTime = currentFrame - lastFrame;
-      //lastFrame = currentFrame;
-
-      //deltaTime = minimum_maximum(deltaTime, 0.001, 0.016666666);
-
-      //ProcessInput(deltaTime);
-
-      // Toggle wireframe mode
-      //if (m_pgpucontext->m_pimpact->m_pengine->m_bWireframeMode) {
-      //   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Enable wireframe mode
-      //}
-      //else {
-      //   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Enable solid mode
-      //}
-      
       if (!m_pframe)
       {
 
@@ -248,6 +202,183 @@ namespace gpu_opengl
    void renderer::on_begin_render(::gpu::frame* pframe)
    {
 
+      if(m_escene == ::gpu::e_scene_2d)
+      {
+
+         auto r = m_pgpucontext->rectangle();
+
+         int width = r.width();
+
+         int height = r.height();
+
+
+         //::cast < ::gpu_opengl::context >pgpucontext = m_pgpucontext;
+
+//pgpucontext->m_size = size;
+
+//pgpucontext->m_sizeNew = size;
+
+//pgpucontext->m_sizeHost = size;
+
+//pgpucontext->make_current();
+
+//m_pframe = prenderer->beginFrame();
+
+//prenderer->on_begin_render(m_pframe);
+//glEnable(GL_BLEND);
+//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+//glEnable(GL_BLEND);
+//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+         glDepthMask(GL_TRUE); // Enable writing to depth
+         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         glDepthMask(GL_FALSE); // Disable writing to depth
+
+         glEnable(GL_BLEND);
+         glDisable(GL_DEPTH_TEST);
+         //glDepthFunc(GL_LEQUAL);
+
+         ///::opengl::resize(size, bYSwap);
+
+         bool bYSwap = true;
+         //double d = 200.0 / 72.0;
+
+   //double d = 1.0;
+   ////glViewport(0, 0, size.cx() * d, size.cy() * d);
+         glViewport(0, 0, width, height);
+         glMatrixMode(GL_PROJECTION);
+         glLoadIdentity();
+         ////glOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
+         ////glOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
+         //////glOrtho(0, size.cx() * d, 0.0f, size.cy() * d, 000.0f, 1000.0f);
+         ////glOrtho(0, size.cx(), size.cy(), 0.0f, -1000.0f, 1000.0f);
+         //glOrtho(0.f, size.cx(), 0.f, -size.cy(), -1.0f, 1.0f);
+         if (bYSwap)
+         {
+            glOrtho(0.0f, width, height, 0, -1.0f, 1.0f);  // Flip Y
+         }
+         else
+         {
+            glOrtho(0.0f, width, 0, height, -1.0f, 1.0f);  // Flip Y
+         }
+         glMatrixMode(GL_MODELVIEW);
+         glLoadIdentity();
+         //auto left = 0.;
+         //auto right = (double) size.cx();
+         //auto bottom = 0.;
+         //auto top = (double)size.cy();
+         //double dFar = 1.0;
+         //double dNear = -1.0;
+         //double tx = -(right + left) / (right - left);
+         //double ty = -(top + bottom) / (top - bottom);
+         //double tz = -(dFar + dNear) / (dFar - dNear);
+         //double a[] =
+         //{
+         //   2.0/(right - left),0.0,0.0,tx,
+         //   0.0,2.0/(top - bottom),0.0,ty,
+         //   0.0,0.0,-2.0/(dFar-dNear),tz,
+         //   0.0,0.0,0.0,1.0
+         //};
+         //glMultMatrixd(a);
+
+         //glMatrixMode(GL_MODELVIEW);
+         //glLoadIdentity();
+
+
+         //gluOrtho2D(0.f, size.cx(), 0.f, size.cy());
+         //glMatrixMode(GL_MODELVIEW);
+         //glLoadIdentity();
+
+         // Clear
+         //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+         //glDisable(GL_DEPTH_TEST);
+
+         // Translate to inside of pixel (otherwise inaccuracies can occur on certain gl implementations)
+         //if (OpenGL::accuracyTweak())
+         glTranslatef(0.5f, 0.5f, 0);
+
+
+
+         //m_z = 0.0f;
+
+         //glLoadIdentity();
+         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         //glClear(GL_COLOR_BUFFER_BIT);
+         //glEnable(GL_BLEND);
+         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+         //::memory_copy(&m_pgpucontext->m_pbuffer->m_pixmap, (::pixmap *)m_pimage, sizeof(::pixmap));
+
+         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+         //m_pgpucontext->start_drawing();
+
+         ///glEnable(GL_DEPTH_TEST);
+
+
+
+            //glScissor(left, top, width, height);
+            //glEnable(GL_SCISSOR_TEST);
+            //glViewport(left, top, width, height);
+
+            //glOrtho(0.0f, width, height, 0, -1.0f, 1.0f);  // Flip Y
+
+            //m_pgpucontext->clear(color::transparent);
+
+            //glMatrixMode(GL_MODELVIEW);
+            //glMatrixMode(GL_PROJECTION);
+            //glLoadIdentity();
+
+            //glOrtho(0.0f, width, 0, height, -1.0f, 1.0f);  // Flip Y
+
+
+      //m_pgpucontext->clear(argb(0.5f, 0.2f, 0.4f, 0.5f));
+
+      //glScissor(left, top, width, height);
+      //glEnable(GL_SCISSOR_TEST);
+
+    /*     glMatrixMode(GL_PROJECTION);
+         glLoadIdentity();
+
+         glMatrixMode(GL_MODELVIEW);
+         glLoadIdentity();
+*/
+
+
+         //if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+         //{
+
+         ////   glOrtho(0.0f, r.width(), 0, r.height(), -1.0f, 1.0f);  // Flip Y
+
+         //}
+         //else
+         //{
+
+          //glOrtho(0.0f, r.width()/3, r.height()/3, 0, -1.0f, 1.0f);  // Flip Y
+
+         //}
+
+
+         //// Frame Logic
+         //float currentFrame = ::time::now().floating_second();
+         //float deltaTime = currentFrame - lastFrame;
+         //lastFrame = currentFrame;
+
+         //deltaTime = minimum_maximum(deltaTime, 0.001, 0.016666666);
+
+         //ProcessInput(deltaTime);
+
+         // Toggle wireframe mode
+         //if (m_pgpucontext->m_pimpact->m_pengine->m_bWireframeMode) {
+         //   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Enable wireframe mode
+         //}
+         //else {
+         //   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Enable solid mode
+         //}
+
+
+      }
 
    }
 
@@ -666,7 +797,7 @@ namespace gpu_opengl
    }
 
 
-   void renderer::endDraw(::user::interaction * puserinteraction, ::gpu::renderer* pgpurendererSrc)
+   void renderer::endDraw(::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc)
    {
 
       ::cast < ::gpu_opengl::renderer > prenderer = pgpurendererSrc;
@@ -759,41 +890,41 @@ namespace gpu_opengl
 
       //}
 
-m_pgpucontext->send([this, prenderer]()
-   {
-
-      if (auto pframe = beginFrame())
-      {
-
-         //m_pvkcrenderpass->m_semaphoreaSignalOnSubmit.add(prendererSrc->m_pvkcrenderpass->imageAvailableSemaphores[prendererSrc->get_frame_index()]);
-
-
-         //on_begin_frame();
-         // render
-         on_begin_render(pframe);
-
-         //m_pgpucontext->clear(::argb(127, 140 / 2, 220 / 2, 240 / 2));
-         m_pgpucontext->clear(::color::transparent);
-
-
-         if (1)
+      m_pgpucontext->send([this, prenderer]()
          {
 
+            if (auto pframe = beginFrame())
+            {
 
-            //if (m_pimpact->global_ubo_block().size() > 0)
-            //{
+               //m_pvkcrenderpass->m_semaphoreaSignalOnSubmit.add(prendererSrc->m_pvkcrenderpass->imageAvailableSemaphores[prendererSrc->get_frame_index()]);
 
-              // update_global_ubo(m_pgpucontext);
 
-            //}
+               //on_begin_frame();
+               // render
+               on_begin_render(pframe);
 
-            //m_pscene->on_render(m_pgpucontext);
+               //m_pgpucontext->clear(::argb(127, 140 / 2, 220 / 2, 240 / 2));
+               m_pgpucontext->clear(::color::transparent);
 
-            //_blend_image(image, m_rectangle);
 
-   //         glDisable(GL_BLEND);
-   //         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            auto pvertexshader = R"vertexshader(#version 330 core
+               if (1)
+               {
+
+
+                  //if (m_pimpact->global_ubo_block().size() > 0)
+                  //{
+
+                    // update_global_ubo(m_pgpucontext);
+
+                  //}
+
+                  //m_pscene->on_render(m_pgpucontext);
+
+                  //_blend_image(image, m_rectangle);
+
+         //         glDisable(GL_BLEND);
+         //         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                  auto pvertexshader = R"vertexshader(#version 330 core
 layout(location = 0) in vec2 aPos;
 layout(location = 1) in vec2 aTexCoord;
 
@@ -806,7 +937,7 @@ void main() {
 )vertexshader";
 
 
-            auto pfragmentshader = R"fragmentshader(#version 330 core
+                  auto pfragmentshader = R"fragmentshader(#version 330 core
 in vec2 TexCoord;
 out vec4 FragColor;
 
@@ -817,76 +948,76 @@ void main() {
 }
 )fragmentshader";
 
-            if (!m_pshaderBlend)
-            {
+                  if (!m_pshaderBlend)
+                  {
 
-               m_pshaderBlend = __create_new < ::gpu_opengl::shader >();
+                     m_pshaderBlend = __create_new < ::gpu_opengl::shader >();
 
-               m_pshaderBlend->initialize_shader_with_block(
-                  this,
-                  pvertexshader, pfragmentshader);
+                     m_pshaderBlend->initialize_shader_with_block(
+                        this,
+                        pvertexshader, pfragmentshader);
 
 
-            }
+                  }
 
-            m_pshaderBlend->bind();
+                  m_pshaderBlend->bind();
 
-            if (1)
-            {
+                  if (1)
+                  {
 
-               glActiveTexture(GL_TEXTURE0);
+                     glActiveTexture(GL_TEXTURE0);
 
-               int iGlError1 = glGetError();
+                     int iGlError1 = glGetError();
 
-               ::cast < context > pcontext = prenderer->m_pgpucontext;
-               
-               GLuint tex = pcontext->m_pframebuffer->m_tex;
+                     ::cast < context > pcontext = prenderer->m_pgpucontext;
 
-               glBindTexture(GL_TEXTURE_2D, tex);
+                     GLuint tex = pcontext->m_pframebuffer->m_tex;
 
-               int iGlError2 = glGetError();
+                     glBindTexture(GL_TEXTURE_2D, tex);
 
-               m_pshaderBlend->_set_int("uTexture", 0);
+                     int iGlError2 = glGetError();
 
-               if (!m_VAOFullScreenQuad)
-               {
+                     m_pshaderBlend->_set_int("uTexture", 0);
 
-                  m_VAOFullScreenQuad = createFullscreenQuad(m_VBOFullScreenQuad);
+                     if (!m_VAOFullScreenQuad)
+                     {
+
+                        m_VAOFullScreenQuad = createFullscreenQuad(m_VBOFullScreenQuad);
+
+                     }
+
+                     glBindVertexArray(m_VAOFullScreenQuad);
+
+                     int iGlError00 = glGetError();
+
+                     glDrawArrays(GL_TRIANGLES, 0, 6); // assuming 2 triangles (quad)
+
+                     int iGlError01 = glGetError();
+
+                     glBindVertexArray(0);
+
+                     int iGlErrorA = glGetError();
+
+                     glBindTexture(GL_TEXTURE_2D, 0);
+
+                     int iGlErrorB = glGetError();
+
+                     debug() << "gl error";
+
+                  }
+
+                  m_pshaderBlend->unbind();
 
                }
 
-               glBindVertexArray(m_VAOFullScreenQuad);
+               on_end_render(pframe);
 
-               int iGlError00 = glGetError();
+               endFrame();
 
-               glDrawArrays(GL_TRIANGLES, 0, 6); // assuming 2 triangles (quad)
-
-               int iGlError01 = glGetError();
-
-               glBindVertexArray(0);
-
-               int iGlErrorA = glGetError();
-
-               glBindTexture(GL_TEXTURE_2D, 0);
-
-               int iGlErrorB = glGetError();
-
-               debug() << "gl error";
 
             }
 
-            m_pshaderBlend->unbind();
-
-         }
-
-         on_end_render(pframe);
-
-         endFrame();
-
-
-      }
-
-   });
+         });
 
 
    }

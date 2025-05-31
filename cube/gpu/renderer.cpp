@@ -105,7 +105,7 @@ namespace gpu
    }
 
 
-   void renderer::initialize_renderer(::gpu::context * pgpucontext, ::gpu::enum_output eoutput)
+   void renderer::initialize_renderer(::gpu::context * pgpucontext, ::gpu::enum_output eoutput, ::gpu::enum_scene escene)
    {
 
       m_pgpucontext = pgpucontext;
@@ -113,6 +113,9 @@ namespace gpu
       //m_pgpucontext->m_prenderer = this;
 
       m_eoutput = eoutput;
+
+      m_escene = escene;
+
       //::particle::initialize(pparticle);
 
       //m_pgpucontext = system()->get_gpu()->create_context(this);

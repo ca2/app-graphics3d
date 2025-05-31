@@ -84,10 +84,10 @@ namespace gpu_vulkan
 	//}
 
 
-	void renderer::initialize_renderer(::gpu::context* pgpucontext, ::gpu::enum_output eoutput)
+	void renderer::initialize_renderer(::gpu::context* pgpucontext, ::gpu::enum_output eoutput, ::gpu::enum_scene escene)
 	{
 
-		::gpu::renderer::initialize_renderer(pgpucontext, eoutput);
+		::gpu::renderer::initialize_renderer(pgpucontext, eoutput, escene);
 
 		m_pgpucontext = pgpucontext;
 

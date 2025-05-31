@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "acme/constant/gpu_output.h"
+#include "acme/constant/gpu.h"
 #include "aura/graphics/draw2d/graphics.h"
 
 

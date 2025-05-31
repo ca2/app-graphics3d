@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "acme/constant/gpu_output.h"
+#include "acme/constant/gpu.h"
 
 
 #define GLM_ENABLE_EXPERIMENTAL
