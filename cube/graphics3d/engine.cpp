@@ -339,6 +339,8 @@ namespace graphics3d
 
       }
 
+      set_ok_flag();
+
       pgpucontext->post([this, pgpucontext, rectanglePlacement]()
          {
 
