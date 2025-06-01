@@ -1771,6 +1771,180 @@ namespace gpu_vulkan
    }
 
 
+   void renderer::_copy_image(VkImage image, const ::int_rectangle& rectangle)
+   {
+
+      // Image Blend descriptors
+      if (!m_psetdescriptorlayoutImageBlend)
+      {
+
+         m_psetdescriptorlayoutImageBlend = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+            .build();
+
+         int iFrameCount = get_frame_count();
+
+         auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+
+         pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
+         pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+         pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
+
+         m_pdescriptorpoolImageBlend = pdescriptorpoolbuilder->build();
+
+      }
+
+      VkCommandBuffer commandBuffer = this->getCurrentCommandBuffer();
+
+      auto& pmodel = m_imagemodel[image];
+
+      if (__defer_construct_new(pmodel))
+      {
+
+         create_quad_buffers(m_pgpucontext->logicalDevice(),
+            m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+            &pmodel->m_vertexBuffer,
+            &pmodel->m_vertexMemory,
+            &pmodel->m_indexBuffer,
+            &pmodel->m_indexMemory);
+
+      }
+
+      auto pshader = get_image_blend_shader();
+
+      pshader->bind();
+
+      auto& pdescriptor = m_imagedescriptor[image];
+
+      if (__defer_construct_new(pdescriptor))
+      {
+
+         pdescriptor->m_descriptorsets.set_size(get_frame_count());
+
+         VkImageViewCreateInfo viewInfo =
+         {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .image = image,  // <-- Your existing VkImage
+            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+            .format = VK_FORMAT_B8G8R8A8_UNORM,  // <-- Match your image's format
+            .components = 
+            {
+               .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+               .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+               .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+               .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+            },
+            .subresourceRange = 
+            {
+               .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+               .baseMipLevel = 0,
+               .levelCount = 1,
+               .baseArrayLayer = 0,
+               .layerCount = 1,
+            },
+         };
+
+         VkImageView imageView;
+
+         if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, NULL, &imageView) != VK_SUCCESS)
+         {
+            // Handle error
+         }
+
+         ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+         for (int i = 0; i < get_frame_count(); i++)
+         {
+
+            VkDescriptorImageInfo imageinfo;
+
+            imageinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageinfo.imageView = imageView;
+            imageinfo.sampler = m_pgpucontext->_001VkSampler();
+
+            auto& playout = m_psetdescriptorlayoutImageBlend;
+
+            auto& ppool = m_pdescriptorpoolImageBlend;
+
+            descriptor_writer(*playout, *ppool)
+               .writeImage(0, &imageinfo)
+               .build(pdescriptor->m_descriptorsets[i]);
+
+         }
+
+         auto descriptorSetLayout = m_psetdescriptorlayoutImageBlend->getDescriptorSetLayout();
+
+         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+      .setLayoutCount = 1,
+      .pSetLayouts = &descriptorSetLayout,
+         };
+
+         //VkPipelineLayout pipelineLayout;
+         if (vkCreatePipelineLayout(m_pgpucontext->logicalDevice(), &pipelineLayoutInfo, NULL, &pdescriptor->m_vkpipelinelayout) != VK_SUCCESS) {
+            // Handle error
+         }
+
+      }
+
+      //auto commandBuffer = this->getCurrentCommandBuffer();
+
+      // Bind pipeline and descriptor sets
+    //      vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      //    vkCmdBindDescriptorSets(commandBuffer, ...);
+      vkCmdBindDescriptorSets(
+         commandBuffer,
+         VK_PIPELINE_BIND_POINT_GRAPHICS,   // Bind point
+         pdescriptor->m_vkpipelinelayout,                     // Layout used when pipeline was created
+         0,                                  // First set (set = 0)
+         1,                                  // Descriptor set count
+         &pdescriptor->m_descriptorsets[get_frame_index()],                     // Pointer to descriptor set
+         0,                                  // Dynamic offset count
+         NULL                                // Dynamic offsets
+      );
+
+
+
+      VkDeviceSize offsets[] = { 0 };
+      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
+      vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+
+      VkViewport vp = {
+         (float)rectangle.left(),
+         (float)rectangle.top(),
+         (float)rectangle.width(),
+         (float)rectangle.height(),
+         0.0f, 1.0f };
+      VkRect2D sc = {
+         {
+         (float)rectangle.left(),
+         (float)rectangle.top(),
+         },
+         {
+                  (float)rectangle.width(),
+         (float)rectangle.height(),
+
+
+      }
+      };
+      vkCmdSetViewport(commandBuffer, 0, 1, &vp);
+      vkCmdSetScissor(commandBuffer, 0, 1, &sc);
+
+      vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+      // Draw full-screen quad
+      //vkCmdDraw(commandBuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
+
+      pshader->unbind();
+
+      //vkCmdEndRenderPass(...);
+
+      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+
+      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &commandBuffer);
+
+
+   }
+
 
    void renderer::_set_image(VkImage image, const ::int_rectangle& rectangle)
    {
@@ -3006,26 +3180,57 @@ namespace gpu_vulkan
    void renderer::endDraw(::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc)
    {
 
-      //VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->currentImageIndex];
+      ::cast < renderer > prenderer = pgpurendererSrc;
 
-      //::int_rectangle rectangle;
+      VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
 
-      //if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
-      //{
+      ::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
 
-      //	rectangle = m_puserinteraction->host_rectangle();
+      auto copyCmd = m_pgpucontext->beginSingleTimeCommands();
 
-      //}
-      //else
-      //{
+      insertImageMemoryBarrier(
+         copyCmd,
+         vkimage,
+         0,
+         VK_ACCESS_TRANSFER_WRITE_BIT,
+         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+         VK_PIPELINE_STAGE_TRANSFER_BIT,
+         VK_PIPELINE_STAGE_TRANSFER_BIT,
+         VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
-      //	rectangle = { 0, 0, 1920, 1080 };
+      VkSubmitInfo submitInfo{};
+      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+      submitInfo.commandBufferCount = 1;
+      submitInfo.pCommandBuffers = &copyCmd;
+      ::array<VkSemaphore> waitSemaphores;
+      ::array<VkPipelineStageFlags> waitStages;
+      waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+      waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
+      submitInfo.waitSemaphoreCount = waitSemaphores.size();
+      submitInfo.pWaitSemaphores = waitSemaphores.data();
+      submitInfo.pWaitDstStageMask = waitStages.data();
 
-      //}
+      m_pgpucontext->endSingleTimeCommands(copyCmd);
 
-      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+      defer_update_render_pass();
 
-      vkQueueWaitIdle(m_pgpucontext->presentQueue());
+      on_new_frame();
+
+      auto pframe = beginFrame();
+
+      on_begin_render(pframe);
+
+
+      _copy_image(vkimage, rectangle);
+
+      on_end_render(pframe);
+
+      endFrame();
+  
+      //vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+
+      //vkQueueWaitIdle(m_pgpucontext->presentQueue());
 
    }
 

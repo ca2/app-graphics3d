@@ -258,6 +258,7 @@ namespace gpu_vulkan
 
       void engine_on_frame_context_initialization() override;
 
+
    };
 
 

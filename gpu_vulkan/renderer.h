@@ -220,6 +220,7 @@ namespace gpu_vulkan
       void _blend_renderer(::gpu_vulkan::renderer* prendererSrc);
       void _on_graphics_end_draw(::gpu_vulkan::renderer * prendererSrc);
 
+      void _copy_image(VkImage image, const ::int_rectangle& rectangle);
 
       ::gpu::shader * get_image_blend_shader();
 
