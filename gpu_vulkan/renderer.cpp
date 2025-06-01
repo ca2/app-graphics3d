@@ -697,8 +697,8 @@ namespace gpu_vulkan
 
 		//::array<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
 		//const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
-		{
-			m_pgpucontext->m_callbackImage32CpuBuffer(
+		//{
+			m_pgpucontext->m_pimagetarget->on_image_pixels(
 				(const ::image32_t*)imagedata,
 				m_vkextent2d.width,
 				m_vkextent2d.height,
@@ -715,7 +715,7 @@ namespace gpu_vulkan
 			   //m_vkextent2d.height,
 			   //subResourceLayout.rowPitch);
 
-		}
+		//}
 		//else
 		//{
 

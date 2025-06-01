@@ -99,7 +99,7 @@
 //
 //      validationLayers.add("VK_LAYER_KHRONOS_validation");
 //
-//      if (m_papplication->m_bUseDraw2dProtoWindow)
+//      if (m_papplication->m_bUseSwapChainWindow)
 //      {
 //       
 //         deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);

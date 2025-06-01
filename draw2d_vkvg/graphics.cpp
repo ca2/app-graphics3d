@@ -452,7 +452,7 @@ namespace draw2d_vkvg
       //m_hglrc = hglrc;
       //m_size = size;
 
-      bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
+      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
 
       ::vulkan::resize(rectanglePlacement.size(), bYSwap);
 
@@ -602,7 +602,7 @@ namespace draw2d_vkvg
 
       }
 
-      bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
+      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
 
       ::vulkan::resize(pbitmap->get_size(), bYSwap);
 
@@ -2720,7 +2720,7 @@ namespace draw2d_vkvg
 
       m_sizeWindow = sizeWindow;
 
-      bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
+      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
 
       ::vulkan::resize(sizeWindow, bYSwap);
 
@@ -6368,7 +6368,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::int_rectangle rectangle;
 
-      if (!m_puserinteraction && m_pwindow && m_papplication->m_bUseDraw2dProtoWindow)
+      if (!m_puserinteraction && m_pwindow && m_papplication->m_bUseSwapChainWindow)
       {
 
          m_puserinteraction = dynamic_cast <::user::interaction*>(m_pwindow->m_pacmeuserinteraction.m_p);
@@ -6388,7 +6388,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
+      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
 
       ::vulkan::resize(rectangle.size(), bYSwap);
 
@@ -6532,7 +6532,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //dr();
 
-      if (m_papplication->m_bUseDraw2dProtoWindow)
+      if (m_papplication->m_bUseSwapChainWindow)
       {
 
          //m_pgpucontext->swap_buffers();
@@ -6563,7 +6563,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::on_present()
    {
 
-      if (m_papplication->m_bUseDraw2dProtoWindow)
+      if (m_papplication->m_bUseSwapChainWindow)
       {
 
          m_pgpucontext->swap_buffers();

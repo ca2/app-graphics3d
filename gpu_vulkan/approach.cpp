@@ -268,7 +268,7 @@ namespace gpu_vulkan
 
       ::array<const char*> instanceExtensions;
 
-      if (m_papplication->m_bUseDraw2dProtoWindow)
+      if (m_papplication->m_bUseSwapChainWindow)
       {
 
          instanceExtensions.add(VK_KHR_SURFACE_EXTENSION_NAME);

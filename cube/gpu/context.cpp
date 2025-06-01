@@ -473,14 +473,14 @@ namespace gpu
 
       m_eoutput = startcontext.m_eoutput;
 
-      if (m_eoutput == ::gpu::e_output_cpu_buffer
-         && startcontext.m_callbackImage32CpuBuffer
-         && !m_callbackImage32CpuBuffer)
-      {
+      //if (m_eoutput == ::gpu::e_output_cpu_buffer
+      //   && startcontext.m_callbackImage32CpuBuffer
+      //   && !m_callbackImage32CpuBuffer)
+      //{
 
-         m_callbackImage32CpuBuffer = startcontext.m_callbackImage32CpuBuffer;
+      //   m_callbackImage32CpuBuffer = startcontext.m_callbackImage32CpuBuffer;
 
-      }
+      //}
 
       on_create_context(startcontext);
 

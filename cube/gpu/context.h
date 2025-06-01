@@ -65,7 +65,7 @@ namespace gpu
 
 
       ::pointer<::gpu::device>               m_pgpudevice;
-      
+      ::pointer < ::image::target >				m_pimagetarget;
       //::int_rectangle                        m_rectangleNew;
       ::int_rectangle                        m_rectangle;
       float                                  m_z;
@@ -79,7 +79,7 @@ namespace gpu
       ::pointer < ::graphics3d::engine >     m_pengine;
       ::pointer_array < ::gpu::render >      m_rendera;
 
-      ::image32_callback                     m_callbackImage32CpuBuffer;
+      //::image32_callback                     m_callbackImage32CpuBuffer;
 
       //::pointer < ::mutex >                  m_pmutexOffscreen;
       //::int_size                             m_sizeOffscreen;

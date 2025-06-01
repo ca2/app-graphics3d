@@ -52,7 +52,7 @@ namespace gpu
 
          __øconstruct(m_pgpudevice);
 
-         m_pgpudevice->initialize_gpu_device(this, pwindow, rectanglePlacement, m_papplication->m_bUseDraw2dProtoWindow);
+         m_pgpudevice->initialize_gpu_device(this, pwindow, rectanglePlacement, m_papplication->m_bUseSwapChainWindow);
 
       }
 

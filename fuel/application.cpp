@@ -29,7 +29,7 @@ namespace app_cube_fuel
    application::application()
    {
 
-      m_bUseDraw2dProtoWindow = true;
+      m_bUseSwapChainWindow = true;
       //m_ptemplateFuelMain = nullptr;
       //m_ptemplateFuelImpact = nullptr;
 

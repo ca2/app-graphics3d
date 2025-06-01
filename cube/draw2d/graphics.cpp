@@ -46,7 +46,7 @@ namespace draw2d_gpu
 
       ::int_rectangle rectangle;
 
-      if (!m_puserinteraction && m_papplication->m_bUseDraw2dProtoWindow)
+      if (!m_puserinteraction && m_papplication->m_bUseSwapChainWindow)
       {
 
          m_puserinteraction = dynamic_cast <::user::interaction*>(m_papplication->m_pacmeuserinteractionMain.m_p);
@@ -66,7 +66,7 @@ namespace draw2d_gpu
 
       }
 
-      bool bYSwap = m_papplication->m_bUseDraw2dProtoWindow;
+      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
 
       //::vulkan::resize(rectangle.size(), bYSwap);
 
@@ -117,12 +117,12 @@ namespace draw2d_gpu
 
       }
 
-      if (m_callbackImage32CpuBuffer)
-      {
+      //if (m_callbackImage32CpuBuffer)
+      //{
 
-         m_pgpucontext->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
+      //   m_pgpucontext->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
 
-      }
+      //}
 
    }
 

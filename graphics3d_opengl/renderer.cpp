@@ -186,7 +186,7 @@
 //      //glFlush();
 //
 //
-//      if (m_papplication->m_bUseDraw2dProtoWindow)
+//      if (m_papplication->m_bUseSwapChainWindow)
 //      {
 //
 //         _swap();

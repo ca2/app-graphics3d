@@ -795,7 +795,7 @@ namespace gpu_vulkan
 
       m_pphysicaldevice = pphysicaldevice;
 
-      if (m_papplication->m_bUseDraw2dProtoWindow)
+      if (m_papplication->m_bUseSwapChainWindow)
       {
 
          m_pphysicaldevice->createWindowSurface(pwindow);
@@ -1490,7 +1490,7 @@ namespace gpu_vulkan
    //void device::resize_offscreen_buffer(const ::int_size& sizeParam)
    //{
 
-   //   if (m_papplication->m_bUseDraw2dProtoWindow)
+   //   if (m_papplication->m_bUseSwapChainWindow)
    //   {
 
    //      return;
@@ -1727,7 +1727,7 @@ namespace gpu_vulkan
 
    //   validationLayers.add("VK_LAYER_KHRONOS_validation");
 
-   //   if (m_papplication->m_bUseDraw2dProtoWindow)
+   //   if (m_papplication->m_bUseSwapChainWindow)
    //   {
 
    //      deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);

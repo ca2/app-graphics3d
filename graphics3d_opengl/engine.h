@@ -68,7 +68,7 @@ namespace graphics3d_opengl
 		~engine();
 
 
-		void defer_start(::windowing::window * pwindow, const ::int_rectangle& rectanglePlacement) override;
+		void defer_start(::user::interaction * puserinteraction, const ::int_rectangle& rectanglePlacement) override;
 
 
 		void defer_update_engine(const ::int_rectangle& rectanglePlacement) override;

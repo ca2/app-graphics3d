@@ -40,7 +40,7 @@ namespace cube
 
       ::pointer < ::graphics3d::key_map >			m_pkeymap;
       //::task_pointer                            m_ptaskEngine;
-
+      //::pointer < ::image::target >             m_pimagetarget;
 
       bool		m_bShouldClose;
       int		m_iWidth;

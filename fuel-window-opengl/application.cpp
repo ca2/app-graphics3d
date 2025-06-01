@@ -16,7 +16,7 @@ namespace app_cube_fuel_window_opengl
    application::application()
    {
 
-      m_bUseDraw2dProtoWindow = true;
+      m_bUseSwapChainWindow = true;
 
       m_strAppId              = "app-cube/fuel-window-opengl";
       m_strAppName            = "app-cube/fuel-window-opengl";

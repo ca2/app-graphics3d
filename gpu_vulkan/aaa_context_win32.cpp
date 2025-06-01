@@ -160,7 +160,7 @@ namespace gpu_vulkan
       // Derived examples can enable extensions based on the list of supported extensions read from the physical device
       //getEnabledExtensions();
 
-      bool useSwapChain = m_papplication->m_bUseDraw2dProtoWindow;
+      bool useSwapChain = m_papplication->m_bUseSwapChainWindow;
 
       VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
     .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES };
@@ -812,7 +812,7 @@ namespace gpu_vulkan
    void context_win32::resize_offscreen_buffer(const ::int_size& sizeParam)
    {
 
-       if (m_papplication->m_bUseDraw2dProtoWindow)
+       if (m_papplication->m_bUseSwapChainWindow)
        {
 
            return;

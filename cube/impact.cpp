@@ -12,8 +12,9 @@
 #include "aura/graphics/draw2d/graphics.h"
 #include "aura/graphics/draw2d/pen.h"
 #include "aura/graphics/image/context.h"
-#include "aura/graphics/image/image.h"
 #include "aura/graphics/image/drawing.h"
+#include "aura/graphics/image/image.h"
+#include "aura/graphics/image/target.h"
 #include "aura/message/user.h"
 #include "app-cube/cube/graphics3d/types.h"
 //#include "vulkan/vk_container.h"
@@ -242,7 +243,7 @@ namespace cube
 
          m_pengine->initialize_engine(this);
 
-         m_pengine->defer_start(window(), rectanglePlacement);
+         m_pengine->defer_start(this, rectanglePlacement);
 
       }
 

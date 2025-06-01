@@ -1528,7 +1528,7 @@ namespace gpu_vulkan
    void context::resize_offscreen_buffer(const ::int_size & sizeParam)
    {
 
-      if (m_papplication->m_bUseDraw2dProtoWindow)
+      if (m_papplication->m_bUseSwapChainWindow)
       {
 
          return;
@@ -1732,7 +1732,7 @@ namespace gpu_vulkan
 
    //   validationLayers.add("VK_LAYER_KHRONOS_validation");
 
-   //   if (m_papplication->m_bUseDraw2dProtoWindow)
+   //   if (m_papplication->m_bUseSwapChainWindow)
    //   {
 
    //      deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);

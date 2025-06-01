@@ -29,7 +29,7 @@ namespace app_cube_fuel_memory_opengl
    application::application()
    {
 
-      m_bUseDraw2dProtoWindow = false;
+      m_bUseSwapChainWindow = false;
       //m_ptemplateFuelMain = nullptr;
       //m_ptemplateFuelImpact = nullptr;
 

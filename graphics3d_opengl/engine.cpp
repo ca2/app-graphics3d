@@ -130,7 +130,7 @@ namespace graphics3d_opengl
 //      glPopMatrix();
 
 
-      //if (!m_papplication->m_bUseDraw2dProtoWindow
+      //if (!m_papplication->m_bUseSwapChainWindow
       //   && m_pimpact->m_callbackImage32CpuBuffer)
       //{
       //   void* p = nullptr;
@@ -180,10 +180,10 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::defer_start(::windowing::window* pwindow, const ::int_rectangle& rectanglePlacement)
+   void engine::defer_start(::user::interaction * puserinteraction, const ::int_rectangle& rectanglePlacement)
    {
 
-      ::graphics3d::engine::defer_start(pwindow, rectanglePlacement);
+      ::graphics3d::engine::defer_start(puserinteraction, rectanglePlacement);
 
       //auto papp = get_app();
 
@@ -682,7 +682,7 @@ namespace graphics3d_opengl
 ////         glPopMatrix();
 ////
 ////
-////         if (!m_papplication->m_bUseDraw2dProtoWindow
+////         if (!m_papplication->m_bUseSwapChainWindow
 ////            && m_pimpact->m_callbackImage32CpuBuffer)
 ////         {
 ////            void* p = nullptr;
@@ -802,7 +802,7 @@ namespace graphics3d_opengl
       //         ////m_pglcapplication = m_pimpact->start_opengl_application();
       //         ////__øconstruct(m_pgpucontext);
 
-      //         //if (!m_papplication->m_bUseDraw2dProtoWindow)
+      //         //if (!m_papplication->m_bUseSwapChainWindow)
       //         //{
 
       //         //   pgpucontext->m_pgpucontext->resize_offscreen_buffer({ cx, cy });

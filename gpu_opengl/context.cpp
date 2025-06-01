@@ -1350,7 +1350,7 @@ namespace gpu_opengl
    void context::resize_offscreen_buffer(const ::int_size& sizeParam)
    {
 
-      //if (m_papplication->m_bUseDraw2dProtoWindow)
+      //if (m_papplication->m_bUseSwapChainWindow)
       {
 
         // return;

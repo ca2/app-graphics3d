@@ -37,7 +37,6 @@ namespace graphics3d
 		//::pointer < ::cube::application >			m_p3dapplication;
 		//::pointer < ::gpu::renderer >				m_prenderer;
 		::pointer < scene >							m_pscene;
-
 		::pointer < ::graphics3d::input >		m_pinput;
 		::pointer < ::graphics3d::camera >		m_pcamera;
 
@@ -54,11 +53,7 @@ namespace graphics3d
 
 
 
-		::image32_callback                        m_callbackImage32CpuBuffer;
-		::image::image_pointer							m_pimageOffScreen;
-		::particle_pointer                        m_pparticleOffScreenImageSynchronization;
-
-
+		//::image32_callback                        m_callbackImage32CpuBuffer;
 
 
 		engine();
@@ -108,6 +103,8 @@ namespace graphics3d
 		virtual void add_scene(::graphics3d::scene* pscene);
 
 		virtual void set_current_scene(::graphics3d::scene* pscene);
+
+		//virtual void on_offscreen_frame_pixels(const ::image32_t* pimage32, int w, int h, int stride);
 
 
 	};
