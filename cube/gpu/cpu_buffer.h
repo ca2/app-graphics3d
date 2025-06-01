@@ -14,8 +14,9 @@ namespace gpu
    public:
 
 
-      ::memory                         m_memory;
-      ::pixmap                         m_pixmap;
+      //::memory                         m_memory;
+      //::pixmap                         m_pixmap;
+      ::pointer < ::image::target >    m_pimagetarget;
       ::pointer < ::gpu::context >     m_pgpucontext;
 
 

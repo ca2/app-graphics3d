@@ -2,6 +2,7 @@
 #include "cpu_buffer.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "aura/graphics/image/image.h"
+#include "aura/graphics/image/target.h"
 #include "app-cube/cube/gpu/context.h"
 
 
@@ -26,7 +27,7 @@ namespace gpu_vulkan
 
       _synchronous_lock synchronouslock(this->synchronization());
 
-      if (m_pixmap.nok())
+      if (m_pimagetarget->m_pimage.nok())
       {
 
          return;
@@ -35,15 +36,15 @@ namespace gpu_vulkan
 
       //m_pixmap.map();
 
-      auto cx = m_pixmap.m_size.cx();
+      auto cx = m_pimagetarget->m_pimage->width();
 
-      auto cy = m_pixmap.m_size.cy();
+      auto cy = m_pimagetarget->m_pimage->height();
 
       //auto sizeNeeded = cx * cy * 4;
 
       //m_pixmap.create(m_memory, sizeNeeded);
       
-      auto data = m_memory.data();
+      auto data = m_pimagetarget->m_pimage->data();
       
 #if defined(__APPLE__) || defined(__ANDROID__)
 
@@ -155,7 +156,7 @@ namespace gpu_vulkan
 
       synchronous_lock synchronouslock(this->synchronization());
 
-      if (m_pixmap.nok())
+      if (m_pimagetarget->m_pimage.nok())
       {
 
          return;

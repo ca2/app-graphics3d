@@ -428,9 +428,9 @@ namespace gpu
 
             }
 
-            synchronous_lock synchronouslock(m_pcpubuffer->synchronization());
+            _synchronous_lock synchronouslock(m_pcpubuffer->synchronization());
 
-            m_pcpubuffer->m_pixmap.create(m_pcpubuffer->m_memory, size);
+            m_pcpubuffer->set_size(size);
 
          });
 

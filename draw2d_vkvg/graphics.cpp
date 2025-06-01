@@ -16,6 +16,7 @@
 #include "app-cube/gpu_vulkan/renderer.h"
 #include "app-cube/cube/gpu/cpu_buffer.h"
 #include "app-cube/cube/gpu/render.h"
+#include "aura/graphics/image/target.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #include "windowing_win32/window.h"
@@ -1357,7 +1358,7 @@ namespace draw2d_vkvg
       //else
       {
 
-         vkvg_set_source_rgba(m_pdc, __expand_double_rgba(pbrush->m_color));
+         vkvg_set_source_rgba(m_pdc, __expand_float_rgba(pbrush->m_color));
 
       }
 
@@ -6553,7 +6554,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          m_pimage->map();
 
-         m_pimage->copy(&m_pgpucontext->m_pcpubuffer->m_pixmap);
+         m_pimage->copy(m_pgpucontext->m_pcpubuffer->m_pimagetarget->m_pimage);
 
       }
 

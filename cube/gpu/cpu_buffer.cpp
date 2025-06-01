@@ -2,6 +2,7 @@
 #include "cpu_buffer.h"
 #include "context.h"
 #include "aura/graphics/image/image.h"
+#include "aura/graphics/image/target.h"
 //#include "_.h"
 //#include "_gpu.h"
 //#include "_defer.h"
@@ -38,9 +39,9 @@ namespace gpu
 
       //m_pbuffer->m_pimage = image()->create_image(size);
 
-      m_pixmap.create(m_memory, size);
+      m_pimagetarget->set_size(size);
 
-      if (m_pixmap.nok())
+      if (m_pimagetarget->m_pimage.nok())
       {
 
          throw ::exception(error_resource);
@@ -54,7 +55,7 @@ namespace gpu
    void cpu_buffer::gpu_read()
    {
 
-      if (m_pixmap.nok())
+      if (m_pimagetarget->m_pimage.nok())
       {
 
          return;
@@ -68,7 +69,7 @@ namespace gpu
    void cpu_buffer::gpu_write()
    {
 
-      if (m_pixmap.nok())
+      if (m_pimagetarget->m_pimage.nok())
       {
 
          return;

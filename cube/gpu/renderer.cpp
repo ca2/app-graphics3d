@@ -9,6 +9,7 @@
 #include "aura/graphics/draw2d/graphics.h"
 #include "aura/graphics/image/drawing.h"
 #include "aura/graphics/image/image.h"
+#include "aura/graphics/image/target.h"
 #include "aura/platform/system.h"
 #include "aura/user/user/interaction.h"
 
@@ -344,7 +345,7 @@ namespace gpu
       //   && m_papplication->m_pbuffer->m_pimage.ok()
       //   && ::is_set(m_pprogram))
       if (::is_set(m_pgpucontext) && ::is_set(m_pgpucontext->m_pcpubuffer)
-         && m_pgpucontext->m_pcpubuffer->m_pixmap.is_ok())
+         && m_pgpucontext->m_pcpubuffer->m_pimagetarget->m_pimage.ok())
       {
 
          //if (::is_set(m_pobject))
