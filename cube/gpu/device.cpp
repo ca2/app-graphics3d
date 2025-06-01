@@ -141,6 +141,94 @@ namespace gpu
    }
 
 
+   bool device::make_current(::gpu::context* pgpucontext)
+   {
+
+      if (m_itaskCurrentGpuContext == ::current_itask()
+         && m_pgpucontextCurrent2 == pgpucontext)
+      {
+
+         return false;
+
+      }
+
+      if (::is_set(m_pgpucontextCurrent2))
+      {
+
+         throw ::exception(error_wrong_state, "device is in use by other context");
+
+      }
+
+      if (m_itaskCurrentGpuContext.is_set())
+      {
+
+         throw ::exception(error_wrong_state, "HGLRC is in use in other thread");
+
+      }
+
+      ::e_status estatus = ::success;
+
+      bool bMadeCurrentNow = false;
+
+      on_make_current();
+
+      m_pgpucontextCurrent2 = pgpucontext;
+
+      m_itaskCurrentGpuContext = ::current_itask();
+
+      return bMadeCurrentNow;
+
+   }
+
+
+   void device::release_current(::gpu::context* pgpucontext)
+   {
+
+      if (!m_pgpucontextCurrent2)
+      {
+
+         // There is no active context in the device, no nothing to release;
+
+         return;
+
+      }
+      else if (!m_itaskCurrentGpuContext)
+      {
+
+         throw ::exception(error_wrong_state, "HGLRC is in use in other thread");
+
+      }
+      else if (m_itaskCurrentGpuContext != ::current_itask())
+      {
+
+         throw ::exception(error_wrong_state, "HGLRC is taken by other thread");
+
+      }
+      
+      on_release_current();
+
+      m_itaskCurrentGpuContext = {};
+
+      m_pgpucontextCurrent2.release();
+
+   }
+
+
+   void device::on_make_current()
+   {
+
+
+   }
+
+
+   void device::on_release_current()
+   {
+
+
+
+   }
+
+
 
    //void device::draw()
    //{

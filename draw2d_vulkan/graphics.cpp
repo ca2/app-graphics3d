@@ -7296,6 +7296,7 @@ namespace draw2d_vulkan
 
    //}
 
+
    void graphics::do_on_context(const ::procedure& procedure)
    {
 

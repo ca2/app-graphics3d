@@ -1404,9 +1404,7 @@ namespace gpu_opengl
    void context::make_current()
    {
 
-      ::cast < device_win32 > pgpudevice = m_pgpudevice;
-
-      auto bMadeCurrentNow = pgpudevice->make_current(this);
+      ::gpu::context::make_current();
 
       update_framebuffer(m_rectangle.size());
 
@@ -1449,9 +1447,7 @@ namespace gpu_opengl
    void context::release_current()
    {
 
-      ::cast < device_win32 > pgpudevice = m_pgpudevice;
-
-      pgpudevice->release_current(this);
+      ::gpu::context::release_current();
 
    }
 

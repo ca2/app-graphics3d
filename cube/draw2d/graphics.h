@@ -36,6 +36,9 @@ namespace draw2d_gpu
       void set_hint_window_output() override;
 
 
+      void thread_select() override;
+
+
    };
 
 

@@ -682,34 +682,69 @@ namespace gpu_opengl
 
 
 
-   bool device_win32::make_current(::gpu::context* pgpucontext)
+   //bool device_win32::make_current(::gpu::context* pgpucontext)
+   //{
+
+   //   if (m_itaskCurrentGpuContext == ::current_itask()
+   //      && m_pgpucontextCurrent2 == pgpucontext)
+   //   {
+
+   //      return false;
+
+   //   }
+
+   //   if (::is_set(m_pgpucontextCurrent2))
+   //   {
+
+   //      throw ::exception(error_wrong_state, "device is in use by other context");
+
+   //   }
+
+   //   if (m_itaskCurrentGpuContext.is_set())
+   //   {
+
+   //      throw ::exception(error_wrong_state, "HGLRC is in use in other thread");
+
+   //   }
+
+   //   ::e_status estatus = ::success;
+
+   //   bool bMadeCurrentNow = false;
+
+   //   if (wglGetCurrentContext() != m_hrc || wglGetCurrentDC() != m_hdc)
+   //   {
+
+   //      bool bMakeCurrentOk = wglMakeCurrent(m_hdc, m_hrc);
+
+   //      if (!bMakeCurrentOk)
+   //      {
+
+   //         informationf("MS WGL - wglMakeCurrent failed");
+
+   //         int iLastError = GetLastError();
+
+   //         informationf("last-error code: %d\n", iLastError);
+
+   //         throw ::exception(error_failed);
+
+   //      }
+
+   //      bMadeCurrentNow = true;
+
+   //   }
+
+   //   m_pgpucontextCurrent2 = pgpucontext;
+
+   //   m_itaskCurrentGpuContext = ::current_itask();
+
+   //   return bMadeCurrentNow;
+
+   //}
+
+   
+   void device_win32::on_make_current()
    {
 
-      if (m_itaskCurrentGpuContext == ::current_itask()
-         && m_pgpucontextCurrent2 == pgpucontext)
-      {
-
-         return false;
-
-      }
-
-      if (::is_set(m_pgpucontextCurrent2))
-      {
-
-         throw ::exception(error_wrong_state, "device is in use by other context");
-
-      }
-
-      if (m_itaskCurrentGpuContext.is_set())
-      {
-
-         throw ::exception(error_wrong_state, "HGLRC is in use in other thread");
-
-      }
-
-      ::e_status estatus = ::success;
-
-      bool bMadeCurrentNow = false;
 
       if (wglGetCurrentContext() != m_hrc || wglGetCurrentDC() != m_hdc)
       {
@@ -729,43 +764,17 @@ namespace gpu_opengl
 
          }
 
-         bMadeCurrentNow = true;
+         //bMadeCurrentNow = true;
 
       }
-
-      m_pgpucontextCurrent2 = pgpucontext;
-
-      m_itaskCurrentGpuContext = ::current_itask();
-
-      return bMadeCurrentNow;
 
    }
 
-
-   void device_win32::release_current(::gpu::context * pgpucontext)
+   void device_win32::on_release_current()
    {
 
-      if (!m_pgpucontextCurrent2)
-      {
 
-         // There is no active context in the device, no nothing to release;
-
-         return;
-
-      }
-      else if (!m_itaskCurrentGpuContext)
-      {
-
-         throw ::exception(error_wrong_state, "HGLRC is in use in other thread");
-
-      }
-      else if (m_itaskCurrentGpuContext != ::current_itask())
-      {
-
-         throw ::exception(error_wrong_state, "HGLRC is taken by other thread");
-
-      }
-      else if (wglGetCurrentContext() != m_hrc || wglGetCurrentDC() != m_hdc)
+      if (wglGetCurrentContext() != m_hrc || wglGetCurrentDC() != m_hdc)
       {
 
          throw ::exception(error_wrong_state, "wrong state");
@@ -785,11 +794,56 @@ namespace gpu_opengl
 
       }
 
-      m_itaskCurrentGpuContext = {};
-
-      m_pgpucontextCurrent2.release();
-
    }
+
+   //void device_win32::release_current(::gpu::context * pgpucontext)
+   //{
+
+   //   if (!m_pgpucontextCurrent2)
+   //   {
+
+   //      // There is no active context in the device, no nothing to release;
+
+   //      return;
+
+   //   }
+   //   else if (!m_itaskCurrentGpuContext)
+   //   {
+
+   //      throw ::exception(error_wrong_state, "HGLRC is in use in other thread");
+
+   //   }
+   //   else if (m_itaskCurrentGpuContext != ::current_itask())
+   //   {
+
+   //      throw ::exception(error_wrong_state, "HGLRC is taken by other thread");
+
+   //   }
+   //   else if (wglGetCurrentContext() != m_hrc || wglGetCurrentDC() != m_hdc)
+   //   {
+
+   //      throw ::exception(error_wrong_state, "wrong state");
+
+   //   }
+
+   //   bool bReleaseOk = wglMakeCurrent(nullptr, nullptr);
+
+   //   if (!bReleaseOk)
+   //   {
+
+   //      informationf("MS WGL - wglMakeCurrent failed");
+
+   //      informationf("last-error code: %d\n", GetLastError());
+
+   //      throw ::exception(error_failed);
+
+   //   }
+
+   //   m_itaskCurrentGpuContext = {};
+
+   //   m_pgpucontextCurrent2.release();
+
+   //}
 
 
    void device_win32::destroy_device()

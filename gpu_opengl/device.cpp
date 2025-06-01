@@ -60,7 +60,7 @@ namespace gpu_opengl
    bool device::make_current(::gpu::context* pgpucontext)
    {
 
-      return false;
+      return ::gpu::device::make_current(pgpucontext);
 
    }
 
@@ -75,6 +75,7 @@ namespace gpu_opengl
    void device::release_current(::gpu::context* pgpucontext)
    {
 
+      ::gpu::device::release_current(pgpucontext);
 
    }
 

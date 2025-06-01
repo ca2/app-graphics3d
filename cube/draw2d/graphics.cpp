@@ -14,6 +14,16 @@ namespace draw2d_gpu
 {
 
 
+
+   void thread_graphics(graphics* pgraphics)
+   {
+
+      ::get_task()->payload("draw2d_gpu::graphics") = pgraphics;
+
+   }
+
+
+
    graphics::graphics()
    {
 
@@ -266,6 +276,24 @@ namespace draw2d_gpu
 
    }
 
+
+
+   void graphics::thread_select()
+   {
+
+      //if (thread_graphics() == this)
+      //{
+
+        // return;
+      //}
+
+      //wglMakeCurrent(m_hdc, m_hglrc);
+
+      m_pgpucontext->make_current();
+
+      thread_graphics(this);
+
+   }
 
 } // namespace draw2d_gpu
 

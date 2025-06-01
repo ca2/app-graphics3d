@@ -56,9 +56,13 @@ namespace gpu_opengl
       //void resize_offscreen_buffer(const ::int_size& size) override;
       //void destroy_offscreen_buffer() override;
 
-      bool make_current(::gpu::context* pgpucontext) override;
+      //bool make_current(::gpu::context* pgpucontext) override;
 
-      void release_current(::gpu::context* pgpucontext) override;
+      //void release_current(::gpu::context* pgpucontext) override;
+
+      void on_make_current() override;
+      void on_release_current() override;
+
 
       void _swap_buffers() override;
 

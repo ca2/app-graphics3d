@@ -79,14 +79,6 @@ namespace draw2d_opengl
 
    }
 
-   void thread_graphics(graphics* pgraphics)
-   {
-
-      ::get_task()->payload("draw2d_opengl::graphics") = pgraphics;
-
-   }
-
-
    graphics::graphics()
    {
 
@@ -6207,17 +6199,21 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::thread_select()
    {
 
-      //if (thread_graphics() == this)
-      //{
+      
+      ::draw2d_gpu::graphics::thread_select();
 
-        // return;
-      //}
 
-      //wglMakeCurrent(m_hdc, m_hglrc);
+      ////if (thread_graphics() == this)
+      ////{
 
-      m_pgpucontext->make_current();
+      //  // return;
+      ////}
 
-      thread_graphics(this);
+      ////wglMakeCurrent(m_hdc, m_hglrc);
+
+      //m_pgpucontext->make_current();
+
+      //thread_graphics(this);
 
    }
 

@@ -548,13 +548,15 @@ namespace gpu
    void context::make_current()
    {
 
-      //return ::success_none;
+      m_pgpudevice->make_current(this);
 
    }
 
 
    void context::release_current()
    {
+
+      m_pgpudevice->release_current(this);
 
    }
 

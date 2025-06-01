@@ -79,6 +79,15 @@ namespace gpu
 
       virtual ::pointer < ::gpu::context > start_gpu_context(const start_context_t& startcontext);
 
+
+      virtual bool make_current(::gpu::context* pgpucontext);
+
+      virtual void release_current(::gpu::context* pgpucontext);
+
+      virtual void on_make_current();
+
+      virtual void on_release_current();
+
       //virtual ::gpu::renderer* get_renderer();
 
       //virtual ::int_size size();
