@@ -33,25 +33,25 @@ namespace gpu_vulkan
 
 
 
-      struct CLASS_DECL_GPU_VULKAN OffScreenSampler :
+      struct CLASS_DECL_GPU_VULKAN cpu_buffer_sampler :
          virtual public ::particle
       {
 
-         VkExtent2D			m_vkextent2d;
-         VkDeviceMemory		m_vkdevicememory;
-         VkImage				m_vkimage;
 
-         ::pointer < context > m_pgpucontext;
-         ::pointer < renderer > m_prenderer;
+         VkExtent2D			      m_vkextent2d;
+         VkDeviceMemory		      m_vkdevicememory;
+         VkImage				      m_vkimage;
 
 
+         ::pointer < context >   m_pgpucontext;
+         ::pointer < renderer >  m_prenderer;
 
 
-         OffScreenSampler();
-         ~OffScreenSampler();
+         cpu_buffer_sampler();
+         ~cpu_buffer_sampler();
 
 
-         void initialize_offscreen_sampler(::gpu::context* pgpucontext);
+         void initialize_cpu_buffer_sampler(::gpu::context* pgpucontext);
 
          void clear();
          void update(VkExtent2D vkextent2d);
@@ -62,6 +62,7 @@ namespace gpu_vulkan
          void send_sample();
 
       };
+
 
       class descriptor :
          virtual public ::particle
@@ -87,7 +88,7 @@ namespace gpu_vulkan
       map < VkImage, ::pointer < model > >       m_imagemodel;
       //::pointer < ::cube::impact >	m_pimpact;
       ::pointer < context >				               m_pgpucontext;
-      ::pointer < OffScreenSampler >	               m_poffscreensampler;
+      ::pointer < cpu_buffer_sampler >	               m_pcpubuffersampler;
       //::pointer<swap_chain_render_pass>			m_pvkcswapchain;
       //::pointer<offscreen_render_pass>			m_pvkcoffscreen;
       ::pointer<render_pass>			                  m_pvkcrenderpass;

@@ -98,11 +98,13 @@ namespace gpu_vulkan
 
          //m_pimpact = pgpucontext->m_pimpact;
 
-         __construct_new(m_poffscreensampler);
+         pgpucontext->create_cpu_buffer(pgpucontext->rectangle().size());
 
-         m_poffscreensampler->initialize_offscreen_sampler(pgpucontext);
+         __construct_new(m_pcpubuffersampler);
 
-         m_poffscreensampler->m_prenderer = this;
+         m_pcpubuffersampler->initialize_cpu_buffer_sampler(pgpucontext);
+
+         m_pcpubuffersampler->m_prenderer = this;
 
       }
 
@@ -432,7 +434,7 @@ namespace gpu_vulkan
    }
 
 
-   renderer::OffScreenSampler::OffScreenSampler()
+   renderer::cpu_buffer_sampler::cpu_buffer_sampler()
    {
 
       clear();
@@ -440,7 +442,7 @@ namespace gpu_vulkan
    }
 
 
-   renderer::OffScreenSampler::~OffScreenSampler()
+   renderer::cpu_buffer_sampler::~cpu_buffer_sampler()
    {
 
       destroy();
@@ -448,7 +450,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::OffScreenSampler::initialize_offscreen_sampler(::gpu::context* pgpucontext)
+   void renderer::cpu_buffer_sampler::initialize_cpu_buffer_sampler(::gpu::context* pgpucontext)
    {
 
       m_pgpucontext = pgpucontext;
@@ -456,7 +458,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::OffScreenSampler::clear()
+   void renderer::cpu_buffer_sampler::clear()
    {
 
       m_vkextent2d.width = 0;
@@ -467,7 +469,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::OffScreenSampler::update(VkExtent2D vkextent2d)
+   void renderer::cpu_buffer_sampler::update(VkExtent2D vkextent2d)
    {
 
       if (vkextent2d.width == m_vkextent2d.width
@@ -556,7 +558,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::OffScreenSampler::destroy()
+   void renderer::cpu_buffer_sampler::destroy()
    {
 
       if (m_vkdevicememory)
@@ -572,7 +574,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::OffScreenSampler::sample(VkImage vkimage)
+   void renderer::cpu_buffer_sampler::sample(VkImage vkimage)
    {
 
       if (!m_vkimage || !m_vkdevicememory)
@@ -661,7 +663,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::OffScreenSampler::send_sample()
+   void renderer::cpu_buffer_sampler::send_sample()
    {
 
       if (!m_vkimage || !m_vkdevicememory)
@@ -701,11 +703,15 @@ namespace gpu_vulkan
       //const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
       //{
 
-      m_pgpucontext->m_pcpubuffer->set_pixels(
+      auto pgpucontext = m_pgpucontext;
+
+      auto pcpubuffer = pgpucontext->m_pcpubuffer;
+
+      pcpubuffer->set_pixels(
          imagedata,
          m_vkextent2d.width,
          m_vkextent2d.height,
-         (int) subResourceLayout.rowPitch);
+         (int)subResourceLayout.rowPitch);
 
       //_synchronous_lock synchronouslock(m_pgpucontext->m_pmutexOffscreen);
       //   m_pgpucontext->m_sizeOffscreen.cx() = m_vkextent2d.width;
@@ -740,14 +746,14 @@ namespace gpu_vulkan
   //      if (callback)
       {
 
-         m_poffscreensampler->update(m_pvkcrenderpass->getExtent());
+         m_pcpubuffersampler->update(m_pvkcrenderpass->getExtent());
          /*
             Copy framebuffer image to host visible image
          */
          /*const char* imagedata;*/
          {
 
-            m_poffscreensampler->sample(m_pvkcrenderpass->m_images[get_frame_index()]);
+            m_pcpubuffersampler->sample(m_pvkcrenderpass->m_images[get_frame_index()]);
 
             //// Create the linear tiled destination image to copy to and to read the memory from
 
@@ -821,7 +827,7 @@ namespace gpu_vulkan
             //vkMapMemory(m_pgpucontext->logicalDevice(), dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
             //imagedata += subResourceLayout.offset;
 
-            m_poffscreensampler->send_sample();
+            m_pcpubuffersampler->send_sample();
 
             ///*
             //	Save host visible framebuffer image to disk (ppm format)

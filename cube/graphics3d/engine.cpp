@@ -436,12 +436,19 @@ namespace graphics3d
       if (pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
       {
 
-         auto pimagetarget = m_pgpucontext->m_pcpubuffer->m_pimagetarget;
+         auto pcpubuffer = pgpucontext->m_pcpubuffer;
 
-         if (::is_set(pimagetarget))
+         if (pcpubuffer)
          {
 
-            pimagetarget->_001OnDraw(pgraphics);
+            auto pimagetarget = pcpubuffer->m_pimagetarget;
+
+            if (::is_set(pimagetarget))
+            {
+
+               pimagetarget->_001OnDraw(pgraphics);
+
+            }
 
          }
 
@@ -456,10 +463,8 @@ namespace graphics3d
    }
 
 
-
    void engine::_engine_on_frame_context_initialization()
    {
-
 
 
    }
