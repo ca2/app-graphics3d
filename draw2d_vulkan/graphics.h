@@ -39,7 +39,7 @@ namespace draw2d_vulkan
       ::int_size                        m_size;
       //HDC                           m_hdcGraphics;
       float                         m_z;
-      int_point                         m_pointTranslate;
+      //int_point                         m_pointTranslate;
       // bool                                      m_bFont;
       ::int_size                    m_sizeWindow;
       //HGLRC m_hrc;

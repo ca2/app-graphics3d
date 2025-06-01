@@ -112,7 +112,7 @@ namespace draw2d_vulkan
       //m_hrc = nullptr;
       //m_hwnd = nullptr;
       //m_hglrc = nullptr;
-      m_pointTranslate = ::int_point();
+      //m_pointTranslate = ::int_point();
       m_bPrinting = false;
       m_pimageAlphaBlend = nullptr;
       m_size.set(0, 0);
@@ -5329,49 +5329,8 @@ namespace draw2d_vulkan
    void graphics::_set(const ::geometry2d::matrix& matrix)
    {
 
-      thread_select();
-
       m_m1 = matrix;
-      //vkMatrixMode(VK_MODELVIEW);
-      //vkLoadIdentity();
-
-  ///      VKdouble m[16];
-
-      //vkGetDoublev(VK_MODELVIEW_MATRIX, m);
-
-      //vkTranslatef(matrix.c1, matrix.c2, 0.f);
-
-      //vkGetDoublev(VK_MODELVIEW_MATRIX, m);
-
-
-      double m[16];
-
-      m[0] = matrix.a1;
-      m[1] = matrix.b1;
-      //m[2] = matrix.c1;
-      m[2] = 0.0;
-      m[3] = 0.0;
-
-      m[4] = matrix.a2;
-      m[5] = matrix.b2;
-      //m[6] = matrix.c2;
-      m[6] = 0.0;
-      m[7] = 0.0;
-
-      m[8] = 0.0;
-      m[9] = 0.0;
-      m[10] = 1.0;
-      m[11] = 0.0;
-
-      m[12] = matrix.c1;
-      m[13] = matrix.c2;
-      m[14] = 0.0;
-      m[15] = 1.0;
-
-      //vkLoadMatrixd((const VKdouble *) m);
-
-      //return false;
-
+      
    }
 
 

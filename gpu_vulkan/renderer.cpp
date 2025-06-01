@@ -1345,6 +1345,7 @@ namespace gpu_vulkan
          m_pshaderImageBlend = pshaderImageBlend;
 
          pshaderImageBlend->m_bEnableBlend = true;
+         pshaderImageBlend->m_bDisableDepthTest = true;
 
          ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
@@ -1672,7 +1673,7 @@ namespace gpu_vulkan
             &pmodel->m_vertexBuffer,
             &pmodel->m_vertexMemory,
             &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory, bYSwap);
+            &pmodel->m_indexMemory, true);
 
       }
 

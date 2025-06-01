@@ -141,6 +141,7 @@ namespace graphics3d_vulkan
 
    //}
 
+
    void engine::on_render_frame()
    {
 
@@ -267,8 +268,8 @@ namespace graphics3d_vulkan
                VK_ACCESS_TRANSFER_WRITE_BIT,
                VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-               VK_PIPELINE_STAGE_TRANSFER_BIT,
-               VK_PIPELINE_STAGE_TRANSFER_BIT,
+               VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+               VK_ACCESS_SHADER_READ_BIT,
                VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
             VkSubmitInfo submitInfo{};
@@ -283,9 +284,35 @@ namespace graphics3d_vulkan
             submitInfo.pWaitSemaphores = waitSemaphores.data();
             submitInfo.pWaitDstStageMask = waitStages.data();
 
+            //vkQueueWaitIdle(pgpucontext->graphicsQueue());
+
             pgpucontext->endSingleTimeCommands(copyCmd);
 
             prendererUpper->_blend_image(vkimage, pgpucontext->m_rectangle, true);
+
+            auto rectangleUpper = pcontextUpper->rectangle();
+
+            VkViewport vp = {
+               (float)rectangleUpper.left(),
+               (float)rectangleUpper.top(),
+               (float)rectangleUpper.width(),
+               (float)rectangleUpper.height(),
+               0.0f, 1.0f };
+            VkRect2D sc = {
+               {
+               (float)rectangleUpper.left(),
+               (float)rectangleUpper.top(),
+               },
+               {
+                        (float)rectangleUpper.width(),
+               (float)rectangleUpper.height(),
+
+
+            }
+            };
+            vkCmdSetViewport(prendererUpper->getCurrentCommandBuffer(), 0, 1, &vp);
+            vkCmdSetScissor(prendererUpper->getCurrentCommandBuffer(), 0, 1, &sc);
+
 
          }
 
