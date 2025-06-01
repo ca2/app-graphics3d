@@ -265,7 +265,7 @@ namespace gpu
    }
 
 
-   void context::create_window_buffer(void* pHwnd)
+   void context::create_window_buffer(::windowing::window * pwindow)
    {
 
       ::cast < device > pgpudevice = m_pgpudevice;
@@ -288,7 +288,7 @@ namespace gpu
 
       //}
 
-      _create_window_buffer(pHwnd);
+      _create_window_buffer(pwindow);
 
       //if(!estatus)
       //{
@@ -302,7 +302,7 @@ namespace gpu
    }
 
 
-   void context::_create_window_buffer(void* pHwnd)
+   void context::_create_window_buffer(::windowing::window * pwindow)
    {
 
       //return ::success_none;
@@ -310,7 +310,7 @@ namespace gpu
    }
 
 
-   void context::create_offscreen_buffer(const ::int_size& size)
+   void context::create_cpu_buffer(const ::int_size& size)
    {
 
       send([this, size]()
@@ -331,7 +331,7 @@ namespace gpu
 
             m_pcpubuffer->set_size(size);
 
-            _create_offscreen_buffer(size);
+            _create_cpu_buffer(size);
 
             //if(!estatus)
             //{
@@ -399,7 +399,7 @@ namespace gpu
    }
 
 
-   void context::_create_offscreen_buffer(const ::int_size& size)
+   void context::_create_cpu_buffer(const ::int_size& size)
    {
 
       //return ::success_none;
@@ -415,7 +415,7 @@ namespace gpu
    }
 
 
-   void context::resize_offscreen_buffer(const ::int_size& size)
+   void context::resize_cpu_buffer(const ::int_size& size)
    {
 
       send([this, size]()
@@ -424,7 +424,7 @@ namespace gpu
             if (!m_pcpubuffer)
             {
 
-               return create_offscreen_buffer(size);
+               return create_cpu_buffer(size);
 
             }
 
@@ -559,7 +559,7 @@ namespace gpu
    }
 
 
-   void context::destroy_offscreen_buffer()
+   void context::destroy_cpu_buffer()
    {
 
       //return ::success_none;

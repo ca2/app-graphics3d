@@ -65,7 +65,6 @@ namespace gpu
 
 
       ::pointer<::gpu::device>               m_pgpudevice;
-      ::pointer < ::image::target >				m_pimagetarget;
       //::int_rectangle                        m_rectangleNew;
       ::int_rectangle                        m_rectangle;
       float                                  m_z;
@@ -135,16 +134,19 @@ namespace gpu
       virtual void swap_buffers();
 
 
-      virtual void create_window_buffer(void * pHwnd);
-      virtual void _create_window_buffer(void * pHwnd);
-      virtual void create_offscreen_buffer(const ::int_size& size);
-      virtual void _create_offscreen_buffer(const ::int_size& size);
+      virtual void create_window_buffer(::windowing::window * pwindow);
+      virtual void _create_window_buffer(::windowing::window* pwindow);
+
+
+      virtual void create_cpu_buffer(const ::int_size& size);
+      virtual void _create_cpu_buffer(const ::int_size& size);
+      virtual void resize_cpu_buffer(const ::int_size& size);
+      virtual void destroy_cpu_buffer();
+
 
       virtual void defer_create_window_context(::windowing::window * pwindow);
       virtual void _defer_create_window_context(::windowing::window * pwindow);
 
-      virtual void resize_offscreen_buffer(const ::int_size& size);
-      virtual void destroy_offscreen_buffer();
       
       virtual void prepare_for_gpu_read();
 

@@ -304,7 +304,7 @@ namespace draw2d_opengl
       //if (__defer_construct(m_pgpucontextOpenGL))
       //{
 
-      m_pgpucontext->create_offscreen_buffer(rectanglePlacement.size());
+      m_pgpucontext->create_cpu_buffer(rectanglePlacement.size());
 
       //}
 

@@ -436,7 +436,7 @@ namespace graphics3d
       if (pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
       {
 
-         auto pimagetarget = m_pgpucontext->m_pimagetarget;
+         auto pimagetarget = m_pgpucontext->m_pcpubuffer->m_pimagetarget;
 
          if (::is_set(pimagetarget))
          {

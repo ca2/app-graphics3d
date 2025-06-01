@@ -34,17 +34,17 @@ namespace gpu_opengl
 
       }
 
-      //m_pixmap.map();
+      ////m_pixmap.map();
 
-      auto cx = m_pimagetarget->m_pimage->width();
+      //auto cx = m_pimagetarget->m_pimage->width();
 
-      auto cy = m_pimagetarget->m_pimage->height();
+      //auto cy = m_pimagetarget->m_pimage->height();
 
-      //auto sizeNeeded = cx * cy * 4;
+      ////auto sizeNeeded = cx * cy * 4;
 
-      //m_pixmap.create(m_memory, sizeNeeded);
-      
-      auto data = m_pimagetarget->m_pimage->data();
+      ////m_pixmap.create(m_memory, sizeNeeded);
+      //
+      //auto data = m_pimagetarget->m_pimage->data();
       
 #if defined(__APPLE__) || defined(__ANDROID__)
 
@@ -86,31 +86,36 @@ namespace gpu_opengl
       
 #else
 
-
       //glReadBuffer(GL_FRONT);
       
       //if (m_pgpucontext->is_mesa())
+
       if(glReadnPixels)
       {
 
+         auto lock = m_pimagetarget->source_scan_lock(::image::e_copy_disposition_y_swap);
+
          glReadnPixels(
             0, 0,
-            cx, cy,
+            lock.width(), lock.height(),
             GL_BGRA,
             GL_UNSIGNED_BYTE,
-            cx * cy * 4,
-            data);
+            lock.scan(),
+            lock.data());
 
       }
       else
       {
+
+         auto lock = m_pimagetarget->no_padded_lock(::image::e_copy_disposition_y_swap);
+
          glReadPixels(
             0, 0,
-            cx, cy,
+            lock.width(), lock.height(),
             GL_BGRA,
             //GL_RGBA,
             GL_UNSIGNED_BYTE,
-            data);
+            lock.data());
 
       }
 
@@ -171,7 +176,7 @@ namespace gpu_opengl
 //         GL_UNSIGNED_BYTE,
 //         m_pixmap.m_pimage32Raw);
 
-      auto lock = m_pimagetarget->no_padded_lock();
+      auto lock = m_pimagetarget->no_padded_lock(::image::e_copy_disposition_y_swap);
       
       glTexImage2D(GL_TEXTURE_2D, 0, 0, 0, 
          lock.width(), 

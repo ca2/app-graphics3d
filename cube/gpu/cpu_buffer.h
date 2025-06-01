@@ -34,6 +34,11 @@ namespace gpu
       virtual void gpu_write();
       
 
+      virtual void set_pixels(const void * p, int w, int h, int s);
+
+
+
+
    };
 
 

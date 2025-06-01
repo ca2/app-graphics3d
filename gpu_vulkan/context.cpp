@@ -1490,7 +1490,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_offscreen_buffer(const ::int_size & size)
+   void context::_create_cpu_buffer(const ::int_size & size)
    {
 
       _create_offscreen_window(size);
@@ -1525,7 +1525,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::resize_offscreen_buffer(const ::int_size & sizeParam)
+   void context::resize_cpu_buffer(const ::int_size & sizeParam)
    {
 
       if (m_papplication->m_bUseSwapChainWindow)
@@ -1541,7 +1541,7 @@ namespace gpu_vulkan
          {
             //if (!m_pcpubuffer)
 
-            create_offscreen_buffer(size);
+            create_cpu_buffer(size);
 
 
             ///m_pcpubuffer->m_pixmap.create(m_pcpubuffer->m_memory, size);
@@ -1609,7 +1609,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::destroy_offscreen_buffer()
+   void context::destroy_cpu_buffer()
    {
 
       //ASSERT(is_current_task());

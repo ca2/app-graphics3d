@@ -324,7 +324,7 @@ namespace draw2d_vulkan
       //if (__defer_construct(m_pgpucontextVulkan))
       //{
 
-      m_pgpucontext->create_offscreen_buffer(rectanglePlacement.size());
+      m_pgpucontext->create_cpu_buffer(rectanglePlacement.size());
 
 
       auto psystem = system();

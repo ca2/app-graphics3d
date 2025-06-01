@@ -85,9 +85,9 @@ namespace gpu_opengl
       virtual void _create_window_context(::windowing::window * pwindow);
 
       virtual void _create_window_buffer();
-      void _create_offscreen_buffer(const ::int_size& size) override;
-      void resize_offscreen_buffer(const ::int_size& size) override;
-      void destroy_offscreen_buffer() override;
+      void _create_cpu_buffer(const ::int_size& size) override;
+      void resize_cpu_buffer(const ::int_size& size) override;
+      void destroy_cpu_buffer() override;
 
       
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;

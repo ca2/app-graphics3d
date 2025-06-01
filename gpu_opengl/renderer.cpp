@@ -609,26 +609,33 @@ namespace gpu_opengl
       if (pgpucontext)
       {
 
-         auto pimagetarget = pgpucontext->m_pimagetarget;
+         auto pcpubuffer = pgpucontext->m_pcpubuffer;
 
-         if (pimagetarget)
+         if (pcpubuffer)
          {
 
-            auto pcpubuffer = pgpucontext->m_pcpubuffer;
+            auto pimagetarget = pcpubuffer->m_pimagetarget;
 
-            if (pcpubuffer)
+            if (pimagetarget)
             {
 
-               pcpubuffer->set_size(pgpucontext->m_rectangle.size());
+               auto pcpubuffer = pgpucontext->m_pcpubuffer;
 
-               pcpubuffer->gpu_read();
+               if (pcpubuffer)
+               {
 
-               auto data = pcpubuffer->m_pixmap.data();
-               auto width = pcpubuffer->m_pixmap.width();
-               auto height = pcpubuffer->m_pixmap.height();
-               auto scan = pcpubuffer->m_pixmap.m_iScan;
+                  pcpubuffer->set_size(pgpucontext->m_rectangle.size());
 
-               pimagetarget->set_image_pixels(data, width, height, scan);
+                  pcpubuffer->gpu_read();
+
+                  //auto data = pcpubuffer->m_pixmap.data();
+                  //auto width = pcpubuffer->m_pixmap.width();
+                  //auto height = pcpubuffer->m_pixmap.height();
+                  //auto scan = pcerrorpubuffer->m_pixmap.m_iScan;
+
+                  //pimagetarget->set_image_pixels(data, width, height, scan);
+
+               }
 
             }
 

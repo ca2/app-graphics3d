@@ -8,6 +8,7 @@
 #include "physical_device.h"
 #include "swap_chain_render_pass.h"
 #include "initializers.h"
+#include "app-cube/cube/gpu/cpu_buffer.h"
 #include "app-cube/gpu_vulkan/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
@@ -700,11 +701,11 @@ namespace gpu_vulkan
       //const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
       //{
 
-      m_pgpucontext->m_pimagetarget->set_image_pixels(
-         (const ::image32_t*)imagedata,
+      m_pgpucontext->m_pcpubuffer->set_pixels(
+         imagedata,
          m_vkextent2d.width,
          m_vkextent2d.height,
-         subResourceLayout.rowPitch);
+         (int) subResourceLayout.rowPitch);
 
       //_synchronous_lock synchronouslock(m_pgpucontext->m_pmutexOffscreen);
       //   m_pgpucontext->m_sizeOffscreen.cx() = m_vkextent2d.width;
