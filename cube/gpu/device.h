@@ -73,7 +73,7 @@ namespace gpu
 
       virtual ::pointer < ::gpu::context > start_gpu_output_context(::particle* pparticle, const ::gpu::enum_output & eoutput, const ::int_rectangle& rectanglePlacement);
 
-      //virtual ::pointer < ::gpu::context > start_cpu_buffer_context(::particle* pparticle, const ::int_rectangle& rectanglePlacement);
+      virtual ::pointer < ::gpu::context > start_cpu_buffer_context(::particle* pparticle, const ::function< void(::image::target* ptarget) >& callbackOnImagePixels, const ::int_rectangle& rectanglePlacement);
 
       virtual ::pointer < ::gpu::context > start_swap_chain_context(::particle* pparticle, ::windowing::window* pwindow);
 

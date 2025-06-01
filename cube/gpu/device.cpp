@@ -87,21 +87,21 @@ namespace gpu
    }
 
 
-   //::pointer < ::gpu::context > device::start_cpu_buffer_context(::particle* pparticle, const ::int_rectangle& rectanglePlacement)
-   //{
+   ::pointer < ::gpu::context > device::start_cpu_buffer_context(::particle* pparticle, const ::function< void(::image::target* ptarget) >& callbackOnImagePixels, const ::int_rectangle& rectanglePlacement)
+   {
 
-   //   auto pgpucontext = start_gpu_context(
-   //      start_gpu_buffer_context_t
-   //      {
-   //         pparticle,
-   //         this,
-   //         ::gpu::e_output,
-   //         rectanglePlacement
-   //      });
+      auto pgpucontext = start_gpu_context(
+         start_cpu_buffer_context_t
+         {
+            pparticle,
+            this,
+            callbackOnImagePixels,
+            rectanglePlacement
+         });
 
-   //   return pgpucontext;
+      return pgpucontext;
 
-   //}
+   }
 
 
    ::pointer < ::gpu::context > device::start_swap_chain_context(::particle* pparticle, ::windowing::window* pwindow)

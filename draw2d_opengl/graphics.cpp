@@ -190,7 +190,7 @@ namespace draw2d_opengl
 
       }
 
-      opengl_create_offscreen_buffer(size);
+      opengl_create_offscreen_buffer({}, size);
 
    }
 
@@ -225,13 +225,13 @@ namespace draw2d_opengl
    void graphics::CreateCompatibleDC(::draw2d::graphics* pgraphics)
    {
 
-      opengl_create_offscreen_buffer({ 0, 0, 1920, 1080 });
+      opengl_create_offscreen_buffer({}, { 0, 0, 1920, 1080 });
       //opengl_create_offscreen_buffer(pgraphics->m_pimage->size());
 
    }
 
 
-   bool graphics::opengl_create_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
+   bool graphics::opengl_create_offscreen_buffer(const ::function< void(::image::target* ptarget) >& callbackOnImagePixels, const ::int_rectangle& rectanglePlacement)
    {
 
       //if (!draw2d_opengl()->m_popenglcontext) {
@@ -267,10 +267,10 @@ namespace draw2d_opengl
 
          ::cast < ::gpu_opengl::device_win32> pdeviceWin32 = pgpudevice;
 
-         if (m_callbackImage32CpuBuffer)
+         if (callbackOnImagePixels)
          {
 
-            m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, m_callbackImage32CpuBuffer, rectanglePlacement);
+            m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, callbackOnImagePixels, rectanglePlacement);
 
          }
          else
@@ -563,7 +563,7 @@ namespace draw2d_opengl
 
       opengl_delete_offscreen_buffer();
 
-      if (!opengl_create_offscreen_buffer(pbitmap->get_size()))
+      if (!opengl_create_offscreen_buffer({}, pbitmap->get_size()))
       {
 
          return NULL;

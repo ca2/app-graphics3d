@@ -31,8 +31,11 @@ namespace gpu
       ::gpu::device * m_pgpudevice;
       ::gpu::enum_output m_eoutput;
       ::windowing::window* m_pwindow;
-      ::image32_callback m_callbackImage32CpuBuffer;
+      //::image32_callback m_callbackImage32CpuBuffer;
+      //::image::target * m_pimagetarget;
+      ::function< void(::image::target* ptarget) > m_callbackOnImagePixels;
       ::int_rectangle m_rectanglePlacement;
+
 
       start_context_t(::particle* pparticle, ::gpu::device* pgpudevice, const enum_output & eoutput, const ::int_rectangle rectanglePlacement):
          m_pparticle(pparticle),
@@ -45,22 +48,23 @@ namespace gpu
 
       }
 
-      //start_context_t(::particle* pparticle, ::gpu::device* pgpudevice, const ::int_rectangle rectanglePlacement) :
-      //   m_pparticle(pparticle),
-      //   m_pgpudevice(pgpudevice),
-      //   m_eoutput(e_output_cpu_buffer),
-      //   m_callbackImage32CpuBuffer(callbackImage32CpuBuffer),
-      //   m_rectanglePlacement(rectanglePlacement),
-      //   m_pwindow(nullptr)
-      //{
+      start_context_t(::particle* pparticle, ::gpu::device* pgpudevice, const ::function< void(::image::target* ptarget) >& callbackOnImagePixels, const ::int_rectangle rectanglePlacement) :
+         m_pparticle(pparticle),
+         m_pgpudevice(pgpudevice),
+         m_eoutput(e_output_cpu_buffer),
+         m_callbackOnImagePixels(callbackOnImagePixels),
+         m_rectanglePlacement(rectanglePlacement),
+         m_pwindow(nullptr)
+      {
 
-      //}
+      }
+
+
       start_context_t(::particle* pparticle, ::gpu::device* pgpudevice, ::windowing::window* pwindow) :
          m_pparticle(pparticle),
          m_pgpudevice(pgpudevice),
          m_eoutput(e_output_swap_chain),
          m_pwindow(pwindow),
-         m_callbackImage32CpuBuffer{},
          m_rectanglePlacement{}
       {
 
@@ -81,16 +85,16 @@ namespace gpu
    };
 
 
-   //struct start_cpu_buffer_context_t :
-   //   public start_context_t
-   //{
+   struct start_cpu_buffer_context_t :
+      public start_context_t
+   {
 
-   //   start_cpu_buffer_context_t(::particle* pparticle, ::gpu::device* pgpudevice, const image32_callback& callbackImage32CpuBuffer, const ::int_rectangle rectanglePlacement) :
-   //      start_context_t(pparticle, pgpudevice, callbackImage32CpuBuffer, rectanglePlacement)
-   //   {
-   //   }
+      start_cpu_buffer_context_t(::particle* pparticle, ::gpu::device* pgpudevice, const ::function< void(::image::target* ptarget) >& callbackOnImagePixels, const ::int_rectangle rectangleplacement) :
+         start_context_t(pparticle, pgpudevice, callbackOnImagePixels, rectangleplacement)
+      {
+      }
 
-   //};
+   };
 
 
    struct start_swap_chain_context_t :

@@ -118,8 +118,8 @@ namespace graphics3d
       // Existing functions...
       //void handleMouseInput(GLFWwindow* window);
 
-      float getX() const { return m_Δx; }
-      float getY() const { return m_Δy; }
+      float getX() const { return (float) m_Δx; }
+      float getY() const { return (float) m_Δy; }
 
 
    };

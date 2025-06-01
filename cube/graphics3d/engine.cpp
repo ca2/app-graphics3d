@@ -105,12 +105,12 @@ namespace graphics3d
    void engine::create_global_ubo(::gpu::context* pgpucontext)
    {
 
-      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
+      auto iGlobalUboSize = m_pimpact->global_ubo_block().size();
 
       if (iGlobalUboSize > 0)
       {
 
-         m_pgpucontext->create_global_ubo(iGlobalUboSize, pgpucontext->get_renderer(::gpu::e_scene_3d)->get_frame_count());
+         m_pgpucontext->create_global_ubo((int) iGlobalUboSize, pgpucontext->get_renderer(::gpu::e_scene_3d)->get_frame_count());
 
       }
 
@@ -338,10 +338,8 @@ namespace graphics3d
    }
 
 
-   void engine::defer_start(::user::interaction * puserinteraction, ::image::target * pimagetarget, const ::int_rectangle& rectanglePlacement)
+   void engine::defer_start(::user::interaction * puserinteraction, const ::int_rectangle& rectanglePlacement)
    {
-
-      m_pimagetarget = pimagetarget;
 
       auto papp = get_app();
 
@@ -432,11 +430,20 @@ namespace graphics3d
 
    void engine::_001OnDraw(::draw2d::graphics_pointer& pgraphics)
    {
+
+      auto pgpucontext = m_pgpucontext;
    
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      if (pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
       {
 
-         m_pimagetarget->_001OnDraw(pgraphics);
+         auto pimagetarget = m_pgpucontext->m_pimagetarget;
+
+         if (::is_set(pimagetarget))
+         {
+
+            pimagetarget->_001OnDraw(pgraphics);
+
+         }
 
       }
       else
@@ -591,7 +598,7 @@ namespace graphics3d
 
          m_bCreatedGlobalUbo = true;
 
-         int iGlobalUboSize = m_pimpact->global_ubo_block().size();
+         auto iGlobalUboSize = m_pimpact->global_ubo_block().size();
 
          if (iGlobalUboSize > 0)
          {
@@ -689,7 +696,7 @@ namespace graphics3d
    }
 
 
-   void engine::on_mouse_move(int x, int y)
+   void engine::on_mouse_move(float x, float y)
    {
 
 

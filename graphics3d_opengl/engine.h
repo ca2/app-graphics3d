@@ -110,7 +110,7 @@ namespace graphics3d_opengl
 
 		virtual void on_layout(const ::int_rectangle & rectanglePlacement) override;
 
-		virtual void on_mouse_move(int x, int y) override;
+		virtual void on_mouse_move(float x, float y) override;
 
 
 		void on_render_frame() override;

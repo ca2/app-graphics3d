@@ -162,15 +162,15 @@ namespace graphics3d
       if (m_b_001AbsoluteMousePosition)
       {
 
-         _yaw = xOffset;
-         _pitch = yOffset;
+         _yaw = (float) xOffset;
+         _pitch = (float)yOffset;
 
       }
       else
       {
 
-         _yaw += xOffset;
-         _pitch += yOffset;
+         _yaw += (float)xOffset;
+         _pitch += (float)yOffset;
 
       }
 
@@ -435,7 +435,7 @@ namespace graphics3d
 
       m_pimpact->track_mouse_leave();
 
-      m_pimpact->m_pengine->on_mouse_move(xCursor, yCursor);
+      m_pimpact->m_pengine->on_mouse_move((float)xCursor, (float)yCursor);
 
    }
 

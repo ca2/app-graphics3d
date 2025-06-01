@@ -816,16 +816,16 @@ namespace gpu_opengl
       if (startcontext.m_eoutput == ::gpu::e_output_cpu_buffer)
       {
 
-         if (startcontext.m_callbackImage32CpuBuffer
-            && !startcontext.m_rectanglePlacement.is_empty())
-         {
+         //if (startcontext.m_callbackImage32CpuBuffer
+         //   && !startcontext.m_rectanglePlacement.is_empty())
+         //{
 
-            ASSERT(startcontext.m_callbackImage32CpuBuffer);
-            ASSERT(!startcontext.m_rectanglePlacement.is_empty());
+         //   ASSERT(startcontext.m_callbackImage32CpuBuffer);
+         //   ASSERT(!startcontext.m_rectanglePlacement.is_empty());
 
             create_offscreen_buffer(startcontext.m_rectanglePlacement.size());
 
-         }
+         //}
 
       }
       else if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
@@ -1504,7 +1504,7 @@ namespace gpu_opengl
    void context::_translate_shader(string_array& stra)
    {
 
-      context::_translate_shader(stra);
+      ::gpu::context::_translate_shader(stra);
 
       character_count iFindPrecision = stra.case_insensitive_find_first_begins("precision ");
 

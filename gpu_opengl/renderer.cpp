@@ -14,6 +14,7 @@
 #include "renderer.h"
 //#include "mesh.h"
 #include "app-cube/cube/impact.h"
+#include "aura/graphics/image/target.h"
 #include "aura/windowing/window.h"
 
 
@@ -608,9 +609,9 @@ namespace gpu_opengl
       if (pgpucontext)
       {
 
-         auto callback = pgpucontext->m_callbackImage32CpuBuffer;
+         auto pimagetarget = pgpucontext->m_pimagetarget;
 
-         if (callback)
+         if (pimagetarget)
          {
 
             auto pcpubuffer = pgpucontext->m_pcpubuffer;
@@ -627,7 +628,7 @@ namespace gpu_opengl
                auto height = pcpubuffer->m_pixmap.height();
                auto scan = pcpubuffer->m_pixmap.m_iScan;
 
-               callback(data, width, height, scan);
+               pimagetarget->set_image_pixels(data, width, height, scan);
 
             }
 

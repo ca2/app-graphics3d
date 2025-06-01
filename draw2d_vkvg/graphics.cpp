@@ -247,7 +247,7 @@ namespace draw2d_vkvg
 
          auto pgpudevice = pgpu->get_device(m_puserinteraction->window(), rectanglePlacement);
 
-         m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, m_callbackImage32CpuBuffer, rectanglePlacement);
+         m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
 
       }
 
@@ -6403,12 +6403,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      if (m_callbackImage32CpuBuffer)
-      {
+      //if (m_callbackImage32CpuBuffer)
+      //{
 
-         m_pgpucontext->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
+      //   m_pgpucontext->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
 
-      }
+      //}
 
    }
 

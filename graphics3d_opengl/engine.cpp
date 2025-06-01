@@ -585,7 +585,7 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::on_mouse_move(int x, int y)
+   void engine::on_mouse_move(float x, float y)
    {
 
 
