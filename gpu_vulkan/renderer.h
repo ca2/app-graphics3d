@@ -212,15 +212,17 @@ namespace gpu_vulkan
       void endDraw(::user::interaction * puserinteraction, ::gpu::renderer* pgpurendererSrc) override;
 
 
-      void _set_image(VkImage image, const ::int_rectangle& rectangle);
+      void _set_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
 
-      void _blend_image(VkImage image, const ::int_rectangle& rectangle);
+      void _blend_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
       void _on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle);
 
-      void _blend_renderer(::gpu_vulkan::renderer* prendererSrc);
+      void _blend_renderer(::gpu_vulkan::renderer* prendererSrc, bool bYSwap);
       void _on_graphics_end_draw(::gpu_vulkan::renderer * prendererSrc);
 
-      void _copy_image(VkImage image, const ::int_rectangle& rectangle);
+      //void _on_frame_draw(::gpu_vulkan::renderer* prendererUpper);
+
+      void _copy_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
 
       ::gpu::shader * get_image_blend_shader();
 

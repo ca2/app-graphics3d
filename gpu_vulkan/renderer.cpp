@@ -32,7 +32,7 @@ namespace gpu_vulkan
    // Create vertex and index buffers
    void create_quad_buffers(VkDevice device, VkPhysicalDevice physicalDevice,
       VkBuffer* vertexBuffer, VkDeviceMemory* vertexMemory,
-      VkBuffer* indexBuffer, VkDeviceMemory* indexMemory);
+      VkBuffer* indexBuffer, VkDeviceMemory* indexMemory, bool bYSwap);
 
 
    // Fragment shader (GLSL -> SPIR-V):
@@ -1402,24 +1402,59 @@ namespace gpu_vulkan
    }
 
 
-   // Fullscreen quad vertex data
-   float quadVertices[] = {
-      // pos     // uv
-      -1.0f, -1.0f, 0.0f, 0.0f,
-       1.0f, -1.0f, 1.0f, 0.0f,
-       1.0f,  1.0f, 1.0f, 1.0f,
-      -1.0f,  1.0f, 0.0f, 1.0f,
-   };
-   uint16_t quadIndices[] = {
-      0, 1, 2,
-      2, 3, 0
-   };
+
+   //// Fullscreen quad vertex data
+   //float quadVertices[] = {
+   //   // pos     // uv
+   //   -1.0f, -1.0f, 0.0f, 0.0f,
+   //    1.0f, -1.0f, 1.0f, 0.0f,
+   //    1.0f,  1.0f, 1.0f, 1.0f,
+   //   -1.0f,  1.0f, 0.0f, 1.0f,
+   //};
+   //uint16_t quadIndices[] = {
+   //   0, 1, 2,
+   //   2, 3, 0
+   //};
 
    // Create vertex and index buffers
    void create_quad_buffers(VkDevice device, VkPhysicalDevice physicalDevice,
       VkBuffer* vertexBuffer, VkDeviceMemory* vertexMemory,
-      VkBuffer* indexBuffer, VkDeviceMemory* indexMemory)
+      VkBuffer* indexBuffer, VkDeviceMemory* indexMemory, bool bYSwap)
    {
+
+      float y0;
+      float y1;
+
+      if (bYSwap)
+      {
+
+         y0 = 1.0f;
+         y1 = -1.0f;
+
+
+      }
+      else
+      {
+
+         y0 = -1.0f;
+         y1 = 1.0f;
+
+      }
+
+
+      // Fullscreen quad vertex data
+      float quadVertices[] = {
+         // pos     // uv
+         -1.0f, y0, 0.0f, 0.0f,
+          1.0f, y0, 1.0f, 0.0f,
+          1.0f, y1, 1.0f, 1.0f,
+         -1.0f, y1, 0.0f, 1.0f,
+      };
+      uint16_t quadIndices[] = {
+         0, 1, 2,
+         2, 3, 0
+      };
+
 
       VkDeviceSize vertexSize = sizeof(quadVertices);
       VkDeviceSize indexSize = sizeof(quadIndices);
@@ -1484,7 +1519,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::_blend_image(VkImage image, const ::int_rectangle& rectangle)
+   void renderer::_blend_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap)
    {
 
       // Image Blend descriptors
@@ -1637,7 +1672,7 @@ namespace gpu_vulkan
             &pmodel->m_vertexBuffer,
             &pmodel->m_vertexMemory,
             &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory);
+            &pmodel->m_indexMemory, bYSwap);
 
       }
 
@@ -1771,7 +1806,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::_copy_image(VkImage image, const ::int_rectangle& rectangle)
+   void renderer::_copy_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap)
    {
 
       // Image Blend descriptors
@@ -1806,7 +1841,7 @@ namespace gpu_vulkan
             &pmodel->m_vertexBuffer,
             &pmodel->m_vertexMemory,
             &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory);
+            &pmodel->m_indexMemory, bYSwap);
 
       }
 
@@ -1946,7 +1981,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::_set_image(VkImage image, const ::int_rectangle& rectangle)
+   void renderer::_set_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap)
    {
 
       // Image Blend descriptors
@@ -2099,7 +2134,8 @@ namespace gpu_vulkan
             &pmodel->m_vertexBuffer,
             &pmodel->m_vertexMemory,
             &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory);
+            &pmodel->m_indexMemory, 
+            bYSwap);
 
       }
 
@@ -2235,7 +2271,7 @@ namespace gpu_vulkan
 
 
 
-   void renderer::_blend_renderer(::gpu_vulkan::renderer* prendererSrc)
+   void renderer::_blend_renderer(::gpu_vulkan::renderer* prendererSrc, bool bYSwap)
    {
 
       VkImage image = prendererSrc->m_pvkcrenderpass->m_images[prendererSrc->get_frame_index()];
@@ -2392,7 +2428,8 @@ namespace gpu_vulkan
             &pmodel->m_vertexBuffer,
             &pmodel->m_vertexMemory,
             &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory);
+            &pmodel->m_indexMemory, 
+            bYSwap);
 
       }
 
@@ -2958,7 +2995,7 @@ namespace gpu_vulkan
 
          //m_pscene->on_render(m_pgpucontext);
 
-         _blend_image(image, rectangle);
+         _blend_image(image, rectangle, false);
 
          on_end_render(pframe);
 
@@ -3131,7 +3168,7 @@ namespace gpu_vulkan
 
          //m_pscene->on_render(m_pgpucontext);
 
-         _blend_image(image, m_pgpucontext->rectangle());
+         _blend_image(image, m_pgpucontext->rectangle(), false);
 
          on_end_render(pframe);
 
@@ -3175,6 +3212,15 @@ namespace gpu_vulkan
 
 
    }
+
+
+   //void renderer::_on_frame_draw(::gpu_vulkan::renderer* prendererUpper)
+   //{
+
+
+
+
+   //}
 
 
    void renderer::endDraw(::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc)
@@ -3221,8 +3267,7 @@ namespace gpu_vulkan
 
       on_begin_render(pframe);
 
-
-      _copy_image(vkimage, rectangle);
+      _copy_image(vkimage, rectangle, false);
 
       on_end_render(pframe);
 

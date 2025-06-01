@@ -7550,8 +7550,6 @@ namespace draw2d_vulkan
    }
 
 
-
-
    void graphics::intersect_clip(const ::double_rectangle& rectangle)
    {
 

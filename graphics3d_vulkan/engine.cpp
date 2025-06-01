@@ -215,25 +215,25 @@ namespace graphics3d_vulkan
 
       m_pgpucontext->set_placement(m_rectanglePlacementNew);
 
-      m_pgpucontext->send([this, pcontextUpper]()
+      ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontext->get_renderer(::gpu::e_scene_3d);
+
+      ::gpu::rear_guard rear_guard(pcontextUpper);
+
+      m_pgpucontext->send([this]()
          {
+
+            ::gpu::context_guard guard(m_pgpucontext);
 
             m_pgpucontext->make_current();
 
-            _prepare_frame();
+            ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
 
-            auto rectangle = m_rectanglePlacement;
-
-            auto sizeHost = m_pimpact->top_level()->size();
-
-            float wHost = sizeHost.width();
-
-            float hHost = sizeHost.height();
+            prenderer->defer_update_render_pass();
 
             try
             {
 
-               _do_frame_step();
+               m_pgpucontext->m_pengine->_do_frame_step();
 
             }
             catch (...)
@@ -241,19 +241,55 @@ namespace graphics3d_vulkan
 
             }
 
-            //if (1)
-            //{
-
-            //   if (pcontextUpper)
-            //   {
-
-            //      pcontextUpper->make_current();
-
-            //   }
-
-            //}
-
          });
+
+
+      if (1)
+      {
+
+         if (pcontextUpper)
+         {
+
+            pcontextUpper->make_current();
+
+            ::cast < ::gpu_vulkan::renderer > prendererUpper = pcontextUpper->m_pgpurenderer;
+
+            VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
+
+            ::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
+
+            auto copyCmd = pgpucontext->beginSingleTimeCommands();
+
+            ::vulkan::insertImageMemoryBarrier(
+               copyCmd,
+               vkimage,
+               0,
+               VK_ACCESS_TRANSFER_WRITE_BIT,
+               VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+               VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+               VK_PIPELINE_STAGE_TRANSFER_BIT,
+               VK_PIPELINE_STAGE_TRANSFER_BIT,
+               VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
+
+            VkSubmitInfo submitInfo{};
+            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+            submitInfo.commandBufferCount = 1;
+            submitInfo.pCommandBuffers = &copyCmd;
+            ::array<VkSemaphore> waitSemaphores;
+            ::array<VkPipelineStageFlags> waitStages;
+            waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
+            submitInfo.waitSemaphoreCount = waitSemaphores.size();
+            submitInfo.pWaitSemaphores = waitSemaphores.data();
+            submitInfo.pWaitDstStageMask = waitStages.data();
+
+            pgpucontext->endSingleTimeCommands(copyCmd);
+
+            prendererUpper->_blend_image(vkimage, pgpucontext->m_rectangle, true);
+
+         }
+
+      }
 
    }
 
@@ -262,7 +298,7 @@ namespace graphics3d_vulkan
    void engine::_engine_on_frame_context_initialization()
    {
 
-      ::cast < ::gpu_vulkan::approach> papproach=m_papplication->get_gpu();
+      ::cast < ::gpu_vulkan::approach> papproach = m_papplication->get_gpu();
 
       papproach->engine_on_frame_context_initialization(m_pgpucontext);
 

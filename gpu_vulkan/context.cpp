@@ -1582,29 +1582,31 @@ namespace gpu_vulkan
    void context::make_current()
    {
 
-      if (!is_current_task())
-      {
+      ::gpu::context::make_current();
 
-         ASSERT(FALSE);
-
-      }
-
-      ::e_status estatus = ::success;
-
-      //bool bMakeCurrentOk = wglMakeCurrent(m_hdc, m_hrc);
-
-      //if (!bMakeCurrentOk)
+      //if (!is_current_task())
       //{
 
-      //   informationf("MS WGL - wglMakeCurrent failed");
-
-      //   informationf("last-error code: %d\n", GetLastError());
-
-      //   throw ::exception(error_failed);
+      //   ASSERT(FALSE);
 
       //}
 
-      //return estatus;
+      //::e_status estatus = ::success;
+
+      ////bool bMakeCurrentOk = wglMakeCurrent(m_hdc, m_hrc);
+
+      ////if (!bMakeCurrentOk)
+      ////{
+
+      ////   informationf("MS WGL - wglMakeCurrent failed");
+
+      ////   informationf("last-error code: %d\n", GetLastError());
+
+      ////   throw ::exception(error_failed);
+
+      ////}
+
+      ////return estatus;
 
    }
 
