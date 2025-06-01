@@ -707,6 +707,13 @@ namespace gpu
    }
 
 
+   void device::on_top_end_frame()
+   {
+
+
+   }
+
+
    //void device::set_matrix_uniform(const ::gpu::payload& payloadMatrix)
    //{
 

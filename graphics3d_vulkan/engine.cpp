@@ -241,17 +241,17 @@ namespace graphics3d_vulkan
 
             }
 
-            if (1)
-            {
+            //if (1)
+            //{
 
-               if (pcontextUpper)
-               {
+            //   if (pcontextUpper)
+            //   {
 
-                  pcontextUpper->make_current();
+            //      pcontextUpper->make_current();
 
-               }
+            //   }
 
-            }
+            //}
 
          });
 

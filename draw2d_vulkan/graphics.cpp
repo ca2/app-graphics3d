@@ -2030,7 +2030,7 @@ namespace draw2d_vulkan
         // rectangle.bottom() - rectangle.top());
 
       auto logicalDevice = pgpucontext->logicalDevice();
-      prenderer->m_pvkcrenderpass->m_procedureaOnAfterSubmit.add([this, logicalDevice, pmodel]()
+      prenderer->m_pgpucontext->m_pgpudevice->m_procedureaOnTopFrameEnd.add([this, logicalDevice, pmodel]()
          {
 
             vkDestroyBuffer(logicalDevice, pmodel->m_vertexBuffer, nullptr);
@@ -2230,7 +2230,8 @@ namespace draw2d_vulkan
         // rectangle.bottom() - rectangle.top());
 
       auto logicalDevice = pgpucontext->logicalDevice();
-      prenderer->m_pvkcrenderpass->m_procedureaOnAfterSubmit.add([this, logicalDevice, pmodel]()
+
+      prenderer->m_pgpucontext->m_pgpudevice->m_procedureaOnTopFrameEnd.add([this, logicalDevice, pmodel]()
          {
 
             vkDestroyBuffer(logicalDevice, pmodel->m_vertexBuffer, nullptr);
@@ -6630,7 +6631,8 @@ namespace draw2d_vulkan
       m_pshaderLine->unbind();
 
       auto logicalDevice = pcontextVulkan->logicalDevice();
-      prenderer->m_pvkcrenderpass->m_procedureaOnAfterSubmit.add([this, logicalDevice, pmodel]()
+
+      prenderer->m_pgpucontext->m_pgpudevice->m_procedureaOnTopFrameEnd.add([this, logicalDevice, pmodel]()
          {
 
             vkDestroyBuffer(logicalDevice, pmodel->m_vertexBuffer, nullptr);

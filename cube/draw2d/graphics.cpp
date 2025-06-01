@@ -232,6 +232,7 @@ namespace draw2d_gpu
 
             prendererOutput->endDraw(m_puserinteraction, pgpurenderer);
 
+            m_pgpucontext->m_pgpudevice->on_top_end_frame();
 
          }
          else if (m_eoutputOnEndDraw == ::gpu::e_output_cpu_buffer)

@@ -2340,6 +2340,21 @@ namespace gpu_vulkan
    }
 
 
+   void device::on_top_end_frame()
+   {
+
+      auto procedureaOnTopFrameEnd = ::transfer(m_procedureaOnTopFrameEnd);
+
+      for (auto& procedure : procedureaOnTopFrameEnd)
+      {
+
+         procedure();
+
+      }
+
+   }
+
+
 } // namespace gpu_vulkan
 
 

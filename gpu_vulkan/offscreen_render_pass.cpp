@@ -89,14 +89,6 @@ namespace gpu_vulkan
    {
 
 
-      for (auto& procedure : m_procedureaOnAfterSubmit)
-      {
-
-         procedure();
-
-      }
-
-      m_procedureaOnAfterSubmit.clear();
       //vkWaitForFences(
       //   m_pgpucontext->logicalDevice(),
       //   1,

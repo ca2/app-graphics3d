@@ -30,7 +30,6 @@ namespace gpu_vulkan
 
       ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
       ::array < VkSemaphore> m_semaphoreaWaitToSubmit;
-      ::procedure_array m_procedureaOnAfterSubmit;
       ::array<VkImage> depthImages;
       ::array<VkDeviceMemory> depthImageMemorys;
       ::array<VkImageView> depthImageViews;

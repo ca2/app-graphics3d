@@ -42,17 +42,6 @@ namespace cube
       //::task_pointer                            m_ptaskEngine;
 
 
-      ::image32_callback                        m_callbackImage32CpuBuffer;
-
-
-      ::image::image_pointer                    m_pimage;
-
-      ::particle_pointer                        m_pparticleImageSynchronization;
-
-      //::image32_callback m_callbackImage32CpuBuffer;
-
-
-
       bool		m_bShouldClose;
       int		m_iWidth;
       int		m_iHeight;

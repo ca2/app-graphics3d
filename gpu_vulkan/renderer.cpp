@@ -3013,6 +3013,10 @@ namespace gpu_vulkan
 
 		//}
 
+      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+
+		vkQueueWaitIdle(m_pgpucontext->presentQueue());
+
 	}
 
 

@@ -94,8 +94,9 @@ namespace gpu_vulkan
       //VkQueue m_vkqueueGraphics;
       //VkQueue m_vkqueuePresent;
 
-      ::array<const char*> validationLayers;
-      ::array<const char*> deviceExtensions;
+      ::array<const char*>       validationLayers;
+      ::array<const char*>       deviceExtensions;
+      ::procedure_array          m_procedureaOnTopFrameEnd;
 
 
 
@@ -249,6 +250,10 @@ namespace gpu_vulkan
       //virtual VkDescriptorSet getGlobalDescriptorSet(::gpu::context* pgpucontext, ::gpu_vulkan::renderer* prenderer);
 
       //::gpu_vulkan::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);
+
+      
+      void on_top_end_frame() override;
+
 
    };
 

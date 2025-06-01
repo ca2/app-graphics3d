@@ -44,13 +44,21 @@ namespace graphics3d
 		TransformComponent							m_transform;
 		float												m_fFrameTime;
 
-		bool												m_bWireframeMode = false;
+		bool													m_bWireframeMode = false;
 
 		::std::chrono::steady_clock::time_point	m_stdtimepoint;
 		bool	m_bCreatedGlobalUbo;
-		::int_rectangle								m_rectanglePlacementNew;
-		::int_rectangle								m_rectanglePlacement;
-		bool m_bEngineOnFrameContextInitialization = false;
+		::int_rectangle									m_rectanglePlacementNew;
+		::int_rectangle									m_rectanglePlacement;
+		bool													m_bEngineOnFrameContextInitialization = false;
+
+
+
+		::image32_callback                        m_callbackImage32CpuBuffer;
+		::image::image_pointer							m_pimageOffScreen;
+		::particle_pointer                        m_pparticleOffScreenImageSynchronization;
+
+
 
 
 		engine();
@@ -62,7 +70,7 @@ namespace graphics3d
 
 		virtual void create_global_ubo(::gpu::context * pgpucontext);
 
-		virtual void defer_start(::windowing::window * pwindow, const ::int_rectangle& rectangle);
+		virtual void defer_start(::user::interaction * puserinteraction, const ::int_rectangle& rectangle);
 
 		virtual void on_begin_frame();
 
@@ -72,6 +80,10 @@ namespace graphics3d
 
 		//void on_begin_frame() override;
 		virtual void run();
+
+		
+      virtual void _001OnDraw(::draw2d::graphics_pointer& pgraphics);
+
 
 		virtual void do_frame_step();
 

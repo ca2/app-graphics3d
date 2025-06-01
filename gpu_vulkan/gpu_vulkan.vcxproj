@@ -711,7 +711,6 @@
     <ClInclude Include="swap_chain.h" />
     <ClInclude Include="swap_chain_render_pass.h" />
     <ClInclude Include="_.h" />
-    <ClInclude Include="factory_exchange.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="_gpu_vulkan.h" />
   </ItemGroup>

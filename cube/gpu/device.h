@@ -137,6 +137,7 @@ namespace gpu
 
       //virtual void clear(const ::color::color& color);
     
+      virtual void on_top_end_frame();
 
 
    };

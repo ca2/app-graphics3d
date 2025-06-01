@@ -434,6 +434,7 @@ namespace graphics3d_opengl
       catch (...)
       {
 
+
       }
 
       //m_pframebuffer->unbind();

@@ -201,14 +201,14 @@ namespace gpu_vulkan
 
       VK_CHECK(vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
 
-      for (auto& procedure : m_procedureaOnAfterSubmit)
-      {
+      //for (auto& procedure : m_procedureaOnAfterSubmit)
+      //{
 
-         procedure();
+      //   procedure();
 
-      }
+      //}
 
-      m_procedureaOnAfterSubmit.clear();
+      //m_procedureaOnAfterSubmit.clear();
 
       //VkPresentInfoKHR presentInfo = {};
       //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
