@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(app_cube_fuel_memory_opengl CXX)
+project(app_graphics3d_fuel_memory_opengl CXX)
 
 
 list(APPEND library_source

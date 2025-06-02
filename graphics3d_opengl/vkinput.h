@@ -3,7 +3,7 @@
 #include "scene_object.h"
 //#include "window.h"
 #include "acme/constant/user_key.h"
-#include "app-cube/cube/key_map.h"
+#include "cube/key_map.h"
 #include <glm/glm.hpp>
 
 namespace graphics3d_opengl 

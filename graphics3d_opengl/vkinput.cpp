@@ -1,8 +1,8 @@
 #include "framework.h"
 #include "input.h"
 #include "scene_object.h"
-#include "app-cube/cube/impact.h"
-#include "app-cube/cube/types.h"
+#include "cube/impact.h"
+#include "cube/types.h"
 #include <limits>
 
 

@@ -4,7 +4,7 @@
 //#include "Core/gl_container.h"
 //#include "opengl-graphics3d/graphics3d_opengl/types.h"
 //#include "acme/constant/user_key.h"
-#include "app-cube/cube/graphics3d/input.h"
+#include "cube/graphics3d/input.h"
 //#include <unordered_map>
 
 //

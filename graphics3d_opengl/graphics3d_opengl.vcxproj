@@ -881,7 +881,7 @@
     <ClInclude Include="_opengl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\app-cube\cube\cube.vcxproj">
+    <ProjectReference Include="..\..\app\cube\cube.vcxproj">
       <Project>{c5fadcf3-ca08-483d-b5f9-2ce2d2beccbe}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\app\acme\acme.vcxproj">

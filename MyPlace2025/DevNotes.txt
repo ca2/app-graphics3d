@@ -1,0 +1,9 @@
+
+
+Instancing: If you have multiple instances of the same mesh, you can use instanced rendering (glDrawElementsInstanced) to draw all instances in one go, while applying different transformations for each instance.
+Batching: Group objects that share the same shaders and materials to minimize state changes, and render them in batches for optimal performance.
+Performance Gains
+By minimizing the number of VAOs, VBOs, and draw calls, you can achieve significant performance improvements, especially when rendering complex scenes with multiple objects.
+
+
+

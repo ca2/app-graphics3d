@@ -4,11 +4,11 @@
 #include "base/user/user/split_impact.h"
 
 
-namespace app_cube_fuel
+namespace app_graphics3d_fuel
 {
 
 
-   class CLASS_DECL_APP_CUBE_FUEL top_impact:
+   class CLASS_DECL_APP_GRAPHICS3D_FUEL top_impact:
       virtual public ::user::split_impact
    {
    public:
@@ -36,7 +36,7 @@ namespace app_cube_fuel
    };
 
 
-} // namespace app_cube_fuel
+} // namespace app_graphics3d_fuel
 
 
 

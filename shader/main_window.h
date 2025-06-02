@@ -5,11 +5,11 @@
 #include "aura/user/user/main_window.h"
 
 
-namespace app_cube_shader
+namespace app_graphics3d_shader
 {
 
 
-   class CLASS_DECL_APP_CUBE_SHADER main_window :
+   class CLASS_DECL_APP_GRAPHICS3D_SHADER main_window :
       virtual public app_consumer < application, ::user::main_window >
    {
    public:
@@ -59,7 +59,7 @@ namespace app_cube_shader
    };
 
 
-} // namespace app_cube_shader
+} // namespace app_graphics3d_shader
 
 
 

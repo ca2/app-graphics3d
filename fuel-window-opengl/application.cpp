@@ -5,11 +5,11 @@
 #include "base/user/user/single_document_template.h"
 
 
-__IMPLEMENT_APPLICATION_RELEASE_TIME(app_cube_fuel_window_opengl);
-IMPLEMENT_APPLICATION_FACTORY(app_cube_fuel_window_opengl);
+__IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_fuel_window_opengl);
+IMPLEMENT_APPLICATION_FACTORY(app_graphics3d_fuel_window_opengl);
 
 
-namespace app_cube_fuel_window_opengl
+namespace app_graphics3d_fuel_window_opengl
 {
 
 
@@ -18,9 +18,9 @@ namespace app_cube_fuel_window_opengl
 
       m_bUseSwapChainWindow = true;
 
-      m_strAppId              = "app-cube/fuel-window-opengl";
-      m_strAppName            = "app-cube/fuel-window-opengl";
-      m_strBaseSupportId      = "app-cube/fuel-window-opengl";
+      m_strAppId              = "app-graphics3d/fuel-window-opengl";
+      m_strAppName            = "app-graphics3d/fuel-window-opengl";
+      m_strBaseSupportId      = "app-graphics3d/fuel-window-opengl";
       m_bLicense              = false;
 
    }
@@ -35,7 +35,7 @@ namespace app_cube_fuel_window_opengl
    void application::init_instance()
    {
 
-      ::app_cube_fuel::application::init_instance();
+      ::app_graphics3d_fuel::application::init_instance();
 
    }
 
@@ -43,7 +43,7 @@ namespace app_cube_fuel_window_opengl
    void application::term_instance()
    {
 
-      ::app_cube_fuel::application::term_instance();
+      ::app_graphics3d_fuel::application::term_instance();
 
    }
 
@@ -51,7 +51,7 @@ namespace app_cube_fuel_window_opengl
    void application::on_request(::request * prequest)
    {
 
-      ::app_cube_fuel::application::on_request(prequest);
+      ::app_graphics3d_fuel::application::on_request(prequest);
 
    }
 
@@ -62,7 +62,7 @@ namespace app_cube_fuel_window_opengl
    long long application::increment_reference_count()
    {
 
-      return ::app_cube_fuel::application::increment_reference_count();
+      return ::app_graphics3d_fuel::application::increment_reference_count();
 
    }
 
@@ -70,7 +70,7 @@ namespace app_cube_fuel_window_opengl
    long long application::decrement_reference_count()
    {
 
-      return ::app_cube_fuel::application::decrement_reference_count();
+      return ::app_graphics3d_fuel::application::decrement_reference_count();
 
    }
 
@@ -86,7 +86,7 @@ namespace app_cube_fuel_window_opengl
    }
 
 
-} // namespace app_cube_fuel_window_opengl
+} // namespace app_graphics3d_fuel_window_opengl
 
 
 

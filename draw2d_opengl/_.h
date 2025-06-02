@@ -18,3 +18,11 @@
 #endif
 
 
+namespace draw2d_opengl
+{
+
+   class face;
+   class face_freetype;
+   class face_gdiplus;
+
+} // namespace draw2d_opengl

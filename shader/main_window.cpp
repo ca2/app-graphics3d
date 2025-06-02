@@ -19,7 +19,7 @@
 #include "aura/platform/system.h"
 
 
-namespace app_cube_shader
+namespace app_graphics3d_shader
 {
 
 
@@ -362,7 +362,7 @@ namespace app_cube_shader
    }
 
 
-} // namespace app_cube_shader
+} // namespace app_graphics3d_shader
 
 
 

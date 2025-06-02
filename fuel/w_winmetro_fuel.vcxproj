@@ -2,7 +2,7 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4f5f745e-ccc2-4d90-8923-f5ba47a125c0}</ProjectGuid>
-    <RootNamespace>winmetro_app_cube_hellomultiverse</RootNamespace>
+    <RootNamespace>winmetro_app_graphics3d_hellomultiverse</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -11,7 +11,7 @@
     <WindowsTargetPlatformMinVersion>10.0.10586.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
-    <ProjectName>winmetro_app_cube_hellomultiverse</ProjectName>
+    <ProjectName>winmetro_app_graphics3d_hellomultiverse</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
@@ -105,7 +105,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>winmetro_app_cube_hellomultiverse_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>winmetro_app_graphics3d_hellomultiverse_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>2B6A238CC6EEA19632CB567BE16EA24FD2B643E2</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -174,7 +174,7 @@
     <None Include="..\..\..\platform\thirdparty\binary\x64\vcomp120d.dll" />
     <None Include="..\..\..\Release\x86\draw2d_direct2d.dll" />
     <None Include="..\..\..\Release\x86\experience_lite.dll" />
-    <None Include="winmetro_app_cube_hellomultiverse_TemporaryKey.pfx" />
+    <None Include="winmetro_app_graphics3d_hellomultiverse_TemporaryKey.pfx" />
     <None Include="winmetro_hellomultiverse.pfx" />
   </ItemGroup>
   <ItemGroup>

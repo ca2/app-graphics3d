@@ -4,7 +4,7 @@
 ////#include "Core/gl_container.h"
 //
 // 
-#include "app-cube/cube/graphics3d/camera.h"
+#include "cube/graphics3d/camera.h"
 //
 namespace graphics3d_opengl
 {

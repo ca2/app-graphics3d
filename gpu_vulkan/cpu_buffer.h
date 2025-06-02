@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "app-cube/cube/gpu/cpu_buffer.h"
+#include "cube/gpu/cpu_buffer.h"
 
 
 namespace gpu_vulkan

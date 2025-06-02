@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(_app_cube_shader CXX)
+project(_app_graphics3d_shader CXX)
 
 
 
@@ -21,7 +21,7 @@ list(APPEND executable_references
    apex
    aqua
    aura
-   app_cube_shader
+   app_graphics3d_shader
    )
 
 

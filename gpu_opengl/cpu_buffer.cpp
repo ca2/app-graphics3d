@@ -3,7 +3,7 @@
 #include "acme/parallelization/synchronous_lock.h"
 #include "aura/graphics/image/image.h"
 #include "aura/graphics/image/target.h"
-#include "app-cube/cube/gpu/context.h"
+#include "cube/gpu/context.h"
 
 
 namespace gpu_opengl

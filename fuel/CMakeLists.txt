@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(app_cube_fuel CXX)
+project(app_graphics3d_fuel CXX)
 
 
 list(APPEND library_source

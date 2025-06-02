@@ -55,7 +55,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="lib_app_cube_shader.def">
+    <None Include="lib_app_graphics3d_shader.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

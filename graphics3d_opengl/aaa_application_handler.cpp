@@ -30,7 +30,7 @@
 #include "application_handler.h"
 #include "vkbootstrap/VkBootstrap.h"
 #include "buffer.h"
-#include "app-cube/cube/camera.h"
+#include "cube/camera.h"
 #include "input.h"
 //#include "renderer/Types/vk_basicRenderSystem.h"
 //#include "renderer/Types/vk_pointLightSystem.h"
@@ -50,7 +50,7 @@ namespace graphics3d_opengl
    //   popenglexample->m_pmousestate = pmousestate;
    //   //popenglexample->initOpenGL();
 
-   //   // OpenGLExample->setupWindow(::GetModuleHandleW(L"app_cube_vulken.dll"_ansi), WndProc);
+   //   // OpenGLExample->setupWindow(::GetModuleHandleW(L"app_graphics3d_vulken.dll"_ansi), WndProc);
    //   //popenglexample->prepare();
    //   //   popenglexample->renderLoop20(callback);
    //      //delete(OpenGLExample);

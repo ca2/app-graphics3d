@@ -2,6 +2,7 @@
 #include "_opengl.h"
 #include "draw2d.h"
 #include "pen.h"
+#include "path.h"
 #include "font.h"
 #include "brush.h"
 #include "image.h"
@@ -9,20 +10,23 @@
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/parallelization/task.h"
 #include "acme/platform/application.h"
+#include "acme/prototype/geometry2d/item.h"
 #include "acme/prototype/mathematics/mathematics.h"
-#include "app-cube/cube/gpu/approach.h"
-#include "app-cube/cube/gpu/cpu_buffer.h"
-#include "app-cube/cube/gpu/device.h"
-#include "app-cube/cube/gpu/render.h"
-#include "app-cube/gpu_opengl/device_win32.h"
-#include "app-cube/gpu_opengl/renderer.h"
+#include "cube/gpu/approach.h"
+#include "cube/gpu/cpu_buffer.h"
+#include "cube/gpu/device.h"
+#include "cube/gpu/render.h"
+#include "app-graphics3d/gpu_opengl/device_win32.h"
+#include "app-graphics3d/gpu_opengl/renderer.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #include "windowing_win32/window.h"
-
-
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <math.h>
 #include <dwmapi.h>
+#include "acme/prototype/geometry2d/_defer_item.h"
 //#include <gl/freeglut.h>
 #define GLAD_GLAPI_EXPORT
 
@@ -30,13 +34,14 @@
 //#define WGL_CONTEXT_FLAGS_ARB 0X2094
 #define WGL_CONTEXT_COREPROFILE_BIT_ARB 0x00000001
 #define WGL_CONTEXT_PROFILE_MASK_ARB 0x9126
-
+#define FONT_POINT_DENOMINATOR 28.0
+#define FONT_PIXEL_DENOMINATOR 35.0
 //int  opengl_init();
+
+#define __expand_float_pre_rgba(color) (color.f32_opacity()*color.f32_red()),(color.f32_opacity()* color.f32_green()), (color.f32_opacity()*color.f32_blue()), color.f32_opacity()
 
 
 HGLRC initialize_opengl_version(HDC hdc, int iMajor, int iMinor);
-
-
 
 namespace opengl
 {
@@ -975,7 +980,15 @@ namespace draw2d_opengl
 
    //}
 
+   inline void vertex2f(const ::double_rectangle& rectangle, float fZ)
+   {
 
+      glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.top(), fZ);
+      glVertex3f((GLfloat)rectangle.right(), (GLfloat)rectangle.top(), fZ);
+      glVertex3f((GLfloat)rectangle.right(), (GLfloat)rectangle.bottom(), fZ);
+      glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.bottom(), fZ);
+
+   }
    void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
    {
 
@@ -983,9 +996,20 @@ namespace draw2d_opengl
 
       glBegin(GL_QUADS);
 
-      set(pbrush);
+      ::opengl::color(pbrush->m_color);
 
-      ::opengl::vertex2f(rectangle, m_z);
+      ::double_polygon polygon;
+
+      polygon = rectangle;
+
+      for (auto& p : polygon)
+      {
+       
+         m_m1.transform(p);
+
+      }
+
+      ::opengl::vertex2f(polygon, m_z);
 
       glEnd();
 
@@ -2098,6 +2122,7 @@ namespace draw2d_opengl
 
    void graphics::get_text_metrics(::write_text::text_metric* lpMetrics)
    {
+     
 
       set(m_pfont);
       //if (!set(m_pfont))
@@ -2107,18 +2132,18 @@ namespace draw2d_opengl
 
       //}
 
-      ::pointer<font>pfont = m_pfont;
+      //::pointer<font>pfont = m_pfont;
 
-      TEXTMETRIC tm;
+      //TEXTMETRIC tm;
 
-      GetTextMetrics(pfont->m_hdcFont, &tm);
+      //GetTextMetrics(pfont->m_hdcFont, &tm);
 
-      lpMetrics->m_dAscent = tm.tmAscent;
-      lpMetrics->m_dHeight = tm.tmHeight;
-      lpMetrics->m_dDescent = tm.tmDescent;
-      //lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
+      //lpMetrics->m_dAscent = tm.tmAscent;
+      //lpMetrics->m_dHeight = tm.tmHeight;
+      //lpMetrics->m_dDescent = tm.tmDescent;
+      ////lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
 
-      //if (m_pgraphics == nullptr)
+      ////if (m_pgraphics == nullptr)
       //   return false;
 
       //graphics * pgraphics = ((graphics *)this);
@@ -2802,6 +2827,7 @@ namespace draw2d_opengl
    void graphics::draw(::draw2d::path* ppath)
    {
 
+      draw(ppath, m_ppen);
       //m_pgraphics->SetSmoothingMode(plusplus::SmoothingModeAntiAlias);
       //m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
 
@@ -2814,7 +2840,40 @@ namespace draw2d_opengl
 
    void graphics::draw(::draw2d::path* ppath, ::draw2d::pen* ppen)
    {
+      bool bLastPoint = false;
+      ::double_point pointLast;
+      for (int i = 0; i < ppath->m_itema.size(); i++)
+      {
+         auto& pitem = ppath->m_itema[i];
 
+         auto etype = pitem->type();
+
+         switch (etype)
+         {
+         case  ::draw2d::e_item_line:
+         {
+
+            ::cast< ::geometry2d::line_item> plineitem = pitem;
+            if (!bLastPoint || !pointLast.is_same_by(0.00001, plineitem->m_item.m_p1))
+            {
+               glVertex3f(
+                  (float)plineitem->m_item.m_p1.x(),
+                  (float)plineitem->m_item.m_p1.y(),
+                  0.0f);
+            }
+            glVertex3f(
+               (float)plineitem->m_item.m_p2.x(),
+               (float)plineitem->m_item.m_p2.y(),
+               0.0f);
+            pointLast = plineitem->m_item.m_p2;
+         }
+            break;
+            default:
+               break;
+
+         }
+
+      }
       //return m_pgraphics->DrawPath((::plusplus::Pen *) ppen->get_os_data(),(dynamic_cast < ::draw2d_opengl::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
 
       //return true;
@@ -4060,10 +4119,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::_set(const ::geometry2d::matrix& matrix)
    {
 
+      ::draw2d_gpu::graphics::_set(matrix);
+      
       //thread_select();
 
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
+      //glMatrixMode(GL_MODELVIEW);
+      //glLoadIdentity();
 
       ///      GLdouble m[16];
 
@@ -4074,33 +4135,33 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             //glGetDoublev(GL_MODELVIEW_MATRIX, m);
 
 
-      GLdouble m[16];
+      //GLdouble m[16];
 
-      m[0] = matrix.a1;
-      m[1] = matrix.b1;
-      //m[2] = matrix.c1;
-      m[2] = 0.0;
-      m[3] = 0.0;
+      //m[0] = matrix.a1;
+      //m[1] = matrix.b1;
+      ////m[2] = matrix.c1;
+      //m[2] = 0.0;
+      //m[3] = 0.0;
 
-      m[4] = matrix.a2;
-      m[5] = matrix.b2;
-      //m[6] = matrix.c2;
-      m[6] = 0.0;
-      m[7] = 0.0;
+      //m[4] = matrix.a2;
+      //m[5] = matrix.b2;
+      ////m[6] = matrix.c2;
+      //m[6] = 0.0;
+      //m[7] = 0.0;
 
-      m[8] = 0.0;
-      m[9] = 0.0;
-      m[10] = 1.0;
-      m[11] = 0.0;
+      //m[8] = 0.0;
+      //m[9] = 0.0;
+      //m[10] = 1.0;
+      //m[11] = 0.0;
 
-      m[12] = matrix.c1;
-      m[13] = matrix.c2;
-      m[14] = 0.0;
-      m[15] = 1.0;
+      //m[12] = matrix.c1;
+      //m[13] = matrix.c2;
+      //m[14] = 0.0;
+      //m[15] = 1.0;
 
-      glLoadMatrixd((const GLdouble*)m);
+      //glLoadMatrixd((const GLdouble*)m);
 
-      //return false;
+      ////return false;
 
    }
 
@@ -4803,14 +4864,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //copy(rectangle,&rectangleParam);
 
       //return draw_text(str, rectangle, ealign, edrawtext);
-
+      text_out(rectangle.left(), rectangle.top(), str);
 
    }
 
 
    void graphics::draw_text(const ::scoped_string& str, const ::int_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
    {
-
+      text_out(rectangle.left(), rectangle.top(), str);
       //try
       //{
 
@@ -4954,11 +5015,70 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //double_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
    double_size graphics::get_text_extent(const ::scoped_string& lpszString)
    {
+      //return{};
 
       //if(lpszString.is_empty())
       //   return int_size(0, 0);
+      set(m_pfont);
 
-      return int_size(0, 0);
+      ::pointer<font>pfont = m_pfont;
+
+      ::cast < draw2d_opengl::draw2d>pdraw2d = draw2d();
+
+
+      ::pointer <face> pface = pdraw2d->get_face(pfont);
+
+      //glBindVertexArray(pfont->m_VAO);
+
+      // iterate through all characters
+      ::string strChar;
+      ::string str(lpszString);
+      auto psz = str.c_str();
+  
+      float x = 0.0f;
+      float y = 0.0f;
+      //glEnable(GL_CULL_FACE);
+      //glEnable(GL_BLEND);
+      //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      while (next_unicode_character(strChar, psz))
+      {
+
+         auto & ch = pface->get_character(strChar);
+
+         //float xpos = x + ch.Bearing.x * scale;
+         //float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+         float w = ch.Size.x;
+         float h = ch.Size.y;
+         y = maximum(h, y);
+         //// update VBO for each character
+         //float vertices[6][4] = {
+         //    { xpos,     ypos + h,   0.0f, 0.0f },
+         //    { xpos,     ypos,       0.0f, 1.0f },
+         //    { xpos + w, ypos,       1.0f, 1.0f },
+
+         //    { xpos,     ypos + h,   0.0f, 0.0f },
+         //    { xpos + w, ypos,       1.0f, 1.0f },
+         //    { xpos + w, ypos + h,   1.0f, 0.0f }
+         //};
+         // render glyph texture over quad
+         if (ch.TextureID)
+         {
+            //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            //// update content of VBO memory
+            //glBindBuffer(GL_ARRAY_BUFFER, pfont->m_VBO);
+            //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+
+            //glBindBuffer(GL_ARRAY_BUFFER, 0);
+            //// render quad
+            //glDrawArrays(GL_TRIANGLES, 0, 6);
+            // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            x += ch.Advance; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+
+         }
+      }
+
+      return int_size(x, y);
 
       //wstring wstr = lpszString;
 
@@ -5264,8 +5384,19 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      glVertex3f((float)(m_point.x()), (float)(m_point.y()), m_z);
-      glVertex3f((float)(x), (float)(y), m_z);
+      ::double_polygon polygon;
+
+      polygon.add(m_point);
+      polygon.add({ x, y });
+
+      for (auto& p : polygon)
+      {
+
+         m_m1.transform(p);
+
+      }
+
+      ::opengl::vertex2f(polygon, m_z);
 
       glEnd();
 
@@ -5277,51 +5408,192 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::text_out(double x, double y, const ::scoped_string& scopedstr)
+   void graphics::text_out(double x, double yParam, const ::scoped_string& scopedstr)
    {
+      //return;
+      // activate corresponding render state	
 
-      if (m_pfont.is_null())
+      if (!m_pgpushaderTextOut)
       {
 
-         return;
+         auto pvertexshader = R"vertexshader(#version 330 core
+layout(location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>
+out vec2 TexCoords;
 
+uniform mat4 projection;
+
+void main()
+{
+   gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);
+   TexCoords = vertex.zw;
+}
+)vertexshader";
+
+
+         auto pfragmentshader = R"fragmentshader(#version 330 core
+in vec2 TexCoords;
+out vec4 color;
+
+uniform sampler2D text;
+uniform vec4 textColor;
+
+void main()
+{    
+    vec4 sampled = texture(text, TexCoords).rgba;
+vec4 c = vec4(textColor) * sampled;
+    //color = vec4(sqrt(c.r),sqrt(c.g), sqrt(c.b), sqrt(c.a));
+color = vec4(c.r,c.g, c.b, c.a);
+}
+)fragmentshader";
+
+         m_pgpushaderTextOut = __create_new < ::gpu_opengl::shader >();
+
+         m_pgpushaderTextOut->initialize_shader_with_block(
+            m_pgpucontext->m_pgpurenderer,
+            pvertexshader,
+            pfragmentshader);
+
+         
       }
-
-      //::draw2d::graphics::text_out(x, y, lpszString);
-      //if (::draw2d::graphics::text_out(x, y, lpszString, nCount))
-      //{
-
-      //   return true;
-
-      //}
-
-      //return true;
+      m_pgpushaderTextOut->bind();
+      auto color = m_pbrush->m_color;
+      //shader.use();
+      ::cast<::gpu_opengl::shader>pshader = m_pgpushaderTextOut;
+      pshader->_set_vec4("textColor", { __expand_float_pre_rgba(color) });
+      // glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
+      glm::mat4 projection = glm::ortho(
+         0.0f, 
+         static_cast<float>(m_pgpucontext->m_rectangle.width()),
+         0.0f,
+         static_cast<float>(m_pgpucontext->m_rectangle.height()));
+      pshader->_set_mat4("projection", projection);
 
       set(m_pfont);
-
+      
       ::pointer<font>pfont = m_pfont;
+      ::cast < draw2d_opengl::draw2d>pdraw2d = draw2d();
+      
+      auto pgpuface = pdraw2d->get_face(pfont);
+      ::cast < draw2d_opengl::face>pface = pgpuface;
 
-      float length = 0.f;
+      glActiveTexture(GL_TEXTURE0);
 
-      for (unsigned int loop = 0; loop < scopedstr.size(); loop++)	// Loop To Find Text Length
+      glBindVertexArray(pface->m_VAO);
+
+      // iterate through all characters
+      ::string strChar;
+      ::string str(scopedstr);
+      auto psz = str.c_str();
+      //float scale;
+      //if (pfont->m_fontsize.eunit() == e_unit_point)
+      //{
+      //   scale = pfont->m_fontsize.as_float() / FONT_POINT_DENOMINATOR;
+      //}
+      //else
+      //{
+      //   scale = pfont->m_fontsize.as_float() / FONT_PIXEL_DENOMINATOR;
+      //}
+      //auto y = m_pgpucontext->m_rectangle.height() - yParam - pface->m_iPixelSize;
+      auto y = yParam;
+
+
+      ::int_point point(x, y);
+      int Δx = 0;
+      m_m1.transform(point);
+
+      point.y() = m_pgpucontext->m_rectangle.height() - point.y() - pface->m_iPixelSize;
+
+      glEnable(GL_CULL_FACE);
+      //glEnable(GL_BLEND);
+      //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      while(next_unicode_character(strChar, psz))
       {
 
-         length += pfont->m_gmf[scopedstr[loop]].gmfCellIncX;			// Increase Length By Each Characters Width
+         auto & ch = pface->get_character(strChar);
 
+         float xpos = point.x() + Δx + ch.Bearing.x;
+         float ypos = point.y() - (ch.Size.y - ch.Bearing.y);
+
+         float w = ch.Size.x;
+         float h = ch.Size.y;
+         // update VBO for each character
+         float vertices[6][4] = {
+             { xpos,     ypos + h,   0.0f, 0.0f },
+             { xpos,     ypos,       0.0f, 1.0f },
+             { xpos + w, ypos,       1.0f, 1.0f },
+
+             { xpos,     ypos + h,   0.0f, 0.0f },
+             { xpos + w, ypos,       1.0f, 1.0f },
+             { xpos + w, ypos + h,   1.0f, 0.0f }
+         };
+         // render glyph texture over quad
+         if (ch.TextureID)
+         {
+            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            // update content of VBO memory
+            glBindBuffer(GL_ARRAY_BUFFER, pface->m_VBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            // render quad
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            Δx += ch.Advance; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+
+         }
       }
-
-      glTranslatef((float)(x), (float)(y), 0.0f);					// Center Our Text On The Screen
-
-      glPushAttrib(GL_LIST_BIT);							// Pushes The Display List Bits
-      glListBase(pfont->m_baseFont);									// Sets The Base Character to 0
-      glCallLists((GLsizei)scopedstr.size(), GL_UNSIGNED_BYTE, scopedstr.begin());	// Draws The Display List Text
-      glPopAttrib();										// Pops The Display List Bits      }
-
-      glTranslatef((float)(-x), (float)(-y), 0.0f);					// Center Our Text On The Screen
-
-      //return true;
-
+      glBindVertexArray(0);
+      glBindTexture(GL_TEXTURE_2D, 0);
+      glDisable(GL_CULL_FACE);
+      m_pgpushaderTextOut->unbind();
    }
+
+
+   //void graphics::text_out_2024_and_before(double x, double y, const ::scoped_string& scopedstr)
+   //{
+
+   //   if (m_pfont.is_null())
+   //   {
+
+   //      return;
+
+   //   }
+
+   //   //::draw2d::graphics::text_out(x, y, lpszString);
+   //   //if (::draw2d::graphics::text_out(x, y, lpszString, nCount))
+   //   //{
+
+   //   //   return true;
+
+   //   //}
+
+   //   //return true;
+
+   //   set(m_pfont);
+
+   //   ::pointer<font>pfont = m_pfont;
+
+   //   float length = 0.f;
+
+   //   for (unsigned int loop = 0; loop < scopedstr.size(); loop++)	// Loop To Find Text Length
+   //   {
+
+   //      length += pfont->m_gmf[scopedstr[loop]].gmfCellIncX;			// Increase Length By Each Characters Width
+
+   //   }
+
+   //   glTranslatef((float)(x), (float)(y), 0.0f);					// Center Our Text On The Screen
+
+   //   glPushAttrib(GL_LIST_BIT);							// Pushes The Display List Bits
+   //   glListBase(pfont->m_baseFont);									// Sets The Base Character to 0
+   //   glCallLists((GLsizei)scopedstr.size(), GL_UNSIGNED_BYTE, scopedstr.begin());	// Draws The Display List Text
+   //   glPopAttrib();										// Pops The Display List Bits      }
+
+   //   glTranslatef((float)(-x), (float)(-y), 0.0f);					// Center Our Text On The Screen
+
+   //   //return true;
+
+   //}
 
 
    void graphics::set(::draw2d::region* pregion)
@@ -5335,9 +5607,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::set(::draw2d::pen* ppen)
    {
 
+      ::draw2d::graphics::set(ppen);
       //glLineWidth(ppen->m_dWidth);
 
-      ::opengl::color(ppen->m_color);
+      //::opengl::color(ppen->m_color);
 
       //return ::success;
 
@@ -5348,7 +5621,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::set(::draw2d::brush* pbrush)
    {
 
-      ::opengl::color(pbrush->m_color);
+      ::draw2d::graphics::set(pbrush);
+      //::opengl::color(pbrush->m_color);
 
       //return ::success;
 
@@ -5367,7 +5641,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      pfont->get_os_data(this);
+      ::draw2d::graphics::set(pfont);
+
+      //pfont->get_os_data(this);
 
       //return ::success;
 
@@ -5446,13 +5722,17 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          {
             //glColorMask(false, false, false, true);
             //glColorMask(true, true, true, false);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             //glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
             //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
             //glBlendFunc(GL_ZERO, GL_SRC_ALPHA);
             //glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
             // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
             glEnable(GL_BLEND);
+
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendEquation(GL_FUNC_ADD); // default, can be omitted if unchanged
+
             //glDisable(GL_DEPTH_TEST);
             //glDepthFunc(GL_NEVER);
          }
@@ -6199,7 +6479,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::thread_select()
    {
 
-      
+
       ::draw2d_gpu::graphics::thread_select();
 
 

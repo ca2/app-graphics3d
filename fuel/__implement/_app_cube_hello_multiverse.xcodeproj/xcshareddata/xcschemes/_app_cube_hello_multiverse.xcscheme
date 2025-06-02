@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "070B8EE91B6E53F900D26137"
-               BuildableName = "_app_cube_hello_multiverse.app"
-               BlueprintName = "_app_cube_hello_multiverse"
-               ReferencedContainer = "container:_app_cube_hello_multiverse.xcodeproj">
+               BuildableName = "_app_graphics3d_hello_multiverse.app"
+               BlueprintName = "_app_graphics3d_hello_multiverse"
+               ReferencedContainer = "container:_app_graphics3d_hello_multiverse.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "070B8EE91B6E53F900D26137"
-            BuildableName = "_app_cube_hello_multiverse.app"
-            BlueprintName = "_app_cube_hello_multiverse"
-            ReferencedContainer = "container:_app_cube_hello_multiverse.xcodeproj">
+            BuildableName = "_app_graphics3d_hello_multiverse.app"
+            BlueprintName = "_app_graphics3d_hello_multiverse"
+            ReferencedContainer = "container:_app_graphics3d_hello_multiverse.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "070B8EE91B6E53F900D26137"
-            BuildableName = "_app_cube_hello_multiverse.app"
-            BlueprintName = "_app_cube_hello_multiverse"
-            ReferencedContainer = "container:_app_cube_hello_multiverse.xcodeproj">
+            BuildableName = "_app_graphics3d_hello_multiverse.app"
+            BlueprintName = "_app_graphics3d_hello_multiverse"
+            ReferencedContainer = "container:_app_graphics3d_hello_multiverse.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -259,7 +259,7 @@
 			containerPortal = 9AEE929B2661FD2700FCA5EC /* app_simple_shader.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9AE24E991904CFFD001AEFFB;
-			remoteInfo = app_cube_hellomultiverse_iosTests;
+			remoteInfo = app_graphics3d_hellomultiverse_iosTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -586,7 +586,7 @@
 			children = (
 				9AEE92AC2661FD2700FCA5EC /* libapp_simple_shader.dylib */,
 				9AEE92AE2661FD2700FCA5EC /* libios_app_simple_shader.a */,
-				9AEE92B02661FD2700FCA5EC /* app_cube_hellomultiverse_iosTests.xctest */,
+				9AEE92B02661FD2700FCA5EC /* app_graphics3d_hellomultiverse_iosTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -841,10 +841,10 @@
 			remoteRef = 9AEE92AD2661FD2700FCA5EC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		9AEE92B02661FD2700FCA5EC /* app_cube_hellomultiverse_iosTests.xctest */ = {
+		9AEE92B02661FD2700FCA5EC /* app_graphics3d_hellomultiverse_iosTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = app_cube_hellomultiverse_iosTests.xctest;
+			path = app_graphics3d_hellomultiverse_iosTests.xctest;
 			remoteRef = 9AEE92AF2661FD2700FCA5EC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};

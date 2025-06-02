@@ -5,14 +5,14 @@
 //#include "acme/prototype/geometry2d/_geometry2d.h"
 #include "acme/prototype/geometry2d/rectangle.h"
 #include "apex/platform/app_consumer.h"
-#include "app-cube/cube/gpu/render.h"
+#include "cube/gpu/render.h"
 
 
-namespace app_cube_shader
+namespace app_graphics3d_shader
 {
 
 
-   class CLASS_DECL_APP_CUBE_SHADER render :
+   class CLASS_DECL_APP_GRAPHICS3D_SHADER render :
       virtual public app_consumer < application, ::gpu::render >
    {
    public:
@@ -73,7 +73,7 @@ namespace app_cube_shader
    };
 
 
-} // namespace app_cube_shader
+} // namespace app_graphics3d_shader
 
 
 

@@ -52,6 +52,17 @@ namespace opengl
 
    }
 
+  
+      inline void vertex2f(const ::double_polygon& a, float fZ)
+      {
+         for (auto& p : a)
+         {
+
+            glVertex3f((GLfloat)p.x(), (GLfloat)p.y(), fZ);
+
+         }
+
+      }
 
    void resize(const ::int_size & size, bool bYSwap);
 

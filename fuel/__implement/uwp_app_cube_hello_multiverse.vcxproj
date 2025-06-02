@@ -2,7 +2,7 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4F014FB0-074E-4E70-964B-3439F852FA85}</ProjectGuid>
-    <RootNamespace>winmetro_app_cube_hello_multiverse</RootNamespace>
+    <RootNamespace>winmetro_app_graphics3d_hello_multiverse</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -10,7 +10,7 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
-    <ProjectName>uwp_app_cube_hello_multiverse</ProjectName>
+    <ProjectName>uwp_app_graphics3d_hello_multiverse</ProjectName>
     <WindowsTargetPlatformMinVersion>10.0.18362.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -245,13 +245,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>uwp_app_cube_hello_multiverse_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>uwp_app_graphics3d_hello_multiverse_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>20B1EB596B6A5F449EDA55B4CE725A196B3A749F</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
-    <AppInstallerUri>C:\metro\app_cube_hello_multiverse</AppInstallerUri>
+    <AppInstallerUri>C:\metro\app_graphics3d_hello_multiverse</AppInstallerUri>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
@@ -853,7 +853,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
     </None>
-    <None Include="..\uwp_app_cube_hello_multiverse_TemporaryKey.pfx" />
+    <None Include="..\uwp_app_graphics3d_hello_multiverse_TemporaryKey.pfx" />
     <None Include="..\_matter.zip">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">true</DeploymentContent>
@@ -872,7 +872,7 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
     </None>
-    <None Include="uwp_app_cube_hello_multiverse_TemporaryKey.pfx" />
+    <None Include="uwp_app_graphics3d_hello_multiverse_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package10.appxmanifest">
@@ -1001,7 +1001,7 @@
     <ProjectReference Include="..\..\gcom\u_gcom.vcxproj">
       <Project>{b7afcefa-8451-7723-8f97-4543bb980265}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\u_app_cube_hello_multiverse.vcxproj">
+    <ProjectReference Include="..\u_app_graphics3d_hello_multiverse.vcxproj">
       <Project>{7707d115-94a0-432d-a057-66c1540cd598}</Project>
     </ProjectReference>
   </ItemGroup>

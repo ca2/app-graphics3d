@@ -4,7 +4,7 @@
 
 
 
-namespace app_cube_fuel
+namespace app_graphics3d_fuel
 {
 
 
@@ -77,7 +77,7 @@ namespace app_cube_fuel
 
 
 
-} // namespace app_cube_fuel
+} // namespace app_graphics3d_fuel
 
 
 

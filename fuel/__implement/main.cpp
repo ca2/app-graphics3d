@@ -1,15 +1,15 @@
 #include "framework.h"
-#define APPLICATION_NAMESPACE app_cube_fuel
+#define APPLICATION_NAMESPACE app_graphics3d_fuel
 #include "acme/inline/application/main.inl"
 
 
-// //app_cube_fuel::application g_app_cube_fuel;
+// //app_graphics3d_fuel::application g_app_graphics3d_fuel;
 
 
 // //int __implement()
 // //{
 // //
-// //   auto papp = ___new app_cube_hello_multiverse::application ();
+// //   auto papp = ___new app_graphics3d_hello_multiverse::application ();
 // //
 // //   int iExitCode = papp->__implement();
 // //
@@ -26,7 +26,7 @@
 // void application_main(::platform::system * psystem)
 // {
 
-//    app_cube_fuel::application application;
+//    app_graphics3d_fuel::application application;
 
 //    application.application_main();
 

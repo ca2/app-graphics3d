@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "app-cube/cube/graphics3d/engine.h"
+#include "cube/graphics3d/engine.h"
 
 
 //#include <memory>
@@ -14,8 +14,8 @@
 #include "camera.h" // Include the ::graphics3d::camera header
 //#include "application.h"
 //#include "apex/platform/app_consumer.h"
-#include "app-cube/cube/gpu/render.h"
-#include "app-cube/gpu_opengl/renderer.h"
+#include "cube/gpu/render.h"
+#include "app-graphics3d/gpu_opengl/renderer.h"
 
 
 namespace graphics3d_opengl

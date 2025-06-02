@@ -4,11 +4,11 @@
 #include "base/user/user/document.h"
 
 
-namespace app_cube_fuel
+namespace app_graphics3d_fuel
 {
 
 
-   class CLASS_DECL_APP_CUBE_FUEL document :
+   class CLASS_DECL_APP_GRAPHICS3D_FUEL document :
       virtual public ::user::document
    {
    public:
@@ -32,7 +32,7 @@ namespace app_cube_fuel
    };
 
 
-} // namespace app_cube_fuel
+} // namespace app_graphics3d_fuel
 
 
 

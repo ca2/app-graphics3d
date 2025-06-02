@@ -11,7 +11,7 @@ namespace macos
 {
 
 
-	class CLASS_DECL_APP_CUBE_HELLO_MULTIVERSE animated_wallpaper :
+	class CLASS_DECL_APP_GRAPHICS3D_HELLO_MULTIVERSE animated_wallpaper :
 		virtual public ::animated_wallpaper
 	{
 	public:

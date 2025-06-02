@@ -39,7 +39,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="platform\windows\_app_cube_shader.cpp">
+    <ClCompile Include="platform\windows\_app_graphics3d_shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

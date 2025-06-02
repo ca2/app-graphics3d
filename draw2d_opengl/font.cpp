@@ -1,21 +1,22 @@
 #include "framework.h"
 #include "_opengl.h"
 #include "font.h"
+#include "acme/filesystem/filesystem/file_context.h"
+
 
 
 namespace draw2d_opengl
+
 {
 
 
    font::font()
    {
-
       //m_pfont     = nullptr;
       //m_bUpdated = false;
-      m_hdcFont = nullptr;
-      m_hfont = nullptr;
-      m_baseFont = 0;
-
+      //m_hdcFont = nullptr;
+      //m_hfont = nullptr;
+      //m_baseFont = 0;
 
    }
 
@@ -35,16 +36,17 @@ namespace draw2d_opengl
    font::~font()
    {
 
-      if (m_hdcFont != nullptr)
-      {
+//      if (m_hdcFont != nullptr)
+      //{
 
-         ::DeleteDC(m_hdcFont);
-         ::DeleteObject(m_hfont);
-         glDeleteLists(m_baseFont, 256);
+      //   ::DeleteDC(m_hdcFont);
+      //   ::DeleteObject(m_hfont);
+      //   glDeleteLists(m_baseFont, 256);
 
-      }
+      //}
 
    }
+
 
 
    void font::construct(const ::write_text::font & pfontParam)
@@ -73,12 +75,12 @@ namespace draw2d_opengl
 
    void font::destroy()
    {
-      if (m_hdcFont != nullptr)
-      {
-         ::DeleteDC(m_hdcFont);
-         ::DeleteObject(m_hfont);
-         glDeleteLists(m_baseFont, 256);
-      }
+      //if (m_hdcFont != nullptr)
+      //{
+      //   ::DeleteDC(m_hdcFont);
+      //   ::DeleteObject(m_hfont);
+      //   glDeleteLists(m_baseFont, 256);
+      //}
 
    }
 
@@ -86,45 +88,45 @@ namespace draw2d_opengl
    void font::create(::draw2d::graphics * pgraphics, char iCreate)
    {
 
-      if (m_hdcFont == nullptr || is_modified(iCreate))
-      {
+      //if (m_hdcFont == nullptr || is_modified(iCreate))
+      //{
 
 
-         //m_bFont = true;
+      //   //m_bFont = true;
 
-         ((font *)this)->m_hdcFont = ::CreateCompatibleDC(nullptr);
+      //   ((font *)this)->m_hdcFont = ::CreateCompatibleDC(nullptr);
 
-         ((font *)this)->m_baseFont = glGenLists(256);								// Storage For 256 Characters
+      //   ((font *)this)->m_baseFont = glGenLists(256);								// Storage For 256 Characters
 
-         ((font *)this)->m_hfont = CreateFont(-m_fontsize.as_int(),							// Height Of Font
-            0,								// Width Of Font
-            0,								// Angle Of Escapement
-            0,								// Orientation Angle
-            m_fontweight,						// Font Weight
-            m_bItalic ? true : false,							// Italic
-            m_bUnderline ? true : false,							// Underline
-            m_bStrikeout ? true : false,							// Strikeout
-            ANSI_CHARSET,					// Character Set Identifier
-            OUT_TT_PRECIS,					// Output Precision
-            CLIP_DEFAULT_PRECIS,			// Clipping Precision
-            ANTIALIASED_QUALITY,			// Output Quality
-            FF_DONTCARE | DEFAULT_PITCH,		// Family And Pitch
-            wstring(m_pfontfamily->family_name(this)));				// Font Name
+      //   ((font *)this)->m_hfont = CreateFont(-m_fontsize.as_int(),							// Height Of Font
+      //      0,								// Width Of Font
+      //      0,								// Angle Of Escapement
+      //      0,								// Orientation Angle
+      //      m_fontweight,						// Font Weight
+      //      m_bItalic ? true : false,							// Italic
+      //      m_bUnderline ? true : false,							// Underline
+      //      m_bStrikeout ? true : false,							// Strikeout
+      //      ANSI_CHARSET,					// Character Set Identifier
+      //      OUT_TT_PRECIS,					// Output Precision
+      //      CLIP_DEFAULT_PRECIS,			// Clipping Precision
+      //      ANTIALIASED_QUALITY,			// Output Quality
+      //      FF_DONTCARE | DEFAULT_PITCH,		// Family And Pitch
+      //      wstring(m_pfontfamily->family_name(this)));				// Font Name
 
-         ::SelectObject(m_hdcFont, m_hfont);							// Selects The Font We Created
+      //   ::SelectObject(m_hdcFont, m_hfont);							// Selects The Font We Created
 
-         wglUseFontOutlines(m_hdcFont,							// Select The Current DC
-            0,								// Starting Character
-            255,							// Number Of Display Lists To Build
-            m_baseFont,							// Starting Display Lists
-            0.0f,							// Deviation From The True Outlines
-            0.2f,							// Font Thickness In The Z Direction
-            WGL_FONT_POLYGONS,				// Use Polygons, Not Lines
-            ((font *)this)->m_gmf);							// Address Of Buffer To Recieve Data
+      //   wglUseFontOutlines(m_hdcFont,							// Select The Current DC
+      //      0,								// Starting Character
+      //      255,							// Number Of Display Lists To Build
+      //      m_baseFont,							// Starting Display Lists
+      //      0.0f,							// Deviation From The True Outlines
+      //      0.2f,							// Font Thickness In The Z Direction
+      //      WGL_FONT_POLYGONS,				// Use Polygons, Not Lines
+      //      ((font *)this)->m_gmf);							// Address Of Buffer To Recieve Data
 
-                                       //::DeleteDC(hDC);
+      //                                 //::DeleteDC(hDC);
 
-      }
+      //}
 
       //return m_hfont;
 

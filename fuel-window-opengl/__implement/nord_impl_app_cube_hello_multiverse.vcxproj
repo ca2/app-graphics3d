@@ -23,8 +23,8 @@
     <Keyword>Android</Keyword>
     <ApplicationType>Android</ApplicationType>
     <ApplicationTypeRevision>3.0</ApplicationTypeRevision>
-    <ProjectName>impl_app_cube_hello_multiverse</ProjectName>
-    <RootNamespace>app_cube</RootNamespace>
+    <ProjectName>impl_app_graphics3d_hello_multiverse</ProjectName>
+    <RootNamespace>app_graphics3d</RootNamespace>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -108,7 +108,7 @@
       <CppLanguageStandard>
       </CppLanguageStandard>
       <AdditionalOptions>-Wno-attributes -Wno-sign-compare -Wno-comment -Wno-strict-overflow -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-variable -Wno-unused-value -Wno-reorder -Wno-overloaded-virtual -std=c++20 -Wno-char-subscripts</AdditionalOptions>
-      <PreprocessorDefinitions>_APP_CUBE_HELLO_MULTIVERSE_LIBRARY;CUBE;DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_APP_GRAPHICS3D_HELLO_MULTIVERSE_LIBRARY;CUBE;DEBUG</PreprocessorDefinitions>
       <CLanguageStandard>c11</CLanguageStandard>
       <ObjectFileName>$(IntDir)%(RelativeDir)%(filename).o</ObjectFileName>
     </ClCompile>
@@ -121,7 +121,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
       <PrecompiledHeaderFile>framework.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>_APP_CUBE_HELLO_MULTIVERSE_LIBRARY;CUBE;DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_APP_GRAPHICS3D_HELLO_MULTIVERSE_LIBRARY;CUBE;DEBUG</PreprocessorDefinitions>
       <ExceptionHandling>Enabled</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <CLanguageStandard>c11</CLanguageStandard>
@@ -148,7 +148,7 @@
       <AdditionalOptions>-Wno-attributes -Wno-sign-compare -Wno-comment -Wno-strict-overflow -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-variable -Wno-unused-value -Wno-reorder -Wno-overloaded-virtual -std=c++20 -Wno-char-subscripts</AdditionalOptions>
       <DebugInformationFormat>FullDebug</DebugInformationFormat>
       <ObjectFileName>$(IntDir)%(RelativeDir)%(filename).o</ObjectFileName>
-      <PreprocessorDefinitions>_APP_CUBE_HELLO_MULTIVERSE_LIBRARY;CUBE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_APP_GRAPHICS3D_HELLO_MULTIVERSE_LIBRARY;CUBE</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <LibraryDependencies>pcre;freeimage;png;jpeg;_openexr;_openjpeg;_rawlite;_tiff4;_webp;sqlite;ssl;crypto;cairo;freetype;pixman;iconv;idn;zlib;jnigraphics;m;$(StlLibraryName);%(LibraryDependencies)</LibraryDependencies>
@@ -167,7 +167,7 @@
       <AdditionalOptions>-Wno-attributes -Wno-sign-compare -Wno-comment -Wno-strict-overflow -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-variable -Wno-unused-value -Wno-reorder -Wno-overloaded-virtual -std=c++20 -Wno-char-subscripts</AdditionalOptions>
       <DebugInformationFormat>FullDebug</DebugInformationFormat>
       <ObjectFileName>$(IntDir)%(RelativeDir)%(filename).o</ObjectFileName>
-      <PreprocessorDefinitions>_APP_CUBE_HELLO_MULTIVERSE_LIBRARY;CUBE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_APP_GRAPHICS3D_HELLO_MULTIVERSE_LIBRARY;CUBE</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <LibraryDependencies>pcre;freeimage;png;jpeg;_openexr;_openjpeg;_rawlite;_tiff4;_webp;sqlite;ssl;crypto;cairo;freetype;pixman;iconv;idn;zlib;jnigraphics;m;$(StlLibraryName);%(LibraryDependencies)</LibraryDependencies>
@@ -273,7 +273,7 @@
     <ProjectReference Include="..\..\gcom\nord_gcom.vcxproj">
       <Project>{7f61a6f3-4ed9-4460-9270-4ea7cb00e634}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\nord_app_cube_hello_multiverse.vcxproj">
+    <ProjectReference Include="..\nord_app_graphics3d_hello_multiverse.vcxproj">
       <Project>{578f1be7-e57a-4552-8067-411ecb4f9a26}</Project>
     </ProjectReference>
   </ItemGroup>

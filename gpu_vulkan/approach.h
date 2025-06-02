@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "app-cube/cube/gpu/approach.h"
+#include "cube/gpu/approach.h"
 #include <glm/glm.hpp>
 
 

@@ -3,7 +3,7 @@
 //#include "GLFW/glfw3.h"  
 #include "mesh.h"
 #include "texture.h"
-#include "app-cube/gpu_opengl/shader.h"
+#include "app-graphics3d/gpu_opengl/shader.h"
 #include <vector>
 
 

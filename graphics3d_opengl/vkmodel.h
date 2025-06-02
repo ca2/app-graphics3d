@@ -4,7 +4,7 @@
 #pragma once
 
 
-#include "app-cube/cube/model.h"
+#include "cube/model.h"
 
 
 #include "context.h"

@@ -104,7 +104,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include=".\app_cube_hellomultiverse.def">
+    <None Include=".\app_graphics3d_hellomultiverse.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

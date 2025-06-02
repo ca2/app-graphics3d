@@ -1,0 +1,6 @@
+
+	<menubar id="link">
+		<item id="simple_checkbox">Simple</item>
+		<separator />
+		<item id="app_exit">Exit</item>
+	</menubar>

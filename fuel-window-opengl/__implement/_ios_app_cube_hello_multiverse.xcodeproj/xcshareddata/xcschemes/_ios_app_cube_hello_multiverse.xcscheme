@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "078C352E1921758500354453"
                BuildableName = "Hellomultiverse!!.app"
-               BlueprintName = "_ios_app_cube_hello_multiverse"
-               ReferencedContainer = "container:_ios_app_cube_hello_multiverse.xcodeproj">
+               BlueprintName = "_ios_app_graphics3d_hello_multiverse"
+               ReferencedContainer = "container:_ios_app_graphics3d_hello_multiverse.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,8 +46,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "078C352E1921758500354453"
             BuildableName = "Hellomultiverse!!.app"
-            BlueprintName = "_ios_app_cube_hello_multiverse"
-            ReferencedContainer = "container:_ios_app_cube_hello_multiverse.xcodeproj">
+            BlueprintName = "_ios_app_graphics3d_hello_multiverse"
+            ReferencedContainer = "container:_ios_app_graphics3d_hello_multiverse.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -63,8 +63,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "078C352E1921758500354453"
             BuildableName = "Hellomultiverse!!.app"
-            BlueprintName = "_ios_app_cube_hello_multiverse"
-            ReferencedContainer = "container:_ios_app_cube_hello_multiverse.xcodeproj">
+            BlueprintName = "_ios_app_graphics3d_hello_multiverse"
+            ReferencedContainer = "container:_ios_app_graphics3d_hello_multiverse.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

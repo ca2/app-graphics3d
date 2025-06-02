@@ -8,16 +8,16 @@
 #include "offscreen_render_pass.h"
 #include "renderer.h"
 #include "swap_chain_render_pass.h"
-#include "app-cube/cube/application.h"
-#include "app-cube/cube/camera.h"
-#include "app-cube/cube/impact.h"
-#include "app-cube/cube/scene.h"
+#include "cube/application.h"
+#include "cube/camera.h"
+#include "cube/impact.h"
+#include "cube/scene.h"
 #include "system/basic_render_system.h"
 #include "system/point_light_system.h"
 #include "acme/platform/application.h"
 #include "apex/database/client.h"
 #include "apex/database/stream.h"
-//#include "app-cube/cube/container.h"
+//#include "cube/container.h"
 #include <chrono>
 
 

@@ -2,16 +2,18 @@
 #pragma once
 
 
+#include "cube/draw2d/draw2d.h"
 #include "acme/platform/auto_pointer.h"
 #include "aura/graphics/draw2d/draw2d.h"
 #include "gpu_opengl/context.h"
+#include "face.h"
 
 namespace draw2d_opengl
 {
 
 
    class CLASS_DECL_DRAW2D_OPENGL draw2d :
-      virtual public ::draw2d::draw2d
+      virtual public ::draw2d_gpu::draw2d
    {
    public:
 
@@ -42,13 +44,14 @@ namespace draw2d_opengl
 
       //::pointer<::opengl::context>          m_popenglcontext;
 
-
+      ::string_map <::int_map<::pointer <face>>> m_mapFaceSize;
       draw2d();
       ~draw2d() override;
 
 
       void initialize(::particle * pparticle) override;
 
+      //face* get_face(::write_text::font * pfont);
 
       bool graphics_context_supports_single_buffer_mode() override;
       bool graphics_context_does_full_redraw() override;

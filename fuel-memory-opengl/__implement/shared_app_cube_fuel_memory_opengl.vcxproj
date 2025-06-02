@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{501BFD29-D625-4079-A608-CD8E6DA2D62E}</ProjectGuid>
-    <RootNamespace>app-cube</RootNamespace>
+    <RootNamespace>app-graphics3d</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -239,7 +239,7 @@
     <ProjectReference Include="..\..\gcom\gcom.vcxproj">
       <Project>{f30bd15a-0eb5-4fa6-88d3-3b4604a41b4e}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\app_cube_fuel_memory_opengl.vcxproj">
+    <ProjectReference Include="..\app_graphics3d_fuel_memory_opengl.vcxproj">
       <Project>{5aafbd19-daed-40a5-bbd6-2fb07425c874}</Project>
     </ProjectReference>
   </ItemGroup>

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(app_cube_shader CXX)
+project(app_graphics3d_shader CXX)
 
 
 list(APPEND library_source

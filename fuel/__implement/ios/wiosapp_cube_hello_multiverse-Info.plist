@@ -46,6 +46,6 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>ca2_command_line</key>
-	<string>app : app=app-cube/hello_multiverse client_only hello_bk="http://ca2.network/image/os/non_existent_file(ios).jpg"</string>
+	<string>app : app=app-graphics3d/hello_multiverse client_only hello_bk="http://ca2.network/image/os/non_existent_file(ios).jpg"</string>
 </dict>
 </plist>

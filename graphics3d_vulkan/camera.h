@@ -4,7 +4,7 @@
 //#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 //#include <glm/glm.hpp>
 
-#include "app-cube/cube/graphics3d/camera.h"
+#include "cube/graphics3d/camera.h"
 
 
 namespace graphics3d_vulkan 

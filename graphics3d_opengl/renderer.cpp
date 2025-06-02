@@ -10,7 +10,7 @@
 ////#include "GLError.h"
 //#include "renderer.h"
 //#include "mesh.h"
-//#include "app-cube/cube/impact.h"
+//#include "cube/impact.h"
 //
 //
 //namespace graphics3d_opengl

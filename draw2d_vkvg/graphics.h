@@ -3,7 +3,7 @@
 
 #include "acme/graphics/image/image32.h"
 #include "aura/graphics/draw2d/graphics.h"
-#include "app-cube/cube/gpu/renderer.h"
+#include "cube/gpu/renderer.h"
 
 
 //struct OffscreenContext

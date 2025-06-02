@@ -1,0 +1,1451 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		070B8F041B6E53FA00D26137 /* Hello_Multiverse__Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 070B8F031B6E53FA00D26137 /* Hello_Multiverse__Tests.m */; };
+		9A1B8E582A7FD8CC00F9A841 /* libaqua.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1B8E572A7FD8CC00F9A841 /* libaqua.dylib */; };
+		9A1B8E5A2A7FD8CC00F9A841 /* libaxis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1B8E592A7FD8CC00F9A841 /* libaxis.dylib */; };
+		9A1B8E5C2A7FD8CC00F9A841 /* libbase.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1B8E5B2A7FD8CC00F9A841 /* libbase.dylib */; };
+		9A1B8E5E2A7FD8CC00F9A841 /* libbred.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1B8E5D2A7FD8CC00F9A841 /* libbred.dylib */; };
+		9A1B8E602A7FD8CC00F9A841 /* libcore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1B8E5F2A7FD8CC00F9A841 /* libcore.dylib */; };
+		9A1B8E612A7FD8D500F9A841 /* libgraphics3d_impact3d.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AE48C912A7F6F7000AA37BC /* libgraphics3d_impact3d.dylib */; };
+		9A1B8E7E2A7FDB6800F9A841 /* libcrypto.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE48D632A7FCBB400AA37BC /* libcrypto.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A1B8E802A7FDB6900F9A841 /* libssl.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE48D642A7FCBB400AA37BC /* libssl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A1B8E812A7FDB6E00F9A841 /* libgraphics3d_impact3d.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE48C912A7F6F7000AA37BC /* libgraphics3d_impact3d.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A1B8E822A7FDB7200F9A841 /* libcore.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A1B8E5F2A7FD8CC00F9A841 /* libcore.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A1B8E832A7FDB7500F9A841 /* libbred.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A1B8E5D2A7FD8CC00F9A841 /* libbred.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A1B8E842A7FDB7900F9A841 /* libbase.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A1B8E5B2A7FD8CC00F9A841 /* libbase.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A1B8E852A7FDB7C00F9A841 /* libaxis.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A1B8E592A7FD8CC00F9A841 /* libaxis.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A1B8E862A7FDB7F00F9A841 /* libaqua.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A1B8E572A7FD8CC00F9A841 /* libaqua.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A3F08C12C79621E00850151 /* glad.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A3F08C02C79621E00850151 /* glad.dylib */; };
+		9A3F08C22C79621E00850151 /* glad.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A3F08C02C79621E00850151 /* glad.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A7520D22A80205200C8B81E /* libfolder_zip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AE488052A7F647A00AA37BC /* libfolder_zip.dylib */; };
+		9A7520D32A80205200C8B81E /* libfolder_zip.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE488052A7F647A00AA37BC /* libfolder_zip.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A7520D52A80206100C8B81E /* libcrypto_openssl.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE4882C2A7F649D00AA37BC /* libcrypto_openssl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A7520D72A80206D00C8B81E /* libdatabase_sqlite3.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE488222A7F649500AA37BC /* libdatabase_sqlite3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A7520D92A80207F00C8B81E /* libdraw2d_quartz2d.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE488192A7F648B00AA37BC /* libdraw2d_quartz2d.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A7520E22A80354400C8B81E /* libidn.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A7520E12A80354400C8B81E /* libidn.dylib */; };
+		9A7520E32A80354500C8B81E /* libidn.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A7520E12A80354400C8B81E /* libidn.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A90BE432B54ADAD002BFC9E /* libarchive.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A90BE412B54ADAD002BFC9E /* libarchive.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A9A1AF72AFC409D00FA9BEB /* libdarwin.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A9A1AF52AFC409D00FA9BEB /* libdarwin.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE489012A7F680F00AA37BC /* libacme.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AE489002A7F680F00AA37BC /* libacme.dylib */; };
+		9AE489022A7F680F00AA37BC /* libacme.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489002A7F680F00AA37BC /* libacme.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE489052A7F682000AA37BC /* libacme_apple.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489032A7F682000AA37BC /* libacme_apple.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE4890A2A7F683300AA37BC /* libacme_darwin.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489062A7F683200AA37BC /* libacme_darwin.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE4890C2A7F683300AA37BC /* libacme_macos.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489072A7F683200AA37BC /* libacme_macos.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE489122A7F685000AA37BC /* libacme_posix.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489102A7F684F00AA37BC /* libacme_posix.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE489182A7F686800AA37BC /* libapex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AE489132A7F686800AA37BC /* libapex.dylib */; };
+		9AE489192A7F686900AA37BC /* libapex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489132A7F686800AA37BC /* libapex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE4891B2A7F686B00AA37BC /* libapex_apple.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489142A7F686800AA37BC /* libapex_apple.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE4891D2A7F686C00AA37BC /* libapex_darwin.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489152A7F686800AA37BC /* libapex_darwin.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE4891F2A7F686E00AA37BC /* libapex_macos.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489162A7F686800AA37BC /* libapex_macos.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE489212A7F686F00AA37BC /* libapex_posix.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489172A7F686800AA37BC /* libapex_posix.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE489252A7F688800AA37BC /* libaura.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AE489222A7F688800AA37BC /* libaura.dylib */; };
+		9AE489262A7F688900AA37BC /* libaura.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489222A7F688800AA37BC /* libaura.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE489282A7F688A00AA37BC /* libaura_apple.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489232A7F688800AA37BC /* libaura_apple.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE4892A2A7F688C00AA37BC /* libaura_darwin.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489242A7F688800AA37BC /* libaura_darwin.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE4892D2A7F689A00AA37BC /* libaura_macos.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE4892B2A7F689900AA37BC /* libaura_macos.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE489302A7F68A900AA37BC /* libaura_posix.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE4892E2A7F68A800AA37BC /* libaura_posix.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE489362A7F68E700AA37BC /* libunac.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489312A7F68E300AA37BC /* libunac.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE489382A7F68EA00AA37BC /* libwindowing_macos.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE489322A7F68E300AA37BC /* libwindowing_macos.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE4893A2A7F68EC00AA37BC /* libwrite_text_quartz2d.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE487FB2A7F646F00AA37BC /* libwrite_text_quartz2d.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE4893C2A7F6A5600AA37BC /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AE4893B2A7F6A5600AA37BC /* main.cpp */; };
+		9AE48CCD2A7F73B900AA37BC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9AE48CC82A7F73B900AA37BC /* MainMenu.xib */; };
+		9AE48CCE2A7F73B900AA37BC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9AE48CCA2A7F73B900AA37BC /* Images.xcassets */; };
+		9AE48CD22A7F73F300AA37BC /* _matter.zip in Resources */ = {isa = PBXBuildFile; fileRef = 9AE48CD12A7F73F300AA37BC /* _matter.zip */; };
+		9AE48E042A7FD3BC00AA37BC /* libimaging_coreimage.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE487F02A7F646500AA37BC /* libimaging_coreimage.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE48E142A7FD42B00AA37BC /* libgpu_opengl.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE48E0C2A7FD3FF00AA37BC /* libgpu_opengl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE7A50C2D1CF6D700070257 /* libacme_windowing_appkit.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE7A50A2D1CF6D700070257 /* libacme_windowing_appkit.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE7A50F2D1CF6DF00070257 /* libacme_windowing_kit.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE7A50D2D1CF6DE00070257 /* libacme_windowing_kit.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE7A5122D1CF6E700070257 /* libinnate_ui_appkit.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE7A5102D1CF6E600070257 /* libinnate_ui_appkit.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AE7A5152D1CF6EE00070257 /* libnano_graphics_quartz2d.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AE7A5132D1CF6EE00070257 /* libnano_graphics_quartz2d.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AEC3FE22D1AB98900F9E621 /* liboperating_ambient_macos.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A0CB79A2D1A6F6A001FD7FE /* liboperating_ambient_macos.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AEC3FE52D1AB99100F9E621 /* libnode_macos.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AEC3FE32D1AB99100F9E621 /* libnode_macos.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		070B8EFE1B6E53FA00D26137 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 070B8EE21B6E53F900D26137 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 070B8EE91B6E53F900D26137;
+			remoteInfo = "Hello Multiverse!!";
+		};
+		9A0CB7992D1A6F6A001FD7FE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A49A0F72D1A6E0500FB4C3D /* operating_ambient_macos.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A1CC36C2CF2BE37004A00CB;
+			remoteInfo = operating_ambient_macos;
+		};
+		9A1B8E622A7FD90000F9A841 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE48C892A7F6F7000AA37BC /* graphics3d_impact3d.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9AEB75A216F78DF10085103B;
+			remoteInfo = graphics3d_impact3d;
+		};
+		9AE487EF2A7F646500AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487E92A7F646500AA37BC /* imaging_coreimage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A574B9816AAB906000CC4EF;
+			remoteInfo = imaging_coreimage;
+		};
+		9AE487F12A7F646500AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487E92A7F646500AA37BC /* imaging_coreimage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 07B65764190F3CA2002DAADE;
+			remoteInfo = ios_imaging_coreimage;
+		};
+		9AE487F32A7F646500AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487E92A7F646500AA37BC /* imaging_coreimage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 07B65773190F3CA2002DAADE;
+			remoteInfo = math_iosTests;
+		};
+		9AE487FA2A7F646F00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487F52A7F646F00AA37BC /* write_text_quartz2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A64C1712660C62C0074030F;
+			remoteInfo = write_text_quartz2d;
+		};
+		9AE487FC2A7F646F00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487F52A7F646F00AA37BC /* write_text_quartz2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A882EE12844AA66004113D1;
+			remoteInfo = ios_write_text_quartz2d;
+		};
+		9AE488042A7F647A00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487FE2A7F647A00AA37BC /* folder_zip.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AC09A2D274DFC67008B042E;
+			remoteInfo = folder_zip;
+		};
+		9AE488062A7F647A00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487FE2A7F647A00AA37BC /* folder_zip.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AA14DDC282A17D900B1621E;
+			remoteInfo = ios_folder_zip;
+		};
+		9AE488082A7F647A00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487FE2A7F647A00AA37BC /* folder_zip.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A1BD6E12A0079D400152CD1;
+			remoteInfo = static_folder_zip;
+		};
+		9AE4880F2A7F648300AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE4880A2A7F648300AA37BC /* experience_core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A81F48127500224003F38EC;
+			remoteInfo = experience_core;
+		};
+		9AE488112A7F648300AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE4880A2A7F648300AA37BC /* experience_core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A93B4F92846E655005ACD11;
+			remoteInfo = ios_experience_core;
+		};
+		9AE488182A7F648B00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE488132A7F648B00AA37BC /* draw2d_quartz2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A1CFD778154F5EAA007447E2;
+			remoteInfo = draw2d_quartz2d;
+		};
+		9AE4881A2A7F648B00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE488132A7F648B00AA37BC /* draw2d_quartz2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 07E25F501B4FFC2100752DE1;
+			remoteInfo = ios_draw2d_quartz2d;
+		};
+		9AE488212A7F649500AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE4881C2A7F649500AA37BC /* database_sqlite3.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A0DB3902864309200D061F7;
+			remoteInfo = database_sqlite3;
+		};
+		9AE488232A7F649500AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE4881C2A7F649500AA37BC /* database_sqlite3.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A0DB3E82864314500D061F7;
+			remoteInfo = ios_database_sqlite3;
+		};
+		9AE4882B2A7F649D00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE488252A7F649D00AA37BC /* crypto_openssl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AC019342748A002006BEBCC;
+			remoteInfo = crypto_openssl;
+		};
+		9AE4882D2A7F649D00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE488252A7F649D00AA37BC /* crypto_openssl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AA14DBB282A17C600B1621E;
+			remoteInfo = ios_crypto_openssl;
+		};
+		9AE4882F2A7F649D00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE488252A7F649D00AA37BC /* crypto_openssl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AC97ECF2A71B2A700B1BCF3;
+			remoteInfo = static_crypto_openssl;
+		};
+		9AE488EA2A7F672800AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE488252A7F649D00AA37BC /* crypto_openssl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9AC019332748A002006BEBCC;
+			remoteInfo = crypto_openssl;
+		};
+		9AE488EE2A7F673C00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE4881C2A7F649500AA37BC /* database_sqlite3.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A0DB38F2864309200D061F7;
+			remoteInfo = database_sqlite3;
+		};
+		9AE488F02A7F674400AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE488132A7F648B00AA37BC /* draw2d_quartz2d.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A1CFD777154F5EAA007447E2;
+			remoteInfo = draw2d_quartz2d;
+		};
+		9AE488F22A7F674E00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE4880A2A7F648300AA37BC /* experience_core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A81F48027500224003F38EC;
+			remoteInfo = experience_core;
+		};
+		9AE488F42A7F675D00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487FE2A7F647A00AA37BC /* folder_zip.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9AC09A2C274DFC67008B042E;
+			remoteInfo = folder_zip;
+		};
+		9AE488FA2A7F67C600AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487E92A7F646500AA37BC /* imaging_coreimage.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A574B9716AAB906000CC4EF;
+			remoteInfo = imaging_coreimage;
+		};
+		9AE488FE2A7F67E000AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE487F52A7F646F00AA37BC /* write_text_quartz2d.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A64C1702660C62C0074030F;
+			remoteInfo = write_text_quartz2d;
+		};
+		9AE48C902A7F6F7000AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE48C892A7F6F7000AA37BC /* graphics3d_impact3d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AEB75A316F78DF10085103B;
+			remoteInfo = graphics3d_impact3d;
+		};
+		9AE48C922A7F6F7000AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE48C892A7F6F7000AA37BC /* graphics3d_impact3d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AE24E8A1904CFFD001AEFFB;
+			remoteInfo = ios_graphics3d_impact;
+		};
+		9AE48C942A7F6F7000AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE48C892A7F6F7000AA37BC /* graphics3d_impact3d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AE24E991904CFFD001AEFFB;
+			remoteInfo = graphics3d_impact3d_iosTests;
+		};
+		9AE48E0B2A7FD3FF00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE48E052A7FD3FF00AA37BC /* gpu_opengl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A574B9816AAB906000CC4EF;
+			remoteInfo = gpu_opengl;
+		};
+		9AE48E0D2A7FD3FF00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE48E052A7FD3FF00AA37BC /* gpu_opengl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 07B65764190F3CA2002DAADE;
+			remoteInfo = ios_gpu_opengl;
+		};
+		9AE48E0F2A7FD3FF00AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE48E052A7FD3FF00AA37BC /* gpu_opengl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 07B65773190F3CA2002DAADE;
+			remoteInfo = math_iosTests;
+		};
+		9AE48E112A7FD41000AA37BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9AE48E052A7FD3FF00AA37BC /* gpu_opengl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A574B9716AAB906000CC4EF;
+			remoteInfo = gpu_opengl;
+		};
+		9AEC3E782D1A9CB700F9E621 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A49A0F72D1A6E0500FB4C3D /* operating_ambient_macos.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A1CC36B2CF2BE37004A00CB;
+			remoteInfo = operating_ambient_macos;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		076A24D91B6E799300BF6C7D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				9AEC3FE22D1AB98900F9E621 /* liboperating_ambient_macos.dylib in CopyFiles */,
+				9AE489302A7F68A900AA37BC /* libaura_posix.dylib in CopyFiles */,
+				9A1B8E812A7FDB6E00F9A841 /* libgraphics3d_impact3d.dylib in CopyFiles */,
+				9AE489362A7F68E700AA37BC /* libunac.dylib in CopyFiles */,
+				9AEC3FE52D1AB99100F9E621 /* libnode_macos.dylib in CopyFiles */,
+				9AE48E042A7FD3BC00AA37BC /* libimaging_coreimage.dylib in CopyFiles */,
+				9AE7A50F2D1CF6DF00070257 /* libacme_windowing_kit.dylib in CopyFiles */,
+				9A9A1AF72AFC409D00FA9BEB /* libdarwin.dylib in CopyFiles */,
+				9A1B8E862A7FDB7F00F9A841 /* libaqua.dylib in CopyFiles */,
+				9AE7A5122D1CF6E700070257 /* libinnate_ui_appkit.dylib in CopyFiles */,
+				9AE489122A7F685000AA37BC /* libacme_posix.dylib in CopyFiles */,
+				9A1B8E832A7FDB7500F9A841 /* libbred.dylib in CopyFiles */,
+				9AE4891B2A7F686B00AA37BC /* libapex_apple.dylib in CopyFiles */,
+				9A7520D52A80206100C8B81E /* libcrypto_openssl.dylib in CopyFiles */,
+				9AE489192A7F686900AA37BC /* libapex.dylib in CopyFiles */,
+				9A7520E32A80354500C8B81E /* libidn.dylib in CopyFiles */,
+				9A1B8E7E2A7FDB6800F9A841 /* libcrypto.dylib in CopyFiles */,
+				9A7520D72A80206D00C8B81E /* libdatabase_sqlite3.dylib in CopyFiles */,
+				9AE489052A7F682000AA37BC /* libacme_apple.dylib in CopyFiles */,
+				9AE489382A7F68EA00AA37BC /* libwindowing_macos.dylib in CopyFiles */,
+				9AE4893A2A7F68EC00AA37BC /* libwrite_text_quartz2d.dylib in CopyFiles */,
+				9AE4892A2A7F688C00AA37BC /* libaura_darwin.dylib in CopyFiles */,
+				9AE489262A7F688900AA37BC /* libaura.dylib in CopyFiles */,
+				9A1B8E802A7FDB6900F9A841 /* libssl.dylib in CopyFiles */,
+				9A1B8E852A7FDB7C00F9A841 /* libaxis.dylib in CopyFiles */,
+				9AE48E142A7FD42B00AA37BC /* libgpu_opengl.dylib in CopyFiles */,
+				9A7520D92A80207F00C8B81E /* libdraw2d_quartz2d.dylib in CopyFiles */,
+				9AE489212A7F686F00AA37BC /* libapex_posix.dylib in CopyFiles */,
+				9A1B8E822A7FDB7200F9A841 /* libcore.dylib in CopyFiles */,
+				9AE7A50C2D1CF6D700070257 /* libacme_windowing_appkit.dylib in CopyFiles */,
+				9AE7A5152D1CF6EE00070257 /* libnano_graphics_quartz2d.dylib in CopyFiles */,
+				9AE4892D2A7F689A00AA37BC /* libaura_macos.dylib in CopyFiles */,
+				9AE4891F2A7F686E00AA37BC /* libapex_macos.dylib in CopyFiles */,
+				9A1B8E842A7FDB7900F9A841 /* libbase.dylib in CopyFiles */,
+				9AE4890A2A7F683300AA37BC /* libacme_darwin.dylib in CopyFiles */,
+				9AE4890C2A7F683300AA37BC /* libacme_macos.dylib in CopyFiles */,
+				9A7520D32A80205200C8B81E /* libfolder_zip.dylib in CopyFiles */,
+				9AE489022A7F680F00AA37BC /* libacme.dylib in CopyFiles */,
+				9AE489282A7F688A00AA37BC /* libaura_apple.dylib in CopyFiles */,
+				9AE4891D2A7F686C00AA37BC /* libapex_darwin.dylib in CopyFiles */,
+				9A3F08C22C79621E00850151 /* glad.dylib in CopyFiles */,
+				9A90BE432B54ADAD002BFC9E /* libarchive.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		070B8EEA1B6E53F900D26137 /* _graphics3d_impact3d.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = _graphics3d_impact3d.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		070B8EFD1B6E53FA00D26137 /* Hello Multiverse!!Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Hello Multiverse!!Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		070B8F021B6E53FA00D26137 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		070B8F031B6E53FA00D26137 /* Hello_Multiverse__Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Hello_Multiverse__Tests.m; sourceTree = "<group>"; };
+		9A1B8E572A7FD8CC00F9A841 /* libaqua.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaqua.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A1B8E592A7FD8CC00F9A841 /* libaxis.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaxis.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A1B8E5B2A7FD8CC00F9A841 /* libbase.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libbase.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A1B8E5D2A7FD8CC00F9A841 /* libbred.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libbred.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A1B8E5F2A7FD8CC00F9A841 /* libcore.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libcore.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A1B8E7A2A7FDB6800F9A841 /* _graphics3d_impact3d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = _graphics3d_impact3d.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9A204B162433E91500D45614 /* libdraw2d_quartz2d.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libdraw2d_quartz2d.dylib; path = "../../time-macos/library/Debug/libdraw2d_quartz2d.dylib"; sourceTree = "<group>"; };
+		9A204B172433E91500D45614 /* libpcre.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpcre.dylib; path = "../../time-macos/library/Debug/libpcre.dylib"; sourceTree = "<group>"; };
+		9A204B192433E91500D45614 /* libidn.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libidn.dylib; path = "../../time-macos/library/Debug/libidn.dylib"; sourceTree = "<group>"; };
+		9A204B1D2433E91500D45614 /* libexperience_lite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libexperience_lite.dylib; path = "../../time-macos/library/Debug/libexperience_lite.dylib"; sourceTree = "<group>"; };
+		9A204B202433E91600D45614 /* libapp_simple_shader.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libapp_simple_shader.dylib; path = "../../time-macos/library/Debug/libapp_simple_shader.dylib"; sourceTree = "<group>"; };
+		9A204B272433E91600D45614 /* libaura.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libaura.dylib; path = "../../time-macos/library/Debug/libaura.dylib"; sourceTree = "<group>"; };
+		9A3F08C02C79621E00850151 /* glad.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = glad.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A49A0F72D1A6E0500FB4C3D /* operating_ambient_macos.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = operating_ambient_macos.xcodeproj; path = "../../../../operating_system/operating_system-macos/operating_ambient_macos/operating_ambient_macos.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		9A7520E12A80354400C8B81E /* libidn.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libidn.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A8B642C24CBE61E00A93185 /* libimaging_coreimage.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libimaging_coreimage.dylib; path = "../../time-macos/library/Debug/libimaging_coreimage.dylib"; sourceTree = "<group>"; };
+		9A8B648C24CC2B2000A93185 /* libgpu_opengl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgpu_opengl.dylib; path = "../../time-macos/library/Debug/libgpu_opengl.dylib"; sourceTree = "<group>"; };
+		9A90BE412B54ADAD002BFC9E /* libarchive.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libarchive.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A9A1AF52AFC409D00FA9BEB /* libdarwin.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libdarwin.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE487E92A7F646500AA37BC /* imaging_coreimage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = imaging_coreimage.xcodeproj; path = "../../../../operating_system/operating_system-apple/imaging_coreimage/imaging_coreimage.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		9AE487F52A7F646F00AA37BC /* write_text_quartz2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = write_text_quartz2d.xcodeproj; path = "../../../../operating_system/operating_system-apple/write_text_quartz2d/write_text_quartz2d.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		9AE487FE2A7F647A00AA37BC /* folder_zip.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = folder_zip.xcodeproj; path = ../../../app/folder_zip/folder_zip.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9AE4880A2A7F648300AA37BC /* experience_core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = experience_core.xcodeproj; path = ../../../app/experience_core/experience_core.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9AE488132A7F648B00AA37BC /* draw2d_quartz2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = draw2d_quartz2d.xcodeproj; path = "../../../../operating_system/operating_system-apple/draw2d_quartz2d/draw2d_quartz2d.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		9AE4881C2A7F649500AA37BC /* database_sqlite3.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = database_sqlite3.xcodeproj; path = ../../../app/database_sqlite3/database_sqlite3.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9AE488252A7F649D00AA37BC /* crypto_openssl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = crypto_openssl.xcodeproj; path = ../../../app/crypto_openssl/crypto_openssl.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9AE489002A7F680F00AA37BC /* libacme.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libacme.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489032A7F682000AA37BC /* libacme_apple.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libacme_apple.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489062A7F683200AA37BC /* libacme_darwin.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libacme_darwin.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489072A7F683200AA37BC /* libacme_macos.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libacme_macos.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE4890D2A7F683E00AA37BC /* libios_acme_posix.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_acme_posix.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489102A7F684F00AA37BC /* libacme_posix.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libacme_posix.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489132A7F686800AA37BC /* libapex.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libapex.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489142A7F686800AA37BC /* libapex_apple.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libapex_apple.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489152A7F686800AA37BC /* libapex_darwin.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libapex_darwin.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489162A7F686800AA37BC /* libapex_macos.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libapex_macos.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489172A7F686800AA37BC /* libapex_posix.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libapex_posix.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489222A7F688800AA37BC /* libaura.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaura.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489232A7F688800AA37BC /* libaura_apple.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaura_apple.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489242A7F688800AA37BC /* libaura_darwin.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaura_darwin.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE4892B2A7F689900AA37BC /* libaura_macos.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaura_macos.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE4892E2A7F68A800AA37BC /* libaura_posix.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaura_posix.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489312A7F68E300AA37BC /* libunac.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libunac.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE489322A7F68E300AA37BC /* libwindowing_macos.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libwindowing_macos.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE4893B2A7F6A5600AA37BC /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		9AE48C892A7F6F7000AA37BC /* graphics3d_impact3d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = graphics3d_impact3d.xcodeproj; path = ../graphics3d_impact3d.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9AE48CC92A7F73B900AA37BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		9AE48CCA2A7F73B900AA37BC /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		9AE48CCC2A7F73B900AA37BC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9AE48CD12A7F73F300AA37BC /* _matter.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = _matter.zip; path = ../_matter.zip; sourceTree = "<group>"; };
+		9AE48D632A7FCBB400AA37BC /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = "../../../../../operating_system/storage-macos/Debug/library/libcrypto.dylib"; sourceTree = "<group>"; };
+		9AE48D642A7FCBB400AA37BC /* libssl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.dylib; path = "../../../../../operating_system/storage-macos/Debug/library/libssl.dylib"; sourceTree = "<group>"; };
+		9AE48DFF2A7FD22A00AA37BC /* _____release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "_____release.xcconfig"; path = "../_____release.xcconfig"; sourceTree = "<group>"; };
+		9AE48E002A7FD22A00AA37BC /* _____debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "_____debug.xcconfig"; path = "../_____debug.xcconfig"; sourceTree = "<group>"; };
+		9AE48E052A7FD3FF00AA37BC /* gpu_opengl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gpu_opengl.xcodeproj; path = ../../../app/gpu_opengl/gpu_opengl.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9AE5CC8E22CBECAE00EDEAD1 /* en.lproj */ = {isa = PBXFileReference; lastKnownFileType = folder; path = en.lproj; sourceTree = "<group>"; };
+		9AE7A50A2D1CF6D700070257 /* libacme_windowing_appkit.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libacme_windowing_appkit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE7A50D2D1CF6DE00070257 /* libacme_windowing_kit.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libacme_windowing_kit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE7A5102D1CF6E600070257 /* libinnate_ui_appkit.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libinnate_ui_appkit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE7A5132D1CF6EE00070257 /* libnano_graphics_quartz2d.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libnano_graphics_quartz2d.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AEC3FE32D1AB99100F9E621 /* libnode_macos.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libnode_macos.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		070B8EE71B6E53F900D26137 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A3F08C12C79621E00850151 /* glad.dylib in Frameworks */,
+				9A1B8E612A7FD8D500F9A841 /* libgraphics3d_impact3d.dylib in Frameworks */,
+				9A1B8E582A7FD8CC00F9A841 /* libaqua.dylib in Frameworks */,
+				9A1B8E5A2A7FD8CC00F9A841 /* libaxis.dylib in Frameworks */,
+				9A1B8E5C2A7FD8CC00F9A841 /* libbase.dylib in Frameworks */,
+				9A1B8E5E2A7FD8CC00F9A841 /* libbred.dylib in Frameworks */,
+				9A1B8E602A7FD8CC00F9A841 /* libcore.dylib in Frameworks */,
+				9A7520D22A80205200C8B81E /* libfolder_zip.dylib in Frameworks */,
+				9AE489252A7F688800AA37BC /* libaura.dylib in Frameworks */,
+				9AE489182A7F686800AA37BC /* libapex.dylib in Frameworks */,
+				9AE489012A7F680F00AA37BC /* libacme.dylib in Frameworks */,
+				9A7520E22A80354400C8B81E /* libidn.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		070B8EFA1B6E53FA00D26137 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		070B8EE11B6E53F900D26137 = {
+			isa = PBXGroup;
+			children = (
+				9AE488252A7F649D00AA37BC /* crypto_openssl.xcodeproj */,
+				9AE4881C2A7F649500AA37BC /* database_sqlite3.xcodeproj */,
+				9AE488132A7F648B00AA37BC /* draw2d_quartz2d.xcodeproj */,
+				9AE4880A2A7F648300AA37BC /* experience_core.xcodeproj */,
+				9AE487FE2A7F647A00AA37BC /* folder_zip.xcodeproj */,
+				9AE48E052A7FD3FF00AA37BC /* gpu_opengl.xcodeproj */,
+				9AE48C892A7F6F7000AA37BC /* graphics3d_impact3d.xcodeproj */,
+				9AE487E92A7F646500AA37BC /* imaging_coreimage.xcodeproj */,
+				9A49A0F72D1A6E0500FB4C3D /* operating_ambient_macos.xcodeproj */,
+				9AE487F52A7F646F00AA37BC /* write_text_quartz2d.xcodeproj */,
+				070B8EEC1B6E53F900D26137 /* __implement */,
+				070B8F001B6E53FA00D26137 /* Hello Multiverse!!Tests */,
+				070B8EEB1B6E53F900D26137 /* Products */,
+				9ADF1D2922C16DBB00456537 /* Frameworks */,
+				9A3E0BA12309FBD400B5459B /* Library */,
+				9AE5CC8A22CBEBF400EDEAD1 /* Supporting Files */,
+			);
+			sourceTree = "<group>";
+		};
+		070B8EEB1B6E53F900D26137 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				070B8EEA1B6E53F900D26137 /* _graphics3d_impact3d.app */,
+				070B8EFD1B6E53FA00D26137 /* Hello Multiverse!!Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		070B8EEC1B6E53F900D26137 /* __implement */ = {
+			isa = PBXGroup;
+			children = (
+				9AE48E002A7FD22A00AA37BC /* _____debug.xcconfig */,
+				9AE48DFF2A7FD22A00AA37BC /* _____release.xcconfig */,
+				9AE48CD12A7F73F300AA37BC /* _matter.zip */,
+				9AE48CC72A7F73B900AA37BC /* macos */,
+				9AE4893B2A7F6A5600AA37BC /* main.cpp */,
+			);
+			name = __implement;
+			sourceTree = "<group>";
+		};
+		070B8F001B6E53FA00D26137 /* Hello Multiverse!!Tests */ = {
+			isa = PBXGroup;
+			children = (
+				070B8F031B6E53FA00D26137 /* Hello_Multiverse__Tests.m */,
+				070B8F011B6E53FA00D26137 /* Supporting Files */,
+			);
+			path = "Hello Multiverse!!Tests";
+			sourceTree = "<group>";
+		};
+		070B8F011B6E53FA00D26137 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				070B8F021B6E53FA00D26137 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		9A0CB7582D1A6F6A001FD7FE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9A0CB79A2D1A6F6A001FD7FE /* liboperating_ambient_macos.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9A1B8E7B2A7FDB6800F9A841 /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9A3E0BA12309FBD400B5459B /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				9A8B648C24CC2B2000A93185 /* libgpu_opengl.dylib */,
+				9A204B202433E91600D45614 /* libapp_simple_shader.dylib */,
+				9A204B272433E91600D45614 /* libaura.dylib */,
+				9A204B162433E91500D45614 /* libdraw2d_quartz2d.dylib */,
+				9A204B1D2433E91500D45614 /* libexperience_lite.dylib */,
+				9A204B192433E91500D45614 /* libidn.dylib */,
+				9A8B642C24CBE61E00A93185 /* libimaging_coreimage.dylib */,
+				9A204B172433E91500D45614 /* libpcre.dylib */,
+			);
+			name = Library;
+			sourceTree = "<group>";
+		};
+		9ADF1D2922C16DBB00456537 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9AE7A5132D1CF6EE00070257 /* libnano_graphics_quartz2d.dylib */,
+				9AE7A5102D1CF6E600070257 /* libinnate_ui_appkit.dylib */,
+				9AE7A50D2D1CF6DE00070257 /* libacme_windowing_kit.dylib */,
+				9AE7A50A2D1CF6D700070257 /* libacme_windowing_appkit.dylib */,
+				9AEC3FE32D1AB99100F9E621 /* libnode_macos.dylib */,
+				9A3F08C02C79621E00850151 /* glad.dylib */,
+				9A90BE412B54ADAD002BFC9E /* libarchive.dylib */,
+				9A9A1AF52AFC409D00FA9BEB /* libdarwin.dylib */,
+				9A7520E12A80354400C8B81E /* libidn.dylib */,
+				9A1B8E572A7FD8CC00F9A841 /* libaqua.dylib */,
+				9A1B8E592A7FD8CC00F9A841 /* libaxis.dylib */,
+				9A1B8E5B2A7FD8CC00F9A841 /* libbase.dylib */,
+				9A1B8E5D2A7FD8CC00F9A841 /* libbred.dylib */,
+				9A1B8E5F2A7FD8CC00F9A841 /* libcore.dylib */,
+				9AE489312A7F68E300AA37BC /* libunac.dylib */,
+				9AE489322A7F68E300AA37BC /* libwindowing_macos.dylib */,
+				9AE4892E2A7F68A800AA37BC /* libaura_posix.dylib */,
+				9AE4892B2A7F689900AA37BC /* libaura_macos.dylib */,
+				9AE489222A7F688800AA37BC /* libaura.dylib */,
+				9AE489232A7F688800AA37BC /* libaura_apple.dylib */,
+				9AE489242A7F688800AA37BC /* libaura_darwin.dylib */,
+				9AE489132A7F686800AA37BC /* libapex.dylib */,
+				9AE489142A7F686800AA37BC /* libapex_apple.dylib */,
+				9AE48D632A7FCBB400AA37BC /* libcrypto.dylib */,
+				9AE48D642A7FCBB400AA37BC /* libssl.dylib */,
+				9AE489152A7F686800AA37BC /* libapex_darwin.dylib */,
+				9AE489162A7F686800AA37BC /* libapex_macos.dylib */,
+				9AE489172A7F686800AA37BC /* libapex_posix.dylib */,
+				9AE489102A7F684F00AA37BC /* libacme_posix.dylib */,
+				9AE4890D2A7F683E00AA37BC /* libios_acme_posix.a */,
+				9A1B8E7A2A7FDB6800F9A841 /* _graphics3d_impact3d.xcodeproj */,
+				9AE489062A7F683200AA37BC /* libacme_darwin.dylib */,
+				9AE489072A7F683200AA37BC /* libacme_macos.dylib */,
+				9AE489032A7F682000AA37BC /* libacme_apple.dylib */,
+				9AE489002A7F680F00AA37BC /* libacme.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9AE487EA2A7F646500AA37BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AE487F02A7F646500AA37BC /* libimaging_coreimage.dylib */,
+				9AE487F22A7F646500AA37BC /* libios_imaging_coreimage.a */,
+				9AE487F42A7F646500AA37BC /* math_iosTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9AE487F62A7F646F00AA37BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AE487FB2A7F646F00AA37BC /* libwrite_text_quartz2d.dylib */,
+				9AE487FD2A7F646F00AA37BC /* libios_write_text_quartz2d.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9AE487FF2A7F647A00AA37BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AE488052A7F647A00AA37BC /* libfolder_zip.dylib */,
+				9AE488072A7F647A00AA37BC /* libios_folder_zip.a */,
+				9AE488092A7F647A00AA37BC /* libstatic_folder_zip.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9AE4880B2A7F648300AA37BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AE488102A7F648300AA37BC /* libexperience_core.dylib */,
+				9AE488122A7F648300AA37BC /* libios_experience_core.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9AE488142A7F648B00AA37BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AE488192A7F648B00AA37BC /* libdraw2d_quartz2d.dylib */,
+				9AE4881B2A7F648B00AA37BC /* libios_draw2d_quartz2d.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9AE4881D2A7F649500AA37BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AE488222A7F649500AA37BC /* libdatabase_sqlite3.dylib */,
+				9AE488242A7F649500AA37BC /* libios_database_sqlite3.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9AE488262A7F649D00AA37BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AE4882C2A7F649D00AA37BC /* libcrypto_openssl.dylib */,
+				9AE4882E2A7F649D00AA37BC /* libios_crypto_openssl.a */,
+				9AE488302A7F649D00AA37BC /* libstatic_crypto_openssl.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9AE48C8A2A7F6F7000AA37BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AE48C912A7F6F7000AA37BC /* libgraphics3d_impact3d.dylib */,
+				9AE48C932A7F6F7000AA37BC /* libgraphics3d_impact3d.a */,
+				9AE48C952A7F6F7000AA37BC /* graphics3d_impact3d_iosTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9AE48CC72A7F73B900AA37BC /* macos */ = {
+			isa = PBXGroup;
+			children = (
+				9AE48CC82A7F73B900AA37BC /* MainMenu.xib */,
+				9AE48CCA2A7F73B900AA37BC /* Images.xcassets */,
+				9AE48CCC2A7F73B900AA37BC /* Info.plist */,
+			);
+			path = macos;
+			sourceTree = "<group>";
+		};
+		9AE48E062A7FD3FF00AA37BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AE48E0C2A7FD3FF00AA37BC /* libgpu_opengl.dylib */,
+				9AE48E0E2A7FD3FF00AA37BC /* libios_gpu_opengl.dylib */,
+				9AE48E102A7FD3FF00AA37BC /* math_iosTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9AE5CC8A22CBEBF400EDEAD1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9AE5CC8E22CBECAE00EDEAD1 /* en.lproj */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		070B8EE91B6E53F900D26137 /* _graphics3d_impact3d */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 070B8F071B6E53FA00D26137 /* Build configuration list for PBXNativeTarget "_graphics3d_impact3d" */;
+			buildPhases = (
+				9A932B192D6DB886006557FC /* ShellScript */,
+				070B8EE61B6E53F900D26137 /* Sources */,
+				070B8EE71B6E53F900D26137 /* Frameworks */,
+				070B8EE81B6E53F900D26137 /* Resources */,
+				076A24D91B6E799300BF6C7D /* CopyFiles */,
+				9A93101E2D6DAD33006557FC /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9AEC3E792D1A9CB700F9E621 /* PBXTargetDependency */,
+				9A1B8E632A7FD90000F9A841 /* PBXTargetDependency */,
+				9AE48E122A7FD41000AA37BC /* PBXTargetDependency */,
+				9AE488FF2A7F67E000AA37BC /* PBXTargetDependency */,
+				9AE488FB2A7F67C600AA37BC /* PBXTargetDependency */,
+				9AE488F52A7F675D00AA37BC /* PBXTargetDependency */,
+				9AE488F32A7F674E00AA37BC /* PBXTargetDependency */,
+				9AE488F12A7F674400AA37BC /* PBXTargetDependency */,
+				9AE488EF2A7F673C00AA37BC /* PBXTargetDependency */,
+				9AE488EB2A7F672800AA37BC /* PBXTargetDependency */,
+			);
+			name = _graphics3d_impact3d;
+			productName = "Hello Multiverse!!";
+			productReference = 070B8EEA1B6E53F900D26137 /* _graphics3d_impact3d.app */;
+			productType = "com.apple.product-type.application";
+		};
+		070B8EFC1B6E53FA00D26137 /* Hello Multiverse!!Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 070B8F0A1B6E53FA00D26137 /* Build configuration list for PBXNativeTarget "Hello Multiverse!!Tests" */;
+			buildPhases = (
+				070B8EF91B6E53FA00D26137 /* Sources */,
+				070B8EFA1B6E53FA00D26137 /* Frameworks */,
+				070B8EFB1B6E53FA00D26137 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				070B8EFF1B6E53FA00D26137 /* PBXTargetDependency */,
+			);
+			name = "Hello Multiverse!!Tests";
+			productName = "Hello Multiverse!!Tests";
+			productReference = 070B8EFD1B6E53FA00D26137 /* Hello Multiverse!!Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		070B8EE21B6E53F900D26137 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1540;
+				ORGANIZATIONNAME = "ca2 Software Development";
+				TargetAttributes = {
+					070B8EE91B6E53F900D26137 = {
+						CreatedOnToolsVersion = 6.4;
+						DevelopmentTeam = L8N5V6TZE5;
+						ProvisioningStyle = Automatic;
+					};
+					070B8EFC1B6E53FA00D26137 = {
+						CreatedOnToolsVersion = 6.4;
+						TestTargetID = 070B8EE91B6E53F900D26137;
+					};
+				};
+			};
+			buildConfigurationList = 070B8EE51B6E53F900D26137 /* Build configuration list for PBXProject "_graphics3d_impact3d" */;
+			compatibilityVersion = "Xcode 12.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 070B8EE11B6E53F900D26137;
+			productRefGroup = 070B8EEB1B6E53F900D26137 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 9A1B8E7B2A7FDB6800F9A841 /* Products */;
+					ProjectRef = 9A1B8E7A2A7FDB6800F9A841 /* _graphics3d_impact3d.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AE488262A7F649D00AA37BC /* Products */;
+					ProjectRef = 9AE488252A7F649D00AA37BC /* crypto_openssl.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AE4881D2A7F649500AA37BC /* Products */;
+					ProjectRef = 9AE4881C2A7F649500AA37BC /* database_sqlite3.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AE488142A7F648B00AA37BC /* Products */;
+					ProjectRef = 9AE488132A7F648B00AA37BC /* draw2d_quartz2d.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AE4880B2A7F648300AA37BC /* Products */;
+					ProjectRef = 9AE4880A2A7F648300AA37BC /* experience_core.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AE487FF2A7F647A00AA37BC /* Products */;
+					ProjectRef = 9AE487FE2A7F647A00AA37BC /* folder_zip.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AE48E062A7FD3FF00AA37BC /* Products */;
+					ProjectRef = 9AE48E052A7FD3FF00AA37BC /* gpu_opengl.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AE48C8A2A7F6F7000AA37BC /* Products */;
+					ProjectRef = 9AE48C892A7F6F7000AA37BC /* graphics3d_impact3d.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AE487EA2A7F646500AA37BC /* Products */;
+					ProjectRef = 9AE487E92A7F646500AA37BC /* imaging_coreimage.xcodeproj */;
+				},
+				{
+					ProductGroup = 9A0CB7582D1A6F6A001FD7FE /* Products */;
+					ProjectRef = 9A49A0F72D1A6E0500FB4C3D /* operating_ambient_macos.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AE487F62A7F646F00AA37BC /* Products */;
+					ProjectRef = 9AE487F52A7F646F00AA37BC /* write_text_quartz2d.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				070B8EE91B6E53F900D26137 /* _graphics3d_impact3d */,
+				070B8EFC1B6E53FA00D26137 /* Hello Multiverse!!Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		9A0CB79A2D1A6F6A001FD7FE /* liboperating_ambient_macos.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = liboperating_ambient_macos.dylib;
+			remoteRef = 9A0CB7992D1A6F6A001FD7FE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE487F02A7F646500AA37BC /* libimaging_coreimage.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libimaging_coreimage.dylib;
+			remoteRef = 9AE487EF2A7F646500AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE487F22A7F646500AA37BC /* libios_imaging_coreimage.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libios_imaging_coreimage.a;
+			remoteRef = 9AE487F12A7F646500AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE487F42A7F646500AA37BC /* math_iosTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = math_iosTests.xctest;
+			remoteRef = 9AE487F32A7F646500AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE487FB2A7F646F00AA37BC /* libwrite_text_quartz2d.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libwrite_text_quartz2d.dylib;
+			remoteRef = 9AE487FA2A7F646F00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE487FD2A7F646F00AA37BC /* libios_write_text_quartz2d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_write_text_quartz2d.a;
+			remoteRef = 9AE487FC2A7F646F00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE488052A7F647A00AA37BC /* libfolder_zip.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libfolder_zip.dylib;
+			remoteRef = 9AE488042A7F647A00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE488072A7F647A00AA37BC /* libios_folder_zip.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_folder_zip.a;
+			remoteRef = 9AE488062A7F647A00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE488092A7F647A00AA37BC /* libstatic_folder_zip.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libstatic_folder_zip.a;
+			remoteRef = 9AE488082A7F647A00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE488102A7F648300AA37BC /* libexperience_core.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libexperience_core.dylib;
+			remoteRef = 9AE4880F2A7F648300AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE488122A7F648300AA37BC /* libios_experience_core.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_experience_core.a;
+			remoteRef = 9AE488112A7F648300AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE488192A7F648B00AA37BC /* libdraw2d_quartz2d.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libdraw2d_quartz2d.dylib;
+			remoteRef = 9AE488182A7F648B00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE4881B2A7F648B00AA37BC /* libios_draw2d_quartz2d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_draw2d_quartz2d.a;
+			remoteRef = 9AE4881A2A7F648B00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE488222A7F649500AA37BC /* libdatabase_sqlite3.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libdatabase_sqlite3.dylib;
+			remoteRef = 9AE488212A7F649500AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE488242A7F649500AA37BC /* libios_database_sqlite3.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_database_sqlite3.a;
+			remoteRef = 9AE488232A7F649500AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE4882C2A7F649D00AA37BC /* libcrypto_openssl.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libcrypto_openssl.dylib;
+			remoteRef = 9AE4882B2A7F649D00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE4882E2A7F649D00AA37BC /* libios_crypto_openssl.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_crypto_openssl.a;
+			remoteRef = 9AE4882D2A7F649D00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE488302A7F649D00AA37BC /* libstatic_crypto_openssl.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libstatic_crypto_openssl.dylib;
+			remoteRef = 9AE4882F2A7F649D00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE48C912A7F6F7000AA37BC /* libgraphics3d_impact3d.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libgraphics3d_impact3d.dylib;
+			remoteRef = 9AE48C902A7F6F7000AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE48C932A7F6F7000AA37BC /* libgraphics3d_impact3d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libgraphics3d_impact3d.a;
+			remoteRef = 9AE48C922A7F6F7000AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE48C952A7F6F7000AA37BC /* graphics3d_impact3d_iosTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = graphics3d_impact3d_iosTests.xctest;
+			remoteRef = 9AE48C942A7F6F7000AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE48E0C2A7FD3FF00AA37BC /* libgpu_opengl.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libgpu_opengl.dylib;
+			remoteRef = 9AE48E0B2A7FD3FF00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE48E0E2A7FD3FF00AA37BC /* libios_gpu_opengl.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libios_gpu_opengl.dylib;
+			remoteRef = 9AE48E0D2A7FD3FF00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9AE48E102A7FD3FF00AA37BC /* math_iosTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = math_iosTests.xctest;
+			remoteRef = 9AE48E0F2A7FD3FF00AA37BC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		070B8EE81B6E53F900D26137 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9AE48CD22A7F73F300AA37BC /* _matter.zip in Resources */,
+				9AE48CCE2A7F73B900AA37BC /* Images.xcassets in Resources */,
+				9AE48CCD2A7F73B900AA37BC /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		070B8EFB1B6E53FA00D26137 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9A93101E2D6DAD33006557FC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_FOLDER_PATH)/$(EXECUTABLE_NAME)",
+				"$(WorkspaceDir)/output_copy.txt",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(WorkspaceDir)/time-$(PLATFORM_MODIFIER)/$(CONFIGURATION)/$(EXECUTABLE_NAME)",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = ". ${WorkspaceDir}/../operating_system/tool/bin/_on_after_build_executable\n";
+		};
+		9A932B192D6DB886006557FC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/matter.txt",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(PROJECT_DIR)/_matter.zip",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = ". ${WorkspaceDir}/../operating_system/tool/bin/_on_before_build_executable\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		070B8EE61B6E53F900D26137 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9AE4893C2A7F6A5600AA37BC /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		070B8EF91B6E53FA00D26137 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				070B8F041B6E53FA00D26137 /* Hello_Multiverse__Tests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		070B8EFF1B6E53FA00D26137 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 070B8EE91B6E53F900D26137 /* _graphics3d_impact3d */;
+			targetProxy = 070B8EFE1B6E53FA00D26137 /* PBXContainerItemProxy */;
+		};
+		9A1B8E632A7FD90000F9A841 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = graphics3d_impact3d;
+			targetProxy = 9A1B8E622A7FD90000F9A841 /* PBXContainerItemProxy */;
+		};
+		9AE488EB2A7F672800AA37BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = crypto_openssl;
+			targetProxy = 9AE488EA2A7F672800AA37BC /* PBXContainerItemProxy */;
+		};
+		9AE488EF2A7F673C00AA37BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = database_sqlite3;
+			targetProxy = 9AE488EE2A7F673C00AA37BC /* PBXContainerItemProxy */;
+		};
+		9AE488F12A7F674400AA37BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = draw2d_quartz2d;
+			targetProxy = 9AE488F02A7F674400AA37BC /* PBXContainerItemProxy */;
+		};
+		9AE488F32A7F674E00AA37BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = experience_core;
+			targetProxy = 9AE488F22A7F674E00AA37BC /* PBXContainerItemProxy */;
+		};
+		9AE488F52A7F675D00AA37BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = folder_zip;
+			targetProxy = 9AE488F42A7F675D00AA37BC /* PBXContainerItemProxy */;
+		};
+		9AE488FB2A7F67C600AA37BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = imaging_coreimage;
+			targetProxy = 9AE488FA2A7F67C600AA37BC /* PBXContainerItemProxy */;
+		};
+		9AE488FF2A7F67E000AA37BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = write_text_quartz2d;
+			targetProxy = 9AE488FE2A7F67E000AA37BC /* PBXContainerItemProxy */;
+		};
+		9AE48E122A7FD41000AA37BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = gpu_opengl;
+			targetProxy = 9AE48E112A7FD41000AA37BC /* PBXContainerItemProxy */;
+		};
+		9AEC3E792D1A9CB700F9E621 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = operating_ambient_macos;
+			targetProxy = 9AEC3E782D1A9CB700F9E621 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		9AE48CC82A7F73B900AA37BC /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9AE48CC92A7F73B900AA37BC /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		070B8F051B6E53FA00D26137 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9AE48E002A7FD22A00AA37BC /* _____debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_PRAGMA_PACK = NO;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = L8N5V6TZE5;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(WorkspaceDir)/../operating_system/storage-$(PLATFORM_MODIFIER)/$(CONFIGURATION)/library",
+					"$(WorkspaceDir)/operating_system",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				PLATFORM_MODIFIER = macos;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"$(WorkspaceDir)/operating_system",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/third-$(PLATFORM_MODIFIER)/include",
+					"$(WorkspaceDir)/port/_",
+					"$(WorkspaceDir)/port/include",
+					"$(WorkspaceDir)/operating_system",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/third-$(PLATFORM_MODIFIER)/third/include/",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"$(WorkspaceDir)/source",
+					"$(WorkspaceDir)/source/include",
+					"$(WorkspaceDir)/operating_system-$(PLATFORM_MODIFIER)",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/include/configuration_selection/$(CONFIGURATION)",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/include",
+					"$(WorkspaceDir)/port/_",
+					"$(WorkspaceDir)/port/include",
+					"$(WorkspaceDir)/source/app",
+					"$(WorkspaceDir)/source/app/include",
+					"$(WorkspaceDir)/operating_system",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)",
+					.,
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/..",
+					"$(PROJECT_DIR)/../..",
+					"$(HOME)/sensitive/sensitive/include",
+				);
+				USE_HEADERMAP = NO;
+				WorkspaceDir = "$(SRCROOT)/../../../..";
+			};
+			name = Debug;
+		};
+		070B8F061B6E53FA00D26137 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9AE48DFF2A7FD22A00AA37BC /* _____release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_PRAGMA_PACK = NO;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = L8N5V6TZE5;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(WorkspaceDir)/../operating_system/storage-$(PLATFORM_MODIFIER)/$(CONFIGURATION)/library",
+					"$(WorkspaceDir)/operating_system",
+				);
+				PLATFORM_MODIFIER = macos;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"$(WorkspaceDir)/operating_system",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/third-$(PLATFORM_MODIFIER)/include",
+					"$(WorkspaceDir)/port/_",
+					"$(WorkspaceDir)/port/include",
+					"$(WorkspaceDir)/operating_system",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/third-$(PLATFORM_MODIFIER)/third/include/",
+				);
+				USER_HEADER_SEARCH_PATHS = (
+					"$(WorkspaceDir)/source",
+					"$(WorkspaceDir)/source/include",
+					"$(WorkspaceDir)/operating_system-$(PLATFORM_MODIFIER)",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/include/configuration_selection/$(CONFIGURATION)",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/include",
+					"$(WorkspaceDir)/port/_",
+					"$(WorkspaceDir)/port/include",
+					"$(WorkspaceDir)/source/app",
+					"$(WorkspaceDir)/source/app/include",
+					"$(WorkspaceDir)/operating_system",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)",
+					.,
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/..",
+					"$(PROJECT_DIR)/../..",
+					"$(HOME)/sensitive/sensitive/include",
+				);
+				USE_HEADERMAP = NO;
+				WorkspaceDir = "$(SRCROOT)/../../../..";
+			};
+			name = Release;
+		};
+		070B8F081B6E53FA00D26137 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "$(SRCROOT)/macos/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Impact 3D";
+				PRODUCT_BUNDLE_IDENTIFIER = graphics3d.impact3d;
+			};
+			name = Debug;
+		};
+		070B8F091B6E53FA00D26137 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "$(SRCROOT)/macos/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Impact 3D";
+				PRODUCT_BUNDLE_IDENTIFIER = graphics3d.impact3d;
+			};
+			name = Release;
+		};
+		070B8F0B1B6E53FA00D26137 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Hello Multiverse!!Tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ca2.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Hello Multiverse!!.app/Contents/MacOS/Hello Multiverse!!";
+			};
+			name = Debug;
+		};
+		070B8F0C1B6E53FA00D26137 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Hello Multiverse!!Tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ca2.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Hello Multiverse!!.app/Contents/MacOS/Hello Multiverse!!";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		070B8EE51B6E53F900D26137 /* Build configuration list for PBXProject "_graphics3d_impact3d" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				070B8F051B6E53FA00D26137 /* Debug */,
+				070B8F061B6E53FA00D26137 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		070B8F071B6E53FA00D26137 /* Build configuration list for PBXNativeTarget "_graphics3d_impact3d" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				070B8F081B6E53FA00D26137 /* Debug */,
+				070B8F091B6E53FA00D26137 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		070B8F0A1B6E53FA00D26137 /* Build configuration list for PBXNativeTarget "Hello Multiverse!!Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				070B8F0B1B6E53FA00D26137 /* Debug */,
+				070B8F0C1B6E53FA00D26137 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 070B8EE21B6E53F900D26137 /* Project object */;
+}

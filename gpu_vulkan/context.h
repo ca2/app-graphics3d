@@ -1,9 +1,9 @@
 #pragma once
 
 
-#include "app-cube/cube/gpu/context.h"
+#include "cube/gpu/context.h"
 #include "acme/prototype/prototype/memory.h"
-#include "app-cube/gpu_vulkan/device.h"
+#include "app-graphics3d/gpu_vulkan/device.h"
 
 
 namespace gpu_vulkan

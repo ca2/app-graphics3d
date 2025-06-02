@@ -1,2 +1,0 @@
-app/main
-app-cube/fuel-window-vulkan

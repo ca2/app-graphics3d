@@ -4,11 +4,11 @@
 #include "core/platform/application.h"
 
 
-namespace app_cube_fuel
+namespace app_graphics3d_fuel
 {
 
 
-   class CLASS_DECL_APP_CUBE_FUEL application :
+   class CLASS_DECL_APP_GRAPHICS3D_FUEL application :
       virtual public ::core::application
    {
    public:
@@ -45,7 +45,7 @@ namespace app_cube_fuel
    };
 
 
-} // namespace app_cube_fuel
+} // namespace app_graphics3d_fuel
 
 
 

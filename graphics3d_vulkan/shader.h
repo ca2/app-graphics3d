@@ -4,7 +4,7 @@
 
 //
 //
-//#include "app-cube/cube/gpu/shader.h"
+//#include "cube/gpu/shader.h"
 //
 //
 //namespace graphics3d_vulkan

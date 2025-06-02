@@ -1,5 +1,5 @@
 #include "framework.h"
-#include "app-cube/gpu_vulkan/context.h"
+#include "app-graphics3d/gpu_vulkan/context.h"
 /*
  * Encapsulates a vulkan buffer
  *

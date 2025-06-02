@@ -36,9 +36,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{21666CA1-767F-4E25-99C2-8EC15991DA53}</ProjectGuid>
-    <RootNamespace>app-cube</RootNamespace>
+    <RootNamespace>app-graphics3d</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>app_cube_fuel_window_opengl</ProjectName>
+    <ProjectName>app_graphics3d_fuel_window_opengl</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -760,7 +760,7 @@
     <ProjectReference Include="..\..\app\core\core.vcxproj">
       <Project>{29c1eb5b-060e-4021-ae12-d1bcfb1b1359}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\fuel\app_cube_fuel.vcxproj">
+    <ProjectReference Include="..\fuel\app_graphics3d_fuel.vcxproj">
       <Project>{5aafbd19-daed-40a5-bbd6-2fb07425c874}</Project>
     </ProjectReference>
   </ItemGroup>

@@ -1,17 +1,17 @@
 #pragma once
 
 
-#include "app-cube/cube/_.h"
+#include "cube/_.h"
 
 
-#if defined(_app_cube_shader_project)
-#define CLASS_DECL_APP_CUBE_SHADER  CLASS_DECL_EXPORT
+#if defined(_app_graphics3d_shader_project)
+#define CLASS_DECL_APP_GRAPHICS3D_SHADER  CLASS_DECL_EXPORT
 #else
-#define CLASS_DECL_APP_CUBE_SHADER  CLASS_DECL_IMPORT
+#define CLASS_DECL_APP_GRAPHICS3D_SHADER  CLASS_DECL_IMPORT
 #endif
 
 
-namespace app_cube_shader
+namespace app_graphics3d_shader
 {
 
 
@@ -40,6 +40,6 @@ namespace opengl
 
 
 #undef APPLICATION_CLASS
-#define APPLICATION_CLASS ::app_cube_shader::application
+#define APPLICATION_CLASS ::app_graphics3d_shader::application
 
 

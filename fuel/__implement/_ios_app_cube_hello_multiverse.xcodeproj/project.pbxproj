@@ -11,7 +11,7 @@
 		9A4972262001905400B9C9B2 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A4972092001905400B9C9B2 /* ImageIO.framework */; };
 		9A4BE107200018A200DED594 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A5752BB16AAE1D2000CC4EF /* Foundation.framework */; };
 		9A5882F628E934DF001543FF /* libios_networking_bsd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A58829828E93380001543FF /* libios_networking_bsd.a */; };
-		9A87FEDD284B8A170084AA05 /* libios_app_cube_hello_multiverse.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AA2EFD72847D9A600A747A1 /* libios_app_cube_hello_multiverse.a */; };
+		9A87FEDD284B8A170084AA05 /* libios_app_graphics3d_hello_multiverse.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AA2EFD72847D9A600A747A1 /* libios_app_graphics3d_hello_multiverse.a */; };
 		9A87FEE9284B8A630084AA05 /* libios_regular_expression_pcre2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AE6436E284AC39D0079EBA0 /* libios_regular_expression_pcre2.a */; };
 		9A87FEEF284B8C060084AA05 /* libios_gcom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A87FEEE284B8C060084AA05 /* libios_gcom.a */; };
 		9A87FEF1284B8C2C0084AA05 /* libios_gcom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A87FEF0284B8C2C0084AA05 /* libios_gcom.a */; };
@@ -66,7 +66,7 @@
 			containerPortal = 9A5752A916AAE1D2000CC4EF /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 078C352E1921758500354453;
-			remoteInfo = wiosapp_cube_hello_multiverse;
+			remoteInfo = wiosapp_graphics3d_hello_multiverse;
 		};
 		9A58829528E93380001543FF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -126,24 +126,24 @@
 		};
 		9AA2EFD42847D9A600A747A1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9AA2EFCE2847D9A600A747A1 /* app_cube_hello_multiverse.xcodeproj */;
+			containerPortal = 9AA2EFCE2847D9A600A747A1 /* app_graphics3d_hello_multiverse.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9AEB75A316F78DF10085103B;
-			remoteInfo = app_cube_hello_multiverse;
+			remoteInfo = app_graphics3d_hello_multiverse;
 		};
 		9AA2EFD62847D9A600A747A1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9AA2EFCE2847D9A600A747A1 /* app_cube_hello_multiverse.xcodeproj */;
+			containerPortal = 9AA2EFCE2847D9A600A747A1 /* app_graphics3d_hello_multiverse.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9AE24E8A1904CFFD001AEFFB;
-			remoteInfo = ios_app_cube_hello_multiverse;
+			remoteInfo = ios_app_graphics3d_hello_multiverse;
 		};
 		9AA2EFD82847D9A600A747A1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9AA2EFCE2847D9A600A747A1 /* app_cube_hello_multiverse.xcodeproj */;
+			containerPortal = 9AA2EFCE2847D9A600A747A1 /* app_graphics3d_hello_multiverse.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9AE24E991904CFFD001AEFFB;
-			remoteInfo = app_cube_hello_multiverse_iosTests;
+			remoteInfo = app_graphics3d_hello_multiverse_iosTests;
 		};
 		9AA2EFDF2847D9A600A747A1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -301,10 +301,10 @@
 		};
 		9AE87A682858C77E00F88364 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9AA2EFCE2847D9A600A747A1 /* app_cube_hello_multiverse.xcodeproj */;
+			containerPortal = 9AA2EFCE2847D9A600A747A1 /* app_graphics3d_hello_multiverse.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9AE24E891904CFFD001AEFFB;
-			remoteInfo = ios_app_cube_hello_multiverse;
+			remoteInfo = ios_app_graphics3d_hello_multiverse;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -329,10 +329,10 @@
 		070276161C5173FF00DAFE31 /* libaurasqlite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libaurasqlite.dylib; path = "../../../app/aura/sqlite/build/Debug-iphoneos/libaurasqlite.dylib"; sourceTree = "<group>"; };
 		077A02081B4D5758001C85FF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		078C352F1921758500354453 /* Hellomultiverse!!.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hellomultiverse!!.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		078C35451921758600354453 /* ios_app_cube_hello_multiverseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ios_app_cube_hello_multiverseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		078C354D1921758600354453 /* wiosapp_cube_hello_multiverseTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "wiosapp_cube_hello_multiverseTests-Info.plist"; path = "../wiosapp_cube_hello_multiverseTests-Info.plist"; sourceTree = "<group>"; };
+		078C35451921758600354453 /* ios_app_graphics3d_hello_multiverseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ios_app_graphics3d_hello_multiverseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		078C354D1921758600354453 /* wiosapp_graphics3d_hello_multiverseTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "wiosapp_graphics3d_hello_multiverseTests-Info.plist"; path = "../wiosapp_graphics3d_hello_multiverseTests-Info.plist"; sourceTree = "<group>"; };
 		078C354F1921758600354453 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		078C35511921758600354453 /* wiosapp_cube_hello_multiverseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = wiosapp_cube_hello_multiverseTests.m; sourceTree = "<group>"; };
+		078C35511921758600354453 /* wiosapp_graphics3d_hello_multiverseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = wiosapp_graphics3d_hello_multiverseTests.m; sourceTree = "<group>"; };
 		07B5903518866047002C6FEC /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		9A41725F20004E120056265A /* build-openssl-1.1.0f.log */ = {isa = PBXFileReference; lastKnownFileType = text; path = "build-openssl-1.1.0f.log"; sourceTree = "<group>"; };
 		9A41726020004E120056265A /* build-openssl-1.1.0g.log */ = {isa = PBXFileReference; lastKnownFileType = text; path = "build-openssl-1.1.0g.log"; sourceTree = "<group>"; };
@@ -437,7 +437,7 @@
 		9A986ED51D2273E3001F4C04 /* libace_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libace_ios.a; path = "../../../../Users/camilo/Library/Developer/Xcode/DerivedData/basic-ios-bmuegusfgbffmoeixicbxhlnbzop/Build/Products/Debug-iphonesimulator/libace_ios.a"; sourceTree = "<group>"; };
 		9A986ED71D2273EF001F4C04 /* libios_axisidn.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libios_axisidn.dylib; path = "../../../../Users/camilo/Library/Developer/Xcode/DerivedData/basic-ios-bmuegusfgbffmoeixicbxhlnbzop/Build/Products/Debug-iphonesimulator/libios_axisidn.dylib"; sourceTree = "<group>"; };
 		9AA2EFBF2847D9A600A747A1 /* experience_core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = experience_core.xcodeproj; path = ../../../app/experience_core/experience_core.xcodeproj; sourceTree = SOURCE_ROOT; };
-		9AA2EFCE2847D9A600A747A1 /* app_cube_hello_multiverse.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = app_cube_hello_multiverse.xcodeproj; path = ../app_cube_hello_multiverse.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9AA2EFCE2847D9A600A747A1 /* app_graphics3d_hello_multiverse.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = app_graphics3d_hello_multiverse.xcodeproj; path = ../app_graphics3d_hello_multiverse.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9AA2EFDA2847D9A600A747A1 /* folder_zip.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = folder_zip.xcodeproj; path = ../../../app/folder_zip/folder_zip.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9AA2EFE32847D9A600A747A1 /* crypto_openssl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = crypto_openssl.xcodeproj; path = ../../../app/crypto_openssl/crypto_openssl.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9AA2EFEC2847D9A600A747A1 /* database_sqlite3.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = database_sqlite3.xcodeproj; path = ../../../app/database_sqlite3/database_sqlite3.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -477,7 +477,7 @@
 		9AE645F5284ADE000079EBA0 /* libios_core.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libios_core.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AE876082858A98300F88364 /* _matter.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = _matter.zip; path = ../_matter.zip; sourceTree = "<group>"; };
 		9AE8760D2858A98300F88364 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		9AE8760E2858A98300F88364 /* wiosapp_cube_hello_multiverse-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "wiosapp_cube_hello_multiverse-Info.plist"; path = "../wiosapp_cube_hello_multiverse-Info.plist"; sourceTree = "<group>"; };
+		9AE8760E2858A98300F88364 /* wiosapp_graphics3d_hello_multiverse-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "wiosapp_graphics3d_hello_multiverse-Info.plist"; path = "../wiosapp_graphics3d_hello_multiverse-Info.plist"; sourceTree = "<group>"; };
 		9AE8760F2858A98300F88364 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		9AE876102858A98300F88364 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		9AE876152858A98300F88364 /* __implement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = __implement.cpp; sourceTree = "<group>"; };
@@ -515,7 +515,7 @@
 				9AE63FC6284AA6150079EBA0 /* libnode_ios.a in Frameworks */,
 				9AE645F0284ADD590079EBA0 /* libsqlite3.tbd in Frameworks */,
 				9AE63FA2284AA6130079EBA0 /* libios_apex.a in Frameworks */,
-				9A87FEDD284B8A170084AA05 /* libios_app_cube_hello_multiverse.a in Frameworks */,
+				9A87FEDD284B8A170084AA05 /* libios_app_graphics3d_hello_multiverse.a in Frameworks */,
 				9AE63F9E284AA6130079EBA0 /* libacme_ios.a in Frameworks */,
 				9AE63FC3284AA6150079EBA0 /* libios_idn.a in Frameworks */,
 				9AE63FB0284AA6140079EBA0 /* libaura_ios.a in Frameworks */,
@@ -552,19 +552,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		078C354B1921758600354453 /* wiosapp_cube_hello_multiverseTests */ = {
+		078C354B1921758600354453 /* wiosapp_graphics3d_hello_multiverseTests */ = {
 			isa = PBXGroup;
 			children = (
-				078C35511921758600354453 /* wiosapp_cube_hello_multiverseTests.m */,
+				078C35511921758600354453 /* wiosapp_graphics3d_hello_multiverseTests.m */,
 				078C354C1921758600354453 /* Supporting Files */,
 			);
-			path = wiosapp_cube_hello_multiverseTests;
+			path = wiosapp_graphics3d_hello_multiverseTests;
 			sourceTree = "<group>";
 		};
 		078C354C1921758600354453 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				078C354D1921758600354453 /* wiosapp_cube_hello_multiverseTests-Info.plist */,
+				078C354D1921758600354453 /* wiosapp_graphics3d_hello_multiverseTests-Info.plist */,
 				078C354E1921758600354453 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
@@ -693,7 +693,7 @@
 		9A5752A716AAE1D2000CC4EF = {
 			isa = PBXGroup;
 			children = (
-				9AA2EFCE2847D9A600A747A1 /* app_cube_hello_multiverse.xcodeproj */,
+				9AA2EFCE2847D9A600A747A1 /* app_graphics3d_hello_multiverse.xcodeproj */,
 				9AA2EFE32847D9A600A747A1 /* crypto_openssl.xcodeproj */,
 				9AA2EFEC2847D9A600A747A1 /* database_sqlite3.xcodeproj */,
 				9AA2F0042847D9A700A747A1 /* draw2d_quartz2d.xcodeproj */,
@@ -705,7 +705,7 @@
 				9AA2EFF52847D9A700A747A1 /* regular_expression_pcre2.xcodeproj */,
 				9AA2EFFB2847D9A700A747A1 /* write_text_quartz2d.xcodeproj */,
 				9AE8754F2858A98200F88364 /* hello_multiverse */,
-				078C354B1921758600354453 /* wiosapp_cube_hello_multiverseTests */,
+				078C354B1921758600354453 /* wiosapp_graphics3d_hello_multiverseTests */,
 				9A5752B516AAE1D2000CC4EF /* Frameworks */,
 				9A5752B316AAE1D2000CC4EF /* Products */,
 			);
@@ -715,7 +715,7 @@
 			isa = PBXGroup;
 			children = (
 				078C352F1921758500354453 /* Hellomultiverse!!.app */,
-				078C35451921758600354453 /* ios_app_cube_hello_multiverseTests.xctest */,
+				078C35451921758600354453 /* ios_app_graphics3d_hello_multiverseTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -818,9 +818,9 @@
 		9AA2EFCF2847D9A600A747A1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9AA2EFD52847D9A600A747A1 /* libapp_cube_hello_multiverse.dylib */,
-				9AA2EFD72847D9A600A747A1 /* libios_app_cube_hello_multiverse.a */,
-				9AA2EFD92847D9A600A747A1 /* app_cube_hello_multiverse_iosTests.xctest */,
+				9AA2EFD52847D9A600A747A1 /* libapp_graphics3d_hello_multiverse.dylib */,
+				9AA2EFD72847D9A600A747A1 /* libios_app_graphics3d_hello_multiverse.a */,
+				9AA2EFD92847D9A600A747A1 /* app_graphics3d_hello_multiverse_iosTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -911,7 +911,7 @@
 			isa = PBXGroup;
 			children = (
 				9AE8760C2858A98300F88364 /* InfoPlist.strings */,
-				9AE8760E2858A98300F88364 /* wiosapp_cube_hello_multiverse-Info.plist */,
+				9AE8760E2858A98300F88364 /* wiosapp_graphics3d_hello_multiverse-Info.plist */,
 				9AE8760F2858A98300F88364 /* Images.xcassets */,
 				9AE876102858A98300F88364 /* main.cpp */,
 				9AE8773E2858AA8600F88364 /* Launch Screen.storyboard */,
@@ -922,9 +922,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		078C352E1921758500354453 /* _ios_app_cube_hello_multiverse */ = {
+		078C352E1921758500354453 /* _ios_app_graphics3d_hello_multiverse */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 078C35741921758600354453 /* Build configuration list for PBXNativeTarget "_ios_app_cube_hello_multiverse" */;
+			buildConfigurationList = 078C35741921758600354453 /* Build configuration list for PBXNativeTarget "_ios_app_graphics3d_hello_multiverse" */;
 			buildPhases = (
 				078C352B1921758500354453 /* Sources */,
 				078C352C1921758500354453 /* Frameworks */,
@@ -946,14 +946,14 @@
 				9AE64264284AA7690079EBA0 /* PBXTargetDependency */,
 				9AE64268284AA7690079EBA0 /* PBXTargetDependency */,
 			);
-			name = _ios_app_cube_hello_multiverse;
-			productName = wiosapp_cube_hello_multiverse;
+			name = _ios_app_graphics3d_hello_multiverse;
+			productName = wiosapp_graphics3d_hello_multiverse;
 			productReference = 078C352F1921758500354453 /* Hellomultiverse!!.app */;
 			productType = "com.apple.product-type.application";
 		};
-		078C35441921758600354453 /* ios_app_cube_hello_multiverseTests */ = {
+		078C35441921758600354453 /* ios_app_graphics3d_hello_multiverseTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 078C35751921758600354453 /* Build configuration list for PBXNativeTarget "ios_app_cube_hello_multiverseTests" */;
+			buildConfigurationList = 078C35751921758600354453 /* Build configuration list for PBXNativeTarget "ios_app_graphics3d_hello_multiverseTests" */;
 			buildPhases = (
 				078C35411921758600354453 /* Sources */,
 				078C35421921758600354453 /* Frameworks */,
@@ -964,9 +964,9 @@
 			dependencies = (
 				078C354A1921758600354453 /* PBXTargetDependency */,
 			);
-			name = ios_app_cube_hello_multiverseTests;
-			productName = wiosapp_cube_hello_multiverseTests;
-			productReference = 078C35451921758600354453 /* ios_app_cube_hello_multiverseTests.xctest */;
+			name = ios_app_graphics3d_hello_multiverseTests;
+			productName = wiosapp_graphics3d_hello_multiverseTests;
+			productReference = 078C35451921758600354453 /* ios_app_graphics3d_hello_multiverseTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -997,7 +997,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 9A5752AC16AAE1D2000CC4EF /* Build configuration list for PBXProject "_ios_app_cube_hello_multiverse" */;
+			buildConfigurationList = 9A5752AC16AAE1D2000CC4EF /* Build configuration list for PBXProject "_ios_app_graphics3d_hello_multiverse" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -1011,7 +1011,7 @@
 			projectReferences = (
 				{
 					ProductGroup = 9AA2EFCF2847D9A600A747A1 /* Products */;
-					ProjectRef = 9AA2EFCE2847D9A600A747A1 /* app_cube_hello_multiverse.xcodeproj */;
+					ProjectRef = 9AA2EFCE2847D9A600A747A1 /* app_graphics3d_hello_multiverse.xcodeproj */;
 				},
 				{
 					ProductGroup = 9AA2EFE42847D9A600A747A1 /* Products */;
@@ -1056,8 +1056,8 @@
 			);
 			projectRoot = "";
 			targets = (
-				078C352E1921758500354453 /* _ios_app_cube_hello_multiverse */,
-				078C35441921758600354453 /* ios_app_cube_hello_multiverseTests */,
+				078C352E1921758500354453 /* _ios_app_graphics3d_hello_multiverse */,
+				078C35441921758600354453 /* ios_app_graphics3d_hello_multiverseTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1091,24 +1091,24 @@
 			remoteRef = 9AA2EFC62847D9A600A747A1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		9AA2EFD52847D9A600A747A1 /* libapp_cube_hello_multiverse.dylib */ = {
+		9AA2EFD52847D9A600A747A1 /* libapp_graphics3d_hello_multiverse.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
-			path = libapp_cube_hello_multiverse.dylib;
+			path = libapp_graphics3d_hello_multiverse.dylib;
 			remoteRef = 9AA2EFD42847D9A600A747A1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		9AA2EFD72847D9A600A747A1 /* libios_app_cube_hello_multiverse.a */ = {
+		9AA2EFD72847D9A600A747A1 /* libios_app_graphics3d_hello_multiverse.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libios_app_cube_hello_multiverse.a;
+			path = libios_app_graphics3d_hello_multiverse.a;
 			remoteRef = 9AA2EFD62847D9A600A747A1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		9AA2EFD92847D9A600A747A1 /* app_cube_hello_multiverse_iosTests.xctest */ = {
+		9AA2EFD92847D9A600A747A1 /* app_graphics3d_hello_multiverse_iosTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = app_cube_hello_multiverse_iosTests.xctest;
+			path = app_graphics3d_hello_multiverse_iosTests.xctest;
 			remoteRef = 9AA2EFD82847D9A600A747A1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1269,7 +1269,7 @@
 /* Begin PBXTargetDependency section */
 		078C354A1921758600354453 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 078C352E1921758500354453 /* _ios_app_cube_hello_multiverse */;
+			target = 078C352E1921758500354453 /* _ios_app_graphics3d_hello_multiverse */;
 			targetProxy = 078C35491921758600354453 /* PBXContainerItemProxy */;
 		};
 		9A5882EA28E93400001543FF /* PBXTargetDependency */ = {
@@ -1324,7 +1324,7 @@
 		};
 		9AE87A692858C77E00F88364 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = ios_app_cube_hello_multiverse;
+			name = ios_app_graphics3d_hello_multiverse;
 			targetProxy = 9AE87A682858C77E00F88364 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1362,14 +1362,14 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/ios/wiosapp_cube_hello_multiverse-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/ios/wiosapp_graphics3d_hello_multiverse-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-all_load",
 				);
 				PLATFORM_MODIFIER = ios;
-				PRODUCT_BUNDLE_IDENTIFIER = "app-cube.hello_multiverse";
+				PRODUCT_BUNDLE_IDENTIFIER = "app-graphics3d.hello_multiverse";
 				PRODUCT_NAME = "Hellomultiverse!!";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1388,14 +1388,14 @@
 				DEVELOPMENT_TEAM = L8N5V6TZE5;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				INFOPLIST_FILE = "$(SRCROOT)/ios/wiosapp_cube_hello_multiverse-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/ios/wiosapp_graphics3d_hello_multiverse-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-all_load",
 				);
 				PLATFORM_MODIFIER = ios;
-				PRODUCT_BUNDLE_IDENTIFIER = "app-cube.hello_multiverse";
+				PRODUCT_BUNDLE_IDENTIFIER = "app-graphics3d.hello_multiverse";
 				PRODUCT_NAME = "Hellomultiverse!!";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1408,7 +1408,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/wiosapp_cube_hello_multiverse.app/wiosapp_cube_hello_multiverse";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/wiosapp_graphics3d_hello_multiverse.app/wiosapp_graphics3d_hello_multiverse";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1422,7 +1422,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "wiosapp_cube_hello_multiverseTests/wiosapp_cube_hello_multiverseTests-Info.plist";
+				INFOPLIST_FILE = "wiosapp_graphics3d_hello_multiverseTests/wiosapp_graphics3d_hello_multiverseTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "ca2.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1435,7 +1435,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/wiosapp_cube_hello_multiverse.app/wiosapp_cube_hello_multiverse";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/wiosapp_graphics3d_hello_multiverse.app/wiosapp_graphics3d_hello_multiverse";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1446,7 +1446,7 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				INFOPLIST_FILE = "wiosapp_cube_hello_multiverseTests/wiosapp_cube_hello_multiverseTests-Info.plist";
+				INFOPLIST_FILE = "wiosapp_graphics3d_hello_multiverseTests/wiosapp_graphics3d_hello_multiverseTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "ca2.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1584,7 +1584,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		078C35741921758600354453 /* Build configuration list for PBXNativeTarget "_ios_app_cube_hello_multiverse" */ = {
+		078C35741921758600354453 /* Build configuration list for PBXNativeTarget "_ios_app_graphics3d_hello_multiverse" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				078C35531921758600354453 /* Debug */,
@@ -1593,7 +1593,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		078C35751921758600354453 /* Build configuration list for PBXNativeTarget "ios_app_cube_hello_multiverseTests" */ = {
+		078C35751921758600354453 /* Build configuration list for PBXNativeTarget "ios_app_graphics3d_hello_multiverseTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				078C35551921758600354453 /* Debug */,
@@ -1602,7 +1602,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9A5752AC16AAE1D2000CC4EF /* Build configuration list for PBXProject "_ios_app_cube_hello_multiverse" */ = {
+		9A5752AC16AAE1D2000CC4EF /* Build configuration list for PBXProject "_ios_app_graphics3d_hello_multiverse" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9A5752CE16AAE1D3000CC4EF /* Debug */,

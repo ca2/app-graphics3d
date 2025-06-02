@@ -6,25 +6,25 @@
 #include "acme/filesystem/filesystem/directory_context.h"
 
 
-__IMPLEMENT_APPLICATION_RELEASE_TIME(app_cube_shader);
-IMPLEMENT_APPLICATION_FACTORY(app_cube_shader);
+__IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_shader);
+IMPLEMENT_APPLICATION_FACTORY(app_graphics3d_shader);
 
 
-namespace app_cube_shader
+namespace app_graphics3d_shader
 {
 
 
-   // __IMPLEMENT_APPLICATION_RELEASE_TIME1(app_cube_shader));
+   // __IMPLEMENT_APPLICATION_RELEASE_TIME1(app_graphics3d_shader));
 
 
    application::application() 
    {
 
-      m_strAppId = "app-cube/shader";
+      m_strAppId = "app-graphics3d/shader";
 
       m_strAppName = "Shader";
 
-      m_strBaseSupportId = "app-cube/shader";
+      m_strBaseSupportId = "app-graphics3d/shader";
 
       m_bLicense = false;
 
@@ -46,7 +46,7 @@ namespace app_cube_shader
 
       //set_local_data();
 
-      //factory()->add_factory_item <::app_cube_shader::main_window >();
+      //factory()->add_factory_item <::app_graphics3d_shader::main_window >();
 
       ::aura::application::init_instance();
 
@@ -73,7 +73,7 @@ namespace app_cube_shader
    void application::on_request(::request * prequest)
    {
 
-      m_pmainwindow = __create_new < ::app_cube_shader::main_window > ();
+      m_pmainwindow = __create_new < ::app_graphics3d_shader::main_window > ();
 
       m_pmainwindow->display(e_display_normal);
 
@@ -166,7 +166,7 @@ namespace app_cube_shader
    }
 
 
-} // namespace app_cube_shader
+} // namespace app_graphics3d_shader
 
 
 

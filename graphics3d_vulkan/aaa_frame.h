@@ -41,7 +41,7 @@ namespace vulkan_land_landen
    };
 
 
-} // namespace app_cube_vulken
+} // namespace app_graphics3d_vulken
 
 
 

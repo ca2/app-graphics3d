@@ -1,6 +1,6 @@
 ; app_hellomultiverse.def
 
-LIBRARY  "m_app_cube_hellomultiverse"
+LIBRARY  "m_app_graphics3d_hellomultiverse"
 ; For Win32 DLLs, only EXPORTs really required.
 
 EXPORTS

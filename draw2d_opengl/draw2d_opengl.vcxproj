@@ -719,7 +719,11 @@
   <ItemGroup>
     <ClInclude Include="bitmap.h" />
     <ClInclude Include="brush.h" />
+    <ClInclude Include="character.h" />
     <ClInclude Include="draw2d.h" />
+    <ClInclude Include="face.h" />
+    <ClInclude Include="face_freetype.h" />
+    <ClInclude Include="face_gdiplus.h" />
     <ClInclude Include="_.h" />
     <ClInclude Include="factory_exchange.h" />
     <ClInclude Include="font.h" />
@@ -739,6 +743,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="draw2d_win32.cpp" />
+    <ClCompile Include="face.cpp" />
+    <ClCompile Include="face_freetype.cpp" />
+    <ClCompile Include="face_gdiplus.cpp" />
     <ClCompile Include="initialize_opengl_version.cpp" />
     <ClCompile Include="bitmap.cpp" />
     <ClCompile Include="brush.cpp" />

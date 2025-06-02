@@ -1,15 +1,15 @@
 #pragma once
 
 
-#include "app-cube/fuel/application.h"
+#include "app-graphics3d/fuel/application.h"
 
 
-namespace app_cube_fuel_window_opengl
+namespace app_graphics3d_fuel_window_opengl
 {
 
 
-   class CLASS_DECL_APP_CUBE_FUEL_WINDOW_OPENGL application :
-      virtual public ::app_cube_fuel::application
+   class CLASS_DECL_APP_GRAPHICS3D_FUEL_WINDOW_OPENGL application :
+      virtual public ::app_graphics3d_fuel::application
    {
    public:
 
@@ -39,7 +39,7 @@ namespace app_cube_fuel_window_opengl
    };
 
 
-} // namespace app_cube_fuel_window_opengl
+} // namespace app_graphics3d_fuel_window_opengl
 
 
 

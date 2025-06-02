@@ -1,9 +1,9 @@
 #include "framework.h"
-#define APPLICATION_NAMESPACE app_cube_shader
+#define APPLICATION_NAMESPACE app_graphics3d_shader
 #include "acme/inline/application/main.inl"
 
 
-// //app_cube_shader::application g_appshaderapplication;
+// //app_graphics3d_shader::application g_appshaderapplication;
 
 
 
@@ -14,7 +14,7 @@
 // void application_main(::platform::system * psystem)
 // {
 
-//    app_cube_shader::application application;
+//    app_graphics3d_shader::application application;
 
 //    application.application_main();
 

@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "app-cube/cube/_.h"
+#include "cube/_.h"
 
 
 #if defined(WINDOWS_DESKTOP)

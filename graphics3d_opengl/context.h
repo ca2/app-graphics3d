@@ -4,11 +4,11 @@
 #pragma once
 
 //
-//#include "app-cube/cube/gpu/context.h"
-//#include "app-cube/cube/graphics3d/context.h"
+//#include "cube/gpu/context.h"
+//#include "cube/graphics3d/context.h"
 ////#include "window.h"
 ////#include "opengl-cube/graphics3d_opengl/context.h"
-//#include "app-cube/graphics3d_opengl/_opengl.h"
+//#include "app-graphics3d/graphics3d_opengl/_opengl.h"
 //// std lib headers
 ////#include <string>
 ////#include <vector>

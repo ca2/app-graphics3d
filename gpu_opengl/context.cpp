@@ -5,7 +5,7 @@
 #include "program.h"
 #include "shader.h"
 #include "aura/graphics/image/image.h"
-#include "app-cube/cube/gpu/types.h"
+#include "cube/gpu/types.h"
 #include "glm/mat4x4.hpp"
 
 

@@ -2,10 +2,10 @@
 #include "application.h"
 
 
-__FACTORY_EXPORT void app_cube_shader_factory(::factory::factory* pfactory)
+__FACTORY_EXPORT void app_graphics3d_shader_factory(::factory::factory* pfactory)
 {
 
-   pfactory->add_factory_item < ::app_cube_shader::application, ::platform::application >();
+   pfactory->add_factory_item < ::app_graphics3d_shader::application, ::platform::application >();
 
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "app-cube/cube/application.h"
+#include "cube/application.h"
 
 
 #include <vector>
@@ -14,7 +14,7 @@
 //#include "vulkan-cube/graphics3d_vulkan/base_application_no_swap_chain.h"
 #include "descriptors.h"
 #include "application_object.h"
-#include "app-cube/cube/container.h"
+#include "cube/container.h"
 #include "renderer.h"
 
 

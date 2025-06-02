@@ -1,12 +1,12 @@
 #pragma once
  
 ////#include "AppCore/vk_window.h"
-////#include "app-cube/cube/container.h"
+////#include "cube/container.h"
 //#include "context.h"
 ////#include "offscreen.h"
 ////#include "swapchain.h"
 //#include "render_pass.h"
-//#include "app-cube/cube/graphics3d/renderer.h"
+//#include "cube/graphics3d/renderer.h"
 //
 //
 //#include <memory>

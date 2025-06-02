@@ -85,13 +85,13 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\uwp_app_cube_hello_multiverse_TemporaryKey.pfx">
+    <None Include="..\uwp_app_graphics3d_hello_multiverse_TemporaryKey.pfx">
       <Filter>UWP</Filter>
     </None>
     <None Include="..\_matter.zip">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="uwp_app_cube_hello_multiverse_TemporaryKey.pfx" />
+    <None Include="uwp_app_graphics3d_hello_multiverse_TemporaryKey.pfx" />
     <None Include="..\..\..\..\..\operating_system\storage-universal_windows\x64\debug\third\binary\bzip2.dll">
       <Filter>Library\x64\debug</Filter>
     </None>

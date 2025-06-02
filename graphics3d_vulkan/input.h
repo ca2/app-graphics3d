@@ -1,14 +1,14 @@
 #pragma once 
 
 
-#include "app-cube/cube/graphics3d/input.h"
+#include "cube/graphics3d/input.h"
 
 
 //// MNK_Controller.h
 //#include "scene_object.h"
 ////#include "window.h"
 //#include "acme/constant/user_key.h"
-//#include "app-cube/cube/graphics3d/key_map.h"
+//#include "cube/graphics3d/key_map.h"
 //#include <glm/glm.hpp>
 //
 //

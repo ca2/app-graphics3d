@@ -37,8 +37,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
-    <ClCompile Include="app_cube_shader_1through3.cpp" />
-    <ClCompile Include="app_cube_shader_arcs.cpp" />
+    <ClCompile Include="app_graphics3d_shader_1through3.cpp" />
+    <ClCompile Include="app_graphics3d_shader_arcs.cpp" />
     <ClCompile Include="framework.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">Create</PrecompiledHeader>
@@ -69,7 +69,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F2942C14-E258-41A9-995D-AC4B261B544F}</ProjectGuid>
     <Keyword>DynamicLibrary</Keyword>
-    <ProjectName>app_cube_shader</ProjectName>
+    <ProjectName>app_graphics3d_shader</ProjectName>
     <RootNamespace>app</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>

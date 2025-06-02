@@ -23,7 +23,7 @@
     <Keyword>Android</Keyword>
     <ApplicationType>Android</ApplicationType>
     <ApplicationTypeRevision>3.0</ApplicationTypeRevision>
-    <ProjectName>app_cube_shader</ProjectName>
+    <ProjectName>app_graphics3d_shader</ProjectName>
     <RootNamespace>app</RootNamespace>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
   </PropertyGroup>
@@ -110,7 +110,7 @@
       <CppLanguageStandard>
       </CppLanguageStandard>
       <AdditionalOptions>-Wno-attributes -Wno-sign-compare -Wno-comment -Wno-strict-overflow -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-variable -Wno-unused-value -Wno-reorder -Wno-overloaded-virtual -std=c++20 -Wno-char-subscripts</AdditionalOptions>
-      <PreprocessorDefinitions>CUBE;DEBUG;_APP_CUBE_SHADER_LIBRARY</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CUBE;DEBUG;_APP_GRAPHICS3D_SHADER_LIBRARY</PreprocessorDefinitions>
       <CLanguageStandard>c11</CLanguageStandard>
       <ObjectFileName>$(IntDir)%(RelativeDir)%(filename).o</ObjectFileName>
     </ClCompile>
@@ -125,7 +125,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>framework.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>include;$(__sensitive)/sensitive/include;$(SolutionDir)../../../source/include;$(__operating_system)third-android/$(PlatformName)/$(Configuration)/include;$(__operating_system)third-android/include;$(__operating_system)third-android/third/include;$(__operating_system)third-android/third/include/include;$(SolutionDir)../../../operating_system/operating_system-android/_include;$(SolutionDir)../../../operating_system/operating_system-android;$(SolutionDir)../../../operating_system/operating_system-posix;$(SolutionDir)../../../source/app/_include;$(SolutionDir)../../../source/port/include;$(SolutionDir)../../../source/port;.;$(IntDir);$(SolutionDir)../../../;$(SolutionDir)../../../source;$(SolutionDir)../../../source/app;$(ProjectDir)../..;$(ProjectDir)../../;$(ProjectDir)../;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CUBE;DEBUG;_APP_CUBE_SHADER_LIBRARY</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CUBE;DEBUG;_APP_GRAPHICS3D_SHADER_LIBRARY</PreprocessorDefinitions>
       <ExceptionHandling>Enabled</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <CLanguageStandard>c11</CLanguageStandard>
@@ -154,7 +154,7 @@
       <AdditionalOptions>-Wno-attributes -Wno-sign-compare -Wno-comment -Wno-strict-overflow -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-variable -Wno-unused-value -Wno-reorder -Wno-overloaded-virtual -std=c++20 -Wno-char-subscripts</AdditionalOptions>
       <DebugInformationFormat>FullDebug</DebugInformationFormat>
       <ObjectFileName>$(IntDir)%(RelativeDir)%(filename).o</ObjectFileName>
-      <PreprocessorDefinitions>CUBE;_APP_CUBE_SHADER_LIBRARY</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CUBE;_APP_GRAPHICS3D_SHADER_LIBRARY</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <LibraryDependencies>ssl;crypto;cairo;freetype;pixman;iconv;idn;zlib;GLESv3;EGL;jnigraphics;m;$(StlLibraryName);%(LibraryDependencies)</LibraryDependencies>
@@ -175,7 +175,7 @@
       <AdditionalOptions>-Wno-attributes -Wno-sign-compare -Wno-comment -Wno-strict-overflow -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-variable -Wno-unused-value -Wno-reorder -Wno-overloaded-virtual -std=c++20 -Wno-char-subscripts</AdditionalOptions>
       <DebugInformationFormat>FullDebug</DebugInformationFormat>
       <ObjectFileName>$(IntDir)%(RelativeDir)%(filename).o</ObjectFileName>
-      <PreprocessorDefinitions>CUBE;_APP_CUBE_SHADER_LIBRARY</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CUBE;_APP_GRAPHICS3D_SHADER_LIBRARY</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <LibraryDependencies>ssl;crypto;cairo;freetype;pixman;iconv;idn;zlib;GLESv3;EGL;jnigraphics;m;$(StlLibraryName);%(LibraryDependencies)</LibraryDependencies>
@@ -191,7 +191,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="_.h" />
-    <ClInclude Include="_app_cube_shader.h" />
+    <ClInclude Include="_app_graphics3d_shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />

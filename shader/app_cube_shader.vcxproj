@@ -38,7 +38,7 @@
     <ProjectGuid>{A18176C9-0892-4FF4-9BE4-2A7FE6EA3005}</ProjectGuid>
     <RootNamespace>app-simple</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>app_cube_shader</ProjectName>
+    <ProjectName>app_graphics3d_shader</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

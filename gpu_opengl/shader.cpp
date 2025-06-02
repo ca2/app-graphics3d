@@ -1,11 +1,11 @@
 #include "framework.h"
 #include "shader.h"
 #include "acme/filesystem/filesystem/file_context.h"
-#include "app-cube/cube/gpu/approach.h"
-#include "app-cube/cube/gpu/context.h"
-#include "app-cube/cube/gpu/device.h"
-#include "app-cube/cube/gpu/renderer.h"
-#include "app-cube/cube/gpu/types.h"
+#include "cube/gpu/approach.h"
+#include "cube/gpu/context.h"
+#include "cube/gpu/device.h"
+#include "cube/gpu/renderer.h"
+#include "cube/gpu/types.h"
 
 
 namespace gpu_opengl

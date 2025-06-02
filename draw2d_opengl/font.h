@@ -6,7 +6,6 @@
 
 #include "aura/graphics/write_text/font.h"
 
-
 namespace draw2d_opengl
 {
 
@@ -17,16 +16,20 @@ namespace draw2d_opengl
    public:
 
       
-      HDC                           m_hdcFont;
-      HFONT                         m_hfont;
-      GLuint	                     m_baseFont;				// Base Display List For The Font Set
+      //HDC                           m_hdcFont;
+      //HFONT                         m_hfont;
+      //GLuint	                     m_baseFont;				// Base Display List For The Font Set
 
-#ifdef WINDOWS
-      GLYPHMETRICSFLOAT             m_gmf[256];	// Storage For Information About Our Outline Font Characters
-#endif
+//#ifdef WINDOWS
+//      GLYPHMETRICSFLOAT             m_gmf[256];	// Storage For Information About Our Outline Font Characters
+//#endif
+//
+      // settings
+      //const unsigned int SCR_WIDTH = 800;
+      //const unsigned int SCR_HEIGHT = 600;
 
-
-
+      ::pointer < face > m_pface;
+     
       font();
       ~font() override;
 

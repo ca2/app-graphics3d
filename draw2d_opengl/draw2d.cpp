@@ -5,6 +5,27 @@
 #include "acme/platform/application.h"
 #include "acme/prototype/prototype/memory.h"
 
+int g_iDpiY = -1;
+int get_y_dpi()
+{
+   if (g_iDpiY < 0)
+   {
+      HDC hdc = ::GetDC(NULL);
+      g_iDpiY = GetDeviceCaps(hdc, LOGPIXELSY); // Usually Y axis DPI is used for font sizes
+      if (g_iDpiY < 0)
+      {
+
+         g_iDpiY = 96;
+
+      }
+
+      ReleaseDC(NULL, hdc);
+
+   }
+   return g_iDpiY;
+}
+
+
 
 //CLASS_DECL_DRAW2D_OPENGL void initialize_opengl();
 //CLASS_DECL_DRAW2D_OPENGL void terminate_opengl();
@@ -46,6 +67,39 @@ namespace draw2d_opengl
       //terminate_opengl();
 
    }
+
+   //::draw2d_gpu::face* draw2d::get_face(::write_text::font * pfont)
+   //{
+
+   //   int iPixelSize = 0;
+
+   //   if (pfont->m_fontsize.eunit() == e_unit_point)
+   //   {
+   //      iPixelSize = points_to_pixels(pfont->m_fontsize.as_int());
+   //   }
+   //   else
+   //   {
+   //      iPixelSize = pfont->m_fontsize.as_int();
+   //   }
+
+   //   ::string strFontFamilyName = pfont->m_pfontfamily->family_name(this);
+
+   //   auto& pface = m_mapFaceSize[strFontFamilyName][iPixelSize];
+
+   //   if (!pface)
+   //   {
+
+   //      __øconstruct(pface);
+
+   //      pface->m_strFontName = strFontFamilyName;
+
+   //      pface->m_iPixelSize = iPixelSize;
+
+   //   }
+
+   //   return pface;
+
+   //}
 
 
    void draw2d::initialize(::particle * pparticle)

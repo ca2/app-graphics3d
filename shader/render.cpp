@@ -2,11 +2,11 @@
 #include "render.h"
 #include "application.h"
 #include "acme/parallelization/single_lock.h"
-#include "app-cube/cube/gpu/shader.h"
-#include "app-cube/cube/gpu/approach.h"
-#include "app-cube/cube/gpu/context.h"
-#include "app-cube/cube/gpu/program.h"
-#include "app-cube/cube/gpu/cpu_buffer.h"
+#include "cube/gpu/shader.h"
+#include "cube/gpu/approach.h"
+#include "cube/gpu/context.h"
+#include "cube/gpu/program.h"
+#include "cube/gpu/cpu_buffer.h"
 #include <math.h>
 #include "aura/graphics/draw2d/brush.h"
 #include "aura/graphics/image/image.h"
@@ -23,7 +23,7 @@ CLASS_DECL_ACME ::color::color dk_red(); // <3ThomasBorregaardSorensen!!
 void image_gl_set(::image::image* pimage);
 
 
-namespace app_cube_shader
+namespace app_graphics3d_shader
 {
 
 
@@ -816,7 +816,7 @@ namespace app_cube_shader
    }
 
 
-} // namespace app_cube_shader
+} // namespace app_graphics3d_shader
 
 
 

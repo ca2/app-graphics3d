@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "app-cube/cube/draw2d/graphics.h"
+#include "cube/draw2d/graphics.h"
 
 
 //struct OffscreenContext
@@ -42,6 +42,8 @@ namespace draw2d_opengl
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextOpenGL;
+      ::pointer < ::gpu::shader >         m_pgpushaderTextOut;
+
 
       graphics();
       ~graphics() override;
@@ -264,6 +266,7 @@ namespace draw2d_opengl
 
 
       void text_out(double x, double y, const ::scoped_string & scopedstr) override;
+      //virtual void text_out_2024_and_before(double x, double y, const ::scoped_string& scopedstr);
 
       // Line-Output Functions
       // int_point GetCurrentPosition() const;

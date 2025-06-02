@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "app-cube/gpu_opengl/_.h"
+#include "app-graphics3d/gpu_opengl/_.h"
 #include "_opengl.h"
 
 

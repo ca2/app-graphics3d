@@ -35,10 +35,10 @@
     <ClCompile Include="framework.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="app_cube_shader_1through3.cpp">
+    <ClCompile Include="app_graphics3d_shader_1through3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="app_cube_shader_arcs.cpp">
+    <ClCompile Include="app_graphics3d_shader_arcs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="application.cpp">
@@ -55,7 +55,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="u_app_cube_shader.def">
+    <None Include="u_app_graphics3d_shader.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

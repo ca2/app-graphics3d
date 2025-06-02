@@ -1,1 +1,1 @@
-﻿app-cube/simple_shader
+﻿app-graphics3d/simple_shader

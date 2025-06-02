@@ -4,17 +4,17 @@
 #include "aura/platform/application.h"
 
 
-namespace app_cube_shader
+namespace app_graphics3d_shader
 {
 
 
-   class CLASS_DECL_APP_CUBE_SHADER application :
+   class CLASS_DECL_APP_GRAPHICS3D_SHADER application :
       virtual public ::aura::application
    {
    public:
 
 
-      ::pointer<::app_cube_shader::main_window>                   m_pmainwindow;
+      ::pointer<::app_graphics3d_shader::main_window>                   m_pmainwindow;
 
 
       application();
@@ -49,7 +49,7 @@ namespace app_cube_shader
    };
 
 
-} // namespace app_cube_shader
+} // namespace app_graphics3d_shader
 
 
 

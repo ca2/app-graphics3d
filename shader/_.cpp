@@ -3,7 +3,7 @@
 #include "acme/platform/release_time.h"
 
 
-__BEGIN_RELEASE_TIME(app_cube_shader)
+__BEGIN_RELEASE_TIME(app_graphics3d_shader)
 #include "release_time.txt"
 __END_RELEASE_TIME()
 

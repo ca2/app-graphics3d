@@ -2,7 +2,7 @@
 #include "model.h"
 #include <stb/stb_image.h>
 #include "context.h"
-#include "app-cube/cube/gpu/context.h"
+#include "cube/gpu/context.h"
 //#include <iostream>
 
 

@@ -36,9 +36,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5AAFBD19-DAED-40A5-BBD6-2FB07425C874}</ProjectGuid>
-    <RootNamespace>app-cube</RootNamespace>
+    <RootNamespace>app-graphics3d</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>app_cube_fuel</ProjectName>
+    <ProjectName>app_graphics3d_fuel</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

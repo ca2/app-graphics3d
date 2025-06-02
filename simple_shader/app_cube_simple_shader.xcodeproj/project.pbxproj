@@ -80,7 +80,7 @@
 			containerPortal = 9AEB759B16F78DF10085103B /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 9AE24E891904CFFD001AEFFB;
-			remoteInfo = app_cube_hellomultiverse_ios;
+			remoteInfo = app_graphics3d_hellomultiverse_ios;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -123,7 +123,7 @@
 		9A8F90CA240C09F10097E249 /* application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = application.h; sourceTree = "<group>"; };
 		9AE12EF72661F293009F476A /* _.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = _.cpp; sourceTree = "<group>"; };
 		9AE24E8A1904CFFD001AEFFB /* libios_app_simple_shader.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libios_app_simple_shader.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		9AE24E991904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = app_cube_hellomultiverse_iosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AE24E991904CFFD001AEFFB /* app_graphics3d_hellomultiverse_iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = app_graphics3d_hellomultiverse_iosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AEB75A316F78DF10085103B /* libapp_simple_shader.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libapp_simple_shader.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AEB75BF16F78E600085103B /* framework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = framework.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -210,7 +210,7 @@
 			children = (
 				9AEB75A316F78DF10085103B /* libapp_simple_shader.dylib */,
 				9AE24E8A1904CFFD001AEFFB /* libios_app_simple_shader.a */,
-				9AE24E991904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.xctest */,
+				9AE24E991904CFFD001AEFFB /* app_graphics3d_hellomultiverse_iosTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -273,13 +273,13 @@
 			dependencies = (
 			);
 			name = ios_app_simple_shader;
-			productName = app_cube_hellomultiverse_ios;
+			productName = app_graphics3d_hellomultiverse_ios;
 			productReference = 9AE24E8A1904CFFD001AEFFB /* libios_app_simple_shader.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		9AE24E981904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests */ = {
+		9AE24E981904CFFD001AEFFB /* app_graphics3d_hellomultiverse_iosTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9AE24EBB1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "app_cube_hellomultiverse_iosTests" */;
+			buildConfigurationList = 9AE24EBB1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "app_graphics3d_hellomultiverse_iosTests" */;
 			buildPhases = (
 				9AE24E951904CFFD001AEFFB /* Sources */,
 				9AE24E961904CFFD001AEFFB /* Frameworks */,
@@ -290,9 +290,9 @@
 			dependencies = (
 				9AE24EA01904CFFD001AEFFB /* PBXTargetDependency */,
 			);
-			name = app_cube_hellomultiverse_iosTests;
-			productName = app_cube_hellomultiverse_iosTests;
-			productReference = 9AE24E991904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests.xctest */;
+			name = app_graphics3d_hellomultiverse_iosTests;
+			productName = app_graphics3d_hellomultiverse_iosTests;
+			productReference = 9AE24E991904CFFD001AEFFB /* app_graphics3d_hellomultiverse_iosTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		9AEB75A216F78DF10085103B /* app_simple_shader */ = {
@@ -311,7 +311,7 @@
 				9AC7CC1124EB475400BF4406 /* PBXTargetDependency */,
 			);
 			name = app_simple_shader;
-			productName = app_cube_hellomultiverse;
+			productName = app_graphics3d_hellomultiverse;
 			productReference = 9AEB75A316F78DF10085103B /* libapp_simple_shader.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
@@ -355,7 +355,7 @@
 			targets = (
 				9AEB75A216F78DF10085103B /* app_simple_shader */,
 				9AE24E891904CFFD001AEFFB /* ios_app_simple_shader */,
-				9AE24E981904CFFD001AEFFB /* app_cube_hellomultiverse_iosTests */,
+				9AE24E981904CFFD001AEFFB /* app_graphics3d_hellomultiverse_iosTests */,
 			);
 		};
 /* End PBXProject section */
@@ -500,7 +500,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/libapp_cube_hellomultiverse.dylib";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/libapp_graphics3d_hellomultiverse.dylib";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -512,7 +512,7 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "app_cube_hellomultiverse_ios/app_cube_hellomultiverse_ios-Prefix.pch";
+				GCC_PREFIX_HEADER = "app_graphics3d_hellomultiverse_ios/app_graphics3d_hellomultiverse_ios-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -521,7 +521,7 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = "app_cube_hellomultiverse_iosTests/app_cube_hellomultiverse_iosTests-Info.plist";
+				INFOPLIST_FILE = "app_graphics3d_hellomultiverse_iosTests/app_graphics3d_hellomultiverse_iosTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "ca2.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -535,7 +535,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/libapp_cube_hellomultiverse.dylib";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/libapp_graphics3d_hellomultiverse.dylib";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -548,12 +548,12 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "app_cube_hellomultiverse_ios/app_cube_hellomultiverse_ios-Prefix.pch";
+				GCC_PREFIX_HEADER = "app_graphics3d_hellomultiverse_ios/app_graphics3d_hellomultiverse_ios-Prefix.pch";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = "app_cube_hellomultiverse_iosTests/app_cube_hellomultiverse_iosTests-Info.plist";
+				INFOPLIST_FILE = "app_graphics3d_hellomultiverse_iosTests/app_graphics3d_hellomultiverse_iosTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "ca2.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -780,7 +780,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9AE24EBB1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "app_cube_hellomultiverse_iosTests" */ = {
+		9AE24EBB1904CFFD001AEFFB /* Build configuration list for PBXNativeTarget "app_graphics3d_hellomultiverse_iosTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9AE24EAC1904CFFD001AEFFB /* Debug */,

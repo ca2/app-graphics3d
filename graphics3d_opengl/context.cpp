@@ -5,8 +5,8 @@
 //#include "context.h"
 ////#include "initializers.h"
 //#include "tools.h"
-//#include "app-cube/cube/gpu/approach.h"
-//#include "app-cube/cube/impact.h"
+//#include "cube/gpu/approach.h"
+//#include "cube/impact.h"
 //// std headers
 //#include <cstring>
 //#include <iostream>

@@ -5,11 +5,11 @@
 #include "base/user/simple/child_frame.h"
 
 
-namespace app_cube_fuel
+namespace app_graphics3d_fuel
 {
 
 
-   class CLASS_DECL_APP_CUBE_FUEL child_frame :
+   class CLASS_DECL_APP_GRAPHICS3D_FUEL child_frame :
       virtual public simple_child_frame
    {
    public:
@@ -29,7 +29,7 @@ namespace app_cube_fuel
    };
 
 
-} // namespace app_cube_fuel
+} // namespace app_graphics3d_fuel
 
 
 

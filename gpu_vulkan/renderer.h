@@ -1,12 +1,12 @@
 #pragma once
 
 //#include "AppCore/vk_window.h"
-//#include "app-cube/cube/container.h"
+//#include "cube/container.h"
 #include "context.h"
 //#include "offscreen.h"
 //#include "swapchain.h"
 #include "render_pass.h"
-#include "app-cube/cube/gpu/renderer.h"
+#include "cube/gpu/renderer.h"
 
 
 constexpr unsigned int FRAME_OVERLAP = 2;

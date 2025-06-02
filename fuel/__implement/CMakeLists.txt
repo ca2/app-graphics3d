@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(_app_cube_fuel CXX)
+project(_app_graphics3d_fuel CXX)
 
 
 
@@ -40,7 +40,7 @@ list(APPEND executable_references
    base
    bred
    core
-   app_cube_fuel)
+   app_graphics3d_fuel)
 
 
 if (MSVC)

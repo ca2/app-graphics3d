@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "app-cube/cube/engine.h"
+#include "cube/engine.h"
 
 
 #include "scene_object.h"

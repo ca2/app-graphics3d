@@ -15,15 +15,15 @@
 #include "base/user/user/single_document_template.h"
 
 
-__IMPLEMENT_APPLICATION_RELEASE_TIME(app_cube_fuel);
-IMPLEMENT_APPLICATION_FACTORY(app_cube_fuel);
+__IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_fuel);
+IMPLEMENT_APPLICATION_FACTORY(app_graphics3d_fuel);
 
 
-namespace app_cube_fuel
+namespace app_graphics3d_fuel
 {
 
 
-   // __IMPLEMENT_APPLICATION_RELEASE_TIME1(app_cube_fuel));
+   // __IMPLEMENT_APPLICATION_RELEASE_TIME1(app_graphics3d_fuel));
 
 
    application::application()
@@ -33,9 +33,9 @@ namespace app_cube_fuel
       //m_ptemplateFuelMain = nullptr;
       //m_ptemplateFuelImpact = nullptr;
 
-      m_strAppId              = "app-cube/fuel";
-      m_strAppName            = "app-cube/fuel";
-      m_strBaseSupportId      = "app-cube/fuel";
+      m_strAppId              = "app-graphics3d/fuel";
+      m_strAppName            = "app-graphics3d/fuel";
+      m_strBaseSupportId      = "app-graphics3d/fuel";
       m_bLicense              = false;
 
    }
@@ -50,15 +50,15 @@ namespace app_cube_fuel
    void application::init_instance()
    {
 
-      factory()->add_factory_item <::app_cube_fuel::child_frame >();
-      factory()->add_factory_item <::app_cube_fuel::document >();
-      factory()->add_factory_item <::app_cube_fuel::frame >();
-      //factory()->add_factory_item <::app_cube_fuel::edit_impact >();
-      factory()->add_factory_item <::app_cube_fuel::impact >();
-      //factory()->add_factory_item <::app_cube_fuel::main_impact >();
-      factory()->add_factory_item <::app_cube_fuel::pane_impact >();
-      //factory()->add_factory_item <::app_cube_fuel::top_impact >();
-      //factory()->add_factory_item <::app_cube_fuel::toggle_impact >();
+      factory()->add_factory_item <::app_graphics3d_fuel::child_frame >();
+      factory()->add_factory_item <::app_graphics3d_fuel::document >();
+      factory()->add_factory_item <::app_graphics3d_fuel::frame >();
+      //factory()->add_factory_item <::app_graphics3d_fuel::edit_impact >();
+      factory()->add_factory_item <::app_graphics3d_fuel::impact >();
+      //factory()->add_factory_item <::app_graphics3d_fuel::main_impact >();
+      factory()->add_factory_item <::app_graphics3d_fuel::pane_impact >();
+      //factory()->add_factory_item <::app_graphics3d_fuel::top_impact >();
+      //factory()->add_factory_item <::app_graphics3d_fuel::toggle_impact >();
 
 
       ::core::application::init_instance();
@@ -75,10 +75,10 @@ namespace app_cube_fuel
       add_impact_system(
          "main", __initialize_new ::user::single_document_template(
                           "main",
-                          ::type < ::app_cube_fuel::document >(),
-                          ::type < ::app_cube_fuel::frame >(),       // top level SDI frame::windowing::window
-                        ::type < ::app_cube_fuel::impact >()));
-      //::type < ::app_cube_fuel::pane_impact >()));
+                          ::type < ::app_graphics3d_fuel::document >(),
+                          ::type < ::app_graphics3d_fuel::frame >(),       // top level SDI frame::windowing::window
+                        ::type < ::app_graphics3d_fuel::impact >()));
+      //::type < ::app_graphics3d_fuel::pane_impact >()));
       
       //add_document_template(pdocumenttemplate);
       //
@@ -87,10 +87,10 @@ namespace app_cube_fuel
       add_impact_system(
          "impact", __initialize_new ::user::single_document_template(
                           "main",
-                          ::type < ::app_cube_fuel::document >(),
-                          ::type < ::app_cube_fuel::child_frame >(),       // top level SDI frame::windowing::window
-                          //::type < ::app_cube_fuel::main_impact >()));
-                     ::type < ::app_cube_fuel::impact >()));
+                          ::type < ::app_graphics3d_fuel::document >(),
+                          ::type < ::app_graphics3d_fuel::child_frame >(),       // top level SDI frame::windowing::window
+                          //::type < ::app_graphics3d_fuel::main_impact >()));
+                     ::type < ::app_graphics3d_fuel::impact >()));
    
       //add_document_template(pdocumenttemplate);
 
@@ -191,10 +191,10 @@ namespace app_cube_fuel
    }
 
 
-   //__namespace_application_factory("app-cube/fuel");
+   //__namespace_application_factory("app-graphics3d/fuel");
 
 
-} // namespace app_cube_fuel
+} // namespace app_graphics3d_fuel
 
 
 

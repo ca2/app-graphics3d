@@ -145,11 +145,11 @@
 #include "base/user/user/impact.h"
 
 
-namespace app_cube_fuel
+namespace app_graphics3d_fuel
 {
 
 
-   class CLASS_DECL_APP_CUBE_FUEL impact :
+   class CLASS_DECL_APP_GRAPHICS3D_FUEL impact :
       virtual public ::user::impact
    {
    public:
@@ -204,7 +204,7 @@ namespace app_cube_fuel
    };
 
 
-} // namespace app_cube_fuel
+} // namespace app_graphics3d_fuel
 
 
 

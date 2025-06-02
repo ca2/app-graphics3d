@@ -8,7 +8,7 @@
 #include "renderer.h"
 #include "acme/filesystem/file/file.h"
 #include "acme/filesystem/filesystem/file_context.h"
-#include "app-cube/cube/gpu/context.h"
+#include "cube/gpu/context.h"
 #include "acme/platform/application.h"
 
 

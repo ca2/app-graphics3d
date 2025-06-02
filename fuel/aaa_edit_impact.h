@@ -5,11 +5,11 @@
 #include "base/user/user/show.h"
 
 
-namespace app_cube_fuel
+namespace app_graphics3d_fuel
 {
 
 
-   class CLASS_DECL_APP_CUBE_FUEL edit_impact:
+   class CLASS_DECL_APP_GRAPHICS3D_FUEL edit_impact:
       virtual public ::user::show < ::user::plain_edit >
    {
    public:
@@ -39,7 +39,7 @@ namespace app_cube_fuel
    };
 
 
-} // namespace app_cube_fuel
+} // namespace app_graphics3d_fuel
 
 
 

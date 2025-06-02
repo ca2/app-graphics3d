@@ -1,8 +1,8 @@
 ; app_simple_shader.def
 
-LIBRARY  "lib_app_cube_shader"
+LIBRARY  "lib_app_graphics3d_shader"
 ; For Win32 DLLs, only EXPORTs really required.
 
 EXPORTS
-;lib_app_cube_shader_factory
+;lib_app_graphics3d_shader_factory
 

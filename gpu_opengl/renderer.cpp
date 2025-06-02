@@ -13,7 +13,7 @@
 //#include "GLError.h"
 #include "renderer.h"
 //#include "mesh.h"
-#include "app-cube/cube/impact.h"
+#include "cube/impact.h"
 #include "aura/graphics/image/target.h"
 #include "aura/windowing/window.h"
 
@@ -236,6 +236,8 @@ namespace gpu_opengl
          glDepthMask(GL_FALSE); // Disable writing to depth
 
          glEnable(GL_BLEND);
+         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+         glBlendEquation(GL_FUNC_ADD); // default, can be omitted if unchanged
          glDisable(GL_DEPTH_TEST);
          //glDepthFunc(GL_LEQUAL);
 

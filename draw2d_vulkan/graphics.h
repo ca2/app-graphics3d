@@ -2,9 +2,9 @@
 
 
 #include "acme/graphics/image/image32.h"
-#include "app-cube/cube/draw2d/graphics.h"
-#include "app-cube/gpu_vulkan/renderer.h"
-#include "app-cube/gpu_vulkan/shader.h"
+#include "cube/draw2d/graphics.h"
+#include "app-graphics3d/gpu_vulkan/renderer.h"
+#include "app-graphics3d/gpu_vulkan/shader.h"
 
 
 //struct OffscreenContext
@@ -47,7 +47,7 @@ namespace draw2d_vulkan
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       ::pointer<::gpu::context>             m_pgpucontextOutput;
       //::pointer < ::gpu::frame > m_pframe;
-      ::geometry2d::matrix m_m1;
+//      ::geometry2d::matrix m_m1;
 
       struct RectangleVertex {
          float pos[3];    // x, y, z

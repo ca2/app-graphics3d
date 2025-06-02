@@ -197,7 +197,7 @@
     <ProjectReference Include="..\..\..\app\aura\aura.vcxproj">
       <Project>{e000ffaf-392f-4e32-bf51-fd7ed638991f}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\app_cube_shader.vcxproj">
+    <ProjectReference Include="..\app_graphics3d_shader.vcxproj">
       <Project>{a18176c9-0892-4ff4-9be4-2a7fe6ea3005}</Project>
     </ProjectReference>
   </ItemGroup>

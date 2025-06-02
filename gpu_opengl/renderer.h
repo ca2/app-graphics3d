@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "app-cube/cube/gpu/renderer.h"
+#include "cube/gpu/renderer.h"
 //#include "mesh.h"
 #include "shader.h"
 //#include "GLFW/glfw3.h"
