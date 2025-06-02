@@ -1,8 +1,0 @@
-; app_graphics3d_shader.def
-
-LIBRARY  "app_graphics3d_shader"
-; For Win32 DLLs, only EXPORTs really required.
-
-EXPORTS
-app_graphics3d_shader_get_new_library
-

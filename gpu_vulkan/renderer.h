@@ -6,7 +6,7 @@
 //#include "offscreen.h"
 //#include "swapchain.h"
 #include "render_pass.h"
-#include "cube/gpu/renderer.h"
+#include "aura/graphics/gpu/renderer.h"
 
 
 constexpr unsigned int FRAME_OVERLAP = 2;
@@ -86,7 +86,7 @@ namespace gpu_vulkan
       ::pointer<::gpu::shader>                        m_pshaderImageSet;
       map < VkImage, ::pointer < descriptor > >       m_imagedescriptor;
       map < VkImage, ::pointer < model > >       m_imagemodel;
-      //::pointer < ::cube::impact >	m_pimpact;
+      //::pointer < ::user::graphics3d >	m_pimpact;
       ::pointer < context >				               m_pgpucontext;
       ::pointer < cpu_buffer_sampler >	               m_pcpubuffersampler;
       //::pointer<swap_chain_render_pass>			m_pvkcswapchain;

@@ -53,7 +53,7 @@ namespace graphics3d_opengl
 
       MNKController( float sensitivity = 0.1f, float yaw = -90.0f, float pitch = 0.0f);
 
-      //void moveInPlaneXZ(::cube::impact * pimpact, float dt, application_object& gameObject);
+      //void moveInPlaneXZ(::user::graphics3d * pimpact, float dt, application_object& gameObject);
 
       void updateMovement(float dt, ::cube::scene_object* pobject);
       void updateLook(float xOffset, float yOffset, ::cube::scene_object * pobject);
@@ -66,7 +66,7 @@ namespace graphics3d_opengl
       glm::vec3 getCameraPosition() const;
 
 
-      ::pointer<::cube::impact > m_pimpact;
+      ::pointer<::user::graphics3d > m_pimpact;
       ::pointer<::cube::key_map > m_pkeymap;
 
       auto key(auto ekey)

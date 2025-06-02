@@ -1,8 +1,8 @@
 // Created by camilo on 2025-05-21 04:47 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "initializers.h"
-#include "cube/gpu/properties.h"
-#include "cube/gpu/types.h"
+#include "aura/graphics/gpu/properties.h"
+#include "aura/graphics/gpu/types.h"
 /*
  * Assorted commonly used Vulkan helper functions
  *

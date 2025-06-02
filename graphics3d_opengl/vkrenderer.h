@@ -30,7 +30,7 @@ namespace graphics3d_opengl
 		~renderer();
 
 
-		virtual void initialize_renderer(::cube::impact * pimpact,  ::cube::context* pgpucontext);
+		virtual void initialize_renderer(::user::graphics3d * pimpact,  ::cube::context* pgpucontext);
 
 
 
@@ -121,7 +121,7 @@ namespace graphics3d_opengl
 
 		};
 
-		::pointer < ::cube::impact >	m_pimpact;
+		::pointer < ::user::graphics3d >	m_pimpact;
 		::pointer < context >				m_pgpucontext;
 		::pointer < OffScreenSampler >	m_poffscreensampler;
 		//::pointer<swap_chain_render_pass>			m_pvkcswapchain;

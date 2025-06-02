@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "cube/graphics3d/model.h"
+#include "aura/graphics/graphics3d/model.h"
 
 #include <glad.h> 
 

@@ -1,7 +1,7 @@
 #pragma once
 
-//#include "cube/graphics3d/camera.h"
-//#include "cube/graphics3d/frame.h"
+//#include "aura/graphics/graphics3d/camera.h"
+//#include "aura/graphics/graphics3d/frame.h"
 //#include "scene_object.h"
 //
 //// lib

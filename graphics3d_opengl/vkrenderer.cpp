@@ -4,7 +4,7 @@
 #include "swap_chain_render_pass.h"
 #include "initializers.h"
 #include "tools.h"
-#include "cube/impact.h"
+#include "aura/user/user/graphics3d.h"
 
 #include <array>
 #include <cassert>
@@ -22,7 +22,7 @@ namespace graphics3d_opengl
    }
 
 
-   void renderer::initialize_renderer(::cube::impact* pimpact, ::cube::context* pgpucontext)
+   void renderer::initialize_renderer(::user::graphics3d* pimpact, ::cube::context* pgpucontext)
    {
 
       m_pimpact = pimpact;

@@ -7,7 +7,7 @@
 #include "acme/constant/user_key.h"
 #include "acme/handler/topic.h"
 #include "base/user/user/split_impact.h"
-#include "cube/gpu/context.h"
+#include "aura/graphics/gpu/context.h"
 #include "aura/message/user.h"
 #include "aura/user/user/frame_interaction.h"
 #include "glm/gtc/matrix_transform.hpp"

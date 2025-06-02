@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "cube/draw2d/graphics.h"
+#include "aura/graphics/gpu/graphics.h"
 
 
 //struct OffscreenContext

@@ -8,7 +8,7 @@
 #include "physical_device.h"
 #include "swap_chain_render_pass.h"
 #include "initializers.h"
-#include "cube/gpu/cpu_buffer.h"
+#include "aura/graphics/gpu/cpu_buffer.h"
 #include "app-graphics3d/gpu_vulkan/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
@@ -16,7 +16,7 @@
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
 //#include "tools.h"
-//#include "cube/impact.h"
+//#include "aura/user/user/graphics3d.h"
 
 //#include <array>
 //#include <cassert>

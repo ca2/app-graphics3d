@@ -3,7 +3,7 @@
 // camilo on 2025-05-17 03:00 <3ThomasBorregaardSorensen!!
 #pragma once
 
-//#include "cube/gpu/context.h"
+//#include "aura/graphics/gpu/context.h"
 ////#include "window.h"
 ////#include "directx-cube/graphics3d_directx/context.h"
 //#include "_directx.h"
@@ -51,7 +51,7 @@
 //      VkInstance m_vkinstance;
 //      VkDebugUtilsMessengerEXT debugMessenger;
 //      VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-//      //::pointer < ::cube::impact > m_pimpact;
+//      //::pointer < ::user::graphics3d > m_pimpact;
 //
 //      VkCommandPool m_vkcommandpool;
 //
@@ -70,7 +70,7 @@
 //      context();
 //      ~context();
 //
-//      virtual void initialize_context(::cube::impact* pimpact);
+//      virtual void initialize_context(::user::graphics3d* pimpact);
 //
 //
 //      VkCommandPool getCommandPool() { return m_vkcommandpool; }

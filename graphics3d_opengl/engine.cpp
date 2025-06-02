@@ -2,15 +2,16 @@
 #include "context.h"
 #include "engine.h"
 //#include "Core/Window.h"
-#include "cube/graphics3d/input.h"
-#include "cube/graphics3d/scene.h"
+#include "aura/graphics/graphics3d/input.h"
+#include "aura/graphics/graphics3d/scene.h"
 #include "renderer.h"
 #include "mesh.h"
 #include "shader.h"
 #include <iostream>
 #include "camera.h"
-#include "cube/gpu/approach.h"
-#include "cube/gpu/shader.h"
+#include "aura/graphics/gpu/approach.h"
+#include "aura/graphics/gpu/shader.h"
+#include "aura/platform/application.h"
 #include "app-graphics3d/gpu_opengl/context.h"
 #include "app-graphics3d/gpu_opengl/device_win32.h"
 #include "app-graphics3d/gpu_opengl/frame_buffer.h"
@@ -18,7 +19,7 @@
 #include "system/basic_render_system.h"
 #include "system/point_light_system.h"
 
-#include "cube/impact.h"
+#include "aura/user/user/graphics3d.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -78,7 +79,7 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::initialize_engine(::cube::impact* pimpact)
+   void engine::initialize_engine(::user::graphics3d* pimpact)
    {
 
       ::graphics3d::engine::initialize_engine(pimpact);
@@ -1092,7 +1093,7 @@ namespace graphics3d_opengl
 
 
 
-   //::pointer<::opengl::engine > start_opengl_engine(::cube::impact* pimpact, mouseState* pmousestate)
+   //::pointer<::opengl::engine > start_opengl_engine(::user::graphics3d* pimpact, mouseState* pmousestate)
    //{
 
    //   auto popenglengine = pimpact->__create_new <::opengl::engine >();

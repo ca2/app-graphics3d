@@ -5,7 +5,7 @@
 #include "acme/prototype/geometry2d/rectangle.h"
 #include "acme/prototype/collection/string_map.h"
 #include "apex/platform/app_consumer.h"
-#include "cube/gpu/render.h"
+#include "aura/graphics/gpu/render.h"
 
 
 namespace graphics3d_hello3d

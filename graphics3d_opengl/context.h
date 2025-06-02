@@ -4,8 +4,8 @@
 #pragma once
 
 //
-//#include "cube/gpu/context.h"
-//#include "cube/graphics3d/context.h"
+//#include "aura/graphics/gpu/context.h"
+//#include "aura/graphics/graphics3d/context.h"
 ////#include "window.h"
 ////#include "opengl-cube/graphics3d_opengl/context.h"
 //#include "app-graphics3d/graphics3d_opengl/_opengl.h"
@@ -58,7 +58,7 @@
 //      context();
 //      ~context();
 //
-//      virtual void initialize_context(::cube::impact* pimpact);
+//      virtual void initialize_context(::user::graphics3d* pimpact);
 //
 //
 //      //VkCommandPool getCommandPool() { return m_vkcommandpool; }
@@ -119,7 +119,7 @@
 //      //VkInstance m_vkinstance;
 //      //VkDebugUtilsMessengerEXT debugMessenger;
 //      //VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-//      //::pointer < ::cube::impact > m_pimpact;
+//      //::pointer < ::user::graphics3d > m_pimpact;
 //
 //      //VkCommandPool m_vkcommandpool;
 //

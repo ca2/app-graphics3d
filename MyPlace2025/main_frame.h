@@ -9,7 +9,7 @@ namespace graphics3d_MyPlace2025
 
 
    class CLASS_DECL_GRAPHICS3D_MYPLACE2025 main_frame :
-      virtual public ::cube::frame
+      virtual public ::simple_frame_window
    {
    public:
 

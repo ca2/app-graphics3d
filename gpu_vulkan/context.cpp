@@ -9,7 +9,7 @@
 #include "shader.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
-#include "cube/gpu/types.h"
+#include "aura/graphics/gpu/types.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 #include "glm/mat4x4.hpp"
 #include "initializers.h"
@@ -1726,7 +1726,7 @@ namespace gpu_vulkan
    //}
 
 
-   //void context::initialize_context(::cube::impact * pimpact)
+   //void context::initialize_context(::user::graphics3d * pimpact)
    //{
 
    //   m_pimpact = pimpact;

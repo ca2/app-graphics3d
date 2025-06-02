@@ -6,11 +6,11 @@
 #include "point_light_system.h"
 #include "app-graphics3d/continuum/application.h"
 #include "app-graphics3d/continuum/impact.h"
-#include "cube/application.h"
-#include "cube/graphics3d/camera.h"
-#include "cube/gpu/context.h"
-#include "cube/graphics3d/engine.h"
-#include "cube/graphics3d/scene_object.h"
+#include "core/platform/application.h"
+#include "aura/graphics/graphics3d/camera.h"
+#include "aura/graphics/gpu/context.h"
+#include "aura/graphics/graphics3d/engine.h"
+#include "aura/graphics/graphics3d/scene_object.h"
 
 
 namespace app_graphics3d_continuum

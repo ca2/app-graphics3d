@@ -64,11 +64,11 @@ struct Vertex {
 //     VkDeviceAddress vertexBufferAddress;
 // };
 
-// push constants for our mesh object draws
-struct GPUDrawPushConstants {
-    glm::mat4 worldMatrix;
-    VkDeviceAddress vertexBuffer;
-};
+//// push constants for our mesh object draws
+//struct GPUDrawPushConstants {
+//    glm::mat4 worldMatrix;
+//    VkDeviceAddress vertexBuffer;
+//};
 // struct AllocatedImage {
 //     VkImage image;
 //     VkImageView imageView;
@@ -92,16 +92,16 @@ enum class MaterialPass :uint8_t {
     Transparent,
     Other
 };
-struct MaterialPipeline {
-    VkPipeline pipeline;
-    VkPipelineLayout layout;
-};
-
-struct MaterialInstance {
-    MaterialPipeline* pipeline;
-    VkDescriptorSet materialSet;
-    MaterialPass passType;
-};
+//struct MaterialPipeline {
+//    VkPipeline pipeline;
+//    VkPipelineLayout layout;
+//};
+//
+//struct MaterialInstance {
+//    MaterialPipeline* pipeline;
+//    VkDescriptorSet materialSet;
+//    MaterialPass passType;
+//};
 
 struct DrawContext;
 

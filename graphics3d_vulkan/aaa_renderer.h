@@ -6,7 +6,7 @@
 ////#include "offscreen.h"
 ////#include "swapchain.h"
 //#include "render_pass.h"
-//#include "cube/graphics3d/renderer.h"
+//#include "aura/graphics/graphics3d/renderer.h"
 //
 //
 //#include <memory>
@@ -119,7 +119,7 @@
 //
 //		};
 //
-//		::pointer < ::cube::impact >	m_pimpact;
+//		::pointer < ::user::graphics3d >	m_pimpact;
 //		::pointer < context >				m_pgpucontext;
 //		::pointer < OffScreenSampler >	m_poffscreensampler;
 //		//::pointer<swap_chain_render_pass>			m_pvkcswapchain;

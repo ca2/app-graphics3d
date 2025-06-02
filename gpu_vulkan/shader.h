@@ -4,7 +4,7 @@
 
 
 
-#include "cube/gpu/shader.h"
+#include "aura/graphics/gpu/shader.h"
 
 
 namespace gpu_vulkan
@@ -82,7 +82,7 @@ namespace gpu_vulkan
 //#pragma once
 //
 //
-//#include "cube/gpu/shader.h"
+//#include "aura/graphics/gpu/shader.h"
 //
 //
 //namespace gpu_vulkan

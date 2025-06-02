@@ -9,12 +9,12 @@
 #include "aura/graphics/image/drawing.h"
 #include "aura/graphics/image/image.h"
 #include "aura/platform/system.h"
-#include "cube/gpu/approach.h"
-#include "cube/gpu/cpu_buffer.h"
-#include "cube/gpu/context.h"
-#include "cube/gpu/object.h"
-#include "cube/gpu/program.h"
-#include "cube/gpu/shader.h"
+#include "aura/graphics/gpu/approach.h"
+#include "aura/graphics/gpu/cpu_buffer.h"
+#include "aura/graphics/gpu/context.h"
+#include "aura/graphics/gpu/object.h"
+#include "aura/graphics/gpu/program.h"
+#include "aura/graphics/gpu/shader.h"
 #define GLAD_GLAPI_EXPORT
 #include <glad.h>
 

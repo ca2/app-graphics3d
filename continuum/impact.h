@@ -1,7 +1,8 @@
 #pragma once
 
 
-#include "cube/impact.h"
+#include "aura/user/user/graphics3d.h"
+#include "base/user/user/show.h"
 #include "app-graphics3d/continuum/global_ubo.h"
 
 
@@ -10,7 +11,7 @@ namespace app_graphics3d_continuum
 
 
    class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM impact :
-      virtual public ::app_consumer < application, ::cube::impact >
+      virtual public ::app_consumer < application, ::user::show <::user::graphics3d> >
    {
    public:
 

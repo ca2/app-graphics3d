@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "cube/graphics3d/engine.h"
+#include "aura/graphics/graphics3d/engine.h"
 
 
 //#include <memory>
@@ -14,7 +14,7 @@
 #include "camera.h" // Include the ::graphics3d::camera header
 //#include "application.h"
 //#include "apex/platform/app_consumer.h"
-#include "cube/gpu/render.h"
+#include "aura/graphics/gpu/render.h"
 #include "app-graphics3d/gpu_opengl/renderer.h"
 
 
@@ -29,7 +29,7 @@ namespace graphics3d_opengl
 	{
 	public:
 
-		//::pointer < ::cube::impact > m_pimpact;
+		//::pointer < ::user::graphics3d > m_pimpact;
 		//::pointer < ::gpu_opengl::renderer > m_prenderer;
 		::pointer < ::graphics3d::camera > m_pcamera;
 		//::pointer < glc::Application > m_pglcapplication;  // Game object that manages the scenes
@@ -100,8 +100,8 @@ namespace graphics3d_opengl
 
 		//private:
 		//void ProcessInput(float deltaTime);
-		//static void MouseCallback(::cube::impact* pglContainer, double xpos, double ypos);
-		virtual void initialize_engine(::cube::impact* pimpact);
+		//static void MouseCallback(::user::graphics3d* pglContainer, double xpos, double ypos);
+		virtual void initialize_engine(::user::graphics3d* pimpact);
 
 		//virtual void handle_mouse_move(double dCursorX, double dCursorY) override;
 

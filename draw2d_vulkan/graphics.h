@@ -2,7 +2,7 @@
 
 
 #include "acme/graphics/image/image32.h"
-#include "cube/draw2d/graphics.h"
+#include "aura/graphics/gpu/graphics.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "app-graphics3d/gpu_vulkan/shader.h"
 

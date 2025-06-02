@@ -4,7 +4,7 @@
 //#include "Core/gl_container.h"
 //#include "opengl-graphics3d/graphics3d_opengl/types.h"
 //#include "acme/constant/user_key.h"
-#include "cube/graphics3d/input.h"
+#include "aura/graphics/graphics3d/input.h"
 //#include <unordered_map>
 
 //
@@ -18,20 +18,20 @@
 //   {
 //   public:
 //
-//      ::pointer < ::cube::impact> m_pimpact;
+//      ::pointer < ::user::graphics3d> m_pimpact;
 //      bool m_IsFullscreen;
 //
 //      //::map<::user::e_key, bool> m_KeyPressed; // Store the state of each key
 //      //static int m_WindowedWidth, m_WindowedHeight;
 //      //static int m_WindowedPosX, m_WindowedPosY;
 //
-//      input(::cube::impact* pimpact);
+//      input(::user::graphics3d* pimpact);
 //      ~input() override;
 //
 //      ::user::enum_key_state  get_key_state(::user::e_key ekey);
 //      bool IsKeyPressed(::user::e_key ekey); // New method for released keys
 //      bool IsKeyReleased(::user::e_key ekey); // New method for released keys
-//      //void SetGLFWWindow(::cube::impact * pimpact);
+//      //void SetGLFWWindow(::user::graphics3d * pimpact);
 //      void ToggleFullscreen();  // Fullscreen toggle logic
 //      void Update(); // Update key states each frame
 //      bool IsAnyKeyPressed(); // New method to check if any keys are pressed

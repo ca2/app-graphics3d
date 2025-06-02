@@ -1,14 +1,14 @@
 #pragma once 
 
 
-#include "cube/graphics3d/input.h"
+#include "aura/graphics/graphics3d/input.h"
 
 
 //// MNK_Controller.h
 //#include "scene_object.h"
 ////#include "window.h"
 //#include "acme/constant/user_key.h"
-//#include "cube/graphics3d/key_map.h"
+//#include "aura/graphics/graphics3d/key_map.h"
 //#include <glm/glm.hpp>
 //
 //
@@ -55,7 +55,7 @@
 //
 //      MNKController( float sensitivity = 0.1f, float yaw = -90.0f, float pitch = 0.0f);
 //
-//      //void moveInPlaneXZ(::cube::impact * pimpact, float dt, application_object& gameObject);
+//      //void moveInPlaneXZ(::user::graphics3d * pimpact, float dt, application_object& gameObject);
 //
 //      void updateMovement(float dt, ::graphics3d::scene_object* pobject);
 //      void updateLook(float xOffset, float yOffset, ::graphics3d::scene_object * pobject);
@@ -68,7 +68,7 @@
 //      glm::vec3 getCameraPosition() const;
 //
 //
-//      ::pointer<::cube::impact > m_pimpact;
+//      ::pointer<::user::graphics3d > m_pimpact;
 //      ::pointer<::graphics3d::key_map > m_pkeymap;
 //
 //      auto key(auto ekey)

@@ -13,8 +13,9 @@
 //#include "GLError.h"
 #include "renderer.h"
 //#include "mesh.h"
-#include "cube/impact.h"
 #include "aura/graphics/image/target.h"
+#include "aura/platform/application.h"
+#include "aura/user/user/graphics3d.h"
 #include "aura/windowing/window.h"
 
 

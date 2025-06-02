@@ -17,7 +17,7 @@
 #include "aura/windowing/window.h"
 #include "draw2d_opengl/_.h"
 #include "draw2d_opengl/graphics.h"
-#include "cube/graphics3d/types.h"
+#include "aura/graphics/graphics3d/types.h"
 
 
 CLASS_DECL_AURA ::color::color dk_red(); // <3 tbs
@@ -443,7 +443,7 @@ namespace graphics3d_MyPlace2025
 
       ////get_app()->m_popenglengine->render_step();
 
-      ::cube::impact::_001OnDraw(pgraphics);
+      ::user::graphics3d::_001OnDraw(pgraphics);
 
    }
 
@@ -485,7 +485,7 @@ namespace graphics3d_MyPlace2025
 
       }
 
-      ::cube::impact::on_layout(pgraphics);
+      ::user::graphics3d::on_layout(pgraphics);
 
       //auto iWidth = rectangleX.width();
       //auto iHeight = rectangleX.height();

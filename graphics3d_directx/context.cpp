@@ -5,7 +5,7 @@
 //#include "context.h"
 //#include "initializers.h"
 //#include "tools.h"
-//#include "cube/impact.h"
+//#include "aura/user/user/graphics3d.h"
 //// std headers
 //#include <cstring>
 //#include <iostream>
@@ -91,7 +91,7 @@
 //   }
 //
 //
-//   void context::initialize_context(::cube::impact* pimpact)
+//   void context::initialize_context(::user::graphics3d* pimpact)
 //   {
 //
 //      m_pimpact = pimpact;

@@ -1,5 +1,0 @@
-draw2d_cairo
-crypto_openssl
-experience_core
-imaging_freeimage
-node_linux

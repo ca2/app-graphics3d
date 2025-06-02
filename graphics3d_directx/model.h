@@ -4,7 +4,7 @@
 #pragma once
 
 
-#include "cube/graphics3d/model.h"
+#include "aura/graphics/graphics3d/model.h"
 
 
 //#include "context.h"
@@ -41,8 +41,8 @@ namespace graphics3d_directx
       uint32_t indexCount;
 
 
-      static ::array<VkVertexInputBindingDescription> getVertexBindingDescriptions();
-      static ::array<VkVertexInputAttributeDescription> getVertexAttributeDescriptions();
+      //static ::array<VkVertexInputBindingDescription> getVertexBindingDescriptions();
+      //static ::array<VkVertexInputAttributeDescription> getVertexAttributeDescriptions();
 
 
       //static ::pointer<model> createModelFromFile(::gpu::context * pgpucontext, const std::string& filepath);

@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "app-graphics3d/gpu_directx/_.h"
+#include "gpu_directx/_.h"
 #include "_directx.h"
 
 

@@ -106,7 +106,7 @@ namespace app_graphics3d_continuum
       factory()->add_factory_item <::app_graphics3d_continuum::impact >();
       factory()->add_factory_item <::app_graphics3d_continuum::pane_impact >();
 
-      ::cube::application::init_instance();
+      ::core::application::init_instance();
 
       add_impact_system(
          "main", __initialize_new ::user::single_document_template(
@@ -170,7 +170,7 @@ namespace app_graphics3d_continuum
       else
       {
 
-         return ::cube::application::draw2d_get_default_implementation_name();
+         return ::core::application::draw2d_get_default_implementation_name();
 
       }
 

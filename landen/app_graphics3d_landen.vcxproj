@@ -753,9 +753,6 @@
     <ClInclude Include="_vulkan.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\app\cube\cube.vcxproj">
-      <Project>{c5fadcf3-ca08-483d-b5f9-2ce2d2beccbe}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\app\acme\acme.vcxproj">
       <Project>{638b242f-0f21-41c3-9f66-724660046133}</Project>
     </ProjectReference>

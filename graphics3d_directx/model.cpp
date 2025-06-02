@@ -7,12 +7,13 @@
 #include "engine.h"
 #include "frame.h"
 //#include "renderer.h"
-#include "cube/impact.h"
-#include "app-graphics3d/gpu_directx/buffer.h"
-#include "app-graphics3d/gpu_directx/context.h"
-#include "app-graphics3d/gpu_directx/renderer.h"
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/path_system.h"
+#include "aura/platform/application.h"
+#include "aura/user/user/graphics3d.h"
+#include "gpu_directx/buffer.h"
+#include "gpu_directx/context.h"
+#include "gpu_directx/renderer.h"
 
 
 // lib headers
@@ -90,36 +91,36 @@ namespace graphics3d_directx
    void model::createVertexBuffers(const ::array<::gpu::Vertex>& vertices)
    {
 
-      vertexCount = static_cast<uint32_t>(vertices.size());
-      assert(vertexCount >= 3 && "Vertex count must be at least 3");
-      VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
-      uint32_t vertexSize = sizeof(vertices[0]);
+      //vertexCount = static_cast<uint32_t>(vertices.size());
+      //assert(vertexCount >= 3 && "Vertex count must be at least 3");
+      //VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+      //uint32_t vertexSize = sizeof(vertices[0]);
 
-      auto pbufferStaging = __create_new < ::gpu_directx::buffer >();
+      //auto pbufferStaging = __create_new < ::gpu_directx::buffer >();
 
-      pbufferStaging->initialize_buffer(
-         m_pgpucontext,
-         vertexSize,
-         vertexCount,
-         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-      );
+      //pbufferStaging->initialize_buffer(
+      //   m_pgpucontext,
+      //   vertexSize,
+      //   vertexCount,
+      //   VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+      //   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+      //);
 
-      pbufferStaging->map();
-      pbufferStaging->writeToBuffer((void*)vertices.data());
+      //pbufferStaging->map();
+      //pbufferStaging->writeToBuffer((void*)vertices.data());
 
-      m_pbufferVertex = __create_new < ::gpu_directx::buffer>();
+      //m_pbufferVertex = __create_new < ::gpu_directx::buffer>();
 
-      m_pbufferVertex->initialize_buffer(
-         m_pgpucontext,
-         vertexSize,
-         vertexCount,
-         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-      );
+      //m_pbufferVertex->initialize_buffer(
+      //   m_pgpucontext,
+      //   vertexSize,
+      //   vertexCount,
+      //   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+      //   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+      //);
 
 
-      m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferVertex->getBuffer(), bufferSize);
+      //m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferVertex->getBuffer(), bufferSize);
 
 
    }
@@ -128,39 +129,39 @@ namespace graphics3d_directx
    void model::createIndexBuffers(const ::array<uint32_t>& indices) 
    {
 
-      indexCount = static_cast<uint32_t>(indices.size());
-      hasIndexBuffer = indexCount > 0;
+      //indexCount = static_cast<uint32_t>(indices.size());
+      //hasIndexBuffer = indexCount > 0;
 
-      if (!hasIndexBuffer) {
-         return;
-      }
+      //if (!hasIndexBuffer) {
+      //   return;
+      //}
 
-      VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
-      uint32_t indexSize = sizeof(indices[0]);
+      //VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
+      //uint32_t indexSize = sizeof(indices[0]);
 
-      auto pbufferStaging = __create_new < ::gpu_directx::buffer>();
+      //auto pbufferStaging = __create_new < ::gpu_directx::buffer>();
 
-      pbufferStaging->initialize_buffer(
-         m_pgpucontext,
-         indexSize,
-         indexCount,
-         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-         ;
+      //pbufferStaging->initialize_buffer(
+      //   m_pgpucontext,
+      //   indexSize,
+      //   indexCount,
+      //   VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+      //   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+      //   ;
 
-      pbufferStaging->map();
-      pbufferStaging->writeToBuffer((void*)indices.data());
+      //pbufferStaging->map();
+      //pbufferStaging->writeToBuffer((void*)indices.data());
 
-      m_pbufferIndex = __create_new < ::gpu_directx::buffer>();
+      //m_pbufferIndex = __create_new < ::gpu_directx::buffer>();
 
-      m_pbufferIndex->initialize_buffer(
-         m_pgpucontext,
-         indexSize,
-         indexCount,
-         VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+      //m_pbufferIndex->initialize_buffer(
+      //   m_pgpucontext,
+      //   indexSize,
+      //   indexCount,
+      //   VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+      //   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-      m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferIndex->getBuffer(), bufferSize);
+      //m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferIndex->getBuffer(), bufferSize);
 
    }
 
@@ -170,14 +171,14 @@ namespace graphics3d_directx
 
       ::cast <::gpu_directx::renderer> pgpurenderer = pgpucontext->m_pgpurenderer;
 
-      auto commandBuffer = pgpurenderer->getCurrentCommandBuffer();
+      //auto commandBuffer = pgpurenderer->getCurrentCommandBuffer();
 
-      if (hasIndexBuffer) {
-         vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
-      }
-      else {
-         vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
-      }
+      //if (hasIndexBuffer) {
+      //   vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+      //}
+      //else {
+      //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
+      //}
    }
 
    
@@ -186,19 +187,19 @@ namespace graphics3d_directx
 
       ::cast <::gpu_directx::renderer> prenderer = pgpucontext->m_pgpurenderer;
 
-      auto commandBuffer = prenderer->getCurrentCommandBuffer();
+      //auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
 
-      VkBuffer buffers[] = { m_pbufferVertex->getBuffer() };
-      VkDeviceSize offsets[] = { 0 };
-      vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
+      //VkBuffer buffers[] = { m_pbufferVertex->getBuffer() };
+      //VkDeviceSize offsets[] = { 0 };
+      //vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 
-      if (hasIndexBuffer) 
-      {
+      //if (hasIndexBuffer) 
+      //{
 
-         vkCmdBindIndexBuffer(commandBuffer, m_pbufferIndex->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+      //   vkCmdBindIndexBuffer(commandBuffer, m_pbufferIndex->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
-      }
+      //}
 
    }
 

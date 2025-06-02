@@ -793,21 +793,6 @@
     <ProjectReference Include="..\..\app\aura\aura.vcxproj">
       <Project>{e000ffaf-392f-4e32-bf51-fd7ed638991f}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\app\axis\axis.vcxproj">
-      <Project>{a2cbd4ed-ed0f-482b-9b16-f48f21c32835}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\app\base\base.vcxproj">
-      <Project>{a216abd4-26c4-4746-96b3-9d30ed28cf92}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\app\bred\bred.vcxproj">
-      <Project>{dfbf067f-aff9-4bd6-a5e1-72af984d1476}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\app\core\core.vcxproj">
-      <Project>{29c1eb5b-060e-4021-ae12-d1bcfb1b1359}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\cube\cube.vcxproj">
-      <Project>{c5fadcf3-ca08-483d-b5f9-2ce2d2beccbe}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\gpu_vulkan\gpu_vulkan.vcxproj">
       <Project>{27c4f9e2-27e4-41e2-a06c-bcd7462ac33e}</Project>
     </ProjectReference>

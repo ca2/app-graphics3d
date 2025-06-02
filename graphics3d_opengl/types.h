@@ -3,7 +3,7 @@
 #pragma once
 
 
-#include "cube/graphics3d/types.h"
+#include "aura/graphics/graphics3d/types.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE

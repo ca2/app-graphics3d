@@ -3,7 +3,7 @@
 #pragma once
 
 
-#include "cube/gpu/device.h"
+#include "aura/graphics/gpu/device.h"
 #include "acme/prototype/prototype/memory.h"
 
 

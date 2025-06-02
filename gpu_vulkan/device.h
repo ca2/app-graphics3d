@@ -3,7 +3,7 @@
 #pragma once
 
 
-#include "cube/gpu/device.h"
+#include "aura/graphics/gpu/device.h"
 #include "acme/prototype/prototype/memory.h"
 
 
@@ -85,7 +85,7 @@ namespace gpu_vulkan
       VkInstance m_vkinstance;
       VkDebugUtilsMessengerEXT debugMessenger;
       //VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-      //::pointer < ::cube::impact > m_pimpact;
+      //::pointer < ::user::graphics3d > m_pimpact;
 
       //VkCommandPool m_vkcommandpool;
 

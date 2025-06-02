@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "cube/application.h"
+#include "core/platform/application.h"
 
 
 namespace app_graphics3d_continuum
@@ -9,9 +9,10 @@ namespace app_graphics3d_continuum
 
 
    class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM application :
-      virtual public ::cube::application
+      virtual public ::core::application
    {
    public:
+
 
       ::string m_strImplementation;
       bool m_bAbsoluteMousePosition;

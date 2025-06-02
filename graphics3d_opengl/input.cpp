@@ -9,14 +9,14 @@
 //
 //
 //   // Initialize static members
-//   //::cube::impact* input::m_pimpact = nullptr;
+//   //::user::graphics3d* input::m_pimpact = nullptr;
 //   //bool input::m_IsFullscreen = false;
 //   //int input::m_WindowedWidth = 1280;
 //   //int input::m_WindowedHeight = 720;
 //   //int input::m_WindowedPosX = 100;
 //   //int input::m_WindowedPosY = 100;
 //   //::map<::user::e_key, bool> input::m_KeyPressed;
-//   input::input(::cube::impact* pimpact) :
+//   input::input(::user::graphics3d* pimpact) :
 //      m_pimpact(pimpact)
 //   {
 //
@@ -57,7 +57,7 @@
 //      return !get_key_state(ekey);
 //   }
 //
-//   //void input::SetGLFWWindow(::cube::impact* window) {
+//   //void input::SetGLFWWindow(::user::graphics3d* window) {
 //   //   m_pimpact = window;
 //   //}
 //

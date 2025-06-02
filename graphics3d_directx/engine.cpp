@@ -7,16 +7,16 @@
 #include "offscreen_render_pass.h"
 //#include "renderer.h"
 #include "swap_chain_render_pass.h"
-#include "cube/application.h"
-#include "cube/impact.h"
-#include "app-graphics3d/gpu_directx/approach.h"
-#include "app-graphics3d/gpu_directx/context.h"
-#include "app-graphics3d/gpu_directx/descriptors.h"
-#include "app-graphics3d/gpu_directx/renderer.h"
-#include "cube/graphics3d/camera.h"
-#include "cube/graphics3d/scene.h"
-//#include "cube/graphics3d/system/simple_render_system.h"
-//#include "cube/graphics3d/system/point_light_system.h"
+#include "aura/platform/application.h"
+#include "aura/user/user/graphics3d.h"
+#include "gpu_directx/approach.h"
+#include "gpu_directx/context.h"
+#include "gpu_directx/descriptors.h"
+#include "gpu_directx/renderer.h"
+#include "aura/graphics/graphics3d/camera.h"
+#include "aura/graphics/graphics3d/scene.h"
+//#include "aura/graphics/graphics3d/system/simple_render_system.h"
+//#include "aura/graphics/graphics3d/system/point_light_system.h"
 #include "acme/platform/application.h"
 #include "apex/database/client.h"
 #include "apex/database/stream.h"
@@ -255,63 +255,63 @@ namespace graphics3d_directx
 
             ::cast < ::gpu_directx::renderer > prendererUpper = pcontextUpper->m_pgpurenderer;
 
-            VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
+            //VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
 
-            ::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
+            //::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
 
-            auto copyCmd = pgpucontext->beginSingleTimeCommands();
+            //auto copyCmd = pgpucontext->beginSingleTimeCommands();
 
-            ::directx::insertImageMemoryBarrier(
-               copyCmd,
-               vkimage,
-               0,
-               VK_ACCESS_TRANSFER_WRITE_BIT,
-               VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-               VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-               VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-               VK_ACCESS_SHADER_READ_BIT,
-               VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
+            //::directx::insertImageMemoryBarrier(
+            //   copyCmd,
+            //   vkimage,
+            //   0,
+            //   VK_ACCESS_TRANSFER_WRITE_BIT,
+            //   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            //   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            //   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+            //   VK_ACCESS_SHADER_READ_BIT,
+            //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
-            VkSubmitInfo submitInfo{};
-            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-            submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &copyCmd;
-            ::array<VkSemaphore> waitSemaphores;
-            ::array<VkPipelineStageFlags> waitStages;
-            waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-            waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
-            submitInfo.waitSemaphoreCount = waitSemaphores.size();
-            submitInfo.pWaitSemaphores = waitSemaphores.data();
-            submitInfo.pWaitDstStageMask = waitStages.data();
+            //VkSubmitInfo submitInfo{};
+            //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+            //submitInfo.commandBufferCount = 1;
+            //submitInfo.pCommandBuffers = &copyCmd;
+            //::array<VkSemaphore> waitSemaphores;
+            //::array<VkPipelineStageFlags> waitStages;
+            //waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            //waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
+            //submitInfo.waitSemaphoreCount = waitSemaphores.size();
+            //submitInfo.pWaitSemaphores = waitSemaphores.data();
+            //submitInfo.pWaitDstStageMask = waitStages.data();
 
-            //vkQueueWaitIdle(pgpucontext->graphicsQueue());
+            ////vkQueueWaitIdle(pgpucontext->graphicsQueue());
 
-            pgpucontext->endSingleTimeCommands(copyCmd);
+            //pgpucontext->endSingleTimeCommands(copyCmd);
 
-            prendererUpper->_blend_image(vkimage, pgpucontext->m_rectangle, true);
+            //prendererUpper->_blend_image(vkimage, pgpucontext->m_rectangle, true);
 
-            auto rectangleUpper = pcontextUpper->rectangle();
+            //auto rectangleUpper = pcontextUpper->rectangle();
 
-            VkViewport vp = {
-               (float)rectangleUpper.left(),
-               (float)rectangleUpper.top(),
-               (float)rectangleUpper.width(),
-               (float)rectangleUpper.height(),
-               0.0f, 1.0f };
-            VkRect2D sc = {
-               {
-               (float)rectangleUpper.left(),
-               (float)rectangleUpper.top(),
-               },
-               {
-                        (float)rectangleUpper.width(),
-               (float)rectangleUpper.height(),
+            //VkViewport vp = {
+            //   (float)rectangleUpper.left(),
+            //   (float)rectangleUpper.top(),
+            //   (float)rectangleUpper.width(),
+            //   (float)rectangleUpper.height(),
+            //   0.0f, 1.0f };
+            //VkRect2D sc = {
+            //   {
+            //   (float)rectangleUpper.left(),
+            //   (float)rectangleUpper.top(),
+            //   },
+            //   {
+            //            (float)rectangleUpper.width(),
+            //   (float)rectangleUpper.height(),
 
 
-            }
-            };
-            vkCmdSetViewport(prendererUpper->getCurrentCommandBuffer(), 0, 1, &vp);
-            vkCmdSetScissor(prendererUpper->getCurrentCommandBuffer(), 0, 1, &sc);
+            //}
+            //};
+            //vkCmdSetViewport(prendererUpper->getCurrentCommandBuffer(), 0, 1, &vp);
+            //vkCmdSetScissor(prendererUpper->getCurrentCommandBuffer(), 0, 1, &sc);
 
 
          }

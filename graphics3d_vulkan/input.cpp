@@ -1,8 +1,8 @@
 #include "framework.h"
 //#include "input.h"
 //#include "scene_object.h"
-//#include "cube/impact.h"
-//#include "cube/graphics3d/types.h"
+//#include "aura/user/user/graphics3d.h"
+//#include "aura/graphics/graphics3d/types.h"
 //#include <limits>
 //
 //
@@ -19,7 +19,7 @@
 //      _cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
 //   }
 //   //void MNKController::moveInPlaneXZ(
-//   //    ::cube::impact * pimpact, float dt, application_object& gameObject) {
+//   //    ::user::graphics3d * pimpact, float dt, application_object& gameObject) {
 //   //    glm::vec3 rotate{ 0 };
 //   //    if (key(e_key_lookRight) == ::user::e_key_state_pressed) rotate.y += 1.f;
 //   //    if (key(e_key_lookLeft) == ::user::e_key_state_pressed) rotate.y -= 1.f;

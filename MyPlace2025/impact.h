@@ -2,11 +2,11 @@
 
 
 #include "apex/platform/app_consumer.h"
-#include "cube/impact.h"
+#include "aura/user/user/graphics3d.h"
 #include "application.h"
-#include "cube/graphics3d/engine.h"
-//#include "cube/impact.h"
-#include "cube/graphics3d/types.h"
+#include "aura/graphics/graphics3d/engine.h"
+//#include "aura/user/user/graphics3d.h"
+#include "aura/graphics/graphics3d/types.h"
 
 
 namespace graphics3d_MyPlace2025
@@ -14,7 +14,7 @@ namespace graphics3d_MyPlace2025
 
 
    class CLASS_DECL_GRAPHICS3D_MYPLACE2025 impact :
-      virtual public ::app_consumer < application, ::cube::impact >
+      virtual public ::app_consumer < application, ::user::graphics3d >
    {
    public:
 

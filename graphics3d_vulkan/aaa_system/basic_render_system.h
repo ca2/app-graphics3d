@@ -4,7 +4,7 @@
 #include "pipeline.h"
 #include "scene_object.h"
 #include "frame_info.h"
-#include "cube/graphics3d/camera.h"
+#include "aura/graphics/graphics3d/camera.h"
 
 
 

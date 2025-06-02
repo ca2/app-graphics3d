@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "cube/graphics3d/scene_object.h"
+#include "aura/graphics/graphics3d/scene_object.h"
 
 
 //

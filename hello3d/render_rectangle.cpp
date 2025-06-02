@@ -1,9 +1,9 @@
 #include "framework.h"
 #include "render.h"
 #include "application.h"
-#include "cube/gpu/context.h"
-#include "cube/gpu/program.h"
-#include "cube/gpu/shader.h"
+#include "aura/graphics/gpu/context.h"
+#include "aura/graphics/gpu/program.h"
+#include "aura/graphics/gpu/shader.h"
 #define GLAD_GLAPI_EXPORT
 #include <glad.h>
 #include <math.h>
