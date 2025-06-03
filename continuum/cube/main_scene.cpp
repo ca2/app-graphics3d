@@ -142,12 +142,12 @@ namespace app_graphics3d_continuum
    void main_scene::on_update_global_ubo(::gpu::context* pgpucontext)
    {
 
-      auto& globalubo = m_pimpact->m_globalubo;
+      auto& globalubo = m_pimpact->m_propertiesGlobalUbo;
 
       //::graphics3d::GlobalUbo ubo{};
-      globalubo.projection = m_pengine->m_pcamera->getProjection();
-      globalubo.view = m_pengine->m_pcamera->getView();
-      globalubo.inverseView = m_pengine->m_pcamera->getInverseView();
+      globalubo["projection"] = m_pengine->m_pcamera->getProjection();
+      globalubo["view"] = m_pengine->m_pcamera->getView();
+      globalubo["invView"] = m_pengine->m_pcamera->getInverseView();
       if (m_ppointlightsystem)
       {
          m_ppointlightsystem->update(pgpucontext, this);

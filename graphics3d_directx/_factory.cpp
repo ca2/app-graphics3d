@@ -4,7 +4,7 @@
 #include "engine.h"
 #include "frame.h"
 #include "model.h"
-#include "shader.h"
+//#include "shader.h"
 #include "aura/graphics/graphics3d/scene_object.h"
 #include "aura/platform/application.h"
 //#include "networking.h"

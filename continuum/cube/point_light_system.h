@@ -26,31 +26,32 @@ namespace app_graphics3d_continuum
    //   float radius;
    //};
 
-   inline ::gpu::properties point_light_properties()
-   {
+   //inline ::gpu::properties point_light_properties()
+   //{
 
-      static ::gpu::property s_properties[] =
-      {
-         {"position", ::gpu::e_type_seq4},
-         {"color", ::gpu::e_type_seq4},
-         {"radius", ::gpu::e_type_float},
-         { nullptr, ::gpu::e_type_none}
+   //   static ::gpu::property s_properties[] =
+   //   {
+   //      {"position", ::gpu::e_type_seq4},
+   //      {"color", ::gpu::e_type_seq4},
+   //      {"radius", ::gpu::e_type_float},
+   //      { nullptr, ::gpu::e_type_none}
 
-      };
+   //   };
 
-      return s_properties;
+   //   return s_properties;
 
-   }
+   //}
 
 
 
    //inline ::gpu::properties global_ubo_properties()
    //{
    //   ::gpu::property s_properties[] = {
-   //      "projection", ::gpu::e_type_mat4,
-   //      "view", ::gpu::e_type_mat4,
-   //      "inverseVew", ::gpu::e_type_mat4,
-   //      "vec4", ::gpu::e_type_seq4,
+   //      {"projection", ::gpu::e_type_mat4},
+   //      {"view", ::gpu::e_type_mat4},
+   //      {"invVew", ::gpu::e_type_mat4},
+   //      {"ambientLightColor", ::gpu::e_type_seq4},
+   //      {"pointLights", ::gpu::e_type_propeties_array, point_light_properties(),  10},
 
    //   };
 

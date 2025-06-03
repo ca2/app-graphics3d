@@ -69,7 +69,12 @@ namespace app_graphics3d_continuum
 
       ::string strImplementation = file()->safe_get_string(pathImplementation);
 
-      if (strImplementation == "opengl")
+
+      if (strImplementation == "directx")
+      {
+         m_strImplementation = "directx";
+      }
+      else if (strImplementation == "opengl")
       {
          m_strImplementation = "opengl";
       }

@@ -19,7 +19,7 @@ namespace app_graphics3d_continuum
       ::write_text::font_pointer       m_pfontThomasBS_;
       string                           m_strFont1;
       int                              m_iSequence;
-      GlobalUbo                        m_globalubo;
+      ::gpu::properties                m_propertiesGlobalUbo;
 
 
       impact();

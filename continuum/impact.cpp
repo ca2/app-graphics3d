@@ -25,7 +25,8 @@ namespace app_graphics3d_continuum
 
 
 
-   impact::impact()
+   impact::impact() :
+      m_propertiesGlobalUbo(global_ubo_properties())
    {
 
       m_emouse = ::graphics3d::e_mouse_updateLook;
@@ -72,7 +73,7 @@ namespace app_graphics3d_continuum
    void impact::install_message_routing(::channel * psender)
    {
 
-      ::user::graphics3d::install_message_routing(psender);
+      ::user::show < ::user::graphics3d >::install_message_routing(psender);
 
       MESSAGE_LINK(e_message_create,psender,this,&impact::on_message_create);
       MESSAGE_LINK(e_message_destroy, psender, this, &impact::on_message_destroy);
@@ -156,18 +157,12 @@ namespace app_graphics3d_continuum
 
       }
 
-//      if (pgraphics->payload("set_transparent") == "set_transparent")
-//      {
-//
-//         information() << "set_transparent called";
-//
-//      }
-//      else
-//      {
-//
-//         information() << "set_transparent NOT called!!";
-//
-//      }
+      if (::is_null(get_document()))
+      {
+
+         return;
+
+      }
 
       ::double_rectangle rectangleClipBox;
 
@@ -313,7 +308,7 @@ namespace app_graphics3d_continuum
    ::block impact::global_ubo_block()
    {
 
-      return as_memory_block(m_globalubo);
+      return m_propertiesGlobalUbo.m_block;
 
    }
    void impact::on_layout(::draw2d::graphics_pointer & pgraphics)

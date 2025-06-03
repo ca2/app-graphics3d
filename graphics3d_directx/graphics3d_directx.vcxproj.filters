@@ -147,9 +147,6 @@
     <ClInclude Include="system\point_light_system.h">
       <Filter>Header Files\system</Filter>
     </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="aaa_system\point_light_system.h">
       <Filter>Header Files\system</Filter>
     </ClInclude>

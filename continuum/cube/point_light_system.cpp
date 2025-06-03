@@ -178,7 +178,7 @@ namespace app_graphics3d_continuum
 
       ::cast < impact > pimpact = m_pengine->m_pimpact;
 
-      auto& globalubo = pimpact->m_globalubo;
+      auto& globalubo = pimpact->m_propertiesGlobalUbo;
 
       auto rotateLight = glm::rotate(glm::mat4(1.f), 0.5f * dt, { 0.f, -1.f, 0.f });
 
@@ -200,16 +200,16 @@ namespace app_graphics3d_continuum
             glm::vec3(rotateLight * glm::vec4(ppointlight->m_transform.translation, 1.f));
 
          // copy light to ubo
-         globalubo.pointLights[lightIndex].position = 
+         globalubo["pointLights"][lightIndex]["position"] =
             glm::vec4(ppointlight->m_transform.translation, 1.f);
-         globalubo.pointLights[lightIndex].color =
+         globalubo["pointLights"][lightIndex]["color"] =
             glm::vec4(obj->m_color, ppointlight->m_pointlightcomponent.lightIntensity);
 
          lightIndex += 1;
 
       }
 
-      globalubo.numLights = lightIndex;
+      globalubo["numLights"] = lightIndex;
 
    }
 
