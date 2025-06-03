@@ -174,7 +174,7 @@ namespace gpu_vulkan
       }
       waitStages.add_copies(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, m_semaphoreaWaitToSubmit.size());
       waitSemaphores.append(::transfer(m_semaphoreaWaitToSubmit));
-      submitInfo.waitSemaphoreCount = waitSemaphores.size();
+      submitInfo.waitSemaphoreCount = (uint32_t) waitSemaphores.size();
       submitInfo.pWaitSemaphores = waitSemaphores.data();
       submitInfo.pWaitDstStageMask = waitStages.data();
 
@@ -185,7 +185,7 @@ namespace gpu_vulkan
 
       signalSemaphores.add(renderFinishedSemaphores[m_pgpurenderer->get_frame_index()]);
       signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
-      submitInfo.signalSemaphoreCount = signalSemaphores.count();
+      submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
       submitInfo.pSignalSemaphores = signalSemaphores.data();
 
       vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
@@ -449,7 +449,7 @@ namespace gpu_vulkan
 
       m_imageviewsAlphaAccumulation.resize(m_images.size());
 
-      for (size_t i = 0; i < m_imagesAlphaAccumulation.size(); i++)
+      for (::collection::index i = 0; i < m_imagesAlphaAccumulation.size(); i++)
       {
 
          VkImageViewCreateInfo viewInfo{};

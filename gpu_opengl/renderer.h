@@ -18,9 +18,16 @@ namespace gpu_opengl
    {
    public:
 
+
+      int instanceCount = 0;
+
       GLuint m_VAOFullScreenQuad;
       GLuint m_VBOFullScreenQuad;
       ::pointer < ::gpu_opengl::shader > m_pshaderBlend; 
+
+      GLuint m_vaoQuadBlend, m_vboQuadBlend;
+
+
 
       //memory m_memory;
       //pixmap m_pixmap;
@@ -60,8 +67,8 @@ namespace gpu_opengl
 
       //virtual void on_layout(int cx, int cy);
 
-   private:
-      int instanceCount = 0;
+      void blend(::gpu::renderer* prendererSource) override;
+
    };
 
 

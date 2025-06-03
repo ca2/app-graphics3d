@@ -255,7 +255,7 @@ namespace gpu_vulkan
 
       m_imageviews.resize(m_images.size());
 
-      for (size_t i = 0; i < m_images.size(); i++) 
+      for (::collection::index i = 0; i < m_images.size(); i++) 
       {
 
          VkImageViewCreateInfo viewInfo{};

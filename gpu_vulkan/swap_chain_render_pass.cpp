@@ -283,7 +283,11 @@ namespace gpu_vulkan
 		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 		vulkan::QueueFamilyIndices indices = m_pgpucontext->m_pgpudevice->m_pphysicaldevice->findQueueFamilies();
-		uint32_t queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
+		uint32_t queueFamilyIndices[] = 
+		{ 
+			(uint32_t)indices.graphicsFamily,
+			(uint32_t)indices.presentFamily 
+		};
 
 		if (indices.graphicsFamily != indices.presentFamily) {
 			createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -332,7 +336,7 @@ namespace gpu_vulkan
 	{
 
 		m_imageviews.resize(m_images.size());
-		for (size_t i = 0; i < m_images.size(); i++) {
+		for (::collection::index i = 0; i < m_images.size(); i++) {
 			VkImageViewCreateInfo viewInfo{};
 			viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			viewInfo.image = m_images[i];

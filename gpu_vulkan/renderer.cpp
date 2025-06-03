@@ -86,6 +86,8 @@ namespace gpu_vulkan
    //}
 
 
+
+
    void renderer::initialize_renderer(::gpu::context* pgpucontext, ::gpu::enum_output eoutput, ::gpu::enum_scene escene)
    {
 
@@ -1764,9 +1766,8 @@ namespace gpu_vulkan
          NULL                                // Dynamic offsets
       );
 
-
-
       VkDeviceSize offsets[] = { 0 };
+
       vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
       vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
@@ -1776,19 +1777,20 @@ namespace gpu_vulkan
          (float)rectangle.width(),
          (float)rectangle.height(),
          0.0f, 1.0f };
+
       VkRect2D sc = {
          {
-         (float)rectangle.left(),
-         (float)rectangle.top(),
+            rectangle.left(),
+            rectangle.top(),
          },
          {
-                  (float)rectangle.width(),
-         (float)rectangle.height(),
-
-
-      }
+            (uint32_t) rectangle.width(),
+            (uint32_t)rectangle.height(),
+         }
       };
+
       vkCmdSetViewport(commandBuffer, 0, 1, &vp);
+
       vkCmdSetScissor(commandBuffer, 0, 1, &sc);
 
       vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
@@ -1863,14 +1865,14 @@ namespace gpu_vulkan
             .image = image,  // <-- Your existing VkImage
             .viewType = VK_IMAGE_VIEW_TYPE_2D,
             .format = VK_FORMAT_B8G8R8A8_UNORM,  // <-- Match your image's format
-            .components = 
+            .components =
             {
                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
                .a = VK_COMPONENT_SWIZZLE_IDENTITY,
             },
-            .subresourceRange = 
+            .subresourceRange =
             {
                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                .baseMipLevel = 0,
@@ -1951,18 +1953,18 @@ namespace gpu_vulkan
          (float)rectangle.width(),
          (float)rectangle.height(),
          0.0f, 1.0f };
+
       VkRect2D sc = {
          {
-         (float)rectangle.left(),
-         (float)rectangle.top(),
+            rectangle.left(),
+            rectangle.top(),
          },
          {
-                  (float)rectangle.width(),
-         (float)rectangle.height(),
-
-
-      }
+            (uint32_t)rectangle.width(),
+            (uint32_t)rectangle.height(),
+         }
       };
+
       vkCmdSetViewport(commandBuffer, 0, 1, &vp);
       vkCmdSetScissor(commandBuffer, 0, 1, &sc);
 
@@ -2135,7 +2137,7 @@ namespace gpu_vulkan
             &pmodel->m_vertexBuffer,
             &pmodel->m_vertexMemory,
             &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory, 
+            &pmodel->m_indexMemory,
             bYSwap);
 
       }
@@ -2239,18 +2241,18 @@ namespace gpu_vulkan
          (float)rectangle.width(),
          (float)rectangle.height(),
          0.0f, 1.0f };
+
       VkRect2D sc = {
          {
-         (float)rectangle.left(),
-         (float)rectangle.top(),
+            rectangle.left(),
+            rectangle.top(),
          },
          {
-                  (float)rectangle.width(),
-         (float)rectangle.height(),
-
-
-      }
+            (uint32_t)rectangle.width(),
+            (uint32_t)rectangle.height(),
+         }
       };
+
       vkCmdSetViewport(commandBuffer, 0, 1, &vp);
       vkCmdSetScissor(commandBuffer, 0, 1, &sc);
 
@@ -2429,7 +2431,7 @@ namespace gpu_vulkan
             &pmodel->m_vertexBuffer,
             &pmodel->m_vertexMemory,
             &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory, 
+            &pmodel->m_indexMemory,
             bYSwap);
 
       }
@@ -2548,18 +2550,18 @@ namespace gpu_vulkan
          (float)rectanglePlacement.width(),
          (float)rectanglePlacement.height(),
          0.0f, 1.0f };
+
       VkRect2D sc = {
          {
-         (float)rectanglePlacement.left(),
-         (float)rectanglePlacement.top(),
+            rectanglePlacement.left(),
+            rectanglePlacement.top(),
          },
          {
-         (float)rectanglePlacement.width(),
-         (float)rectanglePlacement.height(),
-
-
-      }
+            (uint32_t)rectanglePlacement.width(),
+            (uint32_t)rectanglePlacement.height(),
+         }
       };
+
       vkCmdSetViewport(commandBuffer, 0, 1, &vp);
       vkCmdSetScissor(commandBuffer, 0, 1, &sc);
 
@@ -3136,7 +3138,7 @@ namespace gpu_vulkan
          ::array<VkPipelineStageFlags> waitStages;
          waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
          waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
-         submitInfo.waitSemaphoreCount = waitSemaphores.size();
+         submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
          submitInfo.pWaitSemaphores = waitSemaphores.data();
          submitInfo.pWaitDstStageMask = waitStages.data();
          m_pgpucontext->endSingleTimeCommands(cmdBuffer, 1, &submitInfo);
@@ -3254,7 +3256,7 @@ namespace gpu_vulkan
       ::array<VkPipelineStageFlags> waitStages;
       waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
       waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
-      submitInfo.waitSemaphoreCount = waitSemaphores.size();
+      submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
       submitInfo.pWaitSemaphores = waitSemaphores.data();
       submitInfo.pWaitDstStageMask = waitStages.data();
 
@@ -3273,10 +3275,84 @@ namespace gpu_vulkan
       on_end_render(pframe);
 
       endFrame();
-  
+
       //vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
       //vkQueueWaitIdle(m_pgpucontext->presentQueue());
+
+   }
+
+
+   void renderer::blend(::gpu::renderer* prendererSourceParam)
+   {
+
+      ::cast < ::gpu_vulkan::renderer > prendererSource = prendererSourceParam;
+
+      VkImage vkimage = prendererSource->m_pvkcrenderpass->m_images[prendererSource->get_frame_index()];
+
+      auto copyCmd = m_pgpucontext->beginSingleTimeCommands();
+
+      ::vulkan::insertImageMemoryBarrier(
+         copyCmd,
+         vkimage,
+         0,
+         VK_ACCESS_TRANSFER_WRITE_BIT,
+         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         VK_ACCESS_SHADER_READ_BIT,
+         VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
+
+      VkSubmitInfo submitInfo{};
+      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+      submitInfo.commandBufferCount = 1;
+      submitInfo.pCommandBuffers = &copyCmd;
+      ::array<VkSemaphore> waitSemaphores;
+      ::array<VkPipelineStageFlags> waitStages;
+      waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+      waitSemaphores.add(prendererSource->m_pvkcrenderpass->renderFinishedSemaphores[prendererSource->get_frame_index()]);
+      submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
+      submitInfo.pWaitSemaphores = waitSemaphores.data();
+      submitInfo.pWaitDstStageMask = waitStages.data();
+
+      //vkQueueWaitIdle(pgpucontext->graphicsQueue());
+
+      m_pgpucontext->endSingleTimeCommands(copyCmd);
+
+      auto rectangle = prendererSource->m_pgpucontext->rectangle();
+
+      _blend_image(vkimage, rectangle, true);
+
+   }
+
+
+   void renderer::soft_restore_context()
+   {
+
+      auto rectangle = m_pgpucontext->rectangle();
+
+      VkViewport vp = {
+         (float)rectangle.left(),
+         (float)rectangle.top(),
+         (float)rectangle.width(),
+         (float)rectangle.height(),
+         0.0f, 1.0f };
+
+      VkRect2D sc = {
+         {
+            rectangle.left(),
+            rectangle.top(),
+         },
+         {
+            (uint32_t)rectangle.width(),
+            (uint32_t)rectangle.height(),
+         }
+      };
+
+      auto commandBuffer = this->getCurrentCommandBuffer();
+
+      vkCmdSetViewport(commandBuffer, 0, 1, &vp);
+      vkCmdSetScissor(commandBuffer, 0, 1, &sc);
 
    }
 

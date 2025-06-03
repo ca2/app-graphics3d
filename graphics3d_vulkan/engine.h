@@ -49,7 +49,7 @@ namespace graphics3d_vulkan
 
 		void _prepare_frame() override;
 
-		void do_frame_step() override;
+		void do_frame_step(::gpu::context * pgpucontextUpper) override;
 
 		void run() override;
 

@@ -228,7 +228,9 @@ namespace gpu_vulkan
 
       ::gpu::shader* get_image_set_shader();
 
+      void blend(::gpu::renderer* prenderer) override;
 
+      void soft_restore_context() override;
 
    };
 

@@ -45,8 +45,6 @@ namespace graphics3d_opengl
 		double m_Δx = 0.;
 		double m_Δy = 0.;
 
-		GLuint m_vaoQuad, m_vboQuad;
-
 		bool m_Running;
 
 		//bool m_bWireframeMode = false;
@@ -87,7 +85,7 @@ namespace graphics3d_opengl
 		//void run_application() override;
 		//void resize(int cx, int cy) override;
 
-		void do_frame_step() override;
+		void do_frame_step(::gpu::context * pgpucontextUpper) override;
 
 
 		//virtual void _do_frame_step();

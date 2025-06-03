@@ -2,7 +2,7 @@
 #include "framework.h"
 #include "buffer.h"
 #include "engine.h"
-#include "frame.h"
+//#include "frame.h"
 #include "input.h"
 #include "offscreen_render_pass.h"
 //#include "renderer.h"
@@ -48,7 +48,7 @@ namespace graphics3d_vulkan
 
       ::cast < ::gpu_vulkan::renderer> prenderer = m_pgpucontext->m_pgpurenderer;
 
-      prenderer->defer_update_render_pass();
+      prenderer->defer_update_renderer();
 
       ::graphics3d::engine::defer_update_engine(rectanglePlacement);
 
@@ -189,137 +189,93 @@ namespace graphics3d_vulkan
    //}
 
 
-   void engine::do_frame_step()
+   void engine::do_frame_step(::gpu::context * pcontext)
    {
 
-      if (m_rectanglePlacementNew.is_empty())
-      {
+      graphics3d::engine::do_frame_step(pcontext);
 
-         return;
+      //if (m_rectanglePlacementNew.is_empty())
+      //{
 
-      }
+      //   return;
 
-      ::pointer < ::gpu_vulkan::context > pcontextUpper;
+      //}
 
-      ::pointer < ::gpu_vulkan::context > pgpucontext = m_pgpucontext;
+      //::pointer < ::gpu_vulkan::context > pcontextUpper = pcontext;
 
-      ::cast < ::gpu_vulkan::device > pgpudevice = pgpucontext->m_pgpudevice;
+      //m_pgpucontext->set_placement(m_rectanglePlacementNew);
 
-      if (pgpudevice
-         && pgpudevice->m_pgpucontextCurrent2
-         && pgpudevice->m_pgpucontextCurrent2 != m_pgpucontext)
-      {
+      //::gpu::rear_guard rear_guard(pcontextUpper);
 
-         pcontextUpper = pgpudevice->m_pgpucontextCurrent2;
+      //m_pgpucontext->send([this]()
+      //   {
 
-      }
+      //      ::gpu::context_guard guard(m_pgpucontext);
 
-      m_pgpucontext->set_placement(m_rectanglePlacementNew);
+      //      m_pgpucontext->make_current();
 
-      ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontext->get_renderer(::gpu::e_scene_3d);
+      //      ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontext->get_renderer(::gpu::e_scene_3d);
 
-      ::gpu::rear_guard rear_guard(pcontextUpper);
+      //      prenderer->defer_update_renderer();
 
-      m_pgpucontext->send([this]()
-         {
+      //      try
+      //      {
 
-            ::gpu::context_guard guard(m_pgpucontext);
+      //         m_pgpucontext->m_pengine->_do_frame_step();
 
-            m_pgpucontext->make_current();
+      //      }
+      //      catch (...)
+      //      {
 
-            ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
+      //      }
 
-            prenderer->defer_update_render_pass();
+      //   });
 
-            try
-            {
+      //if (1)
+      //{
 
-               m_pgpucontext->m_pengine->_do_frame_step();
+      //   if (pgpucontextUpper)
+      //   {
 
-            }
-            catch (...)
-            {
+      //      pgpucontextUpper->make_current();
 
-            }
+      //      auto prenderer = m_pgpucontext->m_pgpurenderer;
 
-         });
+      //      ::cast < ::gpu_vulkan::renderer > pgpurendererUpper = pgpucontextUpper->m_pgpurenderer;
 
+      //      pgpurendererUpper->blend(prenderer);
 
-      if (1)
-      {
+      //      auto rectangleUpper = pgpucontextUpper->rectangle();
 
-         if (pcontextUpper)
-         {
+      //      VkViewport vp = {
+      //         (float)rectangleUpper.left(),
+      //         (float)rectangleUpper.top(),
+      //         (float)rectangleUpper.width(),
+      //         (float)rectangleUpper.height(),
+      //         0.0f, 1.0f };
 
-            pcontextUpper->make_current();
+      //      VkRect2D sc = {
+      //         {
+      //            rectangleUpper.left(),
+      //            rectangleUpper.top(),
+      //         },
+      //         {
+      //            rectangleUpper.width(),
+      //            rectangleUpper.height(),
+      //         }
+      //      };
 
-            ::cast < ::gpu_vulkan::renderer > prendererUpper = pcontextUpper->m_pgpurenderer;
+      //      auto commandBuffer = pgpurendererUpper->getCurrentCommandBuffer();
 
-            VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
+      //      vkCmdSetViewport(commandBuffer, 0, 1, &vp);
 
-            ::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
+      //      vkCmdSetScissor(commandBuffer, 0, 1, &sc);
 
-            auto copyCmd = pgpucontext->beginSingleTimeCommands();
+      //   }
 
-            ::vulkan::insertImageMemoryBarrier(
-               copyCmd,
-               vkimage,
-               0,
-               VK_ACCESS_TRANSFER_WRITE_BIT,
-               VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-               VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-               VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-               VK_ACCESS_SHADER_READ_BIT,
-               VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
-
-            VkSubmitInfo submitInfo{};
-            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-            submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &copyCmd;
-            ::array<VkSemaphore> waitSemaphores;
-            ::array<VkPipelineStageFlags> waitStages;
-            waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-            waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
-            submitInfo.waitSemaphoreCount = waitSemaphores.size();
-            submitInfo.pWaitSemaphores = waitSemaphores.data();
-            submitInfo.pWaitDstStageMask = waitStages.data();
-
-            //vkQueueWaitIdle(pgpucontext->graphicsQueue());
-
-            pgpucontext->endSingleTimeCommands(copyCmd);
-
-            prendererUpper->_blend_image(vkimage, pgpucontext->m_rectangle, true);
-
-            auto rectangleUpper = pcontextUpper->rectangle();
-
-            VkViewport vp = {
-               (float)rectangleUpper.left(),
-               (float)rectangleUpper.top(),
-               (float)rectangleUpper.width(),
-               (float)rectangleUpper.height(),
-               0.0f, 1.0f };
-            VkRect2D sc = {
-               {
-               (float)rectangleUpper.left(),
-               (float)rectangleUpper.top(),
-               },
-               {
-                        (float)rectangleUpper.width(),
-               (float)rectangleUpper.height(),
-
-
-            }
-            };
-            vkCmdSetViewport(prendererUpper->getCurrentCommandBuffer(), 0, 1, &vp);
-            vkCmdSetScissor(prendererUpper->getCurrentCommandBuffer(), 0, 1, &sc);
-
-
-         }
-
-      }
+      //}
 
    }
-
 
 
    void engine::_engine_on_frame_context_initialization()

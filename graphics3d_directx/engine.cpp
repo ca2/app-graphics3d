@@ -189,134 +189,119 @@ namespace graphics3d_directx
    //}
 
 
-   void engine::do_frame_step()
+   void engine::do_frame_step(::gpu::context * pcontext)
    {
 
-      if (m_rectanglePlacementNew.is_empty())
-      {
+      ::graphics3d::engine::do_frame_step(pcontext);
 
-         return;
+      //if (m_rectanglePlacementNew.is_empty())
+      //{
 
-      }
+      //   return;
 
-      ::pointer < ::gpu_directx::context > pcontextUpper;
+      //}
 
-      ::pointer < ::gpu_directx::context > pgpucontext = m_pgpucontext;
+      //m_pgpucontext->set_placement(m_rectanglePlacementNew);
 
-      ::cast < ::gpu_directx::device > pgpudevice = pgpucontext->m_pgpudevice;
+      //::gpu::rear_guard rear_guard(pcontextUpper);
 
-      if (pgpudevice
-         && pgpudevice->m_pgpucontextCurrent2
-         && pgpudevice->m_pgpucontextCurrent2 != m_pgpucontext)
-      {
+      //m_pgpucontext->send([this]()
+      //   {
 
-         pcontextUpper = pgpudevice->m_pgpucontextCurrent2;
+      //      ::gpu::context_guard guard(m_pgpucontext);
 
-      }
+      //      m_pgpucontext->make_current();
 
-      m_pgpucontext->set_placement(m_rectanglePlacementNew);
+      //      ::cast < ::gpu_directx::renderer > prenderer = m_pgpucontext->get_renderer(::gpu::e_scene_3d);
 
-      ::cast < ::gpu_directx::renderer > prenderer = m_pgpucontext->get_renderer(::gpu::e_scene_3d);
+      //      prenderer->defer_update_renderer();
 
-      ::gpu::rear_guard rear_guard(pcontextUpper);
+      //      try
+      //      {
 
-      m_pgpucontext->send([this]()
-         {
+      //         m_pgpucontext->m_pengine->_do_frame_step();
 
-            ::gpu::context_guard guard(m_pgpucontext);
+      //      }
+      //      catch (...)
+      //      {
 
-            m_pgpucontext->make_current();
+      //      }
 
-            ::cast < ::gpu_directx::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
-
-            prenderer->defer_update_renderer();
-
-            try
-            {
-
-               m_pgpucontext->m_pengine->_do_frame_step();
-
-            }
-            catch (...)
-            {
-
-            }
-
-         });
+      //   });
 
 
-      if (1)
-      {
+      //if (1)
+      //{
 
-         if (pcontextUpper)
-         {
+      //   if (pcontextUpper)
+      //   {
 
-            pcontextUpper->make_current();
+      //      pcontextUpper->make_current();
 
-            ::cast < ::gpu_directx::renderer > prendererUpper = pcontextUpper->m_pgpurenderer;
+      //      ::cast < ::gpu_directx::renderer > prendererUpper = pcontextUpper->m_pgpurenderer;
 
-            //VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
+      //      //VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
 
-            //::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
+      //      //::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
 
-            //auto copyCmd = pgpucontext->beginSingleTimeCommands();
+      //      //auto copyCmd = pgpucontext->beginSingleTimeCommands();
 
-            //::directx::insertImageMemoryBarrier(
-            //   copyCmd,
-            //   vkimage,
-            //   0,
-            //   VK_ACCESS_TRANSFER_WRITE_BIT,
-            //   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-            //   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-            //   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-            //   VK_ACCESS_SHADER_READ_BIT,
-            //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
+      //      //::directx::insertImageMemoryBarrier(
+      //      //   copyCmd,
+      //      //   vkimage,
+      //      //   0,
+      //      //   VK_ACCESS_TRANSFER_WRITE_BIT,
+      //      //   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //      //   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      //      //   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      //      //   VK_ACCESS_SHADER_READ_BIT,
+      //      //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
-            //VkSubmitInfo submitInfo{};
-            //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-            //submitInfo.commandBufferCount = 1;
-            //submitInfo.pCommandBuffers = &copyCmd;
-            //::array<VkSemaphore> waitSemaphores;
-            //::array<VkPipelineStageFlags> waitStages;
-            //waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-            //waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
-            //submitInfo.waitSemaphoreCount = waitSemaphores.size();
-            //submitInfo.pWaitSemaphores = waitSemaphores.data();
-            //submitInfo.pWaitDstStageMask = waitStages.data();
+      //      //VkSubmitInfo submitInfo{};
+      //      //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+      //      //submitInfo.commandBufferCount = 1;
+      //      //submitInfo.pCommandBuffers = &copyCmd;
+      //      //::array<VkSemaphore> waitSemaphores;
+      //      //::array<VkPipelineStageFlags> waitStages;
+      //      //waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+      //      //waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
+      //      //submitInfo.waitSemaphoreCount = waitSemaphores.size();
+      //      //submitInfo.pWaitSemaphores = waitSemaphores.data();
+      //      //submitInfo.pWaitDstStageMask = waitStages.data();
 
-            ////vkQueueWaitIdle(pgpucontext->graphicsQueue());
+      //      ////vkQueueWaitIdle(pgpucontext->graphicsQueue());
 
-            //pgpucontext->endSingleTimeCommands(copyCmd);
+      //      //pgpucontext->endSingleTimeCommands(copyCmd);
 
-            //prendererUpper->_blend_image(vkimage, pgpucontext->m_rectangle, true);
+      //      //prendererUpper->_blend_image(vkimage, pgpucontext->m_rectangle, true);
 
-            //auto rectangleUpper = pcontextUpper->rectangle();
+      //      //auto rectangleUpper = pcontextUpper->rectangle();
 
-            //VkViewport vp = {
-            //   (float)rectangleUpper.left(),
-            //   (float)rectangleUpper.top(),
-            //   (float)rectangleUpper.width(),
-            //   (float)rectangleUpper.height(),
-            //   0.0f, 1.0f };
-            //VkRect2D sc = {
-            //   {
-            //   (float)rectangleUpper.left(),
-            //   (float)rectangleUpper.top(),
-            //   },
-            //   {
-            //            (float)rectangleUpper.width(),
-            //   (float)rectangleUpper.height(),
-
-
-            //}
-            //};
-            //vkCmdSetViewport(prendererUpper->getCurrentCommandBuffer(), 0, 1, &vp);
-            //vkCmdSetScissor(prendererUpper->getCurrentCommandBuffer(), 0, 1, &sc);
+      //      //VkViewport vp = {
+      //      //   (float)rectangleUpper.left(),
+      //      //   (float)rectangleUpper.top(),
+      //      //   (float)rectangleUpper.width(),
+      //      //   (float)rectangleUpper.height(),
+      //      //   0.0f, 1.0f };
+      //      //VkRect2D sc = {
+      //      //   {
+      //      //   (float)rectangleUpper.left(),
+      //      //   (float)rectangleUpper.top(),
+      //      //   },
+      //      //   {
+      //      //            (float)rectangleUpper.width(),
+      //      //   (float)rectangleUpper.height(),
 
 
-         }
+      //      //}
+      //      //};
+      //      //vkCmdSetViewport(prendererUpper->getCurrentCommandBuffer(), 0, 1, &vp);
+      //      //vkCmdSetScissor(prendererUpper->getCurrentCommandBuffer(), 0, 1, &sc);
 
-      }
+
+      //   }
+
+      //}
 
    }
 
