@@ -18,9 +18,9 @@ namespace app_graphics3d_continuum
 BEGIN_GPU_PROPERTIES(point_light)
 GPU_PROPERTY("position", ::gpu::e_type_seq4)
 GPU_PROPERTY("color", ::gpu::e_type_seq4)
-GPU_PROPERTY("radius", ::gpu::e_type_float)
 END_GPU_PROPERTIES()
 
+//GPU_PROPERTY("radius", ::gpu::e_type_float)
 
    // GlobalUbo :
    // glm::mat4 projection{ 1.f };
@@ -36,7 +36,7 @@ GPU_PROPERTY("projection", ::gpu::e_type_mat4)
 GPU_PROPERTY("view", ::gpu::e_type_mat4)
 GPU_PROPERTY("invView", ::gpu::e_type_mat4)
 GPU_PROPERTY("ambientLightColor", ::gpu::e_type_seq4)
-GPU_PROPERTY("pointLights", ::gpu::e_type_properties_array, point_light_properties(), MAX_LIGHTS)
+GPU_PROPERTY("pointLights", point_light_properties(), MAX_LIGHTS)
 GPU_PROPERTY("numLights", ::gpu::e_type_int)
 GPU_PROPERTY("padding1", ::gpu::e_type_float)
 GPU_PROPERTY("padding2", ::gpu::e_type_float)

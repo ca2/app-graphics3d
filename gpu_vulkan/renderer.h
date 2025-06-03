@@ -181,7 +181,7 @@ namespace gpu_vulkan
       int get_frame_index() const override;
       int get_frame_count() const override;
 
-      void defer_update_render_pass();
+      void defer_update_renderer();
 
       //::pointer < ::graphics3d::frame> beginFrame() override;
       //void endFrame() override;

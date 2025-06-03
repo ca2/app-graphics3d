@@ -96,6 +96,29 @@ namespace graphics3d_directx
       //VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
       //uint32_t vertexSize = sizeof(vertices[0]);
 
+
+      //    // Triangle vertex data
+      //struct Vertex { float x, y, z; float r, g, b, a; };
+      //Vertex triangle[] = {
+      //    {  0.0f,  0.5f, 0.0f, 1, 0, 0, 1 },
+      //    {  0.5f, -0.5f, 0.0f, 0, 1, 0, 1 },
+      //    { -0.5f, -0.5f, 0.0f, 0, 0, 1, 1 }
+      //};
+
+      ID3D11Buffer* vbo = nullptr;
+      D3D11_BUFFER_DESC bd = { vertices.size(), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER};
+      D3D11_SUBRESOURCE_DATA initData = { vertices.data()};
+      ::cast < ::gpu_directx::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+      auto hresult = pgpudevice->m_pdevice->CreateBuffer(&bd, &initData, &vbo);
+
+      if (FAILED(hresult))
+      {
+
+         throw ::hresult_exception(hresult);
+
+      }
+
       //auto pbufferStaging = __create_new < ::gpu_directx::buffer >();
 
       //pbufferStaging->initialize_buffer(
@@ -128,6 +151,22 @@ namespace graphics3d_directx
 
    void model::createIndexBuffers(const ::array<uint32_t>& indices) 
    {
+
+
+
+      ID3D11Buffer* vbo = nullptr;
+      D3D11_BUFFER_DESC bd = { indices.size(), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER };
+      D3D11_SUBRESOURCE_DATA initData = { indices.data() };
+      ::cast < ::gpu_directx::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+      auto hresult = pgpudevice->m_pdevice->CreateBuffer(&bd, &initData, &vbo);
+
+      if (FAILED(hresult))
+      {
+
+         throw ::hresult_exception(hresult);
+
+      }
 
       //indexCount = static_cast<uint32_t>(indices.size());
       //hasIndexBuffer = indexCount > 0;
@@ -169,27 +208,43 @@ namespace graphics3d_directx
    void model::draw(::gpu::context* pgpucontext)
    {
 
-      ::cast <::gpu_directx::renderer> pgpurenderer = pgpucontext->m_pgpurenderer;
-
+      //cast <::gpu_directx::renderer> pgpurenderer = pgpucontext->m_pgpurenderer;
+      ::cast <::gpu_directx::context> pcontext = pgpucontext;
       //auto commandBuffer = pgpurenderer->getCurrentCommandBuffer();
 
-      //if (hasIndexBuffer) {
+      if (hasIndexBuffer) {
       //   vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
-      //}
-      //else {
+         pcontext->m_pcontext->DrawIndexed(
+            indexCount,        // Number of indices to draw
+            0,                 // Start index location in the index buffer
+            0                  // Base vertex location (added to each index)
+         );
+      }
+      else {
       //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
-      //}
+         pcontext->m_pcontext->Draw(
+            vertexCount,       // Number of vertices to draw
+            0                  // Start vertex location
+         );
+      }
    }
 
    
    void model::bind(::gpu::context* pgpucontext)
    {
 
-      ::cast <::gpu_directx::renderer> prenderer = pgpucontext->m_pgpurenderer;
+      ::cast <::gpu_directx::context> pcontext = pgpucontext;
 
       //auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
+      UINT stride = sizeof(gpu::Vertex), offset = 0;
+      pcontext->m_pcontext->IASetVertexBuffers(0, 1, &m_pbufferVertex, &stride, &offset);
+      pcontext->m_pcontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+      if (hasIndexBuffer)
+      {
+         pcontext->m_pcontext->IASetIndexBuffer(m_pbufferIndice, DXGI_FORMAT_R32_UINT, 0); // Assuming 32-bit indices
 
+      }
       //VkBuffer buffers[] = { m_pbufferVertex->getBuffer() };
       //VkDeviceSize offsets[] = { 0 };
       //vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);

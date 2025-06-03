@@ -6,8 +6,29 @@ struct PS_INPUT {
     float3 fragNormalWorld : TEXCOORD2;
 };
 
+// Match GLSL std140 layout (float4-aligned)
+struct PointLight {
+    float4 position;
+    float4 color;
+};
+
+// Uniform buffer: GlobalUbo (binding slot b0)
+cbuffer GlobalUbo : register(b0)
+{
+    float4x4 projection;
+    float4x4 view;
+    float4x4 invView;
+    float4 ambientLightColor;
+    PointLight pointLights[10];
+    int numLights;
+    int padding1;
+    int padding2;
+    int padding3;
+};
+
+
 // Output
-float4 main(PS_INPUT input) : SV_TARGET
+float4 PSMain(PS_INPUT input) : SV_TARGET
 {
     float3 diffuseLight = ambientLightColor.rgb * ambientLightColor.a;
     float3 specularLight = float3(0.0, 0.0, 0.0);

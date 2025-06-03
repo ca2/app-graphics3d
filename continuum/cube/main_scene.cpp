@@ -34,7 +34,6 @@ namespace app_graphics3d_continuum
 
       m_pimpact = m_pengine->m_pimpact;
 
-      m_propertiesGlobalUbo.set(::app_graphics3d_continuum::global_ubo_properties());
 
 
    }
@@ -57,6 +56,9 @@ namespace app_graphics3d_continuum
 
    void main_scene::on_load_scene(::gpu::context* pgpucontext)
    {
+
+      m_propertiesGlobalUbo.set(::app_graphics3d_continuum::global_ubo_properties());
+
 
       {
 

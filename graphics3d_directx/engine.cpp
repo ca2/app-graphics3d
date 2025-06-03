@@ -48,7 +48,7 @@ namespace graphics3d_directx
 
       ::cast < ::gpu_directx::renderer> prenderer = m_pgpucontext->m_pgpurenderer;
 
-      prenderer->defer_update_render_pass();
+      prenderer->defer_update_renderer();
 
       ::graphics3d::engine::defer_update_engine(rectanglePlacement);
 
@@ -229,7 +229,7 @@ namespace graphics3d_directx
 
             ::cast < ::gpu_directx::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
 
-            prenderer->defer_update_render_pass();
+            prenderer->defer_update_renderer();
 
             try
             {

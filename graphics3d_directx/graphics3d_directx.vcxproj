@@ -810,6 +810,9 @@
     <ClInclude Include="_directx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\acme_windows_common\acme_windows_common.vcxproj">
+      <Project>{eb9dc9c0-0573-4da0-8700-4dbb371773f1}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\gpu_directx\gpu_directx.vcxproj">
       <Project>{f693b649-3301-4d73-9469-f004ea94708d}</Project>
     </ProjectReference>

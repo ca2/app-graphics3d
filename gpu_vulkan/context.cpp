@@ -2318,6 +2318,20 @@ namespace gpu_vulkan
 
       auto iFrameIndex = m_pgpurenderer->get_frame_index();
 
+      if (iFrameIndex < 0 || iFrameIndex >= m_uboBuffers.size())
+      {
+
+         return;
+
+      }
+
+      if (!m_uboBuffers[iFrameIndex])
+      {
+
+         return;
+
+      }
+
       m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
 
       m_uboBuffers[iFrameIndex]->flush();

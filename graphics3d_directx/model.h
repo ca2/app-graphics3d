@@ -34,11 +34,26 @@ namespace graphics3d_directx
       ::pointer < ::gpu_directx::context > m_pgpucontext;
 
 
-      ::pointer<::gpu_directx::buffer> m_pbufferVertex;
+      //::pointer<::gpu_directx::buffer> m_pbufferVertex;
       uint32_t vertexCount;
 
-      ::pointer<::gpu_directx::buffer> m_pbufferIndex;
+      //::pointer<::gpu_directx::buffer> m_pbufferIndex;
       uint32_t indexCount;
+
+
+      //// Triangle vertex data
+      //struct Vertex { float x, y, z; float r, g, b, a; };
+      //Vertex triangle[] = {
+      //    {  0.0f,  0.5f, 0.0f, 1, 0, 0, 1 },
+      //    {  0.5f, -0.5f, 0.0f, 0, 1, 0, 1 },
+      //    { -0.5f, -0.5f, 0.0f, 0, 0, 1, 1 }
+      //};
+
+      ::comptr<ID3D11Buffer> m_pbufferVertex;
+      ::comptr<ID3D11Buffer> m_pbufferIndice;
+      //D3D11_BUFFER_DESC bd = { sizeof(triangle), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER };
+      //D3D11_SUBRESOURCE_DATA initData = { triangle };
+      //device->CreateBuffer(&bd, &initData, &vbo);
 
 
       //static ::array<VkVertexInputBindingDescription> getVertexBindingDescriptions();

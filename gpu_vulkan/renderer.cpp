@@ -179,7 +179,7 @@ namespace gpu_vulkan
 
       //auto size = m_pimpact->size();
 
-      defer_update_render_pass();
+      defer_update_renderer();
 
       //auto extent = vkcWindow.getExtent();
       //while (extent.width == 0 || extent.height == 0) {
@@ -201,7 +201,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::defer_update_render_pass()
+   void renderer::defer_update_renderer()
    {
 
       if (m_extentRenderer.width == m_pgpucontext->rectangle().width()
@@ -1234,7 +1234,7 @@ namespace gpu_vulkan
          m_bNeedToRecreateSwapChain)
       {
          m_bNeedToRecreateSwapChain = false;
-         defer_update_render_pass();
+         defer_update_renderer();
       }
       else if (result != VK_SUCCESS)
       {
@@ -2883,7 +2883,7 @@ namespace gpu_vulkan
          m_bNeedToRecreateSwapChain)
       {
          m_bNeedToRecreateSwapChain = false;
-         defer_update_render_pass();
+         defer_update_renderer();
       }
       else if (result != VK_SUCCESS)
       {
@@ -3064,7 +3064,7 @@ namespace gpu_vulkan
 
       VkImage image = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
 
-      defer_update_render_pass();
+      defer_update_renderer();
 
       on_new_frame();
 
@@ -3260,7 +3260,7 @@ namespace gpu_vulkan
 
       m_pgpucontext->endSingleTimeCommands(copyCmd);
 
-      defer_update_render_pass();
+      defer_update_renderer();
 
       on_new_frame();
 
