@@ -2884,18 +2884,24 @@ namespace gpu_vulkan
       if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
          m_bNeedToRecreateSwapChain)
       {
+
          m_bNeedToRecreateSwapChain = false;
+
          defer_update_renderer();
+
       }
       else if (result != VK_SUCCESS)
       {
+
          throw ::exception(error_failed, "failed to present swap chain image!");
+
       }
 
       isFrameStarted = false;
 
       if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
       {
+         
          sample();
 
       }

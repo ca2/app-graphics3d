@@ -106,7 +106,7 @@ namespace graphics3d_directx
       //};
 
       ID3D11Buffer* vbo = nullptr;
-      D3D11_BUFFER_DESC bd = { vertices.size(), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER};
+      D3D11_BUFFER_DESC bd = { (UINT) vertices.size(), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER};
       D3D11_SUBRESOURCE_DATA initData = { vertices.data()};
       ::cast < ::gpu_directx::device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
@@ -155,7 +155,7 @@ namespace graphics3d_directx
 
 
       ID3D11Buffer* vbo = nullptr;
-      D3D11_BUFFER_DESC bd = { indices.size(), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER };
+      D3D11_BUFFER_DESC bd = { (UINT) indices.size(), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER };
       D3D11_SUBRESOURCE_DATA initData = { indices.data() };
       ::cast < ::gpu_directx::device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
