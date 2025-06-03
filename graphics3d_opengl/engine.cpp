@@ -179,7 +179,7 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::defer_start(::user::interaction * puserinteraction, const ::int_rectangle& rectanglePlacement)
+   void engine::defer_start(::user::interaction* puserinteraction, const ::int_rectangle& rectanglePlacement)
    {
 
       ::graphics3d::engine::defer_start(puserinteraction, rectanglePlacement);
@@ -343,6 +343,57 @@ namespace graphics3d_opengl
    void engine::on_begin_frame()
    {
 
+
+      //if (m_rectanglePlacementNew.is_empty())
+      //{
+
+      //   return;
+
+      //}
+
+      //m_pgpucontext->set_placement(m_rectanglePlacementNew);
+
+      //auto pdevice = m_pgpucontext->m_pgpudevice;
+
+      //auto pcontextUpper = pdevice->current_context();
+
+      //::gpu::rear_guard rear_guard(pcontextUpper);
+
+      //::gpu::context_guard guard(m_pgpucontext);
+
+      //_prepare_frame();
+
+      //return;
+
+      //// Quad for blending
+      //float quad[] = {
+      //    -1, -1, 0, 0,   1, -1, 1, 0,
+      //    -1,  1, 0, 1,   1,  1, 1, 1
+      //};
+
+      //__defer_construct_new(m_pframebuffer);
+
+      auto rectangle = m_rectanglePlacement;
+
+      auto sizeHost = m_pimpact->top_level()->size();
+
+      float wHost = sizeHost.width();
+      float hHost = sizeHost.height();
+
+      //m_pframebuffer->create(rectangle.size(), true);
+
+      glPushMatrix();
+      glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+      //m_pframebuffer->bind();
+
+      glViewport(0, 0, rectangle.width(), rectangle.height());
+      glEnable(GL_DEPTH_TEST);
+      glDepthMask(GL_TRUE);
+      glDepthFunc(GL_LESS);
+      glClearColor(0.f, 0.f, 0.f, 0.f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
       //// Must match the same binding point as in your C++ side using glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboBuffer)
       //layout(std140) uniform GlobalUbo {
       //   mat4 projection;
@@ -360,7 +411,7 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::do_frame_step(::gpu::context * pcontext)
+   void engine::do_frame_step(::gpu::context* pcontext)
    {
 
       ::graphics3d::engine::do_frame_step(pcontext);
@@ -578,173 +629,173 @@ namespace graphics3d_opengl
    }
 
 
-//   // engine Run
-//   void engine::run()
-//   {
-//      //return true;
-//
-//      float lastFrame = 0.0f;
-//
-//      // Main loop
-//      while (m_Running && !m_pimpact->m_bShouldClose)
-//      {
-//
-//         ::task_iteration();
-//
-//         //{
-//
-//         auto containerW = m_pimpact->m_iWidth;
-//
-//         auto containerH = m_pimpact->m_iHeight;
-//
-//         if (containerW <= 0 || containerH <= 0)
-//         {
-//
-//            continue;
-//
-//         }
-//
-////         auto rectangle = m_pimpact->host_rectangle();
-////
-////         auto sizeHost = m_pimpact->top_level()->raw_rectangle().size();
-////
-////         auto rectangleW = rectangle.width();
-////
-////         auto rectangleH = rectangle.height();
-////
-////         glPushMatrix();
-////         glPushAttrib(GL_ALL_ATTRIB_BITS);
-////
-////         glViewport(rectangle.left(), sizeHost.cy() - rectangleH - rectangle.top(), rectangleW, rectangleH);
-////
-////         glMatrixMode(GL_MODELVIEW);
-////         glLoadIdentity();
-////
-////         //glOrtho(0.0f, rectangleW, 0, rectangleH, -1.0f, 1.0f);  // Flip Y
-////
-////         glEnable(GL_DEPTH_TEST);
-////
-////
-////         glDepthFunc(GL_LESS);
-////
-////
-////         // Frame Logic
-////         float currentFrame = ::time::now().floating_second();
-////         float deltaTime = currentFrame - lastFrame;
-////         lastFrame = currentFrame;
-////
-////         deltaTime = minimum_maximum(deltaTime, 0.001, 0.016666666);
-////
-////         ProcessInput(deltaTime);
-////
-////         // Toggle wireframe mode
-////         if (m_bWireframeMode) {
-////            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Enable wireframe mode
-////         }
-////         else {
-////            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Enable solid mode
-////         }
-////
-////         // Clear the screen
-//////          m_prenderer->Clear();
-////
-////          // Update and render the game (and the current scene)
-////         Update(deltaTime, m_pcamera);
-////         Render(m_prenderer, m_pcamera);
-////
-////         // Swap buffers and poll for events
-////         //m_Window.SwapBuffers();
-////         //m_pimpact->present();
-////         // 
-////         // 
-////
-////         glDisable(GL_DEPTH_TEST);
-////
-////         //}
-////
-////   //            glDepthFunc(GL_LESS);
-////
-////         glPopAttrib();
-////         glPopMatrix();
-////
-////
-////         if (!m_papplication->m_bUseSwapChainWindow
-////            && m_pimpact->m_callbackImage32CpuBuffer)
-////         {
-////            void* p = nullptr;
-////            int w = m_pimpact->m_iWidth;
-////            int h = m_pimpact->m_iHeight;
-////            int stride = w * 4;
-////            m_memoryBuffer.set_size(stride * h);
-////            if (glReadnPixels)
-////            {
-////               glReadnPixels(
-////                  0, 0,
-////                  w, h,
-////                  GL_BGRA,
-////                  GL_UNSIGNED_BYTE,
-////                  m_memoryBuffer.size(),
-////                  m_memoryBuffer.data());
-////            }
-////            else
-////            {
-////               glReadPixels(
-////                  0, 0,
-////                  w, h,
-////                  GL_BGRA,
-////                  GL_UNSIGNED_BYTE,
-////                  m_memoryBuffer.data());
-////
-////            }
-////
-////            m_pimpact->m_callbackImage32CpuBuffer(
-////               m_memoryBuffer.data(),
-////               w,
-////               h,
-////               stride);
-////
-////         }
-////         else
-////         {
-////
-////
-////            m_pimpact->m_callbackImage32CpuBuffer(
-////               nullptr,
-////               0,
-////               0,
-////               0);
-////         }
-//
-//         //glViewport(0, 0, m_sizeHost.cx(), m_sizeHost.cy());
-//
-//
-//         //return true;
-//
-//      //}
-//
-//   //   //)
-//
-//   //   //m_Window.PollEvents();
-//   //   ::task_iteration();
-//      }
-//
-//   }
-//
-
-   //void task::run_loop()
-   //{
-
-   //   while (task_get_run())
+   //   // engine Run
+   //   void engine::run()
    //   {
-
-   //      task_run(0_s);
-
+   //      //return true;
+   //
+   //      float lastFrame = 0.0f;
+   //
+   //      // Main loop
+   //      while (m_Running && !m_pimpact->m_bShouldClose)
+   //      {
+   //
+   //         ::task_iteration();
+   //
+   //         //{
+   //
+   //         auto containerW = m_pimpact->m_iWidth;
+   //
+   //         auto containerH = m_pimpact->m_iHeight;
+   //
+   //         if (containerW <= 0 || containerH <= 0)
+   //         {
+   //
+   //            continue;
+   //
+   //         }
+   //
+   ////         auto rectangle = m_pimpact->host_rectangle();
+   ////
+   ////         auto sizeHost = m_pimpact->top_level()->raw_rectangle().size();
+   ////
+   ////         auto rectangleW = rectangle.width();
+   ////
+   ////         auto rectangleH = rectangle.height();
+   ////
+   ////         glPushMatrix();
+   ////         glPushAttrib(GL_ALL_ATTRIB_BITS);
+   ////
+   ////         glViewport(rectangle.left(), sizeHost.cy() - rectangleH - rectangle.top(), rectangleW, rectangleH);
+   ////
+   ////         glMatrixMode(GL_MODELVIEW);
+   ////         glLoadIdentity();
+   ////
+   ////         //glOrtho(0.0f, rectangleW, 0, rectangleH, -1.0f, 1.0f);  // Flip Y
+   ////
+   ////         glEnable(GL_DEPTH_TEST);
+   ////
+   ////
+   ////         glDepthFunc(GL_LESS);
+   ////
+   ////
+   ////         // Frame Logic
+   ////         float currentFrame = ::time::now().floating_second();
+   ////         float deltaTime = currentFrame - lastFrame;
+   ////         lastFrame = currentFrame;
+   ////
+   ////         deltaTime = minimum_maximum(deltaTime, 0.001, 0.016666666);
+   ////
+   ////         ProcessInput(deltaTime);
+   ////
+   ////         // Toggle wireframe mode
+   ////         if (m_bWireframeMode) {
+   ////            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Enable wireframe mode
+   ////         }
+   ////         else {
+   ////            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Enable solid mode
+   ////         }
+   ////
+   ////         // Clear the screen
+   //////          m_prenderer->Clear();
+   ////
+   ////          // Update and render the game (and the current scene)
+   ////         Update(deltaTime, m_pcamera);
+   ////         Render(m_prenderer, m_pcamera);
+   ////
+   ////         // Swap buffers and poll for events
+   ////         //m_Window.SwapBuffers();
+   ////         //m_pimpact->present();
+   ////         // 
+   ////         // 
+   ////
+   ////         glDisable(GL_DEPTH_TEST);
+   ////
+   ////         //}
+   ////
+   ////   //            glDepthFunc(GL_LESS);
+   ////
+   ////         glPopAttrib();
+   ////         glPopMatrix();
+   ////
+   ////
+   ////         if (!m_papplication->m_bUseSwapChainWindow
+   ////            && m_pimpact->m_callbackImage32CpuBuffer)
+   ////         {
+   ////            void* p = nullptr;
+   ////            int w = m_pimpact->m_iWidth;
+   ////            int h = m_pimpact->m_iHeight;
+   ////            int stride = w * 4;
+   ////            m_memoryBuffer.set_size(stride * h);
+   ////            if (glReadnPixels)
+   ////            {
+   ////               glReadnPixels(
+   ////                  0, 0,
+   ////                  w, h,
+   ////                  GL_BGRA,
+   ////                  GL_UNSIGNED_BYTE,
+   ////                  m_memoryBuffer.size(),
+   ////                  m_memoryBuffer.data());
+   ////            }
+   ////            else
+   ////            {
+   ////               glReadPixels(
+   ////                  0, 0,
+   ////                  w, h,
+   ////                  GL_BGRA,
+   ////                  GL_UNSIGNED_BYTE,
+   ////                  m_memoryBuffer.data());
+   ////
+   ////            }
+   ////
+   ////            m_pimpact->m_callbackImage32CpuBuffer(
+   ////               m_memoryBuffer.data(),
+   ////               w,
+   ////               h,
+   ////               stride);
+   ////
+   ////         }
+   ////         else
+   ////         {
+   ////
+   ////
+   ////            m_pimpact->m_callbackImage32CpuBuffer(
+   ////               nullptr,
+   ////               0,
+   ////               0,
+   ////               0);
+   ////         }
+   //
+   //         //glViewport(0, 0, m_sizeHost.cx(), m_sizeHost.cy());
+   //
+   //
+   //         //return true;
+   //
+   //      //}
+   //
+   //   //   //)
+   //
+   //   //   //m_Window.PollEvents();
+   //   //   ::task_iteration();
+   //      }
+   //
    //   }
+   //
 
-   //}
+      //void task::run_loop()
+      //{
+
+      //   while (task_get_run())
+      //   {
+
+      //      task_run(0_s);
+
+      //   }
+
+      //}
 
 
-   void engine::on_layout(const ::int_rectangle & rectanglePlacement)
+   void engine::on_layout(const ::int_rectangle& rectanglePlacement)
    {
 
       ::graphics3d::engine::on_layout(rectanglePlacement);
