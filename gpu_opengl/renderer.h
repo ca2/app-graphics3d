@@ -23,7 +23,7 @@ namespace gpu_opengl
 
       GLuint m_VAOFullScreenQuad;
       GLuint m_VBOFullScreenQuad;
-      ::pointer < ::gpu_opengl::shader > m_pshaderBlend; 
+      ::pointer < ::gpu::shader > m_pshaderBlend; 
 
       GLuint m_vaoQuadBlend, m_vboQuadBlend;
 

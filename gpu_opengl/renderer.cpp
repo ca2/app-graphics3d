@@ -996,7 +996,9 @@ void main() {
 
                      int iGlError2 = glGetError();
 
-                     m_pshaderBlend->_set_int("uTexture", 0);
+                     ::cast < ::gpu_opengl::shader > pshaderBlend = m_pshaderBlend;
+
+                     pshaderBlend->_set_int("uTexture", 0);
 
                      if (!m_VAOFullScreenQuad)
                      {

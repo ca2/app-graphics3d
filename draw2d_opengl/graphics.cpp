@@ -301,7 +301,12 @@ namespace draw2d_opengl
       //if (__defer_construct(m_pgpucontextOpenGL))
       //{
 
-      m_pgpucontext->create_cpu_buffer(rectanglePlacement.size());
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      {
+
+         m_pgpucontext->create_cpu_buffer(rectanglePlacement.size());
+
+      }
 
       //}
 
