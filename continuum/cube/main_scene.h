@@ -19,7 +19,6 @@ namespace app_graphics3d_continuum
 
 
 
-      ::pointer < impact >                   m_pimpact;
       ::pointer < simple_render_system >		m_psimplerendersystem;
       ::pointer < point_light_system >			m_ppointlightsystem;
 

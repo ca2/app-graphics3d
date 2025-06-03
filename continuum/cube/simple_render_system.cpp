@@ -180,7 +180,7 @@ namespace app_graphics3d_continuum
 			//	sizeof(SimplePushConstantData),
 			//	&push);
 
-			if (obj->m_pmodel)
+			if (obj && obj->m_pmodel)
 			{
 
 				m_pshader->set_mat4("modelMatrix", obj->m_transform.mat4());

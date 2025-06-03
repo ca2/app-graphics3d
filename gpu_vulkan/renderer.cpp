@@ -2953,6 +2953,7 @@ namespace gpu_vulkan
 
       if (1)
       {
+
          auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
 
          VkImageMemoryBarrier barrier = {

@@ -32,9 +32,9 @@ namespace app_graphics3d_continuum
    void main_scene::on_initialize_scene()
    {
 
-      m_pimpact = m_pengine->m_pimpact;
+      scene::on_initialize_particle();
 
-
+      m_pusergraphics3d = m_pengine->m_pusergraphics3d;
 
    }
 

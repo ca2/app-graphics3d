@@ -179,10 +179,10 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::defer_start(::user::interaction* puserinteraction, const ::int_rectangle& rectanglePlacement)
+   void engine::defer_start(::user::graphics3d* pusergraphics3d, const ::int_rectangle& rectanglePlacement)
    {
 
-      ::graphics3d::engine::defer_start(puserinteraction, rectanglePlacement);
+      ::graphics3d::engine::defer_start(pusergraphics3d, rectanglePlacement);
 
       //auto papp = get_app();
 
@@ -375,10 +375,11 @@ namespace graphics3d_opengl
 
       auto rectangle = m_rectanglePlacement;
 
-      auto sizeHost = m_pimpact->top_level()->size();
+      auto sizeHost = m_pusergraphics3d->top_level()->size();
 
-      float wHost = sizeHost.width();
-      float hHost = sizeHost.height();
+      float wHost = (float) sizeHost.width();
+
+      float hHost = (float) sizeHost.height();
 
       //m_pframebuffer->create(rectangle.size(), true);
 
