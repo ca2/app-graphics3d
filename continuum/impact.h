@@ -52,11 +52,13 @@ namespace app_graphics3d_continuum
 
       DECLARE_MESSAGE_HANDLER(on_message_create);
       DECLARE_MESSAGE_HANDLER(on_message_destroy);
-      void on_load_engine() override;
+      //void on_load_engine() override;
       
       bool on_click(::item * pitem, ::user::mouse * pmouse) override;
       
       //bool is_absolute_mouse_position() override;
+
+      ::pointer < ::graphics3d::scene > create_main_scene() override;
 
       //void on_load_engine() override;
 

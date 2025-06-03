@@ -388,16 +388,22 @@ namespace app_graphics3d_continuum
    //}
 
 
-   void impact::on_load_engine()
+   ::pointer < ::graphics3d::scene > impact::create_main_scene()
    {
 
-      ::user::graphics3d::on_load_engine();
+      auto psceneMain = create_scene < main_scene >("main");
 
-      auto psceneMain = add_scene < main_scene >("main");
-
-      m_pengine->set_current_scene(psceneMain);
+      return psceneMain;
 
    }
+
+
+   //void impact::on_load_engine()
+   //{
+
+   //   ::user::graphics3d::on_load_engine();
+
+   //}
 
 
    ::pointer < ::graphics3d::key_map > impact::get_default_key_map()

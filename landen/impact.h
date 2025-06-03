@@ -80,9 +80,13 @@ namespace app_graphics3d_landen
          return ::object::decrement_reference_count();
       }
       bool keyboard_focus_is_focusable() override;
+      
+      
+      ::pointer < ::graphics3d::scene > create_main_scene();
 
 
-      void on_load_engine() override;
+
+      //void on_load_engine() override;
 
       ::pointer < ::graphics3d::key_map > get_default_key_map() override;
 
