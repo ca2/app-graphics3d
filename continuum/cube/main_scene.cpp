@@ -34,6 +34,9 @@ namespace app_graphics3d_continuum
 
       m_pimpact = m_pengine->m_pimpact;
 
+      m_propertiesGlobalUbo.set(::app_graphics3d_continuum::global_ubo_properties());
+
+
    }
 
 
@@ -142,7 +145,7 @@ namespace app_graphics3d_continuum
    void main_scene::on_update_global_ubo(::gpu::context* pgpucontext)
    {
 
-      auto& globalubo = m_pimpact->m_propertiesGlobalUbo;
+      auto& globalubo = this->global_ubo();
 
       //::graphics3d::GlobalUbo ubo{};
       globalubo["projection"] = m_pengine->m_pcamera->getProjection();

@@ -25,8 +25,7 @@ namespace app_graphics3d_continuum
 
 
 
-   impact::impact() :
-      m_propertiesGlobalUbo(global_ubo_properties())
+   impact::impact()
    {
 
       m_emouse = ::graphics3d::e_mouse_updateLook;
@@ -110,6 +109,7 @@ namespace app_graphics3d_continuum
 
       //application()->show_about_box();
     
+      //m_propertiesGlobalUbo.set(global_ubo_properties());
 
    }
 
@@ -305,12 +305,6 @@ namespace app_graphics3d_continuum
 
    }
 
-   ::block impact::global_ubo_block()
-   {
-
-      return m_propertiesGlobalUbo.m_block;
-
-   }
    void impact::on_layout(::draw2d::graphics_pointer & pgraphics)
    {
 

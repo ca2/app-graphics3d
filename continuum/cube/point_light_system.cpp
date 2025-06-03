@@ -176,9 +176,7 @@ namespace app_graphics3d_continuum
 
       auto dt = m_pengine->dt();
 
-      ::cast < impact > pimpact = m_pengine->m_pimpact;
-
-      auto& globalubo = pimpact->m_propertiesGlobalUbo;
+      auto& globalubo = pscene->global_ubo();
 
       auto rotateLight = glm::rotate(glm::mat4(1.f), 0.5f * dt, { 0.f, -1.f, 0.f });
 

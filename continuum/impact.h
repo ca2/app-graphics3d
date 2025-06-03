@@ -19,7 +19,6 @@ namespace app_graphics3d_continuum
       ::write_text::font_pointer       m_pfontThomasBS_;
       string                           m_strFont1;
       int                              m_iSequence;
-      ::gpu::properties                m_propertiesGlobalUbo;
 
 
       impact();
@@ -47,7 +46,7 @@ namespace app_graphics3d_continuum
       document * get_document();
 
 
-      ::block global_ubo_block() override;
+      //s::block global_ubo_block() override;
 
       void on_layout(::draw2d::graphics_pointer & pgraphics) override;
 
