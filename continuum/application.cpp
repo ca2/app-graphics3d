@@ -137,8 +137,6 @@ namespace app_graphics3d_continuum
       
 #endif
 
-
-
    }
 
 
