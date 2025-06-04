@@ -41,11 +41,13 @@ namespace app_graphics3d_continuum
 
    ::pointer < ::graphics3d::camera > main_scene::get_default_camera()
    {
-      glm::vec3 camera = glm::vec3(0.0f, 1.0f, 3.0f);
+      //glm::vec3 camera = glm::vec3(0.0f, 1.0f *m_pengine->m_fYScale, 3.0f);
+      glm::vec3 camera = glm::vec3(0.0f, 1.0f , 3.0f);
       glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f); // Look at origin
       //glm::vec3 direction = glm::normalize(target - cameraPos);
       //camera camera{ glm::vec3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
       auto pcamera = __øcreate < ::graphics3d::camera>();
+      pcamera->m_pengine = m_pengine;
       pcamera->initialize_camera(target, camera);
       //pcamera->m_pimpact = m_pimpact;
       return pcamera;
@@ -59,12 +61,15 @@ namespace app_graphics3d_continuum
 
       m_propertiesGlobalUbo.set(::app_graphics3d_continuum::global_ubo_properties());
 
+      float fXScale;
+
+      fXScale = m_pengine->m_fYScale;
 
       {
 
          auto & flatVase = tinyobjloader_object("matter://models/flat_vase.obj");
          flatVase.translate({ -.5f, 0.f, 0.f });
-         flatVase.scale({3.f, -1.5f, 3.f}); // The vase is upside down.
+         flatVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
 
       }
 
@@ -72,7 +77,7 @@ namespace app_graphics3d_continuum
 
          auto & floor = tinyobjloader_object("matter://models/quad.obj");
          floor.translate({0.f, 0.f, 0.f});
-         floor.scale({5.f, -1.f, 5.f});
+         floor.scale({5.f, -1.f, 5.f * fXScale });
 
       }
 
@@ -80,7 +85,7 @@ namespace app_graphics3d_continuum
 
          auto & smoothVase = tinyobjloader_object("matter://models/smooth_vase.obj");
          smoothVase.translate({.5f, .0f, 0.f});
-         smoothVase.scale({3.f, -1.5f, 3.f}); // The vase is upside down.
+         smoothVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
 
       }
 
@@ -88,7 +93,7 @@ namespace app_graphics3d_continuum
 
          auto & stoneSphere = tinyobjloader_object("matter://models/StoneSphere.obj");
          stoneSphere.translate({ .0f, 0.5f, 0.f });
-         stoneSphere.scale({.25f, .25f, .25f});
+         stoneSphere.scale({.25f, .25f, .25f });
 
       }
 
@@ -96,7 +101,7 @@ namespace app_graphics3d_continuum
 
          auto & woodBarrel = tinyobjloader_object("matter://models/Barrel_OBJ.obj");
          woodBarrel.translate({ 1.f, 0.f, 1.0f });
-         woodBarrel.scale({1.f, 1.f, 1.f});
+         woodBarrel.scale({1.f, 1.f, 1.f });
 
       }
 
@@ -120,7 +125,7 @@ namespace app_graphics3d_continuum
             (i * glm::two_pi<float>()) / lightColors.size(),
             { 0.f, 1.f, 0.f });
          pointLight->m_pointlightcomponent.lightIntensity = 1.0f;
-         pointLight->m_transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, 1.7f, 0.5f, 1.f));
+         pointLight->m_transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, 1.7f, 0.5f , 1.f));
          add_object(pointLight);
 
       }

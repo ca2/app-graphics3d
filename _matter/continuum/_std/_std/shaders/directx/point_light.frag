@@ -36,7 +36,7 @@ struct PSIn
 };
 
 // Output
-float4 PSMain(PSIn input) : SV_TARGET
+float4 main(PSIn input) : SV_TARGET
 {
     float dis = sqrt(dot(input.fragOffset, input.fragOffset));
     if (dis >= 1.0f)

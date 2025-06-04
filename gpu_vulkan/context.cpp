@@ -11,6 +11,8 @@
 #include "aura/graphics/image/image.h"
 #include "aura/graphics/gpu/types.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
 #include "glm/mat4x4.hpp"
 #include "initializers.h"
 
@@ -1667,7 +1669,7 @@ namespace gpu_vulkan
    void context::_translate_shader(string_array & stra)
    {
 
-      context::_translate_shader(stra);
+      gpu::context::_translate_shader(stra);
 
       character_count iFindPrecision = stra.case_insensitive_find_first_begins("precision ");
 

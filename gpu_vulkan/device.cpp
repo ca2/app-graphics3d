@@ -1622,7 +1622,7 @@ namespace gpu_vulkan
    void device::_translate_shader(string_array& stra)
    {
 
-      device::_translate_shader(stra);
+      gpu::device::_translate_shader(stra);
 
       character_count iFindPrecision = stra.case_insensitive_find_first_begins("precision ");
 

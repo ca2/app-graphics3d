@@ -9,6 +9,9 @@
 ////#include "window.h"
 //#include "acme/constant/user_key.h"
 //#include "aura/graphics/graphics3d/key_map.h"
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
+
 //#include <glm/glm.hpp>
 //
 //

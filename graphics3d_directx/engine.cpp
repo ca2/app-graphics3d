@@ -31,7 +31,7 @@ namespace graphics3d_directx
 
    engine::engine()
    {
-
+      m_fYScale = -1.0f;
 
    }
 
@@ -185,6 +185,13 @@ namespace graphics3d_directx
    //   auto pathFolder = pathShader.folder();
 
    //   return pathFolder / "directx/SpirV" / (pathShader.name() + ".spv");
+
+   //}
+
+   //glm::vec3 engine::camera_pole_up()
+   //{
+
+   //   return { 0.0f, -1.0f, 0.0f };
 
    //}
 

@@ -9,13 +9,13 @@
 #include "acme/filesystem/filesystem/path_system.h"
 
 
-// lib headers
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
-
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
+
+// lib headers
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
 
 // std
 #include <cassert>

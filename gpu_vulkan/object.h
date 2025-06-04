@@ -2,6 +2,8 @@
 #pragma once
 
 
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "acme/prototype/geometry3d/location.h"

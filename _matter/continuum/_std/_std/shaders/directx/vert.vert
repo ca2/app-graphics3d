@@ -42,12 +42,12 @@ cbuffer ObjectMatrices : register(b1)
 };
 
 // Main vertex shader
-VS_OUTPUT VSMain(VS_INPUT input)
+VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
 
     float4 positionWorld = mul(float4(input.position, 1.0f), modelMatrix);      // model * vec
-    output.pos = mul(positionWorld, mul(view, projection));                    // projection * view * model * vec
+    output.pos = mul(mul(positionWorld, view), projection);                    // projection * view * model * vec
     output.fragNormalWorld = normalize(mul((float3x3)normalMatrix, input.normal));
     output.fragPosWorld = positionWorld.xyz;
     output.fragColor = input.color;

@@ -28,14 +28,14 @@ cbuffer GlobalUbo : register(b0)
 
 
 // Output
-float4 PSMain(PS_INPUT input) : SV_TARGET
+float4 main(PS_INPUT input) : SV_TARGET
 {
     float3 diffuseLight = ambientLightColor.rgb * ambientLightColor.a;
     float3 specularLight = float3(0.0, 0.0, 0.0);
     float3 surfaceNormal = normalize(input.fragNormalWorld);
 
     // Extract camera position from invView matrix (row-major)
-    float3 cameraPosWorld = float3(invView._41, invView._42, invView._43);
+    float3 cameraPosWorld = float3(invView._41, invView._42, invView._41);
     float3 viewDirection = normalize(cameraPosWorld - input.fragPosWorld);
 
     for (int i = 0; i < numLights; ++i)

@@ -6,6 +6,8 @@
 #include "brush.h"
 #include "image.h"
 #include "color.h"
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
 #include <glm/glm.hpp>
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/parallelization/task.h"

@@ -9,6 +9,8 @@
 
 
 // libs
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_FORCE_LEFT_HANDED
 #include <glm/gtc/matrix_transform.hpp>
 
 //// std
@@ -62,7 +64,7 @@ namespace graphics3d_directx
 		//void update_global_ubo(::gpu::context* pgpucontext) override;
 		//void on_render_frame() override;
 
-
+		//glm::vec3 camera_pole_up() override;
 
 		
 	};

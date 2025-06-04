@@ -6,14 +6,14 @@
 #include "aura/graphics/graphics3d/types.h"
 
 #define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL
 
 
 #pragma warning(push, 0)
-#define GLM_FORCE_SILENT_WARNINGS
+//#define GLM_FORCE_SILENT_WARNINGS
 #define GLM_ENABLE_EXPERIMENTAL
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glad.h>
 //#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>

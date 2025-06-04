@@ -183,9 +183,15 @@ namespace app_graphics3d_continuum
 			if (obj && obj->m_pmodel)
 			{
 
-				m_pshader->set_mat4("modelMatrix", obj->m_transform.mat4());
+				auto pszPath = obj->m_strPath.c_str();
 
-				m_pshader->set_mat4("normalMatrix", obj->m_transform.normalMatrix());
+				auto modelMatrix = m_pengine->model_matrix(obj->m_transform);
+
+				m_pshader->m_properties["modelMatrix"] = modelMatrix;
+
+				auto normalMatrix = m_pengine->normal_matrix(obj->m_transform);
+
+				m_pshader->m_properties["normalMatrix"] = normalMatrix;
 
 				m_pshader->push_properties();
 				

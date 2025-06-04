@@ -744,7 +744,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="camera.cpp" />
     <ClCompile Include="scene_object.cpp" />
     <ClCompile Include="aaa_buffer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -770,13 +769,10 @@
     </ClCompile>
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="initializers.cpp" />
-    <ClCompile Include="input.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="offscreen.cpp" />
-    <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="render_pass.cpp" />
-    <ClCompile Include="shader.cpp" />
     <ClCompile Include="swap_chain.cpp" />
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="window.cpp" />

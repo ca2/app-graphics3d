@@ -713,7 +713,8 @@ namespace gpu_vulkan
          imagedata,
          m_vkextent2d.width,
          m_vkextent2d.height,
-         (int)subResourceLayout.rowPitch);
+         (int)subResourceLayout.rowPitch,
+         true);
 
       //_synchronous_lock synchronouslock(m_pgpucontext->m_pmutexOffscreen);
       //   m_pgpucontext->m_sizeOffscreen.cx() = m_vkextent2d.width;

@@ -36,7 +36,7 @@ struct VSOut
 };
 
 // Vertex shader entry point
-VSOut VSMain(uint vertexID : SV_VertexID)
+VSOut main(uint vertexID : SV_VertexID)
 {
     VSOut output;
 
@@ -62,7 +62,7 @@ VSOut VSMain(uint vertexID : SV_VertexID)
         radius * fragOffset.x * cameraRightWorld +
         radius * fragOffset.y * cameraUpWorld;
 
-    float4 posClip = mul(projection, mul(view, float4(positionWorld, 1.0f)));
+    float4 posClip = mul(float4(positionWorld, 1.0f), mul(view, projection));
     output.pos = posClip;
 
     return output;

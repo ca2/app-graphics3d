@@ -16,13 +16,17 @@
 #include "gpu_directx/renderer.h"
 
 
+
+#define GLM_ENABLE_EXPERIMENTAL
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_FORCE_LEFT_HANDED
+#include <glm/gtx/hash.hpp>
+
+
 // lib headers
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/hash.hpp>
 
 // std
 //#include <cassert>
@@ -96,6 +100,22 @@ namespace graphics3d_directx
       //VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
       //uint32_t vertexSize = sizeof(vertices[0]);
 
+      
+      ::array<::gpu::Vertex> a;
+
+      a.copy(vertices);
+
+      for (int i = 0; i < a.size(); i+=3)
+      {
+         auto& item2 = a[i + 1];
+         //auto& item3 = a[i + 2];
+         //swap(item2, item3);
+         // item.uv.y = 1.0f-item.uv.y;
+         //item.position.x = -item.position.x;
+         //item.position.y = -item.position.y;
+         // item.position.z = 1.0 - item.position.z;
+         //item.position.z = - item.position.z;
+      }
 
       //    // Triangle vertex data
       //struct Vertex { float x, y, z; float r, g, b, a; };
@@ -105,12 +125,24 @@ namespace graphics3d_directx
       //    { -0.5f, -0.5f, 0.0f, 0, 0, 1, 1 }
       //};
 
-      ID3D11Buffer* vbo = nullptr;
-      D3D11_BUFFER_DESC bd = { (UINT) vertices.size(), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER};
-      D3D11_SUBRESOURCE_DATA initData = { vertices.data()};
+      //ID3D11Buffer* vbo = nullptr;
+      int iCount = vertices.size();
+      int iTypeSize = sizeof(::gpu::Vertex);
+      int iMyCalculatedTotalSizeInBytes = iTypeSize * iCount;
+      int iFrameworkCalculatedTotalSizeInBytes = a.get_size_in_bytes();
+      D3D11_BUFFER_DESC bd =
+      { (UINT)
+         iFrameworkCalculatedTotalSizeInBytes,
+         D3D11_USAGE_DEFAULT, 
+         D3D11_BIND_VERTEX_BUFFER
+      };
+      D3D11_SUBRESOURCE_DATA initData = 
+      {
+         a.data()
+      };
       ::cast < ::gpu_directx::device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
-      auto hresult = pgpudevice->m_pdevice->CreateBuffer(&bd, &initData, &vbo);
+      auto hresult = pgpudevice->m_pdevice->CreateBuffer(&bd, &initData, &m_pbufferVertex);
 
       if (FAILED(hresult))
       {
@@ -152,24 +184,36 @@ namespace graphics3d_directx
    void model::createIndexBuffers(const ::array<uint32_t>& indices) 
    {
 
+      indexCount = static_cast<uint32_t>(indices.size());
+      hasIndexBuffer = indexCount > 0;
 
-
-      ID3D11Buffer* vbo = nullptr;
-      D3D11_BUFFER_DESC bd = { (UINT) indices.size(), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER };
-      D3D11_SUBRESOURCE_DATA initData = { indices.data() };
-      ::cast < ::gpu_directx::device > pgpudevice = m_pgpucontext->m_pgpudevice;
-
-      auto hresult = pgpudevice->m_pdevice->CreateBuffer(&bd, &initData, &vbo);
-
-      if (FAILED(hresult))
+      if (hasIndexBuffer)
       {
+         //ID3D11Buffer* vbo = nullptr;
+         D3D11_BUFFER_DESC bd =
+         { 
+            (UINT)indices.get_size_in_bytes(), 
+            D3D11_USAGE_DEFAULT, 
+            D3D11_BIND_INDEX_BUFFER 
+         };
 
-         throw ::hresult_exception(hresult);
+         D3D11_SUBRESOURCE_DATA initData = 
+         { 
+            indices.data() 
+         };
+         ::cast < ::gpu_directx::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+         auto hresult = pgpudevice->m_pdevice->CreateBuffer(&bd, &initData, &m_pbufferIndice);
+
+         if (FAILED(hresult))
+         {
+
+            throw ::hresult_exception(hresult);
+
+         }
 
       }
 
-      //indexCount = static_cast<uint32_t>(indices.size());
-      //hasIndexBuffer = indexCount > 0;
 
       //if (!hasIndexBuffer) {
       //   return;
@@ -238,11 +282,13 @@ namespace graphics3d_directx
       //auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
       UINT stride = sizeof(gpu::Vertex), offset = 0;
-      pcontext->m_pcontext->IASetVertexBuffers(0, 1, &m_pbufferVertex, &stride, &offset);
+      auto p = m_pbufferVertex.m_p;
+      pcontext->m_pcontext->IASetVertexBuffers(0, 1, &p, &stride, &offset);
       pcontext->m_pcontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       if (hasIndexBuffer)
       {
-         pcontext->m_pcontext->IASetIndexBuffer(m_pbufferIndice, DXGI_FORMAT_R32_UINT, 0); // Assuming 32-bit indices
+         auto p = m_pbufferIndice.m_p;
+         pcontext->m_pcontext->IASetIndexBuffer(p, DXGI_FORMAT_R32_UINT, 0); // Assuming 32-bit indices
 
       }
       //VkBuffer buffers[] = { m_pbufferVertex->getBuffer() };
