@@ -65,46 +65,6 @@ namespace app_graphics3d_continuum
    void application::init_instance()
    {
 
-      ::file::path pathImplementation = directory()->home() / "graphics3d.txt";
-
-      ::string strImplementation = file()->safe_get_string(pathImplementation);
-
-
-      if (strImplementation == "directx")
-      {
-         m_strImplementation = "directx";
-      }
-      else if (strImplementation == "opengl")
-      {
-         m_strImplementation = "opengl";
-      }
-      else if (strImplementation == "vulkan")
-      {
-         m_strImplementation = "vulkan";
-      }
-      else
-      {
-
-         m_strImplementation = "opengl";
-
-      }
-
-      ::file::path pathOutput = directory()->home() / "graphics3d_output.txt";
-
-      ::string strOutput = file()->safe_get_string(pathOutput);
-
-      if (strOutput == "swap_chain")
-      {
-
-         m_bUseSwapChainWindow = true;
-
-      }
-      else
-      {
-
-         m_bUseSwapChainWindow = false;
-
-      }
 
       factory()->add_factory_item <::app_graphics3d_continuum::document >();
       factory()->add_factory_item <::app_graphics3d_continuum::main_frame >();
@@ -148,36 +108,6 @@ namespace app_graphics3d_continuum
    }
 
 
-   ::string application::draw2d_get_default_implementation_name()
-   {
-
-      if (m_bUseSwapChainWindow)
-      {
-
-         if (m_strImplementation == "vulkan")
-         {
-
-            //return system()->implementation_name("draw2d", "vkvg");
-
-            return system()->implementation_name("draw2d", "vulkan");
-
-         }
-         else
-         {
-
-            return system()->implementation_name("draw2d", m_strImplementation);
-
-         }
-
-      }
-      else
-      {
-
-         return ::core::application::draw2d_get_default_implementation_name();
-
-      }
-
-   }
 
 
    void application::on_request(::request * prequest)
@@ -371,11 +301,14 @@ namespace app_graphics3d_continuum
       return m_bAbsoluteMousePosition;
 
    }
-   ::string application::graphics3d_get_implementation_name()
-   {
 
-      return m_strImplementation;
-   }
+
+   //::string application::graphics3d_get_implementation_name()
+   //{
+
+   //   return m_strImplementation;
+   //}
+
 
 } // namespace app_graphics3d_continuum
 

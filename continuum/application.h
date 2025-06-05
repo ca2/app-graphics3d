@@ -14,7 +14,6 @@ namespace app_graphics3d_continuum
    public:
 
 
-      ::string m_strImplementation;
       bool m_bAbsoluteMousePosition;
 
       pane_impact* m_ppaneimpact;
@@ -45,9 +44,9 @@ namespace app_graphics3d_continuum
 
 
       bool is_absolute_mouse_position();
-      ::string graphics3d_get_implementation_name() override;
+      //::string graphics3d_get_implementation_name() override;
 
-      ::string draw2d_get_default_implementation_name() override;
+      //::string draw2d_get_default_implementation_name() override;
 
 
    };
