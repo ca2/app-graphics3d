@@ -6,6 +6,7 @@
 #include "aura/graphics/draw2d/draw2d.h"
 #include "gpu_vulkan/context.h"
 
+
 namespace draw2d_vulkan
 {
 
@@ -62,6 +63,11 @@ namespace draw2d_vulkan
 
       //virtual private_font * get_file_private_font(::platform::context * pcontext, const ::file::path & path);
       virtual int  vulkan_init();
+
+
+      void adjust_composited_window_styles(unsigned int& nExStyle, unsigned int& nStyle) override;
+     
+
 
    };
 

@@ -8,6 +8,7 @@
 #include "gpu_opengl/context.h"
 #include "face.h"
 
+
 namespace draw2d_opengl
 {
 
@@ -65,6 +66,10 @@ namespace draw2d_opengl
 
       //virtual private_font * get_file_private_font(::platform::context * pcontext, const ::file::path & path);
       virtual int  opengl_init();
+
+
+      void adjust_composited_window_styles(unsigned int& nExStyle, unsigned int& nStyle) override;
+
 
    };
 

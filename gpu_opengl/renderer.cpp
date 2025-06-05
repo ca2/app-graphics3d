@@ -922,8 +922,8 @@ namespace gpu_opengl
                // render
                on_begin_render(pframe);
 
-               //m_pgpucontext->clear(::argb(127, 140 / 2, 220 / 2, 240 / 2));
-               m_pgpucontext->clear(::color::transparent);
+               m_pgpucontext->clear(::argb(127, 140 / 2, 220 / 2, 240 / 2));
+               //m_pgpucontext->clear(::color::transparent);
 
 
                if (1)
