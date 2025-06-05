@@ -57,6 +57,8 @@ namespace graphics3d_directx
 
 		void on_begin_frame() override;
 
+		void on_after_done_frame_step(::draw2d::graphics_pointer& pgraphics);
+
 
 		void on_render_frame() override;
 

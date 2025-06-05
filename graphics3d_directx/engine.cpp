@@ -13,8 +13,12 @@
 #include "gpu_directx/context.h"
 #include "gpu_directx/descriptors.h"
 #include "gpu_directx/renderer.h"
+#include "gpu_directx/offscreen_render_target_view.h"
+#include "draw2d_direct2d/_.h"
+#include "draw2d_direct2d/graphics.h"
 #include "aura/graphics/graphics3d/camera.h"
 #include "aura/graphics/graphics3d/scene.h"
+#include "aura/windowing/window.h"
 //#include "aura/graphics/graphics3d/system/simple_render_system.h"
 //#include "aura/graphics/graphics3d/system/point_light_system.h"
 #include "acme/platform/application.h"
@@ -536,8 +540,109 @@ namespace graphics3d_directx
    }
 
 
+   void engine::on_after_done_frame_step(::draw2d::graphics_pointer& pgraphics)
+   {
+
+      ::cast < ::draw2d_direct2d::graphics > pgraphics2d = pgraphics;
+
+      if (pgraphics2d)
+      {
+
+         ::cast< ::gpu_directx::context > pgpucontext = m_pgpucontext;
+         ::cast< ::gpu_directx::renderer > prenderer = pgpucontext->m_pgpurenderer;
+         auto prendertargetview = prenderer->m_prendertargetview;
+         ::cast < ::gpu_directx::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
+         ::cast< ::gpu_directx::device > pgpudevice = pgpucontext->m_pgpudevice;
+         ID3D11Device* device = pgpudevice->m_pdevice;
+         ID3D11DeviceContext* context = pgpucontext->m_pcontext;
+         ID3D11Texture2D* offscreenTexture = poffscreenrendertargetview->m_ptextureOffscreen;
+         if (!device || !context || !offscreenTexture)
+         {
+            throw ::exception(error_wrong_state);
+         }
 
 
+
+         //D3D11_TEXTURE2D_DESC texDesc = {};
+         //texDesc.Width = width;
+         //texDesc.Height = height;
+         //texDesc.MipLevels = 1;
+         //texDesc.ArraySize = 1;
+         //texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+         //texDesc.SampleDesc.Count = 1;
+         //texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+         //texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
+
+         // ... Create texture using device->CreateTexture2D
+
+         // 2. Wrap the texture in a DXGI surface
+         comptr<IDXGISurface> dxgiSurface;
+         offscreenTexture->QueryInterface(IID_PPV_ARGS(&dxgiSurface));
+
+         // 3. Create the Direct2D bitmap
+         D2D1_BITMAP_PROPERTIES1 bitmapProps =
+            D2D1::BitmapProperties1(
+               D2D1_BITMAP_OPTIONS_NONE,
+               D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
+            );
+
+         comptr<ID2D1Bitmap1> bitmap;
+         pgraphics2d->m_pdevicecontext->CreateBitmapFromDxgiSurface(
+            dxgiSurface,
+            &bitmapProps,
+            &bitmap
+         );
+
+         // 4. Draw into the D2D1RenderTarget
+         //d2dDeviceContext->BeginDraw();
+
+         auto r = pgpucontext->m_rectangle;
+
+         //pgraphics2d->m_pdevicecontext->DrawBitmap(
+         //   bitmap,
+         //   D2D1::RectF(r.left(), r.top(), r.width(), r.height()),
+         //   1.0f, // opacity
+         //   D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
+         //   nullptr // source rect (optional)
+         //);
+
+         auto puserinteration = pgraphics2d->m_puserinteraction;
+
+         
+
+
+            ::int_rectangle rHost = r;
+            if (puserinteration)
+            {
+
+               auto pwindow = puserinteration->window();
+
+               if (pwindow)
+               {
+
+                  rHost = pwindow->get_window_rectangle();
+
+               }
+
+            }
+            int iBottom= r.bottom();
+
+            int iHostBottom = rHost.height();
+
+            int iTop = r.top();
+
+            int iNewTop = iHostBottom - iBottom;
+
+         pgraphics2d->m_pdevicecontext->DrawImage(
+            bitmap,
+            D2D1::Point2F(0.f, 0.f),
+            D2D1::RectF(r.left(), iNewTop, r.width(), r.height()),
+            D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+            D2D1_COMPOSITE_MODE_SOURCE_OVER);
+
+      }
+
+   }
 
 } // graphics3d_directx
 
