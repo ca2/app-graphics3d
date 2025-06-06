@@ -19,16 +19,16 @@ namespace gpu_directx12
    public:
 
 
-      comptr<ID3D11Device>                            m_pdevice;
-      comptr<ID3D11Device1>                           m_pdevice1;
+      comptr<ID3D12Device>                            m_pdevice;
+      //comptr<ID3D11Device1>                           m_pdevice1;
       comptr<IDXGIDevice>                             m_pdxgidevice;
-      comptr<IDXGIFactory2>                          m_pdxgifactory2;
-      comptr<IDXGISwapChain1>                          m_pdxgiswapchain1;
-      comptr<ID3D11DeviceContext>                     m_pdevicecontext;
+      comptr<IDXGIFactory4>                           m_pdxgifactory2;
+      comptr<IDXGISwapChain3>                         m_pdxgiswapchain1;
+      //comptr<ID3D11DeviceContext>                     m_pdevicecontext;
       ::pointer<::windowing::window>                  m_pimpl;
 
-      ::comptr<ID3D11Texture2D>                       m_ptextureBackBuffer;
-      ::comptr<ID3D11RenderTargetView>                m_prendertargetviewBackBuffer;
+      //::comptr<ID3D12Texture2D>                       m_ptextureBackBuffer;
+      //::comptr<ID3D12RenderTargetView>                m_prendertargetviewBackBuffer;
 
       D3D_FEATURE_LEVEL                               m_featurelevel;
 

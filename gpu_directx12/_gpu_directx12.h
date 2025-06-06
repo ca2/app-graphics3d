@@ -14,12 +14,14 @@
 //#include <windows.h>
 //#include <shlwapi.h>
 //#include <wrl/client.h>
-#include <DXGI1_2.h>
-#include <D3D11.h>
-#include <D3D11_1.h>
-#include <Dxgi1_3.h>
+#include <DXGI1_6.h>
+#include <D3D12.h>
+//#include <D3D12_1.h>
+//#include <Dxgi1_3.h>
+#include <D3Dcompiler.h>
+#include <DirectXMath.h>
 #include <Initguid.h>
-#include <DXGIDebug.h>
+//#include <DXGIDebug.h>
 
 
 // Windows Desktop Thread Local Storage for Draw2d Direct2d plugin

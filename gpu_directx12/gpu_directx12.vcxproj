@@ -35,7 +35,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F693B649-3301-4D73-9469-F004EA94708D}</ProjectGuid>
+    <ProjectGuid>{ED8870D6-1C4F-45F2-A162-A021DA869F26}</ProjectGuid>
     <RootNamespace>app</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
@@ -916,6 +916,9 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
     <None Include="shader\shader.vert.spv.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\acme_windows_common\acme_windows_common.vcxproj">
+      <Project>{eb9dc9c0-0573-4da0-8700-4dbb371773f1}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\source\app\acme\acme.vcxproj">
       <Project>{638b242f-0f21-41c3-9f66-724660046133}</Project>
     </ProjectReference>
@@ -927,9 +930,6 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
     </ProjectReference>
     <ProjectReference Include="..\..\..\source\app\aura\aura.vcxproj">
       <Project>{e000ffaf-392f-4e32-bf51-fd7ed638991f}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\acme_windows_common\acme_windows_common.vcxproj">
-      <Project>{eb9dc9c0-0573-4da0-8700-4dbb371773f1}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

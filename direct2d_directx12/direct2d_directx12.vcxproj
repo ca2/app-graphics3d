@@ -35,7 +35,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2F21F158-1DD5-43F6-9FAD-01FB77A81EC5}</ProjectGuid>
+    <ProjectGuid>{EB65E61B-F57C-4790-9B78-95771D8B3D6B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>direct2d_directx12</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
@@ -722,6 +722,9 @@
     <ResourceCompile Include="deployment.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\acme_windows_common\acme_windows_common.vcxproj">
+      <Project>{eb9dc9c0-0573-4da0-8700-4dbb371773f1}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\source\app\acme\acme.vcxproj">
       <Project>{638b242f-0f21-41c3-9f66-724660046133}</Project>
     </ProjectReference>
@@ -733,9 +736,6 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\source\app\aura\aura.vcxproj">
       <Project>{e000ffaf-392f-4e32-bf51-fd7ed638991f}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\acme_windows_common\acme_windows_common.vcxproj">
-      <Project>{eb9dc9c0-0573-4da0-8700-4dbb371773f1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\gpu_directx12\gpu_directx12.vcxproj">
       <Project>{f693b649-3301-4d73-9469-f004ea94708d}</Project>
