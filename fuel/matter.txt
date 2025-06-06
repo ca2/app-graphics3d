@@ -1,2 +1,0 @@
-app/main
-app-graphics3d/fuel
