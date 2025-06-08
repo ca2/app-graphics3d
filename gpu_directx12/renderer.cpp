@@ -126,6 +126,17 @@ namespace gpu_directx12
    }
 
 
+   ID3D12GraphicsCommandList* renderer::getCurrentCommandList() 
+   {
+      assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
+
+      return m_pgraphicscommandlist;
+      //return commandBuffers[get_frame_index()];
+
+   }
+
+
+
    int renderer::get_frame_index() const
    {
 
@@ -323,6 +334,41 @@ namespace gpu_directx12
    void renderer::createCommandBuffers()
    {
 
+      ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+
+      // 2. Create command queue
+      D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+      queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+      pdevice->m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
+
+
+      for (int i = 0; i < get_frame_count(); i++)
+      {
+
+         auto& pcommandallocator = m_commandallocatora.element_at_grow(i);
+
+         HRESULT hr = pdevice->m_pdevice->CreateCommandAllocator(
+            D3D12_COMMAND_LIST_TYPE_DIRECT,  // Type: DIRECT for graphics
+            __interface_of(pcommandallocator)
+         );
+
+      }
+
+      // 4. Create command list (can be reused)
+      pdevice->m_pdevice->CreateCommandList(
+         0,
+         D3D12_COMMAND_LIST_TYPE_DIRECT,
+         m_commandallocatora[get_frame_index()], // initial allocator
+         nullptr, // No PSO yet
+         __interface_of(m_pgraphicscommandlist)
+      );
+
+
+      m_pgraphicscommandlist->Close(); // Must be closed before Reset()
+
+      // 5. Create fence + event for GPU sync
+      pdevice->m_pdevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, __interface_of(m_pfence));
+      m_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
       //commandBuffers.resize(render_target_view::MAX_FRAMES_IN_FLIGHT);
 
       //VkCommandBufferAllocateInfo allocInfo{};
@@ -335,6 +381,24 @@ namespace gpu_directx12
       //   VK_SUCCESS) {
       //   throw ::exception(error_failed, "failed to allocate command buffers!");
       //}
+
+   }
+
+
+   // Sync CPU to GPU so we can reuse this frame's allocator
+   void renderer::WaitForGpu()
+   {
+      const UINT64 fenceValue = ++m_fences[get_frame_index()];
+      m_pcommandqueue->Signal(m_pfence, fenceValue);
+
+      if (m_pfence->GetCompletedValue() < fenceValue)
+      {
+         m_pfence->SetEventOnCompletion(fenceValue, m_hFenceEvent);
+         WaitForSingleObject(m_hFenceEvent, INFINITE);
+      }
+
+      m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % get_frame_count();
+
 
    }
 
@@ -576,53 +640,107 @@ namespace gpu_directx12
    }
 
 
-   void renderer::cpu_buffer_sampler::sample(ID3D11Texture2D * ptexture)
+   void renderer::cpu_buffer_sampler::sample(ID3D12Resource * presourceTexture, D3D12_CPU_DESCRIPTOR_HANDLE handleTexture)
    {
 
-      D3D11_TEXTURE2D_DESC desc;
+      //D3D11_TEXTURE2D_DESC desc;
 
-      ptexture->GetDesc(&desc);
+      m_desc = presourceTexture->GetDesc();
+      //EnsureStagingTextureMatches(pTexture, desc);
+
+
 
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
-      if (desc.Width != m_size.width() || desc.Height != m_size.height())
+      if (m_desc.Width != m_size.width() || m_desc.Height != m_size.height())
       {
 
-         m_ptextureStaging.Release();
+         m_presourceStagingTexture.Release();
 
-         //m_pimagetarget->m_imagebuffer.set_storing_fla
-         //if (outWidth) *outWidth = desc.Width;
-         //if (outHeight) *outHeight = desc.Height;
-
-         if (desc.Format != DXGI_FORMAT_B8G8R8A8_UNORM) {
-            printf("Unsupported format for readback.\n");
-            throw ::exception(error_wrong_state);
-         }
-
-         D3D11_TEXTURE2D_DESC stagingDesc = desc;
-         stagingDesc.BindFlags = 0;
-         stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-         stagingDesc.Usage = D3D11_USAGE_STAGING;
-         stagingDesc.MiscFlags = 0;
-
-         ::cast < ::gpu_directx12::device > pdevice = pcontext->m_pgpudevice;
-
-         if (FAILED(pdevice->m_pdevice->CreateTexture2D(&stagingDesc, NULL, &m_ptextureStaging)))
+         if (m_desc.Format != DXGI_FORMAT_B8G8R8A8_UNORM)
          {
-            printf("Failed to create staging texture.\n");
-            throw ::exception(error_wrong_state);
+            //printf("Unsupported format for readback.\n");
+            throw ::exception(error_failed, "Unsupported format");
          }
 
-         m_size.cx() = desc.Width;
-         m_size.cy() = desc.Height;
+         auto rowPitch = ((m_desc.Width * 4 /*bytes per pixel*/) + 255) & ~255; // must align to 256 bytes
+         auto bufferSize = rowPitch * m_desc.Height;
+
+         D3D12_HEAP_PROPERTIES heapProps = {};
+         heapProps.Type = D3D12_HEAP_TYPE_READBACK;
+
+         D3D12_RESOURCE_DESC bufferDesc = {};
+         bufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+         bufferDesc.Width = bufferSize;
+         bufferDesc.Height = 1;
+         bufferDesc.DepthOrArraySize = 1;
+         bufferDesc.MipLevels = 1;
+         bufferDesc.Format = DXGI_FORMAT_UNKNOWN;
+         bufferDesc.SampleDesc.Count = 1;
+         bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+         ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
+
+         ::defer_throw_hresult(pdevice->m_pdevice->CreateCommittedResource(
+            &heapProps,
+            D3D12_HEAP_FLAG_NONE,
+            &bufferDesc,
+            D3D12_RESOURCE_STATE_COPY_DEST,
+            nullptr,
+            __interface_of(m_presourceStagingTexture)));
+
+         m_size.cx() = (int)m_desc.Width;
+         m_size.cy() = (int)m_desc.Height;
 
 
       }
 
-      pcontext->m_pcontext->Flush();
+      //pcontext->m_pcontext->Flush();
 
-      pcontext->m_pcontext->CopyResource((ID3D11Resource*)m_ptextureStaging, (ID3D11Resource*)ptexture);
+      //pcontext->m_pcontext->CopyResource((ID3D11Resource*)m_ptextureStaging, (ID3D11Resource*)ptexture);
 
+
+      // Setup footprint
+      UINT64 totalBytes = 0;
+      
+      m_pgpucontext->m_pgpudevice->m_pdevice->GetCopyableFootprints(
+         &m_desc,
+         0, 1, 0,
+         &m_footprint, nullptr, nullptr, &totalBytes);
+
+      //::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
+
+      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
+
+      
+      auto pcommandlist = prenderer->getCurrentCommandList();
+
+      // Transition to copy source
+      D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+         m_presourceStagingTexture,
+         D3D12_RESOURCE_STATE_RENDER_TARGET, // Adjust if needed
+         D3D12_RESOURCE_STATE_COPY_SOURCE
+      );
+      pcommandlist->ResourceBarrier(1, &barrier);
+
+      auto location1 = CD3DX12_TEXTURE_COPY_LOCATION(m_presourceStagingTexture, m_footprint);
+
+      auto location2 = CD3DX12_TEXTURE_COPY_LOCATION(presourceTexture, 0);
+      // Copy to staging buffer
+      pcommandlist->CopyTextureRegion(
+         &location1,
+         0, 0, 0,
+         &location2,
+         nullptr
+      );
+
+      // (Optional) transition back
+      barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+         presourceTexture,
+         D3D12_RESOURCE_STATE_COPY_SOURCE,
+         D3D12_RESOURCE_STATE_RENDER_TARGET
+      );
+      pcommandlist->ResourceBarrier(1, &barrier);
 
       //stagingTexture->lpVtbl->Release(stagingTexture);
 
@@ -717,124 +835,146 @@ namespace gpu_directx12
    void renderer::cpu_buffer_sampler::send_sample()
    {
 
-      D3D11_MAPPED_SUBRESOURCE mapped;
+         void* data = nullptr;
+         m_presourceStagingTexture->Map(0, nullptr, &data);
 
-      ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
+         // You can now read `m_size.cy()` rows, each of aligned pitch `footprint.Footprint.RowPitch`
 
-      D3D11_TEXTURE2D_DESC desc;
+         // Example:
+         uint8_t* row = reinterpret_cast<uint8_t*>(data);
+         for (int y = 0; y < m_size.cy(); ++y)
+         {
+            auto pixel = reinterpret_cast<uint32_t*>(row);
+            for (int x = 0; x < m_size.cx(); ++x)
+            {
+               uint32_t rgba = pixel[x];
+               // process pixel
+            }
+            row += m_footprint.Footprint.RowPitch;
+         }
 
-      m_ptextureStaging->GetDesc(&desc);
-
-      if (FAILED(pcontext->m_pcontext->Map((ID3D11Resource*)m_ptextureStaging, 0, D3D11_MAP_READ, 0, &mapped)))
-      {
-         
-         warning() << "Failed to map staging texture.";
-         
-         throw ::exception(error_wrong_state);
-
-      }
-
-      int width = desc.Width;
-      int height = desc.Height;
-      UINT rowPitch = mapped.RowPitch;
-      auto data = mapped.pData;
-
-      //m_pimagetarget->m_pimage->create({ width, height });
-
-      // Allocate RGBA buffer (contiguous memory)
-      //auto lock = m_pimagetarget->no_padded_lock(::image::e_copy_disposition_none);
-
-      //if (!lock.data()) {
-      //   context->Unmap((ID3D11Resource*)stagingTexture, 0);
-      //   throw ::exception(error_wrong_state);
+         m_presourceStagingTexture->Unmap(0, nullptr);
       //}
 
-      auto pgpucontext = m_pgpucontext;
 
-      auto pcpubuffer = pgpucontext->m_pcpubuffer;
+   //   D3D11_MAPPED_SUBRESOURCE mapped;
 
-      pcpubuffer->set_pixels(
-         data,
-         width,
-         height,
-         (int)rowPitch,
-         //false);
-         false);
+   //   ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
-      //// Copy row by row
-      //for (UINT y = 0; y < height; ++y) {
-      //   memcpy(lock.data() + y * width, (unsigned char*)mapped.pData + y * rowPitch, width * 4);
-      //}
+   //   D3D11_TEXTURE2D_DESC desc;
 
-      pcontext->m_pcontext->Unmap((ID3D11Resource*)m_ptextureStaging, 0);
-   //   if (!m_vkimage || !m_vkdevicememory)
+   //   m_ptextureStaging->GetDesc(&desc);
+
+   //   if (FAILED(pcontext->m_pcontext->Map((ID3D11Resource*)m_ptextureStaging, 0, D3D11_MAP_READ, 0, &mapped)))
    //   {
-
-   //      return;
+   //      
+   //      warning() << "Failed to map staging texture.";
+   //      
+   //      throw ::exception(error_wrong_state);
 
    //   }
 
-   //   //auto pimpact = m_pgpucontext->m_pimpact;
+   //   int width = desc.Width;
+   //   int height = desc.Height;
+   //   UINT rowPitch = mapped.RowPitch;
+   //   auto data = mapped.pData;
 
-   //   //auto callback = pimpact->m_callbackImage32CpuBuffer;
+   //   //m_pimagetarget->m_pimage->create({ width, height });
 
-   //   //auto callback = m_prenderer->m_callbackImage32CpuBuffer;
+   //   // Allocate RGBA buffer (contiguous memory)
+   //   //auto lock = m_pimagetarget->no_padded_lock(::image::e_copy_disposition_none);
 
-   //   // Get layout of the image (including row pitch)
-   //   VkImageSubresource subResource{};
-   //   subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-   //   VkSubresourceLayout subResourceLayout;
+   //   //if (!lock.data()) {
+   //   //   context->Unmap((ID3D11Resource*)stagingTexture, 0);
+   //   //   throw ::exception(error_wrong_state);
+   //   //}
 
-   //   vkGetImageSubresourceLayout(m_pgpucontext->logicalDevice(), m_vkimage, &subResource, &subResourceLayout);
+   //   auto pgpucontext = m_pgpucontext;
 
-   //   const char* imagedata = nullptr;
-   //   // Map image memory so we can start copying from it
-   //   vkMapMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
-   //   imagedata += subResourceLayout.offset;
+   //   auto pcpubuffer = pgpucontext->m_pcpubuffer;
 
-   //   /*
-   //      Save host visible framebuffer image to disk (ppm format)
-   //   */
+   //   pcpubuffer->set_pixels(
+   //      data,
+   //      width,
+   //      height,
+   //      (int)rowPitch,
+   //      //false);
+   //      false);
 
-   //   //::memory mem;
+   //   //// Copy row by row
+   //   //for (UINT y = 0; y < height; ++y) {
+   //   //   memcpy(lock.data() + y * width, (unsigned char*)mapped.pData + y * rowPitch, width * 4);
+   //   //}
 
-   //   //mem.set_size(m_width * m_height * 4);
+   //   pcontext->m_pcontext->Unmap((ID3D11Resource*)m_ptextureStaging, 0);
+   ////   if (!m_vkimage || !m_vkdevicememory)
+   ////   {
 
-   //   //::array<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
-   //   //const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
-   //   //{
+   ////      return;
 
-      //auto pgpucontext = m_pgpucontext;
+   ////   }
 
-      //auto pcpubuffer = pgpucontext->m_pcpubuffer;
+   ////   //auto pimpact = m_pgpucontext->m_pimpact;
 
-      //pcpubuffer->set_pixels(
-      //   imagedata,
-      //   m_vkextent2d.width,
-      //   m_vkextent2d.height,
-      //   (int)subResourceLayout.rowPitch);
+   ////   //auto callback = pimpact->m_callbackImage32CpuBuffer;
 
-   //   //_synchronous_lock synchronouslock(m_pgpucontext->m_pmutexOffscreen);
-   //   //   m_pgpucontext->m_sizeOffscreen.cx() = m_vkextent2d.width;
-   //   //m_pgpucontext->m_sizeOffscreen.cy() = m_vkextent2d.height;
-   //   //m_pgpucontext->m_iScanOffscreen = subResourceLayout.rowPitch;
-   //   //auto area = m_pgpucontext->m_iScanOffscreen * m_pgpucontext->m_sizeOffscreen.cy();
-   //   //m_pgpucontext->m_memoryOffscreen.set_size(area);
-   //   //m_pgpucontext->m_memoryOffscreen.assign(imagedata, area);
-   //   //callback((void *)imagedata,
-   //     // m_vkextent2d.width,
-   //      //m_vkextent2d.height,
-   //      //subResourceLayout.rowPitch);
+   ////   //auto callback = m_prenderer->m_callbackImage32CpuBuffer;
 
-   ////}
-   ////else
-   ////{
+   ////   // Get layout of the image (including row pitch)
+   ////   VkImageSubresource subResource{};
+   ////   subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   ////   VkSubresourceLayout subResourceLayout;
+
+   ////   vkGetImageSubresourceLayout(m_pgpucontext->logicalDevice(), m_vkimage, &subResource, &subResourceLayout);
+
+   ////   const char* imagedata = nullptr;
+   ////   // Map image memory so we can start copying from it
+   ////   vkMapMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
+   ////   imagedata += subResourceLayout.offset;
+
+   ////   /*
+   ////      Save host visible framebuffer image to disk (ppm format)
+   ////   */
+
+   ////   //::memory mem;
+
+   ////   //mem.set_size(m_width * m_height * 4);
+
+   ////   //::array<VkFormat> formatsBGR = { VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SNORM };
+   ////   //const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
+   ////   //{
+
+   //   //auto pgpucontext = m_pgpucontext;
+
+   //   //auto pcpubuffer = pgpucontext->m_pcpubuffer;
+
+   //   //pcpubuffer->set_pixels(
+   //   //   imagedata,
+   //   //   m_vkextent2d.width,
+   //   //   m_vkextent2d.height,
+   //   //   (int)subResourceLayout.rowPitch);
+
+   ////   //_synchronous_lock synchronouslock(m_pgpucontext->m_pmutexOffscreen);
+   ////   //   m_pgpucontext->m_sizeOffscreen.cx() = m_vkextent2d.width;
+   ////   //m_pgpucontext->m_sizeOffscreen.cy() = m_vkextent2d.height;
+   ////   //m_pgpucontext->m_iScanOffscreen = subResourceLayout.rowPitch;
+   ////   //auto area = m_pgpucontext->m_iScanOffscreen * m_pgpucontext->m_sizeOffscreen.cy();
+   ////   //m_pgpucontext->m_memoryOffscreen.set_size(area);
+   ////   //m_pgpucontext->m_memoryOffscreen.assign(imagedata, area);
+   ////   //callback((void *)imagedata,
+   ////     // m_vkextent2d.width,
+   ////      //m_vkextent2d.height,
+   ////      //subResourceLayout.rowPitch);
+
+   //////}
+   //////else
+   //////{
 
 
-   ////}
+   //////}
 
 
-   //   vkUnmapMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory);
+   ////   vkUnmapMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory);
 
    }
 
@@ -848,22 +988,22 @@ namespace gpu_directx12
 
       //m_pgpucontext->m_pcpubuffer->gpu_read();
 
-      ///auto& memory = m_pimagetarget->m_imagebuffer.m_memory;
-      ::cast< context > pgpucontext = m_pgpucontext;
-      ::cast< renderer > prenderer = pgpucontext->m_pgpurenderer;
-      auto prendertargetview = prenderer->m_prendertargetview;
-      ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
-      ::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
-      ID3D11Device* device = pgpudevice->m_pdevice;
-      ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-      ID3D11Texture2D* offscreenTexture = poffscreenrendertargetview->m_ptextureOffscreen;
-      if (!device || !context || !offscreenTexture)
-      {
-         throw ::exception(error_wrong_state);
-      }
+      /////auto& memory = m_pimagetarget->m_imagebuffer.m_memory;
+      //::cast< context > pgpucontext = m_pgpucontext;
+      //::cast< renderer > prenderer = pgpucontext->m_pgpurenderer;
+      //auto prendertargetview = prenderer->m_prendertargetview;
+      //::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
+      //::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
+      //ID3D11Device* device = pgpudevice->m_pdevice;
+      //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
+      //ID3D11Texture2D* offscreenTexture = poffscreenrendertargetview->m_ptextureOffscreen;
+      //if (!device || !context || !offscreenTexture)
+      //{
+      //   throw ::exception(error_wrong_state);
+      //}
 
 
-      m_pcpubuffersampler->sample(offscreenTexture);
+      //m_pcpubuffersampler->sample(offscreenTexture);
 
       //auto callback = m_callbackImage32CpuBuffer;
 
@@ -3129,7 +3269,20 @@ namespace gpu_directx12
 
 ///pcontext->g_pImmediateContext->OMSetRenderTargets(1, rtv.GetAddressOf(), nullptr);
 
-      pcontext->m_pcontext->ClearRenderTargetView(m_prendertargetview->m_prendertargetview, clear);
+      ///pcontext->m_pcontext->ClearRenderTargetView(m_prendertargetview->m_prendertargetview, clear);
+
+      // Assumes:
+// - commandList is a valid ID3D12GraphicsCommandList*
+// - rtvHandle is a valid D3D12_CPU_DESCRIPTOR_HANDLE to the render target view
+// - clearColor is a float[4] array (same as in DX11)
+
+// Example clear color
+      float clearColor[4] = { 0.1f, 0.2f, 0.3f, 1.0f };
+
+      auto pcommandlist = getCurrentCommandList();
+
+      // Issue the clear command
+      pcommandlist->ClearRenderTargetView(m_prendertargetview->m_handleTextureRenderTargetView, clearColor, 0, nullptr);
 
       ////}
       on_happening(e_happening_begin_render);

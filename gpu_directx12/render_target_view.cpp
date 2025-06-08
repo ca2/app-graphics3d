@@ -399,69 +399,131 @@ namespace gpu_directx12
    void render_target_view::createDepthResources()
    {
 
-      D3D11_TEXTURE2D_DESC depthDesc = {};
-      depthDesc.Width = m_size.cx();
-      depthDesc.Height = m_size.cy();
+
+      int width = m_size.cx();
+      int height = m_size.cy();   
+
+      //UINT width,
+      //   UINT height,
+      //   ComPtr<ID3D12DescriptorHeap>& dsvHeap,
+      //   ComPtr<ID3D12Resource>& depthStencilBuffer)
+
+
+
+      ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+
+      D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+      dsvHeapDesc.NumDescriptors = 1;
+      dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+      dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+      pdevice->m_pdevice->CreateDescriptorHeap(&dsvHeapDesc, __interface_of(m_pheapDepthStencilBuffer));
+
+      // 2. Describe depth stencil resource
+      D3D12_RESOURCE_DESC depthDesc = {};
+      depthDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+      depthDesc.Width = width;
+      depthDesc.Height = height;
       depthDesc.MipLevels = 1;
-      depthDesc.ArraySize = 1;
-      int MorePrecisionNoStencil = 0;
-      if (MorePrecisionNoStencil)
-      {
-         depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
-      }
-      else
-      {
-         depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-      }
+      depthDesc.DepthOrArraySize = 1;
+      depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
       depthDesc.SampleDesc.Count = 1;
-      depthDesc.Usage = D3D11_USAGE_DEFAULT;
-      depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+      depthDesc.SampleDesc.Quality = 0;
+      depthDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+      depthDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
-      auto pdevice = pgpudevice->m_pdevice;
+      D3D12_CLEAR_VALUE depthClearValue = {};
+      depthClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+      depthClearValue.DepthStencil.Depth = 1.0f;
+      depthClearValue.DepthStencil.Stencil = 0;
 
-      HRESULT hrCreateTexture = pdevice->CreateTexture2D(&depthDesc, nullptr, &m_ptextureDepthStencil);
+      CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
 
-      if (FAILED(hrCreateTexture))
-      {
+      // 3. Create depth stencil resource
+      pdevice->m_pdevice->CreateCommittedResource(
+         &heapproperties,
+         D3D12_HEAP_FLAG_NONE,
+         &depthDesc,
+         D3D12_RESOURCE_STATE_DEPTH_WRITE,
+         &depthClearValue,
+         __interface_of(m_presourceDepthStencilBuffer));
 
-         throw ::hresult_exception(hrCreateTexture);
+      // 4. Create DSV
+      D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+      dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+      dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+      dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
 
-      }
-      D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+      m_handleDepthStencilView = m_pheapDepthStencilBuffer->GetCPUDescriptorHandleForHeapStart();
+      
+      pdevice->m_pdevice->CreateDepthStencilView(m_presourceDepthStencilBuffer, &dsvDesc, m_handleDepthStencilView);
 
-      if (MorePrecisionNoStencil)
-      {
 
-         dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-         dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-      }
-      HRESULT hrCreateDepthStencilView = pdevice->CreateDepthStencilView(
-         m_ptextureDepthStencil,
-         MorePrecisionNoStencil ? &dsvDesc: nullptr, &m_pdepthstencilview);
+   //}
 
-      if (FAILED(hrCreateDepthStencilView))
-      {
+   //   
+   //   D3D11_TEXTURE2D_DESC depthDesc = {};
+   //   depthDesc.Width = m_size.cx();
+   //   depthDesc.Height = m_size.cy();
+   //   depthDesc.MipLevels = 1;
+   //   depthDesc.ArraySize = 1;
+   //   int MorePrecisionNoStencil = 0;
+   //   if (MorePrecisionNoStencil)
+   //   {
+   //      depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
+   //   }
+   //   else
+   //   {
+   //      depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+   //   }
+   //   depthDesc.SampleDesc.Count = 1;
+   //   depthDesc.Usage = D3D11_USAGE_DEFAULT;
+   //   depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+   //   ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
-         throw ::hresult_exception(hrCreateDepthStencilView);
+   //   auto pdevice = pgpudevice->m_pdevice;
 
-      }
+   //   HRESULT hrCreateTexture = pdevice->CreateTexture2D(&depthDesc, nullptr, &m_ptextureDepthStencil);
 
-      //ID3D11DepthStencilState* depthStencilState = nullptr;
+   //   if (FAILED(hrCreateTexture))
+   //   {
 
-      D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-      dsDesc.DepthEnable = TRUE;
-      dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-      dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+   //      throw ::hresult_exception(hrCreateTexture);
 
-      HRESULT hrCreateDepthStencilState = pdevice->CreateDepthStencilState(&dsDesc, &m_pdepthstencilstate);
+   //   }
+   //   D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 
-      if (FAILED(hrCreateDepthStencilState))
-      {
+   //   if (MorePrecisionNoStencil)
+   //   {
 
-         throw ::hresult_exception(hrCreateDepthStencilState);
+   //      dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+   //      dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+   //   }
+   //   HRESULT hrCreateDepthStencilView = pdevice->CreateDepthStencilView(
+   //      m_ptextureDepthStencil,
+   //      MorePrecisionNoStencil ? &dsvDesc: nullptr, &m_pdepthstencilview);
 
-      }
+   //   if (FAILED(hrCreateDepthStencilView))
+   //   {
+
+   //      throw ::hresult_exception(hrCreateDepthStencilView);
+
+   //   }
+
+   //   //ID3D11DepthStencilState* depthStencilState = nullptr;
+
+   //   D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+   //   dsDesc.DepthEnable = TRUE;
+   //   dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+   //   dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+   //   HRESULT hrCreateDepthStencilState = pdevice->CreateDepthStencilState(&dsDesc, &m_pdepthstencilstate);
+
+   //   if (FAILED(hrCreateDepthStencilState))
+   //   {
+
+   //      throw ::hresult_exception(hrCreateDepthStencilState);
+
+   //   }
 
 
 

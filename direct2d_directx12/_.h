@@ -27,16 +27,18 @@
 
 
 
-interface IDWriteFactory;
-interface ID2D1Factory1;
-
-
-interface IDWriteFactory;
-interface ID2D1Factory1;
-interface ID3D11Device;
-interface ID3D11DeviceContext;
-interface ID3D11Device1;
-interface IDXGIDevice;
+//
+//
+//interface IDWriteFactory;
+//interface ID2D1Factory1;
+//
+//
+//interface IDWriteFactory;
+//interface ID2D1Factory1;
+//interface ID3D11Device;
+//interface ID3D11DeviceContext;
+//interface ID3D11Device1;
+//interface IDXGIDevice;
 
 
 //CLASS_DECL_AURA ID2D1Factory1 * get_d2d1_factory1(bool bCreate = true);
@@ -48,15 +50,15 @@ interface IDXGIDevice;
 //CLASS_DECL_AURA IDXGIDevice * global_draw_get_dxgi_device();
 //CLASS_DECL_AURA ID2D1Device * global_draw_get_d2d1_device();
 
-
-CLASS_DECL_AURA float point_dpi(oswindow hwnd, float points);
-CLASS_DECL_AURA float dpiy(oswindow hwnd, float y);
-CLASS_DECL_AURA float dpix(oswindow hwnd, float y);
-CLASS_DECL_AURA float y_dpi(oswindow hwnd, float y);
-CLASS_DECL_AURA float x_dpi(oswindow hwnd, float y);
-
-
-CLASS_DECL_DIRECT2D_DIRECTX12 DWRITE_FONT_WEIGHT dwrite_font_weight(const write_text::font_weight & fontweight);
+//
+//CLASS_DECL_AURA float point_dpi(oswindow hwnd, float points);
+//CLASS_DECL_AURA float dpiy(oswindow hwnd, float y);
+//CLASS_DECL_AURA float dpix(oswindow hwnd, float y);
+//CLASS_DECL_AURA float y_dpi(oswindow hwnd, float y);
+//CLASS_DECL_AURA float x_dpi(oswindow hwnd, float y);
+//
+//
+//CLASS_DECL_DIRECT2D_DIRECTX12 DWRITE_FONT_WEIGHT dwrite_font_weight(const write_text::font_weight & fontweight);
 
 
 //
@@ -117,52 +119,52 @@ CLASS_DECL_DIRECT2D_DIRECTX12 DWRITE_FONT_WEIGHT dwrite_font_weight(const write_
 //} // namespace draw2d
 //
 
+//
+//inline void copy(D2D1_POINT_2F & pointDst, const ::double_point & pointSrc)
+//{
+//   
+//   pointDst.x = (FLOAT)pointSrc.x();
+//   pointDst.y = (FLOAT)pointSrc.y();
+//
+//}
+//
+//
+//inline D2D1_COLOR_F & copy(D2D1_COLOR_F & colorTarget, const ::color::color & color)
+//{
+//
+//   colorTarget.a = color.f32_opacity();
+//   colorTarget.r = color.f32_red();
+//   colorTarget.g = color.f32_green();
+//   colorTarget.b = color.f32_blue();
+//
+//   return colorTarget;
+//
+//}
+//
+//
+//inline D2D1_COLOR_F & copy(D2D1_COLOR_F & colorTarget, const ::color32_t & color)
+//{
+//
+//   colorTarget.a = color.f32_opacity();
+//   colorTarget.r = color.f32_red();
+//   colorTarget.g = color.f32_green();
+//   colorTarget.b = color.f32_blue();
+//
+//   return colorTarget;
+//
+//}
 
-inline void copy(D2D1_POINT_2F & pointDst, const ::double_point & pointSrc)
-{
-   
-   pointDst.x = (FLOAT)pointSrc.x();
-   pointDst.y = (FLOAT)pointSrc.y();
-
-}
-
-
-inline D2D1_COLOR_F & copy(D2D1_COLOR_F & colorTarget, const ::color::color & color)
-{
-
-   colorTarget.a = color.f32_opacity();
-   colorTarget.r = color.f32_red();
-   colorTarget.g = color.f32_green();
-   colorTarget.b = color.f32_blue();
-
-   return colorTarget;
-
-}
-
-
-inline D2D1_COLOR_F & copy(D2D1_COLOR_F & colorTarget, const ::color32_t & color)
-{
-
-   colorTarget.a = color.f32_opacity();
-   colorTarget.r = color.f32_red();
-   colorTarget.g = color.f32_green();
-   colorTarget.b = color.f32_blue();
-
-   return colorTarget;
-
-}
-
-
-
-namespace direct2d_directx12
-{
-
-   class graphics;
-
-   class object;
-
-   class direct2d_directx12;
-
-} // namespace direct2d_directx12
- 
-
+//
+//
+//namespace direct2d_directx12
+//{
+//
+//   class graphics;
+//
+//   class object;
+//
+//   class direct2d_directx12;
+//
+//} // namespace direct2d_directx12
+// 
+//

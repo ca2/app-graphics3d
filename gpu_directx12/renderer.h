@@ -45,8 +45,12 @@ namespace gpu_directx12
 
          ::pointer < context >   m_pgpucontext;
          ::pointer < renderer >  m_prenderer;
-         comptr<ID3D11Texture2D>       m_ptextureStaging;
+         comptr<ID3D12Resource>       m_presourceStagingTexture;
          ::int_size              m_size;
+
+         D3D12_RESOURCE_DESC m_desc;
+
+         D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_footprint = {};;
 
          cpu_buffer_sampler();
          ~cpu_buffer_sampler();
@@ -58,7 +62,7 @@ namespace gpu_directx12
          //void update(VkExtent2D vkextent2d);
          void destroy();
 
-         void sample(ID3D11Texture2D* ptexture);
+         void sample(ID3D12Resource * presourceTexture, D3D12_CPU_DESCRIPTOR_HANDLE handleTexture);
 
          void send_sample();
 
@@ -111,7 +115,14 @@ namespace gpu_directx12
 
       ::pointer<::gpu_directx12::set_descriptor_layout>           m_psetdescriptorlayoutResolve;
       ::pointer <::gpu_directx12::descriptor_pool>                m_pdescriptorpoolResolve;
-      ::pointer < descriptor >                                 m_pdescriptorResolve;
+      ::pointer < descriptor >                                    m_pdescriptorResolve;
+
+      ::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
+      ::comptr < ID3D12GraphicsCommandList >                      m_pgraphicscommandlist;
+      ::comptr<ID3D12Fence> m_pfence;
+      ::array <UINT64 > m_fences; // fences values
+      HANDLE m_hFenceEvent;
+      ::array < ::comptr<ID3D12CommandAllocator > > m_commandallocatora;
 
       ::procedure_array m_procedureaAfterEndRender;
 
@@ -131,6 +142,8 @@ namespace gpu_directx12
 
       //int width()  override;
       //int height() override;
+
+      void WaitForGpu();
 
       bool is_starting_frame()const
       {
@@ -181,6 +194,9 @@ namespace gpu_directx12
       //   assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
       //   return commandBuffers[get_frame_index()];
       //}
+
+      virtual ID3D12GraphicsCommandList* getCurrentCommandList();
+
 
       int get_frame_index() const override;
       int get_frame_count() const override;

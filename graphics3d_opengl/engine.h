@@ -15,7 +15,7 @@
 //#include "application.h"
 //#include "apex/platform/app_consumer.h"
 #include "aura/graphics/gpu/render.h"
-#include "app-graphics3d/gpu_opengl/renderer.h"
+#include "app/gpu_opengl/renderer.h"
 
 
 namespace graphics3d_opengl

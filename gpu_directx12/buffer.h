@@ -14,13 +14,16 @@ namespace gpu_directx12
    public:
 
 
-      context* m_pgpucontext;
-      void* m_mapped = nullptr;
-      //VkBuffer m_buffer = VK_NULL_HANDLE;
-      //VkDeviceMemory m_memory = VK_NULL_HANDLE;
+      ::comptr<ID3D12Resource >  m_presourceBuffer;
+      uint8_t*                   m_pMapped;
 
-      //VkDeviceSize m_bufferSize;
-      uint32_t m_instanceCount;
+      context* m_pgpucontext;
+      //void* m_mapped = nullptr;
+      ////VkBuffer m_buffer = VK_NULL_HANDLE;
+      ////VkDeviceMemory m_memory = VK_NULL_HANDLE;
+
+      ////VkDeviceSize m_bufferSize;
+      //uint32_t m_instanceCount;
       //VkDeviceSize m_instanceSize;
       //VkDeviceSize m_alignmentSize;
       //VkBufferUsageFlags m_usageFlags;
@@ -54,8 +57,8 @@ namespace gpu_directx12
       HRESULT invalidateIndex(int index);
 
       //VkBuffer getBuffer() const { return m_buffer; }
-      void* getMappedMemory() const { return m_mapped; }
-      uint32_t getInstanceCount() const { return m_instanceCount; }
+      void* getMappedMemory() const { return m_pMapped; }
+      //uint32_t getInstanceCount() const { return m_instanceCount; }
       //VkDeviceSize getInstanceSize() const { return m_instanceSize; }
       //VkDeviceSize getAlignmentSize() const { return m_instanceSize; }
       //VkBufferUsageFlags getUsageFlags() const { return m_usageFlags; }

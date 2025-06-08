@@ -15,7 +15,8 @@
 #include "gpu_directx12/renderer.h"
 #include "gpu_directx12/offscreen_render_target_view.h"
 #include "draw2d_direct2d_directx12/_.h"
-#include "draw2d_direct2d_directx12/graphics.h"
+#include "draw2d_direct2d_directx12/end_draw.h"
+#include "draw2d_direct2d_directx11/graphics.h"
 #include "aura/graphics/graphics3d/camera.h"
 #include "aura/graphics/graphics3d/scene.h"
 #include "aura/windowing/window.h"
@@ -543,25 +544,120 @@ namespace graphics3d_directx12
    void engine::on_after_done_frame_step(::draw2d::graphics_pointer& pgraphics)
    {
 
-      ::cast < ::draw2d_direct2d_directx12::graphics > pgraphics2d = pgraphics;
+      ::cast < ::draw2d_direct2d_directx11::graphics > pgraphics2d = pgraphics;
 
-      if (pgraphics2d)
+      if (!pgraphics2d)
       {
+
+         return;
+       
+      }
 
          ::cast< ::gpu_directx12::context > pgpucontext = m_pgpucontext;
          ::cast< ::gpu_directx12::renderer > prenderer = pgpucontext->m_pgpurenderer;
          auto prendertargetview = prenderer->m_prendertargetview;
          ::cast < ::gpu_directx12::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
          ::cast< ::gpu_directx12::device > pgpudevice = pgpucontext->m_pgpudevice;
-         ID3D11Device* device = pgpudevice->m_pdevice;
-         ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-         ID3D11Texture2D* offscreenTexture = poffscreenrendertargetview->m_ptextureOffscreen;
-         if (!device || !context || !offscreenTexture)
+
+         //::cast < ::draw2d_direct2d_directx12::swap_chain_end_draw > penddraw = pgraphics2d->m_penddraw;
+
+         //ID3D11Device* device = pgpudevice->m_pdevice;
+         //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
+         auto offscreenTexture = poffscreenrendertargetview->m_presourceTexture.m_p;
+         //if (!device || !context || !offscreenTexture)
+         if (!offscreenTexture)
          {
             throw ::exception(error_wrong_state);
          }
 
+         ::cast < ::draw2d_direct2d_directx12::swap_chain_end_draw > penddraw = pgraphics2d->m_penddraw;
 
+         if (poffscreenrendertargetview->new_texture.m_bForOnAfterDoneFrameStep)
+         {
+
+            if (m_presourceWrappedD3D11Resource)
+            {
+
+               // Tell D3D11On12 we’re done using the wrapped resource
+               ID3D11Resource* resources[] = { m_presourceWrappedD3D11Resource.m_p };
+               penddraw->m_pd3d11on12->ReleaseWrappedResources(resources, _countof(resources));
+
+            }
+
+
+            poffscreenrendertargetview->new_texture.m_bForOnAfterDoneFrameStep = false;
+
+            D3D11_RESOURCE_FLAGS d3d11Flags = {};
+            d3d11Flags.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+            
+            ::defer_throw_hresult(penddraw->m_pd3d11on12->CreateWrappedResource(
+               offscreenTexture,
+               &d3d11Flags,
+               D3D12_RESOURCE_STATE_RENDER_TARGET,
+               D3D12_RESOURCE_STATE_PRESENT,
+               __interface_of(m_presourceWrappedD3D11Resource)
+            ));
+            //ComPtr<IDXGISurface> dxgiSurface;
+            ::defer_throw_hresult(m_presourceWrappedD3D11Resource.as(m_pdxgisurface));
+            D2D1_BITMAP_PROPERTIES1 bitmapProps = D2D1::BitmapProperties1(
+               D2D1_BITMAP_OPTIONS_TARGET,
+               D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
+            );
+            
+            ::defer_throw_hresult(penddraw->m_pd2d1devicecontext->CreateBitmapFromDxgiSurface(
+               m_pdxgisurface, &bitmapProps, &m_pd2dbitmap));
+
+         }
+
+         penddraw->m_pd2d1devicecontext->SetTarget(m_pd2dbitmap);
+         penddraw->m_pd2d1devicecontext->BeginDraw();
+     
+         /*ComPtr<ID2D1Bitmap1> d2dBitmap;
+         ThrowIfFailed(d2dContext->CreateBitmapFromDxgiSurface(
+            dxgiSurface.Get(), &bitmapProps, &d2dBitmap));
+
+         d2dContext->SetTarget(d2dBitmap.Get());
+         d2dContext->BeginDraw();*/
+
+
+            auto puserinteration = pgraphics2d->m_puserinteraction;
+
+            auto r = pgpucontext->m_rectangle;
+
+
+       ::int_rectangle rHost = r;
+       if (puserinteration)
+       {
+
+          auto pwindow = puserinteration->window();
+
+          if (pwindow)
+          {
+
+             rHost = pwindow->get_window_rectangle();
+
+          }
+
+       }
+       int iBottom= r.bottom();
+
+       int iHostBottom = rHost.height();
+
+       int iTop = r.top();
+
+       int iNewTop = iHostBottom - iBottom;
+         // Example draw:
+         penddraw->m_pd2d1devicecontext->DrawImage(
+            m_pd2dbitmap,
+            D2D1::Point2F(0.f, 0.f),
+            D2D1::RectF(r.left(), iNewTop, r.width(), r.height()),
+            D2D1_INTERPOLATION_MODE_LINEAR,
+            D2D1_COMPOSITE_MODE_SOURCE_OVER);
+
+         ::defer_throw_hresult(penddraw->m_pd2d1devicecontext->EndDraw());
+
+
+         penddraw->m_pd3d11context->Flush();
 
          //D3D11_TEXTURE2D_DESC texDesc = {};
          //texDesc.Width = width;
@@ -575,72 +671,72 @@ namespace graphics3d_directx12
 
          // ... Create texture using device->CreateTexture2D
 
-         // 2. Wrap the texture in a DXGI surface
-         comptr<IDXGISurface> dxgiSurface;
-         offscreenTexture->QueryInterface(IID_PPV_ARGS(&dxgiSurface));
+      //   // 2. Wrap the texture in a DXGI surface
+      //   comptr<IDXGISurface> dxgiSurface;
+      //   offscreenTexture->QueryInterface(IID_PPV_ARGS(&dxgiSurface));
 
-         // 3. Create the Direct2D bitmap
-         D2D1_BITMAP_PROPERTIES1 bitmapProps =
-            D2D1::BitmapProperties1(
-               D2D1_BITMAP_OPTIONS_NONE,
-               D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
-            );
+      //   // 3. Create the Direct2D bitmap
+      //   D2D1_BITMAP_PROPERTIES1 bitmapProps =
+      //      D2D1::BitmapProperties1(
+      //         D2D1_BITMAP_OPTIONS_NONE,
+      //         D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
+      //      );
 
-         comptr<ID2D1Bitmap1> bitmap;
-         pgraphics2d->m_pdevicecontext->CreateBitmapFromDxgiSurface(
-            dxgiSurface,
-            &bitmapProps,
-            &bitmap
-         );
+      //   comptr<ID2D1Bitmap1> bitmap;
+      //   pgraphics2d->m_pdevicecontext->CreateBitmapFromDxgiSurface(
+      //      dxgiSurface,
+      //      &bitmapProps,
+      //      &bitmap
+      //   );
 
-         // 4. Draw into the D2D1RenderTarget
-         //d2dDeviceContext->BeginDraw();
+      //   // 4. Draw into the D2D1RenderTarget
+      //   //d2dDeviceContext->BeginDraw();
 
-         auto r = pgpucontext->m_rectangle;
+      //   auto r = pgpucontext->m_rectangle;
 
-         //pgraphics2d->m_pdevicecontext->DrawBitmap(
-         //   bitmap,
-         //   D2D1::RectF(r.left(), r.top(), r.width(), r.height()),
-         //   1.0f, // opacity
-         //   D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
-         //   nullptr // source rect (optional)
-         //);
+      //   //pgraphics2d->m_pdevicecontext->DrawBitmap(
+      //   //   bitmap,
+      //   //   D2D1::RectF(r.left(), r.top(), r.width(), r.height()),
+      //   //   1.0f, // opacity
+      //   //   D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
+      //   //   nullptr // source rect (optional)
+      //   //);
 
-         auto puserinteration = pgraphics2d->m_puserinteraction;
+      //   auto puserinteration = pgraphics2d->m_puserinteraction;
 
-         
+      //   
 
 
-            ::int_rectangle rHost = r;
-            if (puserinteration)
-            {
+      //      ::int_rectangle rHost = r;
+      //      if (puserinteration)
+      //      {
 
-               auto pwindow = puserinteration->window();
+      //         auto pwindow = puserinteration->window();
 
-               if (pwindow)
-               {
+      //         if (pwindow)
+      //         {
 
-                  rHost = pwindow->get_window_rectangle();
+      //            rHost = pwindow->get_window_rectangle();
 
-               }
+      //         }
 
-            }
-            int iBottom= r.bottom();
+      //      }
+      //      int iBottom= r.bottom();
 
-            int iHostBottom = rHost.height();
+      //      int iHostBottom = rHost.height();
 
-            int iTop = r.top();
+      //      int iTop = r.top();
 
-            int iNewTop = iHostBottom - iBottom;
+      //      int iNewTop = iHostBottom - iBottom;
 
-         pgraphics2d->m_pdevicecontext->DrawImage(
-            bitmap,
-            D2D1::Point2F(0.f, 0.f),
-            D2D1::RectF(r.left(), iNewTop, r.width(), r.height()),
-            D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
-            D2D1_COMPOSITE_MODE_SOURCE_OVER);
+      //   pgraphics2d->m_pdevicecontext->DrawImage(
+      //      bitmap,
+      //      D2D1::Point2F(0.f, 0.f),
+      //      D2D1::RectF(r.left(), iNewTop, r.width(), r.height()),
+      //      D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+      //      D2D1_COMPOSITE_MODE_SOURCE_OVER);
 
-      }
+      //}
 
    }
 

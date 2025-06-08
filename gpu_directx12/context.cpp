@@ -68,6 +68,32 @@ namespace gpu_directx12
 
 
 
+   void context::on_create_context(const ::gpu::start_context_t& startcontext)
+   {
+
+      m_pgpudevice = startcontext.m_pgpudevice;
+
+      ::gpu::context::on_create_context(startcontext);
+
+
+      
+
+      //// Create an empty root signature.
+      //CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+      //rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+      //::comptr<ID3DBlob> signature;
+      //::comptr<ID3DBlob> error;
+
+      //::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
+      //
+      //::defer_throw_hresult(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
+      //::defer_throw_hresult(pdevice->m_pdevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(),
+      //   
+      //   __interface_of(&m_prootsignature)));
+
+
+   }
 
    //void context::initialize(::particle * pparticle)
    //{
@@ -785,9 +811,9 @@ namespace gpu_directx12
       }
 
 
-      ::defer_throw_hresult(pgpudevice->m_pdevicecontext.as(m_pcontext));
+      //::defer_throw_hresult(pgpudevice->m_pdevicecontext.as(m_pcontext));
 
-      ::defer_throw_hresult(pgpudevice->m_pdevicecontext.as(m_pcontext1));
+      //::defer_throw_hresult(pgpudevice->m_pdevicecontext.as(m_pcontext1));
 
       if (m_eoutput == ::gpu::e_output_cpu_buffer)
       {
@@ -861,30 +887,30 @@ namespace gpu_directx12
    }
 
 
-   void context::on_create_context(const ::gpu::start_context_t& startcontext)
-   {
+   //void context::on_create_context(const ::gpu::start_context_t& startcontext)
+   //{
 
-      //m_itaskGpu = ::current_itask();
+   //   //m_itaskGpu = ::current_itask();
 
-      m_pgpudevice = startcontext.m_pgpudevice;
+   //   m_pgpudevice = startcontext.m_pgpudevice;
 
-      //if (m_pgpudevice->m_queuefamilyindices.graphicsFamily >= 0)
-      //{
+   //   //if (m_pgpudevice->m_queuefamilyindices.graphicsFamily >= 0)
+   //   //{
 
-      //   vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
+   //   //   vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
 
-      //}
+   //   //}
 
-      //if (m_pgpudevice->m_queuefamilyindices.presentFamily >= 0)
-      //{
+   //   //if (m_pgpudevice->m_queuefamilyindices.presentFamily >= 0)
+   //   //{
 
-      //   vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
+   //   //   vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
 
-      //}
+   //   //}
 
-      _create_context_directx12(startcontext);
+   //   c(startcontext);
 
-   }
+   //}
 
 
 
@@ -1630,7 +1656,13 @@ namespace gpu_directx12
 
       ////return estatus;
 
-      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
+      ::cast < ::gpu_directx12::renderer > prenderer = get_renderer(::gpu::e_scene_3d);
+
+      ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
+
+      auto pcommandlist = prenderer->getCurrentCommandList();
+
+      //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
       if (prenderer)
       {
@@ -1640,44 +1672,71 @@ namespace gpu_directx12
          if (pgpurendertargetview)
          {
 
-            auto prendertargetview = pgpurendertargetview->m_prendertargetview;
+            auto presourceTexture = pgpurendertargetview->m_presourceTexture;
 
-            if (prendertargetview)
+            if (presourceTexture)
             {
 
-               m_pcontext->OMSetRenderTargets(1, prendertargetview.pp(), nullptr);
+               pcommandlist->OMSetRenderTargets(
+                  1,
+                  &pgpurendertargetview->m_handleTextureRenderTargetView,
+                  true,
+                  &pgpurendertargetview->m_handleTextureShaderResourceView);
 
-               D3D11_VIEWPORT vp = {};
-               vp.TopLeftX = 0;
-               vp.TopLeftY = 0;
-               vp.Width = static_cast<float>(m_rectangle.width());
-               vp.Height = static_cast<float>(m_rectangle.height());
-               vp.MinDepth = 0.0f;
-               vp.MaxDepth = 1.0f;
 
-               m_pcontext->RSSetViewports(1, &vp);
+               // 1. Define viewport and scissor rectangle
+               D3D12_VIEWPORT viewport = {};
+               viewport.TopLeftX = 0.0f;
+               viewport.TopLeftY = 0.0f;
+               viewport.Width = static_cast<float>(m_rectangle.width());
+               viewport.Height = static_cast<float>(m_rectangle.height());
+               viewport.MinDepth = 0.0f;
+               viewport.MaxDepth = 1.0f;
+
+               D3D12_RECT scissorRect = {};
+               scissorRect.left = 0;
+               scissorRect.top = 0;
+               scissorRect.right = m_rectangle.width();
+               scissorRect.bottom = m_rectangle.height();
+
+               //// 2. Begin command recording
+               //commandAllocator->Reset();
+               //pcommandlist->Reset(commandAllocator.Get(), pipelineState.Get());
+
+               //// 3. Set the pipeline and root signature
+               //pcommandlist->SetPipelineState(pipelineState.Get());
+               //pcommandlist->SetGraphicsRootSignature(rootSignature.Get());
+
+               //// 4. Set the viewport and scissor
+               //commandList->RSSetViewports(1, &viewport);
+               //commandList->RSSetScissorRects(1, &scissorRect);
+               ////D3D11_VIEWPORT vp = {};
+               ////vp.TopLeftX = 0;
+               ////vp.TopLeftY = 0;
+               ////vp.Width = static_cast<float>(m_rectangle.width());
+               ////vp.Height = static_cast<float>(m_rectangle.height());
+               ////vp.MinDepth = 0.0f;
+               ////vp.MaxDepth = 1.0f;
+
+               ////m_pcontext->RSSetViewports(1, &vp);
 
             }
 
-            auto pdepthstencilstate = pgpurendertargetview->m_pdepthstencilstate;
+            auto presourceDepthStencilBuffer = pgpurendertargetview->m_presourceDepthStencilBuffer;
 
-            if (pdepthstencilstate)
+            if(presourceDepthStencilBuffer)
             {
 
-               auto pdepthstencilview = pgpurendertargetview->m_pdepthstencilview;
+               //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
 
-               if (!pdepthstencilview)
-               {
-
-                  throw ::exception(error_wrong_state);
-
-               }
-
-               m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
-
-               m_pcontext->OMSetRenderTargets(1, prendertargetview.pp(), pdepthstencilview);
-
-               m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+               // You set the RTV and DSV like this:
+               pcommandlist->OMSetRenderTargets(
+                  1,                    // One render target
+                  &pgpurendertargetview->m_handleTextureRenderTargetView,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+                  FALSE,                // Not using RTV arrays
+                  &pgpurendertargetview->m_handleDepthStencilView            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+               );
+               //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
             }
 
@@ -1686,12 +1745,12 @@ namespace gpu_directx12
             if (poffscreenrendertargetview)
             {
 
-               auto psamplerstate = poffscreenrendertargetview->m_psamplerstate;
+               //auto psamplerstate = poffscreenrendertargetview->m_psamplerstate;
 
-               if (psamplerstate)
+               //if (psamplerstate)
                {
 
-                  m_pcontext->PSSetSamplers(0, 1, psamplerstate.pp());
+                  //m_pcontext->PSSetSamplers(0, 1, psamplerstate.pp());
 
                }
 
@@ -1703,30 +1762,30 @@ namespace gpu_directx12
       }
 
 
-      if (!m_prasterizerstate)
-      {
+      //if (!m_prasterizerstate)
+      //{
 
-         // 1. Define rasterizer state descriptor
-         D3D11_RASTERIZER_DESC rasterizerDesc = {};
-         rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-         rasterizerDesc.CullMode = D3D11_CULL_BACK;        // Cull back faces
-         rasterizerDesc.FrontCounterClockwise = false; // Treat CCW as front-facing
-         rasterizerDesc.DepthClipEnable = TRUE;
+      //   // 1. Define rasterizer state descriptor
+      //   D3D11_RASTERIZER_DESC rasterizerDesc = {};
+      //   rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+      //   rasterizerDesc.CullMode = D3D11_CULL_BACK;        // Cull back faces
+      //   rasterizerDesc.FrontCounterClockwise = false; // Treat CCW as front-facing
+      //   rasterizerDesc.DepthClipEnable = TRUE;
 
-         // 2. Create rasterizer state object
-         //ID3D11RasterizerState* pRasterizerState = nullptr;
-         HRESULT hr = m_pgpudevice->m_pdevice->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
-         if (FAILED(hr)) {
-            // Handle error (e.g., log or exit)
-            throw ::hresult_exception(hr);
-         }
+      //   // 2. Create rasterizer state object
+      //   //ID3D11RasterizerState* pRasterizerState = nullptr;
+      //   HRESULT hr = m_pgpudevice->m_pdevice->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
+      //   if (FAILED(hr)) {
+      //      // Handle error (e.g., log or exit)
+      //      throw ::hresult_exception(hr);
+      //   }
 
-         // 3. Set rasterizer state on the device context
-         
+      //   // 3. Set rasterizer state on the device context
+      //   
 
-      }
+      //}
 
-      m_pcontext->RSSetState(m_prasterizerstate);
+      //m_pcontext->RSSetState(m_prasterizerstate);
 
    }
 
@@ -2406,15 +2465,47 @@ namespace gpu_directx12
 
       m_uboBuffers.set_size(iFrameCount);
 
-      D3D11_BUFFER_DESC cbd = {};
-      cbd.Usage = D3D11_USAGE_DYNAMIC;
-      cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-      cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-      ::cast < device > pgpudevice = m_pgpudevice;
 
-      // GlobalUbo
-      cbd.ByteWidth = iGlobalUboSize;
-      pgpudevice->m_pdevice->CreateBuffer(&cbd, nullptr, &m_pbufferGlobalUbo);
+//m_frameCount = frameCount;
+  //      m_buffers.resize(frameCount);
+    //    m_mapped.resize(frameCount);
+
+
+        ::cast < device > pgpudevice = m_pgpudevice;
+
+        CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+        CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(
+           ::directx12::Align256(iGlobalUboSize));
+
+        for (UINT i = 0; i < m_uboBuffers.size(); ++i)
+        {
+           auto& pbuffer = m_uboBuffers[i];
+
+           __defer_construct_new(pbuffer);
+
+           pbuffer->m_pgpucontext = this;
+            pgpudevice->m_pdevice->CreateCommittedResource(
+                &heapProps,
+                D3D12_HEAP_FLAG_NONE,
+                &bufferDesc,
+                D3D12_RESOURCE_STATE_GENERIC_READ,
+                nullptr,
+                __interface_of(pbuffer->m_presourceBuffer));
+
+            CD3DX12_RANGE readRange(0, 0);
+            pbuffer->m_presourceBuffer->Map(0, &readRange, 
+               reinterpret_cast<void**>(&pbuffer->m_pMapped));
+        }
+
+      //D3D11_BUFFER_DESC cbd = {};
+      //cbd.Usage = D3D11_USAGE_DYNAMIC;
+      //cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+      //cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+      //::cast < device > pgpudevice = m_pgpudevice;
+
+      //// GlobalUbo
+      //cbd.ByteWidth = iGlobalUboSize;
+      //pgpudevice->m_pdevice->CreateBuffer(&cbd, nullptr, &m_pbufferGlobalUbo);
 
       //for (int i = 0; i < m_uboBuffers.size(); i++)
       //{
@@ -2448,6 +2539,8 @@ namespace gpu_directx12
 
       auto iFrameIndex = m_pgpurenderer->get_frame_index();
 
+
+      memcpy(m_uboBuffers[iFrameIndex]->m_pMapped, block.data(), block.size());
       //m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
 
       //m_uboBuffers[iFrameIndex]->flush();
@@ -2460,16 +2553,16 @@ namespace gpu_directx12
       //cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
       //device->CreateBuffer(&cbd, nullptr, &globalUBOBuffer);
-      if (m_pbufferGlobalUbo)
-      {
+      //if (m_pbufferGlobalUbo)
+      //{
 
-         D3D11_MAPPED_SUBRESOURCE mapped;
-         m_pcontext->Map(m_pbufferGlobalUbo, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-         memcpy(mapped.pData, block.data(), block.size());
-         m_pcontext->Unmap(m_pbufferGlobalUbo, 0);
+      //   D3D11_MAPPED_SUBRESOURCE mapped;
+      //   m_pcontext->Map(m_pbufferGlobalUbo, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+      //   memcpy(mapped.pData, block.data(), block.size());
+      //   m_pcontext->Unmap(m_pbufferGlobalUbo, 0);
 
 
-      }
+      //}
 
       //m_pbufferGlobalUbo
       //m_pbufferGlobalUbo
@@ -2524,20 +2617,20 @@ namespace gpu_directx12
    //   
 
 
-   ID3D11DeviceContext* context::draw_get_d3d11_device_context()
-   {
+   //ID3D11DeviceContext* context::draw_get_d3d11_device_context()
+   //{
 
-      return m_pcontext;
+   //   return m_pcontext;
 
-   }
+   //}
 
 
-   ID3D11DeviceContext1* context::draw_get_d3d11_device_context1()
-   {
+   //ID3D11DeviceContext1* context::draw_get_d3d11_device_context1()
+   //{
 
-      return m_pcontext1;
+   //   return m_pcontext1;
 
-   }
+   //}
 
 
 } // namespace gpu_directx12

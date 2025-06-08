@@ -4,7 +4,9 @@
 #include "aura/_.h"
 #include "gpu_directx12/_.h"
 #include "acme/_win32_gdi.h"
+#include "direct2d_directx11/_.h"
 #include "direct2d_directx12/_.h"
+#include "draw2d_direct2d_directx11/_.h"
 #include "acme_windows_common/_.h"
 #include "acme_windows_common/hresult_exception.h"
 
@@ -57,7 +59,7 @@ namespace draw2d_direct2d_directx12
 
    CLASS_DECL_AURA void destroy();
 
-   class graphics;
+   ///class graphics;
 
 
    class swap_chain_interop;

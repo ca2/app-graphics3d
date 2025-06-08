@@ -12,7 +12,9 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_FORCE_LEFT_HANDED
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <D3D11.h>
+#include <D2D1.h>
+#include <D2D1_1.h>
 //// std
 //#include <memory>
 //#include <unordered_map>
@@ -35,9 +37,11 @@ namespace graphics3d_directx12
 		//::pointer < context >             m_pgpucontext;
 		//::pointer < ::gpu_directx12::renderer >		m_prenderer;
 
+		::comptr<ID3D11Resource> m_presourceWrappedD3D11Resource;
 
+		::comptr<IDXGISurface> m_pdxgisurface;
 
-
+		::comptr<ID2D1Bitmap1> m_pd2dbitmap;
 
 		engine();
 		~engine() override;

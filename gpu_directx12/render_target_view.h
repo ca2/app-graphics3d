@@ -18,10 +18,33 @@ namespace gpu_directx12
    {
    public:
 
-      comptr<ID3D11RenderTargetView>      m_prendertargetview;
-      comptr<ID3D11Texture2D> m_ptextureDepthStencil;
-      comptr<ID3D11DepthStencilView>m_pdepthstencilview;
-      comptr <ID3D11DepthStencilState>m_pdepthstencilstate;
+      ::comptr<ID3D12DescriptorHeap>   m_pheapDepthStencilBuffer;
+      ::comptr<ID3D12Resource>         m_presourceDepthStencilBuffer;
+      D3D12_CPU_DESCRIPTOR_HANDLE      m_handleDepthStencilView;
+
+      ::comptr<ID3D12Resource> m_presourceTexture;
+      ::comptr<ID3D12DescriptorHeap> m_pheapRenderTargetView;
+      ::comptr<ID3D12DescriptorHeap> m_pheapShaderResourceView;
+      D3D12_CPU_DESCRIPTOR_HANDLE m_handleTextureRenderTargetView;
+      D3D12_CPU_DESCRIPTOR_HANDLE m_handleTextureShaderResourceView;
+
+      struct
+      {
+         int m_bForOnAfterDoneFrameStep : 1;
+
+         void set_new_texture()
+         {
+            memset(this, 0xff, sizeof(*this));
+
+         }
+
+
+      }new_texture;
+
+      //comptr<ID3D11RenderTargetView>      m_prendertargetview;
+      //comptr<ID3D11Texture2D> m_ptextureDepthStencil;
+      //comptr<ID3D11DepthStencilView>m_pdepthstencilview;
+      //comptr <ID3D11DepthStencilState>m_pdepthstencilstate;
 
       //VkFormat m_formatImage;
       //VkFormat m_formatDepth;

@@ -62,26 +62,67 @@ namespace gpu_directx12
 	{
 
 
-		D3D11_TEXTURE2D_DESC texDesc = {};
+		//D3D11_TEXTURE2D_DESC texDesc = {};
+		//texDesc.Width = size.cx();
+		//texDesc.Height = size.cy();
+		//texDesc.MipLevels = 1;
+		//texDesc.ArraySize = 1;
+		//texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		//texDesc.SampleDesc.Count = 1;
+		//texDesc.Usage = D3D11_USAGE_DEFAULT;
+		//texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		//texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
+
+		//::cast < ::gpu_directx12::context > pgpucontext = m_pgpucontext;
+
+		//::cast < ::gpu_directx12::device > pgpudevice = pgpucontext->m_pgpudevice;
+
+		//pgpudevice->m_pdevice->CreateTexture2D(&texDesc, nullptr, &m_presoureSharedTexture);
+
+
+		D3D12_RESOURCE_DESC texDesc = {};
+		texDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 		texDesc.Width = size.cx();
 		texDesc.Height = size.cy();
+		texDesc.DepthOrArraySize = 1;
 		texDesc.MipLevels = 1;
-		texDesc.ArraySize = 1;
 		texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 		texDesc.SampleDesc.Count = 1;
-		texDesc.Usage = D3D11_USAGE_DEFAULT;
-		texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-		texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
+		texDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+		texDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
-		::cast < ::gpu_directx12::context > pgpucontext = m_pgpucontext;
+		D3D12_CLEAR_VALUE clearValue = {};
+		clearValue.Format = texDesc.Format;
+		clearValue.Color[0] = 0.f;
+		clearValue.Color[1] = 0.f;
+		clearValue.Color[2] = 0.f;
+		clearValue.Color[3] = 1.f;
 
-		::cast < ::gpu_directx12::device > pgpudevice = pgpucontext->m_pgpudevice;
+		D3D12_HEAP_PROPERTIES heapProps = {};
+		heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
 
-		pgpudevice->m_pdevice->CreateTexture2D(&texDesc, nullptr, &m_ptextureShared);
+		::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+
+		pdevice->m_pdevice->CreateCommittedResource(
+			&heapProps,
+			D3D12_HEAP_FLAG_SHARED, // Enable sharing
+			&texDesc,
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			&clearValue,
+			__interface_of(m_presourceSharedTexture)
+		);
 		//m_bNeedRebuild = false;
 	   //init();
 	   // Cleans up old swap chain since it's no longer needed after resizing
 	   //oldSwapChain = nullptr;
+
+		pdevice->m_pdevice->CreateSharedHandle(
+			m_presourceSharedTexture,
+			nullptr,
+			GENERIC_ALL,
+			nullptr,
+			&m_handleSharedTexture);
+
 	}
 
 
@@ -101,17 +142,17 @@ namespace gpu_directx12
 
 				//::cast < ::gpu_directx12::swap_chain_render_target_view > pswapchainrendertargetview = pgpurenderer->m_prendertargetview;
 
-		HRESULT hr = pgpudevice->m_pdevice->CreateShaderResourceView(
-			m_ptextureShared, nullptr, &m_pshaderresourceviewShader);
-		if (FAILED(hr)) {
-			OutputDebugStringA("Failed to create SRV from shared D2D texture\n");
-			return;
-		}
+		//HRESULT hr = pgpudevice->m_pdevice->CreateGraphicsPipelineState(
+		//	m_presourceSharedTexture, nullptr, __interface_of(m_pshaderresourceviewShader));
+		//if (FAILED(hr)) {
+		//	OutputDebugStringA("Failed to create SRV from shared D2D texture\n");
+		//	return;
+		//}
 		comptr<ID3DBlob> vsBlob;
 		comptr<ID3DBlob> psBlob;
 		comptr<ID3DBlob> errorBlob;
 		// Vertex Shader
-		hr = D3DCompile(
+		HRESULT hr = D3DCompile(
 			fullscreen_vertex_shader, strlen(fullscreen_vertex_shader),
 			nullptr,                       // optional source name
 			nullptr,                       // macro definitions
@@ -142,25 +183,50 @@ namespace gpu_directx12
 			return;
 		}
 
-		pgpudevice->m_pdevice->CreateVertexShader(
-			vsBlob->GetBufferPointer(),
-			vsBlob->GetBufferSize(),
-			nullptr,
-			&m_pvertexshaderFullscreen
-		);
+		//pgpudevice->m_pdevice->CreateVertexShader(
+		//	vsBlob->GetBufferPointer(),
+		//	vsBlob->GetBufferSize(),
+		//	nullptr,
+		//	&m_pvertexshaderFullscreen
+		//);
 
-		pgpudevice->m_pdevice->CreatePixelShader(
-			psBlob->GetBufferPointer(),
-			psBlob->GetBufferSize(),
-			nullptr,
-			&m_ppixelshaderFullscreen
-		);
+		//pgpudevice->m_pdevice->CreatePixelShader(
+		//	psBlob->GetBufferPointer(),
+		//	psBlob->GetBufferSize(),
+		//	nullptr,
+		//	&m_ppixelshaderFullscreen
+		//);
 
-		D3D11_SAMPLER_DESC sampDesc = {};
-		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		sampDesc.AddressU = sampDesc.AddressV = sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		//D3D11_SAMPLER_DESC sampDesc = {};
+		//sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		//sampDesc.AddressU = sampDesc.AddressV = sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 
-		pgpudevice->m_pdevice->CreateSamplerState(&sampDesc, &m_psamplerstateLinear);
+		//pgpudevice->m_pdevice->CreateSamplerState(&sampDesc, &m_psamplerstateLinear);
+				// Define the vertex input layout.
+		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
+		{
+			 { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			 { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		};
+		::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+		::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
+				// Describe and create the graphics pipeline state object (PSO).
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+		psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+		psoDesc.pRootSignature = m_prootsignature;
+		psoDesc.VS = CD3DX12_SHADER_BYTECODE(vsBlob);
+		psoDesc.PS = CD3DX12_SHADER_BYTECODE(psBlob);
+		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+		psoDesc.DepthStencilState.DepthEnable = FALSE;
+		psoDesc.DepthStencilState.StencilEnable = FALSE;
+		psoDesc.SampleMask = UINT_MAX;
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		psoDesc.NumRenderTargets = 1;
+		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		psoDesc.SampleDesc.Count = 1;
+		::defer_throw_hresult(pdevice->m_pdevice->CreateGraphicsPipelineState(&psoDesc, __interface_of(m_ppipelinestate)));
+
 
 		createRenderPassImpl();
 		createImageViews();
@@ -748,31 +814,43 @@ namespace gpu_directx12
 		auto rectangle = m_pgpucontext->m_rectangle;
 
 		// 1. Set render target
-		pgpudevice->m_pdevicecontext->OMSetRenderTargets(1, pgpudevice->m_prendertargetviewBackBuffer.pp(), nullptr);
+		//pgpudevice->m_pdevicecontext->OMSetRenderTargets(1, pgpudevice->m_prendertargetviewBackBuffer.pp(), nullptr);
 
-		// 2. Set viewport
-		D3D11_VIEWPORT vp = {};
-		vp.TopLeftX = 0;
-		vp.TopLeftY = 0;
-		vp.Width = static_cast<float>(rectangle.width());
-		vp.Height = static_cast<float>(rectangle.height());
-		vp.MinDepth = 0.0f;
-		vp.MaxDepth = 1.0f;
-		pgpudevice->m_pdevicecontext->RSSetViewports(1, &vp);
+		//::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
-		// 3. Bind shaders
-		pgpudevice->m_pdevicecontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
-		pgpudevice->m_pdevicecontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
+		//::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
 
-		// 4. Bind SRV and sampler
-		pgpudevice->m_pdevicecontext->PSSetShaderResources(0, 1, m_pshaderresourceviewShader.pp());
-		pgpudevice->m_pdevicecontext->PSSetSamplers(0, 1, m_psamplerstateLinear.pp());
+		//auto pcommandlist = prenderer->getCurrentCommandList();
 
-		// 5. Draw fullscreen triangle (no vertex buffer needed)
-		pgpudevice->m_pdevicecontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		pgpudevice->m_pdevicecontext->Draw(3, 0);
+		//pcommandlist->OMSetRenderTargets(
+		//	1,                // Num render targets
+		//	&m_presourceBackBufferRenderTargetView,       // Pointer to RTV handle(s)
+		//	FALSE,            // RTs are not in a descriptor heap (so use CPU handle)
+		//	nullptr);         // No depth stencil
 
-		pgpudevice->m_pdxgiswapchain1->Present(1, 0);
+		//// 2. Set viewport
+		//D3D11_VIEWPORT vp = {};
+		//vp.TopLeftX = 0;
+		//vp.TopLeftY = 0;
+		//vp.Width = static_cast<float>(rectangle.width());
+		//vp.Height = static_cast<float>(rectangle.height());
+		//vp.MinDepth = 0.0f;
+		//vp.MaxDepth = 1.0f;
+		//pgpudevice->m_pdevicecontext->RSSetViewports(1, &vp);
+
+		//// 3. Bind shaders
+		//pgpudevice->m_pdevicecontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
+		//pgpudevice->m_pdevicecontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
+
+		//// 4. Bind SRV and sampler
+		//pgpudevice->m_pdevicecontext->PSSetShaderResources(0, 1, m_pshaderresourceviewShader.pp());
+		//pgpudevice->m_pdevicecontext->PSSetSamplers(0, 1, m_psamplerstateLinear.pp());
+
+		//// 5. Draw fullscreen triangle (no vertex buffer needed)
+		//pgpudevice->m_pdevicecontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//pgpudevice->m_pdevicecontext->Draw(3, 0);
+
+		//pgpudevice->m_pdxgiswapchain1->Present(1, 0);
 
 	}
 

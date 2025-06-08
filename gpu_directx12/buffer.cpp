@@ -88,11 +88,11 @@ namespace gpu_directx12
     * @note Does not return a result as vkUnmapMemory can't fail
     */
    void buffer::unmap() {
-      if (m_mapped) {
+      if (m_pMapped) {
 
          ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
          //vkUnmapMemory(m_pgpucontext->logicalDevice(), m_memory);
-         m_mapped = nullptr;
+         m_pMapped = nullptr;
       }
    }
 

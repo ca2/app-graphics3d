@@ -1,15 +1,16 @@
 #include "framework.h"
-#include "image.h"
-#include "bitmap.h"
-#include "path.h"
-#include "pen.h"
-#include "brush.h"
-#include "palette.h"
-#include "region.h"
-#include "font.h"
-#include "internal_font.h"
-#include "graphics.h"
+//#include "image.h"
+//#include "bitmap.h"
+//#include "path.h"
+//#include "pen.h"
+//#include "brush.h"
+//#include "palette.h"
+//#include "region.h"
+//#include "font.h"
+//#include "internal_font.h"
+//#include "graphics.h"
 #include "draw2d.h"
+#include "end_draw.h"
 //#include "aura/printer.h"
 //#include "printer.h"
 
@@ -23,8 +24,12 @@ CLASS_DECL_AURA void init_draw2d_mutex();
 //namespace draw2d_direct2d_directx12
 //{
 
+__FACTORY_IMPORT void draw2d_direct2d_directx11_factory(::factory::factory* pfactory);
+
 __FACTORY_EXPORT void draw2d_direct2d_directx12_factory(::factory::factory * pfactory)
    {
+
+   draw2d_direct2d_directx11_factory(pfactory);
 
       //if (g_pimagea == nullptr)
       //{
@@ -34,7 +39,7 @@ __FACTORY_EXPORT void draw2d_direct2d_directx12_factory(::factory::factory * pfa
       //}
 
 
-      pfactory->add_factory_item < ::draw2d_direct2d_directx12::image, ::image::image >();
+      /*pfactory->add_factory_item < ::draw2d_direct2d_directx12::image, ::image::image >();
       pfactory->add_factory_item < ::draw2d_direct2d_directx12::bitmap, ::draw2d::bitmap >();
       pfactory->add_factory_item < ::draw2d_direct2d_directx12::path, ::draw2d::path >();
       pfactory->add_factory_item < ::draw2d_direct2d_directx12::pen, ::draw2d::pen >();
@@ -46,7 +51,9 @@ __FACTORY_EXPORT void draw2d_direct2d_directx12_factory(::factory::factory * pfa
 
       pfactory->add_factory_item < ::draw2d_direct2d_directx12::graphics, ::draw2d::graphics > ();
 
-      pfactory->add_factory_item < ::draw2d_direct2d_directx12::draw2d, ::draw2d::draw2d >();
+      pfactory->add_factory_item < ::draw2d_direct2d_directx12::draw2d, ::draw2d::draw2d >();*/
+
+      pfactory->add_factory_item < ::draw2d_direct2d_directx12::swap_chain_end_draw, ::draw2d_gpu::end_draw >();
 
    }
 

@@ -16,6 +16,7 @@
 //#include <wrl/client.h>
 #include <DXGI1_6.h>
 #include <D3D12.h>
+//#include <D3DX12.h>
 //#include <D3D12_1.h>
 //#include <Dxgi1_3.h>
 #include <D3Dcompiler.h>
@@ -23,14 +24,9 @@
 #include <Initguid.h>
 //#include <DXGIDebug.h>
 
-
+#include "_d3dx12.h"
 // Windows Desktop Thread Local Storage for Draw2d Direct2d plugin
 
-
-interface ID3D11Device;
-interface ID3D11DeviceContext;
-interface ID3D11Device1;
-interface IDXGIDevice;
 
 
 #if defined(_directx12_project)
@@ -80,6 +76,13 @@ CLASS_DECL_DIRECTX12 void directx12_debug();
 
 namespace directx12
 {
+
+
+
+   inline UINT Align256(UINT size)
+   {
+      return (size + 255) & ~255;
+   }
 
 //
 //

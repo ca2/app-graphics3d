@@ -23,6 +23,9 @@
 #include <glm/glm.hpp>
 #include <DirectXMath.h>
 
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+
 DirectX::XMMATRIX GLMToDX_Transposed(const glm::mat4& m) {
    return DirectX::XMMatrixTranspose(
       DirectX::XMMATRIX(reinterpret_cast<const float*>(&m))
@@ -2388,6 +2391,72 @@ namespace gpu_directx12
    }
 
 
+   void device::GetHardwareAdapter(
+      IDXGIFactory1* pFactory,
+      IDXGIAdapter1** ppAdapter,
+      bool requestHighPerformanceAdapter)
+   {
+      *ppAdapter = nullptr;
+
+      ::comptr<IDXGIAdapter1> adapter;
+
+      ::comptr<IDXGIFactory6> factory6;
+      if (SUCCEEDED(pFactory->QueryInterface(__interface_of(factory6))))
+      {
+         for (
+            UINT adapterIndex = 0;
+            SUCCEEDED(factory6->EnumAdapterByGpuPreference(
+               adapterIndex,
+               requestHighPerformanceAdapter == true ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE : DXGI_GPU_PREFERENCE_UNSPECIFIED,
+               IID_PPV_ARGS(&adapter)));
+               ++adapterIndex)
+         {
+            DXGI_ADAPTER_DESC1 desc;
+            adapter->GetDesc1(&desc);
+
+            if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+            {
+               // Don't select the Basic Render Driver adapter.
+               // If you want a software adapter, pass in "/warp" on the command line.
+               continue;
+            }
+
+            // Check to see whether the adapter supports Direct3D 12, but don't create the
+            // actual device yet.
+            if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
+            {
+               break;
+            }
+         }
+      }
+
+      if (adapter == nullptr)
+      {
+         for (UINT adapterIndex = 0; SUCCEEDED(pFactory->EnumAdapters1(adapterIndex, &adapter)); ++adapterIndex)
+         {
+            DXGI_ADAPTER_DESC1 desc;
+            adapter->GetDesc1(&desc);
+
+            if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+            {
+               // Don't select the Basic Render Driver adapter.
+               // If you want a software adapter, pass in "/warp" on the command line.
+               continue;
+            }
+
+            // Check to see whether the adapter supports Direct3D 12, but don't create the
+            // actual device yet.
+            if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
+            {
+               break;
+            }
+         }
+      }
+
+      *ppAdapter = adapter.detach();
+   }
+
+
    void device::initialize_swap_chain(::windowing::window* pwindow)
    {
 
@@ -2432,8 +2501,8 @@ namespace gpu_directx12
       // Enable the debug layer (requires the Graphics Tools "optional feature").
       // NOTE: Enabling the debug layer after device creation will invalidate the active device.
       {
-         ComPtr<ID3D12Debug> debugController;
-         if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+         ::comptr<ID3D12Debug> debugController;
+         if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(debugController))))
          {
             debugController->EnableDebugLayer();
 
@@ -2443,48 +2512,48 @@ namespace gpu_directx12
       }
 #endif
 
-      ComPtr<IDXGIFactory4> factory;
-      ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
+      ///ComPtr<IDXGIFactory4> factory;
+      ::defer_throw_hresult(CreateDXGIFactory2(dxgiFactoryFlags, __interface_of(m_pdxgifactory4)));
 
-      if (m_useWarpDevice)
+      if (m_bUseWarpDevice)
       {
-         ComPtr<IDXGIAdapter> warpAdapter;
-         ThrowIfFailed(factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)));
+         ::comptr<IDXGIAdapter> warpAdapter;
+         ::defer_throw_hresult(m_pdxgifactory4->EnumWarpAdapter(__interface_of(warpAdapter)));
 
-         ThrowIfFailed(D3D12CreateDevice(
-            warpAdapter.Get(),
+         ::defer_throw_hresult(D3D12CreateDevice(
+            warpAdapter,
             D3D_FEATURE_LEVEL_11_0,
-            IID_PPV_ARGS(&m_device)
+            __interface_of(m_pdevice)
          ));
       }
       else
       {
-         ComPtr<IDXGIAdapter1> hardwareAdapter;
-         GetHardwareAdapter(factory.Get(), &hardwareAdapter);
+         ::comptr < IDXGIAdapter1> hardwareAdapter;
+         GetHardwareAdapter(m_pdxgifactory4, &hardwareAdapter);
 
-         ThrowIfFailed(D3D12CreateDevice(
-            hardwareAdapter.Get(),
+         ::defer_throw_hresult(D3D12CreateDevice(
+            hardwareAdapter,
             D3D_FEATURE_LEVEL_11_0,
-            IID_PPV_ARGS(&m_device)
+            __interface_of(m_pdevice)
          ));
       }
 
-      ::defer_throw_hresult(D3D11CreateDevice(nullptr,    // Adapter
-         D3D_DRIVER_TYPE_HARDWARE,
-         nullptr,    // Module
-         D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-         nullptr, 0, // Highest available feature level
-         D3D11_SDK_VERSION,
-         &m_pdevice,
-         nullptr,    // Actual feature level
-         nullptr));  // Device context
-      ::defer_throw_hresult(m_pdevice.as(m_pdevice1));
-      ::defer_throw_hresult(m_pdevice.as(m_pdxgidevice));
+      //::defer_throw_hresult(D3D11CreateDevice(nullptr,    // Adapter
+      //   D3D_DRIVER_TYPE_HARDWARE,
+      //   nullptr,    // Module
+      //   D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+      //   nullptr, 0, // Highest available feature level
+      //   D3D11_SDK_VERSION,
+      //   &m_pdevice,
+      //   nullptr,    // Actual feature level
+      //   nullptr));  // Device context
+      //::defer_throw_hresult(m_pdevice.as(m_pdevice1));
+      //::defer_throw_hresult(m_pdevice.as(m_pdxgidevice));
 
-      ::defer_throw_hresult(CreateDXGIFactory2(
-         DXGI_CREATE_FACTORY_DEBUG,
-         __uuidof(m_pdxgifactory2),
-         reinterpret_cast<void**>(&m_pdxgifactory2)));
+      //::defer_throw_hresult(CreateDXGIFactory2(
+      //   DXGI_CREATE_FACTORY_DEBUG,
+      //   __uuidof(m_pdxgifactory2),
+      //   reinterpret_cast<void**>(&m_pdxgifactory2)));
 
       DXGI_SWAP_CHAIN_DESC1 dxgiswapchaindesc1 = {};
       dxgiswapchaindesc1.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -2497,10 +2566,14 @@ namespace gpu_directx12
       GetWindowRect(pwin32window->m_hwnd, &rect);
       dxgiswapchaindesc1.Width = rect.right - rect.left;
       dxgiswapchaindesc1.Height = rect.bottom - rect.top;
-      ::defer_throw_hresult(m_pdxgifactory2->CreateSwapChainForComposition(m_pdxgidevice,
+      ::comptr < IDXGISwapChain1 > swapchain1;
+      ::defer_throw_hresult(m_pdxgifactory4->CreateSwapChainForComposition(m_pdxgidevice,
          &dxgiswapchaindesc1,
          nullptr, // Don’t restrict
-         &m_pdxgiswapchain1));
+         &swapchain1));
+
+
+      ::defer_throw_hresult(swapchain1.as(m_pdxgiswapchain1));
       //assert(SUCCEEDED(hr));
       //::defer_throw_hresult(hr);
 
@@ -2509,7 +2582,7 @@ namespace gpu_directx12
       // Get the Direct3D 11.1 API device and context interfaces.
       //::defer_throw_hresult(device.as(m_pdevice));
 
-      m_pdevice->GetImmediateContext(&m_pdevicecontext);
+      //m_pdevice->GetImmediateContext(&m_pdevicecontext);
 
       //::defer_throw_hresult(context.as(m_pdevicecontext));
 
@@ -2523,9 +2596,46 @@ namespace gpu_directx12
 
 #endif
 
-      m_pdxgiswapchain1->GetBuffer(0, IID_PPV_ARGS(&m_ptextureBackBuffer));
-      
-      m_pdevice->CreateRenderTargetView(m_ptextureBackBuffer, nullptr, &m_prendertargetviewBackBuffer);
+      ::comptr<ID3D12DescriptorHeap> rtvHeap;
+      UINT rtvDescriptorSize = 0;
+
+      int iFrameCount = 2;
+
+      // Describe and create an RTV descriptor heap.
+      D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+      rtvHeapDesc.NumDescriptors = iFrameCount; // One per back buffer (typically 2)
+      rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+      rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // Must be NONE for RTV/DSV heaps
+
+      HRESULT hr = m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(rtvHeap));
+      ::defer_throw_hresult(hr);
+
+      // Store the descriptor size (used for handle incrementing)
+      rtvDescriptorSize = m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+
+      for(int i = 0; i < iFrameCount; i++)
+      {
+      m_pdxgiswapchain1->GetBuffer(i, __interface_of(m_resourceaBackBufferTexture[i]));
+      // 2. Create the render target view (RTV)
+      m_handleaBackBufferRenderTargetView.element_at_grow(i) 
+         = rtvHeap->GetCPUDescriptorHandleForHeapStart(); // RTV descriptor heap assumed created
+      m_pdevice->CreateRenderTargetView(m_resourceaBackBufferTexture[i], nullptr, m_handleaBackBufferRenderTargetView[i]);
+      //m_prendertargetviewBackBuffer = rtvHandle;
+
+
+      //{
+      //   ::comptr<ID3D12Resource> backBuffer;
+      //   m_pdxgiswapchain1->GetBuffer(i, IID_PPV_ARGS(&backBuffer));
+
+      //   m_pdevice->CreateRenderTargetView(backBuffer.Get(), nullptr, rtvHandle);
+
+      //   // Store backBuffer and handle as needed...
+
+      //   // Advance handle for next RTV
+      //   rtvHandle.ptr += rtvDescriptorSize;
+      }
+
 
       ::defer_throw_hresult(DCompositionCreateDevice(
          m_pdxgidevice,
@@ -2548,64 +2658,111 @@ namespace gpu_directx12
    void device::initialize_cpu_buffer(::windowing::window * pwindow)
    {
 
-      // This flag adds support for surfaces with a different color channel ordering
-      // than the API default. It is required for compatibility with Direct2D.
-      unsigned int creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+//      // This flag adds support for surfaces with a different color channel ordering
+//      // than the API default. It is required for compatibility with Direct2D.
+//      unsigned int creationFlags = D3D12_CREATE_DEVICE_BGRA_SUPPORT;
+//
+//#if defined(__DEBUG)
+//
+//      // If the project is in a debug build, enable debugging via SDK Layers with this flag.
+//      creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+//
+//#endif
+//
+//      // This array defines the set of DirectX12 hardware feature levels this app will support.
+//      // Note the ordering should be preserved.
+//      // Don't forget to declare your application's minimum required feature level in its
+//      // description.  All applications are assumed to support 9.1 unless otherwise stated.
+//      D3D_FEATURE_LEVEL featureLevels[] =
+//      {
+//
+//         D3D_FEATURE_LEVEL_11_1,
+//         D3D_FEATURE_LEVEL_11_0,
+//         D3D_FEATURE_LEVEL_10_1,
+//         D3D_FEATURE_LEVEL_10_0,
+//         D3D_FEATURE_LEVEL_9_3,
+//         D3D_FEATURE_LEVEL_9_2,
+//         D3D_FEATURE_LEVEL_9_1
+//
+//      };
+//
+//      // Create the Direct3D 11 API device object and a corresponding context.
+//      comptr<ID3D11Device> pdevice;
+//
+//      comptr<ID3D11DeviceContext> pdevicecontext;
+//
+//      HRESULT hr = D3D11CreateDevice(
+//         nullptr,                    // Specify nullptr to use the default adapter.
+//         D3D_DRIVER_TYPE_HARDWARE,
+//         0,
+//         creationFlags,              // Set debug and Direct2D compatibility flags.
+//         featureLevels,              // List of feature levels this app can support.
+//         ARRAYSIZE(featureLevels),
+//         D3D11_SDK_VERSION,          // Always set this to D3D11_SDK_VERSION for Metro style apps.
+//         &pdevice,                    // Returns the Direct3D device created.
+//         &m_featurelevel,            // Returns feature level of device created.
+//         &pdevicecontext                    // Returns the device immediate context.
+//      );
 
-#if defined(__DEBUG)
 
-      // If the project is in a debug build, enable debugging via SDK Layers with this flag.
-      creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 
+      UINT dxgiFactoryFlags = 0;
+
+#if defined(_DEBUG)
+      // Enable the debug layer (requires the Graphics Tools "optional feature").
+      // NOTE: Enabling the debug layer after device creation will invalidate the active device.
+      {
+         ::comptr<ID3D12Debug> debugController;
+         if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(debugController))))
+         {
+            debugController->EnableDebugLayer();
+
+            // Enable additional debug layers.
+            dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+         }
+      }
 #endif
 
-      // This array defines the set of DirectX12 hardware feature levels this app will support.
-      // Note the ordering should be preserved.
-      // Don't forget to declare your application's minimum required feature level in its
-      // description.  All applications are assumed to support 9.1 unless otherwise stated.
-      D3D_FEATURE_LEVEL featureLevels[] =
+      ///ComPtr<IDXGIFactory4> factory;
+      ::defer_throw_hresult(CreateDXGIFactory2(dxgiFactoryFlags, __interface_of(m_pdxgifactory4)));
+
+      if (m_bUseWarpDevice)
       {
+         ::comptr<IDXGIAdapter> warpAdapter;
+         ::defer_throw_hresult(m_pdxgifactory4->EnumWarpAdapter(__interface_of(warpAdapter)));
 
-         D3D_FEATURE_LEVEL_11_1,
-         D3D_FEATURE_LEVEL_11_0,
-         D3D_FEATURE_LEVEL_10_1,
-         D3D_FEATURE_LEVEL_10_0,
-         D3D_FEATURE_LEVEL_9_3,
-         D3D_FEATURE_LEVEL_9_2,
-         D3D_FEATURE_LEVEL_9_1
+         ::defer_throw_hresult(D3D12CreateDevice(
+            warpAdapter,
+            D3D_FEATURE_LEVEL_11_0,
+            __interface_of(m_pdevice)
+         ));
+      }
+      else
+      {
+         ::comptr < IDXGIAdapter1> hardwareAdapter;
+         GetHardwareAdapter(m_pdxgifactory4, &hardwareAdapter);
 
-      };
+         ::defer_throw_hresult(D3D12CreateDevice(
+            hardwareAdapter,
+            D3D_FEATURE_LEVEL_11_0,
+            __interface_of(m_pdevice)
+         ));
+      }
 
-      // Create the Direct3D 11 API device object and a corresponding context.
-      comptr<ID3D11Device> pdevice;
 
-      comptr<ID3D11DeviceContext> pdevicecontext;
-
-      HRESULT hr = D3D11CreateDevice(
-         nullptr,                    // Specify nullptr to use the default adapter.
-         D3D_DRIVER_TYPE_HARDWARE,
-         0,
-         creationFlags,              // Set debug and Direct2D compatibility flags.
-         featureLevels,              // List of feature levels this app can support.
-         ARRAYSIZE(featureLevels),
-         D3D11_SDK_VERSION,          // Always set this to D3D11_SDK_VERSION for Metro style apps.
-         &pdevice,                    // Returns the Direct3D device created.
-         &m_featurelevel,            // Returns feature level of device created.
-         &pdevicecontext                    // Returns the device immediate context.
-      );
-
-      ::defer_throw_hresult(hr);
+      ///::defer_throw_hresult(hr);
 
       // Get the Direct3D 11.1 API device and context interfaces.
-      ::defer_throw_hresult(pdevice.as(m_pdevice));
+      //::defer_throw_hresult(pdevice.as(m_pdevice));
 
-      ::defer_throw_hresult(pdevice.as(m_pdevice1));
+      //::defer_throw_hresult(m_pdevice.as(m_pdevice1));
 
-      ::defer_throw_hresult(pdevicecontext.as(m_pdevicecontext));
+///      ::defer_throw_hresult(pdevicecontext.as(m_pdevicecontext));
 
 
       // Get the underlying DXGI device of the Direct3D device.
-      ::defer_throw_hresult(m_pdevice.as(m_pdxgidevice));
+      //HRESULT hresultAsDxgi = m_pdevice.as(m_pdxgidevice);
+      //::defer_throw_hresult(hresultAsDxgi);
 
 #if defined(_DEBUG)
 
@@ -2618,20 +2775,20 @@ namespace gpu_directx12
    }
 
 
-   ID3D11Device* device::draw_get_d3d11_device()
-   {
+   //ID3D11Device* device::draw_get_d3d11_device()
+   //{
 
-      return m_pdevice;
+   //   return m_pdevice;
 
-   }
+   //}
 
 
-   ID3D11Device1* device::draw_get_d3d11_device1()
-   {
+   //ID3D11Device1* device::draw_get_d3d11_device1()
+   //{
 
-      return m_pdevice1;
+   //   return m_pdevice1;
 
-   }
+   //}
 
 
 

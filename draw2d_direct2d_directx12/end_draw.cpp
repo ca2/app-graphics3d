@@ -1,6 +1,6 @@
 // Created by camilo on 2025-06-04 23:11 <3ThomasBorregaardSørensen!!
 #include "framework.h"
-#include "graphics.h"
+#include "draw2d_direct2d_directx11/graphics.h"
 #include "direct2d_directx12/direct2d_directx12.h"
 #include "end_draw.h"
 #include "aura/windowing/window.h"
@@ -9,6 +9,7 @@
 #include "gpu_directx12/swap_chain_render_target_view.h"
 #include "aura/graphics/gpu/graphics.h"
 #include "direct2d_directx12/graphics.h"
+
 
 namespace draw2d_direct2d_directx12
 {
@@ -87,25 +88,85 @@ namespace draw2d_direct2d_directx12
       //}
 
       // g_d2dDevice->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &g_d2dContext);
+      ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
+      ///auto pcommandqueue = prenderer->m_pcommandqueue;
 
-      ::cast < gpu_directx12::renderer > pgpurendererOutput = m_pgraphics->end_draw_renderer_output();
 
-      ::cast < gpu_directx12::swap_chain_render_target_view > pswapchainrendertargetview = pgpurendererOutput->m_prendertargetview;
+      //d3d11Device.As(&d3d11On12); // Query interface
 
-      pswapchainrendertargetview->m_ptextureShared.as(m_pdxgisurface);
+      ::defer_throw_hresult(D3D11On12CreateDevice(
+         pdevice->m_pdevice,
+         0,
+         nullptr,
+         0,
+         reinterpret_cast<IUnknown**>(&m_pcommandqueue),
+         1,
+         0,
+         &m_pd3d11device,
+         &m_pd3d11context,
+         nullptr
+      ));
 
-      D2D1_BITMAP_PROPERTIES1 bitmapProps = D2D1::BitmapProperties1(
-         D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-         D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
-      );
+      //::defer_throw_hresult(m_pd3d11device.As(&m_pd3d11on12)); // Query interface
 
-      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
-      m_pd2d1devicecontext = ::direct2d_directx12::get()->create_d2d1_device_context(nullptr, {});
+      //::comptr<ID3D11Resource> wrappedRTV;
+      D3D11_RESOURCE_FLAGS flags = {};
+      flags.BindFlags = D3D11_BIND_RENDER_TARGET;
 
-      m_pd2d1devicecontext->CreateBitmapFromDxgiSurface(m_pdxgisurface, bitmapProps, &m_pd2d1bitmap);
+      ::defer_throw_hresult(m_pd3d11on12->CreateWrappedResource(
+         prenderer->m_prendertargetview->m_pheapRenderTargetView,
+         &flags,
+         D3D12_RESOURCE_STATE_RENDER_TARGET,
+         D3D12_RESOURCE_STATE_PRESENT,
+         __interface_of(m_presourceWrappedRTV)
+      ));
+
+
+      resources[0] = { m_presourceWrappedRTV.m_p };
+      m_pd3d11on12->AcquireWrappedResources(resources, _countof(resources));
+
+      ::defer_throw_hresult(m_pd3d11device.as(m_pd3d11on12)); // Query interface
+
       
-      m_pd2d1devicecontext->SetTarget(m_pd2d1bitmap);
+      ::defer_throw_hresult(m_presourceWrappedRTV.as(m_pdxgisurface)); // Get IDXGISurface
+
+
+      //D2D1_BITMAP_PROPERTIES1 bitmapProps = D2D1::BitmapProperties1(
+      //   D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
+      //   D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
+      //);
+
+      //ComPtr<ID2D1Bitmap1> d2dTargetBitmap;
+      //d2dDeviceContext->CreateBitmapFromDxgiSurface(
+      //   dxgiSurface.Get(),
+      //   &bitmapProps,
+      //   &d2dTargetBitmap
+      //);
+
+      //// Set as render target
+      //d2dDeviceContext->SetTarget(d2dTargetBitmap.Get());
+
+
+      //::cast < gpu_directx12::renderer > pgpurendererOutput = m_pgraphics->end_draw_renderer_output();
+
+      //::cast < gpu_directx12::swap_chain_render_target_view > pswapchainrendertargetview = pgpurendererOutput->m_prendertargetview;
+
+      //pswapchainrendertargetview->m_ptextureShared.as(m_pdxgisurface);
+
+      //D2D1_BITMAP_PROPERTIES1 bitmapProps = D2D1::BitmapProperties1(
+      //   D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
+      //   D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
+      //);
+
+      //::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+      //m_pd2d1devicecontext = ::direct2d_directx12::get()->create_d2d1_device_context(nullptr, {});
+
+      //m_pd2d1devicecontext->CreateBitmapFromDxgiSurface(m_pdxgisurface, bitmapProps, &m_pd2d1bitmap);
+      //
+      //m_pd2d1devicecontext->SetTarget(m_pd2d1bitmap);
 
       //g_d2dContext->CreateBitmapFromDxgiSurface(dxgiSurface.Get(), &props, &g_d2dBitmap);
       //g_d2dContext->SetTarget(g_d2dBitmap.Get());
@@ -241,6 +302,16 @@ namespace draw2d_direct2d_directx12
       ::cast < gpu_directx12::swap_chain_render_target_view > pswapchainrendertargetview = pgpurendererOutput->m_prendertargetview;
 
       pswapchainrendertargetview->endDraw();
+
+
+      //d2dDeviceContext->BeginDraw();
+//// ... Direct2D drawing calls ...
+      m_pd2d1context->EndDraw();
+
+      m_pd3d11on12->ReleaseWrappedResources(resources, _countof(resources));
+      m_pd3d11context->Flush(); // Ensure rendering is completed
+
+
 
    }
 

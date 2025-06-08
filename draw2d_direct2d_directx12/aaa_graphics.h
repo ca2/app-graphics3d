@@ -2,6 +2,7 @@
 
 
 #include "aura/graphics/gpu/graphics.h"
+#include "draw2d_direct2d_directx11/graphics.h"
 #include "direct2d_directx12/graphics.h"
 
 
@@ -10,7 +11,7 @@ namespace draw2d_direct2d_directx12
 
 
    class CLASS_DECL_DRAW2D_DIRECT2D_DIRECTX12 graphics :
-      virtual public ::draw2d_gpu::graphics
+      virtual public ::draw2d_direct2d_directx11::graphics
       , virtual public ::direct2d_directx12::graphics
    {
    public:
@@ -62,6 +63,12 @@ namespace draw2d_direct2d_directx12
 
       HDC                                                m_hdcAttach;
       ::draw2d::enum_alpha_mode                          m_ealphamodeDevice;
+
+
+
+      ::comptr<ID3D11Device> m_pd3d11Device;
+      ::comptr<ID3D11DeviceContext> m_pd3d11Context;
+      ::comptr<ID3D11On12Device> m_pd3d11On12;
 
 
       graphics();

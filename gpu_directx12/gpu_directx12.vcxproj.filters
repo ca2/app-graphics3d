@@ -95,6 +95,9 @@
     <ClInclude Include="dxgi_debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="_d3dx12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">

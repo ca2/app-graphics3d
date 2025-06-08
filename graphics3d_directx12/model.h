@@ -50,8 +50,18 @@ namespace graphics3d_directx12
       //    { -0.5f, -0.5f, 0.0f, 0, 0, 1, 1 }
       //};
 
-      ::comptr<ID3D11Buffer> m_pbufferVertex;
-      ::comptr<ID3D11Buffer> m_pbufferIndice;
+      //::comptr<ID3D11Buffer> m_pbufferVertex;
+      //::comptr<ID3D11Buffer> m_pbufferIndice;
+
+      // GPU Resources
+      ::comptr<ID3D12Resource> m_presourceVertexBufferGPU;
+      ::comptr<ID3D12Resource> m_presourceIndexBufferGPU;
+      ::comptr<ID3D12Resource> m_presourceVertexBufferUpload;
+      ::comptr<ID3D12Resource> m_presourceIndexBufferUpload;
+      D3D12_VERTEX_BUFFER_VIEW m_vertexbufferview = {};
+      D3D12_INDEX_BUFFER_VIEW       m_indexbufferview = {};
+      D3D12_RANGE                   m_rangeVertex;
+      D3D12_RANGE                   m_rangeIndex;
       //D3D11_BUFFER_DESC bd = { sizeof(triangle), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER };
       //D3D11_SUBRESOURCE_DATA initData = { triangle };
       //device->CreateBuffer(&bd, &initData, &vbo);
@@ -72,8 +82,8 @@ namespace graphics3d_directx12
       void draw(::gpu::context* pgpucontext) override;
       void bind(::gpu::context* pgpucontext) override;
 
-      void createVertexBuffers(const ::array<::gpu::Vertex>& vertices);
-      void createIndexBuffers(const ::array<uint32_t>& indices);
+      void createVertexBuffers(const ::array<::gpu::Vertex>& vertices, ID3D12GraphicsCommandList* commandList);
+      void createIndexBuffers(const ::array<uint32_t>& indices, ID3D12GraphicsCommandList* commandList);
 
 
    };

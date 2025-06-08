@@ -712,6 +712,7 @@
     <ClInclude Include="swap_chain_render_target_view.h" />
     <ClInclude Include="_.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="_d3dx12.h" />
     <ClInclude Include="_gpu_directx12.h" />
   </ItemGroup>
   <ItemGroup>

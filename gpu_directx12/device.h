@@ -22,13 +22,14 @@ namespace gpu_directx12
       comptr<ID3D12Device>                            m_pdevice;
       //comptr<ID3D11Device1>                           m_pdevice1;
       comptr<IDXGIDevice>                             m_pdxgidevice;
-      comptr<IDXGIFactory4>                           m_pdxgifactory2;
+      comptr<IDXGIFactory4>                           m_pdxgifactory4;
       comptr<IDXGISwapChain3>                         m_pdxgiswapchain1;
       //comptr<ID3D11DeviceContext>                     m_pdevicecontext;
       ::pointer<::windowing::window>                  m_pimpl;
-
-      //::comptr<ID3D12Texture2D>                       m_ptextureBackBuffer;
-      //::comptr<ID3D12RenderTargetView>                m_prendertargetviewBackBuffer;
+      bool                                            m_bUseWarpDevice = false;
+      ::array <::comptr<ID3D12Resource>>              m_resourceaBackBufferTexture;
+      ::array < D3D12_CPU_DESCRIPTOR_HANDLE  >        m_handleaBackBufferRenderTargetView;
+      //::comptr<ID3D12RenderargetView>                m_prendertargetviewBackBuffer;
 
       D3D_FEATURE_LEVEL                               m_featurelevel;
 
@@ -131,6 +132,13 @@ namespace gpu_directx12
 
 
       void initialize_gpu_device(::gpu::approach* pgpuapproach, ::windowing::window *pwindow, const ::int_rectangle & rectanglePlacement, bool bAddSwapChainSupport) override;
+
+
+      void GetHardwareAdapter(
+         IDXGIFactory1* pFactory,
+         IDXGIAdapter1** ppAdapter,
+         bool requestHighPerformanceAdapter = false);
+
 
       //string _001GetIntroProjection() override;
       //string _001GetIntroFragment() override;
@@ -281,8 +289,8 @@ namespace gpu_directx12
       void on_top_end_frame() override;
 
 
-      ID3D11Device* draw_get_d3d11_device();
-      ID3D11Device1* draw_get_d3d11_device1();
+      ID3D12Device* draw_get_d3d11_device();
+      ID3D12Device1* draw_get_d3d11_device1();
       IDXGIDevice* draw_get_dxgi_device();
 
       int get_type_size(::gpu::enum_type etype) override;

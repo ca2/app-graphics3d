@@ -15,15 +15,21 @@ namespace gpu_directx12
 
       ::comptr<IDXGISwapChain> m_pdxgiswapchain;
 
-      ::comptr<ID3D11Texture2D> m_ptextureShared;
+      ::comptr<ID3D12Resource> m_presourceSharedTexture;
+
+      ::comptr < ID3D12RootSignature > m_prootsignature;
+
+      HANDLE m_handleSharedTexture;
+
       //VkSwapchainKHR       m_vkswapchain;
       uint32_t             currentImageIndex;
       //::int_size m_size;
 
-      ::comptr<ID3D11VertexShader> m_pvertexshaderFullscreen;
-      ::comptr<ID3D11PixelShader> m_ppixelshaderFullscreen;
-      ::comptr<ID3D11SamplerState> m_psamplerstateLinear;
-      ::comptr<ID3D11ShaderResourceView> m_pshaderresourceviewShader;
+      //::comptr<ID3D11VertexShader> m_pvertexshaderFullscreen;
+      //::comptr<ID3D11PixelShader> m_ppixelshaderFullscreen;
+      ::comptr < ID3D12PipelineState > m_ppipelinestate;
+      //::comptr<ID3D11SamplerState> m_psamplerstateLinear;
+      //::comptr<ID3D11ShaderResourceView> m_pshaderresourceviewShader;
 
 
       static constexpr int MAX_FRAMES_IN_FLIGHT = 2;

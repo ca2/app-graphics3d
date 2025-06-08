@@ -43,54 +43,132 @@ namespace gpu_directx12
 
 
       m_pgpurenderer->restart_frame_counter();
+      int width = m_size.cx();
+      int height = m_size.cy();
 
 
-      // 1. Create offscreen render target texture
-      D3D11_TEXTURE2D_DESC texDesc = {};
-      texDesc.Width = m_size.cx();
-      texDesc.Height = m_size.cy();
-      texDesc.MipLevels = 1;
-      texDesc.ArraySize = 1;
-      texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-      texDesc.SampleDesc.Count = 1;
-      texDesc.Usage = D3D11_USAGE_DEFAULT;
-      texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+      //// 1. Create offscreen render target texture
+      //D3D11_TEXTURE2D_DESC texDesc = {};
+      //texDesc.Width = m_size.cx();
+      //texDesc.Height = m_size.cy();
+      //texDesc.MipLevels = 1;
+      //texDesc.ArraySize = 1;
+      //texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+      //texDesc.SampleDesc.Count = 1;
+      //texDesc.Usage = D3D11_USAGE_DEFAULT;
+      //texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
-      
-      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+      //
+      //::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
-      auto pdevice = pgpudevice->m_pdevice;
+      //auto pdevice = pgpudevice->m_pdevice;
 
-      HRESULT hrCreateTexture = pdevice->CreateTexture2D(&texDesc, nullptr, &m_ptextureOffscreen);
+      //HRESULT hrCreateTexture = pdevice->CreateTexture2D(&texDesc, nullptr, &m_ptextureOffscreen);
 
-      if (FAILED(hrCreateTexture))
-      {
+      //if (FAILED(hrCreateTexture))
+      //{
 
-         throw ::hresult_exception(hrCreateTexture, "Failed to create offscreen texture");
-         
-      }
+      //   throw ::hresult_exception(hrCreateTexture, "Failed to create offscreen texture");
+      //   
+      //}
 
-      HRESULT hrCreateRenderTargetView = pdevice->CreateRenderTargetView(m_ptextureOffscreen, nullptr, &m_prendertargetview);
+      //HRESULT hrCreateRenderTargetView = pdevice->CreateRenderTargetView(m_ptextureOffscreen, nullptr, &m_prendertargetview);
 
-      if (FAILED(hrCreateRenderTargetView))
-      {
+      //if (FAILED(hrCreateRenderTargetView))
+      //{
 
-         throw ::hresult_exception(hrCreateRenderTargetView, "Failed to create offscreen render target view");
+      //   throw ::hresult_exception(hrCreateRenderTargetView, "Failed to create offscreen render target view");
 
-      }
-      
-      HRESULT hrCreateShaderResourceView = pdevice->CreateShaderResourceView(m_ptextureOffscreen, nullptr, &m_pshaderresourceview);
-      
-      if (FAILED(hrCreateShaderResourceView))
-      {
+      //}
+      //
+      //HRESULT hrCreateShaderResourceView = pdevice->CreateShaderResourceView(m_ptextureOffscreen, nullptr, &m_pshaderresourceview);
+      //
+      //if (FAILED(hrCreateShaderResourceView))
+      //{
 
-         throw ::hresult_exception(hrCreateShaderResourceView, "Failed to create offscreen shader resource view");
+      //   throw ::hresult_exception(hrCreateShaderResourceView, "Failed to create offscreen shader resource view");
 
-      }
-      D3D11_SAMPLER_DESC samp = {};
-      samp.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-      samp.AddressU = samp.AddressV = samp.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-      pdevice->CreateSamplerState(&samp, &m_psamplerstate);
+      //}
+      //D3D11_SAMPLER_DESC samp = {};
+      //samp.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+      //samp.AddressU = samp.AddressV = samp.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+      //pdevice->CreateSamplerState(&samp, &m_psamplerstate);
+
+
+      //void CreateOffscreenRenderTexture(
+      //   ID3D12Device * device,
+      //   UINT width,
+      //   UINT height,
+      //   DXGI_FORMAT format,
+      //   ComPtr<ID3D12DescriptorHeap>&rtvHeap,
+      //   ComPtr<ID3D12DescriptorHeap>&srvHeap,
+      //   ComPtr<ID3D12Resource>&renderTexture)
+      //{
+      // 
+      DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
+         // 1. Create the texture resource
+         D3D12_RESOURCE_DESC textureDesc = {};
+         textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+         textureDesc.Width = width;
+         textureDesc.Height = height;
+         textureDesc.MipLevels = 1;
+         textureDesc.DepthOrArraySize = 1;
+         textureDesc.Format = format;
+         textureDesc.SampleDesc.Count = 1;
+         textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+         textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+         D3D12_CLEAR_VALUE clearValue = {};
+         clearValue.Format = format;
+         clearValue.Color[0] = 0.0f;
+         clearValue.Color[1] = 0.0f;
+         clearValue.Color[2] = 0.0f;
+         clearValue.Color[3] = 1.0f;
+
+         ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+
+         CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
+
+         pdevice->m_pdevice->CreateCommittedResource(
+            &heapproperties,
+            D3D12_HEAP_FLAG_NONE,
+            &textureDesc,
+            D3D12_RESOURCE_STATE_RENDER_TARGET,
+            &clearValue,
+            __interface_of(m_presourceTexture));
+
+
+         new_texture.set_new_texture();
+
+         // 2. Create RTV descriptor heap
+         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+         rtvHeapDesc.NumDescriptors = 1;
+         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+         pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
+
+         // 3. Create RTV
+         m_handleTextureRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
+         pdevice->m_pdevice->CreateRenderTargetView(m_presourceTexture, nullptr, m_handleTextureRenderTargetView);
+
+         // 4. Create SRV descriptor heap
+         D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+         srvHeapDesc.NumDescriptors = 1;
+         srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+         srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+         pdevice->m_pdevice->CreateDescriptorHeap(&srvHeapDesc, __interface_of(m_pheapShaderResourceView));
+
+         // 5. Create SRV
+         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+         srvDesc.Format = format;
+         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+         srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+         srvDesc.Texture2D.MostDetailedMip = 0;
+         srvDesc.Texture2D.MipLevels = 1;
+
+         m_handleTextureShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
+         pdevice->m_pdevice->CreateShaderResourceView(m_presourceTexture, &srvDesc, m_handleTextureShaderResourceView);
+      //}
 
       createRenderPassImpl();
       createImageViews();

@@ -122,76 +122,109 @@ namespace gpu_directx12
    }
 
 
-   void shader::create_vertex_shader(const ::block& block)
+   void shader::create_vertex_and_pixel_shader(const ::block& blockVertex, const ::block& blockPixel)
    {
 
-      auto pblobShader = create_vertex_shader_blob(block);
-
-      ::cast < device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
-
-      auto hresult = pgpudevice->m_pdevice->CreateVertexShader(
-         pblobShader->GetBufferPointer(),
-         pblobShader->GetBufferSize(),
-         nullptr,
-         &m_pvertexshader
-      );
-
-      if (FAILED(hresult))
+      // Define the vertex input layout.
+      D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
       {
+          { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+          { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+      };
 
-         throw ::hresult_exception(hresult);
+      auto pblobVertex  = create_vertex_shader_blob(blockVertex);
+      auto pblobPixel = create_pixel_shader_blob(blockPixel);
 
-      }
 
-      ::array < D3D11_INPUT_ELEMENT_DESC > layout;
 
-      UINT uOffset0 = offsetof(gpu::Vertex, position);
-      UINT uOffset1 = offsetof(gpu::Vertex, color);
-      UINT uOffset2 = offsetof(gpu::Vertex, normal);
-      UINT uOffset3 = offsetof(gpu::Vertex, uv);
-      
-      layout.add({ "POSITION" , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
-      layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset1, D3D11_INPUT_PER_VERTEX_DATA, 0 });
-      layout.add({ "NORMAL"   , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset2, D3D11_INPUT_PER_VERTEX_DATA, 0 });
-      layout.add({ "TEXCOORD" , 0, DXGI_FORMAT_R32G32_FLOAT    , 0, uOffset3, D3D11_INPUT_PER_VERTEX_DATA, 0 });
-      
+      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-      auto data = layout.data();
-      auto size = layout.size();
-      
-      //ID3D11InputLayout* inputLayout = nullptr;
-      hresult = pgpudevice->m_pdevice->CreateInputLayout(
-         data,
-         size,
-         pblobShader->GetBufferPointer(),
-         pblobShader->GetBufferSize(),
-         &m_pinputlayout
-      );
+      ::cast < ::gpu_directx12::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      if (FAILED(hresult))
-      {
+      // Describe and create the graphics pipeline state object (PSO).
+      D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+      psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+      psoDesc.pRootSignature = m_prootsignature;
+      psoDesc.VS = CD3DX12_SHADER_BYTECODE(pblobVertex);
+      psoDesc.PS = CD3DX12_SHADER_BYTECODE(pblobPixel);
+      psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+      psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+      psoDesc.DepthStencilState.DepthEnable = FALSE;
+      psoDesc.DepthStencilState.StencilEnable = FALSE;
+      psoDesc.SampleMask = UINT_MAX;
+      psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+      psoDesc.NumRenderTargets = 1;
+      psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+      psoDesc.SampleDesc.Count = 1;
+      ::defer_throw_hresult(pgpudevice->m_pdevice->CreateGraphicsPipelineState(&psoDesc, __interface_of(m_ppipelinestate)));
 
-         throw ::hresult_exception(hresult);
+      ///auto pblobShader = create_vertex_shader_blob(block);
 
-      }
+      //::cast < device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+
+      //auto hresult = pgpudevice->m_pdevice->CreateVertexShader(
+      //   pblobShader->GetBufferPointer(),
+      //   pblobShader->GetBufferSize(),
+      //   nullptr,
+      //   &m_pvertexshader
+      //);
+
+      //if (FAILED(hresult))
+      //{
+
+      //   throw ::hresult_exception(hresult);
+
+      //}
+
+      //::array < D3D11_INPUT_ELEMENT_DESC > layout;
+
+      //UINT uOffset0 = offsetof(gpu::Vertex, position);
+      //UINT uOffset1 = offsetof(gpu::Vertex, color);
+      //UINT uOffset2 = offsetof(gpu::Vertex, normal);
+      //UINT uOffset3 = offsetof(gpu::Vertex, uv);
+      //
+      //layout.add({ "POSITION" , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+      //layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset1, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+      //layout.add({ "NORMAL"   , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset2, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+      //layout.add({ "TEXCOORD" , 0, DXGI_FORMAT_R32G32_FLOAT    , 0, uOffset3, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+      //
+
+      //auto data = layout.data();
+      //auto size = layout.size();
+      //
+      ////ID3D11InputLayout* inputLayout = nullptr;
+      //hresult = pgpudevice->m_pdevice->CreateInputLayout(
+      //   data,
+      //   size,
+      //   pblobShader->GetBufferPointer(),
+      //   pblobShader->GetBufferSize(),
+      //   &m_pinputlayout
+      //);
+
+      //if (FAILED(hresult))
+      //{
+
+      //   throw ::hresult_exception(hresult);
+
+      //}
    }
 
    
-   void shader::create_pixel_shader(const ::block& block)
-   {
+   //void shader::create_pixel_shader(const ::block& block)
+   //{
 
-      auto pblobShader = create_pixel_shader_blob(block);
+   //   auto pblobShader = create_pixel_shader_blob(block);
 
-      ::cast < device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+   //   ::cast < device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-      pgpudevice->m_pdevice->CreatePixelShader(
-         pblobShader->GetBufferPointer(),
-         pblobShader->GetBufferSize(),
-         nullptr,
-         &m_ppixelshader
-      );
+   //   pgpudevice->m_pdevice->CreatePixelShader(
+   //      pblobShader->GetBufferPointer(),
+   //      pblobShader->GetBufferSize(),
+   //      nullptr,
+   //      &m_ppixelshader
+   //   );
 
-   }
+   //}
 
 
    //void shader::_create_pipeline_layout(int iSize)
@@ -286,8 +319,8 @@ namespace gpu_directx12
       pgpudevice->defer_shader_memory(m_memoryFragment, m_pathFragment);
 
 
-      create_vertex_shader(m_memoryVertex);
-      create_pixel_shader(m_memoryFragment);
+      create_vertex_and_pixel_shader(m_memoryVertex, m_memoryFragment);
+      //create_pixel_shader(m_memoryFragment);
 
 
 
@@ -441,73 +474,100 @@ namespace gpu_directx12
    void shader::bind()
    {
 
-      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+      ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 
-      ::cast <renderer> prenderer = m_pgpurenderer;
+      auto pcommandlist = prenderer->getCurrentCommandList();
 
-      pgpucontext->m_pcontext->IASetInputLayout(m_pinputlayout);
+      // 1. Set the pipeline state object
+      pcommandlist->SetPipelineState(m_ppipelinestate);  // ID3D12PipelineState*
 
-      //defer_throw_hresult(hr1);
 
-      pgpucontext->m_pcontext->VSSetShader(m_pvertexshader, nullptr, 0);
-
-      ///defer_throw_hresult(hr2);
-
-      pgpucontext->m_pcontext->PSSetShader(m_ppixelshader, nullptr, 0);
-
-      if (prenderer)
+      if (m_prootsignature)
       {
-
-         auto pgpurendertargetview = prenderer->m_prendertargetview;
-
-         if (pgpurendertargetview)
-         {
-
-            ::cast < offscreen_render_target_view > poffscreenrendertargetview = pgpurendertargetview;
-
-            if (poffscreenrendertargetview)
-            {
-
-               auto pshaderresourceview = poffscreenrendertargetview->m_pshaderresourceview;
-
-               if (pshaderresourceview)
-               {
-
-                  pgpucontext->m_pcontext->PSSetShaderResources(0, 1, pshaderresourceview.pp());
-
-               }
-
-            }
-
-         }
-
+         // Bind root signature
+         pcommandlist->SetGraphicsRootSignature(m_prootsignature);
 
       }
 
-      //defer_throw_hresult(hr3);
+      //// Push constants
+      //pcommandlist->SetGraphicsRoot32BitConstants(0, 4, color, 0);
 
-      /*auto commandBuffer = prenderer->getCurrentCommandBuffer();
-
-      m_ppipeline->bind(commandBuffer);
-
-      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      if (m_presourceConstantBuffer)
       {
+         // Bind constant buffer
+         pcommandlist->SetGraphicsRootConstantBufferView(1, m_presourceConstantBuffer->GetGPUVirtualAddress());
 
-         auto globalDescriptorSet = pgpucontext->getGlobalDescriptorSet(prenderer);
+      }
 
-         vkCmdBindDescriptorSets(
-            commandBuffer,
-            VK_PIPELINE_BIND_POINT_GRAPHICS,
-            m_vkpipelinelayout,
-            0,
-            1,
-            &globalDescriptorSet,
-            0,
-            nullptr);
+      //::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-      }*/
+      //::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+
+      //::cast <renderer> prenderer = m_pgpurenderer;
+
+      //pgpucontext->m_pgpucontext->IASetInputLayout(m_pinputlayout);
+
+      ////defer_throw_hresult(hr1);
+
+      //pgpucontext->m_pgpucontext->VSSetShader(m_pvertexshader, nullptr, 0);
+
+      /////defer_throw_hresult(hr2);
+
+      //pgpucontext->m_pcontext->PSSetShader(m_ppixelshader, nullptr, 0);
+
+      //if (prenderer)
+      //{
+
+      //   auto pgpurendertargetview = prenderer->m_prendertargetview;
+
+      //   if (pgpurendertargetview)
+      //   {
+
+      //      ::cast < offscreen_render_target_view > poffscreenrendertargetview = pgpurendertargetview;
+
+      //      if (poffscreenrendertargetview)
+      //      {
+
+      //         auto pshaderresourceview = poffscreenrendertargetview->m_pshaderresourceview;
+
+      //         if (pshaderresourceview)
+      //         {
+
+      //            pgpucontext->m_pcontext->PSSetShaderResources(0, 1, pshaderresourceview.pp());
+
+      //         }
+
+      //      }
+
+      //   }
+
+
+      //}
+
+      ////defer_throw_hresult(hr3);
+
+      ///*auto commandBuffer = prenderer->getCurrentCommandBuffer();
+
+      //m_ppipeline->bind(commandBuffer);
+
+      //if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      //{
+
+      //   auto globalDescriptorSet = pgpucontext->getGlobalDescriptorSet(prenderer);
+
+      //   vkCmdBindDescriptorSets(
+      //      commandBuffer,
+      //      VK_PIPELINE_BIND_POINT_GRAPHICS,
+      //      m_vkpipelinelayout,
+      //      0,
+      //      1,
+      //      &globalDescriptorSet,
+      //      0,
+      //      nullptr);
+
+      //}*/
 
    }
 
@@ -525,51 +585,61 @@ namespace gpu_directx12
 
       //defer_throw_hresult(hr1);
 
-      if (m_pvertexshader)
-      {
+      //if (m_pvertexshader)
+      //{
 
-         pgpucontext->m_pcontext->VSSetShader(nullptr, nullptr, 0);
+      //   pgpucontext->m_pcontext->VSSetShader(nullptr, nullptr, 0);
 
-      }
+      //}
 
       ///defer_throw_hresult(hr2);
 
-      if (m_ppixelshader)
-      {
+      //if (m_ppixelshader)
+      //{
 
-         pgpucontext->m_pcontext->PSSetShader(m_ppixelshader, nullptr, 0);
+      //   pgpucontext->m_pcontext->PSSetShader(m_ppixelshader, nullptr, 0);
 
-      }
+      //}
 
-      if (prenderer)
-      {
+      //if (prenderer)
+      //{
 
-         auto pgpurendertargetview = prenderer->m_prendertargetview;
+      //   auto pgpurendertargetview = prenderer->m_prendertargetview;
 
-         if (pgpurendertargetview)
-         {
+      //   if (pgpurendertargetview)
+      //   {
 
-            ::cast < offscreen_render_target_view > poffscreenrendertargetview = pgpurendertargetview;
+      //      ::cast < offscreen_render_target_view > poffscreenrendertargetview = pgpurendertargetview;
 
-            if (poffscreenrendertargetview)
-            {
+      //      if (poffscreenrendertargetview)
+      //      {
 
-               auto pshaderresourceview = poffscreenrendertargetview->m_pshaderresourceview;
+      //         auto pshaderresourceview = poffscreenrendertargetview->m_pshaderresourceview;
 
-               if (pshaderresourceview)
-               {
+      //         if (pshaderresourceview)
+      //         {
 
-                  ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-                  pgpucontext->m_pcontext->PSSetShaderResources(0, 1, nullSRV);
+      //            ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+      //            pgpucontext->m_pcontext->PSSetShaderResources(0, 1, nullSRV);
 
-               }
+      //         }
 
-            }
+      //      }
 
-         }
+      //   }
 
 
-      }
+      //}
+
+      //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
+
+      //::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
+
+      auto pcommandlist = prenderer->getCurrentCommandList();
+
+      // 1. Set the pipeline state object
+      pcommandlist->SetPipelineState(nullptr);  // ID3D12PipelineState*
+
 
    }
 
@@ -602,29 +672,67 @@ namespace gpu_directx12
 
       auto iSetSize = m_properties.size();
 
-      if (iSetSize != m_iSizePushConstants || !m_pbufferPushConstants)
+      if (iSetSize != m_iSizePushConstants || !m_presourceConstantBuffer)
       {
 
-         m_pbufferPushConstants.Release();
+         m_presourceConstantBuffer.Release();
 
-         D3D11_BUFFER_DESC cbDesc = {};
-         cbDesc.ByteWidth = (m_properties.size() + 15) & ~15;
-         cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-         cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-         cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+         //using namespace Microsoft::WRL;
 
-         auto pdevice = pgpudevice->m_pdevice;
+         // -- Root Parameters: [0] Push constants, [1] Constant buffer
+         CD3DX12_ROOT_PARAMETER rootParams[2];
+         rootParams[0].InitAsConstants(4, 0); // float4 color -> b0
+         rootParams[1].InitAsConstantBufferView(1); // matrix -> b1
 
-         HRESULT hr = pdevice->CreateBuffer(&cbDesc, nullptr, &m_pbufferPushConstants);
+         CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
+         rootSigDesc.Init(_countof(rootParams), rootParams, 0, nullptr,
+            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-         if (FAILED(hr))
-         {
+         ::comptr<ID3DBlob> pblobSignature;
+         ::comptr<ID3DBlob> pblobSignatureError;
+         D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &pblobSignature, &pblobSignatureError);
+         pgpudevice->m_pdevice->CreateRootSignature(0, 
+            pblobSignature->GetBufferPointer(), 
+            pblobSignature->GetBufferSize(),
+            __interface_of(m_prootsignature));
 
-            throw ::hresult_exception(hr);
+         m_iSizePushConstants = (m_properties.size() + 255) & ~255;
 
-         }
+         // -- Constant buffer (256 bytes aligned)
+         CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+         CD3DX12_RESOURCE_DESC bufDesc = CD3DX12_RESOURCE_DESC::Buffer(m_iSizePushConstants);
 
-         m_iSizePushConstants = m_properties.size();
+         pgpudevice->m_pdevice->CreateCommittedResource(
+            &heapProps,
+            D3D12_HEAP_FLAG_NONE,
+            &bufDesc,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            __interface_of(m_presourceConstantBuffer));
+
+
+
+
+         ///m_pbufferPushConstants.Release();
+
+         //D3D11_BUFFER_DESC cbDesc = {};
+         //cbDesc.ByteWidth = (m_properties.size() + 15) & ~15;
+         //cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+         //cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+         //cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+         //auto pdevice = pgpudevice->m_pdevice;
+
+         //HRESULT hr = pdevice->CreateBuffer(&cbDesc, nullptr, &m_pbufferPushConstants);
+
+         //if (FAILED(hr))
+         //{
+
+         //   throw ::hresult_exception(hr);
+
+         //}
+
+         
 
 
 
@@ -632,28 +740,28 @@ namespace gpu_directx12
 
       //PushConstants pc = { XMFLOAT4(1, 0, 0, 1), currentTime };
 
-      D3D11_MAPPED_SUBRESOURCE mapped;
-      HRESULT hrMap = pgpucontext->m_pcontext->Map(m_pbufferPushConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+      //D3D11_MAPPED_SUBRESOURCE mapped;
+      //HRESULT hrMap = pgpucontext->m_pcontext->Map(m_pbufferPushConstants, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 
-      if (FAILED(hrMap))
-      {
+      //if (FAILED(hrMap))
+      //{
 
-         throw ::hresult_exception(hrMap);
+      //   throw ::hresult_exception(hrMap);
 
-      }
+      //}
       
-      memcpy(mapped.pData, m_properties.data(), m_properties.size());
-      pgpucontext->m_pcontext->Unmap(m_pbufferPushConstants, 0);
+      //memcpy(mapped.pData, m_properties.data(), m_properties.size());
+      //pgpucontext->m_pcontext->Unmap(m_pbufferPushConstants, 0);
 
 
-      pgpucontext->m_pcontext->VSSetConstantBuffers(0, 1, pgpucontext->m_pbufferGlobalUbo.pp());
-      pgpucontext->m_pcontext->PSSetConstantBuffers(0, 1, pgpucontext->m_pbufferGlobalUbo.pp());
+      //pgpucontext->m_pcontext->VSSetConstantBuffers(0, 1, pgpucontext->m_pbufferGlobalUbo.pp());
+      //pgpucontext->m_pcontext->PSSetConstantBuffers(0, 1, pgpucontext->m_pbufferGlobalUbo.pp());
 
 
-      auto pVS = m_pbufferPushConstants.m_p;
-      pgpucontext->m_pcontext->VSSetConstantBuffers(1, 1, &pVS);
-      auto pPS = m_pbufferPushConstants.m_p;
-      pgpucontext->m_pcontext->PSSetConstantBuffers(1, 1, &pPS);
+      //auto pVS = m_pbufferPushConstants.m_p;
+      //pgpucontext->m_pcontext->VSSetConstantBuffers(1, 1, &pVS);
+      //auto pPS = m_pbufferPushConstants.m_p;
+      //pgpucontext->m_pcontext->PSSetConstantBuffers(1, 1, &pPS);
 
 
 
@@ -663,9 +771,16 @@ namespace gpu_directx12
    void shader::draw()
    {
 
-      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
-      pgpucontext->m_pcontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      pgpucontext->m_pcontext->Draw(6, 0);
+
+      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
+
+      ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
+
+      auto pcommandlist = prenderer->getCurrentCommandList();
+
+      //::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+      pcommandlist->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+      pcommandlist->DrawInstanced(6, 1, 0, 0);
    //   ::cast < renderer > prenderer = m_pgpurenderer;
 
    //   auto commandBuffer = prenderer->getCurrentCommandBuffer();

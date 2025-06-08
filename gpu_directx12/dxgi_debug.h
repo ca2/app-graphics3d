@@ -5,6 +5,9 @@
 #if defined(_DEBUG)
 
 
+#include <DXGIDebug.h>
+
+
 namespace directx12
 {
 

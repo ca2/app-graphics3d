@@ -16,25 +16,23 @@ namespace gpu_directx12
    {
    public:
 
-      ::comptr <ID3D11VertexShader> m_pvertexshader ;
+      ::comptr <ID3D12PipelineState> m_ppipelinestate ;
 
-      ::comptr < ID3D11PixelShader> m_ppixelshader;
+      //::comptr < ID3D11PixelShader> m_ppixelshader;
 
-      ::comptr <ID3D11InputLayout > m_pinputlayout;
+      //::comptr <ID3D11InputLayout > m_pinputlayout;
 
-      comptr < ID3D11Buffer> m_pbufferPushConstants;
+      //comptr < ID3D11Buffer> m_pbufferPushConstants;
       int m_iSizePushConstants = -1;
 
-      //::pointer < pipeline > m_ppipeline;
+      ::comptr < ID3D12RootSignature > m_prootsignature;
 
-      bool m_bDisableDepthTest = false;
-      bool m_bDepthTestButNoDepthWrite = false;
+      ::comptr<ID3D12Resource> m_presourceConstantBuffer;
+
+      //::comptr<ID3D12RootSignature> m_rootSignature;
+
       bool m_bEnableBlend = false;
-      bool m_bAccumulationEnable = false;
-      int m_iColorAttachmentCount = 1;
-      //VkPrimitiveTopology m_vktopology;
-
-      //s::comparable_array<VkDynamicState> m_dynamicstateaEnable;
+      bool m_bDisableDepthTest = false;
 
       shader();
       ~shader();
@@ -42,8 +40,8 @@ namespace gpu_directx12
 
       virtual ::comptr < ID3DBlob> create_vertex_shader_blob(const ::block& block);
       virtual ::comptr < ID3DBlob> create_pixel_shader_blob(const ::block& block);
-      virtual void create_vertex_shader(const ::block& block);
-      virtual void create_pixel_shader(const ::block& block);
+      virtual void create_vertex_and_pixel_shader(const ::block& blockVertex, const ::block& blockPixel);
+      //virtual void create_pixel_shader(const ::block& block);
       //void bind(VkCommandBuffer commandBuffer);
 
       ///static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);

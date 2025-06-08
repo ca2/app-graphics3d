@@ -17,37 +17,37 @@
     <ClCompile Include="framework.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bitmap.cpp">
+    <ClCompile Include="aaa_bitmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="brush.cpp">
+    <ClCompile Include="aaa_brush.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="font.cpp">
+    <ClCompile Include="aaa_font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics.cpp">
+    <ClCompile Include="aaa_graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="image.cpp">
+    <ClCompile Include="aaa_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="object.cpp">
+    <ClCompile Include="aaa_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="palette.cpp">
+    <ClCompile Include="aaa_palette.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="path.cpp">
+    <ClCompile Include="aaa_path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pen.cpp">
+    <ClCompile Include="aaa_pen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="region.cpp">
+    <ClCompile Include="aaa_region.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="_.cpp">
@@ -56,7 +56,7 @@
     <ClCompile Include="draw2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="internal_font.cpp">
+    <ClCompile Include="aaa_internal_font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="end_draw.cpp">
@@ -70,40 +70,40 @@
     <ClInclude Include="_.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bitmap.h">
+    <ClInclude Include="aaa_bitmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="brush.h">
+    <ClInclude Include="aaa_brush.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="factory_exchange.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="font.h">
+    <ClInclude Include="aaa_font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics.h">
+    <ClInclude Include="aaa_graphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="image.h">
+    <ClInclude Include="aaa_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="object.h">
+    <ClInclude Include="aaa_object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="palette.h">
+    <ClInclude Include="aaa_palette.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="path.h">
+    <ClInclude Include="aaa_path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pen.h">
+    <ClInclude Include="aaa_pen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="printer.h">
+    <ClInclude Include="aaa_printer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="region.h">
+    <ClInclude Include="aaa_region.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="draw2d.h">
@@ -115,7 +115,7 @@
     <ClInclude Include="_constant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="internal_font.h">
+    <ClInclude Include="aaa_internal_font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="end_draw.h">
