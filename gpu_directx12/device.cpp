@@ -2655,6 +2655,127 @@ namespace gpu_directx12
    }
 
 
+   void device::list_dred_breadcrumbs()
+   {
+      ::comptr<ID3D12DeviceRemovedExtendedData> pDred;
+      if (FAILED(D3D12GetDebugInterface(__interface_of(pDred))))
+      {
+         warningf("Failed to get DRED interface.\n");
+         return;
+      }
+
+      D3D12_DRED_AUTO_BREADCRUMBS_OUTPUT breadcrumbs = {};
+      if (FAILED(pDred->GetAutoBreadcrumbsOutput(&breadcrumbs)))
+      {
+         warningf("Failed to get breadcrumbs output.\n");
+         return;
+      }
+
+      const D3D12_AUTO_BREADCRUMB_NODE* pNode = breadcrumbs.pHeadAutoBreadcrumbNode;
+      while (pNode)
+      {
+         const wchar_t* cmdListName = pNode->pCommandListDebugNameW ? pNode->pCommandListDebugNameW : L"<Unnamed>";
+         warningf("Command List: %ws\n", cmdListName);
+
+         UINT executedOpIndex = *pNode->pLastBreadcrumbValue;
+         UINT count = pNode->BreadcrumbCount;
+
+         for (UINT i = 0; i < count; ++i)
+         {
+            const char* opName = "Unknown";
+            switch (pNode->pCommandHistory[i])
+            {
+            case D3D12_AUTO_BREADCRUMB_OP_DRAWINDEXEDINSTANCED: opName = "DrawIndexedInstanced"; break;
+            case D3D12_AUTO_BREADCRUMB_OP_DRAWINSTANCED: opName = "DrawInstanced"; break;
+            case D3D12_AUTO_BREADCRUMB_OP_EXECUTEBUNDLE: opName = "ExecuteBundle"; break;
+            case D3D12_AUTO_BREADCRUMB_OP_DISPATCH: opName = "Dispatch"; break;
+            case D3D12_AUTO_BREADCRUMB_OP_COPYBUFFERREGION: opName = "CopyBufferRegion"; break;
+            case D3D12_AUTO_BREADCRUMB_OP_COPYTEXTUREREGION: opName = "CopyTextureRegion"; break;
+            case D3D12_AUTO_BREADCRUMB_OP_RESOURCEBARRIER: opName = "ResourceBarrier"; break;
+            case D3D12_AUTO_BREADCRUMB_OP_CLEARRENDERTARGETVIEW: opName = "ClearRTV"; break;
+            case D3D12_AUTO_BREADCRUMB_OP_CLEARDEPTHSTENCILVIEW: opName = "ClearDSV"; break;
+            case D3D12_AUTO_BREADCRUMB_OP_SETPIPELINESTATE1: opName = "SetPipelineState1"; break;
+            default:
+               break;
+               // Add more cases if needed
+            }
+
+            if (i == executedOpIndex)
+               warningf("  >> %s (Last executed)\n", opName);
+            else
+               warningf("     %s\n", opName);
+         }
+
+         pNode = pNode->pNext;
+      }
+   }
+
+
+   void device::defer_throw_hresult(HRESULT hresult)
+   {
+
+      if (hresult == DXGI_ERROR_DEVICE_REMOVED
+         || hresult == DXGI_ERROR_DEVICE_HUNG)
+      {
+
+         list_dred_breadcrumbs();
+
+      }
+      else
+      {
+
+         ::defer_throw_hresult(hresult);
+
+      }
+
+   }
+
+   void device::get_debug_interface(UINT& dxgiFactoryFlags)
+   {
+
+
+      //UINT dxgiFactoryFlags = 0;
+
+#if defined(_DEBUG)
+///   get_debug_interface(dxgiFactoryFlags);
+   // Enable the debug layer (requires the Graphics Tools "optional feature").
+   // NOTE: Enabling the debug layer after device creation will invalidate the active device.
+
+
+   //::comptr<ID3D12Debug> debugController;
+      if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(m_pdebug))))
+      {
+         
+         m_pdebug->EnableDebugLayer();
+
+         // Enable additional debug layers.
+         dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+      }
+
+
+
+      ::comptr<ID3D12Debug1> pdebug1;
+      m_pdebug.as(pdebug1);
+      if (pdebug1)
+      {
+         ///pdebug1->SetEnableGPUBasedValidation(TRUE);
+      }
+
+
+      ::comptr<ID3D12DeviceRemovedExtendedDataSettings> pdredSettings;
+      if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(pdredSettings))))
+      {
+         //pdredSettings->SetAutoBreadcrumbsEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+         //pdredSettings->SetPageFaultEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+      }
+
+#endif
+
+
+   }
+
+
+
    void device::initialize_cpu_buffer(::windowing::window * pwindow)
    {
 
@@ -2709,18 +2830,20 @@ namespace gpu_directx12
       UINT dxgiFactoryFlags = 0;
 
 #if defined(_DEBUG)
-      // Enable the debug layer (requires the Graphics Tools "optional feature").
-      // NOTE: Enabling the debug layer after device creation will invalidate the active device.
-      {
-         ::comptr<ID3D12Debug> debugController;
-         if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(debugController))))
-         {
-            debugController->EnableDebugLayer();
+      get_debug_interface(dxgiFactoryFlags);
+      //// Enable the debug layer (requires the Graphics Tools "optional feature").
+      //// NOTE: Enabling the debug layer after device creation will invalidate the active device.
+      //
+      //
+      ////::comptr<ID3D12Debug> debugController;
+      //   if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(debugController))))
+      //   {
+      //      debugController->EnableDebugLayer();
 
-            // Enable additional debug layers.
-            dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-         }
-      }
+      //      // Enable additional debug layers.
+      //      dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+      //   }
+      //}
 #endif
 
       ///ComPtr<IDXGIFactory4> factory;
@@ -2747,6 +2870,15 @@ namespace gpu_directx12
             D3D_FEATURE_LEVEL_11_0,
             __interface_of(m_pdevice)
          ));
+      }
+      ::comptr<ID3D12InfoQueue> infoQueue;
+      m_pdevice.as(infoQueue);
+
+      if(infoQueue)
+      {
+         infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+         infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+         infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
       }
 
 
@@ -2800,10 +2932,10 @@ namespace gpu_directx12
    }
 
 
-   typedef HRESULT WINAPI FN_DXGIGetDebugInterface(REFIID riid, void** ppDebug);
+   //typedef HRESULT WINAPI FN_DXGIGetDebugInterface(REFIID riid, void** ppDebug);
 
 
-   typedef FN_DXGIGetDebugInterface* PFN_DXGIGetDebugInterface;
+   //typedef FN_DXGIGetDebugInterface* PFN_DXGIGetDebugInterface;
 
 
    //CLASS_DECL_DIRECTX12 void defer_initialize(::particle * pparticle)

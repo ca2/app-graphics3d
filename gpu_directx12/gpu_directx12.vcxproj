@@ -695,6 +695,7 @@
     <ClInclude Include="cpu_buffer.h" />
     <ClInclude Include="context.h" />
     <ClInclude Include="debug.h" />
+    <ClInclude Include="depth_stencil.h" />
     <ClInclude Include="descriptors.h" />
     <ClInclude Include="device.h" />
     <ClInclude Include="dxgi_debug.h" />
@@ -710,6 +711,7 @@
     <ClInclude Include="shader.h" />
     <ClInclude Include="swap_chain.h" />
     <ClInclude Include="swap_chain_render_target_view.h" />
+    <ClInclude Include="texture.h" />
     <ClInclude Include="_.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="_d3dx12.h" />
@@ -741,6 +743,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="debug.cpp" />
+    <ClCompile Include="depth_stencil.cpp" />
     <ClCompile Include="descriptors.cpp" />
     <ClCompile Include="device.cpp" />
     <ClCompile Include="dxgi_debug.cpp" />
@@ -751,6 +754,7 @@
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="render_target_view.cpp" />
     <ClCompile Include="swap_chain_render_target_view.cpp" />
+    <ClCompile Include="texture.cpp" />
     <ClCompile Include="_factory.cpp" />
     <ClCompile Include="framework.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

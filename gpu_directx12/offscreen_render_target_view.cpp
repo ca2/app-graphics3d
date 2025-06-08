@@ -4,6 +4,7 @@
 #include "initializers.h"
 #include "physical_device.h"
 #include "renderer.h"
+#include "texture.h"
 
 using namespace directx12;
 
@@ -105,70 +106,17 @@ namespace gpu_directx12
       //   ComPtr<ID3D12Resource>&renderTexture)
       //{
       // 
-      DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
-         // 1. Create the texture resource
-         D3D12_RESOURCE_DESC textureDesc = {};
-         textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-         textureDesc.Width = width;
-         textureDesc.Height = height;
-         textureDesc.MipLevels = 1;
-         textureDesc.DepthOrArraySize = 1;
-         textureDesc.Format = format;
-         textureDesc.SampleDesc.Count = 1;
-         textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-         textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
-         D3D12_CLEAR_VALUE clearValue = {};
-         clearValue.Format = format;
-         clearValue.Color[0] = 0.0f;
-         clearValue.Color[1] = 0.0f;
-         clearValue.Color[2] = 0.0f;
-         clearValue.Color[3] = 1.0f;
-
-         ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
-
-         CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
-
-         pdevice->m_pdevice->CreateCommittedResource(
-            &heapproperties,
-            D3D12_HEAP_FLAG_NONE,
-            &textureDesc,
-            D3D12_RESOURCE_STATE_RENDER_TARGET,
-            &clearValue,
-            __interface_of(m_presourceTexture));
-
-
-         new_texture.set_new_texture();
-
-         // 2. Create RTV descriptor heap
-         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-         rtvHeapDesc.NumDescriptors = 1;
-         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-         pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
-
-         // 3. Create RTV
-         m_handleTextureRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
-         pdevice->m_pdevice->CreateRenderTargetView(m_presourceTexture, nullptr, m_handleTextureRenderTargetView);
-
-         // 4. Create SRV descriptor heap
-         D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-         srvHeapDesc.NumDescriptors = 1;
-         srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-         srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-         pdevice->m_pdevice->CreateDescriptorHeap(&srvHeapDesc, __interface_of(m_pheapShaderResourceView));
-
-         // 5. Create SRV
-         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-         srvDesc.Format = format;
-         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-         srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-         srvDesc.Texture2D.MostDetailedMip = 0;
-         srvDesc.Texture2D.MipLevels = 1;
-
-         m_handleTextureShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
-         pdevice->m_pdevice->CreateShaderResourceView(m_presourceTexture, &srvDesc, m_handleTextureShaderResourceView);
       //}
+
+      for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
+      {
+
+         __defer_construct_new(m_texturea.element_at_grow(i));
+
+         m_texturea[i]->initialize_texture(m_pgpurenderer, m_size, true, true);
+
+      }
 
       createRenderPassImpl();
       createImageViews();

@@ -51,6 +51,10 @@ namespace gpu_directx12
 
    class swap_chain_render_target_view;
 
+   class texture;
+
+   class depth_stencil;
+
 
 } // namespace gpu_directx12
 

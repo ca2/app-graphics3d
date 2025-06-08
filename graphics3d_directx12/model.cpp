@@ -17,47 +17,15 @@
 
 
 
-#define GLM_ENABLE_EXPERIMENTAL
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_FORCE_LEFT_HANDED
-#include <glm/gtx/hash.hpp>
-
-
-// lib headers
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
-
-
-// std
-//#include <cassert>
-//#include <cstring>
-//#include <stdexcept>
-//#include <unordered_map>
-//#include <unordered_set>
-
-
-//
-//namespace std {
-//    template <>
-//    struct hash<::graphics3d_directx12::model::Vertex> {
-//        size_t operator()(::graphics3d_directx12::model::Vertex const& vertex) const {
-//            size_t seed = 0;
-//            ::graphics3d_directx12::hash_combine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
-//            return seed;
-//        }
-//    };
-//}  // namespace std
-//
 
 namespace graphics3d_directx12
-
 {
 
 
    model::model()
    {
 
-   
+
    }
 
 
@@ -75,41 +43,27 @@ namespace graphics3d_directx12
 
       initialize(pgpucontext);
 
-      ::cast < ::gpu_directx12::renderer > prenderer= pgpucontext->m_pgpurenderer;
+      ::cast < ::gpu_directx12::renderer > prenderer = pgpucontext->m_pgpurenderer;
 
-      auto commandList = prenderer->getCurrentCommandList();
+      m_pcommandbufferLoading = prenderer->getLoadAssetsCommandBuffer();
 
-      createVertexBuffers(builder.vertices, commandList);
+      createVertexBuffers(builder.vertices);
 
-      createIndexBuffers(builder.indices, commandList);
+      createIndexBuffers(builder.indices);
 
    }
 
 
-   //::pointer<model> model::createModelFromFile(::gpu::context * pgpucontext, const std::string& filepath) {
-   //    Builder builder{};
-   //    builder.loadModel(pgpucontext, filepath);
-
-   //    __refdbg_this(pgpucontext);
-
-   //    return __allocate model(pgpucontext, builder);
-   //}
-
-
-   void model::createVertexBuffers(const ::array<::gpu::Vertex>& vertices, ID3D12GraphicsCommandList* commandList)
+   void model::createVertexBuffers(const ::array<::gpu::Vertex>& vertices)
    {
 
-      //vertexCount = static_cast<uint32_t>(vertices.size());
-      //assert(vertexCount >= 3 && "Vertex count must be at least 3");
-      //VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
-      //uint32_t vertexSize = sizeof(vertices[0]);
       ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
-      
+
       ::array<::gpu::Vertex> a;
 
       a.copy(vertices);
 
-      for (int i = 0; i < a.size(); i+=3)
+      for (int i = 0; i < a.size(); i += 3)
       {
          auto& item2 = a[i + 1];
          //auto& item3 = a[i + 2];
@@ -217,8 +171,10 @@ namespace graphics3d_directx12
       m_presourceVertexBufferUpload->Unmap(0, nullptr);
 
 
+      auto pcommandlist = m_pcommandbufferLoading->m_pcommandlist;
+
       // Upload to GPU
-      commandList->CopyBufferRegion(m_presourceVertexBufferGPU, 0, m_presourceVertexBufferUpload, 0, vertexBufferSize);
+      pcommandlist->CopyBufferRegion(m_presourceVertexBufferGPU, 0, m_presourceVertexBufferUpload, 0, vertexBufferSize);
 
       //// Transition to usable state
       //CD3DX12_RESOURCE_BARRIER vbBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -239,12 +195,12 @@ namespace graphics3d_directx12
       m_vertexbufferview.StrideInBytes = sizeof(::gpu::Vertex);
       m_vertexbufferview.SizeInBytes = vertexBufferSize;
 
-   
+
 
    }
 
 
-   void model::createIndexBuffers(const ::array<uint32_t>& indices, ID3D12GraphicsCommandList* commandList)
+   void model::createIndexBuffers(const ::array<uint32_t>& indices)
    {
 
       indexCount = static_cast<uint32_t>(indices.size());
@@ -305,9 +261,9 @@ namespace graphics3d_directx12
          memcpy(pData, indices.data(), indexBufferSize);
          m_presourceIndexBufferUpload->Unmap(0, nullptr);
 
+         auto pcommandlist = m_pcommandbufferLoading->m_pcommandlist;
 
-
-         commandList->CopyBufferRegion(m_presourceIndexBufferGPU, 0, m_presourceIndexBufferUpload, 0, indexBufferSize);
+         pcommandlist->CopyBufferRegion(m_presourceIndexBufferGPU, 0, m_presourceIndexBufferUpload, 0, indexBufferSize);
 
 
          m_indexbufferview.BufferLocation = m_presourceIndexBufferGPU->GetGPUVirtualAddress();
@@ -353,45 +309,33 @@ namespace graphics3d_directx12
    }
 
 
-   void model::draw(::gpu::context* pgpucontext)
-   {
 
-      //cast <::gpu_directx12::renderer> pgpurenderer = pgpucontext->m_pgpurenderer;
-      ::cast <::gpu_directx12::context> pcontext = pgpucontext;
-      ::cast <::gpu_directx12::device> pdevice = pgpucontext->m_pgpudevice;
-      ::cast <::gpu_directx12::renderer> prenderer = pcontext->m_pgpurenderer;
-     auto pcommandlist = prenderer->getCurrentCommandList();
 
-      if (hasIndexBuffer) {
-      //   vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
-         pcommandlist->DrawIndexedInstanced(
-            indexCount,        // Number of indices to draw
-            1,
-            0,                 // Start index location in the index buffer
-            0,                  // Base vertex location (added to each index)
-            0
-         );
-         
-      }
-      else {
-      //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
-         pcommandlist->DrawInstanced(
-            vertexCount,       // Number of vertices to draw
-            1,
-            0,                  // Start vertex location
-            0
-         );
-      }
-   }
-
-   
    void model::bind(::gpu::context* pgpucontext)
    {
 
+      if (m_pcommandbufferLoading)
+      {
+
+         if (!m_pcommandbufferLoading->has_finished())
+         {
+
+            return;
+
+         }
+
+         m_pcommandbufferLoading.release();
+
+      }
+
       ::cast <::gpu_directx12::context> pcontext = pgpucontext;
       ::cast <::gpu_directx12::device> pdevice = pgpucontext->m_pgpudevice;
       ::cast <::gpu_directx12::renderer> prenderer = pcontext->m_pgpurenderer;
-      auto pcommandlist = prenderer->getCurrentCommandList();
+
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
       //auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
@@ -416,6 +360,88 @@ namespace graphics3d_directx12
 
       //}
 
+   }
+
+
+
+   void model::draw(::gpu::context* pgpucontext)
+   {
+
+      if (m_pcommandbufferLoading)
+      {
+
+         if (!m_pcommandbufferLoading->has_finished())
+         {
+
+            return;
+
+         }
+
+         m_pcommandbufferLoading.release();
+
+      }
+
+      //cast <::gpu_directx12::renderer> pgpurenderer = pgpucontext->m_pgpurenderer;
+      ::cast <::gpu_directx12::context> pcontext = pgpucontext;
+      ::cast <::gpu_directx12::device> pdevice = pgpucontext->m_pgpudevice;
+      ::cast <::gpu_directx12::renderer> prenderer = pcontext->m_pgpurenderer;
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      if (hasIndexBuffer)
+      {
+
+         {
+
+            D3D12_RESOURCE_BARRIER barrier = {};
+            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            barrier.Transition.pResource = m_presourceIndexBufferGPU;
+            barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+            barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_INDEX_BUFFER;
+
+            pcommandlist->ResourceBarrier(1, &barrier);
+
+         }
+
+
+         {
+
+            D3D12_RESOURCE_BARRIER barrier = {};
+
+            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            barrier.Transition.pResource = m_presourceVertexBufferGPU;
+            barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+            barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+
+            pcommandlist->ResourceBarrier(1, &barrier);
+
+         }
+
+         //   vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+         pcommandlist->DrawIndexedInstanced(
+            indexCount,        // Number of indices to draw
+            1,
+            0,                 // Start index location in the index buffer
+            0,                  // Base vertex location (added to each index)
+            0
+         );
+
+      }
+      else {
+         //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
+         pcommandlist->DrawInstanced(
+            vertexCount,       // Number of vertices to draw
+            1,
+            0,                  // Start vertex location
+            0
+         );
+      }
    }
 
 

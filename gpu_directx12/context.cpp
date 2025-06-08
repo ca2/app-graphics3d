@@ -1656,136 +1656,13 @@ namespace gpu_directx12
 
       ////return estatus;
 
-      ::cast < ::gpu_directx12::renderer > prenderer = get_renderer(::gpu::e_scene_3d);
+      //::cast < ::gpu_directx12::renderer > prenderer = get_renderer(::gpu::e_scene_3d);
 
-      ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
+      //::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 
-      auto pcommandlist = prenderer->getCurrentCommandList();
-
-      //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
-
-      if (prenderer)
-      {
-
-         auto pgpurendertargetview = prenderer->m_prendertargetview;
-
-         if (pgpurendertargetview)
-         {
-
-            auto presourceTexture = pgpurendertargetview->m_presourceTexture;
-
-            if (presourceTexture)
-            {
-
-               pcommandlist->OMSetRenderTargets(
-                  1,
-                  &pgpurendertargetview->m_handleTextureRenderTargetView,
-                  true,
-                  &pgpurendertargetview->m_handleTextureShaderResourceView);
+      //prenderer->on_new_frame();
 
 
-               // 1. Define viewport and scissor rectangle
-               D3D12_VIEWPORT viewport = {};
-               viewport.TopLeftX = 0.0f;
-               viewport.TopLeftY = 0.0f;
-               viewport.Width = static_cast<float>(m_rectangle.width());
-               viewport.Height = static_cast<float>(m_rectangle.height());
-               viewport.MinDepth = 0.0f;
-               viewport.MaxDepth = 1.0f;
-
-               D3D12_RECT scissorRect = {};
-               scissorRect.left = 0;
-               scissorRect.top = 0;
-               scissorRect.right = m_rectangle.width();
-               scissorRect.bottom = m_rectangle.height();
-
-               //// 2. Begin command recording
-               //commandAllocator->Reset();
-               //pcommandlist->Reset(commandAllocator.Get(), pipelineState.Get());
-
-               //// 3. Set the pipeline and root signature
-               //pcommandlist->SetPipelineState(pipelineState.Get());
-               //pcommandlist->SetGraphicsRootSignature(rootSignature.Get());
-
-               //// 4. Set the viewport and scissor
-               //commandList->RSSetViewports(1, &viewport);
-               //commandList->RSSetScissorRects(1, &scissorRect);
-               ////D3D11_VIEWPORT vp = {};
-               ////vp.TopLeftX = 0;
-               ////vp.TopLeftY = 0;
-               ////vp.Width = static_cast<float>(m_rectangle.width());
-               ////vp.Height = static_cast<float>(m_rectangle.height());
-               ////vp.MinDepth = 0.0f;
-               ////vp.MaxDepth = 1.0f;
-
-               ////m_pcontext->RSSetViewports(1, &vp);
-
-            }
-
-            auto presourceDepthStencilBuffer = pgpurendertargetview->m_presourceDepthStencilBuffer;
-
-            if(presourceDepthStencilBuffer)
-            {
-
-               //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
-
-               // You set the RTV and DSV like this:
-               pcommandlist->OMSetRenderTargets(
-                  1,                    // One render target
-                  &pgpurendertargetview->m_handleTextureRenderTargetView,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
-                  FALSE,                // Not using RTV arrays
-                  &pgpurendertargetview->m_handleDepthStencilView            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
-               );
-               //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-            }
-
-            ::cast < offscreen_render_target_view > poffscreenrendertargetview = pgpurendertargetview;
-
-            if (poffscreenrendertargetview)
-            {
-
-               //auto psamplerstate = poffscreenrendertargetview->m_psamplerstate;
-
-               //if (psamplerstate)
-               {
-
-                  //m_pcontext->PSSetSamplers(0, 1, psamplerstate.pp());
-
-               }
-
-            }
-
-
-         }
-
-      }
-
-
-      //if (!m_prasterizerstate)
-      //{
-
-      //   // 1. Define rasterizer state descriptor
-      //   D3D11_RASTERIZER_DESC rasterizerDesc = {};
-      //   rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-      //   rasterizerDesc.CullMode = D3D11_CULL_BACK;        // Cull back faces
-      //   rasterizerDesc.FrontCounterClockwise = false; // Treat CCW as front-facing
-      //   rasterizerDesc.DepthClipEnable = TRUE;
-
-      //   // 2. Create rasterizer state object
-      //   //ID3D11RasterizerState* pRasterizerState = nullptr;
-      //   HRESULT hr = m_pgpudevice->m_pdevice->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
-      //   if (FAILED(hr)) {
-      //      // Handle error (e.g., log or exit)
-      //      throw ::hresult_exception(hr);
-      //   }
-
-      //   // 3. Set rasterizer state on the device context
-      //   
-
-      //}
-
-      //m_pcontext->RSSetState(m_prasterizerstate);
 
    }
 

@@ -62,7 +62,7 @@ namespace gpu_directx12
          //void update(VkExtent2D vkextent2d);
          void destroy();
 
-         void sample(ID3D12Resource * presourceTexture, D3D12_CPU_DESCRIPTOR_HANDLE handleTexture);
+         void sample(texture * ptexture);
 
          void send_sample();
 
@@ -118,12 +118,47 @@ namespace gpu_directx12
       ::pointer < descriptor >                                    m_pdescriptorResolve;
 
       ::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
-      ::comptr < ID3D12GraphicsCommandList >                      m_pgraphicscommandlist;
-      ::comptr<ID3D12Fence> m_pfence;
-      ::array <UINT64 > m_fences; // fences values
-      HANDLE m_hFenceEvent;
-      ::array < ::comptr<ID3D12CommandAllocator > > m_commandallocatora;
+      ::comptr<ID3D12CommandQueue>                                m_pcommandqueueCopy;
 
+
+      class command_buffer :
+         virtual public ::particle
+      {
+      public:
+
+
+         ::comptr<ID3D12Fence>                     m_pfence;
+         UINT64                                    m_fenceValue;
+         HANDLE                                    m_hFenceEvent;
+         ::comptr<ID3D12CommandAllocator >         m_pcommandallocator;
+         ::comptr < ID3D12GraphicsCommandList >    m_pcommandlist;
+         ::comptr < ID3D12CommandQueue >           m_pcommandqueue;
+         ::pointer < ::gpu_directx12::renderer >   m_prenderer;
+         D3D12_COMMAND_LIST_TYPE                   m_ecommandlisttype;
+
+         command_buffer();
+         ~command_buffer() override;
+
+         virtual void initialize_command_buffer(D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer, ID3D12CommandQueue * pcommandqueue);
+
+         virtual void submit_command_buffer();
+
+         virtual void wait_for_gpu();
+
+         virtual void reset();
+
+         virtual bool has_finished();
+
+      };
+
+      ::pointer_array < command_buffer > m_commandbuffera;
+
+      ::pointer < command_buffer > m_pcommandbufferSingleTime;
+      ::pointer < command_buffer > m_pcommandbufferLoadAssets;
+
+      
+      //::array <UINT64 > m_fences; // fences values
+      
       ::procedure_array m_procedureaAfterEndRender;
 
       ::collection::index m_iCurrentFrame2 = -1;
@@ -142,6 +177,13 @@ namespace gpu_directx12
 
       //int width()  override;
       //int height() override;
+
+      //virtual ::pointer <command_buffer >getLoadAssetsCommandBuffer();
+
+      virtual ::pointer <command_buffer >beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE ecommandlisttype);
+      
+
+      virtual void endSingleTimeCommands(command_buffer * pcommandbuffer);
 
       void WaitForGpu();
 
@@ -195,7 +237,9 @@ namespace gpu_directx12
       //   return commandBuffers[get_frame_index()];
       //}
 
-      virtual ID3D12GraphicsCommandList* getCurrentCommandList();
+      virtual command_buffer * getCurrentCommandBuffer2();
+
+      virtual command_buffer* getLoadAssetsCommandBuffer();
 
 
       int get_frame_index() const override;

@@ -12,8 +12,9 @@
 #include "gpu_directx12/approach.h"
 #include "gpu_directx12/context.h"
 #include "gpu_directx12/descriptors.h"
-#include "gpu_directx12/renderer.h"
 #include "gpu_directx12/offscreen_render_target_view.h"
+#include "gpu_directx12/renderer.h"
+#include "gpu_directx12/texture.h"
 #include "draw2d_direct2d_directx12/_.h"
 #include "draw2d_direct2d_directx12/end_draw.h"
 #include "draw2d_direct2d_directx11/graphics.h"
@@ -335,6 +336,32 @@ namespace graphics3d_directx12
    }
 
 
+   void engine::engine_on_after_load_scene(::graphics3d::scene* pscene)
+   {
+
+      ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
+
+      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
+
+      if (prenderer->m_pcommandbufferLoadAssets)
+      {
+
+         auto pcommandbufferLoadAssets = ::transfer(prenderer->m_pcommandbufferLoadAssets);
+
+         m_papplication->fork([pcommandbufferLoadAssets]()
+            {
+
+               pcommandbufferLoadAssets->submit_command_buffer();
+
+               pcommandbufferLoadAssets->wait_for_gpu();
+
+            });
+
+      }
+
+   }
+
+
    void engine::_prepare_frame()
    {
 
@@ -563,7 +590,7 @@ namespace graphics3d_directx12
 
          //ID3D11Device* device = pgpudevice->m_pdevice;
          //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-         auto offscreenTexture = poffscreenrendertargetview->m_presourceTexture.m_p;
+         auto offscreenTexture = poffscreenrendertargetview->current_texture()->m_presource.m_p;
          //if (!device || !context || !offscreenTexture)
          if (!offscreenTexture)
          {
@@ -572,7 +599,7 @@ namespace graphics3d_directx12
 
          ::cast < ::draw2d_direct2d_directx12::swap_chain_end_draw > penddraw = pgraphics2d->m_penddraw;
 
-         if (poffscreenrendertargetview->new_texture.m_bForOnAfterDoneFrameStep)
+         if (poffscreenrendertargetview->current_texture()->new_texture.m_bForOnAfterDoneFrameStep)
          {
 
             if (m_presourceWrappedD3D11Resource)
@@ -584,8 +611,7 @@ namespace graphics3d_directx12
 
             }
 
-
-            poffscreenrendertargetview->new_texture.m_bForOnAfterDoneFrameStep = false;
+            poffscreenrendertargetview->current_texture()->new_texture.m_bForOnAfterDoneFrameStep = false;
 
             D3D11_RESOURCE_FLAGS d3d11Flags = {};
             d3d11Flags.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;

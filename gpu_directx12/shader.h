@@ -38,6 +38,9 @@ namespace gpu_directx12
       ~shader();
 
 
+      void create_root_signature();
+
+
       virtual ::comptr < ID3DBlob> create_vertex_shader_blob(const ::block& block);
       virtual ::comptr < ID3DBlob> create_pixel_shader_blob(const ::block& block);
       virtual void create_vertex_and_pixel_shader(const ::block& blockVertex, const ::block& blockPixel);

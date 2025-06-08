@@ -19,6 +19,12 @@ namespace gpu_directx12
    public:
 
 
+#if defined(_DEBUG)
+
+      ::comptr<ID3D12Debug> m_pdebug;
+
+#endif
+
       comptr<ID3D12Device>                            m_pdevice;
       //comptr<ID3D11Device1>                           m_pdevice1;
       comptr<IDXGIDevice>                             m_pdxgidevice;
@@ -127,9 +133,15 @@ namespace gpu_directx12
       ~device() override;
 
 
+      void list_dred_breadcrumbs();
+
+      void defer_throw_hresult(HRESULT hresult);
+
+      virtual void get_debug_interface(UINT& dxgiFactoryFlags);
+
       virtual void initialize_swap_chain(::windowing::window* pwindow);
       virtual void initialize_cpu_buffer(::windowing::window* pwindow);
-
+      
 
       void initialize_gpu_device(::gpu::approach* pgpuapproach, ::windowing::window *pwindow, const ::int_rectangle & rectanglePlacement, bool bAddSwapChainSupport) override;
 

@@ -7,6 +7,7 @@
 #include "gpu_directx12/context.h"
 #include "gpu_directx12/renderer.h"
 #include "gpu_directx12/swap_chain_render_target_view.h"
+#include "gpu_directx12/texture.h"
 #include "aura/graphics/gpu/graphics.h"
 #include "direct2d_directx12/graphics.h"
 
@@ -116,7 +117,7 @@ namespace draw2d_direct2d_directx12
       flags.BindFlags = D3D11_BIND_RENDER_TARGET;
 
       ::defer_throw_hresult(m_pd3d11on12->CreateWrappedResource(
-         prenderer->m_prendertargetview->m_pheapRenderTargetView,
+         prenderer->m_prendertargetview->current_texture()->m_pheapRenderTargetView,
          &flags,
          D3D12_RESOURCE_STATE_RENDER_TARGET,
          D3D12_RESOURCE_STATE_PRESENT,

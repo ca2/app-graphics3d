@@ -1,9 +1,10 @@
 #include "framework.h"
 #include "approach.h"
+#include "depth_stencil.h"
 #include "descriptors.h"
 #include "frame.h"
 #include "renderer.h"
-//#include "accumulation_render_target_view.h"
+#include "texture.h"
 #include "offscreen_render_target_view.h"
 #include "physical_device.h"
 #include "swap_chain_render_target_view.h"
@@ -126,15 +127,14 @@ namespace gpu_directx12
    }
 
 
-   ID3D12GraphicsCommandList* renderer::getCurrentCommandList() 
+   renderer::command_buffer* renderer::getCurrentCommandBuffer2()
    {
+
       assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
 
-      return m_pgraphicscommandlist;
-      //return commandBuffers[get_frame_index()];
+      return m_commandbuffera[get_frame_index()];
 
    }
-
 
 
    int renderer::get_frame_index() const
@@ -152,6 +152,15 @@ namespace gpu_directx12
 
    void renderer::on_new_frame()
    {
+
+      if (m_iCurrentFrame2 >= 0)
+      {
+
+         WaitForGpu();
+
+         isFrameStarted = false;
+
+      }
 
       m_iFrameSerial2++;
 
@@ -237,14 +246,14 @@ namespace gpu_directx12
       {
 
          auto poffscreenrendertargetview = __allocate offscreen_render_target_view(this, size, m_prendertargetview);
-//#ifdef WINDOWS_DESKTOP
-//         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
-//#else
-//         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
-//#endif
+         //#ifdef WINDOWS_DESKTOP
+         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+         //#else
+         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+         //#endif
          m_prendertargetview = poffscreenrendertargetview;
-//         //m_prendererResolve.release();
-//
+         //         //m_prendererResolve.release();
+         //
       }
       else if (eoutput == ::gpu::e_output_swap_chain)
       {
@@ -253,60 +262,60 @@ namespace gpu_directx12
          //m_prendererResolve.release();
 
       }
-//      else if (eoutput == ::gpu::e_output_gpu_buffer)
-//      {
-//
-//         auto poffscreenrendertargetview = __allocate offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
-//#ifdef WINDOWS_DESKTOP
-//         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
-//#else
-//         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
-//#endif
-//         m_prendertargetview = poffscreenrendertargetview;
-//         //m_prendererResolve;
-//
-//      }
-//      else if (eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
-//      {
-//
-//         auto paccumulationrendertargetview = __allocate accumulation_render_target_view(this, m_extentRenderer, m_prendertargetview);
-//         paccumulationrendertargetview->m_formatImage = VK_FORMAT_R32G32B32A32_SFLOAT;
-//         paccumulationrendertargetview->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
-//         m_prendertargetview = paccumulationrendertargetview;
-//
-//         //__construct_new(m_prendererResolve);
-//
-//         //m_prendererResolve->initialize_renderer(m_pgpucontext, ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers);
-//
-//         //m_prendererResolve->set_placement(m_pgpucontext->rectangle);
-//         //
-//         //            auto poffscreenrendertargetview = __allocate offscreen_render_target_view(m_pgpucontext, m_extentRenderer, m_prendertargetviewResolve);
-//         //#ifdef WINDOWS_DESKTOP
-//         //            poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
-//         //#else
-//         //            poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
-//         //#endif
-//         //            m_prendertargetviewResolve = poffscreenrendertargetview;
-//      }
-//      else if (eoutput == ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers)
-//      {
-//
-//         auto poffscreenrendertargetview = __allocate offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
-//#ifdef WINDOWS_DESKTOP
-//         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
-//#else
-//         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
-//#endif
-//         m_prendertargetview = poffscreenrendertargetview;
-//
-//      }
-//      else
-//      {
-//
-//         throw ::exception(error_wrong_state, "Unexpected gpu e_output");
-//
-//      }
-//
+      //      else if (eoutput == ::gpu::e_output_gpu_buffer)
+      //      {
+      //
+      //         auto poffscreenrendertargetview = __allocate offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
+      //#ifdef WINDOWS_DESKTOP
+      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+      //#else
+      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+      //#endif
+      //         m_prendertargetview = poffscreenrendertargetview;
+      //         //m_prendererResolve;
+      //
+      //      }
+      //      else if (eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
+      //      {
+      //
+      //         auto paccumulationrendertargetview = __allocate accumulation_render_target_view(this, m_extentRenderer, m_prendertargetview);
+      //         paccumulationrendertargetview->m_formatImage = VK_FORMAT_R32G32B32A32_SFLOAT;
+      //         paccumulationrendertargetview->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
+      //         m_prendertargetview = paccumulationrendertargetview;
+      //
+      //         //__construct_new(m_prendererResolve);
+      //
+      //         //m_prendererResolve->initialize_renderer(m_pgpucontext, ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers);
+      //
+      //         //m_prendererResolve->set_placement(m_pgpucontext->rectangle);
+      //         //
+      //         //            auto poffscreenrendertargetview = __allocate offscreen_render_target_view(m_pgpucontext, m_extentRenderer, m_prendertargetviewResolve);
+      //         //#ifdef WINDOWS_DESKTOP
+      //         //            poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+      //         //#else
+      //         //            poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+      //         //#endif
+      //         //            m_prendertargetviewResolve = poffscreenrendertargetview;
+      //      }
+      //      else if (eoutput == ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers)
+      //      {
+      //
+      //         auto poffscreenrendertargetview = __allocate offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
+      //#ifdef WINDOWS_DESKTOP
+      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+      //#else
+      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+      //#endif
+      //         m_prendertargetview = poffscreenrendertargetview;
+      //
+      //      }
+      //      else
+      //      {
+      //
+      //         throw ::exception(error_wrong_state, "Unexpected gpu e_output");
+      //
+      //      }
+      //
       if (!m_prendertargetview->has_ok_flag() && m_sizeRenderer.area() > 0)
       {
 
@@ -336,39 +345,32 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
 
+      D3D12_COMMAND_QUEUE_DESC descCopyQueue = {};
+      descCopyQueue.Type = D3D12_COMMAND_LIST_TYPE_COPY;
+      pdevice->m_pdevice->CreateCommandQueue(&descCopyQueue, __interface_of(m_pcommandqueueCopy));
+
       // 2. Create command queue
       D3D12_COMMAND_QUEUE_DESC queueDesc = {};
       queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
       pdevice->m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
 
+      m_commandbuffera.set_size(get_frame_count());
 
-      for (int i = 0; i < get_frame_count(); i++)
+      for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
       {
 
-         auto& pcommandallocator = m_commandallocatora.element_at_grow(i);
+         auto& pcommandbuffer = m_commandbuffera[iFrame];
 
-         HRESULT hr = pdevice->m_pdevice->CreateCommandAllocator(
-            D3D12_COMMAND_LIST_TYPE_DIRECT,  // Type: DIRECT for graphics
-            __interface_of(pcommandallocator)
-         );
+         if (__defer_construct_new(pcommandbuffer))
+         {
+
+            pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this, m_pcommandqueue);
+
+         }
 
       }
 
-      // 4. Create command list (can be reused)
-      pdevice->m_pdevice->CreateCommandList(
-         0,
-         D3D12_COMMAND_LIST_TYPE_DIRECT,
-         m_commandallocatora[get_frame_index()], // initial allocator
-         nullptr, // No PSO yet
-         __interface_of(m_pgraphicscommandlist)
-      );
 
-
-      m_pgraphicscommandlist->Close(); // Must be closed before Reset()
-
-      // 5. Create fence + event for GPU sync
-      pdevice->m_pdevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, __interface_of(m_pfence));
-      m_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
       //commandBuffers.resize(render_target_view::MAX_FRAMES_IN_FLIGHT);
 
       //VkCommandBufferAllocateInfo allocInfo{};
@@ -385,20 +387,243 @@ namespace gpu_directx12
    }
 
 
+   renderer::command_buffer::command_buffer()
+   {
+
+      m_fenceValue = 0;
+
+      m_hFenceEvent = nullptr;
+
+   }
+
+   renderer::command_buffer::~command_buffer()
+   {
+
+      if (m_hFenceEvent)
+      {
+
+         ::CloseHandle(m_hFenceEvent);
+
+         m_hFenceEvent = nullptr;
+
+      }
+
+   }
+
+
+   void renderer::command_buffer::initialize_command_buffer(D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer, ID3D12CommandQueue* pcommandqueue)
+   {
+
+      m_prenderer = prenderer;
+
+      m_pcommandqueue = pcommandqueue;
+
+      m_ecommandlisttype = ecommandlisttype;
+
+      // D3D12_COMMAND_LIST_TYPE_DIRECT
+      // D3D12_COMMAND_LIST_TYPE_DIRECT
+
+      ::cast<gpu_directx12::device> pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+
+      HRESULT hr = pdevice->m_pdevice->CreateCommandAllocator(
+         m_ecommandlisttype,  // Type: DIRECT for graphics
+         __interface_of(m_pcommandallocator)
+      );
+
+      ::defer_throw_hresult(hr);
+
+      //auto& pcommandlist = m_framea.element_at_grow(iFrame);
+      // 4. Create command list (can be reused)
+      ::defer_throw_hresult(pdevice->m_pdevice->CreateCommandList(
+         0,
+         m_ecommandlisttype,
+         m_pcommandallocator, // initial allocator
+         nullptr, // No PSO yet
+         __interface_of(m_pcommandlist)
+      ));
+
+      ::defer_throw_hresult(m_pcommandlist->Close()); // Must be closed before Reset()
+
+      HRESULT hrCreateFeence =
+         pdevice->m_pdevice->CreateFence(0, D3D12_FENCE_FLAG_NONE,
+            __interface_of(m_pfence));
+
+      ::defer_throw_hresult(hrCreateFeence);
+
+      // 5. Create fence + event for GPU sync
+      m_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
+   }
+
+
+   //::pointer <renderer::command_buffer >renderer::beginSingleTimeCommands()
+   //{
+
+   //   ::pointer <renderer::command_buffer > pcommandbuffer;
+
+   //   __defer_construct_new(pcommandbuffer);
+
+   //   ::cast < device > pdevice= m_pgpucontext->m_pgpudevice;
+
+   //   pcommandbuffer->initialize_command_buffer(pdevice);
+
+   //   return pcommandbuffer;
+
+   //}
+
+
+   void renderer::command_buffer::submit_command_buffer()
+   {
+
+      ::cast < ::gpu_directx12::device > pdevice = m_prenderer->m_pgpucontext->m_pgpudevice;
+
+      HRESULT hrCloseCommandList = m_pcommandlist->Close();
+
+      pdevice->defer_throw_hresult(hrCloseCommandList);
+
+      ID3D12CommandList* ppCommandLists[] = { m_pcommandlist };
+
+      m_pcommandqueue->ExecuteCommandLists(1, ppCommandLists);
+
+      UINT64 uploadFenceValue = ++m_fenceValue;
+
+      HRESULT hrSignalCommandQueue = m_pcommandqueue->Signal(m_pfence, uploadFenceValue);
+
+      pdevice->defer_throw_hresult(hrSignalCommandQueue);
+
+   }
+
+
+   void renderer::command_buffer::wait_for_gpu()
+   {
+
+      //const UINT64 fenceValue = ++m_fenceValue;
+
+      //prenderer->m_pcommandqueue->Signal(m_pfence, m_fenceValue);
+
+      if (m_pfence->GetCompletedValue() < m_fenceValue)
+      {
+
+         m_pfence->SetEventOnCompletion(m_fenceValue, m_hFenceEvent);
+
+         ::WaitForSingleObject(m_hFenceEvent, INFINITE);
+
+      }
+
+      //m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % get_frame_count();
+
+
+   }
+
+
+   void renderer::command_buffer::reset()
+   {
+
+      auto pcommandallocator = m_pcommandallocator;
+
+      HRESULT hrResetCommandAllocator = pcommandallocator->Reset();
+
+      ::defer_throw_hresult(hrResetCommandAllocator);
+
+      m_pcommandlist->Reset(pcommandallocator, nullptr);
+
+   }
+
+
+   bool renderer::command_buffer::has_finished()
+   {
+
+      DWORD result = ::WaitForSingleObject(m_hFenceEvent, 0);
+
+      if (result == WAIT_OBJECT_0)
+      {
+
+         return true;
+
+      }
+      else if (result == WAIT_TIMEOUT)
+      {
+
+         return false;
+
+      }
+      else
+      {
+
+         throw ::exception(error_failed, "WaitForSingleObject on m_hFenceEvent has failed");
+
+      }
+
+   }
+
+
    // Sync CPU to GPU so we can reuse this frame's allocator
    void renderer::WaitForGpu()
    {
-      const UINT64 fenceValue = ++m_fences[get_frame_index()];
-      m_pcommandqueue->Signal(m_pfence, fenceValue);
 
-      if (m_pfence->GetCompletedValue() < fenceValue)
+      auto pcommandbuffer = getCurrentCommandBuffer2();
+
+      pcommandbuffer->wait_for_gpu();
+
+   }
+
+
+   renderer::command_buffer* renderer::getLoadAssetsCommandBuffer()
+   {
+
+      if (!m_pcommandbufferLoadAssets)
       {
-         m_pfence->SetEventOnCompletion(fenceValue, m_hFenceEvent);
-         WaitForSingleObject(m_hFenceEvent, INFINITE);
+
+         __defer_construct_new(m_pcommandbufferLoadAssets);
+
+         ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
+
+         m_pcommandbufferLoadAssets->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_COPY, this, m_pcommandqueueCopy);
+
+         m_pcommandbufferLoadAssets->reset();
+
       }
 
-      m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % get_frame_count();
+      return m_pcommandbufferLoadAssets;
 
+   }
+
+
+   ::pointer <renderer::command_buffer >renderer::beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE ecommandlisttype)
+   {
+
+      ::pointer <renderer::command_buffer > pcommandbuffer;
+
+      __defer_construct_new(pcommandbuffer);
+
+      ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
+
+      if (ecommandlisttype == D3D12_COMMAND_LIST_TYPE_COPY)
+      {
+
+         pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_COPY, this, m_pcommandqueueCopy);
+
+      }
+      else
+      {
+
+         pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this, m_pcommandqueue);
+
+      }
+
+      pcommandbuffer->reset();
+
+      return pcommandbuffer;
+
+   }
+
+
+   void renderer::endSingleTimeCommands(command_buffer* pcommandbuffer)
+   {
+
+      pcommandbuffer->submit_command_buffer();
+
+      pcommandbuffer->wait_for_gpu();
 
    }
 
@@ -449,7 +674,7 @@ namespace gpu_directx12
          //   throw ::exception(error_failed, "Failed to aquire swap chain image");
          //}
 
-         isFrameStarted = true;
+         
 
          //auto commandBuffer = getCurrentCommandBuffer();
 
@@ -496,6 +721,136 @@ namespace gpu_directx12
       //}
 
       _on_begin_render();
+
+
+      auto pcommandbuffer = getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
+
+      //if (prenderer)
+      {
+
+         auto pgpurendertargetview = m_prendertargetview;
+
+         if (pgpurendertargetview)
+         {
+
+            auto presourceTexture = pgpurendertargetview->current_texture()->m_presource;
+
+            if (presourceTexture)
+            {
+
+               pcommandlist->OMSetRenderTargets(
+                  1,
+                  &pgpurendertargetview->current_texture()->m_handleRenderTargetView,
+                  true,
+                  &pgpurendertargetview->current_texture()->m_handleShaderResourceView);
+
+
+               // 1. Define viewport and scissor rectangle
+               D3D12_VIEWPORT viewport = {};
+               viewport.TopLeftX = 0.0f;
+               viewport.TopLeftY = 0.0f;
+               viewport.Width = static_cast<float>(m_pgpucontext->m_rectangle.width());
+               viewport.Height = static_cast<float>(m_pgpucontext->m_rectangle.height());
+               viewport.MinDepth = 0.0f;
+               viewport.MaxDepth = 1.0f;
+
+               D3D12_RECT scissorRect = {};
+               scissorRect.left = 0;
+               scissorRect.top = 0;
+               scissorRect.right = m_pgpucontext->m_rectangle.width();
+               scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+
+               //// 2. Begin command recording
+               //commandAllocator->Reset();
+               //pcommandlist->Reset(commandAllocator.Get(), pipelineState.Get());
+
+               //// 3. Set the pipeline and root signature
+               //pcommandlist->SetPipelineState(pipelineState.Get());
+               //pcommandlist->SetGraphicsRootSignature(rootSignature.Get());
+
+               //// 4. Set the viewport and scissor
+               //commandList->RSSetViewports(1, &viewport);
+               //commandList->RSSetScissorRects(1, &scissorRect);
+               ////D3D11_VIEWPORT vp = {};
+               ////vp.TopLeftX = 0;
+               ////vp.TopLeftY = 0;
+               ////vp.Width = static_cast<float>(m_rectangle.width());
+               ////vp.Height = static_cast<float>(m_rectangle.height());
+               ////vp.MinDepth = 0.0f;
+               ////vp.MaxDepth = 1.0f;
+
+               ////m_pcontext->RSSetViewports(1, &vp);
+
+            }
+
+            auto presourceDepthStencilBuffer = pgpurendertargetview->current_depth_stencil()->m_presource;
+
+            if (presourceDepthStencilBuffer)
+            {
+
+               //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
+
+               // You set the RTV and DSV like this:
+               pcommandlist->OMSetRenderTargets(
+                  1,                    // One render target
+                  &pgpurendertargetview->current_texture()->m_handleRenderTargetView,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+                  FALSE,                // Not using RTV arrays
+                  &pgpurendertargetview->current_depth_stencil()->m_handle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+               );
+               //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+            }
+
+            ::cast < offscreen_render_target_view > poffscreenrendertargetview = pgpurendertargetview;
+
+            if (poffscreenrendertargetview)
+            {
+
+               //auto psamplerstate = poffscreenrendertargetview->m_psamplerstate;
+
+               //if (psamplerstate)
+               {
+
+                  //m_pcontext->PSSetSamplers(0, 1, psamplerstate.pp());
+
+               }
+
+            }
+
+
+         }
+
+      }
+
+
+      //if (!m_prasterizerstate)
+      //{
+
+      //   // 1. Define rasterizer state descriptor
+      //   D3D11_RASTERIZER_DESC rasterizerDesc = {};
+      //   rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+      //   rasterizerDesc.CullMode = D3D11_CULL_BACK;        // Cull back faces
+      //   rasterizerDesc.FrontCounterClockwise = false; // Treat CCW as front-facing
+      //   rasterizerDesc.DepthClipEnable = TRUE;
+
+      //   // 2. Create rasterizer state object
+      //   //ID3D11RasterizerState* pRasterizerState = nullptr;
+      //   HRESULT hr = m_pgpudevice->m_pdevice->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
+      //   if (FAILED(hr)) {
+      //      // Handle error (e.g., log or exit)
+      //      throw ::hresult_exception(hr);
+      //   }
+
+      //   // 3. Set rasterizer state on the device context
+      //   
+
+      //}
+
+      //m_pcontext->RSSetState(m_prasterizerstate);
 
    }
 
@@ -640,17 +995,48 @@ namespace gpu_directx12
    }
 
 
-   void renderer::cpu_buffer_sampler::sample(ID3D12Resource * presourceTexture, D3D12_CPU_DESCRIPTOR_HANDLE handleTexture)
+   void renderer::cpu_buffer_sampler::sample(texture* ptexture)
    {
 
       //D3D11_TEXTURE2D_DESC desc;
 
-      m_desc = presourceTexture->GetDesc();
+      m_desc = ptexture->m_presource->GetDesc();
       //EnsureStagingTextureMatches(pTexture, desc);
 
 
-
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
+      ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
+      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
+
+      ::pointer <renderer::command_buffer > pcommandbufferBarrier;
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+
+      if (ptexture->m_estate != D3D12_RESOURCE_STATE_COPY_SOURCE)
+      {
+
+         
+         
+
+         // Transition to copy source
+         D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+            ptexture->m_presource,
+            D3D12_RESOURCE_STATE_RENDER_TARGET, // Adjust if needed
+            D3D12_RESOURCE_STATE_COMMON
+         );
+
+         pcommandlist->ResourceBarrier(1, &barrier);
+
+         ptexture->m_estate = D3D12_RESOURCE_STATE_COMMON;
+
+         //pcommandBuffer->submit_command_buffer();
+
+      }
+
+
 
       if (m_desc.Width != m_size.width() || m_desc.Height != m_size.height())
       {
@@ -679,15 +1065,15 @@ namespace gpu_directx12
          bufferDesc.SampleDesc.Count = 1;
          bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-         ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
-
-         ::defer_throw_hresult(pdevice->m_pdevice->CreateCommittedResource(
+         HRESULT hr = pdevice->m_pdevice->CreateCommittedResource(
             &heapProps,
             D3D12_HEAP_FLAG_NONE,
             &bufferDesc,
             D3D12_RESOURCE_STATE_COPY_DEST,
             nullptr,
-            __interface_of(m_presourceStagingTexture)));
+            __interface_of(m_presourceStagingTexture));
+
+         pdevice->defer_throw_hresult(hr);
 
          m_size.cx() = (int)m_desc.Width;
          m_size.cy() = (int)m_desc.Height;
@@ -699,33 +1085,45 @@ namespace gpu_directx12
 
       //pcontext->m_pcontext->CopyResource((ID3D11Resource*)m_ptextureStaging, (ID3D11Resource*)ptexture);
 
+      //prenderer->WaitForGpu();
+
+      //// Command allocator + list (reuse if created earlier)
+      //::comptr < ID3D12CommandAllocator > pcommandallocatorQuick;
+      //pdevice->defer_throw_hresult(pdevice->m_pdevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __interface_of(pcommandallocatorQuick)));
+      //::comptr < ID3D12GraphicsCommandList > pcommandlistQuick;
+      //pdevice->defer_throw_hresult(pdevice->m_pdevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, pcommandallocatorQuick, nullptr, __interface_of(pcommandlistQuick)));
+
+      //pdevice->defer_throw_hresult(pcommandlistQuick->Close());
+
+      //pdevice->defer_throw_hresult(pcommandallocatorQuick->Reset());
+
+      //pdevice->defer_throw_hresult(pcommandlistQuick->Reset(pcommandallocatorQuick, nullptr));
 
       // Setup footprint
       UINT64 totalBytes = 0;
-      
+
       m_pgpucontext->m_pgpudevice->m_pdevice->GetCopyableFootprints(
          &m_desc,
          0, 1, 0,
          &m_footprint, nullptr, nullptr, &totalBytes);
 
-      //::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
-      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
 
-      
-      auto pcommandlist = prenderer->getCurrentCommandList();
 
-      // Transition to copy source
-      D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-         m_presourceStagingTexture,
-         D3D12_RESOURCE_STATE_RENDER_TARGET, // Adjust if needed
-         D3D12_RESOURCE_STATE_COPY_SOURCE
-      );
-      pcommandlist->ResourceBarrier(1, &barrier);
+
+      //// Make compute queue wait for graphics
+      //UINT64 graphicsSignalValue = ++graphicsFenceValue;
+      //graphicsQueue->Signal(graphicsFence.Get(), graphicsSignalValue);
+      //computeQueue->Wait(graphicsFence.Get(), graphicsSignalValue);
+
+      //// Execute compute work
+      //computeQueue->ExecuteCommandLists(1, ppComputeLists);
+
+
 
       auto location1 = CD3DX12_TEXTURE_COPY_LOCATION(m_presourceStagingTexture, m_footprint);
 
-      auto location2 = CD3DX12_TEXTURE_COPY_LOCATION(presourceTexture, 0);
+      auto location2 = CD3DX12_TEXTURE_COPY_LOCATION(ptexture->m_presource, 0);
       // Copy to staging buffer
       pcommandlist->CopyTextureRegion(
          &location1,
@@ -734,13 +1132,20 @@ namespace gpu_directx12
          nullptr
       );
 
-      // (Optional) transition back
-      barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-         presourceTexture,
-         D3D12_RESOURCE_STATE_COPY_SOURCE,
-         D3D12_RESOURCE_STATE_RENDER_TARGET
-      );
-      pcommandlist->ResourceBarrier(1, &barrier);
+
+      //auto  pcommandlist = pframe->getCurrentCommandList();
+
+      //prenderer->endSingleTimeCommands(pcommandbufferSingleTime);
+
+
+      //HRESULT hrCloseCommandList = pcommandlistQuick->Close();
+
+      //::defer_throw_hresult(hrCloseCommandList);
+
+      //// 4. Execute the command list
+      //ID3D12CommandList* ppCommandLists[] = { pcommandlistQuick };
+      //prenderer->m_pcommandqueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
 
       //stagingTexture->lpVtbl->Release(stagingTexture);
 
@@ -835,25 +1240,25 @@ namespace gpu_directx12
    void renderer::cpu_buffer_sampler::send_sample()
    {
 
-         void* data = nullptr;
-         m_presourceStagingTexture->Map(0, nullptr, &data);
+      void* data = nullptr;
+      m_presourceStagingTexture->Map(0, nullptr, &data);
 
-         // You can now read `m_size.cy()` rows, each of aligned pitch `footprint.Footprint.RowPitch`
+      // You can now read `m_size.cy()` rows, each of aligned pitch `footprint.Footprint.RowPitch`
 
-         // Example:
-         uint8_t* row = reinterpret_cast<uint8_t*>(data);
-         for (int y = 0; y < m_size.cy(); ++y)
+      // Example:
+      uint8_t* row = reinterpret_cast<uint8_t*>(data);
+      for (int y = 0; y < m_size.cy(); ++y)
+      {
+         auto pixel = reinterpret_cast<uint32_t*>(row);
+         for (int x = 0; x < m_size.cx(); ++x)
          {
-            auto pixel = reinterpret_cast<uint32_t*>(row);
-            for (int x = 0; x < m_size.cx(); ++x)
-            {
-               uint32_t rgba = pixel[x];
-               // process pixel
-            }
-            row += m_footprint.Footprint.RowPitch;
+            uint32_t rgba = pixel[x];
+            // process pixel
          }
+         row += m_footprint.Footprint.RowPitch;
+      }
 
-         m_presourceStagingTexture->Unmap(0, nullptr);
+      m_presourceStagingTexture->Unmap(0, nullptr);
       //}
 
 
@@ -989,21 +1394,22 @@ namespace gpu_directx12
       //m_pgpucontext->m_pcpubuffer->gpu_read();
 
       /////auto& memory = m_pimagetarget->m_imagebuffer.m_memory;
-      //::cast< context > pgpucontext = m_pgpucontext;
-      //::cast< renderer > prenderer = pgpucontext->m_pgpurenderer;
-      //auto prendertargetview = prenderer->m_prendertargetview;
-      //::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
-      //::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
-      //ID3D11Device* device = pgpudevice->m_pdevice;
+      ::cast< context > pgpucontext = m_pgpucontext;
+      ::cast< renderer > prenderer = pgpucontext->m_pgpurenderer;
+      auto prendertargetview = prenderer->m_prendertargetview;
+      ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
+      ::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
+      ID3D12Device* device = pgpudevice->m_pdevice;
       //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-      //ID3D11Texture2D* offscreenTexture = poffscreenrendertargetview->m_ptextureOffscreen;
-      //if (!device || !context || !offscreenTexture)
-      //{
-      //   throw ::exception(error_wrong_state);
-      //}
+      ID3D12Resource* presourceOffscreenTexture = poffscreenrendertargetview->current_texture()->m_presource;
+      //if (!pdevice || !context || !offscreenTexture)
+      if (!device || !presourceOffscreenTexture)
+      {
+         throw ::exception(error_wrong_state);
+      }
 
 
-      //m_pcpubuffersampler->sample(offscreenTexture);
+      m_pcpubuffersampler->sample(poffscreenrendertargetview->current_texture());
 
       //auto callback = m_callbackImage32CpuBuffer;
 
@@ -1091,7 +1497,6 @@ namespace gpu_directx12
       //      //vkMapMemory(m_pgpucontext->logicalDevice(), dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
       //      //imagedata += subResourceLayout.offset;
 
-            m_pcpubuffersampler->send_sample();
 
       //      ///*
       //      //	Save host visible framebuffer image to disk (ppm format)
@@ -1177,7 +1582,7 @@ namespace gpu_directx12
 
    }
 
-   void renderer::gpu_blend(::draw2d::graphics * pgraphics)
+   void renderer::gpu_blend(::draw2d::graphics* pgraphics)
    {
 
       //::cast < ::gpu_directx12::offscreen_render_target_view > ptargetview = m_prendertargetview;
@@ -1796,7 +2201,7 @@ namespace gpu_directx12
 
 
       }
-      isFrameStarted = false;
+      //isFrameStarted = false;
       //currentFrameIndex = (currentFrameIndex + 1) % render_target_view::MAX_FRAMES_IN_FLIGHT;
 
       //}
@@ -2780,305 +3185,305 @@ namespace gpu_directx12
    void renderer::_blend_renderer(::gpu_directx12::renderer* prendererSrc, bool bYSwap)
    {
 
-    //  VkImage image = prendererSrc->m_prendertargetview->m_images[prendererSrc->get_frame_index()];
+      //  VkImage image = prendererSrc->m_prendertargetview->m_images[prendererSrc->get_frame_index()];
 
-    //  auto rectanglePlacement = prendererSrc->m_pgpucontext->m_rectangle;
+      //  auto rectanglePlacement = prendererSrc->m_pgpucontext->m_rectangle;
 
-    //  // Image Blend descriptors
-    //  if (!m_psetdescriptorlayoutImageBlend)
-    //  {
+      //  // Image Blend descriptors
+      //  if (!m_psetdescriptorlayoutImageBlend)
+      //  {
 
-    //     m_psetdescriptorlayoutImageBlend = ::gpu_directx12::set_descriptor_layout::Builder(m_pgpucontext)
-    //        .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-    //        .build();
+      //     m_psetdescriptorlayoutImageBlend = ::gpu_directx12::set_descriptor_layout::Builder(m_pgpucontext)
+      //        .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      //        .build();
 
-    //     int iFrameCount = get_frame_count();
+      //     int iFrameCount = get_frame_count();
 
-    //     auto pdescriptorpoolbuilder = __allocate::gpu_directx12::descriptor_pool::Builder();
+      //     auto pdescriptorpoolbuilder = __allocate::gpu_directx12::descriptor_pool::Builder();
 
-    //     pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
-    //     pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
-    //     pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
+      //     pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
+      //     pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+      //     pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
 
-    //     m_pdescriptorpoolImageBlend = pdescriptorpoolbuilder->build();
+      //     m_pdescriptorpoolImageBlend = pdescriptorpoolbuilder->build();
 
-    //  }
+      //  }
 
-    //  //vkCmdBeginRenderPass(...);
+      //  //vkCmdBeginRenderPass(...);
 
-    //  auto commandBuffer = this->getCurrentCommandBuffer();
+      //  auto commandBuffer = this->getCurrentCommandBuffer();
 
-    //  //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+      //  //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
-    //  //VkCommandBuffer commandBuffer;
-    //  //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &commandBuffer));
-    //  //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-    //  //VK_CHECK_RESULT(vkBeginCommandBuffer(commandBuffer, &cmdBufInfo));
-
-
-    //  //m_procedureaAfterEndRender.add(
-    //  //   [this, image, commandBuffer]()
-    //  //   {
-
-    //  //      //            {
-    //  //      //            VkImageMemoryBarrier barrier = {
-    //  //      //.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-    //  //      //.pNext = nullptr,
-    //  //      //   .srcAccessMask = VK_ACCESS_SHADER_READ_BIT,
-    //  //      //.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-    //  //      //
-    //  //      //.oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-    //  //      //.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-    //  //      //.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-    //  //      //.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-    //  //      //.image = image,
-    //  //      //.subresourceRange = {
-    //  //      //    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-    //  //      //    .baseMipLevel = 0,
-    //  //      //    .levelCount = 1,
-    //  //      //    .baseArrayLayer = 0,
-    //  //      //    .layerCount = 1,
-    //  //      //},
-    //  //      //            };
-    //  //      //
-    //  //      //            vkCmdPipelineBarrier(
-    //  //      //               commandBuffer,
-    //  //      //               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-    //  //      //               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-    //  //      //               0,
-    //  //      //               0, NULL,
-    //  //      //               0, NULL,
-    //  //      //               1, &barrier
-    //  //      //            );
-    //  //      //
-    //  //      //         }
-    //  //      //            {
-    //  //      //               VkImageMemoryBarrier barrier = {
-    //  //      //         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-    //  //      //         .pNext = nullptr,
-    //  //      //         .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-    //  //      //         .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-    //  //      //
-    //  //      //         .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-    //  //      //         .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-    //  //      //         .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-    //  //      //         .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-    //  //      //         .image = image,  // <-- your VkImage here
-    //  //      //         .subresourceRange = {
-    //  //      //             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-    //  //      //             .baseMipLevel = 0,
-    //  //      //             .levelCount = 1,
-    //  //      //             .baseArrayLayer = 0,
-    //  //      //             .layerCount = 1,
-    //  //      //         },
-    //  //      //               };
-    //  //      //
-    //  //      //               vkCmdPipelineBarrier(
-    //  //      //                  commandBuffer,
-    //  //      //                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // srcStageMask
-    //  //      //                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,         // dstStageMask
-    //  //      //                  0,
-    //  //      //                  0, NULL,
-    //  //      //                  0, NULL,
-    //  //      //                  1, &barrier
-    //  //      //               );
-    //  //      //
-    //  //      //            }
-    //  //      //
-    //  //      //         }
-
-    //  //if(1)
-    //  //      {
+      //  //VkCommandBuffer commandBuffer;
+      //  //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &commandBuffer));
+      //  //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
+      //  //VK_CHECK_RESULT(vkBeginCommandBuffer(commandBuffer, &cmdBufInfo));
 
 
-    //  //   VkImageMemoryBarrier barrier = {
-    //  //       .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-    //  //       .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-    //  //       .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-    //  //       .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-    //  //       .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-    //  //       .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-    //  //       .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-    //  //       .image = image,
-    //  //       .subresourceRange = {
-    //  //           .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-    //  //           .baseMipLevel = 0,
-    //  //           .levelCount = 1,
-    //  //           .baseArrayLayer = 0,
-    //  //           .layerCount = 1
-    //  //       },
-    //  //   };
+      //  //m_procedureaAfterEndRender.add(
+      //  //   [this, image, commandBuffer]()
+      //  //   {
 
-    //  //   vkCmdPipelineBarrier(
-    //  //      commandBuffer,
-    //  //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-    //  //      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-    //  //      0,
-    //  //      0, NULL,
-    //  //      0, NULL,
-    //  //      1, &barrier
-    //  //   );
+      //  //      //            {
+      //  //      //            VkImageMemoryBarrier barrier = {
+      //  //      //.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      //  //      //.pNext = nullptr,
+      //  //      //   .srcAccessMask = VK_ACCESS_SHADER_READ_BIT,
+      //  //      //.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      //  //      //
+      //  //      //.oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      //  //      //.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //  //      //.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //  //      //.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //  //      //.image = image,
+      //  //      //.subresourceRange = {
+      //  //      //    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //  //      //    .baseMipLevel = 0,
+      //  //      //    .levelCount = 1,
+      //  //      //    .baseArrayLayer = 0,
+      //  //      //    .layerCount = 1,
+      //  //      //},
+      //  //      //            };
+      //  //      //
+      //  //      //            vkCmdPipelineBarrier(
+      //  //      //               commandBuffer,
+      //  //      //               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+      //  //      //               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      //  //      //               0,
+      //  //      //               0, NULL,
+      //  //      //               0, NULL,
+      //  //      //               1, &barrier
+      //  //      //            );
+      //  //      //
+      //  //      //         }
+      //  //      //            {
+      //  //      //               VkImageMemoryBarrier barrier = {
+      //  //      //         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      //  //      //         .pNext = nullptr,
+      //  //      //         .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      //  //      //         .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+      //  //      //
+      //  //      //         .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //  //      //         .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      //  //      //         .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //  //      //         .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //  //      //         .image = image,  // <-- your VkImage here
+      //  //      //         .subresourceRange = {
+      //  //      //             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //  //      //             .baseMipLevel = 0,
+      //  //      //             .levelCount = 1,
+      //  //      //             .baseArrayLayer = 0,
+      //  //      //             .layerCount = 1,
+      //  //      //         },
+      //  //      //               };
+      //  //      //
+      //  //      //               vkCmdPipelineBarrier(
+      //  //      //                  commandBuffer,
+      //  //      //                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // srcStageMask
+      //  //      //                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,         // dstStageMask
+      //  //      //                  0,
+      //  //      //                  0, NULL,
+      //  //      //                  0, NULL,
+      //  //      //                  1, &barrier
+      //  //      //               );
+      //  //      //
+      //  //      //            }
+      //  //      //
+      //  //      //         }
 
-    //  //      }
-
-    //  /*   }
-    //     );*/
-
-    //  auto& pmodel = m_imagemodel[image];
-
-    //  if (__defer_construct_new(pmodel))
-    //  {
-
-    //     create_quad_buffers(m_pgpucontext->logicalDevice(),
-    //        m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-    //        &pmodel->m_vertexBuffer,
-    //        &pmodel->m_vertexMemory,
-    //        &pmodel->m_indexBuffer,
-    //        &pmodel->m_indexMemory, 
-    //        bYSwap);
-
-    //  }
-
-    //  auto pshader = get_image_blend_shader();
-
-    //  pshader->bind();
-
-    //  auto& pdescriptor = m_imagedescriptor[image];
-
-    //  if (__defer_construct_new(pdescriptor))
-    //  {
-
-    //     pdescriptor->m_descriptorsets.set_size(get_frame_count());
-
-    //     //     VkImageViewCreateInfo viewInfo = {
-    //     //.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-    //     //.image = image,  // <-- Your existing VkImage
-    //     //.viewType = VK_IMAGE_VIEW_TYPE_2D,
-    //     //.format = VK_FORMAT_B8G8R8A8_UNORM,  // <-- Match your image's format
-    //     //.components = {
-    //     //    .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-    //     //    .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-    //     //    .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-    //     //    .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-    //     //},
-    //     //.subresourceRange = {
-    //     //    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-    //     //    .baseMipLevel = 0,
-    //     //    .levelCount = 1,
-    //     //    .baseArrayLayer = 0,
-    //     //    .layerCount = 1,
-    //     //},
-    //     //     };
-
-    //     //     VkImageView imageView;
-    //     //     if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, NULL, &imageView) != VK_SUCCESS) {
-    //     //        // Handle error
-    //     //     }
-
-    //     ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
-    //     ::cast < accumulation_render_target_view > ppass = prendererSrc->m_prendertargetview;
-
-    //     for (int i = 0; i < get_frame_count(); i++)
-    //     {
-
-    //        VkDescriptorImageInfo imageinfo;
-
-    //        auto imageview = ppass->m_imageviews[i];
-
-    //        imageinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    //        imageinfo.imageView = imageview;
-    //        imageinfo.sampler = m_pgpucontext->_001VkSampler();
-
-    //        VkDescriptorImageInfo imageinfoAlpha;
-
-    //        auto imageviewAlpha = ppass->m_imageviewsAlphaAccumulation[i];
-
-    //        imageinfoAlpha.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    //        imageinfoAlpha.imageView = imageviewAlpha;
-    //        imageinfoAlpha.sampler = m_pgpucontext->_001VkSampler();
+      //  //if(1)
+      //  //      {
 
 
-    //        auto& playout = m_psetdescriptorlayoutImageBlend;
+      //  //   VkImageMemoryBarrier barrier = {
+      //  //       .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      //  //       .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      //  //       .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+      //  //       .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //  //       .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      //  //       .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //  //       .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //  //       .image = image,
+      //  //       .subresourceRange = {
+      //  //           .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //  //           .baseMipLevel = 0,
+      //  //           .levelCount = 1,
+      //  //           .baseArrayLayer = 0,
+      //  //           .layerCount = 1
+      //  //       },
+      //  //   };
 
-    //        auto& ppool = m_pdescriptorpoolImageBlend;
+      //  //   vkCmdPipelineBarrier(
+      //  //      commandBuffer,
+      //  //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      //  //      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+      //  //      0,
+      //  //      0, NULL,
+      //  //      0, NULL,
+      //  //      1, &barrier
+      //  //   );
 
-    //        descriptor_writer(*playout, *ppool)
-    //           .writeImage(0, &imageinfo)
-    //           .writeImage(0, &imageinfoAlpha)
-    //           .build(pdescriptor->m_descriptorsets[i]);
+      //  //      }
 
-    //     }
+      //  /*   }
+      //     );*/
 
-    //     auto descriptorSetLayout = m_psetdescriptorlayoutImageBlend->getDescriptorSetLayout();
+      //  auto& pmodel = m_imagemodel[image];
 
-    //     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
-    //  .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-    //  .setLayoutCount = 1,
-    //  .pSetLayouts = &descriptorSetLayout,
-    //     };
+      //  if (__defer_construct_new(pmodel))
+      //  {
 
-    //     //VkPipelineLayout pipelineLayout;
-    //     if (vkCreatePipelineLayout(m_pgpucontext->logicalDevice(), &pipelineLayoutInfo, NULL, &pdescriptor->m_vkpipelinelayout) != VK_SUCCESS) {
-    //        // Handle error
-    //     }
+      //     create_quad_buffers(m_pgpucontext->logicalDevice(),
+      //        m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+      //        &pmodel->m_vertexBuffer,
+      //        &pmodel->m_vertexMemory,
+      //        &pmodel->m_indexBuffer,
+      //        &pmodel->m_indexMemory, 
+      //        bYSwap);
 
-    //  }
+      //  }
 
-    //  //auto commandBuffer = this->getCurrentCommandBuffer();
+      //  auto pshader = get_image_blend_shader();
 
-    //  // Bind pipeline and descriptor sets
-    ////      vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-    //  //    vkCmdBindDescriptorSets(commandBuffer, ...);
-    //  vkCmdBindDescriptorSets(
-    //     commandBuffer,
-    //     VK_PIPELINE_BIND_POINT_GRAPHICS,   // Bind point
-    //     pdescriptor->m_vkpipelinelayout,                     // Layout used when pipeline was created
-    //     0,                                  // First set (set = 0)
-    //     1,                                  // Descriptor set count
-    //     &pdescriptor->m_descriptorsets[get_frame_index()],                     // Pointer to descriptor set
-    //     0,                                  // Dynamic offset count
-    //     NULL                                // Dynamic offsets
-    //  );
+      //  pshader->bind();
+
+      //  auto& pdescriptor = m_imagedescriptor[image];
+
+      //  if (__defer_construct_new(pdescriptor))
+      //  {
+
+      //     pdescriptor->m_descriptorsets.set_size(get_frame_count());
+
+      //     //     VkImageViewCreateInfo viewInfo = {
+      //     //.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+      //     //.image = image,  // <-- Your existing VkImage
+      //     //.viewType = VK_IMAGE_VIEW_TYPE_2D,
+      //     //.format = VK_FORMAT_B8G8R8A8_UNORM,  // <-- Match your image's format
+      //     //.components = {
+      //     //    .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+      //     //    .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+      //     //    .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+      //     //    .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+      //     //},
+      //     //.subresourceRange = {
+      //     //    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //     //    .baseMipLevel = 0,
+      //     //    .levelCount = 1,
+      //     //    .baseArrayLayer = 0,
+      //     //    .layerCount = 1,
+      //     //},
+      //     //     };
+
+      //     //     VkImageView imageView;
+      //     //     if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, NULL, &imageView) != VK_SUCCESS) {
+      //     //        // Handle error
+      //     //     }
+
+      //     ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
+      //     ::cast < accumulation_render_target_view > ppass = prendererSrc->m_prendertargetview;
+
+      //     for (int i = 0; i < get_frame_count(); i++)
+      //     {
+
+      //        VkDescriptorImageInfo imageinfo;
+
+      //        auto imageview = ppass->m_imageviews[i];
+
+      //        imageinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      //        imageinfo.imageView = imageview;
+      //        imageinfo.sampler = m_pgpucontext->_001VkSampler();
+
+      //        VkDescriptorImageInfo imageinfoAlpha;
+
+      //        auto imageviewAlpha = ppass->m_imageviewsAlphaAccumulation[i];
+
+      //        imageinfoAlpha.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      //        imageinfoAlpha.imageView = imageviewAlpha;
+      //        imageinfoAlpha.sampler = m_pgpucontext->_001VkSampler();
+
+
+      //        auto& playout = m_psetdescriptorlayoutImageBlend;
+
+      //        auto& ppool = m_pdescriptorpoolImageBlend;
+
+      //        descriptor_writer(*playout, *ppool)
+      //           .writeImage(0, &imageinfo)
+      //           .writeImage(0, &imageinfoAlpha)
+      //           .build(pdescriptor->m_descriptorsets[i]);
+
+      //     }
+
+      //     auto descriptorSetLayout = m_psetdescriptorlayoutImageBlend->getDescriptorSetLayout();
+
+      //     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
+      //  .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+      //  .setLayoutCount = 1,
+      //  .pSetLayouts = &descriptorSetLayout,
+      //     };
+
+      //     //VkPipelineLayout pipelineLayout;
+      //     if (vkCreatePipelineLayout(m_pgpucontext->logicalDevice(), &pipelineLayoutInfo, NULL, &pdescriptor->m_vkpipelinelayout) != VK_SUCCESS) {
+      //        // Handle error
+      //     }
+
+      //  }
+
+      //  //auto commandBuffer = this->getCurrentCommandBuffer();
+
+      //  // Bind pipeline and descriptor sets
+      ////      vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      //  //    vkCmdBindDescriptorSets(commandBuffer, ...);
+      //  vkCmdBindDescriptorSets(
+      //     commandBuffer,
+      //     VK_PIPELINE_BIND_POINT_GRAPHICS,   // Bind point
+      //     pdescriptor->m_vkpipelinelayout,                     // Layout used when pipeline was created
+      //     0,                                  // First set (set = 0)
+      //     1,                                  // Descriptor set count
+      //     &pdescriptor->m_descriptorsets[get_frame_index()],                     // Pointer to descriptor set
+      //     0,                                  // Dynamic offset count
+      //     NULL                                // Dynamic offsets
+      //  );
 
 
 
-    //  VkDeviceSize offsets[] = { 0 };
-    //  vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
-    //  vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+      //  VkDeviceSize offsets[] = { 0 };
+      //  vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
+      //  vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
 
-    //  VkViewport vp = {
-    //     (float)rectanglePlacement.left(),
-    //     (float)rectanglePlacement.top(),
-    //     (float)rectanglePlacement.width(),
-    //     (float)rectanglePlacement.height(),
-    //     0.0f, 1.0f };
-    //  VkRect2D sc = {
-    //     {
-    //     (float)rectanglePlacement.left(),
-    //     (float)rectanglePlacement.top(),
-    //     },
-    //     {
-    //     (float)rectanglePlacement.width(),
-    //     (float)rectanglePlacement.height(),
+      //  VkViewport vp = {
+      //     (float)rectanglePlacement.left(),
+      //     (float)rectanglePlacement.top(),
+      //     (float)rectanglePlacement.width(),
+      //     (float)rectanglePlacement.height(),
+      //     0.0f, 1.0f };
+      //  VkRect2D sc = {
+      //     {
+      //     (float)rectanglePlacement.left(),
+      //     (float)rectanglePlacement.top(),
+      //     },
+      //     {
+      //     (float)rectanglePlacement.width(),
+      //     (float)rectanglePlacement.height(),
 
 
-    //  }
-    //  };
-    //  vkCmdSetViewport(commandBuffer, 0, 1, &vp);
-    //  vkCmdSetScissor(commandBuffer, 0, 1, &sc);
+      //  }
+      //  };
+      //  vkCmdSetViewport(commandBuffer, 0, 1, &vp);
+      //  vkCmdSetScissor(commandBuffer, 0, 1, &sc);
 
-    //  vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
-    //  // Draw full-screen quad
-    //  //vkCmdDraw(commandBuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
+      //  vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+      //  // Draw full-screen quad
+      //  //vkCmdDraw(commandBuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
-    //  pshader->unbind();
+      //  pshader->unbind();
 
-    //  //vkCmdEndRenderPass(...);
+      //  //vkCmdEndRenderPass(...);
 
-    //  vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+      //  vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
-    //  //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &commandBuffer);
+      //  //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &commandBuffer);
 
 
    }
@@ -3086,6 +3491,25 @@ namespace gpu_directx12
 
    void renderer::_on_begin_render()
    {
+
+      auto ptexture = m_prendertargetview->current_texture();
+
+      if (ptexture->m_estate != D3D12_RESOURCE_STATE_RENDER_TARGET)
+      {
+
+         // (Optional) transition back
+         auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+            ptexture->m_presource,
+            ptexture->m_estate,
+            D3D12_RESOURCE_STATE_RENDER_TARGET
+         );
+
+         getCurrentCommandBuffer2()->m_pcommandlist->ResourceBarrier(1, &barrier);
+
+         ptexture->m_estate = D3D12_RESOURCE_STATE_RENDER_TARGET;
+
+      }
+
 
       ////::cast < frame > pframe = pframeParam;
 
@@ -3173,6 +3597,8 @@ namespace gpu_directx12
    void renderer::on_begin_render(::gpu::frame* pframeParam)
    {
 
+      _on_begin_render();
+
       //::cast < frame > pframe = pframeParam;
 
       //auto commandBuffer = pframe->commandBuffer;
@@ -3256,36 +3682,176 @@ namespace gpu_directx12
       ////	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
       ////	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
+      auto pcommandbuffer = getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+
+      {
+
+         auto pgpurendertargetview = m_prendertargetview;
+
+         if (pgpurendertargetview)
+         {
+
+            auto presourceTexture = pgpurendertargetview->current_texture()->m_presource;
+
+            if (presourceTexture)
+            {
+
+               auto presourceDepthStencilBuffer = pgpurendertargetview->current_depth_stencil()->m_presource;
+
+               if (presourceDepthStencilBuffer)
+               {
+
+                  //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
+
+                  // You set the RTV and DSV like this:
+                  pcommandlist->OMSetRenderTargets(
+                     1,                    // One render target
+                     &pgpurendertargetview->current_texture()->m_handleRenderTargetView,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+                     FALSE,                // Not using RTV arrays
+                     &pgpurendertargetview->current_depth_stencil()->m_handle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+                  );
+                  //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+               }
+               else
+               {
+
+                  pcommandlist->OMSetRenderTargets(
+                     1,
+                     &pgpurendertargetview->current_texture()->m_handleRenderTargetView,
+                     true,
+                     nullptr);
+
+               }
+
+
+               // 1. Define viewport and scissor rectangle
+               D3D12_VIEWPORT viewport = {};
+               viewport.TopLeftX = 0.0f;
+               viewport.TopLeftY = 0.0f;
+               viewport.Width = static_cast<float>(m_pgpucontext->m_rectangle.width());
+               viewport.Height = static_cast<float>(m_pgpucontext->m_rectangle.height());
+               viewport.MinDepth = 0.0f;
+               viewport.MaxDepth = 1.0f;
+
+               D3D12_RECT scissorRect = {};
+               scissorRect.left = 0;
+               scissorRect.top = 0;
+               scissorRect.right = m_pgpucontext->m_rectangle.width();
+               scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+
+               //// 2. Begin command recording
+               //commandAllocator->Reset();
+               //pcommandlist->Reset(commandAllocator.Get(), pipelineState.Get());
+
+               //// 3. Set the pipeline and root signature
+               //pcommandlist->SetPipelineState(pipelineState.Get());
+               //pcommandlist->SetGraphicsRootSignature(rootSignature.Get());
+
+               //// 4. Set the viewport and scissor
+               //commandList->RSSetViewports(1, &viewport);
+               //commandList->RSSetScissorRects(1, &scissorRect);
+               ////D3D11_VIEWPORT vp = {};
+               ////vp.TopLeftX = 0;
+               ////vp.TopLeftY = 0;
+               ////vp.Width = static_cast<float>(m_rectangle.width());
+               ////vp.Height = static_cast<float>(m_rectangle.height());
+               ////vp.MinDepth = 0.0f;
+               ////vp.MaxDepth = 1.0f;
+
+               ////m_pcontext->RSSetViewports(1, &vp);
+
+            }
+
+            //auto presourceDepthStencilBuffer = pgpurendertargetview->m_presourceDepthStencilBuffer;
+
+            //if (presourceDepthStencilBuffer)
+            //{
+
+            //   //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
+
+            //   // You set the RTV and DSV like this:
+            //   pcommandlist->OMSetRenderTargets(
+            //      1,                    // One render target
+            //      &pgpurendertargetview->m_ptexture->m_handleRenderTargetView,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+            //      FALSE,                // Not using RTV arrays
+            //      &pgpurendertargetview->m_handleDepthStencilView            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+            //   );
+            //   //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+            //}
+
+            ::cast < offscreen_render_target_view > poffscreenrendertargetview = pgpurendertargetview;
+
+            if (poffscreenrendertargetview)
+            {
+
+               //auto psamplerstate = poffscreenrendertargetview->m_psamplerstate;
+
+               //if (psamplerstate)
+               {
+
+                  //m_pcontext->PSSetSamplers(0, 1, psamplerstate.pp());
+
+               }
+
+            }
+
+
+         }
+
+      }
+
+
+      //if (!m_prasterizerstate)
+      //{
+
+      //   // 1. Define rasterizer state descriptor
+      //   D3D11_RASTERIZER_DESC rasterizerDesc = {};
+      //   rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+      //   rasterizerDesc.CullMode = D3D11_CULL_BACK;        // Cull back faces
+      //   rasterizerDesc.FrontCounterClockwise = false; // Treat CCW as front-facing
+      //   rasterizerDesc.DepthClipEnable = TRUE;
+
+      //   // 2. Create rasterizer state object
+      //   //ID3D11RasterizerState* pRasterizerState = nullptr;
+      //   HRESULT hr = m_pgpudevice->m_pdevice->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
+      //   if (FAILED(hr)) {
+      //      // Handle error (e.g., log or exit)
+      //      throw ::hresult_exception(hr);
+      //   }
+
+
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
       m_hlsClear.m_dH = fmod(m_hlsClear.m_dH + 0.0001, 1.0);
       ::color::color colorClear = m_hlsClear;
       // Clear render target
-      float clear[4] = { 
-         colorClear.f32_red() * .5f, 
-         colorClear.f32_green() * .5f, 
+      float clear[4] = {
+         colorClear.f32_red() * .5f,
+         colorClear.f32_green() * .5f,
          colorClear.f32_blue() * .5f, .5f };
 
 
-///pcontext->g_pImmediateContext->OMSetRenderTargets(1, rtv.GetAddressOf(), nullptr);
+      ///pcontext->g_pImmediateContext->OMSetRenderTargets(1, rtv.GetAddressOf(), nullptr);
 
-      ///pcontext->m_pcontext->ClearRenderTargetView(m_prendertargetview->m_prendertargetview, clear);
+            ///pcontext->m_pcontext->ClearRenderTargetView(m_prendertargetview->m_prendertargetview, clear);
 
-      // Assumes:
-// - commandList is a valid ID3D12GraphicsCommandList*
-// - rtvHandle is a valid D3D12_CPU_DESCRIPTOR_HANDLE to the render target view
-// - clearColor is a float[4] array (same as in DX11)
+            // Assumes:
+      // - commandList is a valid ID3D12GraphicsCommandList*
+      // - rtvHandle is a valid D3D12_CPU_DESCRIPTOR_HANDLE to the render target view
+      // - clearColor is a float[4] array (same as in DX11)
 
-// Example clear color
-      float clearColor[4] = { 0.1f, 0.2f, 0.3f, 1.0f };
+      // Example clear color
+      float clearColor[4] = { 0.f, 0.f, 0.f, 0.f };
 
-      auto pcommandlist = getCurrentCommandList();
+      pcommandlist->ClearRenderTargetView(m_prendertargetview->current_texture()->m_handleRenderTargetView, clearColor, 0, nullptr);
 
-      // Issue the clear command
-      pcommandlist->ClearRenderTargetView(m_prendertargetview->m_handleTextureRenderTargetView, clearColor, 0, nullptr);
-
-      ////}
       on_happening(e_happening_begin_render);
+
    }
 
 
@@ -3358,7 +3924,7 @@ namespace gpu_directx12
       //   }
         //auto pframe = __create_new < ::gpu_directx12::frame >();
       //   pframe->commandBuffer = commandBuffer;
-         __defer_construct(m_pframe);
+      __defer_construct(m_pframe);
       //   on_happening(e_happening_begin_frame);
       //   return m_pframe;
 
@@ -3366,6 +3932,13 @@ namespace gpu_directx12
       ////else
       ////{
 
+
+      auto& pcommandbuffer = m_commandbuffera[get_frame_index()];
+
+      pcommandbuffer->reset();
+
+      //::defer_throw_hresult(
+      //   m_pgraphicscommandlist->Reset(pcommandallocator, pipelineState));
 
       ////	auto result = m_pvkcswapchain->acquireNextImage(&currentImageIndex);
 
@@ -3377,7 +3950,7 @@ namespace gpu_directx12
       ////		throw ::exception(error_failed, "Failed to aquire swap chain image");
       ////	}
 
-      ////	isFrameStarted = true;
+      isFrameStarted = true;
 
       ////	auto commandBuffer = getCurrentCommandBuffer();
 
@@ -3396,10 +3969,28 @@ namespace gpu_directx12
 
    }
 
+
    void renderer::endFrame()
    {
 
+
       on_happening(e_happening_end_frame);
+
+
+
+      //// 5. Signal and wait (optional but recommended for CPU/GPU sync)
+      //m_fences[get_frame_index()]++;
+      //HRESULT hrSignalCommandQueue = m_pcommandqueue->Signal(m_pfence, m_fences[get_frame_index()]);
+
+      //::defer_throw_hresult(hrSignalCommandQueue);
+
+      //// Wait until the GPU has completed execution
+      //if (m_pfence->GetCompletedValue() < m_fences[get_frame_index()])
+      //{
+      //   m_pfence->SetEventOnCompletion(m_fences[get_frame_index()], pfrmae->m_hFenceEvent);
+      //   WaitForSingleObject(pframe->m_hFenceEvent, INFINITE);
+      //}
+
 
       ////if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
       ////{
@@ -3424,7 +4015,6 @@ namespace gpu_directx12
       //   throw ::exception(error_failed, "failed to present swap chain image!");
       //}
 
-      //isFrameStarted = false;
 
       //if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
       //{
@@ -3437,6 +4027,21 @@ namespace gpu_directx12
       ////	resolve_color_and_alpha_accumulation_buffers();
 
       ////}
+
+
+
+      //auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      //HRESULT hrCloseCommandList = pcommandlist->Close();
+
+      //::defer_throw_hresult(hrCloseCommandList);
+
+      //// 4. Execute the command list
+      //ID3D12CommandList* ppCommandLists[] = { pcommandlist };
+      //m_pcommandqueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+
+
 
       auto eoutput = m_pgpucontext->m_eoutput;
 
@@ -3487,6 +4092,26 @@ namespace gpu_directx12
       ////	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_target_view::MAX_FRAMES_IN_FLIGHT;
 
       ////}
+
+      auto pcommandbuffer = getCurrentCommandBuffer2();
+
+      pcommandbuffer->submit_command_buffer();
+
+      if (eoutput == ::gpu::e_output_cpu_buffer)
+      {
+
+         pcommandbuffer->wait_for_gpu();
+
+
+         m_pcpubuffersampler->send_sample();
+
+
+      }
+
+
+      ///isFrameStarted = false;
+
+
 
    }
 
@@ -3835,7 +4460,7 @@ namespace gpu_directx12
       //on_end_render(pframe);
 
       //endFrame();
-  
+
       ////vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
       ////vkQueueWaitIdle(m_pgpucontext->presentQueue());

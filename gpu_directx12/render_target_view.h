@@ -12,34 +12,19 @@
 namespace gpu_directx12
 {
 
-
+   
    class CLASS_DECL_GPU_DIRECTX12 render_target_view :
       virtual public ::particle
    {
    public:
 
-      ::comptr<ID3D12DescriptorHeap>   m_pheapDepthStencilBuffer;
-      ::comptr<ID3D12Resource>         m_presourceDepthStencilBuffer;
-      D3D12_CPU_DESCRIPTOR_HANDLE      m_handleDepthStencilView;
-
-      ::comptr<ID3D12Resource> m_presourceTexture;
-      ::comptr<ID3D12DescriptorHeap> m_pheapRenderTargetView;
-      ::comptr<ID3D12DescriptorHeap> m_pheapShaderResourceView;
-      D3D12_CPU_DESCRIPTOR_HANDLE m_handleTextureRenderTargetView;
-      D3D12_CPU_DESCRIPTOR_HANDLE m_handleTextureShaderResourceView;
-
-      struct
-      {
-         int m_bForOnAfterDoneFrameStep : 1;
-
-         void set_new_texture()
-         {
-            memset(this, 0xff, sizeof(*this));
-
-         }
 
 
-      }new_texture;
+      ::pointer_array < texture >            m_texturea;
+      ::pointer_array < depth_stencil >      m_depthstencila;
+
+
+     
 
       //comptr<ID3D11RenderTargetView>      m_prendertargetview;
       //comptr<ID3D11Texture2D> m_ptextureDepthStencil;
@@ -96,6 +81,10 @@ namespace gpu_directx12
       //VkExtent2D getExtent() { return m_extent; }
       uint32_t width() { return 16; }
       uint32_t height() { return 9; }
+
+      texture* current_texture();
+      depth_stencil* current_depth_stencil();
+
 
       float extentAspectRatio() {
          return (float) width() / (float) height();

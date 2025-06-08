@@ -548,7 +548,7 @@ namespace gpu_directx12
 
          auto pathFolder = pathShader.folder();
 
-         return pathFolder / "directx12" / pathShader.name();
+         return pathFolder / "directx11" / pathShader.name();
 
       }
 

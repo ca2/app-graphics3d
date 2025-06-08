@@ -5,6 +5,7 @@
 
 
 #include "aura/graphics/graphics3d/model.h"
+#include "app-graphics3d/gpu_directx12/renderer.h"
 
 
 //#include "context.h"
@@ -41,7 +42,7 @@ namespace graphics3d_directx12
       //::pointer<::gpu_directx12::buffer> m_pbufferIndex;
       uint32_t indexCount;
 
-
+      ::pointer < ::gpu_directx12::renderer::command_buffer > m_pcommandbufferLoading;
       //// Triangle vertex data
       //struct Vertex { float x, y, z; float r, g, b, a; };
       //Vertex triangle[] = {
@@ -79,11 +80,11 @@ namespace graphics3d_directx12
 
       void initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder) override;
 
-      void draw(::gpu::context* pgpucontext) override;
       void bind(::gpu::context* pgpucontext) override;
+      void draw(::gpu::context* pgpucontext) override;
 
-      void createVertexBuffers(const ::array<::gpu::Vertex>& vertices, ID3D12GraphicsCommandList* commandList);
-      void createIndexBuffers(const ::array<uint32_t>& indices, ID3D12GraphicsCommandList* commandList);
+      void createVertexBuffers(const ::array<::gpu::Vertex>& vertices);
+      void createIndexBuffers(const ::array<uint32_t>& indices);
 
 
    };
