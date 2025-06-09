@@ -1235,6 +1235,25 @@ namespace gpu_directx12
 
 
    }
+   void GetTextureSizeInfo(ID3D12Device* device, ID3D12Resource* texture,
+      UINT& width, UINT& height, UINT& rowPitch)
+   {
+      auto desc = texture->GetDesc();
+      width = static_cast<UINT>(desc.Width);
+      height = desc.Height;
+
+      D3D12_PLACED_SUBRESOURCE_FOOTPRINT layout;
+      UINT numRows;
+      UINT64 rowSize;
+      UINT64 totalBytes;
+
+      device->GetCopyableFootprints(
+         &desc, 0, 1, 0,
+         &layout, &numRows, &rowSize, &totalBytes
+      );
+
+      rowPitch = layout.Footprint.RowPitch;
+   }
 
 
    void renderer::cpu_buffer_sampler::send_sample()
@@ -1242,21 +1261,57 @@ namespace gpu_directx12
 
       void* data = nullptr;
       m_presourceStagingTexture->Map(0, nullptr, &data);
+      ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
+      ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
+      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
+      auto prendertargetview = prenderer->m_prendertargetview;
+      ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
+      ID3D12Resource* presourceOffscreenTexture = poffscreenrendertargetview->current_texture()->m_presource;
+
+
+      //m_pcpubuffersampler->sample(poffscreenrendertargetview->current_texture());
 
       // You can now read `m_size.cy()` rows, each of aligned pitch `footprint.Footprint.RowPitch`
+      UINT w = 0;
+      UINT h = 0;
+      UINT s = 0;
+      GetTextureSizeInfo(pdevice->m_pdevice, presourceOffscreenTexture, w, h, s);
+      auto pcpubuffer = m_pgpucontext->m_pcpubuffer;
 
-      // Example:
-      uint8_t* row = reinterpret_cast<uint8_t*>(data);
-      for (int y = 0; y < m_size.cy(); ++y)
+      if (pcpubuffer && w > 0 && h > 0 && s >0)
       {
-         auto pixel = reinterpret_cast<uint32_t*>(row);
-         for (int x = 0; x < m_size.cx(); ++x)
+
+         auto pimagetarget = pcpubuffer->m_pimagetarget;
+
+         if (pimagetarget)
          {
-            uint32_t rgba = pixel[x];
-            // process pixel
+
+            //auto size = m_pgpucontext->m_rectangle.size();
+
+            pimagetarget->set_image_pixels(
+               (const ::image32_t *) data,
+               w,
+               h,
+               s,
+               true);
+
          }
-         row += m_footprint.Footprint.RowPitch;
+
       }
+
+      //if()
+      //// Example:
+      //uint8_t* row = reinterpret_cast<uint8_t*>(data);
+      //for (int y = 0; y < m_size.cy(); ++y)
+      //{
+      //   auto pixel = reinterpret_cast<uint32_t*>(row);
+      //   for (int x = 0; x < m_size.cx(); ++x)
+      //   {
+      //      uint32_t rgba = pixel[x];
+      //      // process pixel
+      //   }
+      //   row += m_footprint.Footprint.RowPitch;
+      //}
 
       m_presourceStagingTexture->Unmap(0, nullptr);
       //}
@@ -3846,7 +3901,7 @@ namespace gpu_directx12
       // - clearColor is a float[4] array (same as in DX11)
 
       // Example clear color
-      float clearColor[4] = { 0.f, 0.f, 0.f, 0.f };
+      float clearColor[4] = { 0.5f * 0.5f, 0.75f * 0.5f, 0.9f * 0.5f, 0.5f };
 
       pcommandlist->ClearRenderTargetView(m_prendertargetview->current_texture()->m_handleRenderTargetView, clearColor, 0, nullptr);
 

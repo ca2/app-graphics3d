@@ -606,12 +606,12 @@ namespace gpu_directx12
       //// Push constants
       //pcommandlist->SetGraphicsRoot32BitConstants(0, 4, color, 0);
 
-      if (m_presourceConstantBuffer)
-      {
-         // Bind constant buffer
-         pcommandlist->SetGraphicsRootConstantBufferView(1, m_presourceConstantBuffer->GetGPUVirtualAddress());
+      //if (m_presourceConstantBuffer)
+      //{
+      //   // Bind constant buffer
+      //   pcommandlist->SetGraphicsRootConstantBufferView(1, m_presourceConstantBuffer->GetGPUVirtualAddress());
 
-      }
+      //}
 
       //::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
@@ -849,6 +849,23 @@ namespace gpu_directx12
 
 
       }
+
+      UINT8* pData = nullptr;
+      D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
+      m_presourceConstantBuffer->Map(0, &range, reinterpret_cast<void**>(&pData));
+      memcpy(pData, m_properties.data(), m_properties.size());
+      m_presourceConstantBuffer->Unmap(0, nullptr);
+      //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
+
+      ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+
+      pcommandlist->SetGraphicsRootConstantBufferView(1, m_presourceConstantBuffer->GetGPUVirtualAddress());
+
 
       //PushConstants pc = { XMFLOAT4(1, 0, 0, 1), currentTime };
 
