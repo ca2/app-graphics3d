@@ -2976,8 +2976,8 @@ namespace gpu_directx12
 
       }
 
-
    }
+
 
    void device::set_mat4(void* p, const ::glm::mat4& mat4)
    {

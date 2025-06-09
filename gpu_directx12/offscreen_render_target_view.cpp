@@ -48,6 +48,26 @@ namespace gpu_directx12
       int height = m_size.cy();
 
 
+      ::cast < device>pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+
+      D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+      rtvHeapDesc.NumDescriptors = m_pgpurenderer->get_frame_count();
+      rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+      rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+      HRESULT hrCreateDescriptorHeapRtv = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap));
+      pdevice->defer_throw_hresult(hrCreateDescriptorHeapRtv);
+      m_rtvDescriptorSize = pdevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+
+      // Describe and create a depth stencil view (DSV) descriptor heap.
+      D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+      dsvHeapDesc.NumDescriptors = 1;
+      dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+      dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+      HRESULT hrCreateDescriptorHeapDsv = pdevice->m_pdevice->CreateDescriptorHeap(&dsvHeapDesc, __interface_of(m_dsvHeap));
+      pdevice->defer_throw_hresult(hrCreateDescriptorHeapDsv);
+
+
       //// 1. Create offscreen render target texture
       //D3D11_TEXTURE2D_DESC texDesc = {};
       //texDesc.Width = m_size.cx();
@@ -60,7 +80,7 @@ namespace gpu_directx12
       //texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
       //
-      //::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
       //auto pdevice = pgpudevice->m_pdevice;
 
@@ -109,12 +129,66 @@ namespace gpu_directx12
 
       //}
 
-      for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
       {
 
-         __defer_construct_new(m_texturea.element_at_grow(i));
+         CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-         m_texturea[i]->initialize_texture(m_pgpurenderer, m_size, true, true);
+            for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
+            {
+
+               __defer_construct_new(m_texturea.element_at_grow(i));
+
+               m_texturea[i]->initialize_texture(m_pgpurenderer, m_size);
+
+               //if (bCreateRenderTargetView)
+               {
+
+                  //// 2. Create RTV descriptor heap
+                  //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+                  //rtvHeapDesc.NumDescriptors = 1;
+                  //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+                  //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+                  //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
+
+                  //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
+
+                  //// 3. Create RTV
+                  //m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
+                  //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+
+                  pgpudevice->m_pdevice->CreateRenderTargetView(m_texturea[i]->m_presource, nullptr, rtvHandle);
+                  rtvHandle.Offset(1, m_rtvDescriptorSize);
+               }
+
+            }
+         //if (bCreateShaderResourceView)
+         //{
+
+         //   //// 4. Create SRV descriptor heap
+         //   //D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+         //   //srvHeapDesc.NumDescriptors = 1;
+         //   //srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+         //   //srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+         //   //
+         //   //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&srvHeapDesc, __interface_of(m_pheapShaderResourceView));
+
+         //   //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
+
+         //   //// 5. Create SRV
+         //   //D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+         //   //srvDesc.Format = format;
+         //   //srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+         //   //srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+         //   //srvDesc.Texture2D.MostDetailedMip = 0;
+         //   //srvDesc.Texture2D.MipLevels = 1;
+
+         //   //m_handleShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
+
+         //   //pdevice->m_pdevice->CreateShaderResourceView(m_presource, &srvDesc, m_handleShaderResourceView);
+
+         //}
+
+
 
       }
 

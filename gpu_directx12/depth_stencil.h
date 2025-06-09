@@ -14,9 +14,9 @@ namespace gpu_directx12
 
 
       ::pointer < ::gpu::renderer >    m_prenderer;
-      ::comptr<ID3D12DescriptorHeap>   m_pheap;
+      //::comptr<ID3D12DescriptorHeap>   m_pheap;
       ::comptr<ID3D12Resource>         m_presource;
-      D3D12_CPU_DESCRIPTOR_HANDLE      m_handle;
+      //D3D12_CPU_DESCRIPTOR_HANDLE      m_handle;
 
 
 

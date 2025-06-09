@@ -68,6 +68,8 @@ namespace gpu_directx12
    // renderer::renderer(VkWindow& window, context* pvkcdevice) : vkcWindow{ window }, m_pgpucontext{ pvkcdevice } 
    renderer::renderer()
    {
+      m_pGlobalUBO = nullptr;
+      m_pPushProperties = nullptr;
       m_hlsClear.m_dL = 0.75;
       m_hlsClear.m_dS = 0.5;
    }
@@ -94,6 +96,40 @@ namespace gpu_directx12
       ::gpu::renderer::initialize_renderer(pgpucontext, eoutput, escene);
 
       m_pgpucontext = pgpucontext;
+      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+      // Describe and create a constant buffer view (CBV) descriptor heap.
+// Flags indicate that this descriptor heap can be bound to the pipeline 
+// and that descriptors contained in it can be referenced by a root table.
+      D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
+      cbvHeapDesc.NumDescriptors = 1;
+      cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+      cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+      HRESULT hrCreateDescriptorHeapCbv=pgpudevice->m_pdevice->CreateDescriptorHeap(&cbvHeapDesc, __interface_of(m_cbvHeap));
+      pgpudevice->defer_throw_hresult(hrCreateDescriptorHeapCbv);
+
+      const UINT constantBufferSize = ::directx12::Align256(64_KiB);    // CB size is required to be 256-byte aligned.
+      //::cast < renderer > prenderer = m_pgpucontext->m_pgpurenderer;
+      CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
+      auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
+      HRESULT hrCreateCommittedResource = pgpudevice->m_pdevice->CreateCommittedResource(
+         &heapproperties,
+         D3D12_HEAP_FLAG_NONE,
+         &resourcedesc,
+         D3D12_RESOURCE_STATE_GENERIC_READ,
+         nullptr,
+         __interface_of(m_presourcePushProperties));
+      pgpudevice->defer_throw_hresult(hrCreateCommittedResource);
+      // Describe and create a constant buffer view.
+      D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+      cbvDesc.BufferLocation = m_presourcePushProperties->GetGPUVirtualAddress();
+      cbvDesc.SizeInBytes = constantBufferSize;
+      auto cbvHeap = m_cbvHeap;
+      pgpudevice->m_pdevice->CreateConstantBufferView(&cbvDesc, cbvHeap->GetCPUDescriptorHandleForHeapStart());
+      CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
+      auto hrMap = m_presourcePushProperties->Map(0, &readRange, reinterpret_cast<void**>(&m_pPushProperties));
+      defer_throw_hresult(hrMap);
+
+
 
       if (eoutput == ::gpu::e_output_cpu_buffer)
       {
@@ -132,7 +168,8 @@ namespace gpu_directx12
 
       assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
 
-      return m_commandbuffera[get_frame_index()];
+      //return m_commandbuffera[get_frame_index()];
+      return m_pcommandbuffer;
 
    }
 
@@ -354,12 +391,14 @@ namespace gpu_directx12
       queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
       pdevice->m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
 
-      m_commandbuffera.set_size(get_frame_count());
+      //m_commandbuffera.set_size(get_frame_count());
 
-      for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
+      //for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
+      for (int iFrame = 0; iFrame < 1; iFrame++)
       {
 
-         auto& pcommandbuffer = m_commandbuffera[iFrame];
+         //auto& pcommandbuffer = m_commandbuffera[iFrame];
+         auto& pcommandbuffer = m_pcommandbuffer;
 
          if (__defer_construct_new(pcommandbuffer))
          {
@@ -395,6 +434,7 @@ namespace gpu_directx12
       m_hFenceEvent = nullptr;
 
    }
+
 
    renderer::command_buffer::~command_buffer()
    {
@@ -533,26 +573,7 @@ namespace gpu_directx12
    bool renderer::command_buffer::has_finished()
    {
 
-      DWORD result = ::WaitForSingleObject(m_hFenceEvent, 0);
-
-      if (result == WAIT_OBJECT_0)
-      {
-
-         return true;
-
-      }
-      else if (result == WAIT_TIMEOUT)
-      {
-
-         return false;
-
-      }
-      else
-      {
-
-         throw ::exception(error_failed, "WaitForSingleObject on m_hFenceEvent has failed");
-
-      }
+      return m_pfence->GetCompletedValue() >= m_fenceValue;
 
    }
 
@@ -742,11 +763,17 @@ namespace gpu_directx12
             if (presourceTexture)
             {
 
+               CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+                  pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
+                  get_frame_index(),
+                  pgpurendertargetview->m_rtvDescriptorSize);
+               CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+
                pcommandlist->OMSetRenderTargets(
                   1,
-                  &pgpurendertargetview->current_texture()->m_handleRenderTargetView,
+                  &rtvHandle,
                   true,
-                  &pgpurendertargetview->current_texture()->m_handleShaderResourceView);
+                  &dsvHandle);
 
 
                // 1. Define viewport and scissor rectangle
@@ -793,15 +820,27 @@ namespace gpu_directx12
             {
 
                //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
+               CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+                  pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
+                  get_frame_index(),
+                  pgpurendertargetview->m_rtvDescriptorSize);
+               CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
                // You set the RTV and DSV like this:
                pcommandlist->OMSetRenderTargets(
                   1,                    // One render target
-                  &pgpurendertargetview->current_texture()->m_handleRenderTargetView,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+                  &rtvHandle,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
                   FALSE,                // Not using RTV arrays
-                  &pgpurendertargetview->current_depth_stencil()->m_handle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+                  &dsvHandle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
                );
                //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+               pcommandlist->ClearDepthStencilView(
+                  pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(),
+                  D3D12_CLEAR_FLAG_DEPTH,
+                  1.0f, 0,
+                  0, nullptr
+               );
 
             }
 
@@ -1014,29 +1053,7 @@ namespace gpu_directx12
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-
-      if (ptexture->m_estate != D3D12_RESOURCE_STATE_COPY_SOURCE)
-      {
-
-         
-         
-
-         // Transition to copy source
-         D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-            ptexture->m_presource,
-            D3D12_RESOURCE_STATE_RENDER_TARGET, // Adjust if needed
-            D3D12_RESOURCE_STATE_COMMON
-         );
-
-         pcommandlist->ResourceBarrier(1, &barrier);
-
-         ptexture->m_estate = D3D12_RESOURCE_STATE_COMMON;
-
-         //pcommandBuffer->submit_command_buffer();
-
-      }
-
-
+      ptexture->_new_state(pcommandlist, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
       if (m_desc.Width != m_size.width() || m_desc.Height != m_size.height())
       {
@@ -1076,8 +1093,8 @@ namespace gpu_directx12
          pdevice->defer_throw_hresult(hr);
 
          m_size.cx() = (int)m_desc.Width;
-         m_size.cy() = (int)m_desc.Height;
 
+         m_size.cy() = (int)m_desc.Height;
 
       }
 
@@ -1106,9 +1123,6 @@ namespace gpu_directx12
          &m_desc,
          0, 1, 0,
          &m_footprint, nullptr, nullptr, &totalBytes);
-
-
-
 
 
       //// Make compute queue wait for graphics
@@ -3549,23 +3563,13 @@ namespace gpu_directx12
 
       auto ptexture = m_prendertargetview->current_texture();
 
-      if (ptexture->m_estate != D3D12_RESOURCE_STATE_RENDER_TARGET)
-      {
+      auto pcommandlist = getCurrentCommandBuffer2()->m_pcommandlist;
 
-         // (Optional) transition back
-         auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-            ptexture->m_presource,
-            ptexture->m_estate,
-            D3D12_RESOURCE_STATE_RENDER_TARGET
-         );
+      ptexture->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-         getCurrentCommandBuffer2()->m_pcommandlist->ResourceBarrier(1, &barrier);
-
-         ptexture->m_estate = D3D12_RESOURCE_STATE_RENDER_TARGET;
-
-      }
-
-
+      ID3D12DescriptorHeap* ppHeaps[] = { m_cbvHeap };
+      pcommandlist->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+    
       ////::cast < frame > pframe = pframeParam;
 
       ////auto commandBuffer = pframe->commandBuffer;
@@ -3760,23 +3764,42 @@ namespace gpu_directx12
                {
 
                   //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
-
+                  int iDescriptorSize = pgpurendertargetview->m_rtvDescriptorSize;
+                  int iFrameIndex = get_frame_index();
+                  auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+                  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+                     hRtv, 
+                     iFrameIndex, 
+                     iDescriptorSize);
+                  auto hDsv = pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
+                  CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(hDsv);
                   // You set the RTV and DSV like this:
                   pcommandlist->OMSetRenderTargets(
                      1,                    // One render target
-                     &pgpurendertargetview->current_texture()->m_handleRenderTargetView,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+                     &rtvHandle,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
                      FALSE,                // Not using RTV arrays
-                     &pgpurendertargetview->current_depth_stencil()->m_handle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+                     &dsvHandle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
                   );
                   //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+                  pcommandlist->ClearDepthStencilView(
+                     pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(),
+                     D3D12_CLEAR_FLAG_DEPTH,
+                     1.0f, 0,
+                     0, nullptr
+                  );
 
                }
                else
                {
 
+                  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+                     pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
+                     get_frame_index(),
+                     pgpurendertargetview->m_rtvDescriptorSize);
+
                   pcommandlist->OMSetRenderTargets(
                      1,
-                     &pgpurendertargetview->current_texture()->m_handleRenderTargetView,
+                     &rtvHandle,
                      true,
                      nullptr);
 
@@ -3902,8 +3925,11 @@ namespace gpu_directx12
 
       // Example clear color
       float clearColor[4] = { 0.5f * 0.5f, 0.75f * 0.5f, 0.9f * 0.5f, 0.5f };
-
-      pcommandlist->ClearRenderTargetView(m_prendertargetview->current_texture()->m_handleRenderTargetView, clearColor, 0, nullptr);
+      CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+         m_prendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), 
+         get_frame_index(),
+         m_prendertargetview->m_rtvDescriptorSize);
+      pcommandlist->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
       on_happening(e_happening_begin_render);
 
@@ -3988,7 +4014,38 @@ namespace gpu_directx12
       ////{
 
 
-      auto& pcommandbuffer = m_commandbuffera[get_frame_index()];
+      //auto& pcommandbuffer = m_commandbuffera[get_frame_index()];
+      auto& pcommandbuffer = m_pcommandbuffer;
+
+      auto pcommandbufferLoadAssets = ::transfer(m_pcommandbufferLoadAssets);
+      if (pcommandbufferLoadAssets)
+      {
+
+         //if (prenderer->m_pcommandbufferLoadAssets)
+         //{
+
+         //   auto pcommandbufferLoadAssets = ::transfer(prenderer->m_pcommandbufferLoadAssets);
+
+         //   m_papplication->fork([pcommandbufferLoadAssets]()
+         //      {
+
+                  pcommandbufferLoadAssets->submit_command_buffer();
+
+                  //pcommandbufferLoadAssets->wait_for_gpu();
+
+      //         });
+
+      //   }
+
+      //}
+
+         // Wait on the graphics queue for the copy to complete
+         pcommandbuffer->m_pcommandqueue->Wait(
+            pcommandbufferLoadAssets->m_pfence,
+            pcommandbufferLoadAssets->m_fenceValue);
+
+      }
+
 
       pcommandbuffer->reset();
 
@@ -4028,10 +4085,7 @@ namespace gpu_directx12
    void renderer::endFrame()
    {
 
-
       on_happening(e_happening_end_frame);
-
-
 
       //// 5. Signal and wait (optional but recommended for CPU/GPU sync)
       //m_fences[get_frame_index()]++;
@@ -4083,8 +4137,6 @@ namespace gpu_directx12
 
       ////}
 
-
-
       //auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
       //HRESULT hrCloseCommandList = pcommandlist->Close();
@@ -4094,9 +4146,6 @@ namespace gpu_directx12
       //// 4. Execute the command list
       //ID3D12CommandList* ppCommandLists[] = { pcommandlist };
       //m_pcommandqueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-
-
 
       auto eoutput = m_pgpucontext->m_eoutput;
 
@@ -4157,16 +4206,9 @@ namespace gpu_directx12
 
          pcommandbuffer->wait_for_gpu();
 
-
          m_pcpubuffersampler->send_sample();
 
-
       }
-
-
-      ///isFrameStarted = false;
-
-
 
    }
 

@@ -29,11 +29,11 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
-      D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-      dsvHeapDesc.NumDescriptors = 1;
-      dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-      dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      pdevice->m_pdevice->CreateDescriptorHeap(&dsvHeapDesc, __interface_of(m_pheap));
+      //D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+      //dsvHeapDesc.NumDescriptors = 1;
+      //dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+      //dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+      //pdevice->m_pdevice->CreateDescriptorHeap(&dsvHeapDesc, __interface_of(m_pheap));
 
       // 2. Describe depth stencil resource
       D3D12_RESOURCE_DESC depthDesc = {};
@@ -64,15 +64,6 @@ namespace gpu_directx12
          &depthClearValue,
          __interface_of(m_presource));
 
-      // 4. Create DSV
-      D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-      dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-      dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-      dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
-
-      m_handle = m_pheap->GetCPUDescriptorHandleForHeapStart();
-
-      pdevice->m_pdevice->CreateDepthStencilView(m_presource, &dsvDesc, m_handle);
 
 
    }

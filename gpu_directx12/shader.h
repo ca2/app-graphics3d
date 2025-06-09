@@ -23,11 +23,13 @@ namespace gpu_directx12
       //::comptr <ID3D11InputLayout > m_pinputlayout;
 
       //comptr < ID3D11Buffer> m_pbufferPushConstants;
-      int m_iSizePushConstants = -1;
+      //int_array m_iaSizePushConstants;
 
       ::comptr < ID3D12RootSignature > m_prootsignature;
 
-      ::comptr<ID3D12Resource> m_presourceConstantBuffer;
+      //::array<::comptr<ID3D12Resource>> m_resourceaConstantBuffer;
+      //array< void* > m_mapaConstantBuffer;
+      //::comptr<ID3D12DescriptorHeap >     m_pheapCbv;
 
       //::comptr<ID3D12RootSignature> m_rootSignature;
 

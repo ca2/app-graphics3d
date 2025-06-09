@@ -7,6 +7,7 @@
 #include "context.h"
 #include "descriptors.h"
 #include "renderer.h"
+#include "texture.h"
 #include "offscreen_render_target_view.h"
 #include "aura/graphics/gpu/types.h"
 #include "acme_windows_common/hresult_exception.h"
@@ -67,7 +68,7 @@ namespace gpu_directx12
          if (pblobError)
          {
 
-            ::string strError((const char *) pblobError->GetBufferPointer(),
+            ::string strError((const char*)pblobError->GetBufferPointer(),
                pblobError->GetBufferSize());
 
             throw ::exception(error_failed);
@@ -132,66 +133,167 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      ::array <CD3DX12_ROOT_PARAMETER> rootParameters;
-
-      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      int i = 0;
+      // Create a root signature consisting of a descriptor table with a single CBV.
       {
-         
-         rootParameters.element_at_grow(0).InitAsConstantBufferView(0); // b0: GlobalUbo
+         D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
 
-      }
+         // This is the highest version the sample supports. If CheckFeatureSupport succeeds, the HighestVersion returned will not be greater than this.
+         featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
 
-      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
-      {
-
-         //if (m_pLocalDescriptorSet)
-         //{
-
-         //   ::cast < ::gpu_directx12::set_descriptor_layout > pset = m_pLocalDescriptorSet;
-
-         //   auto setLayout = pset->getDescriptorSetLayout();
-
-         //   descriptorSetLayouts.add(setLayout);
-
-         //}
-
-         rootParameters.element_at_grow(1).InitAsConstantBufferView(1); // b1: ObjectMatrices
-
-      }
-      //rootParameters[0].InitAsConstantBufferView(0);
-
-      CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
-      rootSigDesc.Init(rootParameters.size(), rootParameters.data(),
-         0, nullptr,
-         D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-      ::comptr<ID3DBlob> serializedRootSig = nullptr;
-      ::comptr<ID3DBlob> errorBlob = nullptr;
-      HRESULT hr = D3D12SerializeRootSignature(
-         &rootSigDesc,
-         D3D_ROOT_SIGNATURE_VERSION_1,
-         &serializedRootSig,
-         &errorBlob
-      );
-
-      if (FAILED(hr))
-      {
-         if (errorBlob)
+         if (FAILED(pgpudevice->m_pdevice->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
          {
-            ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+            featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
          }
-         throw ::exception(error_failed, "Failed to serialize root signature");
+
+         ::array < CD3DX12_DESCRIPTOR_RANGE1> ranges;
+         ::array<CD3DX12_ROOT_PARAMETER1> rootParameters;
+
+         int iCount = 0;
+         if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+         {
+            iCount++;
+
+         }
+         if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
+         {
+
+            iCount++;
+
+         }
+         ranges.set_size(iCount);
+         rootParameters.set_size(iCount);
+         //ranges.set_size(1);
+         //rootParameters.set_size(1);
+         //ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, iCount, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+         //rootParameters[0].InitAsDescriptorTable(1, &ranges[i],
+         //   D3D12_SHADER_VISIBILITY_ALL); //|              D3D12_SHADER_VISIBILITY_PIXEL);
+
+         if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+         {
+
+            ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+            rootParameters[i].InitAsDescriptorTable(1, &ranges[i],
+               D3D12_SHADER_VISIBILITY_ALL); //|              D3D12_SHADER_VISIBILITY_PIXEL);
+            i++;
+
+         }
+
+         if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
+         {
+
+            //if (m_pLocalDescriptorSet)
+            //{
+
+            //   ::cast < ::gpu_directx12::set_descriptor_layout > pset = m_pLocalDescriptorSet;
+
+            //   auto setLayout = pset->getDescriptorSetLayout();
+
+            //   descriptorSetLayouts.add(setLayout);
+
+            //}
+
+      //      rootParameters.element_at_grow(1).InitAsConstantBufferView(1); // b1: ObjectMatrices
+            //ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+            rootParameters[i].InitAsConstantBufferView(1);
+            i++;
+
+         }
+
+
+
+         // Allow input layout and deny uneccessary access to certain pipeline stages.
+         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+         //|  D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+
+         CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+         rootSignatureDesc.Init_1_1(rootParameters.size(), rootParameters.data(), 0, nullptr, rootSignatureFlags);
+
+         ::comptr<ID3DBlob> signature;
+         ::comptr<ID3DBlob> error;
+         HRESULT hrSerializeVersionedRootSignature = D3DX12SerializeVersionedRootSignature(
+            &rootSignatureDesc, featureData.HighestVersion, &signature, &error);
+         if (FAILED(hrSerializeVersionedRootSignature))
+         {
+            if (error)
+            {
+               ::OutputDebugStringA((char*)error->GetBufferPointer());
+            }
+            throw ::exception(error_failed, "Failed to serialize root signature");
+         }
+
+         HRESULT hrCreateRootSignature = pgpudevice->m_pdevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), __interface_of(m_prootsignature));
+         ::defer_throw_hresult(hrCreateRootSignature);
       }
 
-//      com_ptr<ID3D12RootSignature> rootSignature;
+      //::cast < ::gpu_directx12::device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-      HRESULT hrCreateRootSignature = pgpudevice->m_pdevice->CreateRootSignature(
-         0,
-         serializedRootSig->GetBufferPointer(),
-         serializedRootSig->GetBufferSize(),
-         __interface_of(m_prootsignature)
-      );
-      ::defer_throw_hresult(hrCreateRootSignature);
+      //::cast < ::gpu_directx12::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+      //   ::array <CD3DX12_ROOT_PARAMETER> rootParameters;
+
+      //   if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      //   {
+
+      //      rootParameters.element_at_grow(0).InitAsConstantBufferView(0); // b0: GlobalUbo
+
+      //   }
+
+      //   if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
+      //   {
+
+      //      //if (m_pLocalDescriptorSet)
+      //      //{
+
+      //      //   ::cast < ::gpu_directx12::set_descriptor_layout > pset = m_pLocalDescriptorSet;
+
+      //      //   auto setLayout = pset->getDescriptorSetLayout();
+
+      //      //   descriptorSetLayouts.add(setLayout);
+
+      //      //}
+
+      //      rootParameters.element_at_grow(1).InitAsConstantBufferView(1); // b1: ObjectMatrices
+
+      //   }
+      //   //rootParameters[0].InitAsConstantBufferView(0);
+
+      //   CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
+      //   rootSigDesc.Init(rootParameters.size(), rootParameters.data(),
+      //      0, nullptr,
+      //      D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+      //   ::comptr<ID3DBlob> serializedRootSig = nullptr;
+      //   ::comptr<ID3DBlob> errorBlob = nullptr;
+      //   HRESULT hr = D3D12SerializeRootSignature(
+      //      &rootSigDesc,
+      //      D3D_ROOT_SIGNATURE_VERSION_1,
+      //      &serializedRootSig,
+      //      &errorBlob
+      //   );
+
+      //   if (FAILED(hr))
+      //   {
+      //      if (errorBlob)
+      //      {
+      //         ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+      //      }
+      //      throw ::exception(error_failed, "Failed to serialize root signature");
+      //   }
+
+      //   //      com_ptr<ID3D12RootSignature> rootSignature;
+
+      //   HRESULT hrCreateRootSignature = pgpudevice->m_pdevice->CreateRootSignature(
+      //      0,
+      //      serializedRootSig->GetBufferPointer(),
+      //      serializedRootSig->GetBufferSize(),
+      //      __interface_of(m_prootsignature)
+      //      );
+      //   ::defer_throw_hresult(hrCreateRootSignature);
 
       //return rootSignature;
    }
@@ -218,7 +320,7 @@ namespace gpu_directx12
       auto data = layout.data();
       auto size = layout.size();
 
-      auto pblobVertex  = create_vertex_shader_blob(blockVertex);
+      auto pblobVertex = create_vertex_shader_blob(blockVertex);
       auto pblobPixel = create_pixel_shader_blob(blockPixel);
 
 
@@ -232,20 +334,36 @@ namespace gpu_directx12
 
       // Describe and create the graphics pipeline state object (PSO).
       D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-      psoDesc.InputLayout = { data, (UINT) size };
+      psoDesc.InputLayout = { data, (UINT)size };
       psoDesc.pRootSignature = m_prootsignature;
       psoDesc.VS = CD3DX12_SHADER_BYTECODE(pblobVertex);
       psoDesc.PS = CD3DX12_SHADER_BYTECODE(pblobPixel);
       psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
       psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-      psoDesc.DepthStencilState.DepthEnable = FALSE;
-      psoDesc.DepthStencilState.StencilEnable = FALSE;
       psoDesc.SampleMask = UINT_MAX;
       psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
       psoDesc.NumRenderTargets = 1;
       psoDesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
       psoDesc.SampleDesc.Count = 1;
-      HRESULT hrCreateGraphicsPipelineState = 
+
+      if (m_bDisableDepthTest)
+      {
+         psoDesc.DepthStencilState.DepthEnable = FALSE;
+         psoDesc.DepthStencilState.StencilEnable = FALSE;
+      }
+      else
+      {
+         D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
+         depthStencilDesc.DepthEnable = TRUE;
+         depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+         depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+         depthStencilDesc.StencilEnable = FALSE;
+         psoDesc.DepthStencilState = depthStencilDesc;
+         psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT; // must match your DSV
+
+      }
+
+      HRESULT hrCreateGraphicsPipelineState =
          pgpudevice->m_pdevice->CreateGraphicsPipelineState(&psoDesc, __interface_of(m_ppipelinestate));
       ::defer_throw_hresult(hrCreateGraphicsPipelineState);
 
@@ -300,7 +418,7 @@ namespace gpu_directx12
       //}
    }
 
-   
+
    //void shader::create_pixel_shader(const ::block& block)
    //{
 
@@ -552,7 +670,7 @@ namespace gpu_directx12
       //pipelineConfig.renderPass = prendertargetview->m_vkrendertargetview;
       //pipelineConfig.pipelineLayout = m_vkpipelinelayout;
 
-      
+
       /*m_ppipeline->initialize_pipeline(m_pgpurenderer,
          m_memoryVertex,
          m_memoryFragment,
@@ -578,28 +696,58 @@ namespace gpu_directx12
       // 1. Set the pipeline state object
       pcommandlist->SetPipelineState(m_ppipelinestate);  // ID3D12PipelineState*
 
+      auto& ptexture = prenderer->m_prendertargetview->m_texturea[prenderer->get_frame_index()];
+
+      //auto pheap = ptexture->m_pheapRenderTargetView;
+
+      //// Bind descriptor heap
+      //ID3D12DescriptorHeap* heaps[] = { pheap };
+
+      //pcommandlist->SetDescriptorHeaps(1, heaps);
 
       if (m_prootsignature)
       {
-         // Bind root signature
+
          pcommandlist->SetGraphicsRootSignature(m_prootsignature);
 
       }
 
+      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global)
+         || m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
+      {
+
+         auto iFrameIndex = pcontext->m_pgpurenderer->get_frame_index();
+
+         /*auto pbuffer = pcontext->m_uboBuffers[iFrameIndex];
+
+         auto pheap = pbuffer->m_pheap;
+
+         ID3D12DescriptorHeap* heaps[] = { pheap };
+
+         pcommandlist->SetDescriptorHeaps(1, heaps);*/
+
+
+      }
 
       if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
       {
 
          auto iFrameIndex = pcontext->m_pgpurenderer->get_frame_index();
 
-         auto pheap = pcontext->m_uboBuffers[iFrameIndex]->m_pheap;
+         ///auto pbuffer = pcontext->m_uboBuffers[iFrameIndex];
 
-         // Bind descriptor heap
-         ID3D12DescriptorHeap* heaps[] = { pheap };
-         pcommandlist->SetDescriptorHeaps(1, heaps);
+         //auto pheap = pbuffer->m_pheap;
+
+         //ID3D12DescriptorHeap* heaps[] = { pheap };
+
+         //pcommandlist->SetDescriptorHeaps(1, heaps);
+
+         //pcommandlist->SetGraphicsRootConstantBufferView(1, pbuffer->m_presourceBuffer->GetGPUVirtualAddress());
+         //auto pbuffer = prenderer->m_presourceConstantBuffer;
+         //auto gpuaddress = pbuffer->GetGPUVirtualAddress();
 
          // Set root descriptor table (assumes root parameter 0 is CBV)
-//         pcommandlist->SetGraphicsRootDescriptorTable(0, pheap->GetGPUDescriptorHandleForHeapStart());
+         pcommandlist->SetGraphicsRootDescriptorTable(0, prenderer->m_cbvHeap->GetGPUDescriptorHandleForHeapStart());      
       }
 
 
@@ -782,89 +930,107 @@ namespace gpu_directx12
 
       ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      auto iSetSize = (m_properties.size() + 255) & ~255;
+      auto iSetSize = ::directx12::Align256(m_properties.size());
 
-      if (iSetSize != m_iSizePushConstants || !m_presourceConstantBuffer)
-      {
+      //auto& iSizePushConstants = m_iaSizePushConstants.element_at_grow(m_pgpurenderer->get_frame_index());
+      //auto& presourceConstantBuffer = m_resourceaConstantBuffer.element_at_grow(m_pgpurenderer->get_frame_index());
+      //auto& pData = m_mapaConstantBuffer.element_at_grow(m_pgpurenderer->get_frame_index());
+      //if (iSetSize != iSizePushConstants || !presourceConstantBuffer)
+      //{
 
-         m_presourceConstantBuffer.Release();
+      //   if (presourceConstantBuffer && pData)
+      //   {
 
-         ////using namespace Microsoft::WRL;
+      //      presourceConstantBuffer->Unmap(0, nullptr);
 
-         //// -- Root Parameters: [0] Push constants, [1] Constant buffer
-         //CD3DX12_ROOT_PARAMETER rootParams[2];
-         //rootParams[0].InitAsConstants(4, 0); // float4 color -> b0
-         //rootParams[1].InitAsConstantBufferView(1); // matrix -> b1
+      //   }
 
-         //CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
-         //rootSigDesc.Init(_countof(rootParams), rootParams, 0, nullptr,
-         //   D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+      //   presourceConstantBuffer.Release();
 
-         //::comptr<ID3DBlob> pblobSignature;
-         //::comptr<ID3DBlob> pblobSignatureError;
-         //D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &pblobSignature, &pblobSignatureError);
-         //pgpudevice->m_pdevice->CreateRootSignature(0, 
-         //   pblobSignature->GetBufferPointer(), 
-         //   pblobSignature->GetBufferSize(),
-         //   __interface_of(m_prootsignature));
+      //   ////using namespace Microsoft::WRL;
 
-         m_iSizePushConstants = (m_properties.size() + 255) & ~255;
+      //   //// -- Root Parameters: [0] Push constants, [1] Constant buffer
+      //   //CD3DX12_ROOT_PARAMETER rootParams[2];
+      //   //rootParams[0].InitAsConstants(4, 0); // float4 color -> b0
+      //   //rootParams[1].InitAsConstantBufferView(1); // matrix -> b1
 
-         // -- Constant buffer (256 bytes aligned)
-         CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
-         CD3DX12_RESOURCE_DESC bufDesc = CD3DX12_RESOURCE_DESC::Buffer(m_iSizePushConstants);
+      //   //CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
+      //   //rootSigDesc.Init(_countof(rootParams), rootParams, 0, nullptr,
+      //   //   D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-         pgpudevice->m_pdevice->CreateCommittedResource(
-            &heapProps,
-            D3D12_HEAP_FLAG_NONE,
-            &bufDesc,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            __interface_of(m_presourceConstantBuffer));
+      //   //::comptr<ID3DBlob> pblobSignature;
+      //   //::comptr<ID3DBlob> pblobSignatureError;
+      //   //D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &pblobSignature, &pblobSignatureError);
+      //   //pgpudevice->m_pdevice->CreateRootSignature(0, 
+      //   //   pblobSignature->GetBufferPointer(), 
+      //   //   pblobSignature->GetBufferSize(),
+      //   //   __interface_of(m_prootsignature));
+
+      //   iSizePushConstants = iSetSize;
+
+      //   // -- Constant buffer (256 bytes aligned)
+      //   CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+      //   CD3DX12_RESOURCE_DESC bufDesc = CD3DX12_RESOURCE_DESC::Buffer(iSetSize);
+
+      //   pgpudevice->m_pdevice->CreateCommittedResource(
+      //      &heapProps,
+      //      D3D12_HEAP_FLAG_NONE,
+      //      &bufDesc,
+      //      D3D12_RESOURCE_STATE_GENERIC_READ,
+      //      nullptr,
+      //      __interface_of(presourceConstantBuffer));
+
+      //   auto iFrameIndex = pgpucontext->m_pgpurenderer->get_frame_index();
+
+      //   //auto pbuffer = pgpucontext->m_uboBuffers[iFrameIndex];
+
+      //   //auto pheap = pbuffer->m_pheap;
+
+      //   D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+      //   cbvDesc.BufferLocation = presourceConstantBuffer->GetGPUVirtualAddress();
+      //   cbvDesc.SizeInBytes = iSetSize; // must be 256-byte aligned
+
+      //   //pgpudevice->m_pdevice->CreateConstantBufferView(&cbvDesc, pheap->GetCPUDescriptorHandleForHeapStart());
+
+      //   ///m_pbufferPushConstants.Release();
+
+      //   //D3D11_BUFFER_DESC cbDesc = {};
+      //   //cbDesc.ByteWidth = (m_properties.size() + 15) & ~15;
+      //   //cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+      //   //cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+      //   //cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+      //   //auto pdevice = pgpudevice->m_pdevice;
+
+      //   //HRESULT hr = pdevice->CreateBuffer(&cbDesc, nullptr, &m_pbufferPushConstants);
+
+      //   //if (FAILED(hr))
+      //   //{
+
+      //   //   throw ::hresult_exception(hr);
+
+      //   //}
+
+      //   
+
+      //   //UINT8* pData = nullptr;
+      //   D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
+      //   presourceConstantBuffer->Map(0, &range, reinterpret_cast<void**>(&pData));
 
 
+      //}
 
+      //::cast < renderer > prenderer = m_pgpurenderer;
+      //int iAddress = prenderer->m_iPushPropertiesAddress;
 
-         ///m_pbufferPushConstants.Release();
+      //pCommandList->SetGraphicsRootConstantBufferView(0, pFrame->CameraAddress);
+      memcpy(prenderer->m_pPushProperties, m_properties.data(), m_properties.size());
 
-         //D3D11_BUFFER_DESC cbDesc = {};
-         //cbDesc.ByteWidth = (m_properties.size() + 15) & ~15;
-         //cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-         //cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-         //cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-         //auto pdevice = pgpudevice->m_pdevice;
-
-         //HRESULT hr = pdevice->CreateBuffer(&cbDesc, nullptr, &m_pbufferPushConstants);
-
-         //if (FAILED(hr))
-         //{
-
-         //   throw ::hresult_exception(hr);
-
-         //}
-
-         
-
-
-
-      }
-
-      UINT8* pData = nullptr;
-      D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
-      m_presourceConstantBuffer->Map(0, &range, reinterpret_cast<void**>(&pData));
-      memcpy(pData, m_properties.data(), m_properties.size());
-      m_presourceConstantBuffer->Unmap(0, nullptr);
-      //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
-
-      ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
+      //::cast < renderer > prenderer = m_pgpurenderer;
 
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
-      auto pcommandlist = pcommandbuffer->m_pcommandlist;
-
-
-      pcommandlist->SetGraphicsRootConstantBufferView(1, m_presourceConstantBuffer->GetGPUVirtualAddress());
+      pcommandbuffer->m_pcommandlist->SetGraphicsRootConstantBufferView(1, prenderer->m_presourcePushProperties->GetGPUVirtualAddress());
 
 
       //PushConstants pc = { XMFLOAT4(1, 0, 0, 1), currentTime };
@@ -878,7 +1044,7 @@ namespace gpu_directx12
       //   throw ::hresult_exception(hrMap);
 
       //}
-      
+
       //memcpy(mapped.pData, m_properties.data(), m_properties.size());
       //pgpucontext->m_pcontext->Unmap(m_pbufferPushConstants, 0);
 
@@ -914,11 +1080,11 @@ namespace gpu_directx12
 
       pcommandlist->DrawInstanced(6, 1, 0, 0);
 
-   //   ::cast < renderer > prenderer = m_pgpurenderer;
+      //   ::cast < renderer > prenderer = m_pgpurenderer;
 
-   //   auto commandBuffer = prenderer->getCurrentCommandBuffer();
+      //   auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
-   //   vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+      //   vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 
    }
 

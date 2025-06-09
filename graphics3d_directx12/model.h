@@ -31,7 +31,7 @@ namespace graphics3d_directx12
    {
    public:
 
-
+      bool m_bNew = true;
       bool hasIndexBuffer = false;
       ::pointer < ::gpu_directx12::context > m_pgpucontext;
 
@@ -61,8 +61,8 @@ namespace graphics3d_directx12
       ::comptr<ID3D12Resource> m_presourceIndexBufferUpload;
       D3D12_VERTEX_BUFFER_VIEW m_vertexbufferview = {};
       D3D12_INDEX_BUFFER_VIEW       m_indexbufferview = {};
-      D3D12_RANGE                   m_rangeVertex;
-      D3D12_RANGE                   m_rangeIndex;
+      //D3D12_RANGE                   m_rangeVertex;
+      //D3D12_RANGE                   m_rangeIndex;
       //D3D11_BUFFER_DESC bd = { sizeof(triangle), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER };
       //D3D11_SUBRESOURCE_DATA initData = { triangle };
       //device->CreateBuffer(&bd, &initData, &vbo);

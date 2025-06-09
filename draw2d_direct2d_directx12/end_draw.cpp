@@ -117,7 +117,7 @@ namespace draw2d_direct2d_directx12
       flags.BindFlags = D3D11_BIND_RENDER_TARGET;
 
       ::defer_throw_hresult(m_pd3d11on12->CreateWrappedResource(
-         prenderer->m_prendertargetview->current_texture()->m_pheapRenderTargetView,
+         prenderer->m_prendertargetview->current_texture()->m_presource,
          &flags,
          D3D12_RESOURCE_STATE_RENDER_TARGET,
          D3D12_RESOURCE_STATE_PRESENT,

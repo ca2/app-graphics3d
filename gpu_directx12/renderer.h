@@ -45,6 +45,10 @@ namespace gpu_directx12
 
          ::pointer < context >   m_pgpucontext;
          ::pointer < renderer >  m_prenderer;
+         
+         
+
+
          comptr<ID3D12Resource>       m_presourceStagingTexture;
          ::int_size              m_size;
 
@@ -151,12 +155,19 @@ namespace gpu_directx12
 
       };
 
-      ::pointer_array < command_buffer > m_commandbuffera;
+      //::pointer_array < command_buffer > m_commandbuffera;
+      ::pointer < command_buffer > m_pcommandbuffer;
 
       ::pointer < command_buffer > m_pcommandbufferSingleTime;
       ::pointer < command_buffer > m_pcommandbufferLoadAssets;
 
-      
+      ::comptr<ID3D12DescriptorHeap> m_cbvHeap;
+      ::comptr<ID3D12Resource> m_presourceGlobalUBO;
+      ::comptr<ID3D12Resource> m_presourcePushProperties;
+      void* m_pGlobalUBO;
+      void* m_pPushProperties;
+      //int m_iPushPropertiesAddress = 0;
+
       //::array <UINT64 > m_fences; // fences values
       
       ::procedure_array m_procedureaAfterEndRender;

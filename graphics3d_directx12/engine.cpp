@@ -343,21 +343,21 @@ namespace graphics3d_directx12
 
       ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
 
-      if (prenderer->m_pcommandbufferLoadAssets)
-      {
+   //   if (prenderer->m_pcommandbufferLoadAssets)
+   //   {
 
-         auto pcommandbufferLoadAssets = ::transfer(prenderer->m_pcommandbufferLoadAssets);
+   //      auto pcommandbufferLoadAssets = ::transfer(prenderer->m_pcommandbufferLoadAssets);
 
-         m_papplication->fork([pcommandbufferLoadAssets]()
-            {
+   //      m_papplication->fork([pcommandbufferLoadAssets]()
+   //         {
 
-               pcommandbufferLoadAssets->submit_command_buffer();
+   //            pcommandbufferLoadAssets->submit_command_buffer();
 
-               pcommandbufferLoadAssets->wait_for_gpu();
+   //            pcommandbufferLoadAssets->wait_for_gpu();
 
-            });
+   //         });
 
-      }
+   //   }
 
    }
 

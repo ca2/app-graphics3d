@@ -35,6 +35,7 @@ namespace gpu_directx12
       //m_pgpucontext = pgpurenderer->m_pgpucontext;
       //init();
       //m_prendertargetviewOld = nullptr;
+
    }
 
    
@@ -408,14 +409,28 @@ namespace gpu_directx12
       //   UINT height,
       //   ComPtr<ID3D12DescriptorHeap>& dsvHeap,
       //   ComPtr<ID3D12Resource>& depthStencilBuffer)
-      for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
-      {
+      //for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
+      //{
 
-         __defer_construct_new(m_depthstencila.element_at_grow(i));
+         __defer_construct_new(m_pdepthstencil);
 
-         m_depthstencila[i]->initialize_depth_stencil(m_pgpurenderer, m_size);
+         m_pdepthstencil->initialize_depth_stencil(m_pgpurenderer, m_size);
 
-      }
+         // 4. Create DSV
+         D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+         dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+         dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+         dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+
+         //m_handle = m_pheap->GetCPUDescriptorHandleForHeapStart();
+         ::cast < device>pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+
+          pdevice->m_pdevice->CreateDepthStencilView(m_pdepthstencil->m_presource, &dsvDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+
+
+
+
+      //}
 
 
    //}
@@ -647,7 +662,7 @@ namespace gpu_directx12
    depth_stencil* render_target_view::current_depth_stencil() 
    {
       
-      return m_depthstencila[m_pgpurenderer->get_frame_index()];
+      return m_pdepthstencil;
    
    }
 

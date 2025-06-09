@@ -29,9 +29,9 @@ namespace gpu_directx12
 
       ::pointer < ::gpu::renderer >    m_prenderer;
       ::comptr<ID3D12Resource>         m_presource;
-      ::comptr<ID3D12DescriptorHeap>   m_pheapRenderTargetView;
+      //::comptr<ID3D12DescriptorHeap>   m_pheapRenderTargetView;
       D3D12_RESOURCE_STATES            m_estate;
-      D3D12_CPU_DESCRIPTOR_HANDLE      m_handleRenderTargetView;
+      //D3D12_CPU_DESCRIPTOR_HANDLE      m_handleRenderTargetView;
       ::comptr<ID3D12DescriptorHeap>   m_pheapShaderResourceView;
       D3D12_CPU_DESCRIPTOR_HANDLE      m_handleShaderResourceView;
 
@@ -41,7 +41,9 @@ namespace gpu_directx12
       ~texture() override;
 
 
-      void initialize_texture(::gpu::renderer* prenderer, const ::int_size & size, bool bCreateRenderTargetView,  bool bCreateShaderResourceView);
+      void initialize_texture(::gpu::renderer* prenderer, const ::int_size & size);
+
+      void _new_state(ID3D12GraphicsCommandList* pcommandlist, D3D12_RESOURCE_STATES estate);
 
 
    };

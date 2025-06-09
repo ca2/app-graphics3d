@@ -111,7 +111,7 @@ namespace gpu_directx12
 
       ::pointer<::gpu_directx12::set_descriptor_layout>           m_psetdescriptorlayoutGlobal;
       //::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
-      ::pointer_array<::gpu_directx12::buffer>							m_uboBuffers;
+      //::pointer_array<::gpu_directx12::buffer>							m_uboBuffers;
       ::pointer <::gpu_directx12::descriptor_pool>                m_pdescriptorpoolGlobal;
 
       context();

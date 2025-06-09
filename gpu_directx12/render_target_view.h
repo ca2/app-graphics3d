@@ -18,11 +18,13 @@ namespace gpu_directx12
    {
    public:
 
-
-
+      // Describe and create a render target view (RTV) descriptor heap.
+      
+      ::comptr<ID3D12DescriptorHeap> m_rtvHeap;
+      ::comptr<ID3D12DescriptorHeap> m_dsvHeap;
       ::pointer_array < texture >            m_texturea;
-      ::pointer_array < depth_stencil >      m_depthstencila;
-
+      ::pointer < depth_stencil >      m_pdepthstencil;
+      UINT m_rtvDescriptorSize;
 
      
 
