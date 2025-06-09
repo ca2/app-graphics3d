@@ -2,6 +2,7 @@
 // Co-creating with V0idsEmbrace@Twitch with
 // camilo on 2025-05-19 04:59 <3ThomasBorregaardSorensen!!
 #include "approach.h"
+#include "buffer.h"
 #include "shader.h"
 #include "context.h"
 #include "descriptors.h"
@@ -584,6 +585,23 @@ namespace gpu_directx12
          pcommandlist->SetGraphicsRootSignature(m_prootsignature);
 
       }
+
+
+      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      {
+
+         auto iFrameIndex = pcontext->m_pgpurenderer->get_frame_index();
+
+         auto pheap = pcontext->m_uboBuffers[iFrameIndex]->m_pheap;
+
+         // Bind descriptor heap
+         ID3D12DescriptorHeap* heaps[] = { pheap };
+         pcommandlist->SetDescriptorHeaps(1, heaps);
+
+         // Set root descriptor table (assumes root parameter 0 is CBV)
+//         pcommandlist->SetGraphicsRootDescriptorTable(0, pheap->GetGPUDescriptorHandleForHeapStart());
+      }
+
 
       //// Push constants
       //pcommandlist->SetGraphicsRoot32BitConstants(0, 4, color, 0);

@@ -2369,9 +2369,24 @@ namespace gpu_directx12
                 nullptr,
                 __interface_of(pbuffer->m_presourceBuffer));
 
-            CD3DX12_RANGE readRange(0, 0);
-            pbuffer->m_presourceBuffer->Map(0, &readRange, 
-               reinterpret_cast<void**>(&pbuffer->m_pMapped));
+            //CD3DX12_RANGE readRange(0, 0);
+            //pbuffer->m_presourceBuffer->Map(0, &readRange, 
+               //reinterpret_cast<void**>(&pbuffer->m_pMapped));
+
+            D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
+            cbvHeapDesc.NumDescriptors = 1;
+            cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+            cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+            pgpudevice->m_pdevice->CreateDescriptorHeap(&cbvHeapDesc, __interface_of(pbuffer->m_pheap));
+
+            D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+            cbvDesc.BufferLocation = pbuffer->m_presourceBuffer->GetGPUVirtualAddress();
+            cbvDesc.SizeInBytes = ::directx12::Align256(iGlobalUboSize); // must be 256-byte aligned
+
+            pbuffer->m_handle= pbuffer->m_pheap->GetCPUDescriptorHandleForHeapStart();
+
+            pgpudevice->m_pdevice->CreateConstantBufferView(
+               &cbvDesc, pbuffer->m_handle);
         }
 
       //D3D11_BUFFER_DESC cbd = {};
@@ -2417,7 +2432,14 @@ namespace gpu_directx12
       auto iFrameIndex = m_pgpurenderer->get_frame_index();
 
 
-      memcpy(m_uboBuffers[iFrameIndex]->m_pMapped, block.data(), block.size());
+      //MyGlobalData globalData = { /* your values */ };
+
+      UINT8* mappedPtr = nullptr;
+      D3D12_RANGE readRange = {}; // no read access
+      m_uboBuffers[iFrameIndex]->m_presourceBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mappedPtr));
+      memcpy(mappedPtr, block.data(), block.size());
+      m_uboBuffers[iFrameIndex]->m_presourceBuffer->Unmap(0, nullptr);
+
       //m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
 
       //m_uboBuffers[iFrameIndex]->flush();
