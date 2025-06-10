@@ -734,6 +734,9 @@
     <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\acme_windows_common\acme_windows_common.vcxproj">
       <Project>{eb9dc9c0-0573-4da0-8700-4dbb371773f1}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\direct2d_directx11\direct2d_directx11.vcxproj">
+      <Project>{2f21f158-1dd5-43f6-9fad-01fb77a81ec5}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\source\app\acme\acme.vcxproj">
       <Project>{638b242f-0f21-41c3-9f66-724660046133}</Project>
     </ProjectReference>

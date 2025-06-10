@@ -389,10 +389,6 @@ namespace gpu_directx12
       descCopyQueue.Type = D3D12_COMMAND_LIST_TYPE_COPY;
       pdevice->m_pdevice->CreateCommandQueue(&descCopyQueue, __interface_of(m_pcommandqueueCopy));
 
-      // 2. Create command queue
-      D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-      queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-      pdevice->m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
 
       //m_commandbuffera.set_size(get_frame_count());
 
@@ -406,7 +402,7 @@ namespace gpu_directx12
          if (__defer_construct_new(pcommandbuffer))
          {
 
-            pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this, m_pcommandqueue);
+            pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this, pdevice->m_pcommandqueue);
 
          }
 
@@ -682,7 +678,7 @@ namespace gpu_directx12
       else
       {
 
-         pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this, m_pcommandqueue);
+         pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this, pdevice->m_pcommandqueue);
 
       }
 

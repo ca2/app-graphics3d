@@ -3,6 +3,7 @@
 
 
 #include "aura/_.h"
+#include "direct2d_directx11/_.h"
 #include "gpu_directx12/_.h"
 
 

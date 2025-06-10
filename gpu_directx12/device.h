@@ -7,6 +7,8 @@
 #include "acme/prototype/prototype/memory.h"
 //#include "directx12/directx12.h"
 #include <dcomp.h>
+#include <d3d11.h>
+#include <d3d11on12.h>
 
 namespace gpu_directx12
 {
@@ -27,7 +29,7 @@ namespace gpu_directx12
 
       comptr<ID3D12Device>                            m_pdevice;
       //comptr<ID3D11Device1>                           m_pdevice1;
-      comptr<IDXGIDevice>                             m_pdxgidevice;
+      //comptr<IDXGIDevice>                             m_pdxgidevice;
       comptr<IDXGIFactory4>                           m_pdxgifactory4;
       comptr<IDXGISwapChain3>                         m_pdxgiswapchain1;
       //comptr<ID3D11DeviceContext>                     m_pdevicecontext;
@@ -39,6 +41,11 @@ namespace gpu_directx12
 
       D3D_FEATURE_LEVEL                               m_featurelevel;
 
+      ::comptr<ID3D11Device> m_pd3d11device;
+      ::comptr<ID3D11DeviceContext>  m_pd3d11context;
+      ::comptr<ID3D11On12Device>  m_pd3d11on12;
+      ::comptr<IDXGIDevice>  m_pdxgidevice;
+      ::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
 
 
       comptr<IDCompositionDevice> m_pdcompositiondevice;

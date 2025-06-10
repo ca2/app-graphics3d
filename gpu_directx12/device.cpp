@@ -2537,6 +2537,31 @@ namespace gpu_directx12
             __interface_of(m_pdevice)
          ));
       }
+      // Create D3D11On12 device
+
+            // 2. Create command queue
+      D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+      queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+      m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
+
+
+      HRESULT hrD3D11On12 = D3D11On12CreateDevice(
+         m_pdevice,
+         D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+         nullptr, 0,
+         (IUnknown *const*) m_pcommandqueue.pp(),
+         1,
+         0,
+         &m_pd3d11device,
+         &m_pd3d11context,
+         nullptr
+      );
+
+      ::defer_throw_hresult(hrD3D11On12);
+
+      // Get IDXGIDevice from d3d11Device
+      //ComPtr<IDXGIDevice> dxgiDevice;
+      m_pd3d11device.as(m_pdxgidevice); // ✅ This works
 
       //::defer_throw_hresult(D3D11CreateDevice(nullptr,    // Adapter
       //   D3D_DRIVER_TYPE_HARDWARE,
@@ -2567,11 +2592,12 @@ namespace gpu_directx12
       dxgiswapchaindesc1.Width = rect.right - rect.left;
       dxgiswapchaindesc1.Height = rect.bottom - rect.top;
       ::comptr < IDXGISwapChain1 > swapchain1;
-      ::defer_throw_hresult(m_pdxgifactory4->CreateSwapChainForComposition(m_pdxgidevice,
+      HRESULT hrCreateSwapChainForComposition = m_pdxgifactory4->CreateSwapChainForComposition(
+         m_pcommandqueue,
          &dxgiswapchaindesc1,
          nullptr, // Don’t restrict
-         &swapchain1));
-
+         &swapchain1);
+         ::defer_throw_hresult(hrCreateSwapChainForComposition);
 
       ::defer_throw_hresult(swapchain1.as(m_pdxgiswapchain1));
       //assert(SUCCEEDED(hr));
@@ -2612,15 +2638,18 @@ namespace gpu_directx12
 
       // Store the descriptor size (used for handle incrementing)
       rtvDescriptorSize = m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
+      m_resourceaBackBufferTexture.set_size(iFrameCount);
 
       for(int i = 0; i < iFrameCount; i++)
       {
-      m_pdxgiswapchain1->GetBuffer(i, __interface_of(m_resourceaBackBufferTexture[i]));
+         auto& presource = m_resourceaBackBufferTexture[i];
+      HRESULT hrGetBuffer = m_pdxgiswapchain1->GetBuffer(i, __interface_of(presource));
+
+      ::defer_throw_hresult(hrGetBuffer);
       // 2. Create the render target view (RTV)
       m_handleaBackBufferRenderTargetView.element_at_grow(i) 
          = rtvHeap->GetCPUDescriptorHandleForHeapStart(); // RTV descriptor heap assumed created
-      m_pdevice->CreateRenderTargetView(m_resourceaBackBufferTexture[i], nullptr, m_handleaBackBufferRenderTargetView[i]);
+      m_pdevice->CreateRenderTargetView(presource, nullptr, m_handleaBackBufferRenderTargetView[i]);
       //m_prendertargetviewBackBuffer = rtvHandle;
 
 
@@ -2881,6 +2910,9 @@ namespace gpu_directx12
          infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
       }
 
+      D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+      queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+      m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
 
       ///::defer_throw_hresult(hr);
 

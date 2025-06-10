@@ -121,7 +121,7 @@ namespace gpu_directx12
       ::pointer <::gpu_directx12::descriptor_pool>                m_pdescriptorpoolResolve;
       ::pointer < descriptor >                                    m_pdescriptorResolve;
 
-      ::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
+      //::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
       ::comptr<ID3D12CommandQueue>                                m_pcommandqueueCopy;
 
 

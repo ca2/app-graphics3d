@@ -1,18 +1,18 @@
 #pragma once
 
 
-//#include "acme/prototype/geometry2d/_geometry2d.h"
+#include "direct2d_directx11/direct2d_directx11.h"
 #include "geometry_sink_text_renderer.h"
 #include "apex/platform/app_consumer.h"
 #include "aura/platform/application.h"
-
+#include <d3d11on12.h>
 
 namespace direct2d_directx12
 {
 
 
    class CLASS_DECL_DIRECT2D_DIRECTX12 direct2d_directx12 :
-      virtual public ::app_consumer<::aura::application>
+      virtual public ::direct2d_directx11::direct2d_directx11
    {
    protected:
       comptr < ID2D1Device >        m_pd2d1device;
@@ -27,7 +27,6 @@ namespace direct2d_directx12
       comptr<ID2D1DeviceContext>    m_pd2d1devicecontextDefault;
 
       comptr<ID2D1Multithread>      m_pd2d1multithread;
-
       //D3D_FEATURE_LEVEL             m_featurelevel;
 
       static direct2d_directx12 *             s_pdirect2d;

@@ -8,7 +8,8 @@
 #include "acme_windows_common/hresult_exception.h"
 #include "aura/windowing/window.h"
 
-
+#include <d3d11.h>
+#include <d3d11on12.h>
 
 
 typedef HRESULT WINAPI FN_DXGIGetDebugInterface(REFIID riid, void ** ppDebug);
@@ -133,6 +134,9 @@ namespace direct2d_directx12
       ::cast < ::gpu_directx12::approach > papproach = m_papplication->get_gpu();
 
       ::cast < ::gpu_directx12::device > pgpudevice = papproach->get_device(pwindow, rectanglePlacement);
+
+
+
 
       auto& pdxgidevice = pgpudevice->m_pdxgidevice;
 

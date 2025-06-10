@@ -26,8 +26,12 @@ CLASS_DECL_AURA void init_draw2d_mutex();
 
 __FACTORY_IMPORT void draw2d_direct2d_directx11_factory(::factory::factory* pfactory);
 
+__FACTORY_IMPORT void direct2d_directx12_factory(::factory::factory* pfactory);
+
 __FACTORY_EXPORT void draw2d_direct2d_directx12_factory(::factory::factory * pfactory)
    {
+
+   direct2d_directx12_factory(pfactory);
 
    draw2d_direct2d_directx11_factory(pfactory);
 
