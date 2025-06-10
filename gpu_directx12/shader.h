@@ -15,7 +15,7 @@ namespace gpu_directx12
       virtual public ::gpu::shader
    {
    public:
-
+      int m_iPush ;
       ::comptr <ID3D12PipelineState> m_ppipelinestate ;
 
       //::comptr < ID3D11PixelShader> m_ppixelshader;
@@ -35,6 +35,10 @@ namespace gpu_directx12
 
       bool m_bEnableBlend = false;
       bool m_bDisableDepthTest = false;
+
+      ::comptr<ID3D12Resource> m_presourcePushProperties;
+      
+
 
       shader();
       ~shader();

@@ -26,9 +26,49 @@
 
 using namespace directx12;
 
+const char* g_pszHelloTriangleHlsl = R"hlsl(
+//*********************************************************
+//
+// Copyright (c) Microsoft. All rights reserved.
+// This code is licensed under the MIT License (MIT).
+// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+//
+//*********************************************************
+
+struct PSInput
+{
+   float4 position : SV_POSITION;
+   float4 color : COLOR;
+};
+
+PSInput VSMain(float4 position : POSITION, float4 color : COLOR)
+{
+   PSInput result;
+
+   result.position = position;
+   result.color = color;
+
+   return result;
+}
+
+float4 PSMain(PSInput input) : SV_TARGET
+{
+    return input.color;
+}
+)hlsl";
+
 
 namespace gpu_directx12
 {
+
+   struct HelloTriangleVertex
+   {
+      DirectX::XMFLOAT3 position;
+      DirectX::XMFLOAT4 color;
+   };
 
    //// Create vertex and index buffers
    //void create_quad_buffers(VkDevice device, VkPhysicalDevice physicalDevice,
@@ -68,26 +108,12 @@ namespace gpu_directx12
    // renderer::renderer(VkWindow& window, context* pvkcdevice) : vkcWindow{ window }, m_pgpucontext{ pvkcdevice } 
    renderer::renderer()
    {
+      
       m_pGlobalUBO = nullptr;
-      m_pPushProperties = nullptr;
       m_hlsClear.m_dL = 0.75;
       m_hlsClear.m_dS = 0.5;
+
    }
-
-
-   //int renderer::width()
-   //{
-
-   //   return m_prendertargetview->width();
-
-   //}
-
-   //int renderer::height()
-   //{
-
-   //   return m_prendertargetview->height();
-
-   //}
 
 
    void renderer::initialize_renderer(::gpu::context* pgpucontext, ::gpu::enum_output eoutput, ::gpu::enum_scene escene)
@@ -101,35 +127,11 @@ namespace gpu_directx12
 // Flags indicate that this descriptor heap can be bound to the pipeline 
 // and that descriptors contained in it can be referenced by a root table.
       D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-      cbvHeapDesc.NumDescriptors = 1;
+      cbvHeapDesc.NumDescriptors = 2;
       cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
       cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-      HRESULT hrCreateDescriptorHeapCbv=pgpudevice->m_pdevice->CreateDescriptorHeap(&cbvHeapDesc, __interface_of(m_cbvHeap));
+      HRESULT hrCreateDescriptorHeapCbv=pgpudevice->m_pdevice->CreateDescriptorHeap(&cbvHeapDesc, __interface_of(m_pheapCbv));
       pgpudevice->defer_throw_hresult(hrCreateDescriptorHeapCbv);
-
-      const UINT constantBufferSize = ::directx12::Align256(64_KiB);    // CB size is required to be 256-byte aligned.
-      //::cast < renderer > prenderer = m_pgpucontext->m_pgpurenderer;
-      CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
-      auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
-      HRESULT hrCreateCommittedResource = pgpudevice->m_pdevice->CreateCommittedResource(
-         &heapproperties,
-         D3D12_HEAP_FLAG_NONE,
-         &resourcedesc,
-         D3D12_RESOURCE_STATE_GENERIC_READ,
-         nullptr,
-         __interface_of(m_presourcePushProperties));
-      pgpudevice->defer_throw_hresult(hrCreateCommittedResource);
-      // Describe and create a constant buffer view.
-      D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-      cbvDesc.BufferLocation = m_presourcePushProperties->GetGPUVirtualAddress();
-      cbvDesc.SizeInBytes = constantBufferSize;
-      auto cbvHeap = m_cbvHeap;
-      pgpudevice->m_pdevice->CreateConstantBufferView(&cbvDesc, cbvHeap->GetCPUDescriptorHandleForHeapStart());
-      CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
-      auto hrMap = m_presourcePushProperties->Map(0, &readRange, reinterpret_cast<void**>(&m_pPushProperties));
-      defer_throw_hresult(hrMap);
-
-
 
       if (eoutput == ::gpu::e_output_cpu_buffer)
       {
@@ -151,6 +153,7 @@ namespace gpu_directx12
       //defer_layout();
 
       createCommandBuffers();
+
 
    }
 
@@ -603,6 +606,57 @@ namespace gpu_directx12
 
          m_pcommandbufferLoadAssets->reset();
 
+#ifdef HELLO_TRIANGLE_DEBUG
+
+         if(!m_presourceHelloTriangleVertexBuffer)
+         {
+
+            // Create the vertex buffer.
+            {
+
+               float aspectRatio = (float)m_pgpucontext->m_rectangle.width() / (float)m_pgpucontext->m_rectangle.height();
+               // Define the geometry for a triangle.
+               HelloTriangleVertex triangleVertices[] =
+               {
+                   { { 0.0f, 0.25f * aspectRatio, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+                   { { 0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+                   { { -0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+               };
+               int iSizeOfTriangle=sizeof(HelloTriangleVertex);
+               const UINT vertexBufferSize = iSizeOfTriangle * 3;
+               ::cast < device > pdevice = m_pgpucontext->m_pgpudevice;
+               // Note: using upload heaps to transfer static data like vert buffers is not 
+               // recommended. Every time the GPU needs it, the upload heap will be marshalled 
+               // over. Please read up on Default Heap usage. An upload heap is used here for 
+               // code simplicity and because there are very few verts to actually transfer.
+               CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
+               auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
+               pdevice->defer_throw_hresult(pdevice->m_pdevice->CreateCommittedResource(
+                  &heapproperties,
+                  D3D12_HEAP_FLAG_NONE,
+                  &resourcedesc,
+                  D3D12_RESOURCE_STATE_GENERIC_READ,
+                  nullptr,
+                  __interface_of(m_presourceHelloTriangleVertexBuffer)));
+
+               // Copy the triangle data to the vertex buffer.
+               UINT8* pVertexDataBegin;
+               CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
+               pdevice->defer_throw_hresult(m_presourceHelloTriangleVertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
+               memcpy(pVertexDataBegin, triangleVertices, vertexBufferSize);
+               m_presourceHelloTriangleVertexBuffer->Unmap(0, nullptr);
+
+               // Initialize the vertex buffer view.
+               m_vertexbufferviewHelloTriangle.BufferLocation = m_presourceHelloTriangleVertexBuffer->GetGPUVirtualAddress();
+               m_vertexbufferviewHelloTriangle.StrideInBytes = sizeof(HelloTriangleVertex);
+               m_vertexbufferviewHelloTriangle.SizeInBytes = vertexBufferSize;
+
+            }
+
+         }
+
+#endif
+
       }
 
       return m_pcommandbufferLoadAssets;
@@ -750,10 +804,10 @@ namespace gpu_directx12
 
       //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
+      auto pgpurendertargetview = m_prendertargetview;
+
       //if (prenderer)
       {
-
-         auto pgpurendertargetview = m_prendertargetview;
 
          if (pgpurendertargetview)
          {
@@ -1307,7 +1361,7 @@ namespace gpu_directx12
                w,
                h,
                s,
-               true);
+               false);
 
          }
 
@@ -3567,7 +3621,8 @@ namespace gpu_directx12
 
       ptexture->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-      ID3D12DescriptorHeap* ppHeaps[] = { m_cbvHeap };
+      ID3D12DescriptorHeap* ppHeaps[] = { m_pheapCbv };
+
       pcommandlist->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
     
       ////::cast < frame > pframe = pframeParam;
@@ -3745,10 +3800,10 @@ namespace gpu_directx12
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
+      auto pgpurendertargetview = m_prendertargetview;
+
 
       {
-
-         auto pgpurendertargetview = m_prendertargetview;
 
          if (pgpurendertargetview)
          {
@@ -3780,14 +3835,6 @@ namespace gpu_directx12
                      FALSE,                // Not using RTV arrays
                      &dsvHandle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
                   );
-                  //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
-                  pcommandlist->ClearDepthStencilView(
-                     pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(),
-                     D3D12_CLEAR_FLAG_DEPTH,
-                     1.0f, 0,
-                     0, nullptr
-                  );
-
                }
                else
                {
@@ -3820,6 +3867,9 @@ namespace gpu_directx12
                scissorRect.top = 0;
                scissorRect.right = m_pgpucontext->m_rectangle.width();
                scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+
+               pcommandlist->RSSetViewports(1, &viewport);
+               pcommandlist->RSSetScissorRects(1, &scissorRect);
 
                //// 2. Begin command recording
                //commandAllocator->Reset();
@@ -3924,12 +3974,20 @@ namespace gpu_directx12
       // - clearColor is a float[4] array (same as in DX11)
 
       // Example clear color
-      float clearColor[4] = { 0.5f * 0.5f, 0.75f * 0.5f, 0.9f * 0.5f, 0.5f };
+      float clearColor[4] = { 0.5f * 0.5f, 0.95f * 0.5f, 0.9f * 0.5f, 0.5f };
       CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
          m_prendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), 
          get_frame_index(),
          m_prendertargetview->m_rtvDescriptorSize);
       pcommandlist->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+      //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+      pcommandlist->ClearDepthStencilView(
+         pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(),
+         D3D12_CLEAR_FLAG_DEPTH,
+         1.0f, 0,
+         0, nullptr
+      );
+
 
       on_happening(e_happening_begin_render);
 
@@ -3938,6 +3996,57 @@ namespace gpu_directx12
 
    void renderer::on_end_render(::gpu::frame* pframeParam)
    {
+
+#ifdef HELLO_TRIANGLE_DEBUG
+
+      if (!m_pshaderHelloTriangle)
+      {
+
+         __defer_construct_new(m_pshaderHelloTriangle);
+
+         m_pshaderHelloTriangle->m_iVertexLevel = 2;
+
+         m_pshaderHelloTriangle->m_bDisableDepthTest = true;
+
+         ::string str(g_pszHelloTriangleHlsl);
+
+         ::string strVS(str);
+
+         strVS.find_replace("VSMain", "main");
+
+         ::string strPS(str);
+
+         strPS.find_replace("PSMain", "main");
+         m_pshaderHelloTriangle->initialize_shader_with_block(
+            this,
+            strVS,
+            strPS);
+
+
+         //m_pshaderHelloTriangle->initialize_shader_with_block(
+         //   this,
+         //   strVS,
+         //   strPS,
+         //   {
+         //      ::gpu::shader::e_descriptor_set_slot_global,
+         //      ::gpu::shader::e_descriptor_set_slot_local
+         //   });
+
+      }
+
+      m_pshaderHelloTriangle->bind();
+
+      auto pcommandbuffer = getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+      pcommandlist->IASetVertexBuffers(0, 1, &m_vertexbufferviewHelloTriangle);
+      pcommandlist->DrawInstanced(3, 1, 0, 0);
+
+      m_pshaderHelloTriangle->unbind();
+
+#endif
 
       on_happening(e_happening_end_render);
 
@@ -4490,15 +4599,6 @@ namespace gpu_directx12
 
 
    }
-
-
-   //void renderer::_on_frame_draw(::gpu_directx12::renderer* prendererUpper)
-   //{
-
-
-
-
-   //}
 
 
    void renderer::endDraw(::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc)

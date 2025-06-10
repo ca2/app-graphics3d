@@ -43,7 +43,7 @@ namespace gpu_directx12
       D3D12_CLEAR_VALUE clearValue = {};
       clearValue.Format = format;
       clearValue.Color[0] = 0.5f *0.5f;
-      clearValue.Color[1] = 0.75f * 0.5f;
+      clearValue.Color[1] = 0.95f * 0.5f;
       clearValue.Color[2] = 0.9f * 0.5f;
       clearValue.Color[3] = 0.5f;
 

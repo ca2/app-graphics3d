@@ -161,15 +161,19 @@ namespace gpu_directx12
       ::pointer < command_buffer > m_pcommandbufferSingleTime;
       ::pointer < command_buffer > m_pcommandbufferLoadAssets;
 
-      ::comptr<ID3D12DescriptorHeap> m_cbvHeap;
+      ::comptr<ID3D12DescriptorHeap> m_pheapCbv;
       ::comptr<ID3D12Resource> m_presourceGlobalUBO;
-      ::comptr<ID3D12Resource> m_presourcePushProperties;
       void* m_pGlobalUBO;
-      void* m_pPushProperties;
       //int m_iPushPropertiesAddress = 0;
 
       //::array <UINT64 > m_fences; // fences values
-      
+
+#ifdef HELLO_TRIANGLE_DEBUG
+      ::pointer < ::gpu_directx12::shader > m_pshaderHelloTriangle;
+      ::comptr<ID3D12Resource> m_presourceHelloTriangleVertexBuffer;
+      D3D12_VERTEX_BUFFER_VIEW m_vertexbufferviewHelloTriangle;
+#endif
+
       ::procedure_array m_procedureaAfterEndRender;
 
       ::collection::index m_iCurrentFrame2 = -1;

@@ -15,6 +15,8 @@
 #include "_gpu_directx12.h"
 
 
+//#define HELLO_TRIANGLE_DEBUG
+
 namespace gpu_directx12
 {
 
@@ -55,6 +57,7 @@ namespace gpu_directx12
 
    class depth_stencil;
 
+   class shader;
 
 } // namespace gpu_directx12
 
