@@ -14,19 +14,35 @@ using namespace vulkan;
 namespace gpu_vulkan
 {
 
-
-   accumulation_render_pass::accumulation_render_pass(renderer* pgpurenderer, VkExtent2D extent)
-      : render_pass(pgpurenderer, extent)
+   accumulation_render_pass::accumulation_render_pass()
    {
+
 
    }
 
+   //accumulation_render_pass::accumulation_render_pass(renderer* pgpurenderer, VkExtent2D extent)
+   //   : render_pass(pgpurenderer, extent)
+   //{
 
-   accumulation_render_pass::accumulation_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
-      : render_pass(pgpurenderer, extent, previous)
+   //}
+
+
+   //accumulation_render_pass::accumulation_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
+   //   : render_pass(pgpurenderer, extent, previous)
+   //{
+
+   //}
+
+
+   void accumulation_render_pass::initialize_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
    {
 
+      render_pass::initialize_render_pass(pgpurenderer, extent, previous);
+
    }
+
+   
+
 
 
    void accumulation_render_pass::init()

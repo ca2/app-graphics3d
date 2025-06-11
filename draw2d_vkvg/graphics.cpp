@@ -248,7 +248,7 @@ namespace draw2d_vkvg
 
          ASSERT(m_puserinteraction);
 
-         auto pgpudevice = pgpu->get_device(m_puserinteraction->window(), rectanglePlacement);
+         auto pgpudevice = pgpu->get_device();
 
          m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
 
@@ -494,7 +494,7 @@ namespace draw2d_vkvg
 
       auto pgpu = application()->get_gpu();
 
-      auto pgpudevice = pgpu->get_device(pwindow, pwindow->get_window_rectangle());
+      auto pgpudevice = pgpu->get_device();
 
       if (!m_pgpucontext)
       {
@@ -6482,7 +6482,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 
-            m_pgpucontextOutput = m_papplication->get_gpu()->get_device(pwindow, pwindow->get_window_rectangle())->start_swap_chain_context(this, pwindow);
+            m_pgpucontextOutput = m_papplication->get_gpu()->get_device()->start_swap_chain_context(this, pwindow);
 
             //m_pgpucontextOutput->create_window_buffer(pwindow);
 

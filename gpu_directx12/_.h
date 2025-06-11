@@ -59,6 +59,9 @@ namespace gpu_directx12
 
    class shader;
 
+   class direct2d_draw2d_swap_chain;
+
+
 } // namespace gpu_directx12
 
 

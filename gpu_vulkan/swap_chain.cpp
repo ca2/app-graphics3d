@@ -1,30 +1,50 @@
 #include "framework.h"
-#include "swap_chain_render_pass.h"
 #include "physical_device.h"
 #include "renderer.h"
+#include "swap_chain.h"
+#include "aura/user/user/interaction.h"
+#include "aura/windowing/window.h"
+
 
 namespace gpu_vulkan
 {
 
 
-	swap_chain_render_pass::swap_chain_render_pass(renderer* pgpurenderer, VkExtent2D extent)
-		: render_pass(pgpurenderer, extent)
+	swap_chain::swap_chain()
 	{
-		//m_bNeedRebuild = false;
-	   //init();
+
+
 	}
 
-	swap_chain_render_pass::swap_chain_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
-		: render_pass(pgpurenderer, extent, previous)
+	//swap_chain::swap_chain(renderer* pgpurenderer, VkExtent2D extent)
+	//	: render_pass(pgpurenderer, extent)
+	//{
+	//	//m_bNeedRebuild = false;
+	//   //init();
+	//}
+
+	//swap_chain::swap_chain(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
+	//	: render_pass(pgpurenderer, extent, previous)
+	//{
+	//	//m_bNeedRebuild = false;
+	//   //init();
+	//   // Cleans up old swap chain since it's no longer needed after resizing
+	//   //oldSwapChain = nullptr;
+	//}
+
+
+	void swap_chain::initialize_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
 	{
+
+		render_pass::initialize_render_pass(pgpurenderer, extent, previous);
 		//m_bNeedRebuild = false;
-	   //init();
-	   // Cleans up old swap chain since it's no longer needed after resizing
-	   //oldSwapChain = nullptr;
+		//init();
+		// Cleans up old swap chain since it's no longer needed after resizing
+		//oldSwapChain = nullptr;
 	}
 
 
-	void swap_chain_render_pass::init()
+	void swap_chain::init()
 	{
 
 		m_pgpurenderer->restart_frame_counter();
@@ -39,7 +59,7 @@ namespace gpu_vulkan
 	}
 
 
-	swap_chain_render_pass::~swap_chain_render_pass()
+	swap_chain::~swap_chain()
 	{
 		for (auto imageView : m_imageviews) {
 			vkDestroyImageView(m_pgpucontext->logicalDevice(), imageView, nullptr);
@@ -78,7 +98,7 @@ namespace gpu_vulkan
 	}
 
 
-	VkResult swap_chain_render_pass::acquireNextImage()
+	VkResult swap_chain::acquireNextImage()
 	{
 
 		uint32_t* imageIndex = &currentImageIndex;
@@ -146,9 +166,8 @@ namespace gpu_vulkan
 	}
 
 
-	VkResult swap_chain_render_pass::submitCommandBuffers(const VkCommandBuffer* buffers)
+	VkResult swap_chain::submitCommandBuffers(const VkCommandBuffer* buffers)
 	{
-
 
 		uint32_t* imageIndex = &currentImageIndex;
 
@@ -242,7 +261,7 @@ namespace gpu_vulkan
 	}
 
 
-	int swap_chain_render_pass::get_image_index() const
+	int swap_chain::get_image_index() const
 	{
 
 		return currentImageIndex;
@@ -250,7 +269,7 @@ namespace gpu_vulkan
 	}
 
 
-	void swap_chain_render_pass::createRenderPassImpl()
+	void swap_chain::createRenderPassImpl()
 	{
 
 		auto pgpucontext = m_pgpucontext;
@@ -307,11 +326,13 @@ namespace gpu_vulkan
 		createInfo.presentMode = presentMode;
 		createInfo.clipped = VK_TRUE;
 
-		::pointer < swap_chain_render_pass> pswapchainOld = m_pvkcrenderpassOld;
+		::pointer < swap_chain> pswapchainOld = m_pvkcrenderpassOld;
 
 		createInfo.oldSwapchain = pswapchainOld == nullptr ? VK_NULL_HANDLE : pswapchainOld->m_vkswapchain;
 
-		if (vkCreateSwapchainKHR(m_pgpucontext->logicalDevice(), &createInfo, nullptr, &m_vkswapchain) != VK_SUCCESS) {
+		auto logicalDevice = m_pgpucontext->logicalDevice();
+
+		if (vkCreateSwapchainKHR(logicalDevice, &createInfo, nullptr, &m_vkswapchain) != VK_SUCCESS) {
 			//throw ::exception(error_failed,"failed to create swap chain!");
 			m_bNeedRebuild = true;
 			return;
@@ -332,7 +353,7 @@ namespace gpu_vulkan
 	}
 
 
-	void swap_chain_render_pass::createImageViews() 
+	void swap_chain::createImageViews() 
 	{
 
 		m_imageviews.resize(m_images.size());
@@ -356,7 +377,7 @@ namespace gpu_vulkan
 	}
 
 
-	void swap_chain_render_pass::createRenderPass() 
+	void swap_chain::createRenderPass() 
 	{
 
 		VkAttachmentDescription depthAttachment{};
@@ -436,7 +457,7 @@ namespace gpu_vulkan
 	}
 
 
-	void swap_chain_render_pass::createFramebuffers()
+	void swap_chain::createFramebuffers()
 	{
 		render_pass::createFramebuffers();
 		//swapChainFramebuffers.resize(imageCount());
@@ -464,7 +485,7 @@ namespace gpu_vulkan
 	}
 
 
-	void swap_chain_render_pass::createDepthResources()
+	void swap_chain::createDepthResources()
 	{
 		render_pass::createDepthResources();
 
@@ -517,7 +538,7 @@ namespace gpu_vulkan
 	}
 
 
-	void swap_chain_render_pass::createSyncObjects() 
+	void swap_chain::createSyncObjects() 
 	{
 		//imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		//renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -544,7 +565,7 @@ namespace gpu_vulkan
 	}
 
 
-	VkSurfaceFormatKHR swap_chain_render_pass::chooseSwapSurfaceFormat(const ::array<VkSurfaceFormatKHR>& availableFormats) 
+	VkSurfaceFormatKHR swap_chain::chooseSwapSurfaceFormat(const ::array<VkSurfaceFormatKHR>& availableFormats) 
 	{
 
 		for (const auto& availableFormat : availableFormats) {
@@ -559,7 +580,7 @@ namespace gpu_vulkan
 		return availableFormats[0];
 	}
 
-	VkPresentModeKHR swap_chain_render_pass::chooseSwapPresentMode(const ::array<VkPresentModeKHR>& availablePresentModes)
+	VkPresentModeKHR swap_chain::chooseSwapPresentMode(const ::array<VkPresentModeKHR>& availablePresentModes)
 	{
 		for (const auto& availablePresentMode : availablePresentModes)
 		{
@@ -582,7 +603,7 @@ namespace gpu_vulkan
 		return VK_PRESENT_MODE_FIFO_KHR;
 	}
 
-	VkExtent2D swap_chain_render_pass::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+	VkExtent2D swap_chain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
 		if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
 			return capabilities.currentExtent;
 		}
@@ -599,13 +620,72 @@ namespace gpu_vulkan
 		}
 	}
 
-	VkFormat swap_chain_render_pass::findDepthFormat()
+	VkFormat swap_chain::findDepthFormat()
 	{
 
 		return m_pgpucontext->m_pgpudevice->m_pphysicaldevice->findSupportedFormat(
 			{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
 			VK_IMAGE_TILING_OPTIMAL,
 			VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+	}
+
+
+	void swap_chain::endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc)
+	{
+
+		::gpu::swap_chain::endDraw(pgraphics, puserinteraction, pgpurendererSrc);
+
+		if (!m_pgpucontextSwapChain)
+		{
+
+			m_pgpucontextSwapChain = pgpurendererSrc->m_pgpucontext->m_pgpudevice->start_swap_chain_context(this, puserinteraction->window());
+
+		}
+
+		m_pgpucontextSwapChain->send_on_context([this, puserinteraction]()
+			{
+
+				auto rectanglePlacement = puserinteraction->window()->get_window_rectangle();
+
+				m_pgpucontextSwapChain->set_placement(rectanglePlacement);
+
+				auto prendererOutput = m_pgpucontextSwapChain->get_renderer(::gpu::e_scene_2d);
+
+				prendererOutput->defer_update_renderer();
+
+				ASSERT(m_pgpucontextSwapChain == m_pgpucontext);
+
+				::cast < renderer > prendererThis = m_pgpucontextSwapChain->m_pgpurenderer;
+
+				ASSERT(prendererThis->m_pvkcrenderpass == this);
+
+			});
+
+		::cast < renderer > prendererSrc = pgpurendererSrc;
+
+		VkImage vkimage = prendererSrc->m_pvkcrenderpass->m_images[prendererSrc->get_frame_index()];
+
+		::int_rectangle rectangle = prendererSrc->m_pgpucontext->rectangle();
+
+		m_pgpucontext->send_on_context([this, vkimage, rectangle]()
+			{
+
+				m_pgpucontext->m_pgpurenderer->do_on_frame([this, vkimage, rectangle]()
+					{
+
+						::cast < renderer > prenderer = m_pgpucontext->m_pgpurenderer;
+
+						prenderer->_copy_image(vkimage, rectangle, false);
+
+					});
+
+			});
+//		m_pgpucontextOutput
+
+		//vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+
+		//vkQueueWaitIdle(m_pgpucontext->presentQueue());
+
 	}
 
 

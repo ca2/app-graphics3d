@@ -2122,6 +2122,23 @@ namespace gpu_vulkan
    }
 
 
+   //void context::do_on_context(const ::function< void(::gpu::context*) >& functionFrame)
+   //{
+
+   //   ::gpu::rear_guard rear_guard(this);
+
+   //   auto function = functionFrame;
+
+   //   m_pgpucontext->send([this, function]()
+   //      {
+
+
+   //      });
+
+
+   //}
+
+
    VkCommandBuffer context::beginSingleTimeCommands()
    {
 

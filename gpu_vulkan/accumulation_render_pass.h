@@ -25,11 +25,15 @@ namespace gpu_vulkan
 
 		static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-		accumulation_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent);
-		accumulation_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
+		//accumulation_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent);
+		//accumulation_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
+		accumulation_render_pass();
 		~accumulation_render_pass();
 
 		
+		void initialize_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous) override;
+
+
 		void on_before_begin_render(frame* pframe) override;
 
 

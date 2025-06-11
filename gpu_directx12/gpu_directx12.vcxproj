@@ -698,6 +698,7 @@
     <ClInclude Include="depth_stencil.h" />
     <ClInclude Include="descriptors.h" />
     <ClInclude Include="device.h" />
+    <ClInclude Include="direct2d_draw2d_swap_chain.h" />
     <ClInclude Include="dxgi_debug.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="initializers.h" />
@@ -746,6 +747,7 @@
     <ClCompile Include="depth_stencil.cpp" />
     <ClCompile Include="descriptors.cpp" />
     <ClCompile Include="device.cpp" />
+    <ClCompile Include="direct2d_draw2d_swap_chain.cpp" />
     <ClCompile Include="dxgi_debug.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="offscreen_render_target_view.cpp" />
@@ -923,6 +925,12 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
   <ItemGroup>
     <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\acme_windows_common\acme_windows_common.vcxproj">
       <Project>{eb9dc9c0-0573-4da0-8700-4dbb371773f1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\direct2d\direct2d.vcxproj">
+      <Project>{2f21f158-1dd5-43f6-9fad-01fb77a81ec5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\draw2d_direct2d\draw2d_direct2d.vcxproj">
+      <Project>{85683956-09f7-4be0-ab37-5a0165168749}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\source\app\acme\acme.vcxproj">
       <Project>{638b242f-0f21-41c3-9f66-724660046133}</Project>

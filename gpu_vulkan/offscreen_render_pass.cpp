@@ -15,17 +15,34 @@ namespace gpu_vulkan
 {
 
 
-   offscreen_render_pass::offscreen_render_pass(renderer* pgpurenderer, VkExtent2D extent)
-      : render_pass(pgpurenderer, extent)
+   offscreen_render_pass::offscreen_render_pass()
    {
+
 
    }
 
+   //offscreen_render_pass::offscreen_render_pass(renderer* pgpurenderer, VkExtent2D extent)
+   //   : render_pass(pgpurenderer, extent)
+   //{
 
-   offscreen_render_pass::offscreen_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
-      : render_pass(pgpurenderer, extent, previous)
+   //}
+
+
+   //offscreen_render_pass::offscreen_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
+   //   : render_pass(pgpurenderer, extent, previous)
+   //{
+
+   //}
+
+
+   void offscreen_render_pass::initialize_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
    {
 
+      render_pass::initialize_render_pass(pgpurenderer, extent, previous);
+      //m_bNeedRebuild = false;
+      //init();
+      // Cleans up old swap chain since it's no longer needed after resizing
+      //oldSwapChain = nullptr;
    }
 
 

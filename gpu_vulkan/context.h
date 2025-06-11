@@ -117,6 +117,7 @@ namespace gpu_vulkan
 
       VkSampler _001VkSampler();
 
+
       //set_descriptor_layout* get_set_descriptor_layout();
       //virtual VkDescriptorSet getCurrentDescriptorSet(::gpu_vulkan::renderer* prenderer);
 

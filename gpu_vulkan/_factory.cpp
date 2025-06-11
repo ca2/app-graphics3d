@@ -5,6 +5,7 @@
 #include "cpu_buffer.h"
 #include "object.h"
 #include "renderer.h"
+#include "swap_chain.h"
 
 
 //BEGIN_FACTORY(gpu_vulkan)
@@ -28,6 +29,7 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu_vulkan::object, ::gpu::object >();
 
    pfactory->add_factory_item < ::gpu_vulkan::device, ::gpu::device >();
+   pfactory->add_factory_item < ::gpu_vulkan::swap_chain, ::gpu::swap_chain >();
 
 }
 

@@ -26,6 +26,7 @@ namespace gpu_directx12
       //::cube::application_object::map				m_mapObjects;
 
 
+      //::pointer < ::gpu_directx12::direct2d_draw2d_connector > m_pdirect2ddraw2dconnector;
 
 
       //VkInstance instance{ VK_NULL_HANDLE };
@@ -250,6 +251,9 @@ namespace gpu_directx12
 
 
       void initialize_gpu_approach() override;
+
+
+      //::subparticle* get_draw2d_connector_for_swap_chain(::windowing::window * pwindow) override;
 
 
       virtual HRESULT createInstance();

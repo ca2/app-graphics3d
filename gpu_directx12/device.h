@@ -133,11 +133,12 @@ namespace gpu_directx12
       ::array<const char*>       validationLayers;
       ::array<const char*>       deviceExtensions;
       ::procedure_array          m_procedureaOnTopFrameEnd;
-
-
+      ::pointer < direct2d_draw2d_swap_chain >    m_pswapchain;
 
       device();
       ~device() override;
+
+
 
 
       void list_dred_breadcrumbs();
@@ -147,10 +148,11 @@ namespace gpu_directx12
       virtual void get_debug_interface(UINT& dxgiFactoryFlags);
 
       virtual void initialize_swap_chain(::windowing::window* pwindow);
-      virtual void initialize_cpu_buffer(::windowing::window* pwindow);
+      virtual void initialize_cpu_buffer(const ::int_size & size);
       
 
-      void initialize_gpu_device(::gpu::approach* pgpuapproach, ::windowing::window *pwindow, const ::int_rectangle & rectanglePlacement, bool bAddSwapChainSupport) override;
+      void initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproach, ::windowing::window *pwindow) override;
+      void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::int_rectangle& rectanglePlacement) override;
 
 
       void GetHardwareAdapter(

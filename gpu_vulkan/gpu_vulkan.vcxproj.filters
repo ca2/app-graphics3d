@@ -59,7 +59,7 @@
     <ClInclude Include="debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="swap_chain.h">
+    <ClInclude Include="aaa_swap_chain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="physical_device.h">
@@ -74,7 +74,7 @@
     <ClInclude Include="render_pass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="swap_chain_render_pass.h">
+    <ClInclude Include="swap_chain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pipeline.h">
@@ -151,7 +151,7 @@
     <ClCompile Include="render_pass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="swap_chain_render_pass.cpp">
+    <ClCompile Include="swap_chain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="renderer.cpp">

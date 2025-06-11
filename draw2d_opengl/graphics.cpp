@@ -260,7 +260,7 @@ namespace draw2d_opengl
 
          ASSERT(m_puserinteraction);
 
-         auto pgpudevice = pgpu->get_device(m_puserinteraction->window(), rectanglePlacement);
+         auto pgpudevice = pgpu->get_device();
 
          ::cast < ::gpu_opengl::device_win32> pdeviceWin32 = pgpudevice;
 
@@ -490,7 +490,7 @@ namespace draw2d_opengl
 
          auto pgpu = application()->get_gpu();
 
-         auto pgpudevice = pgpu->get_device(pwindow, pwindow->get_window_rectangle());
+         auto pgpudevice = pgpu->get_device();
 
          m_pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
 

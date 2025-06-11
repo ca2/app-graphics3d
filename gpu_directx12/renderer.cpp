@@ -4597,10 +4597,10 @@ namespace gpu_directx12
    }
 
 
-   void renderer::endDraw(::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc)
+   void renderer::endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction* puserinteraction)
    {
 
-      ::cast < renderer > prenderer = pgpurendererSrc;
+      ::cast < renderer > prenderer = this;
 
       if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
       {
@@ -4608,6 +4608,8 @@ namespace gpu_directx12
          m_pgpucontext->swap_buffers();
 
       }
+
+
 
       //VkImage vkimage = prenderer->m_prendertargetview->m_images[prenderer->get_frame_index()];
 

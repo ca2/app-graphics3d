@@ -844,9 +844,6 @@
     <ProjectReference Include="..\..\app\core\core.vcxproj">
       <Project>{29c1eb5b-060e-4021-ae12-d1bcfb1b1359}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\graphics3d_vulkan\graphics3d_vulkan.vcxproj">
-      <Project>{928e4e5f-e062-43d3-8073-f3826381a2e1}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,7 +4,6 @@
 #include "approach.h"
 #include "buffer.h"
 #include "device.h"
-#include "device.h"
 #include "physical_device.h"
 #include "program.h"
 #include "renderer.h"
@@ -767,8 +766,10 @@ namespace gpu_vulkan
    }
 
 
-   void device::initialize_gpu_device(::gpu::approach* pgpuapproachParam, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement, bool bAddSwapChainSupport)
+   void device::initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproachParam, ::windowing::window * pwindow)
    {
+
+      ::gpu::device::initialize_gpu_device_for_swap_chain(pgpuapproachParam, pwindow);
 
 
       //createInstance();
@@ -795,13 +796,13 @@ namespace gpu_vulkan
 
       m_pphysicaldevice = pphysicaldevice;
 
-      if (m_papplication->m_bUseSwapChainWindow)
-      {
+      //if (m_papplication->m_bUseSwapChainWindow)
+      //{
 
-         m_pphysicaldevice->createWindowSurface(pwindow);
+      //   m_pphysicaldevice->createWindowSurface(pwindow);
 
-      }
-
+      //}
+      m_pphysicaldevice->createWindowSurface(pwindow);
 
 
       //if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
@@ -833,7 +834,104 @@ namespace gpu_vulkan
 
       //bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
 
-      bool useSwapChain = bAddSwapChainSupport;
+      //bool useSwapChain = bAddSwapChainSupport;
+
+      //m_itaskGpu = ::current_itask();
+
+      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
+.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
+      .scalarBlockLayout = TRUE };
+      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
+      m_physicaldevicefeaturesCreate.logicOp = TRUE;
+      m_physicaldevicefeaturesCreate.independentBlend = TRUE;
+      bool bUseSwapChain = true;
+      VkResult result = createLogicalDevice(
+         m_physicaldevicefeaturesCreate,
+         pgpuapproach->m_pszaEnabledDeviceExtensions,
+         pgpuapproach->m_pDeviceCreatepNextChain,
+         bUseSwapChain);
+
+      if (result != VK_SUCCESS)
+      {
+
+         //m_itaskGpu = {};
+
+         exitFatal("Could not create Vulkan device: \n" + errorString(result) + " VkResult=" + ::as_string(result), result);
+
+         throw ::exception(error_failed);
+
+      }
+
+
+      //device = vulkanDevice->logicalDevice;
+
+   }
+
+
+   void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::int_rectangle& rectanglePlacement)
+   {
+
+
+      //createInstance();
+      //setupDebugMessenger();
+      //createSurface();
+      //pickPhysicalDevice();
+      //createLogicalDevice();
+      //createCommandPool();
+
+      ::cast < approach > pgpuapproach = pgpuapproachParam;
+
+      if (!pgpuapproach)
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+      m_pgpuapproach = pgpuapproach.m_p;
+
+      auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
+
+      assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
+
+      m_pphysicaldevice = pphysicaldevice;
+
+      //if (m_papplication->m_bUseSwapChainWindow)
+      //{
+
+      //   m_pphysicaldevice->createWindowSurface(pwindow);
+
+      //}
+//if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
+      //{
+
+      //   m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
+
+      //}
+
+      auto physicaldevice = pphysicaldevice->m_physicaldevice;
+
+      // Get list of supported extensions
+      uint32_t extCount = 0;
+      vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
+      if (extCount > 0)
+      {
+         ::array<VkExtensionProperties> extensions(extCount);
+         if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
+         {
+            for (auto& ext : extensions)
+            {
+               m_straSupportedExtensions.add(ext.extensionName);
+            }
+         }
+      }
+
+      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
+      //getEnabledExtensions();
+
+      //bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
+
+      bool useSwapChain = false;
 
       //m_itaskGpu = ::current_itask();
 
@@ -864,6 +962,7 @@ namespace gpu_vulkan
       //device = vulkanDevice->logicalDevice;
 
    }
+
 
 
    //void device::on_create_context(const ::gpu::start_context_t& startcontext)

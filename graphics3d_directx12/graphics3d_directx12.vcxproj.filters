@@ -64,6 +64,9 @@
     <ClCompile Include="aaa_system\point_light_system.cpp">
       <Filter>Source Files\aaa_system</Filter>
     </ClCompile>
+    <ClCompile Include="engine_direct2d_draw2d_swap_chain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">

@@ -708,8 +708,8 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_pass.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="aaa_swap_chain.h" />
     <ClInclude Include="swap_chain.h" />
-    <ClInclude Include="swap_chain_render_pass.h" />
     <ClInclude Include="_.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="_gpu_vulkan.h" />
@@ -740,7 +740,7 @@
     <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="render_pass.cpp" />
-    <ClCompile Include="swap_chain_render_pass.cpp" />
+    <ClCompile Include="swap_chain.cpp" />
     <ClCompile Include="VulkanExample.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">true</ExcludedFromBuild>

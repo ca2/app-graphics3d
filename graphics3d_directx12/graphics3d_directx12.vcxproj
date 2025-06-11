@@ -744,6 +744,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="engine_direct2d_draw2d_swap_chain.cpp" />
     <ClCompile Include="scene_object.cpp" />
     <ClCompile Include="descriptors.cpp" />
     <ClCompile Include="framework.cpp">

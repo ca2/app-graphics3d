@@ -3,43 +3,52 @@
 #include "physical_device.h"
 #include "render_pass.h"
 #include "renderer.h"
-//// std
-//#include <array>
-//#include <cstdlib>
-//#include <cstring>
-//#include <iostream>
-//#include <limits>
-//#include <set>
-//#include <stdexcept>
-//#undef min
-//#undef max
 
 
 namespace gpu_vulkan
 {
 
 
-   render_pass::render_pass(renderer* pgpurenderer, VkExtent2D extent)
-      : m_pgpurenderer(pgpurenderer), windowExtent(extent)
+   render_pass::render_pass()
    {
-       m_bNeedRebuild = false;
-      m_pgpucontext = pgpurenderer->m_pgpucontext;
-      //init();
-      //m_pvkcrenderpassOld = nullptr;
+
+
    }
 
+
+   //render_pass::render_pass(renderer* pgpurenderer, VkExtent2D extent)
+   //   : m_pgpurenderer(pgpurenderer), windowExtent(extent)
+   //{
+   //    m_bNeedRebuild = false;
+   //   m_pgpucontext = pgpurenderer->m_pgpucontext;
+   //   //init();
+   //   //m_pvkcrenderpassOld = nullptr;
+   //}
+
+   //
+   //render_pass::render_pass(renderer * pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
+   //   : m_pgpurenderer{ pgpurenderer }, windowExtent{ extent }, m_pvkcrenderpassOld{ previous }
+   //{
+   //    m_bNeedRebuild = false;
+   //   m_pgpucontext = pgpurenderer->m_pgpucontext;
+   //   //init();
+   //   // Cleans up old swap chain since it's no longer needed after resizing
+   //   //m_pvkcrenderpassOld = nullptr;
+   //}
    
-   render_pass::render_pass(renderer * pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
-      : m_pgpurenderer{ pgpurenderer }, windowExtent{ extent }, m_pvkcrenderpassOld{ previous }
+   
+   void render_pass::initialize_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
    {
-       m_bNeedRebuild = false;
+
+      m_pgpurenderer = pgpurenderer;
+      windowExtent = extent;
+      m_pvkcrenderpassOld = previous;
+      m_bNeedRebuild = false;
       m_pgpucontext = pgpurenderer->m_pgpucontext;
       //init();
       // Cleans up old swap chain since it's no longer needed after resizing
       //m_pvkcrenderpassOld = nullptr;
    }
-   
-   
 
    
    void render_pass::init() 

@@ -51,9 +51,13 @@ namespace gpu_vulkan
 
       static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-      render_pass(renderer * prenderer, VkExtent2D windowExtent);
-      render_pass(renderer * prenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
+      //render_pass(renderer * prenderer, VkExtent2D windowExtent);
+      //render_pass(renderer * prenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
+      render_pass();
       ~render_pass();
+
+
+      virtual void initialize_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous = {});
 
       virtual void on_before_begin_render(frame* pframe);
 

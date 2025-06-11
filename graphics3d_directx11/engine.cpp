@@ -543,7 +543,7 @@ namespace graphics3d_directx11
    void engine::on_after_done_frame_step(::draw2d::graphics_pointer& pgraphics)
    {
 
-      ::cast < ::draw2d_direct2d_directx11::graphics > pgraphics2d = pgraphics;
+      ::cast < ::draw2d_direct2d::graphics > pgraphics2d = pgraphics;
 
       if (pgraphics2d)
       {

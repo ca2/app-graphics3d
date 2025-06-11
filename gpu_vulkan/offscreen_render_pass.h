@@ -18,11 +18,12 @@ namespace gpu_vulkan
 
 		static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-		offscreen_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent);
-		offscreen_render_pass(renderer * pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
+		//offscreen_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent);
+		//offscreen_render_pass(renderer * pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
+		offscreen_render_pass();
 		~offscreen_render_pass();
 
-
+		void initialize_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous = {}) override;
 		//VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
 		//VkRenderPass getRenderPass() { return m_vkrenderpass; }
 		//VkImageView getImageView(int index) { return m_imageview[index]; }

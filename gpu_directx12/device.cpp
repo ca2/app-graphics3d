@@ -4,7 +4,7 @@
 #include "approach.h"
 #include "buffer.h"
 #include "device.h"
-#include "device.h"
+//#include "direct2d_draw2d_connector.h"
 #include "physical_device.h"
 #include "program.h"
 #include "renderer.h"
@@ -788,7 +788,7 @@ namespace gpu_directx12
    }
 
 
-   void device::initialize_gpu_device(::gpu::approach* pgpuapproachParam, ::windowing::window * pwindow, const ::int_rectangle & rectanglePlacement, bool bAddSwapChainSupport)
+   void device::initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproachParam, ::windowing::window * pwindow)
    {
 
 
@@ -799,18 +799,18 @@ namespace gpu_directx12
       //createLogicalDevice();
       //createCommandPool();
 
-      if (bAddSwapChainSupport)
+      //if (bAddSwapChainSupport)
       {
 
          initialize_swap_chain(pwindow);
 
       }
-      else
-      {
+      //else
+      //{
 
-         initialize_cpu_buffer(pwindow);
+      //   initialize_cpu_buffer(pwindow);
 
-      }
+      //}
 
       ::cast < approach > pgpuapproach = pgpuapproachParam;
 
@@ -835,6 +835,120 @@ namespace gpu_directx12
          m_pphysicaldevice->createWindowSurface(pwindow);
 
       }
+
+
+
+      //if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
+      //{
+
+      //   m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
+
+      //}
+
+      //auto physicaldevice = pphysicaldevice->m_physicaldevice;
+
+      //// Get list of supported extensions
+      //uint32_t extCount = 0;
+      //vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
+      //if (extCount > 0)
+      //{
+      //   ::array<VkExtensionProperties> extensions(extCount);
+      //   if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
+      //   {
+      //      for (auto& ext : extensions)
+      //      {
+      //         m_straSupportedExtensions.add(ext.extensionName);
+      //      }
+      //   }
+      //}
+
+      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
+      //getEnabledExtensions();
+
+      //bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
+
+      bool useSwapChain = true;
+
+      //m_itaskGpu = ::current_itask();
+//
+//      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
+//.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
+//      .scalarBlockLayout = TRUE };
+//      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
+//      m_physicaldevicefeaturesCreate.logicOp = TRUE;
+//      m_physicaldevicefeaturesCreate.independentBlend = TRUE;
+//      HRESULT result = createLogicalDevice(
+//         m_physicaldevicefeaturesCreate,
+//         pgpuapproach->m_pszaEnabledDeviceExtensions,
+//         pgpuapproach->m_pDeviceCreatepNextChain,
+//         useSwapChain);
+//
+//      if (result != VK_SUCCESS)
+//      {
+//
+//         //m_itaskGpu = {};
+//
+//         exitFatal("Could not create DirectX12 device: \n" + errorString(result) + " HRESULT=" + ::as_string(result), result);
+//
+//         throw ::exception(error_failed);
+//
+//      }
+//
+
+      //device = directx12Device->logicalDevice;
+
+   }
+
+
+   void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::int_rectangle& rectanglePlacement)
+   {
+
+
+      //createInstance();
+      //setupDebugMessenger();
+      //createSurface();
+      //pickPhysicalDevice();
+      //createLogicalDevice();
+      //createCommandPool();
+
+      bool bAddSwapChainSupport = false;
+
+      //if (bAddSwapChainSupport)
+      //{
+
+      //   initialize_swap_chain(pwindow);
+
+      //}
+      //else
+      {
+
+         initialize_cpu_buffer(rectanglePlacement.size());
+
+      }
+
+      ::cast < approach > pgpuapproach = pgpuapproachParam;
+
+      if (!pgpuapproach)
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+      m_pgpuapproach = pgpuapproach.m_p;
+
+      auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
+
+      //assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
+
+      m_pphysicaldevice = pphysicaldevice;
+
+      //if (m_papplication->m_bUseSwapChainWindow)
+      //{
+
+      //   m_pphysicaldevice->createWindowSurface(pwindow);
+
+      //}
 
 
 
@@ -898,6 +1012,7 @@ namespace gpu_directx12
       //device = directx12Device->logicalDevice;
 
    }
+
 
 
    //void device::on_create_context(const ::gpu::start_context_t& startcontext)
@@ -2684,6 +2799,8 @@ namespace gpu_directx12
    }
 
 
+
+
    void device::list_dred_breadcrumbs()
    {
       ::comptr<ID3D12DeviceRemovedExtendedData> pDred;
@@ -2805,7 +2922,7 @@ namespace gpu_directx12
 
 
 
-   void device::initialize_cpu_buffer(::windowing::window * pwindow)
+   void device::initialize_cpu_buffer(const ::int_size & size)
    {
 
 //      // This flag adds support for surfaces with a different color channel ordering

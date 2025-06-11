@@ -6,7 +6,7 @@
 #include "accumulation_render_pass.h"
 #include "offscreen_render_pass.h"
 #include "physical_device.h"
-#include "swap_chain_render_pass.h"
+#include "swap_chain.h"
 #include "initializers.h"
 #include "aura/graphics/gpu/cpu_buffer.h"
 #include "app-graphics3d/gpu_vulkan/shader.h"
@@ -225,7 +225,7 @@ namespace gpu_vulkan
       if (eoutput == ::gpu::e_output_cpu_buffer)
       {
 
-         auto poffscreenrenderpass = __allocate offscreen_render_pass(this, m_extentRenderer, m_pvkcrenderpass);
+         auto poffscreenrenderpass = __allocate offscreen_render_pass();
 #ifdef WINDOWS_DESKTOP
          poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
 #else
@@ -238,14 +238,15 @@ namespace gpu_vulkan
       else if (eoutput == ::gpu::e_output_swap_chain)
       {
 
-         m_pvkcrenderpass = __allocate swap_chain_render_pass(this, m_extentRenderer, m_pvkcrenderpass);
+         m_pvkcrenderpass = m_pgpucontext->m_pgpudevice->get_swap_chain();
+         //m_pvkcrenderpass = __allocate swap_chain_render_pass(this, m_extentRenderer, m_pvkcrenderpass);
          //m_prendererResolve.release();
 
       }
       else if (eoutput == ::gpu::e_output_gpu_buffer)
       {
 
-         auto poffscreenrenderpass = __allocate offscreen_render_pass(this, m_extentRenderer, m_pvkcrenderpass);
+         auto poffscreenrenderpass = __allocate offscreen_render_pass();
 #ifdef WINDOWS_DESKTOP
          poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
 #else
@@ -258,7 +259,7 @@ namespace gpu_vulkan
       else if (eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
       {
 
-         auto paccumulationrenderpass = __allocate accumulation_render_pass(this, m_extentRenderer, m_pvkcrenderpass);
+         auto paccumulationrenderpass = __allocate accumulation_render_pass();
          paccumulationrenderpass->m_formatImage = VK_FORMAT_R32G32B32A32_SFLOAT;
          paccumulationrenderpass->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
          m_pvkcrenderpass = paccumulationrenderpass;
@@ -280,7 +281,7 @@ namespace gpu_vulkan
       else if (eoutput == ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers)
       {
 
-         auto poffscreenrenderpass = __allocate offscreen_render_pass(this, m_extentRenderer, m_pvkcrenderpass);
+         auto poffscreenrenderpass = __allocate offscreen_render_pass();
 #ifdef WINDOWS_DESKTOP
          poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
 #else
@@ -298,6 +299,8 @@ namespace gpu_vulkan
 
       if (m_pvkcrenderpass->m_images.is_empty())
       {
+
+         m_pvkcrenderpass->initialize_render_pass(this, m_extentRenderer, m_pvkcrenderpass);
 
          m_pvkcrenderpass->init();
 
@@ -3234,10 +3237,10 @@ namespace gpu_vulkan
    //}
 
 
-   void renderer::endDraw(::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc)
+   void renderer::endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction* puserinteraction)
    {
 
-      ::cast < renderer > prenderer = pgpurendererSrc;
+      ::cast < renderer > prenderer = this;
 
       VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
 
@@ -3270,23 +3273,27 @@ namespace gpu_vulkan
 
       m_pgpucontext->endSingleTimeCommands(copyCmd);
 
-      defer_update_renderer();
+      ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
-      on_new_frame();
+      pswapchain->endDraw(pgraphics, puserinteraction, this);
 
-      auto pframe = beginFrame();
+      //defer_update_renderer();
 
-      on_begin_render(pframe);
+      //on_new_frame();
 
-      _copy_image(vkimage, rectangle, false);
+      //auto pframe = beginFrame();
 
-      on_end_render(pframe);
+      //on_begin_render(pframe);
 
-      endFrame();
+      //_copy_image(vkimage, rectangle, false);
 
-      //vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+      //on_end_render(pframe);
 
-      //vkQueueWaitIdle(m_pgpucontext->presentQueue());
+      //endFrame();
+
+      ////vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+
+      ////vkQueueWaitIdle(m_pgpucontext->presentQueue());
 
    }
 
@@ -3307,8 +3314,8 @@ namespace gpu_vulkan
          VK_ACCESS_TRANSFER_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-         VK_ACCESS_SHADER_READ_BIT,
+         VK_PIPELINE_STAGE_TRANSFER_BIT,
+         VK_PIPELINE_STAGE_TRANSFER_BIT,
          VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
       VkSubmitInfo submitInfo{};
@@ -3325,7 +3332,7 @@ namespace gpu_vulkan
 
       //vkQueueWaitIdle(pgpucontext->graphicsQueue());
 
-      m_pgpucontext->endSingleTimeCommands(copyCmd);
+      m_pgpucontext->endSingleTimeCommands(copyCmd, 1, &submitInfo);
 
       auto rectangle = prendererSource->m_pgpucontext->rectangle();
 

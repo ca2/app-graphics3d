@@ -288,7 +288,7 @@ namespace gpu_directx12
       void on_begin_render(::gpu::frame* pframeParam) override;
       void on_end_render(::gpu::frame* pframeParam) override;
       void endFrame() override;
-      void endDraw(::user::interaction * puserinteraction, ::gpu::renderer* pgpurendererSrc) override;
+      void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
 
 
       //void _set_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
