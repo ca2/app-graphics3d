@@ -6,13 +6,7 @@
 #include "object.h"
 #include "renderer.h"
 #include "frame.h"
-
-//BEGIN_FACTORY(gpu_directx12)
-//FACTORY_ITEM(::directx12::directx12)
-//FACTORY_ITEM(::directx12::program)
-//FACTORY_ITEM(::directx12::shader)
-//FACTORY_ITEM(::directx12::buffer)
-//END_FACTORY()
+#include "direct2d_draw2d_swap_chain.h"
 
 
 __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
@@ -28,6 +22,8 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu_directx12::object, ::gpu::object >();
 
    pfactory->add_factory_item < ::gpu_directx12::device, ::gpu::device >();
+
+   pfactory->add_factory_item < ::gpu_directx12::direct2d_draw2d_swap_chain, ::gpu::swap_chain >();
 
 }
 

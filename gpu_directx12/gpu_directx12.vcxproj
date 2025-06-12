@@ -711,7 +711,7 @@
     <ClInclude Include="render_target_view.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="swap_chain.h" />
-    <ClInclude Include="swap_chain_render_target_view.h" />
+    <ClInclude Include="aaa_swap_chain_render_target_view.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="_.h" />
     <ClInclude Include="framework.h" />
@@ -755,7 +755,17 @@
     <ClCompile Include="physical_device.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="render_target_view.cpp" />
-    <ClCompile Include="swap_chain_render_target_view.cpp" />
+    <ClCompile Include="swap_chain.cpp" />
+    <ClCompile Include="aaa_swap_chain_render_target_view.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="_factory.cpp" />
     <ClCompile Include="framework.cpp">
@@ -928,6 +938,9 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
     </ProjectReference>
     <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\direct2d\direct2d.vcxproj">
       <Project>{2f21f158-1dd5-43f6-9fad-01fb77a81ec5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\directx11\directx11.vcxproj">
+      <Project>{c4b37bd9-1ddb-4d98-9740-182ed114cb3a}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\operating_system\operating_system-windows_common\draw2d_direct2d\draw2d_direct2d.vcxproj">
       <Project>{85683956-09f7-4be0-ab37-5a0165168749}</Project>

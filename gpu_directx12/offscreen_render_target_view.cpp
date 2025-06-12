@@ -21,22 +21,34 @@ namespace gpu_directx12
 
 
    //}
-
-
-
-   offscreen_render_target_view::offscreen_render_target_view(renderer* pgpurenderer, const ::int_size & size)
-      : render_target_view(pgpurenderer, size)
+   offscreen_render_target_view::offscreen_render_target_view()
    {
       clear_flag(e_flag_success);
    }
 
 
-   offscreen_render_target_view::offscreen_render_target_view(renderer* pgpurenderer, const ::int_size& size, ::pointer <render_target_view>previous)
-      : render_target_view(pgpurenderer, size, previous)
-   {
-      clear_flag(e_flag_success);
-   }
 
+   //offscreen_render_target_view::offscreen_render_target_view(renderer* pgpurenderer, const ::int_size & size)
+   //   : render_target_view(pgpurenderer, size)
+   //{
+   //   clear_flag(e_flag_success);
+   //}
+
+
+   //offscreen_render_target_view::offscreen_render_target_view(renderer* pgpurenderer, const ::int_size& size, ::pointer <render_target_view>previous)
+   //   : render_target_view(pgpurenderer, size, previous)
+   //{
+   //   clear_flag(e_flag_success);
+   //}
+
+   
+   void offscreen_render_target_view::initialize_render_target_view(renderer* pgpurenderer, const ::int_size& size, ::pointer <render_target_view>previous)
+   {
+
+      render_target_view::initialize_render_target_view(pgpurenderer, size, previous);
+
+//      clear_flag(e_flag_success);
+   }
 
    void offscreen_render_target_view::init()
    {
@@ -49,6 +61,8 @@ namespace gpu_directx12
 
 
       ::cast < device>pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+
+      ::cast < context>pcontext = m_pgpurenderer->m_pgpucontext;
 
       D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
       rtvHeapDesc.NumDescriptors = m_pgpurenderer->get_frame_count();
@@ -80,7 +94,7 @@ namespace gpu_directx12
       //texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
       //
-      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+      //::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
       //auto pdevice = pgpudevice->m_pdevice;
 
@@ -155,6 +169,8 @@ namespace gpu_directx12
                   //// 3. Create RTV
                   //m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
                   //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+
+                  ::cast < device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
                   pgpudevice->m_pdevice->CreateRenderTargetView(m_texturea[i]->m_presource, nullptr, rtvHandle);
                   rtvHandle.Offset(1, m_rtvDescriptorSize);
@@ -490,7 +506,7 @@ namespace gpu_directx12
       //m_extent.width = windowExtent.width;
       //m_extent.height = windowExtent.height;
 
-      ::cast < context > pgpucontext = m_pgpucontext;
+      ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
 
       ////// Find a suitable depth format
       //VkFormat fbDepthFormat;

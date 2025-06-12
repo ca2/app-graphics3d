@@ -5,15 +5,16 @@
 #include "windowing_win32/_.h"
 
 
+#ifndef ACME_OPERATING_SYSTEM
 #undef USUAL_OPERATING_SYSTEM_SUPPRESSIONS
 #include "acme/_operating_system.h"
+#endif
+
+
 #include "acme_windows_common/comptr.h"
 #include "acme_windows_common/hresult_exception.h"
 
-//#include <winapifamily.h>
-//#include <windows.h>
-//#include <shlwapi.h>
-//#include <wrl/client.h>
+
 #include <DXGI1_6.h>
 #include <D3D12.h>
 //#include <D3DX12.h>
@@ -22,18 +23,8 @@
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
 #include <Initguid.h>
-//#include <DXGIDebug.h>
 
 #include "_d3dx12.h"
-// Windows Desktop Thread Local Storage for Draw2d Direct2d plugin
-
-
-
-#if defined(_directx12_project)
-#define CLASS_DECL_DIRECTX12  CLASS_DECL_EXPORT
-#else
-#define CLASS_DECL_DIRECTX12  CLASS_DECL_IMPORT
-#endif
 
 
 namespace directx12
@@ -43,30 +34,16 @@ namespace directx12
    class directx12;
 
 
-#if defined(_DEBUG)
-
-
-   CLASS_DECL_GPU_DIRECTX12 void defer_dxgi_debug_initialize();
-   CLASS_DECL_GPU_DIRECTX12 void dxgi_debug_terminate();
-
-
-#endif
-
-
-   //CLASS_DECL_DIRECTX12 void defer_initialize(::particle * pparticle);
-   //CLASS_DECL_DIRECTX12 void finalize();
-
-
 } // namespace directx12
 
 
-#if defined(_DEBUG)
-
-
-CLASS_DECL_DIRECTX12 void directx12_debug();
-
-
-#endif
+//#if defined(_DEBUG)
+//
+//
+//CLASS_DECL_DIRECTX12 void directx12_debug();
+//
+//
+//#endif
 
 
 

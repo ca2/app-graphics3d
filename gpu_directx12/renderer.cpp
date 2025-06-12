@@ -7,7 +7,7 @@
 #include "texture.h"
 #include "offscreen_render_target_view.h"
 #include "physical_device.h"
-#include "swap_chain_render_target_view.h"
+#include "swap_chain.h"
 #include "initializers.h"
 #include "aura/graphics/gpu/cpu_buffer.h"
 #include "gpu_directx12/shader.h"
@@ -285,7 +285,7 @@ namespace gpu_directx12
          || eoutput == ::gpu::e_output_gpu_buffer)
       {
 
-         auto poffscreenrendertargetview = __allocate offscreen_render_target_view(this, size, m_prendertargetview);
+         auto poffscreenrendertargetview = __allocate offscreen_render_target_view;
          //#ifdef WINDOWS_DESKTOP
          //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
          //#else
@@ -297,8 +297,8 @@ namespace gpu_directx12
       }
       else if (eoutput == ::gpu::e_output_swap_chain)
       {
-
-         m_prendertargetview = __allocate swap_chain_render_target_view(this, size, m_prendertargetview);
+         m_prendertargetview = m_pgpucontext->m_pgpudevice->get_swap_chain();
+         //m_prendertargetview = __allocate swap_chain_render_target_view(this, size, m_prendertargetview);
          //m_prendererResolve.release();
 
       }
@@ -358,6 +358,8 @@ namespace gpu_directx12
       //
       if (!m_prendertargetview->has_ok_flag() && m_sizeRenderer.area() > 0)
       {
+
+         m_prendertargetview->initialize_render_target_view(this, size, m_prendertargetview);
 
          m_prendertargetview->init();
 
@@ -4144,8 +4146,10 @@ namespace gpu_directx12
 
       //}
 
+         auto pcommandqueue = pcommandbuffer->m_pcommandqueue;
+
          // Wait on the graphics queue for the copy to complete
-         pcommandbuffer->m_pcommandqueue->Wait(
+         pcommandqueue->Wait(
             pcommandbufferLoadAssets->m_pfence,
             pcommandbufferLoadAssets->m_fenceValue);
 
@@ -4608,57 +4612,15 @@ namespace gpu_directx12
          m_pgpucontext->swap_buffers();
 
       }
+      else if (m_pgpucontext->m_pgpudevice->m_edevicetarget == ::gpu::e_device_target_swap_chain)
+      {
 
+         auto pswapchain = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
+         pswapchain->endDraw(pgraphics, puserinteraction, this);
 
-      //VkImage vkimage = prenderer->m_prendertargetview->m_images[prenderer->get_frame_index()];
+      }
 
-      //::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
-
-      //auto copyCmd = m_pgpucontext->beginSingleTimeCommands();
-
-      //insertImageMemoryBarrier(
-      //   copyCmd,
-      //   vkimage,
-      //   0,
-      //   VK_ACCESS_TRANSFER_WRITE_BIT,
-      //   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      //   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      //   VK_PIPELINE_STAGE_TRANSFER_BIT,
-      //   VK_PIPELINE_STAGE_TRANSFER_BIT,
-      //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
-
-      //VkSubmitInfo submitInfo{};
-      //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-      //submitInfo.commandBufferCount = 1;
-      //submitInfo.pCommandBuffers = &copyCmd;
-      //::array<VkSemaphore> waitSemaphores;
-      //::array<VkPipelineStageFlags> waitStages;
-      //waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-      //waitSemaphores.add(prenderer->m_prendertargetview->renderFinishedSemaphores[prenderer->get_frame_index()]);
-      //submitInfo.waitSemaphoreCount = waitSemaphores.size();
-      //submitInfo.pWaitSemaphores = waitSemaphores.data();
-      //submitInfo.pWaitDstStageMask = waitStages.data();
-
-      //m_pgpucontext->endSingleTimeCommands(copyCmd);
-
-      //defer_update_render_target_view();
-
-      //on_new_frame();
-
-      //auto pframe = beginFrame();
-
-      //on_begin_render(pframe);
-
-      //_copy_image(vkimage, rectangle, false);
-
-      //on_end_render(pframe);
-
-      //endFrame();
-
-      ////vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
-
-      ////vkQueueWaitIdle(m_pgpucontext->presentQueue());
 
    }
 

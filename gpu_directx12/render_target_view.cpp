@@ -19,42 +19,73 @@
 namespace gpu_directx12
 {
 
-   
-   //render_target_view::render_target_view()
-   //{
 
 
-   //}
-
-
-   //render_target_view::render_target_view()
-   render_target_view::render_target_view(renderer* pgpurenderer, const ::int_size & size):
-       m_pgpurenderer(pgpurenderer), m_size(size)
+   render_target_view::render_target_view()
    {
-       //m_bNeedRebuild = false;
-      //m_pgpucontext = pgpurenderer->m_pgpucontext;
-      //init();
-      //m_prendertargetviewOld = nullptr;
+
+      m_bNeedRebuild = false;
+
 
    }
 
-   
-   render_target_view::render_target_view(renderer * pgpurenderer, const ::int_size & size, ::pointer<render_target_view> previous):
-      m_pgpurenderer(pgpurenderer),
-      m_size(size),
-      m_prendertargetviewOld( previous)
-   {
-       m_bNeedRebuild = false;
-      m_pgpucontext = pgpurenderer->m_pgpucontext;
-      //init();
-      // Cleans up old swap chain since it's no longer needed after resizing
-      //m_prendertargetviewOld = nullptr;
-   }
-   
-   
 
-   
-   void render_target_view::init() 
+
+      //   m_pgpurenderer(pgpurenderer),
+      //   m_size(size),
+      //   m_prendertargetviewOld( previous)
+      //{
+      //    m_bNeedRebuild = false;
+      //   m_pgpucontext = pgpurenderer->m_pgpucontext;
+      //   //init();
+      //   // Cleans up old swap chain since it's no longer needed after resizing
+      //   //m_prendertargetviewOld = nullptr;
+      //}
+
+         //render_target_view::render_target_view()
+         //{
+
+
+         //}
+
+
+         ////render_target_view::render_target_view()
+         //render_target_view::render_target_view(renderer* pgpurenderer, const ::int_size & size):
+         //    m_pgpurenderer(pgpurenderer), m_size(size)
+         //{
+         //    //m_bNeedRebuild = false;
+         //   //m_pgpucontext = pgpurenderer->m_pgpucontext;
+         //   //init();
+         //   //m_prendertargetviewOld = nullptr;
+
+         //}
+
+         //
+         //render_target_view::render_target_view(renderer * pgpurenderer, const ::int_size & size, ::pointer<render_target_view> previous):
+         //   m_pgpurenderer(pgpurenderer),
+         //   m_size(size),
+         //   m_prendertargetviewOld( previous)
+         //{
+         //    m_bNeedRebuild = false;
+         //   m_pgpucontext = pgpurenderer->m_pgpucontext;
+         //   //init();
+         //   // Cleans up old swap chain since it's no longer needed after resizing
+         //   //m_prendertargetviewOld = nullptr;
+         //}
+
+   void render_target_view::initialize_render_target_view(renderer* pgpurenderer, const ::int_size& size, ::pointer<render_target_view> previous)
+   {
+
+      m_pgpurenderer = pgpurenderer;
+      m_size = size;
+      m_prendertargetviewOld = previous;
+      m_bNeedRebuild = false;
+
+   }
+
+
+
+   void render_target_view::init()
    {
       createRenderPassImpl();
       createImageViews();
@@ -113,14 +144,14 @@ namespace gpu_directx12
 
    int render_target_view::get_image_index() const
    {
-      
-      return m_pgpurenderer->get_frame_index(); 
-   
+
+      return m_pgpurenderer->get_frame_index();
+
    }
 
 
-   
-   HRESULT render_target_view::acquireNextImage() 
+
+   HRESULT render_target_view::acquireNextImage()
    {
 
       //vkWaitForFences(
@@ -197,7 +228,7 @@ namespace gpu_directx12
    //}
 
 
-   void render_target_view::createRenderPassImpl() 
+   void render_target_view::createRenderPassImpl()
    {
 
       //SwapChainSupportDetails swapChainSupport = m_pgpucontext->getSwapChainSupport();
@@ -262,8 +293,8 @@ namespace gpu_directx12
 
    }
 
-   
-   void render_target_view::createImageViews() 
+
+   void render_target_view::createImageViews()
    {
 
       //m_imageviews.resize(m_images.size());
@@ -293,7 +324,7 @@ namespace gpu_directx12
    }
 
 
-   void render_target_view::createRenderPass() 
+   void render_target_view::createRenderPass()
    {
 
       //VkAttachmentDescription depthAttachment{};
@@ -362,7 +393,7 @@ namespace gpu_directx12
    }
 
 
-   void render_target_view::createFramebuffers() 
+   void render_target_view::createFramebuffers()
    {
 
       //m_framebuffers.resize(imageCount());
@@ -403,7 +434,7 @@ namespace gpu_directx12
 
 
       int width = m_size.cx();
-      int height = m_size.cy();   
+      int height = m_size.cy();
 
       //UINT width,
       //   UINT height,
@@ -412,20 +443,20 @@ namespace gpu_directx12
       //for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
       //{
 
-         __defer_construct_new(m_pdepthstencil);
+      __defer_construct_new(m_pdepthstencil);
 
-         m_pdepthstencil->initialize_depth_stencil(m_pgpurenderer, m_size);
+      m_pdepthstencil->initialize_depth_stencil(m_pgpurenderer, m_size);
 
-         // 4. Create DSV
-         D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-         dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-         dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-         dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+      // 4. Create DSV
+      D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+      dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+      dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+      dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
 
-         //m_handle = m_pheap->GetCPUDescriptorHandleForHeapStart();
-         ::cast < device>pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      //m_handle = m_pheap->GetCPUDescriptorHandleForHeapStart();
+      ::cast < device>pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-          pdevice->m_pdevice->CreateDepthStencilView(m_pdepthstencil->m_presource, &dsvDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+      pdevice->m_pdevice->CreateDepthStencilView(m_pdepthstencil->m_presource, &dsvDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
 
 
@@ -558,7 +589,7 @@ namespace gpu_directx12
    }
 
 
-   void render_target_view::createSyncObjects() 
+   void render_target_view::createSyncObjects()
    {
 
       //imageAvailable.resize(MAX_FRAMES_IN_FLIGHT);
@@ -590,7 +621,7 @@ namespace gpu_directx12
       //}
    }
 
-   
+
    //VkSurfaceFormatKHR render_target_view::chooseSwapSurfaceFormat(
    //   const ::array<VkSurfaceFormatKHR>& availableFormats) {
    //   for (const auto& availableFormat : availableFormats) {
@@ -653,17 +684,17 @@ namespace gpu_directx12
 
    texture* render_target_view::current_texture()
    {
-      
-      return m_texturea[m_pgpurenderer->get_frame_index()]; 
-   
+
+      return m_texturea[m_pgpurenderer->get_frame_index()];
+
    }
 
 
-   depth_stencil* render_target_view::current_depth_stencil() 
+   depth_stencil* render_target_view::current_depth_stencil()
    {
-      
+
       return m_pdepthstencil;
-   
+
    }
 
 

@@ -21,11 +21,12 @@ namespace gpu_directx12
 		//comptr<ID3D11ShaderResourceView>m_pshaderresourceview;
 		static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-		//offscreen_render_target_view();
-		offscreen_render_target_view(renderer* pgpurenderer, const ::int_size & size);
-		offscreen_render_target_view(renderer * pgpurenderer, const ::int_size& size, ::pointer <render_target_view>previous);
+		offscreen_render_target_view();
+		//offscreen_render_target_view(renderer* pgpurenderer, const ::int_size & size);
+		//offscreen_render_target_view(renderer * pgpurenderer, const ::int_size& size, ::pointer <render_target_view>previous);
 		~offscreen_render_target_view();
 
+		void initialize_render_target_view(renderer* pgpurenderer, const ::int_size& size, ::pointer <render_target_view>previous) override;
 
 		//VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
 		//VkRenderPass getRenderPass() { return m_vkrendertargetview; }

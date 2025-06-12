@@ -31,7 +31,6 @@ namespace gpu_directx12
       //comptr<ID3D11Device1>                           m_pdevice1;
       //comptr<IDXGIDevice>                             m_pdxgidevice;
       comptr<IDXGIFactory4>                           m_pdxgifactory4;
-      comptr<IDXGISwapChain3>                         m_pdxgiswapchain1;
       //comptr<ID3D11DeviceContext>                     m_pdevicecontext;
       ::pointer<::windowing::window>                  m_pimpl;
       bool                                            m_bUseWarpDevice = false;
@@ -41,16 +40,16 @@ namespace gpu_directx12
 
       D3D_FEATURE_LEVEL                               m_featurelevel;
 
-      ::comptr<ID3D11Device> m_pd3d11device;
-      ::comptr<ID3D11DeviceContext>  m_pd3d11context;
-      ::comptr<ID3D11On12Device>  m_pd3d11on12;
-      ::comptr<IDXGIDevice>  m_pdxgidevice;
+      //::comptr<ID3D11Device> m_pd3d11device;
+      //::comptr<ID3D11DeviceContext>  m_pd3d11context;
+      //::comptr<ID3D11On12Device>  m_pd3d11on12;
+      //::comptr<IDXGIDevice>  m_pdxgidevice;
       ::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
 
 
-      comptr<IDCompositionDevice> m_pdcompositiondevice;
-      comptr<IDCompositionTarget> m_pdcompositiontarget;
-      comptr<IDCompositionVisual> m_pdcompositionvisual;
+      //comptr<IDCompositionDevice> m_pdcompositiondevice;
+      //comptr<IDCompositionTarget> m_pdcompositiontarget;
+      //comptr<IDCompositionVisual> m_pdcompositionvisual;
       //directx12();
       //~directx12() override;
 
@@ -133,7 +132,7 @@ namespace gpu_directx12
       ::array<const char*>       validationLayers;
       ::array<const char*>       deviceExtensions;
       ::procedure_array          m_procedureaOnTopFrameEnd;
-      ::pointer < direct2d_draw2d_swap_chain >    m_pswapchain;
+      //::pointer < direct2d_draw2d_swap_chain >    m_pswapchain;
 
       device();
       ~device() override;
@@ -310,9 +309,9 @@ namespace gpu_directx12
       void on_top_end_frame() override;
 
 
-      ID3D12Device* draw_get_d3d11_device();
-      ID3D12Device1* draw_get_d3d11_device1();
-      IDXGIDevice* draw_get_dxgi_device();
+      //ID3D12Device* draw_get_d3d11_device();
+      //ID3D12Device1* draw_get_d3d11_device1();
+      //IDXGIDevice* draw_get_dxgi_device();
 
       int get_type_size(::gpu::enum_type etype) override;
       void set_mat4(void* p, const ::glm::mat4& mat4) override;

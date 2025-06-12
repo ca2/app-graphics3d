@@ -74,7 +74,7 @@
     <ClInclude Include="render_target_view.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="swap_chain_render_target_view.h">
+    <ClInclude Include="aaa_swap_chain_render_target_view.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="descriptors.h">
@@ -160,7 +160,7 @@
     <ClCompile Include="render_target_view.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="swap_chain_render_target_view.cpp">
+    <ClCompile Include="aaa_swap_chain_render_target_view.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="renderer.cpp">
@@ -191,6 +191,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="direct2d_draw2d_swap_chain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="swap_chain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

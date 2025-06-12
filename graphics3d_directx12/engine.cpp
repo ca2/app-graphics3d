@@ -573,7 +573,7 @@ namespace graphics3d_directx12
 
       
 
-      on_after_done_frame_step2(pgraphics);
+      //on_after_done_frame_step2(pgraphics);
 
    }
 

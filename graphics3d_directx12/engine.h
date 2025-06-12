@@ -37,12 +37,6 @@ namespace graphics3d_directx12
 		//::pointer < context >             m_pgpucontext;
 		//::pointer < ::gpu_directx12::renderer >		m_prenderer;
 
-		::comptr<ID3D11Resource> m_presourceWrappedD3D11Resource;
-
-		::comptr<IDXGISurface> m_pdxgisurface;
-
-		::comptr<ID2D1Bitmap1> m_pd2dbitmap;
-
 		engine();
 		~engine() override;
 
@@ -64,7 +58,7 @@ namespace graphics3d_directx12
 		void on_begin_frame() override;
 
 		void on_after_done_frame_step(::draw2d::graphics_pointer& pgraphics) override;
-		virtual void on_after_done_frame_step2(::draw2d::graphics_pointer& pgraphics);
+		//virtual void on_after_done_frame_step2(::draw2d::graphics_pointer& pgraphics);
 
 		void on_render_frame() override;
 

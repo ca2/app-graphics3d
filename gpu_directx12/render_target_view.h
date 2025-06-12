@@ -18,57 +18,32 @@ namespace gpu_directx12
    {
    public:
 
-      // Describe and create a render target view (RTV) descriptor heap.
-      
       ::comptr<ID3D12DescriptorHeap> m_rtvHeap;
       ::comptr<ID3D12DescriptorHeap> m_dsvHeap;
       ::pointer_array < texture >            m_texturea;
       ::pointer < depth_stencil >      m_pdepthstencil;
       UINT m_rtvDescriptorSize;
 
-     
-
-      //comptr<ID3D11RenderTargetView>      m_prendertargetview;
-      //comptr<ID3D11Texture2D> m_ptextureDepthStencil;
-      //comptr<ID3D11DepthStencilView>m_pdepthstencilview;
-      //comptr <ID3D11DepthStencilState>m_pdepthstencilstate;
-
-      //VkFormat m_formatImage;
-      //VkFormat m_formatDepth;
       ::int_size m_size;
-
-      //::array<VkFramebuffer> m_framebuffers;
-      //VkRenderPass m_vkrendertargetview;
 
       ::pointer < renderer >  m_pgpurenderer;
 
-      //::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
-      //::array < VkSemaphore> m_semaphoreaWaitToSubmit;
-      //::array<VkImage> depthImages;
-      //::array<VkDeviceMemory> depthImageMemorys;
-      //::array<VkImageView> depthImageViews;
-      //::array<VkImage> m_images;
-      //::array<VkImageView> m_imageviews;
-
-      context* m_pgpucontext;
-      //VkExtent2D windowExtent;
-
-      //VkSwapchainKHR swapChain;
       ::pointer<render_target_view> m_prendertargetviewOld;
 
       ::int_array imageAvailable;
-      //::array<VkSemaphore> imageAvailableSemaphores;
-      //::array<VkSemaphore> renderFinishedSemaphores;
-      //::array<VkFence>     inFlightFences;
-      //::array<VkFence>     imagesInFlight;
       bool                 m_bNeedRebuild;
 
       static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-      //render_target_view();
-      render_target_view(renderer* prenderer, const ::int_size & size);
-      render_target_view(renderer* prenderer, const ::int_size& size, ::pointer <render_target_view>previous);
+      render_target_view();
+      //render_target_view(renderer* prenderer, const ::int_size & size);
+      //render_target_view(renderer* prenderer, const ::int_size& size, ::pointer <render_target_view>previous);
       ~render_target_view();
+
+
+      virtual void initialize_render_target_view(renderer* prenderer, const ::int_size& size, ::pointer <render_target_view>previous);
+
+
 
       virtual void on_before_begin_render(frame* pframe);
 

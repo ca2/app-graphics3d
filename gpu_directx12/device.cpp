@@ -4,11 +4,11 @@
 #include "approach.h"
 #include "buffer.h"
 #include "device.h"
-//#include "direct2d_draw2d_connector.h"
 #include "physical_device.h"
 #include "program.h"
 #include "renderer.h"
 #include "shader.h"
+#include "swap_chain.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
@@ -43,228 +43,19 @@ namespace gpu_directx12
 
    device::device()
    {
-      //m_vksampler001 = nullptr;
-      //m_bOffscreen = true;
-      //      m_emode = e_mode_none;
-            //m_itaskGpu = 0;
-            //m_iLastBitmap1Scan = -1;
-
-            //m_gluTextureBitmap1 = 0;
-            //m_VAO = 0;
-            //m_VBO = 0;
 
       m_bMesa = false;
 
-      //m_emode = e_mode_system;
-
       m_estatus = error_not_initialized;
-
-      //m_physicaldevicefeaturesCreate = {};
-      //m_physicaldevicefeaturesEnabled = {};
-      //m_vkdevice = VK_NULL_HANDLE;
-      //m_vkcommandpool = VK_NULL_HANDLE;
-
-      //m_vkqueuePresent = nullptr;
-      //m_vkqueueGraphics = nullptr;
-
-
 
    }
 
 
    device::~device()
    {
-#if defined(_DEBUG)
 
-      ::directx12::dxgi_debug_terminate();
-
-#endif
 
    }
-
-
-
-
-   //void device::initialize(::particle * pparticle)
-   //{
-
-   //   ::e_status estatus = ::object::initialize(pparticle);
-
-   //   if (!estatus)
-   //   {
-
-   //      return estatus;
-
-   //   }
-
-   //   return estatus;
-
-   //}
-
-
-//   void device::draw()
-//   {
-//
-//      ASSERT(m_itaskGpu == ::current_itask());
-//
-//      //      if (m_VAO != 0)
-//      //      {
-//      //
-//      //         //return ::success;
-//      //         return;
-//      //
-//      //      }
-//      //      //glGenBuffers(1, &VAO);
-//      ////      float vertices[] = {f
-//      //         // positions         // colors
-//      //  //        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-//      //    //     -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-//      //      //    0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top
-//      //      //};
-//      //      float vertices[] = {
-//      //         // first triangle
-//      //          1.f,  1.f, 0.0f,  // top right
-//      //          1.f, -1.f, 0.0f,  // bottom right
-//      //         -1.f,  1.f, 0.0f,  // top left
-//      //         // second triangle
-//      //          1.f, -1.f, 0.0f,  // bottom right
-//      //         -1.f, -1.f, 0.0f,  // bottom left
-//      //         -1.f,  1.f, 0.0f   // top left
-//      //      };
-//      //
-//      //#if defined(__APPLE__)
-//      //
-//      //      glGenVertexArrays(1, &m_VAO);
-//      //      glGenBuffers(1, &m_VBO);
-//      //      // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-//      //      glBindVertexArray(m_VAO);
-//      //
-//      //      //#elif defined(__ANDROID__)
-//      //      //
-//      //      //      glGenVertexArrays(1, &m_VAO);
-//      //      //      glGenBuffers(1, &m_VBO);
-//      //      //      // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-//      //      //      glBindVertexArray(m_VAO);
-//      //
-//      //#else
-//      //
-//      ////      glGenVertexArrays(1, &m_VAO);
-//      ////      glGenBuffers(1, &m_VBO);
-//      ////      // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-//      ////      glBindVertexArray(m_VAO);
-//      ////
-//      //#endif
-//      ////
-//      ////      glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-//      ////      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-//      ////
-//      ////      // position attribute
-//      ////      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-//      ////      glEnableVertexAttribArray(0);
-//      ////      // color attribute
-//      ////      //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-//      ////      //glEnableVertexAttribArray(1);
-//      ////
-//      ////      //return ::success;
-//   }
-//
-//
-//   void device::start_drawing()
-//   {
-//
-//
-//      //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo_elements);
-////int iError16 = glGetError();
-//
-////int size = 0; 
-////glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-////int iError17 = glGetError();
-//
-////glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
-////int iError18 = glGetError();
-//
-//
-//
-//
-//      //ASSERT(m_itaskGpu == ::current_itask());
-//
-//      ////      glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-//
-//      //      // Clear the screen
-//      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//      ////glClear(GL_COLOR_BUFFER_BIT);
-//
-//      //if (m_pprogram && m_pprogram->m_pshader)
-//      //{
-//
-//      //   m_pprogram->m_pshader->use();
-//
-//      //}
-//      //// Use our shader
-//      ////glUseProgram(programID);
-//
-//      //// be sure to activate the shader
-//      ////glUseProgram(shaderProgram);
-//
-//      //// update the uniform color
-//      ////float timeValue = glfwGetTime();
-//      ////float greenValue = sin(timeValue) / 2.0f + 0.5f;
-//      ////int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-//      ////glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-//
-//      ////return ::success;
-//
-//   }
-//
-//
-//
-//   void device::global_transform()
-//   {
-//
-//
-//      //// Get a handle for our "MVP" uniform
-//      ////GLint MatrixID = glGetUniformLocation(programID, "MVP");
-//
-//      //if (m_iMatrixUniform >= 0)
-//      //{
-//
-//      //   // Compute the MVP matrix from keyboard and mouse input
-//      //   //computeMatricesFromInputs();
-//      //   ::glm::mat4 matrixProjection = (::glm::mat4 &)projection_matrix();
-//      //   ::glm::mat4 matrixView = (::glm::mat4 &)view_matrix();
-//      //   ::glm::mat4 matrixModel = glm::mat4(1.0);
-//      //   ::glm::mat4 matrixMVP = matrixProjection * matrixView * matrixModel;
-//
-//      //   // Send our transformation to the currently bound shader, 
-//      //   // in the "MVP" uniform
-//      //   //glUniformMatrix4fv(m_iMatrixUniform, 1, GL_FALSE, &matrixMVP[0][0]);
-//
-//      //}
-//
-//      ////glm::mat4 getViewMatrix() {
-//      ////   return ViewMatrix;
-//      ////}
-//      ////glm::mat4 getProjectionMatrix() {
-//      ////   return ProjectionMatrix;
-//      ////}
-//
-//
-//      ////// Initial position : on +Z
-//      ////glm::vec3 position = glm::vec3(0, 0, 5);
-//      ////// Initial horizontal angle : toward -Z
-//      ////float horizontalAngle = 3.14f;
-//      ////// Initial vertical angle : none
-//      ////float verticalAngle = 0.0f;
-//      ////// Initial Field of View
-//      ////float initialFoV = 45.0f;
-//
-//      ////float speed = 3.0f; // 3 units / second
-//      ////float mouseSpeed = 0.005f;
-//
-//
-//
-//   }
 
 
    void device::defer_shader_memory(::memory& memory, const ::file::path& pathShader)
@@ -282,436 +73,12 @@ namespace gpu_directx12
    }
 
 
-   //void device::render()
-   //{
-
-   //   ASSERT(m_itaskGpu == ::current_itask());
-
-   //   //      //#ifdef __APPLE__
-   //   //
-   //   //            //glBindVertexArrayAPPLE(m_VAO);
-   //   //
-   //   //      //#else
-   //   //
-   //   //      if (m_gluTextureBitmap1)
-   //   //      {
-   //   //
-   //   //         //glMatrixMode(GL_PROJECTION);
-   //   //         //glOrtho(0, 800, 0, 600, -1, 1);
-   //   //         // glMatrixMode(GL_MODELVIEW);
-   //   //
-   //   //         //clear and draw quad with texture (could be in display callback)
-   //   //         //glClear(GL_COLOR_BUFFER_BIT);
-   //   //         //glBindTexture(GL_TEXTURE_2D, m_gluTextureBitmap1);
-   //   //         ////glEnable(GL_TEXTURE_2D);
-   //   //         //glBegin(GL_QUADS);
-   //   //         //glTexCoord2i(0, 0); glVertex2f(-1.0, -1.0);
-   //   //         //glTexCoord2i(0, 1); glVertex2f(-1.0, 1.0);
-   //   //         //glTexCoord2i(1, 1); glVertex2f(1.0, 1.0);
-   //   //         //glTexCoord2i(1, 0); glVertex2f(1.0, -1.0);
-   //   //         //glEnd();
-   //   //         //glDisable(GL_TEXTURE_2D);
-   //   //         //glBindTexture(GL_TEXTURE_2D, 0);
-   //   //         //glFlush();
-   //   //
-   //   //         /*GLuint readFboId = 0;
-   //   //         glGenFramebuffers(1, &readFboId);
-   //   //         glBindFramebuffer(GL_READ_FRAMEBUFFER, readFboId);
-   //   //         glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-   //   //            GL_TEXTURE_2D, m_gluTextureBitmap1, 0);
-   //   //         glBlitFramebuffer(0, 0, m_sizeBitmap1.cx(), m_sizeBitmap1.cy(),
-   //   //            0, 0, m_size.cx(), m_size.cy(),
-   //   //            GL_COLOR_BUFFER_BIT, GL_LINEAR);
-   //   //         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-   //   //         glDeleteFramebuffers(1, &readFboId);*/
-   //   //      }
-   //   //      else
-   //   //      {
-   //   //
-   //   ////#ifdef __APPLE__
-   //   ////         glBindVertexArrayAPPLE(m_VAO);
-   //   ////#else
-   //   ////         glBindVertexArray(m_VAO);
-   //   ////#endif
-   //   ////
-   //   ////         glDrawArrays(GL_TRIANGLES, 0, 6);
-   //   //
-   //   //   }
-   //   //
-   //   //      //return ::success;
-
-   //}
-
-
-   //void device::set_bitmap_1(::image::image* pimage)
-   //{
-
-   //   ASSERT(m_itaskGpu == ::current_itask());
-
-   //   //      if (!m_gluTextureBitmap1)
-   //   //      {
-   //   //
-   //   ////         glGenTextures(1, &m_gluTextureBitmap1); // generate texture id for your texture (can skip this line)
-   //   ////         glEnable(GL_TEXTURE_2D);
-   //   ////         glBindTexture(GL_TEXTURE_2D, m_gluTextureBitmap1);
-   //   ////
-   //   ////         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // set alignment of data in memory (a good thing to do before glTexImage)
-   //   ////
-   //   ////#if defined(__APPLE__) || defined(__ANDROID__)
-   //   ////         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-   //   ////         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // set clamp (GL_CLAMP_TO_EDGE would be better)
-   //   ////#else
-   //   ////         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-   //   ////         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP); // set clamp (GL_CLAMP_TO_EDGE would be better)
-   //   ////#endif
-   //   ////         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-   //   ////         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // set linear filtering (so you can scale your image)
-   //   //
-   //   //      }
-   //   //
-   //   //      if (pimage->is_ok())
-   //   //      {
-   //   //
-   //   //         pimage->map();
-   //   //
-   //   //         //glBindTexture(GL_TEXTURE_2D, m_gluTextureBitmap1);
-   //   //
-   //   //         //if (m_iLastBitmap1Scan != pimage->m_iScan)
-   //   //         //{
-   //   //
-   //   //         //   m_iLastBitmap1Scan = pimage->m_iScan;
-   //   //
-   //   //         //   glPixelStorei(GL_UNPACK_ROW_LENGTH, pimage->m_iScan / 4);
-   //   //
-   //   //         //}
-   //   //
-   //   //         m_sizeBitmap1 = pimage->size();
-   //   //
-   //   //
-   //   //         m_memorySwap.set_size(m_sizeBitmap1.area() * 4);
-   //   //
-   //   //         //vertical_swap_copy_image32_swap_red_blue(
-   //   //            ((image32_t *)m_memorySwap.data())->vertical_swap_copy_swap_red_blue(
-   //   //            m_sizeBitmap1.cx(),
-   //   //            m_sizeBitmap1.cy(),
-   //   //            m_sizeBitmap1.cx() * 4,
-   //   //            pimage->get_data(),
-   //   //            pimage->m_iScan);
-   //   //
-   //   //         //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-   //   //         //   m_sizeBitmap1.cx(),
-   //   //         //   m_sizeBitmap1.cy(),
-   //   //         //   0, GL_RGBA, GL_UNSIGNED_BYTE,
-   //   //         //   m_memorySwap.data()); // upload image data to the textur
-   //   //
-   //   //
-   //   //
-   //   //
-   //   //
-   //   //      }
-
-   //}
-
-
-   //void device::swap_buffers()
-   //{
-
-
-   //}
-
-
-   //VkSampler device::_001VkSampler()
-   //{
-
-   //   if (!m_vksampler001)
-   //   {
-
-   //      VkSamplerCreateInfo samplerInfo = {
-   //.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-   //.magFilter = VK_FILTER_LINEAR,
-   //.minFilter = VK_FILTER_LINEAR,
-   //   .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-
-   //.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-   //.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-   //.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-   //.mipLodBias = 0.0f,
-   //.anisotropyEnable = VK_FALSE,
-   //.maxAnisotropy = 1.0f,
-   //.compareEnable = VK_FALSE,
-   //.compareOp = VK_COMPARE_OP_ALWAYS,
-   //.minLod = 0.0f,
-   //.maxLod = 0.0f,
-   //   .borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-   //.unnormalizedCoordinates = VK_FALSE,
-
-   //      };
-
-
-   //      if (vkCreateSampler(this->logicalDevice(), &samplerInfo, NULL, &m_vksampler001) != VK_SUCCESS) {
-   //         // Handle error
-   //      }
-
-   //   }
-
-   //   return m_vksampler001;
-
-   //}
-
-
-
-
-
-   //void device::create_offscreen_buffer(const ::int_size& size)
-   //{
-
-   //   auto pgpu = application()->get_gpu();
-
-   //   if (::is_null(pgpu))
-   //   {
-
-   //      return ::error_failed;
-
-   //   }
-
-   //   ::e_status estatus = __øconstruct(m_pbuffer);
-
-   //   if (!estatus)
-   //   {
-
-   //      return false;
-
-   //   }
-
-   //   m_pbuffer->m_pimage = create_image(size);
-
-   //   if (!::is_ok(m_pbuffer->m_pimage))
-   //   {
-
-   //      return false;
-
-   //   }
-
-   //   estatus = _create_offscreen_buffer(size);
-
-   //   if(!estatus)
-   //   {
-
-   //      return estatus;
-
-   //   }
-
-   //   return ::success_none;
-
-   //}
-
-
-   //void device::_create_offscreen_buffer(const ::int_size& size)
-   //{
-
-   //   return ::success_none;
-
-   //}
-
-
-   //void device::resize_offscreen_buffer(const ::int_size& size)
-   //{
-
-   //   return ::success_none;
-
-   //}
-
-
-
-   //void device::make_current()
-   //{
-
-   //   return ::success_none;
-
-   //}
-
-
-   //void device::destroy_offscreen_buffer()
-   //{
-
-   //   return ::success_none;
-
-   //}
-
-
-   //string device::_001GetIntroProjection()
-   //{
-
-   //   string strVersion = get_shader_version_text();
-
-
-   //   string strProjection =
-   //      "layout(location = 0) in vec3 aPos;\n"
-   //      "out vec3 ourPosition;\n"
-   //      "\n"
-   //      "void main()\n"
-   //      "{\n"
-   //      "   gl_Position = vec4(aPos, 1.0);\n"
-   //      "   ourPosition = aPos;\n"
-   //      "}\n";
-
-   //   return strProjection;
-   //}
-
-
-   //string device::_001GetIntroFragment()
-   //{
-
-   //   string strVersion = get_shader_version_text();
-
-   //   string strFragment =
-   //      "uniform vec2 resolution;\n"
-   //      "uniform float time;\n"
-   //      "uniform vec2 mouse;\n"
-   //      "uniform sampler2D backbuffer;\n"
-   //      "\n"
-   //      "void main(void) {\n"
-   //      "float base_res = min(resolution.x(), resolution.y());\n"
-   //      "vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / base_res;\n"
-   //      "\n"
-   //      //"gl_FragColor = vec4(uv, (uv.x() * uv.x()) / 2.0, ((uv.x() + (base_res - uv.y())) *(uv.x() + (base_res - uv.y()))) / 2.0);\n"
-   //      "float posx = max(0.f, uv.x());\n"
-   //      "float posy = max(0.f, uv.y());\n"
-   //      "gl_FragColor = vec4(uv, (posx * posx) / 4.0, ((posx + posy) * (posx + posy)) / 4.0);\n"
-   //      "}\n";
-
-   //   return strFragment;
-
-   //}
-
-   //   string device::load_fragment(const ::string & pszPath, enum_shader & eshader)
-   //   {
-   //
-   //      ::file::path path(pszPath);
-   //
-   //      auto & app = papp;
-   //
-   //      auto & file = app.file();
-   //
-   //      string strFragment = file.as_string(path);
-   //
-   //      string strExtension = path.extension();
-   //
-   //      string strVersion = get_shader_version_text();
-   //
-   //      if (strExtension.case_insensitive_begins("shadertoy"))
-   //      {
-   //
-   //         eshader = e_shader_shadertoy;
-   //
-   //         strFragment =
-   //            //"#" + strVersion + "\n"
-   //            //"\n"
-   //            //"precision highp float;\n"
-   //            "\n"
-   //            "uniform vec2 iResolution;\n"
-   //            "uniform float iTime;\n"
-   //            "uniform vec2 iMouse;\n"
-   //            "uniform sampler2D backbuffer;\n"
-   //            "\n"
-   //            "\n"
-   //            + strFragment;
-   //
-   //
-   //         strFragment +=
-   //            "\n\n"
-   //            "void main(void)\n"
-   //            "{\n"
-   //            "   mainImage(gl_FragColor, gl_FragCoord.xy);\n"
-   //            "}\n";
-   //
-   //      }
-   //      else
-   //      {
-   //
-   //         strFragment =
-   ////            "#" + strVersion + "\n"
-   ////            "\n"
-   //            + strFragment;
-   //
-   //         eshader = e_shader_neort;
-   //
-   //      }
-   //
-   //      return strFragment;
-   //
-   //   }
-
-
-      //string device::get_shader_version_text()
-      //{
-
-      //   return "version 330 core";
-
-      //}
-
-      //void device::translate_shader(string& strFragment)
-      //{
-
-      //   string_array stra;
-
-      //   stra.add_lines(strFragment);
-
-      //   auto pFind = stra.case_insensitive_find_first_begins("#version ");
-
-      //   if (::is_set(pFind))
-      //   {
-
-      //      stra[iFind] = get_shader_version_text();
-
-      //   }
-      //   else
-      //   {
-
-      //      stra.insert_at(0, get_shader_version_text());
-
-      //   }
-
-      //   _translate_shader(stra);
-
-      //   strFragment = stra.implode("\n");
-
-      //}
-
-
-      //void device::_translate_shader(string_array& stra)
-      //{
-
-      //}
-
-
-   //void device::set_matrix_uniform(const ::gpu::payload& uniformMatrix)
-   //{
-
-   //   //m_iMatrixUniform = uniformMatrix.m_iUniform;
-
-   //}
-
    ::pointer < ::gpu::device > allocate_system_context(::particle* pparticle)
    {
 
       return pparticle->__create_new <device>();
 
    }
-
-
-   //device::device()
-   //{
-
-
-
-   //}
-
-
-   //device::~device()
-   //{
-
-   //}
 
 
    bool device::is_mesa()
@@ -788,29 +155,12 @@ namespace gpu_directx12
    }
 
 
-   void device::initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproachParam, ::windowing::window * pwindow)
+   void device::initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproachParam, ::windowing::window* pwindow)
    {
 
+      ::gpu::device::initialize_gpu_device_for_swap_chain(pgpuapproachParam, pwindow);
 
-      //createInstance();
-      //setupDebugMessenger();
-      //createSurface();
-      //pickPhysicalDevice();
-      //createLogicalDevice();
-      //createCommandPool();
-
-      //if (bAddSwapChainSupport)
-      {
-
-         initialize_swap_chain(pwindow);
-
-      }
-      //else
-      //{
-
-      //   initialize_cpu_buffer(pwindow);
-
-      //}
+      initialize_swap_chain(pwindow);
 
       ::cast < approach > pgpuapproach = pgpuapproachParam;
 
@@ -824,8 +174,6 @@ namespace gpu_directx12
       m_pgpuapproach = pgpuapproach.m_p;
 
       auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
-
-      //assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
 
       m_pphysicaldevice = pphysicaldevice;
 
@@ -836,66 +184,14 @@ namespace gpu_directx12
 
       }
 
+      if (!m_pswapchain->m_bSwapChainInitialized)
+      {
 
+         m_pswapchain->initialize_gpu_swap_chain(this, pwindow);
 
-      //if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
-      //{
+      }
 
-      //   m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
-
-      //}
-
-      //auto physicaldevice = pphysicaldevice->m_physicaldevice;
-
-      //// Get list of supported extensions
-      //uint32_t extCount = 0;
-      //vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
-      //if (extCount > 0)
-      //{
-      //   ::array<VkExtensionProperties> extensions(extCount);
-      //   if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
-      //   {
-      //      for (auto& ext : extensions)
-      //      {
-      //         m_straSupportedExtensions.add(ext.extensionName);
-      //      }
-      //   }
-      //}
-
-      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
-      //getEnabledExtensions();
-
-      //bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
-
-      bool useSwapChain = true;
-
-      //m_itaskGpu = ::current_itask();
-//
-//      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
-//.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
-//      .scalarBlockLayout = TRUE };
-//      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
-//      m_physicaldevicefeaturesCreate.logicOp = TRUE;
-//      m_physicaldevicefeaturesCreate.independentBlend = TRUE;
-//      HRESULT result = createLogicalDevice(
-//         m_physicaldevicefeaturesCreate,
-//         pgpuapproach->m_pszaEnabledDeviceExtensions,
-//         pgpuapproach->m_pDeviceCreatepNextChain,
-//         useSwapChain);
-//
-//      if (result != VK_SUCCESS)
-//      {
-//
-//         //m_itaskGpu = {};
-//
-//         exitFatal("Could not create DirectX12 device: \n" + errorString(result) + " HRESULT=" + ::as_string(result), result);
-//
-//         throw ::exception(error_failed);
-//
-//      }
-//
-
-      //device = directx12Device->logicalDevice;
+      //      get_swap_chain();
 
    }
 
@@ -903,28 +199,9 @@ namespace gpu_directx12
    void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::int_rectangle& rectanglePlacement)
    {
 
-
-      //createInstance();
-      //setupDebugMessenger();
-      //createSurface();
-      //pickPhysicalDevice();
-      //createLogicalDevice();
-      //createCommandPool();
-
       bool bAddSwapChainSupport = false;
 
-      //if (bAddSwapChainSupport)
-      //{
-
-      //   initialize_swap_chain(pwindow);
-
-      //}
-      //else
-      {
-
-         initialize_cpu_buffer(rectanglePlacement.size());
-
-      }
+      initialize_cpu_buffer(rectanglePlacement.size());
 
       ::cast < approach > pgpuapproach = pgpuapproachParam;
 
@@ -939,825 +216,17 @@ namespace gpu_directx12
 
       auto pphysicaldevice = pgpuapproach->m_pphysicaldevice;
 
-      //assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
-
       m_pphysicaldevice = pphysicaldevice;
-
-      //if (m_papplication->m_bUseSwapChainWindow)
-      //{
-
-      //   m_pphysicaldevice->createWindowSurface(pwindow);
-
-      //}
-
-
-
-      //if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
-      //{
-
-      //   m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
-
-      //}
-
-      //auto physicaldevice = pphysicaldevice->m_physicaldevice;
-
-      //// Get list of supported extensions
-      //uint32_t extCount = 0;
-      //vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
-      //if (extCount > 0)
-      //{
-      //   ::array<VkExtensionProperties> extensions(extCount);
-      //   if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
-      //   {
-      //      for (auto& ext : extensions)
-      //      {
-      //         m_straSupportedExtensions.add(ext.extensionName);
-      //      }
-      //   }
-      //}
-
-      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
-      //getEnabledExtensions();
-
-      //bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
-
-      bool useSwapChain = bAddSwapChainSupport;
-
-      //m_itaskGpu = ::current_itask();
-//
-//      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
-//.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
-//      .scalarBlockLayout = TRUE };
-//      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
-//      m_physicaldevicefeaturesCreate.logicOp = TRUE;
-//      m_physicaldevicefeaturesCreate.independentBlend = TRUE;
-//      HRESULT result = createLogicalDevice(
-//         m_physicaldevicefeaturesCreate,
-//         pgpuapproach->m_pszaEnabledDeviceExtensions,
-//         pgpuapproach->m_pDeviceCreatepNextChain,
-//         useSwapChain);
-//
-//      if (result != VK_SUCCESS)
-//      {
-//
-//         //m_itaskGpu = {};
-//
-//         exitFatal("Could not create DirectX12 device: \n" + errorString(result) + " HRESULT=" + ::as_string(result), result);
-//
-//         throw ::exception(error_failed);
-//
-//      }
-//
-
-      //device = directx12Device->logicalDevice;
 
    }
 
 
-
-   //void device::on_create_context(const ::gpu::start_context_t& startcontext)
-   //{
-
-   //   UNREFERENCED_PARAMETER(startcontext);
-
-   //   _create_context_win32(startcontext);
-
-   //}
-
-//
-//   HRESULT device::createLogicalDevice(
-//      VkPhysicalDeviceFeatures enabledFeatures,
-//      ::array<const char*> enabledExtensions,
-//      void* pNextChain,
-//      bool useSwapChain,
-//      VkQueueFlags requestedQueueTypes)
-//   {
-//
-//      ::cast < approach > pgpuapproach = application()->get_gpu();
-//
-//      ::cast < physical_device > pphysicaldevice = pgpuapproach->m_pphysicaldevice;
-//
-//      // Desired queues need to be requested upon logical device creation
-//      // Due to differing queue family configurations of DirectX12 implementations this can be a bit tricky, especially if the application
-//      // requests different queue types
-//
-//      ::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
-//
-//      // Get queue family indices for the requested queue family types
-//      // Note that the indices may overlap depending on the implementation
-//
-//      const float defaultQueuePriority(0.0f);
-//
-//      m_queuefamilyindices = pphysicaldevice->findQueueFamilies();
-//
-//      // Graphics queue
-//      if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT
-//         && m_queuefamilyindices.graphicsFamilyHasValue)
-//      {
-//         //m_queuefamilyindices.graphics = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
-//         VkDeviceQueueCreateInfo queueInfo{};
-//         queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-//         queueInfo.queueFamilyIndex = m_queuefamilyindices.graphicsFamily;
-//         queueInfo.queueCount = 1;
-//         queueInfo.pQueuePriorities = &defaultQueuePriority;
-//         queueCreateInfos.add(queueInfo);
-//      }
-//      else
-//      {
-//         m_queuefamilyindices.graphicsFamily = 0;
-//      }
-//
-//      // Dedicated compute queue
-//      if (requestedQueueTypes & VK_QUEUE_COMPUTE_BIT
-//         && m_queuefamilyindices.computeFamilyHasValue)
-//      {
-//         //m_queuefamilyindices.compute = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
-//         if (m_queuefamilyindices.computeFamily != m_queuefamilyindices.graphicsFamily)
-//         {
-//            // If compute family index differs, we need an additional queue create info for the compute queue
-//            VkDeviceQueueCreateInfo queueInfo{};
-//            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-//            queueInfo.queueFamilyIndex = m_queuefamilyindices.computeFamily;
-//            queueInfo.queueCount = 1;
-//            queueInfo.pQueuePriorities = &defaultQueuePriority;
-//            queueCreateInfos.add(queueInfo);
-//         }
-//      }
-//      else
-//      {
-//         // Else we use the same queue
-//         m_queuefamilyindices.computeFamily = m_queuefamilyindices.graphicsFamily;
-//      }
-//
-//      // Dedicated transfer queue
-//      if (requestedQueueTypes & VK_QUEUE_TRANSFER_BIT
-//         && m_queuefamilyindices.transferFamilyHasValue)
-//      {
-//         //m_queuefamilyindices.transfer = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_TRANSFER_BIT);
-//         if ((m_queuefamilyindices.transferFamily != m_queuefamilyindices.graphicsFamily)
-//            && (m_queuefamilyindices.transferFamily != m_queuefamilyindices.computeFamily))
-//         {
-//            // If transfer family index differs, we need an additional queue create info for the transfer queue
-//            VkDeviceQueueCreateInfo queueInfo{};
-//            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-//            queueInfo.queueFamilyIndex = m_queuefamilyindices.transferFamily;
-//            queueInfo.queueCount = 1;
-//            queueInfo.pQueuePriorities = &defaultQueuePriority;
-//            queueCreateInfos.add(queueInfo);
-//         }
-//      }
-//      else
-//      {
-//         // Else we use the same queue
-//         m_queuefamilyindices.transferFamily = m_queuefamilyindices.graphicsFamily;
-//      }
-//
-//      // Create the logical device representation
-//      ::array<const char*> deviceExtensions(enabledExtensions);
-//      if (useSwapChain)
-//      {
-//
-//         // If the device will be used for presenting to a display via a swapchain we need to request the swapchain extension
-//         deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-//
-//      }
-//
-//      VkDeviceCreateInfo deviceCreateInfo = {};
-//      deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-//      deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());;
-//      deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
-//      deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
-//
-//      // If a pNext(Chain) has been passed, we need to add it to the device creation info
-//      VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
-//      if (pNextChain) {
-//         physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-//         physicalDeviceFeatures2.features = enabledFeatures;
-//         physicalDeviceFeatures2.pNext = pNextChain;
-//         deviceCreateInfo.pEnabledFeatures = nullptr;
-//         deviceCreateInfo.pNext = &physicalDeviceFeatures2;
-//      }
-//
-//#if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_METAL_EXT)) && defined(VK_KHR_portability_subset)
-//      // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
-//      if (extensionSupported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
-//      {
-//         deviceExtensions.add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-//      }
-//#endif
-//
-//      if (deviceExtensions.size() > 0)
-//      {
-//         for (const char* enabledExtension : deviceExtensions)
-//         {
-//            if (!isExtensionSupported(enabledExtension)) {
-//               information() << "Enabled device extension \"" << enabledExtension << "\" is not present at device level\n";
-//            }
-//         }
-//
-//         deviceCreateInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
-//         deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
-//      }
-//
-//      this->m_physicaldevicefeaturesEnabled = enabledFeatures;
-//
-//      auto physicaldevice = pphysicaldevice->m_physicaldevice;
-//
-//      HRESULT result = vkCreateDevice(physicaldevice, &deviceCreateInfo, nullptr, &m_vkdevice);
-//      if (result != VK_SUCCESS)
-//      {
-//         return result;
-//      }
-//
-//      // Create a default command pool for graphics command buffers
-//      m_vkcommandpool = createCommandPool(m_queuefamilyindices.graphicsFamily);
-//
-//      return result;
-//
-//   }
-
-
-   ///**
-   //* Create a command pool for allocation command buffers from
-   //*
-   //* @param queueFamilyIndex Family index of the queue to create the command pool for
-   //* @param createFlags (Optional) Command pool creation flags (Defaults to VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
-   //*
-   //* @note Command buffers allocated from the created pool can only be submitted to a queue with the same family index
-   //*
-   //* @return A handle to the created command buffer
-   //*/
-   //VkCommandPool device::createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags)
-   //{
-   //   VkCommandPoolCreateInfo cmdPoolInfo = {};
-   //   cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-   //   cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
-   //   cmdPoolInfo.flags = createFlags;
-   //   VkCommandPool cmdPool;
-   //   VK_CHECK_RESULT(vkCreateCommandPool(m_vkdevice, &cmdPoolInfo, nullptr, &cmdPool));
-   //   return cmdPool;
-   //}
-
-
-   /**
-   * Check if an extension is supported by the (physical device)
-   *
-   * @param extension Name of the extension to check
-   *
-   * @return True if the extension is supported (present in the list read at device creation time)
-   */
    bool device::isExtensionSupported(const ::scoped_string& scopedstrExtension)
    {
 
       return m_straSupportedExtensions.contains(scopedstrExtension);
 
    }
-
-
-   //void device::_create_window_buffer()
-   //{
-
-   //   if (!m_hdc || !m_hrc)
-   //   {
-
-   //      auto psystem = system();
-
-   //      auto pgpu = application()->get_gpu();
-
-   //      ::pointer < ::directx12::directx12 > pdirectx12 = pgpu;
-
-   //      if (!pdirectx12->m_atomClass)
-   //      {
-
-   //         informationf("MS GDI - RegisterClass failed");
-
-   //         informationf("last-error code: %d\n", GetLastError());
-
-   //         throw ::exception(error_failed);
-
-   //      }
-
-   //      // create WGL device, make current
-
-   //      //xxxopengl>>>>directx12 PIXELFORMATDESCRIPTOR pixformat;
-
-   //      int chosenformat;
-
-   //      HDC hdc = GetDC(m_hwnd);
-
-   //      if (!hdc)
-   //      {
-
-   //         informationf("MS GDI - GetDC failed");
-
-   //         informationf("last-error code: %d\n", GetLastError());
-
-   //         throw ::exception(error_failed);
-
-   //      }
-
-   //      ////xxxopengl>>>>directx12  zero(pixformat);
-   //      //pixformat.nSize = sizeof(pixformat);
-   //      //pixformat.nVersion = 1;
-   //      //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_DIRECTX12 | PFD_DOUBLEBUFFER;
-   //      //pixformat.iPixelType = PFD_TYPE_RGBA;
-   //      //pixformat.cColorBits = 32;
-   //      //pixformat.cRedShift = 16;
-   //      //pixformat.cGreenShift = 8;
-   //      //pixformat.cBlueShift = 0;
-   //      //pixformat.cAlphaShift = 24;
-   //      //pixformat.cAlphaBits = 8;
-   //      //pixformat.cDepthBits = 24;
-   //      //pixformat.cStencilBits = 8;
-
-   //      //xxxopengl>>>>directx12 chosenformat = ChoosePixelFormat(hdc, &pixformat);
-
-   //      //if (chosenformat == 0)
-   //      //{
-
-   //      //   informationf("MS GDI - ChoosePixelFormat failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-   //      //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
-
-   //      //if (!spfok)
-   //      //{
-
-   //      //   informationf("MS GDI - SetPixelFormat failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-   //      //HGLRC hglrc = wglCreateContext(hdc);
-
-   //      //if (!hglrc)
-   //      //{
-
-   //      //   informationf("MS WGL - wglCreateContext failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-   //      //bool bMakeCurrentOk = wglMakeCurrent(hdc, hglrc);
-
-   //      //if (!bMakeCurrentOk)
-   //      //{
-
-   //      //   informationf("MS WGL - wglMakeCurrent failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-
-   //      pdirectx12->defer_init_gpu_library();
-
-   //      //auto pszVersion = (const char *)glGetString(GL_VERSION);
-   //      ////::e_status estatus = 
-
-   //      //::string strVersion(pszVersion);
-
-   //      //if (strVersion.case_insensitive_contains("mesa"))
-   //      //{
-
-   //      //   m_bMesa = true;
-
-   //      //}
-
-   //      ////if (!estatus)
-   //      ////{
-
-   //      ////   ReleaseDC(window, hdc);
-
-   //      ////   return estatus;
-
-   //      ////}
-
-   //      m_hwnd = m_hwnd;
-   //      m_hdc = hdc;
-   //      //xxxopengl>>>>directx12 m_hrc = hglrc;
-
-   //   }
-
-   //   RECT rectClient;
-
-   //   ::GetClientRect(m_hwnd, &rectClient);
-
-   //   m_size = { rectClient.right - rectClient.left,
-   //      rectClient.bottom - rectClient.top };
-
-   //   m_itaskGpu = ::current_itask();
-
-   //   m_estatus = ::success;
-
-   //   set_ok_flag();
-   //   
-   //}
-
-
-   //void device::_create_window_context(::windowing::window* pwindowParam)
-   //{
-
-   //   m_itaskGpu = ::current_itask();
-
-   //   //   ::cast < ::windowing_win32::window > pwindow = pwindowParam;
-
-   //   //   if (!m_hdc || !m_hrc)
-   //   //   {
-
-   //   //      auto psystem = system();
-
-   //   //      auto pgpu = application()->get_gpu();
-
-   //   //      ::pointer < ::directx12::directx12 > pdirectx12 = pgpu;
-
-   //   //      //if (!pdirectx12->m_atomClass)
-   //   //      //{
-
-   //   //      //   informationf("MS GDI - RegisterClass failed");
-
-   //   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //   //      //   throw ::exception(error_failed);
-
-   //   //      //}
-
-   //   //      if (!m_hwnd)
-   //   //      {
-
-   //   //         auto hwnd = pwindow->m_hwnd;
-
-
-   //   //         m_hwnd = hwnd;
-
-
-   //   //         //// create WGL device, make current
-
-   //   //         //PIXELFORMATDESCRIPTOR pixformat;
-
-   //   //         //int chosenformat;
-
-   //   //         HDC hdc = GetDC(m_hwnd);
-
-   //   //         //if (!hdc)
-   //   //         //{
-
-   //   //         //   informationf("MS GDI - GetDC failed");
-
-   //   //         //   informationf("last-error code: %d\n", GetLastError());
-
-   //   //         //   throw ::exception(error_failed);
-
-   //   //         //}
-
-   //   //         //zero(pixformat);
-   //   //         //pixformat.nSize = sizeof(pixformat);
-   //   //         //pixformat.nVersion = 1;
-   //   //         //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_DIRECTX12 | PFD_DOUBLEBUFFER;
-   //   //         //pixformat.iPixelType = PFD_TYPE_RGBA;
-   //   //         //pixformat.cColorBits = 32;
-   //   //         //pixformat.cRedShift = 16;
-   //   //         //pixformat.cGreenShift = 8;
-   //   //         //pixformat.cBlueShift = 0;
-   //   //         //pixformat.cAlphaShift = 24;
-   //   //         //pixformat.cAlphaBits = 8;
-   //   //         //pixformat.cDepthBits = 24;
-   //   //         //pixformat.cStencilBits = 8;
-
-   //   //         //chosenformat = ChoosePixelFormat(hdc, &pixformat);
-
-   //   //         //if (chosenformat == 0)
-   //   //         //{
-
-   //   //         //   informationf("MS GDI - ChoosePixelFormat failed");
-
-   //   //         //   informationf("last-error code: %d\n", GetLastError());
-
-   //   //         //   ReleaseDC(m_hwnd, hdc);
-
-   //   //         //   throw ::exception(error_failed);
-
-   //   //         //}
-
-   //   //         //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
-
-   //   //         //if (!spfok)
-   //   //         //{
-
-   //   //         //   informationf("MS GDI - SetPixelFormat failed");
-
-   //   //         //   informationf("last-error code: %d\n", GetLastError());
-
-   //   //         //   ReleaseDC(m_hwnd, hdc);
-
-   //   //         //   throw ::exception(error_failed);
-
-   //   //         //}
-
-   //   ////         auto hglrc = wglCreateContext(hdc);
-
-   //   ////         pwindow->m_hglrcProto = hglrc;
-
-   //   //////         int context_attribs[] = {
-   //   //////WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
-   //   //////WGL_CONTEXT_MINOR_VERSION_ARB, 1,
-   //   //////0, 0
-   //   //////         };
-   //   //////         auto hglrc = wglCreateContextAttribsARB(hdc, NULL, context_attribs);
-   //   //////         if (!hglrc) {
-   //   //////            //ReleaseDC(hWnd, hDC);
-   //   //////            //DestroyWindow(hWnd);
-
-   //   //////            throw ::exception(error_failed);
-   //   //////         }
-   //   //////         //ReleaseDC(hWnd, hDC);
-
-   //   ////         if (!pwindow->m_hglrcProto)
-   //   ////         {
-
-   //   ////            informationf("MS WGL - wglCreateContext failed");
-
-   //   ////            informationf("last-error code: %d\n", GetLastError());
-
-   //   ////            ReleaseDC(m_hwnd, hdc);
-
-   //   ////            throw ::exception(error_failed);
-
-   //   ////         }
-
-   //   ////         bool bMakeCurrentOk = wglMakeCurrent(hdc, pwindow->m_hglrcProto);
-
-   //   ////         if (!bMakeCurrentOk)
-   //   ////         {
-
-   //   ////            informationf("MS WGL - wglMakeCurrent failed");
-
-   //   ////            informationf("last-error code: %d\n", GetLastError());
-
-   //   ////            ReleaseDC(m_hwnd, hdc);
-
-   //   ////            throw ::exception(error_failed);
-
-   //   ////         }
-
-
-   //   ////         pdirectx12->defer_init_gpu_library();
-
-   //   //         //auto pszVersion = (const char *)glGetString(GL_VERSION);
-   //   //         ////::e_status estatus = 
-
-   //   //         //::string strVersion(pszVersion);
-
-   //   //         //if (strVersion.case_insensitive_contains("mesa"))
-   //   //         //{
-
-   //   //         //   m_bMesa = true;
-
-   //   //         //}
-
-   //   //         ////if (!estatus)
-   //   //         ////{
-
-   //   //         ////   ReleaseDC(window, hdc);
-
-   //   //         ////   return estatus;
-
-   //   //         ////}
-
-   //   //         m_hwnd = m_hwnd;
-   //   //         m_hdc = hdc;
-   //   //         m_hrc = pwindow->m_hglrcProto;
-
-   //   //      }
-
-   //   //   }
-
-   //   //   RECT rectClient;
-
-   //   //   ::GetClientRect(m_hwnd, &rectClient);
-
-   //   //   ::int_size sizeNew = { rectClient.right - rectClient.left,
-   //   //rectClient.bottom - rectClient.top };
-   //   //   
-   //   //   if (m_size != sizeNew)
-   //   //   {
-   //   //      m_size = sizeNew;
-
-
-   //   //      //HDC pdcDIB;                      // контекст устройства в памяти
-   //   //      //HBITMAP hbmpDIB;                 // и его текущий битмапvoid *pBitsDIB(NULL);            // содержимое битмапаint cxDIB(200); int cyDIB(300);  // его размеры (например для окна 200х300)
-   //   //      //auto &BIH=pwindow->m_bitmapinfoheaderProto;            // и заголовок// …// создаем DIB section// создаем структуру BITMAPINFOHEADER, описывающую наш DIBint iSize = sizeof(BITMAPINFOHEADER);  // размер
-   //   //      //memset(&BIH, 0, sizeof(pwindow->m_bitmapinfoheaderProto));
-
-   //   //      //BIH.biSize = sizeof(pwindow->m_bitmapinfoheaderProto);        // размер структуры
-   //   //      //BIH.biWidth = m_size.cx();       // геометрия
-   //   //      //BIH.biHeight = m_size.cy();      // битмапа
-   //   //      //BIH.biPlanes = 1;          // один план
-   //   //      //BIH.biBitCount = 32;       // 24 bits per pixel
-   //   //      //BIH.biCompression = BI_RGB;// без сжатия// создаем новый DC в памяти
-   //   //      ////pdcDIB = CreateCompatibleDC(NULL);
-   //   //      ////void * pBits = nullptr;
-   //   //      //// создаем DIB-секцию
-   //   //      //pwindow->m_hbitmapProto = CreateDIBSection(
-   //   //      //  m_hdc,                  // контекст устройства
-   //   //      //  (BITMAPINFO *)&BIH,       // информация о битмапе
-   //   //      //  DIB_RGB_COLORS,          // параметры цвета
-   //   //      //  &pwindow->m_pbitsProto,               // местоположение буфера (память выделяет система)
-   //   //      //  NULL,                    // не привязываемся к отображаемым в память файлам
-   //   //      //  0);
-
-   //   //      //// выберем новый битмап (DIB section) для контекста устройства в памяти
-   //   //      //SelectObject(m_hdc, pwindow->m_hbitmapProto);
-   //   //      //pwindow->m_hdcProto = m_hdc;
-   //   //   }
-
-   //   //   m_itaskGpu = ::current_itask();
-
-   //   //   m_estatus = ::success;
-
-   //   //   set_ok_flag();
-
-   //}
-
-
-   //void device::_create_offscreen_buffer(const ::int_size& size)
-   //{
-
-   //   _create_offscreen_window(size);
-
-   //   //_create_window_buffer();
-
-   //   m_itaskGpu = ::current_itask();
-
-   //}
-
-
-   //void device::defer_create_window_context(::windowing::window* pwindow)
-   //{
-
-   //   //if (m_hrc)
-   //   //{
-
-   //   //   return;
-
-   //   //}
-
-   //   //::directx12::device::defer_create_window_context(pwindow);
-
-   //}
-
-
-   //void device::_defer_create_window_context(::windowing::window* pwindow)
-   //{
-
-   //   _create_window_context(pwindow);
-
-   //}
-
-
-   //void device::resize_offscreen_buffer(const ::int_size& sizeParam)
-   //{
-
-   //   if (m_papplication->m_bUseSwapChainWindow)
-   //   {
-
-   //      return;
-
-   //   }
-
-   //   auto size(sizeParam);
-
-   //   send([this, size]()
-   //      {
-   //         //if (!m_pcpubuffer)
-
-   //         create_offscreen_buffer(size);
-
-
-   //         ///m_pcpubuffer->m_pixmap.create(m_pcpubuffer->m_memory, size);
-
-   //   //#ifdef WINDOWS_DESKTOP
-   //   //
-   //   //      ::SetWindowPos(m_hwnd, 0, 0, 0, size.cx(), size.cy(), SWP_NOZORDER | SWP_NOMOVE | SWP_HIDEWINDOW);
-   //   //
-   //   //#else
-
-   //   //      destroy_offscreen_buffer();
-   //   //
-   //   //      if(!create_offscreen_buffer(size))
-   //   //      {
-   //   //
-   //   //         return error_failed;
-   //   //
-   //   //      }
-
-   //   //#endif
-
-   //         make_current();
-
-   //         //glViewport(0, 0, size.cx(), size.cy());
-   //         //glMatrixMode(GL_PROJECTION);
-   //         //glLoadIdentity();
-   //         //glOrtho(0, size.cx(), 0, size.cy(), -10, 10);
-   //         //glMatrixMode(GL_MODELVIEW);
-   //         //glutPostRedisplay();
-
-   //         //return ::success;
-   //      });
-
-
-   //}
-
-
-   //void device::make_current()
-   //{
-
-   //   ASSERT(m_itaskGpu == ::current_itask());
-
-   //   ::e_status estatus = ::success;
-
-   //   //bool bMakeCurrentOk = wglMakeCurrent(m_hdc, m_hrc);
-
-   //   //if (!bMakeCurrentOk)
-   //   //{
-
-   //   //   informationf("MS WGL - wglMakeCurrent failed");
-
-   //   //   informationf("last-error code: %d\n", GetLastError());
-
-   //   //   throw ::exception(error_failed);
-
-   //   //}
-
-   //   //return estatus;
-
-   //}
-
-
-   //void device::destroy_offscreen_buffer()
-   //{
-
-   //   //ASSERT(m_itaskGpu == ::current_itask());
-
-   //   //::e_status estatus = ::success;
-
-   //   //if (m_hrc == NULL && m_hdc == NULL && m_hwnd == NULL)
-   //   //{
-
-   //   //   return;
-
-   //   //}
-
-   //   ////wglMakeCurrent(nullptr, nullptr);
-   //   ////wglDeleteContext(m_hrc);
-   //   //::ReleaseDC(m_hwnd, m_hdc);
-   //   //::DestroyWindow(m_hwnd);
-   //   //m_size.set(0, 0);
-   //   //m_hrc = NULL;
-   //   //m_hwnd = NULL;
-   //   //m_hdc = NULL;
-
-   //   ////return estatus;
-
-   //}
-
-   //void device::render()
-   //{
-
-   //   ::gpu_directx12::device::render();
-
-
-
-   //}
-
-
-   //void device::swap_buffers()
-   //{
-
-   //   //SwapBuffers(m_hdc);
-
-   //}
 
 
    string device::get_shader_version_text()
@@ -2579,71 +1048,49 @@ namespace gpu_directx12
 
       auto r = pwindow->get_window_rectangle();
 
-      //// Swap chain description
-      //DXGI_SWAP_CHAIN_DESC dxgiswapchaindesc = {};
-      //dxgiswapchaindesc.BufferDesc.Width = r.width();
-      //dxgiswapchaindesc.BufferDesc.Height = r.height();
-      //dxgiswapchaindesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-      //dxgiswapchaindesc.BufferCount = 2;
-      //dxgiswapchaindesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-      //dxgiswapchaindesc.OutputWindow = pwin32window->m_hwnd;
-      //dxgiswapchaindesc.SampleDesc.Count = 1;
-      //dxgiswapchaindesc.Windowed = TRUE;
-      //dxgiswapchaindesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-      //dxgiswapchaindesc.Flags = 0;
-
-      //comptr<IDXGISwapChain> swapchain;
-      //comptr<ID3D11Device> device;
-
-      //comptr<ID3D11DeviceContext> context;
-     
-      //HRESULT hr = D3D11CreateDeviceAndSwapChain(
-      //   nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-      //   D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-      //   nullptr, 0,
-      //   D3D11_SDK_VERSION, 
-      //   &dxgiswapchaindesc,
-      //   &swapchain,
-      //   &device,
-      //   &m_featurelevel,
-      //   &context
-      //);
-
-
       UINT dxgiFactoryFlags = 0;
 
 #if defined(_DEBUG)
-      // Enable the debug layer (requires the Graphics Tools "optional feature").
-      // NOTE: Enabling the debug layer after device creation will invalidate the active device.
+
       {
+
          ::comptr<ID3D12Debug> debugController;
+
          if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(debugController))))
          {
+
             debugController->EnableDebugLayer();
 
-            // Enable additional debug layers.
             dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+
          }
+
       }
+
 #endif
 
-      ///ComPtr<IDXGIFactory4> factory;
       ::defer_throw_hresult(CreateDXGIFactory2(dxgiFactoryFlags, __interface_of(m_pdxgifactory4)));
 
       if (m_bUseWarpDevice)
       {
+
          ::comptr<IDXGIAdapter> warpAdapter;
-         ::defer_throw_hresult(m_pdxgifactory4->EnumWarpAdapter(__interface_of(warpAdapter)));
+
+         ::defer_throw_hresult(
+            m_pdxgifactory4->EnumWarpAdapter(__interface_of(warpAdapter)));
 
          ::defer_throw_hresult(D3D12CreateDevice(
             warpAdapter,
             D3D_FEATURE_LEVEL_11_0,
             __interface_of(m_pdevice)
          ));
+
       }
       else
       {
+
          ::comptr < IDXGIAdapter1> hardwareAdapter;
+
          GetHardwareAdapter(m_pdxgifactory4, &hardwareAdapter);
 
          ::defer_throw_hresult(D3D12CreateDevice(
@@ -2651,49 +1098,8 @@ namespace gpu_directx12
             D3D_FEATURE_LEVEL_11_0,
             __interface_of(m_pdevice)
          ));
+
       }
-      // Create D3D11On12 device
-
-            // 2. Create command queue
-      D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-      queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-      m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
-
-
-      HRESULT hrD3D11On12 = D3D11On12CreateDevice(
-         m_pdevice,
-         D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-         nullptr, 0,
-         (IUnknown *const*) m_pcommandqueue.pp(),
-         1,
-         0,
-         &m_pd3d11device,
-         &m_pd3d11context,
-         nullptr
-      );
-
-      ::defer_throw_hresult(hrD3D11On12);
-
-      // Get IDXGIDevice from d3d11Device
-      //ComPtr<IDXGIDevice> dxgiDevice;
-      m_pd3d11device.as(m_pdxgidevice); // ✅ This works
-
-      //::defer_throw_hresult(D3D11CreateDevice(nullptr,    // Adapter
-      //   D3D_DRIVER_TYPE_HARDWARE,
-      //   nullptr,    // Module
-      //   D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-      //   nullptr, 0, // Highest available feature level
-      //   D3D11_SDK_VERSION,
-      //   &m_pdevice,
-      //   nullptr,    // Actual feature level
-      //   nullptr));  // Device context
-      //::defer_throw_hresult(m_pdevice.as(m_pdevice1));
-      //::defer_throw_hresult(m_pdevice.as(m_pdxgidevice));
-
-      //::defer_throw_hresult(CreateDXGIFactory2(
-      //   DXGI_CREATE_FACTORY_DEBUG,
-      //   __uuidof(m_pdxgifactory2),
-      //   reinterpret_cast<void**>(&m_pdxgifactory2)));
 
       DXGI_SWAP_CHAIN_DESC1 dxgiswapchaindesc1 = {};
       dxgiswapchaindesc1.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -2702,42 +1108,37 @@ namespace gpu_directx12
       dxgiswapchaindesc1.BufferCount = 2;
       dxgiswapchaindesc1.SampleDesc.Count = 1;
       dxgiswapchaindesc1.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
+
       RECT rect = {};
+
       GetWindowRect(pwin32window->m_hwnd, &rect);
+
       dxgiswapchaindesc1.Width = rect.right - rect.left;
       dxgiswapchaindesc1.Height = rect.bottom - rect.top;
+
+      D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+      queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+      m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
+
       ::comptr < IDXGISwapChain1 > swapchain1;
-      HRESULT hrCreateSwapChainForComposition = m_pdxgifactory4->CreateSwapChainForComposition(
-         m_pcommandqueue,
-         &dxgiswapchaindesc1,
-         nullptr, // Don’t restrict
-         &swapchain1);
-         ::defer_throw_hresult(hrCreateSwapChainForComposition);
 
-      ::defer_throw_hresult(swapchain1.as(m_pdxgiswapchain1));
-      //assert(SUCCEEDED(hr));
-      //::defer_throw_hresult(hr);
+      HRESULT hrCreateSwapChainForComposition =
+         m_pdxgifactory4->CreateSwapChainForComposition(
+            m_pcommandqueue,
+            &dxgiswapchaindesc1,
+            nullptr, // Don’t restrict
+            &swapchain1);
 
-      //::defer_throw_hresult(swapchain.as(m_pdxgiswapchain));
+      ::defer_throw_hresult(hrCreateSwapChainForComposition);
 
-      // Get the Direct3D 11.1 API device and context interfaces.
-      //::defer_throw_hresult(device.as(m_pdevice));
+      ::cast < ::gpu_directx12::swap_chain > pswapchain = get_swap_chain();
 
-      //m_pdevice->GetImmediateContext(&m_pdevicecontext);
+      HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain3);
 
-      //::defer_throw_hresult(context.as(m_pdevicecontext));
-
-
-      // Get the underlying DXGI device of the Direct3D device.
-      
-
-#if defined(_DEBUG)
-
-      ::directx12::defer_dxgi_debug_initialize();
-
-#endif
+      ::defer_throw_hresult(hrQueryDxgiSwapChain3);
 
       ::comptr<ID3D12DescriptorHeap> rtvHeap;
+
       UINT rtvDescriptorSize = 0;
 
       int iFrameCount = 2;
@@ -2755,50 +1156,23 @@ namespace gpu_directx12
       rtvDescriptorSize = m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
       m_resourceaBackBufferTexture.set_size(iFrameCount);
 
-      for(int i = 0; i < iFrameCount; i++)
+      for (int i = 0; i < iFrameCount; i++)
       {
+
          auto& presource = m_resourceaBackBufferTexture[i];
-      HRESULT hrGetBuffer = m_pdxgiswapchain1->GetBuffer(i, __interface_of(presource));
 
-      ::defer_throw_hresult(hrGetBuffer);
-      // 2. Create the render target view (RTV)
-      m_handleaBackBufferRenderTargetView.element_at_grow(i) 
-         = rtvHeap->GetCPUDescriptorHandleForHeapStart(); // RTV descriptor heap assumed created
-      m_pdevice->CreateRenderTargetView(presource, nullptr, m_handleaBackBufferRenderTargetView[i]);
-      //m_prendertargetviewBackBuffer = rtvHandle;
+         HRESULT hrGetBuffer = pswapchain->m_pdxgiswapchain3->GetBuffer(i, __interface_of(presource));
 
+         ::defer_throw_hresult(hrGetBuffer);
+         
+         m_handleaBackBufferRenderTargetView.element_at_grow(i)
+            = rtvHeap->GetCPUDescriptorHandleForHeapStart(); // RTV descriptor heap assumed created
 
-      //{
-      //   ::comptr<ID3D12Resource> backBuffer;
-      //   m_pdxgiswapchain1->GetBuffer(i, IID_PPV_ARGS(&backBuffer));
+         m_pdevice->CreateRenderTargetView(presource, nullptr, m_handleaBackBufferRenderTargetView[i]);
 
-      //   m_pdevice->CreateRenderTargetView(backBuffer.Get(), nullptr, rtvHandle);
-
-      //   // Store backBuffer and handle as needed...
-
-      //   // Advance handle for next RTV
-      //   rtvHandle.ptr += rtvDescriptorSize;
       }
 
-
-      ::defer_throw_hresult(DCompositionCreateDevice(
-         m_pdxgidevice,
-         __uuidof(m_pdcompositiondevice),
-         (void **) & m_pdcompositiondevice));
-
-
-      ::defer_throw_hresult(m_pdcompositiondevice->CreateTargetForHwnd(pwin32window->m_hwnd,
-         true, // Top most
-         &m_pdcompositiontarget));
-
-      ::defer_throw_hresult(m_pdcompositiondevice->CreateVisual(&m_pdcompositionvisual));
-      ::defer_throw_hresult(m_pdcompositionvisual->SetContent(m_pdxgiswapchain1));
-      ::defer_throw_hresult(m_pdcompositiontarget->SetRoot(m_pdcompositionvisual));
-      ::defer_throw_hresult(m_pdcompositiondevice->Commit());
-
    }
-
-
 
 
    void device::list_dred_breadcrumbs()
@@ -2876,6 +1250,7 @@ namespace gpu_directx12
 
    }
 
+
    void device::get_debug_interface(UINT& dxgiFactoryFlags)
    {
 
@@ -2891,7 +1266,7 @@ namespace gpu_directx12
    //::comptr<ID3D12Debug> debugController;
       if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(m_pdebug))))
       {
-         
+
          m_pdebug->EnableDebugLayer();
 
          // Enable additional debug layers.
@@ -2922,54 +1297,54 @@ namespace gpu_directx12
 
 
 
-   void device::initialize_cpu_buffer(const ::int_size & size)
+   void device::initialize_cpu_buffer(const ::int_size& size)
    {
 
-//      // This flag adds support for surfaces with a different color channel ordering
-//      // than the API default. It is required for compatibility with Direct2D.
-//      unsigned int creationFlags = D3D12_CREATE_DEVICE_BGRA_SUPPORT;
-//
-//#if defined(__DEBUG)
-//
-//      // If the project is in a debug build, enable debugging via SDK Layers with this flag.
-//      creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
-//
-//#endif
-//
-//      // This array defines the set of DirectX12 hardware feature levels this app will support.
-//      // Note the ordering should be preserved.
-//      // Don't forget to declare your application's minimum required feature level in its
-//      // description.  All applications are assumed to support 9.1 unless otherwise stated.
-//      D3D_FEATURE_LEVEL featureLevels[] =
-//      {
-//
-//         D3D_FEATURE_LEVEL_11_1,
-//         D3D_FEATURE_LEVEL_11_0,
-//         D3D_FEATURE_LEVEL_10_1,
-//         D3D_FEATURE_LEVEL_10_0,
-//         D3D_FEATURE_LEVEL_9_3,
-//         D3D_FEATURE_LEVEL_9_2,
-//         D3D_FEATURE_LEVEL_9_1
-//
-//      };
-//
-//      // Create the Direct3D 11 API device object and a corresponding context.
-//      comptr<ID3D11Device> pdevice;
-//
-//      comptr<ID3D11DeviceContext> pdevicecontext;
-//
-//      HRESULT hr = D3D11CreateDevice(
-//         nullptr,                    // Specify nullptr to use the default adapter.
-//         D3D_DRIVER_TYPE_HARDWARE,
-//         0,
-//         creationFlags,              // Set debug and Direct2D compatibility flags.
-//         featureLevels,              // List of feature levels this app can support.
-//         ARRAYSIZE(featureLevels),
-//         D3D11_SDK_VERSION,          // Always set this to D3D11_SDK_VERSION for Metro style apps.
-//         &pdevice,                    // Returns the Direct3D device created.
-//         &m_featurelevel,            // Returns feature level of device created.
-//         &pdevicecontext                    // Returns the device immediate context.
-//      );
+      //      // This flag adds support for surfaces with a different color channel ordering
+      //      // than the API default. It is required for compatibility with Direct2D.
+      //      unsigned int creationFlags = D3D12_CREATE_DEVICE_BGRA_SUPPORT;
+      //
+      //#if defined(__DEBUG)
+      //
+      //      // If the project is in a debug build, enable debugging via SDK Layers with this flag.
+      //      creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+      //
+      //#endif
+      //
+      //      // This array defines the set of DirectX12 hardware feature levels this app will support.
+      //      // Note the ordering should be preserved.
+      //      // Don't forget to declare your application's minimum required feature level in its
+      //      // description.  All applications are assumed to support 9.1 unless otherwise stated.
+      //      D3D_FEATURE_LEVEL featureLevels[] =
+      //      {
+      //
+      //         D3D_FEATURE_LEVEL_11_1,
+      //         D3D_FEATURE_LEVEL_11_0,
+      //         D3D_FEATURE_LEVEL_10_1,
+      //         D3D_FEATURE_LEVEL_10_0,
+      //         D3D_FEATURE_LEVEL_9_3,
+      //         D3D_FEATURE_LEVEL_9_2,
+      //         D3D_FEATURE_LEVEL_9_1
+      //
+      //      };
+      //
+      //      // Create the Direct3D 11 API device object and a corresponding context.
+      //      comptr<ID3D11Device> pdevice;
+      //
+      //      comptr<ID3D11DeviceContext> pdevicecontext;
+      //
+      //      HRESULT hr = D3D11CreateDevice(
+      //         nullptr,                    // Specify nullptr to use the default adapter.
+      //         D3D_DRIVER_TYPE_HARDWARE,
+      //         0,
+      //         creationFlags,              // Set debug and Direct2D compatibility flags.
+      //         featureLevels,              // List of feature levels this app can support.
+      //         ARRAYSIZE(featureLevels),
+      //         D3D11_SDK_VERSION,          // Always set this to D3D11_SDK_VERSION for Metro style apps.
+      //         &pdevice,                    // Returns the Direct3D device created.
+      //         &m_featurelevel,            // Returns feature level of device created.
+      //         &pdevicecontext                    // Returns the device immediate context.
+      //      );
 
 
 
@@ -3017,10 +1392,12 @@ namespace gpu_directx12
             __interface_of(m_pdevice)
          ));
       }
+
       ::comptr<ID3D12InfoQueue> infoQueue;
+
       m_pdevice.as(infoQueue);
 
-      if(infoQueue)
+      if (infoQueue)
       {
          infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
          infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
@@ -3031,85 +1408,9 @@ namespace gpu_directx12
       queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
       m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
 
-      ///::defer_throw_hresult(hr);
-
-      // Get the Direct3D 11.1 API device and context interfaces.
-      //::defer_throw_hresult(pdevice.as(m_pdevice));
-
-      //::defer_throw_hresult(m_pdevice.as(m_pdevice1));
-
-///      ::defer_throw_hresult(pdevicecontext.as(m_pdevicecontext));
-
-
-      // Get the underlying DXGI device of the Direct3D device.
-      //HRESULT hresultAsDxgi = m_pdevice.as(m_pdxgidevice);
-      //::defer_throw_hresult(hresultAsDxgi);
-
-#if defined(_DEBUG)
-
-      ::directx12::defer_dxgi_debug_initialize();
-
-#endif
-
-      //return ::success;
 
    }
 
-
-   //ID3D11Device* device::draw_get_d3d11_device()
-   //{
-
-   //   return m_pdevice;
-
-   //}
-
-
-   //ID3D11Device1* device::draw_get_d3d11_device1()
-   //{
-
-   //   return m_pdevice1;
-
-   //}
-
-
-
-   IDXGIDevice* device::draw_get_dxgi_device()
-   {
-
-      return m_pdxgidevice;
-
-   }
-
-
-   //typedef HRESULT WINAPI FN_DXGIGetDebugInterface(REFIID riid, void** ppDebug);
-
-
-   //typedef FN_DXGIGetDebugInterface* PFN_DXGIGetDebugInterface;
-
-
-   //CLASS_DECL_DIRECTX12 void defer_initialize(::particle * pparticle)
-   //{
-
-   //   //if (::is_set(directx12::s_pdirectx12))
-   //   //{
-
-   //   //   return;
-
-   //   //}
-
-   //   directx12::s_pdirectx12 = ___new class directx12;
-
-   //   directx12::s_pdirectx12->initialize(pparticle);
-
-   //}
-
-
-   //CLASS_DECL_DIRECTX12 void terminate()
-   //{
-
-   //   ::acme::del(directx12::s_pdirectx12);
-
-   //}
 
    int device::get_type_size(::gpu::enum_type etype)
    {
