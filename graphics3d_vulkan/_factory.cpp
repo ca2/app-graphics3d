@@ -6,7 +6,7 @@
 #include "model.h"
 //#include "shader.h"
 #include "aura/platform/application.h"
-#include "aura/graphics/graphics3d/scene_object.h"
+#include "bred/graphics3d/scene_object.h"
 //#include "networking.h"
 //#include "apex/networking/http/message.h"
 //#include "sockets/basic/socket_handler.h"

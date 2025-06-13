@@ -657,13 +657,17 @@ namespace gpu_vulkan
 
 				::cast < renderer > prendererThis = m_pgpucontextSwapChain->m_pgpurenderer;
 
-				ASSERT(prendererThis->m_pvkcrenderpass == this);
+				::cast < render_pass > pgpurenderpass = prendererThis->m_pgpurendertarget;
+
+				ASSERT(pgpurenderpass == this);
 
 			});
 
 		::cast < renderer > prendererSrc = pgpurendererSrc;
 
-		VkImage vkimage = prendererSrc->m_pvkcrenderpass->m_images[prendererSrc->get_frame_index()];
+		::cast < render_pass > pgpurenderpass = prendererSrc->m_pgpurendertarget;
+
+		VkImage vkimage = pgpurenderpass->m_images[prendererSrc->get_frame_index()];
 
 		::int_rectangle rectangle = prendererSrc->m_pgpucontext->rectangle();
 

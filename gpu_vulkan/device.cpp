@@ -11,7 +11,7 @@
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
-#include "aura/graphics/gpu/types.h"
+#include "bred/gpu/types.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 #include "glm/mat4x4.hpp"
 #include "initializers.h"

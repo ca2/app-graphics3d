@@ -4,21 +4,10 @@
 #include "render_target_view.h"
 #include "renderer.h"
 #include "depth_stencil.h"
-//// std
-//#include <array>
-//#include <cstdlib>
-//#include <cstring>
-//#include <iostream>
-//#include <limits>
-//#include <set>
-//#include <stdexcept>
-//#undef min
-//#undef max
 
 
 namespace gpu_directx12
 {
-
 
 
    render_target_view::render_target_view()
@@ -77,7 +66,6 @@ namespace gpu_directx12
    {
 
       m_pgpurenderer = pgpurenderer;
-      m_size = size;
       m_prendertargetviewOld = previous;
       m_bNeedRebuild = false;
 
@@ -432,9 +420,15 @@ namespace gpu_directx12
    void render_target_view::createDepthResources()
    {
 
+      if (m_pgpurenderer->m_bDisableDepthStencil)
+      {
 
-      int width = m_size.cx();
-      int height = m_size.cy();
+         return;
+
+      }
+
+      int width = m_pgpurenderer->m_pgpucontext->m_rectangle.width();
+      int height = m_pgpurenderer->m_pgpucontext->m_rectangle.height();
 
       //UINT width,
       //   UINT height,
@@ -445,7 +439,7 @@ namespace gpu_directx12
 
       __defer_construct_new(m_pdepthstencil);
 
-      m_pdepthstencil->initialize_depth_stencil(m_pgpurenderer, m_size);
+      m_pdepthstencil->initialize_depth_stencil(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
 
       // 4. Create DSV
       D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
@@ -682,10 +676,15 @@ namespace gpu_directx12
 
    //}
 
-   texture* render_target_view::current_texture()
+
+   ::gpu::texture* render_target_view::current_texture()
    {
 
-      return m_texturea[m_pgpurenderer->get_frame_index()];
+      auto iFrameIndex = m_pgpurenderer->get_frame_index();
+
+      auto size = m_texturea.size();
+
+      return m_texturea[iFrameIndex];
 
    }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "aura/graphics/gpu/context.h"
+#include "bred/gpu/context.h"
 #include "acme/prototype/prototype/memory.h"
 #include "gpu_directx12/device.h"
 
@@ -55,6 +55,26 @@ namespace gpu_directx12
          /** @brief Physical device representation */
       //VkPhysicalDevice m_physicaldevice;
       ::pointer < device >                m_pgpudevice;
+
+
+      class snapshot :
+         virtual public ::particle {
+      public:
+
+         ::int_rectangle m_rectangleTarget;
+         ::comptr < ID3D12Resource > m_presource;
+
+         snapshot(ID3D12Resource* presource, const ::int_rectangle& rectangleTarget) :
+            m_presource(presource),
+            m_rectangleTarget(rectangleTarget)
+         {
+
+         }
+      };
+
+      //::array<::comptr<ID3D12Resource>>   m_resourceaSnapshot;
+      ::pointer_array < snapshot >     m_snapshota;
+
 //      /** @brief Logical device representation (application's view of the device) */
 //      VkDevice m_vkdevice;
 //      ///** @brief Properties of the physical device including limits that the application can check against */
@@ -278,6 +298,12 @@ namespace gpu_directx12
 
       //ID3D11DeviceContext* draw_get_d3d11_device_context();
       //ID3D11DeviceContext1* draw_get_d3d11_device_context1();
+
+      bool create_offscreen_graphics_for_swap_chain_blitting(::draw2d_gpu::graphics* pgraphics, const ::int_size& size = {}) override;
+
+      ::gpu::enum_output eoutput_for_begin_draw() override;
+
+
 
    };
 

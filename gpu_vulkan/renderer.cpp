@@ -8,7 +8,7 @@
 #include "physical_device.h"
 #include "swap_chain.h"
 #include "initializers.h"
-#include "aura/graphics/gpu/cpu_buffer.h"
+#include "bred/gpu/cpu_buffer.h"
 #include "app-graphics3d/gpu_vulkan/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
@@ -74,14 +74,14 @@ namespace gpu_vulkan
    //int renderer::width()
    //{
 
-   //   return m_pvkcrenderpass->width();
+   //   return pgpurenderpass->width();
 
    //}
 
    //int renderer::height()
    //{
 
-   //   return m_pvkcrenderpass->height();
+   //   return pgpurenderpass->height();
 
    //}
 
@@ -231,15 +231,15 @@ namespace gpu_vulkan
 #else
          poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
 #endif
-         m_pvkcrenderpass = poffscreenrenderpass;
+         m_pgpurendertarget = poffscreenrenderpass;
          //m_prendererResolve.release();
 
       }
       else if (eoutput == ::gpu::e_output_swap_chain)
       {
 
-         m_pvkcrenderpass = m_pgpucontext->m_pgpudevice->get_swap_chain();
-         //m_pvkcrenderpass = __allocate swap_chain_render_pass(this, m_extentRenderer, m_pvkcrenderpass);
+         m_pgpurendertarget = m_pgpucontext->m_pgpudevice->get_swap_chain();
+         //pgpurenderpass = __allocate swap_chain_render_pass(this, m_extentRenderer, pgpurenderpass);
          //m_prendererResolve.release();
 
       }
@@ -252,7 +252,7 @@ namespace gpu_vulkan
 #else
          poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
 #endif
-         m_pvkcrenderpass = poffscreenrenderpass;
+         m_pgpurendertarget = poffscreenrenderpass;
          //m_prendererResolve;
 
       }
@@ -262,7 +262,7 @@ namespace gpu_vulkan
          auto paccumulationrenderpass = __allocate accumulation_render_pass();
          paccumulationrenderpass->m_formatImage = VK_FORMAT_R32G32B32A32_SFLOAT;
          paccumulationrenderpass->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
-         m_pvkcrenderpass = paccumulationrenderpass;
+         m_pgpurendertarget = paccumulationrenderpass;
 
          //__construct_new(m_prendererResolve);
 
@@ -270,13 +270,13 @@ namespace gpu_vulkan
 
          //m_prendererResolve->set_placement(m_pgpucontext->rectangle);
          //
-         //            auto poffscreenrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpassResolve);
+         //            auto poffscreenrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, pgpurenderpassResolve);
          //#ifdef WINDOWS_DESKTOP
          //            poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
          //#else
          //            poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
          //#endif
-         //            m_pvkcrenderpassResolve = poffscreenrenderpass;
+         //            pgpurenderpassResolve = poffscreenrenderpass;
       }
       else if (eoutput == ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers)
       {
@@ -287,7 +287,7 @@ namespace gpu_vulkan
 #else
          poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
 #endif
-         m_pvkcrenderpass = poffscreenrenderpass;
+         m_pgpurendertarget = poffscreenrenderpass;
 
       }
       else
@@ -297,19 +297,21 @@ namespace gpu_vulkan
 
       }
 
-      if (m_pvkcrenderpass->m_images.is_empty())
+      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+
+      if (pgpurenderpass->m_images.is_empty())
       {
 
-         m_pvkcrenderpass->initialize_render_pass(this, m_extentRenderer, m_pvkcrenderpass);
+         pgpurenderpass->initialize_render_pass(this, m_extentRenderer, pgpurenderpass.m_p);
 
-         m_pvkcrenderpass->init();
+         pgpurenderpass->init();
 
       }
 
       //if (m_prendererResolve)
       //{
 
-      //	if (m_prendererResolve->m_pvkcrenderpass->m_images.is_empty())
+      //	if (m_prendererResolve->pgpurenderpass->m_images.is_empty())
       //	{
 
       //		m_prendererResolve->defer_update_render_pass();
@@ -372,13 +374,15 @@ namespace gpu_vulkan
       //if (m_bOffScreen)
       {
 
-         auto result = m_pvkcrenderpass->acquireNextImage();
+         ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+
+         auto result = pgpurenderpass->acquireNextImage();
 
          if (result == VK_ERROR_OUT_OF_DATE_KHR
-            || m_pvkcrenderpass->m_bNeedRebuild)
+            || pgpurenderpass->m_bNeedRebuild)
          {
             vkDeviceWaitIdle(m_pgpucontext->logicalDevice());
-            m_pvkcrenderpass->init();
+            pgpurenderpass->init();
             //set_placement(size);
             //throw ::exception(todo, "resize?!?!");
             //return nullptr;
@@ -656,7 +660,7 @@ namespace gpu_vulkan
 
       VK_CHECK_RESULT(vkEndCommandBuffer(copyCmd));
 
-      ::cast < offscreen_render_pass > ppass = m_prenderer->m_pvkcrenderpass;
+      ::cast < offscreen_render_pass > ppass = m_prenderer->m_pgpurendertarget;
 
       ppass->submitSamplingWork(copyCmd);
 
@@ -752,14 +756,16 @@ namespace gpu_vulkan
   //      if (callback)
       {
 
-         m_pcpubuffersampler->update(m_pvkcrenderpass->getExtent());
+         ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+
+         m_pcpubuffersampler->update(pgpurenderpass->getExtent());
          /*
             Copy framebuffer image to host visible image
          */
          /*const char* imagedata;*/
          {
 
-            m_pcpubuffersampler->sample(m_pvkcrenderpass->m_images[get_frame_index()]);
+            m_pcpubuffersampler->sample(pgpurenderpass->m_images[get_frame_index()]);
 
             //// Create the linear tiled destination image to copy to and to read the memory from
 
@@ -789,14 +795,14 @@ namespace gpu_vulkan
             //imageCopyRegion.srcSubresource.layerCount = 1;
             //imageCopyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             //imageCopyRegion.dstSubresource.layerCount = 1;
-            //imageCopyRegion.extent.width = m_pvkcrenderpass->width();
-            //imageCopyRegion.extent.height = m_pvkcrenderpass->height();
+            //imageCopyRegion.extent.width = pgpurenderpass->width();
+            //imageCopyRegion.extent.height = pgpurenderpass->height();
             //imageCopyRegion.extent.depth = 1;
 
             //vkCmdCopyImage(
             //	copyCmd,
             //	//colorAttachment.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-            //	m_pvkcrenderpass->m_images[iIndex], VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            //	pgpurenderpass->m_images[iIndex], VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
             //	dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             //	1,
             //	&imageCopyRegion);
@@ -848,8 +854,8 @@ namespace gpu_vulkan
             //if (callback)
             //{
             //	callback((void*)imagedata, 
-            //		m_pvkcrenderpass->width(),
-            //		m_pvkcrenderpass->height(),
+            //		pgpurenderpass->width(),
+            //		pgpurenderpass->height(),
             //		subResourceLayout.rowPitch);
 
             //}
@@ -925,7 +931,7 @@ namespace gpu_vulkan
    //
    //		auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
    //
-   //		::cast < accumulation_render_pass > ppass = m_pvkcrenderpass;
+   //		::cast < accumulation_render_pass > ppass = pgpurenderpass;
    //
    //		auto iPassCurrentFrame = get_frame_index();
    //
@@ -961,14 +967,14 @@ namespace gpu_vulkan
    //		::array<VkSemaphore> waitSemaphores;
    //		::array<VkPipelineStageFlags> waitStages;
    //		waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-   //		waitSemaphores.add(m_pvkcrenderpass->renderFinishedSemaphores[iPassCurrentFrame]);
+   //		waitSemaphores.add(pgpurenderpass->renderFinishedSemaphores[iPassCurrentFrame]);
    //		submitInfo.waitSemaphoreCount = waitSemaphores.size();
    //		submitInfo.pWaitSemaphores = waitSemaphores.data();
    //		submitInfo.pWaitDstStageMask = waitStages.data();
    //		m_pgpucontext->endSingleTimeCommands(cmdBuffer, 1, &submitInfo);
    //
-   //		//m_prendererResolve->m_pvkcrenderpass->m_semaphoreaWaitToSubmit.add(
-   //		//   m_pvkcrenderpass->renderFinishedSemaphores[iPassCurrentFrame]
+   //		//m_prendererResolve->pgpurenderpass->m_semaphoreaWaitToSubmit.add(
+   //		//   pgpurenderpass->renderFinishedSemaphores[iPassCurrentFrame]
    //		//);
    ////
    //		//m_prendererResolve->_resolve_color_and_alpha_accumulation_buffers();
@@ -985,7 +991,7 @@ namespace gpu_vulkan
 
       //	auto iFrameIndex1 = get_frame_index();
 
-      //	VkImage image1 = m_pvkcrenderpass->m_images[iFrameIndex1];
+      //	VkImage image1 = pgpurenderpass->m_images[iFrameIndex1];
 
       //	if (is_starting_frame())
       //	{
@@ -1110,7 +1116,7 @@ namespace gpu_vulkan
 
       //		::cast < renderer > pgpurendererParent = m_pgpucontext->m_pgpurenderer;
 
-      //		::cast < accumulation_render_pass > paccumulationrenderpass = pgpurendererParent->m_pvkcrenderpass;
+      //		::cast < accumulation_render_pass > paccumulationrenderpass = pgpurendererParent->pgpurenderpass;
 
       //		for (int i = 0; i < get_frame_count(); i++)
       //		{
@@ -1235,7 +1241,8 @@ namespace gpu_vulkan
       if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
          throw ::exception(error_failed, "failed to record command buffer!");
       }
-      auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer);
+      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+      auto result = pgpurenderpass->submitCommandBuffers(&commandBuffer);
       if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
          m_bNeedToRecreateSwapChain)
       {
@@ -1275,7 +1282,7 @@ namespace gpu_vulkan
       //   if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
       //      throw ::exception(error_failed, "failed to record command buffer!");
       //   }
-      //   auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+      //   auto result = pgpurenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
       //   //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       //   //	vkcWindow.wasWindowResized()) 
       //   //{
@@ -2281,7 +2288,9 @@ namespace gpu_vulkan
    void renderer::_blend_renderer(::gpu_vulkan::renderer* prendererSrc, bool bYSwap)
    {
 
-      VkImage image = prendererSrc->m_pvkcrenderpass->m_images[prendererSrc->get_frame_index()];
+      ::cast < render_pass > pgpurenderpassSrc = prendererSrc->m_pgpurendertarget;
+
+      VkImage image = pgpurenderpassSrc->m_images[prendererSrc->get_frame_index()];
 
       auto rectanglePlacement = prendererSrc->m_pgpucontext->m_rectangle;
 
@@ -2477,7 +2486,7 @@ namespace gpu_vulkan
          //     }
 
          ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
-         ::cast < accumulation_render_pass > ppass = prendererSrc->m_pvkcrenderpass;
+         ::cast < accumulation_render_pass > ppass = pgpurenderpassSrc;
 
          for (int i = 0; i < get_frame_count(); i++)
          {
@@ -2594,6 +2603,8 @@ namespace gpu_vulkan
 
       auto commandBuffer = this->getCurrentCommandBuffer();
 
+      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+
       //if (m_bOffScreen)
       {
 
@@ -2604,11 +2615,11 @@ namespace gpu_vulkan
 
          VkRenderPassBeginInfo renderPassInfo{};
          renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-         renderPassInfo.renderPass = m_pvkcrenderpass->getRenderPass();
-         renderPassInfo.framebuffer = m_pvkcrenderpass->getCurrentFrameBuffer();
+         renderPassInfo.renderPass = pgpurenderpass->getRenderPass();
+         renderPassInfo.framebuffer = pgpurenderpass->getCurrentFrameBuffer();
 
          renderPassInfo.renderArea.offset = { 0, 0 };
-         renderPassInfo.renderArea.extent = m_pvkcrenderpass->getExtent();
+         renderPassInfo.renderArea.extent = pgpurenderpass->getExtent();
 
          VkClearValue clearValues[2];
          //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
@@ -2622,11 +2633,11 @@ namespace gpu_vulkan
          VkViewport viewport{};
          viewport.x = 0.0f;
          viewport.y = 0.0f;
-         viewport.width = static_cast<float>(m_pvkcrenderpass->getExtent().width);
-         viewport.height = static_cast<float>(m_pvkcrenderpass->getExtent().height);
+         viewport.width = static_cast<float>(pgpurenderpass->getExtent().width);
+         viewport.height = static_cast<float>(pgpurenderpass->getExtent().height);
          viewport.minDepth = 0.0f;
          viewport.maxDepth = 1.0f;
-         VkRect2D scissor{ {0, 0}, m_pvkcrenderpass->getExtent() };
+         VkRect2D scissor{ {0, 0}, pgpurenderpass->getExtent() };
          vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
          vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
@@ -2678,12 +2689,14 @@ namespace gpu_vulkan
 
       auto commandBuffer = pframe->commandBuffer;
 
-      //m_pvkcrenderpass->m_iFrameSerial++;
+      //pgpurenderpass->m_iFrameSerial++;
 
-      //m_pvkcrenderpass->m_iCurrentFrame = (m_pvkcrenderpass->m_iCurrentFrame + 1) % 
+      //pgpurenderpass->m_iCurrentFrame = (pgpurenderpass->m_iCurrentFrame + 1) % 
       //   get_frame_count();
 
-      m_pvkcrenderpass->on_before_begin_render(pframe);
+      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+
+      pgpurenderpass->on_before_begin_render(pframe);
 
       //if (m_bOffScreen)
       {
@@ -2695,11 +2708,11 @@ namespace gpu_vulkan
 
          VkRenderPassBeginInfo renderPassInfo{};
          renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-         renderPassInfo.renderPass = m_pvkcrenderpass->getRenderPass();
-         renderPassInfo.framebuffer = m_pvkcrenderpass->getCurrentFrameBuffer();
+         renderPassInfo.renderPass = pgpurenderpass->getRenderPass();
+         renderPassInfo.framebuffer = pgpurenderpass->getCurrentFrameBuffer();
 
          renderPassInfo.renderArea.offset = { 0, 0 };
-         renderPassInfo.renderArea.extent = m_pvkcrenderpass->getExtent();
+         renderPassInfo.renderArea.extent = pgpurenderpass->getExtent();
 
          VkClearValue clearValues[2];
          //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
@@ -2713,11 +2726,11 @@ namespace gpu_vulkan
          VkViewport viewport{};
          viewport.x = 0.0f;
          viewport.y = 0.0f;
-         viewport.width = static_cast<float>(m_pvkcrenderpass->getExtent().width);
-         viewport.height = static_cast<float>(m_pvkcrenderpass->getExtent().height);
+         viewport.width = static_cast<float>(pgpurenderpass->getExtent().width);
+         viewport.height = static_cast<float>(pgpurenderpass->getExtent().height);
          viewport.minDepth = 0.0f;
          viewport.maxDepth = 1.0f;
-         VkRect2D scissor{ {0, 0}, m_pvkcrenderpass->getExtent() };
+         VkRect2D scissor{ {0, 0}, pgpurenderpass->getExtent() };
          vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
          vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
@@ -2803,16 +2816,18 @@ namespace gpu_vulkan
 
       //defer_layout();
 
+      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+
       assert(!isFrameStarted && "Can't call beginFrame while already in progress");
 
       //if (m_bOffScreen)
       {
 
-         auto result = m_pvkcrenderpass->acquireNextImage();
+         auto result = pgpurenderpass->acquireNextImage();
 
          if (result == VK_ERROR_OUT_OF_DATE_KHR) {
             //defer_layout();
-            m_pvkcrenderpass->init();
+            pgpurenderpass->init();
             //throw ::exception(todo, "resize happened?!?!");
             return nullptr;
          }
@@ -2883,7 +2898,9 @@ namespace gpu_vulkan
          throw ::exception(error_failed, "failed to record command buffer!");
       }
 
-      auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer);
+      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+
+      auto result = pgpurenderpass->submitCommandBuffers(&commandBuffer);
 
       if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
          m_bNeedToRecreateSwapChain)
@@ -2916,7 +2933,7 @@ namespace gpu_vulkan
 
       //}
 
-      //rrentImageIndex = m_pvkcrenderpass->currentFrame;
+      //rrentImageIndex = pgpurenderpass->currentFrame;
       //currentFrameIndex = (currentFrameIndex + 1) % ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT;
 
       //}
@@ -3075,7 +3092,9 @@ namespace gpu_vulkan
 
       m_pgpucontext->set_placement(prenderer->m_pgpucontext->rectangle());
 
-      VkImage image = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
+      ::cast < render_pass > pgpurenderpass = prenderer->m_pgpurendertarget;
+
+      VkImage image = pgpurenderpass->m_images[prenderer->get_frame_index()];
 
       defer_update_renderer();
 
@@ -3116,7 +3135,7 @@ namespace gpu_vulkan
          //VkSubmitInfo submitInfo = {};
          //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-         //VkSemaphore waitSemaphores[] = { prendererSrc->m_pvkcrenderpass->renderFinishedSemaphores[prendererSrc->m_pvkcrenderpass->currentFrame] };
+         //VkSemaphore waitSemaphores[] = { prendererSrc->pgpurenderpass->renderFinishedSemaphores[prendererSrc->pgpurenderpass->currentFrame] };
          //VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
          //submitInfo.waitSemaphoreCount = 1;
          //submitInfo.pWaitSemaphores = waitSemaphores;
@@ -3148,14 +3167,15 @@ namespace gpu_vulkan
          ::array<VkSemaphore> waitSemaphores;
          ::array<VkPipelineStageFlags> waitStages;
          waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-         waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
+         ::cast < render_pass > pgpurenderpass = prenderer->m_pgpurendertarget;
+         waitSemaphores.add(pgpurenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
          submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
          submitInfo.pWaitSemaphores = waitSemaphores.data();
          submitInfo.pWaitDstStageMask = waitStages.data();
          m_pgpucontext->endSingleTimeCommands(cmdBuffer, 1, &submitInfo);
 
-         //m_prendererResolve->m_pvkcrenderpass->m_semaphoreaWaitToSubmit.add(
-         //   m_pvkcrenderpass->renderFinishedSemaphores[iPassCurrentFrame]
+         //m_prendererResolve->pgpurenderpass->m_semaphoreaWaitToSubmit.add(
+         //   pgpurenderpass->renderFinishedSemaphores[iPassCurrentFrame]
          //);
 
 
@@ -3164,7 +3184,9 @@ namespace gpu_vulkan
       if (auto pframe = beginFrame())
       {
 
-         m_pvkcrenderpass->m_semaphoreaSignalOnSubmit.add(prendererSrc->m_pvkcrenderpass->imageAvailableSemaphores[prendererSrc->get_frame_index()]);
+         ::cast < render_pass > pgpurenderpassSrc = prendererSrc->m_pgpurendertarget;
+
+         pgpurenderpass->m_semaphoreaSignalOnSubmit.add(pgpurenderpassSrc->imageAvailableSemaphores[prendererSrc->get_frame_index()]);
 
 
          //on_begin_frame();
@@ -3242,7 +3264,9 @@ namespace gpu_vulkan
 
       ::cast < renderer > prenderer = this;
 
-      VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
+      ::cast < render_pass > pgpurenderpass = prenderer->m_pgpurendertarget;
+
+      VkImage vkimage = pgpurenderpass->m_images[prenderer->get_frame_index()];
 
       ::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
 
@@ -3266,7 +3290,8 @@ namespace gpu_vulkan
       ::array<VkSemaphore> waitSemaphores;
       ::array<VkPipelineStageFlags> waitStages;
       waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-      waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
+      ::cast < render_pass > pgpurenderpass2 = prenderer->m_pgpurendertarget;
+      waitSemaphores.add(pgpurenderpass2->renderFinishedSemaphores[prenderer->get_frame_index()]);
       submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
       submitInfo.pWaitSemaphores = waitSemaphores.data();
       submitInfo.pWaitDstStageMask = waitStages.data();
@@ -3303,7 +3328,9 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::renderer > prendererSource = prendererSourceParam;
 
-      VkImage vkimage = prendererSource->m_pvkcrenderpass->m_images[prendererSource->get_frame_index()];
+      ::cast < render_pass > pgpurenderpassSource = prendererSource->m_pgpurendertarget;
+
+      VkImage vkimage = pgpurenderpassSource->m_images[prendererSource->get_frame_index()];
 
       auto copyCmd = m_pgpucontext->beginSingleTimeCommands();
 
@@ -3325,7 +3352,8 @@ namespace gpu_vulkan
       ::array<VkSemaphore> waitSemaphores;
       ::array<VkPipelineStageFlags> waitStages;
       waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-      waitSemaphores.add(prendererSource->m_pvkcrenderpass->renderFinishedSemaphores[prendererSource->get_frame_index()]);
+      ::cast < render_pass > pgpurenderpass = prendererSource->m_pgpurendertarget;
+      waitSemaphores.add(pgpurenderpass->renderFinishedSemaphores[prendererSource->get_frame_index()]);
       submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
       submitInfo.pWaitSemaphores = waitSemaphores.data();
       submitInfo.pWaitDstStageMask = waitStages.data();

@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "aura/graphics/graphics3d/engine.h"
+#include "bred/graphics3d/engine.h"
 
 
 //#include <memory>
@@ -14,7 +14,7 @@
 #include "camera.h" // Include the ::graphics3d::camera header
 //#include "application.h"
 //#include "apex/platform/app_consumer.h"
-#include "aura/graphics/gpu/render.h"
+#include "bred/gpu/render.h"
 #include "app/gpu_opengl/renderer.h"
 
 

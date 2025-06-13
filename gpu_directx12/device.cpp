@@ -12,7 +12,7 @@
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
-#include "aura/graphics/gpu/types.h"
+#include "bred/gpu/types.h"
 #include "gpu_directx12/descriptors.h"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_FORCE_LEFT_HANDED
@@ -1101,10 +1101,26 @@ namespace gpu_directx12
 
       }
 
+      if (0)
+      {
+
+         ::comptr<ID3D12InfoQueue> infoQueue;
+
+         m_pdevice.as(infoQueue);
+
+         if (infoQueue)
+         {
+            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
+         }
+
+      }
+
       DXGI_SWAP_CHAIN_DESC1 dxgiswapchaindesc1 = {};
       dxgiswapchaindesc1.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
       dxgiswapchaindesc1.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-      dxgiswapchaindesc1.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+      dxgiswapchaindesc1.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
       dxgiswapchaindesc1.BufferCount = 2;
       dxgiswapchaindesc1.SampleDesc.Count = 1;
       dxgiswapchaindesc1.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
@@ -1437,6 +1453,11 @@ namespace gpu_directx12
       mTarget = m;
 
    }
+
+   void device::composition_store()
+   void device::composition_end()
+
+
 
 
 } // namespace gpu_directx12

@@ -1,13 +1,13 @@
 #pragma once
 
 
-#include "aura/graphics/gpu/properties.h"
-#include "aura/graphics/graphics3d/scene_system.h"
+#include "bred/gpu/properties.h"
+#include "bred/graphics3d/scene_system.h"
 //#include "context.h"
 //#include "pipeline.h"
 //#include "scene_object.h"
 //#include "frame_info.h"
-//#include "aura/graphics/graphics3d/camera.h"
+//#include "bred/graphics3d/camera.h"
 
 
 //

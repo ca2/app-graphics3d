@@ -9,7 +9,7 @@
 #include "renderer.h"
 #include "texture.h"
 #include "offscreen_render_target_view.h"
-#include "aura/graphics/gpu/types.h"
+#include "bred/gpu/types.h"
 #include "acme_windows_common/hresult_exception.h"
 #include <d3dcompiler.h>
 //#include "aura/user/user/graphics3d.h"
@@ -502,8 +502,6 @@ namespace gpu_directx12
 
    void shader::draw()
    {
-
-      return;
 
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 

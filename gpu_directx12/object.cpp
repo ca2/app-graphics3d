@@ -8,10 +8,6 @@
 #include "assimp.h"
 #include "approach.h"
 
-//#include <GLUT/GLUT.h>
-
-//GLuint loadDDS(const char * imagepath);
-
 
 const char * directx12_error_string(int iError)
 {

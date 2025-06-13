@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "aura/graphics/gpu/graphics.h"
+#include "bred/gpu/graphics.h"
 #include "draw2d_direct2d_directx11/graphics.h"
 #include "direct2d_directx12/graphics.h"
 

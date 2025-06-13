@@ -1,14 +1,16 @@
 // Created by camilo on 2025-06-08 18:11 < 3ThomasBorregaardSørensen!!
 #pragma once
 
-
+#include "bred/gpu/"
+#include <d3d11.h>
+#include <d2d1_1.h>
 
 namespace gpu_directx12
 {
 
 
    class CLASS_DECL_GPU_DIRECTX12 texture :
-      virtual public ::particle
+      virtual public ::gpu::texture
    {
    public:
 
@@ -27,7 +29,7 @@ namespace gpu_directx12
 
       }new_texture;
 
-      ::pointer < ::gpu::renderer >    m_prenderer;
+      
       ::comptr<ID3D12Resource>         m_presource;
       //::comptr<ID3D12DescriptorHeap>   m_pheapRenderTargetView;
       D3D12_RESOURCE_STATES            m_estate;
@@ -35,16 +37,36 @@ namespace gpu_directx12
       ::comptr<ID3D12DescriptorHeap>   m_pheapShaderResourceView;
       D3D12_CPU_DESCRIPTOR_HANDLE      m_handleShaderResourceView;
 
+      class d3d11 :
+         virtual public ::particle
+      {
+      public:
 
+
+         //::comptr<ID3D12Resource> d3d12Resource;
+         ::comptr<ID3D11Resource> wrappedResource;
+         ::comptr<IDXGISurface> dxgiSurface;
+         ::comptr<ID2D1Bitmap1> d2dBitmap;
+
+         d3d11() {}
+         ~d3d11() override {}
+
+
+
+      };
+
+
+      ::pointer < d3d11 > m_pd3d11;
 
       texture();
       ~texture() override;
 
 
-      void initialize_texture(::gpu::renderer* prenderer, const ::int_size & size);
+      void initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_size & size);
 
       void _new_state(ID3D12GraphicsCommandList* pcommandlist, D3D12_RESOURCE_STATES estate);
 
+      class d3d11* d3d11();
 
    };
 

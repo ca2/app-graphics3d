@@ -8,7 +8,7 @@
 #include "gpu_directx12/renderer.h"
 #include "gpu_directx12/swap_chain_render_target_view.h"
 #include "gpu_directx12/texture.h"
-#include "aura/graphics/gpu/graphics.h"
+#include "bred/gpu/graphics.h"
 #include "direct2d_directx12/graphics.h"
 
 

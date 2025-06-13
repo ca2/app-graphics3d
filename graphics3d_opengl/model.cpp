@@ -2,7 +2,7 @@
 #include "model.h"
 #include <stb/stb_image.h>
 #include "context.h"
-#include "aura/graphics/gpu/context.h"
+#include "bred/gpu/context.h"
 //#include <iostream>
 
 

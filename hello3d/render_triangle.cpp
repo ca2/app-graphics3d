@@ -2,9 +2,9 @@
 #include "render.h"
 #include "application.h"
 #include "acme/prototype/mathematics/trigonometry.h"
-#include "aura/graphics/gpu/context.h"
-#include "aura/graphics/gpu/program.h"
-#include "aura/graphics/gpu/shader.h"
+#include "bred/gpu/context.h"
+#include "bred/gpu/program.h"
+#include "bred/gpu/shader.h"
 //#include "aura/graphics/draw2d.h"
 #define GLAD_GLAPI_EXPORT
 #include <glad.h>

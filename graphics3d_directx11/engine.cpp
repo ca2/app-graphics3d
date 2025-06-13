@@ -16,11 +16,11 @@
 #include "gpu_directx11/offscreen_render_target_view.h"
 #include "draw2d_direct2d/_.h"
 #include "draw2d_direct2d/graphics.h"
-#include "aura/graphics/graphics3d/camera.h"
-#include "aura/graphics/graphics3d/scene.h"
+#include "bred/graphics3d/camera.h"
+#include "bred/graphics3d/scene.h"
 #include "aura/windowing/window.h"
-//#include "aura/graphics/graphics3d/system/simple_render_system.h"
-//#include "aura/graphics/graphics3d/system/point_light_system.h"
+//#include "bred/graphics3d/system/simple_render_system.h"
+//#include "bred/graphics3d/system/point_light_system.h"
 #include "acme/platform/application.h"
 #include "apex/database/client.h"
 #include "apex/database/stream.h"
@@ -550,7 +550,7 @@ namespace graphics3d_directx11
 
          ::cast< ::gpu_directx11::context > pgpucontext = m_pgpucontext;
          ::cast< ::gpu_directx11::renderer > prenderer = pgpucontext->m_pgpurenderer;
-         auto prendertargetview = prenderer->m_prendertargetview;
+         ::cast < ::gpu_directx11::render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
          ::cast < ::gpu_directx11::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
          ::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
          ID3D11Device* device = pgpudevice->m_pdevice;

@@ -4,7 +4,7 @@
 
 
 
-#include "aura/graphics/gpu/shader.h"
+#include "bred/gpu/shader.h"
 
 
 namespace gpu_directx12
@@ -103,7 +103,7 @@ namespace gpu_directx12
 //#pragma once
 //
 //
-//#include "aura/graphics/gpu/shader.h"
+//#include "bred/gpu/shader.h"
 //
 //
 //namespace gpu_directx12

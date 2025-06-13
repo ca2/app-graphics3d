@@ -9,7 +9,7 @@
 #include "shader.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
-#include "aura/graphics/gpu/types.h"
+#include "bred/gpu/types.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 //#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions

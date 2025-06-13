@@ -9,12 +9,12 @@
 #include "aura/graphics/image/drawing.h"
 #include "aura/graphics/image/image.h"
 #include "aura/platform/system.h"
-#include "aura/graphics/gpu/approach.h"
-#include "aura/graphics/gpu/cpu_buffer.h"
-#include "aura/graphics/gpu/context.h"
-#include "aura/graphics/gpu/object.h"
-#include "aura/graphics/gpu/program.h"
-#include "aura/graphics/gpu/shader.h"
+#include "bred/gpu/approach.h"
+#include "bred/gpu/cpu_buffer.h"
+#include "bred/gpu/context.h"
+#include "bred/gpu/object.h"
+#include "bred/gpu/program.h"
+#include "bred/gpu/shader.h"
 
 
 void image_gl_set(::image::image* pimage);

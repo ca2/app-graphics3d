@@ -4,7 +4,7 @@
 //#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 //#include <glm/glm.hpp>
 
-#include "aura/graphics/graphics3d/camera.h"
+#include "bred/graphics3d/camera.h"
 
 
 namespace graphics3d_directx12 

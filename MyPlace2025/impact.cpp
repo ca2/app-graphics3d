@@ -17,7 +17,7 @@
 #include "aura/windowing/window.h"
 #include "draw2d_opengl/_.h"
 #include "draw2d_opengl/graphics.h"
-#include "aura/graphics/graphics3d/types.h"
+#include "bred/graphics3d/types.h"
 
 
 CLASS_DECL_AURA ::color::color dk_red(); // <3 tbs

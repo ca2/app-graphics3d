@@ -4,7 +4,7 @@
 ////#include "Core/gl_container.h"
 //
 // 
-#include "aura/graphics/graphics3d/camera.h"
+#include "bred/graphics3d/camera.h"
 //
 namespace graphics3d_opengl
 {

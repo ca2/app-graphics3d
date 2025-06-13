@@ -4,7 +4,7 @@
 #include "engine.h"
 #include "frame.h"
 #include "model.h"
-#include "aura/graphics/graphics3d/scene_object.h"
+#include "bred/graphics3d/scene_object.h"
 #include "aura/platform/application.h"
 
 

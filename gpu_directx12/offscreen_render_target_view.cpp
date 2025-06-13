@@ -41,13 +41,13 @@ namespace gpu_directx12
    //   clear_flag(e_flag_success);
    //}
 
-   
+
    void offscreen_render_target_view::initialize_render_target_view(renderer* pgpurenderer, const ::int_size& size, ::pointer <render_target_view>previous)
    {
 
       render_target_view::initialize_render_target_view(pgpurenderer, size, previous);
 
-//      clear_flag(e_flag_success);
+      //      clear_flag(e_flag_success);
    }
 
    void offscreen_render_target_view::init()
@@ -56,8 +56,8 @@ namespace gpu_directx12
 
 
       m_pgpurenderer->restart_frame_counter();
-      int width = m_size.cx();
-      int height = m_size.cy();
+      int width = m_pgpurenderer->m_pgpucontext->m_rectangle.width();
+      int height = m_pgpurenderer->m_pgpucontext->m_rectangle.height();
 
 
       ::cast < device>pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
@@ -147,36 +147,36 @@ namespace gpu_directx12
 
          CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-            for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
+         for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
+         {
+
+            __defer_construct_new(m_texturea.element_at_grow(i));
+
+            m_texturea[i]->initialize_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
+
+            //if (bCreateRenderTargetView)
             {
 
-               __defer_construct_new(m_texturea.element_at_grow(i));
+               //// 2. Create RTV descriptor heap
+               //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+               //rtvHeapDesc.NumDescriptors = 1;
+               //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+               //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+               //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
 
-               m_texturea[i]->initialize_texture(m_pgpurenderer, m_size);
+               //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
-               //if (bCreateRenderTargetView)
-               {
+               //// 3. Create RTV
+               //m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
+               //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-                  //// 2. Create RTV descriptor heap
-                  //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-                  //rtvHeapDesc.NumDescriptors = 1;
-                  //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-                  //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-                  //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
+               ::cast < device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-                  //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
-
-                  //// 3. Create RTV
-                  //m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
-                  //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-
-                  ::cast < device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
-
-                  pgpudevice->m_pdevice->CreateRenderTargetView(m_texturea[i]->m_presource, nullptr, rtvHandle);
-                  rtvHandle.Offset(1, m_rtvDescriptorSize);
-               }
-
+               pgpudevice->m_pdevice->CreateRenderTargetView(m_texturea[i]->m_presource, nullptr, rtvHandle);
+               rtvHandle.Offset(1, m_rtvDescriptorSize);
             }
+
+         }
          //if (bCreateShaderResourceView)
          //{
 
@@ -218,7 +218,7 @@ namespace gpu_directx12
    }
 
 
-   offscreen_render_target_view::~offscreen_render_target_view() 
+   offscreen_render_target_view::~offscreen_render_target_view()
    {
 
       //for (auto imageView : m_imageviews) 
@@ -259,7 +259,7 @@ namespace gpu_directx12
    }
 
 
-   HRESULT offscreen_render_target_view::acquireNextImage() 
+   HRESULT offscreen_render_target_view::acquireNextImage()
    {
 
 
@@ -824,10 +824,11 @@ namespace gpu_directx12
       //}
    }
 
+
    void offscreen_render_target_view::createDepthResources()
    {
-      render_target_view::createDepthResources();
 
+      render_target_view::createDepthResources();
 
       //ID3D11Texture2D* depthStencilBuffer = nullptr;
       //ID3D11DepthStencilView* depthStencilView = nullptr;

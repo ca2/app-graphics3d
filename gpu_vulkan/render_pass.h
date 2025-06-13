@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include "bred/gpu/render_target.h"
 #include "context.h"
 
 // vulkan headers
@@ -14,7 +15,7 @@ namespace gpu_vulkan
 
 
    class CLASS_DECL_GPU_VULKAN render_pass :
-      virtual public ::particle
+      virtual public ::gpu::render_target
    {
    public:
 

@@ -4,9 +4,9 @@
 #include "apex/platform/app_consumer.h"
 #include "aura/user/user/graphics3d.h"
 #include "application.h"
-#include "aura/graphics/graphics3d/engine.h"
+#include "bred/graphics3d/engine.h"
 //#include "aura/user/user/graphics3d.h"
-#include "aura/graphics/graphics3d/types.h"
+#include "bred/graphics3d/types.h"
 
 
 namespace graphics3d_MyPlace2025

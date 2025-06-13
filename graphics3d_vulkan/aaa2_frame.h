@@ -1,7 +1,7 @@
 #pragma once
 
-//#include "aura/graphics/graphics3d/camera.h"
-//#include "aura/graphics/graphics3d/frame.h"
+//#include "bred/graphics3d/camera.h"
+//#include "bred/graphics3d/frame.h"
 //#include "scene_object.h"
 //
 //// lib

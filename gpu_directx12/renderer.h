@@ -6,7 +6,7 @@
 //#include "offscreen.h"
 //#include "swapchain.h"
 #include "render_target_view.h"
-#include "aura/graphics/gpu/renderer.h"
+#include "bred/gpu/renderer.h"
 
 
 constexpr unsigned int FRAME_OVERLAP = 2;
@@ -100,7 +100,7 @@ namespace gpu_directx12
       ::pointer < cpu_buffer_sampler >	               m_pcpubuffersampler;
       //::pointer<swap_chain_render_target_view>			m_pvkcswapchain;
       //::pointer<offscreen_render_target_view>			m_pvkcoffscreen;
-      ::pointer<render_target_view>			            m_prendertargetview;
+      //::pointer<render_target_view>			            m_prendertargetview;
       //::pointer<renderer>			                     m_prendererResolve;
       //::pointer<::gpu::shader>                        m_pshaderResolve;
       //::pointer<model>                                m_pmodelResolve;
@@ -231,7 +231,9 @@ namespace gpu_directx12
          //if (m_bOffScreen)
          {
 
-            return m_prendertargetview->extentAspectRatio();
+            ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
+
+            return pgpurendertargetview->extentAspectRatio();
 
          }
          //else

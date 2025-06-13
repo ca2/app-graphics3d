@@ -2,8 +2,8 @@
 
 
 
-#include "aura/graphics/gpu/properties.h"
-#include "aura/graphics/graphics3d/scene_system.h"
+#include "bred/gpu/properties.h"
+#include "bred/graphics3d/scene_system.h"
 #include <glm/glm.hpp>
 
 

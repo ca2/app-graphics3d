@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include "bred/gpu/render_target.h"
 #include "context.h"
 
 //// directx12 headers
@@ -14,7 +15,7 @@ namespace gpu_directx12
 
    
    class CLASS_DECL_GPU_DIRECTX12 render_target_view :
-      virtual public ::particle
+      virtual public ::gpu::render_target
    {
    public:
 
@@ -24,7 +25,7 @@ namespace gpu_directx12
       ::pointer < depth_stencil >      m_pdepthstencil;
       UINT m_rtvDescriptorSize;
 
-      ::int_size m_size;
+      //::int_size m_size;
 
       ::pointer < renderer >  m_pgpurenderer;
 
@@ -59,8 +60,8 @@ namespace gpu_directx12
       uint32_t width() { return 16; }
       uint32_t height() { return 9; }
 
-      texture* current_texture();
-      depth_stencil* current_depth_stencil();
+      virtual ::gpu::texture* current_texture();
+      virtual depth_stencil* current_depth_stencil();
 
 
       float extentAspectRatio() {

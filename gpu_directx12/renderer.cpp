@@ -9,20 +9,14 @@
 #include "physical_device.h"
 #include "swap_chain.h"
 #include "initializers.h"
-#include "aura/graphics/gpu/cpu_buffer.h"
+#include "bred/gpu/cpu_buffer.h"
 #include "gpu_directx12/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/target.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
-//#include "tools.h"
-//#include "aura/user/user/graphics3d.h"
 
-//#include <array>
-//#include <cassert>
-//#include <stdexcept>
-//
 
 using namespace directx12;
 
@@ -122,6 +116,7 @@ namespace gpu_directx12
       ::gpu::renderer::initialize_renderer(pgpucontext, eoutput, escene);
 
       m_pgpucontext = pgpucontext;
+
       ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
       // Describe and create a constant buffer view (CBV) descriptor heap.
 // Flags indicate that this descriptor heap can be bound to the pipeline 
@@ -135,8 +130,6 @@ namespace gpu_directx12
 
       if (eoutput == ::gpu::e_output_cpu_buffer)
       {
-
-         //m_pimpact = pgpucontext->m_pimpact;
 
          pgpucontext->create_cpu_buffer(pgpucontext->rectangle().size());
 
@@ -291,17 +284,23 @@ namespace gpu_directx12
          //#else
          //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
          //#endif
-         m_prendertargetview = poffscreenrendertargetview;
+         m_pgpurendertarget = poffscreenrendertargetview;
          //         //m_prendererResolve.release();
          //
       }
       else if (eoutput == ::gpu::e_output_swap_chain)
       {
-         m_prendertargetview = m_pgpucontext->m_pgpudevice->get_swap_chain();
-         //m_prendertargetview = __allocate swap_chain_render_target_view(this, size, m_prendertargetview);
-         //m_prendererResolve.release();
+
+         m_pgpurendertarget = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
       }
+      else if (eoutput == ::gpu::e_output_gpu_buffer_to_swap_chain)
+      {
+
+         m_pgpurendertarget = m_pgpucontext->m_pgpudevice->get_swap_chain();
+
+      }
+
       //      else if (eoutput == ::gpu::e_output_gpu_buffer)
       //      {
       //
@@ -356,12 +355,15 @@ namespace gpu_directx12
       //
       //      }
       //
-      if (!m_prendertargetview->has_ok_flag() && m_sizeRenderer.area() > 0)
+
+      ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
+
+      if (!pgpurendertargetview->has_ok_flag() && m_sizeRenderer.area() > 0)
       {
 
-         m_prendertargetview->initialize_render_target_view(this, size, m_prendertargetview);
+         pgpurendertargetview->initialize_render_target_view(this, size, pgpurendertargetview.m_p);
 
-         m_prendertargetview->init();
+         pgpurendertargetview->init();
 
       }
 
@@ -726,12 +728,14 @@ namespace gpu_directx12
 
       }
 
+      ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
+
       assert(!isFrameStarted && "Can't call beginFrame while already in progress");
 
       //if (m_bOffScreen)
       {
 
-         auto result = m_prendertargetview->acquireNextImage();
+         auto result = pgpurendertargetview->acquireNextImage();
 
          //if (result == VK_ERROR_OUT_OF_DATE_KHR
          //   || m_prendertargetview->m_bNeedRebuild)
@@ -802,7 +806,7 @@ namespace gpu_directx12
 
       //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-      auto pgpurendertargetview = m_prendertargetview;
+      ///::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
 
       //if (prenderer)
       {
@@ -1105,7 +1109,19 @@ namespace gpu_directx12
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      ptexture->_new_state(pcommandlist, D3D12_RESOURCE_STATE_COPY_SOURCE);
+      if (m_pgpucontext->m_pgpudevice->m_edevicetarget ==
+         ::gpu::e_device_target_swap_chain)
+      {
+
+         ptexture->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+      }
+      else
+      {
+
+         ptexture->_new_state(pcommandlist, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+      }
 
       if (m_desc.Width != m_size.width() || m_desc.Height != m_size.height())
       {
@@ -1330,7 +1346,7 @@ namespace gpu_directx12
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
       ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
       ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
-      auto prendertargetview = prenderer->m_prendertargetview;
+      ::cast < render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
       ID3D12Resource* presourceOffscreenTexture = poffscreenrendertargetview->current_texture()->m_presource;
 
@@ -1517,7 +1533,7 @@ namespace gpu_directx12
       /////auto& memory = m_pimagetarget->m_imagebuffer.m_memory;
       ::cast< context > pgpucontext = m_pgpucontext;
       ::cast< renderer > prenderer = pgpucontext->m_pgpurenderer;
-      auto prendertargetview = prenderer->m_prendertargetview;
+      ::cast < renderer > prendertargetview = prenderer->m_pgpurendertarget;
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
       ::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
       ID3D12Device* device = pgpudevice->m_pdevice;
@@ -3613,7 +3629,9 @@ namespace gpu_directx12
    void renderer::_on_begin_render()
    {
 
-      auto ptexture = m_prendertargetview->current_texture();
+      ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
+
+      auto ptexture = pgpurendertargetview->current_texture();
 
       auto pcommandlist = getCurrentCommandBuffer2()->m_pcommandlist;
 
@@ -3798,8 +3816,7 @@ namespace gpu_directx12
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      auto pgpurendertargetview = m_prendertargetview;
-
+      ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
 
       {
 
@@ -3811,7 +3828,16 @@ namespace gpu_directx12
             if (presourceTexture)
             {
 
-               auto presourceDepthStencilBuffer = pgpurendertargetview->current_depth_stencil()->m_presource;
+               ID3D12Resource* presourceDepthStencilBuffer = nullptr;
+
+               auto pdepthstencil = pgpurendertargetview->current_depth_stencil();
+
+               if (pdepthstencil)
+               {
+
+                  presourceDepthStencilBuffer = pdepthstencil->m_presource;
+
+               }
 
                if (presourceDepthStencilBuffer)
                {
@@ -3972,20 +3998,29 @@ namespace gpu_directx12
       // - clearColor is a float[4] array (same as in DX11)
 
       // Example clear color
-      float clearColor[4] = { 0.5f * 0.5f, 0.95f * 0.5f, 0.9f * 0.5f, 0.5f };
+
+      int iDescriptorSize = pgpurendertargetview->m_rtvDescriptorSize;
+      int iFrameIndex = get_frame_index();
+      auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
       CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
-         m_prendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), 
-         get_frame_index(),
-         m_prendertargetview->m_rtvDescriptorSize);
+         hRtv,
+         iFrameIndex,
+         iDescriptorSize);
+
+      float clearColor[4] = { 0.5f * 0.5f, 0.75f * 0.5f, 0.9f * 0.5f, 0.5f };
       pcommandlist->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
       //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
-      pcommandlist->ClearDepthStencilView(
-         pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(),
-         D3D12_CLEAR_FLAG_DEPTH,
-         1.0f, 0,
-         0, nullptr
-      );
+      if (pgpurendertargetview->m_pdepthstencil)
+      {
 
+         pcommandlist->ClearDepthStencilView(
+            pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(),
+            D3D12_CLEAR_FLAG_DEPTH,
+            1.0f, 0,
+            0, nullptr
+         );
+
+      }
 
       on_happening(e_happening_begin_render);
 
@@ -4270,6 +4305,7 @@ namespace gpu_directx12
          this->sample();
 
       }
+
       //else if (eoutput == ::gpu::e_output_gpu_buffer)
       //{
 

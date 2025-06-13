@@ -100,23 +100,10 @@ namespace gpu_directx12
 
 		m_pdxgiswapchain = pgpudevice->m_pdxgiswapchain1;
 
-
-
-
-		//      ::cast < ::gpu_directx12::renderer > pgpurenderer = pgpucontext->m_pgpurenderer;
-
-				//::cast < ::gpu_directx12::swap_chain_render_target_view > pswapchainrendertargetview = pgpurenderer->m_prendertargetview;
-
-		//HRESULT hr = pgpudevice->m_pdevice->CreateGraphicsPipelineState(
-		//	m_presourceSharedTexture, nullptr, __interface_of(m_pshaderresourceviewShader));
-		//if (FAILED(hr)) {
-		//	OutputDebugStringA("Failed to create SRV from shared D2D texture\n");
-		//	return;
-		//}
 		comptr<ID3DBlob> vsBlob;
 		comptr<ID3DBlob> psBlob;
 		comptr<ID3DBlob> errorBlob;
-		// Vertex Shader
+
 		HRESULT hr = D3DCompile(
 			fullscreen_vertex_shader, strlen(fullscreen_vertex_shader),
 			nullptr,                       // optional source name

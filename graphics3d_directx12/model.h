@@ -4,7 +4,7 @@
 #pragma once
 
 
-#include "aura/graphics/graphics3d/model.h"
+#include "bred/graphics3d/model.h"
 #include "app-graphics3d/gpu_directx12/renderer.h"
 
 

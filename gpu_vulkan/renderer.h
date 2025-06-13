@@ -6,7 +6,7 @@
 //#include "offscreen.h"
 //#include "swapchain.h"
 #include "render_pass.h"
-#include "aura/graphics/gpu/renderer.h"
+#include "bred/gpu/renderer.h"
 
 
 constexpr unsigned int FRAME_OVERLAP = 2;
@@ -91,7 +91,7 @@ namespace gpu_vulkan
       ::pointer < cpu_buffer_sampler >	               m_pcpubuffersampler;
       //::pointer<swap_chain_render_pass>			m_pvkcswapchain;
       //::pointer<offscreen_render_pass>			m_pvkcoffscreen;
-      ::pointer<render_pass>			                  m_pvkcrenderpass;
+      //::pointer<render_pass>			                  m_pvkcrenderpass;
       //::pointer<renderer>			                     m_prendererResolve;
       //::pointer<::gpu::shader>                        m_pshaderResolve;
       //::pointer<model>                                m_pmodelResolve;
@@ -139,7 +139,9 @@ namespace gpu_vulkan
       VkRenderPass getRenderPass() const
       {
 
-         return m_pvkcrenderpass->getRenderPass();
+         ::cast < render_pass > prenderpass = m_pgpurendertarget;
+
+         return prenderpass->getRenderPass();
          //return m_bOffScreen ?
             //m_pvkcoffscreen->getRenderPass():
             //m_pvkcswapchain->getRenderPass(); 
@@ -157,7 +159,9 @@ namespace gpu_vulkan
          //if (m_bOffScreen)
          {
 
-            return m_pvkcrenderpass->extentAspectRatio();
+            ::cast < render_pass > prenderpass = m_pgpurendertarget;
+
+            return prenderpass->extentAspectRatio();
 
          }
          //else

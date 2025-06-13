@@ -43,7 +43,7 @@ namespace gpu_directx12
       D3D12_CLEAR_VALUE clearValue = {};
       clearValue.Format = format;
       clearValue.Color[0] = 0.5f *0.5f;
-      clearValue.Color[1] = 0.95f * 0.5f;
+      clearValue.Color[1] = 0.75f * 0.5f;
       clearValue.Color[2] = 0.9f * 0.5f;
       clearValue.Color[3] = 0.5f;
 
@@ -137,6 +137,20 @@ namespace gpu_directx12
          //pcommandBuffer->submit_command_buffer();
 
       }
+
+   }
+
+
+   class texture::d3d11* texture::d3d11()
+   {
+
+      if (!m_pd3d11)
+      {
+
+
+      }
+
+      return m_pd3d11;
 
    }
 

@@ -1,8 +1,8 @@
 #pragma once
 
 
-#include "aura/graphics/gpu/swap_chain.h"
-#include "gpu_directx12/render_target_view.h"
+#include "bred/gpu/swap_chain.h"
+#include "gpu_directx12/offscreen_render_target_view.h"
 
 
 namespace gpu_directx12
@@ -11,7 +11,7 @@ namespace gpu_directx12
 
    class swap_chain :
       virtual public ::gpu::swap_chain,
-      virtual public ::gpu_directx12::render_target_view
+      virtual public ::gpu_directx12::offscreen_render_target_view
    {
    public:
 
@@ -32,7 +32,7 @@ namespace gpu_directx12
 
       //::comptr<ID3D11VertexShader> m_pvertexshaderFullscreen;
       //::comptr<ID3D11PixelShader> m_ppixelshaderFullscreen;
-      ::comptr < ID3D12PipelineState > m_ppipelinestate;
+      //::comptr < ID3D12PipelineState > m_ppipelinestate;
       //::comptr<ID3D11SamplerState> m_psamplerstateLinear;
       //::comptr<ID3D11ShaderResourceView> m_pshaderresourceviewShader;
 

@@ -253,7 +253,7 @@ namespace gpu_vulkan
       pipelineConfig.inputAssemblyInfo.topology = m_vktopology;
       pipelineConfig.dynamicStateEnables.append_unique(m_dynamicstateaEnable);
       pipelineConfig.dynamicStateInfo.dynamicStateCount = pipelineConfig.dynamicStateEnables.size();
-      auto prenderpass = prenderer->m_pvkcrenderpass;
+      ::cast < render_pass > prenderpass = prenderer->m_pgpurendertarget;
       pipelineConfig.renderPass = prenderpass->m_vkrenderpass;
       pipelineConfig.pipelineLayout = m_vkpipelinelayout;
 
