@@ -12,11 +12,6 @@
 #include "acme/platform/application.h"
 
 
-//#if defined(FREEBSD) || defined(OPENBSD)
-//#include <string.h>
-//#endif
-using namespace vulkan;
-
 namespace gpu_vulkan
 {
 
@@ -101,9 +96,22 @@ namespace gpu_vulkan
    void approach::initialize(::particle* pparticle)
    {
 
-      //::e_status estatus =
-
       ::object::initialize(pparticle);
+
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      {
+
+         m_papplication->m_gpu.m_eoutputDraw2d = ::gpu::e_output_gpu_buffer;
+         m_papplication->m_gpu.m_eoutputEngine = ::gpu::e_output_gpu_buffer;
+
+      }
+      else
+      {
+
+         m_papplication->m_gpu.m_eoutputDraw2d = ::gpu::e_output_cpu_buffer;
+         m_papplication->m_gpu.m_eoutputEngine = ::gpu::e_output_cpu_buffer;
+
+      }
 
    }
 
@@ -121,7 +129,7 @@ namespace gpu_vulkan
       // Create the instance
       VkResult result = createInstance();
       if (result != VK_SUCCESS) {
-         auto str = "Could not create Vulkan instance : \n" + errorString(result);
+         auto str = "Could not create Vulkan instance : \n" + ::vulkan::errorString(result);
          throw ::exception(error_failed);
       }
 
@@ -133,7 +141,7 @@ namespace gpu_vulkan
       if (settings.validation)
       {
 
-         debug::setupDebugging(m_vkinstance);
+         ::vulkan::debug::setupDebugging(m_vkinstance);
 
       }
 
@@ -142,7 +150,7 @@ namespace gpu_vulkan
       // Get number of available physical devices
       VK_CHECK_RESULT(vkEnumeratePhysicalDevices(m_vkinstance, &gpuCount, nullptr));
       if (gpuCount == 0) {
-         exitFatal("No device with Vulkan support found", -1);
+         //::vuexitFatal("No device with Vulkan support found", -1);
          throw ::exception(error_failed);
       }
       // Enumerate devices
@@ -151,7 +159,7 @@ namespace gpu_vulkan
       physicalDevices.set_size(gpuCount);
       result = vkEnumeratePhysicalDevices(m_vkinstance, &gpuCount, physicalDevices.data());
       if (result != VK_SUCCESS) {
-         exitFatal("Could not enumerate physical devices : \n" + errorString(result), result);
+         ///exitFatal("Could not enumerate physical devices : \n" + errorString(result), result);
          throw ::exception(error_failed);
       }
 
@@ -268,7 +276,7 @@ namespace gpu_vulkan
 
       ::array<const char*> instanceExtensions;
 
-      if (m_papplication->m_bUseSwapChainWindow)
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          instanceExtensions.add(VK_KHR_SURFACE_EXTENSION_NAME);
@@ -351,7 +359,7 @@ namespace gpu_vulkan
       VkDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCI{};
       if (settings.validation)
       {
-         debug::setupDebugingMessengerCreateInfo(debugUtilsMessengerCI);
+         ::vulkan::debug::setupDebugingMessengerCreateInfo(debugUtilsMessengerCI);
          debugUtilsMessengerCI.pNext = instanceCreateInfo.pNext;
          instanceCreateInfo.pNext = &debugUtilsMessengerCI;
       }
@@ -418,7 +426,9 @@ namespace gpu_vulkan
       // If the debug utils extension is present we set up debug functions, so samples can label objects for debugging
       if (m_straSupportedInstanceExtensions.contains(VK_EXT_DEBUG_UTILS_EXTENSION_NAME))
       {
-         debugutils::setup(m_vkinstance);
+         
+         ::vulkan::debugutils::setup(m_vkinstance);
+
       }
 
       return result;

@@ -10,7 +10,7 @@
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/path_system.h"
 #include "aura/platform/application.h"
-#include "aura/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d.h"
 #include "gpu_directx12/buffer.h"
 #include "gpu_directx12/context.h"
 #include "gpu_directx12/renderer.h"
@@ -36,14 +36,14 @@ namespace graphics3d_directx12
    }
 
 
-   void model::initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder)
+   void model::initialize_model(::gpu::renderer * pgpurenderer, const ::graphics3d::model::Builder& builder)
    {
 
-      m_pgpucontext = pgpucontext;
+      m_pgpurenderer = pgpurenderer;
 
-      initialize(pgpucontext);
+      initialize(pgpurenderer);
 
-      ::cast < ::gpu_directx12::renderer > prenderer = pgpucontext->m_pgpurenderer;
+      ::cast < ::gpu_directx12::renderer > prenderer = pgpurenderer;
 
       m_pcommandbufferLoading = prenderer->getLoadAssetsCommandBuffer();
 
@@ -161,7 +161,7 @@ namespace graphics3d_directx12
    }
 
 
-   void model::bind(::gpu::context* pgpucontext)
+   void model::bind()
    {
 
       if (m_pcommandbufferLoading)
@@ -178,11 +178,11 @@ namespace graphics3d_directx12
 
       }
 
-      ::cast <::gpu_directx12::context> pcontext = pgpucontext;
+      ::cast <::gpu_directx12::renderer> prenderer = m_pgpurenderer;
 
-      ::cast <::gpu_directx12::device> pdevice = pgpucontext->m_pgpudevice;
+      ::cast <::gpu_directx12::context> pgpucontext = prenderer->m_pgpucontext;
 
-      ::cast <::gpu_directx12::renderer> prenderer = pcontext->m_pgpurenderer;
+      ::cast <::gpu_directx12::device> pgpudevice = pgpucontext->m_pgpudevice;
 
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
@@ -239,7 +239,7 @@ namespace graphics3d_directx12
    }
 
 
-   void model::draw(::gpu::context* pgpucontext)
+   void model::draw()
    {
 
       if (m_pcommandbufferLoading)
@@ -264,11 +264,11 @@ namespace graphics3d_directx12
       }
 
       //cast <::gpu_directx12::renderer> pgpurenderer = pgpucontext->m_pgpurenderer;
-      ::cast <::gpu_directx12::context> pcontext = pgpucontext;
-      ::cast <::gpu_directx12::device> pdevice = pgpucontext->m_pgpudevice;
-      ::cast <::gpu_directx12::renderer> prenderer = pcontext->m_pgpurenderer;
+      ::cast <::gpu_directx12::renderer> pgpurenderer = m_pgpurenderer;
+      ::cast <::gpu_directx12::context> pgpucontext = pgpurenderer->m_pgpucontext;
+      ::cast <::gpu_directx12::device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      auto pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 

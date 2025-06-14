@@ -152,7 +152,7 @@ namespace gpu_directx12
 
             __defer_construct_new(m_texturea.element_at_grow(i));
 
-            m_texturea[i]->initialize_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
+            m_texturea[i]->initialize_gpu_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
 
             //if (bCreateRenderTargetView)
             {
@@ -172,8 +172,12 @@ namespace gpu_directx12
 
                ::cast < device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-               pgpudevice->m_pdevice->CreateRenderTargetView(m_texturea[i]->m_presource, nullptr, rtvHandle);
+               ::cast < texture > ptexture = m_texturea[i];
+
+               pgpudevice->m_pdevice->CreateRenderTargetView(ptexture->m_presource, nullptr, rtvHandle);
+               
                rtvHandle.Offset(1, m_rtvDescriptorSize);
+
             }
 
          }

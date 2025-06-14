@@ -10,6 +10,7 @@
 #include "swap_chain.h"
 #include "initializers.h"
 #include "bred/gpu/cpu_buffer.h"
+#include "bred/gpu/layer.h"
 #include "gpu_directx12/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
@@ -58,6 +59,12 @@ float4 PSMain(PSInput input) : SV_TARGET
 namespace gpu_directx12
 {
 
+
+   struct ImageBlendVertex {
+      float position[2]; // NDC space
+      float uv[2];
+   };
+
    struct HelloTriangleVertex
    {
       DirectX::XMFLOAT3 position;
@@ -89,14 +96,50 @@ namespace gpu_directx12
    //     fragUV = inUV;
    //     gl_Position = vec4(inPos, 0.0, 1.0);
    // }
-   static unsigned int g_uaImageBlendVertexShader[] = {
- #include "shader/image_blend.vert.spv.inl"
+   static const char * g_pszImageBlendVertexShader = R"hlsl(
+      struct VSInput {
+      float2 position : POSITION;
+      float2 uv : TEXCOORD0;
    };
 
-
-   static unsigned int g_uaResolveFragmentShader[] = {
- #include "shader/resolve.frag.spv.inl"
+   struct PSInput {
+      float4 position : SV_POSITION;
+      float2 uv : TEXCOORD0;
    };
+
+   PSInput main(VSInput input) {
+      PSInput output;
+      output.position = float4(input.position, 0.0f, 1.0f);
+      output.uv = input.uv;
+      return output;
+   }
+)hlsl";
+
+
+   static const char * g_pszImageBlendFragmentShader = R"hlsl(
+    // Pixel Shader
+Texture2D snapshotTex : register(t0);
+SamplerState sampler0 : register(s0);
+
+struct PSInput {
+    float4 position : SV_POSITION;
+    float2 uv : TEXCOORD0;  // Explicitly numbered
+};
+
+float4 main(PSInput input) : SV_TARGET {
+    return snapshotTex.Sample(sampler0, input.uv);
+}
+)hlsl";
+
+   BEGIN_GPU_PROPERTIES(image_blend_input_layout)
+      GPU_PROPERTY("position", ::gpu::e_type_seq2)
+      GPU_PROPERTY("uv", ::gpu::e_type_seq2)
+   END_GPU_PROPERTIES()
+
+   //::gpu::property* image_blend_input_layout_properties()
+   //{
+
+   //}
 
 
    // renderer::renderer(VkWindow& window, context* pvkcdevice) : vkcWindow{ window }, m_pgpucontext{ pvkcdevice } 
@@ -219,7 +262,8 @@ namespace gpu_directx12
    int renderer::get_frame_count() const
    {
 
-      return ::gpu_directx12::render_target_view::MAX_FRAMES_IN_FLIGHT;
+      return ::gpu::renderer::get_frame_count();
+      //::render_target_view::MAX_FRAMES_IN_FLIGHT;
 
    }
 
@@ -297,7 +341,16 @@ namespace gpu_directx12
       else if (eoutput == ::gpu::e_output_gpu_buffer_to_swap_chain)
       {
 
-         m_pgpurendertarget = m_pgpucontext->m_pgpudevice->get_swap_chain();
+         auto poffscreenrendertargetview = __allocate offscreen_render_target_view;
+         //#ifdef WINDOWS_DESKTOP
+         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+         //#else
+         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+         //#endif
+         m_pgpurendertarget = poffscreenrendertargetview;
+
+
+         //m_pgpurendertarget = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
       }
 
@@ -814,7 +867,9 @@ namespace gpu_directx12
          if (pgpurendertargetview)
          {
 
-            auto presourceTexture = pgpurendertargetview->current_texture()->m_presource;
+            ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture();
+
+            auto presourceTexture = ptextureCurrent->m_presource;
 
             if (presourceTexture)
             {
@@ -1101,7 +1156,7 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
       ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
-      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
+      ::cast < ::gpu_directx12::renderer > prenderer = this;
 
       ::pointer <renderer::command_buffer > pcommandbufferBarrier;
 
@@ -1345,10 +1400,11 @@ namespace gpu_directx12
       m_presourceStagingTexture->Map(0, nullptr, &data);
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
       ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
-      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
+      ::cast < ::gpu_directx12::renderer > prenderer = this;
       ::cast < render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
-      ID3D12Resource* presourceOffscreenTexture = poffscreenrendertargetview->current_texture()->m_presource;
+      ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture();
+      ID3D12Resource* presourceOffscreenTexture = ptextureCurrent->m_presource;
 
 
       //m_pcpubuffersampler->sample(poffscreenrendertargetview->current_texture());
@@ -1532,13 +1588,14 @@ namespace gpu_directx12
 
       /////auto& memory = m_pimagetarget->m_imagebuffer.m_memory;
       ::cast< context > pgpucontext = m_pgpucontext;
-      ::cast< renderer > prenderer = pgpucontext->m_pgpurenderer;
+      ::cast< renderer > prenderer = this;
       ::cast < renderer > prendertargetview = prenderer->m_pgpurendertarget;
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
       ::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
       ID3D12Device* device = pgpudevice->m_pdevice;
       //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-      ID3D12Resource* presourceOffscreenTexture = poffscreenrendertargetview->current_texture()->m_presource;
+      ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture();
+      ID3D12Resource* presourceOffscreenTexture = ptextureCurrent->m_presource;
       //if (!pdevice || !context || !offscreenTexture)
       if (!device || !presourceOffscreenTexture)
       {
@@ -1546,7 +1603,7 @@ namespace gpu_directx12
       }
 
 
-      m_pcpubuffersampler->sample(poffscreenrendertargetview->current_texture());
+      m_pcpubuffersampler->sample(ptextureCurrent);
 
       //auto callback = m_callbackImage32CpuBuffer;
 
@@ -2398,11 +2455,13 @@ namespace gpu_directx12
 
          pshaderImageBlend->initialize_shader_with_block(
             this,
-            as_memory_block(g_uaImageBlendVertexShader),
-            as_memory_block(g_uaImageBlendFragmentShader),
-            { ::gpu::shader::e_descriptor_set_slot_local },
+            as_block(g_pszImageBlendVertexShader),
+            as_block(g_pszImageBlendFragmentShader),
+            { ::gpu::shader::e_descriptor_set_shader_resource_view_and_sampler },
             m_psetdescriptorlayoutImageBlend,
-            pshadervertexinput);
+            pshadervertexinput,
+            {},
+            image_blend_input_layout_properties());
 
       }
 
@@ -2437,8 +2496,8 @@ namespace gpu_directx12
 
          pshaderImageBlend->initialize_shader_with_block(
             this,
-            as_memory_block(g_uaImageBlendVertexShader),
-            as_memory_block(g_uaImageBlendFragmentShader),
+            as_memory_block(g_pszImageBlendVertexShader),
+            as_memory_block(g_pszImageBlendFragmentShader),
             { ::gpu::shader::e_descriptor_set_slot_local },
             m_psetdescriptorlayoutImageBlend,
             pshadervertexinput);
@@ -3317,6 +3376,100 @@ namespace gpu_directx12
    //}
 
 
+void CreateImageBlendVertexBuffer(
+   ::comptr<ID3D12Resource> &vertexBuffer,
+   D3D12_VERTEX_BUFFER_VIEW & vbView, 
+   ID3D12Device * pdevice, 
+   const ImageBlendVertex* quadData, 
+   UINT vertexCount)
+{
+   const UINT bufferSize = sizeof(ImageBlendVertex) * vertexCount;
+
+   CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+   CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
+
+   pdevice->CreateCommittedResource(
+      &heapProps,
+      D3D12_HEAP_FLAG_NONE,
+      &bufferDesc,
+      D3D12_RESOURCE_STATE_GENERIC_READ,
+      nullptr,
+      __interface_of(vertexBuffer));
+
+   void* mappedData = nullptr;
+   CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
+   vertexBuffer->Map(0, &readRange, &mappedData);
+   memcpy(mappedData, quadData, bufferSize);
+   vertexBuffer->Unmap(0, nullptr);
+
+   vbView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
+   vbView.SizeInBytes = bufferSize;
+   vbView.StrideInBytes = sizeof(ImageBlendVertex);
+}
+
+
+   void renderer::blend(::gpu::layer* player)
+   {
+
+      ::cast < texture > ptexture = player->m_pgputexture;
+
+      auto pshader = get_image_blend_shader();
+
+      pshader->bind();
+
+      auto sizeHost = m_pgpucontext->m_rectangle.size();
+
+      const auto& rect = player->m_rectangleTarget;
+      float left = ((float)rect.left() / (float) sizeHost.width()) * 2.0f - 1.0f;
+      float right = ((float)rect.right() / (float) sizeHost.width()) * 2.0f - 1.0f;
+      float top = 1.0f - ((float)rect.top() / (float) sizeHost.height()) * 2.0f;
+      float bottom = 1.0f - ((float) rect.bottom() / (float) sizeHost.height()) * 2.0f;
+
+      ImageBlendVertex quad[] = {
+          {{left, top}, {0, 0}},
+          {{right, top}, {1, 0}},
+          {{left, bottom}, {0, 1}},
+
+          {{left, bottom}, {0, 1}},
+          {{right, top}, {1, 0}},
+          {{right, bottom}, {1, 1}},
+      };
+
+      auto vertexCount = 6;
+
+      auto pcommandbuffer = getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      ::cast < device > pdevice = m_pgpucontext->m_pgpudevice;
+
+      ///pcommandlist->SetPipelineState(pipelineState.Get());
+      //pcommandlist->SetGraphicsRootSignature(rootSignature.Get());
+      //pcommandlist->SetGraphicsRootDescriptorTable(0, srvHandle);
+
+      D3D12_VERTEX_BUFFER_VIEW vbView = {};
+      ::comptr<ID3D12Resource> vertexBuffer;
+      CreateImageBlendVertexBuffer(
+         vertexBuffer, vbView,
+         pdevice->m_pdevice, quad, vertexCount);
+
+      //// Upload and bind vertex buffer (simplified)
+      //// This assumes you're using an upload heap for the quad vertices
+      //// Actual implementation should reuse buffer or manage lifetimes properly
+      //
+      //vbView.BufferLocation = ...; // GPU VA of vertex buffer with `quad`
+      //vbView.SizeInBytes = sizeof(ImageBlendVertex) * vertexCount;
+      //vbView.StrideInBytes = sizeof(ImageBlendVertex);
+      pcommandlist->IASetVertexBuffers(0, 1, &vbView);
+      pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+      pcommandlist->DrawInstanced(vertexCount, 1, 0, 0);
+
+      pshader->unbind();
+
+
+
+   }
+
 
 
    void renderer::_blend_renderer(::gpu_directx12::renderer* prendererSrc, bool bYSwap)
@@ -3631,11 +3784,11 @@ namespace gpu_directx12
 
       ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
 
-      auto ptexture = pgpurendertargetview->current_texture();
+      ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture();
 
       auto pcommandlist = getCurrentCommandBuffer2()->m_pcommandlist;
 
-      ptexture->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+      ptextureCurrent->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
       ID3D12DescriptorHeap* ppHeaps[] = { m_pheapCbv };
 
@@ -3823,7 +3976,9 @@ namespace gpu_directx12
          if (pgpurendertargetview)
          {
 
-            auto presourceTexture = pgpurendertargetview->current_texture()->m_presource;
+            ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture();
+
+            auto presourceTexture = ptextureCurrent->m_presource;
 
             if (presourceTexture)
             {

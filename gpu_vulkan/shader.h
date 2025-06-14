@@ -52,7 +52,7 @@ namespace gpu_vulkan
       VkPipelineLayout		m_vkpipelinelayout;
 
 
-      void _create_pipeline_layout(int iSize);
+      void _create_pipeline_layout(int iPushPropertiesSize);
 
       void draw() override;
 

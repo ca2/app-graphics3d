@@ -3,8 +3,8 @@
 // camilo on 2025-05-19 04:59 <3ThomasBorregaardSorensen!!
 #include "approach.h"
 #include "buffer.h"
-#include "shader.h"
 #include "context.h"
+#include "shader.h"
 #include "descriptors.h"
 #include "renderer.h"
 #include "texture.h"
@@ -12,7 +12,7 @@
 #include "bred/gpu/types.h"
 #include "acme_windows_common/hresult_exception.h"
 #include <d3dcompiler.h>
-//#include "aura/user/user/graphics3d.h"
+//#include "bred/user/user/graphics3d.h"
 
 
 
@@ -154,6 +154,12 @@ namespace gpu_directx12
             iCount++;
 
          }
+         if (m_edescriptorsetslota.contains(e_descriptor_set_shader_resource_view_and_sampler))
+         {
+
+            iCount+=2;
+
+         }
          ranges.set_size(iCount);
          rootParameters.set_size(iCount);
          //ranges.set_size(1);
@@ -191,6 +197,39 @@ namespace gpu_directx12
             //ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
             rootParameters[i].InitAsConstantBufferView(1);
             i++;
+
+         }
+
+         if (m_edescriptorsetslota.contains(e_descriptor_set_shader_resource_view_and_sampler))
+         {
+            // Range for SRV (Texture2D)
+            ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,     // Range type
+               1,                                    // Number of descriptors
+               0,                                    // Base shader register (t0)
+               0,                                    // Register space
+               D3D12_DESCRIPTOR_RANGE_FLAG_NONE,    // Flags
+               D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND);
+
+            // Range for Sampler
+            ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, // Range type
+               1,                                    // Number of descriptors
+               0,                                    // Base shader register (s0)
+               0,                                    // Register space
+               D3D12_DESCRIPTOR_RANGE_FLAG_NONE,    // Flags
+               D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND);
+
+            //CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
+            //rootSigDesc.Init(1, &param, 0, nullptr,
+            //   D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+             // Root parameter for SRV table
+            rootParameters[0].InitAsDescriptorTable(1,              // Number of ranges
+               &ranges[0],       // Range array
+               D3D12_SHADER_VISIBILITY_PIXEL); // Only pixel shader needs this
+
+            // Root parameter for Sampler table
+            rootParameters[1].InitAsDescriptorTable(1,              // Number of ranges
+               &ranges[1],       // Range array
+               D3D12_SHADER_VISIBILITY_PIXEL); // Only pixel shader needs this
 
          }
 
@@ -293,33 +332,127 @@ namespace gpu_directx12
    }
 
 
+   inline const char* input_layout_semantic_name_from_gpu_property_name(const ::scoped_string& scopedstr)
+   {
+
+      if (scopedstr.case_insensitive_equals("position"))
+      {
+
+         return "POSITION";
+
+      }
+      else if (scopedstr.case_insensitive_equals("uv"))
+      {
+
+         return "TEXCOORD";
+
+      }
+      else
+      {
+
+         throw ::exception(error_not_implemented, "please implement this missing implementation");
+
+      }
+
+   }
+
+
+   inline DXGI_FORMAT input_layout_format_from_gpu_property_type(const ::gpu::enum_type & etype)
+   {
+
+      switch(etype)
+      {
+      case ::gpu::e_type_seq2:
+         return DXGI_FORMAT_R32G32_FLOAT;
+      default:
+         throw ::exception(error_not_implemented, "please implement this missing implementation");
+      }
+
+   }
+
+
+   inline int input_layout_aligned_property_size(int i)
+   {
+
+      return (i + 3) & ~3;
+
+   }
+
    void shader::create_vertex_and_pixel_shader(const ::block& blockVertex, const ::block& blockPixel)
    {
 
       ::array < D3D12_INPUT_ELEMENT_DESC > layout;
 
-      UINT uOffset0 = offsetof(gpu::Vertex, position);
-      UINT uOffset1 = offsetof(gpu::Vertex, color);
-      UINT uOffset2 = offsetof(gpu::Vertex, normal);
-      UINT uOffset3 = offsetof(gpu::Vertex, uv);
+      auto countInputLayout = m_propertiesInputLayout.count();
 
-
-      layout.add({ "POSITION" , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
-      if (m_iVertexLevel == 2)
+      if (countInputLayout > 0)
       {
-         layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32A32_FLOAT , 0, uOffset1, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+         int iSemanticIndex = 0;
+         int iInputSlot = 0;
+         D3D12_INPUT_CLASSIFICATION classification = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+         UINT DataStepRate = 0;
+         int iOffset = 0;
+         int iNextOffset = 0;
+
+         for (::collection::index iInputLayout = 0; iInputLayout < countInputLayout; iInputLayout++)
+         {
+
+            auto pproperty = m_propertiesInputLayout.m_pproperties + iInputLayout;
+
+            auto name = pproperty->m_pszName;
+            auto type = pproperty->m_etype;
+            auto offset = iNextOffset;
+            iNextOffset = offset + input_layout_aligned_property_size(pproperty->get_item_size());
+
+            D3D12_INPUT_ELEMENT_DESC desc{};
+
+            desc.SemanticName = input_layout_semantic_name_from_gpu_property_name(name);
+            desc.SemanticIndex = iSemanticIndex;
+            desc.Format = input_layout_format_from_gpu_property_type(type);
+            desc.InputSlot = iInputSlot;
+            desc.AlignedByteOffset = offset;
+            desc.InputSlotClass = classification;
+            desc.InstanceDataStepRate = DataStepRate;
+
+            layout.add(desc);
+
+         }
+
+         //// Input layout
+         //D3D12_INPUT_ELEMENT_DESC layout[] = {
+         //    {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+         //    {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+         //};
+
       }
       else
       {
-         layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset1, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+         UINT uOffset0 = offsetof(gpu::Vertex, position);
+         UINT uOffset1 = offsetof(gpu::Vertex, color);
+         UINT uOffset2 = offsetof(gpu::Vertex, normal);
+         UINT uOffset3 = offsetof(gpu::Vertex, uv);
 
 
-      }
+         layout.add({ "POSITION" , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+         if (m_iVertexLevel == 2)
+         {
+            layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32A32_FLOAT , 0, uOffset1, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+         }
+         else
+         {
+            layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset1, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 
-      if (m_iVertexLevel > 2 || m_iVertexLevel < 0)
-      {
-         layout.add({ "NORMAL"   , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset2, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
-         layout.add({ "TEXCOORD" , 0, DXGI_FORMAT_R32G32_FLOAT    , 0, uOffset3, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+         }
+
+         if (m_iVertexLevel > 2 || m_iVertexLevel < 0)
+         {
+            layout.add({ "NORMAL"   , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset2, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+            layout.add({ "TEXCOORD" , 0, DXGI_FORMAT_R32G32_FLOAT    , 0, uOffset3, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+         }
 
       }
 
@@ -399,7 +532,7 @@ namespace gpu_directx12
       if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
       {
          int iNumberOfObjects = 10;
-         UINT constantBufferSize = ::directx12::Align256(m_properties.size()) * iNumberOfObjects;    // CB size is required to be 256-byte aligned.
+         UINT constantBufferSize = ::directx12::Align256(m_propertiesPush.size()) * iNumberOfObjects;    // CB size is required to be 256-byte aligned.
          CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
          auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
          HRESULT hrCreateCommittedResource = pgpudevice->m_pdevice->CreateCommittedResource(
@@ -449,7 +582,7 @@ namespace gpu_directx12
       if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
       {
 
-         auto iFrameIndex = pcontext->m_pgpurenderer->get_frame_index();
+         auto iFrameIndex =m_pgpurenderer->get_frame_index();
 
          pcommandlist->SetGraphicsRootDescriptorTable(0, prenderer->m_pheapCbv->GetGPUDescriptorHandleForHeapStart());
 
@@ -471,7 +604,7 @@ namespace gpu_directx12
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      if (m_properties.size() <= 0)
+      if (m_propertiesPush.size() <= 0)
       {
 
          return;
@@ -482,18 +615,18 @@ namespace gpu_directx12
 
       ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      auto iSetSize = ::directx12::Align256(m_properties.size());
+      auto iSetSize = ::directx12::Align256(m_propertiesPush.size());
       CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
       UINT8* pPushProperties;
       auto hrMap = m_presourcePushProperties->Map(0, &readRange, (void**) & pPushProperties);
       defer_throw_hresult(hrMap);
-      memcpy(pPushProperties + ::directx12::Align256(m_properties.size())*m_iPush, m_properties.data(), m_properties.size());
+      memcpy(pPushProperties + ::directx12::Align256(m_propertiesPush.size())*m_iPush, m_propertiesPush.data(), m_propertiesPush.size());
       m_presourcePushProperties->Unmap(0, nullptr);
 
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       
-      auto address = m_presourcePushProperties->GetGPUVirtualAddress() + m_iPush* ::directx12::Align256(m_properties.size()) ;
+      auto address = m_presourcePushProperties->GetGPUVirtualAddress() + m_iPush* ::directx12::Align256(m_propertiesPush.size()) ;
       pcommandbuffer->m_pcommandlist->SetGraphicsRootConstantBufferView(1, address);
       m_iPush++;
 

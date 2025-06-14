@@ -234,27 +234,33 @@ namespace draw2d_vkvg
       //   return false;
       //}
 
-      if (!m_pgpucontext)
-      {
+      //if (!m_pgpucontext)
+      //{
 
-         auto pgpu = application()->get_gpu();
+      //   auto pgpuapproach = application()->get_gpu_approach();
 
-         if (!m_puserinteraction)
-         {
+      //   if (!m_puserinteraction)
+      //   {
 
-            m_puserinteraction = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+      //      m_puserinteraction = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
 
-         }
+      //   }
 
-         ASSERT(m_puserinteraction);
+      //   ASSERT(m_puserinteraction);
 
-         auto pgpudevice = pgpu->get_device();
+      //   auto pgpudevice = pgpuapproach->get_gpu_device();
 
-         m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
+      //   m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
 
-      }
+      //}
 
-      if (!m_pgpucontext)
+      auto pgpuapproach = application()->get_gpu_approach();
+
+      auto pgpudevice = pgpuapproach->get_gpu_device();
+
+      auto pgpucontext = pgpudevice->get_main_context();
+
+      if (!pgpucontext)
       {
          return false;
          //auto psystem = system();
@@ -278,9 +284,9 @@ namespace draw2d_vkvg
       //m_pgpucontext->create_offscreen_buffer(rectanglePlacement.size());
 
 
-      auto psystem = system();
+      //auto psystem = system();
 
-      auto pgpu = application()->get_gpu();
+      //auto pgpu = application()->get_gpu();
 
       //if (!m_pgpucontext)
       //{
@@ -293,7 +299,7 @@ namespace draw2d_vkvg
       //m_pgpucontext->defer_create_window_context(pwindow);
 
       ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontext;
-      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpu;
+      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
 
       vkvg_device_create_info_t createinfo;
       createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -455,7 +461,7 @@ namespace draw2d_vkvg
       //m_hglrc = hglrc;
       //m_size = size;
 
-      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
+      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
       ::vulkan::resize(rectanglePlacement.size(), bYSwap);
 
@@ -492,22 +498,24 @@ namespace draw2d_vkvg
 
       auto psystem = system();
 
-      auto pgpu = application()->get_gpu();
+      auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpu->get_device();
+      auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      if (!m_pgpucontext)
-      {
+      auto pgpucontext = pgpudevice->get_main_context();
 
-         m_pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
+      //if (!m_pgpucontext)
+      //{
 
-      }
+      //   m_pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
+
+      //}
 
 
-      m_pgpucontext->defer_create_window_context(pwindow);
+      pgpucontext->defer_create_window_context(pwindow);
 
-      ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontext;
-      ::cast < ::gpu_vulkan::approach > papproachVulkan =pgpu;
+      ::cast < ::gpu_vulkan::context > pcontextVulkan = pgpucontext;
+      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
 
       vkvg_device_create_info_t createinfo;
       createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -605,7 +613,7 @@ namespace draw2d_vkvg
 
       }
 
-      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
+      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
       ::vulkan::resize(pbitmap->get_size(), bYSwap);
 
@@ -2723,7 +2731,7 @@ namespace draw2d_vkvg
 
       m_sizeWindow = sizeWindow;
 
-      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
+      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
       ::vulkan::resize(sizeWindow, bYSwap);
 
@@ -6371,7 +6379,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::int_rectangle rectangle;
 
-      if (!m_puserinteraction && m_pwindow && m_papplication->m_bUseSwapChainWindow)
+      if (!m_puserinteraction && m_pwindow && m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          m_puserinteraction = dynamic_cast <::user::interaction*>(m_pwindow->m_pacmeuserinteraction.m_p);
@@ -6391,18 +6399,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
+      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
       ::vulkan::resize(rectangle.size(), bYSwap);
 
       m_z = 0.f;
 
-      if (!m_pgpucontext->m_pgpurenderer)
+      if (!m_pgpucontext->m_pgpurendererDraw2d)
       {
 
-         __øconstruct(m_pgpucontext->m_pgpurenderer);
+         __øconstruct(m_pgpucontext->m_pgpurendererDraw2d);
 
-         m_pgpucontext->m_pgpurenderer->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer, ::gpu::e_scene_2d);
+         m_pgpucontext->m_pgpurendererDraw2d->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer, ::gpu::e_scene_2d);
 
       }
 
@@ -6482,13 +6490,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 
-            m_pgpucontextOutput = m_papplication->get_gpu()->get_device()->start_swap_chain_context(this, pwindow);
+            m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device()->start_swap_chain_context(this, pwindow);
 
             //m_pgpucontextOutput->create_window_buffer(pwindow);
 
          }
 
-         ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontextOutput->get_renderer(::gpu::e_scene_2d);
+         ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontextOutput->get_output_renderer();
 
          //m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
 
@@ -6535,7 +6543,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //dr();
 
-      if (m_papplication->m_bUseSwapChainWindow)
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          //m_pgpucontext->swap_buffers();
@@ -6566,7 +6574,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::on_present()
    {
 
-      if (m_papplication->m_bUseSwapChainWindow)
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          m_pgpucontext->swap_buffers();

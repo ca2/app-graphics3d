@@ -148,7 +148,7 @@ namespace draw2d_opengl
       __defer_construct(m_pgraphics);
       //m_pgraphics->set(m_pbitmap);
 
-      if (m_papplication->m_bUseSwapChainWindow)
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          m_pgraphics->create_window_graphics(pwindow);
@@ -2810,7 +2810,7 @@ namespace draw2d_opengl
 
       int cy = pgraphics->m_sizeWindow.cy();
 
-      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
+      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
       ::opengl::resize(pgraphics->m_sizeWindow, bYSwap);
 

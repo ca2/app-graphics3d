@@ -7,7 +7,7 @@
 #include "bred/gpu/shader.h"
 #include "bred/graphics3d/camera.h"
 #include "bred/graphics3d/scene.h"
-#include "aura/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d.h"
 #include "app-graphics3d/continuum/global_ubo.h"
 #include "point_light_system.h"
 
@@ -70,7 +70,9 @@ namespace app_graphics3d_continuum
    void point_light_system::prepare(::gpu::context * pgpucontext)//(VkDescriptorSetLayout globalSetLayout) 
    {
 
-      m_pshader = pgpucontext->m_pgpurenderer->create_shader(
+      auto prenderer = pgpucontext->m_pgpurendererEngine;
+
+      m_pshader = prenderer->create_shader(
          "matter://shaders/point_light.vert",
          "matter://shaders/point_light.frag",
          {::gpu::shader::e_descriptor_set_slot_global,
@@ -78,6 +80,7 @@ namespace app_graphics3d_continuum
          nullptr,
          {},
          point_light2_properties(),
+         {},
          ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
       );
       

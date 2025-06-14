@@ -4,6 +4,7 @@
 #include "render_target_view.h"
 #include "renderer.h"
 #include "depth_stencil.h"
+#include "texture.h"
 
 
 namespace gpu_directx12
@@ -677,16 +678,7 @@ namespace gpu_directx12
    //}
 
 
-   ::gpu::texture* render_target_view::current_texture()
-   {
-
-      auto iFrameIndex = m_pgpurenderer->get_frame_index();
-
-      auto size = m_texturea.size();
-
-      return m_texturea[iFrameIndex];
-
-   }
+   
 
 
    depth_stencil* render_target_view::current_depth_stencil()

@@ -1530,7 +1530,7 @@ namespace gpu_vulkan
    void context::resize_cpu_buffer(const ::int_size & sizeParam)
    {
 
-      if (m_papplication->m_bUseSwapChainWindow)
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          return;
@@ -2335,7 +2335,7 @@ namespace gpu_vulkan
    void context::update_global_ubo(const ::block& block)
    {
 
-      auto iFrameIndex = m_pgpurenderer->get_frame_index();
+      auto iFrameIndex = m_pgpurendererEngine->get_frame_index();
 
       if (iFrameIndex < 0 || iFrameIndex >= m_uboBuffers.size())
       {
@@ -2365,7 +2365,7 @@ namespace gpu_vulkan
       if (!m_psetdescriptorlayoutGlobal)
       {
 
-         auto pgpurenderer = get_renderer(::gpu::e_scene_3d);
+         auto pgpurenderer = get_output_renderer();
 
          m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(this)
             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)

@@ -22,10 +22,10 @@ namespace gpu_directx12
    }
 
 
-   void texture::initialize_texture(::gpu::renderer* prenderer, const ::int_size& size) //, bool bCreateRenderTargetView, bool bCreateShaderResourceView)
+   void texture::initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_size& size) //, bool bCreateRenderTargetView, bool bCreateShaderResourceView)
    {
 
-      m_prenderer = prenderer;
+      ::gpu::texture::initialize_gpu_texture(prenderer, size);
 
       DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
       // 1. Create the texture resource
@@ -151,6 +151,14 @@ namespace gpu_directx12
       }
 
       return m_pd3d11;
+
+   }
+
+
+   void texture::blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget)
+   {
+
+      
 
    }
 

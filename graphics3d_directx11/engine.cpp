@@ -8,7 +8,7 @@
 //#include "renderer.h"
 #include "swap_chain_render_pass.h"
 #include "aura/platform/application.h"
-#include "aura/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d.h"
 #include "gpu_directx11/approach.h"
 #include "gpu_directx11/context.h"
 #include "gpu_directx11/descriptors.h"
@@ -50,7 +50,7 @@ namespace graphics3d_directx11
    void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::cast < ::gpu_directx11::renderer> prenderer = m_pgpucontext->m_pgpurenderer;
+      ::cast < ::gpu_directx11::renderer> prenderer = m_pgpurendererGraphics3D->m_pgpucontext->m_pgpurendererOutput2;
 
       prenderer->defer_update_renderer();
 
@@ -249,7 +249,7 @@ namespace graphics3d_directx11
 
       //      pcontextUpper->make_current();
 
-      //      ::cast < ::gpu_directx11::renderer > prendererUpper = pcontextUpper->m_pgpurenderer;
+      //      ::cast < ::gpu_directx11::renderer > prendererUpper = pcontextUpper->m_pgpurendererGraphics3D;
 
       //      //VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
 
@@ -321,9 +321,9 @@ namespace graphics3d_directx11
    void engine::_engine_on_frame_context_initialization()
    {
 
-      ::cast < ::gpu_directx11::approach> papproach = m_papplication->get_gpu();
+      ::cast < ::gpu_directx11::approach> papproach = m_papplication->get_gpu_approach();
 
-      papproach->engine_on_frame_context_initialization(m_pgpucontext);
+      papproach->engine_on_frame_context_initialization(m_pgpurendererGraphics3D->m_pgpucontext);
 
       //m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pgpucontext)
       //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
@@ -548,8 +548,8 @@ namespace graphics3d_directx11
       if (pgraphics2d)
       {
 
-         ::cast< ::gpu_directx11::context > pgpucontext = m_pgpucontext;
-         ::cast< ::gpu_directx11::renderer > prenderer = pgpucontext->m_pgpurenderer;
+         ::cast< ::gpu_directx11::context > pgpucontext = m_pgpurendererGraphics3D->m_pgpucontext;
+         ::cast< ::gpu_directx11::renderer > prenderer = this;
          ::cast < ::gpu_directx11::render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
          ::cast < ::gpu_directx11::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
          ::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;

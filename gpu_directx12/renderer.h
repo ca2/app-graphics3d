@@ -93,6 +93,7 @@ namespace gpu_directx12
 
       ::pointer<::gpu::shader>                        m_pshaderImageBlend;
       ::pointer<::gpu::shader>                        m_pshaderImageSet;
+      //::pointer<::gpu::shader>                        m_pshaderLayerBlend;
       //map < VkImage, ::pointer < descriptor > >       m_imagedescriptor;
       //map < VkImage, ::pointer < model > >       m_imagemodel;
       //::pointer < ::user::graphics3d >	m_pimpact;
@@ -175,9 +176,6 @@ namespace gpu_directx12
 #endif
 
       ::procedure_array m_procedureaAfterEndRender;
-
-      ::collection::index m_iCurrentFrame2 = -1;
-      ::collection::index m_iFrameSerial2 = -1;
 
       ::int_size m_sizeRenderer;
 
@@ -297,6 +295,8 @@ namespace gpu_directx12
 
       //void _blend_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
       //void _on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle);
+
+      void blend(::gpu::layer* player);
 
       void _blend_renderer(::gpu_directx12::renderer* prendererSrc, bool bYSwap);
       void _on_graphics_end_draw(::gpu_directx12::renderer * prendererSrc);

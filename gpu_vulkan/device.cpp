@@ -983,7 +983,7 @@ namespace gpu_vulkan
       VkQueueFlags requestedQueueTypes)
    {
 
-      ::cast < approach > pgpuapproach = application()->get_gpu();
+      ::cast < approach > pgpuapproach = application()->get_gpu_approach();
 
       ::cast < physical_device > pphysicaldevice = pgpuapproach->m_pphysicaldevice;
 

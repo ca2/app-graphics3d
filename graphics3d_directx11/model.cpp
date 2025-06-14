@@ -10,7 +10,7 @@
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/path_system.h"
 #include "aura/platform/application.h"
-#include "aura/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d.h"
 #include "gpu_directx11/buffer.h"
 #include "gpu_directx11/context.h"
 #include "gpu_directx11/renderer.h"
@@ -68,12 +68,12 @@ namespace graphics3d_directx11
    }
 
 
-   void model::initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder)
+   void model::initialize_model(::gpu::renderer * pgpurenderer, const ::graphics3d::model::Builder& builder)
    {
 
-      m_pgpucontext = pgpucontext;
+      m_pgpurenderer = pgpurenderer;
 
-      initialize(pgpucontext);
+      initialize(pgpurenderer);
 
       createVertexBuffers(builder.vertices);
 
@@ -249,11 +249,11 @@ namespace graphics3d_directx11
    }
 
 
-   void model::draw(::gpu::context* pgpucontext)
+   void model::draw()
    {
 
       //cast <::gpu_directx11::renderer> pgpurenderer = pgpucontext->m_pgpurenderer;
-      ::cast <::gpu_directx11::context> pcontext = pgpucontext;
+      ::cast <::gpu_directx11::context> pcontext = m_pgpurenderer->m_pgpucontext;
       //auto commandBuffer = pgpurenderer->getCurrentCommandBuffer();
 
       if (hasIndexBuffer) {
@@ -274,10 +274,10 @@ namespace graphics3d_directx11
    }
 
    
-   void model::bind(::gpu::context* pgpucontext)
+   void model::bind()
    {
 
-      ::cast <::gpu_directx11::context> pcontext = pgpucontext;
+      ::cast <::gpu_directx11::context> pcontext = m_pgpurenderer->m_pgpucontext;
 
       //auto commandBuffer = prenderer->getCurrentCommandBuffer();
 

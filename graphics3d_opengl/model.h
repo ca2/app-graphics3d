@@ -47,9 +47,6 @@ namespace graphics3d_opengl
       GLuint m_gluVAO;
       GLuint m_gluEBO;
       ::collection::count m_cIndexes;
-      void bind(::gpu::context* pgpucontext) override;
-      void draw(::gpu::context* pgpucontext) override;
-      void unbind(::gpu::context* pgpucontext) override;
       bool gammaCorrection;
 
       // constructor, expects a filepath to a 3D model.
@@ -61,8 +58,11 @@ namespace graphics3d_opengl
        ~model();
 
 
-       void initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder);
+       void initialize_model(::gpu::renderer* pgpurenderer, const ::graphics3d::model::Builder& builder) override;
 
+       void bind() override;
+       void draw() override;
+       void unbind() override;
 
        void createVertexBuffers(const ::array<gpu::Vertex>& vertices);
        void createIndexBuffers(const ::array<uint32_t>& indices);

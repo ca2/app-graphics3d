@@ -5,7 +5,7 @@
 #include "bred/gpu/context.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/shader.h"
-#include "aura/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d.h"
 #include "simple_render_system.h"
 // libs
 #define GLM_FORCE_RADIANS	
@@ -78,7 +78,9 @@ namespace app_graphics3d_continuum
 	void simple_render_system::prepare(::gpu::context* pgpucontext)
 	{
 
-		m_pshader = pgpucontext->m_pgpurenderer->create_shader(
+		auto prenderer = pgpucontext->m_pgpurendererEngine;
+
+		m_pshader = prenderer->create_shader(
 			"matter://shaders/vert.vert",
 			"matter://shaders/frag.frag",
 			{ ::gpu::shader::e_descriptor_set_slot_global,
@@ -187,19 +189,19 @@ namespace app_graphics3d_continuum
 
 				auto modelMatrix = m_pengine->model_matrix(obj->m_transform);
 
-				m_pshader->m_properties["modelMatrix"] = modelMatrix;
+				m_pshader->m_propertiesPush["modelMatrix"] = modelMatrix;
 
 				auto normalMatrix = m_pengine->normal_matrix(obj->m_transform);
 
-				m_pshader->m_properties["normalMatrix"] = normalMatrix;
+				m_pshader->m_propertiesPush["normalMatrix"] = normalMatrix;
 
 				m_pshader->push_properties();
 				
-				obj->m_pmodel->bind(pgpucontext);
+				obj->m_pmodel->bind();
 
-				obj->m_pmodel->draw(pgpucontext);
+				obj->m_pmodel->draw();
 
-				obj->m_pmodel->unbind(pgpucontext);
+				obj->m_pmodel->unbind();
 
 			}
 

@@ -21,7 +21,6 @@ namespace gpu_directx12
 
       ::comptr<ID3D12DescriptorHeap> m_rtvHeap;
       ::comptr<ID3D12DescriptorHeap> m_dsvHeap;
-      ::pointer_array < texture >            m_texturea;
       ::pointer < depth_stencil >      m_pdepthstencil;
       UINT m_rtvDescriptorSize;
 
@@ -60,7 +59,7 @@ namespace gpu_directx12
       uint32_t width() { return 16; }
       uint32_t height() { return 9; }
 
-      virtual ::gpu::texture* current_texture();
+      //virtual ::gpu::texture* current_texture();
       virtual depth_stencil* current_depth_stencil();
 
 

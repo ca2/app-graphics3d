@@ -1,9 +1,11 @@
 // Created by camilo on 2025-06-08 18:11 < 3ThomasBorregaardSørensen!!
 #pragma once
 
-#include "bred/gpu/"
+
+#include "bred/gpu/texture.h"
 #include <d3d11.h>
 #include <d2d1_1.h>
+
 
 namespace gpu_directx12
 {
@@ -67,6 +69,8 @@ namespace gpu_directx12
       void _new_state(ID3D12GraphicsCommandList* pcommandlist, D3D12_RESOURCE_STATES estate);
 
       class d3d11* d3d11();
+
+      void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
 
    };
 

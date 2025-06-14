@@ -8,7 +8,7 @@
 //#include <vector>
 //#include "Core/Window.h"
 #include "input.h"
-#include "renderer.h"
+//#include "renderer.h"
 #include "mesh.h"
 #include "shader.h"
 #include "camera.h" // Include the ::graphics3d::camera header

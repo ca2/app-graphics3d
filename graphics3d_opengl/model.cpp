@@ -3,6 +3,7 @@
 #include <stb/stb_image.h>
 #include "context.h"
 #include "bred/gpu/context.h"
+#include "bred/gpu/renderer.h"
 //#include <iostream>
 
 
@@ -28,12 +29,12 @@ namespace graphics3d_opengl
 	}
 
 
-	void model::initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder)
+	void model::initialize_model(::gpu::renderer* pgpurenderer, const ::graphics3d::model::Builder& builder)
 	{
 
-		m_pgpucontext = pgpucontext;
+		m_pgpurenderer = pgpurenderer;
 
-		initialize(pgpucontext);
+		initialize(pgpurenderer);
 
 		createVertexBuffers(builder.vertices);
 
@@ -157,8 +158,9 @@ namespace graphics3d_opengl
 	}
 
 	
-	void model::bind(::gpu::context* pgpucontext)
+	void model::bind()
 	{
+
 		glBindVertexArray(m_gluVAO);
 		//auto pframeinfo = (FrameInfo*)p;
 		//VkBuffer buffers[] = { vertexBuffer->getBuffer() };
@@ -171,7 +173,7 @@ namespace graphics3d_opengl
 	}
 
 
-	void model::draw(::gpu::context* pgpucontext)
+	void model::draw()
 	{
 
 		glDrawElements(GL_TRIANGLES, m_cIndexes, GL_UNSIGNED_INT, 0);
@@ -189,7 +191,7 @@ namespace graphics3d_opengl
 	}
 
 
-	void model::unbind(::gpu::context* pgpucontext)
+	void model::unbind()
 	{
 
 		glBindVertexArray(0);

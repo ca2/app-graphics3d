@@ -31,7 +31,7 @@ namespace graphics3d_vulkan
 
 
       bool hasIndexBuffer = false;
-      ::pointer < ::gpu_vulkan::context > m_pgpucontext;
+      ::pointer < ::gpu_vulkan::renderer > m_pgpurenderer;
 
 
       ::pointer<::gpu_vulkan::buffer> m_pbufferVertex;
@@ -51,10 +51,12 @@ namespace graphics3d_vulkan
       model();
       ~model();
 
-      void initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder) override;
 
-      void draw(::gpu::context* pgpucontext) override;
-      void bind(::gpu::context* pgpucontext) override;
+      void initialize_model(::gpu::renderer* pgpurenderer, const ::graphics3d::model::Builder& builder) override;
+
+
+      void draw() override;
+      void bind() override;
 
       void createVertexBuffers(const ::array<::gpu::Vertex>& vertices);
       void createIndexBuffers(const ::array<uint32_t>& indices);

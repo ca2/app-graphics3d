@@ -3,7 +3,7 @@
 
 
 #include "acme/platform/auto_pointer.h"
-#include "aura/graphics/draw2d/draw2d.h"
+#include "bred/gpu/draw2d.h"
 #include "gpu_vulkan/context.h"
 
 
@@ -12,7 +12,7 @@ namespace draw2d_vulkan
 
 
    class CLASS_DECL_DRAW2D_VULKAN draw2d :
-      virtual public ::draw2d::draw2d
+      virtual public ::draw2d_gpu::draw2d
    {
    public:
 

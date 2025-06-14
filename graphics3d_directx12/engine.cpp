@@ -7,7 +7,7 @@
 #include "offscreen_render_pass.h"
 #include "swap_chain_render_pass.h"
 #include "aura/platform/application.h"
-#include "aura/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d.h"
 #include "gpu_directx12/approach.h"
 #include "gpu_directx12/context.h"
 #include "gpu_directx12/descriptors.h"
@@ -52,7 +52,7 @@ namespace graphics3d_directx12
    void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::cast < ::gpu_directx12::renderer> prenderer = m_pgpucontext->m_pgpurenderer;
+      ::cast < ::gpu_directx12::renderer> prenderer = m_pgpurendererGraphics3D;
 
       prenderer->defer_update_renderer();
 
@@ -251,7 +251,7 @@ namespace graphics3d_directx12
 
       //      pcontextUpper->make_current();
 
-      //      ::cast < ::gpu_directx12::renderer > prendererUpper = pcontextUpper->m_pgpurenderer;
+      //      ::cast < ::gpu_directx12::renderer > prendererUpper = pcontextUpper->m_pgpurendererGraphics3D;
 
       //      //VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
 
@@ -323,9 +323,9 @@ namespace graphics3d_directx12
    void engine::_engine_on_frame_context_initialization()
    {
 
-      ::cast < ::gpu_directx12::approach> papproach = m_papplication->get_gpu();
+      ::cast < ::gpu_directx12::approach> papproach = m_papplication->get_gpu_approach();
 
-      papproach->engine_on_frame_context_initialization(m_pgpucontext);
+      papproach->engine_on_frame_context_initialization(m_pgpurendererGraphics3D->m_pgpucontext);
 
       //m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pgpucontext)
       //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
@@ -339,9 +339,9 @@ namespace graphics3d_directx12
    void engine::engine_on_after_load_scene(::graphics3d::scene* pscene)
    {
 
-      ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
+      ::cast < ::gpu_directx12::context > pcontext = m_pgpurendererGraphics3D->m_pgpucontext;
 
-      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
+      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurendererGraphics3D;
 
       //   if (prenderer->m_pcommandbufferLoadAssets)
       //   {

@@ -187,6 +187,9 @@ namespace gpu_vulkan
 
       void defer_update_renderer();
 
+
+
+
       //::pointer < ::graphics3d::frame> beginFrame() override;
       //void endFrame() override;
       //void on_begin_render(::graphics3d::frame * pframe) override;

@@ -36,6 +36,10 @@ namespace gpu_directx12
 
       ::comptr<ID2D1DeviceContext> d2dContext;
 
+      ::pointer < texture >           m_ptextureMainBackBuffer;
+
+
+
 
       ::pointer < ::gpu_directx12::device > m_pgpudevice;
 
@@ -90,13 +94,16 @@ namespace gpu_directx12
       void on_before_begin_draw_frame(::draw2d_gpu::graphics* pgraphics) override;
       void on_after_end_draw_frame(::draw2d_gpu::graphics* pgraphics) override;
 
-      ::gpu_directx12::texture* current_texture() override;
+      ::gpu::texture* current_texture() override;
       ::gpu_directx12::depth_stencil* current_depth_stencil() override;
       //virtual void _defer_d3d11on12_wrapped_resources();
       //void initialize_direct2d_draw2d_gpu_swap_chain(::gpu::device* pgpudevice, ::windowing::window* pwindow) override;
 
 
       void endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc) override;
+
+
+      virtual void endDraw_withShaderThatCopiesFromTexture(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, texture * ptexture);
 
 
       void present() override;

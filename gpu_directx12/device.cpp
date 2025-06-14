@@ -177,7 +177,7 @@ namespace gpu_directx12
 
       m_pphysicaldevice = pphysicaldevice;
 
-      if (m_papplication->m_bUseSwapChainWindow)
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          m_pphysicaldevice->createWindowSurface(pwindow);
@@ -1437,6 +1437,10 @@ namespace gpu_directx12
       case ::gpu::e_type_float: return sizeof(float);
       case ::gpu::e_type_seq4: return sizeof(::glm::vec4);
       case ::gpu::e_type_mat4: return sizeof(::glm::mat4);
+      case ::gpu::e_type_seq3: return sizeof(::glm::vec3);
+      case ::gpu::e_type_mat3: return sizeof(::glm::mat3);
+      case ::gpu::e_type_seq2: return sizeof(::glm::vec2);
+      case ::gpu::e_type_mat2: return sizeof(::glm::mat2);
       default:
          throw ::exception(error_wrong_state);
 
@@ -1454,8 +1458,20 @@ namespace gpu_directx12
 
    }
 
-   void device::composition_store()
-   void device::composition_end()
+   //void device::composition_store()
+   //{
+
+   //   gpu::device::composition_store();
+
+   //}
+
+
+   //void device::composition_end()
+   //{
+
+   //   gpu::device::composition_store();
+
+   //}
 
 
 

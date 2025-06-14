@@ -8,7 +8,7 @@
 //#include "frame.h"
 //#include "renderer.h"
 #include "aura/platform/application.h"
-#include "aura/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d.h"
 #include "app-graphics3d/gpu_vulkan/buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
@@ -66,12 +66,12 @@ namespace graphics3d_vulkan
    }
 
 
-   void model::initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder)
+   void model::initialize_model(::gpu::renderer * pgpurenderer, const ::graphics3d::model::Builder& builder)
    {
 
-      m_pgpucontext = pgpucontext;
+      m_pgpurenderer = pgpurenderer;
 
-      initialize(pgpucontext);
+      initialize(pgpurenderer);
 
       createVertexBuffers(builder.vertices);
 
@@ -101,7 +101,7 @@ namespace graphics3d_vulkan
       auto pbufferStaging = __create_new < ::gpu_vulkan::buffer >();
 
       pbufferStaging->initialize_buffer(
-         m_pgpucontext,
+         m_pgpurenderer->m_pgpucontext,
          vertexSize,
          vertexCount,
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -114,7 +114,7 @@ namespace graphics3d_vulkan
       m_pbufferVertex = __create_new < ::gpu_vulkan::buffer>();
 
       m_pbufferVertex->initialize_buffer(
-         m_pgpucontext,
+         m_pgpurenderer->m_pgpucontext,
          vertexSize,
          vertexCount,
          VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
@@ -122,7 +122,7 @@ namespace graphics3d_vulkan
       );
 
 
-      m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferVertex->getBuffer(), bufferSize);
+      m_pgpurenderer->m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferVertex->getBuffer(), bufferSize);
 
 
    }
@@ -144,7 +144,7 @@ namespace graphics3d_vulkan
       auto pbufferStaging = __create_new < ::gpu_vulkan::buffer>();
 
       pbufferStaging->initialize_buffer(
-         m_pgpucontext,
+         m_pgpurenderer->m_pgpucontext,
          indexSize,
          indexCount,
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -157,37 +157,44 @@ namespace graphics3d_vulkan
       m_pbufferIndex = __create_new < ::gpu_vulkan::buffer>();
 
       m_pbufferIndex->initialize_buffer(
-         m_pgpucontext,
+         m_pgpurenderer->m_pgpucontext,
          indexSize,
          indexCount,
          VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-      m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferIndex->getBuffer(), bufferSize);
+      m_pgpurenderer->m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferIndex->getBuffer(), bufferSize);
 
    }
 
 
-   void model::draw(::gpu::context* pgpucontext)
+   void model::draw()
    {
 
-      ::cast <::gpu_vulkan::renderer> pgpurenderer = pgpucontext->m_pgpurenderer;
+      ::cast <::gpu_vulkan::renderer> pgpurenderer = m_pgpurenderer;
 
       auto commandBuffer = pgpurenderer->getCurrentCommandBuffer();
 
-      if (hasIndexBuffer) {
+      if (hasIndexBuffer) 
+      {
+
          vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+
       }
-      else {
+      else 
+      {
+
          vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
+
       }
+
    }
 
    
-   void model::bind(::gpu::context* pgpucontext)
+   void model::bind()
    {
 
-      ::cast <::gpu_vulkan::renderer> prenderer = pgpucontext->m_pgpurenderer;
+      ::cast <::gpu_vulkan::renderer> prenderer = m_pgpurenderer;
 
       auto commandBuffer = prenderer->getCurrentCommandBuffer();
 

@@ -189,6 +189,8 @@ namespace draw2d_opengl
 
       opengl_create_offscreen_buffer({}, size);
 
+      set_ok_flag();
+
    }
 
 
@@ -202,7 +204,7 @@ namespace draw2d_opengl
 
    //   }
 
-   //   m_pgpucontext->m_pgpurenderer->m_eoutputOnEndDraw = ::gpu::e_output_swap_chain;
+   //   m_pgpucontext->m_pgpurendererDraw2d->m_eoutputOnEndDraw = ::gpu::e_output_swap_chain;
 
    //}
 
@@ -224,6 +226,53 @@ namespace draw2d_opengl
 
       opengl_create_offscreen_buffer({}, { 0, 0, 1920, 1080 });
       //opengl_create_offscreen_buffer(pgraphics->m_pimage->size());
+
+   }
+
+
+   void graphics::create_for_window_drawing(const ::int_size& size)
+   {
+
+      if (m_puserinteraction == nullptr)
+      {
+
+         m_puserinteraction = dynamic_cast <::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+
+         if (m_puserinteraction == nullptr)
+         {
+
+            informationf("No user interaction available for OpenGL offscreen buffer creation.");
+
+            return;
+
+         }
+
+      }
+
+      auto pgpuapproach = application()->get_gpu_approach();
+
+      auto pgpudevice = pgpuapproach->get_gpu_device();
+
+      auto pgpucontext = pgpudevice->get_main_context();
+
+
+      if (!pgpucontext)
+      {
+
+         return;
+
+      }
+
+      if (!m_pgpurendererDraw2d)
+      {
+
+         m_pgpurendererDraw2d = pgpucontext->draw2d_renderer();
+
+      }
+
+      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+
+      ::opengl::resize(size, bYSwap);
 
    }
 
@@ -253,33 +302,41 @@ namespace draw2d_opengl
 
       }
 
-      if (!m_pgpucontext)
-      {
+      auto pgpuapproach = application()->get_gpu_approach();
 
-         auto pgpu = application()->get_gpu();
+      //   ASSERT(m_puserinteraction);
 
-         ASSERT(m_puserinteraction);
+      auto pgpudevice = pgpuapproach->get_gpu_device();
 
-         auto pgpudevice = pgpu->get_device();
+      auto pgpucontext = pgpudevice->get_main_context();
 
-         ::cast < ::gpu_opengl::device_win32> pdeviceWin32 = pgpudevice;
+      //if (!m_pgpurendererDraw2d)
+      //{
 
-         if (callbackOnImagePixels)
-         {
+      //   auto pgpu = application()->get_gpu();
 
-            m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, callbackOnImagePixels, rectanglePlacement);
+      //   ASSERT(m_puserinteraction);
 
-         }
-         else
-         {
+      //   auto pgpudevice = pgpu->get_device();
 
-            m_pgpucontext = pgpudevice->start_gpu_output_context(this, ::gpu::e_output_gpu_buffer, rectanglePlacement);
+      //   ::cast < ::gpu_opengl::device_win32> pdeviceWin32 = pgpudevice;
 
-         }
+      //   if (callbackOnImagePixels)
+      //   {
 
-      }
+      //      pgpucontext = pgpudevice->start_cpu_buffer_context(this, callbackOnImagePixels, rectanglePlacement);
 
-      if (!m_pgpucontext)
+      //   }
+      //   else
+      //   {
+
+      //      pgpucontext = pgpudevice->start_gpu_output_context(this, ::gpu::e_output_gpu_buffer, rectanglePlacement);
+
+      //   }
+
+      //}
+
+      if (!pgpucontext)
       {
 
          return false;
@@ -301,12 +358,19 @@ namespace draw2d_opengl
       //if (__defer_construct(m_pgpucontextOpenGL))
       //{
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      if (!m_pgpurendererDraw2d)
       {
 
-         m_pgpucontext->create_cpu_buffer(rectanglePlacement.size());
+         m_pgpurendererDraw2d = pgpucontext->new_draw2d_renderer();
 
       }
+
+      //if (pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      //{
+
+      //   pgpucontext->create_cpu_buffer(rectanglePlacement.size());
+
+      //}
 
       //}
 
@@ -442,7 +506,7 @@ namespace draw2d_opengl
       //m_hglrc = hglrc;
       //m_size = size;
 
-      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
+      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
       ::opengl::resize(rectanglePlacement.size(), bYSwap);
 
@@ -484,20 +548,18 @@ namespace draw2d_opengl
 
       //}
 
+      //if (!pgpucontext)
+      //{
 
-      if (!m_pgpucontext)
-      {
+      //   auto pgpu = application()->get_gpu();
 
-         auto pgpu = application()->get_gpu();
+      //   auto pgpudevice = pgpu->get_device();
 
-         auto pgpudevice = pgpu->get_device();
+      //   pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
 
-         m_pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
+      //}
 
-      }
-
-
-      m_pgpucontext->defer_create_window_context(pwindow);
+      m_pgpurendererDraw2d->m_pgpucontext->defer_create_window_context(pwindow);
 
       //      ::opengl::resize(size);
 
@@ -572,7 +634,7 @@ namespace draw2d_opengl
 
       }
 
-      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
+      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
       ::opengl::resize(pbitmap->get_size(), bYSwap);
 
@@ -2332,7 +2394,7 @@ namespace draw2d_opengl
 
       m_sizeWindow = sizeWindow;
 
-      bool bYSwap = m_papplication->m_bUseSwapChainWindow;
+      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
       ::opengl::resize(sizeWindow, bYSwap);
 
@@ -5454,12 +5516,12 @@ color = vec4(c.r,c.g, c.b, c.a);
          m_pgpushaderTextOut = __create_new < ::gpu_opengl::shader >();
 
          m_pgpushaderTextOut->initialize_shader_with_block(
-            m_pgpucontext->m_pgpurenderer,
+            m_pgpurendererDraw2d,
             pvertexshader,
             pfragmentshader);
-
          
       }
+
       m_pgpushaderTextOut->bind();
       auto color = m_pbrush->m_color;
       //shader.use();
@@ -5468,9 +5530,9 @@ color = vec4(c.r,c.g, c.b, c.a);
       // glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
       glm::mat4 projection = glm::ortho(
          0.0f, 
-         static_cast<float>(m_pgpucontext->m_rectangle.width()),
+         static_cast<float>(m_pgpurendererDraw2d->m_pgpucontext->m_rectangle.width()),
          0.0f,
-         static_cast<float>(m_pgpucontext->m_rectangle.height()));
+         static_cast<float>(m_pgpurendererDraw2d->m_pgpucontext->m_rectangle.height()));
       pshader->_set_mat4("projection", projection);
 
       set(m_pfont);
@@ -5506,7 +5568,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       int Δx = 0;
       m_m1.transform(point);
 
-      point.y() = m_pgpucontext->m_rectangle.height() - point.y() - pface->m_iPixelSize;
+      point.y() = m_pgpurendererDraw2d->m_pgpucontext->m_rectangle.height() - point.y() - pface->m_iPixelSize;
 
       glEnable(GL_CULL_FACE);
       //glEnable(GL_BLEND);
@@ -6212,7 +6274,7 @@ color = vec4(c.r,c.g, c.b, c.a);
    void graphics::do_on_context(const ::procedure& procedure)
    {
 
-      m_pgpucontext->send(procedure);
+      m_pgpurendererDraw2d->m_pgpucontext->send(procedure);
 
    }
 
@@ -6471,7 +6533,7 @@ color = vec4(c.r,c.g, c.b, c.a);
    void graphics::on_present()
    {
 
-      if (m_papplication->m_bUseSwapChainWindow)
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          //m_pgpucontext->swap_buffers();
@@ -6508,7 +6570,9 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       //return ::is_set(this) & ::is_set(m_hglrc);
 
-      return ::is_set(this) && m_pgpucontext;
+      return ::is_set(this) 
+         && ::is_set(m_pgpurendererDraw2d)
+         && m_pgpurendererDraw2d->m_pgpucontext;
 
    }
 

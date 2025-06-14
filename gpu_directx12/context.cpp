@@ -8,9 +8,11 @@
 #include "renderer.h"
 #include "shader.h"
 #include "swap_chain.h"
+#include "texture.h"
 #include "offscreen_render_target_view.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/types.h"
 #include "gpu_directx12/descriptors.h"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -411,7 +413,7 @@ namespace gpu_directx12
    void context::swap_buffers()
    {
 
-      ::cast < gpu_directx12::renderer > pgpurenderer = m_pgpurenderer;
+      ::cast < gpu_directx12::renderer > pgpurenderer = m_pgpurendererOutput2;
 
       ::cast < gpu_directx12::swap_chain > pswapchain = pgpurenderer->m_pgpucontext->m_pgpudevice->get_swap_chain();
 
@@ -1576,7 +1578,7 @@ namespace gpu_directx12
    void context::resize_cpu_buffer(const ::int_size& sizeParam)
    {
 
-      if (m_papplication->m_bUseSwapChainWindow)
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          return;
@@ -2340,7 +2342,7 @@ namespace gpu_directx12
    void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
    {
 
-      ::cast < renderer > prenderer = m_pgpurenderer;
+      ::cast < renderer > prenderer = m_pgpurendererEngine;
 
       ::cast < device > pgpudevice = m_pgpudevice;
 
@@ -2379,11 +2381,11 @@ namespace gpu_directx12
    void context::update_global_ubo(const ::block& block)
    {
 
-      auto iFrameIndex = m_pgpurenderer->get_frame_index();
+      auto iFrameIndex = m_pgpurendererEngine->get_frame_index();
 
 
       //MyGlobalData globalData = { /* your values */ };
-      ::cast < renderer > prenderer = m_pgpurenderer;
+      ::cast < renderer > prenderer = m_pgpurendererEngine;
       //      UINT8* mappedPtr = nullptr;
         //    D3D12_RANGE readRange = {}; // no read access
           //  m_uboBuffers[iFrameIndex]->m_presourceBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mappedPtr));
@@ -2486,7 +2488,7 @@ namespace gpu_directx12
    //}
 
 
-   ::gpu::enum_output context::eoutput_for_begin_draw()
+   ::gpu::enum_output context::get_eoutput()
    {
 
       if (m_pgpudevice->m_edevicetarget == ::gpu::e_device_target_swap_chain)
@@ -2504,120 +2506,183 @@ namespace gpu_directx12
 
    }
 
-   ::comptr<ID3D12Resource> context::_create_texture(const ::int_size& size)
+
+   void context::on_create_texture(::gpu::texture * pgputexture)
    {
-      ::comptr<ID3D12Resource> presource;
 
-      DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
-      // 1. Create the texture resource
-      D3D12_RESOURCE_DESC textureDesc = {};
-      textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-      textureDesc.Width = size.width();
-      textureDesc.Height = size.height();
-      textureDesc.MipLevels = 1;
-      textureDesc.DepthOrArraySize = 1;
-      textureDesc.Format = format;
-      textureDesc.SampleDesc.Count = 1;
-      textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-      textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+      ::gpu::context::on_create_texture(pgputexture);
 
-      D3D12_CLEAR_VALUE clearValue = {};
-      clearValue.Format = format;
-      clearValue.Color[0] = 0.5f * 0.5f;
-      clearValue.Color[1] = 0.75f * 0.5f;
-      clearValue.Color[2] = 0.9f * 0.5f;
-      clearValue.Color[3] = 0.5f;
+      //::cast < texture > ptexture = pgputexture;
 
-      //clearValue.Color = { 0.5f, 0.75f, 0.9f, 0.5f };
+      //DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
+      //// 1. Create the texture resource
+      //D3D12_RESOURCE_DESC textureDesc = {};
+      //textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+      //textureDesc.Width = size.width();
+      //textureDesc.Height = size.height();
+      //textureDesc.MipLevels = 1;
+      //textureDesc.DepthOrArraySize = 1;
+      //textureDesc.Format = format;
+      //textureDesc.SampleDesc.Count = 1;
+      //textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+      //textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
-      ::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
+      //D3D12_CLEAR_VALUE clearValue = {};
+      //clearValue.Format = format;
+      //clearValue.Color[0] = 0.5f * 0.5f;
+      //clearValue.Color[1] = 0.75f * 0.5f;
+      //clearValue.Color[2] = 0.9f * 0.5f;
+      //clearValue.Color[3] = 0.5f;
 
-      CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
+      ////clearValue.Color = { 0.5f, 0.75f, 0.9f, 0.5f };
 
-      HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
-         &heapproperties,
-         D3D12_HEAP_FLAG_NONE,
-         &textureDesc,
-         D3D12_RESOURCE_STATE_RENDER_TARGET,
-         &clearValue,
-         __interface_of(presource));
+      //::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
 
-      pdevice->defer_throw_hresult(hrCreateCommittedResource);
+      //CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
 
-      return presource;
+      //HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+      //   &heapproperties,
+      //   D3D12_HEAP_FLAG_NONE,
+      //   &textureDesc,
+      //   D3D12_RESOURCE_STATE_RENDER_TARGET,
+      //   &clearValue,
+      //   __interface_of(presource));
+
+      //pdevice->defer_throw_hresult(hrCreateCommittedResource);
+
+      //return presource;
 
    }
 
-   ::comptr<ID3D12Resource> context::_take_snapshot(ID3D12Resource * presourceSource, const ::int_rectangle & rectangleTarget)
+   class texture_guard
+   {
+   public:
+
+      texture* m_ptexture;
+      ID3D12GraphicsCommandList* m_pcommandlist;
+      D3D12_RESOURCE_STATES m_estateOld;
+
+      texture_guard(ID3D12GraphicsCommandList* pcommandlist, texture* ptexture, D3D12_RESOURCE_STATES estate)
+      {
+
+         m_ptexture = ptexture;
+         m_pcommandlist = pcommandlist;
+         m_estateOld = m_ptexture->m_estate;
+
+         m_ptexture->_new_state(m_pcommandlist, estate);
+
+      }
+
+      ~texture_guard()
+      {
+
+         m_ptexture->_new_state(m_pcommandlist, m_estateOld);
+
+      }
+
+   };
+
+
+   void context::on_take_snapshot(::gpu::layer * player, ::gpu::texture * pgputextureSource)
    {
 
-      auto presourceTarget = _create_texture(rectangleTarget.size());
+      if (!player->m_pgputexture 
+         || player->m_pgputexture->m_size != player->m_rectangleTarget.size() 
+         || player->m_pgputexture->m_pgpurenderer->m_pgpucontext == this)
+      {
 
-      ::cast < renderer > prenderer = m_pgpurenderer;
+         player->m_pgputexture = player->m_pgputexture->m_pgpurenderer->create_texture(player->m_rectangleTarget.size());
+
+      }
+
+      ::cast < texture > ptextureSrc = pgputextureSource;
+
+      ::cast < texture > ptextureDst = player->m_pgputexture;
+
+      ::cast < renderer > prenderer = ptextureDst->m_pgpurenderer;
 
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      // Transition source to COPY_SOURCE
-      D3D12_RESOURCE_BARRIER barrier1 = {};
-      barrier1.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-      barrier1.Transition.pResource = presourceSource;
-      barrier1.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-      barrier1.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
-      barrier1.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-      pcommandlist->ResourceBarrier(1, &barrier1);
+      texture_guard guard1(pcommandlist, ptextureDst, D3D12_RESOURCE_STATE_COPY_DEST);
 
-      // Transition dest to COPY_DEST
-      D3D12_RESOURCE_BARRIER barrier2 = {};
-      barrier2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-      barrier2.Transition.pResource = presourceTarget;
-      barrier2.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
-      barrier2.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
-      barrier2.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-      pcommandlist->ResourceBarrier(1, &barrier2);
+      texture_guard guard2(pcommandlist, ptextureSrc, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
-      pcommandlist->CopyResource(presourceTarget, presourceSource);
+      //// Transition source to COPY_SOURCE
+      //D3D12_RESOURCE_BARRIER barrier1 = {};
+      //barrier1.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+      //barrier1.Transition.pResource = ptextureSrc->m_presource;
+      //barrier1.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+      //barrier1.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
+      //barrier1.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+      //pcommandlist->ResourceBarrier(1, &barrier1);
 
-      // Restore states
-      ::swap(barrier2.Transition.StateBefore, barrier2.Transition.StateAfter);
-      pcommandlist->ResourceBarrier(1, &barrier2);
+      //// Transition dest to COPY_DEST
+      //D3D12_RESOURCE_BARRIER barrier2 = {};
+      //barrier2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+      //barrier2.Transition.pResource = ptextureDst->m_presource;
+      //barrier2.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
+      //barrier2.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
+      //barrier2.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+      //pcommandlist->ResourceBarrier(1, &barrier2);
 
-      ::swap(barrier1.Transition.StateBefore, barrier1.Transition.StateAfter);
-      pcommandlist->ResourceBarrier(1, &barrier1);
+      pcommandlist->CopyResource(ptextureDst->m_presource, ptextureSrc->m_presource);
+
+      //// Restore states
+      //::swap(barrier2.Transition.StateBefore, barrier2.Transition.StateAfter);
+      //pcommandlist->ResourceBarrier(1, &barrier2);
+
+      //::swap(barrier1.Transition.StateBefore, barrier1.Transition.StateAfter);
+      //pcommandlist->ResourceBarrier(1, &barrier1);
 
    }
 
    
-   void context::composition_store()
+   //void context::composition_store()
+   //{
+
+   //   ID3D12Resource* presourceSource = nullptr;
+   //   ::cast < renderer > prenderer = m_pgpurenderer;
+   //   ::cast < render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
+   //   auto ptexture = prendertargetview->current_texture();
+   //   if (m_edrawing == e_drawing_draw2d)
+   //   {
+   //      if (!ptexture->m_pd3d1)
+   //      {
+
+   //         throw ::exception(error_wrong_state);
+
+   //      }
+   //      presourceSource = ptexture->m_presource;
+
+   //   }
+   //   else
+   //   {
+
+   //      throw ::exception(error_wrong_state);
+   //   }
+   //   auto psnapshot = __allocate snapshot(_take_snapshot(presourceSource,)
+   //   m_resourceaSnapshot.add();
+
+
+   //}
+
+
+   void context::on_begin_draw_attach(::draw2d_gpu::graphics* pgpugraphics, const ::int_rectangle& rectangle)
    {
 
-      ID3D12Resource* presourceSource = nullptr;
-      ::cast < renderer > prenderer = m_pgpurenderer;
-      ::cast < render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
-      auto ptexture = prendertargetview->current_texture();
-      if (m_edrawing == e_drawing_draw2d)
-      {
-         if (!ptexture->m_pd3d1)
-         {
-
-            throw ::exception(error_wrong_state);
-
-         }
-         presourceSource = ptexture->m_presource;
-
-      }
-      else
-      {
-
-         throw ::exception(error_wrong_state);
-      }
-      auto psnapshot = __allocate snapshot(_take_snapshot(presourceSource,)
-      m_resourceaSnapshot.add();
-
+      ::gpu::context::on_begin_draw_attach(pgpugraphics, rectangle);
 
    }
 
+
+   void context::draw2d_on_begin_draw(::draw2d_gpu::graphics* pgpugraphics, const ::int_rectangle& rectangle)
+   {
+
+      ::gpu::context::draw2d_on_begin_draw(pgpugraphics, rectangle);
+
+   }
 
 
 } // namespace gpu_directx12

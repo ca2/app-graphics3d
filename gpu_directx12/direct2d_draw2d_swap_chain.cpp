@@ -135,7 +135,7 @@ namespace gpu_directx12
    }
 
 
-   ::gpu_directx12::texture* direct2d_draw2d_swap_chain::current_texture()
+   ::gpu::texture* direct2d_draw2d_swap_chain::current_texture()
    {
 
       return offscreen_render_target_view::current_texture();
@@ -152,12 +152,12 @@ namespace gpu_directx12
       if (pdirect2dgraphics)
       {
 
-         auto ptexture = this->current_texture();
+         ::cast < texture > ptextureCurrent = this->current_texture();
 
-         if (ptexture)
+         if (ptextureCurrent)
          {
 
-            auto pd3d11 = ptexture->m_pd3d11;
+            auto pd3d11 = ptextureCurrent->m_pd3d11;
 
             if (pd3d11)
             {
@@ -169,7 +169,7 @@ namespace gpu_directx12
                   1
                );
 
-               ptexture->m_estate = D3D12_RESOURCE_STATE_RENDER_TARGET;
+               ptextureCurrent->m_estate = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
                d2dContext->SetTarget(pd3d11->d2dBitmap);
 
@@ -192,12 +192,12 @@ namespace gpu_directx12
       if (pdirect2dgraphics)
       {
 
-         auto ptexture = this->current_texture();
+         ::cast < texture > ptextureCurrent = this->current_texture();
 
-         if (ptexture)
+         if (ptextureCurrent)
          {
 
-            auto pd3d11 = ptexture->m_pd3d11;
+            auto pd3d11 = ptextureCurrent->m_pd3d11;
 
             if (pd3d11)
             {
@@ -209,7 +209,7 @@ namespace gpu_directx12
                   1
                );
 
-               ptexture->m_estate = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+               ptextureCurrent->m_estate = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
             }
 
@@ -252,10 +252,10 @@ namespace gpu_directx12
    //}
 
 
-   void direct2d_draw2d_swap_chain::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc)
+   void direct2d_draw2d_swap_chain::endDraw_withShaderThatCopiesFromTexture(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, texture * ptextureSrc)
    {
 
-      ::cast < renderer > pgpurendererSrc = prendererSrc;
+      //::cast < renderer > pgpurendererSrc = prendererSrc;
 
       ::cast < ::draw2d_direct2d::graphics > pdirect2dgraphics = pgraphics;
 
@@ -275,39 +275,13 @@ namespace gpu_directx12
 
       }*/
 
-      ::cast <offscreen_render_target_view> poffscreenrendertargetview = pgpurendererSrc->m_pgpurendertarget;
+      //::cast <offscreen_render_target_view> poffscreenrendertargetview = pgpurendererSrc->m_pgpurendertarget;
 
-      auto ptexture = poffscreenrendertargetview->m_texturea[pgpurendererSrc->get_frame_index()];
+      ///auto ptexture = poffscreenrendertargetview->m_texturea[pgpurendererSrc->get_frame_index()];
 
-      auto pd3d11 = ptexture->m_pd3d11;
+      //auto pd3d11 = ptextureSrc->m_pd3d11;
 
-      ::comptr<ID3D12Resource> pd3d12resourceBackBuffer = ptexture->m_presource;
-
-      //   ::cast < renderer > pgpurendererSrc = prendererSrc;
-
-      //   //ID3D11Resource* resources[] = { m_pd3d11resourceWrapped.m_p };
-
-      //   //m_pd3d11on12->AcquireWrappedResources(resources, _countof(resources));
-
-      //   try
-      //   {
-
-      //      ::draw2d_direct2d::swap_chain::endDraw(pgraphics, puserinteraction, prendererSrc);
-
-      //   }
-      //   catch (...)
-      //   {
-
-
-      //   }
-
-      //   //m_pd3d11on12->ReleaseWrappedResources(resources, _countof(resources));
-
-      //}
-
-
-      //void direct2d_draw2d_swap_chain::present()
-      //{
+      ::comptr<ID3D12Resource> pd3d12resourceBackBuffer = ptextureSrc->m_presource;
 
       ::cast < ::gpu_directx12::device> pgpudevice = m_pgpudevice;
 
@@ -316,8 +290,10 @@ namespace gpu_directx12
       if (!m_commandAllocator)
       {
 
-         ::defer_throw_hresult(pdevice->CreateCommandAllocator(
-            D3D12_COMMAND_LIST_TYPE_DIRECT, __interface_of(m_commandAllocator)));
+         HRESULT hrCreateCommandAllocator = pdevice->CreateCommandAllocator(
+            D3D12_COMMAND_LIST_TYPE_DIRECT, __interface_of(m_commandAllocator));
+
+         ::defer_throw_hresult(hrCreateCommandAllocator);
 
       }
 
@@ -342,7 +318,7 @@ namespace gpu_directx12
 
          D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
          srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-         srvHeapDesc.NumDescriptors = pgpurendererSrc->get_frame_count(); // Just one texture
+         srvHeapDesc.NumDescriptors = 1; // Just one texture
          srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
          srvHeapDesc.NodeMask = 0;
 
@@ -354,21 +330,24 @@ namespace gpu_directx12
 
          m_srvDescriptorSize = pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-         for (int iFrameIndex = 0; iFrameIndex < pgpurendererSrc->get_frame_count(); iFrameIndex++)
+         //for (int iFrameIndex = 0; iFrameIndex < pgpurendererSrc->get_frame_count(); iFrameIndex++)
          {
 
             D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
             srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+            //srvDesc.Format = pd3d12resourceBackBuffer->GetDesc().Format;
             srvDesc.Format = pd3d12resourceBackBuffer->GetDesc().Format;
             srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
             srvDesc.Texture2D.MipLevels = pd3d12resourceBackBuffer->GetDesc().MipLevels;
-
+            int iFrameIndex = 0;
             CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(
                m_srvHeap->GetCPUDescriptorHandleForHeapStart(),
                iFrameIndex,
                m_srvDescriptorSize);
 
-            auto presource = poffscreenrendertargetview->m_texturea[iFrameIndex]->m_presource;
+            //auto presource = poffscreenrendertargetview->m_texturea[iFrameIndex]->m_presource;
+
+            auto presource = pd3d12resourceBackBuffer;
 
             pdevice->CreateShaderResourceView(
                presource,
@@ -429,7 +408,7 @@ namespace gpu_directx12
          rootSigDesc.Init(_countof(rootParams), rootParams, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
          ::comptr<ID3DBlob> sigBlob, errBlob;
-         
+
          HRESULT hrSerializeRootSignature = D3D12SerializeRootSignature(
             &rootSigDesc,
             D3D_ROOT_SIGNATURE_VERSION_1, &sigBlob, &errBlob);
@@ -448,13 +427,13 @@ namespace gpu_directx12
 
       if (!m_pipelineState)
       {
-         
+
          ::comptr<ID3DBlob> vertexShader;
-         
+
          ::comptr<ID3DBlob> pixelShader;
 
 #if defined(_DEBUG)
-         
+
          // Enable better shader debugging with the graphics debugging tools.
          UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 
@@ -463,14 +442,14 @@ namespace gpu_directx12
          UINT compileFlags = 0;
 
 #endif
-         
+
          ::string strVs(_fullscreen_vertex_shader_hlsl());
 
          ::defer_throw_hresult(D3DCompile(
             strVs.c_str(), strVs.size(),
             nullptr, nullptr, nullptr, "main", "vs_5_0",
             compileFlags, 0, &vertexShader, nullptr));
-         
+
          ::string strPs(_fullscreen_pixel_shader_hlsl());
 
          ::defer_throw_hresult(D3DCompile(
@@ -512,7 +491,7 @@ namespace gpu_directx12
 
          HRESULT hr = pdevice->CreateGraphicsPipelineState(
             &psoDesc, __interface_of(m_pipelineState));
-         
+
          ::defer_throw_hresult(hr);
 
       }
@@ -537,7 +516,7 @@ namespace gpu_directx12
       m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
       CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(
-         m_srvHeap->GetGPUDescriptorHandleForHeapStart(), 
+         m_srvHeap->GetGPUDescriptorHandleForHeapStart(),
          m_pgpurenderer->get_frame_index(),
          m_srvDescriptorSize);
       m_commandList->SetGraphicsRootDescriptorTable(0, srvHandle);     // t0
@@ -572,7 +551,7 @@ namespace gpu_directx12
       m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
       m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      m_commandList->DrawInstanced(3, 1, 0, 0); 
+      m_commandList->DrawInstanced(3, 1, 0, 0);
 
       auto barrierToPresent = CD3DX12_RESOURCE_BARRIER::Transition(prendertarget, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
       m_commandList->ResourceBarrier(1, &barrierToPresent);
@@ -581,6 +560,8 @@ namespace gpu_directx12
 
       ID3D12CommandList* ppCommandLists[] = { m_commandList };
       pgpudevice->m_pcommandqueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+
 
       m_pdxgiswapchain1->Present(1, 0);
 
@@ -591,7 +572,7 @@ namespace gpu_directx12
 
       // Signal and increment the fence value.
       const UINT64 fence = m_fenceValue;
-      
+
       ::defer_throw_hresult(pgpudevice->m_pcommandqueue->Signal(m_fence, fence));
 
       m_fenceValue++;
@@ -599,14 +580,382 @@ namespace gpu_directx12
       // Wait until the previous frame is finished.
       if (m_fence->GetCompletedValue() < fence)
       {
-         
+
          ::defer_throw_hresult(m_fence->SetEventOnCompletion(fence, m_fenceEvent));
-         
+
          ::WaitForSingleObject(m_fenceEvent, INFINITE);
 
       }
 
       m_frameIndex = m_pdxgiswapchain3->GetCurrentBackBufferIndex();
+
+   }
+
+
+   void direct2d_draw2d_swap_chain::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc)
+   {
+
+      ::cast < ::gpu_directx12::device> pgpudevice = m_pgpudevice;
+
+      ::cast < ::gpu_directx12::context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+
+      auto pdevice = pgpudevice->m_pdevice;
+
+      if (!m_ptextureMainBackBuffer)
+      {
+         
+         m_ptextureMainBackBuffer = pgpucontext->m_pgpurendererOutput2->create_texture(pgpucontext->m_rectangle.size());
+
+      }
+
+      m_ptextureMainBackBuffer->merge_layers(pgpudevice->m_playera);
+
+      endDraw_withShaderThatCopiesFromTexture(
+         pgraphics,
+         puserinteraction,
+         m_ptextureMainBackBuffer
+      );
+
+//      ::cast < renderer > pgpurendererSrc = prendererSrc;
+//
+//      ::cast < ::draw2d_direct2d::graphics > pdirect2dgraphics = pgraphics;
+//
+//      ::cast <offscreen_render_target_view> poffscreenrendertargetview = pgpurendererSrc->m_pgpurendertarget;
+//
+//      auto ptexture = poffscreenrendertargetview->m_texturea[pgpurendererSrc->get_frame_index()];
+//
+//      auto pd3d11 = ptexture->m_pd3d11;
+//
+//      ::comptr<ID3D12Resource> pd3d12resourceBackBuffer = ptexture->m_presource;
+//
+//      ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+//
+//      pdevice->layer_merge(m_pgpurenderer->m_pgpucontext);
+//
+//      //   ::cast < renderer > pgpurendererSrc = prendererSrc;
+//
+//      //   //ID3D11Resource* resources[] = { m_pd3d11resourceWrapped.m_p };
+//
+//      //   //m_pd3d11on12->AcquireWrappedResources(resources, _countof(resources));
+//
+//      //   try
+//      //   {
+//
+//      //      ::draw2d_direct2d::swap_chain::endDraw(pgraphics, puserinteraction, prendererSrc);
+//
+//      //   }
+//      //   catch (...)
+//      //   {
+//
+//
+//      //   }
+//
+//      //   //m_pd3d11on12->ReleaseWrappedResources(resources, _countof(resources));
+//
+//      //}
+//
+//
+//      //void direct2d_draw2d_swap_chain::present()
+//      //{
+//
+////      ::cast < ::gpu_directx12::device> pgpudevice = m_pgpudevice;
+////
+////      auto pdevice = pgpudevice->m_pdevice;
+////
+////      if (!m_commandAllocator)
+////      {
+////
+////         ::defer_throw_hresult(pdevice->CreateCommandAllocator(
+////            D3D12_COMMAND_LIST_TYPE_DIRECT, __interface_of(m_commandAllocator)));
+////
+////      }
+////
+////      if (!m_commandList)
+////      {
+////
+////         ::defer_throw_hresult(
+////            pdevice->CreateCommandList(
+////               0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+////               m_commandAllocator,
+////               nullptr,
+////               __interface_of(m_commandList)));
+////
+////         // Command lists are created in the recording state, but there is nothing
+////         // to record yet. The main loop expects it to be closed, so close it now.
+////         ::defer_throw_hresult(m_commandList->Close());
+////
+////      }
+////
+////      if (!m_srvHeap)
+////      {
+////
+////         D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+////         srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+////         srvHeapDesc.NumDescriptors = pgpurendererSrc->get_frame_count(); // Just one texture
+////         srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+////         srvHeapDesc.NodeMask = 0;
+////
+////         HRESULT hr = pdevice->CreateDescriptorHeap(
+////            &srvHeapDesc,
+////            __interface_of(m_srvHeap));
+////
+////         ::defer_throw_hresult(hr);
+////
+////         m_srvDescriptorSize = pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+////
+////         for (int iFrameIndex = 0; iFrameIndex < pgpurendererSrc->get_frame_count(); iFrameIndex++)
+////         {
+////
+////            D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+////            srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+////            srvDesc.Format = pd3d12resourceBackBuffer->GetDesc().Format;
+////            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+////            srvDesc.Texture2D.MipLevels = pd3d12resourceBackBuffer->GetDesc().MipLevels;
+////
+////            CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(
+////               m_srvHeap->GetCPUDescriptorHandleForHeapStart(),
+////               iFrameIndex,
+////               m_srvDescriptorSize);
+////
+////            auto presource = poffscreenrendertargetview->m_texturea[iFrameIndex]->m_presource;
+////
+////            pdevice->CreateShaderResourceView(
+////               presource,
+////               &srvDesc,
+////               srvHandle
+////            );
+////
+////         }
+////
+////      }
+////
+////      if (!m_samplerHeap)
+////      {
+////
+////         D3D12_DESCRIPTOR_HEAP_DESC samplerHeapDesc = {};
+////         samplerHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+////         samplerHeapDesc.NumDescriptors = 1; // Just one sampler
+////         samplerHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+////         samplerHeapDesc.NodeMask = 0;
+////
+////         HRESULT hr = pdevice->CreateDescriptorHeap(
+////            &samplerHeapDesc, __interface_of(m_samplerHeap));
+////
+////         ::defer_throw_hresult(hr);
+////
+////         D3D12_SAMPLER_DESC samplerDesc = {};
+////         samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+////         samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+////         samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+////         samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+////         samplerDesc.MinLOD = 0.0f;
+////         samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+////         samplerDesc.MipLODBias = 0.0f;
+////         samplerDesc.MaxAnisotropy = 1;
+////         samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+////
+////         pdevice->CreateSampler(
+////            &samplerDesc,
+////            m_samplerHeap->GetCPUDescriptorHandleForHeapStart()
+////         );
+////
+////      }
+////
+////      if (!m_rootSignature)
+////      {
+////
+////         CD3DX12_DESCRIPTOR_RANGE srvRange;
+////         srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0
+////
+////         CD3DX12_DESCRIPTOR_RANGE samplerRange;
+////         samplerRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0); // s0
+////
+////         CD3DX12_ROOT_PARAMETER rootParams[2];
+////         rootParams[0].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL);
+////         rootParams[1].InitAsDescriptorTable(1, &samplerRange, D3D12_SHADER_VISIBILITY_PIXEL);
+////
+////         CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
+////         rootSigDesc.Init(_countof(rootParams), rootParams, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+////
+////         ::comptr<ID3DBlob> sigBlob, errBlob;
+////         
+////         HRESULT hrSerializeRootSignature = D3D12SerializeRootSignature(
+////            &rootSigDesc,
+////            D3D_ROOT_SIGNATURE_VERSION_1, &sigBlob, &errBlob);
+////
+////         ::defer_throw_hresult(hrSerializeRootSignature);
+////
+////         HRESULT hrCreateRootSignature = pdevice->CreateRootSignature(
+////            0,
+////            sigBlob->GetBufferPointer(),
+////            sigBlob->GetBufferSize(),
+////            __interface_of(m_rootSignature));
+////
+////         ::defer_throw_hresult(hrCreateRootSignature);
+////
+////      }
+////
+////      if (!m_pipelineState)
+////      {
+////         
+////         ::comptr<ID3DBlob> vertexShader;
+////         
+////         ::comptr<ID3DBlob> pixelShader;
+////
+////#if defined(_DEBUG)
+////         
+////         // Enable better shader debugging with the graphics debugging tools.
+////         UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+////
+////#else
+////
+////         UINT compileFlags = 0;
+////
+////#endif
+////         
+////         ::string strVs(_fullscreen_vertex_shader_hlsl());
+////
+////         ::defer_throw_hresult(D3DCompile(
+////            strVs.c_str(), strVs.size(),
+////            nullptr, nullptr, nullptr, "main", "vs_5_0",
+////            compileFlags, 0, &vertexShader, nullptr));
+////         
+////         ::string strPs(_fullscreen_pixel_shader_hlsl());
+////
+////         ::defer_throw_hresult(D3DCompile(
+////            strPs.c_str(), strPs.size(),
+////            nullptr, nullptr, nullptr, "main", "ps_5_0",
+////            compileFlags, 0, &pixelShader, nullptr));
+////
+////         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+////
+////         psoDesc.pRootSignature = m_rootSignature;
+////
+////         // Shaders
+////         psoDesc.VS = { vertexShader->GetBufferPointer(), vertexShader->GetBufferSize() };
+////         psoDesc.PS = { pixelShader->GetBufferPointer(), pixelShader->GetBufferSize() };
+////
+////         // No vertex buffer used — SV_VertexID only
+////         psoDesc.InputLayout = { nullptr, 0 };
+////
+////         // Rasterizer state
+////         psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+////         psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; // Often good for fullscreen quads
+////
+////         // Blend state
+////         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+////
+////         // No depth or stencil
+////         psoDesc.DepthStencilState.DepthEnable = FALSE;
+////         psoDesc.DepthStencilState.StencilEnable = FALSE;
+////
+////         // Primitive type
+////         psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+////
+////         // Render target
+////         psoDesc.NumRenderTargets = 1;
+////         psoDesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
+////         psoDesc.SampleDesc.Count = 1;
+////
+////         psoDesc.SampleMask = UINT_MAX;
+////
+////         HRESULT hr = pdevice->CreateGraphicsPipelineState(
+////            &psoDesc, __interface_of(m_pipelineState));
+////         
+////         ::defer_throw_hresult(hr);
+////
+////      }
+////
+////      // Command list allocators can only be reset when the associated 
+////      // command lists have finished execution on the GPU; apps should use 
+////      // fences to determine GPU execution progress.
+////      ::defer_throw_hresult(m_commandAllocator->Reset());
+////
+////      // However, when ExecuteCommandList() is called on a particular command 
+////      // list, that command list can then be reset at any time and must be before 
+////      // re-recording.
+////      ::defer_throw_hresult(
+////         m_commandList->Reset(
+////            m_commandAllocator,
+////            m_pipelineState));
+////
+////      m_commandList->SetPipelineState(m_pipelineState);
+////      m_commandList->SetGraphicsRootSignature(m_rootSignature);
+////
+////      ID3D12DescriptorHeap* heaps[] = { m_srvHeap, m_samplerHeap };
+////      m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+////
+////      CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(
+////         m_srvHeap->GetGPUDescriptorHandleForHeapStart(), 
+////         m_pgpurenderer->get_frame_index(),
+////         m_srvDescriptorSize);
+////      m_commandList->SetGraphicsRootDescriptorTable(0, srvHandle);     // t0
+////      m_commandList->SetGraphicsRootDescriptorTable(1, m_samplerHeap->GetGPUDescriptorHandleForHeapStart()); // s0
+////
+////      D3D12_VIEWPORT viewport = {};
+////      viewport.TopLeftX = 0.0f;
+////      viewport.TopLeftY = 0.0f;
+////      viewport.Width = static_cast<float>(m_pgpurenderer->m_pgpucontext->m_rectangle.width());
+////      viewport.Height = static_cast<float>(m_pgpurenderer->m_pgpucontext->m_rectangle.height());
+////      viewport.MinDepth = 0.0f;
+////      viewport.MaxDepth = 1.0f;
+////
+////      D3D12_RECT scissorRect = {};
+////      scissorRect.left = 0;
+////      scissorRect.top = 0;
+////      scissorRect.right = m_pgpurenderer->m_pgpucontext->m_rectangle.width();
+////      scissorRect.bottom = m_pgpurenderer->m_pgpucontext->m_rectangle.height();
+////
+////      m_commandList->RSSetViewports(1, &viewport);
+////      m_commandList->RSSetScissorRects(1, &scissorRect);
+////
+////      auto& prendertarget = m_renderTargets[m_frameIndex];
+////
+////      auto barrierToRender = CD3DX12_RESOURCE_BARRIER::Transition(prendertarget, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+////      m_commandList->ResourceBarrier(1, &barrierToRender);
+////
+////      CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
+////      m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+////
+////      const float clearColor[] = { 0.5f * 0.5f, 0.5f * 0.75f, 0.90f * 0.5f, 0.5f };
+////      m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+////
+////      m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+////      m_commandList->DrawInstanced(3, 1, 0, 0); 
+////
+////      auto barrierToPresent = CD3DX12_RESOURCE_BARRIER::Transition(prendertarget, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+////      m_commandList->ResourceBarrier(1, &barrierToPresent);
+//
+//      ::defer_throw_hresult(m_commandList->Close());
+//
+//      ID3D12CommandList* ppCommandLists[] = { m_commandList };
+//      pdevice->m_pcommandqueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+//
+//      m_pdxgiswapchain1->Present(1, 0);
+//
+//      // WAITING FOR THE FRAME TO COMPLETE BEFORE CONTINUING IS NOT BEST PRACTICE.
+//      // This is code implemented as such for simplicity. The D3D12HelloFrameBuffering
+//      // sample illustrates how to use fences for efficient resource usage and to
+//      // maximize GPU utilization.
+//
+//      // Signal and increment the fence value.
+//      const UINT64 fence = m_fenceValue;
+//      
+//      ::defer_throw_hresult(pdevice->m_pcommandqueue->Signal(m_fence, fence));
+//
+//      m_fenceValue++;
+//
+//      // Wait until the previous frame is finished.
+//      if (m_fence->GetCompletedValue() < fence)
+//      {
+//         
+//         ::defer_throw_hresult(m_fence->SetEventOnCompletion(fence, m_fenceEvent));
+//         
+//         ::WaitForSingleObject(m_fenceEvent, INFINITE);
+//
+//      }
+//
+//      m_frameIndex = m_pdxgiswapchain3->GetCurrentBackBufferIndex();
 
    }
 
@@ -647,9 +996,9 @@ namespace gpu_directx12
 
       pcontext->set_placement(size);
 
-      pcontext->m_eoutput = pcontext->eoutput_for_begin_draw();
+      pcontext->m_eoutput = pcontext->get_eoutput();
 
-      ::cast < renderer > prenderer = pcontext->get_renderer(::gpu::e_scene_2d);
+      ::cast < renderer > prenderer = pcontext->get_output_renderer();
 
       prenderer->m_bDisableDepthStencil = true;
 
@@ -669,7 +1018,9 @@ namespace gpu_directx12
       {
 
          //m_ptextureRenderTargetBackBuffer = __create_new < swap_chain_texture>();
-         auto ptexture = m_texturea[i];
+         auto pgputexture = m_texturea[i];
+
+         ::cast < texture > ptexture = pgputexture;
 
          __defer_construct_new(ptexture->m_pd3d11);
 

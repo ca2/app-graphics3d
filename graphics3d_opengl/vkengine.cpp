@@ -10,7 +10,7 @@
 #include "swap_chain_render_pass.h"
 #include "cube/application.h"
 #include "cube/camera.h"
-#include "aura/user/user/graphics3d.h"
+#include "bred/user/user/graphics3d.h"
 #include "cube/scene.h"
 #include "system/basic_render_system.h"
 #include "system/point_light_system.h"

@@ -8,7 +8,7 @@
 #include "renderer.h"
 #include "pipeline.h"
 #include "renderer.h"
-//#include "aura/user/user/graphics3d.h"
+//#include "bred/user/user/graphics3d.h"
 
 
 namespace gpu_vulkan
@@ -33,7 +33,7 @@ namespace gpu_vulkan
    }
 
 
-   void shader::_create_pipeline_layout(int iSize)
+   void shader::_create_pipeline_layout(int iPushPropertiesSize)
    {
 
       ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
@@ -44,7 +44,7 @@ namespace gpu_vulkan
       pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
       pushConstantRange.offset = 0;
       //pushConstantRange.size = sizeof(PointLightPushConstants);
-      pushConstantRange.size = iSize;
+      pushConstantRange.size = iPushPropertiesSize;
 
       ::array<VkDescriptorSetLayout> descriptorSetLayouts;
 
@@ -73,7 +73,7 @@ namespace gpu_vulkan
       pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
       pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
 
-      if (iSize > 0)
+      if (iPushPropertiesSize > 0)
       {
          pipelineLayoutInfo.pushConstantRangeCount = 1;
          pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
@@ -106,7 +106,7 @@ namespace gpu_vulkan
    void shader::on_initialize_shader()
    {
 
-      _create_pipeline_layout(m_properties.m_memory.size());
+      _create_pipeline_layout(m_propertiesPush.m_memory.size());
 
       __construct_new(m_ppipeline);
 
@@ -314,8 +314,8 @@ namespace gpu_vulkan
          m_vkpipelinelayout,
          VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
          0,
-         m_properties.size(),
-         m_properties.data());
+         m_propertiesPush.size(),
+         m_propertiesPush.data());
 
    }
 

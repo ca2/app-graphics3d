@@ -732,7 +732,6 @@
     <ClCompile Include="model.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="render_data.cpp" />
-    <ClCompile Include="renderer.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene_object.cpp" />
     <ClCompile Include="buffer.cpp" />
@@ -817,7 +816,6 @@
     <ClInclude Include="model_mesh.h" />
     <ClInclude Include="model_shader.h" />
     <ClInclude Include="render_data.h" />
-    <ClInclude Include="renderer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="scene_object.h" />
     <ClInclude Include="buffer.h" />
@@ -892,6 +890,15 @@
     </ProjectReference>
     <ProjectReference Include="..\..\app\aura\aura.vcxproj">
       <Project>{e000ffaf-392f-4e32-bf51-fd7ed638991f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\axis\axis.vcxproj">
+      <Project>{a2cbd4ed-ed0f-482b-9b16-f48f21c32835}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\base\base.vcxproj">
+      <Project>{a216abd4-26c4-4746-96b3-9d30ed28cf92}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\bred\bred.vcxproj">
+      <Project>{dfbf067f-aff9-4bd6-a5e1-72af984d1476}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\app\gpu_opengl\gpu_opengl.vcxproj">
       <Project>{b7225cb5-b394-444b-8fff-02acd10175ce}</Project>

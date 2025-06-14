@@ -649,13 +649,13 @@ namespace gpu_vulkan
 
 				m_pgpucontextSwapChain->set_placement(rectanglePlacement);
 
-				auto prendererOutput = m_pgpucontextSwapChain->get_renderer(::gpu::e_scene_2d);
+				auto prendererOutput = m_pgpucontextSwapChain->get_output_renderer();
 
 				prendererOutput->defer_update_renderer();
 
 				ASSERT(m_pgpucontextSwapChain == m_pgpucontext);
 
-				::cast < renderer > prendererThis = m_pgpucontextSwapChain->m_pgpurenderer;
+				::cast < renderer > prendererThis = m_pgpucontextSwapChain->m_pgpurendererDraw2d;
 
 				::cast < render_pass > pgpurenderpass = prendererThis->m_pgpurendertarget;
 
@@ -674,10 +674,10 @@ namespace gpu_vulkan
 		m_pgpucontext->send_on_context([this, vkimage, rectangle]()
 			{
 
-				m_pgpucontext->m_pgpurenderer->do_on_frame([this, vkimage, rectangle]()
+				m_pgpucontext->m_pgpurendererDraw2d->do_on_frame([this, vkimage, rectangle]()
 					{
 
-						::cast < renderer > prenderer = m_pgpucontext->m_pgpurenderer;
+						::cast < renderer > prenderer = m_pgpucontext->m_pgpurendererDraw2d;
 
 						prenderer->_copy_image(vkimage, rectangle, false);
 

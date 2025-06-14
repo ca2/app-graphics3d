@@ -31,8 +31,12 @@ namespace graphics3d_directx12
    {
    public:
 
+
+
       bool m_bNew = true;
       bool hasIndexBuffer = false;
+
+
       ::pointer < ::gpu_directx12::context > m_pgpucontext;
 
 
@@ -78,10 +82,10 @@ namespace graphics3d_directx12
       model();
       ~model();
 
-      void initialize_model(::gpu::context* pgpucontext, const ::graphics3d::model::Builder& builder) override;
+      void initialize_model(::gpu::renderer* pgpurenderer, const ::graphics3d::model::Builder& builder) override;
 
-      void bind(::gpu::context* pgpucontext) override;
-      void draw(::gpu::context* pgpucontext) override;
+      void bind() override;
+      void draw() override;
 
       void createVertexBuffers(const ::array<::gpu::Vertex>& vertices);
       void createIndexBuffers(const ::array<uint32_t>& indices);
