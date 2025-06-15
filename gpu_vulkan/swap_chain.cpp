@@ -638,7 +638,7 @@ namespace gpu_vulkan
 		if (!m_pgpucontextSwapChain)
 		{
 
-			m_pgpucontextSwapChain = pgpurendererSrc->m_pgpucontext->m_pgpudevice->start_swap_chain_context(this, puserinteraction->window());
+			m_pgpucontextSwapChain = pgpurendererSrc->m_pgpucontext->m_pgpudevice->create_window_context(puserinteraction->window());
 
 		}
 
@@ -649,13 +649,13 @@ namespace gpu_vulkan
 
 				m_pgpucontextSwapChain->set_placement(rectanglePlacement);
 
-				auto prendererOutput = m_pgpucontextSwapChain->get_output_renderer();
+				auto prendererOutput = m_pgpucontextSwapChain->get_gpu_renderer();
 
 				prendererOutput->defer_update_renderer();
 
 				ASSERT(m_pgpucontextSwapChain == m_pgpucontext);
 
-				::cast < renderer > prendererThis = m_pgpucontextSwapChain->m_pgpurendererDraw2d;
+				::cast < renderer > prendererThis = m_pgpucontextSwapChain->m_pgpurendererOutput2;
 
 				::cast < render_pass > pgpurenderpass = prendererThis->m_pgpurendertarget;
 
@@ -674,10 +674,10 @@ namespace gpu_vulkan
 		m_pgpucontext->send_on_context([this, vkimage, rectangle]()
 			{
 
-				m_pgpucontext->m_pgpurendererDraw2d->do_on_frame([this, vkimage, rectangle]()
+				m_pgpucontext->m_pgpurendererOutput2->do_on_frame([this, vkimage, rectangle]()
 					{
 
-						::cast < renderer > prenderer = m_pgpucontext->m_pgpurendererDraw2d;
+						::cast < renderer > prenderer = m_pgpucontext->m_pgpurendererOutput2;
 
 						prenderer->_copy_image(vkimage, rectangle, false);
 

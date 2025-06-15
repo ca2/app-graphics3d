@@ -70,12 +70,12 @@ namespace gpu_directx12
 
 
 
-   void context::on_create_context(const ::gpu::start_context_t& startcontext)
+   void context::on_create_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size)
    {
 
-      m_pgpudevice = startcontext.m_pgpudevice;
+      m_pgpudevice = pgpudevice;
 
-      ::gpu::context::on_create_context(startcontext);
+      ::gpu::context::on_create_context(pgpudevice, eoutput, pwindow, size);
 
 
 
@@ -793,7 +793,7 @@ namespace gpu_directx12
 
 
 
-   void context::_create_context_directx12(const ::gpu::start_context_t& startcontext)
+   void context::_create_context_directx12(::gpu::device* pgpudeviceParam, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size)
    {
 
       //createInstance();
@@ -803,7 +803,7 @@ namespace gpu_directx12
       //createLogicalDevice();
       //createCommandPool();
 
-      ::cast < device > pgpudevice = m_pgpudevice;
+      ::cast < device > pgpudevice = pgpudeviceParam;
 
       if (!pgpudevice)
       {
@@ -2342,7 +2342,7 @@ namespace gpu_directx12
    void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
    {
 
-      ::cast < renderer > prenderer = m_pgpurendererEngine;
+      ::cast < renderer > prenderer = m_pgpurendererOutput2;
 
       ::cast < device > pgpudevice = m_pgpudevice;
 
@@ -2381,11 +2381,11 @@ namespace gpu_directx12
    void context::update_global_ubo(const ::block& block)
    {
 
-      auto iFrameIndex = m_pgpurendererEngine->get_frame_index();
+      auto iFrameIndex = m_pgpurendererOutput2->get_frame_index();
 
 
       //MyGlobalData globalData = { /* your values */ };
-      ::cast < renderer > prenderer = m_pgpurendererEngine;
+      ::cast < renderer > prenderer = m_pgpurendererOutput2;
       //      UINT8* mappedPtr = nullptr;
         //    D3D12_RANGE readRange = {}; // no read access
           //  m_uboBuffers[iFrameIndex]->m_presourceBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mappedPtr));

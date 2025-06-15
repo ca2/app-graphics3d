@@ -78,7 +78,7 @@ namespace app_graphics3d_continuum
 	void simple_render_system::prepare(::gpu::context* pgpucontext)
 	{
 
-		auto prenderer = pgpucontext->m_pgpurendererEngine;
+		auto prenderer = pgpucontext->m_pgpurendererOutput2;
 
 		m_pshader = prenderer->create_shader(
 			"matter://shaders/vert.vert",

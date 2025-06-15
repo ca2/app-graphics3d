@@ -753,10 +753,7 @@ namespace gpu_vulkan
    }
 
 
-
-
-
-   void context::_create_context_win32(const ::gpu::start_context_t& startcontext)
+   void context::_create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size)
    {
 
       //createInstance();
@@ -765,8 +762,6 @@ namespace gpu_vulkan
       //pickPhysicalDevice();
       //createLogicalDevice();
       //createCommandPool();
-
-      ::cast < device > pgpudevice = m_pgpudevice;
 
       if (!pgpudevice)
       {
@@ -841,12 +836,12 @@ namespace gpu_vulkan
    }
 
 
-   void context::on_create_context(const ::gpu::start_context_t & startcontext)
+   void context::on_create_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size)
    {
 
       //m_itaskGpu = ::current_itask();
 
-      m_pgpudevice = startcontext.m_pgpudevice;
+      m_pgpudevice = pgpudevice;
 
       if (m_pgpudevice->m_queuefamilyindices.graphicsFamily >= 0)
       {
@@ -862,7 +857,7 @@ namespace gpu_vulkan
 
       }
 
-      _create_context_win32(startcontext);
+      _create_context_win32(pgpudevice, eoutput, pwindow, size);
 
    }
 
@@ -2335,7 +2330,7 @@ namespace gpu_vulkan
    void context::update_global_ubo(const ::block& block)
    {
 
-      auto iFrameIndex = m_pgpurendererEngine->get_frame_index();
+      auto iFrameIndex = m_pgpurendererOutput2->get_frame_index();
 
       if (iFrameIndex < 0 || iFrameIndex >= m_uboBuffers.size())
       {
@@ -2365,7 +2360,7 @@ namespace gpu_vulkan
       if (!m_psetdescriptorlayoutGlobal)
       {
 
-         auto pgpurenderer = get_output_renderer();
+         auto pgpurenderer = get_gpu_renderer();
 
          m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(this)
             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)

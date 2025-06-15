@@ -6405,12 +6405,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       m_z = 0.f;
 
-      if (!m_pgpucontext->m_pgpurendererDraw2d)
+      if (!m_pgpucontext->m_pgpurendererOutput2)
       {
 
-         __øconstruct(m_pgpucontext->m_pgpurendererDraw2d);
+         __øconstruct(m_pgpucontext->m_pgpurendererOutput2);
 
-         m_pgpucontext->m_pgpurendererDraw2d->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer, ::gpu::e_scene_2d);
+         m_pgpucontext->m_pgpurendererOutput2->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer, ::gpu::e_scene_2d);
 
       }
 
@@ -6490,13 +6490,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 
-            m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device()->start_swap_chain_context(this, pwindow);
+            m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device()->create_window_context(pwindow);
 
             //m_pgpucontextOutput->create_window_buffer(pwindow);
 
          }
 
-         ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontextOutput->get_output_renderer();
+         ::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontextOutput->get_gpu_renderer();
 
          //m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
 

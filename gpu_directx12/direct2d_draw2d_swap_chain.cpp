@@ -998,7 +998,7 @@ namespace gpu_directx12
 
       pcontext->m_eoutput = pcontext->get_eoutput();
 
-      ::cast < renderer > prenderer = pcontext->get_output_renderer();
+      ::cast < renderer > prenderer = pcontext->get_gpu_renderer();
 
       prenderer->m_bDisableDepthStencil = true;
 

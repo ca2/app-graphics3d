@@ -140,7 +140,10 @@ namespace graphics3d_directx11
       {
          a.data()
       };
-      ::cast < ::gpu_directx11::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+      ::cast < ::gpu_directx11::context > pgpucontext = m_pgpurenderer->m_pgpucontext;
+
+      ::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
 
       auto hresult = pgpudevice->m_pdevice->CreateBuffer(&bd, &initData, &m_pbufferVertex);
 
@@ -201,7 +204,10 @@ namespace graphics3d_directx11
          { 
             indices.data() 
          };
-         ::cast < ::gpu_directx11::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+         ::cast < ::gpu_directx11::context > pgpucontext = m_pgpurenderer->m_pgpucontext;
+
+         ::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
 
          auto hresult = pgpudevice->m_pdevice->CreateBuffer(&bd, &initData, &m_pbufferIndice);
 

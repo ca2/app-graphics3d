@@ -5,7 +5,6 @@
 #include "frame.h"
 #include "input.h"
 #include "offscreen_render_pass.h"
-//#include "renderer.h"
 #include "swap_chain_render_pass.h"
 #include "aura/platform/application.h"
 #include "bred/user/user/graphics3d.h"
@@ -14,6 +13,7 @@
 #include "gpu_directx11/descriptors.h"
 #include "gpu_directx11/renderer.h"
 #include "gpu_directx11/offscreen_render_target_view.h"
+#include "gpu_directx11/texture.h"
 #include "draw2d_direct2d/_.h"
 #include "draw2d_direct2d/graphics.h"
 #include "bred/graphics3d/camera.h"
@@ -50,7 +50,7 @@ namespace graphics3d_directx11
    void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::cast < ::gpu_directx11::renderer> prenderer = m_pgpurendererGraphics3D->m_pgpucontext->m_pgpurendererOutput2;
+      ::cast < ::gpu_directx11::renderer> prenderer = m_pgpucontextGraphics3D->m_pgpurendererOutput2;
 
       prenderer->defer_update_renderer();
 
@@ -323,7 +323,7 @@ namespace graphics3d_directx11
 
       ::cast < ::gpu_directx11::approach> papproach = m_papplication->get_gpu_approach();
 
-      papproach->engine_on_frame_context_initialization(m_pgpurendererGraphics3D->m_pgpucontext);
+      papproach->engine_on_frame_context_initialization(m_pgpucontextGraphics3D);
 
       //m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pgpucontext)
       //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
@@ -548,14 +548,15 @@ namespace graphics3d_directx11
       if (pgraphics2d)
       {
 
-         ::cast< ::gpu_directx11::context > pgpucontext = m_pgpurendererGraphics3D->m_pgpucontext;
-         ::cast< ::gpu_directx11::renderer > prenderer = this;
+         ::cast< ::gpu_directx11::context > pgpucontext = m_pgpucontextGraphics3D;
+         ::cast< ::gpu_directx11::renderer > prenderer = m_pgpucontextGraphics3D->m_pgpurendererOutput2;
          ::cast < ::gpu_directx11::render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
          ::cast < ::gpu_directx11::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
          ::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
          ID3D11Device* device = pgpudevice->m_pdevice;
          ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-         ID3D11Texture2D* offscreenTexture = poffscreenrendertargetview->m_ptextureOffscreen;
+         ::cast < ::gpu_directx11::texture > ptexture = poffscreenrendertargetview->current_texture();
+         ID3D11Texture2D* offscreenTexture = ptexture->m_ptextureOffscreen;
          if (!device || !context || !offscreenTexture)
          {
             throw ::exception(error_wrong_state);
@@ -636,7 +637,11 @@ namespace graphics3d_directx11
          pgraphics2d->m_pdevicecontext->DrawImage(
             bitmap,
             D2D1::Point2F(0.f, 0.f),
-            D2D1::RectF(r.left(), iNewTop, r.width(), r.height()),
+            D2D1::RectF(
+               (FLOAT) r.left(),
+               (FLOAT) iNewTop, 
+               (FLOAT) r.width(),
+               (FLOAT) r.height()),
             D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
             D2D1_COMPOSITE_MODE_SOURCE_OVER);
 

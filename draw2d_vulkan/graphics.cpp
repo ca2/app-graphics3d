@@ -275,7 +275,7 @@ namespace draw2d_vulkan
       //   return false;
       //}
 
-      if (!m_pgpurendererDraw2d)
+      if (!m_pgpucontextDraw2d)
       {
 
          auto pgpuapproach = application()->get_gpu_approach();
@@ -291,7 +291,7 @@ namespace draw2d_vulkan
 
          auto pgpudevice = pgpuapproach->get_gpu_device();
 
-         auto pgpucontext = pgpudevice->get_main_context();
+         auto pgpucontext = pgpudevice->create_draw2d_context(::gpu::e_output_gpu_buffer, rectanglePlacement.size());
 
          //::gpu::start_context_t startcontext;
          //startcontext.m_pparticle = this;
@@ -299,7 +299,7 @@ namespace draw2d_vulkan
          //startcontext.m_eoutput = ::gpu::e_output_color_and_alpha_accumulation_buffers;
          //startcontext.m_rectanglePlacement = rectanglePlacement;
 
-         m_pgpurendererDraw2d = pgpucontext->get_output_renderer();
+         m_pgpucontextDraw2d = pgpucontext;
 
          //m_pgpucontext = pgpudevice->start_gpu_output_context(
          //   this,
@@ -309,7 +309,7 @@ namespace draw2d_vulkan
 
       }
 
-      if (!m_pgpurendererDraw2d)
+      if (!m_pgpucontextDraw2d)
       {
          return false;
          //auto psystem = system();
@@ -629,18 +629,18 @@ namespace draw2d_vulkan
 
       auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      auto pgpucontext = pgpudevice->get_main_context();
+      // auto pgpucontext = pgpudevice->get_main_context();
 
-      if (!m_pgpurendererDraw2d)
+      if (!m_pgpucontextDraw2d)
       {
 
-         m_pgpurendererDraw2d = pgpucontext->get_output_renderer();
+         m_pgpucontextDraw2d = pgpudevice->create_window_context(pwindow);
 
       }
 
-      pgpucontext->defer_create_window_context(pwindow);
+      m_pgpucontextDraw2d->defer_create_window_context(pwindow);
 
-      ::cast < ::gpu_vulkan::context > pcontextVulkan = pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontextDraw2d;
       ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
 
       //vkvg_device_create_info_t createinfo;
@@ -1863,7 +1863,7 @@ namespace draw2d_vulkan
    void graphics::_fill_quad(const ::double_point points[4], const ::color::color& color)
    {
 
-      ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpurendererDraw2d;
+      ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontextDraw2d->m_pgpurendererOutput2;
 
       ::cast < ::gpu_vulkan::context > pgpucontext = prenderer->m_pgpucontext;
 
@@ -1939,7 +1939,7 @@ namespace draw2d_vulkan
 
       //      ::cast < ::gpu_vulkan::device > pgpudevice = m_pgpucontext->m_pgpudevice;
       //      pshaderRectangle->initialize_shader_with_block(
-      //         m_pgpucontext->m_pgpurendererDraw2d,
+      //         m_pgpucontext->m_pgpucontextDraw2d->m_pgpurendererOutput2,
       //         as_memory_block(g_uaRectangleVertexShader),
       //         //as_memory_block(g_uaAccumulationFragmentShader),
       //         as_memory_block(g_uaRectangleFragmentShader),
@@ -1981,7 +1981,7 @@ namespace draw2d_vulkan
 
             ::cast < ::gpu_vulkan::device > pgpudevice = pgpucontext->m_pgpudevice;
             pshaderRectangle->initialize_shader_with_block(
-               m_pgpurendererDraw2d,
+               m_pgpucontextDraw2d->m_pgpurendererOutput2,
                as_memory_block(g_uaRectangleVertexShader),
                //as_memory_block(g_uaAccumulationFragmentShader),
                as_memory_block(g_uaRectangleFragmentShader),
@@ -2072,7 +2072,7 @@ namespace draw2d_vulkan
 
    void graphics::_fill_rectangle_2025_05_29(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
    {
-      ::cast < ::gpu_vulkan::renderer >pgpurenderer = m_pgpurendererDraw2d;
+      ::cast < ::gpu_vulkan::renderer >pgpurenderer = m_pgpucontextDraw2d->m_pgpurendererOutput2;
 
       ::cast < ::gpu_vulkan::context > pgpucontext = pgpurenderer->m_pgpucontext;
 
@@ -2146,7 +2146,7 @@ namespace draw2d_vulkan
 
       //      ::cast < ::gpu_vulkan::device > pgpudevice = m_pgpucontext->m_pgpudevice;
       //      pshaderRectangle->initialize_shader_with_block(
-      //         m_pgpucontext->m_pgpurendererDraw2d,
+      //         m_pgpucontext->m_pgpucontextDraw2d->m_pgpurendererOutput2,
       //         as_memory_block(g_uaRectangleVertexShader),
       //         //as_memory_block(g_uaAccumulationFragmentShader),
       //         as_memory_block(g_uaRectangleFragmentShader),
@@ -6535,10 +6535,10 @@ namespace draw2d_vulkan
             m_pshaderLine->m_vktopology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
             m_pshaderLine->m_dynamicstateaEnable.add(VK_DYNAMIC_STATE_LINE_WIDTH);
 
-            ::cast < ::gpu_vulkan::device > pgpudevice = m_pgpurendererDraw2d->m_pgpucontext->m_pgpudevice;
+            ::cast < ::gpu_vulkan::device > pgpudevice = m_pgpucontextDraw2d->m_pgpudevice;
 
             pshaderRectangle->initialize_shader_with_block(
-               m_pgpurendererDraw2d,
+               m_pgpucontextDraw2d->m_pgpurendererOutput2,
                as_memory_block(g_uaRectangleVertexShader),
                //as_memory_block(g_uaAccumulationFragmentShader),
                as_memory_block(g_uaRectangleFragmentShader),
@@ -6574,12 +6574,12 @@ namespace draw2d_vulkan
 
       {
 
-         ::cast < ::gpu_vulkan::context > pgpucontext = m_pgpurendererDraw2d->m_pgpucontext;
+         ::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontextDraw2d;
 
          pmodel->m_vertexBuffer = createLineVertexBuffer(pgpucontext->logicalDevice(),
             pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
             &pmodel->m_vertexMemory, points[0], points[1],
-            color, m_pgpurendererDraw2d->m_pgpucontext->rectangle().size());
+            color, m_pgpucontextDraw2d->rectangle().size());
 
          pmodel->m_indexBuffer = nullptr;
          pmodel->m_indexMemory = nullptr;
@@ -6588,9 +6588,9 @@ namespace draw2d_vulkan
 
       m_pshaderLine->bind();
 
-      ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpurendererDraw2d->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontextDraw2d;
 
-      ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpurendererDraw2d;
+      ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontextDraw2d->m_pgpurendererOutput2;
 
       auto commandBuffer = prenderer->getCurrentCommandBuffer();
       vkCmdSetLineWidth(commandBuffer, m_ppen->m_dWidth);
@@ -7271,7 +7271,7 @@ namespace draw2d_vulkan
    void graphics::do_on_context(const ::procedure& procedure)
    {
 
-      m_pgpurendererDraw2d->m_pgpucontext->send(procedure);
+      m_pgpucontextDraw2d->send(procedure);
 
    }
 
@@ -7311,16 +7311,16 @@ namespace draw2d_vulkan
 
    //   m_z = 0.f;
 
-   //   if (!m_pgpucontext->m_pgpurendererDraw2d)
+   //   if (!m_pgpucontext->m_pgpucontextDraw2d->m_pgpurendererOutput2)
    //   {
 
-   //      __øconstruct(m_pgpucontext->m_pgpurendererDraw2d);
+   //      __øconstruct(m_pgpucontext->m_pgpucontextDraw2d->m_pgpurendererOutput2);
 
    //      m_pgpucontext->m_eoutput = ::gpu::e_output_color_and_alpha_accumulation_buffers;
 
-   //      //m_pgpucontext->m_pgpurendererDraw2d->initialize_renderer(m_pgpucontext, ::gpu::e_output_color_and_alpha_accumulation_buffers);
+   //      //m_pgpucontext->m_pgpucontextDraw2d->m_pgpurendererOutput2->initialize_renderer(m_pgpucontext, ::gpu::e_output_color_and_alpha_accumulation_buffers);
 
-   //      m_pgpucontext->m_pgpurendererDraw2d->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer);
+   //      m_pgpucontext->m_pgpucontextDraw2d->m_pgpurendererOutput2->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer);
 
    //      //::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontext->m_prenderer;
 
@@ -7338,7 +7338,7 @@ namespace draw2d_vulkan
    //   if (m_egraphics == e_graphics_draw)
    //   {
 
-   //      ::cast < ::gpu_vulkan::renderer > pgpurenderer = m_pgpucontext->m_pgpurendererDraw2d;
+   //      ::cast < ::gpu_vulkan::renderer > pgpurenderer = m_pgpucontext->m_pgpucontextDraw2d->m_pgpurendererOutput2;
 
    //      m_pgpucontext->set_placement(rectangle);
 
@@ -7406,7 +7406,7 @@ namespace draw2d_vulkan
    //      //VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
 
 
-   //      ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontext->m_pgpurendererDraw2d;
+   //      ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontext->m_pgpucontextDraw2d->m_pgpurendererOutput2;
 
    //      prenderer->on_end_render(m_pframe);
 
@@ -7486,7 +7486,7 @@ namespace draw2d_vulkan
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
-         m_pgpurendererDraw2d->m_pgpucontext->swap_buffers();
+         m_pgpucontextDraw2d->swap_buffers();
 
       }
 
@@ -7504,7 +7504,7 @@ namespace draw2d_vulkan
 
       //wglMakeCurrent(m_hdc, m_hglrc);
 
-      m_pgpurendererDraw2d->m_pgpucontext->make_current();
+      m_pgpucontextDraw2d->make_current();
 
       thread_graphics(this);
 
@@ -7516,7 +7516,7 @@ namespace draw2d_vulkan
 
       //return ::is_set(this) & ::is_set(m_hglrc);
 
-      return ::is_set(this) && m_pgpurendererDraw2d->m_pgpucontext;
+      return ::is_set(this) && m_pgpucontextDraw2d;
 
    }
 

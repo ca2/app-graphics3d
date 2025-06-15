@@ -67,10 +67,11 @@ namespace app_graphics3d_continuum
       GPU_PROPERTY("radius", ::gpu::e_type_float)
       END_GPU_PROPERTIES()
 
+
    void point_light_system::prepare(::gpu::context * pgpucontext)//(VkDescriptorSetLayout globalSetLayout) 
    {
 
-      auto prenderer = pgpucontext->m_pgpurendererEngine;
+      auto prenderer = pgpucontext->m_pgpurendererOutput2;
 
       m_pshader = prenderer->create_shader(
          "matter://shaders/point_light.vert",

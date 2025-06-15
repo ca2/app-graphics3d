@@ -75,7 +75,7 @@ namespace graphics3d_directx12
          //item.position.z = - item.position.z;
       }
 
-      UINT vertexBufferSize = vertices.get_size_in_bytes();
+      auto vertexBufferSize = (UINT) vertices.get_size_in_bytes();
 
       // Create default heap resources
       CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
@@ -123,7 +123,7 @@ namespace graphics3d_directx12
       if (hasIndexBuffer)
       {
 
-         UINT indexBufferSize = indices.get_size_in_bytes();
+         auto indexBufferSize = (UINT) indices.get_size_in_bytes();
 
          ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
 
