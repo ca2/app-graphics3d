@@ -31,7 +31,7 @@ namespace gpu_vulkan
 		~accumulation_render_pass();
 
 		
-		void initialize_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous) override;
+		void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous) override;
 
 
 		void on_before_begin_render(frame* pframe) override;

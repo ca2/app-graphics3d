@@ -88,14 +88,14 @@ namespace gpu_vulkan
 
 
 
-   void renderer::initialize_renderer(::gpu::context* pgpucontext, ::gpu::enum_output eoutput, ::gpu::enum_scene escene)
+   void renderer::initialize_renderer(::gpu::context* pgpucontext)
    {
 
-      ::gpu::renderer::initialize_renderer(pgpucontext, eoutput, escene);
+      ::gpu::renderer::initialize_renderer(pgpucontext);
 
       m_pgpucontext = pgpucontext;
 
-      if (eoutput == ::gpu::e_output_cpu_buffer)
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
       {
 
          //m_pimpact = pgpucontext->m_pimpact;
@@ -206,8 +206,10 @@ namespace gpu_vulkan
    void renderer::defer_update_renderer()
    {
 
-      if (m_extentRenderer.width == m_pgpucontext->rectangle().width()
-         && m_extentRenderer.height == m_pgpucontext->rectangle().height())
+      auto rectangle = m_pgpucontext->rectangle();
+
+      if (m_extentRenderer.width == rectangle.width()
+         && m_extentRenderer.height == rectangle.height())
       {
 
          return;
@@ -220,7 +222,7 @@ namespace gpu_vulkan
 
       m_extentRenderer.height = m_pgpucontext->rectangle().height();
 
-      auto eoutput = m_eoutput;
+      auto eoutput = m_pgpucontext->m_eoutput;
 
       if (eoutput == ::gpu::e_output_cpu_buffer)
       {
@@ -302,7 +304,12 @@ namespace gpu_vulkan
       if (pgpurenderpass->m_images.is_empty())
       {
 
-         pgpurenderpass->initialize_render_pass(this, m_extentRenderer, pgpurenderpass.m_p);
+         ::int_size size;
+
+         size.cx() = m_extentRenderer.width;
+         size.cy() = m_extentRenderer.height;
+
+         pgpurenderpass->initialize_render_target(this, size, pgpurenderpass.m_p);
 
          pgpurenderpass->init();
 

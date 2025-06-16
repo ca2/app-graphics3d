@@ -26,7 +26,7 @@ static inline double GET_ABS(double x) {return x>0?x:-x;}
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
+  glPushxxxMatrix();
 	glLoadIdentity();
 	glOrtho( 0,context_width,context_height,0,0.0f,100.0f);
 
@@ -49,7 +49,7 @@ static inline double GET_ABS(double x) {return x>0?x:-x;}
  * and not using alpha blending (blend to background color):
  *
   glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
+  glPushxxxMatrix();
 	glLoadIdentity();
 	glOrtho( 0,context_width,context_height,0,0.0f,100.0f);
 

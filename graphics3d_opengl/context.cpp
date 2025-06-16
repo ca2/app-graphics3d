@@ -735,11 +735,11 @@
 //{
 //
 //   // Clear the screen 
-//   GLCheckError();
+//   GLCheckError("");
 //   //   glClearColor(0.678f, 0.847f, 0.902f, 1.0f);//
 //   glClearColor(color.f32_red(), color.f32_green(), color.f32_blue(), color.f32_opacity());//
 //   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//   GLCheckError();
+//   GLCheckError("");
 //}
 //
 //

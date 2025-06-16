@@ -34,14 +34,59 @@ namespace gpu_vulkan
    //}
 
 
-   void accumulation_render_pass::initialize_render_pass(renderer* pgpurenderer, VkExtent2D extent, ::pointer<render_pass> previous)
+
+   accumulation_render_pass::~accumulation_render_pass()
    {
 
-      render_pass::initialize_render_pass(pgpurenderer, extent, previous);
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+      for (auto imageView : m_imageviews)
+      {
+
+         vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
+
+      }
+
+      m_imageviews.clear();
+
+      //if (swapChain != nullptr) {
+      //   vkDestroySwapchainKHR(m_pgpucontext->logicalDevice(), swapChain, nullptr);
+      //   swapChain = nullptr;
+      //}
+
+      for (int i = 0; i < depthImages.size(); i++)
+      {
+
+         vkDestroyImageView(pcontext->logicalDevice(), depthImageViews[i], nullptr);
+         vkDestroyImage(pcontext->logicalDevice(), depthImages[i], nullptr);
+         vkFreeMemory(pcontext->logicalDevice(), depthImageMemorys[i], nullptr);
+
+      }
+
+      //for (auto framebuffer : m_framebuffers) {
+      //   vkDestroyFramebuffer(m_pgpucontext->logicalDevice(), framebuffer, nullptr);
+      //}
+
+      //vkDestroyRenderPass(m_pgpucontext->logicalDevice(), renderPass, nullptr);
+
+      //// cleanup synchronization objects
+      //for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+      //   vkDestroySemaphore(m_pgpucontext->logicalDevice(), renderFinishedSemaphores[i], nullptr);
+      //   vkDestroySemaphore(m_pgpucontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
+      //   vkDestroyFence(m_pgpucontext->logicalDevice(), inFlightFences[i], nullptr);
+      //}
+   }
+
+
+
+   void accumulation_render_pass::initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size& size, ::pointer<::gpu::render_target> previous)
+   {
+
+      render_pass::initialize_render_target(pgpurenderer, size, previous);
 
    }
 
-   
+
 
 
 
@@ -62,47 +107,6 @@ namespace gpu_vulkan
       createFramebuffers();
       createSyncObjects();
 
-   }
-
-
-   accumulation_render_pass::~accumulation_render_pass()
-   {
-
-      for (auto imageView : m_imageviews)
-      {
-
-         vkDestroyImageView(m_pgpucontext->logicalDevice(), imageView, nullptr);
-
-      }
-
-      m_imageviews.clear();
-
-      //if (swapChain != nullptr) {
-      //   vkDestroySwapchainKHR(m_pgpucontext->logicalDevice(), swapChain, nullptr);
-      //   swapChain = nullptr;
-      //}
-
-      for (int i = 0; i < depthImages.size(); i++)
-      {
-
-         vkDestroyImageView(m_pgpucontext->logicalDevice(), depthImageViews[i], nullptr);
-         vkDestroyImage(m_pgpucontext->logicalDevice(), depthImages[i], nullptr);
-         vkFreeMemory(m_pgpucontext->logicalDevice(), depthImageMemorys[i], nullptr);
-
-      }
-
-      //for (auto framebuffer : m_framebuffers) {
-      //   vkDestroyFramebuffer(m_pgpucontext->logicalDevice(), framebuffer, nullptr);
-      //}
-
-      //vkDestroyRenderPass(m_pgpucontext->logicalDevice(), renderPass, nullptr);
-
-      //// cleanup synchronization objects
-      //for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-      //   vkDestroySemaphore(m_pgpucontext->logicalDevice(), renderFinishedSemaphores[i], nullptr);
-      //   vkDestroySemaphore(m_pgpucontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
-      //   vkDestroyFence(m_pgpucontext->logicalDevice(), inFlightFences[i], nullptr);
-      //}
    }
 
 
@@ -169,10 +173,12 @@ namespace gpu_vulkan
    VkResult accumulation_render_pass::submitCommandBuffers(const VkCommandBuffer* buffers)
    {
 
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
       if (imagesInFlight[get_image_index()] != VK_NULL_HANDLE)
       {
 
-         vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[get_image_index()], VK_TRUE, UINT64_MAX);
+         vkWaitForFences(pcontext->logicalDevice(), 1, &imagesInFlight[get_image_index()], VK_TRUE, UINT64_MAX);
 
       }
 
@@ -204,9 +210,9 @@ namespace gpu_vulkan
       submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
       submitInfo.pSignalSemaphores = signalSemaphores.data();
 
-      vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
+      vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
 
-      auto queueGraphics = m_pgpucontext->graphicsQueue();
+      auto queueGraphics = pcontext->graphicsQueue();
 
       if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
       {
@@ -215,7 +221,7 @@ namespace gpu_vulkan
 
       }
 
-      VK_CHECK(vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
+      VK_CHECK(vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
 
       //for (auto& procedure : m_procedureaOnAfterSubmit)
       //{
@@ -251,10 +257,12 @@ namespace gpu_vulkan
    VkResult accumulation_render_pass::submitSamplingWork(const VkCommandBuffer buffer, uint32_t* imageIndex)
    {
 
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
       if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
       {
 
-         vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+         vkWaitForFences(pcontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
 
       }
 
@@ -281,16 +289,16 @@ namespace gpu_vulkan
          imageAvailable[m_pgpurenderer->get_frame_index()] = 1;
       }
 
-      vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
+      vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
 
-      if (vkQueueSubmit(m_pgpucontext->graphicsQueue(), 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
+      if (vkQueueSubmit(pcontext->graphicsQueue(), 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed, "failed to submit draw command buffer!");
 
       }
 
-      VK_CHECK(vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
+      VK_CHECK(vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
 
       //VkPresentInfoKHR presentInfo = {};
       //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -316,10 +324,12 @@ namespace gpu_vulkan
    void accumulation_render_pass::createRenderPassImpl()
    {
 
-      m_extent.width = windowExtent.width;
-      m_extent.height = windowExtent.height;
 
-      ::cast < context > pgpucontext = m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      m_extent.width = m_size.width();
+      m_extent.height = m_size.height();
+
+      ::cast < context > pgpucontext = pcontext;
 
       //// Find a suitable depth format
       VkFormat fbDepthFormat;
@@ -352,7 +362,7 @@ namespace gpu_vulkan
       for (int i = 0; i < m_images.size(); i++)
       {
 
-         m_pgpucontext->createImageWithInfo(
+         pcontext->createImageWithInfo(
             image,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             m_images[i],
@@ -380,9 +390,10 @@ namespace gpu_vulkan
       samplerInfo.minLod = 0.0f;
       samplerInfo.maxLod = 1.0f;
       samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-      VK_CHECK_RESULT(vkCreateSampler(m_pgpucontext->logicalDevice(), &samplerInfo, nullptr, &m_vksampler));
+      VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerInfo, nullptr, &m_vksampler));
 
-      m_extent = windowExtent;
+      m_extent.width = m_size.width();
+      m_extent.height = m_size.height();
 
    }
 
@@ -390,12 +401,12 @@ namespace gpu_vulkan
    void accumulation_render_pass::createAlphaAccumulation()
    {
 
-      ::cast < context > pgpucontext = m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
       //// Find a suitable depth format
       VkFormat fbDepthFormat;
       VkBool32 validDepthFormat = getSupportedDepthFormat(
-         pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice, &fbDepthFormat);
+         pcontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice, &fbDepthFormat);
       ASSERT(validDepthFormat);
 
       //// Color attachment
@@ -422,7 +433,7 @@ namespace gpu_vulkan
       for (int i = 0; i < m_imagesAlphaAccumulation.size(); i++)
       {
 
-         m_pgpucontext->createImageWithInfo(
+         pcontext->createImageWithInfo(
             imageInfo,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             m_imagesAlphaAccumulation[i],
@@ -463,6 +474,8 @@ namespace gpu_vulkan
 
       render_pass::createImageViews();
 
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
       m_imageviewsAlphaAccumulation.resize(m_images.size());
 
       for (::collection::index i = 0; i < m_imagesAlphaAccumulation.size(); i++)
@@ -479,7 +492,7 @@ namespace gpu_vulkan
          viewInfo.subresourceRange.baseArrayLayer = 0;
          viewInfo.subresourceRange.layerCount = 1;
 
-         if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, nullptr, &m_imageviewsAlphaAccumulation[i]) !=
+         if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &m_imageviewsAlphaAccumulation[i]) !=
             VK_SUCCESS)
          {
             throw ::exception(error_failed, "failed to create texture image view!");
@@ -514,6 +527,8 @@ namespace gpu_vulkan
    void accumulation_render_pass::createRenderPass()
    {
 
+
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
       VkAttachmentDescription attachments[2] = {
          // Accum attachment
@@ -573,7 +588,7 @@ namespace gpu_vulkan
 
 
 
-      if(vkCreateRenderPass(m_pgpucontext->logicalDevice(), &renderPassInfo, NULL, &m_vkrenderpass) != VK_SUCCESS)
+      if(vkCreateRenderPass(pcontext->logicalDevice(), &renderPassInfo, NULL, &m_vkrenderpass) != VK_SUCCESS)
       {
          throw ::exception(error_failed, "failed to create render pass!");
       }
@@ -644,8 +659,12 @@ namespace gpu_vulkan
 
    }
 
+
    void accumulation_render_pass::createFramebuffers()
    {
+
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
       //render_pass::createFramebuffers();
       m_framebuffers.resize(imageCount());
       for (size_t i = 0; i < imageCount(); i++) 
@@ -662,7 +681,7 @@ namespace gpu_vulkan
              .layers = 1
          };
 
-         vkCreateFramebuffer(m_pgpucontext->logicalDevice(), &fbInfo, NULL, &m_framebuffers[i]);
+         vkCreateFramebuffer(pcontext->logicalDevice(), &fbInfo, NULL, &m_framebuffers[i]);
 
       //   VkExtent2D swapChainExtent = getExtent();
       //   VkFramebufferCreateInfo framebufferInfo = {};
@@ -682,7 +701,9 @@ namespace gpu_vulkan
       //      throw ::exception(error_failed,"failed to create framebuffer!");
       //   }
       }
+
    }
+
 
    void accumulation_render_pass::createDepthResources()
    {

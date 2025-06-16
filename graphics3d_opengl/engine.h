@@ -72,6 +72,7 @@ namespace graphics3d_opengl
 		void defer_update_engine(const ::int_rectangle& rectanglePlacement) override;
 
 		void on_begin_frame() override;
+		void on_end_frame() override;
 
 		//void create_global_ubo(::gpu::context* pgpucontext) override;
 		//void update_global_ubo(::gpu::context* pgpucontext) override;

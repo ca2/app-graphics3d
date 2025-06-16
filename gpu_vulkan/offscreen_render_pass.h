@@ -23,7 +23,7 @@ namespace gpu_vulkan
 		offscreen_render_pass();
 		~offscreen_render_pass();
 
-		void initialize_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous = {}) override;
+		void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size &  windowExtent, ::pointer <::gpu::render_target>previous = {}) override;
 		//VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
 		//VkRenderPass getRenderPass() { return m_vkrenderpass; }
 		//VkImageView getImageView(int index) { return m_imageview[index]; }

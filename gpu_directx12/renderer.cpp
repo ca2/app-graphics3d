@@ -153,10 +153,10 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::initialize_renderer(::gpu::context* pgpucontext, ::gpu::enum_output eoutput, ::gpu::enum_scene escene)
+   void renderer::initialize_renderer(::gpu::context* pgpucontext)
    {
 
-      ::gpu::renderer::initialize_renderer(pgpucontext, eoutput, escene);
+      ::gpu::renderer::initialize_renderer(pgpucontext);
 
       m_pgpucontext = pgpucontext;
 
@@ -171,7 +171,7 @@ float4 main(PSInput input) : SV_TARGET {
       HRESULT hrCreateDescriptorHeapCbv=pgpudevice->m_pdevice->CreateDescriptorHeap(&cbvHeapDesc, __interface_of(m_pheapCbv));
       pgpudevice->defer_throw_hresult(hrCreateDescriptorHeapCbv);
 
-      if (eoutput == ::gpu::e_output_cpu_buffer)
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
       {
 
          pgpucontext->create_cpu_buffer(pgpucontext->rectangle().size());
@@ -316,7 +316,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       m_sizeRenderer = size;
 
-      auto eoutput = m_eoutput;
+      auto eoutput = m_pgpucontext->m_eoutput;
 
       if (eoutput == ::gpu::e_output_cpu_buffer
          || eoutput == ::gpu::e_output_gpu_buffer)

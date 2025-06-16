@@ -27,7 +27,7 @@ namespace gpu_vulkan
       ::array<VkFramebuffer> m_framebuffers;
       VkRenderPass m_vkrenderpass;
 
-      ::pointer < renderer >  m_pgpurenderer;
+      ///::pointer < renderer >  m_pgpurenderer;
 
       ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
       ::array < VkSemaphore> m_semaphoreaWaitToSubmit;
@@ -37,11 +37,11 @@ namespace gpu_vulkan
       ::array<VkImage> m_images;
       ::array<VkImageView> m_imageviews;
 
-      context* m_pgpucontext;
-      VkExtent2D windowExtent;
+      //context* m_pgpucontext;
+      //VkExtent2D windowExtent;
 
       //VkSwapchainKHR swapChain;
-      ::pointer<render_pass> m_pvkcrenderpassOld;
+      //::pointer<render_pass> m_pvkcrenderpassOld;
 
       ::int_array imageAvailable;
       ::array<VkSemaphore> imageAvailableSemaphores;
@@ -58,7 +58,7 @@ namespace gpu_vulkan
       ~render_pass();
 
 
-      virtual void initialize_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous = {});
+      void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous = {}) override;
 
       virtual void on_before_begin_render(frame* pframe);
 

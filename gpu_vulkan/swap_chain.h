@@ -27,7 +27,7 @@ namespace gpu_vulkan
       ~swap_chain();
 
 
-      void initialize_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous = {}) override;
+      void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous = {}) override;
 
       //swap_chain_render_pass(const swap_chain_render_pass&) = delete;
       //swap_chain_render_pass& operator=(const swap_chain_render_pass&) = delete;

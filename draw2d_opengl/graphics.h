@@ -125,7 +125,8 @@ namespace draw2d_opengl
 
       //void set_hint_window_output() override;
 
-      virtual bool opengl_create_offscreen_buffer(const ::function< void(::image::target* ptarget) >& callbackOnImagePixels, const ::int_rectangle & rectanglePlacement);
+      //virtual bool opengl_create_offscreen_buffer(const ::function< void(::image::target* ptarget) >& callbackOnImagePixels, const ::int_rectangle & rectanglePlacement);
+      virtual bool opengl_create_offscreen_buffer(const ::int_size& rectanglePlacement);
       virtual bool opengl_delete_offscreen_buffer();
 
       void create_for_window_drawing(const ::int_size& size) override;

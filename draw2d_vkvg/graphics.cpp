@@ -258,45 +258,6 @@ namespace draw2d_vkvg
 
       auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      auto pgpucontext = pgpudevice->get_main_context();
-
-      if (!pgpucontext)
-      {
-         return false;
-         //auto psystem = system();
-
-         //auto pgpu = application()->get_gpu();
-
-         //m_pgpucontextVulkan = pgpu->create_context(this);
-
-         //if (m_pgpucontextVulkan)
-         //{
-
-         //   m_pgpucontextVulkan->initialize(this);
-
-         //}
-
-      }
-
-      //if (__defer_construct(m_pgpucontextVulkan))
-      //{
-
-      //m_pgpucontext->create_offscreen_buffer(rectanglePlacement.size());
-
-
-      //auto psystem = system();
-
-      //auto pgpu = application()->get_gpu();
-
-      //if (!m_pgpucontext)
-      //{
-
-      //   m_pgpucontext = pgpu->start_swap_chain_context(this, pwindow);
-
-      //}
-
-
-      //m_pgpucontext->defer_create_window_context(pwindow);
 
       ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontext;
       ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
@@ -502,17 +463,17 @@ namespace draw2d_vkvg
 
       auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      auto pgpucontext = pgpudevice->get_main_context();
+      auto pgpucontext = pgpudevice->get_main_window_context();
 
-      //if (!m_pgpucontext)
-      //{
+      ////if (!m_pgpucontext)
+      ////{
 
-      //   m_pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
+      ////   m_pgpucontext = pgpudevice->start_swap_chain_context(this, pwindow);
 
-      //}
+      ////}
 
 
-      pgpucontext->defer_create_window_context(pwindow);
+      //pgpucontext->defer_create_window_context(pwindow);
 
       ::cast < ::gpu_vulkan::context > pcontextVulkan = pgpucontext;
       ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
@@ -6410,7 +6371,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          __øconstruct(m_pgpucontext->m_pgpurendererOutput2);
 
-         m_pgpucontext->m_pgpurendererOutput2->initialize_renderer(m_pgpucontext, ::gpu::e_output_gpu_buffer, ::gpu::e_scene_2d);
+         m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
+
+         m_pgpucontext->m_escene = ::gpu::e_scene_2d;
+
+         m_pgpucontext->m_pgpurendererOutput2->initialize_renderer(m_pgpucontext);
 
       }
 

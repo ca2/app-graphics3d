@@ -48,30 +48,6 @@ namespace app_graphics3d_continuum
 
 		initialize_scene_system(pengine);
 		
-		//m_pgpucontext = pgpucontext;
-
-	/*	m_pshader = m_pgpucontext->create_shader(
-			pgpucontext,
-			"matter://Shaders/vert.vert",
-			"matter://Shaders/frag.frag",
-			simple_render_properties()
-			);*/
-
-		//std::string vertShaderPath = 
-		//std::string fragShaderPath = "matter://Shaders/SpirV/frag.frag.spv";
-
-
-		//createPipelineLayout(globalSetLayout);
-		//createPipeline(renderPass);
-
-	//}
-		//std::string vertShaderPath = 
-		//std::string fragShaderPath = "matter://Shaders/SpirV/frag.frag.spv";
-
-
-		//createPipelineLayout(globalSetLayout);
-		//createPipeline(renderPass);
-
 	}
 
 
@@ -88,61 +64,10 @@ namespace app_graphics3d_continuum
 			simple_render_properties()
 		);
 
-		//std::string vertShaderPath = 
-		//std::string fragShaderPath = "matter://Shaders/SpirV/frag.frag.spv";
 
-
-		//createPipelineLayout(globalSetLayout);
-		//createPipeline(renderPass);
 
 	}
-	//void simple_render_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
 
-	//	VkPushConstantRange pushConstantRange{};
-	//	pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-	//	pushConstantRange.offset = 0;
-	//	pushConstantRange.size = sizeof(SimplePushConstantData);
-
-	//	std::vector<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
-
-	//	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-	//	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	//	pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
-	//	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-	//	pipelineLayoutInfo.pushConstantRangeCount = 1;
-	//	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-	//	if (vkCreatePipelineLayout(m_pgpucontext->logicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
-	//		VK_SUCCESS) {
-	//		throw ::exception(error_failed, "Failed to create pipeline layout");
-	//	}
-
-	//}
-
-
-	//void simple_render_system::createPipeline(VkRenderPass renderPass) 
-	//{
-
-	//	assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
-
-	//	PipelineConfigInfo pipelineConfig{};
-	//	pipeline::defaultPipelineConfigInfo(pipelineConfig);
-
-	//	pipelineConfig.renderPass = renderPass;
-	//	pipelineConfig.pipelineLayout = pipelineLayout;
-
-	//	// Construct paths using PROJECT_ROOT_DIR
-	//	std::string vertShaderPath = "matter://Shaders/SpirV/vert.vert.spv";
-	//	std::string fragShaderPath = "matter://Shaders/SpirV/frag.frag.spv";
-
-	//	m_ppipeline = __allocate pipeline();
-	//	
-	//	m_ppipeline->initialize_pipeline(
-	//		m_pgpucontext,
-	//		vertShaderPath.c_str(),
-	//		fragShaderPath.c_str(),
-	//		pipelineConfig
-	//	);
-	//}
 
 	void simple_render_system::update(::gpu::context* pgpucontext, ::graphics3d::scene* pscene)
 	{
@@ -155,15 +80,6 @@ namespace app_graphics3d_continuum
 	{
 
 		m_pshader->bind();
-
-	////	vkCmdBindDescriptorSets(
-	////		frameInfo.commandBuffer,
-	////		VK_PIPELINE_BIND_POINT_GRAPHICS,
-	////		pipelineLayout,
-	////		0, 1,
-	////		&frameInfo.globalDescriptorSet,
-	////		0, nullptr
-	////	);
 
 		for (auto& kv : pscene->m_mapObjects) 
 		{

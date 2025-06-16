@@ -330,7 +330,7 @@ namespace draw2d_vulkan
       //if (__defer_construct(m_pgpucontextVulkan))
       //{
 
-      throw todo;
+      //throw todo;
       //m_pgpucontext->create_cpu_buffer(rectanglePlacement.size());
 
 
@@ -2010,7 +2010,7 @@ namespace draw2d_vulkan
       quad[3] = points[3];
       m_m1.transform(quad[3]);
 
-      pgpucontext = pgpudevice->get_main_context();
+      //pgpucontext = pgpudevice->get_main_context();
 
       {
 
@@ -7271,7 +7271,9 @@ namespace draw2d_vulkan
    void graphics::do_on_context(const ::procedure& procedure)
    {
 
-      m_pgpucontextDraw2d->send(procedure);
+      ::draw2d_gpu::graphics::do_on_context(procedure);
+
+      //m_pgpucontextDraw2d->send(procedure);
 
    }
 

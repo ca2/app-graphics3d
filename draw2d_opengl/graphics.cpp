@@ -187,7 +187,7 @@ namespace draw2d_opengl
 
       }
 
-      opengl_create_offscreen_buffer({}, size);
+      opengl_create_offscreen_buffer(size);
 
       set_ok_flag();
 
@@ -224,7 +224,7 @@ namespace draw2d_opengl
    void graphics::CreateCompatibleDC(::draw2d::graphics* pgraphics)
    {
 
-      opengl_create_offscreen_buffer({}, { 0, 0, 1920, 1080 });
+      opengl_create_offscreen_buffer({ 1920, 1080 });
       //opengl_create_offscreen_buffer(pgraphics->m_pimage->size());
 
    }
@@ -255,8 +255,9 @@ namespace draw2d_opengl
 
       auto pgpucontextMainWindow = m_papplication->get_gpu_approach()->get_gpu_device()->get_main_window_context();
 
-      m_pgpucontextDraw2d = pgpudevice->create_gpu_context(
-         ::gpu::e_output_gpu_buffer, size);
+      m_pgpucontextDraw2d = pgpudevice->create_draw2d_context(
+         ::gpu::e_output_gpu_buffer,
+         size);
 
       if (!m_pgpucontextDraw2d)
       {
@@ -279,7 +280,7 @@ namespace draw2d_opengl
    }
 
 
-   bool graphics::opengl_create_offscreen_buffer(const ::function< void(::image::target* ptarget) >& callbackOnImagePixels, const ::int_rectangle& rectanglePlacement)
+   bool graphics::opengl_create_offscreen_buffer(const ::int_size & size)
    {
 
       //if (!draw2d_opengl()->m_popenglcontext) {
@@ -310,7 +311,11 @@ namespace draw2d_opengl
 
       auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      auto pgpucontext = pgpudevice->get_main_context();
+      m_pgpucontextDraw2d = pgpudevice->create_draw2d_context(
+         ::gpu::e_output_gpu_buffer,
+         size);
+
+      //auto pgpucontext = pgpudevice->get_main_context();
 
       //if (!m_pgpucontextDraw2d->m_pgpurendererOutput2)
       //{
@@ -338,7 +343,7 @@ namespace draw2d_opengl
 
       //}
 
-      if (!pgpucontext)
+      if (!m_pgpucontextDraw2d)
       {
 
          return false;
@@ -360,12 +365,12 @@ namespace draw2d_opengl
       //if (__defer_construct(m_pgpucontextOpenGL))
       //{
 
-      if (!m_pgpucontextDraw2d)
-      {
+      //if (!m_pgpucontextDraw2d)
+      //{
 
-         m_pgpucontextDraw2d = pgpudevice->create_draw2d_context(::gpu::e_output_gpu_buffer, rectanglePlacement.size());
+      //   m_pgpucontextDraw2d = pgpudevice->create_draw2d_context(::gpu::e_output_gpu_buffer, size);
 
-      }
+      //}
 
       //if (pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
       //{
@@ -510,7 +515,7 @@ namespace draw2d_opengl
 
       bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
-      ::opengl::resize(rectanglePlacement.size(), bYSwap);
+      ::opengl::resize(size, bYSwap);
 
       return true;
 
@@ -629,7 +634,7 @@ namespace draw2d_opengl
 
       opengl_delete_offscreen_buffer();
 
-      if (!opengl_create_offscreen_buffer({}, pbitmap->get_size()))
+      if (!opengl_create_offscreen_buffer(pbitmap->get_size()))
       {
 
          return NULL;
@@ -6465,8 +6470,6 @@ color = vec4(c.r,c.g, c.b, c.a);
    //   }
 
    //   ////m_pgpucontext->make_current();
-
-   //   //////glPushMatrix();
 
    //   //////glColor3f(0, 1, 1);
    //   ////glBegin(GL_TRIANGLES);                              // Drawing Using Triangles
