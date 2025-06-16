@@ -10,6 +10,7 @@
 #include "aura/platform/application.h"
 #include "bred/user/user/graphics3d.h"
 #include "app-graphics3d/gpu_vulkan/buffer.h"
+#include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "acme/filesystem/filesystem/directory_context.h"
@@ -173,18 +174,18 @@ namespace graphics3d_vulkan
 
       ::cast <::gpu_vulkan::renderer> pgpurenderer = m_pgpurenderer;
 
-      auto commandBuffer = pgpurenderer->getCurrentCommandBuffer();
+      auto pcommandbuffer = pgpurenderer->getCurrentCommandBuffer();
 
       if (hasIndexBuffer) 
       {
 
-         vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+         vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, indexCount, 1, 0, 0, 0);
 
       }
       else 
       {
 
-         vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
+         vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, vertexCount, 1, 0, 0);
 
       }
 
@@ -196,17 +197,17 @@ namespace graphics3d_vulkan
 
       ::cast <::gpu_vulkan::renderer> prenderer = m_pgpurenderer;
 
-      auto commandBuffer = prenderer->getCurrentCommandBuffer();
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
 
 
       VkBuffer buffers[] = { m_pbufferVertex->getBuffer() };
       VkDeviceSize offsets[] = { 0 };
-      vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
+      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, buffers, offsets);
 
       if (hasIndexBuffer) 
       {
 
-         vkCmdBindIndexBuffer(commandBuffer, m_pbufferIndex->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+         vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, m_pbufferIndex->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
       }
 

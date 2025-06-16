@@ -82,6 +82,7 @@ namespace gpu_vulkan
          VkDeviceMemory m_indexMemory = nullptr;
       };
 
+
       ::pointer<::gpu::shader>                        m_pshaderImageBlend;
       ::pointer<::gpu::shader>                        m_pshaderImageSet;
       map < VkImage, ::pointer < descriptor > >       m_imagedescriptor;
@@ -96,7 +97,7 @@ namespace gpu_vulkan
       //::pointer<::gpu::shader>                        m_pshaderResolve;
       //::pointer<model>                                m_pmodelResolve;
 
-      ::array<VkCommandBuffer>	commandBuffers;
+      ::pointer_array<command_buffer>	         m_commandbuffera;
       VkExtent2D m_extentRenderer;
       //int currentFrameIndex = 0;
       bool isFrameStarted = false;
@@ -177,10 +178,7 @@ namespace gpu_vulkan
       bool isFrameInProgress() const { return isFrameStarted; }
 
 
-      VkCommandBuffer getCurrentCommandBuffer() const {
-         assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
-         return commandBuffers[get_frame_index()];
-      }
+      command_buffer* getCurrentCommandBuffer();
 
       int get_frame_index() const override;
       int get_frame_count() const override;
@@ -238,6 +236,9 @@ namespace gpu_vulkan
       void blend(::gpu::renderer* prenderer) override;
 
       void soft_restore_context() override;
+
+
+      void blend(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource, const ::int_rectangle& rectangleTarget) override;
 
    };
 

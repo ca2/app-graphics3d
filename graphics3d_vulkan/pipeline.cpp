@@ -40,8 +40,8 @@
 //		vkDestroyPipeline(m_pgpucontext->logicalDevice(), graphicsPipeline, nullptr);
 //	}
 //
-//	void pipeline::bind(VkCommandBuffer commandBuffer) {
-//		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+//	void pipeline::bind(VkCommandBuffer pcommandbuffer->m_vkcommandbuffer) {
+//		vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 //	}
 //
 //	::array<char> pipeline::readFile(const std::string& filepath) {

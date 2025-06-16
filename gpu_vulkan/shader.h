@@ -32,7 +32,7 @@ namespace gpu_vulkan
       ~shader();
 
 
-      //void bind(VkCommandBuffer commandBuffer);
+      //void bind(auto pcommandbuffer);
 
       ///static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
    ///private:

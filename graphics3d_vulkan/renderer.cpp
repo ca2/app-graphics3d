@@ -158,16 +158,16 @@
 //
 //         isFrameStarted = true;
 //
-//         auto commandBuffer = getCurrentCommandBuffer();
+//         auto pcommandbuffer = getCurrentCommandBuffer();
 //
 //         VkCommandBufferBeginInfo beginInfo{};
 //         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 //
-//         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+//         if (vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo) != VK_SUCCESS) {
 //            throw ::exception(error_failed, "failed to begin recording command buffer!");
 //         }
 //         auto pframe = __create_new < frame >();
-//         pframe->commandBuffer = commandBuffer;
+//         pframe->pcommandbuffer->m_vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 //         m_pframe = pframe;
 //         return m_pframe;
 //
@@ -188,15 +188,15 @@
 //
 //      //	isFrameStarted = true;
 //
-//      //	auto commandBuffer = getCurrentCommandBuffer();
+//      //	auto pcommandbuffer = getCurrentCommandBuffer();
 //
 //      //	VkCommandBufferBeginInfo beginInfo{};
 //      //	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 //
-//      //	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+//      //	if (vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo) != VK_SUCCESS) {
 //      //		throw ::exception(error_failed, "failed to begin recording command buffer!");
 //      //	}
-//      //	return commandBuffer;
+//      //	return pcommandbuffer->m_vkcommandbuffer;
 //
 //      //}
 //   }
@@ -613,11 +613,11 @@
 //      {
 //
 //         assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-//         auto commandBuffer = getCurrentCommandBuffer();
-//         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+//         auto pcommandbuffer = getCurrentCommandBuffer();
+//         if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
 //            throw ::exception(error_failed, "failed to record command buffer!");
 //         }
-//         auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+//         auto result = m_pvkcrenderpass->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &currentImageIndex);
 //         //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
 //         //	vkcWindow.wasWindowResized()) 
 //         //{
@@ -638,11 +638,11 @@
 //
 //
 //      //	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-//      //	auto commandBuffer = getCurrentCommandBuffer();
-//      //	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+//      //	auto pcommandbuffer = getCurrentCommandBuffer();
+//      //	if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
 //      //		throw ::exception(error_failed, "failed to record command buffer!");
 //      //	}
-//      //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+//      //	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &currentImageIndex);
 //      //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
 //      //	//	vkcWindow.wasWindowResized()) 
 //      //	//{
@@ -666,14 +666,14 @@
 //
 //      ::cast < frame > pframe = pframeParam;
 //
-//      auto commandBuffer = pframe->commandBuffer;
+//      auto pcommandbuffer = pframe->pcommandbuffer->m_vkcommandbuffer;
 //
 //      //if (m_bOffScreen)
 //      {
 //
 //         assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
 //         assert(
-//            commandBuffer == getCurrentCommandBuffer() &&
+//            pcommandbuffer->m_vkcommandbuffer == getCurrentCommandBuffer() &&
 //            "Can't begin render pass on command buffer from a different frame");
 //
 //         VkRenderPassBeginInfo renderPassInfo{};
@@ -691,7 +691,7 @@
 //         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 //         renderPassInfo.pClearValues = clearValues.data();
 //
-//         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+//         vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 //
 //         VkViewport viewport{};
 //         viewport.x = 0.0f;
@@ -701,8 +701,8 @@
 //         viewport.minDepth = 0.0f;
 //         viewport.maxDepth = 1.0f;
 //         VkRect2D scissor{ {0, 0}, m_pvkcrenderpass->getExtent() };
-//         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-//         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+//         vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
+//         vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
 //
 //      }
 //      //else
@@ -710,7 +710,7 @@
 //
 //      //	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
 //      //	assert(
-//      //		commandBuffer == getCurrentCommandBuffer() &&
+//      //		pcommandbuffer->m_vkcommandbuffer == getCurrentCommandBuffer() &&
 //      //		"Can't begin render pass on command buffer from a different frame");
 //
 //      //	VkRenderPassBeginInfo renderPassInfo{};
@@ -727,7 +727,7 @@
 //      //	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 //      //	renderPassInfo.pClearValues = clearValues.data();
 //
-//      //	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+//      //	vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 //
 //      //	VkViewport viewport{};
 //      //	viewport.x = 0.0f;
@@ -737,8 +737,8 @@
 //      //	viewport.minDepth = 0.0f;
 //      //	viewport.maxDepth = 1.0f;
 //      //	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
-//      //	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-//      //	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+//      //	vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
+//      //	vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
 //
 //
 //      //}
@@ -750,13 +750,13 @@
 //
 //      ::cast < frame > pframe = pframeParam;
 //
-//      auto commandBuffer = pframe->commandBuffer;
+//      auto pcommandbuffer = pframe->pcommandbuffer->m_vkcommandbuffer;
 //
 //      assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
 //      assert(
-//         commandBuffer == getCurrentCommandBuffer() &&
+//         pcommandbuffer->m_vkcommandbuffer == getCurrentCommandBuffer() &&
 //         "Can't end render pass on command buffer from a different frame");
-//      vkCmdEndRenderPass(commandBuffer);
+//      vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 //   }
 //
 //

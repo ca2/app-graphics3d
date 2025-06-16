@@ -14,6 +14,7 @@
 #include "acme/platform/application.h"
 #include "acme/prototype/mathematics/mathematics.h"
 #include "app-graphics3d/gpu_vulkan/approach.h"
+#include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
@@ -2027,11 +2028,11 @@ namespace draw2d_vulkan
       pshader->bind();
 
       //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-      auto commandBuffer = prenderer->getCurrentCommandBuffer();
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
       VkDeviceSize offset = 0;
-      ///vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
-      vkCmdDraw(commandBuffer, 6, 1, 0, 0); // 6 vertices for two triangles
+      ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
+      vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertices for two triangles
       //vkCmdEndRenderPass(cmd);
 
 
@@ -2227,11 +2228,11 @@ namespace draw2d_vulkan
       pshader->bind();
 
       //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-      auto commandBuffer = pgpurenderer->getCurrentCommandBuffer();
+      auto pcommandbuffer = pgpurenderer->getCurrentCommandBuffer();
       VkDeviceSize offset = 0;
-      ///vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
-      vkCmdDraw(commandBuffer, 6, 1, 0, 0); // 6 vertices for two triangles
+      ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
+      vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertices for two triangles
       //vkCmdEndRenderPass(cmd);
 
 
@@ -6591,12 +6592,12 @@ namespace draw2d_vulkan
 
       ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontextDraw2d->m_pgpurendererOutput2;
 
-      auto commandBuffer = prenderer->getCurrentCommandBuffer();
-      vkCmdSetLineWidth(commandBuffer, m_ppen->m_dWidth);
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      vkCmdSetLineWidth(pcommandbuffer->m_vkcommandbuffer, m_ppen->m_dWidth);
       VkDeviceSize offset = 0;
-      //vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
-      vkCmdDraw(commandBuffer, 2, 1, 0, 0); // draw 2 vertices as 1 line
+      //vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
+      vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 2, 1, 0, 0); // draw 2 vertices as 1 line
 
       m_pshaderLine->unbind();
 

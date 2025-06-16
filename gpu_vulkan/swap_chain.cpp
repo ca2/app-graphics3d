@@ -358,6 +358,8 @@ namespace gpu_vulkan
 
          __defer_construct(pgputexture);
 
+         pgputexture->initialize_gpu_texture(m_pgpurenderer, { (int)extent.width, (int)extent.height });
+
          ::cast < texture > ptexture = pgputexture;
 
          ptexture->m_vkimage = imagea[i];

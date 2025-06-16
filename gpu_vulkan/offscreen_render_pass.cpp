@@ -343,30 +343,7 @@ namespace gpu_vulkan
       m_extent.width = m_size.width();
       m_extent.height = m_size.height();
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
-
-      ::cast < context > pgpucontext = pcontext;
-
-      //// Find a suitable depth format
-      VkFormat fbDepthFormat;
-      VkBool32 validDepthFormat = getSupportedDepthFormat(
-         pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice, &fbDepthFormat);
-      ASSERT(validDepthFormat);
-
-      //// Color attachment
-      VkImageCreateInfo imagecreateinfo = initializers::imageCreateInfo();
-      imagecreateinfo.imageType = VK_IMAGE_TYPE_2D;
-      imagecreateinfo.format = m_formatImage;
-      imagecreateinfo.extent.width = m_extent.width;
-      imagecreateinfo.extent.height = m_extent.height;
-      imagecreateinfo.extent.depth = 1;
-      imagecreateinfo.mipLevels = 1;
-      imagecreateinfo.arrayLayers = 1;
-      imagecreateinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      imagecreateinfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-      //// We will sample directly from the color attachment
-      imagecreateinfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
-         VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+    
       //image.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
       //VkMemoryAllocateInfo memAlloc = initializers::memory_allocate_info();
@@ -381,14 +358,16 @@ namespace gpu_vulkan
 
          __defer_construct(pgputexture);
 
-         ::cast < texture > ptexture = pgputexture;
+         pgputexture->initialize_gpu_texture(m_pgpurenderer, m_size);
 
-         pcontext->createImageWithInfo(
-            imagecreateinfo,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            ptexture->m_vkimage,
-            ptexture->m_vkdevicememory
-         );
+         //::cast < texture > ptexture = pgputexture;
+
+         //pcontext->createImageWithInfo(
+         //   imagecreateinfo,
+         //   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+         //   ptexture->m_vkimage,
+         //   ptexture->m_vkdevicememory
+         //);
          //VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &image, nullptr, &m_images[i]));
          //vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_images[i], &memReqs);
          //memAlloc.allocationSize = memReqs.size;
@@ -410,6 +389,12 @@ namespace gpu_vulkan
       //colorImageView.image = offscreenPass.color.image;
       //VK_CHECK_RESULT(vkCreateImageView(context, &colorImageView, nullptr, &offscreenPass.color.view));
 
+
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+      ::cast < context > pgpucontext = pcontext;
+
+
       // Create sampler to sample from the attachment in the fragment shader
       VkSamplerCreateInfo samplerInfo = initializers::samplerCreateInfo();
       samplerInfo.magFilter = VK_FILTER_LINEAR;
@@ -423,7 +408,7 @@ namespace gpu_vulkan
       samplerInfo.minLod = 0.0f;
       samplerInfo.maxLod = 1.0f;
       samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-      VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerInfo, nullptr, &m_vksampler));
+      VK_CHECK_RESULT(vkCreateSampler(pgpucontext->logicalDevice(), &samplerInfo, nullptr, &m_vksampler));
 
       //// Depth stencil attachment
       //image.format = fbDepthFormat;

@@ -602,48 +602,48 @@
 //      allocInfo.commandPool = m_vkcommandpool;
 //      allocInfo.commandBufferCount = 1;
 //
-//      VkCommandBuffer commandBuffer;
-//      vkAllocateCommandBuffers(m_vkdevice, &allocInfo, &commandBuffer);
+//      VkCommandBuffer pcommandbuffer->m_vkcommandbuffer;
+//      vkAllocateCommandBuffers(m_vkdevice, &allocInfo, &pcommandbuffer->m_vkcommandbuffer);
 //
 //      VkCommandBufferBeginInfo beginInfo{};
 //      beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 //      beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 //
-//      vkBeginCommandBuffer(commandBuffer, &beginInfo);
-//      return commandBuffer;
+//      vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo);
+//      return pcommandbuffer->m_vkcommandbuffer;
 //
 //   }
 //
 //
-//   void context::endSingleTimeCommands(VkCommandBuffer commandBuffer)
+//   void context::endSingleTimeCommands(VkCommandBuffer pcommandbuffer->m_vkcommandbuffer)
 //   {
 //
-//      vkEndCommandBuffer(commandBuffer);
+//      vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer);
 //
 //      VkSubmitInfo submitInfo{};
 //      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 //      submitInfo.commandBufferCount = 1;
-//      submitInfo.pCommandBuffers = &commandBuffer;
+//      submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
 //
 //      vkQueueSubmit(m_vkqueueGraphics, 1, &submitInfo, VK_NULL_HANDLE);
 //      vkQueueWaitIdle(m_vkqueueGraphics);
 //
-//      vkFreeCommandBuffers(m_vkdevice, m_vkcommandpool, 1, &commandBuffer);
+//      vkFreeCommandBuffers(m_vkdevice, m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 //
 //   }
 //
 //
 //   void context::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 //   {
-//      VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+//      VkCommandBuffer pcommandbuffer->m_vkcommandbuffer = beginSingleTimeCommands();
 //
 //      VkBufferCopy copyRegion{};
 //      copyRegion.srcOffset = 0;  // Optional
 //      copyRegion.dstOffset = 0;  // Optional
 //      copyRegion.size = size;
-//      vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+//      vkCmdCopyBuffer(pcommandbuffer->m_vkcommandbuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 //
-//      endSingleTimeCommands(commandBuffer);
+//      endSingleTimeCommands(pcommandbuffer->m_vkcommandbuffer);
 //
 //   }
 //
@@ -652,7 +652,7 @@
 //      VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
 //   {
 //
-//      VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+//      VkCommandBuffer pcommandbuffer->m_vkcommandbuffer = beginSingleTimeCommands();
 //
 //      VkBufferImageCopy region{};
 //      region.bufferOffset = 0;
@@ -668,14 +668,14 @@
 //      region.imageExtent = { width, height, 1 };
 //
 //      vkCmdCopyBufferToImage(
-//         commandBuffer,
+//         pcommandbuffer->m_vkcommandbuffer,
 //         buffer,
 //         image,
 //         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 //         1,
 //         &region);
 //
-//      endSingleTimeCommands(commandBuffer);
+//      endSingleTimeCommands(pcommandbuffer->m_vkcommandbuffer);
 //
 //   }
 //

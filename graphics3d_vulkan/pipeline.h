@@ -52,7 +52,7 @@
 //		pipeline(const pipeline&) = delete;
 //		void operator=(const pipeline&) = delete;
 //
-//		void bind(VkCommandBuffer commandBuffer);
+//		void bind(VkCommandBuffer pcommandbuffer->m_vkcommandbuffer);
 //		
 //		static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
 //	private:

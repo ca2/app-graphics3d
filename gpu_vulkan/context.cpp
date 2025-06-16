@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "approach.h"
 #include "buffer.h"
+#include "command_buffer.h"
 #include "context.h"
 #include "device.h"
 #include "physical_device.h"
@@ -863,30 +864,31 @@ namespace gpu_vulkan
 
 
 
-   void context::endSingleTimeCommands(VkCommandBuffer commandBuffer)
+   void context::endSingleTimeCommands(command_buffer * pcommandbuffer)
    {
+
+      VkCommandBuffer commandbuffers[] = { pcommandbuffer->m_vkcommandbuffer };
 
       VkSubmitInfo submitInfo{};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
       submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = &commandBuffer;
+      submitInfo.pCommandBuffers = commandbuffers;
 
-      endSingleTimeCommands(commandBuffer,1, &submitInfo);
+      endSingleTimeCommands(pcommandbuffer,1, &submitInfo);
 
    }
 
 
-   void context::endSingleTimeCommands(VkCommandBuffer commandBuffer, int iSubmitCount, VkSubmitInfo* psubmitinfo)
+   void context::endSingleTimeCommands(command_buffer * pcommandbuffer, int iSubmitCount, VkSubmitInfo* psubmitinfo)
    {
 
-      vkEndCommandBuffer(commandBuffer);
+      vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer);
      
       vkQueueSubmit(m_vkqueueGraphics, 1, psubmitinfo, VK_NULL_HANDLE);
 
       vkQueueWaitIdle(m_vkqueueGraphics);
 
-      vkFreeCommandBuffers(this->logicalDevice(), m_pgpudevice->getCommandPool(), 1, &commandBuffer);
-
+ 
    }
 
 
@@ -2134,57 +2136,53 @@ namespace gpu_vulkan
    //}
 
 
-   VkCommandBuffer context::beginSingleTimeCommands()
+   ::pointer < command_buffer > context::beginSingleTimeCommands()
    {
 
-      VkCommandBufferAllocateInfo allocInfo{};
-      allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-      allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      allocInfo.commandPool = m_pgpudevice->getCommandPool();
-      allocInfo.commandBufferCount = 1;
+      ::pointer < command_buffer > pcommandbuffer;
 
-      VkCommandBuffer commandBuffer;
-      vkAllocateCommandBuffers(this->logicalDevice(), &allocInfo, &commandBuffer);
+      __defer_construct_new(pcommandbuffer);
 
-      VkCommandBufferBeginInfo beginInfo{};
-      beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-      beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+      pcommandbuffer->initialize_command_buffer(m_pgpurendererOutput2);
 
-      vkBeginCommandBuffer(commandBuffer, &beginInfo);
-      return commandBuffer;
+      pcommandbuffer->begin_command_buffer();
+
+      return pcommandbuffer;
 
    }
 
 
-   //void context::endSingleTimeCommands(VkCommandBuffer commandBuffer)
+   //void context::endSingleTimeCommands(auto pcommandbuffer)
    //{
 
-   //   vkEndCommandBuffer(commandBuffer);
+   //   vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer);
 
    //   VkSubmitInfo submitInfo{};
    //   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
    //   submitInfo.commandBufferCount = 1;
-   //   submitInfo.pCommandBuffers = &commandBuffer;
+   //   submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
 
    //   vkQueueSubmit(m_vkqueueGraphics, 1, &submitInfo, VK_NULL_HANDLE);
    //   vkQueueWaitIdle(m_vkqueueGraphics);
 
-   //   vkFreeCommandBuffers(this->logicalDevice(), m_pgpudevice->getCommandPool(), 1, &commandBuffer);
+   //   vkFreeCommandBuffers(this->logicalDevice(), m_pgpudevice->getCommandPool(), 1, &pcommandbuffer->m_vkcommandbuffer);
 
    //}
 
 
    void context::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
    {
-      VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+      auto pcommandbuffer = beginSingleTimeCommands();
 
       VkBufferCopy copyRegion{};
       copyRegion.srcOffset = 0;  // Optional
       copyRegion.dstOffset = 0;  // Optional
       copyRegion.size = size;
-      vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-      endSingleTimeCommands(commandBuffer);
+      vkCmdCopyBuffer(pcommandbuffer->m_vkcommandbuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+      endSingleTimeCommands(pcommandbuffer);
 
    }
 
@@ -2193,9 +2191,10 @@ namespace gpu_vulkan
       VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
    {
 
-      VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+      auto pcommandbuffer = beginSingleTimeCommands();
 
       VkBufferImageCopy region{};
+
       region.bufferOffset = 0;
       region.bufferRowLength = 0;
       region.bufferImageHeight = 0;
@@ -2209,14 +2208,14 @@ namespace gpu_vulkan
       region.imageExtent = { width, height, 1 };
 
       vkCmdCopyBufferToImage(
-         commandBuffer,
+         pcommandbuffer->m_vkcommandbuffer,
          buffer,
          image,
          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
          1,
          &region);
 
-      endSingleTimeCommands(commandBuffer);
+      endSingleTimeCommands(pcommandbuffer);
 
    }
 
@@ -2253,16 +2252,14 @@ namespace gpu_vulkan
    }
 
 
-
-
-
-   void context::submitWork(VkCommandBuffer cmdBuffer, VkQueue queue)
+   void context::submitWork(command_buffer * pcommandbuffer, VkQueue queue)
    {
+
       VkSubmitInfo submitInfo = initializers::submitInfo();
       submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = &cmdBuffer;
+      submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
       //m_submitInfo.commandBufferCount = 1;
-      //m_submitInfo.pCommandBuffers = &cmdBuffer;
+      //m_submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
       VkFenceCreateInfo fenceInfo = initializers::fenceCreateInfo();
       VkFence fence;
       VK_CHECK_RESULT(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
@@ -2272,13 +2269,13 @@ namespace gpu_vulkan
    }
 
 
-   //void context::submitSamplingWork(VkCommandBuffer cmdBuffer, VkQueue queue)
+   //void context::submitSamplingWork(VkCommandBuffer pcommandbuffer->m_vkcommandbuffer, VkQueue queue)
    //{
    //   VkSubmitInfo submitInfo = initializers::submit_info();
    //   submitInfo.commandBufferCount = 1;
-   //   submitInfo.pCommandBuffers = &cmdBuffer;
+   //   submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
    //   //m_submitInfo.commandBufferCount = 1;
-   //   //m_submitInfo.pCommandBuffers = &cmdBuffer;
+   //   //m_submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
    //   VkFenceCreateInfo fenceInfo = initializers::fence_create_info();
    //   VkFence fence;
    //   VK_CHECK_RESULT(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));

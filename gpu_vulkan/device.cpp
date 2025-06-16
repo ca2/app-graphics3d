@@ -2221,15 +2221,15 @@ namespace gpu_vulkan
    ////   allocInfo.commandPool = m_vkcommandpool;
    ////   allocInfo.commandBufferCount = 1;
 
-   ////   VkCommandBuffer commandBuffer;
-   ////   vkAllocateCommandBuffers(m_vkdevice, &allocInfo, &commandBuffer);
+   ////   auto pcommandbuffer;
+   ////   vkAllocateCommandBuffers(m_vkdevice, &allocInfo, &pcommandbuffer->m_vkcommandbuffer);
 
    ////   VkCommandBufferBeginInfo beginInfo{};
    ////   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
    ////   beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-   ////   vkBeginCommandBuffer(commandBuffer, &beginInfo);
-   ////   return commandBuffer;
+   ////   vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo);
+   ////   return pcommandbuffer->m_vkcommandbuffer;
 
    ////}
 
@@ -2237,15 +2237,15 @@ namespace gpu_vulkan
 
    //void device::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
    //{
-   //   VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+   //   auto pcommandbuffer = beginSingleTimeCommands();
 
    //   VkBufferCopy copyRegion{};
    //   copyRegion.srcOffset = 0;  // Optional
    //   copyRegion.dstOffset = 0;  // Optional
    //   copyRegion.size = size;
-   //   vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+   //   vkCmdCopyBuffer(pcommandbuffer->m_vkcommandbuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-   //   endSingleTimeCommands(commandBuffer);
+   //   endSingleTimeCommands(pcommandbuffer->m_vkcommandbuffer);
 
    //}
 
@@ -2254,7 +2254,7 @@ namespace gpu_vulkan
    //   VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
    //{
 
-   //   VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+   //   auto pcommandbuffer = beginSingleTimeCommands();
 
    //   VkBufferImageCopy region{};
    //   region.bufferOffset = 0;
@@ -2270,14 +2270,14 @@ namespace gpu_vulkan
    //   region.imageExtent = { width, height, 1 };
 
    //   vkCmdCopyBufferToImage(
-   //      commandBuffer,
+   //      pcommandbuffer->m_vkcommandbuffer,
    //      buffer,
    //      image,
    //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
    //      1,
    //      &region);
 
-   //   endSingleTimeCommands(commandBuffer);
+   //   endSingleTimeCommands(pcommandbuffer->m_vkcommandbuffer);
 
    //}
 
@@ -2317,13 +2317,13 @@ namespace gpu_vulkan
 
 
 
-   //void device::submitWork(VkCommandBuffer cmdBuffer, VkQueue queue)
+   //void device::submitWork(VkCommandBuffer pcommandbuffer->m_vkcommandbuffer, VkQueue queue)
    //{
    //   VkSubmitInfo submitInfo = initializers::submitInfo();
    //   submitInfo.commandBufferCount = 1;
-   //   submitInfo.pCommandBuffers = &cmdBuffer;
+   //   submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
    //   //m_submitInfo.commandBufferCount = 1;
-   //   //m_submitInfo.pCommandBuffers = &cmdBuffer;
+   //   //m_submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
    //   VkFenceCreateInfo fenceInfo = initializers::fenceCreateInfo();
    //   VkFence fence;
    //   VK_CHECK_RESULT(vkCreateFence(m_vkdevice, &fenceInfo, nullptr, &fence));
@@ -2333,13 +2333,13 @@ namespace gpu_vulkan
    //}
 
 
-   //void device::submitSamplingWork(VkCommandBuffer cmdBuffer, VkQueue queue)
+   //void device::submitSamplingWork(VkCommandBuffer pcommandbuffer->m_vkcommandbuffer, VkQueue queue)
    //{
    //   VkSubmitInfo submitInfo = initializers::submit_info();
    //   submitInfo.commandBufferCount = 1;
-   //   submitInfo.pCommandBuffers = &cmdBuffer;
+   //   submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
    //   //m_submitInfo.commandBufferCount = 1;
-   //   //m_submitInfo.pCommandBuffers = &cmdBuffer;
+   //   //m_submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
    //   VkFenceCreateInfo fenceInfo = initializers::fence_create_info();
    //   VkFence fence;
    //   VK_CHECK_RESULT(vkCreateFence(m_vkdevice, &fenceInfo, nullptr, &fence));

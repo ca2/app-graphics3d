@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "command_buffer.h"
 #include "pipeline.h"
 #include "renderer.h"
 #include "acme/platform/application.h"
@@ -43,8 +44,13 @@ namespace gpu_vulkan
       vkDestroyPipeline(pgpucontext->logicalDevice(), graphicsPipeline, nullptr);
    }
 
-   void pipeline::bind(VkCommandBuffer commandBuffer) {
-      vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+   
+   void pipeline::bind(command_buffer * pcommandbuffer)
+   {
+
+      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer,
+         VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+
    }
 
    //::array<char> pipeline::readFile(const ::string & filepath) {

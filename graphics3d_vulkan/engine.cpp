@@ -94,7 +94,7 @@ namespace graphics3d_vulkan
 
       //int frameIndex = m_prenderer->getFrameIndex();
 
-      //FrameInfo frameInfo{ frameIndex, dt(), commandBuffer,
+      //FrameInfo frameInfo{ frameIndex, dt(), pcommandbuffer->m_vkcommandbuffer,
       //   *m_pcamera, m_globalDescriptorSets[frameIndex],
       //   m_pscene->m_mapObjects };
 
@@ -160,17 +160,17 @@ namespace graphics3d_vulkan
    ////   }
 
 
-   ////   if (auto commandBuffer = m_prenderer->beginFrame())
+   ////   if (auto pcommandbuffer = m_prenderer->beginFrame())
    ////   {
 
    ////      on_begin_frame();
    ////      // render
-   ////      m_prenderer->beginRenderPass(commandBuffer);
+   ////      m_prenderer->beginRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
    ////      m_psimplerendersystem->renderGameObjects(m_pscene);
    ////      m_ppointlightsystem->render(m_pscene);
 
-   ////      m_prenderer->endRenderPass(commandBuffer);
+   ////      m_prenderer->endRenderPass(pcommandbuffer->m_vkcommandbuffer);
    ////      m_prenderer->endFrame();
 
    ////   }
@@ -265,11 +265,11 @@ namespace graphics3d_vulkan
       //         }
       //      };
 
-      //      auto commandBuffer = pgpurendererUpper->getCurrentCommandBuffer();
+      //      auto pcommandbuffer = pgpurendererUpper->getCurrentCommandBuffer();
 
-      //      vkCmdSetViewport(commandBuffer, 0, 1, &vp);
+      //      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
 
-      //      vkCmdSetScissor(commandBuffer, 0, 1, &sc);
+      //      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
       //   }
 
@@ -448,12 +448,12 @@ namespace graphics3d_vulkan
 
       //      camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
 
-      //      if (auto commandBuffer = m_prenderer->beginFrame())
+      //      if (auto pcommandbuffer = m_prenderer->beginFrame())
       //      {
 
       //         int frameIndex = m_prenderer->getFrameIndex();
 
-      //         FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex], m_pscene->m_mapObjects };
+      //         FrameInfo frameInfo{ frameIndex, frameTime, pcommandbuffer->m_vkcommandbuffer, camera, globalDescriptorSets[frameIndex], m_pscene->m_mapObjects };
 
       //         // update
       //         GlobalUbo ubo{};
@@ -465,12 +465,12 @@ namespace graphics3d_vulkan
       //         uboBuffers[frameIndex]->flush();
 
       //         // render
-      //         m_prenderer->beginRenderPass(commandBuffer);
+      //         m_prenderer->beginRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
       //         simpleRenderSystem.renderGameObjects(frameInfo);
       //         pointLightSystem.render(frameInfo);
 
-      //         m_prenderer->endRenderPass(commandBuffer);
+      //         m_prenderer->endRenderPass(pcommandbuffer->m_vkcommandbuffer);
       //         m_prenderer->endFrame();
 
       //      }

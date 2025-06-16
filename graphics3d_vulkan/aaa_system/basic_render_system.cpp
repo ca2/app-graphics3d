@@ -84,9 +84,9 @@ namespace graphics3d_vulkan {
 
 	void SimpleRenderSystem::renderGameObjects(FrameInfo& frameInfo) {
 
-		m_ppipeline->bind(frameInfo.commandBuffer);
+		m_ppipeline->bind(frameInfo.pcommandbuffer->m_vkcommandbuffer);
 		vkCmdBindDescriptorSets(
-			frameInfo.commandBuffer,
+			frameInfo.pcommandbuffer->m_vkcommandbuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			pipelineLayout,
 			0, 1,
@@ -101,7 +101,7 @@ namespace graphics3d_vulkan {
 			push.normalMatrix = obj->m_transform.normalMatrix();
 
 			vkCmdPushConstants(
-				frameInfo.commandBuffer,
+				frameInfo.pcommandbuffer->m_vkcommandbuffer,
 				pipelineLayout,
 				VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,

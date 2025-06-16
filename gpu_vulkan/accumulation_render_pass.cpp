@@ -1,6 +1,7 @@
 // From vk_swapchain by camilo on 2025-05-09 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "accumulation_render_pass.h"
+#include "command_buffer.h"
 #include "frame.h"
 #include "initializers.h"
 #include "physical_device.h"
@@ -120,7 +121,7 @@ namespace gpu_vulkan
          ::cast < texture > ptexture = m_texturea[m_pgpurenderer->get_frame_index()];
 
          insertImageMemoryBarrier(
-            pframe->commandBuffer,
+            pframe->m_pcommandbuffer->m_vkcommandbuffer,
             ptexture->m_vkimage,
             0,
             VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -131,7 +132,7 @@ namespace gpu_vulkan
             VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
          insertImageMemoryBarrier(
-            pframe->commandBuffer,
+            pframe->m_pcommandbuffer->m_vkcommandbuffer,
             m_imagesAlphaAccumulation[m_pgpurenderer->get_frame_index()],
             0,
             VK_ACCESS_TRANSFER_WRITE_BIT,

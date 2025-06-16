@@ -54,7 +54,7 @@ namespace gpu_vulkan
       ~pipeline();
 
 
-      void bind(VkCommandBuffer commandBuffer);
+      void bind(command_buffer * pcommandbuffer);
 
       static void defaultPipelineConfigInfo(PipelineConfigInfo & configInfo);
    //private:

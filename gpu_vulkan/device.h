@@ -227,7 +227,7 @@ namespace gpu_vulkan
       //   VkDeviceMemory& imageMemory);
 
 
-//      void submitWork(VkCommandBuffer cmdBuffer, VkQueue queue);
+//      void submitWork(VkCommandBuffer pcommandbuffer->m_vkcommandbuffer, VkQueue queue);
 
 
       //public:

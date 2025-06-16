@@ -2,6 +2,7 @@
 #include "accumulation_render_pass.h"
 
 #include "approach.h"
+#include "command_buffer.h"
 #include "descriptors.h"
 #include "frame.h"
 #include "initializers.h"
@@ -125,6 +126,18 @@ namespace gpu_vulkan
    {
 
       freeCommandBuffers();
+
+   }
+
+
+   command_buffer* renderer::getCurrentCommandBuffer() 
+   {
+      
+      assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
+      
+      auto pcommandbuffer = m_commandbuffera[get_frame_index()];
+
+      return pcommandbuffer;
 
    }
 
@@ -339,17 +352,34 @@ namespace gpu_vulkan
    void renderer::createCommandBuffers()
    {
 
-      commandBuffers.resize(render_pass::MAX_FRAMES_IN_FLIGHT);
+      m_commandbuffera.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
 
-      VkCommandBufferAllocateInfo allocInfo{};
-      allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-      allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      allocInfo.commandPool = m_pgpucontext->m_pgpudevice->getCommandPool();
-      allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
+      //::array<VkCommandBuffer > a;
 
-      if (vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &allocInfo, commandBuffers.data()) !=
-         VK_SUCCESS) {
-         throw ::exception(error_failed, "failed to allocate command buffers!");
+      //a.set_size(m_commandbuffera.size());
+
+      //VkCommandBufferAllocateInfo allocInfo{};
+      //allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+      //allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+      //allocInfo.commandPool = m_pgpucontext->m_pgpudevice->getCommandPool();
+      //allocInfo.commandBufferCount = (uint32_t) a.size();
+
+      //if (vkAllocateCommandBuffers(
+      //   m_pgpucontext->logicalDevice(),
+      //   &allocInfo, 
+      //   a.data()
+      //) !=  VK_SUCCESS) 
+      //{
+
+      //   throw ::exception(error_failed, "failed to allocate command buffers!");
+
+      //}
+
+      for (int i = 0; i < m_commandbuffera.size(); i++)
+      {
+         
+         m_commandbuffera[i]->initialize_command_buffer(this);
+
       }
 
    }
@@ -358,12 +388,25 @@ namespace gpu_vulkan
    void renderer::freeCommandBuffers()
    {
 
-      vkFreeCommandBuffers(
-         m_pgpucontext->logicalDevice(),
-         m_pgpucontext->m_pgpudevice->getCommandPool(),
-         (uint32_t)commandBuffers.size(),
-         commandBuffers.data());
-      commandBuffers.clear();
+      m_commandbuffera.clear();
+
+      //::array<VkCommandBuffer > a;
+
+      //a.set_size(m_commandbuffera.size());
+
+      //for (int i = 0; i < a.size(); i++)
+      //{
+
+      //   a[i] = m_commandbuffera[i]->m_vkcommandbuffer;
+
+      //}
+
+      //vkFreeCommandBuffers(
+      //   m_pgpucontext->logicalDevice(),
+      //   m_pgpucontext->m_pgpudevice->getCommandPool(),
+      //   (uint32_t)a.size(),
+      //   a.data());
+      //a.clear();
 
    }
 
@@ -405,18 +448,25 @@ namespace gpu_vulkan
 
          isFrameStarted = true;
 
-         auto commandBuffer = getCurrentCommandBuffer();
+         auto pcommandbuffer = getCurrentCommandBuffer();
 
-         VkCommandBufferBeginInfo beginInfo{};
-         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+         pcommandbuffer->begin_command_buffer();
 
-         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-            throw ::exception(error_failed, "failed to begin recording command buffer!");
-         }
+         //VkCommandBufferBeginInfo beginInfo{};
+         //beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+         //if (vkBeginCommandBuffer(
+         //   pcommandbuffer->m_vkcommandbuffer, 
+         //   &beginInfo) != VK_SUCCESS) 
+         //{
+
+         //   throw ::exception(error_failed, "failed to begin recording command buffer!");
+
+         //}
 
          //m_
          //auto pframe = __create_new < frame >();
-         //pframe->commandBuffer = commandBuffer;
+         //pframe->m_pcommandbuffer->m_vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
          //m_pframe = pframe;
          //return m_pframe;
 
@@ -437,15 +487,15 @@ namespace gpu_vulkan
 
       //	isFrameStarted = true;
 
-      //	auto commandBuffer = getCurrentCommandBuffer();
+      //	auto pcommandbuffer = getCurrentCommandBuffer();
 
       //	VkCommandBufferBeginInfo beginInfo{};
       //	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-      //	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+      //	if (vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo) != VK_SUCCESS) {
       //		throw ::exception(error_failed, "failed to begin recording command buffer!");
       //	}
-      //	return commandBuffer;
+      //	return pcommandbuffer->m_vkcommandbuffer;
 
       //}
 
@@ -542,7 +592,8 @@ namespace gpu_vulkan
 
       if (1)
       {
-         auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+
+         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -563,7 +614,7 @@ namespace gpu_vulkan
          };
 
          vkCmdPipelineBarrier(
-            cmdBuffer,
+            pcommandbuffer->m_vkcommandbuffer,
             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             0,
@@ -571,7 +622,9 @@ namespace gpu_vulkan
             0, NULL,
             1, &barrier
          );
-         m_pgpucontext->endSingleTimeCommands(cmdBuffer);
+
+         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
+
       }
 
 
@@ -944,7 +997,7 @@ namespace gpu_vulkan
    //	void renderer::resolve_color_and_alpha_accumulation_buffers()
    //	{
    //
-   //		auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+   //		auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
    //
    //		::cast < accumulation_render_pass > ppass = pgpurenderpass;
    //
@@ -952,7 +1005,7 @@ namespace gpu_vulkan
    //
    //		auto image = ppass->m_images[iPassCurrentFrame];
    //
-   //		insertImageMemoryBarrier(cmdBuffer,
+   //		insertImageMemoryBarrier(pcommandbuffer->m_vkcommandbuffer,
    //			image,
    //			0,
    //			VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -964,7 +1017,7 @@ namespace gpu_vulkan
    //
    //		auto imageAlphaAccumulation = ppass->m_imagesAlphaAccumulation[iPassCurrentFrame];
    //
-   //		insertImageMemoryBarrier(cmdBuffer,
+   //		insertImageMemoryBarrier(pcommandbuffer->m_vkcommandbuffer,
    //			imageAlphaAccumulation,
    //			0,
    //			VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -978,7 +1031,7 @@ namespace gpu_vulkan
    //		VkSubmitInfo submitInfo{};
    //		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
    //		submitInfo.commandBufferCount = 1;
-   //		submitInfo.pCommandBuffers = &cmdBuffer;
+   //		submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
    //		::array<VkSemaphore> waitSemaphores;
    //		::array<VkPipelineStageFlags> waitStages;
    //		waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -986,7 +1039,7 @@ namespace gpu_vulkan
    //		submitInfo.waitSemaphoreCount = waitSemaphores.size();
    //		submitInfo.pWaitSemaphores = waitSemaphores.data();
    //		submitInfo.pWaitDstStageMask = waitStages.data();
-   //		m_pgpucontext->endSingleTimeCommands(cmdBuffer, 1, &submitInfo);
+   //		m_pgpucontext->endSingleTimeCommands(pcommandbuffer->m_vkcommandbuffer, 1, &submitInfo);
    //
    //		//m_prendererResolve->pgpurenderpass->m_semaphoreaWaitToSubmit.add(
    //		//   pgpurenderpass->renderFinishedSemaphores[iPassCurrentFrame]
@@ -1002,7 +1055,7 @@ namespace gpu_vulkan
 
       //	on_new_frame();
 
-      //	auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+      //	auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
       //	auto iFrameIndex1 = get_frame_index();
 
@@ -1011,7 +1064,7 @@ namespace gpu_vulkan
       //	if (is_starting_frame())
       //	{
 
-      //		insertImageMemoryBarrier(cmdBuffer,
+      //		insertImageMemoryBarrier(pcommandbuffer->m_vkcommandbuffer,
       //			image1,
       //			0,
       //			VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -1024,7 +1077,7 @@ namespace gpu_vulkan
       //	else
       //	{
 
-      //		insertImageMemoryBarrier(cmdBuffer,
+      //		insertImageMemoryBarrier(pcommandbuffer->m_vkcommandbuffer,
       //			image1,
       //			0,
       //			VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -1035,7 +1088,7 @@ namespace gpu_vulkan
       //			VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
       //	}
 
-      //	m_pgpucontext->endSingleTimeCommands(cmdBuffer);
+      //	m_pgpucontext->endSingleTimeCommands(pcommandbuffer->m_vkcommandbuffer);
 
       //	auto pframe = beginFrame();
 
@@ -1173,15 +1226,15 @@ namespace gpu_vulkan
 
       //	}
 
-      //	auto commandBuffer = getCurrentCommandBuffer();
+      //	auto pcommandbuffer = getCurrentCommandBuffer();
 
-      //	//auto commandBuffer = this->getCurrentCommandBuffer();
+      //	//auto pcommandbuffer = this->getCurrentCommandBuffer();
 
       //	// Bind pipeline and descriptor sets
-      // //      vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      //   //    vkCmdBindDescriptorSets(commandBuffer, ...);
+      // //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      //   //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
       //	vkCmdBindDescriptorSets(
-      //		commandBuffer,
+      //		pcommandbuffer->m_vkcommandbuffer,
       //		VK_PIPELINE_BIND_POINT_GRAPHICS,   // Bind point
       //		pdescriptor->m_vkpipelinelayout,                     // Layout used when pipeline was created
       //		0,                                  // First set (set = 0)
@@ -1209,8 +1262,8 @@ namespace gpu_vulkan
 
 
       //	VkDeviceSize offsets[] = { 0 };
-      //	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
-      //	vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+      //	vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
+      //	vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
       //	auto rectangle = m_rectangle;
       //	VkViewport vp = {
       //	   (float)rectangle.left(),
@@ -1230,12 +1283,12 @@ namespace gpu_vulkan
 
       //	}
       //	};
-      //	vkCmdSetViewport(commandBuffer, 0, 1, &vp);
-      //	vkCmdSetScissor(commandBuffer, 0, 1, &sc);
+      //	vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+      //	vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
-      //	vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+      //	vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0, 0);
       //	// Draw full-screen quad
-      //	//vkCmdDraw(commandBuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
+      //	//vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
       //	pshader->unbind();
 
@@ -1249,36 +1302,46 @@ namespace gpu_vulkan
    void renderer::swap_chain()
    {
 
-
-
       assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-      auto commandBuffer = getCurrentCommandBuffer();
-      if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-         throw ::exception(error_failed, "failed to record command buffer!");
-      }
-      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
-      auto result = pgpurenderpass->submitCommandBuffers(&commandBuffer);
-      if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-         m_bNeedToRecreateSwapChain)
+
+      auto pcommandbuffer = getCurrentCommandBuffer();
+
+      if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) 
       {
+
+         throw ::exception(error_failed, "failed to record command buffer!");
+
+      }
+
+      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+      
+      auto result = pgpurenderpass->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer);
+
+      if (result == VK_ERROR_OUT_OF_DATE_KHR 
+         || result == VK_SUBOPTIMAL_KHR 
+         ||m_bNeedToRecreateSwapChain)
+      {
+
          m_bNeedToRecreateSwapChain = false;
+
          defer_update_renderer();
+
       }
       else if (result != VK_SUCCESS)
       {
+
          throw ::exception(error_failed, "failed to present swap chain image!");
+
       }
 
-
       vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
-
 
    }
 
 
-
    void renderer::on_end_draw()
    {
+
       _on_end_render();
 
       for (auto& procedure : m_procedureaAfterEndRender)
@@ -1293,11 +1356,11 @@ namespace gpu_vulkan
       //{
 
       //   assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-      //   auto commandBuffer = getCurrentCommandBuffer();
-      //   if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+      //   auto pcommandbuffer = getCurrentCommandBuffer();
+      //   if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
       //      throw ::exception(error_failed, "failed to record command buffer!");
       //   }
-      //   auto result = pgpurenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+      //   auto result = pgpurenderpass->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &currentImageIndex);
       //   //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       //   //	vkcWindow.wasWindowResized()) 
       //   //{
@@ -1328,11 +1391,11 @@ namespace gpu_vulkan
 
 
       //	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-      //	auto commandBuffer = getCurrentCommandBuffer();
-      //	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+      //	auto pcommandbuffer = getCurrentCommandBuffer();
+      //	if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
       //		throw ::exception(error_failed, "failed to record command buffer!");
       //	}
-      //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+      //	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &currentImageIndex);
       //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       //	//	vkcWindow.wasWindowResized()) 
       //	//{
@@ -1573,18 +1636,18 @@ namespace gpu_vulkan
 
       //vkCmdBeginRenderPass(...);
 
-      auto commandBuffer = this->getCurrentCommandBuffer();
+      auto pcommandbuffer = this->getCurrentCommandBuffer();
 
       //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
-      //VkCommandBuffer commandBuffer;
-      //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &commandBuffer));
+      //auto pcommandbuffer;
+      //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &pcommandbuffer->m_vkcommandbuffer));
       //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-      //VK_CHECK_RESULT(vkBeginCommandBuffer(commandBuffer, &cmdBufInfo));
+      //VK_CHECK_RESULT(vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &cmdBufInfo));
 
 
       //m_procedureaAfterEndRender.add(
-      //   [this, image, commandBuffer]()
+      //   [this, image, pcommandbuffer->m_vkcommandbuffer]()
       //   {
 
       //      //            {
@@ -1609,7 +1672,7 @@ namespace gpu_vulkan
       //      //            };
       //      //
       //      //            vkCmdPipelineBarrier(
-      //      //               commandBuffer,
+      //      //               pcommandbuffer->m_vkcommandbuffer,
       //      //               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
       //      //               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
       //      //               0,
@@ -1641,7 +1704,7 @@ namespace gpu_vulkan
       //      //               };
       //      //
       //      //               vkCmdPipelineBarrier(
-      //      //                  commandBuffer,
+      //      //                  pcommandbuffer->m_vkcommandbuffer,
       //      //                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // srcStageMask
       //      //                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,         // dstStageMask
       //      //                  0,
@@ -1677,7 +1740,7 @@ namespace gpu_vulkan
       //   };
 
       //   vkCmdPipelineBarrier(
-      //      commandBuffer,
+      //      pcommandbuffer->m_vkcommandbuffer,
       //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
       //      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
       //      0,
@@ -1776,13 +1839,13 @@ namespace gpu_vulkan
 
       }
 
-      //auto commandBuffer = this->getCurrentCommandBuffer();
+      //auto pcommandbuffer = this->getCurrentCommandBuffer();
 
       // Bind pipeline and descriptor sets
-    //      vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      //    vkCmdBindDescriptorSets(commandBuffer, ...);
+    //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
       vkCmdBindDescriptorSets(
-         commandBuffer,
+         pcommandbuffer->m_vkcommandbuffer,
          VK_PIPELINE_BIND_POINT_GRAPHICS,   // Bind point
          pdescriptor->m_vkpipelinelayout,                     // Layout used when pipeline was created
          0,                                  // First set (set = 0)
@@ -1794,8 +1857,13 @@ namespace gpu_vulkan
 
       VkDeviceSize offsets[] = { 0 };
 
-      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
-      vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+      vkCmdBindVertexBuffers(
+         pcommandbuffer->m_vkcommandbuffer,
+         0, 1, 
+         &pmodel->m_vertexBuffer, offsets);
+      vkCmdBindIndexBuffer(
+         pcommandbuffer->m_vkcommandbuffer,
+         pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
       VkViewport vp = {
          (float)rectangle.left(),
@@ -1815,13 +1883,13 @@ namespace gpu_vulkan
          }
       };
 
-      vkCmdSetViewport(commandBuffer, 0, 1, &vp);
+      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
 
-      vkCmdSetScissor(commandBuffer, 0, 1, &sc);
+      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
-      vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+      vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0, 0);
       // Draw full-screen quad
-      //vkCmdDraw(commandBuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
+      //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
       pshader->unbind();
 
@@ -1829,7 +1897,7 @@ namespace gpu_vulkan
 
       vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
-      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &commandBuffer);
+      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 
 
    }
@@ -1858,7 +1926,7 @@ namespace gpu_vulkan
 
       }
 
-      VkCommandBuffer commandBuffer = this->getCurrentCommandBuffer();
+      auto pcommandbuffer = this->getCurrentCommandBuffer();
 
       auto& pmodel = m_imagemodel[image];
 
@@ -1951,13 +2019,13 @@ namespace gpu_vulkan
 
       }
 
-      //auto commandBuffer = this->getCurrentCommandBuffer();
+      //auto pcommandbuffer = this->getCurrentCommandBuffer();
 
       // Bind pipeline and descriptor sets
-    //      vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      //    vkCmdBindDescriptorSets(commandBuffer, ...);
+    //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
       vkCmdBindDescriptorSets(
-         commandBuffer,
+         pcommandbuffer->m_vkcommandbuffer,
          VK_PIPELINE_BIND_POINT_GRAPHICS,   // Bind point
          pdescriptor->m_vkpipelinelayout,                     // Layout used when pipeline was created
          0,                                  // First set (set = 0)
@@ -1970,8 +2038,8 @@ namespace gpu_vulkan
 
 
       VkDeviceSize offsets[] = { 0 };
-      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
-      vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
+      vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
       VkViewport vp = {
          (float)rectangle.left(),
@@ -1991,12 +2059,12 @@ namespace gpu_vulkan
          }
       };
 
-      vkCmdSetViewport(commandBuffer, 0, 1, &vp);
-      vkCmdSetScissor(commandBuffer, 0, 1, &sc);
+      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
-      vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+      vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0, 0);
       // Draw full-screen quad
-      //vkCmdDraw(commandBuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
+      //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
       pshader->unbind();
 
@@ -2004,7 +2072,7 @@ namespace gpu_vulkan
 
       vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
-      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &commandBuffer);
+      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 
 
    }
@@ -2035,18 +2103,18 @@ namespace gpu_vulkan
 
       //vkCmdBeginRenderPass(...);
 
-      auto commandBuffer = this->getCurrentCommandBuffer();
+      auto pcommandbuffer = this->getCurrentCommandBuffer();
 
       //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
-      //VkCommandBuffer commandBuffer;
-      //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &commandBuffer));
+      //auto pcommandbuffer;
+      //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &pcommandbuffer->m_vkcommandbuffer));
       //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-      //VK_CHECK_RESULT(vkBeginCommandBuffer(commandBuffer, &cmdBufInfo));
+      //VK_CHECK_RESULT(vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &cmdBufInfo));
 
 
       //m_procedureaAfterEndRender.add(
-      //   [this, image, commandBuffer]()
+      //   [this, image, pcommandbuffer->m_vkcommandbuffer]()
       //   {
 
       //      //            {
@@ -2071,7 +2139,7 @@ namespace gpu_vulkan
       //      //            };
       //      //
       //      //            vkCmdPipelineBarrier(
-      //      //               commandBuffer,
+      //      //               pcommandbuffer->m_vkcommandbuffer,
       //      //               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
       //      //               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
       //      //               0,
@@ -2103,7 +2171,7 @@ namespace gpu_vulkan
       //      //               };
       //      //
       //      //               vkCmdPipelineBarrier(
-      //      //                  commandBuffer,
+      //      //                  pcommandbuffer->m_vkcommandbuffer,
       //      //                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // srcStageMask
       //      //                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,         // dstStageMask
       //      //                  0,
@@ -2139,7 +2207,7 @@ namespace gpu_vulkan
       //   };
 
       //   vkCmdPipelineBarrier(
-      //      commandBuffer,
+      //      pcommandbuffer->m_vkcommandbuffer,
       //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
       //      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
       //      0,
@@ -2239,13 +2307,13 @@ namespace gpu_vulkan
 
       }
 
-      //auto commandBuffer = this->getCurrentCommandBuffer();
+      //auto pcommandbuffer = this->getCurrentCommandBuffer();
 
       // Bind pipeline and descriptor sets
-    //      vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      //    vkCmdBindDescriptorSets(commandBuffer, ...);
+    //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
       vkCmdBindDescriptorSets(
-         commandBuffer,
+         pcommandbuffer->m_vkcommandbuffer,
          VK_PIPELINE_BIND_POINT_GRAPHICS,   // Bind point
          pdescriptor->m_vkpipelinelayout,                     // Layout used when pipeline was created
          0,                                  // First set (set = 0)
@@ -2258,8 +2326,8 @@ namespace gpu_vulkan
 
 
       VkDeviceSize offsets[] = { 0 };
-      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
-      vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
+      vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
       VkViewport vp = {
          (float)rectangle.left(),
@@ -2279,12 +2347,12 @@ namespace gpu_vulkan
          }
       };
 
-      vkCmdSetViewport(commandBuffer, 0, 1, &vp);
-      vkCmdSetScissor(commandBuffer, 0, 1, &sc);
+      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
-      vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+      vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0, 0);
       // Draw full-screen quad
-      //vkCmdDraw(commandBuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
+      //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
       pshader->unbind();
 
@@ -2292,7 +2360,7 @@ namespace gpu_vulkan
 
       vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
-      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &commandBuffer);
+      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 
 
    }
@@ -2331,18 +2399,18 @@ namespace gpu_vulkan
 
       //vkCmdBeginRenderPass(...);
 
-      auto commandBuffer = this->getCurrentCommandBuffer();
+      auto pcommandbuffer = this->getCurrentCommandBuffer();
 
       //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
-      //VkCommandBuffer commandBuffer;
-      //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &commandBuffer));
+      //auto pcommandbuffer;
+      //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &pcommandbuffer->m_vkcommandbuffer));
       //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-      //VK_CHECK_RESULT(vkBeginCommandBuffer(commandBuffer, &cmdBufInfo));
+      //VK_CHECK_RESULT(vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &cmdBufInfo));
 
 
       //m_procedureaAfterEndRender.add(
-      //   [this, image, commandBuffer]()
+      //   [this, image, pcommandbuffer->m_vkcommandbuffer]()
       //   {
 
       //      //            {
@@ -2367,7 +2435,7 @@ namespace gpu_vulkan
       //      //            };
       //      //
       //      //            vkCmdPipelineBarrier(
-      //      //               commandBuffer,
+      //      //               pcommandbuffer->m_vkcommandbuffer,
       //      //               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
       //      //               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
       //      //               0,
@@ -2399,7 +2467,7 @@ namespace gpu_vulkan
       //      //               };
       //      //
       //      //               vkCmdPipelineBarrier(
-      //      //                  commandBuffer,
+      //      //                  pcommandbuffer->m_vkcommandbuffer,
       //      //                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // srcStageMask
       //      //                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,         // dstStageMask
       //      //                  0,
@@ -2435,7 +2503,7 @@ namespace gpu_vulkan
       //   };
 
       //   vkCmdPipelineBarrier(
-      //      commandBuffer,
+      //      pcommandbuffer->m_vkcommandbuffer,
       //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
       //      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
       //      0,
@@ -2549,13 +2617,13 @@ namespace gpu_vulkan
 
       }
 
-      //auto commandBuffer = this->getCurrentCommandBuffer();
+      //auto pcommandbuffer = this->getCurrentCommandBuffer();
 
       // Bind pipeline and descriptor sets
-    //      vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      //    vkCmdBindDescriptorSets(commandBuffer, ...);
+    //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
       vkCmdBindDescriptorSets(
-         commandBuffer,
+         pcommandbuffer->m_vkcommandbuffer,
          VK_PIPELINE_BIND_POINT_GRAPHICS,   // Bind point
          pdescriptor->m_vkpipelinelayout,                     // Layout used when pipeline was created
          0,                                  // First set (set = 0)
@@ -2568,8 +2636,8 @@ namespace gpu_vulkan
 
 
       VkDeviceSize offsets[] = { 0 };
-      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
-      vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
+      vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
 
       VkViewport vp = {
@@ -2590,12 +2658,12 @@ namespace gpu_vulkan
          }
       };
 
-      vkCmdSetViewport(commandBuffer, 0, 1, &vp);
-      vkCmdSetScissor(commandBuffer, 0, 1, &sc);
+      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
-      vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+      vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0, 0);
       // Draw full-screen quad
-      //vkCmdDraw(commandBuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
+      //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
       pshader->unbind();
 
@@ -2603,7 +2671,7 @@ namespace gpu_vulkan
 
       vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
-      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &commandBuffer);
+      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 
 
    }
@@ -2614,9 +2682,9 @@ namespace gpu_vulkan
 
       //::cast < frame > pframe = pframeParam;
 
-      //auto commandBuffer = pframe->commandBuffer;
+      //auto pcommandbuffer = pframe->m_pcommandbuffer->m_vkcommandbuffer;
 
-      auto commandBuffer = this->getCurrentCommandBuffer();
+      auto pcommandbuffer = this->getCurrentCommandBuffer();
 
       ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
 
@@ -2625,7 +2693,7 @@ namespace gpu_vulkan
 
          assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
          assert(
-            commandBuffer == getCurrentCommandBuffer() &&
+            pcommandbuffer == getCurrentCommandBuffer() &&
             "Can't begin render pass on command buffer from a different frame");
 
          VkRenderPassBeginInfo renderPassInfo{};
@@ -2643,7 +2711,7 @@ namespace gpu_vulkan
          renderPassInfo.clearValueCount = 2;
          renderPassInfo.pClearValues = clearValues;
 
-         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+         vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
          VkViewport viewport{};
          viewport.x = 0.0f;
@@ -2653,8 +2721,8 @@ namespace gpu_vulkan
          viewport.minDepth = 0.0f;
          viewport.maxDepth = 1.0f;
          VkRect2D scissor{ {0, 0}, pgpurenderpass->getExtent() };
-         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+         vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
+         vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
 
       }
       //else
@@ -2662,7 +2730,7 @@ namespace gpu_vulkan
 
       //	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
       //	assert(
-      //		commandBuffer == getCurrentCommandBuffer() &&
+      //		pcommandbuffer == getCurrentCommandBuffer() &&
       //		"Can't begin render pass on command buffer from a different frame");
 
       //	VkRenderPassBeginInfo renderPassInfo{};
@@ -2679,7 +2747,7 @@ namespace gpu_vulkan
       //	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
       //	renderPassInfo.pClearValues = clearValues.data();
 
-      //	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+      //	vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
       //	VkViewport viewport{};
       //	viewport.x = 0.0f;
@@ -2689,8 +2757,8 @@ namespace gpu_vulkan
       //	viewport.minDepth = 0.0f;
       //	viewport.maxDepth = 1.0f;
       //	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
-      //	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-      //	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+      //	vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
+      //	vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
 
 
       //}
@@ -2702,7 +2770,7 @@ namespace gpu_vulkan
 
       ::cast < frame > pframe = pframeParam;
 
-      auto commandBuffer = pframe->commandBuffer;
+      auto pcommandbuffer = pframe->m_pcommandbuffer;
 
       //pgpurenderpass->m_iFrameSerial++;
 
@@ -2718,7 +2786,7 @@ namespace gpu_vulkan
 
          assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
          assert(
-            commandBuffer == getCurrentCommandBuffer() &&
+            pcommandbuffer == getCurrentCommandBuffer() &&
             "Can't begin render pass on command buffer from a different frame");
 
          VkRenderPassBeginInfo renderPassInfo{};
@@ -2736,7 +2804,7 @@ namespace gpu_vulkan
          renderPassInfo.clearValueCount = 2;
          renderPassInfo.pClearValues = clearValues;
 
-         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+         vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
          VkViewport viewport{};
          viewport.x = 0.0f;
@@ -2746,8 +2814,8 @@ namespace gpu_vulkan
          viewport.minDepth = 0.0f;
          viewport.maxDepth = 1.0f;
          VkRect2D scissor{ {0, 0}, pgpurenderpass->getExtent() };
-         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+         vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
+         vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
 
       }
       //else
@@ -2755,7 +2823,7 @@ namespace gpu_vulkan
 
       //	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
       //	assert(
-      //		commandBuffer == getCurrentCommandBuffer() &&
+      //		pcommandbuffer == getCurrentCommandBuffer() &&
       //		"Can't begin render pass on command buffer from a different frame");
 
       //	VkRenderPassBeginInfo renderPassInfo{};
@@ -2772,7 +2840,7 @@ namespace gpu_vulkan
       //	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
       //	renderPassInfo.pClearValues = clearValues.data();
 
-      //	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+      //	vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
       //	VkViewport viewport{};
       //	viewport.x = 0.0f;
@@ -2782,8 +2850,8 @@ namespace gpu_vulkan
       //	viewport.minDepth = 0.0f;
       //	viewport.maxDepth = 1.0f;
       //	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
-      //	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-      //	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+      //	vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
+      //	vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
 
 
       //}
@@ -2798,13 +2866,13 @@ namespace gpu_vulkan
 
       ::cast < frame > pframe = pframeParam;
 
-      auto commandBuffer = pframe->commandBuffer;
+      auto pcommandbuffer = pframe->m_pcommandbuffer;
 
       assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
       assert(
-         commandBuffer == getCurrentCommandBuffer() &&
+         pcommandbuffer == getCurrentCommandBuffer() &&
          "Can't end render pass on command buffer from a different frame");
-      vkCmdEndRenderPass(commandBuffer);
+      vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
    }
 
 
@@ -2814,15 +2882,15 @@ namespace gpu_vulkan
 
       //::cast < frame > pframe = pframeParam;
 
-      //auto commandBuffer = pframe->commandBuffer;
+      //auto pcommandbuffer = pframe->m_pcommandbuffer->m_vkcommandbuffer;
 
-      auto commandBuffer = getCurrentCommandBuffer();
+      auto pcommandbuffer = getCurrentCommandBuffer();
 
       assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
       assert(
-         commandBuffer == getCurrentCommandBuffer() &&
+         pcommandbuffer == getCurrentCommandBuffer() &&
          "Can't end render pass on command buffer from a different frame");
-      vkCmdEndRenderPass(commandBuffer);
+      vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
    }
 
 
@@ -2852,16 +2920,16 @@ namespace gpu_vulkan
 
          isFrameStarted = true;
 
-         auto commandBuffer = getCurrentCommandBuffer();
+         auto pcommandbuffer = getCurrentCommandBuffer();
 
          VkCommandBufferBeginInfo beginInfo{};
          beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+         if (vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo) != VK_SUCCESS) {
             throw ::exception(error_failed, "failed to begin recording command buffer!");
          }
          auto pframe = __create_new < ::gpu_vulkan::frame >();
-         pframe->commandBuffer = commandBuffer;
+         pframe->m_pcommandbuffer->m_vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
          m_pframe = pframe;
          return ::gpu::renderer::beginFrame();
          
@@ -2883,15 +2951,15 @@ namespace gpu_vulkan
 
       //	isFrameStarted = true;
 
-      //	auto commandBuffer = getCurrentCommandBuffer();
+      //	auto pcommandbuffer = getCurrentCommandBuffer();
 
       //	VkCommandBufferBeginInfo beginInfo{};
       //	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-      //	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+      //	if (vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo) != VK_SUCCESS) {
       //		throw ::exception(error_failed, "failed to begin recording command buffer!");
       //	}
-      //	return commandBuffer;
+      //	return pcommandbuffer->m_vkcommandbuffer;
 
       //}
       on_happening(e_happening_begin_frame);
@@ -2907,15 +2975,15 @@ namespace gpu_vulkan
       //{
 
       assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-      auto commandBuffer = getCurrentCommandBuffer();
-      if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+      auto pcommandbuffer = getCurrentCommandBuffer();
+      if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
       {
          throw ::exception(error_failed, "failed to record command buffer!");
       }
 
       ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
 
-      auto result = pgpurenderpass->submitCommandBuffers(&commandBuffer);
+      auto result = pgpurenderpass->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer);
 
       if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
          m_bNeedToRecreateSwapChain)
@@ -2957,11 +3025,11 @@ namespace gpu_vulkan
 
 
       //	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-      //	auto commandBuffer = getCurrentCommandBuffer();
-      //	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+      //	auto pcommandbuffer = getCurrentCommandBuffer();
+      //	if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
       //		throw ::exception(error_failed, "failed to record command buffer!");
       //	}
-      //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+      //	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &currentImageIndex);
       //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       //	//	vkcWindow.wasWindowResized()) 
       //	//{
@@ -2990,7 +3058,7 @@ namespace gpu_vulkan
       if (1)
       {
 
-         auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -3011,7 +3079,7 @@ namespace gpu_vulkan
          };
 
          vkCmdPipelineBarrier(
-            cmdBuffer,
+            pcommandbuffer->m_vkcommandbuffer,
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
             0,
@@ -3019,9 +3087,10 @@ namespace gpu_vulkan
             0, NULL,
             1, &barrier
          );
-         m_pgpucontext->endSingleTimeCommands(cmdBuffer);
-      }
 
+         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
+
+      }
 
       if (auto pframe = beginFrame())
       {
@@ -3051,7 +3120,7 @@ namespace gpu_vulkan
 
       if (1)
       {
-         auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -3072,7 +3141,7 @@ namespace gpu_vulkan
          };
 
          vkCmdPipelineBarrier(
-            cmdBuffer,
+            pcommandbuffer->m_vkcommandbuffer,
             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             0,
@@ -3080,9 +3149,10 @@ namespace gpu_vulkan
             0, NULL,
             1, &barrier
          );
-         m_pgpucontext->endSingleTimeCommands(cmdBuffer);
-      }
 
+         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
+
+      }
 
    }
 
@@ -3117,7 +3187,7 @@ namespace gpu_vulkan
 
       if (1)
       {
-         //auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+         //auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
          //VkImageMemoryBarrier barrier = {
          //    .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -3138,7 +3208,7 @@ namespace gpu_vulkan
          //};
 
          //vkCmdPipelineBarrier(
-         //   cmdBuffer,
+         //   pcommandbuffer->m_vkcommandbuffer,
          //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
          //   VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
          //   0,
@@ -3157,13 +3227,13 @@ namespace gpu_vulkan
          //submitInfo.pWaitDstStageMask = waitStages;
 
          //submitInfo.commandBufferCount = 1;
-         //submitInfo.pCommandBuffers = &cmdBuffer;
+         //submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
 
-         //m_pgpucontext->endSingleTimeCommands(cmdBuffer, 1, &submitInfo);
-         auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+         //m_pgpucontext->endSingleTimeCommands(pcommandbuffer->m_vkcommandbuffer, 1, &submitInfo);
+         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
 
-         insertImageMemoryBarrier(cmdBuffer,
+         insertImageMemoryBarrier(pcommandbuffer->m_vkcommandbuffer,
             ptexture->m_vkimage,
             0,
             VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -3178,7 +3248,7 @@ namespace gpu_vulkan
          VkSubmitInfo submitInfo{};
          submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
          submitInfo.commandBufferCount = 1;
-         submitInfo.pCommandBuffers = &cmdBuffer;
+         submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
          ::array<VkSemaphore> waitSemaphores;
          ::array<VkPipelineStageFlags> waitStages;
          waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -3187,7 +3257,8 @@ namespace gpu_vulkan
          submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
          submitInfo.pWaitSemaphores = waitSemaphores.data();
          submitInfo.pWaitDstStageMask = waitStages.data();
-         m_pgpucontext->endSingleTimeCommands(cmdBuffer, 1, &submitInfo);
+
+         m_pgpucontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
 
          //m_prendererResolve->pgpurenderpass->m_semaphoreaWaitToSubmit.add(
          //   pgpurenderpass->renderFinishedSemaphores[iPassCurrentFrame]
@@ -3229,7 +3300,7 @@ namespace gpu_vulkan
 
       //if (1)
       //{
-      //   auto cmdBuffer = m_pgpucontext->beginSingleTimeCommands();
+      //   auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
       //   VkImageMemoryBarrier barrier = {
       //       .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -3250,7 +3321,7 @@ namespace gpu_vulkan
       //   };
 
       //   vkCmdPipelineBarrier(
-      //      cmdBuffer,
+      //      pcommandbuffer->m_vkcommandbuffer,
       //      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
       //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
       //      0,
@@ -3258,7 +3329,7 @@ namespace gpu_vulkan
       //      0, NULL,
       //      1, &barrier
       //   );
-      //   m_pgpucontext->endSingleTimeCommands(cmdBuffer);
+      //   m_pgpucontext->endSingleTimeCommands(pcommandbuffer->m_vkcommandbuffer);
       //}
 
 
@@ -3285,10 +3356,10 @@ namespace gpu_vulkan
 
       ::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
 
-      auto copyCmd = m_pgpucontext->beginSingleTimeCommands();
+      auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
       insertImageMemoryBarrier(
-         copyCmd,
+         pcommandbuffer->m_vkcommandbuffer,
          ptexture->m_vkimage,
          0,
          VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -3301,7 +3372,7 @@ namespace gpu_vulkan
       VkSubmitInfo submitInfo{};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
       submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = &copyCmd;
+      submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
       ::array<VkSemaphore> waitSemaphores;
       ::array<VkPipelineStageFlags> waitStages;
       waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -3311,7 +3382,7 @@ namespace gpu_vulkan
       submitInfo.pWaitSemaphores = waitSemaphores.data();
       submitInfo.pWaitDstStageMask = waitStages.data();
 
-      m_pgpucontext->endSingleTimeCommands(copyCmd);
+      m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
       ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
@@ -3347,10 +3418,10 @@ namespace gpu_vulkan
 
       ::cast < texture > ptexture = pgpurenderpassSource->m_texturea[prendererSource->get_frame_index()];
 
-      auto copyCmd = m_pgpucontext->beginSingleTimeCommands();
+      auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
       ::vulkan::insertImageMemoryBarrier(
-         copyCmd,
+         pcommandbuffer->m_vkcommandbuffer,
          ptexture->m_vkimage,
          0,
          VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -3363,7 +3434,7 @@ namespace gpu_vulkan
       VkSubmitInfo submitInfo{};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
       submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = &copyCmd;
+      submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
       ::array<VkSemaphore> waitSemaphores;
       ::array<VkPipelineStageFlags> waitStages;
       waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -3375,7 +3446,7 @@ namespace gpu_vulkan
 
       //vkQueueWaitIdle(pgpucontext->graphicsQueue());
 
-      m_pgpucontext->endSingleTimeCommands(copyCmd, 1, &submitInfo);
+      m_pgpucontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
 
       auto rectangle = prendererSource->m_pgpucontext->rectangle();
 
@@ -3407,12 +3478,21 @@ namespace gpu_vulkan
          }
       };
 
-      auto commandBuffer = this->getCurrentCommandBuffer();
+      auto pcommandbuffer = this->getCurrentCommandBuffer();
 
-      vkCmdSetViewport(commandBuffer, 0, 1, &vp);
-      vkCmdSetScissor(commandBuffer, 0, 1, &sc);
+      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
    }
+
+   
+   void renderer::blend(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource, const ::int_rectangle& rectangleTarget)
+   {
+
+      
+
+   }
+
 
 
 } // namespace gpu_vulkan

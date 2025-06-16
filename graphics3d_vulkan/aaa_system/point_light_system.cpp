@@ -104,10 +104,10 @@ namespace graphics3d_vulkan
          sorted[disSquared] = obj->m_iId;
       }
 
-      m_ppipeline->bind(frameInfo.commandBuffer);
+      m_ppipeline->bind(frameInfo.pcommandbuffer->m_vkcommandbuffer);
 
       vkCmdBindDescriptorSets(
-         frameInfo.commandBuffer,
+         frameInfo.pcommandbuffer->m_vkcommandbuffer,
          VK_PIPELINE_BIND_POINT_GRAPHICS,
          pipelineLayout,
          0,
@@ -127,13 +127,13 @@ namespace graphics3d_vulkan
          push.radius = obj->m_transform.scale.x;
 
          vkCmdPushConstants(
-            frameInfo.commandBuffer,
+            frameInfo.pcommandbuffer->m_vkcommandbuffer,
             pipelineLayout,
             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             0,
             sizeof(PointLightPushConstants),
             &push);
-         vkCmdDraw(frameInfo.commandBuffer, 6, 1, 0, 0);
+         vkCmdDraw(frameInfo.pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0);
       }
 
    }

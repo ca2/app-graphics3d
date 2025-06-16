@@ -2,6 +2,7 @@
 // Co-creating with V0idsEmbrace@Twitch with
 // camilo on 2025-05-19 04:59 <3ThomasBorregaardSorensen!!
 #include "approach.h"
+#include "command_buffer.h"
 #include "shader.h"
 #include "context.h"
 #include "descriptors.h"
@@ -278,9 +279,9 @@ namespace gpu_vulkan
 
       ::cast <renderer> prenderer = m_pgpurenderer;
 
-      auto commandBuffer = prenderer->getCurrentCommandBuffer();
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
 
-      m_ppipeline->bind(commandBuffer);
+      m_ppipeline->bind(pcommandbuffer);
 
       if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
       {
@@ -288,7 +289,7 @@ namespace gpu_vulkan
          auto globalDescriptorSet = pgpucontext->getGlobalDescriptorSet(prenderer);
 
          vkCmdBindDescriptorSets(
-            commandBuffer,
+            pcommandbuffer->m_vkcommandbuffer,
             VK_PIPELINE_BIND_POINT_GRAPHICS,
             m_vkpipelinelayout,
             0,
@@ -307,10 +308,10 @@ namespace gpu_vulkan
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      auto commandBuffer = prenderer->getCurrentCommandBuffer();
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
 
       vkCmdPushConstants(
-         commandBuffer,
+         pcommandbuffer->m_vkcommandbuffer,
          m_vkpipelinelayout,
          VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
          0,
@@ -325,9 +326,9 @@ namespace gpu_vulkan
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      auto commandBuffer = prenderer->getCurrentCommandBuffer();
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
 
-      vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+      vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0);
 
    }
 

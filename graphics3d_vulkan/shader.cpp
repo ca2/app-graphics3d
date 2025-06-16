@@ -103,14 +103,14 @@
 //
 //      ::cast <engine> pengine = m_pgpucontext->m_pimpact->m_pengine;
 //
-//      auto commandBuffer = pengine->m_prenderer->getCurrentCommandBuffer();
+//      auto pcommandbuffer = pengine->m_prenderer->getCurrentCommandBuffer();
 //
-//      m_ppipeline->bind(commandBuffer);
+//      m_ppipeline->bind(pcommandbuffer->m_vkcommandbuffer);
 //
 //      auto globalDescriptorSet = pengine->getcurrentDescriptorSet();
 //
 //      vkCmdBindDescriptorSets(
-//         commandBuffer,
+//         pcommandbuffer->m_vkcommandbuffer,
 //         VK_PIPELINE_BIND_POINT_GRAPHICS,
 //         m_vkpipelinelayout,
 //         0,
@@ -127,10 +127,10 @@
 //
 //      ::cast <engine> pengine = m_pgpucontext->m_pimpact->m_pengine;
 //
-//      auto commandBuffer = pengine->m_prenderer->getCurrentCommandBuffer();
+//      auto pcommandbuffer = pengine->m_prenderer->getCurrentCommandBuffer();
 //
 //      vkCmdPushConstants(
-//         commandBuffer,
+//         pcommandbuffer->m_vkcommandbuffer,
 //         m_vkpipelinelayout,
 //         VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 //         0,
@@ -145,9 +145,9 @@
 //
 //      ::cast <engine> pengine = m_pgpucontext->m_pimpact->m_pengine;
 //
-//      auto commandBuffer = pengine->m_prenderer->getCurrentCommandBuffer();
+//      auto pcommandbuffer = pengine->m_prenderer->getCurrentCommandBuffer();
 //
-//      vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+//      vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0);
 //
 //   }
 //
