@@ -52,6 +52,8 @@ namespace gpu_vulkan
 
    class frame;
 
+   class texture;
+
 
 } // namespace gpu_vulkan
 

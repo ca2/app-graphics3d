@@ -4,6 +4,7 @@
 #include "initializers.h"
 #include "physical_device.h"
 #include "renderer.h"
+#include "texture.h"
 
 using namespace vulkan;
 
@@ -353,35 +354,40 @@ namespace gpu_vulkan
       ASSERT(validDepthFormat);
 
       //// Color attachment
-      VkImageCreateInfo image = initializers::imageCreateInfo();
-      image.imageType = VK_IMAGE_TYPE_2D;
-      image.format = m_formatImage;
-      image.extent.width = m_extent.width;
-      image.extent.height = m_extent.height;
-      image.extent.depth = 1;
-      image.mipLevels = 1;
-      image.arrayLayers = 1;
-      image.samples = VK_SAMPLE_COUNT_1_BIT;
-      image.tiling = VK_IMAGE_TILING_OPTIMAL;
+      VkImageCreateInfo imagecreateinfo = initializers::imageCreateInfo();
+      imagecreateinfo.imageType = VK_IMAGE_TYPE_2D;
+      imagecreateinfo.format = m_formatImage;
+      imagecreateinfo.extent.width = m_extent.width;
+      imagecreateinfo.extent.height = m_extent.height;
+      imagecreateinfo.extent.depth = 1;
+      imagecreateinfo.mipLevels = 1;
+      imagecreateinfo.arrayLayers = 1;
+      imagecreateinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      imagecreateinfo.tiling = VK_IMAGE_TILING_OPTIMAL;
       //// We will sample directly from the color attachment
-      image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+      imagecreateinfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
          VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
       //image.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
       //VkMemoryAllocateInfo memAlloc = initializers::memory_allocate_info();
       //VkMemoryRequirements memReqs;
 
-      m_images.resize(MAX_FRAMES_IN_FLIGHT);
-      m_imagememories.resize(MAX_FRAMES_IN_FLIGHT);
-
-      for (int i = 0; i < m_images.size(); i++)
+      m_texturea.set_size(m_pgpurenderer->get_frame_count());
+      
+      for (int i = 0; i < m_texturea.size(); i++)
       {
 
+         auto & pgputexture = m_texturea[i];
+
+         __defer_construct(pgputexture);
+
+         ::cast < texture > ptexture = pgputexture;
+
          pcontext->createImageWithInfo(
-            image,
+            imagecreateinfo,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            m_images[i],
-            m_imagememories[i]
+            ptexture->m_vkimage,
+            ptexture->m_vkdevicememory
          );
          //VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &image, nullptr, &m_images[i]));
          //vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_images[i], &memReqs);

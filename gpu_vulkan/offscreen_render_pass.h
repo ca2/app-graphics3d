@@ -16,7 +16,11 @@ namespace gpu_vulkan
 	public:
 
 
-		static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+		VkSampler m_vksampler;
+		
+
+
+		///static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
 		//offscreen_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent);
 		//offscreen_render_pass(renderer * pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
@@ -61,39 +65,6 @@ namespace gpu_vulkan
 
 		virtual void defer_resize(const ::int_size& size);
 
-		//// Helper functions
-		//VkSurfaceFormatKHR chooseSwapSurfaceFormat(
-		//	const ::array<VkSurfaceFormatKHR>& availableFormats);
-		//VkPresentModeKHR chooseSwapPresentMode(
-		//	const ::array<VkPresentModeKHR>& availablePresentModes);
-		//VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-
-		//VkFormat imageFormat;
-		//VkFormat depthFormat;
-		//VkExtent2D m_extent;
-
-		//::array<VkFramebuffer> swapChainFramebuffers;
-		//VkRenderPass m_vkrenderpass;
-
-		//::array<VkImage> depthImages;
-		//::array<VkDeviceMemory> depthImageMemorys;
-		//::array<VkImageView> depthImageViews;
-		VkSampler m_vksampler;
-		 ::array<VkDeviceMemory> m_imagememories;
-		//::array<VkImage> swapChainImages;
-		//::array<VkImageView> swapChainImageViews;
-
-		//context* m_pgpucontext;
-		//VkExtent2D windowExtent;
-
-		////VkSwapchainKHR swapChain;
-		//::pointer<offscreen_render_pass> oldOffScreen;
-
-		//::array<VkSemaphore> imageAvailableSemaphores;
-		//::array<VkSemaphore> renderFinishedSemaphores;
-		//::array<VkFence> inFlightFences;
-		//::array<VkFence> imagesInFlight;
-		//size_t currentFrame = 0;
 	};
 
 

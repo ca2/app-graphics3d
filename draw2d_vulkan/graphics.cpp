@@ -2014,9 +2014,8 @@ namespace draw2d_vulkan
 
       {
 
-         ::cast < ::gpu_vulkan::context > pgpucontext = pgpucontext;
-
-         pmodel->m_vertexBuffer = createQuadVertexBuffer(pgpucontext->logicalDevice(),
+         pmodel->m_vertexBuffer = createQuadVertexBuffer(
+            pgpucontext->logicalDevice(),
             pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
             &pmodel->m_vertexMemory, quad, color, pgpucontext->rectangle().size());
 

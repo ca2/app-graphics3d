@@ -114,8 +114,8 @@ namespace gpu_vulkan
 
       ::procedure_array m_procedureaAfterEndRender;
 
-      ::collection::index m_iCurrentFrame2 = -1;
-      ::collection::index m_iFrameSerial2 = -1;
+      //::collection::index m_iCurrentFrame2 = -1;
+      //::collection::index m_iFrameSerial2 = -1;
 
 
       renderer();

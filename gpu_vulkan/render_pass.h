@@ -34,7 +34,7 @@ namespace gpu_vulkan
       ::array<VkImage> depthImages;
       ::array<VkDeviceMemory> depthImageMemorys;
       ::array<VkImageView> depthImageViews;
-      ::array<VkImage> m_images;
+      //::array<VkImage> m_images;
       ::array<VkImageView> m_imageviews;
 
       //context* m_pgpucontext;
@@ -50,7 +50,7 @@ namespace gpu_vulkan
       ::array<VkFence>     imagesInFlight;
       bool                 m_bNeedRebuild;
 
-      static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+      // static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
       //render_pass(renderer * prenderer, VkExtent2D windowExtent);
       //render_pass(renderer * prenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
@@ -67,7 +67,7 @@ namespace gpu_vulkan
       virtual int get_image_index() const;
       VkRenderPass getRenderPass() { return m_vkrenderpass; }
       VkImageView getImageView(int index) { return m_imageviews[index]; }
-      size_t imageCount() { return m_images.size(); }
+      size_t imageCount() { return m_texturea.size(); }
       VkFormat getImageFormat() { return m_formatImage; }
       VkExtent2D getExtent() { return m_extent; }
       uint32_t width() { return m_extent.width; }

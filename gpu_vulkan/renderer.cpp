@@ -1,13 +1,15 @@
 #include "framework.h"
+#include "accumulation_render_pass.h"
+
 #include "approach.h"
 #include "descriptors.h"
 #include "frame.h"
+#include "initializers.h"
 #include "renderer.h"
-#include "accumulation_render_pass.h"
 #include "offscreen_render_pass.h"
 #include "physical_device.h"
 #include "swap_chain.h"
-#include "initializers.h"
+#include "texture.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "app-graphics3d/gpu_vulkan/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
@@ -143,11 +145,13 @@ namespace gpu_vulkan
    void renderer::on_new_frame()
    {
 
-      m_iFrameSerial2++;
+      ::gpu::renderer::on_new_frame();
 
-      m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % render_pass::MAX_FRAMES_IN_FLIGHT;
+      //m_iFrameSerial2++;
 
-      on_happening(e_happening_new_frame);
+      //m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % render_pass::MAX_FRAMES_IN_FLIGHT;
+
+      //on_happening(e_happening_new_frame);
 
    }
 
@@ -301,7 +305,7 @@ namespace gpu_vulkan
 
       ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
 
-      if (pgpurenderpass->m_images.is_empty())
+      if (pgpurenderpass->m_texturea.is_empty())
       {
 
          ::int_size size;
@@ -772,7 +776,11 @@ namespace gpu_vulkan
          /*const char* imagedata;*/
          {
 
-            m_pcpubuffersampler->sample(pgpurenderpass->m_images[get_frame_index()]);
+
+            ::cast < texture > ptexture = pgpurenderpass->m_texturea[get_frame_index()];
+
+
+            m_pcpubuffersampler->sample(ptexture->m_vkimage);
 
             //// Create the linear tiled destination image to copy to and to read the memory from
 
@@ -2297,7 +2305,7 @@ namespace gpu_vulkan
 
       ::cast < render_pass > pgpurenderpassSrc = prendererSrc->m_pgpurendertarget;
 
-      VkImage image = pgpurenderpassSrc->m_images[prendererSrc->get_frame_index()];
+      ::cast < texture > ptexture = pgpurenderpassSrc->m_texturea[prendererSrc->get_frame_index()];
 
       auto rectanglePlacement = prendererSrc->m_pgpucontext->m_rectangle;
 
@@ -2441,7 +2449,7 @@ namespace gpu_vulkan
       /*   }
          );*/
 
-      auto& pmodel = m_imagemodel[image];
+      auto& pmodel = m_imagemodel[ptexture->m_vkimage];
 
       if (__defer_construct_new(pmodel))
       {
@@ -2460,7 +2468,7 @@ namespace gpu_vulkan
 
       pshader->bind();
 
-      auto& pdescriptor = m_imagedescriptor[image];
+      auto& pdescriptor = m_imagedescriptor[ptexture->m_vkimage];
 
       if (__defer_construct_new(pdescriptor))
       {
@@ -2855,8 +2863,8 @@ namespace gpu_vulkan
          auto pframe = __create_new < ::gpu_vulkan::frame >();
          pframe->commandBuffer = commandBuffer;
          m_pframe = pframe;
-         on_happening(e_happening_begin_frame);
-         return m_pframe;
+         return ::gpu::renderer::beginFrame();
+         
 
       }
       //else
@@ -3101,7 +3109,7 @@ namespace gpu_vulkan
 
       ::cast < render_pass > pgpurenderpass = prenderer->m_pgpurendertarget;
 
-      VkImage image = pgpurenderpass->m_images[prenderer->get_frame_index()];
+      ::cast < texture > ptexture = pgpurenderpass->m_texturea[prenderer->get_frame_index()];
 
       defer_update_renderer();
 
@@ -3156,7 +3164,7 @@ namespace gpu_vulkan
 
 
          insertImageMemoryBarrier(cmdBuffer,
-            image,
+            ptexture->m_vkimage,
             0,
             VK_ACCESS_TRANSFER_WRITE_BIT,
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
@@ -3211,7 +3219,7 @@ namespace gpu_vulkan
 
          //m_pscene->on_render(m_pgpucontext);
 
-         _blend_image(image, m_pgpucontext->rectangle(), false);
+         _blend_image(ptexture->m_vkimage, m_pgpucontext->rectangle(), false);
 
          on_end_render(pframe);
 
@@ -3273,7 +3281,7 @@ namespace gpu_vulkan
 
       ::cast < render_pass > pgpurenderpass = prenderer->m_pgpurendertarget;
 
-      VkImage vkimage = pgpurenderpass->m_images[prenderer->get_frame_index()];
+      ::cast <texture > ptexture = pgpurenderpass->m_texturea[prenderer->get_frame_index()];
 
       ::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
 
@@ -3281,7 +3289,7 @@ namespace gpu_vulkan
 
       insertImageMemoryBarrier(
          copyCmd,
-         vkimage,
+         ptexture->m_vkimage,
          0,
          VK_ACCESS_TRANSFER_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
@@ -3337,13 +3345,13 @@ namespace gpu_vulkan
 
       ::cast < render_pass > pgpurenderpassSource = prendererSource->m_pgpurendertarget;
 
-      VkImage vkimage = pgpurenderpassSource->m_images[prendererSource->get_frame_index()];
+      ::cast < texture > ptexture = pgpurenderpassSource->m_texturea[prendererSource->get_frame_index()];
 
       auto copyCmd = m_pgpucontext->beginSingleTimeCommands();
 
       ::vulkan::insertImageMemoryBarrier(
          copyCmd,
-         vkimage,
+         ptexture->m_vkimage,
          0,
          VK_ACCESS_TRANSFER_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
@@ -3371,7 +3379,7 @@ namespace gpu_vulkan
 
       auto rectangle = prendererSource->m_pgpucontext->rectangle();
 
-      _blend_image(vkimage, rectangle, true);
+      _blend_image(ptexture->m_vkimage, rectangle, true);
 
    }
 

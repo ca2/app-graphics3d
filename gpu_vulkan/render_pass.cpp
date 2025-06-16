@@ -3,6 +3,7 @@
 #include "physical_device.h"
 #include "render_pass.h"
 #include "renderer.h"
+#include "texture.h"
 
 
 namespace gpu_vulkan
@@ -271,14 +272,16 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      m_imageviews.resize(m_images.size());
+      m_imageviews.resize(m_texturea.size());
 
-      for (::collection::index i = 0; i < m_images.size(); i++) 
+      for (::collection::index i = 0; i < m_texturea.size(); i++) 
       {
+
+         ::cast < texture > ptexture = m_texturea[i];
 
          VkImageViewCreateInfo viewInfo{};
          viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-         viewInfo.image = m_images[i];
+         viewInfo.image = ptexture->m_vkimage;
          viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
          viewInfo.format = m_formatImage;
          viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;

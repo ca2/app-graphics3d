@@ -5,6 +5,7 @@
 #include "initializers.h"
 #include "physical_device.h"
 #include "renderer.h"
+#include "texture.h"
 using namespace vulkan;
 
 
@@ -116,9 +117,11 @@ namespace gpu_vulkan
       if (m_pgpurenderer->is_starting_frame())
       {
 
+         ::cast < texture > ptexture = m_texturea[m_pgpurenderer->get_frame_index()];
+
          insertImageMemoryBarrier(
             pframe->commandBuffer,
-            m_images[m_pgpurenderer->get_frame_index()],
+            ptexture->m_vkimage,
             0,
             VK_ACCESS_TRANSFER_WRITE_BIT,
             VK_IMAGE_LAYOUT_UNDEFINED,
@@ -356,17 +359,18 @@ namespace gpu_vulkan
       //VkMemoryAllocateInfo memAlloc = initializers::memory_allocate_info();
       //VkMemoryRequirements memReqs;
 
-      m_images.resize(MAX_FRAMES_IN_FLIGHT);
-      m_imagememories.resize(MAX_FRAMES_IN_FLIGHT);
+      m_texturea.set_size(m_pgpurenderer->get_frame_count());
 
-      for (int i = 0; i < m_images.size(); i++)
+      for (int i = 0; i < m_texturea.size(); i++)
       {
+
+         ::cast < texture > ptexture = m_texturea[i];
 
          pcontext->createImageWithInfo(
             image,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            m_images[i],
-            m_imagememories[i]
+            ptexture->m_vkimage,
+            ptexture->m_vkdevicememory
          );
          //VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &image, nullptr, &m_images[i]));
          //vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_images[i], &memReqs);
@@ -476,7 +480,7 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      m_imageviewsAlphaAccumulation.resize(m_images.size());
+      m_imageviewsAlphaAccumulation.resize(m_texturea.size());
 
       for (::collection::index i = 0; i < m_imagesAlphaAccumulation.size(); i++)
       {
