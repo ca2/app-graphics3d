@@ -70,7 +70,7 @@ namespace gpu_directx12
 
       class d3d11* d3d11();
 
-      void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
+      void blend(::gpu::texture* ptexture) override;
 
    };
 

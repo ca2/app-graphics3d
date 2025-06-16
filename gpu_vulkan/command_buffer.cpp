@@ -38,6 +38,8 @@ namespace gpu_vulkan
    void command_buffer::initialize_command_buffer(::gpu::renderer* pgpurenderer)
    {
 
+      m_pgpurenderer = pgpurenderer;
+
       ::cast <context > pcontext = m_pgpurenderer->m_pgpucontext;
 
       ::cast <device > pdevice = pcontext->m_pgpudevice;

@@ -168,8 +168,11 @@ namespace gpu_vulkan
       return *this;
    }
 
+
    descriptor_writer & descriptor_writer::writeImage(
-       uint32_t binding, VkDescriptorImageInfo * imageInfo) {
+       uint32_t binding, VkDescriptorImageInfo * imageInfo) 
+   {
+
       assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding");
 
       auto & bindingDescription = setLayout.bindings[binding];

@@ -34,17 +34,23 @@ namespace gpu_vulkan
       VkImage                    m_vkimage;
       VkDeviceMemory             m_vkdevicememory;
       VkImageLayout              m_vkimagelayout;
+      VkImageView                m_vkimageview;
+
 
       
       texture();
       ~texture() override;
 
 
-      void initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_size & size);
+      void initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangleTarget);
 
       //void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
 
       void _new_state(::gpu_vulkan::command_buffer * pcommandbuffer, VkImageLayout newLayout);
+
+      void create_image_view();
+
+      VkFramebuffer create_framebuffer(VkRenderPass renderpass);
 
    };
 

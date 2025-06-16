@@ -3411,15 +3411,15 @@ void CreateImageBlendVertexBuffer(
    void renderer::blend(::gpu::layer* player)
    {
 
-      ::cast < texture > ptexture = player->m_pgputexture;
+      ::cast < texture > ptexture = player->m_pgputextureTarget;
 
       auto pshader = get_image_blend_shader();
 
-      pshader->bind();
+      pshader->bind(ptexture);
 
       auto sizeHost = m_pgpucontext->m_rectangle.size();
 
-      const auto& rect = player->m_rectangleTarget;
+      const auto& rect = player->m_pgputextureTarget->m_rectangleTarget;
       float left = ((float)rect.left() / (float) sizeHost.width()) * 2.0f - 1.0f;
       float right = ((float)rect.right() / (float) sizeHost.width()) * 2.0f - 1.0f;
       float top = 1.0f - ((float)rect.top() / (float) sizeHost.height()) * 2.0f;

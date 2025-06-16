@@ -29,6 +29,7 @@ namespace draw2d_vkvg
       VkvgDevice                       m_vkvgdevice;
       VkvgSurface                      m_vkvgsurface;
       VkvgContext                      m_pdc;
+      ::pointer < ::gpu_vulkan::texture > m_ptextureEndDraw;
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
       //::plusplus::GraphicsPath *     m_ppath;

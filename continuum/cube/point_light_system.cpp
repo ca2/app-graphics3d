@@ -145,7 +145,7 @@ namespace app_graphics3d_continuum
          sorted[disSquared] = obj->m_iId;
       }
 
-      m_pshader->bind();
+      m_pshader->bind(nullptr);
 
       //auto properties = point_light_properties();
 

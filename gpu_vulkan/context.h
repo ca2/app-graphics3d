@@ -19,6 +19,8 @@ namespace gpu_vulkan
       //itask									m_itaskGpu;
       VkSampler m_vksampler001;
 
+      VkFormat m_formatImageDefault;
+
       //unsigned int                     m_VAO;
       //unsigned int                     m_VBO;
 

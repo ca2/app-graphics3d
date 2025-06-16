@@ -9,11 +9,10 @@
 #include "bred/gpu/renderer.h"
 
 
-constexpr unsigned int FRAME_OVERLAP = 2;
-
 
 namespace gpu_vulkan
 {
+
 
    class CLASS_DECL_GPU_VULKAN shader_vertex_input :
       virtual public ::particle
@@ -30,7 +29,6 @@ namespace gpu_vulkan
       virtual public ::gpu::renderer
    {
    public:
-
 
 
       struct CLASS_DECL_GPU_VULKAN cpu_buffer_sampler :
@@ -64,13 +62,6 @@ namespace gpu_vulkan
       };
 
 
-      class descriptor :
-         virtual public ::particle
-      {
-      public:
-         ::array<VkDescriptorSet>   m_descriptorsets;
-         VkPipelineLayout		      m_vkpipelinelayout = nullptr;
-      };
 
       class model :
          virtual public ::particle
@@ -83,9 +74,15 @@ namespace gpu_vulkan
       };
 
 
-      ::pointer<::gpu::shader>                        m_pshaderImageBlend;
-      ::pointer<::gpu::shader>                        m_pshaderImageSet;
-      map < VkImage, ::pointer < descriptor > >       m_imagedescriptor;
+      //::pointer<blend2>                               m_pblend2;
+
+      ::pointer < shader >                       m_pshaderImageBlend;
+      ::pointer < shader >                       m_pshaderImageSet;
+      ::pointer < shader >                       m_pshaderBlend2;
+
+      //::pointer<::gpu::shader>                        m_pshaderImageBlend;
+      //::pointer<::gpu::shader>                        m_pshaderImageSet;
+      //map < VkImage, ::pointer < descriptor > >       m_imagedescriptor;
       map < VkImage, ::pointer < model > >       m_imagemodel;
       //::pointer < ::user::graphics3d >	m_pimpact;
       ::pointer < context >				               m_pgpucontext;
@@ -105,13 +102,14 @@ namespace gpu_vulkan
       //bool m_bOffScreen = true;
       //renderer(VkWindow &window, context * pvkcdevice);
 
-      ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutImageBlend;
-      ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolImageBlend;
+      //::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutImageBlend;
+      //::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolImageBlend;
 
 
-      ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutResolve;
-      ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolResolve;
-      ::pointer < descriptor >                                 m_pdescriptorResolve;
+      ::pointer<shader  >           m_pshaderResolve;
+      //::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutResolve;
+      //::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolResolve;
+      //::pointer < descriptor_set >                                      m_pdescriptorsetResolve;
 
       ::procedure_array m_procedureaAfterEndRender;
 
@@ -217,28 +215,28 @@ namespace gpu_vulkan
       void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
 
 
-      void _set_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
+      void _set_image(::gpu::texture * pgputexture, const ::int_rectangle& rectangle, bool bYSwap);
 
-      void _blend_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
-      void _on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle);
+      void _blend_image(::gpu::texture* pgputexture, const ::int_rectangle& rectangle, bool bYSwap);
+      void _on_graphics_end_draw(::gpu::texture* pgputexture, const ::int_rectangle& rectangle);
 
       void _blend_renderer(::gpu_vulkan::renderer* prendererSrc, bool bYSwap);
       void _on_graphics_end_draw(::gpu_vulkan::renderer * prendererSrc);
 
       //void _on_frame_draw(::gpu_vulkan::renderer* prendererUpper);
 
-      void _copy_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
+      void _copy_image(::gpu::texture* pgputexture, const ::int_rectangle& rectangle, bool bYSwap);
 
-      ::gpu::shader * get_image_blend_shader();
+      shader * _get_image_blend_shader();
 
-      ::gpu::shader* get_image_set_shader();
+      shader* _get_image_set_shader();
 
       void blend(::gpu::renderer* prenderer) override;
 
       void soft_restore_context() override;
 
 
-      void blend(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource, const ::int_rectangle& rectangleTarget) override;
+      void blend(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource) override;
 
    };
 

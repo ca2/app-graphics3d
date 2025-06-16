@@ -16,6 +16,7 @@
 #include "app-graphics3d/gpu_vulkan/approach.h"
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
+#include "app-graphics3d/gpu_vulkan/texture.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/render.h"
 #include "aura/graphics/image/target.h"
@@ -6429,7 +6430,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          vkvg_flush(m_pdc);
 
-         VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
+         __defer_construct(m_ptextureEndDraw);
+
+         m_ptextureEndDraw->m_vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
 
 
 
@@ -6465,7 +6468,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          //m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
 
-         prenderer->_on_graphics_end_draw(vkimage, rectangle);
+         prenderer->_on_graphics_end_draw(m_ptextureEndDraw, rectangle);
 
          //prenderer->_blend_image(vkimage, rectangle);
 

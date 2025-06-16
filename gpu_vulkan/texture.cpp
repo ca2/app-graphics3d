@@ -9,7 +9,6 @@
 #include "texture.h"
 
 
-
 namespace gpu_vulkan
 {
 
@@ -18,6 +17,11 @@ namespace gpu_vulkan
    {
 
       new_texture.set_new_texture();
+
+      m_vkimage = nullptr;
+      m_vkimagelayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      m_vkimageview = nullptr;
+      m_vkdevicememory = nullptr;
 
    }
 
@@ -28,10 +32,10 @@ namespace gpu_vulkan
    }
 
 
-   void texture::initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_size& size) //, bool bCreateRenderTargetView, bool bCreateShaderResourceView)
+   void texture::initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget) //, bool bCreateRenderTargetView, bool bCreateShaderResourceView)
    {
 
-      ::gpu::texture::initialize_gpu_texture(prenderer, size);
+      ::gpu::texture::initialize_gpu_texture(prenderer, rectangleTarget);
 
       m_vkimagelayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
@@ -50,9 +54,9 @@ namespace gpu_vulkan
       //// Color attachment
       VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
       imagecreateinfo.imageType = VK_IMAGE_TYPE_2D;
-      imagecreateinfo.format = prenderpass->m_formatImage;
-      imagecreateinfo.extent.width = m_size.cx();
-      imagecreateinfo.extent.height = m_size.cy();
+      imagecreateinfo.format = prenderpass ? prenderpass->m_formatImage : pcontext->m_formatImageDefault;
+      imagecreateinfo.extent.width = rectangleTarget.width();
+      imagecreateinfo.extent.height = rectangleTarget.height();
       imagecreateinfo.extent.depth = 1;
       imagecreateinfo.mipLevels = 1;
       imagecreateinfo.arrayLayers = 1;
@@ -81,14 +85,14 @@ namespace gpu_vulkan
 
       auto layoutNew = newLayout;
 
-      VkCommandBufferBeginInfo beginInfo = 
-      {
-          
-         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
+      //VkCommandBufferBeginInfo beginInfo =
+      //{
 
-      };
+      //   .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
 
-      vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo);
+      //};
+
+      //vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo);
 
       VkImageMemoryBarrier barrier = {
           .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -134,6 +138,60 @@ namespace gpu_vulkan
    //   
 
    //}
+
+   void texture::create_image_view()
+   {
+
+      if (m_vkimageview)
+      {
+
+         return;
+
+      }
+
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+      VkImageViewCreateInfo viewInfo = {
+          .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+          .image = m_vkimage,
+          .viewType = VK_IMAGE_VIEW_TYPE_2D,
+          .format = VK_FORMAT_R8G8B8A8_UNORM,
+          .subresourceRange = {
+              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+              .baseMipLevel = 0,
+              .levelCount = 1,
+              .baseArrayLayer = 0,
+              .layerCount = 1
+          }
+      };
+
+      VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewInfo, NULL, &m_vkimageview));
+
+   }
+
+
+   VkFramebuffer texture::create_framebuffer(VkRenderPass renderpass)
+   {
+
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+      VkFramebufferCreateInfo fbInfo = {
+       .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+       .renderPass = renderpass,
+       .attachmentCount = 1,
+       .pAttachments = &m_vkimageview,
+       .width = (uint32_t) m_rectangleTarget.width(),
+       .height = (uint32_t)m_rectangleTarget.height(),
+       .layers = 1
+      };
+
+      VkFramebuffer vkframebuffer;
+
+      VK_CHECK_RESULT(vkCreateFramebuffer(pcontext->logicalDevice(), &fbInfo, NULL, &vkframebuffer));
+
+      return vkframebuffer;
+
+   }
 
 
 } // namespace gpu_vulkan

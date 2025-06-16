@@ -5529,7 +5529,7 @@ color = vec4(c.r,c.g, c.b, c.a);
          
       }
 
-      m_pgpushaderTextOut->bind();
+      m_pgpushaderTextOut->bind(nullptr);
       auto color = m_pbrush->m_color;
       //shader.use();
       ::cast<::gpu_opengl::shader>pshader = m_pgpushaderTextOut;

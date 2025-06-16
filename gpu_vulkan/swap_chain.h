@@ -15,12 +15,11 @@ namespace gpu_vulkan
    {
    public:
 
+
       VkSwapchainKHR                m_vkswapchain;
       uint32_t                      currentImageIndex;
       ::pointer < ::gpu::context >  m_pgpucontextSwapChain;
 
-
-      static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
       //swap_chain(renderer* pgpurenderer, VkExtent2D windowExtent);
       swap_chain();
@@ -47,7 +46,7 @@ namespace gpu_vulkan
       VkFormat findDepthFormat();
 
       VkResult acquireNextImage() override;
-      VkResult submitCommandBuffers(const VkCommandBuffer* buffers) override;
+      VkResult submitCommandBuffers(command_buffer * pcommandbuffer) override;
       int get_image_index() const override;
       //bool compareSwapFormats(const swap_chain_render_pass& m_swapchain) const {
       //   return m_swapchain.swapChainDepthFormat == swapChainDepthFormat &&
@@ -95,6 +94,9 @@ namespace gpu_vulkan
       //size_t currentFrame = 0;
 
       void endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc) override;
+
+      void on_end_render(::gpu::frame* pgpuframe) override;
+
 
    };
 

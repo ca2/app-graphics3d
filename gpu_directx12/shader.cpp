@@ -559,7 +559,7 @@ namespace gpu_directx12
    }
 
 
-   void shader::bind()
+   void shader::bind(::gpu::texture * pgputexture)
    {
 
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;

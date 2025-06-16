@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "command_buffer.h"
 #include "physical_device.h"
 #include "renderer.h"
 #include "swap_chain.h"
@@ -159,7 +160,7 @@ namespace gpu_vulkan
    }
 
 
-   VkResult swap_chain::submitCommandBuffers(const VkCommandBuffer* buffers)
+   VkResult swap_chain::submitCommandBuffers(command_buffer * pcommandbuffer)
    {
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
@@ -182,7 +183,8 @@ namespace gpu_vulkan
       submitInfo.pWaitDstStageMask = waitStages;
 
       submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = buffers;
+      VkCommandBuffer commandbuffera[] = { pcommandbuffer->m_vkcommandbuffer };
+      submitInfo.pCommandBuffers = commandbuffera;
 
       VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
       submitInfo.signalSemaphoreCount = 1;
@@ -296,7 +298,7 @@ namespace gpu_vulkan
       createInfo.imageColorSpace = surfaceFormat.colorSpace;
       createInfo.imageExtent = extent;
       createInfo.imageArrayLayers = 1;
-      createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+      createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 
       vulkan::QueueFamilyIndices indices = pcontext->m_pgpudevice->m_pphysicaldevice->findQueueFamilies();
       uint32_t queueFamilyIndices[] =
@@ -358,7 +360,14 @@ namespace gpu_vulkan
 
          __defer_construct(pgputexture);
 
-         pgputexture->initialize_gpu_texture(m_pgpurenderer, { (int)extent.width, (int)extent.height });
+         ::int_rectangle rectangleTarget;
+
+         rectangleTarget.left() = 0;
+         rectangleTarget.top() = 0;
+         rectangleTarget.set_width(extent.width);
+         rectangleTarget.set_height(extent.height);
+
+         pgputexture->initialize_gpu_texture(m_pgpurenderer, rectangleTarget);
 
          ::cast < texture > ptexture = pgputexture;
 
@@ -443,30 +452,30 @@ namespace gpu_vulkan
       subpass.pColorAttachments = &colorAttachmentRef;
       subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
-      VkSubpassDependency dependency[2]{};
-      dependency[0].dstSubpass = 0;
-      dependency[0].dstAccessMask =
+      VkSubpassDependency dependencies[1]{};
+      dependencies[0].dstSubpass = 0;
+      dependencies[0].dstAccessMask =
          VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      dependency[0].dstStageMask =
+      dependencies[0].dstStageMask =
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-      dependency[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-      dependency[0].srcAccessMask = 0;
-      dependency[0].srcStageMask =
+      dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+      dependencies[0].srcAccessMask = 0;
+      dependencies[0].srcStageMask =
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
 
 
-      dependency[1].srcSubpass = 0;
-      dependency[1].dstSubpass = 0;
-      //dependency[1].srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
-      //dependency[1].dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT;
-      //dependency[1].srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+      //dependency[1].srcSubpass = 0;
+      //dependency[1].dstSubpass = 0;
+      ////dependency[1].srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
+      ////dependency[1].dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT;
+      ////dependency[1].srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+      ////dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+      //dependency[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+      //dependency[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+      //dependency[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
       //dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-      dependency[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-      dependency[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-      dependency[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-      dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-      dependency[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;// if needed
+      //dependency[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;// if needed
 
 
       VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
@@ -477,7 +486,7 @@ namespace gpu_vulkan
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;
       renderPassInfo.dependencyCount = 1;
-      renderPassInfo.pDependencies = dependency;
+      renderPassInfo.pDependencies = dependencies;
 
       if (vkCreateRenderPass(pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS)
       {
@@ -716,23 +725,21 @@ namespace gpu_vulkan
 
       ::cast < render_pass > pgpurenderpass = prendererSrc->m_pgpurendertarget;
 
-      ::cast < texture > ptexture = pgpurenderpass->m_texturea[prendererSrc->get_frame_index()];
-
-      VkImage vkimage = ptexture->m_vkimage;
+      auto ptexture = pgpurenderpass->m_texturea[prendererSrc->get_frame_index()].get();
 
       ::int_rectangle rectangle = prendererSrc->m_pgpucontext->rectangle();
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      pcontext->send_on_context([this, pcontext, vkimage, rectangle]()
+      pcontext->send_on_context([this, pcontext, ptexture, rectangle]()
          {
 
-            pcontext->m_pgpurendererOutput2->do_on_frame([this, pcontext, vkimage, rectangle]()
+            pcontext->m_pgpurendererOutput2->do_on_frame([this, pcontext, ptexture, rectangle]()
                {
 
                   ::cast < renderer > prenderer = pcontext->m_pgpurendererOutput2;
 
-                  prenderer->_copy_image(vkimage, rectangle, false);
+                  prenderer->_copy_image(ptexture, rectangle, false);
 
                });
 
@@ -742,6 +749,22 @@ namespace gpu_vulkan
             //vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
             //vkQueueWaitIdle(m_pgpucontext->presentQueue());
+
+   }
+
+
+   void swap_chain::on_end_render(::gpu::frame* pgpuframe)
+   {
+
+      ::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+
+      ::cast < renderer > prenderer = m_pgpurenderer;
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+
+      ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
+
 
    }
 

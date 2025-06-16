@@ -599,17 +599,33 @@ namespace gpu_vulkan
       subpass.pColorAttachments = &colorAttachmentRef;
       subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
-      VkSubpassDependency dependency = {};
-      dependency.dstSubpass = 0;
-      dependency.dstAccessMask =
-         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      dependency.dstStageMask =
-         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-      dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-      dependency.srcAccessMask = 0;
-      dependency.srcStageMask =
-         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      VkSubpassDependency dependencies[1] = {};
 
+      {
+         auto& dependency = dependencies[0];
+         dependency.dstSubpass = 0;
+         dependency.dstAccessMask =
+            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+         dependency.dstStageMask =
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+         dependency.srcAccessMask = 0;
+         dependency.srcStageMask =
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+
+      }
+
+   //   {
+   //      auto& dependency = dependencies[1];
+   //      dependency.srcSubpass = 0,
+   //         dependency.dstSubpass = 0,
+   //         dependency.srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+   //         dependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+   //         dependency.srcAccessMask = VK_ACCESS_SHADER_READ_BIT,
+   //         dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+   //         dependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+   // 
+   //}
 
       VkAttachmentDescription attachments[2] = {colorAttachment, depthAttachment};
       VkRenderPassCreateInfo renderPassInfo = {};
@@ -619,7 +635,7 @@ namespace gpu_vulkan
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;
       renderPassInfo.dependencyCount = 1;
-      renderPassInfo.pDependencies = &dependency;
+      renderPassInfo.pDependencies = dependencies;
 
       if (vkCreateRenderPass(pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) 
       {

@@ -155,7 +155,7 @@ namespace gpu_directx12
    }
 
 
-   void texture::blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget)
+   void texture::blend(::gpu::texture* ptexture)
    {
 
       

@@ -125,7 +125,7 @@ namespace gpu_vulkan
    }
 
 
-   VkResult render_pass::submitCommandBuffers(const VkCommandBuffer* buffers)
+   VkResult render_pass::submitCommandBuffers(command_buffer * pcommandbuffer)
    {
 
       //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {

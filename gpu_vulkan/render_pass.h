@@ -81,7 +81,7 @@ namespace gpu_vulkan
       //virtual VkResult acquireNextImage(uint32_t* imageIndex);
       //virtual VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
       virtual VkResult acquireNextImage();
-      virtual VkResult submitCommandBuffers(const VkCommandBuffer* buffers);
+      virtual VkResult submitCommandBuffers(command_buffer * pcommandbuffer);
 
       bool compareFormats(const render_pass& renderpass) const {
          return renderpass.m_formatDepth == m_formatDepth &&

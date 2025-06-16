@@ -2586,18 +2586,18 @@ namespace gpu_directx12
    void context::on_take_snapshot(::gpu::layer * player, ::gpu::texture * pgputextureSource)
    {
 
-      if (!player->m_pgputexture 
-         || player->m_pgputexture->m_size != player->m_rectangleTarget.size() 
-         || player->m_pgputexture->m_pgpurenderer->m_pgpucontext == this)
-      {
+      //if (!player->m_pgputextureTarget 
+      //   || player->m_pgputextureTarget->size() != player->m_rectangleTarget.size()
+      //   || player->m_pgputextureTarget->m_pgpurenderer->m_pgpucontext == this)
+      //{
 
-         player->m_pgputexture = player->m_pgputexture->m_pgpurenderer->create_texture(player->m_rectangleTarget.size());
+      //   player->m_pgputexture = player->m_pgputexture->m_pgpurenderer->create_texture(player->m_rectangleTarget.size());
 
-      }
+      //}
 
       ::cast < texture > ptextureSrc = pgputextureSource;
 
-      ::cast < texture > ptextureDst = player->m_pgputexture;
+      ::cast < texture > ptextureDst = player->m_pgputextureTarget;
 
       ::cast < renderer > prenderer = ptextureDst->m_pgpurenderer;
 

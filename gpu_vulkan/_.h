@@ -52,6 +52,8 @@ namespace gpu_vulkan
 
    class frame;
 
+   class shader;
+
    class texture;
 
    class command_buffer;
