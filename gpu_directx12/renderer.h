@@ -262,6 +262,9 @@ namespace gpu_directx12
 
       void defer_update_renderer() override;
 
+
+      ::pointer < ::gpu::render_target > allocate_offscreen_render_target() override;
+
       //::pointer < ::graphics3d::frame> beginFrame() override;
       //void endFrame() override;
       //void on_begin_render(::graphics3d::frame * pframe) override;

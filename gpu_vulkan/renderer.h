@@ -186,9 +186,9 @@ namespace gpu_vulkan
 
       void defer_update_renderer();
 
-      ::gpu::render_target* back_buffer_render_target() override;
+      //::gpu::render_target* back_buffer_render_target() override;
 
-
+      ::pointer < ::gpu::render_target> allocate_offscreen_render_target() override;
 
       //::pointer < ::graphics3d::frame> beginFrame() override;
       //void endFrame() override;

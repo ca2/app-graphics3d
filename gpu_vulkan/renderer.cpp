@@ -366,64 +366,80 @@ namespace gpu_vulkan
    }
 
 
-   ::gpu::render_target* renderer::back_buffer_render_target()
+//   ::gpu::render_target* renderer::back_buffer_render_target()
+//   {
+//
+//      auto rectangle = m_pgpucontext->rectangle();
+//
+//      if (m_pgpurendertargetBackBuffer)
+//      {
+//
+//         auto size = m_pgpurendertargetBackBuffer->m_size;
+//
+//         auto sizeNew = rectangle.size();
+//
+//         if (size == sizeNew)
+//         {
+//
+//            return m_pgpurendertargetBackBuffer;
+//
+//         }
+//
+//      }
+//
+//      auto poffscreenrenderpass = __allocate offscreen_render_pass();
+//#ifdef WINDOWS_DESKTOP
+//      poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+//#else
+//      poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+//#endif
+//      poffscreenrenderpass->m_bBackBuffer = true;
+//      m_pgpurendertargetBackBuffer = poffscreenrenderpass;
+//
+//      ::cast < render_pass > pgpurenderpass = m_pgpurendertargetBackBuffer;
+//
+//      if (pgpurenderpass->m_texturea.is_empty())
+//      {
+//
+//         ::int_size size = rectangle.size();
+//
+//         pgpurenderpass->initialize_render_target(this, size, pgpurenderpass.m_p);
+//
+//         pgpurenderpass->init();
+//
+//      }
+//
+//      //if (m_prendererResolve)
+//      //{
+//
+//      //	if (m_prendererResolve->pgpurenderpass->m_images.is_empty())
+//      //	{
+//
+//      //		m_prendererResolve->defer_update_render_pass();
+//
+//      //	}
+//
+//      //}
+//
+//      m_bNeedToRecreateSwapChain = false;
+//
+//      return m_pgpurendertargetBackBuffer;
+//
+//   }
+
+
+   ::pointer < ::gpu::render_target > renderer::allocate_offscreen_render_target()
    {
 
-      auto rectangle = m_pgpucontext->rectangle();
-
-      if (m_pgpurendertargetBackBuffer)
-      {
-
-         auto size = m_pgpurendertargetBackBuffer->m_size;
-
-         auto sizeNew = rectangle.size();
-
-         if (size == sizeNew)
-         {
-
-            return m_pgpurendertargetBackBuffer;
-
-         }
-
-      }
-
       auto poffscreenrenderpass = __allocate offscreen_render_pass();
+
 #ifdef WINDOWS_DESKTOP
       poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
 #else
       poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
 #endif
-      poffscreenrenderpass->m_bBackBuffer = true;
-      m_pgpurendertargetBackBuffer = poffscreenrenderpass;
 
-      ::cast < render_pass > pgpurenderpass = m_pgpurendertargetBackBuffer;
-
-      if (pgpurenderpass->m_texturea.is_empty())
-      {
-
-         ::int_size size = rectangle.size();
-
-         pgpurenderpass->initialize_render_target(this, size, pgpurenderpass.m_p);
-
-         pgpurenderpass->init();
-
-      }
-
-      //if (m_prendererResolve)
-      //{
-
-      //	if (m_prendererResolve->pgpurenderpass->m_images.is_empty())
-      //	{
-
-      //		m_prendererResolve->defer_update_render_pass();
-
-      //	}
-
-      //}
-
-      m_bNeedToRecreateSwapChain = false;
-
-      return m_pgpurendertargetBackBuffer;
+      return poffscreenrenderpass;
 
    }
 
