@@ -17,7 +17,7 @@ namespace gpu_vulkan
 
 
       VkSwapchainKHR                m_vkswapchain;
-      uint32_t                      currentImageIndex;
+      uint32_t                      m_uCurrentSwapChainImage;
       ::pointer < ::gpu::context >  m_pgpucontextSwapChain;
 
 
@@ -26,6 +26,10 @@ namespace gpu_vulkan
       ~swap_chain();
 
 
+      int get_frame_index();
+
+
+      virtual ::gpu::texture* current_texture();
       void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous = {}) override;
 
       //swap_chain_render_pass(const swap_chain_render_pass&) = delete;

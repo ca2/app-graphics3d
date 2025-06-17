@@ -129,7 +129,7 @@ namespace graphics3d_opengl
 		::pointer<render_pass>			m_pvkcrenderpass;
 		::array<VkCommandBuffer>	commandBuffers;
 		VkExtent2D m_extentRenderer;
-		uint32_t currentImageIndex;
+		uint32_t m_uCurrentSwapChainImage;
 		int currentFrameIndex = 0;
 		bool isFrameStarted = false;
 	

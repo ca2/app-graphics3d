@@ -4,6 +4,7 @@
 #include "initializers.h"
 #include "physical_device.h"
 #include "renderer.h"
+#include "swap_chain.h"
 #include "texture.h"
 
 using namespace vulkan;
@@ -81,7 +82,12 @@ namespace gpu_vulkan
    void offscreen_render_pass::init()
    {
 
-      m_pgpurenderer->restart_frame_counter();
+      if (!m_bBackBuffer)
+      {
+
+         m_pgpurenderer->restart_frame_counter();
+
+      }
 
       createRenderPassImpl();
       createImageViews();
@@ -273,6 +279,28 @@ namespace gpu_vulkan
    }
 
 
+   ::gpu::texture* offscreen_render_pass::current_texture()
+   {
+
+      if (m_bBackBuffer)
+      {
+
+         ::cast< swap_chain > pswapchain = m_pgpurenderer->m_pgpurendertarget;
+
+         if (pswapchain)
+         {
+
+            return m_texturea[pswapchain->m_uCurrentSwapChainImage];
+
+         }
+
+      }
+
+      return render_target::current_texture();
+
+   }
+
+
    void offscreen_render_pass::createRenderPassImpl()
    {
 
@@ -349,7 +377,7 @@ namespace gpu_vulkan
       //VkMemoryAllocateInfo memAlloc = initializers::memory_allocate_info();
       //VkMemoryRequirements memReqs;
 
-      m_texturea.set_size(m_pgpurenderer->get_frame_count());
+      m_texturea.set_size(m_pgpurenderer->m_iFrameCountRequest);
       
       for (int i = 0; i < m_texturea.size(); i++)
       {

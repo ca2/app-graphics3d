@@ -32,6 +32,16 @@ using namespace vulkan;
 namespace gpu_vulkan
 {
 
+   static unsigned int g_blend2_vertex[] = {
+#include "shader/blend2.vert.spv.inl"
+   };
+
+
+   static unsigned int g_blend2_fragment[] = {
+ #include "shader/blend2.frag.spv.inl"
+   };
+
+
    // Create vertex and index buffers
    void create_quad_buffers(VkDevice device, VkPhysicalDevice physicalDevice,
       VkBuffer* vertexBuffer, VkDeviceMemory* vertexMemory,
@@ -117,8 +127,6 @@ namespace gpu_vulkan
 
       //defer_layout();
 
-      createCommandBuffers();
-
    }
 
 
@@ -142,7 +150,7 @@ namespace gpu_vulkan
    }
 
 
-   int renderer::get_frame_index() const
+   int renderer::get_frame_index()
    {
 
       assert(m_iFrameSerial2 >= 0
@@ -181,10 +189,10 @@ namespace gpu_vulkan
 
 
 
-   int renderer::get_frame_count() const
+   int renderer::get_frame_count()
    {
 
-      return ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT;
+      return m_pgpurendertarget->m_texturea.size();
 
    }
 
@@ -337,6 +345,8 @@ namespace gpu_vulkan
 
          pgpurenderpass->init();
 
+         createCommandBuffers();
+
       }
 
       //if (m_prendererResolve)
@@ -356,10 +366,72 @@ namespace gpu_vulkan
    }
 
 
+   ::gpu::render_target* renderer::back_buffer_render_target()
+   {
+
+      auto rectangle = m_pgpucontext->rectangle();
+
+      if (m_pgpurendertargetBackBuffer)
+      {
+
+         auto size = m_pgpurendertargetBackBuffer->m_size;
+
+         auto sizeNew = rectangle.size();
+
+         if (size == sizeNew)
+         {
+
+            return m_pgpurendertargetBackBuffer;
+
+         }
+
+      }
+
+      auto poffscreenrenderpass = __allocate offscreen_render_pass();
+#ifdef WINDOWS_DESKTOP
+      poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+#else
+      poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+#endif
+      poffscreenrenderpass->m_bBackBuffer = true;
+      m_pgpurendertargetBackBuffer = poffscreenrenderpass;
+
+      ::cast < render_pass > pgpurenderpass = m_pgpurendertargetBackBuffer;
+
+      if (pgpurenderpass->m_texturea.is_empty())
+      {
+
+         ::int_size size = rectangle.size();
+
+         pgpurenderpass->initialize_render_target(this, size, pgpurenderpass.m_p);
+
+         pgpurenderpass->init();
+
+      }
+
+      //if (m_prendererResolve)
+      //{
+
+      //	if (m_prendererResolve->pgpurenderpass->m_images.is_empty())
+      //	{
+
+      //		m_prendererResolve->defer_update_render_pass();
+
+      //	}
+
+      //}
+
+      m_bNeedToRecreateSwapChain = false;
+
+      return m_pgpurendertargetBackBuffer;
+
+   }
+
+
    void renderer::createCommandBuffers()
    {
 
-      m_commandbuffera.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
+      m_commandbuffera.set_size(get_frame_count());
 
       //::array<VkCommandBuffer > a;
 
@@ -486,7 +558,7 @@ namespace gpu_vulkan
       //{
 
 
-      //	auto result = m_pvkcswapchain->acquireNextImage(&currentImageIndex);
+      //	auto result = m_pvkcswapchain->acquireNextImage(&m_uCurrentSwapChainImage);
 
       //	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
       //		recreateRenderPass();
@@ -1371,7 +1443,7 @@ namespace gpu_vulkan
       //   if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
       //      throw ::exception(error_failed, "failed to record command buffer!");
       //   }
-      //   auto result = pgpurenderpass->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &currentImageIndex);
+      //   auto result = pgpurenderpass->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &m_uCurrentSwapChainImage);
       //   //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       //   //	vkcWindow.wasWindowResized()) 
       //   //{
@@ -1406,7 +1478,7 @@ namespace gpu_vulkan
       //	if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
       //		throw ::exception(error_failed, "failed to record command buffer!");
       //	}
-      //	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &currentImageIndex);
+      //	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &m_uCurrentSwapChainImage);
       //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       //	//	vkcWindow.wasWindowResized()) 
       //	//{
@@ -1783,7 +1855,7 @@ namespace gpu_vulkan
 
       //auto pshader = get_image_blend_shader();
 
-      m_pshaderImageBlend->bind(pgputexture);
+      m_pshaderImageBlend->bind(m_pgpurendertarget->current_texture(), pgputexture);
 
       //m_pshaderImageBlend->_bind_sampler(image, 0);
 
@@ -1835,179 +1907,205 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::_copy_image(::gpu::texture * pgputexture, const ::int_rectangle& rectangle, bool bYSwap)
+   void renderer::copy(::gpu::texture * pgputextureTarget, ::gpu::texture* pgputextureSource)
    {
-
-      //// Image Blend descriptors
-      //if (!m_psetdescriptorlayoutImageBlend)
-      //{
-
-      //   m_psetdescriptorlayoutImageBlend = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
-      //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-      //      .build();
-
-      //   int iFrameCount = get_frame_count();
-
-      //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
-
-      //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
-      //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
-      //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
-
-      //   m_pdescriptorpoolImageBlend = pdescriptorpoolbuilder->build();
-
-      //}
-
-      ::cast <texture > ptexture = pgputexture;
 
       auto pcommandbuffer = this->getCurrentCommandBuffer();
 
-      auto& pmodel = m_imagemodel[ptexture->m_vkimage];
+      ::cast < texture > ptextureSrc = pgputextureSource;
+      ::cast < texture > ptextureDst = pgputextureTarget;
 
-      if (__defer_construct_new(pmodel))
+      ptextureSrc->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+      ptextureDst->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+      //  if (!m_psha)
+      //  {
+
+      //     __construct_new(m_pblend2);
+
+      //     m_pblend2->m_pgpurenderer = this;
+
+      //     m_pblend2->create_render_pass();
+
+      //  }
+
+      //  auto& imagestruct = m_pblend2->m_mapImage[ptextureDst->m_vkimage];
+
+      //  if (!imagestruct.m_vkframebuffer)
+      //  {
+
+      //     ptextureDst->create_image_view();
+
+      //     imagestruct.m_vkframebuffer = ptextureDst->create_framebuffer(m_pblend2->m_vkrenderpass);
+
+      //  }
+
+
+      //  // Image Blend descriptors
+      //  if (!m_psetdescriptorlayoutBlend2)
+      //  {
+
+      //     m_psetdescriptorlayoutBlend2 = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+      //        .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      //        .build();
+
+      //     int iFrameCount = get_frame_count();
+
+      //     auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+
+      //     pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
+      //     pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+      //     pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
+
+      //     m_pdescriptorpoolBlend2 = pdescriptorpoolbuilder->build();
+
+      //     ::cast < context > pcontext = m_pgpucontext;
+
+      //     VkDescriptorSetAllocateInfo allocInfo = {
+      //.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+      //.descriptorPool = m_pdescriptorpoolBlend2->descriptorPool,
+      //.descriptorSetCount = 1,
+      //.pSetLayouts = &m_psetdescriptorlayoutBlend2->descriptorSetLayout
+      //     };
+      //     VK_CHECK_RESULT(vkAllocateDescriptorSets(
+      //        pcontext->logicalDevice(),
+      //        &allocInfo, &m_pblend2->descSet));
+
+      //  }
+
+      if (!m_pshaderCopyImage)
       {
 
-         create_quad_buffers(m_pgpucontext->logicalDevice(),
-            m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-            &pmodel->m_vertexBuffer,
-            &pmodel->m_vertexMemory,
-            &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory, bYSwap);
+         __construct_new(m_pshaderCopyImage);
+
+         m_pshaderCopyImage->m_pgpurenderer = this;
+         m_pshaderCopyImage->m_iSamplerSlot = 0;
+         // Image Blend descriptors
+//if (!m_psetdescriptorlayoutImageBlend)
+         {
+
+            m_pshaderCopyImage->shader_sampler()->m_psetdescriptorlayout
+               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+               .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+               .build();
+
+            int iFrameCount = get_frame_count();
+
+            auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+
+            pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
+            pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
+
+            m_pshaderCopyImage->shader_sampler()->m_pdescriptorpool
+               = pdescriptorpoolbuilder->build();
+
+         }
+
+         auto pshadervertexinput = __allocate  shader_vertex_input();
+
+         //pshadervertexinput->m_bindings.add(
+         //   {
+         //      .binding = 0,
+         //      .stride = sizeof(float) * 4,
+         //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+         //   });
+
+         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
+         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
+
+         //auto pshaderBlend2 = __create_new<::gpu_vulkan::shader>();
+
+         //m_pshaderCopyImage = pshaderBlend2;
+
+         m_pshaderCopyImage->m_bEnableBlend = true;
+         m_pshaderCopyImage->m_bDisableDepthTest = true;
+         m_pshaderCopyImage->m_iSamplerSlot = 0;
+
+         ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+
+         m_pshaderCopyImage->initialize_shader_with_block(
+            this,
+            as_memory_block(g_blend2_vertex),
+            as_memory_block(g_blend2_fragment),
+            { ::gpu::shader::e_descriptor_set_slot_s1 },
+            {},
+            pshadervertexinput,
+            {},
+            {},
+            ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions);
+
 
       }
 
-      auto pshader = _get_image_blend_shader();
 
-      pshader->bind(pgputexture);
+      if (m_pshaderCopyImage->has_shader_sampler())
+      {
 
-      /// pshader->_bind_sampler(image, 0);
+         auto pshadertextureDst = m_pshaderCopyImage->shader_texture(ptextureDst, false);
+         //auto& imagestruct = *pimagestruct;
+         //VkClearValue clearColor = { .color = {{0.0f, 0.0f, 0.0f, 0.0f}} };
+
+         //vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer,
+
+         auto rectangleTarget = ptextureSrc->m_rectangleTarget;
+
+         VkRenderPassBeginInfo renderPassInfo = {
+               .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+               .renderPass = m_pshaderCopyImage->shader_sampler()->get_render_pass(),
+               .framebuffer = pshadertextureDst->get_framebuffer(),
+               .renderArea = {{rectangleTarget.left(), rectangleTarget.top()},
+            {(uint32_t)rectangleTarget.width(),(uint32_t)rectangleTarget.height()}},
+            //.clearValueCount = 1,
+            //.pClearValues = &clearColor
+         .clearValueCount = 0,
+         .pClearValues = nullptr,
+         };
+
+         //auto& imagestructa = s1()->m_imagestructamap[image];
+
+///         vkCmdBeginRenderPass(
+   //         pcommandbuffer->m_vkcommandbuffer, 
+     //       &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+
+      }
+
+
+      VkClearValue clearColor = { .color = {{0.0f, 0.0f, 0.0f, 0.0f}} };
+
+      //  VkRenderPassBeginInfo renderPassInfo = {
+      //.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+      //.renderPass = m_pblend2->m_vkrenderpass,
+      //.framebuffer = imagestruct.m_vkframebuffer,
+      //.renderArea = {{0, 0}, {(uint32_t)rectangleTarget.width(), (uint32_t)rectangleTarget.height()}},
+      //.clearValueCount = 1,
+      //.pClearValues = &clearColor
+      //  };
+
+      //  vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        //vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      m_pshaderCopyImage->bind(ptextureDst, ptextureSrc);
+
+      //m_pshaderCopyImage->_bind_sampler(ptextureDst->m_vkimage, 0);
+
+      //vkCmdBindDescriptorSets(pcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pshaderCopyImage->m_pipelinelayout,
+         //0, 1, &descriptorSet, 0, NULL);
+      // draw full screen triangle or quad
+      vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 3, 1, 0, 0);
+
+
+      m_pshaderCopyImage->unbind();
+
+
+      //if (m_pshaderCopyImage->has_shader_sampler())
       //{
 
-      //   //   /// pdescriptor->m_descriptorsets.set_size(get_frame_count());
-
-      //   //   VkImageViewCreateInfo viewInfo =
-      //   //   {
-      //   //      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-      //   //      .image = image,  // <-- Your existing VkImage
-      //   //      .viewType = VK_IMAGE_VIEW_TYPE_2D,
-      //   //      .format = VK_FORMAT_B8G8R8A8_UNORM,  // <-- Match your image's format
-      //   //      .components =
-      //   //      {
-      //   //         .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-      //   //         .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-      //   //         .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-      //   //         .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-      //   //      },
-      //   //      .subresourceRange =
-      //   //      {
-      //   //         .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-      //   //         .baseMipLevel = 0,
-      //   //         .levelCount = 1,
-      //   //         .baseArrayLayer = 0,
-      //   //         .layerCount = 1,
-      //   //      },
-      //   //   };
-
-      //   //   VkImageView imageView;
-
-      //   //   if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, NULL, &imageView) != VK_SUCCESS)
-      //   //   {
-      //   //      // Handle error
-      //   //   }
-
-      //   //   ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
-
-      //   //   for (int i = 0; i < get_frame_count(); i++)
-      //   //   {
-
-      //   //      VkDescriptorImageInfo imageinfo;
-
-      //   //      imageinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-      //   //      imageinfo.imageView = imageView;
-      //   //      imageinfo.sampler = m_pgpucontext->_001VkSampler();
-
-      //   //      auto& playout = m_psetdescriptorlayoutImageBlend;
-
-      //   //      auto& ppool = m_pdescriptorpoolImageBlend;
-
-      //   //      descriptor_writer(*playout, *ppool)
-      //   //         .writeImage(0, &imageinfo)
-      //   //         .build(pdescriptor->m_descriptorsets[i]);
-
-      //   //   }
-
-      //   //   auto descriptorSetLayout = m_psetdescriptorlayoutImageBlend->getDescriptorSetLayout();
-
-      //   //   VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
-      //   //.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-      //   //.setLayoutCount = 1,
-      //   //.pSetLayouts = &descriptorSetLayout,
-      //   //   };
-
-      //   //   //VkPipelineLayout pipelineLayout;
-      //   //   if (vkCreatePipelineLayout(m_pgpucontext->logicalDevice(), &pipelineLayoutInfo, NULL, &pdescriptor->m_vkpipelinelayout) != VK_SUCCESS) {
-      //   //      // Handle error
-      //   //   }
+      //   vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
       //}
-
-      //pshader->_bind_sampler(image);
-
-      //  //auto pcommandbuffer = this->getCurrentCommandBuffer();
-
-      //  // Bind pipeline and descriptor sets
-      ////      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      //  //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
-      //  vkCmdBindDescriptorSets(
-      //     pcommandbuffer->m_vkcommandbuffer,
-      //     VK_PIPELINE_BIND_POINT_GRAPHICS,   // Bind point
-      //     pdescriptor->m_vkpipelinelayout,                     // Layout used when pipeline was created
-      //     0,                                  // First set (set = 0)
-      //     1,                                  // Descriptor set count
-      //     &pdescriptor->m_descriptorsets[get_frame_index()],                     // Pointer to descriptor set
-      //     0,                                  // Dynamic offset count
-      //     NULL                                // Dynamic offsets
-      //  );
-
-
-
-      VkDeviceSize offsets[] = { 0 };
-      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
-      vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
-
-      VkViewport vp = {
-         (float)rectangle.left(),
-         (float)rectangle.top(),
-         (float)rectangle.width(),
-         (float)rectangle.height(),
-         0.0f, 1.0f };
-
-      VkRect2D sc = {
-         {
-            rectangle.left(),
-            rectangle.top(),
-         },
-         {
-            (uint32_t)rectangle.width(),
-            (uint32_t)rectangle.height(),
-         }
-      };
-
-      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
-      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
-
-      vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0, 0);
-      // Draw full-screen quad
-      //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
-
-      pshader->unbind();
-
-      //vkCmdEndRenderPass(...);
-
-      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
-
-      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
-
+      //vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
    }
 
@@ -2174,7 +2272,7 @@ namespace gpu_vulkan
 
       auto pshader = _get_image_blend_shader();
 
-      pshader->bind(pgputexture);
+      pshader->bind(m_pgpurendertarget->current_texture(), pgputexture);
 
       // pshader->_bind_sampler(image, 0);
 
@@ -2472,7 +2570,7 @@ namespace gpu_vulkan
 
       auto pshader = _get_image_blend_shader();
 
-      pshader->bind(ptexture);
+      pshader->bind(m_pgpurendertarget->current_texture(), ptexture);
 
       // pshader->_bind_sampler(ptexture->m_vkimage, 0);
 
@@ -2676,7 +2774,7 @@ namespace gpu_vulkan
       //	VkRenderPassBeginInfo renderPassInfo{};
       //	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
       //	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
-      //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(currentImageIndex);
+      //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(m_uCurrentSwapChainImage);
 
       //	renderPassInfo.renderArea.offset = { 0, 0 };
       //	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
@@ -2769,7 +2867,7 @@ namespace gpu_vulkan
       //	VkRenderPassBeginInfo renderPassInfo{};
       //	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
       //	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
-      //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(currentImageIndex);
+      //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(m_uCurrentSwapChainImage);
 
       //	renderPassInfo.renderArea.offset = { 0, 0 };
       //	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
@@ -2889,7 +2987,7 @@ namespace gpu_vulkan
       //{
 
 
-      //	auto result = m_pvkcswapchain->acquireNextImage(&currentImageIndex);
+      //	auto result = m_pvkcswapchain->acquireNextImage(&m_uCurrentSwapChainImage);
 
       //	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
       //		recreateRenderPass();
@@ -2979,7 +3077,7 @@ namespace gpu_vulkan
       //	if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
       //		throw ::exception(error_failed, "failed to record command buffer!");
       //	}
-      //	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &currentImageIndex);
+      //	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &m_uCurrentSwapChainImage);
       //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       //	//	vkcWindow.wasWindowResized()) 
       //	//{
@@ -3483,14 +3581,6 @@ namespace gpu_vulkan
    //}
 
 
-   static unsigned int g_blend2_vertex[] = {
-#include "shader/blend2.vert.spv.inl"
-   };
-
-
-   static unsigned int g_blend2_fragment[] = {
- #include "shader/blend2.frag.spv.inl"
-   };
 
 
    void renderer::blend(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource)
@@ -3565,6 +3655,7 @@ namespace gpu_vulkan
          __construct_new(m_pshaderBlend2);
 
          m_pshaderBlend2->m_pgpurenderer = this;
+         m_pshaderBlend2->m_iSamplerSlot = 0;
          // Image Blend descriptors
 //if (!m_psetdescriptorlayoutImageBlend)
          {
@@ -3589,15 +3680,15 @@ namespace gpu_vulkan
 
          auto pshadervertexinput = __allocate  shader_vertex_input();
 
-         pshadervertexinput->m_bindings.add(
-            {
-               .binding = 0,
-               .stride = sizeof(float) * 4,
-               .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-            });
+         //pshadervertexinput->m_bindings.add(
+         //   {
+         //      .binding = 0,
+         //      .stride = sizeof(float) * 4,
+         //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+         //   });
 
-         pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
-         pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
+         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
+         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 
          //auto pshaderBlend2 = __create_new<::gpu_vulkan::shader>();
 
@@ -3616,7 +3707,10 @@ namespace gpu_vulkan
             as_memory_block(g_blend2_fragment),
             { ::gpu::shader::e_descriptor_set_slot_s1 },
             {},
-            pshadervertexinput);
+            pshadervertexinput,
+            {},
+            {},
+            ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions);
 
 
       }
@@ -3625,18 +3719,18 @@ namespace gpu_vulkan
       if (m_pshaderBlend2->has_shader_sampler())
       {
 
-         auto pshadertexture = m_pshaderBlend2->shader_texture(ptextureDst);
+         auto pshadertextureDst = m_pshaderBlend2->shader_texture(ptextureDst, false);
          //auto& imagestruct = *pimagestruct;
          //VkClearValue clearColor = { .color = {{0.0f, 0.0f, 0.0f, 0.0f}} };
 
          //vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer,
 
-         auto rectangleTarget = ptextureDst->m_rectangleTarget;
+         auto rectangleTarget = ptextureSrc->m_rectangleTarget;
 
          VkRenderPassBeginInfo renderPassInfo = {
                .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                .renderPass = m_pshaderBlend2->shader_sampler()->get_render_pass(),
-               .framebuffer = pshadertexture->get_framebuffer(),
+               .framebuffer = pshadertextureDst->get_framebuffer(),
                .renderArea = {{rectangleTarget.left(), rectangleTarget.top()},
             {(uint32_t) rectangleTarget.width(),(uint32_t)rectangleTarget.height()}},
                //.clearValueCount = 1,
@@ -3668,7 +3762,7 @@ namespace gpu_vulkan
 
       //  vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         //vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      m_pshaderBlend2->bind(ptextureDst);
+      m_pshaderBlend2->bind(ptextureTarget,  ptextureSrc);
 
       //m_pshaderBlend2->_bind_sampler(ptextureDst->m_vkimage, 0);
 
@@ -3681,12 +3775,12 @@ namespace gpu_vulkan
       m_pshaderBlend2->unbind();
 
 
-      if (m_pshaderBlend2->has_shader_sampler())
-      {
+      //if (m_pshaderBlend2->has_shader_sampler())
+      //{
 
-         vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
+      //   vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
-      }
+      //}
       //vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
    }

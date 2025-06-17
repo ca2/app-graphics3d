@@ -234,7 +234,7 @@ namespace gpu_directx12
 
 		auto result = S_OK;
 
-		uint32_t* imageIndex = &currentImageIndex;
+		uint32_t* imageIndex = &m_uCurrentSwapChainImage;
 
 		//auto currentFrame = m_pgpurenderer->get_frame_index();
 
@@ -303,7 +303,7 @@ namespace gpu_directx12
 	//{
 
 
-	//	uint32_t* imageIndex = &currentImageIndex;
+	//	uint32_t* imageIndex = &m_uCurrentSwapChainImage;
 
 	//	auto currentFrame = m_pgpurenderer->get_frame_index();
 
@@ -398,7 +398,7 @@ namespace gpu_directx12
 	int swap_chain_render_target_view::get_image_index() const
 	{
 
-		return currentImageIndex;
+		return m_uCurrentSwapChainImage;
 
 	}
 

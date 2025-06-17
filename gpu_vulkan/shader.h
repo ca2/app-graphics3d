@@ -127,7 +127,7 @@ namespace gpu_vulkan
 
       bool has_shader_sampler();
       class shader_sampler * shader_sampler();
-      class shader_texture * shader_texture(::gpu::texture* ptexture);
+      class shader_texture * shader_texture(::gpu::texture* ptexture, bool bSampler);
 
       //void initialize_shader(
       //	::gpu::context* pgpucontext,
@@ -138,8 +138,10 @@ namespace gpu_vulkan
       void on_initialize_shader() override;
 
 
-      void bind(::gpu::texture * pgputexture) override;
+      void bind(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource) override;
+      void bind() override;
       void unbind() override;
+      virtual void _bind();
 
 
       void push_properties() override;

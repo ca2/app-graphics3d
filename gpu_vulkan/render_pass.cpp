@@ -42,17 +42,22 @@ namespace gpu_vulkan
 
       for (auto framebuffer : m_framebuffers)
       {
+
          vkDestroyFramebuffer(pcontext->logicalDevice(), framebuffer, nullptr);
+
       }
 
       vkDestroyRenderPass(pcontext->logicalDevice(), m_vkrenderpass, nullptr);
 
       // cleanup synchronization objects
-      for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+      for (size_t i = 0; i < m_texturea.size(); i++)
       {
+         
          vkDestroySemaphore(pcontext->logicalDevice(), renderFinishedSemaphores[i], nullptr);
          vkDestroySemaphore(pcontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
+
       }
+
    }
 
 
@@ -455,11 +460,14 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      imageAvailable.resize(MAX_FRAMES_IN_FLIGHT);
-      imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-      renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-      inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-      imagesInFlight.resize(imageCount(), VK_NULL_HANDLE);
+      int iImageCount = m_texturea.size();
+      int iMaxFramesInFlight = renderer::DEFAULT_FRAME_COUNT;
+
+      imageAvailable.resize(iImageCount);
+      imageAvailableSemaphores.resize(iImageCount);
+      renderFinishedSemaphores.resize(iImageCount);
+      inFlightFences.resize(iImageCount);
+      imagesInFlight.resize(iImageCount, VK_NULL_HANDLE);
 
 
       VkSemaphoreCreateInfo semaphoreInfo = {};
@@ -469,7 +477,7 @@ namespace gpu_vulkan
       fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
       fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-      for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) 
+      for (size_t i = 0; i < iImageCount; i++)
       {
          imageAvailable[i] = 0;
          if (vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=

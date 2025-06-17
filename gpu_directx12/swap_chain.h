@@ -27,7 +27,7 @@ namespace gpu_directx12
       HANDLE m_handleSharedTexture;
 
       //VkSwapchainKHR       m_vkswapchain;
-      uint32_t             currentImageIndex;
+      uint32_t             m_uCurrentSwapChainImage;
       //::int_size m_size;
 
       //::comptr<ID3D11VertexShader> m_pvertexshaderFullscreen;

@@ -35,7 +35,25 @@ namespace gpu_vulkan
    void texture::initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget) //, bool bCreateRenderTargetView, bool bCreateShaderResourceView)
    {
 
+      if (m_rectangleTarget == rectangleTarget
+         && m_pgpurenderer ==  prenderer)
+      {
+
+         return;
+
+      }
+
+      auto currentSize = m_rectangleTarget.size();
+
       ::gpu::texture::initialize_gpu_texture(prenderer, rectangleTarget);
+
+      if (currentSize == rectangleTarget.size()
+         && m_pgpurenderer == prenderer)
+      {
+
+         return;
+
+      }
 
       m_vkimagelayout = VK_IMAGE_LAYOUT_UNDEFINED;
 

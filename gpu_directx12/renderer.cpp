@@ -213,7 +213,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   int renderer::get_frame_index() const
+   int renderer::get_frame_index()
    {
 
       assert(m_iFrameSerial2 >= 0
@@ -259,7 +259,7 @@ float4 main(PSInput input) : SV_TARGET {
 
 
 
-   int renderer::get_frame_count() const
+   int renderer::get_frame_count()
    {
 
       return ::gpu::renderer::get_frame_count();
@@ -826,7 +826,7 @@ float4 main(PSInput input) : SV_TARGET {
       //{
 
 
-      //	auto result = m_pvkcswapchain->acquireNextImage(&currentImageIndex);
+      //	auto result = m_pvkcswapchain->acquireNextImage(&m_uCurrentSwapChainImage);
 
       //	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
       //		recreateRenderPass();
@@ -2373,7 +2373,7 @@ float4 main(PSInput input) : SV_TARGET {
       //   if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
       //      throw ::exception(error_failed, "failed to record command buffer!");
       //   }
-      //   auto result = m_prendertargetview->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+      //   auto result = m_prendertargetview->submitCommandBuffers(&commandBuffer, &m_uCurrentSwapChainImage);
       //   //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       //   //	vkcWindow.wasWindowResized()) 
       //   //{
@@ -2408,7 +2408,7 @@ float4 main(PSInput input) : SV_TARGET {
       //	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
       //		throw ::exception(error_failed, "failed to record command buffer!");
       //	}
-      //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+      //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &m_uCurrentSwapChainImage);
       //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       //	//	vkcWindow.wasWindowResized()) 
       //	//{
@@ -3415,7 +3415,7 @@ void CreateImageBlendVertexBuffer(
 
       auto pshader = get_image_blend_shader();
 
-      pshader->bind(ptexture);
+      pshader->bind(m_pgpurendertarget->current_texture(), ptexture);
 
       auto sizeHost = m_pgpucontext->m_rectangle.size();
 
@@ -3848,7 +3848,7 @@ void CreateImageBlendVertexBuffer(
       ////	VkRenderPassBeginInfo renderPassInfo{};
       ////	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
       ////	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
-      ////	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(currentImageIndex);
+      ////	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(m_uCurrentSwapChainImage);
 
       ////	renderPassInfo.renderArea.offset = { 0, 0 };
       ////	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
@@ -3941,7 +3941,7 @@ void CreateImageBlendVertexBuffer(
       ////	VkRenderPassBeginInfo renderPassInfo{};
       ////	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
       ////	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
-      ////	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(currentImageIndex);
+      ////	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(m_uCurrentSwapChainImage);
 
       ////	renderPassInfo.renderArea.offset = { 0, 0 };
       ////	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
@@ -4351,7 +4351,7 @@ void CreateImageBlendVertexBuffer(
       //::defer_throw_hresult(
       //   m_pgraphicscommandlist->Reset(pcommandallocator, pipelineState));
 
-      ////	auto result = m_pvkcswapchain->acquireNextImage(&currentImageIndex);
+      ////	auto result = m_pvkcswapchain->acquireNextImage(&m_uCurrentSwapChainImage);
 
       ////	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
       ////		recreateRenderPass();
@@ -4481,7 +4481,7 @@ void CreateImageBlendVertexBuffer(
       ////	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
       ////		throw ::exception(error_failed, "failed to record command buffer!");
       ////	}
-      ////	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+      ////	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &m_uCurrentSwapChainImage);
       ////	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       ////	//	vkcWindow.wasWindowResized()) 
       ////	//{

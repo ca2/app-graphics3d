@@ -124,7 +124,7 @@ namespace graphics3d_opengl
       //if (m_bOffScreen)
       {
 
-         auto result = m_pvkcrenderpass->acquireNextImage(&currentImageIndex);
+         auto result = m_pvkcrenderpass->acquireNextImage(&m_uCurrentSwapChainImage);
 
          if (result == VK_ERROR_OUT_OF_DATE_KHR) {
             defer_layout();
@@ -151,7 +151,7 @@ namespace graphics3d_opengl
       //{
 
 
-      //	auto result = m_pvkcswapchain->acquireNextImage(&currentImageIndex);
+      //	auto result = m_pvkcswapchain->acquireNextImage(&m_uCurrentSwapChainImage);
 
       //	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
       //		recreateRenderPass();
@@ -415,7 +415,7 @@ namespace graphics3d_opengl
          /*const char* imagedata;*/
          {
 
-            m_poffscreensampler->sample(m_pvkcrenderpass->m_images[currentImageIndex]);
+            m_poffscreensampler->sample(m_pvkcrenderpass->m_images[m_uCurrentSwapChainImage]);
 
             //// Create the linear tiled destination image to copy to and to read the memory from
 
@@ -587,7 +587,7 @@ namespace graphics3d_opengl
          if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
             throw ::exception(error_failed, "failed to record command buffer!");
          }
-         auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+         auto result = m_pvkcrenderpass->submitCommandBuffers(&commandBuffer, &m_uCurrentSwapChainImage);
          //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
          //	vkcWindow.wasWindowResized()) 
          //{
@@ -612,7 +612,7 @@ namespace graphics3d_opengl
       //	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
       //		throw ::exception(error_failed, "failed to record command buffer!");
       //	}
-      //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+      //	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &m_uCurrentSwapChainImage);
       //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       //	//	vkcWindow.wasWindowResized()) 
       //	//{
@@ -645,7 +645,7 @@ namespace graphics3d_opengl
          VkRenderPassBeginInfo renderPassInfo{};
          renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
          renderPassInfo.renderPass = m_pvkcrenderpass->getRenderPass();
-         renderPassInfo.framebuffer = m_pvkcrenderpass->getFrameBuffer(currentImageIndex);
+         renderPassInfo.framebuffer = m_pvkcrenderpass->getFrameBuffer(m_uCurrentSwapChainImage);
 
          renderPassInfo.renderArea.offset = { 0, 0 };
          renderPassInfo.renderArea.extent = m_pvkcrenderpass->getExtent();
@@ -682,7 +682,7 @@ namespace graphics3d_opengl
       //	VkRenderPassBeginInfo renderPassInfo{};
       //	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
       //	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
-      //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(currentImageIndex);
+      //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(m_uCurrentSwapChainImage);
 
       //	renderPassInfo.renderArea.offset = { 0, 0 };
       //	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();

@@ -262,6 +262,9 @@ namespace gpu_vulkan
       void engine_on_frame_context_initialization() override;
 
 
+      //void copy(::gpu::texture* ptexture) override;
+
+
    };
 
 

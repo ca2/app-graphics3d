@@ -79,6 +79,7 @@ namespace gpu_vulkan
       ::pointer < shader >                       m_pshaderImageBlend;
       ::pointer < shader >                       m_pshaderImageSet;
       ::pointer < shader >                       m_pshaderBlend2;
+      ::pointer < shader >                       m_pshaderCopyImage;
 
       //::pointer<::gpu::shader>                        m_pshaderImageBlend;
       //::pointer<::gpu::shader>                        m_pshaderImageSet;
@@ -178,11 +179,14 @@ namespace gpu_vulkan
 
       command_buffer* getCurrentCommandBuffer();
 
-      int get_frame_index() const override;
-      int get_frame_count() const override;
+
+
+      int get_frame_index() override;
+      int get_frame_count() override;
 
       void defer_update_renderer();
 
+      ::gpu::render_target* back_buffer_render_target() override;
 
 
 
@@ -225,7 +229,7 @@ namespace gpu_vulkan
 
       //void _on_frame_draw(::gpu_vulkan::renderer* prendererUpper);
 
-      void _copy_image(::gpu::texture* pgputexture, const ::int_rectangle& rectangle, bool bYSwap);
+      void copy(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource) override;
 
       shader * _get_image_blend_shader();
 

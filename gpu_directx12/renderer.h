@@ -257,8 +257,8 @@ namespace gpu_directx12
       virtual command_buffer* getLoadAssetsCommandBuffer();
 
 
-      int get_frame_index() const override;
-      int get_frame_count() const override;
+      int get_frame_index() override;
+      int get_frame_count() override;
 
       void defer_update_renderer() override;
 

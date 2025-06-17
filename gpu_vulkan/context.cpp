@@ -8,6 +8,7 @@
 #include "program.h"
 #include "renderer.h"
 #include "shader.h"
+#include "texture.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/types.h"
@@ -2400,6 +2401,16 @@ namespace gpu_vulkan
 
    }
       
+
+   //void context::copy(::gpu::texture* ptexture)
+   //{
+
+   //   ::cast < renderer > prenderer = get_gpu_renderer();
+
+   //   prenderer->_copy_image(ptexture, ptexture->m_rectangleTarget, true);
+
+   //}
+
 
 } // namespace gpu_vulkan
 

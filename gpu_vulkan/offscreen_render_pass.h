@@ -65,6 +65,9 @@ namespace gpu_vulkan
 
 		virtual void defer_resize(const ::int_size& size);
 
+		::gpu::texture* current_texture();
+		
+
 	};
 
 

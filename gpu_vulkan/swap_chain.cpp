@@ -52,16 +52,22 @@ namespace gpu_vulkan
       //   vkDestroySemaphore(m_pgpucontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
       //   vkDestroyFence(m_pgpucontext->logicalDevice(), inFlightFences[i], nullptr);
       //}
-      for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+      for (size_t i = 0; i < m_texturea.size(); i++)
       {
-         vkDestroyFence(pcontext->logicalDevice(), inFlightFences[i], nullptr);
-      }
 
+         vkDestroyFence(pcontext->logicalDevice(), inFlightFences[i], nullptr);
+
+      }
 
    }
 
 
+   ::gpu::texture* swap_chain::current_texture()
+   {
 
+      return m_texturea[m_uCurrentSwapChainImage];
+
+   }
 
 
    void swap_chain::initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size& size, ::pointer<::gpu::render_target> previous)
@@ -90,17 +96,27 @@ namespace gpu_vulkan
    }
 
 
+   int swap_chain::get_frame_index()
+   {
+
+      return m_uCurrentSwapChainImage;
+
+   }
+
+
    VkResult swap_chain::acquireNextImage()
    {
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      uint32_t* imageIndex = &currentImageIndex;
-
       auto currentFrame = m_pgpurenderer->get_frame_index();
 
       // Wait for the fence of the current frame first (prevents CPU running too fast)
+      //vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+
       vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+      vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
+
 
       VkResult result = vkAcquireNextImageKHR(
          pcontext->logicalDevice(),
@@ -108,7 +124,7 @@ namespace gpu_vulkan
          UINT64_MAX,
          imageAvailableSemaphores[currentFrame],  // signal semaphore
          VK_NULL_HANDLE,
-         imageIndex);
+         &m_uCurrentSwapChainImage);
 
       if (result == VK_ERROR_OUT_OF_DATE_KHR) {
          // Swapchain needs to be recreated - handle outside
@@ -118,13 +134,13 @@ namespace gpu_vulkan
          throw ::exception(error_failed, "failed to acquire swap chain image!");
       }
 
-      // If the image we acquired is already being used (fence not signaled), wait for it
-      if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
-         vkWaitForFences(pcontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
-      }
+      //// If the image we acquired is already being used (fence not signaled), wait for it
+      //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
+      //   vkWaitForFences(pcontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+      //}
 
       // Mark this image as now being in use by current frame
-      imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
+      //imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
 
       return result;
       //vkWaitForFences(
@@ -165,13 +181,13 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      uint32_t* imageIndex = &currentImageIndex;
+      uint32_t* imageIndex = &m_uCurrentSwapChainImage;
 
       auto currentFrame = m_pgpurenderer->get_frame_index();
 
       // Use currentFrame to access per-frame sync objects
-      vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-      vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
+      //vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+      //vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
 
       VkSubmitInfo submitInfo{};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -261,7 +277,7 @@ namespace gpu_vulkan
    int swap_chain::get_image_index() const
    {
 
-      return currentImageIndex;
+      return m_uCurrentSwapChainImage;
 
    }
 
@@ -343,7 +359,7 @@ namespace gpu_vulkan
       // retrieve the handles.
       vkGetSwapchainImagesKHR(pcontext->logicalDevice(), m_vkswapchain, &imageCount, nullptr);
 
-      m_pgpurenderer->m_iFrameCount2 = imageCount;
+      m_pgpurenderer->m_iFrameCountRequest = imageCount;
 
       m_texturea.set_size(imageCount);
 
@@ -739,7 +755,7 @@ namespace gpu_vulkan
 
                   ::cast < renderer > prenderer = pcontext->m_pgpurendererOutput2;
 
-                  prenderer->_copy_image(ptexture, rectangle, false);
+                  prenderer->copy(prenderer->m_pgpurendertarget->current_texture(), ptexture);
 
                });
 
@@ -756,7 +772,7 @@ namespace gpu_vulkan
    void swap_chain::on_end_render(::gpu::frame* pgpuframe)
    {
 
-      ::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+      ::cast < texture > ptexture = current_texture();
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 

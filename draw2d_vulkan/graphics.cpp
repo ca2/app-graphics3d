@@ -2025,7 +2025,7 @@ namespace draw2d_vulkan
 
       }
 
-      pshader->bind(nullptr);
+      pshader->bind();
 
       //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
@@ -2225,7 +2225,7 @@ namespace draw2d_vulkan
 
       }
 
-      pshader->bind(nullptr);
+      pshader->bind();
 
       //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
       auto pcommandbuffer = pgpurenderer->getCurrentCommandBuffer();
@@ -6586,7 +6586,7 @@ namespace draw2d_vulkan
 
       }
 
-      m_pshaderLine->bind(nullptr);
+      m_pshaderLine->bind();
 
       ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontextDraw2d;
 

@@ -79,7 +79,7 @@ namespace app_graphics3d_continuum
 	void simple_render_system::render(::gpu::context * pgpucontext, ::graphics3d::scene* pscene)
 	{
 
-		m_pshader->bind(nullptr);
+		m_pshader->bind();
 
 		for (auto& kv : pscene->m_mapObjects) 
 		{
