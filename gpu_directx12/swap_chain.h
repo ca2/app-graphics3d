@@ -46,10 +46,10 @@ namespace gpu_directx12
 
 
 
-      void initialize_render_target_view(renderer* prenderer, const ::int_size& size, ::pointer <render_target_view>previous) override;
+      void initialize_render_target(::gpu::renderer* prenderer, const ::int_size& size, ::pointer <::gpu::render_target>previous) override;
 
 
-      void init();
+      void on_init() override;
 
 
       void endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc) override;

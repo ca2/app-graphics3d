@@ -34,9 +34,12 @@ namespace gpu_vulkan
       VkImage                    m_vkimage;
       VkDeviceMemory             m_vkdevicememory;
       VkImageLayout              m_vkimagelayout;
+      VkAccessFlags              m_vkaccessflags;
+      VkPipelineStageFlags       m_vkpipelinestageflags;
       VkImageView                m_vkimageview;
 
-
+      bool m_bTransferDst;
+      bool m_bCpuRead;
       
       texture();
       ~texture() override;
@@ -46,7 +49,10 @@ namespace gpu_vulkan
 
       //void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
 
-      void _new_state(::gpu_vulkan::command_buffer * pcommandbuffer, VkImageLayout newLayout);
+      void _new_state(::gpu_vulkan::command_buffer * pcommandbuffer, 
+         VkAccessFlags accessflags,
+         VkImageLayout newLayout,
+         VkPipelineStageFlags pipelineStageFlags);
 
       void create_image_view();
 

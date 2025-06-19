@@ -42,20 +42,19 @@ namespace gpu_directx12
    //}
 
 
-   void offscreen_render_target_view::initialize_render_target_view(renderer* pgpurenderer, const ::int_size& size, ::pointer <render_target_view>previous)
+   void offscreen_render_target_view::initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size& size, ::pointer <::gpu::render_target> previous)
    {
 
-      render_target_view::initialize_render_target_view(pgpurenderer, size, previous);
+      render_target_view::initialize_render_target(pgpurenderer, size, previous);
 
       //      clear_flag(e_flag_success);
    }
 
-   void offscreen_render_target_view::init()
+
+   void offscreen_render_target_view::on_init()
    {
-      set_ok_flag();
 
-
-      m_pgpurenderer->restart_frame_counter();
+      
       int width = m_pgpurenderer->m_pgpucontext->m_rectangle.width();
       int height = m_pgpurenderer->m_pgpucontext->m_rectangle.height();
 
@@ -65,7 +64,7 @@ namespace gpu_directx12
       ::cast < context>pcontext = m_pgpurenderer->m_pgpucontext;
 
       D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-      rtvHeapDesc.NumDescriptors = m_pgpurenderer->get_frame_count();
+      rtvHeapDesc.NumDescriptors = m_pgpurenderer->m_iFrameCountRequest;
       rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
       rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
       HRESULT hrCreateDescriptorHeapRtv = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap));
@@ -147,10 +146,10 @@ namespace gpu_directx12
 
          CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-         for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
+         for (int i = 0; i < m_pgpurenderer->m_iFrameCountRequest; i++)
          {
 
-            __defer_construct_new(m_texturea.element_at_grow(i));
+            __defer_construct(m_texturea.element_at_grow(i));
 
             m_texturea[i]->initialize_gpu_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
 

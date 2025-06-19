@@ -66,19 +66,14 @@ namespace gpu_vulkan
 
       ::gpu::render_target::initialize_render_target(pgpurenderer, size, previous);
 
-      //m_pgpurenderer = pgpurenderer;
-      //windowExtent = extent;
-      //m_pvkcrenderpassOld = previous;
       m_bNeedRebuild = false;
-      //m_pgpucontext = pgpurenderer->m_pgpucontext;
-      //init();
-      // Cleans up old swap chain since it's no longer needed after resizing
-      //m_pvkcrenderpassOld = nullptr;
+
    }
 
 
-   void render_pass::init()
+   void render_pass::on_init()
    {
+
       createRenderPassImpl();
       createImageViews();
       createRenderPass();
@@ -364,7 +359,11 @@ namespace gpu_vulkan
       for (size_t i = 0; i < imageCount(); i++) 
       {
 
-         VkImageView attachments[2] = {m_imageviews[i], depthImageViews[i]};
+         VkImageView imageView = m_imageviews[i];
+
+         VkImageView depthImageView = depthImageViews[i];
+
+         VkImageView attachments[2] = {imageView, depthImageView};
 
          VkExtent2D extent = getExtent();
          VkFramebufferCreateInfo framebufferInfo = {};
@@ -426,11 +425,13 @@ namespace gpu_vulkan
          imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
          imageInfo.flags = 0;
 
+         auto& depthImage = depthImages[i];
+         auto& depthImageMemory = depthImageMemorys[i];
          pcontext->createImageWithInfo(
             imageInfo,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            depthImages[i],
-            depthImageMemorys[i]);
+            depthImage,
+            depthImageMemory);
 
          VkImageViewCreateInfo viewInfo{};
          viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -443,12 +444,16 @@ namespace gpu_vulkan
          viewInfo.subresourceRange.baseArrayLayer = 0;
          viewInfo.subresourceRange.layerCount = 1;
 
-         if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) 
+         auto& depthImageView = depthImageViews[i];
+
+         if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &depthImageView) != VK_SUCCESS) 
          {
 
             throw ::exception(error_failed,"failed to create texture image view!");
 
          }
+
+         debug() << "created a depth resource";
 
       }
 

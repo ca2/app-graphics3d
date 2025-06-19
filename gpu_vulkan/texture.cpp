@@ -16,12 +16,14 @@ namespace gpu_vulkan
    texture::texture()
    {
 
+      m_bTransferDst = false;
       new_texture.set_new_texture();
 
       m_vkimage = nullptr;
       m_vkimagelayout = VK_IMAGE_LAYOUT_UNDEFINED;
       m_vkimageview = nullptr;
       m_vkdevicememory = nullptr;
+      m_bCpuRead = false;
 
    }
 
@@ -56,6 +58,8 @@ namespace gpu_vulkan
       }
 
       m_vkimagelayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      m_vkaccessflags = 0;
+      m_vkpipelinestageflags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
@@ -63,13 +67,6 @@ namespace gpu_vulkan
 
       ::cast < render_pass > prenderpass = m_pgpurenderer->m_pgpurendertarget;
 
-      //// Find a suitable depth format
-      VkFormat fbDepthFormat;
-      VkBool32 validDepthFormat = ::vulkan::getSupportedDepthFormat(
-         pcontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice, &fbDepthFormat);
-      ASSERT(validDepthFormat);
-
-      //// Color attachment
       VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
       imagecreateinfo.imageType = VK_IMAGE_TYPE_2D;
       imagecreateinfo.format = prenderpass ? prenderpass->m_formatImage : pcontext->m_formatImageDefault;
@@ -79,29 +76,87 @@ namespace gpu_vulkan
       imagecreateinfo.mipLevels = 1;
       imagecreateinfo.arrayLayers = 1;
       imagecreateinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      imagecreateinfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-      //// We will sample directly from the color attachment
-      imagecreateinfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
-         VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-      imagecreateinfo.initialLayout = m_vkimagelayout;
+      
+      imagecreateinfo.usage = 0;
 
+      if (m_bTransferDst & m_bCpuRead)
+      {
+         
+         imagecreateinfo.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+         
+         imagecreateinfo.tiling = VK_IMAGE_TILING_LINEAR;
+         
+      }
+      else
+      {
+
+         if (m_bTransferDst)
+         {
+
+            imagecreateinfo.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+
+         }
+
+         imagecreateinfo.usage |=
+            VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+            VK_IMAGE_USAGE_SAMPLED_BIT;
+
+         imagecreateinfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+
+      }
+      
+      imagecreateinfo.initialLayout = m_vkimagelayout;
+      
+      VkMemoryPropertyFlags properties;
+
+      if (m_bCpuRead)
+      {
+
+         properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+
+      }
+      else
+      {
+         
+         properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+      }
+      
       pcontext->createImageWithInfo(
          imagecreateinfo,
-         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+         properties,
          m_vkimage,
          m_vkdevicememory);
 
    }
 
 
-   void texture::_new_state(::gpu_vulkan::command_buffer* pcommandbuffer, VkImageLayout newLayout)
+   void texture::_new_state(::gpu_vulkan::command_buffer* pcommandbuffer,
+      VkAccessFlags accessFlags,
+      VkImageLayout newLayout,
+      VkPipelineStageFlags pipelineStageFlags)
    {
 
       auto image = m_vkimage;
+      
+      auto accessOld = m_vkaccessflags;
+
+      auto accessNew = accessFlags;
 
       auto layoutOld = m_vkimagelayout;
 
       auto layoutNew = newLayout;
+
+      auto pipelineStageFlagsOld = m_vkpipelinestageflags;
+
+      auto pipelineStageFlagsNew = pipelineStageFlags;
+
+      // Optional: Skip no-op transitions
+      if (layoutOld == layoutNew 
+         && accessOld == accessNew && 
+         pipelineStageFlagsOld == pipelineStageFlagsNew)
+         return;
 
       //VkCommandBufferBeginInfo beginInfo =
       //{
@@ -114,6 +169,8 @@ namespace gpu_vulkan
 
       VkImageMemoryBarrier barrier = {
           .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+          .srcAccessMask = accessOld,
+          .dstAccessMask = accessNew,
           .oldLayout = layoutOld,
           .newLayout = layoutNew,
           .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -130,13 +187,17 @@ namespace gpu_vulkan
 
       vkCmdPipelineBarrier(
          pcommandbuffer->m_vkcommandbuffer,
-         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+         pipelineStageFlagsOld,
+         pipelineStageFlagsNew,
          0,
          0, NULL,
          0, NULL,
          1, &barrier
       );
+
+      m_vkimagelayout = layoutNew;
+      m_vkaccessflags = accessNew;
+      m_vkpipelinestageflags = pipelineStageFlagsNew;
 
       //vkEndCommandBuffer(cmdBuf);
       //VkSubmitInfo submitInfo = {
@@ -159,6 +220,14 @@ namespace gpu_vulkan
 
    void texture::create_image_view()
    {
+
+      if (m_bCpuRead)
+      {
+
+         return;
+
+      }
+
 
       if (m_vkimageview)
       {
@@ -190,6 +259,13 @@ namespace gpu_vulkan
 
    VkFramebuffer texture::create_framebuffer(VkRenderPass renderpass)
    {
+
+      if (m_bCpuRead)
+      {
+
+         return {};
+
+      }
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 

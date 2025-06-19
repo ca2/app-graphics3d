@@ -84,10 +84,6 @@ namespace gpu_vulkan
       int m_iSamplerSlot;
 
 
-      bool m_bDisableDepthTest = false;
-      bool m_bDepthTestButNoDepthWrite = false;
-      bool m_bEnableBlend = false;
-      bool m_bAccumulationEnable = false;
       int m_iColorAttachmentCount = 1;
       VkPrimitiveTopology m_vktopology;
 

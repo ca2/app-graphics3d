@@ -2583,7 +2583,7 @@ namespace gpu_directx12
    };
 
 
-   void context::on_take_snapshot(::gpu::layer * player, ::gpu::texture * pgputextureSource)
+   void context::on_take_snapshot(::gpu::layer * player)
    {
 
       //if (!player->m_pgputextureTarget 
@@ -2595,9 +2595,12 @@ namespace gpu_directx12
 
       //}
 
-      ::cast < texture > ptextureSrc = pgputextureSource;
+      ::cast < texture > ptextureDst =
+         (m_pgpurendererBackBuffer ?
+            m_pgpurendererBackBuffer :
+            m_pgpurendererOutput2)->m_pgpurendertarget->current_texture();
 
-      ::cast < texture > ptextureDst = player->m_pgputextureTarget;
+      ::cast < texture > ptextureSrc = player->texture();
 
       ::cast < renderer > prenderer = ptextureDst->m_pgpurenderer;
 
@@ -2669,18 +2672,18 @@ namespace gpu_directx12
    //}
 
 
-   void context::on_begin_draw_attach(::draw2d_gpu::graphics* pgpugraphics, const ::int_rectangle& rectangle)
+   void context::on_begin_draw_attach(::draw2d_gpu::graphics* pgpugraphics)
    {
 
-      ::gpu::context::on_begin_draw_attach(pgpugraphics, rectangle);
+      ::gpu::context::on_begin_draw_attach(pgpugraphics);
 
    }
 
 
-   void context::draw2d_on_begin_draw(::draw2d_gpu::graphics* pgpugraphics, const ::int_rectangle& rectangle)
+   void context::draw2d_on_begin_draw(::draw2d_gpu::graphics* pgpugraphics)
    {
 
-      ::gpu::context::draw2d_on_begin_draw(pgpugraphics, rectangle);
+      ::gpu::context::draw2d_on_begin_draw(pgpugraphics);
 
    }
 

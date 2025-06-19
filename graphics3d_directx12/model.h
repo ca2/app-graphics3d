@@ -37,7 +37,7 @@ namespace graphics3d_directx12
       bool hasIndexBuffer = false;
 
 
-      ::pointer < ::gpu_directx12::context > m_pgpucontext;
+      //::pointer < ::gpu_directx12::context > m_pgpucontext;
 
 
       //::pointer<::gpu_directx12::buffer> m_pbufferVertex;

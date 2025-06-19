@@ -1,5 +1,6 @@
 // From vk_swapchain by camilo on 2025-05-09 <3ThomasBorregaardSorensen!!
 #include "framework.h"
+#include "command_buffer.h"
 #include "offscreen_render_pass.h"
 #include "initializers.h"
 #include "physical_device.h"
@@ -79,15 +80,8 @@ namespace gpu_vulkan
    }
 
 
-   void offscreen_render_pass::init()
+   void offscreen_render_pass::on_init()
    {
-
-      if (!m_bBackBuffer)
-      {
-
-         m_pgpurenderer->restart_frame_counter();
-
-      }
 
       createRenderPassImpl();
       createImageViews();
@@ -125,7 +119,7 @@ namespace gpu_vulkan
    }
 
 
-   VkResult offscreen_render_pass::submitCommandBuffers(const VkCommandBuffer* buffers)
+   VkResult offscreen_render_pass::submitCommandBuffers(command_buffer* pcommandbuffer)
    {
 
 
@@ -155,9 +149,9 @@ namespace gpu_vulkan
       submitInfo.pWaitSemaphores = waitSemaphores.data();
       submitInfo.pWaitDstStageMask = waitStages.data();
 
-
+      VkCommandBuffer vkcommandbuffera[] = { pcommandbuffer->m_vkcommandbuffer };
       submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = buffers;
+      submitInfo.pCommandBuffers = vkcommandbuffera;
 
       ::array<VkSemaphore> signalSemaphores;
       
@@ -170,13 +164,35 @@ namespace gpu_vulkan
 
       auto queueGraphics = pcontext->graphicsQueue();
 
+
+      VkFence fence;
+
+      VkFenceCreateInfo fenceInfo = {
+          .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+          .pNext = NULL,
+          .flags = 0  // 0 = fence starts in unsignaled state
+      };
+
+      VkResult result = vkCreateFence(pcontext->logicalDevice(), &fenceInfo, NULL, &fence);
+      if (result != VK_SUCCESS) {
+         fprintf(stderr, "Failed to create fence\n");
+         // handle error
+      }
+
       //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
-      if (vkQueueSubmit(queueGraphics, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+      if (vkQueueSubmit(queueGraphics, 1, &submitInfo, fence) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed,"failed to submit draw command buffer!");
          
       }
+
+      vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+      vkQueueWaitIdle(queueGraphics);
+
+
+      vkDestroyFence(pcontext->logicalDevice(), fence, NULL);
 
       //VK_CHECK(vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
 
@@ -627,21 +643,21 @@ namespace gpu_vulkan
       subpass.pColorAttachments = &colorAttachmentRef;
       subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
-      VkSubpassDependency dependencies[1] = {};
+      //VkSubpassDependency dependencies[1] = {};
 
-      {
-         auto& dependency = dependencies[0];
-         dependency.dstSubpass = 0;
-         dependency.dstAccessMask =
-            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-         dependency.dstStageMask =
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-         dependency.srcAccessMask = 0;
-         dependency.srcStageMask =
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      //{
+      //   auto& dependency = dependencies[0];
+      //   dependency.dstSubpass = 0;
+      //   dependency.dstAccessMask =
+      //      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      //   dependency.dstStageMask =
+      //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      //   dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+      //   dependency.srcAccessMask = 0;
+      //   dependency.srcStageMask =
+      //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
-      }
+      //}
 
    //   {
    //      auto& dependency = dependencies[1];
@@ -662,10 +678,14 @@ namespace gpu_vulkan
       renderPassInfo.pAttachments = attachments;
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;
-      renderPassInfo.dependencyCount = 1;
-      renderPassInfo.pDependencies = dependencies;
+      //renderPassInfo.dependencyCount = 1;
+      //renderPassInfo.pDependencies = dependencies;
 
-      if (vkCreateRenderPass(pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) 
+      if (vkCreateRenderPass(
+         pcontext->logicalDevice(),
+         &renderPassInfo,
+         nullptr, 
+         &m_vkrenderpass) != VK_SUCCESS) 
       {
 
          throw ::exception(error_failed,"failed to create render pass!");

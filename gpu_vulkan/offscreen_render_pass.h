@@ -19,11 +19,6 @@ namespace gpu_vulkan
 		VkSampler m_vksampler;
 		
 
-
-		///static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
-
-		//offscreen_render_pass(renderer* pgpurenderer, VkExtent2D windowExtent);
-		//offscreen_render_pass(renderer * pgpurenderer, VkExtent2D windowExtent, ::pointer <render_pass>previous);
 		offscreen_render_pass();
 		~offscreen_render_pass();
 
@@ -43,7 +38,7 @@ namespace gpu_vulkan
 		VkFormat findDepthFormat();
 
 		VkResult acquireNextImage() override;
-		VkResult submitCommandBuffers(const VkCommandBuffer* buffers);
+		VkResult submitCommandBuffers(command_buffer * pcommandbuffer) override;
 
 		//bool compareSwapFormats(const offscreen_render_pass& swapChain) const {
 		//	return swapChain.depthFormat == depthFormat &&
@@ -51,7 +46,7 @@ namespace gpu_vulkan
 		//}
 
 	//public:
-		void init();
+		void on_init() override;
 		void createRenderPassImpl();
 		void createImageViews();
 		void createDepthResources();

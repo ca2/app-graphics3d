@@ -36,7 +36,7 @@ namespace draw2d_opengl
       ::int_size                          m_size;
       //HDC                           m_hdcGraphics;
       float                               m_z;
-      int_point                           m_pointTranslate;
+      //int_point                           m_pointTranslate;
       // bool                                      m_bFont;
       ::int_size                          m_sizeWindow;
       //HGLRC m_hrc;
@@ -67,6 +67,11 @@ namespace draw2d_opengl
 
       virtual void thread_select();
       void do_on_context(const ::procedure & procedure) override;
+      
+      
+      void start_gpu_layer() override;
+      void end_gpu_layer() override;
+
 
       //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;

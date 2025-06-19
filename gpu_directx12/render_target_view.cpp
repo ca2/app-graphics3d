@@ -20,62 +20,26 @@ namespace gpu_directx12
    }
 
 
+   render_target_view::~render_target_view()
+   {
+     
 
-      //   m_pgpurenderer(pgpurenderer),
-      //   m_size(size),
-      //   m_prendertargetviewOld( previous)
-      //{
-      //    m_bNeedRebuild = false;
-      //   m_pgpucontext = pgpurenderer->m_pgpucontext;
-      //   //init();
-      //   // Cleans up old swap chain since it's no longer needed after resizing
-      //   //m_prendertargetviewOld = nullptr;
-      //}
-
-         //render_target_view::render_target_view()
-         //{
+   }
 
 
-         //}
-
-
-         ////render_target_view::render_target_view()
-         //render_target_view::render_target_view(renderer* pgpurenderer, const ::int_size & size):
-         //    m_pgpurenderer(pgpurenderer), m_size(size)
-         //{
-         //    //m_bNeedRebuild = false;
-         //   //m_pgpucontext = pgpurenderer->m_pgpucontext;
-         //   //init();
-         //   //m_prendertargetviewOld = nullptr;
-
-         //}
-
-         //
-         //render_target_view::render_target_view(renderer * pgpurenderer, const ::int_size & size, ::pointer<render_target_view> previous):
-         //   m_pgpurenderer(pgpurenderer),
-         //   m_size(size),
-         //   m_prendertargetviewOld( previous)
-         //{
-         //    m_bNeedRebuild = false;
-         //   m_pgpucontext = pgpurenderer->m_pgpucontext;
-         //   //init();
-         //   // Cleans up old swap chain since it's no longer needed after resizing
-         //   //m_prendertargetviewOld = nullptr;
-         //}
-
-   void render_target_view::initialize_render_target_view(renderer* pgpurenderer, const ::int_size& size, ::pointer<render_target_view> previous)
+   void render_target_view::initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size& size, ::pointer<::gpu::render_target> previous)
    {
 
-      m_pgpurenderer = pgpurenderer;
+      ::gpu::render_target::initialize_render_target(pgpurenderer, size, previous);
       m_prendertargetviewOld = previous;
       m_bNeedRebuild = false;
 
    }
 
 
-
-   void render_target_view::init()
+   void render_target_view::on_init()
    {
+
       createRenderPassImpl();
       createImageViews();
       createRenderPass();
@@ -85,42 +49,6 @@ namespace gpu_directx12
       // Cleans up old swap chain since it's no longer needed after resizing
       m_prendertargetviewOld = nullptr;
 
-   }
-
-
-   render_target_view::~render_target_view()
-   {
-      //for (auto imageView : m_imageviews) 
-      //{
-      //   vkDestroyImageView(m_pgpucontext->logicalDevice(), imageView, nullptr);
-      //}
-      //m_imageviews.clear();
-
-      //if (swapChain != nullptr) {
-      //   vkDestroySwapchainKHR(m_pgpucontext->logicalDevice(), swapChain, nullptr);
-      //   swapChain = nullptr;
-      //}
-
-      //for (int i = 0; i < depthImages.size(); i++) 
-      //{
-      //   vkDestroyImageView(m_pgpucontext->logicalDevice(), depthImageViews[i], nullptr);
-      //   vkDestroyImage(m_pgpucontext->logicalDevice(), depthImages[i], nullptr);
-      //   vkFreeMemory(m_pgpucontext->logicalDevice(), depthImageMemorys[i], nullptr);
-      //}
-
-      //for (auto framebuffer : m_framebuffers)
-      //{
-      //   vkDestroyFramebuffer(m_pgpucontext->logicalDevice(), framebuffer, nullptr);
-      //}
-
-      //vkDestroyRenderPass(m_pgpucontext->logicalDevice(), m_vkrendertargetview, nullptr);
-
-      //// cleanup synchronization objects
-      //for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-      //{
-      //   vkDestroySemaphore(m_pgpucontext->logicalDevice(), renderFinishedSemaphores[i], nullptr);
-      //   vkDestroySemaphore(m_pgpucontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
-      //}
    }
 
 

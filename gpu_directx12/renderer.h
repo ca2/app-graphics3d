@@ -113,6 +113,7 @@ namespace gpu_directx12
       bool m_bNeedToRecreateSwapChain = false;
       //bool m_bOffScreen = true;
       //renderer(VkWindow &window, context * pvkcdevice);
+      //::int_size m_sizeRenderer;
 
       ::pointer<::gpu_directx12::set_descriptor_layout>           m_psetdescriptorlayoutImageBlend;
       ::pointer <::gpu_directx12::descriptor_pool>                m_pdescriptorpoolImageBlend;
@@ -177,7 +178,7 @@ namespace gpu_directx12
 
       ::procedure_array m_procedureaAfterEndRender;
 
-      ::int_size m_sizeRenderer;
+      //::int_size m_sizeRenderer;
 
 
       renderer();
@@ -260,8 +261,8 @@ namespace gpu_directx12
       int get_frame_index() override;
       int get_frame_count() override;
 
-      void defer_update_renderer() override;
-
+      //void defer_update_renderer() override;
+      void on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous) override;
 
       ::pointer < ::gpu::render_target > allocate_offscreen_render_target() override;
 

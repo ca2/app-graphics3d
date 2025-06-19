@@ -90,7 +90,7 @@ namespace draw2d_opengl
       //m_hrc = nullptr;
       //m_hwnd = nullptr;
       //m_hglrc = nullptr;
-      m_pointTranslate = ::int_point();
+      //m_pointTranslate = ::int_point();
       m_bPrinting = false;
       m_pimageAlphaBlend = nullptr;
       m_size.set(0, 0);
@@ -204,7 +204,7 @@ namespace draw2d_opengl
 
    //   }
 
-   //   m_pgpucontext->m_pgpucontextDraw2d->m_pgpurendererOutput2->m_eoutputOnEndDraw = ::gpu::e_output_swap_chain;
+   //   m_pgpucontext->m_pgpucontext->m_pgpurendererOutput2->m_eoutputOnEndDraw = ::gpu::e_output_swap_chain;
 
    //}
 
@@ -255,21 +255,23 @@ namespace draw2d_opengl
 
       auto pgpucontextMainWindow = m_papplication->get_gpu_approach()->get_gpu_device()->get_main_window_context();
 
-      m_pgpucontextDraw2d = pgpudevice->create_draw2d_context(
+      m_pgpucontext = pgpudevice->create_draw2d_context(
          ::gpu::e_output_gpu_buffer,
          size);
 
-      if (!m_pgpucontextDraw2d)
+      if (!m_pgpucontext)
       {
 
          return;
 
       }
 
-      if (!m_pgpucontextDraw2d->m_pgpurendererOutput2)
+      m_pgpucontext->m_pgpucompositor = this;
+
+      if (!m_pgpucontext->m_pgpurendererOutput2)
       {
 
-         m_pgpucontextDraw2d->get_gpu_renderer();
+         m_pgpucontext->get_gpu_renderer();
 
       }
 
@@ -311,13 +313,15 @@ namespace draw2d_opengl
 
       auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      m_pgpucontextDraw2d = pgpudevice->create_draw2d_context(
+      m_pgpucontext = pgpudevice->create_draw2d_context(
          ::gpu::e_output_gpu_buffer,
          size);
 
+      m_pgpucontext->m_pgpucompositor = this;  
+
       //auto pgpucontext = pgpudevice->get_main_context();
 
-      //if (!m_pgpucontextDraw2d->m_pgpurendererOutput2)
+      //if (!m_pgpucontext->m_pgpurendererOutput2)
       //{
 
       //   auto pgpu = application()->get_gpu();
@@ -343,7 +347,7 @@ namespace draw2d_opengl
 
       //}
 
-      if (!m_pgpucontextDraw2d)
+      if (!m_pgpucontext)
       {
 
          return false;
@@ -365,10 +369,10 @@ namespace draw2d_opengl
       //if (__defer_construct(m_pgpucontextOpenGL))
       //{
 
-      //if (!m_pgpucontextDraw2d)
+      //if (!m_pgpucontext)
       //{
 
-      //   m_pgpucontextDraw2d = pgpudevice->create_draw2d_context(::gpu::e_output_gpu_buffer, size);
+      //   m_pgpucontext = pgpudevice->create_draw2d_context(::gpu::e_output_gpu_buffer, size);
 
       //}
 
@@ -566,7 +570,7 @@ namespace draw2d_opengl
 
       //}
 
-      m_pgpucontextDraw2d->defer_create_window_context(pwindow);
+      m_pgpucontext->defer_create_window_context(pwindow);
 
       //      ::opengl::resize(size);
 
@@ -1054,7 +1058,7 @@ namespace draw2d_opengl
 
    //}
 
-   inline void vertex2f(const ::double_rectangle& rectangle, float fZ)
+   void vertex2f(const ::double_rectangle& rectangle, float fZ)
    {
 
       glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.top(), fZ);
@@ -1063,12 +1067,12 @@ namespace draw2d_opengl
       glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.bottom(), fZ);
 
    }
+
+
    void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
    {
 
       //thread_select();
-
-      glBegin(GL_QUADS);
 
       ::opengl::color(pbrush->m_color);
 
@@ -1082,6 +1086,8 @@ namespace draw2d_opengl
          m_m1.transform(p);
 
       }
+
+      glBegin(GL_QUADS);
 
       ::opengl::vertex2f(polygon, m_z);
 
@@ -4251,7 +4257,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    int_point graphics::offset_origin(int nWidth, int nHeight)
    {
 
-      return ::draw2d::graphics::offset_origin(nWidth, nHeight);
+      return ::draw2d_gpu::graphics::offset_origin(nWidth, nHeight);
 
 
    }
@@ -5523,7 +5529,7 @@ color = vec4(c.r,c.g, c.b, c.a);
          m_pgpushaderTextOut = __create_new < ::gpu_opengl::shader >();
 
          m_pgpushaderTextOut->initialize_shader_with_block(
-            m_pgpucontextDraw2d->m_pgpurendererOutput2,
+            m_pgpucontext->m_pgpurendererOutput2,
             pvertexshader,
             pfragmentshader);
          
@@ -5537,9 +5543,9 @@ color = vec4(c.r,c.g, c.b, c.a);
       // glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
       glm::mat4 projection = glm::ortho(
          0.0f, 
-         static_cast<float>(m_pgpucontextDraw2d->m_rectangle.width()),
+         static_cast<float>(m_pgpucontext->m_rectangle.width()),
          0.0f,
-         static_cast<float>(m_pgpucontextDraw2d->m_rectangle.height()));
+         static_cast<float>(m_pgpucontext->m_rectangle.height()));
       pshader->_set_mat4("projection", projection);
 
       set(m_pfont);
@@ -5558,6 +5564,13 @@ color = vec4(c.r,c.g, c.b, c.a);
       ::string strChar;
       ::string str(scopedstr);
       auto psz = str.c_str();
+
+      if (str == "Options")
+      {
+
+         warning() << "draw_text: " << str;
+
+      }
       //float scale;
       //if (pfont->m_fontsize.eunit() == e_unit_point)
       //{
@@ -5575,7 +5588,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       int Δx = 0;
       m_m1.transform(point);
 
-      point.y() = m_pgpucontextDraw2d->m_rectangle.height() - point.y() - pface->m_iPixelSize;
+      point.y() = m_pgpucontext->m_rectangle.height() - point.y() - pface->m_iPixelSize;
 
       glEnable(GL_CULL_FACE);
       //glEnable(GL_BLEND);
@@ -5785,41 +5798,48 @@ color = vec4(c.r,c.g, c.b, c.a);
    void graphics::set_alpha_mode(::draw2d::enum_alpha_mode ealphamode)
    {
 
-      try
+      if (m_ealphamode != ealphamode)
       {
 
-         //if(m_pgraphics == nullptr)
-         //   return;
-
-         ::draw2d::graphics::set_alpha_mode(ealphamode);
-         if (m_ealphamode == ::draw2d::e_alpha_mode_blend)
+         try
          {
-            //glColorMask(false, false, false, true);
-            //glColorMask(true, true, true, false);
-            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            //glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
-            //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-            //glBlendFunc(GL_ZERO, GL_SRC_ALPHA);
-            //glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
-            // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-            glEnable(GL_BLEND);
 
-            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-            glBlendEquation(GL_FUNC_ADD); // default, can be omitted if unchanged
+            //if(m_pgraphics == nullptr)
+            //   return;
 
-            //glDisable(GL_DEPTH_TEST);
-            //glDepthFunc(GL_NEVER);
+            ::draw2d::graphics::set_alpha_mode(ealphamode);
+            if (m_ealphamode == ::draw2d::e_alpha_mode_blend)
+            {
+               //glColorMask(false, false, false, true);
+               //glColorMask(true, true, true, false);
+               //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+               //glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
+               //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+               //glBlendFunc(GL_ZERO, GL_SRC_ALPHA);
+               //glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+               // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+               glEnable(GL_BLEND);
+
+               glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+               glBlendEquation(GL_FUNC_ADD); // default, can be omitted if unchanged
+
+               //glDisable(GL_DEPTH_TEST);
+               //glDepthFunc(GL_NEVER);
+            }
+            else if (m_ealphamode == ::draw2d::e_alpha_mode_set)
+            {
+               
+               glEnable(GL_BLEND);
+               glBlendFunc(GL_ONE, GL_ZERO); // Source Copy mode
+
+            }
+
          }
-         else if (m_ealphamode == ::draw2d::e_alpha_mode_set)
+         catch (...)
          {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE, GL_ZERO);
-         }
+            //return false;
 
-      }
-      catch (...)
-      {
-         //return false;
+         }
 
       }
 
@@ -6283,10 +6303,33 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       ::draw2d_gpu::graphics::do_on_context(procedure);
 
-      //m_pgpucontextDraw2d->send(procedure);
+      //m_pgpucontext->send(procedure);
 
    }
 
+   void graphics::start_gpu_layer()
+   {
+
+      ::draw2d_gpu::graphics::start_gpu_layer();
+
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Clear the background to transparent
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the color and depth buffers
+      glDepthMask(GL_FALSE); // Disable writing to depth buffer
+      glDisable(GL_DEPTH_TEST); // Disable depth testing
+
+      auto ealphamode = m_ealphamode;
+      m_ealphamode = ::draw2d::e_alpha_mode_none; // Set alpha mode to blend for GPU layer
+      set_alpha_mode(m_ealphamode);
+
+   }
+
+
+   void graphics::end_gpu_layer()
+   {
+
+      ::draw2d_gpu::graphics::end_gpu_layer();
+
+   }
 
 
 
@@ -6578,8 +6621,8 @@ color = vec4(c.r,c.g, c.b, c.a);
       //return ::is_set(this) & ::is_set(m_hglrc);
 
       return ::is_set(this) 
-         && ::is_set(m_pgpucontextDraw2d->m_pgpurendererOutput2)
-         && m_pgpucontextDraw2d;
+         && ::is_set(m_pgpucontext->m_pgpurendererOutput2)
+         && m_pgpucontext;
 
    }
 

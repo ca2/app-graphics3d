@@ -74,9 +74,9 @@ namespace gpu_vulkan
       if (shader_sampler()->m_psetdescriptorlayout)
       {
 
-         auto globalSetLayout = shader_sampler()->m_psetdescriptorlayout->getDescriptorSetLayout();
+         auto samplerSetLayout = shader_sampler()->m_psetdescriptorlayout->getDescriptorSetLayout();
 
-         descriptorSetLayouts.add(globalSetLayout);
+         descriptorSetLayouts.add(samplerSetLayout);
 
       }
 
@@ -395,8 +395,8 @@ namespace gpu_vulkan
 
          ::cast <render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
 
-         VkClearValue clearValues[2];
-         clearValues[0].color = { 0.f, 0.f, 0.f, 0.f };
+         VkClearValue clearValues[2]{};
+         clearValues[0].color = { 0.5f* 0.5f, 0.75f*0.5f, 0.95f* 0.5f, 0.5f };
          clearValues[1].depthStencil = { 1.0f, 0 };
 
          renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
@@ -414,6 +414,7 @@ namespace gpu_vulkan
          pcommandbuffer->m_vkcommandbuffer,
          &renderPassBeginInfo,
          VK_SUBPASS_CONTENTS_INLINE);
+
 
       _bind();
 
@@ -433,6 +434,32 @@ namespace gpu_vulkan
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
 
       m_ppipeline->bind(pcommandbuffer);
+
+
+      auto rectangle = pgpucontext->m_rectangle;
+      auto size = rectangle.size();
+      VkViewport vp = {
+   (float)0.f,
+   (float)0.f,
+   (float)size.width(),
+   (float)size.height(),
+   0.0f, 1.0f };
+
+      VkRect2D sc = {
+         {
+            0,
+            0,
+         },
+         {
+            (uint32_t)size.width(),
+            (uint32_t)size.height(),
+         }
+      };
+
+      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+
+      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
+
 
       if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
       {

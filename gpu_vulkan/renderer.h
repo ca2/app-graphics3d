@@ -36,12 +36,13 @@ namespace gpu_vulkan
       {
 
 
-         VkExtent2D			      m_vkextent2d;
-         VkDeviceMemory		      m_vkdevicememory;
-         VkImage				      m_vkimage;
+         //VkExtent2D			      m_vkextent2d;
+         //VkDeviceMemory		      m_vkdevicememory;
+         //VkImage				      m_vkimage;
+         ::pointer_array < texture >   m_texturea;
 
 
-         ::pointer < context >   m_pgpucontext;
+         ::pointer < context >   m_pcontext;
          ::pointer < renderer >  m_prenderer;
 
 
@@ -52,10 +53,10 @@ namespace gpu_vulkan
          void initialize_cpu_buffer_sampler(::gpu::context* pgpucontext);
 
          void clear();
-         void update(VkExtent2D vkextent2d);
+         void update(const ::int_size & size);
          void destroy();
 
-         void sample(VkImage vkimage);
+         void sample(::gpu::texture * pgputexture);
 
          void send_sample();
 
@@ -184,7 +185,9 @@ namespace gpu_vulkan
       int get_frame_index() override;
       int get_frame_count() override;
 
-      void defer_update_renderer();
+      //void defer_update_renderer();
+
+      void on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous) override;
 
       //::gpu::render_target* back_buffer_render_target() override;
 

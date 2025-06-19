@@ -89,7 +89,7 @@ namespace gpu_vulkan
       }
 
 
-      virtual void init();
+      void on_init() override;
       virtual void createRenderPassImpl();
       virtual void createImageViews();
       virtual void createDepthResources();

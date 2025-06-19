@@ -889,12 +889,29 @@ namespace gpu_vulkan
    {
 
       vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer);
+
+      VkFence fence;
+
+      VkFenceCreateInfo fenceInfo = {
+          .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+          .pNext = NULL,
+          .flags = 0  // 0 = fence starts in unsignaled state
+      };
+
+      VkResult result = vkCreateFence(this->logicalDevice(), &fenceInfo, NULL, &fence);
+      if (result != VK_SUCCESS) {
+         fprintf(stderr, "Failed to create fence\n");
+         // handle error
+      }
      
-      vkQueueSubmit(m_vkqueueGraphics, 1, psubmitinfo, VK_NULL_HANDLE);
+      vkQueueSubmit(m_vkqueueGraphics, 1, psubmitinfo, fence);
+
+      vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
 
       vkQueueWaitIdle(m_vkqueueGraphics);
 
- 
+
+      vkDestroyFence(this->logicalDevice(), fence, NULL);
    }
 
 

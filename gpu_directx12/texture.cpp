@@ -22,17 +22,17 @@ namespace gpu_directx12
    }
 
 
-   void texture::initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_size& size) //, bool bCreateRenderTargetView, bool bCreateShaderResourceView)
+   void texture::initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangleTarget) //, bool bCreateRenderTargetView, bool bCreateShaderResourceView)
    {
 
-      ::gpu::texture::initialize_gpu_texture(prenderer, size);
+      ::gpu::texture::initialize_gpu_texture(prenderer, rectangleTarget);
 
       DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
       // 1. Create the texture resource
       D3D12_RESOURCE_DESC textureDesc = {};
       textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-      textureDesc.Width = size.width();
-      textureDesc.Height = size.height();
+      textureDesc.Width = rectangleTarget.width();
+      textureDesc.Height = rectangleTarget.height();
       textureDesc.MipLevels = 1;
       textureDesc.DepthOrArraySize = 1;
       textureDesc.Format = format;

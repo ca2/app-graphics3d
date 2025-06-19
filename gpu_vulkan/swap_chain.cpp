@@ -81,10 +81,8 @@ namespace gpu_vulkan
    }
 
 
-   void swap_chain::init()
+   void swap_chain::on_init()
    {
-
-      m_pgpurenderer->restart_frame_counter();
 
       createRenderPassImpl();
       createImageViews();
@@ -778,7 +776,10 @@ namespace gpu_vulkan
 
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
 
-      ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+      ptexture->_new_state(pcommandbuffer, 
+         0,
+         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+         VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
 
 
 

@@ -26,14 +26,14 @@ namespace gpu_directx12
 
       //::int_size m_size;
 
-      ::pointer < renderer >  m_pgpurenderer;
+      //::pointer < renderer >  m_pgpurenderer;
 
       ::pointer<render_target_view> m_prendertargetviewOld;
 
       ::int_array imageAvailable;
       bool                 m_bNeedRebuild;
 
-      static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+      //static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
       render_target_view();
       //render_target_view(renderer* prenderer, const ::int_size & size);
@@ -41,7 +41,7 @@ namespace gpu_directx12
       ~render_target_view();
 
 
-      virtual void initialize_render_target_view(renderer* prenderer, const ::int_size& size, ::pointer <render_target_view>previous);
+      virtual void initialize_render_target(::gpu::renderer* prenderer, const ::int_size& size, ::pointer <::gpu::render_target>previous);
 
 
 
@@ -80,7 +80,7 @@ namespace gpu_directx12
       //}
 
 
-      virtual void init();
+      void on_init() override;
       virtual void createRenderPassImpl();
       virtual void createImageViews();
       virtual void createDepthResources();

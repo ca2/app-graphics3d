@@ -1002,7 +1002,7 @@ namespace gpu_directx12
 
       prenderer->m_bDisableDepthStencil = true;
 
-      initialize_render_target_view(prenderer, size, nullptr);
+      initialize_render_target(prenderer, size, nullptr);
 
       init();
 

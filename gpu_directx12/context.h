@@ -304,12 +304,12 @@ namespace gpu_directx12
       ::gpu::enum_output get_eoutput() override;
 
 
-      void on_begin_draw_attach(::draw2d_gpu::graphics* pgpugraphics, const ::int_rectangle& rectangle) override;
-      void draw2d_on_begin_draw(::draw2d_gpu::graphics* pgpugraphics, const ::int_rectangle& rectangle) override;
+      void on_begin_draw_attach(::draw2d_gpu::graphics* pgpugraphics) override;
+      void draw2d_on_begin_draw(::draw2d_gpu::graphics* pgpugraphics) override;
       
 
       void on_create_texture(::gpu::texture* pgputext) override;
-      void on_take_snapshot(::gpu::layer* pgpulayer, ::gpu::texture* ptextureSource) override;
+      void on_take_snapshot(::gpu::layer* pgpulayer) override;
 
       
 

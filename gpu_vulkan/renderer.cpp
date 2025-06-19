@@ -228,39 +228,22 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::defer_update_renderer()
+   void renderer::on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous)
    {
 
-      auto rectangle = m_pgpucontext->rectangle();
-
-      if (m_extentRenderer.width == rectangle.width()
-         && m_extentRenderer.height == rectangle.height())
+      if (eoutput == ::gpu::e_output_cpu_buffer
+         || eoutput == ::gpu::e_output_gpu_buffer)
       {
 
-         return;
-
-      }
-
-      m_bNeedToRecreateSwapChain = true;
-
-      m_extentRenderer.width = m_pgpucontext->rectangle().width();
-
-      m_extentRenderer.height = m_pgpucontext->rectangle().height();
-
-      auto eoutput = m_pgpucontext->m_eoutput;
-
-      if (eoutput == ::gpu::e_output_cpu_buffer)
-      {
-
-         auto poffscreenrenderpass = __allocate offscreen_render_pass();
-#ifdef WINDOWS_DESKTOP
-         poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
-#else
-         poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
-#endif
-         m_pgpurendertarget = poffscreenrenderpass;
-         //m_prendererResolve.release();
-
+        auto poffscreenrendertargetview = __allocate offscreen_render_pass();
+         //#ifdef WINDOWS_DESKTOP
+         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+         //#else
+         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+         //#endif
+         m_pgpurendertarget = poffscreenrendertargetview;
+         //         //m_prendererResolve.release();
+         //
       }
       else if (eoutput == ::gpu::e_output_swap_chain)
       {
@@ -277,17 +260,18 @@ namespace gpu_vulkan
          //m_prendererResolve.release();
 
       }
-      else if (eoutput == ::gpu::e_output_gpu_buffer)
+      else if (eoutput == ::gpu::e_output_swap_chain)
       {
+         auto poffscreenrendertargetview = __allocate offscreen_render_pass();
+         //#ifdef WINDOWS_DESKTOP
+         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+         //#else
+         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+         //#endif
+         m_pgpurendertarget = poffscreenrendertargetview;
 
-         auto poffscreenrenderpass = __allocate offscreen_render_pass();
-#ifdef WINDOWS_DESKTOP
-         poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
-#else
-         poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
-#endif
-         m_pgpurendertarget = poffscreenrenderpass;
-         //m_prendererResolve;
+         //m_prendertargetview = __allocate swap_chain_render_target(this, size, m_prendertargetview);
+         //m_prendererResolve.release();
 
       }
       else if (eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
@@ -297,6 +281,7 @@ namespace gpu_vulkan
          paccumulationrenderpass->m_formatImage = VK_FORMAT_R32G32B32A32_SFLOAT;
          paccumulationrenderpass->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
          m_pgpurendertarget = paccumulationrenderpass;
+         //m_pgpurendertarget = paccumulationrenderpass;
 
          //__construct_new(m_prendererResolve);
 
@@ -331,39 +316,149 @@ namespace gpu_vulkan
 
       }
 
-      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
 
-      if (pgpurenderpass->m_texturea.is_empty())
-      {
-
-         ::int_size size;
-
-         size.cx() = m_extentRenderer.width;
-         size.cy() = m_extentRenderer.height;
-
-         pgpurenderpass->initialize_render_target(this, size, pgpurenderpass.m_p);
-
-         pgpurenderpass->init();
-
-         createCommandBuffers();
-
-      }
-
-      //if (m_prendererResolve)
-      //{
-
-      //	if (m_prendererResolve->pgpurenderpass->m_images.is_empty())
-      //	{
-
-      //		m_prendererResolve->defer_update_render_pass();
-
-      //	}
-
-      //}
-
-      m_bNeedToRecreateSwapChain = false;
+      //return pgpurendertarget;
 
    }
+
+
+
+//   void renderer::defer_update_renderer()
+//   {
+//
+//      auto rectangle = m_pgpucontext->rectangle();
+//
+//      if (m_extentRenderer.width == rectangle.width()
+//         && m_extentRenderer.height == rectangle.height())
+//      {
+//
+//         return;
+//
+//      }
+//
+//      m_bNeedToRecreateSwapChain = true;
+//
+//      m_extentRenderer.width = m_pgpucontext->rectangle().width();
+//
+//      m_extentRenderer.height = m_pgpucontext->rectangle().height();
+//
+//      auto eoutput = m_pgpucontext->m_eoutput;
+//
+//      if (eoutput == ::gpu::e_output_cpu_buffer)
+//      {
+//
+//         auto poffscreenrenderpass = __allocate offscreen_render_pass();
+//#ifdef WINDOWS_DESKTOP
+//         poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+//#else
+//         poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+//#endif
+//         m_pgpurendertarget = poffscreenrenderpass;
+//         //m_prendererResolve.release();
+//
+//      }
+//      else if (eoutput == ::gpu::e_output_swap_chain)
+//      {
+//
+//         ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->m_pgpudevice->get_swap_chain();
+//#ifdef WINDOWS_DESKTOP
+//         pswapchain->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+//#else
+//         pswapchain->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+//#endif
+//
+//         m_pgpurendertarget = pswapchain.m_p;
+//         //pgpurenderpass = __allocate swap_chain_render_pass(this, m_extentRenderer, pgpurenderpass);
+//         //m_prendererResolve.release();
+//
+//      }
+//      else if (eoutput == ::gpu::e_output_gpu_buffer)
+//      {
+//
+//         auto poffscreenrenderpass = __allocate offscreen_render_pass();
+//#ifdef WINDOWS_DESKTOP
+//         poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+//#else
+//         poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+//#endif
+//         m_pgpurendertarget = poffscreenrenderpass;
+//         //m_prendererResolve;
+//
+//      }
+//      else if (eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
+//      {
+//
+//         auto paccumulationrenderpass = __allocate accumulation_render_pass();
+//         paccumulationrenderpass->m_formatImage = VK_FORMAT_R32G32B32A32_SFLOAT;
+//         paccumulationrenderpass->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
+//         m_pgpurendertarget = paccumulationrenderpass;
+//
+//         //__construct_new(m_prendererResolve);
+//
+//         //m_prendererResolve->initialize_renderer(m_pgpucontext, ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers);
+//
+//         //m_prendererResolve->set_placement(m_pgpucontext->rectangle);
+//         //
+//         //            auto poffscreenrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, pgpurenderpassResolve);
+//         //#ifdef WINDOWS_DESKTOP
+//         //            poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+//         //#else
+//         //            poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+//         //#endif
+//         //            pgpurenderpassResolve = poffscreenrenderpass;
+//      }
+//      else if (eoutput == ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers)
+//      {
+//
+//         auto poffscreenrenderpass = __allocate offscreen_render_pass();
+//#ifdef WINDOWS_DESKTOP
+//         poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+//#else
+//         poffscreenrenderpass->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+//#endif
+//         m_pgpurendertarget = poffscreenrenderpass;
+//
+//      }
+//      else
+//      {
+//
+//         throw ::exception(error_wrong_state, "Unexpected gpu e_output");
+//
+//      }
+//
+//      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+//
+//      if (pgpurenderpass->m_texturea.is_empty())
+//      {
+//
+//         ::int_size size;
+//
+//         size.cx() = m_extentRenderer.width;
+//         size.cy() = m_extentRenderer.height;
+//
+//         pgpurenderpass->initialize_render_target(this, size, pgpurenderpass.m_p);
+//
+//         pgpurenderpass->init();
+//
+//         createCommandBuffers();
+//
+//      }
+//
+//      //if (m_prendererResolve)
+//      //{
+//
+//      //	if (m_prendererResolve->pgpurenderpass->m_images.is_empty())
+//      //	{
+//
+//      //		m_prendererResolve->defer_update_render_pass();
+//
+//      //	}
+//
+//      //}
+//
+//      m_bNeedToRecreateSwapChain = false;
+//
+//   }
 
 
 //   ::gpu::render_target* renderer::back_buffer_render_target()
@@ -622,7 +717,7 @@ namespace gpu_vulkan
    void renderer::cpu_buffer_sampler::initialize_cpu_buffer_sampler(::gpu::context* pgpucontext)
    {
 
-      m_pgpucontext = pgpucontext;
+      m_pcontext = pgpucontext;
 
    }
 
@@ -630,101 +725,112 @@ namespace gpu_vulkan
    void renderer::cpu_buffer_sampler::clear()
    {
 
-      m_vkextent2d.width = 0;
-      m_vkextent2d.height = 0;
-      m_vkdevicememory = nullptr;
-      m_vkimage = nullptr;
+      //m_vkextent2d.width = 0;
+      //m_vkextent2d.height = 0;
+      //m_vkdevicememory = nullptr;
+      //m_vkimage = nullptr;
+
+      m_texturea.clear();
 
    }
 
 
-   void renderer::cpu_buffer_sampler::update(VkExtent2D vkextent2d)
+   void renderer::cpu_buffer_sampler::update(const ::int_size& size)
    {
 
-      if (vkextent2d.width == m_vkextent2d.width
-         && vkextent2d.height == m_vkextent2d.height)
+      auto& ptexture = m_texturea.element_at_grow(m_prenderer->get_frame_index());
+
+      if (ptexture &&
+         ptexture->m_rectangleTarget.size() == size)
       {
 
          return;
 
       }
 
-      destroy();
+      ptexture.release();
 
-      if (vkextent2d.width <= 0 ||
-         vkextent2d.height <= 0)
+      if (size.is_empty())
       {
 
          return;
 
       }
 
-      m_vkextent2d.width = vkextent2d.width;
-      m_vkextent2d.height = vkextent2d.height;
+      __defer_construct_new(ptexture);
 
-      VkImageCreateInfo imgCreateInfo(initializers::imageCreateInfo());
-      imgCreateInfo.imageType = VK_IMAGE_TYPE_2D;
-      imgCreateInfo.format = VK_FORMAT_B8G8R8A8_UNORM;
-      imgCreateInfo.extent.width = m_vkextent2d.width;
-      imgCreateInfo.extent.height = m_vkextent2d.height;
-      imgCreateInfo.extent.depth = 1;
-      imgCreateInfo.arrayLayers = 1;
-      imgCreateInfo.mipLevels = 1;
-      imgCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      imgCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      imgCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
-      imgCreateInfo.usage =
-         VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-         VK_IMAGE_USAGE_SAMPLED_BIT;
-      // Create the image
-      //VkImage dstImage;
-      VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
-      // Create memory to back up the image
-      VkMemoryRequirements memRequirements;
-      VkMemoryAllocateInfo memAllocInfo(initializers::memoryAllocateInfo());
-      vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_vkimage, &memRequirements);
-      memAllocInfo.allocationSize = memRequirements.size;
-      // Memory must be host visible to copy from
-      memAllocInfo.memoryTypeIndex = m_pgpucontext->m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-      VK_CHECK_RESULT(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
-      VK_CHECK_RESULT(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
+      ptexture->m_bTransferDst = true;
+      ptexture->m_bCpuRead = true;
 
-      if (1)
-      {
+      ptexture->initialize_gpu_texture(m_pcontext->get_gpu_renderer(),
+         ::int_rectangle(size));
 
-         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
+      //m_vkextent2d.width = vkextent2d.width;
+      //m_vkextent2d.height = vkextent2d.height;
 
-         VkImageMemoryBarrier barrier = {
-            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            .srcAccessMask = 0,
-            .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-            .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-            .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-            .image = m_vkimage,
-            .subresourceRange = {
-               .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-               .baseMipLevel = 0,
-               .levelCount = 1,
-               .baseArrayLayer = 0,
-               .layerCount = 1
-            },
-         };
+      //VkImageCreateInfo imgCreateInfo(initializers::imageCreateInfo());
+      //imgCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+      //imgCreateInfo.format = VK_FORMAT_B8G8R8A8_UNORM;
+      //imgCreateInfo.extent.width = m_vkextent2d.width;
+      //imgCreateInfo.extent.height = m_vkextent2d.height;
+      //imgCreateInfo.extent.depth = 1;
+      //imgCreateInfo.arrayLayers = 1;
+      //imgCreateInfo.mipLevels = 1;
+      //imgCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      //imgCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      //imgCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
+      //imgCreateInfo.usage =
+      //   VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+      //   VK_IMAGE_USAGE_SAMPLED_BIT;
+      //// Create the image
+      ////VkImage dstImage;
+      //VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
+      //// Create memory to back up the image
+      //VkMemoryRequirements memRequirements;
+      //VkMemoryAllocateInfo memAllocInfo(initializers::memoryAllocateInfo());
+      //vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_vkimage, &memRequirements);
+      //memAllocInfo.allocationSize = memRequirements.size;
+      //// Memory must be host visible to copy from
+      //memAllocInfo.memoryTypeIndex = m_pgpucontext->m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+      //VK_CHECK_RESULT(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
+      //VK_CHECK_RESULT(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
 
-         vkCmdPipelineBarrier(
-            pcommandbuffer->m_vkcommandbuffer,
-            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-            0,
-            0, NULL,
-            0, NULL,
-            1, &barrier
-         );
+      //if (1)
+      //{
 
-         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
+      //   auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
-      }
+      //   VkImageMemoryBarrier barrier = {
+      //      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      //      .srcAccessMask = 0,
+      //      .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      //      .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+      //      .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //      .image = m_vkimage,
+      //      .subresourceRange = {
+      //         .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //         .baseMipLevel = 0,
+      //         .levelCount = 1,
+      //         .baseArrayLayer = 0,
+      //         .layerCount = 1
+      //      },
+      //   };
+
+      //   vkCmdPipelineBarrier(
+      //      pcommandbuffer->m_vkcommandbuffer,
+      //      VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+      //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      //      0,
+      //      0, NULL,
+      //      0, NULL,
+      //      1, &barrier
+      //   );
+
+      //   m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
+
+      //}
 
 
    }
@@ -733,103 +839,344 @@ namespace gpu_vulkan
    void renderer::cpu_buffer_sampler::destroy()
    {
 
-      if (m_vkdevicememory)
-      {
+      //if (m_vkdevicememory)
+      //{
 
-         vkFreeMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory, nullptr);
-         vkDestroyImage(m_pgpucontext->logicalDevice(), m_vkimage, nullptr);
+      //   vkFreeMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory, nullptr);
+      //   vkDestroyImage(m_pgpucontext->logicalDevice(), m_vkimage, nullptr);
 
          clear();
 
-      }
+      //}
 
    }
 
 
-   void renderer::cpu_buffer_sampler::sample(VkImage vkimage)
+   void renderer::cpu_buffer_sampler::sample(::gpu::texture* pgputexture)
    {
 
-      if (!m_vkimage || !m_vkdevicememory)
+      auto iFrameIndex = m_prenderer->get_frame_index();
+
+      auto& ptextureRef = m_texturea.element_at_grow(iFrameIndex);
+
+      if (!ptextureRef)
       {
 
          return;
 
       }
 
+      ::cast < texture > ptexture = pgputexture;
 
+      auto pcommandbuffer = m_pcontext->beginSingleTimeCommands();
       // Create the linear tiled destination image to copy to and to read the memory from
 
-  // Do the actual blit from the offscreen image to our host visible destination image
-      VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->m_pgpudevice->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
-      VkCommandBuffer copyCmd;
-      VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
-      VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-      VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
+  //// Do the actual blit from the offscreen image to our host visible destination image
+  //    VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->m_pgpudevice->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
+  //    VkCommandBuffer copyCmd;
+  //    VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
+  //    VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
+  //    VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
+      //ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+      VkPipelineStageFlags vkpipelinestageflagsWait = ptexture->m_vkpipelinestageflags;
+      {
+         //VkImageMemoryBarrier barrier = {
+         //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+         //   .srcAccessMask = ptexture->m_vkaccessflags,
+         //   .dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
+         //   .oldLayout = ptexture->m_vkimagelayout,
+         //   .newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+         //  .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //  .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //  .image = ptexture->m_vkimage,
+         //  .subresourceRange = {
+         //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+         //      .baseMipLevel = 0,
+         //      .levelCount = 1,
+         //      .baseArrayLayer = 0,
+         //      .layerCount = 1
+         //  }
+         //};
 
-      // Transition source image to transfer destination layout
-      insertImageMemoryBarrier(
-         copyCmd,
-         vkimage,
-         0,
-         VK_ACCESS_TRANSFER_WRITE_BIT,
-         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-         VK_PIPELINE_STAGE_TRANSFER_BIT,
-         VK_PIPELINE_STAGE_TRANSFER_BIT,
-         VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
-      // Transition destination image to transfer destination layout
-      insertImageMemoryBarrier(
-         copyCmd,
-         m_vkimage,
-         0,
-         VK_ACCESS_TRANSFER_WRITE_BIT,
-         VK_IMAGE_LAYOUT_UNDEFINED,
-         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-         VK_PIPELINE_STAGE_TRANSFER_BIT,
-         VK_PIPELINE_STAGE_TRANSFER_BIT,
-         VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
+
+         //vkCmdPipelineBarrier(
+         //   pcommandbuffer->m_vkcommandbuffer,
+         //   ptexture->m_vkpipelinestageflags,  // ✅ srcStageMask
+         //   VK_PIPELINE_STAGE_TRANSFER_BIT,                 // or SHADER_BIT, depending on next usage         0,
+         //   0,
+         //   0, NULL,
+         //   0, NULL,
+         //   1, &barrier
+         //);
+
+         //ptexture->m_vkaccessflags = VK_ACCESS_TRANSFER_READ_BIT;
+         //ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+         //ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_TRANSFER_BIT;
+
+         ptexture->_new_state(pcommandbuffer,
+            VK_ACCESS_TRANSFER_READ_BIT,
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT);
+      }
+
+      {
+         ////m_ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+         //   VkImageMemoryBarrier barrier = {
+         //     .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+         //     .srcAccessMask = m_ptexture->m_vkaccessflags,
+         //     .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
+         //     .oldLayout = m_ptexture->m_vkimagelayout,
+         //     .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+         //    .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //    .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //    .image = m_ptexture->m_vkimage,
+         //    .subresourceRange = {
+         //        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+         //        .baseMipLevel = 0,
+         //        .levelCount = 1,
+         //        .baseArrayLayer = 0,
+         //        .layerCount = 1
+         //    }
+         //   };
+
+         //   
+         //   vkCmdPipelineBarrier(
+         //      pcommandbuffer->m_vkcommandbuffer,
+         //      m_ptexture->m_vkpipelinestageflags,  // ✅ srcStageMask
+         //      VK_PIPELINE_STAGE_TRANSFER_BIT,                 // or SHADER_BIT, depending on next usage         0,
+         //      0,
+         //      0, NULL,
+         //      0, NULL,
+         //      1, &barrier
+         //   );
+
+         //   m_ptexture->m_vkaccessflags = VK_ACCESS_TRANSFER_WRITE_BIT;
+         //   m_ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+         //   m_ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_TRANSFER_BIT;
+         ptextureRef->_new_state(pcommandbuffer,
+            VK_ACCESS_TRANSFER_WRITE_BIT,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT);
+      }
+
+
+      //// Transition source image to transfer destination layout
+      //insertImageMemoryBarrier(
+      //   copyCmd,
+      //   vkimage,
+      //   0,
+      //   VK_ACCESS_TRANSFER_WRITE_BIT,
+      //   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+      //   VK_PIPELINE_STAGE_TRANSFER_BIT,
+      //   VK_PIPELINE_STAGE_TRANSFER_BIT,
+      //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
+
+      //// Transition destination image to transfer destination layout
+      //insertImageMemoryBarrier(
+      //   copyCmd,
+      //   m_vkimage,
+      //   0,
+      //   VK_ACCESS_TRANSFER_WRITE_BIT,
+      //   VK_IMAGE_LAYOUT_UNDEFINED,
+      //   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      //   VK_PIPELINE_STAGE_TRANSFER_BIT,
+      //   VK_PIPELINE_STAGE_TRANSFER_BIT,
+      //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
       // colorAttachment.image is already in VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, and does not need to be transitioned
+      {
+
+      VkClearColorValue clearColor = {
+          .float32 = { 0.0f, 0.5f, 0.0f, 0.5f }  // R, G, B, A
+      };
+
+      VkImageSubresourceRange subresourceRange = {
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1,
+      };
+
+      // Image must already be in VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+      vkCmdClearColorImage(
+         pcommandbuffer->m_vkcommandbuffer,
+         ptextureRef->m_vkimage,
+         ptextureRef->m_vkimagelayout,
+         &clearColor,
+         1,
+         &subresourceRange
+      );
+
+   }
 
       VkImageCopy imageCopyRegion{};
       imageCopyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       imageCopyRegion.srcSubresource.layerCount = 1;
       imageCopyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       imageCopyRegion.dstSubresource.layerCount = 1;
-      imageCopyRegion.extent.width = m_vkextent2d.width;
-      imageCopyRegion.extent.height = m_vkextent2d.height;
+      imageCopyRegion.extent.width = ptexture->m_rectangleTarget.width();
+      imageCopyRegion.extent.height = ptexture->m_rectangleTarget.height();
       imageCopyRegion.extent.depth = 1;
 
       vkCmdCopyImage(
-         copyCmd,
+         pcommandbuffer->m_vkcommandbuffer,
          //colorAttachment.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-         vkimage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-         m_vkimage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+         ptexture->m_vkimage, ptexture->m_vkimagelayout,
+         ptextureRef->m_vkimage, ptextureRef->m_vkimagelayout,
          1,
          &imageCopyRegion);
 
-      // Transition destination image to general layout, which is the required layout for mapping the image memory later on
-      insertImageMemoryBarrier(
-         copyCmd,
-         m_vkimage,
-         VK_ACCESS_TRANSFER_WRITE_BIT,
-         VK_ACCESS_MEMORY_READ_BIT,
-         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-         VK_IMAGE_LAYOUT_GENERAL,
-         VK_PIPELINE_STAGE_TRANSFER_BIT,
-         VK_PIPELINE_STAGE_TRANSFER_BIT,
-         VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
+      //{
 
-      VK_CHECK_RESULT(vkEndCommandBuffer(copyCmd));
+      //   VkClearColorValue clearColor = {
+      //       .float32 = { 0.5f, 0.5f, 0.0f, 0.5f }  // R, G, B, A
+      //   };
 
-      ::cast < offscreen_render_pass > ppass = m_prenderer->m_pgpurendertarget;
+      //   VkImageSubresourceRange subresourceRange = {
+      //       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //       .baseMipLevel = 0,
+      //       .levelCount = 1,
+      //       .baseArrayLayer = 0,
+      //       .layerCount = 1,
+      //   };
 
-      ppass->submitSamplingWork(copyCmd);
+      //   // Image must already be in VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+      //   vkCmdClearColorImage(
+      //      pcommandbuffer->m_vkcommandbuffer,
+      //      ptextureRef->m_vkimage,
+      //      ptextureRef->m_vkimagelayout,
+      //      &clearColor,
+      //      1,
+      //      &subresourceRange
+      //   );
 
-      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+      //}
 
-      vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_pgpudevice->getCommandPool(), 1, &copyCmd);
+      //m_ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_GENERAL);
+      //ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+      {
+         //VkImageMemoryBarrier barrier = {
+         //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+         //   .srcAccessMask = m_ptexture->m_vkaccessflags,
+         //   .dstAccessMask = VK_ACCESS_HOST_READ_BIT,
+         //   .oldLayout = m_ptexture->m_vkimagelayout,
+         //   .newLayout = VK_IMAGE_LAYOUT_GENERAL,
+         //  .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //  .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //  .image = m_ptexture->m_vkimage,
+         //  .subresourceRange = {
+         //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+         //      .baseMipLevel = 0,
+         //      .levelCount = 1,
+         //      .baseArrayLayer = 0,
+         //      .layerCount = 1
+         //  }
+         //};
+
+
+         //vkCmdPipelineBarrier(
+         //   pcommandbuffer->m_vkcommandbuffer,
+         //   m_ptexture->m_vkpipelinestageflags,  // ✅ srcStageMask
+         //   VK_PIPELINE_STAGE_HOST_BIT,                 // or SHADER_BIT, depending on next usage         0,
+         //   0,
+         //   0, NULL,
+         //   0, NULL,
+         //   1, &barrier
+         //);
+         //m_ptexture->m_vkaccessflags = VK_ACCESS_HOST_READ_BIT;
+         //m_ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_GENERAL;
+         //m_ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_HOST_BIT;
+         ptextureRef->_new_state(
+            pcommandbuffer,
+            VK_ACCESS_HOST_READ_BIT,
+            VK_IMAGE_LAYOUT_GENERAL,
+            VK_PIPELINE_STAGE_HOST_BIT);
+      }
+
+      //{
+      //   //VkImageMemoryBarrier barrier = {
+      //   //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      //   //   .srcAccessMask = ptexture->m_vkaccessflags,
+      //   //   .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      //   //   .oldLayout = ptexture->m_vkimagelayout,
+      //   //   .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //   //  .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //   //  .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //   //  .image = ptexture->m_vkimage,
+      //   //  .subresourceRange = {
+      //   //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //   //      .baseMipLevel = 0,
+      //   //      .levelCount = 1,
+      //   //      .baseArrayLayer = 0,
+      //   //      .layerCount = 1
+      //   //  }
+      //   //};
+
+
+      //   //vkCmdPipelineBarrier(
+      //   //   pcommandbuffer->m_vkcommandbuffer,
+      //   //   ptexture->m_vkpipelinestageflags,  // ✅ srcStageMask
+      //   //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,                 // or SHADER_BIT, depending on next usage         0,
+      //   //   0,
+      //   //   0, NULL,
+      //   //   0, NULL,
+      //   //   1, &barrier
+      //   //);
+      //   //ptexture->m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+      //   //ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+      //   //ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+         ptexture->_new_state(
+            pcommandbuffer,
+            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         );
+      //}
+
+
+      ::cast < renderer > prenderer = m_pcontext->get_gpu_renderer();
+
+
+      VkSubmitInfo submitInfo{};
+      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+      submitInfo.commandBufferCount = 1;
+      submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
+      ::array<VkSemaphore> waitSemaphores;
+      ::array<VkPipelineStageFlags> waitStages;
+      waitStages.add(vkpipelinestageflagsWait);
+      ::cast < render_pass > pgpurenderpass = prenderer->m_pgpurendertarget;
+      VkSemaphore vksemaphore = pgpurenderpass->renderFinishedSemaphores[prenderer->get_frame_index()];
+      waitSemaphores.add(vksemaphore);
+      submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
+      submitInfo.pWaitSemaphores = waitSemaphores.data();
+      submitInfo.pWaitDstStageMask = waitStages.data();
+
+      m_pcontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
+      //// Transition destination image to general layout, which is the required layout for mapping the image memory later on
+      //insertImageMemoryBarrier(
+      //   copyCmd,
+      //   m_vkimage,
+      //   VK_ACCESS_TRANSFER_WRITE_BIT,
+      //   VK_ACCESS_MEMORY_READ_BIT,
+      //   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      //   VK_IMAGE_LAYOUT_GENERAL,
+      //   VK_PIPELINE_STAGE_TRANSFER_BIT,
+      //   VK_PIPELINE_STAGE_TRANSFER_BIT,
+      //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
+
+      //VK_CHECK_RESULT(vkEndCommandBuffer(copyCmd));
+
+      //::cast < offscreen_render_pass > ppass = m_prenderer->m_pgpurendertarget;
+
+      //ppass->submitSamplingWork(copyCmd);
+
+      //vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+
+      //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_pgpudevice->getCommandPool(), 1, &copyCmd);
 
 
    }
@@ -838,12 +1185,18 @@ namespace gpu_vulkan
    void renderer::cpu_buffer_sampler::send_sample()
    {
 
-      if (!m_vkimage || !m_vkdevicememory)
+      auto& ptextureRef = m_texturea.element_at_grow(m_prenderer->get_frame_index());
+
+      if (!ptextureRef)
       {
 
          return;
 
       }
+
+      // Make sure you wait for GPU rendering to finish
+      vkDeviceWaitIdle(m_pcontext->logicalDevice()); // Or wait on a specific fence
+
 
       //auto pimpact = m_pgpucontext->m_pimpact;
 
@@ -856,11 +1209,13 @@ namespace gpu_vulkan
       subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       VkSubresourceLayout subResourceLayout;
 
-      vkGetImageSubresourceLayout(m_pgpucontext->logicalDevice(), m_vkimage, &subResource, &subResourceLayout);
+      vkGetImageSubresourceLayout(m_pcontext->logicalDevice(), 
+         ptextureRef->m_vkimage, &subResource, &subResourceLayout);
 
       const char* imagedata = nullptr;
       // Map image memory so we can start copying from it
-      vkMapMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
+      vkMapMemory(m_pcontext->logicalDevice(), 
+         ptextureRef->m_vkdevicememory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
       imagedata += subResourceLayout.offset;
 
       /*
@@ -875,14 +1230,14 @@ namespace gpu_vulkan
       //const bool colorSwizzle = (std::find(formatsBGR.begin(), formatsBGR.end(), VK_FORMAT_R8G8B8A8_UNORM) != formatsBGR.end());
       //{
 
-      auto pgpucontext = m_pgpucontext;
+      auto pgpucontext = m_pcontext;
 
       auto pcpubuffer = pgpucontext->m_pcpubuffer;
 
       pcpubuffer->set_pixels(
          imagedata,
-         m_vkextent2d.width,
-         m_vkextent2d.height,
+         ptextureRef->m_rectangleTarget.width(),
+         ptextureRef->m_rectangleTarget.height(),
          (int)subResourceLayout.rowPitch,
          true);
 
@@ -906,13 +1261,15 @@ namespace gpu_vulkan
    //}
 
 
-      vkUnmapMemory(m_pgpucontext->logicalDevice(), m_vkdevicememory);
+      vkUnmapMemory(m_pcontext->logicalDevice(), ptextureRef->m_vkdevicememory);
 
    }
 
 
    void renderer::sample()
    {
+
+      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
       //auto callback = m_callbackImage32CpuBuffer;
 
@@ -921,18 +1278,19 @@ namespace gpu_vulkan
 
          ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
 
-         m_pcpubuffersampler->update(pgpurenderpass->getExtent());
+         m_pcpubuffersampler->update(m_pgpucontext->m_rectangle.size());
          /*
             Copy framebuffer image to host visible image
          */
          /*const char* imagedata;*/
          {
 
+            
 
             ::cast < texture > ptexture = pgpurenderpass->m_texturea[get_frame_index()];
 
 
-            m_pcpubuffersampler->sample(ptexture->m_vkimage);
+            m_pcpubuffersampler->sample(ptexture);
 
             //// Create the linear tiled destination image to copy to and to read the memory from
 
@@ -1087,7 +1445,6 @@ namespace gpu_vulkan
 
 
       }
-      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
 
 
    }
@@ -1931,8 +2288,17 @@ namespace gpu_vulkan
       ::cast < texture > ptextureSrc = pgputextureSource;
       ::cast < texture > ptextureDst = pgputextureTarget;
 
-      ptextureSrc->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-      ptextureDst->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+      ptextureSrc->_new_state(
+         pcommandbuffer,
+         0,
+         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+
+      ptextureDst->_new_state(
+         pcommandbuffer,
+         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
       //  if (!m_psha)
       //  {
@@ -2749,23 +3115,35 @@ namespace gpu_vulkan
          assert(
             pcommandbuffer == getCurrentCommandBuffer() &&
             "Can't begin render pass on command buffer from a different frame");
+         
+         
+         ::cast < texture > ptexture = m_pgpurendertarget->current_texture();
 
-         VkRenderPassBeginInfo renderPassInfo{};
-         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-         renderPassInfo.renderPass = pgpurenderpass->getRenderPass();
-         renderPassInfo.framebuffer = pgpurenderpass->getCurrentFrameBuffer();
 
-         renderPassInfo.renderArea.offset = { 0, 0 };
-         renderPassInfo.renderArea.extent = pgpurenderpass->getExtent();
+         ptexture->_new_state(
+            pcommandbuffer,
+            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         );
 
-         VkClearValue clearValues[2];
-         //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-         clearValues[0].color = { 0.f, 0.0f, 0.0f, 0.0f };
-         clearValues[1].depthStencil = { 1.0f, 0 };
-         renderPassInfo.clearValueCount = 2;
-         renderPassInfo.pClearValues = clearValues;
 
-         //vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+         //VkRenderPassBeginInfo renderPassInfo{};
+         //renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+         //renderPassInfo.renderPass = pgpurenderpass->getRenderPass();
+         //renderPassInfo.framebuffer = pgpurenderpass->getCurrentFrameBuffer();
+
+         //renderPassInfo.renderArea.offset = { 0, 0 };
+         //renderPassInfo.renderArea.extent = pgpurenderpass->getExtent();
+
+         //VkClearValue clearValues[2];
+         ////clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
+         //clearValues[0].color = { 0.f, 0.0f, 0.0f, 0.0f };
+         //clearValues[1].depthStencil = { 1.0f, 0 };
+         //renderPassInfo.clearValueCount = 2;
+         //renderPassInfo.pClearValues = clearValues;
+
+         ////vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
          VkViewport viewport{};
          viewport.x = 0.0f;
@@ -2843,22 +3221,26 @@ namespace gpu_vulkan
             pcommandbuffer == getCurrentCommandBuffer() &&
             "Can't begin render pass on command buffer from a different frame");
 
-         VkRenderPassBeginInfo renderPassInfo{};
-         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-         renderPassInfo.renderPass = pgpurenderpass->getRenderPass();
-         renderPassInfo.framebuffer = pgpurenderpass->getCurrentFrameBuffer();
+         //if (pgpurenderpass->getRenderPass())
+         //{
+         //   VkRenderPassBeginInfo renderPassInfo{};
+         //   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+         //   renderPassInfo.renderPass = pgpurenderpass->getRenderPass();
+         //   renderPassInfo.framebuffer = pgpurenderpass->getCurrentFrameBuffer();
 
-         renderPassInfo.renderArea.offset = { 0, 0 };
-         renderPassInfo.renderArea.extent = pgpurenderpass->getExtent();
+         //   renderPassInfo.renderArea.offset = { 0, 0 };
+         //   renderPassInfo.renderArea.extent = pgpurenderpass->getExtent();
 
-         VkClearValue clearValues[2];
-         //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-         clearValues[0].color = { 0.0f, 0.0f, 0.0f, 0.0f };
-         clearValues[1].depthStencil = { 1.0f, 0 };
-         renderPassInfo.clearValueCount = 2;
-         renderPassInfo.pClearValues = clearValues;
+         //   VkClearValue clearValues[2];
+         //   //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
+         //   clearValues[0].color = { 0.0f, 0.0f, 0.0f, 0.0f };
+         //   clearValues[1].depthStencil = { 1.0f, 0 };
+         //   renderPassInfo.clearValueCount = 2;
+         //   renderPassInfo.pClearValues = clearValues;
 
-         //vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+         //   //vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+         //}
 
          VkViewport viewport{};
          viewport.x = 0.0f;
@@ -3128,9 +3510,9 @@ namespace gpu_vulkan
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+            .srcAccessMask = ptexture->m_vkaccessflags,
             .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-            .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            .oldLayout = ptexture->m_vkimagelayout,
             .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
             .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
             .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -3144,16 +3526,19 @@ namespace gpu_vulkan
             },
          };
 
+         ptexture->m_vkaccessflags = VK_ACCESS_SHADER_READ_BIT;
+         ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
          vkCmdPipelineBarrier(
             pcommandbuffer->m_vkcommandbuffer,
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            ptexture->m_vkpipelinestageflags,
             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
             0,
             0, NULL,
             0, NULL,
             1, &barrier
          );
-
+         ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
          m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
       }
@@ -3190,9 +3575,9 @@ namespace gpu_vulkan
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            .srcAccessMask = VK_ACCESS_SHADER_READ_BIT,
+            .srcAccessMask = ptexture->m_vkaccessflags,
             .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-            .oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            .oldLayout = ptexture->m_vkimagelayout,
             .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
             .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -3206,16 +3591,19 @@ namespace gpu_vulkan
             },
          };
 
+         ptexture->m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+         ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
          vkCmdPipelineBarrier(
             pcommandbuffer->m_vkcommandbuffer,
-            VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+            ptexture->m_vkpipelinestageflags,
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             0,
             0, NULL,
             0, NULL,
             1, &barrier
          );
-
+         ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
          m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
       }
@@ -3607,8 +3995,17 @@ namespace gpu_vulkan
       ::cast < texture > ptextureSrc = ptextureSource;
       ::cast < texture > ptextureDst = ptextureTarget;
 
-      ptextureSrc->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-      ptextureDst->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+      ptextureSrc->_new_state(
+         pcommandbuffer, 
+         0,
+         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+
+      ptextureDst->_new_state(
+         pcommandbuffer, 
+         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
       //  if (!m_psha)
       //  {

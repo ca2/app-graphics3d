@@ -14,7 +14,6 @@ namespace gpu_vulkan
 
       ::pointer < ::gpu::renderer > m_pgpurenderer;
 
-
       VkCommandBuffer m_vkcommandbuffer;
 
 

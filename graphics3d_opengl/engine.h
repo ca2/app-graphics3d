@@ -31,9 +31,9 @@ namespace graphics3d_opengl
 
 		//::pointer < ::user::graphics3d > m_pimpact;
 		//::pointer < ::gpu_opengl::renderer > m_prenderer;
-		::pointer < ::graphics3d::camera > m_pcamera;
+		//::pointer < ::graphics3d::camera > m_pcamera;
 		//::pointer < glc::Application > m_pglcapplication;  // Game object that manages the scenes
-		::pointer < ::graphics3d::input > m_pinput;
+		//::pointer < ::graphics3d::input > m_pinput;
 		//::pointer<::graphics3d_opengl::render_data> m_prenderdataCurrentScene;
 		//::pointer < ::gpu_opengl::frame_buffer	 >		m_pframebuffer;
 		::pointer < ::gpu::shader	 >		m_pshaderBlend;

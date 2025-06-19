@@ -57,7 +57,7 @@ namespace graphics3d_directx12
    void model::createVertexBuffers(const ::array<::gpu::Vertex>& vertices)
    {
 
-      ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+      ::cast < ::gpu_directx12::device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
       ::array<::gpu::Vertex> a;
 
@@ -125,7 +125,7 @@ namespace graphics3d_directx12
 
          auto indexBufferSize = (UINT) indices.get_size_in_bytes();
 
-         ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+         ::cast < ::gpu_directx12::device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
          CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
          CD3DX12_RESOURCE_DESC ibDesc = CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize);
