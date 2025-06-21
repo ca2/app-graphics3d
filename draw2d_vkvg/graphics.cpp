@@ -6367,16 +6367,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       m_z = 0.f;
 
-      if (!m_pgpucontext->m_pgpurendererOutput2)
+      if (!m_pgpucontext->m_pgpurenderer)
       {
 
-         __øconstruct(m_pgpucontext->m_pgpurendererOutput2);
+         __øconstruct(m_pgpucontext->m_pgpurenderer);
 
          m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
 
          m_pgpucontext->m_escene = ::gpu::e_scene_2d;
 
-         m_pgpucontext->m_pgpurendererOutput2->initialize_renderer(m_pgpucontext);
+         m_pgpucontext->m_pgpurenderer->initialize_gpu_renderer(m_pgpucontext);
 
       }
 
@@ -6542,12 +6542,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::on_present()
    {
 
-      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
-      {
+      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      //{
 
-         m_pgpucontext->swap_buffers();
+      //   m_pgpucontext->swap_buffers();
 
-      }
+      //}
 
    }
 

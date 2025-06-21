@@ -123,19 +123,19 @@ namespace gpu_vulkan
       ~renderer();
 
 
-      virtual void restart_frame_counter();
+//      virtual void restart_frame_counter();
       void on_new_frame() override;
-      void initialize_renderer(::gpu::context* pgpucontext) override;
+      void initialize_gpu_renderer(::gpu::context* pgpucontext) override;
 
       //int width()  override;
       //int height() override;
 
-      bool is_starting_frame()const
-      {
+      //bool is_starting_frame()const
+      //{
 
-         return m_iFrameSerial2 == m_iCurrentFrame2;
+      //   return m_iFrameSerial2 == m_iCurrentFrame2;
 
-      }
+      //}
 
       VkRenderPass getRenderPass() const
       {
@@ -182,16 +182,16 @@ namespace gpu_vulkan
 
 
 
-      int get_frame_index() override;
-      int get_frame_count() override;
+      //int get_frame_index() override;
+      //int get_frame_count() override;
 
       //void defer_update_renderer();
 
-      void on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous) override;
+      //void on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous) override;
 
       //::gpu::render_target* back_buffer_render_target() override;
 
-      ::pointer < ::gpu::render_target> allocate_offscreen_render_target() override;
+      //::pointer < ::gpu::render_target> allocate_offscreen_render_target() override;
 
       //::pointer < ::graphics3d::frame> beginFrame() override;
       //void endFrame() override;
@@ -216,10 +216,10 @@ namespace gpu_vulkan
       //void prepareOffScreen();
 
       ::pointer < ::gpu::frame > beginFrame() override;
-      void on_begin_render(::gpu::frame* pframeParam) override;
+      void _on_begin_render(::gpu::frame* pframeParam) override;
       void on_end_render(::gpu::frame* pframeParam) override;
       void endFrame() override;
-      void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
+      //void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
 
 
       void _set_image(::gpu::texture * pgputexture, const ::int_rectangle& rectangle, bool bYSwap);

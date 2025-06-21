@@ -115,7 +115,7 @@ namespace gpu_vulkan
 
       void set_bitmap_1(::image::image *pimage) override;
 
-      void swap_buffers() override;
+      //void swap_buffers() override;
 
       VkSampler _001VkSampler();
 

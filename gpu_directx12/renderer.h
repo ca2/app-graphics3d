@@ -185,9 +185,9 @@ namespace gpu_directx12
       ~renderer();
 
 
-      virtual void restart_frame_counter();
+//      virtual void restart_frame_counter();
       void on_new_frame() override;
-      void initialize_renderer(::gpu::context* pgpucontext) override;
+      void initialize_gpu_renderer(::gpu::context* pgpucontext) override;
 
       //int width()  override;
       //int height() override;
@@ -201,12 +201,12 @@ namespace gpu_directx12
 
       void WaitForGpu();
 
-      bool is_starting_frame()const
-      {
+      //bool is_starting_frame()const
+      //{
 
-         return m_iFrameSerial2 == m_iCurrentFrame2;
+      //   return m_iFrameSerial2 == m_iCurrentFrame2;
 
-      }
+      //}
 
       //VkRenderPass getRenderPass() const
       //{
@@ -258,13 +258,13 @@ namespace gpu_directx12
       virtual command_buffer* getLoadAssetsCommandBuffer();
 
 
-      int get_frame_index() override;
-      int get_frame_count() override;
+      //int get_frame_index() override;
+      //int get_frame_count() override;
 
       //void defer_update_renderer() override;
-      void on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous) override;
+      //void on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous) override;
 
-      ::pointer < ::gpu::render_target > allocate_offscreen_render_target() override;
+      //::pointer < ::gpu::render_target > allocate_offscreen_render_target() override;
 
       //::pointer < ::graphics3d::frame> beginFrame() override;
       //void endFrame() override;
@@ -301,6 +301,7 @@ namespace gpu_directx12
       //void _on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle);
 
       void blend(::gpu::layer* player);
+      void on_end_layer(::gpu::layer* player) override;
 
       void _blend_renderer(::gpu_directx12::renderer* prendererSrc, bool bYSwap);
       void _on_graphics_end_draw(::gpu_directx12::renderer * prendererSrc);

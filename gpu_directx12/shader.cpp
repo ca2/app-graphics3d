@@ -590,7 +590,7 @@ namespace gpu_directx12
       if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
       {
 
-         auto iFrameIndex =m_pgpurenderer->get_frame_index();
+         auto iFrameIndex =m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
          pcommandlist->SetGraphicsRootDescriptorTable(0, prenderer->m_pheapCbv->GetGPUDescriptorHandleForHeapStart());
 

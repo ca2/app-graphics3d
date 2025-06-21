@@ -64,7 +64,7 @@ namespace gpu_directx12
       ::cast < context>pcontext = m_pgpurenderer->m_pgpucontext;
 
       D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-      rtvHeapDesc.NumDescriptors = m_pgpurenderer->m_iFrameCountRequest;
+      rtvHeapDesc.NumDescriptors = m_pgpurenderer->m_iDefaultFrameCount;
       rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
       rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
       HRESULT hrCreateDescriptorHeapRtv = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap));
@@ -146,10 +146,12 @@ namespace gpu_directx12
 
          CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-         for (int i = 0; i < m_pgpurenderer->m_iFrameCountRequest; i++)
+         m_texturea.set_size(m_pgpurenderer->m_iDefaultFrameCount);
+
+         for (int i = 0; i < m_texturea.size(); i++)
          {
 
-            __defer_construct(m_texturea.element_at_grow(i));
+            __defer_construct(m_texturea[i]);
 
             m_texturea[i]->initialize_gpu_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
 

@@ -52,7 +52,7 @@ namespace graphics3d_directx12
    void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::cast < ::gpu_directx12::renderer> prenderer = m_pgpucontext->m_pgpurendererOutput2;
+      ::cast < ::gpu_directx12::renderer> prenderer = m_pgpucontext->m_pgpurenderer;
 
       prenderer->defer_update_renderer();
 
@@ -341,7 +341,7 @@ namespace graphics3d_directx12
 
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
-      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurendererOutput2;
+      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
 
       //   if (prenderer->m_pcommandbufferLoadAssets)
       //   {

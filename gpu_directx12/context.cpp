@@ -410,16 +410,16 @@ namespace gpu_directx12
    }
 
 
-   void context::swap_buffers()
-   {
+   //void context::swap_buffers()
+   //{
 
-      ::cast < gpu_directx12::renderer > pgpurenderer = m_pgpurendererOutput2;
+   //   ::cast < gpu_directx12::renderer > pgpurenderer = m_pgpurenderer;
 
-      ::cast < gpu_directx12::swap_chain > pswapchain = pgpurenderer->m_pgpucontext->m_pgpudevice->get_swap_chain();
+   //   ::cast < gpu_directx12::swap_chain > pswapchain = pgpurenderer->m_pgpucontext->m_pgpudevice->get_swap_chain();
 
-      pswapchain->m_pdxgiswapchain3->Present(1, 0);
+   //   pswapchain->m_pdxgiswapchain3->Present(1, 0);
 
-   }
+   //}
 
 
    //VkSampler context::_001VkSampler()
@@ -2342,7 +2342,7 @@ namespace gpu_directx12
    void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
    {
 
-      ::cast < renderer > prenderer = m_pgpurendererOutput2;
+      ::cast < renderer > prenderer = m_pgpurenderer;
 
       ::cast < device > pgpudevice = m_pgpudevice;
 
@@ -2381,11 +2381,11 @@ namespace gpu_directx12
    void context::update_global_ubo(const ::block& block)
    {
 
-      auto iFrameIndex = m_pgpurendererOutput2->get_frame_index();
+      auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
 
       //MyGlobalData globalData = { /* your values */ };
-      ::cast < renderer > prenderer = m_pgpurendererOutput2;
+      ::cast < renderer > prenderer = m_pgpurenderer;
       //      UINT8* mappedPtr = nullptr;
         //    D3D12_RANGE readRange = {}; // no read access
           //  m_uboBuffers[iFrameIndex]->m_presourceBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mappedPtr));
@@ -2554,92 +2554,6 @@ namespace gpu_directx12
 
    }
 
-   class texture_guard
-   {
-   public:
-
-      texture* m_ptexture;
-      ID3D12GraphicsCommandList* m_pcommandlist;
-      D3D12_RESOURCE_STATES m_estateOld;
-
-      texture_guard(ID3D12GraphicsCommandList* pcommandlist, texture* ptexture, D3D12_RESOURCE_STATES estate)
-      {
-
-         m_ptexture = ptexture;
-         m_pcommandlist = pcommandlist;
-         m_estateOld = m_ptexture->m_estate;
-
-         m_ptexture->_new_state(m_pcommandlist, estate);
-
-      }
-
-      ~texture_guard()
-      {
-
-         m_ptexture->_new_state(m_pcommandlist, m_estateOld);
-
-      }
-
-   };
-
-
-   void context::on_take_snapshot(::gpu::layer * player)
-   {
-
-      //if (!player->m_pgputextureTarget 
-      //   || player->m_pgputextureTarget->size() != player->m_rectangleTarget.size()
-      //   || player->m_pgputextureTarget->m_pgpurenderer->m_pgpucontext == this)
-      //{
-
-      //   player->m_pgputexture = player->m_pgputexture->m_pgpurenderer->create_texture(player->m_rectangleTarget.size());
-
-      //}
-
-      ::cast < texture > ptextureDst =
-         (m_pgpurendererBackBuffer ?
-            m_pgpurendererBackBuffer :
-            m_pgpurendererOutput2)->m_pgpurendertarget->current_texture();
-
-      ::cast < texture > ptextureSrc = player->texture();
-
-      ::cast < renderer > prenderer = ptextureDst->m_pgpurenderer;
-
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
-
-      auto pcommandlist = pcommandbuffer->m_pcommandlist;
-
-      texture_guard guard1(pcommandlist, ptextureDst, D3D12_RESOURCE_STATE_COPY_DEST);
-
-      texture_guard guard2(pcommandlist, ptextureSrc, D3D12_RESOURCE_STATE_COPY_SOURCE);
-
-      //// Transition source to COPY_SOURCE
-      //D3D12_RESOURCE_BARRIER barrier1 = {};
-      //barrier1.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-      //barrier1.Transition.pResource = ptextureSrc->m_presource;
-      //barrier1.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-      //barrier1.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
-      //barrier1.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-      //pcommandlist->ResourceBarrier(1, &barrier1);
-
-      //// Transition dest to COPY_DEST
-      //D3D12_RESOURCE_BARRIER barrier2 = {};
-      //barrier2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-      //barrier2.Transition.pResource = ptextureDst->m_presource;
-      //barrier2.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
-      //barrier2.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
-      //barrier2.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-      //pcommandlist->ResourceBarrier(1, &barrier2);
-
-      pcommandlist->CopyResource(ptextureDst->m_presource, ptextureSrc->m_presource);
-
-      //// Restore states
-      //::swap(barrier2.Transition.StateBefore, barrier2.Transition.StateAfter);
-      //pcommandlist->ResourceBarrier(1, &barrier2);
-
-      //::swap(barrier1.Transition.StateBefore, barrier1.Transition.StateAfter);
-      //pcommandlist->ResourceBarrier(1, &barrier1);
-
-   }
 
    
    //void context::composition_store()

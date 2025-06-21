@@ -698,7 +698,7 @@
     <ClInclude Include="depth_stencil.h" />
     <ClInclude Include="descriptors.h" />
     <ClInclude Include="device.h" />
-    <ClInclude Include="direct2d_draw2d_swap_chain.h" />
+    <ClInclude Include="aaa_direct2d_draw2d_swap_chain.h" />
     <ClInclude Include="dxgi_debug.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="initializers.h" />
@@ -747,7 +747,7 @@
     <ClCompile Include="depth_stencil.cpp" />
     <ClCompile Include="descriptors.cpp" />
     <ClCompile Include="device.cpp" />
-    <ClCompile Include="direct2d_draw2d_swap_chain.cpp" />
+    <ClCompile Include="aaa_direct2d_draw2d_swap_chain.cpp" />
     <ClCompile Include="dxgi_debug.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="offscreen_render_target_view.cpp" />

@@ -26,10 +26,10 @@ namespace gpu_vulkan
       ~swap_chain();
 
 
-      int get_frame_index();
+      //int get_frame_index();
 
 
-      virtual ::gpu::texture* current_texture();
+      //virtual ::gpu::texture* current_texture();
       void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous = {}) override;
 
       //swap_chain_render_pass(const swap_chain_render_pass&) = delete;
@@ -51,7 +51,7 @@ namespace gpu_vulkan
 
       VkResult acquireNextImage() override;
       VkResult submitCommandBuffers(command_buffer * pcommandbuffer) override;
-      int get_image_index() const override;
+      //int get_image_index() const override;
       //bool compareSwapFormats(const swap_chain_render_pass& m_swapchain) const {
       //   return m_swapchain.swapChainDepthFormat == swapChainDepthFormat &&
       //      m_swapchain.swapChainImageFormat == swapChainImageFormat;
@@ -97,9 +97,9 @@ namespace gpu_vulkan
       //::array<VkFence> imagesInFlight;
       //size_t currentFrame = 0;
 
-      void endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc) override;
+      void present(::gpu::texture * pgputexture) override;
 
-      void on_end_render(::gpu::frame* pgpuframe) override;
+      //void on_end_render(::gpu::frame* pgpuframe) override;
 
 
    };

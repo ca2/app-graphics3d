@@ -138,9 +138,9 @@ namespace gpu_vulkan
 
       ::array<VkSemaphore> waitSemaphores;
       ::array<VkPipelineStageFlags> waitStages;
-      if (imageAvailable[m_pgpurenderer->get_frame_index()] > 0)
+      if (imageAvailable[get_frame_index()] > 0)
       {
-         waitSemaphores.add(imageAvailableSemaphores[m_pgpurenderer->get_frame_index()]);
+         waitSemaphores.add(imageAvailableSemaphores[get_frame_index()]);
          waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
       }
       waitStages.add_copies(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, m_semaphoreaWaitToSubmit.size());
@@ -155,7 +155,7 @@ namespace gpu_vulkan
 
       ::array<VkSemaphore> signalSemaphores;
       
-      signalSemaphores.add(renderFinishedSemaphores[m_pgpurenderer->get_frame_index()]);
+      signalSemaphores.add(renderFinishedSemaphores[get_frame_index()]);
       signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
       submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
       submitInfo.pSignalSemaphores = signalSemaphores.data();
@@ -222,19 +222,19 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      if (imagesInFlight[get_image_index()] != VK_NULL_HANDLE)
+      if (imagesInFlight[get_frame_index()] != VK_NULL_HANDLE)
       {
 
-         vkWaitForFences(pcontext->logicalDevice(), 1, &imagesInFlight[get_image_index()], VK_TRUE, UINT64_MAX);
+         vkWaitForFences(pcontext->logicalDevice(), 1, &imagesInFlight[get_frame_index()], VK_TRUE, UINT64_MAX);
 
       }
 
-      imagesInFlight[get_image_index()] = inFlightFences[m_pgpurenderer->get_frame_index()];
+      imagesInFlight[get_frame_index()] = inFlightFences[get_frame_index()];
 
       VkSubmitInfo submitInfo = {};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-      VkSemaphore waitSemaphores[] = { renderFinishedSemaphores[m_pgpurenderer->get_frame_index()] };
+      VkSemaphore waitSemaphores[] = { renderFinishedSemaphores[get_frame_index()] };
       VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
       submitInfo.waitSemaphoreCount = 1;
       submitInfo.pWaitSemaphores = waitSemaphores;
@@ -243,25 +243,25 @@ namespace gpu_vulkan
       submitInfo.commandBufferCount = 1;
       submitInfo.pCommandBuffers = &buffer;
 
-      VkSemaphore signalSemaphores[] = { imageAvailableSemaphores[m_pgpurenderer->get_frame_index()] };
+      VkSemaphore signalSemaphores[] = { imageAvailableSemaphores[get_frame_index()] };
       submitInfo.signalSemaphoreCount = 1;
       submitInfo.pSignalSemaphores = signalSemaphores;
-      imageAvailable[m_pgpurenderer->get_frame_index()]++;
-      if (imageAvailable[m_pgpurenderer->get_frame_index()] <= 0)
+      imageAvailable[get_frame_index()]++;
+      if (imageAvailable[get_frame_index()] <= 0)
       {
-         imageAvailable[m_pgpurenderer->get_frame_index()]=1;
+         imageAvailable[get_frame_index()]=1;
       }
 
-      vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
+      vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[get_frame_index()]);
 
-      if (vkQueueSubmit(pcontext->graphicsQueue(), 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
+      if (vkQueueSubmit(pcontext->graphicsQueue(), 1, &submitInfo, inFlightFences[get_frame_index()]) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed,"failed to submit draw command buffer!");
 
       }
 
-      VK_CHECK(vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
+      VK_CHECK(vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[get_frame_index()], VK_TRUE, UINT64_MAX));
 
       //VkPresentInfoKHR presentInfo = {};
       //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -393,7 +393,7 @@ namespace gpu_vulkan
       //VkMemoryAllocateInfo memAlloc = initializers::memory_allocate_info();
       //VkMemoryRequirements memReqs;
 
-      m_texturea.set_size(m_pgpurenderer->m_iFrameCountRequest);
+      m_texturea.set_size(m_pgpurenderer->m_iDefaultFrameCount);
       
       for (int i = 0; i < m_texturea.size(); i++)
       {
@@ -623,7 +623,7 @@ namespace gpu_vulkan
       depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
       VkAttachmentDescription colorAttachment = {};
-      colorAttachment.format = getImageFormat();
+      colorAttachment.format = pcontext->m_formatImageDefault;
       colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
       colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
       colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;

@@ -11,7 +11,7 @@
 #include "gpu_directx12/approach.h"
 #include "gpu_directx12/context.h"
 #include "gpu_directx12/descriptors.h"
-#include "gpu_directx12/direct2d_draw2d_swap_chain.h"
+//#include "gpu_directx12/direct2d_draw2d_swap_chain.h"
 #include "gpu_directx12/offscreen_render_target_view.h"
 #include "gpu_directx12/renderer.h"
 #include "gpu_directx12/texture.h"

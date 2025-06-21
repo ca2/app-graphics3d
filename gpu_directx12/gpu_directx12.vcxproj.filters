@@ -104,7 +104,7 @@
     <ClInclude Include="depth_stencil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="direct2d_draw2d_swap_chain.h">
+    <ClInclude Include="aaa_direct2d_draw2d_swap_chain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -190,7 +190,7 @@
     <ClCompile Include="depth_stencil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="direct2d_draw2d_swap_chain.cpp">
+    <ClCompile Include="aaa_direct2d_draw2d_swap_chain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="swap_chain.cpp">

@@ -204,7 +204,7 @@ namespace draw2d_opengl
 
    //   }
 
-   //   m_pgpucontext->m_pgpucontext->m_pgpurendererOutput2->m_eoutputOnEndDraw = ::gpu::e_output_swap_chain;
+   //   m_pgpucontext->m_pgpucontext->m_pgpurenderer->m_eoutputOnEndDraw = ::gpu::e_output_swap_chain;
 
    //}
 
@@ -268,7 +268,7 @@ namespace draw2d_opengl
 
       m_pgpucontext->m_pgpucompositor = this;
 
-      if (!m_pgpucontext->m_pgpurendererOutput2)
+      if (!m_pgpucontext->m_pgpurenderer)
       {
 
          m_pgpucontext->get_gpu_renderer();
@@ -321,7 +321,7 @@ namespace draw2d_opengl
 
       //auto pgpucontext = pgpudevice->get_main_context();
 
-      //if (!m_pgpucontext->m_pgpurendererOutput2)
+      //if (!m_pgpucontext->m_pgpurenderer)
       //{
 
       //   auto pgpu = application()->get_gpu();
@@ -5529,7 +5529,7 @@ color = vec4(c.r,c.g, c.b, c.a);
          m_pgpushaderTextOut = __create_new < ::gpu_opengl::shader >();
 
          m_pgpushaderTextOut->initialize_shader_with_block(
-            m_pgpucontext->m_pgpurendererOutput2,
+            m_pgpucontext->m_pgpurenderer,
             pvertexshader,
             pfragmentshader);
          
@@ -6621,7 +6621,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       //return ::is_set(this) & ::is_set(m_hglrc);
 
       return ::is_set(this) 
-         && ::is_set(m_pgpucontext->m_pgpurendererOutput2)
+         && ::is_set(m_pgpucontext->m_pgpurenderer)
          && m_pgpucontext;
 
    }

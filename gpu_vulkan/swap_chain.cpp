@@ -22,7 +22,7 @@ namespace gpu_vulkan
    swap_chain::~swap_chain()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
 
       for (auto imageView : m_imageviews) {
          vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
@@ -62,12 +62,12 @@ namespace gpu_vulkan
    }
 
 
-   ::gpu::texture* swap_chain::current_texture()
-   {
+   //::gpu::texture* swap_chain::current_texture()
+   //{
 
-      return m_texturea[m_uCurrentSwapChainImage];
+   //   return m_texturea[m_uCurrentSwapChainImage];
 
-   }
+   //}
 
 
    void swap_chain::initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size& size, ::pointer<::gpu::render_target> previous)
@@ -94,20 +94,20 @@ namespace gpu_vulkan
    }
 
 
-   int swap_chain::get_frame_index()
-   {
+   //int swap_chain::get_frame_index()
+   //{
 
-      return m_uCurrentSwapChainImage;
+   //   return m_uCurrentSwapChainImage;
 
-   }
+   //}
 
 
    VkResult swap_chain::acquireNextImage()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
 
-      auto currentFrame = m_pgpurenderer->get_frame_index();
+      auto currentFrame = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
       // Wait for the fence of the current frame first (prevents CPU running too fast)
       //vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
@@ -177,11 +177,11 @@ namespace gpu_vulkan
    VkResult swap_chain::submitCommandBuffers(command_buffer * pcommandbuffer)
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
 
       uint32_t* imageIndex = &m_uCurrentSwapChainImage;
 
-      auto currentFrame = m_pgpurenderer->get_frame_index();
+      auto currentFrame = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
       // Use currentFrame to access per-frame sync objects
       //vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
@@ -272,18 +272,18 @@ namespace gpu_vulkan
    }
 
 
-   int swap_chain::get_image_index() const
-   {
+   //int swap_chain::get_image_index() const
+   //{
 
-      return m_uCurrentSwapChainImage;
+   //   return m_uCurrentSwapChainImage;
 
-   }
+   //}
 
 
    void swap_chain::createRenderPassImpl()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
 
       auto pgpucontext = pcontext;
 
@@ -357,7 +357,7 @@ namespace gpu_vulkan
       // retrieve the handles.
       vkGetSwapchainImagesKHR(pcontext->logicalDevice(), m_vkswapchain, &imageCount, nullptr);
 
-      m_pgpurenderer->m_iFrameCountRequest = imageCount;
+      //m_pgpurenderer->m_pgpurendertarget->m_iFrameCountRequest = imageCount;
 
       m_texturea.set_size(imageCount);
 
@@ -381,7 +381,7 @@ namespace gpu_vulkan
          rectangleTarget.set_width(extent.width);
          rectangleTarget.set_height(extent.height);
 
-         pgputexture->initialize_gpu_texture(m_pgpurenderer, rectangleTarget);
+         pgputexture->initialize_gpu_texture(::gpu_vulkan::render_pass::m_pgpurenderer, rectangleTarget);
 
          ::cast < texture > ptexture = pgputexture;
 
@@ -399,7 +399,7 @@ namespace gpu_vulkan
    void swap_chain::createImageViews()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
 
       m_imageviews.resize(m_texturea.size());
 
@@ -430,7 +430,7 @@ namespace gpu_vulkan
    void swap_chain::createRenderPass()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
 
       VkAttachmentDescription depthAttachment{};
       depthAttachment.format = findDepthFormat();
@@ -447,7 +447,7 @@ namespace gpu_vulkan
       depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
       VkAttachmentDescription colorAttachment = {};
-      colorAttachment.format = getImageFormat();
+      colorAttachment.format = m_formatImage;
       colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
       colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
       colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -691,7 +691,7 @@ namespace gpu_vulkan
    VkFormat swap_chain::findDepthFormat()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
 
       return pcontext->m_pgpudevice->m_pphysicaldevice->findSupportedFormat(
          { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
@@ -700,87 +700,93 @@ namespace gpu_vulkan
    }
 
 
-   void swap_chain::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc)
+   //void swap_chain::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc)
+   //{
+
+   //   ::gpu::swap_chain::endDraw(pgraphics, puserinteraction, pgpurendererSrc);
+
+   //   if (!m_pgpucontextSwapChain)
+   //   {
+
+   //      m_pgpucontextSwapChain = pgpurendererSrc->m_pgpucontext->m_pgpudevice->create_window_context(puserinteraction->window());
+
+   //   }
+
+   //   m_pgpucontextSwapChain->send_on_context([this, puserinteraction]()
+   //      {
+
+   //         ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+   //         auto rectanglePlacement = puserinteraction->window()->get_window_rectangle();
+
+   //         m_pgpucontextSwapChain->set_placement(rectanglePlacement);
+
+   //         auto prendererOutput = m_pgpucontextSwapChain->get_gpu_renderer();
+
+   //         prendererOutput->defer_update_renderer();
+
+   //         ASSERT(m_pgpucontextSwapChain == pcontext);
+
+   //         ::cast < renderer > prendererThis = m_pgpucontextSwapChain->m_pgpurenderer;
+
+   //         ::cast < render_pass > pgpurenderpass = prendererThis->m_pgpurendertarget;
+
+   //         ASSERT(pgpurenderpass == this);
+
+   //      });
+
+   //   ::cast < renderer > prendererSrc = pgpurendererSrc;
+
+   //   ::cast < render_pass > pgpurenderpass = prendererSrc->m_pgpurendertarget;
+
+   //   auto ptexture = pgpurenderpass->current_texture();
+
+   //   ::int_rectangle rectangle = prendererSrc->m_pgpucontext->rectangle();
+
+   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+   //   pcontext->send_on_context([this, pcontext, ptexture, rectangle]()
+   //      {
+
+   //         pcontext->m_pgpurenderer->do_on_frame([this, pcontext, ptexture, rectangle]()
+   //            {
+
+   //               ::cast < renderer > prenderer = pcontext->m_pgpurenderer;
+
+   //               prenderer->copy(prenderer->m_pgpurendertarget->current_texture(), ptexture);
+
+   //            });
+
+   //      });
+   //   //		m_pgpucontextOutput
+
+   //         //vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+
+   //         //vkQueueWaitIdle(m_pgpucontext->presentQueue());
+
+   //}
+
+
+   //void swap_chain::on_end_render(::gpu::frame* pgpuframe)
+   //{
+
+   //   ::cast < texture > ptexture = current_texture();
+
+   //   ::cast < renderer > prenderer = m_pgpurenderer;
+
+   //   auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+
+   //   ptexture->_new_state(pcommandbuffer, 
+   //      0,
+   //      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+   //      VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
+
+
+
+   //}
+
+   void swap_chain::present(::gpu::texture* pgputexture)
    {
-
-      ::gpu::swap_chain::endDraw(pgraphics, puserinteraction, pgpurendererSrc);
-
-      if (!m_pgpucontextSwapChain)
-      {
-
-         m_pgpucontextSwapChain = pgpurendererSrc->m_pgpucontext->m_pgpudevice->create_window_context(puserinteraction->window());
-
-      }
-
-      m_pgpucontextSwapChain->send_on_context([this, puserinteraction]()
-         {
-
-            ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
-
-            auto rectanglePlacement = puserinteraction->window()->get_window_rectangle();
-
-            m_pgpucontextSwapChain->set_placement(rectanglePlacement);
-
-            auto prendererOutput = m_pgpucontextSwapChain->get_gpu_renderer();
-
-            prendererOutput->defer_update_renderer();
-
-            ASSERT(m_pgpucontextSwapChain == pcontext);
-
-            ::cast < renderer > prendererThis = m_pgpucontextSwapChain->m_pgpurendererOutput2;
-
-            ::cast < render_pass > pgpurenderpass = prendererThis->m_pgpurendertarget;
-
-            ASSERT(pgpurenderpass == this);
-
-         });
-
-      ::cast < renderer > prendererSrc = pgpurendererSrc;
-
-      ::cast < render_pass > pgpurenderpass = prendererSrc->m_pgpurendertarget;
-
-      auto ptexture = pgpurenderpass->m_texturea[prendererSrc->get_frame_index()].get();
-
-      ::int_rectangle rectangle = prendererSrc->m_pgpucontext->rectangle();
-
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
-
-      pcontext->send_on_context([this, pcontext, ptexture, rectangle]()
-         {
-
-            pcontext->m_pgpurendererOutput2->do_on_frame([this, pcontext, ptexture, rectangle]()
-               {
-
-                  ::cast < renderer > prenderer = pcontext->m_pgpurendererOutput2;
-
-                  prenderer->copy(prenderer->m_pgpurendertarget->current_texture(), ptexture);
-
-               });
-
-         });
-      //		m_pgpucontextOutput
-
-            //vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
-
-            //vkQueueWaitIdle(m_pgpucontext->presentQueue());
-
-   }
-
-
-   void swap_chain::on_end_render(::gpu::frame* pgpuframe)
-   {
-
-      ::cast < texture > ptexture = current_texture();
-
-      ::cast < renderer > prenderer = m_pgpurenderer;
-
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
-
-      ptexture->_new_state(pcommandbuffer, 
-         0,
-         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-         VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
-
 
 
    }

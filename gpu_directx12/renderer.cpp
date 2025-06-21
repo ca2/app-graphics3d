@@ -11,6 +11,7 @@
 #include "initializers.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/render_state.h"
 #include "gpu_directx12/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
@@ -153,10 +154,10 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::initialize_renderer(::gpu::context* pgpucontext)
+   void renderer::initialize_gpu_renderer(::gpu::context* pgpucontext)
    {
 
-      ::gpu::renderer::initialize_renderer(pgpucontext);
+      ::gpu::renderer::initialize_gpu_renderer(pgpucontext);
 
       m_pgpucontext = pgpucontext;
 
@@ -213,23 +214,23 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   int renderer::get_frame_index()
-   {
+   //int renderer::get_frame_index()
+   //{
 
-      assert(m_iFrameSerial2 >= 0
-         && m_iCurrentFrame2 >= 0
-         && m_estate != e_state_initial
-         && "Cannot get frame index when frame not in progress");
+   //   assert(m_iFrameSerial2 >= 0
+   //      && m_iCurrentFrame2 >= 0
+   //      && m_estate != e_state_initial
+   //      && "Cannot get frame index when frame not in progress");
 
-      return (int)m_iCurrentFrame2;
+   //   return (int)m_iCurrentFrame2;
 
-   }
+   //}
 
 
    void renderer::on_new_frame()
    {
 
-      if (m_iCurrentFrame2 >= 0)
+      if (m_pgpurendertarget->m_iCurrentFrame2 >= 0)
       {
 
          WaitForGpu();
@@ -238,34 +239,30 @@ float4 main(PSInput input) : SV_TARGET {
 
       }
 
-      m_iFrameSerial2++;
-
-      m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % get_frame_count();
-
-      on_happening(e_happening_new_frame);
+      ::gpu::renderer::on_new_frame();
 
    }
 
 
-   void renderer::restart_frame_counter()
-   {
+   //void renderer::restart_frame_counter()
+   //{
 
-      m_iCurrentFrame2 = -1;
-      m_iFrameSerial2 = -1;
+   //   m_iCurrentFrame2 = -1;
+   //   m_iFrameSerial2 = -1;
 
-      on_happening(e_happening_reset_frame_counter);
+   //   on_happening(e_happening_reset_frame_counter);
 
-   }
+   //}
 
 
 
-   int renderer::get_frame_count()
-   {
+   //int renderer::get_frame_count()
+   //{
 
-      return ::gpu::renderer::get_frame_count();
-      //::render_target_view::MAX_FRAMES_IN_FLIGHT;
+   //   return ::gpu::renderer::get_frame_count();
+   //   //::render_target_view::MAX_FRAMES_IN_FLIGHT;
 
-   }
+   //}
 
 
    void renderer::on_context_resize()
@@ -299,58 +296,58 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous)
-   {
+   //void renderer::on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous)
+   //{
 
-      //::pointer < ::gpu::render_target > pgpurendertarget;
+   //   //::pointer < ::gpu::render_target > pgpurendertarget;
 
-      //auto eoutput = m_pgpucontext->m_eoutput;
+   //   //auto eoutput = m_pgpucontext->m_eoutput;
 
-      if (eoutput == ::gpu::e_output_cpu_buffer
-         || eoutput == ::gpu::e_output_gpu_buffer)
-      {
+   //   if (eoutput == ::gpu::e_output_cpu_buffer
+   //      || eoutput == ::gpu::e_output_gpu_buffer)
+   //   {
 
-         auto poffscreenrendertargetview = __allocate offscreen_render_target_view;
-         //#ifdef WINDOWS_DESKTOP
-         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
-         //#else
-         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
-         //#endif
-         m_pgpurendertarget = poffscreenrendertargetview;
-         //         //m_prendererResolve.release();
-         //
-      }
-      else if (eoutput == ::gpu::e_output_swap_chain)
-      {
+   //      auto poffscreenrendertargetview = __allocate offscreen_render_target_view;
+   //      //#ifdef WINDOWS_DESKTOP
+   //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+   //      //#else
+   //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+   //      //#endif
+   //      m_pgpurendertarget = poffscreenrendertargetview;
+   //      //         //m_prendererResolve.release();
+   //      //
+   //   }
+   //   else if (eoutput == ::gpu::e_output_swap_chain)
+   //   {
 
-         m_pgpurendertarget = m_pgpucontext->m_pgpudevice->get_swap_chain();
+   //      m_pgpurendertarget = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
-      }
-      else if (eoutput == ::gpu::e_output_gpu_buffer_to_swap_chain)
-      {
+   //   }
+   //   else if (eoutput == ::gpu::e_output_gpu_buffer_to_swap_chain)
+   //   {
 
-         auto poffscreenrendertargetview = __allocate offscreen_render_target_view;
-         //#ifdef WINDOWS_DESKTOP
-         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
-         //#else
-         //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
-         //#endif
-         m_pgpurendertarget = poffscreenrendertargetview;
+   //      auto poffscreenrendertargetview = __allocate offscreen_render_target_view;
+   //      //#ifdef WINDOWS_DESKTOP
+   //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
+   //      //#else
+   //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_R8G8B8A8_UNORM;
+   //      //#endif
+   //      m_pgpurendertarget = poffscreenrendertargetview;
 
 
-         //m_pgpurendertarget = m_pgpucontext->m_pgpudevice->get_swap_chain();
+   //      //m_pgpurendertarget = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
-      }
-      else
-      {
+   //   }
+   //   else
+   //   {
 
-         throw ::exception(error_not_implemented);
+   //      throw ::exception(error_not_implemented);
 
-      }
+   //   }
 
-      //return pgpurendertarget;
+   //   //return pgpurendertarget;
 
-   }
+   //}
 
 
    //void renderer::defer_update_renderer()
@@ -493,14 +490,14 @@ float4 main(PSInput input) : SV_TARGET {
    //}
 
 
-   ::pointer < ::gpu::render_target > renderer::allocate_offscreen_render_target()
-   {
+   //::pointer < ::gpu::render_target > renderer::allocate_offscreen_render_target()
+   //{
 
-      auto poffscreenrendertargetview = __allocate offscreen_render_target_view();
+   //   auto poffscreenrendertargetview = __allocate offscreen_render_target_view();
 
-      return poffscreenrendertargetview;
+   //   return poffscreenrendertargetview;
 
-   }
+   //}
 
 
 
@@ -943,7 +940,7 @@ float4 main(PSInput input) : SV_TARGET {
 
                CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
                   pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
-                  get_frame_index(),
+                  m_pgpurendertarget->get_frame_index(),
                   pgpurendertargetview->m_rtvDescriptorSize);
                CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
@@ -1000,7 +997,7 @@ float4 main(PSInput input) : SV_TARGET {
                //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
                CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
                   pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
-                  get_frame_index(),
+                  m_pgpurendertarget->get_frame_index(),
                   pgpurendertargetview->m_rtvDescriptorSize);
                CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
@@ -1223,7 +1220,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
       ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
-      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurendererOutput2;
+      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
 
       ::pointer <renderer::command_buffer > pcommandbufferBarrier;
 
@@ -1467,7 +1464,7 @@ float4 main(PSInput input) : SV_TARGET {
       m_presourceStagingTexture->Map(0, nullptr, &data);
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
       ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
-      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurendererOutput2;
+      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
       ::cast < render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
       ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture();
@@ -4073,7 +4070,7 @@ void CreateImageBlendVertexBuffer(
 
                   //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
                   int iDescriptorSize = pgpurendertargetview->m_rtvDescriptorSize;
-                  int iFrameIndex = get_frame_index();
+                  int iFrameIndex = m_pgpurendertarget->get_frame_index();
                   auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
                   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
                      hRtv, 
@@ -4094,7 +4091,7 @@ void CreateImageBlendVertexBuffer(
 
                   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
                      pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
-                     get_frame_index(),
+                     m_pgpurendertarget->get_frame_index(),
                      pgpurendertargetview->m_rtvDescriptorSize);
 
                   pcommandlist->OMSetRenderTargets(
@@ -4229,7 +4226,7 @@ void CreateImageBlendVertexBuffer(
       // Example clear color
 
       int iDescriptorSize = pgpurendertargetview->m_rtvDescriptorSize;
-      int iFrameIndex = get_frame_index();
+      int iFrameIndex = m_pgpurendertarget->get_frame_index();
       auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
       CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
          hRtv,
@@ -4251,8 +4248,8 @@ void CreateImageBlendVertexBuffer(
 
       }
 
-      on_happening(e_happening_begin_render);
-
+      m_prenderstate->on_happening(::gpu::e_happening_begin_render);
+      
    }
 
 
@@ -4310,7 +4307,7 @@ void CreateImageBlendVertexBuffer(
 
 #endif
 
-      on_happening(e_happening_end_render);
+      m_prenderstate->on_happening(::gpu::e_happening_end_render);
 
       //::cast < frame > pframe = pframeParam;
 
@@ -4376,7 +4373,7 @@ void CreateImageBlendVertexBuffer(
       //   }
         //auto pframe = __create_new < ::gpu_directx12::frame >();
       //   pframe->commandBuffer = commandBuffer;
-      __defer_construct(m_pframe);
+      __defer_construct(m_pgpurendertarget->m_pframe);
       //   on_happening(e_happening_begin_frame);
       //   return m_pframe;
 
@@ -4448,17 +4445,75 @@ void CreateImageBlendVertexBuffer(
       ////	return commandBuffer;
 
       ////}
-      on_happening(e_happening_begin_frame);
+      m_prenderstate->on_happening(::gpu::e_happening_begin_frame);
 
-      return m_pframe;
+      return m_pgpurendertarget->m_pframe;
 
    }
+
+
+   void renderer::on_end_layer(::gpu::layer* player)
+   {
+
+      //if (!player->m_pgputextureTarget 
+      //   || player->m_pgputextureTarget->size() != player->m_rectangleTarget.size()
+      //   || player->m_pgputextureTarget->m_pgpurenderer->m_pgpucontext == this)
+      //{
+
+      //   player->m_pgputexture = player->m_pgputexture->m_pgpurenderer->create_texture(player->m_rectangleTarget.size());
+
+      //}
+
+      ::cast < texture > ptextureDst = player->texture();
+
+      ::cast < texture > ptextureSrc = m_pgpurendertarget->current_texture();
+
+      ::cast < renderer > prenderer = ptextureDst->m_pgpurenderer;
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      texture_guard guard1(pcommandlist, ptextureDst, D3D12_RESOURCE_STATE_COPY_DEST);
+
+      texture_guard guard2(pcommandlist, ptextureSrc, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+      //// Transition source to COPY_SOURCE
+      //D3D12_RESOURCE_BARRIER barrier1 = {};
+      //barrier1.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+      //barrier1.Transition.pResource = ptextureSrc->m_presource;
+      //barrier1.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+      //barrier1.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
+      //barrier1.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+      //pcommandlist->ResourceBarrier(1, &barrier1);
+
+      //// Transition dest to COPY_DEST
+      //D3D12_RESOURCE_BARRIER barrier2 = {};
+      //barrier2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+      //barrier2.Transition.pResource = ptextureDst->m_presource;
+      //barrier2.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
+      //barrier2.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
+      //barrier2.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+      //pcommandlist->ResourceBarrier(1, &barrier2);
+
+      pcommandlist->CopyResource(ptextureDst->m_presource, ptextureSrc->m_presource);
+
+      //// Restore states
+      //::swap(barrier2.Transition.StateBefore, barrier2.Transition.StateAfter);
+      //pcommandlist->ResourceBarrier(1, &barrier2);
+
+      //::swap(barrier1.Transition.StateBefore, barrier1.Transition.StateAfter);
+      //pcommandlist->ResourceBarrier(1, &barrier1);
+
+   }
+
+
 
 
    void renderer::endFrame()
    {
 
-      on_happening(e_happening_end_frame);
+      m_prenderstate->on_happening(::gpu::e_happening_end_frame);
 
       //// 5. Signal and wait (optional but recommended for CPU/GPU sync)
       //m_fences[get_frame_index()]++;
@@ -4522,13 +4577,15 @@ void CreateImageBlendVertexBuffer(
 
       auto eoutput = m_pgpucontext->m_eoutput;
 
-      if (eoutput == ::gpu::e_output_swap_chain)
-      {
+      //if (eoutput == ::gpu::e_output_swap_chain)
+      //{
 
-         m_pgpucontext->swap_buffers();
+      //   m_pgpucontext->swap_buffers();
 
-      }
-      else if (eoutput == ::gpu::e_output_cpu_buffer)
+      //}
+      //else 
+         
+         if (eoutput == ::gpu::e_output_cpu_buffer)
       {
 
          this->sample();
@@ -4871,20 +4928,21 @@ void CreateImageBlendVertexBuffer(
 
       ::cast < renderer > prenderer = this;
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
-      {
+      //if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
+      //{
 
-         m_pgpucontext->swap_buffers();
+      //   m_pgpucontext->swap_buffers();
 
-      }
-      else if (m_pgpucontext->m_pgpudevice->m_edevicetarget == ::gpu::e_device_target_swap_chain)
-      {
+      //}
+      //else 
+      //   if (m_pgpucontext->m_pgpudevice->m_edevicetarget == ::gpu::e_device_target_swap_chain)
+      //{
 
-         auto pswapchain = m_pgpucontext->m_pgpudevice->get_swap_chain();
+      //   auto pswapchain = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
-         pswapchain->endDraw(pgraphics, puserinteraction, this);
+      //   pswapchain->endDraw(pgraphics, puserinteraction, this);
 
-      }
+      //}
 
 
    }

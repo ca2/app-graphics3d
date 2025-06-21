@@ -71,7 +71,7 @@ namespace app_graphics3d_continuum
    void point_light_system::prepare(::gpu::context * pgpucontext)//(VkDescriptorSetLayout globalSetLayout) 
    {
 
-      auto prenderer = pgpucontext->m_pgpurendererOutput2;
+      auto prenderer = pgpucontext->m_pgpurenderer;
 
       m_pshader = prenderer->create_shader(
          "matter://shaders/point_light.vert",

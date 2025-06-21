@@ -385,11 +385,11 @@ namespace gpu_vulkan
    }
 
 
-   void context::swap_buffers()
-   {
+   //void context::swap_buffers()
+   //{
 
 
-   }
+   //}
 
 
    VkSampler context::_001VkSampler()
@@ -2166,7 +2166,7 @@ namespace gpu_vulkan
 
       __defer_construct_new(pcommandbuffer);
 
-      pcommandbuffer->initialize_command_buffer(m_pgpurendererOutput2);
+      pcommandbuffer->initialize_command_buffer(m_pgpurenderer);
 
       pcommandbuffer->begin_command_buffer();
 
@@ -2350,7 +2350,7 @@ namespace gpu_vulkan
    void context::update_global_ubo(const ::block& block)
    {
 
-      auto iFrameIndex = m_pgpurendererOutput2->get_frame_index();
+      auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
       if (iFrameIndex < 0 || iFrameIndex >= m_uboBuffers.size())
       {
@@ -2386,7 +2386,7 @@ namespace gpu_vulkan
             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
             .build();
 
-         auto iFrameCount = pgpurenderer->get_frame_count();
+         auto iFrameCount = pgpurenderer->m_pgpurendertarget->get_frame_count();
 
          m_descriptorsetsGlobal.resize(iFrameCount);
 
@@ -2414,7 +2414,7 @@ namespace gpu_vulkan
 
       //}
 
-      return m_descriptorsetsGlobal[prenderer->get_frame_index()];
+      return m_descriptorsetsGlobal[prenderer->m_pgpurendertarget->get_frame_index()];
 
    }
       

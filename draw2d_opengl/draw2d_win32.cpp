@@ -31,6 +31,8 @@ namespace draw2d_opengl
    void draw2d::on_create_window(::windowing::window * pwindowParam)
    {
 
+      ::draw2d_gpu::draw2d::on_create_window(pwindowParam);
+
       ::cast < ::windowing_win32::window > pwindow = pwindowParam;
 
       auto hwnd = pwindow->m_hwnd;

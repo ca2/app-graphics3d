@@ -74,16 +74,16 @@ namespace gpu_directx12
 	}
 
 
-   void swap_chain::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc)
-   {
+   //void swap_chain::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc)
+   //{
 
 
 
 
-   }
+   //}
 
 
-   void swap_chain::present()
+   void swap_chain::present(::gpu::texture * pgputexture)
    {
 
 

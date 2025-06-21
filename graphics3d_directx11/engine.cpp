@@ -50,7 +50,7 @@ namespace graphics3d_directx11
    void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::cast < ::gpu_directx11::renderer> prenderer = m_pgpucontext->m_pgpurendererOutput2;
+      ::cast < ::gpu_directx11::renderer> prenderer = m_pgpucontext->m_pgpurenderer;
 
       prenderer->defer_update_renderer();
 
@@ -153,169 +153,13 @@ namespace graphics3d_directx11
 
    }
 
-   ////   ::cast < renderer > prenderer = m_prenderer;
-
-   ////   if (prenderer->m_pvkcrenderpass->width() <= 0
-   ////      || prenderer->m_pvkcrenderpass->height() <= 0)
-   ////   {
-
-   ////      return;
-
-   ////   }
-
-
-   ////   if (auto commandBuffer = m_prenderer->beginFrame())
-   ////   {
-
-   ////      on_begin_frame();
-   ////      // render
-   ////      m_prenderer->beginRenderPass(commandBuffer);
-
-   ////      m_psimplerendersystem->renderGameObjects(m_pscene);
-   ////      m_ppointlightsystem->render(m_pscene);
-
-   ////      m_prenderer->endRenderPass(commandBuffer);
-   ////      m_prenderer->endFrame();
-
-   ////   }
-
-
-   ////}
-
-
-   //::file::path engine::_translate_shader_path(const ::file::path& pathShader)
-   //{
-
-   //   auto pathFolder = pathShader.folder();
-
-   //   return pathFolder / "directx11/SpirV" / (pathShader.name() + ".spv");
-
-   //}
-
-   //glm::vec3 engine::camera_pole_up()
-   //{
-
-   //   return { 0.0f, -1.0f, 0.0f };
-
-   //}
-
 
    void engine::do_frame_step(::gpu::context * pcontext)
    {
 
       ::graphics3d::engine::do_frame_step(pcontext);
 
-      //if (m_rectanglePlacementNew.is_empty())
-      //{
-
-      //   return;
-
-      //}
-
-      //m_pgpucontext->set_placement(m_rectanglePlacementNew);
-
-      //::gpu::rear_guard rear_guard(pcontextUpper);
-
-      //m_pgpucontext->send([this]()
-      //   {
-
-      //      ::gpu::context_guard guard(m_pgpucontext);
-
-      //      m_pgpucontext->make_current();
-
-      //      ::cast < ::gpu_directx11::renderer > prenderer = m_pgpucontext->get_renderer(::gpu::e_scene_3d);
-
-      //      prenderer->defer_update_renderer();
-
-      //      try
-      //      {
-
-      //         m_pgpucontext->m_pengine->_do_frame_step();
-
-      //      }
-      //      catch (...)
-      //      {
-
-      //      }
-
-      //   });
-
-
-      //if (1)
-      //{
-
-      //   if (pcontextUpper)
-      //   {
-
-      //      pcontextUpper->make_current();
-
-      //      ::cast < ::gpu_directx11::renderer > prendererUpper = pcontextUpper->m_pgpurendererGraphics3D;
-
-      //      //VkImage vkimage = prenderer->m_pvkcrenderpass->m_images[prenderer->get_frame_index()];
-
-      //      //::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
-
-      //      //auto copyCmd = pgpucontext->beginSingleTimeCommands();
-
-      //      //::directx11::insertImageMemoryBarrier(
-      //      //   copyCmd,
-      //      //   vkimage,
-      //      //   0,
-      //      //   VK_ACCESS_TRANSFER_WRITE_BIT,
-      //      //   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      //      //   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      //      //   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-      //      //   VK_ACCESS_SHADER_READ_BIT,
-      //      //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
-
-      //      //VkSubmitInfo submitInfo{};
-      //      //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-      //      //submitInfo.commandBufferCount = 1;
-      //      //submitInfo.pCommandBuffers = &copyCmd;
-      //      //::array<VkSemaphore> waitSemaphores;
-      //      //::array<VkPipelineStageFlags> waitStages;
-      //      //waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-      //      //waitSemaphores.add(prenderer->m_pvkcrenderpass->renderFinishedSemaphores[prenderer->get_frame_index()]);
-      //      //submitInfo.waitSemaphoreCount = waitSemaphores.size();
-      //      //submitInfo.pWaitSemaphores = waitSemaphores.data();
-      //      //submitInfo.pWaitDstStageMask = waitStages.data();
-
-      //      ////vkQueueWaitIdle(pgpucontext->graphicsQueue());
-
-      //      //pgpucontext->endSingleTimeCommands(copyCmd);
-
-      //      //prendererUpper->_blend_image(vkimage, pgpucontext->m_rectangle, true);
-
-      //      //auto rectangleUpper = pcontextUpper->rectangle();
-
-      //      //VkViewport vp = {
-      //      //   (float)rectangleUpper.left(),
-      //      //   (float)rectangleUpper.top(),
-      //      //   (float)rectangleUpper.width(),
-      //      //   (float)rectangleUpper.height(),
-      //      //   0.0f, 1.0f };
-      //      //VkRect2D sc = {
-      //      //   {
-      //      //   (float)rectangleUpper.left(),
-      //      //   (float)rectangleUpper.top(),
-      //      //   },
-      //      //   {
-      //      //            (float)rectangleUpper.width(),
-      //      //   (float)rectangleUpper.height(),
-
-
-      //      //}
-      //      //};
-      //      //vkCmdSetViewport(prendererUpper->getCurrentCommandBuffer(), 0, 1, &vp);
-      //      //vkCmdSetScissor(prendererUpper->getCurrentCommandBuffer(), 0, 1, &sc);
-
-
-      //   }
-
-      //}
-
    }
-
 
 
    void engine::_engine_on_frame_context_initialization()
@@ -549,7 +393,7 @@ namespace graphics3d_directx11
       {
 
          ::cast< ::gpu_directx11::context > pgpucontext = m_pgpucontext;
-         ::cast< ::gpu_directx11::renderer > prenderer = m_pgpucontext->m_pgpurendererOutput2;
+         ::cast< ::gpu_directx11::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
          ::cast < ::gpu_directx11::render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
          ::cast < ::gpu_directx11::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
          ::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;

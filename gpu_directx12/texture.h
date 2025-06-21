@@ -75,6 +75,36 @@ namespace gpu_directx12
    };
 
 
+   class texture_guard
+   {
+   public:
+
+      texture* m_ptexture;
+      ID3D12GraphicsCommandList* m_pcommandlist;
+      D3D12_RESOURCE_STATES m_estateOld;
+
+      texture_guard(ID3D12GraphicsCommandList* pcommandlist, texture* ptexture, D3D12_RESOURCE_STATES estate)
+      {
+
+         m_ptexture = ptexture;
+         m_pcommandlist = pcommandlist;
+         m_estateOld = m_ptexture->m_estate;
+
+         m_ptexture->_new_state(m_pcommandlist, estate);
+
+      }
+
+      ~texture_guard()
+      {
+
+         m_ptexture->_new_state(m_pcommandlist, m_estateOld);
+
+      }
+
+   };
+
+
+
 } // namespace gpu_directx12
 
 

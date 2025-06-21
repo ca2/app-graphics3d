@@ -400,7 +400,7 @@ namespace gpu_vulkan
          clearValues[1].depthStencil = { 1.0f, 0 };
 
          renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
-         renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->get_frame_index());
+         renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->m_pgpurendertarget->get_frame_index());
          renderPassBeginInfo.clearValueCount = 2;
          renderPassBeginInfo.pClearValues = clearValues;
          renderPassBeginInfo.renderArea.offset = { 0, 0 };

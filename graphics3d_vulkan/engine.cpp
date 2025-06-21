@@ -46,7 +46,7 @@ namespace graphics3d_vulkan
    void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::cast < ::gpu_vulkan::renderer> prenderer = m_pgpucontext->m_pgpurendererOutput2;
+      ::cast < ::gpu_vulkan::renderer> prenderer = m_pgpucontext->m_pgpurenderer;
 
       prenderer->defer_update_renderer();
 

@@ -59,12 +59,12 @@ namespace gpu_directx12
    }
 
 
-   int render_target_view::get_image_index() const
-   {
+   //int render_target_view::get_image_index() const
+   //{
 
-      return m_pgpurenderer->get_frame_index();
+   //   return m_pgpurenderer->get_frame_index();
 
-   }
+   //}
 
 
 

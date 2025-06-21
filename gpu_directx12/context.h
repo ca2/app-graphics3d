@@ -151,7 +151,7 @@ namespace gpu_directx12
 
       void set_bitmap_1(::image::image *pimage) override;
 
-      void swap_buffers() override;
+      //void swap_buffers() override;
 
       //VkSampler _001VkSampler();
 
@@ -299,7 +299,7 @@ namespace gpu_directx12
       //ID3D11DeviceContext* draw_get_d3d11_device_context();
       //ID3D11DeviceContext1* draw_get_d3d11_device_context1();
 
-      bool create_offscreen_graphics_for_swap_chain_blitting(::draw2d_gpu::graphics* pgraphics, const ::int_size& size = {}) override;
+      //bool create_offscreen_graphics_for_swap_chain_blitting(::draw2d_gpu::graphics* pgraphics, const ::int_size& size = {}) override;
 
       ::gpu::enum_output get_eoutput() override;
 
@@ -309,7 +309,7 @@ namespace gpu_directx12
       
 
       void on_create_texture(::gpu::texture* pgputext) override;
-      void on_take_snapshot(::gpu::layer* pgpulayer) override;
+      //void on_take_snapshot(::gpu::layer* pgpulayer) override;
 
       
 

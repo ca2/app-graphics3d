@@ -63,15 +63,15 @@ namespace gpu_vulkan
       virtual void on_before_begin_render(frame* pframe);
 
       VkFramebuffer getFrameBuffer(int index) { return m_framebuffers[index]; }
-      VkFramebuffer getCurrentFrameBuffer() { return m_framebuffers[get_image_index()]; }
-      virtual int get_image_index() const;
+      VkFramebuffer getCurrentFrameBuffer() { return m_framebuffers[get_frame_index()]; }
+      //virtual int get_image_index() const;
       VkRenderPass getRenderPass() { return m_vkrenderpass; }
       VkImageView getImageView(int index) { return m_imageviews[index]; }
-      size_t imageCount() { return m_texturea.size(); }
-      VkFormat getImageFormat() { return m_formatImage; }
+      //int imageCount() { return m_texturea.size(); }
+//      VkFormat getImageFormat() { return m_pgpurenderer->m_pgpucontext; }
       VkExtent2D getExtent() { return m_extent; }
-      uint32_t width() { return m_extent.width; }
-      uint32_t height() { return m_extent.height; }
+      int width() { return m_extent.width; }
+      int height() { return m_extent.height; }
 
       float extentAspectRatio() {
          return static_cast<float>(m_extent.width) / static_cast<float>(m_extent.height);
@@ -83,10 +83,10 @@ namespace gpu_vulkan
       virtual VkResult acquireNextImage();
       virtual VkResult submitCommandBuffers(command_buffer * pcommandbuffer);
 
-      bool compareFormats(const render_pass& renderpass) const {
-         return renderpass.m_formatDepth == m_formatDepth &&
-            renderpass.m_formatImage == m_formatImage;
-      }
+      //bool compareFormats(const render_pass& renderpass) const {
+      //   return renderpass.m_formatDepth == m_formatDepth &&
+      //      renderpass.m_formatImage == m_formatImage;
+      //}
 
 
       void on_init() override;

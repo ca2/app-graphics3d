@@ -69,7 +69,7 @@ namespace gpu_vulkan
 
       VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
       imagecreateinfo.imageType = VK_IMAGE_TYPE_2D;
-      imagecreateinfo.format = prenderpass ? prenderpass->m_formatImage : pcontext->m_formatImageDefault;
+      imagecreateinfo.format = pcontext->m_formatImageDefault;
       imagecreateinfo.extent.width = rectangleTarget.width();
       imagecreateinfo.extent.height = rectangleTarget.height();
       imagecreateinfo.extent.depth = 1;

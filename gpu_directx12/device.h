@@ -5,6 +5,7 @@
 
 #include "bred/gpu/device.h"
 #include "acme/prototype/prototype/memory.h"
+#include "acme_windows_common/dxgi_device_source.h"
 //#include "directx12/directx12.h"
 #include <dcomp.h>
 #include <d3d11.h>
@@ -15,8 +16,8 @@ namespace gpu_directx12
 
 
    class CLASS_DECL_GPU_DIRECTX12 device :
-      virtual public ::gpu::device//,
-      //virtual public ::directx12::directx12
+      virtual public ::gpu::device,
+      virtual public ::dxgi_device_source
    {
    public:
 
@@ -133,6 +134,14 @@ namespace gpu_directx12
       ::array<const char*>       deviceExtensions;
       ::procedure_array          m_procedureaOnTopFrameEnd;
       //::pointer < direct2d_draw2d_swap_chain >    m_pswapchain;
+
+
+      // For IDXGIDevice
+      ::comptr<ID3D11Device> m_pd3d11device;
+      ::comptr<ID3D11DeviceContext> m_pd3d11context;
+      ::comptr<ID3D11On12Device> m_pd3d11on12;
+      ::comptr<IDXGIDevice> m_pdxgidevice;
+
 
       device();
       ~device() override;
@@ -311,7 +320,7 @@ namespace gpu_directx12
 
       //ID3D12Device* draw_get_d3d11_device();
       //ID3D12Device1* draw_get_d3d11_device1();
-      //IDXGIDevice* draw_get_dxgi_device();
+      IDXGIDevice* _get_dxgi_device() override;
 
       int get_type_size(::gpu::enum_type etype) override;
       void set_mat4(void* p, const ::glm::mat4& mat4) override;

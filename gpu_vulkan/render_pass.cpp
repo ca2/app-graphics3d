@@ -93,12 +93,12 @@ namespace gpu_vulkan
    }
 
 
-   int render_pass::get_image_index() const
-   {
-      
-      return m_pgpurenderer->get_frame_index(); 
-   
-   }
+   //int render_pass::get_image_index() const
+   //{
+   //   
+   //   return get_frame_index(); 
+   //
+   //}
 
 
    
@@ -260,7 +260,7 @@ namespace gpu_vulkan
          viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
          viewInfo.image = ptexture->m_vkimage;
          viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-         viewInfo.format = m_formatImage;
+         viewInfo.format = pcontext->m_formatImageDefault;
          viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
          viewInfo.subresourceRange.baseMipLevel = 0;
          viewInfo.subresourceRange.levelCount = 1;
@@ -298,7 +298,7 @@ namespace gpu_vulkan
       depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
       VkAttachmentDescription colorAttachment = {};
-      colorAttachment.format = getImageFormat();
+      colorAttachment.format = pcontext->m_formatImageDefault;
       colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
       colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
       colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -466,7 +466,7 @@ namespace gpu_vulkan
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
       int iImageCount = m_texturea.size();
-      int iMaxFramesInFlight = renderer::DEFAULT_FRAME_COUNT;
+      int iMaxFramesInFlight = get_frame_count();
 
       imageAvailable.resize(iImageCount);
       imageAvailableSemaphores.resize(iImageCount);

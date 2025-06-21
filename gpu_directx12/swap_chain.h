@@ -52,8 +52,8 @@ namespace gpu_directx12
       void on_init() override;
 
 
-      void endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc) override;
-      void present() override;
+      //void endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc) override;
+      void present(::gpu::texture * pgputexture) override;
 
 
 //      VkInstance instance{ VK_NULL_HANDLE };
