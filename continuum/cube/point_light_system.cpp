@@ -81,7 +81,7 @@ namespace app_graphics3d_continuum
          nullptr,
          {},
          point_light2_properties(),
-         {},
+         gpu_Vertex_properties(),
          ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
       );
       

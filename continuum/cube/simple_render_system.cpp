@@ -61,7 +61,8 @@ namespace app_graphics3d_continuum
 			"matter://shaders/frag.frag",
 			{ ::gpu::shader::e_descriptor_set_slot_global,
 			::gpu::shader::e_descriptor_set_slot_local }, {}, {},
-			simple_render_properties()
+			simple_render_properties(),
+			gpu_Vertex_properties()
 		);
 
 
