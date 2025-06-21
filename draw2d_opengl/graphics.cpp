@@ -230,8 +230,10 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::create_for_window_drawing(const ::int_size& size)
+   void graphics::create_for_window_draw2d(::user::interaction * puserinteraction, const ::int_size& size)
    {
+
+      ::draw2d_gpu::graphics::create_for_window_draw2d(puserinteraction, size);
 
       if (m_puserinteraction == nullptr)
       {

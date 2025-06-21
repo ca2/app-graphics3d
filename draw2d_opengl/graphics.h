@@ -134,7 +134,7 @@ namespace draw2d_opengl
       virtual bool opengl_create_offscreen_buffer(const ::int_size& rectanglePlacement);
       virtual bool opengl_delete_offscreen_buffer();
 
-      void create_for_window_drawing(const ::int_size& size) override;
+      void create_for_window_draw2d(::user::interaction * puserinteraction, const ::int_size& size) override;
 
       virtual bool opengl_defer_create_window_context(::windowing::window * pwindow);
 
