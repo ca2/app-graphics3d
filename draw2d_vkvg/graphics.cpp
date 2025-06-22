@@ -6329,7 +6329,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::do_on_context(const ::procedure& procedure)
    {
 
-      m_pgpucontext->send(procedure);
+      m_pgpucontext->_send(procedure);
 
    }
 
@@ -6563,7 +6563,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //wglMakeCurrent(m_hdc, m_hglrc);
 
-      m_pgpucontext->make_current();
+      //m_pgpucontext->make_current();
 
       thread_graphics(this);
 

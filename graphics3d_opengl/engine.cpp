@@ -13,6 +13,7 @@
 #include "gpu_opengl/context.h"
 #include "gpu_opengl/device_win32.h"
 #include "gpu_opengl/frame_buffer.h"
+#include "gpu_opengl/lock.h"
 #include "system/basic_render_system.h"
 #include "system/point_light_system.h"
 #include "bred/user/user/graphics3d.h"
@@ -67,6 +68,8 @@ namespace graphics3d_opengl
    void engine::on_render_frame()
    {
 
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+
       ::graphics3d::engine::on_render_frame();
 
    }
@@ -91,8 +94,12 @@ namespace graphics3d_opengl
    void engine::on_begin_frame()
    {
 
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+
       glPushMatrix();
+      GLCheckError("");
       glPushAttrib(GL_ALL_ATTRIB_BITS);
+      GLCheckError("");
 
    }
 
@@ -100,8 +107,12 @@ namespace graphics3d_opengl
    void engine::on_end_frame()
    {
 
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+
       glPopAttrib();
+      GLCheckError("");
       glPopMatrix();
+      GLCheckError("");
 
    }
 

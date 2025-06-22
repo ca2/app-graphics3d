@@ -39,8 +39,8 @@ namespace draw2d_opengl
 
       m_bFace = false;
       m_face = nullptr;
-      m_VAO = 0;
-      m_VBO = 0;
+      m_FaceVAO = 0;
+      m_FaceVBO = 0;
 
    }
 

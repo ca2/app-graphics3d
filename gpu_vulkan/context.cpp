@@ -1585,7 +1585,7 @@ namespace gpu_vulkan
 
       //#endif
 
-            make_current();
+            //make_current();
 
             //glViewport(0, 0, size.cx(), size.cy());
             //glMatrixMode(GL_PROJECTION);
@@ -1601,36 +1601,36 @@ namespace gpu_vulkan
    }
 
 
-   void context::make_current()
-   {
+   //void context::make_current()
+   //{
 
-      ::gpu::context::make_current();
+   //   ::gpu::context::make_current();
 
-      //if (!is_current_task())
-      //{
+   //   //if (!is_current_task())
+   //   //{
 
-      //   ASSERT(FALSE);
+   //   //   ASSERT(FALSE);
 
-      //}
+   //   //}
 
-      //::e_status estatus = ::success;
+   //   //::e_status estatus = ::success;
 
-      ////bool bMakeCurrentOk = wglMakeCurrent(m_hdc, m_hrc);
+   //   ////bool bMakeCurrentOk = wglMakeCurrent(m_hdc, m_hrc);
 
-      ////if (!bMakeCurrentOk)
-      ////{
+   //   ////if (!bMakeCurrentOk)
+   //   ////{
 
-      ////   informationf("MS WGL - wglMakeCurrent failed");
+   //   ////   informationf("MS WGL - wglMakeCurrent failed");
 
-      ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   informationf("last-error code: %d\n", GetLastError());
 
-      ////   throw ::exception(error_failed);
+   //   ////   throw ::exception(error_failed);
 
-      ////}
+   //   ////}
 
-      ////return estatus;
+   //   ////return estatus;
 
-   }
+   //}
 
 
    void context::destroy_cpu_buffer()

@@ -17,6 +17,7 @@
 #include "bred/gpu/device.h"
 #include "bred/gpu/render.h"
 #include "gpu_opengl/device_win32.h"
+#include "gpu_opengl/lock.h"
 #include "gpu_opengl/renderer.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
@@ -1074,6 +1075,7 @@ namespace draw2d_opengl
    void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
    {
 
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
       //thread_select();
 
       ::opengl::color(pbrush->m_color);
@@ -1094,6 +1096,7 @@ namespace draw2d_opengl
       ::opengl::vertex2f(polygon, m_z);
 
       glEnd();
+      GLCheckError("");
 
       //return false;
 
@@ -5097,6 +5100,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //double_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
    double_size graphics::get_text_extent(const ::scoped_string& lpszString)
    {
+
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+
       //return{};
 
       //if(lpszString.is_empty())
@@ -5422,6 +5428,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::draw_line(const int_point& point1, const int_point& point2, ::draw2d::pen* ppen)
    {
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
 
       ::opengl::line(point1.x(), point1.y(), point2.x(), point2.y(), (float)(ppen->m_dWidth),
          ppen->m_color.f32_red(), ppen->m_color.f32_green(),
@@ -5449,6 +5456,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::line_to(double x, double y)
    {
+
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
 
       if (::is_set(m_ppen))
       {
@@ -5492,6 +5501,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::text_out(double x, double yParam, const ::scoped_string& scopedstr)
    {
+
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+
       //return;
       // activate corresponding render state	
 
@@ -5559,8 +5571,10 @@ color = vec4(c.r,c.g, c.b, c.a);
       ::cast < draw2d_opengl::face>pface = pgpuface;
 
       glActiveTexture(GL_TEXTURE0);
+      GLCheckError("");
 
-      glBindVertexArray(pface->m_VAO);
+      glBindVertexArray(pface->m_FaceVAO);
+      GLCheckError("");
 
       // iterate through all characters
       ::string strChar;
@@ -5593,6 +5607,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       point.y() = m_pgpucontext->m_rectangle.height() - point.y() - pface->m_iPixelSize;
 
       glEnable(GL_CULL_FACE);
+      GLCheckError("");
       //glEnable(GL_BLEND);
       //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       while(next_unicode_character(strChar, psz))
@@ -5619,21 +5634,29 @@ color = vec4(c.r,c.g, c.b, c.a);
          if (ch.TextureID)
          {
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            GLCheckError("");
             // update content of VBO memory
-            glBindBuffer(GL_ARRAY_BUFFER, pface->m_VBO);
+            int iVbo = pface->m_FaceVBO;
+            glBindBuffer(GL_ARRAY_BUFFER, iVbo);
+            GLCheckError("");
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
-
+            GLCheckError("");
             glBindBuffer(GL_ARRAY_BUFFER, 0);
+            GLCheckError("");
             // render quad
             glDrawArrays(GL_TRIANGLES, 0, 6);
+            GLCheckError("");
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
             Δx += ch.Advance; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
 
          }
       }
       glBindVertexArray(0);
+      GLCheckError("");
       glBindTexture(GL_TEXTURE_2D, 0);
+      GLCheckError("");
       glDisable(GL_CULL_FACE);
+      GLCheckError("");
       m_pgpushaderTextOut->unbind();
    }
 
@@ -6312,12 +6335,18 @@ color = vec4(c.r,c.g, c.b, c.a);
    void graphics::start_gpu_layer()
    {
 
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+
       ::draw2d_gpu::graphics::start_gpu_layer();
 
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Clear the background to transparent
+      GLCheckError("");
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the color and depth buffers
+      GLCheckError("");
       glDepthMask(GL_FALSE); // Disable writing to depth buffer
+      GLCheckError("");
       glDisable(GL_DEPTH_TEST); // Disable depth testing
+      GLCheckError("");
 
       auto ealphamode = m_ealphamode;
       m_ealphamode = ::draw2d::e_alpha_mode_none; // Set alpha mode to blend for GPU layer
