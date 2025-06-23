@@ -33,11 +33,19 @@ namespace gpu_directx12
 
       
       ::comptr<ID3D12Resource>         m_presource;
-      //::comptr<ID3D12DescriptorHeap>   m_pheapRenderTargetView;
+      ::comptr<ID3D12Resource>         m_presourceDepthStencilView;
+      ::comptr<ID3D12DescriptorHeap>   m_pheapRenderTargetView;
       D3D12_RESOURCE_STATES            m_estate;
-      //D3D12_CPU_DESCRIPTOR_HANDLE      m_handleRenderTargetView;
+      D3D12_CPU_DESCRIPTOR_HANDLE      m_handleRenderTargetView;
       ::comptr<ID3D12DescriptorHeap>   m_pheapShaderResourceView;
       D3D12_CPU_DESCRIPTOR_HANDLE      m_handleShaderResourceView;
+      ::comptr<ID3D12DescriptorHeap>   m_pheapDepthStencilView;
+      D3D12_CPU_DESCRIPTOR_HANDLE      m_handleDepthStencilView;
+      ::comptr<ID3D12DescriptorHeap>   m_pheapSampler;
+      D3D12_CPU_DESCRIPTOR_HANDLE      m_handleSampler;
+      //UINT m_rtvDescriptorSize;
+      bool m_bRenderTarget;
+      bool m_bShaderResource;
 
       class d3d11 :
          virtual public ::particle
@@ -71,6 +79,15 @@ namespace gpu_directx12
       class d3d11* d3d11();
 
       void blend(::gpu::texture* ptexture) override;
+
+
+      void create_render_target();
+
+      void create_shader_resource();
+
+      void create_depth_resources();
+
+      virtual void _initialize_gpu_texture(::gpu::renderer* prenderer, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain);
 
    };
 

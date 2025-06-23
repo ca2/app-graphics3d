@@ -134,6 +134,11 @@ namespace gpu_directx12
       //::pointer_array<::gpu_directx12::buffer>							m_uboBuffers;
       ::pointer <::gpu_directx12::descriptor_pool>                m_pdescriptorpoolGlobal;
 
+
+      ::pointer <::gpu_directx12::shader>                m_pshaderBlend3;
+      //::comptr < ID3D12BlendState >                      m_pd3d11blendstateBlend3;
+
+
       context();
       ~context() override;
 
@@ -311,7 +316,10 @@ namespace gpu_directx12
       void on_create_texture(::gpu::texture* pgputext) override;
       //void on_take_snapshot(::gpu::layer* pgpulayer) override;
 
-      
+      void merge_layers(::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera) override;
+
+      //void swap_buffers();
+
 
    };
 

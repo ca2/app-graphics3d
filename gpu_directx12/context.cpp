@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "approach.h"
 #include "buffer.h"
+#include "command_buffer.h"
 #include "context.h"
 #include "device.h"
 #include "physical_device.h"
@@ -410,136 +411,6 @@ namespace gpu_directx12
    }
 
 
-   //void context::swap_buffers()
-   //{
-
-   //   ::cast < gpu_directx12::renderer > pgpurenderer = m_pgpurenderer;
-
-   //   ::cast < gpu_directx12::swap_chain > pswapchain = pgpurenderer->m_pgpucontext->m_pgpudevice->get_swap_chain();
-
-   //   pswapchain->m_pdxgiswapchain3->Present(1, 0);
-
-   //}
-
-
-   //VkSampler context::_001VkSampler()
-   //{
-
-   //   if (!m_vksampler001)
-   //   {
-
-   //      VkSamplerCreateInfo samplerInfo = {
-   //.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-   //.magFilter = VK_FILTER_LINEAR,
-   //.minFilter = VK_FILTER_LINEAR,
-   //   .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-
-   //.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-   //.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-   //.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-   //.mipLodBias = 0.0f,
-   //.anisotropyEnable = VK_FALSE,
-   //.maxAnisotropy = 1.0f,
-   //.compareEnable = VK_FALSE,
-   //.compareOp = VK_COMPARE_OP_ALWAYS,
-   //.minLod = 0.0f,
-   //.maxLod = 0.0f,
-   //   .borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-   //.unnormalizedCoordinates = VK_FALSE,
-
-   //      };
-
-
-   //      if (vkCreateSampler(this->logicalDevice(), &samplerInfo, NULL, &m_vksampler001) != VK_SUCCESS) {
-   //         // Handle error
-   //      }
-
-   //   }
-
-   //   return m_vksampler001;
-
-   //}
-
-
-
-
-
-   //void context::create_offscreen_buffer(const ::int_size& size)
-   //{
-
-   //   auto pgpu = application()->get_gpu();
-
-   //   if (::is_null(pgpu))
-   //   {
-
-   //      return ::error_failed;
-
-   //   }
-
-   //   ::e_status estatus = __øconstruct(m_pbuffer);
-
-   //   if (!estatus)
-   //   {
-
-   //      return false;
-
-   //   }
-
-   //   m_pbuffer->m_pimage = create_image(size);
-
-   //   if (!::is_ok(m_pbuffer->m_pimage))
-   //   {
-
-   //      return false;
-
-   //   }
-
-   //   estatus = _create_offscreen_buffer(size);
-
-   //   if(!estatus)
-   //   {
-
-   //      return estatus;
-
-   //   }
-
-   //   return ::success_none;
-
-   //}
-
-
-   //void context::_create_offscreen_buffer(const ::int_size& size)
-   //{
-
-   //   return ::success_none;
-
-   //}
-
-
-   //void context::resize_offscreen_buffer(const ::int_size& size)
-   //{
-
-   //   return ::success_none;
-
-   //}
-
-
-
-   //void context::make_current()
-   //{
-
-   //   return ::success_none;
-
-   //}
-
-
-   //void context::destroy_offscreen_buffer()
-   //{
-
-   //   return ::success_none;
-
-   //}
-
 
    string context::_001GetIntroProjection()
    {
@@ -889,430 +760,8 @@ namespace gpu_directx12
    }
 
 
-   //void context::on_create_context(const ::gpu::start_context_t& startcontext)
-   //{
 
-   //   //m_itaskGpu = ::current_itask();
 
-   //   m_pgpudevice = startcontext.m_pgpudevice;
-
-   //   //if (m_pgpudevice->m_queuefamilyindices.graphicsFamily >= 0)
-   //   //{
-
-   //   //   vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
-
-   //   //}
-
-   //   //if (m_pgpudevice->m_queuefamilyindices.presentFamily >= 0)
-   //   //{
-
-   //   //   vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
-
-   //   //}
-
-   //   c(startcontext);
-
-   //}
-
-
-
-   //void context::endSingleTimeCommands(VkCommandBuffer commandBuffer)
-   //{
-
-   //   VkSubmitInfo submitInfo{};
-   //   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-   //   submitInfo.commandBufferCount = 1;
-   //   submitInfo.pCommandBuffers = &commandBuffer;
-
-   //   endSingleTimeCommands(commandBuffer,1, &submitInfo);
-
-   //}
-
-
-   //void context::endSingleTimeCommands(VkCommandBuffer commandBuffer, int iSubmitCount, VkSubmitInfo* psubmitinfo)
-   //{
-
-   //   vkEndCommandBuffer(commandBuffer);
-   //  
-   //   vkQueueSubmit(m_vkqueueGraphics, 1, psubmitinfo, VK_NULL_HANDLE);
-
-   //   vkQueueWaitIdle(m_vkqueueGraphics);
-
-   //   vkFreeCommandBuffers(this->logicalDevice(), m_pgpudevice->getCommandPool(), 1, &commandBuffer);
-
-   //}
-
-
-
-   //VkDevice context::logicalDevice() 
-   //{
-   //   
-   //   ::cast < device > pgpudevice = m_pgpudevice;
-
-   //   return pgpudevice->logicalDevice();
-
-   //}
-
-
-//   HRESULT context::createLogicalDevice(
-//   VkPhysicalDeviceFeatures enabledFeatures,
-//   ::array<const char *> enabledExtensions,
-//   void * pNextChain,
-//   bool useSwapChain,
-//   VkQueueFlags requestedQueueTypes)
-//   {
-//
-//      ::cast < approach > pgpuapproach = application()->get_gpu();
-//
-//      ::cast < physical_device > pphysicaldevice = pgpuapproach->m_pphysicaldevice;
-//
-//      // Desired queues need to be requested upon logical device creation
-//      // Due to differing queue family configurations of DirectX12 implementations this can be a bit tricky, especially if the application
-//      // requests different queue types
-//
-//      ::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
-//
-//      // Get queue family indices for the requested queue family types
-//      // Note that the indices may overlap depending on the implementation
-//
-//      const float defaultQueuePriority(0.0f);
-//
-//      m_queuefamilyindices = pphysicaldevice->findQueueFamilies();
-//
-//      // Graphics queue
-//      if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT
-//         && m_queuefamilyindices.graphicsFamilyHasValue)
-//      {
-//         //m_queuefamilyindices.graphics = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
-//         VkDeviceQueueCreateInfo queueInfo{};
-//         queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-//         queueInfo.queueFamilyIndex = m_queuefamilyindices.graphicsFamily;
-//         queueInfo.queueCount = 1;
-//         queueInfo.pQueuePriorities = &defaultQueuePriority;
-//         queueCreateInfos.add(queueInfo);
-//      }
-//      else
-//      {
-//         m_queuefamilyindices.graphicsFamily = 0;
-//      }
-//
-//      // Dedicated compute queue
-//      if (requestedQueueTypes & VK_QUEUE_COMPUTE_BIT
-//         && m_queuefamilyindices.computeFamilyHasValue)
-//      {
-//         //m_queuefamilyindices.compute = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
-//         if (m_queuefamilyindices.computeFamily != m_queuefamilyindices.graphicsFamily)
-//         {
-//            // If compute family index differs, we need an additional queue create info for the compute queue
-//            VkDeviceQueueCreateInfo queueInfo{};
-//            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-//            queueInfo.queueFamilyIndex = m_queuefamilyindices.computeFamily;
-//            queueInfo.queueCount = 1;
-//            queueInfo.pQueuePriorities = &defaultQueuePriority;
-//            queueCreateInfos.add(queueInfo);
-//         }
-//      }
-//      else
-//      {
-//         // Else we use the same queue
-//         m_queuefamilyindices.computeFamily = m_queuefamilyindices.graphicsFamily;
-//      }
-//
-//      // Dedicated transfer queue
-//      if (requestedQueueTypes & VK_QUEUE_TRANSFER_BIT
-//         && m_queuefamilyindices.transferFamilyHasValue)
-//      {
-//         //m_queuefamilyindices.transfer = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_TRANSFER_BIT);
-//         if ((m_queuefamilyindices.transferFamily != m_queuefamilyindices.graphicsFamily)
-//            && (m_queuefamilyindices.transferFamily != m_queuefamilyindices.computeFamily))
-//         {
-//            // If transfer family index differs, we need an additional queue create info for the transfer queue
-//            VkDeviceQueueCreateInfo queueInfo{};
-//            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-//            queueInfo.queueFamilyIndex = m_queuefamilyindices.transferFamily;
-//            queueInfo.queueCount = 1;
-//            queueInfo.pQueuePriorities = &defaultQueuePriority;
-//            queueCreateInfos.add(queueInfo);
-//         }
-//      }
-//      else
-//      {
-//         // Else we use the same queue
-//         m_queuefamilyindices.transferFamily = m_queuefamilyindices.graphicsFamily;
-//      }
-//
-//      // Create the logical device representation
-//      ::array<const char *> deviceExtensions(enabledExtensions);
-//      if (useSwapChain)
-//      {
-//
-//         // If the device will be used for presenting to a display via a swapchain we need to request the swapchain extension
-//         deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-//
-//      }
-//
-//      VkDeviceCreateInfo deviceCreateInfo = {};
-//      deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-//      deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());;
-//      deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
-//      deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
-//
-//      // If a pNext(Chain) has been passed, we need to add it to the device creation info
-//      VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
-//      if (pNextChain) {
-//         physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-//         physicalDeviceFeatures2.features = enabledFeatures;
-//         physicalDeviceFeatures2.pNext = pNextChain;
-//         deviceCreateInfo.pEnabledFeatures = nullptr;
-//         deviceCreateInfo.pNext = &physicalDeviceFeatures2;
-//      }
-//
-//#if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_METAL_EXT)) && defined(VK_KHR_portability_subset)
-//      // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
-//      if (extensionSupported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
-//      {
-//         deviceExtensions.add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-//      }
-//#endif
-//
-//      if (deviceExtensions.size() > 0)
-//      {
-//         for (const char * enabledExtension : deviceExtensions)
-//         {
-//            if (!isExtensionSupported(enabledExtension)) {
-//               information() << "Enabled device extension \"" << enabledExtension << "\" is not present at device level\n";
-//            }
-//         }
-//
-//         deviceCreateInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
-//         deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
-//      }
-//
-//      this->m_physicaldevicefeaturesEnabled = enabledFeatures;
-//
-//      auto physicaldevice = pphysicaldevice->m_physicaldevice;
-//
-//      HRESULT result = vkCreateDevice(physicaldevice, &deviceCreateInfo, nullptr, &this->logicalDevice());
-//      if (result != VK_SUCCESS)
-//      {
-//         return result;
-//      }
-//
-//      if (m_queuefamilyindices.graphicsFamily >= 0)
-//      {
-//         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
-//      }
-//      if (m_queuefamilyindices.presentFamily >= 0)
-//      {
-//         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
-//      }
-//
-//
-//      // Create a default command pool for graphics command buffers
-//      m_vkcommandpool = createCommandPool(m_queuefamilyindices.graphicsFamily);
-//
-//      return result;
-//
-//   }
-//
-//
-//   /**
-//   * Create a command pool for allocation command buffers from
-//   *
-//   * @param queueFamilyIndex Family index of the queue to create the command pool for
-//   * @param createFlags (Optional) Command pool creation flags (Defaults to VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
-//   *
-//   * @note Command buffers allocated from the created pool can only be submitted to a queue with the same family index
-//   *
-//   * @return A handle to the created command buffer
-//   */
-//   VkCommandPool context::createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags)
-//   {
-//      VkCommandPoolCreateInfo cmdPoolInfo = {};
-//      cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-//      cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
-//      cmdPoolInfo.flags = createFlags;
-//      VkCommandPool cmdPool;
-//      VK_CHECK_RESULT(vkCreateCommandPool(this->logicalDevice(), &cmdPoolInfo, nullptr, &cmdPool));
-//      return cmdPool;
-//   }
-//
-//
-//   /**
-//   * Check if an extension is supported by the (physical device)
-//   *
-//   * @param extension Name of the extension to check
-//   *
-//   * @return True if the extension is supported (present in the list read at device creation time)
-//   */
-//   bool context::isExtensionSupported(const ::scoped_string & scopedstrExtension)
-//   {
-//
-//      return m_straSupportedExtensions.contains(scopedstrExtension);
-//
-//   }
-
-
-   //void context::_create_window_buffer()
-   //{
-
-   //   if (!m_hdc || !m_hrc)
-   //   {
-
-   //      auto psystem = system();
-
-   //      auto pgpu = application()->get_gpu();
-
-   //      ::pointer < ::directx12::directx12 > pdirectx12 = pgpu;
-
-   //      if (!pdirectx12->m_atomClass)
-   //      {
-
-   //         informationf("MS GDI - RegisterClass failed");
-
-   //         informationf("last-error code: %d\n", GetLastError());
-
-   //         throw ::exception(error_failed);
-
-   //      }
-
-   //      // create WGL context, make current
-
-   //      //xxxopengl>>>>directx12 PIXELFORMATDESCRIPTOR pixformat;
-
-   //      int chosenformat;
-
-   //      HDC hdc = GetDC(m_hwnd);
-
-   //      if (!hdc)
-   //      {
-
-   //         informationf("MS GDI - GetDC failed");
-
-   //         informationf("last-error code: %d\n", GetLastError());
-
-   //         throw ::exception(error_failed);
-
-   //      }
-
-   //      ////xxxopengl>>>>directx12  zero(pixformat);
-   //      //pixformat.nSize = sizeof(pixformat);
-   //      //pixformat.nVersion = 1;
-   //      //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_DIRECTX12 | PFD_DOUBLEBUFFER;
-   //      //pixformat.iPixelType = PFD_TYPE_RGBA;
-   //      //pixformat.cColorBits = 32;
-   //      //pixformat.cRedShift = 16;
-   //      //pixformat.cGreenShift = 8;
-   //      //pixformat.cBlueShift = 0;
-   //      //pixformat.cAlphaShift = 24;
-   //      //pixformat.cAlphaBits = 8;
-   //      //pixformat.cDepthBits = 24;
-   //      //pixformat.cStencilBits = 8;
-
-   //      //xxxopengl>>>>directx12 chosenformat = ChoosePixelFormat(hdc, &pixformat);
-
-   //      //if (chosenformat == 0)
-   //      //{
-
-   //      //   informationf("MS GDI - ChoosePixelFormat failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-   //      //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
-
-   //      //if (!spfok)
-   //      //{
-
-   //      //   informationf("MS GDI - SetPixelFormat failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-   //      //HGLRC hglrc = wglCreateContext(hdc);
-
-   //      //if (!hglrc)
-   //      //{
-
-   //      //   informationf("MS WGL - wglCreateContext failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-   //      //bool bMakeCurrentOk = wglMakeCurrent(hdc, hglrc);
-
-   //      //if (!bMakeCurrentOk)
-   //      //{
-
-   //      //   informationf("MS WGL - wglMakeCurrent failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-
-   //      pdirectx12->defer_init_gpu_library();
-
-   //      //auto pszVersion = (const char *)glGetString(GL_VERSION);
-   //      ////::e_status estatus = 
-
-   //      //::string strVersion(pszVersion);
-
-   //      //if (strVersion.case_insensitive_contains("mesa"))
-   //      //{
-
-   //      //   m_bMesa = true;
-
-   //      //}
-
-   //      ////if (!estatus)
-   //      ////{
-
-   //      ////   ReleaseDC(window, hdc);
-
-   //      ////   return estatus;
-
-   //      ////}
-
-   //      m_hwnd = m_hwnd;
-   //      m_hdc = hdc;
-   //      //xxxopengl>>>>directx12 m_hrc = hglrc;
-
-   //   }
-
-   //   RECT rectClient;
-
-   //   ::GetClientRect(m_hwnd, &rectClient);
-
-   //   m_size = { rectClient.right - rectClient.left,
-   //      rectClient.bottom - rectClient.top };
-
-   //   m_itaskGpu = ::current_itask();
-
-   //   m_estatus = ::success;
-
-   //   set_ok_flag();
-   //   
-   //}
 
 
    void context::_create_window_context(::windowing::window* pwindowParam)
@@ -1629,45 +1078,6 @@ namespace gpu_directx12
    }
 
 
-   //void context::make_current()
-   //{
-
-   //   ::gpu::context::make_current();
-
-   //   //if (!is_current_task())
-   //   //{
-
-   //   //   ASSERT(FALSE);
-
-   //   //}
-
-   //   //::e_status estatus = ::success;
-
-   //   ////bool bMakeCurrentOk = wglMakeCurrent(m_hdc, m_hrc);
-
-   //   ////if (!bMakeCurrentOk)
-   //   ////{
-
-   //   ////   informationf("MS WGL - wglMakeCurrent failed");
-
-   //   ////   informationf("last-error code: %d\n", GetLastError());
-
-   //   ////   throw ::exception(error_failed);
-
-   //   ////}
-
-   //   ////return estatus;
-
-   //   //::cast < ::gpu_directx12::renderer > prenderer = get_renderer(::gpu::e_scene_3d);
-
-   //   //::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
-
-   //   //prenderer->on_new_frame();
-
-
-
-   //}
-
 
    void context::destroy_cpu_buffer()
    {
@@ -1696,22 +1106,6 @@ namespace gpu_directx12
 
    }
 
-   //void context::render()
-   //{
-
-   //   ::gpu_directx12::context::render();
-
-
-
-   //}
-
-
-   //void context::swap_buffers()
-   //{
-
-   //   //SwapBuffers(m_hdc);
-
-   //}
 
 
    string context::get_shader_version_text()
@@ -1749,587 +1143,6 @@ namespace gpu_directx12
 
 
 
-   //// class member functions
-   ////context::context(::graphics3d_directx12::DirectX12Device* pgpudevice) : this->logicalDevice(){pgpudevice->logicalDevice} {
-   //context::context()
-   //{
-
-   //   m_vksurfacekhr = nullptr;
-   //   m_vkqueuePresent = nullptr;
-   //   m_vkqueueGraphics = nullptr;
-
-   //   createInstance();
-   //   setupDebugMessenger();
-   //   createSurface();
-   //   pickPhysicalDevice();
-   //   createLogicalDevice();
-   //   createCommandPool();
-   //}
-
-   //context::~context()
-   //{
-   //   vkDestroyCommandPool(this->logicalDevice(), m_vkcommandpool, nullptr);
-   //   vkDestroyDevice(this->logicalDevice(), nullptr);
-
-   //   if (enableValidationLayers) {
-   //      DestroyDebugUtilsMessengerEXT(m_vkinstance, debugMessenger, nullptr);
-   //   }
-
-   //   if (m_vksurfacekhr)
-   //   {
-   //      vkDestroySurfaceKHR(m_vkinstance, m_vksurfacekhr, nullptr);
-   //   }
-   //   vkDestroyInstance(m_vkinstance, nullptr);
-
-   //}
-
-
-   //void context::initialize_context(::user::graphics3d * pimpact)
-   //{
-
-   //   m_pimpact = pimpact;
-
-
-   //   validationLayers.add("VK_LAYER_KHRONOS_validation");
-
-   //   if (m_papplication->m_bUseSwapChainWindow)
-   //   {
-
-   //      deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-
-   //   }
-
-
-   //}
-
-
-   //void context::createInstance()
-   //{
-
-   //   if (enableValidationLayers && !checkValidationLayerSupport()) {
-   //      throw ::exception(error_failed,"validation layers requested, but not available!");
-   //   }
-
-   //   VkApplicationInfo appInfo = {};
-   //   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-   //   appInfo.pApplicationName = "LittleDirectX12Engine App";
-   //   appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-   //   appInfo.pEngineName = "No Engine";
-   //   appInfo.approachVersion = VK_MAKE_VERSION(1, 0, 0);
-   //   appInfo.apiVersion = VK_API_VERSION_1_0;
-
-   //   VkInstanceCreateInfo createInfo = {};
-   //   createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-   //   createInfo.pApplicationInfo = &appInfo;
-
-   //   auto extensions = getRequiredExtensions();
-   //   createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-   //   createInfo.ppEnabledExtensionNames = extensions.data();
-
-   //   VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-   //   if (enableValidationLayers) {
-   //      createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-   //      createInfo.ppEnabledLayerNames = validationLayers.data();
-
-   //      populateDebugMessengerCreateInfo(debugCreateInfo);
-   //      createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
-   //   }
-   //   else {
-   //      createInfo.enabledLayerCount = 0;
-   //      createInfo.pNext = nullptr;
-   //   }
-
-   //   if (vkCreateInstance(&createInfo, nullptr, &m_vkinstance) != VK_SUCCESS) {
-   //      throw ::exception(error_failed,"failed to create m_vkinstance!");
-   //   }
-
-   //   hasGflwRequiredInstanceExtensions();
-   //}
-
-
-   //void context::pickPhysicalDevice()
-   //{
-   //   uint32_t deviceCount = 0;
-   //   vkEnumeratePhysicalDevices(m_vkinstance, &deviceCount, nullptr);
-   //   if (deviceCount == 0) {
-   //      throw ::exception(error_failed,"failed to find GPUs with DirectX12 support!");
-   //   }
-   //   information() << "Device count: " << deviceCount;
-   //   ::array<VkPhysicalDevice> devices(deviceCount);
-   //   vkEnumeratePhysicalDevices(m_vkinstance, &deviceCount, devices.data());
-
-   //   for (const auto & pvkcdevice : devices) {
-   //      if (isDeviceSuitable(pvkcdevice)) {
-   //         physicalDevice = pvkcdevice;
-   //         break;
-   //      }
-   //   }
-
-   //   if (physicalDevice == VK_NULL_HANDLE) {
-   //      throw ::exception(error_failed,"failed to find a suitable GPU!");
-   //   }
-
-   //   vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-   //   information() << "physical pvkcdevice: " << properties.deviceName;
-   //}
-
-
-   //void context::createLogicalDevice()
-   //{
-
-   //   QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-
-   //   ::array<VkDeviceQueueCreateInfo> queueCreateInfos;
-   //   std::set<uint32_t> uniqueQueueFamilies;
-   //   if (indices.graphicsFamilyHasValue)
-   //   {
-   //      uniqueQueueFamilies.insert(indices.graphicsFamily);
-   //   }
-   //   if (indices.presentFamilyHasValue)
-   //   {
-   //      uniqueQueueFamilies.insert(indices.presentFamily);
-   //   }
-
-   //   float queuePriority = 1.0f;
-   //   for (uint32_t queueFamily : uniqueQueueFamilies)
-   //   {
-   //      VkDeviceQueueCreateInfo queueCreateInfo = {};
-   //      queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-   //      queueCreateInfo.queueFamilyIndex = queueFamily;
-   //      queueCreateInfo.queueCount = 1;
-   //      queueCreateInfo.pQueuePriorities = &queuePriority;
-   //      queueCreateInfos.add(queueCreateInfo);
-   //   }
-
-   //   VkPhysicalDeviceFeatures deviceFeatures = {};
-   //   deviceFeatures.samplerAnisotropy = VK_TRUE;
-
-   //   VkDeviceCreateInfo createInfo = {};
-   //   createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-
-   //   createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-   //   createInfo.pQueueCreateInfos = queueCreateInfos.data();
-
-   //   createInfo.pEnabledFeatures = &deviceFeatures;
-   //   createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-   //   createInfo.ppEnabledExtensionNames = deviceExtensions.data();
-
-   //   // might not really be necessary anymore because pvkcdevice specific validation layers
-   //   // have been deprecated
-   //   if (enableValidationLayers)
-   //   {
-   //      createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-   //      createInfo.ppEnabledLayerNames = validationLayers.data();
-   //   }
-   //   else
-   //   {
-   //      createInfo.enabledLayerCount = 0;
-   //   }
-
-   //   if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &this->logicalDevice()) != VK_SUCCESS)
-   //   {
-   //      throw ::exception(error_failed,"failed to create logical pvkcdevice!");
-   //   }
-   //   if (indices.graphicsFamilyHasValue)
-   //   {
-   //      vkGetDeviceQueue(this->logicalDevice(), indices.graphicsFamily, 0, &m_vkqueueGraphics);
-   //   }
-   //   if (indices.presentFamilyHasValue)
-   //   {
-   //      vkGetDeviceQueue(this->logicalDevice(), indices.presentFamily, 0, &m_vkqueuePresent);
-   //   }
-   //}
-
-
-   //void context::createCommandPool()
-   //{
-   //   QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
-
-   //   VkCommandPoolCreateInfo poolInfo = {};
-   //   poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-   //   poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
-   //   poolInfo.flags =
-   //      VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-   //   if (vkCreateCommandPool(this->logicalDevice(), &poolInfo, nullptr, &m_vkcommandpool) != VK_SUCCESS) {
-   //      throw ::exception(error_failed,"failed to create command pool!");
-   //   }
-   //}
-
-   //void context::createSurface() { window.createWindowSurface(m_vkinstance, &m_vksurfacekhr); }
-
-   //void context::_createSurface() {}
-
-
-   //bool context::isDeviceSuitable(VkPhysicalDevice pvkcdevice)
-   //{
-
-   //   QueueFamilyIndices indices = findQueueFamilies(pvkcdevice);
-
-   //   bool extensionsSupported = checkDeviceExtensionSupport(pvkcdevice);
-
-   //   bool swapChainAdequate = false;
-   //   if (m_vksurfacekhr)
-   //   {
-   //      if (extensionsSupported)
-   //      {
-   //         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(pvkcdevice);
-   //         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-   //      }
-   //   }
-   //   else
-   //   {
-
-   //      swapChainAdequate = true;
-
-   //   }
-
-   //   VkPhysicalDeviceFeatures supportedFeatures;
-   //   vkGetPhysicalDeviceFeatures(pvkcdevice, &supportedFeatures);
-
-   //   return (!m_vksurfacekhr || indices.isComplete()) && extensionsSupported && swapChainAdequate &&
-   //      supportedFeatures.samplerAnisotropy;
-
-   //}
-
-
-   //void context::populateDebugMessengerCreateInfo(
-   //   VkDebugUtilsMessengerCreateInfoEXT & createInfo)
-   //{
-
-   //   createInfo = {};
-   //   createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-   //   createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-   //      VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-   //   createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-   //      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-   //      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-   //   createInfo.pfnUserCallback = debugCallback;
-   //   createInfo.pUserData = nullptr;  // Optional
-
-   //}
-
-
-   //void context::setupDebugMessenger()
-   //{
-
-   //   if (!enableValidationLayers)
-   //   {
-
-   //      return;
-
-   //   }
-
-   //   VkDebugUtilsMessengerCreateInfoEXT createInfo;
-
-   //   populateDebugMessengerCreateInfo(createInfo);
-
-   //   if (CreateDebugUtilsMessengerEXT(m_vkinstance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
-   //   {
-
-   //      throw ::exception(error_failed,"failed to set up debug messenger!");
-
-   //   }
-
-   //}
-
-
-   //bool context::checkValidationLayerSupport()
-   //{
-   //   uint32_t layerCount;
-   //   vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-   //   ::array<VkLayerProperties> availableLayers(layerCount);
-   //   vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
-   //   for (const char * layerName : validationLayers)
-   //   {
-   //      bool layerFound = false;
-
-
-   //      printf_line("checking for validation layer : %s", layerName);
-   //      for (const auto & layerProperties : availableLayers)
-   //      {
-   //         printf_line("an available layer : %s", layerProperties.layerName);
-   //         if (strcmp(layerName, layerProperties.layerName) == 0)
-   //         {
-   //            layerFound = true;
-   //            break;
-   //         }
-   //      }
-
-   //      if (!layerFound) {
-   //         return false;
-   //      }
-   //   }
-
-   //   return true;
-
-   //}
-
-
-   //::array<const char *> context::getRequiredExtensions()
-   //{
-   //   uint32_t glfwExtensionCount = 0;
-   //   const char ** glfwExtensions;
-   //   //glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-   //   //::array<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-   //   ::array<const char *> extensions;
-
-   //   if (enableValidationLayers)
-   //   {
-   //      extensions.add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-   //   }
-
-   //   return extensions;
-   //   return {};
-   //}
-
-
-   //void context::hasGflwRequiredInstanceExtensions()
-   //{
-   //   uint32_t extensionCount = 0;
-   //   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-   //   ::array<VkExtensionProperties> extensions(extensionCount);
-   //   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-
-   //   information() << "available extensions:";
-   //   set<::string> available;
-   //   for (const auto & extension : extensions) {
-   //      information() << "\t" << extension.extensionName;
-   //      available.set_at(extension.extensionName);
-   //   }
-
-   //   information() << "required extensions:";
-   //   auto requiredExtensions = getRequiredExtensions();
-   //   for (const auto & required : requiredExtensions)
-   //   {
-   //      information() << "\t" << required;
-   //      if (!available.plookup(required)) {
-   //         throw ::exception(error_failed,"Missing required glfw extension");
-   //      }
-   //   }
-
-   //}
-
-
-   //bool context::checkDeviceExtensionSupport(VkPhysicalDevice pvkcdevice)
-   //{
-
-   //   uint32_t extensionCount;
-   //   vkEnumerateDeviceExtensionProperties(pvkcdevice, nullptr, &extensionCount, nullptr);
-
-   //   ::array<VkExtensionProperties> availableExtensions(extensionCount);
-   //   vkEnumerateDeviceExtensionProperties(
-   //      pvkcdevice,
-   //      nullptr,
-   //      &extensionCount,
-   //      availableExtensions.data());
-
-   //   set<::string> requiredExtensions(deviceExtensions);
-
-   //   for (const auto & extension : availableExtensions) {
-   //      requiredExtensions.erase(extension.extensionName);
-   //   }
-
-   //   return requiredExtensions.empty();
-   //}
-
-
-   //void context::createBuffer(
-   //   VkDeviceSize size,
-   //   VkBufferUsageFlags usage,
-   //   VkMemoryPropertyFlags properties,
-   //   VkBuffer & buffer,
-   //   VkDeviceMemory & bufferMemory)
-   //{
-
-   //   VkBufferCreateInfo bufferInfo{};
-   //   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-   //   bufferInfo.size = size;
-   //   bufferInfo.usage = usage;
-   //   bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-   //   if (vkCreateBuffer(this->logicalDevice(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
-   //   {
-
-   //      throw ::exception(error_failed, "failed to create vertex buffer!");
-
-   //   }
-
-   //   VkMemoryRequirements memRequirements;
-   //   vkGetBufferMemoryRequirements(this->logicalDevice(), buffer, &memRequirements);
-
-   //   VkMemoryAllocateInfo allocInfo{};
-   //   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-   //   allocInfo.allocationSize = memRequirements.size;
-   //   allocInfo.memoryTypeIndex = m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
-
-   //   if (vkAllocateMemory(this->logicalDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
-   //   {
-
-   //      throw ::exception(error_failed, "failed to allocate vertex buffer memory!");
-
-   //   }
-
-   //   vkBindBufferMemory(this->logicalDevice(), buffer, bufferMemory, 0);
-
-   //}
-
-
-   //VkCommandBuffer context::beginSingleTimeCommands()
-   //{
-
-   //   VkCommandBufferAllocateInfo allocInfo{};
-   //   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-   //   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-   //   allocInfo.commandPool = m_pgpudevice->getCommandPool();
-   //   allocInfo.commandBufferCount = 1;
-
-   //   VkCommandBuffer commandBuffer;
-   //   vkAllocateCommandBuffers(this->logicalDevice(), &allocInfo, &commandBuffer);
-
-   //   VkCommandBufferBeginInfo beginInfo{};
-   //   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-   //   beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-   //   vkBeginCommandBuffer(commandBuffer, &beginInfo);
-   //   return commandBuffer;
-
-   //}
-
-
-   //void context::endSingleTimeCommands(VkCommandBuffer commandBuffer)
-   //{
-
-   //   vkEndCommandBuffer(commandBuffer);
-
-   //   VkSubmitInfo submitInfo{};
-   //   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-   //   submitInfo.commandBufferCount = 1;
-   //   submitInfo.pCommandBuffers = &commandBuffer;
-
-   //   vkQueueSubmit(m_vkqueueGraphics, 1, &submitInfo, VK_NULL_HANDLE);
-   //   vkQueueWaitIdle(m_vkqueueGraphics);
-
-   //   vkFreeCommandBuffers(this->logicalDevice(), m_pgpudevice->getCommandPool(), 1, &commandBuffer);
-
-   //}
-
-
-   //void context::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
-   //{
-   //   VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-
-   //   VkBufferCopy copyRegion{};
-   //   copyRegion.srcOffset = 0;  // Optional
-   //   copyRegion.dstOffset = 0;  // Optional
-   //   copyRegion.size = size;
-   //   vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-
-   //   endSingleTimeCommands(commandBuffer);
-
-   //}
-
-
-   //void context::copyBufferToImage(
-   //   VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
-   //{
-
-   //   VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-
-   //   VkBufferImageCopy region{};
-   //   region.bufferOffset = 0;
-   //   region.bufferRowLength = 0;
-   //   region.bufferImageHeight = 0;
-
-   //   region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-   //   region.imageSubresource.mipLevel = 0;
-   //   region.imageSubresource.baseArrayLayer = 0;
-   //   region.imageSubresource.layerCount = layerCount;
-
-   //   region.imageOffset = { 0, 0, 0 };
-   //   region.imageExtent = { width, height, 1 };
-
-   //   vkCmdCopyBufferToImage(
-   //      commandBuffer,
-   //      buffer,
-   //      image,
-   //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-   //      1,
-   //      &region);
-
-   //   endSingleTimeCommands(commandBuffer);
-
-   //}
-
-
-   //void context::createImageWithInfo(
-   //   const VkImageCreateInfo & imageInfo,
-   //   VkMemoryPropertyFlags properties,
-   //   VkImage & image,
-   //   VkDeviceMemory & imageMemory)
-   //{
-
-   //   if (vkCreateImage(this->logicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS)
-   //   {
-
-   //      throw ::exception(error_failed, "failed to create image!");
-
-   //   }
-
-   //   VkMemoryRequirements memRequirements;
-   //   vkGetImageMemoryRequirements(this->logicalDevice(), image, &memRequirements);
-
-   //   VkMemoryAllocateInfo allocInfo{};
-   //   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-   //   allocInfo.allocationSize = memRequirements.size;
-   //   allocInfo.memoryTypeIndex = m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
-
-   //   if (vkAllocateMemory(this->logicalDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
-   //      throw ::exception(error_failed, "failed to allocate image memory!");
-   //   }
-
-   //   if (vkBindImageMemory(this->logicalDevice(), image, imageMemory, 0) != VK_SUCCESS) {
-   //      throw ::exception(error_failed, "failed to bind image memory!");
-   //   }
-   //}
-
-
-
-
-
-   //void context::submitWork(VkCommandBuffer cmdBuffer, VkQueue queue)
-   //{
-   //   VkSubmitInfo submitInfo = initializers::submitInfo();
-   //   submitInfo.commandBufferCount = 1;
-   //   submitInfo.pCommandBuffers = &cmdBuffer;
-   //   //m_submitInfo.commandBufferCount = 1;
-   //   //m_submitInfo.pCommandBuffers = &cmdBuffer;
-   //   VkFenceCreateInfo fenceInfo = initializers::fenceCreateInfo();
-   //   VkFence fence;
-   //   VK_CHECK_RESULT(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
-   //   VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-   //   VK_CHECK_RESULT(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX));
-   //   vkDestroyFence(this->logicalDevice(), fence, nullptr);
-   //}
-
-
-   //void context::submitSamplingWork(VkCommandBuffer cmdBuffer, VkQueue queue)
-   //{
-   //   VkSubmitInfo submitInfo = initializers::submit_info();
-   //   submitInfo.commandBufferCount = 1;
-   //   submitInfo.pCommandBuffers = &cmdBuffer;
-   //   //m_submitInfo.commandBufferCount = 1;
-   //   //m_submitInfo.pCommandBuffers = &cmdBuffer;
-   //   VkFenceCreateInfo fenceInfo = initializers::fence_create_info();
-   //   VkFence fence;
-   //   VK_CHECK_RESULT(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
-   //   VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-   //   VK_CHECK_RESULT(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX));
-   //   vkDestroyFence(this->logicalDevice(), fence, nullptr);
-   //}
 
    ::gpu_directx12::descriptor_pool* context::get_global_pool(int iFrameCount)
    {
@@ -2355,7 +1168,7 @@ namespace gpu_directx12
          &heapProps,
          D3D12_HEAP_FLAG_NONE,
          &bufferDesc,
-         D3D12_RESOURCE_STATE_GENERIC_READ,
+         D3D12_RESOURCE_STATE_COMMON,
          nullptr,
          __interface_of(prenderer->m_presourceGlobalUBO));
 
@@ -2598,6 +1411,218 @@ namespace gpu_directx12
    {
 
       ::gpu::context::draw2d_on_begin_draw(pgpugraphics);
+
+   }
+
+
+
+   void context::merge_layers(::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera)
+   {
+
+      if (!m_pshaderBlend3)
+      {
+
+         const char* full_screen_triangle_vertex_shader = R"hlsl(
+// vertex.hlsl
+struct VSOut {
+    float4 pos : SV_POSITION;
+    float2 uv  : TEXCOORD0;
+};
+
+VSOut main(uint id : SV_VertexID)
+{
+    float2 verts[3] = {
+        float2(-1, -1),
+        float2(-1,  3),
+        float2( 3, -1)
+    };
+
+    float2 uv[3] = {
+        float2(0, 1),
+        float2(0, -1),
+        float2(2, 1)
+    };
+
+    VSOut o;
+    o.pos = float4(verts[id], 0, 1);
+    o.uv  = uv[id];
+    return o;
+}
+)hlsl";
+
+         const char* full_screen_triangle_fragment_shader = R"hlsl(  
+// pixel.hlsl
+Texture2D tex : register(t0);
+SamplerState samp : register(s0);
+
+float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
+{
+    return tex.Sample(samp, uv); // Assumes premultiplied alpha
+}
+)hlsl";
+
+         __defer_construct_new(m_pshaderBlend3);
+
+         m_pshaderBlend3->m_bEnableBlend = true;
+         m_pshaderBlend3->m_bTextureAndSampler = true;
+         m_pshaderBlend3->m_bDisableDepthTest = true;
+
+         m_pshaderBlend3->initialize_shader_with_block(
+            m_pgpurenderer,
+            ::as_block(full_screen_triangle_vertex_shader),
+            ::as_block(full_screen_triangle_fragment_shader)
+            //,
+            //{},
+            //{},
+            //{},
+            //{},
+            //copy_using_shader_input_layout_properties()
+         );
+
+      }
+
+
+      //if (!m_pd3d11blendstateBlend3)
+      //{
+
+      //   D3D12_BLEND_DESC blendDesc = { 0 };
+      //   blendDesc.RenderTarget[0].BlendEnable = TRUE;
+      //   blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;              // Premultiplied alpha
+      //   blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;   // Use inverse of alpha
+      //   blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+
+      //   blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;         // Alpha blending (optional)
+      //   blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+      //   blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+
+      //   blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+      //   ::cast < ::gpu_directx11::device > pgpudevice = m_pgpudevice;
+
+      //   HRESULT hr = pgpudevice->m_pdevice->CreateBlendState(&blendDesc, &m_pd3d11blendstateBlend3);
+      //   ::defer_throw_hresult(hr);
+
+      //}
+
+      ::cast < renderer > prenderer = m_pgpurenderer;
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      ::cast <texture > ptextureDst = ptextureTarget;
+      ////float clearColor[4] = { 0.95f * 0.5f, 0.95f * 0.5f, 0.25f * 0.5f, 0.5f }; // Clear to transparent
+      ////m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
+      //float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
+      //m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
+      ptextureDst->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+      if(!ptextureDst->m_handleRenderTargetView.ptr)
+      {
+
+         ptextureDst->create_render_target();
+
+      }
+
+      m_pshaderBlend3->bind(ptextureTarget);
+
+
+
+      //int iDescriptorSize = ptextureDst->m_rtvDescriptorSize;
+      //int iFrameIndex = m_pgpurendertarget->get_frame_index();
+      //auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+      auto hRtv = ptextureDst->m_handleRenderTargetView;
+      //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+        // hRtv,
+         //iFrameIndex,
+         //iDescriptorSize);
+
+      //float clearColor[4] = { 0.5f * 0.5f, 0.75f * 0.5f, 0.9f * 0.5f, 0.5f };
+      //float clearColor[4] = { 0.f, 0.f , 0.f, 0.f };
+      //pcommandlist->ClearRenderTargetView(hRtv, clearColor, 0, nullptr);
+
+      //{
+      //   float blendFactor[4] = { 0, 0, 0, 0 }; // Ignored with this blend mode
+      //   UINT sampleMask = 0xFFFFFFFF;
+      //   m_pcontext->OMSetBlendState(m_pd3d11blendstateBlend3, blendFactor, sampleMask);
+      //}
+
+
+
+      //ID3D11RenderTargetView* rendertargetview[] = { ptextureDst->m_prendertargetview };
+
+      //m_p(1, rendertargetview, nullptr);
+
+      //m_pcontext->OMSetBlendState(g_blendState, nullptr, 0xffffffff);
+      //g_context->VSSetShader(g_vs, nullptr, 0);
+      //g_context->PSSetShader(g_ps, nullptr, 0);
+      //g_context->PSSetSamplers(0, 1, &g_sampler);
+
+      if (1)
+      {
+
+         for (auto player : *playera)
+         {
+
+            ::cast <texture > ptextureSrc = player->texture();
+
+            m_pshaderBlend3->bind_source(ptextureSrc);
+
+            //ID3D11SamplerState* samplerstatea[] =
+            //{ ptexture->m_psamplerstate };
+            //ID3D11ShaderResourceView* sharedresourceviewa[] =
+            //{ ptexture->m_pshaderresourceview };
+
+                           // 1. Define viewport and scissor rectangle
+            D3D12_VIEWPORT viewport = {};
+            viewport.TopLeftX = ptextureSrc->m_rectangleTarget.left();
+            viewport.TopLeftY = ptextureSrc->m_rectangleTarget.top();
+            viewport.Width = static_cast<float>(ptextureSrc->m_rectangleTarget.width());
+            viewport.Height = static_cast<float>(ptextureSrc->m_rectangleTarget.height());
+            viewport.MinDepth = 0.0f;
+            viewport.MaxDepth = 1.0f;
+
+            D3D12_RECT scissorRect = {};
+            scissorRect.left = ptextureSrc->m_rectangleTarget.left();
+            scissorRect.bottom = ptextureSrc->m_rectangleTarget.top();
+            scissorRect.right = ptextureSrc->m_rectangleTarget.right();
+            scissorRect.bottom = ptextureSrc->m_rectangleTarget.bottom();
+
+
+            //// 4. Set the viewport and scissor
+            pcommandlist->RSSetViewports(1, &viewport);
+            pcommandlist->RSSetScissorRects(1, &scissorRect);
+            //D3D11_VIEWPORT vp = {};
+            //vp.TopLeftX = ptexture->m_rectangleTarget.left();
+            //vp.TopLeftY = ptexture->m_rectangleTarget.top();
+            //vp.Width = static_cast<float>(ptexture->m_rectangleTarget.width());
+            //vp.Height = static_cast<float>(ptexture->m_rectangleTarget.height());
+            //vp.MinDepth = 0.0f;
+            //vp.MaxDepth = 1.0f;
+            //m_pcontext->RSSetViewports(1, &vp);
+
+            //m_pcontext->PSSetSamplers(0, 1, samplerstatea);
+            //m_pcontext->PSSetShaderResources(0, 1, sharedresourceviewa);
+
+
+            pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+            //pcommandlist->Draw(3, 0); // Fullscreen triangle
+            pcommandlist->DrawInstanced(3, 1, 0, 0);
+
+         }
+
+      }
+      //}
+
+      m_pshaderBlend3->unbind();
+
+
+      ptextureDst->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+      //::cast <texture > ptextureDst = ptextureTarget;
+      //float clearColor2[4] = { 0.95f * 0.5f, 0.75f * 0.5f, 0.95f * 0.5f, 0.5f }; // Clear to transparent
+      //m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor2);
+
 
    }
 

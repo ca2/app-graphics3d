@@ -1101,7 +1101,7 @@ namespace gpu_directx12
 
       }
 
-      if (0)
+      if (1)
       {
 
          ::comptr<ID3D12InfoQueue> infoQueue;
@@ -1112,7 +1112,7 @@ namespace gpu_directx12
          {
             infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
             infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
-            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
+            //infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
          }
 
       }
@@ -1149,7 +1149,11 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::swap_chain > pswapchain = get_swap_chain();
 
-      HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain3);
+      HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain);
+
+      pswapchain->get_new_swap_chain_index();
+
+      pswapchain->initialize_swap_chain_window(this, pwindow);
 
       ::defer_throw_hresult(hrQueryDxgiSwapChain3);
 
@@ -1157,36 +1161,36 @@ namespace gpu_directx12
 
       UINT rtvDescriptorSize = 0;
 
-      int iFrameCount = 2;
+      //int iFrameCount = 2;
 
-      // Describe and create an RTV descriptor heap.
-      D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-      rtvHeapDesc.NumDescriptors = iFrameCount; // One per back buffer (typically 2)
-      rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-      rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // Must be NONE for RTV/DSV heaps
+      //// Describe and create an RTV descriptor heap.
+      //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+      //rtvHeapDesc.NumDescriptors = iFrameCount; // One per back buffer (typically 2)
+      //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+      //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // Must be NONE for RTV/DSV heaps
 
-      HRESULT hr = m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(rtvHeap));
-      ::defer_throw_hresult(hr);
+      //HRESULT hr = m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(rtvHeap));
+      //::defer_throw_hresult(hr);
 
-      // Store the descriptor size (used for handle incrementing)
-      rtvDescriptorSize = m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-      m_resourceaBackBufferTexture.set_size(iFrameCount);
+      //// Store the descriptor size (used for handle incrementing)
+      //rtvDescriptorSize = m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+      //m_resourceaBackBufferTexture.set_size(iFrameCount);
 
-      for (int i = 0; i < iFrameCount; i++)
-      {
+      //for (int i = 0; i < iFrameCount; i++)
+      //{
 
-         auto& presource = m_resourceaBackBufferTexture[i];
+      //   auto& presource = m_resourceaBackBufferTexture[i];
 
-         HRESULT hrGetBuffer = pswapchain->m_pdxgiswapchain3->GetBuffer(i, __interface_of(presource));
+      //   HRESULT hrGetBuffer = pswapchain->m_pdxgiswapchain3->GetBuffer(i, __interface_of(presource));
 
-         ::defer_throw_hresult(hrGetBuffer);
-         
-         m_handleaBackBufferRenderTargetView.element_at_grow(i)
-            = rtvHeap->GetCPUDescriptorHandleForHeapStart(); // RTV descriptor heap assumed created
+      //   ::defer_throw_hresult(hrGetBuffer);
+      //   
+      //   m_handleaBackBufferRenderTargetView.element_at_grow(i)
+      //      = rtvHeap->GetCPUDescriptorHandleForHeapStart(); // RTV descriptor heap assumed created
 
-         m_pdevice->CreateRenderTargetView(presource, nullptr, m_handleaBackBufferRenderTargetView[i]);
+      //   m_pdevice->CreateRenderTargetView(presource, nullptr, m_handleaBackBufferRenderTargetView[i]);
 
-      }
+      //}
 
    }
 

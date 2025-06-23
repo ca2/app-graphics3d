@@ -1,5 +1,6 @@
 #include "framework.h"
 #include "approach.h"
+#include "command_buffer.h"
 #include "depth_stencil.h"
 #include "descriptors.h"
 #include "frame.h"
@@ -189,7 +190,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //defer_layout();
 
-      createCommandBuffers();
+      //createCommandBuffers();
 
 
    }
@@ -203,13 +204,13 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   renderer::command_buffer* renderer::getCurrentCommandBuffer2()
+   command_buffer* renderer::getCurrentCommandBuffer2()
    {
 
       assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
 
       //return m_commandbuffera[get_frame_index()];
-      return m_pcommandbuffer;
+      return m_commandbuffera[m_pgpurendertarget->get_frame_index()];
 
    }
 
@@ -504,21 +505,19 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::createCommandBuffers()
    {
 
+
       ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
 
-      D3D12_COMMAND_QUEUE_DESC descCopyQueue = {};
-      descCopyQueue.Type = D3D12_COMMAND_LIST_TYPE_COPY;
-      pdevice->m_pdevice->CreateCommandQueue(&descCopyQueue, __interface_of(m_pcommandqueueCopy));
 
 
-      //m_commandbuffera.set_size(get_frame_count());
+      m_commandbuffera.set_size(m_pgpurendertarget->get_frame_count());
 
       //for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
-      for (int iFrame = 0; iFrame < 1; iFrame++)
+      for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
       {
 
          //auto& pcommandbuffer = m_commandbuffera[iFrame];
-         auto& pcommandbuffer = m_pcommandbuffer;
+         auto& pcommandbuffer = m_commandbuffera[iFrame];
 
          if (__defer_construct_new(pcommandbuffer))
          {
@@ -546,157 +545,6 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   renderer::command_buffer::command_buffer()
-   {
-
-      m_fenceValue = 0;
-
-      m_hFenceEvent = nullptr;
-
-   }
-
-
-   renderer::command_buffer::~command_buffer()
-   {
-
-      if (m_hFenceEvent)
-      {
-
-         ::CloseHandle(m_hFenceEvent);
-
-         m_hFenceEvent = nullptr;
-
-      }
-
-   }
-
-
-   void renderer::command_buffer::initialize_command_buffer(D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer, ID3D12CommandQueue* pcommandqueue)
-   {
-
-      m_prenderer = prenderer;
-
-      m_pcommandqueue = pcommandqueue;
-
-      m_ecommandlisttype = ecommandlisttype;
-
-      // D3D12_COMMAND_LIST_TYPE_DIRECT
-      // D3D12_COMMAND_LIST_TYPE_DIRECT
-
-      ::cast<gpu_directx12::device> pdevice = prenderer->m_pgpucontext->m_pgpudevice;
-
-      HRESULT hr = pdevice->m_pdevice->CreateCommandAllocator(
-         m_ecommandlisttype,  // Type: DIRECT for graphics
-         __interface_of(m_pcommandallocator)
-      );
-
-      ::defer_throw_hresult(hr);
-
-      //auto& pcommandlist = m_framea.element_at_grow(iFrame);
-      // 4. Create command list (can be reused)
-      ::defer_throw_hresult(pdevice->m_pdevice->CreateCommandList(
-         0,
-         m_ecommandlisttype,
-         m_pcommandallocator, // initial allocator
-         nullptr, // No PSO yet
-         __interface_of(m_pcommandlist)
-      ));
-
-      ::defer_throw_hresult(m_pcommandlist->Close()); // Must be closed before Reset()
-
-      HRESULT hrCreateFeence =
-         pdevice->m_pdevice->CreateFence(0, D3D12_FENCE_FLAG_NONE,
-            __interface_of(m_pfence));
-
-      ::defer_throw_hresult(hrCreateFeence);
-
-      // 5. Create fence + event for GPU sync
-      m_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-
-   }
-
-
-   //::pointer <renderer::command_buffer >renderer::beginSingleTimeCommands()
-   //{
-
-   //   ::pointer <renderer::command_buffer > pcommandbuffer;
-
-   //   __defer_construct_new(pcommandbuffer);
-
-   //   ::cast < device > pdevice= m_pgpucontext->m_pgpudevice;
-
-   //   pcommandbuffer->initialize_command_buffer(pdevice);
-
-   //   return pcommandbuffer;
-
-   //}
-
-
-   void renderer::command_buffer::submit_command_buffer()
-   {
-
-      ::cast < ::gpu_directx12::device > pdevice = m_prenderer->m_pgpucontext->m_pgpudevice;
-
-      HRESULT hrCloseCommandList = m_pcommandlist->Close();
-
-      pdevice->defer_throw_hresult(hrCloseCommandList);
-
-      ID3D12CommandList* ppCommandLists[] = { m_pcommandlist };
-
-      m_pcommandqueue->ExecuteCommandLists(1, ppCommandLists);
-
-      UINT64 uploadFenceValue = ++m_fenceValue;
-
-      HRESULT hrSignalCommandQueue = m_pcommandqueue->Signal(m_pfence, uploadFenceValue);
-
-      pdevice->defer_throw_hresult(hrSignalCommandQueue);
-
-   }
-
-
-   void renderer::command_buffer::wait_for_gpu()
-   {
-
-      //const UINT64 fenceValue = ++m_fenceValue;
-
-      //prenderer->m_pcommandqueue->Signal(m_pfence, m_fenceValue);
-
-      if (m_pfence->GetCompletedValue() < m_fenceValue)
-      {
-
-         m_pfence->SetEventOnCompletion(m_fenceValue, m_hFenceEvent);
-
-         ::WaitForSingleObject(m_hFenceEvent, INFINITE);
-
-      }
-
-      //m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % get_frame_count();
-
-
-   }
-
-
-   void renderer::command_buffer::reset()
-   {
-
-      auto pcommandallocator = m_pcommandallocator;
-
-      HRESULT hrResetCommandAllocator = pcommandallocator->Reset();
-
-      ::defer_throw_hresult(hrResetCommandAllocator);
-
-      m_pcommandlist->Reset(pcommandallocator, nullptr);
-
-   }
-
-
-   bool renderer::command_buffer::has_finished()
-   {
-
-      return m_pfence->GetCompletedValue() >= m_fenceValue;
-
-   }
-
 
    // Sync CPU to GPU so we can reuse this frame's allocator
    void renderer::WaitForGpu()
@@ -709,7 +557,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   renderer::command_buffer* renderer::getLoadAssetsCommandBuffer()
+   command_buffer* renderer::getLoadAssetsCommandBuffer()
    {
 
       if (!m_pcommandbufferLoadAssets)
@@ -719,60 +567,22 @@ float4 main(PSInput input) : SV_TARGET {
 
          ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
 
+         if (!m_pcommandqueueCopy)
+         {
+
+            ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+
+            D3D12_COMMAND_QUEUE_DESC descCopyQueue = {};
+            descCopyQueue.Type = D3D12_COMMAND_LIST_TYPE_COPY;
+            pdevice->m_pdevice->CreateCommandQueue(&descCopyQueue, __interface_of(m_pcommandqueueCopy));
+
+
+         }
+
          m_pcommandbufferLoadAssets->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_COPY, this, m_pcommandqueueCopy);
 
          m_pcommandbufferLoadAssets->reset();
 
-#ifdef HELLO_TRIANGLE_DEBUG
-
-         if(!m_presourceHelloTriangleVertexBuffer)
-         {
-
-            // Create the vertex buffer.
-            {
-
-               float aspectRatio = (float)m_pgpucontext->m_rectangle.width() / (float)m_pgpucontext->m_rectangle.height();
-               // Define the geometry for a triangle.
-               HelloTriangleVertex triangleVertices[] =
-               {
-                   { { 0.0f, 0.25f * aspectRatio, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-                   { { 0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-                   { { -0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
-               };
-               int iSizeOfTriangle=sizeof(HelloTriangleVertex);
-               const UINT vertexBufferSize = iSizeOfTriangle * 3;
-               ::cast < device > pdevice = m_pgpucontext->m_pgpudevice;
-               // Note: using upload heaps to transfer static data like vert buffers is not 
-               // recommended. Every time the GPU needs it, the upload heap will be marshalled 
-               // over. Please read up on Default Heap usage. An upload heap is used here for 
-               // code simplicity and because there are very few verts to actually transfer.
-               CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
-               auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-               pdevice->defer_throw_hresult(pdevice->m_pdevice->CreateCommittedResource(
-                  &heapproperties,
-                  D3D12_HEAP_FLAG_NONE,
-                  &resourcedesc,
-                  D3D12_RESOURCE_STATE_GENERIC_READ,
-                  nullptr,
-                  __interface_of(m_presourceHelloTriangleVertexBuffer)));
-
-               // Copy the triangle data to the vertex buffer.
-               UINT8* pVertexDataBegin;
-               CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
-               pdevice->defer_throw_hresult(m_presourceHelloTriangleVertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-               memcpy(pVertexDataBegin, triangleVertices, vertexBufferSize);
-               m_presourceHelloTriangleVertexBuffer->Unmap(0, nullptr);
-
-               // Initialize the vertex buffer view.
-               m_vertexbufferviewHelloTriangle.BufferLocation = m_presourceHelloTriangleVertexBuffer->GetGPUVirtualAddress();
-               m_vertexbufferviewHelloTriangle.StrideInBytes = sizeof(HelloTriangleVertex);
-               m_vertexbufferviewHelloTriangle.SizeInBytes = vertexBufferSize;
-
-            }
-
-         }
-
-#endif
 
       }
 
@@ -781,10 +591,10 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   ::pointer <renderer::command_buffer >renderer::beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE ecommandlisttype)
+   ::pointer <command_buffer >renderer::beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE ecommandlisttype)
    {
 
-      ::pointer <renderer::command_buffer > pcommandbuffer;
+      ::pointer <command_buffer > pcommandbuffer;
 
       __defer_construct_new(pcommandbuffer);
 
@@ -914,7 +724,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //}
 
-      _on_begin_render();
+      _on_begin_render(m_pgpurendertarget->m_pframe);
 
 
       auto pcommandbuffer = getCurrentCommandBuffer2();
@@ -939,16 +749,33 @@ float4 main(PSInput input) : SV_TARGET {
             {
 
                CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
-                  pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
-                  m_pgpurendertarget->get_frame_index(),
-                  pgpurendertargetview->m_rtvDescriptorSize);
-               CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+                  ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart());
+               if (m_pgpucontext->m_escene == ::gpu::e_scene_3d)
+               {
+                  if (!ptextureCurrent->m_pheapDepthStencilView)
+                  {
+                     ptextureCurrent->create_depth_resources();
+                  }
+                  auto hDsv = ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart();
+                  CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(hDsv);
+                  pcommandlist->OMSetRenderTargets(
+                     1,                    // One render target
+                     &rtvHandle,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+                     FALSE,                // Not using RTV arrays
+                     &dsvHandle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+                  );
 
-               pcommandlist->OMSetRenderTargets(
-                  1,
-                  &rtvHandle,
-                  true,
-                  &dsvHandle);
+               }
+               else
+               {
+                  // You set the RTV and DSV like this:
+                  pcommandlist->OMSetRenderTargets(
+                     1,                    // One render target
+                     &rtvHandle,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+                     FALSE,                // Not using RTV arrays
+                     nullptr
+                  );
+               }
 
 
                // 1. Define viewport and scissor rectangle
@@ -965,6 +792,21 @@ float4 main(PSInput input) : SV_TARGET {
                scissorRect.top = 0;
                scissorRect.right = m_pgpucontext->m_rectangle.width();
                scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+
+               if (ptextureCurrent->m_pheapDepthStencilView)
+               {
+
+                  pcommandlist->ClearDepthStencilView(
+                     ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart(),
+                     D3D12_CLEAR_FLAG_DEPTH,
+                     1.0f, 0,
+                     0, nullptr
+                  );
+
+               }
+
+
+
 
                //// 2. Begin command recording
                //commandAllocator->Reset();
@@ -989,35 +831,28 @@ float4 main(PSInput input) : SV_TARGET {
 
             }
 
-            auto presourceDepthStencilBuffer = pgpurendertargetview->current_depth_stencil()->m_presource;
+            //auto presourceDepthStencilBuffer = pgpurendertargetview->current_depth_stencil()->m_presource;
 
-            if (presourceDepthStencilBuffer)
-            {
+            //if (presourceDepthStencilBuffer)
+            //{
 
-               //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
-               CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
-                  pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
-                  m_pgpurendertarget->get_frame_index(),
-                  pgpurendertargetview->m_rtvDescriptorSize);
-               CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+            //   //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
+            //   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+            //      pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
+            //      m_pgpurendertarget->get_frame_index(),
+            //      pgpurendertargetview->m_rtvDescriptorSize);
+            //   CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
-               // You set the RTV and DSV like this:
-               pcommandlist->OMSetRenderTargets(
-                  1,                    // One render target
-                  &rtvHandle,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
-                  FALSE,                // Not using RTV arrays
-                  &dsvHandle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
-               );
-               //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+            //   // You set the RTV and DSV like this:
+            //   pcommandlist->OMSetRenderTargets(
+            //      1,                    // One render target
+            //      &rtvHandle,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+            //      FALSE,                // Not using RTV arrays
+            //      &dsvHandle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+            //   );
+            //   //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-               pcommandlist->ClearDepthStencilView(
-                  pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(),
-                  D3D12_CLEAR_FLAG_DEPTH,
-                  1.0f, 0,
-                  0, nullptr
-               );
-
-            }
+//            }
 
             ::cast < offscreen_render_target_view > poffscreenrendertargetview = pgpurendertargetview;
 
@@ -1222,7 +1057,7 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
 
-      ::pointer <renderer::command_buffer > pcommandbufferBarrier;
+      ::pointer <command_buffer > pcommandbufferBarrier;
 
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
@@ -2419,7 +2254,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    void renderer::on_end_draw()
    {
-      _on_end_render();
+      _on_end_render(m_pgpurendertarget->m_pframe);
 
       for (auto& procedure : m_procedureaAfterEndRender)
       {
@@ -3456,7 +3291,7 @@ void CreateImageBlendVertexBuffer(
       &heapProps,
       D3D12_HEAP_FLAG_NONE,
       &bufferDesc,
-      D3D12_RESOURCE_STATE_GENERIC_READ,
+      D3D12_RESOURCE_STATE_COMMON,
       nullptr,
       __interface_of(vertexBuffer));
 
@@ -3843,7 +3678,7 @@ void CreateImageBlendVertexBuffer(
    }
 
 
-   void renderer::_on_begin_render()
+   void renderer::_on_begin_render(::gpu::frame * pgpuframe)
    {
 
       ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
@@ -3945,102 +3780,12 @@ void CreateImageBlendVertexBuffer(
 
 
       ////}
-   }
-
-
-   void renderer::on_begin_render(::gpu::frame* pframeParam)
-   {
-
-      _on_begin_render();
-
-      //::cast < frame > pframe = pframeParam;
-
-      //auto commandBuffer = pframe->commandBuffer;
-
-      ////m_prendertargetview->m_iFrameSerial++;
-
-      ////m_prendertargetview->m_iCurrentFrame = (m_prendertargetview->m_iCurrentFrame + 1) % 
-      ////   get_frame_count();
-
-      //m_prendertargetview->on_before_begin_render(pframe);
-
-      ////if (m_bOffScreen)
-      //{
-
-      //   assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
-      //   assert(
-      //      commandBuffer == getCurrentCommandBuffer() &&
-      //      "Can't begin render pass on command buffer from a different frame");
-
-      //   VkRenderPassBeginInfo renderPassInfo{};
-      //   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-      //   renderPassInfo.renderPass = m_prendertargetview->getRenderPass();
-      //   renderPassInfo.framebuffer = m_prendertargetview->getCurrentFrameBuffer();
-
-      //   renderPassInfo.renderArea.offset = { 0, 0 };
-      //   renderPassInfo.renderArea.extent = m_prendertargetview->getExtent();
-
-      //   VkClearValue clearValues[2];
-      //   //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-      //   clearValues[0].color = { 0.0f, 0.0f, 0.0f, 0.0f };
-      //   clearValues[1].depthStencil = { 1.0f, 0 };
-      //   renderPassInfo.clearValueCount = 2;
-      //   renderPassInfo.pClearValues = clearValues;
-
-      //   vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-      //   VkViewport viewport{};
-      //   viewport.x = 0.0f;
-      //   viewport.y = 0.0f;
-      //   viewport.width = static_cast<float>(m_prendertargetview->getExtent().width);
-      //   viewport.height = static_cast<float>(m_prendertargetview->getExtent().height);
-      //   viewport.minDepth = 0.0f;
-      //   viewport.maxDepth = 1.0f;
-      //   VkRect2D scissor{ {0, 0}, m_prendertargetview->getExtent() };
-      //   vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-      //   vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-      //}
-      ////else
-      ////{
-
-      ////	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
-      ////	assert(
-      ////		commandBuffer == getCurrentCommandBuffer() &&
-      ////		"Can't begin render pass on command buffer from a different frame");
-
-      ////	VkRenderPassBeginInfo renderPassInfo{};
-      ////	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-      ////	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
-      ////	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(m_uCurrentSwapChainImage);
-
-      ////	renderPassInfo.renderArea.offset = { 0, 0 };
-      ////	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
-
-      ////	std::array<VkClearValue, 2> clearValues{};
-      ////	clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-      ////	clearValues[1].depthStencil = { 1.0f, 0 };
-      ////	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-      ////	renderPassInfo.pClearValues = clearValues.data();
-
-      ////	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-      ////	VkViewport viewport{};
-      ////	viewport.x = 0.0f;
-      ////	viewport.y = 0.0f;
-      ////	viewport.width = static_cast<float>(vkcSwapChain->getSwapChainExtent().width);
-      ////	viewport.height = static_cast<float>(vkcSwapChain->getSwapChainExtent().height);
-      ////	viewport.minDepth = 0.0f;
-      ////	viewport.maxDepth = 1.0f;
-      ////	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
-      ////	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-      ////	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
       auto pcommandbuffer = getCurrentCommandBuffer2();
 
-      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+      //auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
+      //::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
 
       {
 
@@ -4051,56 +3796,76 @@ void CreateImageBlendVertexBuffer(
 
             auto presourceTexture = ptextureCurrent->m_presource;
 
-            if (presourceTexture)
+            //if (presourceTexture)
+            //{
+
+            if (!ptextureCurrent->m_pheapRenderTargetView)
             {
 
-               ID3D12Resource* presourceDepthStencilBuffer = nullptr;
+               ptextureCurrent->create_render_target();
 
-               auto pdepthstencil = pgpurendertargetview->current_depth_stencil();
+            }
 
-               if (pdepthstencil)
-               {
+              /// ID3D12Resource* presourceDepthStencilBuffer = nullptr;
 
-                  presourceDepthStencilBuffer = pdepthstencil->m_presource;
+               //auto pdepthstencil = pgpurendertargetview->current_depth_stencil();
 
-               }
+               //if (pdepthstencil)
+               //{
 
-               if (presourceDepthStencilBuffer)
+                 // presourceDepthStencilBuffer = pdepthstencil->m_presource;
+
+               //}
+
+               //if (presourceDepthStencilBuffer)
                {
 
                   //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
-                  int iDescriptorSize = pgpurendertargetview->m_rtvDescriptorSize;
-                  int iFrameIndex = m_pgpurendertarget->get_frame_index();
-                  auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
                   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
-                     hRtv, 
-                     iFrameIndex, 
-                     iDescriptorSize);
-                  auto hDsv = pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
-                  CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(hDsv);
-                  // You set the RTV and DSV like this:
-                  pcommandlist->OMSetRenderTargets(
-                     1,                    // One render target
-                     &rtvHandle,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
-                     FALSE,                // Not using RTV arrays
-                     &dsvHandle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
-                  );
-               }
-               else
-               {
+                     ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart());
 
-                  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
-                     pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
-                     m_pgpurendertarget->get_frame_index(),
-                     pgpurendertargetview->m_rtvDescriptorSize);
+                  if (m_pgpucontext->m_escene == ::gpu::e_scene_3d)
+                  {
+                     if (!ptextureCurrent->m_pheapDepthStencilView)
+                     {
+                        ptextureCurrent->create_depth_resources();
+                     }
+                     auto hDsv = ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart();
+                     CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(hDsv);
+                     pcommandlist->OMSetRenderTargets(
+                        1,                    // One render target
+                        &rtvHandle,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+                        FALSE,                // Not using RTV arrays
+                        &dsvHandle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+                     );
 
-                  pcommandlist->OMSetRenderTargets(
-                     1,
-                     &rtvHandle,
-                     true,
-                     nullptr);
+                  }
+                  else
+                  {
+                     // You set the RTV and DSV like this:
+                     pcommandlist->OMSetRenderTargets(
+                        1,                    // One render target
+                        &rtvHandle,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+                        FALSE,                // Not using RTV arrays
+                        nullptr
+                     );
+                  }
+               //}
+               //else
+               //{
 
-               }
+               //   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+               //      pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
+               //      m_pgpurendertarget->get_frame_index(),
+               //      pgpurendertargetview->m_rtvDescriptorSize);
+
+               //   pcommandlist->OMSetRenderTargets(
+               //      1,
+               //      &rtvHandle,
+               //      true,
+               //      nullptr);
+
+               //}
 
 
                // 1. Define viewport and scissor rectangle
@@ -4141,6 +3906,27 @@ void CreateImageBlendVertexBuffer(
                ////vp.MaxDepth = 1.0f;
 
                ////m_pcontext->RSSetViewports(1, &vp);
+
+               float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+               pcommandlist->ClearRenderTargetView(
+                  ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+                  clearColor,
+                  0,
+                  nullptr
+               );
+
+               if (ptextureCurrent->m_pheapDepthStencilView)
+               {
+
+
+                  pcommandlist->ClearDepthStencilView(
+                     ptextureCurrent->m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart(),
+                     D3D12_CLEAR_FLAG_DEPTH,
+                     1.0f, 0,
+                     0, nullptr
+                  );
+
+               }
 
             }
 
@@ -4225,104 +4011,424 @@ void CreateImageBlendVertexBuffer(
 
       // Example clear color
 
-      int iDescriptorSize = pgpurendertargetview->m_rtvDescriptorSize;
+   /*   int iDescriptorSize = pgpurendertargetview->m_rtvDescriptorSize;
       int iFrameIndex = m_pgpurendertarget->get_frame_index();
       auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
       CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
          hRtv,
          iFrameIndex,
-         iDescriptorSize);
+         iDescriptorSize);*/
 
-      float clearColor[4] = { 0.5f * 0.5f, 0.75f * 0.5f, 0.9f * 0.5f, 0.5f };
-      pcommandlist->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-      //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
-      if (pgpurendertargetview->m_pdepthstencil)
-      {
+      //float clearColor[4] = { 0.5f * 0.5f, 0.75f * 0.5f, 0.9f * 0.5f, 0.5f };
+      //pcommandlist->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+      ////m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+      //if (pgpurendertargetview->m_pdepthstencil)
+      //{
 
-         pcommandlist->ClearDepthStencilView(
-            pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(),
-            D3D12_CLEAR_FLAG_DEPTH,
-            1.0f, 0,
-            0, nullptr
-         );
+      //   pcommandlist->ClearDepthStencilView(
+      //      pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(),
+      //      D3D12_CLEAR_FLAG_DEPTH,
+      //      1.0f, 0,
+      //      0, nullptr
+      //   );
 
-      }
+      //}
 
-      m_prenderstate->on_happening(::gpu::e_happening_begin_render);
-      
+      //m_prenderstate->on_happening(::gpu::e_happening_begin_render);
+
    }
+
+
+   void renderer::on_begin_render(::gpu::frame* pframeParam)
+   {
+
+      ::gpu::renderer::on_begin_render(pframeParam);
+
+   }
+
+
+   //void renderer::on_begin_render1(::gpu::frame * pframeParam)
+   //{
+
+   //   _on_begin_render();
+
+   //   //::cast < frame > pframe = pframeParam;
+
+   //   //auto commandBuffer = pframe->commandBuffer;
+
+   //   ////m_prendertargetview->m_iFrameSerial++;
+
+   //   ////m_prendertargetview->m_iCurrentFrame = (m_prendertargetview->m_iCurrentFrame + 1) % 
+   //   ////   get_frame_count();
+
+   //   //m_prendertargetview->on_before_begin_render(pframe);
+
+   //   ////if (m_bOffScreen)
+   //   //{
+
+   //   //   assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
+   //   //   assert(
+   //   //      commandBuffer == getCurrentCommandBuffer() &&
+   //   //      "Can't begin render pass on command buffer from a different frame");
+
+   //   //   VkRenderPassBeginInfo renderPassInfo{};
+   //   //   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+   //   //   renderPassInfo.renderPass = m_prendertargetview->getRenderPass();
+   //   //   renderPassInfo.framebuffer = m_prendertargetview->getCurrentFrameBuffer();
+
+   //   //   renderPassInfo.renderArea.offset = { 0, 0 };
+   //   //   renderPassInfo.renderArea.extent = m_prendertargetview->getExtent();
+
+   //   //   VkClearValue clearValues[2];
+   //   //   //clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
+   //   //   clearValues[0].color = { 0.0f, 0.0f, 0.0f, 0.0f };
+   //   //   clearValues[1].depthStencil = { 1.0f, 0 };
+   //   //   renderPassInfo.clearValueCount = 2;
+   //   //   renderPassInfo.pClearValues = clearValues;
+
+   //   //   vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+   //   //   VkViewport viewport{};
+   //   //   viewport.x = 0.0f;
+   //   //   viewport.y = 0.0f;
+   //   //   viewport.width = static_cast<float>(m_prendertargetview->getExtent().width);
+   //   //   viewport.height = static_cast<float>(m_prendertargetview->getExtent().height);
+   //   //   viewport.minDepth = 0.0f;
+   //   //   viewport.maxDepth = 1.0f;
+   //   //   VkRect2D scissor{ {0, 0}, m_prendertargetview->getExtent() };
+   //   //   vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+   //   //   vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+   //   //}
+   //   ////else
+   //   ////{
+
+   //   ////	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
+   //   ////	assert(
+   //   ////		commandBuffer == getCurrentCommandBuffer() &&
+   //   ////		"Can't begin render pass on command buffer from a different frame");
+
+   //   ////	VkRenderPassBeginInfo renderPassInfo{};
+   //   ////	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+   //   ////	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
+   //   ////	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(m_uCurrentSwapChainImage);
+
+   //   ////	renderPassInfo.renderArea.offset = { 0, 0 };
+   //   ////	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
+
+   //   ////	std::array<VkClearValue, 2> clearValues{};
+   //   ////	clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
+   //   ////	clearValues[1].depthStencil = { 1.0f, 0 };
+   //   ////	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+   //   ////	renderPassInfo.pClearValues = clearValues.data();
+
+   //   ////	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+   //   ////	VkViewport viewport{};
+   //   ////	viewport.x = 0.0f;
+   //   ////	viewport.y = 0.0f;
+   //   ////	viewport.width = static_cast<float>(vkcSwapChain->getSwapChainExtent().width);
+   //   ////	viewport.height = static_cast<float>(vkcSwapChain->getSwapChainExtent().height);
+   //   ////	viewport.minDepth = 0.0f;
+   //   ////	viewport.maxDepth = 1.0f;
+   //   ////	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
+   //   ////	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+   //   ////	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+   //   auto pcommandbuffer = getCurrentCommandBuffer2();
+
+   //   auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+   //   ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
+
+   //   {
+
+   //      if (pgpurendertargetview)
+   //      {
+
+   //         ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture();
+
+   //         auto presourceTexture = ptextureCurrent->m_presource;
+
+   //         if (presourceTexture)
+   //         {
+
+   //            ID3D12Resource* presourceDepthStencilBuffer = nullptr;
+
+   //            auto pdepthstencil = pgpurendertargetview->current_depth_stencil();
+
+   //            if (pdepthstencil)
+   //            {
+
+   //               presourceDepthStencilBuffer = pdepthstencil->m_presource;
+
+   //            }
+
+   //            if (presourceDepthStencilBuffer)
+   //            {
+
+   //               //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
+   //               int iDescriptorSize = pgpurendertargetview->m_rtvDescriptorSize;
+   //               int iFrameIndex = m_pgpurendertarget->get_frame_index();
+   //               auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+   //               CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+   //                  hRtv, 
+   //                  iFrameIndex, 
+   //                  iDescriptorSize);
+   //               auto hDsv = pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
+   //               CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(hDsv);
+   //               // You set the RTV and DSV like this:
+   //               pcommandlist->OMSetRenderTargets(
+   //                  1,                    // One render target
+   //                  &rtvHandle,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+   //                  FALSE,                // Not using RTV arrays
+   //                  &dsvHandle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+   //               );
+   //            }
+   //            else
+   //            {
+
+   //               CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+   //                  pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
+   //                  m_pgpurendertarget->get_frame_index(),
+   //                  pgpurendertargetview->m_rtvDescriptorSize);
+
+   //               pcommandlist->OMSetRenderTargets(
+   //                  1,
+   //                  &rtvHandle,
+   //                  true,
+   //                  nullptr);
+
+   //            }
+
+
+   //            // 1. Define viewport and scissor rectangle
+   //            D3D12_VIEWPORT viewport = {};
+   //            viewport.TopLeftX = 0.0f;
+   //            viewport.TopLeftY = 0.0f;
+   //            viewport.Width = static_cast<float>(m_pgpucontext->m_rectangle.width());
+   //            viewport.Height = static_cast<float>(m_pgpucontext->m_rectangle.height());
+   //            viewport.MinDepth = 0.0f;
+   //            viewport.MaxDepth = 1.0f;
+
+   //            D3D12_RECT scissorRect = {};
+   //            scissorRect.left = 0;
+   //            scissorRect.top = 0;
+   //            scissorRect.right = m_pgpucontext->m_rectangle.width();
+   //            scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+
+   //            pcommandlist->RSSetViewports(1, &viewport);
+   //            pcommandlist->RSSetScissorRects(1, &scissorRect);
+
+   //            //// 2. Begin command recording
+   //            //commandAllocator->Reset();
+   //            //pcommandlist->Reset(commandAllocator.Get(), pipelineState.Get());
+
+   //            //// 3. Set the pipeline and root signature
+   //            //pcommandlist->SetPipelineState(pipelineState.Get());
+   //            //pcommandlist->SetGraphicsRootSignature(rootSignature.Get());
+
+   //            //// 4. Set the viewport and scissor
+   //            //commandList->RSSetViewports(1, &viewport);
+   //            //commandList->RSSetScissorRects(1, &scissorRect);
+   //            ////D3D11_VIEWPORT vp = {};
+   //            ////vp.TopLeftX = 0;
+   //            ////vp.TopLeftY = 0;
+   //            ////vp.Width = static_cast<float>(m_rectangle.width());
+   //            ////vp.Height = static_cast<float>(m_rectangle.height());
+   //            ////vp.MinDepth = 0.0f;
+   //            ////vp.MaxDepth = 1.0f;
+
+   //            ////m_pcontext->RSSetViewports(1, &vp);
+
+   //         }
+
+   //         //auto presourceDepthStencilBuffer = pgpurendertargetview->m_presourceDepthStencilBuffer;
+
+   //         //if (presourceDepthStencilBuffer)
+   //         //{
+
+   //         //   //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);
+
+   //         //   // You set the RTV and DSV like this:
+   //         //   pcommandlist->OMSetRenderTargets(
+   //         //      1,                    // One render target
+   //         //      &pgpurendertargetview->m_ptexture->m_handleRenderTargetView,           // D3D12_CPU_DESCRIPTOR_HANDLE to your RTV
+   //         //      FALSE,                // Not using RTV arrays
+   //         //      &pgpurendertargetview->m_handleDepthStencilView            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
+   //         //   );
+   //         //   //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+   //         //}
+
+   //         ::cast < offscreen_render_target_view > poffscreenrendertargetview = pgpurendertargetview;
+
+   //         if (poffscreenrendertargetview)
+   //         {
+
+   //            //auto psamplerstate = poffscreenrendertargetview->m_psamplerstate;
+
+   //            //if (psamplerstate)
+   //            {
+
+   //               //m_pcontext->PSSetSamplers(0, 1, psamplerstate.pp());
+
+   //            }
+
+   //         }
+
+
+   //      }
+
+   //   }
+
+
+   //   //if (!m_prasterizerstate)
+   //   //{
+
+   //   //   // 1. Define rasterizer state descriptor
+   //   //   D3D11_RASTERIZER_DESC rasterizerDesc = {};
+   //   //   rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+   //   //   rasterizerDesc.CullMode = D3D11_CULL_BACK;        // Cull back faces
+   //   //   rasterizerDesc.FrontCounterClockwise = false; // Treat CCW as front-facing
+   //   //   rasterizerDesc.DepthClipEnable = TRUE;
+
+   //   //   // 2. Create rasterizer state object
+   //   //   //ID3D11RasterizerState* pRasterizerState = nullptr;
+   //   //   HRESULT hr = m_pgpudevice->m_pdevice->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
+   //   //   if (FAILED(hr)) {
+   //   //      // Handle error (e.g., log or exit)
+   //   //      throw ::hresult_exception(hr);
+   //   //   }
+
+
+   //   ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
+
+   //   m_hlsClear.m_dH = fmod(m_hlsClear.m_dH + 0.0001, 1.0);
+   //   ::color::color colorClear = m_hlsClear;
+   //   // Clear render target
+   //   float clear[4] = {
+   //      colorClear.f32_red() * .5f,
+   //      colorClear.f32_green() * .5f,
+   //      colorClear.f32_blue() * .5f, .5f };
+
+
+   //   ///pcontext->g_pImmediateContext->OMSetRenderTargets(1, rtv.GetAddressOf(), nullptr);
+
+   //         ///pcontext->m_pcontext->ClearRenderTargetView(m_prendertargetview->m_prendertargetview, clear);
+
+   //         // Assumes:
+   //   // - commandList is a valid ID3D12GraphicsCommandList*
+   //   // - rtvHandle is a valid D3D12_CPU_DESCRIPTOR_HANDLE to the render target view
+   //   // - clearColor is a float[4] array (same as in DX11)
+
+   //   // Example clear color
+
+   //   int iDescriptorSize = pgpurendertargetview->m_rtvDescriptorSize;
+   //   int iFrameIndex = m_pgpurendertarget->get_frame_index();
+   //   auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+   //   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+   //      hRtv,
+   //      iFrameIndex,
+   //      iDescriptorSize);
+
+   //   float clearColor[4] = { 0.5f * 0.5f, 0.75f * 0.5f, 0.9f * 0.5f, 0.5f };
+   //   pcommandlist->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+   //   //m_pcontext->ClearDepthStencilView(pdepthstencilview, D3D11_CLEAR_DEPTH, 1.0f, 0);
+   //   if (pgpurendertargetview->m_pdepthstencil)
+   //   {
+
+   //      pcommandlist->ClearDepthStencilView(
+   //         pgpurendertargetview->m_dsvHeap->GetCPUDescriptorHandleForHeapStart(),
+   //         D3D12_CLEAR_FLAG_DEPTH,
+   //         1.0f, 0,
+   //         0, nullptr
+   //      );
+
+   //   }
+
+   //   m_prenderstate->on_happening(::gpu::e_happening_begin_render);
+   //   
+   //}
 
 
    void renderer::on_end_render(::gpu::frame* pframeParam)
    {
 
-#ifdef HELLO_TRIANGLE_DEBUG
-
-      if (!m_pshaderHelloTriangle)
-      {
-
-         __defer_construct_new(m_pshaderHelloTriangle);
-
-         m_pshaderHelloTriangle->m_iVertexLevel = 2;
-
-         m_pshaderHelloTriangle->m_bDisableDepthTest = true;
-
-         ::string str(g_pszHelloTriangleHlsl);
-
-         ::string strVS(str);
-
-         strVS.find_replace("VSMain", "main");
-
-         ::string strPS(str);
-
-         strPS.find_replace("PSMain", "main");
-         m_pshaderHelloTriangle->initialize_shader_with_block(
-            this,
-            strVS,
-            strPS);
-
-
-         //m_pshaderHelloTriangle->initialize_shader_with_block(
-         //   this,
-         //   strVS,
-         //   strPS,
-         //   {
-         //      ::gpu::shader::e_descriptor_set_slot_global,
-         //      ::gpu::shader::e_descriptor_set_slot_local
-         //   });
-
-      }
-
-      m_pshaderHelloTriangle->bind();
-
-      auto pcommandbuffer = getCurrentCommandBuffer2();
-
-      auto pcommandlist = pcommandbuffer->m_pcommandlist;
-
-      pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      pcommandlist->IASetVertexBuffers(0, 1, &m_vertexbufferviewHelloTriangle);
-      pcommandlist->DrawInstanced(3, 1, 0, 0);
-
-      m_pshaderHelloTriangle->unbind();
-
-#endif
-
-      m_prenderstate->on_happening(::gpu::e_happening_end_render);
-
-      //::cast < frame > pframe = pframeParam;
-
-      //auto commandBuffer = pframe->commandBuffer;
-
-      //assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
-      //assert(
-      //   commandBuffer == getCurrentCommandBuffer() &&
-      //   "Can't end render pass on command buffer from a different frame");
-      //vkCmdEndRenderPass(commandBuffer);
+      ::gpu::renderer::on_end_render(pframeParam);
+//
+//#ifdef HELLO_TRIANGLE_DEBUG
+//
+//      if (!m_pshaderHelloTriangle)
+//      {
+//
+//         __defer_construct_new(m_pshaderHelloTriangle);
+//
+//         m_pshaderHelloTriangle->m_iVertexLevel = 2;
+//
+//         m_pshaderHelloTriangle->m_bDisableDepthTest = true;
+//
+//         ::string str(g_pszHelloTriangleHlsl);
+//
+//         ::string strVS(str);
+//
+//         strVS.find_replace("VSMain", "main");
+//
+//         ::string strPS(str);
+//
+//         strPS.find_replace("PSMain", "main");
+//         m_pshaderHelloTriangle->initialize_shader_with_block(
+//            this,
+//            strVS,
+//            strPS);
+//
+//
+//         //m_pshaderHelloTriangle->initialize_shader_with_block(
+//         //   this,
+//         //   strVS,
+//         //   strPS,
+//         //   {
+//         //      ::gpu::shader::e_descriptor_set_slot_global,
+//         //      ::gpu::shader::e_descriptor_set_slot_local
+//         //   });
+//
+//      }
+//
+//      m_pshaderHelloTriangle->bind();
+//
+//      auto pcommandbuffer = getCurrentCommandBuffer2();
+//
+//      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+//
+//      pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//      pcommandlist->IASetVertexBuffers(0, 1, &m_vertexbufferviewHelloTriangle);
+//      pcommandlist->DrawInstanced(3, 1, 0, 0);
+//
+//      m_pshaderHelloTriangle->unbind();
+//
+//#endif
+//
+//      m_prenderstate->on_happening(::gpu::e_happening_end_render);
+//
+//      //::cast < frame > pframe = pframeParam;
+//
+//      //auto commandBuffer = pframe->commandBuffer;
+//
+//      //assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
+//      //assert(
+//      //   commandBuffer == getCurrentCommandBuffer() &&
+//      //   "Can't end render pass on command buffer from a different frame");
+//      //vkCmdEndRenderPass(commandBuffer);
    }
+
+   BEGIN_GPU_PROPERTIES(hello_triangle_input_layout)
+      GPU_PROPERTY("position", ::gpu::e_type_seq3)
+      GPU_PROPERTY("color", ::gpu::e_type_seq4)
+      END_GPU_PROPERTIES()
 
 
    //void renderer::on_end_render(::graphics3d::frame * pframeParam)
-   void renderer::_on_end_render()
+   void renderer::_on_end_render(::gpu::frame* pgpuframe)
    {
 
       ////::cast < frame > pframe = pframeParam;
@@ -4336,6 +4442,121 @@ void CreateImageBlendVertexBuffer(
       //   commandBuffer == getCurrentCommandBuffer() &&
       //   "Can't end render pass on command buffer from a different frame");
       //vkCmdEndRenderPass(commandBuffer);
+
+      //
+
+      //if (1)
+      //{
+
+      //   //#ifdef HELLO_TRIANGLE_DEBUG
+
+      //   if (!m_presourceHelloTriangleVertexBuffer)
+      //   {
+
+      //      // Create the vertex buffer.
+      //      {
+
+      //         float aspectRatio = (float)m_pgpucontext->m_rectangle.width() / (float)m_pgpucontext->m_rectangle.height();
+      //         // Define the geometry for a triangle.
+      //         HelloTriangleVertex triangleVertices[] =
+      //         {
+      //             { { 0.0f, 0.25f * aspectRatio, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+      //             { { 0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+      //             { { -0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+      //         };
+      //         int iSizeOfTriangle = sizeof(HelloTriangleVertex);
+      //         const UINT vertexBufferSize = iSizeOfTriangle * 3;
+      //         ::cast < device > pdevice = m_pgpucontext->m_pgpudevice;
+      //         // Note: using upload heaps to transfer static data like vert buffers is not 
+      //         // recommended. Every time the GPU needs it, the upload heap will be marshalled 
+      //         // over. Please read up on Default Heap usage. An upload heap is used here for 
+      //         // code simplicity and because there are very few verts to actually transfer.
+      //         CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
+      //         auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
+      //         pdevice->defer_throw_hresult(pdevice->m_pdevice->CreateCommittedResource(
+      //            &heapproperties,
+      //            D3D12_HEAP_FLAG_NONE,
+      //            &resourcedesc,
+      //            D3D12_RESOURCE_STATE_COMMON,
+      //            nullptr,
+      //            __interface_of(m_presourceHelloTriangleVertexBuffer)));
+
+      //         // Copy the triangle data to the vertex buffer.
+      //         UINT8* pVertexDataBegin;
+      //         CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
+      //         pdevice->defer_throw_hresult(m_presourceHelloTriangleVertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
+      //         memcpy(pVertexDataBegin, triangleVertices, vertexBufferSize);
+      //         m_presourceHelloTriangleVertexBuffer->Unmap(0, nullptr);
+
+      //         // Initialize the vertex buffer view.
+      //         m_vertexbufferviewHelloTriangle.BufferLocation = m_presourceHelloTriangleVertexBuffer->GetGPUVirtualAddress();
+      //         m_vertexbufferviewHelloTriangle.StrideInBytes = sizeof(HelloTriangleVertex);
+      //         m_vertexbufferviewHelloTriangle.SizeInBytes = vertexBufferSize;
+
+      //      }
+
+      //   }
+
+      //   //#endif
+
+
+      //   if (!m_pshaderHelloTriangle)
+      //   {
+
+      //      __defer_construct_new(m_pshaderHelloTriangle);
+
+      //      m_pshaderHelloTriangle->m_iVertexLevel = 2;
+
+      //      m_pshaderHelloTriangle->m_bDisableDepthTest = true;
+
+      //      ::string str(g_pszHelloTriangleHlsl);
+
+      //      ::string strVS(str);
+
+      //      strVS.find_replace("VSMain", "main");
+
+      //      ::string strPS(str);
+
+      //      strPS.find_replace("PSMain", "main");
+      //      
+      //      
+      //      m_pshaderHelloTriangle->initialize_shader_with_block(
+      //         this,
+      //         strVS,
+      //         strPS,
+      //         {},
+      //         {},
+      //         {},
+      //         {},
+      //         hello_triangle_input_layout_properties());
+
+
+      //      //m_pshaderHelloTriangle->initialize_shader_with_block(
+      //      //   this,
+      //      //   strVS,
+      //      //   strPS,
+      //      //   {
+      //      //      ::gpu::shader::e_descriptor_set_slot_global,
+      //      //      ::gpu::shader::e_descriptor_set_slot_local
+      //      //   });
+
+      //   }
+
+      //   m_pshaderHelloTriangle->bind();
+
+      //   auto pcommandbuffer = getCurrentCommandBuffer2();
+
+      //   auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      //   pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+      //   pcommandlist->IASetVertexBuffers(0, 1, &m_vertexbufferviewHelloTriangle);
+      //   pcommandlist->DrawInstanced(3, 1, 0, 0);
+
+      //   m_pshaderHelloTriangle->unbind();
+
+      //}
+
+  
    }
 
 
@@ -4381,14 +4602,21 @@ void CreateImageBlendVertexBuffer(
       ////else
       ////{
 
+      if (m_commandbuffera.is_empty())
+      {
+
+         createCommandBuffers();
+
+      }
+
 
       //auto& pcommandbuffer = m_commandbuffera[get_frame_index()];
-      auto& pcommandbuffer = m_pcommandbuffer;
+      auto& pcommandbuffer = m_commandbuffera[m_pgpurendertarget->get_frame_index()];
 
       auto pcommandbufferLoadAssets = ::transfer(m_pcommandbufferLoadAssets);
       if (pcommandbufferLoadAssets)
       {
-
+         m_pcommandbufferLoadAssets2 = pcommandbufferLoadAssets;
          //if (prenderer->m_pcommandbufferLoadAssets)
          //{
 
@@ -4407,12 +4635,14 @@ void CreateImageBlendVertexBuffer(
 
       //}
 
-         auto pcommandqueue = pcommandbuffer->m_pcommandqueue;
+         //auto pcommandqueue = pcommandbuffer->m_pcommandqueue;
 
          // Wait on the graphics queue for the copy to complete
-         pcommandqueue->Wait(
-            pcommandbufferLoadAssets->m_pfence,
-            pcommandbufferLoadAssets->m_fenceValue);
+         //pcommandqueue->Wait(
+            //pcommandbufferLoadAssets->m_pfence,
+            //pcommandbufferLoadAssets->m_fenceValue);
+
+                  pcommandbufferLoadAssets->wait_commands_to_execute();
 
       }
 
@@ -4577,15 +4807,13 @@ void CreateImageBlendVertexBuffer(
 
       auto eoutput = m_pgpucontext->m_eoutput;
 
-      //if (eoutput == ::gpu::e_output_swap_chain)
-      //{
+      if (eoutput == ::gpu::e_output_swap_chain)
+      {
 
-      //   m_pgpucontext->swap_buffers();
+         m_pgpucontext->m_pgpudevice->m_pswapchain->set_present_state();
 
-      //}
-      //else 
-         
-         if (eoutput == ::gpu::e_output_cpu_buffer)
+      }
+      else if (eoutput == ::gpu::e_output_cpu_buffer)
       {
 
          this->sample();
@@ -4632,14 +4860,81 @@ void CreateImageBlendVertexBuffer(
 
       pcommandbuffer->submit_command_buffer();
 
-      if (eoutput == ::gpu::e_output_cpu_buffer)
+      if (eoutput == ::gpu::e_output_swap_chain)
       {
 
-         pcommandbuffer->wait_for_gpu();
+         m_pgpucontext->m_pgpudevice->m_pswapchain->swap_buffers();
+
+      }
+
+      pcommandbuffer->wait_commands_to_execute();
+
+      if (eoutput == ::gpu::e_output_cpu_buffer)
+      {
 
          m_pcpubuffersampler->send_sample();
 
       }
+
+      if (eoutput == ::gpu::e_output_swap_chain)
+      {
+
+         m_pgpucontext->m_pgpudevice->m_pswapchain->get_new_swap_chain_index();
+
+      }
+
+
+      //
+//#ifdef HELLO_TRIANGLE_DEBUG
+//
+//      if (!m_pshaderHelloTriangle)
+//      {
+//
+//         __defer_construct_new(m_pshaderHelloTriangle);
+//
+//         m_pshaderHelloTriangle->m_iVertexLevel = 2;
+//
+//         m_pshaderHelloTriangle->m_bDisableDepthTest = true;
+//
+//         ::string str(g_pszHelloTriangleHlsl);
+//
+//         ::string strVS(str);
+//
+//         strVS.find_replace("VSMain", "main");
+//
+//         ::string strPS(str);
+//
+//         strPS.find_replace("PSMain", "main");
+//         m_pshaderHelloTriangle->initialize_shader_with_block(
+//            this,
+//            strVS,
+//            strPS);
+//
+//
+//         //m_pshaderHelloTriangle->initialize_shader_with_block(
+//         //   this,
+//         //   strVS,
+//         //   strPS,
+//         //   {
+//         //      ::gpu::shader::e_descriptor_set_slot_global,
+//         //      ::gpu::shader::e_descriptor_set_slot_local
+//         //   });
+//
+//      }
+//
+//      m_pshaderHelloTriangle->bind();
+//
+//      auto pcommandbuffer = getCurrentCommandBuffer2();
+//
+//      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+//
+//      pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//      pcommandlist->IASetVertexBuffers(0, 1, &m_vertexbufferviewHelloTriangle);
+//      pcommandlist->DrawInstanced(3, 1, 0, 0);
+//
+//      m_pshaderHelloTriangle->unbind();
+//
+//#endif
 
    }
 

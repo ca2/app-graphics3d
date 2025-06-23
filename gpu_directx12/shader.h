@@ -85,6 +85,8 @@ namespace gpu_directx12
       void draw() override;
 
       void bind(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource) override;
+      void bind(::gpu::texture* pgputextureTarget) override;
+      void bind_source(::gpu::texture* pgputextureSource) override;
       void bind() override;
       void unbind() override;
 

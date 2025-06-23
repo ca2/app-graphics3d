@@ -84,7 +84,7 @@ namespace graphics3d_directx12
 
       pdevice->m_pdevice->CreateCommittedResource(
          &defaultHeap, D3D12_HEAP_FLAG_NONE,
-         &vbDesc, D3D12_RESOURCE_STATE_COPY_DEST,
+         &vbDesc, D3D12_RESOURCE_STATE_COMMON,
          nullptr, __interface_of(m_presourceVertexBufferGPU));
 
       // Create upload heap resources
@@ -92,7 +92,7 @@ namespace graphics3d_directx12
 
       pdevice->m_pdevice->CreateCommittedResource(
          &uploadHeap, D3D12_HEAP_FLAG_NONE,
-         &vbDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
+         &vbDesc, D3D12_RESOURCE_STATE_COMMON,
          nullptr, __interface_of(m_presourceVertexBufferUpload));
 
       // Copy vertex data
@@ -132,14 +132,14 @@ namespace graphics3d_directx12
 
          pdevice->m_pdevice->CreateCommittedResource(
             &defaultHeap, D3D12_HEAP_FLAG_NONE,
-            &ibDesc, D3D12_RESOURCE_STATE_COPY_DEST,
+            &ibDesc, D3D12_RESOURCE_STATE_COMMON,
             nullptr, __interface_of(m_presourceIndexBufferGPU));
 
          CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
 
          pdevice->m_pdevice->CreateCommittedResource(
             &uploadHeap, D3D12_HEAP_FLAG_NONE,
-            &ibDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
+            &ibDesc, D3D12_RESOURCE_STATE_COMMON,
             nullptr, __interface_of(m_presourceIndexBufferUpload));
 
          void* data = nullptr;
@@ -164,10 +164,12 @@ namespace graphics3d_directx12
    void model::bind()
    {
 
-      if (m_pcommandbufferLoading)
+      auto pcommandbufferLoading = m_pcommandbufferLoading;
+
+      if (pcommandbufferLoading)
       {
 
-         if (!m_pcommandbufferLoading->has_finished())
+         if (!pcommandbufferLoading->has_finished())
          {
 
             return;

@@ -5,6 +5,7 @@
 
 
 #include "bred/graphics3d/model.h"
+#include "app-graphics3d/gpu_directx12/command_buffer.h"
 #include "app-graphics3d/gpu_directx12/renderer.h"
 
 
@@ -46,7 +47,7 @@ namespace graphics3d_directx12
       //::pointer<::gpu_directx12::buffer> m_pbufferIndex;
       uint32_t indexCount;
 
-      ::pointer < ::gpu_directx12::renderer::command_buffer > m_pcommandbufferLoading;
+      ::pointer < ::gpu_directx12::command_buffer > m_pcommandbufferLoading;
       //// Triangle vertex data
       //struct Vertex { float x, y, z; float r, g, b, a; };
       //Vertex triangle[] = {

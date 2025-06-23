@@ -16,19 +16,25 @@ namespace gpu_directx12
    public:
 
 
-      comptr<IDXGISwapChain3>                         m_pdxgiswapchain3;
-
+      comptr<IDXGISwapChain3>                         m_pdxgiswapchain;
+      int m_iSwapChainCount = -1;
       //::comptr<IDXGISwapChain> m_pdxgiswapchain;
-
+      ::pointer < ::gpu_directx12::shader > m_pshaderPresent;
       ::comptr<ID3D12Resource> m_presourceSharedTexture;
 
       ::comptr < ID3D12RootSignature > m_prootsignature;
 
       HANDLE m_handleSharedTexture;
-
+      ::pointer_array < texture > m_textureaSwapChain;
       //VkSwapchainKHR       m_vkswapchain;
       uint32_t             m_uCurrentSwapChainImage;
       //::int_size m_size;
+
+
+      comptr<IDCompositionDevice> m_pdcompositiondevice;
+      comptr<IDCompositionTarget> m_pdcompositiontarget;
+      comptr<IDCompositionVisual> m_pdcompositionvisual;
+
 
       //::comptr<ID3D11VertexShader> m_pvertexshaderFullscreen;
       //::comptr<ID3D11PixelShader> m_ppixelshaderFullscreen;
@@ -51,11 +57,13 @@ namespace gpu_directx12
 
       void on_init() override;
 
+      void initialize_swap_chain_window(::gpu::device* pgpudevice, ::windowing::window* pwindow);
 
       //void endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc) override;
       void present(::gpu::texture * pgputexture) override;
-
-
+      void set_present_state() override;
+      void swap_buffers() override;
+      void get_new_swap_chain_index() override;
 //      VkInstance instance{ VK_NULL_HANDLE };
 //      VkDevice device{ VK_NULL_HANDLE };
 //      VkPhysicalDevice physicalDevice{ VK_NULL_HANDLE };

@@ -127,41 +127,13 @@ namespace gpu_directx12
       ::comptr<ID3D12CommandQueue>                                m_pcommandqueueCopy;
 
 
-      class command_buffer :
-         virtual public ::particle
-      {
-      public:
-
-
-         ::comptr<ID3D12Fence>                     m_pfence;
-         UINT64                                    m_fenceValue;
-         HANDLE                                    m_hFenceEvent;
-         ::comptr<ID3D12CommandAllocator >         m_pcommandallocator;
-         ::comptr < ID3D12GraphicsCommandList >    m_pcommandlist;
-         ::comptr < ID3D12CommandQueue >           m_pcommandqueue;
-         ::pointer < ::gpu_directx12::renderer >   m_prenderer;
-         D3D12_COMMAND_LIST_TYPE                   m_ecommandlisttype;
-
-         command_buffer();
-         ~command_buffer() override;
-
-         virtual void initialize_command_buffer(D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer, ID3D12CommandQueue * pcommandqueue);
-
-         virtual void submit_command_buffer();
-
-         virtual void wait_for_gpu();
-
-         virtual void reset();
-
-         virtual bool has_finished();
-
-      };
 
       //::pointer_array < command_buffer > m_commandbuffera;
-      ::pointer < command_buffer > m_pcommandbuffer;
+      ::pointer_array < command_buffer > m_commandbuffera;
 
       ::pointer < command_buffer > m_pcommandbufferSingleTime;
       ::pointer < command_buffer > m_pcommandbufferLoadAssets;
+      ::pointer < command_buffer > m_pcommandbufferLoadAssets2;
 
       ::comptr<ID3D12DescriptorHeap> m_pheapCbv;
       ::comptr<ID3D12Resource> m_presourceGlobalUBO;
@@ -170,11 +142,11 @@ namespace gpu_directx12
 
       //::array <UINT64 > m_fences; // fences values
 
-#ifdef HELLO_TRIANGLE_DEBUG
+//#ifdef HELLO_TRIANGLE_DEBUG
       ::pointer < ::gpu_directx12::shader > m_pshaderHelloTriangle;
       ::comptr<ID3D12Resource> m_presourceHelloTriangleVertexBuffer;
       D3D12_VERTEX_BUFFER_VIEW m_vertexbufferviewHelloTriangle;
-#endif
+//#endif
 
       ::procedure_array m_procedureaAfterEndRender;
 
@@ -273,10 +245,6 @@ namespace gpu_directx12
 
       void on_context_resize() override;
 
-      void on_begin_draw() override;
-      virtual void _on_begin_render();
-      virtual void _on_end_render();
-      void on_end_draw() override;
 
    //public:
 
@@ -290,10 +258,15 @@ namespace gpu_directx12
 
       ::pointer < ::gpu::frame > beginFrame() override;
       void on_begin_render(::gpu::frame* pframeParam) override;
+      //virtual void on_begin_render1(::gpu::frame* pframeParam);
       void on_end_render(::gpu::frame* pframeParam) override;
       void endFrame() override;
       void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
 
+      void on_begin_draw() override;
+      void _on_begin_render(::gpu::frame* pgpuframe) override;
+      void _on_end_render(::gpu::frame* pgpuframe) override;
+      void on_end_draw() override;
 
       //void _set_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
 

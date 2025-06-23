@@ -63,22 +63,22 @@ namespace gpu_directx12
 
       ::cast < context>pcontext = m_pgpurenderer->m_pgpucontext;
 
-      D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-      rtvHeapDesc.NumDescriptors = m_pgpurenderer->m_iDefaultFrameCount;
-      rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-      rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      HRESULT hrCreateDescriptorHeapRtv = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap));
-      pdevice->defer_throw_hresult(hrCreateDescriptorHeapRtv);
-      m_rtvDescriptorSize = pdevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+      //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+      //rtvHeapDesc.NumDescriptors = m_pgpurenderer->m_iDefaultFrameCount;
+      //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+      //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+      //HRESULT hrCreateDescriptorHeapRtv = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap));
+      //pdevice->defer_throw_hresult(hrCreateDescriptorHeapRtv);
+      //m_rtvDescriptorSize = pdevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 
-      // Describe and create a depth stencil view (DSV) descriptor heap.
-      D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-      dsvHeapDesc.NumDescriptors = 1;
-      dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-      dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      HRESULT hrCreateDescriptorHeapDsv = pdevice->m_pdevice->CreateDescriptorHeap(&dsvHeapDesc, __interface_of(m_dsvHeap));
-      pdevice->defer_throw_hresult(hrCreateDescriptorHeapDsv);
+      //// Describe and create a depth stencil view (DSV) descriptor heap.
+      //D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+      //dsvHeapDesc.NumDescriptors = 1;
+      //dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+      //dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+      //HRESULT hrCreateDescriptorHeapDsv = pdevice->m_pdevice->CreateDescriptorHeap(&dsvHeapDesc, __interface_of(m_dsvHeap));
+      //pdevice->defer_throw_hresult(hrCreateDescriptorHeapDsv);
 
 
       //// 1. Create offscreen render target texture
@@ -144,7 +144,7 @@ namespace gpu_directx12
 
       {
 
-         CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+         //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
          m_texturea.set_size(m_pgpurenderer->m_iDefaultFrameCount);
 
@@ -153,33 +153,35 @@ namespace gpu_directx12
 
             __defer_construct(m_texturea[i]);
 
+            m_texturea[i]->m_bRenderTarget = true;
+
             m_texturea[i]->initialize_gpu_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
 
-            //if (bCreateRenderTargetView)
-            {
+            ////if (bCreateRenderTargetView)
+            //{
 
-               //// 2. Create RTV descriptor heap
-               //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-               //rtvHeapDesc.NumDescriptors = 1;
-               //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-               //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-               //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
+            //   //// 2. Create RTV descriptor heap
+            //   //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+            //   //rtvHeapDesc.NumDescriptors = 1;
+            //   //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+            //   //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+            //   //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
 
-               //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
+            //   //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
-               //// 3. Create RTV
-               //m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
-               //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+            //   //// 3. Create RTV
+            //   //m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
+            //   //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-               ::cast < device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+            //   ::cast < device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-               ::cast < texture > ptexture = m_texturea[i];
+            //   ::cast < texture > ptexture = m_texturea[i];
 
-               pgpudevice->m_pdevice->CreateRenderTargetView(ptexture->m_presource, nullptr, rtvHandle);
-               
-               rtvHandle.Offset(1, m_rtvDescriptorSize);
+            //   pgpudevice->m_pdevice->CreateRenderTargetView(ptexture->m_presource, nullptr, rtvHandle);
+            //   
+            //   rtvHandle.Offset(1, m_rtvDescriptorSize);
 
-            }
+            //}
 
          }
          //if (bCreateShaderResourceView)
