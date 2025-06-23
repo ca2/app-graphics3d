@@ -10,39 +10,6 @@
 
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
-const char* fullscreen_vertex_shader = R"shader(// fullscreen_vs.hlsl
-      struct VSOut {
-         float4 pos : SV_POSITION;
-         float2 uv : TEXCOORD0;
-      };
-
-      VSOut main(uint vid : SV_VertexID) {
-         float2 verts[3] = {
-             float2(-1, -1),
-             float2(-1, +3),
-             float2(+3, -1)
-         };
-         float2 uvs[3] = {
-             float2(0, 1),
-             float2(0, -1),
-             float2(2, 1)
-         };
-
-         VSOut o;
-         o.pos = float4(verts[vid], 0, 1);
-         o.uv = 0.5 * (verts[vid] + 1.0);
-         return o;
-      }
-)shader";
-
-const char* fullscreen_pixel_shader = R"shader(// fullscreen_ps.hlsl
-Texture2D tex : register(t0);
-SamplerState samp : register(s0);
-
-float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_Target {
-    return tex.Sample(samp, uv);
-}
-)shader";
 
 
 
@@ -187,6 +154,47 @@ namespace gpu_directx12
 
          m_pshaderPresent->m_bTextureAndSampler = true;
          m_pshaderPresent->m_bDisableDepthTest = true;
+         const char* fullscreen_vertex_shader = R"shader(// fullscreen_vs.hlsl
+      struct VSOut {
+         float4 pos : SV_POSITION;
+         float2 uv : TEXCOORD0;
+      };
+
+      VSOut main(uint vid : SV_VertexID) {
+         float2 verts[3] = {
+             float2(-1, -1),
+             float2(-1, +3),
+             float2(+3, -1)
+         };
+         float2 uvs[3] = {
+             float2(0, 1),
+             float2(0, -1),
+             float2(2, 1)
+         };
+
+         VSOut o;
+         o.pos = float4(verts[vid], 0, 1);
+         o.uv = 0.5 * (verts[vid] + 1.0);
+         return o;
+      }
+)shader";
+
+         const char* fullscreen_pixel_shader = R"shader(// fullscreen_ps.hlsl
+Texture2D tex : register(t0);
+SamplerState samp : register(s0);
+
+float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_Target {
+    
+if(uv.x >0.5)
+{
+   return float4(0.1*0.5, 0.8*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
+}
+else
+{
+return tex.Sample(samp, uv);
+}
+}
+)shader";
 
          m_pshaderPresent->initialize_shader_with_block(
             pgpurenderer,
@@ -201,7 +209,30 @@ namespace gpu_directx12
 
       ptextureSwapChain->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-      m_pshaderPresent->bind(ptextureSwapChain, pgputexture);
+      if (!ptextureSwapChain->m_pheapRenderTargetView)
+      {
+
+         ptextureSwapChain->create_render_target();
+      }
+
+      {
+         FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
+         D3D12_RECT r[1];
+         r[0].left = 100;
+         r[0].top = 100;
+         r[0].right = 200;
+         r[0].bottom = 200;
+         pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView,
+            colorRGBA2, 1, r);
+
+      }
+
+
+      ::cast < texture > ptextureSrc = pgputexture;
+
+      ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+      m_pshaderPresent->bind(ptextureSwapChain, ptextureSrc);
       //pgpucontext->m_pcontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
       //pgpucontext->m_pcontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
 
@@ -229,7 +260,7 @@ namespace gpu_directx12
 
       D3D12_RECT scissorRect = {};
       scissorRect.left = 0;
-      scissorRect.bottom = 0;
+      scissorRect.top = 0;
       scissorRect.right = static_cast<float>(m_size.cx());
       scissorRect.bottom = static_cast<float>(m_size.cy());
 
@@ -250,7 +281,17 @@ namespace gpu_directx12
       //pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView, 
         // colorRGBA2, 0, nullptr);
 
-      
+      {
+         FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
+         D3D12_RECT r[1];
+         r[0].left = 200;
+         r[0].top = 100;
+         r[0].right = 300;
+         r[0].bottom = 200;
+         pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView,
+            colorRGBA2, 1, r);
+
+      }
 
    }
 

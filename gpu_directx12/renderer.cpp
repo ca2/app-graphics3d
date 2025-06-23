@@ -3817,7 +3817,7 @@ void CreateImageBlendVertexBuffer(
 
                //}
 
-               //if (presourceDepthStencilBuffer)
+               if (ptextureCurrent->m_pheapRenderTargetView)
                {
 
                   //m_pcontext->OMSetDepthStencilState(pdepthstencilstate, 0);

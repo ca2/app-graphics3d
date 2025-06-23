@@ -168,7 +168,7 @@ namespace gpu_directx12
          IDXGIAdapter1** ppAdapter,
          bool requestHighPerformanceAdapter = false);
 
-
+      void _create_d3d12_device();
       //string _001GetIntroProjection() override;
       //string _001GetIntroFragment() override;
 

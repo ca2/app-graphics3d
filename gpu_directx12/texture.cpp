@@ -71,9 +71,38 @@ namespace gpu_directx12
 
          CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
 
+         D3D12_HEAP_FLAGS eheap;
+
+         if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+         {
+
+            eheap = D3D12_HEAP_FLAG_NONE;
+
+            textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+            //textureDesc.Width = width;
+            //textureDesc.Height = height;
+            textureDesc.DepthOrArraySize = 1;
+            textureDesc.MipLevels = 1;
+            textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  // MUST be D3D11-compatible format
+            textureDesc.SampleDesc.Count = 1;
+            textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+            textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+            m_bRenderTarget = false;
+
+            m_bShaderResource = false;
+
+         }
+         else
+         {
+
+            eheap = D3D12_HEAP_FLAG_NONE;
+
+         }
+
          HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
             &heapproperties,
-            D3D12_HEAP_FLAG_NONE,
+            eheap,
             &textureDesc,
             D3D12_RESOURCE_STATE_RENDER_TARGET,
             &clearValue,
@@ -131,6 +160,13 @@ namespace gpu_directx12
    void texture::create_render_target()
    {
 
+      if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+      {
+
+         return;
+
+      }
+
       ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
          // 2. Create RTV descriptor heap
          D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
@@ -155,6 +191,13 @@ namespace gpu_directx12
    void texture::create_shader_resource()
    {
 
+      //if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+      //{
+
+      //   return;
+
+      //}
+
       ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
       // 4. Create SRV descriptor heap
@@ -176,6 +219,7 @@ namespace gpu_directx12
       srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
       srvDesc.Texture2D.MostDetailedMip = 0;
       srvDesc.Texture2D.MipLevels = 1;
+      srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
       m_handleShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
 
@@ -193,8 +237,13 @@ namespace gpu_directx12
       samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
       samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
       samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+      samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+      samplerDesc.MinLOD = 0;
+      samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 
-      pdevice->m_pdevice->CreateSampler(&samplerDesc, m_pheapSampler->GetCPUDescriptorHandleForHeapStart());
+      m_handleSampler = m_pheapSampler->GetCPUDescriptorHandleForHeapStart();
+
+      pdevice->m_pdevice->CreateSampler(&samplerDesc, m_handleSampler);
 
    }
 
@@ -202,7 +251,12 @@ namespace gpu_directx12
    void texture::create_depth_resources()
    {
 
+      if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+      {
 
+         return;
+
+      }
       ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
 
@@ -269,6 +323,7 @@ namespace gpu_directx12
       if (!m_pd3d11)
       {
 
+         __construct_new(m_pd3d11);
 
       }
 

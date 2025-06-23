@@ -525,7 +525,35 @@ namespace gpu_directx12
       psoDesc.VS = CD3DX12_SHADER_BYTECODE(pblobVertex);
       psoDesc.PS = CD3DX12_SHADER_BYTECODE(pblobPixel);
       psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-      psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
+      if (m_bEnableBlend)
+      {
+         D3D12_BLEND_DESC blendDesc = {};
+         blendDesc.AlphaToCoverageEnable = FALSE;
+         blendDesc.IndependentBlendEnable = FALSE;
+
+         D3D12_RENDER_TARGET_BLEND_DESC rtBlendDesc = {};
+         rtBlendDesc.BlendEnable = TRUE;
+         rtBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+         rtBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+         rtBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+         rtBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+         rtBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+         rtBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+         rtBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+         blendDesc.RenderTarget[0] = rtBlendDesc;
+
+         //D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+         // ... (fill in shaders, input layout, root signature, etc.)
+         psoDesc.BlendState = blendDesc;
+         psoDesc.NumRenderTargets = 1;
+         psoDesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
+      }
+      else
+      {
+         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+      }
       psoDesc.SampleMask = UINT_MAX;
       psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
       psoDesc.NumRenderTargets = 1;
@@ -535,8 +563,10 @@ namespace gpu_directx12
       if (m_bDisableDepthTest)
       {
          
-         psoDesc.DepthStencilState.DepthEnable = FALSE;
-         psoDesc.DepthStencilState.StencilEnable = FALSE;
+         D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
+         depthStencilDesc.DepthEnable = FALSE;
+         depthStencilDesc.StencilEnable = FALSE;
+         psoDesc.DepthStencilState = depthStencilDesc;
 
       }
       else
@@ -641,7 +671,14 @@ namespace gpu_directx12
       D3D12_CPU_DESCRIPTOR_HANDLE handlea[] = {
       ptextureDst->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart()};
 
-      D3D12_CPU_DESCRIPTOR_HANDLE* depth = nullptr;
+      D3D12_CPU_DESCRIPTOR_HANDLE depth[1]{};
+      D3D12_CPU_DESCRIPTOR_HANDLE * dpth=nullptr;
+      if (ptextureDst->m_pheapDepthStencilView
+         && !m_bDisableDepthTest)
+      {
+         depth[0] = ptextureDst->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
+         dpth = depth;
+      }
 
       //if(ptextureDst->m_ph)
 
@@ -649,7 +686,7 @@ namespace gpu_directx12
          1,
          handlea,
          FALSE,
-         depth
+         dpth
       );
 
 

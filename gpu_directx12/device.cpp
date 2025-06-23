@@ -1048,149 +1048,143 @@ namespace gpu_directx12
 
       auto r = pwindow->get_window_rectangle();
 
-      UINT dxgiFactoryFlags = 0;
-
-#if defined(_DEBUG)
-
+      if (!m_pdevice)
       {
 
-         ::comptr<ID3D12Debug> debugController;
-
-         if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(debugController))))
-         {
-
-            debugController->EnableDebugLayer();
-
-            dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-
-         }
+         _create_d3d12_device();
 
       }
 
-#endif
 
-      ::defer_throw_hresult(CreateDXGIFactory2(dxgiFactoryFlags, __interface_of(m_pdxgifactory4)));
+      //if (m_bUseWarpDevice)
+      //{
 
-      if (m_bUseWarpDevice)
-      {
+      //   ::comptr<IDXGIAdapter> warpAdapter;
 
-         ::comptr<IDXGIAdapter> warpAdapter;
+      //   ::defer_throw_hresult(
+      //      m_pdxgifactory4->EnumWarpAdapter(__interface_of(warpAdapter)));
 
-         ::defer_throw_hresult(
-            m_pdxgifactory4->EnumWarpAdapter(__interface_of(warpAdapter)));
+      //   ::defer_throw_hresult(D3D12CreateDevice(
+      //      warpAdapter,
+      //      D3D_FEATURE_LEVEL_11_0,
+      //      __interface_of(m_pdevice)
+      //   ));
 
-         ::defer_throw_hresult(D3D12CreateDevice(
-            warpAdapter,
-            D3D_FEATURE_LEVEL_11_0,
-            __interface_of(m_pdevice)
-         ));
+      //}
+      //else
+      //{
 
-      }
-      else
-      {
+      //   ::comptr < IDXGIAdapter1> hardwareAdapter;
 
-         ::comptr < IDXGIAdapter1> hardwareAdapter;
+      //   GetHardwareAdapter(m_pdxgifactory4, &hardwareAdapter);
 
-         GetHardwareAdapter(m_pdxgifactory4, &hardwareAdapter);
+      //   ::defer_throw_hresult(D3D12CreateDevice(
+      //      hardwareAdapter,
+      //      D3D_FEATURE_LEVEL_11_0,
+      //      __interface_of(m_pdevice)
+      //   ));
 
-         ::defer_throw_hresult(D3D12CreateDevice(
-            hardwareAdapter,
-            D3D_FEATURE_LEVEL_11_0,
-            __interface_of(m_pdevice)
-         ));
+      //}
 
-      }
+      //if (1)
+      //{
 
-      if (1)
-      {
+      //   ::comptr<ID3D12InfoQueue> infoQueue;
 
-         ::comptr<ID3D12InfoQueue> infoQueue;
+      //   m_pdevice.as(infoQueue);
 
-         m_pdevice.as(infoQueue);
+      //   if (infoQueue)
+      //   {
+      //      infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+      //      infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+      //      //infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
+      //   }
 
-         if (infoQueue)
-         {
-            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
-            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
-            //infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
-         }
-
-      }
-
-      DXGI_SWAP_CHAIN_DESC1 dxgiswapchaindesc1 = {};
-      dxgiswapchaindesc1.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-      dxgiswapchaindesc1.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-      dxgiswapchaindesc1.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-      dxgiswapchaindesc1.BufferCount = 2;
-      dxgiswapchaindesc1.SampleDesc.Count = 1;
-      dxgiswapchaindesc1.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
-
-      RECT rect = {};
-
-      GetWindowRect(pwin32window->m_hwnd, &rect);
-
-      dxgiswapchaindesc1.Width = rect.right - rect.left;
-      dxgiswapchaindesc1.Height = rect.bottom - rect.top;
-
-      D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-      queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-      m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
-
-      ::comptr < IDXGISwapChain1 > swapchain1;
-
-      HRESULT hrCreateSwapChainForComposition =
-         m_pdxgifactory4->CreateSwapChainForComposition(
-            m_pcommandqueue,
-            &dxgiswapchaindesc1,
-            nullptr, // Don’t restrict
-            &swapchain1);
-
-      ::defer_throw_hresult(hrCreateSwapChainForComposition);
+      //}
 
       ::cast < ::gpu_directx12::swap_chain > pswapchain = get_swap_chain();
 
-      HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain);
+      if (!pswapchain->m_pdxgiswapchain)
+      {
 
-      pswapchain->get_new_swap_chain_index();
+         DXGI_SWAP_CHAIN_DESC1 dxgiswapchaindesc1 = {};
+         dxgiswapchaindesc1.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+         dxgiswapchaindesc1.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+         dxgiswapchaindesc1.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+         dxgiswapchaindesc1.BufferCount = 2;
+         dxgiswapchaindesc1.SampleDesc.Count = 1;
+         dxgiswapchaindesc1.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
 
-      pswapchain->initialize_swap_chain_window(this, pwindow);
+         RECT rect = {};
 
-      ::defer_throw_hresult(hrQueryDxgiSwapChain3);
+         GetWindowRect(pwin32window->m_hwnd, &rect);
 
-      ::comptr<ID3D12DescriptorHeap> rtvHeap;
+         dxgiswapchaindesc1.Width = rect.right - rect.left;
+         dxgiswapchaindesc1.Height = rect.bottom - rect.top;
 
-      UINT rtvDescriptorSize = 0;
+         //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+         //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+         //m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
 
-      //int iFrameCount = 2;
+         ::comptr < IDXGISwapChain1 > swapchain1;
 
-      //// Describe and create an RTV descriptor heap.
-      //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-      //rtvHeapDesc.NumDescriptors = iFrameCount; // One per back buffer (typically 2)
-      //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-      //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // Must be NONE for RTV/DSV heaps
+         HRESULT hrCreateSwapChainForComposition =
+            m_pdxgifactory4->CreateSwapChainForComposition(
+               m_pcommandqueue,
+               &dxgiswapchaindesc1,
+               nullptr, // Don’t restrict
+               &swapchain1);
 
-      //HRESULT hr = m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(rtvHeap));
-      //::defer_throw_hresult(hr);
+         ::defer_throw_hresult(hrCreateSwapChainForComposition);
 
-      //// Store the descriptor size (used for handle incrementing)
-      //rtvDescriptorSize = m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-      //m_resourceaBackBufferTexture.set_size(iFrameCount);
+         //::cast < ::gpu_directx12::swap_chain > pswapchain = get_swap_chain();
+         HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain);
 
-      //for (int i = 0; i < iFrameCount; i++)
-      //{
 
-      //   auto& presource = m_resourceaBackBufferTexture[i];
+         //HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain);
 
-      //   HRESULT hrGetBuffer = pswapchain->m_pdxgiswapchain3->GetBuffer(i, __interface_of(presource));
+         pswapchain->get_new_swap_chain_index();
 
-      //   ::defer_throw_hresult(hrGetBuffer);
-      //   
-      //   m_handleaBackBufferRenderTargetView.element_at_grow(i)
-      //      = rtvHeap->GetCPUDescriptorHandleForHeapStart(); // RTV descriptor heap assumed created
+         pswapchain->initialize_swap_chain_window(this, pwindow);
 
-      //   m_pdevice->CreateRenderTargetView(presource, nullptr, m_handleaBackBufferRenderTargetView[i]);
+         ::defer_throw_hresult(hrQueryDxgiSwapChain3);
 
-      //}
+         ::comptr<ID3D12DescriptorHeap> rtvHeap;
+
+         UINT rtvDescriptorSize = 0;
+
+         //int iFrameCount = 2;
+
+         //// Describe and create an RTV descriptor heap.
+         //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+         //rtvHeapDesc.NumDescriptors = iFrameCount; // One per back buffer (typically 2)
+         //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+         //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // Must be NONE for RTV/DSV heaps
+
+         //HRESULT hr = m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(rtvHeap));
+         //::defer_throw_hresult(hr);
+
+         //// Store the descriptor size (used for handle incrementing)
+         //rtvDescriptorSize = m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+         //m_resourceaBackBufferTexture.set_size(iFrameCount);
+
+         //for (int i = 0; i < iFrameCount; i++)
+         //{
+
+         //   auto& presource = m_resourceaBackBufferTexture[i];
+
+         //   HRESULT hrGetBuffer = pswapchain->m_pdxgiswapchain3->GetBuffer(i, __interface_of(presource));
+
+         //   ::defer_throw_hresult(hrGetBuffer);
+         //   
+         //   m_handleaBackBufferRenderTargetView.element_at_grow(i)
+         //      = rtvHeap->GetCPUDescriptorHandleForHeapStart(); // RTV descriptor heap assumed created
+
+         //   m_pdevice->CreateRenderTargetView(presource, nullptr, m_handleaBackBufferRenderTargetView[i]);
+
+         //}
+
+      }
 
    }
 
@@ -1367,67 +1361,110 @@ namespace gpu_directx12
       //      );
 
 
+      if (!m_pdevice)
+      {
 
-      UINT dxgiFactoryFlags = 0;
+         _create_d3d12_device();
+
+      }
+
+   }
+
+
+   void device::_create_d3d12_device()
+   {
+
+      if (!m_pdevice)
+      {
+
+
+         UINT dxgiFactoryFlags = 0;
 
 #if defined(_DEBUG)
-      get_debug_interface(dxgiFactoryFlags);
-      //// Enable the debug layer (requires the Graphics Tools "optional feature").
-      //// NOTE: Enabling the debug layer after device creation will invalidate the active device.
-      //
-      //
-      ////::comptr<ID3D12Debug> debugController;
-      //   if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(debugController))))
-      //   {
-      //      debugController->EnableDebugLayer();
 
-      //      // Enable additional debug layers.
-      //      dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-      //   }
-      //}
+         {
+
+            ::comptr<ID3D12Debug> debugController;
+
+            if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(debugController))))
+            {
+
+               debugController->EnableDebugLayer();
+
+               dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+
+            }
+
+         }
+
+#endif
+
+         ::defer_throw_hresult(CreateDXGIFactory2(dxgiFactoryFlags, __interface_of(m_pdxgifactory4)));
+
+
+         //UINT dxgiFactoryFlags = 0;
+
+#if defined(_DEBUG)
+         get_debug_interface(dxgiFactoryFlags);
+         //// Enable the debug layer (requires the Graphics Tools "optional feature").
+         //// NOTE: Enabling the debug layer after device creation will invalidate the active device.
+         //
+         //
+         ////::comptr<ID3D12Debug> debugController;
+         //   if (SUCCEEDED(D3D12GetDebugInterface(__interface_of(debugController))))
+         //   {
+         //      debugController->EnableDebugLayer();
+
+         //      // Enable additional debug layers.
+         //      dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+         //   }
+         //}
 #endif
 
       ///ComPtr<IDXGIFactory4> factory;
-      ::defer_throw_hresult(CreateDXGIFactory2(dxgiFactoryFlags, __interface_of(m_pdxgifactory4)));
+         ::defer_throw_hresult(CreateDXGIFactory2(dxgiFactoryFlags, __interface_of(m_pdxgifactory4)));
 
-      if (m_bUseWarpDevice)
-      {
-         ::comptr<IDXGIAdapter> warpAdapter;
-         ::defer_throw_hresult(m_pdxgifactory4->EnumWarpAdapter(__interface_of(warpAdapter)));
+         if (m_bUseWarpDevice)
+         {
+            ::comptr<IDXGIAdapter> warpAdapter;
+            ::defer_throw_hresult(m_pdxgifactory4->EnumWarpAdapter(__interface_of(warpAdapter)));
 
-         ::defer_throw_hresult(D3D12CreateDevice(
-            warpAdapter,
-            D3D_FEATURE_LEVEL_11_0,
-            __interface_of(m_pdevice)
-         ));
+            ::defer_throw_hresult(D3D12CreateDevice(
+               warpAdapter,
+               D3D_FEATURE_LEVEL_11_0,
+               __interface_of(m_pdevice)
+            ));
+         }
+         else
+         {
+            ::comptr < IDXGIAdapter1> hardwareAdapter;
+            GetHardwareAdapter(m_pdxgifactory4, &hardwareAdapter);
+
+            ::defer_throw_hresult(D3D12CreateDevice(
+               hardwareAdapter,
+               D3D_FEATURE_LEVEL_11_0,
+               __interface_of(m_pdevice)
+            ));
+         }
+
+         ::comptr<ID3D12InfoQueue> infoQueue;
+
+         m_pdevice.as(infoQueue);
+
+         if (infoQueue)
+         {
+            //infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+            //infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+            ////infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
+         }
+
+         D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+         HRESULT hrCreateCommandQueue = m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
+
+         ::defer_throw_hresult(hrCreateCommandQueue);
+
       }
-      else
-      {
-         ::comptr < IDXGIAdapter1> hardwareAdapter;
-         GetHardwareAdapter(m_pdxgifactory4, &hardwareAdapter);
-
-         ::defer_throw_hresult(D3D12CreateDevice(
-            hardwareAdapter,
-            D3D_FEATURE_LEVEL_11_0,
-            __interface_of(m_pdevice)
-         ));
-      }
-
-      ::comptr<ID3D12InfoQueue> infoQueue;
-
-      m_pdevice.as(infoQueue);
-
-      if (infoQueue)
-      {
-         infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
-         infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
-         infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
-      }
-
-      D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-      queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-      m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
-
 
    }
 
@@ -1491,14 +1528,16 @@ namespace gpu_directx12
       //m_pgpudevice = ::gpu::swap_chain::m_pgpudevice;
 
       ///::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
+         assert(m_pcommandqueue && "Command queue must be initialized before D3D11On12CreateDevice");
 
       auto pd3d12device = m_pdevice;
-
+      D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
+      UINT numFeatureLevels = _countof(featureLevels);
       HRESULT hrD3D11On12 = D3D11On12CreateDevice(
          pd3d12device,
          D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-         nullptr,
-         0,
+         featureLevels,
+         numFeatureLevels,
          (IUnknown* const*)m_pcommandqueue.pp(),
          1,
          0,

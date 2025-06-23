@@ -44,7 +44,7 @@ namespace gpu_directx12
       ::comptr<ID3D12DescriptorHeap>   m_pheapSampler;
       D3D12_CPU_DESCRIPTOR_HANDLE      m_handleSampler;
       //UINT m_rtvDescriptorSize;
-      bool m_bRenderTarget;
+      //bool m_bRenderTarget;
       bool m_bShaderResource;
 
       class d3d11 :
@@ -57,6 +57,7 @@ namespace gpu_directx12
          ::comptr<ID3D11Resource> wrappedResource;
          ::comptr<IDXGISurface> dxgiSurface;
          ::comptr<ID2D1Bitmap1> d2dBitmap;
+         HANDLE sharedHandle = NULL;
 
          d3d11() {}
          ~d3d11() override {}

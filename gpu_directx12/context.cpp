@@ -13,6 +13,7 @@
 #include "offscreen_render_target_view.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
+#include "bred/gpu/compositor.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/types.h"
 #include "gpu_directx12/descriptors.h"
@@ -20,6 +21,7 @@
 #define GLM_FORCE_LEFT_HANDED
 #include <glm/mat4x4.hpp>
 #include "initializers.h"
+#include "acme_windows_common/dxgi_surface_bindable.h"
 
 
 using namespace directx12;
@@ -75,6 +77,15 @@ namespace gpu_directx12
    {
 
       m_pgpudevice = pgpudevice;
+
+      if (m_bD3D11On12Shared)
+      {
+
+         ::cast < device > pdevice = m_pgpudevice;
+
+         auto pdxgidevice = pdevice->_get_dxgi_device();
+
+      }
 
       ::gpu::context::on_create_context(pgpudevice, eoutput, pwindow, size);
 
@@ -1301,6 +1312,93 @@ namespace gpu_directx12
    //}
 
 
+   void context::__bind_draw2d_compositor(::gpu::compositor* pgpucompositor)
+   {
+
+      ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
+
+      ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
+
+      ::cast < device > pdevice = m_pgpudevice;
+
+      auto pdxgidevice = pdevice->_get_dxgi_device();
+
+      auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+
+      auto & pdxgisurface = ptexture->d3d11()->dxgiSurface;
+
+      if (!ptexture->d3d11()->wrappedResource)
+      {
+
+         assert(!ptexture->m_pheapDepthStencilView);
+         assert(!ptexture->m_pheapRenderTargetView);
+         assert(!ptexture->m_pheapShaderResourceView);
+         assert(!ptexture->m_pheapSampler);
+
+         //auto & sharedHandle= ptexture->d3d11()->sharedHandle;
+
+         //::defer_throw_hresult(pdevice->m_pdevice->CreateSharedHandle(
+         //   ptexture->m_presource, nullptr, GENERIC_ALL, nullptr, 
+         //   &sharedHandle));
+
+         D3D11_RESOURCE_FLAGS flags = {};
+         //flags.BindFlags = D3D11_BIND_RENDER_TARGET;
+         flags.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+         assert(ptexture->m_presource); // Confirm it’s non-null
+         HRESULT hrCreateWrappedResource = pdevice->m_pd3d11on12->CreateWrappedResource(
+            ptexture->m_presource,
+            &flags,
+            D3D12_RESOURCE_STATE_RENDER_TARGET,
+            D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+            __interface_of(ptexture->d3d11()->wrappedResource)
+         );
+
+         ::defer_throw_hresult(hrCreateWrappedResource);
+
+      }
+
+      ID3D11Resource * resources[] = { ptexture->d3d11()->wrappedResource.m_p };
+
+      pdevice->m_pd3d11on12->AcquireWrappedResources(resources, _countof(resources));
+
+      //::defer_throw_hresult(m_pd3d11device.as(m_pd3d11on12)); // Query interface
+
+      ::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
+
+      pdxgisurfacebindable->_bind(iFrameIndex, pdxgisurface);
+
+   }
+
+
+   void context::__soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor)
+   {
+
+      ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
+
+      ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
+
+      ::cast < device > pdevice = m_pgpudevice;
+
+      auto pdxgidevice = pdevice->_get_dxgi_device();
+
+      auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+
+      auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
+
+      if (ptexture->d3d11()->wrappedResource)
+      {
+
+         ID3D11Resource* resources[] = { ptexture->d3d11()->wrappedResource.m_p };
+
+         pdevice->m_pd3d11on12->ReleaseWrappedResources(resources, 1);
+
+      }
+
+      pdevice->m_pd3d11context->Flush();
+
+   }
+
+
    ::gpu::enum_output context::get_eoutput()
    {
 
@@ -1457,7 +1555,15 @@ SamplerState samp : register(s0);
 
 float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 {
-    return tex.Sample(samp, uv); // Assumes premultiplied alpha
+    //return tex.Sample(samp, uv); // Assumes premultiplied alpha
+if(uv.y >0.5)
+{
+   return float4(0.7*0.5, 0.5*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
+}
+else
+{
+return tex.Sample(samp, uv);
+}
 }
 )hlsl";
 
@@ -1524,14 +1630,14 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
       }
 
-      m_pshaderBlend3->bind(ptextureTarget);
 
+      m_pshaderBlend3->bind(ptextureTarget);
 
 
       //int iDescriptorSize = ptextureDst->m_rtvDescriptorSize;
       //int iFrameIndex = m_pgpurendertarget->get_frame_index();
       //auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
-      auto hRtv = ptextureDst->m_handleRenderTargetView;
+      //auto hRtv = ptextureDst->m_handleRenderTargetView;
       //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
         // hRtv,
          //iFrameIndex,
@@ -1566,6 +1672,8 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
             ::cast <texture > ptextureSrc = player->texture();
 
+            ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
             m_pshaderBlend3->bind_source(ptextureSrc);
 
             //ID3D11SamplerState* samplerstatea[] =
@@ -1576,7 +1684,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
                            // 1. Define viewport and scissor rectangle
             D3D12_VIEWPORT viewport = {};
             viewport.TopLeftX = ptextureSrc->m_rectangleTarget.left();
-            viewport.TopLeftY = ptextureSrc->m_rectangleTarget.top();
+            viewport.TopLeftY =ptextureSrc->m_rectangleTarget.top();
             viewport.Width = static_cast<float>(ptextureSrc->m_rectangleTarget.width());
             viewport.Height = static_cast<float>(ptextureSrc->m_rectangleTarget.height());
             viewport.MinDepth = 0.0f;
@@ -1584,7 +1692,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
             D3D12_RECT scissorRect = {};
             scissorRect.left = ptextureSrc->m_rectangleTarget.left();
-            scissorRect.bottom = ptextureSrc->m_rectangleTarget.top();
+            scissorRect.top = ptextureSrc->m_rectangleTarget.top();
             scissorRect.right = ptextureSrc->m_rectangleTarget.right();
             scissorRect.bottom = ptextureSrc->m_rectangleTarget.bottom();
 
@@ -1616,12 +1724,21 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
       m_pshaderBlend3->unbind();
 
-
-      ptextureDst->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
       //::cast <texture > ptextureDst = ptextureTarget;
-      //float clearColor2[4] = { 0.95f * 0.5f, 0.75f * 0.5f, 0.95f * 0.5f, 0.5f }; // Clear to transparent
-      //m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor2);
+      //{
+      //   float clearColor2[4] = { 0.95f * 0.5f, 0.75f * 0.5f, 0.95f * 0.5f, 0.5f }; // Clear to transparent
+      //   D3D12_RECT r[1];
+      //   r[0].left = 100;
+      //   r[0].top = 200;
+      //   r[0].right = 200;
+      //   r[0].bottom = 300;
+      //   pcommandlist->ClearRenderTargetView(
+      //      ptextureDst->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+      //      clearColor2,
+      //      0, nullptr);
+      //}
+
+
 
 
    }

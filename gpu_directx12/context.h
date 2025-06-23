@@ -295,6 +295,10 @@ namespace gpu_directx12
       //::gpu_directx12::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);
 
 
+      //IDXGIDevice* __get_dxgi_device();
+      //ID3D11Device* __get_d3d11_device();
+      //ID3D11DeviceContext* __get_d3d11_device_context();
+
       void create_global_ubo(int iSize, int iFrameCount) override;
       void update_global_ubo(const ::block& block) override;
 
@@ -305,6 +309,11 @@ namespace gpu_directx12
       //ID3D11DeviceContext1* draw_get_d3d11_device_context1();
 
       //bool create_offscreen_graphics_for_swap_chain_blitting(::draw2d_gpu::graphics* pgraphics, const ::int_size& size = {}) override;
+
+      
+      void __bind_draw2d_compositor(::gpu::compositor* pgpucompositor) override;
+      void __soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor) override;
+
 
       ::gpu::enum_output get_eoutput() override;
 
