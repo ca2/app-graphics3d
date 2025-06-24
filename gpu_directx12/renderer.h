@@ -172,7 +172,7 @@ namespace gpu_directx12
       virtual void endSingleTimeCommands(command_buffer * pcommandbuffer);
 
       void WaitForGpu();
-
+      void on_start_layer(::gpu::layer* player);
       //bool is_starting_frame()const
       //{
 

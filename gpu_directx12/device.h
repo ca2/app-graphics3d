@@ -16,8 +16,7 @@ namespace gpu_directx12
 
 
    class CLASS_DECL_GPU_DIRECTX12 device :
-      virtual public ::gpu::device,
-      virtual public ::dxgi_device_source
+      virtual public ::gpu::device
    {
    public:
 
@@ -40,12 +39,11 @@ namespace gpu_directx12
       //::comptr<ID3D12RenderargetView>                m_prendertargetviewBackBuffer;
 
       D3D_FEATURE_LEVEL                               m_featurelevel;
-
+      //::pointer < context >                           m_pcontextMain;
       //::comptr<ID3D11Device> m_pd3d11device;
       //::comptr<ID3D11DeviceContext>  m_pd3d11context;
       //::comptr<ID3D11On12Device>  m_pd3d11on12;
       //::comptr<IDXGIDevice>  m_pdxgidevice;
-      ::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
 
 
       //comptr<IDCompositionDevice> m_pdcompositiondevice;
@@ -136,11 +134,6 @@ namespace gpu_directx12
       //::pointer < direct2d_draw2d_swap_chain >    m_pswapchain;
 
 
-      // For IDXGIDevice
-      ::comptr<ID3D11Device> m_pd3d11device;
-      ::comptr<ID3D11DeviceContext> m_pd3d11context;
-      ::comptr<ID3D11On12Device> m_pd3d11on12;
-      ::comptr<IDXGIDevice> m_pdxgidevice;
 
 
       device();
@@ -162,6 +155,7 @@ namespace gpu_directx12
       void initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproach, ::windowing::window *pwindow) override;
       void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::int_rectangle& rectanglePlacement) override;
 
+      //::gpu::context* get_main_window_context() override;
 
       void GetHardwareAdapter(
          IDXGIFactory1* pFactory,
@@ -320,7 +314,6 @@ namespace gpu_directx12
 
       //ID3D12Device* draw_get_d3d11_device();
       //ID3D12Device1* draw_get_d3d11_device1();
-      IDXGIDevice* _get_dxgi_device() override;
 
       int get_type_size(::gpu::enum_type etype) override;
       void set_mat4(void* p, const ::glm::mat4& mat4) override;

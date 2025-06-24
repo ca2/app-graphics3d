@@ -256,7 +256,7 @@ namespace draw2d_opengl
 
       auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      auto pgpucontextMainWindow = m_papplication->get_gpu_approach()->get_gpu_device()->get_main_window_context();
+      auto pgpucontextMain = m_papplication->get_gpu_approach()->get_gpu_device()->get_main_context();
 
       m_pgpucontext = pgpudevice->create_draw2d_context(
          ::gpu::e_output_gpu_buffer,

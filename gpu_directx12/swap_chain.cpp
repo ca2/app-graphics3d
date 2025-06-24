@@ -185,14 +185,14 @@ SamplerState samp : register(s0);
 
 float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_Target {
     
-if(uv.x >0.5)
-{
-   return float4(0.1*0.5, 0.8*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
-}
-else
-{
-return tex.Sample(samp, uv);
-}
+//if(uv.x >0.5)
+//{
+  // return float4(0.1*0.5, 0.8*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
+//}
+//else
+//{
+return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
+//}
 }
 )shader";
 
@@ -215,17 +215,17 @@ return tex.Sample(samp, uv);
          ptextureSwapChain->create_render_target();
       }
 
-      {
-         FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
-         D3D12_RECT r[1];
-         r[0].left = 100;
-         r[0].top = 100;
-         r[0].right = 200;
-         r[0].bottom = 200;
-         pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView,
-            colorRGBA2, 1, r);
+      //{
+      //   FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
+      //   D3D12_RECT r[1];
+      //   r[0].left = 100;
+      //   r[0].top = 100;
+      //   r[0].right = 200;
+      //   r[0].bottom = 200;
+      //   pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView,
+      //      colorRGBA2, 1, r);
 
-      }
+      //}
 
 
       ::cast < texture > ptextureSrc = pgputexture;
@@ -281,17 +281,17 @@ return tex.Sample(samp, uv);
       //pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView, 
         // colorRGBA2, 0, nullptr);
 
-      {
-         FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
-         D3D12_RECT r[1];
-         r[0].left = 200;
-         r[0].top = 100;
-         r[0].right = 300;
-         r[0].bottom = 200;
-         pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView,
-            colorRGBA2, 1, r);
+      //{
+      //   FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
+      //   D3D12_RECT r[1];
+      //   r[0].left = 200;
+      //   r[0].top = 100;
+      //   r[0].right = 300;
+      //   r[0].bottom = 200;
+      //   pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView,
+      //      colorRGBA2, 1, r);
 
-      }
+      //}
 
    }
 
@@ -333,20 +333,20 @@ return tex.Sample(samp, uv);
    }
 
 
-   void swap_chain::initialize_swap_chain_window(::gpu::device* pgpudevice, ::windowing::window* pwindow)
+   void swap_chain::initialize_swap_chain_window(::gpu::context* pgpucontext, ::windowing::window* pwindow)
    {
 
-      ::gpu::swap_chain::initialize_swap_chain_window(pgpudevice, pwindow);
+      ::gpu::swap_chain::initialize_swap_chain_window(pgpucontext, pwindow);
 
       ::cast < ::windowing_win32::window > pwin32window = pwindow;
+
+      ::cast < context > pcontext = pgpucontext;
 
       auto& pdcompositiondevice = m_pdcompositiondevice;
       auto& pdcompositiontarget = m_pdcompositiontarget;
       auto& pdcompositionvisual = m_pdcompositionvisual;
 
-      ::cast < device > pdevice = pgpudevice;
-
-      auto pdxgidevice = pdevice->_get_dxgi_device();
+      auto pdxgidevice = pcontext->_get_dxgi_device();
 
       ::defer_throw_hresult(DCompositionCreateDevice(
          pdxgidevice,

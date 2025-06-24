@@ -196,6 +196,14 @@ namespace gpu_directx12
    }
 
 
+   //::gpu::context* device::get_main_window_context()
+   //{
+
+   //   return m_pcontextMain;
+
+   //}
+
+
    void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::int_rectangle& rectanglePlacement)
    {
 
@@ -1102,89 +1110,9 @@ namespace gpu_directx12
 
       //}
 
-      ::cast < ::gpu_directx12::swap_chain > pswapchain = get_swap_chain();
+      ::cast < context > pcontextMain = get_main_context();
 
-      if (!pswapchain->m_pdxgiswapchain)
-      {
-
-         DXGI_SWAP_CHAIN_DESC1 dxgiswapchaindesc1 = {};
-         dxgiswapchaindesc1.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-         dxgiswapchaindesc1.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-         dxgiswapchaindesc1.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-         dxgiswapchaindesc1.BufferCount = 2;
-         dxgiswapchaindesc1.SampleDesc.Count = 1;
-         dxgiswapchaindesc1.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
-
-         RECT rect = {};
-
-         GetWindowRect(pwin32window->m_hwnd, &rect);
-
-         dxgiswapchaindesc1.Width = rect.right - rect.left;
-         dxgiswapchaindesc1.Height = rect.bottom - rect.top;
-
-         //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-         //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-         //m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
-
-         ::comptr < IDXGISwapChain1 > swapchain1;
-
-         HRESULT hrCreateSwapChainForComposition =
-            m_pdxgifactory4->CreateSwapChainForComposition(
-               m_pcommandqueue,
-               &dxgiswapchaindesc1,
-               nullptr, // Don’t restrict
-               &swapchain1);
-
-         ::defer_throw_hresult(hrCreateSwapChainForComposition);
-
-         //::cast < ::gpu_directx12::swap_chain > pswapchain = get_swap_chain();
-         HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain);
-
-
-         //HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain);
-
-         pswapchain->get_new_swap_chain_index();
-
-         pswapchain->initialize_swap_chain_window(this, pwindow);
-
-         ::defer_throw_hresult(hrQueryDxgiSwapChain3);
-
-         ::comptr<ID3D12DescriptorHeap> rtvHeap;
-
-         UINT rtvDescriptorSize = 0;
-
-         //int iFrameCount = 2;
-
-         //// Describe and create an RTV descriptor heap.
-         //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-         //rtvHeapDesc.NumDescriptors = iFrameCount; // One per back buffer (typically 2)
-         //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-         //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // Must be NONE for RTV/DSV heaps
-
-         //HRESULT hr = m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(rtvHeap));
-         //::defer_throw_hresult(hr);
-
-         //// Store the descriptor size (used for handle incrementing)
-         //rtvDescriptorSize = m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-         //m_resourceaBackBufferTexture.set_size(iFrameCount);
-
-         //for (int i = 0; i < iFrameCount; i++)
-         //{
-
-         //   auto& presource = m_resourceaBackBufferTexture[i];
-
-         //   HRESULT hrGetBuffer = pswapchain->m_pdxgiswapchain3->GetBuffer(i, __interface_of(presource));
-
-         //   ::defer_throw_hresult(hrGetBuffer);
-         //   
-         //   m_handleaBackBufferRenderTargetView.element_at_grow(i)
-         //      = rtvHeap->GetCPUDescriptorHandleForHeapStart(); // RTV descriptor heap assumed created
-
-         //   m_pdevice->CreateRenderTargetView(presource, nullptr, m_handleaBackBufferRenderTargetView[i]);
-
-         //}
-
-      }
+      pcontextMain->initialize_gpu_context_swap_chain(this, pwindow);
 
    }
 
@@ -1458,11 +1386,13 @@ namespace gpu_directx12
             ////infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
          }
 
-         D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-         HRESULT hrCreateCommandQueue = m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
+         //__defer_construct_new(m_pcontextMain);
 
-         ::defer_throw_hresult(hrCreateCommandQueue);
+         //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+         //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+         //HRESULT hrCreateCommandQueue = m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcontextMain->m_pcommandqueue));
+
+         //::defer_throw_hresult(hrCreateCommandQueue);
 
       }
 
@@ -1515,119 +1445,7 @@ namespace gpu_directx12
    //}
 
 
-   IDXGIDevice* device::_get_dxgi_device()
-   {
 
-      if (!m_pdxgidevice)
-      {
-
-  //          {
-
-//      ::gpu_directx12::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
-
-      //m_pgpudevice = ::gpu::swap_chain::m_pgpudevice;
-
-      ///::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
-         assert(m_pcommandqueue && "Command queue must be initialized before D3D11On12CreateDevice");
-
-      auto pd3d12device = m_pdevice;
-      D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
-      UINT numFeatureLevels = _countof(featureLevels);
-      HRESULT hrD3D11On12 = D3D11On12CreateDevice(
-         pd3d12device,
-         D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-         featureLevels,
-         numFeatureLevels,
-         (IUnknown* const*)m_pcommandqueue.pp(),
-         1,
-         0,
-         &m_pd3d11device,
-         &m_pd3d11context,
-         nullptr
-      );
-
-      ::defer_throw_hresult(hrD3D11On12);
-
-      ::defer_throw_hresult(m_pd3d11device.as(m_pd3d11on12)); // Query interface
-
-      ::defer_throw_hresult(m_pd3d11device.as(m_pdxgidevice));
-
-      //::defer_throw_hresult(m_pdxgiswapchain3.as(m_pdxgiswapchain1));
-
-      //DXGI_SWAP_CHAIN_DESC swapchaindesc1{};
-
-      //int FrameCount = 2;
-
-      //if (SUCCEEDED(m_pdxgiswapchain3->GetDesc(&swapchaindesc1)))
-      //{
-
-      //   FrameCount = swapchaindesc1.BufferCount;
-
-      //}
-
-      //m_frameIndex = m_pdxgiswapchain3->GetCurrentBackBufferIndex();
-
-      //// Create synchronization objects and wait until assets have been uploaded to the GPU.
-      //{
-      //   ::defer_throw_hresult(pd3d12device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __interface_of(m_fence)));
-      //   m_fenceValue = 1;
-
-      //   // Create an event handle to use for frame synchronization.
-      //   m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-      //   if (m_fenceEvent == nullptr)
-      //   {
-      //      ::defer_throw_hresult(HRESULT_FROM_WIN32(GetLastError()));
-      //   }
-
-      //}
-
-      ////_defer_d3d11on12_wrapped_resources();
-      //// Create descriptor heaps.
-
-      //{
-      //   // Describe and create a render target view (RTV) descriptor heap.
-      //   D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-      //   rtvHeapDesc.NumDescriptors = FrameCount;
-      //   rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-      //   rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      //   ::defer_throw_hresult(pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap)));
-
-      //   m_rtvDescriptorSize = pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
-      //}
-
-      //// Create frame resources.
-      //{
-
-      //   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-
-      //   // Create a RTV for each frame.
-      //   for (UINT n = 0; n < FrameCount; n++)
-      //   {
-
-      //      auto & prendertarget = m_renderTargets[n];
-
-      //      ::defer_throw_hresult(
-      //         m_pdxgiswapchain1->GetBuffer(
-      //            n, __interface_of(prendertarget)));
-
-      //      pd3d12device->CreateRenderTargetView(prendertarget, nullptr, rtvHandle);
-
-      //      rtvHandle.Offset(1, m_rtvDescriptorSize);
-
-      //   }
-
-      //}
-
-      //::draw2d_direct2d::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
-
-
-
-      }
-
-      return m_pdxgidevice;
-
-   }
 
 } // namespace gpu_directx12
 

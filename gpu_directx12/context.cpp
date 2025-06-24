@@ -22,6 +22,7 @@
 #include <glm/mat4x4.hpp>
 #include "initializers.h"
 #include "acme_windows_common/dxgi_surface_bindable.h"
+#include "windowing_win32/window.h"
 
 
 using namespace directx12;
@@ -83,7 +84,9 @@ namespace gpu_directx12
 
          ::cast < device > pdevice = m_pgpudevice;
 
-         auto pdxgidevice = pdevice->_get_dxgi_device();
+         ::cast < context > pcontext = pdevice->get_main_context();
+
+         auto pdxgidevice = pcontext->_get_dxgi_device();
 
       }
 
@@ -352,6 +355,56 @@ namespace gpu_directx12
    }
 
 
+   class context::d3d11on12* context::d3d11on12()
+   {
+
+      if (this != m_pgpudevice->m_pgpucontextMain)
+      {
+
+         ::cast < context > pcontextMain = m_pgpudevice->m_pgpucontextMain;
+
+         return pcontextMain->d3d11on12();
+
+      }
+
+      if (!m_pd3d11on12)
+      {
+
+         __defer_construct_new(m_pd3d11on12);
+
+      }
+
+      return m_pd3d11on12;
+
+   }
+
+
+   ID3D12CommandQueue* context::command_queue()
+   {
+
+      if (!m_pcommandqueue)
+      {
+
+         D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT; // or COMPUTE, COPY
+         queueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
+         queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE; // Use NONE or D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT
+         queueDesc.NodeMask = 0; // For single-GPU systems
+
+         ::cast < device > pdevice = m_pgpudevice;
+
+         HRESULT hr = pdevice->m_pdevice->CreateCommandQueue(
+            &queueDesc, __interface_of(m_pcommandqueue));
+         
+         ::defer_throw_hresult(hr);
+
+      }
+
+      return m_pcommandqueue;
+
+   }
+
+
    void context::set_bitmap_1(::image::image* pimage)
    {
 
@@ -422,6 +475,99 @@ namespace gpu_directx12
    }
 
 
+   void context::initialize_gpu_context_swap_chain(::gpu::device* pgpudevice, ::windowing::window* pwindow)
+   {
+
+      ::cast < ::gpu_directx12::swap_chain > pswapchain = get_swap_chain();
+
+      if (!pswapchain->m_pdxgiswapchain)
+      {
+
+         ::cast < device > pdevice = m_pgpudevice;
+
+         ::cast < ::windowing_win32::window > pwin32window = pwindow;
+
+         DXGI_SWAP_CHAIN_DESC1 dxgiswapchaindesc1 = {};
+         dxgiswapchaindesc1.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+         dxgiswapchaindesc1.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+         dxgiswapchaindesc1.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+         dxgiswapchaindesc1.BufferCount = 2;
+         dxgiswapchaindesc1.SampleDesc.Count = 1;
+         dxgiswapchaindesc1.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
+
+         RECT rect = {};
+
+         GetWindowRect(pwin32window->m_hwnd, &rect);
+
+         dxgiswapchaindesc1.Width = rect.right - rect.left;
+         dxgiswapchaindesc1.Height = rect.bottom - rect.top;
+
+         //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+         //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+         //m_pdevice->CreateCommandQueue(&queueDesc, __interface_of(m_pcommandqueue));
+
+         ::comptr < IDXGISwapChain1 > swapchain1;
+
+         HRESULT hrCreateSwapChainForComposition =
+            pdevice->m_pdxgifactory4->CreateSwapChainForComposition(
+               command_queue(),
+               &dxgiswapchaindesc1,
+               nullptr, // Don’t restrict
+               &swapchain1);
+
+         ::defer_throw_hresult(hrCreateSwapChainForComposition);
+
+         //::cast < ::gpu_directx12::swap_chain > pswapchain = get_swap_chain();
+         HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain);
+
+
+         //HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain);
+
+         pswapchain->get_new_swap_chain_index();
+
+         pswapchain->initialize_swap_chain_window(this, pwindow);
+
+         ::defer_throw_hresult(hrQueryDxgiSwapChain3);
+
+         ::comptr<ID3D12DescriptorHeap> rtvHeap;
+
+         UINT rtvDescriptorSize = 0;
+
+         //int iFrameCount = 2;
+
+         //// Describe and create an RTV descriptor heap.
+         //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+         //rtvHeapDesc.NumDescriptors = iFrameCount; // One per back buffer (typically 2)
+         //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+         //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // Must be NONE for RTV/DSV heaps
+
+         //HRESULT hr = m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(rtvHeap));
+         //::defer_throw_hresult(hr);
+
+         //// Store the descriptor size (used for handle incrementing)
+         //rtvDescriptorSize = m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+         //m_resourceaBackBufferTexture.set_size(iFrameCount);
+
+         //for (int i = 0; i < iFrameCount; i++)
+         //{
+
+         //   auto& presource = m_resourceaBackBufferTexture[i];
+
+         //   HRESULT hrGetBuffer = pswapchain->m_pdxgiswapchain3->GetBuffer(i, __interface_of(presource));
+
+         //   ::defer_throw_hresult(hrGetBuffer);
+         //   
+         //   m_handleaBackBufferRenderTargetView.element_at_grow(i)
+         //      = rtvHeap->GetCPUDescriptorHandleForHeapStart(); // RTV descriptor heap assumed created
+
+         //   m_pdevice->CreateRenderTargetView(presource, nullptr, m_handleaBackBufferRenderTargetView[i]);
+
+         //}
+
+      }
+
+
+   }
 
    string context::_001GetIntroProjection()
    {
@@ -1315,17 +1461,23 @@ namespace gpu_directx12
    void context::__bind_draw2d_compositor(::gpu::compositor* pgpucompositor)
    {
 
+      ASSERT(m_etype == e_type_draw2d);
+      
       ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
 
       ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
 
-      ::cast < device > pdevice = m_pgpudevice;
-
-      auto pdxgidevice = pdevice->_get_dxgi_device();
+      auto pdxgidevice = _get_dxgi_device();
 
       auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
+      auto etypeRenderer = m_pgpurenderer->m_pgpucontext->m_etype;
+
+      auto etypeCompositor = pgpucompositor->m_pgpucontext->m_etype;
+
       auto & pdxgisurface = ptexture->d3d11()->dxgiSurface;
+
+      ::cast < context > pcontextMain = m_pgpudevice->get_main_context();
 
       if (!ptexture->d3d11()->wrappedResource)
       {
@@ -1345,11 +1497,11 @@ namespace gpu_directx12
          //flags.BindFlags = D3D11_BIND_RENDER_TARGET;
          flags.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
          assert(ptexture->m_presource); // Confirm it’s non-null
-         HRESULT hrCreateWrappedResource = pdevice->m_pd3d11on12->CreateWrappedResource(
+         HRESULT hrCreateWrappedResource = d3d11on12()->m_pd3d11on12->CreateWrappedResource(
             ptexture->m_presource,
             &flags,
             D3D12_RESOURCE_STATE_RENDER_TARGET,
-            D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+            D3D12_RESOURCE_STATE_RENDER_TARGET,
             __interface_of(ptexture->d3d11()->wrappedResource)
          );
 
@@ -1357,9 +1509,20 @@ namespace gpu_directx12
 
       }
 
-      ID3D11Resource * resources[] = { ptexture->d3d11()->wrappedResource.m_p };
+      d3d11on12()->m_d3d11wrappedresources[0] = { ptexture->d3d11()->wrappedResource.m_p };
 
-      pdevice->m_pd3d11on12->AcquireWrappedResources(resources, _countof(resources));
+      ::cast < renderer > prenderer = m_pgpurenderer;
+
+
+
+      //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+
+      //ptexture->_new_state(prenderer->getCurrentCommandBuffer2()->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+
+      d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
+         d3d11on12()->m_d3d11wrappedresources,
+         _countof(d3d11on12()->m_d3d11wrappedresources));
 
       //::defer_throw_hresult(m_pd3d11device.as(m_pd3d11on12)); // Query interface
 
@@ -1377,9 +1540,7 @@ namespace gpu_directx12
 
       ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
 
-      ::cast < device > pdevice = m_pgpudevice;
-
-      auto pdxgidevice = pdevice->_get_dxgi_device();
+      auto pdxgidevice = _get_dxgi_device();
 
       auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
@@ -1388,13 +1549,14 @@ namespace gpu_directx12
       if (ptexture->d3d11()->wrappedResource)
       {
 
-         ID3D11Resource* resources[] = { ptexture->d3d11()->wrappedResource.m_p };
+         d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
+            d3d11on12()->m_d3d11wrappedresources, 1);
 
-         pdevice->m_pd3d11on12->ReleaseWrappedResources(resources, 1);
+         //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
 
       }
 
-      pdevice->m_pd3d11context->Flush();
+      d3d11on12()->m_pd3d11context->Flush();
 
    }
 
@@ -1556,14 +1718,14 @@ SamplerState samp : register(s0);
 float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 {
     //return tex.Sample(samp, uv); // Assumes premultiplied alpha
-if(uv.y >0.5)
-{
-   return float4(0.7*0.5, 0.5*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
-}
-else
-{
+//if(uv.y >0.5)
+//{
+  // return float4(0.7*0.5, 0.5*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
+//}
+//else
+//{
 return tex.Sample(samp, uv);
-}
+//}
 }
 )hlsl";
 
@@ -1743,6 +1905,219 @@ return tex.Sample(samp, uv);
 
    }
 
+
+   void context::on_start_layer(::gpu::layer* player)
+   {
+
+      if (m_pgpucompositor && m_pgpucompositor->m_bInLayer)
+      {
+
+         ::cast < device > pdevice = m_pgpudevice;
+         ::cast < renderer > prenderer = m_pgpurenderer;
+         ::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+
+         //ptexture->_new_state(prenderer->getCurrentCommandBuffer2()->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+         // 4. Release wrapped resource to allow access from D3D12
+         d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
+            d3d11on12()->m_d3d11wrappedresources, 1);
+         
+         //::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = m_pgpucompositor;
+
+         //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+
+         //auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
+
+         //::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
+
+         //int iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+
+         //pdxgisurfacebindable->_bind(iFrameIndex, pdxgisurface);
+
+         m_pgpucompositor->on_start_layer();
+
+      }
+
+   }
+
+
+   void context::on_end_layer(::gpu::layer* player)
+   {
+
+      if (m_pgpucompositor && m_pgpucompositor->m_bInLayer)
+      {
+
+         m_pgpucompositor->on_end_layer();
+
+         ::cast < device > pdevice = m_pgpudevice;
+
+         ASSERT(m_etype == e_type_draw2d);
+
+         d3d11on12()->m_pd3d11context->Flush(); // ✅ Ensures D3D11 commands are issued
+
+         // 4. Release wrapped resource to allow access from D3D12
+         d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
+            d3d11on12()->m_d3d11wrappedresources, 1);
+
+         ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
+
+         //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+
+      }
+
+   }
+
+
+
+   ::gpu::swap_chain* context::get_swap_chain()
+   {
+
+      if (m_etype != e_type_window)
+      {
+
+         throw ::exception(error_failed);
+
+         return nullptr;
+
+      }
+
+      if (!m_pswapchain)
+      {
+
+         __defer_construct(m_pswapchain);
+
+         ///m_pswapchain->initialize_gpu_swap_chain(this, m_pwindow);
+
+      }
+
+      return m_pswapchain;
+
+   }
+
+
+   IDXGIDevice* context::_get_dxgi_device()
+   {
+
+      if (m_pgpudevice->m_pgpucontextMain != this)
+      {
+
+         ::cast < context > pcontextMain = m_pgpudevice->m_pgpucontextMain;
+
+         return pcontextMain->_get_dxgi_device();
+
+      }
+
+      if (!d3d11on12()->m_pdxgidevice)
+      {
+
+         //          {
+
+       //      ::gpu_directx12::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
+
+             //m_pgpudevice = ::gpu::swap_chain::m_pgpudevice;
+
+             ///::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
+
+         assert(command_queue() && "Command queue must be initialized before D3D11On12CreateDevice");
+
+         ::cast < device> pdevice = m_pgpudevice;
+         D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
+         UINT numFeatureLevels = _countof(featureLevels);
+         HRESULT hrD3D11On12 = D3D11On12CreateDevice(
+            pdevice->m_pdevice,
+            D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+            featureLevels,
+            numFeatureLevels,
+            (IUnknown* const*)m_pcommandqueue.pp(),
+            1,
+            0,
+            &d3d11on12()->m_pd3d11device,
+            &d3d11on12()->m_pd3d11context,
+            nullptr
+         );
+
+         ::defer_throw_hresult(hrD3D11On12);
+
+         ::defer_throw_hresult(d3d11on12()->m_pd3d11device.as(d3d11on12()->m_pd3d11on12)); // Query interface
+
+         ::defer_throw_hresult(d3d11on12()->m_pd3d11device.as(d3d11on12()->m_pdxgidevice));
+
+         //::defer_throw_hresult(m_pdxgiswapchain3.as(m_pdxgiswapchain1));
+
+         //DXGI_SWAP_CHAIN_DESC swapchaindesc1{};
+
+         //int FrameCount = 2;
+
+         //if (SUCCEEDED(m_pdxgiswapchain3->GetDesc(&swapchaindesc1)))
+         //{
+
+         //   FrameCount = swapchaindesc1.BufferCount;
+
+         //}
+
+         //m_frameIndex = m_pdxgiswapchain3->GetCurrentBackBufferIndex();
+
+         //// Create synchronization objects and wait until assets have been uploaded to the GPU.
+         //{
+         //   ::defer_throw_hresult(pd3d12device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __interface_of(m_fence)));
+         //   m_fenceValue = 1;
+
+         //   // Create an event handle to use for frame synchronization.
+         //   m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+         //   if (m_fenceEvent == nullptr)
+         //   {
+         //      ::defer_throw_hresult(HRESULT_FROM_WIN32(GetLastError()));
+         //   }
+
+         //}
+
+         ////_defer_d3d11on12_wrapped_resources();
+         //// Create descriptor heaps.
+
+         //{
+         //   // Describe and create a render target view (RTV) descriptor heap.
+         //   D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+         //   rtvHeapDesc.NumDescriptors = FrameCount;
+         //   rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+         //   rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+         //   ::defer_throw_hresult(pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap)));
+
+         //   m_rtvDescriptorSize = pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+         //}
+
+         //// Create frame resources.
+         //{
+
+         //   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+
+         //   // Create a RTV for each frame.
+         //   for (UINT n = 0; n < FrameCount; n++)
+         //   {
+
+         //      auto & prendertarget = m_renderTargets[n];
+
+         //      ::defer_throw_hresult(
+         //         m_pdxgiswapchain1->GetBuffer(
+         //            n, __interface_of(prendertarget)));
+
+         //      pd3d12device->CreateRenderTargetView(prendertarget, nullptr, rtvHandle);
+
+         //      rtvHandle.Offset(1, m_rtvDescriptorSize);
+
+         //   }
+
+         //}
+
+         //::draw2d_direct2d::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
+
+
+
+      }
+
+      return d3d11on12()->m_pdxgidevice;
+
+   }
 
 } // namespace gpu_directx12
 

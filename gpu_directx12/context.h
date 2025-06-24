@@ -11,9 +11,14 @@ namespace gpu_directx12
 
 
    class CLASS_DECL_GPU_DIRECTX12 context :
-      virtual public ::gpu::context
+      virtual public ::gpu::context,
+      virtual public ::dxgi_device_source
    {
    public:
+
+
+
+      ::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
 
 
       // Create an empty root signature.
@@ -55,6 +60,7 @@ namespace gpu_directx12
          /** @brief Physical device representation */
       //VkPhysicalDevice m_physicaldevice;
       ::pointer < device >                m_pgpudevice;
+      ::pointer < context >               m_pgpucontextMain;
 
 
       class snapshot :
@@ -139,12 +145,27 @@ namespace gpu_directx12
       //::comptr < ID3D12BlendState >                      m_pd3d11blendstateBlend3;
 
 
+      // For IDXGIDevice
+      class d3d11on12 :
+         virtual public particle
+      {
+      public:
+         ID3D11Resource* m_d3d11wrappedresources[1];
+         ::comptr<ID3D11Device> m_pd3d11device;
+         ::comptr<ID3D11DeviceContext> m_pd3d11context;
+         ::comptr<ID3D11On12Device> m_pd3d11on12;
+         ::comptr<IDXGIDevice> m_pdxgidevice;
+
+      };
+      ::pointer < class d3d11on12 >     m_pd3d11on12;
+
       context();
       ~context() override;
 
 
       void on_create_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size) override;
 
+      virtual void initialize_gpu_context_swap_chain(::gpu::device* pgpudevice, ::windowing::window* pwindow);
 
       string _001GetIntroProjection() override;
       string _001GetIntroFragment() override;
@@ -153,8 +174,14 @@ namespace gpu_directx12
       void start_drawing() override;
       void global_transform() override;
       void render() override;
-
+      void on_start_layer(::gpu::layer* player);
+      void on_end_layer(::gpu::layer* player);
       void set_bitmap_1(::image::image *pimage) override;
+
+      virtual ID3D12CommandQueue* command_queue();
+
+
+      virtual d3d11on12* d3d11on12();
 
       //void swap_buffers() override;
 
@@ -328,7 +355,8 @@ namespace gpu_directx12
       void merge_layers(::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera) override;
 
       //void swap_buffers();
-
+      IDXGIDevice* _get_dxgi_device() override;
+      ::gpu::swap_chain* get_swap_chain() override;
 
    };
 
