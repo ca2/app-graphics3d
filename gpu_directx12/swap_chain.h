@@ -57,7 +57,7 @@ namespace gpu_directx12
 
       void on_init() override;
 
-      void initialize_swap_chain_window(::gpu::device* pgpudevice, ::windowing::window* pwindow);
+      void initialize_swap_chain_window(::gpu::context* pcontext, ::windowing::window* pwindow);
 
       //void endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc) override;
       void present(::gpu::texture * pgputexture) override;

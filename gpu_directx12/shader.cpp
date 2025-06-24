@@ -534,11 +534,11 @@ namespace gpu_directx12
 
          D3D12_RENDER_TARGET_BLEND_DESC rtBlendDesc = {};
          rtBlendDesc.BlendEnable = TRUE;
-         rtBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+         rtBlendDesc.SrcBlend = D3D12_BLEND_ONE;
          rtBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
          rtBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
          rtBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
-         rtBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+         rtBlendDesc.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
          rtBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
          rtBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
@@ -642,7 +642,7 @@ namespace gpu_directx12
 
       bind(pgputextureTarget);
 
-      bind_source(pgputextureTarget);
+      bind_source(pgputextureSource);
 
    }
 

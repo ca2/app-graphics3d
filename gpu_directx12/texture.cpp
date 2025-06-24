@@ -86,7 +86,8 @@ namespace gpu_directx12
             textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  // MUST be D3D11-compatible format
             textureDesc.SampleDesc.Count = 1;
             textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-            textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+            textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
+               ;
 
             m_bRenderTarget = false;
 

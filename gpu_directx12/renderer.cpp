@@ -505,10 +505,9 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::createCommandBuffers()
    {
 
-
       ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
 
-
+      ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
       m_commandbuffera.set_size(m_pgpurendertarget->get_frame_count());
 
@@ -522,7 +521,8 @@ float4 main(PSInput input) : SV_TARGET {
          if (__defer_construct_new(pcommandbuffer))
          {
 
-            pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this, pdevice->m_pcommandqueue);
+            pcommandbuffer->initialize_command_buffer(
+               D3D12_COMMAND_LIST_TYPE_DIRECT, this, pcontext->command_queue());
 
          }
 
@@ -600,6 +600,8 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
 
+      ::cast<gpu_directx12::context> pcontext = m_pgpucontext;
+
       if (ecommandlisttype == D3D12_COMMAND_LIST_TYPE_COPY)
       {
 
@@ -609,7 +611,7 @@ float4 main(PSInput input) : SV_TARGET {
       else
       {
 
-         pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this, pdevice->m_pcommandqueue);
+         pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this, pcontext->command_queue());
 
       }
 
@@ -4682,8 +4684,28 @@ void CreateImageBlendVertexBuffer(
    }
 
 
+   void renderer::on_start_layer(::gpu::layer* player)
+   {
+
+//      ::cast < texture > ptexture = m_pgpurendertarget->current_texture();
+
+      //if (ptexture)
+      //{
+
+      //   ptexture->_new_state(getCurrentCommandBuffer2()->m_pcommandlist,
+      //      D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+      //}
+
+      m_pgpucontext->on_start_layer(player);
+
+   }
+
+
    void renderer::on_end_layer(::gpu::layer* player)
    {
+
+      m_pgpucontext->on_end_layer(player);
 
       //if (!player->m_pgputextureTarget 
       //   || player->m_pgputextureTarget->size() != player->m_rectangleTarget.size()
@@ -4698,7 +4720,7 @@ void CreateImageBlendVertexBuffer(
 
       ::cast < texture > ptextureSrc = m_pgpurendertarget->current_texture();
 
-      ::cast < renderer > prenderer = ptextureDst->m_pgpurenderer;
+      ::cast < renderer > prenderer = ptextureSrc->m_pgpurenderer;
 
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
@@ -4810,7 +4832,7 @@ void CreateImageBlendVertexBuffer(
       if (eoutput == ::gpu::e_output_swap_chain)
       {
 
-         m_pgpucontext->m_pgpudevice->m_pswapchain->set_present_state();
+         m_pgpucontext->m_pswapchain->set_present_state();
 
       }
       else if (eoutput == ::gpu::e_output_cpu_buffer)
@@ -4863,7 +4885,7 @@ void CreateImageBlendVertexBuffer(
       if (eoutput == ::gpu::e_output_swap_chain)
       {
 
-         m_pgpucontext->m_pgpudevice->m_pswapchain->swap_buffers();
+         m_pgpucontext->m_pswapchain->swap_buffers();
 
       }
 
@@ -4879,7 +4901,7 @@ void CreateImageBlendVertexBuffer(
       if (eoutput == ::gpu::e_output_swap_chain)
       {
 
-         m_pgpucontext->m_pgpudevice->m_pswapchain->get_new_swap_chain_index();
+         m_pgpucontext->m_pswapchain->get_new_swap_chain_index();
 
       }
 
