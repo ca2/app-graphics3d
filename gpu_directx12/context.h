@@ -293,6 +293,7 @@ namespace gpu_directx12
 
       //void submitWork(VkCommandBuffer cmdBuffer, VkQueue queue);
 
+      void copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource) override;
 
       //public:
       //void _createInstance();
@@ -313,7 +314,7 @@ namespace gpu_directx12
       //      //set_descriptor_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
       //virtual VkDescriptorSet getGlobalDescriptorSet(::gpu_directx12::renderer* prenderer);
 
-      ::gpu_directx12::descriptor_pool* get_global_pool(int iFrameCount);
+      //::gpu_directx12::descriptor_pool* get_global_pool(int iFrameCount);
 
 
       ////set_descriptor_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);

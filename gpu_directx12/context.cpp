@@ -475,6 +475,55 @@ namespace gpu_directx12
    }
 
 
+   void context::copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource)
+   {
+
+
+      ::cast < texture > ptextureDst = ptextureTarget;
+
+      ::cast < texture > ptextureSrc = ptextureSource;
+
+      ::cast < renderer > prenderer = ptextureSrc->m_pgpurenderer;
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      texture_guard guard1(pcommandlist, ptextureDst, D3D12_RESOURCE_STATE_COPY_DEST);
+
+      texture_guard guard2(pcommandlist, ptextureSrc, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+      //// Transition source to COPY_SOURCE
+      //D3D12_RESOURCE_BARRIER barrier1 = {};
+      //barrier1.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+      //barrier1.Transition.pResource = ptextureSrc->m_presource;
+      //barrier1.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+      //barrier1.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
+      //barrier1.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+      //pcommandlist->ResourceBarrier(1, &barrier1);
+
+      //// Transition dest to COPY_DEST
+      //D3D12_RESOURCE_BARRIER barrier2 = {};
+      //barrier2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+      //barrier2.Transition.pResource = ptextureDst->m_presource;
+      //barrier2.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
+      //barrier2.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
+      //barrier2.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+      //pcommandlist->ResourceBarrier(1, &barrier2);
+
+      pcommandlist->CopyResource(ptextureDst->m_presource, ptextureSrc->m_presource);
+
+      //// Restore states
+      //::swap(barrier2.Transition.StateBefore, barrier2.Transition.StateAfter);
+      //pcommandlist->ResourceBarrier(1, &barrier2);
+
+      //::swap(barrier1.Transition.StateBefore, barrier1.Transition.StateAfter);
+      //pcommandlist->ResourceBarrier(1, &barrier1);
+
+   }
+
+
+
    void context::initialize_gpu_context_swap_chain(::gpu::device* pgpudevice, ::windowing::window* pwindow)
    {
 
@@ -1301,12 +1350,12 @@ namespace gpu_directx12
 
 
 
-   ::gpu_directx12::descriptor_pool* context::get_global_pool(int iFrameCount)
-   {
+   //::gpu_directx12::descriptor_pool* context::get_global_pool(int iFrameCount)
+   //{
 
-      return m_pdescriptorpoolGlobal;
+   //   return m_pdescriptorpoolGlobal;
 
-   }
+   //}
 
 
    void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)

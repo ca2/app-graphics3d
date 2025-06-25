@@ -4686,80 +4686,40 @@ void CreateImageBlendVertexBuffer(
    }
 
 
-   void renderer::on_start_layer(::gpu::layer* player)
-   {
+//   void renderer::on_start_layer(::gpu::layer* player)
+//   {
+//
+////      ::cast < texture > ptexture = m_pgpurendertarget->current_texture();
+//
+//      //if (ptexture)
+//      //{
+//
+//      //   ptexture->_new_state(getCurrentCommandBuffer2()->m_pcommandlist,
+//      //      D3D12_RESOURCE_STATE_RENDER_TARGET);
+//
+//      //}
+//
+//      m_pgpucontext->on_start_layer(player);
+//
+//   }
 
-//      ::cast < texture > ptexture = m_pgpurendertarget->current_texture();
 
-      //if (ptexture)
-      //{
+   //void renderer::on_end_layer(::gpu::layer* player)
+   //{
 
-      //   ptexture->_new_state(getCurrentCommandBuffer2()->m_pcommandlist,
-      //      D3D12_RESOURCE_STATE_RENDER_TARGET);
+   //   m_pgpucontext->on_end_layer(player);
 
-      //}
+   //   //if (!player->m_pgputextureTarget 
+   //   //   || player->m_pgputextureTarget->size() != player->m_rectangleTarget.size()
+   //   //   || player->m_pgputextureTarget->m_pgpurenderer->m_pgpucontext == this)
+   //   //{
 
-      m_pgpucontext->on_start_layer(player);
+   //   //   player->m_pgputexture = player->m_pgputexture->m_pgpurenderer->create_texture(player->m_rectangleTarget.size());
 
-   }
+   //   //}
 
 
-   void renderer::on_end_layer(::gpu::layer* player)
-   {
-
-      m_pgpucontext->on_end_layer(player);
-
-      //if (!player->m_pgputextureTarget 
-      //   || player->m_pgputextureTarget->size() != player->m_rectangleTarget.size()
-      //   || player->m_pgputextureTarget->m_pgpurenderer->m_pgpucontext == this)
-      //{
-
-      //   player->m_pgputexture = player->m_pgputexture->m_pgpurenderer->create_texture(player->m_rectangleTarget.size());
-
-      //}
-
-      ::cast < texture > ptextureDst = player->texture();
-
-      ::cast < texture > ptextureSrc = m_pgpurendertarget->current_texture();
-
-      ::cast < renderer > prenderer = ptextureSrc->m_pgpurenderer;
-
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
-
-      auto pcommandlist = pcommandbuffer->m_pcommandlist;
-
-      texture_guard guard1(pcommandlist, ptextureDst, D3D12_RESOURCE_STATE_COPY_DEST);
-
-      texture_guard guard2(pcommandlist, ptextureSrc, D3D12_RESOURCE_STATE_COPY_SOURCE);
-
-      //// Transition source to COPY_SOURCE
-      //D3D12_RESOURCE_BARRIER barrier1 = {};
-      //barrier1.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-      //barrier1.Transition.pResource = ptextureSrc->m_presource;
-      //barrier1.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-      //barrier1.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
-      //barrier1.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-      //pcommandlist->ResourceBarrier(1, &barrier1);
-
-      //// Transition dest to COPY_DEST
-      //D3D12_RESOURCE_BARRIER barrier2 = {};
-      //barrier2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-      //barrier2.Transition.pResource = ptextureDst->m_presource;
-      //barrier2.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
-      //barrier2.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
-      //barrier2.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-      //pcommandlist->ResourceBarrier(1, &barrier2);
-
-      pcommandlist->CopyResource(ptextureDst->m_presource, ptextureSrc->m_presource);
-
-      //// Restore states
-      //::swap(barrier2.Transition.StateBefore, barrier2.Transition.StateAfter);
-      //pcommandlist->ResourceBarrier(1, &barrier2);
-
-      //::swap(barrier1.Transition.StateBefore, barrier1.Transition.StateAfter);
-      //pcommandlist->ResourceBarrier(1, &barrier1);
-
-   }
+   //}
 
 
 

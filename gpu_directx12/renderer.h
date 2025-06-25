@@ -172,7 +172,9 @@ namespace gpu_directx12
       virtual void endSingleTimeCommands(ID3D12CommandQueue* pcommandqueue, command_buffer * pcommandbuffer);
 
       void WaitForGpu();
-      void on_start_layer(::gpu::layer* player);
+      //void on_start_layer(::gpu::layer* player);
+      //void on_end_layer(::gpu::layer* player) override;
+
       //bool is_starting_frame()const
       //{
 
@@ -274,7 +276,6 @@ namespace gpu_directx12
       //void _on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle);
 
       void blend(::gpu::layer* player);
-      void on_end_layer(::gpu::layer* player) override;
 
       void _blend_renderer(::gpu_directx12::renderer* prendererSrc, bool bYSwap);
       void _on_graphics_end_draw(::gpu_directx12::renderer * prendererSrc);
