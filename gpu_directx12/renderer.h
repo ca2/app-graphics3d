@@ -169,7 +169,7 @@ namespace gpu_directx12
       virtual ::pointer <command_buffer >beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE ecommandlisttype);
       
 
-      virtual void endSingleTimeCommands(command_buffer * pcommandbuffer);
+      virtual void endSingleTimeCommands(ID3D12CommandQueue* pcommandqueue, command_buffer * pcommandbuffer);
 
       void WaitForGpu();
       void on_start_layer(::gpu::layer* player);

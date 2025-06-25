@@ -522,7 +522,7 @@ float4 main(PSInput input) : SV_TARGET {
          {
 
             pcommandbuffer->initialize_command_buffer(
-               D3D12_COMMAND_LIST_TYPE_DIRECT, this, pcontext->command_queue());
+               D3D12_COMMAND_LIST_TYPE_DIRECT, this);
 
          }
 
@@ -579,7 +579,7 @@ float4 main(PSInput input) : SV_TARGET {
 
          }
 
-         m_pcommandbufferLoadAssets->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_COPY, this, m_pcommandqueueCopy);
+         m_pcommandbufferLoadAssets->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_COPY, this);
 
          m_pcommandbufferLoadAssets->reset();
 
@@ -602,18 +602,18 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast<gpu_directx12::context> pcontext = m_pgpucontext;
 
-      if (ecommandlisttype == D3D12_COMMAND_LIST_TYPE_COPY)
+      //if (ecommandlisttype == D3D12_COMMAND_LIST_TYPE_COPY)
       {
 
-         pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_COPY, this, m_pcommandqueueCopy);
+         pcommandbuffer->initialize_command_buffer(ecommandlisttype, this);
 
       }
-      else
-      {
+      //else
+      //{
 
-         pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this, pcontext->command_queue());
+      //   pcommandbuffer->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_DIRECT, this);
 
-      }
+      //}
 
       pcommandbuffer->reset();
 
@@ -622,12 +622,14 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::endSingleTimeCommands(command_buffer* pcommandbuffer)
+   void renderer::endSingleTimeCommands(ID3D12CommandQueue* pcommandqueue, command_buffer* pcommandbuffer)
    {
 
-      pcommandbuffer->submit_command_buffer();
+      pcommandbuffer->submit_command_buffer(pcommandqueue);
 
-      pcommandbuffer->wait_for_gpu();
+      pcommandbuffer->wait_commands_to_execute(pcommandqueue);
+
+      //pcommandbuffer->wait_for_gpu(pcommandqueue);
 
    }
 
@@ -4627,7 +4629,7 @@ void CreateImageBlendVertexBuffer(
          //   m_papplication->fork([pcommandbufferLoadAssets]()
          //      {
 
-                  pcommandbufferLoadAssets->submit_command_buffer();
+                  pcommandbufferLoadAssets->submit_command_buffer(m_pcommandqueueCopy);
 
                   //pcommandbufferLoadAssets->wait_for_gpu();
 
@@ -4644,7 +4646,7 @@ void CreateImageBlendVertexBuffer(
             //pcommandbufferLoadAssets->m_pfence,
             //pcommandbufferLoadAssets->m_fenceValue);
 
-                  pcommandbufferLoadAssets->wait_commands_to_execute();
+                  pcommandbufferLoadAssets->wait_commands_to_execute(m_pcommandqueueCopy);
 
       }
 
@@ -4880,7 +4882,49 @@ void CreateImageBlendVertexBuffer(
 
       auto pcommandbuffer = getCurrentCommandBuffer2();
 
-      pcommandbuffer->submit_command_buffer();
+      ::cast < context > pcontext = m_pgpucontext;
+
+      auto etypeContext = pcontext->m_etype;
+
+      auto eoutputContext = pcontext->m_eoutput;
+
+      auto pcommandqueue = pcontext->command_queue();
+
+      ::cast < context > pcontextMainDraw2d = m_pgpucontext->m_pgpudevice->m_pgpucontextMainDraw2d;
+
+      if (etypeContext == ::gpu::context::e_type_draw2d)
+      {
+
+         if (pcontextMainDraw2d == pcontext)
+         {
+
+            informationf("good good good");
+
+         }
+         else
+         {
+
+            informationf("bad bad bad");
+
+         }
+
+         if (pcommandqueue == pcontextMainDraw2d->m_pcommandqueue)
+         {
+
+            informationf("good good good (2)");
+
+         }
+         else
+         {
+
+            informationf("bad bad bad");
+
+         }
+
+
+      }
+
+      pcommandbuffer->submit_command_buffer(pcommandqueue);
 
       if (eoutput == ::gpu::e_output_swap_chain)
       {
@@ -4889,7 +4933,7 @@ void CreateImageBlendVertexBuffer(
 
       }
 
-      pcommandbuffer->wait_commands_to_execute();
+      pcommandbuffer->wait_commands_to_execute(pcontext->command_queue());
 
       if (eoutput == ::gpu::e_output_cpu_buffer)
       {

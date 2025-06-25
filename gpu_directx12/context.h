@@ -16,7 +16,7 @@ namespace gpu_directx12
    {
    public:
 
-
+      int m_iResourceWrappingCount = 0;
 
       ::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
 

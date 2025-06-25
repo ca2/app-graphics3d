@@ -37,7 +37,7 @@ namespace gpu_directx12
       ::array <::comptr<ID3D12Resource>>              m_resourceaBackBufferTexture;
       ::array < D3D12_CPU_DESCRIPTOR_HANDLE  >        m_handleaBackBufferRenderTargetView;
       //::comptr<ID3D12RenderargetView>                m_prendertargetviewBackBuffer;
-
+      //::pointer < context >                           m_pcontextMainDraw2d;
       D3D_FEATURE_LEVEL                               m_featurelevel;
       //::pointer < context >                           m_pcontextMain;
       //::comptr<ID3D11Device> m_pd3d11device;
@@ -155,7 +155,7 @@ namespace gpu_directx12
       void initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproach, ::windowing::window *pwindow) override;
       void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::int_rectangle& rectanglePlacement) override;
 
-      //::gpu::context* get_main_window_context() override;
+      //virtual ::gpu::context* main_draw2d_context();
 
       void GetHardwareAdapter(
          IDXGIFactory1* pFactory,

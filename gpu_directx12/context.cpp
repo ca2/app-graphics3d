@@ -84,7 +84,7 @@ namespace gpu_directx12
 
          ::cast < device > pdevice = m_pgpudevice;
 
-         ::cast < context > pcontext = pdevice->get_main_context();
+         ::cast < context > pcontext = pdevice->main_context();
 
          auto pdxgidevice = pcontext->_get_dxgi_device();
 
@@ -1477,15 +1477,15 @@ namespace gpu_directx12
 
       auto & pdxgisurface = ptexture->d3d11()->dxgiSurface;
 
-      ::cast < context > pcontextMain = m_pgpudevice->get_main_context();
+      ::cast < context > pcontextMain = m_pgpudevice->main_context();
 
       if (!ptexture->d3d11()->wrappedResource)
       {
 
          assert(!ptexture->m_pheapDepthStencilView);
-         assert(!ptexture->m_pheapRenderTargetView);
-         assert(!ptexture->m_pheapShaderResourceView);
-         assert(!ptexture->m_pheapSampler);
+         //assert(!ptexture->m_pheapRenderTargetView);
+         //assert(!ptexture->m_pheapShaderResourceView);
+         //assert(!ptexture->m_pheapSampler);
 
          //auto & sharedHandle= ptexture->d3d11()->sharedHandle;
 
@@ -1524,6 +1524,10 @@ namespace gpu_directx12
          d3d11on12()->m_d3d11wrappedresources,
          _countof(d3d11on12()->m_d3d11wrappedresources));
 
+      m_iResourceWrappingCount++;
+
+      ASSERT(m_iResourceWrappingCount == 1);
+
       //::defer_throw_hresult(m_pd3d11device.as(m_pd3d11on12)); // Query interface
 
       ::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
@@ -1552,9 +1556,13 @@ namespace gpu_directx12
          d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
             d3d11on12()->m_d3d11wrappedresources, 1);
 
+         m_iResourceWrappingCount--;
+
          //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
 
       }
+
+      ASSERT(m_iResourceWrappingCount == 0);
 
       d3d11on12()->m_pd3d11context->Flush();
 
@@ -1909,30 +1917,39 @@ return tex.Sample(samp, uv);
    void context::on_start_layer(::gpu::layer* player)
    {
 
-      if (m_pgpucompositor && m_pgpucompositor->m_bInLayer)
+      if (m_pgpucompositor && m_etype == e_type_draw2d)
       {
 
-         ::cast < device > pdevice = m_pgpudevice;
-         ::cast < renderer > prenderer = m_pgpurenderer;
-         ::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
-
-         //ptexture->_new_state(prenderer->getCurrentCommandBuffer2()->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-         // 4. Release wrapped resource to allow access from D3D12
-         d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
-            d3d11on12()->m_d3d11wrappedresources, 1);
-         
-         //::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = m_pgpucompositor;
-
+         //::cast < device > pdevice = m_pgpudevice;
+         //::cast < renderer > prenderer = m_pgpurenderer;
          //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
 
-         //auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
+         //_get_dxgi_device();
 
-         //::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
+         ////ptexture->_new_state(prenderer->getCurrentCommandBuffer2()->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-         //int iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+         //// 4. Release wrapped resource to allow access from D3D12
 
-         //pdxgisurfacebindable->_bind(iFrameIndex, pdxgisurface);
+         //d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
+         //   d3d11on12()->m_d3d11wrappedresources, 1);
+
+         //m_iResourceWrappingCount++;
+
+         //ASSERT(m_iResourceWrappingCount == 1);
+         //
+         ////::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = m_pgpucompositor;
+
+         ////::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+
+         ////auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
+
+         ////::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
+
+         ////int iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+
+         ////pdxgisurfacebindable->_bind(iFrameIndex, pdxgisurface);
+
+         __bind_draw2d_compositor(m_pgpucompositor);
 
          m_pgpucompositor->on_start_layer();
 
@@ -1944,24 +1961,33 @@ return tex.Sample(samp, uv);
    void context::on_end_layer(::gpu::layer* player)
    {
 
-      if (m_pgpucompositor && m_pgpucompositor->m_bInLayer)
+      if (m_pgpucompositor)
       {
 
          m_pgpucompositor->on_end_layer();
 
-         ::cast < device > pdevice = m_pgpudevice;
+         __soft_unbind_draw2d_compositor(m_pgpucompositor);
 
-         ASSERT(m_etype == e_type_draw2d);
+         //::cast < device > pdevice = m_pgpudevice;
 
-         d3d11on12()->m_pd3d11context->Flush(); // ✅ Ensures D3D11 commands are issued
+         //if (m_etype == e_type_draw2d)
+         //{
 
-         // 4. Release wrapped resource to allow access from D3D12
-         d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
-            d3d11on12()->m_d3d11wrappedresources, 1);
+         //   d3d11on12()->m_pd3d11context->Flush(); // ✅ Ensures D3D11 commands are issued
 
-         ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
+         //   // 4. Release wrapped resource to allow access from D3D12
+         //   d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
+         //      d3d11on12()->m_d3d11wrappedresources, 1);
 
-         //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+         //   m_iResourceWrappingCount--;
+
+         //   ASSERT(m_iResourceWrappingCount == 0);
+
+         //   ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
+
+         //   //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+
+         //}
 
       }
 
@@ -2021,14 +2047,24 @@ return tex.Sample(samp, uv);
          assert(command_queue() && "Command queue must be initialized before D3D11On12CreateDevice");
 
          ::cast < device> pdevice = m_pgpudevice;
+         
+         ::cast < context > pcontextMainDraw2d = pdevice->main_draw2d_context();
+         
          D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
+         
          UINT numFeatureLevels = _countof(featureLevels);
+         
+         IUnknown* unknowna[] = 
+         { 
+            pcontextMainDraw2d->command_queue() 
+         };
+
          HRESULT hrD3D11On12 = D3D11On12CreateDevice(
             pdevice->m_pdevice,
             D3D11_CREATE_DEVICE_BGRA_SUPPORT,
             featureLevels,
             numFeatureLevels,
-            (IUnknown* const*)m_pcommandqueue.pp(),
+            unknowna,
             1,
             0,
             &d3d11on12()->m_pd3d11device,

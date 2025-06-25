@@ -983,6 +983,49 @@ namespace gpu_directx12
    }
 
 
+   //::gpu::context* device::main_draw2d_context()
+   //{
+
+   //   if (!m_pcontextMainDraw2d)
+   //   {
+
+   //      __construct_new(m_pcontextMainDraw2d);
+
+   //      m_pcontextMainDraw2d->m_etype = ::gpu::context::e_type_draw2d;
+
+   //      m_pcontextMainDraw2d->m_eoutput = ::gpu::e_output_gpu_buffer;
+
+   //      ::cast < ::user::interaction > puserinteraction = m_papplication->m_pacmeuserinteractionMain;
+
+   //      if (!m_pcontextMainDraw2d->m_itask
+   //         && puserinteraction->m_pacmewindowingwindow)
+   //      {
+
+   //         m_pcontextMainDraw2d->branch_synchronously();
+
+   //         m_pcontextMainDraw2d->_send([this, puserinteraction]()
+   //            {
+
+   //               auto pinteraction = (::user::interaction*)puserinteraction.m_p;
+
+   //               m_pcontextMainDraw2d->initialize_gpu_context(
+   //                  this,
+   //                  m_pcontextMainDraw2d->m_eoutput,
+   //                  pinteraction->window(),
+   //                  pinteraction->window()->get_window_rectangle().size()
+   //               );
+
+   //            });
+
+   //      }
+
+   //   }
+
+   //   return m_pcontextMainDraw2d;
+
+   //}
+
+
    void device::GetHardwareAdapter(
       IDXGIFactory1* pFactory,
       IDXGIAdapter1** ppAdapter,
@@ -1110,7 +1153,7 @@ namespace gpu_directx12
 
       //}
 
-      ::cast < context > pcontextMain = get_main_context();
+      ::cast < context > pcontextMain = main_context();
 
       pcontextMain->initialize_gpu_context_swap_chain(this, pwindow);
 

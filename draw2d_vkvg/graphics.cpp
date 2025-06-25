@@ -464,7 +464,7 @@ namespace draw2d_vkvg
 
       auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      auto pgpucontext = pgpudevice->get_main_context();
+      auto pgpucontext = pgpudevice->main_context();
 
       ////if (!m_pgpucontext)
       ////{
