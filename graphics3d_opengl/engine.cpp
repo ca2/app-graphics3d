@@ -58,7 +58,7 @@ namespace graphics3d_opengl
    void engine::initialize_engine(::user::graphics3d* pimpact)
    {
 
-      m_fYScale = 1.0f;
+      m_fYScale = -1.0f;
 
       ::graphics3d::engine::initialize_engine(pimpact);
 
