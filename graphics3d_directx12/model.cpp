@@ -186,7 +186,7 @@ namespace graphics3d_directx12
 
       ::cast <::gpu_directx12::device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast < ::gpu_directx12::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -270,7 +270,7 @@ namespace graphics3d_directx12
       ::cast <::gpu_directx12::context> pgpucontext = pgpurenderer->m_pgpucontext;
       ::cast <::gpu_directx12::device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      auto pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
+      ::cast < ::gpu_directx12::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 

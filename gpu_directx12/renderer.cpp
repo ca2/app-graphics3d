@@ -204,10 +204,17 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   command_buffer* renderer::getCurrentCommandBuffer2()
+   ::gpu::command_buffer* renderer::getCurrentCommandBuffer2()
    {
 
       assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
+
+      //if (m_pgpulayer)
+      //{
+      //   
+      //   return m_pgpulayer->m_pcommandbuffer.cast < command_buffer>();
+
+      //}
 
       //return m_commandbuffera[get_frame_index()];
       return m_commandbuffera[m_pgpurendertarget->get_frame_index()];
@@ -522,6 +529,7 @@ float4 main(PSInput input) : SV_TARGET {
          {
 
             pcommandbuffer->initialize_command_buffer(
+               pcontext->command_queue(),
                D3D12_COMMAND_LIST_TYPE_DIRECT, this);
 
          }
@@ -545,6 +553,33 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
+   void renderer::on_end_layer(::gpu::layer* player)
+   {
+
+      ::gpu::renderer::on_end_layer(player);
+      //m_pgpucontext->on_end_layer(player);
+
+      //auto ptextureTarget = player->texture();
+
+      //auto ptextureSource = player->source_texture();
+
+      //player->m_pcommandbuffer = m_pgpucontext->copy(ptextureTarget, ptextureSource);
+
+//      auto pcommandbuffer = getCurrentCommandBuffer2();
+
+      ////::cast < context > pcontext = m_pgpucontext;
+
+  //    pcommandbuffer->submit_command_buffer();
+
+      if (m_pgpulayer == player)
+      {
+
+         m_pgpulayer.release();
+
+      }
+
+   }
+
 
    // Sync CPU to GPU so we can reuse this frame's allocator
    void renderer::WaitForGpu()
@@ -552,7 +587,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pcommandbuffer = getCurrentCommandBuffer2();
 
-      pcommandbuffer->wait_for_gpu();
+      pcommandbuffer->wait_commands_to_execute();
 
    }
 
@@ -579,7 +614,7 @@ float4 main(PSInput input) : SV_TARGET {
 
          }
 
-         m_pcommandbufferLoadAssets->initialize_command_buffer(D3D12_COMMAND_LIST_TYPE_COPY, this);
+         m_pcommandbufferLoadAssets->initialize_command_buffer(m_pcommandqueueCopy, D3D12_COMMAND_LIST_TYPE_COPY, this);
 
          m_pcommandbufferLoadAssets->reset();
 
@@ -605,7 +640,8 @@ float4 main(PSInput input) : SV_TARGET {
       //if (ecommandlisttype == D3D12_COMMAND_LIST_TYPE_COPY)
       {
 
-         pcommandbuffer->initialize_command_buffer(ecommandlisttype, this);
+         pcommandbuffer->initialize_command_buffer(
+            m_pgpucontext->m_pcommandqueue, ecommandlisttype, this);
 
       }
       //else
@@ -622,12 +658,12 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::endSingleTimeCommands(ID3D12CommandQueue* pcommandqueue, command_buffer* pcommandbuffer)
+   void renderer::endSingleTimeCommands(command_buffer* pcommandbuffer)
    {
 
-      pcommandbuffer->submit_command_buffer(pcommandqueue);
+      pcommandbuffer->submit_command_buffer();
 
-      pcommandbuffer->wait_commands_to_execute(pcommandqueue);
+      pcommandbuffer->wait_commands_to_execute();
 
       //pcommandbuffer->wait_for_gpu(pcommandqueue);
 
@@ -731,7 +767,7 @@ float4 main(PSInput input) : SV_TARGET {
       _on_begin_render(m_pgpurendertarget->m_pframe);
 
 
-      auto pcommandbuffer = getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -1063,7 +1099,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::pointer <command_buffer > pcommandbufferBarrier;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -3340,7 +3376,7 @@ void CreateImageBlendVertexBuffer(
 
       auto vertexCount = 6;
 
-      auto pcommandbuffer = getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -3694,9 +3730,24 @@ void CreateImageBlendVertexBuffer(
 
       }
 
-      ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture();
+      ::cast < texture > ptextureCurrent;
+      
+      if (pgpuframe->m_pgpulayer)
+      {
 
-      auto pcommandlist = getCurrentCommandBuffer2()->m_pcommandlist;
+         ptextureCurrent = pgpuframe->m_pgpulayer->source_texture();
+
+      }
+      else
+      {
+
+         ptextureCurrent = pgpurendertargetview->current_texture();
+
+      } 
+
+      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2();
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
       ptextureCurrent->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
@@ -3785,7 +3836,7 @@ void CreateImageBlendVertexBuffer(
 
       ////}
 
-      auto pcommandbuffer = getCurrentCommandBuffer2();
+      //auto pcommandbuffer = getCurrentCommandBuffer2();
 
       //auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -3796,7 +3847,7 @@ void CreateImageBlendVertexBuffer(
          if (pgpurendertargetview)
          {
 
-            ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture();
+            //::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture();
 
             auto presourceTexture = ptextureCurrent->m_presource;
 
@@ -3842,6 +3893,14 @@ void CreateImageBlendVertexBuffer(
                         FALSE,                // Not using RTV arrays
                         &dsvHandle            // D3D12_CPU_DESCRIPTOR_HANDLE to your DSV (can be null)
                      );
+                     float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+                     pcommandlist->ClearRenderTargetView(
+   ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+   clearColor,
+   0,
+   nullptr
+);
+
 
                   }
                   else
@@ -3911,13 +3970,13 @@ void CreateImageBlendVertexBuffer(
 
                ////m_pcontext->RSSetViewports(1, &vp);
 
-               float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-               pcommandlist->ClearRenderTargetView(
-                  ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
-                  clearColor,
-                  0,
-                  nullptr
-               );
+               //float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+               //pcommandlist->ClearRenderTargetView(
+               //   ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+               //   clearColor,
+               //   0,
+               //   nullptr
+               //);
 
                if (ptextureCurrent->m_pheapDepthStencilView)
                {
@@ -4039,6 +4098,16 @@ void CreateImageBlendVertexBuffer(
       //}
 
       //m_prenderstate->on_happening(::gpu::e_happening_begin_render);
+
+   }
+
+
+   void renderer::on_start_layer(::gpu::layer* player)
+   {
+
+      m_pgpulayer = player;
+
+      m_pgpucontext->on_start_layer(player);
 
    }
 
@@ -4567,6 +4636,8 @@ void CreateImageBlendVertexBuffer(
    ::pointer < ::gpu::frame > renderer::beginFrame()
    {
 
+      m_iSentLayerCount = 0;
+
       //defer_layout();
 
       assert(!isFrameStarted && "Can't call beginFrame while already in progress");
@@ -4613,11 +4684,11 @@ void CreateImageBlendVertexBuffer(
 
       }
 
-
       //auto& pcommandbuffer = m_commandbuffera[get_frame_index()];
       auto& pcommandbuffer = m_commandbuffera[m_pgpurendertarget->get_frame_index()];
 
       auto pcommandbufferLoadAssets = ::transfer(m_pcommandbufferLoadAssets);
+
       if (pcommandbufferLoadAssets)
       {
          m_pcommandbufferLoadAssets2 = pcommandbufferLoadAssets;
@@ -4629,7 +4700,7 @@ void CreateImageBlendVertexBuffer(
          //   m_papplication->fork([pcommandbufferLoadAssets]()
          //      {
 
-                  pcommandbufferLoadAssets->submit_command_buffer(m_pcommandqueueCopy);
+                  pcommandbufferLoadAssets->submit_command_buffer();
 
                   //pcommandbufferLoadAssets->wait_for_gpu();
 
@@ -4646,12 +4717,12 @@ void CreateImageBlendVertexBuffer(
             //pcommandbufferLoadAssets->m_pfence,
             //pcommandbufferLoadAssets->m_fenceValue);
 
-                  pcommandbufferLoadAssets->wait_commands_to_execute(m_pcommandqueueCopy);
+                  pcommandbufferLoadAssets->wait_commands_to_execute();
 
       }
 
 
-      pcommandbuffer->reset();
+      //pcommandbuffer->reset();
 
       //::defer_throw_hresult(
       //   m_pgraphicscommandlist->Reset(pcommandallocator, pipelineState));
@@ -4840,60 +4911,65 @@ void CreateImageBlendVertexBuffer(
 
       ////}
 
-      auto pcommandbuffer = getCurrentCommandBuffer2();
-
-      ::cast < context > pcontext = m_pgpucontext;
-
-      auto etypeContext = pcontext->m_etype;
-
-      auto eoutputContext = pcontext->m_eoutput;
-
-      auto pcommandqueue = pcontext->command_queue();
-
-      ::cast < context > pcontextMainDraw2d = m_pgpucontext->m_pgpudevice->m_pgpucontextMainDraw2d;
-
-      if (etypeContext == ::gpu::context::e_type_draw2d)
+      if (m_iSentLayerCount <= 0)
       {
 
-         if (pcontextMainDraw2d == pcontext)
+         auto pcommandbuffer = getCurrentCommandBuffer2();
+
+         ::cast < context > pcontext = m_pgpucontext;
+
+         auto etypeContext = pcontext->m_etype;
+
+         auto eoutputContext = pcontext->m_eoutput;
+
+         auto pcommandqueue = pcontext->command_queue();
+
+         ::cast < context > pcontextMainDraw2d = m_pgpucontext->m_pgpudevice->m_pgpucontextMainDraw2d;
+
+         if (etypeContext == ::gpu::context::e_type_draw2d)
          {
 
-            informationf("good good good");
+            if (pcontextMainDraw2d == pcontext)
+            {
+
+               informationf("good good good");
+
+            }
+            else
+            {
+
+               informationf("bad bad bad");
+
+            }
+
+            if (pcommandqueue == pcontextMainDraw2d->m_pcommandqueue)
+            {
+
+               informationf("good good good (2)");
+
+            }
+            else
+            {
+
+               informationf("bad bad bad");
+
+            }
+
 
          }
-         else
+
+         pcommandbuffer->submit_command_buffer();
+
+         if (eoutput == ::gpu::e_output_swap_chain)
          {
 
-            informationf("bad bad bad");
+            m_pgpucontext->m_pswapchain->swap_buffers();
 
          }
 
-         if (pcommandqueue == pcontextMainDraw2d->m_pcommandqueue)
-         {
-
-            informationf("good good good (2)");
-
-         }
-         else
-         {
-
-            informationf("bad bad bad");
-
-         }
-
+         pcommandbuffer->wait_commands_to_execute();
 
       }
-
-      pcommandbuffer->submit_command_buffer(pcommandqueue);
-
-      if (eoutput == ::gpu::e_output_swap_chain)
-      {
-
-         m_pgpucontext->m_pswapchain->swap_buffers();
-
-      }
-
-      pcommandbuffer->wait_commands_to_execute(pcontext->command_queue());
 
       if (eoutput == ::gpu::e_output_cpu_buffer)
       {

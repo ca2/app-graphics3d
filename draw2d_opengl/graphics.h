@@ -69,8 +69,8 @@ namespace draw2d_opengl
       void do_on_context(const ::procedure & procedure) override;
       
       
-      void start_gpu_layer() override;
-      void end_gpu_layer() override;
+      void start_gpu_layer(::gpu::frame * pgpuframe) override;
+      ::gpu::frame * end_gpu_layer() override;
 
 
       //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC

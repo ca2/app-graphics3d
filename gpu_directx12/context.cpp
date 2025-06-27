@@ -1,29 +1,28 @@
 #include "framework.h"
+#include "acme/platform/application.h"
 #include "approach.h"
+#include "aura/graphics/image/image.h"
+#include "bred/gpu/compositor.h"
+#include "bred/gpu/layer.h"
+#include "bred/gpu/types.h"
 #include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
+#include "gpu_directx12/descriptors.h"
+#include "offscreen_render_target_view.h"
 #include "physical_device.h"
 #include "program.h"
 #include "renderer.h"
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
-#include "offscreen_render_target_view.h"
-#include "acme/platform/application.h"
-#include "aura/graphics/image/image.h"
-#include "bred/gpu/compositor.h"
-#include "bred/gpu/layer.h"
-#include "bred/gpu/types.h"
-#include "gpu_directx12/descriptors.h"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_FORCE_LEFT_HANDED
 #include <glm/mat4x4.hpp>
 #include "initializers.h"
 #include "acme_windows_common/dxgi_surface_bindable.h"
 #include "windowing_win32/window.h"
-
 
 using namespace directx12;
 
@@ -367,16 +366,144 @@ namespace gpu_directx12
 
       }
 
-      if (!m_pd3d11on12)
       {
 
          __defer_construct_new(m_pd3d11on12);
 
-      }
+         if (!m_pd3d11on12->m_pdxgidevice)
+         {
 
+            //          {
+
+          //      ::gpu_directx12::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
+
+                //m_pgpudevice = ::gpu::swap_chain::m_pgpudevice;
+
+                ///::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
+
+            assert(command_queue() && "Command queue must be initialized before D3D11On12CreateDevice");
+
+            ::cast < device> pdevice = m_pgpudevice;
+
+            ::cast < context > pcontextMainDraw2d = pdevice->main_draw2d_context();
+
+            D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
+
+            UINT numFeatureLevels = _countof(featureLevels);
+
+            IUnknown* unknowna[] =
+            {
+               pcontextMainDraw2d->command_queue()
+            };
+
+            HRESULT hrD3D11On12 = D3D11On12CreateDevice(
+               pdevice->m_pdevice,
+               D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+               featureLevels,
+               numFeatureLevels,
+               unknowna,
+               1,
+               0,
+               &m_pd3d11on12->m_pd3d11device,
+               &m_pd3d11on12->m_pd3d11context,
+               nullptr
+            );
+
+            ::defer_throw_hresult(hrD3D11On12);
+
+            ::defer_throw_hresult(m_pd3d11on12->m_pd3d11device.as(m_pd3d11on12->m_pd3d11on12)); // Query interface
+
+            ::defer_throw_hresult(m_pd3d11on12->m_pd3d11device.as(m_pd3d11on12->m_pdxgidevice));
+
+            //::defer_throw_hresult(m_pdxgiswapchain3.as(m_pdxgiswapchain1));
+
+            //DXGI_SWAP_CHAIN_DESC swapchaindesc1{};
+
+            //int FrameCount = 2;
+
+            //if (SUCCEEDED(m_pdxgiswapchain3->GetDesc(&swapchaindesc1)))
+            //{
+
+            //   FrameCount = swapchaindesc1.BufferCount;
+
+            //}
+
+            //m_frameIndex = m_pdxgiswapchain3->GetCurrentBackBufferIndex();
+
+            //// Create synchronization objects and wait until assets have been uploaded to the GPU.
+            //{
+            //   ::defer_throw_hresult(pd3d12device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __interface_of(m_fence)));
+            //   m_fenceValue = 1;
+
+            //   // Create an event handle to use for frame synchronization.
+            //   m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+            //   if (m_fenceEvent == nullptr)
+            //   {
+            //      ::defer_throw_hresult(HRESULT_FROM_WIN32(GetLastError()));
+            //   }
+
+            //}
+
+            ////_defer_d3d11on12_wrapped_resources();
+            //// Create descriptor heaps.
+
+            //{
+            //   // Describe and create a render target view (RTV) descriptor heap.
+            //   D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+            //   rtvHeapDesc.NumDescriptors = FrameCount;
+            //   rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+            //   rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+            //   ::defer_throw_hresult(pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap)));
+
+            //   m_rtvDescriptorSize = pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+            //}
+
+            //// Create frame resources.
+            //{
+
+            //   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+
+            //   // Create a RTV for each frame.
+            //   for (UINT n = 0; n < FrameCount; n++)
+            //   {
+
+            //      auto & prendertarget = m_renderTargets[n];
+
+            //      ::defer_throw_hresult(
+            //         m_pdxgiswapchain1->GetBuffer(
+            //            n, __interface_of(prendertarget)));
+
+            //      pd3d12device->CreateRenderTargetView(prendertarget, nullptr, rtvHandle);
+
+            //      rtvHandle.Offset(1, m_rtvDescriptorSize);
+
+            //   }
+
+            //}
+
+            //::draw2d_direct2d::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
+
+
+
+         }
+
+         
+
+      }
       return m_pd3d11on12;
 
    }
+
+   //::gpu_directx12::texture* context::_layer_source_texture(::gpu::layer* player)
+   //{
+
+   //   get_gpu_renderer()->m_pgpurendertarget->current_texture();
+
+   //   
+
+   //}
+   
 
 
    ID3D12CommandQueue* context::command_queue()
@@ -478,20 +605,26 @@ namespace gpu_directx12
    void context::copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource)
    {
 
-
       ::cast < texture > ptextureDst = ptextureTarget;
 
       ::cast < texture > ptextureSrc = ptextureSource;
 
       ::cast < renderer > prenderer = ptextureSrc->m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      //auto pcommandbuffer = prenderer->beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE_DIRECT);
+
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      pcommandbuffer->wait_commands_to_execute();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      texture_guard guard1(pcommandlist, ptextureDst, D3D12_RESOURCE_STATE_COPY_DEST);
+      //texture_guard guard1(pcommandlist, ptextureDst, D3D12_RESOURCE_STATE_COPY_DEST);
 
-      texture_guard guard2(pcommandlist, ptextureSrc, D3D12_RESOURCE_STATE_COPY_SOURCE);
+      //texture_guard guard2(pcommandlist, ptextureSrc, D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+      ptextureDst->_new_state(pcommandlist, D3D12_RESOURCE_STATE_COPY_DEST);
+      ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
       //// Transition source to COPY_SOURCE
       //D3D12_RESOURCE_BARRIER barrier1 = {};
@@ -513,12 +646,16 @@ namespace gpu_directx12
 
       pcommandlist->CopyResource(ptextureDst->m_presource, ptextureSrc->m_presource);
 
+      //pcommandbuffer->submit_command_buffer();
+
       //// Restore states
       //::swap(barrier2.Transition.StateBefore, barrier2.Transition.StateAfter);
       //pcommandlist->ResourceBarrier(1, &barrier2);
 
       //::swap(barrier1.Transition.StateBefore, barrier1.Transition.StateAfter);
       //pcommandlist->ResourceBarrier(1, &barrier1);
+
+      //return pcommandbuffer;
 
    }
 
@@ -1507,14 +1644,14 @@ namespace gpu_directx12
    //}
 
 
-   void context::__bind_draw2d_compositor(::gpu::compositor* pgpucompositor)
+   void context::__bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player)
    {
 
       ASSERT(m_etype == e_type_draw2d);
       
       ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
 
-      ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
+      ::cast < texture > ptexture = player->source_texture();
 
       auto pdxgidevice = _get_dxgi_device();
 
@@ -1522,7 +1659,7 @@ namespace gpu_directx12
 
       auto etypeRenderer = m_pgpurenderer->m_pgpucontext->m_etype;
 
-      auto etypeCompositor = pgpucompositor->m_pgpucontext->m_etype;
+      auto etypeCompositor = pgpucompositor->m_pgpucontextCompositor->m_etype;
 
       auto & pdxgisurface = ptexture->d3d11()->dxgiSurface;
 
@@ -1558,7 +1695,7 @@ namespace gpu_directx12
 
       }
 
-      d3d11on12()->m_d3d11wrappedresources[0] = { ptexture->d3d11()->wrappedResource.m_p };
+      ptexture->d3d11()->m_d3d11wrappedresources[0] = { ptexture->d3d11()->wrappedResource.m_p };
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
@@ -1570,8 +1707,8 @@ namespace gpu_directx12
 
 
       d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
-         d3d11on12()->m_d3d11wrappedresources,
-         _countof(d3d11on12()->m_d3d11wrappedresources));
+         ptexture->d3d11()->m_d3d11wrappedresources,
+         _countof(ptexture->d3d11()->m_d3d11wrappedresources));
 
       m_iResourceWrappingCount++;
 
@@ -1581,17 +1718,19 @@ namespace gpu_directx12
 
       ::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
 
-      pdxgisurfacebindable->_bind(iFrameIndex, pdxgisurface);
+      pdxgisurfacebindable->_bind(iFrameIndex, player->m_iLayerIndex, pdxgisurface);
 
    }
 
 
-   void context::__soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor)
+   void context::__soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player)
    {
 
       ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
 
-      ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
+      ::cast < texture > ptexture = player->source_texture();
+
+      ::cast < device > pdevice = m_pgpudevice;
 
       auto pdxgidevice = _get_dxgi_device();
 
@@ -1599,11 +1738,75 @@ namespace gpu_directx12
 
       auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
 
+      d3d11on12()->m_pd3d11context->Flush();
+
+      // Assume you already have a ID3D12Fence*
+
+      auto& context4 = d3d11on12()->dx11Context4;
+      auto& dx11Fence = d3d11on12()->dx11Fence;
+      auto& dx12Fence = d3d11on12()->dx12Fence;
+      auto& fenceValue = d3d11on12()->fenceValue;
+      auto& fenceEvent = d3d11on12()->fenceEvent;
+
+      if (!dx12Fence)
+      {
+
+         HRESULT hrCreateFence = pdevice->m_pdevice->CreateFence(
+            fenceValue,                // Initial value
+            D3D12_FENCE_FLAG_SHARED,     // Flags (can be SHARED or NONE)
+            __interface_of(dx12Fence)       // Out pointer
+         );
+         ::defer_throw_hresult(hrCreateFence);
+
+         
+         auto &sharedFenceHandle = d3d11on12()->sharedFenceHandle;
+         HRESULT hrCreateSharedHandle = pdevice->m_pdevice->CreateSharedHandle(
+            dx12Fence,
+            nullptr, // Security attributes
+            GENERIC_ALL,
+            nullptr, // Optional name
+            &sharedFenceHandle);
+         ::defer_throw_hresult(hrCreateSharedHandle);
+
+         auto& pdevice5 = d3d11on12()->dx11Device5;
+         // Query ID3D11Device5 from the D3D11On12 device
+         HRESULT hrDev5 = d3d11on12()->m_pd3d11device.as(pdevice5);
+         ::defer_throw_hresult(hrDev5);
+         // Create an ID3D11Fence from the ID3D12Fence
+         HRESULT hrOpenSharedFence = pdevice5->OpenSharedFence(
+            sharedFenceHandle, __interface_of(dx11Fence));
+         
+         auto& pcontext = d3d11on12()->m_pd3d11context;
+         HRESULT hrCtx4 = pcontext.as(context4);
+         ::defer_throw_hresult(hrCtx4);
+      }
+
+      fenceValue++;
+      context4->Signal(
+         dx11Fence,
+         fenceValue);
+
+      if (dx12Fence->GetCompletedValue() < fenceValue)
+      {
+
+         if (!fenceEvent)
+         {
+
+            fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
+         }
+         ::ResetEvent(fenceEvent);
+         dx12Fence->SetEventOnCompletion(
+            fenceValue, fenceEvent);
+         WaitForSingleObject(fenceEvent, INFINITE);
+         //CloseHandle(fenceEvent);
+      }
+
       if (ptexture->d3d11()->wrappedResource)
       {
 
          d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
-            d3d11on12()->m_d3d11wrappedresources, 1);
+            ptexture->d3d11()->m_d3d11wrappedresources, 1);
 
          m_iResourceWrappingCount--;
 
@@ -1613,7 +1816,49 @@ namespace gpu_directx12
 
       ASSERT(m_iResourceWrappingCount == 0);
 
-      d3d11on12()->m_pd3d11context->Flush();
+
+
+   }
+
+
+   void context::__bind_graphics3d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player)
+   {
+
+      ASSERT(m_etype != e_type_draw2d);
+
+      //::cast < texture > ptexture = player->source_texture();
+
+      //auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+
+      //auto etypeRenderer = m_pgpurenderer->m_pgpucontext->m_etype;
+
+      //auto etypeCompositor = pgpucompositor->m_pgpucontextCompositor->m_etype;
+
+      //::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
+
+      //if (!ptexture->m_handleRenderTargetView.ptr)
+      //{
+
+      //   ptexture->create_render_target();
+
+      //}
+
+      //D3D12_CPU_DESCRIPTOR_HANDLE handleaRTV[] = {
+      //   ptexture->m_handleRenderTargetView
+      //};
+
+      //if (!ptexture->m_handleDepthStencilView.ptr)
+      //{
+
+      //   ptexture->create_depth_resources();
+
+      //}
+
+      //D3D12_CPU_DESCRIPTOR_HANDLE handleaDSV[] = {
+      //   ptexture->m_handleDepthStencilView
+      //};
+
+      //pcommandbuffer->m_pcommandlist->OMSetRenderTargets(1, handleaRTV, FALSE, handleaDSV);
 
    }
 
@@ -1831,15 +2076,15 @@ return tex.Sample(samp, uv);
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
       ::cast <texture > ptextureDst = ptextureTarget;
       ////float clearColor[4] = { 0.95f * 0.5f, 0.95f * 0.5f, 0.25f * 0.5f, 0.5f }; // Clear to transparent
       ////m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
-      //float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
-      //m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
+      float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
+      pcommandlist->ClearRenderTargetView(ptextureDst->m_handleRenderTargetView, clearColor, 0, nullptr);
       ptextureDst->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
       if(!ptextureDst->m_handleRenderTargetView.ptr)
@@ -1885,80 +2130,88 @@ return tex.Sample(samp, uv);
 
       if (1)
       {
-
+         int iLayer = 0;
          for (auto player : *playera)
          {
 
-            ::cast <texture > ptextureSrc = player->texture();
-
-            ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-            m_pshaderBlend3->bind_source(ptextureSrc);
-
-            //ID3D11SamplerState* samplerstatea[] =
-            //{ ptexture->m_psamplerstate };
-            //ID3D11ShaderResourceView* sharedresourceviewa[] =
-            //{ ptexture->m_pshaderresourceview };
-
-                           // 1. Define viewport and scissor rectangle
-            D3D12_VIEWPORT viewport = {};
-            viewport.TopLeftX = ptextureSrc->m_rectangleTarget.left();
-            viewport.TopLeftY =ptextureSrc->m_rectangleTarget.top();
-            viewport.Width = static_cast<float>(ptextureSrc->m_rectangleTarget.width());
-            viewport.Height = static_cast<float>(ptextureSrc->m_rectangleTarget.height());
-            viewport.MinDepth = 0.0f;
-            viewport.MaxDepth = 1.0f;
-
-            D3D12_RECT scissorRect = {};
-            scissorRect.left = ptextureSrc->m_rectangleTarget.left();
-            scissorRect.top = ptextureSrc->m_rectangleTarget.top();
-            scissorRect.right = ptextureSrc->m_rectangleTarget.right();
-            scissorRect.bottom = ptextureSrc->m_rectangleTarget.bottom();
+            //if (iLayer == 2)
+            {
 
 
-            //// 4. Set the viewport and scissor
-            pcommandlist->RSSetViewports(1, &viewport);
-            pcommandlist->RSSetScissorRects(1, &scissorRect);
-            //D3D11_VIEWPORT vp = {};
-            //vp.TopLeftX = ptexture->m_rectangleTarget.left();
-            //vp.TopLeftY = ptexture->m_rectangleTarget.top();
-            //vp.Width = static_cast<float>(ptexture->m_rectangleTarget.width());
-            //vp.Height = static_cast<float>(ptexture->m_rectangleTarget.height());
-            //vp.MinDepth = 0.0f;
-            //vp.MaxDepth = 1.0f;
-            //m_pcontext->RSSetViewports(1, &vp);
+               ::cast <texture > ptextureSrc = player->texture();
 
-            //m_pcontext->PSSetSamplers(0, 1, samplerstatea);
-            //m_pcontext->PSSetShaderResources(0, 1, sharedresourceviewa);
+               ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+               m_pshaderBlend3->bind_source(ptextureSrc);
+
+               //ID3D11SamplerState* samplerstatea[] =
+               //{ ptexture->m_psamplerstate };
+               //ID3D11ShaderResourceView* sharedresourceviewa[] =
+               //{ ptexture->m_pshaderresourceview };
+
+                              // 1. Define viewport and scissor rectangle
+               D3D12_VIEWPORT viewport = {};
+               viewport.TopLeftX = ptextureSrc->m_rectangleTarget.left();
+               viewport.TopLeftY = ptextureSrc->m_rectangleTarget.top();
+               viewport.Width = static_cast<float>(ptextureSrc->m_rectangleTarget.width());
+               viewport.Height = static_cast<float>(ptextureSrc->m_rectangleTarget.height());
+               viewport.MinDepth = 0.0f;
+               viewport.MaxDepth = 1.0f;
+
+               D3D12_RECT scissorRect = {};
+               scissorRect.left = ptextureSrc->m_rectangleTarget.left();
+               scissorRect.top = ptextureSrc->m_rectangleTarget.top();
+               scissorRect.right = ptextureSrc->m_rectangleTarget.right();
+               scissorRect.bottom = ptextureSrc->m_rectangleTarget.bottom();
 
 
-            pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-            //pcommandlist->Draw(3, 0); // Fullscreen triangle
-            pcommandlist->DrawInstanced(3, 1, 0, 0);
+               //// 4. Set the viewport and scissor
+               pcommandlist->RSSetViewports(1, &viewport);
+               pcommandlist->RSSetScissorRects(1, &scissorRect);
+               //D3D11_VIEWPORT vp = {};
+               //vp.TopLeftX = ptexture->m_rectangleTarget.left();
+               //vp.TopLeftY = ptexture->m_rectangleTarget.top();
+               //vp.Width = static_cast<float>(ptexture->m_rectangleTarget.width());
+               //vp.Height = static_cast<float>(ptexture->m_rectangleTarget.height());
+               //vp.MinDepth = 0.0f;
+               //vp.MaxDepth = 1.0f;
+               //m_pcontext->RSSetViewports(1, &vp);
+
+               //m_pcontext->PSSetSamplers(0, 1, samplerstatea);
+               //m_pcontext->PSSetShaderResources(0, 1, sharedresourceviewa);
+
+
+               pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+               //pcommandlist->Draw(3, 0); // Fullscreen triangle
+               pcommandlist->DrawInstanced(3, 1, 0, 0);
+            }
+            iLayer++;
 
          }
-
+         
       }
       //}
 
       m_pshaderBlend3->unbind();
 
-      //::cast <texture > ptextureDst = ptextureTarget;
+      ////::cast <texture > ptextureDst = ptextureTarget;
       //{
+      //   
       //   float clearColor2[4] = { 0.95f * 0.5f, 0.75f * 0.5f, 0.95f * 0.5f, 0.5f }; // Clear to transparent
+      //   
       //   D3D12_RECT r[1];
+      //   
       //   r[0].left = 100;
       //   r[0].top = 200;
       //   r[0].right = 200;
       //   r[0].bottom = 300;
+      //   
       //   pcommandlist->ClearRenderTargetView(
       //      ptextureDst->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
       //      clearColor2,
-      //      0, nullptr);
+      //      1, r);
+
       //}
-
-
-
 
    }
 
@@ -1966,39 +2219,89 @@ return tex.Sample(samp, uv);
    void context::on_start_layer(::gpu::layer* player)
    {
 
-      if (m_pgpucompositor && m_etype == e_type_draw2d)
+      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
+
+      if (player->m_pcommandbufferLayer != prenderer->getCurrentCommandBuffer2())
       {
 
+         player->m_pcommandbufferLayer = prenderer->getCurrentCommandBuffer2();
+
+         //auto pcommanbuffer=__create_new < ::gpu_directx12::command_buffer>();
+
+         //::comptr < ID3D12CommandQueue > pcommandqueue;
+
          //::cast < device > pdevice = m_pgpudevice;
-         //::cast < renderer > prenderer = m_pgpurenderer;
-         //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
 
-         //_get_dxgi_device();
+         //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+         //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+         //HRESULT hrCreateCommandQueue = 
+         //   pdevice->m_pdevice->CreateCommandQueue(
+         //      &queueDesc, __interface_of(pcommandqueue));
 
-         ////ptexture->_new_state(prenderer->getCurrentCommandBuffer2()->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+         //::defer_throw_hresult(hrCreateCommandQueue);
 
-         //// 4. Release wrapped resource to allow access from D3D12
+         //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-         //d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
-         //   d3d11on12()->m_d3d11wrappedresources, 1);
+         //pcommanbuffer->initialize_command_buffer(
+         //   pcommandqueue, D3D12_COMMAND_LIST_TYPE_DIRECT, prenderer);
 
-         //m_iResourceWrappingCount++;
+         //player->m_pcommandbuffer = pcommanbuffer;
 
-         //ASSERT(m_iResourceWrappingCount == 1);
-         //
-         ////::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = m_pgpucompositor;
+      }
 
-         ////::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+      if (m_pgpurenderer->m_iSentLayerCount)
+      {
 
-         ////auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
+         player->m_pcommandbufferLayer->wait_commands_to_execute();
 
-         ////::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
+      }
 
-         ////int iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+      player->m_pcommandbufferLayer->reset();
 
-         ////pdxgisurfacebindable->_bind(iFrameIndex, pdxgisurface);
+      if (m_pgpucompositor)
+      {
 
-         __bind_draw2d_compositor(m_pgpucompositor);
+         if (m_etype == e_type_draw2d)
+         {
+
+            //::cast < device > pdevice = m_pgpudevice;
+            //::cast < renderer > prenderer = m_pgpurenderer;
+            //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+
+            //_get_dxgi_device();
+
+            ////ptexture->_new_state(prenderer->getCurrentCommandBuffer2()->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+            //// 4. Release wrapped resource to allow access from D3D12
+
+            //d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
+            //   d3d11on12()->m_d3d11wrappedresources, 1);
+
+            //m_iResourceWrappingCount++;
+
+            //ASSERT(m_iResourceWrappingCount == 1);
+            //
+            ////::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = m_pgpucompositor;
+
+            ////::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+
+            ////auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
+
+            ////::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
+
+            ////int iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+
+            ////pdxgisurfacebindable->_bind(iFrameIndex, pdxgisurface);
+
+            __bind_draw2d_compositor(m_pgpucompositor, player);
+
+         }
+         else
+         {
+
+            __bind_graphics3d_compositor(m_pgpucompositor, player);
+
+         }
 
          m_pgpucompositor->on_start_layer();
 
@@ -2015,28 +2318,33 @@ return tex.Sample(samp, uv);
 
          m_pgpucompositor->on_end_layer();
 
-         __soft_unbind_draw2d_compositor(m_pgpucompositor);
+         if (m_etype == e_type_draw2d)
+         {
 
-         //::cast < device > pdevice = m_pgpudevice;
+            __soft_unbind_draw2d_compositor(m_pgpucompositor, player);
 
-         //if (m_etype == e_type_draw2d)
-         //{
+            //::cast < device > pdevice = m_pgpudevice;
 
-         //   d3d11on12()->m_pd3d11context->Flush(); // ✅ Ensures D3D11 commands are issued
+            //if (m_etype == e_type_draw2d)
+            //{
 
-         //   // 4. Release wrapped resource to allow access from D3D12
-         //   d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
-         //      d3d11on12()->m_d3d11wrappedresources, 1);
+            //   d3d11on12()->m_pd3d11context->Flush(); // ✅ Ensures D3D11 commands are issued
 
-         //   m_iResourceWrappingCount--;
+            //   // 4. Release wrapped resource to allow access from D3D12
+            //   d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
+            //      d3d11on12()->m_d3d11wrappedresources, 1);
 
-         //   ASSERT(m_iResourceWrappingCount == 0);
+            //   m_iResourceWrappingCount--;
 
-         //   ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
+            //   ASSERT(m_iResourceWrappingCount == 0);
 
-         //   //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+            //   ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
 
-         //}
+            //   //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+
+            //}
+
+         }
 
       }
 
@@ -2082,123 +2390,125 @@ return tex.Sample(samp, uv);
 
       }
 
-      if (!d3d11on12()->m_pdxgidevice)
-      {
+      ASSERT(d3d11on12()->m_pdxgidevice);
 
-         //          {
+      //if (!d3d11on12()->m_pdxgidevice)
+      //{
 
-       //      ::gpu_directx12::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
+      //   //          {
 
-             //m_pgpudevice = ::gpu::swap_chain::m_pgpudevice;
+      // //      ::gpu_directx12::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
 
-             ///::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
+      //       //m_pgpudevice = ::gpu::swap_chain::m_pgpudevice;
 
-         assert(command_queue() && "Command queue must be initialized before D3D11On12CreateDevice");
+      //       ///::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
 
-         ::cast < device> pdevice = m_pgpudevice;
-         
-         ::cast < context > pcontextMainDraw2d = pdevice->main_draw2d_context();
-         
-         D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
-         
-         UINT numFeatureLevels = _countof(featureLevels);
-         
-         IUnknown* unknowna[] = 
-         { 
-            pcontextMainDraw2d->command_queue() 
-         };
+      //   assert(command_queue() && "Command queue must be initialized before D3D11On12CreateDevice");
 
-         HRESULT hrD3D11On12 = D3D11On12CreateDevice(
-            pdevice->m_pdevice,
-            D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-            featureLevels,
-            numFeatureLevels,
-            unknowna,
-            1,
-            0,
-            &d3d11on12()->m_pd3d11device,
-            &d3d11on12()->m_pd3d11context,
-            nullptr
-         );
+      //   ::cast < device> pdevice = m_pgpudevice;
+      //   
+      //   ::cast < context > pcontextMainDraw2d = pdevice->main_draw2d_context();
+      //   
+      //   D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
+      //   
+      //   UINT numFeatureLevels = _countof(featureLevels);
+      //   
+      //   IUnknown* unknowna[] = 
+      //   { 
+      //      pcontextMainDraw2d->command_queue() 
+      //   };
 
-         ::defer_throw_hresult(hrD3D11On12);
+      //   HRESULT hrD3D11On12 = D3D11On12CreateDevice(
+      //      pdevice->m_pdevice,
+      //      D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+      //      featureLevels,
+      //      numFeatureLevels,
+      //      unknowna,
+      //      1,
+      //      0,
+      //      &d3d11on12()->m_pd3d11device,
+      //      &d3d11on12()->m_pd3d11context,
+      //      nullptr
+      //   );
 
-         ::defer_throw_hresult(d3d11on12()->m_pd3d11device.as(d3d11on12()->m_pd3d11on12)); // Query interface
+      //   ::defer_throw_hresult(hrD3D11On12);
 
-         ::defer_throw_hresult(d3d11on12()->m_pd3d11device.as(d3d11on12()->m_pdxgidevice));
+      //   ::defer_throw_hresult(d3d11on12()->m_pd3d11device.as(d3d11on12()->m_pd3d11on12)); // Query interface
 
-         //::defer_throw_hresult(m_pdxgiswapchain3.as(m_pdxgiswapchain1));
+      //   ::defer_throw_hresult(d3d11on12()->m_pd3d11device.as(d3d11on12()->m_pdxgidevice));
 
-         //DXGI_SWAP_CHAIN_DESC swapchaindesc1{};
+      //   //::defer_throw_hresult(m_pdxgiswapchain3.as(m_pdxgiswapchain1));
 
-         //int FrameCount = 2;
+      //   //DXGI_SWAP_CHAIN_DESC swapchaindesc1{};
 
-         //if (SUCCEEDED(m_pdxgiswapchain3->GetDesc(&swapchaindesc1)))
-         //{
+      //   //int FrameCount = 2;
 
-         //   FrameCount = swapchaindesc1.BufferCount;
+      //   //if (SUCCEEDED(m_pdxgiswapchain3->GetDesc(&swapchaindesc1)))
+      //   //{
 
-         //}
+      //   //   FrameCount = swapchaindesc1.BufferCount;
 
-         //m_frameIndex = m_pdxgiswapchain3->GetCurrentBackBufferIndex();
+      //   //}
 
-         //// Create synchronization objects and wait until assets have been uploaded to the GPU.
-         //{
-         //   ::defer_throw_hresult(pd3d12device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __interface_of(m_fence)));
-         //   m_fenceValue = 1;
+      //   //m_frameIndex = m_pdxgiswapchain3->GetCurrentBackBufferIndex();
 
-         //   // Create an event handle to use for frame synchronization.
-         //   m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-         //   if (m_fenceEvent == nullptr)
-         //   {
-         //      ::defer_throw_hresult(HRESULT_FROM_WIN32(GetLastError()));
-         //   }
+      //   //// Create synchronization objects and wait until assets have been uploaded to the GPU.
+      //   //{
+      //   //   ::defer_throw_hresult(pd3d12device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __interface_of(m_fence)));
+      //   //   m_fenceValue = 1;
 
-         //}
+      //   //   // Create an event handle to use for frame synchronization.
+      //   //   m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+      //   //   if (m_fenceEvent == nullptr)
+      //   //   {
+      //   //      ::defer_throw_hresult(HRESULT_FROM_WIN32(GetLastError()));
+      //   //   }
 
-         ////_defer_d3d11on12_wrapped_resources();
-         //// Create descriptor heaps.
+      //   //}
 
-         //{
-         //   // Describe and create a render target view (RTV) descriptor heap.
-         //   D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-         //   rtvHeapDesc.NumDescriptors = FrameCount;
-         //   rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-         //   rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-         //   ::defer_throw_hresult(pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap)));
+      //   ////_defer_d3d11on12_wrapped_resources();
+      //   //// Create descriptor heaps.
 
-         //   m_rtvDescriptorSize = pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+      //   //{
+      //   //   // Describe and create a render target view (RTV) descriptor heap.
+      //   //   D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+      //   //   rtvHeapDesc.NumDescriptors = FrameCount;
+      //   //   rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+      //   //   rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+      //   //   ::defer_throw_hresult(pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap)));
 
-         //}
+      //   //   m_rtvDescriptorSize = pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-         //// Create frame resources.
-         //{
+      //   //}
 
-         //   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+      //   //// Create frame resources.
+      //   //{
 
-         //   // Create a RTV for each frame.
-         //   for (UINT n = 0; n < FrameCount; n++)
-         //   {
+      //   //   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-         //      auto & prendertarget = m_renderTargets[n];
+      //   //   // Create a RTV for each frame.
+      //   //   for (UINT n = 0; n < FrameCount; n++)
+      //   //   {
 
-         //      ::defer_throw_hresult(
-         //         m_pdxgiswapchain1->GetBuffer(
-         //            n, __interface_of(prendertarget)));
+      //   //      auto & prendertarget = m_renderTargets[n];
 
-         //      pd3d12device->CreateRenderTargetView(prendertarget, nullptr, rtvHandle);
+      //   //      ::defer_throw_hresult(
+      //   //         m_pdxgiswapchain1->GetBuffer(
+      //   //            n, __interface_of(prendertarget)));
 
-         //      rtvHandle.Offset(1, m_rtvDescriptorSize);
+      //   //      pd3d12device->CreateRenderTargetView(prendertarget, nullptr, rtvHandle);
 
-         //   }
+      //   //      rtvHandle.Offset(1, m_rtvDescriptorSize);
 
-         //}
+      //   //   }
 
-         //::draw2d_direct2d::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
+      //   //}
+
+      //   //::draw2d_direct2d::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
 
 
 
-      }
+      //}
 
       return d3d11on12()->m_pdxgidevice;
 

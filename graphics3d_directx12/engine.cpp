@@ -52,7 +52,7 @@ namespace graphics3d_directx12
    void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::cast < ::gpu_directx12::renderer> prenderer = m_pgpucontext->m_pgpurenderer;
+      ::cast < ::gpu_directx12::renderer> prenderer = m_pgpucontextCompositor->m_pgpurenderer;
 
       prenderer->defer_update_renderer();
 
@@ -62,7 +62,7 @@ namespace graphics3d_directx12
       //
       //      //::graphics3d::engine::m_prenderer = m_prenderer;
       //
-      //      m_prenderer->initialize_renderer(m_pgpucontext);
+      //      m_prenderer->initialize_renderer(m_pgpucontextCompositor);
       //
       //
       //      m_prenderer->set_placement(rectanglePlacement);
@@ -80,7 +80,7 @@ namespace graphics3d_directx12
       //      if (iGlobalUboSize > 0)
       //      {
       //
-      //         create_global_ubo(m_pgpucontext);
+      //         create_global_ubo(m_pgpucontextCompositor);
       //
       //      }
       //
@@ -89,7 +89,7 @@ namespace graphics3d_directx12
       //  //        globalSetLayout->getDescriptorSetLayout()
       //    //  };
       //
-      //      m_pscene->on_load_scene(m_pgpucontext);
+      //      m_pscene->on_load_scene(m_pgpucontextCompositor);
 
 
    }
@@ -214,25 +214,25 @@ namespace graphics3d_directx12
 
       //}
 
-      //m_pgpucontext->set_placement(m_rectanglePlacementNew);
+      //m_pgpucontextCompositor->set_placement(m_rectanglePlacementNew);
 
       //::gpu::rear_guard rear_guard(pcontextUpper);
 
-      //m_pgpucontext->send([this]()
+      //m_pgpucontextCompositor->send([this]()
       //   {
 
-      //      ::gpu::context_guard guard(m_pgpucontext);
+      //      ::gpu::context_guard guard(m_pgpucontextCompositor);
 
-      //      m_pgpucontext->make_current();
+      //      m_pgpucontextCompositor->make_current();
 
-      //      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->get_renderer(::gpu::e_scene_3d);
+      //      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontextCompositor->get_renderer(::gpu::e_scene_3d);
 
       //      prenderer->defer_update_renderer();
 
       //      try
       //      {
 
-      //         m_pgpucontext->m_pengine->_do_frame_step();
+      //         m_pgpucontextCompositor->m_pengine->_do_frame_step();
 
       //      }
       //      catch (...)
@@ -325,7 +325,7 @@ namespace graphics3d_directx12
 
       ::cast < ::gpu_directx12::approach> papproach = m_papplication->get_gpu_approach();
 
-      papproach->engine_on_frame_context_initialization(m_pgpucontext);
+      papproach->engine_on_frame_context_initialization(m_pgpucontextCompositor);
 
       //m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pgpucontext)
       //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
@@ -339,7 +339,7 @@ namespace graphics3d_directx12
    void engine::engine_on_after_load_scene(::graphics3d::scene* pscene)
    {
 
-      ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
+      ::cast < ::gpu_directx12::context > pcontext = m_pgpucontextCompositor;
 
       ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
 
@@ -377,17 +377,17 @@ namespace graphics3d_directx12
 
       //auto papp = get_app();
 
-      //__øconstruct(m_pgpucontext);
+      //__øconstruct(m_pgpucontextCompositor);
 
-      //m_pgpucontext->initialize_context(papp->m_pimpact);
+      //m_pgpucontextCompositor->initialize_context(papp->m_pimpact);
 
       //__construct_new(m_prenderer);
 
-      //m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontext);
+      //m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontextCompositor);
 
       //auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
 
-      //pglobalpoolbuilder->initialize_builder(m_pgpucontext);
+      //pglobalpoolbuilder->initialize_builder(m_pgpucontextCompositor);
       //pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
       //pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, render_pass::MAX_FRAMES_IN_FLIGHT);
 
@@ -408,7 +408,7 @@ namespace graphics3d_directx12
 
       //uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
 
-      //::cast < context > pgpucontext = m_pgpucontext;
+      //::cast < context > pgpucontext = m_pgpucontextCompositor;
 
       //for (int i = 0; i < uboBuffers.size(); i++)
       //{

@@ -4,6 +4,8 @@
 #include "bred/gpu/context.h"
 #include "acme/prototype/prototype/memory.h"
 #include "gpu_directx12/device.h"
+#include <d3d11_3.h>
+#include <d3d11_4.h>
 
 
 namespace gpu_directx12
@@ -150,14 +152,25 @@ namespace gpu_directx12
          virtual public particle
       {
       public:
-         ID3D11Resource* m_d3d11wrappedresources[1];
+
          ::comptr<ID3D11Device> m_pd3d11device;
          ::comptr<ID3D11DeviceContext> m_pd3d11context;
          ::comptr<ID3D11On12Device> m_pd3d11on12;
          ::comptr<IDXGIDevice> m_pdxgidevice;
 
+
+         ::comptr<ID3D12Fence> dx12Fence;
+         UINT64 fenceValue = 0;
+         ::comptr<ID3D11Fence> dx11Fence;
+         ::comptr<ID3D11Device5> dx11Device5;
+         ::comptr<ID3D11DeviceContext4> dx11Context4;
+         HANDLE fenceEvent = NULL;
+         HANDLE sharedFenceHandle = nullptr;
+
       };
-      ::pointer < class d3d11on12 >     m_pd3d11on12;
+      //::pointer_array < class d3d11on12 > >     m_d3d11on12a;
+      ::pointer < class d3d11on12 > m_pd3d11on12;
+
 
       context();
       ~context() override;
@@ -182,6 +195,8 @@ namespace gpu_directx12
 
 
       virtual d3d11on12* d3d11on12();
+
+      //virtual ::gpu_directx12::texture* _layer_source_texture(::gpu::layer* player);
 
       //void swap_buffers() override;
 
@@ -339,9 +354,11 @@ namespace gpu_directx12
       //bool create_offscreen_graphics_for_swap_chain_blitting(::draw2d_gpu::graphics* pgraphics, const ::int_size& size = {}) override;
 
       
-      void __bind_draw2d_compositor(::gpu::compositor* pgpucompositor) override;
-      void __soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor) override;
+      void __bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player) override;
+      void __soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player) override;
 
+
+      virtual void __bind_graphics3d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player);
 
       ::gpu::enum_output get_eoutput() override;
 

@@ -198,14 +198,14 @@ namespace draw2d_opengl
    //void graphics::set_hint_window_output()
    //{
 
-   //   if(!m_pgpucontext)
+   //   if(!m_pgpucontextCompositor)
    //   {
 
    //      throw ::exception(error_wrong_state, "No GPU context available for setting hint window output.");
 
    //   }
 
-   //   m_pgpucontext->m_pgpucontext->m_pgpurenderer->m_eoutputOnEndDraw = ::gpu::e_output_swap_chain;
+   //   m_pgpucontextCompositor->m_pgpucontextCompositor->m_pgpurenderer->m_eoutputOnEndDraw = ::gpu::e_output_swap_chain;
 
    //}
 
@@ -258,23 +258,23 @@ namespace draw2d_opengl
 
       auto pgpucontextMain = m_papplication->get_gpu_approach()->get_gpu_device()->main_context();
 
-      m_pgpucontext = pgpudevice->create_draw2d_context(
+      m_pgpucontextCompositor = pgpudevice->create_draw2d_context(
          ::gpu::e_output_gpu_buffer,
          size);
 
-      if (!m_pgpucontext)
+      if (!m_pgpucontextCompositor)
       {
 
          return;
 
       }
 
-      m_pgpucontext->m_pgpucompositor = this;
+      m_pgpucontextCompositor->m_pgpucompositor = this;
 
-      if (!m_pgpucontext->m_pgpurenderer)
+      if (!m_pgpucontextCompositor->m_pgpurenderer)
       {
 
-         m_pgpucontext->get_gpu_renderer();
+         m_pgpucontextCompositor->get_gpu_renderer();
 
       }
 
@@ -316,15 +316,15 @@ namespace draw2d_opengl
 
       auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      m_pgpucontext = pgpudevice->create_draw2d_context(
+      m_pgpucontextCompositor = pgpudevice->create_draw2d_context(
          ::gpu::e_output_gpu_buffer,
          size);
 
-      m_pgpucontext->m_pgpucompositor = this;  
+      m_pgpucontextCompositor->m_pgpucompositor = this;  
 
       //auto pgpucontext = pgpudevice->get_main_context();
 
-      //if (!m_pgpucontext->m_pgpurenderer)
+      //if (!m_pgpucontextCompositor->m_pgpurenderer)
       //{
 
       //   auto pgpu = application()->get_gpu();
@@ -350,7 +350,7 @@ namespace draw2d_opengl
 
       //}
 
-      if (!m_pgpucontext)
+      if (!m_pgpucontextCompositor)
       {
 
          return false;
@@ -372,10 +372,10 @@ namespace draw2d_opengl
       //if (__defer_construct(m_pgpucontextOpenGL))
       //{
 
-      //if (!m_pgpucontext)
+      //if (!m_pgpucontextCompositor)
       //{
 
-      //   m_pgpucontext = pgpudevice->create_draw2d_context(::gpu::e_output_gpu_buffer, size);
+      //   m_pgpucontextCompositor = pgpudevice->create_draw2d_context(::gpu::e_output_gpu_buffer, size);
 
       //}
 
@@ -555,7 +555,7 @@ namespace draw2d_opengl
    bool graphics::opengl_defer_create_window_context(::windowing::window* pwindow)
    {
 
-      //if (!m_pgpucontext)
+      //if (!m_pgpucontextCompositor)
       //{
 
       //   return false;
@@ -573,7 +573,7 @@ namespace draw2d_opengl
 
       //}
 
-      m_pgpucontext->defer_create_window_context(pwindow);
+      m_pgpucontextCompositor->defer_create_window_context(pwindow);
 
       //      ::opengl::resize(size);
 
@@ -1075,7 +1075,7 @@ namespace draw2d_opengl
    void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
       //thread_select();
 
       ::opengl::color(pbrush->m_color);
@@ -5101,7 +5101,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    double_size graphics::get_text_extent(const ::scoped_string& lpszString)
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
 
       //return{};
 
@@ -5428,7 +5428,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::draw_line(const int_point& point1, const int_point& point2, ::draw2d::pen* ppen)
    {
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
 
       ::opengl::line(point1.x(), point1.y(), point2.x(), point2.y(), (float)(ppen->m_dWidth),
          ppen->m_color.f32_red(), ppen->m_color.f32_green(),
@@ -5457,7 +5457,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::line_to(double x, double y)
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
 
       if (::is_set(m_ppen))
       {
@@ -5502,7 +5502,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::text_out(double x, double yParam, const ::scoped_string& scopedstr)
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
 
       //return;
       // activate corresponding render state	
@@ -5543,7 +5543,7 @@ color = vec4(c.r,c.g, c.b, c.a);
          m_pgpushaderTextOut = __create_new < ::gpu_opengl::shader >();
 
          m_pgpushaderTextOut->initialize_shader_with_block(
-            m_pgpucontext->m_pgpurenderer,
+            m_pgpucontextCompositor->m_pgpurenderer,
             pvertexshader,
             pfragmentshader);
          
@@ -5557,9 +5557,9 @@ color = vec4(c.r,c.g, c.b, c.a);
       // glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
       glm::mat4 projection = glm::ortho(
          0.0f, 
-         static_cast<float>(m_pgpucontext->m_rectangle.width()),
+         static_cast<float>(m_pgpucontextCompositor->m_rectangle.width()),
          0.0f,
-         static_cast<float>(m_pgpucontext->m_rectangle.height()));
+         static_cast<float>(m_pgpucontextCompositor->m_rectangle.height()));
       pshader->_set_mat4("projection", projection);
 
       set(m_pfont);
@@ -5596,7 +5596,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       //{
       //   scale = pfont->m_fontsize.as_float() / FONT_PIXEL_DENOMINATOR;
       //}
-      //auto y = m_pgpucontext->m_rectangle.height() - yParam - pface->m_iPixelSize;
+      //auto y = m_pgpucontextCompositor->m_rectangle.height() - yParam - pface->m_iPixelSize;
       auto y = yParam;
 
 
@@ -5604,7 +5604,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       int Δx = 0;
       m_m1.transform(point);
 
-      point.y() = m_pgpucontext->m_rectangle.height() - point.y() - pface->m_iPixelSize;
+      point.y() = m_pgpucontextCompositor->m_rectangle.height() - point.y() - pface->m_iPixelSize;
 
       glEnable(GL_CULL_FACE);
       GLCheckError("");
@@ -6328,16 +6328,17 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       ::draw2d_gpu::graphics::do_on_context(procedure);
 
-      //m_pgpucontext->send(procedure);
+      //m_pgpucontextCompositor->send(procedure);
 
    }
 
-   void graphics::start_gpu_layer()
+
+   void graphics::start_gpu_layer(::gpu::frame * pgpuframe)
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
 
-      ::draw2d_gpu::graphics::start_gpu_layer();
+      ::draw2d_gpu::graphics::start_gpu_layer(pgpuframe);
 
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Clear the background to transparent
       GLCheckError("");
@@ -6355,10 +6356,10 @@ color = vec4(c.r,c.g, c.b, c.a);
    }
 
 
-   void graphics::end_gpu_layer()
+   ::gpu::frame * graphics::end_gpu_layer()
    {
 
-      ::draw2d_gpu::graphics::end_gpu_layer();
+      return ::draw2d_gpu::graphics::end_gpu_layer();
 
    }
 
@@ -6367,7 +6368,7 @@ color = vec4(c.r,c.g, c.b, c.a);
    //void graphics::defer_add_graphics_render(::graphics::render * pgraphicsrender)
    //{
 
-   //   m_pgpucontext->m_rendera.add_unique(pgraphicsrender);
+   //   m_pgpucontextCompositor->m_rendera.add_unique(pgraphicsrender);
 
    //}
 
@@ -6412,14 +6413,14 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //   bool bYSwap = m_papplication->m_bUseSwapChainWindow;
 
-   //   ::cast < ::gpu_opengl::renderer >prenderer = m_pgpucontext->get_renderer();
+   //   ::cast < ::gpu_opengl::renderer >prenderer = m_pgpucontextCompositor->get_renderer();
 
-   //   m_pgpucontext->set_placement({ int_point{}, size });
+   //   m_pgpucontextCompositor->set_placement({ int_point{}, size });
 
    //   if (m_egraphics & e_graphics_draw)
    //   {
 
-   //      ::cast < ::gpu_opengl::context >pgpucontext = m_pgpucontext;
+   //      ::cast < ::gpu_opengl::context >pgpucontext = m_pgpucontextCompositor;
 
    //      //pgpucontext->m_size = size;
 
@@ -6454,11 +6455,11 @@ color = vec4(c.r,c.g, c.b, c.a);
    //      //glClear(GL_COLOR_BUFFER_BIT);
    //      //glEnable(GL_BLEND);
    //      //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   //      //::memory_copy(&m_pgpucontext->m_pbuffer->m_pixmap, (::pixmap *)m_pimage, sizeof(::pixmap));
+   //      //::memory_copy(&m_pgpucontextCompositor->m_pbuffer->m_pixmap, (::pixmap *)m_pimage, sizeof(::pixmap));
 
    //      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   //      //m_pgpucontext->start_drawing();
+   //      //m_pgpucontextCompositor->start_drawing();
 
    //      ///glEnable(GL_DEPTH_TEST);
 
@@ -6477,7 +6478,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //         //vkvg_surface_resolve(m_vkvgsurface);
 
-   //         //m_pgpucontext->m_prenderer->on_end_draw();
+   //         //m_pgpucontextCompositor->m_prenderer->on_end_draw();
 
    //         //::double_rectangle r{ 0.0, 0.0, 1920.0, 1080.0 };
 
@@ -6489,13 +6490,13 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //         //fill_solid_rectangle(r2, argb(155, 120, 40, 100));
 
-   //         //m_pgpucontext->clear(::argb(100, 80, 120, 160));
+   //         //m_pgpucontextCompositor->clear(::argb(100, 80, 120, 160));
 
    //         //vkvg_flush(m_pdc);
 
    //         //VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
 
-   //         ::cast < ::gpu_opengl::renderer >prenderer = m_pgpucontext->get_renderer();
+   //         ::cast < ::gpu_opengl::renderer >prenderer = m_pgpucontextCompositor->get_renderer();
 
    //         prenderer->on_end_render(m_pframe);
 
@@ -6543,7 +6544,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //   }
 
-   //   ////m_pgpucontext->make_current();
+   //   ////m_pgpucontextCompositor->make_current();
 
    //   //////glColor3f(0, 1, 1);
    //   ////glBegin(GL_TRIANGLES);                              // Drawing Using Triangles
@@ -6581,10 +6582,10 @@ color = vec4(c.r,c.g, c.b, c.a);
    //   //if (m_papplication->m_bUseSwapChainWindow)
    //   //{
 
-   //   //   //if (m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
+   //   //   //if (m_pgpucontextCompositor->m_eoutput == ::gpu::e_output_swap_chain)
    //   //   //{
 
-   //   //   //m_pgpucontext->swap_buffers();
+   //   //   //m_pgpucontextCompositor->swap_buffers();
 
    //   //   //}
 
@@ -6594,7 +6595,7 @@ color = vec4(c.r,c.g, c.b, c.a);
    //   //else
    //   //{
 
-   //   //   //m_pgpucontext->swap_buffers();
+   //   //   //m_pgpucontextCompositor->swap_buffers();
 
    //   ////}
    //   ////else
@@ -6604,7 +6605,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //   //   m_pimage->map();
 
-   //   //   m_pimage->copy(&m_pgpucontext->m_pcpubuffer->m_pixmap);
+   //   //   m_pimage->copy(&m_pgpucontextCompositor->m_pcpubuffer->m_pixmap);
 
    //   //}
 
@@ -6617,7 +6618,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
-         //m_pgpucontext->swap_buffers();
+         //m_pgpucontextCompositor->swap_buffers();
 
       }
 
@@ -6639,7 +6640,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       ////wglMakeCurrent(m_hdc, m_hglrc);
 
-      //m_pgpucontext->make_current();
+      //m_pgpucontextCompositor->make_current();
 
       //thread_graphics(this);
 
@@ -6652,8 +6653,8 @@ color = vec4(c.r,c.g, c.b, c.a);
       //return ::is_set(this) & ::is_set(m_hglrc);
 
       return ::is_set(this) 
-         && ::is_set(m_pgpucontext->m_pgpurenderer)
-         && m_pgpucontext;
+         && ::is_set(m_pgpucontextCompositor->m_pgpurenderer)
+         && m_pgpucontextCompositor;
 
    }
 

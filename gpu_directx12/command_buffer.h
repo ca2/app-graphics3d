@@ -2,12 +2,15 @@
 #pragma once
 
 
+#include "bred/gpu/command_buffer.h"
+
+
 namespace gpu_directx12
 {
 
 
    class command_buffer :
-      virtual public ::particle
+      virtual public ::gpu::command_buffer
    {
    public:
 
@@ -17,18 +20,18 @@ namespace gpu_directx12
       HANDLE                                    m_hFenceEvent;
       ::comptr<ID3D12CommandAllocator >         m_pcommandallocator;
       ::comptr < ID3D12GraphicsCommandList >    m_pcommandlist;
-//      ::comptr < ID3D12CommandQueue >           m_pcommandqueue;
+      ::comptr < ID3D12CommandQueue >           m_pcommandqueue;
       ::pointer < ::gpu_directx12::renderer >   m_prenderer;
       D3D12_COMMAND_LIST_TYPE                   m_ecommandlisttype;
 
       command_buffer();
       ~command_buffer() override;
 
-      virtual void initialize_command_buffer(D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer);
+      virtual void initialize_command_buffer(ID3D12CommandQueue * pcommandqueue, D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer);
 
-      virtual void submit_command_buffer(ID3D12CommandQueue * pcommandqueue);
+      virtual void submit_command_buffer();
 
-      virtual void wait_commands_to_execute(ID3D12CommandQueue* pcommandqueue);
+      void wait_commands_to_execute() override;
 
       virtual void wait_for_gpu();
 

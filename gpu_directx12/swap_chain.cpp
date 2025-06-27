@@ -203,7 +203,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       }
 
-      auto pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -282,12 +282,16 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
         // colorRGBA2, 0, nullptr);
 
       //{
+
       //   FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
+
       //   D3D12_RECT r[1];
+
       //   r[0].left = 200;
       //   r[0].top = 100;
       //   r[0].right = 300;
       //   r[0].bottom = 200;
+
       //   pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView,
       //      colorRGBA2, 1, r);
 
@@ -306,7 +310,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
          auto& ptextureSwapChain = m_textureaSwapChain[m_iSwapChainIndex];
 
-         auto pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
+         ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
 
          auto pcommandlist = pcommandbuffer->m_pcommandlist;
 

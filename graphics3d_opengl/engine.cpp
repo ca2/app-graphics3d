@@ -68,7 +68,7 @@ namespace graphics3d_opengl
    void engine::on_render_frame()
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
 
       ::graphics3d::engine::on_render_frame();
 
@@ -94,7 +94,7 @@ namespace graphics3d_opengl
    void engine::on_begin_frame()
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
 
       glPushMatrix();
       GLCheckError("");
@@ -107,7 +107,7 @@ namespace graphics3d_opengl
    void engine::on_end_frame()
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontext);
+      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
 
       glPopAttrib();
       GLCheckError("");

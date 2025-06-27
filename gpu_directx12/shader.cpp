@@ -664,7 +664,7 @@ namespace gpu_directx12
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -707,7 +707,7 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -735,7 +735,7 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -792,7 +792,7 @@ namespace gpu_directx12
       memcpy(pPushProperties + ::directx12::Align256(m_propertiesPush.size())*m_iPush, m_propertiesPush.data(), m_propertiesPush.size());
       m_presourcePushProperties->Unmap(0, nullptr);
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       
       auto address = m_presourcePushProperties->GetGPUVirtualAddress() + m_iPush* ::directx12::Align256(m_propertiesPush.size()) ;
@@ -809,7 +809,7 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 

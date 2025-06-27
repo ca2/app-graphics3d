@@ -52,6 +52,7 @@ namespace gpu_directx12
       {
       public:
 
+         ID3D11Resource* m_d3d11wrappedresources[1];
 
          //::comptr<ID3D12Resource> d3d12Resource;
          ::comptr<ID3D11Resource> wrappedResource;

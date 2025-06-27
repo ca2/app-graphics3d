@@ -169,7 +169,7 @@ namespace gpu_directx12
       virtual ::pointer <command_buffer >beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE ecommandlisttype);
       
 
-      virtual void endSingleTimeCommands(ID3D12CommandQueue* pcommandqueue, command_buffer * pcommandbuffer);
+      virtual void endSingleTimeCommands(command_buffer * pcommandbuffer);
 
       void WaitForGpu();
       //void on_start_layer(::gpu::layer* player);
@@ -191,6 +191,8 @@ namespace gpu_directx12
       //      //m_pvkcswapchain->getRenderPass(); 
 
       //}
+
+      void on_end_layer(::gpu::layer* player);
 
       void sample();
       void gpu_blend(::draw2d::graphics * pgraphics);
@@ -227,7 +229,7 @@ namespace gpu_directx12
       //   return commandBuffers[get_frame_index()];
       //}
 
-      virtual command_buffer * getCurrentCommandBuffer2();
+      virtual ::gpu::command_buffer * getCurrentCommandBuffer2();
 
       virtual command_buffer* getLoadAssetsCommandBuffer();
 
@@ -259,6 +261,7 @@ namespace gpu_directx12
       //void prepareOffScreen();
 
       ::pointer < ::gpu::frame > beginFrame() override;
+      void on_start_layer(::gpu::layer* player) override;
       void on_begin_render(::gpu::frame* pframeParam) override;
       //virtual void on_begin_render1(::gpu::frame* pframeParam);
       void on_end_render(::gpu::frame* pframeParam) override;

@@ -55,12 +55,19 @@ namespace gpu_directx12
    }
 
 
-   void command_buffer::initialize_command_buffer(D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer)
+   void command_buffer::initialize_command_buffer(ID3D12CommandQueue * pcommandqueue, D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer)
    {
+
+      if (::is_null(pcommandqueue))
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
 
       m_prenderer = prenderer;
 
-      //m_pcommandqueue = pcommandqueue;
+      m_pcommandqueue = pcommandqueue;
 
       m_ecommandlisttype = ecommandlisttype;
 
@@ -116,7 +123,7 @@ namespace gpu_directx12
    //}
 
 
-   void command_buffer::submit_command_buffer(ID3D12CommandQueue * pcommandqueue)
+   void command_buffer::submit_command_buffer()
    {
 
       ::cast < ::gpu_directx12::device > pdevice = m_prenderer->m_pgpucontext->m_pgpudevice;
@@ -127,22 +134,24 @@ namespace gpu_directx12
 
       ID3D12CommandList* ppCommandLists[] = { m_pcommandlist };
 
-      pcommandqueue->ExecuteCommandLists(1, ppCommandLists);
+      m_pcommandqueue->ExecuteCommandLists(1, ppCommandLists);
 
 
    }
 
 
-   void command_buffer::wait_commands_to_execute(ID3D12CommandQueue* pcommandqueue)
+   void command_buffer::wait_commands_to_execute()
    {
 
       ::cast < ::gpu_directx12::device > pdevice = m_prenderer->m_pgpucontext->m_pgpudevice;
 
       UINT64 uploadFenceValue = ++m_fenceValue;
 
-      HRESULT hrSignalCommandQueue = pcommandqueue->Signal(m_pfence, uploadFenceValue);
+      HRESULT hrSignalCommandQueue = m_pcommandqueue->Signal(m_pfence, uploadFenceValue);
 
       pdevice->defer_throw_hresult(hrSignalCommandQueue);
+
+      wait_for_gpu();
 
    }
 
@@ -156,6 +165,8 @@ namespace gpu_directx12
 
       if (m_pfence->GetCompletedValue() < m_fenceValue)
       {
+
+         ::ResetEvent(m_hFenceEvent);
 
          m_pfence->SetEventOnCompletion(m_fenceValue, m_hFenceEvent);
 
