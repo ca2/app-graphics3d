@@ -5,6 +5,8 @@
 #include "descriptors.h"
 #include "frame.h"
 #include "initializers.h"
+#include "layer.h"
+#include "model_buffer.h"
 #include "renderer.h"
 #include "offscreen_render_pass.h"
 #include "physical_device.h"
@@ -138,7 +140,7 @@ namespace gpu_vulkan
    }
 
 
-   command_buffer* renderer::getCurrentCommandBuffer()
+   ::gpu::command_buffer* renderer::getCurrentCommandBuffer2()
    {
 
       assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
@@ -542,7 +544,7 @@ namespace gpu_vulkan
 
          __defer_construct_new(pcommandbuffer);
 
-         pcommandbuffer->initialize_command_buffer(this);
+         pcommandbuffer->initialize_command_buffer(m_pgpurendertarget);
 
       }
 
@@ -612,9 +614,9 @@ namespace gpu_vulkan
 
          isFrameStarted = true;
 
-         auto pcommandbuffer = getCurrentCommandBuffer();
+         ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2();
 
-         pcommandbuffer->begin_command_buffer();
+         pcommandbuffer->begin_command_buffer(false);
 
          //VkCommandBufferBeginInfo beginInfo{};
          //beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -1470,6 +1472,10 @@ namespace gpu_vulkan
    //		//m_prendererResolve->pgpurenderpass->m_semaphoreaWaitToSubmit.add(
    //		//   pgpurenderpass->renderFinishedSemaphores[iPassCurrentFrame]
    //		//);
+   //          //m_prendererResolve->pgpurenderpass->m_stageaWaitToSubmit.add(
+         //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         //);
+
    ////
    //		//m_prendererResolve->_resolve_color_and_alpha_accumulation_buffers();
    //
@@ -1730,7 +1736,7 @@ namespace gpu_vulkan
 
       assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
 
-      auto pcommandbuffer = getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2();
 
       if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
       {
@@ -1741,7 +1747,11 @@ namespace gpu_vulkan
 
       ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
 
-      auto result = pgpurenderpass->submitCommandBuffers(pcommandbuffer);
+      auto result = pgpurenderpass->submitCommandBuffers(
+         pcommandbuffer,
+         {},
+         {},
+         {});
 
       if (result == VK_ERROR_OUT_OF_DATE_KHR
          || result == VK_SUBOPTIMAL_KHR
@@ -1953,107 +1963,107 @@ namespace gpu_vulkan
    //   2, 3, 0
    //};
 
-   // Create vertex and index buffers
-   void create_quad_buffers(VkDevice device, VkPhysicalDevice physicalDevice,
-      VkBuffer* vertexBuffer, VkDeviceMemory* vertexMemory,
-      VkBuffer* indexBuffer, VkDeviceMemory* indexMemory, bool bYSwap)
-   {
+   //// Create vertex and index buffers
+   //void create_quad_buffers(VkDevice device, VkPhysicalDevice physicalDevice,
+   //   VkBuffer* vertexBuffer, VkDeviceMemory* vertexMemory,
+   //   VkBuffer* indexBuffer, VkDeviceMemory* indexMemory, bool bYSwap)
+   //{
 
-      float y0;
-      float y1;
+   //   float y0;
+   //   float y1;
 
-      if (bYSwap)
-      {
+   //   if (bYSwap)
+   //   {
 
-         y0 = 1.0f;
-         y1 = -1.0f;
-
-
-      }
-      else
-      {
-
-         y0 = -1.0f;
-         y1 = 1.0f;
-
-      }
+   //      y0 = 1.0f;
+   //      y1 = -1.0f;
 
 
-      // Fullscreen quad vertex data
-      float quadVertices[] = {
-         // pos     // uv
-         -1.0f, y0, 0.0f, 0.0f,
-          1.0f, y0, 1.0f, 0.0f,
-          1.0f, y1, 1.0f, 1.0f,
-         -1.0f, y1, 0.0f, 1.0f,
-      };
-      uint16_t quadIndices[] = {
-         0, 1, 2,
-         2, 3, 0
-      };
+   //   }
+   //   else
+   //   {
+
+   //      y0 = -1.0f;
+   //      y1 = 1.0f;
+
+   //   }
 
 
-      VkDeviceSize vertexSize = sizeof(quadVertices);
-      VkDeviceSize indexSize = sizeof(quadIndices);
+   //   // Fullscreen quad vertex data
+   //   float quadVertices[] = {
+   //      // pos     // uv
+   //      -1.0f, y0, 0.0f, 0.0f,
+   //       1.0f, y0, 1.0f, 0.0f,
+   //       1.0f, y1, 1.0f, 1.0f,
+   //      -1.0f, y1, 0.0f, 1.0f,
+   //   };
+   //   uint16_t quadIndices[] = {
+   //      0, 1, 2,
+   //      2, 3, 0
+   //   };
 
-      VkBufferCreateInfo bufferInfo = {
-         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-         .size = vertexSize,
-         .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
-      };
-      vkCreateBuffer(device, &bufferInfo, NULL, vertexBuffer);
 
-      VkMemoryRequirements memReq;
-      vkGetBufferMemoryRequirements(device, *vertexBuffer, &memReq);
+   //   VkDeviceSize vertexSize = sizeof(quadVertices);
+   //   VkDeviceSize indexSize = sizeof(quadIndices);
 
-      VkMemoryAllocateInfo allocInfo = {
-         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-         .allocationSize = memReq.size,
-         .memoryTypeIndex = 0
-      };
+   //   VkBufferCreateInfo bufferInfo = {
+   //      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+   //      .size = vertexSize,
+   //      .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+   //      .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+   //   };
+   //   vkCreateBuffer(device, &bufferInfo, NULL, vertexBuffer);
 
-      VkPhysicalDeviceMemoryProperties memProps;
-      vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
-      for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
-         if ((memReq.memoryTypeBits & (1 << i)) &&
-            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
-            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-            allocInfo.memoryTypeIndex = i;
-            break;
-         }
-      }
+   //   VkMemoryRequirements memReq;
+   //   vkGetBufferMemoryRequirements(device, *vertexBuffer, &memReq);
 
-      vkAllocateMemory(device, &allocInfo, NULL, vertexMemory);
-      vkBindBufferMemory(device, *vertexBuffer, *vertexMemory, 0);
+   //   VkMemoryAllocateInfo allocInfo = {
+   //      .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+   //      .allocationSize = memReq.size,
+   //      .memoryTypeIndex = 0
+   //   };
 
-      void* data;
-      vkMapMemory(device, *vertexMemory, 0, vertexSize, 0, &data);
-      memcpy(data, quadVertices, (size_t)vertexSize);
-      vkUnmapMemory(device, *vertexMemory);
+   //   VkPhysicalDeviceMemoryProperties memProps;
+   //   vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
+   //   for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+   //      if ((memReq.memoryTypeBits & (1 << i)) &&
+   //         (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
+   //         (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+   //         allocInfo.memoryTypeIndex = i;
+   //         break;
+   //      }
+   //   }
 
-      // Index buffer
-      bufferInfo.size = indexSize;
-      bufferInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-      vkCreateBuffer(device, &bufferInfo, NULL, indexBuffer);
-      vkGetBufferMemoryRequirements(device, *indexBuffer, &memReq);
-      allocInfo.allocationSize = memReq.size;
+   //   vkAllocateMemory(device, &allocInfo, NULL, vertexMemory);
+   //   vkBindBufferMemory(device, *vertexBuffer, *vertexMemory, 0);
 
-      for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
-         if ((memReq.memoryTypeBits & (1 << i)) &&
-            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
-            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-            allocInfo.memoryTypeIndex = i;
-            break;
-         }
-      }
+   //   void* data;
+   //   vkMapMemory(device, *vertexMemory, 0, vertexSize, 0, &data);
+   //   memcpy(data, quadVertices, (size_t)vertexSize);
+   //   vkUnmapMemory(device, *vertexMemory);
 
-      vkAllocateMemory(device, &allocInfo, NULL, indexMemory);
-      vkBindBufferMemory(device, *indexBuffer, *indexMemory, 0);
-      vkMapMemory(device, *indexMemory, 0, indexSize, 0, &data);
-      memcpy(data, quadIndices, (size_t)indexSize);
-      vkUnmapMemory(device, *indexMemory);
-   }
+   //   // Index buffer
+   //   bufferInfo.size = indexSize;
+   //   bufferInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+   //   vkCreateBuffer(device, &bufferInfo, NULL, indexBuffer);
+   //   vkGetBufferMemoryRequirements(device, *indexBuffer, &memReq);
+   //   allocInfo.allocationSize = memReq.size;
+
+   //   for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+   //      if ((memReq.memoryTypeBits & (1 << i)) &&
+   //         (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
+   //         (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+   //         allocInfo.memoryTypeIndex = i;
+   //         break;
+   //      }
+   //   }
+
+   //   vkAllocateMemory(device, &allocInfo, NULL, indexMemory);
+   //   vkBindBufferMemory(device, *indexBuffer, *indexMemory, 0);
+   //   vkMapMemory(device, *indexMemory, 0, indexSize, 0, &data);
+   //   memcpy(data, quadIndices, (size_t)indexSize);
+   //   vkUnmapMemory(device, *indexMemory);
+   //}
 
 
    void renderer::_blend_image(::gpu::texture* pgputexture, const ::int_rectangle& rectangle, bool bYSwap)
@@ -2062,7 +2072,7 @@ namespace gpu_vulkan
 
       //vkCmdBeginRenderPass(...);
 
-      auto pcommandbuffer = this->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = this->getCurrentCommandBuffer2();
 
       //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
@@ -2182,17 +2192,21 @@ namespace gpu_vulkan
 
       ::cast < texture > ptexture = pgputexture;
 
-      auto& pmodel = m_imagemodel[ptexture->m_vkimage];
+      ::cast < context > pcontext = m_pgpucontext;
 
-      if (__defer_construct_new(pmodel))
+      auto& pmodelbuffer = m_imagemodelbuffer[ptexture->m_vkimage];
+
+      if (__defer_construct_new(pmodelbuffer))
       {
 
-         create_quad_buffers(m_pgpucontext->logicalDevice(),
-            m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-            &pmodel->m_vertexBuffer,
-            &pmodel->m_vertexMemory,
-            &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory, true);
+         pmodelbuffer->create_rectangle(pcontext, true, true);
+
+         //pmodelcreate_quad_buffers(m_pgpucontext->logicalDevice(),
+         //   m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+         //   &pmodel->m_vertexBuffer,
+         //   &pmodel->m_vertexMemory,
+         //   &pmodel->m_indexBuffer,
+         //   &pmodel->m_indexMemory, true);
 
       }
 
@@ -2202,39 +2216,37 @@ namespace gpu_vulkan
 
       //m_pshaderImageBlend->_bind_sampler(image, 0);
 
-      VkDeviceSize offsets[] = { 0 };
+      pmodelbuffer->bind(pcommandbuffer);
 
-      vkCmdBindVertexBuffers(
-         pcommandbuffer->m_vkcommandbuffer,
-         0, 1,
-         &pmodel->m_vertexBuffer, offsets);
-      vkCmdBindIndexBuffer(
-         pcommandbuffer->m_vkcommandbuffer,
-         pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+      //VkViewport vp = {
+      //   (float)rectangle.left(),
+      //   (float)rectangle.top(),
+      //   (float)rectangle.width(),
+      //   (float)rectangle.height(),
+      //   0.0f, 1.0f };
 
-      VkViewport vp = {
-         (float)rectangle.left(),
-         (float)rectangle.top(),
-         (float)rectangle.width(),
-         (float)rectangle.height(),
-         0.0f, 1.0f };
+      //VkRect2D sc = {
+      //   {
+      //      rectangle.left(),
+      //      rectangle.top(),
+      //   },
+      //   {
+      //      (uint32_t)rectangle.width(),
+      //      (uint32_t)rectangle.height(),
+      //   }
+      //};
 
-      VkRect2D sc = {
-         {
-            rectangle.left(),
-            rectangle.top(),
-         },
-         {
-            (uint32_t)rectangle.width(),
-            (uint32_t)rectangle.height(),
-         }
-      };
+      pcommandbuffer->set_viewport(rectangle);
 
-      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+      pcommandbuffer->set_scissor(rectangle);
 
-      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
+      //vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
 
-      vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0, 0);
+      //vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
+
+      pcommandbuffer->draw(pmodelbuffer);
+
+      //vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0, 0);
       // Draw full-screen quad
       //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
@@ -2253,7 +2265,7 @@ namespace gpu_vulkan
    void renderer::copy(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource)
    {
 
-      auto pcommandbuffer = this->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = this->getCurrentCommandBuffer2();
 
       ::cast < texture > ptextureSrc = pgputextureSource;
       ::cast < texture > ptextureDst = pgputextureTarget;
@@ -2487,7 +2499,7 @@ namespace gpu_vulkan
 
       //vkCmdBeginRenderPass(...);
 
-      auto pcommandbuffer = this->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = this->getCurrentCommandBuffer2();
 
       //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
@@ -2607,18 +2619,22 @@ namespace gpu_vulkan
 
       ::cast <texture > ptexture = pgputexture;
 
-      auto& pmodel = m_imagemodel[ptexture->m_vkimage];
+      ::cast <context > pcontext = m_pgpucontext;
 
-      if (__defer_construct_new(pmodel))
+      auto& pmodelbuffer = m_imagemodelbuffer[ptexture->m_vkimage];
+
+      if (__defer_construct_new(pmodelbuffer))
       {
 
-         create_quad_buffers(m_pgpucontext->logicalDevice(),
-            m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-            &pmodel->m_vertexBuffer,
-            &pmodel->m_vertexMemory,
-            &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory,
-            bYSwap);
+         pmodelbuffer->create_rectangle(pcontext, true, bYSwap);
+
+         //create_quad_buffers(m_pgpucontext->logicalDevice(),
+         //   m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+         //   &pmodel->m_vertexBuffer,
+         //   &pmodel->m_vertexMemory,
+         //   &pmodel->m_indexBuffer,
+         //   &pmodel->m_indexMemory,
+         //   bYSwap);
 
       }
 
@@ -2711,34 +2727,19 @@ namespace gpu_vulkan
       //     NULL                                // Dynamic offsets
       //  );
 
+      pmodelbuffer->bind(pcommandbuffer);
+
+      //VkDeviceSize offsets[] = { 0 };
+      //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
+      //vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
 
-      VkDeviceSize offsets[] = { 0 };
-      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
-      vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+      pcommandbuffer->set_viewport(rectangle);
 
-      VkViewport vp = {
-         (float)rectangle.left(),
-         (float)rectangle.top(),
-         (float)rectangle.width(),
-         (float)rectangle.height(),
-         0.0f, 1.0f };
+      pcommandbuffer->set_scissor(rectangle);
 
-      VkRect2D sc = {
-         {
-            rectangle.left(),
-            rectangle.top(),
-         },
-         {
-            (uint32_t)rectangle.width(),
-            (uint32_t)rectangle.height(),
-         }
-      };
 
-      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
-      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
-
-      vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0, 0);
+      pcommandbuffer->draw(pmodelbuffer);
       // Draw full-screen quad
       //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
@@ -2787,7 +2788,7 @@ namespace gpu_vulkan
 
       //vkCmdBeginRenderPass(...);
 
-      auto pcommandbuffer = this->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = this->getCurrentCommandBuffer2();
 
       //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
@@ -2905,18 +2906,21 @@ namespace gpu_vulkan
       /*   }
          );*/
 
-      auto& pmodel = m_imagemodel[ptexture->m_vkimage];
+      ::cast < context > pcontext = m_pgpucontext;
 
-      if (__defer_construct_new(pmodel))
+      auto& pmodelbuffer = m_imagemodelbuffer[ptexture->m_vkimage];
+
+      if (__defer_construct_new(pmodelbuffer))
       {
 
-         create_quad_buffers(m_pgpucontext->logicalDevice(),
-            m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-            &pmodel->m_vertexBuffer,
-            &pmodel->m_vertexMemory,
-            &pmodel->m_indexBuffer,
-            &pmodel->m_indexMemory,
-            bYSwap);
+         pmodelbuffer->create_rectangle(pcontext, true, bYSwap);
+         //create_quad_buffers(m_pgpucontext->logicalDevice(),
+         //   m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+         //   &pmodel->m_vertexBuffer,
+         //   &pmodel->m_vertexMemory,
+         //   &pmodel->m_indexBuffer,
+         //   &pmodel->m_indexMemory,
+         //   bYSwap);
 
       }
 
@@ -3023,35 +3027,38 @@ namespace gpu_vulkan
       //     NULL                                // Dynamic offsets
       //  );
 
+pmodelbuffer->bind(pcommandbuffer);
+
+      //VkDeviceSize offsets[] = { 0 };
+      //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
+      //vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
 
-      VkDeviceSize offsets[] = { 0 };
-      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
-      vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+      //VkViewport vp = {
+      //   (float)rectanglePlacement.left(),
+      //   (float)rectanglePlacement.top(),
+      //   (float)rectanglePlacement.width(),
+      //   (float)rectanglePlacement.height(),
+      //   0.0f, 1.0f };
 
+      //VkRect2D sc = {
+      //   {
+      //      rectanglePlacement.left(),
+      //      rectanglePlacement.top(),
+      //   },
+      //   {
+      //      (uint32_t)rectanglePlacement.width(),
+      //      (uint32_t)rectanglePlacement.height(),
+      //   }
+      //};
 
-      VkViewport vp = {
-         (float)rectanglePlacement.left(),
-         (float)rectanglePlacement.top(),
-         (float)rectanglePlacement.width(),
-         (float)rectanglePlacement.height(),
-         0.0f, 1.0f };
+      //vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+      //vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
-      VkRect2D sc = {
-         {
-            rectanglePlacement.left(),
-            rectanglePlacement.top(),
-         },
-         {
-            (uint32_t)rectanglePlacement.width(),
-            (uint32_t)rectanglePlacement.height(),
-         }
-      };
+      pcommandbuffer->set_viewport(rectanglePlacement);
+      pcommandbuffer->set_scissor(rectanglePlacement);
 
-      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
-      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
-
-      vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0, 0);
+      pmodelbuffer->draw(pcommandbuffer);
       // Draw full-screen quad
       //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
@@ -3074,7 +3081,7 @@ namespace gpu_vulkan
 
       //auto pcommandbuffer = pframe->m_pcommandbuffer->m_vkcommandbuffer;
 
-      auto pcommandbuffer = this->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = this->getCurrentCommandBuffer2();
 
       ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
 
@@ -3083,19 +3090,10 @@ namespace gpu_vulkan
 
          assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
          assert(
-            pcommandbuffer == getCurrentCommandBuffer() &&
+            pcommandbuffer == getCurrentCommandBuffer2() &&
             "Can't begin render pass on command buffer from a different frame");
 
 
-         ::cast < texture > ptexture = m_pgpurendertarget->current_texture();
-
-
-         ptexture->_new_state(
-            pcommandbuffer,
-            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-         );
 
 
          //VkRenderPassBeginInfo renderPassInfo{};
@@ -3174,6 +3172,21 @@ namespace gpu_vulkan
 
       auto pcommandbuffer = pframe->m_pcommandbuffer;
 
+      {
+
+         ::cast < context > pcontextMain = m_pgpucontext->m_pgpudevice->m_pgpucontextMain;
+
+         ::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontextMain->get_swap_chain();
+
+         if (pswapchain)
+         {
+            pswapchain->m_stageaWaitToSubmit.clear();
+            pswapchain->m_semaphoreaWaitToSubmit.clear();
+
+         }
+
+      }
+
       //pgpurenderpass->m_iFrameSerial++;
 
       //pgpurenderpass->m_iCurrentFrame = (pgpurenderpass->m_iCurrentFrame + 1) % 
@@ -3188,7 +3201,7 @@ namespace gpu_vulkan
 
          assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
          assert(
-            pcommandbuffer == getCurrentCommandBuffer() &&
+            pcommandbuffer == getCurrentCommandBuffer2() &&
             "Can't begin render pass on command buffer from a different frame");
 
          //if (pgpurenderpass->getRenderPass())
@@ -3268,19 +3281,35 @@ namespace gpu_vulkan
    void renderer::on_end_render(::gpu::frame* pframeParam)
    {
 
-      m_prenderstate->on_happening(::gpu::e_happening_end_render);
+      //m_prenderstate->on_happening(::gpu::e_happening_end_render);
 
       ::cast < frame > pframe = pframeParam;
 
       auto pcommandbuffer = pframe->m_pcommandbuffer;
 
       assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
-      assert(
-         pcommandbuffer == getCurrentCommandBuffer() &&
-         "Can't end render pass on command buffer from a different frame");
+      //assert(
+        // pcommandbuffer == getCurrentCommandBuffer2() &&
+         //"Can't end render pass on command buffer from a different frame");
       //vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
-      on_end_render(pframe);
+      gpu::renderer::on_end_render(pframe);
+
+      if (m_iSentLayerCount > 0)
+      {
+
+         ::cast < context > pcontextMain = m_pgpucontext->m_pgpudevice->m_pgpucontextMain;
+
+         ::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontextMain->get_swap_chain();
+
+         ::cast < layer > playerLast = pframe->m_pgpulayer;
+
+         auto vksemaphoreRenderFinished = playerLast->m_vksemaphoreRenderFinished;
+
+         pswapchain->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_TRANSFER_BIT);
+         pswapchain->m_semaphoreaWaitToSubmit.add(vksemaphoreRenderFinished);
+
+      }
 
    }
 
@@ -3293,11 +3322,11 @@ namespace gpu_vulkan
 
       //auto pcommandbuffer = pframe->m_pcommandbuffer->m_vkcommandbuffer;
 
-      auto pcommandbuffer = getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2();
 
       assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
       assert(
-         pcommandbuffer == getCurrentCommandBuffer() &&
+         pcommandbuffer == getCurrentCommandBuffer2() &&
          "Can't end render pass on command buffer from a different frame");
       vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
    }
@@ -3329,21 +3358,25 @@ namespace gpu_vulkan
 
          isFrameStarted = true;
 
-         auto pcommandbuffer = getCurrentCommandBuffer();
+         ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2();
 
-         VkCommandBufferBeginInfo beginInfo{};
-         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-         if (vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo) != VK_SUCCESS)
-         {
+         pcommandbuffer->begin_command_buffer(false);
+         //VkCommandBufferBeginInfo beginInfo{};
+         //beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-            throw ::exception(error_failed, "failed to begin recording command buffer!");
+         //if (vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo) != VK_SUCCESS)
+         //{
 
-         }
+         //   throw ::exception(error_failed, "failed to begin recording command buffer!");
+
+         //}
+
+         //pcommandbuffer->m_estate = ::gpu::command_buffer::e_state_recording;
 
          auto pframe = __create_new < ::gpu_vulkan::frame >();
 
-         pframe->m_pcommandbuffer = pcommandbuffer;
+         pframe->m_pcommandbuffer = pcommandbuffer.m_p;
 
          m_pgpurendertarget->m_pframe = pframe;
 
@@ -3391,29 +3424,89 @@ namespace gpu_vulkan
       //{
 
       assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-      auto pcommandbuffer = getCurrentCommandBuffer();
-      if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
+
+      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2();
+
+      auto eoutput = m_pgpucontext->m_eoutput;
+
+      if (eoutput == ::gpu::e_output_swap_chain)
       {
-         throw ::exception(error_failed, "failed to record command buffer!");
+
+         ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
+
+         ::cast < texture  > ptexture = pswapchain->current_texture();
+
+         ptexture->_new_state(
+            pcommandbuffer,
+            0,
+            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
+         );
+
       }
 
-      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
-
-      auto result = pgpurenderpass->submitCommandBuffers(pcommandbuffer);
-
-      if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-         m_bNeedToRecreateSwapChain)
+      if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
       {
 
-         m_bNeedToRecreateSwapChain = false;
+         auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
-         defer_update_renderer();
+         if (vkEndCommandBuffer(vkcommandbuffer) != VK_SUCCESS)
+         {
+
+            throw ::exception(error_failed, "failed to record command buffer!");
+
+         }
 
       }
-      else if (result != VK_SUCCESS)
+
+      ::cast < render_pass > pgpurenderpass;
+
+      if (eoutput == ::gpu::e_output_swap_chain)
       {
 
-         throw ::exception(error_failed, "failed to present swap chain image!");
+         ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
+
+         if (!pswapchain->::gpu_vulkan::render_pass::m_pgpurenderer)
+         {
+
+            pswapchain->initialize_render_target(
+               this,
+               m_pgpucontext->m_rectangle.size());
+
+         }
+
+         pgpurenderpass = pswapchain;
+
+      }
+      else
+      {
+
+         pgpurenderpass = m_pgpurendertarget;
+
+      }
+
+      if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
+      {
+
+         auto result = pgpurenderpass->submitCommandBuffers(
+            pcommandbuffer,
+            {}, {}, {});
+
+         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+            m_bNeedToRecreateSwapChain)
+         {
+
+            m_bNeedToRecreateSwapChain = false;
+
+            defer_update_renderer();
+
+         }
+         else if (result != VK_SUCCESS)
+         {
+
+            throw ::exception(error_failed, "failed to present swap chain image!");
+
+         }
 
       }
 
@@ -3461,7 +3554,33 @@ namespace gpu_vulkan
 
       //}
 
+
    }
+
+
+   //void renderer::on_end_layer(::gpu::layer* player)
+   //{
+
+   //   m_pgpucontext->on_end_layer(player);
+
+   //   auto ptextureTarget = player->texture();
+
+   //   auto ptextureSource = m_pgpurendertarget->current_texture();
+
+   //   m_pgpucontext->copy(ptextureTarget, ptextureSource);
+
+   //   auto pcommandbuffer = getCurrentCommandBuffer2();
+
+   //   if (pcommandbuffer)
+   //   {
+
+   //      pcommandbuffer->submit_command_buffer();
+
+   //      pcommandbuffer->wait_commands_to_execute();
+
+   //   }
+
+   //}
 
 
    void renderer::_on_graphics_end_draw(::gpu::texture* pgputexture, const ::int_rectangle& rectangle)
@@ -3687,6 +3806,9 @@ namespace gpu_vulkan
          //m_prendererResolve->pgpurenderpass->m_semaphoreaWaitToSubmit.add(
          //   pgpurenderpass->renderFinishedSemaphores[iPassCurrentFrame]
          //);
+         //m_prendererResolve->pgpurenderpass->m_stageaWaitToSubmit.add(
+         //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         //);
 
 
       }
@@ -3902,7 +4024,7 @@ namespace gpu_vulkan
          }
       };
 
-      auto pcommandbuffer = this->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = this->getCurrentCommandBuffer2();
 
       vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
       vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
@@ -3960,7 +4082,7 @@ namespace gpu_vulkan
    void renderer::blend(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource)
    {
 
-      auto pcommandbuffer = this->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = this->getCurrentCommandBuffer2();
 
       ::cast < texture > ptextureSrc = ptextureSource;
       ::cast < texture > ptextureDst = ptextureTarget;

@@ -1,5 +1,5 @@
 // From V0idsEmbrace@Twich continuum project
-// base from cube::model by
+// base from graphics3d::model by
 // camilo on 2025-05-17 02:47 <3ThomasBorregaardSorensen!!
 #pragma once
 

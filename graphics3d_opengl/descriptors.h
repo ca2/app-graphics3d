@@ -59,7 +59,7 @@
 //        public:
 //            //Builder(context& m_pgpucontext) : m_pgpucontext{ m_pgpucontext } {}
 //            Builder() {}
-//            void initialize_builder(::cube::context * pgpucontext)
+//            void initialize_builder(::graphics3d::context * pgpucontext)
 //            {
 //               m_pgpucontext = pgpucontext;
 //

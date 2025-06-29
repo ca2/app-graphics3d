@@ -38,7 +38,10 @@ namespace gpu_vulkan
 		VkFormat findDepthFormat();
 
 		VkResult acquireNextImage() override;
-		VkResult submitCommandBuffers(command_buffer * pcommandbuffer) override;
+		VkResult submitCommandBuffers(command_buffer * pcommandbuffer, 
+			const ::array < VkSemaphore > & semaphoreaWait,
+			const ::array < VkPipelineStageFlags > & stageaWait,
+			const ::array < VkSemaphore >& semaphoreaSignal) override;
 
 		//bool compareSwapFormats(const offscreen_render_pass& swapChain) const {
 		//	return swapChain.depthFormat == depthFormat &&

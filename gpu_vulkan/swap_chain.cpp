@@ -2,6 +2,7 @@
 #include "command_buffer.h"
 #include "physical_device.h"
 #include "renderer.h"
+#include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
 #include "aura/user/user/interaction.h"
@@ -15,6 +16,9 @@ namespace gpu_vulkan
    swap_chain::swap_chain()
    {
 
+      m_iCurrentFrame2 = 0;
+      m_uCurrentSwapChainImage = 0;
+      m_bBackBuffer = true;
 
    }
 
@@ -75,9 +79,17 @@ namespace gpu_vulkan
 
       render_pass::initialize_render_target(pgpurenderer, size, previous);
       //m_bNeedRebuild = false;
-      //init();
+      init();
       // Cleans up old swap chain since it's no longer needed after resizing
       //oldSwapChain = nullptr;
+   }
+
+
+   void swap_chain::initialize_gpu_swap_chain(::gpu::renderer* pgpurenderer)
+   {
+
+      ::gpu::swap_chain::initialize_gpu_swap_chain(pgpurenderer);
+
    }
 
 
@@ -107,22 +119,24 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
 
-      auto currentFrame = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+      //auto currentFrame = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+
+      auto imageIndex = &m_uCurrentSwapChainImage;
 
       // Wait for the fence of the current frame first (prevents CPU running too fast)
       //vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
-      vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-      vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
+      vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[get_frame_index()], VK_TRUE, UINT64_MAX);
+      //vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
 
 
       VkResult result = vkAcquireNextImageKHR(
          pcontext->logicalDevice(),
          m_vkswapchain,
          UINT64_MAX,
-         imageAvailableSemaphores[currentFrame],  // signal semaphore
+         imageAvailableSemaphores[get_frame_index()],  // signal semaphore
          VK_NULL_HANDLE,
-         &m_uCurrentSwapChainImage);
+         imageIndex);
 
       if (result == VK_ERROR_OUT_OF_DATE_KHR) {
          // Swapchain needs to be recreated - handle outside
@@ -133,12 +147,12 @@ namespace gpu_vulkan
       }
 
       //// If the image we acquired is already being used (fence not signaled), wait for it
-      //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
-      //   vkWaitForFences(pcontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
-      //}
+      if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
+         vkWaitForFences(pcontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+      }
 
       // Mark this image as now being in use by current frame
-      //imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
+      imagesInFlight[*imageIndex] = inFlightFences[get_frame_index()];
 
       return result;
       //vkWaitForFences(
@@ -174,7 +188,19 @@ namespace gpu_vulkan
    }
 
 
-   VkResult swap_chain::submitCommandBuffers(command_buffer * pcommandbuffer)
+   int swap_chain::get_frame_index()
+   {
+
+      return m_iCurrentFrame2;
+
+   }
+
+
+   VkResult swap_chain::submitCommandBuffers(
+      command_buffer * pcommandbuffer,
+      const ::array < VkSemaphore >& semaphoreaWait,
+      const ::array < VkPipelineStageFlags >& stageaWait,
+      const ::array < VkSemaphore >& semaphoreaSignal)
    {
 
       ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
@@ -186,33 +212,53 @@ namespace gpu_vulkan
       // Use currentFrame to access per-frame sync objects
       //vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
       //vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
+      //if (VK_TIMEOUT == vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[m_uCurrentSwapChainImage], VK_TRUE, 0))
+      {
+
+         vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[get_frame_index()], VK_TRUE, UINT64_MAX);
+      }
+      vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[get_frame_index()]);
 
       VkSubmitInfo submitInfo{};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-      VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
-      VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-      submitInfo.waitSemaphoreCount = 1;
-      submitInfo.pWaitSemaphores = waitSemaphores;
-      submitInfo.pWaitDstStageMask = waitStages;
+      //VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
+      ::array<VkSemaphore> waitSemaphores(semaphoreaWait);
+      ::array<VkPipelineStageFlags> waitStages(stageaWait);
+      //if (imageAvailable[get_frame_index()] > 0)
+      //{
+         waitSemaphores.add(imageAvailableSemaphores[get_frame_index()]);
+         waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+      //}
+      waitStages.append(::transfer(m_stageaWaitToSubmit));
+      waitSemaphores.append(::transfer(m_semaphoreaWaitToSubmit));
+      submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
+      submitInfo.pWaitSemaphores = waitSemaphores.data();
+      submitInfo.pWaitDstStageMask = waitStages.data();
+
 
       submitInfo.commandBufferCount = 1;
       VkCommandBuffer commandbuffera[] = { pcommandbuffer->m_vkcommandbuffer };
       submitInfo.pCommandBuffers = commandbuffera;
 
-      VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
-      submitInfo.signalSemaphoreCount = 1;
-      submitInfo.pSignalSemaphores = signalSemaphores;
+      ::array<VkSemaphore> signalSemaphores(semaphoreaSignal);
+      signalSemaphores.add(renderFinishedSemaphores[*imageIndex]);
+      signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
+      submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
+      submitInfo.pSignalSemaphores = signalSemaphores.data();
 
-      VkResult vkresult = vkQueueSubmit(pcontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]);
+      auto vkqueueGraphics = pcontext->graphicsQueue();
+      //VkResult vkresult = vkQueueSubmit(pcontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]);
+      VkResult vkresult = vkQueueSubmit(vkqueueGraphics, 1,
+         &submitInfo, inFlightFences[get_frame_index()]);
       if (vkresult != VK_SUCCESS) {
          throw ::exception(error_failed, "failed to submit draw command buffer!");
       }
 
       VkPresentInfoKHR presentInfo{};
       presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-      presentInfo.waitSemaphoreCount = 1;
-      presentInfo.pWaitSemaphores = signalSemaphores;
+      presentInfo.waitSemaphoreCount = signalSemaphores.size();
+      presentInfo.pWaitSemaphores = signalSemaphores.data();
       presentInfo.swapchainCount = 1;
       presentInfo.pSwapchains = &m_vkswapchain;
       presentInfo.pImageIndices = imageIndex;
@@ -220,6 +266,7 @@ namespace gpu_vulkan
       VkResult result = vkQueuePresentKHR(pcontext->presentQueue(), &presentInfo);
 
       //currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+      m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % get_frame_count();
 
       return result;
 
@@ -272,12 +319,12 @@ namespace gpu_vulkan
    }
 
 
-   //int swap_chain::get_image_index() const
-   //{
+   int swap_chain::get_image_index() const
+   {
 
-   //   return m_uCurrentSwapChainImage;
+      return m_uCurrentSwapChainImage;
 
-   //}
+   }
 
 
    void swap_chain::createRenderPassImpl()
@@ -380,6 +427,8 @@ namespace gpu_vulkan
          rectangleTarget.top() = 0;
          rectangleTarget.set_width(extent.width);
          rectangleTarget.set_height(extent.height);
+
+         pgputexture->m_bTransferDst = true;
 
          pgputexture->initialize_gpu_texture(::gpu_vulkan::render_pass::m_pgpurenderer, rectangleTarget);
 
@@ -490,7 +539,9 @@ namespace gpu_vulkan
       //dependency[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
       //dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
       //dependency[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;// if needed
-
+      VkClearValue clearColor = {
+    .color = { { 0.0f, 0.0f, 0.0f, 0.0f } } // fully transparent
+      };
 
       VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
       VkRenderPassCreateInfo renderPassInfo = {};
@@ -788,6 +839,246 @@ namespace gpu_vulkan
    void swap_chain::present(::gpu::texture* pgputexture)
    {
 
+      ::cast < renderer > pgpurenderer = ::gpu::swap_chain::m_pgpurenderer;
+
+      ::cast < context > pgpucontext = pgpurenderer->m_pgpucontext;
+
+      m_size = pgpucontext->m_rectangle.size();
+
+      //if (m_iSwapChainCount < 0)
+      //{
+
+      //   DXGI_SWAP_CHAIN_DESC desc = {};
+      //   //ComPtr<IDXGISwapChain> swapChain; // or swapChain3 as IDXGISwapChain
+
+      //   HRESULT hrSwapChainGetDesc = m_pdxgiswapchain->GetDesc(&desc);
+      //   ::defer_throw_hresult(hrSwapChainGetDesc);
+      //   m_iSwapChainCount = desc.BufferCount;
+      //   // bufferCount now holds how many backbuffers the swap chain uses
+
+      //}
+
+      //if (!m_pdxgiswapchain3)
+      //{
+      //   m_pdxgiswapchain1.as(m_pdxgiswapchain3);
+
+      //}
+
+      //UINT currentBackBufferIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
+
+      VkResult vkresultAcquireNextImage = acquireNextImage();
+
+      if (vkresultAcquireNextImage != VK_SUCCESS)
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+      //::cast <texture> ptextureSwapChain = m_texturea[get_image_index()];
+
+      int iFrameIndex = get_frame_index();
+
+      ::cast <texture> ptextureSwapChain = m_texturea[iFrameIndex];
+
+      //if (!ptextureSwapChain)
+      //{
+
+      //   __construct_new(ptextureSwapChain);
+
+      //   ptextureSwapChain->m_bRenderTarget = true;
+
+      //   ptextureSwapChain->m_bShaderResource = false;
+
+      //   ptextureSwapChain->m_bDepthStencil = false;
+
+      //   ptextureSwapChain->_initialize_gpu_texture(
+      //      pgpurenderer,
+      //      m_iSwapChainIndex,
+      //      m_pdxgiswapchain);
+
+      //   //m_pdxgiswapchain1->GetBuffer(0, __interface_of(m_ptextureSwapChain));
+
+      //}
+
+      //if (!m_pblendstateDisabled)
+      //{
+
+      //   ::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
+
+      //   D3D11_BLEND_DESC blendDesc = { 0 };
+      //   blendDesc.RenderTarget[0].BlendEnable = FALSE;  // Disable blending
+      //   blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+      //   HRESULT hr = pgpudevice->m_pdevice->CreateBlendState(&blendDesc, &m_pblendstateDisabled);
+      //   ::defer_throw_hresult(hr);
+
+      //}
+
+      //{
+
+      //   float blendFactor[4] = { 0, 0, 0, 0 }; // Not used
+      //   UINT sampleMask = 0xFFFFFFFF;
+      //   pgpucontext->m_pcontext->OMSetBlendState(m_pblendstateDisabled, blendFactor, sampleMask);
+
+      //}
+
+      //if (!m_prendertargetviewSwapChain)
+      //{
+      // 
+      //   ::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
+
+      //   pgpudevice->m_pdevice->CreateRenderTargetView(
+      //      m_ptextureSwapChain, nullptr, &m_prendertargetviewSwapChain);
+
+      //}
+
+      //ID3D11RenderTargetView* rendertargetviewa[] = 
+      //{
+      //   m_ptextureSwapChain->m_prendertargetview
+      //};
+      //
+      //pgpucontext->m_pcontext->OMSetRenderTargets(1, rendertargetviewa, nullptr);
+
+      // 2. Set viewport
+
+      if (!m_pshaderPresent)
+      {
+
+         __construct_new(m_pshaderPresent);
+
+         m_pshaderPresent->m_bTextureAndSampler = true;
+         m_pshaderPresent->m_bDisableDepthTest = true;
+         unsigned int fullscreen_vertex_shader[] = {
+#include "shader/fullscreen.vert.spv.inl"
+         };
+
+         unsigned int fullscreen_fragment_shader[] = {
+#include "shader/fullscreen.frag.spv.inl"
+         };
+
+
+         m_pshaderPresent->m_bEnableBlend = false;
+         m_pshaderPresent->m_bTextureAndSampler = true;
+         m_pshaderPresent->m_bDisableDepthTest = true;
+
+         //m_pshaderBlend3->m_pgpurenderer = this;
+         m_pshaderPresent->m_iSamplerSlot = 0;
+         // Image Blend descriptors
+//if (!m_psetdescriptorlayoutImageBlend)
+
+         m_pshaderPresent->m_bClearColor = true;
+         m_pshaderPresent->m_colorClear = ::color::transparent;
+
+         
+
+         m_pshaderPresent->initialize_shader_with_block(
+            pgpurenderer,
+            ::as_memory_block(fullscreen_vertex_shader),
+            ::as_memory_block(fullscreen_fragment_shader),
+            {},
+            {},
+            {},
+            {},
+            {},
+            // this means the vertex input layout will be null/empty
+            // the full screen shader is embed in the shader code
+            ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
+
+         );
+
+
+
+      }
+
+      //pgpurenderer->m_pgpucontext->m_iOverrideFrame = get_image_index();
+
+      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
+
+      auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
+
+      ptextureSwapChain->_new_state(pcommandbuffer,
+         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+      );
+
+
+      ::cast <texture > ptextureSrc = pgputexture;
+
+      ptextureSrc->_new_state(
+         pcommandbuffer,
+         0,
+         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+      );
+
+
+      m_pshaderPresent->bind(ptextureSwapChain, ptextureSrc);
+      //pgpucontext->m_pcontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
+      //pgpucontext->m_pcontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
+
+      //pgpucontext->m_pcontext->PSSetShaderResources(
+      //   0, 1, m_ptextureSwapChain->m_pshaderresourceview.pp());
+      //pgpucontext->m_pcontext->PSSetSamplers(
+      //   0, 1, m_ptextureSwapChain->m_psamplerstate.pp());
+
+ /*     D3D11_VIEWPORT vp = {};
+      vp.TopLeftX = 0;
+      vp.TopLeftY = 0;
+      vp.Width = static_cast<float>(m_size.cx());
+      vp.Height = static_cast<float>(m_size.cy());
+      vp.MinDepth = 0.0f;
+      vp.MaxDepth = 1.0f;
+      pgpucontext->m_pcontext->RSSetViewports(1, &vp);*/
+
+      //D3D12_VIEWPORT viewport = {};
+      //viewport.TopLeftX = 0;
+      //viewport.TopLeftY = 0;
+      //viewport.Width = static_cast<float>(m_size.cx());
+      //viewport.Height = static_cast<float>(m_size.cy());
+      //viewport.MinDepth = 0.0f;
+      //viewport.MaxDepth = 1.0f;
+
+      //D3D12_RECT scissorRect = {};
+      //scissorRect.left = 0;
+      //scissorRect.top = 0;
+      //scissorRect.right = static_cast<float>(m_size.cx());
+      //scissorRect.bottom = static_cast<float>(m_size.cy());
+
+      //::cast < renderer > prenderer = m_pgpurenderer;
+
+
+      //// 4. Set the viewport and scissor
+      //pcommandlist->RSSetViewports(1, &viewport);
+      //pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+      //pcommandlist->DrawInstanced(3, 1, 0, 0);
+      vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
+
+
+      m_pshaderPresent->unbind();
+
+      //pgpurenderer->m_pgpucontext->m_iOverrideFrame = -1;
+      //FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
+
+      //pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView, 
+        // colorRGBA2, 0, nullptr);
+
+      //{
+
+      //   FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
+
+      //   D3D12_RECT r[1];
+
+      //   r[0].left = 200;
+      //   r[0].top = 100;
+      //   r[0].right = 300;
+      //   r[0].bottom = 200;
+
+      //   pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView,
+      //      colorRGBA2, 1, r);
+
+      //}
 
    }
 

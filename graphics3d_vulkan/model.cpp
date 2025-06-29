@@ -174,7 +174,7 @@ namespace graphics3d_vulkan
 
       ::cast <::gpu_vulkan::renderer> pgpurenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = pgpurenderer->getCurrentCommandBuffer();
+      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
 
       if (hasIndexBuffer) 
       {
@@ -197,7 +197,7 @@ namespace graphics3d_vulkan
 
       ::cast <::gpu_vulkan::renderer> prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
 
       VkBuffer buffers[] = { m_pbufferVertex->getBuffer() };
@@ -215,7 +215,7 @@ namespace graphics3d_vulkan
 
 
 
-   //void model::Builder::loadModel(::cube::gpu::context * pgpucontext, const std::string& filepath) {
+   //void model::Builder::loadModel(::graphics3d::gpu::context * pgpucontext, const std::string& filepath) {
    //    tinyobj::attrib_t attrib;
    //    ::array<tinyobj::shape_t> shapes;
    //    ::array<tinyobj::material_t> materials;

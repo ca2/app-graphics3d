@@ -31,6 +31,7 @@ namespace gpu_vulkan
 
       ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
       ::array < VkSemaphore> m_semaphoreaWaitToSubmit;
+      ::array < VkPipelineStageFlags > m_stageaWaitToSubmit;
       ::array<VkImage> depthImages;
       ::array<VkDeviceMemory> depthImageMemorys;
       ::array<VkImageView> depthImageViews;
@@ -81,7 +82,11 @@ namespace gpu_vulkan
       //virtual VkResult acquireNextImage(uint32_t* imageIndex);
       //virtual VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
       virtual VkResult acquireNextImage();
-      virtual VkResult submitCommandBuffers(command_buffer * pcommandbuffer);
+      virtual VkResult submitCommandBuffers(
+         command_buffer * pcommandbuffer, 
+         const ::array < VkSemaphore >& semaphoreaWait,
+         const ::array < VkPipelineStageFlags >& stageaWait,
+         const ::array < VkSemaphore >& semaphoreaSignal);
 
       //bool compareFormats(const render_pass& renderpass) const {
       //   return renderpass.m_formatDepth == m_formatDepth &&

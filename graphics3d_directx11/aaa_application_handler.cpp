@@ -43,7 +43,7 @@ namespace graphics3d_directx11
 {
 
 
-   //::pointer<::directx11::application > start_directx11_application(::::cube::container* pcontainer, mouse_state* pmousestate)
+   //::pointer<::directx11::application > start_directx11_application(::::graphics3d::container* pcontainer, mouse_state* pmousestate)
    //{
    //   auto pdirectx11example = pcontainer->__create_new < application_handler >();
 

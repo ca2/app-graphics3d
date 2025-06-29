@@ -5,7 +5,7 @@
 
 //#include "bred/gpu/context.h"
 ////#include "window.h"
-////#include "directx11-cube/graphics3d_directx11/context.h"
+////#include "directx11-graphics3d/graphics3d_directx11/context.h"
 //#include "_directx11.h"
 //// std lib headers
 //#include <string>

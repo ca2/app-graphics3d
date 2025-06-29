@@ -11,7 +11,7 @@
 
 //#include "vma/vk_mem_alloc.h"
 #include "context.h"
-//#include "vulkan-cube/graphics3d_vulkan/base_application_no_swap_chain.h"
+//#include "vulkan-graphics3d/graphics3d_vulkan/base_application_no_swap_chain.h"
 #include "descriptors.h"
 #include "application_object.h"
 #include "cube/container.h"

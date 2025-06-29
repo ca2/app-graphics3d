@@ -23,7 +23,7 @@ namespace gpu_directx12
       //VkInstance                       m_vkinstance;
 
 
-      //::cube::application_object::map				m_mapObjects;
+      //::graphics3d::application_object::map				m_mapObjects;
 
 
       //::pointer < ::gpu_directx12::direct2d_draw2d_connector > m_pdirect2ddraw2dconnector;

@@ -2,18 +2,20 @@
 #pragma once
 
 
+#include "bred/gpu/command_buffer.h"
+
+
 namespace gpu_vulkan
 {
 
 
    class command_buffer :
-      virtual public ::particle
+      virtual public ::gpu::command_buffer
    {
    public:
 
 
-      ::pointer < ::gpu::renderer > m_pgpurenderer;
-
+      
       VkCommandBuffer m_vkcommandbuffer;
 
 
@@ -21,9 +23,20 @@ namespace gpu_vulkan
       ~command_buffer() override;
 
 
-      virtual void initialize_command_buffer(::gpu::renderer * pgpurenderer);
+      void initialize_command_buffer(::gpu::render_target * pgpurendertarget) override;
 
-      virtual void begin_command_buffer();
+      virtual void begin_command_buffer(bool bOneTime);
+
+
+      void wait_commands_to_execute() override;
+
+      void submit_command_buffer(::gpu::layer * pgpulayer) override;
+
+      virtual void set_viewport(const ::int_rectangle & rectangle);
+
+      virtual void set_scissor(const ::int_rectangle& rectangle); 
+
+      virtual void draw(::gpu_vulkan::model_buffer* pmodelbuffer);
 
 
    };

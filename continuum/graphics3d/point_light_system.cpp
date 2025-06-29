@@ -79,9 +79,8 @@ namespace app_graphics3d_continuum
          {::gpu::shader::e_descriptor_set_slot_global,
          ::gpu::shader::e_descriptor_set_slot_local},
          nullptr,
-         {},
          point_light2_properties(),
-         gpu_Vertex_properties(),
+         pgpucontext->input_layout(gpu_Vertex_properties()),
          ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
       );
       

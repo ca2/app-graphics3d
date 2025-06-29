@@ -83,6 +83,8 @@ namespace gpu_vulkan
 
       int m_iSamplerSlot;
 
+      bool m_bClearColor;
+      ::color::color m_colorClear;
 
       int m_iColorAttachmentCount = 1;
       VkPrimitiveTopology m_vktopology;
@@ -91,7 +93,7 @@ namespace gpu_vulkan
 
 
       ::pointer < shader_sampler >     m_pshadersampler;
-
+      ::pointer < ::gpu_vulkan::shader > m_pshaderPresent;
 
       shader();
       ~shader();
@@ -135,6 +137,7 @@ namespace gpu_vulkan
 
 
       void bind(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource) override;
+      void bind(::gpu::texture* pgputextureTarget) override;
       void bind() override;
       void unbind() override;
       virtual void _bind();
@@ -145,7 +148,7 @@ namespace gpu_vulkan
 
       
 
-      void _bind_sampler(::gpu::texture * ptexture);
+      void bind_source(::gpu::texture * ptexture) override;
 
 
    };

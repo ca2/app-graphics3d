@@ -1,5 +1,6 @@
 // From vk_swapchain by camilo on 2025-05-09 02:01 <3ThomasBorregaardSorensen!!
 #include "framework.h"
+#include "command_buffer.h"
 #include "physical_device.h"
 #include "render_pass.h"
 #include "renderer.h"
@@ -89,6 +90,18 @@ namespace gpu_vulkan
    void render_pass::on_before_begin_render(frame* pframe)
    {
 
+      ::cast < texture > ptextureCurrent = current_texture();
+
+      ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
+
+      ptextureCurrent->_new_state(
+         pcommandbuffer,
+         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+      );
+
+
 
    }
 
@@ -125,7 +138,11 @@ namespace gpu_vulkan
    }
 
 
-   VkResult render_pass::submitCommandBuffers(command_buffer * pcommandbuffer)
+   VkResult render_pass::submitCommandBuffers(
+      command_buffer * pcommandbuffer,
+      const ::array < VkSemaphore >& semaphoreaWait,
+      const ::array < VkPipelineStageFlags >& stageaWait,
+      const ::array < VkSemaphore >& semaphoreaSignal)
    {
 
       //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
@@ -375,11 +392,13 @@ namespace gpu_vulkan
          framebufferInfo.height = extent.height;
          framebufferInfo.layers = 1;
 
+         auto& vkframebuffer = m_framebuffers[i];
+
          if (vkCreateFramebuffer(
             pcontext->logicalDevice(),
             &framebufferInfo,
             nullptr,
-            &m_framebuffers[i]) != VK_SUCCESS) 
+            &vkframebuffer) != VK_SUCCESS) 
          {
 
             throw ::exception(error_failed,"failed to create framebuffer!");

@@ -4,6 +4,7 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
+#include "memory_buffer.h"
 #include "physical_device.h"
 #include "program.h"
 #include "renderer.h"
@@ -11,6 +12,7 @@
 #include "texture.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/types.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -28,7 +30,7 @@ namespace gpu_vulkan
 
    context::context()
    {
-      
+
 #ifdef WINDOWS_DESKTOP
       m_formatImageDefault = VK_FORMAT_B8G8R8A8_UNORM;
 #else
@@ -315,7 +317,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::set_bitmap_1(::image::image * pimage)
+   void context::set_bitmap_1(::image::image* pimage)
    {
 
       ASSERT(is_current_task());
@@ -657,14 +659,48 @@ namespace gpu_vulkan
       //}
 
 
-   void context::set_matrix_uniform(const ::gpu::payload & uniformMatrix)
+   bool context::defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, memsize size)
+   {
+
+      if (__defer_construct_new(pmemorybuffer))
+      {
+
+         pmemorybuffer->initialize_memory_buffer(this, size);
+
+         return true;
+
+      }
+
+      return false;
+
+   }
+
+
+   bool context::defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, const ::block& block)
+   {
+
+      if (defer_construct_new(pmemorybuffer, block.size()))
+      {
+
+         pmemorybuffer->assign(block.data(), block.size());
+
+         return true;
+
+      }
+
+      return false;
+
+   }
+
+
+   void context::set_matrix_uniform(const ::gpu::payload& uniformMatrix)
    {
 
       //m_iMatrixUniform = uniformMatrix.m_iUniform;
 
    }
 
-   ::pointer < ::gpu::context > allocate_system_context(::particle * pparticle)
+   ::pointer < ::gpu::context > allocate_system_context(::particle* pparticle)
    {
 
       return pparticle->__create_new <context>();
@@ -694,7 +730,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_offscreen_window(const ::int_size & size)
+   void context::_create_offscreen_window(const ::int_size& size)
    {
       //if (::IsWindow(m_hwnd))
       //{
@@ -777,68 +813,68 @@ namespace gpu_vulkan
 
       }
 
-//      auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
-//
-//      assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
-//      
-//      m_pphysicaldevice = pphysicaldevice;
-//
-//      if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
-//      {
-//
-//         m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
-//
-//      }
-//   
-//      auto physicaldevice = pphysicaldevice->m_physicaldevice;
-//
-//      // Get list of supported extensions
-//      uint32_t extCount = 0;
-//      vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
-//      if (extCount > 0)
-//      {
-//         ::array<VkExtensionProperties> extensions(extCount);
-//         if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
-//         {
-//            for (auto & ext : extensions)
-//            {
-//               m_straSupportedExtensions.add(ext.extensionName);
-//            }
-//         }
-//      }
-//
-//      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
-//      //getEnabledExtensions();
-//
-//      bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
-//
-//      m_itaskGpu = ::current_itask();
-//
-//      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
-//.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
-//      .scalarBlockLayout = TRUE};
-//      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
-//      m_physicaldevicefeaturesCreate.logicOp = TRUE;
-//
-//      VkResult result = createLogicalDevice(
-//         m_physicaldevicefeaturesCreate,
-//         pgpuapproach->m_pszaEnabledDeviceExtensions,
-//         pgpuapproach->m_pDeviceCreatepNextChain,
-//         useSwapChain);
-//
-//      if (result != VK_SUCCESS)
-//      {
-//
-//         m_itaskGpu = {};
-//
-//         exitFatal("Could not create Vulkan device: \n" + errorString(result) + " VkResult=" + ::as_string(result), result);
-//
-//         throw ::exception(error_failed);
-//
-//      }
+      //      auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
+      //
+      //      assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
+      //      
+      //      m_pphysicaldevice = pphysicaldevice;
+      //
+      //      if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
+      //      {
+      //
+      //         m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
+      //
+      //      }
+      //   
+      //      auto physicaldevice = pphysicaldevice->m_physicaldevice;
+      //
+      //      // Get list of supported extensions
+      //      uint32_t extCount = 0;
+      //      vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
+      //      if (extCount > 0)
+      //      {
+      //         ::array<VkExtensionProperties> extensions(extCount);
+      //         if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
+      //         {
+      //            for (auto & ext : extensions)
+      //            {
+      //               m_straSupportedExtensions.add(ext.extensionName);
+      //            }
+      //         }
+      //      }
+      //
+      //      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
+      //      //getEnabledExtensions();
+      //
+      //      bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
+      //
+      //      m_itaskGpu = ::current_itask();
+      //
+      //      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
+      //.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
+      //      .scalarBlockLayout = TRUE};
+      //      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
+      //      m_physicaldevicefeaturesCreate.logicOp = TRUE;
+      //
+      //      VkResult result = createLogicalDevice(
+      //         m_physicaldevicefeaturesCreate,
+      //         pgpuapproach->m_pszaEnabledDeviceExtensions,
+      //         pgpuapproach->m_pDeviceCreatepNextChain,
+      //         useSwapChain);
+      //
+      //      if (result != VK_SUCCESS)
+      //      {
+      //
+      //         m_itaskGpu = {};
+      //
+      //         exitFatal("Could not create Vulkan device: \n" + errorString(result) + " VkResult=" + ::as_string(result), result);
+      //
+      //         throw ::exception(error_failed);
+      //
+      //      }
 
 
-      //device = vulkanDevice->logicalDevice;
+            //device = vulkanDevice->logicalDevice;
 
    }
 
@@ -870,7 +906,7 @@ namespace gpu_vulkan
 
 
 
-   void context::endSingleTimeCommands(command_buffer * pcommandbuffer)
+   void context::endSingleTimeCommands(command_buffer* pcommandbuffer)
    {
 
       VkCommandBuffer commandbuffers[] = { pcommandbuffer->m_vkcommandbuffer };
@@ -880,12 +916,12 @@ namespace gpu_vulkan
       submitInfo.commandBufferCount = 1;
       submitInfo.pCommandBuffers = commandbuffers;
 
-      endSingleTimeCommands(pcommandbuffer,1, &submitInfo);
+      endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
 
    }
 
 
-   void context::endSingleTimeCommands(command_buffer * pcommandbuffer, int iSubmitCount, VkSubmitInfo* psubmitinfo)
+   void context::endSingleTimeCommands(command_buffer* pcommandbuffer, int iSubmitCount, VkSubmitInfo* psubmitinfo)
    {
 
       vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer);
@@ -903,7 +939,7 @@ namespace gpu_vulkan
          fprintf(stderr, "Failed to create fence\n");
          // handle error
       }
-     
+
       vkQueueSubmit(m_vkqueueGraphics, 1, psubmitinfo, fence);
 
       vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
@@ -916,9 +952,9 @@ namespace gpu_vulkan
 
 
 
-   VkDevice context::logicalDevice() 
+   VkDevice context::logicalDevice()
    {
-      
+
       ::cast < device > pgpudevice = m_pgpudevice;
 
       return pgpudevice->logicalDevice();
@@ -926,368 +962,368 @@ namespace gpu_vulkan
    }
 
 
-//   VkResult context::createLogicalDevice(
-//   VkPhysicalDeviceFeatures enabledFeatures,
-//   ::array<const char *> enabledExtensions,
-//   void * pNextChain,
-//   bool useSwapChain,
-//   VkQueueFlags requestedQueueTypes)
-//   {
-//
-//      ::cast < approach > pgpuapproach = application()->get_gpu();
-//
-//      ::cast < physical_device > pphysicaldevice = pgpuapproach->m_pphysicaldevice;
-//
-//      // Desired queues need to be requested upon logical device creation
-//      // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application
-//      // requests different queue types
-//
-//      ::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
-//
-//      // Get queue family indices for the requested queue family types
-//      // Note that the indices may overlap depending on the implementation
-//
-//      const float defaultQueuePriority(0.0f);
-//
-//      m_queuefamilyindices = pphysicaldevice->findQueueFamilies();
-//
-//      // Graphics queue
-//      if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT
-//         && m_queuefamilyindices.graphicsFamilyHasValue)
-//      {
-//         //m_queuefamilyindices.graphics = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
-//         VkDeviceQueueCreateInfo queueInfo{};
-//         queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-//         queueInfo.queueFamilyIndex = m_queuefamilyindices.graphicsFamily;
-//         queueInfo.queueCount = 1;
-//         queueInfo.pQueuePriorities = &defaultQueuePriority;
-//         queueCreateInfos.add(queueInfo);
-//      }
-//      else
-//      {
-//         m_queuefamilyindices.graphicsFamily = 0;
-//      }
-//
-//      // Dedicated compute queue
-//      if (requestedQueueTypes & VK_QUEUE_COMPUTE_BIT
-//         && m_queuefamilyindices.computeFamilyHasValue)
-//      {
-//         //m_queuefamilyindices.compute = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
-//         if (m_queuefamilyindices.computeFamily != m_queuefamilyindices.graphicsFamily)
-//         {
-//            // If compute family index differs, we need an additional queue create info for the compute queue
-//            VkDeviceQueueCreateInfo queueInfo{};
-//            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-//            queueInfo.queueFamilyIndex = m_queuefamilyindices.computeFamily;
-//            queueInfo.queueCount = 1;
-//            queueInfo.pQueuePriorities = &defaultQueuePriority;
-//            queueCreateInfos.add(queueInfo);
-//         }
-//      }
-//      else
-//      {
-//         // Else we use the same queue
-//         m_queuefamilyindices.computeFamily = m_queuefamilyindices.graphicsFamily;
-//      }
-//
-//      // Dedicated transfer queue
-//      if (requestedQueueTypes & VK_QUEUE_TRANSFER_BIT
-//         && m_queuefamilyindices.transferFamilyHasValue)
-//      {
-//         //m_queuefamilyindices.transfer = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_TRANSFER_BIT);
-//         if ((m_queuefamilyindices.transferFamily != m_queuefamilyindices.graphicsFamily)
-//            && (m_queuefamilyindices.transferFamily != m_queuefamilyindices.computeFamily))
-//         {
-//            // If transfer family index differs, we need an additional queue create info for the transfer queue
-//            VkDeviceQueueCreateInfo queueInfo{};
-//            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-//            queueInfo.queueFamilyIndex = m_queuefamilyindices.transferFamily;
-//            queueInfo.queueCount = 1;
-//            queueInfo.pQueuePriorities = &defaultQueuePriority;
-//            queueCreateInfos.add(queueInfo);
-//         }
-//      }
-//      else
-//      {
-//         // Else we use the same queue
-//         m_queuefamilyindices.transferFamily = m_queuefamilyindices.graphicsFamily;
-//      }
-//
-//      // Create the logical device representation
-//      ::array<const char *> deviceExtensions(enabledExtensions);
-//      if (useSwapChain)
-//      {
-//
-//         // If the device will be used for presenting to a display via a swapchain we need to request the swapchain extension
-//         deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-//
-//      }
-//
-//      VkDeviceCreateInfo deviceCreateInfo = {};
-//      deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-//      deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());;
-//      deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
-//      deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
-//
-//      // If a pNext(Chain) has been passed, we need to add it to the device creation info
-//      VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
-//      if (pNextChain) {
-//         physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-//         physicalDeviceFeatures2.features = enabledFeatures;
-//         physicalDeviceFeatures2.pNext = pNextChain;
-//         deviceCreateInfo.pEnabledFeatures = nullptr;
-//         deviceCreateInfo.pNext = &physicalDeviceFeatures2;
-//      }
-//
-//#if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_METAL_EXT)) && defined(VK_KHR_portability_subset)
-//      // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
-//      if (extensionSupported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
-//      {
-//         deviceExtensions.add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-//      }
-//#endif
-//
-//      if (deviceExtensions.size() > 0)
-//      {
-//         for (const char * enabledExtension : deviceExtensions)
-//         {
-//            if (!isExtensionSupported(enabledExtension)) {
-//               information() << "Enabled device extension \"" << enabledExtension << "\" is not present at device level\n";
-//            }
-//         }
-//
-//         deviceCreateInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
-//         deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
-//      }
-//
-//      this->m_physicaldevicefeaturesEnabled = enabledFeatures;
-//
-//      auto physicaldevice = pphysicaldevice->m_physicaldevice;
-//
-//      VkResult result = vkCreateDevice(physicaldevice, &deviceCreateInfo, nullptr, &this->logicalDevice());
-//      if (result != VK_SUCCESS)
-//      {
-//         return result;
-//      }
-//
-//      if (m_queuefamilyindices.graphicsFamily >= 0)
-//      {
-//         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
-//      }
-//      if (m_queuefamilyindices.presentFamily >= 0)
-//      {
-//         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
-//      }
-//
-//
-//      // Create a default command pool for graphics command buffers
-//      m_vkcommandpool = createCommandPool(m_queuefamilyindices.graphicsFamily);
-//
-//      return result;
-//
-//   }
-//
-//
-//   /**
-//   * Create a command pool for allocation command buffers from
-//   *
-//   * @param queueFamilyIndex Family index of the queue to create the command pool for
-//   * @param createFlags (Optional) Command pool creation flags (Defaults to VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
-//   *
-//   * @note Command buffers allocated from the created pool can only be submitted to a queue with the same family index
-//   *
-//   * @return A handle to the created command buffer
-//   */
-//   VkCommandPool context::createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags)
-//   {
-//      VkCommandPoolCreateInfo cmdPoolInfo = {};
-//      cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-//      cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
-//      cmdPoolInfo.flags = createFlags;
-//      VkCommandPool cmdPool;
-//      VK_CHECK_RESULT(vkCreateCommandPool(this->logicalDevice(), &cmdPoolInfo, nullptr, &cmdPool));
-//      return cmdPool;
-//   }
-//
-//
-//   /**
-//   * Check if an extension is supported by the (physical device)
-//   *
-//   * @param extension Name of the extension to check
-//   *
-//   * @return True if the extension is supported (present in the list read at device creation time)
-//   */
-//   bool context::isExtensionSupported(const ::scoped_string & scopedstrExtension)
-//   {
-//
-//      return m_straSupportedExtensions.contains(scopedstrExtension);
-//
-//   }
-
-
-   //void context::_create_window_buffer()
-   //{
-
-   //   if (!m_hdc || !m_hrc)
+   //   VkResult context::createLogicalDevice(
+   //   VkPhysicalDeviceFeatures enabledFeatures,
+   //   ::array<const char *> enabledExtensions,
+   //   void * pNextChain,
+   //   bool useSwapChain,
+   //   VkQueueFlags requestedQueueTypes)
    //   {
-
-   //      auto psystem = system();
-
-   //      auto pgpu = application()->get_gpu();
-
-   //      ::pointer < ::vulkan::vulkan > pvulkan = pgpu;
-
-   //      if (!pvulkan->m_atomClass)
+   //
+   //      ::cast < approach > pgpuapproach = application()->get_gpu();
+   //
+   //      ::cast < physical_device > pphysicaldevice = pgpuapproach->m_pphysicaldevice;
+   //
+   //      // Desired queues need to be requested upon logical device creation
+   //      // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application
+   //      // requests different queue types
+   //
+   //      ::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
+   //
+   //      // Get queue family indices for the requested queue family types
+   //      // Note that the indices may overlap depending on the implementation
+   //
+   //      const float defaultQueuePriority(0.0f);
+   //
+   //      m_queuefamilyindices = pphysicaldevice->findQueueFamilies();
+   //
+   //      // Graphics queue
+   //      if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT
+   //         && m_queuefamilyindices.graphicsFamilyHasValue)
    //      {
-
-   //         informationf("MS GDI - RegisterClass failed");
-
-   //         informationf("last-error code: %d\n", GetLastError());
-
-   //         throw ::exception(error_failed);
-
+   //         //m_queuefamilyindices.graphics = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
+   //         VkDeviceQueueCreateInfo queueInfo{};
+   //         queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+   //         queueInfo.queueFamilyIndex = m_queuefamilyindices.graphicsFamily;
+   //         queueInfo.queueCount = 1;
+   //         queueInfo.pQueuePriorities = &defaultQueuePriority;
+   //         queueCreateInfos.add(queueInfo);
    //      }
-
-   //      // create WGL context, make current
-
-   //      //xxxopengl>>>>vulkan PIXELFORMATDESCRIPTOR pixformat;
-
-   //      int chosenformat;
-
-   //      HDC hdc = GetDC(m_hwnd);
-
-   //      if (!hdc)
+   //      else
    //      {
-
-   //         informationf("MS GDI - GetDC failed");
-
-   //         informationf("last-error code: %d\n", GetLastError());
-
-   //         throw ::exception(error_failed);
-
+   //         m_queuefamilyindices.graphicsFamily = 0;
    //      }
-
-   //      ////xxxopengl>>>>vulkan  zero(pixformat);
-   //      //pixformat.nSize = sizeof(pixformat);
-   //      //pixformat.nVersion = 1;
-   //      //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_VULKAN | PFD_DOUBLEBUFFER;
-   //      //pixformat.iPixelType = PFD_TYPE_RGBA;
-   //      //pixformat.cColorBits = 32;
-   //      //pixformat.cRedShift = 16;
-   //      //pixformat.cGreenShift = 8;
-   //      //pixformat.cBlueShift = 0;
-   //      //pixformat.cAlphaShift = 24;
-   //      //pixformat.cAlphaBits = 8;
-   //      //pixformat.cDepthBits = 24;
-   //      //pixformat.cStencilBits = 8;
-
-   //      //xxxopengl>>>>vulkan chosenformat = ChoosePixelFormat(hdc, &pixformat);
-
-   //      //if (chosenformat == 0)
-   //      //{
-
-   //      //   informationf("MS GDI - ChoosePixelFormat failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-   //      //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
-
-   //      //if (!spfok)
-   //      //{
-
-   //      //   informationf("MS GDI - SetPixelFormat failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-   //      //HGLRC hglrc = wglCreateContext(hdc);
-
-   //      //if (!hglrc)
-   //      //{
-
-   //      //   informationf("MS WGL - wglCreateContext failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-   //      //bool bMakeCurrentOk = wglMakeCurrent(hdc, hglrc);
-
-   //      //if (!bMakeCurrentOk)
-   //      //{
-
-   //      //   informationf("MS WGL - wglMakeCurrent failed");
-
-   //      //   informationf("last-error code: %d\n", GetLastError());
-
-   //      //   ReleaseDC(m_hwnd, hdc);
-
-   //      //   throw ::exception(error_failed);
-
-   //      //}
-
-
-   //      pvulkan->defer_init_gpu_library();
-
-   //      //auto pszVersion = (const char *)glGetString(GL_VERSION);
-   //      ////::e_status estatus = 
-
-   //      //::string strVersion(pszVersion);
-
-   //      //if (strVersion.case_insensitive_contains("mesa"))
-   //      //{
-
-   //      //   m_bMesa = true;
-
-   //      //}
-
-   //      ////if (!estatus)
-   //      ////{
-
-   //      ////   ReleaseDC(window, hdc);
-
-   //      ////   return estatus;
-
-   //      ////}
-
-   //      m_hwnd = m_hwnd;
-   //      m_hdc = hdc;
-   //      //xxxopengl>>>>vulkan m_hrc = hglrc;
-
+   //
+   //      // Dedicated compute queue
+   //      if (requestedQueueTypes & VK_QUEUE_COMPUTE_BIT
+   //         && m_queuefamilyindices.computeFamilyHasValue)
+   //      {
+   //         //m_queuefamilyindices.compute = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
+   //         if (m_queuefamilyindices.computeFamily != m_queuefamilyindices.graphicsFamily)
+   //         {
+   //            // If compute family index differs, we need an additional queue create info for the compute queue
+   //            VkDeviceQueueCreateInfo queueInfo{};
+   //            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+   //            queueInfo.queueFamilyIndex = m_queuefamilyindices.computeFamily;
+   //            queueInfo.queueCount = 1;
+   //            queueInfo.pQueuePriorities = &defaultQueuePriority;
+   //            queueCreateInfos.add(queueInfo);
+   //         }
+   //      }
+   //      else
+   //      {
+   //         // Else we use the same queue
+   //         m_queuefamilyindices.computeFamily = m_queuefamilyindices.graphicsFamily;
+   //      }
+   //
+   //      // Dedicated transfer queue
+   //      if (requestedQueueTypes & VK_QUEUE_TRANSFER_BIT
+   //         && m_queuefamilyindices.transferFamilyHasValue)
+   //      {
+   //         //m_queuefamilyindices.transfer = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_TRANSFER_BIT);
+   //         if ((m_queuefamilyindices.transferFamily != m_queuefamilyindices.graphicsFamily)
+   //            && (m_queuefamilyindices.transferFamily != m_queuefamilyindices.computeFamily))
+   //         {
+   //            // If transfer family index differs, we need an additional queue create info for the transfer queue
+   //            VkDeviceQueueCreateInfo queueInfo{};
+   //            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+   //            queueInfo.queueFamilyIndex = m_queuefamilyindices.transferFamily;
+   //            queueInfo.queueCount = 1;
+   //            queueInfo.pQueuePriorities = &defaultQueuePriority;
+   //            queueCreateInfos.add(queueInfo);
+   //         }
+   //      }
+   //      else
+   //      {
+   //         // Else we use the same queue
+   //         m_queuefamilyindices.transferFamily = m_queuefamilyindices.graphicsFamily;
+   //      }
+   //
+   //      // Create the logical device representation
+   //      ::array<const char *> deviceExtensions(enabledExtensions);
+   //      if (useSwapChain)
+   //      {
+   //
+   //         // If the device will be used for presenting to a display via a swapchain we need to request the swapchain extension
+   //         deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+   //
+   //      }
+   //
+   //      VkDeviceCreateInfo deviceCreateInfo = {};
+   //      deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+   //      deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());;
+   //      deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
+   //      deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
+   //
+   //      // If a pNext(Chain) has been passed, we need to add it to the device creation info
+   //      VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
+   //      if (pNextChain) {
+   //         physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+   //         physicalDeviceFeatures2.features = enabledFeatures;
+   //         physicalDeviceFeatures2.pNext = pNextChain;
+   //         deviceCreateInfo.pEnabledFeatures = nullptr;
+   //         deviceCreateInfo.pNext = &physicalDeviceFeatures2;
+   //      }
+   //
+   //#if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_METAL_EXT)) && defined(VK_KHR_portability_subset)
+   //      // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
+   //      if (extensionSupported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
+   //      {
+   //         deviceExtensions.add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+   //      }
+   //#endif
+   //
+   //      if (deviceExtensions.size() > 0)
+   //      {
+   //         for (const char * enabledExtension : deviceExtensions)
+   //         {
+   //            if (!isExtensionSupported(enabledExtension)) {
+   //               information() << "Enabled device extension \"" << enabledExtension << "\" is not present at device level\n";
+   //            }
+   //         }
+   //
+   //         deviceCreateInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
+   //         deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+   //      }
+   //
+   //      this->m_physicaldevicefeaturesEnabled = enabledFeatures;
+   //
+   //      auto physicaldevice = pphysicaldevice->m_physicaldevice;
+   //
+   //      VkResult result = vkCreateDevice(physicaldevice, &deviceCreateInfo, nullptr, &this->logicalDevice());
+   //      if (result != VK_SUCCESS)
+   //      {
+   //         return result;
+   //      }
+   //
+   //      if (m_queuefamilyindices.graphicsFamily >= 0)
+   //      {
+   //         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
+   //      }
+   //      if (m_queuefamilyindices.presentFamily >= 0)
+   //      {
+   //         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
+   //      }
+   //
+   //
+   //      // Create a default command pool for graphics command buffers
+   //      m_vkcommandpool = createCommandPool(m_queuefamilyindices.graphicsFamily);
+   //
+   //      return result;
+   //
+   //   }
+   //
+   //
+   //   /**
+   //   * Create a command pool for allocation command buffers from
+   //   *
+   //   * @param queueFamilyIndex Family index of the queue to create the command pool for
+   //   * @param createFlags (Optional) Command pool creation flags (Defaults to VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
+   //   *
+   //   * @note Command buffers allocated from the created pool can only be submitted to a queue with the same family index
+   //   *
+   //   * @return A handle to the created command buffer
+   //   */
+   //   VkCommandPool context::createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags)
+   //   {
+   //      VkCommandPoolCreateInfo cmdPoolInfo = {};
+   //      cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+   //      cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
+   //      cmdPoolInfo.flags = createFlags;
+   //      VkCommandPool cmdPool;
+   //      VK_CHECK_RESULT(vkCreateCommandPool(this->logicalDevice(), &cmdPoolInfo, nullptr, &cmdPool));
+   //      return cmdPool;
+   //   }
+   //
+   //
+   //   /**
+   //   * Check if an extension is supported by the (physical device)
+   //   *
+   //   * @param extension Name of the extension to check
+   //   *
+   //   * @return True if the extension is supported (present in the list read at device creation time)
+   //   */
+   //   bool context::isExtensionSupported(const ::scoped_string & scopedstrExtension)
+   //   {
+   //
+   //      return m_straSupportedExtensions.contains(scopedstrExtension);
+   //
    //   }
 
-   //   RECT rectClient;
 
-   //   ::GetClientRect(m_hwnd, &rectClient);
+      //void context::_create_window_buffer()
+      //{
 
-   //   m_size = { rectClient.right - rectClient.left,
-   //      rectClient.bottom - rectClient.top };
+      //   if (!m_hdc || !m_hrc)
+      //   {
 
-   //   m_itaskGpu = ::current_itask();
+      //      auto psystem = system();
 
-   //   m_estatus = ::success;
+      //      auto pgpu = application()->get_gpu();
 
-   //   set_ok_flag();
-   //   
-   //}
+      //      ::pointer < ::vulkan::vulkan > pvulkan = pgpu;
+
+      //      if (!pvulkan->m_atomClass)
+      //      {
+
+      //         informationf("MS GDI - RegisterClass failed");
+
+      //         informationf("last-error code: %d\n", GetLastError());
+
+      //         throw ::exception(error_failed);
+
+      //      }
+
+      //      // create WGL context, make current
+
+      //      //xxxopengl>>>>vulkan PIXELFORMATDESCRIPTOR pixformat;
+
+      //      int chosenformat;
+
+      //      HDC hdc = GetDC(m_hwnd);
+
+      //      if (!hdc)
+      //      {
+
+      //         informationf("MS GDI - GetDC failed");
+
+      //         informationf("last-error code: %d\n", GetLastError());
+
+      //         throw ::exception(error_failed);
+
+      //      }
+
+      //      ////xxxopengl>>>>vulkan  zero(pixformat);
+      //      //pixformat.nSize = sizeof(pixformat);
+      //      //pixformat.nVersion = 1;
+      //      //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_VULKAN | PFD_DOUBLEBUFFER;
+      //      //pixformat.iPixelType = PFD_TYPE_RGBA;
+      //      //pixformat.cColorBits = 32;
+      //      //pixformat.cRedShift = 16;
+      //      //pixformat.cGreenShift = 8;
+      //      //pixformat.cBlueShift = 0;
+      //      //pixformat.cAlphaShift = 24;
+      //      //pixformat.cAlphaBits = 8;
+      //      //pixformat.cDepthBits = 24;
+      //      //pixformat.cStencilBits = 8;
+
+      //      //xxxopengl>>>>vulkan chosenformat = ChoosePixelFormat(hdc, &pixformat);
+
+      //      //if (chosenformat == 0)
+      //      //{
+
+      //      //   informationf("MS GDI - ChoosePixelFormat failed");
+
+      //      //   informationf("last-error code: %d\n", GetLastError());
+
+      //      //   ReleaseDC(m_hwnd, hdc);
+
+      //      //   throw ::exception(error_failed);
+
+      //      //}
+
+      //      //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
+
+      //      //if (!spfok)
+      //      //{
+
+      //      //   informationf("MS GDI - SetPixelFormat failed");
+
+      //      //   informationf("last-error code: %d\n", GetLastError());
+
+      //      //   ReleaseDC(m_hwnd, hdc);
+
+      //      //   throw ::exception(error_failed);
+
+      //      //}
+
+      //      //HGLRC hglrc = wglCreateContext(hdc);
+
+      //      //if (!hglrc)
+      //      //{
+
+      //      //   informationf("MS WGL - wglCreateContext failed");
+
+      //      //   informationf("last-error code: %d\n", GetLastError());
+
+      //      //   ReleaseDC(m_hwnd, hdc);
+
+      //      //   throw ::exception(error_failed);
+
+      //      //}
+
+      //      //bool bMakeCurrentOk = wglMakeCurrent(hdc, hglrc);
+
+      //      //if (!bMakeCurrentOk)
+      //      //{
+
+      //      //   informationf("MS WGL - wglMakeCurrent failed");
+
+      //      //   informationf("last-error code: %d\n", GetLastError());
+
+      //      //   ReleaseDC(m_hwnd, hdc);
+
+      //      //   throw ::exception(error_failed);
+
+      //      //}
 
 
-   void context::_create_window_context(::windowing::window * pwindowParam)
+      //      pvulkan->defer_init_gpu_library();
+
+      //      //auto pszVersion = (const char *)glGetString(GL_VERSION);
+      //      ////::e_status estatus = 
+
+      //      //::string strVersion(pszVersion);
+
+      //      //if (strVersion.case_insensitive_contains("mesa"))
+      //      //{
+
+      //      //   m_bMesa = true;
+
+      //      //}
+
+      //      ////if (!estatus)
+      //      ////{
+
+      //      ////   ReleaseDC(window, hdc);
+
+      //      ////   return estatus;
+
+      //      ////}
+
+      //      m_hwnd = m_hwnd;
+      //      m_hdc = hdc;
+      //      //xxxopengl>>>>vulkan m_hrc = hglrc;
+
+      //   }
+
+      //   RECT rectClient;
+
+      //   ::GetClientRect(m_hwnd, &rectClient);
+
+      //   m_size = { rectClient.right - rectClient.left,
+      //      rectClient.bottom - rectClient.top };
+
+      //   m_itaskGpu = ::current_itask();
+
+      //   m_estatus = ::success;
+
+      //   set_ok_flag();
+      //   
+      //}
+
+
+   void context::_create_window_context(::windowing::window* pwindowParam)
    {
 
       //m_itaskGpu = ::current_itask();
@@ -1512,7 +1548,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_cpu_buffer(const ::int_size & size)
+   void context::_create_cpu_buffer(const ::int_size& size)
    {
 
       _create_offscreen_window(size);
@@ -1524,7 +1560,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::defer_create_window_context(::windowing::window * pwindow)
+   void context::defer_create_window_context(::windowing::window* pwindow)
    {
 
       //if (m_hrc)
@@ -1539,7 +1575,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::_defer_create_window_context(::windowing::window * pwindow)
+   void context::_defer_create_window_context(::windowing::window* pwindow)
    {
 
       _create_window_context(pwindow);
@@ -1547,7 +1583,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::resize_cpu_buffer(const ::int_size & sizeParam)
+   void context::resize_cpu_buffer(const ::int_size& sizeParam)
    {
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
@@ -1595,7 +1631,7 @@ namespace gpu_vulkan
             //glutPostRedisplay();
 
             //return ::success;
-            });
+         });
 
 
    }
@@ -1686,7 +1722,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::_translate_shader(string_array & stra)
+   void context::_translate_shader(string_array& stra)
    {
 
       gpu::context::_translate_shader(stra);
@@ -2105,8 +2141,8 @@ namespace gpu_vulkan
       VkDeviceSize size,
       VkBufferUsageFlags usage,
       VkMemoryPropertyFlags properties,
-      VkBuffer & buffer,
-      VkDeviceMemory & bufferMemory)
+      VkBuffer& buffer,
+      VkDeviceMemory& bufferMemory)
    {
 
       VkBufferCreateInfo bufferInfo{};
@@ -2166,9 +2202,9 @@ namespace gpu_vulkan
 
       __defer_construct_new(pcommandbuffer);
 
-      pcommandbuffer->initialize_command_buffer(m_pgpurenderer);
+      pcommandbuffer->initialize_command_buffer(m_pgpurenderer->m_pgpurendertarget);
 
-      pcommandbuffer->begin_command_buffer();
+      pcommandbuffer->begin_command_buffer(true);
 
       return pcommandbuffer;
 
@@ -2244,10 +2280,10 @@ namespace gpu_vulkan
 
 
    void context::createImageWithInfo(
-      const VkImageCreateInfo & imageInfo,
+      const VkImageCreateInfo& imageInfo,
       VkMemoryPropertyFlags properties,
-      VkImage & image,
-      VkDeviceMemory & imageMemory)
+      VkImage& image,
+      VkDeviceMemory& imageMemory)
    {
 
       if (vkCreateImage(this->logicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS)
@@ -2275,7 +2311,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::submitWork(command_buffer * pcommandbuffer, VkQueue queue)
+   void context::submitWork(command_buffer* pcommandbuffer, VkQueue queue)
    {
 
       VkSubmitInfo submitInfo = initializers::submitInfo();
@@ -2417,7 +2453,7 @@ namespace gpu_vulkan
       return m_descriptorsetsGlobal[prenderer->m_pgpurendertarget->get_frame_index()];
 
    }
-      
+
 
    //void context::copy(::gpu::texture* ptexture)
    //{
@@ -2427,6 +2463,356 @@ namespace gpu_vulkan
    //   prenderer->_copy_image(ptexture, ptexture->m_rectangleTarget, true);
 
    //}
+
+
+   void context::merge_layers(::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera)
+   {
+
+      if (!m_pshaderBlend3)
+      {
+
+         unsigned int full_screen_triangle_vertex_shader[] = {
+#include "shader/blend2.vert.spv.inl"
+         };
+
+         unsigned int full_screen_triangle_fragment_shader[] = {
+#include "shader/blend2.frag.spv.inl"
+         };
+
+         __defer_construct_new(m_pshaderBlend3);
+
+         m_pshaderBlend3->m_bEnableBlend = true;
+         m_pshaderBlend3->m_bTextureAndSampler = true;
+         m_pshaderBlend3->m_bDisableDepthTest = true;
+         //m_pshaderBlend3->m_bT
+         //m_pshaderBlend3->m_pgpurenderer = this;
+         m_pshaderBlend3->m_iSamplerSlot = 0;
+         // Image Blend descriptors
+//if (!m_psetdescriptorlayoutImageBlend)
+
+         //m_pshaderBlend3->m_bClearColor = true;
+         //m_pshaderBlend3->m_colorClear = ::color::transparent;
+
+         m_pshaderBlend3->m_bClearColor = false;
+         //m_pshaderBlend3->m_colorClear = ::color::transparent;
+
+         m_pshaderBlend3->initialize_shader_with_block(
+            m_pgpurenderer,
+            ::as_memory_block(full_screen_triangle_vertex_shader),
+            ::as_memory_block(full_screen_triangle_fragment_shader),
+            {},
+            {},
+            {},
+            {},
+            {},
+            // this means the vertex input layout will be null/empty
+            // the full screen shader is embed in the shader code
+            ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
+
+         );
+
+      }
+
+
+      //if (!m_pd3d11blendstateBlend3)
+      //{
+
+      //   D3D12_BLEND_DESC blendDesc = { 0 };
+      //   blendDesc.RenderTarget[0].BlendEnable = TRUE;
+      //   blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;              // Premultiplied alpha
+      //   blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;   // Use inverse of alpha
+      //   blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+
+      //   blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;         // Alpha blending (optional)
+      //   blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+      //   blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+
+      //   blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+      //   ::cast < ::gpu_directx11::device > pgpudevice = m_pgpudevice;
+
+      //   HRESULT hr = pgpudevice->m_pdevice->CreateBlendState(&blendDesc, &m_pd3d11blendstateBlend3);
+      //   ::defer_throw_hresult(hr);
+
+      //}
+
+      ::cast < renderer > prenderer = m_pgpurenderer;
+
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
+
+      ::cast <texture > ptextureDst = ptextureTarget;
+
+
+      ptextureDst->_new_state(
+         pcommandbuffer,
+         VK_ACCESS_TRANSFER_WRITE_BIT,
+         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+         VK_PIPELINE_STAGE_TRANSFER_BIT
+      );
+
+      // 2. Clear
+      VkClearColorValue clearColor = { .float32 = { 0.0f, 0.0f, 0.0f, 0.0f } };
+      VkImageSubresourceRange range = {
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1,
+      };
+
+      vkCmdClearColorImage(
+         vkcommandbuffer,
+         ptextureDst->m_vkimage,
+         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+         &clearColor,
+         1,
+         &range);
+
+
+      ////float clearColor[4] = { 0.95f * 0.5f, 0.95f * 0.5f, 0.25f * 0.5f, 0.5f }; // Clear to transparent
+      ////m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
+      //float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
+      //pcommandlist->ClearRenderTargetView(ptextureDst->m_handleRenderTargetView, clearColor, 0, nullptr);
+      ptextureDst->_new_state(pcommandbuffer,
+         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+      );
+
+      //if (!ptextureDst->m_handleRenderTargetView.ptr)
+      //{
+
+        // ptextureDst->create_render_target();
+
+      //}
+
+
+      //m_pshaderBlend3->bind(ptextureTarget);
+
+
+      //int iDescriptorSize = ptextureDst->m_rtvDescriptorSize;
+      //int iFrameIndex = m_pgpurendertarget->get_frame_index();
+      //auto hRtv = pgpurendertargetview->m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+      //auto hRtv = ptextureDst->m_handleRenderTargetView;
+      //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+        // hRtv,
+         //iFrameIndex,
+         //iDescriptorSize);
+
+      //float clearColor[4] = { 0.5f * 0.5f, 0.75f * 0.5f, 0.9f * 0.5f, 0.5f };
+      //float clearColor[4] = { 0.f, 0.f , 0.f, 0.f };
+      //pcommandlist->ClearRenderTargetView(hRtv, clearColor, 0, nullptr);
+
+      //{
+      //   float blendFactor[4] = { 0, 0, 0, 0 }; // Ignored with this blend mode
+      //   UINT sampleMask = 0xFFFFFFFF;
+      //   m_pcontext->OMSetBlendState(m_pd3d11blendstateBlend3, blendFactor, sampleMask);
+      //}
+
+
+
+      //ID3D11RenderTargetView* rendertargetview[] = { ptextureDst->m_prendertargetview };
+
+      //m_p(1, rendertargetview, nullptr);
+
+      //m_pcontext->OMSetBlendState(g_blendState, nullptr, 0xffffffff);
+      //g_context->VSSetShader(g_vs, nullptr, 0);
+      //g_context->PSSetShader(g_ps, nullptr, 0);
+      //g_context->PSSetSamplers(0, 1, &g_sampler);
+
+      if (1)
+      {
+         int iLayer = 0;
+         for (auto player : *playera)
+         {
+
+            //if (iLayer == 2)
+            {
+
+
+               ::cast <texture > ptextureSrc = player->texture();
+
+               ptextureSrc->_new_state(
+                  pcommandbuffer,
+                  0,
+                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+               );
+
+               m_pshaderBlend3->bind(ptextureDst, ptextureSrc);
+
+               //ID3D11SamplerState* samplerstatea[] =
+               //{ ptexture->m_psamplerstate };
+               //ID3D11ShaderResourceView* sharedresourceviewa[] =
+               //{ ptexture->m_pshaderresourceview };
+
+                              // 1. Define viewport and scissor rectangle
+               //D3D12_VIEWPORT viewport = {};
+               //viewport.TopLeftX = ptextureSrc->m_rectangleTarget.left();
+               //viewport.TopLeftY = ptextureSrc->m_rectangleTarget.top();
+               //viewport.Width = static_cast<float>(ptextureSrc->m_rectangleTarget.width());
+               //viewport.Height = static_cast<float>(ptextureSrc->m_rectangleTarget.height());
+               //viewport.MinDepth = 0.0f;
+               //viewport.MaxDepth = 1.0f;
+
+               //D3D12_RECT scissorRect = {};
+               //scissorRect.left = ptextureSrc->m_rectangleTarget.left();
+               //scissorRect.top = ptextureSrc->m_rectangleTarget.top();
+               //scissorRect.right = ptextureSrc->m_rectangleTarget.right();
+               //scissorRect.bottom = ptextureSrc->m_rectangleTarget.bottom();
+
+
+               ////// 4. Set the viewport and scissor
+               //pcommandlist->RSSetViewports(1, &viewport);
+               //pcommandlist->RSSetScissorRects(1, &scissorRect);
+               //D3D11_VIEWPORT vp = {};
+               //vp.TopLeftX = ptexture->m_rectangleTarget.left();
+               //vp.TopLeftY = ptexture->m_rectangleTarget.top();
+               //vp.Width = static_cast<float>(ptexture->m_rectangleTarget.width());
+               //vp.Height = static_cast<float>(ptexture->m_rectangleTarget.height());
+               //vp.MinDepth = 0.0f;
+               //vp.MaxDepth = 1.0f;
+               //m_pcontext->RSSetViewports(1, &vp);
+
+               //m_pcontext->PSSetSamplers(0, 1, samplerstatea);
+               //m_pcontext->PSSetShaderResources(0, 1, sharedresourceviewa);
+
+
+               //pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+               vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
+               m_pshaderBlend3->unbind();
+            }
+            iLayer++;
+
+         }
+
+      }
+      //}
+
+
+
+      ////::cast <texture > ptextureDst = ptextureTarget;
+      //{
+      //   
+      //   float clearColor2[4] = { 0.95f * 0.5f, 0.75f * 0.5f, 0.95f * 0.5f, 0.5f }; // Clear to transparent
+      //   
+      //   D3D12_RECT r[1];
+      //   
+      //   r[0].left = 100;
+      //   r[0].top = 200;
+      //   r[0].right = 200;
+      //   r[0].bottom = 300;
+      //   
+      //   pcommandlist->ClearRenderTargetView(
+      //      ptextureDst->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+      //      clearColor2,
+      //      1, r);
+
+      //}
+
+
+   }
+
+
+   void context::on_start_layer(::gpu::layer* player)
+   {
+
+      ::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+
+      ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
+
+      if (pcommandbuffer->m_estate != command_buffer::e_state_recording)
+      {
+
+         ::cast < gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+         ::cast < render_pass > prenderpass = m_pgpurenderer->m_pgpurendertarget;
+
+         VkFence& fence = prenderpass->inFlightFences.element_at_grow(prenderpass->get_frame_index());
+
+         if (fence)
+         {
+
+            vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+         }
+
+         pcommandbuffer->begin_command_buffer(false);
+
+      }
+
+      ptexture->_new_state(
+         pcommandbuffer,
+         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+      );
+
+
+   }
+
+
+   void context::copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource)
+   {
+
+      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+
+      int iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+
+      ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
+
+      ::cast < texture > ptextureDst = ptextureTarget;
+
+      ::cast < texture > ptextureSrc = ptextureSource;
+
+      ptextureDst->_new_state(
+         pcommandbuffer,
+         VK_ACCESS_TRANSFER_WRITE_BIT,
+         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+         VK_PIPELINE_STAGE_TRANSFER_BIT);
+
+      ptextureSrc->_new_state(
+         pcommandbuffer,
+         VK_ACCESS_TRANSFER_READ_BIT,
+         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+         VK_PIPELINE_STAGE_TRANSFER_BIT);
+
+      auto srcImage = ptextureSrc->m_vkimage;
+
+      auto dstImage = ptextureDst->m_vkimage;
+
+      // Copy region
+      VkImageCopy copyRegion = {
+          .srcSubresource = {
+              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+              .mipLevel = 0,
+              .baseArrayLayer = 0,
+              .layerCount = 1,
+          },
+          .srcOffset = { 0, 0, 0 },
+          .dstSubresource = {
+              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+              .mipLevel = 0,
+              .baseArrayLayer = 0,
+              .layerCount = 1,
+          },
+          .dstOffset = { 0, 0, 0 },
+          .extent =
+         {
+            (uint32_t)m_rectangle.width(),
+            (uint32_t)m_rectangle.height(),
+            1},
+      };
+
+      vkCmdCopyImage(pcommandbuffer->m_vkcommandbuffer,
+         srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+         dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+         1, &copyRegion);
+
+   }
+
 
 
 } // namespace gpu_vulkan

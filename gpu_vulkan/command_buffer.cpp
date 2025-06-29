@@ -3,6 +3,8 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
+#include "layer.h"
+#include "model_buffer.h"
 #include "renderer.h"
 
 
@@ -17,11 +19,11 @@ namespace gpu_vulkan
 
    }
 
-   
+
    command_buffer::~command_buffer()
    {
 
-      ::cast <context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast <context > pcontext = m_pgpurendertarget->m_pgpurenderer->m_pgpucontext;
 
       ::cast <device > pdevice = pcontext->m_pgpudevice;
 
@@ -35,16 +37,14 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::initialize_command_buffer(::gpu::renderer* pgpurenderer)
+   void command_buffer::initialize_command_buffer(::gpu::render_target* pgpurendertarget)
    {
 
-      m_pgpurenderer = pgpurenderer;
+      ::gpu::command_buffer::initialize_command_buffer(pgpurendertarget);
 
-      ::cast <context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast <context > pcontext = m_pgpurendertarget->m_pgpurenderer->m_pgpucontext;
 
       ::cast <device > pdevice = pcontext->m_pgpudevice;
-
-      m_pgpurenderer = pgpurenderer;
 
       VkCommandBufferAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -59,12 +59,12 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::begin_command_buffer()
+   void command_buffer::begin_command_buffer(bool bOneTime)
    {
 
       VkCommandBufferBeginInfo beginInfo{};
       beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-      beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+      beginInfo.flags = bOneTime ? VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT : 0;
 
       auto result = vkBeginCommandBuffer(m_vkcommandbuffer, &beginInfo);
 
@@ -75,6 +75,114 @@ namespace gpu_vulkan
 
       }
 
+      m_estate = ::gpu::command_buffer::e_state_recording;
+
+
+   }
+
+
+   void command_buffer::submit_command_buffer(::gpu::layer* pgpulayer)
+   {
+
+      ::cast < layer > player = pgpulayer;
+
+      ::cast < render_pass > prenderpass = m_pgpurendertarget;
+
+      if (prenderpass)
+      {
+
+
+         auto vkcommandbuffer = m_vkcommandbuffer;
+
+         if (vkEndCommandBuffer(vkcommandbuffer) != VK_SUCCESS)
+         {
+
+            throw ::exception(error_failed, "failed to record command buffer!");
+
+         }
+
+         ::cast < layer > playerPrevious = m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_previous_layer(player);
+
+
+         ::array < VkSemaphore > semaphoreaWait;
+         ::array < VkPipelineStageFlags > stageaWait;
+
+         if (playerPrevious)
+         {
+
+            semaphoreaWait.add(playerPrevious->m_vksemaphoreRenderFinished);
+            stageaWait.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+
+         }
+
+         auto vksemaphoreRenderFinished = player->m_vksemaphoreRenderFinished;
+
+         prenderpass->submitCommandBuffers(
+            this,
+            semaphoreaWait,
+            stageaWait,
+            { vksemaphoreRenderFinished });
+
+
+      }
+
+   }
+
+
+   void command_buffer::wait_commands_to_execute()
+   {
+
+      ::cast <context > pcontext = m_pgpurendertarget->m_pgpurenderer->m_pgpucontext;
+
+      ::cast <render_pass > prenderpass = m_pgpurendertarget;
+
+      //vkWaitForFences(pcontext->logicalDevice(), 1, 
+      //   &prenderpass->inFlightFences[prenderpass->get_frame_index()],
+      //   VK_TRUE, UINT64_MAX);
+
+
+   }
+
+
+   void command_buffer::set_viewport(const ::int_rectangle& rectangle)
+   {
+
+      VkViewport vp = {
+         (float)rectangle.left(),
+         (float)rectangle.top(),
+         (float)rectangle.width(),
+         (float)rectangle.height(),
+         0.0f, 1.0f };
+
+      vkCmdSetViewport(m_vkcommandbuffer, 0, 1, &vp);
+
+   }
+
+
+   void command_buffer::set_scissor(const ::int_rectangle& rectangle)
+   {
+      VkRect2D sc = {
+            {
+            (float)rectangle.left(),
+            (float)rectangle.top(),
+            },
+            {
+                     (float)rectangle.width(),
+            (float)rectangle.height(),
+
+         }
+
+      };
+
+      vkCmdSetScissor(m_vkcommandbuffer, 0, 1, &sc);
+
+   }
+
+
+   void command_buffer::draw(::gpu_vulkan::model_buffer* pmodelbuffer)
+   {
+
+      pmodelbuffer->draw(this);
 
    }
 

@@ -43,7 +43,7 @@ namespace graphics3d_directx12
 {
 
 
-   //::pointer<::directx12::application > start_directx12_application(::::cube::container* pcontainer, mouse_state* pmousestate)
+   //::pointer<::directx12::application > start_directx12_application(::::graphics3d::container* pcontainer, mouse_state* pmousestate)
    //{
    //   auto pdirectx12example = pcontainer->__create_new < application_handler >();
 

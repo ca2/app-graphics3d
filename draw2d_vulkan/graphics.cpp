@@ -21,8 +21,11 @@
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/render.h"
+#include "bred/graphics3d/types.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
+#include "gpu_vulkan/model_buffer.h"
+#include "gpu_vulkan/swap_chain.h"
 #include "windowing_win32/window.h"
 
 
@@ -246,12 +249,83 @@ namespace draw2d_vulkan
    //}
 
 
-   void graphics::create_window_graphics(::windowing::window* pwindow)
+   //void graphics::create_window_graphics(::windowing::window* pwindow)
+   //{
+
+   //   m_pwindow = pwindow;
+
+   //   vulkan_defer_create_window_context(pwindow);
+
+   //   set_ok_flag();
+
+   //}
+
+
+   void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::int_size& size)
    {
 
-      m_pwindow = pwindow;
+      ::draw2d_gpu::graphics::create_for_window_draw2d(puserinteraction, size);
 
-      vulkan_defer_create_window_context(pwindow);
+      auto pwindow = puserinteraction->window();
+
+      //vulkan_defer_create_window_context(pwindow);
+
+      auto psystem = system();
+
+      auto pgpuapproach = application()->get_gpu_approach();
+
+      auto pgpudevice = pgpuapproach->get_gpu_device();
+
+      m_pgpucontextCompositor = pgpudevice->main_draw2d_context();
+
+      m_pgpucontextCompositor->m_pgpucompositor = this;
+
+      m_pgpucontextCompositor->defer_create_window_context(pwindow);
+
+      ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontextCompositor;
+      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
+
+      //vkvg_device_create_info_t createinfo;
+      //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      //createinfo.deferredResolve = true;
+      //createinfo.inst = papproachVulkan->m_vkinstance;
+      //createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
+      //createinfo.vkdev = pcontextVulkan->logicalDevice();
+      //createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
+      //createinfo.qIndex = 0;
+      //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+
+      //m_vkvgdevice = vkvg_device_create(&createinfo);
+      //m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, pwindow->m_sizeWindow.cx(),
+      //   pwindow->m_sizeWindow.cy());
+
+      //m_pdc = vkvg_create(m_vkvgsurface);
+      //if (!m_pgpucontextCompositor)
+      //{
+
+      //   return false;
+
+      //}
+
+
+      //      ::vulkan::resize(size);
+
+
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      {
+
+         auto pcontextMain = pgpudevice->main_context();
+
+         auto pswapchain = pcontextMain->get_swap_chain();
+
+         if (!pswapchain->m_bSwapChainInitialized)
+         {
+
+            pswapchain->initialize_swap_chain_window(pcontextMain, puserinteraction->window());
+
+         }
+
+      }
 
       set_ok_flag();
 
@@ -622,59 +696,59 @@ namespace draw2d_vulkan
    }
 
 
-   bool graphics::vulkan_defer_create_window_context(::windowing::window* pwindow)
-   {
+   //bool graphics::vulkan_defer_create_window_context(::windowing::window* pwindow)
+   //{
 
-      auto psystem = system();
+   //   auto psystem = system();
 
-      auto pgpuapproach = application()->get_gpu_approach();
+   //   auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device();
+   //   auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      // auto pgpucontext = pgpudevice->get_main_context();
+   //   // auto pgpucontext = pgpudevice->get_main_context();
 
-      if (!m_pgpucontextCompositor)
-      {
+   //   if (!m_pgpucontextCompositor)
+   //   {
 
-         m_pgpucontextCompositor = pgpudevice->create_window_context(pwindow);
+   //      m_pgpucontextCompositor = pgpudevice->create_window_context(pwindow);
 
-      }
+   //   }
 
-      m_pgpucontextCompositor->m_pgpucompositor = this;
+   //   m_pgpucontextCompositor->m_pgpucompositor = this;
 
-      m_pgpucontextCompositor->defer_create_window_context(pwindow);
+   //   m_pgpucontextCompositor->defer_create_window_context(pwindow);
 
-      ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontextCompositor;
-      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
+   //   ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontextCompositor;
+   //   ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
 
-      //vkvg_device_create_info_t createinfo;
-      //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      //createinfo.deferredResolve = true;
-      //createinfo.inst = papproachVulkan->m_vkinstance;
-      //createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
-      //createinfo.vkdev = pcontextVulkan->logicalDevice();
-      //createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
-      //createinfo.qIndex = 0;
-      //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+   //   //vkvg_device_create_info_t createinfo;
+   //   //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+   //   //createinfo.deferredResolve = true;
+   //   //createinfo.inst = papproachVulkan->m_vkinstance;
+   //   //createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
+   //   //createinfo.vkdev = pcontextVulkan->logicalDevice();
+   //   //createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
+   //   //createinfo.qIndex = 0;
+   //   //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
-      //m_vkvgdevice = vkvg_device_create(&createinfo);
-      //m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, pwindow->m_sizeWindow.cx(),
-      //   pwindow->m_sizeWindow.cy());
+   //   //m_vkvgdevice = vkvg_device_create(&createinfo);
+   //   //m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, pwindow->m_sizeWindow.cx(),
+   //   //   pwindow->m_sizeWindow.cy());
 
-      //m_pdc = vkvg_create(m_vkvgsurface);
-      //if (!m_pgpucontextCompositor)
-      //{
+   //   //m_pdc = vkvg_create(m_vkvgsurface);
+   //   //if (!m_pgpucontextCompositor)
+   //   //{
 
-      //   return false;
+   //   //   return false;
 
-      //}
+   //   //}
+   //  
 
+   //   //      ::vulkan::resize(size);
 
-      //      ::vulkan::resize(size);
+   //   return true;
 
-      return true;
-
-   }
+   //}
 
 
 
@@ -1590,7 +1664,7 @@ namespace draw2d_vulkan
       //};
 
 
-      graphics::RectangleVertex quadVertices[] = {
+      ::graphics3d::sequence3_color quadVertices[] = {
          // Triangle 1
          {{l, t, g_z}, {fR, fG, fB, fA}}, // Red
          {{ r, t, g_z}, {fR, fG, fB, fA}}, // Green
@@ -1645,60 +1719,60 @@ namespace draw2d_vulkan
    VkBuffer createQuadVertexBuffer(
       VkDevice device,
       VkPhysicalDevice physicalDevice,
-      VkDeviceMemory* outMemory,
+      VkDeviceMemory* outMemory/*,
       const ::double_point points1[4],
       const  ::color::color& color,
-      const ::double_size& size)
+      const ::double_size& size*/)
    {
       VkBuffer vertexBuffer;
 
 
-      //  0 l,t
-     //  1 r,t
-     //  2 r,b
-      //  3 l,b
+     // //  0 l,t
+     ////  1 r,t
+     ////  2 r,b
+     // //  3 l,b
 
-      ::geometry2d::matrix m;
-      m.scale(2.0 / size.cx(), 2.0 / size.cy());
-      m.translate(-1.0, -1.0);
+     // ::geometry2d::matrix m;
+     // m.scale(2.0 / size.cx(), 2.0 / size.cy());
+     // m.translate(-1.0, -1.0);
 
-      ::double_point points[4];
+     // ::double_point points[4];
 
-      points[0] = points1[0]; // top-left
-      points[1] = points1[1]; // top-right
-      points[2] = points1[2]; // bottom-right
-      points[3] = points1[3]; // bottom-left
+     // points[0] = points1[0]; // top-left
+     // points[1] = points1[1]; // top-right
+     // points[2] = points1[2]; // bottom-right
+     // points[3] = points1[3]; // bottom-left
 
-      m.transform(points[0]);
-      m.transform(points[1]);
-      m.transform(points[2]);
-      m.transform(points[3]);
+     // m.transform(points[0]);
+     // m.transform(points[1]);
+     // m.transform(points[2]);
+     // m.transform(points[3]);
 
-      float fA = color.f32_opacity();
-      //float fR = color.f32_red();
-      //float fG = color.f32_green();
-      //float fB = color.f32_blue();
-      float fR = color.f32_red() * fA;
-      float fG = color.f32_green() * fA;
-      float fB = color.f32_blue() * fA;
+     // float fA = color.f32_opacity();
+     // //float fR = color.f32_red();
+     // //float fG = color.f32_green();
+     // //float fB = color.f32_blue();
+     // float fR = color.f32_red() * fA;
+     // float fG = color.f32_green() * fA;
+     // float fB = color.f32_blue() * fA;
 
 
-      graphics::RectangleVertex quadVertices[] = {
-         // Triangle 1
-         {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Red
-         {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, // Green
-         {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Blue
-         // Triangle 2
-         {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Green
-         {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Yellow
-         {{(float)points[3].x(), (float)points[3].y(), g_z}, {fR, fG, fB, fA}}, // Blue
-      };
+     // graphics::RectangleVertex quadVertices[] = {
+     //    // Triangle 1
+     //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Red
+     //    {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, // Green
+     //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+     //    // Triangle 2
+     //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Green
+     //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Yellow
+     //    {{(float)points[3].x(), (float)points[3].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+     // };
 
 
 
       VkBufferCreateInfo bufferInfo = {
          .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-         .size = sizeof(quadVertices),
+         .size = sizeof(graphics3d::sequence3_color) * 6,
          .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          .sharingMode = VK_SHARING_MODE_EXCLUSIVE
       };
@@ -1736,13 +1810,115 @@ namespace draw2d_vulkan
       vkAllocateMemory(device, &allocInfo, NULL, outMemory);
       vkBindBufferMemory(device, vertexBuffer, *outMemory, 0);
 
-      void* data;
-      vkMapMemory(device, *outMemory, 0, bufferInfo.size, 0, &data);
-      memcpy(data, quadVertices, sizeof(quadVertices));
-      vkUnmapMemory(device, *outMemory);
+      //void* data;
+      //vkMapMemory(device, *outMemory, 0, bufferInfo.size, 0, &data);
+      //memcpy(data, quadVertices, sizeof(quadVertices));
+      //vkUnmapMemory(device, *outMemory);
 
       return vertexBuffer;
    }
+
+
+   //void editQuadVertexBuffer(
+   //   VkDevice device,
+   //   VkDeviceMemory outMemory,
+   //   const ::double_point points1[4],
+   //   const  ::color::color& color,
+   //   const ::double_size& size)
+   //{
+   //   VkBuffer vertexBuffer;
+
+
+   //   //  0 l,t
+   //  //  1 r,t
+   //  //  2 r,b
+   //   //  3 l,b
+
+   //   ::geometry2d::matrix m;
+   //   m.scale(2.0 / size.cx(), 2.0 / size.cy());
+   //   m.translate(-1.0, -1.0);
+
+   //   ::double_point points[4];
+
+   //   points[0] = points1[0]; // top-left
+   //   points[1] = points1[1]; // top-right
+   //   points[2] = points1[2]; // bottom-right
+   //   points[3] = points1[3]; // bottom-left
+
+   //   m.transform(points[0]);
+   //   m.transform(points[1]);
+   //   m.transform(points[2]);
+   //   m.transform(points[3]);
+
+   //   float fA = color.f32_opacity();
+   //   //float fR = color.f32_red();
+   //   //float fG = color.f32_green();
+   //   //float fB = color.f32_blue();
+   //   float fR = color.f32_red() * fA;
+   //   float fG = color.f32_green() * fA;
+   //   float fB = color.f32_blue() * fA;
+
+
+   //   graphics::RectangleVertex quadVertices[] = {
+   //      // Triangle 1
+   //      {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Red
+   //      {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, // Green
+   //      {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+   //      // Triangle 2
+   //      {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Green
+   //      {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Yellow
+   //      {{(float)points[3].x(), (float)points[3].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+   //   };
+
+
+
+   //   //VkBufferCreateInfo bufferInfo = {
+   //   //   .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+   //   //   .size = sizeof(quadVertices),
+   //   //   .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+   //   //   .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+   //   //};
+   //   //vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
+
+   //   //VkMemoryRequirements memReq;
+   //   //vkGetBufferMemoryRequirements(device, vertexBuffer, &memReq);
+
+   //   //uint32_t memTypeIndex = 0;
+   //   //VkPhysicalDeviceMemoryProperties memProps;
+   //   //vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
+   //   //for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
+   //   //   if ((memReq.memoryTypeBits & (1 << i)) &&
+   //   //      (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
+   //   //      (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+   //   //      memTypeIndex = i;
+   //   //      break;
+   //   //   }
+   //   //}
+
+   //   ////VkBufferCreateInfo bufferInfo = {
+   //   ////    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+   //   ////    .size = sizeof(quadVertices),
+   //   ////    .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+   //   ////    .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+   //   ////};
+   //   ////vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
+
+
+   //   //VkMemoryAllocateInfo allocInfo = {
+   //   //    .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+   //   //    .allocationSize = memReq.size,
+   //   //    .memoryTypeIndex = memTypeIndex
+   //   //};
+   //   //vkAllocateMemory(device, &allocInfo, NULL, outMemory);
+   //   //vkBindBufferMemory(device, vertexBuffer, *outMemory, 0);
+
+   //   void* data;
+   //   vkMapMemory(device, outMemory, 0, sizeof(quadVertices), 0, &data);
+   //   memcpy(data, quadVertices, sizeof(quadVertices));
+   //   vkUnmapMemory(device, outMemory);
+
+   //   //return vertexBuffer;
+   //}
 
 
    VkBuffer createLineVertexBuffer(
@@ -1806,7 +1982,7 @@ namespace draw2d_vulkan
       m.transform(points[1]);
 
 
-      graphics::RectangleVertex lineVertices[] = {
+      graphics3d::sequence3_color lineVertices[] = {
          {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, 
          {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, 
       };
@@ -1915,48 +2091,47 @@ namespace draw2d_vulkan
 
       ::gpu_vulkan::shader* pshader = nullptr;
 
-      //if(m_ealphamode == ::draw2d::e_alpha_mode_set)
-      //{
-      //   if (!m_pshaderSourceRectangle)
-      //   {
+      if(m_ealphamode == ::draw2d::e_alpha_mode_set)
+      {
+         if (!m_pshaderSourceRectangle)
+         {
 
-      //      auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+            auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
 
-      //      pshadervertexinput->m_bindings.add(
-      //         {
-      //            .binding = 0,
-      //            .stride = sizeof(RectangleVertex),
-      //            .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-      //         });
+            pshadervertexinput->m_bindings.add(
+               {
+                  .binding = 0,
+                  .stride = sizeof(RectangleVertex),
+                  .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+               });
 
-      //      pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
-      //      pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
+            pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
+            pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-      //      auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
+            auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
 
-      //      m_pshaderSourceRectangle = pshaderRectangle;
-      //      //m_pshaderRectangle->m_bDisableDepthTest = true;
-      //      //m_pshaderRectangle->m_bDepthTestButNoDepthWrite = true;
-      //      //m_pshaderRectangle->m_iColorAttachmentCount = 2;
-      //      m_pshaderSourceRectangle->m_bEnableBlend = true;
-      //      //m_pshaderRectangle->m_bAccumulationEnable = true;
+            m_pshaderSourceRectangle = pshaderRectangle;
+            //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
+            m_pshaderSourceRectangle->m_bDisableDepthTest = true;
+            //m_pshaderRectangle->m_iColorAttachmentCount = 2;
+            m_pshaderSourceRectangle->m_bEnableBlend = false;
+            //m_pshaderRectangle->m_bAccumulationEnable = true;
 
-      //      ::cast < ::gpu_vulkan::device > pgpudevice = m_pgpucontextCompositor->m_pgpudevice;
-      //      pshaderRectangle->initialize_shader_with_block(
-      //         m_pgpucontextCompositor->m_pgpucontextCompositor->m_pgpurenderer,
-      //         as_memory_block(g_uaRectangleVertexShader),
-      //         //as_memory_block(g_uaAccumulationFragmentShader),
-      //         as_memory_block(g_uaRectangleFragmentShader),
-      //         { },
-      //         m_psetdescriptorlayoutRectangle,
-      //         pshadervertexinput);
+            ::cast < ::gpu_vulkan::device > pgpudevice = pgpucontext->m_pgpudevice;
+            pshaderRectangle->initialize_shader_with_block(
+               m_pgpucontextCompositor->m_pgpurenderer,
+               as_memory_block(g_uaRectangleVertexShader),
+               //as_memory_block(g_uaAccumulationFragmentShader),
+               as_memory_block(g_uaRectangleFragmentShader),
+               { },
+               m_psetdescriptorlayoutRectangle,
+               pshadervertexinput);
 
+         }
+         pshader = m_pshaderSourceRectangle;
 
-      //   }
-      //   pshader = m_pshaderSourceRectangle;
-
-      //}
-      //else
+      }
+      else
       {
 
          if (!m_pshaderBlendRectangle)
@@ -1978,7 +2153,7 @@ namespace draw2d_vulkan
 
             m_pshaderBlendRectangle = pshaderRectangle;
             //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
-            m_pshaderBlendRectangle->m_bDepthTestButNoDepthWrite = true;
+            m_pshaderBlendRectangle->m_bDisableDepthTest = true;
             //m_pshaderRectangle->m_iColorAttachmentCount = 2;
             m_pshaderBlendRectangle->m_bEnableBlend = true;
             //m_pshaderRectangle->m_bAccumulationEnable = true;
@@ -1999,9 +2174,29 @@ namespace draw2d_vulkan
 
       }
 
-      auto pmodel = m_pmodelRectangle;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontextCompositor;
 
-      __construct_new(pmodel);
+      auto & pmodelbuffer = m_pmodelbufferRectangle;
+
+      if (!pmodelbuffer)
+      {
+
+         __defer_construct_new(pmodelbuffer);
+
+         pmodelbuffer->create_rectangle(pcontext, false, false);
+
+         //   pmodel->m_vertexBuffer = createQuadVertexBuffer(
+         //      pgpucontext->logicalDevice(),
+         //      pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+         //      &pmodel->m_vertexMemory);
+
+         //   pmodel->m_indexBuffer = nullptr;
+         //   pmodel->m_indexMemory = nullptr;
+
+         //}
+
+
+      }
 
       double_point quad[4];
 
@@ -2015,23 +2210,15 @@ namespace draw2d_vulkan
       m_m1.transform(quad[3]);
 
       //pgpucontext = pgpudevice->get_main_context();
-
-      {
-
-         pmodel->m_vertexBuffer = createQuadVertexBuffer(
-            pgpucontext->logicalDevice(),
-            pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-            &pmodel->m_vertexMemory, quad, color, pgpucontext->rectangle().size());
-
-         pmodel->m_indexBuffer = nullptr;
-         pmodel->m_indexMemory = nullptr;
-
-      }
+      editQuadVertexBuffer(
+         pgpucontext->logicalDevice(),
+         pmodel->m_vertexMemory,
+         quad, color, pgpucontext->rectangle().size());
 
       pshader->bind();
 
       //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
       VkDeviceSize offset = 0;
       ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
       vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
@@ -2231,7 +2418,7 @@ namespace draw2d_vulkan
       pshader->bind();
 
       //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-      auto pcommandbuffer = pgpurenderer->getCurrentCommandBuffer();
+      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
       VkDeviceSize offset = 0;
       ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
       vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
@@ -6595,7 +6782,7 @@ namespace draw2d_vulkan
 
       ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontextCompositor->m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
       vkCmdSetLineWidth(pcommandbuffer->m_vkcommandbuffer, m_ppen->m_dWidth);
       VkDeviceSize offset = 0;
       //vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);

@@ -6,6 +6,7 @@
 #include "shader.h"
 #include "context.h"
 #include "descriptors.h"
+#include "input_layout.h"
 #include "renderer.h"
 #include "pipeline.h"
 #include "renderer.h"
@@ -20,6 +21,7 @@ namespace gpu_vulkan
    shader::shader()
    {
 
+      m_bClearColor = false;
       m_iSamplerSlot = -1;
       m_vktopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
@@ -118,6 +120,31 @@ namespace gpu_vulkan
    void shader::on_initialize_shader()
    {
 
+      if (m_iSamplerSlot >= 0)
+      {
+
+         {
+
+            shader_sampler()->m_psetdescriptorlayout
+               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpurenderer->m_pgpucontext)
+               .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+               .build();
+
+            int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+
+            auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+
+            pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
+            pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
+
+            shader_sampler()->m_pdescriptorpool
+               = pdescriptorpoolbuilder->build();
+
+         }
+
+      }
+
       _create_pipeline_layout((int)m_propertiesPush.m_memory.size());
 
       __construct_new(m_ppipeline);
@@ -130,13 +157,29 @@ namespace gpu_vulkan
 
       PipelineConfigInfo pipelineConfig{};
 
-      ::cast < shader_vertex_input > pshadervertexinput = m_pVertexInput;
+      //if (m_propertiesInputLayout.m_pproperties)
+      //{
 
-      if (pshadervertexinput)
+      //   if (m_pVertexInput)
+      //   {
+
+      //      throw ::exception(error_wrong_state, "Shader vertex input shouldn't be set if there are input layout properties, they are alternatives to describe the same thing");
+
+      //   }
+
+      //   __defer_construct_new(m_pVertexInput);
+
+      //   m_pVertexInput->initialize_from_properties(m_propertiesInputLayout);
+
+      //}
+
+      ::cast < input_layout > pinputlayout = m_pinputlayout;
+
+      if (pinputlayout)
       {
 
-         pipelineConfig.bindingDescriptions.copy(pshadervertexinput->m_bindings);
-         pipelineConfig.attributeDescriptions.copy(pshadervertexinput->m_attribs);
+         pipelineConfig.bindingDescriptions.copy(pinputlayout->m_bindings);
+         pipelineConfig.attributeDescriptions.copy(pinputlayout->m_attribs);
 
       }
 
@@ -297,13 +340,23 @@ namespace gpu_vulkan
    void shader::bind(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource)
    {
 
+      bind(pgputextureTarget);
+
+      bind_source(pgputextureSource);
+
+   }
+
+
+   void shader::bind(::gpu::texture* pgputextureTarget)
+   {
+
       ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
       ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
 
       ::cast <renderer> prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       VkRenderPassBeginInfo renderPassBeginInfo{};
 
@@ -316,25 +369,25 @@ namespace gpu_vulkan
 
       }
 
-         _bind_sampler(pgputextureSource);
+      //bind_source(pgputextureSource);
 
-         ::cast <texture> ptextureDst = pgputextureTarget;
+      ::cast <texture> ptextureDst = pgputextureTarget;
 
-         auto pshadertextureDst = shader_texture(ptextureDst, false);
+      auto pshadertextureDst = shader_texture(ptextureDst, false);
 
-         renderPassBeginInfo.renderPass = shader_sampler()->get_render_pass();
-         renderPassBeginInfo.framebuffer = pshadertextureDst->get_framebuffer();
+      renderPassBeginInfo.renderPass = shader_sampler()->get_render_pass();
+      renderPassBeginInfo.framebuffer = pshadertextureDst->get_framebuffer();
 
-         uint32_t w = ptextureDst->m_rectangleTarget.width();
-         uint32_t h = ptextureDst->m_rectangleTarget.height();
-         int x = ptextureDst->m_rectangleTarget.left();
-         int bottom = ptextureDst->m_rectangleTarget.bottom();
-         int y = h - bottom;
+      uint32_t w = ptextureDst->m_rectangleTarget.width();
+      uint32_t h = ptextureDst->m_rectangleTarget.height();
+      int x = ptextureDst->m_rectangleTarget.left();
+      int bottom = ptextureDst->m_rectangleTarget.bottom();
+      int y = h - bottom;
 
-         renderPassBeginInfo.renderArea.offset = { x, y };
-         renderPassBeginInfo.renderArea.extent = { w, h };
+      renderPassBeginInfo.renderArea.offset = { x, y };
+      renderPassBeginInfo.renderArea.extent = { w, h };
 
-         debug() << "has_shader_sampler";
+      debug() << "has_shader_sampler";
 
       //}
       //else
@@ -342,14 +395,31 @@ namespace gpu_vulkan
 
       //   ::cast <render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
 
-      //   VkClearValue clearValues[2];
-      //   clearValues[0].color = { 0.f, 0.f, 0.f, 0.f };
-      //   clearValues[1].depthStencil = { 1.0f, 0 };
+      VkClearValue clearValues[2];
+      if (m_bClearColor)
+      {
+         clearValues[0].color = {
+            m_colorClear.f32_red() * m_colorClear.f32_opacity(),
+            m_colorClear.f32_green() * m_colorClear.f32_opacity(),
+            m_colorClear.f32_blue() * m_colorClear.f32_opacity(),
+
+            m_colorClear.f32_opacity() };
+         if (m_bDisableDepthTest)
+         {
+
+            renderPassBeginInfo.clearValueCount = 1;
+
+         }
+         else
+         {
+            clearValues[1].depthStencil = { 1.0f, 0 };
+            renderPassBeginInfo.clearValueCount = 2;
+         }
+         renderPassBeginInfo.pClearValues = clearValues;
+      }
 
       //   renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
       //   renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->get_frame_index());
-      //   renderPassBeginInfo.clearValueCount = 2;
-      //   renderPassBeginInfo.pClearValues = clearValues;
       //   renderPassBeginInfo.renderArea.offset = { 0, 0 };
       //   renderPassBeginInfo.renderArea.extent =
       //   {
@@ -379,7 +449,7 @@ namespace gpu_vulkan
 
       ::cast <renderer> prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       VkRenderPassBeginInfo renderPassBeginInfo{};
 
@@ -393,22 +463,23 @@ namespace gpu_vulkan
       }
 
 
-         ::cast <render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
+      ::cast <render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
 
-         VkClearValue clearValues[2]{};
-         clearValues[0].color = { 0.5f* 0.5f, 0.75f*0.5f, 0.95f* 0.5f, 0.5f };
-         clearValues[1].depthStencil = { 1.0f, 0 };
+      VkClearValue clearValues[2]{};
+      //clearValues[0].color = { 0.5f* 0.5f, 0.75f*0.5f, 0.95f* 0.5f, 0.5f };
+      clearValues[0].color = { 0.f * 0.f, 0.f * 0.f, 0.f * 0.f, 0.f };
+      clearValues[1].depthStencil = { 1.0f, 0 };
 
-         renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
-         renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->m_pgpurendertarget->get_frame_index());
-         renderPassBeginInfo.clearValueCount = 2;
-         renderPassBeginInfo.pClearValues = clearValues;
-         renderPassBeginInfo.renderArea.offset = { 0, 0 };
-         renderPassBeginInfo.renderArea.extent =
-         {
-            (uint32_t)pgpucontext->m_rectangle.width(),
-            (uint32_t)pgpucontext->m_rectangle.height()
-         };
+      renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
+      renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->m_pgpurendertarget->get_frame_index());
+      renderPassBeginInfo.clearValueCount = 2;
+      renderPassBeginInfo.pClearValues = clearValues;
+      renderPassBeginInfo.renderArea.offset = { 0, 0 };
+      renderPassBeginInfo.renderArea.extent =
+      {
+         (uint32_t)pgpucontext->m_rectangle.width(),
+         (uint32_t)pgpucontext->m_rectangle.height()
+      };
 
       vkCmdBeginRenderPass(
          pcommandbuffer->m_vkcommandbuffer,
@@ -424,14 +495,13 @@ namespace gpu_vulkan
    void shader::_bind()
    {
 
-
       ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
       ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
 
       ::cast <renderer> prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       m_ppipeline->bind(pcommandbuffer);
 
@@ -490,7 +560,7 @@ namespace gpu_vulkan
 
       ::cast <renderer> prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
@@ -502,7 +572,7 @@ namespace gpu_vulkan
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       vkCmdPushConstants(
          pcommandbuffer->m_vkcommandbuffer,
@@ -567,7 +637,6 @@ namespace gpu_vulkan
 
       }
 
-
       if (m_vksampler)
       {
 
@@ -604,32 +673,51 @@ namespace gpu_vulkan
       VkAttachmentDescription colorAttachment = {
          .format = pcontext->m_formatImageDefault,
          .samples = VK_SAMPLE_COUNT_1_BIT,
-         .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,  // Blend onto existing dstImage
          .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-         .initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
          .finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
       };
 
+      if (m_pshader->m_bClearColor)
+      {
+
+         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; //// ← clears to clearColor at start
+         colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+      }
+      else
+      {
+
+         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD; // Blend onto existing dstImage
+         colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+      }
+
       VkAttachmentReference colorRef =
       {
-          .attachment = 0,
-          .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+
+         .attachment = 0,
+         .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+
       };
 
       VkSubpassDescription subpass =
       {
-          .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-          .colorAttachmentCount = 1,
-          .pColorAttachments = &colorRef
+
+         .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+         .colorAttachmentCount = 1,
+         .pColorAttachments = &colorRef
+
       };
 
       VkRenderPassCreateInfo renderPassInfo =
       {
-          .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-          .attachmentCount = 1,
-          .pAttachments = &colorAttachment,
-          .subpassCount = 1,
-          .pSubpasses = &subpass
+
+         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+         .attachmentCount = 1,
+         .pAttachments = &colorAttachment,
+         .subpassCount = 1,
+         .pSubpasses = &subpass
+
       };
 
       VK_CHECK_RESULT(vkCreateRenderPass(
@@ -741,7 +829,7 @@ namespace gpu_vulkan
 
          uint32_t h = m_ptexture->size().cy();
 
-         VkFramebufferCreateInfo framebufferCreateInfo = 
+         VkFramebufferCreateInfo framebufferCreateInfo =
          {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
             .renderPass = m_pshadersampler->get_render_pass(),
@@ -753,7 +841,7 @@ namespace gpu_vulkan
          };
 
          VK_CHECK_RESULT(vkCreateFramebuffer(
-            pcontext->logicalDevice(), 
+            pcontext->logicalDevice(),
             &framebufferCreateInfo, NULL,
             &m_vkframebuffer2));
 
@@ -769,7 +857,7 @@ namespace gpu_vulkan
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0);
 
@@ -879,7 +967,7 @@ namespace gpu_vulkan
    }
 
 
-   void shader::_bind_sampler(::gpu::texture* pgputexture)
+   void shader::bind_source(::gpu::texture* pgputexture)
    {
 
       auto pshadertexture = this->shader_texture(pgputexture, true);
@@ -894,7 +982,7 @@ namespace gpu_vulkan
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       // Bind pipeline and descriptor sets
     //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);

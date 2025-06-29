@@ -16,7 +16,7 @@ namespace gpu_vulkan
    texture::texture()
    {
 
-      m_bTransferDst = false;
+      m_bTransferDst = true;
       new_texture.set_new_texture();
 
       m_vkimage = nullptr;
@@ -138,6 +138,8 @@ namespace gpu_vulkan
       VkPipelineStageFlags pipelineStageFlags)
    {
 
+      ASSERT(pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording);
+
       auto image = m_vkimage;
       
       auto accessOld = m_vkaccessflags;
@@ -217,6 +219,8 @@ namespace gpu_vulkan
    //   
 
    //}
+
+
 
    void texture::create_image_view()
    {

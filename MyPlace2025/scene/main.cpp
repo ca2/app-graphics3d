@@ -190,9 +190,9 @@ namespace graphics3d_MyPlace2025
       size_t cubeIndexOffset = 0;
       size_t cubeIndexCount = cube.indices.size();
 
-      // Combine the cube data and prepare offsets for the plane
-      std::vector<float> combinedVertices = cube.vertices;  // Start with cube's vertices
-      std::vector<unsigned int> combinedIndices = cube.indices;  // Start with cube's indices
+      // Combine the graphics3d data and prepare offsets for the plane
+      std::vector<float> combinedVertices = cube.vertices;  // Start with graphics3d's vertices
+      std::vector<unsigned int> combinedIndices = cube.indices;  // Start with graphics3d's indices
 
       size_t planeVertexOffset = combinedVertices.size() / 8;  // Calculate vertex offset for plane
       size_t planeIndexOffset = combinedIndices.size();         // Calculate index offset for plane

@@ -2,7 +2,7 @@
 #include "impact.h"
 #include "document.h"
 #include "application.h"
-#include "cube/main_scene.h"
+#include "graphics3d/main_scene.h"
 #include "acme/constant/message.h"
 #include "acme/filesystem/filesystem/file_system.h"
 #include "acme/filesystem/filesystem/file_context.h"

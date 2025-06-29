@@ -95,7 +95,7 @@
 //      for (auto& kv : frameInfo.gameObjects) {
 //         auto& obj = kv.element2();
 //
-//         ::cast < ::cube::point_light > ppointlight = obj;
+//         ::cast < ::graphics3d::point_light > ppointlight = obj;
 //         if (ppointlight == nullptr) continue;
 //
 //         // calculate distance
@@ -120,7 +120,7 @@
 //      for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
 //         // use game obj id to find light object
 //         auto& obj = frameInfo.gameObjects[it->second];
-//         ::cast < ::cube::point_light > ppointlight = obj;
+//         ::cast < ::graphics3d::point_light > ppointlight = obj;
 //         PointLightPushConstants push{};
 //         push.position = glm::vec4(obj->m_transform.translation, 1.f);
 //         push.color = glm::vec4(obj->m_color, ppointlight->m_pointlightcomponent.lightIntensity);
@@ -150,7 +150,7 @@
 //
 //         auto& obj = kv.element2();
 //
-//         ::cast < ::cube::point_light > ppointlight = obj;
+//         ::cast < ::graphics3d::point_light > ppointlight = obj;
 //
 //         if (ppointlight == nullptr) continue;
 //

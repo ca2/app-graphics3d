@@ -11,7 +11,7 @@
 
 //#include "vma/vk_mem_alloc.h"
 #include "context.h"
-//#include "opengl-cube/graphics3d_opengl/base_application_no_swap_chain.h"
+//#include "opengl-graphics3d/graphics3d_opengl/base_application_no_swap_chain.h"
 #include "descriptors.h"
 #include "application_object.h"
 #include "cube/container.h"

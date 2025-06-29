@@ -178,7 +178,7 @@
 //   {
 //
 //      // Generate shape data
-//      ShapeFactory::ShapeData cube = ShapeFactory::CreateCube(1.7f);
+//      ShapeFactory::ShapeData graphics3d = ShapeFactory::CreateCube(1.7f);
 //      ShapeFactory::ShapeData plane = ShapeFactory::CreatePlane(2.0f, 2.0f);
 //      ShapeFactory::ShapeData skyboxCube = ShapeFactory::CreateCube(1.0f);
 //      ShapeFactory::ShapeData sphere = ShapeFactory::CreateSphere(1.0f, 32, 32);
@@ -188,11 +188,11 @@
 //      // Offsets for vertex and index data (dynamic approach)
 //      size_t cubeVertexOffset = 0;
 //      size_t cubeIndexOffset = 0;
-//      size_t cubeIndexCount = cube.indices.size();
+//      size_t cubeIndexCount = graphics3d.indices.size();
 //
-//      // Combine the cube data and prepare offsets for the plane
-//      ::array<float> combinedVertices = cube.vertices;  // Start with cube's vertices
-//      ::array<unsigned int> combinedIndices = cube.indices;  // Start with cube's indices
+//      // Combine the graphics3d data and prepare offsets for the plane
+//      ::array<float> combinedVertices = graphics3d.vertices;  // Start with graphics3d's vertices
+//      ::array<unsigned int> combinedIndices = graphics3d.indices;  // Start with graphics3d's indices
 //
 //      size_t planeVertexOffset = combinedVertices.size() / 8;  // Calculate vertex offset for plane
 //      size_t planeIndexOffset = combinedIndices.size();         // Calculate index offset for plane

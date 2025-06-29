@@ -3,6 +3,7 @@
 #include "command_buffer.h"
 #include "offscreen_render_pass.h"
 #include "initializers.h"
+#include "layer.h"
 #include "physical_device.h"
 #include "renderer.h"
 #include "swap_chain.h"
@@ -119,9 +120,14 @@ namespace gpu_vulkan
    }
 
 
-   VkResult offscreen_render_pass::submitCommandBuffers(command_buffer* pcommandbuffer)
+   VkResult offscreen_render_pass::submitCommandBuffers(
+      command_buffer* pcommandbuffer,
+      const ::array < VkSemaphore >& semaphoreaWait,
+      const ::array < VkPipelineStageFlags >& stageaWait,
+      const ::array < VkSemaphore >& semaphoreaSignal)
    {
-
+      auto& ecommandbufferstate = pcommandbuffer->m_estate;
+      ASSERT(ecommandbufferstate == ::gpu::command_buffer::e_state_recording);
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
       //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
@@ -136,14 +142,14 @@ namespace gpu_vulkan
       VkSubmitInfo submitInfo = {};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-      ::array<VkSemaphore> waitSemaphores;
-      ::array<VkPipelineStageFlags> waitStages;
+      ::array<VkSemaphore> waitSemaphores(semaphoreaWait);
+      ::array<VkPipelineStageFlags> waitStages(stageaWait);
       if (imageAvailable[get_frame_index()] > 0)
       {
          waitSemaphores.add(imageAvailableSemaphores[get_frame_index()]);
          waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
       }
-      waitStages.add_copies(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, m_semaphoreaWaitToSubmit.size());
+      waitStages.append(::transfer(m_stageaWaitToSubmit));
       waitSemaphores.append(::transfer(m_semaphoreaWaitToSubmit));
       submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
       submitInfo.pWaitSemaphores = waitSemaphores.data();
@@ -153,30 +159,53 @@ namespace gpu_vulkan
       submitInfo.commandBufferCount = 1;
       submitInfo.pCommandBuffers = vkcommandbuffera;
 
-      ::array<VkSemaphore> signalSemaphores;
+      ::array<VkSemaphore> signalSemaphores(semaphoreaSignal);
+
+      if (signalSemaphores.is_empty())
+      {
+
+         signalSemaphores.add(renderFinishedSemaphores[get_frame_index()]);
+
+      }
       
-      signalSemaphores.add(renderFinishedSemaphores[get_frame_index()]);
       signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
+
       submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
+
       submitInfo.pSignalSemaphores = signalSemaphores.data();
 
       //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
 
       auto queueGraphics = pcontext->graphicsQueue();
 
+      VkFence & fence = inFlightFences.element_at_grow(get_frame_index());
 
-      VkFence fence;
+      bool bCreatedFence = false;
 
-      VkFenceCreateInfo fenceInfo = {
-          .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-          .pNext = NULL,
-          .flags = 0  // 0 = fence starts in unsignaled state
-      };
+      if (!fence)
+      {
 
-      VkResult result = vkCreateFence(pcontext->logicalDevice(), &fenceInfo, NULL, &fence);
-      if (result != VK_SUCCESS) {
-         fprintf(stderr, "Failed to create fence\n");
-         // handle error
+         VkFenceCreateInfo fenceInfo = {
+             .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+             .pNext = NULL,
+             .flags = 0  // 0 = fence starts in unsignaled state
+         };
+
+         VkResult result = vkCreateFence(pcontext->logicalDevice(), &fenceInfo, NULL, &fence);
+         if (result != VK_SUCCESS) {
+            fprintf(stderr, "Failed to create fence\n");
+            // handle error
+         }
+
+         bCreatedFence = true;
+
+      }
+      else
+      {
+         vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+         vkResetFences(pcontext->logicalDevice(), 1, &fence);
+
       }
 
       //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
@@ -187,12 +216,14 @@ namespace gpu_vulkan
          
       }
 
-      vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+      ecommandbufferstate = ::gpu::command_buffer::e_state_submitted;
 
-      vkQueueWaitIdle(queueGraphics);
+      //vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+      //vkQueueWaitIdle(queueGraphics);
 
 
-      vkDestroyFence(pcontext->logicalDevice(), fence, NULL);
+      //vkDestroyFence(pcontext->logicalDevice(), fence, NULL);
 
       //VK_CHECK(vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
 

@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required(VERSION "3.13")
-project(graphics3d_continuum CXX)
+project(app_graphics3d_continuum CXX)
 
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -17,42 +17,46 @@ include_directories(${Vulkan_INCLUDE_DIR})
 list(APPEND library_source
         # src
         #src/main.cpp
-        AppCore/vk_application.cpp
-        AppCore/vk_window.cpp
+#        AppCore/vk_application.cpp
+#        AppCore/vk_window.cpp
+#
+#        Renderer/vk_renderer.cpp
 
-        Renderer/vk_renderer.cpp
-
-        VK_abstraction/vk_initializers.cpp
-        VK_abstraction/vk_initializers.h
-        VK_abstraction/vk_device.cpp
-        VK_abstraction/vk_device.h
-        VK_abstraction/vk_swapchain.cpp
-        VK_abstraction/vk_swapchain.h
-        VK_abstraction/vk_descriptors.cpp
-        VK_abstraction/vk_descriptors.h
-        VK_abstraction/vk_pipeline.cpp
-        VK_abstraction/vk_pipeline.h
-        VK_abstraction/vk_renderpass.cpp
-        VK_abstraction/vk_renderpass.h
-        VK_abstraction/vk_offscreen.cpp
-        VK_abstraction/vk_offscreen.h
-../../../port/graphics3d/vkbootstrap/VkBootstrap.cpp
-
-        # vendor
-        Renderer/vk_buffer.h
-        Renderer/vk_buffer.cpp
-        Renderer/Types/vk_basicRenderSystem.cpp
-        Renderer/Types/vk_basicRenderSystem.h
-        VK_abstraction/vk_camera.cpp
-        VK_abstraction/vk_camera.h
-        VK_abstraction/vk_model.cpp
-        VK_abstraction/vk_model.h
-        VK_abstraction/vk_gameObject.cpp
-        VK_abstraction/vk_gameObject.h
-        VK_abstraction/vk_input.cpp
-        VK_abstraction/vk_input.h
-        Renderer/Types/vk_pointLightSystem.cpp
-        Renderer/Types/vk_pointLightSystem.h
+#        VK_abstraction/vk_initializers.cpp
+#        VK_abstraction/vk_initializers.h
+#        VK_abstraction/vk_device.cpp
+#        VK_abstraction/vk_device.h
+#        VK_abstraction/vk_swapchain.cpp
+#        VK_abstraction/vk_swapchain.h
+#        VK_abstraction/vk_descriptors.cpp
+#        VK_abstraction/vk_descriptors.h
+#        VK_abstraction/vk_pipeline.cpp
+#        VK_abstraction/vk_pipeline.h
+#        VK_abstraction/vk_renderpass.cpp
+#        VK_abstraction/vk_renderpass.h
+#        VK_abstraction/vk_offscreen.cpp
+#        VK_abstraction/vk_offscreen.h
+##../../../port/graphics3d/vkbootstrap/VkBootstrap.cpp
+#
+#        # vendor
+#        Renderer/vk_buffer.h
+#        Renderer/vk_buffer.cpp
+#        Renderer/Types/vk_basicRenderSystem.cpp
+#        Renderer/Types/vk_basicRenderSystem.h
+#        VK_abstraction/vk_camera.cpp
+#        VK_abstraction/vk_camera.h
+#        VK_abstraction/vk_model.cpp
+#        VK_abstraction/vk_model.h
+#        VK_abstraction/vk_gameObject.cpp
+#        VK_abstraction/vk_gameObject.h
+#        VK_abstraction/vk_input.cpp
+#        VK_abstraction/vk_input.h
+        graphics3d/main_scene.cpp
+        graphics3d/main_scene.h
+        graphics3d/point_light_system.cpp
+        graphics3d/point_light_system.h
+        graphics3d/simple_render_system.cpp
+        graphics3d/simple_render_system.h
         _.cpp
         _.h
         application.cpp
@@ -98,7 +102,6 @@ list(APPEND library_references
     base
     bred
     core
-    graphics3d_landen
 )
 
 
@@ -125,7 +128,7 @@ if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE "/MD$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/DEFAULTLIB:msvcrt$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
-    target_link_libraries(${PROJECT_NAME} PRIVATE acme apex aqua aura axis base)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${library_references})
 elseif (${LINUX})
 
     #if(USE_PKGCONFIG)
@@ -157,8 +160,8 @@ add_dependencies(${PROJECT_NAME} ${default_networking})
 add_dependencies(${PROJECT_NAME} ${default_write_text})
 add_dependencies(${PROJECT_NAME} database_sqlite3)
 
-set(SPIRV_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}../_matter/continuum/_std/_std/shaders/spirV")
-file(MAKE_DIRECTORY ${SPIRV_OUTPUT_DIR})
+#set(SPIRV_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}../_matter/continuum/_std/_std/shaders/spirV")
+#file(MAKE_DIRECTORY ${SPIRV_OUTPUT_DIR})
 
 foreach(SHADER_FILE ${SHADER_FILES})
     get_filename_component(FILE_NAME ${SHADER_FILE} NAME)

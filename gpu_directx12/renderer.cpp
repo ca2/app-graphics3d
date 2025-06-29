@@ -4958,7 +4958,7 @@ void CreateImageBlendVertexBuffer(
 
          }
 
-         pcommandbuffer->submit_command_buffer();
+         pcommandbuffer->submit_command_buffer(nullptr);
 
          if (eoutput == ::gpu::e_output_swap_chain)
          {

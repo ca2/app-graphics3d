@@ -38,8 +38,6 @@ namespace gpu_vulkan
       VkPipelineStageFlags       m_vkpipelinestageflags;
       VkImageView                m_vkimageview;
 
-      bool m_bTransferDst;
-      bool m_bCpuRead;
       
       texture();
       ~texture() override;

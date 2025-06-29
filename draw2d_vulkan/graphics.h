@@ -43,19 +43,15 @@ namespace draw2d_vulkan
       // bool                                      m_bFont;
       ::int_size                    m_sizeWindow;
       //HGLRC m_hrc;
-      ::pointer < ::windowing::window >   m_pwindow;
+      //::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       ::pointer<::gpu::context>             m_pgpucontextOutput;
       //::pointer < ::gpu::frame > m_pframe;
 //      ::geometry2d::matrix m_m1;
 
-      struct RectangleVertex {
-         float pos[3];    // x, y, z
-         float color[4];  // r, g, b, a
-      };
       ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutRectangle;
       ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolRectangle;
-      ::pointer <::gpu_vulkan::renderer::model >               m_pmodelRectangle;
+      ::pointer <::gpu_vulkan::model_buffer >                  m_pmodelbufferRectangle;
       ::pointer < ::gpu_vulkan::shader >                       m_pshaderBlendRectangle;
       ::pointer < ::gpu_vulkan::shader >                       m_pshaderSourceRectangle;
 
@@ -139,13 +135,14 @@ namespace draw2d_vulkan
       bool CreateIC(const ::scoped_string & lpszDriverName, const ::scoped_string & lpszDeviceName,
                     const char * lpszOutput, const void * lpInitData);
       void create_memory_graphics(const ::int_size & size = {}) override;
-      void create_window_graphics(::windowing::window * pwindow) override;
+      //void create_window_graphics(::windowing::window * pwindow) override;
+      void create_for_window_draw2d(::user::interaction * puserinteraction, const ::int_size & size) override;
       void CreateCompatibleDC(::draw2d::graphics * pgraphics) override;
 
       virtual bool vulkan_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement);
       virtual bool vulkan_delete_offscreen_buffer();
 
-      virtual bool vulkan_defer_create_window_context(::windowing::window * pwindow);
+      //virtual bool vulkan_defer_create_window_context(::windowing::window * pwindow);
 
       void DeleteDC() override;
 

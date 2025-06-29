@@ -312,7 +312,7 @@ namespace graphics3d_directx11
 
 
 
-   //void model::Builder::loadModel(::cube::gpu::context * pgpucontext, const std::string& filepath) {
+   //void model::Builder::loadModel(::graphics3d::gpu::context * pgpucontext, const std::string& filepath) {
    //    tinyobj::attrib_t attrib;
    //    ::array<tinyobj::shape_t> shapes;
    //    ::array<tinyobj::material_t> materials;

@@ -58,6 +58,14 @@ namespace gpu_vulkan
 
    class command_buffer;
 
+   class layer;
+
+   class memory_buffer;
+
+   class model_buffer;
+
+   class input_layout;
+
 
 } // namespace gpu_vulkan
 

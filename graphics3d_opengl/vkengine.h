@@ -33,7 +33,7 @@ namespace graphics3d_opengl
 
 		//::pointer <descriptor_pool>		m_pglobalpool;
 
-		//::cube::application_object::map				m_mapObjects;
+		//::graphics3d::application_object::map				m_mapObjects;
 
 
 

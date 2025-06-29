@@ -101,6 +101,9 @@ namespace gpu_vulkan
       ::pointer_array<::gpu_vulkan::buffer>							m_uboBuffers;
       ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolGlobal;
 
+
+      ::pointer <::gpu_vulkan::shader>                m_pshaderBlend3;
+
       context();
       ~context() override;
 
@@ -119,7 +122,11 @@ namespace gpu_vulkan
 
       VkSampler _001VkSampler();
 
+      void on_start_layer(::gpu::layer* player) override;
 
+      void merge_layers(::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera) override;
+
+      void copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource) override;
       //set_descriptor_layout* get_set_descriptor_layout();
       //virtual VkDescriptorSet getCurrentDescriptorSet(::gpu_vulkan::renderer* prenderer);
 
@@ -145,6 +152,9 @@ namespace gpu_vulkan
       // virtual string load_fragment(const ::string & pszPath, enum_shader_source& eshadersource);
 
       //virtual string get_shader_version_text();
+
+      virtual bool defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, memsize size);
+      virtual bool defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, const ::block& block);
       
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;
 

@@ -1,7 +1,7 @@
 #pragma once
 
 //#include "AppCore/vk_window.h"
-//#include "cube/container.h"
+//#include "graphics3d/container.h"
 #include "context.h"
 //#include "offscreen.h"
 //#include "swapchain.h"
@@ -14,15 +14,6 @@ namespace gpu_vulkan
 {
 
 
-   class CLASS_DECL_GPU_VULKAN shader_vertex_input :
-      virtual public ::particle
-   {
-   public:
-
-      ::array < VkVertexInputBindingDescription >     m_bindings;
-      ::array < VkVertexInputAttributeDescription >   m_attribs;
-
-   };
 
 
    class CLASS_DECL_GPU_VULKAN renderer :
@@ -64,17 +55,6 @@ namespace gpu_vulkan
 
 
 
-      class model :
-         virtual public ::particle
-      {
-      public:
-         VkBuffer m_vertexBuffer = nullptr;
-         VkDeviceMemory m_vertexMemory = nullptr;
-         VkBuffer m_indexBuffer = nullptr;
-         VkDeviceMemory m_indexMemory = nullptr;
-      };
-
-
       //::pointer<blend2>                               m_pblend2;
 
       ::pointer < shader >                       m_pshaderImageBlend;
@@ -85,7 +65,7 @@ namespace gpu_vulkan
       //::pointer<::gpu::shader>                        m_pshaderImageBlend;
       //::pointer<::gpu::shader>                        m_pshaderImageSet;
       //map < VkImage, ::pointer < descriptor > >       m_imagedescriptor;
-      map < VkImage, ::pointer < model > >       m_imagemodel;
+      map < VkImage, ::pointer < model_buffer > >       m_imagemodelbuffer;
       //::pointer < ::user::graphics3d >	m_pimpact;
       ::pointer < context >				               m_pgpucontext;
       ::pointer < cpu_buffer_sampler >	               m_pcpubuffersampler;
@@ -154,6 +134,10 @@ namespace gpu_vulkan
       //void _resolve_color_and_alpha_accumulation_buffers();
       void swap_chain();
 
+
+      //void on_end_layer(::gpu::layer* player) override;
+
+
       float getAspectRatio() const
       {
 
@@ -178,7 +162,7 @@ namespace gpu_vulkan
       bool isFrameInProgress() const { return isFrameStarted; }
 
 
-      command_buffer* getCurrentCommandBuffer();
+      ::gpu::command_buffer* getCurrentCommandBuffer2() override;
 
 
 

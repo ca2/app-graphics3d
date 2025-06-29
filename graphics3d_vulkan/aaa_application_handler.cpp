@@ -43,7 +43,7 @@ namespace graphics3d_vulkan
 {
 
 
-   //::pointer<::vulkan::application > start_vulkan_application(::::cube::container* pcontainer, mouse_state* pmousestate)
+   //::pointer<::vulkan::application > start_vulkan_application(::::graphics3d::container* pcontainer, mouse_state* pmousestate)
    //{
    //   auto pvulkanexample = pcontainer->__create_new < application_handler >();
 

@@ -7,18 +7,22 @@
  */
 #include "framework.h"
 #include "debug.h"
- //#include <iostream>
+
 
 namespace vulkan
 {
+
 
    namespace debug
    {
 
 
       PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT;
+      
       PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT;
+      
       VkDebugUtilsMessengerEXT debugUtilsMessenger;
+
 
       VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessageCallback(
          VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -54,14 +58,19 @@ namespace vulkan
 #endif
          }
 
-
          // Display message to default output (console/logcat)
          ::string debugMessage;
-         if (pCallbackData->pMessageIdName) {
+         if (pCallbackData->pMessageIdName) 
+         {
+
             debugMessage << prefix << "[" << pCallbackData->messageIdNumber << "][" << pCallbackData->pMessageIdName << "] : " << pCallbackData->pMessage;
+
          }
-         else {
+         else 
+         {
+
             debugMessage << prefix << "[" << pCallbackData->messageIdNumber << "] : " << pCallbackData->pMessage;
+
          }
 
 #if defined(__ANDROID__)

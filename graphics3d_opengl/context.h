@@ -7,7 +7,7 @@
 //#include "bred/gpu/context.h"
 //#include "bred/graphics3d/context.h"
 ////#include "window.h"
-////#include "opengl-cube/graphics3d_opengl/context.h"
+////#include "opengl-graphics3d/graphics3d_opengl/context.h"
 //#include "app-graphics3d/graphics3d_opengl/_opengl.h"
 //// std lib headers
 ////#include <string>

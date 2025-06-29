@@ -41,7 +41,7 @@ namespace graphics3d_opengl
 {
 
 
-   //::pointer<::opengl::application > start_opengl_application(::::cube::container* pcontainer, mouse_state* pmousestate)
+   //::pointer<::opengl::application > start_opengl_application(::::graphics3d::container* pcontainer, mouse_state* pmousestate)
    //{
    //   auto popenglexample = pcontainer->__create_new < application_handler >();
 

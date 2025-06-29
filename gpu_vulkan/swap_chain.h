@@ -19,7 +19,7 @@ namespace gpu_vulkan
       VkSwapchainKHR                m_vkswapchain;
       uint32_t                      m_uCurrentSwapChainImage;
       ::pointer < ::gpu::context >  m_pgpucontextSwapChain;
-
+      ::pointer < ::gpu_vulkan::shader > m_pshaderPresent;
 
       //swap_chain(renderer* pgpurenderer, VkExtent2D windowExtent);
       swap_chain();
@@ -31,7 +31,7 @@ namespace gpu_vulkan
 
       //virtual ::gpu::texture* current_texture();
       void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous = {}) override;
-
+      void initialize_gpu_swap_chain(::gpu::renderer* pgpurenderer) override;
       //swap_chain_render_pass(const swap_chain_render_pass&) = delete;
       //swap_chain_render_pass& operator=(const swap_chain_render_pass&) = delete;
 
@@ -49,9 +49,15 @@ namespace gpu_vulkan
       //}
       VkFormat findDepthFormat();
 
+      int get_frame_index() override;
+
       VkResult acquireNextImage() override;
-      VkResult submitCommandBuffers(command_buffer * pcommandbuffer) override;
-      //int get_image_index() const override;
+      VkResult submitCommandBuffers(
+         command_buffer * pcommandbuffer,
+         const ::array < VkSemaphore >& semaphoreaWait,
+         const ::array < VkPipelineStageFlags >& stageaWait,
+         const ::array < VkSemaphore >& semaphoreaSignal) override;
+      virtual int get_image_index() const;
       //bool compareSwapFormats(const swap_chain_render_pass& m_swapchain) const {
       //   return m_swapchain.swapChainDepthFormat == swapChainDepthFormat &&
       //      m_swapchain.swapChainImageFormat == swapChainImageFormat;
