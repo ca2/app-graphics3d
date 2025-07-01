@@ -3,7 +3,7 @@
 #pragma once
 
 
-#include "bred/gpu/face.h"
+#include "bred/typeface/face.h"
 
 
 
@@ -12,7 +12,7 @@ namespace draw2d_opengl
 
 
    class CLASS_DECL_DRAW2D_OPENGL face:
-      virtual public ::draw2d_gpu::face
+      virtual public ::typeface::face
    {
    public:
 
@@ -26,11 +26,11 @@ namespace draw2d_opengl
       //virtual character& get_character(const ::scoped_string& scopedstr);
 
 
-      virtual void create_character(::draw2d_gpu::character& ch, const ::scoped_string& scopedstr);
+      virtual void create_character(::typeface::character& ch, const ::scoped_string& scopedstr);
 
       void create_draw_buffers();
 
-      void create_texture(::draw2d_gpu::character& ch, const unsigned char* p);
+      void create_texture(::typeface::character& ch, const unsigned char* p);
 
 
    };

@@ -2,6 +2,7 @@
 // 2025-06-01 23:22 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "face.h"
+#include "bred/gpu/pixmap.h"
 
 
 namespace draw2d_opengl
@@ -45,10 +46,11 @@ namespace draw2d_opengl
    //}
 
 
-   void face::create_character(::draw2d_gpu::character& ch, const ::scoped_string& scopedstr)
+   void face::create_character(::typeface::character& ch, const ::scoped_string& scopedstr)
    {
 
    }
+
 
    void face::create_draw_buffers()
    {
@@ -73,35 +75,51 @@ namespace draw2d_opengl
 
    }
 
-   void face::create_texture(::draw2d_gpu::character& ch, const unsigned char* p)
+
+   void face::create_texture(::typeface::character& ch, const unsigned char* p)
    {
 
-      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+      //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
       // generate texture
          //unsigned int texture;
-      glGenTextures(1, &ch.TextureID);
-      glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-      glTexImage2D(
-         GL_TEXTURE_2D,
-         0,
-         GL_BGRA,
-         ch.Size.x,
-         ch.Size.y,
-         0,
-         GL_BGRA,
-         GL_UNSIGNED_BYTE,
-         p
-      );
-      // set texture options
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      //glGenTextures(1, &ch.TextureID);
+      //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
 
-      glBindTexture(GL_TEXTURE_2D, 0);
+      __defer_construct(ch.m_ppixmap);
+
+      ch.m_ppixmap->initialize_gpu_pixmap(m_pgpurenderer,
+         { ch.Size.x,
+         ch.Size.y }
+      );
+
+
+      ch.m_ppixmap->set_pixels(p,
+         ch.Size.x,
+         ch.Size.y);
+
+
+      //glTexImage2D(
+      //   GL_TEXTURE_2D,
+      //   0,
+      //   GL_BGRA,
+      //   ch.Size.x,
+      //   ch.Size.y,
+      //   0,
+      //   GL_BGRA,
+      //   GL_UNSIGNED_BYTE,
+      //   p
+      //);
+      //// set texture options
+      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+      //glBindTexture(GL_TEXTURE_2D, 0);
 
 
    }
+
 
 } // namespace draw2d_opengl
 

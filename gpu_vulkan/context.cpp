@@ -2824,8 +2824,9 @@ namespace gpu_vulkan
    }
 
 
-   ::memory::rectangle_shader_vert()
+   ::memory context::rectangle_shader_vert()
    {
+
       unsigned int uaRectangleVert[] = {
     #include "shader/rectangle.vert.spv.inl"
       };
@@ -2835,8 +2836,9 @@ namespace gpu_vulkan
    }
 
 
-   ::memory::rectangle_shader_frag()
+   ::memory context::rectangle_shader_frag()
    {
+
       unsigned int uaRectangleFrag[] = {
 #include "shader/rectangle.frag.spv.inl"
       };
@@ -2846,7 +2848,6 @@ namespace gpu_vulkan
    }
 
   
-
    //void context::initialize_rectangle_shader(::gpu::shader* pshader)
    //{
 

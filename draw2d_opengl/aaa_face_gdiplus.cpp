@@ -108,7 +108,7 @@ namespace draw2d_opengl
 
    }
 
-   void face_gdiplus::create_character(::draw2d_gpu::character& ch, const ::scoped_string& scopedstr)
+   void face_gdiplus::create_character(::gpu::character& ch, const ::scoped_string& scopedstr)
       //Character& face_freetype::get_character(const ::scoped_string& scopedstr)
    {
 

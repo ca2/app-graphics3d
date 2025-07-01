@@ -251,6 +251,12 @@
     <CustomBuild Include="shader\fullscreen.frag">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="shader\rectangle.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\rectangle.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\image_blend.frag.spv.inl">
