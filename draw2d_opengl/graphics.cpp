@@ -5401,7 +5401,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       ::cast < draw2d_opengl::draw2d>pdraw2d = draw2d();
 
 
-      ::pointer <face> pface = pdraw2d->get_face(pfont);
+      ::pointer <::typeface::face> pface = pdraw2d->get_face(pfont);
 
       //glBindVertexArray(pfont->m_VAO);
 

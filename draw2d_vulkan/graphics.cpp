@@ -7677,9 +7677,8 @@ namespace draw2d_vulkan
    void graphics::on_set_gpu_context()
    {
 
-      auto pcontext = gpu_context();
 
-      ::cast < ::gpu_vulkan::device > pdevice = pcontext->m_pgpudevice;
+      ::gpu::graphics::on_set_gpu_context();
 
    }
 
