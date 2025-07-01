@@ -4,6 +4,7 @@
 #include "depth_stencil.h"
 #include "descriptors.h"
 #include "frame.h"
+#include "input_layout.h"
 #include "renderer.h"
 #include "texture.h"
 #include "offscreen_render_target_view.h"
@@ -13,6 +14,8 @@
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/render_state.h"
+#include "bred/gpu/types.h"
+#include "bred/graphics3d/types.h"
 #include "gpu_directx12/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
@@ -62,10 +65,10 @@ namespace gpu_directx12
 {
 
 
-   struct ImageBlendVertex {
-      float position[2]; // NDC space
-      float uv[2];
-   };
+   //struct ImageBlendVertex {
+   //   float position[2]; // NDC space
+   //   float uv[2];
+   //};
 
    struct HelloTriangleVertex
    {
@@ -133,10 +136,10 @@ float4 main(PSInput input) : SV_TARGET {
 }
 )hlsl";
 
-   BEGIN_GPU_PROPERTIES(image_blend_input_layout)
-      GPU_PROPERTY("position", ::gpu::e_type_seq2)
-      GPU_PROPERTY("uv", ::gpu::e_type_seq2)
-   END_GPU_PROPERTIES()
+   //BEGIN_GPU_PROPERTIES(image_blend_input_layout)
+   //   GPU_PROPERTY("position", ::gpu::e_type_seq2)
+   //   GPU_PROPERTY("uv", ::gpu::e_type_seq2)
+   //END_GPU_PROPERTIES()
 
    //::gpu::property* image_blend_input_layout_properties()
    //{
@@ -190,7 +193,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //defer_layout();
 
-      //createCommandBuffers();
+      //create_command_buffers();
 
 
    }
@@ -199,7 +202,26 @@ float4 main(PSInput input) : SV_TARGET {
    renderer::~renderer()
    {
 
-      freeCommandBuffers();
+      free_command_buffers();
+
+   }
+
+
+   ::gpu_directx12::vertex_buffer < ::graphics3d::sequence2_uv >*
+      renderer::sequence2_uv_rectangle()
+   {
+
+      if (!m_pvertexbufferSeq2UvRectangle)
+      {
+
+         __defer_construct_new(m_pvertexbufferSeq2UvRectangle);
+
+         m_pvertexbufferSeq2UvRectangle->initialize_vertex_buffer(m_pgpucontext,
+            6);
+
+      }
+
+      return m_pvertexbufferSeq2UvRectangle;
 
    }
 
@@ -207,17 +229,19 @@ float4 main(PSInput input) : SV_TARGET {
    ::gpu::command_buffer* renderer::getCurrentCommandBuffer2()
    {
 
-      assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
+      return ::gpu::renderer::getCurrentCommandBuffer2();
 
-      //if (m_pgpulayer)
-      //{
-      //   
-      //   return m_pgpulayer->m_pcommandbuffer.cast < command_buffer>();
+      //assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
 
-      //}
+      ////if (m_pgpulayer)
+      ////{
+      ////   
+      ////   return m_pgpulayer->m_pcommandbuffer.cast < command_buffer>();
 
-      //return m_commandbuffera[get_frame_index()];
-      return m_commandbuffera[m_pgpurendertarget->get_frame_index()];
+      ////}
+
+      ////return m_commandbuffera[get_frame_index()];
+      //return m_commandbuffera[m_pgpurendertarget->get_frame_index()];
 
    }
 
@@ -509,7 +533,7 @@ float4 main(PSInput input) : SV_TARGET {
 
 
 
-   void renderer::createCommandBuffers()
+   void renderer::create_command_buffers()
    {
 
       ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
@@ -670,7 +694,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::freeCommandBuffers()
+   void renderer::free_command_buffers()
    {
 
       //vkFreeCommandBuffers(
@@ -2371,7 +2395,7 @@ float4 main(PSInput input) : SV_TARGET {
       if (!m_pshaderImageBlend)
       {
 
-         auto pshadervertexinput = __allocate  shader_vertex_input();
+         auto pinputlayoutEmpty = __øcreate <::gpu::input_layout >();
 
          //pshadervertexinput->m_bindings.add(
          //   {
@@ -2390,7 +2414,7 @@ float4 main(PSInput input) : SV_TARGET {
          pshaderImageBlend->m_bEnableBlend = true;
          pshaderImageBlend->m_bDisableDepthTest = true;
 
-         ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
+         //::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
          pshaderImageBlend->initialize_shader_with_block(
             this,
@@ -2398,9 +2422,8 @@ float4 main(PSInput input) : SV_TARGET {
             as_block(g_pszImageBlendFragmentShader),
             { ::gpu::shader::e_descriptor_set_shader_resource_view_and_sampler },
             m_psetdescriptorlayoutImageBlend,
-            pshadervertexinput,
             {},
-            image_blend_input_layout_properties());
+            m_pgpucontext->input_layout(::graphics3d::sequence2_uv_properties()));
 
       }
 
@@ -2415,7 +2438,7 @@ float4 main(PSInput input) : SV_TARGET {
       if (!m_pshaderImageBlend)
       {
 
-         auto pshadervertexinput = __allocate  shader_vertex_input();
+         auto pinputlayoutEmpty = __øcreate < ::gpu::input_layout > ();
 
          //pshadervertexinput->m_bindings.add(
          //   {
@@ -2431,15 +2454,14 @@ float4 main(PSInput input) : SV_TARGET {
 
          m_pshaderImageBlend = pshaderImageBlend;
 
-         ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
-
          pshaderImageBlend->initialize_shader_with_block(
             this,
             as_memory_block(g_pszImageBlendVertexShader),
             as_memory_block(g_pszImageBlendFragmentShader),
             { ::gpu::shader::e_descriptor_set_slot_local },
             m_psetdescriptorlayoutImageBlend,
-            pshadervertexinput);
+            {},
+            pinputlayoutEmpty);
 
       }
 
@@ -3315,36 +3337,36 @@ float4 main(PSInput input) : SV_TARGET {
    //}
 
 
-void CreateImageBlendVertexBuffer(
-   ::comptr<ID3D12Resource> &vertexBuffer,
-   D3D12_VERTEX_BUFFER_VIEW & vbView, 
-   ID3D12Device * pdevice, 
-   const ImageBlendVertex* quadData, 
-   UINT vertexCount)
-{
-   const UINT bufferSize = sizeof(ImageBlendVertex) * vertexCount;
-
-   CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
-   CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
-
-   pdevice->CreateCommittedResource(
-      &heapProps,
-      D3D12_HEAP_FLAG_NONE,
-      &bufferDesc,
-      D3D12_RESOURCE_STATE_COMMON,
-      nullptr,
-      __interface_of(vertexBuffer));
-
-   void* mappedData = nullptr;
-   CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
-   vertexBuffer->Map(0, &readRange, &mappedData);
-   memcpy(mappedData, quadData, bufferSize);
-   vertexBuffer->Unmap(0, nullptr);
-
-   vbView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
-   vbView.SizeInBytes = bufferSize;
-   vbView.StrideInBytes = sizeof(ImageBlendVertex);
-}
+//void CreateImageBlendVertexBuffer(
+//   ::comptr<ID3D12Resource> &vertexBuffer,
+//   D3D12_VERTEX_BUFFER_VIEW & vbView, 
+//   ID3D12Device * pdevice, 
+//   const ImageBlendVertex* quadData, 
+//   UINT vertexCount)
+//{
+//   const UINT bufferSize = sizeof(ImageBlendVertex) * vertexCount;
+//
+//   CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+//   CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
+//
+//   pdevice->CreateCommittedResource(
+//      &heapProps,
+//      D3D12_HEAP_FLAG_NONE,
+//      &bufferDesc,
+//      D3D12_RESOURCE_STATE_COMMON,
+//      nullptr,
+//      __interface_of(vertexBuffer));
+//
+//   void* mappedData = nullptr;
+//   CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
+//   vertexBuffer->Map(0, &readRange, &mappedData);
+//   memcpy(mappedData, quadData, bufferSize);
+//   vertexBuffer->Unmap(0, nullptr);
+//
+//   vbView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
+//   vbView.SizeInBytes = bufferSize;
+//   vbView.StrideInBytes = sizeof(ImageBlendVertex);
+//}
 
 
    void renderer::blend(::gpu::layer* player)
@@ -3364,7 +3386,7 @@ void CreateImageBlendVertexBuffer(
       float top = 1.0f - ((float)rect.top() / (float) sizeHost.height()) * 2.0f;
       float bottom = 1.0f - ((float) rect.bottom() / (float) sizeHost.height()) * 2.0f;
 
-      ImageBlendVertex quad[] = {
+      ::graphics3d::sequence2_uv quad[] = {
           {{left, top}, {0, 0}},
           {{right, top}, {1, 0}},
           {{left, bottom}, {0, 1}},
@@ -3386,11 +3408,13 @@ void CreateImageBlendVertexBuffer(
       //pcommandlist->SetGraphicsRootSignature(rootSignature.Get());
       //pcommandlist->SetGraphicsRootDescriptorTable(0, srvHandle);
 
-      D3D12_VERTEX_BUFFER_VIEW vbView = {};
-      ::comptr<ID3D12Resource> vertexBuffer;
-      CreateImageBlendVertexBuffer(
-         vertexBuffer, vbView,
-         pdevice->m_pdevice, quad, vertexCount);
+
+      auto pseq2uvrectangle = this->sequence2_uv_rectangle();
+      //D3D12_VERTEX_BUFFER_VIEW vbView = {};
+      //::comptr<ID3D12Resource> vertexBuffer;
+      //CreateImageBlendVertexBuffer(
+        // vertexBuffer, vbView,
+         //pdevice->m_pdevice, quad, vertexCount);
 
       //// Upload and bind vertex buffer (simplified)
       //// This assumes you're using an upload heap for the quad vertices
@@ -3399,7 +3423,7 @@ void CreateImageBlendVertexBuffer(
       //vbView.BufferLocation = ...; // GPU VA of vertex buffer with `quad`
       //vbView.SizeInBytes = sizeof(ImageBlendVertex) * vertexCount;
       //vbView.StrideInBytes = sizeof(ImageBlendVertex);
-      pcommandlist->IASetVertexBuffers(0, 1, &vbView);
+      pcommandlist->IASetVertexBuffers(0, 1, &pseq2uvrectangle->m_vertextbufferview);
       pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       pcommandlist->DrawInstanced(vertexCount, 1, 0, 0);
 
@@ -4680,7 +4704,7 @@ void CreateImageBlendVertexBuffer(
       if (m_commandbuffera.is_empty())
       {
 
-         createCommandBuffers();
+         create_command_buffers();
 
       }
 

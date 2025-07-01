@@ -152,8 +152,8 @@ namespace vulkan
 
    //CLASS_DECL_GPU_VULKAN ::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions(const ::gpu::property* pproperties);
    //CLASS_DECL_GPU_VULKAN ::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions(const ::gpu::property* pproperties);
-   CLASS_DECL_GPU_VULKAN::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions();
-   CLASS_DECL_GPU_VULKAN::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions();
+   //CLASS_DECL_GPU_VULKAN::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions();
+   //CLASS_DECL_GPU_VULKAN::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions();
 
 
 } // namespace vulkan

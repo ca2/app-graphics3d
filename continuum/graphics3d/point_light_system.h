@@ -69,7 +69,7 @@ namespace app_graphics3d_continuum
 
       ::pointer < ::gpu::shader >            m_pshader;
       //::pointer < ::graphics3d::engine >        m_pengine;
-
+      ::pointer < ::graphics3d::model >      m_pmodelDummy;
 
       point_light_system();
       ~point_light_system();

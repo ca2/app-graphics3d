@@ -22,14 +22,14 @@
     <ClCompile Include="pane_impact.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cube\main_scene.cpp">
-      <Filter>Source Files\cube</Filter>
+    <ClCompile Include="graphics3d\point_light_system.cpp">
+      <Filter>Source Files\graphics3d</Filter>
     </ClCompile>
-    <ClCompile Include="cube\point_light_system.cpp">
-      <Filter>Source Files\cube</Filter>
+    <ClCompile Include="graphics3d\simple_render_system.cpp">
+      <Filter>Source Files\graphics3d</Filter>
     </ClCompile>
-    <ClCompile Include="cube\simple_render_system.cpp">
-      <Filter>Source Files\cube</Filter>
+    <ClCompile Include="graphics3d\main_scene.cpp">
+      <Filter>Source Files\graphics3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -66,17 +66,17 @@
     <ClInclude Include="system_basic_render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cube\simple_render_system.h">
-      <Filter>Header Files\cube</Filter>
-    </ClInclude>
-    <ClInclude Include="cube\point_light_system.h">
-      <Filter>Header Files\cube</Filter>
-    </ClInclude>
-    <ClInclude Include="cube\main_scene.h">
-      <Filter>Header Files\cube</Filter>
-    </ClInclude>
     <ClInclude Include="global_ubo.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\main_scene.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\point_light_system.h">
+      <Filter>Header Files\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics3d\simple_render_system.h">
+      <Filter>Header Files\graphics3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -86,11 +86,11 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{553e2ad6-0eec-4e39-9937-6581b3f77c18}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\cube">
-      <UniqueIdentifier>{4f7d92d7-443f-4dca-8930-cb18c9455114}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\cube">
+    <Filter Include="Source Files\graphics3d">
       <UniqueIdentifier>{63516a3d-20c1-4643-b614-328225d0eb76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics3d">
+      <UniqueIdentifier>{4f7d92d7-443f-4dca-8930-cb18c9455114}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

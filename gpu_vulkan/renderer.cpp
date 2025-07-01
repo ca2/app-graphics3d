@@ -5,6 +5,7 @@
 #include "descriptors.h"
 #include "frame.h"
 #include "initializers.h"
+#include "input_layout.h"
 #include "layer.h"
 #include "model_buffer.h"
 #include "renderer.h"
@@ -20,6 +21,8 @@
 #include "aura/graphics/image/target.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
+#include "bred/gpu/types.h"
+#include "bred/graphics3d/types.h"
 //#include "tools.h"
 //#include "bred/user/user/graphics3d.h"
 
@@ -135,7 +138,7 @@ namespace gpu_vulkan
    renderer::~renderer()
    {
 
-      freeCommandBuffers();
+      free_command_buffers();
 
    }
 
@@ -143,18 +146,20 @@ namespace gpu_vulkan
    ::gpu::command_buffer* renderer::getCurrentCommandBuffer2()
    {
 
-      assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
+      return ::gpu::renderer::getCurrentCommandBuffer2();
 
-      if (m_commandbuffera.is_empty())
-      {
+      //assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
 
-         createCommandBuffers();
+      //if (m_commandbuffera.is_empty())
+      //{
 
-      }
+      //   create_command_buffers();
 
-      auto pcommandbuffer = m_commandbuffera[m_pgpurendertarget->get_frame_index()];
+      //}
 
-      return pcommandbuffer;
+      //auto pcommandbuffer = m_commandbuffera[m_pgpurendertarget->get_frame_index()];
+
+      //return pcommandbuffer;
 
    }
 
@@ -412,7 +417,7 @@ namespace gpu_vulkan
    //
    //         pgpurenderpass->init();
    //
-   //         createCommandBuffers();
+   //         create_command_buffers();
    //
    //      }
    //
@@ -511,7 +516,7 @@ namespace gpu_vulkan
 //   }
 
 
-   void renderer::createCommandBuffers()
+   void renderer::create_command_buffers()
    {
 
       m_commandbuffera.set_size(m_pgpurendertarget->get_frame_count());
@@ -551,10 +556,12 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::freeCommandBuffers()
+   void renderer::free_command_buffers()
    {
 
-      m_commandbuffera.clear();
+      ::gpu::renderer::free_command_buffers();
+
+      //m_commandbuffera.clear();
 
       //::array<VkCommandBuffer > a;
 
@@ -1880,17 +1887,18 @@ namespace gpu_vulkan
 
          }
 
-         auto pshadervertexinput = __allocate  shader_vertex_input();
+         //auto pinputlayout = __øcreate<::gpu::input_layout> ();
 
-         pshadervertexinput->m_bindings.add(
-            {
-               .binding = 0,
-               .stride = sizeof(float) * 4,
-               .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-            });
 
-         pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
-         pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
+         //pshadervertexinput->m_bindings.add(
+         //   {
+         //      .binding = 0,
+         //      .stride = sizeof(float) * 4,
+         //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+         //   });
+
+         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
+         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 
          m_pshaderImageBlend->m_bEnableBlend = true;
          m_pshaderImageBlend->m_bDisableDepthTest = true;
@@ -1902,8 +1910,8 @@ namespace gpu_vulkan
             as_memory_block(g_uaImageBlendVertexShader),
             as_memory_block(g_uaImageBlendFragmentShader),
             { ::gpu::shader::e_descriptor_set_slot_s1 },
-            {},
-            pshadervertexinput);
+            {}, {},
+            m_pgpucontext->input_layout(::graphics3d::sequence2_uv_properties()));
 
       }
 
@@ -1920,19 +1928,19 @@ namespace gpu_vulkan
 
          __construct_new(m_pshaderImageSet);
 
-         auto pshadervertexinput = __allocate  shader_vertex_input();
+         //auto pshadervertexinput = __allocate  shader_vertex_input();
 
-         pshadervertexinput->m_bindings.add(
-            {
-               .binding = 0,
-               .stride = sizeof(float) * 4,
-               .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-            });
+         //pshadervertexinput->m_bindings.add(
+         //   {
+         //      .binding = 0,
+         //      .stride = sizeof(float) * 4,
+         //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+         //   });
 
-         pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
-         pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
+         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
+         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 
-         ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
+         //::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
          m_pshaderImageBlend->initialize_shader_with_block(
             this,
@@ -1940,7 +1948,8 @@ namespace gpu_vulkan
             as_memory_block(g_uaImageBlendFragmentShader),
             { ::gpu::shader::e_descriptor_set_slot_local },
             m_pshaderImageSet->shader_sampler()->m_psetdescriptorlayout,
-            pshadervertexinput);
+            {},
+            m_pgpucontext->input_layout(::graphics3d::sequence2_uv_properties()));
 
       }
 
@@ -2199,7 +2208,7 @@ namespace gpu_vulkan
       if (__defer_construct_new(pmodelbuffer))
       {
 
-         pmodelbuffer->create_rectangle(pcontext, true, true);
+         pmodelbuffer->sequence2_uv_create_rectangle(pcontext, true, true);
 
          //pmodelcreate_quad_buffers(m_pgpucontext->logicalDevice(),
          //   m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
@@ -2366,7 +2375,7 @@ namespace gpu_vulkan
 
          }
 
-         auto pshadervertexinput = __allocate  shader_vertex_input();
+         auto pinputlayoutEmpty = __øcreate<::gpu::input_layout>();
 
          //pshadervertexinput->m_bindings.add(
          //   {
@@ -2395,9 +2404,8 @@ namespace gpu_vulkan
             as_memory_block(g_blend2_fragment),
             { ::gpu::shader::e_descriptor_set_slot_s1 },
             {},
-            pshadervertexinput,
             {},
-            {},
+            pinputlayoutEmpty,
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions);
 
 
@@ -2626,7 +2634,7 @@ namespace gpu_vulkan
       if (__defer_construct_new(pmodelbuffer))
       {
 
-         pmodelbuffer->create_rectangle(pcontext, true, bYSwap);
+         pmodelbuffer->sequence2_uv_create_rectangle(pcontext, true, bYSwap);
 
          //create_quad_buffers(m_pgpucontext->logicalDevice(),
          //   m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
@@ -2913,7 +2921,7 @@ namespace gpu_vulkan
       if (__defer_construct_new(pmodelbuffer))
       {
 
-         pmodelbuffer->create_rectangle(pcontext, true, bYSwap);
+         pmodelbuffer->sequence2_uv_create_rectangle(pcontext, true, bYSwap);
          //create_quad_buffers(m_pgpucontext->logicalDevice(),
          //   m_pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
          //   &pmodel->m_vertexBuffer,
@@ -3518,7 +3526,7 @@ pmodelbuffer->bind(pcommandbuffer);
          sample();
 
       }
-      //else if (m_eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
+         //else if (m_eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
       //{
 
       //	resolve_color_and_alpha_accumulation_buffers();
@@ -4183,7 +4191,7 @@ pmodelbuffer->bind(pcommandbuffer);
 
          }
 
-         auto pshadervertexinput = __allocate  shader_vertex_input();
+         auto pinputlayoutEmpty = __øcreate<::gpu::input_layout >();
 
          //pshadervertexinput->m_bindings.add(
          //   {
@@ -4212,9 +4220,8 @@ pmodelbuffer->bind(pcommandbuffer);
             as_memory_block(g_blend2_fragment),
             { ::gpu::shader::e_descriptor_set_slot_s1 },
             {},
-            pshadervertexinput,
             {},
-            {},
+            pinputlayoutEmpty,
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions);
 
 

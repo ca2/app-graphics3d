@@ -5,11 +5,12 @@
 #include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
-#include "shader.h"
 #include "descriptors.h"
-#include "renderer.h"
-#include "texture.h"
+#include "input_layout.h"
 #include "offscreen_render_target_view.h"
+#include "renderer.h"
+#include "shader.h"
+#include "texture.h"
 #include "bred/gpu/types.h"
 #include "acme_windows_common/hresult_exception.h"
 #include <d3dcompiler.h>
@@ -426,54 +427,56 @@ namespace gpu_directx12
 
    }
 
+
+
    void shader::create_vertex_and_pixel_shader(const ::block& blockVertex, const ::block& blockPixel)
    {
 
-      ::array < D3D12_INPUT_ELEMENT_DESC > layout;
+      //::array < D3D12_INPUT_ELEMENT_DESC > layout;
 
-      auto countInputLayout = m_propertiesInputLayout.count();
+      //auto countInputLayout = m_propertiesInputLayout.count();
 
-      if (countInputLayout > 0)
-      {
+      //if (countInputLayout > 0)
+      //{
 
-         int iSemanticIndex = 0;
-         int iInputSlot = 0;
-         D3D12_INPUT_CLASSIFICATION classification = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-         UINT DataStepRate = 0;
-         int iOffset = 0;
-         int iNextOffset = 0;
+      //   int iSemanticIndex = 0;
+      //   int iInputSlot = 0;
+      //   D3D12_INPUT_CLASSIFICATION classification = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+      //   UINT DataStepRate = 0;
+      //   int iOffset = 0;
+      //   int iNextOffset = 0;
 
-         for (::collection::index iInputLayout = 0; iInputLayout < countInputLayout; iInputLayout++)
-         {
+      //   for (::collection::index iInputLayout = 0; iInputLayout < countInputLayout; iInputLayout++)
+      //   {
 
-            auto pproperty = m_propertiesInputLayout.m_pproperties + iInputLayout;
+      //      auto pproperty = m_propertiesInputLayout.m_pproperties + iInputLayout;
 
-            auto name = pproperty->m_pszName;
-            auto type = pproperty->m_etype;
-            auto offset = iNextOffset;
-            iNextOffset = offset + input_layout_aligned_property_size(pproperty->get_item_size());
+      //      auto name = pproperty->m_pszName;
+      //      auto type = pproperty->m_etype;
+      //      auto offset = iNextOffset;
+      //      iNextOffset = offset + input_layout_aligned_property_size(pproperty->get_item_size());
 
-            D3D12_INPUT_ELEMENT_DESC desc{};
+      //      D3D12_INPUT_ELEMENT_DESC desc{};
 
-            desc.SemanticName = input_layout_semantic_name_from_gpu_property_name(name);
-            desc.SemanticIndex = iSemanticIndex;
-            desc.Format = input_layout_format_from_gpu_property_type(type);
-            desc.InputSlot = iInputSlot;
-            desc.AlignedByteOffset = offset;
-            desc.InputSlotClass = classification;
-            desc.InstanceDataStepRate = DataStepRate;
+      //      desc.SemanticName = input_layout_semantic_name_from_gpu_property_name(name);
+      //      desc.SemanticIndex = iSemanticIndex;
+      //      desc.Format = input_layout_format_from_gpu_property_type(type);
+      //      desc.InputSlot = iInputSlot;
+      //      desc.AlignedByteOffset = offset;
+      //      desc.InputSlotClass = classification;
+      //      desc.InstanceDataStepRate = DataStepRate;
 
-            layout.add(desc);
+      //      layout.add(desc);
 
-         }
+      //   }
 
-         //// Input layout
-         //D3D12_INPUT_ELEMENT_DESC layout[] = {
-         //    {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-         //    {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-         //};
+      //   //// Input layout
+      //   //D3D12_INPUT_ELEMENT_DESC layout[] = {
+      //   //    {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+      //   //    {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+      //   //};
 
-      }
+      //}
      /* else
       {
 
@@ -504,9 +507,11 @@ namespace gpu_directx12
 
       }*/
 
-      auto data = layout.data();
+      //auto data = layout.data();
 
-      auto size = layout.size();
+      //auto size = layout.size();
+
+      ::cast < input_layout > pinputlayout = m_pinputlayout;
 
       auto pblobVertex = create_vertex_shader_blob(blockVertex);
 
@@ -520,7 +525,7 @@ namespace gpu_directx12
 
       // Describe and create the graphics pipeline state object (PSO).
       D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-      psoDesc.InputLayout = { data, (UINT)size };
+      psoDesc.InputLayout = pinputlayout->_get_d3d12_input_layout_desc();
       psoDesc.pRootSignature = m_prootsignature;
       psoDesc.VS = CD3DX12_SHADER_BYTECODE(pblobVertex);
       psoDesc.PS = CD3DX12_SHADER_BYTECODE(pblobPixel);
@@ -599,7 +604,7 @@ namespace gpu_directx12
 
       ::cast <renderer> prenderer = m_pgpurenderer;
 
-      ::cast < shader_vertex_input > pshadervertexinput = m_pVertexInput;
+      ::cast < input_layout > pinputlayout = m_pinputlayout;
 
       pgpudevice->defer_shader_memory(m_memoryVertex, m_pathVertex);
 

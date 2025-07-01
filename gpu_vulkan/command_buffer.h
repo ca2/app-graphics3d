@@ -32,6 +32,8 @@ namespace gpu_vulkan
 
       void submit_command_buffer(::gpu::layer * pgpulayer) override;
 
+      virtual void set_line_width(float fLineWidth);
+
       virtual void set_viewport(const ::int_rectangle & rectangle);
 
       virtual void set_scissor(const ::int_rectangle& rectangle); 

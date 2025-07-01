@@ -244,13 +244,13 @@ namespace gpu_vulkan
       configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
       configInfo.dynamicStateInfo.flags = 0;
 
-      if (configInfo.attributeDescriptions.is_empty())
-      {
+      //if (configInfo.attributeDescriptions.is_empty())
+      //{
 
-         configInfo.bindingDescriptions = _001GetVertexBindingDescriptions();
-         configInfo.attributeDescriptions = _001GetVertexAttributeDescriptions();
+      //   configInfo.bindingDescriptions = _001GetVertexBindingDescriptions();
+      //   configInfo.attributeDescriptions = _001GetVertexAttributeDescriptions();
 
-      }
+      //}
    }
 
 

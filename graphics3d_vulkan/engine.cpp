@@ -46,7 +46,9 @@ namespace graphics3d_vulkan
    void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::cast < ::gpu_vulkan::renderer> prenderer = m_pgpucontextCompositor->m_pgpurenderer;
+      auto pcontext = gpu_context();
+
+      ::cast < ::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
 
       prenderer->defer_update_renderer();
 
@@ -283,7 +285,9 @@ namespace graphics3d_vulkan
 
       ::cast < ::gpu_vulkan::approach> papproach = m_papplication->get_gpu_approach();
 
-      papproach->engine_on_frame_context_initialization(m_pgpucontextCompositor);
+      auto pcontext = gpu_context();
+
+      papproach->engine_on_frame_context_initialization(pcontext);
 
       //m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pgpucontext)
       //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)

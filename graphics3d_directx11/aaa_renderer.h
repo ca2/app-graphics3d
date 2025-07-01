@@ -81,9 +81,9 @@
 //		void on_begin_render(::graphics3d::frame * pframe) override;
 //		void on_end_render(::graphics3d::frame* pframe) override;
 //	public:
-//		void createCommandBuffers();
+//		void create_command_buffers() override;
 //
-//		void freeCommandBuffers();
+//		void free_command_buffers() override;
 //		//void recreateSwapchain();
 //		void defer_layout();
 //

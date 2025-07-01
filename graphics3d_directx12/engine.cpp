@@ -52,7 +52,9 @@ namespace graphics3d_directx12
    void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::cast < ::gpu_directx12::renderer> prenderer = m_pgpucontextCompositor->m_pgpurenderer;
+      auto pcontext = gpu_context();
+
+      ::cast < ::gpu_directx12::renderer> prenderer = pcontext->m_pgpurenderer;
 
       prenderer->defer_update_renderer();
 
@@ -325,7 +327,9 @@ namespace graphics3d_directx12
 
       ::cast < ::gpu_directx12::approach> papproach = m_papplication->get_gpu_approach();
 
-      papproach->engine_on_frame_context_initialization(m_pgpucontextCompositor);
+      auto pcontext = gpu_context();
+
+      papproach->engine_on_frame_context_initialization(pcontext);
 
       //m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(pgpucontext)
       //   .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
@@ -339,7 +343,9 @@ namespace graphics3d_directx12
    void engine::engine_on_after_load_scene(::graphics3d::scene* pscene)
    {
 
-      ::cast < ::gpu_directx12::context > pcontext = m_pgpucontextCompositor;
+      //::cast < ::gpu_directx12::context > pcontext = m_pgpucontextCompositor;
+
+      auto pcontext = gpu_context();
 
       ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
 

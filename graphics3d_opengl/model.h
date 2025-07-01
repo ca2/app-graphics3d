@@ -46,6 +46,8 @@ namespace graphics3d_opengl
       GLuint m_gluVBO;
       GLuint m_gluVAO;
       GLuint m_gluEBO;
+      
+      
       ::collection::count m_cIndexes;
       bool gammaCorrection;
 
@@ -59,12 +61,13 @@ namespace graphics3d_opengl
 
 
        void initialize_model(::gpu::renderer* pgpurenderer, const ::graphics3d::model::Builder& builder) override;
+       void initialize_dummy_model(::gpu::renderer* pgpurenderer, int iVertices) override;
 
        void bind() override;
        void draw() override;
        void unbind() override;
 
-       void createVertexBuffers(const ::array<gpu::Vertex>& vertices);
+       void createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices);
        void createIndexBuffers(const ::array<uint32_t>& indices);
 
       // draws the model, and thus all its meshes

@@ -659,38 +659,38 @@ namespace gpu_vulkan
       //}
 
 
-   bool context::defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, memsize size)
-   {
+   //bool context::defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, memsize size)
+   //{
 
-      if (__defer_construct_new(pmemorybuffer))
-      {
+   //   if (__defer_construct_new(pmemorybuffer))
+   //   {
 
-         pmemorybuffer->initialize_memory_buffer(this, size);
+   //      pmemorybuffer->initialize_memory_buffer(this, size);
 
-         return true;
+   //      return true;
 
-      }
+   //   }
 
-      return false;
+   //   return false;
 
-   }
+   //}
 
 
-   bool context::defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, const ::block& block)
-   {
+   //bool context::defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, const ::block& block)
+   //{
 
-      if (defer_construct_new(pmemorybuffer, block.size()))
-      {
+   //   if (defer_construct_new(pmemorybuffer, block.size()))
+   //   {
 
-         pmemorybuffer->assign(block.data(), block.size());
+   //      pmemorybuffer->assign(block.data(), block.size());
 
-         return true;
+   //      return true;
 
-      }
+   //   }
 
-      return false;
+   //   return false;
 
-   }
+   //}
 
 
    void context::set_matrix_uniform(const ::gpu::payload& uniformMatrix)
@@ -2504,7 +2504,6 @@ namespace gpu_vulkan
             {},
             {},
             {},
-            {},
             // this means the vertex input layout will be null/empty
             // the full screen shader is embed in the shader code
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
@@ -2551,6 +2550,13 @@ namespace gpu_vulkan
          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
          VK_PIPELINE_STAGE_TRANSFER_BIT
       );
+
+
+
+      pcommandbuffer->set_viewport(m_rectangle.size());
+
+      pcommandbuffer->set_scissor(m_rectangle.size());
+
 
       // 2. Clear
       VkClearColorValue clearColor = { .float32 = { 0.0f, 0.0f, 0.0f, 0.0f } };
@@ -2642,6 +2648,10 @@ namespace gpu_vulkan
                );
 
                m_pshaderBlend3->bind(ptextureDst, ptextureSrc);
+
+               pcommandbuffer->set_viewport(ptextureSrc->m_rectangleTarget);
+
+               pcommandbuffer->set_scissor(ptextureSrc->m_rectangleTarget);
 
                //ID3D11SamplerState* samplerstatea[] =
                //{ ptexture->m_psamplerstate };
@@ -2813,6 +2823,48 @@ namespace gpu_vulkan
 
    }
 
+
+   ::memory::rectangle_shader_vert()
+   {
+      unsigned int uaRectangleVert[] = {
+    #include "shader/rectangle.vert.spv.inl"
+      };
+
+      return as_memory_block(uaRectangleVert);
+
+   }
+
+
+   ::memory::rectangle_shader_frag()
+   {
+      unsigned int uaRectangleFrag[] = {
+#include "shader/rectangle.frag.spv.inl"
+      };
+
+      return as_memory_block(uaRectangleFrag);
+
+   }
+
+  
+
+   //void context::initialize_rectangle_shader(::gpu::shader* pshader)
+   //{
+
+   //   auto pcontext = gpu_context();
+
+   //   //::cast < ::gpu_vulkan::device > pgpudevice = pgpucontext->m_pgpudevice;
+   //   pshaderRectangle->initialize_shader_with_block(
+   //      pcontext->m_pgpurenderer,
+   //      as_memory_block(g_uaRectangleVertexShader),
+   //      //as_memory_block(g_uaAccumulationFragmentShader),
+   //      as_memory_block(g_uaRectangleFragmentShader),
+   //      {},
+   //      m_psetdescriptorlayoutRectangle,
+   //      {},
+   //      pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+
+
+   //}
 
 
 } // namespace gpu_vulkan

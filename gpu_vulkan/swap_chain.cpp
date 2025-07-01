@@ -748,93 +748,9 @@ namespace gpu_vulkan
          { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
          VK_IMAGE_TILING_OPTIMAL,
          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+
    }
 
-
-   //void swap_chain::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* pgpurendererSrc)
-   //{
-
-   //   ::gpu::swap_chain::endDraw(pgraphics, puserinteraction, pgpurendererSrc);
-
-   //   if (!m_pgpucontextSwapChain)
-   //   {
-
-   //      m_pgpucontextSwapChain = pgpurendererSrc->m_pgpucontext->m_pgpudevice->create_window_context(puserinteraction->window());
-
-   //   }
-
-   //   m_pgpucontextSwapChain->send_on_context([this, puserinteraction]()
-   //      {
-
-   //         ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
-
-   //         auto rectanglePlacement = puserinteraction->window()->get_window_rectangle();
-
-   //         m_pgpucontextSwapChain->set_placement(rectanglePlacement);
-
-   //         auto prendererOutput = m_pgpucontextSwapChain->get_gpu_renderer();
-
-   //         prendererOutput->defer_update_renderer();
-
-   //         ASSERT(m_pgpucontextSwapChain == pcontext);
-
-   //         ::cast < renderer > prendererThis = m_pgpucontextSwapChain->m_pgpurenderer;
-
-   //         ::cast < render_pass > pgpurenderpass = prendererThis->m_pgpurendertarget;
-
-   //         ASSERT(pgpurenderpass == this);
-
-   //      });
-
-   //   ::cast < renderer > prendererSrc = pgpurendererSrc;
-
-   //   ::cast < render_pass > pgpurenderpass = prendererSrc->m_pgpurendertarget;
-
-   //   auto ptexture = pgpurenderpass->current_texture();
-
-   //   ::int_rectangle rectangle = prendererSrc->m_pgpucontext->rectangle();
-
-   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
-
-   //   pcontext->send_on_context([this, pcontext, ptexture, rectangle]()
-   //      {
-
-   //         pcontext->m_pgpurenderer->do_on_frame([this, pcontext, ptexture, rectangle]()
-   //            {
-
-   //               ::cast < renderer > prenderer = pcontext->m_pgpurenderer;
-
-   //               prenderer->copy(prenderer->m_pgpurendertarget->current_texture(), ptexture);
-
-   //            });
-
-   //      });
-   //   //		m_pgpucontextOutput
-
-   //         //vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
-
-   //         //vkQueueWaitIdle(m_pgpucontext->presentQueue());
-
-   //}
-
-
-   //void swap_chain::on_end_render(::gpu::frame* pgpuframe)
-   //{
-
-   //   ::cast < texture > ptexture = current_texture();
-
-   //   ::cast < renderer > prenderer = m_pgpurenderer;
-
-   //   auto pcommandbuffer = prenderer->getCurrentCommandBuffer();
-
-   //   ptexture->_new_state(pcommandbuffer, 
-   //      0,
-   //      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-   //      VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
-
-
-
-   //}
 
    void swap_chain::present(::gpu::texture* pgputexture)
    {
@@ -845,27 +761,6 @@ namespace gpu_vulkan
 
       m_size = pgpucontext->m_rectangle.size();
 
-      //if (m_iSwapChainCount < 0)
-      //{
-
-      //   DXGI_SWAP_CHAIN_DESC desc = {};
-      //   //ComPtr<IDXGISwapChain> swapChain; // or swapChain3 as IDXGISwapChain
-
-      //   HRESULT hrSwapChainGetDesc = m_pdxgiswapchain->GetDesc(&desc);
-      //   ::defer_throw_hresult(hrSwapChainGetDesc);
-      //   m_iSwapChainCount = desc.BufferCount;
-      //   // bufferCount now holds how many backbuffers the swap chain uses
-
-      //}
-
-      //if (!m_pdxgiswapchain3)
-      //{
-      //   m_pdxgiswapchain1.as(m_pdxgiswapchain3);
-
-      //}
-
-      //UINT currentBackBufferIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
-
       VkResult vkresultAcquireNextImage = acquireNextImage();
 
       if (vkresultAcquireNextImage != VK_SUCCESS)
@@ -875,72 +770,9 @@ namespace gpu_vulkan
 
       }
 
-      //::cast <texture> ptextureSwapChain = m_texturea[get_image_index()];
-
       int iFrameIndex = get_frame_index();
 
       ::cast <texture> ptextureSwapChain = m_texturea[iFrameIndex];
-
-      //if (!ptextureSwapChain)
-      //{
-
-      //   __construct_new(ptextureSwapChain);
-
-      //   ptextureSwapChain->m_bRenderTarget = true;
-
-      //   ptextureSwapChain->m_bShaderResource = false;
-
-      //   ptextureSwapChain->m_bDepthStencil = false;
-
-      //   ptextureSwapChain->_initialize_gpu_texture(
-      //      pgpurenderer,
-      //      m_iSwapChainIndex,
-      //      m_pdxgiswapchain);
-
-      //   //m_pdxgiswapchain1->GetBuffer(0, __interface_of(m_ptextureSwapChain));
-
-      //}
-
-      //if (!m_pblendstateDisabled)
-      //{
-
-      //   ::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
-
-      //   D3D11_BLEND_DESC blendDesc = { 0 };
-      //   blendDesc.RenderTarget[0].BlendEnable = FALSE;  // Disable blending
-      //   blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-      //   HRESULT hr = pgpudevice->m_pdevice->CreateBlendState(&blendDesc, &m_pblendstateDisabled);
-      //   ::defer_throw_hresult(hr);
-
-      //}
-
-      //{
-
-      //   float blendFactor[4] = { 0, 0, 0, 0 }; // Not used
-      //   UINT sampleMask = 0xFFFFFFFF;
-      //   pgpucontext->m_pcontext->OMSetBlendState(m_pblendstateDisabled, blendFactor, sampleMask);
-
-      //}
-
-      //if (!m_prendertargetviewSwapChain)
-      //{
-      // 
-      //   ::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
-
-      //   pgpudevice->m_pdevice->CreateRenderTargetView(
-      //      m_ptextureSwapChain, nullptr, &m_prendertargetviewSwapChain);
-
-      //}
-
-      //ID3D11RenderTargetView* rendertargetviewa[] = 
-      //{
-      //   m_ptextureSwapChain->m_prendertargetview
-      //};
-      //
-      //pgpucontext->m_pcontext->OMSetRenderTargets(1, rendertargetviewa, nullptr);
-
-      // 2. Set viewport
 
       if (!m_pshaderPresent)
       {
@@ -948,7 +780,9 @@ namespace gpu_vulkan
          __construct_new(m_pshaderPresent);
 
          m_pshaderPresent->m_bTextureAndSampler = true;
+
          m_pshaderPresent->m_bDisableDepthTest = true;
+
          unsigned int fullscreen_vertex_shader[] = {
 #include "shader/fullscreen.vert.spv.inl"
          };
@@ -957,20 +791,17 @@ namespace gpu_vulkan
 #include "shader/fullscreen.frag.spv.inl"
          };
 
-
          m_pshaderPresent->m_bEnableBlend = false;
+
          m_pshaderPresent->m_bTextureAndSampler = true;
+
          m_pshaderPresent->m_bDisableDepthTest = true;
 
-         //m_pshaderBlend3->m_pgpurenderer = this;
          m_pshaderPresent->m_iSamplerSlot = 0;
-         // Image Blend descriptors
-//if (!m_psetdescriptorlayoutImageBlend)
 
          m_pshaderPresent->m_bClearColor = true;
-         m_pshaderPresent->m_colorClear = ::color::transparent;
 
-         
+         m_pshaderPresent->m_colorClear = ::color::yellow;
 
          m_pshaderPresent->initialize_shader_with_block(
             pgpurenderer,
@@ -980,14 +811,10 @@ namespace gpu_vulkan
             {},
             {},
             {},
-            {},
             // this means the vertex input layout will be null/empty
             // the full screen shader is embed in the shader code
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
-
          );
-
-
 
       }
 
@@ -1003,8 +830,7 @@ namespace gpu_vulkan
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
       );
 
-
-      ::cast <texture > ptextureSrc = pgputexture;
+      ::cast < texture > ptextureSrc = pgputexture;
 
       ptextureSrc->_new_state(
          pcommandbuffer,
@@ -1013,8 +839,12 @@ namespace gpu_vulkan
          VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
       );
 
-
       m_pshaderPresent->bind(ptextureSwapChain, ptextureSrc);
+
+      pcommandbuffer->set_viewport(pgpucontext->m_rectangle.size());
+
+      pcommandbuffer->set_scissor(pgpucontext->m_rectangle.size());
+
       //pgpucontext->m_pcontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
       //pgpucontext->m_pcontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
 

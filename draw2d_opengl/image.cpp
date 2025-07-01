@@ -2793,9 +2793,9 @@ namespace draw2d_opengl
 
       m_pgraphics->thread_select();
 
-      int hasAlphaBits = 0;
+      //int hasAlphaBits = 0;
 
-      glGetIntegerv(GL_ALPHA_BITS, &hasAlphaBits);
+      //glGetIntegerv(GL_ALPHA_BITS, &hasAlphaBits);
 
       glFlush();
 
@@ -2878,7 +2878,7 @@ namespace draw2d_opengl
 
       m_pgraphics->thread_select();
 
-      glDrawPixels(m_size.cx(), m_size.cy(), GL_BGRA, GL_UNSIGNED_BYTE, m_pimage32Raw);
+      //glDrawPixels(m_size.cx(), m_size.cy(), GL_BGRA, GL_UNSIGNED_BYTE, m_pimage32Raw);
 
       m_bMapped = false;
 

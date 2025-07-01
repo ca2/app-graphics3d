@@ -185,6 +185,16 @@ namespace gpu_vulkan
 
       pipeline::defaultPipelineConfigInfo(pipelineConfig);
 
+      if (m_pinputlayout)
+      {
+
+         ::cast < input_layout > pinputlayout = m_pinputlayout;
+
+         pipelineConfig.attributeDescriptions = pinputlayout->m_attribs;
+         pipelineConfig.bindingDescriptions = pinputlayout->m_bindings;
+
+      }
+
       if (m_eflag & e_flag_clear_default_bindings_and_attributes_descriptions)
       {
 
@@ -308,6 +318,7 @@ namespace gpu_vulkan
       pipelineConfig.inputAssemblyInfo.topology = m_vktopology;
       pipelineConfig.dynamicStateEnables.append_unique(m_dynamicstateaEnable);
       pipelineConfig.dynamicStateInfo.dynamicStateCount = (uint32_t)pipelineConfig.dynamicStateEnables.size();
+
       ::cast < render_pass > prenderpass = prenderer->m_pgpurendertarget;
 
       if (has_shader_sampler())

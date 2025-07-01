@@ -54,26 +54,26 @@ namespace graphics3d_directx12
    }
 
 
-   void model::createVertexBuffers(const ::array<::gpu::Vertex>& vertices)
+   void model::createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices)
    {
 
       ::cast < ::gpu_directx12::device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-      ::array<::gpu::Vertex> a;
+      //::array<::gpu::Vertex> a;
 
-      a.copy(vertices);
+      //a.copy(vertices);
 
-      for (int i = 0; i < a.size(); i += 3)
-      {
-         auto& item2 = a[i + 1];
-         //auto& item3 = a[i + 2];
-         //swap(item2, item3);
-         // item.uv.y = 1.0f-item.uv.y;
-         //item.position.x = -item.position.x;
-         //item.position.y = -item.position.y;
-         // item.position.z = 1.0 - item.position.z;
-         //item.position.z = - item.position.z;
-      }
+      //for (int i = 0; i < a.size(); i += 3)
+      //{
+      //   auto& item2 = a[i + 1];
+      //   //auto& item3 = a[i + 2];
+      //   //swap(item2, item3);
+      //   // item.uv.y = 1.0f-item.uv.y;
+      //   //item.position.x = -item.position.x;
+      //   //item.position.y = -item.position.y;
+      //   // item.position.z = 1.0 - item.position.z;
+      //   //item.position.z = - item.position.z;
+      //}
 
       auto vertexBufferSize = (UINT) vertices.get_size_in_bytes();
 
@@ -107,7 +107,7 @@ namespace graphics3d_directx12
       pcommandlist->CopyBufferRegion(m_presourceVertexBufferGPU, 0, m_presourceVertexBufferUpload, 0, vertexBufferSize);
 
       m_vertexbufferview.BufferLocation = m_presourceVertexBufferGPU->GetGPUVirtualAddress();
-      m_vertexbufferview.StrideInBytes = sizeof(::gpu::Vertex);
+      m_vertexbufferview.StrideInBytes = sizeof(::graphics3d::Vertex);
       m_vertexbufferview.SizeInBytes = vertexBufferSize;
 
    }

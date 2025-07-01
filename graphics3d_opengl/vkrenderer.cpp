@@ -35,13 +35,13 @@ namespace graphics3d_opengl
 
       defer_layout();
 
-      createCommandBuffers();
+      create_command_buffers();
 
    }
 
 
    renderer::~renderer() {
-      freeCommandBuffers();
+      free_command_buffers();
    }
 
 
@@ -89,7 +89,7 @@ namespace graphics3d_opengl
       //}
    }
 
-   void renderer::createCommandBuffers() {
+   void renderer::create_command_buffers() {
       commandBuffers.resize(render_pass::MAX_FRAMES_IN_FLIGHT);
 
       VkCommandBufferAllocateInfo allocInfo{};
@@ -105,7 +105,7 @@ namespace graphics3d_opengl
 
    }
 
-   void renderer::freeCommandBuffers() {
+   void renderer::free_command_buffers() {
       vkFreeCommandBuffers(
          m_pgpucontext->logicalDevice(),
          m_pgpucontext->getCommandPool(),

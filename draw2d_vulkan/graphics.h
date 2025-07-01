@@ -51,10 +51,8 @@ namespace draw2d_vulkan
 
       ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutRectangle;
       ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolRectangle;
-      ::pointer <::gpu_vulkan::model_buffer >                  m_pmodelbufferRectangle;
-      ::pointer < ::gpu_vulkan::shader >                       m_pshaderBlendRectangle;
-      ::pointer < ::gpu_vulkan::shader >                       m_pshaderSourceRectangle;
-
+      ::pointer <::gpu_vulkan::model_buffer >                  m_pmodelbufferLine;
+      
       ::pointer < ::gpu_vulkan::shader >                       m_pshaderLine;
 
 
@@ -65,6 +63,12 @@ namespace draw2d_vulkan
          long long increment_reference_count() override;
       long long decrement_reference_count() override;
 #endif
+
+
+      void on_set_gpu_context() override;
+
+      ::gpu_vulkan::context* gpu_context();
+
 
       void initialize(::particle * pparticle) override;
       //plusplus::Graphics & g()
@@ -313,8 +317,8 @@ namespace draw2d_vulkan
       void poly_bezier_to(const ::double_point * lpPoints,::collection::count nCount);
 
 
-      virtual void _fill_quad(const ::double_point points[4], const ::color::color & color);
-      virtual void _fill_rectangle_2025_05_29(const ::double_rectangle& rectangle, ::draw2d::brush* pBrush);
+      //virtual void _fill_quad(const ::double_point points[4], const ::color::color & color);
+      //virtual void _fill_rectangle_2025_05_29(const ::double_rectangle& rectangle, ::draw2d::brush* pBrush);
 
 
       // Simple Drawing Functions
@@ -631,7 +635,7 @@ namespace draw2d_vulkan
       //void _add_clipping_shape(const ::double_rectangle & rectangle, ::draw2d::region * pregion) override;
 
 
-      //void on_begin_draw() override;
+      void on_begin_draw() override;
       //void on_end_draw() override;
       //void on_end_draw() override;
       void on_present() override;

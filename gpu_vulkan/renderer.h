@@ -76,11 +76,9 @@ namespace gpu_vulkan
       //::pointer<::gpu::shader>                        m_pshaderResolve;
       //::pointer<model>                                m_pmodelResolve;
 
-      ::pointer_array<command_buffer>	         m_commandbuffera;
+      //::pointer_array<command_buffer>	         m_commandbuffera;
       VkExtent2D m_extentRenderer;
       //int currentFrameIndex = 0;
-      bool isFrameStarted = false;
-      bool m_bNeedToRecreateSwapChain = false;
       //bool m_bOffScreen = true;
       //renderer(VkWindow &window, context * pvkcdevice);
 
@@ -159,7 +157,7 @@ namespace gpu_vulkan
       }
 
 
-      bool isFrameInProgress() const { return isFrameStarted; }
+      /*bool isFrameInProgress() const { return isFrameStarted; }*/
 
 
       ::gpu::command_buffer* getCurrentCommandBuffer2() override;
@@ -191,9 +189,9 @@ namespace gpu_vulkan
 
    //public:
 
-      void createCommandBuffers();
+      void create_command_buffers() override;
 
-      void freeCommandBuffers();
+      void free_command_buffers() override;
       //void recreateSwapchain();
       //void set_size(const ::int_size & size) override;
 

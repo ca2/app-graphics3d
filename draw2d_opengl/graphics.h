@@ -4,6 +4,7 @@
 #include "bred/gpu/graphics.h"
 
 
+
 //struct OffscreenContext
 //{
 //   HWND window;
@@ -72,6 +73,7 @@ namespace draw2d_opengl
       void start_gpu_layer(::gpu::frame * pgpuframe) override;
       ::gpu::frame * end_gpu_layer() override;
 
+      ::gpu_opengl::context* gpu_context();
 
       //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
@@ -308,7 +310,10 @@ namespace draw2d_opengl
       void poly_bezier_to(const ::double_point * lpPoints,::collection::count nCount);
 
       // Simple Drawing Functions
+
+      void fill_rectangle(const ::double_rectangle& rectangle, const ::color::color& color) override;
       void fill_rectangle(const ::double_rectangle &  rectangle, ::draw2d::brush* pBrush) override;
+      virtual void fill_rectangle_2025_06(const ::double_rectangle& rectangle, ::draw2d::brush* pBrush);
       void frame_rectangle(const ::double_rectangle & rectangle, ::draw2d::brush* pBrush) override;
       //bool DrawRect(const ::int_rectangle & rectangle, ::draw2d::pen * ppen);
       void invert_rectangle(const ::double_rectangle & int_rectangle) override;

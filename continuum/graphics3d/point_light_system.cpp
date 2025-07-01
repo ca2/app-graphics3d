@@ -3,9 +3,11 @@
 #include "impact.h"
 #include "bred/gpu/context.h"
 #include "bred/gpu/approach.h"
+#include "bred/gpu/command_buffer.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/shader.h"
 #include "bred/graphics3d/camera.h"
+#include "bred/graphics3d/model.h"
 #include "bred/graphics3d/scene.h"
 #include "bred/user/user/graphics3d.h"
 #include "app-graphics3d/continuum/global_ubo.h"
@@ -51,6 +53,13 @@ namespace app_graphics3d_continuum
       //createPipelineLayout(globalSetLayout);
       //createPipeline(renderPass);
 
+      __defer_construct(m_pmodelDummy);
+
+      ::graphics3d::model::Builder builderDummy;
+
+      m_pmodelDummy->initialize_model(pengine->m_pgpucontextCompositor2->m_pgpurenderer,
+         builderDummy);
+
    }
 
 
@@ -80,7 +89,7 @@ namespace app_graphics3d_continuum
          ::gpu::shader::e_descriptor_set_slot_local},
          nullptr,
          point_light2_properties(),
-         pgpucontext->input_layout(gpu_Vertex_properties()),
+         pgpucontext->input_layout(::graphics3d::Vertex_properties()),
          ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
       );
       
@@ -160,17 +169,27 @@ namespace app_graphics3d_continuum
 
          m_pshader->push_properties();
 
+         m_pmodelDummy->bind();
 
-         //vkCmdPushConstants(
-         //   frameInfo.commandBuffer,
-         //   pipelineLayout,
-         //   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-         //   0,
-         //   sizeof(PointLightPushConstants),
-         //   &push);
-         //vkCmdDraw(frameInfo.commandBuffer, 6, 1, 0, 0);
+         m_pmodelDummy->draw();
 
-         m_pshader->draw();
+         m_pmodelDummy->unbind();
+
+
+         //auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2();
+
+         ////vkCmdPushConstants(
+         ////   frameInfo.commandBuffer,
+         ////   pipelineLayout,
+         ////   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+         ////   0,
+         ////   sizeof(PointLightPushConstants),
+         ////   &push);
+         ////vkCmdDraw(frameInfo.commandBuffer, 6, 1, 0, 0);
+
+         //pcommandbuffer->draw(6);
+
+         //m_pshader->draw();
 
       }
 

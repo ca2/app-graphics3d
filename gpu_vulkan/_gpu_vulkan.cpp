@@ -2,7 +2,7 @@
 #include "framework.h"
 #include "initializers.h"
 #include "bred/gpu/properties.h"
-#include "bred/gpu/types.h"
+#include "bred/graphics3d/types.h"
 /*
  * Assorted commonly used Vulkan helper functions
  *
@@ -454,30 +454,30 @@ namespace vulkan
    }
 
 
-   ::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions()
-   {
+   //::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions()
+   //{
 
-         ::array<VkVertexInputBindingDescription> bindingDescriptions(1, VkVertexInputBindingDescription{});
+   //      ::array<VkVertexInputBindingDescription> bindingDescriptions(1, VkVertexInputBindingDescription{});
 
-         bindingDescriptions[0].binding = 0;
-         bindingDescriptions[0].stride = sizeof(::gpu::Vertex);
-         bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-         return bindingDescriptions;
-     
-   }
+   //      bindingDescriptions[0].binding = 0;
+   //      bindingDescriptions[0].stride = sizeof(::graphics3d::Vertex);
+   //      bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+   //      return bindingDescriptions;
+   //  
+   //}
 
 
-   ::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions(const ::gpu::property* pproperties)
-   {
+   //::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions(const ::gpu::property* pproperties)
+   //{
 
-      ::array<VkVertexInputBindingDescription> bindingDescriptions(1, VkVertexInputBindingDescription{});
+   //   ::array<VkVertexInputBindingDescription> bindingDescriptions(1, VkVertexInputBindingDescription{});
 
-      bindingDescriptions[0].binding = 0;
-      bindingDescriptions[0].stride = pproperties->get_size();
-      bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-      return bindingDescriptions;
+   //   bindingDescriptions[0].binding = 0;
+   //   bindingDescriptions[0].stride = pproperties->get_size();
+   //   bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+   //   return bindingDescriptions;
 
-   }
+   //}
 
 
    VkFormat get_type_vk_format(::gpu::enum_type etype)
@@ -485,6 +485,7 @@ namespace vulkan
 
       switch (etype)
       {
+      case ::gpu::e_type_seq4: return VK_FORMAT_R32G32B32A32_SFLOAT;
       case ::gpu::e_type_seq3: return VK_FORMAT_R32G32B32_SFLOAT;
       case ::gpu::e_type_seq2: return VK_FORMAT_R32G32_SFLOAT;
       default:
@@ -495,41 +496,41 @@ namespace vulkan
    }
    
    
-   ::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions() 
-   {
-   
-      ::array<VkVertexInputAttributeDescription> attributeDescriptions{};
-      
-      attributeDescriptions.add({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu::Vertex, position) });
-      attributeDescriptions.add({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu::Vertex, color) });
-      attributeDescriptions.add({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu::Vertex, normal) });
-      attributeDescriptions.add({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(::gpu::Vertex, uv) });
+   //::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions() 
+   //{
+   //
+   //   ::array<VkVertexInputAttributeDescription> attributeDescriptions{};
+   //   
+   //   attributeDescriptions.add({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu::Vertex, position) });
+   //   attributeDescriptions.add({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu::Vertex, color) });
+   //   attributeDescriptions.add({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu::Vertex, normal) });
+   //   attributeDescriptions.add({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(::gpu::Vertex, uv) });
 
-      return attributeDescriptions;
+   //   return attributeDescriptions;
 
-   }
+   //}
 
 
-   ::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions(const ::gpu::property* pproperties) 
-   {
+   //::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions(const ::gpu::property* pproperties) 
+   //{
 
-      ::array<VkVertexInputAttributeDescription> attributeDescriptions{};
+   //   ::array<VkVertexInputAttributeDescription> attributeDescriptions{};
 
-      //::array<VkVertexInputAttributeDescription> attributeDescriptions{};
+   //   //::array<VkVertexInputAttributeDescription> attributeDescriptions{};
 
-      uint32_t i = 0;
-      uint32_t pos = 0;
+   //   uint32_t i = 0;
+   //   uint32_t pos = 0;
 
-      for (auto p = pproperties; ::is_set(p->m_pszName); p++, i++, pos += ::gpu::get_type_size(p->m_etype))
-      {
+   //   for (auto p = pproperties; ::is_set(p->m_pszName); p++, i++, pos += ::gpu::get_type_size(p->m_etype))
+   //   {
 
-         attributeDescriptions.add({ i, 0, get_type_vk_format(p->m_etype), pos});
+   //      attributeDescriptions.add({ i, 0, get_type_vk_format(p->m_etype), pos});
 
-      }
+   //   }
 
-      return attributeDescriptions;
+   //   return attributeDescriptions;
 
-   }
+   //}
 
 
 } // namespace vulkan

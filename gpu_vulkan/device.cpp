@@ -862,6 +862,7 @@ namespace gpu_vulkan
 
       }
 
+      on_initialize_gpu_device();
 
       //device = vulkanDevice->logicalDevice;
 
@@ -958,11 +959,21 @@ namespace gpu_vulkan
 
       }
 
+      on_initialize_gpu_device();
 
       //device = vulkanDevice->logicalDevice;
 
    }
 
+
+   void device::on_initialize_gpu_device()
+   {
+
+      ::gpu::device::on_initialize_gpu_device();
+
+      //m_poolgroupaFrameLifetime.m_pallocator = this;
+
+   }
 
 
    //void device::on_create_context(const ::gpu::start_context_t& startcontext)

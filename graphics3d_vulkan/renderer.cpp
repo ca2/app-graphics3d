@@ -54,7 +54,7 @@
 //
 //      defer_layout();
 //
-//      createCommandBuffers();
+//      create_command_buffers();
 //
 //   }
 //
@@ -62,7 +62,7 @@
 //   renderer::~renderer() 
 //   {
 //
-//      freeCommandBuffers();
+//      free_command_buffers();
 //
 //   }
 //
@@ -111,7 +111,7 @@
 //      //}
 //   }
 //
-//   void renderer::createCommandBuffers() {
+//   void renderer::create_command_buffers() {
 //      commandBuffers.resize(render_pass::MAX_FRAMES_IN_FLIGHT);
 //
 //      VkCommandBufferAllocateInfo allocInfo{};
@@ -127,7 +127,7 @@
 //
 //   }
 //
-//   void renderer::freeCommandBuffers() {
+//   void renderer::free_command_buffers() {
 //      vkFreeCommandBuffers(
 //         m_pgpucontext->logicalDevice(),
 //         m_pgpucontext->getCommandPool(),

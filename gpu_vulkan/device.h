@@ -96,7 +96,6 @@ namespace gpu_vulkan
 
       ::array<const char*>       validationLayers;
       ::array<const char*>       deviceExtensions;
-      ::procedure_array          m_procedureaOnTopFrameEnd;
 
 
 
@@ -106,6 +105,9 @@ namespace gpu_vulkan
 
       void initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproach, ::windowing::window *pwindow) override;
       void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::int_rectangle& rectanglePlacement) override;
+
+
+      void on_initialize_gpu_device() override;
 
       //string _001GetIntroProjection() override;
       //string _001GetIntroFragment() override;

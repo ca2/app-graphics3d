@@ -695,6 +695,7 @@
     <ClInclude Include="command_buffer.h" />
     <ClInclude Include="cpu_buffer.h" />
     <ClInclude Include="context.h" />
+    <ClInclude Include="d3d12_resource.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="depth_stencil.h" />
     <ClInclude Include="descriptors.h" />
@@ -703,6 +704,7 @@
     <ClInclude Include="dxgi_debug.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="initializers.h" />
+    <ClInclude Include="input_layout.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="approach.h" />
     <ClInclude Include="offscreen_render_target_view.h" />
@@ -751,12 +753,14 @@
     <ClCompile Include="device.cpp" />
     <ClCompile Include="aaa_direct2d_draw2d_swap_chain.cpp" />
     <ClCompile Include="dxgi_debug.cpp" />
+    <ClCompile Include="input_layout.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="offscreen_render_target_view.cpp" />
     <ClCompile Include="operating_system\windows.cpp" />
     <ClCompile Include="physical_device.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="render_target_view.cpp" />
+    <ClCompile Include="d3d12_resource.cpp" />
     <ClCompile Include="swap_chain.cpp" />
     <ClCompile Include="aaa_swap_chain_render_target_view.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

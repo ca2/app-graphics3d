@@ -92,7 +92,7 @@ namespace graphics3d_directx11
    //}
 
 
-   void model::createVertexBuffers(const ::array<::gpu::Vertex>& vertices)
+   void model::createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices)
    {
 
       //vertexCount = static_cast<uint32_t>(vertices.size());
@@ -101,21 +101,21 @@ namespace graphics3d_directx11
       //uint32_t vertexSize = sizeof(vertices[0]);
 
       
-      ::array<::gpu::Vertex> a;
+      //::array<::gpu::Vertex> a;
 
-      a.copy(vertices);
+      //a.copy(vertices);
 
-      for (int i = 0; i < a.size(); i+=3)
-      {
-         auto& item2 = a[i + 1];
-         //auto& item3 = a[i + 2];
-         //swap(item2, item3);
-         // item.uv.y = 1.0f-item.uv.y;
-         //item.position.x = -item.position.x;
-         //item.position.y = -item.position.y;
-         // item.position.z = 1.0 - item.position.z;
-         //item.position.z = - item.position.z;
-      }
+      //for (int i = 0; i < a.size(); i+=3)
+      //{
+      //   auto& item2 = a[i + 1];
+      //   //auto& item3 = a[i + 2];
+      //   //swap(item2, item3);
+      //   // item.uv.y = 1.0f-item.uv.y;
+      //   //item.position.x = -item.position.x;
+      //   //item.position.y = -item.position.y;
+      //   // item.position.z = 1.0 - item.position.z;
+      //   //item.position.z = - item.position.z;
+      //}
 
       //    // Triangle vertex data
       //struct Vertex { float x, y, z; float r, g, b, a; };
@@ -127,9 +127,9 @@ namespace graphics3d_directx11
 
       //ID3D11Buffer* vbo = nullptr;
       int iCount = vertices.size();
-      int iTypeSize = sizeof(::gpu::Vertex);
+      int iTypeSize = sizeof(::graphics3d::Vertex);
       int iMyCalculatedTotalSizeInBytes = iTypeSize * iCount;
-      int iFrameworkCalculatedTotalSizeInBytes = a.get_size_in_bytes();
+      int iFrameworkCalculatedTotalSizeInBytes = vertices.get_size_in_bytes();
       D3D11_BUFFER_DESC bd =
       { (UINT)
          iFrameworkCalculatedTotalSizeInBytes,
@@ -138,7 +138,7 @@ namespace graphics3d_directx11
       };
       D3D11_SUBRESOURCE_DATA initData = 
       {
-         a.data()
+         vertices.data()
       };
 
       ::cast < ::gpu_directx11::context > pgpucontext = m_pgpurenderer->m_pgpucontext;
@@ -287,7 +287,7 @@ namespace graphics3d_directx11
 
       //auto commandBuffer = prenderer->getCurrentCommandBuffer();
 
-      UINT stride = sizeof(gpu::Vertex), offset = 0;
+      UINT stride = sizeof(::graphics3d::Vertex), offset = 0;
       auto p = m_pbufferVertex.m_p;
       pcontext->m_pcontext->IASetVertexBuffers(0, 1, &p, &stride, &offset);
       pcontext->m_pcontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

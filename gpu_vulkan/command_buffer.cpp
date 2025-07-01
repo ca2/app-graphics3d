@@ -144,37 +144,49 @@ namespace gpu_vulkan
    }
 
 
+   void command_buffer::set_line_width(float fLineWidth)
+   {
+
+      vkCmdSetLineWidth(m_vkcommandbuffer, fLineWidth);
+
+   }
+
+
    void command_buffer::set_viewport(const ::int_rectangle& rectangle)
    {
 
-      VkViewport vp = {
+      VkViewport viewport =
+      {
          (float)rectangle.left(),
          (float)rectangle.top(),
          (float)rectangle.width(),
          (float)rectangle.height(),
-         0.0f, 1.0f };
+         0.0f, 1.0f 
+      };
 
-      vkCmdSetViewport(m_vkcommandbuffer, 0, 1, &vp);
+      vkCmdSetViewport(m_vkcommandbuffer, 0, 1, &viewport);
 
    }
 
 
    void command_buffer::set_scissor(const ::int_rectangle& rectangle)
    {
-      VkRect2D sc = {
-            {
+      
+      VkRect2D rect2d = 
+      {
+
+         {
             (float)rectangle.left(),
             (float)rectangle.top(),
-            },
-            {
-                     (float)rectangle.width(),
+         },
+         {
+            (float)rectangle.width(),
             (float)rectangle.height(),
-
          }
 
       };
 
-      vkCmdSetScissor(m_vkcommandbuffer, 0, 1, &sc);
+      vkCmdSetScissor(m_vkcommandbuffer, 0, 1, &rect2d);
 
    }
 

@@ -91,7 +91,7 @@ namespace graphics3d_vulkan
    //}
 
 
-   void model::createVertexBuffers(const ::array<::gpu::Vertex>& vertices)
+   void model::createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices)
    {
 
       vertexCount = static_cast<uint32_t>(vertices.size());

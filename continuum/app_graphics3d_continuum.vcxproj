@@ -783,9 +783,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
-    <ClCompile Include="cube\main_scene.cpp" />
-    <ClCompile Include="cube\point_light_system.cpp" />
-    <ClCompile Include="cube\simple_render_system.cpp" />
     <ClCompile Include="document.cpp" />
     <ClCompile Include="framework.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -797,6 +794,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="graphics3d\main_scene.cpp" />
+    <ClCompile Include="graphics3d\point_light_system.cpp" />
+    <ClCompile Include="graphics3d\simple_render_system.cpp" />
     <ClCompile Include="impact.cpp" />
     <ClCompile Include="main_frame.cpp" />
     <ClCompile Include="pane_impact.cpp" />
@@ -804,11 +804,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
-    <ClInclude Include="cube\main_scene.h" />
-    <ClInclude Include="cube\point_light_system.h" />
-    <ClInclude Include="cube\simple_render_system.h" />
     <ClInclude Include="document.h" />
     <ClInclude Include="global_ubo.h" />
+    <ClInclude Include="graphics3d\main_scene.h" />
+    <ClInclude Include="graphics3d\point_light_system.h" />
+    <ClInclude Include="graphics3d\simple_render_system.h" />
     <ClInclude Include="impact.h" />
     <ClInclude Include="main_frame.h" />
     <ClInclude Include="pane_impact.h" />

@@ -25,6 +25,9 @@ namespace gpu_vulkan
       
       void on_initialize_input_layout() override;
 
+      
+      virtual ::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions();
+      virtual ::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions();
 
 
    };

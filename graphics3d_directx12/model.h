@@ -88,7 +88,7 @@ namespace graphics3d_directx12
       void bind() override;
       void draw() override;
 
-      void createVertexBuffers(const ::array<::gpu::Vertex>& vertices);
+      void createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices);
       void createIndexBuffers(const ::array<uint32_t>& indices);
 
 

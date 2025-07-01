@@ -42,27 +42,27 @@ namespace opengl
 {
 
 
-   inline void vertex2f(const ::double_rectangle & rectangle, float fZ)
-   {
+   //inline void vertex2f(const ::double_rectangle & rectangle, float fZ)
+   //{
 
-      glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.top(), fZ);
-      glVertex3f((GLfloat)rectangle.right(), (GLfloat)rectangle.top(), fZ);
-      glVertex3f((GLfloat)rectangle.right(), (GLfloat)rectangle.bottom(), fZ);
-      glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.bottom(), fZ);
+   //   glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.top(), fZ);
+   //   glVertex3f((GLfloat)rectangle.right(), (GLfloat)rectangle.top(), fZ);
+   //   glVertex3f((GLfloat)rectangle.right(), (GLfloat)rectangle.bottom(), fZ);
+   //   glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.bottom(), fZ);
 
-   }
+   //}
 
   
-      inline void vertex2f(const ::double_polygon& a, float fZ)
-      {
-         for (auto& p : a)
-         {
+      //inline void vertex2f(const ::double_polygon& a, float fZ)
+      //{
+      //   for (auto& p : a)
+      //   {
 
-            glVertex3f((GLfloat)p.x(), (GLfloat)p.y(), fZ);
+      //      glVertex3f((GLfloat)p.x(), (GLfloat)p.y(), fZ);
 
-         }
+      //   }
 
-      }
+      //}
 
    void resize(const ::int_size & size, bool bYSwap);
 

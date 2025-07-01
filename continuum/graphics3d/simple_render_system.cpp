@@ -62,7 +62,7 @@ namespace app_graphics3d_continuum
 			{ ::gpu::shader::e_descriptor_set_slot_global,
 			::gpu::shader::e_descriptor_set_slot_local }, {},
 			simple_render_properties(),
-			pgpucontext->input_layout(gpu_Vertex_properties())
+			pgpucontext->input_layout(::graphics3d::Vertex_properties())
 
 		);
 

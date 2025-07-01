@@ -34,7 +34,7 @@ namespace opengl
       */
       //auto f32Opacity = (float)u8Opacity / 255.f;
 
-      ::glColor4f(f32Red, f32Green, f32Blue, f32Opacity);
+      //::glColor4f(f32Red, f32Green, f32Blue, f32Opacity);
 
    }
 

@@ -7,6 +7,8 @@
 //#include "swapchain.h"
 #include "render_target_view.h"
 #include "bred/gpu/renderer.h"
+#include "gpu_directx12/d3d12_resource.h"
+#include "bred/graphics3d/types.h"
 
 
 constexpr unsigned int FRAME_OVERLAP = 2;
@@ -109,8 +111,8 @@ namespace gpu_directx12
       //::array<VkCommandBuffer>	commandBuffers;
       //VkExtent2D m_extentRenderer;
       //int currentFrameIndex = 0;
-      bool isFrameStarted = false;
-      bool m_bNeedToRecreateSwapChain = false;
+      //bool isFrameStarted = false;
+      //bool m_bNeedToRecreateSwapChain = false;
       //bool m_bOffScreen = true;
       //renderer(VkWindow &window, context * pvkcdevice);
       //::int_size m_sizeRenderer;
@@ -149,6 +151,10 @@ namespace gpu_directx12
 //#endif
 
       ::procedure_array m_procedureaAfterEndRender;
+
+      ::pointer < ::gpu_directx12::vertex_buffer < ::graphics3d::sequence2_uv >  >
+         m_pvertexbufferSeq2UvRectangle;
+
 
       //::int_size m_sizeRenderer;
 
@@ -221,7 +227,11 @@ namespace gpu_directx12
       }
 
 
-      bool isFrameInProgress() const { return isFrameStarted; }
+      virtual ::gpu_directx12::vertex_buffer < ::graphics3d::sequence2_uv > * 
+         sequence2_uv_rectangle();
+
+
+      //bool isFrameInProgress() const { return isFrameStarted; }
 
 
       //VkCommandBuffer getCurrentCommandBuffer() const {
@@ -252,9 +262,9 @@ namespace gpu_directx12
 
    //public:
 
-      void createCommandBuffers();
+      void create_command_buffers() override;
 
-      void freeCommandBuffers();
+      void free_command_buffers() override;
       //void recreateSwapchain();
       //void set_size(const ::int_size & size) override;
 

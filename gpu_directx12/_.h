@@ -20,10 +20,9 @@
 namespace gpu_directx12
 {
 
-   
    class program;
-   class approach;
 
+   class approach;
 
    class swap_chain;
 
@@ -62,6 +61,8 @@ namespace gpu_directx12
    class command_buffer;
 
    class direct2d_draw2d_swap_chain;
+
+   class d3d12_resource;
 
 
 } // namespace gpu_directx12

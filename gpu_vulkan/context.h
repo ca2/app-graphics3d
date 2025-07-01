@@ -153,8 +153,6 @@ namespace gpu_vulkan
 
       //virtual string get_shader_version_text();
 
-      virtual bool defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, memsize size);
-      virtual bool defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, const ::block& block);
       
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;
 
@@ -273,6 +271,10 @@ namespace gpu_vulkan
 
 
       //void copy(::gpu::texture* ptexture) override;
+      virtual ::memory rectangle_shader_vert();
+      virtual ::memory rectangle_shader_frag();
+
+//      void initialize_rectangle_shader(::gpu::shader* pshader) override;
 
 
    };

@@ -110,6 +110,12 @@
     <ClInclude Include="command_buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="input_layout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d12_resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -200,6 +206,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="command_buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="input_layout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d12_resource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

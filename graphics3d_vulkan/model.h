@@ -58,7 +58,7 @@ namespace graphics3d_vulkan
       void draw() override;
       void bind() override;
 
-      void createVertexBuffers(const ::array<::gpu::Vertex>& vertices);
+      void createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices);
       void createIndexBuffers(const ::array<uint32_t>& indices);
 
 

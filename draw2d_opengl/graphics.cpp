@@ -15,7 +15,9 @@
 #include "bred/gpu/approach.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/device.h"
+#include "bred/gpu/model_buffer.h"
 #include "bred/gpu/render.h"
+#include "bred/graphics3d/types.h"
 #include "gpu_opengl/device_win32.h"
 #include "gpu_opengl/lock.h"
 #include "gpu_opengl/renderer.h"
@@ -75,6 +77,30 @@ public:
 
 namespace draw2d_opengl
 {
+
+
+   const char proto_vert[] = R"vert(
+#version 330 core
+
+layout(location = 0) in vec2 inPos;
+layout(location = 1) in vec4 inColor;
+
+out vec4 fragColor;
+
+void main() {
+    gl_Position = vec4(inPos, 0.0, 1.0);
+    fragColor = inColor;
+})vert";
+   const char proto_frag[] = R"frag(
+            #version 330 core
+
+               in vec4 fragColor;      // Input from the vertex shader (location = 0)
+            out vec4 outColor;      // Output to framebuffer (location = 0)
+
+            void main() {
+               outColor = fragColor;
+            }
+)frag";
 
    //ATOM class_atom = NULL;
 
@@ -258,23 +284,27 @@ namespace draw2d_opengl
 
       auto pgpucontextMain = m_papplication->get_gpu_approach()->get_gpu_device()->main_context();
 
-      m_pgpucontextCompositor = pgpudevice->create_draw2d_context(
+      auto pgpucontextNew = pgpudevice->create_draw2d_context(
          ::gpu::e_output_gpu_buffer,
          size);
 
-      if (!m_pgpucontextCompositor)
+      if (!pgpucontextNew)
       {
 
          return;
 
       }
 
-      m_pgpucontextCompositor->m_pgpucompositor = this;
+      set_gpu_context(pgpucontextNew);
 
-      if (!m_pgpucontextCompositor->m_pgpurenderer)
+      auto pcontext = gpu_context();
+
+      pcontext->m_pgpucompositor = this;
+
+      if (!pcontext->m_pgpurenderer)
       {
 
-         m_pgpucontextCompositor->get_gpu_renderer();
+         pcontext->get_gpu_renderer();
 
       }
 
@@ -316,11 +346,13 @@ namespace draw2d_opengl
 
       auto pgpudevice = pgpuapproach->get_gpu_device();
 
-      m_pgpucontextCompositor = pgpudevice->create_draw2d_context(
+      auto pgpucontextNew = pgpudevice->create_draw2d_context(
          ::gpu::e_output_gpu_buffer,
          size);
 
-      m_pgpucontextCompositor->m_pgpucompositor = this;  
+      pgpucontextNew->m_pgpucompositor = this;  
+
+      set_gpu_context(pgpucontextNew);
 
       //auto pgpucontext = pgpudevice->get_main_context();
 
@@ -350,7 +382,9 @@ namespace draw2d_opengl
 
       //}
 
-      if (!m_pgpucontextCompositor)
+      auto pcontext = gpu_context();
+
+      if (!pcontext)
       {
 
          return false;
@@ -573,7 +607,9 @@ namespace draw2d_opengl
 
       //}
 
-      m_pgpucontextCompositor->defer_create_window_context(pwindow);
+      auto pcontext = gpu_context();
+
+      pcontext->defer_create_window_context(pwindow);
 
       //      ::opengl::resize(size);
 
@@ -1061,21 +1097,260 @@ namespace draw2d_opengl
 
    //}
 
-   void vertex2f(const ::double_rectangle& rectangle, float fZ)
+   //void vertex2f(const ::double_rectangle& rectangle, float fZ)
+   //{
+
+   //   glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.top(), fZ);
+   //   glVertex3f((GLfloat)rectangle.right(), (GLfloat)rectangle.top(), fZ);
+   //   glVertex3f((GLfloat)rectangle.right(), (GLfloat)rectangle.bottom(), fZ);
+   //   glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.bottom(), fZ);
+
+   //}
+
+
+   void graphics::fill_rectangle(const ::double_rectangle& rectangle, const ::color::color& color)
    {
 
-      glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.top(), fZ);
-      glVertex3f((GLfloat)rectangle.right(), (GLfloat)rectangle.top(), fZ);
-      glVertex3f((GLfloat)rectangle.right(), (GLfloat)rectangle.bottom(), fZ);
-      glVertex3f((GLfloat)rectangle.left(), (GLfloat)rectangle.bottom(), fZ);
+      auto pcontext = gpu_context();
+
+      ::cast < ::gpu::renderer >prenderer = pcontext->m_pgpurenderer;
+
+      ::cast < ::gpu::context > pgpucontext = prenderer->m_pgpucontext;
+
+      ::cast < ::gpu::device > pgpudevice = pgpucontext->m_pgpudevice;
+
+
+      //// Rectangle descriptors
+      //if (!m_psetdescriptorlayoutRectangle)
+      //{
+
+      //   int iFrameCount = prenderer->get_frame_count();
+
+      //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontextCompositor)
+      //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      //      .build();
+
+      //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+
+      //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
+      //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+      //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
+
+      //   m_psetdescriptorlayoutRectangle = pdescriptorpoolbuilder->build();
+
+      //}
+
+      //// Rectangle descriptors
+      //if (!m_psetdescriptorlayoutRectangle)
+      //{
+
+      //   int iFrameCount = prenderer->get_frame_count();
+
+      //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontextCompositor)
+      //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      //      .build();
+
+      //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+
+      //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
+      //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+      //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
+
+      //   m_psetdescriptorlayoutRectangle = pdescriptorpoolbuilder->build();
+
+      //}
+
+      ::gpu::shader* pshader = nullptr;
+
+      if (m_ealphamode == ::draw2d::e_alpha_mode_set)
+      {
+         if (!m_pshaderSourceRectangle)
+         {
+
+            //auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+
+            //pshadervertexinput->m_bindings.add(
+            //   {
+            //      .binding = 0,
+            //      .stride = sizeof(RectangleVertex),
+            //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+            //   });
+
+            //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
+            //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
+
+
+            auto pshaderRectangle = __create_new<::gpu::shader>();
+
+            m_pshaderSourceRectangle = pshaderRectangle;
+            //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
+            m_pshaderSourceRectangle->m_bDisableDepthTest = true;
+            //m_pshaderRectangle->m_iColorAttachmentCount = 2;
+            m_pshaderSourceRectangle->m_bEnableBlend = false;
+            //m_pshaderRectangle->m_bAccumulationEnable = true;
+
+            auto pcontext = gpu_context();
+
+            //::cast < ::gpu_vulkan::device > pgpudevice = pgpucontext->m_pgpudevice;
+            pshaderRectangle->initialize_shader_with_block(
+               pcontext->m_pgpurenderer,
+               as_memory_block(proto_vert),
+               //as_memory_block(g_uaAccumulationFragmentShader),
+               as_memory_block(proto_frag),
+               {},
+               {},
+               {},
+               pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+
+         }
+         pshader = m_pshaderSourceRectangle;
+
+      }
+      else
+      {
+
+         if (!m_pshaderBlendRectangle)
+         {
+
+            //auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+
+            //pshadervertexinput->m_bindings.add(
+            //   {
+            //      .binding = 0,
+            //      .stride = sizeof(RectangleVertex),
+            //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+            //   });
+
+            //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
+            //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
+
+            auto pshaderRectangle = __create_new<::gpu::shader>();
+
+            m_pshaderBlendRectangle = pshaderRectangle;
+            //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
+            m_pshaderBlendRectangle->m_bDisableDepthTest = true;
+            //m_pshaderRectangle->m_iColorAttachmentCount = 2;
+            m_pshaderBlendRectangle->m_bEnableBlend = true;
+            //m_pshaderRectangle->m_bAccumulationEnable = true;
+
+            auto pcontext = gpu_context();
+
+            ::cast < ::gpu::device > pgpudevice = pgpucontext->m_pgpudevice;
+            pshaderRectangle->initialize_shader_with_block(
+               pcontext->m_pgpurenderer,
+               as_memory_block(proto_vert),
+               //as_memory_block(g_uaAccumulationFragmentShader),
+               as_memory_block(proto_frag),
+               { },
+               {},
+               {},
+               pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+
+         }
+
+         pshader = m_pshaderBlendRectangle;
+
+      }
+
+      //auto pcontext = gpu_context();
+
+      //::cast < ::gpu_vulkan::context > pcontext = m_pgpucontextCompositor;
+
+      auto pmodelbufferRectangle = m_poolmodelbufferRectangle.get();
+
+      if (pmodelbufferRectangle->is_new())
+      {
+
+         pmodelbufferRectangle->sequence2_color_create_rectangle(pcontext);
+
+      }
+
+      //   auto & pmodelbuffer = m_pmodelbufferRectangle;
+
+      //if (!pmodelbuffer)
+      //{
+
+      //   
+
+      //   //   pmodel->m_vertexBuffer = createQuadVertexBuffer(
+      //   //      pgpucontext->logicalDevice(),
+      //   //      pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+      //   //      &pmodel->m_vertexMemory);
+
+      //   //   pmodel->m_indexBuffer = nullptr;
+      //   //   pmodel->m_indexMemory = nullptr;
+
+      //   //}
+
+
+      //}
+
+      double_point points[4] = {
+   {rectangle.top_left()},
+   {rectangle.top_right()},
+   {rectangle.bottom_right()},
+   {rectangle.bottom_left()}
+      };
+
+      double_point quad[4];
+
+      quad[0] = points[0];
+      m_m1.transform(quad[0]);
+      quad[1] = points[1];
+      m_m1.transform(quad[1]);
+      quad[2] = points[2];
+      m_m1.transform(quad[2]);
+      quad[3] = points[3];
+      m_m1.transform(quad[3]);
+
+      //pmodelbuffer->sequence3_color_set_rectangle();
+      //pgpucontext = pgpudevice->get_main_context();
+      //editQuadVertexBuffer(
+      //   pgpucontext->logicalDevice(),
+      //   pmodel->m_vertexMemory,
+      //   quad, color, pgpucontext->rectangle().size());
+
+      pmodelbufferRectangle->sequence2_color_set_rectangle(
+         quad,
+         color,
+         pgpucontext->m_rectangle.size());
+
+
+      pshader->bind();
+
+      //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      //VkDeviceSize offset = 0;
+      ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+      //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodelbuffer->m_vertexBuffer, &offset);
+
+      pmodelbufferRectangle->bind(pcommandbuffer);
+
+      pmodelbufferRectangle->draw(pcommandbuffer);
+
+      //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertices for two triangles
+      //vkCmdEndRenderPass(cmd);
+
+
+      pshader->unbind();
+      //vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
+        // rectangle.bottom() - rectangle.top());
+
+      //m_particleaResetOnTopFrameEnd.add(pmodelbufferRectangle);
+
+      //push_on_end_top_frame(m_modelbufferaRectangle, pmodelbufferRectangle);
+
+      //g_z -= 0.0001;
+
 
    }
 
-
-   void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
+   void graphics::fill_rectangle_2025_06(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
+      auto pcontext = gpu_context();
+
+      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
       //thread_select();
 
       ::opengl::color(pbrush->m_color);
@@ -1091,14 +1366,23 @@ namespace draw2d_opengl
 
       }
 
-      glBegin(GL_QUADS);
+      //glBegin(GL_QUADS);
 
-      ::opengl::vertex2f(polygon, m_z);
+      //::opengl::vertex2f(polygon, m_z);
 
-      glEnd();
-      GLCheckError("");
+      //glEnd();
+      //GLCheckError("");
 
       //return false;
+
+   }
+
+
+   void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
+   {
+
+
+      fill_rectangle(rectangle, pbrush->m_color);
 
    }
 
@@ -1883,20 +2167,20 @@ namespace draw2d_opengl
 
       }
 
-      glBegin(GL_LINE_LOOP);
+      //glBegin(GL_LINE_LOOP);
 
-      if (::is_set(ppen))
-      {
+      //if (::is_set(ppen))
+      //{
 
-         ::opengl::color(ppen->m_color);
+      //   ::opengl::color(ppen->m_color);
 
-      }
+      //}
 
-      ::opengl::vertex2f(rectangle, m_z);
+      //::opengl::vertex2f(rectangle, m_z);
 
-      glEnd();
+      //glEnd();
 
-      //return true;
+      ////return true;
 
    }
 
@@ -2939,17 +3223,17 @@ namespace draw2d_opengl
          {
 
             ::cast< ::geometry2d::line_item> plineitem = pitem;
-            if (!bLastPoint || !pointLast.is_same_by(0.00001, plineitem->m_item.m_p1))
-            {
-               glVertex3f(
-                  (float)plineitem->m_item.m_p1.x(),
-                  (float)plineitem->m_item.m_p1.y(),
-                  0.0f);
-            }
-            glVertex3f(
-               (float)plineitem->m_item.m_p2.x(),
-               (float)plineitem->m_item.m_p2.y(),
-               0.0f);
+            //if (!bLastPoint || !pointLast.is_same_by(0.00001, plineitem->m_item.m_p1))
+            //{
+            //   glVertex3f(
+            //      (float)plineitem->m_item.m_p1.x(),
+            //      (float)plineitem->m_item.m_p1.y(),
+            //      0.0f);
+            //}
+            //glVertex3f(
+            //   (float)plineitem->m_item.m_p2.x(),
+            //   (float)plineitem->m_item.m_p2.y(),
+            //   0.0f);
             pointLast = plineitem->m_item.m_p2;
          }
             break;
@@ -5101,7 +5385,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    double_size graphics::get_text_extent(const ::scoped_string& lpszString)
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
+      auto pcontext = gpu_context();
+
+      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
 
       //return{};
 
@@ -5428,12 +5714,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::draw_line(const int_point& point1, const int_point& point2, ::draw2d::pen* ppen)
    {
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
 
-      ::opengl::line(point1.x(), point1.y(), point2.x(), point2.y(), (float)(ppen->m_dWidth),
-         ppen->m_color.f32_red(), ppen->m_color.f32_green(),
-         ppen->m_color.f32_blue(),
-         ppen->m_color.f32_opacity(), 0.f, 0.f, true);
+      auto pcontext = gpu_context();
+
+      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
+
+      //::opengl::line(point1.x(), point1.y(), point2.x(), point2.y(), (float)(ppen->m_dWidth),
+      //   ppen->m_color.f32_red(), ppen->m_color.f32_green(),
+      //   ppen->m_color.f32_blue(),
+      //   ppen->m_color.f32_opacity(), 0.f, 0.f, true);
 
       /*glLineWidth(ppen->m_dWidth);
 
@@ -5457,7 +5746,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::line_to(double x, double y)
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
+      auto pcontext = gpu_context();
+
+      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
 
       if (::is_set(m_ppen))
       {
@@ -5466,30 +5757,30 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      glBegin(GL_LINES);
+      //glBegin(GL_LINES);
 
-      if (::is_set(m_ppen))
-      {
+      //if (::is_set(m_ppen))
+      //{
 
-         ::opengl::color(m_ppen->m_color);
+      //   ::opengl::color(m_ppen->m_color);
 
-      }
+      //}
 
-      ::double_polygon polygon;
+      //::double_polygon polygon;
 
-      polygon.add(m_point);
-      polygon.add({ x, y });
+      //polygon.add(m_point);
+      //polygon.add({ x, y });
 
-      for (auto& p : polygon)
-      {
+      //for (auto& p : polygon)
+      //{
 
-         m_m1.transform(p);
+      //   m_m1.transform(p);
 
-      }
+      //}
 
-      ::opengl::vertex2f(polygon, m_z);
+      //::opengl::vertex2f(polygon, m_z);
 
-      glEnd();
+      //glEnd();
 
       m_point.x() = x;
       m_point.y() = y;
@@ -5502,7 +5793,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::text_out(double x, double yParam, const ::scoped_string& scopedstr)
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
+      auto pcontext = gpu_context();
+
+      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
 
       //return;
       // activate corresponding render state	
@@ -5542,8 +5835,10 @@ color = vec4(c.r,c.g, c.b, c.a);
 
          m_pgpushaderTextOut = __create_new < ::gpu_opengl::shader >();
 
+         auto pcontext = gpu_context();
+
          m_pgpushaderTextOut->initialize_shader_with_block(
-            m_pgpucontextCompositor->m_pgpurenderer,
+            pcontext->m_pgpurenderer,
             pvertexshader,
             pfragmentshader);
          
@@ -5555,11 +5850,14 @@ color = vec4(c.r,c.g, c.b, c.a);
       ::cast<::gpu_opengl::shader>pshader = m_pgpushaderTextOut;
       pshader->_set_vec4("textColor", { __expand_float_pre_rgba(color) });
       // glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
+
+      //auto pcontext = gpu_context();
+
       glm::mat4 projection = glm::ortho(
          0.0f, 
-         static_cast<float>(m_pgpucontextCompositor->m_rectangle.width()),
+         static_cast<float>(pcontext->m_rectangle.width()),
          0.0f,
-         static_cast<float>(m_pgpucontextCompositor->m_rectangle.height()));
+         static_cast<float>(pcontext->m_rectangle.height()));
       pshader->_set_mat4("projection", projection);
 
       set(m_pfont);
@@ -5604,7 +5902,9 @@ color = vec4(c.r,c.g, c.b, c.a);
       int Δx = 0;
       m_m1.transform(point);
 
-      point.y() = m_pgpucontextCompositor->m_rectangle.height() - point.y() - pface->m_iPixelSize;
+      //auto pcontext = gpu_context();
+
+      point.y() = pcontext->m_rectangle.height() - point.y() - pface->m_iPixelSize;
 
       glEnable(GL_CULL_FACE);
       GLCheckError("");
@@ -6336,7 +6636,9 @@ color = vec4(c.r,c.g, c.b, c.a);
    void graphics::start_gpu_layer(::gpu::frame * pgpuframe)
    {
 
-      ::gpu_opengl::opengl_lock opengl_lock(m_pgpucontextCompositor);
+      auto pcontext = gpu_context();
+
+      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
 
       ::draw2d_gpu::graphics::start_gpu_layer(pgpuframe);
 
@@ -6363,7 +6665,12 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    }
 
+   ::gpu_opengl::context* graphics::gpu_context()
+   {
 
+      return dynamic_cast <::gpu_opengl::context*>(::draw2d_gpu::graphics::gpu_context());
+
+   }
 
    //void graphics::defer_add_graphics_render(::graphics::render * pgraphicsrender)
    //{
@@ -6652,9 +6959,12 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       //return ::is_set(this) & ::is_set(m_hglrc);
 
-      return ::is_set(this) 
-         && ::is_set(m_pgpucontextCompositor->m_pgpurenderer)
-         && m_pgpucontextCompositor;
+      auto pcontext = ((graphics*)this)->gpu_context();
+
+      return ::is_set(this)
+         && ::is_set(pcontext)
+         && ::is_set(pcontext->m_pgpurenderer);
+         
 
    }
 
@@ -6720,8 +7030,8 @@ namespace opengl
       //double d = 1.0;
       ////glViewport(0, 0, size.cx() * d, size.cy() * d);
       glViewport(0, 0, size.cx(), size.cy());
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
+      //glMatrixMode(GL_PROJECTION);
+      //glLoadIdentity();
       ////glOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
       ////glOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
       //////glOrtho(0, size.cx() * d, 0.0f, size.cy() * d, 000.0f, 1000.0f);
@@ -6729,14 +7039,14 @@ namespace opengl
       //glOrtho(0.f, size.cx(), 0.f, -size.cy(), -1.0f, 1.0f);
       if (bYSwap)
       {
-         glOrtho(0.0f, size.cx(), size.cy(), 0, -1.0f, 1.0f);  // Flip Y
+         //glOrtho(0.0f, size.cx(), size.cy(), 0, -1.0f, 1.0f);  // Flip Y
       }
       else
       {
-         glOrtho(0.0f, size.cx(), 0, size.cy(), -1.0f, 1.0f);  // Flip Y
+         //glOrtho(0.0f, size.cx(), 0, size.cy(), -1.0f, 1.0f);  // Flip Y
       }
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
+      //glMatrixMode(GL_MODELVIEW);
+      //glLoadIdentity();
       //auto left = 0.;
       //auto right = (double) size.cx();
       //auto bottom = 0.;
@@ -6771,40 +7081,40 @@ namespace opengl
 
       // Translate to inside of pixel (otherwise inaccuracies can occur on certain gl implementations)
       //if (OpenGL::accuracyTweak())
-      glTranslatef(0.5f, 0.5f, 0);
+      //glTranslatef(0.5f, 0.5f, 0);
 
    }
 
 
-   //https://community.khronos.org/t/draw-an-arc-in-opengl/57994/2
-   inline void draw_arc(float cx, float cy, float r, float start_angle, float arc_angle, int num_segments, float fZ)
-   {
-      float theta = arc_angle / float(num_segments - 1);//theta is now calculated from the arc angle instead, the - 1 bit comes from the fact that the arc is open
+   ////https://community.khronos.org/t/draw-an-arc-in-opengl/57994/2
+   //inline void draw_arc(float cx, float cy, float r, float start_angle, float arc_angle, int num_segments, float fZ)
+   //{
+   //   float theta = arc_angle / float(num_segments - 1);//theta is now calculated from the arc angle instead, the - 1 bit comes from the fact that the arc is open
 
-      float tangetial_factor = tanf(theta);
+   //   float tangetial_factor = tanf(theta);
 
-      float radial_factor = cosf(theta);
+   //   float radial_factor = cosf(theta);
 
 
-      float x = r * cosf(start_angle);//we now start at the start angle
-      float y = r * sinf(start_angle);
+   //   float x = r * cosf(start_angle);//we now start at the start angle
+   //   float y = r * sinf(start_angle);
 
-      glBegin(GL_LINE_STRIP);//since the arc is not a closed curve, this is a strip now
-      for (int ii = 0; ii < num_segments; ii++)
-      {
-         glVertex3f(x + cx, y + cy, fZ);
+   //   glBegin(GL_LINE_STRIP);//since the arc is not a closed curve, this is a strip now
+   //   for (int ii = 0; ii < num_segments; ii++)
+   //   {
+   //      glVertex3f(x + cx, y + cy, fZ);
 
-         float tx = -y;
-         float ty = x;
+   //      float tx = -y;
+   //      float ty = x;
 
-         x += tx * tangetial_factor;
-         y += ty * tangetial_factor;
+   //      x += tx * tangetial_factor;
+   //      y += ty * tangetial_factor;
 
-         x *= radial_factor;
-         y *= radial_factor;
-      }
-      glEnd();
-   }
+   //      x *= radial_factor;
+   //      y *= radial_factor;
+   //   }
+   //   glEnd();
+   //}
 
 
 

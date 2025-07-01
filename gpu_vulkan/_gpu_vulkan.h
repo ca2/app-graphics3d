@@ -150,10 +150,12 @@ namespace vulkan
    CLASS_DECL_GPU_VULKAN VkDeviceSize alignedVkSize(VkDeviceSize value, VkDeviceSize alignment);
 
 
-   //CLASS_DECL_GPU_VULKAN ::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions(const ::gpu::property* pproperties);
-   //CLASS_DECL_GPU_VULKAN ::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions(const ::gpu::property* pproperties);
-   CLASS_DECL_GPU_VULKAN::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions();
-   CLASS_DECL_GPU_VULKAN::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions();
+   ////CLASS_DECL_GPU_VULKAN ::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions(const ::gpu::property* pproperties);
+   ////CLASS_DECL_GPU_VULKAN ::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions(const ::gpu::property* pproperties);
+   //CLASS_DECL_GPU_VULKAN::array<VkVertexInputBindingDescription> _001GetVertexBindingDescriptions();
+   //CLASS_DECL_GPU_VULKAN::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions();
+
+   CLASS_DECL_GPU_VULKAN VkFormat get_type_vk_format(::gpu::enum_type etype);
 
 
 } // namespace vulkan
