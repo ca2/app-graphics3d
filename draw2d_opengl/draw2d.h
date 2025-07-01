@@ -14,7 +14,7 @@ namespace draw2d_opengl
 
 
    class CLASS_DECL_DRAW2D_OPENGL draw2d :
-      virtual public ::draw2d_gpu::draw2d
+      virtual public ::gpu::draw2d
    {
    public:
 

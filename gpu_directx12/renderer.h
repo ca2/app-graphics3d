@@ -276,7 +276,7 @@ namespace gpu_directx12
       //virtual void on_begin_render1(::gpu::frame* pframeParam);
       void on_end_render(::gpu::frame* pframeParam) override;
       void endFrame() override;
-      void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
+      void endDraw(::gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
 
       void on_begin_draw() override;
       void _on_begin_render(::gpu::frame* pgpuframe) override;

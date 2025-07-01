@@ -236,9 +236,6 @@
     <CustomBuild Include="shader\shader.vert">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="shader\resolve.frag">
-      <Filter>Source Files\shader</Filter>
-    </CustomBuild>
     <CustomBuild Include="shader\blend2.frag">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
@@ -271,15 +268,17 @@
     <None Include="shader\shader.vert.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
-    <None Include="shader\resolve.frag.spv.inl">
-      <Filter>Header Files\shader</Filter>
-    </None>
     <None Include="shader\blend2.frag.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
     <None Include="shader\blend2.vert.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
-    <None Include="fullscreen.frag" />
+    <None Include="shader\rectangle.vert.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\rectangle.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

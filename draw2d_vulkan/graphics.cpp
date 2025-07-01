@@ -188,7 +188,7 @@ namespace draw2d_vulkan
    ::gpu_vulkan::context* graphics::gpu_context()
    {
 
-      return dynamic_cast <::gpu_vulkan::context*>(::draw2d_gpu::graphics::gpu_context());
+      return dynamic_cast <::gpu_vulkan::context*>(::gpu::graphics::gpu_context());
 
    }
 
@@ -269,7 +269,7 @@ namespace draw2d_vulkan
    void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::int_size& size)
    {
 
-      ::draw2d_gpu::graphics::create_for_window_draw2d(puserinteraction, size);
+      ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
 
       auto pwindow = puserinteraction->window();
 
@@ -5582,7 +5582,7 @@ namespace draw2d_vulkan
    void graphics::_set(const ::geometry2d::matrix& matrix)
    {
 
-      ::draw2d_gpu::graphics::_set(matrix);
+      ::gpu::graphics::_set(matrix);
       
    }
 
@@ -6783,9 +6783,9 @@ namespace draw2d_vulkan
 
             pshaderRectangle->initialize_shader_with_block(
                pcontext->m_pgpurenderer,
-               as_memory_block(g_uaRectangleVertexShader),
+               pcontext->rectangle_shader_vert(),
                //as_memory_block(g_uaAccumulationFragmentShader),
-               as_memory_block(g_uaRectangleFragmentShader),
+               pcontext->rectangle_shader_frag(),
                { },
                m_psetdescriptorlayoutRectangle, {},
                pcontext->input_layout(::graphics3d::sequence2_color_properties()));
@@ -7538,7 +7538,7 @@ namespace draw2d_vulkan
    void graphics::do_on_context(const ::procedure& procedure)
    {
 
-      ::draw2d_gpu::graphics::do_on_context(procedure);
+      ::gpu::graphics::do_on_context(procedure);
 
       //m_pgpucontextCompositor->send(procedure);
 
@@ -7571,7 +7571,7 @@ namespace draw2d_vulkan
 
       }
 
-      ::draw2d_gpu::graphics::on_begin_draw();
+      ::gpu::graphics::on_begin_draw();
 
    //   thread_select();
 

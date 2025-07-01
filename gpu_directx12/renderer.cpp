@@ -5344,7 +5344,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction* puserinteraction)
+   void renderer::endDraw(::gpu::graphics * pgraphics, ::user::interaction* puserinteraction)
    {
 
       ::cast < renderer > prenderer = this;

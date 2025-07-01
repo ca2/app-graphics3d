@@ -22,7 +22,7 @@ namespace draw2d_vulkan
    class draw2d;
 
    class CLASS_DECL_DRAW2D_VULKAN graphics :
-      virtual public ::draw2d_gpu::graphics//,
+      virtual public ::gpu::graphics//,
       //virtual public ::gpu::renderer
    {
    public:

@@ -1659,7 +1659,7 @@ namespace gpu_directx12
 
       auto etypeRenderer = m_pgpurenderer->m_pgpucontext->m_etype;
 
-      auto etypeCompositor = pgpucompositor->m_pgpucontextCompositor->m_etype;
+      auto etypeCompositor = pgpucompositor->gpu_context()->m_etype;
 
       auto & pdxgisurface = ptexture->d3d11()->dxgiSurface;
 
@@ -1961,7 +1961,7 @@ namespace gpu_directx12
    //}
 
 
-   void context::on_begin_draw_attach(::draw2d_gpu::graphics* pgpugraphics)
+   void context::on_begin_draw_attach(::gpu::graphics* pgpugraphics)
    {
 
       ::gpu::context::on_begin_draw_attach(pgpugraphics);
@@ -1969,7 +1969,7 @@ namespace gpu_directx12
    }
 
 
-   void context::draw2d_on_begin_draw(::draw2d_gpu::graphics* pgpugraphics)
+   void context::draw2d_on_begin_draw(::gpu::graphics* pgpugraphics)
    {
 
       ::gpu::context::draw2d_on_begin_draw(pgpugraphics);
@@ -2151,8 +2151,8 @@ return tex.Sample(samp, uv);
 
                               // 1. Define viewport and scissor rectangle
                D3D12_VIEWPORT viewport = {};
-               viewport.TopLeftX = ptextureSrc->m_rectangleTarget.left();
-               viewport.TopLeftY = ptextureSrc->m_rectangleTarget.top();
+               viewport.TopLeftX = (FLOAT) ptextureSrc->m_rectangleTarget.left();
+               viewport.TopLeftY = (FLOAT) ptextureSrc->m_rectangleTarget.top();
                viewport.Width = static_cast<float>(ptextureSrc->m_rectangleTarget.width());
                viewport.Height = static_cast<float>(ptextureSrc->m_rectangleTarget.height());
                viewport.MinDepth = 0.0f;

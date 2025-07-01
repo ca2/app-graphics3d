@@ -53,7 +53,7 @@ namespace draw2d_vkvg
 
       //auto estatus = 
 
-      ::draw2d_gpu::draw2d::initialize(pparticle);
+      ::gpu::draw2d::initialize(pparticle);
 
 
       //application()->create_gpu();

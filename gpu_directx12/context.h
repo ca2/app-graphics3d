@@ -351,7 +351,7 @@ namespace gpu_directx12
       //ID3D11DeviceContext* draw_get_d3d11_device_context();
       //ID3D11DeviceContext1* draw_get_d3d11_device_context1();
 
-      //bool create_offscreen_graphics_for_swap_chain_blitting(::draw2d_gpu::graphics* pgraphics, const ::int_size& size = {}) override;
+      //bool create_offscreen_graphics_for_swap_chain_blitting(::gpu::graphics* pgraphics, const ::int_size& size = {}) override;
 
       
       void __bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player) override;
@@ -363,8 +363,8 @@ namespace gpu_directx12
       ::gpu::enum_output get_eoutput() override;
 
 
-      void on_begin_draw_attach(::draw2d_gpu::graphics* pgpugraphics) override;
-      void draw2d_on_begin_draw(::draw2d_gpu::graphics* pgpugraphics) override;
+      void on_begin_draw_attach(::gpu::graphics* pgpugraphics) override;
+      void draw2d_on_begin_draw(::gpu::graphics* pgpugraphics) override;
       
 
       void on_create_texture(::gpu::texture* pgputext) override;

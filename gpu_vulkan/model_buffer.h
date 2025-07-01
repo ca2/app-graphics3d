@@ -48,27 +48,27 @@ namespace gpu_vulkan
       void sequence3_color_create_rectangle(::gpu_vulkan::context* pcontext);
       void sequence3_color_create_line(::gpu_vulkan::context* pcontext);*/
 
-      void sequence3_color_set_rectangle(
-         const ::double_point points1[4],
-         const  ::color::color& color,
-         const ::double_size& size);
+      //void sequence3_color_set_rectangle(
+      //   const ::double_point points1[4],
+      //   const  ::color::color& color,
+      //   const ::double_size& size);
 
-      void sequence2_color_set_rectangle(
-         const ::double_point points1[4],
-         const ::color::color& color,
-         const ::double_size& size);
+      //void sequence2_color_set_rectangle(
+      //   const ::double_point points1[4],
+      //   const ::color::color& color,
+      //   const ::double_size& size);
 
-      void sequence3_color_set_line(
-         const ::double_point& pointA,
-         const ::double_point& pointB,
-         const  ::color::color& color,
-         const ::double_size& size);
+      //void sequence3_color_set_line(
+      //   const ::double_point& pointA,
+      //   const ::double_point& pointB,
+      //   const  ::color::color& color,
+      //   const ::double_size& size);
 
-      void sequence2_color_set_line(
-         const ::double_point& pointA,
-         const ::double_point& pointB,
-         const  ::color::color& color,
-         const ::double_size& size);
+      //void sequence2_color_set_line(
+      //   const ::double_point& pointA,
+      //   const ::double_point& pointB,
+      //   const  ::color::color& color,
+      //   const ::double_size& size);
 
  /*     template < typename VERTEX > 
       memory_map < memory_buffer, VERTEX > map()

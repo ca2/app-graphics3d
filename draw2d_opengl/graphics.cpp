@@ -13,6 +13,7 @@
 #include "acme/prototype/geometry2d/item.h"
 #include "acme/prototype/mathematics/mathematics.h"
 #include "bred/gpu/approach.h"
+#include "bred/gpu/command_buffer.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/device.h"
 #include "bred/gpu/model_buffer.h"
@@ -260,7 +261,7 @@ void main() {
    void graphics::create_for_window_draw2d(::user::interaction * puserinteraction, const ::int_size& size)
    {
 
-      ::draw2d_gpu::graphics::create_for_window_draw2d(puserinteraction, size);
+      ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
 
       if (m_puserinteraction == nullptr)
       {
@@ -4488,7 +4489,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::_set(const ::geometry2d::matrix& matrix)
    {
 
-      ::draw2d_gpu::graphics::_set(matrix);
+      ::gpu::graphics::_set(matrix);
       
       //thread_select();
 
@@ -4546,7 +4547,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    int_point graphics::offset_origin(int nWidth, int nHeight)
    {
 
-      return ::draw2d_gpu::graphics::offset_origin(nWidth, nHeight);
+      return ::gpu::graphics::offset_origin(nWidth, nHeight);
 
 
    }
@@ -5414,6 +5415,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //glEnable(GL_CULL_FACE);
       //glEnable(GL_BLEND);
       //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      int xpos = 0;
+      int ypos = 0;
       while (next_unicode_character(strChar, psz))
       {
 
@@ -5426,23 +5429,41 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          float h = ch.Size.y;
          y = maximum(h, y);
          //// update VBO for each character
-         //float vertices[6][4] = {
-         //    { xpos,     ypos + h,   0.0f, 0.0f },
-         //    { xpos,     ypos,       0.0f, 1.0f },
-         //    { xpos + w, ypos,       1.0f, 1.0f },
-
-         //    { xpos,     ypos + h,   0.0f, 0.0f },
-         //    { xpos + w, ypos,       1.0f, 1.0f },
-         //    { xpos + w, ypos + h,   1.0f, 0.0f }
-         //};
          // render glyph texture over quad
-         if (ch.TextureID)
+         if (ch.m_ppixmap)
          {
-            //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+           /* ::graphics3d::sequence2_uv vertices[6] = {
+                {{xpos,     ypos + h},  { 0.0f, 0.0f } },
+            { {xpos,     ypos    },     {  0.0f, 1.0f }},
+                {{xpos + w, ypos    },  {     1.0f, 1.0f }},
+                {{xpos,     ypos + h},  { 0.0f, 0.0f }},
+                {{xpos + w, ypos    },  {     1.0f, 1.0f }},
+                {{xpos + w, ypos + h},  { 1.0f, 0.0f }}
+            };
+
+            auto pmodelbuffer = m_poolmodelbufferCharacter.get();
+
+            if (pmodelbuffer->is_null())
+            {
+
+               pmodelbuffer->create_vertex_buffer < ::graphics3d::sequence2_uv>(6);
+
+            }
+
+            pmodelbuffer->sequence2_uv_set_vertex(vertices, 6)*/
+
+               //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
             //// update content of VBO memory
             //glBindBuffer(GL_ARRAY_BUFFER, pfont->m_VBO);
             //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
 
+            //auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2();
+
+            //pcommandbuffer->
+
+            //pcommandbuffer->draw(ch.m_ppixmap);
+
+            //ch.m_ppixmap;
             //glBindBuffer(GL_ARRAY_BUFFER, 0);
             //// render quad
             //glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -5931,21 +5952,41 @@ color = vec4(c.r,c.g, c.b, c.a);
              { xpos + w, ypos + h,   1.0f, 0.0f }
          };
          // render glyph texture over quad
-         if (ch.TextureID)
+         if (ch.m_ppixmap)
          {
-            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-            GLCheckError("");
-            // update content of VBO memory
-            int iVbo = pface->m_FaceVBO;
-            glBindBuffer(GL_ARRAY_BUFFER, iVbo);
-            GLCheckError("");
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
-            GLCheckError("");
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            GLCheckError("");
+
+
+            auto pmodelbuffer = m_poolmodelbufferCharacter.get();
+
+            if (pmodelbuffer->is_null())
+            {
+
+               pmodelbuffer->create_vertex_array < ::graphics3d::sequence2_uv>(pcontext, 6);
+
+            }
+
+            pmodelbuffer->set_vertex_array(vertices, 6);
+
+            //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            //GLCheckError("");
+            //// update content of VBO memory
+            //int iVbo = pface->m_FaceVBO;
+            //glBindBuffer(GL_ARRAY_BUFFER, iVbo);
+            //GLCheckError("");
+            //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+            //GLCheckError("");
+            //glBindBuffer(GL_ARRAY_BUFFER, 0);
+            //GLCheckError("");
             // render quad
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-            GLCheckError("");
+            // 
+            // 
+            
+            auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2();
+
+            pcommandbuffer->draw(ch.m_ppixmap);
+
+            //glDrawArrays(GL_TRIANGLES, 0, 6);
+            //GLCheckError("");
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
             Δx += ch.Advance; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
 
@@ -6626,7 +6667,7 @@ color = vec4(c.r,c.g, c.b, c.a);
    void graphics::do_on_context(const ::procedure& procedure)
    {
 
-      ::draw2d_gpu::graphics::do_on_context(procedure);
+      ::gpu::graphics::do_on_context(procedure);
 
       //m_pgpucontextCompositor->send(procedure);
 
@@ -6640,7 +6681,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       ::gpu_opengl::opengl_lock opengl_lock(pcontext);
 
-      ::draw2d_gpu::graphics::start_gpu_layer(pgpuframe);
+      ::gpu::graphics::start_gpu_layer(pgpuframe);
 
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Clear the background to transparent
       GLCheckError("");
@@ -6661,14 +6702,15 @@ color = vec4(c.r,c.g, c.b, c.a);
    ::gpu::frame * graphics::end_gpu_layer()
    {
 
-      return ::draw2d_gpu::graphics::end_gpu_layer();
+      return ::gpu::graphics::end_gpu_layer();
 
    }
+
 
    ::gpu_opengl::context* graphics::gpu_context()
    {
 
-      return dynamic_cast <::gpu_opengl::context*>(::draw2d_gpu::graphics::gpu_context());
+      return dynamic_cast <::gpu_opengl::context*>(::gpu::graphics::gpu_context());
 
    }
 
@@ -6936,7 +6978,7 @@ color = vec4(c.r,c.g, c.b, c.a);
    {
 
 
-      ::draw2d_gpu::graphics::thread_select();
+      ::gpu::graphics::thread_select();
 
 
       ////if (thread_graphics() == this)
