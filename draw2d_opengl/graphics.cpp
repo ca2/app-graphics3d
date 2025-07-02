@@ -18,7 +18,9 @@
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/device.h"
 #include "bred/gpu/model_buffer.h"
+#include "bred/gpu/pixmap.h"
 #include "bred/gpu/render.h"
+#include "bred/gpu/render_target.h"
 #include "bred/graphics3d/types.h"
 #include "gpu_opengl/device_win32.h"
 #include "gpu_opengl/lock.h"
@@ -81,6 +83,14 @@ namespace draw2d_opengl
 {
 
 
+#define __TRANSFORM(p) \
+   m_m1.transform(p); \
+p.y() = iContextHeight - p.y()
+
+#define __USES_TRANSFORM(pcontext) \
+auto iContextHeight = pcontext->m_rectangle.height()
+
+
    const char proto_vert[] = R"vert(
 #version 330 core
 
@@ -116,6 +126,7 @@ void main() {
    graphics::graphics()
    {
 
+ 
       //m_hrc = nullptr;
       //m_hwnd = nullptr;
       //m_hglrc = nullptr;
@@ -290,6 +301,12 @@ void main() {
          ::gpu::e_output_gpu_buffer,
          size);
 
+      auto r = pgpucontextMain->m_rectangle;
+
+      m_sizeScaleOutput = {1.0, -1.0};
+
+      m_pointTranslateOutput = { 0.0, (double)r.height()};
+
       if (!pgpucontextNew)
       {
 
@@ -355,6 +372,10 @@ void main() {
       pgpucontextNew->m_pgpucompositor = this;  
 
       set_gpu_context(pgpucontextNew);
+
+      m_sizeScaleOutput = { 1.0, -1.0 };
+
+      m_pointTranslateOutput = { 0.0, (double)size.cy() };
 
       //auto pgpucontext = pgpudevice->get_main_context();
 
@@ -5406,10 +5427,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::cast < draw2d_opengl::draw2d>pdraw2d = draw2d();
 
-
       ::pointer <::typeface::face> pface = pdraw2d->get_face(pfont);
 
-      //glBindVertexArray(pfont->m_VAO);
+      if (!pface->m_pgpurenderer)
+      {
+
+         pface->initialize_gpu_buffer(pcontext->m_pgpurenderer);
+
+      }
+
+         //glBindVertexArray(pfont->m_VAO);
 
       // iterate through all characters
       ::string strChar;
@@ -5477,6 +5504,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             x += ch.Advance; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
 
          }
+
       }
 
       return int_size(x, y);
@@ -5775,6 +5803,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto pcontext = gpu_context();
 
+      auto prenderer = pcontext->m_pgpurenderer;
+
       ::gpu::context_lock contextlock(pcontext);
 
       if (::is_set(m_ppen))
@@ -5784,30 +5814,97 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      //glBegin(GL_LINES);
+      __USES_TRANSFORM(pcontext);
 
-      //if (::is_set(m_ppen))
-      //{
+      auto pshader = rectangle_shader();
 
-      //   ::opengl::color(m_ppen->m_color);
+      float g_z = 0.0f; // Assuming z is 0 for 2D rendering, adjust as needed
 
-      //}
+      ::double_point points1[2];
 
-      //::double_polygon polygon;
+      points1[0].x() = m_point.x();
+      points1[0].y() = m_point.y();
+      points1[1].x() = x;
+      points1[1].y() = y;
 
-      //polygon.add(m_point);
-      //polygon.add({ x, y });
+      //m_point.x() = x;
+      //m_point.y() = y;
 
-      //for (auto& p : polygon)
-      //{
+      __TRANSFORM(points1[0]);
+      __TRANSFORM(points1[1]);
 
-      //   m_m1.transform(p);
+      auto size = pcontext->m_rectangle.size();
 
-      //}
+      ::geometry2d::matrix m;
+      m.scale(2.0 / size.cx(), 2.0 / size.cy());
+      m.translate(-1.0, -1.0);
 
-      //::opengl::vertex2f(polygon, m_z);
+      ::double_point points[2];
 
-      //glEnd();
+      points[0] = points1[0]; 
+      points[1] = points1[1]; 
+      
+      m.transform(points[0]);
+      m.transform(points[1]);
+
+      auto color = m_ppen->m_color;
+
+      float fA = color.f32_opacity();
+      //float fR = color.f32_red();
+      //float fG = color.f32_green();
+      //float fB = color.f32_blue();
+      float fR = color.f32_red() * fA;
+      float fG = color.f32_green() * fA;
+      float fB = color.f32_blue() * fA;
+
+
+      ::graphics3d::sequence2_color quadVertices[] = {
+         // Triangle 1
+         {{(float)points[0].x(), (float)points[0].y()}, {fR, fG, fB, fA}}, 
+         {{(float)points[1].x(), (float)points[1].y()}, {fR, fG, fB, fA}}, 
+      };
+
+
+      auto pmodelbuffer = m_poolmodelbufferLine.get();
+
+      if (pmodelbuffer->is_new())
+      {
+
+         pmodelbuffer->sequence2_color_create_line(pcontext);
+
+      }
+
+      pmodelbuffer->set_vertex_array<::graphics3d::sequence2_color>(quadVertices, 2);
+
+      //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      //VkDeviceSize offset = 0;
+      ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+      //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodelbuffer->m_vertexBuffer, &offset);
+      pshader->bind(prenderer->m_pgpurendertarget->current_texture());
+
+      pmodelbuffer->bind(pcommandbuffer);
+
+      pmodelbuffer->draw_lines(pcommandbuffer);
+
+      pmodelbuffer->unbind(pcommandbuffer);
+
+      //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertices for two triangles
+      //vkCmdEndRenderPass(cmd);
+
+
+
+      pshader->unbind();
+      //vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
+        // rectangle.bottom() - rectangle.top());
+
+      //m_particleaResetOnTopFrameEnd.add(pmodelbufferRectangle);
+
+      //push_on_end_top_frame(m_modelbufferaRectangle, pmodelbufferRectangle);
+
+      //g_z -= 0.0001;
+
+
 
       m_point.x() = x;
       m_point.y() = y;
@@ -5822,6 +5919,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto pcontext = gpu_context();
 
+      __USES_TRANSFORM(pcontext);
+
       ::gpu::context_lock contextlock(pcontext);
 
       //return;
@@ -5831,15 +5930,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       {
 
          auto pvertexshader = R"vertexshader(#version 330 core
-layout(location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>
+layout(location = 0) in vec2 pos;
+layout(location = 1) in vec2 tex;
 out vec2 TexCoords;
 
 uniform mat4 projection;
 
 void main()
 {
-   gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);
-   TexCoords = vertex.zw;
+   gl_Position = projection * vec4(pos, 0.0, 1.0);
+   TexCoords = vec2(tex.x, 1.0 - tex.y);
 }
 )vertexshader";
 
@@ -5857,6 +5957,7 @@ void main()
 vec4 c = vec4(textColor) * sampled;
     //color = vec4(sqrt(c.r),sqrt(c.g), sqrt(c.b), sqrt(c.a));
 color = vec4(c.r,c.g, c.b, c.a);
+//color = vec4(0.0, 1.0, 0.0, 1.0); // Bright debug color
 }
 )fragmentshader";
 
@@ -5864,10 +5965,18 @@ color = vec4(c.r,c.g, c.b, c.a);
 
          auto pcontext = gpu_context();
 
+         m_pgpushaderTextOut->m_bEnableBlend = true;
+         m_pgpushaderTextOut->m_bDisableDepthTest = true;
+
          m_pgpushaderTextOut->initialize_shader_with_block(
             pcontext->m_pgpurenderer,
             pvertexshader,
-            pfragmentshader);
+            pfragmentshader,
+            {},
+            {},
+            {},
+            pcontext->input_layout(::graphics3d::sequence2_uv_properties())
+            );  
          
       }
 
@@ -5877,14 +5986,14 @@ color = vec4(c.r,c.g, c.b, c.a);
       ::cast<::gpu_opengl::shader>pshader = m_pgpushaderTextOut;
       pshader->_set_vec4("textColor", { __expand_float_pre_rgba(color) });
       // glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
-
+      pshader->_set_int("text", 0);
       //auto pcontext = gpu_context();
 
       glm::mat4 projection = glm::ortho(
          0.0f, 
          static_cast<float>(pcontext->m_rectangle.width()),
-         0.0f,
-         static_cast<float>(pcontext->m_rectangle.height()));
+         static_cast<float>(pcontext->m_rectangle.height()),
+         0.0f);
       pshader->_set_mat4("projection", projection);
 
       set(m_pfont);
@@ -5895,11 +6004,19 @@ color = vec4(c.r,c.g, c.b, c.a);
       auto pgpuface = pdraw2d->get_face(pfont);
       ::cast < ::typeface::face>pface = pgpuface;
 
-  /*    glActiveTexture(GL_TEXTURE0);
+      glActiveTexture(GL_TEXTURE0);
       GLCheckError("");
 
-      glBindVertexArray(pface->m_FaceVAO);
-      GLCheckError("");*/
+      //glEnable(GL_BLEND);
+      //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+      //glDisable(GL_DEPTH_TEST);
+      //glDepthMask(GL_FALSE);
+
+      //glBindVertexArray(pface->m_FaceVAO);
+      //GLCheckError("");
+      auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2();
+      pface->m_pmodelbufferBox->bind(pcommandbuffer);
 
       // iterate through all characters
       ::string strChar;
@@ -5927,7 +6044,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       ::int_point point(x, y);
       int Δx = 0;
-      m_m1.transform(point);
+      __TRANSFORM(point);
 
       //auto pcontext = gpu_context();
 
@@ -5941,9 +6058,9 @@ color = vec4(c.r,c.g, c.b, c.a);
       {
 
          auto & ch = pface->get_character(strChar);
-
+         float h2 = (ch.Size.y - ch.Bearing.y);
          float xpos = point.x() + Δx + ch.Bearing.x;
-         float ypos = point.y() - (ch.Size.y - ch.Bearing.y);
+         float ypos = point.y() + h2;
 
          float w = ch.Size.x;
          float h = ch.Size.y;
@@ -5969,10 +6086,13 @@ color = vec4(c.r,c.g, c.b, c.a);
 
                pmodelbuffer->create_vertex_array < ::graphics3d::sequence2_uv>(pcontext, 6);
 
+               pmodelbuffer->defer_set_input_layout(m_pgpushaderTextOut->m_pinputlayout);
+
             }
 
-            pmodelbuffer->set_vertex_array(vertices, 6);
+            //pmodelbuffer->set_vertex_array(vertices, 6);
 
+            ch.m_ppixmap->bind_texture();
             //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
             //GLCheckError("");
             //// update content of VBO memory
@@ -5989,7 +6109,17 @@ color = vec4(c.r,c.g, c.b, c.a);
             
             auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2();
 
-            pcommandbuffer->draw(ch.m_ppixmap);
+            //pcommandbuffer->draw(ch.m_ppixmap);
+
+            pmodelbuffer->bind(pcommandbuffer);
+
+            pmodelbuffer->m_pbufferVertex->bind();
+
+            pmodelbuffer->_set_vertex_array(vertices, 6);
+            
+            pmodelbuffer->draw(pcommandbuffer);
+
+            //pmodelbuffer->unbind(pcommandbuffer);
 
             //glDrawArrays(GL_TRIANGLES, 0, 6);
             //GLCheckError("");

@@ -72,7 +72,7 @@ namespace graphics3d_opengl
 		create_vertex_array<::graphics3d::Vertex>(m_pgpurenderer->m_pgpucontext,
 			vertices.size());
 
-		m_pbufferVertex->assign(vertices.data(), vertices.size());
+		m_pbufferVertex->assign(vertices.data(), vertices.length_in_bytes());
 		//{
 
 		//	auto data = map < ::graphics3d::Vertex>();
@@ -112,7 +112,7 @@ namespace graphics3d_opengl
 		create_index_array<uint32_t>(m_pgpurenderer->m_pgpucontext,
 			indices.size());
 
-		m_pbufferIndex->assign(indices.data(), indices.size());
+		m_pbufferIndex->assign(indices.data(), indices.length_in_bytes());
 
 		//glBindVertexArray(m_gluVao);
 		//GLCheckError("");

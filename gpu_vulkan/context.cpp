@@ -2587,6 +2587,8 @@ namespace gpu_vulkan
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
       );
 
+      int iH = ptextureDst->m_pgpurenderer->m_pgpucontext->m_rectangle.height();
+
       //if (!ptextureDst->m_handleRenderTargetView.ptr)
       //{
 
@@ -2636,7 +2638,6 @@ namespace gpu_vulkan
 
             //if (iLayer == 2)
             {
-
 
                ::cast <texture > ptextureSrc = player->texture();
 
