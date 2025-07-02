@@ -34,9 +34,9 @@ namespace gpu_vulkan
 
       virtual void set_line_width(float fLineWidth);
 
-      virtual void set_viewport(const ::int_rectangle & rectangle);
+      void set_viewport(const ::int_rectangle & rectangle) override;
 
-      virtual void set_scissor(const ::int_rectangle& rectangle); 
+      void set_scissor(const ::int_rectangle& rectangle) override;  
 
       virtual void draw(::gpu_vulkan::model_buffer* pmodelbuffer);
 

@@ -601,6 +601,7 @@ namespace draw2d_opengl
       pfd.iPixelType = PFD_TYPE_RGBA;
       pfd.cColorBits = 32;
       pfd.cDepthBits = 32;
+      pfd.cAlphaBits = 8;
       pfd.iLayerType = PFD_MAIN_PLANE;
 
       if (!(g_hDC = GetDC(g_hWnd)))
