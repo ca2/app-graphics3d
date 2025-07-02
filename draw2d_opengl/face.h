@@ -17,7 +17,7 @@ namespace draw2d_opengl
    public:
 
       
-      unsigned int m_FaceVAO, m_FaceVBO;
+      //unsigned int m_FaceVAO, m_FaceVBO;
 
 
       face();

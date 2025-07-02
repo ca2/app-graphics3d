@@ -8,6 +8,7 @@
 #include <iostream>
 #include "camera.h"
 #include "bred/gpu/approach.h"
+#include "bred/gpu/context_lock.h"
 #include "bred/gpu/shader.h"
 #include "aura/platform/application.h"
 #include "gpu_opengl/context.h"
@@ -70,7 +71,7 @@ namespace graphics3d_opengl
 
       auto pcontext = gpu_context();
 
-      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
+      ::gpu::context_lock contextlock(pcontext);
 
       ::graphics3d::engine::on_render_frame();
 
@@ -98,7 +99,7 @@ namespace graphics3d_opengl
 
       auto pcontext = gpu_context();
 
-      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
+      ::gpu::context_lock contextlock(pcontext);
 
       //glPushMatrix();
       //GLCheckError("");
@@ -113,7 +114,7 @@ namespace graphics3d_opengl
 
       auto pcontext = gpu_context();
 
-      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
+      ::gpu::context_lock contextlock(pcontext);
 
       //glPopAttrib();
       //GLCheckError("");

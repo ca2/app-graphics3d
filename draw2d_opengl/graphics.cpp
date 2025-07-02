@@ -14,6 +14,7 @@
 #include "acme/prototype/mathematics/mathematics.h"
 #include "bred/gpu/approach.h"
 #include "bred/gpu/command_buffer.h"
+#include "bred/gpu/context_lock.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/device.h"
 #include "bred/gpu/model_buffer.h"
@@ -1112,236 +1113,241 @@ void main() {
    void graphics::fill_rectangle(const ::double_rectangle& rectangle, const ::color::color& color)
    {
 
-      auto pcontext = gpu_context();
+      ::gpu::graphics::fill_rectangle(rectangle, color);
 
-      ::cast < ::gpu::renderer >prenderer = pcontext->m_pgpurenderer;
 
-      ::cast < ::gpu::context > pgpucontext = prenderer->m_pgpucontext;
 
-      ::cast < ::gpu::device > pgpudevice = pgpucontext->m_pgpudevice;
+   //   auto pcontext = gpu_context();
 
+   //   ::cast < ::gpu::renderer >prenderer = pcontext->m_pgpurenderer;
 
-      //// Rectangle descriptors
-      //if (!m_psetdescriptorlayoutRectangle)
-      //{
+   //   ::cast < ::gpu::context > pgpucontext = prenderer->m_pgpucontext;
 
-      //   int iFrameCount = prenderer->get_frame_count();
+   //   ::cast < ::gpu::device > pgpudevice = pgpucontext->m_pgpudevice;
 
-      //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontextCompositor)
-      //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-      //      .build();
+   //   ::gpu::context_lock contextlock(pcontext);
 
-      //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+   //   //// Rectangle descriptors
+   //   //if (!m_psetdescriptorlayoutRectangle)
+   //   //{
 
-      //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
-      //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
-      //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
+   //   //   int iFrameCount = prenderer->get_frame_count();
 
-      //   m_psetdescriptorlayoutRectangle = pdescriptorpoolbuilder->build();
+   //   //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontextCompositor)
+   //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+   //   //      .build();
 
-      //}
+   //   //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
 
-      //// Rectangle descriptors
-      //if (!m_psetdescriptorlayoutRectangle)
-      //{
+   //   //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
+   //   //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+   //   //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
 
-      //   int iFrameCount = prenderer->get_frame_count();
+   //   //   m_psetdescriptorlayoutRectangle = pdescriptorpoolbuilder->build();
 
-      //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontextCompositor)
-      //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-      //      .build();
+   //   //}
 
-      //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+   //   //// Rectangle descriptors
+   //   //if (!m_psetdescriptorlayoutRectangle)
+   //   //{
 
-      //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
-      //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
-      //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
+   //   //   int iFrameCount = prenderer->get_frame_count();
 
-      //   m_psetdescriptorlayoutRectangle = pdescriptorpoolbuilder->build();
+   //   //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontextCompositor)
+   //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+   //   //      .build();
 
-      //}
+   //   //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
 
-      ::gpu::shader* pshader = nullptr;
+   //   //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
+   //   //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+   //   //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
 
-      if (m_ealphamode == ::draw2d::e_alpha_mode_set)
-      {
-         if (!m_pshaderSourceRectangle)
-         {
+   //   //   m_psetdescriptorlayoutRectangle = pdescriptorpoolbuilder->build();
 
-            //auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+   //   //}
 
-            //pshadervertexinput->m_bindings.add(
-            //   {
-            //      .binding = 0,
-            //      .stride = sizeof(RectangleVertex),
-            //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-            //   });
+   //   ::gpu::shader* pshader = nullptr;
 
-            //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
-            //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
+   //   if (m_ealphamode == ::draw2d::e_alpha_mode_set)
+   //   {
+   //      if (!m_pshaderSourceRectangle)
+   //      {
 
+   //         //auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
 
-            auto pshaderRectangle = __create_new<::gpu::shader>();
+   //         //pshadervertexinput->m_bindings.add(
+   //         //   {
+   //         //      .binding = 0,
+   //         //      .stride = sizeof(RectangleVertex),
+   //         //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+   //         //   });
 
-            m_pshaderSourceRectangle = pshaderRectangle;
-            //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
-            m_pshaderSourceRectangle->m_bDisableDepthTest = true;
-            //m_pshaderRectangle->m_iColorAttachmentCount = 2;
-            m_pshaderSourceRectangle->m_bEnableBlend = false;
-            //m_pshaderRectangle->m_bAccumulationEnable = true;
+   //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
+   //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-            auto pcontext = gpu_context();
 
-            //::cast < ::gpu_vulkan::device > pgpudevice = pgpucontext->m_pgpudevice;
-            pshaderRectangle->initialize_shader_with_block(
-               pcontext->m_pgpurenderer,
-               as_memory_block(proto_vert),
-               //as_memory_block(g_uaAccumulationFragmentShader),
-               as_memory_block(proto_frag),
-               {},
-               {},
-               {},
-               pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+   //         auto pshaderRectangle = __create_new<::gpu::shader>();
 
-         }
-         pshader = m_pshaderSourceRectangle;
+   //         m_pshaderSourceRectangle = pshaderRectangle;
+   //         //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
+   //         m_pshaderSourceRectangle->m_bDisableDepthTest = true;
+   //         //m_pshaderRectangle->m_iColorAttachmentCount = 2;
+   //         m_pshaderSourceRectangle->m_bEnableBlend = false;
+   //         //m_pshaderRectangle->m_bAccumulationEnable = true;
 
-      }
-      else
-      {
+   //         auto pcontext = gpu_context();
 
-         if (!m_pshaderBlendRectangle)
-         {
+   //         //::cast < ::gpu_vulkan::device > pgpudevice = pgpucontext->m_pgpudevice;
+   //         pshaderRectangle->initialize_shader_with_block(
+   //            pcontext->m_pgpurenderer,
+   //            as_memory_block(proto_vert),
+   //            //as_memory_block(g_uaAccumulationFragmentShader),
+   //            as_memory_block(proto_frag),
+   //            {},
+   //            {},
+   //            {},
+   //            pcontext->input_layout(::graphics3d::sequence2_color_properties()));
 
-            //auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+   //      }
+   //      pshader = m_pshaderSourceRectangle;
 
-            //pshadervertexinput->m_bindings.add(
-            //   {
-            //      .binding = 0,
-            //      .stride = sizeof(RectangleVertex),
-            //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-            //   });
+   //   }
+   //   else
+   //   {
 
-            //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
-            //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
+   //      if (!m_pshaderBlendRectangle)
+   //      {
 
-            auto pshaderRectangle = __create_new<::gpu::shader>();
+   //         //auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
 
-            m_pshaderBlendRectangle = pshaderRectangle;
-            //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
-            m_pshaderBlendRectangle->m_bDisableDepthTest = true;
-            //m_pshaderRectangle->m_iColorAttachmentCount = 2;
-            m_pshaderBlendRectangle->m_bEnableBlend = true;
-            //m_pshaderRectangle->m_bAccumulationEnable = true;
+   //         //pshadervertexinput->m_bindings.add(
+   //         //   {
+   //         //      .binding = 0,
+   //         //      .stride = sizeof(RectangleVertex),
+   //         //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+   //         //   });
 
-            auto pcontext = gpu_context();
+   //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
+   //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-            ::cast < ::gpu::device > pgpudevice = pgpucontext->m_pgpudevice;
-            pshaderRectangle->initialize_shader_with_block(
-               pcontext->m_pgpurenderer,
-               as_memory_block(proto_vert),
-               //as_memory_block(g_uaAccumulationFragmentShader),
-               as_memory_block(proto_frag),
-               { },
-               {},
-               {},
-               pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+   //         auto pshaderRectangle = __create_new<::gpu::shader>();
 
-         }
+   //         m_pshaderBlendRectangle = pshaderRectangle;
+   //         //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
+   //         m_pshaderBlendRectangle->m_bDisableDepthTest = true;
+   //         //m_pshaderRectangle->m_iColorAttachmentCount = 2;
+   //         m_pshaderBlendRectangle->m_bEnableBlend = true;
+   //         //m_pshaderRectangle->m_bAccumulationEnable = true;
 
-         pshader = m_pshaderBlendRectangle;
+   //         auto pcontext = gpu_context();
 
-      }
+   //         ::cast < ::gpu::device > pgpudevice = pgpucontext->m_pgpudevice;
+   //         pshaderRectangle->initialize_shader_with_block(
+   //            pcontext->m_pgpurenderer,
+   //            as_memory_block(proto_vert),
+   //            //as_memory_block(g_uaAccumulationFragmentShader),
+   //            as_memory_block(proto_frag),
+   //            { },
+   //            {},
+   //            {},
+   //            pcontext->input_layout(::graphics3d::sequence2_color_properties()));
 
-      //auto pcontext = gpu_context();
+   //      }
 
-      //::cast < ::gpu_vulkan::context > pcontext = m_pgpucontextCompositor;
+   //      pshader = m_pshaderBlendRectangle;
 
-      auto pmodelbufferRectangle = m_poolmodelbufferRectangle.get();
+   //   }
 
-      if (pmodelbufferRectangle->is_new())
-      {
+   //   //auto pcontext = gpu_context();
 
-         pmodelbufferRectangle->sequence2_color_create_rectangle(pcontext);
+   //   //::cast < ::gpu_vulkan::context > pcontext = m_pgpucontextCompositor;
 
-      }
+   //   auto pmodelbufferRectangle = m_poolmodelbufferRectangle.get();
 
-      //   auto & pmodelbuffer = m_pmodelbufferRectangle;
+   //   if (pmodelbufferRectangle->is_new())
+   //   {
 
-      //if (!pmodelbuffer)
-      //{
+   //      pmodelbufferRectangle->sequence2_color_create_rectangle(pcontext);
 
-      //   
+   //   }
 
-      //   //   pmodel->m_vertexBuffer = createQuadVertexBuffer(
-      //   //      pgpucontext->logicalDevice(),
-      //   //      pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-      //   //      &pmodel->m_vertexMemory);
+   //   //   auto & pmodelbuffer = m_pmodelbufferRectangle;
 
-      //   //   pmodel->m_indexBuffer = nullptr;
-      //   //   pmodel->m_indexMemory = nullptr;
+   //   //if (!pmodelbuffer)
+   //   //{
 
-      //   //}
+   //   //   
 
+   //   //   //   pmodel->m_vertexBuffer = createQuadVertexBuffer(
+   //   //   //      pgpucontext->logicalDevice(),
+   //   //   //      pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+   //   //   //      &pmodel->m_vertexMemory);
 
-      //}
+   //   //   //   pmodel->m_indexBuffer = nullptr;
+   //   //   //   pmodel->m_indexMemory = nullptr;
 
-      double_point points[4] = {
-   {rectangle.top_left()},
-   {rectangle.top_right()},
-   {rectangle.bottom_right()},
-   {rectangle.bottom_left()}
-      };
+   //   //   //}
 
-      double_point quad[4];
 
-      quad[0] = points[0];
-      m_m1.transform(quad[0]);
-      quad[1] = points[1];
-      m_m1.transform(quad[1]);
-      quad[2] = points[2];
-      m_m1.transform(quad[2]);
-      quad[3] = points[3];
-      m_m1.transform(quad[3]);
+   //   //}
 
-      //pmodelbuffer->sequence3_color_set_rectangle();
-      //pgpucontext = pgpudevice->get_main_context();
-      //editQuadVertexBuffer(
-      //   pgpucontext->logicalDevice(),
-      //   pmodel->m_vertexMemory,
-      //   quad, color, pgpucontext->rectangle().size());
+   //   double_point points[4] = {
+   //{rectangle.top_left()},
+   //{rectangle.top_right()},
+   //{rectangle.bottom_right()},
+   //{rectangle.bottom_left()}
+   //   };
 
-      pmodelbufferRectangle->sequence2_color_set_rectangle(
-         quad,
-         color,
-         pgpucontext->m_rectangle.size());
+   //   double_point quad[4];
 
+   //   quad[0] = points[0];
+   //   m_m1.transform(quad[0]);
+   //   quad[1] = points[1];
+   //   m_m1.transform(quad[1]);
+   //   quad[2] = points[2];
+   //   m_m1.transform(quad[2]);
+   //   quad[3] = points[3];
+   //   m_m1.transform(quad[3]);
 
-      pshader->bind();
+   //   //pmodelbuffer->sequence3_color_set_rectangle();
+   //   //pgpucontext = pgpudevice->get_main_context();
+   //   //editQuadVertexBuffer(
+   //   //   pgpucontext->logicalDevice(),
+   //   //   pmodel->m_vertexMemory,
+   //   //   quad, color, pgpucontext->rectangle().size());
 
-      //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
-      //VkDeviceSize offset = 0;
-      ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-      //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodelbuffer->m_vertexBuffer, &offset);
+   //   pmodelbufferRectangle->sequence2_color_set_rectangle(
+   //      quad,
+   //      color,
+   //      pgpucontext->m_rectangle.size());
 
-      pmodelbufferRectangle->bind(pcommandbuffer);
 
-      pmodelbufferRectangle->draw(pcommandbuffer);
+   //   pshader->bind();
 
-      //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertices for two triangles
-      //vkCmdEndRenderPass(cmd);
+   //   //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+   //   auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+   //   //VkDeviceSize offset = 0;
+   //   ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+   //   //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodelbuffer->m_vertexBuffer, &offset);
 
+   //   pmodelbufferRectangle->bind(pcommandbuffer);
 
-      pshader->unbind();
-      //vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
-        // rectangle.bottom() - rectangle.top());
+   //   pmodelbufferRectangle->draw(pcommandbuffer);
 
-      //m_particleaResetOnTopFrameEnd.add(pmodelbufferRectangle);
+   //   //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertices for two triangles
+   //   //vkCmdEndRenderPass(cmd);
 
-      //push_on_end_top_frame(m_modelbufferaRectangle, pmodelbufferRectangle);
 
-      //g_z -= 0.0001;
+   //   pshader->unbind();
+   //   //vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
+   //     // rectangle.bottom() - rectangle.top());
+
+   //   //m_particleaResetOnTopFrameEnd.add(pmodelbufferRectangle);
+
+   //   //push_on_end_top_frame(m_modelbufferaRectangle, pmodelbufferRectangle);
+
+   //   //g_z -= 0.0001;
 
 
    }
@@ -1351,7 +1357,7 @@ void main() {
 
       auto pcontext = gpu_context();
 
-      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
+      ::gpu::context_lock contextlock(pcontext);
       //thread_select();
 
       ::opengl::color(pbrush->m_color);
@@ -5388,7 +5394,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto pcontext = gpu_context();
 
-      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
+      ::gpu::context_lock contextlock(pcontext);
 
       //return{};
 
@@ -5738,7 +5744,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto pcontext = gpu_context();
 
-      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
+      ::gpu::context_lock contextlock(pcontext);
 
       //::opengl::line(point1.x(), point1.y(), point2.x(), point2.y(), (float)(ppen->m_dWidth),
       //   ppen->m_color.f32_red(), ppen->m_color.f32_green(),
@@ -5769,7 +5775,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto pcontext = gpu_context();
 
-      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
+      ::gpu::context_lock contextlock(pcontext);
 
       if (::is_set(m_ppen))
       {
@@ -5816,7 +5822,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto pcontext = gpu_context();
 
-      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
+      ::gpu::context_lock contextlock(pcontext);
 
       //return;
       // activate corresponding render state	
@@ -5887,13 +5893,13 @@ color = vec4(c.r,c.g, c.b, c.a);
       ::cast < draw2d_opengl::draw2d>pdraw2d = draw2d();
       
       auto pgpuface = pdraw2d->get_face(pfont);
-      ::cast < draw2d_opengl::face>pface = pgpuface;
+      ::cast < ::typeface::face>pface = pgpuface;
 
-      glActiveTexture(GL_TEXTURE0);
+  /*    glActiveTexture(GL_TEXTURE0);
       GLCheckError("");
 
       glBindVertexArray(pface->m_FaceVAO);
-      GLCheckError("");
+      GLCheckError("");*/
 
       // iterate through all characters
       ::string strChar;
@@ -5958,7 +5964,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
             auto pmodelbuffer = m_poolmodelbufferCharacter.get();
 
-            if (pmodelbuffer->is_null())
+            if (pmodelbuffer->is_new())
             {
 
                pmodelbuffer->create_vertex_array < ::graphics3d::sequence2_uv>(pcontext, 6);
@@ -6679,7 +6685,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       auto pcontext = gpu_context();
 
-      ::gpu_opengl::opengl_lock opengl_lock(pcontext);
+      ::gpu::context_lock contextlock(pcontext);
 
       ::gpu::graphics::start_gpu_layer(pgpuframe);
 

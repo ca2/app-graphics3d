@@ -36,10 +36,10 @@ namespace gpu_vulkan
    }
 
 
-   void memory_buffer::initialize_memory_buffer(::gpu::context* pgpucontext, memsize size)
+   void memory_buffer::initialize_memory_buffer(::gpu::context* pgpucontext, memsize size, bool bIndices)
    {
 
-      ::gpu::memory_buffer::initialize_memory_buffer(pgpucontext, size);
+      ::gpu::memory_buffer::initialize_memory_buffer(pgpucontext, size, bIndices);
 
       //m_pcontext = pcontext;
 

@@ -26,7 +26,7 @@ namespace gpu_vulkan
       ~memory_buffer();
 
 
-      void initialize_memory_buffer(::gpu::context* pcontext, memsize size) override;
+      void initialize_memory_buffer(::gpu::context* pcontext, memsize size, bool bIndices) override;
 
 
       bool is_initialized() const override;
@@ -89,54 +89,6 @@ namespace gpu_vulkan
 
    };
 
-
-   template < typename MAPPER, typename TYPE >
-   class memory_map
-   {
-   public:
-
-      MAPPER* m_pMapper;
-      TYPE* m_p;
-
-      memory_map(MAPPER* pmapper, TYPE* p) :
-         m_pMapper(pmapper)
-      {
-
-         m_p = (TYPE *) m_pMapper->map(0, -1);
-
-      }
-
-      ~memory_map()
-      {
-
-         m_pMapper->unmap();
-
-      }
-
-      operator TYPE* ()
-      {
-
-         return m_p;
-
-      }
-
-
-      TYPE* operator -> ()
-      {
-
-         return m_p;
-
-      }
-
-      template < primitive_integral INTEGRAL >
-      TYPE& operator[](INTEGRAL i)
-      {
-
-         return m_p[i];
-
-      }
-
-   };
 
 
 } // namespace gpu_vulkan

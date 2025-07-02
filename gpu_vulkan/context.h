@@ -271,8 +271,8 @@ namespace gpu_vulkan
 
 
       //void copy(::gpu::texture* ptexture) override;
-      virtual ::memory rectangle_shader_vert();
-      virtual ::memory rectangle_shader_frag();
+      ::memory rectangle_shader_vert() override;
+      ::memory rectangle_shader_frag() override;
 
 //      void initialize_rectangle_shader(::gpu::shader* pshader) override;
 

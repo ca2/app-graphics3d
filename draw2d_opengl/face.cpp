@@ -12,8 +12,8 @@ namespace draw2d_opengl
    face::face()
    {
 
-      m_FaceVAO = 0;
-      m_FaceVBO = 0;
+      //m_FaceVAO = 0;
+      //m_FaceVBO = 0;
 
    }
 
@@ -54,24 +54,24 @@ namespace draw2d_opengl
 
    void face::create_draw_buffers()
    {
-      glGenVertexArrays(1, &m_FaceVAO);
-      GLCheckError("");
-      glGenBuffers(1, &m_FaceVBO);
-      GLCheckError("");
-      glBindVertexArray(m_FaceVAO);
-      GLCheckError("");
-      glBindBuffer(GL_ARRAY_BUFFER, m_FaceVBO);
-      GLCheckError("");
-      glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-      GLCheckError("");
-      glEnableVertexAttribArray(0);
-      GLCheckError("");
-      glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-      GLCheckError("");
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      GLCheckError("");
-      glBindVertexArray(0);
-      GLCheckError("");
+      //glGenVertexArrays(1, &m_FaceVAO);
+      //GLCheckError("");
+      //glGenBuffers(1, &m_FaceVBO);
+      //GLCheckError("");
+      //glBindVertexArray(m_FaceVAO);
+      //GLCheckError("");
+      //glBindBuffer(GL_ARRAY_BUFFER, m_FaceVBO);
+      //GLCheckError("");
+      //glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+      //GLCheckError("");
+      //glEnableVertexAttribArray(0);
+      //GLCheckError("");
+      //glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+      //GLCheckError("");
+      //glBindBuffer(GL_ARRAY_BUFFER, 0);
+      //GLCheckError("");
+      //glBindVertexArray(0);
+      //GLCheckError("");
 
    }
 
