@@ -6689,14 +6689,14 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       ::gpu::graphics::start_gpu_layer(pgpuframe);
 
-      glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Clear the background to transparent
-      GLCheckError("");
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the color and depth buffers
-      GLCheckError("");
-      glDepthMask(GL_FALSE); // Disable writing to depth buffer
-      GLCheckError("");
-      glDisable(GL_DEPTH_TEST); // Disable depth testing
-      GLCheckError("");
+      //glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Clear the background to transparent
+      //GLCheckError("");
+      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the color and depth buffers
+      //GLCheckError("");
+      //glDepthMask(GL_FALSE); // Disable writing to depth buffer
+      //GLCheckError("");
+      //glDisable(GL_DEPTH_TEST); // Disable depth testing
+      //GLCheckError("");
 
       auto ealphamode = m_ealphamode;
       m_ealphamode = ::draw2d::e_alpha_mode_none; // Set alpha mode to blend for GPU layer

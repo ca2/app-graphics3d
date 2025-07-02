@@ -2,6 +2,7 @@
 
 
 #include "bred/graphics3d/model.h"
+#include "gpu_opengl/model_buffer.h"
 
 #include <glad.h> 
 
@@ -15,15 +16,15 @@
 #include "texture.h"
 #include "shader.h"
 //#include <learnopengl/mesh.h>
-///#include <learnopengl/shader.h>
+//#include <learnopengl/shader.h>
 
-//#include <string>
-//#include <fstream>
-//#include <sstream>
-//#include <iostream>
-#include <map>
-#include <vector>
-//using namespace std;
+////#include <string>
+////#include <fstream>
+////#include <sstream>
+////#include <iostream>
+//#include <map>
+//#include <vector>
+////using namespace std;
 
 namespace graphics3d_opengl
 {
@@ -31,7 +32,8 @@ namespace graphics3d_opengl
    //unsigned int TextureFromFile(const char* path, const ::std::string& directory, bool gamma = false);
 
    class model :
-      virtual public ::graphics3d::model
+      virtual public ::graphics3d::model,
+      virtual public ::gpu_opengl::model_buffer
    {
    public:
       
@@ -43,12 +45,12 @@ namespace graphics3d_opengl
       ::std::string directory;
       //::pointer < context > m_pgpucontext;
 
-      GLuint m_gluVBO;
-      GLuint m_gluVAO;
-      GLuint m_gluEBO;
+      //GLuint m_gluVBO;
+      //GLuint m_gluVAO;
+      //GLuint m_gluEBO;
       
       
-      ::collection::count m_cIndexes;
+      //::collection::count m_cIndexes;
       bool gammaCorrection;
 
       // constructor, expects a filepath to a 3D model.

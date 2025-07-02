@@ -52,7 +52,7 @@ namespace gpu_vulkan
       allocInfo.commandPool = pdevice->getCommandPool();
       allocInfo.commandBufferCount = 1;
 
-      VkCommandBuffer pcommandbuffer;
+      //VkCommandBuffer pcommandbuffer;
       vkAllocateCommandBuffers(pcontext->logicalDevice(), &allocInfo, &m_vkcommandbuffer);
 
 
@@ -176,12 +176,12 @@ namespace gpu_vulkan
       {
 
          {
-            (float)rectangle.left(),
-            (float)rectangle.top(),
+            rectangle.left(),
+            rectangle.top(),
          },
          {
-            (float)rectangle.width(),
-            (float)rectangle.height(),
+            rectangle.width(),
+            rectangle.height(),
          }
 
       };

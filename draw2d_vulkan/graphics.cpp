@@ -7548,29 +7548,6 @@ namespace draw2d_vulkan
    void graphics::on_begin_draw()
    {
 
-      auto pcontext = gpu_context();
-
-      auto prenderer = pcontext->m_pgpurenderer;
-
-      ::cast < ::gpu_vulkan::render_pass > prenderpass = prenderer->m_pgpurendertarget;
-
-      if (prenderer->m_prenderstate->m_estate == ::gpu::e_state_began_render)
-      {
-
-         ::cast < ::gpu_vulkan::device > pdevice = pcontext->m_pgpudevice;
-
-         int iFrameIndex = prenderpass->get_frame_index();
-
-         auto ppoolgroupFrame = pdevice->frame_pool_group(iFrameIndex);
-
-         ppoolgroupFrame->m_pallocator = pdevice;
-
-         ppoolgroupFrame->call_ongoing(e_call_off_to_pool);
-
-         m_poolmodelbufferRectangle.m_ppoolgroup = ppoolgroupFrame;
-
-      }
-
       ::gpu::graphics::on_begin_draw();
 
    //   thread_select();
