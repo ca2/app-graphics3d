@@ -51,7 +51,9 @@ namespace graphics3d_opengl
 
 		initialize_gpu_context_object(pgpurenderer->m_pgpucontext);
 
-		initialize_dummy_model(pgpurenderer, iVertices);
+		m_pgpurenderer = pgpurenderer;
+
+		m_iVertexCount = iVertices;
 
 		//glGenVertexArrays(1, &m_gluVAO);
 		// GLCheckError("");

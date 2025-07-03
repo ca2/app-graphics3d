@@ -57,8 +57,9 @@ namespace app_graphics3d_continuum
 
       ::graphics3d::model::Builder builderDummy;
 
-      m_pmodelDummy->initialize_model(pengine->m_pgpucontextCompositor2->m_pgpurenderer,
-         builderDummy);
+      m_pmodelDummy->initialize_dummy_model(
+         pengine->m_pgpucontextCompositor2->m_pgpurenderer,
+         6);
 
    }
 
