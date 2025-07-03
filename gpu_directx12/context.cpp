@@ -2256,7 +2256,7 @@ return tex.Sample(samp, uv);
 
       }
 
-      player->m_pcommandbufferLayer->reset();
+      //player->m_pcommandbufferLayer->reset();
 
       if (m_pgpucompositor)
       {

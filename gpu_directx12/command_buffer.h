@@ -29,7 +29,7 @@ namespace gpu_directx12
 
       virtual void initialize_command_buffer(ID3D12CommandQueue * pcommandqueue, D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer);
 
-      virtual void submit_command_buffer();
+      void submit_command_buffer(::gpu::layer* pgpulayer) override;
 
       void wait_commands_to_execute() override;
 

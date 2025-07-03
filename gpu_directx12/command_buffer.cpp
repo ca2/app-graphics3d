@@ -123,7 +123,7 @@ namespace gpu_directx12
    //}
 
 
-   void command_buffer::submit_command_buffer()
+   void command_buffer::submit_command_buffer(::gpu::layer* pgpulayer)
    {
 
       ::cast < ::gpu_directx12::device > pdevice = m_prenderer->m_pgpucontext->m_pgpudevice;

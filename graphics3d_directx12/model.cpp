@@ -47,9 +47,19 @@ namespace graphics3d_directx12
 
       m_pcommandbufferLoading = prenderer->getLoadAssetsCommandBuffer();
 
-      createVertexBuffers(builder.vertices);
+      if (builder.vertices.has_element())
+      {
 
-      createIndexBuffers(builder.indices);
+         createVertexBuffers(builder.vertices);
+
+      }
+
+      if (builder.indices.has_element())
+      {
+
+         createIndexBuffers(builder.indices);
+
+      }
 
    }
 
@@ -210,6 +220,7 @@ namespace graphics3d_directx12
 
          }
 
+         if(m_presourceVertexBufferGPU)
          {
 
             D3D12_RESOURCE_BARRIER barrier = {};

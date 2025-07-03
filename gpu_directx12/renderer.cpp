@@ -549,10 +549,12 @@ float4 main(PSInput input) : SV_TARGET {
          //auto& pcommandbuffer = m_commandbuffera[iFrame];
          auto& pcommandbuffer = m_commandbuffera[iFrame];
 
-         if (__defer_construct_new(pcommandbuffer))
+         if (__defer_construct(pcommandbuffer))
          {
 
-            pcommandbuffer->initialize_command_buffer(
+            ::cast < command_buffer > pdx12commandbuffer = pcommandbuffer;
+
+            pdx12commandbuffer->initialize_command_buffer(
                pcontext->command_queue(),
                D3D12_COMMAND_LIST_TYPE_DIRECT, this);
 
@@ -685,7 +687,7 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::endSingleTimeCommands(command_buffer* pcommandbuffer)
    {
 
-      pcommandbuffer->submit_command_buffer();
+      pcommandbuffer->submit_command_buffer(nullptr);
 
       pcommandbuffer->wait_commands_to_execute();
 
@@ -4129,9 +4131,11 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::on_start_layer(::gpu::layer* player)
    {
 
-      m_pgpulayer = player;
+      ::gpu::renderer::on_start_layer(player);
 
-      m_pgpucontext->on_start_layer(player);
+      //m_pgpulayer = player;
+
+      //m_pgpucontext->on_start_layer(player);
 
    }
 
@@ -4724,7 +4728,7 @@ float4 main(PSInput input) : SV_TARGET {
          //   m_papplication->fork([pcommandbufferLoadAssets]()
          //      {
 
-                  pcommandbufferLoadAssets->submit_command_buffer();
+                  pcommandbufferLoadAssets->submit_command_buffer(nullptr);
 
                   //pcommandbufferLoadAssets->wait_for_gpu();
 
@@ -4746,7 +4750,7 @@ float4 main(PSInput input) : SV_TARGET {
       }
 
 
-      //pcommandbuffer->reset();
+      pcommandbuffer->reset();
 
       //::defer_throw_hresult(
       //   m_pgraphicscommandlist->Reset(pcommandallocator, pipelineState));

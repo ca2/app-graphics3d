@@ -525,7 +525,10 @@ namespace gpu_directx12
 
       // Describe and create the graphics pipeline state object (PSO).
       D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-      psoDesc.InputLayout = pinputlayout->_get_d3d12_input_layout_desc();
+      if (pinputlayout)
+      {
+         psoDesc.InputLayout = pinputlayout->_get_d3d12_input_layout_desc();
+      }
       psoDesc.pRootSignature = m_prootsignature;
       psoDesc.VS = CD3DX12_SHADER_BYTECODE(pblobVertex);
       psoDesc.PS = CD3DX12_SHADER_BYTECODE(pblobPixel);

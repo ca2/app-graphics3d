@@ -131,7 +131,7 @@ namespace gpu_directx12
 
 
       //::pointer_array < command_buffer > m_commandbuffera;
-      ::pointer_array < command_buffer > m_commandbuffera;
+      //::pointer_array < command_buffer > m_commandbuffera;
 
       ::pointer < command_buffer > m_pcommandbufferSingleTime;
       ::pointer < command_buffer > m_pcommandbufferLoadAssets;
