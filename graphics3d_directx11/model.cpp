@@ -75,9 +75,19 @@ namespace graphics3d_directx11
 
       initialize(pgpurenderer);
 
-      createVertexBuffers(builder.vertices);
+      if (builder.vertices.has_elements())
+      {
 
-      createIndexBuffers(builder.indices);
+         createVertexBuffers(builder.vertices);
+
+      }
+
+      if (builder.indices.has_elements())
+      {
+
+         createIndexBuffers(builder.indices);
+
+      }
 
    }
 
@@ -145,7 +155,9 @@ namespace graphics3d_directx11
 
       ::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
 
-      auto hresult = pgpudevice->m_pdevice->CreateBuffer(&bd, &initData, &m_pbufferVertex);
+      auto pd3d11device = pgpudevice->m_pdevice;
+
+      auto hresult = pd3d11device->CreateBuffer(&bd, &initData, &m_pbufferVertex);
 
       if (FAILED(hresult))
       {
