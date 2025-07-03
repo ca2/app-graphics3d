@@ -723,6 +723,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="accumulation_render_pass.cpp" />
+    <ClCompile Include="approach_win32.cpp" />
     <ClCompile Include="assimp.cpp" />
     <ClCompile Include="buffer.cpp" />
     <ClCompile Include="command_buffer.cpp" />

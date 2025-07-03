@@ -7,7 +7,7 @@
 #include "shader.h"
 #include <iostream>
 #include "camera.h"
-#include "bred/gpu/approach.h"
+#include "bred/gpu/bred_approach.h"
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/shader.h"
 #include "aura/platform/application.h"

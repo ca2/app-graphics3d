@@ -31,6 +31,7 @@ namespace app_graphics3d_continuum
    {
       m_bAbsoluteMousePosition = false;
       m_ppaneimpact = nullptr;
+      m_bGpu = true;
       //m_bImaging = false;
       //preempt(15_s);
       //m_bImaging = true; // for showing application icon

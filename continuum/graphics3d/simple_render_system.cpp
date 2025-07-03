@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "application.h"
 #include "bred/graphics3d/scene.h"
-#include "bred/gpu/approach.h"
+#include "bred/gpu/bred_approach.h"
 #include "bred/gpu/context.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/shader.h"

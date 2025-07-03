@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "bred/gpu/approach.h"
+#include "bred/gpu/bred_approach.h"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 //#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
 #include <glm/glm.hpp>
@@ -15,7 +15,7 @@ namespace gpu_vulkan
 
 
    class CLASS_DECL_GPU_VULKAN approach :
-      virtual public ::gpu::approach
+      virtual public ::gpu::bred_approach
    {
    public:
 
@@ -243,8 +243,6 @@ namespace gpu_vulkan
       ~approach() override;
 
 
-      ::file::path shader_path(const ::file::path& pathShader) override;
-
 
       virtual void initialize(::particle * pparticle) override;
 
@@ -276,15 +274,13 @@ namespace gpu_vulkan
 
 //      void engine_on_frame_context_initialization(::gpu::context* pgpucontext) override;
 
-      ::gpu::payload load_dds(const ::scoped_string & scopedstrImagePath) override;
-
-
+      void on_create_window(::windowing::window* pwindow) override; 
 
 
    };
 
 
-} // namespace vulkan
+} // namespace gpu_vulkan
 
 
 

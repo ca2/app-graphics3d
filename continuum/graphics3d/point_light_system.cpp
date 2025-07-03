@@ -2,7 +2,7 @@
 #include "application.h"
 #include "impact.h"
 #include "bred/gpu/context.h"
-#include "bred/gpu/approach.h"
+#include "bred/gpu/bred_approach.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/shader.h"

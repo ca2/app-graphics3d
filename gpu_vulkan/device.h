@@ -11,8 +11,6 @@ namespace gpu_vulkan
 {
 
 
-
-
    class CLASS_DECL_GPU_VULKAN device :
       virtual public ::gpu::device
    {
@@ -256,6 +254,11 @@ namespace gpu_vulkan
 
       
       void on_top_end_frame() override;
+
+
+      ::file::path shader_path(const ::file::path& pathShader) override;
+
+      ::gpu::payload load_dds(const ::scoped_string& scopedstrImagePath) override;
 
 
    };

@@ -217,6 +217,9 @@
     <ClCompile Include="context_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="approach_win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="deployment.rc">

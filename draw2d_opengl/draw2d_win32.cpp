@@ -10,14 +10,14 @@ namespace draw2d_opengl
 {
    
 
-   void draw2d::on_before_create_window(::windowing::window* pwindow)
-   {
-      ::cast < ::gpu_opengl::approach > papproach = m_papplication->get_gpu_approach();
-      papproach->_on_before_create_window(pwindow);
-//      defer_load_wgl_extensions();
-
-   }
-
+//   void draw2d::on_before_create_window(::windowing::window* pwindow)
+//   {
+//      ::cast < ::gpu_opengl::approach > papproach = m_papplication->get_gpu_approach();
+//      papproach->_on_before_create_window(pwindow);
+////      defer_load_wgl_extensions();
+//
+//   }
+//
    //
    //void opengl_on_create_window_2025_05(HWND hwnd, HINSTANCE hInstance, HGLRC* outRC, HDC* outDC)
    //{      // OpenGL context setup
@@ -196,23 +196,6 @@ namespace draw2d_opengl
    //   *outDC = dc;
    //}
 
-   void draw2d::on_create_window(::windowing::window * pwindow)
-   {
-      ::cast < ::gpu_opengl::approach > papproach = m_papplication->get_gpu_approach();
-      papproach->_on_create_window(pwindow);
-      //::draw2d_gpu::draw2d::on_create_window(pwindowParam);
-
-      //::cast < ::windowing_win32::window > pwindow = pwindowParam;
-
-      //auto hwnd = pwindow->m_hwnd;
-
-      //HRGN hRgn = CreateRectRgn(0, 0, -1, -1);
-      //bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-      //bb.hRgnBlur = hRgn;
-      //bb.fEnable = TRUE;
-      //DwmEnableBlurBehindWindow(hwnd, &bb);
-
-   }
 
 
 

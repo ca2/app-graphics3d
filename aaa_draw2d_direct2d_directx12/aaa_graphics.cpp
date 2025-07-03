@@ -21,7 +21,7 @@
 #include "aura/graphics/draw2d/lock.h"
 #include "aura/graphics/draw2d/region.h"
 #include "aura/graphics/draw2d/device_lock.h"
-#include "bred/gpu/approach.h"
+#include "bred/gpu/bred_approach.h"
 #include "bred/gpu/context.h"
 #include "bred/gpu/types.h"
 #include "aura/graphics/image/context.h"
