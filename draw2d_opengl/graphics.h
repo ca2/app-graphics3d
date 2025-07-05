@@ -43,7 +43,7 @@ namespace draw2d_opengl
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextOpenGL;
-      ::pointer < ::gpu::shader >         m_pgpushaderTextOut;
+      //::pointer < ::gpu::shader >         m_pgpushaderTextOut;
 
 
       graphics();
@@ -276,6 +276,8 @@ namespace draw2d_opengl
 
 
       void text_out(double x, double y, const ::scoped_string & scopedstr) override;
+
+      virtual void text_out_2025_06(double x, double y, const ::scoped_string& scopedstr);
       //virtual void text_out_2024_and_before(double x, double y, const ::scoped_string& scopedstr);
 
       // Line-Output Functions
