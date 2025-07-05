@@ -515,18 +515,23 @@ namespace gpu_vulkan
       subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
       subpass.colorAttachmentCount = 1;
       subpass.pColorAttachments = &colorAttachmentRef;
-      subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
-      VkSubpassDependency dependencies[1]{};
-      dependencies[0].dstSubpass = 0;
-      dependencies[0].dstAccessMask =
-         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      dependencies[0].dstStageMask =
-         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-      dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-      dependencies[0].srcAccessMask = 0;
-      dependencies[0].srcStageMask =
-         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      if (m_bWithDepth)
+      {
+         subpass.pDepthStencilAttachment = &depthAttachmentRef;
+
+      }
+
+      //VkSubpassDependency dependencies[1]{};
+      //dependencies[0].dstSubpass = 0;
+      //dependencies[0].dstAccessMask =
+      //   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      //dependencies[0].dstStageMask =
+      //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      //dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+      //dependencies[0].srcAccessMask = 0;
+      //dependencies[0].srcStageMask =
+      //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
 
 
@@ -548,12 +553,20 @@ namespace gpu_vulkan
       VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
       VkRenderPassCreateInfo renderPassInfo = {};
       renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-      renderPassInfo.attachmentCount = 2;
+
+      if (m_bWithDepth)
+      {
+         renderPassInfo.attachmentCount = 2;
+      }
+      else
+      {
+         renderPassInfo.attachmentCount = 1;
+      }
       renderPassInfo.pAttachments = attachments;
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;
-      renderPassInfo.dependencyCount = 1;
-      renderPassInfo.pDependencies = dependencies;
+      //renderPassInfo.dependencyCount = 1;
+      //renderPassInfo.pDependencies = dependencies;
 
       if (vkCreateRenderPass(pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS)
       {
