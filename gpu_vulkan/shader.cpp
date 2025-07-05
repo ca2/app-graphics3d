@@ -147,13 +147,257 @@ namespace gpu_vulkan
 
       _create_pipeline_layout((int)m_propertiesPush.m_memory.size());
 
-      __construct_new(m_ppipeline);
+
+
+   }
+
+
+   void shader::bind(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource)
+   {
+
+      bind(pgputextureTarget);
+
+      bind_source(pgputextureSource);
+
+   }
+
+
+   void shader::bind(::gpu::texture* pgputextureTarget)
+   {
 
       ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
       ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
 
       ::cast <renderer> prenderer = m_pgpurenderer;
+
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      VkRenderPassBeginInfo renderPassBeginInfo{};
+
+      renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+
+      if (!has_shader_sampler())
+      {
+
+         throw ::exception(error_wrong_state, "use bind()");
+
+      }
+
+      //bind_source(pgputextureSource);
+
+      ::cast <texture> ptextureDst = pgputextureTarget;
+
+      auto pshadertextureDst = shader_texture(ptextureDst, false);
+
+      renderPassBeginInfo.renderPass = shader_sampler()->get_render_pass();
+      renderPassBeginInfo.framebuffer = pshadertextureDst->get_framebuffer();
+
+      uint32_t w = ptextureDst->m_rectangleTarget.width();
+      uint32_t h = ptextureDst->m_rectangleTarget.height();
+      int x = ptextureDst->m_rectangleTarget.left();
+      int bottom = ptextureDst->m_rectangleTarget.bottom();
+      int y = h - bottom;
+
+      renderPassBeginInfo.renderArea.offset = { x, y };
+      renderPassBeginInfo.renderArea.extent = { w, h };
+
+      debug() << "has_shader_sampler";
+
+      //}
+      //else
+      //{
+
+      //   ::cast <render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
+
+      VkClearValue clearValues[2];
+
+      if (m_bClearColor)
+      {
+
+         clearValues[0].color = 
+         {
+            m_colorClear.f32_red() * m_colorClear.f32_opacity(),
+            m_colorClear.f32_green() * m_colorClear.f32_opacity(),
+            m_colorClear.f32_blue() * m_colorClear.f32_opacity(),
+            m_colorClear.f32_opacity()
+         };
+
+         if (m_bDisableDepthTest)
+         {
+
+            renderPassBeginInfo.clearValueCount = 1;
+
+         }
+         else
+         {
+            
+            clearValues[1].depthStencil = { 1.0f, 0 };
+            renderPassBeginInfo.clearValueCount = 2;
+
+         }
+         
+         renderPassBeginInfo.pClearValues = clearValues;
+
+      }
+      else
+      {
+
+         renderPassBeginInfo.clearValueCount = 0;
+         renderPassBeginInfo.pClearValues = nullptr;
+
+      }
+
+      //   renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
+      //   renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->get_frame_index());
+      //   renderPassBeginInfo.renderArea.offset = { 0, 0 };
+      //   renderPassBeginInfo.renderArea.extent =
+      //   {
+      //      (uint32_t)pgpucontext->m_rectangle.width(),
+      //      (uint32_t)pgpucontext->m_rectangle.height()
+      //   };
+
+      //}
+
+      ::cast < texture > ptexture = ptextureDst;
+
+      if (ptexture->m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+      {
+
+         warning() << "what?";
+
+      }
+
+
+      vkCmdBeginRenderPass(
+         pcommandbuffer->m_vkcommandbuffer,
+         &renderPassBeginInfo,
+         VK_SUBPASS_CONTENTS_INLINE);
+
+      _bind();
+
+   }
+
+
+
+   void shader::bind()
+   {
+
+      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+
+      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+
+      ::cast <renderer> prenderer = m_pgpurenderer;
+
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      VkRenderPassBeginInfo renderPassBeginInfo{};
+
+      renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+
+      if (has_shader_sampler())
+      {
+
+         throw ::exception(error_wrong_state, "use bind(txtDst, txtDsr)");
+
+      }
+
+      ::cast <render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
+
+
+      renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
+      if (prenderer->m_pgpulayer)
+      {
+
+         ::cast < texture > ptexture = prenderpass->current_texture();
+
+         if (ptexture->m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+         {
+
+            warning() << "what?";
+
+         }
+
+
+         renderPassBeginInfo.framebuffer = ptexture->get_framebuffer(prenderpass->getRenderPass());
+
+      }
+      else
+      {
+
+         renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->m_pgpurendertarget->get_frame_index());
+
+      }
+
+
+
+      VkClearValue clearValues[2]{};
+      //clearValues[0].color = { 0.5f* 0.5f, 0.75f*0.5f, 0.95f* 0.5f, 0.5f };
+
+      if (m_bClearColor)
+      {
+
+         auto fR = m_colorClear.f32_red();
+         auto fG = m_colorClear.f32_green();
+         auto fB = m_colorClear.f32_blue();
+         auto fA = m_colorClear.f32_opacity();
+
+         clearValues[0].color = { fR * fA, fG * fA, fB * fA, fA };
+         clearValues[1].depthStencil = { 1.0f, 0 };
+         renderPassBeginInfo.clearValueCount = 2;
+         renderPassBeginInfo.pClearValues = nullptr;
+
+      }
+      else
+      {
+
+         renderPassBeginInfo.clearValueCount = 0;
+         renderPassBeginInfo.pClearValues = nullptr;
+
+      }
+
+
+      renderPassBeginInfo.renderArea.offset = { 0, 0 };
+      renderPassBeginInfo.renderArea.extent =
+      {
+         (uint32_t)pgpucontext->m_rectangle.width(),
+         (uint32_t)pgpucontext->m_rectangle.height()
+      };
+
+
+
+
+      vkCmdBeginRenderPass(
+         pcommandbuffer->m_vkcommandbuffer,
+         &renderPassBeginInfo,
+         VK_SUBPASS_CONTENTS_INLINE);
+
+
+      _bind();
+
+   }
+
+
+   void shader::_bind()
+   {
+
+      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+
+      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+
+      ::cast <renderer> prenderer = m_pgpurenderer;
+
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+      __construct_new(m_ppipeline);
+
+      prenderer->current_frame_particle_array()->add(m_ppipeline);
+
+      //::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+
+      //::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+
+      //::cast <renderer> prenderer = m_pgpurenderer;
 
       PipelineConfigInfo pipelineConfig{};
 
@@ -321,6 +565,15 @@ namespace gpu_vulkan
 
       ::cast < render_pass > prenderpass = prenderer->m_pgpurendertarget;
 
+      ::cast < texture > ptexture = prenderpass->current_texture();
+
+      if (ptexture->m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+      {
+
+         warning() << "what?";
+
+      }
+
       if (has_shader_sampler())
       {
 
@@ -343,176 +596,6 @@ namespace gpu_vulkan
          m_memoryVertex,
          m_memoryFragment,
          pipelineConfig);
-
-
-   }
-
-
-   void shader::bind(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource)
-   {
-
-      bind(pgputextureTarget);
-
-      bind_source(pgputextureSource);
-
-   }
-
-
-   void shader::bind(::gpu::texture* pgputextureTarget)
-   {
-
-      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
-
-      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
-
-      ::cast <renderer> prenderer = m_pgpurenderer;
-
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
-
-      VkRenderPassBeginInfo renderPassBeginInfo{};
-
-      renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-
-      if (!has_shader_sampler())
-      {
-
-         throw ::exception(error_wrong_state, "use bind()");
-
-      }
-
-      //bind_source(pgputextureSource);
-
-      ::cast <texture> ptextureDst = pgputextureTarget;
-
-      auto pshadertextureDst = shader_texture(ptextureDst, false);
-
-      renderPassBeginInfo.renderPass = shader_sampler()->get_render_pass();
-      renderPassBeginInfo.framebuffer = pshadertextureDst->get_framebuffer();
-
-      uint32_t w = ptextureDst->m_rectangleTarget.width();
-      uint32_t h = ptextureDst->m_rectangleTarget.height();
-      int x = ptextureDst->m_rectangleTarget.left();
-      int bottom = ptextureDst->m_rectangleTarget.bottom();
-      int y = h - bottom;
-
-      renderPassBeginInfo.renderArea.offset = { x, y };
-      renderPassBeginInfo.renderArea.extent = { w, h };
-
-      debug() << "has_shader_sampler";
-
-      //}
-      //else
-      //{
-
-      //   ::cast <render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
-
-      VkClearValue clearValues[2];
-      if (m_bClearColor)
-      {
-         clearValues[0].color = {
-            m_colorClear.f32_red() * m_colorClear.f32_opacity(),
-            m_colorClear.f32_green() * m_colorClear.f32_opacity(),
-            m_colorClear.f32_blue() * m_colorClear.f32_opacity(),
-
-            m_colorClear.f32_opacity() };
-         if (m_bDisableDepthTest)
-         {
-
-            renderPassBeginInfo.clearValueCount = 1;
-
-         }
-         else
-         {
-            clearValues[1].depthStencil = { 1.0f, 0 };
-            renderPassBeginInfo.clearValueCount = 2;
-         }
-         renderPassBeginInfo.pClearValues = clearValues;
-      }
-
-      //   renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
-      //   renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->get_frame_index());
-      //   renderPassBeginInfo.renderArea.offset = { 0, 0 };
-      //   renderPassBeginInfo.renderArea.extent =
-      //   {
-      //      (uint32_t)pgpucontext->m_rectangle.width(),
-      //      (uint32_t)pgpucontext->m_rectangle.height()
-      //   };
-
-      //}
-
-      vkCmdBeginRenderPass(
-         pcommandbuffer->m_vkcommandbuffer,
-         &renderPassBeginInfo,
-         VK_SUBPASS_CONTENTS_INLINE);
-
-      _bind();
-
-   }
-
-
-
-   void shader::bind()
-   {
-
-      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
-
-      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
-
-      ::cast <renderer> prenderer = m_pgpurenderer;
-
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
-
-      VkRenderPassBeginInfo renderPassBeginInfo{};
-
-      renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-
-      if (has_shader_sampler())
-      {
-
-         throw ::exception(error_wrong_state, "use bind(txtDst, txtDsr)");
-
-      }
-
-
-      ::cast <render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
-
-      VkClearValue clearValues[2]{};
-      //clearValues[0].color = { 0.5f* 0.5f, 0.75f*0.5f, 0.95f* 0.5f, 0.5f };
-      clearValues[0].color = { 0.f * 0.f, 0.f * 0.f, 0.f * 0.f, 0.f };
-      clearValues[1].depthStencil = { 1.0f, 0 };
-
-      renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
-      renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->m_pgpurendertarget->get_frame_index());
-      renderPassBeginInfo.clearValueCount = 2;
-      renderPassBeginInfo.pClearValues = clearValues;
-      renderPassBeginInfo.renderArea.offset = { 0, 0 };
-      renderPassBeginInfo.renderArea.extent =
-      {
-         (uint32_t)pgpucontext->m_rectangle.width(),
-         (uint32_t)pgpucontext->m_rectangle.height()
-      };
-
-      vkCmdBeginRenderPass(
-         pcommandbuffer->m_vkcommandbuffer,
-         &renderPassBeginInfo,
-         VK_SUBPASS_CONTENTS_INLINE);
-
-
-      _bind();
-
-   }
-
-
-   void shader::_bind()
-   {
-
-      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
-
-      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
-
-      ::cast <renderer> prenderer = m_pgpurenderer;
-
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       m_ppipeline->bind(pcommandbuffer);
 
@@ -567,11 +650,101 @@ namespace gpu_vulkan
 
       ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
-
+      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice; 
+      
       ::cast <renderer> prenderer = m_pgpurenderer;
 
       ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+//
+//      {
+//
+//   {
+//
+//      if (pgpucontext->m_pgpudevice->m_iLayer == 0)
+//      {
+//
+//         VkClearAttachment clearAttachment = {
+//            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+//            .colorAttachment = 0,
+//            .clearValue={.color = {0.5f, 0.0f, 0.0f, 0.5f}} // Red
+//         };
+//
+//         VkClearRect clearRect = {
+//             .rect = {
+//                 .offset = {100, 100},
+//                 .extent = {100, 100}
+//             },
+//             .baseArrayLayer = 0,
+//             .layerCount = 1
+//         };
+//
+//         vkCmdClearAttachments(
+//            pcommandbuffer->m_vkcommandbuffer,
+//            1,
+//            &clearAttachment,
+//            1,
+//            &clearRect);
+//
+//      }
+//      else if (pgpucontext->m_pgpudevice->m_iLayer == 1)
+//      {
+//
+//         VkClearAttachment clearAttachment = {
+//            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+//            .colorAttachment = 0,
+//            .clearValue = {.color = {0.0f, 0.5f, 0.0f, 0.5f} } // Green
+//         };
+//
+//         VkClearRect clearRect = {
+//             .rect = {
+//                 .offset = {200, 100},
+//                 .extent = {100, 100}
+//             },
+//             .baseArrayLayer = 0,
+//             .layerCount = 1
+//         };
+//
+//         vkCmdClearAttachments(
+//            pcommandbuffer->m_vkcommandbuffer,
+//            1,
+//            &clearAttachment,
+//            1,
+//            &clearRect);
+//
+//
+//      }
+//      else if (pgpucontext->m_pgpudevice->m_iLayer == 2)
+//      {
+//
+//         VkClearAttachment clearAttachment = {
+//            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+//            .colorAttachment = 0,
+//            .clearValue = {.color = {0.0f, 0.0f, 0.5f, 0.5f} } // Blue
+//         };
+//
+//         VkClearRect clearRect = {
+//             .rect = {
+//                 .offset = {300, 100},
+//                 .extent = {100, 100}
+//             },
+//             .baseArrayLayer = 0,
+//             .layerCount = 1
+//         };
+//
+//         vkCmdClearAttachments(
+//            pcommandbuffer->m_vkcommandbuffer,
+//            1,
+//            &clearAttachment,
+//            1,
+//            &clearRect);
+//
+//      }
+//
+//   }
+//
+//}
+
+
 
       vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 

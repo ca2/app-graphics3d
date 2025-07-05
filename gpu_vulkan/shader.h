@@ -83,8 +83,8 @@ namespace gpu_vulkan
 
       int m_iSamplerSlot;
 
-      bool m_bClearColor;
-      ::color::color m_colorClear;
+      //bool m_bClearColor;
+      //::color::color m_colorClear;
 
       int m_iColorAttachmentCount = 1;
       VkPrimitiveTopology m_vktopology;

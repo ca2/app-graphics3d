@@ -66,7 +66,8 @@ namespace app_graphics3d_continuum
 
 		);
 
-
+		//m_pshader->m_bClearColor = true;
+      //m_pshader->m_colorClear = argb(0.8f, 0.1f, 0.5f, 0.1f);
 
 	}
 

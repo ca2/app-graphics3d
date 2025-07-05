@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include "context.h"
 #include "bred/gpu/memory_buffer.h"
 
 
@@ -15,80 +16,64 @@ namespace gpu_vulkan
    public:
 
 
-      //::gpu_vulkan::context * m_pcontext;
-      VkDeviceMemory m_vkdevicememory;
-      VkBuffer m_vkbuffer;
-      //memsize m_size;
-      //void* m_pMap;
+      //context* m_pgpucontext;
+      //void* m_mapped = nullptr;
+      VkBuffer                   m_vkbuffer = VK_NULL_HANDLE;
+      VkDeviceMemory             m_vkdevicememory = VK_NULL_HANDLE;
 
+      //VkDeviceSize m_bufferSize;
+      uint32_t                   m_instanceCount;
+      VkDeviceSize               m_vkdevicesizeInstance;
+      VkDeviceSize               m_vkdevicesizeAlignment;
+      VkBufferUsageFlags         m_vkbufferusageflags;
+      VkMemoryPropertyFlags      m_vkmemorypropertyflags;
 
       memory_buffer();
       ~memory_buffer();
 
 
-      void initialize_memory_buffer(::gpu::context* pcontext, memsize size, bool bIndices) override;
+      void _initialize_buffer(::gpu::context* pgpudevice,
+         VkDeviceSize instanceSize,
+         uint32_t instanceCount,
+         VkBufferUsageFlags usageFlags,
+         VkMemoryPropertyFlags memoryPropertyFlags,
+         VkDeviceSize minOffsetAlignment = 1);
 
+      void initialize_memory_buffer(::gpu::context* pgpucontext, memsize size, bool bIndices) override;
 
       bool is_initialized() const override;
+      //VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+      //void unmap();
 
-      //   VkBufferCreateInfo bufferInfo = {
-      //      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      //      .size = sizeof(graphics::RectangleVertex) * 6,
-      //      .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-      //      .sharingMode = VK_SHARING_MODE_EXCLUSIVE
-      //   };
-      //   vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
+      virtual void* __map(memsize start, memsize count);
+      virtual void __unmap();
 
-      //   VkMemoryRequirements memReq;
-      //   vkGetBufferMemoryRequirements(device, vertexBuffer, &memReq);
+      void writeToBuffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+      VkResult flush(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+      VkDescriptorBufferInfo descriptorInfo(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+      VkResult invalidate(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 
-      //   uint32_t memTypeIndex = 0;
-      //   VkPhysicalDeviceMemoryProperties memProps;
-      //   vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
-      //   for (uint32_t i = 0; i < memProps.memoryTypeCount; i++) {
-      //      if ((memReq.memoryTypeBits & (1 << i)) &&
-      //         (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
-      //         (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-      //         memTypeIndex = i;
-      //         break;
-      //      }
-      //   }
+      void writeToIndex(void* data, int index);
+      VkResult flushIndex(int index);
+      VkDescriptorBufferInfo descriptorInfoForIndex(int index);
+      VkResult invalidateIndex(int index);
 
-      //   //VkBufferCreateInfo bufferInfo = {
-      //   //    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      //   //    .size = sizeof(quadVertices),
-      //   //    .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-      //   //    .sharingMode = VK_SHARING_MODE_EXCLUSIVE
-      //   //};
-      //   //vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
+      VkBuffer getBuffer() const { return m_vkbuffer; }
+      void* getMappedMemory() const { return m_pMap; }
+      uint32_t getInstanceCount() const { return m_instanceCount; }
+      VkDeviceSize getInstanceSize() const { return m_vkdevicesizeInstance; }
+      VkDeviceSize getAlignmentSize() const { return m_vkdevicesizeAlignment; }
+      VkBufferUsageFlags getUsageFlags() const { return m_vkbufferusageflags; }
+      VkMemoryPropertyFlags getMemoryPropertyFlags() const { return m_vkmemorypropertyflags; }
+      VkDeviceSize getBufferSize() const { return m_size; }
 
-
-      //   VkMemoryAllocateInfo allocInfo = {
-      //       .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-      //       .allocationSize = memReq.size,
-      //       .memoryTypeIndex = memTypeIndex
-      //   };
-      //   vkAllocateMemory(device, &allocInfo, NULL, outMemory);
-      //   vkBindBufferMemory(device, vertexBuffer, *outMemory, 0);
-
-      //   //void* data;
-      //   //vkMapMemory(device, *outMemory, 0, bufferInfo.size, 0, &data);
-      //   //memcpy(data, quadVertices, sizeof(quadVertices));
-      //   //vkUnmapMemory(device, *outMemory);
-
-      //   return vertexBuffer;
-      //}
-
-      //virtual void assign(const void* pData, memsize size);
-      //virtual void assign(const ::block & block);
-
-
-      virtual void * _map(memsize start, memsize count);
-      virtual void _unmap();
+      static VkDeviceSize getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment);
 
 
    };
 
 
+}  // namespace gpu_vulkan
 
-} // namespace gpu_vulkan
+
+

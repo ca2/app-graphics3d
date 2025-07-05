@@ -56,7 +56,7 @@ namespace gpu_vulkan
       //   vkDestroySemaphore(m_pgpucontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
       //   vkDestroyFence(m_pgpucontext->logicalDevice(), inFlightFences[i], nullptr);
       //}
-      for (size_t i = 0; i < m_texturea.size(); i++)
+      for (::collection::index i = 0; i < m_texturea.size(); i++)
       {
 
          vkDestroyFence(pcontext->logicalDevice(), inFlightFences[i], nullptr);
@@ -191,7 +191,7 @@ namespace gpu_vulkan
    int swap_chain::get_frame_index()
    {
 
-      return m_iCurrentFrame2;
+      return (int) m_iCurrentFrame2;
 
    }
 
@@ -257,7 +257,7 @@ namespace gpu_vulkan
 
       VkPresentInfoKHR presentInfo{};
       presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-      presentInfo.waitSemaphoreCount = signalSemaphores.size();
+      presentInfo.waitSemaphoreCount = (uint32_t) signalSemaphores.size();
       presentInfo.pWaitSemaphores = signalSemaphores.data();
       presentInfo.swapchainCount = 1;
       presentInfo.pSwapchains = &m_vkswapchain;
@@ -430,7 +430,7 @@ namespace gpu_vulkan
 
          pgputexture->m_bTransferDst = true;
 
-         pgputexture->initialize_gpu_texture(::gpu_vulkan::render_pass::m_pgpurenderer, rectangleTarget);
+         pgputexture->initialize_image_texture(::gpu_vulkan::render_pass::m_pgpurenderer, rectangleTarget, m_bWithDepth);
 
          ::cast < texture > ptexture = pgputexture;
 
@@ -818,19 +818,41 @@ namespace gpu_vulkan
 
       }
 
-      //pgpurenderer->m_pgpucontext->m_iOverrideFrame = get_image_index();
-
       ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
 
       auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
+
+      ::cast < texture > ptextureSrc = pgputexture;
+
+      //{
+
+      //   // 2. Clear
+      //   VkClearColorValue clearColor = { .float32 = { 0.95f * 0.5f, 0.75f * 0.5f, 0.95f * 0.5f, 0.5f } };
+      //   VkImageSubresourceRange range = {
+      //       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //       .baseMipLevel = 0,
+      //       .levelCount = 1,
+      //       .baseArrayLayer = 0,
+      //       .layerCount = 1,
+      //   };
+
+      //   vkCmdClearColorImage(
+      //      vkcommandbuffer,
+      //      ptextureSrc->m_vkimage,
+      //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      //      &clearColor,
+      //      1,
+      //      &range);
+
+      //}
+
+      //pgpurenderer->m_pgpucontext->m_iOverrideFrame = get_image_index();
 
       ptextureSwapChain->_new_state(pcommandbuffer,
          VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
       );
-
-      ::cast < texture > ptextureSrc = pgputexture;
 
       ptextureSrc->_new_state(
          pcommandbuffer,
@@ -884,6 +906,31 @@ namespace gpu_vulkan
       //pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       //pcommandlist->DrawInstanced(3, 1, 0, 0);
       vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
+
+
+      
+
+      //{
+
+      //   // 2. Clear
+      //   VkClearColorValue clearColor = {.float32 = { 0.5f *0.5f, 0.75f * 0.5f, 0.95f * 0.5f, 0.5f } };
+      //   VkImageSubresourceRange range = {
+      //       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //       .baseMipLevel = 0,
+      //       .levelCount = 1,
+      //       .baseArrayLayer = 0,
+      //       .layerCount = 1,
+      //   };
+
+      //   vkCmdClearColorImage(
+      //      vkcommandbuffer,
+      //      ptextureSwapChain->m_vkimage,
+      //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      //      &clearColor,
+      //      1,
+      //      &range);
+
+      //}
 
 
       m_pshaderPresent->unbind();

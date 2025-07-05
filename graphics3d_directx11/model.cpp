@@ -136,10 +136,10 @@ namespace graphics3d_directx11
       //};
 
       //ID3D11Buffer* vbo = nullptr;
-      int iCount = vertices.size();
+      int iCount = (int) vertices.size();
       int iTypeSize = sizeof(::graphics3d::Vertex);
       int iMyCalculatedTotalSizeInBytes = iTypeSize * iCount;
-      int iFrameworkCalculatedTotalSizeInBytes = vertices.get_size_in_bytes();
+      int iFrameworkCalculatedTotalSizeInBytes = (int) vertices.get_size_in_bytes();
       D3D11_BUFFER_DESC bd =
       { (UINT)
          iFrameworkCalculatedTotalSizeInBytes,
@@ -199,10 +199,10 @@ namespace graphics3d_directx11
    void model::createIndexBuffers(const ::array<uint32_t>& indices) 
    {
 
-      indexCount = static_cast<uint32_t>(indices.size());
-      hasIndexBuffer = indexCount > 0;
+      m_iIndexCount = static_cast<uint32_t>(indices.size());
+      //hasIndexBuffer = indexCount > 0;
 
-      if (hasIndexBuffer)
+      if (m_iIndexCount > 0)
       {
          //ID3D11Buffer* vbo = nullptr;
          D3D11_BUFFER_DESC bd =
@@ -274,21 +274,28 @@ namespace graphics3d_directx11
       ::cast <::gpu_directx11::context> pcontext = m_pgpurenderer->m_pgpucontext;
       //auto commandBuffer = pgpurenderer->getCurrentCommandBuffer();
 
-      if (hasIndexBuffer) {
+      if (m_iIndexCount > 0)
+      {
+
       //   vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
          pcontext->m_pcontext->DrawIndexed(
-            indexCount,        // Number of indices to draw
+            m_iIndexCount,        // Number of indices to draw
             0,                 // Start index location in the index buffer
             0                  // Base vertex location (added to each index)
          );
+
       }
-      else {
-      //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
+      else
+      {
+
+         //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
          pcontext->m_pcontext->Draw(
-            vertexCount,       // Number of vertices to draw
+            m_iVertexCount,       // Number of vertices to draw
             0                  // Start vertex location
          );
+
       }
+
    }
 
    
@@ -303,7 +310,7 @@ namespace graphics3d_directx11
       auto p = m_pbufferVertex.m_p;
       pcontext->m_pcontext->IASetVertexBuffers(0, 1, &p, &stride, &offset);
       pcontext->m_pcontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      if (hasIndexBuffer)
+      if (m_iIndexCount > 0)
       {
          auto p = m_pbufferIndice.m_p;
          pcontext->m_pcontext->IASetIndexBuffer(p, DXGI_FORMAT_R32_UINT, 0); // Assuming 32-bit indices

@@ -33,7 +33,6 @@ namespace gpu_vulkan
          1,
          &m_vkcommandbuffer);
 
-
    }
 
 
@@ -55,7 +54,6 @@ namespace gpu_vulkan
       //VkCommandBuffer pcommandbuffer;
       vkAllocateCommandBuffers(pcontext->logicalDevice(), &allocInfo, &m_vkcommandbuffer);
 
-
    }
 
 
@@ -63,7 +61,9 @@ namespace gpu_vulkan
    {
 
       VkCommandBufferBeginInfo beginInfo{};
+
       beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
       beginInfo.flags = bOneTime ? VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT : 0;
 
       auto result = vkBeginCommandBuffer(m_vkcommandbuffer, &beginInfo);
@@ -77,7 +77,6 @@ namespace gpu_vulkan
 
       m_estate = ::gpu::command_buffer::e_state_recording;
 
-
    }
 
 
@@ -90,7 +89,6 @@ namespace gpu_vulkan
 
       if (prenderpass)
       {
-
 
          auto vkcommandbuffer = m_vkcommandbuffer;
 
@@ -180,8 +178,8 @@ namespace gpu_vulkan
             rectangle.top(),
          },
          {
-            rectangle.width(),
-            rectangle.height(),
+            (uint32_t) rectangle.width(),
+            (uint32_t)rectangle.height(),
          }
 
       };

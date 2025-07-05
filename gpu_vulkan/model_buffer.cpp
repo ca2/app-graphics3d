@@ -4,6 +4,8 @@
 #include "context.h"
 #include "memory_buffer.h"
 #include "model_buffer.h"
+#include "renderer.h"
+#include "texture.h"
 #include "acme/prototype/geometry2d/matrix.h"
 #include "acme/prototype/prototype/call.h"
 #include "bred/gpu/types.h"
@@ -704,6 +706,13 @@ namespace gpu_vulkan
          }
          else
          {
+
+::cast < texture > ptexture = m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->current_texture();
+if (ptexture->m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+{
+   warning() << "what?";
+
+      }
             vkCmdDraw(
                pcommandbuffer->m_vkcommandbuffer,
                m_iVertexCount, 1, 0, 0);

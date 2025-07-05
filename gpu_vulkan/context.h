@@ -98,7 +98,7 @@ namespace gpu_vulkan
 
       ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutGlobal;
       ::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
-      ::pointer_array<::gpu_vulkan::buffer>							m_uboBuffers;
+      ::pointer_array<::gpu_vulkan::memory_buffer>					m_uboBuffers;
       ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolGlobal;
 
 
@@ -119,6 +119,9 @@ namespace gpu_vulkan
       void set_bitmap_1(::image::image *pimage) override;
 
       //void swap_buffers() override;
+
+
+      VkFormat findDepthFormat();
 
       VkSampler _001VkSampler();
 

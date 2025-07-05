@@ -95,7 +95,7 @@ namespace gpu_directx12
 
          ptextureSwapChain->m_bShaderResource = false;
 
-         ptextureSwapChain->m_bDepthStencil = false;
+         //ptextureSwapChain->m_bDepthStencil = false;
 
          ptextureSwapChain->_initialize_gpu_texture(
             pgpurenderer,

@@ -9,7 +9,7 @@
 //#include "renderer.h"
 #include "aura/platform/application.h"
 #include "bred/user/user/graphics3d.h"
-#include "app-graphics3d/gpu_vulkan/buffer.h"
+#include "app-graphics3d/gpu_vulkan/memory_buffer.h"
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
@@ -94,17 +94,17 @@ namespace graphics3d_vulkan
    void model::createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices)
    {
 
-      vertexCount = static_cast<uint32_t>(vertices.size());
-      assert(vertexCount >= 3 && "Vertex count must be at least 3");
-      VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+      m_iVertexCount = static_cast<uint32_t>(vertices.size());
+      assert(m_iVertexCount >= 3 && "Vertex count must be at least 3");
+      VkDeviceSize bufferSize = sizeof(vertices[0]) * m_iVertexCount;
       uint32_t vertexSize = sizeof(vertices[0]);
 
-      auto pbufferStaging = __create_new < ::gpu_vulkan::buffer >();
+      auto pbufferStaging = __create_new < ::gpu_vulkan::memory_buffer >();
 
-      pbufferStaging->initialize_buffer(
+      pbufferStaging->_initialize_buffer(
          m_pgpurenderer->m_pgpucontext,
          vertexSize,
-         vertexCount,
+         m_iVertexCount,
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
       );
@@ -112,18 +112,21 @@ namespace graphics3d_vulkan
       pbufferStaging->map();
       pbufferStaging->writeToBuffer((void*)vertices.data());
 
-      m_pbufferVertex = __create_new < ::gpu_vulkan::buffer>();
+      auto pvulkanbufferVertex = __create_new < ::gpu_vulkan::memory_buffer>();
 
-      m_pbufferVertex->initialize_buffer(
+      pvulkanbufferVertex->_initialize_buffer(
          m_pgpurenderer->m_pgpucontext,
          vertexSize,
-         vertexCount,
+         m_iVertexCount,
          VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
       );
+      
+      m_pbufferVertex = pvulkanbufferVertex;
 
+      ::cast < gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;   
 
-      m_pgpurenderer->m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferVertex->getBuffer(), bufferSize);
+      pcontext->copyBuffer(pbufferStaging->getBuffer(), pvulkanbufferVertex->getBuffer(), bufferSize);
 
 
    }
@@ -132,22 +135,25 @@ namespace graphics3d_vulkan
    void model::createIndexBuffers(const ::array<uint32_t>& indices) 
    {
 
-      indexCount = static_cast<uint32_t>(indices.size());
-      hasIndexBuffer = indexCount > 0;
+      m_iIndexCount = static_cast<uint32_t>(indices.size());
 
-      if (!hasIndexBuffer) {
+      if (m_iIndexCount <= 0)
+      {
+
          return;
+
       }
 
-      VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
+      VkDeviceSize bufferSize = sizeof(indices[0]) * m_iIndexCount;
+
       uint32_t indexSize = sizeof(indices[0]);
 
-      auto pbufferStaging = __create_new < ::gpu_vulkan::buffer>();
+      auto pbufferStaging = __create_new < ::gpu_vulkan::memory_buffer>();
 
-      pbufferStaging->initialize_buffer(
+      pbufferStaging->_initialize_buffer(
          m_pgpurenderer->m_pgpucontext,
          indexSize,
-         indexCount,
+         m_iIndexCount,
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
          ;
@@ -155,16 +161,20 @@ namespace graphics3d_vulkan
       pbufferStaging->map();
       pbufferStaging->writeToBuffer((void*)indices.data());
 
-      m_pbufferIndex = __create_new < ::gpu_vulkan::buffer>();
+      auto pbufferIndex = __create_new < ::gpu_vulkan::memory_buffer>();
 
-      m_pbufferIndex->initialize_buffer(
+      pbufferIndex->_initialize_buffer(
          m_pgpurenderer->m_pgpucontext,
          indexSize,
-         indexCount,
+         m_iIndexCount,
          VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-      m_pgpurenderer->m_pgpucontext->copyBuffer(pbufferStaging->getBuffer(), m_pbufferIndex->getBuffer(), bufferSize);
+      m_pbufferIndex = pbufferIndex;
+
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext; 
+
+      pcontext->copyBuffer(pbufferStaging->getBuffer(), pbufferIndex->getBuffer(), bufferSize);
 
    }
 
@@ -176,16 +186,16 @@ namespace graphics3d_vulkan
 
       ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
 
-      if (hasIndexBuffer) 
+      if (m_iIndexCount > 0) 
       {
 
-         vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, indexCount, 1, 0, 0, 0);
+         vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, m_iIndexCount, 1, 0, 0, 0);
 
       }
       else 
       {
 
-         vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, vertexCount, 1, 0, 0);
+         vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, m_iVertexCount, 1, 0, 0);
 
       }
 
@@ -195,19 +205,29 @@ namespace graphics3d_vulkan
    void model::bind()
    {
 
-      ::cast <::gpu_vulkan::renderer> prenderer = m_pgpurenderer;
-
-      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
-
-
-      VkBuffer buffers[] = { m_pbufferVertex->getBuffer() };
-      VkDeviceSize offsets[] = { 0 };
-      vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, buffers, offsets);
-
-      if (hasIndexBuffer) 
+      if (m_pbufferVertex)
       {
 
-         vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, m_pbufferIndex->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+         ::cast <::gpu_vulkan::renderer> prenderer = m_pgpurenderer;
+
+         ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+
+         ::cast < ::gpu_vulkan::memory_buffer> pbufferVertex = m_pbufferVertex;
+
+         VkBuffer buffers[] = { pbufferVertex->getBuffer() };
+         VkDeviceSize offsets[] = { 0 };
+         vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, buffers, offsets);
+
+         if (m_iIndexCount)
+         {
+
+            ::cast < ::gpu_vulkan::memory_buffer> pbufferIndex = m_pbufferIndex;
+
+            vkCmdBindIndexBuffer(
+               pcommandbuffer->m_vkcommandbuffer,
+               pbufferIndex->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+         }
 
       }
 

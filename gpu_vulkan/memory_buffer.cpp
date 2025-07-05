@@ -1,9 +1,15 @@
-// Created by camilo on 2025-06-11 00:50 <3ThomasBorregaardSørensen!!
 #include "framework.h"
 #include "context.h"
-#include "device.h"
-#include "memory_buffer.h"
 #include "physical_device.h"
+#include "app-graphics3d/gpu_vulkan/context.h"
+/*
+ * Encapsulates a vulkan memory_buffer
+ *
+ * Initially based off VulkanBuffer by Sascha Willems -
+ * https://github.com/SaschaWillems/Vulkan/blob/master/base/VulkanBuffer.h
+ */
+
+#include "memory_buffer.h"
 
 
 namespace gpu_vulkan
@@ -93,7 +99,7 @@ namespace gpu_vulkan
 
       VkBufferCreateInfo bufferInfo = {
          .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-         .size = (uint64_t) size,
+         .size = (uint64_t)size,
          .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          .sharingMode = VK_SHARING_MODE_EXCLUSIVE
       };
@@ -153,6 +159,275 @@ namespace gpu_vulkan
    }
 
 
+
+
+
+   /**
+    * Returns the minimum m_vkinstance size required to be compatible with devices minOffsetAlignment
+    *
+    * @param instanceSize The size of an m_vkinstance
+    * @param minOffsetAlignment The minimum required alignment, in bytes, for the offset member (eg
+    * minUniformBufferOffsetAlignment)
+    *
+    * @return VkResult of the memory_buffer mapping call
+    */
+   VkDeviceSize memory_buffer::getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment) {
+      if (minOffsetAlignment > 0) {
+         return (instanceSize + minOffsetAlignment - 1) & ~(minOffsetAlignment - 1);
+      }
+      return instanceSize;
+   }
+
+
+   void memory_buffer::_initialize_buffer(
+      ::gpu::context* pgpucontext,
+      VkDeviceSize instanceSize,
+      uint32_t instanceCount,
+      VkBufferUsageFlags usageFlags,
+      VkMemoryPropertyFlags memoryPropertyFlags,
+      VkDeviceSize minOffsetAlignment)
+   {
+
+      m_pcontext = pgpucontext;
+      m_vkdevicesizeInstance = instanceSize;
+      m_instanceCount = instanceCount;
+      m_vkbufferusageflags = usageFlags;
+      m_vkmemorypropertyflags = memoryPropertyFlags;
+
+      m_vkdevicesizeAlignment = getAlignment(instanceSize, minOffsetAlignment);
+      m_size = m_vkdevicesizeAlignment * instanceCount;
+      
+      ::cast < context > pcontext = m_pcontext;
+      
+      pcontext->createBuffer(
+         m_size,
+         m_vkbufferusageflags, 
+         m_vkmemorypropertyflags, 
+         m_vkbuffer, 
+         m_vkdevicememory);
+
+   }
+
+   
+
+
+   /**
+    * Map a memory range of this memory_buffer. If successful, mapped points to the specified memory_buffer range.
+    *
+    * @param size (Optional) Size of the memory range to map. Pass VK_WHOLE_SIZE to map the complete
+    * memory_buffer range.
+    * @param offset (Optional) Byte offset from beginning
+    *
+    * @return VkResult of the memory_buffer mapping call
+    */
+   void * memory_buffer::__map(memsize start, memsize count)
+   {
+
+      if (m_pMap)
+      {
+
+         return m_pMap;
+
+      }
+
+      assert(m_vkbuffer && m_vkdevicememory && "Called map on memory_buffer before create");
+
+      ::cast < context > pcontext = m_pcontext;
+
+      auto vkresult = vkMapMemory(pcontext->logicalDevice(),
+         m_vkdevicememory, 
+         (VkDeviceSize) start, 
+         (VkDeviceSize)count,
+         0,
+         &m_pMap);
+
+      if(vkresult != VK_SUCCESS)
+      {
+         throw ::exception(error_failed, "Failed to map memory_buffer");
+      }  
+
+      return m_pMap;
+
+   }
+
+   /**
+    * Unmap a mapped memory range
+    *
+    * @note Does not return a result as vkUnmapMemory can't fail
+    */
+   void memory_buffer::__unmap() 
+   {
+      
+      if (m_pMap) 
+      {
+         
+         ::cast < context > pcontext = m_pcontext;
+         
+         vkUnmapMemory(pcontext->logicalDevice(), m_vkdevicememory);
+
+         m_pMap = nullptr;
+
+      }
+
+   }
+
+
+   /**
+    * Copies the specified data to the mapped memory_buffer. Default value writes whole memory_buffer range
+    *
+    * @param data Pointer to the data to copy
+    * @param size (Optional) Size of the data to copy. Pass VK_WHOLE_SIZE to flush the complete memory_buffer
+    * range.
+    * @param offset (Optional) Byte offset from beginning of mapped region
+    *
+    */
+   void memory_buffer::writeToBuffer(void* data, VkDeviceSize size, VkDeviceSize offset) 
+   {
+
+      assert(m_pMap && "Cannot copy to unmapped memory_buffer");
+
+      if (size == VK_WHOLE_SIZE) 
+      {
+
+         memcpy(m_pMap, data, m_size);
+
+      }
+      else 
+      {
+
+         char* memOffset = (char*)m_pMap;
+
+         memOffset += offset;
+
+         memcpy(memOffset, data, size);
+
+      }
+
+   }
+
+
+   /**
+    * Flush a memory range of the memory_buffer to make it visible to the pgpucontext
+    *
+    * @note Only required for non-coherent memory
+    *
+    * @param size (Optional) Size of the memory range to flush. Pass VK_WHOLE_SIZE to flush the
+    * complete memory_buffer range.
+    * @param offset (Optional) Byte offset from beginning
+    *
+    * @return VkResult of the flush call
+    */
+   VkResult memory_buffer::flush(VkDeviceSize size, VkDeviceSize offset)
+   {
+      VkMappedMemoryRange mappedRange = {};
+      mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+      mappedRange.memory = m_vkdevicememory;
+      mappedRange.offset = offset;
+      mappedRange.size = size;
+      
+      ::cast < context > pcontext = m_pcontext;
+
+      return vkFlushMappedMemoryRanges(pcontext->logicalDevice(), 1, &mappedRange);
+
+   }
+
+   /**
+    * Invalidate a memory range of the memory_buffer to make it visible to the host
+    *
+    * @note Only required for non-coherent memory
+    *
+    * @param size (Optional) Size of the memory range to invalidate. Pass VK_WHOLE_SIZE to invalidate
+    * the complete memory_buffer range.
+    * @param offset (Optional) Byte offset from beginning
+    *
+    * @return VkResult of the invalidate call
+    */
+   VkResult memory_buffer::invalidate(VkDeviceSize size, VkDeviceSize offset) 
+   {
+      VkMappedMemoryRange mappedRange = {};
+      mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+      mappedRange.memory = m_vkdevicememory;
+      mappedRange.offset = offset;
+      mappedRange.size = size;
+      
+      ::cast < context > pcontext = m_pcontext;
+
+      return vkInvalidateMappedMemoryRanges(pcontext->logicalDevice(), 1, &mappedRange);
+
+   }
+
+   /**
+    * Create a memory_buffer info descriptor
+    *
+    * @param size (Optional) Size of the memory range of the descriptor
+    * @param offset (Optional) Byte offset from beginning
+    *
+    * @return VkDescriptorBufferInfo of specified offset and range
+    */
+   VkDescriptorBufferInfo memory_buffer::descriptorInfo(VkDeviceSize size, VkDeviceSize offset) {
+      return VkDescriptorBufferInfo{
+          m_vkbuffer,
+          offset,
+          size,
+      };
+   }
+
+   /**
+    * Copies "instanceSize" bytes of data to the mapped memory_buffer at an offset of index * alignmentSize
+    *
+    * @param data Pointer to the data to copy
+    * @param index Used in offset calculation
+    *
+    */
+   void memory_buffer::writeToIndex(void* data, int index) {
+      writeToBuffer(data, m_vkdevicesizeInstance, index * m_vkdevicesizeAlignment);
+   }
+
+   /**
+    *  Flush the memory range at index * alignmentSize of the memory_buffer to make it visible to the pgpucontext
+    *
+    * @param index Used in offset calculation
+    *
+    */
+   VkResult memory_buffer::flushIndex(int index) 
+   {
+      
+      return flush(m_vkdevicesizeAlignment, index * m_vkdevicesizeAlignment); 
+   
+   }
+
+   /**
+    * Create a memory_buffer info descriptor
+    *
+    * @param index Specifies the region given by index * alignmentSize
+    *
+    * @return VkDescriptorBufferInfo for m_vkinstance at index
+    */
+   VkDescriptorBufferInfo memory_buffer::descriptorInfoForIndex(int index) 
+   {
+
+      return descriptorInfo(m_vkdevicesizeAlignment, index * m_vkdevicesizeAlignment);
+
+   }
+
+   /**
+    * Invalidate a memory range of the memory_buffer to make it visible to the host
+    *
+    * @note Only required for non-coherent memory
+    *
+    * @param index Specifies the region to invalidate: index * alignmentSize
+    *
+    * @return VkResult of the invalidate call
+    */
+   VkResult memory_buffer::invalidateIndex(int index) 
+   {
+
+      return invalidate(m_vkdevicesizeAlignment, index * m_vkdevicesizeAlignment);
+
+   }
+
+
+   
    //void memory_buffer::assign(const void* pData, memsize size)
    //{
 
@@ -182,52 +457,51 @@ namespace gpu_vulkan
    //}
 
 
-   void* memory_buffer::_map(memsize start, memsize count)
-   {
+   //void* memory_buffer::__map(memsize start, memsize count)
+   //{
 
-      void * data;
+   //   void* data;
 
-      ::cast < context > pcontext = m_pcontext;
-
-      
-              vkMapMemory(
-            pcontext->logicalDevice(),
-            m_vkdevicememory,
-            start, 
-            count > 0 ? count : (m_size + count + 1),
-            0,
-            &data);
-
-              m_pMap = data;
-
-              return data;
-
-      
-   }
+   //   ::cast < context > pcontext = m_pcontext;
 
 
-   void memory_buffer::_unmap()
-   {
+   //   vkMapMemory(
+   //      pcontext->logicalDevice(),
+   //      m_vkdevicememory,
+   //      start,
+   //      count > 0 ? count : (m_size + count + 1),
+   //      0,
+   //      &data);
 
-      //if (!m_pMap)
-      //{
+   //   m_pMap = data;
 
-      //   return;
-
-      //}
-
-      ::cast < context > pcontext = m_pcontext;
-
-      vkUnmapMemory(pcontext->logicalDevice(), m_vkdevicememory);
+   //   return data;
 
 
-
-      //m_pMap = nullptr;
-
-   }
+   //}
 
 
-} // namespace gpu_vulkan
+   //void memory_buffer::__unmap()
+   //{
+
+   //   //if (!m_pMap)
+   //   //{
+
+   //   //   return;
+
+   //   //}
+
+   //   ::cast < context > pcontext = m_pcontext;
+
+   //   vkUnmapMemory(pcontext->logicalDevice(), m_vkdevicememory);
 
 
+
+   //   //m_pMap = nullptr;
+
+   //}
+
+
+
+}  // namespace graphics3d_vulkan
 

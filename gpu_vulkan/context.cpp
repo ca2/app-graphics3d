@@ -1,6 +1,5 @@
 #include "framework.h"
 #include "approach.h"
-#include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
@@ -2359,22 +2358,24 @@ namespace gpu_vulkan
       for (int i = 0; i < m_uboBuffers.size(); i++)
       {
 
-         m_uboBuffers[i] = __allocate buffer();
+         __defer_construct_new(m_uboBuffers[i]);
 
-         m_uboBuffers[i]->initialize_buffer(
+         m_uboBuffers[i]->_initialize_buffer(
             this,
             iGlobalUboSize,
             1,
             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
-         m_uboBuffers[i]->map();
+         m_uboBuffers[i]->map(0, m_uboBuffers[i]->m_size);
 
          auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
 
          descriptor_writer(*m_psetdescriptorlayoutGlobal, *m_pdescriptorpoolGlobal)
             .writeBuffer(0, &bufferInfo)
             .build(m_descriptorsetsGlobal[i]);
+
+         m_uboBuffers[i]->unmap();
 
       }
 
@@ -2402,9 +2403,13 @@ namespace gpu_vulkan
 
       }
 
+      m_uboBuffers[iFrameIndex]->map();
+
       m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
 
       m_uboBuffers[iFrameIndex]->flush();
+
+      m_uboBuffers[iFrameIndex]->unmap();
 
    }
 
@@ -2558,23 +2563,27 @@ namespace gpu_vulkan
       pcommandbuffer->set_scissor(m_rectangle.size());
 
 
-      // 2. Clear
-      VkClearColorValue clearColor = { .float32 = { 0.0f, 0.0f, 0.0f, 0.0f } };
-      VkImageSubresourceRange range = {
-          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-          .baseMipLevel = 0,
-          .levelCount = 1,
-          .baseArrayLayer = 0,
-          .layerCount = 1,
-      };
+      {
 
-      vkCmdClearColorImage(
-         vkcommandbuffer,
-         ptextureDst->m_vkimage,
-         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-         &clearColor,
-         1,
-         &range);
+         // 2. Clear
+         VkClearColorValue clearColor = { .float32 = { 0.0f, 0.0f, 0.0f, 0.0f } };
+         VkImageSubresourceRange range = {
+             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+             .baseMipLevel = 0,
+             .levelCount = 1,
+             .baseArrayLayer = 0,
+             .layerCount = 1,
+         };
+
+         vkCmdClearColorImage(
+            vkcommandbuffer,
+            ptextureDst->m_vkimage,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            &clearColor,
+            1,
+            &range);
+
+      }
 
 
       ////float clearColor[4] = { 0.95f * 0.5f, 0.95f * 0.5f, 0.25f * 0.5f, 0.5f }; // Clear to transparent
@@ -2654,6 +2663,29 @@ namespace gpu_vulkan
 
                pcommandbuffer->set_scissor(ptextureSrc->m_rectangleTarget);
 
+               //{
+
+               //   // 2. Clear
+               //   VkClearColorValue clearColor = { .float32 = { 0.95f * 0.5f, 0.95f * 0.5f, 0.50f * 0.5f, 0.5f } };
+               //   VkImageSubresourceRange range = {
+               //       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+               //       .baseMipLevel = 0,
+               //       .levelCount = 1,
+               //       .baseArrayLayer = 0,
+               //       .layerCount = 1,
+               //   };
+
+               //   vkCmdClearColorImage(
+               //      vkcommandbuffer,
+               //      ptextureDst->m_vkimage,
+               //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+               //      &clearColor,
+               //      1,
+               //      &range);
+
+               //}
+
+
                //ID3D11SamplerState* samplerstatea[] =
                //{ ptexture->m_psamplerstate };
                //ID3D11ShaderResourceView* sharedresourceviewa[] =
@@ -2693,8 +2725,12 @@ namespace gpu_vulkan
 
                //pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
                vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
+
+
                m_pshaderBlend3->unbind();
+
             }
+
             iLayer++;
 
          }
@@ -2824,6 +2860,18 @@ namespace gpu_vulkan
 
    }
 
+   VkFormat context::findDepthFormat()
+   {
+
+      return m_pgpudevice->m_pphysicaldevice->findSupportedFormat(
+         { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+         VK_IMAGE_TILING_OPTIMAL,
+         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+
+   }
+
+
+
 
    ::memory context::rectangle_shader_vert()
    {
@@ -2848,7 +2896,7 @@ namespace gpu_vulkan
 
    }
 
-  
+
    //void context::initialize_rectangle_shader(::gpu::shader* pshader)
    //{
 

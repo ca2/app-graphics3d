@@ -11,6 +11,7 @@
 #include "acme/filesystem/filesystem/path_system.h"
 #include "aura/platform/application.h"
 #include "bred/user/user/graphics3d.h"
+#include "bred/gpu/model_buffer.h"
 #include "gpu_directx12/buffer.h"
 #include "gpu_directx12/context.h"
 #include "gpu_directx12/renderer.h"
@@ -112,7 +113,9 @@ namespace graphics3d_directx12
       memcpy(data, vertices.data(), vertexBufferSize);
       m_presourceVertexBufferUpload->Unmap(0, nullptr);
 
-      auto pcommandlist = m_pcommandbufferLoading->m_pcommandlist;
+      ::cast < ::gpu_directx12::command_buffer > pcommandbufferLoading = m_pcommandbufferLoading;
+
+      auto pcommandlist = pcommandbufferLoading->m_pcommandlist;
 
       pcommandlist->CopyBufferRegion(m_presourceVertexBufferGPU, 0, m_presourceVertexBufferUpload, 0, vertexBufferSize);
 
@@ -126,11 +129,11 @@ namespace graphics3d_directx12
    void model::createIndexBuffers(const ::array<uint32_t>& indices)
    {
 
-      indexCount = static_cast<uint32_t>(indices.size());
+      m_iIndexCount = static_cast<uint32_t>(indices.size());
 
-      hasIndexBuffer = indexCount > 0;
+      // hasIndexBuffer = indexCount > 0;
 
-      if (hasIndexBuffer)
+      if (m_iIndexCount > 0)
       {
 
          auto indexBufferSize = (UINT) indices.get_size_in_bytes();
@@ -158,9 +161,11 @@ namespace graphics3d_directx12
          memcpy(data, indices.data(), indexBufferSize);
          m_presourceIndexBufferUpload->Unmap(0, nullptr);
 
-         auto pcommandlist = m_pcommandbufferLoading->m_pcommandlist;
+         ::cast < ::gpu_directx12::command_buffer> pcommandbufferLoading = m_pcommandbufferLoading;
 
-         pcommandlist->CopyBufferRegion(m_presourceIndexBufferGPU, 0, m_presourceIndexBufferUpload, 0, indexBufferSize);
+         auto pcommandlistLoading = pcommandbufferLoading->m_pcommandlist;
+
+         pcommandlistLoading->CopyBufferRegion(m_presourceIndexBufferGPU, 0, m_presourceIndexBufferUpload, 0, indexBufferSize);
 
          m_indexbufferview.BufferLocation = m_presourceIndexBufferGPU->GetGPUVirtualAddress();
          m_indexbufferview.Format = DXGI_FORMAT_R32_UINT;
@@ -178,6 +183,8 @@ namespace graphics3d_directx12
 
       if (pcommandbufferLoading)
       {
+
+         ::cast < ::gpu_directx12::command_buffer> pcommandbufferLoading = m_pcommandbufferLoading;   
 
          if (!pcommandbufferLoading->has_finished())
          {
@@ -205,7 +212,7 @@ namespace graphics3d_directx12
 
          m_bNew = false;
 
-         if (hasIndexBuffer)
+         if (m_iIndexCount > 0)
          {
 
             D3D12_RESOURCE_BARRIER barrier = {};
@@ -242,7 +249,7 @@ namespace graphics3d_directx12
 
       pcommandlist->IASetVertexBuffers(0, 1, &m_vertexbufferview);
 
-      if (hasIndexBuffer)
+      if (m_iIndexCount > 0)
       {
 
          pcommandlist->IASetIndexBuffer(&m_indexbufferview);
@@ -258,7 +265,9 @@ namespace graphics3d_directx12
       if (m_pcommandbufferLoading)
       {
 
-         if (!m_pcommandbufferLoading->has_finished())
+         ::cast <::gpu_directx12::command_buffer> pcommandbufferLoading = m_pcommandbufferLoading;
+
+         if (!pcommandbufferLoading->has_finished())
          {
 
             return;
@@ -285,12 +294,12 @@ namespace graphics3d_directx12
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      if (hasIndexBuffer)
+      if (m_iIndexCount > 0)
       {
 
          //   vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
          pcommandlist->DrawIndexedInstanced(
-            indexCount,        // Number of indices to draw
+            m_iIndexCount,        // Number of indices to draw
             1,
             0,                 // Start index location in the index buffer
             0,                  // Base vertex location (added to each index)
@@ -303,7 +312,7 @@ namespace graphics3d_directx12
       
          //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
          pcommandlist->DrawInstanced(
-            vertexCount,       // Number of vertices to draw
+            m_iVertexCount,       // Number of vertices to draw
             1,
             0,                  // Start vertex location
             0

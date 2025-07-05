@@ -101,7 +101,19 @@ namespace gpu_vulkan
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
       );
 
+      ::cast < texture > ptextureDepth = ptextureCurrent->m_ptextureDepth;
 
+      if(ptextureDepth)
+      {
+
+         ptextureDepth->_new_state(
+            pcommandbuffer,
+            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+            VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
+         );
+
+      }
 
    }
 
@@ -284,10 +296,16 @@ namespace gpu_vulkan
          viewInfo.subresourceRange.baseArrayLayer = 0;
          viewInfo.subresourceRange.layerCount = 1;
 
-         if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &m_imageviews[i]) !=
+         if (vkCreateImageView(
+            pcontext->logicalDevice(), 
+            &viewInfo, 
+            nullptr, 
+            &m_imageviews[i]) !=
             VK_SUCCESS) 
          {
+
             throw ::exception(error_failed,"failed to create texture image view!");
+
          }
 
       }
@@ -345,7 +363,6 @@ namespace gpu_vulkan
       dependency.srcStageMask =
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
-
       VkAttachmentDescription attachments[2] = {colorAttachment, depthAttachment};
       VkRenderPassCreateInfo renderPassInfo = {};
       renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -378,15 +395,34 @@ namespace gpu_vulkan
 
          VkImageView imageView = m_imageviews[i];
 
-         VkImageView depthImageView = depthImageViews[i];
+         VkImageView attachments[2];
 
-         VkImageView attachments[2] = {imageView, depthImageView};
+         attachments[0] = imageView;
+
+         int iAttachmentCount;
+
+         if (m_bWithDepth)
+         {
+
+            VkImageView depthImageView = depthImageViews[i];
+
+            attachments[1] = depthImageView;
+
+            iAttachmentCount = 2;
+
+         }
+         else
+         {
+
+            iAttachmentCount = 1;
+
+         }
 
          VkExtent2D extent = getExtent();
          VkFramebufferCreateInfo framebufferInfo = {};
          framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
          framebufferInfo.renderPass = m_vkrenderpass;
-         framebufferInfo.attachmentCount = 2;
+         framebufferInfo.attachmentCount = iAttachmentCount;
          framebufferInfo.pAttachments = attachments;
          framebufferInfo.width = extent.width;
          framebufferInfo.height = extent.height;
@@ -405,6 +441,8 @@ namespace gpu_vulkan
 
          }
 
+         debug() << "created framebuffer " << i << " with image view " << imageView;
+
       }
 
    }
@@ -412,6 +450,13 @@ namespace gpu_vulkan
 
    void render_pass::createDepthResources()
    {
+
+      if (!m_bWithDepth)
+      {
+
+         return;
+
+      }
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 

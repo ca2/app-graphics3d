@@ -20,8 +20,8 @@
 
 
 // std
-#include <memory>
-#include <vector>
+//#include <memory>
+//#include <vector>
 
 namespace graphics3d_directx12
 {
@@ -34,20 +34,19 @@ namespace graphics3d_directx12
 
 
 
-      bool m_bNew = true;
-      bool hasIndexBuffer = false;
+      ///bool m_bNew = true;
+      //sbool hasIndexBuffer = false;
 
 
       //::pointer < ::gpu_directx12::context > m_pgpucontext;
 
 
       //::pointer<::gpu_directx12::buffer> m_pbufferVertex;
-      uint32_t vertexCount;
+      //uint32_t vertexCount;
 
       //::pointer<::gpu_directx12::buffer> m_pbufferIndex;
-      uint32_t indexCount;
+      //uint32_t indexCount;
 
-      ::pointer < ::gpu_directx12::command_buffer > m_pcommandbufferLoading;
       //// Triangle vertex data
       //struct Vertex { float x, y, z; float r, g, b, a; };
       //Vertex triangle[] = {

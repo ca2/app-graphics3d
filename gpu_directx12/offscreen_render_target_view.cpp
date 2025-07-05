@@ -155,7 +155,7 @@ namespace gpu_directx12
 
             m_texturea[i]->m_bRenderTarget = true;
 
-            m_texturea[i]->initialize_gpu_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
+            m_texturea[i]->initialize_image_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size(), m_bWithDepth);
 
             ////if (bCreateRenderTargetView)
             //{

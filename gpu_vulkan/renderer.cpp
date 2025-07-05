@@ -106,6 +106,7 @@ namespace gpu_vulkan
 
 
 
+
    void renderer::initialize_gpu_renderer(::gpu::context* pgpucontext)
    {
 
@@ -547,7 +548,7 @@ namespace gpu_vulkan
 
          auto& pcommandbuffer = m_commandbuffera[i];
 
-         __defer_construct_new(pcommandbuffer);
+         __defer_construct(pcommandbuffer);
 
          pcommandbuffer->initialize_command_buffer(m_pgpurendertarget);
 
@@ -701,6 +702,8 @@ namespace gpu_vulkan
    }
 
 
+
+
    void renderer::cpu_buffer_sampler::clear()
    {
 
@@ -741,8 +744,9 @@ namespace gpu_vulkan
       ptexture->m_bTransferDst = true;
       ptexture->m_bCpuRead = true;
 
-      ptexture->initialize_gpu_texture(m_pcontext->get_gpu_renderer(),
-         ::int_rectangle(size));
+      ptexture->initialize_image_texture(m_pcontext->get_gpu_renderer(),
+         ::int_rectangle(size), 
+         m_prenderer->m_pgpurendertarget->m_bWithDepth);
 
       //m_vkextent2d.width = vkextent2d.width;
       //m_vkextent2d.height = vkextent2d.height;
@@ -968,7 +972,7 @@ namespace gpu_vulkan
       {
 
          VkClearColorValue clearColor = {
-             .float32 = { 0.0f, 0.5f, 0.0f, 0.5f }  // R, G, B, A
+             .float32 = { 0.5f, 0.0f, 0.5f, 0.5f }  // R, G, B, A
          };
 
          VkImageSubresourceRange subresourceRange = {
@@ -3035,7 +3039,7 @@ namespace gpu_vulkan
       //     NULL                                // Dynamic offsets
       //  );
 
-pmodelbuffer->bind(pcommandbuffer);
+      pmodelbuffer->bind(pcommandbuffer);
 
       //VkDeviceSize offsets[] = { 0 };
       //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, offsets);
@@ -3180,9 +3184,10 @@ pmodelbuffer->bind(pcommandbuffer);
 
       auto pcommandbuffer = pframe->m_pcommandbuffer;
 
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
-         ::cast < context > pcontextMain = m_pgpucontext->m_pgpudevice->m_pgpucontextMain;
+         ::cast < context > pcontextMain = m_pgpucontext->m_pgpudevice->main_context();
 
          ::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontextMain->get_swap_chain();
 
@@ -3201,6 +3206,74 @@ pmodelbuffer->bind(pcommandbuffer);
       //   get_frame_count();
 
       ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+
+      ::cast < texture > ptexture = pgpurenderpass->current_texture();
+
+      {
+
+         ptexture->_new_state(
+            pcommandbuffer,
+            VK_ACCESS_TRANSFER_WRITE_BIT,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT
+         );
+
+         VkClearColorValue clearColor = { .float32 = { 0.0f, 0.0f, 0.0f, 0.0f } };
+
+         VkImageSubresourceRange range = {
+             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+             .baseMipLevel = 0,
+             .levelCount = 1,
+             .baseArrayLayer = 0,
+             .layerCount = 1,
+         };
+         vkCmdClearColorImage(pcommandbuffer->m_vkcommandbuffer,
+            ptexture->m_vkimage,
+            ptexture->m_vkimagelayout,
+            &clearColor,
+            1, // rangeCount
+            &range
+         );
+
+      }
+
+      ::cast < texture > ptextureDepth = ptexture->m_ptextureDepth;
+
+      if(ptextureDepth)
+      {
+
+         ptextureDepth->get_depth_image();
+
+         ptextureDepth->_new_state(
+            pcommandbuffer,
+            VK_ACCESS_TRANSFER_WRITE_BIT,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT
+         );
+         
+         VkClearDepthStencilValue clearValue = {
+            .depth = 1.0f,
+            .stencil = 0
+         };
+
+         VkImageSubresourceRange range = {
+             .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+             .baseMipLevel = 0,
+             .levelCount = 1,
+             .baseArrayLayer = 0,
+             .layerCount = 1
+         };
+
+         vkCmdClearDepthStencilImage(
+            pcommandbuffer->m_vkcommandbuffer,
+            ptextureDepth->m_vkimage,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,  // Must be in a writable layout
+            &clearValue,
+            1,
+            &range
+         );
+
+      }
 
       pgpurenderpass->on_before_begin_render(pframe);
 
@@ -3301,6 +3374,122 @@ pmodelbuffer->bind(pcommandbuffer);
          //"Can't end render pass on command buffer from a different frame");
       //vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
+      //{
+
+      //   ::cast < texture > ptexture = m_pgpurendertarget->current_texture();
+
+      //   VkClearColorValue clearColor = {
+      //         .float32 = { 0.5f, 0.0f, 0.5f, 0.5f }  // R, G, B, A
+      //   };
+
+      //   VkImageSubresourceRange subresourceRange = {
+      //       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //       .baseMipLevel = 0,
+      //       .levelCount = 1,
+      //       .baseArrayLayer = 0,
+      //       .layerCount = 1,
+      //   };
+
+      //   vkCmdClearColorImage(
+      //      pcommandbuffer->m_vkcommandbuffer,
+      //      ptexture->m_vkimage,
+      //      ptexture->m_vkimagelayout,
+      //      &clearColor,
+      //      1,
+      //      &subresourceRange
+      //   );
+
+      //}
+
+      //{
+
+      //   {
+
+      //      if (m_pgpucontext->m_pgpudevice->m_iLayer == 0)
+      //      {
+
+      //         VkClearAttachment clearAttachment = {
+      //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //            .colorAttachment = 0,
+      //            .clearValue={.color = {0.5f, 0.0f, 0.0f, 0.5f}} // Red
+      //         };
+
+      //         VkClearRect clearRect = {
+      //             .rect = {
+      //                 .offset = {100, 100},
+      //                 .extent = {100, 100}
+      //             },
+      //             .baseArrayLayer = 0,
+      //             .layerCount = 1
+      //         };
+
+      //         vkCmdClearAttachments(
+      //            pcommandbuffer->m_vkcommandbuffer,
+      //            1,
+      //            &clearAttachment,
+      //            1,
+      //            &clearRect);
+
+      //      }
+      //      else if (m_pgpucontext->m_pgpudevice->m_iLayer == 1)
+      //      {
+
+      //         VkClearAttachment clearAttachment = {
+      //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //            .colorAttachment = 0,
+      //            .clearValue = {.color = {0.0f, 0.5f, 0.0f, 0.5f} } // Green
+      //         };
+
+      //         VkClearRect clearRect = {
+      //             .rect = {
+      //                 .offset = {200, 100},
+      //                 .extent = {100, 100}
+      //             },
+      //             .baseArrayLayer = 0,
+      //             .layerCount = 1
+      //         };
+
+      //         vkCmdClearAttachments(
+      //            pcommandbuffer->m_vkcommandbuffer,
+      //            1,
+      //            &clearAttachment,
+      //            1,
+      //            &clearRect);
+
+
+      //      }
+      //      else if (m_pgpucontext->m_pgpudevice->m_iLayer == 2)
+      //      {
+
+      //         VkClearAttachment clearAttachment = {
+      //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //            .colorAttachment = 0,
+      //            .clearValue = {.color = {0.0f, 0.0f, 0.5f, 0.5f} } // Blue
+      //         };
+
+      //         VkClearRect clearRect = {
+      //             .rect = {
+      //                 .offset = {200, 100},
+      //                 .extent = {100, 100}
+      //             },
+      //             .baseArrayLayer = 0,
+      //             .layerCount = 1
+      //         };
+
+      //         vkCmdClearAttachments(
+      //            pcommandbuffer->m_vkcommandbuffer,
+      //            1,
+      //            &clearAttachment,
+      //            1,
+      //            &clearRect);
+
+      //      }
+  
+      //   }
+
+      //}
+
+
       gpu::renderer::on_end_render(pframe);
 
       if (m_iSentLayerCount > 0)
@@ -3344,6 +3533,13 @@ pmodelbuffer->bind(pcommandbuffer);
    {
 
       //defer_layout();
+
+      if (m_commandbuffera.is_empty())
+      {
+
+         create_command_buffers();
+
+      }
 
       ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
 
@@ -3526,41 +3722,41 @@ pmodelbuffer->bind(pcommandbuffer);
          sample();
 
       }
-         //else if (m_eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
-      //{
+      //else if (m_eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
+   //{
 
-      //	resolve_color_and_alpha_accumulation_buffers();
+   //	resolve_color_and_alpha_accumulation_buffers();
 
-      //}
+   //}
 
-      //rrentImageIndex = pgpurenderpass->currentFrame;
-      //currentFrameIndex = (currentFrameIndex + 1) % ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT;
+   //rrentImageIndex = pgpurenderpass->currentFrame;
+   //currentFrameIndex = (currentFrameIndex + 1) % ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT;
 
-      //}
-      //else
-      //{
+   //}
+   //else
+   //{
 
 
-      //	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-      //	auto pcommandbuffer = getCurrentCommandBuffer();
-      //	if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
-      //		throw ::exception(error_failed, "failed to record command buffer!");
-      //	}
-      //	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &m_uCurrentSwapChainImage);
-      //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-      //	//	vkcWindow.wasWindowResized()) 
-      //	//{
-      //	//	vkcWindow.resetWindowResizedFlag();
-      //	//	recreateSwapchain();
-      //	//}
-      //	//else 
-      //	//	if (result != VK_SUCCESS) {
-      //	//	throw ::exception(error_failed, "failed to present swap chain image!");
-      //	//}
-      //	isFrameStarted = false;
-      //	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT;
+   //	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
+   //	auto pcommandbuffer = getCurrentCommandBuffer();
+   //	if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
+   //		throw ::exception(error_failed, "failed to record command buffer!");
+   //	}
+   //	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &m_uCurrentSwapChainImage);
+   //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+   //	//	vkcWindow.wasWindowResized()) 
+   //	//{
+   //	//	vkcWindow.resetWindowResizedFlag();
+   //	//	recreateSwapchain();
+   //	//}
+   //	//else 
+   //	//	if (result != VK_SUCCESS) {
+   //	//	throw ::exception(error_failed, "failed to present swap chain image!");
+   //	//}
+   //	isFrameStarted = false;
+   //	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT;
 
-      //}
+   //}
 
 
    }
@@ -3624,6 +3820,7 @@ pmodelbuffer->bind(pcommandbuffer);
          };
 
          ptexture->m_vkaccessflags = VK_ACCESS_SHADER_READ_BIT;
+
          ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
          vkCmdPipelineBarrier(
@@ -3635,7 +3832,9 @@ pmodelbuffer->bind(pcommandbuffer);
             0, NULL,
             1, &barrier
          );
+
          ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+
          m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
       }
@@ -3700,7 +3899,9 @@ pmodelbuffer->bind(pcommandbuffer);
             0, NULL,
             1, &barrier
          );
+
          ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
          m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
       }

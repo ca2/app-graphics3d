@@ -2,8 +2,8 @@
 // camilo on 2025-05-27 04:54 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "approach.h"
-#include "buffer.h"
 #include "device.h"
+#include "memory_buffer.h"
 #include "physical_device.h"
 #include "program.h"
 #include "renderer.h"
@@ -26,15 +26,16 @@ namespace gpu_vulkan
 
    device::device()
    {
+
       //m_vksampler001 = nullptr;
       //m_bOffscreen = true;
       //      m_emode = e_mode_none;
-            //m_itaskGpu = 0;
-            //m_iLastBitmap1Scan = -1;
+      //m_itaskGpu = 0;
+      //m_iLastBitmap1Scan = -1;
 
-            //m_gluTextureBitmap1 = 0;
-            //m_VAO = 0;
-            //m_VBO = 0;
+      //m_gluTextureBitmap1 = 0;
+      //m_VAO = 0;
+      //m_VBO = 0;
 
       m_bMesa = false;
 
@@ -49,8 +50,6 @@ namespace gpu_vulkan
 
       //m_vkqueuePresent = nullptr;
       //m_vkqueueGraphics = nullptr;
-
-
 
    }
 

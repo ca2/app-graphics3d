@@ -30,8 +30,8 @@ namespace gpu_vulkan
 
       ::cast <context> pcontext = pgpurenderer->m_pgpucontext;
 
-
       VkSemaphoreCreateInfo semaphoreInfo = {};
+
       semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
       if (vkCreateSemaphore(pcontext->logicalDevice(),

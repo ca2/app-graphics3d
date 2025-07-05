@@ -46,7 +46,7 @@ namespace gpu_vulkan
 
    class descriptor_pool;
 
-   class buffer;
+   class memory_buffer;
 
    class set_descriptor_layout;
 

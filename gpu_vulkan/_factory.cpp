@@ -1,5 +1,6 @@
 #include "framework.h"
 #include "approach.h"
+#include "command_buffer.h"
 #include "program.h"
 #include "shader.h"
 #include "cpu_buffer.h"
@@ -40,8 +41,10 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item < ::gpu_vulkan::input_layout, ::gpu::input_layout >();
    pfactory->add_factory_item < ::gpu_vulkan::layer, ::gpu::layer >();
+   pfactory->add_factory_item < ::gpu_vulkan::command_buffer, ::gpu::command_buffer >();
 
-   pfactory->add_factory_item < ::gpu_vulkan::model_buffer >();
+   pfactory->add_factory_item < ::gpu_vulkan::memory_buffer, ::gpu::memory_buffer >();
+   pfactory->add_factory_item < ::gpu_vulkan::model_buffer, ::gpu::model_buffer > ();
 
    
 

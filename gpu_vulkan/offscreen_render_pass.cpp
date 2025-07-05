@@ -433,9 +433,13 @@ namespace gpu_vulkan
 
          __defer_construct(pgputexture);
 
-         pgputexture->initialize_gpu_texture(m_pgpurenderer, m_size);
+         pgputexture->initialize_image_texture(m_pgpurenderer, m_size, m_bWithDepth);
 
-         //::cast < texture > ptexture = pgputexture;
+         ::cast < texture > ptexture = pgputexture;
+
+         auto vkimage = ptexture->m_vkimage;
+
+         debug() << "here";
 
          //pcontext->createImageWithInfo(
          //   imagecreateinfo,
@@ -640,27 +644,44 @@ namespace gpu_vulkan
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
       VkAttachmentDescription depthAttachment{};
-      depthAttachment.format = findDepthFormat();
-      depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-      depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-      depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-      depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
       VkAttachmentReference depthAttachmentRef{};
-      depthAttachmentRef.attachment = 1;
-      depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+      int iAttachmentCount;
+
+      if (m_bWithDepth)
+      {
+
+         depthAttachment.format = findDepthFormat();
+         depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+         //depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+         depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+         depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+         depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+         //depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+         depthAttachment.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+         depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+         depthAttachmentRef.attachment = 1;
+         depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+         iAttachmentCount = 2;
+      }
+      else
+      {
+         iAttachmentCount = 1;
+
+      }
+
 
       VkAttachmentDescription colorAttachment = {};
       colorAttachment.format = pcontext->m_formatImageDefault;
       colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      //colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
       colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
       colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
       colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      //colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
       //colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
       colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
@@ -672,7 +693,10 @@ namespace gpu_vulkan
       subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
       subpass.colorAttachmentCount = 1;
       subpass.pColorAttachments = &colorAttachmentRef;
-      subpass.pDepthStencilAttachment = &depthAttachmentRef;
+      if(m_bWithDepth)
+      {
+         subpass.pDepthStencilAttachment = &depthAttachmentRef;
+      }
 
       //VkSubpassDependency dependencies[1] = {};
 
@@ -705,7 +729,7 @@ namespace gpu_vulkan
       VkAttachmentDescription attachments[2] = {colorAttachment, depthAttachment};
       VkRenderPassCreateInfo renderPassInfo = {};
       renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-      renderPassInfo.attachmentCount = 2;
+      renderPassInfo.attachmentCount = iAttachmentCount;
       renderPassInfo.pAttachments = attachments;
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;

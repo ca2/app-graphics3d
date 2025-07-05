@@ -13,6 +13,12 @@ namespace gpu_vulkan
    class CLASS_DECL_GPU_VULKAN texture :
       virtual public ::gpu::texture
    {
+   protected:
+
+
+      texture* _get_depth_texture();
+
+
    public:
 
 
@@ -36,14 +42,18 @@ namespace gpu_vulkan
       VkImageLayout              m_vkimagelayout;
       VkAccessFlags              m_vkaccessflags;
       VkPipelineStageFlags       m_vkpipelinestageflags;
+      //VkImage                    m_vkimageDepth;
+      //VkDeviceMemory             m_vkdevicememoryDepth;
       VkImageView                m_vkimageview;
-
+      //VkImageView                m_vkimageviewDepth;
+      map<VkRenderPass, VkFramebuffer >             m_mapFramebuffer;
+      ::pointer < texture >      m_ptextureDepth;    
       
       texture();
       ~texture() override;
 
 
-      void initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangleTarget);
+      void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth);
 
       //void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
 
@@ -52,9 +62,17 @@ namespace gpu_vulkan
          VkImageLayout newLayout,
          VkPipelineStageFlags pipelineStageFlags);
 
-      void create_image_view();
+      VkImageView get_image();
 
-      VkFramebuffer create_framebuffer(VkRenderPass renderpass);
+      VkImageView get_image_view();
+
+      VkImage get_depth_image();
+
+      VkImageView get_depth_image_view();
+
+      VkFramebuffer get_framebuffer(VkRenderPass vkrenderpass);
+
+      // VkFramebuffer create_framebuffer(VkRenderPass renderpass);
 
    };
 

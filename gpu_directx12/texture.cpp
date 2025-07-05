@@ -26,7 +26,7 @@ namespace gpu_directx12
    }
 
 
-   void texture::initialize_gpu_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangleTarget) //, bool bCreateRenderTargetView, bool bCreateShaderResourceView)
+   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangleTarget, bool bWithDepth)
    {
 
       auto size = m_rectangleTarget.size();
@@ -34,7 +34,7 @@ namespace gpu_directx12
       if (rectangleTarget != m_rectangleTarget)
       {
 
-         ::gpu::texture::initialize_gpu_texture(prenderer, rectangleTarget);
+         ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth);
 
       }
 

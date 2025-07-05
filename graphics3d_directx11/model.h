@@ -5,8 +5,7 @@
 
 
 #include "bred/graphics3d/model.h"
-
-
+//#include "gpu_directx11/model_buffer.h"
 //#include "context.h"
 #include "buffer.h"
 
@@ -17,9 +16,9 @@
 #include <glm/glm.hpp>
 
 
-// std
-#include <memory>
-#include <vector>
+//// std
+//#include <memory>
+//#include <vector>
 
 namespace graphics3d_directx11
 {
@@ -31,15 +30,15 @@ namespace graphics3d_directx11
    public:
 
 
-      bool hasIndexBuffer = false;
-      //::pointer < ::gpu_directx11::context > m_pgpucontext;
+      //bool hasIndexBuffer = false;
+      ////::pointer < ::gpu_directx11::context > m_pgpucontext;
 
 
-      //::pointer<::gpu_directx11::buffer> m_pbufferVertex;
-      uint32_t vertexCount;
+      ////::pointer<::gpu_directx11::buffer> m_pbufferVertex;
+      //uint32_t vertexCount;
 
-      //::pointer<::gpu_directx11::buffer> m_pbufferIndex;
-      uint32_t indexCount;
+      ////::pointer<::gpu_directx11::buffer> m_pbufferIndex;
+      //uint32_t indexCount;
 
 
       //// Triangle vertex data
