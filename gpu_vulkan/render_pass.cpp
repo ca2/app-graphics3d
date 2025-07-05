@@ -23,23 +23,23 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      for (auto imageView : m_imageviews) 
-      {
-         vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
-      }
-      m_imageviews.clear();
+      //for (auto imageView : m_imageviews) 
+      //{
+        // vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
+      //}
+      //m_imageviews.clear();
 
       //if (swapChain != nullptr) {
       //   vkDestroySwapchainKHR(m_pgpucontext->logicalDevice(), swapChain, nullptr);
       //   swapChain = nullptr;
       //}
 
-      for (int i = 0; i < depthImages.size(); i++) 
-      {
-         vkDestroyImageView(pcontext->logicalDevice(), depthImageViews[i], nullptr);
-         vkDestroyImage(pcontext->logicalDevice(), depthImages[i], nullptr);
-         vkFreeMemory(pcontext->logicalDevice(), depthImageMemorys[i], nullptr);
-      }
+      //for (int i = 0; i < depthImages.size(); i++) 
+      //{
+      //   vkDestroyImageView(pcontext->logicalDevice(), depthImageViews[i], nullptr);
+      //   vkDestroyImage(pcontext->logicalDevice(), depthImages[i], nullptr);
+      //   vkFreeMemory(pcontext->logicalDevice(), depthImageMemorys[i], nullptr);
+      //}
 
       for (auto framebuffer : m_framebuffers)
       {
@@ -83,6 +83,58 @@ namespace gpu_vulkan
       createSyncObjects();
       // Cleans up old swap chain since it's no longer needed after resizing
       //m_pvkcrenderpassOld = nullptr;
+
+   }
+
+
+   VkImageView render_pass::getImageView(int index)
+   { 
+
+      ::cast < texture > ptexture = m_texturea[index];
+
+      if(!ptexture)
+      {
+         
+         throw ::exception(error_wrong_state, "No texture at index");
+
+      }
+
+      auto imageview = ptexture->get_image_view();
+
+      if(!imageview)
+      {
+         
+         throw ::exception(error_wrong_state, "No image view at index");
+
+      }
+      
+      return imageview; 
+   
+   }
+
+
+   VkImageView render_pass::getDepthImageView(int index)
+   {
+
+      ::cast < texture > ptexture = m_texturea[index];
+
+      if (!ptexture)
+      {
+
+         throw ::exception(error_wrong_state, "No texture at index");
+
+      }
+
+      auto imageview = ptexture->get_depth_image_view();
+
+      if (!imageview)
+      {
+
+         throw ::exception(error_wrong_state, "No depth image view at index");
+
+      }
+
+      return imageview;
 
    }
 
@@ -278,35 +330,37 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      m_imageviews.resize(m_texturea.size());
+      //m_imageviews.resize(m_texturea.size());
 
       for (::collection::index i = 0; i < m_texturea.size(); i++) 
       {
 
          ::cast < texture > ptexture = m_texturea[i];
 
-         VkImageViewCreateInfo viewInfo{};
-         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-         viewInfo.image = ptexture->m_vkimage;
-         viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-         viewInfo.format = pcontext->m_formatImageDefault;
-         viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-         viewInfo.subresourceRange.baseMipLevel = 0;
-         viewInfo.subresourceRange.levelCount = 1;
-         viewInfo.subresourceRange.baseArrayLayer = 0;
-         viewInfo.subresourceRange.layerCount = 1;
+         ptexture->get_image_view();
 
-         if (vkCreateImageView(
-            pcontext->logicalDevice(), 
-            &viewInfo, 
-            nullptr, 
-            &m_imageviews[i]) !=
-            VK_SUCCESS) 
-         {
+         //VkImageViewCreateInfo viewInfo{};
+         //viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+         //viewInfo.image = ptexture->m_vkimage;
+         //viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+         //viewInfo.format = pcontext->m_formatImageDefault;
+         //viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+         //viewInfo.subresourceRange.baseMipLevel = 0;
+         //viewInfo.subresourceRange.levelCount = 1;
+         //viewInfo.subresourceRange.baseArrayLayer = 0;
+         //viewInfo.subresourceRange.layerCount = 1;
 
-            throw ::exception(error_failed,"failed to create texture image view!");
+         //if (vkCreateImageView(
+         //   pcontext->logicalDevice(), 
+         //   &viewInfo, 
+         //   nullptr, 
+         //   &m_imageviews[i]) !=
+         //   VK_SUCCESS) 
+         //{
 
-         }
+         //   throw ::exception(error_failed,"failed to create texture image view!");
+
+         //}
 
       }
 
@@ -393,7 +447,7 @@ namespace gpu_vulkan
       for (size_t i = 0; i < imageCount(); i++) 
       {
 
-         VkImageView imageView = m_imageviews[i];
+         VkImageView imageView = getImageView(i);
 
          VkImageView attachments[2];
 
@@ -404,7 +458,7 @@ namespace gpu_vulkan
          if (m_bWithDepth)
          {
 
-            VkImageView depthImageView = depthImageViews[i];
+            VkImageView depthImageView = getDepthImageView(i);
 
             attachments[1] = depthImageView;
 
@@ -466,56 +520,60 @@ namespace gpu_vulkan
 
       VkExtent2D extent = getExtent();
 
-      depthImages.resize(imageCount());
-      depthImageMemorys.resize(imageCount());
-      depthImageViews.resize(imageCount());
+      //depthImages.resize(imageCount());
+      //depthImageMemorys.resize(imageCount());
+      //depthImageViews.resize(imageCount());
 
-      for (int i = 0; i < depthImages.size(); i++) 
+      auto iImageCount = imageCount();
+
+      //for (int i = 0; i < depthImages.size(); i++) 
+      for (int i = 0; i < iImageCount; i++)
       {
+         getDepthImageView(i); // Ensure depth image view is created
+         //VkImageCreateInfo imageInfo{};
+         //imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+         //imageInfo.imageType = VK_IMAGE_TYPE_2D;
+         //imageInfo.extent.width = extent.width;
+         //imageInfo.extent.height = extent.height;
+         //imageInfo.extent.depth = 1;
+         //imageInfo.mipLevels = 1;
+         //imageInfo.arrayLayers = 1;
+         //imageInfo.format = depthFormat;
+         //imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+         //imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+         //imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
+         //   VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+         //imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+         //imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+         //imageInfo.flags = 0;
 
-         VkImageCreateInfo imageInfo{};
-         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-         imageInfo.imageType = VK_IMAGE_TYPE_2D;
-         imageInfo.extent.width = extent.width;
-         imageInfo.extent.height = extent.height;
-         imageInfo.extent.depth = 1;
-         imageInfo.mipLevels = 1;
-         imageInfo.arrayLayers = 1;
-         imageInfo.format = depthFormat;
-         imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-         imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-         imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-         imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-         imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-         imageInfo.flags = 0;
+         //auto& depthImage = depthImages[i];
+         //auto& depthImageMemory = depthImageMemorys[i];
+         //pcontext->createImageWithInfo(
+         //   imageInfo,
+         //   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+         //   depthImage,
+         //   depthImageMemory);
 
-         auto& depthImage = depthImages[i];
-         auto& depthImageMemory = depthImageMemorys[i];
-         pcontext->createImageWithInfo(
-            imageInfo,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            depthImage,
-            depthImageMemory);
+         //VkImageViewCreateInfo viewInfo{};
+         //viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+         //viewInfo.image = depthImages[i];
+         //viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+         //viewInfo.format = depthFormat;
+         //viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+         //viewInfo.subresourceRange.baseMipLevel = 0;
+         //viewInfo.subresourceRange.levelCount = 1;
+         //viewInfo.subresourceRange.baseArrayLayer = 0;
+         //viewInfo.subresourceRange.layerCount = 1;
 
-         VkImageViewCreateInfo viewInfo{};
-         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-         viewInfo.image = depthImages[i];
-         viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-         viewInfo.format = depthFormat;
-         viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-         viewInfo.subresourceRange.baseMipLevel = 0;
-         viewInfo.subresourceRange.levelCount = 1;
-         viewInfo.subresourceRange.baseArrayLayer = 0;
-         viewInfo.subresourceRange.layerCount = 1;
+         //auto& depthImageView = depthImageViews[i];
 
-         auto& depthImageView = depthImageViews[i];
+         //if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &depthImageView) != VK_SUCCESS) 
+         //{
 
-         if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &depthImageView) != VK_SUCCESS) 
-         {
+         //   throw ::exception(error_failed,"failed to create texture image view!");
 
-            throw ::exception(error_failed,"failed to create texture image view!");
-
-         }
+         //}
 
          debug() << "created a depth resource";
 

@@ -3237,12 +3237,23 @@ namespace gpu_vulkan
 
       }
 
-      ::cast < texture > ptextureDepth = ptexture->m_ptextureDepth;
+      ::cast < texture > ptextureDepth;
+
+      if (m_pgpulayer)
+      {
+
+         ptextureDepth = ptexture->get_depth_texture();
+
+      }
+      else
+      {
+
+         ptextureDepth = pgpurenderpass->current_depth_texture();
+
+      }
 
       if(ptextureDepth)
       {
-
-         ptextureDepth->get_depth_image();
 
          ptextureDepth->_new_state(
             pcommandbuffer,
@@ -3266,7 +3277,7 @@ namespace gpu_vulkan
 
          vkCmdClearDepthStencilImage(
             pcommandbuffer->m_vkcommandbuffer,
-            ptextureDepth->m_vkimage,
+            ptextureDepth->get_depth_image(),
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,  // Must be in a writable layout
             &clearValue,
             1,

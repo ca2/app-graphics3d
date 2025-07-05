@@ -32,28 +32,28 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      for (auto imageView : m_imageviews) 
-      {
+      //for (auto imageView : m_imageviews) 
+      //{
 
-         vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
+      //   vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
 
-      }
+      //}
 
-      m_imageviews.clear();
+      //m_imageviews.clear();
 
       //if (swapChain != nullptr) {
       //   vkDestroySwapchainKHR(m_pgpucontext->logicalDevice(), swapChain, nullptr);
       //   swapChain = nullptr;
       //}
 
-      for (int i = 0; i < depthImages.size(); i++) 
-      {
+      //for (int i = 0; i < depthImages.size(); i++) 
+      //{
 
-         vkDestroyImageView(pcontext->logicalDevice(), depthImageViews[i], nullptr);
-         vkDestroyImage(pcontext->logicalDevice(), depthImages[i], nullptr);
-         vkFreeMemory(pcontext->logicalDevice(), depthImageMemorys[i], nullptr);
+      //   vkDestroyImageView(pcontext->logicalDevice(), depthImageViews[i], nullptr);
+      //   vkDestroyImage(pcontext->logicalDevice(), depthImages[i], nullptr);
+      //   vkFreeMemory(pcontext->logicalDevice(), depthImageMemorys[i], nullptr);
 
-      }
+      //}
 
       //for (auto framebuffer : m_framebuffers) {
       //   vkDestroyFramebuffer(m_pgpucontext->logicalDevice(), framebuffer, nullptr);
@@ -664,9 +664,11 @@ namespace gpu_vulkan
          depthAttachmentRef.attachment = 1;
          depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
          iAttachmentCount = 2;
+
       }
       else
       {
+
          iAttachmentCount = 1;
 
       }

@@ -275,7 +275,8 @@ namespace gpu_vulkan
          imageInfo.format = depthFormat;
          imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
          imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-         imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+         imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+            | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
          imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
          imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
          imageInfo.flags = 0;
@@ -290,13 +291,13 @@ namespace gpu_vulkan
             depthImage,
             depthImageMemory);
 
-         ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
+         //::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
 
-         _new_state(
-            pcommandbuffer,
-            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-            VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT);
+         //_new_state(
+         //   pcommandbuffer,
+         //   VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+         //   VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+         //   VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT);
 
          return m_vkimage;
 
@@ -304,37 +305,39 @@ namespace gpu_vulkan
       else
       {
 
-         return _get_depth_texture()->m_vkimage;
+         ::cast < texture > ptexture = get_depth_texture();
+
+         return ptexture->m_vkimage;
 
       }
 
    }
 
 
-   texture* texture::_get_depth_texture()
-   {
-      
-      if (m_etype & ::gpu::texture::e_type_depth)
-      {
+   //texture* texture::_get_depth_texture()
+   //{
+   //   
+   //   if (m_etype & ::gpu::texture::e_type_depth)
+   //   {
 
-         return this;
+   //      return this;
 
-      }
+   //   }
 
-      if (m_ptextureDepth)
-      {     
+   //   if (m_ptextureDepth)
+   //   {     
 
-         return m_ptextureDepth;
+   //      return m_ptextureDepth;
 
-      }
+   //   }
 
-      __defer_construct_new(m_ptextureDepth);
+   //   __defer_construct_new(m_ptextureDepth);
 
-      m_ptextureDepth->initialize_depth_texture(m_pgpurenderer, m_rectangleTarget);
+   //   m_ptextureDepth->initialize_depth_texture(m_pgpurenderer, m_rectangleTarget);
 
-      return m_ptextureDepth;
+   //   return m_ptextureDepth;
 
-   }  
+   //}  
 
 
    VkImageView texture::get_image_view()
@@ -443,29 +446,34 @@ namespace gpu_vulkan
       if (m_etype & ::gpu::texture::e_type_depth)
       {
 
-         ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
-
-         VkFormat depthFormat = pcontext->findDepthFormat();
-
-         VkImageViewCreateInfo viewInfo{};
-         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-         viewInfo.image = get_depth_image();
-         viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-         viewInfo.format = depthFormat;
-         viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-         viewInfo.subresourceRange.baseMipLevel = 0;
-         viewInfo.subresourceRange.levelCount = 1;
-         viewInfo.subresourceRange.baseArrayLayer = 0;
-         viewInfo.subresourceRange.layerCount = 1;
-
-         if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &m_vkimageview) != VK_SUCCESS)
+         if (!m_vkimageview)
          {
 
-            throw ::exception(error_failed, "failed to create texture image view!");
+            ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+            VkFormat depthFormat = pcontext->findDepthFormat();
+
+            VkImageViewCreateInfo viewInfo{};
+            viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+            viewInfo.image = get_depth_image();
+            viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            viewInfo.format = depthFormat;
+            viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+            viewInfo.subresourceRange.baseMipLevel = 0;
+            viewInfo.subresourceRange.levelCount = 1;
+            viewInfo.subresourceRange.baseArrayLayer = 0;
+            viewInfo.subresourceRange.layerCount = 1;
+
+            if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &m_vkimageview) != VK_SUCCESS)
+            {
+
+               throw ::exception(error_failed, "failed to create texture image view!");
+
+            }
+
+            debug() << "created a depth resource";
 
          }
-
-         debug() << "created a depth resource";
 
          return m_vkimageview;
 
@@ -473,7 +481,16 @@ namespace gpu_vulkan
       else
       {
 
-         return _get_depth_texture()->get_depth_image_view();
+         ::cast < texture > ptexture = get_depth_texture();
+
+         if (!ptexture)
+         {
+
+            return nullptr;
+
+         }
+
+         return ptexture->get_depth_image_view();
 
       }
 

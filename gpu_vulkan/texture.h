@@ -13,10 +13,10 @@ namespace gpu_vulkan
    class CLASS_DECL_GPU_VULKAN texture :
       virtual public ::gpu::texture
    {
-   protected:
+   //protected:
 
 
-      texture* _get_depth_texture();
+      //texture* _get_depth_texture();
 
 
    public:
@@ -47,8 +47,8 @@ namespace gpu_vulkan
       VkImageView                m_vkimageview;
       //VkImageView                m_vkimageviewDepth;
       map<VkRenderPass, VkFramebuffer >             m_mapFramebuffer;
-      ::pointer < texture >      m_ptextureDepth;    
-      
+
+
       texture();
       ~texture() override;
 

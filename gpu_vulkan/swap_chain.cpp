@@ -28,15 +28,15 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
 
-      for (auto imageView : m_imageviews) {
-         vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
-      }
-      m_imageviews.clear();
+      //for (auto imageView : m_imageviews) {
+      //   vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
+      //}
+      //m_imageviews.clear();
 
-      if (m_vkswapchain != nullptr) {
-         vkDestroySwapchainKHR(pcontext->logicalDevice(), m_vkswapchain, nullptr);
-         m_vkswapchain = nullptr;
-      }
+      //if (m_vkswapchain != nullptr) {
+      //   vkDestroySwapchainKHR(pcontext->logicalDevice(), m_vkswapchain, nullptr);
+      //   m_vkswapchain = nullptr;
+      //}
 
       //for (int i = 0; i < depthImages.size(); i++) {
       //   vkDestroyImageView(m_pgpucontext->logicalDevice(), depthImageViews[i], nullptr);
@@ -450,28 +450,30 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
 
-      m_imageviews.resize(m_texturea.size());
+      //m_imageviews.resize(m_texturea.size());
 
-      for (::collection::index i = 0; i < m_imageviews.size(); i++) 
+      //for (::collection::index i = 0; i < m_imageviews.size(); i++) 
+      for (::collection::index i = 0; i < m_texturea.size(); i++)
       {
+         getImageView(i);
 
-         ::cast < texture > ptexture = m_texturea[i];
+         //::cast < texture > ptexture = m_texturea[i];
 
-         VkImageViewCreateInfo viewInfo{};
-         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-         viewInfo.image = ptexture->m_vkimage;
-         viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-         viewInfo.format = m_formatImage;
-         viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-         viewInfo.subresourceRange.baseMipLevel = 0;
-         viewInfo.subresourceRange.levelCount = 1;
-         viewInfo.subresourceRange.baseArrayLayer = 0;
-         viewInfo.subresourceRange.layerCount = 1;
+         //VkImageViewCreateInfo viewInfo{};
+         //viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+         //viewInfo.image = ptexture->m_vkimage;
+         //viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+         //viewInfo.format = m_formatImage;
+         //viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+         //viewInfo.subresourceRange.baseMipLevel = 0;
+         //viewInfo.subresourceRange.levelCount = 1;
+         //viewInfo.subresourceRange.baseArrayLayer = 0;
+         //viewInfo.subresourceRange.layerCount = 1;
 
-         if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &m_imageviews[i]) !=
-            VK_SUCCESS) {
-            throw ::exception(error_failed, "failed to create texture image view!");
-         }
+         //if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &m_imageviews[i]) !=
+         //   VK_SUCCESS) {
+         //   throw ::exception(error_failed, "failed to create texture image view!");
+         //}
       }
    }
 

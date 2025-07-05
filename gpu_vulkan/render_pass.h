@@ -32,11 +32,11 @@ namespace gpu_vulkan
       ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
       ::array < VkSemaphore> m_semaphoreaWaitToSubmit;
       ::array < VkPipelineStageFlags > m_stageaWaitToSubmit;
-      ::array<VkImage> depthImages;
-      ::array<VkDeviceMemory> depthImageMemorys;
-      ::array<VkImageView> depthImageViews;
+      //::array<VkImage> depthImages;
+      //::array<VkDeviceMemory> depthImageMemorys;
+      //::array<VkImageView> depthImageViews;
       //::array<VkImage> m_images;
-      ::array<VkImageView> m_imageviews;
+      //::array<VkImageView> m_imageviews;
 
       //context* m_pgpucontext;
       //VkExtent2D windowExtent;
@@ -67,7 +67,8 @@ namespace gpu_vulkan
       VkFramebuffer getCurrentFrameBuffer() { return m_framebuffers[get_frame_index()]; }
       //virtual int get_image_index() const;
       VkRenderPass getRenderPass() { return m_vkrenderpass; }
-      VkImageView getImageView(int index) { return m_imageviews[index]; }
+      VkImageView getImageView(int index);
+      VkImageView getDepthImageView(int index);
       //int imageCount() { return m_texturea.size(); }
 //      VkFormat getImageFormat() { return m_pgpurenderer->m_pgpucontext; }
       VkExtent2D getExtent() { return m_extent; }

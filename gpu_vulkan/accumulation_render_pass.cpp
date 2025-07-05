@@ -42,28 +42,28 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-      for (auto imageView : m_imageviews)
-      {
+      //for (auto imageView : m_imageviews)
+      //{
 
-         vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
+      //   vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
 
-      }
+      //}
 
-      m_imageviews.clear();
+      //m_imageviews.clear();
 
       //if (swapChain != nullptr) {
       //   vkDestroySwapchainKHR(m_pgpucontext->logicalDevice(), swapChain, nullptr);
       //   swapChain = nullptr;
       //}
 
-      for (int i = 0; i < depthImages.size(); i++)
-      {
+      //for (int i = 0; i < depthImages.size(); i++)
+      //{
 
-         vkDestroyImageView(pcontext->logicalDevice(), depthImageViews[i], nullptr);
-         vkDestroyImage(pcontext->logicalDevice(), depthImages[i], nullptr);
-         vkFreeMemory(pcontext->logicalDevice(), depthImageMemorys[i], nullptr);
+      //   vkDestroyImageView(pcontext->logicalDevice(), depthImageViews[i], nullptr);
+      //   vkDestroyImage(pcontext->logicalDevice(), depthImages[i], nullptr);
+      //   vkFreeMemory(pcontext->logicalDevice(), depthImageMemorys[i], nullptr);
 
-      }
+      //}
 
       //for (auto framebuffer : m_framebuffers) {
       //   vkDestroyFramebuffer(m_pgpucontext->logicalDevice(), framebuffer, nullptr);
@@ -674,7 +674,7 @@ namespace gpu_vulkan
       m_framebuffers.resize(imageCount());
       for (size_t i = 0; i < imageCount(); i++) 
       {
-         VkImageView attachments[2] = {m_imageviews[i], m_imageviewsAlphaAccumulation[i]};
+         VkImageView attachments[2] = {getImageView(i), m_imageviewsAlphaAccumulation[i]};
 
          VkFramebufferCreateInfo fbInfo = {
              .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
