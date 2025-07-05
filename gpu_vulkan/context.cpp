@@ -2659,9 +2659,22 @@ namespace gpu_vulkan
 
                m_pshaderBlend3->bind(ptextureDst, ptextureSrc);
 
-               pcommandbuffer->set_viewport(ptextureSrc->m_rectangleTarget);
+               //pcommandbuffer->set_viewport(ptextureSrc->m_rectangleTarget);
 
-               pcommandbuffer->set_scissor(ptextureSrc->m_rectangleTarget);
+               //pcommandbuffer->set_scissor(ptextureSrc->m_rectangleTarget.size());
+
+               auto r = ptextureSrc->m_rectangleTarget;
+
+               int h = r.height();
+
+               r.top() = iH - r.bottom();
+
+               r.bottom() = r.top() + h;
+
+               pcommandbuffer->set_viewport(r);
+
+               pcommandbuffer->set_scissor(r);
+
 
                //{
 
