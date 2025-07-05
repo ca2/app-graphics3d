@@ -63,14 +63,14 @@ namespace gpu_vulkan
 
       }
 
-      if (m_etype & ::gpu::texture::e_type_depth)
-      {
+      ASSERT(!(m_etype & ::gpu::texture::e_type_depth));
+      //{
 
-         get_depth_image();
+      //   get_depth_image();
 
-      }
-      else
-      {
+      //}
+      //else
+      //{
 
          ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
@@ -148,8 +148,120 @@ namespace gpu_vulkan
 
          }
 
+      //}
+
+   }
+
+
+   void texture::initialize_depth_texture(::gpu::renderer* pgpurenderer, const ::int_rectangle& rectangleTarget)
+   {
+
+      if (m_rectangleTarget == rectangleTarget
+         && m_pgpurenderer == pgpurenderer)
+      {
+
+         return;
+
       }
 
+      auto currentSize = m_rectangleTarget.size();
+
+      ::gpu::texture::initialize_depth_texture(pgpurenderer, rectangleTarget);
+
+      if (currentSize == rectangleTarget.size()
+         && m_pgpurenderer == pgpurenderer)
+      {
+
+         return;
+
+      }
+
+      ASSERT(m_etype & ::gpu::texture::e_type_depth);
+      
+
+         get_depth_image();
+
+      ////}
+      ////else
+      ////{
+
+      //::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+      //::cast < context > pgpucontext = pcontext;
+
+      //::cast < render_pass > prenderpass = m_pgpurenderer->m_pgpurendertarget;
+
+      //VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
+
+      //imagecreateinfo.imageType = VK_IMAGE_TYPE_2D;
+      //imagecreateinfo.format = pcontext->m_formatImageDefault;
+      //imagecreateinfo.extent.width = rectangleTarget.width();
+      //imagecreateinfo.extent.height = rectangleTarget.height();
+      //imagecreateinfo.extent.depth = 1;
+      //imagecreateinfo.mipLevels = 1;
+      //imagecreateinfo.arrayLayers = 1;
+      //imagecreateinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+
+      //imagecreateinfo.usage = 0;
+
+      //if (m_bTransferDst & m_bCpuRead)
+      //{
+
+      //   imagecreateinfo.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+
+      //   imagecreateinfo.tiling = VK_IMAGE_TILING_LINEAR;
+
+      //}
+      //else
+      //{
+
+      //   if (m_bTransferDst)
+      //   {
+
+      //      imagecreateinfo.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+
+      //   }
+
+      //   imagecreateinfo.usage |=
+      //      VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+      //      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+      //      VK_IMAGE_USAGE_SAMPLED_BIT;
+
+      //   imagecreateinfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+
+      //}
+
+      //imagecreateinfo.initialLayout = m_vkimagelayout;
+
+      //VkMemoryPropertyFlags properties;
+
+      //if (m_bCpuRead)
+      //{
+
+      //   properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+
+      //}
+      //else
+      //{
+
+      //   properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+      //}
+
+      //pcontext->createImageWithInfo(
+      //   imagecreateinfo,
+      //   properties,
+      //   m_vkimage,
+      //   m_vkdevicememory);
+
+      //if (m_bWithDepth)
+      //{
+
+      //   get_depth_image();
+
+      //}
+
+      ////}
    }
 
 
@@ -304,6 +416,8 @@ namespace gpu_vulkan
       }
       else
       {
+
+         ASSERT(m_bWithDepth);
 
          ::cast < texture > ptexture = get_depth_texture();
 
@@ -480,6 +594,8 @@ namespace gpu_vulkan
       }
       else
       {
+
+         ASSERT(m_bWithDepth);
 
          ::cast < texture > ptexture = get_depth_texture();
 

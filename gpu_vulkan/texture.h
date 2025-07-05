@@ -54,7 +54,7 @@ namespace gpu_vulkan
 
 
       void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth);
-
+      void initialize_depth_texture(::gpu::renderer* pgpurenderer, const ::int_rectangle& rectangleTarget) override;
       //void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
 
       void _new_state(::gpu_vulkan::command_buffer * pcommandbuffer, 
