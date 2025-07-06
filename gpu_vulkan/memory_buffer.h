@@ -39,7 +39,10 @@ namespace gpu_vulkan
          VkMemoryPropertyFlags memoryPropertyFlags,
          VkDeviceSize minOffsetAlignment = 1);
 
-      void initialize_memory_buffer(::gpu::context* pgpucontext, memsize size, bool bIndices) override;
+      //void initialize_memory_buffer_with_context(::gpu::context* pgpucontext, memsize size, ::gpu::memory_buffer::enum_type etype) override;
+      //void initialize_memory_buffer_with_model_buffer(::gpu::model_buffer* ppmodelbuffer, memsize size, ::gpu::memory_buffer::enum_type etype) override;
+
+      void on_initialize_memory_buffer() override;
 
       bool is_initialized() const override;
       //VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);

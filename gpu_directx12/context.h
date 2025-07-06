@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "bred/gpu/context.h"
+#include "bred/gpu/hlsl_context.h"
 #include "acme/prototype/prototype/memory.h"
 #include "gpu_directx12/device.h"
 #include <d3d11_3.h>
@@ -13,7 +13,7 @@ namespace gpu_directx12
 
 
    class CLASS_DECL_GPU_DIRECTX12 context :
-      virtual public ::gpu::context,
+      virtual public ::gpu::hlsl_context,
       virtual public ::dxgi_device_source
    {
    public:

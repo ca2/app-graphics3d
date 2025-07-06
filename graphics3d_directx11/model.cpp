@@ -11,7 +11,7 @@
 #include "acme/filesystem/filesystem/path_system.h"
 #include "aura/platform/application.h"
 #include "bred/user/user/graphics3d.h"
-#include "gpu_directx11/buffer.h"
+#include "gpu_directx11/memory_buffer.h"
 #include "gpu_directx11/context.h"
 #include "gpu_directx11/renderer.h"
 

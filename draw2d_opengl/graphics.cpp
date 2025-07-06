@@ -6005,9 +6005,9 @@ color = vec4(c.r,c.g, c.b, c.a);
       set(m_pfont);
       
       ::pointer<font>pfont = m_pfont;
-      ::cast < draw2d_opengl::draw2d>pdraw2d = draw2d();
       
-      auto pgpuface = pdraw2d->get_face(pfont);
+      auto pgpuface = get_face(pfont);
+
       ::cast < ::typeface::face>pface = pgpuface;
 
       glActiveTexture(GL_TEXTURE0);
@@ -6098,7 +6098,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
             //pmodelbuffer->set_vertex_array(vertices, 6);
 
-            ch.m_ppixmap->bind_texture();
+            ch.m_ppixmap->bind_texture(pshader);
             //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
             //GLCheckError("");
             //// update content of VBO memory
@@ -6229,9 +6229,10 @@ color = vec4(c.r,c.g, c.b, c.a);
       set(m_pfont);
 
       ::pointer<font>pfont = m_pfont;
-      ::cast < draw2d_opengl::draw2d>pdraw2d = draw2d();
 
-      auto pgpuface = pdraw2d->get_face(pfont);
+
+      auto pgpuface = get_face(pfont);
+
       ::cast < ::typeface::face>pface = pgpuface;
 
       glActiveTexture(GL_TEXTURE0);
@@ -6322,7 +6323,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
             //pmodelbuffer->set_vertex_array(vertices, 6);
 
-            ch.m_ppixmap->bind_texture();
+            ch.m_ppixmap->bind_texture(pshader);
             //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
             //GLCheckError("");
             //// update content of VBO memory
