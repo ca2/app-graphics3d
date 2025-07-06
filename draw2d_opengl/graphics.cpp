@@ -1228,7 +1228,7 @@ void main() {
    //            {},
    //            {},
    //            {},
-   //            pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+   //            pcontext->input_layout<::graphics3d::sequence2_color>());
 
    //      }
    //      pshader = m_pshaderSourceRectangle;
@@ -1272,7 +1272,7 @@ void main() {
    //            { },
    //            {},
    //            {},
-   //            pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+   //            pcontext->input_layout<::graphics3d::sequence2_color>());
 
    //      }
 
@@ -5981,7 +5981,7 @@ color = vec4(c.r,c.g, c.b, c.a);
             {},
             {},
             {},
-            pcontext->input_layout(::graphics3d::sequence2_uv_properties())
+            pcontext->input_layout<::graphics3d::sequence2_uv>()
             );  
          
       }
@@ -6205,7 +6205,7 @@ color = vec4(c.r,c.g, c.b, c.a);
             {},
             {},
             {},
-            pcontext->input_layout(::graphics3d::sequence2_uv_properties())
+            pcontext->input_layout<::graphics3d::sequence2_uv>()
          );
 
       }

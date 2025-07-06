@@ -71,11 +71,6 @@ namespace app_graphics3d_continuum
 
    }
 
-   BEGIN_GPU_PROPERTIES(point_light2)
-      GPU_PROPERTY("position", ::gpu::e_type_seq4)
-      GPU_PROPERTY("color", ::gpu::e_type_seq4)
-      GPU_PROPERTY("radius", ::gpu::e_type_float)
-      END_GPU_PROPERTIES()
 
 
    void point_light_system::prepare(::gpu::context * pgpucontext)//(VkDescriptorSetLayout globalSetLayout) 
@@ -89,8 +84,8 @@ namespace app_graphics3d_continuum
          {::gpu::shader::e_descriptor_set_slot_global,
          ::gpu::shader::e_descriptor_set_slot_local},
          nullptr,
-         point_light2_properties(),
-         pgpucontext->input_layout(::graphics3d::Vertex_properties()),
+         ::gpu_properties<point_light2>(),
+         pgpucontext->input_layout<::graphics3d::Vertex>(),
          ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
       );
       

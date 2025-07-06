@@ -2924,7 +2924,7 @@ namespace gpu_vulkan
    //      {},
    //      m_psetdescriptorlayoutRectangle,
    //      {},
-   //      pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+   //      pcontext->input_layout<::graphics3d::sequence2_color>());
 
 
    //}

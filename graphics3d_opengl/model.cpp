@@ -41,7 +41,7 @@ namespace graphics3d_opengl
 
 		createIndexBuffers(builder.indices);
 
-		defer_set_input_layout(pgpurenderer->m_pgpucontext->input_layout(::graphics3d::Vertex_properties()));
+		//defer_set_input_layout(pgpurenderer->m_pgpucontext->input_layout<::graphics3d::Vertex>());
 
 	}
 

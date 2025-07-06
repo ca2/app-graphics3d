@@ -59,7 +59,7 @@ namespace app_graphics3d_continuum
    void main_scene::on_load_scene(::gpu::context* pgpucontext)
    {
 
-      m_propertiesGlobalUbo.set(::app_graphics3d_continuum::global_ubo_properties());
+      m_propertiesGlobalUbo.set<::app_graphics3d_continuum::global_ubo>();
 
       float fXScale;
 

@@ -1915,7 +1915,7 @@ namespace gpu_vulkan
             as_memory_block(g_uaImageBlendFragmentShader),
             { ::gpu::shader::e_descriptor_set_slot_s1 },
             {}, {},
-            m_pgpucontext->input_layout(::graphics3d::sequence2_uv_properties()));
+            m_pgpucontext->input_layout<::graphics3d::sequence2_uv>());
 
       }
 
@@ -1953,7 +1953,8 @@ namespace gpu_vulkan
             { ::gpu::shader::e_descriptor_set_slot_local },
             m_pshaderImageSet->shader_sampler()->m_psetdescriptorlayout,
             {},
-            m_pgpucontext->input_layout(::graphics3d::sequence2_uv_properties()));
+            m_pgpucontext->input_layout<::graphics3d::sequence2_uv>()
+         );
 
       }
 

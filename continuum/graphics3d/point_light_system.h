@@ -10,53 +10,15 @@
 namespace app_graphics3d_continuum
 {
 
-//#define MAX_LIGHTS 10
-//
-//   struct PointLight 
-//   {
-//      glm::vec4 position{};  // ignore w
-//      glm::vec4 color{};     // w is intensity
-//   };
-//
 
+   struct point_light2
+   {
 
-   //struct PointLightPushConstants {
-   //   glm::vec4 position{};
-   //   glm::vec4 color{};
-   //   float radius;
-   //};
+      ::glm::vec4 position;
+      ::glm::vec4 color;
+      float radius;
 
-   //inline ::gpu::properties point_light_properties()
-   //{
-
-   //   static ::gpu::property s_properties[] =
-   //   {
-   //      {"position", ::gpu::e_type_seq4},
-   //      {"color", ::gpu::e_type_seq4},
-   //      {"radius", ::gpu::e_type_float},
-   //      { nullptr, ::gpu::e_type_none}
-
-   //   };
-
-   //   return s_properties;
-
-   //}
-
-
-
-   //inline ::gpu::properties global_ubo_properties()
-   //{
-   //   ::gpu::property s_properties[] = {
-   //      {"projection", ::gpu::e_type_mat4},
-   //      {"view", ::gpu::e_type_mat4},
-   //      {"invVew", ::gpu::e_type_mat4},
-   //      {"ambientLightColor", ::gpu::e_type_seq4},
-   //      {"pointLights", ::gpu::e_type_propeties_array, point_light_properties(),  10},
-
-   //   };
-
-
-   //}
+   };
 
 
    class point_light_system :
@@ -93,3 +55,10 @@ namespace app_graphics3d_continuum
 
 
 }  // namespace app_graphics3d_continuum
+
+
+BEGIN_GPU_PROPERTIES(::app_graphics3d_continuum::point_light2)
+GPU_PROPERTY("position", ::gpu::e_type_seq4)
+GPU_PROPERTY("color", ::gpu::e_type_seq4)
+GPU_PROPERTY("radius", ::gpu::e_type_float)
+END_GPU_PROPERTIES()

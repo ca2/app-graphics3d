@@ -2149,7 +2149,7 @@ namespace draw2d_vulkan
    //            {},
    //            m_psetdescriptorlayoutRectangle,
    //            {},
-   //            pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+   //            pcontext->input_layout<::graphics3d::sequence2_color>());
 
    //      }
    //      pshader = m_pshaderSourceRectangle;
@@ -2193,7 +2193,7 @@ namespace draw2d_vulkan
    //            { },
    //            m_psetdescriptorlayoutRectangle,
    //            {},
-   //            pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+   //            pcontext->input_layout<::graphics3d::sequence2_color>());
 
    //      }
 
@@ -6788,7 +6788,7 @@ namespace draw2d_vulkan
                pcontext->rectangle_shader_frag(),
                { },
                m_psetdescriptorlayoutRectangle, {},
-               pcontext->input_layout(::graphics3d::sequence2_color_properties()));
+               pcontext->input_layout<::graphics3d::sequence2_color>());
 
          }
 

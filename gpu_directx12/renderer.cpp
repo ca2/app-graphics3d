@@ -2425,7 +2425,8 @@ float4 main(PSInput input) : SV_TARGET {
             { ::gpu::shader::e_descriptor_set_shader_resource_view_and_sampler },
             m_psetdescriptorlayoutImageBlend,
             {},
-            m_pgpucontext->input_layout(::graphics3d::sequence2_uv_properties()));
+            m_pgpucontext->input_layout<::graphics3d::sequence2_uv>()
+         );
 
       }
 
@@ -4522,10 +4523,6 @@ float4 main(PSInput input) : SV_TARGET {
 //      //vkCmdEndRenderPass(commandBuffer);
    }
 
-   BEGIN_GPU_PROPERTIES(hello_triangle_input_layout)
-      GPU_PROPERTY("position", ::gpu::e_type_seq3)
-      GPU_PROPERTY("color", ::gpu::e_type_seq4)
-      END_GPU_PROPERTIES()
 
 
    //void renderer::on_end_render(::graphics3d::frame * pframeParam)

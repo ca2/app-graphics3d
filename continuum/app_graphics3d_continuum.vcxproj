@@ -813,8 +813,6 @@
     <ClInclude Include="main_frame.h" />
     <ClInclude Include="pane_impact.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="system_basic_render.h" />
-    <ClInclude Include="system_point_light.h" />
     <ClInclude Include="_.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="_vulkan.h" />
