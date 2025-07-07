@@ -48,8 +48,8 @@ namespace gpu_vulkan
       //VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
       //void unmap();
 
-      virtual void* __map(memsize start, memsize count);
-      virtual void __unmap();
+      void* _map(memsize start, memsize count) override;
+      void _unmap() override;
 
       void writeToBuffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
       VkResult flush(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);

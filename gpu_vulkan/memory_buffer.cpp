@@ -181,7 +181,7 @@ namespace gpu_vulkan
     *
     * @return VkResult of the memory_buffer mapping call
     */
-   void * memory_buffer::__map(memsize start, memsize count)
+   void * memory_buffer::_map(memsize start, memsize count)
    {
 
       if (m_pMap)
@@ -216,7 +216,7 @@ namespace gpu_vulkan
     *
     * @note Does not return a result as vkUnmapMemory can't fail
     */
-   void memory_buffer::__unmap() 
+   void memory_buffer::_unmap() 
    {
       
       if (m_pMap) 
