@@ -261,8 +261,8 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       D3D12_RECT scissorRect = {};
       scissorRect.left = 0;
       scissorRect.top = 0;
-      scissorRect.right = static_cast<float>(m_size.cx());
-      scissorRect.bottom = static_cast<float>(m_size.cy());
+      scissorRect.right = m_size.cx();
+      scissorRect.bottom = m_size.cy();
 
       //::cast < renderer > prenderer = m_pgpurenderer;
 

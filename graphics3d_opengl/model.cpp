@@ -37,9 +37,15 @@ namespace graphics3d_opengl
 
 		initialize(pgpurenderer);
 
+		glBindVertexArray(m_gluVao);
+		GLCheckError("");
+
 		createVertexBuffers(builder.vertices);
 
 		createIndexBuffers(builder.indices);
+
+		glBindVertexArray(0);
+		GLCheckError("");
 
 		//defer_set_input_layout(pgpurenderer->m_pgpucontext->input_layout<::graphics3d::Vertex>());
 
@@ -71,10 +77,9 @@ namespace graphics3d_opengl
 
 		}
 
-		create_vertex_array<::graphics3d::Vertex>(m_pgpurenderer->m_pgpucontext,
-			vertices.size());
+		static_initialize_vertices(vertices);
 
-		m_pbufferVertex->assign(vertices.data(), vertices.length_in_bytes());
+		//set_vertex_array<::graphics3d::Vertex>(vertices.data(), (int) vertices.size());
 		//{
 
 		//	auto data = map < ::graphics3d::Vertex>();
@@ -111,10 +116,9 @@ namespace graphics3d_opengl
 
 		}
 
-		create_index_array<uint32_t>(m_pgpurenderer->m_pgpucontext,
-			indices.size());
+		static_initialize_indices(indices);
 
-		m_pbufferIndex->assign(indices.data(), indices.length_in_bytes());
+		//set_index_array<uint32_t>(indices.data(), indices.size());
 
 		//glBindVertexArray(m_gluVao);
 		//GLCheckError("");

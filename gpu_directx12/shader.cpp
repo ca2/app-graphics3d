@@ -275,7 +275,7 @@ namespace gpu_directx12
             //|  D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
 
             CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-            rootSignatureDesc.Init_1_1(rootParameters.size(), rootParameters.data(), 0, nullptr, rootSignatureFlags);
+            rootSignatureDesc.Init_1_1((UINT) rootParameters.size(), rootParameters.data(), 0, nullptr, rootSignatureFlags);
 
             ::comptr<ID3DBlob> signature;
             ::comptr<ID3DBlob> error;
@@ -618,7 +618,7 @@ namespace gpu_directx12
       if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
       {
          int iNumberOfObjects = 10;
-         UINT constantBufferSize = ::directx12::Align256(m_propertiesPush.size()) * iNumberOfObjects;    // CB size is required to be 256-byte aligned.
+         UINT constantBufferSize = ::directx12::Align256((UINT) m_propertiesPush.size()) * iNumberOfObjects;    // CB size is required to be 256-byte aligned.
          CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
          auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
          HRESULT hrCreateCommittedResource = pgpudevice->m_pdevice->CreateCommittedResource(
@@ -725,7 +725,7 @@ namespace gpu_directx12
       heapa.add(ptextureSrc->m_pheapShaderResourceView);
       heapa.add(ptextureSrc->m_pheapSampler);
 
-      pcommandlist->SetDescriptorHeaps(heapa.size(), heapa.data());
+      pcommandlist->SetDescriptorHeaps((UINT) heapa.size(), heapa.data());
 
 
       pcommandlist->SetGraphicsRootDescriptorTable(0, 
@@ -792,18 +792,18 @@ namespace gpu_directx12
 
       ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      auto iSetSize = ::directx12::Align256(m_propertiesPush.size());
+      auto iSetSize = ::directx12::Align256((UINT) m_propertiesPush.size());
       CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
       UINT8* pPushProperties;
       auto hrMap = m_presourcePushProperties->Map(0, &readRange, (void**) & pPushProperties);
       defer_throw_hresult(hrMap);
-      memcpy(pPushProperties + ::directx12::Align256(m_propertiesPush.size())*m_iPush, m_propertiesPush.data(), m_propertiesPush.size());
+      memcpy(pPushProperties + ::directx12::Align256((UINT) m_propertiesPush.size())*m_iPush, m_propertiesPush.data(), m_propertiesPush.size());
       m_presourcePushProperties->Unmap(0, nullptr);
 
       ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       
-      auto address = m_presourcePushProperties->GetGPUVirtualAddress() + m_iPush* ::directx12::Align256(m_propertiesPush.size()) ;
+      auto address = m_presourcePushProperties->GetGPUVirtualAddress() + m_iPush* ::directx12::Align256((UINT) m_propertiesPush.size()) ;
       pcommandbuffer->m_pcommandlist->SetGraphicsRootConstantBufferView(1, address);
       m_iPush++;
 

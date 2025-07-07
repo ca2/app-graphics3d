@@ -43,7 +43,7 @@ namespace gpu_vulkan
 
 
 
-   void memory_buffer::on_initialize_memory_buffer()
+   void memory_buffer::on_initialize_memory_buffer(const void* dataStatic, memsize sizeStatic)
    {
 
       if (m_etype == e_type_vertex_buffer)
@@ -97,10 +97,15 @@ namespace gpu_vulkan
          vkAllocateMemory(pcontext->logicalDevice(), &allocInfo, NULL, &m_vkdevicememory);
          vkBindBufferMemory(pcontext->logicalDevice(), m_vkbuffer, m_vkdevicememory, 0);
 
-         //void* data;
-         //vkMapMemory(device, *outMemory, 0, bufferInfo.size, 0, &data);
-         //memcpy(data, quadVertices, sizeof(quadVertices));
-         //vkUnmapMemory(device, *outMemory);
+         if (dataStatic && sizeStatic > 0)
+         {
+
+            void* data;
+            vkMapMemory(pcontext->logicalDevice(), m_vkdevicememory, 0, bufferInfo.size, 0, &data);
+            memcpy(data, dataStatic, sizeStatic);
+            vkUnmapMemory(pcontext->logicalDevice(), m_vkdevicememory);
+
+         }
 
       }
 

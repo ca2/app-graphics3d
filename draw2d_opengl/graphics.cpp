@@ -5860,7 +5860,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       float fB = color.f32_blue() * fA;
 
 
-      ::graphics3d::sequence2_color quadVertices[] = {
+      ::array<::graphics3d::sequence2_color> quadVertices= {
          // Triangle 1
          {{(float)points[0].x(), (float)points[0].y()}, {fR, fG, fB, fA}}, 
          {{(float)points[1].x(), (float)points[1].y()}, {fR, fG, fB, fA}}, 
@@ -5876,7 +5876,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      pmodelbuffer->set_vertex_array<::graphics3d::sequence2_color>(quadVertices, 2);
+      pmodelbuffer->set_vertices(quadVertices);
 
       //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
@@ -5918,6 +5918,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::text_out(double x, double yParam, const ::scoped_string& scopedstr)
    {
+
+      ::gpu::graphics::text_out(x, yParam, scopedstr);
+
+      return;
 
       //text_out_2025_06(x, yParam, scopedstr);
 
@@ -6064,21 +6068,20 @@ color = vec4(c.r,c.g, c.b, c.a);
       {
 
          auto & ch = pface->get_character(strChar);
-         float h2 = (ch.Size.y - ch.Bearing.y);
-         float xpos = point.x() + Δx + ch.Bearing.x;
-         float ypos = point.y() + h2;
+         float h2 = (float) (ch.Size.y - ch.Bearing.y);
+         float xpos = (float) (point.x() + Δx + ch.Bearing.x);
+         float ypos = (float) (point.y() + h2);
 
-         float w = ch.Size.x;
-         float h = ch.Size.y;
+         float w = (float) ch.Size.x;
+         float h = (float) ch.Size.y;
          // update VBO for each character
-         float vertices[6][4] = {
-             { xpos,     ypos + h,   0.0f, 0.0f },
-             { xpos,     ypos,       0.0f, 1.0f },
-             { xpos + w, ypos,       1.0f, 1.0f },
-
-             { xpos,     ypos + h,   0.0f, 0.0f },
-             { xpos + w, ypos,       1.0f, 1.0f },
-             { xpos + w, ypos + h,   1.0f, 0.0f }
+         ::array <::graphics3d::sequence2_uv > vertices = {
+             {{ xpos,     ypos + h},{   0.0f, 0.0f }},
+             {{ xpos,     ypos    },{   0.0f, 1.0f }},
+             {{ xpos + w, ypos    },{   1.0f, 1.0f }},
+             {{ xpos,     ypos + h},{   0.0f, 0.0f }},
+             {{ xpos + w, ypos    },{   1.0f, 1.0f }},
+             {{ xpos + w, ypos + h},{   1.0f, 0.0f }}
          };
          // render glyph texture over quad
          if (ch.m_ppixmap)
@@ -6090,9 +6093,11 @@ color = vec4(c.r,c.g, c.b, c.a);
             if (pmodelbuffer->is_new())
             {
 
-               pmodelbuffer->create_vertex_array < ::graphics3d::sequence2_uv>(pcontext, 6);
+               pmodelbuffer->initialize_gpu_context_object(pcontext);
 
-               pmodelbuffer->defer_set_input_layout(m_pgpushaderTextOut->m_pinputlayout);
+               pmodelbuffer->create_vertices < ::graphics3d::sequence2_uv>(6);
+
+               //pmodelbuffer->defer_set_input_layout(m_pgpushaderTextOut->m_pinputlayout);
 
             }
 
@@ -6121,7 +6126,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
             pmodelbuffer->m_pbufferVertex->bind();
 
-            pmodelbuffer->_set_vertex_array(vertices, 6);
+            pmodelbuffer->set_vertices(vertices);
             
             pmodelbuffer->draw(pcommandbuffer);
 
@@ -6289,21 +6294,20 @@ color = vec4(c.r,c.g, c.b, c.a);
       {
 
          auto& ch = pface->get_character(strChar);
-         float h2 = (ch.Size.y - ch.Bearing.y);
-         float xpos = point.x() + Δx + ch.Bearing.x;
-         float ypos = point.y() + h2;
+         float h2 = (float) (ch.Size.y - ch.Bearing.y);
+         float xpos = (float) (point.x() + Δx + ch.Bearing.x);
+         float ypos = (float) (point.y() + h2);
 
-         float w = ch.Size.x;
-         float h = ch.Size.y;
+         float w = (float) ch.Size.x;
+         float h = (float) ch.Size.y;
          // update VBO for each character
-         float vertices[6][4] = {
-             { xpos,     ypos + h,   0.0f, 0.0f },
-             { xpos,     ypos,       0.0f, 1.0f },
-             { xpos + w, ypos,       1.0f, 1.0f },
-
-             { xpos,     ypos + h,   0.0f, 0.0f },
-             { xpos + w, ypos,       1.0f, 1.0f },
-             { xpos + w, ypos + h,   1.0f, 0.0f }
+         ::array < ::graphics3d::sequence2_uv > vertices = {
+             {{xpos,     ypos + h},{ 0.0f, 0.0f }},
+             {{xpos,     ypos    },{ 0.0f, 1.0f }},
+             {{xpos + w, ypos    },{ 1.0f, 1.0f }},
+             {{xpos,     ypos + h},{ 0.0f, 0.0f }},
+             {{xpos + w, ypos    },{ 1.0f, 1.0f }},
+             {{xpos + w, ypos + h},{ 1.0f, 0.0f} }
          };
          // render glyph texture over quad
          if (ch.m_ppixmap)
@@ -6315,9 +6319,15 @@ color = vec4(c.r,c.g, c.b, c.a);
             if (pmodelbuffer->is_new())
             {
 
-               pmodelbuffer->create_vertex_array < ::graphics3d::sequence2_uv>(pcontext, 6);
+               pmodelbuffer->initialize_gpu_context_object(pcontext);
 
-               pmodelbuffer->defer_set_input_layout(m_pgpushaderTextOut->m_pinputlayout);
+               pmodelbuffer->bind(pcommandbuffer);
+
+               pmodelbuffer->create_vertices < ::graphics3d::sequence2_uv>(6);
+
+               pmodelbuffer->unbind(pcommandbuffer);
+
+               //pmodelbuffer->defer_set_input_layout(m_pgpushaderTextOut->m_pinputlayout);
 
             }
 
@@ -6346,7 +6356,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
             pmodelbuffer->m_pbufferVertex->bind();
 
-            pmodelbuffer->_set_vertex_array(vertices, 6);
+            pmodelbuffer->set_vertices(vertices);
 
             pmodelbuffer->draw(pcommandbuffer);
 
