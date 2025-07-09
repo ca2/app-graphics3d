@@ -175,10 +175,10 @@ foreach(SHADER_FILE ${SHADER_FILES})
     list(APPEND SPIRV_BINARIES ${SPIRV_OUTPUT_DIR}/${FILE_NAME}.spv)
 endforeach()
 
-add_custom_target(CompileShaders ALL DEPENDS ${SPIRV_BINARIES})
+add_custom_target(_app_graphics3d_continuum_shaders ALL DEPENDS ${SPIRV_BINARIES})
 
 # Ensure shaders are compiled before the VKContinuum executable
-add_dependencies(${PROJECT_NAME} CompileShaders)
+add_dependencies(${PROJECT_NAME} _app_graphics3d_continuum_shaders)
 
 
 

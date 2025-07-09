@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 project(gpu_vulkan CXX)
 
 
-
 message(STATUS "PROJECT_NAME is ${PROJECT_NAME}")
 
 list(APPEND library_source
@@ -11,51 +10,51 @@ list(APPEND library_source
         _factory.cpp
         assimp.cpp
         assimp.h
+        context.cpp
+        context.h
+        context_object.cpp
+        context_object.h
         cpu_buffer.cpp
         cpu_buffer.h
         context.cpp
         context.h
+        debug.cpp
+        debug.h
+        descriptors.cpp
+        descriptors.h
+        device.cpp
+        device.h
+        #image_directx.cpp
+        image_vulkan.cpp
+        input_layout.cpp
+        input_layout.h
         framework.cpp
         framework.h
-        image_vulkan.cpp
+        layer.cpp
+        layer.h
+        memory_buffer.cpp
+        memory_buffer.h
+        model_buffer.cpp
+        model_buffer.h
         object.cpp
         object.h
-        vulkan.cpp
-        vulkan.h
-        program.cpp
-        program.h
+        offscreen_render_pass.cpp
+        offscreen_render_pass.h
+        physical_device.cpp
+        physical_device.h
+        pipeline.cpp
+        pipeline.h
+        render_pass.cpp
+        render_pass.h
+        renderer.cpp
+        renderer.h
         shader.cpp
-        shader.h)
+        shader.h
+        swap_chain.cpp
+        swap_chain.h
+        texture.cpp
+        texture.h)
 
-if (WIN32)
-    list(APPEND library_source
-            context_win32.cpp
-            context_win32.h
-            )
-
-endif ()
-
-
-if(${LINUX} OR ${__BSD__})
-    list(APPEND library_source
-            context_egl.cpp
-            context_egl.h
-            #context_glx.cpp
-            #context_glx.h
-            )
-
-endif ()
-
-
-if (APPLE)
-    list(APPEND library_source
-            context_cgl.cpp
-            context_cgl.h
-            context_fbo.cpp
-            context_fbo.h
-            )
-
-endif ()
 
 
 list(APPEND library_references
@@ -63,21 +62,24 @@ list(APPEND library_references
         apex
         aqua
         aura
-        )
+        axis
+        base
+        bred
+)
 
 
-if(${LINUX} OR ${__BSD__})
+if (${LINUX} OR ${__BSD__})
 
     list(APPEND library_references
             aura_posix
-       #windowing_system_x11
-            )
+            #windowing_system_x11
+    )
 
-else()
+else ()
 
-   #list(APPEND library_references
+    #list(APPEND library_references
     #  glad
-   #)
+    #)
 
 
 endif ()
@@ -114,24 +116,23 @@ if (MSVC)
 
 elseif (${LINUX} OR ${__BSD__} OR ${ANDROID})
 
-   target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
-   #set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
+    #set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 
-
-   if(${OPENBSD})
-      #list(APPEND extra_pkg_modules glm gl)
-      list(APPEND extra_pkg_modules gl osmesa)
-   elseif(${FREEBSD})
-      list(APPEND extra_pkg_modules gl osmesa)
-   endif()
+    if (${OPENBSD})
+        #list(APPEND extra_pkg_modules glm gl)
+        list(APPEND extra_pkg_modules gl osmesa)
+    elseif (${FREEBSD})
+        list(APPEND extra_pkg_modules gl osmesa)
+    endif ()
 
     #if (USE_PKGCONFIG)
-        pkg_check_modules(PKGCONFIG glew egl assimp ${extra_pkg_modules})
+    pkg_check_modules(PKGCONFIG glew egl assimp ${extra_pkg_modules})
 
     #endif ()
-    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive  ${EXTRA_CXX_TARGET_COMPILER_OPTIONS}>)
-    target_compile_options(static_${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive  ${EXTRA_CXX_TARGET_COMPILER_OPTIONS}>)
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive ${EXTRA_CXX_TARGET_COMPILER_OPTIONS}>)
+    target_compile_options(static_${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive ${EXTRA_CXX_TARGET_COMPILER_OPTIONS}>)
     target_compile_definitions(static_${PROJECT_NAME} PRIVATE CUBE)
 
     target_compile_options(${PROJECT_NAME} PRIVATE ${PKGCONFIG_CFLAGS})
@@ -144,7 +145,6 @@ elseif (${LINUX} OR ${__BSD__} OR ${ANDROID})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${default_windowing})
     target_link_options(${PROJECT_NAME} PRIVATE -Wl,-z,defs)
     # target_link_options(static_${PROJECT_NAME} PRIVATE --whole-archive)
-
 
 
 endif ()

@@ -1,96 +1,43 @@
 ﻿cmake_minimum_required(VERSION "3.13")
-project(app_graphics3d_continuum CXX)
+project(draw2d_opengl CXX)
 
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 #set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
 
-#add_subdirectory("vendor/glfw")
-
-find_package (Vulkan REQUIRED)
-#set(CMAKE_CXX_STANDARD 17)
-
-set(Vulkan_INCLUDE_DIR "C:/VulkanSDK/1.4.313.0/Include")
-set(Vulkan_LIBRARY "C:/VulkanSDK/1.4.313.0/Lib/vulkan-1.lib")
-include_directories(${Vulkan_INCLUDE_DIR}) 
 
 list(APPEND library_source
-        # src
-        #src/main.cpp
-#        AppCore/vk_application.cpp
-#        AppCore/vk_window.cpp
-#
-#        Renderer/vk_renderer.cpp
 
-#        VK_abstraction/vk_initializers.cpp
-#        VK_abstraction/vk_initializers.h
-#        VK_abstraction/vk_device.cpp
-#        VK_abstraction/vk_device.h
-#        VK_abstraction/vk_swapchain.cpp
-#        VK_abstraction/vk_swapchain.h
-#        VK_abstraction/vk_descriptors.cpp
-#        VK_abstraction/vk_descriptors.h
-#        VK_abstraction/vk_pipeline.cpp
-#        VK_abstraction/vk_pipeline.h
-#        VK_abstraction/vk_renderpass.cpp
-#        VK_abstraction/vk_renderpass.h
-#        VK_abstraction/vk_offscreen.cpp
-#        VK_abstraction/vk_offscreen.h
-##../../../port/graphics3d/vkbootstrap/VkBootstrap.cpp
-#
-#        # vendor
-#        Renderer/vk_buffer.h
-#        Renderer/vk_buffer.cpp
-#        Renderer/Types/vk_basicRenderSystem.cpp
-#        Renderer/Types/vk_basicRenderSystem.h
-#        VK_abstraction/vk_camera.cpp
-#        VK_abstraction/vk_camera.h
-#        VK_abstraction/vk_model.cpp
-#        VK_abstraction/vk_model.h
-#        VK_abstraction/vk_gameObject.cpp
-#        VK_abstraction/vk_gameObject.h
-#        VK_abstraction/vk_input.cpp
-#        VK_abstraction/vk_input.h
-        graphics3d/main_scene.cpp
-        graphics3d/main_scene.h
-        graphics3d/point_light_system.cpp
-        graphics3d/point_light_system.h
-        graphics3d/simple_render_system.cpp
-        graphics3d/simple_render_system.h
         _.cpp
         _.h
-        application.cpp
-        application.h
-        document.cpp
-        document.h
+        bitmap.cpp
+        bitmap.h
+        brush.cpp
+        brush.h
+        character.h
+        color.h
+        draw2d.cpp
+        draw2d.h
+        face.cpp
+        face.h
+        font.cpp
+        font.h
         framework.cpp
         framework.h
-        impact.cpp
-        impact.h
-        main_frame.cpp
-        main_frame.h
-        pane_impact.cpp
-        pane_impact.h
+        graphics.cpp
+        graphics.h
+        image.cpp
+        image.h
+        initialize_opengl_version.cpp
+        object.cpp
+        object.h
+        path.cpp
+        path.h
+        pen.cpp
+        pen.h
+        region.cpp
+        region.h
 )
-
-
-## Define PROJECT_ROOT_DIR for use in the code
-#target_compile_definitions(${PROJECT_NAME} PRIVATE PROJECT_ROOT_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
-
-
-# Include Directories
-##target_include_directories(VKContinuum PUBLIC
-#    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/glm"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/stb"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/GLFW"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/tinyobjloader"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/vkbootstrap"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/vma"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/vk_video"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/tinygltf"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui"
-#    "${CMAKE_CURRENT_SOURCE_DIR}/src"
-#)
 
 # Link vendor libs
 list(APPEND library_references
@@ -101,7 +48,7 @@ list(APPEND library_references
     axis
     base
     bred
-    core
+    gpu_opengl
 )
 
 
@@ -128,7 +75,7 @@ if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE "/MD$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/DEFAULTLIB:msvcrt$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${library_references})
+    target_link_libraries(${PROJECT_NAME} PRIVATE Opengl32 ${library_references})
 elseif (${LINUX})
 
     #if(USE_PKGCONFIG)
@@ -194,4 +141,4 @@ target_include_directories(static_${PROJECT_NAME} PRIVATE ${library_include_dire
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE _${PROJECT_NAME}_project)
 
-add_subdirectory(__implement)
+

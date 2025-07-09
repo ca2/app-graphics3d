@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required(VERSION "3.13")
-project(draw2d_opengl CXX)
+project(draw2d_vulkan CXX)
 
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -14,12 +14,9 @@ list(APPEND library_source
         bitmap.h
         brush.cpp
         brush.h
-        character.h
         color.h
         draw2d.cpp
         draw2d.h
-        face.cpp
-        face.h
         font.cpp
         font.h
         framework.cpp
@@ -28,7 +25,6 @@ list(APPEND library_source
         graphics.h
         image.cpp
         image.h
-        initialize_opengl_version.cpp
         object.cpp
         object.h
         path.cpp
@@ -48,7 +44,7 @@ list(APPEND library_references
     axis
     base
     bred
-    core
+        gpu_vulkan
 )
 
 
@@ -122,10 +118,11 @@ foreach(SHADER_FILE ${SHADER_FILES})
     list(APPEND SPIRV_BINARIES ${SPIRV_OUTPUT_DIR}/${FILE_NAME}.spv)
 endforeach()
 
-add_custom_target(CompileShaders ALL DEPENDS ${SPIRV_BINARIES})
+
+add_custom_target(_draw2d_vulkan_shaders ALL DEPENDS ${SPIRV_BINARIES})
 
 # Ensure shaders are compiled before the VKContinuum executable
-add_dependencies(${PROJECT_NAME} CompileShaders)
+add_dependencies(${PROJECT_NAME} _draw2d_vulkan_shaders)
 
 
 

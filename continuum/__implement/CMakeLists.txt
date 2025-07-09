@@ -72,6 +72,11 @@ add_dependencies(${PROJECT_NAME} crypto_openssl)
 add_dependencies(${PROJECT_NAME} experience_core)
 add_dependencies(${PROJECT_NAME} folder_zip)
 
+add_dependencies(${PROJECT_NAME} draw2d_direct2d)
+add_dependencies(${PROJECT_NAME} draw2d_directx11)
+add_dependencies(${PROJECT_NAME} draw2d_opengl)
+add_dependencies(${PROJECT_NAME} draw2d_vulkan)
+
 
 list(APPEND executable_include_directories ${CMAKE_CURRENT_SOURCE_DIR})
 list(APPEND executable_include_directories ${CMAKE_CURRENT_SOURCE_DIR}/..)
