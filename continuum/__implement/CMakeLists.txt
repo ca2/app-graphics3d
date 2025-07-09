@@ -15,19 +15,17 @@ endif()
 add_executable(${PROJECT_NAME} ${application_source})
 
 
-
-
 list(APPEND executable_references
-   acme
-   apex
-   aqua
-   aura
-   axis
-   base
+        acme
+        apex
+        aqua
+        aura
+        axis
+        base
         bred
         core
-   app_graphics3d_continuum
-   )
+        app_graphics3d_continuum
+)
 
 
 if(${LINUX} OR ${__BSD__})
@@ -73,10 +71,16 @@ add_dependencies(${PROJECT_NAME} experience_core)
 add_dependencies(${PROJECT_NAME} folder_zip)
 
 add_dependencies(${PROJECT_NAME} draw2d_direct2d)
+add_dependencies(${PROJECT_NAME} write_text_direct2d)
 add_dependencies(${PROJECT_NAME} draw2d_directx11)
+add_dependencies(${PROJECT_NAME} write_text_directx11)
 add_dependencies(${PROJECT_NAME} draw2d_opengl)
 add_dependencies(${PROJECT_NAME} draw2d_vulkan)
 
+add_dependencies(${PROJECT_NAME} graphics3d_directx11)
+add_dependencies(${PROJECT_NAME} graphics3d_directx12)
+add_dependencies(${PROJECT_NAME} graphics3d_opengl)
+add_dependencies(${PROJECT_NAME} graphics3d_vulkan)
 
 list(APPEND executable_include_directories ${CMAKE_CURRENT_SOURCE_DIR})
 list(APPEND executable_include_directories ${CMAKE_CURRENT_SOURCE_DIR}/..)

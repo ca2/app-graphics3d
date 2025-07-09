@@ -10,6 +10,7 @@ list(APPEND library_source
 
         _.cpp
         _.h
+        _factory.cpp
         bitmap.cpp
         bitmap.h
         brush.cpp
@@ -122,11 +123,17 @@ foreach(SHADER_FILE ${SHADER_FILES})
     list(APPEND SPIRV_BINARIES ${SPIRV_OUTPUT_DIR}/${FILE_NAME}.spv)
 endforeach()
 
-add_custom_target(CompileShaders ALL DEPENDS ${SPIRV_BINARIES})
+add_custom_target(_draw2d_opengl_shaders ALL DEPENDS ${SPIRV_BINARIES})
 
 # Ensure shaders are compiled before the VKContinuum executable
-add_dependencies(${PROJECT_NAME} CompileShaders)
+add_dependencies(${PROJECT_NAME} _draw2d_opengl_shaders)
+if(${WIN32})
+add_dependencies(${PROJECT_NAME} typeface_gdiplus)
+endif()
 
+if(${WIN32})
+    add_dependencies(${PROJECT_NAME} typeface_freetype)
+endif()
 
 
 

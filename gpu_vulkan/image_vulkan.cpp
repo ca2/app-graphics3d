@@ -5,13 +5,6 @@
 #include "acme/_operating_system.h"
 
 
-#ifdef WINDOWS_DESKTOP
-//#include <gl/glew.h>
-//#include <gl/gl.h>
-#include <glad.h>
-#endif
-
-
 CLASS_DECL_GPU_VULKAN void image_gl_set(::image::image *pimage)
 {
 

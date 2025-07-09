@@ -4,7 +4,7 @@
 #include "bred/graphics3d/model.h"
 #include "gpu_opengl/model_buffer.h"
 
-#include <glad.h> 
+#include <glad/glad.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

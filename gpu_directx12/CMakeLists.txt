@@ -2,47 +2,77 @@ cmake_minimum_required(VERSION 3.16)
 project(gpu_directx12 CXX)
 
 
-
 message(STATUS "PROJECT_NAME is ${PROJECT_NAME}")
 
 list(APPEND library_source
         _.cpp
         _.h
         _factory.cpp
+        _gpu_directx12.cpp
+        approach.cpp
+        approach.h
         assimp.cpp
         assimp.h
+        buffer.cpp
+        buffer.h
+        command_buffer.cpp
+        command_buffer.h
         cpu_buffer.cpp
         cpu_buffer.h
         context.cpp
         context.h
+        d3d12_resource.cpp
+        d3d12_resource.h
+        debug.cpp
+        debug.h
+        device.cpp
+        device.h
+        depth_stencil.cpp
+        depth_stencil.h
+        descriptors.cpp
+        descriptors.h
+        dxgi_debug.cpp
+        dxgi_debug.h
         framework.cpp
         framework.h
         image_directx12.cpp
+        input_layout.cpp
+        input_layout.h
         object.cpp
         object.h
-        directx12.cpp
-        directx12.h
+        offscreen_render_target_view.cpp
+        offscreen_render_target_view.h
+        physical_device.cpp
+        physical_device.h
         program.cpp
         program.h
+        render_target_view.cpp
+        render_target_view.h
+        renderer.cpp
+        renderer.h
         shader.cpp
-        shader.h)
+        shader.h
+        swap_chain.cpp
+        swap_chain.h
+        texture.cpp
+        texture.h
+operating_system/windows.cpp
+)
 
 if (WIN32)
     list(APPEND library_source
-            context_win32.cpp
-            context_win32.h
-            )
+    )
 
 endif ()
 
 
-if(${LINUX} OR ${__BSD__})
+if (${LINUX} OR ${__BSD__})
     list(APPEND library_source
             context_egl.cpp
             context_egl.h
             #context_glx.cpp
             #context_glx.h
-            )
+    )
 
 endif ()
 
@@ -53,7 +83,7 @@ if (APPLE)
             context_cgl.h
             context_fbo.cpp
             context_fbo.h
-            )
+    )
 
 endif ()
 
@@ -63,21 +93,25 @@ list(APPEND library_references
         apex
         aqua
         aura
-        )
+        axis
+        base
+        bred
+        acme_windows_common
+)
 
 
-if(${LINUX} OR ${__BSD__})
+if (${LINUX} OR ${__BSD__})
 
     list(APPEND library_references
             aura_posix
-       #windowing_system_x11
-            )
+            #windowing_system_x11
+    )
 
-else()
+else ()
 
-   #list(APPEND library_references
+    #list(APPEND library_references
     #  glad
-   #)
+    #)
 
 
 endif ()
@@ -107,31 +141,30 @@ if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE "/MD$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/DEFAULTLIB:msvcrt$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/IMPLIB:${LIBRARY_OUTPUT_PATH}/${PROJECT_NAME}.lib")
-    target_link_options(${PROJECT_NAME} PRIVATE "/DEF:${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.def")
-    target_link_libraries(${PROJECT_NAME} PRIVATE assimp glu32 directx1232)
+    #target_link_options(${PROJECT_NAME} PRIVATE "/DEF:${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.def")
+    target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${library_references} ${global_library_references})
 
 
 elseif (${LINUX} OR ${__BSD__} OR ${ANDROID})
 
-   target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
-   #set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
+    #set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 
-
-   if(${OPENBSD})
-      #list(APPEND extra_pkg_modules glm gl)
-      list(APPEND extra_pkg_modules gl osmesa)
-   elseif(${FREEBSD})
-      list(APPEND extra_pkg_modules gl osmesa)
-   endif()
+    if (${OPENBSD})
+        #list(APPEND extra_pkg_modules glm gl)
+        list(APPEND extra_pkg_modules gl osmesa)
+    elseif (${FREEBSD})
+        list(APPEND extra_pkg_modules gl osmesa)
+    endif ()
 
     #if (USE_PKGCONFIG)
-        pkg_check_modules(PKGCONFIG glew egl assimp ${extra_pkg_modules})
+    pkg_check_modules(PKGCONFIG glew egl assimp ${extra_pkg_modules})
 
     #endif ()
-    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive  ${EXTRA_CXX_TARGET_COMPILER_OPTIONS}>)
-    target_compile_options(static_${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive  ${EXTRA_CXX_TARGET_COMPILER_OPTIONS}>)
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive ${EXTRA_CXX_TARGET_COMPILER_OPTIONS}>)
+    target_compile_options(static_${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive ${EXTRA_CXX_TARGET_COMPILER_OPTIONS}>)
     target_compile_definitions(static_${PROJECT_NAME} PRIVATE CUBE)
 
     target_compile_options(${PROJECT_NAME} PRIVATE ${PKGCONFIG_CFLAGS})
@@ -144,7 +177,6 @@ elseif (${LINUX} OR ${__BSD__} OR ${ANDROID})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${default_windowing})
     target_link_options(${PROJECT_NAME} PRIVATE -Wl,-z,defs)
     # target_link_options(static_${PROJECT_NAME} PRIVATE --whole-archive)
-
 
 
 endif ()

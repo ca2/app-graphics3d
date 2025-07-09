@@ -7,7 +7,7 @@
 
 #ifdef WINDOWS_DESKTOP
 #define GLAD_GLAPI_EXPORT
-#include "glad.h"
+#include <glad/glad.h>
 #else
 //#include <GL/gl.h>
 //#include <GL/glu.h>

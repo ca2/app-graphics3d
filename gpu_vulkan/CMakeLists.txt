@@ -8,8 +8,15 @@ list(APPEND library_source
         _.cpp
         _.h
         _factory.cpp
+        _gpu_vulkan.cpp
+        accumulation_render_pass.cpp
+        accumulation_render_pass.h
+        approach.cpp
+        approach.h
         assimp.cpp
         assimp.h
+        command_buffer.cpp
+        command_buffer.h
         context.cpp
         context.h
         context_object.cpp
@@ -56,6 +63,15 @@ list(APPEND library_source
         texture.h)
 
 
+if (${WIN32})
+
+    list(APPEND library_source
+            approach_win32.cpp
+            #windowing_system_x11
+            operating_system/windows.cpp
+    )
+
+endif()
 
 list(APPEND library_references
         acme
@@ -67,8 +83,7 @@ list(APPEND library_references
         bred
 )
 
-
-if (${LINUX} OR ${__BSD__})
+    if (${LINUX} OR ${__BSD__})
 
     list(APPEND library_references
             aura_posix
@@ -110,7 +125,7 @@ if (MSVC)
     target_link_options(${PROJECT_NAME} PRIVATE "/DEFAULTLIB:msvcrt$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/IMPLIB:${LIBRARY_OUTPUT_PATH}/${PROJECT_NAME}.lib")
     target_link_options(${PROJECT_NAME} PRIVATE "/DEF:${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.def")
-    target_link_libraries(${PROJECT_NAME} PRIVATE assimp glu32 vulkan32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE vulkan-1)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${library_references} ${global_library_references})
 
 

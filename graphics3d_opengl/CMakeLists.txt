@@ -1,83 +1,19 @@
 cmake_minimum_required(VERSION 3.16)
-project(opengl_land_landen CXX)
+project(graphics3d_opengl CXX)
 
 
 list(APPEND library_source
-        opengl/application.cpp
-        opengl/application.h
-        opengl/benchmark.hpp
-        opengl/camera.hpp
-        opengl/CMakeLists.txt
-        opengl/CommandLineParser.hpp
-        opengl/Entrypoints.h
-        opengl/frustum.hpp
-        opengl/keycodes.h
-        opengl/keycodes.hpp
-        opengl/offscreen.cpp
-        opengl/offscreen.h
-        #opengl/render_headless.cpp
-        #opengl/render_headless.h
-        opengl/shared.h
-        #opengl/swap_chain.cpp
-        #opengl/swap_chain.h
-        #opengl/swap_chain2.cpp
-        #opengl/swap_chain2.h
-        opengl/threadpool.hpp
-        opengl/vk_container.cpp
-        opengl/vk_container.h
-        #opengl/opengl_example_base_with_swap_chain.cpp
-        #opengl/opengl_example_base_with_swap_chain.h
-        opengl/opengl_example_base_no_swap_chain.cpp
-        opengl/opengl_example_base_no_swap_chain.h
-        opengl/OpenGLAndroid.cpp
-        opengl/OpenGLAndroid.h
-        opengl/OpenGLBuffer.cpp
-        opengl/OpenGLBuffer.h
-        opengl/OpenGLDebug.cpp
-        opengl/OpenGLDebug.h
-        opengl/OpenGLDevice.cpp
-        opengl/OpenGLDevice.h
-        opengl/OpenGLFrameBuffer.hpp
-        opengl/OpenGLglTFModel.cpp
-        opengl/OpenGLglTFModel.h
-        opengl/OpenGLInitializers.h
-        opengl/OpenGLInitializers.hpp
-        #opengl/OpenGLRaytracingSample.cpp
-        #opengl/OpenGLRaytracingSample.h
-        #opengl/OpenGLSwapChain.cpp
-        #opengl/OpenGLSwapChain.h
-        #opengl/OpenGLTexture.cpp
-        #opengl/OpenGLTexture.h
-        opengl/OpenGLTools.cpp
-        opengl/OpenGLTools.h
-        opengl/OpenGLUIOverlay.cpp
-        opengl/OpenGLUIOverlay.h
-   _.cpp
-   _.h
-   application.cpp
-   application.h
-#   child_frame.cpp
-#   child_frame.h
-   document.cpp
-   document.h
-   #edit_impact.cpp
-   #edit_impact.h
-   frame.cpp
-   frame.h
-   framework.cpp
-   framework.h
-   impact.cpp
-   impact.h
-   #main_impact.cpp
-   #main_impact.h
-   #pane_impact.cpp
-   #pane_impact.h
-   #toggle_impact.cpp
-   #toggle_impact.h
-   #top_impact.cpp
-   #top_impact.h
-   #window.cpp
-   #window.h
+        _.cpp
+        _.h
+        _factory.cpp
+        camera.cpp
+        camera.h
+        engine.cpp
+        engine.h
+        framework.cpp
+        framework.h
+        model.cpp
+        model.h
 )
 
 
@@ -89,8 +25,8 @@ list(APPEND library_references
         axis
         base
         bred
-        core
         imgui
+        gpu_opengl
 )
 
 
@@ -111,8 +47,7 @@ if (MSVC)
    target_compile_options(${PROJECT_NAME} PRIVATE "/MD$<$<CONFIG:Debug>:d>")
    target_link_options(${PROJECT_NAME} PRIVATE "/DEFAULTLIB:msvcrt$<$<CONFIG:Debug>:d>")
    target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
-   target_link_libraries(${PROJECT_NAME} PRIVATE acme apex aqua aura axis base)
-   target_compile_definitions(${PROJECT_NAME} PRIVATE VK_USE_PLATFORM_WIN32_KHR)
+   target_link_libraries(${PROJECT_NAME} PRIVATE ${library_references} glad)
 elseif (${LINUX})
    #if(USE_PKGCONFIG)
    pkg_check_modules(PKGCONFIG opengl)
@@ -146,9 +81,5 @@ target_include_directories(static_${PROJECT_NAME} PRIVATE ${library_include_dire
 
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE _${PROJECT_NAME}_project)
-
-
-add_subdirectory(__implement)
-
 
 

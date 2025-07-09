@@ -10,6 +10,7 @@ list(APPEND library_source
 
         _.cpp
         _.h
+        _factory.cpp
         bitmap.cpp
         bitmap.h
         brush.cpp
@@ -71,7 +72,7 @@ if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE "/MD$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/DEFAULTLIB:msvcrt$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${library_references})
+    target_link_libraries(${PROJECT_NAME} PRIVATE vulkan-1 ${library_references})
 elseif (${LINUX})
 
     #if(USE_PKGCONFIG)
