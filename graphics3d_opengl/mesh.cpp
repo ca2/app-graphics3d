@@ -1,10 +1,10 @@
 #include "framework.h"
-#include "glad.h"
 //#include "GLFW/glfw3.h"  
 #include "mesh.h"
 #include "texture.h"
 #include "app/gpu_opengl/shader.h"
-#include <vector>
+#include <glad/glad.h>
+// #include <vector>
 
 
 namespace graphics3d_opengl

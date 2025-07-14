@@ -14,7 +14,7 @@ namespace draw2d_vkvg
 {
 
 
-   class CLASS_DECL_DRAW2d_VKVG pen : 
+   class CLASS_DECL_DRAW2D_VKVG pen : 
       virtual public ::draw2d_vkvg::object,
       virtual public ::draw2d::pen
    {

@@ -1906,6 +1906,7 @@ namespace gpu_vulkan
 
          m_pshaderImageBlend->m_bEnableBlend = true;
          m_pshaderImageBlend->m_bDisableDepthTest = true;
+         m_pshaderImageBlend->m_iSamplerSlot = 0;
 
          ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
@@ -2224,9 +2225,9 @@ namespace gpu_vulkan
 
       }
 
-      //auto pshader = get_image_blend_shader();
+      auto pshaderImageBlend = _get_image_blend_shader();
 
-      m_pshaderImageBlend->bind(m_pgpurendertarget->current_texture(), pgputexture);
+      pshaderImageBlend->bind(m_pgpurendertarget->current_texture(), pgputexture);
 
       //m_pshaderImageBlend->_bind_sampler(image, 0);
 

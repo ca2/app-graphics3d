@@ -5,7 +5,7 @@
 //{
 //
 //
-//   class CLASS_DECL_DRAW2d_VKVG factory_exchange :
+//   class CLASS_DECL_DRAW2D_VKVG factory_exchange :
 //      virtual public ::object
 //   {
 //   public:

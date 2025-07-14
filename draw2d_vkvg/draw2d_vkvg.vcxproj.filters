@@ -68,7 +68,7 @@
     <ClInclude Include="draw2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="_vulkan.h">
+    <ClInclude Include="_vkvg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="color.h">
@@ -122,6 +122,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="draw2d_win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_vkvg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

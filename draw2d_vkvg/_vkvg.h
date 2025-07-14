@@ -7,6 +7,11 @@
 #undef USUAL_OPERATING_SYSTEM_SUPPRESSIONS
 #include "acme/_operating_system.h"
 
+#define VKVG_SHARED_LINKING
+#include <vkh.h>
+#include <vkvg.h>
+
+
 #if defined(WINDOWS_DESKTOP)
 #define VK_USE_PLATFORM_WIN32_KHR
 #else
@@ -49,4 +54,5 @@ namespace draw2d_vkvg
 } // namespace draw2d_vkvg
 
 
+void copy(vkvg_matrix_t* pcairomatrix, const ::geometry2d::matrix* pmatrix);
 

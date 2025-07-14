@@ -1,5 +1,4 @@
 #include "framework.h"
-#include "_vulkan.h"
 #include "font.h"
 
 

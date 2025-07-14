@@ -14,7 +14,7 @@ namespace draw2d_vkvg
 {
 
 
-   class CLASS_DECL_DRAW2d_VKVG image :
+   class CLASS_DECL_DRAW2D_VKVG image :
       virtual public ::image::image
    {
    public:

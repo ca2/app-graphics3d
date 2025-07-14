@@ -11,7 +11,7 @@ namespace draw2d_vkvg
 {
 
 
-   class CLASS_DECL_DRAW2d_VKVG font : 
+   class CLASS_DECL_DRAW2D_VKVG font : 
       virtual public ::write_text::font
    {
    public:

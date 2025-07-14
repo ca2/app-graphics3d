@@ -1,13 +1,12 @@
 #include "framework.h"
-#include "_vulkan.h"
 #include "draw2d.h"
 #include "acme/exception/resource.h"
 #include "acme/platform/application.h"
 #include "acme/prototype/prototype/memory.h"
 
 
-//CLASS_DECL_DRAW2d_VKVG void initialize_vulkan();
-//CLASS_DECL_DRAW2d_VKVG void terminate_vulkan();
+//CLASS_DECL_DRAW2D_VKVG void initialize_vulkan();
+//CLASS_DECL_DRAW2D_VKVG void terminate_vulkan();
 
 
 namespace draw2d_vkvg

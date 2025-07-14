@@ -1,8 +1,8 @@
 #pragma once
 
-#include <glad.h>
-#include <string>
-#include <vector>
+#include <glad/glad.h>
+//#include <string>
+//#include <vector>
 
 
 namespace graphics3d_opengl
@@ -13,7 +13,7 @@ namespace graphics3d_opengl
    
    {
    public:
-      sky_box(::particle * pparticle, const ::array<std::string>& faces);
+      sky_box(::particle * pparticle, const ::string_array & faces);
       ~sky_box();
 
       void SetupSkybox();
@@ -22,7 +22,7 @@ namespace graphics3d_opengl
    private:
       unsigned int skyboxVAO, skyboxVBO, skyboxEBO;
       unsigned int cubemapTexture;
-      ::array<std::string> facesCubemap;
+      ::string_array facesCubemap;
 
       void LoadCubemapTextures();
    };

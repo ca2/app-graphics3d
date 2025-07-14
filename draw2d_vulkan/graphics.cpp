@@ -359,46 +359,49 @@ namespace draw2d_vulkan
       //   return false;
       //}
 
+      defer_yield_gpu_context(rectanglePlacement);
+
       auto pcontext = gpu_context();
 
-      if (!pcontext)
-      {
 
-         auto pgpuapproach = application()->get_gpu_approach();
+      //if (!pcontext)
+      //{
 
-         //if (!m_puserinteraction)
-         //{
+      //   auto pgpuapproach = application()->get_gpu_approach();
 
-         //   m_puserinteraction = dynamic_cast <::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+      //   //if (!m_puserinteraction)
+      //   //{
 
-         //}
+      //   //   m_puserinteraction = dynamic_cast <::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
 
-         //ASSERT(m_puserinteraction);
+      //   //}
 
-         auto pgpudevice = pgpuapproach->get_gpu_device();
+      //   //ASSERT(m_puserinteraction);
 
-         auto pgpucontext = pgpudevice->create_draw2d_context(::gpu::e_output_gpu_buffer, rectanglePlacement.size());
+      //   auto pgpudevice = pgpuapproach->get_gpu_device();
 
-         //::gpu::start_context_t startcontext;
-         //startcontext.m_pparticle = this;
-         //startcontext.m_pgpudevice = pgpudevice;
-         //startcontext.m_eoutput = ::gpu::e_output_color_and_alpha_accumulation_buffers;
-         //startcontext.m_rectanglePlacement = rectanglePlacement;
+      //   auto pgpucontext = pgpudevice->create_draw2d_context(::gpu::e_output_gpu_buffer, rectanglePlacement.size());
 
-         auto pgpucontextNew = pgpucontext;
+      //   //::gpu::start_context_t startcontext;
+      //   //startcontext.m_pparticle = this;
+      //   //startcontext.m_pgpudevice = pgpudevice;
+      //   //startcontext.m_eoutput = ::gpu::e_output_color_and_alpha_accumulation_buffers;
+      //   //startcontext.m_rectanglePlacement = rectanglePlacement;
 
-         set_gpu_context(pgpucontextNew);
+      //   auto pgpucontextNew = pgpucontext;
 
-         pcontext = gpu_context();
+      //   set_gpu_context(pgpucontextNew);
 
-         pcontext->m_pgpucompositor = this;
-         //m_pgpucontextCompositor = pgpudevice->start_gpu_output_context(
-         //   this,
-         //   ::gpu::e_output_color_and_alpha_accumulation_buffers,
-         //   rectanglePlacement
-         //);
+      //   pcontext = gpu_context();
 
-      }
+      //   pcontext->m_pgpucompositor = this;
+      //   //m_pgpucontextCompositor = pgpudevice->start_gpu_output_context(
+      //   //   this,
+      //   //   ::gpu::e_output_color_and_alpha_accumulation_buffers,
+      //   //   rectanglePlacement
+      //   //);
+
+      //}
 
       //auto pcontext = gpu_context();
 
@@ -1013,13 +1016,13 @@ namespace draw2d_vulkan
       return size;
    }
 
-   // non-virtual helpers calling virtual mapping functions
-   int_point graphics::set_origin(const ::int_point& point)
-   {
+   //// non-virtual helpers calling virtual mapping functions
+   //int_point graphics::set_origin(const ::int_point& point)
+   //{
 
-      return set_origin(point.x(), point.y());
+   //   return set_origin(point.x(), point.y());
 
-   }
+   //}
 
    //int_size graphics::set_context_extents(const ::int_size & size)
    //{
@@ -5587,21 +5590,21 @@ namespace draw2d_vulkan
    }
 
 
-   int_point graphics::set_origin(int x, int y)
-   {
+   //int_point graphics::set_origin(int x, int y)
+   //{
 
-      return ::draw2d::graphics::set_origin(x, y);
+   //   return ::draw2d::graphics::set_origin(x, y);
 
-   }
-
-
-   int_point graphics::offset_origin(int nWidth, int nHeight)
-   {
-
-      return ::draw2d::graphics::offset_origin(nWidth, nHeight);
+   //}
 
 
-   }
+   //int_point graphics::offset_origin(int nWidth, int nHeight)
+   //{
+
+   //   return ::draw2d::graphics::offset_origin(nWidth, nHeight);
+
+
+   //}
 
 
    //int_size graphics::set_context_extents(int x, int y)

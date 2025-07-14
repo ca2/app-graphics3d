@@ -2,7 +2,7 @@
 
 
 #include "acme/graphics/image/image32.h"
-#include "aura/graphics/draw2d/graphics.h"
+#include "bred/gpu/graphics.h"
 #include "bred/gpu/renderer.h"
 
 
@@ -18,18 +18,20 @@
 namespace draw2d_vkvg
 {
 
+   
    class draw2d;
 
-   class CLASS_DECL_DRAW2d_VKVG graphics :
-      virtual public ::draw2d::graphics,
-      virtual public ::gpu::renderer
+
+   class CLASS_DECL_DRAW2D_VKVG graphics :
+      virtual public ::gpu::graphics
+      //,virtual public ::gpu::renderer
    {
    public:
 
       VkvgDevice                       m_vkvgdevice;
       VkvgSurface                      m_vkvgsurface;
       VkvgContext                      m_pdc;
-      ::pointer < ::gpu_vulkan::texture > m_ptextureEndDraw;
+      ::pointer < ::gpu::texture > m_ptextureEndDraw;
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
       //::plusplus::GraphicsPath *     m_ppath;
@@ -126,6 +128,7 @@ namespace draw2d_vkvg
                     const char * lpszOutput, const void * lpInitData);
       void create_memory_graphics(const ::int_size & size = {}) override;
       void create_window_graphics(::windowing::window * pwindow) override;
+      void create_for_window_draw2d(::user::interaction* puserinteraction, const ::int_size& size) override;
       void CreateCompatibleDC(::draw2d::graphics * pgraphics) override;
 
       virtual bool vulkan_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement);
@@ -210,9 +213,9 @@ namespace draw2d_vkvg
       //virtual int_point get_origin() const;
       virtual int SetMapMode(int nMapMode);
       // Context Origin
-      virtual int_point set_origin(int x, int y);
-      virtual int_point set_origin(const ::int_point & point);
-      virtual int_point offset_origin(int nWidth, int nHeight);
+      //virtual int_point set_origin(int x, int y);
+      //virtual int_point set_origin(const ::int_point & point);
+      //virtual int_point offset_origin(int nWidth, int nHeight);
 
       // Context Extent
       virtual int_size get_context_extents() const;
@@ -525,13 +528,14 @@ namespace draw2d_vkvg
       void draw(::draw2d::path * ppath, ::draw2d::pen * ppen);
       void fill(::draw2d::path * ppath);
       void fill(::draw2d::path * ppath, ::draw2d::brush * pbrush);
-
+      bool draw(::draw2d::pen* ppen);
+      void draw();
 
       bool fill(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
       bool _fill1(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
       bool _fill2(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
 
-
+      bool _set(::draw2d::pen* ppen);
       bool _set(::draw2d::brush* pbrush, double x = 0.0, double y = 0.0);
       //float GetMiterLimit() const;
       //bool SetMiterLimit(float fMiterLimit);
@@ -628,9 +632,9 @@ namespace draw2d_vkvg
    };
 
 
-   CLASS_DECL_DRAW2d_VKVG graphics * thread_graphics();
+   CLASS_DECL_DRAW2D_VKVG graphics * thread_graphics();
 
-   CLASS_DECL_DRAW2d_VKVG void thread_graphics(graphics * graphics);
+   CLASS_DECL_DRAW2D_VKVG void thread_graphics(graphics * graphics);
 
 
 } // namespace draw2d_vkvg

@@ -11,7 +11,7 @@ namespace draw2d_vkvg
 {
 
 
-   class CLASS_DECL_DRAW2d_VKVG draw2d :
+   class CLASS_DECL_DRAW2D_VKVG draw2d :
       virtual public ::gpu::draw2d
    {
    public:

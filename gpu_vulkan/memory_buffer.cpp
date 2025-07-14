@@ -46,15 +46,31 @@ namespace gpu_vulkan
    void memory_buffer::on_initialize_memory_buffer(const void* dataStatic, memsize sizeStatic)
    {
 
-      if (m_etype == e_type_vertex_buffer)
+      if (m_etype == e_type_vertex_buffer
+         || m_etype == e_type_index_buffer)
       {
 
          ::cast < context > pcontext = m_pcontext;
 
+         VkBufferUsageFlags usage;
+
+         if (m_etype == e_type_vertex_buffer)
+         {
+
+            usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+
+         }
+         else
+         {
+
+            usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+
+         }
+
          VkBufferCreateInfo bufferInfo = {
             .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
             .size = (uint64_t)this->total_size_in_bytes(),
-            .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+            .usage = usage,
             .sharingMode = VK_SHARING_MODE_EXCLUSIVE
          };
          vkCreateBuffer(pcontext->logicalDevice(), &bufferInfo, NULL, &m_vkbuffer);

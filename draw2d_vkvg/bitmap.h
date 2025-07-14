@@ -96,7 +96,7 @@ namespace draw2d_vkvg
 {
 
 
-   class CLASS_DECL_DRAW2d_VKVG bitmap : 
+   class CLASS_DECL_DRAW2D_VKVG bitmap : 
       virtual public ::draw2d::bitmap
    {
    public:

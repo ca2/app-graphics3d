@@ -1,5 +1,4 @@
 #include "framework.h"
-#include "_vulkan.h"
 #include "image.h"
 #include "acme/platform/application.h"
 

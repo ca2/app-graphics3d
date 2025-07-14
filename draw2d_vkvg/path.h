@@ -8,7 +8,7 @@ namespace draw2d_vkvg
 {
 
 
-   class CLASS_DECL_DRAW2d_VKVG path :
+   class CLASS_DECL_DRAW2D_VKVG path :
       virtual public ::draw2d::path
    {
    public:

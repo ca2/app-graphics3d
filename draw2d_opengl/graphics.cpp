@@ -884,13 +884,13 @@ void main() {
       return size;
    }
 
-   // non-virtual helpers calling virtual mapping functions
-   int_point graphics::set_origin(const ::int_point& point)
-   {
+   //// non-virtual helpers calling virtual mapping functions
+   //int_point graphics::set_origin(const ::int_point& point)
+   //{
 
-      return set_origin(point.x(), point.y());
+   //   return set_origin(point.x(), point.y());
 
-   }
+   //}
 
    //int_size graphics::set_context_extents(const ::int_size & size)
    //{
@@ -4563,21 +4563,21 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   int_point graphics::set_origin(int x, int y)
-   {
+   //int_point graphics::set_origin(int x, int y)
+   //{
 
-      return ::draw2d::graphics::set_origin(x, y);
+   //   return ::draw2d::graphics::set_origin(x, y);
 
-   }
-
-
-   int_point graphics::offset_origin(int nWidth, int nHeight)
-   {
-
-      return ::gpu::graphics::offset_origin(nWidth, nHeight);
+   //}
 
 
-   }
+   //int_point graphics::offset_origin(int nWidth, int nHeight)
+   //{
+
+   //   return ::gpu::graphics::offset_origin(nWidth, nHeight);
+
+
+   //}
 
 
    //int_size graphics::set_context_extents(int x, int y)
