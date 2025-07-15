@@ -720,6 +720,7 @@
     <ClInclude Include="bitmap.h" />
     <ClInclude Include="brush.h" />
     <ClInclude Include="draw2d.h" />
+    <ClInclude Include="keep.h" />
     <ClInclude Include="_.h" />
     <ClInclude Include="factory_exchange.h" />
     <ClInclude Include="font.h" />
@@ -743,6 +744,7 @@
     <ClCompile Include="bitmap.cpp" />
     <ClCompile Include="brush.cpp" />
     <ClCompile Include="draw2d.cpp" />
+    <ClCompile Include="keep.cpp" />
     <ClCompile Include="_.cpp" />
     <ClCompile Include="_factory.cpp" />
     <ClCompile Include="font.cpp" />

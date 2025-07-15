@@ -6,6 +6,10 @@
 #include "bred/gpu/renderer.h"
 
 
+typedef void FN_VKVG_TEXT(VkvgContext, const char*);
+typedef FN_VKVG_TEXT* PFN_VKVG_TEXT;
+
+
 //struct OffscreenContext
 //{
 //   HWND window;
@@ -31,7 +35,7 @@ namespace draw2d_vkvg
       VkvgDevice                       m_vkvgdevice;
       VkvgSurface                      m_vkvgsurface;
       VkvgContext                      m_pdc;
-      ::pointer < ::gpu::texture > m_ptextureEndDraw;
+      ::pointer < ::gpu::texture >     m_ptextureCurrent;
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
       //::plusplus::GraphicsPath *     m_ppath;
@@ -49,6 +53,8 @@ namespace draw2d_vkvg
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       ::pointer<::gpu::context>             m_pgpucontextOutput;
+
+   
 
       graphics();
       ~graphics() override;
@@ -70,6 +76,9 @@ namespace draw2d_vkvg
       //oswindow get_window_handle() const;
 //      ::windowing::window * GetWindow() const;
 
+
+      ::gpu::texture* current_target_texture() override;
+
       bool is_gpu_oriented() override;
 
       virtual void thread_select();
@@ -78,7 +87,7 @@ namespace draw2d_vkvg
       //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
 
-
+      void defer_load_font_by_family_name(const ::scoped_string& scopedstrName);
       //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
       //virtual bool Attach(HDC hdc);   // attach/detach affects only the Output DC
@@ -101,7 +110,7 @@ namespace draw2d_vkvg
       //::draw2d::palette_pointer get_current_palette() const;
       ::write_text::font *    get_current_font() override;
       ::draw2d::bitmap *  get_current_bitmap() override;
-
+      ::gpu::frame* end_gpu_layer() override;
 
       void _draw_raw(const ::double_rectangle & rectangleTarget, ::image::image *pimage, const ::image::image_drawing_options & imagedrawingoptionsParam, const ::double_point & pointSrc) override;
 
@@ -305,6 +314,7 @@ namespace draw2d_vkvg
       void poly_bezier_to(const ::double_point * lpPoints,::collection::count nCount);
 
       // Simple Drawing Functions
+      void fill_rectangle(const ::double_rectangle& rectangle, const ::color::color& color) override;
       void fill_rectangle(const ::double_rectangle &  rectangle, ::draw2d::brush* pBrush) override;
       void frame_rectangle(const ::double_rectangle & rectangle, ::draw2d::brush* pBrush) override;
       //bool DrawRect(const ::int_rectangle & rectangle, ::draw2d::pen * ppen);
@@ -340,9 +350,9 @@ namespace draw2d_vkvg
       //bool FillEllipse(int x1, int y1, int x2, int y2);
       //bool FillEllipse(const ::int_rectangle & int_rectangle);
 
-      //virtual bool DrawEllipse(double x1,double y1,double x2,double y2);
+      void draw_ellipse(double x1,double y1,double x2,double y2) override;
       void draw_ellipse(const ::double_rectangle & rectangle) override;
-      //virtual bool fill_ellipse(double x1,double y1,double x2,double y2);
+      void fill_ellipse(double x1,double y1,double x2,double y2) override;
       void fill_ellipse(const ::double_rectangle & rectangle) override;
 
       //virtual bool Pie(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) override;
@@ -409,6 +419,13 @@ namespace draw2d_vkvg
 
       //void text_out(double x, double y, const ::scoped_string & lpszString, character_count nCount) override;
 
+      virtual void internal_draw_text(const block& block, const ::double_rectangle& rectangle, const ::e_align& ealign,
+         const ::e_draw_text& edrawtext);
+
+      virtual void internal_draw_text_vkvg(const block& block, const ::double_rectangle& double_rectangle, const ::e_align& ealign = e_align_top_left, const ::e_draw_text& edrawtext = e_draw_text_none, PFN_VKVG_TEXT pfnText = nullptr);
+
+
+
       void draw_text(const ::scoped_string & str,const ::int_rectangle & rectangle, const ::e_align & ealign = e_align_top_left, const ::e_draw_text & edrawtext = e_draw_text_none);
 
       //void draw_text_ex(const ::scoped_string & str,const ::int_rectangle & rectangle, const ::e_align & ealign = e_align_top_left, const ::e_draw_text & edrawtext = e_draw_text_none,LPDRAWTEXTPARAMS lpDTParams = nullptr);
@@ -417,9 +434,12 @@ namespace draw2d_vkvg
 
       //void draw_text_ex(const ::string & str, const ::double_rectangle & prectd, const ::e_align & ealign = e_align_top_left, const ::e_draw_text & edrawtext = e_draw_text_none) override;
 
+
       //virtual double_size get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex) override;
-      //virtual double_size get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
-      virtual double_size get_text_extent(const ::scoped_string & str) override;
+      using ::gpu::graphics::get_text_extent;
+      ::double_size get_text_extent(const ::scoped_string& scopedstr) override;
+      ::double_size get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
+//      virtual double_size get_text_extent(const ::scoped_string & str) override;
       //virtual bool get_text_extent(double_size & size, const ::scoped_string & lpszString, character_count nCount, character_count iIndex);
       //virtual bool get_text_extent(double_size & size, const ::scoped_string & lpszString, character_count nCount);
       //virtual bool get_text_extent(double_size & size, const ::scoped_string & str);
@@ -528,15 +548,65 @@ namespace draw2d_vkvg
       void draw(::draw2d::path * ppath, ::draw2d::pen * ppen);
       void fill(::draw2d::path * ppath);
       void fill(::draw2d::path * ppath, ::draw2d::brush * pbrush);
-      bool draw(::draw2d::pen* ppen);
-      void draw();
+      //bool draw(::draw2d::pen* ppen);
+      
 
+      bool fill_and_draw(::draw2d::brush* pbrush, ::draw2d::pen* ppen);
       bool fill(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
       bool _fill1(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
       bool _fill2(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
+      bool draw(::draw2d::pen* ppen);
+      bool fill_and_draw();
+      bool fill(double xOrg = 0.0, double yOrg = 0.0);
+      bool _fill1(double xOrg = 0.0, double yOrg = 0.0);
+      bool _fill2(double xOrg = 0.0, double yOrg = 0.0);
+      void draw();
 
+      //bool fill(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
+      //bool _fill1(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
+      //bool _fill2(::draw2d::brush* pbrush, double xOrg = 0.0, double yOrg = 0.0);
+
+
+      bool _set(::write_text::font* pfont);
       bool _set(::draw2d::pen* ppen);
+      bool _set(::draw2d::path* ppath);
       bool _set(::draw2d::brush* pbrush, double x = 0.0, double y = 0.0);
+
+      bool _set(::geometry2d::item* pitem);
+
+      bool _set(const ::int_point_array& pointa);
+      bool _set(const ::double_point_array& pointa);
+
+      bool _set(const ::double_arc& arc, const ::pointer<::draw2d::region>& pregion);
+      //bool _set(const ::line & line);
+      //bool _set(const ::lines & lines);
+      bool _set(const ::double_rectangle& rectangle, const ::pointer<::draw2d::region>& pregion);
+      bool _set(const ::double_ellipse& ellipse, const ::pointer<::draw2d::region>& pregion);
+      bool _set(const ::double_polygon& polygon, const ::pointer<::draw2d::region>& pregion);
+      bool _set(const ::write_text::text_out& textout, const ::pointer<::draw2d::region>& pregion);
+      bool _set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::region>& pregion);
+
+
+      bool _set(const ::double_arc& arc, const ::pointer<::draw2d::path>& ppath);
+      bool _set(const ::double_line& line, const ::pointer<::draw2d::path>& ppath);
+      bool _set(const ::double_lines& lines, const ::pointer<::draw2d::path>& ppath);
+      bool _set(const ::double_rectangle& rectangle, const ::pointer<::draw2d::path>& ppath);
+      bool _set(const ::double_ellipse& ellipse, const ::pointer<::draw2d::path>& ppath);
+      bool _set(const ::double_polygon& polygon, const ::pointer<::draw2d::path>& ppath);
+      bool _set(const ::write_text::text_out& textout, const ::pointer<::draw2d::path>& ppath);
+      bool _set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::path>& ppath);
+
+
+      bool _set(const ::double_arc& arc);
+      bool _set(const ::double_line& line);
+      bool _set(const ::double_lines& lines);
+      bool _set(const ::double_rectangle& rectangle);
+      bool _set(const ::double_ellipse& ellipse);
+      bool _set(const ::double_polygon& polygon);
+      bool _set(const ::write_text::text_out& textout);
+      bool _set(const ::write_text::draw_text& drawtext);
+
+
       //float GetMiterLimit() const;
       //bool SetMiterLimit(float fMiterLimit);
       //int GetPath(::int_point * lpPoints, LPBYTE lpTypes,::collection::count nCount) const;

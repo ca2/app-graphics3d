@@ -863,17 +863,22 @@ namespace gpu_vulkan
 
       //pgpurenderer->m_pgpucontext->m_iOverrideFrame = get_image_index();
 
-      ptextureSwapChain->_new_state(pcommandbuffer,
+      auto scopedstateSwapChain = ptextureSwapChain->_scoped_state(pcommandbuffer,
+         {
          VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         }
       );
 
-      ptextureSrc->_new_state(
+      auto scopedstateSrc = ptextureSrc->_scoped_state(
          pcommandbuffer,
+         {
          0,
          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
          VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+
+         }
       );
 
       m_pshaderPresent->bind(ptextureSwapChain, ptextureSrc);

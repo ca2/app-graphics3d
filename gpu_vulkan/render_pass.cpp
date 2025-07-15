@@ -146,11 +146,13 @@ namespace gpu_vulkan
 
       ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
 
-      ptextureCurrent->_new_state(
+      ptextureCurrent->_set_state(
          pcommandbuffer,
+         {
          VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         }
       );
 
       ::cast < texture > ptextureDepth = ptextureCurrent->m_ptextureDepth;
@@ -158,11 +160,13 @@ namespace gpu_vulkan
       if(ptextureDepth)
       {
 
-         ptextureDepth->_new_state(
+         ptextureDepth->_set_state(
             pcommandbuffer,
+            {
             VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
             VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
+            }
          );
 
       }

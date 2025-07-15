@@ -2,6 +2,7 @@
 #include "draw2d.h"
 #include "acme/exception/resource.h"
 #include "acme/platform/application.h"
+#include "acme/platform/node.h"
 #include "acme/prototype/prototype/memory.h"
 
 
@@ -26,11 +27,25 @@ namespace draw2d_vkvg
 
 
    //}
+   ::draw2d_vkvg::draw2d* g_pdraw2dvkvg = nullptr;
 
+   ::draw2d_vkvg::draw2d* get()
+   {
+      return g_pdraw2dvkvg;
+
+   }
+
+
+   ::particle* mutex()
+   {
+
+      return get()->m_pmutex;
+
+   }
 
    draw2d::draw2d()
    {
-
+      g_pdraw2dvkvg = this;
       //m_atomClass = NULL;
       //m_bGladInitialized = false;
 
@@ -65,10 +80,12 @@ namespace draw2d_vkvg
 
       //estatus = 
 
-
+      m_pmutex = node()->create_mutex();
       vulkan_init();
 
 
+
+      defer_create_synchronization();
       //initialize_vulkan();
 
       //if (!estatus)
@@ -131,6 +148,9 @@ namespace draw2d_vkvg
       return "win32";
 
    }
+
+
+
 
 
    //draw2d::private_font * draw2d::get_file_private_font(::platform::context * pcontext, const ::file::path & path)
@@ -223,6 +243,37 @@ namespace draw2d_vkvg
       return true;
 
    }
+
+
+   void draw2d::defer_load_font_by_family_name(VkvgContext pdc, const ::scoped_string& scopedstrName)
+   {
+
+      _synchronous_lock lock(m_pmutex);
+
+      auto& font = m_mapFont[scopedstrName];
+
+      if (!font.m_bLoaded)
+      {
+
+         font.m_bLoaded = true;
+
+         ::file::path pathFont = node()->get_font_path_from_name(scopedstrName);
+
+         vkvg_load_font_from_path(pdc, pathFont, scopedstrName);
+
+         auto status = vkvg_status(pdc);
+
+         if (status)
+         {
+
+            warning() << "oh no";
+
+         }
+
+      }
+
+   }
+
 
 
 } // namespace draw2d_vkvg

@@ -36,12 +36,62 @@ namespace gpu_vulkan
 
       }new_texture;
 
+      struct state_t
+      {
+         VkAccessFlags              m_vkaccessflags;
+         VkImageLayout              m_vkimagelayout;
+         VkPipelineStageFlags       m_vkpipelinestageflags;
 
+         state_t() {}
+
+         state_t(
+            VkAccessFlags              vkaccessflags,
+            VkImageLayout              vkimagelayout,
+            VkPipelineStageFlags       vkpipelinestageflags
+         ) :
+            m_vkimagelayout(vkimagelayout),
+            m_vkaccessflags(vkaccessflags),
+            m_vkpipelinestageflags(vkpipelinestageflags)
+         {
+
+
+         }
+
+
+
+      };
+
+
+      class scoped_state
+      {
+      public:
+         ::gpu_vulkan::command_buffer* m_pcommandbuffer;
+         texture* m_ptexture;
+         state_t m_state;
+
+         scoped_state(::gpu_vulkan::command_buffer* pcommandbuffer, texture* ptexture, state_t state) :
+            m_pcommandbuffer(pcommandbuffer),
+            m_ptexture(ptexture),
+            m_state(state)
+
+         {
+
+            m_state = m_ptexture->m_state;
+
+         }
+         ~scoped_state()
+         {
+
+            m_ptexture->_set_state(m_pcommandbuffer, m_state);
+
+         }
+
+      };
+
+      bool                       m_bOwnImage;
       VkImage                    m_vkimage;
       VkDeviceMemory             m_vkdevicememory;
-      VkImageLayout              m_vkimagelayout;
-      VkAccessFlags              m_vkaccessflags;
-      VkPipelineStageFlags       m_vkpipelinestageflags;
+      state_t                    m_state;
       //VkImage                    m_vkimageDepth;
       //VkDeviceMemory             m_vkdevicememoryDepth;
       VkImageView                m_vkimageview;
@@ -57,10 +107,26 @@ namespace gpu_vulkan
       void initialize_depth_texture(::gpu::renderer* pgpurenderer, const ::int_rectangle& rectangleTarget) override;
       //void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
 
-      void _new_state(::gpu_vulkan::command_buffer * pcommandbuffer, 
-         VkAccessFlags accessflags,
-         VkImageLayout newLayout,
-         VkPipelineStageFlags pipelineStageFlags);
+      void _set_state(::gpu_vulkan::command_buffer * pcommandbuffer, 
+         state_t state);
+      scoped_state _scoped_state(::gpu_vulkan::command_buffer* pcommandbuffer,
+         state_t state)
+      {
+
+         auto stateRestore = m_state;
+
+         _set_state(pcommandbuffer, state);
+
+         return { pcommandbuffer, this, stateRestore };
+
+        
+
+      }
+
+      void _attach(VkImage vkimage, enum_type etype);
+
+
+      void destroy();
 
       VkImageView get_image();
 

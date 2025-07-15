@@ -2549,11 +2549,13 @@ namespace gpu_vulkan
       ::cast <texture > ptextureDst = ptextureTarget;
 
 
-      ptextureDst->_new_state(
+      ptextureDst->_set_state(
          pcommandbuffer,
+         {
          VK_ACCESS_TRANSFER_WRITE_BIT,
          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
          VK_PIPELINE_STAGE_TRANSFER_BIT
+         }
       );
 
 
@@ -2590,10 +2592,12 @@ namespace gpu_vulkan
       ////m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
       //float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
       //pcommandlist->ClearRenderTargetView(ptextureDst->m_handleRenderTargetView, clearColor, 0, nullptr);
-      ptextureDst->_new_state(pcommandbuffer,
+      auto scopedstate = ptextureDst->_scoped_state(pcommandbuffer,
+         {
          VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         }
       );
 
       int iH = ptextureDst->m_pgpurenderer->m_pgpucontext->m_rectangle.height();
@@ -2650,11 +2654,13 @@ namespace gpu_vulkan
 
                ::cast <texture > ptextureSrc = player->texture();
 
-               ptextureSrc->_new_state(
+               auto scopedstateLayer = ptextureSrc->_scoped_state(
                   pcommandbuffer,
+                  {
                   0,
                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                   VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+                  }
                );
 
                m_pshaderBlend3->bind(ptextureDst, ptextureSrc);
@@ -2803,11 +2809,13 @@ namespace gpu_vulkan
 
       }
 
-      ptexture->_new_state(
+      ptexture->_set_state(
          pcommandbuffer,
+         {
          VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         }
       );
 
 
@@ -2827,17 +2835,23 @@ namespace gpu_vulkan
 
       ::cast < texture > ptextureSrc = ptextureSource;
 
-      ptextureDst->_new_state(
+      auto scopedstateDst = ptextureDst->_scoped_state(
          pcommandbuffer,
-         VK_ACCESS_TRANSFER_WRITE_BIT,
+         {
+            VK_ACCESS_TRANSFER_WRITE_BIT,
          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-         VK_PIPELINE_STAGE_TRANSFER_BIT);
+         VK_PIPELINE_STAGE_TRANSFER_BIT
+         }
+         );
 
-      ptextureSrc->_new_state(
+      auto scopedstateSrc = ptextureSrc->_scoped_state(
          pcommandbuffer,
+         {
          VK_ACCESS_TRANSFER_READ_BIT,
          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-         VK_PIPELINE_STAGE_TRANSFER_BIT);
+         VK_PIPELINE_STAGE_TRANSFER_BIT
+         }
+         );
 
       auto srcImage = ptextureSrc->m_vkimage;
 

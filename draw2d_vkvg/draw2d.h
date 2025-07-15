@@ -43,6 +43,16 @@ namespace draw2d_vkvg
 
       //::pointer<::vulkan::context>          m_pvulkancontext;
 
+      ::pointer< ::mutex > m_pmutex;
+
+      struct font_t
+      {
+
+         bool m_bLoaded = false;
+
+      };
+
+      ::string_map < font_t > m_mapFont;
 
       draw2d();
       ~draw2d() override;
@@ -64,7 +74,17 @@ namespace draw2d_vkvg
       //virtual private_font * get_file_private_font(::platform::context * pcontext, const ::file::path & path);
       virtual int  vulkan_init();
 
+
+      virtual void defer_load_font_by_family_name(VkvgContext pdc, const ::scoped_string& scopedstrName);
+
+
+
    };
+
+
+
+   CLASS_DECL_DRAW2D_VKVG::draw2d_vkvg::draw2d* get();
+   CLASS_DECL_DRAW2D_VKVG::particle* mutex();
 
 
 } // namespace draw2d_vkvg

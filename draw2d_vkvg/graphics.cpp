@@ -5,6 +5,8 @@
 #include "font.h"
 #include "brush.h"
 #include "image.h"
+#include "keep.h"
+#include "path.h"
 #include "color.h"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 //#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
@@ -12,7 +14,11 @@
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/parallelization/task.h"
 #include "acme/platform/application.h"
+#include "acme/platform/node.h"
+#include "acme/prototype/geometry2d/_text_stream.h"
+#include "acme/prototype/geometry2d/item.h"
 #include "acme/prototype/mathematics/mathematics.h"
+#include "acme/prototype/string/str.h"
 #include "app-graphics3d/gpu_vulkan/approach.h"
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
@@ -24,6 +30,10 @@
 #include "aura/user/user/interaction.h"
 #include "bred/gpu/swap_chain.h"
 #include "windowing_win32/window.h"
+#include "aura/graphics/write_text/text_out.h"
+#include "aura/graphics/write_text/draw_text.h"
+#include "acme/prototype/geometry2d/_defer_item.h"
+#include "aura/graphics/write_text/_defer_geometry2d_item.h"
 
 
 #include <math.h>
@@ -51,6 +61,9 @@ namespace vulkan
 }
 
 
+
+
+
 BOOL CALLBACK draw2d_vkvg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p);
 
 
@@ -75,7 +88,6 @@ public:
 namespace draw2d_vkvg
 {
 
-   //ATOM class_atom = NULL;
 
    graphics* thread_graphics()
    {
@@ -83,6 +95,7 @@ namespace draw2d_vkvg
       return ::get_task()->payload("draw2d_vkvg::graphics").cast < graphics >();
 
    }
+
 
    void thread_graphics(graphics* pgraphics)
    {
@@ -98,6 +111,7 @@ namespace draw2d_vkvg
       //m_hrc = nullptr;
       //m_hwnd = nullptr;
       //m_hglrc = nullptr;
+      _m_bYFlip = true;
       m_pointTranslate = ::int_point();
       m_bPrinting = false;
       m_pimageAlphaBlend = nullptr;
@@ -173,13 +187,16 @@ namespace draw2d_vkvg
    {
       //return Attach(::CreateDC(lpszDriverName, lpszDeviceName, lpszOutput, (const DEVMODE*)lpInitData));
       return false;
+
    }
 
 
    bool graphics::CreateIC(const ::scoped_string& lpszDriverName, const ::scoped_string& lpszDeviceName, const char* lpszOutput, const void* lpInitData)
    {
+
       //return Attach(::CreateIC(lpszDriverName, lpszDeviceName, lpszOutput, (const DEVMODE*) lpInitData));
       return false;
+
    }
 
 
@@ -191,7 +208,7 @@ namespace draw2d_vkvg
       if (size.is_empty())
       {
 
-         rectanglePlacement.set_size({1920, 1080});
+         rectanglePlacement.set_size({ 1920, 1080 });
 
       }
       else
@@ -221,75 +238,81 @@ namespace draw2d_vkvg
    void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::int_size& size)
    {
 
-       ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
+      ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
 
-       auto pwindow = puserinteraction->window();
+      auto pwindow = puserinteraction->window();
 
-       //vulkan_defer_create_window_context(pwindow);
+      //vulkan_defer_create_window_context(pwindow);
 
-       auto psystem = system();
+      auto psystem = system();
 
-       auto pgpuapproach = application()->get_gpu_approach();
+      auto pgpuapproach = application()->get_gpu_approach();
 
-       auto pgpudevice = pgpuapproach->get_gpu_device();
+      auto pgpudevice = pgpuapproach->get_gpu_device();
 
-       auto pgpucontextNew = pgpudevice->main_draw2d_context();
+      auto pgpucontextNew = pgpudevice->main_draw2d_context();
 
-       set_gpu_context(pgpucontextNew);
+      set_gpu_context(pgpucontextNew);
 
-       auto pcontext = gpu_context();
+      auto pcontext = gpu_context();
 
-       pcontext->m_pgpucompositor = this;
+      pcontext->m_pgpucompositor = this;
 
-       pcontext->defer_create_window_context(pwindow);
+      pcontext->defer_create_window_context(pwindow);
 
-       ::cast < ::gpu_vulkan::context > pcontextVulkan = pcontext;
-       ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
+      ::cast < ::gpu_vulkan::context > pcontextVulkan = pcontext;
+      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
 
-       vkvg_device_create_info_t createinfo;
-       createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-       createinfo.deferredResolve = true;
-       createinfo.inst = papproachVulkan->m_vkinstance;
-       createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
-       createinfo.vkdev = pcontextVulkan->logicalDevice();
-       createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
-       createinfo.qIndex = 0;
-       createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+      vkvg_device_create_info_t createinfo;
+      createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      createinfo.deferredResolve = true;
+      createinfo.inst = papproachVulkan->m_vkinstance;
+      createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
+      createinfo.vkdev = pcontextVulkan->logicalDevice();
+      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
+      createinfo.qIndex = 0;
+      createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
-       m_vkvgdevice = vkvg_device_create(&createinfo);
-       m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, pwindow->m_sizeWindow.cx(),
-          pwindow->m_sizeWindow.cy());
+      m_vkvgdevice = vkvg_device_create(&createinfo);
 
-       m_pdc = vkvg_create(m_vkvgsurface);
-       if (!m_pdc)
-       {
+      auto sizeWindow = pwindow->m_sizeWindow;
 
-          throw ::exception(error_failed);
+      m_vkvgsurface = vkvg_surface_create(
+         m_vkvgdevice,
+         sizeWindow.cx(),
+         sizeWindow.cy()
+      );
 
-       }
+      m_pdc = vkvg_create(m_vkvgsurface);
+      if (!m_pdc)
+      {
 
-       defer_create_swap_chain(puserinteraction);
+         throw ::exception(error_failed);
 
-       //      ::vulkan::resize(size);
+      }
+
+      defer_create_swap_chain(puserinteraction);
+
+      //      ::vulkan::resize(size);
 
 
-       //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
-       //{
+      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      //{
 
-       //    auto pcontextMain = pgpudevice->main_context();
+      //    auto pcontextMain = pgpudevice->main_context();
 
-       //    auto pswapchain = pcontextMain->get_swap_chain();
+      //    auto pswapchain = pcontextMain->get_swap_chain();
 
-       //    if (!pswapchain->m_bSwapChainInitialized)
-       //    {
+      //    if (!pswapchain->m_bSwapChainInitialized)
+      //    {
 
-       //        pswapchain->initialize_swap_chain_window(pcontextMain, puserinteraction->window());
+      //        pswapchain->initialize_swap_chain_window(pcontextMain, puserinteraction->window());
 
-       //    }
+      //    }
 
-       //}
+      //}
 
-       set_ok_flag();
+      set_ok_flag();
 
    }
 
@@ -303,10 +326,10 @@ namespace draw2d_vkvg
    }
 
 
-   bool graphics::vulkan_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement)
+   bool graphics::vulkan_create_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
    {
 
-       defer_yield_gpu_context(rectanglePlacement);
+      defer_yield_gpu_context(rectanglePlacement);
 
       //if (!draw2d_vkvg()->m_pvulkancontext) {
       //   informationf("MS GDI - RegisterClass failed");
@@ -1004,24 +1027,38 @@ namespace draw2d_vkvg
    void graphics::arc(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
    {
 
-      auto pmathematics = mathematics();
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
-      double centerx = (x2 + x1) / 2.0;
-      double centery = (y2 + y1) / 2.0;
+   double centerx = (x2 + x1) / 2.0;
 
-      double start = atan2(y3 - centery, x3 - centerx) * 180.0 / π;
-      double end = atan2(y4 - centery, x4 - centerx) * 180.0 / π;
-      double sweep = fabs(end - start);
+   double centery = (y2 + y1) / 2.0;
 
-      /*if(GetArcDirection() == AD_COUNTERCLOCKWISE)
-      {
-         sweep = -sweep;
-      }
-      */
+   double radiusx = abs(x2 - x1) / 2.0;
 
-      return arc(x1, y1, x2 - x1, y2 - y1, start, sweep);
+   double radiusy = abs(y2 - y1) / 2.0;
+
+   if (radiusx == 0.0 || radiusy == 0.0)
+   {
+
+      throw ::exception(error_invalid_empty_argument);
 
    }
+
+   double start = atan2(y3 - centery, x3 - centerx);
+
+   double end = atan2(y4 - centery, x4 - centerx);
+
+   vkvg_keep keep(m_pdc);
+
+   vkvg_translate(m_pdc, centerx, centery);
+
+   vkvg_scale(m_pdc, radiusx, radiusy);
+
+   vkvg_arc(m_pdc, 0.0, 0.0, 1.0, start, end);
+
+   draw();
+
+}
 
 
    //void graphics::arc(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4)
@@ -1072,7 +1109,7 @@ namespace draw2d_vkvg
    bool graphics::fill(::draw2d::brush* pbrush, double xOrg, double yOrg)
    {
 
-      //_synchronous_lock ml(::draw2d_cairo::mutex());
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
       if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
       {
@@ -1105,9 +1142,9 @@ namespace draw2d_vkvg
       //vkvg todo if (m_pregion.is_set() && !m_pregion.cast<region>()->is_simple_positive_region())
       //{
 
-      //   cairo_set_antialias(m_pdc, CAIRO_ANTIALIAS_BEST);
+      //   vkvg_set_antialias(m_pdc, VKVG_ANTIALIAS_BEST);
 
-      //   cairo_push_group(m_pdc);
+      //   vkvg_push_group(m_pdc);
 
       //   _set(pbrush, xOrg, yOrg);
 
@@ -1123,50 +1160,51 @@ namespace draw2d_vkvg
 
    }
 
+
    bool graphics::_set(::draw2d::brush* pbrush, double x, double y)
    {
 
-      //_synchronous_lock ml(::draw2d_cairo::mutex());
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
-      //vkvg todo if (pbrush->m_ebrush == ::draw2d::e_brush_radial_gradient_color)
-      //{
+      if (pbrush->m_ebrush == ::draw2d::e_brush_radial_gradient_color)
+      {
 
-      //   cairo_pattern_t* ppattern = cairo_pattern_create_radial(pbrush->m_point.x() - x, pbrush->m_point.y() - y, 0,
-      //      pbrush->m_point.x() - x, pbrush->m_point.y() - y,
-      //      maximum(pbrush->m_size.cx(), pbrush->m_size.cy()));
+         VkvgPattern ppattern = vkvg_pattern_create_radial(pbrush->m_point.x() - x, pbrush->m_point.y() - y, 0,
+            pbrush->m_point.x() - x, pbrush->m_point.y() - y,
+            maximum(pbrush->m_size.cx(), pbrush->m_size.cy()));
 
-      //   cairo_pattern_add_color_stop_rgba(ppattern, 0., __expand_float_rgba(pbrush->m_color1));
+         vkvg_pattern_add_color_stop(ppattern, 0., __expand_float_rgba(pbrush->m_color1));
 
-      //   cairo_pattern_add_color_stop_rgba(ppattern, 1., __expand_float_rgba(pbrush->m_color2));
+         vkvg_pattern_add_color_stop(ppattern, 1., __expand_float_rgba(pbrush->m_color2));
 
-      //   cairo_set_source(m_pdc, ppattern);
+         vkvg_set_source(m_pdc, ppattern);
 
-      //   cairo_pattern_destroy(ppattern);
+         //vkvg_pattern_destroy(ppattern);
 
-      //}
-      //else if (pbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
-      //{
+      }
+      else if (pbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
+      {
 
-      //   double x0 = pbrush->m_point1.x() - x;
+         double x0 = pbrush->m_point1.x() - x;
 
-      //   double y0 = pbrush->m_point1.y() - y;
+         double y0 = pbrush->m_point1.y() - y;
 
-      //   double x1 = pbrush->m_point2.x() - x;
+         double x1 = pbrush->m_point2.x() - x;
 
-      //   double y1 = pbrush->m_point2.y() - y;
+         double y1 = pbrush->m_point2.y() - y;
 
-      //   cairo_pattern_t* ppattern = cairo_pattern_create_linear(x0, y0, x1, y1);
+         VkvgPattern ppattern = vkvg_pattern_create_linear(x0, y0, x1, y1);
 
-      //   cairo_pattern_add_color_stop_rgba(ppattern, 0., __expand_double_rgba(pbrush->m_color1));
+         vkvg_pattern_add_color_stop(ppattern, 0., __expand_double_rgba(pbrush->m_color1));
 
-      //   cairo_pattern_add_color_stop_rgba(ppattern, 1., __expand_double_rgba(pbrush->m_color2));
+         vkvg_pattern_add_color_stop(ppattern, 1., __expand_double_rgba(pbrush->m_color2));
 
-      //   cairo_set_source(m_pdc, ppattern);
+         vkvg_set_source(m_pdc, ppattern);
 
-      //   // cairo_pattern_destroy(ppattern);
+         // vkvg_pattern_destroy(ppattern);
 
 
-      //}
+      }
       //else if (pbrush->m_ebrush == ::draw2d::e_brush_box_gradient)
       //{
 
@@ -1194,59 +1232,59 @@ namespace draw2d_vkvg
       //   //center = innerright, innertop
 
 
-      //   cairo_pattern_t* ppattern = cairo_pattern_create_mesh();
+      //   VkvgPattern ppattern = vkvg_pattern_create_mesh();
 
       //   /* Add a Coons patch */
-      //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), outer.top());
-      //   cairo_mesh_pattern_curve_to(ppattern, inner.right() + KR, outer.top(), outer.right(), inner.top() - KR, outer.right(),
+      //   vkvg_mesh_pattern_begin_patch(ppattern);
+      //   vkvg_mesh_pattern_move_to(ppattern, inner.right(), inner.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.right(), outer.top());
+      //   vkvg_mesh_pattern_curve_to(ppattern, inner.right() + KR, outer.top(), outer.right(), inner.top() - KR, outer.right(),
       //      inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
-      //   //cairo_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
-      //   //cairo_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
-      //   //cairo_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_end_patch(ppattern);
-      //   int iStatus = cairo_pattern_status(ppattern);
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
+      //   //vkvg_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
+      //   //vkvg_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
+      //   //vkvg_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_end_patch(ppattern);
+      //   int iStatus = vkvg_pattern_status(ppattern);
 
 
-      //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.right(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.right(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_end_patch(ppattern);
+      //   vkvg_mesh_pattern_begin_patch(ppattern);
+      //   vkvg_mesh_pattern_move_to(ppattern, inner.right(), inner.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, outer.right(), inner.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, outer.right(), inner.bottom());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_end_patch(ppattern);
 
       //   ///* Add a Coons patch */
-      //   //      cairo_mesh_pattern_begin_patch (pattern);
-      //   //      cairo_mesh_pattern_move_to (pattern, 0, 0);
-      //   //      cairo_mesh_pattern_curve_to (pattern, 30, -30,  60,  30, 100, 0);
-      //   //      cairo_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
-      //   //      cairo_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
-      //   //      cairo_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
-      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
-      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
-      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 1);
-      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 3, 1, 1, 0);
-      //   //      cairo_mesh_pattern_end_patch (pattern);
+      //   //      vkvg_mesh_pattern_begin_patch (pattern);
+      //   //      vkvg_mesh_pattern_move_to (pattern, 0, 0);
+      //   //      vkvg_mesh_pattern_curve_to (pattern, 30, -30,  60,  30, 100, 0);
+      //   //      vkvg_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
+      //   //      vkvg_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
+      //   //      vkvg_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
+      //   //      vkvg_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
+      //   //      vkvg_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
+      //   //      vkvg_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 1);
+      //   //      vkvg_mesh_pattern_set_corner_color_rgb (pattern, 3, 1, 1, 0);
+      //   //      vkvg_mesh_pattern_end_patch (pattern);
 
       //   ///* Add a Gouraud-shaded triangle */
-      //   //      cairo_mesh_pattern_begin_patch (pattern)
-      //   //      cairo_mesh_pattern_move_to (pattern, 100, 100);
-      //   //      cairo_mesh_pattern_line_to (pattern, 130, 130);
-      //   //      cairo_mesh_pattern_line_to (pattern, 130,  70);
-      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
-      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
-      //   //      cairo_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 1);
-      //   //      cairo_mesh_pattern_end_patch (pattern)
+      //   //      vkvg_mesh_pattern_begin_patch (pattern)
+      //   //      vkvg_mesh_pattern_move_to (pattern, 100, 100);
+      //   //      vkvg_mesh_pattern_line_to (pattern, 130, 130);
+      //   //      vkvg_mesh_pattern_line_to (pattern, 130,  70);
+      //   //      vkvg_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
+      //   //      vkvg_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
+      //   //      vkvg_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 1);
+      //   //      vkvg_mesh_pattern_end_patch (pattern)
 
 
       //            // clockwise bottom-right
@@ -1257,41 +1295,41 @@ namespace draw2d_vkvg
       //            //center = innerright, innerbottom
 
 
-      //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.right(), inner.bottom());
-      //   cairo_mesh_pattern_curve_to(ppattern, outer.right(), inner.bottom() + KR, inner.right() + KR, outer.bottom(),
+      //   vkvg_mesh_pattern_begin_patch(ppattern);
+      //   vkvg_mesh_pattern_move_to(ppattern, inner.right(), inner.bottom());
+      //   vkvg_mesh_pattern_line_to(ppattern, outer.right(), inner.bottom());
+      //   vkvg_mesh_pattern_curve_to(ppattern, outer.right(), inner.bottom() + KR, inner.right() + KR, outer.bottom(),
       //      inner.right(), outer.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_end_patch(ppattern);
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_end_patch(ppattern);
 
 
-      //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), outer.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), outer.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_end_patch(ppattern);
+      //   vkvg_mesh_pattern_begin_patch(ppattern);
+      //   vkvg_mesh_pattern_move_to(ppattern, inner.right(), inner.bottom());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.right(), outer.bottom());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.left(), outer.bottom());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_end_patch(ppattern);
 
 
-      //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_end_patch(ppattern);
+      //   vkvg_mesh_pattern_begin_patch(ppattern);
+      //   vkvg_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_end_patch(ppattern);
 
       //   // clockwise bottom-left
       //   //p0 = [innerleft, outerbottom]
@@ -1301,29 +1339,29 @@ namespace draw2d_vkvg
       //   //center = innerleft, innerbottom
 
 
-      //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), outer.bottom());
-      //   cairo_mesh_pattern_curve_to(ppattern, inner.left() - KR, outer.bottom(), outer.left(), inner.bottom() + KR, outer.left(),
+      //   vkvg_mesh_pattern_begin_patch(ppattern);
+      //   vkvg_mesh_pattern_move_to(ppattern, inner.left(), inner.bottom());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.left(), outer.bottom());
+      //   vkvg_mesh_pattern_curve_to(ppattern, inner.left() - KR, outer.bottom(), outer.left(), inner.bottom() + KR, outer.left(),
       //      inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_end_patch(ppattern);
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_end_patch(ppattern);
 
 
-      //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.left(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.left(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_end_patch(ppattern);
+      //   vkvg_mesh_pattern_begin_patch(ppattern);
+      //   vkvg_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, outer.left(), inner.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, outer.left(), inner.bottom());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_end_patch(ppattern);
 
 
       //   // clockwise top-left
@@ -1336,32 +1374,32 @@ namespace draw2d_vkvg
 
 
 
-      //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.left(), inner.top());
-      //   cairo_mesh_pattern_curve_to(ppattern, outer.left(), inner.top() - KR, inner.left() - KR, outer.top(), inner.left(),
+      //   vkvg_mesh_pattern_begin_patch(ppattern);
+      //   vkvg_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, outer.left(), inner.top());
+      //   vkvg_mesh_pattern_curve_to(ppattern, outer.left(), inner.top() - KR, inner.left() - KR, outer.top(), inner.left(),
       //      outer.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.top());
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_end_patch(ppattern);
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.left(), inner.top());
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_end_patch(ppattern);
 
 
-      //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), outer.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), outer.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_end_patch(ppattern);
+      //   vkvg_mesh_pattern_begin_patch(ppattern);
+      //   vkvg_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.left(), outer.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.right(), outer.top());
+      //   vkvg_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
+      //   vkvg_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   vkvg_mesh_pattern_end_patch(ppattern);
 
 
-      //   cairo_set_source(m_pdc, ppattern);
+      //   vkvg_set_source(m_pdc, ppattern);
 
 
       //}
@@ -1375,7 +1413,7 @@ namespace draw2d_vkvg
 
       //   }
 
-      //   cairo_surface_t* psurface = cairo_get_target((cairo_t*)pbrush->m_pimage->g()->get_os_data());
+      //   vkvg_surface_t* psurface = vkvg_get_target((vkvg_t*)pbrush->m_pimage->g()->get_os_data());
 
       //   if (psurface == nullptr)
       //   {
@@ -1384,22 +1422,22 @@ namespace draw2d_vkvg
 
       //   }
 
-      //   cairo_pattern_t* ppattern = cairo_pattern_create_for_surface(psurface);
+      //   VkvgPattern ppattern = vkvg_pattern_create_for_surface(psurface);
 
-      //   cairo_status_t status = cairo_pattern_status(ppattern);
+      //   vkvg_status_t status = vkvg_pattern_status(ppattern);
 
-      //   if (status == CAIRO_STATUS_SUCCESS)
+      //   if (status == VKVG_STATUS_SUCCESS)
       //   {
 
-      //      cairo_pattern_set_extend(ppattern, CAIRO_EXTEND_REPEAT);
+      //      vkvg_pattern_set_extend(ppattern, VKVG_EXTEND_REPEAT);
 
-      //      cairo_set_source(m_pdc, ppattern);
+      //      vkvg_set_source(m_pdc, ppattern);
 
       //   }
 
-      //   cairo_pattern_destroy(ppattern);
+      //   vkvg_pattern_destroy(ppattern);
 
-      //   if (status != CAIRO_STATUS_SUCCESS)
+      //   if (status != VKVG_STATUS_SUCCESS)
       //   {
 
       //      return false;
@@ -1407,7 +1445,7 @@ namespace draw2d_vkvg
       //   }
 
       //}
-      //else
+      else
       {
 
          vkvg_set_source_rgba(m_pdc, __expand_float_rgba(pbrush->m_color));
@@ -1433,13 +1471,21 @@ namespace draw2d_vkvg
       //vkvg todo if (m_pregion.is_set() && !m_pregion.cast<region>()->is_simple_positive_region())
       //{
 
-      //   cairo_pop_group_to_source(m_pdc);
+      //   vkvg_pop_group_to_source(m_pdc);
 
       //   m_pregion.cast<region>()->mask_fill(m_pdc);
 
       //}
 
       return true;
+
+   }
+
+
+   void graphics::fill_rectangle(const ::double_rectangle& rectangle, const ::color::color& color)
+   {
+
+      ::draw2d::graphics::fill_rectangle(rectangle, color);
 
    }
 
@@ -1454,7 +1500,10 @@ namespace draw2d_vkvg
 
       }
 
-      vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
+      vkvg_rectangle(m_pdc, 
+         rectangle.left(), 
+         rectangle.top(), 
+         rectangle.right() - rectangle.left(),
          rectangle.bottom() - rectangle.top());
 
       fill(pbrush);
@@ -1475,8 +1524,6 @@ namespace draw2d_vkvg
    void graphics::_set(const ::geometry2d::matrix& matrix)
    {
 
-      //_synchronous_lock ml(::draw2d_cairo::mutex());
-
       if (m_pdc == nullptr)
       {
 
@@ -1484,16 +1531,13 @@ namespace draw2d_vkvg
 
       }
 
-      vkvg_matrix_t cairomatrix;
+      vkvg_matrix_t vkvgmatrix;
 
-      copy(&cairomatrix, &matrix);
+      copy(&vkvgmatrix, &matrix);
 
-      vkvg_set_matrix(m_pdc, &cairomatrix);
-
-      //return true;
+      vkvg_set_matrix(m_pdc, &vkvgmatrix);
 
    }
-
 
 
    void graphics::frame_rectangle(const ::double_rectangle& rectangleParam, ::draw2d::brush* pBrush)
@@ -1822,13 +1866,58 @@ namespace draw2d_vkvg
    void graphics::draw_ellipse(const ::double_rectangle& rectangleParam)
    {
 
-      //set_smooth_mode(::draw2d::e_smooth_mode_high);
+      ::draw2d::graphics::draw_ellipse(rectangleParam);
 
-      //return (m_pgraphics->DrawEllipse(vk2d_pen(),rectangleParam.left(),rectangleParam.top(),rectangleParam.right() - rectangleParam.left(),rectangleParam.bottom() - rectangleParam.top())) == plusplus::Status::Ok;
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
-      //return true;
+      //double centerx = (x2 + x1) / 2.0;
+
+      //double centery = (y2 + y1) / 2.0;
+
+      //double radiusx = fabs(x2 - x1) / 2.0;
+
+      //double radiusy = fabs(y2 - y1) / 2.0;
+
+      //if (radiusx == 0.0 || radiusy == 0.0)
+      //{
+
+      //   //return false;
+
+      //   return;
+
+      //}
+
+      //vkvg_keep keep(m_pdc);
+
+      //vkvg_new_sub_path(m_pdc);
+
+      //vkvg_translate(m_pdc, centerx, centery);
+
+      //if (m_ppen->m_epenalign == ::draw2d::e_pen_align_inset)
+      //{
+
+      //   vkvg_scale(m_pdc, radiusx - m_ppen->m_dWidth / 2.0, radiusy - m_ppen->m_dWidth / 2.0);
+
+      //}
+      //else
+      //{
+
+      //   vkvg_scale(m_pdc, radiusx, radiusy);
+
+      //}
+
+      //vkvg_arc(m_pdc, 0.0, 0.0, 1.0, 0.0, 2.0 * 3.1415);
+
+      //keep.pulse();
+
+      //_set(m_ppen);
+
+      //vkvg_stroke(m_pdc);
+
+      ////return true;
 
    }
+
 
 
    //bool graphics::FillEllipse(double x1, double y1, double x2, double y2)
@@ -1846,25 +1935,170 @@ namespace draw2d_vkvg
    void graphics::fill_ellipse(const ::double_rectangle& rectangleParam)
    {
 
-      //set_smooth_mode(::draw2d::e_smooth_mode_high);
+      ::draw2d::graphics::fill_ellipse(rectangleParam);
+      //_synchronous_lock ml(::draw2d_vkvg::mutex());
 
-//      return (m_pgraphics->FillEllipse(vk2d_brush(), rectangleParam.left(), rectangleParam.top(), rectangleParam.right() - rectangleParam.left(), rectangleParam.bottom() - rectangleParam.top())) == plusplus::Status::Ok;
+      //double centerx = (x2 + x1) / 2.0;
+
+      //double centery = (y2 + y1) / 2.0;
+
+      //double radiusx = fabs(x2 - x1) / 2.0;
+
+      //double radiusy = fabs(y2 - y1) / 2.0;
+
+      //if (radiusx == 0.0 || radiusy == 0.0)
+      //{
+
+      //   //return false;
+
+      //   return;
+
+      //}
+
+      //vkvg_keep keep(m_pdc);
+
+      //_fill1();
+
+      //vkvg_new_sub_path(m_pdc);
+
+      //vkvg_translate(m_pdc, centerx, centery);
+
+      //vkvg_scale(m_pdc, radiusx, radiusy);
+
+      ////vkvg_arc(m_pdc, 0.0, 0.0, 1.0, 0.0, 2.0 * M_PI);
+      //vkvg_arc(m_pdc, 0.0, 0.0, 1.0, 0.0, 6.28);
+
+      //vkvg_fill(m_pdc);
+
+      //_fill2();
+
+      ////return true;
+
+   }
+
+   void graphics::fill_ellipse(double x1, double y1, double x2, double y2)
+   {
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      double centerx = (x2 + x1) / 2.0;
+
+      double centery = (y2 + y1) / 2.0;
+
+      double radiusx = fabs(x2 - x1) / 2.0;
+
+      double radiusy = fabs(y2 - y1) / 2.0;
+
+      if (radiusx == 0.0 || radiusy == 0.0)
+      {
+
+         //return false;
+
+         return;
+
+      }
+
+      if (!m_pbrush)
+      {
+
+         return;
+
+      }
+
+      if (m_pbrush->m_ebrush == ::draw2d::e_brush_null)
+      {
+
+         return;
+
+      }
+
+      if (m_pbrush->m_ebrush == ::draw2d::e_brush_solid
+         && m_pbrush->m_color.is_transparent()
+         && m_ealphamode == ::draw2d::e_alpha_mode_blend)
+      {
+
+         return;
+
+      }
+
+      vkvg_keep keep(m_pdc);
+
+      _fill1();
+
+      vkvg_new_sub_path(m_pdc);
+
+      vkvg_translate(m_pdc, centerx, centery);
+
+      vkvg_scale(m_pdc, radiusx, radiusy);
+
+      //vkvg_arc(m_pdc, 0.0, 0.0, 1.0, 0.0, 2.0 * M_PI);
+      vkvg_arc(m_pdc, 0.0, 0.0, 1.0, 0.0, 6.28);
+
+      keep.pulse();
+
+      _set(m_pbrush);
+
+      vkvg_fill(m_pdc);
+
+      _fill2();
 
       //return true;
 
    }
 
 
-   //bool graphics::draw_ellipse(double x1,double y1,double x2,double y2)
-   //{
+   void graphics::draw_ellipse(double x1,double y1,double x2,double y2)
+   {
 
-   //   //set_smooth_mode(::draw2d::e_smooth_mode_high);
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
-   //   //return (m_pgraphics->DrawEllipse(vk2d_pen(),(plusplus::REAL)x1,(plusplus::REAL)y1,(plusplus::REAL)(x2 - x1),(plusplus::REAL)(y2 - y1))) == plusplus::Status::Ok;
+      double centerx = (x2 + x1) / 2.0;
 
-   //   return true;
+      double centery = (y2 + y1) / 2.0;
 
-   //}
+      double radiusx = fabs(x2 - x1) / 2.0;
+
+      double radiusy = fabs(y2 - y1) / 2.0;
+
+      if (radiusx == 0.0 || radiusy == 0.0)
+      {
+
+         //return false;
+
+         return;
+
+      }
+
+      vkvg_keep keep(m_pdc);
+
+      vkvg_new_sub_path(m_pdc);
+
+      vkvg_translate(m_pdc, centerx, centery);
+
+      if (m_ppen->m_epenalign == ::draw2d::e_pen_align_inset)
+      {
+
+         vkvg_scale(m_pdc, radiusx - m_ppen->m_dWidth / 2.0, radiusy - m_ppen->m_dWidth / 2.0);
+
+      }
+      else
+      {
+
+         vkvg_scale(m_pdc, radiusx, radiusy);
+
+      }
+
+      vkvg_arc(m_pdc, 0.0, 0.0, 1.0, 0.0, 2.0 * 3.1415);
+
+      keep.pulse();
+
+      _set(m_ppen);
+
+      vkvg_stroke(m_pdc);
+
+      //return true;
+
+   }
 
 
    //bool graphics::draw_ellipse(const ::double_rectangle & rectectParam)
@@ -3324,14 +3558,704 @@ namespace draw2d_vkvg
    }
 
 
+   bool graphics::_set(::draw2d::path* ppath)
+   {
+
+      if (::is_null(ppath) || ppath->m_itema.is_empty())
+      {
+
+         return false;
+
+      }
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      vkvg_keep keep(m_pdc);
+
+      vkvg_new_sub_path(m_pdc);
+
+      //if (!m_bOutline)
+      {
+
+         if (ppath->m_efillmode == ::draw2d::e_fill_mode_alternate)
+         {
+
+            vkvg_set_fill_rule(m_pdc, VKVG_FILL_RULE_EVEN_ODD);
+
+         }
+         else
+         {
+
+            vkvg_set_fill_rule(m_pdc, VKVG_FILL_RULE_NON_ZERO);
+
+         }
+
+      }
+
+      for (int i = 0; i < ppath->m_itema.get_count(); i++)
+      {
+
+         _set(ppath->m_itema[i]);
+
+      }
+
+      return true;
+
+   }
+
+
+   bool graphics::_set(::geometry2d::item* pitem)
+   {
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      auto eitem = pitem->type();
+
+      switch (eitem)
+      {
+      case ::draw2d::e_item_begin_figure:
+         return _set(::draw2d::e_item_begin_figure);
+      case ::draw2d::e_item_close_figure:
+         return _set(::draw2d::e_item_close_figure);
+      case ::draw2d::e_item_end_figure:
+         return _set(::draw2d::e_item_end_figure);
+      case ::draw2d::e_item_arc:
+         return _set(pitem->cast <::geometry2d::arc_item>()->m_item);
+         //case ::draw2d::e_item_line:
+         //   return _set(pshape->shape < ::line > ());
+      case ::draw2d::e_item_line:
+         return _set(pitem->cast <::geometry2d::line_item>()->m_item);
+         //case ::draw2d::e_item_lines:
+         //   return _set(pshape->shape < ::lines > ());
+      case ::draw2d::e_item_lines:
+         return _set(pitem->cast <::geometry2d::lines_item>()->m_item);
+         //case ::draw2d::e_item_rect:
+         //   return _set(pshape->shape < ::int_rectangle > ());
+      case ::draw2d::e_item_rectangle:
+         return _set(pitem->cast <::geometry2d::rectangle_item>()->m_item);
+         //case ::draw2d::e_item_polygon:
+         //   return _set(pshape->shape < ::int_polygon > ());
+      case ::draw2d::e_item_ellipse:
+         return _set(pitem->cast <::geometry2d::ellipse_item>()->m_item);
+      case ::draw2d::e_item_polygon:
+         return _set(pitem->cast <::geometry2d::polygon_item>()->m_polygon);
+      case ::draw2d::e_item_text_out:
+         return _set(pitem->cast <::geometry2d::text_out_item>()->m_item);
+      case ::draw2d::e_item_draw_text:
+         return _set(pitem->cast <::geometry2d::draw_text_item>()->m_item);
+      default:
+         throw "unexpected simple os graphics matter type";
+      }
+
+      return false;
+
+   }
+
+
+   bool graphics::_set(const ::double_arc& arc, const ::pointer<::draw2d::region>& pregion)
+   {
+
+      return _set(arc);
+
+   }
+
+
+   //bool _set(const ::line & line);
+   //bool _set(const ::lines & lines);
+   bool graphics::_set(const ::double_rectangle& rectangle, const ::pointer<::draw2d::region>& pregion)
+   {
+
+      return _set(rectangle);
+
+   }
+
+
+   bool graphics::_set(const ::double_ellipse& ellipse, const ::pointer<::draw2d::region>& pregion)
+   {
+
+      return _set(ellipse);
+
+   }
+
+
+   bool graphics::_set(const ::double_polygon& polygon, const ::pointer<::draw2d::region>& pregion)
+   {
+
+      return _set(polygon);
+
+   }
+
+
+   bool graphics::_set(const ::write_text::text_out& textout, const ::pointer<::draw2d::region>& pregion)
+   {
+
+      return _set(textout);
+
+   }
+
+
+   bool graphics::_set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::region>& pregion)
+   {
+
+      return _set(drawtext);
+
+   }
+
+
+   bool graphics::_set(const ::double_arc& arc, const ::pointer<::draw2d::path>& ppath)
+   {
+
+      return _set(arc);
+
+   }
+
+
+   bool graphics::_set(const ::double_line& line, const ::pointer<::draw2d::path>& ppath)
+   {
+
+      return _set(line);
+
+   }
+
+
+   bool graphics::_set(const ::double_lines& lines, const ::pointer<::draw2d::path>& ppath)
+   {
+
+      return _set(lines);
+
+   }
+
+
+   bool graphics::_set(const ::double_rectangle& rectangle, const ::pointer<::draw2d::path>& ppath)
+   {
+
+      return _set(rectangle);
+
+   }
+
+
+   bool graphics::_set(const ::double_ellipse& ellipse, const ::pointer<::draw2d::path>& ppath)
+   {
+
+      return _set(ellipse);
+
+   }
+
+
+   bool graphics::_set(const ::double_polygon& polygon, const ::pointer<::draw2d::path>& ppath)
+   {
+
+      return _set(polygon);
+
+   }
+
+
+   bool graphics::_set(const ::write_text::text_out& textout, const ::pointer<::draw2d::path>& ppath)
+   {
+
+      return _set(textout);
+
+   }
+
+
+   bool graphics::_set(const ::write_text::draw_text& drawtext, const ::pointer<::draw2d::path>& ppath)
+   {
+
+      return _set(drawtext);
+
+   }
+
+
+   bool graphics::_set(const ::double_arc& arc)
+   {
+
+      if (arc.radius().cx() <= 0.0000001)
+      {
+
+         return false;
+
+      }
+
+      if (arc.radius().cy() <= 0.0000001)
+      {
+
+         return 0;
+
+      }
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      vkvg_keep keep(m_pdc);
+
+      vkvg_translate(m_pdc, arc.center().x(), arc.center().y());
+
+      vkvg_scale(m_pdc, 1.0, arc.radius().cy() / arc.radius().cx());
+
+      if (arc.m_angleExt > 0)
+      {
+
+         vkvg_arc(m_pdc, 0.0, 0.0, arc.radius().cx(), arc.m_angleBeg, arc.m_angleEnd2);
+
+      }
+      else
+      {
+
+         vkvg_arc_negative(m_pdc, 0.0, 0.0, arc.radius().cx(), arc.m_angleBeg, arc.m_angleEnd2);
+
+      }
+
+      return true;
+
+   }
+
+
+   //bool graphics::_set(const ::line & line)
+   //{
+   //
+   //    _synchronous_lock ml(::draw2d_vkvg::mutex());
+   //
+   //    if (vkvg_has_current_point(m_pdc))
+   //    {
+   //
+   //      double x;
+   //
+   //      double y;
+   //
+   //      vkvg_get_current_point (m_pdc, &x, &y);
+   //
+   //      if(x != line.m_p1.x() || y != line.m_p1.y())
+   //      {
+   //
+   //         vkvg_move_to(m_pdc, line.m_p1.x(), line.m_p1.y());
+   //
+   //      }
+   //      else
+   //      {
+   //
+   //         vkvg_line_to(m_pdc, line.m_p1.x(), line.m_p1.y());
+   //
+   //      }
+   //
+   //    }
+   //    else
+   //    {
+   //
+   //      vkvg_move_to(m_pdc, line.m_p1.x(), line.m_p1.y());
+   //
+   //    }
+   //
+   //    vkvg_line_to(m_pdc, line.m_p2.x(), line.m_p2.y());
+   //
+   //    return true;
+   //
+   //}
+
+
+   bool graphics::_set(const ::double_line& line)
+   {
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      if (vkvg_has_current_point(m_pdc))
+      {
+
+         float x;
+
+         float y;
+
+         vkvg_get_current_point(m_pdc, &x, &y);
+
+         if (is_different(x, line.m_p1.x(), 0.0001) || is_different(y, line.m_p1.y(), 0.0001))
+         {
+
+            vkvg_line_to(m_pdc, line.m_p1.x(), line.m_p1.y());
+
+         }
+
+      }
+      else
+      {
+
+         vkvg_move_to(m_pdc, line.m_p1.x(), line.m_p1.y());
+
+      }
+
+      vkvg_line_to(m_pdc, line.m_p2.x(), line.m_p2.y());
+
+      return true;
+
+   }
+
+
+   bool graphics::_set(const ::int_point_array& pointa)
+   {
+
+      if (pointa.get_count() <= 1)
+      {
+
+         return true;
+
+      }
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      if (vkvg_has_current_point(m_pdc))
+      {
+
+         float x;
+
+         float y;
+
+         vkvg_get_current_point(m_pdc, &x, &y);
+
+         if (x != pointa[0].x() || y != pointa[0].y())
+         {
+
+            vkvg_move_to(m_pdc, pointa[0].x(), pointa[0].y());
+
+         }
+         else
+         {
+
+            vkvg_line_to(m_pdc, pointa[0].x(), pointa[0].y());
+
+         }
+
+      }
+      else
+      {
+
+         vkvg_move_to(m_pdc, pointa[0].x(), pointa[0].y());
+
+      }
+
+      for (::collection::index i = 1; i < pointa.get_count(); i++)
+      {
+
+         vkvg_line_to(m_pdc, pointa[i].x(), pointa[i].y());
+
+      }
+
+      return true;
+
+   }
+
+
+   bool graphics::_set(const ::double_point_array& pointa)
+   {
+
+      if (pointa.get_count() <= 1)
+      {
+
+         return true;
+
+      }
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      if (vkvg_has_current_point(m_pdc))
+      {
+
+         float x;
+
+         float y;
+
+         vkvg_get_current_point(m_pdc, &x, &y);
+
+         if (x != pointa[0].x() || y != pointa[0].y())
+         {
+
+            vkvg_move_to(m_pdc, pointa[0].x(), pointa[0].y());
+
+         }
+         else
+         {
+
+            vkvg_line_to(m_pdc, pointa[0].x(), pointa[0].y());
+
+         }
+
+      }
+      else
+      {
+
+         vkvg_move_to(m_pdc, pointa[0].x(), pointa[0].y());
+
+      }
+
+      for (::collection::index i = 1; i < pointa.get_count(); i++)
+      {
+
+         vkvg_line_to(m_pdc, pointa[i].x(), pointa[i].y());
+
+      }
+
+      return true;
+
+   }
+
+
+   //bool graphics::_set(const lines & lines)
+   //{
+   //
+   //   if(lines.get_count() <= 1)
+   //   {
+   //
+   //      return true;
+   //
+   //   }
+   //
+   //   _synchronous_lock ml(::draw2d_vkvg::mutex());
+   //
+   //   vkvg_new_sub_path(m_pdc);
+   //
+   //   _set((const ::int_point_array &) lines);
+   //
+   //   return true;
+   //
+   //}
+
+
+   bool graphics::_set(const double_lines& lines)
+   {
+
+      if (lines.get_count() <= 1)
+      {
+
+         return true;
+
+      }
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      vkvg_new_sub_path(m_pdc);
+
+      _set((const ::double_point_array&)lines);
+
+      return true;
+
+   }
+
+
+   //bool graphics::_set(const ::int_polygon & int_polygon)
+   //{
+   //
+   //   if(int_polygon.get_count() <= 1)
+   //   {
+   //
+   //      return true;
+   //
+   //   }
+   //
+   //   _synchronous_lock ml(::draw2d_vkvg::mutex());
+   //
+   //   vkvg_new_sub_path(m_pdc);
+   //
+   //   _set((const ::int_point_array &) int_polygon);
+   //
+   //   vkvg_close_path(m_pdc);
+   //
+   //   return true;
+   //
+   //}
+
+
+   bool graphics::_set(const ::double_polygon& int_polygon)
+   {
+
+      if (int_polygon.get_count() <= 1)
+      {
+
+         return true;
+
+      }
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      vkvg_new_sub_path(m_pdc);
+
+      _set((const ::double_point_array&)int_polygon);
+
+      vkvg_close_path(m_pdc);
+
+      return true;
+
+   }
+
+
+   //bool graphics::_set(const ::int_rectangle & rectangle)
+   //{
+   //
+   //    _synchronous_lock ml(::draw2d_vkvg::mutex());
+   //
+   //    vkvg_rectangle(
+   //      m_pdc,
+   //      rectangle.left(),
+   //      rectangle.top(),
+   //      rectangle.width(),
+   //      rectangle.height());
+   //
+   //    return true;
+   //
+   //}
+
+
+   bool graphics::_set(const ::double_rectangle& rectangle)
+   {
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      vkvg_rectangle(
+         m_pdc,
+         rectangle.left(),
+         rectangle.top(),
+         rectangle.width(),
+         rectangle.height());
+
+      return true;
+
+   }
+
+
+   bool graphics::_set(const ::double_ellipse& ellipse)
+   {
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      double Δx = ellipse.center_x();
+
+      double Δy = ellipse.center_y();
+
+      vkvg_translate(m_pdc, Δx, Δy);
+
+      double rx = ellipse.width() / 2.0;
+
+      double ry = ellipse.height() / 2.0;
+
+      vkvg_scale(m_pdc, rx, ry);
+
+      vkvg_arc(m_pdc, 0.0, 0.0, 1.0, 0.0, 2.0 * π);
+
+      vkvg_scale(m_pdc, 1.0 / rx, 1.0 / ry);
+
+      vkvg_translate(m_pdc, -Δx, -Δy);
+
+      return true;
+
+   }
+
+
+   bool graphics::_set(const ::write_text::text_out& textout)
+   {
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      auto rectangle = ::double_rectangle(textout.m_point, double_size(65535.0, 65535.0));
+
+      internal_draw_text(textout.m_strText, rectangle, e_align_top_left, e_draw_text_none);
+
+      //#if defined(USE_PANGO)
+      //
+      //      internal_draw_text_pango(textout.m_strText, rectangle, e_align_top_left, e_draw_text_none,
+      //                               &pango_vkvg_layout_path);
+      //
+      //#else
+      //
+      //      internal_draw_text(textout.m_strText, rectangle, e_align_top_left, e_draw_text_none, &vkvg_text_path);
+      //
+      //#endif
+
+      vkvg_status_t status = vkvg_status(m_pdc);
+
+      if (status != VKVG_STATUS_SUCCESS)
+      {
+
+         const ::ansi_character* pszStatus = vkvg_status_to_string(status);
+
+         informationf("vkvg error : graphics::set(string_path) %d %s", status, pszStatus);
+
+      }
+
+      return true;
+
+   }
+
+
+   bool graphics::_set(const ::write_text::draw_text& drawtext)
+   {
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      auto rectangle = drawtext.m_rectangle;
+
+      internal_draw_text(drawtext.m_strText, rectangle, e_align_top_left, e_draw_text_none);
+
+      //#if defined(USE_PANGO)
+      //
+      //      internal_draw_text_pango(drawtext.m_strText, rectangle, e_align_top_left, e_draw_text_none,
+      //                               &pango_vkvg_layout_path);
+      //
+      //#else
+      //
+      //      internal_draw_text(drawtext.m_strText, rectangle, e_align_top_left, e_draw_text_none, &vkvg_text_path);
+      //
+      //#endif
+
+      vkvg_status_t status = vkvg_status(m_pdc);
+
+      if (status != VKVG_STATUS_SUCCESS)
+      {
+
+         const ::ansi_character* pszStatus = vkvg_status_to_string(status);
+
+         informationf("vkvg error : graphics::set(string_path) %d %s", status, pszStatus);
+
+      }
+
+      return true;
+
+   }
+
+
+   //bool graphics::_set(::draw2d_vkvg::path::close * pclose)
+   //{
+   //
+   //   return true;
+   //
+   //}
+
+
+   //void graphics::set(const ::draw2d_vkvg::path::transfer & p)
+   //{
+   //
+   //    _synchronous_lock ml(::draw2d_vkvg::mutex());
+   //
+   //    vkvg_move_to(m_pdc, p.m_x + 0.5, p.m_y + 0.5);
+   //
+   //    return true;
+   //
+   //}
+
+
+
+
    void graphics::fill(::draw2d::path* ppath)
    {
 
-      //return m_pgraphics->FillPath(vk2d_brush(),(dynamic_cast < ::draw2d_vkvg::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
-      //return true;
+      if (!_set(ppath))
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+      //return
+      fill();
 
    }
+
 
 
    void graphics::fill(::draw2d::path* ppath, ::draw2d::brush* pbrush)
@@ -3344,19 +4268,162 @@ namespace draw2d_vkvg
    }
 
 
-   void graphics::draw()
+   bool graphics::fill_and_draw()
    {
 
-      draw(m_ppen);
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      bool bPen = m_ppen->m_epen != ::draw2d::e_pen_null;
+
+      vkvg_keep keep(m_pdc);
+
+      if (m_pbrush->m_ebrush != ::draw2d::e_brush_null)
+      {
+
+         _set(m_pbrush);
+
+         set_alpha_mode(m_ealphamode);
+
+         if (bPen)
+         {
+
+            vkvg_fill_preserve(m_pdc);
+
+         }
+         else
+         {
+
+            vkvg_fill(m_pdc);
+
+         }
+
+      }
+
+      keep.pulse();
+
+      if (bPen)
+      {
+
+         _set(m_ppen);
+
+         set_alpha_mode(m_ealphamode);
+
+         vkvg_stroke(m_pdc);
+
+      }
+
+      return true;
 
    }
 
+
+   //bool graphics::fill(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   //{
+
+   //   _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+   //   if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+   //   {
+
+   //      return true;
+
+   //   }
+
+   //   _fill1(pbrush, xOrg, yOrg);
+
+   //   vkvg_fill(m_pdc);
+
+   //   _fill2(pbrush, xOrg, yOrg);
+
+   //   return true;
+
+   //}
+
+
+   //bool graphics::_fill1(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   //{
+
+   //   if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+   //   {
+
+   //      return true;
+
+   //   }
+
+   //   if (m_pregion.is_set() && !m_pregion.cast<region>()->is_simple_positive_region())
+   //   {
+
+   //      vkvg_set_antialias(m_pdc, VKVG_ANTIALIAS_BEST);
+
+   //      vkvg_push_group(m_pdc);
+
+   //      _set(pbrush, xOrg, yOrg);
+
+   //   }
+   //   else
+   //   {
+
+   //      _set(pbrush, xOrg, yOrg);
+
+   //   }
+
+   //   return true;
+
+   //}
+
+
+   //bool graphics::_fill2(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   //{
+
+   //   if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+   //   {
+
+   //      return true;
+
+   //   }
+
+   //   if (m_pregion.is_set() && !m_pregion.cast<region>()->is_simple_positive_region())
+   //   {
+
+   //      vkvg_pop_group_to_source(m_pdc);
+
+   //      m_pregion.cast<region>()->mask_fill(m_pdc);
+
+   //   }
+
+   //   return true;
+
+   //}
+
+
+   bool graphics::fill(double xOrg, double yOrg)
+   {
+
+      return fill(m_pbrush, xOrg, yOrg);
+
+   }
+
+
+   bool graphics::_fill1(double xOrg, double yOrg)
+   {
+
+      return _fill1(m_pbrush, xOrg, yOrg);
+
+   }
+
+
+   bool graphics::_fill2(double xOrg, double yOrg)
+   {
+
+      return _fill2(m_pbrush, xOrg, yOrg);
+
+   }
 
 
    bool graphics::draw(::draw2d::pen* ppen)
    {
 
-      //_synchronous_lock ml(::draw2d_cairo::mutex());
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
       if (ppen == nullptr || ppen->m_epen == ::draw2d::e_pen_null)
       {
@@ -3365,7 +4432,7 @@ namespace draw2d_vkvg
 
       }
 
-      //cairo_keep keep(m_pdc);
+      vkvg_keep keep(m_pdc);
 
       _set(ppen);
 
@@ -3376,10 +4443,43 @@ namespace draw2d_vkvg
    }
 
 
+
+   void graphics::draw()
+   {
+
+      draw(m_ppen);
+
+   }
+
+
+
+   //bool graphics::draw(::draw2d::pen* ppen)
+   //{
+
+   //   _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+   //   if (ppen == nullptr || ppen->m_epen == ::draw2d::e_pen_null)
+   //   {
+
+   //      return true;
+
+   //   }
+
+   //   //vkvg_keep keep(m_pdc);
+
+   //   _set(ppen);
+
+   //   vkvg_stroke(m_pdc);
+
+   //   return true;
+
+   //}
+
+
    bool graphics::_set(::draw2d::pen* ppen)
    {
 
-      //_synchronous_lock ml(::draw2d_cairo::mutex());
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
       if (ppen->m_epen == ::draw2d::e_pen_brush)
       {
@@ -3753,6 +4853,16 @@ namespace draw2d_vkvg
    }
 
 
+   ::gpu::frame* graphics::end_gpu_layer()
+   {
+
+      vkvg_flush(m_pdc);
+
+      return ::gpu::graphics::end_gpu_layer();
+
+   }
+
+
    inline color32_t graphics::SetDCBrushColor(color32_t crColor)
    {
       // ASSERT(m_hdc != nullptr);
@@ -4014,6 +5124,39 @@ namespace draw2d_vkvg
 
    //   */
    //}
+
+   void graphics::text_out(double x, double y, const ::scoped_string& scopedstr)
+   {
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      vkvg_keep keep(m_pdc);
+
+#if defined(USE_PANGO)
+
+      auto rectangle = ::double_rectangle(double_point(x, y), double_size(65535.0, 65535.0));
+
+      internal_draw_text(scopedstr, rectangle, e_align_none);
+
+#else
+
+      ::int_rectangle rectangle = int_rectangle_dimension(
+         int(x),
+         int(y),
+         65535,
+         65535
+      );
+
+      internal_draw_text(scopedstr, rectangle, e_null, e_null);
+
+      //return true;
+
+#endif
+
+      //return true;
+
+   }
+
 
    /*void graphics::FillSolidRect(const ::double_rectangle & rectangle, color32_t clr)
    {
@@ -4353,6 +5496,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    int graphics::save_graphics_context()
    {
+
+      vkvg_save(m_pdc);
       //      return m_pgraphics->Save();
       return 0;
 
@@ -4361,7 +5506,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::restore_graphics_context(int iSavedContext)
    {
-
+      vkvg_restore(m_pdc);
       //return m_pgraphics->Restore(nSavedDC) != false;
       //return true;
 
@@ -4631,6 +5776,40 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   //return m_pointTranslate;
 
    //}
+
+
+   ::gpu::texture* graphics::current_target_texture()
+   {
+
+      __defer_construct(m_ptextureCurrent);
+
+      ::cast < ::gpu_vulkan::texture > ptextureCurrent = m_ptextureCurrent;
+
+      auto vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
+
+      if (ptextureCurrent->m_vkimage != vkimage)
+      {
+
+         if (ptextureCurrent->m_vkimage)
+         {
+
+            __øconstruct(m_ptextureCurrent);
+
+            ptextureCurrent = m_ptextureCurrent;
+
+         }
+
+         ptextureCurrent->_attach(vkimage, ::gpu::texture::e_type_image);
+
+         ptextureCurrent->m_state.m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+         ptextureCurrent->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+         ptextureCurrent->m_state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+      }
+
+      return m_ptextureCurrent;
+
+   }
 
 
    bool graphics::is_gpu_oriented()
@@ -5534,43 +6713,151 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //}
 
-
-   //double_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
-   double_size graphics::get_text_extent(const ::scoped_string& lpszString)
+   ::double_size graphics::get_text_extent(const ::scoped_string& scopedstr)
    {
 
-      //if(lpszString.is_empty())
-      //   return int_size(0, 0);
+      return get_text_extent(scopedstr, scopedstr.size());
 
-      return int_size(0, 0);
+   }
 
-      //wstring wstr = lpszString;
 
-      //character_count iRange = 0;
-      //character_count i = 0;
-      //character_count iLen;
-      //const ::scoped_string & scopedstr = lpszString;
-      //while(i < iIndex)
-      //{
-      //   iLen = ::str::get_utf8_char(psz).length();
-      //   iRange++;
-      //   i += iLen;
-      //   unicode_increment(psz);
-      //   if(psz == nullptr)
-      //      break;
-      //   if(*psz == '\0')
-      //      break;
-      //}
+   //double_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
+   ::double_size graphics::get_text_extent(const ::scoped_string& scopedstr, character_count iIndex)
+   {
 
-      //set(m_pfont);
+      string str(scopedstr.m_begin, minimum_non_negative(iIndex, scopedstr.size()));
 
-      //::pointer<font>pfont = m_pfont;
+      str = ::str::q_valid(str);
 
-      //::int_size s = { 0 };
+      if (str.is_empty())
+      {
 
-      //::GetTextExtentPointW(pfont->m_hdcFont, wstr, wstr.get_length(), &s);
+         return {};
 
-      //return s;
+      }
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      if (m_pfont.is_null())
+      {
+
+         //return false;
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      if (m_pfont->m_dFontWidth <= 0.0)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      if (iIndex < 0)
+      {
+
+         iIndex = (int)scopedstr.size();
+
+      }
+
+      if (not_found(str.find_first_character_in("\n\r")))
+      {
+
+
+#if defined(USE_PANGO)
+
+         PangoFontDescription* pdesc = (PangoFontDescription*)m_pfont->get_os_data(this);
+
+         if (::is_set(pdesc))
+         {
+
+            PangoLayout* playout;                            // layout for a paragraph of text
+
+            playout = pango_vkvg_create_layout(m_pdc);                 // init pango layout ready for use
+
+            pango_layout_set_text(playout, scopedstr.m_begin,
+               scopedstr.size());          // sets the text to be associated with the layout (final arg is length, -1
+
+            // to calculate automatically when passing a nul-terminated string)
+            pango_layout_set_font_description(playout,
+               pdesc);            // assign the previous font description to the layout
+
+            pango_vkvg_update_layout(m_pdc,
+               playout);                  // if the target surface or transformation properties of the vkvg instance
+
+            // have changed, update the pango layout to reflect this
+            int width = 0;
+
+            int height = 0;
+
+            PangoRectangle pos;
+
+            pango_layout_index_to_pos(playout, iIndex, &pos);
+
+            pango_layout_get_pixel_size(playout, &width, &height);
+
+            //size.cx() = ;
+
+            //size.cy() = height;
+
+            g_object_unref(playout);                         // free the layout
+
+            return { (double)pos.x / (double)PANGO_SCALE, (double)height };
+
+         }
+         else
+
+#endif // USE_PANGO
+
+         {
+
+            _set(m_pfont);
+
+            vkvg_text_extents_t textextents;
+
+            vkvg_text_extents(m_pdc, str, &textextents);
+
+            vkvg_font_extents_t fontextents;
+
+            vkvg_font_extents(m_pdc, &fontextents);
+
+            //size.cx() = x;
+
+            //size.cy() = x;
+
+            return { textextents.x_advance, textextents.height };
+
+         }
+
+         //return true;
+
+         //xx
+
+      }
+
+      string_array straLines;
+
+      straLines.add_lines(str, true);
+
+      ::double_size size;
+
+      size.cx() = 0.0;
+
+      size.cy() = 0.0;
+
+      for (auto& strLine : straLines)
+      {
+
+         auto sizeLine = get_text_extent(strLine, str.length());
+
+         size.cx() = maximum(size.cx(), sizeLine.cx());
+
+         size.cy() += sizeLine.cy();
+
+      }
+
+      return size;
 
    }
 
@@ -5853,7 +7140,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //vkEnd();
 
-      //_synchronous_lock ml(::draw2d_cairo::mutex());
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
       if (!vkvg_has_current_point(m_pdc))
       {
@@ -5875,49 +7162,352 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::text_out(double x, double y, const ::scoped_string& scopedstr)
+   void graphics::internal_draw_text(const block& block, const ::double_rectangle& rectangle, const ::e_align& ealign,
+         const ::e_draw_text& edrawtext)
    {
+
+
+//      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      auto pfont = m_pfont;
+
+      if (::is_null(pfont))
+      {
+
+         throw ::exception(error_null_pointer);
+
+      }
+
+      if (pfont->m_fontsize.is_null_or_negative() || pfont->m_dFontWidth <= 0.0)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+#if defined(USE_PANGO)
+
+      if (::is_set(pfont->get_os_data(this, 0)))
+      {
+
+         return internal_draw_text_pango(pfont, block, rectangle, ealign, edrawtext, &pango_vkvg_show_layout);
+
+
+      }
+
+#endif
+
+      //if (::is_set(pfont->get_os_data(this, 1)))
+//      if (::is_set(pfont->get_os_data(this, 0)))
+  //    {
+
+        // return internal_draw_text_vkvg(block, rectangle, ealign, edrawtext, &vkvg_show_text);
+
+    //  }
+      //else if (::is_set(pfont->get_os_data(this, 1)))
+      //{
+
+         return internal_draw_text_vkvg(block, rectangle, ealign, edrawtext, &vkvg_show_text);
+
+      //}
+
+      //throw ::exception(error_null_pointer);
+
+   }
+
+
+   void graphics::internal_draw_text_vkvg(const ::block& block, const ::double_rectangle& rectangle,
+      const ::e_align& ealign, const ::e_draw_text& edrawtext,
+      PFN_VKVG_TEXT ftext)
+   {
+
+      string str((const char*)block.data(), block.size());
+
+      str = ::str::q_valid(str);
+
+      if (str.is_empty())
+      {
+
+         throw ::exception(error_invalid_empty_argument);
+
+      }
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
 
       if (m_pfont.is_null())
       {
 
-         return;
+         throw ::exception(error_null_pointer);
 
       }
 
-      //::draw2d::graphics::text_out(x, y, lpszString);
-      //if (::draw2d::graphics::text_out(x, y, lpszString, nCount))
+      if (m_pfont->m_dFontWidth <= 0.0)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      vkvg_keep keep(m_pdc);
+
+      double_size sz = get_text_extent(str);
+
+      _set(m_pfont);
+
+      vkvg_font_extents_t e;
+
+      vkvg_font_extents(m_pdc, &e);
+
+      double Δx;
+
+      double Δy;
+
+      if (ealign & e_align_right)
+      {
+
+         Δx = rectangle.right() - rectangle.left() - sz.cx();
+
+      }
+      else if (ealign & e_align_horizontal_center)
+      {
+
+         Δx = ((rectangle.right() - rectangle.left()) - (sz.cx())) / 2.0;
+
+      }
+      else
+      {
+
+         Δx = 0.;
+
+      }
+
+      if (ealign & e_align_bottom)
+      {
+
+         Δy = rectangle.bottom() - rectangle.top() - e.ascent;
+
+      }
+      else if (ealign & e_align_vertical_center)
+      {
+
+         Δy = ((rectangle.bottom() - rectangle.top()) - (e.ascent)) / 2.0;
+
+      }
+      else
+      {
+
+         Δy = 0.;
+
+      }
+
+      if (m_pfont->m_dFontWidth != 1.0)
+      {
+
+         vkvg_matrix_t m;
+
+         vkvg_get_matrix(m_pdc, &m);
+
+         vkvg_matrix_scale(&m, m_pfont->m_dFontWidth, 1.0);
+
+         vkvg_set_matrix(m_pdc, &m);
+
+      }
+
+      //if (m_pbrush.is_set())
       //{
 
-      //   return true;
+      //    set_os_color(m_pbrush->m_color);
 
       //}
 
-      //return true;
+      if (edrawtext & e_draw_text_expand_tabs)
+      {
 
-      set(m_pfont);
+         str.replace_with("        ", "\t");
 
-      //::pointer<font>pfont = m_pfont;
+      }
+      else
+      {
 
-      //float length = 0.f;
+         str.replace_with(" ", "\t");
 
-      //for (unsigned int loop = 0; loop < scopedstr.size(); loop++)	// Loop To Find Text Length
+      }
+
+      if (edrawtext & e_draw_text_single_line)
+      {
+
+         str.replace_with("", "\n");
+
+         str.replace_with("", "\r");
+
+      }
+
+      string_array stra;
+
+      stra.add_lines(str);
+
+      int i = 0;
+
+      _fill1();
+
+      for (auto& strLine : stra)
+      {
+
+         //vkvg_move_to(m_pdc, rectangle.left() + Δx, rectangle.top() + Δy + e.ascent + sz.cy() * (i) / stra.get_size());
+
+         vkvg_move_to(m_pdc, rectangle.left() + Δx, rectangle.top() + Δy + e.ascent + e.ascent * i);
+         if (strLine.contains("ø"))
+         {
+            (*ftext)(m_pdc, strLine);
+         }
+         else
+         {
+            (*ftext)(m_pdc, strLine);
+         }
+
+         vkvg_status_t status = vkvg_status(m_pdc);
+
+         if (status != VKVG_STATUS_SUCCESS)
+         {
+
+            const ::ansi_character* pszStatus = vkvg_status_to_string(status);
+
+            informationf("vkvg error : graphics::draw_text %d %s", status, pszStatus);
+
+         }
+
+         i++;
+
+      }
+
+      _fill2();
+
+      //return 1;
+
+   }
+
+
+   bool graphics::_set(::write_text::font* pfontParam)
+   {
+
+      _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      if (::is_null(pfontParam))
+      {
+
+         return false;
+
+      }
+
+      //::cast < ::draw2d_vkvg::font > pvkvgdraw2dfont = pfontParam;
+
+      if (::is_null(pfontParam))
+      {
+
+         return false;
+
+      }
+
+      //auto posdata = pfontParam->get_os_data(this, 1);
+
+      //if (::is_null(posdata))
       //{
 
-      //   length += pfont->m_gmf[scopedstr[loop]].gmfCellIncX;			// Increase Length By Each Characters Width
+      //   return false;
 
       //}
 
-      //vkTranslatef((float)(x), (float)(y), 0.0f);					// Center Our Text On The Screen
+      ::string strFamilyName = pfontParam->m_pfontfamily->family_name(this);
 
-      //vkPushAttrib(VK_LIST_BIT);							// Pushes The Display List Bits
-      //vkListBase(pfont->m_baseFont);									// Sets The Base Character to 0
-      //vkCallLists((VKsizei)scopedstr.size(), VK_UNSIGNED_BYTE, scopedstr.begin());	// Draws The Display List Text
-      //vkPopAttrib();										// Pops The Display List Bits      }
+      defer_load_font_by_family_name(strFamilyName);
 
-      //vkTranslatef((float)(-x), (float)(-y), 0.0f);					// Center Our Text On The Screen
+      vkvg_select_font_face(m_pdc, strFamilyName);
 
-      ////return true;
+      //vkvg_font_face_t* pfontface = (vkvg_font_face_t*)posdata;
+
+      //vkvg_set_font_face(m_pdc, pfontface);
+
+      float fPreferredDpiX = 96.0f;
+
+      float fPreferredDpiY = 96.0f;
+
+      float fPreferredDensity = 1.0f;
+
+      float fDenominatorDpi;
+
+#ifdef __ANDROID__
+
+      fDenominatorDpi = 160.0;
+
+#elif defined(MACOS)
+
+      fDenominatorDpi = 72.0;
+
+#else
+
+      #define VKVG_USING_FREE_TYPE
+
+//#ifdef VKVG_USING_FREE_TYPE
+
+         //fDenominatorDpi = 96.0;
+
+//#else
+
+         fDenominatorDpi = 72.0;
+
+//#endif
+
+#endif
+
+      //double dFontScaler = 1.0;
+
+
+      //if (::is_set(m_pdraw2dhost))
+      //{
+
+      //   dFontScaler = m_pdraw2dhost->font_scaler();
+
+      //}
+
+      if (::is_set(m_puserinteraction))
+      {
+
+         fPreferredDpiX = m_puserinteraction->preferred_dpi_x();
+
+         fPreferredDpiY = m_puserinteraction->preferred_dpi_y();
+
+         fPreferredDensity = m_puserinteraction->preferred_density();
+
+      }
+
+      float fDpi = maximum(fPreferredDpiX, fPreferredDpiY);
+
+      float fDensity = fPreferredDensity;
+
+      if (pfontParam->m_fontsize.eunit() == ::e_unit_pixel)
+      {
+
+         //vkvg_set_font_size(m_pdc, pfontParam->m_dFontSize * dFontScaler * fDensity);
+
+         vkvg_set_font_size(m_pdc, pfontParam->m_fontsize.as_double() * fDensity);
+
+      }
+      else
+      {
+
+         //vkvg_set_font_size(m_pdc, pfontParam->m_dFontSize * dFontScaler * fPreferredDpiX / fDenominatorDpi);
+
+         auto dFontSize = pfontParam->m_fontsize.as_double();
+
+         double dSize = dFontSize * fPreferredDpiX / fDenominatorDpi;
+
+         vkvg_set_font_size(m_pdc, dSize);
+
+      }
+
+      m_pfontDevice = m_pfont;
+
+      return true;
 
    }
 
@@ -5947,7 +7537,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::set(::draw2d::brush* pbrush)
    {
 
-      ::vulkan::color(pbrush->m_color);
+      ::draw2d::graphics::set(pbrush);
+      //::vulkan::color(pbrush->m_color);
 
       //return ::success;
 
@@ -5958,17 +7549,28 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::set(::write_text::font* pfont)
    {
 
-      if (::is_null(pfont))
+      if (m_pfont != pfont)
       {
 
-         //return ::error_failed;
-         return;
+         ::string strFontName = pfont->m_pfontfamily->family_name(this);
+
+         auto pszFontName = strFontName.c_str();
+
+         ::draw2d::graphics::set(pfont);
 
       }
 
-      pfont->get_os_data(this);
+      //if (::is_null(pfont))
+      //{
 
-      //return ::success;
+      //   //return ::error_failed;
+      //   return;
+
+      //}
+
+      //pfont->get_os_data(this);
+
+      ////return ::success;
 
    }
 
@@ -6036,32 +7638,35 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       try
       {
-
-         //if(m_pgraphics == nullptr)
-         //   return;
-
-         ::draw2d::graphics::set_alpha_mode(ealphamode);
-         if (m_ealphamode == ::draw2d::e_alpha_mode_blend)
+         if (m_ealphamode != ealphamode)
          {
-            //vkColorMask(false, false, false, true);
-            //vkColorMask(true, true, true, false);
-            //vkBlendFunc(VK_SRC_ALPHA, VK_ONE_MINUS_SRC_ALPHA);
-            //vkBlendFunc(VK_SRC_ALPHA, VK_SRC_ALPHA);
-            //vkBlendFunc(VK_ONE, VK_ONE_MINUS_SRC_ALPHA);
-            //vkBlendFunc(VK_ZERO, VK_SRC_ALPHA);
-            //vkBlendEquationSeparate(VK_FUNC_ADD, VK_FUNC_ADD);
-            // vkBlendFuncSeparate(VK_SRC_ALPHA, VK_ONE_MINUS_SRC_ALPHA, VK_ONE, VK_ZERO);
-            //vkEnable(VK_BLEND);
-            //vkDisable(VK_DEPTH_TEST);
-            //vkDepthFunc(VK_NEVER);
+            //if(m_pgraphics == nullptr)
+            //   return;
 
-            vkvg_set_operator(m_pdc, VKVG_OPERATOR_OVER);
-         }
-         else if (m_ealphamode == ::draw2d::e_alpha_mode_set)
-         {
-            //vkEnable(VK_BLEND);
-            //vkBlendFunc(VK_ONE, VK_ZERO);
-            vkvg_set_operator(m_pdc, VKVG_OPERATOR_SOURCE);
+            ::draw2d::graphics::set_alpha_mode(ealphamode);
+            if (m_ealphamode == ::draw2d::e_alpha_mode_blend)
+            {
+               //vkColorMask(false, false, false, true);
+               //vkColorMask(true, true, true, false);
+               //vkBlendFunc(VK_SRC_ALPHA, VK_ONE_MINUS_SRC_ALPHA);
+               //vkBlendFunc(VK_SRC_ALPHA, VK_SRC_ALPHA);
+               //vkBlendFunc(VK_ONE, VK_ONE_MINUS_SRC_ALPHA);
+               //vkBlendFunc(VK_ZERO, VK_SRC_ALPHA);
+               //vkBlendEquationSeparate(VK_FUNC_ADD, VK_FUNC_ADD);
+               // vkBlendFuncSeparate(VK_SRC_ALPHA, VK_ONE_MINUS_SRC_ALPHA, VK_ONE, VK_ZERO);
+               //vkEnable(VK_BLEND);
+               //vkDisable(VK_DEPTH_TEST);
+               //vkDepthFunc(VK_NEVER);
+
+               vkvg_set_operator(m_pdc, VKVG_OPERATOR_OVER);
+            }
+            else if (m_ealphamode == ::draw2d::e_alpha_mode_set)
+            {
+               //vkEnable(VK_BLEND);
+               //vkBlendFunc(VK_ONE, VK_ZERO);
+               vkvg_set_operator(m_pdc, VKVG_OPERATOR_SOURCE);
+            }
+
          }
 
       }
@@ -6545,27 +8150,24 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::gpu::graphics::on_begin_draw();
 
-      //::int_rectangle rectangle;
+      reset_clip();
 
-      //if (!m_puserinteraction && m_pwindow && m_papplication->m_gpu.m_bUseSwapChainWindow)
-      //{
+      reset_impact_area();
 
-      //   m_puserinteraction = dynamic_cast <::user::interaction*>(m_pwindow->m_pacmeuserinteraction.m_p);
+      if (m_egraphics & e_graphics_draw)
+      {
 
-      //}
+         ::int_rectangle rectangle;
 
-      //if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
-      //{
+         rectangle.set_size(total_size());
 
-      //   rectangle = m_puserinteraction->host_rectangle();
+         set_alpha_mode(::draw2d::e_alpha_mode_set);
 
-      //}
-      //else
-      //{
+         fill_rectangle(rectangle, ::color::transparent);
 
-      //   rectangle = { 0, 0, 1920, 1080 };
+         set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
-      //}
+      }
 
       //bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
@@ -6638,11 +8240,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          vkvg_flush(m_pdc);
 
-         __defer_construct(m_ptextureEndDraw);
+         //__defer_construct(m_ptextureCurrent);
 
-         ::cast < ::gpu_vulkan::texture > ptextureEndDraw = m_ptextureEndDraw;
+         //::cast < ::gpu_vulkan::texture > ptextureEndDraw = m_ptextureEndDraw;
 
-         ptextureEndDraw->m_vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
+         //ptextureEndDraw->m_vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
 
 
 
@@ -6835,6 +8437,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
+   void graphics::defer_load_font_by_family_name(const ::scoped_string& scopedstrName)
+   {
+
+      ::draw2d_vkvg::get()->defer_load_font_by_family_name(m_pdc, scopedstrName);
+
+   }
+
 
 
 } // namespace draw2d_vkvg
@@ -6969,6 +8578,7 @@ namespace vulkan
       //}
       //vkEnd();
    }
+
 
 
 

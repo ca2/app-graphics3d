@@ -16,11 +16,13 @@ namespace gpu_vulkan
    texture::texture()
    {
 
+      m_bOwnImage = false;
+
       m_etype = e_type_none;
 
-      m_vkimagelayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      m_vkaccessflags = 0;
-      m_vkpipelinestageflags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+      m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      m_state.m_vkaccessflags = 0;
+      m_state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 
       m_bTransferDst = true;
       new_texture.set_new_texture();
@@ -118,7 +120,7 @@ namespace gpu_vulkan
 
          }
 
-         imagecreateinfo.initialLayout = m_vkimagelayout;
+         imagecreateinfo.initialLayout = m_state.m_vkimagelayout;
 
          VkMemoryPropertyFlags properties;
 
@@ -265,27 +267,25 @@ namespace gpu_vulkan
    }
 
 
-   void texture::_new_state(::gpu_vulkan::command_buffer* pcommandbuffer,
-      VkAccessFlags accessFlags,
-      VkImageLayout newLayout,
-      VkPipelineStageFlags pipelineStageFlags)
+   void texture::_set_state(::gpu_vulkan::command_buffer* pcommandbuffer,
+      state_t state)
    {
 
       ASSERT(pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording);
 
       auto image = m_vkimage;
       
-      auto accessOld = m_vkaccessflags;
+      auto accessOld = m_state.m_vkaccessflags;
 
-      auto accessNew = accessFlags;
+      auto accessNew = state.m_vkaccessflags;
 
-      auto layoutOld = m_vkimagelayout;
+      auto layoutOld = m_state.m_vkimagelayout;
 
-      auto layoutNew = newLayout;
+      auto layoutNew = state.m_vkimagelayout;
 
-      auto pipelineStageFlagsOld = m_vkpipelinestageflags;
+      auto pipelineStageFlagsOld = m_state.m_vkpipelinestageflags;
 
-      auto pipelineStageFlagsNew = pipelineStageFlags;
+      auto pipelineStageFlagsNew = state.m_vkpipelinestageflags;
 
       // Optional: Skip no-op transitions
       if (layoutOld == layoutNew 
@@ -345,9 +345,9 @@ namespace gpu_vulkan
          1, &barrier
       );
 
-      m_vkimagelayout = layoutNew;
-      m_vkaccessflags = accessNew;
-      m_vkpipelinestageflags = pipelineStageFlagsNew;
+      m_state.m_vkimagelayout = layoutNew;
+      m_state.m_vkaccessflags = accessNew;
+      m_state.m_vkpipelinestageflags = pipelineStageFlagsNew;
 
    }
 
@@ -611,6 +611,34 @@ namespace gpu_vulkan
       }
 
    }
+
+
+   void texture::_attach(VkImage vkimage, enum_type etype)
+   {
+
+      destroy();
+
+      m_bOwnImage = false;
+
+      m_etype = etype;
+
+      m_vkimage = vkimage;
+
+   }
+
+
+   void texture::destroy()
+   {
+
+      m_vkimage = nullptr;
+      m_vkdevicememory = nullptr;
+      m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      m_state.m_vkaccessflags = VK_ACCESS_NONE;
+      m_state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_NONE;
+      m_vkimageview = nullptr;
+
+   }
+
 
 } // namespace gpu_vulkan
 

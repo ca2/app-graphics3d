@@ -861,7 +861,7 @@ namespace gpu_vulkan
   //    VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
   //    VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
       //ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-      VkPipelineStageFlags vkpipelinestageflagsWait = ptexture->m_vkpipelinestageflags;
+      VkPipelineStageFlags vkpipelinestageflagsWait = ptexture->m_state.m_vkpipelinestageflags;
       {
          //VkImageMemoryBarrier barrier = {
          //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -897,13 +897,15 @@ namespace gpu_vulkan
          //ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
          //ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_TRANSFER_BIT;
 
-         ptexture->_new_state(pcommandbuffer,
-            VK_ACCESS_TRANSFER_READ_BIT,
-            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-            VK_PIPELINE_STAGE_TRANSFER_BIT);
-      }
+      auto scopedstate = ptexture->_scoped_state(pcommandbuffer,
+         {
+         VK_ACCESS_TRANSFER_READ_BIT,
+         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+         VK_PIPELINE_STAGE_TRANSFER_BIT
+         });
+      //}
 
-      {
+      //{
          ////m_ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
          //   VkImageMemoryBarrier barrier = {
          //     .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -937,11 +939,14 @@ namespace gpu_vulkan
          //   m_ptexture->m_vkaccessflags = VK_ACCESS_TRANSFER_WRITE_BIT;
          //   m_ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
          //   m_ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_TRANSFER_BIT;
-         ptextureRef->_new_state(pcommandbuffer,
-            VK_ACCESS_TRANSFER_WRITE_BIT,
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            VK_PIPELINE_STAGE_TRANSFER_BIT);
-      }
+      ptextureRef->_set_state(pcommandbuffer,
+         {
+         VK_ACCESS_TRANSFER_WRITE_BIT,
+         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+         VK_PIPELINE_STAGE_TRANSFER_BIT
+         }
+      );
+      //}
 
 
       //// Transition source image to transfer destination layout
@@ -987,7 +992,7 @@ namespace gpu_vulkan
          vkCmdClearColorImage(
             pcommandbuffer->m_vkcommandbuffer,
             ptextureRef->m_vkimage,
-            ptextureRef->m_vkimagelayout,
+            ptextureRef->m_state.m_vkimagelayout,
             &clearColor,
             1,
             &subresourceRange
@@ -1007,8 +1012,8 @@ namespace gpu_vulkan
       vkCmdCopyImage(
          pcommandbuffer->m_vkcommandbuffer,
          //colorAttachment.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-         ptexture->m_vkimage, ptexture->m_vkimagelayout,
-         ptextureRef->m_vkimage, ptextureRef->m_vkimagelayout,
+         ptexture->m_vkimage, ptexture->m_state.m_vkimagelayout,
+         ptextureRef->m_vkimage, ptextureRef->m_state.m_vkimagelayout,
          1,
          &imageCopyRegion);
 
@@ -1041,7 +1046,7 @@ namespace gpu_vulkan
       //m_ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_GENERAL);
       //ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
-      {
+      //{
          //VkImageMemoryBarrier barrier = {
          //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
          //   .srcAccessMask = m_ptexture->m_vkaccessflags,
@@ -1073,12 +1078,15 @@ namespace gpu_vulkan
          //m_ptexture->m_vkaccessflags = VK_ACCESS_HOST_READ_BIT;
          //m_ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_GENERAL;
          //m_ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_HOST_BIT;
-         ptextureRef->_new_state(
-            pcommandbuffer,
+      ptextureRef->_set_state(
+         pcommandbuffer,
+         {
             VK_ACCESS_HOST_READ_BIT,
-            VK_IMAGE_LAYOUT_GENERAL,
-            VK_PIPELINE_STAGE_HOST_BIT);
-      }
+         VK_IMAGE_LAYOUT_GENERAL,
+         VK_PIPELINE_STAGE_HOST_BIT
+         }
+      );
+      //}
 
       //{
       //   //VkImageMemoryBarrier barrier = {
@@ -1112,13 +1120,17 @@ namespace gpu_vulkan
       //   //ptexture->m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
       //   //ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
       //   //ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-      ptexture->_new_state(
-         pcommandbuffer,
-         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-      );
+      //ptexture->_new_state(
+      //   pcommandbuffer,
+      //   {
+      //   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+      //   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+      //   }
+      //);
       //}
+
+   }
 
 
       ::cast < renderer > prenderer = m_pcontext->get_gpu_renderer();
@@ -2285,18 +2297,25 @@ namespace gpu_vulkan
       ::cast < texture > ptextureSrc = pgputextureSource;
       ::cast < texture > ptextureDst = pgputextureTarget;
 
-      ptextureSrc->_new_state(
+      auto scopedstateSrc = ptextureSrc->_scoped_state(
          pcommandbuffer,
-         0,
-         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+         {
 
-      ptextureDst->_new_state(
+            0,
+         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+         }
+         );
+
+      auto scopedstateDst = ptextureDst->_scoped_state(
          pcommandbuffer,
+         {
          VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         }
+         );
+      
       //  if (!m_psha)
       //  {
 
@@ -3213,11 +3232,13 @@ namespace gpu_vulkan
 
       {
 
-         ptexture->_new_state(
+         ptexture->_set_state(
             pcommandbuffer,
+            {
             VK_ACCESS_TRANSFER_WRITE_BIT,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_PIPELINE_STAGE_TRANSFER_BIT
+            }
          );
 
          VkClearColorValue clearColor = { .float32 = { 0.0f, 0.0f, 0.0f, 0.0f } };
@@ -3231,7 +3252,7 @@ namespace gpu_vulkan
          };
          vkCmdClearColorImage(pcommandbuffer->m_vkcommandbuffer,
             ptexture->m_vkimage,
-            ptexture->m_vkimagelayout,
+            ptexture->m_state.m_vkimagelayout,
             &clearColor,
             1, // rangeCount
             &range
@@ -3257,11 +3278,13 @@ namespace gpu_vulkan
       if(ptextureDepth)
       {
 
-         ptextureDepth->_new_state(
+         ptextureDepth->_set_state(
             pcommandbuffer,
+            {
             VK_ACCESS_TRANSFER_WRITE_BIT,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_PIPELINE_STAGE_TRANSFER_BIT
+            }
          );
          
          VkClearDepthStencilValue clearValue = {
@@ -3653,11 +3676,13 @@ namespace gpu_vulkan
 
          ::cast < texture  > ptexture = pswapchain->current_texture();
 
-         ptexture->_new_state(
+         ptexture->_set_state(
             pcommandbuffer,
+            {
             0,
             VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
             VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
+            }
          );
 
       }
@@ -3816,9 +3841,9 @@ namespace gpu_vulkan
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            .srcAccessMask = ptexture->m_vkaccessflags,
+            .srcAccessMask = ptexture->m_state.m_vkaccessflags,
             .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-            .oldLayout = ptexture->m_vkimagelayout,
+            .oldLayout = ptexture->m_state.m_vkimagelayout,
             .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
             .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
             .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -3832,13 +3857,13 @@ namespace gpu_vulkan
             },
          };
 
-         ptexture->m_vkaccessflags = VK_ACCESS_SHADER_READ_BIT;
+         ptexture->m_state.m_vkaccessflags = VK_ACCESS_SHADER_READ_BIT;
 
-         ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+         ptexture->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
          vkCmdPipelineBarrier(
             pcommandbuffer->m_vkcommandbuffer,
-            ptexture->m_vkpipelinestageflags,
+            ptexture->m_state.m_vkpipelinestageflags,
             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
             0,
             0, NULL,
@@ -3846,7 +3871,7 @@ namespace gpu_vulkan
             1, &barrier
          );
 
-         ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+         ptexture->m_state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 
          m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
@@ -3884,9 +3909,9 @@ namespace gpu_vulkan
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            .srcAccessMask = ptexture->m_vkaccessflags,
+            .srcAccessMask = ptexture->m_state.m_vkaccessflags,
             .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-            .oldLayout = ptexture->m_vkimagelayout,
+            .oldLayout = ptexture->m_state.m_vkimagelayout,
             .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
             .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -3900,12 +3925,12 @@ namespace gpu_vulkan
             },
          };
 
-         ptexture->m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-         ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+         ptexture->m_state.m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+         ptexture->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
          vkCmdPipelineBarrier(
             pcommandbuffer->m_vkcommandbuffer,
-            ptexture->m_vkpipelinestageflags,
+            ptexture->m_state.m_vkpipelinestageflags,
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             0,
             0, NULL,
@@ -3913,7 +3938,7 @@ namespace gpu_vulkan
             1, &barrier
          );
 
-         ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+         ptexture->m_state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
          m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
@@ -4309,17 +4334,20 @@ namespace gpu_vulkan
       ::cast < texture > ptextureSrc = ptextureSource;
       ::cast < texture > ptextureDst = ptextureTarget;
 
-      ptextureSrc->_new_state(
+      auto scopedstateSrc = ptextureSrc->_scoped_state(
          pcommandbuffer,
+         {
          0,
          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+         });
 
-      ptextureDst->_new_state(
+      auto scopedstateDst = ptextureDst->_scoped_state(
          pcommandbuffer,
-         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         { VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         });
 
       //  if (!m_psha)
       //  {

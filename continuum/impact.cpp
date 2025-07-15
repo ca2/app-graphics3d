@@ -224,7 +224,7 @@ namespace app_graphics3d_continuum
 
       m_iSequence++;
       
-      strText.formatf("JegElskerDigThomasBorregaardSørensen!!; %d", m_iSequence);
+      strText.formatf("øçåJegElskerDigThomasBorregaardSørensen!!; %d", m_iSequence);
 
       auto size = pgraphics->get_text_extent(strText);
 

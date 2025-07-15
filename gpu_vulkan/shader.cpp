@@ -261,7 +261,7 @@ namespace gpu_vulkan
 
       ::cast < texture > ptexture = ptextureDst;
 
-      if (ptexture->m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+      if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       {
 
          warning() << "what?";
@@ -311,7 +311,7 @@ namespace gpu_vulkan
 
          ::cast < texture > ptexture = prenderpass->current_texture();
 
-         if (ptexture->m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+         if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
          {
 
             warning() << "what?";
@@ -567,7 +567,7 @@ namespace gpu_vulkan
 
       ::cast < texture > ptexture = prenderpass->current_texture();
 
-      if (ptexture->m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+      if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       {
 
          warning() << "what?";
