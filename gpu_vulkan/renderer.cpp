@@ -1918,7 +1918,7 @@ namespace gpu_vulkan
 
          m_pshaderImageBlend->m_bEnableBlend = true;
          m_pshaderImageBlend->m_bDisableDepthTest = true;
-         m_pshaderImageBlend->m_iSamplerSlot = 0;
+         m_pshaderImageBlend->m_bindingSampler.set();
 
          ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
@@ -2377,7 +2377,7 @@ namespace gpu_vulkan
          __construct_new(m_pshaderCopyImage);
 
          m_pshaderCopyImage->m_pgpurenderer = this;
-         m_pshaderCopyImage->m_iSamplerSlot = 0;
+         m_pshaderCopyImage->m_bindingSampler.set();
          // Image Blend descriptors
 //if (!m_psetdescriptorlayoutImageBlend)
          {
@@ -2418,7 +2418,7 @@ namespace gpu_vulkan
 
          m_pshaderCopyImage->m_bEnableBlend = true;
          m_pshaderCopyImage->m_bDisableDepthTest = true;
-         m_pshaderCopyImage->m_iSamplerSlot = 0;
+         m_pshaderCopyImage->m_bindingSampler.set();
 
          ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
@@ -4410,7 +4410,7 @@ namespace gpu_vulkan
          __construct_new(m_pshaderBlend2);
 
          m_pshaderBlend2->m_pgpurenderer = this;
-         m_pshaderBlend2->m_iSamplerSlot = 0;
+         m_pshaderBlend2->m_bindingSampler.set();
          // Image Blend descriptors
 //if (!m_psetdescriptorlayoutImageBlend)
          {
@@ -4451,7 +4451,7 @@ namespace gpu_vulkan
 
          m_pshaderBlend2->m_bEnableBlend = true;
          m_pshaderBlend2->m_bDisableDepthTest = true;
-         m_pshaderBlend2->m_iSamplerSlot = 0;
+         m_pshaderBlend2->m_bindingSampler.set();
 
          ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
 

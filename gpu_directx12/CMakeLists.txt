@@ -38,6 +38,10 @@ list(APPEND library_source
         image_directx12.cpp
         input_layout.cpp
         input_layout.h
+        memory_buffer.cpp
+        memory_buffer.h
+        model_buffer.cpp
+        model_buffer.h
         object.cpp
         object.h
         offscreen_render_target_view.cpp

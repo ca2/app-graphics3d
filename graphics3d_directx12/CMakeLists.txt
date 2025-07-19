@@ -12,8 +12,8 @@ list(APPEND library_source
         engine.h
         framework.cpp
         framework.h
-        model.cpp
-        model.h
+        #model.cpp
+        #model.h
 
 )
 

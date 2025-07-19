@@ -759,7 +759,7 @@
     </ClCompile>
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="initializers.cpp" />
-    <ClCompile Include="model.cpp" />
+    <ClCompile Include="aaa_model.cpp" />
     <ClCompile Include="offscreen.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="render_pass.cpp" />
@@ -781,7 +781,7 @@
     <ClInclude Include="engine.h" />
     <ClInclude Include="initializers.h" />
     <ClInclude Include="input.h" />
-    <ClInclude Include="model.h" />
+    <ClInclude Include="aaa_model.h" />
     <ClInclude Include="offscreen_render_pass.h" />
     <ClInclude Include="pipeline.h" />
     <ClInclude Include="render_pass.h" />

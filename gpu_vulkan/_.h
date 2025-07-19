@@ -56,6 +56,8 @@ namespace gpu_vulkan
 
    class texture;
 
+   class buffer;
+
    class command_buffer;
 
    class layer;

@@ -32,6 +32,13 @@ uniform mat4 modelMatrix;
 uniform mat4 normalMatrix;
 
 void main() {
+
+  
+  // Test if the fragment is on the left side in world space
+  //if (fragPosWorld.x < 0.0) {
+    //outColor = vec4(0.5*0.5, 0.75*0.5, 0.95*0.5, .5);
+    //return;
+  //}
  vec3 diffuseLight = ambientLightColor.xyz * ambientLightColor.w;
   vec3 specularLight = vec3(0.0);
   vec3 surfaceNormal = normalize(fragNormalWorld);

@@ -21,7 +21,6 @@ namespace graphics3d_vulkan
    //class renderer;
    class application_object;
 
-
    class model;
    //class context;
    class input;

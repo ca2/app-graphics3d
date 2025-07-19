@@ -22,7 +22,7 @@ namespace gpu_vulkan
 
       //VkImageView srcView, dstView;
       VkSampler m_vksampler;
-
+      unsigned int m_uSet;
       VkRenderPass m_vkrenderpass2;
       VkDescriptorSetLayout m_descriptorsetlayout;
       //VkPipelineLayout pipelineLayout;
@@ -71,7 +71,6 @@ namespace gpu_vulkan
 
    };
 
-
    class CLASS_DECL_GPU_VULKAN shader :
       virtual public ::gpu::shader
    {
@@ -81,7 +80,6 @@ namespace gpu_vulkan
       ::pointer < pipeline > m_ppipeline;
 
 
-      int m_iSamplerSlot;
 
       //bool m_bClearColor;
       //::color::color m_colorClear;
@@ -140,6 +138,7 @@ namespace gpu_vulkan
       void bind(::gpu::texture* pgputextureTarget) override;
       void bind() override;
       void unbind() override;
+      virtual void _bind(::gpu::texture* pgputextureTarget);
       virtual void _bind();
 
 
@@ -148,7 +147,7 @@ namespace gpu_vulkan
 
       
 
-      void bind_source(::gpu::texture * ptexture) override;
+      void bind_source(::gpu::texture * ptexture, int iSlot) override;
 
 
    };

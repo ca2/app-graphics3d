@@ -214,18 +214,17 @@ namespace gpu_vulkan
 
 
       // Buffer Helper Functions
-      void createBuffer(
+      ::pointer < buffer > create_buffer(
          VkDeviceSize size,
          VkBufferUsageFlags usage,
-         VkMemoryPropertyFlags properties,
-         VkBuffer & buffer,
-         VkDeviceMemory & bufferMemory);
+         VkMemoryPropertyFlags properties);
+
       ::pointer < command_buffer > beginSingleTimeCommands();
       void endSingleTimeCommands(command_buffer * pcommandbuffer);
       void endSingleTimeCommands(command_buffer * pcommandbuffer, int iSubmitCount, VkSubmitInfo * psubmitinfo);
       void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-      void copyBufferToImage(
-         VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
+      void copyBufferToImage(::gpu::command_buffer * pcommandbuffer, ::gpu_vulkan::texture* ptexture, ::gpu_vulkan::buffer* pbuffer);
+      //(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
       void createImageWithInfo(
          const VkImageCreateInfo & imageInfo,
          VkMemoryPropertyFlags properties,
@@ -259,7 +258,14 @@ namespace gpu_vulkan
 
       ::gpu_vulkan::descriptor_pool* get_global_pool(int iFrameCount);
 
-
+      //void transitionImageLayout(
+      //   VkImage image,
+      //   VkFormat format,
+      //   VkImageLayout oldLayout,
+      //   VkImageLayout newLayout,
+      //   uint32_t mizLevels,
+      //   uint32_t layerCount);
+       
       ////set_descriptor_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
       //virtual VkDescriptorSet getGlobalDescriptorSet(::gpu::context* pgpucontext, ::gpu_vulkan::renderer* prenderer);
 
@@ -276,7 +282,7 @@ namespace gpu_vulkan
       //void copy(::gpu::texture* ptexture) override;
       ::memory rectangle_shader_vert() override;
       ::memory rectangle_shader_frag() override;
-
+      bool hasStencilComponent(VkFormat format);
 //      void initialize_rectangle_shader(::gpu::shader* pshader) override;
 
 

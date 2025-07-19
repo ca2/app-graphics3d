@@ -61,6 +61,47 @@ namespace app_graphics3d_continuum
 
       m_propertiesGlobalUbo.set<::app_graphics3d_continuum::global_ubo>();
 
+
+      ::graphics3d::sky_box::cube cube = {
+
+         // Cloudy skybox
+        /* "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_ft.jpg",
+         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_bk.jpg",
+         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_dn.jpg",
+         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_up.jpg",
+         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_rt.jpg",
+         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_lf.jpg",*/
+
+         // Hell skybox
+        /* "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Front.png",
+         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Back.png",
+
+          "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Top.png",
+          "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Bottom.png",
+
+         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Left.png",
+         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Right.png",
+       */
+
+
+       // Space sky_box
+         {"matter://textures/SpaceSkybox/right.png",
+        "matter://textures/SpaceSkybox/left.png",
+        "matter://textures/SpaceSkybox/bot.png",
+        "matter://textures/SpaceSkybox/top.png",
+        "matter://textures/SpaceSkybox/front.png",
+        "matter://textures/SpaceSkybox/back.png"
+        }
+      };
+
+//      m_Skybox = __allocate::graphics3d::sky_box();
+
+      __defer_construct_new(m_Skybox);
+
+      m_Skybox->initialize_sky_box(m_pengine, cube);
+
+
+
       float fXScale;
 
       fXScale = m_pengine->m_fYScale;
@@ -92,7 +133,7 @@ namespace app_graphics3d_continuum
       {
 
          auto & stoneSphere = tinyobjloader_object("matter://models/StoneSphere.obj");
-         stoneSphere.translate({ .0f, 0.5f, 0.f });
+         stoneSphere.translate({ .0f, 0.0f, 0.f });
          stoneSphere.scale({.25f, .25f, .25f });
 
       }
@@ -154,6 +195,8 @@ namespace app_graphics3d_continuum
 
       auto& globalubo = this->global_ubo();
 
+      //pgpucontext->clear(::argb(.5f, 0.f, 0.f, 0.5f));
+
       //::graphics3d::GlobalUbo ubo{};
 
       auto projection = m_pengine->m_pcamera->getProjection();
@@ -171,6 +214,7 @@ namespace app_graphics3d_continuum
          m_ppointlightsystem->update(pgpucontext, this);
 
       }
+
 
    }
 
@@ -191,10 +235,39 @@ namespace app_graphics3d_continuum
 
       //m_pengine->update_global_ubo();
 
-      if (m_psimplerendersystem && m_ppointlightsystem)
+      if (m_Skybox)
+      {
+
+         m_Skybox->render(pgpucontext, this);
+         //auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2();
+
+
+
+         //// sky_box
+         ////glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); // Remove translation from the view matrix
+         ////m_SkyboxShader->bind();
+
+         //m_Skybox->bind(pcommandbuffer);
+         //m_Skybox->draw(pcommandbuffer);
+         //m_Skybox->unbind(pcommandbuffer);
+
+         // m_SkyboxShader->unbind(); // Make sure to bind the shader first
+
+      }
+
+      //return;
+
+      if (m_psimplerendersystem)
       {
 
          m_psimplerendersystem->render(pgpucontext, this);
+
+      }
+
+
+      if(m_ppointlightsystem)
+      {
+
          m_ppointlightsystem->render(pgpucontext, this);
 
       }

@@ -3,7 +3,7 @@
 #include "acme/constant/message.h"
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
 
@@ -59,7 +59,7 @@ namespace graphics3d_MyPlace2025
    }
 
 
-} // namespace graphics3d_MyPlace2025
+} // namespace app_graphics3d_MyPlace2025
 
 
 

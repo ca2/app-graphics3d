@@ -1,15 +1,15 @@
 #pragma once
 
 
-#include "cube/document.h"
+#include "base/user/user/document.h"
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
 
-   class CLASS_DECL_GRAPHICS3D_MYPLACE2025 document :
-      public ::cube::document
+   class CLASS_DECL_APP_GRAPHICS3D_MYPLACE2025 document :
+      public ::user::document
    {
    public:
       
@@ -38,7 +38,7 @@ namespace graphics3d_MyPlace2025
    };
 
 
-} // namespace graphics3d_MyPlace2025
+} // namespace app_graphics3d_MyPlace2025
 
 
 

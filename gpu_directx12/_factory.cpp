@@ -5,6 +5,8 @@
 #include "shader.h"
 #include "cpu_buffer.h"
 #include "input_layout.h"
+#include "memory_buffer.h"
+#include "model_buffer.h"
 #include "object.h"
 #include "offscreen_render_target_view.h"
 #include "renderer.h"
@@ -39,6 +41,9 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item < ::gpu_directx12::input_layout, ::gpu::input_layout >();
    pfactory->add_factory_item < ::gpu_directx12::command_buffer   , ::gpu::command_buffer >();
+   pfactory->add_factory_item < ::gpu_directx12::memory_buffer, ::gpu::memory_buffer >();
+   pfactory->add_factory_item < ::gpu_directx12::model_buffer, ::gpu::model_buffer >();
+   pfactory->add_factory_item < ::gpu_directx12::command_buffer, ::gpu::command_buffer >();
    pfactory->add_factory_item < ::gpu::layer >();
 }
 

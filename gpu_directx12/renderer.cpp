@@ -618,7 +618,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   command_buffer* renderer::getLoadAssetsCommandBuffer()
+   ::gpu::command_buffer* renderer::getLoadAssetsCommandBuffer()
    {
 
       if (!m_pcommandbufferLoadAssets)

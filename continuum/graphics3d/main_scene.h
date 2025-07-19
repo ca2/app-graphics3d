@@ -3,6 +3,7 @@
 #pragma once
 
 
+#include "bred/graphics3d/cube_map.h"
 #include "bred/graphics3d/scene.h"
 
 
@@ -10,13 +11,13 @@ namespace app_graphics3d_continuum
 {
 
 
-
-
    class main_scene :
       virtual public ::graphics3d::scene
    {
    public:
 
+
+      ::pointer< ::graphics3d::sky_box> m_Skybox;
 
 
       ::pointer < simple_render_system >		m_psimplerendersystem;

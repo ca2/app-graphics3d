@@ -21,7 +21,6 @@ namespace graphics3d_directx11
    //class renderer;
    class application_object;
 
-
    class model;
    //class context;
    class input;

@@ -1,10 +1,12 @@
+// from graphics3d_direct2d/model.h by 
+// camilo on 2025-07-16 06:12 <3ThomasBorregaardSørensen!!
 // From V0idsEmbrace@Twich continuum project
 // base from graphics3d::model by
 // camilo on 2025-05-17 02:47 <3ThomasBorregaardSorensen!!
 #pragma once
 
 
-#include "bred/graphics3d/model.h"
+#include "bred/gpu/model_buffer.h"
 #include "app-graphics3d/gpu_directx12/command_buffer.h"
 #include "app-graphics3d/gpu_directx12/renderer.h"
 
@@ -23,12 +25,12 @@
 //#include <memory>
 //#include <vector>
 
-namespace graphics3d_directx12
+namespace gpu_directx12
 {
 
 
-   class CLASS_DECL_GRAPHICS3D_DIRECTX12 model :
-      virtual public ::graphics3d::model
+   class CLASS_DECL_GPU_DIRECTX12 model_buffer :
+      virtual public ::gpu::model_buffer
    {
    public:
 
@@ -59,10 +61,10 @@ namespace graphics3d_directx12
       //::comptr<ID3D11Buffer> m_pbufferIndice;
 
       // GPU Resources
-      ::comptr<ID3D12Resource> m_presourceVertexBufferGPU;
-      ::comptr<ID3D12Resource> m_presourceIndexBufferGPU;
-      ::comptr<ID3D12Resource> m_presourceVertexBufferUpload;
-      ::comptr<ID3D12Resource> m_presourceIndexBufferUpload;
+      //::comptr<ID3D12Resource> m_presourceVertexBufferGPU;
+      //::comptr<ID3D12Resource> m_presourceIndexBufferGPU;
+      //::comptr<ID3D12Resource> m_presourceVertexBufferUpload;
+      //::comptr<ID3D12Resource> m_presourceIndexBufferUpload;
       D3D12_VERTEX_BUFFER_VIEW m_vertexbufferview = {};
       D3D12_INDEX_BUFFER_VIEW       m_indexbufferview = {};
       //D3D12_RANGE                   m_rangeVertex;
@@ -79,22 +81,34 @@ namespace graphics3d_directx12
       //static ::pointer<model> createModelFromFile(::gpu::context * pgpucontext, const std::string& filepath);
 
 
-      model();
-      ~model();
+      model_buffer();
+      ~model_buffer();
 
-      void initialize_model(::gpu::renderer* pgpurenderer, const ::graphics3d::model::Builder& builder) override;
+      //void initialize_model(::gpu::renderer* pgpurenderer, const ::graphics3d::model::Builder& builder) override;
 
-      void bind() override;
-      void draw() override;
 
-      void createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices);
-      void createIndexBuffers(const ::array<uint32_t>& indices);
+      void on_initialize_gpu_context_object() override;
+
+      //void bind() override;
+      //void draw() override;
+
+      void bind(::gpu::command_buffer* pcommandbuffer) override;
+
+      void draw(::gpu::command_buffer* pcommandbuffer) override;
+
+
+      //void createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices);
+      //void createIndexBuffers(const ::array<uint32_t>& indices);
+
+
+      void static_initialize_vertex_buffer(const void* data, memsize iTypeSize, ::collection::count iVertexCount) override;
+      void static_initialize_index_buffer(const void* data, memsize iTypeSize, ::collection::count iIndexCount) override;
 
 
    };
 
 
-}  // namespace graphics3d_directx12
+}  // namespace gpu_directx12
 
 
 

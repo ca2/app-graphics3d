@@ -15,6 +15,8 @@ list(APPEND library_source
         approach.h
         assimp.cpp
         assimp.h
+        buffer.cpp
+        buffer.h
         command_buffer.cpp
         command_buffer.h
         context.cpp

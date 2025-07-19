@@ -1,14 +1,14 @@
 #pragma once
 
 
-#include "cube/frame.h"
+#include "base/user/simple/frame_window.h"
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
 
-   class CLASS_DECL_GRAPHICS3D_MYPLACE2025 main_frame :
+   class CLASS_DECL_APP_GRAPHICS3D_MYPLACE2025 main_frame :
       virtual public ::simple_frame_window
    {
    public:
@@ -40,7 +40,7 @@ namespace graphics3d_MyPlace2025
    };
 
 
-} // namespace graphics3d_MyPlace2025
+} // namespace app_graphics3d_MyPlace2025
 
 
 

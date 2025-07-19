@@ -23,7 +23,6 @@ namespace graphics3d_opengl
    class renderer;
    //class application_object;
 
-
    class model;
    //class context;
    class input;

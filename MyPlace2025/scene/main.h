@@ -3,24 +3,25 @@
 #include <string>
 #include <memory>
 #include <glm/glm.hpp>
-//#include "renderer.h"
+#include "bred/graphics3d/scene.h"
+#include "bred/graphics3d/mesh.h"
 //#include "shader.h"
 //#include "mesh.h"
 //#include "camera.h"
 //#include "texture.h"
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
-   class renderer;
-   class shader;
-   class mesh;
+   //class renderer;
+   //class shader;
+   //class mesh;
    //class Camera;
-   class sky_box;
+   //class sky_box;
 
    class main_scene :
-      virtual public ::cube::scene
+      virtual public ::graphics3d::scene
    {
    public:
 
@@ -39,35 +40,35 @@ namespace graphics3d_MyPlace2025
 
       void Init();
       void Update(float deltaTime);
-      void Render(renderer* prenderer, ::graphics3d::camera* pcamera);
+      void Render(::gpu::renderer* prenderer, ::graphics3d::camera* pcamera);
       void LoadModel(std::string& path);
       // Misc
 
 
    //private:
       // Shaders
-      ::pointer<shader> m_Shader;
-      ::pointer<shader> m_LightingShader;
-      ::pointer<shader> m_LightSourceShader;
-      ::pointer<shader> m_SkyboxShader;
-      ::pointer<shader> m_WallShader;
-
+      ::pointer<::gpu::shader> m_Shader;
+      ::pointer<::gpu::shader> m_LightingShader;
+      ::pointer<::gpu::shader> m_LightSourceShader;
+      //::pointer<::gpu::shader> m_SkyboxShader;
+      ::pointer<::gpu::shader> m_WallShader;
+                
       // Textures
-      ::pointer<texture> m_PlaneTexture;
-      ::pointer<texture> m_BoxTexture;
-      ::pointer<texture> m_Specular;
-      ::pointer<texture> m_SphereTexture;
-      ::pointer<texture> m_Misc;
+      ::pointer<::gpu::texture> m_PlaneTexture;
+      ::pointer<::gpu::texture> m_BoxTexture;
+      ::pointer<::gpu::texture> m_Specular;
+      ::pointer<::gpu::texture> m_SphereTexture;
+      ::pointer<::gpu::texture> m_Misc;
 
       // Meshes
-      ::pointer<mesh> m_BoxMesh;
-      ::pointer<mesh> m_PlaneMesh;
-      ::pointer<mesh> m_SkyboxMesh;
-      ::pointer<mesh> m_SphereMesh;
-      ::pointer<mesh> m_WallMesh;
+      ::pointer<::graphics3d::mesh> m_BoxMesh;
+      ::pointer<::graphics3d::mesh> m_PlaneMesh;
+      ::pointer<::graphics3d::mesh> m_SkyboxMesh;
+      ::pointer<::graphics3d::mesh> m_SphereMesh;
+      ::pointer<::graphics3d::mesh> m_WallMesh;
 
       // Models
-      std::vector<::pointer<mesh>> m_Meshes;
+      std::vector<::pointer<::graphics3d::mesh>> m_Meshes;
 
       //Instances
       int m_PlaneInstanceCount = 1;
@@ -91,13 +92,13 @@ namespace graphics3d_MyPlace2025
       float scaleFactorY = 20.0f;
       float scaleFactorZ = 20.0f;
 
-      ::pointer<sky_box> m_Skybox;
+      ::pointer<::graphics3d::sky_box> m_Skybox;
 
 
    };
 
 
-} //  namespace graphics3d_MyPlace2025
+} //  namespace app_graphics3d_MyPlace2025
 
 
 

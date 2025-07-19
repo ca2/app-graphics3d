@@ -1,5 +1,6 @@
 // Created by camilo on 2025-06-11 01:08 <3ThomasBorregaardSørensen!!
 #include "framework.h"
+#include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "memory_buffer.h"
@@ -660,6 +661,13 @@ namespace gpu_vulkan
    void model_buffer::bind(::gpu::command_buffer* pgpucommandbuffer)
    {
 
+      if (m_bDummy)
+      {
+
+         return;
+
+      }
+
       if (m_pbufferVertex)
       {
 
@@ -672,16 +680,37 @@ namespace gpu_vulkan
          vkCmdBindVertexBuffers(
             pcommandbuffer->m_vkcommandbuffer,
             0, 1,
-            &pbufferVertex->m_vkbuffer, offsets);
+            &pbufferVertex->m_pbuffer->m_vkbuffer, offsets);
 
          if (m_pbufferIndex)
          {
 
             ::cast < memory_buffer > pbufferIndex = m_pbufferIndex;
 
+            VkIndexType vkindextype;
+
+            if (m_iIndexTypeSize == 1)
+            {
+
+               vkindextype = VK_INDEX_TYPE_UINT8;
+
+            }
+            else if (m_iIndexByteSize == 2)
+            {
+               
+               vkindextype = VK_INDEX_TYPE_UINT16;
+
+            }
+            else 
+            {
+
+               vkindextype = VK_INDEX_TYPE_UINT32;
+
+            }
+
             vkCmdBindIndexBuffer(
                pcommandbuffer->m_vkcommandbuffer,
-               pbufferIndex->m_vkbuffer, 0, VK_INDEX_TYPE_UINT16);
+               pbufferIndex->m_pbuffer->m_vkbuffer, 0, vkindextype);
 
          }
 

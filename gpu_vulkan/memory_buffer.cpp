@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "buffer.h"
 #include "context.h"
 #include "physical_device.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
@@ -19,8 +20,8 @@ namespace gpu_vulkan
    memory_buffer::memory_buffer()
    {
       //m_pcontext = nullptr;
-      m_vkbuffer = VK_NULL_HANDLE;
-      m_vkdevicememory = VK_NULL_HANDLE;
+      //m_vkbuffer = VK_NULL_HANDLE;
+      //m_vkdevicememory = VK_NULL_HANDLE;
       //m_pMap = nullptr;
    }
 
@@ -28,17 +29,6 @@ namespace gpu_vulkan
    memory_buffer::~memory_buffer()
    {
 
-      ::cast < context > pcontext = m_pcontext;
-      if (m_vkbuffer != VK_NULL_HANDLE)
-      {
-         vkDestroyBuffer(pcontext->logicalDevice(), m_vkbuffer, nullptr);
-         m_vkbuffer = VK_NULL_HANDLE;
-      }
-      if (m_vkdevicememory != VK_NULL_HANDLE)
-      {
-         vkFreeMemory(pcontext->logicalDevice(), m_vkdevicememory, nullptr);
-         m_vkdevicememory = VK_NULL_HANDLE;
-      }
    }
 
 
@@ -46,84 +36,186 @@ namespace gpu_vulkan
    void memory_buffer::on_initialize_memory_buffer(const void* dataStatic, memsize sizeStatic)
    {
 
-      if (m_etype == e_type_vertex_buffer
-         || m_etype == e_type_index_buffer)
+      if (sizeStatic > 0)
       {
-
-         ::cast < context > pcontext = m_pcontext;
-
-         VkBufferUsageFlags usage;
 
          if (m_etype == e_type_vertex_buffer)
          {
 
-            usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+            ::cast < context > pcontext = m_pcontext;
+
+            m_pbuffer = pcontext->create_buffer(
+               sizeStatic,
+               VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+            );
+
+
+            ////m_iVertexCount = static_cast<uint32_t>(vertices.size());
+            ////assert(m_iVertexCount >= 3 && "Vertex count must be at least 3");
+            ////VkDeviceSize bufferSize = sizeof(vertices[0]) * m_iVertexCount;
+            //VkDeviceSize bufferSize = sizeStatic;
+            ////uint32_t vertexSize = sizeof(vertices[0]);
+
+            //auto pbufferStaging = __create_new < ::gpu_vulkan::memory_buffer >();
+
+            //pbufferStaging->_initialize_buffer(
+            //   m_pcontext,
+            //   bufferSize,
+            //   VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            //   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+            //);
+
+            //pbufferStaging->map();
+            //pbufferStaging->writeToBuffer((void*)dataStatic);
+
+
+            //::cast < gpu_vulkan::context > pcontext = m_pcontext;
+
+            //pcontext->copyBuffer(pbufferStaging->m_vk, this->getBuffer(), bufferSize);
 
          }
-         else
+         else if (m_etype == e_type_index_buffer)
          {
 
-            usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+            ::cast < context > pcontext = m_pcontext;
 
-         }
-
-         VkBufferCreateInfo bufferInfo = {
-            .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-            .size = (uint64_t)this->total_size_in_bytes(),
-            .usage = usage,
-            .sharingMode = VK_SHARING_MODE_EXCLUSIVE
-         };
-         vkCreateBuffer(pcontext->logicalDevice(), &bufferInfo, NULL, &m_vkbuffer);
-
-         VkMemoryRequirements memReq{};
-         vkGetBufferMemoryRequirements(pcontext->logicalDevice(), m_vkbuffer, &memReq);
-
-         ::cast < device > pdevice = pcontext->m_pgpudevice;
-
-         auto pphysicaldevice = pdevice->m_pphysicaldevice;
-
-         uint32_t memTypeIndex = 0;
-         VkPhysicalDeviceMemoryProperties memProps;
-         vkGetPhysicalDeviceMemoryProperties(pphysicaldevice->m_physicaldevice, &memProps);
-
-         for (uint32_t i = 0; i < memProps.memoryTypeCount; i++)
-         {
-            if ((memReq.memoryTypeBits & (1 << i)) &&
-               (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
-               (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-               memTypeIndex = i;
-               break;
-            }
-         }
-
-         //VkBufferCreateInfo bufferInfo = {
-         //    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-         //    .size = sizeof(quadVertices),
-         //    .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-         //    .sharingMode = VK_SHARING_MODE_EXCLUSIVE
-         //};
-         //vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
-
-
-         VkMemoryAllocateInfo allocInfo = {
-             .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-             .allocationSize = memReq.size,
-             .memoryTypeIndex = memTypeIndex
-         };
-         vkAllocateMemory(pcontext->logicalDevice(), &allocInfo, NULL, &m_vkdevicememory);
-         vkBindBufferMemory(pcontext->logicalDevice(), m_vkbuffer, m_vkdevicememory, 0);
-
-         if (dataStatic && sizeStatic > 0)
-         {
-
-            void* data;
-            vkMapMemory(pcontext->logicalDevice(), m_vkdevicememory, 0, bufferInfo.size, 0, &data);
-            memcpy(data, dataStatic, sizeStatic);
-            vkUnmapMemory(pcontext->logicalDevice(), m_vkdevicememory);
+            m_pbuffer = pcontext->create_buffer(
+               sizeStatic,
+               VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+            );
 
          }
 
       }
+
+      if (m_pbuffer && ::is_set(dataStatic))
+      {
+
+         m_pbuffer->assign(dataStatic, sizeStatic);
+
+
+      }
+
+
+      //      //VkDeviceSize bufferSize = sizeStatic;
+
+      //      ////uint32_t indexSize = sizeof(indices[0]);
+
+      //      //auto pbufferStaging = __create_new < ::gpu_vulkan::memory_buffer>();
+
+      //      //pbufferStaging->_initialize_buffer(
+      //      //   m_pcontext,
+      //      //   bufferSize,
+      //      //   VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+      //      //   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+      //      //   ;
+
+      //      //pbufferStaging->map();
+      //      //pbufferStaging->writeToBuffer((void*)dataStatic);
+
+      //      ////to pbufferIndex = __create_new < ::gpu_vulkan::memory_buffer>();
+
+      //      //_initialize_buffer(
+      //      //   m_pcontext,
+      //      //   bufferSize,
+      //      //   VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+      //      //   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+      //      ////m_pbufferIndex = pbufferIndex;
+
+      //      //::cast < ::gpu_vulkan::context > pcontext = m_pcontext;
+
+      //      //pcontext->copyBuffer(pbufferStaging->getBuffer(), this->getBuffer(), bufferSize);
+
+      //   }
+
+
+      //}
+      //else
+      //{
+
+      //   if (m_etype == e_type_vertex_buffer
+      //      || m_etype == e_type_index_buffer)
+      //   {
+
+      //      ::cast < context > pcontext = m_pcontext;
+
+      //      VkBufferUsageFlags usage;
+
+      //      if (m_etype == e_type_vertex_buffer)
+      //      {
+
+      //         usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+
+      //      }
+      //      else
+      //      {
+
+      //         usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+
+      //      }
+
+      //      VkBufferCreateInfo bufferInfo = {
+      //         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+      //         .size = (uint64_t)this->total_size_in_bytes(),
+      //         .usage = usage,
+      //         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+      //      };
+      //      vkCreateBuffer(pcontext->logicalDevice(), &bufferInfo, NULL, &m_vkbuffer);
+
+      //      VkMemoryRequirements memReq{};
+      //      vkGetBufferMemoryRequirements(pcontext->logicalDevice(), m_vkbuffer, &memReq);
+
+      //      ::cast < device > pdevice = pcontext->m_pgpudevice;
+
+      //      auto pphysicaldevice = pdevice->m_pphysicaldevice;
+
+      //      uint32_t memTypeIndex = 0;
+      //      VkPhysicalDeviceMemoryProperties memProps;
+      //      vkGetPhysicalDeviceMemoryProperties(pphysicaldevice->m_physicaldevice, &memProps);
+
+      //      for (uint32_t i = 0; i < memProps.memoryTypeCount; i++)
+      //      {
+      //         if ((memReq.memoryTypeBits & (1 << i)) &&
+      //            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
+      //            (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+      //            memTypeIndex = i;
+      //            break;
+      //         }
+      //      }
+
+      //      //VkBufferCreateInfo bufferInfo = {
+      //      //    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+      //      //    .size = sizeof(quadVertices),
+      //      //    .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+      //      //    .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+      //      //};
+      //      //vkCreateBuffer(device, &bufferInfo, NULL, &vertexBuffer);
+
+
+      //      VkMemoryAllocateInfo allocInfo = {
+      //          .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+      //          .allocationSize = memReq.size,
+      //          .memoryTypeIndex = memTypeIndex
+      //      };
+      //      vkAllocateMemory(pcontext->logicalDevice(), &allocInfo, NULL, &m_vkdevicememory);
+      //      vkBindBufferMemory(pcontext->logicalDevice(), m_vkbuffer, m_vkdevicememory, 0);
+
+      //      if (dataStatic && sizeStatic > 0)
+      //      {
+
+      //         void* data;
+      //         vkMapMemory(pcontext->logicalDevice(), m_vkdevicememory, 0, bufferInfo.size, 0, &data);
+      //         memcpy(data, dataStatic, sizeStatic);
+      //         vkUnmapMemory(pcontext->logicalDevice(), m_vkdevicememory);
+
+      //      }
+
+   //}
+
+//}
 
    }
 
@@ -131,7 +223,7 @@ namespace gpu_vulkan
    bool memory_buffer::is_initialized() const
    {
 
-      return m_vkdevicememory != VK_NULL_HANDLE && m_vkbuffer != VK_NULL_HANDLE;
+      return m_pbuffer && m_pbuffer->is_initialized();
 
    }
 
@@ -158,34 +250,33 @@ namespace gpu_vulkan
 
    void memory_buffer::_initialize_buffer(
       ::gpu::context* pgpucontext,
-      VkDeviceSize instanceSize,
-      uint32_t instanceCount,
+      VkDeviceSize size,
       VkBufferUsageFlags usageFlags,
       VkMemoryPropertyFlags memoryPropertyFlags,
       VkDeviceSize minOffsetAlignment)
    {
 
       m_pcontext = pgpucontext;
-      m_vkdevicesizeInstance = instanceSize;
-      m_instanceCount = instanceCount;
+      m_vkdevicesizeInstance = 0;
+      m_instanceCount = 0;
       m_vkbufferusageflags = usageFlags;
       m_vkmemorypropertyflags = memoryPropertyFlags;
 
-      m_vkdevicesizeAlignment = getAlignment(instanceSize, minOffsetAlignment);
-      m_size = m_vkdevicesizeAlignment * instanceCount;
-      
+      m_vkdevicesizeAlignment = getAlignment(size, minOffsetAlignment);
+      m_size = size;
+
       ::cast < context > pcontext = m_pcontext;
-      
-      pcontext->createBuffer(
+
+      auto pbuffer = pcontext->create_buffer(
          m_size,
-         m_vkbufferusageflags, 
-         m_vkmemorypropertyflags, 
-         m_vkbuffer, 
-         m_vkdevicememory);
+         m_vkbufferusageflags,
+         m_vkmemorypropertyflags);
+
+      m_pbuffer = pbuffer;
 
    }
 
-   
+
 
 
    /**
@@ -197,7 +288,7 @@ namespace gpu_vulkan
     *
     * @return VkResult of the memory_buffer mapping call
     */
-   void * memory_buffer::_map(memsize start, memsize count)
+   void* memory_buffer::_map(memsize start, memsize count)
    {
 
       if (m_pMap)
@@ -207,21 +298,11 @@ namespace gpu_vulkan
 
       }
 
-      assert(m_vkbuffer && m_vkdevicememory && "Called map on memory_buffer before create");
+      assert(is_initialized() && "Called map on memory_buffer before create");
 
       ::cast < context > pcontext = m_pcontext;
 
-      auto vkresult = vkMapMemory(pcontext->logicalDevice(),
-         m_vkdevicememory, 
-         (VkDeviceSize) start, 
-         (VkDeviceSize)count,
-         0,
-         &m_pMap);
-
-      if(vkresult != VK_SUCCESS)
-      {
-         throw ::exception(error_failed, "Failed to map memory_buffer");
-      }  
+      m_pMap = m_pbuffer->map();
 
       return m_pMap;
 
@@ -232,15 +313,13 @@ namespace gpu_vulkan
     *
     * @note Does not return a result as vkUnmapMemory can't fail
     */
-   void memory_buffer::_unmap() 
+   void memory_buffer::_unmap()
    {
-      
-      if (m_pMap) 
+
+      if (m_pMap)
       {
-         
-         ::cast < context > pcontext = m_pcontext;
-         
-         vkUnmapMemory(pcontext->logicalDevice(), m_vkdevicememory);
+
+         m_pbuffer->unmap();
 
          m_pMap = nullptr;
 
@@ -258,18 +337,18 @@ namespace gpu_vulkan
     * @param offset (Optional) Byte offset from beginning of mapped region
     *
     */
-   void memory_buffer::writeToBuffer(void* data, VkDeviceSize size, VkDeviceSize offset) 
+   void memory_buffer::writeToBuffer(void* data, VkDeviceSize size, VkDeviceSize offset)
    {
 
       assert(m_pMap && "Cannot copy to unmapped memory_buffer");
 
-      if (size == VK_WHOLE_SIZE) 
+      if (size == VK_WHOLE_SIZE)
       {
 
          memcpy(m_pMap, data, m_size);
 
       }
-      else 
+      else
       {
 
          char* memOffset = (char*)m_pMap;
@@ -296,15 +375,15 @@ namespace gpu_vulkan
     */
    VkResult memory_buffer::flush(VkDeviceSize size, VkDeviceSize offset)
    {
-      VkMappedMemoryRange mappedRange = {};
-      mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-      mappedRange.memory = m_vkdevicememory;
-      mappedRange.offset = offset;
-      mappedRange.size = size;
-      
-      ::cast < context > pcontext = m_pcontext;
+      //VkMappedMemoryRange mappedRange = {};
+      //mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+      //mappedRange.memory = m_vkdevicememory;
+      //mappedRange.offset = offset;
+      //mappedRange.size = size;
 
-      return vkFlushMappedMemoryRanges(pcontext->logicalDevice(), 1, &mappedRange);
+      //::cast < context > pcontext = m_pcontext;
+
+      return m_pbuffer->flush(size, offset);
 
    }
 
@@ -319,18 +398,19 @@ namespace gpu_vulkan
     *
     * @return VkResult of the invalidate call
     */
-   VkResult memory_buffer::invalidate(VkDeviceSize size, VkDeviceSize offset) 
+   VkResult memory_buffer::invalidate(VkDeviceSize size, VkDeviceSize offset)
    {
-      VkMappedMemoryRange mappedRange = {};
-      mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-      mappedRange.memory = m_vkdevicememory;
-      mappedRange.offset = offset;
-      mappedRange.size = size;
-      
-      ::cast < context > pcontext = m_pcontext;
+      //VkMappedMemoryRange mappedRange = {};
+      //mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+      //mappedRange.memory = m_vkdevicememory;
+      //mappedRange.offset = offset;
+      //mappedRange.size = size;
 
-      return vkInvalidateMappedMemoryRanges(pcontext->logicalDevice(), 1, &mappedRange);
+      //::cast < context > pcontext = m_pcontext;
 
+      //return vkInvalidateMappedMemoryRanges(pcontext->logicalDevice(), 1, &mappedRange);
+
+      return m_pbuffer->invalidate(size, offset);
    }
 
    /**
@@ -341,12 +421,9 @@ namespace gpu_vulkan
     *
     * @return VkDescriptorBufferInfo of specified offset and range
     */
-   VkDescriptorBufferInfo memory_buffer::descriptorInfo(VkDeviceSize size, VkDeviceSize offset) {
-      return VkDescriptorBufferInfo{
-          m_vkbuffer,
-          offset,
-          size,
-      };
+   VkDescriptorBufferInfo memory_buffer::descriptorInfo(VkDeviceSize size, VkDeviceSize offset)
+   {
+      return m_pbuffer->descriptorInfo(size, offset);
    }
 
    /**
@@ -366,11 +443,11 @@ namespace gpu_vulkan
     * @param index Used in offset calculation
     *
     */
-   VkResult memory_buffer::flushIndex(int index) 
+   VkResult memory_buffer::flushIndex(int index)
    {
-      
-      return flush(m_vkdevicesizeAlignment, index * m_vkdevicesizeAlignment); 
-   
+
+      return flush(m_vkdevicesizeAlignment, index * m_vkdevicesizeAlignment);
+
    }
 
    /**
@@ -380,7 +457,7 @@ namespace gpu_vulkan
     *
     * @return VkDescriptorBufferInfo for m_vkinstance at index
     */
-   VkDescriptorBufferInfo memory_buffer::descriptorInfoForIndex(int index) 
+   VkDescriptorBufferInfo memory_buffer::descriptorInfoForIndex(int index)
    {
 
       return descriptorInfo(m_vkdevicesizeAlignment, index * m_vkdevicesizeAlignment);
@@ -396,7 +473,7 @@ namespace gpu_vulkan
     *
     * @return VkResult of the invalidate call
     */
-   VkResult memory_buffer::invalidateIndex(int index) 
+   VkResult memory_buffer::invalidateIndex(int index)
    {
 
       return invalidate(m_vkdevicesizeAlignment, index * m_vkdevicesizeAlignment);
@@ -404,7 +481,7 @@ namespace gpu_vulkan
    }
 
 
-   
+
    //void memory_buffer::assign(const void* pData, memsize size)
    //{
 

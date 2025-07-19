@@ -165,8 +165,8 @@
     <ProjectReference Include="..\..\..\app\core\core.vcxproj">
       <Project>{29c1eb5b-060e-4021-ae12-d1bcfb1b1359}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\graphics3d_MyPlace2025.vcxproj">
-      <Project>{4eeb9763-3caf-4436-8654-a583351353e2}</Project>
+    <ProjectReference Include="..\app_graphics3d_MyPlace2025.vcxproj">
+      <Project>{7511b3f0-6e82-4240-ae91-36c82aed5c7f}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

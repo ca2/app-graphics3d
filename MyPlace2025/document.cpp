@@ -5,7 +5,7 @@
 #include "acme/filesystem/filesystem/file_context.h"
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
 
@@ -26,7 +26,7 @@ namespace graphics3d_MyPlace2025
 
       //::file::path path;
       //
-      //::pointer < ::graphics3d_MyPlace2025::application > papp = application();
+      //::pointer < ::app_graphics3d_MyPlace2025::application > papp = application();
       //
       //path = papp->m_pathApplicationText;
 
@@ -73,7 +73,7 @@ namespace graphics3d_MyPlace2025
    bool document::on_open_document(const ::payload & payloadFile)
    {
 
-      impact * pimpact = get_typed_impact < impact >();
+      auto pimpact = get_typed_impact < ::app_graphics3d_MyPlace2025::impact >();
 
       if(pimpact == NULL)
       {
@@ -109,7 +109,7 @@ namespace graphics3d_MyPlace2025
 #endif
 
 
-} // namespace graphics3d_MyPlace2025
+} // namespace app_graphics3d_MyPlace2025
 
 
 

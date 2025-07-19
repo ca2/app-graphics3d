@@ -38,7 +38,7 @@
     <ProjectGuid>{7511B3F0-6E82-4240-AE91-36C82AED5C7F}</ProjectGuid>
     <RootNamespace>graphics3d</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>graphics3d_MyPlace2025</ProjectName>
+    <ProjectName>app_graphics3d_MyPlace2025</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -510,7 +510,6 @@
       <AdditionalIncludeDirectories>$(SolutionDir)../../..</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>glad.lib;opengl-1.lib;windowscodecs.lib;gdiplus.lib;winmm.lib;version.lib;vfw32.lib;opengl32.lib;glu32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>

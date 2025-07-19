@@ -180,130 +180,138 @@ namespace app_graphics3d_continuum
 
       pgraphics->fill_rectangle(rectangleX, argb(108, 128, 128, 128));
 
-      ::color::color color_dk(dk_red());
+      ::user::graphics3d::_001OnDraw(pgraphics);
+
+      {
+
+
+         ::color::color color_dk(dk_red());
 
 #ifdef DEBUG_WORK
 
-      ::int_rectangle rectangleDryProWithLove_Work(5, 5, 1915, 1075);
+         ::int_rectangle rectangleDryProWithLove_Work(5, 5, 1915, 1075);
 
-      pgraphics->fill_rectangle(rectangleDryProWithLove_Work, argb(255, 150, 200, 255));
+         pgraphics->fill_rectangle(rectangleDryProWithLove_Work, argb(255, 150, 200, 255));
 
 #endif
 
-      pgraphics->set_text_color(color_dk);
+         pgraphics->set_text_color(color_dk);
 
-      auto psystem = system();
+         auto psystem = system();
 
-      auto pnode = psystem->draw2d();
+         auto pnode = psystem->draw2d();
 
-      auto pwritetext = pnode->write_text();
+         auto pwritetext = pnode->write_text();
 
-      auto fontsize = ::write_text::font_size(48.0 * rectangleX.height() / 1'080, e_unit_pixel);
+         auto fontsize = ::write_text::font_size(48.0 * rectangleX.height() / 1'080, e_unit_pixel);
 
-      m_pfontThomasBS_ = pwritetext->font("Fira Code", fontsize);
+         m_pfontThomasBS_ = pwritetext->font("Fira Code", fontsize);
 
-      pgraphics->set(m_pfontThomasBS_);
+         pgraphics->set(m_pfontThomasBS_);
 
-      pgraphics->set_text_rendering_hint(write_text::e_rendering_anti_alias);
+         pgraphics->set_text_rendering_hint(write_text::e_rendering_anti_alias);
 
-      pgraphics->set_alpha_mode(draw2d::e_alpha_mode_blend);
+         pgraphics->set_alpha_mode(draw2d::e_alpha_mode_blend);
 
-      _synchronous_lock synchronouslockDocument(get_document()->synchronization());
-      
-      string_array & stra = get_document()->m_straLine;
-      
-      bool bWhite  = true;
-      
-      double x = 0.;
-      
-      double y = 0.;
-      
-      ::int_point point;
+         _synchronous_lock synchronouslockDocument(get_document()->synchronization());
 
-      string strText;
+         string_array& stra = get_document()->m_straLine;
 
-      m_iSequence++;
-      
-      strText.formatf("øçåJegElskerDigThomasBorregaardSørensen!!; %d", m_iSequence);
+         bool bWhite = true;
 
-      auto size = pgraphics->get_text_extent(strText);
+         double x = 0.;
 
-      bool bFixedPosition = true;
+         double y = 0.;
 
-      if (bFixedPosition)
-      {
+         ::int_point point;
 
-         point = { 10, 10 };
+         string strText;
 
-      }
-      else
-      {
-       
-         point.x() = mathematics()->random(0, (int)(rectangleX.width() - size.cx()));
-         point.y() = mathematics()->random(0, (int)(rectangleX.height() - size.cy() * 2));
+         m_iSequence++;
 
-      }
+         strText.formatf("øçåJegElskerDigThomasBorregaardSørensen!!; %d", m_iSequence);
 
-      ::color::color color;
+         auto size = pgraphics->get_text_extent(strText);
 
-      opacity = ::opacity(96);
+         bool bFixedPosition = true;
 
-      for(auto & strItem : stra)
-      {
-         
-         if(strItem.is_empty())
+         if (bFixedPosition)
          {
-            
-            x = 0;
-            
-            y += size.cy();
-            
-            bWhite = true;
-         
-            continue;
-         
-         }
 
-         if(bWhite)
-         {
-            
-            color = color::white;
-            
+            point = { 10, 10 };
+
          }
          else
          {
-            
-            color = color_dk;
-            
+
+            point.x() = mathematics()->random(0, (int)(rectangleX.width() - size.cx()));
+            point.y() = mathematics()->random(0, (int)(rectangleX.height() - size.cy() * 2));
+
          }
+
+         ::color::color color;
+
+         opacity = ::opacity(96);
+
+         for (auto& strItem : stra)
+         {
+
+            if (strItem.is_empty())
+            {
+
+               x = 0;
+
+               y += size.cy();
+
+               bWhite = true;
+
+               continue;
+
+            }
+
+            if (bWhite)
+            {
+
+               color = color::white;
+
+            }
+            else
+            {
+
+               color = color_dk;
+
+            }
+
+            color &= opacity;
+
+            pgraphics->set_text_color(color);
+
+            pgraphics->text_out(point.x() + x, point.y() + y, strItem);
+
+            auto s = pgraphics->get_text_extent(strItem);
+
+            x += s.cx();
+
+            bWhite = !bWhite;
+
+         }
+
+         color = color_dk;
 
          color &= opacity;
 
          pgraphics->set_text_color(color);
 
-         pgraphics->text_out(point.x() + x, point.y() + y, strItem);
-         
-         auto s = pgraphics->get_text_extent(strItem);
+         pgraphics->text_out(point.x(), point.y() + y + size.cy(), strText);
 
-         x += s.cx();
-         
-         bWhite = !bWhite;
-         
+         pgraphics->set_smooth_mode(::draw2d::e_smooth_mode_none);
+
+
+
       }
 
-      color = color_dk;
-      
-      color &= opacity;
-
-      pgraphics->set_text_color(color);
-
-      pgraphics->text_out(point.x(), point.y() + y + size.cy(), strText);
-
-      pgraphics->set_smooth_mode(::draw2d::e_smooth_mode_none);
-      
-      ::user::graphics3d::_001OnDraw(pgraphics);
-
    }
+
 
    void impact::on_layout(::draw2d::graphics_pointer & pgraphics)
    {

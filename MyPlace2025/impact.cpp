@@ -36,7 +36,7 @@ CLASS_DECL_AURA ::color::color dk_red(); // <3 tbs
 //} // namespace glc
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
 
@@ -45,7 +45,7 @@ namespace graphics3d_MyPlace2025
    impact::impact()
    {
 
-      m_ekeyboard = ::cube::e_keyboard_spaceExplorer;
+      m_ekeyboard = ::graphics3d::e_keyboard_spaceExplorer;
       m_flagNonClient -= e_non_client_background;
       m_iSequence = 0;
       m_bNeedFullRedrawOnResize = true;
@@ -93,8 +93,8 @@ namespace graphics3d_MyPlace2025
 
       MESSAGE_LINK(e_message_create,psender,this,&impact::on_message_create);
       MESSAGE_LINK(e_message_destroy, psender, this, &impact::on_message_destroy);
-      MESSAGE_LINK(e_message_mouse_move, psender, this, &impact::on_message_mouse_move);
-      MESSAGE_LINK(e_message_mouse_leave, psender, this, &impact::on_message_mouse_leave);
+      //MESSAGE_LINK(e_message_mouse_move, psender, this, &impact::on_message_mouse_move);
+      //MESSAGE_LINK(e_message_mouse_leave, psender, this, &impact::on_message_mouse_leave);
 
    }
 
@@ -190,12 +190,11 @@ namespace graphics3d_MyPlace2025
 
       }
 
+      //m_pparticleImageSynchronization = node()->create_mutex();
 
-      m_pparticleImageSynchronization = node()->create_mutex();
+      //m_pimage = image()->create_image(int_size{ 1920, 1080 });
 
-      m_pimage = image()->create_image(int_size{ 1920, 1080 });
-
-      get_app()->m_pimpact = this;
+      //get_app()->m_pimpact = this;
 
 
       //application()->show_about_box();
@@ -404,22 +403,22 @@ namespace graphics3d_MyPlace2025
       //::user::impact::_001OnDraw(pgraphics);
 
 
-      if (::is_ok(m_pimage))
-      {
+      //if (::is_ok(m_pimage))
+      //{
 
-         pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
+      //   pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
-         _synchronous_lock synchronouslock(m_pparticleImageSynchronization);
+      //   _synchronous_lock synchronouslock(m_pparticleImageSynchronization);
 
-         ::image::image_source imagesource(m_pimage, m_pimage->rectangle());
+      //   ::image::image_source imagesource(m_pimage, m_pimage->rectangle());
 
-         ::image::image_drawing_options imagedrawingoptions(m_pimage->rectangle());
+      //   ::image::image_drawing_options imagedrawingoptions(m_pimage->rectangle());
 
-         ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
+      //   ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
 
-         pgraphics->draw(imagedrawing);
+      //   pgraphics->draw(imagedrawing);
 
-      }
+      //}
 
       //auto papp = get_app();
 
@@ -611,7 +610,7 @@ namespace graphics3d_MyPlace2025
       //)->IsKeyPressed(::user::e_key_w
 
 
-} // namespace graphics3d_MyPlace2025
+} // namespace app_graphics3d_MyPlace2025
 
 
 

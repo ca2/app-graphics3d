@@ -6730,7 +6730,7 @@ namespace draw2d_vulkan
    }
 
 
-   void graphics::line_to(double x, double y)
+   void graphics::line(double x1, double y1, double x2, double y2)
    {
 
       //auto distance = ::sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
@@ -6802,16 +6802,15 @@ namespace draw2d_vulkan
 
       auto x0 = m_point.x();
       auto y0 = m_point.y();
-      auto x1 = x;
-      auto y1 = y;
 
       auto color = m_ppen->m_color;
 
       double_point points[2];
 
-      points[0] = m_point;
-      points[1].x() = x;
-      points[1].y() = y;
+      points[0].x() = x1;
+      points[0].y() = x1;
+      points[1].x() = x2;
+      points[1].y() = y2;
 
 
       m_m1.transform(points[0]);

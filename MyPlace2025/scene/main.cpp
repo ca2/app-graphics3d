@@ -1,39 +1,48 @@
 #include "framework.h"
 #include "main.h"
-#include "renderer.h"
-#include "shader.h"
-#include "cube_map.h"
+#include "aura/platform/application.h"
+#include "bred/gpu/renderer.h"
+#include "bred/gpu/shader.h"
+#include "bred/gpu/texture.h"
+#include "bred/graphics3d/cube_map.h"
+#include "bred/graphics3d/engine.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "mesh.h"
+#include "bred/graphics3d/cube_map.h"
+#include "bred/graphics3d/mesh.h"
 #include <cmath>
 #include <vector>
-#include <stb_image.h>
-#include "shapes.h"
+//#include <stb_image.h>
+#include "bred/graphics3d/cube_map.h"
+#include "bred/graphics3d/shape_factory.h"
 //#include "common.h"
 #include <random>
 #include <glm/gtc/matrix_transform.hpp>  // For matrix transforms like rotate, translate
 #include <glm/gtc/constants.hpp> 
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
 
    void main_scene::Init()
    {
 
+      auto pgpucontext = m_pengine->gpu_context();
 
       // Initialize shaders
-      m_Shader = __allocate shader(this,
+      __defer_construct(m_Shader);
+      
+      m_Shader->initialize_shader(pgpucontext->m_pgpurenderer,
          "matter://shaders/default.vert",
          "matter://shaders/default.frag"
       );
 
       //m_Shader->initialize(this);
 
-      m_WallShader = __allocate shader(
-         this,
+      __defer_construct(m_WallShader);
+
+      m_WallShader->initialize_shader(pgpucontext->m_pgpurenderer,
          "matter://shaders/misc.vert",
          "matter://shaders/misc.frag"
       );
@@ -41,17 +50,17 @@ namespace graphics3d_MyPlace2025
       //m_WallShader->initialize(this);
 
       // Load textures
-      m_BoxTexture = __allocate texture(this, "matter://textures/stoneWall.jpg");
-      m_PlaneTexture = __allocate texture(this, "matter://textures/spaceFloor.jpg");
-      m_SphereTexture = __allocate texture(this, "matter://textures/greenWall.jpg");
-      m_Misc = __allocate texture(this, "matter://textures/mystical1.jpg");
+      m_BoxTexture = pgpucontext->texture("matter://textures/stoneWall.jpg");
+      m_PlaneTexture = pgpucontext->texture("matter://textures/spaceFloor.jpg");
+      m_SphereTexture = pgpucontext->texture("matter://textures/greenWall.jpg");
+      m_Misc = pgpucontext->texture("matter://textures/mystical1.jpg");
 
       //m_BoxTexture->initialize(this);
         // m_PlaneTexture -> initialize(this);
          //m_SphereTexture -> initialize(this);
          //m_Misc -> initialize(this);
       // sky_box textures
-      std::vector<std::string> facesCubemap = {
+      ::graphics3d::sky_box::cube cube = {
 
          // Cloudy skybox
         /* "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_ft.jpg",
@@ -74,22 +83,26 @@ namespace graphics3d_MyPlace2025
 
 
        // Space sky_box
-        "matter://textures/SpaceSkybox/right.png",
+         {"matter://textures/SpaceSkybox/right.png",
         "matter://textures/SpaceSkybox/left.png",
         "matter://textures/SpaceSkybox/bot.png",
         "matter://textures/SpaceSkybox/top.png",
         "matter://textures/SpaceSkybox/front.png",
         "matter://textures/SpaceSkybox/back.png"
+        }
       };
 
-      m_Skybox = __allocate sky_box(this, facesCubemap);
+      m_Skybox = __allocate ::graphics3d::sky_box();
 
-      // Initialize skybox shader
-      m_SkyboxShader = __allocate shader(
-         this,
-         "matter://shaders/skybox.vert",
-         "matter://shaders/skybox.frag"
-      );
+      m_Skybox->initialize_sky_box(m_pengine, cube);
+
+      //// Initialize skybox shader
+      //__defer_construct(m_SkyboxShader);
+
+      //m_SkyboxShader->initialize_shader(pgpucontext->m_pgpurenderer,
+      //   "matter://shaders/skybox.vert",
+      //   "matter://shaders/skybox.frag"
+      //);
 
       //m_Skybox->initialize(this);
       //m_SkyboxShader->initialize(this);
@@ -146,11 +159,11 @@ namespace graphics3d_MyPlace2025
 
 
 
-      // Set the model matrices for each mesh instance
-      m_BoxMesh->SetInstanceModelMatrices(boxModelMatrices);
-      m_PlaneMesh->SetInstanceModelMatrices(planeModelMatrices);
-      m_SphereMesh->SetInstanceModelMatrices(sphereModelMatrices);
-      m_WallMesh->SetInstanceModelMatrices(wallModelMatricies);
+      //// Set the model matrices for each mesh instance
+      //m_BoxMesh->SetInstanceModelMatrices(boxModelMatrices);
+      //m_PlaneMesh->SetInstanceModelMatrices(planeModelMatrices);
+      //m_SphereMesh->SetInstanceModelMatrices(sphereModelMatrices);
+      //m_WallMesh->SetInstanceModelMatrices(wallModelMatricies);
    }
 
    void main_scene::Update(float deltaTime) {
@@ -164,7 +177,7 @@ namespace graphics3d_MyPlace2025
 
 
       // Update the meshes with the new model matrices
-      m_BoxMesh->SetInstanceModelMatrices(boxModelMatrices);
+      //m_BoxMesh->SetInstanceModelMatrices(boxModelMatrices);
 
    }
 
@@ -178,83 +191,79 @@ namespace graphics3d_MyPlace2025
    {
 
       // Generate shape data
-      ShapeFactory::ShapeData cube = ShapeFactory::CreateCube(1.7f);
-      ShapeFactory::ShapeData plane = ShapeFactory::CreatePlane(2.0f, 2.0f);
-      ShapeFactory::ShapeData skyboxCube = ShapeFactory::CreateCube(1.0f);
-      ShapeFactory::ShapeData sphere = ShapeFactory::CreateSphere(1.0f, 32, 32);
-      ShapeFactory::ShapeData wall = ShapeFactory::CreateWall(5.0, 5.0);
+      ::graphics3d::shape_factory::shape cube = ::graphics3d::shape_factory::create_cube(1.7f);
+      ::graphics3d::shape_factory::shape plane = ::graphics3d::shape_factory::create_plane(2.0f, 2.0f);
+      ::graphics3d::shape_factory::shape skyboxCube = ::graphics3d::shape_factory::create_cube(1.0f);
+      ::graphics3d::shape_factory::shape sphere = ::graphics3d::shape_factory::create_sphere(1.0f, 32, 32);
+      ::graphics3d::shape_factory::shape wall = ::graphics3d::shape_factory::create_wall(5.0, 5.0);
 
 
-      // Offsets for vertex and index data (dynamic approach)
-      size_t cubeVertexOffset = 0;
-      size_t cubeIndexOffset = 0;
-      size_t cubeIndexCount = cube.indices.size();
+      //// Offsets for vertex and index data (dynamic approach)
+      //size_t cubeVertexOffset = 0;
+      //size_t cubeIndexOffset = 0;
+      //size_t cubeIndexCount = cube.m_indices.size();
 
-      // Combine the graphics3d data and prepare offsets for the plane
-      std::vector<float> combinedVertices = cube.vertices;  // Start with graphics3d's vertices
-      std::vector<unsigned int> combinedIndices = cube.indices;  // Start with graphics3d's indices
+      //::graphics3d::shape_factory::shape shapeCombined;
 
-      size_t planeVertexOffset = combinedVertices.size() / 8;  // Calculate vertex offset for plane
-      size_t planeIndexOffset = combinedIndices.size();         // Calculate index offset for plane
-      size_t planeIndexCount = plane.indices.size();
+      //// Combine the graphics3d data and prepare offsets for the plane
+      //auto combinedVertices = cube.m_vertices;  // Start with graphics3d's vertices
+      //auto combinedIndices = cube.m_indices;  // Start with graphics3d's indices
 
-      // Append the plane data to the combined data
-      combinedVertices.insert(combinedVertices.end(), plane.vertices.begin(), plane.vertices.end());
-      combinedIndices.insert(combinedIndices.end(), plane.indices.begin(), plane.indices.end());
+      //shapeCombined.append(cube);
 
-      // Sphere offsets and data appending
-      size_t sphereVertexOffset = combinedVertices.size() / 8;  // Sphere vertex offset
-      size_t sphereIndexOffset = combinedIndices.size();        // Sphere index offset
-      size_t sphereIndexCount = sphere.indices.size();
+      //size_t planeVertexOffset = combinedVertices.size() / 8;  // Calculate vertex offset for plane
+      //size_t planeIndexOffset = combinedIndices.size();         // Calculate index offset for plane
+      //size_t planeIndexCount = plane.m_indices.size();
 
-      combinedVertices.insert(combinedVertices.end(), sphere.vertices.begin(), sphere.vertices.end());
-      combinedIndices.insert(combinedIndices.end(), sphere.indices.begin(), sphere.indices.end());
+      //// Append the plane data to the combined data
+      //combinedVertices.append(plane.m_vertices);
+      //combinedIndices.append(plane.m_indices);
 
-      // Wall offsets and data appending
-      size_t wallVertexOffset = combinedVertices.size() / 8;
-      size_t wallIndexOffset = combinedIndices.size();
-      size_t wallIndexCount = wall.indices.size();
+      //shapeCombined 
 
-      combinedVertices.insert(combinedVertices.end(), wall.vertices.begin(), wall.vertices.end());
-      combinedIndices.insert(combinedIndices.end(), wall.indices.begin(), wall.indices.end());
+      //// Sphere offsets and data appending
+      //size_t sphereVertexOffset = combinedVertices.size() / 8;  // Sphere vertex offset
+      //size_t sphereIndexOffset = combinedIndices.size();        // Sphere index offset
+      //size_t sphereIndexCount = sphere.m_indices.size();
+
+      //combinedVertices.append(sphere.m_vertices);
+      //combinedIndices.append(sphere.m_indices);
+
+      //// Wall offsets and data appending
+      //size_t wallVertexOffset = combinedVertices.size() / 8;
+      //size_t wallIndexOffset = combinedIndices.size();
+      //size_t wallIndexCount = wall.m_indices.size();
+
+      //combinedVertices.append(wall.m_vertices);
+      //combinedIndices.append(wall.m_indices);
 
 
       // Create Cube mesh object
-      m_BoxMesh = __allocate mesh(
-         combinedVertices, combinedIndices, cubeVertexOffset, cubeIndexOffset, cubeIndexCount
-      );
+      __defer_construct_new(m_BoxMesh);
 
       // Create Plane mesh object
-      m_PlaneMesh = __allocate mesh(
-         combinedVertices, combinedIndices, planeVertexOffset, planeIndexOffset, planeIndexCount
-      );
+      __defer_construct_new(m_PlaneMesh);
 
       // Create sky_box mesh object
-      m_SkyboxMesh = __allocate mesh(
-         skyboxCube.vertices, skyboxCube.indices, 0, 0, skyboxCube.indices.size()
-      );
+      __defer_construct_new(m_SkyboxMesh);
 
       // Create Sphere mesh object
-      m_SphereMesh = __allocate mesh(
-         combinedVertices, combinedIndices, sphereVertexOffset, sphereIndexOffset, sphereIndexCount
-      );
+      __defer_construct_new(m_SphereMesh);
 
-      m_WallMesh = __allocate  mesh(
-         combinedVertices, combinedIndices, wallVertexOffset, wallIndexOffset, wallIndexCount
-      );
+      __defer_construct_new(m_WallMesh);
 
-      m_BoxMesh->initialize(this);
-      m_PlaneMesh->initialize(this);
-      m_SphereMesh->initialize(this);
-      m_SkyboxMesh->initialize(this);
-      m_WallMesh->initialize(this);
+      m_BoxMesh->initialize_mesh(cube);
+      m_PlaneMesh->initialize_mesh(plane);
+      m_SphereMesh->initialize_mesh(sphere);
+      m_SkyboxMesh->initialize_mesh(skyboxCube);
+      m_WallMesh->initialize_mesh(wall);
 
 
 
    }
 
 
-   void main_scene::Render(renderer* prenderer, ::graphics3d::* pcamera)
+   void main_scene::Render(::gpu::renderer* prenderer, ::graphics3d::camera* pcamera)
    {
 
 
@@ -262,56 +271,61 @@ namespace graphics3d_MyPlace2025
       glm::mat4 view = pcamera->GetViewMatrix();
       glm::mat4 projection = glm::perspective(glm::radians(pcamera->GetZoom()), 1280.0f / 720.0f, 0.1f, 1000.0f);
 
-      // sky_box
-      glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); // Remove translation from the view matrix
-      m_SkyboxShader->Bind();
-      m_SkyboxShader->SetUniformMat4f("view", skyboxView);
-      m_SkyboxShader->SetUniformMat4f("projection", projection);
+      //// sky_box
+      //glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); // Remove translation from the view matrix
+      //m_SkyboxShader->bind();
+      //m_SkyboxShader->set_mat4("view", skyboxView);
+      //m_SkyboxShader->set_mat4("projection", projection);
 
 
-      // Set uniforms in the shader
-      m_SkyboxShader->Bind(); // Make sure to bind the shader first
+      //// Set uniforms in the shader
+      //m_SkyboxShader->bind(); // Make sure to bind the shader first
+      //m_SkyboxMesh->bind();
+      //m_SkyboxMesh->draw(m_SkyboxShader);
 
-      prenderer->DrawSkybox(m_SkyboxMesh, m_SkyboxShader);
+      //// prenderer->DrawSkybox(m_SkyboxMesh, m_SkyboxShader);
+      //m_SkyboxMesh->unbind();
+      //m_SkyboxShader->unbind(); // Make sure to bind the shader first
 
       // Bind the shader and set the view and projection matrices
-      m_Shader->Bind();
-      m_Shader->SetUniformMat4f("view", view);
-      m_Shader->SetUniformMat4f("projection", projection);
+      m_Shader->bind();
+      m_Shader->set_mat4("view", view);
+      m_Shader->set_mat4("projection", projection);
 
       // Bind the box mesh and render multiple instances using instanced rendering
-      m_BoxMesh->Bind();
-      m_BoxTexture->Bind();
-      prenderer->DrawInstanced({ m_BoxMesh.get() }, m_Shader, m_BoxInstanceCount);  // Drawing the box instances
+      m_BoxMesh->bind();
+      //m_BoxTexture->bind();
+      //prenderer->DrawInstanced({ m_BoxMesh.get() }, m_Shader, m_BoxInstanceCount);  // Drawing the box instances
+      m_BoxMesh->draw_instanced();
 
       // Bind the plane texture
-      m_PlaneTexture->Bind();
-      m_PlaneMesh->Bind();
-      prenderer->DrawInstanced({ m_PlaneMesh.get() }, m_Shader, m_PlaneInstanceCount);  // Drawing the plane instances
+      //m_PlaneTexture->Bind();
+      //m_PlaneMesh->Bind();
+      //prenderer->DrawInstanced({ m_PlaneMesh.get() }, m_Shader, m_PlaneInstanceCount);  // Drawing the plane instances
 
       // Render the sphere instances
-      m_SphereTexture->Bind();
-      m_SphereMesh->Bind();
-      prenderer->DrawInstanced({ m_SphereMesh.get() }, m_Shader, m_SphereInstanceCount);  // Draw sphere instances
+      //m_SphereTexture->Bind();
+      //m_SphereMesh->Bind();
+      //prenderer->DrawInstanced({ m_SphereMesh.get() }, m_Shader, m_SphereInstanceCount);  // Draw sphere instances
 
 
       // Render the wall
-      m_WallShader->Bind();
-      m_WallShader->SetUniformMat4f("view", view);
-      m_WallShader->SetUniformMat4f("projection", projection);
+      //m_WallShader->Bind();
+      //m_WallShader->SetUniformMat4f("view", view);
+      //m_WallShader->SetUniformMat4f("projection", projection);
 
 
-      // Get camera position
-      glm::vec3 cameraPosition = pcamera->GetPosition();
+      //// Get camera position
+      //glm::vec3 cameraPosition = pcamera->GetPosition();
 
-      m_WallShader->SetUniform3f("cameraPos", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+      //m_WallShader->SetUniform3f("cameraPos", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
-      m_Misc->Bind();
-      m_WallMesh->Bind();
-      prenderer->DrawInstanced({ m_WallMesh.get() }, m_WallShader, m_WallInstanceCount); // Draw robin
+      //m_Misc->Bind();
+      //m_WallMesh->Bind();
+      //prenderer->DrawInstanced({ m_WallMesh.get() }, m_WallShader, m_WallInstanceCount); // Draw robin
 
-      // Unbind the shader
-      m_Shader->Unbind();
+      //// Unbind the shader
+      //m_Shader->Unbind();
    }
 
 

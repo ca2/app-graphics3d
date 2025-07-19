@@ -1,14 +1,14 @@
 #pragma once
 
 
-#include "cube/_.h"
+#include "core/_.h"
 
 
 
-#if defined(_graphics3d_MyPlace2025_project)
-#define CLASS_DECL_GRAPHICS3D_MYPLACE2025  CLASS_DECL_EXPORT
+#if defined(_app_graphics3d_MyPlace2025_project)
+#define CLASS_DECL_APP_GRAPHICS3D_MYPLACE2025  CLASS_DECL_EXPORT
 #else
-#define CLASS_DECL_GRAPHICS3D_MYPLACE2025  CLASS_DECL_IMPORT
+#define CLASS_DECL_APP_GRAPHICS3D_MYPLACE2025  CLASS_DECL_IMPORT
 #endif
 
 
@@ -122,7 +122,7 @@
 //#endif
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
    class application;
@@ -130,7 +130,9 @@ namespace graphics3d_MyPlace2025
    class document;
    class impact;
 
-} // namespace flag
+   class pane_impact;
+
+} // namespace app_graphics3d_MyPlace2025
 
 
 

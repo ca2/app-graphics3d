@@ -625,7 +625,7 @@ namespace gpu_directx12
             &heapproperties,
             D3D12_HEAP_FLAG_NONE,
             &resourcedesc,
-            D3D12_RESOURCE_STATE_COMMON,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
             nullptr,
             __interface_of(m_presourcePushProperties));
          pgpudevice->defer_throw_hresult(hrCreateCommittedResource);
@@ -650,7 +650,7 @@ namespace gpu_directx12
 
       bind(pgputextureTarget);
 
-      bind_source(pgputextureSource);
+      bind_source(pgputextureSource, 0);
 
    }
 
@@ -701,7 +701,7 @@ namespace gpu_directx12
    }
 
 
-   void shader::bind_source(::gpu::texture * ptextureSource)
+   void shader::bind_source(::gpu::texture * ptextureSource, int iSlot)
    {
 
       ::cast < ::gpu_directx12::texture > ptextureSrc = ptextureSource;

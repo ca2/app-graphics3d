@@ -31,7 +31,7 @@
     <ClCompile Include="initializers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="model.cpp">
+    <ClCompile Include="aaa_model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="offscreen.cpp">
@@ -99,7 +99,7 @@
     <ClInclude Include="input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="model.h">
+    <ClInclude Include="aaa_model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="offscreen_render_pass.h">

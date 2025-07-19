@@ -1,5 +1,6 @@
 // Created by camilo on 2025-06-08 18:14 < 3ThomasBorregaardSørensen!!
 #include "framework.h"
+#include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
@@ -7,6 +8,7 @@
 #include "physical_device.h"
 #include "renderer.h"
 #include "texture.h"
+#include "acme/graphics/image/pixmap.h"
 
 
 namespace gpu_vulkan
@@ -16,9 +18,12 @@ namespace gpu_vulkan
    texture::texture()
    {
 
+      m_mipsLevel = 1;
       m_bOwnImage = false;
 
       m_etype = e_type_none;
+
+      m_vkformat = VK_FORMAT_UNDEFINED;
 
       m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_UNDEFINED;
       m_state.m_vkaccessflags = 0;
@@ -42,11 +47,11 @@ namespace gpu_vulkan
    }
 
 
-   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth)
+   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, ::pixmap* ppixmap, enum_type etype)
    {
 
       if (m_rectangleTarget == rectangleTarget
-         && m_pgpurenderer ==  prenderer)
+         && m_pgpurenderer == prenderer)
       {
 
          return;
@@ -55,7 +60,7 @@ namespace gpu_vulkan
 
       auto currentSize = m_rectangleTarget.size();
 
-      ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth);
+      ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, ppixmap, etype);
 
       if (currentSize == rectangleTarget.size()
          && m_pgpurenderer == prenderer)
@@ -74,83 +79,181 @@ namespace gpu_vulkan
       //else
       //{
 
-         ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-         ::cast < context > pgpucontext = pcontext;
+      ::cast < context > pgpucontext = pcontext;
 
-         ::cast < render_pass > prenderpass = m_pgpurenderer->m_pgpurendertarget;
+      ::cast < render_pass > prenderpass = m_pgpurenderer->m_pgpurendertarget;
 
-         VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
+      VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
 
-         imagecreateinfo.imageType = VK_IMAGE_TYPE_2D;
-         imagecreateinfo.format = pcontext->m_formatImageDefault;
-         imagecreateinfo.extent.width = rectangleTarget.width();
-         imagecreateinfo.extent.height = rectangleTarget.height();
-         imagecreateinfo.extent.depth = 1;
-         imagecreateinfo.mipLevels = 1;
+      imagecreateinfo.imageType = VK_IMAGE_TYPE_2D;
+      imagecreateinfo.format = m_vkformat = pcontext->m_formatImageDefault;
+      imagecreateinfo.extent.width = rectangleTarget.width();
+      imagecreateinfo.extent.height = rectangleTarget.height();
+      imagecreateinfo.extent.depth = 1;
+      imagecreateinfo.mipLevels = m_mipsLevel = 1;
+      if (m_etype == e_type_cube_map)
+      {
+         imagecreateinfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+         imagecreateinfo.arrayLayers = 6;
+      }
+      else
+      {
          imagecreateinfo.arrayLayers = 1;
-         imagecreateinfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
-         imagecreateinfo.usage = 0;
 
-         if (m_bTransferDst & m_bCpuRead)
+      }
+      imagecreateinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+
+      imagecreateinfo.usage = 0;
+
+      if (m_bTransferDst & m_bCpuRead)
+      {
+
+         imagecreateinfo.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+
+         imagecreateinfo.tiling = VK_IMAGE_TILING_LINEAR;
+
+      }
+      else
+      {
+
+         if (m_bTransferDst)
          {
 
             imagecreateinfo.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
-            imagecreateinfo.tiling = VK_IMAGE_TILING_LINEAR;
-
          }
-         else
+
+         imagecreateinfo.usage |=
+            VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+            VK_IMAGE_USAGE_SAMPLED_BIT;
+
+         if (m_bRenderTarget)
          {
-
-            if (m_bTransferDst)
-            {
-
-               imagecreateinfo.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-
-            }
 
             imagecreateinfo.usage |=
-               VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
-               VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-               VK_IMAGE_USAGE_SAMPLED_BIT;
-
-            imagecreateinfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+               VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
          }
 
-         imagecreateinfo.initialLayout = m_state.m_vkimagelayout;
+         imagecreateinfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 
-         VkMemoryPropertyFlags properties;
+      }
 
-         if (m_bCpuRead)
-         {
+      imagecreateinfo.initialLayout = m_state.m_vkimagelayout;
 
-            properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+      VkMemoryPropertyFlags properties;
 
-         }
-         else
-         {
+      if (m_bCpuRead)
+      {
 
-            properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+         properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-         }
+      }
+      else
+      {
 
-         pcontext->createImageWithInfo(
-            imagecreateinfo,
-            properties,
-            m_vkimage,
-            m_vkdevicememory);
+         properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
-         if (m_bWithDepth)
-         {
+      }
 
-            get_depth_image();
+      pcontext->createImageWithInfo(
+         imagecreateinfo,
+         properties,
+         m_vkimage,
+         m_vkdevicememory);
 
-         }
+      if (m_bWithDepth)
+      {
+
+         get_depth_image();
+
+      }
 
       //}
+
+      if (m_etype == e_type_cube_map)
+      {
+
+         if (ppixmap != nullptr)
+         {
+
+            _LoadCubeMap(ppixmap);
+
+            /*   VkMemoryAllocateInfo allocInfo = {
+                  .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+                  .allocationSize = memReq.size,
+                  .memoryTypeIndex = memTypeIndex
+               };
+               vkAllocateMemory(device, &allocInfo, NULL, outMemory);
+               vkBindBufferMemory(device, vertexBuffer, *outMemory, 0);
+
+               void* data;
+               vkMapMemory(device, stagingBufferMemory, 0, totalSize, 0, &data);
+               for (int i = 0; i < 6; ++i) {
+                  memcpy((uint8_t*)data + imageSize * i, faceData[i], imageSize);
+               }
+               vkUnmapMemory(device, stagingBufferMemory);*/
+         }
+
+      }
+
+   }
+
+   //void texture::TransitionImageLayout(
+   //   VkImageLayout newLayout,
+   //   uint32_t    layerCount)
+   //{
+
+   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+   //   pcontext->transitionImageLayout(
+   //      m_vkimage, m_vkformat,
+   //      m_state.m_vkimagelayout, newLayout,
+   //      m_mipsLevel, layerCount);
+   //}
+
+
+   void texture::_LoadCubeMap(::pixmap* ppixmap)
+   {
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+      ::cast < context > pgpucontext = pcontext;
+      ::cast <device > pdevice = pcontext->m_pgpudevice;
+      auto w = ppixmap->width();
+      auto h = ppixmap->height();
+      auto scan = ppixmap->m_iScan;
+      auto data = ppixmap->data();
+      VkDeviceSize layerSize = w * h * 4;
+      VkDeviceSize totalSize = layerSize * 6;
+      auto pbufferStaging = pgpucontext->create_buffer(totalSize,
+         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+      pbufferStaging->_assign_cube_map(data, w, h, scan);
+
+      auto pcommandbuffer = pcontext->beginSingleTimeCommands();
+      pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging);
+
+      _set_state(pcommandbuffer,
+         {
+                        VK_ACCESS_TRANSFER_READ_BIT,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT
+
+         });
+
+      pcontext->endSingleTimeCommands(pcommandbuffer);
+
+      //// copy all 6 faces into the staging buffer, one after another
+      //void* data;
+      //vkMapMemory(device->logicalDevice, stagingMemory, 0, totalSize, 0, &data);
+      //for (int i = 0; i < 6; i++) {
+      //   memcpy((char*)data + layerSize * i, images[i], layerSize);
+      //   stbi_image_free(images[i]);
+      //}
+      //vkUnmapMemory(device->logicalDevice, stagingMemory);
 
    }
 
@@ -179,9 +282,9 @@ namespace gpu_vulkan
       }
 
       ASSERT(m_etype & ::gpu::texture::e_type_depth);
-      
 
-         get_depth_image();
+
+      get_depth_image();
 
       ////}
       ////else
@@ -264,6 +367,7 @@ namespace gpu_vulkan
       //}
 
       ////}
+
    }
 
 
@@ -274,7 +378,7 @@ namespace gpu_vulkan
       ASSERT(pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording);
 
       auto image = m_vkimage;
-      
+
       auto accessOld = m_state.m_vkaccessflags;
 
       auto accessNew = state.m_vkaccessflags;
@@ -288,8 +392,8 @@ namespace gpu_vulkan
       auto pipelineStageFlagsNew = state.m_vkpipelinestageflags;
 
       // Optional: Skip no-op transitions
-      if (layoutOld == layoutNew 
-         && accessOld == accessNew && 
+      if (layoutOld == layoutNew
+         && accessOld == accessNew &&
          pipelineStageFlagsOld == pipelineStageFlagsNew)
          return;
 
@@ -310,19 +414,19 @@ namespace gpu_vulkan
           }
       };
 
-      if(m_etype == e_type_depth)
+      if (m_etype == e_type_depth)
       {
-         
+
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 
       }
       else if (m_etype == e_type_depth_stencil)
       {
-         
+
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
 
       }
-      else if (m_etype == e_type_image)
+      else if (m_etype == e_type_image || m_etype == e_type_cube_map)
       {
 
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -384,7 +488,7 @@ namespace gpu_vulkan
          imageInfo.extent.depth = 1;
          imageInfo.mipLevels = 1;
          imageInfo.arrayLayers = 1;
-         imageInfo.format = depthFormat;
+         imageInfo.format = m_vkformat = depthFormat;
          imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
          imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
          imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
@@ -393,9 +497,9 @@ namespace gpu_vulkan
          imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
          imageInfo.flags = 0;
 
-         auto & depthImage = m_vkimage;
+         auto& depthImage = m_vkimage;
 
-         auto & depthImageMemory = m_vkdevicememory;
+         auto& depthImageMemory = m_vkdevicememory;
 
          pcontext->createImageWithInfo(
             imageInfo,
@@ -472,12 +576,21 @@ namespace gpu_vulkan
       }
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      VkImageViewType viewType;
+      if (m_etype == e_type_cube_map)
+      {
+         viewType = VK_IMAGE_VIEW_TYPE_CUBE;
 
+      }
+      else
+      {
+         viewType = VK_IMAGE_VIEW_TYPE_2D;
+      }
       VkImageViewCreateInfo viewInfo = {
           .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
           .image = m_vkimage,
-          .viewType = VK_IMAGE_VIEW_TYPE_2D,
-          .format = pcontext->m_formatImageDefault,
+          .viewType = viewType,
+          .format = m_vkformat = pcontext->m_formatImageDefault,
           .subresourceRange = {
               .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
               .baseMipLevel = 0,
@@ -504,9 +617,9 @@ namespace gpu_vulkan
 
       }
 
-      auto & framebuffer = m_mapFramebuffer[renderpass];
+      auto& framebuffer = m_mapFramebuffer[renderpass];
 
-      if(framebuffer)
+      if (framebuffer)
       {
          return framebuffer;
       }
@@ -539,9 +652,9 @@ namespace gpu_vulkan
       VkFramebufferCreateInfo fbInfo = {
        .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
        .renderPass = renderpass,
-       .attachmentCount = (uint32_t) iAttachmentCount,
+       .attachmentCount = (uint32_t)iAttachmentCount,
        .pAttachments = attachments,
-       .width = (uint32_t) m_rectangleTarget.width(),
+       .width = (uint32_t)m_rectangleTarget.width(),
        .height = (uint32_t)m_rectangleTarget.height(),
        .layers = 1
       };
@@ -571,7 +684,7 @@ namespace gpu_vulkan
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
             viewInfo.image = get_depth_image();
             viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            viewInfo.format = depthFormat;
+            viewInfo.format = m_vkformat = depthFormat;
             viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
             viewInfo.subresourceRange.baseMipLevel = 0;
             viewInfo.subresourceRange.levelCount = 1;
@@ -625,6 +738,41 @@ namespace gpu_vulkan
       m_vkimage = vkimage;
 
    }
+
+   unsigned int texture::_get_layer_count()
+   {
+      if (m_etype == e_type_cube_map)
+      {
+
+         return 6;
+
+      }
+      else
+      {
+
+         return 1;
+
+      }
+
+   }
+
+
+   VkImageViewType texture::_get_image_view_type()
+   {
+
+      if (m_etype == e_type_cube_map)
+      {
+
+         return VK_IMAGE_VIEW_TYPE_CUBE;
+      }
+      else
+      {
+         return VK_IMAGE_VIEW_TYPE_2D;
+
+      }
+
+   }
+
 
 
    void texture::destroy()

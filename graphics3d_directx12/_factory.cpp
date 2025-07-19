@@ -3,7 +3,7 @@
 #include "camera.h"
 #include "engine.h"
 #include "frame.h"
-#include "model.h"
+//#include "model.h"
 #include "bred/graphics3d/scene_object.h"
 #include "aura/platform/application.h"
 
@@ -13,7 +13,7 @@ IMPLEMENT_FACTORY(graphics3d_directx12)
 
    pfactory->add_factory_item < ::graphics3d_directx12::camera, ::graphics3d::camera >();
 
-   pfactory->add_factory_item < ::graphics3d_directx12::model, ::graphics3d::model >();
+   //pfactory->add_factory_item < ::graphics3d_directx12::model, ::graphics3d::model >();
 
    pfactory->add_factory_item < ::graphics3d_directx12::engine, ::graphics3d::engine >();
 

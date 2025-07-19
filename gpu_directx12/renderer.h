@@ -239,9 +239,9 @@ namespace gpu_directx12
       //   return commandBuffers[get_frame_index()];
       //}
 
-      virtual ::gpu::command_buffer * getCurrentCommandBuffer2();
+      ::gpu::command_buffer * getCurrentCommandBuffer2() override;
 
-      virtual command_buffer* getLoadAssetsCommandBuffer();
+      ::gpu::command_buffer * getLoadAssetsCommandBuffer() override;
 
 
       //int get_frame_index() override;

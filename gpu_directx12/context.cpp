@@ -605,9 +605,9 @@ namespace gpu_directx12
    void context::copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource)
    {
 
-      ::cast < texture > ptextureDst = ptextureTarget;
+      ::cast < ::gpu_directx12::texture > ptextureDst = ptextureTarget;
 
-      ::cast < texture > ptextureSrc = ptextureSource;
+      ::cast < ::gpu_directx12::texture > ptextureSrc = ptextureSource;
 
       ::cast < renderer > prenderer = ptextureSrc->m_pgpurenderer;
 
@@ -1511,7 +1511,7 @@ namespace gpu_directx12
          &heapProps,
          D3D12_HEAP_FLAG_NONE,
          &bufferDesc,
-         D3D12_RESOURCE_STATE_COMMON,
+         D3D12_RESOURCE_STATE_GENERIC_READ,
          nullptr,
          __interface_of(prenderer->m_presourceGlobalUBO));
 
@@ -1651,7 +1651,7 @@ namespace gpu_directx12
       
       ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
 
-      ::cast < texture > ptexture = player->source_texture();
+      ::cast < ::gpu_directx12::texture > ptexture = player->source_texture();
 
       auto pdxgidevice = _get_dxgi_device();
 
@@ -1728,7 +1728,7 @@ namespace gpu_directx12
 
       ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
 
-      ::cast < texture > ptexture = player->source_texture();
+      ::cast < ::gpu_directx12::texture > ptexture = player->source_texture();
 
       ::cast < device > pdevice = m_pgpudevice;
 
@@ -2080,7 +2080,7 @@ return tex.Sample(samp, uv);
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      ::cast <texture > ptextureDst = ptextureTarget;
+      ::cast <::gpu_directx12::texture > ptextureDst = ptextureTarget;
       ////float clearColor[4] = { 0.95f * 0.5f, 0.95f * 0.5f, 0.25f * 0.5f, 0.5f }; // Clear to transparent
       ////m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
       float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
@@ -2137,12 +2137,11 @@ return tex.Sample(samp, uv);
             //if (iLayer == 2)
             {
 
-
-               ::cast <texture > ptextureSrc = player->texture();
+               ::cast < ::gpu_directx12::texture > ptextureSrc = player->texture();
 
                ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-               m_pshaderBlend3->bind_source(ptextureSrc);
+               m_pshaderBlend3->bind_source(ptextureSrc, 0);
 
                //ID3D11SamplerState* samplerstatea[] =
                //{ ptexture->m_psamplerstate };
@@ -2303,7 +2302,7 @@ return tex.Sample(samp, uv);
 
          }
 
-         m_pgpucompositor->on_start_layer();
+         m_pgpucompositor->on_start_layer(player);
 
       }
 
@@ -2316,7 +2315,7 @@ return tex.Sample(samp, uv);
       if (m_pgpucompositor)
       {
 
-         m_pgpucompositor->on_end_layer();
+         m_pgpucompositor->on_end_layer(player);
 
          if (m_etype == e_type_draw2d)
          {

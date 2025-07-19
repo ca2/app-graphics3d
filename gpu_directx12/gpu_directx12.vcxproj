@@ -705,6 +705,8 @@
     <ClInclude Include="frame.h" />
     <ClInclude Include="initializers.h" />
     <ClInclude Include="input_layout.h" />
+    <ClInclude Include="memory_buffer.h" />
+    <ClInclude Include="model_buffer.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="approach.h" />
     <ClInclude Include="offscreen_render_target_view.h" />
@@ -754,6 +756,8 @@
     <ClCompile Include="aaa_direct2d_draw2d_swap_chain.cpp" />
     <ClCompile Include="dxgi_debug.cpp" />
     <ClCompile Include="input_layout.cpp" />
+    <ClCompile Include="memory_buffer.cpp" />
+    <ClCompile Include="model_buffer.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="offscreen_render_target_view.cpp" />
     <ClCompile Include="operating_system\windows.cpp" />

@@ -812,7 +812,7 @@ namespace gpu_vulkan
 
          m_pshaderPresent->m_bDisableDepthTest = true;
 
-         m_pshaderPresent->m_iSamplerSlot = 0;
+         m_pshaderPresent->m_bindingSampler.set();
 
          m_pshaderPresent->m_bClearColor = true;
 

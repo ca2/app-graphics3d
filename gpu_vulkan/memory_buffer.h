@@ -18,9 +18,9 @@ namespace gpu_vulkan
 
       //context* m_pgpucontext;
       //void* m_mapped = nullptr;
-      VkBuffer                   m_vkbuffer = VK_NULL_HANDLE;
-      VkDeviceMemory             m_vkdevicememory = VK_NULL_HANDLE;
-
+      //VkBuffer                   m_vkbuffer = VK_NULL_HANDLE;
+      //VkDeviceMemory             m_vkdevicememory = VK_NULL_HANDLE;
+      ::pointer < buffer >       m_pbuffer;
       //VkDeviceSize m_bufferSize;
       uint32_t                   m_instanceCount;
       VkDeviceSize               m_vkdevicesizeInstance;
@@ -32,9 +32,15 @@ namespace gpu_vulkan
       ~memory_buffer();
 
 
+      //void _initialize_buffer(::gpu::context* pgpudevice,
+      //   VkDeviceSize instanceSize,
+      //   uint32_t instanceCount,
+      //   VkBufferUsageFlags usageFlags,
+      //   VkMemoryPropertyFlags memoryPropertyFlags,
+      //   VkDeviceSize minOffsetAlignment = 1);
+
       void _initialize_buffer(::gpu::context* pgpudevice,
          VkDeviceSize instanceSize,
-         uint32_t instanceCount,
          VkBufferUsageFlags usageFlags,
          VkMemoryPropertyFlags memoryPropertyFlags,
          VkDeviceSize minOffsetAlignment = 1);
@@ -61,7 +67,7 @@ namespace gpu_vulkan
       VkDescriptorBufferInfo descriptorInfoForIndex(int index);
       VkResult invalidateIndex(int index);
 
-      VkBuffer getBuffer() const { return m_vkbuffer; }
+      buffer * getBuffer() const { return m_pbuffer; }
       void* getMappedMemory() const { return m_pMap; }
       uint32_t getInstanceCount() const { return m_instanceCount; }
       VkDeviceSize getInstanceSize() const { return m_vkdevicesizeInstance; }

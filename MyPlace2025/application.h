@@ -1,16 +1,16 @@
 #pragma once
 
 
-#include "cube/application.h"
+#include "core/platform/application.h"
 //#include "opengl/engine.h"
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
 
-   class CLASS_DECL_GRAPHICS3D_MYPLACE2025 application :
-      virtual public ::cube::application
+   class CLASS_DECL_APP_GRAPHICS3D_MYPLACE2025 application :
+      virtual public ::core::application
    {
    public:
 
@@ -63,7 +63,7 @@ bool m_bAbsoluteMousePosition;
    };
 
 
-} // namespace graphics3d_MyPlace2025
+} // namespace app_graphics3d_MyPlace2025
 
 
 

@@ -51,7 +51,7 @@ namespace app_graphics3d_continuum
 	}
 
 
-	void simple_render_system::prepare(::gpu::context* pgpucontext)
+	void simple_render_system::on_prepare(::gpu::context* pgpucontext)
 	{
 
 		auto prenderer = pgpucontext->m_pgpurenderer;
@@ -72,17 +72,17 @@ namespace app_graphics3d_continuum
 	}
 
 
-	void simple_render_system::update(::gpu::context* pgpucontext, ::graphics3d::scene* pscene)
+	void simple_render_system::on_update(::gpu::context* pgpucontext, ::graphics3d::scene* pscene)
 	{
 
 
 	}
 
 
-	void simple_render_system::render(::gpu::context * pgpucontext, ::graphics3d::scene* pscene)
+	void simple_render_system::on_render(::gpu::context * pgpucontext, ::graphics3d::scene* pscene)
 	{
 
-		m_pshader->bind();
+		m_pshader->bind(pgpucontext->current_target_texture());
 
 		for (auto& kv : pscene->m_mapObjects) 
 		{
@@ -115,12 +115,14 @@ namespace app_graphics3d_continuum
 				m_pshader->m_propertiesPush["normalMatrix"] = normalMatrix;
 
 				m_pshader->push_properties();
+
+				auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2();
 				
-				obj->m_pmodel->bind();
+				obj->m_pmodel->bind(pcommandbuffer);
 
-				obj->m_pmodel->draw();
+				obj->m_pmodel->draw(pcommandbuffer);
 
-				obj->m_pmodel->unbind();
+				obj->m_pmodel->unbind(pcommandbuffer);
 
 			}
 

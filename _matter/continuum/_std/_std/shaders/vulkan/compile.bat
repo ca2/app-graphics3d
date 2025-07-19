@@ -3,7 +3,7 @@
 setlocal
 
 :: Path to glslangValidator
-set GLSLANG=C:/LocalVendor/glSlang/bin/glslangValidator.exe
+set GLSLANG=glslangValidator.exe
 
 :: Output directory
 set OUTPUT_DIR=SpirV

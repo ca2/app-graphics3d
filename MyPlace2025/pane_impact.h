@@ -3,13 +3,14 @@
 
 #include "apex/platform/app_consumer.h"
 #include "core/user/userex/pane_tab_impact.h"
+#include "application.h"
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
 
-   class CLASS_DECL_GRAPHICS3D_MYPLACE2025 pane_impact :
+   class CLASS_DECL_APP_GRAPHICS3D_MYPLACE2025 pane_impact :
       virtual public ::app_consumer < application, ::userex::pane_tab_impact, ::user::form_callback >
    {
    public:
@@ -60,7 +61,7 @@ namespace graphics3d_MyPlace2025
    };
 
 
-} // namespace graphics3d_MyPlace2025
+} // namespace app_graphics3d_MyPlace2025
 
 
 

@@ -18,18 +18,18 @@
 #include "base/user/user/single_document_template.h"
 
 
-__IMPLEMENT_APPLICATION_RELEASE_TIME(graphics3d_MyPlace2025);
-IMPLEMENT_APPLICATION_FACTORY(graphics3d_MyPlace2025);
+__IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_MyPlace2025);
+IMPLEMENT_APPLICATION_FACTORY(app_graphics3d_MyPlace2025);
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
 
    application::application()
    {
 
-      m_bUseSwapChainWindow = true;
+      //m_bUseSwapChainWindow = true;
       m_bAbsoluteMousePosition = false;
       m_ppaneimpact = nullptr;
       //m_bImaging = false;
@@ -46,7 +46,7 @@ namespace graphics3d_MyPlace2025
 
       m_strAppName = "opengl-land/MyPlace2025";
 
-      m_strBaseSupportId = "graphics3d_MyPlace2025";
+      m_strBaseSupportId = "app_graphics3d_MyPlace2025";
 
       m_bLicense = false;
 
@@ -66,10 +66,10 @@ namespace graphics3d_MyPlace2025
    void application::init_instance()
    {
 
-      factory()->add_factory_item <::graphics3d_MyPlace2025::document >();
-      factory()->add_factory_item <::graphics3d_MyPlace2025::main_frame >();
-      factory()->add_factory_item <::graphics3d_MyPlace2025::impact >();
-      factory()->add_factory_item <::graphics3d_MyPlace2025::pane_impact >();
+      factory()->add_factory_item <::app_graphics3d_MyPlace2025::document >();
+      factory()->add_factory_item <::app_graphics3d_MyPlace2025::main_frame >();
+      factory()->add_factory_item <::app_graphics3d_MyPlace2025::impact >();
+      factory()->add_factory_item <::app_graphics3d_MyPlace2025::pane_impact >();
 
       ::core::application::init_instance();
 
@@ -415,7 +415,7 @@ namespace graphics3d_MyPlace2025
 //}
 
 
-} // namespace graphics3d_MyPlace2025
+} // namespace app_graphics3d_MyPlace2025
 
 
 

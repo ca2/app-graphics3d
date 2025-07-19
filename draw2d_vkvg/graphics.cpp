@@ -1050,11 +1050,11 @@ namespace draw2d_vkvg
 
    vkvg_keep keep(m_pdc);
 
-   vkvg_translate(m_pdc, centerx, centery);
+   vkvg_translate(m_pdc, (float) centerx, (float) centery);
 
-   vkvg_scale(m_pdc, radiusx, radiusy);
+   vkvg_scale(m_pdc, (float) radiusx, (float) radiusy);
 
-   vkvg_arc(m_pdc, 0.0, 0.0, 1.0, start, end);
+   vkvg_arc(m_pdc, 0.f, 0.f, 1.f, (float) start, (float) end);
 
    draw();
 
@@ -7116,7 +7116,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::line_to(double x, double y)
+   void graphics::line(double x1, double y1, double x2, double y2)
    {
 
       //if (::is_set(m_ppen))
@@ -7142,20 +7142,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
 
-      if (!vkvg_has_current_point(m_pdc))
-      {
+      vkvg_move_to(m_pdc, x1, y1);
 
-         vkvg_move_to(m_pdc, m_point.x(), m_point.y());
-
-      }
-
-      vkvg_line_to(m_pdc, x, y);
+      vkvg_line_to(m_pdc, x2, y2);
 
       draw();
 
-      m_point.x() = x;
+      m_point.x() = x2;
 
-      m_point.y() = y;
+      m_point.y() = y2;
 
       //return true;
 
@@ -8139,6 +8134,25 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //auto pgpucontext = gpu_context();
 
       //pgpucontext->_send(procedure);
+
+   }
+
+
+   void graphics::on_start_layer(::gpu::layer* pgpulayer)
+   {
+
+      vkvg_clear(m_pdc);
+      ////if (m_pdevicecontext && m_bInLayer)
+      ////if (m_pdevicecontext)
+      //{
+
+      //   m_pdirect2d->m_pd2d1multithread->Enter();
+
+      //   m_pdevicecontext->BeginDraw();
+
+      //   m_pdevicecontext->Clear();
+
+      //}
 
    }
 

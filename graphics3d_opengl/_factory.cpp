@@ -4,7 +4,7 @@
 #include "context.h"
 #include "engine.h"
 #include "frame.h"
-#include "model.h"
+//#include "model.h"
 #include "shader.h"
 #include "aura/platform/application.h"
 #include "bred/graphics3d/scene_object.h"
@@ -22,7 +22,7 @@ IMPLEMENT_FACTORY(graphics3d_opengl)
 
    pfactory->add_factory_item < ::graphics3d_opengl::camera, ::graphics3d::camera >();
 
-   pfactory->add_factory_item < ::graphics3d_opengl::model, ::graphics3d::model >();
+   // pfactory->add_factory_item < ::graphics3d_opengl::model, ::graphics3d::model >();
 
    //pfactory->add_factory_item < ::graphics3d_opengl::shader, ::graphics3d::shader >();
 

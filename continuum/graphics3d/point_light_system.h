@@ -31,7 +31,7 @@ namespace app_graphics3d_continuum
 
       ::pointer < ::gpu::shader >            m_pshader;
       //::pointer < ::graphics3d::engine >        m_pengine;
-      ::pointer < ::graphics3d::model >      m_pmodelDummy;
+      ::graphics3d::model<::graphics3d::Vertex> m_pmodelDummy;
 
       point_light_system();
       ~point_light_system();
@@ -40,14 +40,14 @@ namespace app_graphics3d_continuum
       void initialize_point_light_system(::graphics3d::engine * pengine);
 
 
-      virtual void update(::gpu::context* pgpucontext, ::graphics3d::scene * pscene) override;
-      virtual void render(::gpu::context* pgpucontext, ::graphics3d::scene * pscene) override;
+      void on_update(::gpu::context* pgpucontext, ::graphics3d::scene * pscene) override;
+      void on_render(::gpu::context* pgpucontext, ::graphics3d::scene * pscene) override;
       
 
       //void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
       //void createPipeline(VkRenderPass renderPass);
 
-      virtual void prepare(::gpu::context* pgpucontext) override;
+      void on_prepare(::gpu::context* pgpucontext) override;
 
       //VkPipelineLayout pipelineLayout;
 

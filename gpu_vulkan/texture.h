@@ -90,8 +90,10 @@ namespace gpu_vulkan
 
       bool                       m_bOwnImage;
       VkImage                    m_vkimage;
+      VkFormat                   m_vkformat;
       VkDeviceMemory             m_vkdevicememory;
       state_t                    m_state;
+      int                        m_mipsLevel;
       //VkImage                    m_vkimageDepth;
       //VkDeviceMemory             m_vkdevicememoryDepth;
       VkImageView                m_vkimageview;
@@ -103,9 +105,12 @@ namespace gpu_vulkan
       ~texture() override;
 
 
-      void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth);
+      void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, ::pixmap* ppixmap = nullptr, enum_type etype = e_type_image) override;
       void initialize_depth_texture(::gpu::renderer* pgpurenderer, const ::int_rectangle& rectangleTarget) override;
       //void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
+      //void TransitionImageLayout(
+      //   VkImageLayout newLayout,
+      //   uint32_t    layerCount);
 
       void _set_state(::gpu_vulkan::command_buffer * pcommandbuffer, 
          state_t state);
@@ -124,7 +129,8 @@ namespace gpu_vulkan
       }
 
       void _attach(VkImage vkimage, enum_type etype);
-
+      virtual unsigned int _get_layer_count();
+      virtual VkImageViewType _get_image_view_type();
 
       void destroy();
 
@@ -139,7 +145,7 @@ namespace gpu_vulkan
       VkFramebuffer get_framebuffer(VkRenderPass vkrenderpass);
 
       // VkFramebuffer create_framebuffer(VkRenderPass renderpass);
-
+      void _LoadCubeMap(::pixmap* ppixmap);
    };
 
 

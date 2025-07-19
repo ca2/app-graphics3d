@@ -2,6 +2,7 @@
 
 
 #include "apex/platform/app_consumer.h"
+#include "base/user/user/show.h"
 #include "bred/user/user/graphics3d.h"
 #include "application.h"
 #include "bred/graphics3d/engine.h"
@@ -9,12 +10,12 @@
 #include "bred/graphics3d/types.h"
 
 
-namespace graphics3d_MyPlace2025
+namespace app_graphics3d_MyPlace2025
 {
 
 
-   class CLASS_DECL_GRAPHICS3D_MYPLACE2025 impact :
-      virtual public ::app_consumer < application, ::user::graphics3d >
+   class CLASS_DECL_APP_GRAPHICS3D_MYPLACE2025 impact :
+      virtual public ::app_consumer < application, ::user::show < ::user::graphics3d > >
    {
    public:
 
@@ -72,6 +73,6 @@ namespace graphics3d_MyPlace2025
    };
 
 
-} // namespace graphics3d_MyPlace2025
+} // namespace app_graphics3d_MyPlace2025
 
 

@@ -55,9 +55,9 @@ namespace app_graphics3d_continuum
 
       __defer_construct(m_pmodelDummy);
 
-      ::graphics3d::model::Builder builderDummy;
+      // ::graphics3d::model::Builder builderDummy;
 
-      m_pmodelDummy->initialize_dummy_model(
+      m_pmodelDummy.initialize_dummy_model(
          pengine->m_pgpucontextCompositor2->m_pgpurenderer,
          6);
 
@@ -73,7 +73,7 @@ namespace app_graphics3d_continuum
 
 
 
-   void point_light_system::prepare(::gpu::context * pgpucontext)//(VkDescriptorSetLayout globalSetLayout) 
+   void point_light_system::on_prepare(::gpu::context * pgpucontext)//(VkDescriptorSetLayout globalSetLayout) 
    {
 
       auto prenderer = pgpucontext->m_pgpurenderer;
@@ -133,7 +133,9 @@ namespace app_graphics3d_continuum
    //      pipelineConfig
    //   );
    //}
-   void point_light_system::render(::gpu::context * pgpucontext, ::graphics3d::scene* pscene)
+
+
+   void point_light_system::on_render(::gpu::context * pgpucontext, ::graphics3d::scene* pscene)
    {
       // sort lights
       std::map<float, ::collection::index> sorted;
@@ -165,11 +167,13 @@ namespace app_graphics3d_continuum
 
          m_pshader->push_properties();
 
-         m_pmodelDummy->bind();
+         auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2();
 
-         m_pmodelDummy->draw();
+         m_pmodelDummy->bind(pcommandbuffer);
 
-         m_pmodelDummy->unbind();
+         m_pmodelDummy->draw(pcommandbuffer);
+
+         m_pmodelDummy->unbind(pcommandbuffer);
 
 
          //auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2();
@@ -194,7 +198,7 @@ namespace app_graphics3d_continuum
    }
 
 
-   void point_light_system::update(::gpu::context * pcontext, ::graphics3d::scene* pscene)
+   void point_light_system::on_update(::gpu::context * pcontext, ::graphics3d::scene* pscene)
    {
 
       auto dt = m_pengine->dt();

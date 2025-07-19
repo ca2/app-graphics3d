@@ -1,7 +1,9 @@
 // Created by camilo on 2025-06-08 18:14 < 3ThomasBorregaardSørensen!!
 #include "framework.h"
+#include "command_buffer.h"
 #include "texture.h"
 #include "renderer.h"
+#include "acme/graphics/image/pixmap.h"
 
 
 namespace gpu_directx12
@@ -26,7 +28,7 @@ namespace gpu_directx12
    }
 
 
-   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangleTarget, bool bWithDepth)
+   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangleTarget, bool bWithDepth, ::pixmap * ppixmap, enum_type etype)
    {
 
       auto size = m_rectangleTarget.size();
@@ -86,8 +88,7 @@ namespace gpu_directx12
             textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  // MUST be D3D11-compatible format
             textureDesc.SampleDesc.Count = 1;
             textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-            textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
-               ;
+            textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
             m_bRenderTarget = false;
 
@@ -110,6 +111,47 @@ namespace gpu_directx12
             __interface_of(m_presource));
 
          pdevice->defer_throw_hresult(hrCreateCommittedResource);
+
+         if (ppixmap)
+         {
+
+            if (ppixmap->size() != rectangleTarget.size())
+            {
+
+               throw ::exception(error_failed);
+
+            }
+
+            ::comptr<ID3D12Resource> presourceUpload;
+
+            const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_presource, 0, 1);
+
+            CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
+
+            auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+
+            pdevice->m_pdevice->CreateCommittedResource(
+               &propertiesUpload,
+               D3D12_HEAP_FLAG_NONE,
+               &descUpload,
+               D3D12_RESOURCE_STATE_GENERIC_READ,
+               nullptr,
+               __interface_of(presourceUpload));
+
+            D3D12_SUBRESOURCE_DATA textureData = {};
+            textureData.pData = ppixmap->data();            // pointer to your bitmap data (RGBA8, etc.)
+            textureData.RowPitch = ppixmap->m_iScan;
+            textureData.SlicePitch = textureData.RowPitch * ppixmap->height();
+
+            ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+            
+            UpdateSubresources(
+               pcommandbuffer->m_pcommandlist,
+               m_presource,
+               presourceUpload, 0, 0, 1, 
+               &textureData);
+
+         }
 
          m_estate = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
