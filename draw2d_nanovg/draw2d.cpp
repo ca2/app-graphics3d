@@ -4,7 +4,7 @@
 #include "acme/platform/application.h"
 #include "acme/platform/node.h"
 #include "acme/prototype/prototype/memory.h"
-
+#include "fontstash.h"
 
 //CLASS_DECL_DRAW2D_NANOVG void initialize_opengl();
 //CLASS_DECL_DRAW2D_NANOVG void terminate_opengl();
@@ -258,6 +258,8 @@ namespace draw2d_nanovg
          font.m_bLoaded = true;
 
          ::file::path pathFont = node()->get_font_path_from_name(scopedstrName);
+
+         nvgCreateFont(pdc, scopedstrName, pathFont);
 
          //nanovg_load_font_from_path(pdc, pathFont, scopedstrName);
 

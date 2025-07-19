@@ -1164,14 +1164,22 @@ namespace draw2d_nanovg
       //else
       if (pbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
       {
-         
-         double x0 = pbrush->m_point1.x() - xOrg;
 
-         double y0 = pbrush->m_point1.y() - yOrg;
+         float x0 = (float)(pbrush->m_point1.x() - xOrg);
 
-         double x1 = pbrush->m_point2.x() - xOrg;
+         float y0 = (float)(pbrush->m_point1.y() - yOrg);
 
-         double y1 = pbrush->m_point2.y() - yOrg;
+         float x1 = (float)(pbrush->m_point2.x() - xOrg);
+
+         float y1 = (float)(pbrush->m_point2.y() - yOrg);
+
+         //float xform[6];
+
+         //nvgCurrentTransform(m_pdc, xform);
+
+         //nvgTransformPoint(&x0, &y0, xform, x0, y0);
+         //
+         //nvgTransformPoint(&x1, &y1, xform, x1, y1);
 
          // Create a linear gradient paint
          NVGpaint gradient = nvgLinearGradient(
@@ -1192,7 +1200,7 @@ namespace draw2d_nanovg
 
          //nanovg_pattern_add_color_stop(ppattern, 1., __expand_double_rgba(pbrush->m_color2));
 
-         return true;
+         return false;
 
       }
       else
@@ -3643,6 +3651,8 @@ namespace draw2d_nanovg
 
       nvgBeginPath(m_pdc);
 
+      m_bHasCurrentPoint = false;
+
       //if (!m_bOutline)
       {
 
@@ -5254,10 +5264,13 @@ namespace draw2d_nanovg
    //   */
    //}
 
+
    void graphics::text_out(double x, double y, const ::scoped_string& scopedstr)
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      ::gpu::context_lock contextlock(gpu_context());
 
       nanovg_keep keep(m_pdc);
 
@@ -5276,7 +5289,7 @@ namespace draw2d_nanovg
          65535
       );
 
-      internal_draw_text(scopedstr, rectangle, e_null, e_null);
+      internal_draw_text(scopedstr, rectangle, e_align_top_left, e_draw_text_none);
 
       //return true;
 
@@ -7383,45 +7396,55 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       nvgTextMetrics(m_pdc, &ascender, &descender, &lineh);
 
-      double Δx;
+      float x;
 
-      double Δy;
+      float y;
 
       if (ealign & e_align_right)
       {
 
-         Δx = rectangle.right() - rectangle.left() - sz.cx();
+         nvgTextAlign(m_pdc, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
+
+         x = rectangle.right();
 
       }
       else if (ealign & e_align_horizontal_center)
       {
 
-         Δx = ((rectangle.right() - rectangle.left()) - (sz.cx())) / 2.0;
+         nvgTextAlign(m_pdc, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+
+         x = (rectangle.right() + rectangle.left()) / 2.f;
 
       }
       else
       {
 
-         Δx = 0.;
+         nvgTextAlign(m_pdc, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+
+         x = rectangle.left();
 
       }
+
+      string_array stra;
+
+      stra.add_lines(str);
 
       if (ealign & e_align_bottom)
       {
 
-         Δy = rectangle.bottom() - rectangle.top() - ascender;
+         y = rectangle.bottom() - lineh * stra.size();
 
       }
       else if (ealign & e_align_vertical_center)
       {
 
-         Δy = ((rectangle.bottom() - rectangle.top()) - (ascender)) / 2.0;
+         y = rectangle.center_y() - lineh * stra.size() / 2.f;
 
       }
       else
       {
 
-         Δy = 0.;
+         y = rectangle.top();
 
       }
 
@@ -7467,10 +7490,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      string_array stra;
-
-      stra.add_lines(str);
-
       int i = 0;
 
       _fill1();
@@ -7479,10 +7498,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       {
 
          //nanovg_move_to(m_pdc, rectangle.left() + Δx, rectangle.top() + Δy + e.ascent + sz.cy() * (i) / stra.get_size());
-
-         auto x = rectangle.left() + Δx;
-
-         auto y = rectangle.top() + Δy + ascender + lineh * i;
 
          //nvgMoveTo(m_pdc, , );
 
@@ -7509,6 +7524,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          //   informationf("nanovg error : graphics::draw_text %d %s", status, pszStatus);
 
          //}
+
+         y += lineh * i;
 
          i++;
 
