@@ -37,7 +37,7 @@
 //#include <gl/freeglut.h>
 #define GLAD_GLAPI_EXPORT
 
-#include "glad_wgl.h"
+#include <glad/glad_wgl.h>
 //#define WGL_CONTEXT_FLAGS_ARB 0X2094
 #define WGL_CONTEXT_COREPROFILE_BIT_ARB 0x00000001
 #define WGL_CONTEXT_PROFILE_MASK_ARB 0x9126

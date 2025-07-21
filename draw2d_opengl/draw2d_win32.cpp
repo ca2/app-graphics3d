@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "draw2d.h"
 //#include "windowing_win32/window.h"
-#include "glad_wgl.h"
+#include <glad/glad_wgl.h>
 #include "acme/platform/application.h"
 #include "gpu_opengl/approach.h"
 //#include <dwmapi.h>
