@@ -1,12 +1,15 @@
 #include "framework.h"
 #include "command_buffer.h"
+#include "context.h"
 #include "physical_device.h"
 #include "renderer.h"
+#include "render_target.h"
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
+#include "bred/gpu/frame.h"
 
 
 namespace gpu_vulkan
@@ -16,9 +19,11 @@ namespace gpu_vulkan
    swap_chain::swap_chain()
    {
 
-      m_iCurrentFrame2 = 0;
+      m_bLoadClearOp = true;
+
+      //m_iCurrentFrame2 = 0;
       m_uCurrentSwapChainImage = 0;
-      m_bBackBuffer = true;
+      //m_bBackBuffer = true;
 
    }
 
@@ -26,7 +31,7 @@ namespace gpu_vulkan
    swap_chain::~swap_chain()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
 
       //for (auto imageView : m_imageviews) {
       //   vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
@@ -56,12 +61,12 @@ namespace gpu_vulkan
       //   vkDestroySemaphore(m_pgpucontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
       //   vkDestroyFence(m_pgpucontext->logicalDevice(), inFlightFences[i], nullptr);
       //}
-      for (::collection::index i = 0; i < m_texturea.size(); i++)
-      {
+      //for (::collection::index i = 0; i < m_ptexturea->size(); i++)
+      //{
 
-         vkDestroyFence(pcontext->logicalDevice(), inFlightFences[i], nullptr);
+      //   vkDestroyFence(pcontext->logicalDevice(), inFlightFences[i], nullptr);
 
-      }
+      //}
 
    }
 
@@ -74,12 +79,12 @@ namespace gpu_vulkan
    //}
 
 
-   void swap_chain::initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size& size, ::pointer<::gpu::render_target> previous)
+   void swap_chain::update_render_pass(::gpu::context* pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
    {
 
-      render_pass::initialize_render_target(pgpurenderer, size, previous);
+      render_pass::update_render_pass(pgpucontext, previous);
       //m_bNeedRebuild = false;
-      init();
+      //on_init();
       // Cleans up old swap chain since it's no longer needed after resizing
       //oldSwapChain = nullptr;
    }
@@ -90,18 +95,20 @@ namespace gpu_vulkan
 
       ::gpu::swap_chain::initialize_gpu_swap_chain(pgpurenderer);
 
+      ::gpu_vulkan::render_pass::update_render_pass(pgpurenderer->m_pgpucontext, nullptr);
+
    }
 
 
-   void swap_chain::on_init()
+   void swap_chain::on_init_render_pass()
    {
 
-      createRenderPassImpl();
-      createImageViews();
+      create_images();
+      //createImageViews();
       createRenderPass();
-      createDepthResources();
-      createFramebuffers();
-      createSyncObjects();
+      //createDepthResources();
+      //createFramebuffers();
+      //createSyncObjects();
 
    }
 
@@ -117,24 +124,34 @@ namespace gpu_vulkan
    VkResult swap_chain::acquireNextImage()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
 
-      //auto currentFrame = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+      auto prenderer = pcontext->m_pgpurenderer;
+
+      ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
+
+      auto ptexture = current_swap_chain_texture();
+
+      auto& texture = this->texture(ptexture);
 
       auto imageIndex = &m_uCurrentSwapChainImage;
 
-      // Wait for the fence of the current frame first (prevents CPU running too fast)
-      //vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+      prenderer->wait_swap_chain_command_buffer_ready();
 
-      vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[get_frame_index()], VK_TRUE, UINT64_MAX);
-      //vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
+      //// Wait for the fence of the current frame first (prevents CPU running too fast)
+      ////vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+
+      //auto fence = texture.in_flight_fence();
+
+      //vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+      ////vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
 
 
       VkResult result = vkAcquireNextImageKHR(
          pcontext->logicalDevice(),
          m_vkswapchain,
          UINT64_MAX,
-         imageAvailableSemaphores[get_frame_index()],  // signal semaphore
+         texture.m_vksemaphoreAvailable,  // signal semaphore
          VK_NULL_HANDLE,
          imageIndex);
 
@@ -146,13 +163,17 @@ namespace gpu_vulkan
          throw ::exception(error_failed, "failed to acquire swap chain image!");
       }
 
+      auto ptextureAcquire = m_ptextureaSwapChain->element_at(*imageIndex);
+
+      auto& textureAcquire = this->texture(ptextureAcquire);
+
       //// If the image we acquired is already being used (fence not signaled), wait for it
-      if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
-         vkWaitForFences(pcontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+      if (textureAcquire.m_vkfenceImageInFlight != VK_NULL_HANDLE) {
+         vkWaitForFences(pcontext->logicalDevice(), 1, &textureAcquire.m_vkfenceImageInFlight, VK_TRUE, UINT64_MAX);
       }
 
       // Mark this image as now being in use by current frame
-      imagesInFlight[*imageIndex] = inFlightFences[get_frame_index()];
+      textureAcquire.m_vkfenceImageInFlight = texture.in_flight_fence();
 
       return result;
       //vkWaitForFences(
@@ -191,33 +212,52 @@ namespace gpu_vulkan
    int swap_chain::get_frame_index()
    {
 
-      return (int) m_iCurrentFrame2;
+      return (int) ::gpu_vulkan::render_pass::get_frame_index();
+
+   }
+
+
+   bool swap_chain::should_use_advanced_pipeline_synchronization()
+   {
+
+      return true;
 
    }
 
 
    VkResult swap_chain::submitCommandBuffers(
       command_buffer * pcommandbuffer,
+      ::gpu::texture * pgputexture,
       const ::array < VkSemaphore >& semaphoreaWait,
       const ::array < VkPipelineStageFlags >& stageaWait,
       const ::array < VkSemaphore >& semaphoreaSignal)
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
 
       uint32_t* imageIndex = &m_uCurrentSwapChainImage;
 
-      auto currentFrame = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+      auto prendertarget = pcontext->m_pgpurenderer->m_pgpurendertarget;
+
+      auto currentFrame = prendertarget->get_frame_index();
+
+      auto& texture = this->texture(pgputexture);
+
+      auto ptextureIndex = m_ptextureaSwapChain->element_at(*imageIndex);
+
+      auto& textureIndex = this->texture(ptextureIndex);
 
       // Use currentFrame to access per-frame sync objects
       //vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
       //vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
       //if (VK_TIMEOUT == vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[m_uCurrentSwapChainImage], VK_TRUE, 0))
+      auto fence = texture.in_flight_fence();
       {
 
-         vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[get_frame_index()], VK_TRUE, UINT64_MAX);
+
+         vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
       }
-      vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[get_frame_index()]);
+      vkResetFences(pcontext->logicalDevice(), 1, &fence);
 
       VkSubmitInfo submitInfo{};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -227,7 +267,7 @@ namespace gpu_vulkan
       ::array<VkPipelineStageFlags> waitStages(stageaWait);
       //if (imageAvailable[get_frame_index()] > 0)
       //{
-         waitSemaphores.add(imageAvailableSemaphores[get_frame_index()]);
+         waitSemaphores.add(texture.m_vksemaphoreAvailable);
          waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
       //}
       waitStages.append(::transfer(m_stageaWaitToSubmit));
@@ -242,18 +282,24 @@ namespace gpu_vulkan
       submitInfo.pCommandBuffers = commandbuffera;
 
       ::array<VkSemaphore> signalSemaphores(semaphoreaSignal);
-      signalSemaphores.add(renderFinishedSemaphores[*imageIndex]);
+      signalSemaphores.add(textureIndex.m_vksemaphoreRenderFinished);
       signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
       submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
       submitInfo.pSignalSemaphores = signalSemaphores.data();
 
       auto vkqueueGraphics = pcontext->graphicsQueue();
+
+      ::cast < ::gpu_vulkan::texture > ptextureIdx = ptextureIndex;
+
+      //auto fence = texture.in_flight_fence();
+
       //VkResult vkresult = vkQueueSubmit(pcontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]);
       VkResult vkresult = vkQueueSubmit(vkqueueGraphics, 1,
-         &submitInfo, inFlightFences[get_frame_index()]);
+         &submitInfo, fence);
       if (vkresult != VK_SUCCESS) {
          throw ::exception(error_failed, "failed to submit draw command buffer!");
       }
+
 
       VkPresentInfoKHR presentInfo{};
       presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -266,7 +312,7 @@ namespace gpu_vulkan
       VkResult result = vkQueuePresentKHR(pcontext->presentQueue(), &presentInfo);
 
       //currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-      m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % get_frame_count();
+      m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % m_ptextureaSwapChain->size();
 
       return result;
 
@@ -327,10 +373,17 @@ namespace gpu_vulkan
    }
 
 
-   void swap_chain::createRenderPassImpl()
+   
+   void swap_chain::create_images()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
+      __defer_construct_new(m_ptextureaSwapChain);
+
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+
+      auto prenderer = pcontext->m_pgpurenderer;
+
+      auto prendertarget = prenderer->m_pgpurendertarget;
 
       auto pgpucontext = pcontext;
 
@@ -359,7 +412,10 @@ namespace gpu_vulkan
       createInfo.imageColorSpace = surfaceFormat.colorSpace;
       createInfo.imageExtent = extent;
       createInfo.imageArrayLayers = 1;
-      createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+      createInfo.imageUsage = 
+         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+         | VK_IMAGE_USAGE_TRANSFER_DST_BIT
+         | VK_IMAGE_USAGE_SAMPLED_BIT;
 
       vulkan::QueueFamilyIndices indices = pcontext->m_pgpudevice->m_pphysicaldevice->findQueueFamilies();
       uint32_t queueFamilyIndices[] =
@@ -386,7 +442,7 @@ namespace gpu_vulkan
       createInfo.presentMode = presentMode;
       createInfo.clipped = VK_TRUE;
 
-      ::pointer < swap_chain> pswapchainOld = m_prendertargetOld;
+      ::pointer < swap_chain> pswapchainOld = prendertarget->m_prendertargetOld;
 
       createInfo.oldSwapchain = pswapchainOld == nullptr ? VK_NULL_HANDLE : pswapchainOld->m_vkswapchain;
 
@@ -406,18 +462,18 @@ namespace gpu_vulkan
 
       //m_pgpurenderer->m_pgpurendertarget->m_iFrameCountRequest = imageCount;
 
-      m_texturea.set_size(imageCount);
+      m_ptextureaSwapChain->set_size(imageCount);
 
       ::array < VkImage> imagea;
 
-      imagea.set_size(m_texturea.size());
+      imagea.set_size(m_ptextureaSwapChain->size());
 
       vkGetSwapchainImagesKHR(pcontext->logicalDevice(), m_vkswapchain, &imageCount, imagea.data());
       
       for (int i = 0; i < imagea.size(); i++)
       {
 
-         auto & pgputexture = m_texturea[i];
+         auto & pgputexture = m_ptextureaSwapChain->element_at(i);
 
          __defer_construct(pgputexture);
 
@@ -430,9 +486,9 @@ namespace gpu_vulkan
 
          pgputexture->m_bTransferDst = true;
 
-         pgputexture->initialize_image_texture(::gpu_vulkan::render_pass::m_pgpurenderer, rectangleTarget, m_bWithDepth);
+         pgputexture->initialize_image_texture(::gpu_vulkan::render_pass::m_pgpucontext->m_pgpurenderer, rectangleTarget, m_bWithDepth);
 
-         ::cast < texture > ptexture = pgputexture;
+         ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
 
          ptexture->m_vkimage = imagea[i];
 
@@ -445,48 +501,55 @@ namespace gpu_vulkan
    }
 
 
-   void swap_chain::createImageViews()
-   {
+   //void swap_chain::createImageViews()
+   //{
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
+   //   ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
 
-      //m_imageviews.resize(m_texturea.size());
+   //   //m_imageviews.resize(m_texturea.size());
 
-      //for (::collection::index i = 0; i < m_imageviews.size(); i++) 
-      for (::collection::index i = 0; i < m_texturea.size(); i++)
-      {
-         getImageView(i);
+   //   //for (::collection::index i = 0; i < m_imageviews.size(); i++) 
+   //   for (::collection::index i = 0; i < m_ptexturea->size(); i++)
+   //   {
+   //      getImageView(i);
 
-         //::cast < texture > ptexture = m_texturea[i];
+   //      //::cast < texture > ptexture = m_texturea[i];
 
-         //VkImageViewCreateInfo viewInfo{};
-         //viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-         //viewInfo.image = ptexture->m_vkimage;
-         //viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-         //viewInfo.format = m_formatImage;
-         //viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-         //viewInfo.subresourceRange.baseMipLevel = 0;
-         //viewInfo.subresourceRange.levelCount = 1;
-         //viewInfo.subresourceRange.baseArrayLayer = 0;
-         //viewInfo.subresourceRange.layerCount = 1;
+   //      //VkImageViewCreateInfo viewInfo{};
+   //      //viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+   //      //viewInfo.image = ptexture->m_vkimage;
+   //      //viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+   //      //viewInfo.format = m_formatImage;
+   //      //viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   //      //viewInfo.subresourceRange.baseMipLevel = 0;
+   //      //viewInfo.subresourceRange.levelCount = 1;
+   //      //viewInfo.subresourceRange.baseArrayLayer = 0;
+   //      //viewInfo.subresourceRange.layerCount = 1;
 
-         //if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &m_imageviews[i]) !=
-         //   VK_SUCCESS) {
-         //   throw ::exception(error_failed, "failed to create texture image view!");
-         //}
-      }
-   }
+   //      //if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &m_imageviews[i]) !=
+   //      //   VK_SUCCESS) {
+   //      //   throw ::exception(error_failed, "failed to create texture image view!");
+   //      //}
+   //   }
+   //}
 
 
    void swap_chain::createRenderPass()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
 
       VkAttachmentDescription depthAttachment{};
       depthAttachment.format = findDepthFormat();
       depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-      depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      if (m_bLoadClearOp)
+      {
+         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      }
+      else
+      {
+         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+      }
       depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
       depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
       depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -578,112 +641,112 @@ namespace gpu_vulkan
    }
 
 
-   void swap_chain::createFramebuffers()
-   {
-      render_pass::createFramebuffers();
-      //swapChainFramebuffers.resize(imageCount());
-      //for (size_t i = 0; i < imageCount(); i++) {
-      //   std::array<VkImageView, 2> attachments = { m_imageviews[i], depthImageViews[i] };
+   //void swap_chain::createFramebuffers()
+   //{
+   //   render_pass::createFramebuffers();
+   //   //swapChainFramebuffers.resize(imageCount());
+   //   //for (size_t i = 0; i < imageCount(); i++) {
+   //   //   std::array<VkImageView, 2> attachments = { m_imageviews[i], depthImageViews[i] };
 
-      //   VkExtent2D m_vkswapchainExtent = getExtent();
-      //   VkFramebufferCreateInfo framebufferInfo = {};
-      //   framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-      //   framebufferInfo.renderPass = m_vkrenderpass;
-      //   framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-      //   framebufferInfo.pAttachments = attachments.data();
-      //   framebufferInfo.width = m_vkswapchainExtent.width;
-      //   framebufferInfo.height = m_vkswapchainExtent.height;
-      //   framebufferInfo.layers = 1;
+   //   //   VkExtent2D m_vkswapchainExtent = getExtent();
+   //   //   VkFramebufferCreateInfo framebufferInfo = {};
+   //   //   framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+   //   //   framebufferInfo.renderPass = m_vkrenderpass;
+   //   //   framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+   //   //   framebufferInfo.pAttachments = attachments.data();
+   //   //   framebufferInfo.width = m_vkswapchainExtent.width;
+   //   //   framebufferInfo.height = m_vkswapchainExtent.height;
+   //   //   framebufferInfo.layers = 1;
 
-      //   if (vkCreateFramebuffer(
-      //      m_pgpucontext->logicalDevice(),
-      //      &framebufferInfo,
-      //      nullptr,
-      //      &swapChainFramebuffers[i]) != VK_SUCCESS) {
-      //      throw ::exception(error_failed,"failed to create framebuffer!");
-      //   }
-      //}
-   }
-
-
-   void swap_chain::createDepthResources()
-   {
-      render_pass::createDepthResources();
-
-      //VkFormat depthFormat = findDepthFormat();
-      //m_formatDepth = depthFormat;
-      //VkExtent2D m_vkswapchainExtent = getExtent();
-
-      //depthImages.resize(imageCount());
-      //depthImageMemorys.resize(imageCount());
-      //depthImageViews.resize(imageCount());
-
-      //for (int i = 0; i < depthImages.size(); i++) {
-      //   VkImageCreateInfo imageInfo{};
-      //   imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-      //   imageInfo.imageType = VK_IMAGE_TYPE_2D;
-      //   imageInfo.extent.width = m_vkswapchainExtent.width;
-      //   imageInfo.extent.height = m_vkswapchainExtent.height;
-      //   imageInfo.extent.depth = 1;
-      //   imageInfo.mipLevels = 1;
-      //   imageInfo.arrayLayers = 1;
-      //   imageInfo.format = depthFormat;
-      //   imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-      //   imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      //   imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-      //   imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      //   imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-      //   imageInfo.flags = 0;
-
-      //   m_pgpucontext->createImageWithInfo(
-      //      imageInfo,
-      //      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-      //      depthImages[i],
-      //      depthImageMemorys[i]);
-
-      //   VkImageViewCreateInfo viewInfo{};
-      //   viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-      //   viewInfo.image = depthImages[i];
-      //   viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-      //   viewInfo.format = depthFormat;
-      //   viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-      //   viewInfo.subresourceRange.baseMipLevel = 0;
-      //   viewInfo.subresourceRange.levelCount = 1;
-      //   viewInfo.subresourceRange.baseArrayLayer = 0;
-      //   viewInfo.subresourceRange.layerCount = 1;
-
-      //   if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) {
-      //      throw ::exception(error_failed,"failed to create texture image view!");
-      //   }
-      //}
-   }
+   //   //   if (vkCreateFramebuffer(
+   //   //      m_pgpucontext->logicalDevice(),
+   //   //      &framebufferInfo,
+   //   //      nullptr,
+   //   //      &swapChainFramebuffers[i]) != VK_SUCCESS) {
+   //   //      throw ::exception(error_failed,"failed to create framebuffer!");
+   //   //   }
+   //   //}
+   //}
 
 
-   void swap_chain::createSyncObjects()
-   {
-      //imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-      //renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+   //void swap_chain::createDepthResources()
+   //{
+   //   render_pass::createDepthResources();
 
-      render_pass::createSyncObjects();
+   //   //VkFormat depthFormat = findDepthFormat();
+   //   //m_formatDepth = depthFormat;
+   //   //VkExtent2D m_vkswapchainExtent = getExtent();
+
+   //   //depthImages.resize(imageCount());
+   //   //depthImageMemorys.resize(imageCount());
+   //   //depthImageViews.resize(imageCount());
+
+   //   //for (int i = 0; i < depthImages.size(); i++) {
+   //   //   VkImageCreateInfo imageInfo{};
+   //   //   imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   //   //   imageInfo.imageType = VK_IMAGE_TYPE_2D;
+   //   //   imageInfo.extent.width = m_vkswapchainExtent.width;
+   //   //   imageInfo.extent.height = m_vkswapchainExtent.height;
+   //   //   imageInfo.extent.depth = 1;
+   //   //   imageInfo.mipLevels = 1;
+   //   //   imageInfo.arrayLayers = 1;
+   //   //   imageInfo.format = depthFormat;
+   //   //   imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+   //   //   imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+   //   //   imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+   //   //   imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+   //   //   imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+   //   //   imageInfo.flags = 0;
+
+   //   //   m_pgpucontext->createImageWithInfo(
+   //   //      imageInfo,
+   //   //      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+   //   //      depthImages[i],
+   //   //      depthImageMemorys[i]);
+
+   //   //   VkImageViewCreateInfo viewInfo{};
+   //   //   viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+   //   //   viewInfo.image = depthImages[i];
+   //   //   viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+   //   //   viewInfo.format = depthFormat;
+   //   //   viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+   //   //   viewInfo.subresourceRange.baseMipLevel = 0;
+   //   //   viewInfo.subresourceRange.levelCount = 1;
+   //   //   viewInfo.subresourceRange.baseArrayLayer = 0;
+   //   //   viewInfo.subresourceRange.layerCount = 1;
+
+   //   //   if (vkCreateImageView(m_pgpucontext->logicalDevice(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) {
+   //   //      throw ::exception(error_failed,"failed to create texture image view!");
+   //   //   }
+   //   //}
+   //}
 
 
-      //inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-      //imagesInFlight.resize(imageCount(), VK_NULL_HANDLE);
+   //void swap_chain::createSyncObjects()
+   //{
+   //   //imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+   //   //renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 
-      ////VkSemaphoreCreateInfo semaphoreInfo = {};
-      ////semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+   //   render_pass::createSyncObjects();
 
-      //VkFenceCreateInfo fenceInfo = {};
-      //fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-      //fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-      //for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-      //   if (vkCreateFence(m_pgpucontext->logicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS)
-      //   {
-      //      throw ::exception(error_failed,"failed to create synchronization objects for a frame!");
-      //   }
-      //}
-   }
+   //   //inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+   //   //imagesInFlight.resize(imageCount(), VK_NULL_HANDLE);
+
+   //   ////VkSemaphoreCreateInfo semaphoreInfo = {};
+   //   ////semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+   //   //VkFenceCreateInfo fenceInfo = {};
+   //   //fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+   //   //fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+   //   //for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+   //   //   if (vkCreateFence(m_pgpucontext->logicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS)
+   //   //   {
+   //   //      throw ::exception(error_failed,"failed to create synchronization objects for a frame!");
+   //   //   }
+   //   //}
+   //}
 
 
    VkSurfaceFormatKHR swap_chain::chooseSwapSurfaceFormat(const ::array<VkSurfaceFormatKHR>& availableFormats)
@@ -737,10 +800,18 @@ namespace gpu_vulkan
       else
       {
 
+         ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+
+         auto prenderer = pcontext->m_pgpurenderer;
+
+         auto prendertarget = prenderer->m_pgpurendertarget;
+
+
+
          VkExtent2D actualExtent;
 
-         actualExtent.width = m_size.cx();
-         actualExtent.height = m_size.cy();
+         actualExtent.width = m_ptextureaSwapChain->element_at(0)->width();
+         actualExtent.height = m_ptextureaSwapChain->element_at(0)->height();
 
          actualExtent.width = std::max(
             capabilities.minImageExtent.width,
@@ -757,7 +828,7 @@ namespace gpu_vulkan
    VkFormat swap_chain::findDepthFormat()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
 
       return pcontext->m_pgpudevice->m_pphysicaldevice->findSupportedFormat(
          { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
@@ -770,13 +841,25 @@ namespace gpu_vulkan
    void swap_chain::present(::gpu::texture* pgputexture)
    {
 
-      ::cast < renderer > pgpurenderer = ::gpu::swap_chain::m_pgpurenderer;
+      //if (!m_papplication->m_gpu.m_bUseSwapChainWindow
+        // || m_pgpucontext->m_etype != ::gpu::context::e_type_window)
+      //{
 
-      ::cast < context > pgpucontext = pgpurenderer->m_pgpucontext;
+        // pcommandbuffer->begin_command_buffer(false);
 
-      m_size = pgpucontext->m_rectangle.size();
+      //}
 
-      VkResult vkresultAcquireNextImage = acquireNextImage();
+      ::cast < ::gpu_vulkan::context > pgpucontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+
+      ::cast < renderer > pgpurenderer = pgpucontext->m_pgpurenderer;
+
+      ::cast < render_target > prendertarget = pgpurenderer->m_pgpurendertarget;
+
+      ::cast < ::gpu_vulkan::texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
+
+      ::cast < swap_chain > pswapchain = pgpucontext->m_pgpuswapchain;
+
+      VkResult vkresultAcquireNextImage = pswapchain->acquireNextImage();
 
       if (vkresultAcquireNextImage != VK_SUCCESS)
       {
@@ -785,16 +868,14 @@ namespace gpu_vulkan
 
       }
 
-      int iFrameIndex = get_frame_index();
-
-      ::cast <texture> ptextureSwapChain = m_texturea[iFrameIndex];
+      ::cast <::gpu_vulkan::texture> ptextureSwapChain = pswapchain->current_swap_chain_texture();
 
       if (!m_pshaderPresent)
       {
 
          __construct_new(m_pshaderPresent);
 
-         m_pshaderPresent->m_bTextureAndSampler = true;
+         m_pshaderPresent->m_bindingSampler.set();
 
          m_pshaderPresent->m_bDisableDepthTest = true;
 
@@ -808,7 +889,7 @@ namespace gpu_vulkan
 
          m_pshaderPresent->m_bEnableBlend = false;
 
-         m_pshaderPresent->m_bTextureAndSampler = true;
+         //m_pshaderPresent->m_bTextureAndSampler = true;
 
          m_pshaderPresent->m_bDisableDepthTest = true;
 
@@ -833,11 +914,11 @@ namespace gpu_vulkan
 
       }
 
-      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
-      ::cast < texture > ptextureSrc = pgputexture;
+      ::cast < ::gpu_vulkan::texture > ptextureSrc = pgputexture;
 
       //{
 

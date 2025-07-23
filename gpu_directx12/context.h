@@ -355,7 +355,7 @@ namespace gpu_directx12
 
       
       void __bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player) override;
-      void __soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player) override;
+      void __defer_soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player) override;
 
 
       virtual void __bind_graphics3d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player);

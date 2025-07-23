@@ -4853,12 +4853,12 @@ namespace draw2d_vkvg
    }
 
 
-   ::gpu::frame* graphics::end_gpu_layer()
+   ::gpu::frame* graphics::end_gpu_layer(::gpu::frame * pgpuframe)
    {
 
       vkvg_flush(m_pdc);
 
-      return ::gpu::graphics::end_gpu_layer();
+      return ::gpu::graphics::end_gpu_layer(pgpuframe);
 
    }
 
@@ -5778,7 +5778,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   ::gpu::texture* graphics::current_target_texture()
+   ::gpu::texture* graphics::current_target_texture(::gpu::frame * pgpuframe)
    {
 
       __defer_construct(m_ptextureCurrent);

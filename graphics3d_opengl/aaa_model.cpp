@@ -146,7 +146,7 @@
 //   void model::bind()
 //   {
 //
-//      auto pcommandbuffer = this->m_pgpurenderer->getCurrentCommandBuffer2();
+//      auto pcommandbuffer = this->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 //
 //      gpu_opengl::model_buffer::bind(pcommandbuffer);
 //      // glBindVertexArray(m_gluVAO);
@@ -158,7 +158,7 @@
 //   void model::draw()
 //   {
 //
-//      auto pcommandbuffer = this->m_pgpurenderer->getCurrentCommandBuffer2();
+//      auto pcommandbuffer = this->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 //
 //      ::gpu_opengl::model_buffer::draw(pcommandbuffer);
 //
@@ -183,7 +183,7 @@
 //   void model::unbind()
 //   {
 //
-//      auto pcommandbuffer = this->m_pgpurenderer->getCurrentCommandBuffer2();
+//      auto pcommandbuffer = this->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 //
 //      ::gpu_opengl::model_buffer::unbind(pcommandbuffer);
 //

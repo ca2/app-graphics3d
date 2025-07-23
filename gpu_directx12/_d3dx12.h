@@ -3700,3 +3700,23 @@ inline HRESULT D3DX12SerializeVersionedRootSignature(
    return E_INVALIDARG;
 }
 
+
+inline D3D12_CULL_MODE as_d3d12_cull_mode(::gpu::enum_cull_mode ecullmode)
+{
+
+	switch (ecullmode)
+	{
+	case ::gpu::e_cull_mode_none:
+		return D3D12_CULL_MODE_NONE;
+	case ::gpu::e_cull_mode_front:
+		return D3D12_CULL_MODE_FRONT;
+	case ::gpu::e_cull_mode_back:
+		return D3D12_CULL_MODE_BACK;
+	default:
+		return D3D12_CULL_MODE_BACK;
+	}
+
+}
+
+
+

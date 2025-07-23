@@ -42,6 +42,12 @@ namespace gpu_vulkan
          /** @brief Physical device representation */
       //VkPhysicalDevice m_physicaldevice;
       ::pointer < device >                m_pgpudevice;
+
+      // Wraps the swap chain to present images (framebuffers) to the windowing system
+      //::pointer < swap_chain >         m_pswapchain;
+
+
+
 //      /** @brief Logical device representation (application's view of the device) */
 //      VkDevice m_vkdevice;
 //      ///** @brief Properties of the physical device including limits that the application can check against */

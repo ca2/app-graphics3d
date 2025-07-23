@@ -63,7 +63,7 @@ namespace gpu_directx12
       void present(::gpu::texture * pgputexture) override;
       void set_present_state() override;
       void swap_buffers() override;
-      void get_new_swap_chain_index() override;
+      int swap_chain_frame_index() override;
 //      VkInstance instance{ VK_NULL_HANDLE };
 //      VkDevice device{ VK_NULL_HANDLE };
 //      VkPhysicalDevice physicalDevice{ VK_NULL_HANDLE };

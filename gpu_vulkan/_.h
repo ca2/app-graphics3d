@@ -68,6 +68,10 @@ namespace gpu_vulkan
 
    class input_layout;
 
+   class render_pass;
+
+   class render_target;
+
 
 } // namespace gpu_vulkan
 

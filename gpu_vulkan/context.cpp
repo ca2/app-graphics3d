@@ -8,11 +8,14 @@
 #include "physical_device.h"
 #include "program.h"
 #include "renderer.h"
+#include "render_target.h"
 #include "shader.h"
+#include "swap_chain.h"
 #include "texture.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/compositor.h"
+#include "bred/gpu/frame.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/types.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
@@ -2587,6 +2590,35 @@ namespace gpu_vulkan
    void context::merge_layers(::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera)
    {
 
+      ::cast < renderer > pgpurenderer = m_pgpurenderer;
+
+      ::cast < render_target > prendertarget = pgpurenderer->m_pgpurendertarget;
+
+      ::cast < ::gpu_vulkan::texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
+
+      ::cast < swap_chain > pswapchain = m_pgpuswapchain;
+
+      auto& texture = pswapchain->texture(ptexture);
+
+      auto fence = texture.in_flight_fence();
+
+      pgpurenderer->wait_swap_chain_command_buffer_ready();
+
+      /*if (fence)
+      {
+
+         vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+      }*/
+
+      ///vkResetFences(this->logicalDevice(), 1, &fence);
+
+      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+      pcommandbuffer->begin_command_buffer(false);
+
+
+
       if (!m_pshaderBlend3)
       {
 
@@ -2601,7 +2633,7 @@ namespace gpu_vulkan
          __defer_construct_new(m_pshaderBlend3);
 
          m_pshaderBlend3->m_bEnableBlend = true;
-         m_pshaderBlend3->m_bTextureAndSampler = true;
+         m_pshaderBlend3->m_bindingSampler.set();
          m_pshaderBlend3->m_bDisableDepthTest = true;
          //m_pshaderBlend3->m_bT
          //m_pshaderBlend3->m_pgpurenderer = this;
@@ -2655,8 +2687,6 @@ namespace gpu_vulkan
       //}
 
       ::cast < renderer > prenderer = m_pgpurenderer;
-
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
 
       auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
@@ -2784,11 +2814,11 @@ namespace gpu_vulkan
 
                auto r = ptextureSrc->m_rectangleTarget;
 
-               int h = r.height();
+               //int h = r.height();
 
-               r.top() = iH - r.bottom();
+               //r.top() = iH - r.bottom();
 
-               r.bottom() = r.top() + h;
+               //r.bottom() = r.top() + h;
 
                pcommandbuffer->set_viewport(r);
 
@@ -2898,18 +2928,22 @@ namespace gpu_vulkan
    void context::on_start_layer(::gpu::layer* player)
    {
 
-      ::cast < ::gpu_vulkan::texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+      ::cast < ::gpu_vulkan::texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_frame());
 
-      ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       if (pcommandbuffer->m_estate != command_buffer::e_state_recording)
       {
 
          ::cast < gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
-         ::cast < render_pass > prenderpass = m_pgpurenderer->m_pgpurendertarget;
+         ::cast < render_target > prendertarget = m_pgpurenderer->m_pgpurendertarget;
 
-         VkFence& fence = prenderpass->inFlightFences.element_at_grow(prenderpass->get_frame_index());
+         ::cast < render_pass > prenderpass = prendertarget->render_pass();
+
+         auto& texture = prenderpass->texture(ptexture);
+
+         VkFence fence = texture.in_flight_fence();
 
          if (fence)
          {
@@ -2952,7 +2986,7 @@ namespace gpu_vulkan
 
       int iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
-      ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       ::cast < ::gpu_vulkan::texture > ptextureDst = ptextureTarget;
 

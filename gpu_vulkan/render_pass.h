@@ -1,8 +1,10 @@
+// From render_pass now render target to just gpu_vulkan/render_pass by
+// camilo on 2025-07-22 13:49 <3ThomasBorregaardSørensen!!
 // From vk_swapchain by camilo on 2025-05-09 01:40 <3ThomasBorregaardSorensen!!
 #pragma once
 
 
-#include "bred/gpu/render_target.h"
+#include "bred/gpu/context_object.h"
 #include "context.h"
 
 // vulkan headers
@@ -13,18 +15,49 @@
 namespace gpu_vulkan
 {
 
+   struct texture_t
+   {
+
+      ::gpu_vulkan::render_pass *   m_prenderpass = nullptr;
+      ::gpu_vulkan::texture *       m_ptexture = nullptr;
+
+      VkFramebuffer                 m_vkframebuffer = VK_NULL_HANDLE;
+
+
+      bool                          m_bAdvancedPipelineSynchronization = false;
+      int                           m_iImageAvailable = -1;
+      VkSemaphore                   m_vksemaphoreAvailable = VK_NULL_HANDLE;
+      VkSemaphore                   m_vksemaphoreRenderFinished = VK_NULL_HANDLE;
+      VkFence                       m_vkfenceInFlight2 = VK_NULL_HANDLE;
+      VkFence                       m_vkfenceImageInFlight = VK_NULL_HANDLE;
+
+      texture_t();
+      ~texture_t();
+
+      VkFramebuffer get_frame_buffer();
+
+      VkFence in_flight_fence();
+
+   };
+
+
 
    class CLASS_DECL_GPU_VULKAN render_pass :
-      virtual public ::gpu::render_target
+      virtual public ::gpu::context_object
    {
    public:
 
+      bool m_bWithDepth = false;
 
+
+      ///::pointer < ::pointer_array < ::gpu::texture > > m_ptexturea;
       VkFormat m_formatImage;
       VkFormat m_formatDepth;
       VkExtent2D m_extent;
+      ::pointer < render_pass > m_prenderpassOld;
 
-      ::array<VkFramebuffer> m_framebuffers;
+      map < ::gpu::texture*, texture_t > m_mapTexture;
+      
       VkRenderPass m_vkrenderpass;
 
       ///::pointer < renderer >  m_pgpurenderer;
@@ -44,12 +77,8 @@ namespace gpu_vulkan
       //VkSwapchainKHR swapChain;
       //::pointer<render_pass> m_pvkcrenderpassOld;
 
-      ::int_array imageAvailable;
-      ::array<VkSemaphore> imageAvailableSemaphores;
-      ::array<VkSemaphore> renderFinishedSemaphores;
-      ::array<VkFence>     inFlightFences;
-      ::array<VkFence>     imagesInFlight;
       bool                 m_bNeedRebuild;
+      bool                 m_bLoadClearOp = false;
 
       // static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -58,17 +87,24 @@ namespace gpu_vulkan
       render_pass();
       ~render_pass();
 
+      
+      virtual bool should_use_advanced_pipeline_synchronization();
 
-      void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous = {}) override;
 
-      virtual void on_before_begin_render(frame* pframe);
+      virtual void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {});
 
-      VkFramebuffer getFrameBuffer(int index) { return m_framebuffers[index]; }
-      VkFramebuffer getCurrentFrameBuffer() { return m_framebuffers[get_frame_index()]; }
+      virtual void on_before_begin_render(frame* pframe, ::gpu::texture * pgputexture);
+
+      virtual texture_t& texture(::gpu::texture* pgputexture);
+
+      virtual int get_frame_index();
+      //virtual ::gpu::texture* current_texture();
+      //VkFramebuffer getFrameBuffer(int index) { return m_framebuffers[index]; }
+      //VkFramebuffer getCurrentFrameBuffer() { return m_framebuffers[get_frame_index()]; }
       //virtual int get_image_index() const;
       VkRenderPass getRenderPass() { return m_vkrenderpass; }
-      VkImageView getImageView(int index);
-      VkImageView getDepthImageView(int index);
+      //VkImageView getImageView(int index);
+      //VkImageView getDepthImageView(int index);
       //int imageCount() { return m_texturea.size(); }
 //      VkFormat getImageFormat() { return m_pgpurenderer->m_pgpucontext; }
       VkExtent2D getExtent() { return m_extent; }
@@ -84,7 +120,8 @@ namespace gpu_vulkan
       //virtual VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
       virtual VkResult acquireNextImage();
       virtual VkResult submitCommandBuffers(
-         command_buffer * pcommandbuffer, 
+         command_buffer* pcommandbuffer,
+         ::gpu::texture * pgputexture,
          const ::array < VkSemaphore >& semaphoreaWait,
          const ::array < VkPipelineStageFlags >& stageaWait,
          const ::array < VkSemaphore >& semaphoreaSignal);
@@ -95,13 +132,13 @@ namespace gpu_vulkan
       //}
 
 
-      void on_init() override;
-      virtual void createRenderPassImpl();
-      virtual void createImageViews();
-      virtual void createDepthResources();
+      virtual void on_init_render_pass();
+      //virtual void createRenderPassImpl();
+      //virtual void createImageViews();
+      //virtual void createDepthResources();
       virtual void createRenderPass();
-      virtual void createFramebuffers();
-      virtual void createSyncObjects();
+      //virtual void createFramebuffers();
+      //virtual void createSyncObjects();
 
 
       //virtual void defer_layout();

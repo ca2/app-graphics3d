@@ -1,9 +1,10 @@
 #include "framework.h"
 #include "application.h"
 #include "impact.h"
-#include "bred/gpu/context.h"
 #include "bred/gpu/bred_approach.h"
 #include "bred/gpu/command_buffer.h"
+#include "bred/gpu/context.h"
+#include "bred/gpu/frame.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/shader.h"
 #include "bred/graphics3d/camera.h"
@@ -167,7 +168,7 @@ namespace app_graphics3d_continuum
 
          m_pshader->push_properties();
 
-         auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2();
+         auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
          m_pmodelDummy->bind(pcommandbuffer);
 
@@ -176,7 +177,7 @@ namespace app_graphics3d_continuum
          m_pmodelDummy->unbind(pcommandbuffer);
 
 
-         //auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2();
+         //auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
          ////vkCmdPushConstants(
          ////   frameInfo.commandBuffer,

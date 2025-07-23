@@ -239,7 +239,7 @@ namespace gpu_directx12
       //   return commandBuffers[get_frame_index()];
       //}
 
-      ::gpu::command_buffer * getCurrentCommandBuffer2() override;
+      ::gpu::command_buffer * getCurrentCommandBuffer2(::gpu::frame* pgpuframe) override;
 
       ::gpu::command_buffer * getLoadAssetsCommandBuffer() override;
 
@@ -277,7 +277,7 @@ namespace gpu_directx12
       void on_end_render(::gpu::frame* pframeParam) override;
       void endFrame() override;
       void endDraw(::gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
-
+      void on_begin_frame() override;
       void on_begin_draw() override;
       void _on_begin_render(::gpu::frame* pgpuframe) override;
       void _on_end_render(::gpu::frame* pgpuframe) override;

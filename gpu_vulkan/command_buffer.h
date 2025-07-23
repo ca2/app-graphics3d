@@ -16,7 +16,9 @@ namespace gpu_vulkan
 
 
       
-      VkCommandBuffer m_vkcommandbuffer;
+      VkCommandBuffer   m_vkcommandbuffer;
+
+      VkFence           m_vkfence;
 
 
       command_buffer();
@@ -25,7 +27,7 @@ namespace gpu_vulkan
 
       void initialize_command_buffer(::gpu::render_target * pgpurendertarget) override;
 
-      virtual void begin_command_buffer(bool bOneTime);
+      void begin_command_buffer(bool bOneTime) override;
 
 
       void wait_commands_to_execute() override;

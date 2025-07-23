@@ -3,6 +3,7 @@
 #include "approach.h"
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/compositor.h"
+#include "bred/gpu/frame.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/types.h"
 #include "buffer.h"
@@ -613,7 +614,7 @@ namespace gpu_directx12
 
       //auto pcommandbuffer = prenderer->beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       pcommandbuffer->wait_commands_to_execute();
 
@@ -709,7 +710,7 @@ namespace gpu_directx12
 
          //HRESULT hrQueryDxgiSwapChain3 = swapchain1.as(pswapchain->m_pdxgiswapchain);
 
-         pswapchain->get_new_swap_chain_index();
+         //pswapchain->get_new_swap_chain_index();
 
          pswapchain->initialize_swap_chain_window(this, pwindow);
 
@@ -1703,7 +1704,7 @@ namespace gpu_directx12
 
       //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
 
-      //ptexture->_new_state(prenderer->getCurrentCommandBuffer2()->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+      //ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_frame())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 
       d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
@@ -1723,7 +1724,7 @@ namespace gpu_directx12
    }
 
 
-   void context::__soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player)
+   void context::__defer_soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player)
    {
 
       ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
@@ -1834,7 +1835,7 @@ namespace gpu_directx12
 
       //auto etypeCompositor = pgpucompositor->m_pgpucontextCompositor->m_etype;
 
-      //::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
+      //::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       //if (!ptexture->m_handleRenderTargetView.ptr)
       //{
@@ -2019,14 +2020,14 @@ SamplerState samp : register(s0);
 
 float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 {
-    //return tex.Sample(samp, uv); // Assumes premultiplied alpha
+    return tex.Sample(samp, uv); // Assumes premultiplied alpha
 //if(uv.y >0.5)
 //{
-  // return float4(0.7*0.5, 0.5*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
+// return float4(0.7*0.5, 0.5*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
 //}
 //else
 //{
-return tex.Sample(samp, uv);
+//return tex.Sample(samp, uv);
 //}
 }
 )hlsl";
@@ -2034,7 +2035,7 @@ return tex.Sample(samp, uv);
          __defer_construct_new(m_pshaderBlend3);
 
          m_pshaderBlend3->m_bEnableBlend = true;
-         m_pshaderBlend3->m_bTextureAndSampler = true;
+         m_pshaderBlend3->m_bindingSampler.set();
          m_pshaderBlend3->m_bDisableDepthTest = true;
 
          m_pshaderBlend3->initialize_shader_with_block(
@@ -2076,23 +2077,26 @@ return tex.Sample(samp, uv);
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
       ::cast <::gpu_directx12::texture > ptextureDst = ptextureTarget;
       ////float clearColor[4] = { 0.95f * 0.5f, 0.95f * 0.5f, 0.25f * 0.5f, 0.5f }; // Clear to transparent
       ////m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
-      float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
-      pcommandlist->ClearRenderTargetView(ptextureDst->m_handleRenderTargetView, clearColor, 0, nullptr);
-      ptextureDst->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-      if(!ptextureDst->m_handleRenderTargetView.ptr)
+      if (!ptextureDst->m_handleRenderTargetView.ptr)
       {
 
          ptextureDst->create_render_target();
 
       }
+
+      ptextureDst->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+
+      float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
+      pcommandlist->ClearRenderTargetView(ptextureDst->m_handleRenderTargetView, clearColor, 0, nullptr);
+
 
 
       m_pshaderBlend3->bind(ptextureTarget);
@@ -2220,38 +2224,38 @@ return tex.Sample(samp, uv);
 
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-      if (player->m_pcommandbufferLayer != prenderer->getCurrentCommandBuffer2())
-      {
+      //if (player->getCurrentCommandBuffer4() != prenderer->getCurrentCommandBuffer2(::gpu::current_frame()))
+      //{
 
-         player->m_pcommandbufferLayer = prenderer->getCurrentCommandBuffer2();
+      //   player->getCurrentCommandBuffer4() = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
-         //auto pcommanbuffer=__create_new < ::gpu_directx12::command_buffer>();
+      //   //auto pcommanbuffer=__create_new < ::gpu_directx12::command_buffer>();
 
-         //::comptr < ID3D12CommandQueue > pcommandqueue;
+      //   //::comptr < ID3D12CommandQueue > pcommandqueue;
 
-         //::cast < device > pdevice = m_pgpudevice;
+      //   //::cast < device > pdevice = m_pgpudevice;
 
-         //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-         //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-         //HRESULT hrCreateCommandQueue = 
-         //   pdevice->m_pdevice->CreateCommandQueue(
-         //      &queueDesc, __interface_of(pcommandqueue));
+      //   //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+      //   //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+      //   //HRESULT hrCreateCommandQueue = 
+      //   //   pdevice->m_pdevice->CreateCommandQueue(
+      //   //      &queueDesc, __interface_of(pcommandqueue));
 
-         //::defer_throw_hresult(hrCreateCommandQueue);
+      //   //::defer_throw_hresult(hrCreateCommandQueue);
 
-         //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
+      //   //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-         //pcommanbuffer->initialize_command_buffer(
-         //   pcommandqueue, D3D12_COMMAND_LIST_TYPE_DIRECT, prenderer);
+      //   //pcommanbuffer->initialize_command_buffer(
+      //   //   pcommandqueue, D3D12_COMMAND_LIST_TYPE_DIRECT, prenderer);
 
-         //player->m_pcommandbuffer = pcommanbuffer;
+      //   //player->m_pcommandbuffer = pcommanbuffer;
 
-      }
+      //}
 
       if (m_pgpurenderer->m_iSentLayerCount)
       {
 
-         player->m_pcommandbufferLayer->wait_commands_to_execute();
+         player->getCurrentCommandBuffer4()->wait_commands_to_execute();
 
       }
 
@@ -2269,7 +2273,7 @@ return tex.Sample(samp, uv);
 
             //_get_dxgi_device();
 
-            ////ptexture->_new_state(prenderer->getCurrentCommandBuffer2()->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+            ////ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_frame())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
             //// 4. Release wrapped resource to allow access from D3D12
 
@@ -2312,40 +2316,42 @@ return tex.Sample(samp, uv);
    void context::on_end_layer(::gpu::layer* player)
    {
 
-      if (m_pgpucompositor)
-      {
+      ::gpu::context::on_end_layer(player);
 
-         m_pgpucompositor->on_end_layer(player);
+      //if (m_pgpucompositor)
+      //{
 
-         if (m_etype == e_type_draw2d)
-         {
+      //   m_pgpucompositor->on_end_layer(player);
 
-            __soft_unbind_draw2d_compositor(m_pgpucompositor, player);
+      //   if (m_etype == e_type_draw2d)
+      //   {
 
-            //::cast < device > pdevice = m_pgpudevice;
+      //      __soft_unbind_draw2d_compositor(m_pgpucompositor, player);
 
-            //if (m_etype == e_type_draw2d)
-            //{
+      //      //::cast < device > pdevice = m_pgpudevice;
 
-            //   d3d11on12()->m_pd3d11context->Flush(); // ✅ Ensures D3D11 commands are issued
+      //      //if (m_etype == e_type_draw2d)
+      //      //{
 
-            //   // 4. Release wrapped resource to allow access from D3D12
-            //   d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
-            //      d3d11on12()->m_d3d11wrappedresources, 1);
+      //      //   d3d11on12()->m_pd3d11context->Flush(); // ✅ Ensures D3D11 commands are issued
 
-            //   m_iResourceWrappingCount--;
+      //      //   // 4. Release wrapped resource to allow access from D3D12
+      //      //   d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
+      //      //      d3d11on12()->m_d3d11wrappedresources, 1);
 
-            //   ASSERT(m_iResourceWrappingCount == 0);
+      //      //   m_iResourceWrappingCount--;
 
-            //   ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
+      //      //   ASSERT(m_iResourceWrappingCount == 0);
 
-            //   //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+      //      //   ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
 
-            //}
+      //      //   //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
 
-         }
+      //      //}
 
-      }
+      //   }
+
+      //}
 
    }
 
@@ -2363,16 +2369,16 @@ return tex.Sample(samp, uv);
 
       }
 
-      if (!m_pswapchain)
+      if (!m_pgpuswapchain)
       {
 
-         __defer_construct(m_pswapchain);
+         __defer_construct(m_pgpuswapchain);
 
          ///m_pswapchain->initialize_gpu_swap_chain(this, m_pwindow);
 
       }
 
-      return m_pswapchain;
+      return m_pgpuswapchain;
 
    }
 

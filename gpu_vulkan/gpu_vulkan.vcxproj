@@ -714,6 +714,7 @@
     <ClInclude Include="program.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_pass.h" />
+    <ClInclude Include="render_target.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="aaa_swap_chain.h" />
     <ClInclude Include="swap_chain.h" />
@@ -765,6 +766,7 @@
     <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="render_pass.cpp" />
+    <ClCompile Include="render_target.cpp" />
     <ClCompile Include="swap_chain.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="VulkanExample.cpp">

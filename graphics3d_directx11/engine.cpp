@@ -7,6 +7,7 @@
 #include "offscreen_render_pass.h"
 #include "swap_chain_render_pass.h"
 #include "aura/platform/application.h"
+#include "bred/gpu/frame.h"
 #include "bred/user/user/graphics3d.h"
 #include "gpu_directx11/approach.h"
 #include "gpu_directx11/context.h"
@@ -407,7 +408,7 @@ namespace graphics3d_directx11
          ::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
          ID3D11Device* device = pgpudevice->m_pdevice;
          ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-         ::cast < ::gpu_directx11::texture > ptexture = poffscreenrendertargetview->current_texture();
+         ::cast < ::gpu_directx11::texture > ptexture = poffscreenrendertargetview->current_texture(::gpu::current_frame());
          ID3D11Texture2D* offscreenTexture = ptexture->m_ptextureOffscreen;
          if (!device || !context || !offscreenTexture)
          {

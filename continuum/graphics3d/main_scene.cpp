@@ -239,7 +239,7 @@ namespace app_graphics3d_continuum
       {
 
          m_Skybox->render(pgpucontext, this);
-         //auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2();
+         //auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
 
 

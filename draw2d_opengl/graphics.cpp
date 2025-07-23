@@ -17,6 +17,7 @@
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/device.h"
+#include "bred/gpu/frame.h"
 #include "bred/gpu/model_buffer.h"
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/render.h"
@@ -1347,7 +1348,7 @@ void main() {
    //   pshader->bind();
 
    //   //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-   //   auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+   //   auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
    //   //VkDeviceSize offset = 0;
    //   ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
    //   //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodelbuffer->m_vertexBuffer, &offset);
@@ -1408,7 +1409,6 @@ void main() {
 
    void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
    {
-
 
       fill_rectangle(rectangle, pbrush->m_color);
 
@@ -5492,7 +5492,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //      //glBindBuffer(GL_ARRAY_BUFFER, pfont->m_VBO);
       //      //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
 
-      //      //auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2();
+      //      //auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       //      //pcommandbuffer->
 
@@ -5872,18 +5872,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (pmodelbuffer->is_new())
       {
 
-         pmodelbuffer->sequence2_color_create_line(pcontext);
+         pmodelbuffer->sequence2_color_create_line(::gpu::current_frame());
 
       }
 
       pmodelbuffer->set_vertices(quadVertices);
 
       //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
       //VkDeviceSize offset = 0;
       ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
       //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodelbuffer->m_vertexBuffer, &offset);
-      pshader->bind(prenderer->m_pgpurendertarget->current_texture());
+      pshader->bind(prenderer->m_pgpurendertarget->current_texture(::gpu::current_frame()));
 
       pmodelbuffer->bind(pcommandbuffer);
 
@@ -6025,7 +6025,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       //glBindVertexArray(pface->m_FaceVAO);
       //GLCheckError("");
-      auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2();
+      auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
       pface->m_pmodelbufferBox->bind(pcommandbuffer);
 
       // iterate through all characters
@@ -6118,7 +6118,7 @@ color = vec4(c.r,c.g, c.b, c.a);
             // 
             // 
             
-            auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2();
+            auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
             //pcommandbuffer->draw(ch.m_ppixmap);
 
@@ -6251,7 +6251,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       //glBindVertexArray(pface->m_FaceVAO);
       //GLCheckError("");
-      auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2();
+      auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
       pface->m_pmodelbufferBox->bind(pcommandbuffer);
 
       // iterate through all characters
@@ -6348,7 +6348,7 @@ color = vec4(c.r,c.g, c.b, c.a);
             // 
             // 
 
-            auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2();
+            auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
             //pcommandbuffer->draw(ch.m_ppixmap);
 
@@ -7075,10 +7075,10 @@ color = vec4(c.r,c.g, c.b, c.a);
    }
 
 
-   ::gpu::frame * graphics::end_gpu_layer()
+   ::gpu::frame * graphics::end_gpu_layer(::gpu::frame * pgpuframe)
    {
 
-      return ::gpu::graphics::end_gpu_layer();
+      return ::gpu::graphics::end_gpu_layer(pgpuframe);
 
    }
 

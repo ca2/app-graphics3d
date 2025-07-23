@@ -88,6 +88,16 @@ namespace gpu_vulkan
 
       };
 
+      struct shader_t
+      {
+
+         bool m_bNew = true;
+         VkDescriptorSet m_vkdescriptorset = VK_NULL_HANDLE;
+
+
+      };
+
+
       bool                       m_bOwnImage;
       VkImage                    m_vkimage;
       VkFormat                   m_vkformat;
@@ -99,6 +109,7 @@ namespace gpu_vulkan
       VkImageView                m_vkimageview;
       //VkImageView                m_vkimageviewDepth;
       map<VkRenderPass, VkFramebuffer >             m_mapFramebuffer;
+      map<::gpu_vulkan::shader *, shader_t >             m_mapShader;
 
 
       texture();
@@ -142,7 +153,10 @@ namespace gpu_vulkan
 
       VkImageView get_depth_image_view();
 
-      VkFramebuffer get_framebuffer(VkRenderPass vkrenderpass);
+
+      VkDescriptorSet descriptor_set(::gpu_vulkan::shader* pshader);
+
+      VkFramebuffer get_framebuffer(::gpu_vulkan::render_pass * prenderpass);
 
       // VkFramebuffer create_framebuffer(VkRenderPass renderpass);
       void _LoadCubeMap(::pixmap* ppixmap);

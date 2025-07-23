@@ -6,9 +6,11 @@
 #include "memory_buffer.h"
 #include "model_buffer.h"
 #include "renderer.h"
+#include "render_target.h"
 #include "texture.h"
 #include "acme/prototype/geometry2d/matrix.h"
 #include "acme/prototype/prototype/call.h"
+#include "bred/gpu/frame.h"
 #include "bred/gpu/types.h"
 #include "bred/graphics3d/types.h"
 
@@ -736,7 +738,7 @@ namespace gpu_vulkan
          else
          {
 
-::cast < texture > ptexture = m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->current_texture();
+::cast < texture > ptexture = m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_frame());
 if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
 {
    warning() << "what?";

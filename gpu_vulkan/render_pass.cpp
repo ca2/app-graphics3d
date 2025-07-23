@@ -1,8 +1,12 @@
+// From render_pass now render target to just gpu_vulkan/render_pass by
+// camilo on 2025-07-22 13:54 <3ThomasBorregaardSørensen!!
 // From vk_swapchain by camilo on 2025-05-09 02:01 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "command_buffer.h"
+#include "bred/gpu/frame.h"
 #include "physical_device.h"
 #include "render_pass.h"
+#include "render_target.h"
 #include "renderer.h"
 #include "texture.h"
 
@@ -21,7 +25,7 @@ namespace gpu_vulkan
    render_pass::~render_pass()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
       //for (auto imageView : m_imageviews) 
       //{
@@ -41,110 +45,325 @@ namespace gpu_vulkan
       //   vkFreeMemory(pcontext->logicalDevice(), depthImageMemorys[i], nullptr);
       //}
 
-      for (auto framebuffer : m_framebuffers)
-      {
+      //for (auto framebuffer : m_framebuffers)
+      //{
 
-         vkDestroyFramebuffer(pcontext->logicalDevice(), framebuffer, nullptr);
+      //   vkDestroyFramebuffer(pcontext->logicalDevice(), framebuffer, nullptr);
 
-      }
+      //}
 
       vkDestroyRenderPass(pcontext->logicalDevice(), m_vkrenderpass, nullptr);
 
-      // cleanup synchronization objects
-      for (size_t i = 0; i < m_texturea.size(); i++)
+      //// cleanup synchronization objects
+      //for (size_t i = 0; i < m_ptexturea->size(); i++)
+      //{
+
+      //   vkDestroySemaphore(pcontext->logicalDevice(), renderFinishedSemaphores[i], nullptr);
+      //   vkDestroySemaphore(pcontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
+
+      //}
+
+   }
+
+
+   bool render_pass::should_use_advanced_pipeline_synchronization()
+   {
+
+      return false;
+
+   }
+
+
+   void render_pass::update_render_pass(::gpu::context* pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
+   {
+
+      //::gpu_vulkan::render_pass::initialize_render_pass(pgpurenderer, size, previous);
+      m_pgpucontext = pgpucontext;
+
+      if (m_pgpucontext->m_escene == ::gpu::e_scene_3d)
       {
-         
-         vkDestroySemaphore(pcontext->logicalDevice(), renderFinishedSemaphores[i], nullptr);
-         vkDestroySemaphore(pcontext->logicalDevice(), imageAvailableSemaphores[i], nullptr);
+
+         m_bWithDepth = true;
+
+      }
+
+      //m_ptexturea = ptexturea;
+
+      auto size = pgpucontext->m_rectangle.size();
+
+      m_prenderpassOld = previous;
+
+      m_bNeedRebuild = false;
+
+      if (size.has_area())
+      {
+
+         if (m_extent.width != size.cx() ||
+            m_extent.height != size.cy())
+         {
+
+            m_extent.width = size.cx();
+
+            m_extent.height = size.cy();
+
+            on_init_render_pass();
+
+         }
 
       }
 
    }
 
 
-   void render_pass::initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size& size, ::pointer<::gpu::render_target> previous)
+   void render_pass::on_init_render_pass()
    {
 
-      ::gpu::render_target::initialize_render_target(pgpurenderer, size, previous);
-
-      m_bNeedRebuild = false;
-
-   }
-
-
-   void render_pass::on_init()
-   {
-
-      createRenderPassImpl();
-      createImageViews();
+      //createRenderPassImpl();
+      //createImageViews();
       createRenderPass();
-      createDepthResources();
-      createFramebuffers();
-      createSyncObjects();
+      //createDepthResources();
+      //createFramebuffers();
+      //createSyncObjects();
       // Cleans up old swap chain since it's no longer needed after resizing
       //m_pvkcrenderpassOld = nullptr;
 
    }
 
+   int render_pass::get_frame_index()
+   {
+      return m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->get_frame_index(); 
+   }
 
-   VkImageView render_pass::getImageView(int index)
-   { 
+   //::gpu::texture* render_pass::current_texture()
+   //{
 
-      ::cast < texture > ptexture = m_texturea[index];
+   //   auto iFrameIndex = get_frame_index();
 
-      if(!ptexture)
-      {
-         
-         throw ::exception(error_wrong_state, "No texture at index");
+   //   auto ptexture = m_ptexturea->element_at(iFrameIndex);
 
-      }
+   //   return ptexture;
 
-      auto imageview = ptexture->get_image_view();
+   //}
 
-      if(!imageview)
-      {
-         
-         throw ::exception(error_wrong_state, "No image view at index");
+   //VkImageView render_pass::getImageView(int index)
+   //{
 
-      }
-      
-      return imageview; 
-   
+   //   ::cast < texture > ptexture = m_ptexturea->element_at(index);
+
+   //   if (!ptexture)
+   //   {
+
+   //      throw ::exception(error_wrong_state, "No texture at index");
+
+   //   }
+
+   //   auto imageview = ptexture->get_image_view();
+
+   //   if (!imageview)
+   //   {
+
+   //      throw ::exception(error_wrong_state, "No image view at index");
+
+   //   }
+
+   //   return imageview;
+
+   //}
+
+
+   //VkImageView render_pass::getDepthImageView(int index)
+   //{
+
+   //   ::cast < texture > ptexture = m_ptexturea->element_at(index);
+
+   //   if (!ptexture)
+   //   {
+
+   //      throw ::exception(error_wrong_state, "No texture at index");
+
+   //   }
+
+   //   auto imageview = ptexture->get_depth_image_view();
+
+   //   if (!imageview)
+   //   {
+
+   //      throw ::exception(error_wrong_state, "No depth image view at index");
+
+   //   }
+
+   //   return imageview;
+
+   //}
+
+   texture_t::texture_t()
+   {
+
    }
 
 
-   VkImageView render_pass::getDepthImageView(int index)
+   texture_t::~texture_t()
    {
 
-      ::cast < texture > ptexture = m_texturea[index];
-
-      if (!ptexture)
-      {
-
-         throw ::exception(error_wrong_state, "No texture at index");
-
-      }
-
-      auto imageview = ptexture->get_depth_image_view();
-
-      if (!imageview)
-      {
-
-         throw ::exception(error_wrong_state, "No depth image view at index");
-
-      }
-
-      return imageview;
 
    }
 
 
-   void render_pass::on_before_begin_render(frame* pframe)
+   VkFramebuffer texture_t::get_frame_buffer()
    {
 
-      ::cast < texture > ptextureCurrent = current_texture();
+      VkImageView imageView = m_ptexture->get_image_view();
 
-      ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
+      VkImageView attachments[2];
+
+      attachments[0] = imageView;
+
+      int iAttachmentCount;
+
+      if (m_prenderpass->m_bWithDepth)
+      {
+
+         VkImageView depthImageView = m_ptexture->get_depth_image_view();
+
+         attachments[1] = depthImageView;
+
+         iAttachmentCount = 2;
+
+      }
+      else
+      {
+
+         iAttachmentCount = 1;
+
+      }
+
+      VkExtent2D extent = m_prenderpass->getExtent();
+      VkFramebufferCreateInfo framebufferInfo = {};
+      framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+      framebufferInfo.renderPass = m_prenderpass->m_vkrenderpass;
+      framebufferInfo.attachmentCount = iAttachmentCount;
+      framebufferInfo.pAttachments = attachments;
+      framebufferInfo.width = extent.width;
+      framebufferInfo.height = extent.height;
+      framebufferInfo.layers = 1;
+
+      auto& vkframebuffer = m_vkframebuffer;
+
+      ::cast < ::gpu_vulkan::context > pcontext = m_prenderpass->m_pgpucontext;
+
+      if (vkCreateFramebuffer(
+         pcontext->logicalDevice(),
+         &framebufferInfo,
+         nullptr,
+         &vkframebuffer) != VK_SUCCESS)
+      {
+
+         throw ::exception(error_failed, "failed to create framebuffer!");
+
+      }
+
+      debug() << "created framebuffer "<< vkframebuffer << "with image view " << imageView;
+
+      return vkframebuffer;
+
+   }
+
+
+   VkFence texture_t::in_flight_fence()
+   {
+
+      if (!m_vkfenceInFlight2)
+      {
+
+         ::cast < ::gpu_vulkan::context > pcontext = m_prenderpass->m_pgpucontext;
+
+         VkFenceCreateInfo fenceInfo = {};
+         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+         if (vkCreateFence(
+            pcontext->logicalDevice(),
+            &fenceInfo,
+            nullptr,
+            &m_vkfenceInFlight2) != VK_SUCCESS
+            )
+         {
+
+            throw ::exception(error_failed, "failed to create fence!");
+
+         }
+
+      }
+
+      return m_vkfenceInFlight2;
+
+   }
+
+
+   texture_t& render_pass::texture(::gpu::texture* pgputexture)
+   {
+
+      auto& texture = this->m_mapTexture[pgputexture];
+
+      if (!texture.m_ptexture)
+      {
+
+         ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+
+         texture.m_prenderpass = this;
+
+         texture.m_ptexture = dynamic_cast < ::gpu_vulkan::texture * > (pgputexture);
+
+         if (should_use_advanced_pipeline_synchronization()
+            || (pgputexture->m_pgpurendertarget
+            && pgputexture->m_pgpurendertarget->m_bAdvancedPipelineSynchronization))
+         {
+
+            texture.m_bAdvancedPipelineSynchronization = true;
+
+            VkSemaphoreCreateInfo semaphoreInfo = {};
+            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+            texture.m_iImageAvailable = 0;
+
+            if (vkCreateSemaphore(
+               pcontext->logicalDevice(),
+               &semaphoreInfo,
+               nullptr,
+               &texture.m_vksemaphoreAvailable
+            ) != VK_SUCCESS
+
+               ||
+
+               vkCreateSemaphore(
+                  pcontext->logicalDevice(),
+                  &semaphoreInfo,
+                  nullptr, &texture.m_vksemaphoreRenderFinished
+               ) != VK_SUCCESS)
+
+            {
+
+               throw ::exception(error_failed, "failed to create synchronization objects for a frame!");
+
+            }
+
+         }
+
+      }
+
+      return texture;
+
+   }
+
+
+   void render_pass::on_before_begin_render(frame* pframe, ::gpu::texture* pgputexture)
+   {
+
+      //::cast < ::gpu::texture > ptextureCurrent = current_texture();
+
+      ::cast < ::gpu_vulkan::texture > ptextureCurrent = pgputexture;
+
+      ::cast < command_buffer > pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       ptextureCurrent->_set_state(
          pcommandbuffer,
@@ -155,9 +374,9 @@ namespace gpu_vulkan
          }
       );
 
-      ::cast < texture > ptextureDepth = ptextureCurrent->m_ptextureDepth;
+      ::cast < ::gpu_vulkan::texture > ptextureDepth = ptextureCurrent->m_ptextureDepth;
 
-      if(ptextureDepth)
+      if (ptextureDepth)
       {
 
          ptextureDepth->_set_state(
@@ -182,8 +401,8 @@ namespace gpu_vulkan
    //}
 
 
-   
-   VkResult render_pass::acquireNextImage() 
+
+   VkResult render_pass::acquireNextImage()
    {
 
       //vkWaitForFences(
@@ -207,7 +426,8 @@ namespace gpu_vulkan
 
 
    VkResult render_pass::submitCommandBuffers(
-      command_buffer * pcommandbuffer,
+      command_buffer* pcommandbuffer,
+      ::gpu::texture * pgputexture,
       const ::array < VkSemaphore >& semaphoreaWait,
       const ::array < VkPipelineStageFlags >& stageaWait,
       const ::array < VkSemaphore >& semaphoreaSignal)
@@ -263,118 +483,118 @@ namespace gpu_vulkan
    }
 
 
-   void render_pass::createRenderPassImpl() 
+   //void render_pass::createRenderPassImpl()
+   //{
+
+   //   //SwapChainSupportDetails swapChainSupport = m_pgpucontext->getSwapChainSupport();
+
+   //   //VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+   //   //VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+   //   //VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+
+   //   //uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+   //   //if (swapChainSupport.capabilities.maxImageCount > 0 &&
+   //   //   imageCount > swapChainSupport.capabilities.maxImageCount) {
+   //   //   imageCount = swapChainSupport.capabilities.maxImageCount;
+   //   //}
+
+   //   //VkSwapchainCreateInfoKHR createInfo = {};
+   //   //createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+   //   //createInfo.surface = m_pgpucontext->surface();
+
+   //   //createInfo.minImageCount = imageCount;
+   //   //createInfo.imageFormat = surfaceFormat.format;
+   //   //createInfo.imageColorSpace = surfaceFormat.colorSpace;
+   //   //createInfo.imageExtent = extent;
+   //   //createInfo.imageArrayLayers = 1;
+   //   //createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+   //   //QueueFamilyIndices indices = m_pgpucontext->findPhysicalQueueFamilies();
+   //   //uint32_t queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
+
+   //   //if (indices.graphicsFamily != indices.presentFamily) {
+   //   //   createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+   //   //   createInfo.queueFamilyIndexCount = 2;
+   //   //   createInfo.pQueueFamilyIndices = queueFamilyIndices;
+   //   //}
+   //   //else {
+   //   //   createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+   //   //   createInfo.queueFamilyIndexCount = 0;      // Optional
+   //   //   createInfo.pQueueFamilyIndices = nullptr;  // Optional
+   //   //}
+
+   //   //createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+   //   //createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+
+   //   //createInfo.presentMode = presentMode;
+   //   //createInfo.clipped = VK_TRUE;
+
+   //   //createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
+
+   //   //if (vkCreateSwapchainKHR(m_pgpucontext->logicalDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
+   //   //   throw ::exception(error_failed,"failed to create swap chain!");
+   //   //}
+
+   //   //// we only specified a minimum number of images in the swap chain, so the implementation is
+   //   //// allowed to create a swap chain with more. That's why we'll first query the final number of
+   //   //// images with vkGetSwapchainImagesKHR, then resize the container and finally call it again to
+   //   //// retrieve the handles.
+   //   //vkGetSwapchainImagesKHR(m_pgpucontext->logicalDevice(), swapChain, &imageCount, nullptr);
+   //   //swapChainImages.resize(imageCount);
+   //   //vkGetSwapchainImagesKHR(m_pgpucontext->logicalDevice(), swapChain, &imageCount, swapChainImages.data());
+
+   //   //swapChainImageFormat = surfaceFormat.format;
+   //   //extent = extent;
+
+   //}
+
+
+   //void render_pass::createImageViews()
+   //{
+
+   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext->m_pgpurenderer->m_pgpucontext;
+
+   //   //m_imageviews.resize(m_texturea.size());
+
+   //   for (::collection::index i = 0; i < m_ptexturea->size(); i++)
+   //   {
+
+   //      ::cast < texture > ptexture = m_ptexturea->element_at(i);
+
+   //      ptexture->get_image_view();
+
+   //      //VkImageViewCreateInfo viewInfo{};
+   //      //viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+   //      //viewInfo.image = ptexture->m_vkimage;
+   //      //viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+   //      //viewInfo.format = pcontext->m_formatImageDefault;
+   //      //viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   //      //viewInfo.subresourceRange.baseMipLevel = 0;
+   //      //viewInfo.subresourceRange.levelCount = 1;
+   //      //viewInfo.subresourceRange.baseArrayLayer = 0;
+   //      //viewInfo.subresourceRange.layerCount = 1;
+
+   //      //if (vkCreateImageView(
+   //      //   pcontext->logicalDevice(), 
+   //      //   &viewInfo, 
+   //      //   nullptr, 
+   //      //   &m_imageviews[i]) !=
+   //      //   VK_SUCCESS) 
+   //      //{
+
+   //      //   throw ::exception(error_failed,"failed to create texture image view!");
+
+   //      //}
+
+   //   }
+
+   //}
+
+
+   void render_pass::createRenderPass()
    {
 
-      //SwapChainSupportDetails swapChainSupport = m_pgpucontext->getSwapChainSupport();
-
-      //VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-      //VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-      //VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
-
-      //uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-      //if (swapChainSupport.capabilities.maxImageCount > 0 &&
-      //   imageCount > swapChainSupport.capabilities.maxImageCount) {
-      //   imageCount = swapChainSupport.capabilities.maxImageCount;
-      //}
-
-      //VkSwapchainCreateInfoKHR createInfo = {};
-      //createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-      //createInfo.surface = m_pgpucontext->surface();
-
-      //createInfo.minImageCount = imageCount;
-      //createInfo.imageFormat = surfaceFormat.format;
-      //createInfo.imageColorSpace = surfaceFormat.colorSpace;
-      //createInfo.imageExtent = extent;
-      //createInfo.imageArrayLayers = 1;
-      //createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-      //QueueFamilyIndices indices = m_pgpucontext->findPhysicalQueueFamilies();
-      //uint32_t queueFamilyIndices[] = { indices.graphicsFamily, indices.presentFamily };
-
-      //if (indices.graphicsFamily != indices.presentFamily) {
-      //   createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-      //   createInfo.queueFamilyIndexCount = 2;
-      //   createInfo.pQueueFamilyIndices = queueFamilyIndices;
-      //}
-      //else {
-      //   createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-      //   createInfo.queueFamilyIndexCount = 0;      // Optional
-      //   createInfo.pQueueFamilyIndices = nullptr;  // Optional
-      //}
-
-      //createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-      //createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-
-      //createInfo.presentMode = presentMode;
-      //createInfo.clipped = VK_TRUE;
-
-      //createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
-
-      //if (vkCreateSwapchainKHR(m_pgpucontext->logicalDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
-      //   throw ::exception(error_failed,"failed to create swap chain!");
-      //}
-
-      //// we only specified a minimum number of images in the swap chain, so the implementation is
-      //// allowed to create a swap chain with more. That's why we'll first query the final number of
-      //// images with vkGetSwapchainImagesKHR, then resize the container and finally call it again to
-      //// retrieve the handles.
-      //vkGetSwapchainImagesKHR(m_pgpucontext->logicalDevice(), swapChain, &imageCount, nullptr);
-      //swapChainImages.resize(imageCount);
-      //vkGetSwapchainImagesKHR(m_pgpucontext->logicalDevice(), swapChain, &imageCount, swapChainImages.data());
-
-      //swapChainImageFormat = surfaceFormat.format;
-      //extent = extent;
-
-   }
-
-   
-   void render_pass::createImageViews() 
-   {
-
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
-
-      //m_imageviews.resize(m_texturea.size());
-
-      for (::collection::index i = 0; i < m_texturea.size(); i++) 
-      {
-
-         ::cast < texture > ptexture = m_texturea[i];
-
-         ptexture->get_image_view();
-
-         //VkImageViewCreateInfo viewInfo{};
-         //viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-         //viewInfo.image = ptexture->m_vkimage;
-         //viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-         //viewInfo.format = pcontext->m_formatImageDefault;
-         //viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-         //viewInfo.subresourceRange.baseMipLevel = 0;
-         //viewInfo.subresourceRange.levelCount = 1;
-         //viewInfo.subresourceRange.baseArrayLayer = 0;
-         //viewInfo.subresourceRange.layerCount = 1;
-
-         //if (vkCreateImageView(
-         //   pcontext->logicalDevice(), 
-         //   &viewInfo, 
-         //   nullptr, 
-         //   &m_imageviews[i]) !=
-         //   VK_SUCCESS) 
-         //{
-
-         //   throw ::exception(error_failed,"failed to create texture image view!");
-
-         //}
-
-      }
-
-   }
-
-
-   void render_pass::createRenderPass() 
-   {
-
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext->m_pgpurenderer->m_pgpucontext;
 
       VkAttachmentDescription depthAttachment{};
       depthAttachment.format = findDepthFormat();
@@ -421,7 +641,7 @@ namespace gpu_vulkan
       dependency.srcStageMask =
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
-      VkAttachmentDescription attachments[2] = {colorAttachment, depthAttachment};
+      VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
       VkRenderPassCreateInfo renderPassInfo = {};
       renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
       renderPassInfo.attachmentCount = 2;
@@ -431,199 +651,199 @@ namespace gpu_vulkan
       renderPassInfo.dependencyCount = 1;
       renderPassInfo.pDependencies = &dependency;
 
-      if (vkCreateRenderPass(pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS) 
+      if (vkCreateRenderPass(pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS)
       {
 
-         throw ::exception(error_failed,"failed to create render pass!");
+         throw ::exception(error_failed, "failed to create render pass!");
 
       }
 
    }
 
 
-   void render_pass::createFramebuffers() 
-   {
+   //void render_pass::createFramebuffers()
+   //{
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext->m_pgpurenderer->m_pgpucontext;
 
-      m_framebuffers.resize(imageCount());
+   //   m_framebuffers.resize(m_ptexturea->size());
 
-      for (size_t i = 0; i < imageCount(); i++) 
-      {
+   //   for (size_t i = 0; i < m_ptexturea->size(); i++)
+   //   {
 
-         VkImageView imageView = getImageView(i);
+   //      VkImageView imageView = getImageView(i);
 
-         VkImageView attachments[2];
+   //      VkImageView attachments[2];
 
-         attachments[0] = imageView;
+   //      attachments[0] = imageView;
 
-         int iAttachmentCount;
+   //      int iAttachmentCount;
 
-         if (m_bWithDepth)
-         {
+   //      if (m_bWithDepth)
+   //      {
 
-            VkImageView depthImageView = getDepthImageView(i);
+   //         VkImageView depthImageView = getDepthImageView(i);
 
-            attachments[1] = depthImageView;
+   //         attachments[1] = depthImageView;
 
-            iAttachmentCount = 2;
+   //         iAttachmentCount = 2;
 
-         }
-         else
-         {
+   //      }
+   //      else
+   //      {
 
-            iAttachmentCount = 1;
+   //         iAttachmentCount = 1;
 
-         }
+   //      }
 
-         VkExtent2D extent = getExtent();
-         VkFramebufferCreateInfo framebufferInfo = {};
-         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-         framebufferInfo.renderPass = m_vkrenderpass;
-         framebufferInfo.attachmentCount = iAttachmentCount;
-         framebufferInfo.pAttachments = attachments;
-         framebufferInfo.width = extent.width;
-         framebufferInfo.height = extent.height;
-         framebufferInfo.layers = 1;
+   //      VkExtent2D extent = getExtent();
+   //      VkFramebufferCreateInfo framebufferInfo = {};
+   //      framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+   //      framebufferInfo.renderPass = m_vkrenderpass;
+   //      framebufferInfo.attachmentCount = iAttachmentCount;
+   //      framebufferInfo.pAttachments = attachments;
+   //      framebufferInfo.width = extent.width;
+   //      framebufferInfo.height = extent.height;
+   //      framebufferInfo.layers = 1;
 
-         auto& vkframebuffer = m_framebuffers[i];
+   //      auto& vkframebuffer = m_framebuffers[i];
 
-         if (vkCreateFramebuffer(
-            pcontext->logicalDevice(),
-            &framebufferInfo,
-            nullptr,
-            &vkframebuffer) != VK_SUCCESS) 
-         {
+   //      if (vkCreateFramebuffer(
+   //         pcontext->logicalDevice(),
+   //         &framebufferInfo,
+   //         nullptr,
+   //         &vkframebuffer) != VK_SUCCESS)
+   //      {
 
-            throw ::exception(error_failed,"failed to create framebuffer!");
+   //         throw ::exception(error_failed, "failed to create framebuffer!");
 
-         }
+   //      }
 
-         debug() << "created framebuffer " << i << " with image view " << imageView;
+   //      debug() << "created framebuffer " << i << " with image view " << imageView;
 
-      }
+   //   }
 
-   }
-
-
-   void render_pass::createDepthResources()
-   {
-
-      if (!m_bWithDepth)
-      {
-
-         return;
-
-      }
-
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
-
-      VkFormat depthFormat = findDepthFormat();
-
-      m_formatDepth = depthFormat;
-
-      VkExtent2D extent = getExtent();
-
-      //depthImages.resize(imageCount());
-      //depthImageMemorys.resize(imageCount());
-      //depthImageViews.resize(imageCount());
-
-      auto iImageCount = imageCount();
-
-      //for (int i = 0; i < depthImages.size(); i++) 
-      for (int i = 0; i < iImageCount; i++)
-      {
-         getDepthImageView(i); // Ensure depth image view is created
-         //VkImageCreateInfo imageInfo{};
-         //imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-         //imageInfo.imageType = VK_IMAGE_TYPE_2D;
-         //imageInfo.extent.width = extent.width;
-         //imageInfo.extent.height = extent.height;
-         //imageInfo.extent.depth = 1;
-         //imageInfo.mipLevels = 1;
-         //imageInfo.arrayLayers = 1;
-         //imageInfo.format = depthFormat;
-         //imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-         //imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-         //imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
-         //   VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-         //imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-         //imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-         //imageInfo.flags = 0;
-
-         //auto& depthImage = depthImages[i];
-         //auto& depthImageMemory = depthImageMemorys[i];
-         //pcontext->createImageWithInfo(
-         //   imageInfo,
-         //   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-         //   depthImage,
-         //   depthImageMemory);
-
-         //VkImageViewCreateInfo viewInfo{};
-         //viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-         //viewInfo.image = depthImages[i];
-         //viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-         //viewInfo.format = depthFormat;
-         //viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-         //viewInfo.subresourceRange.baseMipLevel = 0;
-         //viewInfo.subresourceRange.levelCount = 1;
-         //viewInfo.subresourceRange.baseArrayLayer = 0;
-         //viewInfo.subresourceRange.layerCount = 1;
-
-         //auto& depthImageView = depthImageViews[i];
-
-         //if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &depthImageView) != VK_SUCCESS) 
-         //{
-
-         //   throw ::exception(error_failed,"failed to create texture image view!");
-
-         //}
-
-         debug() << "created a depth resource";
-
-      }
-
-   }
+   //}
 
 
-   void render_pass::createSyncObjects() 
-   {
+   //void render_pass::createDepthResources()
+   //{
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+   //   if (!m_bWithDepth)
+   //   {
 
-      int iImageCount = m_texturea.size();
-      int iMaxFramesInFlight = get_frame_count();
+   //      return;
 
-      imageAvailable.resize(iImageCount);
-      imageAvailableSemaphores.resize(iImageCount);
-      renderFinishedSemaphores.resize(iImageCount);
-      inFlightFences.resize(iImageCount);
-      imagesInFlight.resize(iImageCount, VK_NULL_HANDLE);
+   //   }
+
+   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+
+   //   VkFormat depthFormat = findDepthFormat();
+
+   //   m_formatDepth = depthFormat;
+
+   //   VkExtent2D extent = getExtent();
+
+   //   //depthImages.resize(imageCount());
+   //   //depthImageMemorys.resize(imageCount());
+   //   //depthImageViews.resize(imageCount());
+
+   //   auto iImageCount = m_ptexturea->size();
+
+   //   //for (int i = 0; i < depthImages.size(); i++) 
+   //   for (int i = 0; i < iImageCount; i++)
+   //   {
+   //      getDepthImageView(i); // Ensure depth image view is created
+   //      //VkImageCreateInfo imageInfo{};
+   //      //imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+   //      //imageInfo.imageType = VK_IMAGE_TYPE_2D;
+   //      //imageInfo.extent.width = extent.width;
+   //      //imageInfo.extent.height = extent.height;
+   //      //imageInfo.extent.depth = 1;
+   //      //imageInfo.mipLevels = 1;
+   //      //imageInfo.arrayLayers = 1;
+   //      //imageInfo.format = depthFormat;
+   //      //imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+   //      //imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+   //      //imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
+   //      //   VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+   //      //imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+   //      //imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+   //      //imageInfo.flags = 0;
+
+   //      //auto& depthImage = depthImages[i];
+   //      //auto& depthImageMemory = depthImageMemorys[i];
+   //      //pcontext->createImageWithInfo(
+   //      //   imageInfo,
+   //      //   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+   //      //   depthImage,
+   //      //   depthImageMemory);
+
+   //      //VkImageViewCreateInfo viewInfo{};
+   //      //viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+   //      //viewInfo.image = depthImages[i];
+   //      //viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+   //      //viewInfo.format = depthFormat;
+   //      //viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+   //      //viewInfo.subresourceRange.baseMipLevel = 0;
+   //      //viewInfo.subresourceRange.levelCount = 1;
+   //      //viewInfo.subresourceRange.baseArrayLayer = 0;
+   //      //viewInfo.subresourceRange.layerCount = 1;
+
+   //      //auto& depthImageView = depthImageViews[i];
+
+   //      //if (vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &depthImageView) != VK_SUCCESS) 
+   //      //{
+
+   //      //   throw ::exception(error_failed,"failed to create texture image view!");
+
+   //      //}
+
+   //      debug() << "created a depth resource";
+
+   //   }
+
+   //}
 
 
-      VkSemaphoreCreateInfo semaphoreInfo = {};
-      semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+   //void render_pass::createSyncObjects()
+   //{
 
-      VkFenceCreateInfo fenceInfo = {};
-      fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-      fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
-      for (size_t i = 0; i < iImageCount; i++)
-      {
-         imageAvailable[i] = 0;
-         if (vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
-            VK_SUCCESS ||
-            vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
-            VK_SUCCESS 
-            ||        vkCreateFence(pcontext->logicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS
-             ) 
-         {
-            throw ::exception(error_failed,"failed to create synchronization objects for a frame!");
-         }
-      }
-   }
+   //   int iImageCount = m_ptexturea->size();
+   //   int iMaxFramesInFlight = pcontext->m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-   
+   //   imageAvailable.resize(iImageCount);
+   //   imageAvailableSemaphores.resize(iImageCount);
+   //   renderFinishedSemaphores.resize(iImageCount);
+   //   inFlightFences.resize(iImageCount);
+   //   imagesInFlight.resize(iImageCount, VK_NULL_HANDLE);
+
+
+   //   VkSemaphoreCreateInfo semaphoreInfo = {};
+   //   semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+   //   VkFenceCreateInfo fenceInfo = {};
+   //   fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+   //   fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+   //   for (size_t i = 0; i < iImageCount; i++)
+   //   {
+   //      imageAvailable[i] = 0;
+   //      if (vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=
+   //         VK_SUCCESS ||
+   //         vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=
+   //         VK_SUCCESS
+   //         || vkCreateFence(pcontext->logicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS
+   //         )
+   //      {
+   //         throw ::exception(error_failed, "failed to create synchronization objects for a frame!");
+   //      }
+   //   }
+   //}
+
+
    //VkSurfaceFormatKHR render_pass::chooseSwapSurfaceFormat(
    //   const ::array<VkSurfaceFormatKHR>& availableFormats) {
    //   for (const auto& availableFormat : availableFormats) {
@@ -674,10 +894,10 @@ namespace gpu_vulkan
    //   }
    //}
 
-   VkFormat render_pass::findDepthFormat() 
+   VkFormat render_pass::findDepthFormat()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
       return pcontext->m_pgpudevice->m_pphysicaldevice->findSupportedFormat(
          { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
@@ -685,6 +905,7 @@ namespace gpu_vulkan
          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
    }
+
 
 } // namespace gpu_vulkan
 

@@ -362,6 +362,18 @@ namespace gpu_vulkan
    }
 
 
+   void memory_buffer::on_set_memory_buffer(const void* dataStatic, memsize sizeStatic)
+   {
+
+      auto pmap = _map(0, sizeStatic);
+      
+      writeToBuffer((void*)dataStatic, sizeStatic);
+      
+      _unmap();
+
+   }
+
+
    /**
     * Flush a memory range of the memory_buffer to make it visible to the pgpucontext
     *

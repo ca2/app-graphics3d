@@ -10,7 +10,7 @@ namespace gpu_vulkan
 
 
    class swap_chain :
-      virtual public render_pass,
+      virtual public ::gpu_vulkan::render_pass,
       virtual public ::gpu::swap_chain
    {
    public:
@@ -27,10 +27,10 @@ namespace gpu_vulkan
 
 
       //int get_frame_index();
-
+      bool should_use_advanced_pipeline_synchronization() override;
 
       //virtual ::gpu::texture* current_texture();
-      void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous = {}) override;
+      void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {}) override;
       void initialize_gpu_swap_chain(::gpu::renderer* pgpurenderer) override;
       //swap_chain_render_pass(const swap_chain_render_pass&) = delete;
       //swap_chain_render_pass& operator=(const swap_chain_render_pass&) = delete;
@@ -54,6 +54,7 @@ namespace gpu_vulkan
       VkResult acquireNextImage() override;
       VkResult submitCommandBuffers(
          command_buffer * pcommandbuffer,
+         ::gpu::texture * pgputexture,
          const ::array < VkSemaphore >& semaphoreaWait,
          const ::array < VkPipelineStageFlags >& stageaWait,
          const ::array < VkSemaphore >& semaphoreaSignal) override;
@@ -63,14 +64,17 @@ namespace gpu_vulkan
       //      m_swapchain.swapChainImageFormat == swapChainImageFormat;
       //}
 
+      //::gpu::texture* current_texture() override;
+
+
    //public:
-      void on_init() override;
-      void createRenderPassImpl();
-      void createImageViews();
-      void createDepthResources();
+      void on_init_render_pass() override;
+      void create_images();
+      //void createImageViews();
+      //void createDepthResources();
       void createRenderPass();
-      void createFramebuffers();
-      void createSyncObjects();
+      //void createFramebuffers();
+      //void createSyncObjects();
 
       // Helper functions
       VkSurfaceFormatKHR chooseSwapSurfaceFormat(

@@ -3,9 +3,11 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
+#include "frame.h"
 #include "layer.h"
 #include "model_buffer.h"
 #include "renderer.h"
+#include "render_target.h"
 
 
 namespace gpu_vulkan
@@ -16,6 +18,7 @@ namespace gpu_vulkan
    {
 
       m_vkcommandbuffer = nullptr;
+      m_vkfence = nullptr;
 
    }
 
@@ -54,6 +57,23 @@ namespace gpu_vulkan
       //VkCommandBuffer pcommandbuffer;
       vkAllocateCommandBuffers(pcontext->logicalDevice(), &allocInfo, &m_vkcommandbuffer);
 
+      VkFenceCreateInfo fenceInfo = {};
+      fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+      fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+      if (vkCreateFence(
+         pcontext->logicalDevice(),
+         &fenceInfo,
+         nullptr,
+         &m_vkfence) != VK_SUCCESS
+         )
+      {
+
+         throw ::exception(error_failed, "failed to create fence!");
+
+      }
+
+
    }
 
 
@@ -85,7 +105,9 @@ namespace gpu_vulkan
 
       ::cast < layer > player = pgpulayer;
 
-      ::cast < render_pass > prenderpass = m_pgpurendertarget;
+      ::cast < render_target > prendertarget = m_pgpurendertarget;
+
+      ::cast < render_pass > prenderpass = prendertarget->render_pass();
 
       if (prenderpass)
       {
@@ -115,8 +137,11 @@ namespace gpu_vulkan
 
          auto vksemaphoreRenderFinished = player->m_vksemaphoreRenderFinished;
 
+         auto ptexture = prendertarget->current_texture(::gpu::current_frame());
+
          prenderpass->submitCommandBuffers(
             this,
+            ptexture,
             semaphoreaWait,
             stageaWait,
             { vksemaphoreRenderFinished });

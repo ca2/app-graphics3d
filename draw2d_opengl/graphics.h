@@ -71,7 +71,7 @@ namespace draw2d_opengl
       
       
       void start_gpu_layer(::gpu::frame * pgpuframe) override;
-      ::gpu::frame * end_gpu_layer() override;
+      ::gpu::frame * end_gpu_layer(::gpu::frame * pgpuframe) override;
 
       ::gpu_opengl::context* gpu_context();
 

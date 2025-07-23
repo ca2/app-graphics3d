@@ -104,6 +104,8 @@ namespace gpu_directx12
       // 5. Create fence + event for GPU sync
       m_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
+      m_fenceValue = 1;
+
    }
 
 

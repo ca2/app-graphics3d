@@ -62,6 +62,9 @@ namespace gpu_vulkan
       ::pointer < shader >                       m_pshaderBlend2;
       ::pointer < shader >                       m_pshaderCopyImage;
 
+      ::pointer < ::gpu_vulkan::render_pass >   m_prenderpassBlend2;
+      ::pointer < ::gpu_vulkan::render_pass >   m_prenderpassCopy;
+
       //::pointer<::gpu::shader>                        m_pshaderImageBlend;
       //::pointer<::gpu::shader>                        m_pshaderImageSet;
       //map < VkImage, ::pointer < descriptor > >       m_imagedescriptor;
@@ -92,6 +95,8 @@ namespace gpu_vulkan
       //::pointer < descriptor_set >                                      m_pdescriptorsetResolve;
 
       ::procedure_array m_procedureaAfterEndRender;
+
+      
 
       //::collection::index m_iCurrentFrame2 = -1;
       //::collection::index m_iFrameSerial2 = -1;
@@ -166,7 +171,7 @@ namespace gpu_vulkan
       /*bool isFrameInProgress() const { return isFrameStarted; }*/
 
 
-      ::gpu::command_buffer* getCurrentCommandBuffer2() override;
+      ::gpu::command_buffer* getCurrentCommandBuffer2(::gpu::frame * pgpuframe) override;
 
 
 
@@ -181,11 +186,13 @@ namespace gpu_vulkan
 
       //::pointer < ::gpu::render_target> allocate_offscreen_render_target() override;
 
+      void on_begin_frame() override;
       //::pointer < ::graphics3d::frame> beginFrame() override;
       //void endFrame() override;
       //void on_begin_render(::graphics3d::frame * pframe) override;
       //void on_end_render(::graphics3d::frame * pframe) override;
-
+      void wait_swap_chain_command_buffer_ready() override;
+      void wait_command_buffer_ready() override;
       void on_context_resize() override;
 
       void on_begin_draw() override;

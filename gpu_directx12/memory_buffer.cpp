@@ -3,6 +3,7 @@
 #include "framework.h"
 #include "gpu_directx12/context.h"
 #include "model_buffer.h"
+#include "bred/gpu/frame.h"
 /*
  * Encapsulates a directx11 memory_buffer
  *
@@ -75,6 +76,13 @@ namespace gpu_directx12
 
          ::cast < ::gpu_directx12::command_buffer > pcommandbufferLoading = m_pmodelbuffer->m_pcommandbufferLoading;
 
+         if (!pcommandbufferLoading)
+         {
+
+            pcommandbufferLoading = m_pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+         }
+
          auto pcommandlist = pcommandbufferLoading->m_pcommandlist;
 
          pcommandlist->CopyBufferRegion(m_presource, 0, m_presourceUpload, 0, vertexBufferSize);
@@ -118,6 +126,24 @@ namespace gpu_directx12
 
       }
       else if (etype == ::gpu::memory_buffer::e_type_constant_buffer)
+      {
+
+         //bufferdesc.ByteWidth = (UINT)(total_size_in_bytes() + 15) & ~15;
+         //bufferdesc.Usage = D3D11_USAGE_DYNAMIC;
+         //bufferdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+         //bufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+      }
+      else if (etype == ::gpu::memory_buffer::e_type_constant_buffer)
+      {
+
+         //bufferdesc.ByteWidth = (UINT)(total_size_in_bytes() + 15) & ~15;
+         //bufferdesc.Usage = D3D11_USAGE_DYNAMIC;
+         //bufferdesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+         //bufferdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+      }
+      else if (etype == ::gpu::memory_buffer::e_type_none)
       {
 
          //bufferdesc.ByteWidth = (UINT)(total_size_in_bytes() + 15) & ~15;

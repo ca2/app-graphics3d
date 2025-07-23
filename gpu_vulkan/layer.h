@@ -4,6 +4,7 @@
 
 
 #include "bred/gpu/layer.h"
+#include "gpu_vulkan/render_pass.h"
 
 
 namespace gpu_vulkan
@@ -15,7 +16,9 @@ namespace gpu_vulkan
    {
    public:
 
+
       VkSemaphore          m_vksemaphoreRenderFinished;
+
 
       //int m_iFrameIndex = -1;
       //int m_iLayerIndex = -1;
@@ -34,6 +37,11 @@ namespace gpu_vulkan
 
 
       void initialize_gpu_layer(::gpu::renderer* pgpurenderer, int iFrameIndex, int iLayerIndex) override;
+
+
+      void create_command_buffers();
+
+      ::gpu::command_buffer* getCurrentCommandBuffer4() override;
 
 
    };

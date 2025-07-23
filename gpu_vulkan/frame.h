@@ -32,7 +32,6 @@ namespace gpu_vulkan
 
 		//int frameIndex;
 		//float frameTime;
-		::pointer < command_buffer > m_pcommandbuffer;
 		//::graphics3d::camera &camera;
 		//VkDescriptorSet globalDescriptorSet;
 		//::graphics3d::scene_object::map& gameObjects;

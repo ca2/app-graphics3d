@@ -1,6 +1,7 @@
 // Created by camilo on 2025-06-11 02:34 <3ThomasBorregaardSørensen!!
 #include "framework.h"
 #include "command_buffer.h"
+#include "frame.h"
 #include "renderer.h"
 #include "shader.h"
 #include "swap_chain.h"
@@ -152,7 +153,7 @@ namespace gpu_directx12
 
          __construct_new(m_pshaderPresent);
 
-         m_pshaderPresent->m_bTextureAndSampler = true;
+         m_pshaderPresent->m_bindingSampler.set();
          m_pshaderPresent->m_bDisableDepthTest = true;
          const char* fullscreen_vertex_shader = R"shader(// fullscreen_vs.hlsl
       struct VSOut {
@@ -203,7 +204,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       }
 
-      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
+      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -310,7 +311,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
          auto& ptextureSwapChain = m_textureaSwapChain[m_iSwapChainIndex];
 
-         ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
+         ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
          auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -329,10 +330,11 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
    }
 
    
-   void swap_chain::get_new_swap_chain_index()
+   int swap_chain::swap_chain_frame_index()
    {
 
-      m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
+      //m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
+      return m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
 
    }
 

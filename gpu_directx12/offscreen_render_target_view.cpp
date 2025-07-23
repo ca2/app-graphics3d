@@ -146,16 +146,18 @@ namespace gpu_directx12
 
          //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-         m_texturea.set_size(m_pgpurenderer->m_iDefaultFrameCount);
+         m_ptexturea->set_size(m_pgpurenderer->m_iDefaultFrameCount);
 
-         for (int i = 0; i < m_texturea.size(); i++)
+         for (int i = 0; i < m_ptexturea->size(); i++)
          {
 
-            __defer_construct(m_texturea[i]);
+            auto& ptexture = m_ptexturea->element_at(i);
 
-            m_texturea[i]->m_bRenderTarget = true;
+            __defer_construct(ptexture);
 
-            m_texturea[i]->initialize_image_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size(), m_bWithDepth);
+            ptexture->m_bRenderTarget = true;
+
+            ptexture->initialize_image_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size(), m_bWithDepth);
 
             ////if (bCreateRenderTargetView)
             //{

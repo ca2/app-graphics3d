@@ -22,7 +22,7 @@ namespace gpu_vulkan
 		offscreen_render_pass();
 		~offscreen_render_pass();
 
-		void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size &  windowExtent, ::pointer <::gpu::render_target>previous = {}) override;
+		void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {}) override;
 		//VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
 		//VkRenderPass getRenderPass() { return m_vkrenderpass; }
 		//VkImageView getImageView(int index) { return m_imageview[index]; }
@@ -39,6 +39,7 @@ namespace gpu_vulkan
 
 		VkResult acquireNextImage() override;
 		VkResult submitCommandBuffers(command_buffer * pcommandbuffer, 
+			::gpu::texture * pgputexture,
 			const ::array < VkSemaphore > & semaphoreaWait,
 			const ::array < VkPipelineStageFlags > & stageaWait,
 			const ::array < VkSemaphore >& semaphoreaSignal) override;
@@ -49,13 +50,13 @@ namespace gpu_vulkan
 		//}
 
 	//public:
-		void on_init() override;
-		void createRenderPassImpl();
-		void createImageViews();
-		void createDepthResources();
+		void on_init_render_pass() override;
+		//void createRenderPassImpl();
+		//void createImageViews();
+		//void createDepthResources();
 		void createRenderPass();
-		void createFramebuffers();
-		void createSyncObjects();
+		//void createFramebuffers();
+		//void createSyncObjects();
 
 		//VkResult submitSamplingWork(const VkCommandBuffer buffer, uint32_t* imageIndex);
 		VkResult submitSamplingWork(const VkCommandBuffer buffer);
@@ -63,7 +64,7 @@ namespace gpu_vulkan
 
 		virtual void defer_resize(const ::int_size& size);
 
-		::gpu::texture* current_texture();
+		//::gpu::texture* current_texture();
 		
 
 	};

@@ -24,6 +24,7 @@
 #include "gpu_opengl/texture.h"
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/cpu_buffer.h"
+#include "bred/gpu/frame.h"
 #include "bred/gpu/render.h"
 #include "aura/graphics/image/target.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
@@ -4992,12 +4993,12 @@ namespace draw2d_nanovg
    }
 
 
-   ::gpu::frame* graphics::end_gpu_layer()
+   ::gpu::frame* graphics::end_gpu_layer(::gpu::frame * pgpuframe)
    {
 
       //nvgFlush(m_pdc);
 
-      return ::gpu::graphics::end_gpu_layer();
+      return ::gpu::graphics::end_gpu_layer(pgpuframe);
 
    }
 
@@ -5920,10 +5921,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   ::gpu::texture* graphics::current_target_texture()
+   ::gpu::texture* graphics::current_target_texture(::gpu::frame * pgpuframe)
    {
 
-      return ::gpu::graphics::current_target_texture();
+      return ::gpu::graphics::current_target_texture(pgpuframe);
 
       //__defer_construct(m_ptextureCurrent);
 
@@ -8398,7 +8399,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::string strMessage;
 
-            ::cast < ::gpu_opengl::texture > ptexture = gpu_context()->current_target_texture();
+            ::cast < ::gpu_opengl::texture > ptexture = gpu_context()->current_target_texture(::gpu::current_frame());
 
             auto uTexture = ptexture->m_gluTextureID;
 
@@ -8585,7 +8586,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::string strMessage;
 
-            ::cast < ::gpu_opengl::texture > ptexture = gpu_context()->current_target_texture();
+            ::cast < ::gpu_opengl::texture > ptexture = gpu_context()->current_target_texture(::gpu::current_frame());
 
             auto uTexture = ptexture->m_gluTextureID;
 

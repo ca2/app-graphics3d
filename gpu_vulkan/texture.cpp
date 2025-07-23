@@ -3,10 +3,12 @@
 #include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
+#include "descriptors.h"
 #include "device.h"
 #include "initializers.h"
 #include "physical_device.h"
 #include "renderer.h"
+#include "shader.h"
 #include "texture.h"
 #include "acme/graphics/image/pixmap.h"
 
@@ -126,9 +128,14 @@ namespace gpu_vulkan
 
          }
 
-         imagecreateinfo.usage |=
-            VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
-            VK_IMAGE_USAGE_SAMPLED_BIT;
+         if (m_bTransferDst)
+         {
+
+            imagecreateinfo.usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+
+         }
+
+         imagecreateinfo.usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
 
          if (m_bRenderTarget)
          {
@@ -226,7 +233,7 @@ namespace gpu_vulkan
       auto scan = ppixmap->m_iScan;
       auto data = ppixmap->data();
       VkDeviceSize layerSize = w * h * 4;
-      VkDeviceSize totalSize = layerSize * 6;
+      VkDeviceSize totalSize = layerSize;
       auto pbufferStaging = pgpucontext->create_buffer(totalSize,
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -397,6 +404,21 @@ namespace gpu_vulkan
          pipelineStageFlagsOld == pipelineStageFlagsNew)
          return;
 
+      unsigned int iLayerCount;
+
+      if (m_etype == e_type_cube_map)
+      {
+
+         iLayerCount = 6;
+
+      }
+      else
+      {
+
+         iLayerCount = 1;
+
+      }
+
       VkImageMemoryBarrier barrier = {
           .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
           .srcAccessMask = accessOld,
@@ -410,7 +432,7 @@ namespace gpu_vulkan
               .baseMipLevel = 0,
               .levelCount = 1,
               .baseArrayLayer = 0,
-              .layerCount = 1
+              .layerCount = iLayerCount
           }
       };
 
@@ -507,7 +529,7 @@ namespace gpu_vulkan
             depthImage,
             depthImageMemory);
 
-         //::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2();
+         //::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
          //_new_state(
          //   pcommandbuffer,
@@ -586,6 +608,22 @@ namespace gpu_vulkan
       {
          viewType = VK_IMAGE_VIEW_TYPE_2D;
       }
+
+      unsigned int uLayerCount;
+
+      if (m_etype == e_type_cube_map)
+      {
+
+         uLayerCount = 6;
+
+      }
+      else
+      {
+
+         uLayerCount = 1;
+
+      }
+
       VkImageViewCreateInfo viewInfo = {
           .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
           .image = m_vkimage,
@@ -596,7 +634,7 @@ namespace gpu_vulkan
               .baseMipLevel = 0,
               .levelCount = 1,
               .baseArrayLayer = 0,
-              .layerCount = 1
+              .layerCount = uLayerCount
           }
       };
 
@@ -607,7 +645,49 @@ namespace gpu_vulkan
    }
 
 
-   VkFramebuffer texture::get_framebuffer(VkRenderPass renderpass)
+   VkDescriptorSet texture::descriptor_set(::gpu_vulkan::shader* pshader)
+   {
+
+      auto& shader = m_mapShader[pshader];
+
+      if (!shader.m_bNew)
+      {
+
+         return shader.m_vkdescriptorset;
+
+      }
+
+      VkDescriptorImageInfo imageinfo;
+
+      ::cast < context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+      imageinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      imageinfo.imageView = get_image_view();
+      imageinfo.sampler = pcontext->_001VkSampler();
+
+      auto& playout = pshader->m_psetdescriptorlayout;
+
+      auto& ppool = pshader->m_pdescriptorpool;
+
+      unsigned int uSamplerBinding = 0;
+
+      if (pshader->m_bindingSampler.is_set())
+         uSamplerBinding = pshader->m_bindingSampler.m_uBinding;
+      else if (pshader->m_bindingCubeSampler.is_set())
+         uSamplerBinding = pshader->m_bindingCubeSampler.m_uBinding;
+
+      descriptor_writer(*playout, *ppool)
+         .writeImage(uSamplerBinding, &imageinfo)
+         .build(shader.m_vkdescriptorset);
+
+      shader.m_bNew = false;
+
+      return shader.m_vkdescriptorset;
+
+   }
+
+
+   VkFramebuffer texture::get_framebuffer(::gpu_vulkan::render_pass* prenderpass)
    {
 
       if (m_bCpuRead)
@@ -617,7 +697,7 @@ namespace gpu_vulkan
 
       }
 
-      auto& framebuffer = m_mapFramebuffer[renderpass];
+      auto& framebuffer = m_mapFramebuffer[prenderpass->m_vkrenderpass];
 
       if (framebuffer)
       {
@@ -651,7 +731,7 @@ namespace gpu_vulkan
 
       VkFramebufferCreateInfo fbInfo = {
        .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-       .renderPass = renderpass,
+       .renderPass = prenderpass->m_vkrenderpass,
        .attachmentCount = (uint32_t)iAttachmentCount,
        .pAttachments = attachments,
        .width = (uint32_t)m_rectangleTarget.width(),

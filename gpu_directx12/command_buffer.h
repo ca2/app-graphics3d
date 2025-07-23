@@ -24,6 +24,9 @@ namespace gpu_directx12
       ::pointer < ::gpu_directx12::renderer >   m_prenderer;
       D3D12_COMMAND_LIST_TYPE                   m_ecommandlisttype;
 
+      ::array <comptr <IUnknown > >             m_comptraHold;
+
+
       command_buffer();
       ~command_buffer() override;
 

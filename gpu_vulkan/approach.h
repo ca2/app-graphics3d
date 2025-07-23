@@ -65,8 +65,6 @@ namespace gpu_vulkan
       ::array<VkShaderModule>          m_shadermodulea;
       // Pipeline cache object
       VkPipelineCache                  m_vkpipelinecache;
-      // Wraps the swap chain to present images (framebuffers) to the windowing system
-      ::pointer < swap_chain >         m_pswapchain;
       // Synchronization semaphores
       struct {
          // Swap chain image presentation

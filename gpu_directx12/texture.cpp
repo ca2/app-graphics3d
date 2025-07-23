@@ -4,6 +4,7 @@
 #include "texture.h"
 #include "renderer.h"
 #include "acme/graphics/image/pixmap.h"
+#include "bred/gpu/frame.h"
 
 
 namespace gpu_directx12
@@ -36,7 +37,7 @@ namespace gpu_directx12
       if (rectangleTarget != m_rectangleTarget)
       {
 
-         ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth);
+         ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, ppixmap, etype);
 
       }
 
@@ -49,23 +50,55 @@ namespace gpu_directx12
          textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
          textureDesc.Width = rectangleTarget.width();
          textureDesc.Height = rectangleTarget.height();
+         if (m_etype == e_type_cube_map)
+         {
+            if (textureDesc.Width != textureDesc.Height)
+            {
+
+               throw ::exception(error_wrong_state);
+
+            }
+            textureDesc.DepthOrArraySize = 6;
+         }
+         else
+         {
+            textureDesc.DepthOrArraySize = 1;
+
+         }
+
          textureDesc.MipLevels = 1;
-         textureDesc.DepthOrArraySize = 1;
+         //textureDesc.DepthOrArraySize = 1;
          textureDesc.Format = format;
          textureDesc.SampleDesc.Count = 1;
          textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-         textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+         if (m_bRenderTarget)
+         {
+
+            textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+         }
+
+         D3D12_CLEAR_VALUE* pclearvalue = nullptr;
 
          D3D12_CLEAR_VALUE clearValue = {};
-         clearValue.Format = format;
-         //clearValue.Color[0] = 0.5f * 0.5f;
-         //clearValue.Color[1] = 0.75f * 0.5f;
-         //clearValue.Color[2] = 0.9f * 0.5f;
-         //clearValue.Color[3] = 0.5f;
-         clearValue.Color[0] = 0.f * 0.5f;
-         clearValue.Color[1] = 0.f * 0.5f;
-         clearValue.Color[2] = 0. * 0.5f;
-         clearValue.Color[3] = 0.f;
+
+         if (m_bRenderTarget)
+         {
+
+            pclearvalue = &clearValue;
+
+            clearValue.Format = format;
+            //clearValue.Color[0] = 0.5f * 0.5f;
+            //clearValue.Color[1] = 0.75f * 0.5f;
+            //clearValue.Color[2] = 0.9f * 0.5f;
+            //clearValue.Color[3] = 0.5f;
+            clearValue.Color[0] = 0.f * 0.5f;
+            clearValue.Color[1] = 0.f * 0.5f;
+            clearValue.Color[2] = 0. * 0.5f;
+            clearValue.Color[3] = 0.f;
+
+         }
 
          //clearValue.Color = { 0.5f, 0.75f, 0.9f, 0.5f };
 
@@ -83,12 +116,11 @@ namespace gpu_directx12
             textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
             //textureDesc.Width = width;
             //textureDesc.Height = height;
-            textureDesc.DepthOrArraySize = 1;
+               //textureDesc.DepthOrArraySize = 1;
             textureDesc.MipLevels = 1;
             textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  // MUST be D3D11-compatible format
             textureDesc.SampleDesc.Count = 1;
             textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-            textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
             m_bRenderTarget = false;
 
@@ -102,29 +134,66 @@ namespace gpu_directx12
 
          }
 
+         D3D12_RESOURCE_STATES stateInitial;
+
+         if (m_bRenderTarget)
+         {
+
+            stateInitial = D3D12_RESOURCE_STATE_RENDER_TARGET;
+
+         }
+         else
+         {
+
+            stateInitial = D3D12_RESOURCE_STATE_COPY_DEST;
+
+         }
+
          HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
             &heapproperties,
             eheap,
             &textureDesc,
-            D3D12_RESOURCE_STATE_RENDER_TARGET,
-            &clearValue,
+            stateInitial,
+            pclearvalue,
             __interface_of(m_presource));
 
          pdevice->defer_throw_hresult(hrCreateCommittedResource);
 
+         m_estate = stateInitial;
+
          if (ppixmap)
          {
 
-            if (ppixmap->size() != rectangleTarget.size())
-            {
+            int iCount;
 
-               throw ::exception(error_failed);
+
+            if (m_etype == e_type_cube_map)
+            {
+               iCount = 6;
+               if (ppixmap->width() != rectangleTarget.width() * 6
+                  || ppixmap->height() != rectangleTarget.height())
+               {
+
+                  throw ::exception(error_failed);
+
+               }
+
+            }
+            else
+            {
+               iCount = 1;
+               if (ppixmap->size() != rectangleTarget.size())
+               {
+
+                  throw ::exception(error_failed);
+
+               }
 
             }
 
             ::comptr<ID3D12Resource> presourceUpload;
 
-            const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_presource, 0, 1);
+            const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_presource, 0, iCount);
 
             CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
 
@@ -138,22 +207,46 @@ namespace gpu_directx12
                nullptr,
                __interface_of(presourceUpload));
 
-            D3D12_SUBRESOURCE_DATA textureData = {};
-            textureData.pData = ppixmap->data();            // pointer to your bitmap data (RGBA8, etc.)
-            textureData.RowPitch = ppixmap->m_iScan;
-            textureData.SlicePitch = textureData.RowPitch * ppixmap->height();
 
-            ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+            // 3. Prepare subresources
+            D3D12_SUBRESOURCE_DATA subresources[6];
+            if (m_etype == e_type_cube_map)
+            {
+               for (int i = 0; i < 6; ++i) {
+                  subresources[i].pData = ppixmap->data() + textureDesc.Width * i;                    // Your CPU data pointer
+                  subresources[i].RowPitch = ppixmap->m_iScan;  // 512 * 4
+                  //subresources[i].SlicePitch = textureDesc.Width * textureDesc.Height * 4;
+                  subresources[i].SlicePitch = 0;
+               }
+            }
+            else
+            {
+
+               subresources[0].pData = ppixmap->data();            // pointer to your bitmap data (RGBA8, etc.)
+               subresources[0].RowPitch = ppixmap->m_iScan;
+               subresources[0].SlicePitch = subresources[0].RowPitch * ppixmap->height();
+            }
+
+            ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
+            
+            if (!pcommandbuffer)
+            {
+
+               pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+            }
             
             UpdateSubresources(
                pcommandbuffer->m_pcommandlist,
                m_presource,
-               presourceUpload, 0, 0, 1, 
-               &textureData);
+               presourceUpload, 0, 0, iCount, 
+               subresources);
+
+            comptr < IUnknown > punknownResourceUpdate(presourceUpload);
+
+            pcommandbuffer->m_comptraHold.add(punknownResourceUpdate);
 
          }
-
-         m_estate = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
          new_texture.set_new_texture();
 
@@ -203,14 +296,17 @@ namespace gpu_directx12
    void texture::create_render_target()
    {
 
-      if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+      if (m_bRenderTarget)
       {
 
-         return;
+         if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+         {
 
-      }
+            return;
 
-      ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+         }
+
+         ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
          // 2. Create RTV descriptor heap
          D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
          rtvHeapDesc.NumDescriptors = 1;
@@ -227,6 +323,7 @@ namespace gpu_directx12
          pdevice->m_pdevice->CreateRenderTargetView(m_presource, nullptr, m_handleRenderTargetView);
 
 
+      }
 
    }
 
@@ -258,7 +355,15 @@ namespace gpu_directx12
       DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
       D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
       srvDesc.Format = format;
-      srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+      if (m_etype == e_type_cube_map)
+      {
+
+         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+      }
+      else
+      {
+         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+      }
       srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
       srvDesc.Texture2D.MostDetailedMip = 0;
       srvDesc.Texture2D.MipLevels = 1;
@@ -305,6 +410,7 @@ namespace gpu_directx12
          ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
 
+       
          // 2. Describe depth stencil resource
          D3D12_RESOURCE_DESC depthDesc = {};
          depthDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;

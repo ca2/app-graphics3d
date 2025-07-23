@@ -20,6 +20,7 @@
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "bred/gpu/cpu_buffer.h"
+#include "bred/gpu/frame.h"
 #include "bred/gpu/render.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/render_state.h"
@@ -2264,7 +2265,7 @@ namespace draw2d_vulkan
    //   pshader->bind();
 
    //   //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-   //   ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+   //   ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
    //   VkDeviceSize offset = 0;
    //   ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
    //   //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodelbuffer->m_vertexBuffer, &offset);
@@ -2288,7 +2289,12 @@ namespace draw2d_vulkan
    //   //g_z -= 0.0001;
 
    //}
+void graphics::gpu_layer_on_before_end_render()
+{
 
+   ::gpu::graphics::gpu_layer_on_before_end_render();
+
+}
 
    void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pBrush)
    {
@@ -2473,7 +2479,7 @@ namespace draw2d_vulkan
    //   pshader->bind();
 
    //   //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-   //   ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2();
+   //   ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
    //   VkDeviceSize offset = 0;
    //   ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
    //   vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
@@ -6832,7 +6838,7 @@ namespace draw2d_vulkan
 
          //::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontextCompositor;
  
-         m_pmodelbufferLine->sequence2_color_create_line(pcontext);
+         m_pmodelbufferLine->sequence2_color_create_line(::gpu::current_frame());
 
          //pmodelbuffer->m_indexBuffer = nullptr;
          //pmodelbuffer->m_indexMemory = nullptr;
@@ -6846,13 +6852,13 @@ namespace draw2d_vulkan
          color, 
          pcontext->rectangle().size());
 
-      m_pshaderLine->bind();
+      pcontext->defer_bind(m_pshaderLine);
 
       ::cast < ::gpu_vulkan::context > pcontextVulkan = pcontext;
 
       ::cast < ::gpu_vulkan::renderer >prenderer = pcontext->m_pgpurenderer;
 
-      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2();
+      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
       
       
       pcommandbuffer->set_line_width(m_ppen->m_dWidth);
@@ -6865,7 +6871,7 @@ namespace draw2d_vulkan
       //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
       //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 2, 1, 0, 0); // draw 2 vertices as 1 line
 
-      m_pshaderLine->unbind();
+      pcontext->defer_unbind(m_pshaderLine);
 
       auto logicalDevice = pcontextVulkan->logicalDevice();
 

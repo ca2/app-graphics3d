@@ -32,6 +32,7 @@ namespace graphics3d_vulkan
    engine::engine()
    {
 
+      //m_fYScale = -1.f;
 
    }
 

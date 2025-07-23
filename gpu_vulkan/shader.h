@@ -10,66 +10,66 @@ namespace gpu_vulkan
 {
 
    
-   class shader_texture;
+   //class shader_texture;
 
 
-   class shader_sampler :
-      virtual public ::particle
-   {
-   public:
+   //class shader_sampler :
+   //   virtual public ::particle
+   //{
+   //public:
 
-      shader* m_pshader;
+   //   shader* m_pshader;
 
-      //VkImageView srcView, dstView;
-      VkSampler m_vksampler;
-      unsigned int m_uSet;
-      VkRenderPass m_vkrenderpass2;
-      VkDescriptorSetLayout m_descriptorsetlayout;
-      //VkPipelineLayout pipelineLayout;
-      // VkPipeline pipeline;
-      ///VkDescriptorPool descPool;
-      ///VkDescriptorSet descSet;
-      //::pointer<::gpu::shader>                        m_pshader;
-      ::pointer<::gpu_vulkan::set_descriptor_layout>  m_psetdescriptorlayout;
-      ::pointer <::gpu_vulkan::descriptor_pool>       m_pdescriptorpool;
+   //   //VkImageView srcView, dstView;
+   //   VkSampler m_vksampler;
+   //   unsigned int m_uSet;
+   //   VkRenderPass m_vkrenderpass2;
+   //   VkDescriptorSetLayout m_descriptorsetlayout;
+   //   //VkPipelineLayout pipelineLayout;
+   //   // VkPipeline pipeline;
+   //   ///VkDescriptorPool descPool;
+   //   ///VkDescriptorSet descSet;
+   //   //::pointer<::gpu::shader>                        m_pshader;
+   //   ::pointer<::gpu_vulkan::set_descriptor_layout>  m_psetdescriptorlayout;
+   //   ::pointer <::gpu_vulkan::descriptor_pool>       m_pdescriptorpool;
 
-      map < VkImage, ::pointer<shader_texture> >      m_shadertexturemap;
+   //   map < VkImage, ::pointer<shader_texture> >      m_shadertexturemap;
 
-      //::map < VkImage, image > m_mapImage;
+   //   //::map < VkImage, image > m_mapImage;
 
-      shader_sampler();
-      ~shader_sampler() override;
+   //   shader_sampler();
+   //   ~shader_sampler() override;
 
-      
-      VkRenderPass get_render_pass();
+   //   
+   //   VkRenderPass get_render_pass();
 
-   };
-
-
-   class shader_texture :
-      virtual public ::particle
-   {
-   public:
+   //};
 
 
-      shader_sampler * m_pshadersampler;
+   //class shader_texture :
+   //   virtual public ::particle
+   //{
+   //public:
 
-      ::pointer < texture > m_ptexture;
 
-      VkImageView       m_vkimageview;
-      VkFramebuffer     m_vkframebuffer2;
-      VkDescriptorSet   m_vkdescriptorset;
-      //VkPipelineLayout		      m_vkpipelinelayout = nullptr;
+   //   shader_sampler * m_pshadersampler;
 
-      shader_texture();
-      ~shader_texture() override;
+   //   ::pointer < texture > m_ptexture;
 
-      void initialize_shader_texture(shader_sampler* pshadersampler, texture* ptexture);
+   //   VkImageView       m_vkimageview;
+   //   map < VkRenderPass, VkFramebuffer >    m_mapVkFramebuffer2;
+   //   VkDescriptorSet   m_vkdescriptorset;
+   //   //VkPipelineLayout		      m_vkpipelinelayout = nullptr;
 
-      VkImageView get_image_view();
-      VkFramebuffer get_framebuffer();
+   //   shader_texture();
+   //   ~shader_texture() override;
 
-   };
+   //   void initialize_shader_texture(shader_sampler* pshadersampler, texture* ptexture);
+
+   //   VkImageView get_image_view();
+   //   VkFramebuffer get_framebuffer(::gpu_vulkan::render_pass * prenderpass);
+
+   //};
 
    class CLASS_DECL_GPU_VULKAN shader :
       virtual public ::gpu::shader
@@ -89,8 +89,13 @@ namespace gpu_vulkan
 
       ::comparable_array<VkDynamicState> m_dynamicstateaEnable;
 
+      //VkDescriptorSet   m_vkdescriptorset;
+      ::pointer<::gpu_vulkan::set_descriptor_layout>  m_psetdescriptorlayout;
+      ::pointer <::gpu_vulkan::descriptor_pool>       m_pdescriptorpool;
 
-      ::pointer < shader_sampler >     m_pshadersampler;
+
+
+      //::pointer < shader_sampler >     m_pshadersampler;
       ::pointer < ::gpu_vulkan::shader > m_pshaderPresent;
 
       shader();
@@ -119,11 +124,14 @@ namespace gpu_vulkan
 
       void _create_pipeline_layout(int iPushPropertiesSize);
 
+
+      virtual void create_descriptor_layout();
+
       void draw() override;
 
-      bool has_shader_sampler();
-      class shader_sampler * shader_sampler();
-      class shader_texture * shader_texture(::gpu::texture* ptexture, bool bSampler);
+      bool has_sampler();
+      //class shader_sampler * shader_sampler();
+      //class shader_texture * shader_texture(::gpu::texture* ptexture, bool bSampler);
 
       //void initialize_shader(
       //	::gpu::context* pgpucontext,
