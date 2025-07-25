@@ -30,7 +30,11 @@ namespace gpu_vulkan
       //::array<VkFramebuffer> m_framebuffers;
       //VkRenderPass m_vkrenderpass;
 
-      ::pointer < ::gpu_vulkan::render_pass > m_prenderpass;
+      ::pointer < ::gpu_vulkan::render_pass > m_prenderpassDepth;
+      ::pointer < ::gpu_vulkan::render_pass > m_prenderpassNoDepth;
+
+
+
 
       /////::pointer < renderer >  m_pgpurenderer;
 
@@ -67,7 +71,13 @@ namespace gpu_vulkan
       void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous = {}) override;
 
 
-      virtual ::gpu_vulkan::render_pass* render_pass();
+      virtual ::gpu_vulkan::render_pass* render_pass_with_depth();
+      virtual ::gpu_vulkan::render_pass* render_pass_no_depth();
+
+      virtual ::gpu_vulkan::render_pass* render_pass2(bool bWithDepth);
+
+      virtual ::pointer <::gpu_vulkan::render_pass > create_render_pass(bool bWithDepth);
+
 
 
 //      virtual void on_before_begin_render(frame* pframe);

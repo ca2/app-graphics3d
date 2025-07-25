@@ -211,11 +211,11 @@ namespace gpu_vulkan
 
       ::cast <renderer> prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
 
-      auto prenderpass = prendertarget->render_pass();
+      auto prenderpass = this->render_pass2();
 
       VkRenderPassBeginInfo renderPassBeginInfo{};
 
@@ -235,7 +235,7 @@ namespace gpu_vulkan
       //auto pshadertextureDst = shader_texture(ptextureDst, false);
 
       renderPassBeginInfo.renderPass = prenderpass->m_vkrenderpass;
-      renderPassBeginInfo.framebuffer = ptextureDst->get_framebuffer(prenderpass);
+      renderPassBeginInfo.framebuffer = ptextureDst->framebuffer(prenderpass);
 
       uint32_t w = ptextureDst->m_rectangleTarget.width();
       uint32_t h = ptextureDst->m_rectangleTarget.height();
@@ -334,7 +334,7 @@ namespace gpu_vulkan
 
       ::cast <renderer> prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       VkRenderPassBeginInfo renderPassBeginInfo{};
 
@@ -349,7 +349,7 @@ namespace gpu_vulkan
 
       ::cast < render_target> prendertarget = m_pgpurenderer->m_pgpurendertarget;
 
-      ::cast <render_pass> prenderpass = prendertarget->render_pass();
+      ::cast <render_pass> prenderpass = this->render_pass2();
 
 
       renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
@@ -365,7 +365,7 @@ namespace gpu_vulkan
 
          }
 
-         renderPassBeginInfo.framebuffer = ptexture->get_framebuffer(prenderpass);
+         renderPassBeginInfo.framebuffer = ptexture->framebuffer(prenderpass);
 
       }
       //else
@@ -431,7 +431,7 @@ namespace gpu_vulkan
 
       ::cast <renderer> prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       if (!m_ppipeline)
       {
@@ -612,7 +612,7 @@ namespace gpu_vulkan
 
          ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
 
-         auto prenderpass = prendertarget->render_pass();
+         auto prenderpass = this->render_pass2();
 
          ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
 
@@ -704,7 +704,7 @@ namespace gpu_vulkan
 
       ::cast <renderer> prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
       //
       //      {
       //
@@ -806,7 +806,7 @@ namespace gpu_vulkan
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       vkCmdPushConstants(
          pcommandbuffer->m_vkcommandbuffer,
@@ -1095,14 +1095,33 @@ namespace gpu_vulkan
 
 
    }
+   render_pass* shader::render_pass2()
+   {
+      
+      ::cast < render_target> prendertarget = m_pgpurenderer->m_pgpurendertarget;
 
+
+      if (m_pgpurenderer->m_pgpucontext->m_escene == ::gpu::e_scene_3d)
+      {
+
+         return prendertarget->render_pass_with_depth();
+
+      }
+      else
+      {
+
+         return prendertarget->render_pass_no_depth();
+
+      }
+
+   }
 
    void shader::draw()
    {
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0);
 
@@ -1237,7 +1256,7 @@ namespace gpu_vulkan
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       unsigned int uSet = 0;
 

@@ -275,6 +275,8 @@ namespace draw2d_vkvg
 
       m_vkvgdevice = vkvg_device_create(&createinfo);
 
+      vkvg_device_reference(m_vkvgdevice);
+
       auto sizeWindow = pwindow->m_sizeWindow;
 
       m_vkvgsurface = vkvg_surface_create(
@@ -5783,6 +5785,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       __defer_construct(m_ptextureCurrent);
 
+      if (!m_ptextureCurrent->m_pgpurenderer)
+      {
+
+         m_ptextureCurrent->m_pgpurenderer = gpu_context()->m_pgpurenderer;
+
+      }
+
       ::cast < ::gpu_vulkan::texture > ptextureCurrent = m_ptextureCurrent;
 
       auto vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
@@ -5794,6 +5803,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          {
 
             __øconstruct(m_ptextureCurrent);
+
+            if (!m_ptextureCurrent->m_pgpurenderer)
+            {
+
+               m_ptextureCurrent->m_pgpurenderer = gpu_context()->m_pgpurenderer;
+
+            }
 
             ptextureCurrent = m_ptextureCurrent;
 
@@ -8137,22 +8153,32 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    }
 
+   void graphics::initialize(::particle* pparticle)
+   {
+
+      ::draw2d::graphics::initialize(pparticle);
+
+   }
+
+
+   void graphics::_create_context()
+   {
+
+
+   }
+
+
+   void graphics::_destroy_context()
+   {
+
+
+   }
+
 
    void graphics::on_start_layer(::gpu::layer* pgpulayer)
    {
 
       vkvg_clear(m_pdc);
-      ////if (m_pdevicecontext && m_bInLayer)
-      ////if (m_pdevicecontext)
-      //{
-
-      //   m_pdirect2d->m_pd2d1multithread->Enter();
-
-      //   m_pdevicecontext->BeginDraw();
-
-      //   m_pdevicecontext->Clear();
-
-      //}
 
    }
 
@@ -8164,70 +8190,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::gpu::graphics::on_begin_draw();
 
-      reset_clip();
-
-      reset_impact_area();
-
       if (m_egraphics & e_graphics_draw)
       {
 
-         ::int_rectangle rectangle;
+         reset_clip();
 
-         rectangle.set_size(total_size());
-
-         set_alpha_mode(::draw2d::e_alpha_mode_set);
-
-         fill_rectangle(rectangle, ::color::transparent);
+         reset_impact_area();
 
          set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
       }
-
-      //bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
-
-      //::vulkan::resize(rectangle.size(), bYSwap);
-
-      //m_z = 0.f;
-
-      //auto pgpucontext = gpu_context();
-
-      //if (!pgpucontext->m_pgpurenderer)
-      //{
-
-      //   __øconstruct(pgpucontext->m_pgpurenderer);
-
-      //   pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
-
-      //   pgpucontext->m_escene = ::gpu::e_scene_2d;
-
-      //   pgpucontext->m_pgpurenderer->initialize_gpu_renderer(pgpucontext);
-
-      //}
-
-      ////if (m_callbackImage32CpuBuffer)
-      ////{
-
-      ////   m_pgpucontext->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
-
-      ////}
-
-   }
-
-
-   //void graphics::defer_add_gpu_render(::gpu::render * pgpurender)
-   //{
-
-   //   m_pgpucontext->m_rendera.add_unique(pgpurender);
-
-   //}
-
-
-   void graphics::initialize(::particle* pparticle)
-   {
-
-      ::draw2d::graphics::initialize(pparticle);
-
-   //   ::gpu::renderer::initialize(pparticle);
 
    }
 
@@ -8238,127 +8210,33 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (m_egraphics & e_graphics_draw)
       {
 
-         //vkvg_surface_resolve(m_vkvgsurface);
-
-         //m_pgpucontext->m_prenderer->on_end_draw();
-
-         //::double_rectangle r{ 0.0, 0.0, 1920.0, 1080.0 };
-
-         //fill_solid_rectangle(r, argb(255, 100, 200, 240));
-
-         //::double_rectangle r2{ 100.0, 100.0, 192.0, 198.0 };
-
-         //set_alpha_mode(::draw2d::e_alpha_mode_blend);
-
-         //fill_solid_rectangle(r2, argb(155, 120, 40, 100));
-
          vkvg_flush(m_pdc);
 
-         //__defer_construct(m_ptextureCurrent);
+         //::int_rectangle rectangle;
 
-         //::cast < ::gpu_vulkan::texture > ptextureEndDraw = m_ptextureEndDraw;
+         //if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
+         //{
 
-         //ptextureEndDraw->m_vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
+         //   rectangle = m_puserinteraction->host_rectangle();
 
+         //}
+         //else
+         //{
 
+         //   rectangle = { 0, 0, 1920, 1080 };
 
-         ::int_rectangle rectangle;
-
-         if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
-         {
-
-            rectangle = m_puserinteraction->host_rectangle();
-
-         }
-         else
-         {
-
-            rectangle = { 0, 0, 1920, 1080 };
-
-         }
+         //}
 
          if (!m_pgpucontextOutput)
          {
 
-            __øconstruct(m_pgpucontextOutput);
+            //__øconstruct(m_pgpucontextOutput);
 
-            ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
+            //::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 
-            m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device()->create_window_context(pwindow);
-
-            //m_pgpucontextOutput->create_window_buffer(pwindow);
+            //m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device()->create_window_context(pwindow);
 
          }
-
-         //::cast < ::gpu_vulkan::renderer > prenderer = m_pgpucontextOutput->get_gpu_renderer();
-
-         ////m_pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
-
-         //prenderer->_on_graphics_end_draw(m_ptextureEndDraw, rectangle);
-
-         ////prenderer->_blend_image(vkimage, rectangle);
-
-
-
-      }
-
-      ////vkPushMatrix();
-
-      ////vkColor3f(0, 1, 1);
-      //vkBegin(VK_TRIANGLES);                              // Drawing Using Triangles
-      //
-
-      //vkColor4f(1.0f, 0.0f, 0.0f, 0.5f);                      // Set The Color To Red
-      //vkVertex3f(100.0f, -2000.0f, 0.0f);                  // Top
-      //
-
-      //vkColor3f(0.0f, 1.0f, 0.0f);                      // Set The Color To Green
-      //vkVertex3f(0.0f, 200.0f, 0.0f);                  // Bottom Left
-
-
-      //vkColor3f(0.0f, 0.0f, 1.0f);                      // Set The Color To Blue
-      //vkVertex3f(2000.0f, 2000.0f, 0.0f);                  // Bottom Right
-
-      //vkEnd();
-
-      //vkPopMatrix();
-
-
-      //vkFlush();
-      //vkFinish();
-      //vkDisable(VK_BLEND);
-
-
-
-
-      //SwapBuffers(m_hdc);
-
-      //m_pgpucontextVulkan->render
-
-      //dr();
-
-      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
-      {
-
-         //m_pgpucontext->swap_buffers();
-
-         //m_pwindow->m_timeLastDrawGuard1.Now();
-
-      }
-      else
-      {
-
-         //m_pgpucontext->swap_buffers();
-
-      //}
-      //else
-      //{
-
-         //read_to_cpu_buffer();
-
-         //m_pimage->map();
-
-         //m_pimage->copy(m_pgpucontext->m_pcpubuffer->m_pimagetarget->m_pimage);
 
       }
 

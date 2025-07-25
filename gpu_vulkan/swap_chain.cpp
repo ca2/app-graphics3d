@@ -19,8 +19,7 @@ namespace gpu_vulkan
    swap_chain::swap_chain()
    {
 
-      m_bLoadClearOp = true;
-
+      m_bNeedRebuild = false;
       //m_iCurrentFrame2 = 0;
       m_uCurrentSwapChainImage = 0;
       //m_bBackBuffer = true;
@@ -31,7 +30,7 @@ namespace gpu_vulkan
    swap_chain::~swap_chain()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
       //for (auto imageView : m_imageviews) {
       //   vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
@@ -79,15 +78,15 @@ namespace gpu_vulkan
    //}
 
 
-   void swap_chain::update_render_pass(::gpu::context* pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
-   {
+   //void swap_chain::update_render_pass(::gpu::context* pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
+   //{
 
-      render_pass::update_render_pass(pgpucontext, previous);
-      //m_bNeedRebuild = false;
-      //on_init();
-      // Cleans up old swap chain since it's no longer needed after resizing
-      //oldSwapChain = nullptr;
-   }
+   //   render_pass::update_render_pass(pgpucontext, previous);
+   //   //m_bNeedRebuild = false;
+   //   //on_init();
+   //   // Cleans up old swap chain since it's no longer needed after resizing
+   //   //oldSwapChain = nullptr;
+   //}
 
 
    void swap_chain::initialize_gpu_swap_chain(::gpu::renderer* pgpurenderer)
@@ -95,17 +94,27 @@ namespace gpu_vulkan
 
       ::gpu::swap_chain::initialize_gpu_swap_chain(pgpurenderer);
 
-      ::gpu_vulkan::render_pass::update_render_pass(pgpurenderer->m_pgpucontext, nullptr);
+      //::gpu_vulkan::render_pass::update_render_pass(pgpurenderer->m_pgpucontext, nullptr);
 
    }
 
 
-   void swap_chain::on_init_render_pass()
+   void swap_chain::create_render_pass()
    {
 
       create_images();
+
+      //{
+
+      //   ::cast < swap_chain > pswapchain = m_pgpurenderer->m_pgpucontext->get_swap_chain();
+
+      //   pswapchain->update_render_pass(m_pgpurenderer->m_pgpucontext, m_prenderpass->m_prenderpassOld);
+
+      //   pswapchain->on_init_render_pass();
+
+      //}
       //createImageViews();
-      createRenderPass();
+      //createRenderPass();
       //createDepthResources();
       //createFramebuffers();
       //createSyncObjects();
@@ -124,15 +133,15 @@ namespace gpu_vulkan
    VkResult swap_chain::acquireNextImage()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
       auto prenderer = pcontext->m_pgpurenderer;
 
       ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
 
-      auto ptexture = current_swap_chain_texture();
+      ::cast < texture > ptexture = current_swap_chain_texture();
 
-      auto& texture = this->texture(ptexture);
+      auto psynchronization = ptexture->synchronization();
 
       auto imageIndex = &m_uCurrentSwapChainImage;
 
@@ -151,7 +160,7 @@ namespace gpu_vulkan
          pcontext->logicalDevice(),
          m_vkswapchain,
          UINT64_MAX,
-         texture.m_vksemaphoreAvailable,  // signal semaphore
+         psynchronization->m_vksemaphoreAvailable,  // signal semaphore
          VK_NULL_HANDLE,
          imageIndex);
 
@@ -163,17 +172,17 @@ namespace gpu_vulkan
          throw ::exception(error_failed, "failed to acquire swap chain image!");
       }
 
-      auto ptextureAcquire = m_ptextureaSwapChain->element_at(*imageIndex);
+      ::cast < ::gpu_vulkan::texture > ptextureAcquire = m_ptextureaSwapChain->element_at(*imageIndex);
 
-      auto& textureAcquire = this->texture(ptextureAcquire);
+      auto psynchronizationAcquire = ptextureAcquire->synchronization();
 
       //// If the image we acquired is already being used (fence not signaled), wait for it
-      if (textureAcquire.m_vkfenceImageInFlight != VK_NULL_HANDLE) {
-         vkWaitForFences(pcontext->logicalDevice(), 1, &textureAcquire.m_vkfenceImageInFlight, VK_TRUE, UINT64_MAX);
+      if (psynchronizationAcquire->m_vkfenceImageInFlight != VK_NULL_HANDLE) {
+         vkWaitForFences(pcontext->logicalDevice(), 1, &psynchronizationAcquire->m_vkfenceImageInFlight, VK_TRUE, UINT64_MAX);
       }
 
       // Mark this image as now being in use by current frame
-      textureAcquire.m_vkfenceImageInFlight = texture.in_flight_fence();
+      psynchronizationAcquire->m_vkfenceImageInFlight = psynchronizationAcquire->in_flight_fence();
 
       return result;
       //vkWaitForFences(
@@ -209,12 +218,12 @@ namespace gpu_vulkan
    }
 
 
-   int swap_chain::get_frame_index()
-   {
+   //int swap_chain::get_frame_index()
+   //{
 
-      return (int) ::gpu_vulkan::render_pass::get_frame_index();
+   //   return (int) ::gpu_vulkan::render_pass::get_frame_index();
 
-   }
+   //}
 
 
    bool swap_chain::should_use_advanced_pipeline_synchronization()
@@ -225,15 +234,34 @@ namespace gpu_vulkan
    }
 
 
-   VkResult swap_chain::submitCommandBuffers(
-      command_buffer * pcommandbuffer,
-      ::gpu::texture * pgputexture,
+   //void swap_chain::create_render_pass()
+   //{
+   //   //if (m_pgpurenderer->m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
+   //   {
+
+   //      ::cast < swap_chain > pswapchain = m_pgpurenderer->m_pgpucontext->get_swap_chain();
+
+   //      pswapchain->update_render_pass(m_pgpurenderer->m_pgpucontext, m_prenderpass->m_prenderpassOld);
+
+   //      pswapchain->on_init_render_pass();
+
+   //   }
+
+   //}
+
+
+
+   VkResult swap_chain::submitCommandBuffers2(
+      command_buffer* pcommandbuffer,
+      ::gpu::texture* pgputexture,
       const ::array < VkSemaphore >& semaphoreaWait,
       const ::array < VkPipelineStageFlags >& stageaWait,
       const ::array < VkSemaphore >& semaphoreaSignal)
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+
+      ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
 
       uint32_t* imageIndex = &m_uCurrentSwapChainImage;
 
@@ -241,17 +269,17 @@ namespace gpu_vulkan
 
       auto currentFrame = prendertarget->get_frame_index();
 
-      auto& texture = this->texture(pgputexture);
+      ::cast < ::gpu_vulkan::texture > ptextureIndex = m_ptextureaSwapChain->element_at(*imageIndex);
 
-      auto ptextureIndex = m_ptextureaSwapChain->element_at(*imageIndex);
+      auto psynchronization = ptexture->synchronization();
 
-      auto& textureIndex = this->texture(ptextureIndex);
+      auto psynchronizationIndex = ptextureIndex->synchronization();
 
       // Use currentFrame to access per-frame sync objects
       //vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
       //vkResetFences(pcontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
       //if (VK_TIMEOUT == vkWaitForFences(pcontext->logicalDevice(), 1, &inFlightFences[m_uCurrentSwapChainImage], VK_TRUE, 0))
-      auto fence = texture.in_flight_fence();
+      auto fence = psynchronization->in_flight_fence();
       {
 
 
@@ -263,15 +291,51 @@ namespace gpu_vulkan
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
       //VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
-      ::array<VkSemaphore> waitSemaphores(semaphoreaWait);
-      ::array<VkPipelineStageFlags> waitStages(stageaWait);
-      //if (imageAvailable[get_frame_index()] > 0)
-      //{
-         waitSemaphores.add(texture.m_vksemaphoreAvailable);
-         waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-      //}
-      waitStages.append(::transfer(m_stageaWaitToSubmit));
-      waitSemaphores.append(::transfer(m_semaphoreaWaitToSubmit));
+      ::comparable_array<VkSemaphore> waitSemaphores;
+      ::array<VkPipelineStageFlags> waitStages;
+      for (int i = 0; i < semaphoreaWait.size(); i++)
+      {
+         if (waitSemaphores.add_unique(semaphoreaWait[i]))
+         {
+            waitStages.add(stageaWait[i]);
+
+         }
+
+      }
+      if (psynchronization && psynchronization->m_iImageAvailable > 0)
+      {
+         if (waitSemaphores.add_unique(psynchronization->m_vksemaphoreAvailable))
+         {
+            waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+         }
+      }
+      if (psynchronizationIndex && psynchronizationIndex->m_vksemaphoreAvailable)
+      {
+         if (waitSemaphores.add_unique(psynchronizationIndex->m_vksemaphoreAvailable))
+         {
+            waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+         }
+      }
+      if (psynchronization && psynchronization->m_iRendering > 0)
+      {
+         if (waitSemaphores.add_unique(psynchronization->m_vksemaphoreRenderFinished))
+         {
+            waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+         }
+         psynchronization->m_iRendering = 0;
+      }
+
+      for (int i = 0; i < pcommandbuffer->m_semaphoreaWaitToSubmit.size(); i++)
+      {
+         if (waitSemaphores.add_unique(pcommandbuffer->m_semaphoreaWaitToSubmit[i]))
+         {
+            waitStages.add(pcommandbuffer->m_stageaWaitToSubmit[i]);
+
+         }
+
+      }
+      pcommandbuffer->m_semaphoreaWaitToSubmit.clear();
+      pcommandbuffer->m_stageaWaitToSubmit.clear();
       submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
       submitInfo.pWaitSemaphores = waitSemaphores.data();
       submitInfo.pWaitDstStageMask = waitStages.data();
@@ -282,8 +346,12 @@ namespace gpu_vulkan
       submitInfo.pCommandBuffers = commandbuffera;
 
       ::array<VkSemaphore> signalSemaphores(semaphoreaSignal);
-      signalSemaphores.add(textureIndex.m_vksemaphoreRenderFinished);
-      signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
+
+      if (psynchronizationIndex && psynchronizationIndex->m_vksemaphoreRenderFinished)
+      {
+         signalSemaphores.add(psynchronizationIndex->m_vksemaphoreRenderFinished);
+      }
+      signalSemaphores.append(::transfer(pcommandbuffer->m_semaphoreaSignalOnSubmit));
       submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
       submitInfo.pSignalSemaphores = signalSemaphores.data();
 
@@ -300,11 +368,42 @@ namespace gpu_vulkan
          throw ::exception(error_failed, "failed to submit draw command buffer!");
       }
 
+      
 
+  
+
+      {
+         auto pcommandbufferPresent = pcontext->beginSingleTimeCommands(true);
+
+
+         ::comparable_array<VkSemaphore> waitSemaphores2;
+         ::array<VkPipelineStageFlags> waitStages2;
+         VkSubmitInfo submitInfo{};
+
+      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+         for(auto semaphore : signalSemaphores)
+         {
+            if (waitSemaphores2.add_unique(semaphore))
+            {
+               waitStages2.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+
+            }
+         }
+         submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores2.size();
+         submitInfo.pWaitSemaphores = waitSemaphores2.data();
+         submitInfo.pWaitDstStageMask = waitStages2.data();
+         submitInfo.commandBufferCount = 1;
+         VkCommandBuffer commandbuffera[] = { pcommandbufferPresent->m_vkcommandbuffer };
+         submitInfo.pCommandBuffers = commandbuffera;
+         pcontext->endSingleTimeCommands(pcommandbufferPresent, 1, &submitInfo);
+      }
       VkPresentInfoKHR presentInfo{};
       presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-      presentInfo.waitSemaphoreCount = (uint32_t) signalSemaphores.size();
-      presentInfo.pWaitSemaphores = signalSemaphores.data();
+      //presentInfo.waitSemaphoreCount = (uint32_t) signalSemaphores.size();
+      //presentInfo.pWaitSemaphores = signalSemaphores.data();
+      presentInfo.waitSemaphoreCount = (uint32_t)0;
+      presentInfo.pWaitSemaphores = nullptr;
       presentInfo.swapchainCount = 1;
       presentInfo.pSwapchains = &m_vkswapchain;
       presentInfo.pImageIndices = imageIndex;
@@ -379,7 +478,7 @@ namespace gpu_vulkan
 
       __defer_construct_new(m_ptextureaSwapChain);
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
       auto prenderer = pcontext->m_pgpurenderer;
 
@@ -486,7 +585,9 @@ namespace gpu_vulkan
 
          pgputexture->m_bTransferDst = true;
 
-         pgputexture->initialize_image_texture(::gpu_vulkan::render_pass::m_pgpucontext->m_pgpurenderer, rectangleTarget, m_bWithDepth);
+         bool bWithDepth = false;
+
+         pgputexture->initialize_image_texture(m_pgpucontext->m_pgpurenderer, rectangleTarget, bWithDepth);
 
          ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
 
@@ -494,8 +595,8 @@ namespace gpu_vulkan
 
       }
 
-      m_formatImage = surfaceFormat.format;
-      m_extent = extent;
+      //m_formatImage = surfaceFormat.format;
+      //m_extent = extent;
       pcontext->m_rectangle.set_size({ (int)extent.width, (int)extent.height });
 
    }
@@ -504,7 +605,7 @@ namespace gpu_vulkan
    //void swap_chain::createImageViews()
    //{
 
-   //   ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
    //   //m_imageviews.resize(m_texturea.size());
 
@@ -534,111 +635,111 @@ namespace gpu_vulkan
    //}
 
 
-   void swap_chain::createRenderPass()
-   {
+   //void swap_chain::createRenderPass()
+   //{
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
-      VkAttachmentDescription depthAttachment{};
-      depthAttachment.format = findDepthFormat();
-      depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-      if (m_bLoadClearOp)
-      {
-         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-      }
-      else
-      {
-         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-      }
-      depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-      depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+   //   VkAttachmentDescription depthAttachment{};
+   //   depthAttachment.format = findDepthFormat();
+   //   depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+   //   if (m_bLoadClearOp)
+   //   {
+   //      depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+   //   }
+   //   else
+   //   {
+   //      depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+   //   }
+   //   depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+   //   depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+   //   depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+   //   depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+   //   depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-      VkAttachmentReference depthAttachmentRef{};
-      depthAttachmentRef.attachment = 1;
-      depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+   //   VkAttachmentReference depthAttachmentRef{};
+   //   depthAttachmentRef.attachment = 1;
+   //   depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-      VkAttachmentDescription colorAttachment = {};
-      colorAttachment.format = m_formatImage;
-      colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-      colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-      colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+   //   VkAttachmentDescription colorAttachment = {};
+   //   colorAttachment.format = m_formatImage;
+   //   colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+   //   colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+   //   colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+   //   colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+   //   colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+   //   colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+   //   colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-      VkAttachmentReference colorAttachmentRef = {};
-      colorAttachmentRef.attachment = 0;
-      colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+   //   VkAttachmentReference colorAttachmentRef = {};
+   //   colorAttachmentRef.attachment = 0;
+   //   colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-      VkSubpassDescription subpass = {};
-      subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-      subpass.colorAttachmentCount = 1;
-      subpass.pColorAttachments = &colorAttachmentRef;
+   //   VkSubpassDescription subpass = {};
+   //   subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+   //   subpass.colorAttachmentCount = 1;
+   //   subpass.pColorAttachments = &colorAttachmentRef;
 
-      if (m_bWithDepth)
-      {
-         subpass.pDepthStencilAttachment = &depthAttachmentRef;
+   //   if (m_bWithDepth)
+   //   {
+   //      subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
-      }
+   //   }
 
-      //VkSubpassDependency dependencies[1]{};
-      //dependencies[0].dstSubpass = 0;
-      //dependencies[0].dstAccessMask =
-      //   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      //dependencies[0].dstStageMask =
-      //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-      //dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-      //dependencies[0].srcAccessMask = 0;
-      //dependencies[0].srcStageMask =
-      //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+   //   //VkSubpassDependency dependencies[1]{};
+   //   //dependencies[0].dstSubpass = 0;
+   //   //dependencies[0].dstAccessMask =
+   //   //   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+   //   //dependencies[0].dstStageMask =
+   //   //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+   //   //dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+   //   //dependencies[0].srcAccessMask = 0;
+   //   //dependencies[0].srcStageMask =
+   //   //   VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
 
 
-      //dependency[1].srcSubpass = 0;
-      //dependency[1].dstSubpass = 0;
-      ////dependency[1].srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
-      ////dependency[1].dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT;
-      ////dependency[1].srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-      ////dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-      //dependency[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-      //dependency[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-      //dependency[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-      //dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-      //dependency[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;// if needed
-      VkClearValue clearColor = {
-    .color = { { 0.0f, 0.0f, 0.0f, 0.0f } } // fully transparent
-      };
+   //   //dependency[1].srcSubpass = 0;
+   //   //dependency[1].dstSubpass = 0;
+   //   ////dependency[1].srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
+   //   ////dependency[1].dstStageMask = VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT;
+   //   ////dependency[1].srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+   //   ////dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+   //   //dependency[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+   //   //dependency[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+   //   //dependency[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+   //   //dependency[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+   //   //dependency[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;// if needed
+   //   VkClearValue clearColor = {
+   // .color = { { 0.0f, 0.0f, 0.0f, 0.0f } } // fully transparent
+   //   };
 
-      VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
-      VkRenderPassCreateInfo renderPassInfo = {};
-      renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+   //   VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
+   //   VkRenderPassCreateInfo renderPassInfo = {};
+   //   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 
-      if (m_bWithDepth)
-      {
-         renderPassInfo.attachmentCount = 2;
-      }
-      else
-      {
-         renderPassInfo.attachmentCount = 1;
-      }
-      renderPassInfo.pAttachments = attachments;
-      renderPassInfo.subpassCount = 1;
-      renderPassInfo.pSubpasses = &subpass;
-      //renderPassInfo.dependencyCount = 1;
-      //renderPassInfo.pDependencies = dependencies;
+   //   if (m_bWithDepth)
+   //   {
+   //      renderPassInfo.attachmentCount = 2;
+   //   }
+   //   else
+   //   {
+   //      renderPassInfo.attachmentCount = 1;
+   //   }
+   //   renderPassInfo.pAttachments = attachments;
+   //   renderPassInfo.subpassCount = 1;
+   //   renderPassInfo.pSubpasses = &subpass;
+   //   //renderPassInfo.dependencyCount = 1;
+   //   //renderPassInfo.pDependencies = dependencies;
 
-      if (vkCreateRenderPass(pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS)
-      {
+   //   if (vkCreateRenderPass(pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS)
+   //   {
 
-         throw ::exception(error_failed, "failed to create render pass!");
+   //      throw ::exception(error_failed, "failed to create render pass!");
 
-      }
+   //   }
 
-   }
+   //}
 
 
    //void swap_chain::createFramebuffers()
@@ -800,7 +901,7 @@ namespace gpu_vulkan
       else
       {
 
-         ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+         ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
          auto prenderer = pcontext->m_pgpurenderer;
 
@@ -828,7 +929,7 @@ namespace gpu_vulkan
    VkFormat swap_chain::findDepthFormat()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
       return pcontext->m_pgpudevice->m_pphysicaldevice->findSupportedFormat(
          { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
@@ -849,7 +950,7 @@ namespace gpu_vulkan
 
       //}
 
-      ::cast < ::gpu_vulkan::context > pgpucontext = ::gpu_vulkan::render_pass::m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontext;
 
       ::cast < renderer > pgpurenderer = pgpucontext->m_pgpurenderer;
 
@@ -916,6 +1017,8 @@ namespace gpu_vulkan
 
       ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
+      pcommandbuffer->begin_command_buffer(false);
+
       auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
       ::cast < ::gpu_vulkan::texture > ptextureSrc = pgputexture;
@@ -944,6 +1047,7 @@ namespace gpu_vulkan
 
       //pgpurenderer->m_pgpucontext->m_iOverrideFrame = get_image_index();
 
+
       auto scopedstateSwapChain = ptextureSwapChain->_scoped_state(pcommandbuffer,
          {
          VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
@@ -963,6 +1067,9 @@ namespace gpu_vulkan
       );
 
       m_pshaderPresent->bind(ptextureSwapChain, ptextureSrc);
+
+      pcommandbuffer->m_semaphoreaWaitToSubmit.add(ptextureSrc->synchronization()->m_vksemaphoreRenderFinished);
+      pcommandbuffer->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
       pcommandbuffer->set_viewport(pgpucontext->m_rectangle.size());
 

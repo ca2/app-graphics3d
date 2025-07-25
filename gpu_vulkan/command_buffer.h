@@ -17,8 +17,14 @@ namespace gpu_vulkan
 
       
       VkCommandBuffer   m_vkcommandbuffer;
-
+      VkCommandPool     m_vkcommandpool;
       VkFence           m_vkfence;
+
+      bool m_bPresentQueue;
+      ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
+      ::array < VkSemaphore> m_semaphoreaWaitToSubmit;
+      ::array < VkPipelineStageFlags > m_stageaWaitToSubmit;
+
 
 
       command_buffer();
@@ -42,8 +48,15 @@ namespace gpu_vulkan
 
       virtual void draw(::gpu_vulkan::model_buffer* pmodelbuffer);
 
-
+      virtual VkResult submitCommandBuffers(
+         ::gpu::texture* pgputextureTarget,
+         const ::pointer_array < ::gpu::texture >& gputextureaSource,
+         const ::array < VkSemaphore >& semaphoreaWait,
+         const ::array < VkPipelineStageFlags >& stageaWait,
+         const ::array < VkSemaphore >& semaphoreaSignal,
+         VkFence * pvkfence = nullptr);
    };
+
 
 
 } // namespace gpu_vulkan

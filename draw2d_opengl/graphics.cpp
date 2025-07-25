@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "_draw2d.h"
 #include "_opengl.h"
 #include "draw2d.h"
 #include "pen.h"
@@ -12,6 +13,7 @@
 #include "acme/platform/application.h"
 #include "acme/prototype/geometry2d/item.h"
 #include "acme/prototype/mathematics/mathematics.h"
+#include "bred/gpu/_model.h"
 #include "bred/gpu/bred_approach.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context_lock.h"
@@ -51,6 +53,7 @@
 
 HGLRC initialize_opengl_version(HDC hdc, int iMajor, int iMinor);
 
+
 namespace opengl
 {
 
@@ -84,12 +87,9 @@ namespace draw2d_opengl
 {
 
 
-#define __TRANSFORM(p) \
-   m_m1.transform(p); \
-p.y() = iContextHeight - p.y()
 
-#define __USES_TRANSFORM(pcontext) \
-auto iContextHeight = pcontext->m_rectangle.height()
+
+
 
 
    const char proto_vert[] = R"vert(
@@ -117,12 +117,15 @@ void main() {
 
    //ATOM class_atom = NULL;
 
+
+
    graphics* thread_graphics()
    {
 
       return ::get_task()->payload("draw2d_opengl::graphics").cast < graphics >();
 
    }
+
 
    graphics::graphics()
    {
@@ -2184,32 +2187,87 @@ void main() {
 
    }
 
-
+   
    void graphics::draw_rectangle(const ::double_rectangle& rectangle, ::draw2d::pen* ppen)
    {
 
-      if (::is_set(ppen))
+      if (::is_null(ppen) || ppen->m_epen == ::draw2d::e_pen_null)
       {
 
-         glLineWidth((float)(ppen->m_dWidth));
+         return;
 
       }
 
-      //glBegin(GL_LINE_LOOP);
+      if (ppen->m_epen == ::draw2d::e_pen_solid && ppen->m_dWidth <= 0.0)
+      {
 
-      //if (::is_set(ppen))
-      //{
+         return;
 
-      //   ::opengl::color(ppen->m_color);
+      }
 
-      //}
+      auto pcontext = gpu_context();
 
-      //::opengl::vertex2f(rectangle, m_z);
+      auto prenderer = pcontext->m_pgpurenderer;
 
-      //glEnd();
+      ::gpu::context_lock contextlock(pcontext);
 
-      ////return true;
+      auto pshader = rectangle_shader();
 
+      float g_z = 0.0f; // Assuming z is 0 for 2D rendering, adjust as needed
+
+      ::preallocated_array < ::array < ::double_point >, 4 > pointa1;
+
+      rectangle.add_clockwise_edges(pointa1);
+
+      for(auto & item : pointa1) __transform(item);
+
+      ::double_point pointPen(ppen->m_dWidth, ppen->m_dWidth);
+
+      ::double_point_array pointa;
+
+      ::draw2d::make_draw_rectangle(
+         pointa,
+         pointa1,
+         pointPen);
+
+      auto contextmatrix = this->context_matrix();
+
+      contextmatrix.transform(pointa);
+
+
+      auto color = m_ppen->m_color;
+
+      float fA = color.f32_opacity();
+      float fR = color.f32_red() * fA;
+      float fG = color.f32_green() * fA;
+      float fB = color.f32_blue() * fA;
+
+      ::array<::graphics3d::sequence2_color> quadVertices;
+      for (auto& point : pointa)
+         quadVertices.add({ {(float)point.x(), (float)point.y()}, {fR, fG, fB, fA} });
+
+      auto pmodelbuffer = model_buffer(::draw2d::e_model_draw_rectangle);
+
+      if (pmodelbuffer->is_new())
+      {
+
+         pmodelbuffer->create_vertex_array< ::graphics3d::sequence2_color>(24);
+
+      }
+
+      pmodelbuffer->set_vertices(quadVertices);
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+      pcontext->defer_bind(pshader);
+
+      pmodelbuffer->bind(pcommandbuffer);
+
+      pmodelbuffer->draw(pcommandbuffer);
+
+      pmodelbuffer->unbind(pcommandbuffer);
+
+      pcontext->defer_unbind(pshader);
    }
 
 
@@ -2217,8 +2275,6 @@ void main() {
    {
 
       draw_rectangle(rectangle, m_ppen);
-
-      //return true;
 
    }
 
@@ -3251,6 +3307,7 @@ void main() {
          {
 
             ::cast< ::geometry2d::line_item> plineitem = pitem;
+            ::draw2d::graphics::line(plineitem->m_item.m_p1, plineitem->m_item.m_p2);
             //if (!bLastPoint || !pointLast.is_same_by(0.00001, plineitem->m_item.m_p1))
             //{
             //   glVertex3f(
@@ -4483,130 +4540,20 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   //int_point graphics::get_origin() const
-   //{
+   void graphics::update_matrix()
+   {
 
-   //   return ::draw2d::graphics::get_origin();
+      ::gpu::graphics::update_matrix();
 
-   //   //::int_point point;
-   //   //::GetContextOrgEx(m_hdc, &point);
-
-   //   //if (m_pgraphics == nullptr)
-   //   //{
-
-   //   //   return ::int_point();
-
-   //   //}
-
-   //   //plusplus::Point origin(0, 0);
-
-   //   //m_pgraphics->TransformPoints(
-   //   //   plusplus::CoordinateSpacePage,
-   //   //   plusplus::CoordinateSpaceWorld,
-   //   //   &origin,
-   //   //   1);
-
-   //   //return point((long long) origin.X, (long long) origin.Y);
-
-   //   //return m_pointTranslate;
-
-   //}
+   }
 
 
    void graphics::_set(const ::geometry2d::matrix& matrix)
    {
 
       ::gpu::graphics::_set(matrix);
-      
-      //thread_select();
-
-      //glMatrixMode(GL_MODELVIEW);
-      //glLoadIdentity();
-
-      ///      GLdouble m[16];
-
-            //glGetDoublev(GL_MODELVIEW_MATRIX, m);
-
-            //glTranslatef(matrix.c1, matrix.c2, 0.f);
-
-            //glGetDoublev(GL_MODELVIEW_MATRIX, m);
-
-
-      //GLdouble m[16];
-
-      //m[0] = matrix.a1;
-      //m[1] = matrix.b1;
-      ////m[2] = matrix.c1;
-      //m[2] = 0.0;
-      //m[3] = 0.0;
-
-      //m[4] = matrix.a2;
-      //m[5] = matrix.b2;
-      ////m[6] = matrix.c2;
-      //m[6] = 0.0;
-      //m[7] = 0.0;
-
-      //m[8] = 0.0;
-      //m[9] = 0.0;
-      //m[10] = 1.0;
-      //m[11] = 0.0;
-
-      //m[12] = matrix.c1;
-      //m[13] = matrix.c2;
-      //m[14] = 0.0;
-      //m[15] = 1.0;
-
-      //glLoadMatrixd((const GLdouble*)m);
-
-      ////return false;
 
    }
-
-
-   //int_point graphics::set_origin(int x, int y)
-   //{
-
-   //   return ::draw2d::graphics::set_origin(x, y);
-
-   //}
-
-
-   //int_point graphics::offset_origin(int nWidth, int nHeight)
-   //{
-
-   //   return ::gpu::graphics::offset_origin(nWidth, nHeight);
-
-
-   //}
-
-
-   //int_size graphics::set_context_extents(int x, int y)
-   //{
-
-   //   return ::draw2d::graphics::set_context_extents(x, y);
-
-   //   //int_size size(0, 0);
-   //   ////if(m_hdc != nullptr && m_hdc != m_hdc)
-   //   ////   ::Set_wiewportExtEx(m_hdc, x, y, &size);
-   //   ////if(m_hdc != nullptr)
-   //   ////   ::Set_wiewportExtEx(m_hdc, x, y, &size);
-   //   //return size;
-
-   //}
-
-
-   //int_size graphics::scale_context_extents(int xNum, int xDenom, int yNum, int yDenom)
-   //{
-
-   //   return ::draw2d::graphics::scale_context_extents(xNum, xDenom, yNum, yDenom);
-
-   //   //int_size size(0, 0);
-   //   ////if(m_hdc != nullptr && m_hdc != m_hdc)
-   //   ////   ::scale_context_extentsEx(m_hdc, xNum, xDenom, yNum, yDenom, &size);
-   //   ////if(m_hdc != nullptr)
-   //   ////   ::scale_context_extentsEx(m_hdc, xNum, xDenom, yNum, yDenom, &size);
-   //   //return size;
-   //}
 
 
    int_point graphics::SetWindowOrg(int x, int y)
@@ -5542,265 +5489,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   //double_size graphics::get_text_extent(const ::string & lpszString, character_count nCount)
-   //{
-
-   //   ::double_size size;
-
-   //   if (!get_text_extent(size, lpszString, nCount, 0))
-   //      return ::int_size(0, 0);
-
-   //   return ::int_size(size.cx(), size.cy());
-
-   //}
-
-
-  /* double_size graphics::get_text_extent(const ::scoped_string & str)
-   {
-
-      ::double_size size;
-
-      if(!get_text_extent(size, str, (double) str.length(), 0))
-         return ::int_size(0, 0);
-
-      return ::int_size((long) size.cx(), (long) size.cy());
-
-   }*/
-
-
-   //int_size graphics::GetOutputTextExtent(const ::string & lpszString, character_count nCount)
-   //{
-   //   // ASSERT(m_hdc != nullptr);
-   //   ::int_size size;
-   //   //string str(lpszString, nCount);
-   //   //wstring wstr = utf8_to_unicode(str);
-   //   //VERIFY(::GetTextExtentPoint32W(m_hdc, wstr, (double)wstr.get_length(), &size));
-   //   return size;
-
-   //}
-
-
-   //int_size graphics::GetOutputTextExtent(const ::string & str)
-   //{
-
-   //   // ASSERT(m_hdc != nullptr);
-
-   //   ::int_size size;
-
-   //   wstring wstr = utf8_to_unicode(str);
-
-   //   //::GetTextExtentPoint32W(m_hdc, wstr, (double)wstr.get_length(), &size);
-
-   //   return size;
-
-   //}
-
-//
-//   bool graphics::get_text_extent(double_size & size, const ::string & lpszString, character_count nCount, character_count iIndex)
-//   {
-//
-//      //// ASSERT(m_hdc != nullptr);
-//
-//      set(m_pfont);
-//
-//      ::pointer<font>pfont = m_pfont;
-//
-//      ::int_size s;
-//
-//      wstring wstr = utf8_to_unicode(string(&lpszString[iIndex], nCount));
-//
-//      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
-////         return false;
-//
-//      //// FreeType
-//      //FT_Library ft;
-//      //// All functions return a value different than 0 whenever an error occurred
-//      //if (FT_Init_FreeType(&ft))
-//      //   std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-//
-//      //// Load font as face
-//      //FT_Face face;
-//      //if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
-//      //   std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-//
-//      //// Set int_size to load glyphs as
-//      //FT_Set_Pixel_Sizes(face, 0, 48);
-//
-//      //// Disable unsigned char-alignment restriction
-//      //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-//
-//      //// Load first 128 characters of ASCII set
-//      //for (GLubyte c = 0; c < 128; c++)
-//      //{
-//      //   // Load character glyph 
-//      //   if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-//      //   {
-//      //      std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-//      //      continue;
-//      //   }
-//      //   // Generate texture
-//      //   GLuint texture;
-//      //   glGenTextures(1, &texture);
-//      //   glBindTexture(GL_TEXTURE_2D, texture);
-//      //   glTexImage2D(
-//      //      GL_TEXTURE_2D,
-//      //      0,
-//      //      GL_RED,
-//      //      face->glyph->bitmap.width,
-//      //      face->glyph->bitmap.rows,
-//      //      0,
-//      //      GL_RED,
-//      //      GL_UNSIGNED_BYTE,
-//      //      face->glyph->bitmap.buffer
-//      //   );
-//      //   // Set texture options
-//      //   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//      //   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//      //   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//      //   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//      //   // Now store character for later use
-//      //   Character character = {
-//      //       texture,
-//      //       glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-//      //       glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-//      //       face->glyph->advance.x()
-//      //   };
-//      //   Characters.insert(std::pair<GLchar, Character>(c, character));
-//      //}
-//      //glBindTexture(GL_TEXTURE_2D, 0);
-//      //// Destroy FreeType once we're finished
-//      //FT_Done_Face(face);
-//      //FT_Done_FreeType(ft);
-//
-//      size.cx() = s.cx();
-//
-//      size.cy() = s.cy();
-//
-//      return true;
-//
-//   }
-//
-//
-//   bool graphics::get_text_extent(double_size & size, const ::string & lpszString, character_count nCount)
-//   {
-//
-//      //// ASSERT(m_hdc != nullptr);
-//
-//      set(m_pfont);
-//
-//      ::pointer<font>pfont = m_pfont;
-//
-//      ::int_size s;
-//
-//      wstring wstr = utf8_to_unicode(lpszString, nCount);
-//
-//      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
-//        // return false;
-//
-//      size.cx() = s.cx();
-//
-//      size.cy() = s.cy();
-//
-//      return true;
-//
-//   }
-//
-//
-//   bool graphics::get_text_extent(double_size & size, const ::string & str)
-//   {
-//
-//      //// ASSERT(m_hdc != nullptr);
-//
-//      set(m_pfont);
-//
-//      ::pointer<font>pfont = m_pfont;
-//
-//      ::int_size s;
-//
-//      wstring wstr = utf8_to_unicode(str);
-//
-//      //if (::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
-//        // return false;
-//
-//      size.cx() = s.cx();
-//
-//      size.cy() = s.cy();
-//
-//      return true;
-//
-//   }
-
-
-   //void graphics::fill_rectangle(const double_rectangle& rectangle, color32_t color32)
-   //{
-
-   //   try
-   //   {
-
-   //      if (m_pbitmap.is_set())
-   //      {
-
-
-   //         ::int_size s = m_pbitmap.cast < bitmap>()->m_sizeOut;
-
-   //         if (s.area() <= 0)
-   //         {
-
-   //            return;
-
-   //         }
-
-   //      }
-
-   //      glBegin(GL_QUADS);
-
-   //      ::opengl::color(color32);
-
-   //      ::opengl::vertex2f(rectangle);
-
-   //      glEnd();
-
-   //   }
-   //   catch(...)
-   //   {
-   //      
-   //   }
-
-   //}
-
-
-   void graphics::draw_line(const int_point& point1, const int_point& point2, ::draw2d::pen* ppen)
-   {
-
-      auto pcontext = gpu_context();
-
-      ::gpu::context_lock contextlock(pcontext);
-
-      //::opengl::line(point1.x(), point1.y(), point2.x(), point2.y(), (float)(ppen->m_dWidth),
-      //   ppen->m_color.f32_red(), ppen->m_color.f32_green(),
-      //   ppen->m_color.f32_blue(),
-      //   ppen->m_color.f32_opacity(), 0.f, 0.f, true);
-
-      /*glLineWidth(ppen->m_dWidth);
-
-      glBegin(GL_LINES);
-
-      ::opengl::color(ppen->m_color);
-
-      glVertex2f(point1.x(), point1.y());
-      glVertex2f(point2.x(), point2.y());
-
-      glEnd();*/
-
-      m_point.x() = point2.x();
-      m_point.y() = point2.y();
-
-      //return true;
-
-   }
-
-
-   void graphics::line(double x1, double y1, double x2, double y2)
+   void graphics::line(double x1, double y1, double x2, double y2, ::draw2d::pen * ppen)
    {
 
       auto pcontext = gpu_context();
@@ -5809,14 +5498,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::gpu::context_lock contextlock(pcontext);
 
-      if (::is_set(m_ppen))
-      {
-
-         glLineWidth((float)(m_ppen->m_dWidth));
-
-      }
-
-      __USES_TRANSFORM(pcontext);
+      //__USES_TRANSFORM(pcontext);
 
       auto pshader = rectangle_shader();
 
@@ -5825,93 +5507,68 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       ::double_point points1[2];
 
       points1[0].x() = x1;
-      points1[0].y() = x2;
-      points1[1].x() = x1;
+      points1[0].y() = y1;
+      points1[1].x() = x2;
       points1[1].y() = y2;
 
-      //m_point.x() = x;
-      //m_point.y() = y;
-
-      __TRANSFORM(points1[0]);
-      __TRANSFORM(points1[1]);
+      __transform(points1[0]);
+      __transform(points1[1]);
 
       auto size = pcontext->m_rectangle.size();
 
-      ::geometry2d::matrix m;
-      m.scale(2.0 / size.cx(), 2.0 / size.cy());
-      m.translate(-1.0, -1.0);
+      //::geometry2d::matrix m;
+      //m.translate(0.5, -0.5);
+      //m.scale(2.0 / size.cx(), 2.0 / size.cy());
+      //m.translate(-1.0, -1.0);
 
-      ::double_point points[2];
+      ::double_point_array pointa;
 
-      points[0] = points1[0]; 
-      points[1] = points1[1]; 
+      ::double_point pointPen(ppen->m_dWidth, ppen->m_dWidth);
+
+      ::draw2d::make_line_triangles_cap_butt_square(
+         pointa,
+         points1[0],
+         points1[1],
+         pointPen);
       
-      m.transform(points[0]);
-      m.transform(points[1]);
+      context_matrix().transform(pointa);
 
       auto color = m_ppen->m_color;
 
       float fA = color.f32_opacity();
-      //float fR = color.f32_red();
-      //float fG = color.f32_green();
-      //float fB = color.f32_blue();
       float fR = color.f32_red() * fA;
       float fG = color.f32_green() * fA;
       float fB = color.f32_blue() * fA;
 
+      ::array<::graphics3d::sequence2_color> quadVertices;
+      for(auto & point : pointa)
+         quadVertices.add({ {(float)point.x(), (float)point.y()}, {fR, fG, fB, fA} });
 
-      ::array<::graphics3d::sequence2_color> quadVertices= {
-         // Triangle 1
-         {{(float)points[0].x(), (float)points[0].y()}, {fR, fG, fB, fA}}, 
-         {{(float)points[1].x(), (float)points[1].y()}, {fR, fG, fB, fA}}, 
-      };
-
-
-      auto pmodelbuffer = m_poolmodelbufferLine.get();
+      auto pmodelbuffer = model_buffer(::draw2d::e_model_line);
 
       if (pmodelbuffer->is_new())
       {
 
-         pmodelbuffer->sequence2_color_create_line(::gpu::current_frame());
+         pmodelbuffer->create_vertex_array< ::graphics3d::sequence2_color>(6);
 
       }
 
       pmodelbuffer->set_vertices(quadVertices);
 
-      //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
-      //VkDeviceSize offset = 0;
-      ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-      //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodelbuffer->m_vertexBuffer, &offset);
-      pshader->bind(prenderer->m_pgpurendertarget->current_texture(::gpu::current_frame()));
+
+      pcontext->defer_bind(pshader);
 
       pmodelbuffer->bind(pcommandbuffer);
 
-      pmodelbuffer->draw_lines(pcommandbuffer);
+      pmodelbuffer->draw(pcommandbuffer);
 
       pmodelbuffer->unbind(pcommandbuffer);
 
-      //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertices for two triangles
-      //vkCmdEndRenderPass(cmd);
-
-
-
-      pshader->unbind();
-      //vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
-        // rectangle.bottom() - rectangle.top());
-
-      //m_particleaResetOnTopFrameEnd.add(pmodelbufferRectangle);
-
-      //push_on_end_top_frame(m_modelbufferaRectangle, pmodelbufferRectangle);
-
-      //g_z -= 0.0001;
-
-
-
+      pcontext->defer_unbind(pshader);
+ 
       m_point.x() = x2;
       m_point.y() = y2;
-
-      //return true;
 
    }
 
@@ -5929,7 +5586,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto pcontext = gpu_context();
 
-      __USES_TRANSFORM(pcontext);
+      //__USES_TRANSFORM(pcontext);
 
       ::gpu::context_lock contextlock(pcontext);
 
@@ -5990,7 +5647,7 @@ color = vec4(c.r,c.g, c.b, c.a);
          
       }
 
-      m_pgpushaderTextOut->bind();
+      pcontext->defer_bind(m_pgpushaderTextOut);
       auto color = m_pbrush->m_color;
       //shader.use();
       ::cast<::gpu_opengl::shader>pshader = m_pgpushaderTextOut;
@@ -6054,13 +5711,13 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       ::int_point point(x, y);
       int Δx = 0;
-      __TRANSFORM(point);
+      __transform(point);
 
       //auto pcontext = gpu_context();
 
       point.y() = pcontext->m_rectangle.height() - point.y() - pface->m_iPixelSize;
 
-      glEnable(GL_CULL_FACE);
+      glDisable(GL_CULL_FACE);
       GLCheckError("");
       //glEnable(GL_BLEND);
       //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -6088,7 +5745,7 @@ color = vec4(c.r,c.g, c.b, c.a);
          {
 
 
-            auto pmodelbuffer = m_poolmodelbufferCharacter.get();
+            auto pmodelbuffer = model_buffer(::draw2d::e_model_character);
 
             if (pmodelbuffer->is_new())
             {
@@ -6145,7 +5802,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       GLCheckError("");
       glDisable(GL_CULL_FACE);
       GLCheckError("");
-      m_pgpushaderTextOut->unbind();
+      pcontext->defer_unbind(m_pgpushaderTextOut);
    }
 
    
@@ -6154,7 +5811,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       auto pcontext = gpu_context();
 
-      __USES_TRANSFORM(pcontext);
+      //__USES_TRANSFORM(pcontext);
 
       ::gpu::context_lock contextlock(pcontext);
 
@@ -6215,7 +5872,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       }
 
-      m_pgpushaderTextOut->bind();
+      pcontext->defer_bind(m_pgpushaderTextOut);
       auto color = m_pbrush->m_color;
       //shader.use();
       ::cast<::gpu_opengl::shader>pshader = m_pgpushaderTextOut;
@@ -6280,13 +5937,13 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       ::int_point point(x, y);
       int Δx = 0;
-      __TRANSFORM(point);
+      __transform(point);
 
       //auto pcontext = gpu_context();
 
       point.y() = pcontext->m_rectangle.height() - point.y() - pface->m_iPixelSize;
 
-      glEnable(GL_CULL_FACE);
+      glDisable(GL_CULL_FACE);
       GLCheckError("");
       //glEnable(GL_BLEND);
       //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -6314,7 +5971,7 @@ color = vec4(c.r,c.g, c.b, c.a);
          {
 
 
-            auto pmodelbuffer = m_poolmodelbufferCharacter.get();
+            auto pmodelbuffer = model_buffer(::draw2d::e_model_character);
 
             if (pmodelbuffer->is_new())
             {
@@ -6375,7 +6032,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       GLCheckError("");
       glDisable(GL_CULL_FACE);
       GLCheckError("");
-      m_pgpushaderTextOut->unbind();
+      pcontext->defer_unbind(m_pgpushaderTextOut);
    }
 
    //void graphics::text_out_2024_and_before(double x, double y, const ::scoped_string& scopedstr)

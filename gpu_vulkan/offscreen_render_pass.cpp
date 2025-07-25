@@ -122,159 +122,159 @@ namespace gpu_vulkan
    }
 
 
-   VkResult offscreen_render_pass::submitCommandBuffers(
-      command_buffer* pcommandbuffer,
-      ::gpu::texture * pgputexture,
-      const ::array < VkSemaphore >& semaphoreaWait,
-      const ::array < VkPipelineStageFlags >& stageaWait,
-      const ::array < VkSemaphore >& semaphoreaSignal)
-   {
-      auto& ecommandbufferstate = pcommandbuffer->m_estate;
-      ASSERT(ecommandbufferstate == ::gpu::command_buffer::e_state_recording);
-      ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
-      auto& texture = this->texture(pgputexture);
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
-      //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
-      //{
+   //VkResult offscreen_render_pass::submitCommandBuffers(
+   //   command_buffer* pcommandbuffer,
+   //   ::gpu::texture * pgputexture,
+   //   const ::array < VkSemaphore >& semaphoreaWait,
+   //   const ::array < VkPipelineStageFlags >& stageaWait,
+   //   const ::array < VkSemaphore >& semaphoreaSignal)
+   //{
+   //   auto& ecommandbufferstate = pcommandbuffer->m_estate;
+   //   ASSERT(ecommandbufferstate == ::gpu::command_buffer::e_state_recording);
+   //   ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
+   //   auto& texture = this->texture(pgputexture);
+   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+   //   //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
+   //   //{
 
-      //   vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+   //   //   vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
 
-      //}
+   //   //}
 
-      //imagesInFlight[*imageIndex] = inFlightFences[m_pgpurenderer->get_frame_index()];
+   //   //imagesInFlight[*imageIndex] = inFlightFences[m_pgpurenderer->get_frame_index()];
 
-      VkSubmitInfo submitInfo = {};
-      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+   //   VkSubmitInfo submitInfo = {};
+   //   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-      ::array<VkSemaphore> waitSemaphores(semaphoreaWait);
-      ::array<VkPipelineStageFlags> waitStages(stageaWait);
-      if (texture.m_iImageAvailable > 0)
-      {
-         waitSemaphores.add(texture.m_vksemaphoreAvailable);
-         waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-      }
-      waitStages.append(::transfer(m_stageaWaitToSubmit));
-      waitSemaphores.append(::transfer(m_semaphoreaWaitToSubmit));
-      submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
-      submitInfo.pWaitSemaphores = waitSemaphores.data();
-      submitInfo.pWaitDstStageMask = waitStages.data();
+   //   ::array<VkSemaphore> waitSemaphores(semaphoreaWait);
+   //   ::array<VkPipelineStageFlags> waitStages(stageaWait);
+   //   if (texture.m_iImageAvailable > 0)
+   //   {
+   //      waitSemaphores.add(texture.m_vksemaphoreAvailable);
+   //      waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+   //   }
+   //   waitStages.append(::transfer(m_stageaWaitToSubmit));
+   //   waitSemaphores.append(::transfer(m_semaphoreaWaitToSubmit));
+   //   submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
+   //   submitInfo.pWaitSemaphores = waitSemaphores.data();
+   //   submitInfo.pWaitDstStageMask = waitStages.data();
 
-      VkCommandBuffer vkcommandbuffera[] = { pcommandbuffer->m_vkcommandbuffer };
-      submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = vkcommandbuffera;
+   //   VkCommandBuffer vkcommandbuffera[] = { pcommandbuffer->m_vkcommandbuffer };
+   //   submitInfo.commandBufferCount = 1;
+   //   submitInfo.pCommandBuffers = vkcommandbuffera;
 
-      ::array<VkSemaphore> signalSemaphores(semaphoreaSignal);
+   //   ::array<VkSemaphore> signalSemaphores(semaphoreaSignal);
 
-      //if (signalSemaphores.is_empty()
-        // && texture.m_vksemaphoreRenderFinished)
-      //if(texture.m_vksemaphoreRenderFinished)
-      //{
+   //   //if (signalSemaphores.is_empty()
+   //     // && texture.m_vksemaphoreRenderFinished)
+   //   //if(texture.m_vksemaphoreRenderFinished)
+   //   //{
 
-      //   signalSemaphores.add(texture.m_vksemaphoreRenderFinished);
+   //   //   signalSemaphores.add(texture.m_vksemaphoreRenderFinished);
 
-      //}
+   //   //}
 
-      if (::gpu::current_frame()->m_pgpulayer)
-      {
+   //   if (::gpu::current_frame()->m_pgpulayer)
+   //   {
 
-         //if (m_iSentLayerCount > 0)
-         {
+   //      //if (m_iSentLayerCount > 0)
+   //      {
 
-            ::cast < ::gpu_vulkan::context > pcontextMain = m_pgpucontext->m_pgpudevice->m_pgpucontextMain;
+   //         ::cast < ::gpu_vulkan::context > pcontextMain = m_pgpucontext->m_pgpudevice->m_pgpucontextMain;
 
-            ::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontextMain->get_swap_chain();
+   //         ::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontextMain->get_swap_chain();
 
-            ::cast < layer > playerLast = ::gpu::current_frame()->m_pgpulayer;
+   //         ::cast < layer > playerLast = ::gpu::current_frame()->m_pgpulayer;
 
-            auto vksemaphoreRenderFinished = playerLast->m_vksemaphoreRenderFinished;
-            if (vksemaphoreRenderFinished)
-            {
-               pswapchain->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_TRANSFER_BIT);
-               pswapchain->m_semaphoreaWaitToSubmit.add(vksemaphoreRenderFinished);
-               signalSemaphores.add(vksemaphoreRenderFinished);
-            }
-         }
-
-
-      }
-      
-      signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
-
-      submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
-
-      submitInfo.pSignalSemaphores = signalSemaphores.data();
-
-      //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
-
-      auto queueGraphics = pcontext->graphicsQueue();
-
-      VkFence fence = texture.in_flight_fence();
-
-      bool bCreatedFence = false;
-
-      if (!fence)
-      {
-
-         VkFenceCreateInfo fenceInfo = {
-             .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-             .pNext = NULL,
-             .flags = 0  // 0 = fence starts in unsignaled state
-         };
-
-         VkResult result = vkCreateFence(pcontext->logicalDevice(), &fenceInfo, NULL, &fence);
-         if (result != VK_SUCCESS) {
-            fprintf(stderr, "Failed to create fence\n");
-            // handle error
-         }
-
-         bCreatedFence = true;
-
-      }
-      else
-      {
-         vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
-
-         vkResetFences(pcontext->logicalDevice(), 1, &fence);
-
-      }
-
-      //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
-      if (vkQueueSubmit(queueGraphics, 1, &submitInfo, fence) != VK_SUCCESS)
-      {
-
-         throw ::exception(error_failed,"failed to submit draw command buffer!");
-         
-      }
-
-      ecommandbufferstate = ::gpu::command_buffer::e_state_submitted;
-
-      //vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
-
-      //vkQueueWaitIdle(queueGraphics);
+   //         auto vksemaphoreRenderFinished = playerLast->m_vksemaphoreRenderFinished;
+   //         if (vksemaphoreRenderFinished)
+   //         {
+   //            pswapchain->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_TRANSFER_BIT);
+   //            pswapchain->m_semaphoreaWaitToSubmit.add(vksemaphoreRenderFinished);
+   //            signalSemaphores.add(vksemaphoreRenderFinished);
+   //         }
+   //      }
 
 
-      //vkDestroyFence(pcontext->logicalDevice(), fence, NULL);
+   //   }
+   //   
+   //   signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
 
-      //VK_CHECK(vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
+   //   submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
+
+   //   submitInfo.pSignalSemaphores = signalSemaphores.data();
+
+   //   //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
+
+   //   auto queueGraphics = pcontext->graphicsQueue();
+
+   //   VkFence fence = texture.in_flight_fence();
+
+   //   bool bCreatedFence = false;
+
+   //   if (!fence)
+   //   {
+
+   //      VkFenceCreateInfo fenceInfo = {
+   //          .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+   //          .pNext = NULL,
+   //          .flags = 0  // 0 = fence starts in unsignaled state
+   //      };
+
+   //      VkResult result = vkCreateFence(pcontext->logicalDevice(), &fenceInfo, NULL, &fence);
+   //      if (result != VK_SUCCESS) {
+   //         fprintf(stderr, "Failed to create fence\n");
+   //         // handle error
+   //      }
+
+   //      bCreatedFence = true;
+
+   //   }
+   //   else
+   //   {
+   //      vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+   //      vkResetFences(pcontext->logicalDevice(), 1, &fence);
+
+   //   }
+
+   //   //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
+   //   if (vkQueueSubmit(queueGraphics, 1, &submitInfo, fence) != VK_SUCCESS)
+   //   {
+
+   //      throw ::exception(error_failed,"failed to submit draw command buffer!");
+   //      
+   //   }
+
+   //   ecommandbufferstate = ::gpu::command_buffer::e_state_submitted;
+
+   //   //vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+   //   //vkQueueWaitIdle(queueGraphics);
 
 
-      //VkPresentInfoKHR presentInfo = {};
-      //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+   //   //vkDestroyFence(pcontext->logicalDevice(), fence, NULL);
 
-      //presentInfo.waitSemaphoreCount = 1;
-      //presentInfo.pWaitSemaphores = signalSemaphores;
+   //   //VK_CHECK(vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
 
-      //VkSwapchainKHR swapChains[] = { swapChain };
-      //presentInfo.swapchainCount = 1;
-      //presentInfo.pSwapchains = swapChains;
 
-      //presentInfo.pImageIndices = imageIndex;
+   //   //VkPresentInfoKHR presentInfo = {};
+   //   //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
-      //auto result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
+   //   //presentInfo.waitSemaphoreCount = 1;
+   //   //presentInfo.pWaitSemaphores = signalSemaphores;
 
-      return VK_SUCCESS;
+   //   //VkSwapchainKHR swapChains[] = { swapChain };
+   //   //presentInfo.swapchainCount = 1;
+   //   //presentInfo.pSwapchains = swapChains;
 
-   }
+   //   //presentInfo.pImageIndices = imageIndex;
+
+   //   //auto result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
+
+   //   return VK_SUCCESS;
+
+   //}
 
 
 
@@ -283,45 +283,86 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
-      auto pgputexture = pcontext->m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_frame());
+      ::cast < ::gpu_vulkan::render_target > prendertarget = pcontext->m_pgpurenderer->m_pgpurendertarget;
 
-      auto& texture = this->texture(pgputexture);
+      ::cast < ::gpu_vulkan::texture > ptextureSrc = prendertarget->current_texture(::gpu::current_frame());
 
-      if (texture.m_vkfenceImageInFlight != VK_NULL_HANDLE)
+      auto psynchronizationSrc = ptextureSrc->synchronization();
+
+      if (psynchronizationSrc &&
+         psynchronizationSrc->m_vkfenceImageInFlight != VK_NULL_HANDLE)
       {
 
-         vkWaitForFences(pcontext->logicalDevice(), 1, &texture.m_vkfenceImageInFlight, VK_TRUE, UINT64_MAX);
+         vkWaitForFences(pcontext->logicalDevice(),
+            1,
+            &psynchronizationSrc->m_vkfenceImageInFlight, VK_TRUE, UINT64_MAX);
 
       }
 
-      texture.m_vkfenceImageInFlight= texture.in_flight_fence();
+      if (psynchronizationSrc)
+      {
+
+         psynchronizationSrc->m_vkfenceImageInFlight = psynchronizationSrc->in_flight_fence();
+
+      }
 
       VkSubmitInfo submitInfo = {};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-      VkSemaphore waitSemaphores[] = { texture.m_vksemaphoreRenderFinished };
-      VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-      submitInfo.waitSemaphoreCount = 1;
-      submitInfo.pWaitSemaphores = waitSemaphores;
-      submitInfo.pWaitDstStageMask = waitStages;
+      ::array<VkSemaphore> waitSemaphores;
+      ::array<VkPipelineStageFlags> waitStages;
+      if (psynchronizationSrc &&
+         psynchronizationSrc->m_vksemaphoreRenderFinished)
+      {
+         waitSemaphores.add(psynchronizationSrc->m_vksemaphoreRenderFinished);
+         waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+      } 
+      submitInfo.waitSemaphoreCount = minimum(waitSemaphores.size(), waitStages.size());
+      submitInfo.pWaitSemaphores = waitSemaphores.data();
+      submitInfo.pWaitDstStageMask = waitStages.data();
 
       submitInfo.commandBufferCount = 1;
       submitInfo.pCommandBuffers = &buffer;
 
-      VkSemaphore signalSemaphores[] = { texture.m_vksemaphoreAvailable };
-      submitInfo.signalSemaphoreCount = 1;
-      submitInfo.pSignalSemaphores = signalSemaphores;
-      texture.m_iImageAvailable++;
-      if (texture.m_iImageAvailable <= 0)
+      ::array<VkSemaphore> signalSemaphores;
+      if (psynchronizationSrc &&
+         psynchronizationSrc->m_vksemaphoreAvailable)
       {
-         texture.m_iImageAvailable=1;
+         signalSemaphores.add(psynchronizationSrc->m_vksemaphoreAvailable);
+
+      }
+      
+      submitInfo.signalSemaphoreCount = signalSemaphores.size();
+      submitInfo.pSignalSemaphores = signalSemaphores.data();
+
+      if (psynchronizationSrc)
+      {
+         psynchronizationSrc->m_iImageAvailable++;
+         if (psynchronizationSrc->m_iImageAvailable <= 0)
+         {
+         
+            psynchronizationSrc->m_iImageAvailable = 1;
+         }
+
       }
 
-      auto fence = texture.in_flight_fence();
+      VkFence fence = VK_NULL_HANDLE;
+      
+      if (psynchronizationSrc)
+      {
+         fence = psynchronizationSrc->in_flight_fence();
 
-      vkResetFences(pcontext->logicalDevice(), 1, &fence);
 
-      if (vkQueueSubmit(pcontext->graphicsQueue(), 1, &submitInfo, texture.in_flight_fence()) != VK_SUCCESS)
+      }
+
+      if (fence)
+      {
+
+         vkResetFences(pcontext->logicalDevice(), 1, &fence);
+
+      }
+
+      if (vkQueueSubmit(pcontext->graphicsQueue(), 1, &submitInfo, fence) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed,"failed to submit draw command buffer!");

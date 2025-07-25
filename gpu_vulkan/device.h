@@ -59,6 +59,7 @@ namespace gpu_vulkan
       string_array m_straSupportedExtensions;
       ///** @brief Default command pool for the graphics queue family index */
       VkCommandPool m_vkcommandpool;
+      VkCommandPool m_vkcommandpoolPresent;
 
       /** @brief Contains queue family indices */
       vulkan::QueueFamilyIndices m_queuefamilyindices;
@@ -204,6 +205,7 @@ namespace gpu_vulkan
 
 
       VkCommandPool getCommandPool() { return m_vkcommandpool; }
+      VkCommandPool getPresentCommandPool() { return m_vkcommandpoolPresent; }
       VkDevice logicalDevice() { return m_vkdevice; }
 
       //VkQueue graphicsQueue() { return m_vkqueueGraphics; }

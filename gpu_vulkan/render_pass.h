@@ -15,30 +15,6 @@
 namespace gpu_vulkan
 {
 
-   struct texture_t
-   {
-
-      ::gpu_vulkan::render_pass *   m_prenderpass = nullptr;
-      ::gpu_vulkan::texture *       m_ptexture = nullptr;
-
-      VkFramebuffer                 m_vkframebuffer = VK_NULL_HANDLE;
-
-
-      bool                          m_bAdvancedPipelineSynchronization = false;
-      int                           m_iImageAvailable = -1;
-      VkSemaphore                   m_vksemaphoreAvailable = VK_NULL_HANDLE;
-      VkSemaphore                   m_vksemaphoreRenderFinished = VK_NULL_HANDLE;
-      VkFence                       m_vkfenceInFlight2 = VK_NULL_HANDLE;
-      VkFence                       m_vkfenceImageInFlight = VK_NULL_HANDLE;
-
-      texture_t();
-      ~texture_t();
-
-      VkFramebuffer get_frame_buffer();
-
-      VkFence in_flight_fence();
-
-   };
 
 
 
@@ -48,6 +24,8 @@ namespace gpu_vulkan
    public:
 
       bool m_bWithDepth = false;
+      bool m_bLoadClearOp = false;
+
 
 
       ///::pointer < ::pointer_array < ::gpu::texture > > m_ptexturea;
@@ -56,15 +34,18 @@ namespace gpu_vulkan
       VkExtent2D m_extent;
       ::pointer < render_pass > m_prenderpassOld;
 
-      map < ::gpu::texture*, texture_t > m_mapTexture;
+      //map < ::gpu::texture*, texture_t > m_mapTexture;
       
       VkRenderPass m_vkrenderpass;
 
       ///::pointer < renderer >  m_pgpurenderer;
 
-      ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
-      ::array < VkSemaphore> m_semaphoreaWaitToSubmit;
-      ::array < VkPipelineStageFlags > m_stageaWaitToSubmit;
+      //::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
+      //::array < VkSemaphore> m_semaphoreaWaitToSubmit;
+      //::array < VkPipelineStageFlags > m_stageaWaitToSubmit;
+
+
+
       //::array<VkImage> depthImages;
       //::array<VkDeviceMemory> depthImageMemorys;
       //::array<VkImageView> depthImageViews;
@@ -78,7 +59,7 @@ namespace gpu_vulkan
       //::pointer<render_pass> m_pvkcrenderpassOld;
 
       bool                 m_bNeedRebuild;
-      bool                 m_bLoadClearOp = false;
+      //bool                 m_bLoadClearOp = false;
 
       // static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -93,9 +74,8 @@ namespace gpu_vulkan
 
       virtual void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {});
 
-      virtual void on_before_begin_render(frame* pframe, ::gpu::texture * pgputexture);
+      //virtual void on_before_begin_render(frame* pframe, ::gpu::texture * pgputexture);
 
-      virtual texture_t& texture(::gpu::texture* pgputexture);
 
       virtual int get_frame_index();
       //virtual ::gpu::texture* current_texture();
@@ -119,12 +99,12 @@ namespace gpu_vulkan
       //virtual VkResult acquireNextImage(uint32_t* imageIndex);
       //virtual VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
       virtual VkResult acquireNextImage();
-      virtual VkResult submitCommandBuffers(
-         command_buffer* pcommandbuffer,
+      ///virtual VkResult submitCommandBuffers(
+         /*command_buffer* pcommandbuffer,
          ::gpu::texture * pgputexture,
          const ::array < VkSemaphore >& semaphoreaWait,
          const ::array < VkPipelineStageFlags >& stageaWait,
-         const ::array < VkSemaphore >& semaphoreaSignal);
+         const ::array < VkSemaphore >& semaphoreaSignal);*/
 
       //bool compareFormats(const render_pass& renderpass) const {
       //   return renderpass.m_formatDepth == m_formatDepth &&

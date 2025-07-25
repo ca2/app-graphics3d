@@ -177,10 +177,13 @@ namespace app_graphics3d_continuum
       auto opacity = ::opacity(48);
 
       pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
-
+      ::get_task()->payload("debug") = 123;
       pgraphics->fill_rectangle(rectangleX, argb(108, 128, 128, 128));
-
+      ::get_task()->payload("debug") = 0;
+      
+      
       ::user::graphics3d::_001OnDraw(pgraphics);
+
 
       {
 

@@ -53,10 +53,10 @@ namespace vulkan
 
    struct QueueFamilyIndices
    {
-      int graphicsFamily;
-      int presentFamily;
-      int computeFamily;
-      int transferFamily;
+      int graphicsFamily = -1;
+      int presentFamily = -1;
+      int computeFamily = -1;
+      int transferFamily = -1;
       bool graphicsFamilyHasValue = false;
       bool presentFamilyHasValue = false;
       bool computeFamilyHasValue = false;

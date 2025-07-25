@@ -10,7 +10,6 @@ namespace gpu_vulkan
 
 
    class swap_chain :
-      virtual public ::gpu_vulkan::render_pass,
       virtual public ::gpu::swap_chain
    {
    public:
@@ -20,6 +19,10 @@ namespace gpu_vulkan
       uint32_t                      m_uCurrentSwapChainImage;
       ::pointer < ::gpu::context >  m_pgpucontextSwapChain;
       ::pointer < ::gpu_vulkan::shader > m_pshaderPresent;
+      ::pointer < ::gpu_vulkan::render_pass > m_prenderpass;
+
+
+      bool m_bNeedRebuild;
 
       //swap_chain(renderer* pgpurenderer, VkExtent2D windowExtent);
       swap_chain();
@@ -27,10 +30,10 @@ namespace gpu_vulkan
 
 
       //int get_frame_index();
-      bool should_use_advanced_pipeline_synchronization() override;
+      virtual bool should_use_advanced_pipeline_synchronization();
 
       //virtual ::gpu::texture* current_texture();
-      void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {}) override;
+      //virtual void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {});
       void initialize_gpu_swap_chain(::gpu::renderer* pgpurenderer) override;
       //swap_chain_render_pass(const swap_chain_render_pass&) = delete;
       //swap_chain_render_pass& operator=(const swap_chain_render_pass&) = delete;
@@ -49,15 +52,15 @@ namespace gpu_vulkan
       //}
       VkFormat findDepthFormat();
 
-      int get_frame_index() override;
+      //int get_frame_index() override;
 
-      VkResult acquireNextImage() override;
-      VkResult submitCommandBuffers(
+      virtual VkResult acquireNextImage();
+      virtual VkResult submitCommandBuffers2(
          command_buffer * pcommandbuffer,
          ::gpu::texture * pgputexture,
          const ::array < VkSemaphore >& semaphoreaWait,
          const ::array < VkPipelineStageFlags >& stageaWait,
-         const ::array < VkSemaphore >& semaphoreaSignal) override;
+         const ::array < VkSemaphore >& semaphoreaSignal);
       virtual int get_image_index() const;
       //bool compareSwapFormats(const swap_chain_render_pass& m_swapchain) const {
       //   return m_swapchain.swapChainDepthFormat == swapChainDepthFormat &&
@@ -66,13 +69,13 @@ namespace gpu_vulkan
 
       //::gpu::texture* current_texture() override;
 
-
+      void create_render_pass();
    //public:
-      void on_init_render_pass() override;
+      //void on_init_render_pass() override;
       void create_images();
       //void createImageViews();
       //void createDepthResources();
-      void createRenderPass();
+      //void createRenderPass();
       //void createFramebuffers();
       //void createSyncObjects();
 

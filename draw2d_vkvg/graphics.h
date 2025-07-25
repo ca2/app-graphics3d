@@ -32,6 +32,7 @@ namespace draw2d_vkvg
    {
    public:
 
+      bool                             m_bBeginDrawEndDrawMode;
       VkvgDevice                       m_vkvgdevice;
       VkvgSurface                      m_vkvgsurface;
       VkvgContext                      m_pdc;
@@ -694,6 +695,9 @@ namespace draw2d_vkvg
       //void on_end_draw() override;
       void on_present() override;
 
+      virtual void _create_context();
+
+      virtual void _destroy_context();
       
       bool _is_ok() const override;
 

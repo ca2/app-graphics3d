@@ -124,7 +124,7 @@ namespace gpu_vulkan
 
       void _create_pipeline_layout(int iPushPropertiesSize);
 
-
+      virtual render_pass* render_pass2();
       virtual void create_descriptor_layout();
 
       void draw() override;

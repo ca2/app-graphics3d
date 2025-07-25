@@ -179,18 +179,18 @@ namespace gpu_vulkan
    //}
 
 
-   void renderer::on_new_frame()
-   {
+   //void renderer::on_new_frame()
+   //{
 
-      ::gpu::renderer::on_new_frame();
+   //   ::gpu::renderer::on_new_frame();
 
-      //m_iFrameSerial2++;
+   //   //m_iFrameSerial2++;
 
-      //m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % render_pass::MAX_FRAMES_IN_FLIGHT;
+   //   //m_iCurrentFrame2 = (m_iCurrentFrame2 + 1) % render_pass::MAX_FRAMES_IN_FLIGHT;
 
-      //on_happening(e_happening_new_frame);
+   //   //on_happening(e_happening_new_frame);
 
-   }
+   //}
 
 
    //void renderer::restart_frame_counter()
@@ -1146,10 +1146,11 @@ namespace gpu_vulkan
       waitStages.add(vkpipelinestageflagsWait);
 
       ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
-      auto prenderpass = prendertarget->render_pass();
+      //::cast < texture > ptexture = pgputexture;
+         //auto prenderpass = prendertarget->render_pass();
 
-      auto& texture = prenderpass->texture(pgputexture);
-      VkSemaphore vksemaphore = texture.m_vksemaphoreRenderFinished;
+      auto psynchronization = ptexture->synchronization();
+      VkSemaphore vksemaphore = psynchronization->m_vksemaphoreRenderFinished;
       waitSemaphores.add(vksemaphore);
       submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
       submitInfo.pWaitSemaphores = waitSemaphores.data();
@@ -1771,13 +1772,14 @@ namespace gpu_vulkan
 
       ::cast < render_target > prendertarget = m_pgpurendertarget;
 
-      ::cast < render_pass > prenderpass = prendertarget->render_pass();
+      //::cast < render_pass > prenderpass = prendertarget->render_pass();
 
       auto ptexture = prendertarget->current_texture(::gpu::current_frame());
 
-      auto result = prenderpass->submitCommandBuffers(
-         pcommandbuffer,
+      auto result = pcommandbuffer->submitCommandBuffers(
+         //pcommandbuffer,
          ptexture,
+         {},
          {},
          {},
          {});
@@ -2463,12 +2465,12 @@ namespace gpu_vulkan
 
          auto rectangleTarget = ptextureSrc->m_rectangleTarget;
 
-         auto& texture = m_prenderpassCopy->texture(pgputextureTarget);
+         //auto& synchronization = ptextureDst->synchronization(m_pgpurendertarget);
 
          VkRenderPassBeginInfo renderPassInfo = {
                .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                .renderPass = m_prenderpassCopy->m_vkrenderpass,
-               .framebuffer = texture.get_frame_buffer(),
+               .framebuffer = ptextureDst->framebuffer(m_prenderpassCopy),
                .renderArea = {{rectangleTarget.left(), rectangleTarget.top()},
             {(uint32_t)rectangleTarget.width(),(uint32_t)rectangleTarget.height()}},
             //.clearValueCount = 1,
@@ -3233,9 +3235,10 @@ namespace gpu_vulkan
 
          if (pswapchain)
          {
-            pswapchain->m_stageaWaitToSubmit.clear();
-            pswapchain->m_semaphoreaWaitToSubmit.clear();
-
+            //pswapchain->m_stageaWaitToSubmit.clear();
+            //pswapchain->m_semaphoreaWaitToSubmit.clear();
+            pcommandbuffer->m_stageaWaitToSubmit.clear();
+            pcommandbuffer->m_semaphoreaWaitToSubmit.clear();
          }
 
       }
@@ -3254,7 +3257,7 @@ namespace gpu_vulkan
 
       ::cast < render_target > prendertarget = m_pgpurendertarget;
 
-      auto prenderpass = prendertarget->render_pass();
+      //auto prenderpass = prendertarget->render_pass();
 
       ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
 
@@ -3292,18 +3295,18 @@ namespace gpu_vulkan
 
       ::cast < texture > ptextureDepth;
 
-      if (pframeParam->m_pgpulayer)
-      {
+      //if (pframeParam->m_pgpulayer)
+      //{
 
          ptextureDepth = ptexture->get_depth_texture();
 
-      }
-      else
-      {
+      //}
+      //else
+      //{
 
-         ptextureDepth = m_pgpurendertarget->current_depth_texture(::gpu::current_frame());
+        // ptextureDepth = m_pgpurendertarget->current_depth_texture(::gpu::current_frame());
 
-      }
+      //}
 
       if (ptextureDepth)
       {
@@ -3341,7 +3344,42 @@ namespace gpu_vulkan
 
       }
 
-      prenderpass->on_before_begin_render(pframe, ptexture);
+      //prenderpass->on_before_begin_render(pframe, ptexture);
+
+      //::cast < ::gpu::texture > ptextureCurrent = current_texture();
+
+      {
+
+         ::cast < ::gpu_vulkan::texture > ptextureCurrent = ptexture;
+
+         ::cast < command_buffer > pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+         ptextureCurrent->_set_state(
+            pcommandbuffer,
+            {
+            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+            }
+         );
+
+         ::cast < ::gpu_vulkan::texture > ptextureDepth = ptextureCurrent->m_ptextureDepth;
+
+         if (ptextureDepth)
+         {
+
+            ptextureDepth->_set_state(
+               pcommandbuffer,
+               {
+               VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+               VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+               VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
+               }
+            );
+
+         }
+
+      }
 
       //if (m_bOffScreen)
       {
@@ -3372,14 +3410,19 @@ namespace gpu_vulkan
 
          //}
 
+         ::cast < context > pcontext = m_pgpucontext;
+
          VkViewport viewport{};
          viewport.x = 0.0f;
          viewport.y = 0.0f;
-         viewport.width = static_cast<float>(prenderpass->getExtent().width);
-         viewport.height = static_cast<float>(prenderpass->getExtent().height);
+         viewport.width = static_cast<float>(pcontext->m_rectangle.width());
+         viewport.height = static_cast<float>(pcontext->m_rectangle.height());
          viewport.minDepth = 0.0f;
          viewport.maxDepth = 1.0f;
-         VkRect2D scissor{ {0, 0}, prenderpass->getExtent() };
+         VkRect2D scissor{ {0, 0}, {pcontext->m_rectangle.width(),
+            pcontext->m_rectangle.height()
+         
+         } };
          vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
          vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
 
@@ -3598,38 +3641,40 @@ namespace gpu_vulkan
    void renderer::on_begin_frame()
    {
 
-      ::cast < render_target > prendertarget = m_pgpurendertarget;
+      //::cast < render_target > prendertarget = m_pgpurendertarget;
 
-      auto prenderpass = prendertarget->render_pass();
+      //auto prenderpass = prendertarget->render_pass();
 
 
-      if (m_pgpucontext->m_eoutput != ::gpu::e_output_swap_chain)
-      {
+      //if (m_pgpucontext->m_eoutput != ::gpu::e_output_swap_chain)
+      //{
 
-         auto result = prenderpass->acquireNextImage();
+      //   ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
 
-         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-            //defer_layout();
-            prenderpass->on_init_render_pass();
-            //throw ::exception(todo, "resize happened?!?!");
-            return;
-         }
-         if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-            throw ::exception(error_failed, "Failed to aquire swap chain image");
-         }
+      //   auto result = pswapchain->acquireNextImage();
 
-         //VkCommandBufferBeginInfo beginInfo{};
-         //beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+      //   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+      //      //defer_layout();
+      //      pswapchain->initialize_gpu_swap_chain(this);
+      //      //throw ::exception(todo, "resize happened?!?!");
+      //      return;
+      //   }
+      //   if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+      //      throw ::exception(error_failed, "Failed to aquire swap chain image");
+      //   }
 
-         //if (vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo) != VK_SUCCESS)
-         //{
+      //   //VkCommandBufferBeginInfo beginInfo{};
+      //   //beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-         //   throw ::exception(error_failed, "failed to begin recording command buffer!");
+      //   //if (vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo) != VK_SUCCESS)
+      //   //{
 
-         //}
+      //   //   throw ::exception(error_failed, "failed to begin recording command buffer!");
 
-         //pcommandbuffer->m_estate = ::gpu::command_buffer::e_state_recording;
-      }
+      //   //}
+
+      //   //pcommandbuffer->m_estate = ::gpu::command_buffer::e_state_recording;
+      //}
 
 
 
@@ -3744,9 +3789,9 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::texture > ptexture = m_pgpurendertarget->current_texture(::gpu::current_frame());
 
-      auto& texture = prendertarget->render_pass()->texture(ptexture);
+      auto psynchronization = ptexture->synchronization();
 
-      VkFence fence = texture.in_flight_fence();
+      VkFence fence = psynchronization->in_flight_fence();
 
       vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
 
@@ -3763,11 +3808,18 @@ namespace gpu_vulkan
       //::cast < ::gpu_vulkan::texture > ptexture = m_pgpurendertarget->current_texture(::gpu::current_frame());
       ::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontext->get_swap_chain();
 
-      auto ptexture = pswapchain->current_swap_chain_texture();
+      ::cast < ::gpu_vulkan::texture > ptexture = pswapchain->current_swap_chain_texture();
 
-      auto& texture = pswapchain->texture(ptexture);
+      auto psynchronization = ptexture->synchronization();
 
-      VkFence fence = texture.in_flight_fence();
+      VkFence fence = VK_NULL_HANDLE;
+      
+      if (psynchronization)
+      {
+       
+         fence = psynchronization->in_flight_fence();
+
+      }
 
       vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
 
@@ -3837,19 +3889,6 @@ namespace gpu_vulkan
 
       }
 
-      auto player = ::gpu::current_frame()->m_pgpulayer;
-
-      if (player)
-      {
-
-         auto ptextureTarget = player->texture();
-
-         auto ptextureSource = m_pgpurendertarget->current_texture(player->m_pgpuframe);
-
-         m_pgpucontext->copy(ptextureTarget, ptextureSource);
-
-      }
-
       if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
       {
 
@@ -3864,23 +3903,21 @@ namespace gpu_vulkan
 
       }
 
-      render_pass* prenderpassOutput;
+      //render_pass* prenderpassOutput;
 
       if (eoutput == ::gpu::e_output_swap_chain)
       {
 
          ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
 
-         if (pswapchain->::gpu_vulkan::render_pass::m_pgpucontext->m_pgpurenderer)
+         if (pswapchain->m_pgpucontext->m_pgpurenderer)
          {
 
-            pswapchain->update_render_pass(
-               pswapchain->::gpu_vulkan::render_pass::m_pgpucontext,
-               pswapchain->m_prenderpassOld);
+            pswapchain->initialize_gpu_swap_chain(pswapchain->m_pgpucontext->m_pgpurenderer);
 
          }
 
-         prenderpassOutput = pswapchain;
+         //prenderpassOutput = pswapchain;
 
       }
       else
@@ -3888,7 +3925,7 @@ namespace gpu_vulkan
 
          ::cast < render_target > prendertargetOutput = m_pgpurendertarget;
 
-         prenderpassOutput = prendertargetOutput->render_pass();
+         //prenderpassOutput = prendertargetOutput->render_pass();
 
          pgputextureOutput = ptexture;
 
@@ -3899,10 +3936,28 @@ namespace gpu_vulkan
       if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
       {
 
-         auto result = prenderpassOutput->submitCommandBuffers(
-            pcommandbuffer,
-            pgputextureOutput,
-            {}, {}, {});
+         VkResult result;
+
+         if (eoutput == ::gpu::e_output_swap_chain)
+         {
+
+            ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
+
+            result = pswapchain->submitCommandBuffers2(
+               pcommandbuffer,
+               pgputextureOutput,
+               {}, {}, {});
+
+         }
+         else
+         {
+
+            result = pcommandbuffer->submitCommandBuffers(
+               pgputextureOutput,
+               {},
+               {}, {}, {});
+
+         }
 
          if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
             m_bNeedToRecreateSwapChain)
@@ -3924,10 +3979,18 @@ namespace gpu_vulkan
 
       isFrameStarted = false;
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      //auto eoutput = m_pgpucontext->m_eoutput;
+
+      if (eoutput == ::gpu::e_output_cpu_buffer)
       {
 
          sample();
+
+      }
+      else if (eoutput == ::gpu::e_output_gpu_buffer)
+      {
+
+         defer_end_frame_layer_copy();
 
       }
       //else if (m_eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
@@ -4000,7 +4063,7 @@ namespace gpu_vulkan
 
       m_pgpucontext->set_placement(rectangle);
 
-      on_new_frame();
+      //on_new_frame();
 
       ::cast <texture > ptexture = pgputexture;
 
@@ -4139,13 +4202,13 @@ namespace gpu_vulkan
 
       ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
 
-      ::cast < render_pass > prenderpass = prendertarget->render_pass();
+      //::cast < render_pass > prenderpass = prendertarget->render_pass();
 
       ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
 
       defer_update_renderer();
 
-      on_new_frame();
+      //on_new_frame();
 
       if (1)
       {
@@ -4214,10 +4277,10 @@ namespace gpu_vulkan
          ::array<VkSemaphore> waitSemaphores;
          ::array<VkPipelineStageFlags> waitStages;
          waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-         ::cast < render_pass > pgpurenderpass = prenderer->m_pgpurendertarget;
+         //::cast < render_pass > pgpurenderpass = prenderer->m_pgpurendertarget;
 
-         auto& texture = pgpurenderpass->texture(ptexture);
-         waitSemaphores.add(texture.m_vksemaphoreRenderFinished);
+         auto psynchronization = ptexture->synchronization();
+         waitSemaphores.add(psynchronization->m_vksemaphoreRenderFinished);
          submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
          submitInfo.pWaitSemaphores = waitSemaphores.data();
          submitInfo.pWaitDstStageMask = waitStages.data();
@@ -4239,13 +4302,15 @@ namespace gpu_vulkan
 
          ::cast < render_target > prendertargetSrc = prendererSrc->m_pgpurendertarget;
 
-         ::cast < render_pass > prenderpassSrc = prendertargetSrc->render_pass();
+         //::cast < render_pass > prenderpassSrc = prendertargetSrc->render_pass();
 
-         auto ptextureSrc = prendertargetSrc->m_ptexturea->element_at(prendertargetSrc->get_frame_index());
+         ::cast < ::gpu_vulkan::texture > ptextureSrc = prendertargetSrc->m_ptexturea->element_at(prendertargetSrc->get_frame_index());
 
-         auto& textureSrc = prenderpassSrc->texture(ptextureSrc);
+         auto psynchronizationSrc = ptextureSrc->synchronization();
 
-         prenderpass->m_semaphoreaSignalOnSubmit.add(textureSrc.m_vksemaphoreAvailable);
+         ::cast < command_buffer > pcommandbuffer = pframe->m_pgpucommandbuffer;
+
+         pcommandbuffer->m_semaphoreaSignalOnSubmit.add(psynchronizationSrc->m_vksemaphoreAvailable);
 
 
          //on_begin_frame();
@@ -4389,7 +4454,7 @@ namespace gpu_vulkan
 
       ::cast < render_target > prendertargetSource = prendererSource->m_pgpurendertarget;
 
-      auto prenderpassSource = prendertargetSource->render_pass();
+      //auto prenderpassSource = prendertargetSource->render_pass();
 
       ::cast < texture > ptexture = prendertargetSource->current_texture(::gpu::current_frame());
 
@@ -4414,9 +4479,15 @@ namespace gpu_vulkan
       ::array<VkPipelineStageFlags> waitStages;
       waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
-      auto ptextureSource = prendertargetSource->m_ptexturea->element_at(prendertargetSource->get_frame_index());
-      auto& textureSource = prenderpassSource->texture(ptextureSource);
-      waitSemaphores.add(textureSource.m_vksemaphoreRenderFinished);
+      ::cast < ::gpu_vulkan::texture> ptextureSource = prendertargetSource->m_ptexturea->element_at(prendertargetSource->get_frame_index());
+      auto psynchronizationSource = ptextureSource->synchronization();
+      if (psynchronizationSource
+         && psynchronizationSource->m_vksemaphoreRenderFinished)
+      {
+         waitSemaphores.add(psynchronizationSource->m_vksemaphoreRenderFinished);
+
+      }
+      
       submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
       submitInfo.pWaitSemaphores = waitSemaphores.data();
       submitInfo.pWaitDstStageMask = waitStages.data();
@@ -4673,14 +4744,17 @@ namespace gpu_vulkan
 
          //vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer,
 
+         ::cast < render_target > prendertarget = m_pgpurendertarget;
+
          auto rectangleTarget = ptextureSrc->m_rectangleTarget;
 
-         auto& texture = m_prenderpassBlend2->texture(ptextureTarget);
+         auto vkframebuffer = ptextureDst->framebuffer(m_pshaderBlend2->render_pass2());
+         //auto& synchronization = ptextureDst->synchronization(m_pgpurendertarget);
 
          VkRenderPassBeginInfo renderPassInfo = {
                .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                .renderPass = m_prenderpassBlend2->m_vkrenderpass,
-               .framebuffer = texture.m_vkframebuffer,
+               .framebuffer = vkframebuffer,
                .renderArea = {{rectangleTarget.left(), rectangleTarget.top()},
             {(uint32_t)rectangleTarget.width(),(uint32_t)rectangleTarget.height()}},
             //.clearValueCount = 1,

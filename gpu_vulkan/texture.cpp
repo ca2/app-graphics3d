@@ -7,6 +7,7 @@
 #include "device.h"
 #include "initializers.h"
 #include "physical_device.h"
+#include "render_target.h"
 #include "renderer.h"
 #include "shader.h"
 #include "texture.h"
@@ -15,6 +16,179 @@
 
 namespace gpu_vulkan
 {
+
+
+   texture_synchronization::texture_synchronization()
+   {
+
+   }
+
+
+   texture_synchronization::~texture_synchronization()
+   {
+
+
+   }
+
+
+   VkFramebuffer texture::framebuffer(::gpu_vulkan::render_pass* prenderpass)
+   {
+
+      auto& renderpass = m_mapRenderPass[prenderpass];
+
+      if (!renderpass.m_vkframebuffer)
+      {
+
+         renderpass.m_vkframebuffer = _framebuffer(prenderpass);
+
+      }
+
+      return renderpass.m_vkframebuffer;
+   }
+
+
+   //   VkFramebuffer texture_synchronization::_get_frame_buffer(::gpu_vulkan::render_pass * prenderpass)
+   //   {
+
+   //   VkImageView imageView = m_ptexture->get_image_view();
+
+   //   VkImageView attachments[2];
+
+   //   attachments[0] = imageView;
+
+   //   int iAttachmentCount;
+
+   //   if (prenderpass->m_bWithDepth)
+   //   {
+
+   //      VkImageView depthImageView = m_ptexture->get_depth_image_view();
+
+   //      attachments[1] = depthImageView;
+
+   //      iAttachmentCount = 2;
+
+   //   }
+   //   else
+   //   {
+
+   //      iAttachmentCount = 1;
+
+   //   }
+
+   //   VkExtent2D extent = m_prenderpass->getExtent();
+   //   VkFramebufferCreateInfo framebufferInfo = {};
+   //   framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+   //   framebufferInfo.renderPass = m_prenderpass->m_vkrenderpass;
+   //   framebufferInfo.attachmentCount = iAttachmentCount;
+   //   framebufferInfo.pAttachments = attachments;
+   //   framebufferInfo.width = extent.width;
+   //   framebufferInfo.height = extent.height;
+   //   framebufferInfo.layers = 1;
+
+   //   auto& vkframebuffer = m_vkframebuffer;
+
+   //   ::cast < ::gpu_vulkan::context > pcontext = m_prenderpass->m_pgpucontext;
+
+   //   if (vkCreateFramebuffer(
+   //      pcontext->logicalDevice(),
+   //      &framebufferInfo,
+   //      nullptr,
+   //      &vkframebuffer) != VK_SUCCESS)
+   //   {
+
+   //      throw ::exception(error_failed, "failed to create framebuffer!");
+
+   //   }
+
+   //   debug() << "created framebuffer " << vkframebuffer << "with image view " << imageView;
+
+   //   return vkframebuffer;
+
+   //}
+
+
+   VkFence texture_synchronization::in_flight_fence()
+   {
+
+      if (!m_vkfenceInFlight2)
+      {
+
+         ::cast < ::gpu_vulkan::context > pcontext = m_ptexture->m_pgpurenderer->m_pgpucontext;
+
+         VkFenceCreateInfo fenceInfo = {};
+         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+         if (vkCreateFence(
+            pcontext->logicalDevice(),
+            &fenceInfo,
+            nullptr,
+            &m_vkfenceInFlight2) != VK_SUCCESS
+            )
+         {
+
+            throw ::exception(error_failed, "failed to create fence!");
+
+         }
+
+      }
+
+      return m_vkfenceInFlight2;
+
+   }
+
+
+   texture_synchronization * texture::synchronization()
+   {
+
+      //::cast<::gpu_vulkan::render_target> prendertarget = pgpurendertarget;
+
+      auto& psynchronization = this->m_ptexturesynchronization;
+
+      //auto& synchronization = this->m_mapSynchronization[prendertarget];
+
+      if (!psynchronization)
+      {
+
+         __construct_new(psynchronization);
+
+         ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+         //synchronization.m_prendertarget = nullptr;
+
+         psynchronization->m_ptexture = this;
+
+         VkSemaphoreCreateInfo semaphoreInfo = {};
+         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+         psynchronization->m_iImageAvailable = 0;
+
+         if (vkCreateSemaphore(
+            pcontext->logicalDevice(),
+            &semaphoreInfo,
+            nullptr,
+            &psynchronization->m_vksemaphoreAvailable
+         ) != VK_SUCCESS
+
+            ||
+
+            vkCreateSemaphore(
+               pcontext->logicalDevice(),
+               &semaphoreInfo,
+               nullptr, &psynchronization->m_vksemaphoreRenderFinished
+            ) != VK_SUCCESS)
+
+         {
+
+            throw ::exception(error_failed, "failed to create synchronization objects for a frame!");
+
+         }
+
+      }
+
+      return psynchronization;
+
+   }
 
 
    texture::texture()
@@ -687,7 +861,7 @@ namespace gpu_vulkan
    }
 
 
-   VkFramebuffer texture::get_framebuffer(::gpu_vulkan::render_pass* prenderpass)
+   VkFramebuffer texture::_framebuffer(::gpu_vulkan::render_pass* prenderpass)
    {
 
       if (m_bCpuRead)
@@ -712,8 +886,15 @@ namespace gpu_vulkan
 
       int iAttachmentCount;
 
-      if (m_ptextureDepth)
+      if (prenderpass->m_bWithDepth)
       {
+
+         if (!m_bWithDepth)
+         {
+
+            m_bWithDepth = true;
+
+         }
 
          VkImageView depthImageView = get_depth_image_view();
 
@@ -788,7 +969,7 @@ namespace gpu_vulkan
       else
       {
 
-         ASSERT(m_bWithDepth);
+         //ASSERT(m_bWithDepth);
 
          ::cast < texture > ptexture = get_depth_texture();
 

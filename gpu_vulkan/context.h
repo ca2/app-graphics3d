@@ -225,7 +225,7 @@ namespace gpu_vulkan
          VkBufferUsageFlags usage,
          VkMemoryPropertyFlags properties);
 
-      ::pointer < command_buffer > beginSingleTimeCommands();
+      ::pointer < command_buffer > beginSingleTimeCommands(bool bPresentQueue = false);
       void endSingleTimeCommands(command_buffer * pcommandbuffer);
       void endSingleTimeCommands(command_buffer * pcommandbuffer, int iSubmitCount, VkSubmitInfo * psubmitinfo);
       void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

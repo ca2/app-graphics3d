@@ -52,29 +52,31 @@ namespace gpu_vulkan
    void layer::create_command_buffers()
    {
 
-      m_commandbufferaLayer.set_size(m_pgpurenderer->m_iDefaultFrameCount);
+      ::gpu::layer::create_command_buffers();
 
-      for (auto& pcommandbufferLayer : m_commandbufferaLayer)
-      {
+      //m_commandbufferaLayer.set_size(m_pgpurenderer->m_iDefaultFrameCount);
 
-         __defer_construct(pcommandbufferLayer);
+      //for (auto& pcommandbufferLayer : m_commandbufferaLayer)
+      //{
 
-         pcommandbufferLayer->initialize_command_buffer(m_pgpurenderer->m_pgpurendertarget);
+      //   __defer_construct(pcommandbufferLayer);
 
-      }
+      //   pcommandbufferLayer->initialize_command_buffer(m_pgpurenderer->m_pgpurendertarget);
 
-      //commandBuffers.resize(render_target_view::MAX_FRAMES_IN_FLIGHT);
-
-      //VkCommandBufferAllocateInfo allocInfo{};
-      //allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-      //allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      //allocInfo.commandPool = m_pgpucontext->m_pgpudevice->getCommandPool();
-      //allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
-
-      //if (vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &allocInfo, commandBuffers.data()) !=
-      //   VK_SUCCESS) {
-      //   throw ::exception(error_failed, "failed to allocate command buffers!");
       //}
+
+      ////commandBuffers.resize(render_target_view::MAX_FRAMES_IN_FLIGHT);
+
+      ////VkCommandBufferAllocateInfo allocInfo{};
+      ////allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+      ////allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+      ////allocInfo.commandPool = m_pgpucontext->m_pgpudevice->getCommandPool();
+      ////allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
+
+      ////if (vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &allocInfo, commandBuffers.data()) !=
+      ////   VK_SUCCESS) {
+      ////   throw ::exception(error_failed, "failed to allocate command buffers!");
+      ////}
 
 
    }

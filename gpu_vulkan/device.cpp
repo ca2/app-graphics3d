@@ -47,6 +47,7 @@ namespace gpu_vulkan
       m_physicaldevicefeaturesEnabled = {};
       m_vkdevice = VK_NULL_HANDLE;
       m_vkcommandpool = VK_NULL_HANDLE;
+      m_vkcommandpoolPresent = VK_NULL_HANDLE;
 
       //m_vkqueuePresent = nullptr;
       //m_vkqueueGraphics = nullptr;
@@ -1131,6 +1132,15 @@ namespace gpu_vulkan
 
       // Create a default command pool for graphics command buffers
       m_vkcommandpool = createCommandPool(m_queuefamilyindices.graphicsFamily);
+
+      if (m_queuefamilyindices.presentFamily >= 0)
+      {
+         m_vkcommandpoolPresent = createCommandPool(m_queuefamilyindices.presentFamily);
+      }
+      else
+      {
+         m_vkcommandpoolPresent = VK_NULL_HANDLE;
+      }
 
       return result;
 

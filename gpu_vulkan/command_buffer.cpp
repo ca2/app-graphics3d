@@ -8,17 +8,19 @@
 #include "model_buffer.h"
 #include "renderer.h"
 #include "render_target.h"
+//#include "swa"
+#include "texture.h"
 
 
 namespace gpu_vulkan
 {
-
-
    command_buffer::command_buffer()
    {
 
-      m_vkcommandbuffer = nullptr;
-      m_vkfence = nullptr;
+      m_bPresentQueue = false;
+      m_vkcommandbuffer = VK_NULL_HANDLE;
+      m_vkfence = VK_NULL_HANDLE;
+      m_vkcommandpool = VK_NULL_HANDLE;
 
    }
 
@@ -32,7 +34,7 @@ namespace gpu_vulkan
 
       vkFreeCommandBuffers(
          pcontext->logicalDevice(),
-         pdevice->getCommandPool(),
+         m_vkcommandpool,
          1,
          &m_vkcommandbuffer);
 
@@ -51,7 +53,16 @@ namespace gpu_vulkan
       VkCommandBufferAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
       allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      allocInfo.commandPool = pdevice->getCommandPool();
+      
+      if (m_bPresentQueue)
+      {
+         m_vkcommandpool = pdevice->getPresentCommandPool();
+      }
+      else
+      {
+         m_vkcommandpool = pdevice->getCommandPool();
+      }
+      allocInfo.commandPool = m_vkcommandpool;
       allocInfo.commandBufferCount = 1;
 
       //VkCommandBuffer pcommandbuffer;
@@ -107,9 +118,10 @@ namespace gpu_vulkan
 
       ::cast < render_target > prendertarget = m_pgpurendertarget;
 
-      ::cast < render_pass > prenderpass = prendertarget->render_pass();
+      //::cast < render_pass > prenderpass = prendertarget->render_pass();
 
-      if (prenderpass)
+      //if (prenderpass)
+      if(prendertarget)
       {
 
          auto vkcommandbuffer = m_vkcommandbuffer;
@@ -139,15 +151,256 @@ namespace gpu_vulkan
 
          auto ptexture = prendertarget->current_texture(::gpu::current_frame());
 
-         prenderpass->submitCommandBuffers(
-            this,
+         submitCommandBuffers(
             ptexture,
+            {},
             semaphoreaWait,
             stageaWait,
             { vksemaphoreRenderFinished });
 
 
       }
+
+   }
+
+
+   VkResult command_buffer::submitCommandBuffers(
+      ::gpu::texture* pgputextureTarget,
+      const ::pointer_array < ::gpu::texture > & gputextureaSource,
+      const ::array < VkSemaphore >& semaphoreaWait,
+      const ::array < VkPipelineStageFlags >& stageaWait,
+      const ::array < VkSemaphore >& semaphoreaSignal,
+      VkFence * pvkfence)
+   {
+
+      auto& ecommandbufferstate = m_estate;
+
+      ASSERT(ecommandbufferstate == ::gpu::command_buffer::e_state_recording);
+
+      ::pointer < ::gpu_vulkan::texture > ptextureDst;
+      
+      if (pgputextureTarget)
+      {
+
+         ptextureDst = pgputextureTarget;
+
+      }
+
+      ::pointer_array < ::gpu_vulkan::texture > textureaSrc;
+
+      for(auto & pgputextureSource : gputextureaSource)
+      {
+
+         textureaSrc.add(pgputextureSource);
+
+      }
+
+      ::cast < ::gpu_vulkan::render_target > prendertarget = m_pgpurendertarget;
+
+      ::cast < ::gpu_vulkan::renderer > prenderer = prendertarget->m_pgpurenderer;
+
+      ::cast < ::gpu_vulkan::context > pcontext = prenderer->m_pgpucontext;
+
+      //::cast < ::gpu_vulkan::texture > ptexture = prenderer->m_pgputexture;
+
+      bool bWithDepth = pcontext->m_escene == ::gpu::e_scene_3d;
+
+      ///auto prenderpass = prendertarget->render_pass2(bWithDepth);
+
+      ::gpu_vulkan::texture_synchronization* psynchronizationDst = nullptr;
+
+      if (ptextureDst)
+      {
+
+         psynchronizationDst = ptextureDst->synchronization();
+
+      }
+
+      ::array< ::gpu_vulkan::texture_synchronization *> synchronizationaSrc;
+
+      for(auto & ptextureSrc : textureaSrc)
+      {
+
+         synchronizationaSrc.add(ptextureSrc->synchronization());
+
+      }
+
+
+      //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
+      //{
+
+      //   vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+
+      //}
+
+      //imagesInFlight[*imageIndex] = inFlightFences[m_pgpurenderer->get_frame_index()];
+
+      VkSubmitInfo submitInfo = {};
+      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+      ::array<VkSemaphore> waitSemaphores(semaphoreaWait);
+      ::array<VkPipelineStageFlags> waitStages(stageaWait);
+      for(auto psynchronizationSrc : synchronizationaSrc)
+      {
+         if (psynchronizationSrc && psynchronizationSrc->m_iImageAvailable > 0)
+         {
+            waitSemaphores.add(psynchronizationSrc->m_vksemaphoreAvailable);
+            waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+
+         }
+      }
+      for (auto psynchronizationSrc : synchronizationaSrc)
+      {
+         if (psynchronizationSrc && psynchronizationSrc->m_iRendering > 0)
+         {
+            waitSemaphores.add(psynchronizationSrc->m_vksemaphoreRenderFinished);
+            waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            psynchronizationSrc->m_iRendering = 0;
+         }
+      }
+      waitStages.append(::transfer(m_stageaWaitToSubmit));
+      waitSemaphores.append(::transfer(m_semaphoreaWaitToSubmit));
+      submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
+      submitInfo.pWaitSemaphores = waitSemaphores.data();
+      submitInfo.pWaitDstStageMask = waitStages.data();
+
+      VkCommandBuffer vkcommandbuffera[] = { m_vkcommandbuffer };
+      submitInfo.commandBufferCount = 1;
+      submitInfo.pCommandBuffers = vkcommandbuffera;
+
+      ::comparable_array<VkSemaphore> signalSemaphores(semaphoreaSignal);
+
+        // && texture.m_vksemaphoreRenderFinished)
+      if(psynchronizationDst && psynchronizationDst->m_vksemaphoreRenderFinished)
+      {
+
+         signalSemaphores.add_unique(psynchronizationDst->m_vksemaphoreRenderFinished);
+         psynchronizationDst->m_iRendering = 1;
+
+      }
+
+      if (signalSemaphores.has_elements())
+      {
+
+         signalSemaphores.append_unique(signalSemaphores);
+
+      }
+
+      //if (::gpu::current_frame()->m_pgpulayer)
+      //{
+
+      //   //if (m_iSentLayerCount > 0)
+      //   {
+
+      //      ::cast < ::gpu_vulkan::context > pcontextMain = pcontext->m_pgpudevice->m_pgpucontextMain;
+
+      //      //::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontextMain->get_swap_chain();
+
+      //      ::cast < layer > playerLast = ::gpu::current_frame()->m_pgpulayer;
+
+      //      auto vksemaphoreRenderFinished = playerLast->m_vksemaphoreRenderFinished;
+      //      if (vksemaphoreRenderFinished)
+      //      {
+      //         //pswapchain->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_TRANSFER_BIT);
+      //         //pswapchain->m_semaphoreaWaitToSubmit.add(vksemaphoreRenderFinished);
+      //         m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_TRANSFER_BIT);
+      //         m_semaphoreaWaitToSubmit.add(vksemaphoreRenderFinished);
+      //         signalSemaphores.add(vksemaphoreRenderFinished);
+      //      }
+      //   }
+
+
+      //}
+
+      signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
+
+      submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
+
+      submitInfo.pSignalSemaphores = signalSemaphores.data();
+
+      //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
+
+      auto queueGraphics = pcontext->graphicsQueue();
+
+      VkFence fence = VK_NULL_HANDLE;
+
+      if (psynchronizationDst)
+      {
+
+         fence = psynchronizationDst->in_flight_fence();
+
+      }
+
+      bool bCreatedFence = false;
+
+      if (fence)
+      //{
+
+      //   VkFenceCreateInfo fenceInfo = {
+      //       .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+      //       .pNext = NULL,
+      //       .flags = 0  // 0 = fence starts in unsignaled state
+      //   };
+
+      //   VkResult result = vkCreateFence(pcontext->logicalDevice(), &fenceInfo, NULL, &fence);
+      //   if (result != VK_SUCCESS) {
+      //      fprintf(stderr, "Failed to create fence\n");
+      //      // handle error
+      //   }
+
+      //   bCreatedFence = true;
+
+      //}
+      //else
+      {
+         vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+         vkResetFences(pcontext->logicalDevice(), 1, &fence);
+
+      }
+
+      //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
+      if (vkQueueSubmit(queueGraphics, 1, &submitInfo, fence) != VK_SUCCESS)
+      {
+
+         throw ::exception(error_failed, "failed to submit draw command buffer!");
+
+      }
+
+      if (pvkfence)
+      {
+
+         *pvkfence = fence;
+
+      }
+
+      ecommandbufferstate = ::gpu::command_buffer::e_state_submitted;
+
+      //vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+      //vkQueueWaitIdle(queueGraphics);
+
+
+      //vkDestroyFence(pcontext->logicalDevice(), fence, NULL);
+
+      //VK_CHECK(vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()], VK_TRUE, UINT64_MAX));
+
+
+      //VkPresentInfoKHR presentInfo = {};
+      //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+      //presentInfo.waitSemaphoreCount = 1;
+      //presentInfo.pWaitSemaphores = signalSemaphores;
+
+      //VkSwapchainKHR swapChains[] = { swapChain };
+      //presentInfo.swapchainCount = 1;
+      //presentInfo.pSwapchains = swapChains;
+
+      //presentInfo.pImageIndices = imageIndex;
+
+      //auto result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
+
+      return VK_SUCCESS;
 
    }
 

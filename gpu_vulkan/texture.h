@@ -10,6 +10,40 @@ namespace gpu_vulkan
 {
 
 
+   class texture_synchronization :
+      virtual public ::particle
+   {
+   public:
+
+      //::gpu_vulkan::render_pass *   m_prenderpass = nullptr;
+      //::gpu_vulkan::render_target * m_prendertarget = nullptr;
+      ::gpu_vulkan::texture* m_ptexture = nullptr;
+
+
+      //bool                          m_bAdvancedPipelineSynchronization = false;
+      int                           m_iImageAvailable = -1;
+      int                           m_iRendering = -1;
+      VkSemaphore                   m_vksemaphoreAvailable = VK_NULL_HANDLE;
+      VkSemaphore                   m_vksemaphoreRenderFinished = VK_NULL_HANDLE;
+      VkFence                       m_vkfenceInFlight2 = VK_NULL_HANDLE;
+      VkFence                       m_vkfenceImageInFlight = VK_NULL_HANDLE;
+
+      texture_synchronization();
+      ~texture_synchronization();
+
+      VkFramebuffer get_frame_buffer(::gpu_vulkan::render_pass * prenderpass);
+      VkFramebuffer _get_frame_buffer(::gpu_vulkan::render_pass* prenderpass);
+
+      VkFence in_flight_fence();
+
+
+      //virtual texture_synchronization& synchronization(::gpu::render_target * prendertarget);
+
+
+   };
+
+
+
    class CLASS_DECL_GPU_VULKAN texture :
       virtual public ::gpu::texture
    {
@@ -21,6 +55,11 @@ namespace gpu_vulkan
 
    public:
 
+      struct render_pass_t
+      {
+
+         VkFramebuffer m_vkframebuffer = VK_NULL_HANDLE;
+      };
 
       struct
       {
@@ -108,8 +147,14 @@ namespace gpu_vulkan
       //VkDeviceMemory             m_vkdevicememoryDepth;
       VkImageView                m_vkimageview;
       //VkImageView                m_vkimageviewDepth;
+      ::pointer < texture_synchronization >           m_ptexturesynchronization;
       map<VkRenderPass, VkFramebuffer >             m_mapFramebuffer;
       map<::gpu_vulkan::shader *, shader_t >             m_mapShader;
+      //map<::gpu_vulkan::render_target*, texture_synchronization > m_mapSynchronization;
+
+
+      map < ::gpu_vulkan::render_pass *, render_pass_t > m_mapRenderPass;
+
 
 
       texture();
@@ -156,10 +201,19 @@ namespace gpu_vulkan
 
       VkDescriptorSet descriptor_set(::gpu_vulkan::shader* pshader);
 
-      VkFramebuffer get_framebuffer(::gpu_vulkan::render_pass * prenderpass);
+      VkFramebuffer framebuffer(::gpu_vulkan::render_pass * prenderpass);
+      VkFramebuffer _framebuffer(::gpu_vulkan::render_pass* prenderpass);
+
+
 
       // VkFramebuffer create_framebuffer(VkRenderPass renderpass);
       void _LoadCubeMap(::pixmap* ppixmap);
+
+
+      virtual texture_synchronization * synchronization();
+      //virtual texture_synchronization* synchronization(::gpu::render_target* prendertarget);
+
+
    };
 
 

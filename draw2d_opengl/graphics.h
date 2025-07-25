@@ -53,8 +53,13 @@ namespace draw2d_opengl
          long long increment_reference_count() override;
       long long decrement_reference_count() override;
 #endif
-
       void initialize(::particle * pparticle) override;
+      //template < primitive_point POINT >
+
+
+//#define __USES_TRANSFORM(pcontext) \
+//auto iContextHeight = pcontext->m_rectangle.height()
+
       //plusplus::Graphics & g()
       //{
       //   if(m_pgraphics == nullptr)
@@ -284,11 +289,13 @@ namespace draw2d_opengl
       // int_point GetCurrentPosition() const;
 //      int_point MoveTo(int x, int y);
       //    int_point MoveTo(const ::int_point & point);
-      void line(double x1, double y1, double x2, double y2) override;
+      ///void line(double x1, double y1, double x2, double y2, ::draw2d::pen * ppen) override;
       //bool LineTo(int x,int y);
       //  bool LineTo(const ::int_point & point);
       void polyline(const ::double_point* ppoints,::collection::count nCount) override;
 
+
+      void update_matrix() override;
       void _set(const ::geometry2d::matrix & matrix) override;
 
       //using ::draw2d::graphics::Arc;
@@ -601,7 +608,7 @@ namespace draw2d_opengl
       //virtual bool DrawLine(int x1, int y1, int x2, int y2, ::draw2d::pen * ppen);
 
       
-      void draw_line(const int_point& point1, const int_point& point2, ::draw2d::pen* ppen);
+      void line(double x1, double y1, double x2, double y2, ::draw2d::pen* ppen) override;
 
 
       //virtual void enum_fonts(::write_text::font_enumeration_item_array& itema) override;

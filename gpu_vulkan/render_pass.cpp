@@ -196,201 +196,43 @@ namespace gpu_vulkan
 
    //}
 
-   texture_t::texture_t()
-   {
 
-   }
 
+   //void render_pass::on_before_begin_render(frame* pframe, ::gpu::texture* pgputexture)
+   //{
 
-   texture_t::~texture_t()
-   {
+   //   //::cast < ::gpu::texture > ptextureCurrent = current_texture();
 
+   //   ::cast < ::gpu_vulkan::texture > ptextureCurrent = pgputexture;
 
-   }
+   //   ::cast < command_buffer > pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
+   //   ptextureCurrent->_set_state(
+   //      pcommandbuffer,
+   //      {
+   //      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+   //      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+   //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+   //      }
+   //   );
 
-   VkFramebuffer texture_t::get_frame_buffer()
-   {
+   //   ::cast < ::gpu_vulkan::texture > ptextureDepth = ptextureCurrent->m_ptextureDepth;
 
-      VkImageView imageView = m_ptexture->get_image_view();
+   //   if (ptextureDepth)
+   //   {
 
-      VkImageView attachments[2];
+   //      ptextureDepth->_set_state(
+   //         pcommandbuffer,
+   //         {
+   //         VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+   //         VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+   //         VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
+   //         }
+   //      );
 
-      attachments[0] = imageView;
+   //   }
 
-      int iAttachmentCount;
-
-      if (m_prenderpass->m_bWithDepth)
-      {
-
-         VkImageView depthImageView = m_ptexture->get_depth_image_view();
-
-         attachments[1] = depthImageView;
-
-         iAttachmentCount = 2;
-
-      }
-      else
-      {
-
-         iAttachmentCount = 1;
-
-      }
-
-      VkExtent2D extent = m_prenderpass->getExtent();
-      VkFramebufferCreateInfo framebufferInfo = {};
-      framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-      framebufferInfo.renderPass = m_prenderpass->m_vkrenderpass;
-      framebufferInfo.attachmentCount = iAttachmentCount;
-      framebufferInfo.pAttachments = attachments;
-      framebufferInfo.width = extent.width;
-      framebufferInfo.height = extent.height;
-      framebufferInfo.layers = 1;
-
-      auto& vkframebuffer = m_vkframebuffer;
-
-      ::cast < ::gpu_vulkan::context > pcontext = m_prenderpass->m_pgpucontext;
-
-      if (vkCreateFramebuffer(
-         pcontext->logicalDevice(),
-         &framebufferInfo,
-         nullptr,
-         &vkframebuffer) != VK_SUCCESS)
-      {
-
-         throw ::exception(error_failed, "failed to create framebuffer!");
-
-      }
-
-      debug() << "created framebuffer "<< vkframebuffer << "with image view " << imageView;
-
-      return vkframebuffer;
-
-   }
-
-
-   VkFence texture_t::in_flight_fence()
-   {
-
-      if (!m_vkfenceInFlight2)
-      {
-
-         ::cast < ::gpu_vulkan::context > pcontext = m_prenderpass->m_pgpucontext;
-
-         VkFenceCreateInfo fenceInfo = {};
-         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-         if (vkCreateFence(
-            pcontext->logicalDevice(),
-            &fenceInfo,
-            nullptr,
-            &m_vkfenceInFlight2) != VK_SUCCESS
-            )
-         {
-
-            throw ::exception(error_failed, "failed to create fence!");
-
-         }
-
-      }
-
-      return m_vkfenceInFlight2;
-
-   }
-
-
-   texture_t& render_pass::texture(::gpu::texture* pgputexture)
-   {
-
-      auto& texture = this->m_mapTexture[pgputexture];
-
-      if (!texture.m_ptexture)
-      {
-
-         ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
-
-         texture.m_prenderpass = this;
-
-         texture.m_ptexture = dynamic_cast < ::gpu_vulkan::texture * > (pgputexture);
-
-         if (should_use_advanced_pipeline_synchronization()
-            || (pgputexture->m_pgpurendertarget
-            && pgputexture->m_pgpurendertarget->m_bAdvancedPipelineSynchronization))
-         {
-
-            texture.m_bAdvancedPipelineSynchronization = true;
-
-            VkSemaphoreCreateInfo semaphoreInfo = {};
-            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-            texture.m_iImageAvailable = 0;
-
-            if (vkCreateSemaphore(
-               pcontext->logicalDevice(),
-               &semaphoreInfo,
-               nullptr,
-               &texture.m_vksemaphoreAvailable
-            ) != VK_SUCCESS
-
-               ||
-
-               vkCreateSemaphore(
-                  pcontext->logicalDevice(),
-                  &semaphoreInfo,
-                  nullptr, &texture.m_vksemaphoreRenderFinished
-               ) != VK_SUCCESS)
-
-            {
-
-               throw ::exception(error_failed, "failed to create synchronization objects for a frame!");
-
-            }
-
-         }
-
-      }
-
-      return texture;
-
-   }
-
-
-   void render_pass::on_before_begin_render(frame* pframe, ::gpu::texture* pgputexture)
-   {
-
-      //::cast < ::gpu::texture > ptextureCurrent = current_texture();
-
-      ::cast < ::gpu_vulkan::texture > ptextureCurrent = pgputexture;
-
-      ::cast < command_buffer > pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
-
-      ptextureCurrent->_set_state(
-         pcommandbuffer,
-         {
-         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-         }
-      );
-
-      ::cast < ::gpu_vulkan::texture > ptextureDepth = ptextureCurrent->m_ptextureDepth;
-
-      if (ptextureDepth)
-      {
-
-         ptextureDepth->_set_state(
-            pcommandbuffer,
-            {
-            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-            VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
-            }
-         );
-
-      }
-
-   }
+   //}
 
 
    //int render_pass::get_image_index() const
@@ -425,62 +267,62 @@ namespace gpu_vulkan
    }
 
 
-   VkResult render_pass::submitCommandBuffers(
-      command_buffer* pcommandbuffer,
-      ::gpu::texture * pgputexture,
-      const ::array < VkSemaphore >& semaphoreaWait,
-      const ::array < VkPipelineStageFlags >& stageaWait,
-      const ::array < VkSemaphore >& semaphoreaSignal)
-   {
+   //VkResult render_pass::submitCommandBuffers(
+   //   command_buffer* pcommandbuffer,
+   //   ::gpu::texture * pgputexture,
+   //   const ::array < VkSemaphore >& semaphoreaWait,
+   //   const ::array < VkPipelineStageFlags >& stageaWait,
+   //   const ::array < VkSemaphore >& semaphoreaSignal)
+   //{
 
-      //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
-      //   vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
-      //}
-      //imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
+   //   //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
+   //   //   vkWaitForFences(m_pgpucontext->logicalDevice(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
+   //   //}
+   //   //imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
 
-      //VkSubmitInfo submitInfo = {};
-      //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+   //   //VkSubmitInfo submitInfo = {};
+   //   //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-      //VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
-      //VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-      //submitInfo.waitSemaphoreCount = 1;
-      //submitInfo.pWaitSemaphores = waitSemaphores;
-      //submitInfo.pWaitDstStageMask = waitStages;
+   //   //VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
+   //   //VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+   //   //submitInfo.waitSemaphoreCount = 1;
+   //   //submitInfo.pWaitSemaphores = waitSemaphores;
+   //   //submitInfo.pWaitDstStageMask = waitStages;
 
-      //submitInfo.commandBufferCount = 1;
-      //submitInfo.pCommandBuffers = buffers;
+   //   //submitInfo.commandBufferCount = 1;
+   //   //submitInfo.pCommandBuffers = buffers;
 
-      //VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
-      //submitInfo.signalSemaphoreCount = 1;
-      //submitInfo.pSignalSemaphores = signalSemaphores;
+   //   //VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
+   //   //submitInfo.signalSemaphoreCount = 1;
+   //   //submitInfo.pSignalSemaphores = signalSemaphores;
 
-      //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
-      //if (vkQueueSubmit(m_pgpucontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
-      //   VK_SUCCESS) {
-      //   throw ::exception(error_failed,"failed to submit draw command buffer!");
-      //}
+   //   //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[currentFrame]);
+   //   //if (vkQueueSubmit(m_pgpucontext->graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) !=
+   //   //   VK_SUCCESS) {
+   //   //   throw ::exception(error_failed,"failed to submit draw command buffer!");
+   //   //}
 
-      //VkPresentInfoKHR presentInfo = {};
-      //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+   //   //VkPresentInfoKHR presentInfo = {};
+   //   //presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
-      //presentInfo.waitSemaphoreCount = 1;
-      //presentInfo.pWaitSemaphores = signalSemaphores;
+   //   //presentInfo.waitSemaphoreCount = 1;
+   //   //presentInfo.pWaitSemaphores = signalSemaphores;
 
-      //VkSwapchainKHR swapChains[] = { swapChain };
-      //presentInfo.swapchainCount = 1;
-      //presentInfo.pSwapchains = swapChains;
+   //   //VkSwapchainKHR swapChains[] = { swapChain };
+   //   //presentInfo.swapchainCount = 1;
+   //   //presentInfo.pSwapchains = swapChains;
 
-      //presentInfo.pImageIndices = imageIndex;
+   //   //presentInfo.pImageIndices = imageIndex;
 
-      //auto result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
+   //   //auto result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
 
-      //currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+   //   //currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
-      //return result;
+   //   //return result;
 
-      return VK_SUCCESS;
+   //   return VK_SUCCESS;
 
-   }
+   //}
 
 
    //void render_pass::createRenderPassImpl()
@@ -596,15 +438,29 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext->m_pgpurenderer->m_pgpucontext;
 
+
       VkAttachmentDescription depthAttachment{};
-      depthAttachment.format = findDepthFormat();
-      depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-      depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-      depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-      depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+      if (m_bWithDepth)
+      {
+
+         depthAttachment.format = findDepthFormat();
+         depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+         if (m_bLoadClearOp)
+         {
+            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+         }
+         else
+         {
+            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+         }
+         //         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+         depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+         depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+         depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+         depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+         depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+      }
 
       VkAttachmentReference depthAttachmentRef{};
       depthAttachmentRef.attachment = 1;
@@ -613,7 +469,15 @@ namespace gpu_vulkan
       VkAttachmentDescription colorAttachment = {};
       colorAttachment.format = pcontext->m_formatImageDefault;
       colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      //colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      if (m_bLoadClearOp)
+      {
+         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      }
+      else
+      {
+         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+      }
       colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
       colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
       colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -642,9 +506,17 @@ namespace gpu_vulkan
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
       VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
+      //VkAttachmentDescription attachments[1] = { colorAttachment };
       VkRenderPassCreateInfo renderPassInfo = {};
       renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-      renderPassInfo.attachmentCount = 2;
+      if (m_bWithDepth)
+      {
+         renderPassInfo.attachmentCount = 2;
+      }
+      else
+      {
+         renderPassInfo.attachmentCount = 1;
+      }
       renderPassInfo.pAttachments = attachments;
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;

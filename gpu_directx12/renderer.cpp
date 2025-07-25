@@ -260,21 +260,21 @@ float4 main(PSInput input) : SV_TARGET {
    //}
 
 
-   void renderer::on_new_frame()
-   {
+   //void renderer::on_new_frame()
+   //{
 
-      if (m_pgpurendertarget->m_iCurrentFrame2 >= 0)
-      {
+   //   if (m_pgpurendertarget->m_iCurrentFrame2 >= 0)
+   //   {
 
-         WaitForGpu();
+   //      WaitForGpu();
 
-         isFrameStarted = false;
+   //      isFrameStarted = false;
 
-      }
+   //   }
 
-      ::gpu::renderer::on_new_frame();
+   //   ::gpu::renderer::on_new_frame();
 
-   }
+   //}
 
 
    //void renderer::restart_frame_counter()
@@ -541,7 +541,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
-      m_commandbuffera.set_size(m_pgpurendertarget->get_frame_count());
+      m_commandbuffera.set_size(pdevice->get_frame_count());
 
       //for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
       for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)

@@ -7,6 +7,7 @@
 #include "renderer.h"
 #include "swap_chain.h"
 #include "texture.h"
+#include "bred/gpu/frame.h"
 
 
 namespace gpu_vulkan
@@ -73,35 +74,78 @@ namespace gpu_vulkan
    }
 
 
-   ::gpu_vulkan::render_pass* render_target::render_pass()
+   ::gpu_vulkan::render_pass* render_target::render_pass_with_depth()
    {
 
-      return m_prenderpass;
+      if(!m_prenderpassDepth)
+      {
+
+         m_prenderpassDepth = create_render_pass(true);
+
+      }
+
+      return m_prenderpassDepth;
 
    }
+
+
+   ::gpu_vulkan::render_pass* render_target::render_pass_no_depth()
+   {
+
+      if(!m_prenderpassNoDepth)
+      {
+
+         m_prenderpassNoDepth = create_render_pass(false);
+
+      }
+
+      return m_prenderpassNoDepth;
+
+   }
+
+
+   ::gpu_vulkan::render_pass* render_target::render_pass2(bool bWithDepth)
+   {
+
+      if (bWithDepth)
+      {
+
+         return render_pass_with_depth();
+
+      }
+      else
+      {
+
+         return render_pass_no_depth();
+
+      }
+
+
+   }
+
+
+   ::pointer <::gpu_vulkan::render_pass > render_target::create_render_pass(bool bWithDepth)
+   {
+
+      auto prenderpass = __allocate offscreen_render_pass();
+
+      prenderpass->m_bWithDepth = bWithDepth;
+
+      prenderpass->initialize(this);
+
+      prenderpass->update_render_pass(m_pgpurenderer->m_pgpucontext, prenderpass->m_prenderpassOld);
+
+      prenderpass->on_init_render_pass();
+
+      return prenderpass;
+
+   }
+
 
 
    void render_target::on_init()
    {
 
-      m_prenderpass = __allocate offscreen_render_pass();
-
-      m_prenderpass->initialize(this);
-
-      m_prenderpass->update_render_pass(m_pgpurenderer->m_pgpucontext, m_prenderpass->m_prenderpassOld);
-
-      m_prenderpass->on_init_render_pass();
-
-      if (m_pgpurenderer->m_pgpucontext->m_eoutput == ::gpu::e_output_swap_chain)
-      {
-
-         ::cast < swap_chain > pswapchain = m_pgpurenderer->m_pgpucontext->get_swap_chain();
-
-         pswapchain->update_render_pass(m_pgpurenderer->m_pgpucontext, m_prenderpass->m_prenderpassOld);
-
-         pswapchain->on_init_render_pass();
-
-      }
       //createRenderPassImpl();
       //createImageViews();
       //createRenderPass();

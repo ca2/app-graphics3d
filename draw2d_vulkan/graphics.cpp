@@ -84,6 +84,15 @@ namespace draw2d_vulkan
 
 
 
+#define __TRANSFORM(p) \
+   m_m1.transform(p); \
+p.y() = iContextHeight - p.y()
+
+#define __USES_TRANSFORM(pcontext) \
+auto iContextHeight = pcontext->m_rectangle.height()
+
+
+
    static unsigned int g_uaAccumulationFragmentShader[] = {
  #include "shader/accumulation.frag.spv.inl"
    };
@@ -6739,6 +6748,10 @@ void graphics::gpu_layer_on_before_end_render()
    void graphics::line(double x1, double y1, double x2, double y2)
    {
 
+      auto pcontext = gpu_context();
+
+      __USES_TRANSFORM(pcontext);
+
       //auto distance = ::sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
 
       //auto sinangle = (y1 - y0) / distance;
@@ -6786,7 +6799,7 @@ void graphics::gpu_layer_on_before_end_render()
             m_pshaderLine->m_vktopology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
             m_pshaderLine->m_dynamicstateaEnable.add(VK_DYNAMIC_STATE_LINE_WIDTH);
 
-            auto pcontext = gpu_context();
+            //auto pcontext = gpu_context();
 
             ::cast < ::gpu_vulkan::device > pgpudevice = pcontext->m_pgpudevice;
 
@@ -6819,8 +6832,11 @@ void graphics::gpu_layer_on_before_end_render()
       points[1].y() = y2;
 
 
-      m_m1.transform(points[0]);
-      m_m1.transform(points[1]);
+      //m_m1.transform(points[0]);
+      //m_m1.transform(points[1]);
+
+      __TRANSFORM(points[0]);
+      __TRANSFORM(points[1]);
 
       //auto pmodelbuffer = __create_new< ::gpu_vulkan::model_buffer>();
 
@@ -6844,8 +6860,6 @@ void graphics::gpu_layer_on_before_end_render()
          //pmodelbuffer->m_indexMemory = nullptr;
 
       }
-
-      auto pcontext = gpu_context();
 
       m_pmodelbufferLine->sequence2_color_set_line(
          points[0], points[1],
