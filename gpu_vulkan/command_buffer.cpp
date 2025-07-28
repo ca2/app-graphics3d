@@ -17,7 +17,7 @@ namespace gpu_vulkan
    command_buffer::command_buffer()
    {
 
-      m_bPresentQueue = false;
+      //m_bPresentQueue = false;
       m_vkcommandbuffer = VK_NULL_HANDLE;
       m_vkfence = VK_NULL_HANDLE;
       m_vkcommandpool = VK_NULL_HANDLE;
@@ -41,10 +41,10 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::initialize_command_buffer(::gpu::render_target* pgpurendertarget)
+   void command_buffer::initialize_command_buffer(::gpu::render_target* pgpurendertarget, ::gpu::enum_command_buffer ecommandbuffer)
    {
 
-      ::gpu::command_buffer::initialize_command_buffer(pgpurendertarget);
+      ::gpu::command_buffer::initialize_command_buffer(pgpurendertarget, ecommandbuffer);
 
       ::cast <context > pcontext = m_pgpurendertarget->m_pgpurenderer->m_pgpucontext;
 
@@ -54,11 +54,11 @@ namespace gpu_vulkan
       allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
       allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
       
-      if (m_bPresentQueue)
+      if (m_ecommandbuffer == ::gpu::e_command_buffer_present)
       {
          m_vkcommandpool = pdevice->getPresentCommandPool();
       }
-      else
+      else if(m_ecommandbuffer == ::gpu::e_command_buffer_graphics)
       {
          m_vkcommandpool = pdevice->getCommandPool();
       }

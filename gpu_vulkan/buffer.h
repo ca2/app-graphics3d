@@ -45,8 +45,8 @@ namespace gpu_vulkan
 
       virtual void assign(const void* data, int size);
       virtual void _assign(const void* data, int size);
-      virtual void assign_cube_map(const void* data, int w, int h, int scan);
-      virtual void _assign_cube_map(const void* data, int w, int h, int scan);
+      virtual void assign_cube_map(const ::pointer_array < ::image::image >& imagea);
+      virtual void _assign_cube_map(const ::pointer_array < ::image::image >& imagea);
 
 
    };

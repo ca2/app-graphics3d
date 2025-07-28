@@ -551,7 +551,8 @@ namespace gpu_vulkan
 
          __defer_construct(pcommandbuffer);
 
-         pcommandbuffer->initialize_command_buffer(m_pgpurendertarget);
+         pcommandbuffer->initialize_command_buffer(m_pgpurendertarget,
+            ::gpu::e_command_buffer_graphics);
 
       }
 

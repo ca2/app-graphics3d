@@ -556,8 +556,11 @@ float4 main(PSInput input) : SV_TARGET {
             ::cast < command_buffer > pdx12commandbuffer = pcommandbuffer;
 
             pdx12commandbuffer->initialize_command_buffer(
-               pcontext->command_queue(),
-               D3D12_COMMAND_LIST_TYPE_DIRECT, this);
+               m_pgpurendertarget,
+               ::gpu::e_command_buffer_graphics
+               );
+               //pcontext->command_queue(),
+               //D3D12_COMMAND_LIST_TYPE_DIRECT, this);
 
          }
 
@@ -625,25 +628,18 @@ float4 main(PSInput input) : SV_TARGET {
       if (!m_pcommandbufferLoadAssets)
       {
 
-         __defer_construct_new(m_pcommandbufferLoadAssets);
+         __defer_construct(m_pcommandbufferLoadAssets);
 
          ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
 
-         if (!m_pcommandqueueCopy)
-         {
+         ::cast < command_buffer > pcommandbuffer = m_pcommandbufferLoadAssets;
 
-            ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+         pcommandbuffer->initialize_command_buffer(
+            m_pgpurendertarget,
+            ::gpu::e_command_buffer_copy);
+            //m_pcommandqueueCopy, D3D12_COMMAND_LIST_TYPE_COPY, this);
 
-            D3D12_COMMAND_QUEUE_DESC descCopyQueue = {};
-            descCopyQueue.Type = D3D12_COMMAND_LIST_TYPE_COPY;
-            pdevice->m_pdevice->CreateCommandQueue(&descCopyQueue, __interface_of(m_pcommandqueueCopy));
-
-
-         }
-
-         m_pcommandbufferLoadAssets->initialize_command_buffer(m_pcommandqueueCopy, D3D12_COMMAND_LIST_TYPE_COPY, this);
-
-         m_pcommandbufferLoadAssets->reset();
+         pcommandbuffer->reset();
 
 
       }
@@ -653,7 +649,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   ::pointer <command_buffer >renderer::beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE ecommandlisttype)
+   ::pointer <command_buffer >renderer::beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer)
    {
 
       ::pointer <command_buffer > pcommandbuffer;
@@ -667,8 +663,10 @@ float4 main(PSInput input) : SV_TARGET {
       //if (ecommandlisttype == D3D12_COMMAND_LIST_TYPE_COPY)
       {
 
+         //pcommandbuffer->initialize_command_buffer(
+           // m_pgpucontext->m_pcommandqueue, ecommandlisttype, this);
          pcommandbuffer->initialize_command_buffer(
-            m_pgpucontext->m_pcommandqueue, ecommandlisttype, this);
+           m_pgpurendertarget, ecommandbuffer);
 
       }
       //else
@@ -4130,6 +4128,13 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
+   void renderer::on_final_begin_render()
+   {
+
+
+   }
+
+
    void renderer::on_start_layer(::gpu::layer* player)
    {
 
@@ -4661,30 +4666,6 @@ float4 main(PSInput input) : SV_TARGET {
 
    void renderer::on_begin_frame()
    {
-      auto pcommandbufferLoadAssets = ::transfer(m_pcommandbufferLoadAssets);
-
-      if (pcommandbufferLoadAssets)
-      {
-         m_pcommandbufferLoadAssets2 = pcommandbufferLoadAssets;
-         //if (prenderer->m_pcommandbufferLoadAssets)
-         //{
-
-         //   auto pcommandbufferLoadAssets = ::transfer(prenderer->m_pcommandbufferLoadAssets);
-
-         //   m_papplication->fork([pcommandbufferLoadAssets]()
-         //      {
-
-         pcommandbufferLoadAssets->submit_command_buffer(nullptr);
-
-         //pcommandbufferLoadAssets->wait_for_gpu();
-
-//         });
-
-//   }
-
-//}
-
-      }
 
    }
 
@@ -4858,7 +4839,7 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::endFrame()
    {
 
-      m_prenderstate->on_happening(::gpu::e_happening_end_frame);
+      //m_prenderstate->on_happening(::gpu::e_happening_end_frame);
 
       //// 5. Signal and wait (optional but recommended for CPU/GPU sync)
       //m_fences[get_frame_index()]++;
@@ -4920,6 +4901,8 @@ float4 main(PSInput input) : SV_TARGET {
       //ID3D12CommandList* ppCommandLists[] = { pcommandlist };
       //m_pcommandqueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
+      defer_end_frame_layer_copy();
+
       auto eoutput = m_pgpucontext->m_eoutput;
 
       if (eoutput == ::gpu::e_output_swap_chain)
@@ -4971,7 +4954,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       ////}
 
-      if (m_iSentLayerCount <= 0)
+      //if (m_iSentLayerCount <= 0)
       {
 
          auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
@@ -5020,14 +5003,14 @@ float4 main(PSInput input) : SV_TARGET {
 
          pcommandbuffer->submit_command_buffer(nullptr);
 
+         pcommandbuffer->wait_commands_to_execute();
+
          if (eoutput == ::gpu::e_output_swap_chain)
          {
 
             m_pgpucontext->get_swap_chain()->swap_buffers();
 
          }
-
-         pcommandbuffer->wait_commands_to_execute();
 
       }
 
@@ -5097,6 +5080,8 @@ float4 main(PSInput input) : SV_TARGET {
 //      m_pshaderHelloTriangle->unbind();
 //
 //#endif
+
+      ::gpu::renderer::endFrame();
 
    }
 

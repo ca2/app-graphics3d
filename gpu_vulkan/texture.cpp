@@ -12,6 +12,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "acme/graphics/image/pixmap.h"
+#include "aura/graphics/image/image.h"
 
 
 namespace gpu_vulkan
@@ -223,7 +224,7 @@ namespace gpu_vulkan
    }
 
 
-   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, ::pixmap* ppixmap, enum_type etype)
+   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype)
    {
 
       if (m_rectangleTarget == rectangleTarget
@@ -236,7 +237,7 @@ namespace gpu_vulkan
 
       auto currentSize = m_rectangleTarget.size();
 
-      ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, ppixmap, etype);
+      ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, imagea, etype);
 
       if (currentSize == rectangleTarget.size()
          && m_pgpurenderer == prenderer)
@@ -358,10 +359,10 @@ namespace gpu_vulkan
       if (m_etype == e_type_cube_map)
       {
 
-         if (ppixmap != nullptr)
+         if (imagea.has_element())
          {
 
-            _LoadCubeMap(ppixmap);
+            _LoadCubeMap(imagea);
 
             /*   VkMemoryAllocateInfo allocInfo = {
                   .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
@@ -396,23 +397,23 @@ namespace gpu_vulkan
    //}
 
 
-   void texture::_LoadCubeMap(::pixmap* ppixmap)
+   void texture::_LoadCubeMap(const ::pointer_array < ::image::image >& imagea)
    {
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
       ::cast < context > pgpucontext = pcontext;
       ::cast <device > pdevice = pcontext->m_pgpudevice;
-      auto w = ppixmap->width();
-      auto h = ppixmap->height();
-      auto scan = ppixmap->m_iScan;
-      auto data = ppixmap->data();
+      auto w = imagea.first()->width();
+      auto h = imagea.first()->height();
+      //auto scan = ppixmap->m_iScan;
+      //auto data = ppixmap->data();
       VkDeviceSize layerSize = w * h * 4;
       VkDeviceSize totalSize = layerSize;
       auto pbufferStaging = pgpucontext->create_buffer(totalSize,
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-      pbufferStaging->_assign_cube_map(data, w, h, scan);
+      pbufferStaging->_assign_cube_map(imagea);
 
       auto pcommandbuffer = pcontext->beginSingleTimeCommands();
       pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging);

@@ -20,7 +20,7 @@ namespace gpu_vulkan
       VkCommandPool     m_vkcommandpool;
       VkFence           m_vkfence;
 
-      bool m_bPresentQueue;
+      //bool m_bPresentQueue;
       ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
       ::array < VkSemaphore> m_semaphoreaWaitToSubmit;
       ::array < VkPipelineStageFlags > m_stageaWaitToSubmit;
@@ -31,7 +31,7 @@ namespace gpu_vulkan
       ~command_buffer() override;
 
 
-      void initialize_command_buffer(::gpu::render_target * pgpurendertarget) override;
+      void initialize_command_buffer(::gpu::render_target * pgpurendertarget, ::gpu::enum_command_buffer ecommandbuffer) override;
 
       void begin_command_buffer(bool bOneTime) override;
 

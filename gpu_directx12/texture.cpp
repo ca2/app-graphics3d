@@ -4,6 +4,7 @@
 #include "texture.h"
 #include "renderer.h"
 #include "acme/graphics/image/pixmap.h"
+#include "aura/graphics/image/image.h"
 #include "bred/gpu/frame.h"
 
 
@@ -29,7 +30,7 @@ namespace gpu_directx12
    }
 
 
-   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangleTarget, bool bWithDepth, ::pixmap * ppixmap, enum_type etype)
+   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype)
    {
 
       auto size = m_rectangleTarget.size();
@@ -37,7 +38,7 @@ namespace gpu_directx12
       if (rectangleTarget != m_rectangleTarget)
       {
 
-         ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, ppixmap, etype);
+         ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, imagea, etype);
 
       }
 
@@ -161,7 +162,7 @@ namespace gpu_directx12
 
          m_estate = stateInitial;
 
-         if (ppixmap)
+         if (imagea.has_element())
          {
 
             int iCount;
@@ -170,8 +171,8 @@ namespace gpu_directx12
             if (m_etype == e_type_cube_map)
             {
                iCount = 6;
-               if (ppixmap->width() != rectangleTarget.width() * 6
-                  || ppixmap->height() != rectangleTarget.height())
+               if (imagea.first()->width() != rectangleTarget.width() * 6
+                  || imagea.first()->height() != rectangleTarget.height())
                {
 
                   throw ::exception(error_failed);
@@ -182,7 +183,7 @@ namespace gpu_directx12
             else
             {
                iCount = 1;
-               if (ppixmap->size() != rectangleTarget.size())
+               if (imagea.first()->size() != rectangleTarget.size())
                {
 
                   throw ::exception(error_failed);
@@ -213,15 +214,16 @@ namespace gpu_directx12
             if (m_etype == e_type_cube_map)
             {
                for (int i = 0; i < 6; ++i) {
-                  subresources[i].pData = ppixmap->data() + textureDesc.Width * i;                    // Your CPU data pointer
+                  auto ppixmap = imagea[i];
+                  subresources[i].pData = ppixmap->data(); // Your CPU data pointer
                   subresources[i].RowPitch = ppixmap->m_iScan;  // 512 * 4
-                  //subresources[i].SlicePitch = textureDesc.Width * textureDesc.Height * 4;
-                  subresources[i].SlicePitch = 0;
+                  subresources[i].SlicePitch = textureDesc.Width * textureDesc.Height * 4;
+                  //subresources[i].SlicePitch = 0;
                }
             }
             else
             {
-
+               auto ppixmap = imagea.first();
                subresources[0].pData = ppixmap->data();            // pointer to your bitmap data (RGBA8, etc.)
                subresources[0].RowPitch = ppixmap->m_iScan;
                subresources[0].SlicePitch = subresources[0].RowPitch * ppixmap->height();
@@ -385,7 +387,18 @@ namespace gpu_directx12
       samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
       samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
       samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-      samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+      if (m_etype == e_type_cube_map)
+      {
+
+         samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+
+      }
+      else
+      {
+       
+         samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+
+      }
       samplerDesc.MinLOD = 0;
       samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 

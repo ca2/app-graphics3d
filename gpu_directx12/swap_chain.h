@@ -64,6 +64,10 @@ namespace gpu_directx12
       void set_present_state() override;
       void swap_buffers() override;
       int swap_chain_frame_index() override;
+
+      int get_frame_index() override;
+
+
 //      VkInstance instance{ VK_NULL_HANDLE };
 //      VkDevice device{ VK_NULL_HANDLE };
 //      VkPhysicalDevice physicalDevice{ VK_NULL_HANDLE };

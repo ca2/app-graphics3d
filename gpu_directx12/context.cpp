@@ -533,6 +533,28 @@ namespace gpu_directx12
    }
 
 
+   ID3D12CommandQueue* context::copy_command_queue()
+   {
+
+      if (!m_pcommandqueueCopy)
+         {
+
+            ::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
+
+            D3D12_COMMAND_QUEUE_DESC descCopyQueue = {};
+            descCopyQueue.Type = D3D12_COMMAND_LIST_TYPE_COPY;
+            pdevice->m_pdevice->CreateCommandQueue(&descCopyQueue, __interface_of(m_pcommandqueueCopy));
+
+
+         }
+
+
+
+      return m_pcommandqueueCopy;
+
+   }
+
+
    void context::set_bitmap_1(::image::image* pimage)
    {
 
@@ -2079,6 +2101,16 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
       ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
+      if (m_papplication->m_gpu.m_bUseSwapChainWindow
+         && m_etype == ::gpu::context::e_type_window)
+      {
+
+         m_pgpurenderer->wait_command_buffer_ready();
+
+         pcommandbuffer->begin_command_buffer(false);
+
+      }
+
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
       ::cast <::gpu_directx12::texture > ptextureDst = ptextureTarget;
@@ -2252,12 +2284,12 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
       //}
 
-      if (m_pgpurenderer->m_iSentLayerCount)
-      {
+      //if (m_pgpurenderer->m_iSentLayerCount)
+      //{
 
-         player->getCurrentCommandBuffer4()->wait_commands_to_execute();
+      //   player->getCurrentCommandBuffer4()->wait_commands_to_execute();
 
-      }
+      //}
 
       //player->m_pcommandbufferLayer->reset();
 

@@ -126,7 +126,7 @@ namespace gpu_directx12
       ::pointer < descriptor >                                    m_pdescriptorResolve;
 
       //::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
-      ::comptr<ID3D12CommandQueue>                                m_pcommandqueueCopy;
+      //::comptr<ID3D12CommandQueue>                                m_pcommandqueueCopy;
 
 
 
@@ -134,8 +134,6 @@ namespace gpu_directx12
       //::pointer_array < command_buffer > m_commandbuffera;
 
       ::pointer < command_buffer > m_pcommandbufferSingleTime;
-      ::pointer < command_buffer > m_pcommandbufferLoadAssets;
-      ::pointer < command_buffer > m_pcommandbufferLoadAssets2;
 
       ::comptr<ID3D12DescriptorHeap> m_pheapCbv;
       ::comptr<ID3D12Resource> m_presourceGlobalUBO;
@@ -172,7 +170,8 @@ namespace gpu_directx12
 
       //virtual ::pointer <command_buffer >getLoadAssetsCommandBuffer();
 
-      virtual ::pointer <command_buffer >beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE ecommandlisttype);
+      //virtual ::pointer <command_buffer >beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE ecommandlisttype);
+      virtual ::pointer <command_buffer >beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer);
       
 
       virtual void endSingleTimeCommands(command_buffer * pcommandbuffer);
@@ -282,6 +281,8 @@ namespace gpu_directx12
       void _on_begin_render(::gpu::frame* pgpuframe) override;
       void _on_end_render(::gpu::frame* pgpuframe) override;
       void on_end_draw() override;
+
+      void on_final_begin_render() override;
 
       //void _set_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
 

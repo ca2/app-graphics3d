@@ -948,7 +948,7 @@ namespace gpu_vulkan
 
       VkQueue vkqueue;
 
-      if (pcommandbuffer->m_bPresentQueue)
+      if (pcommandbuffer->m_ecommandbuffer == ::gpu::e_command_buffer_present)
          vkqueue = m_vkqueuePresent;
       else
          vkqueue = m_vkqueueGraphics;
@@ -2213,16 +2213,14 @@ namespace gpu_vulkan
    //}
 
 
-   ::pointer < command_buffer > context::beginSingleTimeCommands(bool bPresentQueue)
+   ::pointer < command_buffer > context::beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer)
    {
 
       ::pointer < command_buffer > pcommandbuffer;
 
       __defer_construct_new(pcommandbuffer);
 
-      pcommandbuffer->m_bPresentQueue = bPresentQueue;
-
-      pcommandbuffer->initialize_command_buffer(m_pgpurenderer->m_pgpurendertarget);
+      pcommandbuffer->initialize_command_buffer(m_pgpurenderer->m_pgpurendertarget, ecommandbuffer);
 
       pcommandbuffer->begin_command_buffer(true);
 

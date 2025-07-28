@@ -33,8 +33,8 @@ namespace gpu_directx12
 
       //::comptr<ID3D12RootSignature> m_rootSignature;
 
-      bool m_bEnableBlend = false;
-      bool m_bDisableDepthTest = false;
+      //bool m_bEnableBlend = false;
+      //bool m_bDisableDepthTest = false;
 
       ::comptr<ID3D12Resource> m_presourcePushProperties;
       

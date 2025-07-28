@@ -334,7 +334,23 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
    {
 
       //m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
-      return m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
+      m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
+
+      if (m_iSwapChainIndex < 0)
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+      return m_iSwapChainIndex;
+
+   }
+
+
+   int swap_chain::get_frame_index()
+   {
+      return swap_chain_frame_index();
 
    }
 

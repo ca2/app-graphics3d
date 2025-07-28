@@ -21,7 +21,7 @@ namespace gpu_directx12
       int m_iResourceWrappingCount = 0;
 
       ::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
-
+      ::comptr<ID3D12CommandQueue>                                m_pcommandqueueCopy;
 
       // Create an empty root signature.
    /*{
@@ -192,6 +192,7 @@ namespace gpu_directx12
       void set_bitmap_1(::image::image *pimage) override;
 
       virtual ID3D12CommandQueue* command_queue();
+      virtual ID3D12CommandQueue* copy_command_queue();
 
 
       virtual d3d11on12* d3d11on12();

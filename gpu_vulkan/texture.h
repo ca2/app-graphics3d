@@ -161,7 +161,7 @@ namespace gpu_vulkan
       ~texture() override;
 
 
-      void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, ::pixmap* ppixmap = nullptr, enum_type etype = e_type_image) override;
+      void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea = {}, enum_type etype = e_type_image) override;
       void initialize_depth_texture(::gpu::renderer* pgpurenderer, const ::int_rectangle& rectangleTarget) override;
       //void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
       //void TransitionImageLayout(
@@ -207,7 +207,7 @@ namespace gpu_vulkan
 
 
       // VkFramebuffer create_framebuffer(VkRenderPass renderpass);
-      void _LoadCubeMap(::pixmap* ppixmap);
+      void _LoadCubeMap(const ::pointer_array < ::image::image >& imagea);
 
 
       virtual texture_synchronization * synchronization();

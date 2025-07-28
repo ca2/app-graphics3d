@@ -373,7 +373,7 @@ namespace gpu_vulkan
   
 
       {
-         auto pcommandbufferPresent = pcontext->beginSingleTimeCommands(true);
+         auto pcommandbufferPresent = pcontext->beginSingleTimeCommands(::gpu::e_command_buffer_present);
 
 
          ::comparable_array<VkSemaphore> waitSemaphores2;

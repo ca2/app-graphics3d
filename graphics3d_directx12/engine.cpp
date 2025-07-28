@@ -343,11 +343,12 @@ namespace graphics3d_directx12
    void engine::engine_on_after_load_scene(::graphics3d::scene* pscene)
    {
 
+      ::graphics3d::engine::engine_on_after_load_scene(pscene);
       //::cast < ::gpu_directx12::context > pcontext = m_pgpucontextCompositor;
 
-      auto pcontext = gpu_context();
+      //auto pcontext = gpu_context();
 
-      ::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
+      //::cast < ::gpu_directx12::renderer > prenderer = pcontext->m_pgpurenderer;
 
       //   if (prenderer->m_pcommandbufferLoadAssets)
       //   {

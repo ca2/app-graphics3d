@@ -55,7 +55,38 @@ namespace gpu_directx12
    }
 
 
-   void command_buffer::initialize_command_buffer(ID3D12CommandQueue * pcommandqueue, D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer)
+   void command_buffer::initialize_command_buffer(::gpu::render_target* pgpurendertarget, ::gpu::enum_command_buffer ecommandbuffer)
+   {
+      
+      ::gpu::command_buffer::initialize_command_buffer(pgpurendertarget, ecommandbuffer);
+
+      ::cast < renderer > prenderer = pgpurendertarget->m_pgpurenderer;
+
+      ::cast < context > pcontext = prenderer->m_pgpucontext;
+
+      if (ecommandbuffer == ::gpu::e_command_buffer_graphics)
+      {
+
+         _initialize_command_buffer(
+            pcontext->command_queue(),
+            D3D12_COMMAND_LIST_TYPE_DIRECT,
+            prenderer);
+
+      }
+      else if (ecommandbuffer == ::gpu::e_command_buffer_copy)
+      {
+
+         _initialize_command_buffer(
+            pcontext->copy_command_queue(),
+            D3D12_COMMAND_LIST_TYPE_COPY,
+            prenderer);
+
+      }
+
+   }
+
+
+   void command_buffer::_initialize_command_buffer(ID3D12CommandQueue * pcommandqueue, D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer)
    {
 
       if (::is_null(pcommandqueue))
@@ -109,20 +140,12 @@ namespace gpu_directx12
    }
 
 
-   //::pointer <command_buffer >renderer::beginSingleTimeCommands()
-   //{
+   void command_buffer::begin_command_buffer(bool bOneTime)
+   {
 
-   //   ::pointer <command_buffer > pcommandbuffer;
+      reset();
 
-   //   __defer_construct_new(pcommandbuffer);
-
-   //   ::cast < device > pdevice= m_pgpucontext->m_pgpudevice;
-
-   //   pcommandbuffer->initialize_command_buffer(pdevice);
-
-   //   return pcommandbuffer;
-
-   //}
+   }
 
 
    void command_buffer::submit_command_buffer(::gpu::layer* pgpulayer)
@@ -137,7 +160,6 @@ namespace gpu_directx12
       ID3D12CommandList* ppCommandLists[] = { m_pcommandlist };
 
       m_pcommandqueue->ExecuteCommandLists(1, ppCommandLists);
-
 
    }
 

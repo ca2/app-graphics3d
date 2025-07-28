@@ -657,8 +657,23 @@ namespace gpu_directx12
 
          D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
          depthStencilDesc.DepthEnable = TRUE;
-         depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-         depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+         if (m_bDepthTestButNoDepthWrite)
+         {
+            depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+         }
+         else
+         {
+            depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+         }
+         if (m_bLequalDepth)
+         {
+            depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+         }
+         else
+         {
+            depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+
+         }
          depthStencilDesc.StencilEnable = FALSE;
          psoDesc.DepthStencilState = depthStencilDesc;
          psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT; // must match your DSV

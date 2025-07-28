@@ -49,8 +49,6 @@ namespace gpu_directx12
 
       m_pcommandbufferLoading = prenderer->getLoadAssetsCommandBuffer();
 
-
-
    }
 
 

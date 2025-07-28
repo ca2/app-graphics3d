@@ -1,6 +1,7 @@
 // From gpu_directx12/buffer.cpp by camilo on 2025-07-17 00:05 <3ThomasBorregaardSørensen!!
 #include "framework.h"
 #include "gpu_vulkan/context.h"
+#include "aura/graphics/image/image.h"
 /*
  * Encapsulates a directx12 buffer
  *
@@ -374,33 +375,46 @@ namespace gpu_vulkan
 
 
 
-   void buffer::assign_cube_map(const void* dataSrc, int w, int h, int scan)
+   void buffer::assign_cube_map(const ::pointer_array < ::image::image >& imagea)
    {
 
       defer_stage([&](buffer* pbuffer)
          {
             
-            pbuffer->_assign_cube_map(dataSrc, w, h, scan);
+            pbuffer->_assign_cube_map(imagea);
 
          });
 
    }
 
 
-
-   void buffer::_assign_cube_map(const void* dataSrc, int wFull, int h, int scan)
+   void buffer::_assign_cube_map(const ::pointer_array < ::image::image >& imagea)
    {
+      
       ::cast < context > pcontext = m_pgpucontext;
+      
       // copy all 6 faces into the staging buffer, one after another
+      
       void* data;
+      
       vkMapMemory(pcontext->logicalDevice(), m_vkdevicememory, 0, m_size, 0, &data);
-      auto w = wFull / 6;
+      
       for (int i = 0; i < 6; i++)
       {
+
+         auto pimage = imagea[i];
+
+         auto w = pimage->width();
+
+         auto h = pimage->height();
+         
          auto pimage32 = (image32_t*)data + w * h  * i;
-         pimage32->vertical_swap_copy(w, h, w * 4,
-            (image32_t*)(((unsigned char*)dataSrc) + w * 4 * i), scan);
+         
+         pimage32->vertical_swap_copy(w, h, w * 4, 
+            pimage->image32(), pimage->m_iScan);
+
       }
+
       vkUnmapMemory(pcontext->logicalDevice(), m_vkdevicememory);
 
    }
