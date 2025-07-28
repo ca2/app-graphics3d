@@ -183,11 +183,11 @@ namespace gpu_vulkan
    void shader::bind(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource)
    {
 
+      _bind();
+
       _bind(pgputextureTarget);
 
       bind_source(pgputextureSource, 0);
-
-      _bind();
 
    }
 

@@ -2276,43 +2276,78 @@ namespace gpu_vulkan
 
       ptexture->_set_state(pcommandbuffer,
          {
-                        VK_ACCESS_TRANSFER_WRITE_BIT,
+
+            VK_ACCESS_TRANSFER_WRITE_BIT,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_PIPELINE_STAGE_TRANSFER_BIT
 
          });
 
+      VkBufferImageCopy regions[6];
 
-      VkBufferImageCopy region{};
-
-      region.bufferOffset = 0;
-      region.bufferRowLength = 0;
-      region.bufferImageHeight = 0;
-
-      region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-      region.imageSubresource.mipLevel = 0;
-      region.imageSubresource.baseArrayLayer = 0;
+      int iRegionCount;
+      
       if (ptexture->m_etype == ::gpu::texture::e_type_cube_map)
       {
-         region.imageSubresource.layerCount = 6;
+
+         iRegionCount = 6;
+
+         auto texWidth = (uint32_t)ptexture->width();
+
+         auto texHeight = (uint32_t)ptexture->height();
+
+         auto layerarea = texWidth * texHeight * 4;
+
+         for (uint32_t face = 0; face < 6; face++) 
+         {
+
+            auto& region = regions[face];
+
+            memset(&region, 0, sizeof(region));
+
+            region.bufferOffset = layerarea * face;
+            region.bufferRowLength = 0;
+            region.bufferImageHeight = 0;
+            region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            region.imageSubresource.mipLevel = 0;
+            region.imageSubresource.baseArrayLayer = face;
+            region.imageSubresource.layerCount = 1;
+            region.imageOffset = { 0, 0, 0 };
+            region.imageExtent = { texWidth, texHeight, 1 };
+
+         }
+
       }
       else
       {
-         region.imageSubresource.layerCount = 1;
-      }
 
-      region.imageOffset = { 0, 0, 0 };
-      region.imageExtent = { (uint32_t)ptexture->width(), (uint32_t) ptexture->height(), 1};
+         iRegionCount = 1;
+
+         auto & region = regions[0];
+
+         memset(&region, 0, sizeof(region));
+
+         region.bufferOffset = 0;
+         region.bufferRowLength = 0;
+         region.bufferImageHeight = 0;
+
+         region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+         region.imageSubresource.mipLevel = 0;
+         region.imageSubresource.baseArrayLayer = 0;
+         region.imageSubresource.layerCount = 1;
+
+         region.imageOffset = { 0, 0, 0 };
+         region.imageExtent = { (uint32_t)ptexture->width(), (uint32_t)ptexture->height(), 1 };
+
+      }
 
       vkCmdCopyBufferToImage(
          pcommandbuffer->m_vkcommandbuffer,
          pbuffer->m_vkbuffer,
          ptexture->m_vkimage,
          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-         1,
-         &region);
-
-      //endSingleTimeCommands(pcommandbuffer);
+         iRegionCount,
+         regions);
 
    }
 

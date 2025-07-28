@@ -1,6 +1,8 @@
 #version 450
 
 layout(location = 0) in vec3 aPos; // Skybox positions
+layout(location = 1) in vec3 aNormal;   // NEW: normal attribute
+layout(location = 2) in vec2 uv;   // NEW: uv attribute
 
 layout(location = 0) out vec3 TexCoords; // Pass to fragment shader
 

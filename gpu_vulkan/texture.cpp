@@ -248,13 +248,6 @@ namespace gpu_vulkan
       }
 
       ASSERT(!(m_etype & ::gpu::texture::e_type_depth));
-      //{
-
-      //   get_depth_image();
-
-      //}
-      //else
-      //{
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
@@ -303,7 +296,7 @@ namespace gpu_vulkan
 
          }
 
-         if (m_bTransferDst)
+         if (m_bTransferSrc)
          {
 
             imagecreateinfo.usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
@@ -354,88 +347,61 @@ namespace gpu_vulkan
 
       }
 
-      //}
-
-      if (m_etype == e_type_cube_map)
+      if(imagea.has_element())
       {
 
-         if (imagea.has_element())
+         if (m_etype == e_type_cube_map)
          {
 
             _LoadCubeMap(imagea);
 
-            /*   VkMemoryAllocateInfo allocInfo = {
-                  .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-                  .allocationSize = memReq.size,
-                  .memoryTypeIndex = memTypeIndex
-               };
-               vkAllocateMemory(device, &allocInfo, NULL, outMemory);
-               vkBindBufferMemory(device, vertexBuffer, *outMemory, 0);
-
-               void* data;
-               vkMapMemory(device, stagingBufferMemory, 0, totalSize, 0, &data);
-               for (int i = 0; i < 6; ++i) {
-                  memcpy((uint8_t*)data + imageSize * i, faceData[i], imageSize);
-               }
-               vkUnmapMemory(device, stagingBufferMemory);*/
          }
 
       }
 
    }
 
-   //void texture::TransitionImageLayout(
-   //   VkImageLayout newLayout,
-   //   uint32_t    layerCount)
-   //{
-
-   //   ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
-   //   pcontext->transitionImageLayout(
-   //      m_vkimage, m_vkformat,
-   //      m_state.m_vkimagelayout, newLayout,
-   //      m_mipsLevel, layerCount);
-   //}
-
 
    void texture::_LoadCubeMap(const ::pointer_array < ::image::image >& imagea)
    {
+
+      defer_throw_if_cube_map_images_are_not_ok(imagea);
+
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
       ::cast < context > pgpucontext = pcontext;
-      ::cast <device > pdevice = pcontext->m_pgpudevice;
+
+      ::cast < device > pdevice = pcontext->m_pgpudevice;
+
       auto w = imagea.first()->width();
+
       auto h = imagea.first()->height();
-      //auto scan = ppixmap->m_iScan;
-      //auto data = ppixmap->data();
+      
       VkDeviceSize layerSize = w * h * 4;
-      VkDeviceSize totalSize = layerSize;
-      auto pbufferStaging = pgpucontext->create_buffer(totalSize,
+      
+      VkDeviceSize totalSize = layerSize * 6;
+
+      auto pbufferStaging = pgpucontext->create_buffer(
+         totalSize,
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
       pbufferStaging->_assign_cube_map(imagea);
 
       auto pcommandbuffer = pcontext->beginSingleTimeCommands();
+
       pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging);
 
       _set_state(pcommandbuffer,
          {
-                        VK_ACCESS_TRANSFER_READ_BIT,
+
+            VK_ACCESS_TRANSFER_READ_BIT,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
             VK_PIPELINE_STAGE_TRANSFER_BIT
 
          });
 
       pcontext->endSingleTimeCommands(pcommandbuffer);
-
-      //// copy all 6 faces into the staging buffer, one after another
-      //void* data;
-      //vkMapMemory(device->logicalDevice, stagingMemory, 0, totalSize, 0, &data);
-      //for (int i = 0; i < 6; i++) {
-      //   memcpy((char*)data + layerSize * i, images[i], layerSize);
-      //   stbi_image_free(images[i]);
-      //}
-      //vkUnmapMemory(device->logicalDevice, stagingMemory);
 
    }
 

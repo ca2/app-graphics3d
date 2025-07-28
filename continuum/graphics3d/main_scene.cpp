@@ -222,36 +222,12 @@ namespace app_graphics3d_continuum
    void main_scene::on_render(::gpu::context * pgpucontext)
    {
 
-
       //pgpucontext->clear(rgba(0.5f, 0.75f, 1.0f, 1.0f)); // Clear with a light blue color
-
-      //return;
-
-      //if (pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
-      //{
-      //   auto colorLightBlue = rgba(0.5f, 0.75f, 1.0f, 1.0f);
-      //   pgpucontext->clear(colorLightBlue);
-      //}
-
-      //m_pengine->update_global_ubo();
 
       if (m_Skybox)
       {
 
          m_Skybox->render(pgpucontext, this);
-         //auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
-
-
-
-         //// sky_box
-         ////glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); // Remove translation from the view matrix
-         ////m_SkyboxShader->bind();
-
-         //m_Skybox->bind(pcommandbuffer);
-         //m_Skybox->draw(pcommandbuffer);
-         //m_Skybox->unbind(pcommandbuffer);
-
-         // m_SkyboxShader->unbind(); // Make sure to bind the shader first
 
       }
 
@@ -264,14 +240,12 @@ namespace app_graphics3d_continuum
 
       }
 
-
       if(m_ppointlightsystem)
       {
 
          m_ppointlightsystem->render(pgpucontext, this);
 
       }
-
 
    }
 

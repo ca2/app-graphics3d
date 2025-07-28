@@ -398,20 +398,29 @@ namespace gpu_vulkan
       void* data;
       
       vkMapMemory(pcontext->logicalDevice(), m_vkdevicememory, 0, m_size, 0, &data);
+
+      auto pimageFirst = imagea.first();  
+
+      auto w = pimageFirst->width();
+
+      auto h = pimageFirst->height();
+
+      auto layerarea = w * h;
+
+      int iScanDst = w * 4;
       
       for (int i = 0; i < 6; i++)
       {
 
          auto pimage = imagea[i];
 
-         auto w = pimage->width();
+         int iScanSrc = pimage->m_iScan;
 
-         auto h = pimage->height();
+         auto pimage32Dst = (image32_t*)data + layerarea * i;
+
+         auto pimage32Src = pimage->image32();  
          
-         auto pimage32 = (image32_t*)data + w * h  * i;
-         
-         pimage32->vertical_swap_copy(w, h, w * 4, 
-            pimage->image32(), pimage->m_iScan);
+         pimage32Dst->copy(w, h, iScanDst, pimage32Src, iScanSrc);
 
       }
 
@@ -419,5 +428,8 @@ namespace gpu_vulkan
 
    }
 
+
 }  // namespace gpu_vulkan
+
+
 

@@ -2,6 +2,8 @@
 #version 330 core
 
 layout (location = 0) in vec3 aPos; // Skybox positions
+layout (location = 1) in vec3 aNormal; // Skybox positions
+layout (location = 2) in vec2 uv; // Skybox positions
 
 out vec3 TexCoords; // Pass to fragment shader
 
