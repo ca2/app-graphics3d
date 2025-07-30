@@ -467,12 +467,12 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::set_primitive_topology_triangle_strip()
-   {
+   //void command_buffer::set_primitive_topology_triangle_strip()
+   //{
 
-      //vkCmdSetPrimitiveTopology(m_vkcommandbuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
+   //   //vkCmdSetPrimitiveTopology(m_vkcommandbuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
 
-   }
+   //}
 
 
    void command_buffer::draw(::gpu_vulkan::model_buffer* pmodelbuffer)

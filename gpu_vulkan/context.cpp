@@ -2065,7 +2065,8 @@ namespace gpu_vulkan
    //   return {};
    //}
 
-   void context::gpu_debug_message(const ::scoped_string& scopedstrMessage)
+   //void context::gpu_debug_message(const ::scoped_string& scopedstrMessage)
+   void context::start_debug_happening(const ::scoped_string& scopedstrMessage)
    {
 
       //::string strMessage(scopedstrMessage);

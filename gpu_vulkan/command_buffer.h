@@ -46,7 +46,7 @@ namespace gpu_vulkan
 
       void set_scissor(const ::int_rectangle& rectangle) override;  
 
-      void set_primitive_topology_triangle_strip() override;
+      //void set_primitive_topology_triangle_strip() override;
 
       virtual void draw(::gpu_vulkan::model_buffer* pmodelbuffer);
 

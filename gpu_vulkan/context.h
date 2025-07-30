@@ -56,7 +56,8 @@ namespace gpu_vulkan
       VkSampler _001VkSampler();
 
 
-      void gpu_debug_message(const ::scoped_string& scopedstr) override;
+      //void gpu_debug_message(const ::scoped_string& scopedstr) override;
+      void start_debug_happening(const ::scoped_string& scopedstr) override;
 
       void on_start_layer(::gpu::layer* player) override;
 

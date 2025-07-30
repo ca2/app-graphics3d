@@ -28,8 +28,8 @@ VertexOutput main(VertexInput input) {
     VertexOutput output;
     
     // Pass position directly as texture coordinates for skybox
-    //output.texCoords = float3(input.position.x, input.position.z, input.position.y);
-    output.texCoords = input.position;
+    output.texCoords = float3(input.position.x, input.position.y, -input.position.z);
+    //output.texCoords = input.position;
     
     // Since matrices are transposed on C++ side, we need to transpose them back
     // or use the opposite multiplication order
