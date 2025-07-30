@@ -687,6 +687,9 @@ namespace draw2d_vkvg
       void is_valid_update_window_thread() override;
 
 
+
+      bool is_y_flip() override;
+
       //void _add_clipping_shape(const ::double_rectangle & rectangle, ::draw2d::region * pregion) override;
 
       void on_start_layer(::gpu::layer* pgpulayer) override;

@@ -8183,6 +8183,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
+   bool graphics::is_y_flip()
+   {
+
+      return true;
+
+   }
+
+
    void graphics::on_begin_draw()
    {
 
