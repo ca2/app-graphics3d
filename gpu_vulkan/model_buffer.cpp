@@ -724,16 +724,18 @@ namespace gpu_vulkan
    void model_buffer::draw(::gpu::command_buffer* pgpucommandbuffer)
    {
 
-      if (m_pbufferVertex)
+      if (m_pbufferVertex || m_bDummy)
       {
 
          ::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
 
          if (m_pbufferIndex)
          {
+
             vkCmdDrawIndexed(
                pcommandbuffer->m_vkcommandbuffer,
                m_iIndexCount, 1, 0, 0, 0);
+
          }
          else
          {
@@ -748,7 +750,9 @@ if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
                pcommandbuffer->m_vkcommandbuffer,
                m_iVertexCount, 1, 0, 0);
          }
+
       }
+
    }
 
 
