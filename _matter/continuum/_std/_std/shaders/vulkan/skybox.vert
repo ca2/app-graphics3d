@@ -22,7 +22,10 @@ layout(set = 0, binding = 0) uniform GlobalUbo {
 } ubo;
 
 void main() {
-    TexCoords = aPos;
+
+    //TexCoords = vec3(aPos.x, -aPos.y, aPos.z); // Flip Y
+
+    TexCoords = vec3(aPos.x, aPos.y, -aPos.z); // Flip Y
 
     // Remove translation from the view matrix to keep the skybox centered around the camera
     mat4 viewNoTranslation = mat4(mat3(ubo.view)); 

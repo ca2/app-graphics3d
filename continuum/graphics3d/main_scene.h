@@ -12,18 +12,18 @@ namespace app_graphics3d_continuum
 
 
    class main_scene :
-      virtual public ::graphics3d::scene
+      virtual public ::app_consumer < application, ::graphics3d::scene >
    {
    public:
 
 
-      ::pointer< ::graphics3d::sky_box> m_Skybox;
+      //::pointer< ::graphics3d::sky_box> m_Skybox;
 
 
       ::pointer < simple_render_system >		m_psimplerendersystem;
       ::pointer < point_light_system >			m_ppointlightsystem;
 
-
+      string_map < ::pointer < ::graphics3d::sky_box > > m_mapSkybox;
 
       main_scene();
       ~main_scene() override;
@@ -31,6 +31,7 @@ namespace app_graphics3d_continuum
       
       void on_initialize_scene() override;
 
+      virtual ::graphics3d::sky_box * get_skybox();
 
       ::pointer < ::graphics3d::camera > get_default_camera() override;
 

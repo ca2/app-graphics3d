@@ -494,6 +494,22 @@ namespace vulkan
       }
 
    }
+
+
+   CLASS_DECL_GPU_VULKAN VkPrimitiveTopology as_vk_topology(::gpu::enum_topology etopology)
+   {
+      switch (etopology)
+      {
+      case ::gpu::e_topology_triangle_list:
+         return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+      case ::gpu::e_topology_triangle_strip:
+         return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+      case ::gpu::e_topology_line_list:
+         return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+      default:
+         throw ::exception(error_unexpected);
+      }
+   }
    
    
    //::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions() 

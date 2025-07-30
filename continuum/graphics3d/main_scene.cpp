@@ -36,7 +36,12 @@ namespace app_graphics3d_continuum
 
       m_pusergraphics3d = m_pengine->m_pusergraphics3d;
 
+      m_papp->m_pmainscene = this;
+
    }
+
+
+
 
 
    ::pointer < ::graphics3d::camera > main_scene::get_default_camera()
@@ -55,6 +60,12 @@ namespace app_graphics3d_continuum
 
    }
 
+   //void main_scene::on_load_scene(::gpu::context* pgpucontext)
+   //{
+
+
+   //}
+
 
    void main_scene::on_load_scene(::gpu::context* pgpucontext)
    {
@@ -62,43 +73,50 @@ namespace app_graphics3d_continuum
       m_propertiesGlobalUbo.set<::app_graphics3d_continuum::global_ubo>();
 
 
-      ::graphics3d::sky_box::cube cube = {
+      //::graphics3d::sky_box::cube cube = {
 
-         // Cloudy skybox
-        /* "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_ft.jpg",
-         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_bk.jpg",
-         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_dn.jpg",
-         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_up.jpg",
-         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_rt.jpg",
-         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_lf.jpg",*/
+      //   // Cloudy skybox
+      //  /* "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_ft.jpg",
+      //   "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_bk.jpg",
+      //   "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_dn.jpg",
+      //   "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_up.jpg",
+      //   "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_rt.jpg",
+      //   "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_lf.jpg",*/
 
-         // Hell skybox
-        /* "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Front.png",
-         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Back.png",
+      //   // Hell skybox
+      //  /* "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Front.png",
+      //   "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Back.png",
 
-          "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Top.png",
-          "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Bottom.png",
+      //    "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Top.png",
+      //    "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Bottom.png",
 
-         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Left.png",
-         "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Right.png",
-       */
+      //   "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Left.png",
+      //   "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CoolSkybox/NightSky_Right.png",
+      // */
 
 
-       // Space sky_box
-         {"matter://textures/SpaceSkybox/right.png",
-        "matter://textures/SpaceSkybox/left.png",
-        "matter://textures/SpaceSkybox/bot.png",
-        "matter://textures/SpaceSkybox/top.png",
-        "matter://textures/SpaceSkybox/front.png",
-        "matter://textures/SpaceSkybox/back.png"
-        }
-      };
+      // // Space sky_box
+      //   {"matter://textures/SpaceSkybox/right.png",
+      //  "matter://textures/SpaceSkybox/left.png",
+      //  "matter://textures/SpaceSkybox/top.png",
+      //  "matter://textures/SpaceSkybox/bottom.png",
+      //  "matter://textures/SpaceSkybox/front.png",
+      //  "matter://textures/SpaceSkybox/back.png"
+      //  }
+      //};
 
 //      m_Skybox = __allocate::graphics3d::sky_box();
 
-      __defer_construct_new(m_Skybox);
+      for (auto& strSkybox : m_papp->m_straSkybox)
+      {
 
-      m_Skybox->initialize_sky_box(m_pengine, cube);
+         auto& pskybox = m_mapSkybox[strSkybox];
+
+         __defer_construct_new(pskybox);
+
+         pskybox->initialize_sky_box(m_pengine, strSkybox);
+
+      }
 
 
 
@@ -218,16 +236,28 @@ namespace app_graphics3d_continuum
 
    }
 
+
+   ::graphics3d::sky_box* main_scene::get_skybox()
+   {
+
+      ::string strSkybox = m_papp->m_strSkybox;
+
+      return m_mapSkybox[strSkybox];
+
+   }
+
    
    void main_scene::on_render(::gpu::context * pgpucontext)
    {
 
       //pgpucontext->clear(rgba(0.5f, 0.75f, 1.0f, 1.0f)); // Clear with a light blue color
 
-      if (m_Skybox)
+      auto pskybox = get_skybox();
+
+      if (pskybox)
       {
 
-         m_Skybox->render(pgpucontext, this);
+         pskybox->render(pgpucontext, this);
 
       }
 

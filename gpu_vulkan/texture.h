@@ -212,7 +212,7 @@ namespace gpu_vulkan
 
       virtual texture_synchronization * synchronization();
       //virtual texture_synchronization* synchronization(::gpu::render_target* prendertarget);
-
+      void set_pixels(const ::int_rectangle& rectangle, const void* data) override;
 
    };
 

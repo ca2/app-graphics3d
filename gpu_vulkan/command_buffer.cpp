@@ -53,12 +53,12 @@ namespace gpu_vulkan
       VkCommandBufferAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
       allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      
+
       if (m_ecommandbuffer == ::gpu::e_command_buffer_present)
       {
          m_vkcommandpool = pdevice->getPresentCommandPool();
       }
-      else if(m_ecommandbuffer == ::gpu::e_command_buffer_graphics)
+      else if (m_ecommandbuffer == ::gpu::e_command_buffer_graphics)
       {
          m_vkcommandpool = pdevice->getCommandPool();
       }
@@ -121,7 +121,7 @@ namespace gpu_vulkan
       //::cast < render_pass > prenderpass = prendertarget->render_pass();
 
       //if (prenderpass)
-      if(prendertarget)
+      if (prendertarget)
       {
 
          auto vkcommandbuffer = m_vkcommandbuffer;
@@ -166,11 +166,11 @@ namespace gpu_vulkan
 
    VkResult command_buffer::submitCommandBuffers(
       ::gpu::texture* pgputextureTarget,
-      const ::pointer_array < ::gpu::texture > & gputextureaSource,
+      const ::pointer_array < ::gpu::texture >& gputextureaSource,
       const ::array < VkSemaphore >& semaphoreaWait,
       const ::array < VkPipelineStageFlags >& stageaWait,
       const ::array < VkSemaphore >& semaphoreaSignal,
-      VkFence * pvkfence)
+      VkFence* pvkfence)
    {
 
       auto& ecommandbufferstate = m_estate;
@@ -178,7 +178,7 @@ namespace gpu_vulkan
       ASSERT(ecommandbufferstate == ::gpu::command_buffer::e_state_recording);
 
       ::pointer < ::gpu_vulkan::texture > ptextureDst;
-      
+
       if (pgputextureTarget)
       {
 
@@ -188,7 +188,7 @@ namespace gpu_vulkan
 
       ::pointer_array < ::gpu_vulkan::texture > textureaSrc;
 
-      for(auto & pgputextureSource : gputextureaSource)
+      for (auto& pgputextureSource : gputextureaSource)
       {
 
          textureaSrc.add(pgputextureSource);
@@ -216,9 +216,9 @@ namespace gpu_vulkan
 
       }
 
-      ::array< ::gpu_vulkan::texture_synchronization *> synchronizationaSrc;
+      ::array< ::gpu_vulkan::texture_synchronization*> synchronizationaSrc;
 
-      for(auto & ptextureSrc : textureaSrc)
+      for (auto& ptextureSrc : textureaSrc)
       {
 
          synchronizationaSrc.add(ptextureSrc->synchronization());
@@ -240,7 +240,7 @@ namespace gpu_vulkan
 
       ::array<VkSemaphore> waitSemaphores(semaphoreaWait);
       ::array<VkPipelineStageFlags> waitStages(stageaWait);
-      for(auto psynchronizationSrc : synchronizationaSrc)
+      for (auto psynchronizationSrc : synchronizationaSrc)
       {
          if (psynchronizationSrc && psynchronizationSrc->m_iImageAvailable > 0)
          {
@@ -270,8 +270,8 @@ namespace gpu_vulkan
 
       ::comparable_array<VkSemaphore> signalSemaphores(semaphoreaSignal);
 
-        // && texture.m_vksemaphoreRenderFinished)
-      if(psynchronizationDst && psynchronizationDst->m_vksemaphoreRenderFinished)
+      // && texture.m_vksemaphoreRenderFinished)
+      if (psynchronizationDst && psynchronizationDst->m_vksemaphoreRenderFinished)
       {
 
          signalSemaphores.add_unique(psynchronizationDst->m_vksemaphoreRenderFinished);
@@ -334,24 +334,24 @@ namespace gpu_vulkan
       bool bCreatedFence = false;
 
       if (fence)
-      //{
+         //{
 
-      //   VkFenceCreateInfo fenceInfo = {
-      //       .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-      //       .pNext = NULL,
-      //       .flags = 0  // 0 = fence starts in unsignaled state
-      //   };
+         //   VkFenceCreateInfo fenceInfo = {
+         //       .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+         //       .pNext = NULL,
+         //       .flags = 0  // 0 = fence starts in unsignaled state
+         //   };
 
-      //   VkResult result = vkCreateFence(pcontext->logicalDevice(), &fenceInfo, NULL, &fence);
-      //   if (result != VK_SUCCESS) {
-      //      fprintf(stderr, "Failed to create fence\n");
-      //      // handle error
-      //   }
+         //   VkResult result = vkCreateFence(pcontext->logicalDevice(), &fenceInfo, NULL, &fence);
+         //   if (result != VK_SUCCESS) {
+         //      fprintf(stderr, "Failed to create fence\n");
+         //      // handle error
+         //   }
 
-      //   bCreatedFence = true;
+         //   bCreatedFence = true;
 
-      //}
-      //else
+         //}
+         //else
       {
          vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
 
@@ -437,7 +437,7 @@ namespace gpu_vulkan
          (float)rectangle.top(),
          (float)rectangle.width(),
          (float)rectangle.height(),
-         0.0f, 1.0f 
+         0.0f, 1.0f
       };
 
       vkCmdSetViewport(m_vkcommandbuffer, 0, 1, &viewport);
@@ -447,8 +447,8 @@ namespace gpu_vulkan
 
    void command_buffer::set_scissor(const ::int_rectangle& rectangle)
    {
-      
-      VkRect2D rect2d = 
+
+      VkRect2D rect2d =
       {
 
          {
@@ -456,7 +456,7 @@ namespace gpu_vulkan
             rectangle.top(),
          },
          {
-            (uint32_t) rectangle.width(),
+            (uint32_t)rectangle.width(),
             (uint32_t)rectangle.height(),
          }
 
@@ -467,10 +467,34 @@ namespace gpu_vulkan
    }
 
 
+   void command_buffer::set_primitive_topology_triangle_strip()
+   {
+
+      //vkCmdSetPrimitiveTopology(m_vkcommandbuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
+
+   }
+
+
    void command_buffer::draw(::gpu_vulkan::model_buffer* pmodelbuffer)
    {
 
       pmodelbuffer->draw(this);
+
+   }
+
+
+   void command_buffer::draw_vertices(int iVertexCount)
+   {
+
+      vkCmdDraw(m_vkcommandbuffer, iVertexCount, 1, 0, 0);
+
+   }
+
+
+   void command_buffer::draw_indices(int iIndexCount)
+   {
+
+      vkCmdDrawIndexed(m_vkcommandbuffer, iIndexCount, 1, 0, 0, 0);
 
    }
 

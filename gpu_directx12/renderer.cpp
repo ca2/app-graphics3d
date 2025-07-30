@@ -2421,7 +2421,8 @@ float4 main(PSInput input) : SV_TARGET {
             this,
             as_block(g_pszImageBlendVertexShader),
             as_block(g_pszImageBlendFragmentShader),
-            { ::gpu::shader::e_descriptor_set_shader_resource_view_and_sampler },
+            {},
+            //{ ::gpu::shader::e_descriptor_set_shader_resource_view_and_sampler },
             m_psetdescriptorlayoutImageBlend,
             {},
             m_pgpucontext->input_layout<::graphics3d::sequence2_uv>()

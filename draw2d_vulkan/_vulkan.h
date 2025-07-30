@@ -29,9 +29,6 @@ namespace vulkan
 {
 
 
-   void resize(const ::int_size & size, bool bYSwap);
-
-
    //https://community.khronos.org/t/draw-an-arc-in-vulkan/57994/2
    void draw_arc(float cx, float cy, float r, float start_angle, float arc_angle, int num_segments);
 

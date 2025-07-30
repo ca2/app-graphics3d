@@ -105,7 +105,12 @@ namespace gpu_vulkan
    //}
 
 
+   void renderer::on_resize(const ::int_size& size)
+   {
 
+      ::gpu::renderer::on_resize(size);
+
+   }
 
 
    void renderer::initialize_gpu_renderer(::gpu::context* pgpucontext)
@@ -853,7 +858,7 @@ namespace gpu_vulkan
 
       ::cast < texture > ptexture = pgputexture;
 
-      auto pcommandbuffer = m_pcontext->beginSingleTimeCommands();
+      ::pointer < command_buffer > pcommandbuffer = m_pcontext->beginSingleTimeCommands();
       // Create the linear tiled destination image to copy to and to read the memory from
 
   //// Do the actual blit from the offscreen image to our host visible destination image
@@ -1573,7 +1578,7 @@ namespace gpu_vulkan
 
       //	}
 
-      //	if (!m_pshaderResolve)
+      //	if (nok(m_pshaderResolve))
       //	{
 
       //		auto pshadervertexinput = __allocate  shader_vertex_input();
@@ -1882,19 +1887,20 @@ namespace gpu_vulkan
    }
 
 
-   shader* renderer::_get_image_blend_shader()
+   ::gpu::shader* renderer::_get_image_blend_shader()
    {
 
-      if (!m_pshaderImageBlend)
+      if (::nok(m_pshaderImageBlend))
       {
 
-         __construct_new(m_pshaderImageBlend);
+         m_pgpucontext->øconstruct(m_pshaderImageBlend);
 
+         ::cast < shader > pshader = m_pshaderImageBlend;
          // Image Blend descriptors
          //if (!m_psetdescriptorlayoutImageBlend)
          {
 
-            m_pshaderImageBlend->m_psetdescriptorlayout
+            pshader->m_psetdescriptorlayout
                = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
                .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
                .build();
@@ -1907,7 +1913,7 @@ namespace gpu_vulkan
             pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
             pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
 
-            m_pshaderImageBlend->m_pdescriptorpool = pdescriptorpoolbuilder->build();
+            pshader->m_pdescriptorpool = pdescriptorpoolbuilder->build();
 
          }
 
@@ -1945,13 +1951,15 @@ namespace gpu_vulkan
    }
 
 
-   shader* renderer::_get_image_set_shader()
+   ::gpu::shader* renderer::_get_image_set_shader()
    {
 
-      if (!m_pshaderImageSet)
+      if (::nok(m_pshaderImageSet))
       {
 
-         __construct_new(m_pshaderImageSet);
+         m_pgpucontext->øconstruct(m_pshaderImageSet);
+
+         ::cast < shader > pshader = m_pshaderImageSet;
 
          //auto pshadervertexinput = __allocate  shader_vertex_input();
 
@@ -1967,12 +1975,12 @@ namespace gpu_vulkan
 
          //::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
-         m_pshaderImageBlend->initialize_shader_with_block(
+         pshader->initialize_shader_with_block(
             this,
             as_memory_block(g_uaImageBlendVertexShader),
             as_memory_block(g_uaImageBlendFragmentShader),
             { ::gpu::shader::e_descriptor_set_slot_local },
-            m_pshaderImageSet->m_psetdescriptorlayout,
+            pshader->m_psetdescriptorlayout,
             {},
             m_pgpucontext->input_layout<::graphics3d::sequence2_uv>()
          );
@@ -2390,10 +2398,10 @@ namespace gpu_vulkan
 
       }
 
-      if (!m_pshaderCopyImage)
+      if (::nok(m_pshaderCopyImage))
       {
 
-         __construct_new(m_pshaderCopyImage);
+         m_pgpucontext->øconstruct(m_pshaderCopyImage);
 
          m_pshaderCopyImage->m_pgpurenderer = this;
          m_pshaderCopyImage->m_bindingSampler.set();
@@ -2401,7 +2409,9 @@ namespace gpu_vulkan
 //if (!m_psetdescriptorlayoutImageBlend)
          {
 
-            m_pshaderCopyImage->m_psetdescriptorlayout
+            ::cast < shader > pshader = m_pshaderCopyImage;
+
+            pshader->m_psetdescriptorlayout
                = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
                .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
                .build();
@@ -2414,7 +2424,7 @@ namespace gpu_vulkan
             pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
             pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
 
-            m_pshaderCopyImage->m_pdescriptorpool
+            pshader->m_pdescriptorpool
                = pdescriptorpoolbuilder->build();
 
          }
@@ -2455,7 +2465,9 @@ namespace gpu_vulkan
 
       }
 
-      if (m_pshaderCopyImage->has_sampler())
+      ::cast < shader > pshaderCopyImage = m_pshaderCopyImage;
+
+      if (pshaderCopyImage->has_sampler())
       {
 
          //auto pshadertextureDst = m_pshaderCopyImage->shader_texture(ptextureDst, false);
@@ -4071,7 +4083,7 @@ namespace gpu_vulkan
       if (1)
       {
 
-         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
+         ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -4139,7 +4151,8 @@ namespace gpu_vulkan
 
       if (1)
       {
-         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
+
+         ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -4256,7 +4269,7 @@ namespace gpu_vulkan
          //submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
 
          //m_pgpucontext->endSingleTimeCommands(pcommandbuffer->m_vkcommandbuffer, 1, &submitInfo);
-         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
+         ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
 
          insertImageMemoryBarrier(pcommandbuffer->m_vkcommandbuffer,
@@ -4459,7 +4472,7 @@ namespace gpu_vulkan
 
       ::cast < texture > ptexture = prendertargetSource->current_texture(::gpu::current_frame());
 
-      auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
+      ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
       ::vulkan::insertImageMemoryBarrier(
          pcommandbuffer->m_vkcommandbuffer,
@@ -4671,10 +4684,10 @@ namespace gpu_vulkan
 
       m_prenderpassBlend2->update_render_pass(m_pgpucontext);
 
-      if (!m_pshaderBlend2)
+      if (::nok(m_pshaderBlend2))
       {
 
-         __construct_new(m_pshaderBlend2);
+         m_pgpucontext->øconstruct(m_pshaderBlend2);
 
          m_pshaderBlend2->m_pgpurenderer = this;
          m_pshaderBlend2->m_bindingSampler.set();
@@ -4682,7 +4695,9 @@ namespace gpu_vulkan
 //if (!m_psetdescriptorlayoutImageBlend)
          {
 
-            m_pshaderBlend2->m_psetdescriptorlayout
+            ::cast < shader > pshader = m_pshaderBlend2;
+
+            pshader->m_psetdescriptorlayout
                = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
                .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
                .build();
@@ -4695,7 +4710,7 @@ namespace gpu_vulkan
             pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
             pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
 
-            m_pshaderBlend2->m_pdescriptorpool = pdescriptorpoolbuilder->build();
+            pshader->m_pdescriptorpool = pdescriptorpoolbuilder->build();
 
          }
 
@@ -4735,8 +4750,9 @@ namespace gpu_vulkan
 
       }
 
+      ::cast < shader > pshaderBlend2 = m_pshaderBlend2;
 
-      if (m_pshaderBlend2->has_sampler())
+      if (pshaderBlend2->has_sampler())
       {
 
          //auto pshadertextureDst = m_pshaderBlend2->shader_texture(ptextureDst, false);
@@ -4749,7 +4765,9 @@ namespace gpu_vulkan
 
          auto rectangleTarget = ptextureSrc->m_rectangleTarget;
 
-         auto vkframebuffer = ptextureDst->framebuffer(m_pshaderBlend2->render_pass2());
+         ::cast < shader > pshader = m_pshaderBlend2;
+
+         auto vkframebuffer = ptextureDst->framebuffer(pshader->render_pass2());
          //auto& synchronization = ptextureDst->synchronization(m_pgpurendertarget);
 
          VkRenderPassBeginInfo renderPassInfo = {

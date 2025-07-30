@@ -85,7 +85,6 @@ namespace gpu_vulkan
 
       virtual void draw(::gpu::command_buffer* pcommandbuffer);
 
-
       
 
    };

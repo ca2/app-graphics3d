@@ -40,5 +40,8 @@ namespace vulkan
       void setup(VkInstance instance);
       void cmdBeginLabel(VkCommandBuffer cmdbuffer, ::string caption, glm::vec4 color);
       void cmdEndLabel(VkCommandBuffer cmdbuffer);
+      
+      void insertDebugLabel(VkCommandBuffer cmd, const ::scoped_string& scopedstrMessage, const ::color::color& color);
+
    }
 } // namespace debug

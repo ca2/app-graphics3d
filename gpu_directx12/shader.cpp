@@ -282,43 +282,43 @@ namespace gpu_directx12
 
             }
 
-            if (m_edescriptorsetslota.contains(e_descriptor_set_shader_resource_view_and_sampler))
-            {
-               // Range for SRV (Texture2D)
-               rootParameters.øadd().InitAsShaderResourceView(
-                  0,
-                  0,
-                  D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC,
-                  D3D12_SHADER_VISIBILITY_PIXEL);
-               //ranges.øadd().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,     // Range type
-               //   1,                                    // Number of descriptors
-               //   0,                                    // Base shader register (t0)
-               //   0,                                    // Register space
-               //   D3D12_DESCRIPTOR_RANGE_FLAG_NONE,    // Flags
-               //   D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND);
-               //CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
-       //rootSigDesc.Init(1, &param, 0, nullptr,
-       //   D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-        // Root parameter for SRV table
-               //rootParameters.øadd().InitAsDescriptorTable(1,              // Number of ranges
-               //   &ranges.last(),       // Range array
-               //   D3D12_SHADER_VISIBILITY_PIXEL); // Only pixel shader needs this
+       //     if (m_edescriptorsetslota.contains(e_descriptor_set_shader_resource_view_and_sampler))
+       //     {
+       //        // Range for SRV (Texture2D)
+       //        rootParameters.øadd().InitAsShaderResourceView(
+       //           0,
+       //           0,
+       //           D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC,
+       //           D3D12_SHADER_VISIBILITY_PIXEL);
+       //        //ranges.øadd().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,     // Range type
+       //        //   1,                                    // Number of descriptors
+       //        //   0,                                    // Base shader register (t0)
+       //        //   0,                                    // Register space
+       //        //   D3D12_DESCRIPTOR_RANGE_FLAG_NONE,    // Flags
+       //        //   D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND);
+       //        //CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
+       ////rootSigDesc.Init(1, &param, 0, nullptr,
+       ////   D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+       // // Root parameter for SRV table
+       //        //rootParameters.øadd().InitAsDescriptorTable(1,              // Number of ranges
+       //        //   &ranges.last(),       // Range array
+       //        //   D3D12_SHADER_VISIBILITY_PIXEL); // Only pixel shader needs this
 
-               // Range for Sampler
-               //ranges.øadd().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, // Range type
-               //   1,                                    // Number of descriptors
-               //   0,                                    // Base shader register (s0)
-               //   0,                                    // Register space
-               //   D3D12_DESCRIPTOR_RANGE_FLAG_NONE,    // Flags
-               //   D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND);
+       //        // Range for Sampler
+       //        //ranges.øadd().Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, // Range type
+       //        //   1,                                    // Number of descriptors
+       //        //   0,                                    // Base shader register (s0)
+       //        //   0,                                    // Register space
+       //        //   D3D12_DESCRIPTOR_RANGE_FLAG_NONE,    // Flags
+       //        //   D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND);
 
-       
-               // Root parameter for Sampler table
-               //rootParameters.øadd().InitAsDescriptorTable(1,              // Number of ranges
-               //   &ranges.last(),       // Range array
-               //   D3D12_SHADER_VISIBILITY_PIXEL); // Only pixel shader needs this
+       //
+       //        // Root parameter for Sampler table
+       //        //rootParameters.øadd().InitAsDescriptorTable(1,              // Number of ranges
+       //        //   &ranges.last(),       // Range array
+       //        //   D3D12_SHADER_VISIBILITY_PIXEL); // Only pixel shader needs this
 
-            }
+       //     }
 
 
 

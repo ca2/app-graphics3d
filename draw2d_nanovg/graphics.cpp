@@ -337,7 +337,7 @@ namespace draw2d_nanovg
    bool graphics::opengl_create_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
    {
 
-      defer_yield_gpu_context(rectanglePlacement);
+      on_gpu_context_placement_change(rectanglePlacement);
 
       //if (!draw2d_nanovg()->m_popenglcontext) {
       //   informationf("MS GDI - RegisterClass failed");

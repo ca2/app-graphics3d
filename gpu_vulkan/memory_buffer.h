@@ -78,6 +78,7 @@ namespace gpu_vulkan
 
       static VkDeviceSize getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment);
       void on_set_memory_buffer(const void* dataStatic, memsize sizeStatic) override;
+      void _on_set_memory_buffer(const void* dataStatic = nullptr, memsize sizeStatic = 0) override;
 
    };
 

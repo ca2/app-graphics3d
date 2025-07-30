@@ -765,6 +765,8 @@ if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
    //}
 
 
+   
+
 } // namespace gpu_vulkan
 
 

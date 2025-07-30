@@ -29,6 +29,8 @@ namespace app_graphics3d_continuum
 
    application::application()
    {
+
+      m_pmainscene = nullptr;
       m_bAbsoluteMousePosition = false;
       m_ppaneimpact = nullptr;
       m_bGpu = true;
@@ -97,6 +99,18 @@ namespace app_graphics3d_continuum
       m_pathApplicationText = "dropbox-app://application.txt";
       
 #endif
+
+      datastream()->get("skybox", m_strSkybox);
+
+      m_straSkybox.add("rosendal");
+      m_straSkybox.add("SpaceSkybox");
+
+      if (!m_straSkybox.contains(m_strSkybox))
+      {
+
+         m_strSkybox = m_straSkybox.first();
+
+      }
 
    }
 
@@ -181,7 +195,7 @@ namespace app_graphics3d_continuum
    void application::create_options_body(::user::interaction* pparent)
    {
 
-      auto pstillTitle = create_label<::user::still>(pparent, "vulkan-land continuum Options");
+      auto pstillTitle = create_label<::user::still>(pparent, "graphics3d continuum Options");
 
       __defer_construct(pstillTitle->m_pfont);
 
@@ -224,6 +238,67 @@ namespace app_graphics3d_continuum
          create_label<::user::still>(playoutLine, "Absolute Mouse Position");
 
       }
+
+
+      for(int i = 0; i < m_straSkybox.size(); i++)
+      {
+
+         auto playoutSkyboxCheckbox = create_line_layout(pparent, e_orientation_horizontal);
+
+         auto pcheckbox = create_check_box<::user::check_box>(playoutSkyboxCheckbox, "");
+
+         create_label<::user::still>(playoutSkyboxCheckbox, m_straSkybox[i]);
+
+         m_checkboxaSkyBox.add(pcheckbox);
+
+         pcheckbox->check_changed(this) += [this, i](::data::check_change& change)
+            {
+
+               if (!change.action_context().is_user_source())
+               {
+
+                  return;
+
+               }
+
+               auto bChecked = change.payload().as_bool();
+
+               if (bChecked)
+               {
+
+                  for (int j = 0; j < m_straSkybox.size(); j++)
+                  {
+
+                     if (j != i)
+                     {
+
+                        m_checkboxaSkyBox[j]->set_check(e_check_unchecked, ::e_source_sync);
+
+                     }
+
+                  }
+
+               }
+               else
+               {
+
+                  m_checkboxaSkyBox[i]->set_check(e_check_checked, ::e_source_sync);
+
+               }
+
+               ::string strSkybox = m_straSkybox[i];
+
+               datastream()->set("skybox", strSkybox);
+
+               m_strSkybox = strSkybox;
+
+
+            };
+
+      }
+
+
+
 
       //{
 

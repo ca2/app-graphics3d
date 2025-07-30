@@ -16,11 +16,17 @@ namespace app_graphics3d_continuum
 
       bool m_bAbsoluteMousePosition;
 
+      ::string_array m_straSkybox;
+      ::string m_strSkybox;
+
+      ::pointer_array < ::user::check_box> m_checkboxaSkyBox;
+
       pane_impact* m_ppaneimpact;
       ::file::path                                    m_pathApplicationText;
       ::user::document* m_pdocMenu;
       //::pointer<::user::single_document_template>  m_ptemplateSimpleDrawingMain;
       //pane_impact *                                     m_ppaneimpact;
+      main_scene* m_pmainscene;
       ::pointer < ::user::plain_edit >             m_peditYeeColor;
 
       application();

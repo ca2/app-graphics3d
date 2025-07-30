@@ -2576,75 +2576,76 @@ void main() {
    void graphics::get_text_metrics(::write_text::text_metric* lpMetrics)
    {
      
+      ::gpu::graphics::get_text_metrics(lpMetrics);
 
-      set(m_pfont);
-      //if (!set(m_pfont))
-      //{
+      //set(m_pfont);
+      ////if (!set(m_pfont))
+      ////{
 
-      //   return false;
+      ////   return false;
 
-      //}
+      ////}
 
-      //::pointer<font>pfont = m_pfont;
+      ////::pointer<font>pfont = m_pfont;
 
-      //TEXTMETRIC tm;
+      ////TEXTMETRIC tm;
 
-      //GetTextMetrics(pfont->m_hdcFont, &tm);
+      ////GetTextMetrics(pfont->m_hdcFont, &tm);
 
-      //lpMetrics->m_dAscent = tm.tmAscent;
-      //lpMetrics->m_dHeight = tm.tmHeight;
-      //lpMetrics->m_dDescent = tm.tmDescent;
-      ////lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
+      ////lpMetrics->m_dAscent = tm.tmAscent;
+      ////lpMetrics->m_dHeight = tm.tmHeight;
+      ////lpMetrics->m_dDescent = tm.tmDescent;
+      //////lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
 
-      ////if (m_pgraphics == nullptr)
-      //   return false;
+      //////if (m_pgraphics == nullptr)
+      ////   return false;
 
-      //graphics * pgraphics = ((graphics *)this);
+      ////graphics * pgraphics = ((graphics *)this);
 
-      //if(pgraphics->gl2d_font() == nullptr)
-      //   return false;
+      ////if(pgraphics->gl2d_font() == nullptr)
+      ////   return false;
 
-      //plusplus::Font * pfont = pgraphics->gl2d_font();
+      ////plusplus::Font * pfont = pgraphics->gl2d_font();
 
-      //plusplus::FontFamily family;
+      ////plusplus::FontFamily family;
 
-      //pfont->GetFamily(&family);
+      ////pfont->GetFamily(&family);
 
-      //::double iStyle = pfont->GetStyle();
+      ////::double iStyle = pfont->GetStyle();
 
-      //double dHeight = family.GetEmHeight(iStyle);
+      ////double dHeight = family.GetEmHeight(iStyle);
 
-      //double dSize = pfont->GetSize();
+      ////double dSize = pfont->GetSize();
 
-      //double dFontHeight = pfont->GetHeight((plusplus::REAL) pgraphics->get_dpiy());
+      ////double dFontHeight = pfont->GetHeight((plusplus::REAL) pgraphics->get_dpiy());
 
-      //lpMetrics->tmAscent              = (::double) (dSize * family.GetCellAscent(iStyle) / dHeight);
-      //lpMetrics->tmDescent             = (::double) (dSize * family.GetCellDescent(iStyle) / dHeight);
-      //lpMetrics->tmHeight              = (::double)dFontHeight;
+      ////lpMetrics->tmAscent              = (::double) (dSize * family.GetCellAscent(iStyle) / dHeight);
+      ////lpMetrics->tmDescent             = (::double) (dSize * family.GetCellDescent(iStyle) / dHeight);
+      ////lpMetrics->tmHeight              = (::double)dFontHeight;
 
-      //double dLineSpacing = maximum(dFontHeight, dSize * family.GetLineSpacing(iStyle) / dHeight);
+      ////double dLineSpacing = maximum(dFontHeight, dSize * family.GetLineSpacing(iStyle) / dHeight);
 
-      //lpMetrics->tmInternalLeading     = (::double) (lpMetrics->tmAscent + lpMetrics->tmDescent - lpMetrics->tmHeight);
-      //lpMetrics->tmExternalLeading     = (::double) (dLineSpacing - (lpMetrics->tmAscent + lpMetrics->tmDescent));
+      ////lpMetrics->tmInternalLeading     = (::double) (lpMetrics->tmAscent + lpMetrics->tmDescent - lpMetrics->tmHeight);
+      ////lpMetrics->tmExternalLeading     = (::double) (dLineSpacing - (lpMetrics->tmAscent + lpMetrics->tmDescent));
 
-      //const plusplus::FontFamily * pfamilyMono = family.GenericMonospace();
+      ////const plusplus::FontFamily * pfamilyMono = family.GenericMonospace();
 
-      //::plusplus::Font font2(pfamilyMono, pfamilyMono->GetEmHeight(((graphics * )this)->gl2d_font()->GetStyle()));
+      ////::plusplus::Font font2(pfamilyMono, pfamilyMono->GetEmHeight(((graphics * )this)->gl2d_font()->GetStyle()));
 
-      //wstring wstr(L"123AWZwmc123AWZwmcpQg");
-      //plusplus::rectF ::double_rectangle(0.f, 0.f, 1024.f * 1024.f, 1024.f * 1024.f);
-      //plusplus::rectF rect2;
-      //plusplus::PointF origin(0, 0);
+      ////wstring wstr(L"123AWZwmc123AWZwmcpQg");
+      ////plusplus::rectF ::double_rectangle(0.f, 0.f, 1024.f * 1024.f, 1024.f * 1024.f);
+      ////plusplus::rectF rect2;
+      ////plusplus::PointF origin(0, 0);
 
-      //m_pgraphics->MeasureString(wstr, (::double) wstr.get_length(), ((graphics * )this)->gl2d_font(), origin, &rectangle);
+      ////m_pgraphics->MeasureString(wstr, (::double) wstr.get_length(), ((graphics * )this)->gl2d_font(), origin, &rectangle);
 
 
-      ///*wstr = L"";
-      //m_pgraphics->MeasureString(wstr.m_pwsz, -1, (plusplus::Font *) m_pfont->get_os_data(), origin, &rect2);*/
+      /////*wstr = L"";
+      ////m_pgraphics->MeasureString(wstr.m_pwsz, -1, (plusplus::Font *) m_pfont->get_os_data(), origin, &rect2);*/
 
-      //lpMetrics->tmAveCharWidth = (::double) (rectangle.Width * get_current_font()->m_dFontWidth / (double) wstr.get_length());
+      ////lpMetrics->tmAveCharWidth = (::double) (rectangle.Width * get_current_font()->m_dFontWidth / (double) wstr.get_length());
 
-      //return true;
+      ////return true;
 
    }
 
@@ -5683,7 +5684,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       //glBindVertexArray(pface->m_FaceVAO);
       //GLCheckError("");
       auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
-      pface->m_pmodelbufferBox->bind(pcommandbuffer);
+      //pface->m_pmodelbufferBox->bind(pcommandbuffer);
 
       // iterate through all characters
       ::string strChar;
@@ -5909,7 +5910,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       //glBindVertexArray(pface->m_FaceVAO);
       //GLCheckError("");
       auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
-      pface->m_pmodelbufferBox->bind(pcommandbuffer);
+      //pface->m_pmodelbufferBox->bind(pcommandbuffer);
 
       // iterate through all characters
       ::string strChar;

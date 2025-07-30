@@ -7,6 +7,7 @@
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
+#include "acme/platform/application.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
 #include "bred/gpu/frame.h"
@@ -19,10 +20,9 @@ namespace gpu_vulkan
    swap_chain::swap_chain()
    {
 
-      m_bNeedRebuild = false;
-      //m_iCurrentFrame2 = 0;
+      m_iSwapSeed = 0;
+      m_iCurrentSwapSerial = 0;
       m_uCurrentSwapChainImage = 0;
-      //m_bBackBuffer = true;
 
    }
 
@@ -70,64 +70,12 @@ namespace gpu_vulkan
    }
 
 
-   //::gpu::texture* swap_chain::current_texture()
-   //{
-
-   //   return m_texturea[m_uCurrentSwapChainImage];
-
-   //}
-
-
-   //void swap_chain::update_render_pass(::gpu::context* pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
-   //{
-
-   //   render_pass::update_render_pass(pgpucontext, previous);
-   //   //m_bNeedRebuild = false;
-   //   //on_init();
-   //   // Cleans up old swap chain since it's no longer needed after resizing
-   //   //oldSwapChain = nullptr;
-   //}
-
-
    void swap_chain::initialize_gpu_swap_chain(::gpu::renderer* pgpurenderer)
    {
 
       ::gpu::swap_chain::initialize_gpu_swap_chain(pgpurenderer);
 
-      //::gpu_vulkan::render_pass::update_render_pass(pgpurenderer->m_pgpucontext, nullptr);
-
    }
-
-
-   void swap_chain::create_render_pass()
-   {
-
-      create_images();
-
-      //{
-
-      //   ::cast < swap_chain > pswapchain = m_pgpurenderer->m_pgpucontext->get_swap_chain();
-
-      //   pswapchain->update_render_pass(m_pgpurenderer->m_pgpucontext, m_prenderpass->m_prenderpassOld);
-
-      //   pswapchain->on_init_render_pass();
-
-      //}
-      //createImageViews();
-      //createRenderPass();
-      //createDepthResources();
-      //createFramebuffers();
-      //createSyncObjects();
-
-   }
-
-
-   //int swap_chain::get_frame_index()
-   //{
-
-   //   return m_uCurrentSwapChainImage;
-
-   //}
 
 
    VkResult swap_chain::acquireNextImage()
@@ -224,6 +172,14 @@ namespace gpu_vulkan
    //   return (int) ::gpu_vulkan::render_pass::get_frame_index();
 
    //}
+
+
+   void swap_chain::on_new_swap_chain()
+   {
+
+      ::gpu::swap_chain::on_new_swap_chain();
+
+   }
 
 
    bool swap_chain::should_use_advanced_pipeline_synchronization()
@@ -368,13 +324,9 @@ namespace gpu_vulkan
          throw ::exception(error_failed, "failed to submit draw command buffer!");
       }
 
-      
-
-  
-
       {
-         auto pcommandbufferPresent = pcontext->beginSingleTimeCommands(::gpu::e_command_buffer_present);
 
+         ::pointer < command_buffer > pcommandbufferPresent = pcontext->beginSingleTimeCommands(::gpu::e_command_buffer_present);
 
          ::comparable_array<VkSemaphore> waitSemaphores2;
          ::array<VkPipelineStageFlags> waitStages2;
@@ -472,11 +424,26 @@ namespace gpu_vulkan
    }
 
 
-   
    void swap_chain::create_images()
    {
 
-      __defer_construct_new(m_ptextureaSwapChain);
+      auto ptextureaOld = m_ptextureaSwapChain;
+
+      if (ptextureaOld)
+      {
+
+         m_papplication->post([this, ptextureaOld]()
+            {
+
+               preempt(1_s);
+
+               ptextureaOld->destroy();
+
+            });
+
+      }
+
+      __construct_new(m_ptextureaSwapChain);
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
@@ -500,6 +467,8 @@ namespace gpu_vulkan
          imageCount > swapchainSupport.capabilities.maxImageCount) {
          imageCount = swapchainSupport.capabilities.maxImageCount;
       }
+
+      pcontext->on_resize({ extent.width, extent.height });
 
       VkSwapchainCreateInfoKHR createInfo = {};
       createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -547,10 +516,15 @@ namespace gpu_vulkan
 
       auto logicalDevice = pcontext->logicalDevice();
 
-      if (vkCreateSwapchainKHR(logicalDevice, &createInfo, nullptr, &m_vkswapchain) != VK_SUCCESS) {
-         //throw ::exception(error_failed,"failed to create swap chain!");
-         m_bNeedRebuild = true;
+      auto vkResultCreateSwapChain = vkCreateSwapchainKHR(logicalDevice, &createInfo, nullptr, &m_vkswapchain);
+
+      if(vkResultCreateSwapChain != VK_SUCCESS)
+      {
+         
+         m_iSwapSeed++;
+
          return;
+
       }
 
       // we only specified a minimum number of images in the swap chain, so the implementation is
@@ -962,19 +936,22 @@ namespace gpu_vulkan
 
       VkResult vkresultAcquireNextImage = pswapchain->acquireNextImage();
 
-      if (vkresultAcquireNextImage != VK_SUCCESS)
+      if (vkresultAcquireNextImage == VK_ERROR_OUT_OF_DATE_KHR 
+         || vkresultAcquireNextImage == VK_SUBOPTIMAL_KHR) 
       {
-
-         throw ::exception(error_failed);
+         
+         m_iSwapSeed++;
 
       }
 
+      defer_check_swap_chain();
+
       ::cast <::gpu_vulkan::texture> ptextureSwapChain = pswapchain->current_swap_chain_texture();
 
-      if (!m_pshaderPresent)
+      if (::nok(m_pshaderPresent))
       {
 
-         __construct_new(m_pshaderPresent);
+         pgpucontext->øconstruct(m_pshaderPresent);
 
          m_pshaderPresent->m_bindingSampler.set();
 

@@ -79,43 +79,47 @@ namespace draw2d_opengl
    void face::create_texture(::typeface::character& ch, const unsigned char* p)
    {
 
-      //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-      // generate texture
-         //unsigned int texture;
-      //glGenTextures(1, &ch.TextureID);
-      //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+      ::typeface::face::create_texture(ch, p);
 
-      __defer_construct(ch.m_ppixmap);
+      ////glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+      //// generate texture
+      //   //unsigned int texture;
+      ////glGenTextures(1, &ch.TextureID);
+      ////glBindTexture(GL_TEXTURE_2D, ch.TextureID);
 
-      ch.m_ppixmap->initialize_gpu_pixmap(m_pgpurenderer,
-         { ch.Size.x,
-         ch.Size.y }
-      );
+      ////__defer_construct(ch.m_ppixmap);
 
+      //ch.m_ppixmap = m_pgpurenderer->m_pgpucontext->
 
-      ch.m_ppixmap->set_pixels(p,
-         ch.Size.x,
-         ch.Size.y);
-
-
-      //glTexImage2D(
-      //   GL_TEXTURE_2D,
-      //   0,
-      //   GL_BGRA,
-      //   ch.Size.x,
-      //   ch.Size.y,
-      //   0,
-      //   GL_BGRA,
-      //   GL_UNSIGNED_BYTE,
-      //   p
+      //ch.m_ppixmap->initialize_gpu_pixmap(m_pgpurenderer,
+      //   { ch.Size.x,
+      //   ch.Size.y }
       //);
-      //// set texture options
-      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-      //glBindTexture(GL_TEXTURE_2D, 0);
+
+      //ch.m_ppixmap->set_pixels(p,
+      //   ch.Size.x,
+      //   ch.Size.y);
+
+
+      ////glTexImage2D(
+      ////   GL_TEXTURE_2D,
+      ////   0,
+      ////   GL_BGRA,
+      ////   ch.Size.x,
+      ////   ch.Size.y,
+      ////   0,
+      ////   GL_BGRA,
+      ////   GL_UNSIGNED_BYTE,
+      ////   p
+      ////);
+      ////// set texture options
+      ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+      ////glBindTexture(GL_TEXTURE_2D, 0);
 
 
    }

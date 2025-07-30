@@ -122,6 +122,9 @@
     <ClInclude Include="render_pass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="pixmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -232,6 +235,9 @@
     <ClCompile Include="render_pass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pixmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="deployment.rc">
@@ -269,6 +275,12 @@
     <CustomBuild Include="shader\rectangle.vert">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="shader\white_to_color.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\white_to_color.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\image_blend.frag.spv.inl">
@@ -293,6 +305,12 @@
       <Filter>Header Files\shader</Filter>
     </None>
     <None Include="shader\rectangle.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\white_to_color.vert.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\white_to_color.frag.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
   </ItemGroup>

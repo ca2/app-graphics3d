@@ -51,6 +51,7 @@ namespace vulkan
 {
 
 
+
    struct QueueFamilyIndices
    {
       int graphicsFamily = -1;
@@ -156,6 +157,7 @@ namespace vulkan
    //CLASS_DECL_GPU_VULKAN::array<VkVertexInputAttributeDescription> _001GetVertexAttributeDescriptions();
 
    CLASS_DECL_GPU_VULKAN VkFormat get_type_vk_format(::gpu::enum_type etype);
+   CLASS_DECL_GPU_VULKAN VkPrimitiveTopology as_vk_topology(::gpu::enum_topology etopology);
 
 
 } // namespace vulkan

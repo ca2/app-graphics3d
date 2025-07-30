@@ -13,6 +13,7 @@
 #include "renderer.h"
 #include "swap_chain.h"
 #include "texture.h"
+#include "bred/gpu/pixmap.h"
 
 
 //BEGIN_FACTORY(gpu_vulkan)
@@ -48,7 +49,7 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu_vulkan::model_buffer, ::gpu::model_buffer > ();
 
    pfactory->add_factory_item < ::gpu_vulkan::frame, ::gpu::frame >();
-
+   pfactory->add_factory_item < ::gpu::pixmap >();
    
 
 }

@@ -47,8 +47,13 @@ namespace gpu_vulkan
             m_pbuffer = pcontext->create_buffer(
                sizeStatic,
                VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+               m_bDynamic ?
+               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 
+               | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+               : 
                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
             );
+
 
 
             ////m_iVertexCount = static_cast<uint32_t>(vertices.size());
@@ -83,6 +88,10 @@ namespace gpu_vulkan
             m_pbuffer = pcontext->create_buffer(
                sizeStatic,
                VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+               m_bDynamic ?
+               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+               | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+               :
                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
             );
 
@@ -369,6 +378,25 @@ namespace gpu_vulkan
       
       writeToBuffer((void*)dataStatic, sizeStatic);
       
+      _unmap();
+
+   }
+
+
+   void memory_buffer::_on_set_memory_buffer(const void* dataStatic, memsize sizeStatic)
+   {
+
+      ::cast < context > pcontext = m_pcontext;
+
+      vkBindBufferMemory(
+         pcontext->logicalDevice(), 
+         m_pbuffer->m_vkbuffer, 
+         m_pbuffer->m_vkdevicememory, 0);
+
+      auto pmap = _map(0, sizeStatic);
+
+      writeToBuffer((void*)dataStatic, sizeStatic);
+
       _unmap();
 
    }

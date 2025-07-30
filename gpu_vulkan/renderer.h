@@ -57,10 +57,10 @@ namespace gpu_vulkan
 
       //::pointer<blend2>                               m_pblend2;
 
-      ::pointer < shader >                       m_pshaderImageBlend;
-      ::pointer < shader >                       m_pshaderImageSet;
-      ::pointer < shader >                       m_pshaderBlend2;
-      ::pointer < shader >                       m_pshaderCopyImage;
+      ::pointer < ::gpu::shader >                       m_pshaderImageBlend;
+      ::pointer < ::gpu::shader >                       m_pshaderImageSet;
+      ::pointer < ::gpu::shader >                       m_pshaderBlend2;
+      ::pointer < ::gpu::shader >                       m_pshaderCopyImage;
 
       ::pointer < ::gpu_vulkan::render_pass >   m_prenderpassBlend2;
       ::pointer < ::gpu_vulkan::render_pass >   m_prenderpassCopy;
@@ -113,7 +113,7 @@ namespace gpu_vulkan
 
 
 
-
+      void on_resize(const ::int_size& size) override;
 
 
       //int width()  override;
@@ -229,9 +229,9 @@ namespace gpu_vulkan
 
       void copy(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource) override;
 
-      shader * _get_image_blend_shader();
+      ::gpu::shader * _get_image_blend_shader();
 
-      shader* _get_image_set_shader();
+      ::gpu::shader* _get_image_set_shader();
 
       void blend(::gpu::renderer* prenderer) override;
 

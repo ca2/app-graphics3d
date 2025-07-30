@@ -388,7 +388,7 @@ namespace gpu_vulkan
 
       pbufferStaging->_assign_cube_map(imagea);
 
-      auto pcommandbuffer = pcontext->beginSingleTimeCommands();
+      ::pointer < command_buffer > pcommandbuffer = pcontext->beginSingleTimeCommands();
 
       pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging);
 
@@ -782,6 +782,32 @@ namespace gpu_vulkan
       VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewInfo, NULL, &m_vkimageview));
 
       return m_vkimageview;
+
+   }
+
+
+   void texture::set_pixels(const ::int_rectangle & rectangle, const void * data)
+   {
+
+      VkDeviceSize size = rectangle.area() * 4;
+
+      ::pointer < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+      auto pbufferStaging = pcontext->create_buffer(
+         size,
+         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+      );
+
+      pbufferStaging->_assign(data, size);
+
+      ::cast < command_buffer > pcommandbuffer = pcontext->defer_get_upload_command_buffer();
+
+      pcontext->copyBufferToImage(
+         pcommandbuffer, 
+         this,
+         pbufferStaging,
+         rectangle);
 
    }
 

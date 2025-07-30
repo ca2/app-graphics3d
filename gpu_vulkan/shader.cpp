@@ -23,7 +23,8 @@ namespace gpu_vulkan
    {
 
       m_bClearColor = false;
-      m_vktopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+      //m_vktopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+      m_vkrenderpassCurrent = VK_NULL_HANDLE;
 
    }
 
@@ -34,6 +35,47 @@ namespace gpu_vulkan
       ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
 
       vkDestroyPipelineLayout(pgpucontext->logicalDevice(), m_vkpipelinelayout, nullptr);
+
+   }
+
+
+   bool shader::need_rebuild()
+   {
+
+      auto prenderpass = render_pass2();
+
+      if (::is_null(prenderpass))
+      {
+
+         // Shader doesn't have a render pass. Won't bother 
+         // the shader to recreate it if prerequesite (the render pass)
+         // is not present.
+
+         return false;
+
+      }
+
+      auto vkrenderpass = prenderpass->m_vkrenderpass;
+
+      if (!vkrenderpass)
+      {
+
+         // Shader doesn't have a render pass. Won't bother 
+         // the shader to recreate it if prerequesite (the render pass)
+         // is not present.
+
+         return false;
+
+      }
+
+      if (vkrenderpass == m_vkrenderpassCurrent)
+      {
+
+         return false;
+
+      }
+
+      return true;
 
    }
 
@@ -175,7 +217,249 @@ namespace gpu_vulkan
 
       _create_pipeline_layout((int)m_propertiesPush.m_memory.size());
 
+   }
 
+
+   void shader::_create_pipeline()
+   {
+
+
+      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+
+      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+
+      ::cast <renderer> prenderer = m_pgpurenderer;
+
+      //::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+
+      //::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
+
+
+      __construct_new(m_ppipeline);
+
+      //prenderer->current_frame_particle_array()->add(m_ppipeline);
+
+      //::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+
+      //::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+
+      //::cast <renderer> prenderer = m_pgpurenderer;
+
+      PipelineConfigInfo pipelineConfig{};
+
+      //if (m_propertiesInputLayout.m_pproperties)
+      //{
+
+      //   if (m_pVertexInput)
+      //   {
+
+      //      throw ::exception(error_wrong_state, "Shader vertex input shouldn't be set if there are input layout properties, they are alternatives to describe the same thing");
+
+      //   }
+
+      //   __defer_construct_new(m_pVertexInput);
+
+      //   m_pVertexInput->initialize_from_properties(m_propertiesInputLayout);
+
+      //}
+
+      ::cast < input_layout > pinputlayout = m_pinputlayout;
+
+      if (pinputlayout)
+      {
+
+         pipelineConfig.bindingDescriptions.copy(pinputlayout->m_bindings);
+         pipelineConfig.attributeDescriptions.copy(pinputlayout->m_attribs);
+
+      }
+
+      pipeline::defaultPipelineConfigInfo(pipelineConfig);
+
+      if (m_pinputlayout)
+      {
+
+         ::cast < input_layout > pinputlayout = m_pinputlayout;
+
+         pipelineConfig.attributeDescriptions = pinputlayout->m_attribs;
+         pipelineConfig.bindingDescriptions = pinputlayout->m_bindings;
+
+      }
+
+      if (m_eflag & e_flag_clear_default_bindings_and_attributes_descriptions)
+      {
+
+         pipelineConfig.attributeDescriptions.clear();
+         pipelineConfig.bindingDescriptions.clear();
+
+      }
+      
+      if (m_bDepthTestButNoDepthWrite)
+      {
+
+         pipelineConfig.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+         pipelineConfig.depthStencilInfo.depthTestEnable = VK_TRUE;
+         pipelineConfig.depthStencilInfo.depthWriteEnable = VK_FALSE;
+         pipelineConfig.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+         pipelineConfig.depthStencilInfo.stencilTestEnable = VK_FALSE;
+
+      }
+      else if (m_bDisableDepthTest)
+      {
+
+         pipelineConfig.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+         pipelineConfig.depthStencilInfo.depthTestEnable = VK_FALSE;
+         pipelineConfig.depthStencilInfo.depthWriteEnable = VK_FALSE;
+         pipelineConfig.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_ALWAYS; // doesn't matter since test is disabled
+         pipelineConfig.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+         pipelineConfig.depthStencilInfo.stencilTestEnable = VK_FALSE;
+
+      }
+      if (!m_bDisableDepthTest)
+      {
+
+         if(m_bLequalDepth)
+         {
+            pipelineConfig.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+         }
+         else
+         {
+            pipelineConfig.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+         }
+
+      }
+
+      pipelineConfig.colorBlendAttachments.clear();
+      if (m_bAccumulationEnable)
+      {
+
+         VkPipelineColorBlendAttachmentState state;
+         state.blendEnable = VK_TRUE;
+         state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // use alpha blending
+         state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
+         state.colorBlendOp = VK_BLEND_OP_ADD;
+         state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+         state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+         state.alphaBlendOp = VK_BLEND_OP_ADD;
+         state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+         pipelineConfig.colorBlendAttachments.add(state);
+         if (m_iColorAttachmentCount > 1)
+         {
+
+            state.blendEnable = VK_TRUE;
+            state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // use alpha blending
+            state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
+            state.colorBlendOp = VK_BLEND_OP_ADD;
+            state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+            state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+            state.alphaBlendOp = VK_BLEND_OP_ADD;
+            state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT;
+            pipelineConfig.colorBlendAttachments.add(state);
+         }
+
+         pipelineConfig.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+         pipelineConfig.colorBlendInfo.logicOpEnable = VK_FALSE;
+         pipelineConfig.colorBlendInfo.attachmentCount = (uint32_t)pipelineConfig.colorBlendAttachments.get_count();
+         pipelineConfig.colorBlendInfo.pAttachments = pipelineConfig.colorBlendAttachments.data();
+
+      }
+      else if (m_bEnableBlend)
+      {
+
+         for (int i = 0; i < m_iColorAttachmentCount; i++)
+         {
+            VkPipelineColorBlendAttachmentState state;
+            state.blendEnable = VK_TRUE;
+            state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+            state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+            state.colorBlendOp = VK_BLEND_OP_ADD;
+            state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+            state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+            state.alphaBlendOp = VK_BLEND_OP_ADD;
+            //state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // use alpha blending
+            //state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+            //state.colorBlendOp = VK_BLEND_OP_ADD;
+            //state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+            //state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+            //state.alphaBlendOp = VK_BLEND_OP_ADD;
+            state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+               VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+            pipelineConfig.colorBlendAttachments.add(state);
+         }
+
+         pipelineConfig.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+         pipelineConfig.colorBlendInfo.logicOpEnable = VK_FALSE;
+         pipelineConfig.colorBlendInfo.attachmentCount = (uint32_t)pipelineConfig.colorBlendAttachments.get_count();
+         pipelineConfig.colorBlendInfo.pAttachments = pipelineConfig.colorBlendAttachments.data();
+
+      }
+      else
+      {
+
+         for (int i = 0; i < m_iColorAttachmentCount; i++)
+         {
+            VkPipelineColorBlendAttachmentState state;
+            state.colorWriteMask =
+               VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+               VK_COLOR_COMPONENT_A_BIT;
+            state.blendEnable = VK_FALSE;
+            state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
+            state.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
+            state.colorBlendOp = VK_BLEND_OP_ADD;              // Optional
+            state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
+            state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
+            state.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
+            pipelineConfig.colorBlendAttachments.add(state);
+         }
+
+         pipelineConfig.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+         pipelineConfig.colorBlendInfo.logicOpEnable = VK_FALSE;
+         pipelineConfig.colorBlendInfo.attachmentCount = (uint32_t)pipelineConfig.colorBlendAttachments.get_count();
+         pipelineConfig.colorBlendInfo.pAttachments = pipelineConfig.colorBlendAttachments.data();
+
+      }
+
+      pipelineConfig.inputAssemblyInfo.topology = ::vulkan::as_vk_topology(m_etopology);
+      pipelineConfig.dynamicStateEnables.append_unique(m_dynamicstateaEnable);
+      pipelineConfig.dynamicStateInfo.dynamicStateCount = (uint32_t)pipelineConfig.dynamicStateEnables.size();
+
+      ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
+
+      auto prenderpass = this->render_pass2();
+
+      ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
+
+      if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+      {
+
+         warning() << "what?";
+
+      }
+
+      //if (has_sampler())
+      //{
+
+      //   pipelineConfig.renderPass = shader_sampler()->get_render_pass();
+
+      //}
+      //else
+      {
+
+         pipelineConfig.renderPass = prenderpass->m_vkrenderpass;
+
+      }
+
+      pipelineConfig.pipelineLayout = m_vkpipelinelayout;
+
+      pgpudevice->defer_shader_memory(m_memoryVertex, m_pathVertex);
+      pgpudevice->defer_shader_memory(m_memoryFragment, m_pathFragment);
+
+      m_ppipeline->initialize_pipeline(m_pgpurenderer,
+         m_memoryVertex,
+         m_memoryFragment,
+         pipelineConfig);
+
+      m_vkrenderpassCurrent = pipelineConfig.renderPass;
 
    }
 
@@ -436,215 +720,7 @@ namespace gpu_vulkan
       if (!m_ppipeline)
       {
 
-         __construct_new(m_ppipeline);
-
-         //prenderer->current_frame_particle_array()->add(m_ppipeline);
-
-         //::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
-
-         //::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
-
-         //::cast <renderer> prenderer = m_pgpurenderer;
-
-         PipelineConfigInfo pipelineConfig{};
-
-         //if (m_propertiesInputLayout.m_pproperties)
-         //{
-
-         //   if (m_pVertexInput)
-         //   {
-
-         //      throw ::exception(error_wrong_state, "Shader vertex input shouldn't be set if there are input layout properties, they are alternatives to describe the same thing");
-
-         //   }
-
-         //   __defer_construct_new(m_pVertexInput);
-
-         //   m_pVertexInput->initialize_from_properties(m_propertiesInputLayout);
-
-         //}
-
-         ::cast < input_layout > pinputlayout = m_pinputlayout;
-
-         if (pinputlayout)
-         {
-
-            pipelineConfig.bindingDescriptions.copy(pinputlayout->m_bindings);
-            pipelineConfig.attributeDescriptions.copy(pinputlayout->m_attribs);
-
-         }
-
-         pipeline::defaultPipelineConfigInfo(pipelineConfig);
-
-         if (m_pinputlayout)
-         {
-
-            ::cast < input_layout > pinputlayout = m_pinputlayout;
-
-            pipelineConfig.attributeDescriptions = pinputlayout->m_attribs;
-            pipelineConfig.bindingDescriptions = pinputlayout->m_bindings;
-
-         }
-
-         if (m_eflag & e_flag_clear_default_bindings_and_attributes_descriptions)
-         {
-
-            pipelineConfig.attributeDescriptions.clear();
-            pipelineConfig.bindingDescriptions.clear();
-
-         }
-         if (m_bDepthTestButNoDepthWrite)
-         {
-            pipelineConfig.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-            pipelineConfig.depthStencilInfo.depthTestEnable = VK_TRUE;
-            pipelineConfig.depthStencilInfo.depthWriteEnable = VK_FALSE;
-            pipelineConfig.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
-            pipelineConfig.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
-            pipelineConfig.depthStencilInfo.stencilTestEnable = VK_FALSE;
-
-
-         }
-         else if (m_bDisableDepthTest)
-         {
-
-            pipelineConfig.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-            pipelineConfig.depthStencilInfo.depthTestEnable = VK_FALSE;
-            pipelineConfig.depthStencilInfo.depthWriteEnable = VK_FALSE;
-            pipelineConfig.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_ALWAYS; // doesn't matter since test is disabled
-            pipelineConfig.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
-            pipelineConfig.depthStencilInfo.stencilTestEnable = VK_FALSE;
-
-         }
-         pipelineConfig.colorBlendAttachments.clear();
-         if (m_bAccumulationEnable)
-         {
-
-            VkPipelineColorBlendAttachmentState state;
-            state.blendEnable = VK_TRUE;
-            state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // use alpha blending
-            state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
-            state.colorBlendOp = VK_BLEND_OP_ADD;
-            state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-            state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-            state.alphaBlendOp = VK_BLEND_OP_ADD;
-            state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-               VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-            pipelineConfig.colorBlendAttachments.add(state);
-            if (m_iColorAttachmentCount > 1)
-            {
-
-               state.blendEnable = VK_TRUE;
-               state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // use alpha blending
-               state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
-               state.colorBlendOp = VK_BLEND_OP_ADD;
-               state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-               state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-               state.alphaBlendOp = VK_BLEND_OP_ADD;
-               state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT;
-               pipelineConfig.colorBlendAttachments.add(state);
-            }
-
-            pipelineConfig.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-            pipelineConfig.colorBlendInfo.logicOpEnable = VK_FALSE;
-            pipelineConfig.colorBlendInfo.attachmentCount = (uint32_t)pipelineConfig.colorBlendAttachments.get_count();
-            pipelineConfig.colorBlendInfo.pAttachments = pipelineConfig.colorBlendAttachments.data();
-
-         }
-         else if (m_bEnableBlend)
-         {
-
-            for (int i = 0; i < m_iColorAttachmentCount; i++)
-            {
-               VkPipelineColorBlendAttachmentState state;
-               state.blendEnable = VK_TRUE;
-               state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-               state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-               state.colorBlendOp = VK_BLEND_OP_ADD;
-               state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-               state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-               state.alphaBlendOp = VK_BLEND_OP_ADD;
-               //state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // use alpha blending
-               //state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-               //state.colorBlendOp = VK_BLEND_OP_ADD;
-               //state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-               //state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-               //state.alphaBlendOp = VK_BLEND_OP_ADD;
-               state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                  VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-               pipelineConfig.colorBlendAttachments.add(state);
-            }
-
-            pipelineConfig.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-            pipelineConfig.colorBlendInfo.logicOpEnable = VK_FALSE;
-            pipelineConfig.colorBlendInfo.attachmentCount = (uint32_t)pipelineConfig.colorBlendAttachments.get_count();
-            pipelineConfig.colorBlendInfo.pAttachments = pipelineConfig.colorBlendAttachments.data();
-
-         }
-         else
-         {
-
-            for (int i = 0; i < m_iColorAttachmentCount; i++)
-            {
-               VkPipelineColorBlendAttachmentState state;
-               state.colorWriteMask =
-                  VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-                  VK_COLOR_COMPONENT_A_BIT;
-               state.blendEnable = VK_FALSE;
-               state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
-               state.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
-               state.colorBlendOp = VK_BLEND_OP_ADD;              // Optional
-               state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
-               state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
-               state.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
-               pipelineConfig.colorBlendAttachments.add(state);
-            }
-
-            pipelineConfig.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-            pipelineConfig.colorBlendInfo.logicOpEnable = VK_FALSE;
-            pipelineConfig.colorBlendInfo.attachmentCount = (uint32_t)pipelineConfig.colorBlendAttachments.get_count();
-            pipelineConfig.colorBlendInfo.pAttachments = pipelineConfig.colorBlendAttachments.data();
-
-         }
-
-         pipelineConfig.inputAssemblyInfo.topology = m_vktopology;
-         pipelineConfig.dynamicStateEnables.append_unique(m_dynamicstateaEnable);
-         pipelineConfig.dynamicStateInfo.dynamicStateCount = (uint32_t)pipelineConfig.dynamicStateEnables.size();
-
-         ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
-
-         auto prenderpass = this->render_pass2();
-
-         ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
-
-         if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
-         {
-
-            warning() << "what?";
-
-         }
-
-         //if (has_sampler())
-         //{
-
-         //   pipelineConfig.renderPass = shader_sampler()->get_render_pass();
-
-         //}
-         //else
-         {
-
-            pipelineConfig.renderPass = prenderpass->m_vkrenderpass;
-
-         }
-
-         pipelineConfig.pipelineLayout = m_vkpipelinelayout;
-
-         pgpudevice->defer_shader_memory(m_memoryVertex, m_pathVertex);
-         pgpudevice->defer_shader_memory(m_memoryFragment, m_pathFragment);
-
-         m_ppipeline->initialize_pipeline(m_pgpurenderer,
-            m_memoryVertex,
-            m_memoryFragment,
-            pipelineConfig);
+         _create_pipeline();
 
       }
 
@@ -830,7 +906,7 @@ namespace gpu_vulkan
    //class shader_sampler* shader::shader_sampler()
    //{
 
-   //   if (!m_pshadersampler)
+   //   if (nok(m_pshadersampler))
    //   {
 
    //      __construct_new(m_pshadersampler);
@@ -1095,11 +1171,12 @@ namespace gpu_vulkan
 
 
    }
+
+
    render_pass* shader::render_pass2()
    {
       
       ::cast < render_target> prendertarget = m_pgpurenderer->m_pgpurendertarget;
-
 
       if (m_pgpurenderer->m_pgpucontext->m_escene == ::gpu::e_scene_3d)
       {

@@ -111,7 +111,7 @@ namespace draw2d_vkvg
       //m_hrc = nullptr;
       //m_hwnd = nullptr;
       //m_hglrc = nullptr;
-      _m_bYFlip = true;
+      //_m_bYFlip = true;
       m_pointTranslate = ::int_point();
       m_bPrinting = false;
       m_pimageAlphaBlend = nullptr;
@@ -331,7 +331,7 @@ namespace draw2d_vkvg
    bool graphics::vulkan_create_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
    {
 
-      defer_yield_gpu_context(rectanglePlacement);
+      on_gpu_context_placement_change(rectanglePlacement);
 
       //if (!draw2d_vkvg()->m_pvulkancontext) {
       //   informationf("MS GDI - RegisterClass failed");

@@ -160,6 +160,32 @@ namespace vulkan
          vkCmdEndDebugUtilsLabelEXT(cmdbuffer);
       }
 
+
+      void insertDebugLabel(VkCommandBuffer cmd, const ::scoped_string & scopedstrMessage, const ::color::color & color) 
+      {
+
+         ::string strMessage(scopedstrMessage);
+
+         auto r = color.f32_red();
+         auto g = color.f32_green();
+         auto b = color.f32_blue();
+         auto a = color.f32_opacity();
+
+         VkDebugUtilsLabelEXT debugLabel = 
+         {
+             
+            .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
+            .pNext = NULL,
+            .pLabelName = strMessage.c_str(),
+            .color = { r, g, b, a }
+
+         };
+
+         vkCmdInsertDebugUtilsLabelEXT(cmd, &debugLabel);
+
+      }
+
+
    } // namespace debug
 
 

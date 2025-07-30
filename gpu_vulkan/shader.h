@@ -85,7 +85,7 @@ namespace gpu_vulkan
       //::color::color m_colorClear;
 
       int m_iColorAttachmentCount = 1;
-      VkPrimitiveTopology m_vktopology;
+      //VkPrimitiveTopology m_vktopology;
 
       ::comparable_array<VkDynamicState> m_dynamicstateaEnable;
 
@@ -97,10 +97,14 @@ namespace gpu_vulkan
 
       //::pointer < shader_sampler >     m_pshadersampler;
       ::pointer < ::gpu_vulkan::shader > m_pshaderPresent;
+      VkRenderPass            m_vkrenderpassCurrent;
+
 
       shader();
       ~shader();
 
+
+      bool need_rebuild() override;
 
       //void bind(auto pcommandbuffer);
 
@@ -141,6 +145,7 @@ namespace gpu_vulkan
 
       void on_initialize_shader() override;
 
+      virtual void _create_pipeline();
 
       void bind(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource) override;
       void bind(::gpu::texture* pgputextureTarget) override;

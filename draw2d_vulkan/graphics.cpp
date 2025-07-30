@@ -35,19 +35,6 @@
 
 #include <math.h>
 #include <dwmapi.h>
-////#include <vk/freeglut.h>
-//#define VKAD_GLAPI_EXPORT
-
-//#include "vkad_wgl.h"
-////#define WGL_CONTEXT_FLAGS_ARB 0X2094
-//#define WGL_CONTEXT_COREPROFILE_BIT_ARB 0x00000001
-//#define WGL_CONTEXT_PROFILE_MASK_ARB 0x9126
-
-//int  vulkan_init();
-
-
-//HGLRC initialize_vulkan_version(HDC hdc, int iMajor, int iMinor);
-
 
 
 namespace vulkan
@@ -102,8 +89,6 @@ auto iContextHeight = pcontext->m_rectangle.height()
  #include "shader/resolve.frag.spv.inl"
    };
 
-   //ATOM class_atom = NULL;
-
    graphics* thread_graphics()
    {
 
@@ -122,51 +107,22 @@ auto iContextHeight = pcontext->m_rectangle.height()
    graphics::graphics()
    {
 
-      //m_hrc = nullptr;
-      //m_hwnd = nullptr;
-      //m_hglrc = nullptr;
-      //m_pointTranslate = ::int_point();
       m_bPrinting = false;
       m_pimageAlphaBlend = nullptr;
       m_size.set(0, 0);
-      //m_hdc = nullptr;
-      //m_hdcGraphics = nullptr;
       m_ewritetextrendering = ::write_text::e_rendering_anti_alias_grid_fit;
       m_dFontFactor = 1.0;
 
    }
 
 
-   //void graphics::assert_ok() const
-   //{
-
-   //   object::assert_ok();
-
-   //}
-
-
-   //void graphics::dump(dump_context& dumpcontext) const
-   //{
-   //   
-   //   object::dump(dumpcontext);
-
-   //   dumpcontext << "m_hdc = " << (iptr) m_hdc;
-   //   dumpcontext << "\nm_hAttribDC = " << (iptr) m_hdc;
-   //   dumpcontext << "\nm_bPrinting = " << m_bPrinting;
-
-   //   dumpcontext << "\n";
-
-   //}
-
-
    graphics::~graphics()
    {
-
-      //vulkan_delete_offscreen_buffer();
 
       DeleteDC();
 
    }
+
 
 #ifdef _DEBUG
 
@@ -185,15 +141,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    }
 
-
 #endif
 
-   //bool graphics::IsPrinting() const
-   //{
-
-   //   return m_bPrinting;
-
-   //}
 
    ::gpu_vulkan::context* graphics::gpu_context()
    {
@@ -203,18 +152,19 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-
    bool graphics::CreateDC(const ::scoped_string& lpszDriverName, const ::scoped_string& lpszDeviceName, const char* lpszOutput, const void* lpInitData)
    {
-      //return Attach(::CreateDC(lpszDriverName, lpszDeviceName, lpszOutput, (const DEVMODE*)lpInitData));
+
       return false;
+
    }
 
 
    bool graphics::CreateIC(const ::scoped_string& lpszDriverName, const ::scoped_string& lpszDeviceName, const char* lpszOutput, const void* lpInitData)
    {
-      //return Attach(::CreateIC(lpszDriverName, lpszDeviceName, lpszOutput, (const DEVMODE*) lpInitData));
+
       return false;
+
    }
 
 
@@ -241,40 +191,6 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //void graphics::defer_resize_memory_graphics(const ::int_size& size)
-   //{
-
-   //    ::int_rectangle rectanglePlacement;
-
-   //    if (size.is_empty())
-   //    {
-
-   //        rectanglePlacement.set_size({ 1920, 1080 });
-
-   //    }
-   //    else
-   //    {
-
-   //        rectanglePlacement.set_size(size);
-
-   //    }
-
-   //    vulkan_create_offscreen_buffer(rectanglePlacement);
-
-   //}
-
-
-   //void graphics::create_window_graphics(::windowing::window* pwindow)
-   //{
-
-   //   m_pwindow = pwindow;
-
-   //   vulkan_defer_create_window_context(pwindow);
-
-   //   set_ok_flag();
-
-   //}
-
 
    void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::int_size& size)
    {
@@ -283,14 +199,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       auto pwindow = puserinteraction->window();
 
-      //vulkan_defer_create_window_context(pwindow);
-
       auto psystem = system();
 
       auto pgpuapproach = application()->get_gpu_approach();
 
       auto pgpudevice = pgpuapproach->get_gpu_device();
-      
+
       auto pgpucontextNew = pgpudevice->main_draw2d_context();
 
       set_gpu_context(pgpucontextNew);
@@ -301,34 +215,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       pcontext->defer_create_window_context(pwindow);
 
-      //::cast < ::gpu_vulkan::context > pcontextVulkan = pcontext;
       ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
-
-      //vkvg_device_create_info_t createinfo;
-      //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      //createinfo.deferredResolve = true;
-      //createinfo.inst = papproachVulkan->m_vkinstance;
-      //createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
-      //createinfo.vkdev = pcontextVulkan->logicalDevice();
-      //createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
-      //createinfo.qIndex = 0;
-      //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
-
-      //m_vkvgdevice = vkvg_device_create(&createinfo);
-      //m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, pwindow->m_sizeWindow.cx(),
-      //   pwindow->m_sizeWindow.cy());
-
-      //m_pdc = vkvg_create(m_vkvgsurface);
-      //if (!m_pgpucontextCompositor)
-      //{
-
-      //   return false;
-
-      //}
-
-
-      //      ::vulkan::resize(size);
-
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
@@ -355,7 +242,6 @@ auto iContextHeight = pcontext->m_rectangle.height()
    {
 
       vulkan_create_offscreen_buffer({ 0, 0, 1920, 1080 });
-      //vulkan_create_offscreen_buffer(pgraphics->m_pimage->size());
 
    }
 
@@ -363,425 +249,23 @@ auto iContextHeight = pcontext->m_rectangle.height()
    bool graphics::vulkan_create_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
    {
 
-      //if (!draw2d_vulkan()->m_pvulkancontext) {
-      //   informationf("MS GDI - RegisterClass failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-
-      defer_yield_gpu_context(rectanglePlacement);
+      on_gpu_context_placement_change(rectanglePlacement);
 
       auto pcontext = gpu_context();
-
-
-      //if (!pcontext)
-      //{
-
-      //   auto pgpuapproach = application()->get_gpu_approach();
-
-      //   //if (!m_puserinteraction)
-      //   //{
-
-      //   //   m_puserinteraction = dynamic_cast <::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
-
-      //   //}
-
-      //   //ASSERT(m_puserinteraction);
-
-      //   auto pgpudevice = pgpuapproach->get_gpu_device();
-
-      //   auto pgpucontext = pgpudevice->create_draw2d_context(::gpu::e_output_gpu_buffer, rectanglePlacement.size());
-
-      //   //::gpu::start_context_t startcontext;
-      //   //startcontext.m_pparticle = this;
-      //   //startcontext.m_pgpudevice = pgpudevice;
-      //   //startcontext.m_eoutput = ::gpu::e_output_color_and_alpha_accumulation_buffers;
-      //   //startcontext.m_rectanglePlacement = rectanglePlacement;
-
-      //   auto pgpucontextNew = pgpucontext;
-
-      //   set_gpu_context(pgpucontextNew);
-
-      //   pcontext = gpu_context();
-
-      //   pcontext->m_pgpucompositor = this;
-      //   //m_pgpucontextCompositor = pgpudevice->start_gpu_output_context(
-      //   //   this,
-      //   //   ::gpu::e_output_color_and_alpha_accumulation_buffers,
-      //   //   rectanglePlacement
-      //   //);
-
-      //}
-
-      //auto pcontext = gpu_context();
-
-      if (!pcontext)
-      {
-
-         return false;
-
-         //auto psystem = system();
-
-         //auto pgpu = application()->get_gpu();
-
-         //m_pgpucontextVulkan = pgpu->create_context(this);
-
-         //if (m_pgpucontextVulkan)
-         //{
-
-         //   m_pgpucontextVulkan->initialize(this);
-
-         //}
-
-      }
-
-      //if (__defer_construct(m_pgpucontextVulkan))
-      //{
-
-      //throw todo;
-      //m_pgpucontextCompositor->create_cpu_buffer(rectanglePlacement.size());
-
-
-      auto psystem = system();
-
-      auto pgpuapproach = application()->get_gpu_approach();
-
-      //if (!m_pgpucontextCompositor)
-      //{
-
-      //   m_pgpucontextCompositor = pgpu->start_swap_chain_context(this, pwindow);
-
-      //}
-
-
-      //m_pgpucontextCompositor->defer_create_window_context(pwindow);
-
-      ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontextOutput;
-      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
-
-      //vkvg_device_create_info_t createinfo;
-      //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      //createinfo.deferredResolve = true;
-      //createinfo.inst = papproachVulkan->m_vkinstance;
-      //createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
-      //createinfo.vkdev = pcontextVulkan->logicalDevice();
-      //createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
-      //createinfo.qIndex = 0;
-      //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
-
-      //m_vkvgdevice = vkvg_device_create(&createinfo);
-      //m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, rectanglePlacement.width(),
-      //   rectanglePlacement.height());
-
-      //m_pdc = vkvg_create(m_vkvgsurface);
-      //if (!m_pgpucontextCompositor)
-      //{
-
-      //   return false;
-
-      //}
-
-
-      //      ::vulkan::resize(size);
-
-
-      //}
-
-      //LPCTSTR lpClassName = L"draw2d_vulkan_offscreen_buffer_window";
-      //LPCTSTR lpWindowName = L"draw2d_vulkan_offscreen_buffer_window";
-      ////unsigned int dwStyle = WS_CAPTION | WS_POPUPWINDOW; // | WS_VISIBLE
-      //unsigned int dwExStyle = 0;
-      //unsigned int dwStyle = WS_OVERLAPPEDWINDOW;
-      //dwStyle |= WS_POPUP;
-      ////dwStyle |= WS_VISIBLE;
-      ////dwStyle |= WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
-      //dwStyle &= ~WS_CAPTION;
-      ////dwStyle = 0;
-      //dwStyle &= ~WS_THICKFRAME;
-      //dwStyle &= ~WS_BORDER;
-      //int x = 0;
-      //int y = 0;
-      //int nWidth = size.cx();
-      //int nHeight = size.cy();
-      //HWND hWndParent = nullptr;
-      //HMENU hMenu = nullptr;
-      /////HINSTANCE hInstance = psystem->m_hinstance;
-      //LPVOID lpParam = nullptr;
-
-      ////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y,  nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-      //HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, nullptr, lpParam);
-
-      //if (window == nullptr) 
-      //{
-      //   informationf("MS GDI - CreateWindow failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-
-      //// create WGL context, make current
-
-      //PIXELFORMATDESCRIPTOR pixformat;
-      //int chosenformat;
-      //HDC hdc = GetDC(window);
-      //if (hdc == nullptr)
-      //{
-      //   informationf("MS GDI - GetDC failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-
-      //ZeroMemory(&pixformat, sizeof(pixformat));
-      //pixformat.nSize = sizeof(pixformat);
-      //pixformat.nVersion = 1;
-      //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_VULKAN | PFD_DOUBLEBUFFER;
-      //pixformat.iPixelType = PFD_TYPE_RGBA;
-      //pixformat.cColorBits = 24;
-      //pixformat.cAlphaBits = 8;
-      //pixformat.cDepthBits = 24;
-      //pixformat.cStencilBits = 8;
-
-      //chosenformat = ChoosePixelFormat(hdc, &pixformat);
-      //if (chosenformat == 0) 
-      //{
-      //   informationf("MS GDI - ChoosePixelFormat failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-
-      //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
-      //if (!spfok) 
-      //{
-      //   informationf("MS GDI - SetPixelFormat failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-
-      //HGLRC hglrcTime = wglCreateContext(hdc);
-      //if (hglrcTime == nullptr)
-      //{
-      //   informationf("MS WGL - wglCreateContext failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   ReleaseDC(m_hwnd, m_hdc);
-      //   return false;
-      //}
-
-      //bool okMakeCurrent = wglMakeCurrent(hdc, hglrcTime);
-      //if (!okMakeCurrent)
-      //{
-      //   informationf("MS WGL - wglMakeCurrent failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-      ////vkfwInit();
-      //// ... <snip> ... setup a window and a context
-      //
-      //auto wglCurrentContext = wglGetCurrentContext();
-
-      //// Load all Vulkan functions using the vkfw loader function
-      //// If you use SDL you can use: https://wiki.libsdl.org/SDL_GL_GetProcAddress
-      ////if (!vkadLoadGLLoader((VKADloadproc)vkfwGetProcAddress)) {
-      ////   std::cout << "Failed to initialize Vulkan context" << std::endl;
-      ////   return -1;
-      ////}
-      //if (!vkadLoadWGL(hdc))
-      //{
-      //   // Problem: vkewInit failed, something is seriously wrong.
-      //   informationf("vkadLoadWGL failed");
-      //   //return false;
-      //   //throw resource_exception();
-
-      //   return false;
-
-      //}
-      //int attribs[] =
-      //{
-      //   WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-      //   WGL_CONTEXT_MINOR_VERSION_ARB, 1,
-      //   WGL_CONTEXT_FLAGS_ARB, 0,
-      //   WGL_CONTEXT_PROFILE_MASK_ARB,
-      //   WGL_CONTEXT_COREPROFILE_BIT_ARB, 0
-      //};
-
-      ////PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
-      ////wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-
-      //auto hglrc =  wglCreateContextAttribsARB(hdc, 0, attribs);
-      //wglMakeCurrent(nullptr, nullptr);
-      //wglDeleteContext(hglrcTime);
-      //   wglMakeCurrent(hdc, m_hglrc);
-      ////draw2d_vulkan()->defer_initialize_glew();
-      //
-      ////draw2d_vulkan()->defer_initialize_glew();
-
-
-      //m_hwnd = window;
-      //m_hdc = hdc;
-      //m_hglrc = hglrc;
-      //m_size = size;
-
-      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
-
-      ::vulkan::resize(rectanglePlacement.size(), bYSwap);
 
       return true;
 
    }
-
-
-   //bool graphics::vulkan_resize_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
-   //{
-
-   //    //if (!draw2d_vulkan()->m_pvulkancontext) {
-   //    //   informationf("MS GDI - RegisterClass failed");
-   //    //   informationf("last-error code: %d\n", GetLastError());
-   //    //   return false;
-   //    //}
-
-   //    if (!m_pgpucontextCompositor)
-   //    {
-
-   //        auto pgpu = application()->get_gpu();
-
-   //        if (!m_puserinteraction)
-   //        {
-
-   //            m_puserinteraction = dynamic_cast <::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
-
-   //        }
-
-   //        ASSERT(m_puserinteraction);
-
-   //        //auto pgpudevice = pgpu->get_device(m_puserinteraction->window());
-
-   //        ////::gpu::start_context_t startcontext;
-   //        ////startcontext.m_pparticle = this;
-   //        ////startcontext.m_pgpudevice = pgpudevice;
-   //        ////startcontext.m_eoutput = ::gpu::e_output_color_and_alpha_accumulation_buffers;
-   //        ////startcontext.m_rectanglePlacement = rectanglePlacement;
-
-   //        //m_pgpucontextCompositor = pgpudevice->start_gpu_output_context(
-   //        //    this,
-   //        //    ::gpu::e_output_color_and_alpha_accumulation_buffers,
-   //        //    rectanglePlacement
-   //        //);
-
-   //    }
-
-   //    if (!m_pgpucontextCompositor)
-   //    {
-   //        return false;
-   //        //auto psystem = system();
-
-   //        //auto pgpu = application()->get_gpu();
-
-   //        //m_pgpucontextVulkan = pgpu->create_context(this);
-
-   //        //if (m_pgpucontextVulkan)
-   //        //{
-
-   //        //   m_pgpucontextVulkan->initialize(this);
-
-   //        //}
-
-   //    }
-
-   //    m_pgpucontextCompositor->resize_offscreen_buffer(rectanglePlacement.size());
-
-
-   //    //auto psystem = system();
-
-   //    //auto pgpu = application()->get_gpu();
-
-   //    //::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontextCompositor;
-   //    //::cast < ::gpu_vulkan::approach > papproachVulkan = pgpu;
-
-
-   //    //bool bYSwap = m_papplication->m_bUseSwapChainWindow;
-
-   //    //::vulkan::resize(rectanglePlacement.size(), bYSwap);
-
-   //    return true;
-
-   //}
 
 
    bool graphics::vulkan_delete_offscreen_buffer()
    {
 
-      //if (m_hglrc == NULL && m_hdc == NULL && m_hwnd == NULL)
-      //{
-
-      //   return true;
-
-      //}
-
-      //wglMakeCurrent(nullptr, nullptr);
-      //wglDeleteContext(m_hglrc);
-      //::ReleaseDC(m_hwnd, m_hdc);
-      //::DestroyWindow(m_hwnd);
       m_size.set(0, 0);
-      //m_hglrc = NULL;
-      //m_hwnd = NULL;
-      //m_hdc = NULL;
+
       return true;
 
    }
-
-
-   //bool graphics::vulkan_defer_create_window_context(::windowing::window* pwindow)
-   //{
-
-   //   auto psystem = system();
-
-   //   auto pgpuapproach = application()->get_gpu_approach();
-
-   //   auto pgpudevice = pgpuapproach->get_gpu_device();
-
-   //   // auto pgpucontext = pgpudevice->get_main_context();
-
-   //   if (!m_pgpucontextCompositor)
-   //   {
-
-   //      m_pgpucontextCompositor = pgpudevice->create_window_context(pwindow);
-
-   //   }
-
-   //   m_pgpucontextCompositor->m_pgpucompositor = this;
-
-   //   m_pgpucontextCompositor->defer_create_window_context(pwindow);
-
-   //   ::cast < ::gpu_vulkan::context > pcontextVulkan = m_pgpucontextCompositor;
-   //   ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
-
-   //   //vkvg_device_create_info_t createinfo;
-   //   //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-   //   //createinfo.deferredResolve = true;
-   //   //createinfo.inst = papproachVulkan->m_vkinstance;
-   //   //createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
-   //   //createinfo.vkdev = pcontextVulkan->logicalDevice();
-   //   //createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
-   //   //createinfo.qIndex = 0;
-   //   //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
-
-   //   //m_vkvgdevice = vkvg_device_create(&createinfo);
-   //   //m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, pwindow->m_sizeWindow.cx(),
-   //   //   pwindow->m_sizeWindow.cy());
-
-   //   //m_pdc = vkvg_create(m_vkvgsurface);
-   //   //if (!m_pgpucontextCompositor)
-   //   //{
-
-   //   //   return false;
-
-   //   //}
-   //  
-
-   //   //      ::vulkan::resize(size);
-
-   //   return true;
-
-   //}
-
 
 
    int graphics::ExcludeUpdateRgn(::user::interaction_base* pwindow)
@@ -792,42 +276,39 @@ auto iContextHeight = pcontext->m_rectangle.height()
       return 0;
    }
 
-   //double graphics::GetDeviceCaps(double nIndex) const
-   //{
-   //   // ASSERT(m_hdc != nullptr);
-   //   //return ::GetDeviceCaps(m_hdc, nIndex);
-   //   return 0;
-   //}
 
    int_point graphics::GetBrushOrg() const
    {
-      // ASSERT(m_hdc != nullptr);
       ::int_point point;
-      //VERIFY(::GetBrushOrgEx(m_hdc, &point));
+
       return point;
+
    }
+
 
    int_point graphics::SetBrushOrg(int x, int y)
    {
-      // ASSERT(m_hdc != nullptr);
+
       ::int_point point;
-      //VERIFY(::SetBrushOrgEx(m_hdc, x, y, &point));
+
       return point;
+
    }
+
 
    int_point graphics::SetBrushOrg(const ::int_point& point)
    {
-      // ASSERT(m_hdc != nullptr);
-      //VERIFY(::SetBrushOrgEx(m_hdc, point.x(), point.y(), &point));
+
       return point;
+
    }
 
 
    int graphics::EnumObjects(int nObjectType, int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData)
    {
-      // ASSERT(m_hdc != nullptr);
-      //return ::EnumObjects(m_hdc, nObjectType, (GOBJENUMPROC)lpfn, lpData);
+
       return 0;
+
    }
 
    ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pbitmap)
@@ -851,10 +332,6 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
-      ::vulkan::resize(pbitmap->get_size(), bYSwap);
-
-      //vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
-
       m_pbitmap = pbitmap;
 
       return m_pbitmap;
@@ -871,64 +348,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
       return nullptr;
    }
 
-   //HGDIOBJ graphics::SelectObject(HGDIOBJ hObject) // Safe for nullptr handles
-   //{
-
-   //   unsigned int uType = GetObjectType(hObject);
-
-   //   if(uiType == OBJ_BITMAP)
-   //   {
-
-   //      HBITMAP hbitmap = (HBITMAP) hObject;
-
-   //      if(m_pbitmap.is_null())
-   //         m_pbitmap.create();
-
-   //      if(m_pbitmap.is_null())
-   //         return nullptr;
-
-   //      //(dynamic_cast < ::draw2d_vulkan::bitmap * > (m_pbitmap.m_p))->m_pbitmap = ___new plusplus::Bitmap (hbitmap, nullptr);
-
-   //      //if(m_pgraphics != nullptr)
-   //      //{
-
-   //      //   try
-   //      //   {
-
-   //      //      delete m_pgraphics;
-
-   //      //   }
-   //      //   catch(...)
-   //      //   {
-
-   //      //      informationf("graphics::SelectObject(HGDIOBJ) OBJ_BITMAP : Failed to delete plusplus::Graphics");
-
-   //      //   }
-
-   //      //   m_pgraphics = nullptr;
-
-   //      //}
-
-   //      //m_pgraphics = __allocate< plusplus::Graphics((plusplus::Bitmap *) m_pbitmap->get_os_data >());
-
-   //      //m_pgraphics->SetPageUnit(plusplus::UnitPixel);
-
-   //      //set_text_rendering_hint(::write_text::e_rendering_anti_alias_grid_fit);
-
-   //      return hbitmap;
-
-   //   }
-
-   //   //*ASSERT(m_hdc == m_hdc); // ASSERT a simple graphics object
-   //   //return (hObject != nullptr) ? ::SelectObject(m_hdc, hObject) : nullptr; */
-   //   return nullptr;
-   //}
-
 
    color32_t graphics::GetNearestColor(color32_t crColor) const
    {
 
-      //return ::GetNearestColor(m_hdc, crColor);
       return color::transparent;
 
    }
@@ -936,34 +359,40 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    unsigned int graphics::RealizePalette()
    {
-      //return ::RealizePalette(m_hdc);
+
       return 0;
+
    }
+
 
    void graphics::UpdateColors()
    {
-      //::UpdateColors(m_hdc);
+
+
    }
 
 
    int graphics::GetPolyFillMode() const
    {
-      //return ::GetPolyFillMode(m_hdc);
+
       return 0;
+
    }
 
 
    int graphics::GetROP2() const
    {
-      //return ::GetROP2(m_hdc);
+
       return 0;
+
    }
 
 
    int graphics::GetStretchBltMode() const
    {
-      //return ::GetStretchBltMode(m_hdc);
+
       return 0;
+
    }
 
 
@@ -983,23 +412,6 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    bool graphics::GetWorldTransform(XFORM* pXform) const
    {
-
-
-
-      //m_pgraphics->GetTransform(((graphics *)this)->m_pm);
-
-      //plusplus::REAL ::double_rectangle[6];
-
-      //m_pm->GetElements(rectangle);
-
-      //pXform->eM11 = ::double_rectangle[0];
-      //pXform->eM12 = ::double_rectangle[1];
-      //pXform->eM21 = ::double_rectangle[2];
-      //pXform->eM22 = ::double_rectangle[3];
-
-      //pXform->eDx = ::double_rectangle[4];
-      //pXform->eDy = ::double_rectangle[5];
-
 
       return true;
 
@@ -1759,46 +1171,46 @@ auto iContextHeight = pcontext->m_rectangle.height()
       VkBuffer vertexBuffer;
 
 
-     // //  0 l,t
-     ////  1 r,t
-     ////  2 r,b
-     // //  3 l,b
+      // //  0 l,t
+      ////  1 r,t
+      ////  2 r,b
+      // //  3 l,b
 
-     // ::geometry2d::matrix m;
-     // m.scale(2.0 / size.cx(), 2.0 / size.cy());
-     // m.translate(-1.0, -1.0);
+      // ::geometry2d::matrix m;
+      // m.scale(2.0 / size.cx(), 2.0 / size.cy());
+      // m.translate(-1.0, -1.0);
 
-     // ::double_point points[4];
+      // ::double_point points[4];
 
-     // points[0] = points1[0]; // top-left
-     // points[1] = points1[1]; // top-right
-     // points[2] = points1[2]; // bottom-right
-     // points[3] = points1[3]; // bottom-left
+      // points[0] = points1[0]; // top-left
+      // points[1] = points1[1]; // top-right
+      // points[2] = points1[2]; // bottom-right
+      // points[3] = points1[3]; // bottom-left
 
-     // m.transform(points[0]);
-     // m.transform(points[1]);
-     // m.transform(points[2]);
-     // m.transform(points[3]);
+      // m.transform(points[0]);
+      // m.transform(points[1]);
+      // m.transform(points[2]);
+      // m.transform(points[3]);
 
-     // float fA = color.f32_opacity();
-     // //float fR = color.f32_red();
-     // //float fG = color.f32_green();
-     // //float fB = color.f32_blue();
-     // float fR = color.f32_red() * fA;
-     // float fG = color.f32_green() * fA;
-     // float fB = color.f32_blue() * fA;
+      // float fA = color.f32_opacity();
+      // //float fR = color.f32_red();
+      // //float fG = color.f32_green();
+      // //float fB = color.f32_blue();
+      // float fR = color.f32_red() * fA;
+      // float fG = color.f32_green() * fA;
+      // float fB = color.f32_blue() * fA;
 
 
-     // graphics::RectangleVertex quadVertices[] = {
-     //    // Triangle 1
-     //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Red
-     //    {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, // Green
-     //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Blue
-     //    // Triangle 2
-     //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Green
-     //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Yellow
-     //    {{(float)points[3].x(), (float)points[3].y(), g_z}, {fR, fG, fB, fA}}, // Blue
-     // };
+      // graphics::RectangleVertex quadVertices[] = {
+      //    // Triangle 1
+      //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Red
+      //    {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, // Green
+      //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+      //    // Triangle 2
+      //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Green
+      //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Yellow
+      //    {{(float)points[3].x(), (float)points[3].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+      // };
 
 
 
@@ -1957,7 +1369,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       VkDevice device,
       VkPhysicalDevice physicalDevice,
       VkDeviceMemory* outMemory,
-      const ::double_point & pointA,
+      const ::double_point& pointA,
       const ::double_point& pointB,
       const  ::color::color& color,
       const ::double_size& size)
@@ -2015,8 +1427,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
       graphics3d::sequence3_color lineVertices[] = {
-         {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, 
-         {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, 
+         {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}},
+         {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}},
       };
 
 
@@ -2298,12 +1710,13 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //g_z -= 0.0001;
 
    //}
-void graphics::gpu_layer_on_before_end_render()
-{
+   void graphics::gpu_layer_on_before_end_render()
+   {
 
-   ::gpu::graphics::gpu_layer_on_before_end_render();
+      ::gpu::graphics::gpu_layer_on_before_end_render();
 
-}
+   }
+
 
    void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pBrush)
    {
@@ -3631,74 +3044,75 @@ void graphics::gpu_layer_on_before_end_render()
    void graphics::get_text_metrics(::write_text::text_metric* lpMetrics)
    {
 
-      set(m_pfont);
-      //if (!set(m_pfont))
-      //{
+      ::gpu::graphics::get_text_metrics(lpMetrics);
+      //set(m_pfont);
+      ////if (!set(m_pfont))
+      ////{
 
-      //   return false;
+      ////   return false;
 
-      //}
+      ////}
 
-      ::pointer<font>pfont = m_pfont;
+      //::pointer<font>pfont = m_pfont;
 
-      TEXTMETRIC tm;
+      //TEXTMETRIC tm;
 
-      GetTextMetrics(pfont->m_hdcFont, &tm);
+      //GetTextMetrics(pfont->m_hdcFont, &tm);
 
-      lpMetrics->m_dAscent = tm.tmAscent;
-      lpMetrics->m_dHeight = tm.tmHeight;
-      lpMetrics->m_dDescent = tm.tmDescent;
-      //lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
+      //lpMetrics->m_dAscent = tm.tmAscent;
+      //lpMetrics->m_dHeight = tm.tmHeight;
+      //lpMetrics->m_dDescent = tm.tmDescent;
+      ////lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
 
-      //if (m_pgraphics == nullptr)
-      //   return false;
+      ////if (m_pgraphics == nullptr)
+      ////   return false;
 
-      //graphics * pgraphics = ((graphics *)this);
+      ////graphics * pgraphics = ((graphics *)this);
 
-      //if(pgraphics->vk2d_font() == nullptr)
-      //   return false;
+      ////if(pgraphics->vk2d_font() == nullptr)
+      ////   return false;
 
-      //plusplus::Font * pfont = pgraphics->vk2d_font();
+      ////plusplus::Font * pfont = pgraphics->vk2d_font();
 
-      //plusplus::FontFamily family;
+      ////plusplus::FontFamily family;
 
-      //pfont->GetFamily(&family);
+      ////pfont->GetFamily(&family);
 
-      //::double iStyle = pfont->GetStyle();
+      ////::double iStyle = pfont->GetStyle();
 
-      //double dHeight = family.GetEmHeight(iStyle);
+      ////double dHeight = family.GetEmHeight(iStyle);
 
-      //double dSize = pfont->GetSize();
+      ////double dSize = pfont->GetSize();
 
-      //double dFontHeight = pfont->GetHeight((plusplus::REAL) pgraphics->get_dpiy());
+      ////double dFontHeight = pfont->GetHeight((plusplus::REAL) pgraphics->get_dpiy());
 
-      //lpMetrics->tmAscent              = (::double) (dSize * family.GetCellAscent(iStyle) / dHeight);
-      //lpMetrics->tmDescent             = (::double) (dSize * family.GetCellDescent(iStyle) / dHeight);
-      //lpMetrics->tmHeight              = (::double)dFontHeight;
+      ////lpMetrics->tmAscent              = (::double) (dSize * family.GetCellAscent(iStyle) / dHeight);
+      ////lpMetrics->tmDescent             = (::double) (dSize * family.GetCellDescent(iStyle) / dHeight);
+      ////lpMetrics->tmHeight              = (::double)dFontHeight;
 
-      //double dLineSpacing = maximum(dFontHeight, dSize * family.GetLineSpacing(iStyle) / dHeight);
+      ////double dLineSpacing = maximum(dFontHeight, dSize * family.GetLineSpacing(iStyle) / dHeight);
 
-      //lpMetrics->tmInternalLeading     = (::double) (lpMetrics->tmAscent + lpMetrics->tmDescent - lpMetrics->tmHeight);
-      //lpMetrics->tmExternalLeading     = (::double) (dLineSpacing - (lpMetrics->tmAscent + lpMetrics->tmDescent));
+      ////lpMetrics->tmInternalLeading     = (::double) (lpMetrics->tmAscent + lpMetrics->tmDescent - lpMetrics->tmHeight);
+      ////lpMetrics->tmExternalLeading     = (::double) (dLineSpacing - (lpMetrics->tmAscent + lpMetrics->tmDescent));
 
-      //const plusplus::FontFamily * pfamilyMono = family.GenericMonospace();
+      ////const plusplus::FontFamily * pfamilyMono = family.GenericMonospace();
 
-      //::plusplus::Font font2(pfamilyMono, pfamilyMono->GetEmHeight(((graphics * )this)->vk2d_font()->GetStyle()));
+      ////::plusplus::Font font2(pfamilyMono, pfamilyMono->GetEmHeight(((graphics * )this)->vk2d_font()->GetStyle()));
 
-      //wstring wstr(L"123AWZwmc123AWZwmcpQg");
-      //plusplus::rectF ::double_rectangle(0.f, 0.f, 1024.f * 1024.f, 1024.f * 1024.f);
-      //plusplus::rectF rect2;
-      //plusplus::PointF origin(0, 0);
+      ////wstring wstr(L"123AWZwmc123AWZwmcpQg");
+      ////plusplus::rectF ::double_rectangle(0.f, 0.f, 1024.f * 1024.f, 1024.f * 1024.f);
+      ////plusplus::rectF rect2;
+      ////plusplus::PointF origin(0, 0);
 
-      //m_pgraphics->MeasureString(wstr, (::double) wstr.get_length(), ((graphics * )this)->vk2d_font(), origin, &rectangle);
+      ////m_pgraphics->MeasureString(wstr, (::double) wstr.get_length(), ((graphics * )this)->vk2d_font(), origin, &rectangle);
 
 
-      ///*wstr = L"";
-      //m_pgraphics->MeasureString(wstr.m_pwsz, -1, (plusplus::Font *) m_pfont->get_os_data(), origin, &rect2);*/
+      /////*wstr = L"";
+      ////m_pgraphics->MeasureString(wstr.m_pwsz, -1, (plusplus::Font *) m_pfont->get_os_data(), origin, &rect2);*/
 
-      //lpMetrics->tmAveCharWidth = (::double) (rectangle.Width * get_current_font()->m_dFontWidth / (double) wstr.get_length());
+      ////lpMetrics->tmAveCharWidth = (::double) (rectangle.Width * get_current_font()->m_dFontWidth / (double) wstr.get_length());
 
-      //return true;
+      ////return true;
 
    }
 
@@ -3834,68 +3248,8 @@ void graphics::gpu_layer_on_before_end_render()
 
       m_sizeWindow = sizeWindow;
 
-      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
-
-      ::vulkan::resize(sizeWindow, bYSwap);
-
    }
 
-
-
-   //bool graphics::ResetDC(const DEVMODE* lpDevMode)
-   //{
-   //   // ASSERT(m_hdc != nullptr);
-   //   //return ::ResetDC(m_hdc, lpDevMode) != nullptr;
-   //   return false;
-
-   //}
-
-
-   //unsigned int graphics::GetOutlineTextMetrics(unsigned int cbData, LPOUTLINETEXTMETRICW lpotm) const
-   //{
-   //   // ASSERT(m_hdc != nullptr);
-   //   //return ::GetOutlineTextMetricsW(m_hdc, cbData, lpotm);
-   //   return 0;
-   //}
-
-
-   //bool graphics::GetCharABCWidths(unsigned int nFirstChar, unsigned int nLastChar, LPABC lpabc) const
-   //{
-   //   // ASSERT(m_hdc != nullptr);
-   //   //return ::GetCharABCWidths(m_hdc, nFirstChar, nLastChar, lpabc) != false;
-   //   return false;
-
-   //}
-
-
-   //unsigned int graphics::GetFontData(unsigned int dwTable, unsigned int dwOffset, LPVOID lpData,
-   //                               unsigned int cbData) const
-   //{
-   //   // ASSERT(m_hdc != nullptr);
-   //   //return ::GetFontData(m_hdc, dwTable, dwOffset, lpData, cbData);
-   //   return 0;
-
-   //}
-
-
-   //double graphics::GetKerningPairs(double nPairs, LPKERNINGPAIR lpkrnpair) const
-   //{
-   //   // ASSERT(m_hdc != nullptr);
-   //   //return ::GetKerningPairs(m_hdc, nPairs, lpkrnpair);
-   //   return 0;
-
-   //}
-
-
-   //unsigned int graphics::GetGlyphOutline(unsigned int nChar, const ::e_align & ealign, const ::e_draw_text & edrawtext, LPGLYPHMETRICS lpgm,
-   //                                   unsigned int cbBuffer, LPVOID lpBuffer, const MAT2* lpmat2) const
-   //{
-   //   // ASSERT(m_hdc != nullptr);
-   //   //return ::GetGlyphOutline(m_hdc, nChar, nFormat,
-   //     //                       lpgm, cbBuffer, lpBuffer, lpmat2);
-   //   return 0;
-
-   //}
 
 
    // ::user::document handling functions
@@ -5414,11 +4768,9 @@ void graphics::gpu_layer_on_before_end_render()
 
    int graphics::SelectObject(::draw2d::region* pRgn)
    {
+
       int nRetVal = GDI_ERROR;
-      //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = (double)(iptr)::SelectObject(m_hdc, (HGDIOBJ) pRgn->get_os_data());
-      //if(m_hdc != nullptr)
-      //   nRetVal = (double)(iptr)::SelectObject(m_hdc, (HGDIOBJ) pRgn->get_os_data());
+
       return nRetVal;
 
    }
@@ -5426,18 +4778,17 @@ void graphics::gpu_layer_on_before_end_render()
 
    ::draw2d::palette* graphics::SelectPalette(::draw2d::palette* pPalette, bool bForceBackground)
    {
+
       return nullptr;
-      //      return dynamic_cast < ::draw2d::palette * > (::draw2d_vulkan::object::from_handle(get_app(), ::SelectPalette(m_hdc, (HPALETTE)pPalette->get_os_data(), bForceBackground)));
+
    }
 
 
    int graphics::SetPolyFillMode(int nPolyFillMode)
    {
+
       int nRetVal = 0;
-      //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = ::SetPolyFillMode(m_hdc, nPolyFillMode);
-      //if(m_hdc != nullptr)
-      //   nRetVal = ::SetPolyFillMode(m_hdc, nPolyFillMode);
+
       return nRetVal;
 
    }
@@ -5445,11 +4796,9 @@ void graphics::gpu_layer_on_before_end_render()
 
    int graphics::SetROP2(int nDrawMode)
    {
+
       int nRetVal = 0;
-      //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = ::SetROP2(m_hdc, nDrawMode);
-      //if(m_hdc != nullptr)
-      //   nRetVal = ::SetROP2(m_hdc, nDrawMode);
+
       return nRetVal;
 
    }
@@ -5601,7 +4950,7 @@ void graphics::gpu_layer_on_before_end_render()
    {
 
       ::gpu::graphics::_set(matrix);
-      
+
    }
 
 
@@ -6455,38 +5804,40 @@ void graphics::gpu_layer_on_before_end_render()
    double_size graphics::get_text_extent(const ::scoped_string& lpszString)
    {
 
-      //if(lpszString.is_empty())
-      //   return int_size(0, 0);
+      return ::gpu::graphics::get_text_extent(lpszString);
 
-      return int_size(0, 0);
+      ////if(lpszString.is_empty())
+      ////   return int_size(0, 0);
 
-      //wstring wstr = lpszString;
+      //return int_size(0, 0);
 
-      //character_count iRange = 0;
-      //character_count i = 0;
-      //character_count iLen;
-      //const ::scoped_string & scopedstr = lpszString;
-      //while(i < iIndex)
-      //{
-      //   iLen = ::str::get_utf8_char(psz).length();
-      //   iRange++;
-      //   i += iLen;
-      //   unicode_increment(psz);
-      //   if(psz == nullptr)
-      //      break;
-      //   if(*psz == '\0')
-      //      break;
-      //}
+      ////wstring wstr = lpszString;
 
-      //set(m_pfont);
+      ////character_count iRange = 0;
+      ////character_count i = 0;
+      ////character_count iLen;
+      ////const ::scoped_string & scopedstr = lpszString;
+      ////while(i < iIndex)
+      ////{
+      ////   iLen = ::str::get_utf8_char(psz).length();
+      ////   iRange++;
+      ////   i += iLen;
+      ////   unicode_increment(psz);
+      ////   if(psz == nullptr)
+      ////      break;
+      ////   if(*psz == '\0')
+      ////      break;
+      ////}
 
-      //::pointer<font>pfont = m_pfont;
+      ////set(m_pfont);
 
-      //::int_size s = { 0 };
+      ////::pointer<font>pfont = m_pfont;
 
-      //::GetTextExtentPointW(pfont->m_hdcFont, wstr, wstr.get_length(), &s);
+      ////::int_size s = { 0 };
 
-      //return s;
+      ////::GetTextExtentPointW(pfont->m_hdcFont, wstr, wstr.get_length(), &s);
+
+      ////return s;
 
    }
 
@@ -6796,7 +6147,7 @@ void graphics::gpu_layer_on_before_end_render()
             m_pshaderLine->m_bEnableBlend = true;
             //m_pshaderRectangle->m_bAccumulationEnable = true;
 
-            m_pshaderLine->m_vktopology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+            m_pshaderLine->m_etopology = ::gpu::e_topology_line_list;
             m_pshaderLine->m_dynamicstateaEnable.add(VK_DYNAMIC_STATE_LINE_WIDTH);
 
             //auto pcontext = gpu_context();
@@ -6840,7 +6191,7 @@ void graphics::gpu_layer_on_before_end_render()
 
       //auto pmodelbuffer = __create_new< ::gpu_vulkan::model_buffer>();
 
-      if(!m_pmodelbufferLine)
+      if (!m_pmodelbufferLine)
       {
 
          __construct_new(m_pmodelbufferLine);
@@ -6853,7 +6204,7 @@ void graphics::gpu_layer_on_before_end_render()
          auto pcontext = gpu_context();
 
          //::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontextCompositor;
- 
+
          m_pmodelbufferLine->sequence2_color_create_line(::gpu::current_frame());
 
          //pmodelbuffer->m_indexBuffer = nullptr;
@@ -6863,7 +6214,7 @@ void graphics::gpu_layer_on_before_end_render()
 
       m_pmodelbufferLine->sequence2_color_set_line(
          points[0], points[1],
-         color, 
+         color,
          pcontext->rectangle().size());
 
       pcontext->defer_bind(m_pshaderLine);
@@ -6873,8 +6224,7 @@ void graphics::gpu_layer_on_before_end_render()
       ::cast < ::gpu_vulkan::renderer >prenderer = pcontext->m_pgpurenderer;
 
       ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
-      
-      
+
       pcommandbuffer->set_line_width(m_ppen->m_dWidth);
 
       //VkDeviceSize offset = 0;
@@ -6907,46 +6257,48 @@ void graphics::gpu_layer_on_before_end_render()
    void graphics::text_out(double x, double y, const ::scoped_string& scopedstr)
    {
 
-      if (m_pfont.is_null())
-      {
+      ::gpu::graphics::text_out(x, y, scopedstr);
 
-         return;
-
-      }
-
-      //::draw2d::graphics::text_out(x, y, lpszString);
-      //if (::draw2d::graphics::text_out(x, y, lpszString, nCount))
+      //if (m_pfont.is_null())
       //{
 
-      //   return true;
+      //   return;
 
       //}
 
-      //return true;
+      ////::draw2d::graphics::text_out(x, y, lpszString);
+      ////if (::draw2d::graphics::text_out(x, y, lpszString, nCount))
+      ////{
 
-      set(m_pfont);
+      ////   return true;
 
-      //::pointer<font>pfont = m_pfont;
-
-      //float length = 0.f;
-
-      //for (unsigned int loop = 0; loop < scopedstr.size(); loop++)	// Loop To Find Text Length
-      //{
-
-      //   length += pfont->m_gmf[scopedstr[loop]].gmfCellIncX;			// Increase Length By Each Characters Width
-
-      //}
-
-      //vkTranslatef((float)(x), (float)(y), 0.0f);					// Center Our Text On The Screen
-
-      //vkPushAttrib(VK_LIST_BIT);							// Pushes The Display List Bits
-      //vkListBase(pfont->m_baseFont);									// Sets The Base Character to 0
-      //vkCallLists((VKsizei)scopedstr.size(), VK_UNSIGNED_BYTE, scopedstr.begin());	// Draws The Display List Text
-      //vkPopAttrib();										// Pops The Display List Bits      }
-
-      //vkTranslatef((float)(-x), (float)(-y), 0.0f);					// Center Our Text On The Screen
+      ////}
 
       ////return true;
+
+      //set(m_pfont);
+
+      ////::pointer<font>pfont = m_pfont;
+
+      ////float length = 0.f;
+
+      ////for (unsigned int loop = 0; loop < scopedstr.size(); loop++)	// Loop To Find Text Length
+      ////{
+
+      ////   length += pfont->m_gmf[scopedstr[loop]].gmfCellIncX;			// Increase Length By Each Characters Width
+
+      ////}
+
+      ////vkTranslatef((float)(x), (float)(y), 0.0f);					// Center Our Text On The Screen
+
+      ////vkPushAttrib(VK_LIST_BIT);							// Pushes The Display List Bits
+      ////vkListBase(pfont->m_baseFont);									// Sets The Base Character to 0
+      ////vkCallLists((VKsizei)scopedstr.size(), VK_UNSIGNED_BYTE, scopedstr.begin());	// Draws The Display List Text
+      ////vkPopAttrib();										// Pops The Display List Bits      }
+
+      ////vkTranslatef((float)(-x), (float)(-y), 0.0f);					// Center Our Text On The Screen
+
+      //////return true;
 
    }
 
@@ -6977,7 +6329,9 @@ void graphics::gpu_layer_on_before_end_render()
    void graphics::set(::draw2d::brush* pbrush)
    {
 
-      ::vulkan::color(pbrush->m_color);
+
+      ::gpu::graphics::set(pbrush);
+      //::vulkan::color(pbrush->m_color);
 
       //return ::success;
 
@@ -6988,15 +6342,17 @@ void graphics::gpu_layer_on_before_end_render()
    void graphics::set(::write_text::font* pfont)
    {
 
-      if (::is_null(pfont))
-      {
+      ::gpu::graphics::set(pfont);
 
-         //return ::error_failed;
-         return;
+      //if (::is_null(pfont))
+      //{
 
-      }
+      //   //return ::error_failed;
+      //   return;
 
-      pfont->get_os_data(this);
+      //}
+
+      //pfont->get_os_data(this);
 
       //return ::success;
 
@@ -7572,95 +6928,8 @@ void graphics::gpu_layer_on_before_end_render()
 
       ::gpu::graphics::on_begin_draw();
 
-   //   thread_select();
-
-   //   g_z = -0.5;
-
-   //   ::int_rectangle rectangle;
-
-   //   if (!m_puserinteraction && m_pwindow && m_papplication->m_bUseSwapChainWindow)
-   //   {
-
-   //      m_puserinteraction = dynamic_cast <::user::interaction*>(m_pwindow->m_pacmeuserinteraction.m_p);
-
-   //   }
-
-   //   if (m_puserinteraction && !m_puserinteraction->host_rectangle().size().is_empty())
-   //   {
-
-   //      rectangle = m_puserinteraction->host_rectangle();
-
-   //   }
-   //   else
-   //   {
-
-   //      rectangle = { 0, 0, 1920, 1080 };
-
-   //   }
-
-   //   bool bYSwap = m_papplication->m_bUseSwapChainWindow;
-
-   //   ::vulkan::resize(rectangle.size(), bYSwap);
-
-   //   m_z = 0.f;
-
-   //   if (!m_pgpucontextCompositor->m_pgpucontextCompositor->m_pgpurenderer)
-   //   {
-
-   //      __øconstruct(m_pgpucontextCompositor->m_pgpucontextCompositor->m_pgpurenderer);
-
-   //      m_pgpucontextCompositor->m_eoutput = ::gpu::e_output_color_and_alpha_accumulation_buffers;
-
-   //      //m_pgpucontextCompositor->m_pgpucontextCompositor->m_pgpurenderer->initialize_renderer(m_pgpucontextCompositor, ::gpu::e_output_color_and_alpha_accumulation_buffers);
-
-   //      m_pgpucontextCompositor->m_pgpucontextCompositor->m_pgpurenderer->initialize_renderer(m_pgpucontextCompositor, ::gpu::e_output_gpu_buffer);
-
-   //      //::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontextCompositor->m_prenderer;
-
-   //      //prenderer->m_poffscreensampler->initialize_offscreen_sampler(m_pgpucontextCompositor);
-
-   //      //prenderer->m_poffscreensampler->update({ (uint32_t)rectangle.width(),(uint32_t)rectangle.height() });
-
-   //   }
-   //   else
-   //   {
-
-
-   //   }
-
-   //   if (m_egraphics == e_graphics_draw)
-   //   {
-
-   //      ::cast < ::gpu_vulkan::renderer > pgpurenderer = m_pgpucontextCompositor->m_pgpucontextCompositor->m_pgpurenderer;
-
-   //      m_pgpucontextCompositor->set_placement(rectangle);
-
-   //      pgpurenderer->defer_update_render_pass();
-
-   //      pgpurenderer->on_new_frame();
-
-   //      m_pframe = pgpurenderer->beginFrame();
-
-   //      pgpurenderer->on_begin_render(m_pframe);
-
-   //   }
-
-   //   if (m_callbackImage32CpuBuffer)
-   //   {
-
-   //      m_pgpucontextCompositor->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
-
-   //   }
-
    }
 
-
-   //void graphics::defer_add_gpu_render(::gpu::render * pgpurender)
-   //{
-
-   //   m_pgpucontextCompositor->m_rendera.add_unique(pgpurender);
-
-   //}
 
 
    void graphics::initialize(::particle* pparticle)
@@ -7668,7 +6937,27 @@ void graphics::gpu_layer_on_before_end_render()
 
       ::draw2d::graphics::initialize(pparticle);
 
-      //::gpu::renderer::initialize(pparticle);
+   }
+
+
+   void graphics::on_gpu_context_placement_change(const ::int_rectangle& rectanglePlacement)
+   {
+
+      ::gpu::graphics::on_gpu_context_placement_change(rectanglePlacement);
+
+      auto sizeNew = rectanglePlacement.size();
+
+      if (m_size == sizeNew
+         && m_sizeWindow == sizeNew)
+      {
+
+         return;
+
+      }
+
+      m_size = sizeNew;
+
+      resize(sizeNew);
 
    }
 
@@ -7682,115 +6971,9 @@ void graphics::gpu_layer_on_before_end_render()
    }
 
 
-   //void graphics::on_end_draw()
-   //{
-
-   //   if (m_egraphics & e_graphics_draw)
-   //   {
-
-
-   //      //vkvg_surface_resolve(m_vkvgsurface);
-
-   //      //m_pgpucontextCompositor->m_prenderer->on_end_draw();
-
-   //      //::double_rectangle r{ 0.0, 0.0, 1920.0, 1080.0 };
-
-   //      //fill_solid_rectangle(r, argb(255, 100, 200, 240));
-
-   //      //::double_rectangle r2{ 100.0, 100.0, 1920.0, 1980.0 };
-
-   //      //set_alpha_mode(::draw2d::e_alpha_mode_blend);
-
-   //      //fill_solid_rectangle(r2, argb(155, 120, 40, 100));
-
-   //      //vkvg_flush(m_pdc);
-
-   //      //VkImage vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
-
-
-   //      ::cast < ::gpu_vulkan::renderer >prenderer = m_pgpucontextCompositor->m_pgpucontextCompositor->m_pgpurenderer;
-
-   //      prenderer->on_end_render(m_pframe);
-
-   //      prenderer->endFrame();
-
-   //      prenderer->endDraw(m_puserinteraction);
-
-
-   //   }
-
-   //   ////vkPushMatrix();
-
-   //   ////vkColor3f(0, 1, 1);
-   //   //vkBegin(VK_TRIANGLES);                              // Drawing Using Triangles
-   //   //
-
-   //   //vkColor4f(1.0f, 0.0f, 0.0f, 0.5f);                      // Set The Color To Red
-   //   //vkVertex3f(100.0f, -2000.0f, 0.0f);                  // Top
-   //   //
-
-   //   //vkColor3f(0.0f, 1.0f, 0.0f);                      // Set The Color To Green
-   //   //vkVertex3f(0.0f, 200.0f, 0.0f);                  // Bottom Left
-
-
-   //   //vkColor3f(0.0f, 0.0f, 1.0f);                      // Set The Color To Blue
-   //   //vkVertex3f(2000.0f, 2000.0f, 0.0f);                  // Bottom Right
-
-   //   //vkEnd();
-
-   //   //vkPopMatrix();
-
-
-   //   //vkFlush();
-   //   //vkFinish();
-   //   //vkDisable(VK_BLEND);
-
-
-
-
-   //   //SwapBuffers(m_hdc);
-
-   //   //m_pgpucontextVulkan->render
-
-   //   //dr();
-
-   //   if (m_papplication->m_bUseSwapChainWindow)
-   //   {
-
-   //      //m_pgpucontextCompositor->swap_buffers();
-
-   //      //m_pwindow->m_timeLastDrawGuard1.Now();
-
-   //   }
-   //   else
-   //   {
-
-   //      //m_pgpucontextCompositor->swap_buffers();
-
-   //    //}
-   //    //else
-   //    //{
-
-   //      read_to_cpu_buffer();
-
-   //      m_pimage->map();
-
-   //      m_pimage->copy(&m_pgpucontextCompositor->m_pcpubuffer->m_pixmap);
-
-   //   }
-
-   //}
-
-
    void graphics::on_present()
    {
 
-      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
-      //{
-
-      //   m_pgpucontextCompositor->swap_buffers();
-
-      //}
 
    }
 
@@ -7818,7 +7001,7 @@ void graphics::gpu_layer_on_before_end_render()
 
       //return ::is_set(this) & ::is_set(m_hglrc);
 
-      auto pcontext = ((graphics *)this)->gpu_context();
+      auto pcontext = ((graphics*)this)->gpu_context();
 
       return ::is_set(this) && ::is_set(pcontext);
 
@@ -7907,71 +7090,6 @@ BOOL CALLBACK draw2d_vulkan_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpnt
 namespace vulkan
 {
 
-
-   void resize(const ::int_size& size, bool bYSwap)
-   {
-
-      //double d = 200.0 / 72.0;
-
-      //double d = 1.0;
-
-      ////vkViewport(0, 0, size.cx() * d, size.cy() * d);
-      //vkViewport(0, 0, size.cx(), size.cy());
-
-      //vkMatrixMode(VK_PROJECTION);
-      //vkLoadIdentity();
-      ////vkOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
-      ////vkOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
-      //////vkOrtho(0, size.cx() * d, 0.0f, size.cy() * d, 000.0f, 1000.0f);
-      ////vkOrtho(0, size.cx(), size.cy(), 0.0f, -1000.0f, 1000.0f);
-      //vkOrtho(0.f, size.cx(), 0.f, -size.cy(), -1.0f, 1.0f);
-
-
-      //vkMatrixMode(VK_PROJECTION);
-      //vkLoadIdentity();
-      //if (bYSwap)
-      //{
-      //   vkOrtho(0.0f, size.cx(), size.cy(), 0, -1.0f, 1.0f);  // Flip Y
-      //}
-      //else
-      //{
-      //   vkOrtho(0.0f, size.cx(), 0, size.cy(), -1.0f, 1.0f);  // Flip Y
-      //}
-      ////auto left = 0.;
-      ////auto right = (double) size.cx();
-      ////auto bottom = 0.;
-      ////auto top = (double)size.cy();
-      ////double dFar = 1.0;
-      ////double dNear = -1.0;
-      ////double tx = -(right + left) / (right - left);
-      ////double ty = -(top + bottom) / (top - bottom);
-      ////double tz = -(dFar + dNear) / (dFar - dNear);
-      ////double a[] =
-      ////{
-      ////   2.0/(right - left),0.0,0.0,tx,
-      ////   0.0,2.0/(top - bottom),0.0,ty,
-      ////   0.0,0.0,-2.0/(dFar-dNear),tz,
-      ////   0.0,0.0,0.0,1.0
-      ////};
-      ////vkMultMatrixd(a);
-
-      ////vkMatrixMode(VK_MODELVIEW);
-      ////vkLoadIdentity();
-
-
-      ////vkuOrtho2D(0.f, size.cx(), 0.f, size.cy());
-      ////vkMatrixMode(VK_MODELVIEW);
-      ////vkLoadIdentity();
-
-      //// Clear
-      ////vkClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-      ////vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
-
-      //// Translate to inside of pixel (otherwise inaccuracies can occur on certain vk implementations)
-      ////if (Vulkan::accuracyTweak())
-      //vkTranslatef(0.5f, 0.5f, 0);
-
-   }
 
    //https://community.khronos.org/t/draw-an-arc-in-vulkan/57994/2
    inline void draw_arc(float cx, float cy, float r, float start_angle, float arc_angle, int num_segments)

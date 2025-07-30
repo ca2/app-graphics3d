@@ -29,7 +29,7 @@ layout(std140) uniform GlobalUbo {
  
 
 void main() {
-    TexCoords = aPos; // Skybox uses aPos directly as texture coordinates
+    TexCoords = vec3(aPos.x, aPos.y, -aPos.z); // Flip X
     vec4 pos = projection * mat4(mat3(view)) * vec4(aPos, 1.0);
     gl_Position = pos.xyww; // Keep the z/w ratio 1:1 for a skybox
 }

@@ -46,6 +46,8 @@ namespace gpu_vulkan
 
       void set_scissor(const ::int_rectangle& rectangle) override;  
 
+      void set_primitive_topology_triangle_strip() override;
+
       virtual void draw(::gpu_vulkan::model_buffer* pmodelbuffer);
 
       virtual VkResult submitCommandBuffers(
@@ -55,6 +57,11 @@ namespace gpu_vulkan
          const ::array < VkPipelineStageFlags >& stageaWait,
          const ::array < VkSemaphore >& semaphoreaSignal,
          VkFence * pvkfence = nullptr);
+
+      void draw_vertices(int iVertexCount) override;
+      void draw_indices(int iIndexCount) override;
+
+
    };
 
 

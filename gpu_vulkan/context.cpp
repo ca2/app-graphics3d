@@ -3,6 +3,7 @@
 #include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
+#include "debug.h"
 #include "device.h"
 #include "memory_buffer.h"
 #include "physical_device.h"
@@ -17,6 +18,7 @@
 #include "bred/gpu/compositor.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/pixmap.h"
 #include "bred/gpu/types.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -803,82 +805,12 @@ namespace gpu_vulkan
    void context::_create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size)
    {
 
-      //createInstance();
-      //setupDebugMessenger();
-      //createSurface();
-      //pickPhysicalDevice();
-      //createLogicalDevice();
-      //createCommandPool();
-
       if (!pgpudevice)
       {
 
          throw ::exception(error_failed);
 
       }
-
-      //      auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
-      //
-      //      assert(pphysicaldevice && pphysicaldevice->m_physicaldevice);
-      //      
-      //      m_pphysicaldevice = pphysicaldevice;
-      //
-      //      if (startcontext.m_eoutput == ::gpu::e_output_swap_chain)
-      //      {
-      //
-      //         m_pphysicaldevice->createWindowSurface(startcontext.m_pwindow);
-      //
-      //      }
-      //   
-      //      auto physicaldevice = pphysicaldevice->m_physicaldevice;
-      //
-      //      // Get list of supported extensions
-      //      uint32_t extCount = 0;
-      //      vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, nullptr);
-      //      if (extCount > 0)
-      //      {
-      //         ::array<VkExtensionProperties> extensions(extCount);
-      //         if (vkEnumerateDeviceExtensionProperties(physicaldevice, nullptr, &extCount, extensions.data()) == VK_SUCCESS)
-      //         {
-      //            for (auto & ext : extensions)
-      //            {
-      //               m_straSupportedExtensions.add(ext.extensionName);
-      //            }
-      //         }
-      //      }
-      //
-      //      // Derived examples can enable extensions based on the list of supported extensions read from the physical device
-      //      //getEnabledExtensions();
-      //
-      //      bool useSwapChain = m_eoutput == ::gpu::e_output_swap_chain;
-      //
-      //      m_itaskGpu = ::current_itask();
-      //
-      //      VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
-      //.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
-      //      .scalarBlockLayout = TRUE};
-      //      pgpuapproach->m_pDeviceCreatepNextChain = &scalarBlockLayoutSupport;
-      //      m_physicaldevicefeaturesCreate.logicOp = TRUE;
-      //
-      //      VkResult result = createLogicalDevice(
-      //         m_physicaldevicefeaturesCreate,
-      //         pgpuapproach->m_pszaEnabledDeviceExtensions,
-      //         pgpuapproach->m_pDeviceCreatepNextChain,
-      //         useSwapChain);
-      //
-      //      if (result != VK_SUCCESS)
-      //      {
-      //
-      //         m_itaskGpu = {};
-      //
-      //         exitFatal("Could not create Vulkan device: \n" + errorString(result) + " VkResult=" + ::as_string(result), result);
-      //
-      //         throw ::exception(error_failed);
-      //
-      //      }
-
-
-            //device = vulkanDevice->logicalDevice;
 
    }
 
@@ -910,8 +842,10 @@ namespace gpu_vulkan
 
 
 
-   void context::endSingleTimeCommands(command_buffer* pcommandbuffer)
+   void context::endSingleTimeCommands(::gpu::command_buffer* pgpucommandbuffer)
    {
+
+      ::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
 
       VkCommandBuffer commandbuffers[] = { pcommandbuffer->m_vkcommandbuffer };
 
@@ -949,17 +883,26 @@ namespace gpu_vulkan
       VkQueue vkqueue;
 
       if (pcommandbuffer->m_ecommandbuffer == ::gpu::e_command_buffer_present)
+      {
+
          vkqueue = m_vkqueuePresent;
+
+      }
       else
+      {
+
          vkqueue = m_vkqueueGraphics;
+
+      }
+
       vkQueueSubmit(vkqueue, 1, psubmitinfo, fence);
 
       vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
 
       vkQueueWaitIdle(vkqueue);
 
-
       vkDestroyFence(this->logicalDevice(), fence, NULL);
+
    }
 
 
@@ -1726,6 +1669,30 @@ namespace gpu_vulkan
    //}
 
 
+   ::memory context::white_to_color_sampler_vert()
+   {
+
+      unsigned int pvertexshader[] = {
+#include "shader/white_to_color.vert.spv.inl"
+      };
+
+      return ::as_memory_block(pvertexshader);
+
+   }
+
+
+   ::memory context::white_to_color_sampler_frag()
+   {
+
+      unsigned int pfragmentshader[] = {
+#include "shader/white_to_color.frag.spv.inl"
+      };
+
+      return ::as_memory_block(pfragmentshader);
+   }
+
+
+
    string context::get_shader_version_text()
    {
 
@@ -2098,6 +2065,33 @@ namespace gpu_vulkan
    //   return {};
    //}
 
+   void context::gpu_debug_message(const ::scoped_string& scopedstrMessage)
+   {
+
+      //::string strMessage(scopedstrMessage);
+
+      ::color::color color(::color::black);
+
+      //VkDebugUtilsLabelEXT debugLabel = {
+      //    .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
+      //    .pNext = NULL,
+      //    .pLabelName = strMessage.c_str(),
+      //    .color = {
+      //      color.f32_red(),
+      //      color.f32_green(),
+      //      color.f32_blue(),
+      //      color.f32_opacity() }
+      //};
+
+      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      
+      ::vulkan::debugutils::insertDebugLabel(
+         pcommandbuffer->m_vkcommandbuffer, 
+         scopedstrMessage, 
+         color);
+
+   }
+
 
    //void context::hasGflwRequiredInstanceExtensions()
    //{
@@ -2213,7 +2207,7 @@ namespace gpu_vulkan
    //}
 
 
-   ::pointer < command_buffer > context::beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer)
+   ::pointer < ::gpu::command_buffer > context::beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer)
    {
 
       ::pointer < command_buffer > pcommandbuffer;
@@ -2250,7 +2244,7 @@ namespace gpu_vulkan
    void context::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
    {
 
-      auto pcommandbuffer = beginSingleTimeCommands();
+      ::pointer < command_buffer > pcommandbuffer = beginSingleTimeCommands();
 
       VkBufferCopy copyRegion{};
       copyRegion.srcOffset = 0;  // Optional
@@ -2265,8 +2259,9 @@ namespace gpu_vulkan
 
 
    void context::copyBufferToImage(
-      ::gpu::command_buffer * pgpucommandbuffer, 
-      ::gpu_vulkan::texture* ptexture, ::gpu_vulkan::buffer* pbuffer)
+      ::gpu::command_buffer* pgpucommandbuffer,
+      ::gpu_vulkan::texture* ptexture, ::gpu_vulkan::buffer* pbuffer,
+      const ::int_rectangle& rectangleSubImage)
       //VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
    {
 
@@ -2286,7 +2281,7 @@ namespace gpu_vulkan
       VkBufferImageCopy regions[6];
 
       int iRegionCount;
-      
+
       if (ptexture->m_etype == ::gpu::texture::e_type_cube_map)
       {
 
@@ -2298,7 +2293,7 @@ namespace gpu_vulkan
 
          auto layerarea = texWidth * texHeight * 4;
 
-         for (uint32_t face = 0; face < 6; face++) 
+         for (uint32_t face = 0; face < 6; face++)
          {
 
             auto& region = regions[face];
@@ -2323,7 +2318,7 @@ namespace gpu_vulkan
 
          iRegionCount = 1;
 
-         auto & region = regions[0];
+         auto& region = regions[0];
 
          memset(&region, 0, sizeof(region));
 
@@ -2336,8 +2331,24 @@ namespace gpu_vulkan
          region.imageSubresource.baseArrayLayer = 0;
          region.imageSubresource.layerCount = 1;
 
-         region.imageOffset = { 0, 0, 0 };
-         region.imageExtent = { (uint32_t)ptexture->width(), (uint32_t)ptexture->height(), 1 };
+         if (rectangleSubImage.is_empty())
+         {
+
+            region.imageOffset = { 0, 0, 0 };
+            region.imageExtent = { (uint32_t)ptexture->width(), (uint32_t)ptexture->height(), 1 };
+
+         }
+         else
+         {
+            region.imageOffset = {
+   (int32_t)rectangleSubImage.left(),
+   (int32_t)rectangleSubImage.top(), 0 };
+            region.imageExtent = {
+               (uint32_t)rectangleSubImage.width(),
+               (uint32_t)rectangleSubImage.height(), 1};
+
+
+         }
 
       }
 
@@ -2349,7 +2360,103 @@ namespace gpu_vulkan
          iRegionCount,
          regions);
 
+      pcommandbuffer->m_particleaHold.add(pbuffer);
+
    }
+
+
+   //void context::copyBufferToImage(
+   //   ::gpu::command_buffer* pgpucommandbuffer,
+   //   ::gpu::pixmap* pgpupixmap, ::gpu_vulkan::buffer* pbuffer)
+   //   //VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
+   //{
+
+   //   //auto pcommandbuffer = beginSingleTimeCommands();
+
+   //   ::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
+
+   //   ::cast < ::gpu_vulkan::texture > ptexture = pgpupixmap->m_pgputexture;
+
+   //   ptexture->_set_state(pcommandbuffer,
+   //      {
+
+   //         VK_ACCESS_TRANSFER_WRITE_BIT,
+   //         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+   //         VK_PIPELINE_STAGE_TRANSFER_BIT
+
+   //      });
+
+   //   VkBufferImageCopy region;
+
+   //   int iRegionCount = 1;
+
+   //   //if (ptexture->m_etype == ::gpu::texture::e_type_cube_map)
+   //   //{
+
+   //   //   iRegionCount = 6;
+
+   //   //   auto texWidth = (uint32_t)ptexture->width();
+
+   //   //   auto texHeight = (uint32_t)ptexture->height();
+
+   //   //   auto layerarea = texWidth * texHeight * 4;
+
+   //   //   for (uint32_t face = 0; face < 6; face++)
+   //   //   {
+
+   //   //      auto& region = regions[face];
+
+   //   //      memset(&region, 0, sizeof(region));
+
+   //   //      region.bufferOffset = layerarea * face;
+   //   //      region.bufferRowLength = 0;
+   //   //      region.bufferImageHeight = 0;
+   //   //      region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   //   //      region.imageSubresource.mipLevel = 0;
+   //   //      region.imageSubresource.baseArrayLayer = face;
+   //   //      region.imageSubresource.layerCount = 1;
+   //   //      region.imageOffset = { 0, 0, 0 };
+   //   //      region.imageExtent = { texWidth, texHeight, 1 };
+
+   //   //   }
+
+   //   //}
+   //   //else
+   //   {
+
+   //      //iRegionCount = 1;
+
+   //      //auto& region = regions[0];
+
+   //      memset(&region, 0, sizeof(region));
+
+   //      region.bufferOffset = 0;
+   //      region.bufferRowLength = 0;
+   //      region.bufferImageHeight = 0;
+
+   //      region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   //      region.imageSubresource.mipLevel = 0;
+   //      region.imageSubresource.baseArrayLayer = 0;
+   //      region.imageSubresource.layerCount = 1;
+
+   //      region.imageOffset = {
+   //         (int32_t)pgpupixmap->m_rectangle.left(),
+   //         (int32_t)pgpupixmap->m_rectangle.top(), 0 };
+   //      region.imageExtent = {
+   //         (uint32_t)pgpupixmap->m_rectangle.width(),
+   //         (uint32_t)pgpupixmap->m_rectangle.height(), 1 };
+
+   //   }
+
+   //   vkCmdCopyBufferToImage(
+   //      pcommandbuffer->m_vkcommandbuffer,
+   //      pbuffer->m_vkbuffer,
+   //      ptexture->m_vkimage,
+   //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+   //      iRegionCount,
+   //      &region);
+
+   //}
 
 
    void context::createImageWithInfo(
@@ -2656,14 +2763,12 @@ namespace gpu_vulkan
 
       ///vkResetFences(this->logicalDevice(), 1, &fence);
 
-      auto pcommandbuffer = this->beginSingleTimeCommands();
+      ::pointer < command_buffer > pcommandbuffer = this->beginSingleTimeCommands();
 
       ::gpu::scoped_command_buffer scopedcommanbuffer(pcommandbuffer);
       // pcommandbuffer->begin_command_buffer(false);
 
-
-
-      if (!m_pshaderBlend3)
+      if (::nok(m_pshaderBlend3))
       {
 
          unsigned int full_screen_triangle_vertex_shader[] = {
@@ -2674,7 +2779,7 @@ namespace gpu_vulkan
 #include "shader/blend2.frag.spv.inl"
          };
 
-         __defer_construct_new(m_pshaderBlend3);
+         øconstruct(m_pshaderBlend3);
 
          m_pshaderBlend3->m_bEnableBlend = true;
          m_pshaderBlend3->m_bindingSampler.set();
@@ -2982,7 +3087,7 @@ namespace gpu_vulkan
             {},
             {},
             {},
-            &fence
+            & fence
          );
 
          if (fence)
@@ -3076,61 +3181,61 @@ namespace gpu_vulkan
 
       {
 
-      ::cast < ::gpu_vulkan::texture > ptextureDst = ptextureTarget;
+         ::cast < ::gpu_vulkan::texture > ptextureDst = ptextureTarget;
 
-      ::cast < ::gpu_vulkan::texture > ptextureSrc = ptextureSource;
+         ::cast < ::gpu_vulkan::texture > ptextureSrc = ptextureSource;
 
-      auto scopedstateDst = ptextureDst->_scoped_state(
-         pcommandbuffer,
-         {
-            VK_ACCESS_TRANSFER_WRITE_BIT,
-         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-         VK_PIPELINE_STAGE_TRANSFER_BIT
-         }
-      );
+         auto scopedstateDst = ptextureDst->_scoped_state(
+            pcommandbuffer,
+            {
+               VK_ACCESS_TRANSFER_WRITE_BIT,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT
+            }
+         );
 
-      auto scopedstateSrc = ptextureSrc->_scoped_state(
-         pcommandbuffer,
-         {
-         VK_ACCESS_TRANSFER_READ_BIT,
-         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-         VK_PIPELINE_STAGE_TRANSFER_BIT
-         }
-      );
+         auto scopedstateSrc = ptextureSrc->_scoped_state(
+            pcommandbuffer,
+            {
+            VK_ACCESS_TRANSFER_READ_BIT,
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT
+            }
+         );
 
-      auto srcImage = ptextureSrc->m_vkimage;
+         auto srcImage = ptextureSrc->m_vkimage;
 
-      auto dstImage = ptextureDst->m_vkimage;
+         auto dstImage = ptextureDst->m_vkimage;
 
-      // Copy region
-      VkImageCopy copyRegion = {
-          .srcSubresource = {
-              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-              .mipLevel = 0,
-              .baseArrayLayer = 0,
-              .layerCount = 1,
-          },
-          .srcOffset = { 0, 0, 0 },
-          .dstSubresource = {
-              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-              .mipLevel = 0,
-              .baseArrayLayer = 0,
-              .layerCount = 1,
-          },
-          .dstOffset = { 0, 0, 0 },
-          .extent =
-         {
-            (uint32_t)m_rectangle.width(),
-            (uint32_t)m_rectangle.height(),
-            1},
-      };
+         // Copy region
+         VkImageCopy copyRegion = {
+             .srcSubresource = {
+                 .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                 .mipLevel = 0,
+                 .baseArrayLayer = 0,
+                 .layerCount = 1,
+             },
+             .srcOffset = { 0, 0, 0 },
+             .dstSubresource = {
+                 .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                 .mipLevel = 0,
+                 .baseArrayLayer = 0,
+                 .layerCount = 1,
+             },
+             .dstOffset = { 0, 0, 0 },
+             .extent =
+            {
+               (uint32_t)m_rectangle.width(),
+               (uint32_t)m_rectangle.height(),
+               1},
+         };
 
-      vkCmdCopyImage(pcommandbuffer->m_vkcommandbuffer,
-         srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-         dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-         1, &copyRegion);
+         vkCmdCopyImage(pcommandbuffer->m_vkcommandbuffer,
+            srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            1, &copyRegion);
 
-   }
+      }
 
       if (!m_pgpurenderer->isFrameStarted)
       {
