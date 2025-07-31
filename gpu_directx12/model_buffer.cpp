@@ -199,7 +199,7 @@ namespace gpu_directx12
       ::cast < memory_buffer > pbufferVertex = m_pbufferVertex;
 
       m_vertexbufferview.BufferLocation = pbufferVertex->m_presource->GetGPUVirtualAddress();
-      m_vertexbufferview.StrideInBytes = sizeof(::graphics3d::Vertex);
+      m_vertexbufferview.StrideInBytes = iTypeSize;
       m_vertexbufferview.SizeInBytes = (UINT) ( iTypeSize * iVertexCount);
 
 

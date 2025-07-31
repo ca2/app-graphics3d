@@ -116,7 +116,8 @@ namespace gpu_directx12
             auto name = pproperty->m_pszName;
             auto type = pproperty->m_etype;
             auto offset = iNextOffset;
-            iNextOffset = offset + input_layout_aligned_property_size(pproperty->get_item_size());
+            int iAlignedSize = input_layout_aligned_property_size(pproperty->get_item_size());
+            iNextOffset = offset + iAlignedSize;
 
             D3D12_INPUT_ELEMENT_DESC desc{};
 

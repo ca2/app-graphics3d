@@ -171,7 +171,7 @@ namespace gpu_directx12
             if (m_etype == e_type_cube_map)
             {
                iCount = 6;
-               if (imagea.first()->width() != rectangleTarget.width() * 6
+               if (imagea.first()->width() != rectangleTarget.width()
                   || imagea.first()->height() != rectangleTarget.height())
                {
 

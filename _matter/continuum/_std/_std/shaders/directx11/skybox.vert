@@ -17,6 +17,8 @@ cbuffer GlobalUbo : register(b0) {
 
 struct VertexInput {
     float3 position : POSITION;
+    float3 color : COLOR;
+    float2 uv : TEXCOORD0;
 };
 
 struct VertexOutput {
