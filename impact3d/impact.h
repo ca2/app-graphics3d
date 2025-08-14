@@ -6,7 +6,7 @@
 #include "acme/prototype/geometry3d/location.h"
 #include "acme/prototype/time/frequency.h"
 #include "apex/platform/app_consumer.h"
-#include "base/user/user/impact.h"
+#include "berg/user/user/impact.h"
 
 
 namespace graphics3d_impact3d

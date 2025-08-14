@@ -1,6 +1,6 @@
 #include "framework.h"
 #include "pane_impact.h"
-#include "base/user/user/single_document_template.h"
+#include "berg/user/user/single_document_template.h"
 
 
 namespace graphics3d_impact3d

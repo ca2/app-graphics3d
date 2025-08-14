@@ -6,8 +6,8 @@
 #include "pane_impact.h"
 #include "main_frame.h"
 #include "acme/handler/request.h"
-#include "base/user/user/single_document_template.h"
-#include "base/user/user/multiple_document_template.h"
+#include "berg/user/user/single_document_template.h"
+#include "berg/user/user/multiple_document_template.h"
 
 
 __IMPLEMENT_APPLICATION_RELEASE_TIME(graphics3d_hello3d);
