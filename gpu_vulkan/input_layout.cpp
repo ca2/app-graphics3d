@@ -25,11 +25,13 @@ namespace gpu_vulkan
    ::array<VkVertexInputBindingDescription> input_layout::_001GetVertexBindingDescriptions()
    {
 
-      ::array<VkVertexInputBindingDescription> bindingDescriptions(1, VkVertexInputBindingDescription{});
+      ::array<VkVertexInputBindingDescription> bindingDescriptions;
 
-      bindingDescriptions[0].binding = 0;
-      bindingDescriptions[0].stride = this->size();
-      bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+      auto & bindingDescription = bindingDescriptions.ø(0);
+
+      bindingDescription.binding = 0;
+      bindingDescription.stride = this->size();
+      bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
       return bindingDescriptions;
 

@@ -245,7 +245,7 @@ namespace gpu_directx12
    }
 
 
-   void device::_translate_shader(string_array& stra)
+   void device::_translate_shader(string_array_base& stra)
    {
 
       ::gpu::device::_translate_shader(stra);
@@ -1424,8 +1424,8 @@ namespace gpu_directx12
 
          if (infoQueue)
          {
-            //infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
-            //infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+            infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
             ////infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
          }
 

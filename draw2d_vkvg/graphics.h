@@ -572,6 +572,8 @@ namespace draw2d_vkvg
       bool _set(::draw2d::pen* ppen);
       bool _set(::draw2d::path* ppath);
       bool _set(::draw2d::brush* pbrush, double x = 0.0, double y = 0.0);
+      
+      bool _set(const ::draw2d::enum_item& eitem) override;
 
       bool _set(::geometry2d::item* pitem);
 

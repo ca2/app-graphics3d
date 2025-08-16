@@ -3606,6 +3606,14 @@ namespace draw2d_vkvg
    }
 
 
+   bool graphics::_set(const ::draw2d::enum_item& eitem)
+   {
+
+      return true;
+
+   }
+
+
    bool graphics::_set(::geometry2d::item* pitem)
    {
 
@@ -5149,7 +5157,7 @@ namespace draw2d_vkvg
          65535
       );
 
-      internal_draw_text(scopedstr, rectangle, e_null, e_null);
+      internal_draw_text(scopedstr, rectangle, {}, {});
 
       //return true;
 

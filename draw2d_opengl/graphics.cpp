@@ -2215,7 +2215,7 @@ void main() {
 
       float g_z = 0.0f; // Assuming z is 0 for 2D rendering, adjust as needed
 
-      ::preallocated_array < ::array < ::double_point >, 4 > pointa1;
+      ::preallocated_array_base < ::double_point_array, 4 > pointa1;
 
       rectangle.add_clockwise_edges(pointa1);
 
@@ -5493,83 +5493,87 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::line(double x1, double y1, double x2, double y2, ::draw2d::pen * ppen)
    {
 
-      auto pcontext = gpu_context();
+      ::gpu::graphics::line(x1, y1, x2, y2, ppen);
 
-      auto prenderer = pcontext->m_pgpurenderer;
+      return;
 
-      ::gpu::context_lock contextlock(pcontext);
+      //auto pcontext = gpu_context();
 
-      //__USES_TRANSFORM(pcontext);
+      //auto prenderer = pcontext->m_pgpurenderer;
 
-      auto pshader = rectangle_shader();
+      //::gpu::context_lock contextlock(pcontext);
 
-      float g_z = 0.0f; // Assuming z is 0 for 2D rendering, adjust as needed
+      ////__USES_TRANSFORM(pcontext);
 
-      ::double_point points1[2];
+      //auto pshader = rectangle_shader();
 
-      points1[0].x() = x1;
-      points1[0].y() = y1;
-      points1[1].x() = x2;
-      points1[1].y() = y2;
+      //float g_z = 0.0f; // Assuming z is 0 for 2D rendering, adjust as needed
 
-      __transform(points1[0]);
-      __transform(points1[1]);
+      //::double_point points1[2];
 
-      auto size = pcontext->m_rectangle.size();
+      //points1[0].x() = x1;
+      //points1[0].y() = y1;
+      //points1[1].x() = x2;
+      //points1[1].y() = y2;
 
-      //::geometry2d::matrix m;
-      //m.translate(0.5, -0.5);
-      //m.scale(2.0 / size.cx(), 2.0 / size.cy());
-      //m.translate(-1.0, -1.0);
+      //__transform(points1[0]);
+      //__transform(points1[1]);
 
-      ::double_point_array pointa;
+      //auto size = pcontext->m_rectangle.size();
 
-      ::double_point pointPen(ppen->m_dWidth, ppen->m_dWidth);
+      ////::geometry2d::matrix m;
+      ////m.translate(0.5, -0.5);
+      ////m.scale(2.0 / size.cx(), 2.0 / size.cy());
+      ////m.translate(-1.0, -1.0);
 
-      ::draw2d::make_line_triangles_cap_butt_square(
-         pointa,
-         points1[0],
-         points1[1],
-         pointPen);
-      
-      context_matrix().transform(pointa);
+      //::double_point_array pointa;
 
-      auto color = m_ppen->m_color;
+      //::double_point pointPen(ppen->m_dWidth, ppen->m_dWidth);
 
-      float fA = color.f32_opacity();
-      float fR = color.f32_red() * fA;
-      float fG = color.f32_green() * fA;
-      float fB = color.f32_blue() * fA;
+      //::draw2d::make_line_triangles_cap_butt_square(
+      //   pointa,
+      //   points1[0],
+      //   points1[1],
+      //   pointPen);
+      //
+      //context_matrix().transform(pointa);
 
-      ::array<::graphics3d::sequence2_color> quadVertices;
-      for(auto & point : pointa)
-         quadVertices.add({ {(float)point.x(), (float)point.y()}, {fR, fG, fB, fA} });
+      //auto color = m_ppen->m_color;
 
-      auto pmodelbuffer = model_buffer(::draw2d::e_model_line);
+      //float fA = color.f32_opacity();
+      //float fR = color.f32_red() * fA;
+      //float fG = color.f32_green() * fA;
+      //float fB = color.f32_blue() * fA;
 
-      if (pmodelbuffer->is_new())
-      {
+      //::array<::graphics3d::sequence2_color> quadVertices;
+      //for(auto & point : pointa)
+      //   quadVertices.add({ {(float)point.x(), (float)point.y()}, {fR, fG, fB, fA} });
 
-         pmodelbuffer->create_vertex_array< ::graphics3d::sequence2_color>(6);
+      //auto pmodelbuffer = model_buffer(::draw2d::e_model_line);
 
-      }
+      //if (pmodelbuffer->is_new())
+      //{
 
-      pmodelbuffer->set_vertices(quadVertices);
+      //   pmodelbuffer->create_vertex_array< ::graphics3d::sequence2_color>(6);
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //}
 
-      pcontext->defer_bind(pshader);
+      //pmodelbuffer->set_vertices(quadVertices);
 
-      pmodelbuffer->bind(pcommandbuffer);
+      //auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
-      pmodelbuffer->draw(pcommandbuffer);
+      //pcontext->defer_bind(pshader);
 
-      pmodelbuffer->unbind(pcommandbuffer);
+      //pmodelbuffer->bind(pcommandbuffer);
 
-      pcontext->defer_unbind(pshader);
+      //pmodelbuffer->draw(pcommandbuffer);
+
+      //pmodelbuffer->unbind(pcommandbuffer);
+
+      //pcontext->defer_unbind(pshader);
  
-      m_point.x() = x2;
-      m_point.y() = y2;
+      //m_point.x() = x2;
+      //m_point.y() = y2;
 
    }
 

@@ -24,7 +24,7 @@ namespace app_graphics3d_MyPlace2025
 
 
       ::user::plain_edit *                            m_prollfps;
-      address_array < ::user::check_box * >           m_checkptraBilbo;
+      address_array_base < ::user::check_box * >      m_checkptraBilbo;
 
 
       pane_impact();

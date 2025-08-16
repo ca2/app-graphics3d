@@ -118,7 +118,7 @@ namespace app_graphics3d_continuum
    void application::term_application()
    {
 
-      ::base::application::term_application();
+      ::berg::application::term_application();
 
    }
 
@@ -203,6 +203,8 @@ namespace app_graphics3d_continuum
 
       auto playoutLine = create_line_layout(pparent, e_orientation_horizontal);
 
+      playoutLine->m_atomMatterId = "::user::line_layout(1)";
+
       {
 
          auto pcheckbox = create_check_box<::user::check_box>(playoutLine, "");
@@ -244,6 +246,12 @@ namespace app_graphics3d_continuum
       {
 
          auto playoutSkyboxCheckbox = create_line_layout(pparent, e_orientation_horizontal);
+
+         ::string strId;
+
+         strId.formatf("(2)(%d)", i);
+
+         playoutSkyboxCheckbox->m_atomMatterId = "::user::line_layout" + strId;
 
          auto pcheckbox = create_check_box<::user::check_box>(playoutSkyboxCheckbox, "");
 

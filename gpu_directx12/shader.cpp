@@ -144,8 +144,8 @@ namespace gpu_directx12
                featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
             }
 
-            ::array<CD3DX12_DESCRIPTOR_RANGE1 > ranges(pre_allocate_t{}, 64);
-            ::array<CD3DX12_ROOT_PARAMETER1> rootParameters(pre_allocate_t{}, 64);
+            preallocated_array_base < ::array<CD3DX12_DESCRIPTOR_RANGE1 >, 64> ranges;
+            preallocated_array_base < ::array<CD3DX12_ROOT_PARAMETER1>, 64> rootParameters;
 
             // Static sampler at s0, space0
             //::array< CD3DX12_STATIC_SAMPLER_DESC > staticSamplers(pre_allocate_t{}, 64);
@@ -707,7 +707,7 @@ namespace gpu_directx12
 
       if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
       {
-         int iNumberOfObjects = 10;
+         int iNumberOfObjects = 256;
          UINT constantBufferSize = ::directx12::Align256((UINT) m_propertiesPush.size()) * iNumberOfObjects;    // CB size is required to be 256-byte aligned.
          CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
          auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
@@ -829,6 +829,14 @@ namespace gpu_directx12
             ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
          pcommandlist->SetGraphicsRootDescriptorTable(2,
             ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
+      }
+      else if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
+      {
+         pcommandlist->SetGraphicsRootDescriptorTable(1,
+            ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
+         pcommandlist->SetGraphicsRootDescriptorTable(1,
+            ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
+
       }
       else
       {

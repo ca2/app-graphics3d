@@ -1701,7 +1701,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::_translate_shader(string_array& stra)
+   void context::_translate_shader(string_array_base & stra)
    {
 
       gpu::context::_translate_shader(stra);

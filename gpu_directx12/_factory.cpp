@@ -4,6 +4,7 @@
 #include "program.h"
 #include "shader.h"
 #include "cpu_buffer.h"
+#include "frame_storage.h"
 #include "input_layout.h"
 #include "memory_buffer.h"
 #include "model_buffer.h"
@@ -14,6 +15,7 @@
 #include "swap_chain.h"
 #include "texture.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/pixmap.h"
 //#include "direct2d_draw2d_swap_chain.h"
 
 
@@ -45,6 +47,13 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu_directx12::model_buffer, ::gpu::model_buffer >();
    pfactory->add_factory_item < ::gpu_directx12::command_buffer, ::gpu::command_buffer >();
    pfactory->add_factory_item < ::gpu::layer >();
+
+   pfactory->add_factory_item < ::gpu::pixmap >();
+
+
+   pfactory->add_factory_item < ::gpu_directx12::frame_storage, ::gpu::frame_storage >();
+
+
 }
 
 

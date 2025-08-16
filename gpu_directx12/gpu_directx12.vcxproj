@@ -703,6 +703,7 @@
     <ClInclude Include="aaa_direct2d_draw2d_swap_chain.h" />
     <ClInclude Include="dxgi_debug.h" />
     <ClInclude Include="frame.h" />
+    <ClInclude Include="frame_storage.h" />
     <ClInclude Include="initializers.h" />
     <ClInclude Include="input_layout.h" />
     <ClInclude Include="memory_buffer.h" />
@@ -734,6 +735,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="frame_storage.cpp" />
+    <ClCompile Include="object.cpp" />
     <ClCompile Include="assimp.cpp" />
     <ClCompile Include="buffer.cpp" />
     <ClCompile Include="command_buffer.cpp" />
@@ -758,7 +761,6 @@
     <ClCompile Include="input_layout.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="model_buffer.cpp" />
-    <ClCompile Include="object.cpp" />
     <ClCompile Include="offscreen_render_target_view.cpp" />
     <ClCompile Include="operating_system\windows.cpp" />
     <ClCompile Include="physical_device.cpp" />

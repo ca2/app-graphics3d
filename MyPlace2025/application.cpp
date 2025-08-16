@@ -105,7 +105,7 @@ namespace app_graphics3d_MyPlace2025
    void application::term_application()
    {
 
-      ::base::application::term_application();
+      ::berg::application::term_application();
 
    }
 

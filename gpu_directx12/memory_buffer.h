@@ -16,10 +16,13 @@ namespace gpu_directx12
    {
    public:
 
-
+      bool m_bStatic;
 
       ::comptr<ID3D12Resource> m_presource;
       ::comptr<ID3D12Resource> m_presourceUpload;
+
+      int m_iBufferOffset;
+      int m_iSizeMapped;
 
       //context* m_pgpucontext;
       //void* m_mapped = nullptr;

@@ -122,6 +122,9 @@
     <ClInclude Include="memory_buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="frame_storage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -152,9 +155,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cpu_buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="assimp.cpp">
@@ -224,6 +224,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="memory_buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="frame_storage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,8 @@
 // From gpu_directx11/memory_buffer.cpp by
 // camilo on 2025-07-16 06:23 <3ThomasBorregaardSørensen!!
 #include "framework.h"
+#include "device.h"
+#include "frame_storage.h"
 #include "gpu_directx12/context.h"
 #include "model_buffer.h"
 #include "bred/gpu/frame.h"
@@ -21,6 +23,7 @@ namespace gpu_directx12
    memory_buffer::memory_buffer()
    {
 
+      m_bStatic = false;
 
    }
 
@@ -43,86 +46,100 @@ namespace gpu_directx12
       if (etype == ::gpu::memory_buffer::e_type_vertex_buffer)
       {
 
-         auto vertexBufferSize = (UINT)sizeStatic;
-
-         // Create default heap resources
-         CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
-
-         CD3DX12_RESOURCE_DESC vbDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-
-         auto hresultCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
-            &defaultHeap, D3D12_HEAP_FLAG_NONE,
-            &vbDesc, D3D12_RESOURCE_STATE_COMMON,
-            nullptr, __interface_of(m_presource));
-
-         pdevice->defer_throw_hresult(hresultCreateCommittedResource);
-
-         // Create upload heap resources
-         CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
-
-         auto hresultCreateCommittedResourceUpload = pdevice->m_pdevice->CreateCommittedResource(
-            &uploadHeap, D3D12_HEAP_FLAG_NONE,
-            &vbDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr, __interface_of(m_presourceUpload));
-
-         pdevice->defer_throw_hresult(hresultCreateCommittedResourceUpload);
-
-         // Copy vertex data
-         void* data = nullptr;
-         D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
-         m_presourceUpload->Map(0, &range, &data);
-         memcpy(data, dataStatic, vertexBufferSize);
-         m_presourceUpload->Unmap(0, nullptr);
-
-         ::cast < ::gpu_directx12::command_buffer > pcommandbufferLoading = m_pmodelbuffer->m_pcommandbufferLoading;
-
-         if (!pcommandbufferLoading)
+         if (dataStatic)
          {
 
-            pcommandbufferLoading = m_pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+            m_bStatic = true;
+
+            auto vertexBufferSize = (UINT)sizeStatic;
+
+            // Create default heap resources
+            CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
+
+            CD3DX12_RESOURCE_DESC vbDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
+
+            auto hresultCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+               &defaultHeap, D3D12_HEAP_FLAG_NONE,
+               &vbDesc, D3D12_RESOURCE_STATE_COMMON,
+               nullptr, __interface_of(m_presource));
+
+            pdevice->defer_throw_hresult(hresultCreateCommittedResource);
+
+            // Create upload heap resources
+            CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
+
+            auto hresultCreateCommittedResourceUpload = pdevice->m_pdevice->CreateCommittedResource(
+               &uploadHeap, D3D12_HEAP_FLAG_NONE,
+               &vbDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
+               nullptr, __interface_of(m_presourceUpload));
+
+            pdevice->defer_throw_hresult(hresultCreateCommittedResourceUpload);
+
+            // Copy vertex data
+            void* data = nullptr;
+            D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
+            m_presourceUpload->Map(0, &range, &data);
+            memcpy(data, dataStatic, vertexBufferSize);
+            m_presourceUpload->Unmap(0, nullptr);
+
+            ::cast < ::gpu_directx12::command_buffer > pcommandbufferLoading = m_pmodelbuffer->m_pcommandbufferLoading;
+
+            if (!pcommandbufferLoading)
+            {
+
+               pcommandbufferLoading = m_pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+            }
+
+            auto pcommandlist = pcommandbufferLoading->m_pcommandlist;
+
+            pcommandlist->CopyBufferRegion(m_presource, 0, m_presourceUpload, 0, vertexBufferSize);
 
          }
-
-         auto pcommandlist = pcommandbufferLoading->m_pcommandlist;
-
-         pcommandlist->CopyBufferRegion(m_presource, 0, m_presourceUpload, 0, vertexBufferSize);
 
       }
       else if (etype == ::gpu::memory_buffer::e_type_index_buffer)
       {
 
-         auto indexBufferSize = (UINT)sizeStatic;
+         if (dataStatic)
+         {
 
-         CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
-         CD3DX12_RESOURCE_DESC ibDesc = CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize);
+            m_bStatic = true;
 
-         auto hresultCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
-            &defaultHeap, D3D12_HEAP_FLAG_NONE,
-            &ibDesc, D3D12_RESOURCE_STATE_COMMON,
-            nullptr, __interface_of(m_presource));
+            auto indexBufferSize = (UINT)sizeStatic;
 
-         pdevice->defer_throw_hresult(hresultCreateCommittedResource);
+            CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
+            CD3DX12_RESOURCE_DESC ibDesc = CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize);
 
-         CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
+            auto hresultCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+               &defaultHeap, D3D12_HEAP_FLAG_NONE,
+               &ibDesc, D3D12_RESOURCE_STATE_COMMON,
+               nullptr, __interface_of(m_presource));
 
-         auto hresultCreateCommittedResourceUpload = pdevice->m_pdevice->CreateCommittedResource(
-            &uploadHeap, D3D12_HEAP_FLAG_NONE,
-            &ibDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr, __interface_of(m_presourceUpload));
+            pdevice->defer_throw_hresult(hresultCreateCommittedResource);
 
-         pdevice->defer_throw_hresult(hresultCreateCommittedResourceUpload);
+            CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
 
-         void* data = nullptr;
-         D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
-         m_presourceUpload->Map(0, &range, &data);
-         memcpy(data, dataStatic, indexBufferSize);
-         m_presourceUpload->Unmap(0, nullptr);
+            auto hresultCreateCommittedResourceUpload = pdevice->m_pdevice->CreateCommittedResource(
+               &uploadHeap, D3D12_HEAP_FLAG_NONE,
+               &ibDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
+               nullptr, __interface_of(m_presourceUpload));
 
-         ::cast < ::gpu_directx12::command_buffer> pcommandbufferLoading = m_pmodelbuffer->m_pcommandbufferLoading;
+            pdevice->defer_throw_hresult(hresultCreateCommittedResourceUpload);
 
-         auto pcommandlistLoading = pcommandbufferLoading->m_pcommandlist;
+            void* data = nullptr;
+            D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
+            m_presourceUpload->Map(0, &range, &data);
+            memcpy(data, dataStatic, indexBufferSize);
+            m_presourceUpload->Unmap(0, nullptr);
 
-         pcommandlistLoading->CopyBufferRegion(m_presource, 0, m_presourceUpload, 0, indexBufferSize);
+            ::cast < ::gpu_directx12::command_buffer> pcommandbufferLoading = m_pmodelbuffer->m_pcommandbufferLoading;
+
+            auto pcommandlistLoading = pcommandbufferLoading->m_pcommandlist;
+
+            pcommandlistLoading->CopyBufferRegion(m_presource, 0, m_presourceUpload, 0, indexBufferSize);
+
+         }
 
       }
       else if (etype == ::gpu::memory_buffer::e_type_constant_buffer)
@@ -192,6 +209,19 @@ namespace gpu_directx12
 
    void* memory_buffer::_map(memsize start, memsize count)
    {
+
+      if (m_bStatic)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      ::cast < device > pdevice = m_pcontext->m_pgpudevice;
+
+      ::cast < frame_storage > pframestorage = pdevice->current_frame_storage();
+
+      pframestorage->map_allocate(this, count);
 
       return nullptr;
 

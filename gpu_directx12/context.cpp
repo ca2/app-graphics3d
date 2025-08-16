@@ -1482,7 +1482,7 @@ namespace gpu_directx12
    }
 
 
-   void context::_translate_shader(string_array& stra)
+   void context::_translate_shader(string_array_base& stra)
    {
 
       ::gpu::context::_translate_shader(stra);
