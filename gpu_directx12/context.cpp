@@ -511,6 +511,7 @@ namespace gpu_directx12
    ::pointer < ::gpu::command_buffer > context::beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer)
    {
 
+      return ::gpu::context::beginSingleTimeCommands(ecommandbuffer);
 
    }
 
@@ -518,6 +519,7 @@ namespace gpu_directx12
    void context::endSingleTimeCommands(::gpu::command_buffer* pcommandbuffer)
    {
 
+      ::gpu::context::endSingleTimeCommands(pcommandbuffer);
 
    }
 

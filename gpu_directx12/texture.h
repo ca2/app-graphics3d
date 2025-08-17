@@ -26,17 +26,17 @@ namespace gpu_directx12
          class damage
          {
          public:
-            D3D12_TEXTURE_COPY_LOCATION dstLoc;
-            D3D12_TEXTURE_COPY_LOCATION srcLoc;
-            CD3DX12_BOX srcBox;
+            D3D12_TEXTURE_COPY_LOCATION m_copylocationTarget;
+            D3D12_TEXTURE_COPY_LOCATION m_copylocationSource;
+            CD3DX12_BOX m_boxSource;
 
-            int m_left;
-            int m_top;
+            int m_iLeft;
+            int m_iTop;
 
             damage() :
-               dstLoc{},
-               srcLoc{},
-               srcBox{}
+               m_copylocationTarget{},
+               m_copylocationSource{},
+               m_boxSource{}
             {
 
 
@@ -46,20 +46,38 @@ namespace gpu_directx12
 
          };
 
+
+         void initialize_upload_buffer(texture* ptexture);
+
+         D3D12_RESOURCE_DESC m_descTexture;
+
+         UINT64 m_uUploadBufferSize = 0;
+         UINT64 m_uRowSizeInBytes = 0;
+         UINT   m_uNumRows = 0;
+
+         D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_footprint;
+
+
          ::array_base < damage > m_damagea;
 
          ::gpu_directx12::texture* m_ptexture;
          ::comptr<ID3D12Resource>         m_presourceUpload;
 
-         void* m_pMap;
+         void* m_pMap = nullptr;
 
          upload_buffer();
          ~upload_buffer();
 
 
+         void map();
+         void unmap();
+
+
          void on_end_frame() override;
 
          virtual void upload_damaged_regions();
+
+         void update_pixels(const ::int_rectangle& rectangle, const void* data);
 
       };
 

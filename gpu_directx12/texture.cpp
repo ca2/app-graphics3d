@@ -811,49 +811,92 @@ namespace gpu_directx12
 
    //}
 
+   texture::upload_buffer::upload_buffer()
+   {
+
+      m_pMap = nullptr;
+   }
+
+
+   texture::upload_buffer::~upload_buffer()
+   {
+
+      unmap();
+
+
+   }
+
+
+   void texture::upload_buffer::initialize_upload_buffer(texture* ptexture)
+   {
+
+      ::cast < renderer > prenderer = ptexture->m_pgpurenderer;
+
+      ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+
+      m_ptexture = ptexture;
+
+      auto presource = ptexture->m_presource.m_p;
+
+      // 2. Create an intermediate UPLOAD buffer big enough for this region
+      const UINT64 uploadBufferSize =
+         GetRequiredIntermediateSize(presource, 0, 1);
+
+      CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+      CD3DX12_RESOURCE_DESC   bufferDesc =
+         CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+
+      HRESULT hrCreateCommittedResource = 
+         pdevice->m_pdevice->CreateCommittedResource(
+         &heapProps,
+         D3D12_HEAP_FLAG_NONE,
+         &bufferDesc,
+         D3D12_RESOURCE_STATE_GENERIC_READ,
+         nullptr,
+         IID_PPV_ARGS(&m_presourceUpload));
+
+      ::defer_throw_hresult(hrCreateCommittedResource);
+
+      m_descTexture = presource->GetDesc();
+
+      pdevice->m_pdevice->GetCopyableFootprints(
+         &m_descTexture,      // texture description
+         0,             // first subresource
+         1,             // num subresources
+         0,             // base offset
+         &m_footprint,    // out: layout for subresource
+         &m_uNumRows,      // out: number of rows
+         &m_uRowSizeInBytes, // out: bytes per row (unpadded)
+         &m_uUploadBufferSize); // out: required buffer size
+
+
+   }
+
+
 
    texture::upload_buffer* texture::_get_upload_buffer()
    {
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
-
       ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
       auto pframestorage = pdevice->current_frame_storage();
 
-      auto& pparticle = pframestorage->m_mapResource[this][e_resource_upload_buffer];
+      auto& pobject = pframestorage->m_mapObject[this][::gpu::e_resource_upload_buffer];
 
-      if (!pparticle)
+      if (!pobject)
       {
 
          auto puploadbuffer = __allocate upload_buffer();
 
-         puploadbuffer->m_ptexture = this;
+         puploadbuffer->initialize_upload_buffer(this);
 
-         // 2. Create an intermediate UPLOAD buffer big enough for this region
-         const UINT64 uploadBufferSize =
-            GetRequiredIntermediateSize(m_presource, 0, 1);
-
-
-         CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
-         CD3DX12_RESOURCE_DESC   bufferDesc =
-            CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
-
-         pdevice->m_pdevice->CreateCommittedResource(
-            &heapProps,
-            D3D12_HEAP_FLAG_NONE,
-            &bufferDesc,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&puploadbuffer->m_presourceUpload));
-
-         pparticle = puploadbuffer;
+         pobject = puploadbuffer;
 
       }
 
-      ::cast < texture::upload_buffer > puploadbuffer = pparticle;
+      ::cast < texture::upload_buffer > puploadbuffer = pobject;
 
       return puploadbuffer;
 
@@ -868,15 +911,56 @@ namespace gpu_directx12
    }
 
 
-   void texture::upload_buffer::damage::update_copyable_region(ID3D12CommandList* pcommandlist)
+   void texture::upload_buffer::damage::update_copyable_region(ID3D12GraphicsCommandList* pcommandlist)
    {
 
       pcommandlist->CopyTextureRegion(
-         &dstLoc,
-         m_left, m_top, 0, // destination position
-         &srcLoc,
-         &srcBox
+         &m_copylocationTarget,
+         m_iLeft, m_iTop, 0, // destination position
+         &m_copylocationSource,
+         &m_boxSource
       );
+
+   }
+
+
+   void texture::upload_buffer::map()
+   {
+
+      if (!m_pMap)
+      {
+
+         if (!m_presourceUpload)
+         {
+
+            throw ::exception(error_wrong_state);
+
+         }
+
+         // 4. Copy CPU data → upload buffer → texture
+//    UpdateSubresources takes care of mapping & copying
+// Map and copy row by row
+//BYTE* pData = nullptr;
+         HRESULT hrUploadResourceMap = m_presourceUpload->Map(0, nullptr, reinterpret_cast<void**>(&m_pMap));
+
+         ::defer_throw_hresult(hrUploadResourceMap);
+
+      }
+
+   }
+
+
+   void texture::upload_buffer::unmap()
+   {
+
+      if (m_pMap)
+      {
+
+         m_presourceUpload->Unmap(0, nullptr);
+
+         m_pMap = nullptr;
+
+      }
 
    }
 
@@ -884,17 +968,103 @@ namespace gpu_directx12
    void texture::upload_buffer::upload_damaged_regions()
    {
 
-      ::cast < renderer > prenderer = m_pgpurenderer;
+      if (m_damagea.has_element())
+      {
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getEndOfFrameCommandBuffer(::gpu::current_frame());
+         unmap();
 
-      pcommandbuffer->m_pcommandlist->CopyTextureRegion(
-         &dstLoc,
-         rectangle.left(), rectangle.top(), 0, // destination position
-         &srcLoc,
-         &srcBox
-      );
 
+         ::cast < renderer > prenderer = m_ptexture->m_pgpurenderer;
+
+         ::cast < context > pcontext = prenderer->m_pgpucontext;
+
+         ::pointer < command_buffer > pcommandbuffer = pcontext->beginSingleTimeCommands();
+
+         {
+
+            texture_guard guard(
+               pcommandbuffer->m_pcommandlist,
+               m_ptexture,
+               D3D12_RESOURCE_STATE_COPY_DEST);
+
+            for (auto& damage : m_damagea)
+            {
+
+               try
+               {
+
+                  damage.update_copyable_region(pcommandbuffer->m_pcommandlist);
+
+               }
+               catch (...)
+               {
+
+               }
+
+            }
+
+            m_damagea.clear();
+
+         }
+
+         pcontext->endSingleTimeCommands(pcommandbuffer);
+
+      }
+
+   }
+
+
+   void texture::upload_buffer::update_pixels(const ::int_rectangle& rectangle, const void* data)
+   {
+
+      map();
+
+      auto bytesPerPixel = 4;
+
+      //// 1. Describe the subresource we want to update
+      //D3D12_SUBRESOURCE_DATA subresource = {};
+      //subresource.pData = data;
+      //subresource.RowPitch = rectangle.width() * 4;          // bytes per row in CPU buffer
+      //subresource.SlicePitch = rectangle.width() * 4 * rectangle.height();  // total size of region
+
+      UINT srcRowPitch = rectangle.width() * bytesPerPixel;
+      BYTE* dst = (BYTE *) m_pMap + m_footprint.Offset + 
+         rectangle.left() * bytesPerPixel
+         + rectangle.top() * m_footprint.Footprint.RowPitch;
+
+      auto cpuPixels = data;
+
+      for (UINT y = 0; y < rectangle.height(); y++)
+      {
+         memcpy(
+            dst + y * m_footprint.Footprint.RowPitch,
+            (const BYTE*)cpuPixels + y * srcRowPitch,
+            srcRowPitch
+         );
+      }
+
+      auto & damageNew = m_damagea.add_new();
+      //damage damage;
+      // Copy into texture
+      //D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
+      damageNew.m_copylocationTarget.pResource = m_ptexture->m_presource;
+      damageNew.m_copylocationTarget.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+      damageNew.m_copylocationTarget.SubresourceIndex = 0;
+
+      //D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
+      damageNew.m_copylocationSource.pResource = m_presourceUpload;
+      damageNew.m_copylocationSource.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+      damageNew.m_copylocationSource.PlacedFootprint = m_footprint;
+
+      damageNew.m_boxSource = CD3DX12_BOX(
+         rectangle.left(), rectangle.top(),
+         0, rectangle.width(), rectangle.height(), 1);
+
+
+      
+      // ⚠️ caller is responsible for:
+      // - Transitioning dstTexture into COPY_DEST before this call
+      // - Transitioning dstTexture back to usable state after this call
 
 
    }
@@ -903,88 +1073,20 @@ namespace gpu_directx12
    void texture::set_pixels(const ::int_rectangle& rectangle, const void* data)
    {
 
-      ::cast < renderer > prenderer = m_pgpurenderer;
+      //::cast < renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
-      ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
-
-      auto bytesPerPixel = 4;
-
-
-      //// 1. Describe the subresource we want to update
-      //D3D12_SUBRESOURCE_DATA subresource = {};
-      //subresource.pData = data;
-      //subresource.RowPitch = rectangle.width() * 4;          // bytes per row in CPU buffer
-      //subresource.SlicePitch = rectangle.width() * 4 * rectangle.height();  // total size of region
+      //::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
       auto puploadbuffer = _get_upload_buffer();
 
-      // 3. Transition the texture into COPY_DEST
-      _new_state(pcommandbuffer->m_pcommandlist,
-         D3D12_RESOURCE_STATE_COPY_DEST);
+      //D3D12_RESOURCE_DESC texDesc = m_presource->GetDesc();
 
 
-      D3D12_RESOURCE_DESC texDesc = m_presource->GetDesc();
+      puploadbuffer->update_pixels(rectangle, data);
 
-      UINT64 uploadBufferSize = 0;
-      UINT64 rowSizeInBytes = 0;
-      UINT   numRows = 0;
-
-      D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
-      pdevice->m_pdevice->GetCopyableFootprints(
-         &texDesc,      // texture description
-         0,             // first subresource
-         1,             // num subresources
-         0,             // base offset
-         &footprint,    // out: layout for subresource
-         &numRows,      // out: number of rows
-         &rowSizeInBytes, // out: bytes per row (unpadded)
-         &uploadBufferSize); // out: required buffer size
-
-      // 4. Copy CPU data → upload buffer → texture
-      //    UpdateSubresources takes care of mapping & copying
-      // Map and copy row by row
-      BYTE* pData = nullptr;
-      m_presourceUpload->Map(0, nullptr, reinterpret_cast<void**>(&pData));
-
-
-
-      UINT srcRowPitch = rectangle.width() * bytesPerPixel;
-      BYTE* dst = pData + footprint.Offset;
-
-      auto cpuPixels = data;
-
-      for (UINT y = 0; y < rectangle.height(); y++)
-      {
-         memcpy(
-            dst + y * footprint.Footprint.RowPitch,
-            (const BYTE*)cpuPixels + y * srcRowPitch,
-            srcRowPitch
-         );
-      }
-
-      m_presourceUpload->Unmap(0, nullptr);
-
-      upload_buffer::damage damage;
-      // Copy into texture
-      //D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
-      damage.dstLoc.pResource = m_presource;
-      damage.dstLoc.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
-      damage.dstLoc.SubresourceIndex = 0;
-
-      //D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
-      damage.srcLoc.pResource = m_presourceUpload;
-      damage.srcLoc.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
-      damage.srcLoc.PlacedFootprint = footprint;
-
-      damage.srcBox = CD3DX12_BOX(0, 0, 0, rectangle.width(), rectangle.height(), 1);
-
-
-      puploadbuffer->m_damagea.add(damage);
-      // ⚠️ caller is responsible for:
-      // - Transitioning dstTexture into COPY_DEST before this call
-      // - Transitioning dstTexture back to usable state after this call
+      puploadbuffer->map();
 
 
    }

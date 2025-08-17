@@ -14,6 +14,7 @@
 #include "frame.h"
 #include "swap_chain.h"
 #include "texture.h"
+#include "bred/gpu/frame_ephemeral.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
 //#include "direct2d_draw2d_swap_chain.h"
@@ -52,6 +53,8 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
 
 
    pfactory->add_factory_item < ::gpu_directx12::frame_storage, ::gpu::frame_storage >();
+
+   pfactory->add_factory_item < ::gpu::frame_ephemeral >();
 
 
 }
