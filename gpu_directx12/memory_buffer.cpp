@@ -23,7 +23,7 @@ namespace gpu_directx12
    memory_buffer::memory_buffer()
    {
 
-      m_bStatic = false;
+      ///m_bStatic = false;
 
    }
 
@@ -41,15 +41,58 @@ namespace gpu_directx12
 
       auto etype = m_etype;
 
+      m_bDynamic = true;
+
       ::cast < ::gpu_directx12::device > pdevice = m_pcontext->m_pgpudevice;
 
-      if (etype == ::gpu::memory_buffer::e_type_vertex_buffer)
+      if (etype == ::gpu::memory_buffer::e_type_shared_dynamic_vertex_buffer)
+      {
+
+         UINT bufSize = m_size; // number of vertices the buffer can hold
+
+         // Describe heap (UPLOAD so CPU can write directly)
+         D3D12_HEAP_PROPERTIES heapProps = {};
+         heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+         D3D12_RESOURCE_DESC desc = {};
+         desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+         desc.Width = bufSize;
+         desc.Height = 1;
+         desc.DepthOrArraySize = 1;
+         desc.MipLevels = 1;
+         desc.SampleDesc.Count = 1;
+         desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+         // Create upload buffer
+         HRESULT hresultCreateCommittedResource =
+            pdevice->m_pdevice->CreateCommittedResource(
+               &heapProps,
+               D3D12_HEAP_FLAG_NONE,
+               &desc,
+               D3D12_RESOURCE_STATE_GENERIC_READ,
+               nullptr,
+               __interface_of(m_presource));
+
+         ::defer_throw_hresult(hresultCreateCommittedResource);
+
+         // Persistent map
+         HRESULT hresultResourceMap =
+            m_presource->Map(
+               0, nullptr, reinterpret_cast<void**>(&m_pMap));
+
+         ::defer_throw_hresult(hresultResourceMap);
+         //m_currentOffset = 0;
+
+         m_bDynamic = true;
+
+      }
+      else if (etype == ::gpu::memory_buffer::e_type_vertex_buffer)
       {
 
          if (dataStatic)
          {
 
-            m_bStatic = true;
+            m_bDynamic = false;
 
             auto vertexBufferSize = (UINT)sizeStatic;
 
@@ -82,7 +125,7 @@ namespace gpu_directx12
             memcpy(data, dataStatic, vertexBufferSize);
             m_presourceUpload->Unmap(0, nullptr);
 
-            ::cast < ::gpu_directx12::command_buffer > pcommandbufferLoading = m_pmodelbuffer->m_pcommandbufferLoading;
+            ::cast < ::gpu_directx12::command_buffer > pcommandbufferLoading = m_pmodelbuffer->_defer_get_loading_command_buffer();
 
             if (!pcommandbufferLoading)
             {
@@ -104,7 +147,7 @@ namespace gpu_directx12
          if (dataStatic)
          {
 
-            m_bStatic = true;
+            m_bDynamic = false;
 
             auto indexBufferSize = (UINT)sizeStatic;
 
@@ -133,7 +176,7 @@ namespace gpu_directx12
             memcpy(data, dataStatic, indexBufferSize);
             m_presourceUpload->Unmap(0, nullptr);
 
-            ::cast < ::gpu_directx12::command_buffer> pcommandbufferLoading = m_pmodelbuffer->m_pcommandbufferLoading;
+            ::cast < ::gpu_directx12::command_buffer> pcommandbufferLoading = m_pmodelbuffer->_defer_get_loading_command_buffer();
 
             auto pcommandlistLoading = pcommandbufferLoading->m_pcommandlist;
 
@@ -210,7 +253,7 @@ namespace gpu_directx12
    void* memory_buffer::_map(memsize start, memsize count)
    {
 
-      if (m_bStatic)
+      if (!m_bDynamic)
       {
 
          throw ::exception(error_wrong_state);
@@ -223,7 +266,14 @@ namespace gpu_directx12
 
       pframestorage->map_allocate(this, count);
 
-      return nullptr;
+      if (m_pmodelbuffer)
+      {
+
+         m_pmodelbuffer->m_bNew = false;
+
+      }
+
+      return m_pMap;
 
       //::cast < ::gpu_directx11::context > pcontext = m_pcontext;
 
@@ -280,6 +330,46 @@ namespace gpu_directx12
    void memory_buffer::unbind()
    {
 
+
+   }
+
+
+   void memory_buffer::_complete_map_allocate(::gpu::memory_buffer* pmemorybufferSource, ::gpu::frame_storage * pgpuframestorage, int size)
+   {
+
+      ::gpu::memory_buffer::_complete_map_allocate(pmemorybufferSource, pgpuframestorage, size);
+
+      ::cast < memory_buffer > pbufferSource = pmemorybufferSource;
+
+      auto p = (unsigned char*)pmemorybufferSource->m_pMap;
+
+      m_pMap = p + pgpuframestorage->m_iBufferOffset;
+
+      m_presource = pbufferSource->m_presource;
+
+      if (m_bDynamic)
+      {
+
+         if (m_etype == e_type_vertex_buffer)
+         {
+
+            ::cast < model_buffer > pmodelbuffer = m_pmodelbuffer;
+
+            if (pmodelbuffer)
+            {
+
+               auto& vertexbufferview = pmodelbuffer->m_vertexbufferview;
+
+               vertexbufferview.BufferLocation = this->m_presource->GetGPUVirtualAddress() + pgpuframestorage->m_iBufferOffset;
+               vertexbufferview.StrideInBytes = pmodelbuffer->m_iVertexTypeSize;
+               vertexbufferview.SizeInBytes = pmodelbuffer->m_iVertexByteSize;
+
+            }
+
+         }
+
+
+      }
 
    }
 

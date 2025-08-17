@@ -454,7 +454,7 @@ namespace gpu_vulkan
 
    //   }
 
-   //   ::e_status estatus = __øconstruct(m_pbuffer);
+   //   ::e_status estatus = øconstruct(m_pbuffer);
 
    //   if (!estatus)
    //   {
@@ -668,7 +668,7 @@ namespace gpu_vulkan
    //bool context::defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, memsize size)
    //{
 
-   //   if (__defer_construct_new(pmemorybuffer))
+   //   if (ødefer_construct_new(pmemorybuffer))
    //   {
 
    //      pmemorybuffer->initialize_memory_buffer(this, size);
@@ -709,7 +709,7 @@ namespace gpu_vulkan
    ::pointer < ::gpu::context > allocate_system_context(::particle* pparticle)
    {
 
-      return pparticle->__create_new <context>();
+      return pparticle->øcreate_new <context>();
 
    }
 
@@ -2156,7 +2156,7 @@ namespace gpu_vulkan
       bufferInfo.usage = usage;
       bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-      auto pbuffer = __create_new < buffer >();
+      auto pbuffer = øcreate_new < buffer >();
 
       pbuffer->m_pgpucontext = this;
 
@@ -2211,15 +2211,17 @@ namespace gpu_vulkan
    ::pointer < ::gpu::command_buffer > context::beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer)
    {
 
-      ::pointer < command_buffer > pcommandbuffer;
+      return ::gpu::context::beginSingleTimeCommands(ecommandbuffer);
 
-      __defer_construct_new(pcommandbuffer);
+      //::pointer < command_buffer > pcommandbuffer;
 
-      pcommandbuffer->initialize_command_buffer(m_pgpurenderer->m_pgpurendertarget, ecommandbuffer);
+      //ødefer_construct_new(pcommandbuffer);
 
-      pcommandbuffer->begin_command_buffer(true);
+      //pcommandbuffer->initialize_command_buffer(m_pgpurenderer->m_pgpurendertarget, ecommandbuffer);
 
-      return pcommandbuffer;
+      //pcommandbuffer->begin_command_buffer(true);
+
+      //return pcommandbuffer;
 
    }
 
@@ -2627,7 +2629,7 @@ namespace gpu_vulkan
       for (int i = 0; i < m_uboBuffers.size(); i++)
       {
 
-         __defer_construct_new(m_uboBuffers[i]);
+         ødefer_construct_new(m_uboBuffers[i]);
 
          m_uboBuffers[i]->_initialize_buffer(
             this,

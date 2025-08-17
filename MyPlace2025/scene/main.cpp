@@ -31,7 +31,7 @@ namespace app_graphics3d_MyPlace2025
       auto pgpucontext = m_pengine->gpu_context();
 
       // Initialize shaders
-      __defer_construct(m_Shader);
+      ødefer_construct(m_Shader);
       
       m_Shader->initialize_shader(pgpucontext->m_pgpurenderer,
          "matter://shaders/default.vert",
@@ -40,7 +40,7 @@ namespace app_graphics3d_MyPlace2025
 
       //m_Shader->initialize(this);
 
-      __defer_construct(m_WallShader);
+      ødefer_construct(m_WallShader);
 
       m_WallShader->initialize_shader(pgpucontext->m_pgpurenderer,
          "matter://shaders/misc.vert",
@@ -97,7 +97,7 @@ namespace app_graphics3d_MyPlace2025
       m_Skybox->initialize_sky_box(m_pengine, cube);
 
       //// Initialize skybox shader
-      //__defer_construct(m_SkyboxShader);
+      //ødefer_construct(m_SkyboxShader);
 
       //m_SkyboxShader->initialize_shader(pgpucontext->m_pgpurenderer,
       //   "matter://shaders/skybox.vert",
@@ -239,18 +239,18 @@ namespace app_graphics3d_MyPlace2025
 
 
       // Create Cube mesh object
-      __defer_construct_new(m_BoxMesh);
+      ødefer_construct_new(m_BoxMesh);
 
       // Create Plane mesh object
-      __defer_construct_new(m_PlaneMesh);
+      ødefer_construct_new(m_PlaneMesh);
 
       // Create sky_box mesh object
-      __defer_construct_new(m_SkyboxMesh);
+      ødefer_construct_new(m_SkyboxMesh);
 
       // Create Sphere mesh object
-      __defer_construct_new(m_SphereMesh);
+      ødefer_construct_new(m_SphereMesh);
 
-      __defer_construct_new(m_WallMesh);
+      ødefer_construct_new(m_WallMesh);
 
       m_BoxMesh->initialize_mesh(cube);
       m_PlaneMesh->initialize_mesh(plane);

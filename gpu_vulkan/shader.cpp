@@ -235,7 +235,7 @@ namespace gpu_vulkan
       //::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
 
 
-      __construct_new(m_ppipeline);
+      øconstruct_new(m_ppipeline);
 
       //prenderer->current_frame_particle_array()->add(m_ppipeline);
 
@@ -257,7 +257,7 @@ namespace gpu_vulkan
 
       //   }
 
-      //   __defer_construct_new(m_pVertexInput);
+      //   ødefer_construct_new(m_pVertexInput);
 
       //   m_pVertexInput->initialize_from_properties(m_propertiesInputLayout);
 
@@ -909,7 +909,7 @@ namespace gpu_vulkan
    //   if (nok(m_pshadersampler))
    //   {
 
-   //      __construct_new(m_pshadersampler);
+   //      øconstruct_new(m_pshadersampler);
 
    //      m_pshadersampler->m_pshader = this;
 
@@ -1219,7 +1219,7 @@ namespace gpu_vulkan
    //   if (!pshadertexture)
    //   {
 
-   //      __construct_new(pshadertexture);
+   //      øconstruct_new(pshadertexture);
 
    //      pshadertexture->initialize_shader_texture(pshadersampler, ptexture);
 

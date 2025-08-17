@@ -183,6 +183,9 @@ namespace gpu_directx12
       string _001GetIntroProjection() override;
       string _001GetIntroFragment() override;
 
+      void start_debug_happening(const ::scoped_string& scopedstrStartDebugHappening) override;
+      void end_debug_happening() override;
+
       void draw() override;
       void start_drawing() override;
       void global_transform() override;
@@ -196,6 +199,12 @@ namespace gpu_directx12
 
 
       virtual d3d11on12* d3d11on12();
+
+
+      ::pointer < ::gpu::command_buffer > beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer = ::gpu::e_command_buffer_graphics) override;
+      void endSingleTimeCommands(::gpu::command_buffer* pcommandbuffer) override;
+//      void endSingleTimeCommands(command_buffer* pcommandbuffer, int iSubmitCount, VkSubmitInfo* psubmitinfo);
+
 
       //virtual ::gpu_directx12::texture* _layer_source_texture(::gpu::layer* player);
 

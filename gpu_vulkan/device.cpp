@@ -452,7 +452,7 @@ namespace gpu_vulkan
 
    //   }
 
-   //   ::e_status estatus = __øconstruct(m_pbuffer);
+   //   ::e_status estatus = øconstruct(m_pbuffer);
 
    //   if (!estatus)
    //   {
@@ -673,7 +673,7 @@ namespace gpu_vulkan
    ::pointer < ::gpu::device > allocate_system_context(::particle* pparticle)
    {
 
-      return pparticle->__create_new <device>();
+      return pparticle->øcreate_new <device>();
 
    }
 

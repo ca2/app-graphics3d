@@ -51,7 +51,7 @@ namespace app_graphics3d_continuum
       glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f); // Look at origin
       //glm::vec3 direction = glm::normalize(target - cameraPos);
       //camera camera{ glm::vec3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
-      auto pcamera = __øcreate < ::graphics3d::camera>();
+      auto pcamera = øcreate < ::graphics3d::camera>();
       pcamera->m_pengine = m_pengine;
       pcamera->initialize_camera(target, camera);
       //pcamera->m_pimpact = m_pimpact;
@@ -112,7 +112,7 @@ namespace app_graphics3d_continuum
 
          auto& pskybox = m_mapSkybox[strSkybox];
 
-         __defer_construct_new(pskybox);
+         ødefer_construct_new(pskybox);
 
          pskybox->initialize_sky_box(m_pengine, strSkybox);
 
@@ -190,7 +190,7 @@ namespace app_graphics3d_continuum
       }
 
 
-      __construct_new(m_psimplerendersystem);
+      øconstruct_new(m_psimplerendersystem);
 
       m_psimplerendersystem->initialize_simple_render_system(m_pengine);
 
@@ -198,7 +198,7 @@ namespace app_graphics3d_continuum
       //m_prenderer->getRenderPass(),
       //globalSetLayout->getDescriptorSetLayout() };
 
-      __construct_new(m_ppointlightsystem);
+      øconstruct_new(m_ppointlightsystem);
 
       m_ppointlightsystem->initialize_point_light_system(m_pengine);
 

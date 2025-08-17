@@ -1554,7 +1554,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
    //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-   //         auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
+   //         auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
 
    //         m_pshaderSourceRectangle = pshaderRectangle;
    //         //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
@@ -1598,7 +1598,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
    //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-   //         auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
+   //         auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
 
    //         m_pshaderBlendRectangle = pshaderRectangle;
    //         //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
@@ -1801,7 +1801,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //      pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
    //   //      pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-   //   //      auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
+   //   //      auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
 
    //   //      m_pshaderSourceRectangle = pshaderRectangle;
    //   //      //m_pshaderRectangle->m_bDisableDepthTest = true;
@@ -1843,7 +1843,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
    //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-   //         auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
+   //         auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
 
    //         m_pshaderBlendRectangle = pshaderRectangle;
    //         //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
@@ -1872,7 +1872,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   auto & pmodel = m_pmodelbufferRectangle;
 
-   //   if (__defer_construct_new(m_pmodelbufferRectangle))
+   //   if (ødefer_construct_new(m_pmodelbufferRectangle))
    //   {
 
    //      m_pmodelbufferRectangle
@@ -5541,7 +5541,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //         break;
       //      case META_SETBKCOLOR:
       //      {
-      //         auto pbrush = __øcreate < ::draw2d::brush >();
+      //         auto pbrush = øcreate < ::draw2d::brush >();
       //         
       //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
       //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SelectObject(brush);
@@ -6138,7 +6138,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
             //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
             //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-            auto pshaderRectangle = __create_new<::gpu_vulkan::shader>();
+            auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
 
             m_pshaderLine = pshaderRectangle;
             //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
@@ -6189,12 +6189,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
       __TRANSFORM(points[0]);
       __TRANSFORM(points[1]);
 
-      //auto pmodelbuffer = __create_new< ::gpu_vulkan::model_buffer>();
+      //auto pmodelbuffer = øcreate_new< ::gpu_vulkan::model_buffer>();
 
       if (!m_pmodelbufferLine)
       {
 
-         __construct_new(m_pmodelbufferLine);
+         øconstruct_new(m_pmodelbufferLine);
 
          //pmodel->m_vertexBuffer = createLineVertexBuffer(pgpucontext->logicalDevice(),
          //   pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,

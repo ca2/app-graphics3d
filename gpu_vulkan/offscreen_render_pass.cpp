@@ -510,7 +510,7 @@ namespace gpu_vulkan
 
    //      auto & pgputexture = m_ptexturea->element_at(i);
 
-   //      __defer_construct(pgputexture);
+   //      ødefer_construct(pgputexture);
 
    //      pgputexture->m_bRenderTarget = true;
 

@@ -37,7 +37,9 @@ namespace gpu_directx12
       //bool m_bDisableDepthTest = false;
 
       ::comptr<ID3D12Resource> m_presourcePushProperties;
-      
+      int m_iShaderResourceViewDescriptorTableRootParameterIndex = -1;
+      int m_iSamplerDescriptorTableRootParameterIndex = -1;
+      int m_iPushConstantsBufferIndex = -1;
 
 
       shader();

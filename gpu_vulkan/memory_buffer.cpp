@@ -62,7 +62,7 @@ namespace gpu_vulkan
             //VkDeviceSize bufferSize = sizeStatic;
             ////uint32_t vertexSize = sizeof(vertices[0]);
 
-            //auto pbufferStaging = __create_new < ::gpu_vulkan::memory_buffer >();
+            //auto pbufferStaging = øcreate_new < ::gpu_vulkan::memory_buffer >();
 
             //pbufferStaging->_initialize_buffer(
             //   m_pcontext,
@@ -112,7 +112,7 @@ namespace gpu_vulkan
 
       //      ////uint32_t indexSize = sizeof(indices[0]);
 
-      //      //auto pbufferStaging = __create_new < ::gpu_vulkan::memory_buffer>();
+      //      //auto pbufferStaging = øcreate_new < ::gpu_vulkan::memory_buffer>();
 
       //      //pbufferStaging->_initialize_buffer(
       //      //   m_pcontext,
@@ -124,7 +124,7 @@ namespace gpu_vulkan
       //      //pbufferStaging->map();
       //      //pbufferStaging->writeToBuffer((void*)dataStatic);
 
-      //      ////to pbufferIndex = __create_new < ::gpu_vulkan::memory_buffer>();
+      //      ////to pbufferIndex = øcreate_new < ::gpu_vulkan::memory_buffer>();
 
       //      //_initialize_buffer(
       //      //   m_pcontext,

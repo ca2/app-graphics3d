@@ -76,7 +76,7 @@ namespace gpu_directx12
    ::pointer < ::gpu::device > allocate_system_context(::particle* pparticle)
    {
 
-      return pparticle->__create_new <device>();
+      return pparticle->øcreate_new <device>();
 
    }
 
@@ -989,7 +989,7 @@ namespace gpu_directx12
    //   if (!m_pcontextMainDraw2d)
    //   {
 
-   //      __construct_new(m_pcontextMainDraw2d);
+   //      øconstruct_new(m_pcontextMainDraw2d);
 
    //      m_pcontextMainDraw2d->m_etype = ::gpu::context::e_type_draw2d;
 
@@ -1429,7 +1429,7 @@ namespace gpu_directx12
             ////infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
          }
 
-         //__defer_construct_new(m_pcontextMain);
+         //ødefer_construct_new(m_pcontextMain);
 
          //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
          //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;

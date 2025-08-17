@@ -54,7 +54,7 @@ namespace app_graphics3d_continuum
       //createPipelineLayout(globalSetLayout);
       //createPipeline(renderPass);
 
-      __defer_construct(m_pmodelDummy);
+      ødefer_construct(m_pmodelDummy);
 
       // ::graphics3d::model::Builder builderDummy;
 

@@ -46,7 +46,7 @@
 //
 //      m_pimpact = pgpucontext->m_pimpact;
 //
-//      __construct_new(m_poffscreensampler);
+//      øconstruct_new(m_poffscreensampler);
 //
 //      m_poffscreensampler->initialize_offscreen_sampler(pgpucontext);
 //
@@ -166,7 +166,7 @@
 //         if (vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &beginInfo) != VK_SUCCESS) {
 //            throw ::exception(error_failed, "failed to begin recording command buffer!");
 //         }
-//         auto pframe = __create_new < frame >();
+//         auto pframe = øcreate_new < frame >();
 //         pframe->pcommandbuffer->m_vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 //         m_pframe = pframe;
 //         return m_pframe;

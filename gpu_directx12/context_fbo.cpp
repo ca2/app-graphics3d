@@ -19,7 +19,7 @@ namespace directx12
    ::pointer <::gpu::context > allocate_fbo_context(::particle * pparticle)
    {
 
-      return pparticle->__create_new < context_fbo >();
+      return pparticle->øcreate_new < context_fbo >();
 
    }
 

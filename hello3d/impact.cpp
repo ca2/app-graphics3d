@@ -123,7 +123,7 @@ namespace graphics3d_hello3d
 
       };
 
-      //__construct_new(m_prender);
+      //øconstruct_new(m_prender);
 
       //if(!estatus)
       //{
@@ -410,7 +410,7 @@ namespace graphics3d_hello3d
 
       ::pointer <render> prender;
 
-      prender = __create_new <render>();
+      prender = øcreate_new <render>();
 
       prender->m_rectangle = this->rectangle();
 

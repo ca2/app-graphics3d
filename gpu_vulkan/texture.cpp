@@ -151,7 +151,7 @@ namespace gpu_vulkan
       if (!psynchronization)
       {
 
-         __construct_new(psynchronization);
+         øconstruct_new(psynchronization);
 
          ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
@@ -712,7 +712,7 @@ namespace gpu_vulkan
 
    //   }
 
-   //   __defer_construct_new(m_ptextureDepth);
+   //   ødefer_construct_new(m_ptextureDepth);
 
    //   m_ptextureDepth->initialize_depth_texture(m_pgpurenderer, m_rectangleTarget);
 

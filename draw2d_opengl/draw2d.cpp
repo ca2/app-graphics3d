@@ -89,7 +89,7 @@ namespace draw2d_opengl
    //   if (!pface)
    //   {
 
-   //      __øconstruct(pface);
+   //      øconstruct(pface);
 
    //      pface->m_strFontName = strFontFamilyName;
 
@@ -200,7 +200,7 @@ namespace draw2d_opengl
 
    //   }
 
-   //   __construct_new(pfont);
+   //   øconstruct_new(pfont);
 
    //   pfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
 
@@ -249,7 +249,7 @@ namespace draw2d_opengl
    int  draw2d::opengl_init()
    {
 
-      //__øconstruct(m_popenglcontext);
+      //øconstruct(m_popenglcontext);
 
       //if (m_atomClass)
       //{

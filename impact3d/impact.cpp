@@ -119,7 +119,7 @@ namespace graphics3d_impact3d
 //
 //      };
 
-      //__construct_new(m_prender);
+      //øconstruct_new(m_prender);
 
       //if(!estatus)
       //{

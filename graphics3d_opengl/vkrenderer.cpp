@@ -29,7 +29,7 @@ namespace graphics3d_opengl
 
       m_pgpucontext = pgpucontext;
 
-      __construct_new(m_poffscreensampler);
+      øconstruct_new(m_poffscreensampler);
 
       m_poffscreensampler->initialize_offscreen_sampler(pgpucontext);
 

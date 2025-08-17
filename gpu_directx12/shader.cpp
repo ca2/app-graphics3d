@@ -219,18 +219,52 @@ namespace gpu_directx12
 
          //      rootParameters.element_at_grow(1).InitAsConstantBufferView(1); // b1: ObjectMatrices
                //ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-               rootParameters.øadd().InitAsConstantBufferView(1);
+
+               UINT ShaderRegister;
+
+               if (m_iPushConstants < 0)
+               {
+
+                  ShaderRegister = 1;
+
+               }
+               else
+               {
+
+                  ShaderRegister = m_iPushConstants;
+
+               }
+               rootParameters.øadd().InitAsConstantBufferView(ShaderRegister);
+
+               m_iPushConstantsBufferIndex = rootParameters.get_upper_bound();
+
+
 
             }
 
             if (m_bindingSampler.is_set() || m_bindingCubeSampler.is_set())
             {
+
+               UINT ShaderRegister;
+
+               if (m_bindingCubeSampler.is_set())
+               {
+
+                  ShaderRegister = m_bindingCubeSampler.m_uBinding;
+
+               }
+               else
+               {
+
+                  ShaderRegister = m_bindingSampler.m_uBinding;
+
+               }
                
                //CD3DX12_DESCRIPTOR_RANGE texRange;
                ranges.øadd().Init(
                   D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 
                   1, 
-                  0,
+                  ShaderRegister, 
                   0,
                   D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
@@ -239,7 +273,7 @@ namespace gpu_directx12
                   &ranges.last(),
                   D3D12_SHADER_VISIBILITY_PIXEL);
 
-
+               m_iShaderResourceViewDescriptorTableRootParameterIndex = rootParameters.get_upper_bound();
                //staticSamplers.add(CD3DX12_STATIC_SAMPLER_DESC(0,                                  // register s0
                //   D3D12_FILTER_MIN_MAG_MIP_LINEAR,
                //   D3D12_TEXTURE_ADDRESS_MODE_WRAP,
@@ -258,13 +292,13 @@ namespace gpu_directx12
                ranges.øadd().Init(
                   D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER,
                   1, 
-                  0); // s0
+                  ShaderRegister); // s0
                rootParameters.øadd().InitAsDescriptorTable(
                   1,
                   &ranges.last(), 
                   D3D12_SHADER_VISIBILITY_PIXEL);
 
-
+               m_iSamplerDescriptorTableRootParameterIndex = rootParameters.get_upper_bound();
                //CD3DX12_ROOT_PARAMETER rootParams[2];
                
             //   CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
@@ -349,9 +383,12 @@ namespace gpu_directx12
                &rootSignatureDesc, featureData.HighestVersion, &psignature, &perror);
             if (FAILED(hrSerializeVersionedRootSignature))
             {
+
+               ::string strError;
                if (perror)
                {
-                  ::OutputDebugStringA((char*)perror->GetBufferPointer());
+                  strError = (char*)perror->GetBufferPointer();
+                  ::OutputDebugStringA(strError);
                }
                throw ::exception(error_failed, "Failed to serialize root signature");
             }
@@ -821,32 +858,81 @@ namespace gpu_directx12
 
       pcommandlist->SetDescriptorHeaps((UINT) heapa.size(), heapa.data());
 
-      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+//      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+//      {
+//
+////         pcommandlist->SetGraphicsRootConstantBufferView(0, your_cbv_gpu_address);
+//         pcommandlist->SetGraphicsRootDescriptorTable(1,
+//            ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
+//         pcommandlist->SetGraphicsRootDescriptorTable(2,
+//            ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
+//      }
+//      else if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
+//      {
+//
+//         UINT RootParameterIndex;
+//
+//         if (m_iPushConstants < 0)
+//         {
+//
+//            RootParameterIndex = 1;
+//
+//         }
+//         else
+//         {
+//
+//            RootParameterIndex = m_iPushConstants;
+//
+//         }
+//
+//         pcommandlist->SetGraphicsRootDescriptorTable(RootParameterIndex,
+//            ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
+//         pcommandlist->SetGraphicsRootDescriptorTable(RootParameterIndex,
+//            ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
+//
+//      }
+//      else
+//      {
+//
+//      }
+      //if (m_bindingCubeSampler.is_set())
+      //{
+      //   pcommandlist->SetGraphicsRootDescriptorTable(
+      //      m_bindingCubeSampler.m_uBinding,
+      //      ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
+      //   pcommandlist->SetGraphicsRootDescriptorTable(
+      //      m_bindingCubeSampler.m_uBinding,
+      //      ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
+
+      //}
+      //else if (m_bindingSampler.is_set())
+      //{
+
+      //   pcommandlist->SetGraphicsRootDescriptorTable(
+      //      m_bindingSampler.m_uBinding,
+      //      ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
+      //   pcommandlist->SetGraphicsRootDescriptorTable(
+      //      m_bindingSampler.m_uBinding,
+      //      ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
+
+      //}
+
+      if (m_iShaderResourceViewDescriptorTableRootParameterIndex>=0)
       {
+            pcommandlist->SetGraphicsRootDescriptorTable(
+               m_iShaderResourceViewDescriptorTableRootParameterIndex,
+               ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
 
-//         pcommandlist->SetGraphicsRootConstantBufferView(0, your_cbv_gpu_address);
-         pcommandlist->SetGraphicsRootDescriptorTable(1,
-            ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
-         pcommandlist->SetGraphicsRootDescriptorTable(2,
-            ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
+
       }
-      else if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
+      if (m_iSamplerDescriptorTableRootParameterIndex>=0)
       {
-         pcommandlist->SetGraphicsRootDescriptorTable(1,
-            ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
-         pcommandlist->SetGraphicsRootDescriptorTable(1,
-            ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
+         pcommandlist->SetGraphicsRootDescriptorTable(
+            m_iSamplerDescriptorTableRootParameterIndex,
+            ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // t0
+
 
       }
-      else
-      {
-         pcommandlist->SetGraphicsRootDescriptorTable(0,
-            ptextureSrc->m_pheapShaderResourceView->GetGPUDescriptorHandleForHeapStart()); // t0
-         pcommandlist->SetGraphicsRootDescriptorTable(1,
-            ptextureSrc->m_pheapSampler->GetGPUDescriptorHandleForHeapStart()); // s0
-
-      }
-
    }
 
 
@@ -917,9 +1003,12 @@ namespace gpu_directx12
 
       ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
-      
-      auto address = m_presourcePushProperties->GetGPUVirtualAddress() + m_iPush* ::directx12::Align256((UINT) m_propertiesPush.size()) ;
-      pcommandbuffer->m_pcommandlist->SetGraphicsRootConstantBufferView(1, address);
+
+      int iBlockSize = ::directx12::Align256((UINT)m_propertiesPush.size());
+      int iSize = m_iPush * iBlockSize;
+      m_strPushConstantsDebugging.formatf("%d,%d:%d", iSize, iBlockSize, iSize/iBlockSize);
+      auto address = m_presourcePushProperties->GetGPUVirtualAddress() + iSize;
+      pcommandbuffer->m_pcommandlist->SetGraphicsRootConstantBufferView(m_iPushConstantsBufferIndex, address);
       m_iPush++;
 
    }

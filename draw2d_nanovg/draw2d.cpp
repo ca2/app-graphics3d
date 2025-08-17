@@ -165,7 +165,7 @@ namespace draw2d_nanovg
 
    //   }
 
-   //   __construct_new(pfont);
+   //   øconstruct_new(pfont);
 
    //   pfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
 
@@ -214,7 +214,7 @@ namespace draw2d_nanovg
    int  draw2d::opengl_init()
    {
 
-      //__øconstruct(m_popenglcontext);
+      //øconstruct(m_popenglcontext);
 
       //if (m_atomClass)
       //{

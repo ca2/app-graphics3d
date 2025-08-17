@@ -45,11 +45,11 @@ namespace graphics3d_opengl
 
       auto papp = get_app();
 
-      __øconstruct(m_pgpucontext);
+      øconstruct(m_pgpucontext);
 
       m_pgpucontext->initialize_context(papp->m_pimpact);
 
-      __construct_new(m_prenderer);
+      øconstruct_new(m_prenderer);
 
       m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontext);
 
@@ -128,7 +128,7 @@ namespace graphics3d_opengl
 
       //VkcCamera camera(glm::vec3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
 
-      auto viewerObject = __øcreate <::cube::scene_object>();
+      auto viewerObject = øcreate <::cube::scene_object>();
       papp->m_pimpact->m_bLastMouse = true;
       viewerObject->m_transform.translation.z = -2.5f;
       MNKController cameraController;

@@ -16,15 +16,13 @@ namespace gpu_directx12
    public:
 
 
-      struct resource
-      {
-         ::comptr<ID3D12Resource> m_presource;
-         unsigned char * m_pMap = nullptr;
+      //struct resource
+      //{
+      //   ::comptr<ID3D12Resource> m_presource;
+      //   unsigned char * m_pMap = nullptr;
 
-      };
+      //};
 
-
-      array_base < resource > m_resourcea;
 
 
       frame_storage();

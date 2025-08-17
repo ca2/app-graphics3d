@@ -234,7 +234,7 @@ namespace graphics3d_hello3d
 //      if (!m_pprogram)
 //      {
 //
-//         ::__øconstruct(this,m_pprogram);
+//         ::øconstruct(this,m_pprogram);
 //
 //      }
 //
@@ -338,7 +338,7 @@ namespace graphics3d_hello3d
 //   void render::set_model_path(const ::payload & payloadFile)
 //   {
 //
-//      ::__øconstruct(this, m_pobject);
+//      ::øconstruct(this, m_pobject);
 //
 //      auto pparticle = m_pobject;
 //

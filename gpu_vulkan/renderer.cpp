@@ -127,7 +127,7 @@ namespace gpu_vulkan
 
          pgpucontext->create_cpu_buffer(pgpucontext->rectangle().size());
 
-         __construct_new(m_pcpubuffersampler);
+         øconstruct_new(m_pcpubuffersampler);
 
          m_pcpubuffersampler->initialize_cpu_buffer_sampler(pgpucontext);
 
@@ -377,7 +377,7 @@ namespace gpu_vulkan
    //         paccumulationrenderpass->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
    //         m_pgpurendertarget = paccumulationrenderpass;
    //
-   //         //__construct_new(m_prendererResolve);
+   //         //øconstruct_new(m_prendererResolve);
    //
    //         //m_prendererResolve->initialize_renderer(m_pgpucontext, ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers);
    //
@@ -554,7 +554,7 @@ namespace gpu_vulkan
 
          auto& pcommandbuffer = m_commandbuffera[i];
 
-         __defer_construct(pcommandbuffer);
+         ødefer_construct(pcommandbuffer);
 
          pcommandbuffer->initialize_command_buffer(m_pgpurendertarget,
             ::gpu::e_command_buffer_graphics);
@@ -646,7 +646,7 @@ namespace gpu_vulkan
          //}
 
          //m_
-         //auto pframe = __create_new < frame >();
+         //auto pframe = øcreate_new < frame >();
          //pframe->m_pcommandbuffer->m_vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
          //m_pframe = pframe;
          //return m_pframe;
@@ -746,7 +746,7 @@ namespace gpu_vulkan
 
       }
 
-      __defer_construct_new(ptexture);
+      ødefer_construct_new(ptexture);
 
       ptexture->m_bTransferDst = true;
       ptexture->m_bCpuRead = true;
@@ -1593,7 +1593,7 @@ namespace gpu_vulkan
       //		pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
       //		pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 
-      //		auto pshaderResolve = __create_new<::gpu_vulkan::shader>();
+      //		auto pshaderResolve = øcreate_new<::gpu_vulkan::shader>();
 
       //		m_pshaderResolve = pshaderResolve;
 
@@ -1638,7 +1638,7 @@ namespace gpu_vulkan
 
       //	auto& pdescriptor = m_pdescriptorResolve;
 
-      //	if (__defer_construct_new(pdescriptor))
+      //	if (ødefer_construct_new(pdescriptor))
       //	{
 
       //		pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -1710,7 +1710,7 @@ namespace gpu_vulkan
 
       //	auto& pmodel = m_pmodelResolve;
 
-      //	if (__defer_construct_new(pmodel))
+      //	if (ødefer_construct_new(pmodel))
       //	{
 
       //		create_quad_buffers(m_pgpucontext->logicalDevice(),
@@ -1917,7 +1917,7 @@ namespace gpu_vulkan
 
          }
 
-         //auto pinputlayout = __øcreate<::gpu::input_layout> ();
+         //auto pinputlayout = øcreate<::gpu::input_layout> ();
 
 
          //pshadervertexinput->m_bindings.add(
@@ -2239,7 +2239,7 @@ namespace gpu_vulkan
 
       auto& pmodelbuffer = m_imagemodelbuffer[ptexture->m_vkimage];
 
-      if (__defer_construct_new(pmodelbuffer))
+      if (ødefer_construct_new(pmodelbuffer))
       {
 
          pmodelbuffer->sequence2_uv_create_rectangle(pcontext, true, true);
@@ -2335,7 +2335,7 @@ namespace gpu_vulkan
       //  if (!m_psha)
       //  {
 
-      //     __construct_new(m_pblend2);
+      //     øconstruct_new(m_pblend2);
 
       //     m_pblend2->m_pgpurenderer = this;
 
@@ -2429,7 +2429,7 @@ namespace gpu_vulkan
 
          }
 
-         auto pinputlayoutEmpty = __øcreate<::gpu::input_layout>();
+         auto pinputlayoutEmpty = øcreate<::gpu::input_layout>();
 
          //pshadervertexinput->m_bindings.add(
          //   {
@@ -2441,7 +2441,7 @@ namespace gpu_vulkan
          //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
          //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 
-         //auto pshaderBlend2 = __create_new<::gpu_vulkan::shader>();
+         //auto pshaderBlend2 = øcreate_new<::gpu_vulkan::shader>();
 
          //m_pshaderCopyImage = pshaderBlend2;
 
@@ -2688,7 +2688,7 @@ namespace gpu_vulkan
 
       auto& pmodelbuffer = m_imagemodelbuffer[ptexture->m_vkimage];
 
-      if (__defer_construct_new(pmodelbuffer))
+      if (ødefer_construct_new(pmodelbuffer))
       {
 
          pmodelbuffer->sequence2_uv_create_rectangle(pcontext, true, bYSwap);
@@ -2711,7 +2711,7 @@ namespace gpu_vulkan
 
       //  auto& pdescriptor = m_imagedescriptor[image];
 
-      //  //if (__defer_construct_new(pdescriptor))
+      //  //if (ødefer_construct_new(pdescriptor))
       //  {
 
       //     pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -2977,7 +2977,7 @@ namespace gpu_vulkan
 
       auto& pmodelbuffer = m_imagemodelbuffer[ptexture->m_vkimage];
 
-      if (__defer_construct_new(pmodelbuffer))
+      if (ødefer_construct_new(pmodelbuffer))
       {
 
          pmodelbuffer->sequence2_uv_create_rectangle(pcontext, true, bYSwap);
@@ -2999,7 +2999,7 @@ namespace gpu_vulkan
 
       //  auto& pdescriptor = m_imagedescriptor[ptexture->m_vkimage];
 
-      //  if (__defer_construct_new(pdescriptor))
+      //  if (ødefer_construct_new(pdescriptor))
       //  {
 
       //     pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -3749,7 +3749,7 @@ namespace gpu_vulkan
 
       //pcommandbuffer->begin_command_buffer(false);
 
-      //auto pframe = __create_new < ::gpu_vulkan::frame >();
+      //auto pframe = øcreate_new < ::gpu_vulkan::frame >();
 
       //pframe->m_pcommandbuffer = pcommandbuffer.m_p;
 
@@ -4621,7 +4621,7 @@ namespace gpu_vulkan
       //  if (!m_psha)
       //  {
 
-      //     __construct_new(m_pblend2);
+      //     øconstruct_new(m_pblend2);
 
       //     m_pblend2->m_pgpurenderer = this;
 
@@ -4714,7 +4714,7 @@ namespace gpu_vulkan
 
          }
 
-         auto pinputlayoutEmpty = __øcreate<::gpu::input_layout >();
+         auto pinputlayoutEmpty = øcreate<::gpu::input_layout >();
 
          //pshadervertexinput->m_bindings.add(
          //   {
@@ -4726,7 +4726,7 @@ namespace gpu_vulkan
          //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
          //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 
-         //auto pshaderBlend2 = __create_new<::gpu_vulkan::shader>();
+         //auto pshaderBlend2 = øcreate_new<::gpu_vulkan::shader>();
 
          //m_pshaderBlend2 = pshaderBlend2;
 

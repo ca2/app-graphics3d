@@ -12,6 +12,7 @@
 #include "draw2d.h"
 //#include "directx12/directx12.h"
 #include "bred/gpu/command_buffer.h"
+#include "bred/gpu/frame_ephemeral.h"
 
 
 CLASS_DECL_AURA void init_draw2d_mutex();
@@ -34,7 +35,8 @@ __FACTORY_EXPORT void draw2d_directx12_factory(::factory::factory* pfactory)
 
    pfactory->add_factory_item < ::draw2d_directx12::draw2d, ::draw2d::draw2d >();
    pfactory->add_factory_item < ::gpu::command_buffer >();
-   //pfactory->add_factory_item < ::draw2d_directx12::directx12_swap_chain, ::gpu::swap_chain >();
+   
+   //pfactory->add_factory_item pfactory->add_factory_item < ::gpu::frame_ephemeral >();< ::draw2d_directx12::directx12_swap_chain, ::gpu::swap_chain >();
 
 
 }

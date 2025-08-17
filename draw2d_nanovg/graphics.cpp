@@ -5926,7 +5926,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       return ::gpu::graphics::current_target_texture(pgpuframe);
 
-      //__defer_construct(m_ptextureCurrent);
+      //ødefer_construct(m_ptextureCurrent);
 
       //::cast < ::gpu_opengl::texture > ptextureCurrent = m_ptextureCurrent;
 
@@ -5938,7 +5938,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //   if (ptextureCurrent->m_vkimage)
       //   {
 
-      //      __øconstruct(m_ptextureCurrent);
+      //      øconstruct(m_ptextureCurrent);
 
       //      ptextureCurrent = m_ptextureCurrent;
 
@@ -6600,7 +6600,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //         break;
       //      case META_SETBKCOLOR:
       //      {
-      //         auto pbrush = __øcreate < ::draw2d::brush >();
+      //         auto pbrush = øcreate < ::draw2d::brush >();
       //         
       //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
       //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(brush);
@@ -8464,7 +8464,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //if (!pgpucontext->m_pgpurenderer)
       //{
 
-      //   __øconstruct(pgpucontext->m_pgpurenderer);
+      //   øconstruct(pgpucontext->m_pgpurenderer);
 
       //   pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
 
@@ -8524,7 +8524,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          //nanovg_flush(m_pdc);
 
-         //__defer_construct(m_ptextureCurrent);
+         //ødefer_construct(m_ptextureCurrent);
 
          //::cast < ::gpu_opengl::texture > ptextureEndDraw = m_ptextureEndDraw;
 
@@ -8550,7 +8550,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          if (!m_pgpucontextOutput)
          {
 
-            __øconstruct(m_pgpucontextOutput);
+            øconstruct(m_pgpucontextOutput);
 
             ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 

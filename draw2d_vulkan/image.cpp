@@ -88,7 +88,7 @@ namespace draw2d_vulkan
       m_bitmapinfo.bmiHeader.biCompression   = BI_RGB;
       m_bitmapinfo.bmiHeader.biSizeImage     = iStride  * size.cy();
 
-      __øconstruct(m_pbitmap);
+      øconstruct(m_pbitmap);
 
       image32_t * pimage32 = nullptr;
       m_pbitmap->create_bitmap(nullptr, size, (void **)&pimage32, &iStride);
@@ -144,8 +144,8 @@ namespace draw2d_vulkan
 
       ::memory_copy((::pixmap *) this, ppixmap, sizeof(::pixmap));
 
-      //__øconstruct(m_pbitmap);
-      __defer_construct(m_pgraphics);
+      //øconstruct(m_pbitmap);
+      ødefer_construct(m_pgraphics);
       //m_pgraphics->set(m_pbitmap);
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
@@ -2436,7 +2436,7 @@ namespace draw2d_vulkan
 
          }
 
-         ((image *)this)->__øconstruct(((image*)this)->m_pgraphics);
+         ((image *)this)->øconstruct(((image*)this)->m_pgraphics);
 
 
          ((image *)this)->m_pgraphics->set(m_pbitmap);

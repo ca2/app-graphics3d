@@ -90,7 +90,7 @@ namespace gpu_directx12
       if (!ptextureSwapChain)
       {
 
-         __construct_new(ptextureSwapChain);
+         øconstruct_new(ptextureSwapChain);
 
          ptextureSwapChain->m_bRenderTarget = true;
 
@@ -151,7 +151,7 @@ namespace gpu_directx12
       if (!m_pshaderPresent)
       {
 
-         __construct_new(m_pshaderPresent);
+         øconstruct_new(m_pshaderPresent);
 
          m_pshaderPresent->m_bindingSampler.set();
          m_pshaderPresent->m_bDisableDepthTest = true;

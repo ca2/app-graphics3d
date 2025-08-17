@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include "bred/gpu/frame_storage.h"
 #include "bred/gpu/texture.h"
 #include <d3d11.h>
 #include <d2d1_1.h>
@@ -15,6 +16,52 @@ namespace gpu_directx12
       virtual public ::gpu::texture
    {
    public:
+
+
+      class upload_buffer :
+         virtual public ::gpu::frame_storage::object
+      {
+      public:
+
+         class damage
+         {
+         public:
+            D3D12_TEXTURE_COPY_LOCATION dstLoc;
+            D3D12_TEXTURE_COPY_LOCATION srcLoc;
+            CD3DX12_BOX srcBox;
+
+            int m_left;
+            int m_top;
+
+            damage() :
+               dstLoc{},
+               srcLoc{},
+               srcBox{}
+            {
+
+
+            }
+
+            void update_copyable_region(ID3D12GraphicsCommandList* pcommandlist);
+
+         };
+
+         ::array_base < damage > m_damagea;
+
+         ::gpu_directx12::texture* m_ptexture;
+         ::comptr<ID3D12Resource>         m_presourceUpload;
+
+         void* m_pMap;
+
+         upload_buffer();
+         ~upload_buffer();
+
+
+         void on_end_frame() override;
+
+         virtual void upload_damaged_regions();
+
+      };
 
 
       struct
@@ -90,6 +137,11 @@ namespace gpu_directx12
       void create_depth_resources();
 
       virtual void _initialize_gpu_texture(::gpu::renderer* prenderer, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain);
+
+
+      void set_pixels(const ::int_rectangle& rectangle, const void* data) override;
+
+      virtual upload_buffer * _get_upload_buffer();
 
    };
 

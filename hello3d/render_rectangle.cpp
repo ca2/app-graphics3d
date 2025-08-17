@@ -23,7 +23,7 @@ namespace graphics3d_hello3d
       if (!m_pgpuprogram)
       {
 
-         __defer_construct(m_pgpuprogram);
+         ødefer_construct(m_pgpuprogram);
 
          ::string strVertex = R"====(
 #version 330 core
@@ -87,11 +87,11 @@ void main()
 
    //   //string strFontFamily = get_font();
 
-   //   //auto ppen = __øcreate < ::draw2d::pen > ();
+   //   //auto ppen = øcreate < ::draw2d::pen > ();
 
-   //   //auto pbrush = __øcreate < ::draw2d::brush >();
+   //   //auto pbrush = øcreate < ::draw2d::brush >();
 
-   //   //auto pfont = __øcreate < ::write_text::font > ();
+   //   //auto pfont = øcreate < ::write_text::font > ();
 
    //   //if (m_iDrawing == 3)
    //   //{
@@ -109,7 +109,7 @@ void main()
    //   //            if (m_pimage1.ok())
    //   //            {
 
-   //   //               __øconstruct(m_pimage2);
+   //   //               øconstruct(m_pimage2);
 
    //   //               m_pimage2->copy_from(m_pimage1);
 
@@ -313,7 +313,7 @@ void main()
       if (!m_pgpuprogram)
       {
 
-         __defer_construct(m_pgpuprogram);
+         ødefer_construct(m_pgpuprogram);
 
          ::string strVertex = R"====(
 #version 330 core

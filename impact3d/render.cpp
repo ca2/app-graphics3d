@@ -236,7 +236,7 @@ namespace graphics3d_impact3d
       if (!m_pgpuprogram)
       {
 
-         __øconstruct(m_pgpuprogram);
+         øconstruct(m_pgpuprogram);
 
       }
 
@@ -460,7 +460,7 @@ namespace graphics3d_impact3d
    void render::set_model_path(const ::payload & payloadFile)
    {
 
-      __øconstruct(m_pobject);
+      øconstruct(m_pobject);
 
       auto pparticle = m_pobject;
 

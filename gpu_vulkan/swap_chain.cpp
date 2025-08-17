@@ -443,7 +443,7 @@ namespace gpu_vulkan
 
       }
 
-      __construct_new(m_ptextureaSwapChain);
+      øconstruct_new(m_ptextureaSwapChain);
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
@@ -548,7 +548,7 @@ namespace gpu_vulkan
 
          auto & pgputexture = m_ptextureaSwapChain->element_at(i);
 
-         __defer_construct(pgputexture);
+         ødefer_construct(pgputexture);
 
          ::int_rectangle rectangleTarget;
 

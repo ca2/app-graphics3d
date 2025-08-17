@@ -430,7 +430,7 @@ void main() {
 
       }
 
-      //if (__defer_construct(m_pgpucontextOpenGL))
+      //if (ødefer_construct(m_pgpucontextOpenGL))
       //{
 
       //if (!m_pgpucontextCompositor)
@@ -1212,7 +1212,7 @@ void main() {
    //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
 
-   //         auto pshaderRectangle = __create_new<::gpu::shader>();
+   //         auto pshaderRectangle = øcreate_new<::gpu::shader>();
 
    //         m_pshaderSourceRectangle = pshaderRectangle;
    //         //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
@@ -1256,7 +1256,7 @@ void main() {
    //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
    //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-   //         auto pshaderRectangle = __create_new<::gpu::shader>();
+   //         auto pshaderRectangle = øcreate_new<::gpu::shader>();
 
    //         m_pshaderBlendRectangle = pshaderRectangle;
    //         //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
@@ -5098,7 +5098,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //         break;
       //      case META_SETBKCOLOR:
       //      {
-      //         auto pbrush = __øcreate < ::draw2d::brush >();
+      //         auto pbrush = øcreate < ::draw2d::brush >();
       //         
       //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
       //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
@@ -5633,7 +5633,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //}
 //)fragmentshader";
 //
-//         m_pgpushaderTextOut = __create_new < ::gpu_opengl::shader >();
+//         m_pgpushaderTextOut = øcreate_new < ::gpu_opengl::shader >();
 //
 //         auto pcontext = gpu_context();
 //
@@ -5858,7 +5858,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 }
 )fragmentshader";
 
-         m_pgpushaderTextOut = __create_new < ::gpu_opengl::shader >();
+         m_pgpushaderTextOut = øcreate_new < ::gpu_opengl::shader >();
 
          auto pcontext = gpu_context();
 

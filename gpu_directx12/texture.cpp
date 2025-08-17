@@ -30,7 +30,7 @@ namespace gpu_directx12
    }
 
 
-   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype)
+   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype)
    {
 
       auto size = m_rectangleTarget.size();
@@ -194,11 +194,11 @@ namespace gpu_directx12
 
             ::comptr<ID3D12Resource> presourceUpload;
 
-            const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_presource, 0, iCount);
+            const UINT64 presourceUploadBufferSize = GetRequiredIntermediateSize(m_presource, 0, iCount);
 
             CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
 
-            auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+            auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(presourceUploadBufferSize);
 
             pdevice->m_pdevice->CreateCommittedResource(
                &propertiesUpload,
@@ -230,18 +230,18 @@ namespace gpu_directx12
             }
 
             ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
-            
+
             if (!pcommandbuffer)
             {
 
                pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
             }
-            
+
             UpdateSubresources(
                pcommandbuffer->m_pcommandlist,
                m_presource,
-               presourceUpload, 0, 0, iCount, 
+               presourceUpload, 0, 0, iCount,
                subresources);
 
             comptr < IUnknown > punknownResourceUpdate(presourceUpload);
@@ -347,7 +347,7 @@ namespace gpu_directx12
       srvHeapDesc.NumDescriptors = 1;
       srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
       srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-   
+
       HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(
          &srvHeapDesc, __interface_of(m_pheapShaderResourceView));
 
@@ -395,7 +395,7 @@ namespace gpu_directx12
       }
       else
       {
-       
+
          samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
 
       }
@@ -423,7 +423,7 @@ namespace gpu_directx12
          ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
 
-       
+
          // 2. Describe depth stencil resource
          D3D12_RESOURCE_DESC depthDesc = {};
          depthDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -487,7 +487,7 @@ namespace gpu_directx12
       if (!m_pd3d11)
       {
 
-         __construct_new(m_pd3d11);
+         øconstruct_new(m_pd3d11);
 
       }
 
@@ -499,7 +499,7 @@ namespace gpu_directx12
    void texture::blend(::gpu::texture* ptexture)
    {
 
-      
+
 
    }
 
@@ -519,119 +519,475 @@ namespace gpu_directx12
 
       }
 
-//      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
-//
-//
-//      // Create descriptor heaps.
-//      {
-//         // Describe and create a render target view (RTV) descriptor heap.
-//         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-//         rtvHeapDesc.NumDescriptors = 1;
-//         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-//         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-//         auto hrCreateDescriptorHeap = pgpudevice->m_pdevice->CreateDescriptorHeap(
-//            &rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
-//
-////         m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-//      }
-//
-//      // Create frame resources.
-//      {
-//         
-//         //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-//         m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
-//         // Create a RTV for each frame.
-//         //for (UINT n = 0; n < FrameCount; n++)
-//         {
-//         pgpudevice->m_pdevice->CreateRenderTargetView(
-//            m_presource, nullptr, m_handleRenderTargetView);
-//            //rtvHandle.Offset(1, m_rtvDescriptorSize);
-//         }
-//      }
-//
-      //auto pdevice = pgpudevice->m_pdevice;
+      //      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      //
+      //
+      //      // Create descriptor heaps.
+      //      {
+      //         // Describe and create a render target view (RTV) descriptor heap.
+      //         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+      //         rtvHeapDesc.NumDescriptors = 1;
+      //         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+      //         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+      //         auto hrCreateDescriptorHeap = pgpudevice->m_pdevice->CreateDescriptorHeap(
+      //            &rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
+      //
+      ////         m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+      //      }
+      //
+      //      // Create frame resources.
+      //      {
+      //         
+      //         //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+      //         m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
+      //         // Create a RTV for each frame.
+      //         //for (UINT n = 0; n < FrameCount; n++)
+      //         {
+      //         pgpudevice->m_pdevice->CreateRenderTargetView(
+      //            m_presource, nullptr, m_handleRenderTargetView);
+      //            //rtvHandle.Offset(1, m_rtvDescriptorSize);
+      //         }
+      //      }
+      //
+            //auto pdevice = pgpudevice->m_pdevice;
 
-      //HRESULT hrCreateTexture = pdxgiswapchain->GetBuffer(0, __interface_of(m_ptextureOffscreen));
+            //HRESULT hrCreateTexture = pdxgiswapchain->GetBuffer(0, __interface_of(m_ptextureOffscreen));
 
-      //if (FAILED(hrCreateTexture))
-      //{
+            //if (FAILED(hrCreateTexture))
+            //{
 
-      //   throw ::hresult_exception(hrCreateTexture, "Failed to create offscreen texture");
+            //   throw ::hresult_exception(hrCreateTexture, "Failed to create offscreen texture");
 
-      //}
+            //}
 
-      //if (m_bRenderTarget)
-      //{
+            //if (m_bRenderTarget)
+            //{
 
-      //   create_render_target_view();
+            //   create_render_target_view();
 
-      //}
+            //}
 
-      //if (m_bShaderResourceView)
-      //{
+            //if (m_bShaderResourceView)
+            //{
 
-      //   create_shader_resource_view();
+            //   create_shader_resource_view();
 
-      //}
+            //}
 
-      ////HRESULT hrCreateShaderResourceView = pdevice->CreateShaderResourceView(m_ptextureOffscreen, nullptr, &m_pshaderresourceview);
+            ////HRESULT hrCreateShaderResourceView = pdevice->CreateShaderResourceView(m_ptextureOffscreen, nullptr, &m_pshaderresourceview);
 
-      ////if (FAILED(hrCreateShaderResourceView))
-      ////{
+            ////if (FAILED(hrCreateShaderResourceView))
+            ////{
 
-      ////   throw ::hresult_exception(hrCreateShaderResourceView, "Failed to create offscreen shader resource view");
+            ////   throw ::hresult_exception(hrCreateShaderResourceView, "Failed to create offscreen shader resource view");
 
-      ////}
+            ////}
 
-      ////if (bCreateRenderTargetView)
-      ////{
+            ////if (bCreateRenderTargetView)
+            ////{
 
-      ////   //// 2. Create RTV descriptor heap
-      ////   //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-      ////   //rtvHeapDesc.NumDescriptors = 1;
-      ////   //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-      ////   //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      ////   //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
+            ////   //// 2. Create RTV descriptor heap
+            ////   //D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+            ////   //rtvHeapDesc.NumDescriptors = 1;
+            ////   //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+            ////   //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+            ////   //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
 
-      ////   //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
+            ////   //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
-      ////   //// 3. Create RTV
-      ////   //m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
-      ////   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+            ////   //// 3. Create RTV
+            ////   //m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
+            ////   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-      ////   pdevice->m_pdevice->CreateRenderTargetView(m_presource, nullptr, m_handleRenderTargetView);
+            ////   pdevice->m_pdevice->CreateRenderTargetView(m_presource, nullptr, m_handleRenderTargetView);
 
-      ////}
+            ////}
 
-      ////if (bCreateShaderResourceView)
-      ////{
+            ////if (bCreateShaderResourceView)
+            ////{
 
-      ////   //// 4. Create SRV descriptor heap
-      ////   //D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-      ////   //srvHeapDesc.NumDescriptors = 1;
-      ////   //srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-      ////   //srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-      ////   //
-      ////   //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&srvHeapDesc, __interface_of(m_pheapShaderResourceView));
+            ////   //// 4. Create SRV descriptor heap
+            ////   //D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+            ////   //srvHeapDesc.NumDescriptors = 1;
+            ////   //srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+            ////   //srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+            ////   //
+            ////   //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&srvHeapDesc, __interface_of(m_pheapShaderResourceView));
 
-      ////   //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
+            ////   //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
-      ////   //// 5. Create SRV
-      ////   //D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-      ////   //srvDesc.Format = format;
-      ////   //srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-      ////   //srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-      ////   //srvDesc.Texture2D.MostDetailedMip = 0;
-      ////   //srvDesc.Texture2D.MipLevels = 1;
+            ////   //// 5. Create SRV
+            ////   //D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+            ////   //srvDesc.Format = format;
+            ////   //srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+            ////   //srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+            ////   //srvDesc.Texture2D.MostDetailedMip = 0;
+            ////   //srvDesc.Texture2D.MipLevels = 1;
 
-      ////   //m_handleShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
+            ////   //m_handleShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
 
-      ////   //pdevice->m_pdevice->CreateShaderResourceView(m_presource, &srvDesc, m_handleShaderResourceView);
+            ////   //pdevice->m_pdevice->CreateShaderResourceView(m_presource, &srvDesc, m_handleShaderResourceView);
 
-      ////}
+            ////}
 
    }
 
+
+   //texture::upload_buffer* texture::_get_upload_buffer()
+   //{
+
+
+   //}
+
+
+//   ID3D12Resource* texture::_get_upload_buffer()
+//   {
+//      if (m_presourceUpload && m_presourceUpload->GetDesc().Width >= iCapacity)
+//         return m_presourceUpload; // already big enough
+//
+//      // Release old
+////      m_presourceUploadReset();
+//
+//      // Create new (round up for fewer reallocations, e.g. 256KB align)
+//      auto requiredBytes = (iCapacity + 0xFFFF) & ~0xFFFFull;
+//
+//      CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+//      CD3DX12_RESOURCE_DESC bufDesc = CD3DX12_RESOURCE_DESC::Buffer(requiredBytes);
+//      ::cast < renderer > prenderer = m_pgpurenderer;
+//
+//      ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+//
+//      pdevice->m_pdevice->CreateCommittedResource(
+//         &heapProps,
+//         D3D12_HEAP_FLAG_NONE,
+//         &bufDesc,
+//         D3D12_RESOURCE_STATE_GENERIC_READ,
+//         nullptr,
+//         IID_PPV_ARGS(&m_presourceUpload)
+//      );
+//
+//      return m_presourceUpload;
+//
+//   }
+//
+
+   //void texture::set_pixels_problem_to_maintain_upload_buffer_active_while_command_list_is_not_yet_executed(const ::int_rectangle& rectangle, const void* data)
+   //{
+
+   //   ::cast < renderer > prenderer = m_pgpurenderer;
+   //   
+   //   ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+   //   ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+
+   //   _new_state(
+   //      pcommandbuffer->m_pcommandlist,
+   //      D3D12_RESOURCE_STATE_COPY_DEST
+   //      );
+
+   //   // Dimensions of update
+   //   UINT updateWidth = rectangle.right() - rectangle.left();
+   //   UINT updateHeight = rectangle.bottom() - rectangle.top();
+
+   //   // Describe destination
+   //   D3D12_RESOURCE_DESC texDesc = m_presource->GetDesc();
+
+   //   // Compute layout
+   //   D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+   //   UINT64 totalBytes = 0;
+   //   pdevice->m_pdevice->GetCopyableFootprints(
+   //      &texDesc, 0, 1, 0,
+   //      &footprint, nullptr, nullptr, &totalBytes
+   //   );
+
+   //   // Create upload buffer
+
+   //   auto  presourceUploadBuffer = _get_upload_buffer(totalBytes);
+   //   //CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+   //   //CD3DX12_RESOURCE_DESC bufDesc = CD3DX12_RESOURCE_DESC::Buffer(totalBytes);
+
+   //   //pdevice->m_pdevice->CreateCommittedResource(
+   //   //   &heapProps,
+   //   //   D3D12_HEAP_FLAG_NONE,
+   //   //   &bufDesc,
+   //   //   D3D12_RESOURCE_STATE_GENERIC_READ,
+   //   //   nullptr,
+   //   //   IID_PPV_ARGS(&presourceUploadBuffer)
+   //   //);
+
+   //   // Map and copy row by row
+   //   BYTE* pData = nullptr;
+   //   presourceUploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pData));
+
+   //   auto bytesPerPixel = 4;
+
+   //   UINT srcRowPitch = updateWidth * bytesPerPixel;
+   //   BYTE* dst = pData + footprint.Offset;
+
+   //   auto cpuPixels = data;
+
+   //   for (UINT y = 0; y < updateHeight; y++)
+   //   {
+   //      memcpy(
+   //         dst + y * footprint.Footprint.RowPitch,
+   //         (const BYTE*)cpuPixels + y * srcRowPitch,
+   //         srcRowPitch
+   //      );
+   //   }
+
+   //   presourceUploadBuffer->Unmap(0, nullptr);
+
+   //   // Copy into texture
+   //   D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
+   //   dstLoc.pResource = m_presource;
+   //   dstLoc.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+   //   dstLoc.SubresourceIndex = 0;
+
+   //   D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
+   //   srcLoc.pResource = presourceUploadBuffer;
+   //   srcLoc.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+   //   srcLoc.PlacedFootprint = footprint;
+
+   //   CD3DX12_BOX srcBox(0, 0, 0, updateWidth, updateHeight, 1);
+
+   //   pcommandbuffer->m_pcommandlist->CopyTextureRegion(
+   //      &dstLoc,
+   //      rectangle.left(), rectangle.top(), 0, // destination position
+   //      &srcLoc,
+   //      &srcBox
+   //   );
+
+   //   // ⚠️ caller is responsible for:
+   //   // - Transitioning dstTexture into COPY_DEST before this call
+   //   // - Transitioning dstTexture back to usable state after this call
+
+   //}
+
+
+   //void texture::set_pixels_upload_buffer_is_big_exclamation_exclamation_lets_again_try_to_keep_it_around(const ::int_rectangle& rectangle, const void* data)
+   //{
+
+   //   ::cast < renderer > prenderer = m_pgpurenderer;
+
+   //   ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+   //   ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+
+
+   //   // 1. Describe the subresource we want to update
+   //   D3D12_SUBRESOURCE_DATA subresource = {};
+   //   subresource.pData = data;
+   //   subresource.RowPitch = rectangle.width() * 4;          // bytes per row in CPU buffer
+   //   subresource.SlicePitch = rectangle.width() * 4 * rectangle.height();  // total size of region
+
+   //   // 2. Create an intermediate UPLOAD buffer big enough for this region
+   //   const UINT64 uploadBufferSize =
+   //      GetRequiredIntermediateSize(m_presource, 0, 1);
+
+   //   ::comptr<ID3D12Resource> presourceUpload;
+   //   CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+   //   CD3DX12_RESOURCE_DESC   bufferDesc =
+   //      CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+
+   //   pdevice->m_pdevice->CreateCommittedResource(
+   //      &heapProps,
+   //      D3D12_HEAP_FLAG_NONE,
+   //      &bufferDesc,
+   //      D3D12_RESOURCE_STATE_GENERIC_READ,
+   //      nullptr,
+   //      IID_PPV_ARGS(&presourceUpload));
+
+   //   // 3. Transition the texture into COPY_DEST
+   //   _new_state(pcommandbuffer->m_pcommandlist, 
+   //      D3D12_RESOURCE_STATE_COPY_DEST);
+
+   //   // 4. Copy CPU data → upload buffer → texture
+   //   //    UpdateSubresources takes care of mapping & copying
+   //   UpdateSubresources(
+   //      pcommandbuffer->m_pcommandlist,
+   //      m_presource, 
+   //      presourceUpload,
+   //      0, 0, 1, &subresource);
+
+   //}
+
+
+   texture::upload_buffer* texture::_get_upload_buffer()
+   {
+
+      ::cast < renderer > prenderer = m_pgpurenderer;
+
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+      ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+
+      auto pframestorage = pdevice->current_frame_storage();
+
+      auto& pparticle = pframestorage->m_mapResource[this][e_resource_upload_buffer];
+
+      if (!pparticle)
+      {
+
+         auto puploadbuffer = __allocate upload_buffer();
+
+         puploadbuffer->m_ptexture = this;
+
+         // 2. Create an intermediate UPLOAD buffer big enough for this region
+         const UINT64 uploadBufferSize =
+            GetRequiredIntermediateSize(m_presource, 0, 1);
+
+
+         CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+         CD3DX12_RESOURCE_DESC   bufferDesc =
+            CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+
+         pdevice->m_pdevice->CreateCommittedResource(
+            &heapProps,
+            D3D12_HEAP_FLAG_NONE,
+            &bufferDesc,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&puploadbuffer->m_presourceUpload));
+
+         pparticle = puploadbuffer;
+
+      }
+
+      ::cast < texture::upload_buffer > puploadbuffer = pparticle;
+
+      return puploadbuffer;
+
+   }
+
+
+   void texture::upload_buffer::on_end_frame()
+   {
+
+      upload_damaged_regions();
+
+   }
+
+
+   void texture::upload_buffer::damage::update_copyable_region(ID3D12CommandList* pcommandlist)
+   {
+
+      pcommandlist->CopyTextureRegion(
+         &dstLoc,
+         m_left, m_top, 0, // destination position
+         &srcLoc,
+         &srcBox
+      );
+
+   }
+
+
+   void texture::upload_buffer::upload_damaged_regions()
+   {
+
+      ::cast < renderer > prenderer = m_pgpurenderer;
+
+      ::cast < command_buffer > pcommandbuffer = prenderer->getEndOfFrameCommandBuffer(::gpu::current_frame());
+
+      pcommandbuffer->m_pcommandlist->CopyTextureRegion(
+         &dstLoc,
+         rectangle.left(), rectangle.top(), 0, // destination position
+         &srcLoc,
+         &srcBox
+      );
+
+
+
+   }
+
+
+   void texture::set_pixels(const ::int_rectangle& rectangle, const void* data)
+   {
+
+      ::cast < renderer > prenderer = m_pgpurenderer;
+
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+      ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+
+      auto bytesPerPixel = 4;
+
+
+      //// 1. Describe the subresource we want to update
+      //D3D12_SUBRESOURCE_DATA subresource = {};
+      //subresource.pData = data;
+      //subresource.RowPitch = rectangle.width() * 4;          // bytes per row in CPU buffer
+      //subresource.SlicePitch = rectangle.width() * 4 * rectangle.height();  // total size of region
+
+      auto puploadbuffer = _get_upload_buffer();
+
+      // 3. Transition the texture into COPY_DEST
+      _new_state(pcommandbuffer->m_pcommandlist,
+         D3D12_RESOURCE_STATE_COPY_DEST);
+
+
+      D3D12_RESOURCE_DESC texDesc = m_presource->GetDesc();
+
+      UINT64 uploadBufferSize = 0;
+      UINT64 rowSizeInBytes = 0;
+      UINT   numRows = 0;
+
+      D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+      pdevice->m_pdevice->GetCopyableFootprints(
+         &texDesc,      // texture description
+         0,             // first subresource
+         1,             // num subresources
+         0,             // base offset
+         &footprint,    // out: layout for subresource
+         &numRows,      // out: number of rows
+         &rowSizeInBytes, // out: bytes per row (unpadded)
+         &uploadBufferSize); // out: required buffer size
+
+      // 4. Copy CPU data → upload buffer → texture
+      //    UpdateSubresources takes care of mapping & copying
+      // Map and copy row by row
+      BYTE* pData = nullptr;
+      m_presourceUpload->Map(0, nullptr, reinterpret_cast<void**>(&pData));
+
+
+
+      UINT srcRowPitch = rectangle.width() * bytesPerPixel;
+      BYTE* dst = pData + footprint.Offset;
+
+      auto cpuPixels = data;
+
+      for (UINT y = 0; y < rectangle.height(); y++)
+      {
+         memcpy(
+            dst + y * footprint.Footprint.RowPitch,
+            (const BYTE*)cpuPixels + y * srcRowPitch,
+            srcRowPitch
+         );
+      }
+
+      m_presourceUpload->Unmap(0, nullptr);
+
+      upload_buffer::damage damage;
+      // Copy into texture
+      //D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
+      damage.dstLoc.pResource = m_presource;
+      damage.dstLoc.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+      damage.dstLoc.SubresourceIndex = 0;
+
+      //D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
+      damage.srcLoc.pResource = m_presourceUpload;
+      damage.srcLoc.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+      damage.srcLoc.PlacedFootprint = footprint;
+
+      damage.srcBox = CD3DX12_BOX(0, 0, 0, rectangle.width(), rectangle.height(), 1);
+
+
+      puploadbuffer->m_damagea.add(damage);
+      // ⚠️ caller is responsible for:
+      // - Transitioning dstTexture into COPY_DEST before this call
+      // - Transitioning dstTexture back to usable state after this call
+
+
+   }
 
 
 } // namespace gpu_directx12

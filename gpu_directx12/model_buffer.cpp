@@ -45,10 +45,6 @@ namespace gpu_directx12
 
       ::gpu::model_buffer::on_initialize_gpu_context_object();
 
-      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
-
-      m_pcommandbufferLoading = prenderer->getLoadAssetsCommandBuffer();
-
    }
 
 
@@ -221,24 +217,55 @@ namespace gpu_directx12
    }
 
 
+   ::gpu::command_buffer* model_buffer::_defer_get_loading_command_buffer()
+   {
+
+      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
+
+      if (::is_null(prenderer))
+      {
+
+         return nullptr;
+
+      }
+
+      return prenderer->getLoadAssetsCommandBuffer();
+
+   }
+
+
    void model_buffer::bind(::gpu::command_buffer* pgpucommandbuffer)
    {
 
-      auto pcommandbufferLoading = m_pcommandbufferLoading;
-
-      if (pcommandbufferLoading)
+      if (!m_pbufferVertex && !m_pbufferIndex)
       {
 
-         ::cast < ::gpu_directx12::command_buffer> pcommandbufferLoading = m_pcommandbufferLoading;   
+         return;
 
-         if (!pcommandbufferLoading->has_finished())
+      }
+
+      if ((m_pbufferVertex && !m_pbufferVertex->m_bDynamic)
+         || (m_pbufferIndex && !m_pbufferIndex->m_bDynamic))
+      {
+
+
+         auto pcommandbufferLoading = m_pcommandbufferLoading;
+
+         if (pcommandbufferLoading)
          {
 
-            return;
+            ::cast < ::gpu_directx12::command_buffer> pcommandbufferLoading = m_pcommandbufferLoading;
+
+            if (!pcommandbufferLoading->has_finished())
+            {
+
+               return;
+
+            }
+
+            m_pcommandbufferLoading.release();
 
          }
-
-         m_pcommandbufferLoading.release();
 
       }
 

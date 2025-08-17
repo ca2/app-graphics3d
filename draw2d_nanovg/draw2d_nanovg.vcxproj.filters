@@ -121,9 +121,6 @@
     <ClCompile Include="draw2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="initialize_opengl_version.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="draw2d_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

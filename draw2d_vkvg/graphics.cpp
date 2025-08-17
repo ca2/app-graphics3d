@@ -5791,7 +5791,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    ::gpu::texture* graphics::current_target_texture(::gpu::frame * pgpuframe)
    {
 
-      __defer_construct(m_ptextureCurrent);
+      ødefer_construct(m_ptextureCurrent);
 
       if (!m_ptextureCurrent->m_pgpurenderer)
       {
@@ -5810,7 +5810,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          if (ptextureCurrent->m_vkimage)
          {
 
-            __øconstruct(m_ptextureCurrent);
+            øconstruct(m_ptextureCurrent);
 
             if (!m_ptextureCurrent->m_pgpurenderer)
             {
@@ -6479,7 +6479,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //         break;
       //      case META_SETBKCOLOR:
       //      {
-      //         auto pbrush = __øcreate < ::draw2d::brush >();
+      //         auto pbrush = øcreate < ::draw2d::brush >();
       //         
       //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
       //         (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->SelectObject(brush);
@@ -8246,7 +8246,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          if (!m_pgpucontextOutput)
          {
 
-            //__øconstruct(m_pgpucontextOutput);
+            //øconstruct(m_pgpucontextOutput);
 
             //::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 

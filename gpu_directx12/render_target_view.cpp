@@ -366,7 +366,7 @@ namespace gpu_directx12
       //for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
       //{
 
-      //__defer_construct_new(m_pdepthstencil);
+      //ødefer_construct_new(m_pdepthstencil);
 
       //m_pdepthstencil->initialize_depth_stencil(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
 

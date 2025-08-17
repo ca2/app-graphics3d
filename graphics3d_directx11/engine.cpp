@@ -59,7 +59,7 @@ namespace graphics3d_directx11
 
       ::graphics3d::engine::defer_update_engine(rectanglePlacement);
 
-      //      __construct_new(m_prenderer);
+      //      øconstruct_new(m_prenderer);
       //
       //      //::graphics3d::engine::m_prenderer = m_prenderer;
       //
@@ -198,11 +198,11 @@ namespace graphics3d_directx11
 
       //auto papp = get_app();
 
-      //__øconstruct(m_pgpucontextCompositor);
+      //øconstruct(m_pgpucontextCompositor);
 
       //m_pgpucontextCompositor->initialize_context(papp->m_pimpact);
 
-      //__construct_new(m_prenderer);
+      //øconstruct_new(m_prenderer);
 
       //m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontextCompositor);
 
@@ -281,7 +281,7 @@ namespace graphics3d_directx11
 
       ////VkcCamera camera(glm::vec3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
 
-      //auto viewerObject = __øcreate <::graphics3d::scene_object>();
+      //auto viewerObject = øcreate <::graphics3d::scene_object>();
       //papp->m_pimpact->m_bLastMouse = true;
       //viewerObject->m_transform.translation.z = -2.5f;
       //::graphics3d::input input;

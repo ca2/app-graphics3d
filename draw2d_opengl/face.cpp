@@ -87,7 +87,7 @@ namespace draw2d_opengl
       ////glGenTextures(1, &ch.TextureID);
       ////glBindTexture(GL_TEXTURE_2D, ch.TextureID);
 
-      ////__defer_construct(ch.m_ppixmap);
+      ////ødefer_construct(ch.m_ppixmap);
 
       //ch.m_ppixmap = m_pgpurenderer->m_pgpucontext->
 

@@ -185,7 +185,7 @@ namespace gpu_directx12
 
 //      auto physicaldevice = physicalDevices[selectedDevice];
 //
-      auto pphysicaldevice = __create_new < physical_device >();
+      auto pphysicaldevice = øcreate_new < physical_device >();
 
   //    pphysicaldevice->_initialize_physical_device(this, physicaldevice);
 
@@ -260,7 +260,7 @@ namespace gpu_directx12
    //   if (!m_pdirect2ddraw2dconnector)
    //   {
 
-   //      __defer_construct_new(m_pdirect2ddraw2dconnector);
+   //      ødefer_construct_new(m_pdirect2ddraw2dconnector);
 
    //      m_pdirect2ddraw2dconnector->initialize_draw2d_connector_for_swap_chain(pwindow);
 

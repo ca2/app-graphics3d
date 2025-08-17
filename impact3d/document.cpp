@@ -61,7 +61,7 @@ namespace graphics3d_impact3d
 
       string strPath = payloadFile.as_file_path();
 
-      __construct_new(m_prender);
+      øconstruct_new(m_prender);
 
       auto strVertexSourceCode = file()->as_string("matter://TransformVertexShader.vertexshader");
 

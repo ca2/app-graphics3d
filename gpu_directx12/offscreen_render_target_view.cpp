@@ -153,7 +153,7 @@ namespace gpu_directx12
 
             auto& ptexture = m_ptexturea->element_at(i);
 
-            __defer_construct(ptexture);
+            ødefer_construct(ptexture);
 
             ptexture->m_bRenderTarget = true;
 
