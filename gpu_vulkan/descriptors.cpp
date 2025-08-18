@@ -205,7 +205,8 @@ namespace gpu_vulkan
       for (auto & write : writes) {
          write.dstSet = set;
       }
-      vkUpdateDescriptorSets(pool.m_pgpucontext->logicalDevice(), writes.size(), writes.data(), 0, nullptr);
+      vkUpdateDescriptorSets(pool.m_pgpucontext->logicalDevice(), 
+         (uint32_t) writes.size(), writes.data(), 0, nullptr);
    }
 
 
