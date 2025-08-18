@@ -71,11 +71,11 @@ namespace vulkan
       //vkDeviceWaitIdle(m_pvkcdevice->device());
 
       //if (vkcSwapChain == nullptr) {
-      //	vkcSwapChain = std::make_unique<VkcSwapChain>(m_pvkcdevice, extent);
+      //	vkcSwapChain = øcreate_pointer<VkcSwapChain>(m_pvkcdevice, extent);
       //}
       //else {
       //	::pointer<VkcSwapChain> oldSwapChain = std::move(vkcSwapChain);
-      //	vkcSwapChain = std::make_unique<VkcSwapChain>(m_pvkcdevice, extent, oldSwapChain);
+      //	vkcSwapChain = øcreate_pointer<VkcSwapChain>(m_pvkcdevice, extent, oldSwapChain);
       //	if (!oldSwapChain->compareSwapFormats(*vkcSwapChain.get())) {
       //		throw std::runtime_error("Swap chain image(or depth) format has changed!");
       //	}

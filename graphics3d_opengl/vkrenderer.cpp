@@ -77,11 +77,11 @@ namespace graphics3d_opengl
       //vkDeviceWaitIdle(m_pgpucontext->logicalDevice());
 
       //if (vkcSwapChain == nullptr) {
-      //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pgpucontext, extent);
+      //	vkcSwapChain = øcreate_pointer<swap_chain_render_pass>(m_pgpucontext, extent);
       //}
       //else {
       //	::pointer<swap_chain_render_pass> oldSwapChain = std::move(vkcSwapChain);
-      //	vkcSwapChain = std::make_unique<swap_chain_render_pass>(m_pgpucontext, extent, oldSwapChain);
+      //	vkcSwapChain = øcreate_pointer<swap_chain_render_pass>(m_pgpucontext, extent, oldSwapChain);
       //	if (!oldSwapChain->compareSwapFormats(*vkcSwapChain.get())) {
       //		throw ::exception(error_failed, "Swap chain image(or depth) format has changed!");
       //	}
