@@ -739,7 +739,7 @@ namespace draw2d_vkvg
 
    //      //}
 
-   //      //m_pgraphics = __allocate< plusplus::Graphics((plusplus::Bitmap *) m_pbitmap->get_os_data >());
+   //      //m_pgraphics = øallocate< plusplus::Graphics((plusplus::Bitmap *) m_pbitmap->get_os_data >());
 
    //      //m_pgraphics->SetPageUnit(plusplus::UnitPixel);
 
@@ -5252,7 +5252,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   //if(hdc != nullptr)
    //   //{
 
-   //   //   m_pgraphics = __allocate< ::plusplus::Graphics( >(HDC) hdc);
+   //   //   m_pgraphics = øallocate< ::plusplus::Graphics( >(HDC) hdc);
 
    //   //   m_pgraphics->SetPageUnit(plusplus::UnitPixel);
 
@@ -8372,7 +8372,7 @@ BOOL CALLBACK draw2d_vkvg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm,
    else if (FontType & TRUETYPE_FONTTYPE)
    {
 
-      pfonts->m_itema.add(__allocate::write_text::font_enumeration_item(lplf->lfFaceName));
+      pfonts->m_itema.add(øallocate::write_text::font_enumeration_item(lplf->lfFaceName));
 
    }
    else

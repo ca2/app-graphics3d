@@ -67,7 +67,7 @@ namespace vkc {
 		std::string vertShaderPath = "matter://Shaders/SpirV/vert.vert.spv";
 		std::string fragShaderPath = "matter://Shaders/SpirV/frag.frag.spv";
 
-		vkcPipeline = __allocate VkcPipeline();
+		vkcPipeline = øallocate VkcPipeline();
 		
 		vkcPipeline->initialize_pipeline(
 			m_pvkcdevice,

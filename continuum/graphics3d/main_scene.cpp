@@ -105,7 +105,7 @@ namespace app_graphics3d_continuum
       //  }
       //};
 
-//      m_Skybox = __allocate::graphics3d::sky_box();
+//      m_Skybox = øallocate::graphics3d::sky_box();
 
       for (auto& strSkybox : m_papp->m_straSkybox)
       {
@@ -177,7 +177,7 @@ namespace app_graphics3d_continuum
 
       for (int i = 0; i < lightColors.size(); i++) 
       {
-         auto pointLight = __allocate ::graphics3d::point_light (0.2f);
+         auto pointLight = øallocate ::graphics3d::point_light (0.2f);
          pointLight->m_color = lightColors[i];
          auto rotateLight = glm::rotate(
             glm::mat4(1.f),

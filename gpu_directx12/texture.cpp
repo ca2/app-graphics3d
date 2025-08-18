@@ -888,7 +888,7 @@ namespace gpu_directx12
       if (!pobject)
       {
 
-         auto puploadbuffer = __allocate upload_buffer();
+         auto puploadbuffer = øallocate upload_buffer();
 
          puploadbuffer->initialize_upload_buffer(this);
 

@@ -65,13 +65,13 @@ namespace graphics3d_vulkan
       //      m_prenderer->set_placement(rectanglePlacement);
       //      //m_pglobalpool->initialize_pool(pgpucontext);
       //
-      //      //= __allocate
+      //      //= øallocate
       //      //   descriptor_pool::Builder(pgpucontext)
       //      //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //      //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //      //   .build();
       //
-      //      //pgpucontext = __allocate context(m_pvulkandevice);
+      //      //pgpucontext = øallocate context(m_pvulkandevice);
       //      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
       //
       //      if (iGlobalUboSize > 0)
@@ -322,7 +322,7 @@ namespace graphics3d_vulkan
 
       //m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontextCompositor);
 
-      //auto pglobalpoolbuilder = __allocate descriptor_pool::Builder();
+      //auto pglobalpoolbuilder = øallocate descriptor_pool::Builder();
 
       //pglobalpoolbuilder->initialize_builder(m_pgpucontextCompositor);
       //pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
@@ -332,14 +332,14 @@ namespace graphics3d_vulkan
 
       ////m_pglobalpool->initialize_pool(pgpucontext);
 
-      ////= __allocate
+      ////= øallocate
       ////   descriptor_pool::Builder(pgpucontext)
       ////   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       ////   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       ////   .build();
       //m_pscene->on_load_scene();
 
-      ////pgpucontext = __allocate context(m_pvulkandevice);
+      ////pgpucontext = øallocate context(m_pvulkandevice);
 
       //::pointer_array<buffer> uboBuffers;
 
@@ -350,7 +350,7 @@ namespace graphics3d_vulkan
       //for (int i = 0; i < uboBuffers.size(); i++)
       //{
 
-      //   uboBuffers[i] = __allocate buffer();
+      //   uboBuffers[i] = øallocate buffer();
 
       //   uboBuffers[i]->initialize_buffer(
       //      pgpucontext,

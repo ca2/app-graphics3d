@@ -127,7 +127,7 @@ namespace gpu_vulkan
    ::pointer <::gpu_vulkan::render_pass > render_target::create_render_pass(bool bWithDepth)
    {
 
-      auto prenderpass = __allocate offscreen_render_pass();
+      auto prenderpass = øallocate offscreen_render_pass();
 
       prenderpass->m_bWithDepth = bWithDepth;
 

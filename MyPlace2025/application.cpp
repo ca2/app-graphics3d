@@ -254,7 +254,7 @@ namespace app_graphics3d_MyPlace2025
 
       //m_peditYeeColor->set_text(strYeeColor, ::e_source_initialize);
 
-      //auto pstill = __allocate ::user::still();
+      //auto pstill = øallocate ::user::still();
 
       //øconstruct_new(m_pedit);
 

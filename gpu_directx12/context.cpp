@@ -1669,7 +1669,7 @@ namespace gpu_directx12
 
       //   m_descriptorsetsGlobal.resize(iFrameCount);
 
-      //   auto pdescriptorpoolbuilder = __allocate::gpu_directx12::descriptor_pool::Builder();
+      //   auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
 
       //   pdescriptorpoolbuilder->initialize_builder(this);
       //   pdescriptorpoolbuilder->setMaxSets(iFrameCount);
@@ -2030,7 +2030,7 @@ namespace gpu_directx12
 
    //      throw ::exception(error_wrong_state);
    //   }
-   //   auto psnapshot = __allocate snapshot(_take_snapshot(presourceSource,)
+   //   auto psnapshot = øallocate snapshot(_take_snapshot(presourceSource,)
    //   m_resourceaSnapshot.add();
 
 

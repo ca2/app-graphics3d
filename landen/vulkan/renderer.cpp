@@ -58,7 +58,7 @@ namespace vulkan
       if (m_bOffScreen)
       {
 
-         m_pvkcrenderpass = __allocate VkcOffScreen(m_pvkcdevice, m_extentRenderer, m_pvkcrenderpass);
+         m_pvkcrenderpass = øallocate VkcOffScreen(m_pvkcdevice, m_extentRenderer, m_pvkcrenderpass);
 
       }
 

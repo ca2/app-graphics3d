@@ -25,14 +25,14 @@
 //
 //
 //      // Initialize shaders
-//      m_Shader = __allocate shader(this,
+//      m_Shader = øallocate shader(this,
 //         "matter://shaders/default.vert",
 //         "matter://shaders/default.frag"
 //      );
 //
 //      //m_Shader->initialize(this);
 //
-//      m_WallShader = __allocate shader(
+//      m_WallShader = øallocate shader(
 //         this,
 //         "matter://shaders/misc.vert",
 //         "matter://shaders/misc.frag"
@@ -41,10 +41,10 @@
 //      //m_WallShader->initialize(this);
 //
 //      // Load textures
-//      m_BoxTexture      = __allocate texture(this, "matter://textures/stoneWall.jpg");
-//      m_PlaneTexture    = __allocate texture(this, "matter://textures/spaceFloor.jpg");
-//      m_SphereTexture   = __allocate texture(this, "matter://textures/greenWall.jpg");
-//      m_Misc            = __allocate texture(this, "matter://textures/mystical1.jpg");
+//      m_BoxTexture      = øallocate texture(this, "matter://textures/stoneWall.jpg");
+//      m_PlaneTexture    = øallocate texture(this, "matter://textures/spaceFloor.jpg");
+//      m_SphereTexture   = øallocate texture(this, "matter://textures/greenWall.jpg");
+//      m_Misc            = øallocate texture(this, "matter://textures/mystical1.jpg");
 //
 //      //m_BoxTexture->initialize(this);
 //        // m_PlaneTexture -> initialize(this);
@@ -82,10 +82,10 @@
 //        "matter://textures/SpaceSkybox/back.png"
 //      };
 //
-//      m_Skybox = __allocate sky_box(this, facesCubemap);
+//      m_Skybox = øallocate sky_box(this, facesCubemap);
 //
 //      // Initialize skybox shader
-//      m_SkyboxShader = __allocate shader(
+//      m_SkyboxShader = øallocate shader(
 //         this,
 //         "matter://shaders/skybox.vert",
 //         "matter://shaders/skybox.frag"
@@ -220,26 +220,26 @@
 //
 //
 //      // Create Cube mesh object
-//      m_BoxMesh = __allocate mesh(
+//      m_BoxMesh = øallocate mesh(
 //         combinedVertices, combinedIndices, cubeVertexOffset, cubeIndexOffset, cubeIndexCount
 //      );
 //
 //      // Create Plane mesh object
-//      m_PlaneMesh = __allocate mesh(
+//      m_PlaneMesh = øallocate mesh(
 //         combinedVertices, combinedIndices, planeVertexOffset, planeIndexOffset, planeIndexCount
 //      );
 //
 //      // Create sky_box mesh object
-//      m_SkyboxMesh = __allocate mesh(
+//      m_SkyboxMesh = øallocate mesh(
 //         skyboxCube.vertices, skyboxCube.indices, 0, 0, skyboxCube.indices.size()
 //      );
 //
 //      // Create Sphere mesh object
-//      m_SphereMesh = __allocate mesh(
+//      m_SphereMesh = øallocate mesh(
 //         combinedVertices, combinedIndices, sphereVertexOffset, sphereIndexOffset, sphereIndexCount
 //      );
 //
-//      m_WallMesh = __allocate  mesh(
+//      m_WallMesh = øallocate  mesh(
 //         combinedVertices, combinedIndices, wallVertexOffset, wallIndexOffset, wallIndexCount
 //      );
 //

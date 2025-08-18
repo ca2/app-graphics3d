@@ -1505,7 +1505,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
-   //   //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+   //   //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
 
    //   //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
    //   //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -1525,7 +1525,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
-   //   //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+   //   //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
 
    //   //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
    //   //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -1542,7 +1542,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //      if (!m_pshaderSourceRectangle)
    //      {
 
-   //         //auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+   //         //auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
 
    //         //pshadervertexinput->m_bindings.add(
    //         //   {
@@ -1586,7 +1586,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //      if (!m_pshaderBlendRectangle)
    //      {
 
-   //         //auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+   //         //auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
 
    //         //pshadervertexinput->m_bindings.add(
    //         //   {
@@ -1752,7 +1752,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
-   //   //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+   //   //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
 
    //   //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
    //   //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -1772,7 +1772,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
-   //   //   auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+   //   //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
 
    //   //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
    //   //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -1789,7 +1789,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //   if (!m_pshaderSourceRectangle)
    //   //   {
 
-   //   //      auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+   //   //      auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
 
    //   //      pshadervertexinput->m_bindings.add(
    //   //         {
@@ -1831,7 +1831,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //      if (!m_pshaderBlendRectangle)
    //      {
 
-   //         //auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+   //         //auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
 
    //         //pshadervertexinput->m_bindings.add(
    //         //   {
@@ -4409,7 +4409,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //if(hdc != nullptr)
    //   //{
 
-   //   //   m_pgraphics = __allocate< ::plusplus::Graphics( >(HDC) hdc);
+   //   //   m_pgraphics = øallocate< ::plusplus::Graphics( >(HDC) hdc);
 
    //   //   m_pgraphics->SetPageUnit(plusplus::UnitPixel);
 
@@ -6126,7 +6126,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
          if (!m_pshaderLine)
          {
 
-            //auto pshadervertexinput = __allocate::gpu_vulkan::shader_vertex_input();
+            //auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
 
             //pshadervertexinput->m_bindings.add(
             //   {
@@ -7071,7 +7071,7 @@ BOOL CALLBACK draw2d_vulkan_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpnt
    else if (FontType & TRUETYPE_FONTTYPE)
    {
 
-      pfonts->m_itema.add(__allocate::write_text::font_enumeration_item(lplf->lfFaceName));
+      pfonts->m_itema.add(øallocate::write_text::font_enumeration_item(lplf->lfFaceName));
 
    }
    else

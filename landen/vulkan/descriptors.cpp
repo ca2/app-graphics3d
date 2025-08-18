@@ -29,7 +29,7 @@ namespace vkc {
     {
         auto pvkcdevice = this->m_pvkcdevice.m_p;
         __refdbg_this(pvkcdevice);
-        return __allocate VkcDescriptorSetLayout(m_pvkcdevice, bindings);
+        return øallocate VkcDescriptorSetLayout(m_pvkcdevice, bindings);
     }
 
     // *************** Descriptor Set Layout *********************
@@ -82,7 +82,7 @@ namespace vkc {
     }
 
     ::pointer <VkcDescriptorPool> VkcDescriptorPool::Builder::build() const {
-        return __allocate VkcDescriptorPool (m_pvkcdevice, maxSets, poolFlags, poolSizes);
+        return øallocate VkcDescriptorPool (m_pvkcdevice, maxSets, poolFlags, poolSizes);
     }
 
     // *************** Descriptor Pool *********************

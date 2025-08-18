@@ -28,7 +28,7 @@ namespace gpu_vulkan
    {
       auto pvkcdevice = this->m_pgpucontext.m_p;
       __refdbg_this(pvkcdevice);
-      return __allocate set_descriptor_layout(m_pgpucontext, bindings);
+      return øallocate set_descriptor_layout(m_pgpucontext, bindings);
    }
 
    // *************** Descriptor Set Layout *********************
@@ -82,7 +82,7 @@ namespace gpu_vulkan
    }
 
    ::pointer <descriptor_pool> descriptor_pool::Builder::build() const {
-      return __allocate descriptor_pool(m_pgpucontext, maxSets, poolFlags, poolSizes);
+      return øallocate descriptor_pool(m_pgpucontext, maxSets, poolFlags, poolSizes);
    }
 
    // *************** Descriptor Pool *********************

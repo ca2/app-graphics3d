@@ -2701,7 +2701,7 @@ namespace gpu_vulkan
 
          m_descriptorsetsGlobal.resize(iFrameCount);
 
-         auto pdescriptorpoolbuilder = __allocate::gpu_vulkan::descriptor_pool::Builder();
+         auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
 
          pdescriptorpoolbuilder->initialize_builder(this);
          pdescriptorpoolbuilder->setMaxSets(iFrameCount);

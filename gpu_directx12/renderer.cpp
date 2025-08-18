@@ -340,7 +340,7 @@ float4 main(PSInput input) : SV_TARGET {
    //      || eoutput == ::gpu::e_output_gpu_buffer)
    //   {
 
-   //      auto poffscreenrendertargetview = __allocate offscreen_render_target_view;
+   //      auto poffscreenrendertargetview = øallocate offscreen_render_target_view;
    //      //#ifdef WINDOWS_DESKTOP
    //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //      //#else
@@ -359,7 +359,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   else if (eoutput == ::gpu::e_output_gpu_buffer_to_swap_chain)
    //   {
 
-   //      auto poffscreenrendertargetview = __allocate offscreen_render_target_view;
+   //      auto poffscreenrendertargetview = øallocate offscreen_render_target_view;
    //      //#ifdef WINDOWS_DESKTOP
    //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //      //#else
@@ -408,7 +408,7 @@ float4 main(PSInput input) : SV_TARGET {
    //      || eoutput == ::gpu::e_output_gpu_buffer)
    //   {
 
-   //      auto poffscreenrendertargetview = __allocate offscreen_render_target_view;
+   //      auto poffscreenrendertargetview = øallocate offscreen_render_target_view;
    //      //#ifdef WINDOWS_DESKTOP
    //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //      //#else
@@ -427,7 +427,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   else if (eoutput == ::gpu::e_output_gpu_buffer_to_swap_chain)
    //   {
 
-   //      auto poffscreenrendertargetview = __allocate offscreen_render_target_view;
+   //      auto poffscreenrendertargetview = øallocate offscreen_render_target_view;
    //      //#ifdef WINDOWS_DESKTOP
    //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //      //#else
@@ -443,7 +443,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   //      else if (eoutput == ::gpu::e_output_gpu_buffer)
    //   //      {
    //   //
-   //   //         auto poffscreenrendertargetview = __allocate offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
+   //   //         auto poffscreenrendertargetview = øallocate offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
    //   //#ifdef WINDOWS_DESKTOP
    //   //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //   //#else
@@ -456,7 +456,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   //      else if (eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
    //   //      {
    //   //
-   //   //         auto paccumulationrendertargetview = __allocate accumulation_render_target_view(this, m_extentRenderer, m_prendertargetview);
+   //   //         auto paccumulationrendertargetview = øallocate accumulation_render_target_view(this, m_extentRenderer, m_prendertargetview);
    //   //         paccumulationrendertargetview->m_formatImage = VK_FORMAT_R32G32B32A32_SFLOAT;
    //   //         paccumulationrendertargetview->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
    //   //         m_prendertargetview = paccumulationrendertargetview;
@@ -467,7 +467,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   //
    //   //         //m_prendererResolve->set_placement(m_pgpucontext->rectangle);
    //   //         //
-   //   //         //            auto poffscreenrendertargetview = __allocate offscreen_render_target_view(m_pgpucontext, m_extentRenderer, m_prendertargetviewResolve);
+   //   //         //            auto poffscreenrendertargetview = øallocate offscreen_render_target_view(m_pgpucontext, m_extentRenderer, m_prendertargetviewResolve);
    //   //         //#ifdef WINDOWS_DESKTOP
    //   //         //            poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //   //         //#else
@@ -478,7 +478,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   //      else if (eoutput == ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers)
    //   //      {
    //   //
-   //   //         auto poffscreenrendertargetview = __allocate offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
+   //   //         auto poffscreenrendertargetview = øallocate offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
    //   //#ifdef WINDOWS_DESKTOP
    //   //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //   //#else
@@ -526,7 +526,7 @@ float4 main(PSInput input) : SV_TARGET {
    //::pointer < ::gpu::render_target > renderer::allocate_offscreen_render_target()
    //{
 
-   //   auto poffscreenrendertargetview = __allocate offscreen_render_target_view();
+   //   auto poffscreenrendertargetview = øallocate offscreen_render_target_view();
 
    //   return poffscreenrendertargetview;
 
@@ -2093,7 +2093,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //		int iFrameCount = get_frame_count();
 
-      //		auto pdescriptorpoolbuilder = __allocate::gpu_directx12::descriptor_pool::Builder();
+      //		auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
 
       //		pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
       //		pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -2106,7 +2106,7 @@ float4 main(PSInput input) : SV_TARGET {
       //	if (!m_pshaderResolve)
       //	{
 
-      //		auto pshadervertexinput = __allocate  shader_vertex_input();
+      //		auto pshadervertexinput = øallocate  shader_vertex_input();
 
       //		pshadervertexinput->m_bindings.add(
       //			{
@@ -2603,7 +2603,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //      int iFrameCount = get_frame_count();
 
-   //      auto pdescriptorpoolbuilder = __allocate::gpu_directx12::descriptor_pool::Builder();
+   //      auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
 
    //      pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
    //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -2890,7 +2890,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //      int iFrameCount = get_frame_count();
 
-   //      auto pdescriptorpoolbuilder = __allocate::gpu_directx12::descriptor_pool::Builder();
+   //      auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
 
    //      pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
    //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -3065,7 +3065,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //      int iFrameCount = get_frame_count();
 
-   //      auto pdescriptorpoolbuilder = __allocate::gpu_directx12::descriptor_pool::Builder();
+   //      auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
 
    //      pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
    //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -3455,7 +3455,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //     int iFrameCount = get_frame_count();
 
-      //     auto pdescriptorpoolbuilder = __allocate::gpu_directx12::descriptor_pool::Builder();
+      //     auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
 
       //     pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
       //     pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);

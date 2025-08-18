@@ -55,7 +55,7 @@ namespace vkc {
 
         __refdbg_this(pvkcdevice);
 
-        return __allocate VkcModel(pvkcdevice, builder);
+        return øallocate VkcModel(pvkcdevice, builder);
     }
 
 
@@ -78,7 +78,7 @@ namespace vkc {
         stagingBuffer.map();
         stagingBuffer.writeToBuffer((void*)vertices.data());
 
-        vertexBuffer = __allocate VkcBuffer;
+        vertexBuffer = øallocate VkcBuffer;
         
            vertexBuffer->initialize_buffer(
             m_pvkcdevice,
@@ -117,7 +117,7 @@ namespace vkc {
         stagingBuffer.map();
         stagingBuffer.writeToBuffer((void*)indices.data());
 
-        indexBuffer = __allocate VkcBuffer();
+        indexBuffer = øallocate VkcBuffer();
         
         indexBuffer->initialize_buffer(
             m_pvkcdevice,

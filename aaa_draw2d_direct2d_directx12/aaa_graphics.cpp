@@ -208,7 +208,7 @@ namespace draw2d_direct2d_directx12
       m_pgpucontext->_send([this, size]()
          {
 
-            /*::direct2d_directx12::direct2d_directx12() = __allocate ::draw2d_direct2d_directx12::plugin();
+            /*::direct2d_directx12::direct2d_directx12() = øallocate ::draw2d_direct2d_directx12::plugin();
 
             ::direct2d_directx12::get()->initialize();*/
 
@@ -6104,7 +6104,7 @@ namespace draw2d_direct2d_directx12
 
       }
 
-      m_penddraw = __allocate swap_chain_end_draw();
+      m_penddraw = øallocate swap_chain_end_draw();
 
       m_penddraw->initialize(this);
 

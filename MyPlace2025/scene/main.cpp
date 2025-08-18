@@ -92,7 +92,7 @@ namespace app_graphics3d_MyPlace2025
         }
       };
 
-      m_Skybox = __allocate ::graphics3d::sky_box();
+      m_Skybox = øallocate ::graphics3d::sky_box();
 
       m_Skybox->initialize_sky_box(m_pengine, cube);
 

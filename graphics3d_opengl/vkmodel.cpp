@@ -70,7 +70,7 @@ namespace graphics3d_opengl
 
     //    __refdbg_this(pvkcdevice);
 
-    //    return __allocate model(pvkcdevice, builder);
+    //    return øallocate model(pvkcdevice, builder);
     //}
 
 
@@ -93,7 +93,7 @@ namespace graphics3d_opengl
         stagingBuffer.map();
         stagingBuffer.writeToBuffer((void*)vertices.data());
 
-        vertexBuffer = __allocate buffer;
+        vertexBuffer = øallocate buffer;
         
            vertexBuffer->initialize_buffer(
             m_pgpucontext,
@@ -132,7 +132,7 @@ namespace graphics3d_opengl
         stagingBuffer.map();
         stagingBuffer.writeToBuffer((void*)indices.data());
 
-        indexBuffer = __allocate buffer();
+        indexBuffer = øallocate buffer();
         
         indexBuffer->initialize_buffer(
             m_pgpucontext,

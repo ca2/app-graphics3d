@@ -1157,7 +1157,7 @@
 //      //m_pgpucontext->_send([this, size]()
 //      //   {
 //
-//      //      /*::direct2d::direct2d() = __allocate ::draw2d_direct2d::plugin();
+//      //      /*::direct2d::direct2d() = øallocate ::draw2d_direct2d::plugin();
 //
 //      //      ::direct2d::get()->initialize();*/
 //

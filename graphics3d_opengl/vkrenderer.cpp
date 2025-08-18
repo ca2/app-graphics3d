@@ -64,7 +64,7 @@ namespace graphics3d_opengl
       if (m_bOffScreen)
       {
 
-         m_pvkcrenderpass = __allocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
+         m_pvkcrenderpass = øallocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
 
       }
 
