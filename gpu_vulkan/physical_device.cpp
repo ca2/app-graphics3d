@@ -12,10 +12,10 @@ namespace gpu_vulkan
    {
       
       m_vksurfacekhr = nullptr;
-      m_physicaldevice = VK_NULL_HANDLE;
-      m_physicaldeviceproperties = {};
-      m_physicaldevicefeatures = {};
-      m_physicaldevicememoryproperties = {};
+      m_vkphysicaldevice = VK_NULL_HANDLE;
+      m_vkphysicaldeviceproperties = {};
+      m_vkphysicaldevicefeatures = {};
+      m_vkphysicaldevicememoryproperties = {};
 
    }
 
@@ -27,49 +27,49 @@ namespace gpu_vulkan
    }
 
    
-   void physical_device::_initialize_physical_device(approach * pgpuapproach, VkPhysicalDevice physicaldevice)
+   void physical_device::_initialize_physical_device(approach * pgpuapproach, VkPhysicalDevice vkphysicaldevice)
    {
 
       m_pgpuapproach = pgpuapproach;
 
-      m_physicaldevice = physicaldevice;
+      m_vkphysicaldevice = vkphysicaldevice;
 
       // Store properties (including limits), features and memory properties of the physical device (so that examples can check against them)
       // Store Properties features, limits and properties of the physical device for later use
       // Device properties also contain limits and sparse properties
-      vkGetPhysicalDeviceProperties(m_physicaldevice, &m_physicaldeviceproperties);
+      vkGetPhysicalDeviceProperties(m_vkphysicaldevice, &m_vkphysicaldeviceproperties);
       // Features should be checked by the examples before using them
-      vkGetPhysicalDeviceFeatures(m_physicaldevice, &m_physicaldevicefeatures);
+      vkGetPhysicalDeviceFeatures(m_vkphysicaldevice, &m_vkphysicaldevicefeatures);
       // Memory properties are used regularly for creating all kinds of buffers
-      vkGetPhysicalDeviceMemoryProperties(m_physicaldevice, &m_physicaldevicememoryproperties);
+      vkGetPhysicalDeviceMemoryProperties(m_vkphysicaldevice, &m_vkphysicaldevicememoryproperties);
       // Queue family properties, used for setting up requested queues upon device creation
       uint32_t queueFamilyCount;
-      vkGetPhysicalDeviceQueueFamilyProperties(m_physicaldevice, &queueFamilyCount, nullptr);
+      vkGetPhysicalDeviceQueueFamilyProperties(m_vkphysicaldevice, &queueFamilyCount, nullptr);
       assert(queueFamilyCount > 0);
-      m_queuefamilypropertya.set_size(queueFamilyCount);
-      vkGetPhysicalDeviceQueueFamilyProperties(m_physicaldevice, &queueFamilyCount, m_queuefamilypropertya.data());
+      m_vkqueuefamilypropertya.set_size(queueFamilyCount);
+      vkGetPhysicalDeviceQueueFamilyProperties(m_vkphysicaldevice, &queueFamilyCount, m_vkqueuefamilypropertya.data());
 
       //::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
 
-      //// Get queue family indices for the requested queue family types
-      //// Note that the indices may overlap depending on the implementation
+      //// Get queue family indexes for the requested queue family types
+      //// Note that the indexes may overlap depending on the implementation
 
       //const float defaultQueuePriority(0.0f);
 
       //// Graphics queue
       //if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT)
       //{
-      //   m_queuefamilyindices.graphics = getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
+      //   m_queuefamilyindexes.graphics = getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
       //   VkDeviceQueueCreateInfo queueInfo{};
       //   queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-      //   queueInfo.queueFamilyIndex = m_queuefamilyindices.graphics;
+      //   queueInfo.queueFamilyIndex = m_queuefamilyindexes.graphics;
       //   queueInfo.queueCount = 1;
       //   queueInfo.pQueuePriorities = &defaultQueuePriority;
       //   queueCreateInfos.add(queueInfo);
       //}
       //else
       //{
-      //   m_queuefamilyindices.graphics = 0;
+      //   m_queuefamilyindexes.graphics = 0;
       //}
 
      
@@ -92,9 +92,9 @@ namespace gpu_vulkan
       // Try to find a queue family index that supports compute but not graphics
       if ((queueFlags & VK_QUEUE_COMPUTE_BIT) == queueFlags)
       {
-         for (uint32_t i = 0; i < static_cast<uint32_t>(m_queuefamilypropertya.size()); i++)
+         for (uint32_t i = 0; i < static_cast<uint32_t>(m_vkqueuefamilypropertya.size()); i++)
          {
-            if ((m_queuefamilypropertya[i].queueFlags & VK_QUEUE_COMPUTE_BIT) && ((m_queuefamilypropertya[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0))
+            if ((m_vkqueuefamilypropertya[i].queueFlags & VK_QUEUE_COMPUTE_BIT) && ((m_vkqueuefamilypropertya[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0))
             {
                return i;
             }
@@ -105,9 +105,9 @@ namespace gpu_vulkan
       // Try to find a queue family index that supports transfer but not graphics and compute
       if ((queueFlags & VK_QUEUE_TRANSFER_BIT) == queueFlags)
       {
-         for (uint32_t i = 0; i < static_cast<uint32_t>(m_queuefamilypropertya.size()); i++)
+         for (uint32_t i = 0; i < static_cast<uint32_t>(m_vkqueuefamilypropertya.size()); i++)
          {
-            if ((m_queuefamilypropertya[i].queueFlags & VK_QUEUE_TRANSFER_BIT) && ((m_queuefamilypropertya[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0) && ((m_queuefamilypropertya[i].queueFlags & VK_QUEUE_COMPUTE_BIT) == 0))
+            if ((m_vkqueuefamilypropertya[i].queueFlags & VK_QUEUE_TRANSFER_BIT) && ((m_vkqueuefamilypropertya[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0) && ((m_vkqueuefamilypropertya[i].queueFlags & VK_QUEUE_COMPUTE_BIT) == 0))
             {
                return i;
             }
@@ -115,9 +115,9 @@ namespace gpu_vulkan
       }
 
       // For other queue types or if no separate compute queue is present, return the first one to support the requested flags
-      for (uint32_t i = 0; i < static_cast<uint32_t>(m_queuefamilypropertya.size()); i++)
+      for (uint32_t i = 0; i < static_cast<uint32_t>(m_vkqueuefamilypropertya.size()); i++)
       {
-         if ((m_queuefamilypropertya[i].queueFlags & queueFlags) == queueFlags)
+         if ((m_vkqueuefamilypropertya[i].queueFlags & queueFlags) == queueFlags)
          {
             return i;
          }
@@ -137,7 +137,7 @@ namespace gpu_vulkan
       {
 
          VkFormatProperties props;
-         vkGetPhysicalDeviceFormatProperties(m_physicaldevice, format, &props);
+         vkGetPhysicalDeviceFormatProperties(m_vkphysicaldevice, format, &props);
 
          if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
             return format;
@@ -155,7 +155,7 @@ namespace gpu_vulkan
    {
 
       VkPhysicalDeviceMemoryProperties memProperties;
-      vkGetPhysicalDeviceMemoryProperties(m_physicaldevice, &memProperties);
+      vkGetPhysicalDeviceMemoryProperties(m_vkphysicaldevice, &memProperties);
       for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
          if ((typeFilter & (1 << i)) &&
             (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {

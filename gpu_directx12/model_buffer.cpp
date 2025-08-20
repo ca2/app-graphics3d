@@ -59,31 +59,31 @@ namespace gpu_directx12
 
    //   m_pcommandbufferLoading = prenderer->getLoadAssetsCommandBuffer();
 
-   //   if (builder.vertices.has_element())
+   //   if (builder.vertexes.has_element())
    //   {
 
-   //      createVertexBuffers(builder.vertices);
+   //      createVertexBuffers(builder.vertexes);
 
    //   }
 
-   //   if (builder.indices.has_element())
+   //   if (builder.indexes.has_element())
    //   {
 
-   //      createIndexBuffers(builder.indices);
+   //      createIndexBuffers(builder.indexes);
 
    //   }
 
    //}
 
 
-   //void model_buffer::createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices)
+   //void model_buffer::createVertexBuffers(const ::array<::graphics3d::Vertex>& vertexes)
    //{
 
    //   ::cast < ::gpu_directx12::device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
    //   //::array<::gpu::Vertex> a;
 
-   //   //a.copy(vertices);
+   //   //a.copy(vertexes);
 
    //   //for (int i = 0; i < a.size(); i += 3)
    //   //{
@@ -97,7 +97,7 @@ namespace gpu_directx12
    //   //   //item.position.z = - item.position.z;
    //   //}
 
-   //   auto vertexBufferSize = (UINT) vertices.get_size_in_bytes();
+   //   auto vertexBufferSize = (UINT) vertexes.get_size_in_bytes();
 
    //   // Create default heap resources
    //   CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
@@ -121,7 +121,7 @@ namespace gpu_directx12
    //   void* data = nullptr;
    //   D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
    //   m_presourceVertexBufferUpload->Map(0, &range, &data);
-   //   memcpy(data, vertices.data(), vertexBufferSize);
+   //   memcpy(data, vertexes.data(), vertexBufferSize);
    //   m_presourceVertexBufferUpload->Unmap(0, nullptr);
 
    //   ::cast < ::gpu_directx12::command_buffer > pcommandbufferLoading = m_pcommandbufferLoading;
@@ -137,17 +137,17 @@ namespace gpu_directx12
    //}
 
 
-   //void model_buffer::createIndexBuffers(const ::array<uint32_t>& indices)
+   //void model_buffer::createIndexBuffers(const ::array<uint32_t>& indexes)
    //{
 
-   //   m_iIndexCount = static_cast<uint32_t>(indices.size());
+   //   m_iIndexCount = static_cast<uint32_t>(indexes.size());
 
    //   // hasIndexBuffer = indexCount > 0;
 
    //   if (m_iIndexCount > 0)
    //   {
 
-   //      auto indexBufferSize = (UINT) indices.get_size_in_bytes();
+   //      auto indexBufferSize = (UINT) indexes.get_size_in_bytes();
 
    //      ::cast < ::gpu_directx12::device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
@@ -169,7 +169,7 @@ namespace gpu_directx12
    //      void* data = nullptr;
    //      D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
    //      m_presourceIndexBufferUpload->Map(0, &range, &data);
-   //      memcpy(data, indices.data(), indexBufferSize);
+   //      memcpy(data, indexes.data(), indexBufferSize);
    //      m_presourceIndexBufferUpload->Unmap(0, nullptr);
 
    //      ::cast < ::gpu_directx12::command_buffer> pcommandbufferLoading = m_pcommandbufferLoading;
@@ -321,9 +321,22 @@ namespace gpu_directx12
 
       }
 
-      pcommandlist->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+      if (m_bDummy)
+      {
 
-      pcommandlist->IASetVertexBuffers(0, 1, &m_vertexbufferview);
+         pcommandlist->IASetVertexBuffers(0, 0, nullptr);
+         pcommandlist->IASetIndexBuffer(nullptr);
+
+      }
+      else
+      {
+         pcommandlist->IASetVertexBuffers(0, 1, &m_vertexbufferview);
+      }
+
+
+
+
+
 
       if (m_iIndexCount > 0)
       {
@@ -375,7 +388,7 @@ namespace gpu_directx12
 
          //   vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
          pcommandlist->DrawIndexedInstanced(
-            m_iIndexCount,        // Number of indices to draw
+            m_iIndexCount,        // Number of indexes to draw
             1,
             0,                 // Start index location in the index buffer
             0,                  // Base vertex location (added to each index)
@@ -388,7 +401,7 @@ namespace gpu_directx12
       
          //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
          pcommandlist->DrawInstanced(
-            m_iVertexCount,       // Number of vertices to draw
+            m_iVertexCount,       // Number of vertexes to draw
             1,
             0,                  // Start vertex location
             0
@@ -416,20 +429,20 @@ namespace gpu_directx12
    //        throw std::runtime_error(warn + err);
    //    }
 
-   //    vertices.clear();
-   //    indices.clear();
+   //    vertexes.clear();
+   //    indexes.clear();
 
 
    //    ::map<Vertex, uint32_t> uniqueVertices{};
    //    for (const auto& shape : shapes) {
-   //        for (const auto& index : shape.mesh.indices) {
+   //        for (const auto& index : shape.mesh.indexes) {
    //            Vertex vertex{};
 
    //            if (index.vertex_index >= 0) {
    //                vertex.position = {
-   //                    attrib.vertices[3 * index.vertex_index + 0],
-   //                    attrib.vertices[3 * index.vertex_index + 1],
-   //                    attrib.vertices[3 * index.vertex_index + 2],
+   //                    attrib.vertexes[3 * index.vertex_index + 0],
+   //                    attrib.vertexes[3 * index.vertex_index + 1],
+   //                    attrib.vertexes[3 * index.vertex_index + 2],
    //                };
 
    //                vertex.color = {
@@ -456,10 +469,10 @@ namespace gpu_directx12
    //            }
 
    //            if (uniqueVertices.count(vertex) == 0) {
-   //                uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-   //                vertices.add(vertex);
+   //                uniqueVertices[vertex] = static_cast<uint32_t>(vertexes.size());
+   //                vertexes.add(vertex);
    //            }
-   //            indices.add(uniqueVertices[vertex]);
+   //            indexes.add(uniqueVertices[vertex]);
 
    //        }
    //    }

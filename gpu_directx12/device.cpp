@@ -438,17 +438,17 @@ namespace gpu_directx12
    //void device::createLogicalDevice()
    //{
 
-   //   QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+   //   QueueFamilyIndices indexes = findQueueFamilies(physicalDevice);
 
    //   ::array<VkDeviceQueueCreateInfo> queueCreateInfos;
    //   std::set<uint32_t> uniqueQueueFamilies;
-   //   if (indices.graphicsFamilyHasValue)
+   //   if (indexes.graphicsFamilyHasValue)
    //   {
-   //      uniqueQueueFamilies.insert(indices.graphicsFamily);
+   //      uniqueQueueFamilies.insert(indexes.graphicsFamily);
    //   }
-   //   if (indices.presentFamilyHasValue)
+   //   if (indexes.presentFamilyHasValue)
    //   {
-   //      uniqueQueueFamilies.insert(indices.presentFamily);
+   //      uniqueQueueFamilies.insert(indexes.presentFamily);
    //   }
 
    //   float queuePriority = 1.0f;
@@ -491,13 +491,13 @@ namespace gpu_directx12
    //   {
    //      throw ::exception(error_failed,"failed to create logical pvkcdevice!");
    //   }
-   //   if (indices.graphicsFamilyHasValue)
+   //   if (indexes.graphicsFamilyHasValue)
    //   {
-   //      vkGetDeviceQueue(m_vkdevice, indices.graphicsFamily, 0, &m_vkqueueGraphics);
+   //      vkGetDeviceQueue(m_vkdevice, indexes.graphicsFamily, 0, &m_vkqueueGraphics);
    //   }
-   //   if (indices.presentFamilyHasValue)
+   //   if (indexes.presentFamilyHasValue)
    //   {
-   //      vkGetDeviceQueue(m_vkdevice, indices.presentFamily, 0, &m_vkqueuePresent);
+   //      vkGetDeviceQueue(m_vkdevice, indexes.presentFamily, 0, &m_vkqueuePresent);
    //   }
    //}
 
@@ -525,7 +525,7 @@ namespace gpu_directx12
    //bool device::isDeviceSuitable(VkPhysicalDevice pvkcdevice)
    //{
 
-   //   QueueFamilyIndices indices = findQueueFamilies(pvkcdevice);
+   //   QueueFamilyIndices indexes = findQueueFamilies(pvkcdevice);
 
    //   bool extensionsSupported = checkDeviceExtensionSupport(pvkcdevice);
 
@@ -548,7 +548,7 @@ namespace gpu_directx12
    //   VkPhysicalDeviceFeatures supportedFeatures;
    //   vkGetPhysicalDeviceFeatures(pvkcdevice, &supportedFeatures);
 
-   //   return (!m_vksurfacekhr || indices.isComplete()) && extensionsSupported && swapChainAdequate &&
+   //   return (!m_vksurfacekhr || indexes.isComplete()) && extensionsSupported && swapChainAdequate &&
    //      supportedFeatures.samplerAnisotropy;
 
    //}
@@ -879,7 +879,7 @@ namespace gpu_directx12
    //directx12::QueueFamilyIndices physical_device::findQueueFamilies()
    //{
 
-   //   directx12::QueueFamilyIndices indices;
+   //   directx12::QueueFamilyIndices indexes;
 
    //   uint32_t queueFamilyCount = 0;
    //   vkGetPhysicalDeviceQueueFamilyProperties(m_physicaldevice, &queueFamilyCount, nullptr);
@@ -892,18 +892,18 @@ namespace gpu_directx12
    //   {
    //      if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
    //      {
-   //         indices.graphicsFamily = i;
-   //         indices.graphicsFamilyHasValue = true;
+   //         indexes.graphicsFamily = i;
+   //         indexes.graphicsFamilyHasValue = true;
    //      }
    //      if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
    //      {
-   //         indices.computeFamily = i;
-   //         indices.computeFamilyHasValue = true;
+   //         indexes.computeFamily = i;
+   //         indexes.computeFamilyHasValue = true;
    //      }
    //      if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT)
    //      {
-   //         indices.transferFamily = i;
-   //         indices.transferFamilyHasValue = true;
+   //         indexes.transferFamily = i;
+   //         indexes.transferFamilyHasValue = true;
    //      }
    //      if (m_vksurfacekhr)
    //      {
@@ -911,18 +911,18 @@ namespace gpu_directx12
    //         vkGetPhysicalDeviceSurfaceSupportKHR(m_physicaldevice, i, m_vksurfacekhr, &presentSupport);
    //         if (queueFamily.queueCount > 0 && presentSupport)
    //         {
-   //            indices.presentFamily = i;
-   //            indices.presentFamilyHasValue = true;
+   //            indexes.presentFamily = i;
+   //            indexes.presentFamilyHasValue = true;
    //         }
    //      }
-   //      //if (indices.isComplete()) {
+   //      //if (indexes.isComplete()) {
    //        // break;
    //      //}
 
    //      i++;
    //   }
 
-   //   return indices;
+   //   return indexes;
 
    //}
 

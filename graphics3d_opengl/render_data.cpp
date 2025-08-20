@@ -188,35 +188,35 @@
 //      // Offsets for vertex and index data (dynamic approach)
 //      size_t cubeVertexOffset = 0;
 //      size_t cubeIndexOffset = 0;
-//      size_t cubeIndexCount = graphics3d.indices.size();
+//      size_t cubeIndexCount = graphics3d.indexes.size();
 //
 //      // Combine the graphics3d data and prepare offsets for the plane
-//      ::array<float> combinedVertices = graphics3d.vertices;  // Start with graphics3d's vertices
-//      ::array<unsigned int> combinedIndices = graphics3d.indices;  // Start with graphics3d's indices
+//      ::array<float> combinedVertices = graphics3d.vertexes;  // Start with graphics3d's vertexes
+//      ::array<unsigned int> combinedIndices = graphics3d.indexes;  // Start with graphics3d's indexes
 //
 //      size_t planeVertexOffset = combinedVertices.size() / 8;  // Calculate vertex offset for plane
 //      size_t planeIndexOffset = combinedIndices.size();         // Calculate index offset for plane
-//      size_t planeIndexCount = plane.indices.size();
+//      size_t planeIndexCount = plane.indexes.size();
 //
 //      // Append the plane data to the combined data
-//      combinedVertices.insert(combinedVertices.end(), plane.vertices.begin(), plane.vertices.end());
-//      combinedIndices.insert(combinedIndices.end(), plane.indices.begin(), plane.indices.end());
+//      combinedVertices.insert(combinedVertices.end(), plane.vertexes.begin(), plane.vertexes.end());
+//      combinedIndices.insert(combinedIndices.end(), plane.indexes.begin(), plane.indexes.end());
 //
 //      // Sphere offsets and data appending
 //      size_t sphereVertexOffset = combinedVertices.size() / 8;  // Sphere vertex offset
 //      size_t sphereIndexOffset = combinedIndices.size();        // Sphere index offset
-//      size_t sphereIndexCount = sphere.indices.size();
+//      size_t sphereIndexCount = sphere.indexes.size();
 //
-//      combinedVertices.insert(combinedVertices.end(), sphere.vertices.begin(), sphere.vertices.end());
-//      combinedIndices.insert(combinedIndices.end(), sphere.indices.begin(), sphere.indices.end());
+//      combinedVertices.insert(combinedVertices.end(), sphere.vertexes.begin(), sphere.vertexes.end());
+//      combinedIndices.insert(combinedIndices.end(), sphere.indexes.begin(), sphere.indexes.end());
 //
 //      // Wall offsets and data appending
 //      size_t wallVertexOffset = combinedVertices.size() / 8;
 //      size_t wallIndexOffset = combinedIndices.size();
-//      size_t wallIndexCount = wall.indices.size();
+//      size_t wallIndexCount = wall.indexes.size();
 //
-//      combinedVertices.insert(combinedVertices.end(), wall.vertices.begin(), wall.vertices.end());
-//      combinedIndices.insert(combinedIndices.end(), wall.indices.begin(), wall.indices.end());
+//      combinedVertices.insert(combinedVertices.end(), wall.vertexes.begin(), wall.vertexes.end());
+//      combinedIndices.insert(combinedIndices.end(), wall.indexes.begin(), wall.indexes.end());
 //
 //
 //      // Create Cube mesh object
@@ -231,7 +231,7 @@
 //
 //      // Create sky_box mesh object
 //      m_SkyboxMesh = øallocate mesh(
-//         skyboxCube.vertices, skyboxCube.indices, 0, 0, skyboxCube.indices.size()
+//         skyboxCube.vertexes, skyboxCube.indexes, 0, 0, skyboxCube.indexes.size()
 //      );
 //
 //      // Create Sphere mesh object

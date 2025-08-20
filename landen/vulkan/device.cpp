@@ -170,17 +170,17 @@ namespace vkc
    void VkcDevice::createLogicalDevice()
    {
 
-      QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+      QueueFamilyIndices indexes = findQueueFamilies(physicalDevice);
 
       std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
       std::set<uint32_t> uniqueQueueFamilies;
-      if (indices.graphicsFamilyHasValue)
+      if (indexes.graphicsFamilyHasValue)
       {
-         uniqueQueueFamilies.insert(indices.graphicsFamily);
+         uniqueQueueFamilies.insert(indexes.graphicsFamily);
       }
-      if (indices.presentFamilyHasValue)
+      if (indexes.presentFamilyHasValue)
       {
-         uniqueQueueFamilies.insert(indices.presentFamily);
+         uniqueQueueFamilies.insert(indexes.presentFamily);
       }
 
       float queuePriority = 1.0f;
@@ -223,13 +223,13 @@ namespace vkc
       {
          throw std::runtime_error("failed to create logical pvkcdevice!");
       }
-      if (indices.graphicsFamilyHasValue)
+      if (indexes.graphicsFamilyHasValue)
       {
-         vkGetDeviceQueue(m_vkdevice, indices.graphicsFamily, 0, &graphicsQueue_);
+         vkGetDeviceQueue(m_vkdevice, indexes.graphicsFamily, 0, &graphicsQueue_);
       }
-      if (indices.presentFamilyHasValue)
+      if (indexes.presentFamilyHasValue)
       {
-         vkGetDeviceQueue(m_vkdevice, indices.presentFamily, 0, &presentQueue_);
+         vkGetDeviceQueue(m_vkdevice, indexes.presentFamily, 0, &presentQueue_);
       }
    }
 
@@ -257,7 +257,7 @@ namespace vkc
    bool VkcDevice::isDeviceSuitable(VkPhysicalDevice pvkcdevice)
    {
 
-      QueueFamilyIndices indices = findQueueFamilies(pvkcdevice);
+      QueueFamilyIndices indexes = findQueueFamilies(pvkcdevice);
 
       bool extensionsSupported = checkDeviceExtensionSupport(pvkcdevice);
 
@@ -280,7 +280,7 @@ namespace vkc
       VkPhysicalDeviceFeatures supportedFeatures;
       vkGetPhysicalDeviceFeatures(pvkcdevice, &supportedFeatures);
 
-      return (!surface_ || indices.isComplete()) && extensionsSupported && swapChainAdequate &&
+      return (!surface_ || indexes.isComplete()) && extensionsSupported && swapChainAdequate &&
          supportedFeatures.samplerAnisotropy;
 
    }
@@ -433,7 +433,7 @@ namespace vkc
    QueueFamilyIndices VkcDevice::findQueueFamilies(VkPhysicalDevice pvkcdevice)
    {
 
-      QueueFamilyIndices indices;
+      QueueFamilyIndices indexes;
 
       uint32_t queueFamilyCount = 0;
       vkGetPhysicalDeviceQueueFamilyProperties(pvkcdevice, &queueFamilyCount, nullptr);
@@ -446,8 +446,8 @@ namespace vkc
       {
          if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
          {
-            indices.graphicsFamily = i;
-            indices.graphicsFamilyHasValue = true;
+            indexes.graphicsFamily = i;
+            indexes.graphicsFamilyHasValue = true;
          }
          if (surface_)
          {
@@ -455,18 +455,18 @@ namespace vkc
             vkGetPhysicalDeviceSurfaceSupportKHR(pvkcdevice, i, surface_, &presentSupport);
             if (queueFamily.queueCount > 0 && presentSupport)
             {
-               indices.presentFamily = i;
-               indices.presentFamilyHasValue = true;
+               indexes.presentFamily = i;
+               indexes.presentFamilyHasValue = true;
             }
          }
-         if (indices.isComplete()) {
+         if (indexes.isComplete()) {
             break;
          }
 
          i++;
       }
 
-      return indices;
+      return indexes;
 
    }
 

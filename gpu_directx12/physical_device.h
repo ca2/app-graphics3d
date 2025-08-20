@@ -35,13 +35,13 @@ namespace gpu_directx12
       //VkPhysicalDeviceMemoryProperties m_physicaldevicememoryproperties;
       ///** @brief Queue family properties of the physical device */
       //::array<VkQueueFamilyProperties> m_queuefamilypropertya;
-      /////** @brief Contains queue family indices */
+      /////** @brief Contains queue family indexes */
       ////struct
       ////{
       ////   uint32_t graphics;
       ////   uint32_t compute;
       ////   uint32_t transfer;
-      ////} m_queuefamilyindices;
+      ////} m_queuefamilyindexes;
 
       ////::array<VkDeviceQueueCreateInfo> m_devicequeuecreateinfoa;
       //VkSurfaceKHR m_vksurfacekhr;

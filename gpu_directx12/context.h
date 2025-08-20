@@ -102,14 +102,14 @@ namespace gpu_directx12
 //      ///** @brief Default command pool for the graphics queue family index */
 //      VkCommandPool m_vkcommandpool;
 //
-//      /** @brief Contains queue family indices */
-//      directx12::QueueFamilyIndices m_queuefamilyindices;
+//      /** @brief Contains queue family indexes */
+//      directx12::QueueFamilyIndices m_queuefamilyindexes;
 //      //struct
 //      //{
 //      //   uint32_t graphics;
 //      //   uint32_t compute;
 //      //   uint32_t transfer;
-//      //} m_queuefamilyindices;
+//      //} m_queuefamilyindexes;
 //
 //
 //

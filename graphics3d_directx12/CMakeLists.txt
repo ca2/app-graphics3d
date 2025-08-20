@@ -24,7 +24,7 @@ list(APPEND library_references
         aqua
         aura
         axis
-        base
+        berg
         bred
         imgui
         acme_windows_common

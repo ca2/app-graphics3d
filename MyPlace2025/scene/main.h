@@ -31,7 +31,7 @@ namespace app_graphics3d_MyPlace2025
 
 
       //struct DrawIndexedIndirectCommand {
-      //   GLuint indexCount;    // Number of indices to draw
+      //   GLuint indexCount;    // Number of indexes to draw
       //   GLuint instanceCount; // Number of instances
       //   GLuint firstIndex;    // Starting index in index buffer
       //   GLuint baseVertex;    // Base vertex offset

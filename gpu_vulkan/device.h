@@ -61,14 +61,14 @@ namespace gpu_vulkan
       VkCommandPool m_vkcommandpool;
       VkCommandPool m_vkcommandpoolPresent;
 
-      /** @brief Contains queue family indices */
-      vulkan::QueueFamilyIndices m_queuefamilyindices;
+      /** @brief Contains queue family indexes */
+      vulkan::QueueFamilyIndices m_queuefamilyindexes;
       //struct
       //{
       //   uint32_t graphics;
       //   uint32_t compute;
       //   uint32_t transfer;
-      //} m_queuefamilyindices;
+      //} m_queuefamilyindexes;
 
 
 
@@ -212,21 +212,27 @@ namespace gpu_vulkan
       //VkQueue presentQueue() { return m_vkqueuePresent; }
 
 
-      //// Buffer Helper Functions
-      //void createBuffer(
-      //   VkDeviceSize size,
-      //   VkBufferUsageFlags usage,
-      //   VkMemoryPropertyFlags properties,
-      //   VkBuffer& buffer,
-      //   VkDeviceMemory& bufferMemory);
-      //void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-      //void copyBufferToImage(
-      //   VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
-      //void createImageWithInfo(
-      //   const VkImageCreateInfo& imageInfo,
-      //   VkMemoryPropertyFlags properties,
-      //   VkImage& image,
-      //   VkDeviceMemory& imageMemory);
+      // Buffer Helper Functions
+      VkResult createBuffer(VkBufferUsageFlags usageFlags,
+         VkMemoryPropertyFlags memoryPropertyFlags,
+         VkDeviceSize size,
+         VkBuffer* buffer,
+         VkDeviceMemory* memory,
+         void* data = nullptr);
+      void createBuffer(
+         VkDeviceSize size,
+         VkBufferUsageFlags usage,
+         VkMemoryPropertyFlags properties,
+         VkBuffer& buffer,
+         VkDeviceMemory& bufferMemory);
+      void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+      void copyBufferToImage(
+         VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
+      void createImageWithInfo(
+         const VkImageCreateInfo& imageInfo,
+         VkMemoryPropertyFlags properties,
+         VkImage& image,
+         VkDeviceMemory& imageMemory);
 
 
 //      void submitWork(VkCommandBuffer pcommandbuffer->m_vkcommandbuffer, VkQueue queue);

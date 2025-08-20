@@ -98,8 +98,8 @@ list(APPEND library_references
     apex
     aqua
     aura
-    axis
-    base
+        axis
+        berg
     bred
     core
 )

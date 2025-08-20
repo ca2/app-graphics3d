@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{C4990B2E-D2FF-40BD-A858-2AF2581DEA1D}</ProjectGuid>
+    <ProjectGuid>{332976D7-F2DE-4195-937A-AE32882F6AB9}</ProjectGuid>
     <RootNamespace>app-graphics3d</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -149,9 +149,6 @@
     <ProjectReference Include="..\..\..\app\apex\apex.vcxproj">
       <Project>{e000ffaf-392f-4e32-bf51-777ca238991f}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\app\aura\aura.vcxproj">
-      <Project>{e000ffaf-392f-4e32-bf51-fd7ed638991f}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\app\axis\axis.vcxproj">
       <Project>{a2cbd4ed-ed0f-482b-9b16-f48f21c32835}</Project>
     </ProjectReference>
@@ -165,7 +162,7 @@
       <Project>{29c1eb5b-060e-4021-ae12-d1bcfb1b1359}</Project>
     </ProjectReference>
     <ProjectReference Include="..\app_graphics3d_continuum.vcxproj">
-      <Project>{0d637306-cc51-4622-a99c-e5ade60c5312}</Project>
+      <Project>{f1161227-5818-45cc-99ba-5e3195ba1a2f}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

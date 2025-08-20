@@ -43,16 +43,16 @@ namespace graphics3d_opengl
    class ModelMesh {
    public:
       // mesh Data
-      vector<Vertex>            vertices;
-      vector<unsigned int>       indices;
+      vector<Vertex>            vertexes;
+      vector<unsigned int>       indexes;
       vector<ModelTexture>      textures;
       unsigned int VAO;
 
       // constructor
-      ModelMesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<ModelTexture> textures)
+      ModelMesh(vector<Vertex> vertexes, vector<unsigned int> indexes, vector<ModelTexture> textures)
       {
-         this->vertices = vertices;
-         this->indices = indices;
+         this->vertexes = vertexes;
+         this->indexes = indexes;
          this->textures = textures;
 
          // now that we have all the required data, set the vertex buffers and its attribute pointers.
@@ -90,7 +90,7 @@ namespace graphics3d_opengl
 
          // draw mesh
          glBindVertexArray(VAO);
-         glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+         glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indexes.size()), GL_UNSIGNED_INT, 0);
          glBindVertexArray(0);
 
          // always good practice to set everything back to defaults once configured.
@@ -115,10 +115,10 @@ namespace graphics3d_opengl
          // A great thing about structs is that their memory layout is sequential for all its items.
          // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
          // again translates to 3/2 floats which translates to a byte array.
-         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_DYNAMIC_DRAW);
+         glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(Vertex), &vertexes[0], GL_DYNAMIC_DRAW);
 
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_DYNAMIC_DRAW);
+         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(unsigned int), &indexes[0], GL_DYNAMIC_DRAW);
 
          // set the vertex attribute pointers
          // vertex Positions

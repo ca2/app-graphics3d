@@ -269,7 +269,7 @@ namespace draw2d_vkvg
       createinfo.inst = papproachVulkan->m_vkinstance;
       createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
       createinfo.vkdev = pcontextVulkan->logicalDevice();
-      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
+      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
       createinfo.qIndex = 0;
       createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
@@ -373,7 +373,7 @@ namespace draw2d_vkvg
       createinfo.inst = papproachVulkan->m_vkinstance;
       createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
       createinfo.vkdev = pcontextVulkan->logicalDevice();
-      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
+      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
       createinfo.qIndex = 0;
       createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
@@ -589,7 +589,7 @@ namespace draw2d_vkvg
       createinfo.inst = papproachVulkan->m_vkinstance;
       createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
       createinfo.vkdev = pcontextVulkan->logicalDevice();
-      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindices.graphicsFamily;
+      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
       createinfo.qIndex = 0;
       createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
@@ -8331,14 +8331,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          glm::vec3 color;
       };
 
-      std::vector<Vertex> vertices = {
+      std::vector<Vertex> vertexes = {
           {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}}, // Bottom-left
           {{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}}, // Bottom-right
           {{ 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}, // Top-right
           {{-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}}, // Top-left
       };
 
-      std::vector<uint16_t> indices = {
+      std::vector<uint16_t> indexes = {
           0, 1, 2, 2, 3, 0 // Two triangles
       };
 

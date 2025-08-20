@@ -3420,7 +3420,7 @@ float4 main(PSInput input) : SV_TARGET {
          //pdevice->m_pdevice, quad, vertexCount);
 
       //// Upload and bind vertex buffer (simplified)
-      //// This assumes you're using an upload heap for the quad vertices
+      //// This assumes you're using an upload heap for the quad vertexes
       //// Actual implementation should reuse buffer or manage lifetimes properly
       //
       //vbView.BufferLocation = ...; // GPU VA of vertex buffer with `quad`
@@ -3939,6 +3939,16 @@ float4 main(PSInput input) : SV_TARGET {
                         FALSE,                // Not using RTV arrays
                         nullptr
                      );
+
+
+                     float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+                     pcommandlist->ClearRenderTargetView(
+   ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+   clearColor,
+   0,
+   nullptr
+);
+
                   }
                //}
                //else

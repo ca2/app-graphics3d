@@ -45,8 +45,8 @@ namespace graphics3d_opengl
       void draw(void * pframeinfo) override;
       void bind(void* pframeinfo) override;
 
-      void createVertexBuffers(const ::array<Vertex>& vertices);
-      void createIndexBuffers(const ::array<uint32_t>& indices);
+      void createVertexBuffers(const ::array<Vertex>& vertexes);
+      void createIndexBuffers(const ::array<uint32_t>& indexes);
 
       bool hasIndexBuffer = false;
       ::pointer < context > m_pgpucontext;

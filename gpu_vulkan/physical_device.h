@@ -26,22 +26,22 @@ namespace gpu_vulkan
 
       ::pointer < approach >           m_pgpuapproach;
       // Physical device (GPU) that Vulkan will use
-      VkPhysicalDevice                 m_physicaldevice;
+      VkPhysicalDevice                 m_vkphysicaldevice;
       // Stores physical device properties (for e.g. checking device limits)
-      VkPhysicalDeviceProperties       m_physicaldeviceproperties;
+      VkPhysicalDeviceProperties       m_vkphysicaldeviceproperties;
       // Stores the features available on the selected physical device (for e.g. checking if a feature is available)
-      VkPhysicalDeviceFeatures         m_physicaldevicefeatures;
+      VkPhysicalDeviceFeatures         m_vkphysicaldevicefeatures;
       // Stores all available memory (type) properties for the physical device
-      VkPhysicalDeviceMemoryProperties m_physicaldevicememoryproperties;
+      VkPhysicalDeviceMemoryProperties m_vkphysicaldevicememoryproperties;
       /** @brief Queue family properties of the physical device */
-      ::array<VkQueueFamilyProperties> m_queuefamilypropertya;
-      ///** @brief Contains queue family indices */
+      ::array<VkQueueFamilyProperties> m_vkqueuefamilypropertya;
+      ///** @brief Contains queue family indexes */
       //struct
       //{
       //   uint32_t graphics;
       //   uint32_t compute;
       //   uint32_t transfer;
-      //} m_queuefamilyindices;
+      //} m_queuefamilyindexes;
 
       //::array<VkDeviceQueueCreateInfo> m_devicequeuecreateinfoa;
       VkSurfaceKHR m_vksurfacekhr;

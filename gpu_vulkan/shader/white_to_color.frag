@@ -16,4 +16,5 @@ void main() {
     vec4 sampled = texture(text, TexCoords).rgba;
     vec4 c = pc.textColor * sampled;
     outColor = vec4(c.rgb, c.a);
+    //outColor = vec4(0.5*0.35,0.5*0.75,0.5*0.95, 0.5);
 }

@@ -56,11 +56,11 @@ namespace gpu_vulkan
 
 
 
-            ////m_iVertexCount = static_cast<uint32_t>(vertices.size());
+            ////m_iVertexCount = static_cast<uint32_t>(vertexes.size());
             ////assert(m_iVertexCount >= 3 && "Vertex count must be at least 3");
-            ////VkDeviceSize bufferSize = sizeof(vertices[0]) * m_iVertexCount;
+            ////VkDeviceSize bufferSize = sizeof(vertexes[0]) * m_iVertexCount;
             //VkDeviceSize bufferSize = sizeStatic;
-            ////uint32_t vertexSize = sizeof(vertices[0]);
+            ////uint32_t vertexSize = sizeof(vertexes[0]);
 
             //auto pbufferStaging = øcreate_new < ::gpu_vulkan::memory_buffer >();
 
@@ -110,7 +110,7 @@ namespace gpu_vulkan
 
       //      //VkDeviceSize bufferSize = sizeStatic;
 
-      //      ////uint32_t indexSize = sizeof(indices[0]);
+      //      ////uint32_t indexSize = sizeof(indexes[0]);
 
       //      //auto pbufferStaging = øcreate_new < ::gpu_vulkan::memory_buffer>();
 

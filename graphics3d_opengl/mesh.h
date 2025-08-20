@@ -27,7 +27,7 @@ namespace graphics3d_opengl
       // New instance buffer
       //unsigned int m_InstanceVBO;
 
-      //mesh(const ::array<float>& vertices, const ::array<unsigned int>& indices,
+      //mesh(const ::array<float>& vertexes, const ::array<unsigned int>& indexes,
       //   unsigned int vertexOffset, unsigned int indexOffset, unsigned int indexCount);
       //~mesh() override;
 

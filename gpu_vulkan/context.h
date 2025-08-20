@@ -151,6 +151,15 @@ namespace gpu_vulkan
       //void _createLogicalDevice();
       //void _createCommandPool();
 
+      virtual VkCommandBuffer createCommandBuffer(VkCommandBufferLevel level, bool begin = false);
+      virtual VkCommandBuffer createCommandBuffer(VkCommandBufferLevel level, VkCommandPool pool, bool begin = false);
+
+      // /// Ends, submits and frees a one‑time command buffer
+      virtual void flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, bool free = true);
+      virtual void flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, VkCommandPool pool, bool free = true);
+
+
+
       // helper functions
       //bool isDeviceSuitable(VkPhysicalDevice pvkcdevice);
       //::array<const char *> getRequiredExtensions();
