@@ -27,6 +27,6 @@ void main() {
 
     int vid = gl_VertexIndex;
     //gl_Position = pc.projection * vec4(positions[vid], 0.0, 1.0);
-    gl_Position =  vec4(positions[vid], 0.0, 1.0);
+    gl_Position = vec4(positions[vid], 0.0, 1.0);
     TexCoords = uvs[vid];
 }
