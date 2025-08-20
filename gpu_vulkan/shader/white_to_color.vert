@@ -3,7 +3,7 @@
 layout(location = 0) out vec2 TexCoords;
 
 layout(push_constant) uniform PushConstants {
-    mat4 projection;
+    //mat4 projection;
     vec4 quad;        // l, t, r, b
     vec4 texcoords;   // l, t, r, b
     vec4 textColor;
@@ -26,6 +26,7 @@ void main() {
     );
 
     int vid = gl_VertexIndex;
-    gl_Position = pc.projection * vec4(positions[vid], 0.0, 1.0);
+    //gl_Position = pc.projection * vec4(positions[vid], 0.0, 1.0);
+    gl_Position = vec4(positions[vid], 0.0, 1.0);
     TexCoords = uvs[vid];
 }

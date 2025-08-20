@@ -4,7 +4,7 @@ layout(location = 0) in vec2 TexCoords;
 layout(location = 0) out vec4 outColor;
 
 layout(push_constant) uniform PushConstants {
-    mat4 projection;
+    //mat4 projection;
     vec4 quad;        // l, t, r, b
     vec4 texcoords;   // l, t, r, b
     vec4 textColor;
