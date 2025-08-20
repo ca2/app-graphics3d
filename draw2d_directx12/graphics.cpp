@@ -2198,7 +2198,7 @@ namespace draw2d_directx12
    //   float r = pxToNDC_X(rightPx);
    //   float b = pxToNDC_Y(bottomPx);
 
-   //   fill_rectangle_Vertex vertices[] = {
+   //   fill_rectangle_Vertex vertexes[] = {
    //       { l, b, red, green, blue, alpha }, // bottom-left
    //       { l, t, red, green, blue, alpha }, // top-left
    //       { r, b, red, green, blue, alpha }, // bottom-right
@@ -2212,12 +2212,12 @@ namespace draw2d_directx12
 
    //   D3D11_BUFFER_DESC bd = {};
    //   bd.Usage = D3D11_USAGE_DEFAULT;
-   //   bd.ByteWidth = sizeof(vertices);
+   //   bd.ByteWidth = sizeof(vertexes);
    //   bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
    //   bd.CPUAccessFlags = 0;
 
    //   D3D12_SUBRESOURCE_DATA initData = {};
-   //   initData.pSysMem = vertices;
+   //   initData.pSysMem = vertexes;
 
    //   HRESULT hr = device->CreateResource(&bd, &initData, &vb);
    //   if (FAILED(hr)) {
@@ -7958,6 +7958,45 @@ namespace draw2d_directx12
    //   return (ID2D1Geometry *)pdirectx12region->get_os_data(this);
 
    //}
+
+   ::geometry2d::matrix graphics::context_matrix(enum_transform_context etransformcontext)
+   {
+
+      auto pcontext = gpu_context();
+
+      ::geometry2d::matrix contextmatrix;
+
+      if (etransformcontext == e_transform_context_default
+         || etransformcontext == e_transform_context_geometry)
+      {
+
+         contextmatrix.translate(0.5, -0.5);
+
+      }
+
+      contextmatrix.append(context_scale_matrix());
+
+      return contextmatrix;
+
+   }
+
+
+   ::geometry2d::matrix graphics::context_scale_matrix()
+   {
+
+      auto pcontext = gpu_context();
+
+      auto size = pcontext->m_rectangle.size();
+
+      ::geometry2d::matrix contextmatrix;
+
+      contextmatrix.scale(2.0 / size.cx(), -2.0 / size.cy());
+
+      contextmatrix.translate(-1.0, 1.0);
+
+      return contextmatrix;
+
+   }
 
 
 } // namespace draw2d_directx12

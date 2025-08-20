@@ -43,8 +43,8 @@ namespace std {
 namespace vkc {
     VkcModel::VkcModel(VkcDevice * pvkcdevice, const VkcModel::Builder& builder) : m_pvkcdevice{ pvkcdevice } {
        initialize(pvkcdevice);
-        createVertexBuffers(builder.vertices);
-        createIndexBuffers(builder.indices);
+        createVertexBuffers(builder.vertexes);
+        createIndexBuffers(builder.indexes);
     }
     VkcModel::~VkcModel() {
     }
@@ -59,11 +59,11 @@ namespace vkc {
     }
 
 
-    void VkcModel::createVertexBuffers(const std::vector<Vertex>& vertices) {
-        vertexCount = static_cast<uint32_t>(vertices.size());
+    void VkcModel::createVertexBuffers(const std::vector<Vertex>& vertexes) {
+        vertexCount = static_cast<uint32_t>(vertexes.size());
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
-        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
-        uint32_t vertexSize = sizeof(vertices[0]);
+        VkDeviceSize bufferSize = sizeof(vertexes[0]) * vertexCount;
+        uint32_t vertexSize = sizeof(vertexes[0]);
 
         VkcBuffer stagingBuffer;
         
@@ -76,7 +76,7 @@ namespace vkc {
         );
 
         stagingBuffer.map();
-        stagingBuffer.writeToBuffer((void*)vertices.data());
+        stagingBuffer.writeToBuffer((void*)vertexes.data());
 
         vertexBuffer = øallocate VkcBuffer;
         
@@ -94,16 +94,16 @@ namespace vkc {
 
     }
 
-    void VkcModel::createIndexBuffers(const std::vector<uint32_t>& indices) {
-        indexCount = static_cast<uint32_t>(indices.size());
+    void VkcModel::createIndexBuffers(const std::vector<uint32_t>& indexes) {
+        indexCount = static_cast<uint32_t>(indexes.size());
         hasIndexBuffer = indexCount > 0;
 
         if (!hasIndexBuffer) {
             return;
         }
 
-        VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
-        uint32_t indexSize = sizeof(indices[0]);
+        VkDeviceSize bufferSize = sizeof(indexes[0]) * indexCount;
+        uint32_t indexSize = sizeof(indexes[0]);
 
         VkcBuffer stagingBuffer;
         stagingBuffer.initialize_buffer(
@@ -115,7 +115,7 @@ namespace vkc {
         ;
 
         stagingBuffer.map();
-        stagingBuffer.writeToBuffer((void*)indices.data());
+        stagingBuffer.writeToBuffer((void*)indexes.data());
 
         indexBuffer = øallocate VkcBuffer();
         
@@ -184,20 +184,20 @@ namespace vkc {
             throw std::runtime_error(warn + err);
         }
 
-        vertices.clear();
-        indices.clear();
+        vertexes.clear();
+        indexes.clear();
 
 
         std::unordered_map<Vertex, uint32_t> uniqueVertices{};
         for (const auto& shape : shapes) {
-            for (const auto& index : shape.mesh.indices) {
+            for (const auto& index : shape.mesh.indexes) {
                 Vertex vertex{};
 
                 if (index.vertex_index >= 0) {
                     vertex.position = {
-                        attrib.vertices[3 * index.vertex_index + 0],
-                        attrib.vertices[3 * index.vertex_index + 1],
-                        attrib.vertices[3 * index.vertex_index + 2],
+                        attrib.vertexes[3 * index.vertex_index + 0],
+                        attrib.vertexes[3 * index.vertex_index + 1],
+                        attrib.vertexes[3 * index.vertex_index + 2],
                     };
 
                     vertex.color = {
@@ -224,10 +224,10 @@ namespace vkc {
                 }
 
                 if (uniqueVertices.count(vertex) == 0) {
-                    uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-                    vertices.push_back(vertex);
+                    uniqueVertices[vertex] = static_cast<uint32_t>(vertexes.size());
+                    vertexes.push_back(vertex);
                 }
-                indices.push_back(uniqueVertices[vertex]);
+                indexes.push_back(uniqueVertices[vertex]);
 
             }
         }

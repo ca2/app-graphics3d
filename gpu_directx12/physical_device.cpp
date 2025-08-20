@@ -51,25 +51,25 @@ namespace gpu_directx12
 
    //   //::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
 
-   //   //// Get queue family indices for the requested queue family types
-   //   //// Note that the indices may overlap depending on the implementation
+   //   //// Get queue family indexes for the requested queue family types
+   //   //// Note that the indexes may overlap depending on the implementation
 
    //   //const float defaultQueuePriority(0.0f);
 
    //   //// Graphics queue
    //   //if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT)
    //   //{
-   //   //   m_queuefamilyindices.graphics = getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
+   //   //   m_queuefamilyindexes.graphics = getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
    //   //   VkDeviceQueueCreateInfo queueInfo{};
    //   //   queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-   //   //   queueInfo.queueFamilyIndex = m_queuefamilyindices.graphics;
+   //   //   queueInfo.queueFamilyIndex = m_queuefamilyindexes.graphics;
    //   //   queueInfo.queueCount = 1;
    //   //   queueInfo.pQueuePriorities = &defaultQueuePriority;
    //   //   queueCreateInfos.add(queueInfo);
    //   //}
    //   //else
    //   //{
-   //   //   m_queuefamilyindices.graphics = 0;
+   //   //   m_queuefamilyindexes.graphics = 0;
    //   //}
 
    //  

@@ -187,17 +187,17 @@
 //   //void context::createLogicalDevice()
 //   //{
 //
-//   //   //QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+//   //   //QueueFamilyIndices indexes = findQueueFamilies(physicalDevice);
 //
 //   //   //::array<VkDeviceQueueCreateInfo> queueCreateInfos;
 //   //   //std::set<uint32_t> uniqueQueueFamilies;
-//   //   //if (indices.graphicsFamilyHasValue)
+//   //   //if (indexes.graphicsFamilyHasValue)
 //   //   //{
-//   //   //   uniqueQueueFamilies.insert(indices.graphicsFamily);
+//   //   //   uniqueQueueFamilies.insert(indexes.graphicsFamily);
 //   //   //}
-//   //   //if (indices.presentFamilyHasValue)
+//   //   //if (indexes.presentFamilyHasValue)
 //   //   //{
-//   //   //   uniqueQueueFamilies.insert(indices.presentFamily);
+//   //   //   uniqueQueueFamilies.insert(indexes.presentFamily);
 //   //   //}
 //
 //   //   //float queuePriority = 1.0f;
@@ -240,13 +240,13 @@
 //   //   //{
 //   //   //   throw ::exception(error_failed, "failed to create logical pvkcdevice!");
 //   //   //}
-//   //   //if (indices.graphicsFamilyHasValue)
+//   //   //if (indexes.graphicsFamilyHasValue)
 //   //   //{
-//   //   //   vkGetDeviceQueue(m_vkdevice, indices.graphicsFamily, 0, &m_vkqueueGraphics);
+//   //   //   vkGetDeviceQueue(m_vkdevice, indexes.graphicsFamily, 0, &m_vkqueueGraphics);
 //   //   //}
-//   //   //if (indices.presentFamilyHasValue)
+//   //   //if (indexes.presentFamilyHasValue)
 //   //   //{
-//   //   //   vkGetDeviceQueue(m_vkdevice, indices.presentFamily, 0, &m_vkqueuePresent);
+//   //   //   vkGetDeviceQueue(m_vkdevice, indexes.presentFamily, 0, &m_vkqueuePresent);
 //   //   //}
 //   //}
 //
@@ -274,7 +274,7 @@
 //   //bool context::isDeviceSuitable(VkPhysicalDevice pvkcdevice)
 //   //{
 //
-//   //   QueueFamilyIndices indices = findQueueFamilies(pvkcdevice);
+//   //   QueueFamilyIndices indexes = findQueueFamilies(pvkcdevice);
 //
 //   //   bool extensionsSupported = checkDeviceExtensionSupport(pvkcdevice);
 //
@@ -297,7 +297,7 @@
 //   //   VkPhysicalDeviceFeatures supportedFeatures;
 //   //   vkGetPhysicalDeviceFeatures(pvkcdevice, &supportedFeatures);
 //
-//   //   return (!m_vksurfacekhr || indices.isComplete()) && extensionsSupported && swapChainAdequate &&
+//   //   return (!m_vksurfacekhr || indexes.isComplete()) && extensionsSupported && swapChainAdequate &&
 //   //      supportedFeatures.samplerAnisotropy;
 //
 //   //}
@@ -450,7 +450,7 @@
 //   //QueueFamilyIndices context::findQueueFamilies(VkPhysicalDevice pvkcdevice)
 //   //{
 //
-//   //   QueueFamilyIndices indices;
+//   //   QueueFamilyIndices indexes;
 //
 //   //   uint32_t queueFamilyCount = 0;
 //   //   vkGetPhysicalDeviceQueueFamilyProperties(pvkcdevice, &queueFamilyCount, nullptr);
@@ -463,8 +463,8 @@
 //   //   {
 //   //      if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 //   //      {
-//   //         indices.graphicsFamily = i;
-//   //         indices.graphicsFamilyHasValue = true;
+//   //         indexes.graphicsFamily = i;
+//   //         indexes.graphicsFamilyHasValue = true;
 //   //      }
 //   //      if (m_vksurfacekhr)
 //   //      {
@@ -472,18 +472,18 @@
 //   //         vkGetPhysicalDeviceSurfaceSupportKHR(pvkcdevice, i, m_vksurfacekhr, &presentSupport);
 //   //         if (queueFamily.queueCount > 0 && presentSupport)
 //   //         {
-//   //            indices.presentFamily = i;
-//   //            indices.presentFamilyHasValue = true;
+//   //            indexes.presentFamily = i;
+//   //            indexes.presentFamilyHasValue = true;
 //   //         }
 //   //      }
-//   //      if (indices.isComplete()) {
+//   //      if (indexes.isComplete()) {
 //   //         break;
 //   //      }
 //
 //   //      i++;
 //   //   }
 //
-//   //   return indices;
+//   //   return indexes;
 //
 //   //}
 //

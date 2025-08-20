@@ -880,7 +880,9 @@ namespace gpu_vulkan
    void shader::push_properties()
    {
 
-      ::cast < renderer > prenderer = m_pgpurenderer;
+      ::gpu::shader::push_properties();
+      //set_push_properties(m_propertiesPush.m_block);
+ /*     ::cast < renderer > prenderer = m_pgpurenderer;
 
       ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
@@ -890,7 +892,7 @@ namespace gpu_vulkan
          VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
          0,
          (uint32_t)m_propertiesPush.size(),
-         m_propertiesPush.data());
+         m_propertiesPush.data());*/
 
    }
 
@@ -900,6 +902,32 @@ namespace gpu_vulkan
 
       return m_bindingSampler.is_set() || m_bindingCubeSampler.is_set();
 
+   }
+
+
+   void shader::set_push_properties(const ::block& block)
+   {
+
+      ::cast < renderer > prenderer = m_pgpurenderer;
+
+      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+
+      vkCmdPushConstants(
+         pcommandbuffer->m_vkcommandbuffer,
+         m_vkpipelinelayout,
+         VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+         0,
+         (uint32_t)block.size(),
+         block.data());
+      //::cast < renderer > prenderer = m_pgpurenderer;
+
+      //::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+
+      //vkCmdPushConstants(
+      //   pcommandbuffer->m_vkcommandbuffer,
+
+
+      //vkCmdPushConstants(cmdBuf, irradiancePipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, block.size(), block.data());
    }
 
 

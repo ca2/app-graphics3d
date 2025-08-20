@@ -58,8 +58,8 @@ namespace gpu_vulkan
          const ::array < VkSemaphore >& semaphoreaSignal,
          VkFence * pvkfence = nullptr);
 
-      void draw_vertices(int iVertexCount) override;
-      void draw_indices(int iIndexCount) override;
+      void draw_vertexes(int iVertexCount) override;
+      void draw_indexes(int iIndexCount) override;
 
 
    };

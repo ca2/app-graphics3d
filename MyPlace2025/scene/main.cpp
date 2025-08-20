@@ -201,41 +201,41 @@ namespace app_graphics3d_MyPlace2025
       //// Offsets for vertex and index data (dynamic approach)
       //size_t cubeVertexOffset = 0;
       //size_t cubeIndexOffset = 0;
-      //size_t cubeIndexCount = cube.m_indices.size();
+      //size_t cubeIndexCount = cube.m_indexes.size();
 
       //::graphics3d::shape_factory::shape shapeCombined;
 
       //// Combine the graphics3d data and prepare offsets for the plane
-      //auto combinedVertices = cube.m_vertices;  // Start with graphics3d's vertices
-      //auto combinedIndices = cube.m_indices;  // Start with graphics3d's indices
+      //auto combinedVertices = cube.m_vertexes;  // Start with graphics3d's vertexes
+      //auto combinedIndices = cube.m_indexes;  // Start with graphics3d's indexes
 
       //shapeCombined.append(cube);
 
       //size_t planeVertexOffset = combinedVertices.size() / 8;  // Calculate vertex offset for plane
       //size_t planeIndexOffset = combinedIndices.size();         // Calculate index offset for plane
-      //size_t planeIndexCount = plane.m_indices.size();
+      //size_t planeIndexCount = plane.m_indexes.size();
 
       //// Append the plane data to the combined data
-      //combinedVertices.append(plane.m_vertices);
-      //combinedIndices.append(plane.m_indices);
+      //combinedVertices.append(plane.m_vertexes);
+      //combinedIndices.append(plane.m_indexes);
 
       //shapeCombined 
 
       //// Sphere offsets and data appending
       //size_t sphereVertexOffset = combinedVertices.size() / 8;  // Sphere vertex offset
       //size_t sphereIndexOffset = combinedIndices.size();        // Sphere index offset
-      //size_t sphereIndexCount = sphere.m_indices.size();
+      //size_t sphereIndexCount = sphere.m_indexes.size();
 
-      //combinedVertices.append(sphere.m_vertices);
-      //combinedIndices.append(sphere.m_indices);
+      //combinedVertices.append(sphere.m_vertexes);
+      //combinedIndices.append(sphere.m_indexes);
 
       //// Wall offsets and data appending
       //size_t wallVertexOffset = combinedVertices.size() / 8;
       //size_t wallIndexOffset = combinedIndices.size();
-      //size_t wallIndexCount = wall.m_indices.size();
+      //size_t wallIndexCount = wall.m_indexes.size();
 
-      //combinedVertices.append(wall.m_vertices);
-      //combinedIndices.append(wall.m_indices);
+      //combinedVertices.append(wall.m_vertexes);
+      //combinedIndices.append(wall.m_indexes);
 
 
       // Create Cube mesh object

@@ -29,7 +29,10 @@ list(APPEND library_references
         apex
         aqua
         aura
-        directx12
+        axis
+        berg
+        bred
+        gpu_directx12
 )
 
 if (MSVC)

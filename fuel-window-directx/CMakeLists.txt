@@ -33,7 +33,7 @@ list(APPEND library_source
 
 
 list(APPEND library_references
-   acme apex aqua aura axis base bred core
+   acme apex aqua aura axis berg bred core
 )
 add_library(${PROJECT_NAME} SHARED ${library_source})
 add_library(static_${PROJECT_NAME} STATIC ${library_source})

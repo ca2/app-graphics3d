@@ -33,6 +33,8 @@ list(APPEND library_source
         descriptors.h
         dxgi_debug.cpp
         dxgi_debug.h
+        frame_storage.cpp
+        frame_storage.h
         framework.cpp
         framework.h
         image_directx12.cpp
@@ -98,7 +100,7 @@ list(APPEND library_references
         aqua
         aura
         axis
-        base
+        berg
         bred
         acme_windows_common
 )

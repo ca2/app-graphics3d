@@ -55,6 +55,8 @@ list(APPEND library_source
         pipeline.h
         render_pass.cpp
         render_pass.h
+        render_target.cpp
+        render_target.h
         renderer.cpp
         renderer.h
         shader.cpp
@@ -81,7 +83,7 @@ list(APPEND library_references
         aqua
         aura
         axis
-        base
+        berg
         bred
 )
 
@@ -102,7 +104,9 @@ else ()
 endif ()
 
 
-add_library(${PROJECT_NAME} SHARED ${library_source})
+add_library(${PROJECT_NAME} SHARED ${library_source}
+        gltf_model.cpp
+        gltf_model.h)
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
 if (NOT ${NO_PRECOMPILED_HEADER})
@@ -127,7 +131,7 @@ if (MSVC)
     target_link_options(${PROJECT_NAME} PRIVATE "/DEFAULTLIB:msvcrt$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/IMPLIB:${LIBRARY_OUTPUT_PATH}/${PROJECT_NAME}.lib")
     target_link_options(${PROJECT_NAME} PRIVATE "/DEF:${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.def")
-    target_link_libraries(${PROJECT_NAME} PRIVATE vulkan-1)
+    target_link_libraries(${PROJECT_NAME} PRIVATE vulkan-1 tinyktx)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${library_references} ${global_library_references})
 
 

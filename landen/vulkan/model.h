@@ -30,8 +30,8 @@ namespace vkc {
         };
 
         struct Builder {
-            std::vector<Vertex> vertices{};
-            std::vector<uint32_t> indices{};
+            std::vector<Vertex> vertexes{};
+            std::vector<uint32_t> indexes{};
 
             void loadModel(::particle * pparticle, const std::string& filepath);
         };
@@ -52,8 +52,8 @@ namespace vkc {
         void bind(VkCommandBuffer commandBuffer);
 
     private:
-        void createVertexBuffers(const std::vector<Vertex>& vertices);
-        void createIndexBuffers(const std::vector<uint32_t>& indices);
+        void createVertexBuffers(const std::vector<Vertex>& vertexes);
+        void createIndexBuffers(const std::vector<uint32_t>& indexes);
 
         bool hasIndexBuffer = false;
         ::pointer < VkcDevice > m_pvkcdevice;

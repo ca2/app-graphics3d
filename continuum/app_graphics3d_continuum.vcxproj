@@ -35,7 +35,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{0D637306-CC51-4622-A99C-E5ADE60C5312}</ProjectGuid>
+    <ProjectGuid>{F1161227-5818-45CC-99BA-5E3195BA1A2F}</ProjectGuid>
     <RootNamespace>app-graphics3d</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>app_graphics3d_continuum</ProjectName>

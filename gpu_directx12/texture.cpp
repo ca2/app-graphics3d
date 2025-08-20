@@ -971,7 +971,7 @@ namespace gpu_directx12
       if (m_damagea.has_element())
       {
 
-         unmap();
+         //unmap();
 
 
          ::cast < renderer > prenderer = m_ptexture->m_pgpurenderer;
@@ -1058,10 +1058,11 @@ namespace gpu_directx12
 
       damageNew.m_boxSource = CD3DX12_BOX(
          rectangle.left(), rectangle.top(),
-         0, rectangle.width(), rectangle.height(), 1);
+         0, rectangle.right(), rectangle.bottom(), 1);
 
+      damageNew.m_iLeft = rectangle.left();
+      damageNew.m_iTop = rectangle.top();
 
-      
       // ⚠️ caller is responsible for:
       // - Transitioning dstTexture into COPY_DEST before this call
       // - Transitioning dstTexture back to usable state after this call
@@ -1086,7 +1087,7 @@ namespace gpu_directx12
 
       puploadbuffer->update_pixels(rectangle, data);
 
-      puploadbuffer->map();
+      //puploadbuffer->map();
 
 
    }

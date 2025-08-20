@@ -21,7 +21,7 @@ list(APPEND executable_references
         aqua
         aura
         axis
-        base
+        berg
         bred
         core
         app_graphics3d_continuum
@@ -74,8 +74,12 @@ add_dependencies(${PROJECT_NAME} draw2d_direct2d)
 add_dependencies(${PROJECT_NAME} write_text_direct2d)
 add_dependencies(${PROJECT_NAME} draw2d_directx11)
 add_dependencies(${PROJECT_NAME} write_text_directx11)
+add_dependencies(${PROJECT_NAME} draw2d_directx12)
+add_dependencies(${PROJECT_NAME} write_text_directx12)
 add_dependencies(${PROJECT_NAME} draw2d_opengl)
 add_dependencies(${PROJECT_NAME} draw2d_vulkan)
+add_dependencies(${PROJECT_NAME} draw2d_nanovg)
+add_dependencies(${PROJECT_NAME} draw2d_vkvg)
 
 add_dependencies(${PROJECT_NAME} graphics3d_directx11)
 add_dependencies(${PROJECT_NAME} graphics3d_directx12)

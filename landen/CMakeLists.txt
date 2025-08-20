@@ -87,7 +87,7 @@ list(APPEND library_references
         aqua
         aura
         axis
-        base
+        berg
         bred
         core
         imgui
@@ -111,7 +111,7 @@ if (MSVC)
    target_compile_options(${PROJECT_NAME} PRIVATE "/MD$<$<CONFIG:Debug>:d>")
    target_link_options(${PROJECT_NAME} PRIVATE "/DEFAULTLIB:msvcrt$<$<CONFIG:Debug>:d>")
    target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
-   target_link_libraries(${PROJECT_NAME} PRIVATE acme apex aqua aura axis base)
+   target_link_libraries(${PROJECT_NAME} PRIVATE acme apex aqua aura axis berg)
    target_compile_definitions(${PROJECT_NAME} PRIVATE VK_USE_PLATFORM_WIN32_KHR)
 elseif (${LINUX})
    #if(USE_PKGCONFIG)

@@ -30,9 +30,9 @@ namespace graphics3d_opengl
 
 
 
-   //const ::array<float>& vertices, const ::array<unsigned int>& indices,
+   //const ::array<float>& vertexes, const ::array<unsigned int>& indexes,
    //   unsigned int vertexOffset, unsigned int indexOffset, unsigned int indexCount)
-   //   : m_Vertices(vertices), m_Indices(indices), m_VertexOffset(vertexOffset),
+   //   : m_Vertices(vertexes), m_Indices(indexes), m_VertexOffset(vertexOffset),
    //   m_IndexOffset(indexOffset), m_IndexCount(indexCount)
    //void mesh::initialize_mesh(::gpu::renderer * prenderer, )
    //   {

@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required(VERSION "3.13")
-project(draw2d_vulkan CXX)
+project(draw2d_nanovg CXX)
 
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -26,6 +26,8 @@ list(APPEND library_source
         graphics.h
         image.cpp
         image.h
+        keep.cpp
+        keep.h
         object.cpp
         object.h
         path.cpp
@@ -42,18 +44,19 @@ list(APPEND library_references
     apex
     aqua
     aura
-        axis
-        berg
+    axis
+    berg
     bred
-        gpu_vulkan
+    gpu_opengl
+    nanovg
 )
 
 
-# Shader Compilation
-file(GLOB SHADER_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/../_matter/continuum/_std/_std/shaders/*.vert"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../_matter/continuum/_std/_std/shaders/*.frag")
-
+## Shader Compilation
+#file(GLOB SHADER_FILES
+#        "${CMAKE_CURRENT_SOURCE_DIR}/../_matter/continuum/_std/_std/shaders/*.vert"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/../_matter/continuum/_std/_std/shaders/*.frag")
+#
 
 add_library(${PROJECT_NAME} SHARED ${library_source})
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
@@ -72,7 +75,8 @@ if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE "/MD$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/DEFAULTLIB:msvcrt$<$<CONFIG:Debug>:d>")
     target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
-    target_link_libraries(${PROJECT_NAME} PRIVATE vulkan-1 ${library_references})
+    target_link_libraries(${PROJECT_NAME} PRIVATE glu32 opengl32 glad)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${library_references})
 elseif (${LINUX})
 
     #if(USE_PKGCONFIG)
@@ -107,23 +111,23 @@ add_dependencies(${PROJECT_NAME} database_sqlite3)
 #set(SPIRV_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}../_matter/continuum/_std/_std/shaders/spirV")
 #file(MAKE_DIRECTORY ${SPIRV_OUTPUT_DIR})
 
-foreach(SHADER_FILE ${SHADER_FILES})
-    get_filename_component(FILE_NAME ${SHADER_FILE} NAME)
-    add_custom_command(
-            OUTPUT ${SPIRV_OUTPUT_DIR}/${FILE_NAME}.spv
-            COMMAND ${CMAKE_COMMAND} -E echo "Compiling shader: ${FILE_NAME}"
-            COMMAND glslangValidator -V ${SHADER_FILE} -o ${SPIRV_OUTPUT_DIR}/${FILE_NAME}.spv
-            DEPENDS ${SHADER_FILE}
-            COMMENT "Compiling ${FILE_NAME} to SPIR-V"
-    )
-    list(APPEND SPIRV_BINARIES ${SPIRV_OUTPUT_DIR}/${FILE_NAME}.spv)
-endforeach()
-
-
-add_custom_target(_draw2d_vulkan_shaders ALL DEPENDS ${SPIRV_BINARIES})
-
-# Ensure shaders are compiled before the VKContinuum executable
-add_dependencies(${PROJECT_NAME} _draw2d_vulkan_shaders)
+#foreach(SHADER_FILE ${SHADER_FILES})
+#    get_filename_component(FILE_NAME ${SHADER_FILE} NAME)
+#    add_custom_command(
+#            OUTPUT ${SPIRV_OUTPUT_DIR}/${FILE_NAME}.spv
+#            COMMAND ${CMAKE_COMMAND} -E echo "Compiling shader: ${FILE_NAME}"
+#            COMMAND glslangValidator -V ${SHADER_FILE} -o ${SPIRV_OUTPUT_DIR}/${FILE_NAME}.spv
+#            DEPENDS ${SHADER_FILE}
+#            COMMENT "Compiling ${FILE_NAME} to SPIR-V"
+#    )
+#    list(APPEND SPIRV_BINARIES ${SPIRV_OUTPUT_DIR}/${FILE_NAME}.spv)
+#endforeach()
+#
+#
+#add_custom_target(_draw2d_vulkan_shaders ALL DEPENDS ${SPIRV_BINARIES})
+#
+## Ensure shaders are compiled before the VKContinuum executable
+#add_dependencies(${PROJECT_NAME} _draw2d_vulkan_shaders)
 
 
 

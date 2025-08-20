@@ -551,7 +551,7 @@ namespace draw2d_vulkan
       //virtual bool DrawLine(int x1, int y1, int x2, int y2, ::draw2d::pen * ppen);
 
 
-      void draw_line(const int_point& point1, const int_point& point2, ::draw2d::pen* ppen);
+      void line(double x1, double y1, double x2, double y2, ::draw2d::pen* ppen) override;
 
 
       //virtual void enum_fonts(::write_text::font_enumeration_item_array& itema) override;
@@ -581,6 +581,12 @@ namespace draw2d_vulkan
       bool _is_ok() const override;
 
       void _vk_rectangle(const ::double_rectangle& rectangle);
+
+
+       ::geometry2d::matrix context_matrix(enum_transform_context etransformcontext) override;
+
+       ::geometry2d::matrix context_scale_matrix() override;
+
 
    };
 

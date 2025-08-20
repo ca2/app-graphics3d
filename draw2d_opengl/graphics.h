@@ -73,8 +73,8 @@ namespace draw2d_opengl
 
       virtual void thread_select();
       void do_on_context(const ::procedure & procedure) override;
-      
-      
+         ::geometry2d::matrix context_matrix(enum_transform_context etransformcontext);
+         ::geometry2d::matrix context_scale_matrix() override;
       void start_gpu_layer(::gpu::frame * pgpuframe) override;
       ::gpu::frame * end_gpu_layer(::gpu::frame * pgpuframe) override;
 

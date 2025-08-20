@@ -158,7 +158,8 @@ namespace gpu_vulkan
       void push_properties() override;
 
 
-      
+      void set_push_properties(const ::block& block) override;
+
 
       void bind_source(::gpu::texture * ptexture, int iSlot) override;
 

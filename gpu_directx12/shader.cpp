@@ -833,6 +833,13 @@ namespace gpu_directx12
    void shader::bind_source(::gpu::texture * ptextureSource, int iSlot)
    {
 
+      if (ptextureSource == m_pgputextureBound)
+      {
+
+         return;
+
+      }
+
       ::cast < ::gpu_directx12::texture > ptextureSrc = ptextureSource;
 
       if (!ptextureSrc->m_pheapShaderResourceView)
@@ -933,6 +940,9 @@ namespace gpu_directx12
 
 
       }
+
+      m_pgputextureBound = ptextureSource;
+
    }
 
 
@@ -968,11 +978,28 @@ namespace gpu_directx12
 
       m_iPush = 0;
 
+      if (m_etopology == ::gpu::e_topology_triangle_strip)
+      {
+
+         pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+      }
+      else if (m_etopology == ::gpu::e_topology_triangle_list)
+      {
+
+         pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+      }
+
+
+
    }
 
 
    void shader::unbind()
    {
+
+      ::gpu::shader::unbind();
 
    }
 

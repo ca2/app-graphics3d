@@ -41,7 +41,6 @@ namespace gpu_directx12
       int m_iSamplerDescriptorTableRootParameterIndex = -1;
       int m_iPushConstantsBufferIndex = -1;
 
-
       shader();
       ~shader();
 

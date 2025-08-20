@@ -1695,7 +1695,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   pmodelbufferRectangle->draw(pcommandbuffer);
 
-   //   //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertices for two triangles
+   //   //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertexes for two triangles
    //   //vkCmdEndRenderPass(cmd);
 
 
@@ -1905,7 +1905,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   VkDeviceSize offset = 0;
    //   ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
    //   vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
-   //   vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertices for two triangles
+   //   vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertexes for two triangles
    //   //vkCmdEndRenderPass(cmd);
 
 
@@ -3688,6 +3688,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    void graphics::draw(::draw2d::path* ppath)
    {
 
+      ::gpu::graphics::draw(ppath);
       //m_pgraphics->SetSmoothingMode(plusplus::SmoothingModeAntiAlias);
       //m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
 
@@ -3701,6 +3702,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    void graphics::draw(::draw2d::path* ppath, ::draw2d::pen* ppen)
    {
 
+      ::gpu::graphics::draw(ppath, ppen);
       //return m_pgraphics->DrawPath((::plusplus::Pen *) ppen->get_os_data(),(dynamic_cast < ::draw2d_vulkan::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
 
       //return true;
@@ -6069,13 +6071,15 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::draw_line(const int_point& point1, const int_point& point2, ::draw2d::pen* ppen)
+   void graphics::line(double x1, double y1, double x2, double y2, ::draw2d::pen* ppen)
    {
 
-      ::vulkan::line(point1.x(), point1.y(), point2.x(), point2.y(), (float)(ppen->m_dWidth),
-         ppen->m_color.f32_red(), ppen->m_color.f32_green(),
-         ppen->m_color.f32_blue(),
-         ppen->m_color.f32_opacity(), 0.f, 0.f, true);
+      ::gpu::graphics::line(x1, y1, x2, y2, ppen);
+
+      // ::vulkan::line(point1.x(), point1.y(), point2.x(), point2.y(), (float)(ppen->m_dWidth),
+      //    ppen->m_color.f32_red(), ppen->m_color.f32_green(),
+      //    ppen->m_color.f32_blue(),
+      //    ppen->m_color.f32_opacity(), 0.f, 0.f, true);
 
       /*vkLineWidth(ppen->m_dWidth);
 
@@ -6088,8 +6092,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       vkEnd();*/
 
-      m_point.x() = point2.x();
-      m_point.y() = point2.y();
+      //m_point.x() = point2.x();
+      //m_point.y() = point2.y();
 
       //return true;
 
@@ -6099,157 +6103,161 @@ auto iContextHeight = pcontext->m_rectangle.height()
    void graphics::line(double x1, double y1, double x2, double y2)
    {
 
-      auto pcontext = gpu_context();
+      ::gpu::graphics::line(x1, y1, x2, y2);
 
-      __USES_TRANSFORM(pcontext);
-
-      //auto distance = ::sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
-
-      //auto sinangle = (y1 - y0) / distance;
-      //auto cosangle = (x1 - x0) / distance;
-
-      //double_point points[4];
-
-      //points[0].x() = x0 - cosangle * m_ppen->m_dWidth / 2.0;
-      //points[0].y() = y0 - sinangle * m_ppen->m_dWidth / 2.0;
-      //points[1].x() = x0 + cosangle * m_ppen->m_dWidth / 2.0;
-      //points[1].y() = y0 + sinangle * m_ppen->m_dWidth / 2.0;
-      //points[2].x() = x1 + cosangle * m_ppen->m_dWidth / 2.0;
-      //points[2].y() = y1 + sinangle * m_ppen->m_dWidth / 2.0;
-      //points[3].x() = x1 - cosangle * m_ppen->m_dWidth / 2.0;
-      //points[3].y() = y1 - sinangle * m_ppen->m_dWidth / 2.0;
-
-      //_fill_quad(points, m_ppen->m_color);
-
-      {
-
-         if (!m_pshaderLine)
-         {
-
-            //auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
-
-            //pshadervertexinput->m_bindings.add(
-            //   {
-            //      .binding = 0,
-            //      .stride = sizeof(RectangleVertex),
-            //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-            //   });
-
-            //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
-            //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
-
-            auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
-
-            m_pshaderLine = pshaderRectangle;
-            //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
-            m_pshaderLine->m_bDepthTestButNoDepthWrite = true;
-            //m_pshaderRectangle->m_iColorAttachmentCount = 2;
-            m_pshaderLine->m_bEnableBlend = true;
-            //m_pshaderRectangle->m_bAccumulationEnable = true;
-
-            m_pshaderLine->m_etopology = ::gpu::e_topology_line_list;
-            m_pshaderLine->m_dynamicstateaEnable.add(VK_DYNAMIC_STATE_LINE_WIDTH);
-
-            //auto pcontext = gpu_context();
-
-            ::cast < ::gpu_vulkan::device > pgpudevice = pcontext->m_pgpudevice;
-
-            pshaderRectangle->initialize_shader_with_block(
-               pcontext->m_pgpurenderer,
-               pcontext->rectangle_shader_vert(),
-               //as_memory_block(g_uaAccumulationFragmentShader),
-               pcontext->rectangle_shader_frag(),
-               { },
-               m_psetdescriptorlayoutRectangle, {},
-               pcontext->input_layout<::graphics3d::sequence2_color>());
-
-         }
-
-         //pshader = m_pshaderBlendRectangle;
-
-      }
-
-
-      auto x0 = m_point.x();
-      auto y0 = m_point.y();
-
-      auto color = m_ppen->m_color;
-
-      double_point points[2];
-
-      points[0].x() = x1;
-      points[0].y() = x1;
-      points[1].x() = x2;
-      points[1].y() = y2;
-
-
-      //m_m1.transform(points[0]);
-      //m_m1.transform(points[1]);
-
-      __TRANSFORM(points[0]);
-      __TRANSFORM(points[1]);
-
-      //auto pmodelbuffer = øcreate_new< ::gpu_vulkan::model_buffer>();
-
-      if (!m_pmodelbufferLine)
-      {
-
-         øconstruct_new(m_pmodelbufferLine);
-
-         //pmodel->m_vertexBuffer = createLineVertexBuffer(pgpucontext->logicalDevice(),
-         //   pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-         //   &pmodel->m_vertexMemory, points[0], points[1],
-         //   color, m_pgpucontextCompositor->rectangle().size());
-
-         auto pcontext = gpu_context();
-
-         //::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontextCompositor;
-
-         m_pmodelbufferLine->sequence2_color_create_line(::gpu::current_frame());
-
-         //pmodelbuffer->m_indexBuffer = nullptr;
-         //pmodelbuffer->m_indexMemory = nullptr;
-
-      }
-
-      m_pmodelbufferLine->sequence2_color_set_line(
-         points[0], points[1],
-         color,
-         pcontext->rectangle().size());
-
-      pcontext->defer_bind(m_pshaderLine);
-
-      ::cast < ::gpu_vulkan::context > pcontextVulkan = pcontext;
-
-      ::cast < ::gpu_vulkan::renderer >prenderer = pcontext->m_pgpurenderer;
-
-      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
-
-      pcommandbuffer->set_line_width(m_ppen->m_dWidth);
-
-      //VkDeviceSize offset = 0;
-      //vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-
-      m_pmodelbufferLine->bind(pcommandbuffer);
-      m_pmodelbufferLine->draw(pcommandbuffer);
-      //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
-      //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 2, 1, 0, 0); // draw 2 vertices as 1 line
-
-      pcontext->defer_unbind(m_pshaderLine);
-
-      auto logicalDevice = pcontextVulkan->logicalDevice();
-
-
-      //m_particleaReleaseOnTopFrameEnd
-      //prenderer->m_pgpucontext->m_pgpudevice->m_procedureaOnTopFrameEnd.add(
-      //   [this, logicalDevice, pmodel]()
-      //   {
-
-      //      vkDestroyBuffer(logicalDevice, pmodel->m_vertexBuffer, nullptr);
-      //      vkFreeMemory(logicalDevice, pmodel->m_vertexMemory, nullptr);
-
-      //   });
-
+      //
+      //
+      // auto pcontext = gpu_context();
+      //
+      // __USES_TRANSFORM(pcontext);
+      //
+      // //auto distance = ::sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+      //
+      // //auto sinangle = (y1 - y0) / distance;
+      // //auto cosangle = (x1 - x0) / distance;
+      //
+      // //double_point points[4];
+      //
+      // //points[0].x() = x0 - cosangle * m_ppen->m_dWidth / 2.0;
+      // //points[0].y() = y0 - sinangle * m_ppen->m_dWidth / 2.0;
+      // //points[1].x() = x0 + cosangle * m_ppen->m_dWidth / 2.0;
+      // //points[1].y() = y0 + sinangle * m_ppen->m_dWidth / 2.0;
+      // //points[2].x() = x1 + cosangle * m_ppen->m_dWidth / 2.0;
+      // //points[2].y() = y1 + sinangle * m_ppen->m_dWidth / 2.0;
+      // //points[3].x() = x1 - cosangle * m_ppen->m_dWidth / 2.0;
+      // //points[3].y() = y1 - sinangle * m_ppen->m_dWidth / 2.0;
+      //
+      // //_fill_quad(points, m_ppen->m_color);
+      //
+      // {
+      //
+      //    if (!m_pshaderLine)
+      //    {
+      //
+      //       //auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
+      //
+      //       //pshadervertexinput->m_bindings.add(
+      //       //   {
+      //       //      .binding = 0,
+      //       //      .stride = sizeof(RectangleVertex),
+      //       //      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+      //       //   });
+      //
+      //       //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
+      //       //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
+      //
+      //       auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
+      //
+      //       m_pshaderLine = pshaderRectangle;
+      //       //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
+      //       m_pshaderLine->m_bDepthTestButNoDepthWrite = true;
+      //       //m_pshaderRectangle->m_iColorAttachmentCount = 2;
+      //       m_pshaderLine->m_bEnableBlend = true;
+      //       //m_pshaderRectangle->m_bAccumulationEnable = true;
+      //
+      //       m_pshaderLine->m_etopology = ::gpu::e_topology_line_list;
+      //       m_pshaderLine->m_dynamicstateaEnable.add(VK_DYNAMIC_STATE_LINE_WIDTH);
+      //
+      //       //auto pcontext = gpu_context();
+      //
+      //       ::cast < ::gpu_vulkan::device > pgpudevice = pcontext->m_pgpudevice;
+      //
+      //       pshaderRectangle->initialize_shader_with_block(
+      //          pcontext->m_pgpurenderer,
+      //          pcontext->rectangle_shader_vert(),
+      //          //as_memory_block(g_uaAccumulationFragmentShader),
+      //          pcontext->rectangle_shader_frag(),
+      //          { },
+      //          m_psetdescriptorlayoutRectangle, {},
+      //          pcontext->input_layout<::graphics3d::sequence2_color>());
+      //
+      //    }
+      //
+      //    //pshader = m_pshaderBlendRectangle;
+      //
+      // }
+      //
+      //
+      // auto x0 = m_point.x();
+      // auto y0 = m_point.y();
+      //
+      // auto color = m_ppen->m_color;
+      //
+      // double_point points[2];
+      //
+      // points[0].x() = x1;
+      // points[0].y() = x1;
+      // points[1].x() = x2;
+      // points[1].y() = y2;
+      //
+      //
+      // //m_m1.transform(points[0]);
+      // //m_m1.transform(points[1]);
+      //
+      // __TRANSFORM(points[0]);
+      // __TRANSFORM(points[1]);
+      //
+      // //auto pmodelbuffer = øcreate_new< ::gpu_vulkan::model_buffer>();
+      //
+      // if (!m_pmodelbufferLine)
+      // {
+      //
+      //    øconstruct_new(m_pmodelbufferLine);
+      //
+      //    //pmodel->m_vertexBuffer = createLineVertexBuffer(pgpucontext->logicalDevice(),
+      //    //   pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
+      //    //   &pmodel->m_vertexMemory, points[0], points[1],
+      //    //   color, m_pgpucontextCompositor->rectangle().size());
+      //
+      //    auto pcontext = gpu_context();
+      //
+      //    //::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontextCompositor;
+      //
+      //    m_pmodelbufferLine->sequence2_color_create_line(::gpu::current_frame());
+      //
+      //    //pmodelbuffer->m_indexBuffer = nullptr;
+      //    //pmodelbuffer->m_indexMemory = nullptr;
+      //
+      // }
+      //
+      // m_pmodelbufferLine->sequence2_color_set_line(
+      //    points[0], points[1],
+      //    color,
+      //    pcontext->rectangle().size());
+      //
+      // pcontext->defer_bind(m_pshaderLine);
+      //
+      // ::cast < ::gpu_vulkan::context > pcontextVulkan = pcontext;
+      //
+      // ::cast < ::gpu_vulkan::renderer >prenderer = pcontext->m_pgpurenderer;
+      //
+      // ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //
+      // pcommandbuffer->set_line_width(m_ppen->m_dWidth);
+      //
+      // //VkDeviceSize offset = 0;
+      // //vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      //
+      // m_pmodelbufferLine->bind(pcommandbuffer);
+      // m_pmodelbufferLine->draw(pcommandbuffer);
+      // //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
+      // //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 2, 1, 0, 0); // draw 2 vertexes as 1 line
+      //
+      // pcontext->defer_unbind(m_pshaderLine);
+      //
+      // auto logicalDevice = pcontextVulkan->logicalDevice();
+      //
+      //
+      // //m_particleaReleaseOnTopFrameEnd
+      // //prenderer->m_pgpucontext->m_pgpudevice->m_procedureaOnTopFrameEnd.add(
+      // //   [this, logicalDevice, pmodel]()
+      // //   {
+      //
+      // //      vkDestroyBuffer(logicalDevice, pmodel->m_vertexBuffer, nullptr);
+      // //      vkFreeMemory(logicalDevice, pmodel->m_vertexMemory, nullptr);
+      //
+      // //   });
+      //
 
    }
 
@@ -7037,20 +7045,60 @@ auto iContextHeight = pcontext->m_rectangle.height()
          glm::vec3 color;
       };
 
-      std::vector<Vertex> vertices = {
+      std::vector<Vertex> vertexes = {
          {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}}, // Bottom-left
          {{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}}, // Bottom-right
          {{ 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}, // Top-right
          {{-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}}, // Top-left
       };
 
-      std::vector<uint16_t> indices = {
+      std::vector<uint16_t> indexes = {
          0, 1, 2, 2, 3, 0 // Two triangles
       };
 
    }
 
 
+
+
+   ::geometry2d::matrix graphics::context_matrix(enum_transform_context etransformcontext)
+   {
+
+      auto pcontext = gpu_context();
+
+      ::geometry2d::matrix contextmatrix;
+
+      if (etransformcontext == e_transform_context_default
+         || etransformcontext == e_transform_context_geometry)
+      {
+
+         contextmatrix.translate(0.5, -0.5);
+
+      }
+
+      contextmatrix.append(context_scale_matrix());
+
+      return contextmatrix;
+
+   }
+
+
+   ::geometry2d::matrix graphics::context_scale_matrix()
+   {
+
+      auto pcontext = gpu_context();
+
+      auto size = pcontext->m_rectangle.size();
+
+      ::geometry2d::matrix contextmatrix;
+
+      contextmatrix.scale(2.0 / size.cx(), -2.0 / size.cy());
+
+      contextmatrix.translate(-1.0, 1.0);
+
+      return contextmatrix;
+
+   }
 
 
 } // namespace draw2d_vulkan
@@ -7120,7 +7168,6 @@ namespace vulkan
       //}
       //vkEnd();
    }
-
 
 
 } // namespace vulkan

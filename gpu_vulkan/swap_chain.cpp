@@ -485,14 +485,14 @@ namespace gpu_vulkan
          | VK_IMAGE_USAGE_TRANSFER_DST_BIT
          | VK_IMAGE_USAGE_SAMPLED_BIT;
 
-      vulkan::QueueFamilyIndices indices = pcontext->m_pgpudevice->m_pphysicaldevice->findQueueFamilies();
+      vulkan::QueueFamilyIndices indexes = pcontext->m_pgpudevice->m_pphysicaldevice->findQueueFamilies();
       uint32_t queueFamilyIndices[] =
       {
-         (uint32_t)indices.graphicsFamily,
-         (uint32_t)indices.presentFamily
+         (uint32_t)indexes.graphicsFamily,
+         (uint32_t)indexes.presentFamily
       };
 
-      if (indices.graphicsFamily != indices.presentFamily) {
+      if (indexes.graphicsFamily != indexes.presentFamily) {
          createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
          createInfo.queueFamilyIndexCount = 2;
          createInfo.pQueueFamilyIndices = queueFamilyIndices;

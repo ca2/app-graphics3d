@@ -25,6 +25,7 @@
 //#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
 #include "glm/mat4x4.hpp"
 #include "initializers.h"
+#include "vk_init.h"
 
 
 using namespace vulkan;
@@ -110,13 +111,13 @@ namespace gpu_vulkan
       //
       //      }
       //      //glGenBuffers(1, &VAO);
-      ////      float vertices[] = {f
+      ////      float vertexes[] = {f
       //         // positions         // colors
       //  //        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
       //    //     -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
       //      //    0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top
       //      //};
-      //      float vertices[] = {
+      //      float vertexes[] = {
       //         // first triangle
       //          1.f,  1.f, 0.0f,  // top right
       //          1.f, -1.f, 0.0f,  // bottom right
@@ -151,7 +152,7 @@ namespace gpu_vulkan
       //#endif
       ////
       ////      glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-      ////      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+      ////      glBufferData(GL_ARRAY_BUFFER, sizeof(vertexes), vertexes, GL_STATIC_DRAW);
       ////
       ////      // position attribute
       ////      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
@@ -822,17 +823,17 @@ namespace gpu_vulkan
 
       m_pgpudevice = pgpudevice;
 
-      if (m_pgpudevice->m_queuefamilyindices.graphicsFamily >= 0)
+      if (m_pgpudevice->m_queuefamilyindexes.graphicsFamily >= 0)
       {
 
-         vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
+         vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindexes.graphicsFamily, 0, &m_vkqueueGraphics);
 
       }
 
-      if (m_pgpudevice->m_queuefamilyindices.presentFamily >= 0)
+      if (m_pgpudevice->m_queuefamilyindexes.presentFamily >= 0)
       {
 
-         vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
+         vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindexes.presentFamily, 0, &m_vkqueuePresent);
 
       }
 
@@ -935,41 +936,41 @@ namespace gpu_vulkan
    //
    //      ::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
    //
-   //      // Get queue family indices for the requested queue family types
-   //      // Note that the indices may overlap depending on the implementation
+   //      // Get queue family indexes for the requested queue family types
+   //      // Note that the indexes may overlap depending on the implementation
    //
    //      const float defaultQueuePriority(0.0f);
    //
-   //      m_queuefamilyindices = pphysicaldevice->findQueueFamilies();
+   //      m_queuefamilyindexes = pphysicaldevice->findQueueFamilies();
    //
    //      // Graphics queue
    //      if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT
-   //         && m_queuefamilyindices.graphicsFamilyHasValue)
+   //         && m_queuefamilyindexes.graphicsFamilyHasValue)
    //      {
-   //         //m_queuefamilyindices.graphics = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
+   //         //m_queuefamilyindexes.graphics = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
    //         VkDeviceQueueCreateInfo queueInfo{};
    //         queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-   //         queueInfo.queueFamilyIndex = m_queuefamilyindices.graphicsFamily;
+   //         queueInfo.queueFamilyIndex = m_queuefamilyindexes.graphicsFamily;
    //         queueInfo.queueCount = 1;
    //         queueInfo.pQueuePriorities = &defaultQueuePriority;
    //         queueCreateInfos.add(queueInfo);
    //      }
    //      else
    //      {
-   //         m_queuefamilyindices.graphicsFamily = 0;
+   //         m_queuefamilyindexes.graphicsFamily = 0;
    //      }
    //
    //      // Dedicated compute queue
    //      if (requestedQueueTypes & VK_QUEUE_COMPUTE_BIT
-   //         && m_queuefamilyindices.computeFamilyHasValue)
+   //         && m_queuefamilyindexes.computeFamilyHasValue)
    //      {
-   //         //m_queuefamilyindices.compute = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
-   //         if (m_queuefamilyindices.computeFamily != m_queuefamilyindices.graphicsFamily)
+   //         //m_queuefamilyindexes.compute = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
+   //         if (m_queuefamilyindexes.computeFamily != m_queuefamilyindexes.graphicsFamily)
    //         {
    //            // If compute family index differs, we need an additional queue create info for the compute queue
    //            VkDeviceQueueCreateInfo queueInfo{};
    //            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-   //            queueInfo.queueFamilyIndex = m_queuefamilyindices.computeFamily;
+   //            queueInfo.queueFamilyIndex = m_queuefamilyindexes.computeFamily;
    //            queueInfo.queueCount = 1;
    //            queueInfo.pQueuePriorities = &defaultQueuePriority;
    //            queueCreateInfos.add(queueInfo);
@@ -978,21 +979,21 @@ namespace gpu_vulkan
    //      else
    //      {
    //         // Else we use the same queue
-   //         m_queuefamilyindices.computeFamily = m_queuefamilyindices.graphicsFamily;
+   //         m_queuefamilyindexes.computeFamily = m_queuefamilyindexes.graphicsFamily;
    //      }
    //
    //      // Dedicated transfer queue
    //      if (requestedQueueTypes & VK_QUEUE_TRANSFER_BIT
-   //         && m_queuefamilyindices.transferFamilyHasValue)
+   //         && m_queuefamilyindexes.transferFamilyHasValue)
    //      {
-   //         //m_queuefamilyindices.transfer = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_TRANSFER_BIT);
-   //         if ((m_queuefamilyindices.transferFamily != m_queuefamilyindices.graphicsFamily)
-   //            && (m_queuefamilyindices.transferFamily != m_queuefamilyindices.computeFamily))
+   //         //m_queuefamilyindexes.transfer = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_TRANSFER_BIT);
+   //         if ((m_queuefamilyindexes.transferFamily != m_queuefamilyindexes.graphicsFamily)
+   //            && (m_queuefamilyindexes.transferFamily != m_queuefamilyindexes.computeFamily))
    //         {
    //            // If transfer family index differs, we need an additional queue create info for the transfer queue
    //            VkDeviceQueueCreateInfo queueInfo{};
    //            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-   //            queueInfo.queueFamilyIndex = m_queuefamilyindices.transferFamily;
+   //            queueInfo.queueFamilyIndex = m_queuefamilyindexes.transferFamily;
    //            queueInfo.queueCount = 1;
    //            queueInfo.pQueuePriorities = &defaultQueuePriority;
    //            queueCreateInfos.add(queueInfo);
@@ -1001,7 +1002,7 @@ namespace gpu_vulkan
    //      else
    //      {
    //         // Else we use the same queue
-   //         m_queuefamilyindices.transferFamily = m_queuefamilyindices.graphicsFamily;
+   //         m_queuefamilyindexes.transferFamily = m_queuefamilyindexes.graphicsFamily;
    //      }
    //
    //      // Create the logical device representation
@@ -1061,18 +1062,18 @@ namespace gpu_vulkan
    //         return result;
    //      }
    //
-   //      if (m_queuefamilyindices.graphicsFamily >= 0)
+   //      if (m_queuefamilyindexes.graphicsFamily >= 0)
    //      {
-   //         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindices.graphicsFamily, 0, &m_vkqueueGraphics);
+   //         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindexes.graphicsFamily, 0, &m_vkqueueGraphics);
    //      }
-   //      if (m_queuefamilyindices.presentFamily >= 0)
+   //      if (m_queuefamilyindexes.presentFamily >= 0)
    //      {
-   //         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindices.presentFamily, 0, &m_vkqueuePresent);
+   //         vkGetDeviceQueue(this->logicalDevice(), m_queuefamilyindexes.presentFamily, 0, &m_vkqueuePresent);
    //      }
    //
    //
    //      // Create a default command pool for graphics command buffers
-   //      m_vkcommandpool = createCommandPool(m_queuefamilyindices.graphicsFamily);
+   //      m_vkcommandpool = createCommandPool(m_queuefamilyindexes.graphicsFamily);
    //
    //      return result;
    //
@@ -1856,17 +1857,17 @@ namespace gpu_vulkan
    //void context::createLogicalDevice()
    //{
 
-   //   QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+   //   QueueFamilyIndices indexes = findQueueFamilies(physicalDevice);
 
    //   ::array<VkDeviceQueueCreateInfo> queueCreateInfos;
    //   std::set<uint32_t> uniqueQueueFamilies;
-   //   if (indices.graphicsFamilyHasValue)
+   //   if (indexes.graphicsFamilyHasValue)
    //   {
-   //      uniqueQueueFamilies.insert(indices.graphicsFamily);
+   //      uniqueQueueFamilies.insert(indexes.graphicsFamily);
    //   }
-   //   if (indices.presentFamilyHasValue)
+   //   if (indexes.presentFamilyHasValue)
    //   {
-   //      uniqueQueueFamilies.insert(indices.presentFamily);
+   //      uniqueQueueFamilies.insert(indexes.presentFamily);
    //   }
 
    //   float queuePriority = 1.0f;
@@ -1909,13 +1910,13 @@ namespace gpu_vulkan
    //   {
    //      throw ::exception(error_failed,"failed to create logical pvkcdevice!");
    //   }
-   //   if (indices.graphicsFamilyHasValue)
+   //   if (indexes.graphicsFamilyHasValue)
    //   {
-   //      vkGetDeviceQueue(this->logicalDevice(), indices.graphicsFamily, 0, &m_vkqueueGraphics);
+   //      vkGetDeviceQueue(this->logicalDevice(), indexes.graphicsFamily, 0, &m_vkqueueGraphics);
    //   }
-   //   if (indices.presentFamilyHasValue)
+   //   if (indexes.presentFamilyHasValue)
    //   {
-   //      vkGetDeviceQueue(this->logicalDevice(), indices.presentFamily, 0, &m_vkqueuePresent);
+   //      vkGetDeviceQueue(this->logicalDevice(), indexes.presentFamily, 0, &m_vkqueuePresent);
    //   }
    //}
 
@@ -1935,6 +1936,131 @@ namespace gpu_vulkan
    //   }
    //}
 
+
+   VkCommandBuffer context::createCommandBuffer(VkCommandBufferLevel level, bool begin)
+   {
+
+      ::cast < device > pdevice = m_pgpudevice;
+
+      auto vkcommandpool = pdevice->getCommandPool();
+
+      return createCommandBuffer(level, vkcommandpool, begin);
+
+   }
+
+
+   VkCommandBuffer context::createCommandBuffer(VkCommandBufferLevel level, VkCommandPool pool, bool begin)
+   {
+
+      VkCommandBufferAllocateInfo cmdBufAllocateInfo = vkinit::commandBufferAllocateInfo(pool, level, 1);
+
+      VkCommandBuffer cmdBuffer;
+
+      vkAllocateCommandBuffers(this->logicalDevice(), &cmdBufAllocateInfo, &cmdBuffer);
+
+      // If requested, also start recording for the new command buffer
+      if (begin)
+      {
+
+         VkCommandBufferBeginInfo cmdBufInfo = vkinit::commandBufferBeginInfo();
+
+         vkBeginCommandBuffer(cmdBuffer, &cmdBufInfo);
+
+      }
+
+      return cmdBuffer;
+
+   }
+
+
+   void context::flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, VkCommandPool pool, bool free)
+   {
+
+      if (commandBuffer == VK_NULL_HANDLE)
+      {
+
+         return;
+
+      }
+
+      VK_CHECK_RESULT(vkEndCommandBuffer(commandBuffer));
+
+      VkSubmitInfo submitInfo = vkinit::submitInfo();
+
+      submitInfo.commandBufferCount = 1;
+
+      submitInfo.pCommandBuffers = &commandBuffer;
+
+      // Create fence to ensure that the command buffer has finished executing
+      VkFenceCreateInfo fenceInfo = vkinit::fenceCreateInfo(VK_FLAGS_NONE);
+
+      VkFence fence;
+
+      VK_CHECK_RESULT(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
+
+      // Submit to the queue
+      VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
+
+      // Wait for the fence to signal that command buffer has finished executing
+      VK_CHECK_RESULT(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT));
+
+      vkDestroyFence(this->logicalDevice(), fence, nullptr);
+
+      if (free)
+      {
+
+         vkFreeCommandBuffers(this->logicalDevice(), pool, 1, &commandBuffer);
+
+      }
+
+   }
+
+
+   void context::flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, bool free)
+   {
+
+      ::cast < device > pdevice = m_pgpudevice;
+
+      auto vkcommandpool = pdevice->getCommandPool();
+
+      return flushCommandBuffer(commandBuffer, queue, vkcommandpool, free);
+
+   }
+
+
+   // // 1) Query swapchain support for our chosen physical pdevice + surface:
+   // SwapChainSupportDetails sandbox_device::querySwapchainSupport(VkSurfaceKHR surface) const {
+   //    SwapChainSupportDetails details;
+   //
+   //    // Capabilities:
+   //    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+   //       m_physicalDevice, surface, &details.capabilities);
+   //
+   //    // Surface formats:
+   //    uint32_t count = 0;
+   //    vkGetPhysicalDeviceSurfaceFormatsKHR(
+   //       m_physicalDevice, surface, &count, nullptr);
+   //    if (count > 0) {
+   //       details.formats.resize(count);
+   //       vkGetPhysicalDeviceSurfaceFormatsKHR(
+   //          m_physicalDevice, surface, &count,
+   //          details.formats.data());
+   //    }
+   //
+   //    // Present modes:
+   //    vkGetPhysicalDeviceSurfacePresentModesKHR(
+   //       m_physicalDevice, surface, &count, nullptr);
+   //    if (count > 0) {
+   //       details.presentModes.resize(count);
+   //       vkGetPhysicalDeviceSurfacePresentModesKHR(
+   //          m_physicalDevice, surface, &count,
+   //          details.presentModes.data());
+   //    }
+   //
+   //    return details;
+   // }
+
+
    //void context::createSurface() { window.createWindowSurface(m_vkinstance, &m_vksurfacekhr); }
 
    //void context::_createSurface() {}
@@ -1943,7 +2069,7 @@ namespace gpu_vulkan
    //bool context::isDeviceSuitable(VkPhysicalDevice pvkcdevice)
    //{
 
-   //   QueueFamilyIndices indices = findQueueFamilies(pvkcdevice);
+   //   QueueFamilyIndices indexes = findQueueFamilies(pvkcdevice);
 
    //   bool extensionsSupported = checkDeviceExtensionSupport(pvkcdevice);
 
@@ -1966,7 +2092,7 @@ namespace gpu_vulkan
    //   VkPhysicalDeviceFeatures supportedFeatures;
    //   vkGetPhysicalDeviceFeatures(pvkcdevice, &supportedFeatures);
 
-   //   return (!m_vksurfacekhr || indices.isComplete()) && extensionsSupported && swapChainAdequate &&
+   //   return (!m_vksurfacekhr || indexes.isComplete()) && extensionsSupported && swapChainAdequate &&
    //      supportedFeatures.samplerAnisotropy;
 
    //}

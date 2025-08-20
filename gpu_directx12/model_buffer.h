@@ -99,8 +99,8 @@ namespace gpu_directx12
       void draw(::gpu::command_buffer* pcommandbuffer) override;
 
 
-      //void createVertexBuffers(const ::array<::graphics3d::Vertex>& vertices);
-      //void createIndexBuffers(const ::array<uint32_t>& indices);
+      //void createVertexBuffers(const ::array<::graphics3d::Vertex>& vertexes);
+      //void createIndexBuffers(const ::array<uint32_t>& indexes);
 
 
       void static_initialize_vertex_buffer(const void* data, memsize iTypeSize, ::collection::count iVertexCount) override;

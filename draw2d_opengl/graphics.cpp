@@ -1360,7 +1360,7 @@ void main() {
 
    //   pmodelbufferRectangle->draw(pcommandbuffer);
 
-   //   //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertices for two triangles
+   //   //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // 6 vertexes for two triangles
    //   //vkCmdEndRenderPass(cmd);
 
 
@@ -2230,7 +2230,7 @@ void main() {
          pointa1,
          pointPen);
 
-      auto contextmatrix = this->context_matrix();
+      auto contextmatrix = this->context_matrix(e_transform_context_geometry);
 
       contextmatrix.transform(pointa);
 
@@ -2255,7 +2255,7 @@ void main() {
 
       }
 
-      pmodelbuffer->set_vertices(quadVertices);
+      pmodelbuffer->set_vertexes(quadVertices);
 
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
@@ -5415,7 +5415,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //   // render glyph texture over quad
       //   if (ch.m_ppixmap)
       //   {
-      //     /* ::graphics3d::sequence2_uv vertices[6] = {
+      //     /* ::graphics3d::sequence2_uv vertexes[6] = {
       //          {{xpos,     ypos + h},  { 0.0f, 0.0f } },
       //      { {xpos,     ypos    },     {  0.0f, 1.0f }},
       //          {{xpos + w, ypos    },  {     1.0f, 1.0f }},
@@ -5433,12 +5433,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //      }
 
-      //      pmodelbuffer->sequence2_uv_set_vertex(vertices, 6)*/
+      //      pmodelbuffer->sequence2_uv_set_vertex(vertexes, 6)*/
 
       //         //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
       //      //// update content of VBO memory
       //      //glBindBuffer(GL_ARRAY_BUFFER, pfont->m_VBO);
-      //      //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+      //      //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertexes), vertexes); // be sure to use glBufferSubData and not glBufferData
 
       //      //auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
@@ -5558,7 +5558,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      //pmodelbuffer->set_vertices(quadVertices);
+      //pmodelbuffer->set_vertexes(quadVertices);
 
       //auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
@@ -5737,7 +5737,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //         float w = (float) ch.Size.x;
 //         float h = (float) ch.Size.y;
 //         // update VBO for each character
-//         ::array <::graphics3d::sequence2_uv > vertices = {
+//         ::array <::graphics3d::sequence2_uv > vertexes = {
 //             {{ xpos,     ypos + h},{   0.0f, 0.0f }},
 //             {{ xpos,     ypos    },{   0.0f, 1.0f }},
 //             {{ xpos + w, ypos    },{   1.0f, 1.0f }},
@@ -5757,13 +5757,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //
 //               pmodelbuffer->initialize_gpu_context_object(pcontext);
 //
-//               pmodelbuffer->create_vertices < ::graphics3d::sequence2_uv>(6);
+//               pmodelbuffer->create_vertexes < ::graphics3d::sequence2_uv>(6);
 //
 //               //pmodelbuffer->defer_set_input_layout(m_pgpushaderTextOut->m_pinputlayout);
 //
 //            }
 //
-//            //pmodelbuffer->set_vertex_array(vertices, 6);
+//            //pmodelbuffer->set_vertex_array(vertexes, 6);
 //
 //            ch.m_ppixmap->bind_texture(pshader);
 //            //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
@@ -5772,7 +5772,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //            //int iVbo = pface->m_FaceVBO;
 //            //glBindBuffer(GL_ARRAY_BUFFER, iVbo);
 //            //GLCheckError("");
-//            //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+//            //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertexes), vertexes); // be sure to use glBufferSubData and not glBufferData
 //            //GLCheckError("");
 //            //glBindBuffer(GL_ARRAY_BUFFER, 0);
 //            //GLCheckError("");
@@ -5788,7 +5788,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //
 //            pmodelbuffer->m_pbufferVertex->bind();
 //
-//            pmodelbuffer->set_vertices(vertices);
+//            pmodelbuffer->set_vertexes(vertexes);
 //            
 //            pmodelbuffer->draw(pcommandbuffer);
 //
@@ -5963,7 +5963,7 @@ color = vec4(c.r,c.g, c.b, c.a);
          float w = (float) ch.Size.x;
          float h = (float) ch.Size.y;
          // update VBO for each character
-         ::array < ::graphics3d::sequence2_uv > vertices = {
+         ::array < ::graphics3d::sequence2_uv > vertexes = {
              {{xpos,     ypos + h},{ 0.0f, 0.0f }},
              {{xpos,     ypos    },{ 0.0f, 1.0f }},
              {{xpos + w, ypos    },{ 1.0f, 1.0f }},
@@ -5985,7 +5985,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
                pmodelbuffer->bind(pcommandbuffer);
 
-               pmodelbuffer->create_vertices < ::graphics3d::sequence2_uv>(6);
+               pmodelbuffer->create_vertexes < ::graphics3d::sequence2_uv>(6);
 
                pmodelbuffer->unbind(pcommandbuffer);
 
@@ -5993,7 +5993,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
             }
 
-            //pmodelbuffer->set_vertex_array(vertices, 6);
+            //pmodelbuffer->set_vertex_array(vertexes, 6);
 
             ch.m_ppixmap->bind_texture(pshader);
             //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
@@ -6002,7 +6002,7 @@ color = vec4(c.r,c.g, c.b, c.a);
             //int iVbo = pface->m_FaceVBO;
             //glBindBuffer(GL_ARRAY_BUFFER, iVbo);
             //GLCheckError("");
-            //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+            //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertexes), vertexes); // be sure to use glBufferSubData and not glBufferData
             //GLCheckError("");
             //glBindBuffer(GL_ARRAY_BUFFER, 0);
             //GLCheckError("");
@@ -6018,7 +6018,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
             pmodelbuffer->m_pbufferVertex->bind();
 
-            pmodelbuffer->set_vertices(vertices);
+            pmodelbuffer->set_vertexes(vertexes);
 
             pmodelbuffer->draw(pcommandbuffer);
 
@@ -6603,6 +6603,44 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //}
 
+   ::geometry2d::matrix graphics::context_matrix(enum_transform_context etransformcontext)
+   {
+
+      auto pcontext = gpu_context();
+
+      ::geometry2d::matrix contextmatrix;
+
+      if (etransformcontext == e_transform_context_default
+         || etransformcontext == e_transform_context_geometry)
+      {
+
+         contextmatrix.translate(0.5, -0.5);
+
+      }
+
+      contextmatrix.append(context_scale_matrix());
+
+      return contextmatrix;
+
+   }
+
+
+   ::geometry2d::matrix graphics::context_scale_matrix()
+   {
+
+      auto pcontext = gpu_context();
+
+      auto size = pcontext->m_rectangle.size();
+
+      ::geometry2d::matrix contextmatrix;
+
+      contextmatrix.scale(2.0 / size.cx(), -2.0 / size.cy());
+
+      contextmatrix.translate(-1.0, 1.0);
+
+      return contextmatrix;
+
+   }
 
 
    void graphics::CreateWindowDC(oswindow wnd)

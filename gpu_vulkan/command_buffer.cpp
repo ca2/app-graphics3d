@@ -483,7 +483,7 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::draw_vertices(int iVertexCount)
+   void command_buffer::draw_vertexes(int iVertexCount)
    {
 
       vkCmdDraw(m_vkcommandbuffer, iVertexCount, 1, 0, 0);
@@ -491,7 +491,7 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::draw_indices(int iIndexCount)
+   void command_buffer::draw_indexes(int iIndexCount)
    {
 
       vkCmdDrawIndexed(m_vkcommandbuffer, iIndexCount, 1, 0, 0, 0);

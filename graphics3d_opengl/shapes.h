@@ -19,8 +19,8 @@ namespace graphics3d_opengl
    class ShapeFactory {
    public:
       struct ShapeData {
-         ::array<float> vertices;  // Positions, colors, texture coordinates, and normals
-         ::array<unsigned int> indices;
+         ::array<float> vertexes;  // Positions, colors, texture coordinates, and normals
+         ::array<unsigned int> indexes;
       };
 
       // Generate a graphics3d with position, color, texture coordinates, and normals
@@ -30,7 +30,7 @@ namespace graphics3d_opengl
          float halfSize = size / 2.0f;
 
          // Vertices for a graphics3d
-         shape.vertices = {
+         shape.vertexes = {
             // Front face
             -halfSize, -halfSize,  halfSize,  -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   // bottom-left (red)
              halfSize, -halfSize,  halfSize,   0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   // bottom-right (green)
@@ -70,7 +70,7 @@ namespace graphics3d_opengl
 
 
          // Indices for the graphics3d (two triangles per face)
-         shape.indices = {
+         shape.indexes = {
             // Front face
             0, 1, 2,  2, 3, 0,
 
@@ -101,7 +101,7 @@ namespace graphics3d_opengl
          float halfDepth = depth / 2.0f;
 
          // Vertices for a plane
-         shape.vertices = {
+         shape.vertexes = {
             // Position               // Color           // texture coords 
             -halfWidth, 0.0f, -halfDepth,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
              halfWidth, 0.0f, -halfDepth,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
@@ -110,7 +110,7 @@ namespace graphics3d_opengl
          };
 
          // Indices for a plane (two triangles)
-         shape.indices = {
+         shape.indexes = {
              0, 1, 2, 2, 3, 0
          };
 
@@ -125,7 +125,7 @@ namespace graphics3d_opengl
          float halfHeight = height / 2.0f;
 
          // Vertices for a wall
-         shape.vertices = {
+         shape.vertexes = {
             // Position               // Color           // texture coords 
             -halfWidth, -halfHeight, 0.0f,  -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   // bottom-left (red)
              halfWidth, -halfHeight, 0.0f,   0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   // bottom-right (green)
@@ -135,7 +135,7 @@ namespace graphics3d_opengl
 
 
          // Indices for a wall (two triangles)
-         shape.indices = {
+         shape.indexes = {
              0, 1, 2, 2, 3, 0
          };
 
@@ -158,31 +158,31 @@ namespace graphics3d_opengl
             xy = radius * cosf(stackAngle);              // r * cos(u)
             z = radius * sinf(stackAngle);               // r * sin(u)
 
-            // add (sectorCount+1) vertices per stack
-            // the first and last vertices have same position and normal, but different tex coords
+            // add (sectorCount+1) vertexes per stack
+            // the first and last vertexes have same position and normal, but different tex coords
             for (unsigned int j = 0; j <= sectorCount; ++j) {
                sectorAngle = j * sectorStep;           // from 0 to 2pi
 
                // vertex position (x, y, z)
                x = xy * cosf(sectorAngle);             // r * cos(u) * cos(v)
                y = xy * sinf(sectorAngle);             // r * cos(u) * sin(v)
-               shape.vertices.push_back(x);
-               shape.vertices.push_back(y);
-               shape.vertices.push_back(z);
+               shape.vertexes.push_back(x);
+               shape.vertexes.push_back(y);
+               shape.vertexes.push_back(z);
 
                // normalized vertex normal (nx, ny, nz)
                nx = x * lengthInv;
                ny = y * lengthInv;
                nz = z * lengthInv;
-               shape.vertices.push_back(nx);
-               shape.vertices.push_back(ny);
-               shape.vertices.push_back(nz);
+               shape.vertexes.push_back(nx);
+               shape.vertexes.push_back(ny);
+               shape.vertexes.push_back(nz);
 
                // vertex tex coord (s, t) range between [0, 1]
                s = (float)j / sectorCount;
                t = (float)i / stackCount;
-               shape.vertices.push_back(s);
-               shape.vertices.push_back(t);
+               shape.vertexes.push_back(s);
+               shape.vertexes.push_back(t);
             }
          }
 
@@ -195,16 +195,16 @@ namespace graphics3d_opengl
             for (unsigned int j = 0; j < sectorCount; ++j, ++k1, ++k2) {
                if (i != 0) {
                   // triangle 1
-                  shape.indices.push_back(k1);
-                  shape.indices.push_back(k2);
-                  shape.indices.push_back(k1 + 1);
+                  shape.indexes.push_back(k1);
+                  shape.indexes.push_back(k2);
+                  shape.indexes.push_back(k1 + 1);
                }
 
                if (i != (stackCount - 1)) {
                   // triangle 2
-                  shape.indices.push_back(k1 + 1);
-                  shape.indices.push_back(k2);
-                  shape.indices.push_back(k2 + 1);
+                  shape.indexes.push_back(k1 + 1);
+                  shape.indexes.push_back(k2);
+                  shape.indexes.push_back(k2 + 1);
                }
             }
          }
@@ -216,14 +216,14 @@ namespace graphics3d_opengl
       static ShapeData CreateRay(float length) {
          ShapeData shape;
 
-         // Define vertices for the ray (start at origin, end at specified length)
-         shape.vertices = {
+         // Define vertexes for the ray (start at origin, end at specified length)
+         shape.vertexes = {
              0.0f, 0.0f, 0.0f,  // Ray start
              0.0f, 0.0f, length, // Ray end
          };
 
-         // Define indices for the ray (one line)
-         shape.indices = {
+         // Define indexes for the ray (one line)
+         shape.indexes = {
              0, 1,
          };
 

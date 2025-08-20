@@ -84,7 +84,7 @@ namespace gpu_vulkan
 
 #if !defined(__APPLE__) && !defined(WINDOWS)
        
-      ::assimp::load_obj(memory.data(), memory.size(), m_indices, m_vertices, m_uvs, m_normals);
+      ::assimp::load_obj(memory.data(), memory.size(), m_indexes, m_vertexes, m_uvs, m_normals);
 
 #else
 
@@ -139,9 +139,9 @@ namespace gpu_vulkan
 //      }
 //
 //#ifdef __APPLE__
-//      glGenVertexArraysAPPLE(1, (GLuint *) &m_vao_vertices); // vertext array object
+//      glGenVertexArraysAPPLE(1, (GLuint *) &m_vao_vertexes); // vertext array object
 //#else
-//      glGenVertexArrays(1, (GLuint *) &m_vao_vertices); // vertext array object
+//      glGenVertexArrays(1, (GLuint *) &m_vao_vertexes); // vertext array object
 //#endif
 //      int iError2 = glGetError();
 //      auto pszError2 = (const char *)vulkan_error_string(iError2);
@@ -152,9 +152,9 @@ namespace gpu_vulkan
 //         
 //      }
 //#ifdef __APPLE__
-//      glBindVertexArrayAPPLE(m_vao_vertices);
+//      glBindVertexArrayAPPLE(m_vao_vertexes);
 //#else
-//      glBindVertexArray(m_vao_vertices);
+//      glBindVertexArray(m_vao_vertexes);
 //#endif
 //      int iErrorA = glGetError();
 //      auto pszErrorA = (const char *)vulkan_error_string(iErrorA);
@@ -165,7 +165,7 @@ namespace gpu_vulkan
 //         
 //      }
 //
-//      glGenBuffers(1, (GLuint *)&m_vbo_vertices); // vertex buffer object
+//      glGenBuffers(1, (GLuint *)&m_vbo_vertexes); // vertex buffer object
 //      int iError1 = glGetError();
 //      auto pszError1 = (const char *) vulkan_error_string(iError1);
 //      if(pszError1)
@@ -176,7 +176,7 @@ namespace gpu_vulkan
 //      }
 //
 //
-//      glBindBuffer(GL_ARRAY_BUFFER, m_vbo_vertices);
+//      glBindBuffer(GL_ARRAY_BUFFER, m_vbo_vertexes);
 //      int iError5 = glGetError();
 //      auto pszError5 = (const char *)vulkan_error_string(iError5);
 //      if(pszError5)
@@ -186,8 +186,8 @@ namespace gpu_vulkan
 //         
 //      }
 //
-//      auto byteCount1 = m_vertices.byte_count();
-//      auto data1 = m_vertices.data();
+//      auto byteCount1 = m_vertexes.byte_count();
+//      auto data1 = m_vertexes.data();
 //
 //      glBufferData(GL_ARRAY_BUFFER, byteCount1, data1, GL_STATIC_DRAW);
 //      int iError4 = glGetError();
@@ -198,12 +198,12 @@ namespace gpu_vulkan
 //         information() << "error " << pszError4;
 //         
 //      }
-//      //glEnableVertexAttribArray(m_vao_vertices);
+//      //glEnableVertexAttribArray(m_vao_vertexes);
 //      //int iError3 = glGetError();
 //      //auto pszError3 = (const char *)gluErrorString(iError3);
 //
 //      //glVertexAttribPointer(
-//      //   m_vao_vertices,  // attribute
+//      //   m_vao_vertexes,  // attribute
 //      //   4,                  // number of elements per vertex, here (x,y,z,w)
 //      //   GL_FLOAT,           // the type of each element
 //      //   GL_FALSE,           // take our values as-is
@@ -248,7 +248,7 @@ namespace gpu_vulkan
 //      //GLuint vertexbuffer;
 //      //glGenBuffers(1, &vertexbuffer);
 //      //glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-//      //glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+//      //glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(glm::vec3), &vertexes[0], GL_STATIC_DRAW);
 //
 //
 //      auto byteCount2 = m_uvs.byte_count();
@@ -271,7 +271,7 @@ namespace gpu_vulkan
 //      //int iError14 = glGetError();
 //      //auto pszError14 = (const char *)gluErrorString(iError14);
 //
-//      //glBufferData(GL_ARRAY_BUFFER, m_vertices.byte_count(), m_vertices.data(), GL_STATIC_DRAW);
+//      //glBufferData(GL_ARRAY_BUFFER, m_vertexes.byte_count(), m_vertexes.data(), GL_STATIC_DRAW);
 //      //int iError15 = glGetError();
 //      //auto pszError15 = (const char *)gluErrorString(iError15);
 //
@@ -297,9 +297,9 @@ namespace gpu_vulkan
 
       }
 
-      //// 1rst attribute buffer : vertices
+      //// 1rst attribute buffer : vertexes
       //glEnableVertexAttribArray(0);
-      //glBindBuffer(GL_ARRAY_BUFFER, m_vbo_vertices);
+      //glBindBuffer(GL_ARRAY_BUFFER, m_vbo_vertexes);
       //glVertexAttribPointer(
       //   0,                  // attribute
       //   3,                  // size
@@ -321,7 +321,7 @@ namespace gpu_vulkan
       //   (void *)0                          // array buffer offset
       //);
 
-      //auto sizeVertices = m_vertices.size();
+      //auto sizeVertices = m_vertexes.size();
       //// Draw the triangle !
       //glDrawArrays(GL_TRIANGLES, 0, (GLsizei)sizeVertices);
 
