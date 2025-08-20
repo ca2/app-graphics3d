@@ -9,7 +9,7 @@
 #include <vector>
 
 #include <vulkan/vulkan.h>
-#include "bred/sandbox_interfaces/model.h"
+#include "bred/sandbox/model.h"
 //#include "vk_tools/vk_init.h"
 //#include "vulkan_wrapper/vulkan_descriptor.h"
 
@@ -260,7 +260,7 @@ namespace gpu_vulkan
 			glTF model loading and rendering class
 		*/
 		class Model :
-			public ::sandbox_interfaces::IModel
+			public ::sandbox::IModel
 		{
 		private:
 			vkglTF::Texture* getTexture(uint32_t index);
