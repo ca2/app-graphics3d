@@ -2029,7 +2029,7 @@ namespace gpu_vulkan
 
 
    // // 1) Query swapchain support for our chosen physical pdevice + surface:
-   // SwapChainSupportDetails sandbox_device::querySwapchainSupport(VkSurfaceKHR surface) const {
+   // SwapChainSupportDetails device::querySwapchainSupport(VkSurfaceKHR surface) const {
    //    SwapChainSupportDetails details;
    //
    //    // Capabilities:
