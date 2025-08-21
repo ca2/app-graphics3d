@@ -106,7 +106,8 @@ endif ()
 
 add_library(${PROJECT_NAME} SHARED ${library_source}
         gltf_model.cpp
-        gltf_model.h)
+        gltf_model.h
+        _tinygltf.cpp)
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
 if (NOT ${NO_PRECOMPILED_HEADER})

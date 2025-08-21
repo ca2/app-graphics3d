@@ -14,12 +14,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
-
-#include <string>
-#include <array>
-#include <cassert>
-#include <stdexcept>
-
+//
+// #include <string>
+// #include <array>
+// #include <cassert>
+// #include <stdexcept>
+//
 
 namespace app_graphics3d_continuum
 {

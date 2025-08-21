@@ -136,6 +136,48 @@ namespace app_graphics3d_continuum
    //}
 
 
+   void point_light_system::on_update(::gpu::context * pcontext, ::graphics3d::scene* pscene)
+   {
+
+      auto dt = m_pengine->dt();
+
+      auto& globalubo = pscene->global_ubo();
+
+      auto rotateLight = glm::rotate(glm::mat4(1.f), 0.5f * dt, { 0.f, -1.f, 0.f });
+
+      int lightIndex = 0;
+
+      for (auto& kv : pscene->m_mapObjects)
+      {
+
+         auto& obj = kv.element2();
+
+         ::cast < ::graphics3d::point_light > ppointlight = obj;
+
+         if (ppointlight == nullptr) continue;
+
+         assert(lightIndex < MAX_LIGHTS && "Point lights exceed maximum specified");
+
+         // update light position
+         ppointlight->m_transform.translation =
+            glm::vec3(rotateLight * glm::vec4(ppointlight->m_transform.translation, 1.f));
+
+         // copy light to ubo
+         globalubo["pointLights"][lightIndex]["position"] =
+            glm::vec4(ppointlight->m_transform.translation, 1.f);
+         globalubo["pointLights"][lightIndex]["color"] =
+            glm::vec4(obj->m_color, ppointlight->m_pointlightcomponent.lightIntensity);
+
+         lightIndex += 1;
+
+      }
+
+      globalubo["numLights"] = lightIndex;
+
+   }
+
+
+
    void point_light_system::on_render(::gpu::context * pgpucontext, ::graphics3d::scene* pscene)
    {
       // sort lights
@@ -197,48 +239,6 @@ namespace app_graphics3d_continuum
       m_pshader->unbind();
 
    }
-
-
-   void point_light_system::on_update(::gpu::context * pcontext, ::graphics3d::scene* pscene)
-   {
-
-      auto dt = m_pengine->dt();
-
-      auto& globalubo = pscene->global_ubo();
-
-      auto rotateLight = glm::rotate(glm::mat4(1.f), 0.5f * dt, { 0.f, -1.f, 0.f });
-
-      int lightIndex = 0;
-
-      for (auto& kv : pscene->m_mapObjects)
-      {
-
-         auto& obj = kv.element2();
-
-         ::cast < ::graphics3d::point_light > ppointlight = obj;
-
-         if (ppointlight == nullptr) continue;
-
-         assert(lightIndex < MAX_LIGHTS && "Point lights exceed maximum specified");
-
-         // update light position
-         ppointlight->m_transform.translation =
-            glm::vec3(rotateLight * glm::vec4(ppointlight->m_transform.translation, 1.f));
-
-         // copy light to ubo
-         globalubo["pointLights"][lightIndex]["position"] =
-            glm::vec4(ppointlight->m_transform.translation, 1.f);
-         globalubo["pointLights"][lightIndex]["color"] =
-            glm::vec4(obj->m_color, ppointlight->m_pointlightcomponent.lightIntensity);
-
-         lightIndex += 1;
-
-      }
-
-      globalubo["numLights"] = lightIndex;
-
-   }
-
 
 } // namespace app_graphics3d_continuum
 

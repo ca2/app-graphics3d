@@ -19,8 +19,8 @@ public:
    bool debugDisplay = false;
 
    struct {
-      vkglTF::Model example;
-      vkglTF::Model plane;
+      glTF::Model example;
+      glTF::Model plane;
    } models;
 
    struct {
@@ -397,7 +397,7 @@ public:
 
    void loadAssets()
    {
-      const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
+      const uint32_t glTFLoadingFlags = glTF::FileLoadingFlags::PreTransformVertices | glTF::FileLoadingFlags::PreMultiplyVertexColors | glTF::FileLoadingFlags::FlipY;
       models.plane.loadFromFile(getAssetPath() + "models/plane.gltf", vulkanDevice, queue, glTFLoadingFlags);
       models.example.loadFromFile(getAssetPath() + "models/chinesedragon.gltf", vulkanDevice, queue, glTFLoadingFlags);
    }
@@ -497,7 +497,7 @@ public:
       pipelineCI.pDynamicState = &dynamicState;
       pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
       pipelineCI.pStages = shaderStages.data();
-      pipelineCI.pVertexInputState = vkglTF::Vertex::getPipelineVertexInputState({ vkglTF::VertexComponent::Position, vkglTF::VertexComponent::Color, vkglTF::VertexComponent::Normal });
+      pipelineCI.pVertexInputState = glTF::Vertex::getPipelineVertexInputState({ glTF::VertexComponent::Position, glTF::VertexComponent::Color, glTF::VertexComponent::Normal });
 
       rasterizationState.cullMode = VK_CULL_MODE_NONE;
 

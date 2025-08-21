@@ -28,6 +28,7 @@ namespace gpu_vulkan
   
       VkQueue m_vkqueueGraphics;
       VkQueue m_vkqueuePresent;
+      VkQueue m_vkqueueTransfer3;
 
       ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutGlobal;
       ::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
@@ -199,6 +200,17 @@ namespace gpu_vulkan
       ::memory rectangle_shader_frag() override;
       bool hasStencilComponent(VkFormat format);
 //      void initialize_rectangle_shader(::gpu::shader* pshader) override;
+
+      void generateIrradianceMap(
+         ::gpu::texture * irradianceCube,
+         ::gpu::texture * environmentCube,
+         ::gpu::model_buffer * pmodelbufferSkybox);
+      // ::pointer<::gpu::texture> loadCubemap(
+      //    const ::scoped_string& name,
+      //    const ::scoped_string& ktxFilename,
+      //    VkFormat format,
+      //    VkImageUsageFlags usageFlags,
+      //    VkImageLayout initialLayout);
 
 
    };

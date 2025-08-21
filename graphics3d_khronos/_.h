@@ -1,8 +1,9 @@
 #pragma once
 
 
-#include "app-graphics3d/gpu_vulkan/_.h"
-#include "_vulkan.h"
+#include "bred/_.h"
+//#include "app-graphics3d/gpu_vulkan/_.h"
+//#include "_vulkan.h"
 
 
 #if defined(_graphics3d_vulkan_project)
@@ -12,22 +13,23 @@
 #endif
 
 
-namespace graphics3d_vulkan
+namespace graphics3d_khronos
 {
 
+   class gltf_render_system;
 
-   class application_handler;
-
-   //class renderer;
-   class application_object;
-
-   class model;
-   //class context;
-   class input;
-   //class camera;
-   class pipeline;
-
-   class engine;
+   // class application_handler;
+   //
+   // //class renderer;
+   // class application_object;
+   //
+   // class model;
+   // //class context;
+   // class input;
+   // //class camera;
+   // class pipeline;
+   //
+   // class engine;
 
    //class descriptor_pool;
 

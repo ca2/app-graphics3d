@@ -27,6 +27,7 @@ list(APPEND library_references
         bred
         imgui
         gpu_opengl
+        graphics3d_khronos
 )
 
 
