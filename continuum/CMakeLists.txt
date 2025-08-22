@@ -51,12 +51,12 @@ list(APPEND library_source
 #        VK_abstraction/vk_gameObject.h
 #        VK_abstraction/vk_input.cpp
 #        VK_abstraction/vk_input.h
-        graphics3d/main_scene.cpp
-        graphics3d/main_scene.h
-        graphics3d/point_light_system.cpp
-        graphics3d/point_light_system.h
-        graphics3d/simple_render_system.cpp
-        graphics3d/simple_render_system.h
+        main_scene.cpp
+        main_scene.h
+        #graphics3d/point_light_system.cpp
+   #graphics3d/point_light_system.h
+   #graphics3d/simple_render_system.cpp
+   #        graphics3d/simple_render_system.h
         _.cpp
         _.h
         application.cpp

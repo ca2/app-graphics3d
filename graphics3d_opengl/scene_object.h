@@ -20,7 +20,7 @@
 //{
 //
 //
-//	struct TransformComponent {
+//	struct ::graphics3d::transform {
 //		glm::vec3 translation{};
 //		glm::vec3 scale{ 1.f, 1.f, 1.f };
 //		glm::vec3 rotation{};
@@ -46,7 +46,7 @@
 //		
 //		::collection::index m_iId;
 //
-//		TransformComponent m_transform;
+//		::graphics3d::transform m_transform;
 //
 //		glm::vec3 m_color;
 //

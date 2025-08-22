@@ -260,9 +260,11 @@ namespace gpu_vulkan
 			glTF model loading and rendering class
 		*/
 		class Model :
-			public ::graphics3d::IModel
+			public ::graphics3d::renderable
 		{
 		public:
+
+
 			glTF::Texture* getTexture(uint32_t index);
 			glTF::Texture emptyTexture;
 			void createEmptyTexture(VkQueue transferQueue);

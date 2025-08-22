@@ -12,7 +12,7 @@
 
 
 namespace vkc {
-	struct TransformComponent {
+	struct ::graphics3d::transform {
 		glm::vec3 translation{};
 		glm::vec3 scale{ 1.f, 1.f, 1.f };
 		glm::vec3 rotation{};
@@ -48,7 +48,7 @@ namespace vkc {
 
 		id_t getId() { return id; }
 
-		TransformComponent transform;
+		::graphics3d::transform transform;
 		glm::vec3 color{};
 
 		::pointer<VkcModel> model{};
