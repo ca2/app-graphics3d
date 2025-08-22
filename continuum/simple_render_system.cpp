@@ -7,7 +7,7 @@
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/shader.h"
 #include "bred/user/user/graphics3d.h"
-#include "simple_render_system.h"
+#include "graphics3d/simple_render_system.h"
 // libs
 #define GLM_FORCE_RADIANS	
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE

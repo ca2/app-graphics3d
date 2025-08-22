@@ -3,7 +3,7 @@
 #pragma once
 
 
-#include "bred/graphics3d/cube_map.h"
+#include "bred/graphics3d/sky_box.h"
 #include "bred/graphics3d/scene.h"
 
 

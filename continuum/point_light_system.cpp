@@ -12,7 +12,7 @@
 #include "bred/graphics3d/scene.h"
 #include "bred/user/user/graphics3d.h"
 #include "app-graphics3d/continuum/global_ubo.h"
-#include "point_light_system.h"
+#include "graphics3d/point_light_system.h"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -189,7 +189,7 @@ namespace app_graphics3d_continuum
          if (ppointlight == nullptr) continue;
 
          // calculate distance
-         auto offset = m_pengine->m_pcamera->GetPosition() - obj->m_transform.translation;
+         auto offset = m_pengine->m_pgamelayer->m_pscene->m_pcameraCurrent->GetPosition() - obj->m_transform.translation;
          float disSquared = glm::dot(offset, offset);
          sorted[disSquared] = obj->m_iId;
       }

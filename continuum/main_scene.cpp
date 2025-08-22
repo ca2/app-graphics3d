@@ -1,8 +1,8 @@
 // From continuum (V0idsEmbrace@Twitch)
 // by camilo on 2025-05-07 02:18 <3ThomasBorregaardSorensen!!
 #include "framework.h"
-#include "main_scene.h"
-#include "simple_render_system.h"
+#include "graphics3d/main_scene.h"
+#include "graphics3d/simple_render_system.h"
 #include "point_light_system.h"
 #include "app-graphics3d/continuum/application.h"
 #include "app-graphics3d/continuum/impact.h"
@@ -217,13 +217,13 @@ namespace app_graphics3d_continuum
 
       //::graphics3d::GlobalUbo ubo{};
 
-      auto projection = m_pengine->m_pcamera->getProjection();
+      auto projection = m_pengine->m_pgamelayer->m_pscene->m_pcameraCurrent->getProjection();
       globalubo["projection"] = projection;
 
-      auto view = m_pengine->m_pcamera->getView();
+      auto view = m_pengine->m_pgamelayer->m_pscene->m_pcameraCurrent->getView();
       globalubo["view"] = view;
 
-      auto inverseView = m_pengine->m_pcamera->getInverseView();
+      auto inverseView = m_pengine->m_pgamelayer->m_pscene->m_pcameraCurrent->getInverseView();
       globalubo["invView"] = inverseView;
 
       if (m_ppointlightsystem)
