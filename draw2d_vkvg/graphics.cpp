@@ -267,7 +267,7 @@ namespace draw2d_vkvg
       createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
       createinfo.deferredResolve = true;
       createinfo.inst = papproachVulkan->m_vkinstance;
-      createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
+      createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
       createinfo.vkdev = pcontextVulkan->logicalDevice();
       createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
       createinfo.qIndex = 0;
