@@ -3,19 +3,20 @@
 #include "framework.h"
 #include "approach.h"
 #include "device.h"
+#include "initializers.h"
 #include "memory_buffer.h"
 #include "physical_device.h"
 #include "program.h"
 #include "renderer.h"
 #include "shader.h"
+#include "vk_init.h"
+#include "vkresult_exception.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/types.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
-#include "glm/mat4x4.hpp"
-#include "initializers.h"
-#include "vk_init.h"
+#include <glm/mat4x4.hpp>
 
 
 using namespace vulkan;
@@ -963,6 +964,14 @@ namespace gpu_vulkan
       on_initialize_gpu_device();
 
       //device = vulkanDevice->logicalDevice;
+
+   }
+
+
+   void device::_defer_throw_vkresult(VkResult vkresult, const scoped_string & scopedstrMessage)
+   {
+
+      throw vkresult_exception(vkresult, scopedstrMessage);
 
    }
 
@@ -2671,6 +2680,95 @@ namespace gpu_vulkan
 
 
    }
+
+
+   void device::default_pipeline_configuration(pipeline_configuration & pipelineconfiguration)
+   {
+
+      pipelineconfiguration.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+      pipelineconfiguration.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+      pipelineconfiguration.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+
+      //VK_PRIMITIVE_TOPOLOGY_LINE_LIST
+
+      pipelineconfiguration.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+      pipelineconfiguration.viewportInfo.viewportCount = 1;
+      pipelineconfiguration.viewportInfo.pViewports = nullptr;
+      pipelineconfiguration.viewportInfo.scissorCount = 1;
+      pipelineconfiguration.viewportInfo.pScissors = nullptr;
+
+      pipelineconfiguration.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+      pipelineconfiguration.rasterizationInfo.depthClampEnable = VK_FALSE;
+      pipelineconfiguration.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
+      pipelineconfiguration.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+      pipelineconfiguration.rasterizationInfo.lineWidth = 1.0f;
+      pipelineconfiguration.rasterizationInfo.cullMode = VK_CULL_MODE_NONE;
+      pipelineconfiguration.rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
+      pipelineconfiguration.rasterizationInfo.depthBiasEnable = VK_FALSE;
+      pipelineconfiguration.rasterizationInfo.depthBiasConstantFactor = 0.0f;  // Optional
+      pipelineconfiguration.rasterizationInfo.depthBiasClamp = 0.0f;           // Optional
+      pipelineconfiguration.rasterizationInfo.depthBiasSlopeFactor = 0.0f;     // Optional
+
+      pipelineconfiguration.multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+      pipelineconfiguration.multisampleInfo.sampleShadingEnable = VK_FALSE;
+      pipelineconfiguration.multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+      pipelineconfiguration.multisampleInfo.minSampleShading = 1.0f;           // Optional
+      pipelineconfiguration.multisampleInfo.pSampleMask = nullptr;             // Optional
+      pipelineconfiguration.multisampleInfo.alphaToCoverageEnable = VK_FALSE;  // Optional
+      pipelineconfiguration.multisampleInfo.alphaToOneEnable = VK_FALSE;       // Optional
+      pipelineconfiguration.colorBlendAttachments.clear();
+
+
+      VkPipelineColorBlendAttachmentState state;
+      state.colorWriteMask =
+         VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+         VK_COLOR_COMPONENT_A_BIT;
+      state.blendEnable = VK_FALSE;
+      state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
+      state.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
+      state.colorBlendOp = VK_BLEND_OP_ADD;              // Optional
+      state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
+      state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
+      state.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
+      pipelineconfiguration.colorBlendAttachments.add(state);
+
+
+      pipelineconfiguration.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+      pipelineconfiguration.colorBlendInfo.logicOpEnable = VK_FALSE;
+      pipelineconfiguration.colorBlendInfo.logicOp = VK_LOGIC_OP_COPY;  // Optional
+      pipelineconfiguration.colorBlendInfo.attachmentCount = 1;
+      pipelineconfiguration.colorBlendInfo.pAttachments = pipelineconfiguration.colorBlendAttachments.data();
+      pipelineconfiguration.colorBlendInfo.blendConstants[0] = 0.0f;  // Optional
+      pipelineconfiguration.colorBlendInfo.blendConstants[1] = 0.0f;  // Optional
+      pipelineconfiguration.colorBlendInfo.blendConstants[2] = 0.0f;  // Optional
+      pipelineconfiguration.colorBlendInfo.blendConstants[3] = 0.0f;  // Optional
+
+      pipelineconfiguration.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+      pipelineconfiguration.depthStencilInfo.depthTestEnable = VK_TRUE;
+      pipelineconfiguration.depthStencilInfo.depthWriteEnable = VK_TRUE;
+      pipelineconfiguration.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+      pipelineconfiguration.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+      pipelineconfiguration.depthStencilInfo.minDepthBounds = 0.0f;  // Optional
+      pipelineconfiguration.depthStencilInfo.maxDepthBounds = 1.0f;  // Optional
+      pipelineconfiguration.depthStencilInfo.stencilTestEnable = VK_FALSE;
+      pipelineconfiguration.depthStencilInfo.front = {};  // Optional
+      pipelineconfiguration.depthStencilInfo.back = {};   // Optional
+
+      pipelineconfiguration.dynamicStateEnables.append({VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR});
+      pipelineconfiguration.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+      pipelineconfiguration.dynamicStateInfo.pDynamicStates = pipelineconfiguration.dynamicStateEnables.data();
+      pipelineconfiguration.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(pipelineconfiguration.dynamicStateEnables.size());
+      pipelineconfiguration.dynamicStateInfo.flags = 0;
+
+      //if (pipelineconfiguration.attributeDescriptions.is_empty())
+      //{
+
+      //   pipelineconfiguration.bindingDescriptions = _001GetVertexBindingDescriptions();
+      //   pipelineconfiguration.attributeDescriptions = _001GetVertexAttributeDescriptions();
+
+      //}
+   }
+
 
 
 } // namespace gpu_vulkan

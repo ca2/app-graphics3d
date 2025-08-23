@@ -10,13 +10,13 @@
 //{
 //
 //
-//	struct PipelineConfigInfo 
+//	struct pipeline_configuration
 //	{
 //
 //
-//		PipelineConfigInfo() = default;
-//		PipelineConfigInfo(const PipelineConfigInfo&) = delete;
-//		PipelineConfigInfo& operator=(const PipelineConfigInfo&) = delete;
+//		pipeline_configuration() = default;
+//		pipeline_configuration(const pipeline_configuration&) = delete;
+//		pipeline_configuration& operator=(const pipeline_configuration&) = delete;
 //
 //
 //		::array<VkVertexInputBindingDescription> bindingDescriptions{};
@@ -46,7 +46,7 @@
 //			::gpu::context * pgpucontext,
 //			const ::file::path& pathVert,
 //			const ::file::path& pathFrag,
-//			const PipelineConfigInfo& configInfo);
+//			const pipeline_configuration& configInfo);
 //		~pipeline();
 //
 //		pipeline(const pipeline&) = delete;
@@ -54,14 +54,14 @@
 //
 //		void bind(VkCommandBuffer pcommandbuffer->m_vkcommandbuffer);
 //		
-//		static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
+//		static void default_pipeline_configuration(pipeline_configuration& configInfo);
 //	private:
 //		static ::array<char> readFile(const std::string& filepath);
 //
 //		void createGraphicsPipeline(
 //			const ::file::path& pathVert,
 //			const ::file::path& pathFrag,
-//			const PipelineConfigInfo& configInfo);
+//			const pipeline_configuration& configInfo);
 //
 //		void createShaderModule(const ::block & block, VkShaderModule* shaderModule);
 //

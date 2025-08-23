@@ -54,14 +54,14 @@ namespace gpu_directx12
       //virtual void create_pixel_shader(const ::block& block);
       //void bind(VkCommandBuffer commandBuffer);
 
-      ///static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
+      ///static void default_pipeline_configuration(pipeline_configuration& configInfo);
    ///private:
 ///		static ::array<char> readFile(const ::string& filepath);
 
       /*void createGraphicsPipeline(
          const ::string& vertFilepath,
          const ::string& fragFilepath,
-         const PipelineConfigInfo& configInfo);
+         const pipeline_configuration& configInfo);
 
       void createShaderModule(const ::block& block, VkShaderModule* shaderModule);*/
 

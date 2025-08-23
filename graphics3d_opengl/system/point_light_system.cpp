@@ -69,12 +69,12 @@
 //   //void point_light_system::createPipeline(VkRenderPass renderPass) {
 //   //   assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 //
-//   //   PipelineConfigInfo pipelineConfig{};
-//   //   pipeline::defaultPipelineConfigInfo(pipelineConfig);
-//   //   pipelineConfig.attributeDescriptions.clear();
-//   //   pipelineConfig.bindingDescriptions.clear();
-//   //   pipelineConfig.renderPass = renderPass;
-//   //   pipelineConfig.pipelineLayout = pipelineLayout;
+//   //   pipeline_configuration pipelineconfiguration{};
+//   //   pipeline::default_pipeline_configuration(pipelineconfiguration);
+//   //   pipelineconfiguration.attributeDescriptions.clear();
+//   //   pipelineconfiguration.bindingDescriptions.clear();
+//   //   pipelineconfiguration.renderPass = renderPass;
+//   //   pipelineconfiguration.pipelineLayout = pipelineLayout;
 //
 //   //   // Construct paths using PROJECT_ROOT_DIR
 //   //   std::string vertShaderPath = "matter://Shaders/SpirV/point_light.vert.spv";
@@ -86,7 +86,7 @@
 //   //      m_pgpucontext,
 //   //      vertShaderPath.c_str(),
 //   //      fragShaderPath.c_str(),
-//   //      pipelineConfig
+//   //      pipelineconfiguration
 //   //   );
 //   //}
 //   void point_light_system::render(FrameInfo& frameInfo) {

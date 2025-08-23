@@ -47,7 +47,7 @@ namespace graphics3d_directx12
 
 		void _engine_on_frame_context_initialization() override;
 
-		void engine_on_after_load_scene(::graphics3d::scene* pscene) override; 
+		void engine_on_after_load_scene(::graphics3d::scene* pscene) override;
 
 		void _prepare_frame() override;
 

@@ -59,12 +59,12 @@ namespace graphics3d
     void PointLightSystem::createPipeline(VkRenderPass renderPass) {
         assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 
-        PipelineConfigInfo pipelineConfig{};
-        VkcPipeline::defaultPipelineConfigInfo(pipelineConfig);
-        pipelineConfig.attributeDescriptions.clear();
-        pipelineConfig.bindingDescriptions.clear();
-        pipelineConfig.renderPass = renderPass;
-        pipelineConfig.pipelineLayout = pipelineLayout;
+        pipeline_configuration pipelineconfiguration{};
+        VkcPipeline::default_pipeline_configuration(pipelineconfiguration);
+        pipelineconfiguration.attributeDescriptions.clear();
+        pipelineconfiguration.bindingDescriptions.clear();
+        pipelineconfiguration.renderPass = renderPass;
+        pipelineconfiguration.pipelineLayout = pipelineLayout;
 
         // Construct paths using PROJECT_ROOT_DIR
         std::string vertShaderPath = "matter://Shaders/SpirV/point_light.vert.spv";
@@ -76,7 +76,7 @@ namespace graphics3d
             m_pvkcdevice,
             vertShaderPath.c_str(),
             fragShaderPath.c_str(),
-            pipelineConfig
+            pipelineconfiguration
         );
     }
     void PointLightSystem::render(FrameInfo& frameInfo) {

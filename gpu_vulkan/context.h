@@ -26,8 +26,13 @@ namespace gpu_vulkan
       ::pointer < device >          m_pgpudevice;
 
   
-      VkQueue m_vkqueueGraphics;
-      VkQueue m_vkqueuePresent;
+      //VkQueue m_vkqueueGraphics;
+      //VkQueue m_vkqueuePresent;
+      //VkQueue m_vkqueueTransfer3;
+      ::pointer < gpu::queue >                                 m_pqueueTransfer;
+      ::pointer < gpu::queue >                                 m_pqueueGraphics;
+      ::pointer < gpu::queue >                                 m_pqueuePresent;
+
 
       ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutGlobal;
       ::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
@@ -112,8 +117,9 @@ namespace gpu_vulkan
       //VkCommandPool getCommandPool() { return m_vkcommandpool; }
       //VkDevice logicalDevice() { return m_vkdevice; }
 
-      VkQueue graphicsQueue() { return m_vkqueueGraphics; }
-      VkQueue presentQueue() { return m_vkqueuePresent; }
+      ::gpu::queue * transfer_queue() override;
+      ::gpu::queue * graphics_queue() override;
+      ::gpu::queue * present_queue() override;
 
 
       // Buffer Helper Functions
@@ -122,7 +128,7 @@ namespace gpu_vulkan
          VkBufferUsageFlags usage,
          VkMemoryPropertyFlags properties);
 
-      ::pointer < ::gpu::command_buffer > beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer = ::gpu::e_command_buffer_graphics) override;
+      ::pointer < ::gpu::command_buffer > beginSingleTimeCommands(::gpu::queue * pgpuqueue, ::gpu::enum_command_buffer ecommandbuffer = ::gpu::e_command_buffer_graphics) override;
       void endSingleTimeCommands(::gpu::command_buffer * pcommandbuffer);
       void endSingleTimeCommands(command_buffer * pcommandbuffer, int iSubmitCount, VkSubmitInfo * psubmitinfo);
       void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
@@ -151,12 +157,12 @@ namespace gpu_vulkan
       //void _createLogicalDevice();
       //void _createCommandPool();
 
-      virtual VkCommandBuffer createCommandBuffer(VkCommandBufferLevel level, bool begin = false);
-      virtual VkCommandBuffer createCommandBuffer(VkCommandBufferLevel level, VkCommandPool pool, bool begin = false);
+      //virtual VkCommandBuffer createCommandBuffer(VkCommandBufferLevel level, bool begin = false);
+      //virtual VkCommandBuffer createCommandBuffer(VkCommandBufferLevel level, VkCommandPool pool, bool begin = false);
 
       // /// Ends, submits and frees a one‑time command buffer
-      virtual void flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, bool free = true);
-      virtual void flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, VkCommandPool pool, bool free = true);
+      //virtual void flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, bool free = true);
+      //virtual void flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue, VkCommandPool pool, bool free = true);
 
 
 
@@ -200,6 +206,25 @@ namespace gpu_vulkan
       bool hasStencilComponent(VkFormat format);
 //      void initialize_rectangle_shader(::gpu::shader* pshader) override;
 
+      /// generate irradianceCube
+      /// @return irradianceCube
+      virtual ::pointer < ::gpu::texture > generateIrradianceMap(
+//         ::gpu::texture * irradianceCube,
+         ::gpu::texture * environmentCube,
+         ::gpu::model_buffer * pmodelbufferSkybox);
+      // ::pointer<::gpu::texture> loadCubemap(
+      //    const ::scoped_string& name,
+      //    const ::scoped_string& ktxFilename,
+      //    VkFormat format,
+      //    VkImageUsageFlags usageFlags,
+      //    VkImageLayout initialLayout);
+  //    virtual void generateBRDFlut(
+    //     ::gpu::texture * lutBrdf);
+      /// generate lutBrdf
+      /// @return lutBrdf
+      virtual ::pointer < ::gpu::texture > generateBRDFlut();
+
+      ::pointer<::graphics3d::renderable> _load_gltf_model(const ::gpu::renderable_t & model) override;
 
    };
 

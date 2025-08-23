@@ -3,7 +3,8 @@
 #pragma once
 
 
-#include "bred/graphics3d/cube_map.h"
+#include "apex/platform/app_consumer.h"
+#include "bred/graphics3d/sky_box.h"
 #include "bred/graphics3d/scene.h"
 
 
@@ -20,8 +21,12 @@ namespace app_graphics3d_continuum
       //::pointer< ::graphics3d::sky_box> m_Skybox;
 
 
-      ::pointer < simple_render_system >		m_psimplerendersystem;
-      ::pointer < point_light_system >			m_ppointlightsystem;
+      //::pointer < simple_render_system >		m_psimplerendersystem;
+      //::pointer < point_light_system >			m_ppointlightsystem;
+
+      ::pointer < ::graphics3d::object_render_system >		m_pobjectrendersystem;
+      ::pointer < ::graphics3d::point_light_render_system >		m_ppointlightrendersystem;
+      ::pointer < ::graphics3d::skybox_render_system >		m_pskyboxrendersystem;
 
       string_map < ::pointer < ::graphics3d::sky_box > > m_mapSkybox;
 
@@ -33,7 +38,7 @@ namespace app_graphics3d_continuum
 
       virtual ::graphics3d::sky_box * get_skybox();
 
-      ::pointer < ::graphics3d::camera > get_default_camera() override;
+      ::graphics3d::camera* get_default_camera() override;
 
 
       void on_load_scene(::gpu::context* pgpucontext) override;

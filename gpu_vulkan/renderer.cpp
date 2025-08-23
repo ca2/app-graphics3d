@@ -8,6 +8,7 @@
 #include "input_layout.h"
 #include "layer.h"
 #include "model_buffer.h"
+#include "queue.h"
 #include "render_target.h"
 #include "renderer.h"
 #include "offscreen_render_pass.h"
@@ -858,7 +859,7 @@ namespace gpu_vulkan
 
       ::cast < texture > ptexture = pgputexture;
 
-      ::pointer < command_buffer > pcommandbuffer = m_pcontext->beginSingleTimeCommands();
+      ::pointer < command_buffer > pcommandbuffer = m_pcontext->beginSingleTimeCommands(m_pcontext->graphics_queue());
       // Create the linear tiled destination image to copy to and to read the memory from
 
   //// Do the actual blit from the offscreen image to our host visible destination image
@@ -1276,7 +1277,9 @@ namespace gpu_vulkan
    void renderer::sample()
    {
 
-      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+      ::cast < ::gpu_vulkan::queue > pqueueGraphics = m_pgpucontext->graphics_queue();
+
+      vkQueueWaitIdle(pqueueGraphics->m_vkqueue);
 
       //auto callback = m_callbackImage32CpuBuffer;
 
@@ -1807,7 +1810,9 @@ namespace gpu_vulkan
 
       }
 
-      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+      ::cast < ::gpu_vulkan::queue > pqueueGraphics = m_pgpucontext->graphics_queue();
+
+      vkQueueWaitIdle(pqueueGraphics->m_vkqueue);
 
    }
 
@@ -2297,7 +2302,9 @@ namespace gpu_vulkan
 
       //vkCmdEndRenderPass(...);
 
-      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+      ::cast < ::gpu_vulkan::queue > pqueueGraphics = m_pgpucontext->graphics_queue();
+
+      vkQueueWaitIdle(pqueueGraphics->m_vkqueue);
 
       //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 
@@ -2812,7 +2819,9 @@ namespace gpu_vulkan
 
       //vkCmdEndRenderPass(...);
 
-      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+      ::cast < ::gpu_vulkan::queue > pqueueGraphics = m_pgpucontext->graphics_queue();
+
+      vkQueueWaitIdle(pqueueGraphics->m_vkqueue);
 
       //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 
@@ -3133,7 +3142,9 @@ namespace gpu_vulkan
 
       //vkCmdEndRenderPass(...);
 
-      vkQueueWaitIdle(m_pgpucontext->graphicsQueue());
+      ::cast < ::gpu_vulkan::queue > pqueueGraphics = m_pgpucontext->graphics_queue();
+
+      vkQueueWaitIdle(pqueueGraphics->m_vkqueue);
 
       //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 
@@ -3432,8 +3443,10 @@ namespace gpu_vulkan
          viewport.height = static_cast<float>(pcontext->m_rectangle.height());
          viewport.minDepth = 0.0f;
          viewport.maxDepth = 1.0f;
-         VkRect2D scissor{ {0, 0}, {pcontext->m_rectangle.width(),
-            pcontext->m_rectangle.height()
+         VkRect2D scissor{ {0, 0},
+            {
+               (uint32_t) pcontext->m_rectangle.width(),
+            (uint32_t) pcontext->m_rectangle.height()
          
          } };
          vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
@@ -4083,7 +4096,7 @@ namespace gpu_vulkan
       if (1)
       {
 
-         ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
+         ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->graphics_queue());
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -4152,7 +4165,7 @@ namespace gpu_vulkan
       if (1)
       {
 
-         ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
+         ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->graphics_queue());
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -4269,7 +4282,7 @@ namespace gpu_vulkan
          //submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
 
          //m_pgpucontext->endSingleTimeCommands(pcommandbuffer->m_vkcommandbuffer, 1, &submitInfo);
-         ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
+         ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->graphics_queue());
 
 
          insertImageMemoryBarrier(pcommandbuffer->m_vkcommandbuffer,
@@ -4472,7 +4485,7 @@ namespace gpu_vulkan
 
       ::cast < texture > ptexture = prendertargetSource->current_texture(::gpu::current_frame());
 
-      ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
+      ::pointer < command_buffer > pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->graphics_queue());
 
       ::vulkan::insertImageMemoryBarrier(
          pcommandbuffer->m_vkcommandbuffer,

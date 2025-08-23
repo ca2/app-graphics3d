@@ -27,6 +27,8 @@
 #define USE_PIX
 #include <pix.h>
 
+#include "bred/gpu/queue.h"
+
 using namespace directx12;
 
 
@@ -508,10 +510,10 @@ namespace gpu_directx12
    //}
    
    
-   ::pointer < ::gpu::command_buffer > context::beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer)
+   ::pointer < ::gpu::command_buffer > context::beginSingleTimeCommands(::gpu::queue * pqueue, ::gpu::enum_command_buffer ecommandbuffer)
    {
 
-      return ::gpu::context::beginSingleTimeCommands(ecommandbuffer);
+      return ::gpu::context::beginSingleTimeCommands(pqueue, ecommandbuffer);
 
    }
 

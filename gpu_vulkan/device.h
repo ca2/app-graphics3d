@@ -108,6 +108,13 @@ namespace gpu_vulkan
 
       void on_initialize_gpu_device() override;
 
+
+      virtual void _defer_throw_vkresult(VkResult vkresult, const ::scoped_string & scopedstrMessage = {});
+
+
+      virtual void default_pipeline_configuration(::vulkan::pipeline_configuration & pipelineconfigurationDefault);
+
+
       //string _001GetIntroProjection() override;
       //string _001GetIntroFragment() override;
 

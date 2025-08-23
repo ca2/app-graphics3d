@@ -26,14 +26,14 @@
 //
 //		//void bind(VkCommandBuffer commandBuffer);
 //
-//		///static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
+//		///static void default_pipeline_configuration(pipeline_configuration& configInfo);
 //	///private:
 /////		static ::array<char> readFile(const std::string& filepath);
 //
 //		/*void createGraphicsPipeline(
 //			const std::string& vertFilepath,
 //			const std::string& fragFilepath,
-//			const PipelineConfigInfo& configInfo);
+//			const pipeline_configuration& configInfo);
 //
 //		void createShaderModule(const ::block& block, VkShaderModule* shaderModule);*/
 //

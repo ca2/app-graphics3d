@@ -39,17 +39,15 @@ namespace app_graphics3d_continuum
       
       void initialize_point_light_system(::graphics3d::engine * pengine);
 
-
+      void on_prepare(::gpu::context* pgpucontext) override;
       void on_update(::gpu::context* pgpucontext, ::graphics3d::scene * pscene) override;
       void on_render(::gpu::context* pgpucontext, ::graphics3d::scene * pscene) override;
       
 
       //void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
       //void createPipeline(VkRenderPass renderPass);
-
-      void on_prepare(::gpu::context* pgpucontext) override;
-
       //VkPipelineLayout pipelineLayout;
+
 
    };
 

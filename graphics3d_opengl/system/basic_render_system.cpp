@@ -62,11 +62,11 @@
 //
 //	//	assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 //
-//	//	PipelineConfigInfo pipelineConfig{};
-//	//	pipeline::defaultPipelineConfigInfo(pipelineConfig);
+//	//	pipeline_configuration pipelineconfiguration{};
+//	//	pipeline::default_pipeline_configuration(pipelineconfiguration);
 //
-//	//	pipelineConfig.renderPass = renderPass;
-//	//	pipelineConfig.pipelineLayout = pipelineLayout;
+//	//	pipelineconfiguration.renderPass = renderPass;
+//	//	pipelineconfiguration.pipelineLayout = pipelineLayout;
 //
 //	//	// Construct paths using PROJECT_ROOT_DIR
 //	//	std::string vertShaderPath = "matter://Shaders/SpirV/vert.vert.spv";
@@ -78,7 +78,7 @@
 //	//		m_pgpucontext,
 //	//		vertShaderPath.c_str(),
 //	//		fragShaderPath.c_str(),
-//	//		pipelineConfig
+//	//		pipelineconfiguration
 //	//	);
 //	//}
 //

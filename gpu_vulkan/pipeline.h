@@ -8,24 +8,6 @@ namespace gpu_vulkan
 {
 
 
-   struct PipelineConfigInfo
-   {
-
-      ::array<VkVertexInputBindingDescription> bindingDescriptions{};
-      ::array<VkVertexInputAttributeDescription> attributeDescriptions{};
-      VkPipelineViewportStateCreateInfo viewportInfo;
-      VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
-      VkPipelineRasterizationStateCreateInfo rasterizationInfo;
-      VkPipelineMultisampleStateCreateInfo multisampleInfo;
-      ::array < VkPipelineColorBlendAttachmentState > colorBlendAttachments;
-      VkPipelineColorBlendStateCreateInfo colorBlendInfo;
-      VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
-      ::comparable_array<VkDynamicState> dynamicStateEnables;
-      VkPipelineDynamicStateCreateInfo dynamicStateInfo;
-      VkPipelineLayout pipelineLayout = nullptr;
-      VkRenderPass renderPass = nullptr;
-      uint32_t subpass = 0;
-   };
 
    class CLASS_DECL_GPU_VULKAN pipeline :
       virtual public ::particle
@@ -33,39 +15,42 @@ namespace gpu_vulkan
    public:
 
 
-      ::pointer < renderer > m_pgpurenderer;
-      VkPipeline graphicsPipeline;
-      VkShaderModule vertShaderModule;
-      VkShaderModule fragShaderModule;
-
+      ::pointer < renderer >        m_pgpurenderer;
+      VkPipeline                    m_vkpipelineGraphics;
+      VkShaderModule                m_vkshadermoduleVertex;
+      VkShaderModule                m_vkshadermoduleFragment;
+      VkPipelineLayout		         m_vkpipelinelayout;
 
 
       pipeline();
+      ~pipeline() override;
+
+
       //virtual void initialize_pipeline(
       //   ::gpu::context * pgpucontext,
       //   const ::file::path & pathVert,
       //   const ::file::path & pathFrag,
-      //   const PipelineConfigInfo & configInfo);
-      virtual void initialize_pipeline(
+      //   const pipeline_configuration & configInfo);
+
+      virtual VkPipelineLayout _pipeline_layout();
+
+
+      virtual void initialize_graphics_pipeline(
          ::gpu::renderer * pgpurenderer,
          const ::block & blockVertex,
          const ::block & blockFragment,
-         const PipelineConfigInfo & configInfo);
-      ~pipeline();
+         const ::vulkan::pipeline_configuration & pipelineconfiguration);
+
 
 
       void bind(command_buffer * pcommandbuffer);
 
-      static void defaultPipelineConfigInfo(PipelineConfigInfo & configInfo);
-   //private:
-      //static ::array<char> readFile(const ::string & filepath);
-
-      void createGraphicsPipeline(
+      void create_graphics_pipeline(
          const ::block & blockVertex,
          const ::block & blockFragment,
-         const PipelineConfigInfo & configInfo);
+         const ::vulkan::pipeline_configuration & pipelineconfiguration);
 
-      void createShaderModule(const ::block & block, VkShaderModule * shaderModule);
+      void create_shader_module(const ::block & block, VkShaderModule * shaderModule);
 
    };
 

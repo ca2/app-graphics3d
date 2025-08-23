@@ -6,10 +6,10 @@
 
 namespace vkc {
 
-	struct PipelineConfigInfo {
-		PipelineConfigInfo() = default;
-		PipelineConfigInfo(const PipelineConfigInfo&) = delete;
-		PipelineConfigInfo& operator=(const PipelineConfigInfo&) = delete;
+	struct pipeline_configuration {
+		pipeline_configuration() = default;
+		pipeline_configuration(const pipeline_configuration&) = delete;
+		pipeline_configuration& operator=(const pipeline_configuration&) = delete;
 
 
 		std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
@@ -36,7 +36,7 @@ namespace vkc {
 			VkcDevice * pvkcdevice,
 			const std::string& vertFilepath,
 			const std::string& fragFilepath,
-			const PipelineConfigInfo& configInfo);
+			const pipeline_configuration& configInfo);
 		~VkcPipeline();
 
 		VkcPipeline(const VkcPipeline&) = delete;
@@ -44,14 +44,14 @@ namespace vkc {
 
 		void bind(VkCommandBuffer commandBuffer);
 		
-		static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
+		static void default_pipeline_configuration(pipeline_configuration& configInfo);
 	private:
 		static std::vector<char> readFile(const std::string& filepath);
 
 		void createGraphicsPipeline(
 			const std::string& vertFilepath,
 			const std::string& fragFilepath,
-			const PipelineConfigInfo& configInfo);
+			const pipeline_configuration& configInfo);
 
 		void createShaderModule(const ::block & block, VkShaderModule* shaderModule);
 

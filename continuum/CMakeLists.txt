@@ -51,12 +51,12 @@ list(APPEND library_source
 #        VK_abstraction/vk_gameObject.h
 #        VK_abstraction/vk_input.cpp
 #        VK_abstraction/vk_input.h
-        graphics3d/main_scene.cpp
-        graphics3d/main_scene.h
-        graphics3d/point_light_system.cpp
-        graphics3d/point_light_system.h
-        graphics3d/simple_render_system.cpp
-        graphics3d/simple_render_system.h
+        main_scene.cpp
+        main_scene.h
+        #graphics3d/point_light_system.cpp
+   #graphics3d/point_light_system.h
+   #graphics3d/simple_render_system.cpp
+   #        graphics3d/simple_render_system.h
         _.cpp
         _.h
         application.cpp
@@ -111,7 +111,9 @@ file(GLOB SHADER_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/../_matter/continuum/_std/_std/shaders/*.frag")
 
 
-add_library(${PROJECT_NAME} SHARED ${library_source})
+add_library(${PROJECT_NAME} SHARED ${library_source}
+   immersion.cpp
+   immersion.h)
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
 

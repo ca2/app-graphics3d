@@ -53,6 +53,8 @@ list(APPEND library_source
         physical_device.h
         pipeline.cpp
         pipeline.h
+   queue.cpp
+   queue.h
         render_pass.cpp
         render_pass.h
         render_target.cpp
@@ -106,7 +108,10 @@ endif ()
 
 add_library(${PROJECT_NAME} SHARED ${library_source}
         gltf_model.cpp
-        gltf_model.h)
+        gltf_model.h
+        _tinygltf.cpp
+        vkresult_exception.cpp
+        vkresult_exception.h)
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
 if (NOT ${NO_PRECOMPILED_HEADER})

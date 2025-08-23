@@ -2,7 +2,8 @@
 #include "impact.h"
 #include "document.h"
 #include "application.h"
-#include "graphics3d/main_scene.h"
+#include "immersion.h"
+#include "main_scene.h"
 #include "acme/constant/message.h"
 #include "acme/filesystem/filesystem/file_system.h"
 #include "acme/filesystem/filesystem/file_context.h"
@@ -399,12 +400,12 @@ namespace app_graphics3d_continuum
    //}
 
 
-   ::pointer < ::graphics3d::scene > impact::create_main_scene()
+   ::pointer < ::prodevian::immersion > impact::create_immersion()
    {
 
-      auto psceneMain = create_scene < main_scene >("main");
+      auto pimmersion = øcreate_new<::app_graphics3d_continuum::immersion>();
 
-      return psceneMain;
+      return pimmersion;
 
    }
 

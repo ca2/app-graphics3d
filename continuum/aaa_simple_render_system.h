@@ -56,6 +56,7 @@ namespace app_graphics3d_continuum
 
 
 
+		void on_prepare(::gpu::context* pgpucontext) override;
 		void on_update(::gpu::context* pgpucontext, ::graphics3d::scene* pscene) override;
 		void on_render(::gpu::context* pgpucontext, ::graphics3d::scene* pscene) override;
 
@@ -63,7 +64,6 @@ namespace app_graphics3d_continuum
 		//void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
 		//void createPipeline(VkRenderPass renderPass);
 
-		void on_prepare(::gpu::context* pgpucontext) override;
 
 
 		//virtual void renderGameObjects(::graphics3d::scene* pscene);

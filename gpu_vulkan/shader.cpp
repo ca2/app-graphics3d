@@ -32,9 +32,6 @@ namespace gpu_vulkan
    shader::~shader()
    {
 
-      ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
-
-      vkDestroyPipelineLayout(pgpucontext->logicalDevice(), m_vkpipelinelayout, nullptr);
 
    }
 
@@ -47,7 +44,7 @@ namespace gpu_vulkan
       if (::is_null(prenderpass))
       {
 
-         // Shader doesn't have a render pass. Won't bother 
+         // Shader doesn't have a render pass. Won't bother
          // the shader to recreate it if prerequesite (the render pass)
          // is not present.
 
@@ -60,7 +57,7 @@ namespace gpu_vulkan
       if (!vkrenderpass)
       {
 
-         // Shader doesn't have a render pass. Won't bother 
+         // Shader doesn't have a render pass. Won't bother
          // the shader to recreate it if prerequesite (the render pass)
          // is not present.
 
@@ -80,142 +77,62 @@ namespace gpu_vulkan
    }
 
 
-   void shader::_create_pipeline_layout(int iPushPropertiesSize)
-   {
-
-      ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
-
-      ::cast < device > pgpudevice = pgpucontext->m_pgpudevice;
-
-      VkPushConstantRange pushConstantRange{};
-      pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-      pushConstantRange.offset = 0;
-      //pushConstantRange.size = sizeof(PointLightPushConstants);
-      pushConstantRange.size = iPushPropertiesSize;
-
-      ::array<VkDescriptorSetLayout> descriptorSetLayouts;
-
-      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
-      {
-
-         auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-
-         descriptorSetLayouts.add(globalSetLayout);
-
-      }
-
-      if (m_pLocalDescriptorSet)
-      {
-
-         ::cast < ::gpu_vulkan::set_descriptor_layout > pset = m_pLocalDescriptorSet;
-
-         auto setLayout = pset->getDescriptorSetLayout();
-
-         descriptorSetLayouts.add(setLayout);
-
-      }
-
-      if (m_psetdescriptorlayout)
-      {
-
-         auto samplerSetLayout = m_psetdescriptorlayout->getDescriptorSetLayout();
-
-         auto uSet = (unsigned int)descriptorSetLayouts.add(samplerSetLayout);
-
-         if (m_bindingSampler.is_set())
-            m_bindingSampler.m_uSet = uSet;
-         else if (m_bindingCubeSampler.is_set())
-            m_bindingCubeSampler.m_uSet = uSet;
-
-      }
-
-      VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-      pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-      pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
-      pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-
-      if (iPushPropertiesSize > 0)
-      {
-         pipelineLayoutInfo.pushConstantRangeCount = 1;
-         pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-      }
-      else
-      {
-         pipelineLayoutInfo.pushConstantRangeCount = 0;
-         pipelineLayoutInfo.pPushConstantRanges = NULL;
-
-
-      }
-
-      //pipelineLayoutInfo.pPushConstantRanges = nullptr;
-
-      if (vkCreatePipelineLayout(
-         pgpucontext->logicalDevice(),
-         &pipelineLayoutInfo,
-         nullptr,
-         &m_vkpipelinelayout) !=
-         VK_SUCCESS)
-      {
-
-         throw ::exception(error_failed, "failed to create pipeline layout!");
-
-      }
-
-   }
+   // void shader::_create_pipeline_layout(int iPushPropertiesSize)
+   // {
+   //
+   //    // ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
+   //    //
+   //    // ::cast < device > pgpudevice = pgpucontext->m_pgpudevice;
+   //    //
+   //    // VkPushConstantRange pushConstantRange{};
+   //    // pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+   //    // pushConstantRange.offset = 0;
+   //    // //pushConstantRange.size = sizeof(PointLightPushConstants);
+   //    // pushConstantRange.size = iPushPropertiesSize;
+   //    //
+   //    // ::array<VkDescriptorSetLayout> descriptorSetLayouts;
+   //    //
+   //    // if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+   //    // {
+   //    //
+   //    //    auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+   //    //
+   //    //    descriptorSetLayouts.add(globalSetLayout);
+   //    //
+   //    // }
+   //    //
+   //    // if (m_pLocalDescriptorSet)
+   //    // {
+   //    //
+   //    //    ::cast < ::gpu_vulkan::set_descriptor_layout > pset = m_pLocalDescriptorSet;
+   //    //
+   //    //    auto setLayout = pset->getDescriptorSetLayout();
+   //    //
+   //    //    descriptorSetLayouts.add(setLayout);
+   //    //
+   //    // }
+   //    //
+   //    // if (m_psetdescriptorlayout)
+   //    // {
+   //    //
+   //    //    auto samplerSetLayout = m_psetdescriptorlayout->getDescriptorSetLayout();
+   //    //
+   //    //    auto uSet = (unsigned int)descriptorSetLayouts.add(samplerSetLayout);
+   //    //
+   //    //    if (m_bindingSampler.is_set())
+   //    //       m_bindingSampler.m_uSet = uSet;
+   //    //    else if (m_bindingCubeSampler.is_set())
+   //    //       m_bindingCubeSampler.m_uSet = uSet;
+   //    //
+   //    // }
+   //
+   //
+   // }
 
 
    void shader::on_initialize_shader()
    {
 
-      if (m_bindingSampler.is_set())
-      {
-
-         {
-
-            m_psetdescriptorlayout
-               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpurenderer->m_pgpucontext)
-               .addBinding(m_bindingSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-               .build();
-
-            int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
-
-            auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
-
-            pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
-            pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
-            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
-
-            m_pdescriptorpool = pdescriptorpoolbuilder->build();
-
-         }
-
-      }
-      else if (m_bindingCubeSampler.is_set())
-      {
-
-         {
-
-            m_psetdescriptorlayout
-               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpurenderer->m_pgpucontext)
-               .addBinding(m_bindingCubeSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-               .build();
-
-            int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
-
-            auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
-
-            pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
-            pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
-            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
-
-            m_pdescriptorpool
-               = pdescriptorpoolbuilder->build();
-
-         }
-
-      }
-
-      _create_pipeline_layout((int)m_propertiesPush.m_memory.size());
 
    }
 
@@ -224,11 +141,11 @@ namespace gpu_vulkan
    {
 
 
-      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      ::cast <renderer> prenderer = m_pgpurenderer;
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
       //::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
@@ -245,7 +162,7 @@ namespace gpu_vulkan
 
       //::cast <renderer> prenderer = m_pgpurenderer;
 
-      PipelineConfigInfo pipelineConfig{};
+      ::vulkan::pipeline_configuration pipelineconfiguration{};
 
       //if (m_propertiesInputLayout.m_pproperties)
       //{
@@ -263,104 +180,106 @@ namespace gpu_vulkan
 
       //}
 
-      ::cast < input_layout > pinputlayout = m_pinputlayout;
+      ::cast<input_layout> pinputlayout = m_pinputlayout;
 
       if (pinputlayout)
       {
 
-         pipelineConfig.bindingDescriptions.copy(pinputlayout->m_bindings);
-         pipelineConfig.attributeDescriptions.copy(pinputlayout->m_attribs);
+         pipelineconfiguration.bindingDescriptions.copy(pinputlayout->m_bindings);
+         pipelineconfiguration.attributeDescriptions.copy(pinputlayout->m_attribs);
 
       }
 
-      pipeline::defaultPipelineConfigInfo(pipelineConfig);
+      pgpudevice->default_pipeline_configuration(pipelineconfiguration);
 
       if (m_pinputlayout)
       {
 
-         ::cast < input_layout > pinputlayout = m_pinputlayout;
+         ::cast<input_layout> pinputlayout = m_pinputlayout;
 
-         pipelineConfig.attributeDescriptions = pinputlayout->m_attribs;
-         pipelineConfig.bindingDescriptions = pinputlayout->m_bindings;
+         pipelineconfiguration.attributeDescriptions = pinputlayout->m_attribs;
+         pipelineconfiguration.bindingDescriptions = pinputlayout->m_bindings;
 
       }
 
       if (m_eflag & e_flag_clear_default_bindings_and_attributes_descriptions)
       {
 
-         pipelineConfig.attributeDescriptions.clear();
-         pipelineConfig.bindingDescriptions.clear();
+         pipelineconfiguration.attributeDescriptions.clear();
+         pipelineconfiguration.bindingDescriptions.clear();
 
       }
-      
+
       if (m_bDepthTestButNoDepthWrite)
       {
 
-         pipelineConfig.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-         pipelineConfig.depthStencilInfo.depthTestEnable = VK_TRUE;
-         pipelineConfig.depthStencilInfo.depthWriteEnable = VK_FALSE;
-         pipelineConfig.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
-         pipelineConfig.depthStencilInfo.stencilTestEnable = VK_FALSE;
+         pipelineconfiguration.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+         pipelineconfiguration.depthStencilInfo.depthTestEnable = VK_TRUE;
+         pipelineconfiguration.depthStencilInfo.depthWriteEnable = VK_FALSE;
+         pipelineconfiguration.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+         pipelineconfiguration.depthStencilInfo.stencilTestEnable = VK_FALSE;
 
       }
       else if (m_bDisableDepthTest)
       {
 
-         pipelineConfig.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-         pipelineConfig.depthStencilInfo.depthTestEnable = VK_FALSE;
-         pipelineConfig.depthStencilInfo.depthWriteEnable = VK_FALSE;
-         pipelineConfig.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_ALWAYS; // doesn't matter since test is disabled
-         pipelineConfig.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
-         pipelineConfig.depthStencilInfo.stencilTestEnable = VK_FALSE;
+         pipelineconfiguration.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+         pipelineconfiguration.depthStencilInfo.depthTestEnable = VK_FALSE;
+         pipelineconfiguration.depthStencilInfo.depthWriteEnable = VK_FALSE;
+         pipelineconfiguration.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_ALWAYS;
+         // doesn't matter since test is disabled
+         pipelineconfiguration.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+         pipelineconfiguration.depthStencilInfo.stencilTestEnable = VK_FALSE;
 
       }
       if (!m_bDisableDepthTest)
       {
 
-         if(m_bLequalDepth)
+         if (m_bLequalDepth)
          {
-            pipelineConfig.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+            pipelineconfiguration.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
          }
          else
          {
-            pipelineConfig.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+            pipelineconfiguration.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
          }
 
       }
 
-      pipelineConfig.colorBlendAttachments.clear();
+      pipelineconfiguration.colorBlendAttachments.clear();
       if (m_bAccumulationEnable)
       {
 
          VkPipelineColorBlendAttachmentState state;
          state.blendEnable = VK_TRUE;
-         state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // use alpha blending
+         state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // use alpha blending
          state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
          state.colorBlendOp = VK_BLEND_OP_ADD;
          state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
          state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
          state.alphaBlendOp = VK_BLEND_OP_ADD;
          state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-         pipelineConfig.colorBlendAttachments.add(state);
+                                VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+         pipelineconfiguration.colorBlendAttachments.add(state);
          if (m_iColorAttachmentCount > 1)
          {
 
             state.blendEnable = VK_TRUE;
-            state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // use alpha blending
+            state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // use alpha blending
             state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
             state.colorBlendOp = VK_BLEND_OP_ADD;
             state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
             state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
             state.alphaBlendOp = VK_BLEND_OP_ADD;
             state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT;
-            pipelineConfig.colorBlendAttachments.add(state);
+            pipelineconfiguration.colorBlendAttachments.add(state);
          }
 
-         pipelineConfig.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-         pipelineConfig.colorBlendInfo.logicOpEnable = VK_FALSE;
-         pipelineConfig.colorBlendInfo.attachmentCount = (uint32_t)pipelineConfig.colorBlendAttachments.get_count();
-         pipelineConfig.colorBlendInfo.pAttachments = pipelineConfig.colorBlendAttachments.data();
+         pipelineconfiguration.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+         pipelineconfiguration.colorBlendInfo.logicOpEnable = VK_FALSE;
+         pipelineconfiguration.colorBlendInfo.attachmentCount = (uint32_t)pipelineconfiguration.colorBlendAttachments.
+            get_count();
+         pipelineconfiguration.colorBlendInfo.pAttachments = pipelineconfiguration.colorBlendAttachments.data();
 
       }
       else if (m_bEnableBlend)
@@ -383,14 +302,15 @@ namespace gpu_vulkan
             //state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
             //state.alphaBlendOp = VK_BLEND_OP_ADD;
             state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-               VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-            pipelineConfig.colorBlendAttachments.add(state);
+                                   VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+            pipelineconfiguration.colorBlendAttachments.add(state);
          }
 
-         pipelineConfig.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-         pipelineConfig.colorBlendInfo.logicOpEnable = VK_FALSE;
-         pipelineConfig.colorBlendInfo.attachmentCount = (uint32_t)pipelineConfig.colorBlendAttachments.get_count();
-         pipelineConfig.colorBlendInfo.pAttachments = pipelineConfig.colorBlendAttachments.data();
+         pipelineconfiguration.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+         pipelineconfiguration.colorBlendInfo.logicOpEnable = VK_FALSE;
+         pipelineconfiguration.colorBlendInfo.attachmentCount = (uint32_t)pipelineconfiguration.colorBlendAttachments.
+            get_count();
+         pipelineconfiguration.colorBlendInfo.pAttachments = pipelineconfiguration.colorBlendAttachments.data();
 
       }
       else
@@ -403,31 +323,33 @@ namespace gpu_vulkan
                VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
                VK_COLOR_COMPONENT_A_BIT;
             state.blendEnable = VK_FALSE;
-            state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
-            state.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
-            state.colorBlendOp = VK_BLEND_OP_ADD;              // Optional
-            state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
-            state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
-            state.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
-            pipelineConfig.colorBlendAttachments.add(state);
+            state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+            state.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+            state.colorBlendOp = VK_BLEND_OP_ADD; // Optional
+            state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+            state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+            state.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
+            pipelineconfiguration.colorBlendAttachments.add(state);
          }
 
-         pipelineConfig.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-         pipelineConfig.colorBlendInfo.logicOpEnable = VK_FALSE;
-         pipelineConfig.colorBlendInfo.attachmentCount = (uint32_t)pipelineConfig.colorBlendAttachments.get_count();
-         pipelineConfig.colorBlendInfo.pAttachments = pipelineConfig.colorBlendAttachments.data();
+         pipelineconfiguration.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+         pipelineconfiguration.colorBlendInfo.logicOpEnable = VK_FALSE;
+         pipelineconfiguration.colorBlendInfo.attachmentCount = (uint32_t)pipelineconfiguration.colorBlendAttachments.
+            get_count();
+         pipelineconfiguration.colorBlendInfo.pAttachments = pipelineconfiguration.colorBlendAttachments.data();
 
       }
 
-      pipelineConfig.inputAssemblyInfo.topology = ::vulkan::as_vk_topology(m_etopology);
-      pipelineConfig.dynamicStateEnables.append_unique(m_dynamicstateaEnable);
-      pipelineConfig.dynamicStateInfo.dynamicStateCount = (uint32_t)pipelineConfig.dynamicStateEnables.size();
+      pipelineconfiguration.inputAssemblyInfo.topology = ::vulkan::as_vk_topology(m_etopology);
+      pipelineconfiguration.dynamicStateEnables.append_unique(m_dynamicstateaEnable);
+      pipelineconfiguration.dynamicStateInfo.dynamicStateCount = (uint32_t)pipelineconfiguration.dynamicStateEnables.
+         size();
 
-      ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
+      ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
 
       auto prenderpass = this->render_pass2();
 
-      ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
+      ::cast<texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
 
       if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       {
@@ -439,32 +361,137 @@ namespace gpu_vulkan
       //if (has_sampler())
       //{
 
-      //   pipelineConfig.renderPass = shader_sampler()->get_render_pass();
+      //   pipelineconfiguration.renderPass = shader_sampler()->get_render_pass();
 
       //}
       //else
       {
 
-         pipelineConfig.renderPass = prenderpass->m_vkrenderpass;
+         pipelineconfiguration.renderPass = prenderpass->m_vkrenderpass;
 
       }
 
-      pipelineConfig.pipelineLayout = m_vkpipelinelayout;
+      //pipelineconfiguration.pipelineLayout = m_vkpipelinelayout;
+
+      if (m_bindingSampler.is_set())
+      {
+
+         {
+
+            m_psetdescriptorlayout
+               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpurenderer->m_pgpucontext)
+               .addBinding(m_bindingSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                           VK_SHADER_STAGE_FRAGMENT_BIT)
+               .build();
+
+            int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+
+            auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+
+            pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
+            pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
+
+            m_pdescriptorpool = pdescriptorpoolbuilder->build();
+
+         }
+
+      }
+      else if (m_bindingCubeSampler.is_set())
+      {
+
+         {
+
+            m_psetdescriptorlayout
+               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpurenderer->m_pgpucontext)
+               .addBinding(m_bindingCubeSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                           VK_SHADER_STAGE_FRAGMENT_BIT)
+               .build();
+
+            int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+
+            auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+
+            pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
+            pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
+
+            m_pdescriptorpool
+               = pdescriptorpoolbuilder->build();
+
+         }
+
+      }
+
+      //_create_pipeline_layout((int)m_propertiesPush.m_memory.size());
+
+      // ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
+      //
+      // ::cast < device > pgpudevice = pgpucontext->m_pgpudevice;
+
+      int iPushPropertiesSize = (int)m_propertiesPush.m_memory.size();
+
+      if (iPushPropertiesSize > 0)
+      {
+         VkPushConstantRange pushConstantRange{};
+         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+         pushConstantRange.offset = 0;
+         pushConstantRange.size = iPushPropertiesSize;
+
+         pipelineconfiguration.pushConstantRanges.add(pushConstantRange);
+         // pushConstantRange.size = iPushPropertiesSize;
+      }
+
+      //::array<VkDescriptorSetLayout> descriptorSetLayouts;
+
+      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      {
+
+         auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+         pipelineconfiguration.descriptorSetLayouts.add(globalSetLayout);
+
+      }
+
+      if (m_pLocalDescriptorSet)
+      {
+
+         ::cast<::gpu_vulkan::set_descriptor_layout> pset = m_pLocalDescriptorSet;
+
+         auto setLayout = pset->getDescriptorSetLayout();
+
+         pipelineconfiguration.descriptorSetLayouts.add(setLayout);
+
+      }
+
+      if (m_psetdescriptorlayout)
+      {
+
+         auto samplerSetLayout = m_psetdescriptorlayout->getDescriptorSetLayout();
+
+         auto uSet = (unsigned int)pipelineconfiguration.descriptorSetLayouts.add(samplerSetLayout);
+
+         if (m_bindingSampler.is_set())
+            m_bindingSampler.m_uSet = uSet;
+         else if (m_bindingCubeSampler.is_set())
+            m_bindingCubeSampler.m_uSet = uSet;
+
+      }
+
 
       pgpudevice->defer_shader_memory(m_memoryVertex, m_pathVertex);
       pgpudevice->defer_shader_memory(m_memoryFragment, m_pathFragment);
 
-      m_ppipeline->initialize_pipeline(m_pgpurenderer,
-         m_memoryVertex,
-         m_memoryFragment,
-         pipelineConfig);
+      m_ppipeline->initialize_graphics_pipeline(m_pgpurenderer,
+                                       m_memoryVertex,
+                                       m_memoryFragment,
+                                       pipelineconfiguration);
 
-      m_vkrenderpassCurrent = pipelineConfig.renderPass;
+      m_vkrenderpassCurrent = pipelineconfiguration.renderPass;
 
    }
 
 
-   void shader::bind(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource)
+   void shader::bind(::gpu::texture *pgputextureTarget, ::gpu::texture *pgputextureSource)
    {
 
       _bind();
@@ -476,7 +503,7 @@ namespace gpu_vulkan
    }
 
 
-   void shader::bind(::gpu::texture* pgputextureTarget)
+   void shader::bind(::gpu::texture *pgputextureTarget)
    {
 
       _bind(pgputextureTarget);
@@ -486,18 +513,18 @@ namespace gpu_vulkan
    }
 
 
-   void shader::_bind(::gpu::texture* pgputextureTarget)
+   void shader::_bind(::gpu::texture *pgputextureTarget)
    {
 
-      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      ::cast <renderer> prenderer = m_pgpurenderer;
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
-      ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
+      ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
 
       auto prenderpass = this->render_pass2();
 
@@ -514,7 +541,7 @@ namespace gpu_vulkan
 
       //bind_source(pgputextureSource);
 
-      ::cast <texture> ptextureDst = pgputextureTarget;
+      ::cast<texture> ptextureDst = pgputextureTarget;
 
       //auto pshadertextureDst = shader_texture(ptextureDst, false);
 
@@ -527,9 +554,9 @@ namespace gpu_vulkan
       int bottom = ptextureDst->m_rectangleTarget.bottom();
       int y = h - bottom;
 
-      renderPassBeginInfo.renderArea.offset = { x, y };
-      renderPassBeginInfo.renderArea.offset = { 0, 0 };
-      renderPassBeginInfo.renderArea.extent = { w, h };
+      renderPassBeginInfo.renderArea.offset = {x, y};
+      renderPassBeginInfo.renderArea.offset = {0, 0};
+      renderPassBeginInfo.renderArea.extent = {w, h};
 
       debug() << "has_shader_sampler";
 
@@ -561,7 +588,7 @@ namespace gpu_vulkan
          else
          {
 
-            clearValues[1].depthStencil = { 1.0f, 0 };
+            clearValues[1].depthStencil = {1.0f, 0};
             renderPassBeginInfo.clearValueCount = 2;
 
          }
@@ -588,7 +615,7 @@ namespace gpu_vulkan
 
       //}
 
-      ::cast < texture > ptexture = ptextureDst;
+      ::cast<texture> ptexture = ptextureDst;
 
       if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       {
@@ -608,17 +635,16 @@ namespace gpu_vulkan
    }
 
 
-
    void shader::bind()
    {
 
-      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      ::cast <renderer> prenderer = m_pgpurenderer;
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       VkRenderPassBeginInfo renderPassBeginInfo{};
 
@@ -631,16 +657,16 @@ namespace gpu_vulkan
 
       //}
 
-      ::cast < render_target> prendertarget = m_pgpurenderer->m_pgpurendertarget;
+      ::cast<render_target> prendertarget = m_pgpurenderer->m_pgpurendertarget;
 
-      ::cast <render_pass> prenderpass = this->render_pass2();
+      ::cast<render_pass> prenderpass = this->render_pass2();
 
 
       renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
       //if (prenderer->m_pgpulayer)
       {
 
-         ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
+         ::cast<texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
 
          if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
          {
@@ -670,8 +696,8 @@ namespace gpu_vulkan
          auto fB = m_colorClear.f32_blue();
          auto fA = m_colorClear.f32_opacity();
 
-         clearValues[0].color = { fR * fA, fG * fA, fB * fA, fA };
-         clearValues[1].depthStencil = { 1.0f, 0 };
+         clearValues[0].color = {fR * fA, fG * fA, fB * fA, fA};
+         clearValues[1].depthStencil = {1.0f, 0};
          renderPassBeginInfo.clearValueCount = 2;
          renderPassBeginInfo.pClearValues = nullptr;
 
@@ -685,14 +711,12 @@ namespace gpu_vulkan
       }
 
 
-      renderPassBeginInfo.renderArea.offset = { 0, 0 };
+      renderPassBeginInfo.renderArea.offset = {0, 0};
       renderPassBeginInfo.renderArea.extent =
       {
          (uint32_t)pgpucontext->m_rectangle.width(),
          (uint32_t)pgpucontext->m_rectangle.height()
       };
-
-
 
 
       vkCmdBeginRenderPass(
@@ -709,13 +733,13 @@ namespace gpu_vulkan
    void shader::_bind()
    {
 
-      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      ::cast <renderer> prenderer = m_pgpurenderer;
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       if (!m_ppipeline)
       {
@@ -729,11 +753,11 @@ namespace gpu_vulkan
       auto rectangle = pgpucontext->m_rectangle;
       auto size = rectangle.size();
       VkViewport vp = {
-   (float)0.f,
-   (float)0.f,
-   (float)size.width(),
-   (float)size.height(),
-   0.0f, 1.0f };
+         (float)0.f,
+         (float)0.f,
+         (float)size.width(),
+         (float)size.height(),
+         0.0f, 1.0f};
 
       VkRect2D sc = {
          {
@@ -759,7 +783,7 @@ namespace gpu_vulkan
          vkCmdBindDescriptorSets(
             pcommandbuffer->m_vkcommandbuffer,
             VK_PIPELINE_BIND_POINT_GRAPHICS,
-            m_vkpipelinelayout,
+            m_ppipeline->_pipeline_layout(),
             0,
             1,
             &globalDescriptorSet,
@@ -774,13 +798,13 @@ namespace gpu_vulkan
    void shader::unbind()
    {
 
-      ::cast <context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-      ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
+      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      ::cast <renderer> prenderer = m_pgpurenderer;
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
       //
       //      {
       //
@@ -871,7 +895,6 @@ namespace gpu_vulkan
       //}
 
 
-
       vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
    }
@@ -882,17 +905,17 @@ namespace gpu_vulkan
 
       ::gpu::shader::push_properties();
       //set_push_properties(m_propertiesPush.m_block);
- /*     ::cast < renderer > prenderer = m_pgpurenderer;
+      /*     ::cast < renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+           ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
-      vkCmdPushConstants(
-         pcommandbuffer->m_vkcommandbuffer,
-         m_vkpipelinelayout,
-         VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-         0,
-         (uint32_t)m_propertiesPush.size(),
-         m_propertiesPush.data());*/
+           vkCmdPushConstants(
+              pcommandbuffer->m_vkcommandbuffer,
+              m_vkpipelinelayout,
+              VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+              0,
+              (uint32_t)m_propertiesPush.size(),
+              m_propertiesPush.data());*/
 
    }
 
@@ -905,16 +928,16 @@ namespace gpu_vulkan
    }
 
 
-   void shader::set_push_properties(const ::block& block)
+   void shader::set_push_properties(const ::block &block)
    {
 
-      ::cast < renderer > prenderer = m_pgpurenderer;
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       vkCmdPushConstants(
          pcommandbuffer->m_vkcommandbuffer,
-         m_vkpipelinelayout,
+         m_ppipeline->_pipeline_layout(),
          VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
          0,
          (uint32_t)block.size(),
@@ -1197,14 +1220,13 @@ namespace gpu_vulkan
    {
 
 
-
    }
 
 
-   render_pass* shader::render_pass2()
+   render_pass *shader::render_pass2()
    {
-      
-      ::cast < render_target> prendertarget = m_pgpurenderer->m_pgpurendertarget;
+
+      ::cast<render_target> prendertarget = m_pgpurenderer->m_pgpurendertarget;
 
       if (m_pgpurenderer->m_pgpucontext->m_escene == ::gpu::e_scene_3d)
       {
@@ -1221,12 +1243,13 @@ namespace gpu_vulkan
 
    }
 
+
    void shader::draw()
    {
 
-      ::cast < renderer > prenderer = m_pgpurenderer;
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0);
 
@@ -1343,25 +1366,24 @@ namespace gpu_vulkan
    //}
 
 
-   void shader::bind_source(::gpu::texture* pgputexture, int iSlot)
+   void shader::bind_source(::gpu::texture *pgputexture, int iSlot)
    {
 
-      ::cast < texture > ptexture = pgputexture;
+      ::cast<texture> ptexture = pgputexture;
 
 
       //auto pshadertexture = this->shader_texture(pgputexture, true);
 
       //for (int i = 0; i < prenderer->get_frame_count(); i++)
-   //{
+      //{
 
 
+      //auto& pdescriptorset = s1()->m_imagedescriptorset[image];
+      //auto pcommandbuffer = this->getCurrentCommandBuffer();
 
-         //auto& pdescriptorset = s1()->m_imagedescriptorset[image];
-         //auto pcommandbuffer = this->getCurrentCommandBuffer();
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast < renderer > prenderer = m_pgpurenderer;
-
-      ::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       unsigned int uSet = 0;
 
@@ -1373,25 +1395,24 @@ namespace gpu_vulkan
       auto vkdescriptorset = ptexture->descriptor_set(this);
 
       // Bind pipeline and descriptor sets
-    //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
       //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
       vkCmdBindDescriptorSets(
          pcommandbuffer->m_vkcommandbuffer,
-         VK_PIPELINE_BIND_POINT_GRAPHICS,    // Bind point
-         m_vkpipelinelayout,                 // Layout used when pipeline was created
-         uSet,                                  // First set (set = 0)
-         1,                                  // Descriptor set count
-         &vkdescriptorset,     // Pointer to descriptor set
-         0,                                  // Dynamic offset count
-         NULL                                // Dynamic offsets
-      );
+         VK_PIPELINE_BIND_POINT_GRAPHICS, // Bind point
+         m_ppipeline->_pipeline_layout(), // Layout used when pipeline was created
+         uSet, // First set (set = 0)
+         1, // Descriptor set count
+         &vkdescriptorset, // Pointer to descriptor set
+         0, // Dynamic offset count
+         NULL // Dynamic offsets
+         );
 
 
    }
 
 
 } // namespace gpu_vulkan
-
 
 
 //#include "shader.h"

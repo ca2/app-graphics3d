@@ -8,7 +8,7 @@ namespace gpu_directx12
 {
 
 
-   struct PipelineConfigInfo
+   struct pipeline_configuration
    {
 
       /*::array<VkVertexInputBindingDescription> bindingDescriptions{};
@@ -45,25 +45,25 @@ namespace gpu_directx12
       //   ::gpu::context * pgpucontext,
       //   const ::file::path & pathVert,
       //   const ::file::path & pathFrag,
-      //   const PipelineConfigInfo & configInfo);
+      //   const pipeline_configuration & configInfo);
       virtual void initialize_pipeline(
          ::gpu::renderer * pgpurenderer,
          const ::block & blockVertex,
          const ::block & blockFragment,
-         const PipelineConfigInfo & configInfo);
+         const pipeline_configuration & configInfo);
       ~pipeline();
 
 
       //void bind(VkCommandBuffer commandBuffer);
 
-      static void defaultPipelineConfigInfo(PipelineConfigInfo & configInfo);
+      static void default_pipeline_configuration(pipeline_configuration & configInfo);
    //private:
       //static ::array<char> readFile(const ::string & filepath);
 
       void createGraphicsPipeline(
          const ::block & blockVertex,
          const ::block & blockFragment,
-         const PipelineConfigInfo & configInfo);
+         const pipeline_configuration & configInfo);
 
       //void createShaderModule(const ::block & block, VkShaderModule * shaderModule);
       void createShaderModule(const ::block& block, void* shaderModule);

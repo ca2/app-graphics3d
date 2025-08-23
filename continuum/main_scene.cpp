@@ -2,15 +2,19 @@
 // by camilo on 2025-05-07 02:18 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "main_scene.h"
-#include "simple_render_system.h"
-#include "point_light_system.h"
+//#include "graphics3d/simple_render_system.h"
+//#include "point_light_system.h"
 #include "app-graphics3d/continuum/application.h"
 #include "app-graphics3d/continuum/impact.h"
 #include "core/platform/application.h"
 #include "bred/graphics3d/camera.h"
 #include "bred/gpu/context.h"
 #include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/point_light.h"
 #include "bred/graphics3d/scene_object.h"
+#include "bred/graphics3d/render_systems/object_render_system.h"
+#include "bred/graphics3d/render_systems/point_light_render_system.h"
+#include "bred/graphics3d/render_systems/skybox_render_system.h"
 
 
 namespace app_graphics3d_continuum
@@ -34,7 +38,7 @@ namespace app_graphics3d_continuum
 
       scene::on_initialize_particle();
 
-      m_pusergraphics3d = m_pengine->m_pusergraphics3d;
+      //m_pusergraphics3d = m_pengine->m_pusergraphics3d;
 
       m_papp->m_pmainscene = this;
 
@@ -44,7 +48,7 @@ namespace app_graphics3d_continuum
 
 
 
-   ::pointer < ::graphics3d::camera > main_scene::get_default_camera()
+   ::graphics3d::camera * main_scene::get_default_camera()
    {
       //glm::vec3 camera = glm::vec3(0.0f, 1.0f *m_pengine->m_fYScale, 3.0f);
       glm::vec3 camera = glm::vec3(0.0f, 1.0f , 3.0f);
@@ -70,7 +74,7 @@ namespace app_graphics3d_continuum
    void main_scene::on_load_scene(::gpu::context* pgpucontext)
    {
 
-      m_propertiesGlobalUbo.set<::app_graphics3d_continuum::global_ubo>();
+      m_gpupropertiesGlobalUbo.set<::app_graphics3d_continuum::global_ubo>();
 
 
       //::graphics3d::sky_box::cube cube = {
@@ -126,7 +130,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & flatVase = tinyobjloader_object("matter://models/flat_vase.obj");
+         auto & flatVase = scene_object("matter://models/flat_vase.obj");
          flatVase.translate({ -.5f, 0.f, 0.f });
          flatVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
 
@@ -134,7 +138,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & floor = tinyobjloader_object("matter://models/quad.obj");
+         auto & floor = scene_object("matter://models/quad.obj");
          floor.translate({0.f, 0.f, 0.f});
          floor.scale({5.f, -1.f, 5.f * fXScale });
 
@@ -142,7 +146,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & smoothVase = tinyobjloader_object("matter://models/smooth_vase.obj");
+         auto & smoothVase = scene_object("matter://models/smooth_vase.obj");
          smoothVase.translate({.5f, .0f, 0.f});
          smoothVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
 
@@ -150,7 +154,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & stoneSphere = tinyobjloader_object("matter://models/StoneSphere.obj");
+         auto & stoneSphere = scene_object("matter://models/StoneSphere.obj");
          stoneSphere.translate({ .0f, 0.0f, 0.f });
          stoneSphere.scale({.25f, .25f, .25f });
 
@@ -158,7 +162,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & woodBarrel = tinyobjloader_object("matter://models/Barrel_OBJ.obj");
+         auto & woodBarrel = scene_object("matter://models/Barrel_OBJ.obj");
          woodBarrel.translate({ 1.f, 0.f, 1.0f });
          woodBarrel.scale({1.f, 1.f, 1.f });
 
@@ -166,43 +170,43 @@ namespace app_graphics3d_continuum
 
       float fLo = 0.5f;
 
-      std::vector<glm::vec3> lightColors{
-            {1.f, fLo, fLo},
-            {fLo, fLo, 1.f},
-            {fLo, 1.f, fLo},
-            {1.f, 1.f, fLo},
-            {fLo, 1.f, 1.f},
-            {1.f, 1.f, 1.f}
+      ::array_base < ::color::color > lightColors={
+           argb(1.f, 1.f, fLo, fLo),
+           argb(1.f, fLo, fLo, 1.f),
+           argb(1.f, fLo, 1.f, fLo),
+           argb(1.f, 1.f, 1.f, fLo),
+           argb(1.f, fLo, 1.f, 1.f),
+           argb(1.f, 1.f, 1.f, 1.f)
       };
 
       for (int i = 0; i < lightColors.size(); i++) 
       {
-         auto pointLight = øallocate ::graphics3d::point_light (0.2f);
-         pointLight->m_color = lightColors[i];
+         auto ppointlight = create_point_light(0.2f);
+         ppointlight->m_color = lightColors[i];
          auto rotateLight = glm::rotate(
             glm::mat4(1.f),
             (i * glm::two_pi<float>()) / lightColors.size(),
             { 0.f, 1.f, 0.f });
-         pointLight->m_pointlightcomponent.lightIntensity = 1.0f;
-         pointLight->m_transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, 1.7f, 0.5f , 1.f));
-         add_object(pointLight);
+         ppointlight->m_fLightIntensity = 1.0f;
+         ppointlight->transform().m_vec3Translation = glm::vec3(rotateLight * glm::vec4(-1.f, 1.7f, 0.5f , 1.f));
+         m_pointlighta.add(ppointlight);
 
       }
 
 
-      øconstruct_new(m_psimplerendersystem);
+      øconstruct_new(m_pobjectrendersystem);
 
-      m_psimplerendersystem->initialize_simple_render_system(m_pengine);
+      m_pobjectrendersystem->initialize_render_system(m_pengine);
 
-      m_psimplerendersystem->prepare(pgpucontext);
+      m_pobjectrendersystem->prepare(pgpucontext);
       //m_prenderer->getRenderPass(),
       //globalSetLayout->getDescriptorSetLayout() };
 
-      øconstruct_new(m_ppointlightsystem);
+      øconstruct_new(m_ppointlightrendersystem);
 
-      m_ppointlightsystem->initialize_point_light_system(m_pengine);
+      m_ppointlightrendersystem->initialize_render_system(m_pengine);
 
-      m_ppointlightsystem->prepare(pgpucontext);
+      m_ppointlightrendersystem->prepare(pgpucontext);
 
 
    }
@@ -217,19 +221,19 @@ namespace app_graphics3d_continuum
 
       //::graphics3d::GlobalUbo ubo{};
 
-      auto projection = m_pengine->m_pcamera->getProjection();
+      auto projection = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent->getProjection();
       globalubo["projection"] = projection;
 
-      auto view = m_pengine->m_pcamera->getView();
+      auto view = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent->getView();
       globalubo["view"] = view;
 
-      auto inverseView = m_pengine->m_pcamera->getInverseView();
+      auto inverseView = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent->getInverseView();
       globalubo["invView"] = inverseView;
 
-      if (m_ppointlightsystem)
+      if (m_ppointlightrendersystem)
       {
 
-         m_ppointlightsystem->update(pgpucontext, this);
+         m_ppointlightrendersystem->update(pgpucontext, this);
 
       }
 
@@ -252,28 +256,26 @@ namespace app_graphics3d_continuum
 
       //pgpucontext->clear(rgba(0.5f, 0.75f, 1.0f, 1.0f)); // Clear with a light blue color
 
-      auto pskybox = get_skybox();
-
-      if (pskybox)
+      if (m_pskyboxrendersystem)
       {
 
-         pskybox->render(pgpucontext, this);
+         m_pskyboxrendersystem->render(pgpucontext, this);
 
       }
 
       //return;
 
-      if (m_psimplerendersystem)
+      if (m_pobjectrendersystem)
       {
 
-         m_psimplerendersystem->render(pgpucontext, this);
+         m_pobjectrendersystem->render(pgpucontext, this);
 
       }
 
-      if(m_ppointlightsystem)
+      if(m_ppointlightrendersystem)
       {
 
-         m_ppointlightsystem->render(pgpucontext, this);
+         m_ppointlightrendersystem->render(pgpucontext, this);
 
       }
 
