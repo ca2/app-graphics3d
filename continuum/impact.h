@@ -58,7 +58,7 @@ namespace app_graphics3d_continuum
       
       //bool is_absolute_mouse_position() override;
 
-      ::pointer < ::graphics3d::scene > create_main_scene() override;
+      ::pointer < ::prodevian::immersion > create_immersion() override;
 
       //void on_load_engine() override;
 

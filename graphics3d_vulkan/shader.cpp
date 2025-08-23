@@ -78,21 +78,21 @@
 //
 //      ::cast <engine> pengine = m_pgpucontext->m_pimpact->m_pengine;
 //
-//      PipelineConfigInfo pipelineConfig{};
-//      pipeline::defaultPipelineConfigInfo(pipelineConfig);
+//      pipeline_configuration pipelineconfiguration{};
+//      pipeline::default_pipeline_configuration(pipelineconfiguration);
 //      if (m_eflag & e_flag_clear_default_bindings_and_attributes_descriptions)
 //      {
-//         pipelineConfig.attributeDescriptions.clear();
-//         pipelineConfig.bindingDescriptions.clear();
+//         pipelineconfiguration.attributeDescriptions.clear();
+//         pipelineconfiguration.bindingDescriptions.clear();
 //      }
-//      pipelineConfig.renderPass = pengine->m_prenderer->m_pvkcrenderpass->m_vkrenderpass;
-//      pipelineConfig.pipelineLayout = m_vkpipelinelayout;
+//      pipelineconfiguration.renderPass = pengine->m_prenderer->m_pvkcrenderpass->m_vkrenderpass;
+//      pipelineconfiguration.pipelineLayout = m_vkpipelinelayout;
 //
 //
 //      m_ppipeline->initialize_pipeline(m_pgpucontext,
 //         pengine->_translate_shader_path(m_pathVert),
 //         pengine->_translate_shader_path(m_pathFrag),
-//         pipelineConfig);
+//         pipelineconfiguration);
 //
 //
 //   }

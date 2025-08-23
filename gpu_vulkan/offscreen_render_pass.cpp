@@ -6,6 +6,7 @@
 #include "initializers.h"
 #include "layer.h"
 #include "physical_device.h"
+#include "queue.h"
 #include "render_target.h"
 #include "renderer.h"
 #include "swap_chain.h"
@@ -278,7 +279,7 @@ namespace gpu_vulkan
 
 
 
-   VkResult offscreen_render_pass::submitSamplingWork(const VkCommandBuffer buffer)
+   void offscreen_render_pass::submitSamplingWork(::gpu::command_buffer * pgpucommandbuffer)
    {
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
@@ -286,6 +287,8 @@ namespace gpu_vulkan
       ::cast < ::gpu_vulkan::render_target > prendertarget = pcontext->m_pgpurenderer->m_pgpurendertarget;
 
       ::cast < ::gpu_vulkan::texture > ptextureSrc = prendertarget->current_texture(::gpu::current_frame());
+
+      ::cast < ::gpu_vulkan::command_buffer > pcommandbuffer = pgpucommandbuffer;
 
       auto psynchronizationSrc = ptextureSrc->synchronization();
 
@@ -322,7 +325,8 @@ namespace gpu_vulkan
       submitInfo.pWaitDstStageMask = waitStages.data();
 
       submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = &buffer;
+      VkCommandBuffer vkcommandbuffera[] = {pcommandbuffer->m_vkcommandbuffer};
+      submitInfo.pCommandBuffers = vkcommandbuffera;
 
       ::array<VkSemaphore> signalSemaphores;
       if (psynchronizationSrc &&
@@ -362,7 +366,9 @@ namespace gpu_vulkan
 
       }
 
-      if (vkQueueSubmit(pcontext->graphicsQueue(), 1, &submitInfo, fence) != VK_SUCCESS)
+      ::cast < ::gpu_vulkan::queue > pqueue = pcommandbuffer->m_pgpuqueue;
+
+      if (vkQueueSubmit(pqueue->m_vkqueue, 1, &submitInfo, fence) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed,"failed to submit draw command buffer!");
@@ -389,7 +395,7 @@ namespace gpu_vulkan
 
       //currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
-      return VK_SUCCESS;
+      //return VK_SUCCESS;
 
    }
 

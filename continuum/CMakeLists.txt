@@ -111,7 +111,9 @@ file(GLOB SHADER_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/../_matter/continuum/_std/_std/shaders/*.frag")
 
 
-add_library(${PROJECT_NAME} SHARED ${library_source})
+add_library(${PROJECT_NAME} SHARED ${library_source}
+   immersion.cpp
+   immersion.h)
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
 

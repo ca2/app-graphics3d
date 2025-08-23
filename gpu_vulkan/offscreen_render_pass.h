@@ -59,7 +59,7 @@ namespace gpu_vulkan
 		//void createSyncObjects();
 
 		//VkResult submitSamplingWork(const VkCommandBuffer buffer, uint32_t* imageIndex);
-		VkResult submitSamplingWork(const VkCommandBuffer buffer);
+		virtual void submitSamplingWork(::gpu::command_buffer * pgpucommandbuffer);
 
 
 		virtual void defer_resize(const ::int_size& size);

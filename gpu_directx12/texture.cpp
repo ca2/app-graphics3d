@@ -978,7 +978,9 @@ namespace gpu_directx12
 
          ::cast < context > pcontext = prenderer->m_pgpucontext;
 
-         ::pointer < command_buffer > pcommandbuffer = pcontext->beginSingleTimeCommands();
+         auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(nullptr);
+
+         ::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
 
          {
 

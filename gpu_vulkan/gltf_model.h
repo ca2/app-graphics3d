@@ -31,7 +31,7 @@ namespace gpu_vulkan
 {
 
 
-	namespace glTF
+	namespace gltf
 	{
 
 
@@ -56,7 +56,7 @@ namespace gpu_vulkan
 		struct Node;
 
 		/*
-			glTF texture loading class
+			gltf texture loading class
 		*/
 		class Texture
 		{
@@ -79,7 +79,7 @@ namespace gpu_vulkan
 
 
 		/*
-			glTF material class
+			gltf material class
 		*/
 		class Material
 		{
@@ -92,14 +92,14 @@ namespace gpu_vulkan
 			float metallicFactor = 1.0f;
 			float roughnessFactor = 1.0f;
 			glm::vec4 baseColorFactor = glm::vec4(1.0f);
-			glTF::Texture* baseColorTexture = nullptr;
-			glTF::Texture* metallicRoughnessTexture = nullptr;
-			glTF::Texture* normalTexture = nullptr;
-			glTF::Texture* occlusionTexture = nullptr;
-			glTF::Texture* emissiveTexture = nullptr;
+			gltf::Texture* baseColorTexture = nullptr;
+			gltf::Texture* metallicRoughnessTexture = nullptr;
+			gltf::Texture* normalTexture = nullptr;
+			gltf::Texture* occlusionTexture = nullptr;
+			gltf::Texture* emissiveTexture = nullptr;
 
-			glTF::Texture* specularGlossinessTexture;
-			glTF::Texture* diffuseTexture;
+			gltf::Texture* specularGlossinessTexture;
+			gltf::Texture* diffuseTexture;
 
 			VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
 
@@ -108,7 +108,7 @@ namespace gpu_vulkan
 		};
 
 		/*
-			glTF primitive
+			gltf primitive
 		*/
 		struct Primitive {
 			uint32_t firstIndex;
@@ -130,7 +130,7 @@ namespace gpu_vulkan
 		};
 
 		/*
-			glTF mesh
+			gltf mesh
 		*/
 		struct Mesh {
 			::gpu::context* m_pgpucontext = nullptr;
@@ -157,7 +157,7 @@ namespace gpu_vulkan
 		};
 
 		/*
-			glTF skin
+			gltf skin
 		*/
 		struct Skin {
 			std::string name;
@@ -167,7 +167,7 @@ namespace gpu_vulkan
 		};
 
 		/*
-			glTF node
+			gltf node
 		*/
 		struct Node {
 			Node* parent;
@@ -188,7 +188,7 @@ namespace gpu_vulkan
 		};
 
 		/*
-			glTF animation channel
+			gltf animation channel
 		*/
 		struct AnimationChannel {
 			enum PathType { TRANSLATION, ROTATION, SCALE };
@@ -198,7 +198,7 @@ namespace gpu_vulkan
 		};
 
 		/*
-			glTF animation sampler
+			gltf animation sampler
 		*/
 		struct AnimationSampler {
 			enum InterpolationType { LINEAR, STEP, CUBICSPLINE };
@@ -208,7 +208,7 @@ namespace gpu_vulkan
 		};
 
 		/*
-			glTF animation
+			gltf animation
 		*/
 		struct Animation {
 			std::string name;
@@ -219,7 +219,7 @@ namespace gpu_vulkan
 		};
 
 		/*
-			glTF default vertex layout with easy Vulkan mapping functions
+			gltf default vertex layout with easy Vulkan mapping functions
 		*/
 		enum class VertexComponent { Position, Normal, UV, Color, Tangent, Joint0, Weight0 };
 
@@ -257,7 +257,7 @@ namespace gpu_vulkan
 		};
 
 		/*
-			glTF model loading and rendering class
+			gltf model loading and rendering class
 		*/
 		class Model :
 			public ::graphics3d::renderable
@@ -265,8 +265,8 @@ namespace gpu_vulkan
 		public:
 
 
-			glTF::Texture* getTexture(uint32_t index);
-			glTF::Texture emptyTexture;
+			gltf::Texture* getTexture(uint32_t index);
+			gltf::Texture emptyTexture;
 			void createEmptyTexture(VkQueue transferQueue);
 		//public:
 			::gpu::context* m_pgpucontext = nullptr;
@@ -289,7 +289,7 @@ namespace gpu_vulkan
 			std::vector<Skin*> m_skins;
 
 
-			std::vector<glTF::Texture> m_textures;
+			std::vector<gltf::Texture> m_textures;
 			std::vector<Material> m_materials;
 			std::vector<Animation> m_animations;
 
@@ -307,7 +307,7 @@ namespace gpu_vulkan
 
 			Model();
 			~Model();
-			void loadNode(glTF::Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale);
+			void loadNode(gltf::Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale);
 			void loadSkins(tinygltf::Model& gltfModel);
 			void loadImages(tinygltf::Model& gltfModel, ::gpu::context * pcontext, VkQueue transferQueue);
 			void loadMaterials(tinygltf::Model& gltfModel);
@@ -332,13 +332,13 @@ namespace gpu_vulkan
 			void updateAnimation(uint32_t index, float time);
 			Node* findNode(Node* parent, uint32_t index);
 			Node* nodeFromIndex(uint32_t index);
-			void prepareNodeDescriptor(glTF::Node* node, VkDescriptorSetLayout descriptorSetLayout);
+			void prepareNodeDescriptor(gltf::Node* node, VkDescriptorSetLayout descriptorSetLayout);
 
 
 		};
 
 
-	} // namespace glTF
+	} // namespace gltf
 
 
 } // namespace gpu_vulkan

@@ -231,6 +231,28 @@ namespace vulkan
 	// uint32_t alignedSize(uint32_t value, uint32_t alignment);
 	// VkDeviceSize alignedVkSize(VkDeviceSize value, VkDeviceSize alignment);
 
+   struct pipeline_configuration
+   {
+
+      ::array<VkVertexInputBindingDescription> bindingDescriptions{};
+      ::array<VkVertexInputAttributeDescription> attributeDescriptions{};
+      VkPipelineViewportStateCreateInfo viewportInfo;
+      VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
+      VkPipelineRasterizationStateCreateInfo rasterizationInfo;
+      VkPipelineMultisampleStateCreateInfo multisampleInfo;
+      ::array < VkPipelineColorBlendAttachmentState > colorBlendAttachments;
+      VkPipelineColorBlendStateCreateInfo colorBlendInfo;
+      VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+      ::comparable_array<VkDynamicState> dynamicStateEnables;
+      VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+      VkRenderPass renderPass = nullptr;
+      uint32_t subpass = 0;
+      VkSpecializationInfo* fragSpecInfo = nullptr;
+      ::array_base<VkPushConstantRange> pushConstantRanges;
+      ::array_base<VkDescriptorSetLayout> descriptorSetLayouts;
+   };
+
+
 } // namespace vulkan
 
 

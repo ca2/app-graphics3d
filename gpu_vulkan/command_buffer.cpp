@@ -8,7 +8,7 @@
 #include "model_buffer.h"
 #include "renderer.h"
 #include "render_target.h"
-//#include "swa"
+#include "queue.h"
 #include "texture.h"
 
 
@@ -320,8 +320,6 @@ namespace gpu_vulkan
 
       //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
 
-      auto queueGraphics = pcontext->graphicsQueue();
-
       VkFence fence = VK_NULL_HANDLE;
 
       if (psynchronizationDst)
@@ -359,8 +357,10 @@ namespace gpu_vulkan
 
       }
 
+      ::cast < ::gpu_vulkan::queue > pqueue = m_pgpuqueue;
+
       //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
-      if (vkQueueSubmit(queueGraphics, 1, &submitInfo, fence) != VK_SUCCESS)
+      if (vkQueueSubmit(pqueue->m_vkqueue, 1, &submitInfo, fence) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed, "failed to submit draw command buffer!");

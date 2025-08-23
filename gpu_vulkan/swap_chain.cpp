@@ -2,6 +2,7 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "physical_device.h"
+#include "queue.h"
 #include "renderer.h"
 #include "render_target.h"
 #include "shader.h"
@@ -311,7 +312,9 @@ namespace gpu_vulkan
       submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
       submitInfo.pSignalSemaphores = signalSemaphores.data();
 
-      auto vkqueueGraphics = pcontext->graphicsQueue();
+      ::cast < ::gpu_vulkan::queue > pqueueGraphics = pcontext->graphics_queue();
+
+      auto vkqueueGraphics = pqueueGraphics->m_vkqueue;
 
       ::cast < ::gpu_vulkan::texture > ptextureIdx = ptextureIndex;
 
@@ -324,9 +327,15 @@ namespace gpu_vulkan
          throw ::exception(error_failed, "failed to submit draw command buffer!");
       }
 
+      auto pgpuqueuePresent = pcontext->present_queue();
+
+      ::cast < ::gpu_vulkan::queue > pqueuePresent = pgpuqueuePresent;
+
       {
 
-         ::pointer < command_buffer > pcommandbufferPresent = pcontext->beginSingleTimeCommands(::gpu::e_command_buffer_present);
+         auto pgpucommandbufferPresent = pcontext->beginSingleTimeCommands(pqueuePresent, ::gpu::e_command_buffer_present);
+
+         ::cast < command_buffer > pcommandbufferPresent = pgpucommandbufferPresent;
 
          ::comparable_array<VkSemaphore> waitSemaphores2;
          ::array<VkPipelineStageFlags> waitStages2;
@@ -360,7 +369,7 @@ namespace gpu_vulkan
       presentInfo.pSwapchains = &m_vkswapchain;
       presentInfo.pImageIndices = imageIndex;
 
-      VkResult result = vkQueuePresentKHR(pcontext->presentQueue(), &presentInfo);
+      VkResult result = vkQueuePresentKHR(pqueuePresent->m_vkqueue, &presentInfo);
 
       //currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
       m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % m_ptextureaSwapChain->size();

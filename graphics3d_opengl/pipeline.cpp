@@ -24,7 +24,7 @@
 //		context * pvkcdevice,
 //		const std::string& vertFilepath,
 //		const std::string& fragFilepath,
-//		const PipelineConfigInfo& configInfo)
+//		const pipeline_configuration& configInfo)
 //	{
 //		initialize(pvkcdevice);
 //		m_pgpucontext = pvkcdevice;
@@ -64,7 +64,7 @@
 //	void pipeline::createGraphicsPipeline(
 //		const std::string& vertFilepath,
 //		const std::string& fragFilepath,
-//		const PipelineConfigInfo& configInfo)
+//		const pipeline_configuration& configInfo)
 //	{
 //
 //		assert(
@@ -148,7 +148,7 @@
 //			throw ::exception(error_failed, "failed to create shader module");
 //		}
 //	}
-//	void pipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo) {
+//	void pipeline::default_pipeline_configuration(pipeline_configuration& configInfo) {
 //
 //		configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 //		configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;

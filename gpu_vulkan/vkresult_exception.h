@@ -1,16 +1,18 @@
 //
 // Created by camilo on 2025-08-22.
 //
+#pragma once
 
-#ifndef VKRESULT_EXCEPTION_H
-#define VKRESULT_EXCEPTION_H
+class vkresult_exception :
+virtual public ::exception
+{
+public:
 
 
+      VkResult          m_vkresult;
 
-class vkresult_exception {
+      vkresult_exception(VkResult vkresult, const ::scoped_string & scopedstr);
+   ~vkresult_exception() override;
 
 };
 
-
-
-#endif //VKRESULT_EXCEPTION_H

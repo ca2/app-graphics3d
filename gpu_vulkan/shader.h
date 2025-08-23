@@ -108,25 +108,25 @@ namespace gpu_vulkan
 
       //void bind(auto pcommandbuffer);
 
-      ///static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
+      ///static void default_pipeline_configuration(pipeline_configuration& configInfo);
    ///private:
 ///		static ::array<char> readFile(const ::string& filepath);
 
-      /*void createGraphicsPipeline(
+      /*void create_graphics_pipeline(
          const ::string& vertFilepath,
          const ::string& fragFilepath,
-         const PipelineConfigInfo& configInfo);
+         const pipeline_configuration& configInfo);
 
-      void createShaderModule(const ::block& block, VkShaderModule* shaderModule);*/
+      void create_shader_module(const ::block& block, VkShaderModule* shaderModule);*/
 
       /*
       VkPipeline graphicsPipeline;
       VkShaderModule vertShaderModule;
       VkShaderModule fragShaderModule;*/
-      VkPipelineLayout		m_vkpipelinelayout;
+      // VkPipelineLayout		m_vkpipelinelayout;
 
 
-      void _create_pipeline_layout(int iPushPropertiesSize);
+      //void _create_pipeline_layout(int iPushPropertiesSize);
 
       virtual render_pass* render_pass2();
       virtual void create_descriptor_layout();

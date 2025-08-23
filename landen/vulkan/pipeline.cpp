@@ -21,7 +21,7 @@ namespace vkc {
 		VkcDevice * pvkcdevice,
 		const std::string& vertFilepath,
 		const std::string& fragFilepath,
-		const PipelineConfigInfo& configInfo)
+		const pipeline_configuration& configInfo)
 	{
 		initialize(pvkcdevice);
 		m_pvkcdevice = pvkcdevice;
@@ -61,7 +61,7 @@ namespace vkc {
 	void VkcPipeline::createGraphicsPipeline(
 		const std::string& vertFilepath,
 		const std::string& fragFilepath,
-		const PipelineConfigInfo& configInfo)
+		const pipeline_configuration& configInfo)
 	{
 
 		assert(
@@ -145,7 +145,7 @@ namespace vkc {
 			throw std::runtime_error("failed to create shader module");
 		}
 	}
-	void VkcPipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo) {
+	void VkcPipeline::default_pipeline_configuration(pipeline_configuration& configInfo) {
 
 		configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;

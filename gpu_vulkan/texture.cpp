@@ -388,7 +388,7 @@ namespace gpu_vulkan
 
       pbufferStaging->_assign_cube_map(imagea);
 
-      ::pointer < command_buffer > pcommandbuffer = pcontext->beginSingleTimeCommands();
+      ::pointer < command_buffer > pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pqueueTransfer);
 
       pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging);
 

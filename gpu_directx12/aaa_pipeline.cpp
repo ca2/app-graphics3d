@@ -22,7 +22,7 @@ namespace gpu_directx12
       ::gpu::renderer * pgpurenderer,
       const ::block & blockVertex,
       const ::block & blockFragment,
-      const PipelineConfigInfo & configInfo)
+      const pipeline_configuration & configInfo)
    {
       initialize(pgpurenderer);
       m_pgpurenderer = pgpurenderer;
@@ -68,7 +68,7 @@ namespace gpu_directx12
    void pipeline::createGraphicsPipeline(
       const ::block & blockVertex,
       const ::block & blockFragment,
-      const PipelineConfigInfo & configInfo)
+      const pipeline_configuration & configInfo)
    {
 
       //assert(
@@ -160,7 +160,7 @@ namespace gpu_directx12
    //}
    //
    
-   void pipeline::defaultPipelineConfigInfo(PipelineConfigInfo & configInfo)
+   void pipeline::default_pipeline_configuration(pipeline_configuration & configInfo)
    {
 
       //configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;

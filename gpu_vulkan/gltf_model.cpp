@@ -1,5 +1,5 @@
 ///*
-//* Vulkan glTF model and texture loading class based on tinyglTF (https://github.com/syoyo/tinygltf)
+//* Vulkan gltf model and texture loading class based on tinyglTF (https://github.com/syoyo/tinygltf)
 //*
 //* Copyright (C) 2018-2024 by Sascha Willems - www.saschawillems.de
 //*
@@ -7,10 +7,10 @@
 //*/
 //
 ///*
-// * Note that this isn't a complete glTF loader and not all features of the glTF 2.0 spec are supported
-// * For details on how glTF 2.0 works, see the official spec at https://github.com/KhronosGroup/glTF/tree/master/specification/2.0
+// * Note that this isn't a complete gltf loader and not all features of the gltf 2.0 spec are supported
+// * For details on how gltf 2.0 works, see the official spec at https://github.com/KhronosGroup/gltf/tree/master/specification/2.0
 // *
-// * If you are looking for a complete glTF implementation, check out https://github.com/SaschaWillems/Vulkan-glTF-PBR/
+// * If you are looking for a complete gltf implementation, check out https://github.com/SaschaWillems/Vulkan-gltf-PBR/
 // */
 #include "framework.h"
 #include "acme/filesystem/filesystem/file_context.h"
@@ -33,11 +33,11 @@
 namespace gpu_vulkan
 {
 
-	VkDescriptorSetLayout  glTF::descriptorSetLayoutImage = VK_NULL_HANDLE;
-	VkDescriptorSetLayout  glTF::descriptorSetLayoutIbl = VK_NULL_HANDLE;
-	VkDescriptorSetLayout  glTF::descriptorSetLayoutUbo = VK_NULL_HANDLE;
-	VkMemoryPropertyFlags  glTF::memoryPropertyFlags = 0;
-	uint32_t glTF::descriptorBindingFlags =  glTF::DescriptorBindingFlags::ImageBaseColor |  glTF::DescriptorBindingFlags::ImageNormalMap;
+	VkDescriptorSetLayout  gltf::descriptorSetLayoutImage = VK_NULL_HANDLE;
+	VkDescriptorSetLayout  gltf::descriptorSetLayoutIbl = VK_NULL_HANDLE;
+	VkDescriptorSetLayout  gltf::descriptorSetLayoutUbo = VK_NULL_HANDLE;
+	VkMemoryPropertyFlags  gltf::memoryPropertyFlags = 0;
+	uint32_t gltf::descriptorBindingFlags =  gltf::DescriptorBindingFlags::ImageBaseColor |  gltf::DescriptorBindingFlags::ImageNormalMap;
 
 	////class VkSandboxDevice;
 	//
@@ -65,17 +65,17 @@ namespace gpu_vulkan
 
 
 	/*
-		glTF texture loading class
+		gltf texture loading class
 	*/
 
-	void glTF::Texture::updateDescriptor()
+	void gltf::Texture::updateDescriptor()
 	{
 		descriptor.sampler = sampler;
 		descriptor.imageView = view;
 		descriptor.imageLayout = imageLayout;
 	}
 
-	void glTF::Texture::destroy()
+	void gltf::Texture::destroy()
 	{
 		if (m_pgpucontext)
 		{
@@ -88,13 +88,13 @@ namespace gpu_vulkan
 	}
 
 
-	glTF::Model::Model()
+	gltf::Model::Model()
 	{
 
 	}
 
 
-	void glTF::Texture::fromglTfImage(tinygltf::Image& gltfimage, void * pIfKtx, long long llIfKtx, ::gpu::context * pgpucontext, VkQueue copyQueue, bool isSrgb)
+	void gltf::Texture::fromglTfImage(tinygltf::Image& gltfimage, void * pIfKtx, long long llIfKtx, ::gpu::context * pgpucontext, VkQueue copyQueue, bool isSrgb)
 	{
 		this->m_pgpucontext = pgpucontext;
 
@@ -202,7 +202,11 @@ namespace gpu_vulkan
 			VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &deviceMemory));
 			VK_CHECK_RESULT(vkBindImageMemory(pcontext->logicalDevice(), image, deviceMemory, 0));
 
-			VkCommandBuffer copyCmd = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+			//VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+
+		   auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue(), ::gpu::e_command_buffer_copy);
+
+		   ::cast < command_buffer > pcommandbufferCopy = pgpucommandbufferCopy;
 
 			VkImageSubresourceRange subresourceRange = {};
 			subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -218,7 +222,7 @@ namespace gpu_vulkan
 			imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 			imageMemoryBarrier.image = image;
 			imageMemoryBarrier.subresourceRange = subresourceRange;
-			vkCmdPipelineBarrier(copyCmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+			vkCmdPipelineBarrier(pcommandbufferCopy->m_vkcommandbuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 
 			VkBufferImageCopy bufferCopyRegion = {};
 			bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -229,7 +233,7 @@ namespace gpu_vulkan
 			bufferCopyRegion.imageExtent.height = height;
 			bufferCopyRegion.imageExtent.depth = 1;
 
-			vkCmdCopyBufferToImage(copyCmd, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
+			vkCmdCopyBufferToImage(pcommandbufferCopy->m_vkcommandbuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
 
 			imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 			imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
@@ -238,15 +242,21 @@ namespace gpu_vulkan
 			imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 			imageMemoryBarrier.image = image;
 			imageMemoryBarrier.subresourceRange = subresourceRange;
-			vkCmdPipelineBarrier(copyCmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+			vkCmdPipelineBarrier(pcommandbufferCopy->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 
-			pcontext->flushCommandBuffer(copyCmd, copyQueue, true);
+			//pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, copyQueue, true);
+		   pcontext->endSingleTimeCommands(pcommandbufferCopy);
 
 			vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
 			vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
 
-			// Generate the mip chain (glTF uses jpg and png, so we need to create this manually)
-			VkCommandBuffer blitCmd = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+			// Generate the mip chain (gltf uses jpg and png, so we need to create this manually)
+			//VkCommandBuffer blitCmd = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+
+		   auto pgpucommandbufferBlit = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+
+		   ::cast < command_buffer > pcommandbufferBlit = pgpucommandbufferBlit;
+
 			for (uint32_t i = 1; i < mipLevels; i++) {
 				VkImageBlit imageBlit{};
 
@@ -279,10 +289,10 @@ namespace gpu_vulkan
 					imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 					imageMemoryBarrier.image = image;
 					imageMemoryBarrier.subresourceRange = mipSubRange;
-					vkCmdPipelineBarrier(blitCmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+					vkCmdPipelineBarrier(pcommandbufferBlit->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 				}
 
-				vkCmdBlitImage(blitCmd, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlit, VK_FILTER_LINEAR);
+				vkCmdBlitImage(pcommandbufferBlit->m_vkcommandbuffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlit, VK_FILTER_LINEAR);
 
 				{
 					VkImageMemoryBarrier imageMemoryBarrier{};
@@ -293,7 +303,7 @@ namespace gpu_vulkan
 					imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 					imageMemoryBarrier.image = image;
 					imageMemoryBarrier.subresourceRange = mipSubRange;
-					vkCmdPipelineBarrier(blitCmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+					vkCmdPipelineBarrier(pcommandbufferBlit->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 				}
 			}
 
@@ -307,13 +317,14 @@ namespace gpu_vulkan
 			imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 			imageMemoryBarrier.image = image;
 			imageMemoryBarrier.subresourceRange = subresourceRange;
-			vkCmdPipelineBarrier(blitCmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+			vkCmdPipelineBarrier(pcommandbufferBlit->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 
 			if (deleteBuffer) {
 				delete[] buffer;
 			}
 
-			pcontext->flushCommandBuffer(blitCmd, copyQueue, true);
+			pcontext->endSingleTimeCommands(pgpucommandbufferBlit);
+
 		}
 		else {
 // 			// Texture is stored in an external ktx file
@@ -366,7 +377,12 @@ namespace gpu_vulkan
 			VkFormatProperties formatProperties;
 			vkGetPhysicalDeviceFormatProperties(pphysicaldevice->m_vkphysicaldevice, format, &formatProperties);
 
-			VkCommandBuffer copyCmd = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+			//VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+
+         auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+
+		   ::cast < command_buffer > pcommandbufferCopy = pgpucommandbufferCopy;
+
 			VkBuffer stagingBuffer;
 			VkDeviceMemory stagingMemory;
 
@@ -434,10 +450,11 @@ namespace gpu_vulkan
 			subresourceRange.levelCount = mipLevels;
 			subresourceRange.layerCount = 1;
 
-			vulkan::setImageLayout(copyCmd, image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
-			vkCmdCopyBufferToImage(copyCmd, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32_t>(bufferCopyRegions.size()), bufferCopyRegions.data());
-			vulkan::setImageLayout(copyCmd, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange);
-			pcontext->flushCommandBuffer(copyCmd, copyQueue);
+			vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
+			vkCmdCopyBufferToImage(pcommandbufferCopy->m_vkcommandbuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32_t>(bufferCopyRegions.size()), bufferCopyRegions.data());
+			vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange);
+			//pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, copyQueue);
+		   pcontext->endSingleTimeCommands(pcommandbufferCopy);
 			this->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 			vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
@@ -479,13 +496,13 @@ namespace gpu_vulkan
 	}
 
 	/*
-		glTF material
+		gltf material
 	*/
-	void glTF::Material::createDescriptorSet(
+	void gltf::Material::createDescriptorSet(
 		VkDescriptorPool descriptorPool,
 		VkDescriptorSetLayout descriptorSetLayout,
 		uint32_t descriptorBindingFlags,
-		glTF::Texture* fallbackTexture
+		gltf::Texture* fallbackTexture
 	) {
 
 		::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
@@ -544,9 +561,9 @@ namespace gpu_vulkan
 
 
 	/*
-		glTF primitive
+		gltf primitive
 	*/
-	void  glTF::Primitive::setDimensions(glm::vec3 min, glm::vec3 max) {
+	void  gltf::Primitive::setDimensions(glm::vec3 min, glm::vec3 max) {
 		dimensions.min = min;
 		dimensions.max = max;
 		dimensions.size = max - min;
@@ -555,9 +572,9 @@ namespace gpu_vulkan
 	}
 
 	/*
-		glTF mesh
+		gltf mesh
 	*/
-	glTF::Mesh::Mesh(::gpu::context * pgpucontext, glm::mat4 matrix) {
+	gltf::Mesh::Mesh(::gpu::context * pgpucontext, glm::mat4 matrix) {
 		this->m_pgpucontext = pgpucontext;
 		::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 		::cast < ::gpu_vulkan::device > pgpudevice = pcontext->m_pgpudevice;
@@ -575,7 +592,7 @@ namespace gpu_vulkan
 		uniformBuffer.descriptor = { uniformBuffer.buffer, 0, sizeof(uniformBlock) };
 	};
 
-	glTF::Mesh::~Mesh() {
+	gltf::Mesh::~Mesh() {
 		::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 		::cast < ::gpu_vulkan::device > pgpudevice = pcontext->m_pgpudevice;
 		auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
@@ -589,13 +606,13 @@ namespace gpu_vulkan
 	}
 
 	/*
-		glTF node
+		gltf node
 	*/
-	glm::mat4 glTF::Node::localMatrix() {
+	glm::mat4 gltf::Node::localMatrix() {
 		return glm::translate(glm::mat4(1.0f), translation) * glm::mat4(rotation) * glm::scale(glm::mat4(1.0f), scale) * matrix;
 	}
 
-	glm::mat4 glTF::Node::getMatrix() {
+	glm::mat4 gltf::Node::getMatrix() {
 		glm::mat4 m = localMatrix();
 		Node* p = parent;
 		while (p) {
@@ -605,7 +622,7 @@ namespace gpu_vulkan
 		return m;
 	}
 
-	void glTF::Node::update() {
+	void gltf::Node::update() {
 		if (mesh) {
 			glm::mat4 m = getMatrix();
 			if (skin) {
@@ -631,7 +648,7 @@ namespace gpu_vulkan
 		}
 	}
 
-	glTF::Node::~Node() {
+	gltf::Node::~Node() {
 		if (mesh) {
 			delete mesh;
 		}
@@ -641,18 +658,18 @@ namespace gpu_vulkan
 	}
 
 	/*
-		glTF default vertex layout with easy Vulkan mapping functions
+		gltf default vertex layout with easy Vulkan mapping functions
 	*/
 
-	VkVertexInputBindingDescription   glTF::Vertex::vertexInputBindingDescription;
-	std::vector<VkVertexInputAttributeDescription>   glTF::Vertex::vertexInputAttributeDescriptions;
-	VkPipelineVertexInputStateCreateInfo   glTF::Vertex::pipelineVertexInputStateCreateInfo;
+	VkVertexInputBindingDescription   gltf::Vertex::vertexInputBindingDescription;
+	std::vector<VkVertexInputAttributeDescription>   gltf::Vertex::vertexInputAttributeDescriptions;
+	VkPipelineVertexInputStateCreateInfo   gltf::Vertex::pipelineVertexInputStateCreateInfo;
 
-	VkVertexInputBindingDescription   glTF::Vertex::inputBindingDescription(uint32_t binding) {
+	VkVertexInputBindingDescription   gltf::Vertex::inputBindingDescription(uint32_t binding) {
 		return VkVertexInputBindingDescription({ binding, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX });
 	}
 
-	VkVertexInputAttributeDescription   glTF::Vertex::inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component) {
+	VkVertexInputAttributeDescription   gltf::Vertex::inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component) {
 		switch (component) {
 		case VertexComponent::Position:
 			return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos) });
@@ -673,7 +690,7 @@ namespace gpu_vulkan
 		}
 	}
 
-	std::vector<VkVertexInputAttributeDescription>   glTF::Vertex::inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components) {
+	std::vector<VkVertexInputAttributeDescription>   gltf::Vertex::inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components) {
 		std::vector<VkVertexInputAttributeDescription> result;
 		uint32_t location = 0;
 		for (VertexComponent component : components) {
@@ -684,7 +701,7 @@ namespace gpu_vulkan
 	}
 
 	/** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
-	VkPipelineVertexInputStateCreateInfo* glTF::Vertex::getPipelineVertexInputState(const std::vector<VertexComponent> components) {
+	VkPipelineVertexInputStateCreateInfo* gltf::Vertex::getPipelineVertexInputState(const std::vector<VertexComponent> components) {
 		vertexInputBindingDescription = Vertex::inputBindingDescription(0);
 		Vertex::vertexInputAttributeDescriptions = Vertex::inputAttributeDescriptions(0, components);
 		pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -695,7 +712,7 @@ namespace gpu_vulkan
 		return &pipelineVertexInputStateCreateInfo;
 	}
 
-	glTF::Texture* glTF::Model::getTexture(uint32_t index)
+	gltf::Texture* gltf::Model::getTexture(uint32_t index)
 	{
 
 		if (index < m_textures.size()) {
@@ -704,7 +721,7 @@ namespace gpu_vulkan
 		return nullptr;
 	}
 
-	void glTF::Model::createEmptyTexture(VkQueue transferQueue)
+	void gltf::Model::createEmptyTexture(VkQueue transferQueue)
 	{
 
 		// Define the static member here (outside any class/function)
@@ -779,11 +796,17 @@ namespace gpu_vulkan
 		subresourceRange.levelCount = 1;
 		subresourceRange.layerCount = 1;
 
-		VkCommandBuffer copyCmd = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-		vulkan::setImageLayout(copyCmd, emptyTexture.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
-		vkCmdCopyBufferToImage(copyCmd, stagingBuffer, emptyTexture.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
-		vulkan::setImageLayout(copyCmd, emptyTexture.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange);
-		pcontext->flushCommandBuffer(copyCmd, transferQueue);
+		//VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+
+	   auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+
+	   ::cast < command_buffer > pcommandbufferCopy = pgpucommandbufferCopy;
+
+		vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, emptyTexture.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
+		vkCmdCopyBufferToImage(pcommandbufferCopy->m_vkcommandbuffer, stagingBuffer, emptyTexture.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
+		vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, emptyTexture.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange);
+		//pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, transferQueue);
+	   pcontext->endSingleTimeCommands(pcommandbufferCopy);
 		emptyTexture.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		// Clean up staging resources
@@ -815,9 +838,9 @@ namespace gpu_vulkan
 	}
 
 	/*
-		glTF model loading and rendering class
+		gltf model loading and rendering class
 	*/
-	glTF::Model::~Model()
+	gltf::Model::~Model()
 	{
 
 
@@ -850,7 +873,7 @@ namespace gpu_vulkan
 		emptyTexture.destroy();
 	}
 
-	void   glTF::Model::loadNode( Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale)
+	void   gltf::Model::loadNode( Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale)
 	{
 		Node* newNode = new Node{};
 		newNode->index = nodeIndex;
@@ -1058,7 +1081,7 @@ namespace gpu_vulkan
 		m_linearNodes.push_back(newNode);
 	}
 
-	void   glTF::Model::loadSkins(tinygltf::Model& gltfModel)
+	void   gltf::Model::loadSkins(tinygltf::Model& gltfModel)
 	{
 		for (tinygltf::Skin& source : gltfModel.skins) {
 			Skin* newSkin = new Skin{};
@@ -1090,7 +1113,7 @@ namespace gpu_vulkan
 		}
 	}
 
-	void glTF::Model::loadImages(tinygltf::Model& gltfModel, ::gpu::context * pgpucontext, VkQueue transferQueue)
+	void gltf::Model::loadImages(tinygltf::Model& gltfModel, ::gpu::context * pgpucontext, VkQueue transferQueue)
 	{
 		auto memory = file()->as_memory(m_path.c_str());
 		for (tinygltf::Image& image : gltfModel.images) {
@@ -1103,7 +1126,7 @@ namespace gpu_vulkan
 		createEmptyTexture(transferQueue);
 		emptyTexture.descriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	}
-	void glTF::Model::loadMaterials(tinygltf::Model& gltfModel)
+	void gltf::Model::loadMaterials(tinygltf::Model& gltfModel)
 	{
 		for (tinygltf::Material& mat : gltfModel.materials) {
 			Material material(m_pgpucontext);
@@ -1159,7 +1182,7 @@ namespace gpu_vulkan
 	}
 
 
-	void  glTF::Model::loadFromFile(std::string filename, ::gpu::context* pgpucontext, VkQueue transferQueue, uint32_t fileLoadingFlags, float scale)
+	void  gltf::Model::loadFromFile(std::string filename, ::gpu::context* pgpucontext, VkQueue transferQueue, uint32_t fileLoadingFlags, float scale)
 	{
 		tinygltf::Model gltfModel;
 		tinygltf::TinyGLTF gltfContext;
@@ -1223,7 +1246,7 @@ namespace gpu_vulkan
 
 			::string strMessage;
 
-			strMessage <<  "Could not load glTF file \"" << filename.c_str() << "\": " << error.c_str();
+			strMessage <<  "Could not load gltf file \"" << filename.c_str() << "\": " << error.c_str();
 
 			throw ::exception(error_failed, strMessage);
 
@@ -1323,17 +1346,21 @@ namespace gpu_vulkan
 
 
 		// Copy from staging buffers
-		VkCommandBuffer copyCmd = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+		auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+
+		::cast < ::gpu_vulkan::command_buffer > pcommandbufferCopy = pgpucommandbufferCopy;
 
 		VkBufferCopy copyRegion = {};
 
 		copyRegion.size = vertexBufferSize;
-		vkCmdCopyBuffer(copyCmd, vertexStaging.buffer, vertices.buffer, 1, &copyRegion);
+		vkCmdCopyBuffer(pcommandbufferCopy->m_vkcommandbuffer, vertexStaging.buffer, vertices.buffer, 1, &copyRegion);
 
 		copyRegion.size = indexBufferSize;
-		vkCmdCopyBuffer(copyCmd, indexStaging.buffer, indices.buffer, 1, &copyRegion);
+		vkCmdCopyBuffer(pcommandbufferCopy->m_vkcommandbuffer, indexStaging.buffer, indices.buffer, 1, &copyRegion);
 
-		pcontext->flushCommandBuffer(copyCmd, transferQueue, true);
+		//pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, transferQueue, true);
+
+		pcontext->endSingleTimeCommands(pcommandbufferCopy);
 
 		vkDestroyBuffer(pcontext->logicalDevice(), vertexStaging.buffer, nullptr);
 		vkFreeMemory(pcontext->logicalDevice(), vertexStaging.memory, nullptr);
@@ -1461,7 +1488,7 @@ namespace gpu_vulkan
 
 
 
-	void  glTF::Model::drawNode(Node* node, VkCommandBuffer commandBuffer, uint32_t renderFlags, VkPipelineLayout pipelineLayout, uint32_t bindImageSet)
+	void  gltf::Model::drawNode(Node* node, VkCommandBuffer commandBuffer, uint32_t renderFlags, VkPipelineLayout pipelineLayout, uint32_t bindImageSet)
 	{
 		if (node->mesh) {
 			for (Primitive* primitive : node->mesh->primitives) {
@@ -1488,7 +1515,7 @@ namespace gpu_vulkan
 			drawNode(child, commandBuffer, renderFlags, pipelineLayout, bindImageSet);
 		}
 	}
-	void  glTF::Model::bind(::gpu::command_buffer *pgpucommandbuffer)
+	void  gltf::Model::bind(::gpu::command_buffer *pgpucommandbuffer)
 	{
 		::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
 		const VkDeviceSize offsets[1] = { 0 };
@@ -1496,7 +1523,7 @@ namespace gpu_vulkan
 		vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
 		m_bBuffersBound = true;
 	}
-	void  glTF::Model::gltfDraw(VkCommandBuffer commandBuffer, uint32_t renderFlags, VkPipelineLayout pipelineLayout, uint32_t bindImageSet)
+	void  gltf::Model::gltfDraw(VkCommandBuffer commandBuffer, uint32_t renderFlags, VkPipelineLayout pipelineLayout, uint32_t bindImageSet)
 	{
 		if (!m_bBuffersBound) {
 			const VkDeviceSize offsets[1] = { 0 };
@@ -1509,7 +1536,7 @@ namespace gpu_vulkan
 	}
 
 
-	void  glTF::Model::getNodeDimensions(Node* node, glm::vec3& min, glm::vec3& max)
+	void  gltf::Model::getNodeDimensions(Node* node, glm::vec3& min, glm::vec3& max)
 	{
 		if (node->mesh) {
 			for (Primitive* primitive : node->mesh->primitives) {
@@ -1528,7 +1555,7 @@ namespace gpu_vulkan
 		}
 	}
 
-	void  glTF::Model::getSceneDimensions()
+	void  gltf::Model::getSceneDimensions()
 	{
 		dimensions.min = glm::vec3(FLT_MAX);
 		dimensions.max = glm::vec3(-FLT_MAX);
@@ -1540,7 +1567,7 @@ namespace gpu_vulkan
 		dimensions.radius = glm::distance(dimensions.min, dimensions.max) / 2.0f;
 	}
 
-	void glTF::Model::loadAnimations(tinygltf::Model& gltfModel)
+	void gltf::Model::loadAnimations(tinygltf::Model& gltfModel)
 	{
 		for (tinygltf::Animation& anim : gltfModel.animations) {
 			Animation animation{};
@@ -1654,7 +1681,7 @@ namespace gpu_vulkan
 		}
 	}
 
-	void  glTF::Model::updateAnimation(uint32_t index, float time)
+	void  gltf::Model::updateAnimation(uint32_t index, float time)
 	{
 		if (index > static_cast<uint32_t>(m_animations.size()) - 1) {
 			information() << "No animation with index " << index;
@@ -1714,7 +1741,7 @@ namespace gpu_vulkan
 	/*
 		Helper functions
 	*/
-	glTF::Node* glTF::Model::findNode(Node* parent, uint32_t index) {
+	gltf::Node* gltf::Model::findNode(Node* parent, uint32_t index) {
 		Node* nodeFound = nullptr;
 		if (parent->index == index) {
 			return parent;
@@ -1728,7 +1755,7 @@ namespace gpu_vulkan
 		return nodeFound;
 	}
 
-	glTF::Node* glTF::Model::nodeFromIndex(uint32_t index) {
+	gltf::Node* gltf::Model::nodeFromIndex(uint32_t index) {
 		Node* nodeFound = nullptr;
 		for (auto& node : m_nodes) {
 			nodeFound = findNode(node, index);
@@ -1739,7 +1766,7 @@ namespace gpu_vulkan
 		return nodeFound;
 	}
 
-	void  glTF::Model::prepareNodeDescriptor( Node* node, VkDescriptorSetLayout descriptorSetLayout) {
+	void  gltf::Model::prepareNodeDescriptor( Node* node, VkDescriptorSetLayout descriptorSetLayout) {
 		if (node->mesh) {
 			VkDescriptorSetAllocateInfo descriptorSetAllocInfo{};
 			descriptorSetAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
