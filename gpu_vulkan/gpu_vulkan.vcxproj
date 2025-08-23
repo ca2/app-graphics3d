@@ -692,6 +692,11 @@
     <ClInclude Include="accumulation_render_pass.h" />
     <ClInclude Include="assimp.h" />
     <ClInclude Include="buffer.h" />
+    <ClInclude Include="context_cgl.h" />
+    <ClInclude Include="context_fbo.h" />
+    <ClInclude Include="gltf_model.h" />
+    <ClInclude Include="image_blend.frag.spv.h" />
+    <ClInclude Include="image_blend.vert.spv.h" />
     <ClInclude Include="memory_buffer.h" />
     <ClInclude Include="command_buffer.h" />
     <ClInclude Include="context_object.h" />
@@ -713,15 +718,22 @@
     <ClInclude Include="pipeline.h" />
     <ClInclude Include="pixmap.h" />
     <ClInclude Include="program.h" />
+    <ClInclude Include="queue.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_pass.h" />
     <ClInclude Include="render_target.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="shader.frag.spv.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="aaa_swap_chain.h" />
+    <ClInclude Include="shader.vert.spv.h" />
     <ClInclude Include="swap_chain.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="vkresult_exception.h" />
+    <ClInclude Include="vk_init.h" />
     <ClInclude Include="_.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="_gpu_directx.h" />
     <ClInclude Include="_gpu_vulkan.h" />
   </ItemGroup>
   <ItemGroup>
@@ -729,6 +741,7 @@
     <ClCompile Include="approach_win32.cpp" />
     <ClCompile Include="assimp.cpp" />
     <ClCompile Include="buffer.cpp" />
+    <ClCompile Include="gltf_model.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="command_buffer.cpp" />
     <ClCompile Include="context_object.cpp" />
@@ -766,11 +779,13 @@
     <ClCompile Include="physical_device.cpp" />
     <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="pixmap.cpp" />
+    <ClCompile Include="queue.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="render_pass.cpp" />
     <ClCompile Include="render_target.cpp" />
     <ClCompile Include="swap_chain.cpp" />
     <ClCompile Include="texture.cpp" />
+    <ClCompile Include="vkresult_exception.cpp" />
     <ClCompile Include="VulkanExample.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">true</ExcludedFromBuild>
@@ -798,6 +813,7 @@
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="_.cpp" />
     <ClCompile Include="_gpu_vulkan.cpp" />
+    <ClCompile Include="_tinygltf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="deployment.rc" />

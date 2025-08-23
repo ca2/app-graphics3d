@@ -50,19 +50,27 @@ namespace app_graphics3d_continuum
 
    ::graphics3d::camera * main_scene::get_default_camera()
    {
-      //glm::vec3 camera = glm::vec3(0.0f, 1.0f *m_pengine->m_fYScale, 3.0f);
-      glm::vec3 camera = glm::vec3(0.0f, 1.0f , 3.0f);
-      glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f); // Look at origin
-      //glm::vec3 direction = glm::normalize(target - cameraPos);
-      //camera camera{ glm::vec3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
-      auto pcamera = øcreate < ::graphics3d::camera>();
-      pcamera->m_pengine = m_pengine;
-      pcamera->initialize_camera(target, camera);
-      //pcamera->m_pimpact = m_pimpact;
-      return pcamera;
 
+      if (!m_pcameraDefault)
+      {
+
+         //glm::vec3 camera = glm::vec3(0.0f, 1.0f *m_pengine->m_fYScale, 3.0f);
+         glm::vec3 camera = glm::vec3(0.0f, 1.0f, 3.0f);
+         glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f); // Look at origin
+         //glm::vec3 direction = glm::normalize(target - cameraPos);
+         //camera camera{ glm::vec3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
+         auto pcamera = øcreate < ::graphics3d::camera>();
+         pcamera->m_pengine = m_pengine;
+         pcamera->initialize_camera(target, camera);
+         //pcamera->m_pimpact = m_pimpact;
+         m_pcameraDefault = pcamera;
+
+      }
+
+      return m_pcameraDefault;
 
    }
+
 
    //void main_scene::on_load_scene(::gpu::context* pgpucontext)
    //{
@@ -189,7 +197,7 @@ namespace app_graphics3d_continuum
             { 0.f, 1.f, 0.f });
          ppointlight->m_fLightIntensity = 1.0f;
          ppointlight->transform().m_vec3Translation = glm::vec3(rotateLight * glm::vec4(-1.f, 1.7f, 0.5f , 1.f));
-         m_pointlighta.add(ppointlight);
+         //m_pointlighta.add(ppointlight);
 
       }
 

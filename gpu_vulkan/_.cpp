@@ -5,5 +5,7 @@
 #ifdef WINDOWS
 
 #pragma comment(lib, "glad.lib")
+#pragma comment(lib, "tinyktx.lib")
+
 
 #endif

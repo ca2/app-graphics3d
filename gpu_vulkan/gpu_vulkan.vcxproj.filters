@@ -125,6 +125,42 @@
     <ClInclude Include="pixmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gltf_model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_gpu_directx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="context_cgl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="context_fbo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="image_blend.frag.spv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="image_blend.vert.spv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="queue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.frag.spv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.vert.spv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vk_init.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vkresult_exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -236,6 +272,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pixmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gltf_model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="queue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_tinygltf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vkresult_exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

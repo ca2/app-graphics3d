@@ -4,7 +4,7 @@
 
 
 #include "apex/platform/app_consumer.h"
-#include "bred/graphics3d/sky_box.h"
+#include "bred/graphics3d/skybox.h"
 #include "bred/graphics3d/scene.h"
 
 

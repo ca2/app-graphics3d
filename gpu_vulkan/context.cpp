@@ -836,6 +836,8 @@ namespace gpu_vulkan
             0,
             &pqueueGraphics->m_vkqueue);
 
+         m_pqueueGraphics = pqueueGraphics;
+
       }
 
       if (m_pgpudevice->m_queuefamilyindexes.presentFamily >= 0)
@@ -850,6 +852,25 @@ namespace gpu_vulkan
             m_pgpudevice->m_queuefamilyindexes.presentFamily,
             0,
             &pqueuePresent->m_vkqueue);
+
+         m_pqueuePresent = pqueuePresent;
+
+      }
+
+      if (m_pgpudevice->m_queuefamilyindexes.transferFamily >= 0)
+      {
+
+         auto pqueueTransfer = øcreate_new<::gpu_vulkan::queue>();
+
+         pqueueTransfer->initialize_gpu_queue(this);
+
+         vkGetDeviceQueue(
+            this->logicalDevice(),
+            m_pgpudevice->m_queuefamilyindexes.transferFamily,
+            0,
+            &pqueueTransfer->m_vkqueue);
+
+         m_pqueueTransfer = pqueueTransfer;
 
       }
 

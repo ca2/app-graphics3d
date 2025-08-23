@@ -82,7 +82,7 @@ namespace app_graphics3d_landen
       bool keyboard_focus_is_focusable() override;
       
       
-      ::pointer < ::graphics3d::scene > create_main_scene();
+      //::pointer < ::graphics3d::scene > create_main_scene();
 
 
 

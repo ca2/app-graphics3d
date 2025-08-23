@@ -30,7 +30,7 @@ namespace gpu_directx12
       command_buffer();
       ~command_buffer() override;
 
-      void initialize_command_buffer(::gpu::render_target* prendertarget, ::gpu::enum_command_buffer ecommandbuffer) override;
+      void initialize_command_buffer(::gpu::render_target* prendertarget,::gpu::queue * pqueue, ::gpu::enum_command_buffer ecommandbuffer) override;
       virtual void _initialize_command_buffer(ID3D12CommandQueue * pcommandqueue, D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer);
 
       void submit_command_buffer(::gpu::layer* pgpulayer) override;

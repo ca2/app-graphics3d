@@ -31,7 +31,7 @@ namespace gpu_vulkan
       ~command_buffer() override;
 
 
-      void initialize_command_buffer(::gpu::render_target * pgpurendertarget, ::gpu::enum_command_buffer ecommandbuffer) override;
+      void initialize_command_buffer(::gpu::render_target * pgpurendertarget, ::gpu::queue * pqueue, ::gpu::enum_command_buffer ecommandbuffer) override;
 
       void begin_command_buffer(bool bOneTime) override;
 

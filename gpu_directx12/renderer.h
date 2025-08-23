@@ -171,10 +171,10 @@ namespace gpu_directx12
       //virtual ::pointer <command_buffer >getLoadAssetsCommandBuffer();
 
       //virtual ::pointer <command_buffer >beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE ecommandlisttype);
-      virtual ::pointer <command_buffer >beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer);
+      //virtual ::pointer <command_buffer >beginSingleTimeCommands(::gpu::enum_command_buffer ecommandbuffer);
       
 
-      virtual void endSingleTimeCommands(command_buffer * pcommandbuffer);
+      //virtual void endSingleTimeCommands(command_buffer * pcommandbuffer);
 
       void WaitForGpu();
       //void on_start_layer(::gpu::layer* player);

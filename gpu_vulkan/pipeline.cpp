@@ -156,6 +156,8 @@ namespace gpu_vulkan
 
       pgpudevice->_defer_throw_vkresult(vkresultCreatePipelineLayout);
 
+      m_vkpipelinelayout = vkpipelinelayout;
+
       VkGraphicsPipelineCreateInfo graphicspipelinecreateinfo{};
       graphicspipelinecreateinfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
       graphicspipelinecreateinfo.stageCount = 2;

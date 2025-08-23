@@ -3,7 +3,8 @@
 //
 #pragma once
 
-class vkresult_exception :
+
+class CLASS_DECL_GPU_VULKAN vkresult_exception :
 virtual public ::exception
 {
 public:

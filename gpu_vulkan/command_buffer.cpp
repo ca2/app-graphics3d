@@ -41,10 +41,10 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::initialize_command_buffer(::gpu::render_target* pgpurendertarget, ::gpu::enum_command_buffer ecommandbuffer)
+   void command_buffer::initialize_command_buffer(::gpu::render_target* pgpurendertarget, ::gpu::queue * pqueue, ::gpu::enum_command_buffer ecommandbuffer)
    {
 
-      ::gpu::command_buffer::initialize_command_buffer(pgpurendertarget, ecommandbuffer);
+      ::gpu::command_buffer::initialize_command_buffer(pgpurendertarget, pqueue, ecommandbuffer);
 
       ::cast <context > pcontext = m_pgpurendertarget->m_pgpurenderer->m_pgpucontext;
 

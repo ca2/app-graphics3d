@@ -971,7 +971,12 @@ namespace gpu_vulkan
    void device::_defer_throw_vkresult(VkResult vkresult, const scoped_string & scopedstrMessage)
    {
 
-      throw vkresult_exception(vkresult, scopedstrMessage);
+      if (vkresult != VK_SUCCESS)
+      {
+
+         throw vkresult_exception(vkresult, scopedstrMessage);
+
+      }
 
    }
 

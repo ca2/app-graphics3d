@@ -557,7 +557,11 @@ namespace gpu_vulkan
 
          ødefer_construct(pcommandbuffer);
 
-         pcommandbuffer->initialize_command_buffer(m_pgpurendertarget,
+         //pcommandbuffer->m_pgpuqueue = m_pgpucontext->graphics_queue();
+
+         pcommandbuffer->initialize_command_buffer(
+            m_pgpurendertarget,
+            m_pgpucontext->graphics_queue(),
             ::gpu::e_command_buffer_graphics);
 
       }
