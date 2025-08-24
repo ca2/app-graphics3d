@@ -9,7 +9,7 @@ namespace app_graphics3d_continuum
 {
 
 
-#define MAX_LIGHTS 10
+//#define MAX_LIGHTS 10
 
 
    //struct PointLight
@@ -34,7 +34,7 @@ namespace app_graphics3d_continuum
 
 
 
-#define MAX_LIGHTS 10
+//#define MAX_LIGHTS 10
 
    //struct point_light {
    //   glm::vec4 position{};  // ignore w
@@ -43,6 +43,7 @@ namespace app_graphics3d_continuum
 
 
    struct global_ubo {
+      inline static const int MAX_LIGHTS{10};
       glm::mat4 projection{ 1.f };
       glm::mat4 view{ 1.f };
       glm::mat4 inverseView{ 1.f };
@@ -56,18 +57,7 @@ namespace app_graphics3d_continuum
 } // namespace app_graphics3d_continuum
 
 
+DECLARE_GPU_PROPERTIES(CLASS_DECL_APP_GRAPHICS3D_CONTINUUM, ::app_graphics3d_continuum::global_ubo)
 
 
 
-
-BEGIN_GPU_PROPERTIES(::app_graphics3d_continuum::global_ubo)
-GPU_PROPERTY("projection", ::gpu::e_type_mat4)
-GPU_PROPERTY("view", ::gpu::e_type_mat4)
-GPU_PROPERTY("invView", ::gpu::e_type_mat4)
-GPU_PROPERTY("ambientLightColor", ::gpu::e_type_seq4)
-GPU_PROPERTY("pointLights", ::gpu_properties<::gpu::point_light>(), MAX_LIGHTS)
-GPU_PROPERTY("numLights", ::gpu::e_type_int)
-GPU_PROPERTY("padding1", ::gpu::e_type_float)
-GPU_PROPERTY("padding2", ::gpu::e_type_float)
-GPU_PROPERTY("padding3", ::gpu::e_type_float)
-END_GPU_PROPERTIES()

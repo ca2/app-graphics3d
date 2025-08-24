@@ -1,12 +1,9 @@
 // From continuum (V0idsEmbrace@Twitch)
 // by camilo on 2025-05-07 02:18 <3ThomasBorregaardSorensen!!
 #include "framework.h"
+#include "application.h"
+#include "impact.h"
 #include "main_scene.h"
-//#include "graphics3d/simple_render_system.h"
-//#include "point_light_system.h"
-#include "app-graphics3d/continuum/application.h"
-#include "app-graphics3d/continuum/impact.h"
-#include "core/platform/application.h"
 #include "bred/graphics3d/camera.h"
 #include "bred/gpu/context.h"
 #include "bred/graphics3d/engine.h"
@@ -38,14 +35,9 @@ namespace app_graphics3d_continuum
 
       scene::on_initialize_particle();
 
-      //m_pusergraphics3d = m_pengine->m_pusergraphics3d;
-
       m_papp->m_pmainscene = this;
 
    }
-
-
-
 
 
    ::graphics3d::camera * main_scene::get_default_camera()
@@ -70,13 +62,6 @@ namespace app_graphics3d_continuum
       return m_pcameraDefault;
 
    }
-
-
-   //void main_scene::on_load_scene(::gpu::context* pgpucontext)
-   //{
-
-
-   //}
 
 
    void main_scene::on_load_scene(::gpu::context* pgpucontext)
@@ -118,6 +103,8 @@ namespace app_graphics3d_continuum
       //};
 
 //      m_Skybox = øallocate::graphics3d::sky_box();
+
+
 
       for (auto& strSkybox : m_papp->m_straSkybox)
       {
@@ -202,6 +189,14 @@ namespace app_graphics3d_continuum
       }
 
 
+      øconstruct_new(m_pskyboxrendersystem);
+
+      m_pskyboxrendersystem->initialize_render_system(m_pengine);
+
+      m_pskyboxrendersystem->prepare(pgpucontext);
+
+
+
       øconstruct_new(m_pobjectrendersystem);
 
       m_pobjectrendersystem->initialize_render_system(m_pengine);
@@ -220,8 +215,10 @@ namespace app_graphics3d_continuum
    }
 
 
-   void main_scene::on_update_global_ubo(::gpu::context* pgpucontext)
+   void main_scene::on_update(::gpu::context* pgpucontext)
    {
+
+      m_pskyboxrendersystem->set_skybox(get_skybox());
 
       auto& globalubo = this->global_ubo();
 
@@ -249,7 +246,7 @@ namespace app_graphics3d_continuum
    }
 
 
-   ::graphics3d::sky_box* main_scene::get_skybox()
+   ::graphics3d::skybox* main_scene::get_skybox()
    {
 
       ::string strSkybox = m_papp->m_strSkybox;
