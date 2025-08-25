@@ -218,6 +218,16 @@ namespace gpu_vulkan
          ::gpu::texture * environmentCube, ::graphics3d::renderable *prenderableSkyboxx) override;
 
       ::pointer<::gpu::texture> load_cube_map(const ::scoped_string &scopedstrName, const ::file::path &path, bool b32) override;
+      ::pointer<::gpu::texture> load_sandbox_texture(const ::scoped_string &scopedstrName,
+                                                              const ::file::path &path,
+                                                              const ::scoped_string &scopedstrImageFormat) override;
+
+      ::pointer<::gpu::texture> _loadTexture(
+         const ::scoped_string &name,
+         const ::file::path & path, 
+         VkFormat format,
+         VkImageUsageFlags usageFlags, 
+         VkImageLayout imageLayout);
 
 
        ::pointer<::gpu::texture> loadCubemap(

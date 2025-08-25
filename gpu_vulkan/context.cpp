@@ -4236,8 +4236,12 @@ namespace gpu_vulkan
        cfg.pushConstantRanges = {pushRange};
 
        // shader paths (match your project layout)
-       auto vert = file()->as_memory("matter://shaders/filtered_cube.vert");
-       auto frag = file()->as_memory("matter://shaders/prefiltered_env_map.frag");
+       ::memory vert;
+       ::memory frag;
+       pdevice->defer_shader_memory(vert, "matter://shaders/filtered_cube.vert");
+       pdevice->defer_shader_memory(frag, "matter://shaders/prefiltered_env_map.frag");
+       //auto vert = file()->as_memory("matter://shaders/filtered_cube.vert");
+       //auto frag = file()->as_memory("matter://shaders/prefiltered_env_map.frag");
 
        if (frag.is_empty())
        {
@@ -4388,6 +4392,10 @@ namespace gpu_vulkan
        auto tEnd = std::chrono::high_resolution_clock::now();
        auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
        information("Generating pre-filtered environment cube with {} mip levels took {} ms", numMips, tDiff);
+
+
+       return prefilteredCubeNew;
+
     }
 
 
@@ -5120,6 +5128,163 @@ namespace gpu_vulkan
 
    }
 
+
+            ::pointer<::gpu::texture> context::load_sandbox_texture(const ::scoped_string &scopedstrName,
+                                                           const ::file::path &path,
+                                                           const ::scoped_string &scopedstrImageFormat)
+   {
+
+
+      VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
+      if (scopedstrImageFormat == "VK_FORMAT_R8_UNORM")
+         format = VK_FORMAT_R8_UNORM;
+      else if (scopedstrImageFormat == "VK_FORMAT_R16G16B16A16_SFLOAT")
+         format = VK_FORMAT_R16G16B16A16_SFLOAT;
+      else if (scopedstrImageFormat == "VK_FORMAT_R32G32B32A32_SFLOAT")
+         format = VK_FORMAT_R32G32B32A32_SFLOAT;
+
+      // candidate prefixes to try (order matters — most likely first)
+      string_array_base candidates;
+
+      candidates.add("matter://textures");
+      candidates.add("matter://models");
+      candidates.add("matter://");
+
+      //{std::string(PROJECT_ROOT_DIR) + "/res/textures",
+      //std::string(PROJECT_ROOT_DIR) + "/res/models",
+      //std::string(PROJECT_ROOT_DIR) + "/res", std::string(PROJECT_ROOT_DIR)};
+
+      ::file::path pathFound;
+
+      for (auto &strFolder: candidates)
+      {
+
+         ::file::path pathFolder = strFolder;
+
+         ::file::path pathCandidate = pathFolder / path;
+
+         if (file()->exists(pathCandidate))
+         {
+            pathFound = pathCandidate;
+            break;
+         }
+      }
+
+      //auto resolved = find_existing_path(relPath, candidates);
+      if (pathFound.is_empty())
+      {
+         error("[AssetManager] texture '{}' not found, tried candidates. JSON path='{}'", scopedstrName, path);
+
+         for (const auto &c: candidates)
+         {
+            debug("[AssetManager] tried: {}", c / path);
+         }
+         continue;
+      }
+
+      information("[AssetManager] Loading texture '{}' from resolved path '{}'", scopedstrName, pathFound);
+
+      try
+      {
+         auto ptexture = _loadTexture(
+            name, 
+            fullPath, 
+            format, 
+            VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+                                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+         if (!tex)
+         {
+            error("[AssetManager] loadTexture returned nullptr for '{}'", name);
+            continue;
+         }
+         registerTextureIfNeeded(name, tex, m_textures, m_textureIndexMap, m_textureList);
+         information("[AssetManager] Loaded texture '{}' from '{}'", name, fullPath);
+      }
+      catch (const std::exception &e)
+      {
+         error("[AssetManager] Failed to load texture '{}': {}", name, e.what());
+      }
+   }
+
+            
+   ::pointer<::gpu::texture> context::_loadTexture(
+      const ::scoped_string &name, 
+      const ::file::path  &path,
+      VkFormat format, VkImageUsageFlags usageFlags,
+VkImageLayout imageLayout)
+   {
+      
+
+      ::information("[AssetManager] Loading texture '{}' from '{}'", name, path);
+
+      // Create the texture wrapper tied to this device
+      auto pgputexture  = øcreate<::gpu::texture>();
+      ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
+      ptexture->m_state.m_vkimagelayout = imageLayout;
+      ptexture->m_vkformat = format;
+
+      ::string strExtension = path.final_extension();
+
+      strExtension.make_lower();
+
+      try
+      {
+         bool ok = false;
+
+         if (strExtension == "ktx" || strExtension == "ktx2")
+         {
+            ok = tex->KTXLoadFromFile(filename, format, &m_device, m_transferQueue, usageFlags, imageLayout,
+                                      /*forceLinear=*/false);
+
+            if (!ok)
+            {
+               spdlog::error("[AssetManager] KTXLoadFromFile failed for '{}'", filename);
+               return nullptr;
+            }
+         }
+         else
+         {
+
+            ok = tex->STBLoadFromFile(filename);
+            if (!ok)
+            {
+               spdlog::error("[AssetManager] STBLoadFromFile failed for '{}'", filename);
+               return nullptr;
+            }
+         }
+
+
+         VkSampler sampler = tex->GetSampler();
+         VkImageView view = tex->GetImageView();
+
+         if (sampler == VK_NULL_HANDLE || view == VK_NULL_HANDLE)
+         {
+            spdlog::warn("[AssetManager] Texture '{}' loaded but sampler/view are null (sampler: {}, view: {})", name,
+                         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(sampler)),
+                         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(view)));
+         }
+
+         tex->m_descriptor.sampler = sampler;
+         tex->m_descriptor.imageView = view;
+         tex->m_descriptor.imageLayout = imageLayout;
+
+
+         spdlog::info("[AssetManager] Texture '{}' loaded OK (view: {}, sampler: {})", name,
+                      (view != VK_NULL_HANDLE ? "valid" : "null"), (sampler != VK_NULL_HANDLE ? "valid" : "null"));
+
+         return tex;
+      }
+      catch (const std::exception &e)
+      {
+         spdlog::error("[AssetManager] Exception while loading texture '{}': {}", filename, e.what());
+         return nullptr;
+      }
+      catch (...)
+      {
+         spdlog::error("[AssetManager] Unknown error while loading texture '{}'", filename);
+         return nullptr;
+      }
+   }
 
 
 } // namespace gpu_vulkan
