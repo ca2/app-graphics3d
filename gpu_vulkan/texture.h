@@ -194,6 +194,9 @@ namespace gpu_vulkan
 
       void destroy();
 
+      virtual void create_image_view();
+      virtual void create_sampler();
+
       VkImageView get_image();
 
       VkImageView get_image_view();
@@ -219,6 +222,14 @@ namespace gpu_vulkan
       void set_pixels(const ::int_rectangle& rectangle, const void* data) override;
 
 
+      virtual VkDeviceMemory AllocateMemory(VkMemoryRequirements memRequirements, VkMemoryPropertyFlags properties);
+
+      virtual bool CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling,
+                               VkImageUsageFlags usage,
+                       VkMemoryPropertyFlags properties, uint32_t arrayLayers, VkImageCreateFlags flags);
+
+      virtual bool imaging_load_from_file(const ::file::path &path);
+
       virtual bool KTXLoadFromFile(const ::file::path &path, VkFormat format, VkQueue copyQueue,
                                     VkImageUsageFlags imageUsageFlags, VkImageLayout imageLayout, bool forceLinear);
 
@@ -233,6 +244,8 @@ namespace gpu_vulkan
 
 
       void UpdateDescriptor();
+
+      bool is_in_shader_sampling_state() override;
 
    };
 

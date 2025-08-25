@@ -24,7 +24,7 @@ namespace draw2d_vulkan
       float                                              m_z;
       ::int_size                                         m_sizeWindow;
       ::pointer<::gpu::context>                          m_pgpucontextOutput;
-      ::pointer<::gpu_vulkan::set_descriptor_layout>     m_psetdescriptorlayoutRectangle;
+      ::pointer<::gpu_vulkan::descriptor_set_layout>     m_psetdescriptorlayoutRectangle;
       ::pointer <::gpu_vulkan::descriptor_pool>          m_pdescriptorpoolRectangle;
       ::pointer <::gpu_vulkan::model_buffer >            m_pmodelbufferLine;
 

@@ -393,6 +393,22 @@ namespace gpu_vulkan
 	VkMemoryPropertyFlags  gltf::memoryPropertyFlags = 0;
 	uint32_t gltf::descriptorBindingFlags =  gltf::DescriptorBindingFlags::ImageBaseColor |  gltf::DescriptorBindingFlags::ImageNormalMap;
 
+   namespace gltf
+   {
+    
+      CLASS_DECL_GPU_VULKAN VkDescriptorSetLayout ubo_descriptor_set_layout()
+      {
+         
+         return descriptorSetLayoutUbo;
+      
+      }
+
+            CLASS_DECL_GPU_VULKAN VkDescriptorSetLayout image_descriptor_set_layout()
+            {
+               return descriptorSetLayoutImage; 
+            }
+
+   } // 
 	////class VkSandboxDevice;
 	//
 
@@ -860,7 +876,7 @@ void gltf::Texture::fromglTfImage(tinygltf::Image &gltfimage, ::std::string path
       samplerInfo.anisotropyEnable = VK_FALSE;
       samplerInfo.maxLod = (float)mipLevels;
       samplerInfo.maxAnisotropy = 8.0f;
-      samplerInfo.anisotropyEnable = VK_TRUE;
+      //samplerInfo.anisotropyEnable = VK_TRUE;
       VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerInfo, nullptr, &sampler));
 
       VkImageViewCreateInfo viewInfo{};

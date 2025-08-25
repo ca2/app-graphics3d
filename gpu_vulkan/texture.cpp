@@ -13,8 +13,9 @@
 #include "renderer.h"
 #include "shader.h"
 #include "acme/filesystem/filesystem/file_context.h"
-#include "acme/graphics/image/pixmap.h"
+#include "aura/graphics/image/context.h"
 #include "aura/graphics/image/image.h"
+#include "acme/graphics/image/pixmap.h"
 #include "vk_init.h"
 #include <ktx.h>
 #include <ktxvulkan.h>
@@ -346,12 +347,15 @@ namespace gpu_vulkan
 
       pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging);
 
-      _set_state(pcommandbuffer, {
+      _set_state(pcommandbuffer, 
+         {
 
-                                    VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                                    VK_PIPELINE_STAGE_TRANSFER_BIT
+            VK_ACCESS_TRANSFER_READ_BIT, 
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT
 
-                                 });
+         }
+      );
 
       pcontext->endSingleTimeCommands(pcommandbuffer);
    }
@@ -595,6 +599,7 @@ namespace gpu_vulkan
          //   VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT);
 
          return m_vkimage;
+
       }
       else
       {
@@ -648,7 +653,14 @@ namespace gpu_vulkan
 
          return m_vkimageview;
       }
+      create_image_view();
+      return m_vkimageview;
+   }
 
+   void texture::create_image_view()
+   {
+
+      
       ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
       VkImageViewType viewType;
       if (m_etype == e_type_cube_map)
@@ -685,7 +697,8 @@ namespace gpu_vulkan
 
       VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewInfo, NULL, &m_vkimageview));
 
-      return m_vkimageview;
+
+
    }
 
 
@@ -702,9 +715,41 @@ namespace gpu_vulkan
 
       pbufferStaging->_assign(data, size);
 
-      ::cast<command_buffer> pcommandbuffer = pcontext->defer_get_upload_command_buffer();
+      m_pgpurenderer->post_on_after_end_frame(
+         [this, pcontext, pbufferStaging, rectangle]()
+         {
 
-      pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging, rectangle);
+            auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+
+            pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging, rectangle);
+
+            pcontext->endSingleTimeCommands(pcommandbuffer);
+
+         });
+
+      m_pgpurenderer->post_on_just_before_frame_next_start(
+         [this, pcontext]()
+         {
+
+            auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+
+            ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer; 
+
+            _set_state(pcommandbuffer, 
+               {
+
+                  VK_ACCESS_TRANSFER_READ_BIT,
+                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                  VK_PIPELINE_STAGE_TRANSFER_BIT
+
+               });
+
+
+            pcontext->endSingleTimeCommands(pcommandbuffer);
+
+         });
+
+
    }
 
 
@@ -931,6 +976,247 @@ namespace gpu_vulkan
       return result;
    }
 
+
+   //   bool VkSandboxTexture::STBLoadFromFile(const std::string &filename)
+   //{
+   //   int texWidth, texHeight, texChannels;
+   //   stbi_uc *pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+   //   if (!pixels)
+   //   {
+   //      throw std::runtime_error("Failed to load texture image: " + filename);
+   //   }
+   //   VkDeviceSize imageSize = static_cast<VkDeviceSize>(texWidth) * texHeight * 4;
+
+   //   // Stage data
+   //   VkBuffer stagingBuffer;
+   //   VkDeviceMemory stagingMemory;
+   //   m_pDevice->createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+   //                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer,
+   //                           stagingMemory);
+
+   //   void *data;
+   //   vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, imageSize, 0, &data);
+   //   memcpy(data, pixels, static_cast<size_t>(imageSize));
+   //   vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
+   //   stbi_image_free(pixels);
+
+   //   // Create and upload to 2D image
+   //   CreateImage(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), VK_FORMAT_R8G8B8A8_SRGB,
+   //               VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+   //               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+   //               1, // arrayLayers
+   //               0 // flags
+   //   );
+
+   //   TransitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+   //                         1 // layerCount
+   //   );
+   //   CopyBufferToImage(stagingBuffer, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight),
+   //                     1 // layerCount
+   //   );
+   //   TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+   //                         1 // layerCount
+   //   );
+
+   //   vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
+   //   vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
+
+   //   // Create view and sampler for 2D
+   //   CreateImageView(VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_VIEW_TYPE_2D,
+   //                   1 // layerCount
+   //   );
+   //   CreateSampler();
+   //   UpdateDescriptor();
+
+   //   return true;
+   //}
+
+   VkDeviceMemory texture::AllocateMemory(VkMemoryRequirements memRequirements, VkMemoryPropertyFlags properties)
+   {
+            
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
+            auto pphysicaldevice = pdevice->m_pphysicaldevice;
+      VkMemoryAllocateInfo allocInfo{};
+      allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+      allocInfo.allocationSize = memRequirements.size;
+      allocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
+
+      VkDeviceMemory memory;
+      auto vkresultAllocateMemory = vkAllocateMemory(pcontext->logicalDevice(), &allocInfo, nullptr, &memory);
+
+      pdevice->_defer_throw_vkresult(vkresultAllocateMemory, "Failed to allocate image memory!");
+
+      return memory;
+   }
+
+
+      bool texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling,
+                                      VkImageUsageFlags usage, VkMemoryPropertyFlags properties, uint32_t arrayLayers,
+                                      VkImageCreateFlags flags)
+   {
+
+            ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
+
+
+      VkImageCreateInfo info{};
+      info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+      info.flags = flags;
+      info.imageType = VK_IMAGE_TYPE_2D;
+      info.extent = {width, height, 1};
+      info.mipLevels = 1;
+      info.arrayLayers = arrayLayers;
+      info.format = format;
+      info.tiling = tiling;
+      info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      info.usage = usage;
+      info.samples = VK_SAMPLE_COUNT_1_BIT;
+      info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+      auto vkresultCreateImage = vkCreateImage(pcontext->logicalDevice(), &info, nullptr, &m_vkimage);
+
+      pdevice->_defer_throw_vkresult(vkresultCreateImage, "Failed to create image!");
+      //{
+      //   throw ::exception(error_failed,
+      //}
+      VkMemoryRequirements memReq;
+      vkGetImageMemoryRequirements(pcontext->logicalDevice(), m_vkimage, &memReq);
+      m_vkdevicememory = AllocateMemory(memReq, properties);
+      vkBindImageMemory(pcontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0);
+
+      return true;
+
+   }
+
+      
+void texture::create_sampler()
+   {
+
+         ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
+
+      VkSamplerCreateInfo samplerInfo{};
+      samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+      samplerInfo.magFilter = VK_FILTER_LINEAR;
+      samplerInfo.minFilter = VK_FILTER_LINEAR;
+      samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerInfo.anisotropyEnable = VK_TRUE;
+      samplerInfo.maxAnisotropy = 16.0f;
+      samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+      samplerInfo.unnormalizedCoordinates = VK_FALSE;
+      samplerInfo.compareEnable = VK_FALSE;
+      samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+
+      auto vkresultCreateSampler = vkCreateSampler(pcontext->logicalDevice(), &samplerInfo, nullptr, &m_vksamplerDedicated);
+
+      pdevice->_defer_throw_vkresult(vkresultCreateSampler, "Failed to create texture sampler!");
+
+}
+
+   bool texture::imaging_load_from_file(const ::file::path &path)
+   {
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
+
+
+      int texWidth, texHeight, texChannels;
+      ::pointer<::gpu_vulkan::buffer> pbuffer;
+      {
+      auto pimage = image()->path_image(path);
+      if (!pimage)
+      {
+         throw ::exception(error_failed, "Failed to load texture image: " + path);
+      }
+
+      texWidth = pimage->width();
+      texHeight = pimage->height();
+
+      VkDeviceSize imageSize = static_cast<VkDeviceSize>(texWidth) * texHeight * 4;
+
+      pbuffer = pcontext->create_buffer(
+         imageSize,
+
+         VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                                             
+
+      //// Stage data
+      //VkBuffer stagingBuffer;
+      //VkDeviceMemory stagingMemory;
+      //pdevice->createBuffer(imageSize, ,
+      //                      ,
+      //                      stagingMemory);
+
+      void *data = pbuffer->map();
+      
+      //vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, imageSize, 0, &data);
+      
+      auto pimage32 = (image32_t *)data;
+      pimage32->copy(pimage->size(), pimage->width() * 4, pimage);
+
+      pbuffer->unmap();
+      //vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
+   }
+      //stbi_image_free(pixels);
+
+      // Create and upload to 2D image
+      CreateImage(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), VK_FORMAT_R8G8B8A8_SRGB,
+                  VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                  1, // arrayLayers
+                  0 // flags
+      );
+
+      pcontext->transitionImageLayout(m_vkimage, m_vkformat, VK_IMAGE_LAYOUT_UNDEFINED,
+                                       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_mipLevels,
+                                       1); // layerCount
+
+               auto pcommandbuffer = pcontext->beginSingleTimeCommands(nullptr);
+               ::int_rectangle r(::int_point(0, 0), ::int_size(texWidth, texHeight));
+               pcontext->copyBufferToImage(pcommandbuffer, this, pbuffer, r);
+                                      // 1 // layerCount
+      pcontext->endSingleTimeCommands(nullptr);
+      pcontext->transitionImageLayout(
+         m_vkimage, m_vkformat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_mipLevels,
+          1); // layerCount
+      //TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      //                      1 // layerCount
+      //);
+
+      //vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
+      //vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
+
+      // Create view and sampler for 2D
+      //;
+      //;
+      //CreateImageView(VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_VIEW_TYPE_2D,
+                      //1 // layerCount
+      //);
+
+      create_image_view();
+
+      //CreateSampler();
+      create_sampler();
+      UpdateDescriptor();
+
+      return true;
+   }
+
+
+   
+//void texture::TransitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount)
+//   {
+//      //VkCommandBuffer cmd = m_pDevice->beginSingleTimeCommands();
+//      m_pDevice->transitionImageLayout(m_image, m_format, oldLayout, newLayout, m_mipLevels, layerCount);
+//      //m_pDevice->endSingleTimeCommands(cmd);
+//   }
+//
+//   void texture::CopyBufferToImage(VkBuffer buffer, uint32_t width, uint32_t height, uint32_t layerCount)
+//   {
+//      m_pDevice->copyBufferToImage(buffer, m_image, width, height, layerCount);
+//   }
 
    //bool VkSandboxTexture::KTXLoadFromFile(const std::string &filename, VkFormat format, VkSandboxDevice *device,
    //                                       VkQueue copyQueue, VkImageUsageFlags imageUsageFlags,
@@ -1863,6 +2149,25 @@ namespace gpu_vulkan
       }
       m_descriptor3.imageView = m_vkimageview;
       m_descriptor3.imageLayout = m_state.m_vkimagelayout;
+   }
+
+
+   bool texture::is_in_shader_sampling_state()
+   {
+
+      if (m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+      {
+
+         return true;
+
+      }
+      else
+      {
+
+         return false;
+
+      }
+
    }
 
 

@@ -117,11 +117,11 @@ namespace gpu_directx12
       //renderer(VkWindow &window, context * pvkcdevice);
       //::int_size m_sizeRenderer;
 
-      ::pointer<::gpu_directx12::set_descriptor_layout>           m_psetdescriptorlayoutImageBlend;
+      ::pointer<::gpu_directx12::descriptor_set_layout>           m_psetdescriptorlayoutImageBlend;
       ::pointer <::gpu_directx12::descriptor_pool>                m_pdescriptorpoolImageBlend;
 
 
-      ::pointer<::gpu_directx12::set_descriptor_layout>           m_psetdescriptorlayoutResolve;
+      ::pointer<::gpu_directx12::descriptor_set_layout>           m_psetdescriptorlayoutResolve;
       ::pointer <::gpu_directx12::descriptor_pool>                m_pdescriptorpoolResolve;
       ::pointer < descriptor >                                    m_pdescriptorResolve;
 

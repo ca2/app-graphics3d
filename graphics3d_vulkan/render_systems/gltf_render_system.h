@@ -37,7 +37,15 @@ namespace graphics3d_vulkan
 
       //VkSandboxDevice &m_device;
 
-      ::pointer<::gpu_vulkan::set_descriptor_layout> m_globalSetLayout;
+      ::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutIbl;
+      ::array_base<VkDescriptorSet> m_vkdescriptorsetaIbl;
+
+      ::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutPbr;
+      ::array_base<VkDescriptorSet> m_vkdescriptorsetaPbr;
+
+      //::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutUbo;
+      
+      
       ::pointer<::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
       //VkDescriptorSetLayout m_iblSetLayout;
       //VkDescriptorSet m_iblDescriptorSet;
@@ -49,11 +57,6 @@ namespace graphics3d_vulkan
 
       //IAssetProvider &m_assets;
 
-      ::pointer<::gpu_vulkan::set_descriptor_layout> m_iblLayout;
-      ::array_base<VkDescriptorSet> m_iblDescriptorSets;
-
-      ::pointer<::gpu_vulkan::set_descriptor_layout> m_pbrLayout;
-      ::array_base<VkDescriptorSet> m_pbrDescriptorSets;
 
 
 
@@ -62,26 +65,26 @@ namespace graphics3d_vulkan
 
 
       //virtual void init(VkRenderPass renderPass, 
-      //   ::gpu_vulkan::set_descriptor_layout * psetdescriptorlayoutGlobal,
-      //          ::pointer < ::gpu_vulkan::set_descriptor_layout > &descriptorPool,
+      //   ::gpu_vulkan::descriptor_set_layout * psetdescriptorlayoutGlobal,
+      //          ::pointer < ::gpu_vulkan::descriptor_set_layout > &descriptorPool,
       //   size_t frameCount);
-      //virtual void init(::gpu_vulkan::set_descriptor_layout *psetdescriptorlayoutGlobal,
-        //                ::pointer<::gpu_vulkan::set_descriptor_layout> &descriptorPool, size_t frameCount);
+      //virtual void init(::gpu_vulkan::descriptor_set_layout *psetdescriptorlayoutGlobal,
+        //                ::pointer<::gpu_vulkan::descriptor_set_layout> &descriptorPool, size_t frameCount);
 
       void on_prepare(::gpu::context *pgpucontext) override;
 
       //void initialize_GltfRenderSystem(VkRenderPass renderPass,
-      //   ::gpu_vulkan::set_descriptor_layout *psetdescriptorlayoutGlobal, 
+      //   ::gpu_vulkan::descriptor_set_layout *psetdescriptorlayoutGlobal, 
       //   ::graphics3d::asset_manager * passetmanager);
       //void initialize_GltfRenderSystem(
 
-      //                                 ::gpu_vulkan::set_descriptor_layout *psetdescriptorlayoutGlobal,
+      //                                 ::gpu_vulkan::descriptor_set_layout *psetdescriptorlayoutGlobal,
       //                                 ::graphics3d::asset_manager *passetmanager);
 
       ///void initialize_GltfRenderSystem(
 
          //;
-      ///;::gpu_vulkan::set_descriptor_layout *psetdescriptorlayoutGlobal);
+      ///;::gpu_vulkan::descriptor_set_layout *psetdescriptorlayoutGlobal);
 
       void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
       void createPipeline(VkRenderPass renderPass);

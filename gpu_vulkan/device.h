@@ -129,7 +129,7 @@ namespace gpu_vulkan
 
       //VkSampler _001VkSampler();
 
-      //set_descriptor_layout* get_set_descriptor_layout();
+      //descriptor_set_layout* get_set_descriptor_layout();
       //virtual VkDescriptorSet getCurrentDescriptorSet(::gpu_vulkan::renderer* prenderer);
 
       //::gpu_vulkan::descriptor_pool* get_global_pool(int iFrameCount);
@@ -175,7 +175,7 @@ namespace gpu_vulkan
       }
 
       virtual VkResult createLogicalDevice(
-         VkPhysicalDeviceFeatures enabledFeatures,
+         VkPhysicalDeviceFeatures enabledFeatures, 
          ::array<const char*> enabledExtensions,
          void* pNextChain,
          bool useSwapChain = true,
@@ -262,7 +262,7 @@ namespace gpu_vulkan
       //bool checkDeviceExtensionSupport(VkPhysicalDevice pvkcdevice);
 
 
-      //      //set_descriptor_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
+      //      //descriptor_set_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
       //virtual VkDescriptorSet getGlobalDescriptorSet(::gpu::context* pgpucontext, ::gpu_vulkan::renderer* prenderer);
 
       //::gpu_vulkan::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);
@@ -274,6 +274,7 @@ namespace gpu_vulkan
       ::file::path shader_path(const ::file::path& pathShader) override;
 
       ::gpu::payload load_dds(const ::scoped_string& scopedstrImagePath) override;
+
 
 
    };

@@ -209,7 +209,7 @@ namespace gpu_directx12
                //if (m_pLocalDescriptorSet)
                //{
 
-               //   ::cast < ::gpu_directx12::set_descriptor_layout > pset = m_pLocalDescriptorSet;
+               //   ::cast < ::gpu_directx12::descriptor_set_layout > pset = m_pLocalDescriptorSet;
 
                //   auto setLayout = pset->getDescriptorSetLayout();
 
@@ -423,7 +423,7 @@ namespace gpu_directx12
       //      //if (m_pLocalDescriptorSet)
       //      //{
 
-      //      //   ::cast < ::gpu_directx12::set_descriptor_layout > pset = m_pLocalDescriptorSet;
+      //      //   ::cast < ::gpu_directx12::descriptor_set_layout > pset = m_pLocalDescriptorSet;
 
       //      //   auto setLayout = pset->getDescriptorSetLayout();
 

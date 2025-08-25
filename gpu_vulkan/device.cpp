@@ -847,6 +847,34 @@ namespace gpu_vulkan
       m_physicaldevicefeaturesCreate.logicOp = TRUE;
       m_physicaldevicefeaturesCreate.independentBlend = TRUE;
       bool bUseSwapChain = true;
+
+          // Descriptor Indexing Features
+      VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures{};
+      indexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+      indexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
+      indexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
+      indexingFeatures.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+      indexingFeatures.runtimeDescriptorArray = VK_TRUE;
+      indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+      scalarBlockLayoutSupport.pNext = &indexingFeatures;
+
+          // Vulkan 1.3 Features
+      VkPhysicalDeviceVulkan13Features vulkan13Features{};
+      vulkan13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+      vulkan13Features.dynamicRendering = VK_TRUE;
+      vulkan13Features.synchronization2 = VK_TRUE;
+      //vulkan13Features.maintenance4 = VK_TRUE;
+      vulkan13Features.robustImageAccess = VK_TRUE;
+
+      indexingFeatures.pNext = &vulkan13Features;
+
+    //VkPhysicalDeviceFeatures2 features2{};
+//      features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+    m_physicaldevicefeaturesCreate.samplerAnisotropy = VK_TRUE;
+  //    vulkan13Features.pNext = &indexingFeatures;
+
+
+      //pgpuapproach->m_pDeviceCreatepNextChain = &features2;
       VkResult result = createLogicalDevice(
          m_physicaldevicefeaturesCreate,
          pgpuapproach->m_pszaEnabledDeviceExtensions,

@@ -14,7 +14,7 @@
 //{
 //
 //
-//    class CLASS_DECL_GRAPHICS3D_OPENGL set_descriptor_layout:
+//    class CLASS_DECL_GRAPHICS3D_OPENGL descriptor_set_layout:
 //      virtual public ::particle
 //    {
 //    public:
@@ -28,18 +28,18 @@
 //                VkDescriptorType descriptorType,
 //                VkShaderStageFlags stageFlags,
 //                uint32_t count = 1);
-//            ::pointer<set_descriptor_layout> build() const;
+//            ::pointer<descriptor_set_layout> build() const;
 //
 //        private:
 //            ::pointer < context > m_pgpucontext;
 //            ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
 //        };
 //
-//        set_descriptor_layout(
+//        descriptor_set_layout(
 //            context * pvkcdevice, ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
-//        ~set_descriptor_layout();
-//        set_descriptor_layout(const set_descriptor_layout&) = delete;
-//        set_descriptor_layout& operator=(const set_descriptor_layout&) = delete;
+//        ~descriptor_set_layout();
+//        descriptor_set_layout(const descriptor_set_layout&) = delete;
+//        descriptor_set_layout& operator=(const descriptor_set_layout&) = delete;
 //
 //        VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
 //
@@ -103,7 +103,7 @@
 //    class CLASS_DECL_GRAPHICS3D_OPENGL descriptor_writer
 //    {
 //    public:
-//        descriptor_writer(set_descriptor_layout& setLayout, descriptor_pool& pool);
+//        descriptor_writer(descriptor_set_layout& setLayout, descriptor_pool& pool);
 //
 //        descriptor_writer& writeBuffer(uint32_t binding, VkDescriptorBufferInfo* bufferInfo);
 //        descriptor_writer& writeImage(uint32_t binding, VkDescriptorImageInfo* imageInfo);
@@ -112,7 +112,7 @@
 //        void overwrite(VkDescriptorSet& set);
 //
 //    private:
-//        set_descriptor_layout& setLayout;
+//        descriptor_set_layout& setLayout;
 //        descriptor_pool& pool;
 //        ::array<VkWriteDescriptorSet> writes;
 //    };

@@ -9,7 +9,7 @@ namespace gpu_vulkan
 
    // *************** Descriptor Set Layout Builder *********************
 
-   set_descriptor_layout::Builder & set_descriptor_layout::Builder::addBinding(
+   descriptor_set_layout::Builder & descriptor_set_layout::Builder::addBinding(
        uint32_t binding,
        VkDescriptorType descriptorType,
        VkShaderStageFlags stageFlags,
@@ -24,18 +24,18 @@ namespace gpu_vulkan
       return *this;
    }
 
-   ::pointer<set_descriptor_layout> set_descriptor_layout::Builder::build() const
+   ::pointer<descriptor_set_layout> descriptor_set_layout::Builder::build() const
    {
       auto pvkcdevice = this->m_pgpucontext.m_p;
       __refdbg_this(pvkcdevice);
-      return øallocate set_descriptor_layout(m_pgpucontext, bindings);
+      return øallocate descriptor_set_layout(m_pgpucontext, bindings);
    }
 
    // *************** Descriptor Set Layout *********************
 
-   set_descriptor_layout::set_descriptor_layout(
+   descriptor_set_layout::descriptor_set_layout(
        context * pvkcdevice, ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings)
-      : m_pgpucontext{ pvkcdevice }, bindings{ bindings } {
+      : m_pgpucontext{ pvkcdevice }, m_bindings{ bindings } {
       ::array<VkDescriptorSetLayoutBinding> setLayoutBindings{};
       for (auto kv : bindings) {
          setLayoutBindings.add(kv.m_element2);
@@ -56,7 +56,7 @@ namespace gpu_vulkan
       }
    }
 
-   set_descriptor_layout::~set_descriptor_layout() {
+   descriptor_set_layout::~descriptor_set_layout() {
       if (m_vkdescriptorsetlayout != VK_NULL_HANDLE)
       {
          ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
@@ -102,26 +102,39 @@ namespace gpu_vulkan
       descriptorPoolInfo.maxSets = maxSets;
       descriptorPoolInfo.flags = poolFlags;
 
-      if (vkCreateDescriptorPool(m_pgpucontext->logicalDevice(), &descriptorPoolInfo, nullptr, &descriptorPool) !=
+      if (vkCreateDescriptorPool(m_pgpucontext->logicalDevice(), &descriptorPoolInfo, nullptr, &m_vkdescriptorpool) !=
           VK_SUCCESS) {
          throw ::exception(error_failed, "failed to create descriptor pool!");
       }
    }
 
    descriptor_pool::~descriptor_pool() {
-      if (descriptorPool != VK_NULL_HANDLE) {
-         vkDestroyDescriptorPool(m_pgpucontext->logicalDevice(), descriptorPool, nullptr);
-         descriptorPool = VK_NULL_HANDLE;
+      if (m_vkdescriptorpool != VK_NULL_HANDLE) {
+         vkDestroyDescriptorPool(m_pgpucontext->logicalDevice(), m_vkdescriptorpool, nullptr);
+         m_vkdescriptorpool = VK_NULL_HANDLE;
       }
    }
 
    bool descriptor_pool::allocateDescriptor(
-       const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet & descriptor) const {
+       const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet & descriptor, uint32_t variableDescriptorCount) const
+   {
       VkDescriptorSetAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-      allocInfo.descriptorPool = descriptorPool;
+      allocInfo.descriptorPool = m_vkdescriptorpool;
       allocInfo.pSetLayouts = &descriptorSetLayout;
       allocInfo.descriptorSetCount = 1;
+
+
+          // Optional variable descriptor count extension
+      VkDescriptorSetVariableDescriptorCountAllocateInfo countInfo{};
+      if (variableDescriptorCount > 0)
+      {
+         countInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO;
+         countInfo.descriptorSetCount = 1;
+         countInfo.pDescriptorCounts = &variableDescriptorCount;
+
+         allocInfo.pNext = &countInfo; // chain if used
+      }
 
       // Might want to create a "DescriptorPoolManager" class that handles this case, and builds
       // a new pool whenever an old pool fills up. But this is beyond our current scope
@@ -134,39 +147,39 @@ namespace gpu_vulkan
    void descriptor_pool::freeDescriptors(::array<VkDescriptorSet> & descriptors) const {
       vkFreeDescriptorSets(
           m_pgpucontext->logicalDevice(),
-          descriptorPool,
+          m_vkdescriptorpool,
           static_cast<uint32_t>(descriptors.size()),
           descriptors.data());
    }
 
    void descriptor_pool::resetPool() {
-      vkResetDescriptorPool(m_pgpucontext->logicalDevice(), descriptorPool, 0);
+      vkResetDescriptorPool(m_pgpucontext->logicalDevice(), m_vkdescriptorpool, 0);
    }
 
    // *************** Descriptor Writer *********************
 
-   descriptor_writer::descriptor_writer(set_descriptor_layout & setLayout, descriptor_pool & pool)
-      : setLayout{ setLayout }, pool{ pool } {
+   descriptor_writer::descriptor_writer(descriptor_set_layout & setLayout, descriptor_pool & pool)
+      : m_setLayout{ setLayout }, pool{ pool } {
    }
 
    descriptor_writer & descriptor_writer::writeBuffer(
        uint32_t binding, VkDescriptorBufferInfo * bufferInfo) {
-      assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding");
+      assert(m_setLayout.m_bindings.count(binding) == 1 && "Layout does not contain specified binding");
 
-      auto & bindingDescription = setLayout.bindings[binding];
+      auto & bindingDescription = m_setLayout.m_bindings[binding];
 
       assert(
           bindingDescription.descriptorCount == 1 &&
           "Binding single descriptor info, but binding expects multiple");
 
-      VkWriteDescriptorSet write{};
-      write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-      write.descriptorType = bindingDescription.descriptorType;
-      write.dstBinding = binding;
-      write.pBufferInfo = bufferInfo;
-      write.descriptorCount = 1;
+      VkWriteDescriptorSet vkwritedescriptorset{};
+      vkwritedescriptorset.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      vkwritedescriptorset.descriptorType = bindingDescription.descriptorType;
+      vkwritedescriptorset.dstBinding = binding;
+      vkwritedescriptorset.pBufferInfo = bufferInfo;
+      vkwritedescriptorset.descriptorCount = 1;
 
-      writes.add(write);
+      m_vkwritedescriptorseta.add(vkwritedescriptorset);
       return *this;
    }
 
@@ -175,27 +188,51 @@ namespace gpu_vulkan
        uint32_t binding, VkDescriptorImageInfo * imageInfo) 
    {
 
-      assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding");
+      assert(m_setLayout.m_bindings.count(binding) == 1 && "Layout does not contain specified binding");
 
-      auto & bindingDescription = setLayout.bindings[binding];
+      auto & bindingDescription = m_setLayout.m_bindings[binding];
 
       assert(
           bindingDescription.descriptorCount == 1 &&
           "Binding single descriptor info, but binding expects multiple");
 
-      VkWriteDescriptorSet write{};
-      write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-      write.descriptorType = bindingDescription.descriptorType;
-      write.dstBinding = binding;
-      write.pImageInfo = imageInfo;
-      write.descriptorCount = 1;
+      VkWriteDescriptorSet vkwritedescriptorset{};
+      vkwritedescriptorset.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      vkwritedescriptorset.descriptorType = bindingDescription.descriptorType;
+      vkwritedescriptorset.dstBinding = binding;
+      vkwritedescriptorset.pImageInfo = imageInfo;
+      vkwritedescriptorset.descriptorCount = 1;
 
-      writes.add(write);
+      m_vkwritedescriptorseta.add(vkwritedescriptorset);
+      return *this;
+   }
+
+
+   descriptor_writer &descriptor_writer::writeImage(uint32_t binding, const VkDescriptorImageInfo *imageInfos,
+                                                    uint32_t count)
+   {
+      assert(m_setLayout.m_bindings.count(binding) == 1 && "Layout does not contain specified binding");
+      assert(m_setLayout.m_bindings[binding].descriptorCount >= count && "Too many image descriptors for binding");
+
+
+      m_uVariableDescriptorCount = count;
+      VkWriteDescriptorSet vkwritedescriptorset{};
+      vkwritedescriptorset.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      vkwritedescriptorset.dstBinding = binding;
+      vkwritedescriptorset.dstArrayElement = 0;
+      vkwritedescriptorset.descriptorType = m_setLayout.m_bindings[binding].descriptorType;
+      vkwritedescriptorset.descriptorCount = count;
+      vkwritedescriptorset.pImageInfo = imageInfos;
+      vkwritedescriptorset.pBufferInfo = nullptr;
+      vkwritedescriptorset.pTexelBufferView = nullptr;
+
+      m_vkwritedescriptorseta.add(vkwritedescriptorset);
       return *this;
    }
 
    bool descriptor_writer::build(VkDescriptorSet & set) {
-      bool success = pool.allocateDescriptor(setLayout.getDescriptorSetLayout(), set);
+      bool success = pool.allocateDescriptor(m_setLayout.getDescriptorSetLayout(), 
+         set, m_uVariableDescriptorCount);
       if (!success) {
          return false;
       }
@@ -204,11 +241,12 @@ namespace gpu_vulkan
    }
 
    void descriptor_writer::overwrite(VkDescriptorSet & set) {
-      for (auto & write : writes) {
-         write.dstSet = set;
+      for (auto & vkwritedescriptorset : m_vkwritedescriptorseta) {
+         vkwritedescriptorset.dstSet = set;
       }
       vkUpdateDescriptorSets(pool.m_pgpucontext->logicalDevice(), 
-         (uint32_t) writes.size(), writes.data(), 0, nullptr);
+         (uint32_t)m_vkwritedescriptorseta.size(),
+                             m_vkwritedescriptorseta.data(), 0, nullptr);
    }
 
 

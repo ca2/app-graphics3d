@@ -30,7 +30,7 @@ namespace gpu_vulkan
    //   ///VkDescriptorPool descPool;
    //   ///VkDescriptorSet descSet;
    //   //::pointer<::gpu::shader>                        m_pshader;
-   //   ::pointer<::gpu_vulkan::set_descriptor_layout>  m_psetdescriptorlayout;
+   //   ::pointer<::gpu_vulkan::descriptor_set_layout>  m_psetdescriptorlayout;
    //   ::pointer <::gpu_vulkan::descriptor_pool>       m_pdescriptorpool;
 
    //   map < VkImage, ::pointer<shader_texture> >      m_shadertexturemap;
@@ -90,7 +90,7 @@ namespace gpu_vulkan
       ::comparable_array<VkDynamicState> m_dynamicstateaEnable;
 
       //VkDescriptorSet   m_vkdescriptorset;
-      ::pointer<::gpu_vulkan::set_descriptor_layout>  m_psetdescriptorlayout;
+      ::pointer<::gpu_vulkan::descriptor_set_layout>  m_psetdescriptorlayout;
       ::pointer <::gpu_vulkan::descriptor_pool>       m_pdescriptorpool;
 
 

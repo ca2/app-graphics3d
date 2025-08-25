@@ -9,7 +9,7 @@ namespace gpu_vulkan
 {
 
 
-   class CLASS_DECL_GPU_VULKAN set_descriptor_layout :
+   class CLASS_DECL_GPU_VULKAN descriptor_set_layout :
       virtual public ::particle
    {
    public:
@@ -23,22 +23,22 @@ namespace gpu_vulkan
              VkDescriptorType descriptorType,
              VkShaderStageFlags stageFlags,
              uint32_t count = 1);
-         ::pointer<set_descriptor_layout> build() const;
+         ::pointer<descriptor_set_layout> build() const;
 
       private:
          ::pointer < context > m_pgpucontext;
          ::map < unsigned int, VkDescriptorSetLayoutBinding> bindings{};
       };
 
-      set_descriptor_layout(
+      descriptor_set_layout(
           context * pvkcdevice, ::map<unsigned int, VkDescriptorSetLayoutBinding> bindings);
-      ~set_descriptor_layout();
+      ~descriptor_set_layout();
 
       VkDescriptorSetLayout getDescriptorSetLayout() const { return m_vkdescriptorsetlayout; }
 
       ::pointer < context > m_pgpucontext;
       VkDescriptorSetLayout m_vkdescriptorsetlayout;
-      ::map<unsigned int, VkDescriptorSetLayoutBinding> bindings;
+      ::map<unsigned int, VkDescriptorSetLayoutBinding> m_bindings;
 
    };
 
@@ -83,14 +83,16 @@ namespace gpu_vulkan
       descriptor_pool & operator=(const descriptor_pool &) = delete;
 
       bool allocateDescriptor(
-          const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet & descriptor) const;
+          const VkDescriptorSetLayout descriptorSetLayout, 
+         VkDescriptorSet & descriptor,
+                              uint32_t variableDescriptorCount) const;
 
       void freeDescriptors(::array<VkDescriptorSet> & descriptors) const;
 
       void resetPool();
 
       ::pointer < context > m_pgpucontext;
-      VkDescriptorPool descriptorPool;
+      VkDescriptorPool m_vkdescriptorpool;
 
    };
 
@@ -98,17 +100,19 @@ namespace gpu_vulkan
    class CLASS_DECL_GPU_VULKAN descriptor_writer
    {
    public:
-      descriptor_writer(set_descriptor_layout & setLayout, descriptor_pool & pool);
+      descriptor_writer(descriptor_set_layout & setLayout, descriptor_pool & pool);
 
       descriptor_writer & writeBuffer(uint32_t binding, VkDescriptorBufferInfo * bufferInfo);
       descriptor_writer & writeImage(uint32_t binding, VkDescriptorImageInfo * imageInfo);
+      descriptor_writer & writeImage(uint32_t binding, const VkDescriptorImageInfo *imageInfos, uint32_t count);
 
       bool build(VkDescriptorSet & set);
       void overwrite(VkDescriptorSet & set);
 
-      set_descriptor_layout & setLayout;
+      descriptor_set_layout & m_setLayout;
       descriptor_pool & pool;
-      ::array<VkWriteDescriptorSet> writes;
+      ::array_base<VkWriteDescriptorSet> m_vkwritedescriptorseta;
+      uint32_t m_uVariableDescriptorCount = 0;
    };
 
 

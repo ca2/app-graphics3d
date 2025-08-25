@@ -2042,7 +2042,7 @@ float4 main(PSInput input) : SV_TARGET {
       //	if (!m_psetdescriptorlayoutResolve)
       //	{
 
-      //		m_psetdescriptorlayoutResolve = ::gpu_directx12::set_descriptor_layout::Builder(m_pgpucontext)
+      //		m_psetdescriptorlayoutResolve = ::gpu_directx12::descriptor_set_layout::Builder(m_pgpucontext)
       //			.addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
       //			.addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
       //			.build();
@@ -2553,7 +2553,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   if (!m_psetdescriptorlayoutImageBlend)
    //   {
 
-   //      m_psetdescriptorlayoutImageBlend = ::gpu_directx12::set_descriptor_layout::Builder(m_pgpucontext)
+   //      m_psetdescriptorlayoutImageBlend = ::gpu_directx12::descriptor_set_layout::Builder(m_pgpucontext)
    //         .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //         .build();
 
@@ -2840,7 +2840,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   if (!m_psetdescriptorlayoutImageBlend)
    //   {
 
-   //      m_psetdescriptorlayoutImageBlend = ::gpu_directx12::set_descriptor_layout::Builder(m_pgpucontext)
+   //      m_psetdescriptorlayoutImageBlend = ::gpu_directx12::descriptor_set_layout::Builder(m_pgpucontext)
    //         .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //         .build();
 
@@ -3015,7 +3015,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   if (!m_psetdescriptorlayoutImageBlend)
    //   {
 
-   //      m_psetdescriptorlayoutImageBlend = ::gpu_directx12::set_descriptor_layout::Builder(m_pgpucontext)
+   //      m_psetdescriptorlayoutImageBlend = ::gpu_directx12::descriptor_set_layout::Builder(m_pgpucontext)
    //         .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //         .build();
 
@@ -3405,7 +3405,7 @@ float4 main(PSInput input) : SV_TARGET {
       //  if (!m_psetdescriptorlayoutImageBlend)
       //  {
 
-      //     m_psetdescriptorlayoutImageBlend = ::gpu_directx12::set_descriptor_layout::Builder(m_pgpucontext)
+      //     m_psetdescriptorlayoutImageBlend = ::gpu_directx12::descriptor_set_layout::Builder(m_pgpucontext)
       //        .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
       //        .build();
 

@@ -93,7 +93,7 @@ namespace graphics3d_opengl
          uboBuffers[i]->map();
 
       }
-      auto globalSetLayout = set_descriptor_layout::Builder(pgpucontext)
+      auto globalSetLayout = descriptor_set_layout::Builder(pgpucontext)
          .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
          .build();
 

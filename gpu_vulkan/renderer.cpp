@@ -106,6 +106,8 @@ namespace gpu_vulkan
    //}
 
 
+
+
    void renderer::on_resize(const ::int_size& size)
    {
 
@@ -1568,7 +1570,7 @@ namespace gpu_vulkan
       //	if (!m_psetdescriptorlayoutResolve)
       //	{
 
-      //		m_psetdescriptorlayoutResolve = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+      //		m_psetdescriptorlayoutResolve = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontext)
       //			.addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
       //			.addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
       //			.build();
@@ -1910,7 +1912,7 @@ namespace gpu_vulkan
          {
 
             pshader->m_psetdescriptorlayout
-               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+               = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontext)
                .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
                .build();
 
@@ -2370,7 +2372,7 @@ namespace gpu_vulkan
       //  if (!m_psetdescriptorlayoutBlend2)
       //  {
 
-      //     m_psetdescriptorlayoutBlend2 = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+      //     m_psetdescriptorlayoutBlend2 = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontext)
       //        .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
       //        .build();
 
@@ -2423,7 +2425,7 @@ namespace gpu_vulkan
             ::cast < shader > pshader = m_pshaderCopyImage;
 
             pshader->m_psetdescriptorlayout
-               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+               = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontext)
                .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
                .build();
 
@@ -2557,7 +2559,7 @@ namespace gpu_vulkan
       //if (!m_psetdescriptorlayoutImageBlend)
       //{
 
-      //   m_psetdescriptorlayoutImageBlend = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+      //   m_psetdescriptorlayoutImageBlend = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontext)
       //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
       //      .build();
 
@@ -2850,7 +2852,7 @@ namespace gpu_vulkan
       //if (!m_psetdescriptorlayoutImageBlend)
       //{
 
-      //   m_psetdescriptorlayoutImageBlend = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+      //   m_psetdescriptorlayoutImageBlend = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontext)
       //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
       //      .build();
 
@@ -4662,7 +4664,7 @@ namespace gpu_vulkan
       //  if (!m_psetdescriptorlayoutBlend2)
       //  {
 
-      //     m_psetdescriptorlayoutBlend2 = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+      //     m_psetdescriptorlayoutBlend2 = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontext)
       //        .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
       //        .build();
 
@@ -4715,7 +4717,7 @@ namespace gpu_vulkan
             ::cast < shader > pshader = m_pshaderBlend2;
 
             pshader->m_psetdescriptorlayout
-               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontext)
+               = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontext)
                .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
                .build();
 

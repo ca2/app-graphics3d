@@ -52,7 +52,8 @@ namespace gpu_vulkan
 		extern VkDescriptorSetLayout descriptorSetLayoutIbl;
 		extern VkMemoryPropertyFlags memoryPropertyFlags;
 		extern uint32_t descriptorBindingFlags;
-
+      CLASS_DECL_GPU_VULKAN VkDescriptorSetLayout ubo_descriptor_set_layout();
+      CLASS_DECL_GPU_VULKAN VkDescriptorSetLayout image_descriptor_set_layout();
 		struct Node;
 
 		/*
@@ -255,6 +256,7 @@ namespace gpu_vulkan
 		};
 
 		enum RenderFlags {
+         RenderNone = 0x00000000,
 			BindImages = 0x00000001,
 			RenderOpaqueNodes = 0x00000002,
 			RenderAlphaMaskedNodes = 0x00000004,

@@ -48,7 +48,7 @@ namespace gpu_vulkan
 
    class memory_buffer;
 
-   class set_descriptor_layout;
+   class descriptor_set_layout;
 
    class frame;
 

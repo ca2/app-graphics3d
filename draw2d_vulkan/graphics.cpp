@@ -1501,7 +1501,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   //   int iFrameCount = prenderer->get_frame_count();
 
-   //   //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontextCompositor)
+   //   //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontextCompositor)
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
@@ -1521,7 +1521,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   //   int iFrameCount = prenderer->get_frame_count();
 
-   //   //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontextCompositor)
+   //   //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontextCompositor)
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
@@ -1748,7 +1748,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   //   int iFrameCount = prenderer->get_frame_count();
 
-   //   //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontextCompositor)
+   //   //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontextCompositor)
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
@@ -1768,7 +1768,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   //   int iFrameCount = prenderer->get_frame_count();
 
-   //   //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpucontextCompositor)
+   //   //   m_psetdescriptorlayoutRectangle = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpucontextCompositor)
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 

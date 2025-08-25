@@ -2650,6 +2650,84 @@ namespace gpu_vulkan
    //}
 
 
+      void context::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout,
+                                      uint32_t mizLevels, uint32_t layerCount)
+   {
+
+
+      auto pgpucommandbuffer = beginSingleTimeCommands(nullptr);
+
+      VkImageMemoryBarrier barrier{};
+      barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+      barrier.oldLayout = oldLayout;
+      barrier.newLayout = newLayout;
+
+      barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+
+      barrier.image = image;
+
+      barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+      {
+         barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+         if (hasStencilComponent(format))
+         {
+            barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+         }
+      }
+
+      barrier.subresourceRange.baseMipLevel = 0;
+      barrier.subresourceRange.levelCount = mizLevels;
+      barrier.subresourceRange.baseArrayLayer = 0;
+      barrier.subresourceRange.layerCount = layerCount;
+
+      VkPipelineStageFlags sourceStage;
+      VkPipelineStageFlags destinationStage;
+
+      if ((oldLayout == VK_IMAGE_LAYOUT_UNDEFINED) && (newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL))
+      {
+         barrier.srcAccessMask = 0;
+         barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+         sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+         destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+      }
+      else if ((oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) &&
+               (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL))
+      {
+         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+         barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+         sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+         destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+      }
+      else if ((oldLayout == VK_IMAGE_LAYOUT_UNDEFINED) &&
+               (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL))
+      {
+         barrier.srcAccessMask = 0;
+         barrier.dstAccessMask =
+            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+         sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+         destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      }
+      else
+      {
+         throw ::exception(error_bad_argument,"unsupported layout transition!");
+      }
+      ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      vkCmdPipelineBarrier(pcommandbuffer->m_vkcommandbuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+      endSingleTimeCommands(pcommandbuffer);
+
+   }
+
+   bool context::hasStencilComponent(VkFormat format)
+   {
+      return (format == VK_FORMAT_D32_SFLOAT_S8_UINT) || (format == VK_FORMAT_D24_UNORM_S8_UINT);
+   }
+
+
+
    void context::createImageWithInfo(
       const VkImageCreateInfo &imageInfo,
       VkMemoryPropertyFlags properties,
@@ -2725,10 +2803,10 @@ namespace gpu_vulkan
    }
 
 
-   bool context::hasStencilComponent(VkFormat format)
-   {
-      return (format == VK_FORMAT_D32_SFLOAT_S8_UINT) || (format == VK_FORMAT_D24_UNORM_S8_UINT);
-   }
+   //bool context::hasStencilComponent(VkFormat format)
+   //{
+   //   return (format == VK_FORMAT_D32_SFLOAT_S8_UINT) || (format == VK_FORMAT_D24_UNORM_S8_UINT);
+   //}
 
 
    //void context::transitionImageLayout(
@@ -2887,7 +2965,7 @@ namespace gpu_vulkan
 
          auto pgpurenderer = get_gpu_renderer();
 
-         m_psetdescriptorlayoutGlobal = set_descriptor_layout::Builder(this)
+         m_psetdescriptorlayoutGlobal = descriptor_set_layout::Builder(this)
             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
             .build();
 
@@ -4669,8 +4747,10 @@ namespace gpu_vulkan
       //std::string frag = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/irradiance_cube.frag.spv";
       auto ppipelineIrradiance = øcreate<pipeline>();
 
-            auto vert = file()->as_memory("matter://shaders/spirV/filtered_cube.vert.spv");
-      auto frag = file()->as_memory("matter://shaders/spirV/irradiance_cube.frag.spv");
+      ::memory vert;
+      ::memory frag;
+      pgpudevice->defer_shader_memory(vert, "matter://shaders/filtered_cube.vert");
+      pgpudevice->defer_shader_memory(frag, "matter://shaders/irradiance_cube.frag");
 
 
       ppipelineIrradiance->initialize_graphics_pipeline(
@@ -4997,8 +5077,10 @@ namespace gpu_vulkan
 
       auto ppipelineBrdf = øcreate_new<pipeline>();
 
-      auto vert = file()->as_memory("matter://shaders/spirV/gen_brdflut.vert.spv");
-      auto frag = file()->as_memory("matter://shaders/spirV/gen_brdflut.frag.spv");
+      ::memory vert;
+      ::memory frag;
+      pgpudevice->defer_shader_memory(vert, "matter://shaders/gen_brdflut.vert");
+      pgpudevice->defer_shader_memory(frag, "matter://shaders/gen_brdflut.frag");
 
       ppipelineBrdf->initialize_graphics_pipeline(
          m_pgpurenderer,
@@ -5219,7 +5301,7 @@ VkImageLayout imageLayout)
    {
       
 
-      ::information("[AssetManager] Loading texture '{}' from '{}'", name, path);
+      information("[AssetManager] Loading texture '{}' from '{}'", name, path);
 
       // Create the texture wrapper tied to this device
       auto pgputexture  = øcreate<::gpu::texture>();
@@ -5260,8 +5342,8 @@ VkImageLayout imageLayout)
          }
 
 
-         VkSampler sampler = ptexture->GetSampler();
-         VkImageView view = ptexture->GetImageView();
+         VkSampler sampler = ptexture->m_vksamplerDedicated;
+         VkImageView view = ptexture->m_vkimageview;
 
          if (sampler == VK_NULL_HANDLE || view == VK_NULL_HANDLE)
          {
@@ -5277,16 +5359,16 @@ VkImageLayout imageLayout)
         information("[AssetManager] Texture '{}' loaded OK (view: {}, sampler: {})", name,
                       (view != VK_NULL_HANDLE ? "valid" : "null"), (sampler != VK_NULL_HANDLE ? "valid" : "null"));
 
-         return ptexture;
+         return ptexture.m_p;
       }
-      catch (const std::exception &e)
+      catch (const ::exception &e)
       {
-         spdlog::error("[AssetManager] Exception while loading texture '{}': {}", filename, e.what());
+         error("[AssetManager] Exception while loading texture '{}': {}", path, e.get_message());
          return nullptr;
       }
       catch (...)
       {
-         spdlog::error("[AssetManager] Unknown error while loading texture '{}'", filename);
+         error("[AssetManager] Unknown error while loading texture '{}'", path);
          return nullptr;
       }
    }

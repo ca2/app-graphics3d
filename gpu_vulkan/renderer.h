@@ -85,16 +85,20 @@ namespace gpu_vulkan
       //bool m_bOffScreen = true;
       //renderer(VkWindow &window, context * pvkcdevice);
 
-      //::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutImageBlend;
+      //::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutImageBlend;
       //::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolImageBlend;
 
 
       ::pointer<shader  >           m_pshaderResolve;
-      //::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutResolve;
+      //::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutResolve;
       //::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolResolve;
       //::pointer < descriptor_set >                                      m_pdescriptorsetResolve;
 
       ::procedure_array m_procedureaAfterEndRender;
+
+
+      
+
 
       
 
@@ -110,9 +114,7 @@ namespace gpu_vulkan
       //void on_new_frame() override;
       void initialize_gpu_renderer(::gpu::context* pgpucontext) override;
 
-
-
-
+   
       void on_resize(const ::int_size& size) override;
 
 

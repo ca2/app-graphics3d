@@ -177,7 +177,7 @@ namespace gpu_directx12
 
       //VkSampler _001VkSampler();
 
-      //set_descriptor_layout* get_set_descriptor_layout();
+      //descriptor_set_layout* get_set_descriptor_layout();
       //virtual VkDescriptorSet getCurrentDescriptorSet(::gpu_directx12::renderer* prenderer);
 
       //::gpu_directx12::descriptor_pool* get_global_pool(int iFrameCount);
@@ -303,7 +303,7 @@ namespace gpu_directx12
       //bool checkDeviceExtensionSupport(VkPhysicalDevice pvkcdevice);
 
 
-      //      //set_descriptor_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
+      //      //descriptor_set_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
       //virtual VkDescriptorSet getGlobalDescriptorSet(::gpu::context* pgpucontext, ::gpu_directx12::renderer* prenderer);
 
       //::gpu_directx12::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);

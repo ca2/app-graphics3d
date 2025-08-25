@@ -104,7 +104,7 @@ namespace gpu_vulkan
    //    // if (m_pLocalDescriptorSet)
    //    // {
    //    //
-   //    //    ::cast < ::gpu_vulkan::set_descriptor_layout > pset = m_pLocalDescriptorSet;
+   //    //    ::cast < ::gpu_vulkan::descriptor_set_layout > pset = m_pLocalDescriptorSet;
    //    //
    //    //    auto setLayout = pset->getDescriptorSetLayout();
    //    //
@@ -379,7 +379,7 @@ namespace gpu_vulkan
          {
 
             m_psetdescriptorlayout
-               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpurenderer->m_pgpucontext)
+               = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpurenderer->m_pgpucontext)
                .addBinding(m_bindingSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                            VK_SHADER_STAGE_FRAGMENT_BIT)
                .build();
@@ -403,7 +403,7 @@ namespace gpu_vulkan
          {
 
             m_psetdescriptorlayout
-               = ::gpu_vulkan::set_descriptor_layout::Builder(m_pgpurenderer->m_pgpucontext)
+               = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpurenderer->m_pgpucontext)
                .addBinding(m_bindingCubeSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                            VK_SHADER_STAGE_FRAGMENT_BIT)
                .build();
@@ -455,7 +455,7 @@ namespace gpu_vulkan
       if (m_pLocalDescriptorSet)
       {
 
-         ::cast<::gpu_vulkan::set_descriptor_layout> pset = m_pLocalDescriptorSet;
+         ::cast<::gpu_vulkan::descriptor_set_layout> pset = m_pLocalDescriptorSet;
 
          auto setLayout = pset->getDescriptorSetLayout();
 

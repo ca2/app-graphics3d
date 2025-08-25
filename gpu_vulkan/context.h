@@ -34,7 +34,7 @@ namespace gpu_vulkan
       ::pointer < gpu::queue >                                 m_pqueuePresent;
 
 
-      ::pointer<::gpu_vulkan::set_descriptor_layout>           m_psetdescriptorlayoutGlobal;
+      ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGlobal;
       ::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
       ::pointer_array<::gpu_vulkan::memory_buffer>					m_uboBuffers;
       ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolGlobal;
@@ -174,7 +174,7 @@ namespace gpu_vulkan
       //void hasGflwRequiredInstanceExtensions();
       //bool checkDeviceExtensionSupport(VkPhysicalDevice pvkcdevice);
 
-            //set_descriptor_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
+            //descriptor_set_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
       virtual VkDescriptorSet getGlobalDescriptorSet(::gpu_vulkan::renderer* prenderer);
 
       ::gpu_vulkan::descriptor_pool* get_global_pool(int iFrameCount);
@@ -187,7 +187,7 @@ namespace gpu_vulkan
       //   uint32_t mizLevels,
       //   uint32_t layerCount);
        
-      ////set_descriptor_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
+      ////descriptor_set_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
       //virtual VkDescriptorSet getGlobalDescriptorSet(::gpu::context* pgpucontext, ::gpu_vulkan::renderer* prenderer);
 
       //::gpu_vulkan::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);
@@ -244,6 +244,15 @@ namespace gpu_vulkan
       virtual ::pointer < ::gpu::texture > generateBRDFlut();
 
       ::pointer<::graphics3d::renderable> _load_gltf_model(const ::gpu::renderable_t & model) override;
+
+
+      
+            
+      virtual void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout,
+                                         VkImageLayout newLayout, uint32_t mizLevels, uint32_t layerCount);
+
+
+
 
    };
 
