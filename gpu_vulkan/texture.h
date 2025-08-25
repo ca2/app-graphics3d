@@ -219,6 +219,10 @@ namespace gpu_vulkan
       void set_pixels(const ::int_rectangle& rectangle, const void* data) override;
 
 
+      virtual bool KTXLoadFromFile(const ::file::path &path, VkFormat format, VkQueue copyQueue,
+                                    VkImageUsageFlags imageUsageFlags, VkImageLayout imageLayout, bool forceLinear);
+
+
       virtual void KtxLoadCubemapFromFile(
          const ::scoped_string &name,
          ::string filename, 

@@ -5179,7 +5179,7 @@ namespace gpu_vulkan
          {
             debug("[AssetManager] tried: {}", c / path);
          }
-         continue;
+         return nullptr;
       }
 
       information("[AssetManager] Loading texture '{}' from resolved path '{}'", scopedstrName, pathFound);
@@ -5187,23 +5187,27 @@ namespace gpu_vulkan
       try
       {
          auto ptexture = _loadTexture(
-            name, 
-            fullPath, 
+            scopedstrName, 
+            pathFound, 
             format, 
             VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-         if (!tex)
+         if (!ptexture)
          {
-            error("[AssetManager] loadTexture returned nullptr for '{}'", name);
-            continue;
+            error("[AssetManager] loadTexture returned nullptr for '{}'", scopedstrName);
+            return nullptr;
          }
-         registerTextureIfNeeded(name, tex, m_textures, m_textureIndexMap, m_textureList);
-         information("[AssetManager] Loaded texture '{}' from '{}'", name, fullPath);
+         //registerTextureIfNeeded(name, tex, m_textures, m_textureIndexMap, m_textureList);
+         information("[AssetManager] Loaded texture '{}' from '{}'", 
+            scopedstrName, path);
+         return ptexture;
       }
-      catch (const std::exception &e)
+      catch (const ::exception &e)
       {
-         error("[AssetManager] Failed to load texture '{}': {}", name, e.what());
+         error("[AssetManager] Failed to load texture '{}': {}",
+            scopedstrName, e.get_message());
       }
+      return nullptr;
    }
 
             
@@ -5233,46 +5237,47 @@ VkImageLayout imageLayout)
 
          if (strExtension == "ktx" || strExtension == "ktx2")
          {
-            ok = tex->KTXLoadFromFile(filename, format, &m_device, m_transferQueue, usageFlags, imageLayout,
+            ::cast<::gpu_vulkan::queue> pqueueTransfer = transfer_queue();
+            ok = ptexture->KTXLoadFromFile(path, format, 
+               pqueueTransfer->m_vkqueue, usageFlags, imageLayout,
                                       /*forceLinear=*/false);
 
             if (!ok)
             {
-               spdlog::error("[AssetManager] KTXLoadFromFile failed for '{}'", filename);
+               error("[AssetManager] KTXLoadFromFile failed for '{}'", path);
                return nullptr;
             }
          }
          else
          {
 
-            ok = tex->STBLoadFromFile(filename);
+            ok = ptexture->imaging_load_from_file(path);
             if (!ok)
             {
-               spdlog::error("[AssetManager] STBLoadFromFile failed for '{}'", filename);
+               error("[AssetManager] STBLoadFromFile failed for '{}'", path);
                return nullptr;
             }
          }
 
 
-         VkSampler sampler = tex->GetSampler();
-         VkImageView view = tex->GetImageView();
+         VkSampler sampler = ptexture->GetSampler();
+         VkImageView view = ptexture->GetImageView();
 
          if (sampler == VK_NULL_HANDLE || view == VK_NULL_HANDLE)
          {
-            spdlog::warn("[AssetManager] Texture '{}' loaded but sampler/view are null (sampler: {}, view: {})", name,
+            warning("[AssetManager] Texture '{}' loaded but sampler/view are null (sampler: {}, view: {})", name,
                          static_cast<uint64_t>(reinterpret_cast<uintptr_t>(sampler)),
                          static_cast<uint64_t>(reinterpret_cast<uintptr_t>(view)));
          }
 
-         tex->m_descriptor.sampler = sampler;
-         tex->m_descriptor.imageView = view;
-         tex->m_descriptor.imageLayout = imageLayout;
+         ptexture->m_descriptor3.sampler = sampler;
+         ptexture->m_descriptor3.imageView = view;
+         ptexture->m_descriptor3.imageLayout = imageLayout;
 
-
-         spdlog::info("[AssetManager] Texture '{}' loaded OK (view: {}, sampler: {})", name,
+        information("[AssetManager] Texture '{}' loaded OK (view: {}, sampler: {})", name,
                       (view != VK_NULL_HANDLE ? "valid" : "null"), (sampler != VK_NULL_HANDLE ? "valid" : "null"));
 
-         return tex;
+         return ptexture;
       }
       catch (const std::exception &e)
       {
