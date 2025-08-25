@@ -207,7 +207,9 @@ namespace gpu_vulkan
 //      void initialize_rectangle_shader(::gpu::shader* pshader) override;
 
 
-      ::pointer<::gpu::texture> generatePrefilteredEnvMap(::gpu::texture *environmentCubeExisting) override;
+      ::pointer<::gpu::texture> generatePrefilteredEnvMap(
+         ::gpu::texture *environmentCubeExisting,
+         ::graphics3d::renderable *prenderableSkybox) override;
 
       /// generate irradianceCube
       /// @return irradianceCube

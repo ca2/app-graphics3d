@@ -4236,8 +4236,8 @@ namespace gpu_vulkan
        cfg.pushConstantRanges = {pushRange};
 
        // shader paths (match your project layout)
-       auto vert = file()->as_memory("matter://shaders/spirV/filtered_cube.vert.spv");
-       auto frag = file()->as_memory("matter://shaders/spirV/prefiltered_env_map.spv");
+       auto vert = file()->as_memory("matter://shaders/filtered_cube.vert");
+       auto frag = file()->as_memory("matter://shaders/prefiltered_env_map.frag");
 
        if (frag.is_empty())
        {
@@ -4324,25 +4324,26 @@ namespace gpu_vulkan
                                 &pushBlock);
 
              // bind pipeline and descriptor set (environment cubemap sampler)
-             prefilterPipeline.bind(pcommandbufferCmd);
-             vkCmdBindDescriptorSets(pcommandbufferCmd->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, prefilterPipeline.getPipelineLayout(), 0,
+             prefilterPipeline->bind(pcommandbufferCmd);
+             vkCmdBindDescriptorSets(pcommandbufferCmd->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, prefilterPipeline->m_vkpipelinelayout, 0,
                                      1, &descriptorset, 0, nullptr);
 
              // draw the skybox mesh (ensure it binds position vertex at location 0)
-             if (!m_skyboxModel)
-             {
-                spdlog::error("[AssetManager] No skybox model loaded - skipping draw in generatePrefilteredEnvMap()");
-             }
-             else
-             {
-                m_skyboxModel->bind(pcommandbufferCmd->m_vkcommandbuffer);
-                m_skyboxModel->gltfDraw(pcommandbufferCmd->m_vkcommandbuffer);
-             }
+             //if (!m_skyboxModel)
+             //{
+             //   spdlog::error("[AssetManager] No skybox model loaded - skipping draw in generatePrefilteredEnvMap()");
+             //}
+             //else
+             //{
+                prenderableSkybox->bind(pcommandbufferCmd);
+             //prenderableSkybox->gltfDraw(pcommandbufferCmd);
+              prenderableSkybox->draw(pcommandbufferCmd);
+             //}
 
              vkCmdEndRenderPass(pcommandbufferCmd->m_vkcommandbuffer);
 
              // copy from offscreen -> prefilteredCube mip/face
-             tools::setImageLayout(pcommandbufferCmd->m_vkcommandbuffer, offscreen.image, VK_IMAGE_ASPECT_COLOR_BIT,
+             ::vulkan::setImageLayout(pcommandbufferCmd->m_vkcommandbuffer, offscreen.image, VK_IMAGE_ASPECT_COLOR_BIT,
                                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
              VkImageCopy copyRegion{};
@@ -4354,17 +4355,18 @@ namespace gpu_vulkan
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
 
              // restore offscreen layout
-             tools::setImageLayout(pcommandbufferCmd->m_vkcommandbuffer, offscreen.image, VK_IMAGE_ASPECT_COLOR_BIT,
+             ::vulkan::setImageLayout(pcommandbufferCmd->m_vkcommandbuffer, offscreen.image, VK_IMAGE_ASPECT_COLOR_BIT,
                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
           }
        }
 
        // final transition: prefiltered cubemap -> shader read
-       tools::setImageLayout(pcommandbufferCmd->m_vkcommandbuffer, prefilteredCube->m_vkimage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+       ::vulkan::setImageLayout(pcommandbufferCmd->m_vkcommandbuffer, prefilteredCube->m_vkimage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange);
 
-       m_device.flushCommandBuffer(pcommandbufferCmd->m_vkcommandbuffer, m_transferQueue);
-       vkQueueWaitIdle(m_transferQueue);
+       this->endSingleTimeCommands(pcommandbufferCmd);
+       ::cast<::gpu_vulkan::queue> pqueue = pcommandbufferCmd->m_pgpuqueue;
+       vkQueueWaitIdle(pqueue->m_vkqueue);
 
 
        // --- Cleanup: destroy only resources we created here (do NOT destroy pipeline layout; wrapper owns pipeline)
@@ -4385,7 +4387,7 @@ namespace gpu_vulkan
 
        auto tEnd = std::chrono::high_resolution_clock::now();
        auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
-       spdlog::info("Generating pre-filtered environment cube with {} mip levels took {} ms", numMips, tDiff);
+       information("Generating pre-filtered environment cube with {} mip levels took {} ms", numMips, tDiff);
     }
 
 
