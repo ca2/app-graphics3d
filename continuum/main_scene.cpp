@@ -9,7 +9,7 @@
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/point_light.h"
 #include "bred/graphics3d/scene_object.h"
-#include "bred/graphics3d/render_systems/object_render_system.h"
+#include "bred/graphics3d/render_systems/wavefront_obj_render_system.h"
 #include "bred/graphics3d/render_systems/point_light_render_system.h"
 #include "bred/graphics3d/render_systems/skybox_render_system.h"
 
@@ -52,7 +52,7 @@ namespace app_graphics3d_continuum
          //glm::vec3 direction = glm::normalize(target - cameraPos);
          //camera camera{ glm::vec3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
          auto pcamera = øcreate < ::graphics3d::camera>();
-         pcamera->m_pengine = m_pengine;
+         pcamera->m_pengine = m_pimmersionlayer->m_pengine;
          pcamera->initialize_camera(target, camera);
          //pcamera->m_pimpact = m_pimpact;
          m_pcameraDefault = pcamera;
@@ -113,7 +113,7 @@ namespace app_graphics3d_continuum
 
          ødefer_construct_new(pskybox);
 
-         pskybox->initialize_sky_box(m_pengine, strSkybox);
+         pskybox->initialize_sky_box(m_pimmersionlayer->m_pengine, strSkybox);
 
       }
 
@@ -121,7 +121,7 @@ namespace app_graphics3d_continuum
 
       float fXScale;
 
-      fXScale = m_pengine->m_fYScale;
+      fXScale = m_pimmersionlayer->m_pengine->m_fYScale;
 
       {
 
@@ -191,23 +191,23 @@ namespace app_graphics3d_continuum
 
       øconstruct_new(m_pskyboxrendersystem);
 
-      m_pskyboxrendersystem->initialize_render_system(m_pengine);
+      m_pskyboxrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
 
       m_pskyboxrendersystem->prepare(pgpucontext);
 
 
 
-      øconstruct_new(m_pobjectrendersystem);
+      øconstruct_new(m_pwavefrontobjrendersystem);
 
-      m_pobjectrendersystem->initialize_render_system(m_pengine);
+      m_pwavefrontobjrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
 
-      m_pobjectrendersystem->prepare(pgpucontext);
+      m_pwavefrontobjrendersystem->prepare(pgpucontext);
       //m_prenderer->getRenderPass(),
       //globalSetLayout->getDescriptorSetLayout() };
 
       øconstruct_new(m_ppointlightrendersystem);
 
-      m_ppointlightrendersystem->initialize_render_system(m_pengine);
+      m_ppointlightrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
 
       m_ppointlightrendersystem->prepare(pgpucontext);
 
@@ -226,13 +226,13 @@ namespace app_graphics3d_continuum
 
       //::graphics3d::GlobalUbo ubo{};
 
-      auto projection = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent->getProjection();
+      auto projection = m_pimmersionlayer->m_pscene->m_pcameraCurrent->getProjection();
       globalubo["projection"] = projection;
 
-      auto view = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent->getView();
+      auto view = m_pimmersionlayer->m_pscene->m_pcameraCurrent->getView();
       globalubo["view"] = view;
 
-      auto inverseView = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent->getInverseView();
+      auto inverseView = m_pimmersionlayer->m_pscene->m_pcameraCurrent->getInverseView();
       globalubo["invView"] = inverseView;
 
       if (m_ppointlightrendersystem)
@@ -270,10 +270,10 @@ namespace app_graphics3d_continuum
 
       //return;
 
-      if (m_pobjectrendersystem)
+      if (m_pwavefrontobjrendersystem)
       {
 
-         m_pobjectrendersystem->render(pgpucontext, this);
+         m_pwavefrontobjrendersystem->render(pgpucontext, this);
 
       }
 

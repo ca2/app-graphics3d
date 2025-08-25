@@ -34,10 +34,10 @@ namespace gpu_vulkan
           context * pvkcdevice, ::map<unsigned int, VkDescriptorSetLayoutBinding> bindings);
       ~set_descriptor_layout();
 
-      VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
+      VkDescriptorSetLayout getDescriptorSetLayout() const { return m_vkdescriptorsetlayout; }
 
       ::pointer < context > m_pgpucontext;
-      VkDescriptorSetLayout descriptorSetLayout;
+      VkDescriptorSetLayout m_vkdescriptorsetlayout;
       ::map<unsigned int, VkDescriptorSetLayoutBinding> bindings;
 
    };

@@ -24,7 +24,7 @@ namespace app_graphics3d_continuum
       //::pointer < simple_render_system >		m_psimplerendersystem;
       //::pointer < point_light_system >			m_ppointlightsystem;
 
-      ::pointer < ::graphics3d::object_render_system >		   m_pobjectrendersystem;
+      ::pointer < ::graphics3d::wavefront_obj_render_system >	m_pwavefrontobjrendersystem;
       ::pointer < ::graphics3d::point_light_render_system >		m_ppointlightrendersystem;
       ::pointer < ::graphics3d::skybox_render_system >		   m_pskyboxrendersystem;
       

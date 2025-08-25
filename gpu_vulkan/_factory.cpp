@@ -9,6 +9,7 @@
 #include "layer.h"
 #include "model_buffer.h"
 #include "object.h"
+#include "pipeline.h"
 #include "render_target.h"
 #include "renderer.h"
 #include "swap_chain.h"
@@ -51,6 +52,7 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu_vulkan::model_buffer, ::gpu::model_buffer > ();
 
    pfactory->add_factory_item < ::gpu_vulkan::frame, ::gpu::frame >();
+   pfactory->add_factory_item < ::gpu_vulkan::pipeline>();
    pfactory->add_factory_item < ::gpu::pixmap >();
 
    pfactory->add_factory_item < ::gpu::frame_ephemeral >();

@@ -206,18 +206,25 @@ namespace gpu_vulkan
       bool hasStencilComponent(VkFormat format);
 //      void initialize_rectangle_shader(::gpu::shader* pshader) override;
 
+
+      ::pointer<::gpu::texture> generatePrefilteredEnvMap(::gpu::texture *environmentCubeExisting) override;
+
       /// generate irradianceCube
       /// @return irradianceCube
-      virtual ::pointer < ::gpu::texture > generateIrradianceMap(
+      ::pointer < ::gpu::texture > generateIrradianceMap(
 //         ::gpu::texture * irradianceCube,
-         ::gpu::texture * environmentCube,
-         ::gpu::model_buffer * pmodelbufferSkybox);
-      // ::pointer<::gpu::texture> loadCubemap(
-      //    const ::scoped_string& name,
-      //    const ::scoped_string& ktxFilename,
-      //    VkFormat format,
-      //    VkImageUsageFlags usageFlags,
-      //    VkImageLayout initialLayout);
+         ::gpu::texture * environmentCube, ::graphics3d::renderable *prenderableSkyboxx) override;
+
+      ::pointer<::gpu::texture> load_cube_map(const ::scoped_string &scopedstrName, const ::file::path &path, bool b32) override;
+
+
+       ::pointer<::gpu::texture> loadCubemap(
+          const ::scoped_string& name,
+          const ::scoped_string& ktxFilename,
+          VkFormat format,
+          VkQueue vkqueueCopy,
+          VkImageUsageFlags usageFlags,
+          VkImageLayout initialLayout);
   //    virtual void generateBRDFlut(
     //     ::gpu::texture * lutBrdf);
       /// generate lutBrdf

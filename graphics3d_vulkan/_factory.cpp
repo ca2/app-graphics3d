@@ -12,6 +12,7 @@
 //#include "sockets/basic/socket_handler.h"
 //#include "sockets/basic/tcp_socket.h"
 //#include "sockets/basic/listen_socket_impl.h"
+#include "render_systems/gltf_render_system.h"
 
 
 IMPLEMENT_FACTORY(graphics3d_vulkan)
@@ -31,6 +32,7 @@ IMPLEMENT_FACTORY(graphics3d_vulkan)
 
    pfactory->add_factory_item < ::graphics3d::scene_object >();
 
+   pfactory->add_factory_item< ::graphics3d_vulkan::gltf_render_system, ::graphics3d::gltf_render_system>();
 
 }
 

@@ -50,16 +50,18 @@ namespace gpu_vulkan
          m_pgpucontext->logicalDevice(),
          &descriptorSetLayoutInfo,
          nullptr,
-         &descriptorSetLayout) != VK_SUCCESS) {
+                                      &m_vkdescriptorsetlayout) != VK_SUCCESS)
+      {
          throw ::exception(error_failed, "failed to create descriptor set layout!");
       }
    }
 
    set_descriptor_layout::~set_descriptor_layout() {
-      if (descriptorSetLayout != VK_NULL_HANDLE) {
+      if (m_vkdescriptorsetlayout != VK_NULL_HANDLE)
+      {
          ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
-         vkDestroyDescriptorSetLayout(m_pgpucontext->logicalDevice(), descriptorSetLayout, nullptr);
-         descriptorSetLayout = VK_NULL_HANDLE;
+         vkDestroyDescriptorSetLayout(m_pgpucontext->logicalDevice(), m_vkdescriptorsetlayout, nullptr);
+         m_vkdescriptorsetlayout = VK_NULL_HANDLE;
       }
    }
 

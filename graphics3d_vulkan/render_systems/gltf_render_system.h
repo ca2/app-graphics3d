@@ -1,0 +1,99 @@
+// From V0idsEmbrace.gltf_render_system by 
+// camilo on 2025-04-24 21:28 <3ThomasBorregaardSorensen!!
+#pragma once
+
+
+// #include "SceneFoundry/graphics3d/render_system.h"
+
+#include "bred/graphics3d/render_systems/gltf_render_system.h"
+#include "app-graphics3d/graphics3d_vulkan/render_system.h"
+
+// #include "SceneFoundry/graphics3d/asset_provider_i.h"
+// #include "SceneFoundry/graphics3d/game_object_i.h"
+
+// #include "device.h"
+// #include "pipeline.h"
+// #include "SceneFoundry/graphics3d/descriptor.h"
+
+// #include "gltf.h"
+// #include "SceneFoundry/graphics3d/renderer.h"
+
+// STD
+// #include <memory>
+// #include <vector>
+
+// #include <vulkan/vulkan.h>
+
+namespace graphics3d_vulkan
+{
+
+
+   class gltf_render_system : 
+      virtual public ::graphics3d::gltf_render_system,
+      virtual public ::graphics3d_vulkan::render_system
+   {
+   public:
+
+
+      //VkSandboxDevice &m_device;
+
+      ::pointer<::gpu_vulkan::set_descriptor_layout> m_globalSetLayout;
+      ::pointer<::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
+      //VkDescriptorSetLayout m_iblSetLayout;
+      //VkDescriptorSet m_iblDescriptorSet;
+
+      ::pointer<::gpu_vulkan::pipeline> m_opaquePipeline;
+      ::pointer<::gpu_vulkan::pipeline> m_maskPipeline;
+      ::pointer<::gpu_vulkan::pipeline> m_blendPipeline;
+      VkPipelineLayout m_pipelineLayout;
+
+      //IAssetProvider &m_assets;
+
+      ::pointer<::gpu_vulkan::set_descriptor_layout> m_iblLayout;
+      ::array_base<VkDescriptorSet> m_iblDescriptorSets;
+
+      ::pointer<::gpu_vulkan::set_descriptor_layout> m_pbrLayout;
+      ::array_base<VkDescriptorSet> m_pbrDescriptorSets;
+
+
+
+      gltf_render_system();
+      ~gltf_render_system();
+
+
+      //virtual void init(VkRenderPass renderPass, 
+      //   ::gpu_vulkan::set_descriptor_layout * psetdescriptorlayoutGlobal,
+      //          ::pointer < ::gpu_vulkan::set_descriptor_layout > &descriptorPool,
+      //   size_t frameCount);
+      //virtual void init(::gpu_vulkan::set_descriptor_layout *psetdescriptorlayoutGlobal,
+        //                ::pointer<::gpu_vulkan::set_descriptor_layout> &descriptorPool, size_t frameCount);
+
+      void on_prepare(::gpu::context *pgpucontext) override;
+
+      //void initialize_GltfRenderSystem(VkRenderPass renderPass,
+      //   ::gpu_vulkan::set_descriptor_layout *psetdescriptorlayoutGlobal, 
+      //   ::graphics3d::asset_manager * passetmanager);
+      //void initialize_GltfRenderSystem(
+
+      //                                 ::gpu_vulkan::set_descriptor_layout *psetdescriptorlayoutGlobal,
+      //                                 ::graphics3d::asset_manager *passetmanager);
+
+      ///void initialize_GltfRenderSystem(
+
+         //;
+      ///;::gpu_vulkan::set_descriptor_layout *psetdescriptorlayoutGlobal);
+
+      void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+      void createPipeline(VkRenderPass renderPass);
+
+      
+      void on_render(::gpu::context *pgpucontext, ::graphics3d::scene *pscene) override;
+
+
+   };
+
+
+} // namespace graphics3d_vulkan
+ 
+
+

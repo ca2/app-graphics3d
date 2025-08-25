@@ -20,7 +20,8 @@
 #include "command_buffer.h"
 #include "vk_init.h"
 #include "context.h"
-
+#include "aura/graphics/image/context.h"
+#include <filesystem> // C++17
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -30,8 +31,361 @@
 //#include "vk_tools/vk_tools.h"
 
 
+//#include <fstream>
+//#include <iostream>
+//#include <string>
+//#include <vector>
+//
+//#define TINYGLTF_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include "tiny_gltf.h"
+
+// ---------------------------------------------------------
+// Global filesystem callbacks
+// ---------------------------------------------------------
+
+//bool tinygltf_example_FileExists(const std::string &abs_filename, void *user_data)
+//{
+//   std::ifstream f(abs_filename.c_str());
+//   return f.good();
+//}
+
+//bool tinygltf_example_ReadWholeFile(std::vector<unsigned char> *out, std::string *err, const std::string &filepath,
+//                                    void *user_data)
+//{
+//   std::ifstream f(filepath, std::ios::binary);
+//   if (!f)
+//   {
+//      if (err)
+//         *err = "Could not open file: " + filepath;
+//      return false;
+//   }
+//   f.seekg(0, std::ios::end);
+//   size_t sz = static_cast<size_t>(f.tellg());
+//   f.seekg(0, std::ios::beg);
+//
+//   out->resize(sz);
+//   f.read(reinterpret_cast<char *>(out->data()), sz);
+//   return true;
+//}
+//
+//bool tinygltf_example_WriteWholeFile(std::string *err, const std::string &filepath, const std::vector<unsigned char> &contents,
+//                    void *user_data)
+//{
+//   std::ofstream f(filepath, std::ios::binary);
+//   if (!f)
+//   {
+//      if (err)
+//         *err = "Could not write file: " + filepath;
+//      return false;
+//   }
+//   f.write(reinterpret_cast<const char *>(contents.data()), contents.size());
+//   return true;
+//}
+
+//// ---------------------------------------------------------
+//// Global image loader callback
+//// ---------------------------------------------------------
+//
+//bool tinygltf_example_LoadImageData(tinygltf::Image *image, const int image_idx, std::string *err, std::string *warn,
+//                                    int req_width,
+//                   int req_height, const unsigned char *bytes, int size, void *user_data)
+//{
+//   // Decode using stb_image (already included by tinygltf)
+//   int w, h, comp;
+//   unsigned char *data = stbi_load_from_memory(bytes, size, &w, &h, &comp, 0);
+//   if (!data)
+//   {
+//      if (err)
+//         *err = "Failed to decode image " + image->uri;
+//      return false;
+//   }
+//
+//   image->width = w;
+//   image->height = h;
+//   image->component = comp;
+//   image->image.assign(data, data + (w * h * comp));
+//   image->bits = 8;
+//   image->pixel_type = TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE;
+//
+//   stbi_image_free(data);
+//   return true;
+//}
+
+//// ---------------------------------------------------------
+//// Main
+//// ---------------------------------------------------------
+//
+//int tinygltf_example_main(int argc, char **argv)
+//{
+//   if (argc < 2)
+//   {
+//      std::cerr << "Usage: " << argv[0] << " model.gltf" << std::endl;
+//      return -1;
+//   }
+//
+//   std::string filename(argv[1]);
+//
+//   tinygltf::Model model;
+//   tinygltf::TinyGLTF loader;
+//   std::string err, warn;
+//
+//   // Set custom filesystem callbacks
+//   tinygltf::FsCallbacks fsCallbacks;
+//   fsCallbacks.FileExists = FileExists;
+//   fsCallbacks.ReadWholeFile = ReadWholeFile;
+//   fsCallbacks.WriteWholeFile = WriteWholeFile;
+//   fsCallbacks.ExpandFilePath = nullptr; // use default
+//   fsCallbacks.user_data = nullptr;
+//   loader.SetFsCallbacks(fsCallbacks);
+//
+//   // Set custom image loader
+//   loader.SetImageLoader(LoadImageData, nullptr);
+//
+//   bool ret = loader.LoadASCIIFromFile(&model, &err, &warn, filename);
+//
+//   if (!warn.empty())
+//      std::cout << "Warn: " << warn << std::endl;
+//   if (!err.empty())
+//      std::cerr << "Err: " << err << std::endl;
+//   if (!ret)
+//   {
+//      std::cerr << "Failed to load " << filename << std::endl;
+//      return -1;
+//   }
+//
+//   std::cout << "Loaded glTF file: " << filename << std::endl;
+//
+//   // Print buffers
+//   for (size_t i = 0; i < model.buffers.size(); i++)
+//   {
+//      const auto &buffer = model.buffers[i];
+//      std::cout << "Buffer[" << i << "] size: " << buffer.data.size() << " bytes" << std::endl;
+//   }
+//
+//   // Print images
+//   for (size_t i = 0; i < model.images.size(); i++)
+//   {
+//      const auto &image = model.images[i];
+//      std::cout << "Image[" << i << "] : " << image.uri << " (" << image.width << "x" << image.height
+//                << ", comp=" << image.component << ")" << std::endl;
+//   }
+//
+//   return 0;
+//}
+
+
 namespace gpu_vulkan
 {
+
+//#include <fstream>
+//#include <iostream>
+//#include <string>
+//#include <vector>
+//
+//#define TINYGLTF_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include "tiny_gltf.h"
+//
+   // ---------------------------------------------------------
+   // Global filesystem callbacks
+   // ---------------------------------------------------------
+
+   bool tinygltf_FileExists(const std::string &abs_filename, void *user_data)
+   {
+      
+      auto pfile = (file_context *) user_data;
+      
+      ::file::path path(abs_filename.c_str());
+
+      return pfile->exists(path);
+
+   }
+
+
+   bool tinygltf_ReadWholeFile(std::vector<unsigned char> *out, std::string *err, const std::string &filepath,
+                               void *user_data)
+   {
+
+      
+      auto pfile = (file_context *)user_data;
+
+      try
+      {
+
+         ::file::path path(filepath.c_str());
+
+         auto memory = pfile->as_memory(path);
+
+         out->assign(memory.begin(), memory.end());
+      }
+      catch (...)
+      {
+
+         return false;
+
+      }
+
+      //std::ifstream f(filepath, std::ios::binary);
+      //if (!f)
+      //{
+      //   if (err)
+      //      *err = "Could not open file: " + filepath;
+      //   return false;
+      //}
+      //f.seekg(0, std::ios::end);
+      //size_t sz = static_cast<size_t>(f.tellg());
+      //f.seekg(0, std::ios::beg);
+      //f.read(reinterpret_cast<char *>(out->data()), sz);
+      return true;
+
+   }
+
+
+   // ExpandFilePath callback: normalize/adjust file paths
+   std::string tinygltf_ExpandFilePath(const std::string &filename, void *user_data)
+   {
+      //// Example: prepend a base asset directory (stored in user_data)
+      //const char *baseDir = static_cast<const char *>(user_data);
+
+      //std::filesystem::path base(baseDir ? baseDir : "");
+      //d::filesystem::path file(filename);
+    return filename;
+      // Combine and normalize
+      //std::filesystem::path full = std::filesystem::weakly_canonical(base / file);
+      //return full.string();
+   }
+
+
+   bool tinygltf_WriteWholeFile(std::string *err, const std::string &filepath,
+                                const std::vector<unsigned char> &contents,
+                       void *user_data)
+   {
+      auto pfile = (file_context *)user_data;
+
+      try
+      {
+
+         ::file::path path(filepath.c_str());
+
+         pfile->put_memory(path, {contents.data(), contents.size()});
+
+      }
+      catch (...)
+      {
+
+         return false;
+
+      }
+
+      return true;
+      //std::ofstream f(filepath, std::ios::binary);
+      //if (!f)
+      //{
+      //   if (err)
+      //      *err = "Could not write file: " + filepath;
+      //   return false;
+      //}
+      //f.write(reinterpret_cast<const char *>(contents.data()), contents.size());
+      //return true;
+   }
+
+   // ---------------------------------------------------------
+   // Global image loader callback
+   // ---------------------------------------------------------
+
+   bool tinygltf_LoadImageData(tinygltf::Image *image, const int image_idx, std::string *err, std::string *warn, int req_width,
+                      int req_height, const unsigned char *bytes, int size, void *user_data)
+   {
+
+      auto pimagecontext = (::image::image_context *)user_data;
+
+
+      // Decode using stb_image (already included by tinygltf)
+      int w, h, comp;
+      unsigned char *data = pimagecontext->like_stbi_load_from_memory(bytes, size, &w, &h, &comp, 0);
+      if (!data)
+      {
+         if (err)
+            *err = "Failed to decode image " + image->uri;
+         return false;
+      }
+
+      image->width = w;
+      image->height = h;
+      image->component = comp;
+      image->image.assign(data, data + (w * h * comp));
+      image->bits = 8;
+      image->pixel_type = TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE;
+
+      pimagecontext->like_stbi_image_free(data);
+      return true;
+   }
+
+   //// ---------------------------------------------------------
+   //// Main
+   //// ---------------------------------------------------------
+
+   //int main(int argc, char **argv)
+   //{
+   //   if (argc < 2)
+   //   {
+   //      std::cerr << "Usage: " << argv[0] << " model.gltf" << std::endl;
+   //      return -1;
+   //   }
+
+   //   std::string filename(argv[1]);
+
+   //   tinygltf::Model model;
+   //   tinygltf::TinyGLTF loader;
+   //   std::string err, warn;
+
+   //   // Set custom filesystem callbacks
+   //   tinygltf::FsCallbacks fsCallbacks;
+   //   fsCallbacks.FileExists = FileExists;
+   //   fsCallbacks.ReadWholeFile = ReadWholeFile;
+   //   fsCallbacks.WriteWholeFile = WriteWholeFile;
+   //   fsCallbacks.ExpandFilePath = nullptr; // use default
+   //   fsCallbacks.user_data = nullptr;
+   //   loader.SetFsCallbacks(fsCallbacks);
+
+   //   // Set custom image loader
+   //   loader.SetImageLoader(LoadImageData, nullptr);
+
+   //   bool ret = loader.LoadASCIIFromFile(&model, &err, &warn, filename);
+
+   //   if (!warn.empty())
+   //      std::cout << "Warn: " << warn << std::endl;
+   //   if (!err.empty())
+   //      std::cerr << "Err: " << err << std::endl;
+   //   if (!ret)
+   //   {
+   //      std::cerr << "Failed to load " << filename << std::endl;
+   //      return -1;
+   //   }
+
+   //   std::cout << "Loaded glTF file: " << filename << std::endl;
+
+   //   // Print buffers
+   //   for (size_t i = 0; i < model.buffers.size(); i++)
+   //   {
+   //      const auto &buffer = model.buffers[i];
+   //      std::cout << "Buffer[" << i << "] size: " << buffer.data.size() << " bytes" << std::endl;
+   //   }
+
+   //   // Print images
+   //   for (size_t i = 0; i < model.images.size(); i++)
+   //   {
+   //      const auto &image = model.images[i];
+   //      std::cout << "Image[" << i << "] : " << image.uri << " (" << image.width << "x" << image.height
+   //                << ", comp=" << image.component << ")" << std::endl;
+   //   }
+
+   //   return 0;
+   //}
+
 
 	VkDescriptorSetLayout  gltf::descriptorSetLayoutImage = VK_NULL_HANDLE;
 	VkDescriptorSetLayout  gltf::descriptorSetLayoutIbl = VK_NULL_HANDLE;
@@ -42,20 +396,20 @@ namespace gpu_vulkan
 	////class VkSandboxDevice;
 	//
 
-	/*
-		We use a custom image loading function with tinyglTF, so we can do custom stuff loading ktx textures
-	*/
-	bool loadImageDataFunc(tinygltf::Image* image, const int imageIndex, std::string* error, std::string* warning, int req_width, int req_height, const unsigned char* bytes, int size, void* userData)
-	{
-		// KTX files will be handled by our own code
-		if (image->uri.find_last_of(".") != std::string::npos) {
-			if (image->uri.substr(image->uri.find_last_of(".") + 1) == "ktx") {
-				return true;
-			}
-		}
+	///*
+	//	We use a custom image loading function with tinyglTF, so we can do custom stuff loading ktx textures
+	//*/
+	//bool loadImageDataFunc(tinygltf::Image* image, const int imageIndex, std::string* error, std::string* warning, int req_width, int req_height, const unsigned char* bytes, int size, void* userData)
+	//{
+	//	// KTX files will be handled by our own code
+	//	if (image->uri.find_last_of(".") != std::string::npos) {
+	//		if (image->uri.substr(image->uri.find_last_of(".") + 1) == "ktx") {
+	//			return true;
+	//		}
+	//	}
 
-		return tinygltf::LoadImageData(image, imageIndex, error, warning, req_width, req_height, bytes, size, userData);
-	}
+	//	return tinygltf::LoadImageData(image, imageIndex, error, warning, req_width, req_height, bytes, size, userData);
+	//}
 
 	bool loadImageDataFuncEmpty(tinygltf::Image* image, const int imageIndex, std::string* error, std::string* warning, int req_width, int req_height, const unsigned char* bytes, int size, void* userData)
 	{
@@ -94,406 +448,436 @@ namespace gpu_vulkan
 	}
 
 
-	void gltf::Texture::fromglTfImage(tinygltf::Image& gltfimage, void * pIfKtx, long long llIfKtx, ::gpu::context * pgpucontext, VkQueue copyQueue, bool isSrgb)
-	{
-		this->m_pgpucontext = pgpucontext;
+void gltf::Texture::fromglTfImage(tinygltf::Image &gltfimage, ::std::string path, ::gpu::context *pgpucontext,
+                                     VkQueue copyQueue, bool isSrgb)
+   {
+      this->m_pgpucontext = pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
+      ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
+      auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
-		::cast < ::gpu_vulkan::context > pcontext = pgpucontext;
-		::cast < ::gpu_vulkan::device > pgpudevice = pgpucontext->m_pgpudevice;
-		auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
+      bool isKtx = false;
+      // Image points to an external ktx file
+      if (gltfimage.uri.find_last_of(".") != ::std::string::npos)
+      {
+         if (gltfimage.uri.substr(gltfimage.uri.find_last_of(".") + 1) == "ktx")
+         {
+            isKtx = true;
+         }
+      }
 
+      VkFormat format;
 
-		bool isKtx = pIfKtx && llIfKtx > 0;
-		// // Image points to an external ktx file
-		// if (gltfimage.uri.find_last_of(".") != std::string::npos) {
-		// 	if (gltfimage.uri.substr(gltfimage.uri.find_last_of(".") + 1) == "ktx") {
-		// 		isKtx = true;
-		// 	}
-		// }
+      if (!isKtx)
+      {
+         // Texture was loaded using STB_Image
 
-		VkFormat format;
+         unsigned char *buffer = nullptr;
+         VkDeviceSize bufferSize = 0;
+         bool deleteBuffer = false;
+         if (gltfimage.component == 3)
+         {
+            // Most devices don't support RGB only on Vulkan so convert if necessary
+            // TODO: Check actual format support and transform only if required
+            bufferSize = gltfimage.width * gltfimage.height * 4;
+            buffer = new unsigned char[bufferSize];
+            unsigned char *rgba = buffer;
+            unsigned char *rgb = &gltfimage.image[0];
+            for (size_t i = 0; i < gltfimage.width * gltfimage.height; ++i)
+            {
+               for (int32_t j = 0; j < 3; ++j)
+               {
+                  rgba[j] = rgb[j];
+               }
+               rgba += 4;
+               rgb += 3;
+            }
+            deleteBuffer = true;
+         }
+         else
+         {
+            buffer = &gltfimage.image[0];
+            bufferSize = gltfimage.image.size();
+         }
 
-		if (!isKtx) {
-			// Texture was loaded using STB_Image
+         format = isSrgb ? VK_FORMAT_R8G8B8A8_SRGB : VK_FORMAT_R8G8B8A8_UNORM;
 
-			unsigned char* buffer = nullptr;
-			VkDeviceSize bufferSize = 0;
-			bool deleteBuffer = false;
-			if (gltfimage.component == 3) {
-				// Most devices don't support RGB only on Vulkan so convert if necessary
-				// TODO: Check actual format support and transform only if required
-				bufferSize = gltfimage.width * gltfimage.height * 4;
-				buffer = new unsigned char[bufferSize];
-				unsigned char* rgba = buffer;
-				unsigned char* rgb = &gltfimage.image[0];
-				for (size_t i = 0; i < gltfimage.width * gltfimage.height; ++i) {
-					for (int32_t j = 0; j < 3; ++j) {
-						rgba[j] = rgb[j];
-					}
-					rgba += 4;
-					rgb += 3;
-				}
-				deleteBuffer = true;
-			}
-			else {
-				buffer = &gltfimage.image[0];
-				bufferSize = gltfimage.image.size();
-			}
+         VkFormatProperties formatProperties;
 
-			format = isSrgb
-				? VK_FORMAT_R8G8B8A8_SRGB
-				: VK_FORMAT_R8G8B8A8_UNORM;
+         width = gltfimage.width;
+         height = gltfimage.height;
+         mipLevels = static_cast<uint32_t>(floor(log2(std::max(width, height))) + 1.0);
 
-			VkFormatProperties formatProperties;
+         vkGetPhysicalDeviceFormatProperties(pphysicaldevice->m_vkphysicaldevice, format, &formatProperties);
+         assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_SRC_BIT);
+         assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT);
 
-			width = gltfimage.width;
-			height = gltfimage.height;
-			mipLevels = static_cast<uint32_t>(floor(log2(std::max(width, height))) + 1.0);
+         VkMemoryAllocateInfo memAllocInfo{};
+         memAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+         VkMemoryRequirements memReqs{};
 
-			// ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
-			// ::cast < ::gpu_vulkan::device > pgpudevice = pgpucontext->m_pgpudevice;
-			// auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
+         VkBuffer stagingBuffer;
+         VkDeviceMemory stagingMemory;
 
-			vkGetPhysicalDeviceFormatProperties(pphysicaldevice->m_vkphysicaldevice, format, &formatProperties);
-			assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_SRC_BIT);
-			assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT);
+         VkBufferCreateInfo bufferCreateInfo{};
+         bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+         bufferCreateInfo.size = bufferSize;
+         bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+         bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+         VK_CHECK_RESULT(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
+         vkGetBufferMemoryRequirements(pcontext->logicalDevice(), stagingBuffer, &memReqs);
+         memAllocInfo.allocationSize = memReqs.size;
+         memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(
+            memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+         VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
+         VK_CHECK_RESULT(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
 
-			VkMemoryAllocateInfo memAllocInfo{};
-			memAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			VkMemoryRequirements memReqs{};
+         uint8_t *data;
+         VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
+         memcpy(data, buffer, bufferSize);
+         vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
 
-			VkBuffer stagingBuffer;
-			VkDeviceMemory stagingMemory;
+         VkImageCreateInfo imageCreateInfo{};
+         imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+         imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+         imageCreateInfo.format = format;
+         imageCreateInfo.mipLevels = mipLevels;
+         imageCreateInfo.arrayLayers = 1;
+         imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+         imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+         imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT;
+         imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+         imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+         imageCreateInfo.extent = {width, height, 1};
+         imageCreateInfo.usage =
+            VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+         VK_CHECK_RESULT(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &image));
+         vkGetImageMemoryRequirements(pcontext->logicalDevice(), image, &memReqs);
+         memAllocInfo.allocationSize = memReqs.size;
+         memAllocInfo.memoryTypeIndex =
+            pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+         VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &deviceMemory));
+         VK_CHECK_RESULT(vkBindImageMemory(pcontext->logicalDevice(), image, deviceMemory, 0));
 
-			VkBufferCreateInfo bufferCreateInfo{};
-			bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			bufferCreateInfo.size = bufferSize;
-			bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-			bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			VK_CHECK_RESULT(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
-			vkGetBufferMemoryRequirements(pcontext->logicalDevice(), stagingBuffer, &memReqs);
-			memAllocInfo.allocationSize = memReqs.size;
-			memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-			VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
-			VK_CHECK_RESULT(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
-
-			uint8_t* data;
-			VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void**)&data));
-			memcpy(data, buffer, bufferSize);
-			vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
-
-			VkImageCreateInfo imageCreateInfo{};
-			imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-			imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
-			imageCreateInfo.format = format;
-			imageCreateInfo.mipLevels = mipLevels;
-			imageCreateInfo.arrayLayers = 1;
-			imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-			imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-			imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT;
-			imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			imageCreateInfo.extent = { width, height, 1 };
-			imageCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-			VK_CHECK_RESULT(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &image));
-			vkGetImageMemoryRequirements(pcontext->logicalDevice(), image, &memReqs);
-			memAllocInfo.allocationSize = memReqs.size;
-			memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-			VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &deviceMemory));
-			VK_CHECK_RESULT(vkBindImageMemory(pcontext->logicalDevice(), image, deviceMemory, 0));
-
-			//VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-
-		   auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue(), ::gpu::e_command_buffer_copy);
-
-		   ::cast < command_buffer > pcommandbufferCopy = pgpucommandbufferCopy;
-
-			VkImageSubresourceRange subresourceRange = {};
-			subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			subresourceRange.levelCount = 1;
-			subresourceRange.layerCount = 1;
-
-			VkImageMemoryBarrier imageMemoryBarrier{};
-
-			imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-			imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-			imageMemoryBarrier.srcAccessMask = 0;
-			imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-			imageMemoryBarrier.image = image;
-			imageMemoryBarrier.subresourceRange = subresourceRange;
-			vkCmdPipelineBarrier(pcommandbufferCopy->m_vkcommandbuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-
-			VkBufferImageCopy bufferCopyRegion = {};
-			bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			bufferCopyRegion.imageSubresource.mipLevel = 0;
-			bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
-			bufferCopyRegion.imageSubresource.layerCount = 1;
-			bufferCopyRegion.imageExtent.width = width;
-			bufferCopyRegion.imageExtent.height = height;
-			bufferCopyRegion.imageExtent.depth = 1;
-
-			vkCmdCopyBufferToImage(pcommandbufferCopy->m_vkcommandbuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
-
-			imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-			imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-			imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-			imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-			imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-			imageMemoryBarrier.image = image;
-			imageMemoryBarrier.subresourceRange = subresourceRange;
-			vkCmdPipelineBarrier(pcommandbufferCopy->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-
-			//pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, copyQueue, true);
-		   pcontext->endSingleTimeCommands(pcommandbufferCopy);
-
-			vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
-			vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
-
-			// Generate the mip chain (gltf uses jpg and png, so we need to create this manually)
-			//VkCommandBuffer blitCmd = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-
-		   auto pgpucommandbufferBlit = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
-
-		   ::cast < command_buffer > pcommandbufferBlit = pgpucommandbufferBlit;
-
-			for (uint32_t i = 1; i < mipLevels; i++) {
-				VkImageBlit imageBlit{};
-
-				imageBlit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-				imageBlit.srcSubresource.layerCount = 1;
-				imageBlit.srcSubresource.mipLevel = i - 1;
-				imageBlit.srcOffsets[1].x = int32_t(width >> (i - 1));
-				imageBlit.srcOffsets[1].y = int32_t(height >> (i - 1));
-				imageBlit.srcOffsets[1].z = 1;
-
-				imageBlit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-				imageBlit.dstSubresource.layerCount = 1;
-				imageBlit.dstSubresource.mipLevel = i;
-				imageBlit.dstOffsets[1].x = int32_t(width >> i);
-				imageBlit.dstOffsets[1].y = int32_t(height >> i);
-				imageBlit.dstOffsets[1].z = 1;
-
-				VkImageSubresourceRange mipSubRange = {};
-				mipSubRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-				mipSubRange.baseMipLevel = i;
-				mipSubRange.levelCount = 1;
-				mipSubRange.layerCount = 1;
-
-				{
-					VkImageMemoryBarrier imageMemoryBarrier{};
-					imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-					imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-					imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-					imageMemoryBarrier.srcAccessMask = 0;
-					imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-					imageMemoryBarrier.image = image;
-					imageMemoryBarrier.subresourceRange = mipSubRange;
-					vkCmdPipelineBarrier(pcommandbufferBlit->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-				}
-
-				vkCmdBlitImage(pcommandbufferBlit->m_vkcommandbuffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlit, VK_FILTER_LINEAR);
-
-				{
-					VkImageMemoryBarrier imageMemoryBarrier{};
-					imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-					imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-					imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-					imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-					imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-					imageMemoryBarrier.image = image;
-					imageMemoryBarrier.subresourceRange = mipSubRange;
-					vkCmdPipelineBarrier(pcommandbufferBlit->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-				}
-			}
-
-			subresourceRange.levelCount = mipLevels;
-			imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-			imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-			imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-			imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-			imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-			imageMemoryBarrier.image = image;
-			imageMemoryBarrier.subresourceRange = subresourceRange;
-			vkCmdPipelineBarrier(pcommandbufferBlit->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-
-			if (deleteBuffer) {
-				delete[] buffer;
-			}
-
-			pcontext->endSingleTimeCommands(pgpucommandbufferBlit);
-
-		}
-		else {
-// 			// Texture is stored in an external ktx file
-// 			std::string filename = path + "/" + gltfimage.uri;
-//
- 			ktxTexture* ktxTexture;
-//
- 			ktxResult result = KTX_SUCCESS;
-// #if defined(__ANDROID__)
-// 			AAsset* asset = AAssetManager_open(androidApp->activity->assetManager, filename.c_str(), AASSET_MODE_STREAMING);
-// 			if (!asset) {
-// 				vks::vulkan::exitFatal("Could not load texture from " + filename + "\n\nMake sure the assets submodule has been checked out and is up-to-date.", -1);
-// 			}
-// 			size_t size = AAsset_getLength(asset);
-			size_t size = llIfKtx;
-// 			assert(size > 0);
-// 			ktx_uint8_t* textureData = new ktx_uint8_t[size];
-			auto textureData= (ktx_uint8_t*)pIfKtx;
-// 			AAsset_read(asset, textureData, size);
-// 			AAsset_close(asset);
-			result = ktxTexture_CreateFromMemory(textureData, size, KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &ktxTexture);
-// 			delete[] textureData;
-// #else
-// 			if (!file()->exists(filename)) {
-// 				throw ::file::exception(error_file_not_found, "Could not load texture from " + filename + "\n\nMake sure the assets submodule has been checked out and is up-to-date.", -1);
-// 			}
-// 			result = ktxTexture_CreateFromNamedFile(filename.c_str(), KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &ktxTexture);
-// #endif
-//			assert(result == KTX_SUCCESS);
-
-			if (result != KTX_SUCCESS)
-			{
-
-				throw ::exception(error_failed);
-
-			}
-
-
-			this->m_pgpucontext = pgpucontext;
-
-			width = ktxTexture->baseWidth;
-			height = ktxTexture->baseHeight;
-			mipLevels = ktxTexture->numLevels;
-
-			ktx_uint8_t* ktxTextureData = ktxTexture_GetData(ktxTexture);
-			ktx_size_t ktxTextureSize = ktxTexture_GetSize(ktxTexture);
-			format = ktxTexture_GetVkFormat(ktxTexture);
-
-			// Get device properties for the requested texture format
-			VkFormatProperties formatProperties;
-			vkGetPhysicalDeviceFormatProperties(pphysicaldevice->m_vkphysicaldevice, format, &formatProperties);
-
-			//VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+         //VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
          auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
 
-		   ::cast < command_buffer > pcommandbufferCopy = pgpucommandbufferCopy;
+         ::cast < command_buffer > pcommandbufferCopy = pgpucommandbufferCopy;
 
-			VkBuffer stagingBuffer;
-			VkDeviceMemory stagingMemory;
+         VkImageSubresourceRange subresourceRange = {};
+         subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+         subresourceRange.levelCount = 1;
+         subresourceRange.layerCount = 1;
 
-			VkBufferCreateInfo bufferCreateInfo = vkinit::bufferCreateInfo();
-			bufferCreateInfo.size = ktxTextureSize;
-			// This buffer is used as a transfer source for the buffer copy
-			bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-			bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			VK_CHECK_RESULT(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
+         VkImageMemoryBarrier imageMemoryBarrier{};
 
-			VkMemoryAllocateInfo memAllocInfo = vkinit::memoryAllocateInfo();
-			VkMemoryRequirements memReqs;
-			vkGetBufferMemoryRequirements(pcontext->logicalDevice(), stagingBuffer, &memReqs);
-			memAllocInfo.allocationSize = memReqs.size;
-			memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-			VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
-			VK_CHECK_RESULT(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
+         imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+         imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+         imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+         imageMemoryBarrier.srcAccessMask = 0;
+         imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+         imageMemoryBarrier.image = image;
+         imageMemoryBarrier.subresourceRange = subresourceRange;
+         vkCmdPipelineBarrier(pcommandbufferCopy->m_vkcommandbuffer, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr,
+                              0, nullptr, 1, &imageMemoryBarrier);
 
-			uint8_t* data;
-			VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void**)&data));
-			memcpy(data, ktxTextureData, ktxTextureSize);
-			vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
+         VkBufferImageCopy bufferCopyRegion = {};
+         bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+         bufferCopyRegion.imageSubresource.mipLevel = 0;
+         bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
+         bufferCopyRegion.imageSubresource.layerCount = 1;
+         bufferCopyRegion.imageExtent.width = width;
+         bufferCopyRegion.imageExtent.height = height;
+         bufferCopyRegion.imageExtent.depth = 1;
 
-			std::vector<VkBufferImageCopy> bufferCopyRegions;
-			for (uint32_t i = 0; i < mipLevels; i++)
-			{
-				ktx_size_t offset;
-				KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, i, 0, 0, &offset);
-				assert(result == KTX_SUCCESS);
-				VkBufferImageCopy bufferCopyRegion = {};
-				bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-				bufferCopyRegion.imageSubresource.mipLevel = i;
-				bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
-				bufferCopyRegion.imageSubresource.layerCount = 1;
-				bufferCopyRegion.imageExtent.width = std::max(1u, ktxTexture->baseWidth >> i);
-				bufferCopyRegion.imageExtent.height = std::max(1u, ktxTexture->baseHeight >> i);
-				bufferCopyRegion.imageExtent.depth = 1;
-				bufferCopyRegion.bufferOffset = offset;
-				bufferCopyRegions.push_back(bufferCopyRegion);
-			}
+         vkCmdCopyBufferToImage(pcommandbufferCopy->m_vkcommandbuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
+                                &bufferCopyRegion);
 
-			// Create optimal tiled target image
-			VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
-			imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
-			imageCreateInfo.format = format;
-			imageCreateInfo.mipLevels = mipLevels;
-			imageCreateInfo.arrayLayers = 1;
-			imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-			imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-			imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			imageCreateInfo.extent = { width, height, 1 };
-			imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-			VK_CHECK_RESULT(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &image));
+         imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+         imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+         imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+         imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+         imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+         imageMemoryBarrier.image = image;
+         imageMemoryBarrier.subresourceRange = subresourceRange;
+         vkCmdPipelineBarrier(pcommandbufferCopy->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
+                              nullptr, 1, &imageMemoryBarrier);
 
-			vkGetImageMemoryRequirements(pcontext->logicalDevice(), image, &memReqs);
-			memAllocInfo.allocationSize = memReqs.size;
-			memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-			VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &deviceMemory));
-			VK_CHECK_RESULT(vkBindImageMemory(pcontext->logicalDevice(), image, deviceMemory, 0));
+         pcontext->endSingleTimeCommands(pcommandbufferCopy);
 
-			VkImageSubresourceRange subresourceRange = {};
-			subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			subresourceRange.baseMipLevel = 0;
-			subresourceRange.levelCount = mipLevels;
-			subresourceRange.layerCount = 1;
+         vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
+         vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
 
-			vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
-			vkCmdCopyBufferToImage(pcommandbufferCopy->m_vkcommandbuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32_t>(bufferCopyRegions.size()), bufferCopyRegions.data());
-			vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange);
-			//pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, copyQueue);
-		   pcontext->endSingleTimeCommands(pcommandbufferCopy);
-			this->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+         // Generate the mip chain (glTF uses jpg and png, so we need to create this manually)
+         //VkCommandBuffer blitCmd = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+         auto pgpucommandbufferBlit = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+         ::cast<command_buffer> pcommandbufferBlit = pgpucommandbufferBlit;
+         for (uint32_t i = 1; i < mipLevels; i++)
+         {
+            VkImageBlit imageBlit{};
 
-			vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
-			vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
+            imageBlit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            imageBlit.srcSubresource.layerCount = 1;
+            imageBlit.srcSubresource.mipLevel = i - 1;
+            imageBlit.srcOffsets[1].x = int32_t(width >> (i - 1));
+            imageBlit.srcOffsets[1].y = int32_t(height >> (i - 1));
+            imageBlit.srcOffsets[1].z = 1;
 
-			ktxTexture_Destroy(ktxTexture);
-		}
+            imageBlit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            imageBlit.dstSubresource.layerCount = 1;
+            imageBlit.dstSubresource.mipLevel = i;
+            imageBlit.dstOffsets[1].x = int32_t(width >> i);
+            imageBlit.dstOffsets[1].y = int32_t(height >> i);
+            imageBlit.dstOffsets[1].z = 1;
 
-		VkSamplerCreateInfo samplerInfo{};
-		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-		samplerInfo.magFilter = VK_FILTER_LINEAR;
-		samplerInfo.minFilter = VK_FILTER_LINEAR;
-		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-		samplerInfo.compareOp = VK_COMPARE_OP_NEVER;
-		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-		samplerInfo.maxAnisotropy = 1.0;
-		samplerInfo.anisotropyEnable = VK_FALSE;
-		samplerInfo.maxLod = (float)mipLevels;
-		samplerInfo.maxAnisotropy = 8.0f;
-		samplerInfo.anisotropyEnable = VK_TRUE;
-		VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerInfo, nullptr, &sampler));
+            VkImageSubresourceRange mipSubRange = {};
+            mipSubRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            mipSubRange.baseMipLevel = i;
+            mipSubRange.levelCount = 1;
+            mipSubRange.layerCount = 1;
 
-		VkImageViewCreateInfo viewInfo{};
-		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		viewInfo.image = image;
-		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		viewInfo.format = format;
-		viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		viewInfo.subresourceRange.layerCount = 1;
-		viewInfo.subresourceRange.levelCount = mipLevels;
-		VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &view));
+            {
+               VkImageMemoryBarrier imageMemoryBarrier{};
+               imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+               imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+               imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+               imageMemoryBarrier.srcAccessMask = 0;
+               imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+               imageMemoryBarrier.image = image;
+               imageMemoryBarrier.subresourceRange = mipSubRange;
+               vkCmdPipelineBarrier(pcommandbufferBlit->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                    0, 0,
+                                    nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+            }
 
-		descriptor.sampler = sampler;
-		descriptor.imageView = view;
-		descriptor.imageLayout = imageLayout;
-	}
+            vkCmdBlitImage(pcommandbufferBlit->m_vkcommandbuffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image,
+                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlit, VK_FILTER_LINEAR);
+
+            {
+               VkImageMemoryBarrier imageMemoryBarrier{};
+               imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+               imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+               imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+               imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+               imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+               imageMemoryBarrier.image = image;
+               imageMemoryBarrier.subresourceRange = mipSubRange;
+               vkCmdPipelineBarrier(pcommandbufferBlit->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                    VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0,
+                                    nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+            }
+         }
+
+         subresourceRange.levelCount = mipLevels;
+         imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+         imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+         imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+         imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+         imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+         imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+         imageMemoryBarrier.image = image;
+         imageMemoryBarrier.subresourceRange = subresourceRange;
+         vkCmdPipelineBarrier(pcommandbufferBlit->m_vkcommandbuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
+                              VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0,
+                              nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+
+         if (deleteBuffer)
+         {
+            delete[] buffer;
+         }
+
+         //pcontext->endSingleTimeCommands(blitCmd, copyQueue, true);
+
+         pcontext->endSingleTimeCommands(pcommandbufferBlit);
+      }
+      else
+      {
+         // Texture is stored in an external ktx file
+         ::string filename = (path + "/" + gltfimage.uri).c_str();
+
+         ktxTexture *ktxTexture;
+
+         ktxResult result = KTX_SUCCESS;
+#if defined(__ANDROID__)
+         AAsset *asset =
+            AAssetManager_open(androidApp->activity->assetManager, filename.c_str(), AASSET_MODE_STREAMING);
+         if (!asset)
+         {
+            vks::tools::exitFatal("Could not load texture from " + filename +
+                                     "\n\nMake sure the assets submodule has been checked out and is up-to-date.",
+                                  -1);
+         }
+         size_t size = AAsset_getLength(asset);
+         assert(size > 0);
+         ktx_uint8_t *textureData = new ktx_uint8_t[size];
+         AAsset_read(asset, textureData, size);
+         AAsset_close(asset);
+         result = ktxTexture_CreateFromMemory(textureData, size, KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &ktxTexture);
+         delete[] textureData;
+#else
+         //if (!tools::fileExists(filename))
+         //{
+         //   tools::exitFatal("Could not load texture from " + filename +
+         //                       "\n\nMake sure the assets submodule has been checked out and is up-to-date.",
+         //                    -1);
+         //}
+         if (!pcontext->file()->exists(filename))
+         {
+             throw ::exception(error_failed, "Could not load texture from " + ::string(filename) +
+                                 "\n\nMake sure the assets submodule has been checked out and is up-to-date."
+                             );
+          }
+
+         auto memory = pcontext->file()->as_memory(filename);
+          result = ktxTexture_CreateFromMemory(memory.data(), memory.size(),
+             KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT,
+                                               &ktxTexture);
+         //delete[] textureData;
+
+         //result = ktxTexture_CreateFromNamedFile(filename.c_str(), KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &ktxTexture);
+#endif
+         assert(result == KTX_SUCCESS);
+
+
+         this->m_pgpucontext = pgpucontext;
+
+         width = ktxTexture->baseWidth;
+         height = ktxTexture->baseHeight;
+         mipLevels = ktxTexture->numLevels;
+
+         ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
+         ktx_size_t ktxTextureSize = ktxTexture_GetSize(ktxTexture);
+         format = ktxTexture_GetVkFormat(ktxTexture);
+
+         // Get device properties for the requested texture format
+         VkFormatProperties formatProperties;
+         vkGetPhysicalDeviceFormatProperties(pphysicaldevice->m_vkphysicaldevice, format, &formatProperties);
+
+         //VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+
+                  auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+
+         ::cast<command_buffer> pcommandbufferCopy = pgpucommandbufferCopy;
+
+         VkBuffer stagingBuffer;
+         VkDeviceMemory stagingMemory;
+
+         VkBufferCreateInfo bufferCreateInfo = vkinit::bufferCreateInfo();
+         bufferCreateInfo.size = ktxTextureSize;
+         // This buffer is used as a transfer source for the buffer copy
+         bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+         bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+         VK_CHECK_RESULT(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
+
+         VkMemoryAllocateInfo memAllocInfo = vkinit::memoryAllocateInfo();
+         VkMemoryRequirements memReqs;
+         vkGetBufferMemoryRequirements(pcontext->logicalDevice(), stagingBuffer, &memReqs);
+         memAllocInfo.allocationSize = memReqs.size;
+         memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(
+            memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+         VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
+         VK_CHECK_RESULT(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
+
+         uint8_t *data;
+         VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
+         memcpy(data, ktxTextureData, ktxTextureSize);
+         vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
+
+         ::array_base<VkBufferImageCopy> bufferCopyRegions;
+         for (uint32_t i = 0; i < mipLevels; i++)
+         {
+            ktx_size_t offset;
+            KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, i, 0, 0, &offset);
+            assert(result == KTX_SUCCESS);
+            VkBufferImageCopy bufferCopyRegion = {};
+            bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            bufferCopyRegion.imageSubresource.mipLevel = i;
+            bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
+            bufferCopyRegion.imageSubresource.layerCount = 1;
+            bufferCopyRegion.imageExtent.width = std::max(1u, ktxTexture->baseWidth >> i);
+            bufferCopyRegion.imageExtent.height = std::max(1u, ktxTexture->baseHeight >> i);
+            bufferCopyRegion.imageExtent.depth = 1;
+            bufferCopyRegion.bufferOffset = offset;
+            bufferCopyRegions.add(bufferCopyRegion);
+         }
+
+         // Create optimal tiled target image
+         VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
+         imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+         imageCreateInfo.format = format;
+         imageCreateInfo.mipLevels = mipLevels;
+         imageCreateInfo.arrayLayers = 1;
+         imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+         imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+         imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+         imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+         imageCreateInfo.extent = {width, height, 1};
+         imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+         VK_CHECK_RESULT(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &image));
+
+         vkGetImageMemoryRequirements(pcontext->logicalDevice(), image, &memReqs);
+         memAllocInfo.allocationSize = memReqs.size;
+         memAllocInfo.memoryTypeIndex =
+            pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+         VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &deviceMemory));
+         VK_CHECK_RESULT(vkBindImageMemory(pcontext->logicalDevice(), image, deviceMemory, 0));
+
+         VkImageSubresourceRange subresourceRange = {};
+         subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+         subresourceRange.baseMipLevel = 0;
+         subresourceRange.levelCount = mipLevels;
+         subresourceRange.layerCount = 1;
+
+         ::vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                               subresourceRange);
+         vkCmdCopyBufferToImage(pcommandbufferCopy->m_vkcommandbuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                static_cast<uint32_t>(bufferCopyRegions.size()), bufferCopyRegions.data());
+         ::vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                               VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange);
+         pcontext->endSingleTimeCommands(pcommandbufferCopy);
+         //pcontext->endSingleTimeCommands(pcommandbufferCopy->m_vkcommandbuffer, copyQueue);
+         this->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+         vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
+         vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
+
+         ktxTexture_Destroy(ktxTexture);
+      }
+
+      VkSamplerCreateInfo samplerInfo{};
+      samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+      samplerInfo.magFilter = VK_FILTER_LINEAR;
+      samplerInfo.minFilter = VK_FILTER_LINEAR;
+      samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+      samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+      samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+      samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+      samplerInfo.compareOp = VK_COMPARE_OP_NEVER;
+      samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+      samplerInfo.maxAnisotropy = 1.0;
+      samplerInfo.anisotropyEnable = VK_FALSE;
+      samplerInfo.maxLod = (float)mipLevels;
+      samplerInfo.maxAnisotropy = 8.0f;
+      samplerInfo.anisotropyEnable = VK_TRUE;
+      VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerInfo, nullptr, &sampler));
+
+      VkImageViewCreateInfo viewInfo{};
+      viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+      viewInfo.image = image;
+      viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+      viewInfo.format = format;
+      viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      viewInfo.subresourceRange.layerCount = 1;
+      viewInfo.subresourceRange.levelCount = mipLevels;
+      VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &view));
+
+      descriptor.sampler = sampler;
+      descriptor.imageView = view;
+      descriptor.imageLayout = imageLayout;
+   }
+
 
 	/*
 		gltf material
@@ -1115,12 +1499,16 @@ namespace gpu_vulkan
 
 	void gltf::Model::loadImages(tinygltf::Model& gltfModel, ::gpu::context * pgpucontext, VkQueue transferQueue)
 	{
-		auto memory = file()->as_memory(m_path.c_str());
 		for (tinygltf::Image& image : gltfModel.images) {
 			Texture texture;
-			texture.fromglTfImage(image, memory.data(), memory.size(), pgpucontext, transferQueue, false);
-			texture.index = static_cast<uint32_t>(m_textures.size());
-			m_textures.push_back(texture);
+         texture.fromglTfImage(image, m_path, pgpucontext, transferQueue, false);
+         texture.index = static_cast<uint32_t>(m_textures.size());
+         m_textures.push_back(texture);
+
+         //auto memory = file()->as_memory(image.m_path.c_str());
+         //texture.fromglTfImage(image, memory.data(), memory.size(), pgpucontext, transferQueue, false);
+			//texture.index = static_cast<uint32_t>(m_textures.size());
+			//m_textures.push_back(texture);
 		}
 		// Create an empty texture to be used for empty material images
 		createEmptyTexture(transferQueue);
@@ -1182,6 +1570,53 @@ namespace gpu_vulkan
 	}
 
 
+   //loader.SetImageLoader(
+   //   [](tinygltf::Image *image, int index, std::string *err, std::string *warn, int req_width, int req_height,
+   //      const unsigned char *bytes, int size, void *user_data)
+   //   {
+   //      // You can decode image bytes here with stb_image or your own decoder
+   //      // Example: load with stb_image
+   //      int w, h, comp;
+   //      unsigned char *data = stbi_load_from_memory(bytes, size, &w, &h, &comp, req_width > 0 ? req_width : 0);
+   //      if (!data)
+   //      {
+   //         if (err)
+   //            *err = "Failed to load image";
+   //         return false;
+   //      }
+   //      image->width = w;
+   //      image->height = h;
+   //      image->component = comp;
+   //      image->image.assign(data, data + w * h * comp);
+   //      stbi_image_free(data);
+   //      return true;
+   //   },
+   //   nullptr);
+
+
+   //loader.SetFsCallbacks({// fileExists
+   //                       [](const std::string &path, void *) { return std::filesystem::exists(path); },
+   //                       // readWholeFile
+   //                       [](std::vector<unsigned char> *out, std::string *err, const std::string &path, void *)
+   //                       {
+   //                          std::ifstream f(path, std::ios::binary);
+   //                          if (!f)
+   //                          {
+   //                             if (err)
+   //                                *err = "Could not open: " + path;
+   //                             return false;
+   //                          }
+   //                          f.seekg(0, std::ios::end);
+   //                          size_t size = f.tellg();
+   //                          f.seekg(0);
+   //                          out->resize(size);
+   //                          f.read(reinterpret_cast<char *>(out->data()), size);
+   //                          return true;
+   //                       },
+   //                       // writeWholeFile (rarely needed)
+   //                       nullptr, nullptr});
+
+
 	void  gltf::Model::loadFromFile(std::string filename, ::gpu::context* pgpucontext, VkQueue transferQueue, uint32_t fileLoadingFlags, float scale)
 	{
 		tinygltf::Model gltfModel;
@@ -1191,8 +1626,21 @@ namespace gpu_vulkan
 			gltfContext.SetImageLoader(loadImageDataFuncEmpty, nullptr);
 		}
 		else {
-			gltfContext.SetImageLoader(loadImageDataFunc, nullptr);
+			gltfContext.SetImageLoader(tinygltf_LoadImageData, image());
 		}
+  //    if (fileLoadingFlags & FileLoadingFlags::UseFsCallbacks)
+  //    {
+
+             // Set custom filesystem callbacks
+         tinygltf::FsCallbacks fsCallbacks;
+         fsCallbacks.FileExists = tinygltf_FileExists;
+         fsCallbacks.ReadWholeFile = tinygltf_ReadWholeFile;
+         fsCallbacks.WriteWholeFile = tinygltf_WriteWholeFile;
+         fsCallbacks.ExpandFilePath = tinygltf_ExpandFilePath; // use default
+         fsCallbacks.user_data = file();
+         gltfContext.SetFsCallbacks(fsCallbacks);
+         
+      //}
 #if defined(__ANDROID__)
 		// On Android all assets are packed with the apk in a compressed form, so we need to open them using the asset manager
 		// We let tinygltf handle this, by passing the asset manager of our app
@@ -1523,6 +1971,11 @@ namespace gpu_vulkan
 		vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
 		m_bBuffersBound = true;
 	}
+   void gltf::Model::draw(::gpu::command_buffer * pgpucommandbuffer)
+   {
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+      gltfDraw(pcommandbuffer->m_vkcommandbuffer);
+   }
 	void  gltf::Model::gltfDraw(VkCommandBuffer commandBuffer, uint32_t renderFlags, VkPipelineLayout pipelineLayout, uint32_t bindImageSet)
 	{
 		if (!m_bBuffersBound) {

@@ -138,25 +138,32 @@ namespace gpu_vulkan
       vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
       vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
-      VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-      pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-      pipelineLayoutInfo.setLayoutCount = (uint32_t) pipelineconfiguration.descriptorSetLayouts.size();
-      pipelineLayoutInfo.pSetLayouts = pipelineconfiguration.descriptorSetLayouts.data();
-      pipelineLayoutInfo.pushConstantRangeCount = (uint32_t) pipelineconfiguration.pushConstantRanges.size();
-      pipelineLayoutInfo.pPushConstantRanges = pipelineconfiguration.pushConstantRanges.data();
+      if (pipelineconfiguration.pipelineLayout)
+      {
 
-      VkPipelineLayout vkpipelinelayout = VK_NULL_HANDLE;
-      
-      auto vkresultCreatePipelineLayout =
-         vkCreatePipelineLayout(
-         pgpucontext->logicalDevice(),
-         &pipelineLayoutInfo,
-         nullptr,
-         &vkpipelinelayout);
+         m_vkpipelinelayout = pipelineconfiguration.pipelineLayout;
 
-      pgpudevice->_defer_throw_vkresult(vkresultCreatePipelineLayout);
+      }
+      else
+      {
 
-      m_vkpipelinelayout = vkpipelinelayout;
+         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+         pipelineLayoutInfo.setLayoutCount = (uint32_t)pipelineconfiguration.descriptorSetLayouts.size();
+         pipelineLayoutInfo.pSetLayouts = pipelineconfiguration.descriptorSetLayouts.data();
+         pipelineLayoutInfo.pushConstantRangeCount = (uint32_t)pipelineconfiguration.pushConstantRanges.size();
+         pipelineLayoutInfo.pPushConstantRanges = pipelineconfiguration.pushConstantRanges.data();
+
+         VkPipelineLayout vkpipelinelayout = VK_NULL_HANDLE;
+
+         auto vkresultCreatePipelineLayout =
+            vkCreatePipelineLayout(pgpucontext->logicalDevice(), &pipelineLayoutInfo, nullptr, &vkpipelinelayout);
+
+         pgpudevice->_defer_throw_vkresult(vkresultCreatePipelineLayout);
+
+         m_vkpipelinelayout = vkpipelinelayout;
+
+      }
 
       VkGraphicsPipelineCreateInfo graphicspipelinecreateinfo{};
       graphicspipelinecreateinfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -172,7 +179,7 @@ namespace gpu_vulkan
       graphicspipelinecreateinfo.pDynamicState = &pipelineconfiguration.dynamicStateInfo;
       
 
-      graphicspipelinecreateinfo.layout = vkpipelinelayout;
+      graphicspipelinecreateinfo.layout = m_vkpipelinelayout;
       graphicspipelinecreateinfo.renderPass = pipelineconfiguration.renderPass;
       graphicspipelinecreateinfo.subpass = pipelineconfiguration.subpass;
 

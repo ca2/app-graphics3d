@@ -245,6 +245,7 @@ namespace vulkan
       VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
       ::comparable_array<VkDynamicState> dynamicStateEnables;
       VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+      VkPipelineLayout pipelineLayout = nullptr;
       VkRenderPass renderPass = nullptr;
       uint32_t subpass = 0;
       VkSpecializationInfo* fragSpecInfo = nullptr;

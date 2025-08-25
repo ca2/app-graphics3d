@@ -74,7 +74,11 @@ namespace gpu_vulkan
 			uint32_t index;
 			void updateDescriptor();
 			void destroy();
-			void fromglTfImage(tinygltf::Image& gltfimage, void * pIfKtx, long long llIfKtx, ::gpu::context* pcontext, VkQueue copyQueue, bool isSrgb);
+//			void fromglTfImage(tinygltf::Image& gltfimage, void * pIfKtx, long long llIfKtx, ::gpu::context* pcontext, VkQueue copyQueue, bool isSrgb);
+
+         void fromglTfImage(tinygltf::Image &gltfimage, ::std::string path, ::gpu::context *pcontext, VkQueue copyQueue,
+                            bool isSrgb);
+
 		};
 
 
@@ -169,7 +173,7 @@ namespace gpu_vulkan
 		/*
 			gltf node
 		*/
-		struct Node {
+		struct CLASS_DECL_GPU_VULKAN Node {
 			Node* parent;
 			uint32_t index;
 			std::vector<Node*> children;
@@ -246,7 +250,8 @@ namespace gpu_vulkan
 			PreTransformVertices = 0x00000001,
 			PreMultiplyVertexColors = 0x00000002,
 			FlipY = 0x00000004,
-			DontLoadImages = 0x00000008
+			DontLoadImages = 0x00000008,
+         //UseFsCallbacks = 0x00000010
 		};
 
 		enum RenderFlags {
@@ -259,7 +264,7 @@ namespace gpu_vulkan
 		/*
 			gltf model loading and rendering class
 		*/
-		class Model :
+		class CLASS_DECL_GPU_VULKAN Model :
 			public ::graphics3d::renderable
 		{
 		public:
@@ -316,6 +321,7 @@ namespace gpu_vulkan
 			void loadFromFile(std::string filename, ::gpu::context * pcontext, VkQueue transferQueue, uint32_t fileLoadingFlags = FileLoadingFlags::None, float scale = 1.0f);
 
 			void bind(::gpu::command_buffer * pgpucommandbuffer)override;
+         void draw(::gpu::command_buffer *pgpucommandbuffer) override;
 
 			void gltfDraw(
 				VkCommandBuffer cmd,

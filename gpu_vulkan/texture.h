@@ -146,6 +146,7 @@ namespace gpu_vulkan
       /// Does every texture needs its own sampler?
       VkSampler                  m_vksampler3;
       VkDescriptorImageInfo      m_descriptor3;
+      VkSampler                  m_vksamplerDedicated;
       //VkImage                    m_vkimageDepth;
       //VkDeviceMemory             m_vkdevicememoryDepth;
       VkImageView                m_vkimageview;
@@ -216,6 +217,18 @@ namespace gpu_vulkan
       virtual texture_synchronization * synchronization();
       //virtual texture_synchronization* synchronization(::gpu::render_target* prendertarget);
       void set_pixels(const ::int_rectangle& rectangle, const void* data) override;
+
+
+      virtual void KtxLoadCubemapFromFile(
+         const ::scoped_string &name,
+         ::string filename, 
+         VkFormat format,
+         VkQueue copyQueue, 
+         VkImageUsageFlags imageUsageFlags,
+         VkImageLayout imageLayout);
+
+
+      void UpdateDescriptor();
 
    };
 
