@@ -1226,20 +1226,9 @@ namespace gpu_vulkan
    render_pass *shader::render_pass2()
    {
 
-      ::cast<render_target> prendertarget = m_pgpurenderer->m_pgpurendertarget;
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
-      if (m_pgpurenderer->m_pgpucontext->m_escene == ::gpu::e_scene_3d)
-      {
-
-         return prendertarget->render_pass_with_depth();
-
-      }
-      else
-      {
-
-         return prendertarget->render_pass_no_depth();
-
-      }
+      return prenderer->render_pass2();
 
    }
 

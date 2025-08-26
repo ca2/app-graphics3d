@@ -168,6 +168,7 @@ namespace graphics3d_vulkan
 
       auto &sceneobjects = pscene->scene_objects();
 
+
       //   //// xxxxxxxxxxxxxxxxx
       ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
       ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;

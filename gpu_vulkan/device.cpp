@@ -864,9 +864,10 @@ namespace gpu_vulkan
       vulkan13Features.dynamicRendering = VK_TRUE;
       vulkan13Features.synchronization2 = VK_TRUE;
       //vulkan13Features.maintenance4 = VK_TRUE;
-      vulkan13Features.robustImageAccess = VK_TRUE;
+      vulkan13Features.robustImageAccess = VK_FALSE;
+      //vulkan13Features.robustImageAccess = VK_TRUE;
 
-      indexingFeatures.pNext = &vulkan13Features;
+      //indexingFeatures.pNext = &vulkan13Features;
 
     //VkPhysicalDeviceFeatures2 features2{};
 //      features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;

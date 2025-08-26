@@ -52,7 +52,7 @@ namespace graphics3d_opengl
    {
    public:
 
-      void setPerspectiveProjection(float fovy, float aspect, float near, float far) override;
+      void setPerspectiveProjection(float fovy, float aspect, float near, float far);
 //
 //      ::pointer < ::glc::GlContainer > m_pimpact;
 //

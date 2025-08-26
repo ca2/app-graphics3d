@@ -57,6 +57,7 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item < ::gpu::frame_ephemeral >();
    pfactory->add_factory_item < ::gpu::frame_storage >();
+   pfactory->add_factory_item<::gpu_vulkan::render_pass>();
    
 
 }

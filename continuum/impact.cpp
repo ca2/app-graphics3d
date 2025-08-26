@@ -29,7 +29,7 @@ namespace app_graphics3d_continuum
    impact::impact()
    {
 
-      m_emouse = ::graphics3d::e_mouse_updateLook;
+      
       m_flagNonClient -= e_non_client_background;
       m_iSequence = 0;
       m_bNeedFullRedrawOnResize = true;

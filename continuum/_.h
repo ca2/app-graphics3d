@@ -29,6 +29,20 @@ namespace app_graphics3d_continuum
    class GlobalUbo;
 
 
+   enum enum_mouse
+   {
+      e_mouse_none = 0,
+      e_mouse_updateLook
+   };
+   enum enum_keyboard
+   {
+      e_keyboard_none = 0,
+      e_keyboard_updateMovement,
+      e_keyboard_spaceExplorer
+   };
+
+
+
 } // namespace flag
 
 

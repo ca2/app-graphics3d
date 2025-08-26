@@ -10,16 +10,23 @@
 namespace app_graphics3d_continuum
 {
 
-class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM immersion :
-   virtual public ::prodevian::immersion
-{
-public:
-immersion();
-   ~immersion() override;
+   class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM immersion :
+      virtual public ::prodevian::immersion
+   {
+   public:
 
-   ::pointer < ::graphics3d::scene>create_main_scene() override;
+      ::app_graphics3d_continuum::enum_mouse m_emouse;
+      ::app_graphics3d_continuum::enum_keyboard m_ekeyboard;
 
-};
 
-} // app_graphics3d_continuum
+      immersion();
+      ~immersion() override;
 
+      ::pointer<::graphics3d::scene> create_main_scene() override;
+
+      void on_pre_update_camera() override;
+
+
+   };
+
+} // namespace app_graphics3d_continuum

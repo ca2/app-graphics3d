@@ -5,7 +5,7 @@
 #include "bred/graphics3d/engine.h"
 
 
-#include "scene_object.h"
+//#include "scene_object.h"
 
 
 // libs

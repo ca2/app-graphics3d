@@ -1280,6 +1280,25 @@ namespace gpu_vulkan
    }
 
 
+   ::gpu_vulkan::render_pass * renderer::render_pass2()
+   {
+
+      ::cast<render_target> prendertarget = m_pgpurendertarget;
+
+      if (m_pgpucontext->m_escene == ::gpu::e_scene_3d)
+      {
+
+         return prendertarget->render_pass_with_depth();
+      }
+      else
+      {
+
+         return prendertarget->render_pass_no_depth();
+      }
+
+   }
+
+
    void renderer::sample()
    {
 
@@ -3863,7 +3882,7 @@ namespace gpu_vulkan
    void renderer::endFrame()
    {
 
-      m_prenderstate->on_happening(::gpu::e_happening_end_frame);
+      //m_prenderstate->on_happening(::gpu::e_happening_end_frame);
 
       assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
 
@@ -4009,7 +4028,9 @@ namespace gpu_vulkan
 
       }
 
-      isFrameStarted = false;
+      ::gpu::renderer::endFrame();
+
+      //isFrameStarted = false;
 
       //auto eoutput = m_pgpucontext->m_eoutput;
 

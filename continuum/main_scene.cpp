@@ -2,6 +2,7 @@
 // by camilo on 2025-05-07 02:18 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "application.h"
+#include "camera.h"
 #include "impact.h"
 #include "main_scene.h"
 #include "bred/graphics3d/camera.h"
@@ -37,6 +38,8 @@ namespace app_graphics3d_continuum
 
       m_papp->m_pmainscene = this;
 
+
+
    }
 
 
@@ -51,9 +54,13 @@ namespace app_graphics3d_continuum
          glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f); // Look at origin
          //glm::vec3 direction = glm::normalize(target - cameraPos);
          //camera camera{ glm::vec3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
-         auto pcamera = øcreate < ::graphics3d::camera>();
+         auto pcamera = øcreate_new<::app_graphics3d_continuum::camera>();
          pcamera->m_pengine = m_pimmersionlayer->m_pengine;
          pcamera->initialize_camera(target, camera);
+
+         float aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
+
+         pcamera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
          //pcamera->m_pimpact = m_pimpact;
          m_pcameraDefault = pcamera;
 
@@ -176,7 +183,7 @@ namespace app_graphics3d_continuum
 
       for (int i = 0; i < lightColors.size(); i++) 
       {
-         auto ppointlight = create_point_light(0.2f);
+         auto ppointlight = create_point_light(0.2f, 0.1f);
          ppointlight->m_color = lightColors[i];
          auto rotateLight = glm::rotate(
             glm::mat4(1.f),
@@ -225,14 +232,39 @@ namespace app_graphics3d_continuum
       //pgpucontext->clear(::argb(.5f, 0.f, 0.f, 0.5f));
 
       //::graphics3d::GlobalUbo ubo{};
+      ::cast<::app_graphics3d_continuum::camera> pcamera = camera();
 
-      auto projection = m_pimmersionlayer->m_pscene->m_pcameraCurrent->getProjection();
+      
+         glm::mat4 matrixImpact;
+         if (m_pimmersionlayer->m_pengine->m_fYScale < 0)
+         {
+            matrixImpact = glm::lookAtRH(pcamera->m_locationPosition,
+                                         pcamera->m_locationPosition + pcamera->m_poleFront,
+                             pcamera->m_poleWorldUp);
+            // matrixImpact[2][0] = -matrixImpact[2][0];
+            // matrixImpact[2][1] = -matrixImpact[2][1];
+            // matrixImpact[2][2] = -matrixImpact[2][2];
+            // matrixImpact[2][3] = -matrixImpact[2][3];
+         }
+         else
+         {
+            matrixImpact =
+               glm::lookAtRH(pcamera->m_locationPosition, pcamera->m_locationPosition + pcamera->m_poleFront, pcamera->m_poleWorldUp);
+         }
+         pcamera->m_matrixImpact = matrixImpact;
+         //}
+
+         pcamera->m_matrixAntImpact = glm::inverse(pcamera->m_matrixImpact);
+
+
+
+      auto projection = pcamera->getProjection();
       globalubo["projection"] = projection;
 
-      auto view = m_pimmersionlayer->m_pscene->m_pcameraCurrent->getView();
+      auto view = pcamera->getView();
       globalubo["view"] = view;
 
-      auto inverseView = m_pimmersionlayer->m_pscene->m_pcameraCurrent->getInverseView();
+      auto inverseView = pcamera->getInverseView();
       globalubo["invView"] = inverseView;
 
       if (m_ppointlightrendersystem)

@@ -140,6 +140,9 @@ namespace gpu_vulkan
 
       }
 
+
+      virtual ::gpu_vulkan::render_pass *render_pass2();
+
       void sample();
       //void resolve_color_and_alpha_accumulation_buffers();
       //void _resolve_color_and_alpha_accumulation_buffers();

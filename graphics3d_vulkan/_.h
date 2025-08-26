@@ -2,7 +2,7 @@
 
 
 #include "app-graphics3d/gpu_vulkan/_.h"
-#include "_vulkan.h"
+//#include "_vulkan.h"
 
 
 #if defined(_graphics3d_vulkan_project)

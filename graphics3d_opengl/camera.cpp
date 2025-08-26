@@ -16,7 +16,7 @@ namespace graphics3d_opengl
    void camera::setPerspectiveProjection(float fovy, float aspect, float fNear, float fFar)
    {
 
-      ::graphics3d::camera::setPerspectiveProjection(fovy, aspect, fNear, fFar);
+      //::graphics3d::camera::setPerspectiveProjection(fovy, aspect, fNear, fFar);
       //const float tanHalfFovy = tan(fovy / 2.f);
 
       //m_matrixProjection = glm::mat4{ 0.0f };
