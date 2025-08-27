@@ -4197,7 +4197,7 @@ VkFormat context::findDepthFormat()
    // Write the environment cubemap descriptor (make sure environmentCube is valid)
    if (!environmentCube)
    {
-      throw std::runtime_error("generatePrefilteredEnvMap: environmentCube is null");
+      throw ::exception(error_failed, "generatePrefilteredEnvMap: environmentCube is null");
    }
    VkWriteDescriptorSet writeDescriptorSet = vkinit::writeDescriptorSet(
       descriptorset, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &environmentCube->m_descriptor3);
@@ -4224,7 +4224,7 @@ VkFormat context::findDepthFormat()
 
    // --- Pipeline creation using your VkSandboxPipeline wrapper (vertex pos only) ---
    ::vulkan::pipeline_configuration cfg{};
-   pdevice->default_pipeline_configuration(cfg);
+   ::vulkan::defaultPipelineConfigInfo2(cfg);
 
    // Vertex input: vec3 position only (location 0)
    VkVertexInputBindingDescription bindingDesc{};
@@ -4497,10 +4497,10 @@ VkFormat context::findDepthFormat()
    samplerCI.minLod = 0.0f;
    samplerCI.maxLod = static_cast<float>(numMips);
    samplerCI.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-   VK_CHECK_RESULT(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &irradianceCube->m_vksampler3));
+   VK_CHECK_RESULT(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &irradianceCube->m_vksamplerDedicated));
 
    irradianceCube->m_descriptor3.imageView = irradianceCube->m_vkimageview;
-   irradianceCube->m_descriptor3.sampler = irradianceCube->m_vksampler3;
+   irradianceCube->m_descriptor3.sampler = irradianceCube->m_vksamplerDedicated;
    irradianceCube->m_descriptor3.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
    // irradianceCube->m_pDevice = m_pgpudevice;
 
@@ -4644,7 +4644,7 @@ VkFormat context::findDepthFormat()
 
    // Pipeline config — IMPORTANT: provide vertex input descriptions to match shader (location 0)
    pipeline_configuration pipelineconfiguration{};
-   pgpudevice->default_pipeline_configuration(pipelineconfiguration);
+   ::vulkan::defaultPipelineConfigInfo2(pipelineconfiguration);
 
    // Vertex input: location 0 is a vec3 position (adjust if your skybox vertex layout differs)
    VkVertexInputBindingDescription bindingDesc{};
@@ -4661,7 +4661,7 @@ VkFormat context::findDepthFormat()
    pipelineconfiguration.attributeDescriptions = {attrDesc};
 
    pipelineconfiguration.renderPass = renderpass;
-   // pipelineconfiguration.pipelineLayout = VK_NULL_HANDLE;
+   pipelineconfiguration.pipelineLayout = VK_NULL_HANDLE;
    pipelineconfiguration.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
    pipelineconfiguration.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
    pipelineconfiguration.dynamicStateInfo.pDynamicStates = pipelineconfiguration.dynamicStateEnables.data();
@@ -4675,7 +4675,7 @@ VkFormat context::findDepthFormat()
    pushRange.size = sizeof(PushBlock);
    pipelineconfiguration.pushConstantRanges = {pushRange};
 
-   // pipelineconfiguration.pipelineLayout = VK_NULL_HANDLE;
+   pipelineconfiguration.pipelineLayout = VK_NULL_HANDLE;
 
    // std::string vert = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/filtered_cube.vert.spv";
    // std::string frag = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/irradiance_cube.frag.spv";
@@ -5070,7 +5070,7 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
    viewCI.image = lutBrdf->m_vkimage;
    VK_CHECK_RESULT(vkCreateImageView(this->logicalDevice(), &viewCI, nullptr, &lutBrdf->m_vkimageview));
 
-   lutBrdf->m_vksampler3 = _001VkSampler();
+   //lutBrdf->m_vksampler3 = _001VkSampler();
 
    // Sampler
    VkSamplerCreateInfo samplerCI = vkinit::samplerCreateInfo();
@@ -5083,10 +5083,10 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
    samplerCI.minLod = 0.0f;
    samplerCI.maxLod = 1.0f;
    samplerCI.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-   VK_CHECK_RESULT(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &lutBrdf->m_vksampler3));
+   VK_CHECK_RESULT(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &lutBrdf->m_vksamplerDedicated));
 
    lutBrdf->m_descriptor3.imageView = lutBrdf->m_vkimageview;
-   lutBrdf->m_descriptor3.sampler = lutBrdf->m_vksampler3;
+   lutBrdf->m_descriptor3.sampler = lutBrdf->m_vksamplerDedicated;
    lutBrdf->m_descriptor3.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
    // lutBrdf->m_pDevice = m_pgpudevice;
 
@@ -5206,12 +5206,12 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
 
    // 4) Fill your pipeline_configuration_information
    ::vulkan::pipeline_configuration pipelineconfiguration{};
-   pgpudevice->default_pipeline_configuration(pipelineconfiguration);
+   ::vulkan::defaultPipelineConfigInfo2(pipelineconfiguration);
 
    pipelineconfiguration.bindingDescriptions.clear();
    pipelineconfiguration.attributeDescriptions.clear();
    pipelineconfiguration.renderPass = renderpass;
-   // pipelineconfiguration.pipelineLayout = pipelinelayout;
+   pipelineconfiguration.pipelineLayout = pipelinelayout;
    //  viewport & scissor will be dynamic
    pipelineconfiguration.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
    pipelineconfiguration.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
@@ -5430,6 +5430,7 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
    ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
    ptexture->m_state.m_vkimagelayout = imageLayout;
    ptexture->m_vkformat = format;
+   ptexture->m_pgpurenderer = m_pgpurenderer;
 
    ::string strExtension = path.final_extension();
 

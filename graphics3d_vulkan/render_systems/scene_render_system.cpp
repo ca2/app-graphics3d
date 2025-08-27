@@ -75,20 +75,25 @@ namespace graphics3d_vulkan
       ::memory vert;
       ::memory frag;
 
-      pgpudevice->defer_shader_memory(vert,  "matter://shaders/scene_vert.vert");
+      pgpudevice->defer_shader_memory(vert, "matter://shaders/scene_vert.vert");
       pgpudevice->defer_shader_memory(frag, "matter://shaders/scene_frag.frag");
 
       ::array_base<VkVertexInputBindingDescription> bindings = {
          vkinit::vertexInputBindingDescription(0, sizeof(::gpu_vulkan::gltf::Vertex), VK_VERTEX_INPUT_RATE_VERTEX)};
 
       ::array_base<VkVertexInputAttributeDescription> attributes = {
-         vkinit::vertexInputAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu_vulkan::gltf::Vertex, pos)),
-         vkinit::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(::gpu_vulkan::gltf::Vertex, normal)),
-         vkinit::vertexInputAttributeDescription(0, 2, VK_FORMAT_R32G32_SFLOAT, offsetof(::gpu_vulkan::gltf::Vertex, uv)),
-         vkinit::vertexInputAttributeDescription(0, 3, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(::gpu_vulkan::gltf::Vertex, color)),
+         vkinit::vertexInputAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT,
+                                                 offsetof(::gpu_vulkan::gltf::Vertex, pos)),
+         vkinit::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT,
+                                                 offsetof(::gpu_vulkan::gltf::Vertex, normal)),
+         vkinit::vertexInputAttributeDescription(0, 2, VK_FORMAT_R32G32_SFLOAT,
+                                                 offsetof(::gpu_vulkan::gltf::Vertex, uv)),
+         vkinit::vertexInputAttributeDescription(0, 3, VK_FORMAT_R32G32B32A32_SFLOAT,
+                                                 offsetof(::gpu_vulkan::gltf::Vertex, color)),
          vkinit::vertexInputAttributeDescription(0, 4, VK_FORMAT_R32G32B32A32_SFLOAT,
                                                  offsetof(::gpu_vulkan::gltf::Vertex, tangent))};
 
+      {
       // OPAQUE
       ::vulkan::pipeline_configuration pipelineconfigurationOpaque{};
       ::vulkan::defaultPipelineConfigInfo2(pipelineconfigurationOpaque);
@@ -98,60 +103,74 @@ namespace graphics3d_vulkan
       pipelineconfigurationOpaque.attributeDescriptions = attributes;
 
       m_ppipelineOpaque = øcreate_new<::gpu_vulkan::pipeline>();
-      
-      m_ppipelineOpaque->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, pipelineconfigurationOpaque);
 
-      // MASK
-      ::vulkan::pipeline_configuration pipelineconfigurationMask{};
-      ::vulkan::defaultPipelineConfigInfo2(pipelineconfigurationMask);
-      pipelineconfigurationMask.pipelineLayout = m_pipelineLayout;
-      pipelineconfigurationMask.renderPass = renderPass;
-      pipelineconfigurationMask.bindingDescriptions = bindings;
-      pipelineconfigurationMask.attributeDescriptions = attributes;
-      pipelineconfigurationMask.colorBlendAttachments[0].blendEnable = VK_FALSE;
+      m_ppipelineOpaque->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag,
+                                                      pipelineconfigurationOpaque);
+   }
 
-      struct SpecData
       {
-         VkBool32 alphaMask;
-         float cutoff;
-      };
-      static SpecData specData{VK_TRUE, 0.5f};
-      static VkSpecializationMapEntry mapEntries[2] = {{0, offsetof(SpecData, alphaMask), sizeof(VkBool32)},
-                                                       {1, offsetof(SpecData, cutoff), sizeof(float)}};
-      static VkSpecializationInfo specInfo{};
-      specInfo.mapEntryCount = 2;
-      specInfo.pMapEntries = mapEntries;
-      specInfo.dataSize = sizeof(specData);
-      specInfo.pData = &specData;
+         // MASK
+         ::vulkan::pipeline_configuration pipelineconfigurationMask{};
+         ::vulkan::defaultPipelineConfigInfo2(pipelineconfigurationMask);
+         pipelineconfigurationMask.pipelineLayout = m_pipelineLayout;
+         pipelineconfigurationMask.renderPass = renderPass;
+         pipelineconfigurationMask.bindingDescriptions = bindings;
+         pipelineconfigurationMask.attributeDescriptions = attributes;
+         pipelineconfigurationMask.colorBlendAttachments[0].blendEnable = VK_FALSE;
 
-      pipelineconfigurationMask.fragSpecInfo = &specInfo;
+         struct SpecData
+         {
+            VkBool32 alphaMask;
+            float cutoff;
+         };
+         static SpecData specData{VK_TRUE, 0.5f};
+         static VkSpecializationMapEntry mapEntries[2] = {{0, offsetof(SpecData, alphaMask), sizeof(VkBool32)},
+                                                          {1, offsetof(SpecData, cutoff), sizeof(float)}};
+         static VkSpecializationInfo specInfo{};
+         specInfo.mapEntryCount = 2;
+         specInfo.pMapEntries = mapEntries;
+         specInfo.dataSize = sizeof(specData);
+         specInfo.pData = &specData;
 
-      m_ppipelineMask = øcreate_new<::gpu_vulkan::pipeline>();
-      
-      m_ppipelineMask->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, pipelineconfigurationMask);
+         pipelineconfigurationMask.fragSpecInfo = &specInfo;
 
-      // BLEND
-      ::vulkan::pipeline_configuration pipelineconfigurationBlend{};
-      ::vulkan::defaultPipelineConfigInfo2(pipelineconfigurationBlend);
-      pipelineconfigurationBlend.pipelineLayout = m_pipelineLayout;
-      pipelineconfigurationBlend.renderPass = renderPass;
-      pipelineconfigurationBlend.bindingDescriptions = bindings;
-      pipelineconfigurationBlend.attributeDescriptions = attributes;
+         m_ppipelineMask = øcreate_new<::gpu_vulkan::pipeline>();
 
-      pipelineconfigurationBlend.colorBlendAttachments[0].blendEnable = VK_TRUE;
-      pipelineconfigurationBlend.colorBlendAttachments[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-      pipelineconfigurationBlend.colorBlendAttachments[0].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-      pipelineconfigurationBlend.colorBlendAttachments[0].colorBlendOp = VK_BLEND_OP_ADD;
-      pipelineconfigurationBlend.colorBlendAttachments[0].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-      pipelineconfigurationBlend.colorBlendAttachments[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-      pipelineconfigurationBlend.colorBlendAttachments[0].alphaBlendOp = VK_BLEND_OP_ADD;
+         m_ppipelineMask->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, pipelineconfigurationMask);
+      }
 
-      pipelineconfigurationBlend.colorBlendAttachments[0].colorWriteMask =
-         VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+      {
+         // BLEND
+         ::vulkan::pipeline_configuration pipelineconfigurationBlend{};
+         ::vulkan::defaultPipelineConfigInfo2(pipelineconfigurationBlend);
+         pipelineconfigurationBlend.pipelineLayout = m_pipelineLayout;
+         pipelineconfigurationBlend.renderPass = renderPass;
+         pipelineconfigurationBlend.bindingDescriptions = bindings;
+         pipelineconfigurationBlend.attributeDescriptions = attributes;
 
-      m_ppipelineBlend = øcreate_new<::gpu_vulkan::pipeline>();
-      
-      m_ppipelineBlend->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, pipelineconfigurationBlend);
+         pipelineconfigurationBlend.colorBlendAttachments[0].blendEnable = VK_TRUE;
+         pipelineconfigurationBlend.colorBlendAttachments[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+         pipelineconfigurationBlend.colorBlendAttachments[0].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+         pipelineconfigurationBlend.colorBlendAttachments[0].colorBlendOp = VK_BLEND_OP_ADD;
+         pipelineconfigurationBlend.colorBlendAttachments[0].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+         pipelineconfigurationBlend.colorBlendAttachments[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+         pipelineconfigurationBlend.colorBlendAttachments[0].alphaBlendOp = VK_BLEND_OP_ADD;
+         // auto &state = pipelineconfigurationBlend.colorBlendAttachments[0];
+         // state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+         // state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+         // state.colorBlendOp = VK_BLEND_OP_ADD;
+         // state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+         // state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+         // state.alphaBlendOp = VK_BLEND_OP_ADD;
+
+         pipelineconfigurationBlend.colorBlendAttachments[0].colorWriteMask =
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+         m_ppipelineBlend = øcreate_new<::gpu_vulkan::pipeline>();
+
+         m_ppipelineBlend->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag,
+                                                        pipelineconfigurationBlend);
+      }
 
    }
 
@@ -185,6 +204,13 @@ namespace graphics3d_vulkan
          {
 
             debug("Hey, there is a null object named '{}' in scene objects map.", id);
+
+            continue;
+
+         }
+
+         if (psceneobject->m_erendersystem != ::graphics3d::e_render_system_scene)
+         {
 
             continue;
 

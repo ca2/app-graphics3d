@@ -366,7 +366,7 @@ namespace graphics3d_vulkan
 
       pdescriptorpoolbuilder->initialize_builder(pcontext);
       pdescriptorpoolbuilder->setMaxSets(frameCount * 10);
-      pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, frameCount * 10);
+      pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, frameCount * 100);
 
       m_pdescriptorpool = pdescriptorpoolbuilder->build();
 
@@ -416,7 +416,7 @@ namespace graphics3d_vulkan
          //                 (uint64_t)info.imageView, (int)info.imageLayout);
          // };
 
-         if (0)
+         if (1)
          {
 
             ::cast<::gpu_vulkan::texture> ptextureAlbedo = passetmanager->getTexture("cerberus_albedo");
@@ -526,7 +526,7 @@ namespace graphics3d_vulkan
 
       // OPAQUE
       ::vulkan::pipeline_configuration opaqueConfig{};
-      pgpudevice->default_pipeline_configuration(opaqueConfig);
+      ::vulkan::defaultPipelineConfigInfo2(opaqueConfig);
 
       opaqueConfig.pipelineLayout = m_pipelineLayout;
       opaqueConfig.renderPass = renderPass;
@@ -539,7 +539,7 @@ namespace graphics3d_vulkan
 
       // MASK
       ::vulkan::pipeline_configuration maskConfig{};
-      pgpudevice->default_pipeline_configuration(maskConfig);
+      ::vulkan::defaultPipelineConfigInfo2(maskConfig);
       maskConfig.pipelineLayout = m_pipelineLayout;
       maskConfig.renderPass = renderPass;
       maskConfig.bindingDescriptions = bindings;
@@ -569,19 +569,19 @@ namespace graphics3d_vulkan
 
       // BLEND
       ::vulkan::pipeline_configuration blendConfig{};
-      pgpudevice->default_pipeline_configuration(blendConfig);
+      ::vulkan::defaultPipelineConfigInfo2(blendConfig);
       blendConfig.pipelineLayout = m_pipelineLayout;
       blendConfig.renderPass = renderPass;
       blendConfig.bindingDescriptions = bindings;
       blendConfig.attributeDescriptions = attributes;
 
-      maskConfig.colorBlendAttachments[0].blendEnable = VK_TRUE;
-      maskConfig.colorBlendAttachments[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-      maskConfig.colorBlendAttachments[0].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-      maskConfig.colorBlendAttachments[0].colorBlendOp = VK_BLEND_OP_ADD;
-      maskConfig.colorBlendAttachments[0].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-      maskConfig.colorBlendAttachments[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-      maskConfig.colorBlendAttachments[0].alphaBlendOp = VK_BLEND_OP_ADD;
+      blendConfig.colorBlendAttachments[0].blendEnable = VK_TRUE;
+      blendConfig.colorBlendAttachments[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+      blendConfig.colorBlendAttachments[0].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+      blendConfig.colorBlendAttachments[0].colorBlendOp = VK_BLEND_OP_ADD;
+      blendConfig.colorBlendAttachments[0].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+      blendConfig.colorBlendAttachments[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+      blendConfig.colorBlendAttachments[0].alphaBlendOp = VK_BLEND_OP_ADD;
 
       blendConfig.colorBlendAttachments[0].colorWriteMask =
          VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
@@ -887,6 +887,13 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
             continue;
 
          }
+
+         if (psceneobject->m_erendersystem != ::graphics3d::e_render_system_gltf)
+         {
+
+            continue;
+         }
+
 
          auto prenderable = psceneobject->renderable();
          if (!prenderable)

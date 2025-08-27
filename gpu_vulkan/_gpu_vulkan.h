@@ -234,16 +234,16 @@ namespace vulkan
    struct pipeline_configuration
    {
 
-      ::array<VkVertexInputBindingDescription> bindingDescriptions{};
-      ::array<VkVertexInputAttributeDescription> attributeDescriptions{};
+      ::array_base<VkVertexInputBindingDescription> bindingDescriptions{};
+      ::array_base<VkVertexInputAttributeDescription> attributeDescriptions{};
       VkPipelineViewportStateCreateInfo viewportInfo;
       VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
       VkPipelineRasterizationStateCreateInfo rasterizationInfo;
       VkPipelineMultisampleStateCreateInfo multisampleInfo;
-      ::array < VkPipelineColorBlendAttachmentState > colorBlendAttachments;
+      ::array_base < VkPipelineColorBlendAttachmentState > colorBlendAttachments;
       VkPipelineColorBlendStateCreateInfo colorBlendInfo;
       VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
-      ::comparable_array<VkDynamicState> dynamicStateEnables;
+      ::comparable_array_base<VkDynamicState> dynamicStateEnables;
       VkPipelineDynamicStateCreateInfo dynamicStateInfo;
       VkPipelineLayout pipelineLayout = nullptr;
       VkRenderPass renderPass = nullptr;

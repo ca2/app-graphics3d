@@ -126,7 +126,7 @@ namespace gpu_vulkan
       shaderStages[1].pName = "main";
       shaderStages[1].flags = 0;
       shaderStages[1].pNext = nullptr;
-      shaderStages[1].pSpecializationInfo = nullptr;
+      shaderStages[1].pSpecializationInfo = pipelineconfiguration.fragSpecInfo;
 
       auto & bindingDescriptions = pipelineconfiguration.bindingDescriptions;
       auto & attributeDescriptions = pipelineconfiguration.attributeDescriptions;
