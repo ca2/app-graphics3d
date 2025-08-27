@@ -548,6 +548,109 @@ namespace vulkan
 
    //}
 
+       struct Vertex2
+   {
+      glm::vec3 position{};
+      glm::vec3 color{};
+      glm::vec3 normal{};
+      glm::vec2 uv{};
+
+   };
+   ::array_base<VkVertexInputBindingDescription> getBindingDescriptions2()
+   {
+      return {VkVertexInputBindingDescription{0, sizeof(Vertex2), VK_VERTEX_INPUT_RATE_VERTEX}};
+   }
+
+   ::array_base<VkVertexInputAttributeDescription> getAttributeDescriptions2()
+   {
+      return {
+         {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex2, position)},
+         {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex2, color)},
+         {2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex2, normal)}
+         //{ 3, 0, VK_FORMAT_R32G32_SFLOAT,    offsetof(Vertex, uv) }
+      };
+   }
+
+   CLASS_DECL_GPU_VULKAN void defaultPipelineConfigInfo2(pipeline_configuration &configInfo)
+   {
+
+      configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+      configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+      configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+
+
+      configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+      configInfo.viewportInfo.viewportCount = 1;
+      configInfo.viewportInfo.pViewports = nullptr;
+      configInfo.viewportInfo.scissorCount = 1;
+      configInfo.viewportInfo.pScissors = nullptr;
+
+      configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+      configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
+      configInfo.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
+      configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+      configInfo.rasterizationInfo.lineWidth = 1.0f;
+      configInfo.rasterizationInfo.cullMode = VK_CULL_MODE_NONE;
+      configInfo.rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
+      configInfo.rasterizationInfo.depthBiasEnable = VK_FALSE;
+      configInfo.rasterizationInfo.depthBiasConstantFactor = 0.0f; // Optional
+      configInfo.rasterizationInfo.depthBiasClamp = 0.0f; // Optional
+      configInfo.rasterizationInfo.depthBiasSlopeFactor = 0.0f; // Optional
+
+      configInfo.multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+      configInfo.multisampleInfo.sampleShadingEnable = VK_FALSE;
+      configInfo.multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+      configInfo.multisampleInfo.minSampleShading = 1.0f; // Optional
+      configInfo.multisampleInfo.pSampleMask = nullptr; // Optional
+      configInfo.multisampleInfo.alphaToCoverageEnable = VK_FALSE; // Optional
+      configInfo.multisampleInfo.alphaToOneEnable = VK_FALSE; // Optional
+
+      configInfo.colorBlendAttachments.ø(0).colorWriteMask =
+         VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+      configInfo.colorBlendAttachments[0].blendEnable = VK_TRUE;
+      configInfo.colorBlendAttachments[0].srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+      configInfo.colorBlendAttachments[0].dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+      configInfo.colorBlendAttachments[0].colorBlendOp = VK_BLEND_OP_ADD; // Optional
+      configInfo.colorBlendAttachments[0].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+      configInfo.colorBlendAttachments[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+      configInfo.colorBlendAttachments[0].alphaBlendOp = VK_BLEND_OP_ADD; // Optional
+
+      configInfo.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+      configInfo.colorBlendInfo.logicOpEnable = VK_FALSE;
+      configInfo.colorBlendInfo.logicOp = VK_LOGIC_OP_COPY; // Optional
+      configInfo.colorBlendInfo.attachmentCount = 1;
+      configInfo.colorBlendInfo.pAttachments = &configInfo.colorBlendAttachments[0];
+      configInfo.colorBlendInfo.blendConstants[0] = 0.0f; // Optional
+      configInfo.colorBlendInfo.blendConstants[1] = 0.0f; // Optional
+      configInfo.colorBlendInfo.blendConstants[2] = 0.0f; // Optional
+      configInfo.colorBlendInfo.blendConstants[3] = 0.0f; // Optional
+
+      configInfo.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+      configInfo.depthStencilInfo.depthTestEnable = VK_TRUE;
+      configInfo.depthStencilInfo.depthWriteEnable = VK_TRUE;
+      configInfo.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+      configInfo.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
+      configInfo.depthStencilInfo.minDepthBounds = 0.0f; // Optional
+      configInfo.depthStencilInfo.maxDepthBounds = 1.0f; // Optional
+      configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
+      configInfo.depthStencilInfo.front = {}; // Optional
+      configInfo.depthStencilInfo.back = {}; // Optional
+
+      configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+      configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+      configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
+      configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
+      configInfo.dynamicStateInfo.flags = 0;
+
+
+      configInfo.bindingDescriptions.clear();
+      configInfo.attributeDescriptions.clear();
+
+      configInfo.bindingDescriptions = getBindingDescriptions2();
+      configInfo.attributeDescriptions = getAttributeDescriptions2();
+   }
+   
+
 
 } // namespace vulkan
 

@@ -16,7 +16,6 @@
 #include "acme/filesystem/filesystem/file_context.h"
 #include "gpu_vulkan/physical_device.h"
 #include "gltf_model.h"
-
 #include "command_buffer.h"
 #include "vk_init.h"
 #include "context.h"
@@ -1979,15 +1978,19 @@ void gltf::Texture::fromglTfImage(tinygltf::Image &gltfimage, ::std::string path
 			drawNode(child, commandBuffer, renderFlags, pipelineLayout, bindImageSet);
 		}
 	}
-	void  gltf::Model::bind(::gpu::command_buffer *pgpucommandbuffer)
-	{
-		::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
-		const VkDeviceSize offsets[1] = { 0 };
-		vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vertices.buffer, offsets);
-		vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
-		m_bBuffersBound = true;
-	}
-   void gltf::Model::draw(::gpu::command_buffer * pgpucommandbuffer)
+   void gltf::Model::bind(VkCommandBuffer commandBuffer)
+   {
+      const VkDeviceSize offsets[1] = {0};
+      vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertices.buffer, offsets);
+      vkCmdBindIndexBuffer(commandBuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
+      m_bBuffersBound = true;
+   }
+   void gltf::Model::bind(::gpu::command_buffer *pgpucommandbuffer)
+   {
+      ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
+      bind(pcommandbuffer->m_vkcommandbuffer);
+   }
+   void gltf::Model::draw(::gpu::command_buffer *pgpucommandbuffer)
    {
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
       gltfDraw(pcommandbuffer->m_vkcommandbuffer);

@@ -39,7 +39,7 @@ namespace app_graphics3d_continuum
       
       void on_initialize_scene() override;
 
-      virtual ::graphics3d::skybox * get_skybox();
+//      virtual ::graphics3d::skybox * get_skybox();
 
       ::graphics3d::camera* get_default_camera() override;
 

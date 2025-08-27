@@ -3430,6 +3430,98 @@ namespace gpu_vulkan
 
       }
 
+
+      {
+
+         //////////////////////////////////////////
+
+
+         ::cast<context> pgpucontext = this->m_pgpucontext;
+
+         ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
+
+         ::cast<renderer> prenderer = this;
+
+         ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+
+         VkRenderPassBeginInfo renderPassBeginInfo{};
+
+         renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+
+         // if (has_sampler())
+         //{
+
+         //   throw ::exception(error_wrong_state, "use bind(txtDst, txtDsr)");
+
+         //}
+
+         ::cast<render_target> prendertarget = this->m_pgpurendertarget;
+         //::cast<renderer> prenderer = m_pgpurenderer;
+
+         ::cast<render_pass> prenderpass = prenderer->render_pass2();
+
+
+         renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
+         // if (prenderer->m_pgpulayer)
+         {
+
+            ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
+
+            if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+            {
+
+               warning() << "what?";
+            }
+
+            renderPassBeginInfo.framebuffer = ptexture->framebuffer(prenderpass);
+         }
+         // else
+         //{
+
+         //   renderPassBeginInfo.framebuffer =
+         //   prenderpass->getFrameBuffer(prenderer->m_pgpurendertarget->get_frame_index());
+
+         //}
+
+         VkClearValue clearValues[2]{};
+         // clearValues[0].color = { 0.5f* 0.5f, 0.75f*0.5f, 0.95f* 0.5f, 0.5f };
+         bool bClearColor = true;
+         // if (m_bClearColor)
+         if (bClearColor)
+         {
+
+            ::color::color colorClear(color::transparent);
+
+            auto fR = colorClear.f32_red();
+            auto fG = colorClear.f32_green();
+            auto fB = colorClear.f32_blue();
+            auto fA = colorClear.f32_opacity();
+
+            clearValues[0].color = {fR * fA, fG * fA, fB * fA, fA};
+            clearValues[1].depthStencil = {1.0f, 0};
+            renderPassBeginInfo.clearValueCount = 2;
+            renderPassBeginInfo.pClearValues = clearValues;
+         }
+         else
+         {
+
+            renderPassBeginInfo.clearValueCount = 0;
+            renderPassBeginInfo.pClearValues = nullptr;
+         }
+
+
+         renderPassBeginInfo.renderArea.offset = {0, 0};
+         renderPassBeginInfo.renderArea.extent = {(uint32_t)pgpucontext->m_rectangle.width(),
+                                                  (uint32_t)pgpucontext->m_rectangle.height()};
+
+
+         vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+
+         //////////////////////////////////////////
+      }
+
+
       //if (m_bOffScreen)
       {
 
@@ -3939,6 +4031,8 @@ namespace gpu_vulkan
          pgputextureOutput = ptexture;
 
       }
+
+      //m_pgpucontext->defer_unbind_shader();
 
       if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
       {

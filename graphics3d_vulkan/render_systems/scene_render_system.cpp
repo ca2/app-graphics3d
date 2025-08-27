@@ -91,7 +91,7 @@ namespace graphics3d_vulkan
 
       // OPAQUE
       ::vulkan::pipeline_configuration pipelineconfigurationOpaque{};
-      pgpudevice->default_pipeline_configuration(pipelineconfigurationOpaque);
+      ::vulkan::defaultPipelineConfigInfo2(pipelineconfigurationOpaque);
       pipelineconfigurationOpaque.pipelineLayout = m_pipelineLayout;
       pipelineconfigurationOpaque.renderPass = renderPass;
       pipelineconfigurationOpaque.bindingDescriptions = bindings;
@@ -103,7 +103,7 @@ namespace graphics3d_vulkan
 
       // MASK
       ::vulkan::pipeline_configuration pipelineconfigurationMask{};
-      pgpudevice->default_pipeline_configuration(pipelineconfigurationMask);
+      ::vulkan::defaultPipelineConfigInfo2(pipelineconfigurationMask);
       pipelineconfigurationMask.pipelineLayout = m_pipelineLayout;
       pipelineconfigurationMask.renderPass = renderPass;
       pipelineconfigurationMask.bindingDescriptions = bindings;
@@ -132,7 +132,7 @@ namespace graphics3d_vulkan
 
       // BLEND
       ::vulkan::pipeline_configuration pipelineconfigurationBlend{};
-      pgpudevice->default_pipeline_configuration(pipelineconfigurationBlend);
+      ::vulkan::defaultPipelineConfigInfo2(pipelineconfigurationBlend);
       pipelineconfigurationBlend.pipelineLayout = m_pipelineLayout;
       pipelineconfigurationBlend.renderPass = renderPass;
       pipelineconfigurationBlend.bindingDescriptions = bindings;
@@ -180,6 +180,15 @@ namespace graphics3d_vulkan
 
       for (auto &[id, psceneobject]: sceneobjects)
       {
+
+         if (!psceneobject)
+         {
+
+            debug("Hey, there is a null object named '{}' in scene objects map.", id);
+
+            continue;
+
+         }
 
                  auto prenderable = psceneobject->renderable();
          if (!prenderable)

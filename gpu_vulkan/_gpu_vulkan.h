@@ -254,6 +254,9 @@ namespace vulkan
    };
 
 
+   CLASS_DECL_GPU_VULKAN void defaultPipelineConfigInfo2(pipeline_configuration &configInfo);
+
+
 } // namespace vulkan
 
 

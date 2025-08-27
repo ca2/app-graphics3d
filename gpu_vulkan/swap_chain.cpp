@@ -1061,6 +1061,9 @@ namespace gpu_vulkan
 
       pcommandbuffer->set_scissor(pgpucontext->m_rectangle.size());
 
+
+      pgpucontext->_001BeginRenderPass(pcommandbuffer, ptextureSwapChain);
+
       //pgpucontext->m_pcontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
       //pgpucontext->m_pcontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
 
@@ -1102,7 +1105,7 @@ namespace gpu_vulkan
       vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
 
 
-      
+      pgpucontext->_001EndRenderPass(pcommandbuffer);
 
       //{
 

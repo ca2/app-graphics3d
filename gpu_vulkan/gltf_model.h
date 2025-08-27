@@ -322,6 +322,8 @@ namespace gpu_vulkan
 
 			void loadFromFile(std::string filename, ::gpu::context * pcontext, VkQueue transferQueue, uint32_t fileLoadingFlags = FileLoadingFlags::None, float scale = 1.0f);
 
+
+         void bind(VkCommandBuffer cmd);
 			void bind(::gpu::command_buffer * pgpucommandbuffer)override;
          void draw(::gpu::command_buffer *pgpucommandbuffer) override;
 

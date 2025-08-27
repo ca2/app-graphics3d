@@ -448,16 +448,17 @@ namespace gpu_vulkan
          if (m_bLoadClearOp)
          {
             depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
          }
          else
          {
             depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            depthAttachment.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
          }
          //         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
          depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
          depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
          depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-         depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
          depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
       }
@@ -473,16 +474,17 @@ namespace gpu_vulkan
       if (m_bLoadClearOp)
       {
          colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+         colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
       }
       else
       {
          colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+         colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
       }
       colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
       colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
       colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+      colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
       VkAttachmentReference colorAttachmentRef = {};
       colorAttachmentRef.attachment = 0;

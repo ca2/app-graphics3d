@@ -116,7 +116,7 @@ namespace app_graphics3d_continuum
       for (auto& strSkybox : m_papp->m_straSkybox)
       {
 
-         auto& pskybox = m_mapSkybox[strSkybox];
+         auto& pskybox = m_pimmersionlayer->m_passetmanager->m_mapSkybox[strSkybox];
 
          ødefer_construct_new(pskybox);
 
@@ -190,7 +190,7 @@ namespace app_graphics3d_continuum
             (i * glm::two_pi<float>()) / lightColors.size(),
             { 0.f, 1.f, 0.f });
          ppointlight->m_fLightIntensity = 1.0f;
-         ppointlight->transform().m_vec3Translation = glm::vec3(rotateLight * glm::vec4(-1.f, 1.7f, 0.5f , 1.f));
+         ppointlight->transform().m_vec3Position = glm::vec3(rotateLight * glm::vec4(-1.f, 1.7f, 0.5f, 1.f));
          //m_pointlighta.add(ppointlight);
 
       }
@@ -225,7 +225,7 @@ namespace app_graphics3d_continuum
    void main_scene::on_update(::gpu::context* pgpucontext)
    {
 
-      m_pskyboxrendersystem->set_skybox(get_skybox());
+      m_pskyboxrendersystem->set_skybox(current_sky_box());
 
       auto& globalubo = this->global_ubo();
 
@@ -278,14 +278,14 @@ namespace app_graphics3d_continuum
    }
 
 
-   ::graphics3d::skybox* main_scene::get_skybox()
-   {
+   //::graphics3d::skybox* main_scene::get_skybox()
+   //{
 
-      ::string strSkybox = m_papp->m_strSkybox;
+   //   ::string strSkybox = m_papp->m_strSkybox;
 
-      return m_mapSkybox[strSkybox];
+   //   return m_mapSkybox[strSkybox];
 
-   }
+   //}
 
    
    void main_scene::on_render(::gpu::context * pgpucontext)

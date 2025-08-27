@@ -65,6 +65,7 @@ namespace gpu_vulkan
       void start_debug_happening(const ::scoped_string& scopedstr) override;
 
       void on_start_layer(::gpu::layer* player) override;
+      void on_end_layer(::gpu::layer *player) override;
 
       void merge_layers(::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera) override;
 
@@ -73,7 +74,8 @@ namespace gpu_vulkan
       
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;
 
-
+      void _001BeginRenderPass(::gpu::command_buffer *pcommandbuffer, ::gpu::texture * pgputexture = nullptr);
+      void _001EndRenderPass(::gpu::command_buffer *pcommandbuffer);
 
 
       virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size);

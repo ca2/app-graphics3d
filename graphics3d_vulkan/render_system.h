@@ -15,7 +15,7 @@ namespace graphics3d_vulkan
    public:
 
 
-      ::pointer<::gpu_vulkan::render_pass> m_pgpurenderpass;
+      //::pointer<::gpu_vulkan::render_pass> m_pgpurenderpass;
 
       render_system();
       ~render_system();

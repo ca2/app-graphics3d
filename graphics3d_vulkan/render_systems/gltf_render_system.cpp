@@ -881,6 +881,13 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
       for (auto &[id, psceneobject]: sceneobjects)
       {
 
+         if (!psceneobject)
+         {
+
+            continue;
+
+         }
+
          auto prenderable = psceneobject->renderable();
          if (!prenderable)
             continue;

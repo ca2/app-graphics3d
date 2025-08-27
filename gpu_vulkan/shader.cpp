@@ -625,10 +625,10 @@ namespace gpu_vulkan
       }
 
 
-      vkCmdBeginRenderPass(
-         pcommandbuffer->m_vkcommandbuffer,
-         &renderPassBeginInfo,
-         VK_SUBPASS_CONTENTS_INLINE);
+      //vkCmdBeginRenderPass(
+        // pcommandbuffer->m_vkcommandbuffer,
+         //&renderPassBeginInfo,
+         //VK_SUBPASS_CONTENTS_INLINE);
 
       //_bind();
 
@@ -719,10 +719,10 @@ namespace gpu_vulkan
       };
 
 
-      vkCmdBeginRenderPass(
+      /*vkCmdBeginRenderPass(
          pcommandbuffer->m_vkcommandbuffer,
          &renderPassBeginInfo,
-         VK_SUBPASS_CONTENTS_INLINE);
+         VK_SUBPASS_CONTENTS_INLINE);*/
 
 
       _bind();
@@ -895,7 +895,7 @@ namespace gpu_vulkan
       //}
 
 
-      vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
+      //vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
    }
 
