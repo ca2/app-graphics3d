@@ -6,6 +6,7 @@
 #include "bred/gpu/texture.h"
 #include "bred/graphics3d/skybox.h"
 #include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/immersion_layer.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 //#include "bred/graphics3d/cube_map.h"
@@ -28,7 +29,7 @@ namespace app_graphics3d_MyPlace2025
    void main_scene::Init()
    {
 
-      auto pgpucontext = m_pengine->gpu_context();
+      auto pgpucontext = m_pimmersionlayer->m_pengine->gpu_context();
 
       // Initialize shaders
       ødefer_construct(m_Shader);
@@ -60,7 +61,7 @@ namespace app_graphics3d_MyPlace2025
          //m_SphereTexture -> initialize(this);
          //m_Misc -> initialize(this);
       // sky_box textures
-      ::graphics3d::sky_box::cube cube = {
+      ::graphics3d::skybox::cube cube = {
 
          // Cloudy skybox
         /* "D:/Users/Admin/source/repos/MyHell2024/MyHell2024/res/Textures/CloudySkybox/bluecloud_ft.jpg",
@@ -92,9 +93,9 @@ namespace app_graphics3d_MyPlace2025
         }
       };
 
-      m_Skybox = øallocate ::graphics3d::sky_box();
+      m_Skybox = øallocate ::graphics3d::skybox();
 
-      m_Skybox->initialize_sky_box(m_pengine, cube);
+      m_Skybox->initialize_sky_box(this, cube);
 
       //// Initialize skybox shader
       //ødefer_construct(m_SkyboxShader);
@@ -267,65 +268,65 @@ namespace app_graphics3d_MyPlace2025
    {
 
 
-      // Calculate view and projection matrices
-      glm::mat4 view = pcamera->GetViewMatrix();
-      glm::mat4 projection = glm::perspective(glm::radians(pcamera->GetZoom()), 1280.0f / 720.0f, 0.1f, 1000.0f);
+      //// Calculate view and projection matrices
+      //glm::mat4 view = pcamera->GetViewMatrix();
+      //glm::mat4 projection = glm::perspective(pcamera->GetZoom(), 1280.0f / 720.0f, 0.1f, 1000.0f);
 
-      //// sky_box
-      //glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); // Remove translation from the view matrix
-      //m_SkyboxShader->bind();
-      //m_SkyboxShader->set_mat4("view", skyboxView);
-      //m_SkyboxShader->set_mat4("projection", projection);
-
-
-      //// Set uniforms in the shader
-      //m_SkyboxShader->bind(); // Make sure to bind the shader first
-      //m_SkyboxMesh->bind();
-      //m_SkyboxMesh->draw(m_SkyboxShader);
-
-      //// prenderer->DrawSkybox(m_SkyboxMesh, m_SkyboxShader);
-      //m_SkyboxMesh->unbind();
-      //m_SkyboxShader->unbind(); // Make sure to bind the shader first
-
-      // Bind the shader and set the view and projection matrices
-      m_Shader->bind();
-      m_Shader->set_mat4("view", view);
-      m_Shader->set_mat4("projection", projection);
-
-      // Bind the box mesh and render multiple instances using instanced rendering
-      m_BoxMesh->bind();
-      //m_BoxTexture->bind();
-      //prenderer->DrawInstanced({ m_BoxMesh.get() }, m_Shader, m_BoxInstanceCount);  // Drawing the box instances
-      m_BoxMesh->draw_instanced();
-
-      // Bind the plane texture
-      //m_PlaneTexture->Bind();
-      //m_PlaneMesh->Bind();
-      //prenderer->DrawInstanced({ m_PlaneMesh.get() }, m_Shader, m_PlaneInstanceCount);  // Drawing the plane instances
-
-      // Render the sphere instances
-      //m_SphereTexture->Bind();
-      //m_SphereMesh->Bind();
-      //prenderer->DrawInstanced({ m_SphereMesh.get() }, m_Shader, m_SphereInstanceCount);  // Draw sphere instances
+      ////// sky_box
+      ////glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); // Remove translation from the view matrix
+      ////m_SkyboxShader->bind();
+      ////m_SkyboxShader->set_mat4("view", skyboxView);
+      ////m_SkyboxShader->set_mat4("projection", projection);
 
 
-      // Render the wall
-      //m_WallShader->Bind();
-      //m_WallShader->SetUniformMat4f("view", view);
-      //m_WallShader->SetUniformMat4f("projection", projection);
+      ////// Set uniforms in the shader
+      ////m_SkyboxShader->bind(); // Make sure to bind the shader first
+      ////m_SkyboxMesh->bind();
+      ////m_SkyboxMesh->draw(m_SkyboxShader);
+
+      ////// prenderer->DrawSkybox(m_SkyboxMesh, m_SkyboxShader);
+      ////m_SkyboxMesh->unbind();
+      ////m_SkyboxShader->unbind(); // Make sure to bind the shader first
+
+      //// Bind the shader and set the view and projection matrices
+      //m_Shader->bind();
+      //m_Shader->set_mat4("view", view);
+      //m_Shader->set_mat4("projection", projection);
+
+      //// Bind the box mesh and render multiple instances using instanced rendering
+      //m_BoxMesh->bind();
+      ////m_BoxTexture->bind();
+      ////prenderer->DrawInstanced({ m_BoxMesh.get() }, m_Shader, m_BoxInstanceCount);  // Drawing the box instances
+      //m_BoxMesh->draw_instanced();
+
+      //// Bind the plane texture
+      ////m_PlaneTexture->Bind();
+      ////m_PlaneMesh->Bind();
+      ////prenderer->DrawInstanced({ m_PlaneMesh.get() }, m_Shader, m_PlaneInstanceCount);  // Drawing the plane instances
+
+      //// Render the sphere instances
+      ////m_SphereTexture->Bind();
+      ////m_SphereMesh->Bind();
+      ////prenderer->DrawInstanced({ m_SphereMesh.get() }, m_Shader, m_SphereInstanceCount);  // Draw sphere instances
 
 
-      //// Get camera position
-      //glm::vec3 cameraPosition = pcamera->GetPosition();
+      //// Render the wall
+      ////m_WallShader->Bind();
+      ////m_WallShader->SetUniformMat4f("view", view);
+      ////m_WallShader->SetUniformMat4f("projection", projection);
 
-      //m_WallShader->SetUniform3f("cameraPos", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
-      //m_Misc->Bind();
-      //m_WallMesh->Bind();
-      //prenderer->DrawInstanced({ m_WallMesh.get() }, m_WallShader, m_WallInstanceCount); // Draw robin
+      ////// Get camera position
+      ////glm::vec3 cameraPosition = pcamera->GetPosition();
 
-      //// Unbind the shader
-      //m_Shader->Unbind();
+      ////m_WallShader->SetUniform3f("cameraPos", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
+      ////m_Misc->Bind();
+      ////m_WallMesh->Bind();
+      ////prenderer->DrawInstanced({ m_WallMesh.get() }, m_WallShader, m_WallInstanceCount); // Draw robin
+
+      ////// Unbind the shader
+      ////m_Shader->Unbind();
    }
 
 

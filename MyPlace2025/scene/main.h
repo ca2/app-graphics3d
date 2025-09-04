@@ -92,7 +92,7 @@ namespace app_graphics3d_MyPlace2025
       float scaleFactorY = 20.0f;
       float scaleFactorZ = 20.0f;
 
-      ::pointer<::graphics3d::sky_box> m_Skybox;
+      ::pointer<::graphics3d::skybox> m_Skybox;
 
 
    };

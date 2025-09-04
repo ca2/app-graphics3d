@@ -112,6 +112,7 @@ namespace app_graphics3d_continuum
 //      m_Skybox = øallocate::graphics3d::sky_box();
 
 
+      m_strSkybox = m_papp->m_strSkybox;
 
       for (auto& strSkybox : m_papp->m_straSkybox)
       {
@@ -120,7 +121,7 @@ namespace app_graphics3d_continuum
 
          ødefer_construct_new(pskybox);
 
-         pskybox->initialize_sky_box(m_pimmersionlayer->m_pengine, strSkybox);
+         pskybox->initialize_sky_box(this, strSkybox);
 
       }
 
@@ -225,7 +226,7 @@ namespace app_graphics3d_continuum
    void main_scene::on_update(::gpu::context* pgpucontext)
    {
 
-      m_pskyboxrendersystem->set_skybox(current_sky_box());
+      //m_pskyboxrendersystem->set_skybox(current_sky_box());
 
       auto& globalubo = this->global_ubo();
 

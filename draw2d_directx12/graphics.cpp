@@ -4898,7 +4898,7 @@ namespace draw2d_directx12
    }
 
 
-   void graphics::_add_shape(const ::double_polygon & polygon)
+   void graphics::_add_shape(const ::double_polygon_base & polygon)
    {
 
       throw ::exception(error_not_supported);

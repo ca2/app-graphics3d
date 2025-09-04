@@ -3,6 +3,7 @@
 #include "main_frame.h"
 #include "document.h"
 #include "impact.h"
+#include "main_scene.h"
 #include "pane_impact.h"
 #include "acme/filesystem/filesystem/directory_context.h"
 #include "acme/filesystem/filesystem/file_context.h"
@@ -259,6 +260,11 @@ namespace app_graphics3d_continuum
 
          m_checkboxaSkyBox.add(pcheckbox);
 
+         if (m_straSkybox[i] == m_strSkybox)
+         {
+            m_checkboxaSkyBox[i]->set_check(e_check_checked, ::e_source_sync);
+         }
+
          pcheckbox->check_changed(this) += [this, i](::data::check_change& change)
             {
 
@@ -300,6 +306,9 @@ namespace app_graphics3d_continuum
 
                m_strSkybox = strSkybox;
 
+               m_pmainscene->m_strSkybox = strSkybox;
+
+               m_pmainscene->m_pskyboxCurrent = m_pmainscene->m_pimmersionlayer->m_passetmanager->m_mapSkybox[strSkybox];
 
             };
 

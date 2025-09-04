@@ -102,7 +102,7 @@ namespace app_graphics3d_continuum
                   if (pimmersion->m_emouse == ::app_graphics3d_continuum::e_mouse_updateLook)
       {
 
-         m_pengine->m_pinput->_001OnMouseOut();
+         //m_pengine->m_pinput->_001OnMouseOut();
       }
 
 

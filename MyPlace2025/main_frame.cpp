@@ -46,7 +46,7 @@ namespace app_graphics3d_MyPlace2025
 
       ::simple_frame_window::install_message_routing(pchannel);
 
-      MESSAGE_LINK(e_message_create, pchannel, this, &main_frame::on_message_create);
+      USER_MESSAGE_LINK(::user::e_message_create, pchannel, this, &main_frame::on_message_create);
 
    }
 

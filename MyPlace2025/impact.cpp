@@ -45,7 +45,7 @@ namespace app_graphics3d_MyPlace2025
    impact::impact()
    {
 
-      m_ekeyboard = ::graphics3d::e_keyboard_spaceExplorer;
+      //m_ekeyboard = ::graphics3d::e_keyboard_spaceExplorer;
       m_flagNonClient -= e_non_client_background;
       m_iSequence = 0;
       m_bNeedFullRedrawOnResize = true;
@@ -91,8 +91,8 @@ namespace app_graphics3d_MyPlace2025
 
       ::user::impact::install_message_routing(psender);
 
-      MESSAGE_LINK(e_message_create,psender,this,&impact::on_message_create);
-      MESSAGE_LINK(e_message_destroy, psender, this, &impact::on_message_destroy);
+      USER_MESSAGE_LINK(::user::e_message_create,psender,this,&impact::on_message_create);
+      USER_MESSAGE_LINK(::user::e_message_destroy, psender, this, &impact::on_message_destroy);
       //MESSAGE_LINK(e_message_mouse_move, psender, this, &impact::on_message_mouse_move);
       //MESSAGE_LINK(e_message_mouse_leave, psender, this, &impact::on_message_mouse_leave);
 

@@ -84,8 +84,8 @@ namespace graphics3d_impact3d
 
       ::user::impact::install_message_routing(psender);
       //::user::interaction::install_simple_ui_default_mouse_handling(psender);
-      MESSAGE_LINK(e_message_create, psender, this, &impact::on_message_create);
-      MESSAGE_LINK(e_message_destroy, psender, this, &impact::on_message_destroy);
+      USER_MESSAGE_LINK(::user::e_message_create, psender, this, &impact::on_message_create);
+      USER_MESSAGE_LINK(::user::e_message_destroy, psender, this, &impact::on_message_destroy);
       MESSAGE_LINK(e_message_mouse_move, psender, this, &impact::on_message_mouse_move);
       MESSAGE_LINK(e_message_key_down, psender, this, &impact::on_message_key_down);
 
