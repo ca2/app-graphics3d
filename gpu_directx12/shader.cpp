@@ -144,8 +144,8 @@ namespace gpu_directx12
                featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
             }
 
-            preallocated_array_base < ::array<CD3DX12_DESCRIPTOR_RANGE1 >, 64> ranges;
-            preallocated_array_base < ::array<CD3DX12_ROOT_PARAMETER1>, 64> rootParameters;
+            ::block_array<CD3DX12_DESCRIPTOR_RANGE1, 64> ranges;
+            ::block_array<CD3DX12_ROOT_PARAMETER1, 64> rootParameters;
 
             // Static sampler at s0, space0
             //::array< CD3DX12_STATIC_SAMPLER_DESC > staticSamplers(pre_allocate_t{}, 64);
