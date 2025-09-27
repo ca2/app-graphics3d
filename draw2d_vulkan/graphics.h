@@ -373,7 +373,7 @@ namespace draw2d_vulkan
 
       //virtual double_size get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex) override;
       //virtual double_size get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
-      virtual double_size get_text_extent(const ::scoped_string& str) override;
+      virtual double_size _get_text_extent(const ::scoped_string& str) override;
       //virtual bool get_text_extent(double_size & size, const ::scoped_string & lpszString, character_count nCount, character_count iIndex);
       //virtual bool get_text_extent(double_size & size, const ::scoped_string & lpszString, character_count nCount);
       //virtual bool get_text_extent(double_size & size, const ::scoped_string & str);

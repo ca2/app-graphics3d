@@ -193,7 +193,7 @@ namespace gpu_directx12
                //   0, 
                //   D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
-               rootParameters.øadd().InitAsConstantBufferView(
+               rootParameters.add_new().InitAsConstantBufferView(
                   0,
                   0,
                   D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC,
@@ -234,7 +234,7 @@ namespace gpu_directx12
                   ShaderRegister = m_iPushConstants;
 
                }
-               rootParameters.øadd().InitAsConstantBufferView(ShaderRegister);
+               rootParameters.add_new().InitAsConstantBufferView(ShaderRegister);
 
                m_iPushConstantsBufferIndex = rootParameters.get_upper_bound();
 
@@ -261,16 +261,16 @@ namespace gpu_directx12
                }
                
                //CD3DX12_DESCRIPTOR_RANGE texRange;
-               ranges.øadd().Init(
+               ranges.add_new().Init(
                   D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 
                   1, 
                   ShaderRegister, 
                   0,
                   D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
-               rootParameters.øadd().InitAsDescriptorTable(
+               rootParameters.add_new().InitAsDescriptorTable(
                   1,
-                  &ranges.last(),
+                  &ranges.element_at(ranges.get_upper_bound()),
                   D3D12_SHADER_VISIBILITY_PIXEL);
 
                m_iShaderResourceViewDescriptorTableRootParameterIndex = rootParameters.get_upper_bound();
@@ -289,11 +289,11 @@ namespace gpu_directx12
                //));
 
                //CD3DX12_DESCRIPTOR_RANGE samplerRange;
-               ranges.øadd().Init(
+               ranges.add_new().Init(
                   D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER,
                   1, 
                   ShaderRegister); // s0
-               rootParameters.øadd().InitAsDescriptorTable(
+               rootParameters.add_new().InitAsDescriptorTable(
                   1,
                   &ranges.last(), 
                   D3D12_SHADER_VISIBILITY_PIXEL);

@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "gpu_opengl/_gpu_opengl.h"
 #include "_draw2d.h"
 #include "_opengl.h"
 #include "draw2d.h"
@@ -2215,7 +2216,7 @@ void main() {
 
       float g_z = 0.0f; // Assuming z is 0 for 2D rendering, adjust as needed
 
-      ::preallocated_array_base < ::double_point_array, 4 > pointa1;
+      ::block_array < ::double_point, 4 > pointa1;
 
       rectangle.add_clockwise_edges(pointa1);
 

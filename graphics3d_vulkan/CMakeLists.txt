@@ -6,8 +6,18 @@ list(APPEND library_source
         _.cpp
         _.h
         _factory.cpp
-        camera.cpp
-        camera.h
+        #camera.cpp
+        #camera.h
+   #render_systems/basic_render_system.cpp
+   #render_systems/basic_render_system.h
+   render_systems/gltf_render_system.cpp
+   render_systems/gltf_render_system.h
+   #render_systems/point_light_system.cpp
+   #render_systems/point_light_system.h
+   render_systems/scene_render_system.cpp
+   render_systems/scene_render_system.h
+   render_system.cpp
+   render_system.h
         engine.cpp
         engine.h
         framework.cpp

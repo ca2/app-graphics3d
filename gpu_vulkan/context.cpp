@@ -4521,7 +4521,7 @@ VkFormat context::findDepthFormat()
    subpassDescription.colorAttachmentCount = 1;
    subpassDescription.pColorAttachments = &colorReference;
 
-   ::preallocated_array_base<::array_base<VkSubpassDependency>, 2> dependencies;
+   ::block_array<VkSubpassDependency, 2> dependencies;
    dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
    dependencies[0].dstSubpass = 0;
    dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
@@ -5109,7 +5109,7 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
    subpassDescription.pColorAttachments = &colorReference;
 
    // Use subpass dependencies for layout transitions
-   ::preallocated_array_base<::array_base<VkSubpassDependency>, 2> dependencies;
+   ::block_array<VkSubpassDependency, 2> dependencies;
    dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
    dependencies[0].dstSubpass = 0;
    dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
@@ -5189,7 +5189,7 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
    ::array_base<VkDynamicState> dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
    VkPipelineDynamicStateCreateInfo dynamicState = vkinit::pipelineDynamicStateCreateInfo(dynamicStateEnables);
    VkPipelineVertexInputStateCreateInfo emptyInputState = vkinit::pipelineVertexInputStateCreateInfo();
-   ::preallocated_array_base<::array_base<VkPipelineShaderStageCreateInfo>, 2> shaderStages;
+   ::block_array<VkPipelineShaderStageCreateInfo, 2> shaderStages;
 
    VkGraphicsPipelineCreateInfo pipelineCI = vkinit::pipelineCreateInfo(pipelinelayout, renderpass);
    pipelineCI.pInputAssemblyState = &inputAssemblyState;

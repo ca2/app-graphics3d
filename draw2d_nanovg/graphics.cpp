@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "gpu_opengl/_gpu_opengl.h"
 #include "_nanovg.h"
 #include "draw2d.h"
 #include "pen.h"

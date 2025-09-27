@@ -51,6 +51,9 @@ list(APPEND library_source
 #        VK_abstraction/vk_gameObject.h
 #        VK_abstraction/vk_input.cpp
 #        VK_abstraction/vk_input.h
+   camera.cpp
+   camera.h
+
         main_scene.cpp
         main_scene.h
         #graphics3d/point_light_system.cpp
@@ -65,8 +68,12 @@ list(APPEND library_source
         document.h
         framework.cpp
         framework.h
+   global_ubo.cpp
+   global_ubo.h
         impact.cpp
         impact.h
+   input.cpp
+   input.h
         main_frame.cpp
         main_frame.h
         pane_impact.cpp

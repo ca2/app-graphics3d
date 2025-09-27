@@ -5803,10 +5803,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
    //double_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
-   double_size graphics::get_text_extent(const ::scoped_string& lpszString)
+   double_size graphics::_get_text_extent(const ::scoped_string& lpszString)
    {
 
-      return ::gpu::graphics::get_text_extent(lpszString);
+      return ::gpu::graphics::_get_text_extent(lpszString);
 
       ////if(lpszString.is_empty())
       ////   return int_size(0, 0);
