@@ -6,16 +6,20 @@
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 #include "app-graphics3d/gpu_vulkan/gltf_model.h"
+#include "app-graphics3d/gpu_vulkan/gltf/model.h"
 #include "app-graphics3d/gpu_vulkan/pipeline.h"
 #include "app-graphics3d/gpu_vulkan/render_pass.h"
 #include "app-graphics3d/gpu_vulkan/render_target.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "app-graphics3d/gpu_vulkan/texture.h"
 #include "app-graphics3d/gpu_vulkan/vk_init.h"
+#include "app-graphics3d/graphics3d/scene.h"
 #include "bred/gpu/frame.h"
+#include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/immersion_layer.h"
-#include "bred/graphics3d/scene.h"
+#include "bred/graphics3d/scene_base.h"
+#include "bred/graphics3d/scene_renderable.h"
 #include "gltf_render_system.h"
 // #include "graphics3d/_.h"
 // #include <stdexcept>
@@ -222,7 +226,7 @@ namespace graphics3d_vulkan
    //   // }
    //
    //
-   //   void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene *pscene)
+   //   void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    //   {
    //
    //      // vkCmdBindDescriptorSets(
@@ -373,6 +377,7 @@ namespace graphics3d_vulkan
 
       auto passetmanager = m_pengine->m_pimmersionlayer->m_passetmanager;
 
+      ::cast<::graphics3d::scene> pscene = m_pengine->m_pimmersionlayer->m_pscene;
 
       for (uint32_t i = 0; i < frameCount; i++)
       {
@@ -384,9 +389,9 @@ namespace graphics3d_vulkan
          m_pdescriptorpool->allocateDescriptor(
             m_pdescriptorsetlayoutIbl->getDescriptorSetLayout(), set, 0);
 
-         ::cast<::gpu_vulkan::texture> ptextureBrdf = passetmanager->m_ptextureLuBrdf;
-         ::cast<::gpu_vulkan::texture> ptextureIrrad = passetmanager->m_ptextureIrradianceCube;
-         ::cast<::gpu_vulkan::texture> ptexturePrefltr = passetmanager->m_ptexturePrefilteredCube;
+         ::cast<::gpu_vulkan::texture> ptextureBrdf = pscene->m_ptextureLuBrdf;
+         ::cast<::gpu_vulkan::texture> ptextureIrrad = pscene->m_ptextureIrradianceCube;
+         ::cast<::gpu_vulkan::texture> ptexturePrefltr = pscene->m_ptexturePrefilteredCube;
          // auto irradianceInfo = m_assets.getIrradianceDescriptor();
          // auto prefilterInfo = m_assets.getPrefilteredDescriptor();
 
@@ -404,7 +409,7 @@ namespace graphics3d_vulkan
       }
 
       m_vkdescriptorsetaPbr.resize(frameCount);
-      for (uint32_t i = 0; i < frameCount; i++)
+      for (uint32_t uFrameIndex = 0; uFrameIndex < frameCount; uFrameIndex++)
       {
          VkDescriptorSet set;
          // m_pdescriptorpool->allocateDescriptor(m_pdescriptorsetlayoutPbr->getDescriptorSetLayout(), set, /*setIndex=*/0);
@@ -419,40 +424,91 @@ namespace graphics3d_vulkan
          if (1)
          {
 
-            ::cast<::gpu_vulkan::texture> ptextureAlbedo = passetmanager->getTexture("cerberus_albedo");
-            ::cast<::gpu_vulkan::texture> ptextureNormal = passetmanager->getTexture("cerberus_normal");
-            ::cast<::gpu_vulkan::texture> ptextureMetallic = passetmanager->getTexture("cerberus_metallic");
-            ::cast<::gpu_vulkan::texture> ptextureRoughness = passetmanager->getTexture("cerberus_roughness");
-            ::cast<::gpu_vulkan::texture> ptextureAo = passetmanager->getTexture("cerberus_ao");
+            auto &scenerenderables = pscene->scene_renderables();
+
+            //   //// xxxxxxxxxxxxxxxxx
+            ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+            ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
+
+            ////// xxxxxxxxxxxxxxxxx
+            // auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+            auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer, uFrameIndex);
 
 
-            // VkDescriptorImageInfo albedoInfo = m_assets.getTextureDescriptor("cerberus_albedo");
-            // VkDescriptorImageInfo normalInfo = m_assets.getTextureDescriptor("cerberus_normal");
-            // VkDescriptorImageInfo metallicInfo = m_assets.getTextureDescriptor("cerberus_metallic");
-            // VkDescriptorImageInfo roughnessInfo = m_assets.getTextureDescriptor("cerberus_roughness");
-            // VkDescriptorImageInfo aoInfo = m_assets.getTextureDescriptor("cerberus_ao");
+            for (auto &[id, pscenerenderable]: scenerenderables)
+            {
 
-            VkDescriptorImageInfo albedoInfo = ptextureAlbedo->m_descriptor3;
-            VkDescriptorImageInfo normalInfo = ptextureNormal->m_descriptor3;
-            VkDescriptorImageInfo metallicInfo = ptextureMetallic->m_descriptor3;
-            VkDescriptorImageInfo roughnessInfo = ptextureRoughness->m_descriptor3;
-            VkDescriptorImageInfo aoInfo = ptextureAo->m_descriptor3;
+               if (!pscenerenderable)
+               {
 
-            // logDescriptor("albedo", albedoInfo);
-            // logDescriptor("normal", normalInfo);
-            // logDescriptor("metallic", metallicInfo);
-            // logDescriptor("roughness", roughnessInfo);
-            // logDescriptor("ao", aoInfo);
+                  continue;
+               }
 
-            ::gpu_vulkan::descriptor_writer(*m_pdescriptorsetlayoutPbr, *m_pdescriptorpool)
-               .writeImage(0, &albedoInfo)
-               .writeImage(1, &normalInfo)
-               .writeImage(2, &metallicInfo)
-               .writeImage(3, &roughnessInfo)
-               .writeImage(4, &aoInfo)
-               .build(set);
+               if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_ibl)
+               {
 
-            m_vkdescriptorsetaPbr[i] = set;
+                  continue;
+               }
+
+
+               auto prenderable = pscenerenderable->renderable();
+               if (!prenderable)
+                  continue;
+
+               auto erenderabletype = prenderable->m_erenderabletype;
+
+               if (erenderabletype != ::gpu::e_renderable_type_gltf)
+               {
+                  continue; // not mine, skip
+               }
+               ::cast<::gpu_vulkan::gltf::model> pgltfmodel = prenderable;
+
+               if (!pgltfmodel)
+                  continue;
+
+               // pgltfmodel->bind(pgpucommandbuffer);
+
+               // for (auto *node: pgltfmodel->m_pgltfmodel->m_linearNodes)
+               //{
+               //    if (!node->mesh)
+               //       continue;
+
+
+               ::cast<::gpu_vulkan::texture> ptextureAlbedo = passetmanager->getTexture("cerberus_albedo");
+               ::cast<::gpu_vulkan::texture> ptextureNormal = passetmanager->getTexture("cerberus_normal");
+               ::cast<::gpu_vulkan::texture> ptextureMetallic = passetmanager->getTexture("cerberus_metallic");
+               ::cast<::gpu_vulkan::texture> ptextureRoughness = passetmanager->getTexture("cerberus_roughness");
+               ::cast<::gpu_vulkan::texture> ptextureAo = passetmanager->getTexture("cerberus_ao");
+
+
+               // VkDescriptorImageInfo albedoInfo = m_assets.getTextureDescriptor("cerberus_albedo");
+               // VkDescriptorImageInfo normalInfo = m_assets.getTextureDescriptor("cerberus_normal");
+               // VkDescriptorImageInfo metallicInfo = m_assets.getTextureDescriptor("cerberus_metallic");
+               // VkDescriptorImageInfo roughnessInfo = m_assets.getTextureDescriptor("cerberus_roughness");
+               // VkDescriptorImageInfo aoInfo = m_assets.getTextureDescriptor("cerberus_ao");
+
+               VkDescriptorImageInfo albedoInfo = ptextureAlbedo->m_descriptor3;
+               VkDescriptorImageInfo normalInfo = ptextureNormal->m_descriptor3;
+               VkDescriptorImageInfo metallicInfo = ptextureMetallic->m_descriptor3;
+               VkDescriptorImageInfo roughnessInfo = ptextureRoughness->m_descriptor3;
+               VkDescriptorImageInfo aoInfo = ptextureAo->m_descriptor3;
+
+               // logDescriptor("albedo", albedoInfo);
+               // logDescriptor("normal", normalInfo);
+               // logDescriptor("metallic", metallicInfo);
+               // logDescriptor("roughness", roughnessInfo);
+               // logDescriptor("ao", aoInfo);
+
+               ::gpu_vulkan::descriptor_writer(*m_pdescriptorsetlayoutPbr, *m_pdescriptorpool)
+                  .writeImage(0, &albedoInfo)
+                  .writeImage(1, &normalInfo)
+                  .writeImage(2, &metallicInfo)
+                  .writeImage(3, &roughnessInfo)
+                  .writeImage(4, &aoInfo)
+                  .build(set);
+
+               m_vkdescriptorsetaPbr[uFrameIndex] = set;
+            }
          }
       }
    }
@@ -687,7 +743,7 @@ namespace graphics3d_vulkan
    //    }
 
 
-   //void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene *pscene)
+   //void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    //{
 
    //   // vkCmdBindDescriptorSets(
@@ -859,7 +915,7 @@ namespace graphics3d_vulkan
 //      }
 //   }
 
-void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene *pscene)
+void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    {
       static bool warnedThisFrame = false;
 
@@ -867,7 +923,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
          ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
 
-         auto &sceneobjects = pscene->scene_objects();
+         auto &scenerenderables = pscene->scene_renderables();
 
       //   //// xxxxxxxxxxxxxxxxx
       ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
@@ -878,24 +934,24 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
          auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
 
 
-      for (auto &[id, psceneobject]: sceneobjects)
+      for (auto &[id, pscenerenderable]: scenerenderables)
       {
 
-         if (!psceneobject)
+         if (!pscenerenderable)
          {
 
             continue;
 
          }
 
-         if (psceneobject->m_erendersystem != ::graphics3d::e_render_system_gltf)
+         if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_ibl)
          {
 
             continue;
          }
 
 
-         auto prenderable = psceneobject->renderable();
+         auto prenderable = pscenerenderable->renderable();
          if (!prenderable)
             continue;
 
@@ -917,7 +973,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
             if (!node->mesh)
                continue;
 
-            glm::mat4 world = psceneobject->transform().getMatrix() * node->getMatrix();
+            glm::mat4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
             glm::mat4 normalMat = glm::transpose(glm::inverse(world));
 
             memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));

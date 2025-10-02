@@ -323,6 +323,8 @@ void main() {
 
       auto pcontext = gpu_context();
 
+///      ::gpu::context_lock contextlock(pcontext);
+
       pcontext->m_pgpucompositor = this;
 
       if (!pcontext->m_pgpurenderer)

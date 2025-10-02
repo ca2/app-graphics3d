@@ -49,7 +49,7 @@ namespace graphics3d_vulkan
 
    
    
-   void render_system::render(::gpu::context *pgpucontext, ::graphics3d::scene *pscene)
+   void render_system::render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    {
       
       ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();

@@ -6,6 +6,8 @@
 #include "frame.h"
 //#include "model.h"
 #include "shader.h"
+#include "render_systems/gltf_render_system.h"
+#include "render_systems/scene_render_system.h"
 #include "aura/platform/application.h"
 #include "bred/graphics3d/scene_object.h"
 //#include "networking.h"
@@ -31,6 +33,10 @@ IMPLEMENT_FACTORY(graphics3d_opengl)
    //pfactory->add_factory_item < ::graphics3d_opengl::context, ::gpu::context >();
 
    pfactory->add_factory_item < ::graphics3d::scene_object >();
+
+   pfactory->add_factory_item< ::graphics3d_opengl::gltf_render_system, ::graphics3d::gltf_render_system>();
+   pfactory->add_factory_item<::graphics3d_opengl::scene_render_system, ::graphics3d::scene_render_system>();
+
 
 }
 

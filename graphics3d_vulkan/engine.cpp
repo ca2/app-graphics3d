@@ -14,7 +14,7 @@
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "bred/graphics3d/camera.h"
-#include "bred/graphics3d/scene.h"
+#include "bred/graphics3d/scene_base.h"
 //#include "bred/graphics3d/system/simple_render_system.h"
 //#include "bred/graphics3d/system/point_light_system.h"
 #include "acme/platform/application.h"

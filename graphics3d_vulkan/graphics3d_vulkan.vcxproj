@@ -779,6 +779,9 @@
     <ProjectReference Include="..\gpu_vulkan\gpu_vulkan.vcxproj">
       <Project>{27c4f9e2-27e4-41e2-a06c-bcd7462ac33e}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\graphics3d\graphics3d.vcxproj">
+      <Project>{beca2c96-6cfd-4793-a2b8-1fce9bd31682}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

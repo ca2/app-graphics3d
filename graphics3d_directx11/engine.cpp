@@ -18,7 +18,7 @@
 #include "draw2d_direct2d/_.h"
 #include "draw2d_direct2d/graphics.h"
 #include "bred/graphics3d/camera.h"
-#include "bred/graphics3d/scene.h"
+#include "bred/graphics3d/scene_base.h"
 #include "aura/windowing/window.h"
 //#include "bred/graphics3d/system/simple_render_system.h"
 //#include "bred/graphics3d/system/point_light_system.h"

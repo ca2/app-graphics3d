@@ -22,7 +22,7 @@ namespace app_graphics3d_continuum
       immersion();
       ~immersion() override;
 
-      ::pointer<::graphics3d::scene> create_main_scene() override;
+      ::pointer<::graphics3d::scene_base> create_main_scene() override;
 
       void on_pre_update_camera() override;
 

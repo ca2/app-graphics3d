@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "bred/_.h"
+#include "app/gpu/_.h"
 
 
 #if defined(WINDOWS_DESKTOP)
@@ -71,6 +71,17 @@ namespace gpu_vulkan
    class render_pass;
 
    class render_target;
+
+   namespace gltf
+   {
+
+      class model;
+
+      class mesh;
+
+      class Model;
+
+   }
 
 
 } // namespace gpu_vulkan

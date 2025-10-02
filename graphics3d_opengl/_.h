@@ -3,6 +3,7 @@
 
 #include "gpu_opengl/_.h"
 #include "_opengl.h"
+#include "app-graphics3d/graphics3d/_.h"
 
 
 #if defined(_graphics3d_opengl_project)

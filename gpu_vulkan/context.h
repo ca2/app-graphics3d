@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "bred/gpu/context.h"
+#include "gpu/context.h"
 #include "acme/prototype/prototype/memory.h"
 #include "app-graphics3d/gpu_vulkan/device.h"
 
@@ -11,7 +11,7 @@ namespace gpu_vulkan
 
 
    class CLASS_DECL_GPU_VULKAN context :
-      virtual public ::gpu::context
+      virtual public ::gpu_gpu::context
    {
    public:
 
@@ -177,7 +177,7 @@ namespace gpu_vulkan
       //bool checkDeviceExtensionSupport(VkPhysicalDevice pvkcdevice);
 
             //descriptor_set_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
-      virtual VkDescriptorSet getGlobalDescriptorSet(::gpu_vulkan::renderer* prenderer);
+      virtual VkDescriptorSet getGlobalDescriptorSet(::gpu_vulkan::renderer* prenderer, ::collection::index iFrameIndex = -1);
 
       ::gpu_vulkan::descriptor_pool* get_global_pool(int iFrameCount);
 
@@ -209,15 +209,15 @@ namespace gpu_vulkan
 //      void initialize_rectangle_shader(::gpu::shader* pshader) override;
 
 
-      ::pointer<::gpu::texture> generatePrefilteredEnvMap(
-         ::gpu::texture *environmentCubeExisting,
-         ::graphics3d::renderable *prenderableSkybox) override;
-
-      /// generate irradianceCube
-      /// @return irradianceCube
-      ::pointer < ::gpu::texture > generateIrradianceMap(
-//         ::gpu::texture * irradianceCube,
-         ::gpu::texture * environmentCube, ::graphics3d::renderable *prenderableSkyboxx) override;
+//      ::pointer<::gpu::texture> generate_ibl_prefiltered_env_map(
+//         ::gpu::texture *environmentCubeExisting,
+//         ::graphics3d::renderable *prenderableSkybox) override;
+//
+//      /// generate irradianceCube
+//      /// @return irradianceCube
+//      ::pointer < ::gpu::texture > generate_ibl_irradiance_map(
+////         ::gpu::texture * irradianceCube,
+//         ::gpu::texture * environmentCube, ::graphics3d::renderable *prenderableSkyboxx) override;
 
       ::pointer<::gpu::texture> load_cube_map(const ::scoped_string &scopedstrName, const ::file::path &path, bool b32) override;
       ::pointer<::gpu::texture> load_sandbox_texture(const ::scoped_string &scopedstrName,
@@ -239,11 +239,11 @@ namespace gpu_vulkan
           VkQueue vkqueueCopy,
           VkImageUsageFlags usageFlags,
           VkImageLayout initialLayout);
-  //    virtual void generateBRDFlut(
-    //     ::gpu::texture * lutBrdf);
-      /// generate lutBrdf
-      /// @return lutBrdf
-      virtual ::pointer < ::gpu::texture > generateBRDFlut();
+  ////    virtual void generateBRDFlut(
+  //  //     ::gpu::texture * lutBrdf);
+  //    /// generate lutBrdf
+  //    /// @return lutBrdf
+  //    virtual ::pointer < ::gpu::texture > generateBRDFlut();
 
       ::pointer<::graphics3d::renderable> _load_gltf_model(const ::gpu::renderable_t & model) override;
 

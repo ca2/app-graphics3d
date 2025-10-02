@@ -5,8 +5,9 @@
 #include "camera.h"
 #include "impact.h"
 #include "main_scene.h"
-#include "bred/graphics3d/camera.h"
 #include "bred/gpu/context.h"
+#include "bred/graphics3d/asset_manager.h"
+#include "bred/graphics3d/camera.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/point_light.h"
 #include "bred/graphics3d/scene_object.h"
@@ -117,7 +118,7 @@ namespace app_graphics3d_continuum
       for (auto& strSkybox : m_papp->m_straSkybox)
       {
 
-         auto& pskybox = m_pimmersionlayer->m_passetmanager->m_mapSkybox[strSkybox];
+         auto& pskybox = m_mapSkybox[strSkybox];
 
          ødefer_construct_new(pskybox);
 
@@ -133,7 +134,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & flatVase = scene_object("matter://models/flat_vase.obj");
+         auto & flatVase = scene_renderable("matter://models/flat_vase.obj");
          flatVase.translate({ -.5f, 0.f, 0.f });
          flatVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
 
@@ -141,7 +142,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & floor = scene_object("matter://models/quad.obj");
+         auto &floor = scene_renderable("matter://models/quad.obj");
          floor.translate({0.f, 0.f, 0.f});
          floor.scale({5.f, -1.f, 5.f * fXScale });
 
@@ -149,7 +150,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & smoothVase = scene_object("matter://models/smooth_vase.obj");
+         auto &smoothVase = scene_renderable("matter://models/smooth_vase.obj");
          smoothVase.translate({.5f, .0f, 0.f});
          smoothVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
 
@@ -157,7 +158,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & stoneSphere = scene_object("matter://models/StoneSphere.obj");
+         auto &stoneSphere = scene_renderable("matter://models/StoneSphere.obj");
          stoneSphere.translate({ .0f, 0.0f, 0.f });
          stoneSphere.scale({.25f, .25f, .25f });
 
@@ -165,7 +166,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & woodBarrel = scene_object("matter://models/Barrel_OBJ.obj");
+         auto &woodBarrel = scene_renderable("matter://models/Barrel_OBJ.obj");
          woodBarrel.translate({ 1.f, 0.f, 1.0f });
          woodBarrel.scale({1.f, 1.f, 1.f });
 

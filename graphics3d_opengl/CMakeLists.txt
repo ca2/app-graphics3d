@@ -3,6 +3,10 @@ project(graphics3d_opengl CXX)
 
 
 list(APPEND library_source
+   render_systems/gltf_render_system.cpp
+   render_systems/gltf_render_system.h
+   render_systems/scene_render_system.cpp
+   render_systems/scene_render_system.h
         _.cpp
         _.h
         _factory.cpp
@@ -14,6 +18,8 @@ list(APPEND library_source
         framework.h
         #model.cpp
         #model.h
+   render_system.cpp
+   render_system.h
 )
 
 

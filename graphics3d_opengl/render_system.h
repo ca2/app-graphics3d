@@ -5,7 +5,7 @@
 #include "bred/graphics3d/render_system.h"
 
 
-namespace graphics3d_vulkan
+namespace graphics3d_opengl
 {
 
 
@@ -15,15 +15,15 @@ namespace graphics3d_vulkan
    public:
 
 
-      //::pointer<::gpu_vulkan::render_pass> m_pgpurenderpass;
+      //::pointer<::gpu_opengl::render_pass> m_pgpurenderpass;
 
       render_system();
       ~render_system();
 
 
-      virtual ::gpu_vulkan::render_pass *render_pass2();
+      //virtual ::gpu_opengl::render_pass *render_pass2();
 
-      void render(::gpu::context *pgpucontext, ::graphics3d::scene *pscene) override;
+      void render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene) override;
 
 
    };

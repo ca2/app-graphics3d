@@ -5,7 +5,7 @@
 
 #include "apex/platform/app_consumer.h"
 #include "bred/graphics3d/skybox.h"
-#include "bred/graphics3d/scene.h"
+#include "graphics3d/scene.h"
 
 
 namespace app_graphics3d_continuum

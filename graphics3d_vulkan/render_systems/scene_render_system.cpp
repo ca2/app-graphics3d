@@ -1,7 +1,8 @@
 #include "framework.h"
 #include "scene_render_system.h"
 #include "bred/graphics3d/engine.h"
-#include "bred/graphics3d/scene.h"
+#include "bred/graphics3d/scene_base.h"
+#include "bred/graphics3d/scene_renderable.h"
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
@@ -175,7 +176,7 @@ namespace graphics3d_vulkan
    }
 
 
-   void scene_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene *pscene)
+   void scene_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    {
 
 
@@ -185,7 +186,7 @@ namespace graphics3d_vulkan
 
       ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
 
-      auto &sceneobjects = pscene->scene_objects();
+      auto &scenerenderables = pscene->scene_renderables();
 
 
       //   //// xxxxxxxxxxxxxxxxx
@@ -197,10 +198,10 @@ namespace graphics3d_vulkan
       auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
 
 
-      for (auto &[id, psceneobject]: sceneobjects)
+      for (auto &[id, pscenerenderable]: scenerenderables)
       {
 
-         if (!psceneobject)
+         if (!pscenerenderable)
          {
 
             debug("Hey, there is a null object named '{}' in scene objects map.", id);
@@ -209,14 +210,14 @@ namespace graphics3d_vulkan
 
          }
 
-         if (psceneobject->m_erendersystem != ::graphics3d::e_render_system_scene)
+         if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_scene)
          {
 
             continue;
 
          }
 
-                 auto prenderable = psceneobject->renderable();
+                 auto prenderable = pscenerenderable->renderable();
          if (!prenderable)
             continue;
 
@@ -238,7 +239,7 @@ namespace graphics3d_vulkan
             if (!node->mesh)
                continue;
 
-            glm::mat4 world = psceneobject->transform().getMatrix() * node->getMatrix();
+            glm::mat4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
             glm::mat4 normalMat = glm::transpose(glm::inverse(world));
 
             memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));

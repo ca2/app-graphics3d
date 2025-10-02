@@ -23,7 +23,7 @@ namespace graphics3d_vulkan
 
       virtual ::gpu_vulkan::render_pass *render_pass2();
 
-      void render(::gpu::context *pgpucontext, ::graphics3d::scene *pscene) override;
+      void render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene) override;
 
 
    };

@@ -17,6 +17,8 @@
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/frame_ephemeral.h"
 #include "bred/gpu/frame_storage.h"
+#include "app-graphics3d/gpu_vulkan/ibl/diffuse_irradiance_map.h"
+#include "app-graphics3d/gpu_vulkan/ibl/specular_map.h"
 
 
 //BEGIN_FACTORY(gpu_vulkan)
@@ -58,6 +60,9 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu::frame_ephemeral >();
    pfactory->add_factory_item < ::gpu::frame_storage >();
    pfactory->add_factory_item<::gpu_vulkan::render_pass>();
+
+   pfactory->add_factory_item<::gpu_vulkan::ibl::diffuse_irradiance_map, ::gpu::ibl::diffuse_irradiance_map>();
+   pfactory->add_factory_item<::gpu_vulkan::ibl::specular_map, ::gpu::ibl::specular_map>();
    
 
 }

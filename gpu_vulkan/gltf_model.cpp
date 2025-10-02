@@ -763,7 +763,7 @@ void gltf::Texture::fromglTfImage(tinygltf::Image &gltfimage, ::std::string path
          mipLevels = ktxTexture->numLevels;
 
          ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
-         ktx_size_t ktxTextureSize = ktxTexture_GetSize(ktxTexture);
+         ktx_size_t ktxTextureSize = ktxTexture_GetDataSize(ktxTexture);
          format = ktxTexture_GetVkFormat(ktxTexture);
 
          // Get device properties for the requested texture format

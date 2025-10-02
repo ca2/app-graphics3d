@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{5a52cb6c-76f6-41e2-8d96-4d5f2abad324}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{ef06b4aa-aea8-481f-a357-14ec7fd18d55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{e61edb41-436c-4e0f-812d-d34bddf4617c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\aaa_user">
+      <UniqueIdentifier>{0a84bbef-ff11-4ea1-867a-2a3aa6ed4b67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\aaa_include">
+      <UniqueIdentifier>{585c3aae-09f8-4632-839e-aa82f9bc11a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\aaa_ibl">
+      <UniqueIdentifier>{ed0212c8-4764-4da3-bd29-a8d00feeaabf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\aaa_gltf">
+      <UniqueIdentifier>{ec397ecc-99f7-4462-acd1-f141d9fd298b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\aaa_game">
+      <UniqueIdentifier>{a7fafa56-be62-4b65-8e63-2449a2d57b82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\aaa_constant">
+      <UniqueIdentifier>{28e5c993-7608-46fa-ad2a-2011b35072ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\aaa_user">
+      <UniqueIdentifier>{168ea230-ce83-4199-a897-712f155b8049}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\aaa_platform">
+      <UniqueIdentifier>{36ce9182-dffc-4368-ad02-15d228e1b348}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\aaa_operating_system">
+      <UniqueIdentifier>{d77e15ab-fc03-42af-855b-f31189092ab1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\aaa_inline">
+      <UniqueIdentifier>{cf6c72f9-3368-440e-b488-f352a9cf92ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\aaa_include">
+      <UniqueIdentifier>{e73b9bb9-c726-4abb-98a4-7737f7c0ecc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\aaa_ibl">
+      <UniqueIdentifier>{1e4332f9-c214-4eca-9d50-d238a9f96556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\aaa_gpu">
+      <UniqueIdentifier>{b4f1d8eb-4d51-4ffa-9aaa-1ff0ab7ae826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\aaa_game">
+      <UniqueIdentifier>{906a8a0b-f60b-4fa7-9981-ddd212c9e981}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\aaa_constant">
+      <UniqueIdentifier>{6fc21995-1225-4b7b-8d36-166f83dba56d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__defer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="framework.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="deployment.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

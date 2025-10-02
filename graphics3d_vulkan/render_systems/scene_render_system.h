@@ -71,7 +71,7 @@ namespace graphics3d_vulkan
       void createPipeline(VkRenderPass renderPass);
 
       
-      void on_render(::gpu::context *pgpucontext, ::graphics3d::scene *pscene) override;
+      void on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene) override;
 
 
    };

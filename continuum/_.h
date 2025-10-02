@@ -2,7 +2,7 @@
 
 
 #include "core/_.h"
-
+#include "app-graphics3d/graphics3d/_.h"
 
 
 #if defined(_app_graphics3d_continuum_project)

@@ -12,13 +12,12 @@
 #include "render_target.h"
 #include "renderer.h"
 #include "shader.h"
-#include "acme/filesystem/filesystem/file_context.h"
 #include "aura/graphics/image/context.h"
 #include "aura/graphics/image/image.h"
 #include "acme/graphics/image/pixmap.h"
 #include "vk_init.h"
-#include <ktx.h>
-#include <ktxvulkan.h>
+#include "gpu/_ktx.h"
+//#include <ktxvulkan.h>
 
 
 namespace gpu_vulkan
@@ -957,24 +956,6 @@ namespace gpu_vulkan
    }
 
 
-      ktxResult loadKTXFile(::particle *pparticle, const ::file::path & path, ktxTexture **target)
-   {
-
-      ktxResult result = KTX_SUCCESS;
-
-      if (!pparticle->file()->exists(path))
-      {
-
-         throw ::exception(error_file_not_found, "KTX file not found: " + path);
-      }
-
-      auto memory = pparticle->file()->as_memory(path);
-
-      result =
-         ktxTexture_CreateFromMemory(memory.data(), memory.size(), KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, target);
-
-      return result;
-   }
 
 
    //   bool VkSandboxTexture::STBLoadFromFile(const std::string &filename)
@@ -1473,7 +1454,7 @@ void texture::create_sampler()
                                           VkImageLayout imageLayout, bool forceLinear)
    {
       ktxTexture *ktxTexture;
-      ktxResult result = loadKTXFile(this, path, &ktxTexture);
+      ktxResult result = ::gpu::loadKTXFile(this, path, &ktxTexture);
       assert(result == KTX_SUCCESS);
 
       ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
@@ -1490,7 +1471,7 @@ void texture::create_sampler()
       m_mipLevels = ktxTexture->numLevels;
 
       ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
-      ktx_size_t ktxTextureSize = ktxTexture_GetSize(ktxTexture);
+      ktx_size_t ktxTextureSize = ktxTexture_GetDataSize(ktxTexture);
 
       VkFormatProperties formatProperties;
       vkGetPhysicalDeviceFormatProperties(pphysicaldevice->m_vkphysicaldevice, format, &formatProperties);
@@ -1955,7 +1936,7 @@ void texture::create_sampler()
       m_mipLevels = ktxTexture->numLevels;
 
       ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
-      ktx_size_t ktxTextureSize = ktxTexture_GetSize(ktxTexture);
+      ktx_size_t ktxTextureSize = ktxTexture_GetDataSize(ktxTexture);
 
       VkMemoryAllocateInfo memAllocInfo = vkinit::memoryAllocateInfo();
       VkMemoryRequirements memReqs;

@@ -8,7 +8,7 @@
 #include "bred/gpu/context.h"
 #include "bred/gpu/renderer.h"
 #include "bred/graphics3d/camera.h"
-#include "bred/graphics3d/scene.h"
+#include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/types.h"
 #include "aura/platform/application.h"
 #include "aura/platform/session.h"

@@ -18,6 +18,7 @@
 #include "berg/user/user/document_manager.h"
 #include "berg/user/user/user.h"
 #include "berg/user/user/single_document_template.h"
+#include "bred/graphics3d/asset_manager.h"
 
 
 __IMPLEMENT_APPLICATION_RELEASE_TIME(app_graphics3d_continuum);
@@ -308,7 +309,7 @@ namespace app_graphics3d_continuum
 
                m_pmainscene->m_strSkybox = strSkybox;
 
-               m_pmainscene->m_pskyboxCurrent = m_pmainscene->m_pimmersionlayer->m_passetmanager->m_mapSkybox[strSkybox];
+               m_pmainscene->m_pskyboxCurrent2 = m_pmainscene->m_mapSkybox[strSkybox];
 
             };
 
