@@ -5,7 +5,12 @@
 
 #include "bred/gpu/texture.h"
 
+namespace tinygltf
+{
 
+   struct Image;
+
+}
 namespace gpu_vulkan
 {
 
@@ -167,6 +172,8 @@ namespace gpu_vulkan
 
       void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea = {}, enum_type etype = e_type_image) override;
       void initialize_depth_texture(::gpu::renderer* pgpurenderer, const ::int_rectangle& rectangleTarget) override;
+      void initialize_image_texture(::gpu::renderer *prenderer, const ::file::path & path, bool bIsSrgb);
+
       //void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
       //void TransitionImageLayout(
       //   VkImageLayout newLayout,
@@ -246,6 +253,9 @@ namespace gpu_vulkan
       void UpdateDescriptor();
 
       bool is_in_shader_sampling_state() override;
+
+      void _fromglTfImage(tinygltf::Image * pgltfimage, const ::file::path & path, ::gpu::renderer * pgpurender,  bool isSrgb);
+      void on_finish_load_texture();
 
    };
 

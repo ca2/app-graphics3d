@@ -28,7 +28,7 @@ namespace graphics3d_vulkan
 {
 
 
-   class gltf_render_system : 
+   class CLASS_DECL_GRAPHICS3D_VULKAN gltf_render_system : 
       virtual public ::graphics3d::gltf_render_system,
       virtual public ::graphics3d_vulkan::render_system
    {
@@ -41,7 +41,6 @@ namespace graphics3d_vulkan
       ::array_base<VkDescriptorSet> m_vkdescriptorsetaIbl;
 
       ::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutPbr;
-      ::array_base<VkDescriptorSet> m_vkdescriptorsetaPbr;
 
       //::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutUbo;
       

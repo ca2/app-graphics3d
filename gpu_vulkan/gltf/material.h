@@ -14,7 +14,7 @@ namespace gpu_vulkan
 
 namespace gltf
 {
-   class CLASS_DECL_GPU material :
+   class CLASS_DECL_GPU_VULKAN material :
    virtual public ::message::particle
    {
 

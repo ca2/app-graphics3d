@@ -21,28 +21,16 @@
 // Default fence timeout in nanoseconds
 #define DEFAULT_FENCE_TIMEOUT 100000000000
 
-// Macro to check and display Vulkan return results
-#if defined(__ANDROID__)
-#define VK_CHECK_RESULT(f)																				\
-{																										\
-	VkResult res = (f);																					\
-	if (res != VK_SUCCESS)																				\
-	{																									\
-		LOGE("Fatal : VkResult is \" %s \" in %s at line %d", vks::tools::errorString(res).c_str(), __FILE__, __LINE__); \
-		assert(res == VK_SUCCESS);																		\
-	}																									\
+CLASS_DECL_GPU_VULKAN void _vk_check_result(VkResult f, const char *pszFile, int iLine);
+
+#define VK_CHECK_RESULT(f)	                        \
+{				                                       \
+	VkResult res = (f);                             \
+   if (res != VK_SUCCESS)                          \
+   {                                               \
+      _vk_check_result(res, __FILE__, __LINE__);   \
+   }                                               \
 }
-#else
-#define VK_CHECK_RESULT(f)																				\
-{																										\
-	VkResult res = (f);																					\
-	if (res != VK_SUCCESS)																				\
-	{																									\
-		::information() << "Fatal : VkResult is \"" << ::vulkan::errorString(res) << "\" in " << __FILE__ << " at line " << __LINE__ ; \
-		ASSERT(res == VK_SUCCESS);																		\
-	}																									\
-}
-#endif
 
 //const ::string getAssetPath();
 //const ::string getShaderBasePath();

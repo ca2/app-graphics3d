@@ -656,3 +656,32 @@ namespace vulkan
 
 
 
+// Macro to check and display Vulkan return results
+#if defined(__ANDROID__)
+void _vk_check_result(VkResult f, const char *pszFile, int iLine)                                                                              \
+   {                                                                                                                
+      VkResult res = (f);                                                                                           
+      if (res != VK_SUCCESS)                                                                                        
+      {                                                                                                             
+         LOGE("Fatal : VkResult is \" %s \" in %s at line %d", vks::tools::errorString(res).c_str(), pszFile,       
+              iLine);                                                                                            
+         assert(res == VK_SUCCESS);                                                                                 
+      }                                                                                                             
+   }
+#else
+
+void _vk_check_result(VkResult  f, const char *pszFile, int iLine)
+{
+   VkResult res = (f);
+   if (res != VK_SUCCESS)
+   {
+      ::information() << "Fatal : VkResult is \"" << ::vulkan::errorString(res) << "\" in " << pszFile << " at line "
+                      << iLine;
+      ASSERT(res == VK_SUCCESS);
+   }							
+
+}
+
+
+
+#endif

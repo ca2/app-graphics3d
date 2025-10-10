@@ -48,17 +48,19 @@ namespace graphics3d_vulkan
 
    void scene_render_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
    {
+
+      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
       const ::array_base<VkDescriptorSetLayout> layouts = {
-         globalSetLayout,
-         ::gpu_vulkan::gltf::ubo_descriptor_set_layout(),
-   ::gpu_vulkan::gltf::image_descriptor_set_layout()};
+         globalSetLayout, 
+         pcontext->m_psetdescriptorlayoutGlobal->m_vkdescriptorsetlayout,
+         pcontext->m_psetdescriptorlayoutGltfImage->m_vkdescriptorsetlayout};
 
       VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
       pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
       pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(layouts.size());
       pipelineLayoutInfo.pSetLayouts = layouts.data();
 
-      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+      //::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
 
 
       if (vkCreatePipelineLayout(pcontext->logicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
@@ -188,7 +190,6 @@ namespace graphics3d_vulkan
 
       auto &scenerenderables = pscene->scene_renderables();
 
-
       //   //// xxxxxxxxxxxxxxxxx
       ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
       ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
@@ -270,7 +271,7 @@ namespace graphics3d_vulkan
                      break;
                }
 
-               pgltfmodel->drawNode(node, pcommandbuffer->m_vkcommandbuffer,
+               pgltfmodel->drawNode(node, pcommandbuffer->m_iFrameIndex, pcommandbuffer->m_vkcommandbuffer,
                                     ::gpu_vulkan::gltf::RenderFlags::BindImages,
                                m_pipelineLayout, 2);
                warnedThisFrame = false;

@@ -35,6 +35,8 @@ namespace gpu_vulkan
 
 
       ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGlobal;
+      ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGltfImage;
+      ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutIbl;
       ::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
       ::pointer_array<::gpu_vulkan::memory_buffer>					m_uboBuffers;
       ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolGlobal;
@@ -201,6 +203,8 @@ namespace gpu_vulkan
 
       void engine_on_frame_context_initialization() override;
 
+      void onBeforePreloadGlobalAssets() override;
+
 
       //void copy(::gpu::texture* ptexture) override;
       ::memory rectangle_shader_vert() override;
@@ -253,6 +257,9 @@ namespace gpu_vulkan
       virtual void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout,
                                          VkImageLayout newLayout, uint32_t mizLevels, uint32_t layerCount);
 
+   void load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::file::path &path,
+                                int iAssimpTextureType) override;
+      
 
 
 

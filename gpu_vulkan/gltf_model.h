@@ -10,6 +10,7 @@
 
 #include <vulkan/vulkan.h>
 #include "bred/graphics3d/model.h"
+#include "gpu/gltf/model_base.h"
 //#include "vk_tools/vk_init.h"
 //#include "vulkan_wrapper/vulkan_descriptor.h"
 
@@ -47,46 +48,46 @@ namespace gpu_vulkan
 		};
 
 
-		extern VkDescriptorSetLayout descriptorSetLayoutImage;
-		extern VkDescriptorSetLayout descriptorSetLayoutUbo;
-		extern VkDescriptorSetLayout descriptorSetLayoutIbl;
-		extern VkMemoryPropertyFlags memoryPropertyFlags;
-		extern uint32_t descriptorBindingFlags;
-      CLASS_DECL_GPU_VULKAN VkDescriptorSetLayout ubo_descriptor_set_layout();
-      CLASS_DECL_GPU_VULKAN VkDescriptorSetLayout image_descriptor_set_layout();
+		//extern VkDescriptorSetLayout descriptorSetLayoutImage;
+		//extern VkDescriptorSetLayout descriptorSetLayoutUbo;
+		//extern VkDescriptorSetLayout descriptorSetLayoutIbl;
+		//extern VkMemoryPropertyFlags memoryPropertyFlags;
+		//extern uint32_t descriptorBindingFlags;
+      //CLASS_DECL_GPU_VULKAN VkDescriptorSetLayout ubo_descriptor_set_layout();
+      //CLASS_DECL_GPU_VULKAN VkDescriptorSetLayout image_descriptor_set_layout();
 		struct Node;
 
-		/*
-			gltf texture loading class
-		*/
-		class Texture
-		{
-		public:
-			::gpu::context* m_pgpucontext = nullptr;
-			VkImage image;
-			VkImageLayout imageLayout;
-			VkDeviceMemory deviceMemory;
-			VkImageView view;
-			uint32_t width, height;
-			uint32_t mipLevels;
-			uint32_t layerCount;
-			VkDescriptorImageInfo descriptor;
-			VkSampler sampler;
-			uint32_t index;
-			void updateDescriptor();
-			void destroy();
-//			void fromglTfImage(tinygltf::Image& gltfimage, void * pIfKtx, long long llIfKtx, ::gpu::context* pcontext, VkQueue copyQueue, bool isSrgb);
-
-         void fromglTfImage(tinygltf::Image &gltfimage, ::std::string path, ::gpu::context *pcontext, VkQueue copyQueue,
-                            bool isSrgb);
-
-		};
+//		/*
+//			gltf texture loading class
+//		*/
+//		class Texture
+//		{
+//		public:
+//			::gpu::context* m_pgpucontext = nullptr;
+//			VkImage image;
+//			VkImageLayout imageLayout;
+//			VkDeviceMemory deviceMemory;
+//			VkImageView view;
+//			uint32_t width, height;
+//			uint32_t mipLevels;
+//			uint32_t layerCount;
+//			VkDescriptorImageInfo descriptor;
+//			VkSampler sampler;
+//			uint32_t index;
+//			void updateDescriptor();
+//			void destroy();
+////			void fromglTfImage(tinygltf::Image& gltfimage, void * pIfKtx, long long llIfKtx, ::gpu::context* pcontext, VkQueue copyQueue, bool isSrgb);
+//
+//         void fromglTfImage(tinygltf::Image &gltfimage, ::std::string path, ::gpu::context *pcontext, VkQueue copyQueue,
+//                            bool isSrgb);
+//
+//		};
 
 
 		/*
 			gltf material class
 		*/
-		class Material
+      class CLASS_DECL_GPU_VULKAN Material
 		{
 		public:
 
@@ -97,19 +98,19 @@ namespace gpu_vulkan
 			float metallicFactor = 1.0f;
 			float roughnessFactor = 1.0f;
 			glm::vec4 baseColorFactor = glm::vec4(1.0f);
-			gltf::Texture* baseColorTexture = nullptr;
-			gltf::Texture* metallicRoughnessTexture = nullptr;
-			gltf::Texture* normalTexture = nullptr;
-			gltf::Texture* occlusionTexture = nullptr;
-			gltf::Texture* emissiveTexture = nullptr;
+			::pointer<::gpu_vulkan::texture> baseColorTexture;
+         ::pointer<::gpu_vulkan::texture> metallicRoughnessTexture;
+         ::pointer<::gpu_vulkan::texture> normalTexture;
+         ::pointer<::gpu_vulkan::texture> occlusionTexture;
+         ::pointer<::gpu_vulkan::texture> emissiveTexture;
 
-			gltf::Texture* specularGlossinessTexture;
-			gltf::Texture* diffuseTexture;
+			::pointer<::gpu_vulkan::texture> specularGlossinessTexture;
+         ::pointer<::gpu_vulkan::texture> diffuseTexture;
 
-			VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
+			::array_base < VkDescriptorSet >m_descriptorseta;
 
 			Material(::gpu::context* pcontext) : m_pgpucontext(pcontext) {};
-			void createDescriptorSet(VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags, Texture* fallbackTexture);
+			void addDescriptorSet(VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags, ::gpu_vulkan::texture* fallbackTexture);
 		};
 
 		/*
@@ -266,18 +267,20 @@ namespace gpu_vulkan
 		/*
 			gltf model loading and rendering class
 		*/
-		class CLASS_DECL_GPU_VULKAN Model :
-			public ::graphics3d::renderable
+		class CLASS_DECL_GPU_VULKAN Model : public ::gpu::gltf::model_base
 		{
 		public:
 
 
-			gltf::Texture* getTexture(uint32_t index);
-			gltf::Texture emptyTexture;
+			::gpu_vulkan::texture* getTexture(uint32_t index);
+			::pointer < gpu_vulkan::texture > emptyTexture;
 			void createEmptyTexture(VkQueue transferQueue);
 		//public:
-			::gpu::context* m_pgpucontext = nullptr;
+			///::gpu::context* m_pgpucontext = nullptr;
 			VkDescriptorPool m_descriptorPool;
+
+
+
 
 			struct Vertices {
 				int count;
@@ -296,9 +299,13 @@ namespace gpu_vulkan
 			std::vector<Skin*> m_skins;
 
 
-			std::vector<gltf::Texture> m_textures;
+			::pointer_array<::gpu_vulkan::texture> m_textures;
 			std::vector<Material> m_materials;
 			std::vector<Animation> m_animations;
+
+
+         //::array_base<VkDescriptorSet> m_vkdescriptorsetaPbr;
+         
 
 			struct Dimensions {
 				glm::vec3 min = glm::vec3(FLT_MAX);
@@ -310,7 +317,7 @@ namespace gpu_vulkan
 
 			bool m_bMetallicRoughnessWorkflow = true;
 			bool m_bBuffersBound = false;
-			std::string m_path;
+			::std::string m_path1;
 
 			Model();
 			~Model();
@@ -329,12 +336,13 @@ namespace gpu_vulkan
 
 			void gltfDraw(
 				VkCommandBuffer cmd,
+            uint32_t uFrameIndex, 
 				uint32_t renderFlags = 0,
 				VkPipelineLayout pipelineLayout = VK_NULL_HANDLE,
 				uint32_t bindImageSet = 1
 			);
 
-			void drawNode(Node* node, VkCommandBuffer commandBuffer, uint32_t renderFlags = 0, VkPipelineLayout pipelineLayout = VK_NULL_HANDLE, uint32_t bindImageSet = 1);
+			void drawNode(Node* node, uint32_t uFrameIndex,  VkCommandBuffer commandBuffer, uint32_t renderFlags = 0, VkPipelineLayout pipelineLayout = VK_NULL_HANDLE, uint32_t bindImageSet = 1);
 
 
 			void getNodeDimensions(Node* node, glm::vec3& min, glm::vec3& max);
@@ -344,7 +352,9 @@ namespace gpu_vulkan
 			Node* nodeFromIndex(uint32_t index);
 			void prepareNodeDescriptor(gltf::Node* node, VkDescriptorSetLayout descriptorSetLayout);
 
-
+         ::gpu::texture *loadMaterialTexture2(const ::scoped_string &scopedstr, tinygltf::Material &material,
+                                              tinygltf::Model &gltfModel, const ::scoped_string &scopedstrType,
+                                              aiTextureType type);
 		};
 
 

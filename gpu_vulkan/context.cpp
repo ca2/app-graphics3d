@@ -2853,7 +2853,13 @@ namespace gpu_vulkan
    void context::engine_on_frame_context_initialization()
    {
 
-      // Global UBO descriptors
+   }
+
+
+   void context::onBeforePreloadGlobalAssets()
+   {
+
+            // Global UBO descriptors
       if (!m_psetdescriptorlayoutGlobal)
       {
 
@@ -2876,6 +2882,8 @@ namespace gpu_vulkan
 
          m_pdescriptorpoolGlobal = pdescriptorpoolbuilder->build();
       }
+
+
    }
 
 
@@ -5307,9 +5315,11 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
 
    auto pmodel = øcreate_new<::gpu_vulkan::gltf::Model>();
 
+   *((::gpu::renderable_t *)pmodel) = model;
+
    ::cast<::gpu_vulkan::queue> pqueueGraphics = graphics_queue();
 
-   pmodel->loadFromFile(model.m_path.c_str(), this, pqueueGraphics->m_vkqueue, model.m_iFlags, model.m_fScale);
+   pmodel->loadFromFile(model.m_pathRenderable.c_str(), this, pqueueGraphics->m_vkqueue, model.m_iFlags, model.m_fScale);
 
    // m_mapgltfModel[name] = model;
    return pmodel;
@@ -5500,6 +5510,20 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
       return nullptr;
    }
 }
+void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::file::path &path,
+                                   int iAssimpTextureType)
+{
+
+   if (ødefer_construct(ptexture))
+   {
+   
+       ptexture->initialize_image_texture(m_pgpurenderer, path, false);
+   
+    }
+
+}
+
+
 
 
 } // namespace gpu_vulkan

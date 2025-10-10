@@ -21,6 +21,7 @@
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
 #include "gltf_render_system.h"
+#include "gpu_vulkan/gltf_model.h"
 // #include "graphics3d/_.h"
 // #include <stdexcept>
 
@@ -408,7 +409,6 @@ namespace graphics3d_vulkan
          m_vkdescriptorsetaIbl[i] = set;
       }
 
-      m_vkdescriptorsetaPbr.resize(frameCount);
       for (uint32_t uFrameIndex = 0; uFrameIndex < frameCount; uFrameIndex++)
       {
          VkDescriptorSet set;
@@ -461,10 +461,30 @@ namespace graphics3d_vulkan
                {
                   continue; // not mine, skip
                }
-               ::cast<::gpu_vulkan::gltf::model> pgltfmodel = prenderable;
+               ::cast<::gpu_vulkan::gltf::Model> pgltfmodel = prenderable;
 
                if (!pgltfmodel)
                   continue;
+
+               //for (auto &material: pgltfmodel->m_materials)
+               //{
+               //   if (material.baseColorTexture != nullptr)
+               //   {
+               //      material.addDescriptorSet(
+               //         m_pdescriptorpool->m_vkdescriptorpool, 
+               //         m_pdescriptorsetlayoutPbr->m_vkdescriptorsetlayout, 
+               //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageBaseColor |
+               //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageMetallicMap |
+               //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageNormalMap |
+               //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageAOMap |
+               //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageEmissiveMap,
+               //         pgltfmodel->emptyTexture);
+               //   }
+               //}
+
+
+               //pgltfmodel->m_vkdescriptorsetaPbr.resize(frameCount);
+
 
                // pgltfmodel->bind(pgpucommandbuffer);
 
@@ -474,11 +494,11 @@ namespace graphics3d_vulkan
                //       continue;
 
 
-               ::cast<::gpu_vulkan::texture> ptextureAlbedo = passetmanager->getTexture("cerberus_albedo");
-               ::cast<::gpu_vulkan::texture> ptextureNormal = passetmanager->getTexture("cerberus_normal");
-               ::cast<::gpu_vulkan::texture> ptextureMetallic = passetmanager->getTexture("cerberus_metallic");
-               ::cast<::gpu_vulkan::texture> ptextureRoughness = passetmanager->getTexture("cerberus_roughness");
-               ::cast<::gpu_vulkan::texture> ptextureAo = passetmanager->getTexture("cerberus_ao");
+               //::cast<::gpu_vulkan::texture> ptextureAlbedo = pgltfmodel->b;
+               //::cast<::gpu_vulkan::texture> ptextureNormal = passetmanager->getTexture("cerberus_normal");
+               //::cast<::gpu_vulkan::texture> ptextureMetallic = passetmanager->getTexture("cerberus_metallic");
+               //::cast<::gpu_vulkan::texture> ptextureRoughness = passetmanager->getTexture("cerberus_roughness");
+               //::cast<::gpu_vulkan::texture> ptextureAo = passetmanager->getTexture("cerberus_ao");*/
 
 
                // VkDescriptorImageInfo albedoInfo = m_assets.getTextureDescriptor("cerberus_albedo");
@@ -487,11 +507,11 @@ namespace graphics3d_vulkan
                // VkDescriptorImageInfo roughnessInfo = m_assets.getTextureDescriptor("cerberus_roughness");
                // VkDescriptorImageInfo aoInfo = m_assets.getTextureDescriptor("cerberus_ao");
 
-               VkDescriptorImageInfo albedoInfo = ptextureAlbedo->m_descriptor3;
-               VkDescriptorImageInfo normalInfo = ptextureNormal->m_descriptor3;
-               VkDescriptorImageInfo metallicInfo = ptextureMetallic->m_descriptor3;
-               VkDescriptorImageInfo roughnessInfo = ptextureRoughness->m_descriptor3;
-               VkDescriptorImageInfo aoInfo = ptextureAo->m_descriptor3;
+               //VkDescriptorImageInfo albedoInfo = ptextureAlbedo->m_descriptor3;
+               //VkDescriptorImageInfo normalInfo = ptextureNormal->m_descriptor3;
+               //VkDescriptorImageInfo metallicInfo = ptextureMetallic->m_descriptor3;
+               //VkDescriptorImageInfo roughnessInfo = ptextureRoughness->m_descriptor3;
+               //VkDescriptorImageInfo aoInfo = ptextureAo->m_descriptor3;
 
                // logDescriptor("albedo", albedoInfo);
                // logDescriptor("normal", normalInfo);
@@ -499,15 +519,15 @@ namespace graphics3d_vulkan
                // logDescriptor("roughness", roughnessInfo);
                // logDescriptor("ao", aoInfo);
 
-               ::gpu_vulkan::descriptor_writer(*m_pdescriptorsetlayoutPbr, *m_pdescriptorpool)
-                  .writeImage(0, &albedoInfo)
-                  .writeImage(1, &normalInfo)
-                  .writeImage(2, &metallicInfo)
-                  .writeImage(3, &roughnessInfo)
-                  .writeImage(4, &aoInfo)
-                  .build(set);
+               //::gpu_vulkan::descriptor_writer(*m_pdescriptorsetlayoutPbr, *m_pdescriptorpool)
+               //   .writeImage(0, &albedoInfo)
+               //   .writeImage(1, &normalInfo)
+               //   .writeImage(2, &metallicInfo)
+               //   .writeImage(3, &roughnessInfo)
+               //   .writeImage(4, &aoInfo)
+               //   .build(set);
 
-               m_vkdescriptorsetaPbr[uFrameIndex] = set;
+               //pgltfmodel->m_vkdescriptorsetaPbr[uFrameIndex] = set;
             }
          }
       }
@@ -520,7 +540,7 @@ namespace graphics3d_vulkan
       ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
 
       auto descriptorsetlayout0 = globalSetLayout;
-      auto descriptorsetlayout1 = ::gpu_vulkan::gltf::ubo_descriptor_set_layout();
+      auto descriptorsetlayout1 = pcontext->m_psetdescriptorlayoutGlobal->m_vkdescriptorsetlayout;
       auto descriptorsetlayout2 = m_pdescriptorsetlayoutPbr->getDescriptorSetLayout();
       auto descriptorsetlayout3 = m_pdescriptorsetlayoutIbl->getDescriptorSetLayout();
 
@@ -998,8 +1018,17 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                   (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
 
                // --- Bind our PBR set (set = 2) ---
+               if (pgltfmodel->m_materials.size() <= 0)
+               {
+
+                  if (!warnedThisFrame)
+                  { /*spdlog::warn("PBR set null");*/
+                     warnedThisFrame = true;
+                  }
+                  continue;
+               }
                 VkDescriptorSet pbrSet =
-                  m_vkdescriptorsetaPbr[pcontext->m_pgpurenderer->m_pgpurendertarget->get_frame_index()];
+                  pgltfmodel->m_materials[0].m_descriptorseta[pframe->m_pgpucommandbuffer->m_iFrameIndex];
                if (pbrSet == VK_NULL_HANDLE)
                {
                   if (!warnedThisFrame)
@@ -1037,7 +1066,9 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                      break;
                }
 
-               pgltfmodel->gltfDraw(pcommandbuffer->m_vkcommandbuffer, ::gpu_vulkan::gltf::RenderNone, m_pipelineLayout, 2);
+               pgltfmodel->gltfDraw(pcommandbuffer->m_vkcommandbuffer, 
+                  pframe->m_pgpucommandbuffer->m_iFrameIndex,::gpu_vulkan::gltf::RenderNone,
+                                    m_pipelineLayout, 2);
                warnedThisFrame = false;
             }
          }
