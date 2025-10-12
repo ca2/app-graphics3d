@@ -12,9 +12,6 @@
     <Filter Include="Resource Files">
       <UniqueIdentifier>{2ec8ecd0-d089-4887-98eb-a66497a4e6c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\operating_system">
-      <UniqueIdentifier>{7d5251d2-1d85-456a-b600-24603712b07d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\shader">
       <UniqueIdentifier>{179b8e43-ca4a-4546-a31a-fc40ccd96636}</UniqueIdentifier>
     </Filter>
@@ -38,6 +35,9 @@
     </Filter>
     <Filter Include="Source Files\gltf">
       <UniqueIdentifier>{e9555e35-cf1e-4789-8707-233d2ce33cea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ibl\operating_system">
+      <UniqueIdentifier>{7d5251d2-1d85-456a-b600-24603712b07d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +200,18 @@
     <ClInclude Include="gltf\_constant.h">
       <Filter>Header Files\gltf</Filter>
     </ClInclude>
+    <ClInclude Include="ibl\equirectangular_cubemap.h">
+      <Filter>Header Files\ibl</Filter>
+    </ClInclude>
+    <ClInclude Include="ibl\cubemap_framebuffer.h">
+      <Filter>Header Files\ibl</Filter>
+    </ClInclude>
+    <ClInclude Include="ibl\hdri_cube.h">
+      <Filter>Header Files\ibl</Filter>
+    </ClInclude>
+    <ClInclude Include="cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -212,9 +224,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="aaa_context_win32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="image_vulkan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="approach.cpp">
@@ -272,7 +281,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="operating_system\windows.cpp">
-      <Filter>Source Files\operating_system</Filter>
+      <Filter>Source Files\ibl\operating_system</Filter>
     </ClCompile>
     <ClCompile Include="device.cpp">
       <Filter>Source Files</Filter>
@@ -337,6 +346,18 @@
     <ClCompile Include="gltf\model.cpp">
       <Filter>Source Files\gltf</Filter>
     </ClCompile>
+    <ClCompile Include="ibl\equirectangular_cubemap.cpp">
+      <Filter>Source Files\ibl</Filter>
+    </ClCompile>
+    <ClCompile Include="ibl\hdri_cube.cpp">
+      <Filter>Source Files\ibl</Filter>
+    </ClCompile>
+    <ClCompile Include="cube.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ibl\cubemap_framebuffer.cpp">
+      <Filter>Source Files\ibl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="deployment.rc">
@@ -389,6 +410,12 @@
     <CustomBuild Include="ibl\shader\prefiltered_env_map.frag">
       <Filter>Source Files\ibl\shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="ibl\shader\hdricube.vert">
+      <Filter>Source Files\ibl\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ibl\shader\hdricube.frag">
+      <Filter>Source Files\ibl\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\image_blend.frag.spv.inl">
@@ -425,6 +452,12 @@
       <Filter>Header Files\ibl\shader</Filter>
     </None>
     <None Include="ibl\shader\diffuseirradiance.vert.spv.inl">
+      <Filter>Header Files\ibl\shader</Filter>
+    </None>
+    <None Include="ibl\shader\hdricube.frag.spv.inl">
+      <Filter>Header Files\ibl\shader</Filter>
+    </None>
+    <None Include="ibl\shader\hdricube.vert.spv.inl">
       <Filter>Header Files\ibl\shader</Filter>
     </None>
   </ItemGroup>

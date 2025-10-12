@@ -233,7 +233,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-      m_pshaderPresent->bind(ptextureSwapChain, ptextureSrc);
+      m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain, ptextureSrc);
       //pgpucontext->m_pcontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
       //pgpucontext->m_pcontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
 
@@ -274,7 +274,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       pcommandlist->DrawInstanced(3, 1, 0, 0);
 
 
-      m_pshaderPresent->unbind();
+      m_pshaderPresent->unbind(pcommandbuffer);
 
 
       //FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };

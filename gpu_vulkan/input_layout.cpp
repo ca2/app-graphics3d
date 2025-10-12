@@ -30,7 +30,7 @@ namespace gpu_vulkan
       auto & bindingDescription = bindingDescriptions.ø(0);
 
       bindingDescription.binding = 0;
-      bindingDescription.stride = this->size();
+      bindingDescription.stride = this->size(false);
       bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
       return bindingDescriptions;

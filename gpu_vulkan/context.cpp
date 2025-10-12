@@ -3122,7 +3122,7 @@ namespace gpu_vulkan
                   //   ptextureSrc->_scoped_state(pcommandbuffer, {0, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                   //                                               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT});
 
-                  m_pshaderBlend3->bind(ptextureDst, ptextureSrc);
+                  m_pshaderBlend3->bind(pcommandbuffer, ptextureDst, ptextureSrc);
 
                   // pcommandbuffer->set_viewport(ptextureSrc->m_rectangleTarget);
 
@@ -3205,7 +3205,7 @@ namespace gpu_vulkan
                   vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
 
 
-                  m_pshaderBlend3->unbind();
+                  m_pshaderBlend3->unbind(pcommandbuffer);
                }
 
                iLayer++;
@@ -3565,7 +3565,7 @@ VkFormat context::findDepthFormat()
 //}
 
 
-::pointer<::gpu::texture> context::loadCubemap(const ::scoped_string &name, const ::scoped_string &ktxFilename,
+::pointer<::gpu::texture> context::loadCubemap(const ::scoped_string &name, const ::scoped_string &scopedstrFileName,
                                                VkFormat format, VkQueue vkqueueCopy, VkImageUsageFlags usageFlags,
                                                VkImageLayout initialLayout)
 {
@@ -3584,8 +3584,37 @@ VkFormat context::findDepthFormat()
 
    try
    {
+      if (scopedstrFileName.case_insensitive_ends(".ktx"))
+      {
 
-      ptexture->KtxLoadCubemapFromFile(name, ktxFilename, format, pqueueGraphics->m_vkqueue, usageFlags, initialLayout);
+         ptexture->KtxLoadCubemapFromFile(name, scopedstrFileName, format, pqueueGraphics->m_vkqueue, usageFlags,
+                                          initialLayout);
+      }
+      else if (scopedstrFileName.case_insensitive_ends(".hdr"))
+      {
+
+         try
+         {
+
+            // ptexture->KtxLoadCubemapFromFile(name, ktxFilename, format, pqueueGraphics->m_vkqueue, usageFlags,
+            // initialLayout);
+
+            auto ptexture = cubemap_from_hdr(scopedstrFileName);
+
+            return ptexture;
+         }
+         catch (const ::exception &e)
+         {
+            throw ::exception(e.m_estatus, "Failed to load HDR cubemap '" + name + "': " + e.get_message());
+         }
+
+      }
+      else
+      {
+
+         warning() << "not implemented loadCubemap case";
+
+      }
    }
    catch (const ::exception &e)
    {

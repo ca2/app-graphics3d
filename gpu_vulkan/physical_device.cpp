@@ -42,6 +42,7 @@ namespace gpu_vulkan
       vkGetPhysicalDeviceFeatures(m_vkphysicaldevice, &m_vkphysicaldevicefeatures);
       // Memory properties are used regularly for creating all kinds of buffers
       vkGetPhysicalDeviceMemoryProperties(m_vkphysicaldevice, &m_vkphysicaldevicememoryproperties);
+
       // Queue family properties, used for setting up requested queues upon device creation
       uint32_t queueFamilyCount;
       vkGetPhysicalDeviceQueueFamilyProperties(m_vkphysicaldevice, &queueFamilyCount, nullptr);

@@ -1052,7 +1052,7 @@ namespace gpu_vulkan
          }
       );
 
-      m_pshaderPresent->bind(ptextureSwapChain, ptextureSrc);
+      m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain, ptextureSrc);
 
       pcommandbuffer->m_semaphoreaWaitToSubmit.add(ptextureSrc->synchronization()->m_vksemaphoreRenderFinished);
       pcommandbuffer->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -1130,7 +1130,7 @@ namespace gpu_vulkan
       //}
 
 
-      m_pshaderPresent->unbind();
+      m_pshaderPresent->unbind(pcommandbuffer);
 
       //pgpurenderer->m_pgpucontext->m_iOverrideFrame = -1;
       //FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };

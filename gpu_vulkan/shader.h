@@ -147,21 +147,22 @@ namespace gpu_vulkan
 
       virtual void _create_pipeline();
 
-      void bind(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource) override;
-      void bind(::gpu::texture* pgputextureTarget) override;
-      void bind() override;
-      void unbind() override;
-      virtual void _bind(::gpu::texture* pgputextureTarget);
-      virtual void _bind();
+      void bind(::gpu::command_buffer *pgpucommandbuffer,::gpu::texture *pgputextureTarget,
+                ::gpu::texture *pgputextureSource) override;
+      void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget) override;
+      void bind(::gpu::command_buffer *pgpucommandbuffe) override;
+      void unbind(::gpu::command_buffer *pgpucommandbuffer) override;
+      virtual void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget);
+      virtual void _bind(::gpu::command_buffer *pgpucommandbuffer);
 
 
-      void push_properties() override;
+      void push_properties(::gpu::command_buffer *pgpucommandbuffer) override;
 
 
-      void set_push_properties(const ::block& block) override;
+      void set_push_properties(::gpu::command_buffer *pgpucommandbuffer, const ::block &block) override;
 
 
-      void bind_source(::gpu::texture * ptexture, int iSlot) override;
+      void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptexture, int iSlot) override;
 
 
    };

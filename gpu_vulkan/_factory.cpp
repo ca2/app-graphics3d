@@ -17,8 +17,13 @@
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/frame_ephemeral.h"
 #include "bred/gpu/frame_storage.h"
+#include "app-graphics3d/gpu_vulkan/ibl/cubemap_framebuffer.h"
 #include "app-graphics3d/gpu_vulkan/ibl/diffuse_irradiance_map.h"
+#include "app-graphics3d/gpu_vulkan/ibl/equirectangular_cubemap.h"
+#include "app-graphics3d/gpu_vulkan/ibl/hdri_cube.h"
 #include "app-graphics3d/gpu_vulkan/ibl/specular_map.h"
+#include "app-graphics3d/gpu_vulkan/cube.h"
+
 
 
 //BEGIN_FACTORY(gpu_vulkan)
@@ -63,6 +68,10 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item<::gpu_vulkan::ibl::diffuse_irradiance_map, ::gpu::ibl::diffuse_irradiance_map>();
    pfactory->add_factory_item<::gpu_vulkan::ibl::specular_map, ::gpu::ibl::specular_map>();
+   pfactory->add_factory_item<::gpu_vulkan::ibl::cubemap_framebuffer, ::gpu::ibl::cubemap_framebuffer>();
+   pfactory->add_factory_item<::gpu_vulkan::ibl::equirectangular_cubemap, ::gpu::ibl::equirectangular_cubemap>();
+   pfactory->add_factory_item<::gpu_vulkan::ibl::hdri_cube, ::gpu::ibl::hdri_cube>();
+   pfactory->add_factory_item<::gpu_vulkan::cube, ::gpu::cube>();
    
 
 }

@@ -712,7 +712,7 @@ namespace gpu_vulkan
       emptyTexture->m_rectangleTarget.set_width(1);
       emptyTexture->m_rectangleTarget.set_height(1);
       emptyTexture->m_iLayerCount = 1;
-		emptyTexture->m_mipLevels = 1;
+		emptyTexture->m_mipsLevel = 1;
 
 		::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 		::cast < ::gpu_vulkan::device > pgpudevice = pcontext->m_pgpudevice;

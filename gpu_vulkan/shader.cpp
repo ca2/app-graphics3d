@@ -349,14 +349,14 @@ namespace gpu_vulkan
 
       auto prenderpass = this->render_pass2();
 
-      ::cast<texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
+      //::cast<texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
 
-      if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
-      {
+      //if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+      //{
 
-         warning() << "what?";
+      //   warning() << "what?";
 
-      }
+      //}
 
       //if (has_sampler())
       //{
@@ -373,7 +373,51 @@ namespace gpu_vulkan
 
       //pipelineconfiguration.pipelineLayout = m_vkpipelinelayout;
 
-      if (m_bindingSampler.is_set())
+      if (m_bindingUbo.is_set())
+      {
+
+         if (m_bindingSampler.is_set())
+         {
+            m_psetdescriptorlayout =
+               ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpurenderer->m_pgpucontext)
+                  .addBinding(m_bindingUbo.m_uBinding, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                              VK_SHADER_STAGE_VERTEX_BIT|VK_SHADER_STAGE_FRAGMENT_BIT)
+                  .addBinding(m_bindingSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                              VK_SHADER_STAGE_FRAGMENT_BIT)
+                  .build();
+            int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+
+            auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+
+            pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
+            pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
+
+            m_pdescriptorpool = pdescriptorpoolbuilder->build();
+
+         }
+         else
+         {
+
+            m_psetdescriptorlayout=
+               ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpurenderer->m_pgpucontext)
+                  .addBinding(m_bindingSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                              VK_SHADER_STAGE_FRAGMENT_BIT)
+                  .build();
+
+            int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+
+            auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+
+            pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
+            pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
+
+            m_pdescriptorpool = pdescriptorpoolbuilder->build();
+         }
+      }
+         else if (m_bindingSampler.is_set())
       {
 
          {
@@ -381,7 +425,7 @@ namespace gpu_vulkan
             m_psetdescriptorlayout
                = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpurenderer->m_pgpucontext)
                .addBinding(m_bindingSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                           VK_SHADER_STAGE_FRAGMENT_BIT)
+                              VK_SHADER_STAGE_FRAGMENT_BIT)
                .build();
 
             int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
@@ -491,29 +535,30 @@ namespace gpu_vulkan
    }
 
 
-   void shader::bind(::gpu::texture *pgputextureTarget, ::gpu::texture *pgputextureSource)
+   void shader::bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget,
+                     ::gpu::texture *pgputextureSource)
    {
 
-      _bind();
+      _bind(pgpucommandbuffer);
 
-      _bind(pgputextureTarget);
+      _bind(pgpucommandbuffer, pgputextureTarget);
 
-      bind_source(pgputextureSource, 0);
+      bind_source(pgpucommandbuffer, pgputextureSource, 0);
 
    }
 
 
-   void shader::bind(::gpu::texture *pgputextureTarget)
+   void shader::bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
    {
 
-      _bind(pgputextureTarget);
+      _bind(pgpucommandbuffer, pgputextureTarget);
 
-      _bind();
+      _bind(pgpucommandbuffer);
 
    }
 
 
-   void shader::_bind(::gpu::texture *pgputextureTarget)
+   void shader::_bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
    {
 
       ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
@@ -522,7 +567,7 @@ namespace gpu_vulkan
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
 
@@ -635,7 +680,7 @@ namespace gpu_vulkan
    }
 
 
-   void shader::bind()
+   void shader::bind(::gpu::command_buffer *pgpucommandbuffer)
    {
 
       ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
@@ -725,12 +770,12 @@ namespace gpu_vulkan
          VK_SUBPASS_CONTENTS_INLINE);*/
 
 
-      _bind();
+      _bind(pgpucommandbuffer);
 
    }
 
 
-   void shader::_bind()
+   void shader::_bind(::gpu::command_buffer *pgpucommandbuffer)
    {
 
       ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
@@ -739,7 +784,8 @@ namespace gpu_vulkan
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      //::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       if (!m_ppipeline)
       {
@@ -795,7 +841,7 @@ namespace gpu_vulkan
    }
 
 
-   void shader::unbind()
+   void shader::unbind(::gpu::command_buffer * pgpucommandbuffer)
    {
 
       ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
@@ -804,7 +850,7 @@ namespace gpu_vulkan
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
       //
       //      {
       //
@@ -900,10 +946,11 @@ namespace gpu_vulkan
    }
 
 
-   void shader::push_properties()
+   void shader::push_properties(::gpu::command_buffer *pgpucommandbuffer)
    {
 
-      ::gpu::shader::push_properties();
+      set_push_properties(pgpucommandbuffer, m_propertiesPush.m_blockWithoutSamplers);
+      //::gpu::shader::push_properties();
       //set_push_properties(m_propertiesPush.m_block);
       /*     ::cast < renderer > prenderer = m_pgpurenderer;
 
@@ -928,12 +975,12 @@ namespace gpu_vulkan
    }
 
 
-   void shader::set_push_properties(const ::block &block)
+   void shader::set_push_properties(::gpu::command_buffer *pgpucommandbuffer, const ::block &block)
    {
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       vkCmdPushConstants(
          pcommandbuffer->m_vkcommandbuffer,
@@ -1355,7 +1402,7 @@ namespace gpu_vulkan
    //}
 
 
-   void shader::bind_source(::gpu::texture *pgputexture, int iSlot)
+   void shader::bind_source(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture *pgputexture, int iSlot)
    {
 
       ::cast<texture> ptexture = pgputexture;
@@ -1372,7 +1419,8 @@ namespace gpu_vulkan
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      //::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       unsigned int uSet = 0;
 

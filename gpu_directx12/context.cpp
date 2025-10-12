@@ -2186,7 +2186,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
 
 
-      m_pshaderBlend3->bind(ptextureTarget);
+      m_pshaderBlend3->bind(pcommandbuffer, ptextureTarget);
 
 
       //int iDescriptorSize = ptextureDst->m_rtvDescriptorSize;
@@ -2232,7 +2232,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
                ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-               m_pshaderBlend3->bind_source(ptextureSrc, 0);
+               m_pshaderBlend3->bind_source(pcommandbuffer,  ptextureSrc, 0);
 
                //ID3D11SamplerState* samplerstatea[] =
                //{ ptexture->m_psamplerstate };
@@ -2282,7 +2282,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
       }
       //}
 
-      m_pshaderBlend3->unbind();
+      m_pshaderBlend3->unbind(pcommandbuffer);
 
       ////::cast <texture > ptextureDst = ptextureTarget;
       //{

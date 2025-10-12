@@ -2285,7 +2285,7 @@ namespace gpu_vulkan
 
       auto pshaderImageBlend = _get_image_blend_shader();
 
-      pshaderImageBlend->bind(m_pgpurendertarget->current_texture(::gpu::current_frame()), pgputexture);
+      pshaderImageBlend->bind(pcommandbuffer, m_pgpurendertarget->current_texture(::gpu::current_frame()), pgputexture);
 
       //m_pshaderImageBlend->_bind_sampler(image, 0);
 
@@ -2323,7 +2323,7 @@ namespace gpu_vulkan
       // Draw full-screen quad
       //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
-      m_pshaderImageBlend->unbind();
+      m_pshaderImageBlend->unbind(pcommandbuffer);
 
       //vkCmdEndRenderPass(...);
 
@@ -2547,7 +2547,7 @@ namespace gpu_vulkan
 
       //  vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         //vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      m_pshaderCopyImage->bind(ptextureDst, ptextureSrc);
+      m_pshaderCopyImage->bind(pcommandbuffer, ptextureDst, ptextureSrc);
 
       //m_pshaderCopyImage->_bind_sampler(ptextureDst->m_vkimage, 0);
 
@@ -2557,7 +2557,7 @@ namespace gpu_vulkan
       vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 3, 1, 0, 0);
 
 
-      m_pshaderCopyImage->unbind();
+      m_pshaderCopyImage->unbind(pcommandbuffer);
 
 
       //if (m_pshaderCopyImage->has_shader_sampler())
@@ -2737,7 +2737,7 @@ namespace gpu_vulkan
 
       auto pshader = _get_image_blend_shader();
 
-      pshader->bind(m_pgpurendertarget->current_texture(::gpu::current_frame()), pgputexture);
+      pshader->bind(pcommandbuffer, m_pgpurendertarget->current_texture(::gpu::current_frame()), pgputexture);
 
       // pshader->_bind_sampler(image, 0);
 
@@ -2840,7 +2840,7 @@ namespace gpu_vulkan
       // Draw full-screen quad
       //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
-      pshader->unbind();
+      pshader->unbind(pcommandbuffer);
 
       //vkCmdEndRenderPass(...);
 
@@ -3027,7 +3027,7 @@ namespace gpu_vulkan
 
       auto pshader = _get_image_blend_shader();
 
-      pshader->bind(m_pgpurendertarget->current_texture(::gpu::current_frame()), ptexture);
+      pshader->bind(pcommandbuffer, m_pgpurendertarget->current_texture(::gpu::current_frame()), ptexture);
 
       // pshader->_bind_sampler(ptexture->m_vkimage, 0);
 
@@ -3163,7 +3163,7 @@ namespace gpu_vulkan
       // Draw full-screen quad
       //vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0); // assuming full-screen triangle/quad
 
-      pshader->unbind();
+      pshader->unbind(pcommandbuffer);
 
       //vkCmdEndRenderPass(...);
 
@@ -4939,7 +4939,7 @@ namespace gpu_vulkan
 
       //  vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         //vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      m_pshaderBlend2->bind(ptextureTarget, ptextureSrc);
+      m_pshaderBlend2->bind(pcommandbuffer, ptextureTarget, ptextureSrc);
 
       //m_pshaderBlend2->_bind_sampler(ptextureDst->m_vkimage, 0);
 
@@ -4949,7 +4949,7 @@ namespace gpu_vulkan
       vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 3, 1, 0, 0);
 
 
-      m_pshaderBlend2->unbind();
+      m_pshaderBlend2->unbind(pcommandbuffer);
 
 
       //if (m_pshaderBlend2->has_shader_sampler())

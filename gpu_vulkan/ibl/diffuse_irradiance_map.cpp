@@ -165,10 +165,10 @@ namespace gpu_vulkan
          samplerCI.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
          VK_CHECK_RESULT(
             vkCreateSampler(pgpucontext->logicalDevice(), &samplerCI, nullptr, &pgputextureIrradianceCube->m_vksamplerDedicated));
-
-         pgputextureIrradianceCube->m_descriptor3.imageView = pgputextureIrradianceCube->m_vkimageview;
-         pgputextureIrradianceCube->m_descriptor3.sampler = pgputextureIrradianceCube->m_vksamplerDedicated;
-         pgputextureIrradianceCube->m_descriptor3.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+         auto &desc3 = pgputextureIrradianceCube->m_descriptor3;
+         desc3.imageView = pgputextureIrradianceCube->m_vkimageview;
+         desc3.sampler = pgputextureIrradianceCube->m_vksamplerDedicated;
+         desc3.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
          // pgputextureIrradianceCube->m_pDevice = m_pgpudevice;
 
          // --- create offscreen renderpass/framebuffer (unchanged) ---

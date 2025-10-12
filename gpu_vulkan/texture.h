@@ -147,7 +147,7 @@ namespace gpu_vulkan
       VkFormat                   m_vkformat;
       VkDeviceMemory             m_vkdevicememory;
       state_t                    m_state;
-      int                        m_mipsLevel;
+      //int                        m_mipsLevel;
       /// Does every texture needs its own sampler?
       VkSampler                  m_vksampler3;
       VkDescriptorImageInfo      m_descriptor3;
@@ -173,7 +173,8 @@ namespace gpu_vulkan
       void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea = {}, enum_type etype = e_type_image) override;
       void initialize_depth_texture(::gpu::renderer* pgpurenderer, const ::int_rectangle& rectangleTarget) override;
       void initialize_image_texture(::gpu::renderer *prenderer, const ::file::path & path, bool bIsSrgb);
-
+      void initialize_hdr_texture_on_memory(::gpu::renderer *pgpurenderer, const ::block &block) override;
+      //virtual void load_Cubemap(const ::file::path & path);
       //void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
       //void TransitionImageLayout(
       //   VkImageLayout newLayout,

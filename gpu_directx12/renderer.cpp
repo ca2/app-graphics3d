@@ -3334,8 +3334,12 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast < texture > ptexture = player->texture();
 
       auto pshader = get_image_blend_shader();
+      ::cast<command_buffer> pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
 
-      pshader->bind(m_pgpurendertarget->current_texture(::gpu::current_frame()), ptexture);
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+
+      pshader->bind(pcommandbuffer, m_pgpurendertarget->current_texture(::gpu::current_frame()), ptexture);
 
       auto sizeHost = m_pgpucontext->m_rectangle.size();
 
@@ -3357,9 +3361,6 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto vertexCount = 6;
 
-      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
-
-      auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
       ::cast < device > pdevice = m_pgpucontext->m_pgpudevice;
 
@@ -3386,7 +3387,7 @@ float4 main(PSInput input) : SV_TARGET {
       pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       pcommandlist->DrawInstanced(vertexCount, 1, 0, 0);
 
-      pshader->unbind();
+      pshader->unbind(pcommandbuffer);
 
 
 

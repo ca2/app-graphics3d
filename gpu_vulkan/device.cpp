@@ -255,6 +255,13 @@ namespace gpu_vulkan
 
          auto path = this->shader_path(pathShader);
 
+         if (path.contains("_ibl_hdr"))
+         {
+
+            information() << "_ibl_hdr";
+
+         }
+
          memory = file()->as_memory(path);
 
       }

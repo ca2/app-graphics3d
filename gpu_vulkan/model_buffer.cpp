@@ -741,8 +741,8 @@ namespace gpu_vulkan
          {
 
 ::cast < texture > ptexture = m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_frame());
-if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
-{
+            if (ptexture && ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+            {
    warning() << "what?";
 
       }
