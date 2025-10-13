@@ -282,7 +282,7 @@ namespace gpu_vulkan
                vkCreateFramebuffer(pgpucontext->logicalDevice(), &fbufCreateInfo, nullptr, &offscreen.framebuffer));
 
             // VkCommandBuffer layoutCmd = m_device.createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-            auto pgpucommandbufferLayoutCmd = pgpucontext->beginSingleTimeCommands(pgpucontext->transfer_queue());
+            auto pgpucommandbufferLayoutCmd = pgpucontext->beginSingleTimeCommands(pgpucontext->m_pgpudevice->transfer_queue());
             ::cast<command_buffer> pcommandbufferLayoutCmd = pgpucommandbufferLayoutCmd;
             ::vulkan::setImageLayout(pcommandbufferLayoutCmd->m_vkcommandbuffer, offscreen.image,
                                      VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED,
@@ -408,7 +408,7 @@ namespace gpu_vulkan
          // VkCommandBuffer pcommandbufferCmd->m_vkcommandbuffer =
          // m_device.createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
-         auto pgpucommandbufferCmd = pgpucontext->beginSingleTimeCommands(pgpucontext->transfer_queue());
+         auto pgpucommandbufferCmd = pgpucontext->beginSingleTimeCommands(pgpucontext->m_pgpudevice->transfer_queue());
 
          ::cast<::gpu_vulkan::command_buffer> pcommandbufferCmd = pgpucommandbufferCmd;
 
@@ -786,7 +786,7 @@ namespace gpu_vulkan
          // COMMAND RECORDING
          // VkCommandBuffer vkcommandbuffer = this->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
          ::pointer<::gpu_vulkan::command_buffer> pcommandbuffer =
-            pgpucontext->beginSingleTimeCommands(pgpucontext->transfer_queue());
+            pgpucontext->beginSingleTimeCommands(pgpucontext->m_pgpudevice->transfer_queue());
 
          // Render
          VkClearValue clearValues[1];

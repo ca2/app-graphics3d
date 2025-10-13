@@ -268,7 +268,7 @@ namespace gpu_vulkan
                vkCreateFramebuffer(pgpucontext->logicalDevice(), &fbufCreateInfo, nullptr, &offscreen.framebuffer));
 
             // VkCommandBuffer layoutCmd = pgpucontext->beginSingleTimeCommands((VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-            ::pointer<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucontext->beginSingleTimeCommands(pgpucontext->transfer_queue());
+            ::pointer<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucontext->beginSingleTimeCommands(pgpucontext->m_pgpudevice->transfer_queue());
             vulkan::setImageLayout(pcommandbuffer->m_vkcommandbuffer, offscreen.image, VK_IMAGE_ASPECT_COLOR_BIT,
                                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
             // this->flushCommandBuffer(layoutCmd, m_vkqueueTransfer3, true);
@@ -367,7 +367,7 @@ namespace gpu_vulkan
 
          // COMMAND RECORDING
          // VkCommandBuffer vkcommandbuffer = this->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-         ::pointer<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucontext->beginSingleTimeCommands(pgpucontext->transfer_queue());
+         ::pointer<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucontext->beginSingleTimeCommands(pgpucontext->m_pgpudevice->transfer_queue());
 
          // Transition irradiance cubemap to TRANSFER_DST (outside any renderpass)
          VkImageSubresourceRange cubemapRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, numMips, 0, 6};

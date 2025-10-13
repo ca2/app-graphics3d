@@ -23,6 +23,7 @@ namespace gpu_vulkan
 		~offscreen_render_pass();
 
 		void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {}) override;
+      //void _update_render_pass(::gpu::context *pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous = {}) override;
 		//VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
 		//VkRenderPass getRenderPass() { return m_vkrenderpass; }
 		//VkImageView getImageView(int index) { return m_imageview[index]; }

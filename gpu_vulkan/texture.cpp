@@ -47,9 +47,11 @@ namespace gpu_vulkan
       {
 
          renderpass.m_vkframebuffer = _framebuffer(prenderpass);
+
       }
 
       return renderpass.m_vkframebuffer;
+
    }
 
 
@@ -350,7 +352,7 @@ namespace gpu_vulkan
 
       pbufferStaging->_assign_cube_map(imagea);
 
-      ::pointer<command_buffer> pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pqueueTransfer);
+      ::pointer<command_buffer> pcommandbuffer = pcontext->beginSingleTimeCommands(pdevice->m_pqueueTransfer);
 
       pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging);
 
@@ -480,76 +482,193 @@ namespace gpu_vulkan
    {
 
       ASSERT(pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording);
+      VkImage image = m_vkimage;
 
-      auto image = m_vkimage;
+      VkAccessFlags accessOld = m_state.m_vkaccessflags;
+      VkAccessFlags accessNew = state.m_vkaccessflags;
+      VkImageLayout layoutOld = m_state.m_vkimagelayout;
+      VkImageLayout layoutNew = state.m_vkimagelayout;
+      VkPipelineStageFlags stageOld = m_state.m_vkpipelinestageflags;
+      VkPipelineStageFlags stageNew = state.m_vkpipelinestageflags;
 
-      auto accessOld = m_state.m_vkaccessflags;
+      // Quick no-op
+      if (layoutOld == layoutNew && accessOld == accessNew && stageOld == stageNew)
+      {
 
-      auto accessNew = state.m_vkaccessflags;
-
-      auto layoutOld = m_state.m_vkimagelayout;
-
-      auto layoutNew = state.m_vkimagelayout;
-
-      auto pipelineStageFlagsOld = m_state.m_vkpipelinestageflags;
-
-      auto pipelineStageFlagsNew = state.m_vkpipelinestageflags;
-
-      // Optional: Skip no-op transitions
-      if (layoutOld == layoutNew && accessOld == accessNew && pipelineStageFlagsOld == pipelineStageFlagsNew)
          return;
 
-      unsigned int iLayerCount;
-
-      if (m_etype == e_type_cube_map)
-      {
-
-         iLayerCount = 6;
-      }
-      else
-      {
-
-         iLayerCount = 1;
       }
 
-      VkImageMemoryBarrier barrier = {
-         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-         .srcAccessMask = accessOld,
-         .dstAccessMask = accessNew,
-         .oldLayout = layoutOld,
-         .newLayout = layoutNew,
-         .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-         .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-         .image = image,
-         .subresourceRange = {.baseMipLevel = 0, .levelCount = 1, .baseArrayLayer = 0, .layerCount = iLayerCount}};
+      uint32_t layerCount = (m_etype == e_type_cube_map) ? 6u : 1u;
 
+      uint32_t levelCount = (m_mipsLevel > 0) ? m_mipsLevel : 1u; // be safe if m_mipsLevel wasn't set
+
+      // If old layout is UNDEFINED, the src access must be 0 and src stage can be TOP_OF_PIPE
+      if (layoutOld == VK_IMAGE_LAYOUT_UNDEFINED)
+      {
+         
+         accessOld = 0;
+         
+         if (stageOld == 0)
+         {
+
+            stageOld = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
+         }
+
+      }
+
+      // If no stage bits provided, derive conservative ones from access masks / layouts
+      auto derive_stage_from_access = [](VkAccessFlags access) -> VkPipelineStageFlags
+      {
+         
+         if (access == 0)
+         {
+
+            return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
+         }
+
+         VkPipelineStageFlags stages = 0;
+
+         if (access & (VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_TRANSFER_WRITE_BIT))
+         {
+
+            stages |= VK_PIPELINE_STAGE_TRANSFER_BIT;
+
+         }
+
+         if (access & (VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT))
+         {
+            
+            stages |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+
+         }
+
+         if (access & (VK_ACCESS_HOST_READ_BIT | VK_ACCESS_HOST_WRITE_BIT))
+         {
+
+            stages |= VK_PIPELINE_STAGE_HOST_BIT;
+
+         }
+
+         if (access & (VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT))
+         {
+
+            stages |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+         }
+         
+         if (stages == 0)
+         {
+
+            stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
+         }
+
+         return stages;
+
+      };
+
+      if (stageOld == 0)
+      {
+      
+         stageOld = derive_stage_from_access(accessOld);
+
+      }
+
+      if (stageNew == 0)
+      {
+
+         stageNew = derive_stage_from_access(accessNew);
+
+      }
+
+      // If new layout is transfer dst and no dst access set, set transfer write
+      if (layoutNew == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && (accessNew & VK_ACCESS_TRANSFER_WRITE_BIT) == 0)
+      {
+         
+         accessNew |= VK_ACCESS_TRANSFER_WRITE_BIT;
+         
+         if ((stageNew & VK_PIPELINE_STAGE_TRANSFER_BIT) == 0)
+         {
+
+            stageNew |= VK_PIPELINE_STAGE_TRANSFER_BIT;
+
+         }
+
+      }
+
+      // If new layout is shader read only and no shader read access set, set it
+      if (layoutNew == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && (accessNew & VK_ACCESS_SHADER_READ_BIT) == 0)
+      {
+         
+         accessNew |= VK_ACCESS_SHADER_READ_BIT;
+         
+         if ((stageNew & (VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_VERTEX_SHADER_BIT |
+                          VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT)) == 0)
+         {
+
+            stageNew |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+
+         }
+
+      }
+
+      // Build barrier
+      VkImageMemoryBarrier barrier{};
+      barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+      barrier.pNext = nullptr;
+      barrier.srcAccessMask = accessOld;
+      barrier.dstAccessMask = accessNew;
+      barrier.oldLayout = layoutOld;
+      barrier.newLayout = layoutNew;
+      barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      barrier.image = image;
+      barrier.subresourceRange.baseMipLevel = 0;
+      barrier.subresourceRange.levelCount = levelCount;
+      barrier.subresourceRange.baseArrayLayer = 0;
+      barrier.subresourceRange.layerCount = layerCount;
+
+      // Set aspect mask according to texture type
       if (m_etype == e_type_depth)
       {
-
+         
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+
       }
       else if (m_etype == e_type_depth_stencil)
       {
-
+         
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+
       }
       else if (m_etype == e_type_image || m_etype == e_type_cube_map)
       {
-
+         
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
       }
       else
       {
-
+         
          throw ::exception(error_wrong_state);
+
       }
 
-      vkCmdPipelineBarrier(pcommandbuffer->m_vkcommandbuffer, pipelineStageFlagsOld, pipelineStageFlagsNew, 0, 0, NULL,
-                           0, NULL, 1, &barrier);
+      // Finally call barrier
+      vkCmdPipelineBarrier(
+         pcommandbuffer->m_vkcommandbuffer, 
+         stageOld, stageNew, 
+         0, 0, nullptr, 0, nullptr, 1,
+         &barrier);
 
+      // Update stored state
       m_state.m_vkimagelayout = layoutNew;
       m_state.m_vkaccessflags = accessNew;
-      m_state.m_vkpipelinestageflags = pipelineStageFlagsNew;
+      m_state.m_vkpipelinestageflags = stageNew;
+
    }
 
 
@@ -726,7 +845,7 @@ namespace gpu_vulkan
          [this, pcontext, pbufferStaging, rectangle]()
          {
 
-            auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+            auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
             pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging, rectangle);
 
@@ -738,7 +857,7 @@ namespace gpu_vulkan
          [this, pcontext]()
          {
 
-            auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+            auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
             ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer; 
 
@@ -1491,7 +1610,7 @@ void texture::create_sampler()
 
       //VkCommandBuffer pcommandbufferCmd->m_vkcommandbuffer = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
-      auto pgpucommandbufferCmd = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+      auto pgpucommandbufferCmd = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
       ::cast<::gpu_vulkan::command_buffer> pcommandbufferCmd = pgpucommandbufferCmd;
 
@@ -2044,7 +2163,7 @@ void texture::create_sampler()
       // Use a separate command buffer for texture loading
       //VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer = pdevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
-      auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+      auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
       ::cast<command_buffer> pcommandbufferCopy = pgpucommandbufferCopy;
 
@@ -2167,13 +2286,20 @@ void texture::create_sampler()
 
       m_pgpurenderer = pgpurenderer;
 
-      auto data1 = block.data();
+      auto blockData = block.data();
 
-      auto size1 = block.size();
+      auto blockSize = block.size();
 
-      int width, height,channels;
+      int width = 0;
+      
+      int height = 0;
+      
+      int channels;
 
-      auto imagedata = stbi_loadf_from_memory(data1, size1, &width, &height, &channels, 0);
+      //stbi_set_flip_vertically_on_load(true);
+
+      auto imagedata = stbi_loadf_from_memory(
+         blockData, blockSize, &width, &height, &channels, 0);
 
       if (!imagedata)
       {
@@ -2183,10 +2309,9 @@ void texture::create_sampler()
          stbi_image_free(imagedata);
 
          return;
+
       }
 
-
-      // m_etype = etype;
       m_rectangleTarget = ::int_rectangle(::int_size(width, height));
 
       m_bWithDepth = false;
@@ -2197,111 +2322,47 @@ void texture::create_sampler()
 
       ::cast<::gpu_vulkan::physical_device> pphysicaldevice = pdevice->m_pphysicaldevice;
 
-      //glGenTextures(1, &m_gluTextureID);
-      //GLCheckError("");
-      //glBindTexture(GL_TEXTURE_2D, m_gluTextureID);
-      //GLCheckError("");
+      m_mipsLevel = 1;
 
-      //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, w, h, 0, GL_RGB, GL_FLOAT, imagedata);
-      //GLCheckError("");
+      m_etype = e_type_image;
 
-      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      //GLCheckError("");
-      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      //GLCheckError("");
-      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      //GLCheckError("");
-      //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      //GLCheckError("");
-
-      stbi_set_flip_vertically_on_load(true);
-
-//      if (channels == 3)
-  //    {
-    //  m_vkformat= pphysicaldevice->findSupportedFormat(
-   	//{ VK_FORMAT_R32G32B32_SFLOAT,
-        // VK_FORMAT_R16G16B16_SFLOAT},
-		//VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
-      //}
-      //if(channels == 4)
-      {
-         m_vkformat = pphysicaldevice->findSupportedFormat(
-            {VK_FORMAT_R32G32B32A32_SFLOAT, VK_FORMAT_R16G16B16A16_SFLOAT},
-                                                 VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
-      }
+      m_vkformat = pphysicaldevice->findSupportedFormat(
+         {
+            VK_FORMAT_R32G32B32A32_SFLOAT
+         },
+         VK_IMAGE_TILING_OPTIMAL, 
+         VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
       int iBytesPerChannel = 4;
-      float *rgbaData = nullptr; 
+
+      ::memory memoryRgba;
+      
+      float * rgbaData = nullptr; 
+
       if (channels == 3)
       {
 
          size_t pixelCount = (size_t)width * height;
-         rgbaData = (float *) malloc(pixelCount * 4 * sizeof(float));
+
+         memoryRgba.set_size(pixelCount * iBytesPerChannel * sizeof(float));
+         
+         rgbaData = (float *) memoryRgba.data();
 
          for (size_t i = 0; i < pixelCount; ++i)
          {
+            
             rgbaData[i * 4 + 0] = imagedata[i * 3 + 0];
             rgbaData[i * 4 + 1] = imagedata[i * 3 + 1];
             rgbaData[i * 4 + 2] = imagedata[i * 3 + 2];
             rgbaData[i * 4 + 3] = 1.0f; // synthesized alpha
+
          }
+
          channels = 4;
+
       }
 
-         // void *textureData[6];
-         //// Load images
-         // int width, height, channels;
-         // bool hdr = m_vkformat == VK_FORMAT_R16_SFLOAT || m_vkformat == VK_FORMAT_R16G16_SFLOAT ||
-         //            m_vkformat == VK_FORMAT_R16G16B16_SFLOAT ||
-         //            m_vkformat == VK_FORMAT_R16G16B16A16_SFLOAT || m_vkformat == VK_FORMAT_R32_SFLOAT ||
-         //            m_vkformat == VK_FORMAT_R32G32_SFLOAT || m_vkformat == VK_FORMAT_R32G32B32_SFLOAT ||
-         //            m_vkformat == VK_FORMAT_R32G32B32A32_SFLOAT;
-         // if (hdr)
-         //{
-         //    if (formatInfo.bytesPerChannel == 4)
-         //    {
-         //       for (unsigned int i = 0; i < 6; i++)
-         //       {
-         //          textureData[i] =
-         //             stbi_loadf(cubemapInfo.directories[i].c_str(), &width, &height, &channels,
-         //             formatInfo.nChannels);
-         //       }
-         //    }
-         //    else if (formatInfo.bytesPerChannel == 2)
-         //    {
-         //       for (unsigned int i = 0; i < 6; i++)
-         //       {
-         //          float *data =
-         //             stbi_loadf(cubemapInfo.directories[i].c_str(), &width, &height, &channels,
-         //             formatInfo.nChannels);
-         //          unsigned long long dataSize = width * height * formatInfo.nChannels;
-
-         //         textureData[i] = new float16[dataSize];
-         //         for (unsigned long long j = 0; j < dataSize; j++)
-         //         {
-         //            ((float16 *)textureData[i])[j] = floatToFloat16(data[j]);
-         //         }
-         //         stbi_image_free((void *)data);
-         //      }
-         //   }
-         //}
-         // else
-         //{
-         //   for (unsigned int i = 0; i < 6; i++)
-         //   {
-         //      textureData[i] =
-         //         stbi_load(cubemapInfo.directories[i].c_str(), &width, &height, &channels, formatInfo.nChannels);
-         //   }
-         //}
-
-         const VkDeviceSize imageSize = VkDeviceSize(width) * height * channels * iBytesPerChannel;
-      //unsigned int nMips = unsigned int(std::floor(std::log2(width > height ? width : height))) + 1;
-
-      //assert(("[ERROR] Unsupported texture format",
-      //        formatProperties.maxExtent.width >= width && formatProperties.maxExtent.height >= height &&
-      //           formatProperties.maxExtent.depth >= 1 && formatProperties.maxMipLevels >= 1 &&
-      //           formatProperties.maxArrayLayers >= 1 && formatProperties.sampleCounts & VK_SAMPLE_COUNT_1_BIT &&
-      //           formatProperties.maxResourceSize >= imageSize));
+      const VkDeviceSize imageSize = VkDeviceSize(width) * height * channels * iBytesPerChannel;
 
       // Create image
       auto imageCreateInfo = ::vulkan::initializers::imageCreateInfo();
@@ -2313,74 +2374,132 @@ void texture::create_sampler()
       imageCreateInfo.mipLevels = 1;
       imageCreateInfo.arrayLayers = 1;
       imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      //imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+      //imageCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
       imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
       imageCreateInfo.usage =
-         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+         //VK_IMAGE_USAGE_TRANSFER_SRC_BIT | 
+         VK_IMAGE_USAGE_TRANSFER_DST_BIT |
          VK_IMAGE_USAGE_SAMPLED_BIT;
+      //imageCreateInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
+      //imageCreateInfo.queueFamilyIndexCount = 2;
+      //uint32_t concurrentQueueFamilyIndices[] = {pdevice->m_queuefamilyindexes.graphicsFamily,
+      //                                         pdevice->m_queuefamilyindexes.transferFamily};
+      //imageCreateInfo.pQueueFamilyIndices = concurrentQueueFamilyIndices;
       imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
       imageCreateInfo.queueFamilyIndexCount = 0;
       imageCreateInfo.pQueueFamilyIndices = nullptr;
       imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+      m_state.m_vkimagelayout = imageCreateInfo.initialLayout;
+      m_state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+      m_state.m_vkaccessflags = 0;
       
       auto logicalDevice = pcontext->logicalDevice();
 
       VK_CHECK_RESULT(vkCreateImage(logicalDevice, &imageCreateInfo, nullptr, &m_vkimage));
-      //validateResult(result);
 
       VkMemoryRequirements memoryRequirements;
       vkGetImageMemoryRequirements(pcontext->logicalDevice(), m_vkimage, &memoryRequirements);
 
-      VkMemoryAllocateInfo memoryAllocateInfo = {};
-      memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-      memoryAllocateInfo.allocationSize = memoryRequirements.size;
-      memoryAllocateInfo.memoryTypeIndex =
+      VkMemoryAllocateInfo memoryAllocateInfo1 = {};
+      memoryAllocateInfo1.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+      memoryAllocateInfo1.allocationSize = memoryRequirements.size;
+      memoryAllocateInfo1.memoryTypeIndex =
          pphysicaldevice->findMemoryType(memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-      VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memoryAllocateInfo, nullptr, &m_vkdevicememory));
-      //validateResult(result);
+      VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memoryAllocateInfo1, nullptr, &m_vkdevicememory));
 
       VK_CHECK_RESULT(vkBindImageMemory(pcontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
-      //validateResult(result);
 
       // Create staging buffer
       VkBuffer stagingBuffer;
       VkDeviceMemory stagingMemory;
+
+      information() << "imageSize = " << imageSize;
+      information() << "memoryRequirements.size = " << memoryRequirements.size;
 
       auto bufferCreateInfo =::vulkan::initializers::bufferCreateInfo();
       bufferCreateInfo.pNext = nullptr;
       bufferCreateInfo.flags = 0;
       bufferCreateInfo.size = imageSize;
       bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+      //bufferCreateInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
+      //bufferCreateInfo.queueFamilyIndexCount = 2;
+      //bufferCreateInfo.pQueueFamilyIndices = concurrentQueueFamilyIndices;
       bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
       bufferCreateInfo.queueFamilyIndexCount = 0;
       bufferCreateInfo.pQueueFamilyIndices = nullptr;
       VK_CHECK_RESULT(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
-      ///validateResult(result);
 
       vkGetBufferMemoryRequirements(pcontext->logicalDevice(), stagingBuffer, &memoryRequirements);
 
-      memoryAllocateInfo.allocationSize = memoryRequirements.size;
-      memoryAllocateInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(
+      VkMemoryAllocateInfo memoryAllocateInfo2 = {};
+      memoryAllocateInfo2.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+      memoryAllocateInfo2.allocationSize = memoryRequirements.size;
+      memoryAllocateInfo2.memoryTypeIndex = pphysicaldevice->findMemoryType(
          memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-      VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memoryAllocateInfo, nullptr, &stagingMemory));
-      //validateResult(result);
+      VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memoryAllocateInfo2, nullptr, &stagingMemory));
 
       VK_CHECK_RESULT(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
-      //validateResult(result);
 
-      unsigned char *data;
+      unsigned char *data = nullptr;
+
       VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, imageSize, 0, (void **)&data));
-      //validateResult(result);
 
-      unsigned long long dataLayer = unsigned long long(width) * height * channels * iBytesPerChannel;
-      //for (unsigned int i = 0; i < 6; i++)
-      //{
-      memcpy((void *)(data), rgbaData? rgbaData:imagedata, dataLayer);
-         //stbi_image_free(textureData[i]);
-      //}
+      memcpy(data, rgbaData ? rgbaData : imagedata, imageSize);
 
       vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
 
+      ::pointer<::gpu_vulkan::command_buffer> pcommandbuffer =
+         pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue(),
+            ::gpu::e_command_buffer_transfer);
+
+      auto vkcommandpoolTransfer = pcontext->getTransferCommandPool();
+
+      assert(pcommandbuffer != nullptr);
+      assert(pcommandbuffer->m_vkcommandbuffer != VK_NULL_HANDLE);
+      assert(pcommandbuffer->m_vkcommandpool == vkcommandpoolTransfer);
+      assert(pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording);
+      assert(pcommandbuffer->m_vkcommandbufferlevel == VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+
+      _set_state(pcommandbuffer, 
+         {
+            VK_ACCESS_TRANSFER_WRITE_BIT,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT
+         });
+
+      // Copy buffer -> image
+      VkBufferImageCopy region{};
+      region.bufferOffset = 0;
+      region.bufferRowLength = 0; // tightly packed
+      region.bufferImageHeight = 0;
+      region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      region.imageSubresource.mipLevel = 0;
+      region.imageSubresource.baseArrayLayer = 0;
+      region.imageSubresource.layerCount = 1;
+      region.imageOffset = {0, 0, 0};
+      region.imageExtent = {(uint32_t)width, (uint32_t)height, 1};
+
+      vkCmdCopyBufferToImage(pcommandbuffer->m_vkcommandbuffer,
+         stagingBuffer, m_vkimage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
+                             &region);
+
+      _set_state(pcommandbuffer,
+         {
+            VK_ACCESS_SHADER_READ_BIT, 
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 
+            VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT});
+
       
+      pcontext->endSingleTimeCommands(pcommandbuffer);
+
+      //vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
+      m_descriptor3.imageView = m_vkimageview;
+      m_descriptor3.sampler = m_vksampler3;
+      m_descriptor3.imageLayout = m_state.m_vkimagelayout;
+
+
       // Create image view
       VkImageViewCreateInfo imageViewCreateInfo = {};
       imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -2401,7 +2520,6 @@ void texture::create_sampler()
       imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
       imageViewCreateInfo.subresourceRange.layerCount = 1;
       VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &imageViewCreateInfo, nullptr, &m_vkimageview));
-      //;;validateResult(result);
 
       // Create sampler
       VkSamplerCreateInfo samplerCreateInfo = {};
@@ -2414,34 +2532,26 @@ void texture::create_sampler()
       samplerCreateInfo.mipLodBias = 0.0f;
       samplerCreateInfo.minLod = 0.0f;
       samplerCreateInfo.maxLod = float(m_mipsLevel);
-      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-      ;
-      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-      samplerCreateInfo.anisotropyEnable = VK_TRUE;
-      samplerCreateInfo.maxAnisotropy = pphysicaldevice->m_vkphysicaldeviceproperties.limits.maxSamplerAnisotropy;
+      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+      samplerCreateInfo.anisotropyEnable =
+         pphysicaldevice->m_vkphysicaldevicefeatures.samplerAnisotropy ? VK_TRUE : VK_FALSE;
+      samplerCreateInfo.maxAnisotropy = samplerCreateInfo.anisotropyEnable
+                                           ? pphysicaldevice->m_vkphysicaldeviceproperties.limits.maxSamplerAnisotropy
+                                           : 1.0f;
       samplerCreateInfo.compareEnable = VK_FALSE;
       samplerCreateInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-      samplerCreateInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+      samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
       samplerCreateInfo.unnormalizedCoordinates = VK_FALSE;
       VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerCreateInfo, nullptr, &m_vksampler3));
-      //validateResult(result);
-      ::cast<::gpu_vulkan::queue> pqueueTransfer = pcontext->m_pqueueTransfer;
-      VK_CHECK_RESULT(vkQueueWaitIdle(pqueueTransfer->m_vkqueue));
-      //validateResult(result);
-      //result = vkResetCommandBuffer(textureManager.mCommandBuffer, 0);
-      ///validateResult(result);
 
+      vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
       vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
-      m_descriptor3.imageView = m_vkimageview;
-      m_descriptor3.sampler = m_vksampler3;
-      m_descriptor3.imageLayout = m_state.m_vkimagelayout;
       stbi_image_free(imagedata);
-      if (rgbaData)
-      {
-         ::free(rgbaData);
-      }
+
    }
+
 
 //   void texture::load_Cubemap(const ::file::path & path)
 //   {
@@ -2778,7 +2888,9 @@ void texture::create_sampler()
       {
          isKtx = true;
       }
-      ::cast<::gpu_vulkan::queue> pgpuqueueTransfer = pcontext->m_pqueueTransfer;
+      
+      ::cast<::gpu_vulkan::queue> pgpuqueueTransfer = pgpudevice->m_pqueueTransfer;
+
       VkQueue copyQueue = pgpuqueueTransfer->m_vkqueue;
       //VkFormat format;
 
@@ -2878,7 +2990,7 @@ void texture::create_sampler()
          // VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer =
          // pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
-         auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+         auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
          ::cast<command_buffer> pcommandbufferCopy = pgpucommandbufferCopy;
 
@@ -2928,7 +3040,7 @@ void texture::create_sampler()
 
          // Generate the mip chain (glTF uses jpg and png, so we need to create this manually)
          // VkCommandBuffer blitCmd = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-         auto pgpucommandbufferBlit = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+         auto pgpucommandbufferBlit = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
          ::cast<command_buffer> pcommandbufferBlit = pgpucommandbufferBlit;
          for (uint32_t i = 1; i < m_mipsLevel; i++)
          {
@@ -3084,7 +3196,7 @@ void texture::create_sampler()
          // VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer =
          // device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
-         auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+         auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
          ::cast<command_buffer> pcommandbufferCopy = pgpucommandbufferCopy;
 

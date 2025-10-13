@@ -36,15 +36,18 @@ namespace graphics3d_vulkan
    //void scene_render_system::init(VkSandboxDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
    //                             VkSandboxDescriptorPool &descriptorPool, size_t frameCount)
    //{
-      void scene_render_system::on_prepare(::gpu::context *pgpucontext)
-      {
-      //m_globalSetLayout = globalSetLayout;
+   void scene_render_system::on_prepare(::gpu::context *pgpucontext)
+   {
+   
+      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
 
-         ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
       createPipelineLayout(pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout());
          auto prenderpass = render_pass2();
+
       createPipeline(prenderpass->m_vkrenderpass);
+
    }
+
 
    void scene_render_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
    {

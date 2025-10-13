@@ -783,7 +783,7 @@ namespace gpu_vulkan
 
 		//VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer = pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
-	   auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+	   auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
 	   ::cast < command_buffer > pcommandbufferCopy = pgpucommandbufferCopy;
 
@@ -1464,7 +1464,7 @@ namespace gpu_vulkan
 
 
 		// Copy from staging buffers
-		auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->transfer_queue());
+		auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
 		::cast < ::gpu_vulkan::command_buffer > pcommandbufferCopy = pgpucommandbufferCopy;
 

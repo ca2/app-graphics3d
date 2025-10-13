@@ -39,7 +39,7 @@ namespace gpu_vulkan
    bool shader::need_rebuild()
    {
 
-      auto prenderpass = render_pass2();
+      auto prenderpass = render_pass2(::gpu::e_scene_none);
 
       if (::is_null(prenderpass))
       {
@@ -137,9 +137,8 @@ namespace gpu_vulkan
    }
 
 
-   void shader::_create_pipeline()
+   void shader::_create_pipeline(::gpu::enum_scene escene)
    {
-
 
       ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
@@ -150,7 +149,6 @@ namespace gpu_vulkan
       //::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
       //::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
-
 
       øconstruct_new(m_ppipeline);
 
@@ -232,21 +230,27 @@ namespace gpu_vulkan
          pipelineconfiguration.depthStencilInfo.stencilTestEnable = VK_FALSE;
 
       }
+
       if (!m_bDisableDepthTest)
       {
 
          if (m_bLequalDepth)
          {
+
             pipelineconfiguration.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+
          }
          else
          {
+
             pipelineconfiguration.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+
          }
 
       }
 
       pipelineconfiguration.colorBlendAttachments.clear();
+
       if (m_bAccumulationEnable)
       {
 
@@ -347,7 +351,7 @@ namespace gpu_vulkan
 
       ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
 
-      auto prenderpass = this->render_pass2();
+      auto prenderpass = this->render_pass2(escene);
 
       //::cast<texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
 
@@ -378,6 +382,7 @@ namespace gpu_vulkan
 
          if (m_bindingSampler.is_set())
          {
+
             m_psetdescriptorlayout =
                ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpurenderer->m_pgpucontext)
                   .addBinding(m_bindingUbo.m_uBinding, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
@@ -385,6 +390,7 @@ namespace gpu_vulkan
                   .addBinding(m_bindingSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                               VK_SHADER_STAGE_FRAGMENT_BIT)
                   .build();
+
             int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
             auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
@@ -539,7 +545,7 @@ namespace gpu_vulkan
                      ::gpu::texture *pgputextureSource)
    {
 
-      _bind(pgpucommandbuffer);
+      _bind(pgpucommandbuffer, ::gpu::e_scene_none);
 
       _bind(pgpucommandbuffer, pgputextureTarget);
 
@@ -553,7 +559,7 @@ namespace gpu_vulkan
 
       _bind(pgpucommandbuffer, pgputextureTarget);
 
-      _bind(pgpucommandbuffer);
+      _bind(pgpucommandbuffer, ::gpu::e_scene_none);
 
    }
 
@@ -571,7 +577,7 @@ namespace gpu_vulkan
 
       ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
 
-      auto prenderpass = this->render_pass2();
+      auto prenderpass = this->render_pass2(::gpu::e_scene_none);
 
       VkRenderPassBeginInfo renderPassBeginInfo{};
 
@@ -704,7 +710,7 @@ namespace gpu_vulkan
 
       ::cast<render_target> prendertarget = m_pgpurenderer->m_pgpurendertarget;
 
-      ::cast<render_pass> prenderpass = this->render_pass2();
+      ::cast<render_pass> prenderpass = this->render_pass2(::gpu::e_scene_none);
 
 
       renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
@@ -770,12 +776,12 @@ namespace gpu_vulkan
          VK_SUBPASS_CONTENTS_INLINE);*/
 
 
-      _bind(pgpucommandbuffer);
+      _bind(pgpucommandbuffer, ::gpu::e_scene_none);
 
    }
 
 
-   void shader::_bind(::gpu::command_buffer *pgpucommandbuffer)
+   void shader::_bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_scene escene)
    {
 
       ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
@@ -790,7 +796,7 @@ namespace gpu_vulkan
       if (!m_ppipeline)
       {
 
-         _create_pipeline();
+         _create_pipeline(escene);
 
       }
 
@@ -1270,12 +1276,12 @@ namespace gpu_vulkan
    }
 
 
-   render_pass *shader::render_pass2()
+   render_pass *shader::render_pass2(::gpu::enum_scene escene)
    {
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 
-      return prenderer->render_pass2();
+      return prenderer->render_pass2(escene);
 
    }
 

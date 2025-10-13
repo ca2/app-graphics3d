@@ -7,18 +7,19 @@
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context.h"
 #include "bred/graphics3d/skybox.h"
+#include "gpu/timer.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include "glm/glm.hpp"
 
 #include "gpu/gltf/_constant.h"
 #include "gpu_vulkan/_gpu_vulkan.h"
+#include "gpu_vulkan/command_buffer.h"
 #include "gpu_vulkan/context.h"
+#include "gpu_vulkan/texture.h"
 // #include "timer.h"
 #include "cubemap_framebuffer.h"
 #include "hdri_cube.h"
-
-
 
 
 namespace gpu_vulkan
@@ -27,6 +28,7 @@ namespace gpu_vulkan
 
    namespace ibl
    {
+
 
       equirectangular_cubemap::equirectangular_cubemap()
       {
@@ -45,21 +47,22 @@ namespace gpu_vulkan
       ::block equirectangular_cubemap::embedded_ibl_hdri_cube_vert()
       {
 
-
-            static unsigned int pvertexshader[] = {
+         static unsigned int pvertexshader[] = {
 #include "shader/hdricube.vert.spv.inl"
-            };
+         };
 
-            return ::as_memory_block(pvertexshader);
+         return ::as_memory_block(pvertexshader);
+
       }
 
 
       ::block equirectangular_cubemap::embedded_ibl_hdri_cube_frag()
       {
 
-         static unsigned int pfragmentshader[] = {
-         #include "shader/hdricube.frag.spv.inl"
-      };
+         static unsigned int pfragmentshader[] = 
+         {
+#include "shader/hdricube.frag.spv.inl"
+         };
 
       return ::as_memory_block(pfragmentshader);
 
@@ -75,36 +78,54 @@ namespace gpu_vulkan
       //     framebuffer = std::make_unique<cubemap_framebuffer>(cubemapWidth, cubemapHeight);
       // }
 
+
       void equirectangular_cubemap::compute()
       {
-         // Timer timer;
 
-         auto pgpucommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->graphics_queue());
+         ::gpu::Timer timer;
+
+         ::pointer < ::gpu_vulkan::command_buffer > pgpucommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
+
          glm::mat4 model = ::gpu::gltf::mIndentity4;
+
          glm::mat4 cameraAngles[] = {glm::lookAt(::gpu::gltf::origin, ::gpu::gltf::unitX, -::gpu::gltf::unitY),
                                      glm::lookAt(::gpu::gltf::origin, -::gpu::gltf::unitX, -::gpu::gltf::unitY),
                                      glm::lookAt(::gpu::gltf::origin, ::gpu::gltf::unitY, ::gpu::gltf::unitZ),
                                      glm::lookAt(::gpu::gltf::origin, -::gpu::gltf::unitY, -::gpu::gltf::unitZ),
                                      glm::lookAt(::gpu::gltf::origin, ::gpu::gltf::unitZ, -::gpu::gltf::unitY),
                                      glm::lookAt(::gpu::gltf::origin, -::gpu::gltf::unitZ, -::gpu::gltf::unitY)};
+         
          glm::mat4 projection = glm::perspective(glm::radians(90.0f), // 90 degrees to cover one face
                                                  1.0f, // its a square
                                                  0.1f, 2.0f);
 
          m_pgpucontext->m_rectangle.set(0, 0, m_uCubemapWidth, m_uCubemapHeight);
+
          ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
          // render the equirectangular HDR texture to a cubemap
          //m_pframebuffer->bind();
-         m_pshaderHdri->bind(pgpucommandbuffer, m_pframebuffer->m_ptexture, m_phdricube->m_ptextureHdr);
-
-         pcontext->_001BeginRenderPass(pgpucommandbuffer, m_pframebuffer->m_ptexture);
          // render to each side of the cubemap
+
+         ::cast<::gpu_vulkan::texture> ptextureFramebuffer = m_pframebuffer->m_ptexture;
+
+         ptextureFramebuffer->_set_state(pgpucommandbuffer, {
+
+                                                               VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                                                               VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                                               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+            });
+
+         m_pshaderHdri->_bind(pgpucommandbuffer, ::gpu::e_scene_2d);
+         m_pshaderHdri->bind_source(pgpucommandbuffer, m_phdricube->m_ptextureHdr);
+
          for (auto i = 0; i < 6; i++)
          {
+
+            pcontext->_001BeginRenderPass(pgpucommandbuffer, m_pframebuffer, i, ::gpu::e_scene_2d);
             
             m_pshaderHdri->setModelViewProjectionMatrices(model, cameraAngles[i], projection);
             
-            m_pframebuffer->setCubeFace(i, m_pshaderHdri);
+            //m_pframebuffer->setCubeFace(i, m_pshaderHdri);
 
             m_pshaderHdri->push_properties(pgpucommandbuffer);
                ///            pgpucommandbuffer->cle
@@ -117,17 +138,18 @@ namespace gpu_vulkan
                 // auto pshader = pcommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->
             //   m_pshaderBound;
 
-
-
             m_phdricube->draw(pgpucommandbuffer);
+
+            pcontext->_001EndRenderPass(pgpucommandbuffer);
+
 
          }
 
+         pcontext->endSingleTimeCommands(pgpucommandbuffer);
+
          m_pframebuffer->generateMipmap();
 
-         pcontext->_001EndRenderPass(pgpucommandbuffer);
-
-         // timer.logDifference("Rendered equirectangular cubemap");
+         timer.logDifference("Rendered equirectangular cubemap");
 
          //GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 

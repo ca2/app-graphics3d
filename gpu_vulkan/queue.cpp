@@ -24,10 +24,10 @@ namespace gpu_vulkan
    }
 
 
-   void queue::initialize_gpu_queue(::gpu::context * pgpucontext)
+   void queue::initialize_gpu_queue(::gpu::device * pgpudevice)
    {
 
-      ::gpu::queue::initialize_gpu_queue(pgpucontext);
+      ::gpu::queue::initialize_gpu_queue(pgpudevice);
 
    }
 

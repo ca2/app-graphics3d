@@ -312,7 +312,7 @@ namespace gpu_vulkan
       submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
       submitInfo.pSignalSemaphores = signalSemaphores.data();
 
-      ::cast < ::gpu_vulkan::queue > pqueueGraphics = pcontext->graphics_queue();
+      ::cast < ::gpu_vulkan::queue > pqueueGraphics = pcontext->m_pgpudevice->graphics_queue();
 
       auto vkqueueGraphics = pqueueGraphics->m_vkqueue;
 
@@ -327,7 +327,7 @@ namespace gpu_vulkan
          throw ::exception(error_failed, "failed to submit draw command buffer!");
       }
 
-      auto pgpuqueuePresent = pcontext->present_queue();
+      auto pgpuqueuePresent = pcontext->m_pgpudevice->present_queue();
 
       ::cast < ::gpu_vulkan::queue > pqueuePresent = pgpuqueuePresent;
 

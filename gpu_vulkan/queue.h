@@ -25,7 +25,7 @@ namespace gpu_vulkan
       ~queue() override;
 
 
-      virtual void initialize_gpu_queue(::gpu::context * pgpucontext);
+      void initialize_gpu_queue(::gpu::device * pgpudevice) override;
 
 
    };

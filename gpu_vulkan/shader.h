@@ -128,7 +128,7 @@ namespace gpu_vulkan
 
       //void _create_pipeline_layout(int iPushPropertiesSize);
 
-      virtual render_pass* render_pass2();
+      virtual render_pass* render_pass2(::gpu::enum_scene escene);
       virtual void create_descriptor_layout();
 
       void draw() override;
@@ -145,7 +145,7 @@ namespace gpu_vulkan
 
       void on_initialize_shader() override;
 
-      virtual void _create_pipeline();
+      virtual void _create_pipeline(::gpu::enum_scene escene);
 
       void bind(::gpu::command_buffer *pgpucommandbuffer,::gpu::texture *pgputextureTarget,
                 ::gpu::texture *pgputextureSource) override;
@@ -153,7 +153,7 @@ namespace gpu_vulkan
       void bind(::gpu::command_buffer *pgpucommandbuffe) override;
       void unbind(::gpu::command_buffer *pgpucommandbuffer) override;
       virtual void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget);
-      virtual void _bind(::gpu::command_buffer *pgpucommandbuffer);
+      void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_scene escene) override;
 
 
       void push_properties(::gpu::command_buffer *pgpucommandbuffer) override;

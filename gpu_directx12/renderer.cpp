@@ -557,7 +557,7 @@ float4 main(PSInput input) : SV_TARGET {
 
             pdx12commandbuffer->initialize_command_buffer(
                m_pgpurendertarget,
-               m_pgpucontext->graphics_queue(),
+               m_pgpucontext->m_pgpudevice->graphics_queue(),
                ::gpu::e_command_buffer_graphics
                );
                //pcontext->command_queue(),
@@ -637,7 +637,7 @@ float4 main(PSInput input) : SV_TARGET {
 
          pcommandbuffer->initialize_command_buffer(
             m_pgpurendertarget,
-            m_pgpucontext->transfer_queue(),
+            m_pgpucontext->m_pgpudevice->transfer_queue(),
             ::gpu::e_command_buffer_copy);
             //m_pcommandqueueCopy, D3D12_COMMAND_LIST_TYPE_COPY, this);
 

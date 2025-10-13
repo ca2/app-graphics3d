@@ -84,6 +84,16 @@ namespace gpu_vulkan
    }
 
 
+   namespace ibl
+   {
+
+      
+      class cubemap_framebuffer;
+
+
+   } // namespace ibl
+
+
 } // namespace gpu_vulkan
 
 

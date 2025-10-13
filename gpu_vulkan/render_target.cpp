@@ -133,9 +133,9 @@ namespace gpu_vulkan
 
       prenderpass->initialize(this);
 
-      prenderpass->update_render_pass(m_pgpurenderer->m_pgpucontext, prenderpass->m_prenderpassOld);
+      prenderpass->_update_render_pass(m_pgpurenderer->m_pgpucontext, prenderpass->m_prenderpassOld);
 
-      prenderpass->on_init_render_pass();
+      //prenderpass->on_init_render_pass();
 
       return prenderpass;
 

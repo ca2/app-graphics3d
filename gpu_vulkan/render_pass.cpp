@@ -74,7 +74,7 @@ namespace gpu_vulkan
    }
 
 
-   void render_pass::update_render_pass(::gpu::context* pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
+   void render_pass::update_render_pass(::gpu::context *pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
    {
 
       //::gpu_vulkan::render_pass::initialize_render_pass(pgpurenderer, size, previous);
@@ -84,8 +84,20 @@ namespace gpu_vulkan
       {
 
          m_bWithDepth = true;
-
       }
+
+      _update_render_pass(pgpucontext, previous);
+
+   }
+
+
+   void render_pass::_update_render_pass(::gpu::context * pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
+   {
+
+         //::gpu_vulkan::render_pass::initialize_render_pass(pgpurenderer, size, previous);
+         m_pgpucontext = pgpucontext;
+
+         
 
       //m_ptexturea = ptexturea;
 
@@ -494,7 +506,10 @@ namespace gpu_vulkan
       subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
       subpass.colorAttachmentCount = 1;
       subpass.pColorAttachments = &colorAttachmentRef;
-      subpass.pDepthStencilAttachment = &depthAttachmentRef;
+      if (m_bWithDepth)
+      {
+         subpass.pDepthStencilAttachment = &depthAttachmentRef;
+      }
 
       VkSubpassDependency dependency = {};
       dependency.dstSubpass = 0;

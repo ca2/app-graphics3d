@@ -7,6 +7,7 @@
 #include "memory_buffer.h"
 #include "physical_device.h"
 #include "program.h"
+#include "queue.h"
 #include "renderer.h"
 #include "shader.h"
 #include "vk_init.h"
@@ -48,8 +49,6 @@ namespace gpu_vulkan
       m_physicaldevicefeaturesCreate = {};
       m_physicaldevicefeaturesEnabled = {};
       m_vkdevice = VK_NULL_HANDLE;
-      m_vkcommandpool = VK_NULL_HANDLE;
-      m_vkcommandpoolPresent = VK_NULL_HANDLE;
 
       //m_vkqueuePresent = nullptr;
       //m_vkqueueGraphics = nullptr;
@@ -887,7 +886,10 @@ namespace gpu_vulkan
          m_physicaldevicefeaturesCreate,
          pgpuapproach->m_pszaEnabledDeviceExtensions,
          pgpuapproach->m_pDeviceCreatepNextChain,
-         bUseSwapChain);
+         bUseSwapChain,
+         VK_QUEUE_GRAPHICS_BIT
+         | VK_QUEUE_COMPUTE_BIT
+         | VK_QUEUE_TRANSFER_BIT);
 
       if (result != VK_SUCCESS)
       {
@@ -1181,16 +1183,61 @@ namespace gpu_vulkan
          return result;
       }
 
-      // Create a default command pool for graphics command buffers
-      m_vkcommandpool = createCommandPool(m_queuefamilyindexes.graphicsFamily);
+      auto graphicsFamily = m_queuefamilyindexes.graphicsFamily;
 
-      if (m_queuefamilyindexes.presentFamily >= 0)
+      VkQueue queueGraphics = VK_NULL_HANDLE;
+
+      if (graphicsFamily >= 0)
       {
-         m_vkcommandpoolPresent = createCommandPool(m_queuefamilyindexes.presentFamily);
+
+         auto pqueueGraphics = øcreate_new<::gpu_vulkan::queue>();
+
+         pqueueGraphics->initialize_gpu_queue(this);
+
+         vkGetDeviceQueue(this->logicalDevice(), graphicsFamily, 0, &queueGraphics);
+
+         pqueueGraphics->m_vkqueue = queueGraphics;
+
+         m_pqueueGraphics = pqueueGraphics;
+
       }
-      else
+
+      auto transferFamily = m_queuefamilyindexes.transferFamily;
+
+      VkQueue queueTransfer = VK_NULL_HANDLE;
+
+      if (transferFamily >= 0)
       {
-         m_vkcommandpoolPresent = VK_NULL_HANDLE;
+
+         auto pqueueTransfer = øcreate_new<::gpu_vulkan::queue>();
+
+         pqueueTransfer->initialize_gpu_queue(this);
+
+         vkGetDeviceQueue(this->logicalDevice(), transferFamily, 0, &queueTransfer);
+
+         pqueueTransfer->m_vkqueue = queueTransfer;
+
+         m_pqueueTransfer = pqueueTransfer;
+
+      }
+
+      auto presentFamily = m_queuefamilyindexes.presentFamily;
+
+      VkQueue queuePresent = VK_NULL_HANDLE;
+
+      if (presentFamily >= 0)
+      {
+
+         auto pqueuePresent = øcreate_new<::gpu_vulkan::queue>();
+
+         pqueuePresent->initialize_gpu_queue(this);
+
+         vkGetDeviceQueue(this->logicalDevice(), presentFamily, 0, &queuePresent);
+
+         pqueuePresent->m_vkqueue = queuePresent;
+
+         m_pqueuePresent = pqueuePresent;
+
       }
 
       return result;
@@ -1198,26 +1245,15 @@ namespace gpu_vulkan
    }
 
 
-   /**
-   * Create a command pool for allocation command buffers from
-   *
-   * @param queueFamilyIndex Family index of the queue to create the command pool for
-   * @param createFlags (Optional) Command pool creation flags (Defaults to VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
-   *
-   * @note Command buffers allocated from the created pool can only be submitted to a queue with the same family index
-   *
-   * @return A handle to the created command buffer
-   */
-   VkCommandPool device::createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags)
-   {
-      VkCommandPoolCreateInfo cmdPoolInfo = {};
-      cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-      cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
-      cmdPoolInfo.flags = createFlags;
-      VkCommandPool cmdPool;
-      VK_CHECK_RESULT(vkCreateCommandPool(m_vkdevice, &cmdPoolInfo, nullptr, &cmdPool));
-      return cmdPool;
-   }
+   ::gpu::queue *device::transfer_queue() { return m_pqueueTransfer; }
+
+
+   ::gpu::queue *device::graphics_queue() { return m_pqueueGraphics; }
+
+
+   ::gpu::queue *device::present_queue() { return m_pqueuePresent; }
+
+
 
 
    /**

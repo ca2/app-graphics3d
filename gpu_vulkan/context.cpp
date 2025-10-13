@@ -34,7 +34,7 @@
 
 #include "pipeline.h"
 #include "queue.h"
-
+#include "gpu_vulkan/ibl/cubemap_framebuffer.h"
 
 using namespace vulkan;
 
@@ -75,6 +75,11 @@ namespace gpu_vulkan
 
       // m_vkqueuePresent = nullptr;
       // m_vkqueueGraphics = nullptr;
+
+      m_vkcommandpoolGraphics = VK_NULL_HANDLE;
+      //m_vkcommandpoolTransfer = VK_NULL_HANDLE;
+      //m_vkcommandpoolPresent = VK_NULL_HANDLE;
+
    }
 
 
@@ -797,54 +802,81 @@ namespace gpu_vulkan
    }
 
 
+         /**
+    * Create a command pool for allocation command buffers from
+    *
+    * @param queueFamilyIndex Family index of the queue to create the command pool for
+    * @param createFlags (Optional) Command pool creation flags (Defaults to
+    * VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
+    *
+    * @note Command buffers allocated from the created pool can only be submitted to a queue with the same family index
+    *
+    * @return A handle to the created command buffer
+    */
+   VkCommandPool context::createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags)
+   {
+      
+      VkCommandPoolCreateInfo cmdPoolInfo = {};
+      
+      cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+      cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
+      cmdPoolInfo.flags = createFlags;
+      
+      VkCommandPool cmdPool;
+      
+      VK_CHECK_RESULT(vkCreateCommandPool(this->logicalDevice(), &cmdPoolInfo, nullptr, &cmdPool));
+
+      return cmdPool;
+
+   }
+
+
    void context::on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
                                    ::windowing::window *pwindow, const ::int_size &size)
    {
 
       // m_itaskGpu = ::current_itask();
-
       m_pgpudevice = pgpudevice;
 
-      if (m_pgpudevice->m_queuefamilyindexes.graphicsFamily >= 0)
+      ::cast<::gpu_vulkan::device> pdevice = pgpudevice;
+
+      auto graphicsFamilyIndex = pdevice->m_queuefamilyindexes.graphicsFamily;
+
+      // Create a default command pool for graphics command buffers
+      m_vkcommandpoolGraphics = createCommandPool(graphicsFamilyIndex);
+
+      auto transferFamilyIndex = pdevice->m_queuefamilyindexes.graphicsFamily;
+
+      if (transferFamilyIndex >= 0)
       {
 
-         auto pqueueGraphics = øcreate_new<::gpu_vulkan::queue>();
+         m_vkcommandpoolTransfer = createCommandPool(transferFamilyIndex, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT);
 
-         pqueueGraphics->initialize_gpu_queue(this);
+      }
+      else
+      {
 
-         vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindexes.graphicsFamily, 0,
-                          &pqueueGraphics->m_vkqueue);
+         m_vkcommandpoolTransfer = VK_NULL_HANDLE;
 
-         m_pqueueGraphics = pqueueGraphics;
       }
 
-      if (m_pgpudevice->m_queuefamilyindexes.presentFamily >= 0)
+      auto presentFamilyIndex = pdevice->m_queuefamilyindexes.presentFamily;
+
+      if (presentFamilyIndex >= 0)
       {
 
-         auto pqueuePresent = øcreate_new<::gpu_vulkan::queue>();
+         m_vkcommandpoolPresent = createCommandPool(presentFamilyIndex);
 
-         pqueuePresent->initialize_gpu_queue(this);
-
-         vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindexes.presentFamily, 0,
-                          &pqueuePresent->m_vkqueue);
-
-         m_pqueuePresent = pqueuePresent;
       }
-
-      if (m_pgpudevice->m_queuefamilyindexes.transferFamily >= 0)
+      else
       {
 
-         auto pqueueTransfer = øcreate_new<::gpu_vulkan::queue>();
+         m_vkcommandpoolPresent = VK_NULL_HANDLE;
 
-         pqueueTransfer->initialize_gpu_queue(this);
-
-         vkGetDeviceQueue(this->logicalDevice(), m_pgpudevice->m_queuefamilyindexes.transferFamily, 0,
-                          &pqueueTransfer->m_vkqueue);
-
-         m_pqueueTransfer = pqueueTransfer;
       }
 
       _create_context_win32(pgpudevice, eoutput, pwindow, size);
+
    }
 
 
@@ -867,10 +899,14 @@ namespace gpu_vulkan
 
    void context::endSingleTimeCommands(command_buffer *pcommandbuffer, int iSubmitCount, VkSubmitInfo *psubmitinfo)
    {
+
       if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
       {
+         
          throw ::exception(error_failed);
+
       }
+
       VkFence fence;
 
       VkFenceCreateInfo fenceInfo = {
@@ -880,10 +916,12 @@ namespace gpu_vulkan
       };
 
       VkResult result = vkCreateFence(this->logicalDevice(), &fenceInfo, NULL, &fence);
+
       if (result != VK_SUCCESS)
       {
+
          fprintf(stderr, "Failed to create fence\n");
-         // handle error
+         
       }
 
       ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
@@ -910,6 +948,7 @@ namespace gpu_vulkan
       vkQueueWaitIdle(vkqueue);
 
       vkDestroyFence(this->logicalDevice(), fence, NULL);
+
    }
 
 
@@ -2317,15 +2356,6 @@ namespace gpu_vulkan
    //}
 
 
-   ::gpu::queue *context::transfer_queue() { return m_pqueueTransfer; }
-
-
-   ::gpu::queue *context::graphics_queue() { return m_pqueueGraphics; }
-
-
-   ::gpu::queue *context::present_queue() { return m_pqueuePresent; }
-
-
    ::pointer<::gpu::command_buffer> context::beginSingleTimeCommands(::gpu::queue *pqueue,
                                                                      ::gpu::enum_command_buffer ecommandbuffer)
    {
@@ -2366,7 +2396,7 @@ namespace gpu_vulkan
    void context::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
    {
 
-      ::pointer<command_buffer> pcommandbuffer = beginSingleTimeCommands(graphics_queue());
+      ::pointer<command_buffer> pcommandbuffer = beginSingleTimeCommands(m_pgpudevice->graphics_queue());
 
       VkBufferCopy copyRegion{};
       copyRegion.srcOffset = 0; // Optional
@@ -2859,7 +2889,7 @@ namespace gpu_vulkan
    void context::onBeforePreloadGlobalAssets()
    {
 
-            // Global UBO descriptors
+      // Global UBO descriptors
       if (!m_psetdescriptorlayoutGlobal)
       {
 
@@ -2943,7 +2973,7 @@ namespace gpu_vulkan
 
       /// vkResetFences(this->logicalDevice(), 1, &fence);
 
-      ::pointer<command_buffer> pcommandbuffer = this->beginSingleTimeCommands(graphics_queue());
+      ::pointer<command_buffer> pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
 
       ::gpu::scoped_command_buffer scopedcommanbuffer(pcommandbuffer);
       // pcommandbuffer->begin_command_buffer(false);
@@ -3444,7 +3474,7 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
    else
    {
 
-      pcommandbuffer = this->beginSingleTimeCommands(graphics_queue());
+      pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
    }
 
    {
@@ -3569,26 +3599,29 @@ VkFormat context::findDepthFormat()
                                                VkFormat format, VkQueue vkqueueCopy, VkImageUsageFlags usageFlags,
                                                VkImageLayout initialLayout)
 {
-   // if (auto it = m_textures.find(name); it != m_textures.end())
-   // return it->element2();
 
-   auto tex = øcreate<::gpu::texture>();
+   auto pgputexture = øcreate<::gpu::texture>();
 
-   // tex->m_pDevice = &m_pgpudevice;
-
-   ::cast<::gpu_vulkan::texture> ptexture = tex;
+   ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
 
    ptexture->m_pgpurenderer = m_pgpurenderer;
 
-   ::cast<::gpu_vulkan::queue> pqueueGraphics = this->graphics_queue();
-
    try
    {
+
       if (scopedstrFileName.case_insensitive_ends(".ktx"))
       {
 
-         ptexture->KtxLoadCubemapFromFile(name, scopedstrFileName, format, pqueueGraphics->m_vkqueue, usageFlags,
-                                          initialLayout);
+         ::cast<::gpu_vulkan::queue> pqueueGraphics = m_pgpudevice->graphics_queue();
+
+         ptexture->KtxLoadCubemapFromFile(
+            name, 
+            scopedstrFileName, 
+            format, 
+            pqueueGraphics->m_vkqueue, 
+            usageFlags,
+            initialLayout);
+
       }
       else if (scopedstrFileName.case_insensitive_ends(".hdr"))
       {
@@ -3596,16 +3629,16 @@ VkFormat context::findDepthFormat()
          try
          {
 
-            // ptexture->KtxLoadCubemapFromFile(name, ktxFilename, format, pqueueGraphics->m_vkqueue, usageFlags,
-            // initialLayout);
-
             auto ptexture = cubemap_from_hdr(scopedstrFileName);
 
             return ptexture;
+
          }
          catch (const ::exception &e)
          {
+
             throw ::exception(e.m_estatus, "Failed to load HDR cubemap '" + name + "': " + e.get_message());
+
          }
 
       }
@@ -3615,14 +3648,17 @@ VkFormat context::findDepthFormat()
          warning() << "not implemented loadCubemap case";
 
       }
+
    }
    catch (const ::exception &e)
    {
+
       throw ::exception(e.m_estatus, "Failed to load HDR cubemap '" + name + "': " + e.get_message());
+
    }
 
-   // registerTextureIfNeeded(name, tex, m_textures, m_textureIndexMap, m_textureList);
-   return tex;
+   return pgputexture;
+
 }
 
 // void AssetManager::generatePrefilteredEnvMap()
@@ -4951,7 +4987,130 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 }
 
 
-void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
+void context::_001BeginRenderPass(::gpu::command_buffer *pgpucommandbuffer,
+                                  ::gpu::ibl::cubemap_framebuffer *pgpucubemapframebuffer, int iFace,
+                                  ::gpu::enum_scene escene)
+{
+
+
+   {
+
+      //////////////////////////////////////////
+
+
+      ::cast<context> pgpucontext = this;
+
+      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
+
+      ::cast<renderer> prenderer = m_pgpurenderer;
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      //::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+
+      VkRenderPassBeginInfo renderPassBeginInfo{};
+
+      renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+
+      // if (has_sampler())
+      //{
+
+      //   throw ::exception(error_wrong_state, "use bind(txtDst, txtDsr)");
+
+      //}
+
+      ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
+      //::cast<renderer> prenderer = m_pgpurenderer;
+
+      ::cast<render_pass> prenderpass = prenderer->render_pass2(escene);
+
+
+      renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
+      // if (prenderer->m_pgpulayer)
+      {
+
+         ::cast<::gpu_vulkan::ibl::cubemap_framebuffer> pcubemapframebuffer;
+
+         pcubemapframebuffer = pgpucubemapframebuffer;
+
+         //if (pgputexture)
+         //{
+
+         //   ptexture = pgputexture;
+         //}
+         //else
+         //{
+
+         //   ptexture = prendertarget->current_texture(::gpu::current_frame());
+         //}
+
+         //if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+         //{
+
+         //   warning() << "what?";
+         //}
+
+         renderPassBeginInfo.framebuffer = pcubemapframebuffer->framebuffer(prenderpass, iFace);
+
+      }
+      // else
+      //{
+
+      //   renderPassBeginInfo.framebuffer =
+      //   prenderpass->getFrameBuffer(prenderer->m_pgpurendertarget->get_frame_index());
+
+      //}
+
+      VkClearValue clearValues[2]{};
+      // clearValues[0].color = { 0.5f* 0.5f, 0.75f*0.5f, 0.95f* 0.5f, 0.5f };
+      bool bClearColor = true;
+      // if (m_bClearColor)
+      if (bClearColor)
+      {
+
+         ::color::color colorClear(color::transparent);
+
+         auto fR = colorClear.f32_red();
+         auto fG = colorClear.f32_green();
+         auto fB = colorClear.f32_blue();
+         auto fA = colorClear.f32_opacity();
+
+
+
+         clearValues[0].color = {fR * fA, fG * fA, fB * fA, fA};
+
+         if (escene == ::gpu::e_scene_3d)
+         {
+            clearValues[1].depthStencil = {1.0f, 0};
+            renderPassBeginInfo.clearValueCount = 2;
+         }
+         else
+         {
+            renderPassBeginInfo.clearValueCount = 1;
+         }
+         renderPassBeginInfo.pClearValues = clearValues;
+      }
+      else
+      {
+
+         renderPassBeginInfo.clearValueCount = 0;
+         renderPassBeginInfo.pClearValues = nullptr;
+      }
+
+
+      renderPassBeginInfo.renderArea.offset = {0, 0};
+      renderPassBeginInfo.renderArea.extent = {(uint32_t)pgpucontext->m_rectangle.width(),
+                                               (uint32_t)pgpucontext->m_rectangle.height()};
+
+
+      vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+
+      //////////////////////////////////////////
+   }
+}
+
+
+void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 {
 
     //::gpu::context::on_end_layer(player);
@@ -5346,13 +5505,14 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
 
    *((::gpu::renderable_t *)pmodel) = model;
 
-   ::cast<::gpu_vulkan::queue> pqueueGraphics = graphics_queue();
+   ::cast<::gpu_vulkan::queue> pqueueGraphics = m_pgpudevice->graphics_queue();
 
    pmodel->loadFromFile(model.m_pathRenderable.c_str(), this, pqueueGraphics->m_vkqueue, model.m_iFlags, model.m_fScale);
 
    // m_mapgltfModel[name] = model;
    return pmodel;
 }
+
 
 ::pointer<::gpu::texture> context::load_cube_map(const ::scoped_string &scopedstrName, const ::file::path &path,
                                                  bool b32)
@@ -5364,15 +5524,18 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
    {
 
       vkformat = VK_FORMAT_R16G16B16A16_SFLOAT;
+
    }
    else
    {
 
       vkformat = VK_FORMAT_R32G32B32A32_SFLOAT;
+
    }
 
    ::cast<gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
-   ::cast<gpu_vulkan::queue> pqueueCopy = pcontext->transfer_queue();
+
+   ::cast<gpu_vulkan::queue> pqueueCopy = pcontext->m_pgpudevice->transfer_queue();
 
    auto vkqueueCopy = pqueueCopy->m_vkqueue;
 
@@ -5382,8 +5545,8 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
 
    auto ptexture = loadCubemap(scopedstrName, path, vkformat, vkqueueCopy, usageFlags, initialLayout);
 
-
    return ptexture;
+
 }
 
 
@@ -5487,7 +5650,7 @@ void context::_001EndRenderPass(::gpu::command_buffer * pgpucommandbuffer)
 
       if (strExtension == "ktx" || strExtension == "ktx2")
       {
-         ::cast<::gpu_vulkan::queue> pqueueTransfer = transfer_queue();
+         ::cast<::gpu_vulkan::queue> pqueueTransfer = m_pgpudevice->transfer_queue();
          ok = ptexture->KTXLoadFromFile(path, format, pqueueTransfer->m_vkqueue, usageFlags, imageLayout,
                                         /*forceLinear=*/false);
 

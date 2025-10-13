@@ -23,11 +23,30 @@ namespace gpu_vulkan
       public:
 
 
-         ///int m_iWidth, m_iHeight;
+         //int m_iWidth, m_iHeight;
          //unsigned int m_uFramebufferId;
          //unsigned int m_uDepthRenderbufferId;
          //unsigned int m_uCubemapTextureId;
 
+         struct render_pass_t
+         {
+
+            VkFramebuffer m_framebuffera[6] = {};
+
+         };
+
+         struct framebuffer_cube
+         {
+
+            VkFramebuffer m_framebuffera[6] = {};
+
+         };
+
+         map<VkRenderPass, framebuffer_cube> m_mapFramebufferCube;
+
+         VkImageView       m_imageviewa[6] = {};
+
+         map<::gpu_vulkan::render_pass *, render_pass_t> m_mapRenderPass;
 
 
 
@@ -54,6 +73,8 @@ namespace gpu_vulkan
           */
          void setCubeFace(unsigned int index);
 
+         VkFramebuffer framebuffer(::gpu_vulkan::render_pass *prenderpass, int iFace);
+         VkFramebuffer _framebuffer(::gpu_vulkan::render_pass *prenderpass, int iFace);
 
          //unsigned int getCubemapTextureId();
 

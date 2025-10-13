@@ -14,13 +14,17 @@
 
 namespace gpu_vulkan
 {
+
+
    command_buffer::command_buffer()
    {
 
       //m_bPresentQueue = false;
       m_vkcommandbuffer = VK_NULL_HANDLE;
+      m_vkcommandbufferlevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
       m_vkfence = VK_NULL_HANDLE;
       m_vkcommandpool = VK_NULL_HANDLE;
+
 
    }
 
@@ -51,17 +55,37 @@ namespace gpu_vulkan
       ::cast <device > pdevice = pcontext->m_pgpudevice;
 
       VkCommandBufferAllocateInfo allocInfo{};
+
       allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-      allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 
       if (m_ecommandbuffer == ::gpu::e_command_buffer_present)
       {
-         m_vkcommandpool = pdevice->getPresentCommandPool();
+         
+         m_vkcommandpool = pcontext->getPresentCommandPool();
+
       }
       else if (m_ecommandbuffer == ::gpu::e_command_buffer_graphics)
       {
-         m_vkcommandpool = pdevice->getCommandPool();
+         
+         m_vkcommandpool = pcontext->getGraphicsCommandPool();
+
       }
+      else if (m_ecommandbuffer == ::gpu::e_command_buffer_transfer)
+      {
+
+         m_vkcommandpool = pcontext->getTransferCommandPool();
+         //m_vkcommandbufferlevel = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
+      }
+      else
+      {
+
+         throw ::exception(error_wrong_state, "currently unsupported command buffer type");
+
+      }
+
+      ASSERT(m_vkcommandpool != VK_NULL_HANDLE);
+
+      allocInfo.level = m_vkcommandbufferlevel;
       allocInfo.commandPool = m_vkcommandpool;
       allocInfo.commandBufferCount = 1;
 

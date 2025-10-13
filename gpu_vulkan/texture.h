@@ -60,11 +60,14 @@ namespace gpu_vulkan
 
    public:
 
+      
       struct render_pass_t
       {
 
          VkFramebuffer m_vkframebuffer = VK_NULL_HANDLE;
+
       };
+
 
       struct
       {
@@ -163,7 +166,6 @@ namespace gpu_vulkan
 
 
       map < ::gpu_vulkan::render_pass *, render_pass_t > m_mapRenderPass;
-
 
 
       texture();

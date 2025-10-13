@@ -16,9 +16,10 @@ namespace gpu_vulkan
 
 
       
-      VkCommandBuffer   m_vkcommandbuffer;
-      VkCommandPool     m_vkcommandpool;
-      VkFence           m_vkfence;
+      VkCommandBuffer         m_vkcommandbuffer;
+      VkCommandBufferLevel    m_vkcommandbufferlevel;
+      VkCommandPool           m_vkcommandpool;
+      VkFence                 m_vkfence;
 
       //bool m_bPresentQueue;
       ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;

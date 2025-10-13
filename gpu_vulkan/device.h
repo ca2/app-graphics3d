@@ -57,9 +57,6 @@ namespace gpu_vulkan
       //::array<VkQueueFamilyProperties> m_queuefamilypropertya;
       /** @brief List of extensions supported by the device */
       string_array m_straSupportedExtensions;
-      ///** @brief Default command pool for the graphics queue family index */
-      VkCommandPool m_vkcommandpool;
-      VkCommandPool m_vkcommandpoolPresent;
 
       /** @brief Contains queue family indexes */
       vulkan::QueueFamilyIndices m_queuefamilyindexes;
@@ -69,6 +66,13 @@ namespace gpu_vulkan
       //   uint32_t compute;
       //   uint32_t transfer;
       //} m_queuefamilyindexes;
+
+
+      
+
+      ::pointer<gpu::queue> m_pqueueTransfer;
+      ::pointer<gpu::queue> m_pqueueGraphics;
+      ::pointer<gpu::queue> m_pqueuePresent;
 
 
 
@@ -157,6 +161,10 @@ namespace gpu_vulkan
 
       //void set_matrix_uniform(const ::gpu::payload& uniformMatrix) override;
 
+      ::gpu::queue *transfer_queue() override;
+      ::gpu::queue *graphics_queue() override;
+      ::gpu::queue *present_queue() override;
+
 
       virtual void defer_shader_memory(::memory& memory, const ::file::path& pathShader);
 
@@ -181,7 +189,6 @@ namespace gpu_vulkan
          bool useSwapChain = true,
          VkQueueFlags requestedQueueTypes = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT);
       //virtual uint32_t getQueueFamilyIndex(VkQueueFlags queueFlags) const;
-      virtual VkCommandPool createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
       virtual bool isExtensionSupported(const ::scoped_string& scopedstrExtension);
 
       virtual void _create_offscreen_window(const ::int_size& size);
@@ -211,8 +218,6 @@ namespace gpu_vulkan
       //graphics3d_vulkan::context
 
 
-      VkCommandPool getCommandPool() { return m_vkcommandpool; }
-      VkCommandPool getPresentCommandPool() { return m_vkcommandpoolPresent; }
       VkDevice logicalDevice() { return m_vkdevice; }
 
       //VkQueue graphicsQueue() { return m_vkqueueGraphics; }

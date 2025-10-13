@@ -29,9 +29,11 @@ namespace gpu_vulkan
       //VkQueue m_vkqueueGraphics;
       //VkQueue m_vkqueuePresent;
       //VkQueue m_vkqueueTransfer3;
-      ::pointer < gpu::queue >                                 m_pqueueTransfer;
-      ::pointer < gpu::queue >                                 m_pqueueGraphics;
-      ::pointer < gpu::queue >                                 m_pqueuePresent;
+
+      
+      VkCommandPool m_vkcommandpoolGraphics;
+      VkCommandPool m_vkcommandpoolTransfer;
+      VkCommandPool m_vkcommandpoolPresent;
 
 
       ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGlobal;
@@ -77,7 +79,19 @@ namespace gpu_vulkan
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;
 
       void _001BeginRenderPass(::gpu::command_buffer *pcommandbuffer, ::gpu::texture * pgputexture = nullptr);
+      void _001BeginRenderPass(::gpu::command_buffer *pcommandbuffer, ::gpu::ibl::cubemap_framebuffer * pgpucubeframebuffer, int iFace, ::gpu::enum_scene escene);
       void _001EndRenderPass(::gpu::command_buffer *pcommandbuffer);
+
+
+      virtual VkCommandPool
+      createCommandPool(uint32_t queueFamilyIndex,
+                        VkCommandPoolCreateFlags createFlags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+
+      VkCommandPool getGraphicsCommandPool() { return m_vkcommandpoolGraphics; }
+      VkCommandPool getTransferCommandPool() { return m_vkcommandpoolTransfer; }
+      VkCommandPool getPresentCommandPool() { return m_vkcommandpoolPresent; }
+
 
 
       virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size);
@@ -120,10 +134,6 @@ namespace gpu_vulkan
 
       //VkCommandPool getCommandPool() { return m_vkcommandpool; }
       //VkDevice logicalDevice() { return m_vkdevice; }
-
-      ::gpu::queue * transfer_queue() override;
-      ::gpu::queue * graphics_queue() override;
-      ::gpu::queue * present_queue() override;
 
 
       // Buffer Helper Functions
