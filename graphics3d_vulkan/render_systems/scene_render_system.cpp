@@ -93,7 +93,7 @@ namespace graphics3d_vulkan
          vkinit::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT,
                                                  offsetof(::gpu_vulkan::gltf::Vertex, normal)),
          vkinit::vertexInputAttributeDescription(0, 2, VK_FORMAT_R32G32_SFLOAT,
-                                                 offsetof(::gpu_vulkan::gltf::Vertex, uv)),
+                                                 offsetof(::gpu_vulkan::gltf::Vertex, gltf_uv)),
          vkinit::vertexInputAttributeDescription(0, 3, VK_FORMAT_R32G32B32A32_SFLOAT,
                                                  offsetof(::gpu_vulkan::gltf::Vertex, color)),
          vkinit::vertexInputAttributeDescription(0, 4, VK_FORMAT_R32G32B32A32_SFLOAT,

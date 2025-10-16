@@ -17,6 +17,12 @@
     <Filter Include="Header Files\render_systems">
       <UniqueIdentifier>{63ff2ab5-ffba-41de-8ad5-b61662bfe75a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\render_system\shader">
+      <UniqueIdentifier>{554b4339-d03d-4bd4-a859-e582d4b6e91f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\render_systems\shader">
+      <UniqueIdentifier>{cd27add2-6b7f-4ae4-9059-65e35304f220}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -34,10 +40,13 @@
     <ClCompile Include="render_system.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="render_systems\gltf_render_system.cpp">
+    <ClCompile Include="render_systems\gltf_render_system1.cpp">
       <Filter>Source Files\render_system</Filter>
     </ClCompile>
     <ClCompile Include="render_systems\scene_render_system.cpp">
+      <Filter>Source Files\render_system</Filter>
+    </ClCompile>
+    <ClCompile Include="render_systems\gltf_render_system.cpp">
       <Filter>Source Files\render_system</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,5 +84,24 @@
     <ClInclude Include="render_systems\scene_render_system.h">
       <Filter>Header Files\render_systems</Filter>
     </ClInclude>
+    <ClInclude Include="render_systems\gltf_render_system1.h">
+      <Filter>Header Files\render_systems</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="render_systems\shader\pbr.frag.spv.inl">
+      <Filter>Header Files\render_systems\shader</Filter>
+    </None>
+    <None Include="render_systems\shader\pbr.vert.spv.inl">
+      <Filter>Header Files\render_systems\shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="render_systems\shader\pbr.frag">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="render_systems\shader\pbr.vert">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

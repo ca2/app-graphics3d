@@ -745,7 +745,7 @@ namespace gpu_directx12
       if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
       {
          int iNumberOfObjects = 256;
-         UINT constantBufferSize = ::directx12::Align256((UINT) m_propertiesPush.size(false)) * iNumberOfObjects;    // CB size is required to be 256-byte aligned.
+         UINT constantBufferSize = ::directx12::Align256((UINT) m_propertiesPushShared.size(false)) * iNumberOfObjects;    // CB size is required to be 256-byte aligned.
          CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
          auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
          HRESULT hrCreateCommittedResource = pgpudevice->m_pdevice->CreateCommittedResource(
@@ -1009,7 +1009,7 @@ namespace gpu_directx12
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      if (m_propertiesPush.size(false) <= 0)
+      if (m_propertiesPushShared.size(false) <= 0)
       {
 
          return;
@@ -1020,18 +1020,19 @@ namespace gpu_directx12
 
       ::cast <device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      auto iSetSize = ::directx12::Align256((UINT) m_propertiesPush.size(false));
+      auto iSetSize = ::directx12::Align256((UINT)m_propertiesPushShared.size(false));
       CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
       UINT8* pPushProperties;
       auto hrMap = m_presourcePushProperties->Map(0, &readRange, (void**) & pPushProperties);
       defer_throw_hresult(hrMap);
-      memcpy(pPushProperties + ::directx12::Align256((UINT) m_propertiesPush.size(false))*m_iPush, m_propertiesPush.data(false), m_propertiesPush.size(false));
+      memcpy(pPushProperties + ::directx12::Align256((UINT)m_propertiesPushShared.size(false)) * m_iPush,
+             m_propertiesPushShared.data(false), m_propertiesPushShared.size(false));
       m_presourcePushProperties->Unmap(0, nullptr);
 
       ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
 
-      int iBlockSize = ::directx12::Align256((UINT)m_propertiesPush.size(false));
+      int iBlockSize = ::directx12::Align256((UINT)m_propertiesPushShared.size(false));
       int iSize = m_iPush * iBlockSize;
       m_strPushConstantsDebugging.formatf("%d,%d:%d", iSize, iBlockSize, iSize/iBlockSize);
       auto address = m_presourcePushProperties->GetGPUVirtualAddress() + iSize;

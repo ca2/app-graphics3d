@@ -115,17 +115,21 @@ namespace gpu_vulkan
                                                                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
             });
 
-         m_pshaderHdri->_bind(pgpucommandbuffer, ::gpu::e_scene_2d);
+         auto escene = ::gpu::e_scene_srgb;
+
+         m_pshaderHdri->_bind(pgpucommandbuffer, escene);
          m_pshaderHdri->bind_source(pgpucommandbuffer, m_phdricube->m_ptextureHdr);
 
          for (auto i = 0; i < 6; i++)
          {
 
-            pcontext->_001BeginRenderPass(pgpucommandbuffer, m_pframebuffer, i, ::gpu::e_scene_2d);
+            pcontext->_001BeginRenderPass(pgpucommandbuffer, m_pframebuffer, i, escene);
             
             m_pshaderHdri->setModelViewProjectionMatrices(model, cameraAngles[i], projection);
             
             //m_pframebuffer->setCubeFace(i, m_pshaderHdri);
+
+            auto pmat1 = (::glm::mat4 *)m_pshaderHdri->m_propertiesPushShared.m_blockWithoutSamplers.data();
 
             m_pshaderHdri->push_properties(pgpucommandbuffer);
                ///            pgpucommandbuffer->cle

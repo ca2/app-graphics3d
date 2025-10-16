@@ -1300,7 +1300,13 @@ namespace gpu_vulkan
 
       ::cast<render_target> prendertarget = m_pgpurendertarget;
 
-      if (escene == ::gpu::e_scene_3d)
+      if (escene == ::gpu::e_scene_srgb)
+      {
+
+         return prendertarget->render_pass_srgb();
+
+      }
+      else if (escene == ::gpu::e_scene_3d)
       {
 
          return prendertarget->render_pass_with_depth();
@@ -1314,6 +1320,7 @@ namespace gpu_vulkan
       }
 
    }
+
 
 
    void renderer::sample()
@@ -1988,7 +1995,7 @@ namespace gpu_vulkan
             as_memory_block(g_uaImageBlendVertexShader),
             as_memory_block(g_uaImageBlendFragmentShader),
             { ::gpu::shader::e_descriptor_set_slot_s1 },
-            {}, {},
+            {}, 
             m_pgpucontext->input_layout<::graphics3d::sequence2_uv>());
 
       }
@@ -2028,7 +2035,6 @@ namespace gpu_vulkan
             as_memory_block(g_uaImageBlendFragmentShader),
             { ::gpu::shader::e_descriptor_set_slot_local },
             pshader->m_psetdescriptorlayout,
-            {},
             m_pgpucontext->input_layout<::graphics3d::sequence2_uv>()
          );
 
@@ -2506,7 +2512,6 @@ namespace gpu_vulkan
             as_memory_block(g_blend2_vertex),
             as_memory_block(g_blend2_fragment),
             { ::gpu::shader::e_descriptor_set_slot_s1 },
-            {},
             {},
             pinputlayoutEmpty,
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions);
@@ -3995,7 +4000,7 @@ namespace gpu_vulkan
 
       assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
 
-      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+      ::pointer < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
 
       auto eoutput = m_pgpucontext->m_eoutput;
 
@@ -4893,7 +4898,6 @@ namespace gpu_vulkan
             as_memory_block(g_blend2_vertex),
             as_memory_block(g_blend2_fragment),
             { ::gpu::shader::e_descriptor_set_slot_s1 },
-            {},
             {},
             pinputlayoutEmpty,
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions);

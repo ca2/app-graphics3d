@@ -802,6 +802,67 @@ namespace gpu_vulkan
    }
 
 
+   void context::layout_push_constants(::gpu::properties & properties)
+   {
+
+      auto pproperty = properties.m_pproperties;
+
+      ::collection::index i = 0;
+
+      int iSizeWithSamplers = 0;
+
+      int iSizeWithoutSamplers = 0;
+
+      while (pproperty->m_pszName)
+      {
+
+         int iItemSize = pproperty->get_item_size(true);
+
+         int iSize = iItemSize;
+
+         if (pproperty->m_etype == ::gpu::e_type_seq3)
+         {
+
+            if (iSizeWithSamplers % 16 != 0)
+            {
+
+               iSizeWithSamplers += 16 - iSizeWithSamplers % 16;
+
+            }
+
+            //iSize = 16;
+
+         }
+
+         ::gpu::property_data data;
+
+         data.m_iOffset = iSizeWithSamplers;
+
+         properties.m_propertydataa.set_at_grow(i, data);
+
+         i++;
+
+         iSizeWithSamplers += iSize;
+
+         ::string strName(pproperty->m_pszName);
+
+         if (!strName.begins("sampler:"))
+         {
+
+            iSizeWithoutSamplers = iSizeWithSamplers;
+
+         }
+
+         pproperty++;
+
+      }
+
+      properties.m_memory.set_size(iSizeWithSamplers);
+      properties.m_blockWithoutSamplers = properties.m_memory(0, iSizeWithoutSamplers);
+      properties.m_blockWithSamplers = properties.m_memory;
+
+   }
+
          /**
     * Create a command pool for allocation command buffers from
     *
@@ -3008,7 +3069,7 @@ namespace gpu_vulkan
 
          m_pshaderBlend3->initialize_shader_with_block(
             m_pgpurenderer, ::as_memory_block(full_screen_triangle_vertex_shader),
-            ::as_memory_block(full_screen_triangle_fragment_shader), {}, {}, {}, {},
+            ::as_memory_block(full_screen_triangle_fragment_shader), {}, {}, {},
             // this means the vertex input layout will be null/empty
             // the full screen shader is embed in the shader code
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions

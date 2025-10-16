@@ -104,6 +104,18 @@ namespace gpu_vulkan
    }
 
 
+      ::gpu_vulkan::render_pass *render_target::render_pass_srgb()
+   {
+
+      if (!m_prenderpassSrgb)
+      {
+
+         m_prenderpassSrgb = create_render_pass(false, true);
+      }
+
+      return m_prenderpassSrgb;
+   }
+
    ::gpu_vulkan::render_pass* render_target::render_pass2(bool bWithDepth)
    {
 
@@ -124,12 +136,14 @@ namespace gpu_vulkan
    }
 
 
-   ::pointer <::gpu_vulkan::render_pass > render_target::create_render_pass(bool bWithDepth)
+   ::pointer <::gpu_vulkan::render_pass > render_target::create_render_pass(bool bWithDepth, bool bSrgb)
    {
 
       auto prenderpass = øallocate offscreen_render_pass();
 
       prenderpass->m_bWithDepth = bWithDepth;
+
+      prenderpass->m_bSrgb = bSrgb;
 
       prenderpass->initialize(this);
 

@@ -479,19 +479,51 @@ namespace gpu_vulkan
       //
       // ::cast < device > pgpudevice = pgpucontext->m_pgpudevice;
 
-      int iPushPropertiesSize = (int)m_propertiesPush.m_memory.size();
+      int iPushConstantOffset = 0;
 
-      if (iPushPropertiesSize > 0)
+      int iSharedPushPropertiesSize = (int)m_propertiesPushShared.m_blockWithoutSamplers.size();
+
+      if (iSharedPushPropertiesSize > 0)
       {
          VkPushConstantRange pushConstantRange{};
          pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-         pushConstantRange.offset = 0;
-         pushConstantRange.size = iPushPropertiesSize;
+         pushConstantRange.offset = iPushConstantOffset;
+         pushConstantRange.size = iSharedPushPropertiesSize;
+
+         pipelineconfiguration.pushConstantRanges.add(pushConstantRange);
+         // pushConstantRange.size = iPushPropertiesSize;
+         iPushConstantOffset += iSharedPushPropertiesSize;
+      }
+
+      int iVertexPushPropertiesSize = (int)m_propertiesPushVertex.m_blockWithoutSamplers.size();
+
+      if (iVertexPushPropertiesSize > 0)
+      {
+         VkPushConstantRange pushConstantRange{};
+         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+         pushConstantRange.offset = iPushConstantOffset;
+         pushConstantRange.size = iVertexPushPropertiesSize;
+
+         //iPushConstantOffset += iVertexPushPropertiesSie;
 
          pipelineconfiguration.pushConstantRanges.add(pushConstantRange);
          // pushConstantRange.size = iPushPropertiesSize;
       }
 
+      int iFragmentPushPropertiesSize = (int)m_propertiesPushFragment.m_blockWithoutSamplers.size();
+
+      if (iFragmentPushPropertiesSize > 0)
+      {
+         VkPushConstantRange pushConstantRange{};
+         pushConstantRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+         pushConstantRange.offset = iPushConstantOffset;
+         pushConstantRange.size = iFragmentPushPropertiesSize;
+
+         //iPushConstantOffset += iFragmentPushPropertiesSize;
+
+         pipelineconfiguration.pushConstantRanges.add(pushConstantRange);
+         // pushConstantRange.size = iPushPropertiesSize;
+      }
       //::array<VkDescriptorSetLayout> descriptorSetLayouts;
 
       if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
@@ -524,6 +556,17 @@ namespace gpu_vulkan
             m_bindingSampler.m_uSet = uSet;
          else if (m_bindingCubeSampler.is_set())
             m_bindingCubeSampler.m_uSet = uSet;
+
+      }
+
+      for (auto & pair : m_mapDescriptorSetLayout)
+      {
+
+         auto uSet = (unsigned int)pair.element1();
+
+         auto descriptorsetlayout = pair.element2()->getDescriptorSetLayout();
+
+         pipelineconfiguration.descriptorSetLayouts.element_at_grow(uSet) = descriptorsetlayout;
 
       }
 
@@ -955,7 +998,60 @@ namespace gpu_vulkan
    void shader::push_properties(::gpu::command_buffer *pgpucommandbuffer)
    {
 
-      set_push_properties(pgpucommandbuffer, m_propertiesPush.m_blockWithoutSamplers);
+      ::cast<renderer> prenderer = m_pgpurenderer;
+
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      int iPushConstantsOffset = 0;
+
+      if (m_propertiesPushShared.m_blockWithoutSamplers.size() > 0)
+      {
+
+         auto uBlockSizeWithoutSamplers = (uint32_t)m_propertiesPushShared.m_blockWithoutSamplers.size();
+
+         vkCmdPushConstants(
+            pcommandbuffer->m_vkcommandbuffer, m_ppipeline->_pipeline_layout(),
+            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 
+            iPushConstantsOffset,
+            uBlockSizeWithoutSamplers,
+            m_propertiesPushShared.m_blockWithoutSamplers.data());
+
+         iPushConstantsOffset += uBlockSizeWithoutSamplers;
+
+      }
+
+      if (m_propertiesPushVertex.m_blockWithoutSamplers.size() > 0)
+      {
+
+         vkCmdPushConstants(
+            pcommandbuffer->m_vkcommandbuffer,
+            m_ppipeline->_pipeline_layout(),
+            VK_SHADER_STAGE_VERTEX_BIT, 
+            iPushConstantsOffset,
+            (uint32_t)m_propertiesPushVertex.m_blockWithoutSamplers.size(),
+            m_propertiesPushVertex.m_blockWithoutSamplers.data());
+
+         //iPushConstantsOffset += m_propertiesPushVertex.m_blockWithoutSamplers.size();
+
+      }
+
+      if (m_propertiesPushFragment.m_blockWithoutSamplers.size() > 0)
+      {
+
+         vkCmdPushConstants(
+            pcommandbuffer->m_vkcommandbuffer, m_ppipeline->_pipeline_layout(),
+            VK_SHADER_STAGE_FRAGMENT_BIT, 
+            iPushConstantsOffset,
+            (uint32_t)m_propertiesPushFragment.m_blockWithoutSamplers.size(),
+            m_propertiesPushFragment.m_blockWithoutSamplers.data());
+
+         //iPushConstantsOffset += m_propertiesPushFragment.m_blockWithoutSamplers.size();
+
+      }
+
+      // set_push_properties(pgpucommandbuffer, m_propertiesPushShared.m_blockWithoutSamplers);
+      //set_push_properties(pgpucommandbuffer, m_propertiesPushVertex.m_blockWithoutSamplers);
+      //set_push_properties(pgpucommandbuffer, m_propertiesPushFragment.m_blockWithoutSamplers);
       //::gpu::shader::push_properties();
       //set_push_properties(m_propertiesPush.m_block);
       /*     ::cast < renderer > prenderer = m_pgpurenderer;
@@ -981,30 +1077,30 @@ namespace gpu_vulkan
    }
 
 
-   void shader::set_push_properties(::gpu::command_buffer *pgpucommandbuffer, const ::block &block)
-   {
+   //void shader::set_push_properties(::gpu::command_buffer *pgpucommandbuffer, const ::block &block)
+   //{
 
-      ::cast<renderer> prenderer = m_pgpurenderer;
+   //   ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+   //   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      vkCmdPushConstants(
-         pcommandbuffer->m_vkcommandbuffer,
-         m_ppipeline->_pipeline_layout(),
-         VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-         0,
-         (uint32_t)block.size(),
-         block.data());
-      //::cast < renderer > prenderer = m_pgpurenderer;
+   //   vkCmdPushConstants(
+   //      pcommandbuffer->m_vkcommandbuffer,
+   //      m_ppipeline->_pipeline_layout(),
+   //      VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+   //      0,
+   //      (uint32_t)block.size(),
+   //      block.data());
+   //   //::cast < renderer > prenderer = m_pgpurenderer;
 
-      //::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+   //   //::cast < command_buffer > pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
 
-      //vkCmdPushConstants(
-      //   pcommandbuffer->m_vkcommandbuffer,
+   //   //vkCmdPushConstants(
+   //   //   pcommandbuffer->m_vkcommandbuffer,
 
 
-      //vkCmdPushConstants(cmdBuf, irradiancePipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, block.size(), block.data());
-   }
+   //   //vkCmdPushConstants(cmdBuf, irradiancePipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, block.size(), block.data());
+   //}
 
 
    //class shader_sampler* shader::shader_sampler()

@@ -302,7 +302,8 @@ namespace graphics3d_opengl
 
             //memcpy(pmesh->uniformBuffer.mapped, &world, sizeof(world));
             //memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
-            pcommandbuffer->m_erendersystem = ::graphics3d::e_render_system_gltf_scene;
+            m_erendersystem = ::graphics3d::e_render_system_gltf_scene;
+            pcommandbuffer->m_prendersystem = this;
             pmesh->draw(pcommandbuffer);
             // for (auto *primitive: node->mesh->primitives)
             // {

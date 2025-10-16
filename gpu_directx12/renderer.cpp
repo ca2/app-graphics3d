@@ -2380,7 +2380,6 @@ float4 main(PSInput input) : SV_TARGET {
             {},
             //{ ::gpu::shader::e_descriptor_set_shader_resource_view_and_sampler },
             m_psetdescriptorlayoutImageBlend,
-            {},
             m_pgpucontext->input_layout<::graphics3d::sequence2_uv>()
          );
 
@@ -2419,7 +2418,6 @@ float4 main(PSInput input) : SV_TARGET {
             as_memory_block(g_pszImageBlendFragmentShader),
             { ::gpu::shader::e_descriptor_set_slot_local },
             m_psetdescriptorlayoutImageBlend,
-            {},
             pinputlayoutEmpty);
 
       }

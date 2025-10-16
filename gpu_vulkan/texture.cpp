@@ -241,7 +241,16 @@ namespace gpu_vulkan
       VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
 
       imagecreateinfo.imageType = VK_IMAGE_TYPE_2D;
-      imagecreateinfo.format = m_vkformat = pcontext->m_formatImageDefault;
+      if (m_bSrgb)
+      {
+
+         m_vkformat = VK_FORMAT_R32G32B32A32_SFLOAT;
+      }
+      else
+      {
+         m_vkformat = pcontext->m_formatImageDefault;
+      }
+      imagecreateinfo.format = m_vkformat;
       imagecreateinfo.extent.width = rectangleTarget.width();
       imagecreateinfo.extent.height = rectangleTarget.height();
       imagecreateinfo.extent.depth = 1;
@@ -2924,6 +2933,24 @@ void texture::create_sampler()
          {
             buffer = &pgltfimage->image[0];
             bufferSize = pgltfimage->image.size();
+         }
+         int iSize = pgltfimage->width * pgltfimage->height * 4;
+         for (size_t i = 0; i < iSize; i+=4)
+         {
+            auto t = buffer[i];
+            buffer[i] = buffer[i+2];
+            buffer[i + 2] = t;
+         }
+         int h = pgltfimage->height;
+         int halfh = h / 2;
+         ::memory memoryLine;
+         memoryLine.set_size(pgltfimage->width * 4);
+         auto p = buffer;
+         for (size_t y = 0; y < halfh; y++)
+         {
+            memcpy(memoryLine.data(), p + y * pgltfimage->width * 4, memoryLine.size());
+            memcpy(p + y * pgltfimage->width * 4, p + (h - 1-y) * pgltfimage->width * 4, memoryLine.size());
+            memcpy(p + (h - 1 - y) * pgltfimage->width * 4, memoryLine.data(), memoryLine.size());
          }
 
          m_vkformat = isSrgb ? VK_FORMAT_R8G8B8A8_SRGB : VK_FORMAT_R8G8B8A8_UNORM;

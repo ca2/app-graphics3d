@@ -50,6 +50,7 @@ namespace gpu_vulkan
                                             1.0);
          ptexture->m_bTransferSrc = true;
          ptexture->m_bWithDepth = false;
+         ptexture->m_bSrgb = true;
          ptexture->initialize_image_texture(m_pgpucontext->m_pgpurenderer, ptexture->m_rectangleTarget, true,
                                             {}, ::gpu::texture::e_type_cube_map);
 

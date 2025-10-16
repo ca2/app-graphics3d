@@ -448,7 +448,7 @@ namespace gpu_vulkan
    void render_pass::createRenderPass()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext->m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext->m_pgpurenderer->m_pgpucontext;
 
 
       VkAttachmentDescription depthAttachment{};
@@ -472,7 +472,6 @@ namespace gpu_vulkan
          depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
          depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
          depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
       }
 
       VkAttachmentReference depthAttachmentRef{};
@@ -480,7 +479,14 @@ namespace gpu_vulkan
       depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
       VkAttachmentDescription colorAttachment = {};
+      if (m_bSrgb)
+      {
+         colorAttachment.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+   }
+   else
+   {
       colorAttachment.format = pcontext->m_formatImageDefault;
+   }
       colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
       //colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
       if (m_bLoadClearOp)

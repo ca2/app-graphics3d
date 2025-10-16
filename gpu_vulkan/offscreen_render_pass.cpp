@@ -761,7 +761,14 @@ namespace gpu_vulkan
 
 
       VkAttachmentDescription colorAttachment = {};
-      colorAttachment.format = pcontext->m_formatImageDefault;
+      if (m_bSrgb)
+      {
+         colorAttachment.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+      }
+      
+      else{
+         colorAttachment.format = pcontext->m_formatImageDefault;
+      }
       colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
       //colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
       colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;

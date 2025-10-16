@@ -4,6 +4,7 @@
 
 
 #include "bred/gpu/shader.h"
+#include "acme/prototype/collection/int_map.h"
 
 
 namespace gpu_vulkan
@@ -98,6 +99,7 @@ namespace gpu_vulkan
       //::pointer < shader_sampler >     m_pshadersampler;
       ::pointer < ::gpu_vulkan::shader > m_pshaderPresent;
       VkRenderPass            m_vkrenderpassCurrent;
+      ::int_map<::pointer<::gpu_vulkan::descriptor_set_layout>> m_mapDescriptorSetLayout;
 
 
       shader();
@@ -159,7 +161,7 @@ namespace gpu_vulkan
       void push_properties(::gpu::command_buffer *pgpucommandbuffer) override;
 
 
-      void set_push_properties(::gpu::command_buffer *pgpucommandbuffer, const ::block &block) override;
+      //void set_push_properties(::gpu::command_buffer *pgpucommandbuffer, const ::block &block) override;
 
 
       void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptexture, int iSlot) override;

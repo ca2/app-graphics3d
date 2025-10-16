@@ -24,6 +24,7 @@ namespace gpu_vulkan
    public:
 
       bool m_bWithDepth = false;
+      bool m_bSrgb = false;
       bool m_bLoadClearOp = false;
 
 

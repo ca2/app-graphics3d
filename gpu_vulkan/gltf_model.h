@@ -227,25 +227,65 @@ namespace gpu_vulkan
 		/*
 			gltf default vertex layout with easy Vulkan mapping functions
 		*/
-		enum class VertexComponent { Position, Normal, UV, Color, Tangent, Joint0, Weight0 };
+		//enum class VertexComponent { Position, Normal, UV, Color, Tangent, Joint0, Weight0 };
+      enum class VertexComponent
+      {
+         Position,
+         Normal,
+         UV,
+         Color,
+         Tangent
+      };
 
 		struct Vertex {
 			glm::vec3 pos;
 			glm::vec3 normal;
-			glm::vec2 uv;
+			glm::vec2 gltf_uv;
 			glm::vec4 color;
-			glm::vec4 joint0;
-			glm::vec4 weight0;
+			//glm::vec4 joint0;
+			//glm::vec4 weight0;
 			glm::vec4 tangent;
-			static VkVertexInputBindingDescription vertexInputBindingDescription;
-			static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
-			static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
-			static VkVertexInputBindingDescription inputBindingDescription(uint32_t binding);
-			static VkVertexInputAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
-			static std::vector<VkVertexInputAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
-			/** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
-			static VkPipelineVertexInputStateCreateInfo* getPipelineVertexInputState(const std::vector<VertexComponent> components);
+			//static VkVertexInputBindingDescription vertexInputBindingDescription;
+			//static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
+			//static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
+			//static VkVertexInputBindingDescription inputBindingDescription(uint32_t binding);
+			//static VkVertexInputAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
+			//static std::vector<VkVertexInputAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
+			///** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
+			//static VkPipelineVertexInputStateCreateInfo* getPipelineVertexInputState(const std::vector<VertexComponent> components);
 		};
+      enum class Vertex2Component
+      {
+         Position,
+         Normal,
+         UV,
+         Color,
+         Tangent,
+         Joint0,
+         Weight0
+      };
+      		struct Vertex2
+      {
+         glm::vec3 pos;
+         glm::vec3 normal;
+         glm::vec2 uv;
+         glm::vec4 color;
+         glm::vec4 joint0;
+         glm::vec4 weight0;
+         glm::vec4 tangent;
+         // static VkVertexInputBindingDescription vertexInputBindingDescription;
+         // static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
+         // static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
+         // static VkVertexInputBindingDescription inputBindingDescription(uint32_t binding);
+         // static VkVertexInputAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location,
+         // VertexComponent component); static std::vector<VkVertexInputAttributeDescription>
+         // inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
+         ///** @brief Returns the default pipeline vertex input state create info structure for the requested vertex
+         ///components */
+         // static VkPipelineVertexInputStateCreateInfo* getPipelineVertexInputState(const std::vector<VertexComponent>
+         // components);
+      };
+
 
 		enum FileLoadingFlags {
 			None = 0x00000000,
@@ -365,3 +405,4 @@ namespace gpu_vulkan
 
 
 
+DECLARE_GPU_PROPERTIES(CLASS_DECL_BRED, ::gpu_vulkan::gltf::Vertex);

@@ -4,7 +4,7 @@ layout(location = 0) in vec3 modelCoordinates;
 layout(location = 0) out vec4 FragColor;
 
 // Equirectangular projection HDRI texture
-layout(set = 0, binding = 1) uniform sampler2D hdri;
+layout(set = 0, binding = 0) uniform sampler2D hdri;
 
 const vec2 inverseAtan = vec2(0.1591, 0.3183);
 

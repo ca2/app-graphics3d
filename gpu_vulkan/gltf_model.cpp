@@ -504,13 +504,18 @@ namespace gpu_vulkan
             : fallbackTexture->m_descriptor3;
 
 		// If you have a separate roughness texture, bind it here, otherwise fallback
-      VkDescriptorImageInfo roughnessImageInfo = fallbackTexture->m_descriptor3;
+      //VkDescriptorImageInfo roughnessImageInfo = fallbackTexture->m_descriptor3;
 
 		VkDescriptorImageInfo occlusionImageInfo = (occlusionTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageAOMap))
             ? occlusionTexture->m_descriptor3
             : fallbackTexture->m_descriptor3;
 
-		std::array<VkWriteDescriptorSet, 5> writeDescriptorSets{};
+		VkDescriptorImageInfo emissiveImageInfo =
+         (occlusionTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageEmissiveMap))
+            ? emissiveTexture->m_descriptor3
+            : fallbackTexture->m_descriptor3;
+
+      std::array<VkWriteDescriptorSet, 5> writeDescriptorSets{};
 
 		writeDescriptorSets[0] = {
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, descriptorSet, 0, 0, 1,
@@ -518,19 +523,22 @@ namespace gpu_vulkan
 		};
 		writeDescriptorSets[1] = {
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, descriptorSet, 1, 0, 1,
-			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &normalImageInfo, nullptr, nullptr
-		};
-		writeDescriptorSets[2] = {
-			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, descriptorSet, 2, 0, 1,
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &metallicRoughnessImageInfo, nullptr, nullptr
 		};
+      writeDescriptorSets[2] = {
+         VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    nullptr,          descriptorSet, 2,      0, 1,
+         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &normalImageInfo, nullptr,       nullptr};
+  //    writeDescriptorSets[3] = {
+		//	VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, descriptorSet, 3, 0, 1,
+		//	VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &roughnessImageInfo, nullptr, nullptr
+		//};
 		writeDescriptorSets[3] = {
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, descriptorSet, 3, 0, 1,
-			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &roughnessImageInfo, nullptr, nullptr
+			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &occlusionImageInfo, nullptr, nullptr
 		};
 		writeDescriptorSets[4] = {
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, descriptorSet, 4, 0, 1,
-			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &occlusionImageInfo, nullptr, nullptr
+			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &emissiveImageInfo, nullptr, nullptr
 		};
 
 		vkUpdateDescriptorSets(pcontext->logicalDevice(), static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
@@ -641,56 +649,56 @@ namespace gpu_vulkan
 		gltf default vertex layout with easy Vulkan mapping functions
 	*/
 
-	VkVertexInputBindingDescription   gltf::Vertex::vertexInputBindingDescription;
-	std::vector<VkVertexInputAttributeDescription>   gltf::Vertex::vertexInputAttributeDescriptions;
-	VkPipelineVertexInputStateCreateInfo   gltf::Vertex::pipelineVertexInputStateCreateInfo;
+	//VkVertexInputBindingDescription   gltf::Vertex::vertexInputBindingDescription;
+	//std::vector<VkVertexInputAttributeDescription>   gltf::Vertex::vertexInputAttributeDescriptions;
+	//VkPipelineVertexInputStateCreateInfo   gltf::Vertex::pipelineVertexInputStateCreateInfo;
 
-	VkVertexInputBindingDescription   gltf::Vertex::inputBindingDescription(uint32_t binding) {
-		return VkVertexInputBindingDescription({ binding, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX });
-	}
+	//VkVertexInputBindingDescription   gltf::Vertex::inputBindingDescription(uint32_t binding) {
+	//	return VkVertexInputBindingDescription({ binding, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX });
+	//}
 
-	VkVertexInputAttributeDescription   gltf::Vertex::inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component) {
-		switch (component) {
-		case VertexComponent::Position:
-			return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos) });
-		case VertexComponent::Normal:
-			return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal) });
-		case VertexComponent::UV:
-			return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv) });
-		case VertexComponent::Color:
-			return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, color) });
-		case VertexComponent::Tangent:
-			return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, tangent) });
-		case VertexComponent::Joint0:
-			return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, joint0) });
-		case VertexComponent::Weight0:
-			return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, weight0) });
-		default:
-			return VkVertexInputAttributeDescription({});
-		}
-	}
+	//VkVertexInputAttributeDescription   gltf::Vertex::inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component) {
+	//	switch (component) {
+	//	case VertexComponent::Position:
+	//		return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos) });
+	//	case VertexComponent::Normal:
+	//		return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal) });
+	//	case VertexComponent::UV:
+	//		return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv) });
+	//	case VertexComponent::Color:
+	//		return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, color) });
+	//	case VertexComponent::Tangent:
+	//		return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, tangent) });
+	//	case VertexComponent::Joint0:
+	//		return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, joint0) });
+	//	case VertexComponent::Weight0:
+	//		return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, weight0) });
+	//	default:
+	//		return VkVertexInputAttributeDescription({});
+	//	}
+	//}
 
-	std::vector<VkVertexInputAttributeDescription>   gltf::Vertex::inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components) {
-		std::vector<VkVertexInputAttributeDescription> result;
-		uint32_t location = 0;
-		for (VertexComponent component : components) {
-			result.push_back(Vertex::inputAttributeDescription(binding, location, component));
-			location++;
-		}
-		return result;
-	}
+	//std::vector<VkVertexInputAttributeDescription>   gltf::Vertex::inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components) {
+	//	std::vector<VkVertexInputAttributeDescription> result;
+	//	uint32_t location = 0;
+	//	for (VertexComponent component : components) {
+	//		result.push_back(Vertex::inputAttributeDescription(binding, location, component));
+	//		location++;
+	//	}
+	//	return result;
+	//}
 
-	/** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
-	VkPipelineVertexInputStateCreateInfo* gltf::Vertex::getPipelineVertexInputState(const std::vector<VertexComponent> components) {
-		vertexInputBindingDescription = Vertex::inputBindingDescription(0);
-		Vertex::vertexInputAttributeDescriptions = Vertex::inputAttributeDescriptions(0, components);
-		pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
-		pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = &Vertex::vertexInputBindingDescription;
-		pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(Vertex::vertexInputAttributeDescriptions.size());
-		pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = Vertex::vertexInputAttributeDescriptions.data();
-		return &pipelineVertexInputStateCreateInfo;
-	}
+	///** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
+	//VkPipelineVertexInputStateCreateInfo* gltf::Vertex::getPipelineVertexInputState(const std::vector<VertexComponent> components) {
+	//	vertexInputBindingDescription = Vertex::inputBindingDescription(0);
+	//	Vertex::vertexInputAttributeDescriptions = Vertex::inputAttributeDescriptions(0, components);
+	//	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	//	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
+	//	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = &Vertex::vertexInputBindingDescription;
+	//	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(Vertex::vertexInputAttributeDescriptions.size());
+	//	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = Vertex::vertexInputAttributeDescriptions.data();
+	//	return &pipelineVertexInputStateCreateInfo;
+	//}
 
 	gpu_vulkan::texture* gltf::Model::getTexture(uint32_t index)
 	{
@@ -858,6 +866,77 @@ namespace gpu_vulkan
 		emptyTexture->destroy();
 	}
 
+
+   // Compute tangents from indexed mesh data
+   void computeTangents(std::vector<gpu_vulkan::gltf::Vertex> &vertices, const std::vector<uint32_t> &indices)
+   {
+      std::vector<glm::vec3> tan1(vertices.size(), glm::vec3(0.0f));
+      std::vector<glm::vec3> tan2(vertices.size(), glm::vec3(0.0f));
+
+      // Step 1: accumulate per-triangle tangents and bitangents
+      for (size_t i = 0; i < indices.size(); i += 3)
+      {
+         uint32_t i1 = indices[i + 0];
+         uint32_t i2 = indices[i + 1];
+         uint32_t i3 = indices[i + 2];
+
+         const glm::vec3 &v1 = vertices[i1].pos;
+         const glm::vec3 &v2 = vertices[i2].pos;
+         const glm::vec3 &v3 = vertices[i3].pos;
+
+         const glm::vec2 &w1 = vertices[i1].gltf_uv;
+         const glm::vec2 &w2 = vertices[i2].gltf_uv;
+         const glm::vec2 &w3 = vertices[i3].gltf_uv;
+
+         glm::vec3 e1 = v2 - v1;
+         glm::vec3 e2 = v3 - v1;
+
+         float x1 = e1.x, x2 = e2.x;
+         float y1 = e1.y, y2 = e2.y;
+         float z1 = e1.z, z2 = e2.z;
+
+         float s1 = w2.x - w1.x;
+         float s2 = w3.x - w1.x;
+         float t1 = w2.y - w1.y;
+         float t2 = w3.y - w1.y;
+
+         float r = (s1 * t2 - s2 * t1);
+         if (fabs(r) < 1e-10f)
+            r = 1.0f;
+         else
+            r = 1.0f / r;
+
+         glm::vec3 sdir = (e1 * t2 - e2 * t1) * r;
+         glm::vec3 tdir = (e2 * s1 - e1 * s2) * r;
+
+         tan1[i1] += sdir;
+         tan1[i2] += sdir;
+         tan1[i3] += sdir;
+
+         tan2[i1] += tdir;
+         tan2[i2] += tdir;
+         tan2[i3] += tdir;
+      }
+
+      // Step 2: orthogonalize and compute handedness
+      for (size_t i = 0; i < vertices.size(); ++i)
+      {
+         const glm::vec3 &n = vertices[i].normal;
+         const glm::vec3 &t = tan1[i];
+
+         // Gram-Schmidt orthogonalize
+         glm::vec3 tangent = glm::normalize(t - n * glm::dot(n, t));
+
+         // Determine handedness (sign)
+         float sign = (glm::dot(glm::cross(n, t), tan2[i]) < 0.0f) ? -1.0f : 1.0f;
+
+         vertices[i].tangent.x = tangent.x;
+         vertices[i].tangent.y = tangent.y;
+         vertices[i].tangent.z = tangent.z;
+         vertices[i].tangent.w = sign;
+      }
+   }
+
 	void   gltf::Model::loadNode( Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale)
 	{
 		Node* newNode = new Node{};
@@ -920,6 +999,9 @@ namespace gpu_vulkan
 				glm::vec3 posMin{};
 				glm::vec3 posMax{};
 				bool hasSkin = false;
+            bool bHasStoredTangents = false;
+
+
 				// Vertices
 				{
 					const float* bufferPos = nullptr;
@@ -963,6 +1045,7 @@ namespace gpu_vulkan
 
 					if (primitive.attributes.find("TANGENT") != primitive.attributes.end())
 					{
+                  bHasStoredTangents = true;
 						const tinygltf::Accessor& tangentAccessor = model.accessors[primitive.attributes.find("TANGENT")->second];
 						const tinygltf::BufferView& tangentView = model.bufferViews[tangentAccessor.bufferView];
 						bufferTangents = reinterpret_cast<const float*>(&(model.buffers[tangentView.buffer].data[tangentAccessor.byteOffset + tangentView.byteOffset]));
@@ -990,7 +1073,7 @@ namespace gpu_vulkan
 						Vertex vert{};
 						vert.pos = glm::vec4(glm::make_vec3(&bufferPos[v * 3]), 1.0f);
 						vert.normal = glm::normalize(glm::vec3(bufferNormals ? glm::make_vec3(&bufferNormals[v * 3]) : glm::vec3(0.0f)));
-						vert.uv = bufferTexCoords ? glm::make_vec2(&bufferTexCoords[v * 2]) : glm::vec3(0.0f);
+						vert.gltf_uv = bufferTexCoords ? glm::make_vec2(&bufferTexCoords[v * 2]) : glm::vec3(0.0f);
 						if (bufferColors) {
 							switch (numColorComponents) {
 							case 3:
@@ -1003,11 +1086,12 @@ namespace gpu_vulkan
 							vert.color = glm::vec4(1.0f);
 						}
 						vert.tangent = bufferTangents ? glm::vec4(glm::make_vec4(&bufferTangents[v * 4])) : glm::vec4(0.0f);
-						vert.joint0 = hasSkin ? glm::vec4(glm::make_vec4(&bufferJoints[v * 4])) : glm::vec4(0.0f);
-						vert.weight0 = hasSkin ? glm::make_vec4(&bufferWeights[v * 4]) : glm::vec4(0.0f);
+						//vert.joint0 = hasSkin ? glm::vec4(glm::make_vec4(&bufferJoints[v * 4])) : glm::vec4(0.0f);
+						//vert.weight0 = hasSkin ? glm::make_vec4(&bufferWeights[v * 4]) : glm::vec4(0.0f);
 						vertexBuffer.push_back(vert);
 					}
 				}
+
 				// Indices
 				{
 					const tinygltf::Accessor& accessor = model.accessors[primitive.indices];
@@ -1049,6 +1133,11 @@ namespace gpu_vulkan
 						return;
 					}
 				}
+            if (!bHasStoredTangents)
+            {
+               computeTangents(vertexBuffer, indexBuffer);
+
+            }
 				Primitive* newPrimitive = new Primitive(indexStart, indexCount, primitive.material > -1 ? &m_materials[primitive.material] : &m_materials.back());
 				newPrimitive->firstVertex = vertexStart;
 				newPrimitive->vertexCount = vertexCount;
@@ -1977,3 +2066,36 @@ namespace gpu_vulkan
 
 } // namespace gpu_vulkan
 
+
+
+
+BEGIN_GPU_PROPERTIES(::gpu_vulkan::gltf::Vertex)
+GPU_PROPERTY("pos", ::gpu::e_type_seq3)
+GPU_PROPERTY("normal", ::gpu::e_type_seq3)
+GPU_PROPERTY("uv", ::gpu::e_type_seq2)
+GPU_PROPERTY("color", ::gpu::e_type_seq4)
+GPU_PROPERTY("tangent", ::gpu::e_type_seq4)
+END_GPU_PROPERTIES()
+
+//
+//		struct Vertex
+//{
+//   glm::vec3 pos;
+//   glm::vec3 normal;
+//   glm::vec2 uv;
+//   glm::vec4 color;
+//   glm::vec4 joint0;
+//   glm::vec4 weight0;
+//   glm::vec4 tangent;
+//   // static VkVertexInputBindingDescription vertexInputBindingDescription;
+//   // static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
+//   // static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
+//   // static VkVertexInputBindingDescription inputBindingDescription(uint32_t binding);
+//   // static VkVertexInputAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location,
+//   // VertexComponent component); static std::vector<VkVertexInputAttributeDescription>
+//   // inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
+//   ///** @brief Returns the default pipeline vertex input state create info structure for the requested vertex
+//   ///components */
+//   // static VkPipelineVertexInputStateCreateInfo* getPipelineVertexInputState(const std::vector<VertexComponent>
+//   // components);
+//};

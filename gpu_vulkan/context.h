@@ -83,6 +83,9 @@ namespace gpu_vulkan
       void _001EndRenderPass(::gpu::command_buffer *pcommandbuffer);
 
 
+      void layout_push_constants(::gpu::properties &properties) override;
+
+
       virtual VkCommandPool
       createCommandPool(uint32_t queueFamilyIndex,
                         VkCommandPoolCreateFlags createFlags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);

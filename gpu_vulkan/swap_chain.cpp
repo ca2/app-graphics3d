@@ -993,7 +993,6 @@ namespace gpu_vulkan
             {},
             {},
             {},
-            {},
             // this means the vertex input layout will be null/empty
             // the full screen shader is embed in the shader code
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
