@@ -14,6 +14,12 @@
     <Filter Include="Source Files\aaa_system">
       <UniqueIdentifier>{7549d886-8d19-4c0d-aefb-fd4011a475ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\render_systems">
+      <UniqueIdentifier>{d34456e3-1895-444d-bb46-163824bcd77f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\render_systems">
+      <UniqueIdentifier>{4cc54b2f-bd44-48c7-b57b-bb558bc17de4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -63,6 +69,15 @@
     </ClCompile>
     <ClCompile Include="aaa_system\point_light_system.cpp">
       <Filter>Source Files\aaa_system</Filter>
+    </ClCompile>
+    <ClCompile Include="render_systems\gltf_render_system.cpp">
+      <Filter>Source Files\render_systems</Filter>
+    </ClCompile>
+    <ClCompile Include="render_systems\scene_render_system.cpp">
+      <Filter>Source Files\render_systems</Filter>
+    </ClCompile>
+    <ClCompile Include="render_system.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +151,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render_systems\scene_render_system.h">
+      <Filter>Header Files\render_systems</Filter>
+    </ClInclude>
+    <ClInclude Include="render_systems\gltf_render_system.h">
+      <Filter>Header Files\render_systems</Filter>
+    </ClInclude>
+    <ClInclude Include="render_system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

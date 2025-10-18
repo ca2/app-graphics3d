@@ -744,6 +744,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="render_system.cpp" />
+    <ClCompile Include="render_systems\gltf_render_system.cpp" />
+    <ClCompile Include="render_systems\scene_render_system.cpp" />
     <ClCompile Include="scene_object.cpp" />
     <ClCompile Include="descriptors.cpp" />
     <ClCompile Include="framework.cpp">
@@ -774,6 +777,9 @@
     <ClInclude Include="aaa_window.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="frame.h" />
+    <ClInclude Include="render_system.h" />
+    <ClInclude Include="render_systems\gltf_render_system.h" />
+    <ClInclude Include="render_systems\scene_render_system.h" />
     <ClInclude Include="scene_object.h" />
     <ClInclude Include="buffer.h" />
     <ClInclude Include="descriptors.h" />
@@ -821,6 +827,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\app\bred\bred.vcxproj">
       <Project>{dfbf067f-aff9-4bd6-a5e1-72af984d1476}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\gpu\gpu.vcxproj">
+      <Project>{d728fd54-84d0-4b93-9d34-43338f285886}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

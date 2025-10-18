@@ -19,7 +19,7 @@
     public:
 
 
-       ::pointer<::gpu::model_buffer> m_pmodelbuffer;
+       
 
        cube();
        ~cube() override;

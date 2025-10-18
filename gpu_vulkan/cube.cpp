@@ -56,10 +56,6 @@
        ::gpu::cube::initialize_gpu_cube(pgpucontext);
 
 
-       øconstruct(m_pmodelbuffer);
-
-
-       m_pmodelbuffer->initialize_model(pgpucontext, m_modeldata);
 
        //// create our data structures
        //glGenVertexArrays(1, &m_uVAO);

@@ -8303,7 +8303,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // Clear buffers
       auto pgpucontext = gpu_context();
 
-      pgpucontext->clear(::color::transparent);
+      pgpucontext->clear(pgpucontext->current_target_texture(::gpu::current_frame()), ::color::transparent);
 
       ::cast < ::gpu::layer > playerPrevious = pgpucontext->m_pgpudevice->get_previous_layer(pgpulayer);
 

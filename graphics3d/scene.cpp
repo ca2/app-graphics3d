@@ -128,7 +128,7 @@ namespace graphics3d
    //   //                                   {-1.0f, -1.0f, -1.0f}, {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, -1.0f},
    //   //                                   {1.0f, -1.0f, -1.0f},  {-1.0f, -1.0f, 1.0f},  {1.0f, -1.0f, 1.0f}};
 
-   //   //pmodelbuffer->static_initialize_vertexes<::glm::vec3>(vertexa);
+   //   //pmodelbuffer->static_initialize_vertexes<::gpu::position3>(vertexa);
 
    //   //return pmodelbuffer;
    //}
@@ -184,8 +184,9 @@ namespace graphics3d
 
       //if (!piblspecularmap->m_pframebufferPrefilteredEnvMap)
       {
-
+         m_pgpucontext->start_debug_happening("computePrefilteredEnvMap");
          piblspecularmap->computePrefilteredEnvMap();
+         m_pgpucontext->end_debug_happening();
       }
 
       return piblspecularmap->m_pframebufferPrefilteredEnvMap->m_ptexture;
@@ -211,8 +212,9 @@ namespace graphics3d
 
       //if (!m_pibldiffuseirradiancemap->m_pdiffuseIrradianceFramebuffer)
       {
-
+         m_pgpucontext->start_debug_happening("compute irradianceMap");
          m_pibldiffuseirradiancemap->compute();
+         m_pgpucontext->end_debug_happening();
       }
 
       return m_pibldiffuseirradiancemap->m_pdiffuseIrradianceFramebuffer->m_ptexture;

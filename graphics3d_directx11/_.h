@@ -2,6 +2,7 @@
 
 
 #include "gpu_directx11/_.h"
+#include "app-graphics3d/graphics3d/_.h"
 #include "_directx11.h"
 
 
