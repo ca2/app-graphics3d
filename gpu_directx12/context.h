@@ -183,8 +183,8 @@ namespace gpu_directx12
       string _001GetIntroProjection() override;
       string _001GetIntroFragment() override;
 
-      void start_debug_happening(const ::scoped_string& scopedstrStartDebugHappening) override;
-      void end_debug_happening() override;
+      void start_debug_happening(::gpu::command_buffer * pgpucommandbuffer, const ::scoped_string& scopedstrStartDebugHappening) override;
+      void end_debug_happening(::gpu::command_buffer * pgpucommandbuffer) override;
 
       void draw() override;
       void start_drawing() override;

@@ -843,7 +843,7 @@ namespace gpu_directx12
    }
 
 
-   void context::start_debug_happening(const ::scoped_string& scopedstrStartDebugHappening)
+   void context::start_debug_happening(::gpu::command_buffer * pgpucommandbuffer, const ::scoped_string& scopedstrStartDebugHappening)
    {
 
       auto prenderer = m_pgpurenderer;
@@ -859,7 +859,7 @@ namespace gpu_directx12
    }
 
 
-   void context::end_debug_happening()
+   void context::end_debug_happening(::gpu::command_buffer * pgpucommandbuffer)
    {
 
       auto prenderer = m_pgpurenderer;

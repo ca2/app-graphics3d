@@ -68,7 +68,7 @@ namespace gpu_vulkan
          /**
           * Render the pre-filtered environment map.
           */
-         void computePrefilteredEnvMap() override;
+         void computePrefilteredEnvMap(::gpu::command_buffer *pgpucommandbuffer) override;
 
 
          /**

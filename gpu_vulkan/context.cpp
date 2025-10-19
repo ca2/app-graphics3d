@@ -2283,7 +2283,7 @@ namespace gpu_vulkan
    //}
 
    // void context::gpu_debug_message(const ::scoped_string& scopedstrMessage)
-   void context::start_debug_happening(const ::scoped_string &scopedstrMessage)
+   void context::start_debug_happening(::gpu::command_buffer * pgpucommandbuffer, const ::scoped_string &scopedstrMessage)
    {
 
       //::string strMessage(scopedstrMessage);
@@ -2301,7 +2301,7 @@ namespace gpu_vulkan
       //       color.f32_opacity() }
       // };
 
-      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       ::vulkan::debugutils::insertDebugLabel(pcommandbuffer->m_vkcommandbuffer, scopedstrMessage, color);
    }
@@ -3422,7 +3422,7 @@ void context::on_end_layer(::gpu::layer *player)
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      ::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
       //
       //      {
       //
@@ -4954,7 +4954,7 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
       ::cast<renderer> prenderer = m_pgpurenderer;
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      //::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
 
       VkRenderPassBeginInfo renderPassBeginInfo{};
 
@@ -5066,7 +5066,7 @@ void context::_001BeginRenderPass(::gpu::command_buffer *pgpucommandbuffer,
       ::cast<renderer> prenderer = m_pgpurenderer;
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      //::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
 
       VkRenderPassBeginInfo renderPassBeginInfo{};
 
@@ -5184,7 +5184,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      //::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+      //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
       //
       //      {
       //

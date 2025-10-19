@@ -85,7 +85,7 @@ namespace gpu_vulkan
       }
 
 
-      void specular_map::computePrefilteredEnvMap()
+      void specular_map::computePrefilteredEnvMap(::gpu::command_buffer *pgpucommandbuffer)
       {
 
          ::pointer<::gpu::texture> pgputexturePrefilteredCubeNew;

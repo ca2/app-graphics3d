@@ -71,7 +71,7 @@ namespace gpu_vulkan
       }
 
 
-      void diffuse_irradiance_map::compute()
+      void diffuse_irradiance_map::computeIrradianceMap(::gpu::command_buffer *pgpucommandbuffer)
       {
 
          ::cast<::gpu_vulkan::context> pgpucontext = m_pgpucontext;

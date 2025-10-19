@@ -2,6 +2,8 @@
 #include "framework.h"
 #include "scene.h"
 #include "acme/filesystem/filesystem/file_context.h"
+#include "bred/gpu/command_buffer.h"
+#include "bred/gpu/device.h"
 #include "bred/gpu/texture.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/engine.h"
@@ -184,9 +186,13 @@ namespace graphics3d
 
       //if (!piblspecularmap->m_pframebufferPrefilteredEnvMap)
       {
-         m_pgpucontext->start_debug_happening("computePrefilteredEnvMap");
-         piblspecularmap->computePrefilteredEnvMap();
-         m_pgpucontext->end_debug_happening();
+         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
+         // this->flushCommandBuffer(layoutCmd, m_vkqueueTransfer3, true);
+
+         m_pgpucontext->start_debug_happening(pcommandbuffer, "compute irradianceMap");
+         piblspecularmap->computePrefilteredEnvMap(pcommandbuffer);
+         m_pgpucontext->end_debug_happening(pcommandbuffer);
+         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
       }
 
       return piblspecularmap->m_pframebufferPrefilteredEnvMap->m_ptexture;
@@ -212,9 +218,15 @@ namespace graphics3d
 
       //if (!m_pibldiffuseirradiancemap->m_pdiffuseIrradianceFramebuffer)
       {
-         m_pgpucontext->start_debug_happening("compute irradianceMap");
-         m_pibldiffuseirradiancemap->compute();
-         m_pgpucontext->end_debug_happening();
+         auto pcommandbuffer =
+            m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
+         // this->flushCommandBuffer(layoutCmd, m_vkqueueTransfer3, true);
+
+         m_pgpucontext->start_debug_happening(pcommandbuffer, "compute irradianceMap");
+         m_pibldiffuseirradiancemap->computeIrradianceMap(pcommandbuffer);
+         m_pgpucontext->end_debug_happening(pcommandbuffer);
+         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
+
       }
 
       return m_pibldiffuseirradiancemap->m_pdiffuseIrradianceFramebuffer->m_ptexture;

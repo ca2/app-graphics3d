@@ -66,7 +66,7 @@ namespace gpu_vulkan
 
 
       //void gpu_debug_message(const ::scoped_string& scopedstr) override;
-      void start_debug_happening(const ::scoped_string& scopedstr) override;
+      void start_debug_happening(::gpu::command_buffer * pgpucommandbuffer, const ::scoped_string& scopedstr) override;
 
       void on_start_layer(::gpu::layer* player) override;
       void on_end_layer(::gpu::layer *player) override;

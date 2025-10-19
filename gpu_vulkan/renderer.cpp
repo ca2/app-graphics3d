@@ -3464,7 +3464,7 @@ namespace gpu_vulkan
 
          ::cast<renderer> prenderer = this;
 
-         ::cast<command_buffer> pcommandbuffer = ::gpu::current_frame()->m_pgpucommandbuffer;
+         ::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
 
          VkRenderPassBeginInfo renderPassBeginInfo{};
 
@@ -3946,7 +3946,7 @@ namespace gpu_vulkan
 
       ::cast < context > pcontext = m_pgpucontext;
 
-      auto& ecommandbufferstate = ::gpu::current_frame()->m_pgpucommandbuffer->m_estate;
+      auto& ecommandbufferstate = ::gpu::current_command_buffer()->m_estate;
 
       ASSERT(ecommandbufferstate != ::gpu::command_buffer::e_state_recording);
 
