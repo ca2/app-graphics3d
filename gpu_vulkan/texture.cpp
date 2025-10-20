@@ -185,7 +185,6 @@ namespace gpu_vulkan
    {
 
       m_vksamplerDedicated = VK_NULL_HANDLE;
-      m_mipsLevel = 1;
       m_bOwnImage = false;
 
       m_etype = e_type_none;
@@ -254,7 +253,7 @@ namespace gpu_vulkan
       imagecreateinfo.extent.width = rectangleTarget.width();
       imagecreateinfo.extent.height = rectangleTarget.height();
       imagecreateinfo.extent.depth = 1;
-      imagecreateinfo.mipLevels = m_mipsLevel;
+      imagecreateinfo.mipLevels = m_iMipCount;
       if (m_etype == e_type_cube_map)
       {
          imagecreateinfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
@@ -510,7 +509,7 @@ namespace gpu_vulkan
 
       uint32_t layerCount = (m_etype == e_type_cube_map) ? 6u : 1u;
 
-      uint32_t levelCount = (m_mipsLevel > 0) ? m_mipsLevel : 1u; // be safe if m_mipsLevel wasn't set
+      uint32_t iMipCount = (m_iMipCount > 0) ? m_iMipCount : 1u; // be safe if m_iMipCount wasn't set
 
       // If old layout is UNDEFINED, the src access must be 0 and src stage can be TOP_OF_PIPE
       if (layoutOld == VK_IMAGE_LAYOUT_UNDEFINED)
@@ -636,7 +635,7 @@ namespace gpu_vulkan
       barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
       barrier.image = image;
       barrier.subresourceRange.baseMipLevel = 0;
-      barrier.subresourceRange.levelCount = levelCount;
+      barrier.subresourceRange.levelCount = iMipCount;
       barrier.subresourceRange.baseArrayLayer = 0;
       barrier.subresourceRange.layerCount = layerCount;
 
@@ -1287,7 +1286,7 @@ void texture::create_sampler()
       );
 
       pcontext->transitionImageLayout(m_vkimage, m_vkformat, VK_IMAGE_LAYOUT_UNDEFINED,
-                                       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_mipsLevel,
+                                       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_iMipCount,
                                        1); // layerCount
 
                auto pcommandbuffer = pcontext->beginSingleTimeCommands(nullptr);
@@ -1296,7 +1295,9 @@ void texture::create_sampler()
                                       // 1 // layerCount
       pcontext->endSingleTimeCommands(nullptr);
       pcontext->transitionImageLayout(
-         m_vkimage, m_vkformat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_mipsLevel,
+         m_vkimage, m_vkformat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 
+         m_iMipCount,
           1); // layerCount
       //TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
       //                      1 // layerCount
@@ -1326,7 +1327,7 @@ void texture::create_sampler()
 //void texture::TransitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount)
 //   {
 //      //VkCommandBuffer cmd = m_pDevice->beginSingleTimeCommands();
-//      m_pDevice->transitionImageLayout(m_image, m_format, oldLayout, newLayout, m_mipsLevel, layerCount);
+//      m_pDevice->transitionImageLayout(m_image, m_format, oldLayout, newLayout, m_iMipCount, layerCount);
 //      //m_pDevice->endSingleTimeCommands(cmd);
 //   }
 //
@@ -1346,7 +1347,7 @@ void texture::create_sampler()
    //   this->m_pDevice = device;
    //   m_width = ktxTexture->baseWidth;
    //   m_height = ktxTexture->baseHeight;
-   //   m_mipsLevel = ktxTexture->numLevels;
+   //   m_iMipCount = ktxTexture->numLevels;
 
    //   ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
    //   ktx_size_t ktxTextureSize = ktxTexture_GetSize(ktxTexture);
@@ -1394,7 +1395,7 @@ void texture::create_sampler()
    //      // Setup buffer copy regions for each mip level
    //      std::vector<VkBufferImageCopy> bufferCopyRegions;
 
-   //      for (uint32_t i = 0; i < m_mipsLevel; i++)
+   //      for (uint32_t i = 0; i < m_iMipCount; i++)
    //      {
    //         ktx_size_t offset;
    //         KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, i, 0, 0, &offset);
@@ -1418,7 +1419,7 @@ void texture::create_sampler()
    //      VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
    //      imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
    //      imageCreateInfo.format = format;
-   //      imageCreateInfo.mipLevels = m_mipsLevel;
+   //      imageCreateInfo.mipLevels = m_iMipCount;
    //      imageCreateInfo.arrayLayers = 1;
    //      imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
    //      imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
@@ -1445,7 +1446,7 @@ void texture::create_sampler()
    //      VkImageSubresourceRange subresourceRange = {};
    //      subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
    //      subresourceRange.baseMipLevel = 0;
-   //      subresourceRange.levelCount = m_mipsLevel;
+   //      subresourceRange.levelCount = m_iMipCount;
    //      subresourceRange.layerCount = 1;
 
 
@@ -1554,7 +1555,7 @@ void texture::create_sampler()
    //   samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
    //   samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
    //   samplerCreateInfo.minLod = 0.0f;
-   //   samplerCreateInfo.maxLod = static_cast<float>(m_mipsLevel);
+   //   samplerCreateInfo.maxLod = static_cast<float>(m_iMipCount);
    //   samplerCreateInfo.mipLodBias = 0.0f;
    //   samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;
 
@@ -1572,7 +1573,7 @@ void texture::create_sampler()
    //   viewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
    //   viewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
    //   viewCreateInfo.format = format;
-   //   viewCreateInfo.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, m_mipsLevel, 0, 1};
+   //   viewCreateInfo.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, m_iMipCount, 0, 1};
    //   viewCreateInfo.image = m_image;
    //   VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewCreateInfo, nullptr, &m_view));
 
@@ -1604,7 +1605,7 @@ void texture::create_sampler()
       // this->m_pDevice = pdevice;
       m_rectangleTarget.right() = ktxTexture->baseWidth;
       m_rectangleTarget.bottom() = ktxTexture->baseHeight;
-      m_mipsLevel = ktxTexture->numLevels;
+      m_iMipCount = ktxTexture->numLevels;
 
       ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
       ktx_size_t ktxTextureSize = ktxTexture_GetDataSize(ktxTexture);
@@ -1656,7 +1657,7 @@ void texture::create_sampler()
          // Setup buffer copy regions for each mip level
          std::vector<VkBufferImageCopy> bufferCopyRegions;
 
-         for (uint32_t i = 0; i < m_mipsLevel; i++)
+         for (uint32_t i = 0; i < m_iMipCount; i++)
          {
             ktx_size_t offset;
             KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, i, 0, 0, &offset);
@@ -1680,7 +1681,7 @@ void texture::create_sampler()
          VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
          imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
          imageCreateInfo.format = format;
-         imageCreateInfo.mipLevels = m_mipsLevel;
+         imageCreateInfo.mipLevels = m_iMipCount;
          imageCreateInfo.arrayLayers = 1;
          imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
          imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
@@ -1711,7 +1712,7 @@ void texture::create_sampler()
          VkImageSubresourceRange subresourceRange = {};
          subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
          subresourceRange.baseMipLevel = 0;
-         subresourceRange.levelCount = m_mipsLevel;
+         subresourceRange.levelCount = m_iMipCount;
          subresourceRange.layerCount = 1;
 
 
@@ -1827,7 +1828,7 @@ void texture::create_sampler()
       samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
       samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
       samplerCreateInfo.minLod = 0.0f;
-      samplerCreateInfo.maxLod = static_cast<float>(m_mipsLevel);
+      samplerCreateInfo.maxLod = (float)(m_iMipCount);
       samplerCreateInfo.mipLodBias = 0.0f;
       samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;
 
@@ -1845,7 +1846,7 @@ void texture::create_sampler()
       viewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
       viewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
       viewCreateInfo.format = format;
-      viewCreateInfo.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t) m_mipsLevel, 0, 1};
+      viewCreateInfo.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t) m_iMipCount, 0, 1};
       viewCreateInfo.image = m_vkimage;
       VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewCreateInfo, nullptr, &m_vkimageview));
 
@@ -1868,7 +1869,7 @@ void texture::create_sampler()
    // 	this->m_pDevice = pdevice;
    // 	m_rectangleTarget.width() = ktxTexture->baseWidth;
    // 	m_rectangleTarget.height() = ktxTexture->baseHeight;
-   // 	m_mipsLevel = ktxTexture->numLevels;
+   // 	m_iMipCount = ktxTexture->numLevels;
    //
    // 	ktx_uint8_t* ktxTextureData = ktxTexture_GetData(ktxTexture);
    // 	ktx_size_t ktxTextureSize = ktxTexture_GetSize(ktxTexture);
@@ -1910,7 +1911,7 @@ void texture::create_sampler()
    //
    // 	for (uint32_t face = 0; face < 6; face++)
    // 	{
-   // 		for (uint32_t level = 0; level < m_mipsLevel; level++)
+   // 		for (uint32_t level = 0; level < m_iMipCount; level++)
    // 		{
    // 			ktx_size_t offset;
    // 			KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, level, 0, face, &offset);
@@ -1934,7 +1935,7 @@ void texture::create_sampler()
    // 	VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
    // 	imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
    // 	imageCreateInfo.format = format;
-   // 	imageCreateInfo.mipLevels = m_mipsLevel;
+   // 	imageCreateInfo.mipLevels = m_iMipCount;
    // 	imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
    // 	imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
    // 	imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -1971,7 +1972,7 @@ void texture::create_sampler()
    // 	VkImageSubresourceRange subresourceRange = {};
    // 	subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
    // 	subresourceRange.baseMipLevel = 0;
-   // 	subresourceRange.levelCount = m_mipsLevel;
+   // 	subresourceRange.levelCount = m_iMipCount;
    // 	subresourceRange.layerCount = 6;
    //
    // 	tools::setImageLayout(
@@ -2013,7 +2014,7 @@ void texture::create_sampler()
    // 	samplerCreateInfo.maxAnisotropy = pdevice->m_enabledFeatures.samplerAnisotropy ?
    // pdevice->m_deviceProperties.limits.maxSamplerAnisotropy : 1.0f; 	samplerCreateInfo.anisotropyEnable =
    // pdevice->m_enabledFeatures.samplerAnisotropy ? VK_TRUE : VK_FALSE; 	samplerCreateInfo.compareOp =
-   // VK_COMPARE_OP_NEVER; 	samplerCreateInfo.minLod = 0.0f; 	samplerCreateInfo.maxLod = (float)m_mipsLevel;
+   // VK_COMPARE_OP_NEVER; 	samplerCreateInfo.minLod = 0.0f; 	samplerCreateInfo.maxLod = (float)m_iMipCount;
    // 	samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
    // 	VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerCreateInfo, nullptr, &m_sampler));
    //
@@ -2023,7 +2024,7 @@ void texture::create_sampler()
    // 	viewCreateInfo.format = format;
    // 	viewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
    // 	viewCreateInfo.subresourceRange.baseMipLevel = 0;
-   // 	viewCreateInfo.subresourceRange.levelCount = m_mipsLevel;
+   // 	viewCreateInfo.subresourceRange.levelCount = m_iMipCount;
    // 	viewCreateInfo.subresourceRange.baseArrayLayer = 0;
    // 	viewCreateInfo.subresourceRange.layerCount = 6;
    // 	viewCreateInfo.image = m_vkimage;
@@ -2069,7 +2070,7 @@ void texture::create_sampler()
       //this->m_pDevice = pdevice;
       m_rectangleTarget.right() = ktxTexture->baseWidth;
       m_rectangleTarget.bottom() = ktxTexture->baseHeight;
-      m_mipsLevel = ktxTexture->numLevels;
+      m_iMipCount = ktxTexture->numLevels;
 
       ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
       ktx_size_t ktxTextureSize = ktxTexture_GetDataSize(ktxTexture);
@@ -2111,7 +2112,7 @@ void texture::create_sampler()
 
       for (uint32_t face = 0; face < 6; face++)
       {
-         for (uint32_t level = 0; level < m_mipsLevel; level++)
+         for (uint32_t level = 0; level < m_iMipCount; level++)
          {
             ktx_size_t offset;
             KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, level, 0, face, &offset);
@@ -2135,7 +2136,7 @@ void texture::create_sampler()
       VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
       imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
       imageCreateInfo.format = format;
-      imageCreateInfo.mipLevels = m_mipsLevel;
+      imageCreateInfo.mipLevels = m_iMipCount;
       imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
       imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
       imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -2181,7 +2182,7 @@ void texture::create_sampler()
       VkImageSubresourceRange subresourceRange = {};
       subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       subresourceRange.baseMipLevel = 0;
-      subresourceRange.levelCount = m_mipsLevel;
+      subresourceRange.levelCount = m_iMipCount;
       subresourceRange.layerCount = 6;
 
       vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, m_vkimage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -2216,7 +2217,7 @@ void texture::create_sampler()
          pphysicaldevice->m_vkphysicaldevicefeatures.samplerAnisotropy ? VK_TRUE : VK_FALSE;
       samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;
       samplerCreateInfo.minLod = 0.0f;
-      samplerCreateInfo.maxLod = (float)m_mipsLevel;
+      samplerCreateInfo.maxLod = (float)m_iMipCount;
       samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
       VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerCreateInfo, nullptr, &m_vksamplerDedicated));
 
@@ -2226,7 +2227,7 @@ void texture::create_sampler()
       viewCreateInfo.format = format;
       viewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       viewCreateInfo.subresourceRange.baseMipLevel = 0;
-      viewCreateInfo.subresourceRange.levelCount = m_mipsLevel;
+      viewCreateInfo.subresourceRange.levelCount = m_iMipCount;
       viewCreateInfo.subresourceRange.baseArrayLayer = 0;
       viewCreateInfo.subresourceRange.layerCount = 6;
       viewCreateInfo.image = m_vkimage;
@@ -2331,7 +2332,7 @@ void texture::create_sampler()
 
       ::cast<::gpu_vulkan::physical_device> pphysicaldevice = pdevice->m_pphysicaldevice;
 
-      m_mipsLevel = 1;
+      m_iMipCount = 1;
 
       m_etype = e_type_image;
 
@@ -2525,7 +2526,7 @@ void texture::create_sampler()
       };
       imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
-      imageViewCreateInfo.subresourceRange.levelCount = m_mipsLevel;
+      imageViewCreateInfo.subresourceRange.levelCount = m_iMipCount;
       imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
       imageViewCreateInfo.subresourceRange.layerCount = 1;
       VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &imageViewCreateInfo, nullptr, &m_vkimageview));
@@ -2540,7 +2541,7 @@ void texture::create_sampler()
       samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
       samplerCreateInfo.mipLodBias = 0.0f;
       samplerCreateInfo.minLod = 0.0f;
-      samplerCreateInfo.maxLod = float(m_mipsLevel);
+      samplerCreateInfo.maxLod = (float)(m_iMipCount);
       samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
       samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
       samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
@@ -2960,7 +2961,7 @@ void texture::create_sampler()
 
          m_rectangleTarget.set_width(pgltfimage->width);
          m_rectangleTarget.set_height(pgltfimage->height);
-         m_mipsLevel = (uint32_t)(floor(::log2((double)::maximum(m_rectangleTarget.width(),
+         m_iMipCount = (uint32_t)(floor(::log2((double)::maximum(m_rectangleTarget.width(),
             m_rectangleTarget.height()))) + 1.0);
 
          vkGetPhysicalDeviceFormatProperties(pphysicaldevice->m_vkphysicaldevice, m_vkformat, &formatProperties);
@@ -2996,7 +2997,7 @@ void texture::create_sampler()
          imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
          imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
          imageCreateInfo.format = m_vkformat;
-         imageCreateInfo.mipLevels = m_mipsLevel;
+         imageCreateInfo.mipLevels = m_iMipCount;
          imageCreateInfo.arrayLayers = 1;
          imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
          imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
@@ -3069,7 +3070,7 @@ void texture::create_sampler()
          // VkCommandBuffer blitCmd = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
          auto pgpucommandbufferBlit = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
          ::cast<command_buffer> pcommandbufferBlit = pgpucommandbufferBlit;
-         for (uint32_t i = 1; i < m_mipsLevel; i++)
+         for (uint32_t i = 1; i < m_iMipCount; i++)
          {
             VkImageBlit imageBlit{};
 
@@ -3123,7 +3124,7 @@ void texture::create_sampler()
             }
          }
 
-         subresourceRange.levelCount = m_mipsLevel;
+         subresourceRange.levelCount = m_iMipCount;
          m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
          imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -3210,7 +3211,7 @@ void texture::create_sampler()
 
          m_rectangleTarget.set_width(ktxTexture->baseWidth);
          m_rectangleTarget.set_height(ktxTexture->baseHeight);
-         m_mipsLevel = ktxTexture->numLevels;
+         m_iMipCount = ktxTexture->numLevels;
 
          ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
          ktx_size_t ktxTextureSize = ktxTexture_GetDataSize(ktxTexture);
@@ -3252,7 +3253,7 @@ void texture::create_sampler()
          vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
 
          ::array_base<VkBufferImageCopy> bufferCopyRegions;
-         for (uint32_t i = 0; i < m_mipsLevel; i++)
+         for (uint32_t i = 0; i < m_iMipCount; i++)
          {
             ktx_size_t offset;
             KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, i, 0, 0, &offset);
@@ -3273,7 +3274,7 @@ void texture::create_sampler()
          VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
          imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
          imageCreateInfo.format = m_vkformat;
-         imageCreateInfo.mipLevels = m_mipsLevel;
+         imageCreateInfo.mipLevels = m_iMipCount;
          imageCreateInfo.arrayLayers = 1;
          imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
          imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
@@ -3295,7 +3296,7 @@ void texture::create_sampler()
          VkImageSubresourceRange subresourceRange = {};
          subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
          subresourceRange.baseMipLevel = 0;
-         subresourceRange.levelCount = m_mipsLevel;
+         subresourceRange.levelCount = m_iMipCount;
          subresourceRange.layerCount = 1;
 
          ::vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, m_vkimage, VK_IMAGE_LAYOUT_UNDEFINED,
@@ -3336,7 +3337,7 @@ void texture::create_sampler()
       samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
       samplerInfo.maxAnisotropy = 1.0;
       samplerInfo.anisotropyEnable = VK_FALSE;
-      samplerInfo.maxLod = (float)m_mipsLevel;
+      samplerInfo.maxLod = (float)m_iMipCount;
       samplerInfo.maxAnisotropy = 8.0f;
       // samplerInfo.anisotropyEnable = VK_TRUE;
       VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerInfo, nullptr, &m_vksampler3));
@@ -3348,7 +3349,7 @@ void texture::create_sampler()
       viewInfo.format = m_vkformat;
       viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       viewInfo.subresourceRange.layerCount = 1;
-      viewInfo.subresourceRange.levelCount = m_mipsLevel;
+      viewInfo.subresourceRange.levelCount = m_iMipCount;
       VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &m_vkimageview));
 
       m_descriptor3.sampler = m_vksampler3;

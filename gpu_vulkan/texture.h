@@ -150,7 +150,7 @@ namespace gpu_vulkan
       VkFormat                   m_vkformat;
       VkDeviceMemory             m_vkdevicememory;
       state_t                    m_state;
-      //int                        m_mipsLevel;
+      //int                        m_iMipCount;
       /// Does every texture needs its own sampler?
       VkSampler                  m_vksampler3;
       VkDescriptorImageInfo      m_descriptor3;

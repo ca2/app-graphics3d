@@ -45,7 +45,7 @@ namespace gpu_vulkan
 
          ::cast<gpu_vulkan::context> pcontext = m_pgpucontext;
 
-         ptexture->m_mipsLevel = (uint32_t)(floor(::log2((double)::maximum(ptexture->m_rectangleTarget.width(),
+         ptexture->m_iMipCount = (uint32_t)(floor(::log2((double)::maximum(ptexture->m_rectangleTarget.width(),
                                                                            ptexture->m_rectangleTarget.height()))) +
                                             1.0);
          ptexture->m_bTransferSrc = true;
@@ -356,7 +356,7 @@ namespace gpu_vulkan
             ptexture->m_vkimage, 
             ptexture->m_vkformat,
             ptexture->m_rectangleTarget.width(), ptexture->m_rectangleTarget.height(),
-            ptexture->m_mipsLevel);
+            ptexture->m_iMipCount);
 
          pcontext->endSingleTimeCommands(pcommandbufferCopy);
 
@@ -376,7 +376,7 @@ namespace gpu_vulkan
          };
          imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
          imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
-         imageViewCreateInfo.subresourceRange.levelCount = ptexture->m_mipsLevel;
+         imageViewCreateInfo.subresourceRange.levelCount = ptexture->m_iMipCount;
          imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
          imageViewCreateInfo.subresourceRange.layerCount = 6;
          VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &imageViewCreateInfo, nullptr, &ptexture->m_vkimageview));
@@ -391,7 +391,7 @@ namespace gpu_vulkan
          samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
          samplerCreateInfo.mipLodBias = 0.0f;
          samplerCreateInfo.minLod = 0.0f;
-         samplerCreateInfo.maxLod = float(ptexture->m_mipsLevel);
+         samplerCreateInfo.maxLod = float(ptexture->m_iMipCount);
          samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
          samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
          samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;

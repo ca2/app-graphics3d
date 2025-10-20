@@ -189,7 +189,7 @@ namespace graphics3d
          auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
          // this->flushCommandBuffer(layoutCmd, m_vkqueueTransfer3, true);
 
-         m_pgpucontext->start_debug_happening(pcommandbuffer, "compute irradianceMap");
+         m_pgpucontext->start_debug_happening(pcommandbuffer, "compute ibl_prefiltered_env_map");
          piblspecularmap->computePrefilteredEnvMap(pcommandbuffer);
          m_pgpucontext->end_debug_happening(pcommandbuffer);
          m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
