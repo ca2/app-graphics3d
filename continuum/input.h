@@ -4,7 +4,7 @@
 #include "bred/graphics3d/input.h"
 #include "acme/constant/user_key.h"
 #include "bred/graphics3d/key_map.h"
-#include <glm/glm.hpp>
+//#include <glm/glm.hpp>
 
 
 namespace app_graphics3d_continuum

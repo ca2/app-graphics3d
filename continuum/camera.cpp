@@ -24,7 +24,7 @@ namespace app_graphics3d_continuum
    camera::~camera() {}
 
 
-   void camera::initialize_camera(floating_sequence3 position, float yaw, float pitch)
+   void camera::initialize_camera(floating_sequence3 position, float_angle yaw, float_angle pitch)
    {
 
       m_locationPosition = position;
@@ -48,9 +48,9 @@ namespace app_graphics3d_continuum
 
       m_locationPosition = camera;
 
-      auto direction = glm::normalize(target - camera);
+      auto direction = (target - camera).normalized();
 
-      m_fYaw = atan2(direction.z, direction.x);
+      m_fYaw = geometry::atan2(direction.z, direction.x);
 
       m_fPitch = asin(direction.y);
 

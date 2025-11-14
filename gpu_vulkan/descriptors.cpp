@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "descriptors.h"
 
-
+#include <assert.h>
 
 namespace gpu_vulkan
 {

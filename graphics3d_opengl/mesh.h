@@ -2,7 +2,7 @@
 
 
 #include "bred/graphics3d/mesh.h"
-#include <glm/glm.hpp>
+//#include <glm/glm.hpp>
 
 
 namespace graphics3d_opengl

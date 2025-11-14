@@ -74,7 +74,7 @@ namespace app_graphics3d_continuum
 		//camera(floating_sequence3 position, float yaw, float pitch);
 		//camera(floating_sequence3 position, floating_sequence3 to, floating_sequence3 from);
 
-		virtual void initialize_camera(floating_sequence3 position, float yaw, float pitch);
+		virtual void initialize_camera(floating_sequence3 position, float_angle yaw, float_angle pitch);
 		virtual void initialize_camera(floating_sequence3 target, floating_sequence3 camera);
 
 		void setOrthographicProjection(float left, float right, float top, float bottom, float near, float far);

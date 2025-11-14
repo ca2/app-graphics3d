@@ -11,6 +11,7 @@
  */
 
 #include "memory_buffer.h"
+#include <assert.h>
 
 
 namespace gpu_vulkan

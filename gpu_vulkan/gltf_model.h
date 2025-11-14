@@ -13,12 +13,12 @@
 #include "gpu/gltf/model_base.h"
 //#include "vk_tools/vk_init.h"
 //#include "vulkan_wrapper/vulkan_descriptor.h"
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "acme/prototype/geometry/quaternion.h"
+//#define GLM_FORCE_RADIANS
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/gtc/type_ptr.hpp>
 
 #define TINYGLTF_NO_STB_IMAGE_WRITE
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
@@ -186,7 +186,7 @@ namespace gpu_vulkan
 			int32_t skinIndex = -1;
 			floating_sequence3 translation{};
 			floating_sequence3 scale{ 1.0f };
-			glm::quat rotation{};
+			float_quaternion rotation{};
 			floating_matrix4 localMatrix();
 			floating_matrix4 getMatrix();
 			void update();
