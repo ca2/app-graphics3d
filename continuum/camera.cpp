@@ -7,8 +7,10 @@
 //#include <glm/gtc/matrix_transform.hpp>
 //#include <glm/gtc/type_ptr.hpp>
 #include "aura/platform/application.h"
+#include "bred/gpu/context.h"
 #include "bred/graphics3d/engine.h"
 #include "acme/prototype/geometry2d/angle.h"
+
 
 // std
 #include <cassert>
@@ -72,8 +74,8 @@ namespace app_graphics3d_continuum
       xoffset *= sensitivity;
       yoffset *= sensitivity;
 
-      m_fYaw += xoffset;
-      m_fPitch += yoffset;
+      m_fYaw += ::radians(xoffset);
+      m_fPitch += ::radians(yoffset);
 
       if (constrainPitch)
       {
@@ -118,16 +120,21 @@ namespace app_graphics3d_continuum
    void camera::setPerspectiveProjection(float fovy, float aspect, float fNear, float fFar)
    {
 
-      if (m_pengine->m_fYScale < 0.f)
-      {
+      auto pgpucontext = m_pengine->get_gpu_context();
+      
+      m_matrixProjection = pgpucontext->perspective(fovy, aspect, fNear, fFar);
 
-         m_matrixProjection = glm::perspectiveRH_ZO(fovy, aspect, fNear, fFar);
-      }
-      else
-      {
 
-         m_matrixProjection = glm::perspective(fovy, aspect, fNear, fFar);
-      }
+      //if (m_pengine->m_fYScale < 0.f)
+      //{
+
+         //m_matrixProjection = glm::perspectiveRH_ZO(fovy, aspect, fNear, fFar);
+      //}
+      //else
+      //{
+
+        // m_matrixProjection = glm::perspective(fovy, aspect, fNear, fFar);
+      //}
 
       /*assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
       const float tanHalfFovy = tan(fovy / 2.f);
@@ -143,9 +150,9 @@ namespace app_graphics3d_continuum
    void camera::setViewDirection(floating_sequence3 position, floating_sequence3 direction, floating_sequence3 up)
    {
 
-      const floating_sequence3 w{glm::normalize(direction)};
-      const floating_sequence3 u{glm::normalize(glm::cross(w, up))};
-      const floating_sequence3 v{glm::cross(w, u)};
+      const auto w = direction.normalized();
+      const auto u = w.crossed(up).normalized();
+      const auto v = w.crossed(u);
 
       m_matrixImpact = floating_matrix4{1.f};
       m_matrixImpact[0][0] = u.x;
@@ -157,9 +164,9 @@ namespace app_graphics3d_continuum
       m_matrixImpact[0][2] = w.x;
       m_matrixImpact[1][2] = w.y;
       m_matrixImpact[2][2] = w.z;
-      m_matrixImpact[3][0] = -glm::dot(u, position);
-      m_matrixImpact[3][1] = -glm::dot(v, position);
-      m_matrixImpact[3][2] = -glm::dot(w, position);
+      m_matrixImpact[3][0] = -u.dotted(position);
+      m_matrixImpact[3][1] = -v.dotted(position);
+      m_matrixImpact[3][2] = -w.dotted(position);
       m_matrixAntImpact = floating_matrix4{1.f};
       m_matrixAntImpact[0][0] = u.x;
       m_matrixAntImpact[0][1] = u.y;
@@ -209,11 +216,11 @@ namespace app_graphics3d_continuum
       front.x = cos(m_fPitch) * cos(m_fYaw);
       front.y = sin(m_fPitch);
       front.z = cos(m_fPitch) * sin(m_fYaw);
-      this->m_poleFront = glm::normalize(front);
+      this->m_poleFront = front.normalized();
 
       // Re-calculate the right and up vector
-      this->m_poleRight = glm::normalize(glm::cross(this->m_poleFront, m_poleWorldUp));
-      this->m_poleUp = glm::normalize(glm::cross(this->m_poleRight, this->m_poleFront));
+      this->m_poleRight = this->m_poleFront.crossed(m_poleWorldUp).normalized();
+      this->m_poleUp = this->m_poleRight.crossed(this->m_poleFront).normalized();
    }
 
 

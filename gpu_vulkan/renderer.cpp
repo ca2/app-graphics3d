@@ -29,7 +29,7 @@
 //#include "bred/user/user/graphics3d.h"
 
 //#include <array>
-//#include <cassert>
+#include <assert.h>
 //#include <stdexcept>
 //
 

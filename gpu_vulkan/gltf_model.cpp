@@ -618,7 +618,7 @@ namespace gpu_vulkan
 			if (skin) {
 				mesh->uniformBlock.matrix = m;
 				// Update join matrices
-				floating_matrix4 inverseTransform = glm::inverse(m);
+				floating_matrix4 inverseTransform = m.inversed();
 				for (size_t i = 0; i < skin->joints.size(); i++) {
 					Node* jointNode = skin->joints[i];
 					floating_matrix4 jointMat = jointNode->getMatrix() * skin->inverseBindMatrices[i];
@@ -923,14 +923,14 @@ namespace gpu_vulkan
       // Step 2: orthogonalize and compute handedness
       for (size_t i = 0; i < vertices.size(); ++i)
       {
-         const floating_sequence3 &n = vertices[i].normal;
-         const floating_sequence3 &t = tan1[i];
+         const auto &n = vertices[i].normal;
+         const auto &t = tan1[i];
 
          // Gram-Schmidt orthogonalize
-         floating_sequence3 tangent = glm::normalize(t - n * glm::dot(n, t));
+         auto tangent = (t - n * n.dotted(t)).normalized();
 
          // Determine handedness (sign)
-         float sign = (glm::dot(glm::cross(n, t), tan2[i]) < 0.0f) ? -1.0f : 1.0f;
+         float sign = (n.crossed(t).dotted(tan2[i]) < 0.0f) ? -1.0f : 1.0f;
 
          vertices[i].tangent.x = tangent.x;
          vertices[i].tangent.y = tangent.y;
@@ -957,13 +957,13 @@ namespace gpu_vulkan
 		// Generate local node matrix
 		floating_sequence3 translation = floating_sequence3(0.0f);
 		if (node.translation.size() == 3) {
-			translation = glm::make_vec3(node.translation.data());
+			translation = floating_sequence3(node.translation.data());
 			newNode->translation = translation;
 		}
 		floating_matrix4 rotation = floating_matrix4(1.0f);
 		if (node.rotation.size() == 4) {
-			glm::quat q = glm::make_quat(node.rotation.data());
-			newNode->rotation = floating_matrix4(q);
+			auto quaternion = floating_quaternion(node.rotation.data());
+         newNode->rotation = floating_matrix4(quaternion);
 		}
 		floating_sequence3 scale = floating_sequence3(1.0f);
 		if (node.scale.size() == 3) {
