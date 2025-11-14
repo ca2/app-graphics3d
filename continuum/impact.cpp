@@ -248,8 +248,8 @@ namespace app_graphics3d_continuum
          else
          {
 
-            point.x() = mathematics()->random(0, (int)(rectangleX.width() - size.cx()));
-            point.y() = mathematics()->random(0, (int)(rectangleX.height() - size.cy() * 2));
+            point.x = mathematics()->random(0, (int)(rectangleX.width() - size.cx()));
+            point.y = mathematics()->random(0, (int)(rectangleX.height() - size.cy() * 2));
 
          }
 
@@ -290,7 +290,7 @@ namespace app_graphics3d_continuum
 
             pgraphics->set_text_color(color);
 
-            pgraphics->text_out(point.x() + x, point.y() + y, strItem);
+            pgraphics->text_out(point.x + x, point.y + y, strItem);
 
             auto s = pgraphics->get_text_extent(strItem);
 
@@ -306,7 +306,7 @@ namespace app_graphics3d_continuum
 
          pgraphics->set_text_color(color);
 
-         pgraphics->text_out(point.x(), point.y() + y + size.cy(), strText);
+         pgraphics->text_out(point.x, point.y + y + size.cy(), strText);
 
          pgraphics->set_smooth_mode(::draw2d::e_smooth_mode_none);
 

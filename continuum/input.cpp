@@ -456,8 +456,8 @@ namespace app_graphics3d_continuum
    void input::_001OnMouseMove(const ::int_point& point)
    {
 
-      //m_mousestate.position.x = point.x();
-//m_mousestate.position.y = point.y();
+      //m_mousestate.position.x = point.x;
+//m_mousestate.position.y = point.y;
 //m_mousestate.m_buttons.left = true;
 //         pmouse->m_p
 
@@ -479,18 +479,18 @@ namespace app_graphics3d_continuum
       if (m_b_001AbsoluteMousePosition)
       {
 
-         xCursor = ((point.x() - (w / 2.0)) * 2.0);
-         yCursor = ((point.y() - (h / 2.0)) * 2.0);
+         xCursor = ((point.x - (w / 2.0)) * 2.0);
+         yCursor = ((point.y - (h / 2.0)) * 2.0);
 
       }
       else
       {
 
-         //xCursor = point.x();
-         //yCursor = point.y();
+         //xCursor = point.x;
+         //yCursor = point.y;
 
-         xCursor = point.x();
-         yCursor = point.y();
+         xCursor = point.x;
+         yCursor = point.y;
 
       }
 

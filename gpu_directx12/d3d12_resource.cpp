@@ -75,13 +75,13 @@ namespace gpu_directx12
 
       // graphics::RectangleVertex quadVertices[] = {
       //    // Triangle 1
-      //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Red
-      //    {{(float)points[1].x(), (float)points[1].y(), g_z}, {fR, fG, fB, fA}}, // Green
-      //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+      //    {{(float)points[0].x, (float)points[0].y, g_z}, {fR, fG, fB, fA}}, // Red
+      //    {{(float)points[1].x, (float)points[1].y, g_z}, {fR, fG, fB, fA}}, // Green
+      //    {{(float)points[2].x, (float)points[2].y, g_z}, {fR, fG, fB, fA}}, // Blue
       //    // Triangle 2
-      //    {{(float)points[0].x(), (float)points[0].y(), g_z}, {fR, fG, fB, fA}}, // Green
-      //    {{(float)points[2].x(), (float)points[2].y(), g_z}, {fR, fG, fB, fA}}, // Yellow
-      //    {{(float)points[3].x(), (float)points[3].y(), g_z}, {fR, fG, fB, fA}}, // Blue
+      //    {{(float)points[0].x, (float)points[0].y, g_z}, {fR, fG, fB, fA}}, // Green
+      //    {{(float)points[2].x, (float)points[2].y, g_z}, {fR, fG, fB, fA}}, // Yellow
+      //    {{(float)points[3].x, (float)points[3].y, g_z}, {fR, fG, fB, fA}}, // Blue
       // };
 
       //const UINT bufferSize = sizeof(ImageBlendVertex) * vertexCount;

@@ -137,8 +137,8 @@ namespace draw2d_vkvg
    //   //      try
    //   //      {
    //   //         ((brush *) this)->m_pbrush = øallocate< plusplus::LinearGradientBrush >(
-   //   //            plusplus::PointF((plusplus::REAL) m_point1.x(),(plusplus::REAL) m_point1.y()),
-   //   //            plusplus::PointF((plusplus::REAL) m_point2.x(),(plusplus::REAL) m_point2.y()),
+   //   //            plusplus::PointF((plusplus::REAL) m_point1.x,(plusplus::REAL) m_point1.y),
+   //   //            plusplus::PointF((plusplus::REAL) m_point2.x,(plusplus::REAL) m_point2.y),
    //   //            plusplus::Color(color32_byte_opacity(m_color1), color32_byte_red(m_color1), color32_byte_green(m_color1), color32_byte_blue(m_color1)),
    //   //            plusplus::Color(color32_byte_opacity(m_color2), color32_byte_red(m_color2), color32_byte_green(m_color2), color32_byte_blue(m_color2)));
    //   //      }
@@ -152,7 +152,7 @@ namespace draw2d_vkvg
    //   //      {
 
    //   //         plusplus::GraphicsPath * gp = ___new plusplus::GraphicsPath ();
-   //   //         gp->AddEllipse((plusplus::REAL) (m_point.x() - m_size.cx() / 2),(plusplus::REAL)(m_point.y() - m_size.cy() / 2),(plusplus::REAL) (m_size.cx()),(plusplus::REAL) (m_size.cy()));
+   //   //         gp->AddEllipse((plusplus::REAL) (m_point.x - m_size.cx() / 2),(plusplus::REAL)(m_point.y - m_size.cy() / 2),(plusplus::REAL) (m_size.cx()),(plusplus::REAL) (m_size.cy()));
 
    //   //         plusplus::PathGradientBrush * pgb = ___new plusplus::PathGradientBrush (gp);
 
@@ -161,7 +161,7 @@ namespace draw2d_vkvg
 
    //   //            int c = 1;
 
-   //   //            pgb->SetCenterPoint(plusplus::PointF((plusplus::REAL) m_point.x(),(plusplus::REAL) m_point.y()));
+   //   //            pgb->SetCenterPoint(plusplus::PointF((plusplus::REAL) m_point.x,(plusplus::REAL) m_point.y));
    //   //         pgb->SetCenterColor(c1);
    //   //         pgb->SetSurroundColors(&c2,&c);
 

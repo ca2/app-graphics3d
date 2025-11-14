@@ -494,7 +494,7 @@ namespace graphics3d_vulkan
                //       continue;
 
 
-               //::cast<::gpu_vulkan::texture> ptextureAlbedo = pgltfmodel->b;
+               //::cast<::gpu_vulkan::texture> ptextureAlbedo = pgltfmodel->y;
                //::cast<::gpu_vulkan::texture> ptextureNormal = passetmanager->getTexture("cerberus_normal");
                //::cast<::gpu_vulkan::texture> ptextureMetallic = passetmanager->getTexture("cerberus_metallic");
                //::cast<::gpu_vulkan::texture> ptextureRoughness = passetmanager->getTexture("cerberus_roughness");

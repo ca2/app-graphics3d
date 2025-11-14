@@ -242,7 +242,9 @@ void main() {
     vec3 irradiance = texture(diffuseIrradianceMap, n).rgb;
     vec3 diffuseIBL = irradiance * albedo;
 
-    vec3 prefilteredEnvMapColor = textureLod(prefilteredEnvMap, r, roughness * 4.0).rgb; // PREFILTERED_ENV_MAP_LOD = 4.0
+    //vec3 r_fixed = vec3(r.x, r.y, -r.z);
+    vec3 r_fixed = r;
+    vec3 prefilteredEnvMapColor = textureLod(prefilteredEnvMap, r_fixed, roughness * 4.0).rgb; // PREFILTERED_ENV_MAP_LOD = 4.0
     float NdotV = max(dot(n, v), 0.0);
     vec2 brdf = texture(brdfConvolutionMap, vec2(NdotV, roughness)).rg;
     vec3 specularIBL = prefilteredEnvMapColor * (kSpecular * brdf.x + brdf.y);

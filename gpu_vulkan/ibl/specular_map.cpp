@@ -119,7 +119,7 @@ namespace gpu_vulkan
          auto tStart = std::chrono::high_resolution_clock::now();
 
          const VkFormat format = VK_FORMAT_R16G16B16A16_SFLOAT;
-         const int32_t dim = 512;
+         const int32_t dim = m_uPrefilteredEnvMapWidth;
          const uint32_t numMips = static_cast<uint32_t>(floor(log2(dim))) + 1;
 
          // Pre-filtered cube map

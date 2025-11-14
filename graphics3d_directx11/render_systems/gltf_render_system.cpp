@@ -607,7 +607,7 @@ namespace graphics3d_directx11
       //         //       continue;
 
 
-      //         //::cast<::gpu_directx11::texture> ptextureAlbedo = pgltfmodel->b;
+      //         //::cast<::gpu_directx11::texture> ptextureAlbedo = pgltfmodel->y;
       //         //::cast<::gpu_directx11::texture> ptextureNormal = passetmanager->getTexture("cerberus_normal");
       //         //::cast<::gpu_directx11::texture> ptextureMetallic = passetmanager->getTexture("cerberus_metallic");
       //         //::cast<::gpu_directx11::texture> ptextureRoughness = passetmanager->getTexture("cerberus_roughness");

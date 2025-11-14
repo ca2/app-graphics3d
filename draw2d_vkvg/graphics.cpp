@@ -648,7 +648,7 @@ namespace draw2d_vkvg
    int_point graphics::SetBrushOrg(const ::int_point& point)
    {
       // ASSERT(m_hdc != nullptr);
-      //VERIFY(::SetBrushOrgEx(m_hdc, point.x(), point.y(), &point));
+      //VERIFY(::SetBrushOrgEx(m_hdc, point.x, point.y, &point));
       return point;
    }
 
@@ -861,7 +861,7 @@ namespace draw2d_vkvg
    //int_point graphics::set_origin(const ::int_point& point)
    //{
 
-   //   return set_origin(point.x(), point.y());
+   //   return set_origin(point.x, point.y);
 
    //}
 
@@ -872,7 +872,7 @@ namespace draw2d_vkvg
 
    int_point graphics::SetWindowOrg(const ::int_point& point)
    {
-      return SetWindowOrg(point.x(), point.y());
+      return SetWindowOrg(point.x, point.y);
    }
 
    int_size graphics::set_window_ext(const ::int_size& size)
@@ -956,7 +956,7 @@ namespace draw2d_vkvg
    {
 
       // ASSERT(m_hdc != nullptr);   // call virtual
-      return PtVisible(point.x(), point.y());
+      return PtVisible(point.x, point.y);
 
    }
 
@@ -1002,8 +1002,8 @@ namespace draw2d_vkvg
 
       //   for(double i = 0; i < nCount; i++)
       //   {
-      //      ppoints[i].X = lpPoints[i].x();
-      //      ppoints[i].Y = lpPoints[i].y();
+      //      ppoints[i].X = lpPoints[i].x;
+      //      ppoints[i].Y = lpPoints[i].y;
       //   }
 
       //   bOk1 = m_pgraphics->DrawLines(vk2d_pen(),ppoints,(::double) nCount) == plusplus::Status::Ok;
@@ -1171,8 +1171,8 @@ namespace draw2d_vkvg
       if (pbrush->m_ebrush == ::draw2d::e_brush_radial_gradient_color)
       {
 
-         VkvgPattern ppattern = vkvg_pattern_create_radial(pbrush->m_point.x() - x, pbrush->m_point.y() - y, 0,
-            pbrush->m_point.x() - x, pbrush->m_point.y() - y,
+         VkvgPattern ppattern = vkvg_pattern_create_radial(pbrush->m_point.x - x, pbrush->m_point.y - y, 0,
+            pbrush->m_point.x - x, pbrush->m_point.y - y,
             maximum(pbrush->m_size.cx(), pbrush->m_size.cy()));
 
          vkvg_pattern_add_color_stop(ppattern, 0., __expand_float_rgba(pbrush->m_color1));
@@ -1187,13 +1187,13 @@ namespace draw2d_vkvg
       else if (pbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
       {
 
-         double x0 = pbrush->m_point1.x() - x;
+         double x0 = pbrush->m_point1.x - x;
 
-         double y0 = pbrush->m_point1.y() - y;
+         double y0 = pbrush->m_point1.y - y;
 
-         double x1 = pbrush->m_point2.x() - x;
+         double x1 = pbrush->m_point2.x - x;
 
-         double y1 = pbrush->m_point2.y() - y;
+         double y1 = pbrush->m_point2.y - y;
 
          VkvgPattern ppattern = vkvg_pattern_create_linear(x0, y0, x1, y1);
 
@@ -1584,7 +1584,7 @@ namespace draw2d_vkvg
    //   if(picon == nullptr)
    //      return false;
 
-   //   //return ::DrawIcon(m_hdc, point.x(), point.y(), (HICON) picon->m_picon) != false;
+   //   //return ::DrawIcon(m_hdc, point.x, point.y, (HICON) picon->m_picon) != false;
 
    //   return false;
 
@@ -1729,7 +1729,7 @@ namespace draw2d_vkvg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hBitmap, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
+//      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hBitmap, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
 //      return false;
 //
 //   }
@@ -1738,7 +1738,7 @@ namespace draw2d_vkvg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)pBitmap->get_os_data(), 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
+//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)pBitmap->get_os_data(), 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
 //
 //      return false;
 //
@@ -1748,7 +1748,7 @@ namespace draw2d_vkvg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hIcon, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_ICON) != false;
+//      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hIcon, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_ICON) != false;
 //
 //      return false;
 //
@@ -1759,7 +1759,7 @@ namespace draw2d_vkvg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)hIcon, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_ICON) != false;
+//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)hIcon, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_ICON) != false;
 //      return false;
 //
 //   }
@@ -1769,7 +1769,7 @@ namespace draw2d_vkvg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, hBrush,  nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x(), point.y(), size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
+//      //return ::DrawState(m_hdc, hBrush,  nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x, point.y, size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
 //      return false;
 //
 //   }
@@ -1779,7 +1779,7 @@ namespace draw2d_vkvg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x(), point.y(), size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
+//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x, point.y, size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
 //      return false;
 //
 //   }
@@ -1789,7 +1789,7 @@ namespace draw2d_vkvg
 //   {
 //      // ASSERT(m_hdc != nullptr);
 //      //return ::DrawState(m_hdc, hBrush,
-//          //               lpDrawProc, lData, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
+//          //               lpDrawProc, lData, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
 //      return false;
 //
 //   }
@@ -1799,7 +1799,7 @@ namespace draw2d_vkvg
 //   {
 //      // ASSERT(m_hdc != nullptr);
 //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(),
-//        //                 lpDrawProc, lData, 0, point.x(), point.y(), size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
+//        //                 lpDrawProc, lData, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
 //      return false;
 //
 //   }
@@ -1838,8 +1838,8 @@ namespace draw2d_vkvg
 
       // ASSERT(m_hdc != nullptr);
       //return ::Chord(m_hdc,rectangleParam.left(),rectangleParam.top(),
-      //               rectangleParam.right(),rectangleParam.bottom(),ptStart.x(),ptStart.y(),
-      //               ptEnd.x(), ptEnd.y()) != false;
+      //               rectangleParam.right(),rectangleParam.bottom(),ptStart.x,ptStart.y,
+      //               ptEnd.x, ptEnd.y) != false;
 
       return false;
 
@@ -2158,8 +2158,8 @@ namespace draw2d_vkvg
 
    //   // ASSERT(m_hdc != nullptr);
    //   //return ::Pie(m_hdc, rectangleParam.left(), rectangleParam.top(),
-   //   //             rectangleParam.right(), rectangleParam.bottom(), ptStart.x(), ptStart.y(),
-   //   //             ptEnd.x(), ptEnd.y()) != false;
+   //   //             rectangleParam.right(), rectangleParam.bottom(), ptStart.x, ptStart.y,
+   //   //             ptEnd.x, ptEnd.y) != false;
 
    //   return false;
 
@@ -2181,8 +2181,8 @@ namespace draw2d_vkvg
 
       //      for(double i = 0; i < nCount; i++)
       //      {
-      //         ppoints[i].X = (plusplus::REAL) lpPoints[i].x();
-      //         ppoints[i].Y = (plusplus::REAL) lpPoints[i].y();
+      //         ppoints[i].X = (plusplus::REAL) lpPoints[i].x;
+      //         ppoints[i].Y = (plusplus::REAL) lpPoints[i].y;
       //      }
 
       //      m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
@@ -2228,8 +2228,8 @@ namespace draw2d_vkvg
 
    //   //      for(double i = 0; i < nCount; i++)
    //   //      {
-   //   //         ppoints[i].X = lpPoints[i].x();
-   //   //         ppoints[i].Y = lpPoints[i].y();
+   //   //         ppoints[i].X = lpPoints[i].x;
+   //   //         ppoints[i].Y = lpPoints[i].y;
    //   //      }
 
    //   //      m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
@@ -2272,8 +2272,8 @@ namespace draw2d_vkvg
 
       //   for (double i = 0; i < nCount; i++)
       //   {
-      //      ppoints[i].X = lpPoints[i].x();
-      //      ppoints[i].Y = lpPoints[i].y();
+      //      ppoints[i].X = lpPoints[i].x;
+      //      ppoints[i].Y = lpPoints[i].y;
       //   }
 
       //   m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
@@ -2317,8 +2317,8 @@ namespace draw2d_vkvg
 
    //   //   for(double i = 0; i < nCount; i++)
    //   //   {
-   //   //      ppoints[i].X = (plusplus::REAL) lpPoints[i].x();
-   //   //      ppoints[i].Y = (plusplus::REAL) lpPoints[i].y();
+   //   //      ppoints[i].X = (plusplus::REAL) lpPoints[i].x;
+   //   //      ppoints[i].Y = (plusplus::REAL) lpPoints[i].y;
    //   //   }
 
    //   //   m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
@@ -2363,8 +2363,8 @@ namespace draw2d_vkvg
 
       //   for(double i = 0; i < nCount; i++)
       //   {
-      //      ppoints[i].X = lpPoints[i].x();
-      //      ppoints[i].Y = lpPoints[i].y();
+      //      ppoints[i].X = lpPoints[i].x;
+      //      ppoints[i].Y = lpPoints[i].y;
       //   }
 
 
@@ -2443,8 +2443,8 @@ namespace draw2d_vkvg
 
    //   //   for(double i = 0; i < nCount; i++)
    //   //   {
-   //   //      ppoints[i].X = (plusplus::REAL) lpPoints[i].x();
-   //   //      ppoints[i].Y = (plusplus::REAL) lpPoints[i].y();
+   //   //      ppoints[i].X = (plusplus::REAL) lpPoints[i].x;
+   //   //      ppoints[i].Y = (plusplus::REAL) lpPoints[i].y;
    //   //   }
 
    //   //   m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
@@ -2563,7 +2563,7 @@ namespace draw2d_vkvg
    {
       //// ASSERT(m_hdc != nullptr);
       //return ::RoundRect(m_hdc, rectangleParam.left(), rectangleParam.top(),
-        //                 rectangleParam.right(), rectangleParam.bottom(), point.x(), point.y()) != false;
+        //                 rectangleParam.right(), rectangleParam.bottom(), point.x, point.y) != false;
 
       //return false;
 
@@ -2616,7 +2616,7 @@ namespace draw2d_vkvg
    ////
    ////         return m_pgraphics->DrawImage(
    ////                   (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data(),
-   ////                   x, y, xSrc + pgraphicsSrc->get_origin().x(), ySrc + pgraphicsSrc->get_origin().y(), nWidth, nHeight, plusplus::UnitPixel) == plusplus::Status::Ok;
+   ////                   x, y, xSrc + pgraphicsSrc->get_origin().x, ySrc + pgraphicsSrc->get_origin().y, nWidth, nHeight, plusplus::UnitPixel) == plusplus::Status::Ok;
    ////
    //      }
    //      catch(...)
@@ -2700,7 +2700,7 @@ namespace draw2d_vkvg
    ::color::color graphics::GetPixel(const ::int_point& point) const
    {
       // ASSERT(m_hdc != nullptr);
-      //return ::GetPixel(m_hdc, point.x(), point.y());
+      //return ::GetPixel(m_hdc, point.x, point.y);
       return color::transparent;
 
    }
@@ -2717,7 +2717,7 @@ namespace draw2d_vkvg
    ::color::color graphics::SetPixel(const ::int_point& point, ::color::color crColor)
    {
 
-      //fill_solid_rect_coord(point.x(),point.y(),1,1,crColor);
+      //fill_solid_rect_coord(point.x,point.y,1,1,crColor);
 
       return crColor;
 
@@ -3208,12 +3208,12 @@ namespace draw2d_vkvg
    //
    //         plusplus::Point p[3];
    //
-   //         p[0].X = lpPoint[0].x();
-   //         p[0].Y = lpPoint[0].y();
-   //         p[1].X = lpPoint[1].x();
-   //         p[1].Y = lpPoint[1].y();
-   //         p[2].X = lpPoint[2].x();
-   //         p[2].Y = lpPoint[2].y();
+   //         p[0].X = lpPoint[0].x;
+   //         p[0].Y = lpPoint[0].y;
+   //         p[1].X = lpPoint[1].x;
+   //         p[1].Y = lpPoint[1].y;
+   //         p[2].X = lpPoint[2].x;
+   //         p[2].Y = lpPoint[2].y;
    //
    //         return m_pgraphics->DrawImage((plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data(), p, 3) == plusplus::Status::Ok;
    //
@@ -3241,7 +3241,7 @@ namespace draw2d_vkvg
    void graphics::SetPixelV(const ::int_point& point, ::color::color crColor)
    {
       // ASSERT(m_hdc != nullptr);
-      //return ::SetPixelV(m_hdc, point.x(), point.y(), crColor) != false;
+      //return ::SetPixelV(m_hdc, point.x, point.y, crColor) != false;
       //return 0;
 
    }
@@ -3261,7 +3261,7 @@ namespace draw2d_vkvg
    {
       // ASSERT(m_hdc != nullptr);
       //return ArcTo(rectangleParam.left(), rectangleParam.top(), rectangleParam.right(),
-        //           rectangleParam.bottom(), ptStart.x(), ptStart.y(), ptEnd.x(), ptEnd.y());
+        //           rectangleParam.bottom(), ptStart.x, ptStart.y, ptEnd.x, ptEnd.y);
 
       //return false;
 
@@ -3797,7 +3797,7 @@ namespace draw2d_vkvg
 
       vkvg_keep keep(m_pdc);
 
-      vkvg_translate(m_pdc, arc.center().x(), arc.center().y());
+      vkvg_translate(m_pdc, arc.center().x, arc.center().y);
 
       vkvg_scale(m_pdc, 1.0, arc.radius().cy() / arc.radius().cx());
 
@@ -3833,16 +3833,16 @@ namespace draw2d_vkvg
    //
    //      vkvg_get_current_point (m_pdc, &x, &y);
    //
-   //      if(x != line.m_p1.x() || y != line.m_p1.y())
+   //      if(x != line.m_p1.x || y != line.m_p1.y)
    //      {
    //
-   //         vkvg_move_to(m_pdc, line.m_p1.x(), line.m_p1.y());
+   //         vkvg_move_to(m_pdc, line.m_p1.x, line.m_p1.y);
    //
    //      }
    //      else
    //      {
    //
-   //         vkvg_line_to(m_pdc, line.m_p1.x(), line.m_p1.y());
+   //         vkvg_line_to(m_pdc, line.m_p1.x, line.m_p1.y);
    //
    //      }
    //
@@ -3850,11 +3850,11 @@ namespace draw2d_vkvg
    //    else
    //    {
    //
-   //      vkvg_move_to(m_pdc, line.m_p1.x(), line.m_p1.y());
+   //      vkvg_move_to(m_pdc, line.m_p1.x, line.m_p1.y);
    //
    //    }
    //
-   //    vkvg_line_to(m_pdc, line.m_p2.x(), line.m_p2.y());
+   //    vkvg_line_to(m_pdc, line.m_p2.x, line.m_p2.y);
    //
    //    return true;
    //
@@ -3875,10 +3875,10 @@ namespace draw2d_vkvg
 
          vkvg_get_current_point(m_pdc, &x, &y);
 
-         if (is_different(x, line.m_p1.x(), 0.0001) || is_different(y, line.m_p1.y(), 0.0001))
+         if (is_different(x, line.m_p1.x, 0.0001) || is_different(y, line.m_p1.y, 0.0001))
          {
 
-            vkvg_line_to(m_pdc, line.m_p1.x(), line.m_p1.y());
+            vkvg_line_to(m_pdc, line.m_p1.x, line.m_p1.y);
 
          }
 
@@ -3886,11 +3886,11 @@ namespace draw2d_vkvg
       else
       {
 
-         vkvg_move_to(m_pdc, line.m_p1.x(), line.m_p1.y());
+         vkvg_move_to(m_pdc, line.m_p1.x, line.m_p1.y);
 
       }
 
-      vkvg_line_to(m_pdc, line.m_p2.x(), line.m_p2.y());
+      vkvg_line_to(m_pdc, line.m_p2.x, line.m_p2.y);
 
       return true;
 
@@ -3918,16 +3918,16 @@ namespace draw2d_vkvg
 
          vkvg_get_current_point(m_pdc, &x, &y);
 
-         if (x != pointa[0].x() || y != pointa[0].y())
+         if (x != pointa[0].x || y != pointa[0].y)
          {
 
-            vkvg_move_to(m_pdc, pointa[0].x(), pointa[0].y());
+            vkvg_move_to(m_pdc, pointa[0].x, pointa[0].y);
 
          }
          else
          {
 
-            vkvg_line_to(m_pdc, pointa[0].x(), pointa[0].y());
+            vkvg_line_to(m_pdc, pointa[0].x, pointa[0].y);
 
          }
 
@@ -3935,14 +3935,14 @@ namespace draw2d_vkvg
       else
       {
 
-         vkvg_move_to(m_pdc, pointa[0].x(), pointa[0].y());
+         vkvg_move_to(m_pdc, pointa[0].x, pointa[0].y);
 
       }
 
       for (::collection::index i = 1; i < pointa.get_count(); i++)
       {
 
-         vkvg_line_to(m_pdc, pointa[i].x(), pointa[i].y());
+         vkvg_line_to(m_pdc, pointa[i].x, pointa[i].y);
 
       }
 
@@ -3972,16 +3972,16 @@ namespace draw2d_vkvg
 
          vkvg_get_current_point(m_pdc, &x, &y);
 
-         if (x != pointa[0].x() || y != pointa[0].y())
+         if (x != pointa[0].x || y != pointa[0].y)
          {
 
-            vkvg_move_to(m_pdc, pointa[0].x(), pointa[0].y());
+            vkvg_move_to(m_pdc, pointa[0].x, pointa[0].y);
 
          }
          else
          {
 
-            vkvg_line_to(m_pdc, pointa[0].x(), pointa[0].y());
+            vkvg_line_to(m_pdc, pointa[0].x, pointa[0].y);
 
          }
 
@@ -3989,14 +3989,14 @@ namespace draw2d_vkvg
       else
       {
 
-         vkvg_move_to(m_pdc, pointa[0].x(), pointa[0].y());
+         vkvg_move_to(m_pdc, pointa[0].x, pointa[0].y);
 
       }
 
       for (::collection::index i = 1; i < pointa.get_count(); i++)
       {
 
-         vkvg_line_to(m_pdc, pointa[i].x(), pointa[i].y());
+         vkvg_line_to(m_pdc, pointa[i].x, pointa[i].y);
 
       }
 
@@ -4673,8 +4673,8 @@ namespace draw2d_vkvg
 ////
 ////         imageWork4.Fill(255, 0, 0, 0);
 ////
-////         imageWork4.from(int_point(maximum(0, m_pointAlphaBlend.x() - xDest), maximum(0, m_pointAlphaBlend.y() - yDest)),
-////                         m_pimageAlphaBlend->get_graphics(), int_point(maximum(0, xDest - m_pointAlphaBlend.x()), maximum(0, yDest - m_pointAlphaBlend.y())), size);
+////         imageWork4.from(int_point(maximum(0, m_pointAlphaBlend.x - xDest), maximum(0, m_pointAlphaBlend.y - yDest)),
+////                         m_pimageAlphaBlend->get_graphics(), int_point(maximum(0, xDest - m_pointAlphaBlend.x), maximum(0, yDest - m_pointAlphaBlend.y)), size);
 ////
 ////         imageWork.channel_multiply(::color::e_channel_opacity, imageWork4);
 ////
@@ -4682,7 +4682,7 @@ namespace draw2d_vkvg
 ////         keep < image > keep(&m_pimageAlphaBlend, nullptr, m_pimageAlphaBlend, true);
 ////
 ////
-////         return BitBlt(ptDest.x(), ptDest.y(), size.cx(), size.cy(), imageWork.get_graphics(), pointSrc.x(), pointSrc.y());
+////         return BitBlt(ptDest.x, ptDest.y, size.cx(), size.cy(), imageWork.get_graphics(), pointSrc.x, pointSrc.y);
 ////
 ////
 ////      }
@@ -4800,8 +4800,8 @@ namespace draw2d_vkvg
 
          imageWork4.Fill(255, 0, 0, 0);
 
-         imageWork4.from(int_point(maximum(0, m_pointAlphaBlend.x() - xDest), maximum(0, m_pointAlphaBlend.y() - yDest)),
-            m_pimageAlphaBlend->get_graphics(), int_point(maximum(0, xDest - m_pointAlphaBlend.x()), maximum(0, yDest - m_pointAlphaBlend.y())), size);
+         imageWork4.from(int_point(maximum(0, m_pointAlphaBlend.x - xDest), maximum(0, m_pointAlphaBlend.y - yDest)),
+            m_pimageAlphaBlend->get_graphics(), int_point(maximum(0, xDest - m_pointAlphaBlend.x), maximum(0, yDest - m_pointAlphaBlend.y)), size);
 
          imageWork.channel_multiply(::color::e_channel_opacity, imageWork4);
 
@@ -6274,7 +6274,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //{
       //   ::int_point point;
       //   VERIFY(::GetCurrentPositionEx(m_hdc, &point));
-      //   VERIFY(::MoveToEx(m_hdc, point.x(), point.y(), nullptr));
+      //   VERIFY(::MoveToEx(m_hdc, point.x, point.y, nullptr));
       //}
       //return bResult;
    }
@@ -6303,7 +6303,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   //{
    //   //   ::int_point point;
    //   //   VERIFY(::GetCurrentPositionEx(m_hdc, &point));
-   //   //   VERIFY(::MoveToEx(m_hdc, point.x(), point.y(), nullptr));
+   //   //   VERIFY(::MoveToEx(m_hdc, point.x, point.y, nullptr));
    //   //}
    //   return bResult;
    //}
@@ -6317,7 +6317,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //{
       //   ::int_point point;
       //   VERIFY(::GetCurrentPositionEx(m_hdc, &point));
-      //   VERIFY(::MoveToEx(m_hdc, point.x(), point.y(), nullptr));
+      //   VERIFY(::MoveToEx(m_hdc, point.x, point.y, nullptr));
       //}
       //return bResult;
    }
@@ -6343,7 +6343,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //{
       //   ::int_point point;
       //   VERIFY(::GetCurrentPositionEx(m_hdc, &point));
-      //   VERIFY(::MoveToEx(m_hdc, point.x(), point.y(), nullptr));
+      //   VERIFY(::MoveToEx(m_hdc, point.x, point.y, nullptr));
       //}
       //return bResult;
    }
@@ -7007,7 +7007,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //      //       texture,
 //      //       vkm::ivec2(face->vkyph->bitmap.width, face->vkyph->bitmap.rows),
 //      //       vkm::ivec2(face->vkyph->bitmap_left, face->vkyph->bitmap_top),
-//      //       face->vkyph->advance.x()
+//      //       face->vkyph->advance.x
 //      //   };
 //      //   Characters.insert(std::pair<VKchar, Character>(c, character));
 //      //}
@@ -7116,7 +7116,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::draw_line(const int_point& point1, const int_point& point2, ::draw2d::pen* ppen)
    {
 
-      ::vulkan::line(point1.x(), point1.y(), point2.x(), point2.y(), (float)(ppen->m_dWidth),
+      ::vulkan::line(point1.x, point1.y, point2.x, point2.y, (float)(ppen->m_dWidth),
          ppen->m_color.f32_red(), ppen->m_color.f32_green(),
          ppen->m_color.f32_blue(),
          ppen->m_color.f32_opacity(), 0.f, 0.f, true);
@@ -7127,13 +7127,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::vulkan::color(ppen->m_color);
 
-      vkVertex2f(point1.x(), point1.y());
-      vkVertex2f(point2.x(), point2.y());
+      vkVertex2f(point1.x, point1.y);
+      vkVertex2f(point2.x, point2.y);
 
       vkEnd();*/
 
-      m_point.x() = point2.x();
-      m_point.y() = point2.y();
+      m_point.x = point2.x;
+      m_point.y = point2.y;
 
       //return true;
 
@@ -7159,7 +7159,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      //vkVertex2f((float)(m_point.x()), (float)(m_point.y()));
+      //vkVertex2f((float)(m_point.x), (float)(m_point.y));
       //vkVertex2f((float)(x), (float)(y));
 
       //vkEnd();
@@ -7172,9 +7172,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       draw();
 
-      m_point.x() = x2;
+      m_point.x = x2;
 
-      m_point.y() = y2;
+      m_point.y = y2;
 
       //return true;
 

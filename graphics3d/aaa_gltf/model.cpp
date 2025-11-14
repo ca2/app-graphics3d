@@ -214,8 +214,8 @@ namespace gpu
             {
                color.x = mesh->mColors[0]->r;
                color.y = mesh->mColors[0]->g;
-               color.z = mesh->mColors[0]->b;
-               color.w = mesh->mColors[0]->a;
+               color.z = mesh->mColors[0]->y;
+               color.w = mesh->mColors[0]->x;
             }
             else
             {

@@ -26,8 +26,8 @@ namespace graphics3d_hello3d
    impact::impact()
    {
 
-      m_pointLastMouse.x() = -100'000.0;
-      m_pointLastMouse.y() = -100'000.0;
+      m_pointLastMouse.x = -100'000.0;
+      m_pointLastMouse.y = -100'000.0;
 
       m_iView = -1;
 
@@ -243,14 +243,14 @@ namespace graphics3d_hello3d
    //   // Camera matrix
    //   // 
    //   
-   //   //auto loc = ::glm::vec3(m_location.x(), m_location.y(), m_location.z);
-   //   auto campos = ::glm::vec3(camera_position().x(), camera_position().y(), camera_position().z());
+   //   //auto loc = ::glm::vec3(m_location.x, m_location.y, m_location.z);
+   //   auto campos = ::glm::vec3(camera_position().x, camera_position().y, camera_position().z());
    //   //sauto locdir = loc + 2;
-   //   auto r = ::glm::vec3(right().x(), right().y(), right().z());
+   //   auto r = ::glm::vec3(right().x, right().y, right().z());
    //   auto up = ::glm::cross(campos, r);
    //   auto matrixImpact = ::glm::lookAt(
    //      campos, // Camera is here
-   //      //::glm::vec3(m_location.x(), m_location.y(), m_location.z),           // Camera is here
+   //      //::glm::vec3(m_location.x, m_location.y, m_location.z),           // Camera is here
    //      ::glm::vec3(0.f, 0.f, 0.f),          // and looks here : at the same position, plus "direction"
    //      up
    //      //::glm::vec3(0.f, 1.f, 0.f)// Head is up (set to 0,-1,0 to look upside-down)
@@ -332,7 +332,7 @@ namespace graphics3d_hello3d
 
          auto size = this->get_size();
 
-         bool bOk = m_pointLastMouse.x() > -10'000.0 && m_pointLastMouse.y() > -10'000.0;
+         bool bOk = m_pointLastMouse.x > -10'000.0 && m_pointLastMouse.y > -10'000.0;
 
          m_sizeMouseDelta = double_point(pmouse->m_pointHost) - m_pointLastMouse;
 

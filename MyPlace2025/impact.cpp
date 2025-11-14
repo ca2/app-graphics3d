@@ -137,8 +137,8 @@ namespace app_graphics3d_MyPlace2025
 
    //      host_to_client()(point);
 
-   //      //m_mousestate.position.x = point.x();
-   //      //m_mousestate.position.y = point.y();
+   //      //m_mousestate.position.x = point.x;
+   //      //m_mousestate.position.y = point.y;
    //      //m_mousestate.buttons.left = true;
    //      //         pmouse->m_p
 
@@ -154,14 +154,14 @@ namespace app_graphics3d_MyPlace2025
 
    //      if (is_absolute_mouse_position())
    //      {
-   //         m_dCursorX = ((point.x() - (w / 2.0)) * 2.0);
-   //         m_dCursorY = ((point.y() - (h / 2.0)) * 2.0);
+   //         m_dCursorX = ((point.x - (w / 2.0)) * 2.0);
+   //         m_dCursorY = ((point.y - (h / 2.0)) * 2.0);
    //      }
    //      else
    //      {
 
-   //         m_dCursorX = point.x();
-   //         m_dCursorY = point.y();
+   //         m_dCursorX = point.x;
+   //         m_dCursorY = point.y;
 
    //      }
 
@@ -339,8 +339,8 @@ namespace app_graphics3d_MyPlace2025
       else
       {
        
-         point.x() = mathematics()->random(0, (int)(rectangleX.width() - size.cx()));
-         point.y() = mathematics()->random(0, (int)(rectangleX.height() - size.cy() * 2));
+         point.x = mathematics()->random(0, (int)(rectangleX.width() - size.cx()));
+         point.y = mathematics()->random(0, (int)(rectangleX.height() - size.cy() * 2));
 
       }
 
@@ -381,7 +381,7 @@ namespace app_graphics3d_MyPlace2025
 
          pgraphics->set_text_color(color);
 
-         pgraphics->text_out(point.x() + x, point.y() + y, strItem);
+         pgraphics->text_out(point.x + x, point.y + y, strItem);
          
          auto s = pgraphics->get_text_extent(strItem);
 
@@ -397,7 +397,7 @@ namespace app_graphics3d_MyPlace2025
 
       pgraphics->set_text_color(color);
 
-      pgraphics->text_out(point.x(), point.y() + y + size.cy(), strText);
+      pgraphics->text_out(point.x, point.y + y + size.cy(), strText);
 
       pgraphics->set_smooth_mode(::draw2d::e_smooth_mode_none);
       //::user::impact::_001OnDraw(pgraphics);

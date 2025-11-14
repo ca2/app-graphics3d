@@ -83,7 +83,7 @@ namespace draw2d_vkvg
 //      LOGPEN lp;
 //      VERIFY(GetObject(sizeof(lp), &lp));
 //      dumpcontext << "lgpn.lopnStyle = " << lp.lopnStyle;
-//      dumpcontext << "\nlgpn.lopnWidth.x() (width) = " << lp.lopnWidth.x();
+//      dumpcontext << "\nlgpn.lopnWidth.x (width) = " << lp.lopnWidth.x;
 //      dumpcontext << "\nlgpn.lopnColor = " << (void *)(uptr)lp.lopnColor;
 //
 //      dumpcontext << "\n";*/

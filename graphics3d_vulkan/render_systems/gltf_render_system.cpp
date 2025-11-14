@@ -606,7 +606,7 @@ namespace graphics3d_vulkan
                //       continue;
 
 
-               //::cast<::gpu_vulkan::texture> ptextureAlbedo = pgltfmodel->b;
+               //::cast<::gpu_vulkan::texture> ptextureAlbedo = pgltfmodel->y;
                //::cast<::gpu_vulkan::texture> ptextureNormal = passetmanager->getTexture("cerberus_normal");
                //::cast<::gpu_vulkan::texture> ptextureMetallic = passetmanager->getTexture("cerberus_metallic");
                //::cast<::gpu_vulkan::texture> ptextureRoughness = passetmanager->getTexture("cerberus_roughness");
@@ -1283,21 +1283,23 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                                        // m_pipelineLayout, 3, 1,
                                        pshader->m_ppipeline->m_vkpipelinelayout, 1, 1, &iblSet, 0, nullptr);
 
-
-                VkDescriptorSet pbrSet =
-                  pgltfmodel->m_materials[0].m_descriptorseta[pframe->m_pgpucommandbuffer->m_iFrameIndex];
-               if (pbrSet == VK_NULL_HANDLE)
+               if (pgltfmodel->m_materials[0].m_descriptorseta.has_element())
                {
-                  if (!warnedThisFrame)
-                  { /*spdlog::warn("PBR set null");*/
-                     warnedThisFrame = true;
+                  VkDescriptorSet pbrSet =
+                     pgltfmodel->m_materials[0].m_descriptorseta[pframe->m_pgpucommandbuffer->m_iFrameIndex];
+                  if (pbrSet == VK_NULL_HANDLE)
+                  {
+                     if (!warnedThisFrame)
+                     { /*spdlog::warn("PBR set null");*/
+                        warnedThisFrame = true;
+                     }
+                     continue;
                   }
-                  continue;
+                  vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                          // m_pipelineLayout, 2, 1,
+                                          pshader->m_ppipeline->m_vkpipelinelayout, 2, 1, &pbrSet, 0, nullptr);
                }
-               vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                       //m_pipelineLayout, 2, 1,
-                                       pshader->m_ppipeline->m_vkpipelinelayout, 2, 1,
-                                       &pbrSet, 0, nullptr);
+
 
                pgltfmodel->gltfDraw(pcommandbuffer->m_vkcommandbuffer, 
                   pframe->m_pgpucommandbuffer->m_iFrameIndex,::gpu_vulkan::gltf::RenderNone, pshader->m_ppipeline->m_vkpipelinelayout, 2);

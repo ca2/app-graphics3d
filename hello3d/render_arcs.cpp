@@ -222,7 +222,7 @@ namespace graphics3d_hello3d
 //
 //      r.left() = 0;
 //
-//      r.bottom() = rClient.center().y();
+//      r.bottom() = rClient.center().y;
 //
 //      int i = 0;
 //

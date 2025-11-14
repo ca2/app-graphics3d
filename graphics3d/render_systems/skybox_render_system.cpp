@@ -208,7 +208,7 @@ namespace graphics3d
 
    //      //pimageCubeMap->image32()->copy(point, sizeItem, scanCubeMap, pimage32, scan);
 
-   //      //point.x() += m_sizeSquare.width();
+   //      //point.x += m_sizeSquare.width();
 
    //   }
 

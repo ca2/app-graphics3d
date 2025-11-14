@@ -176,8 +176,8 @@ namespace app_graphics3d_landen
 
    //      host_to_client()(point);
 
-   //      //m_mousestate.position.x = point.x();
-   //      //m_mousestate.position.y = point.y();
+   //      //m_mousestate.position.x = point.x;
+   //      //m_mousestate.position.y = point.y;
    //      //m_mousestate.m_buttons.left = true;
    //      //         pmouse->m_p
 
@@ -198,18 +198,18 @@ namespace app_graphics3d_landen
    //      if (is_absolute_mouse_position())
    //      {
 
-   //         xCursor = ((point.x() - (w / 2.0)) * 2.0);
-   //         yCursor = ((point.y() - (h / 2.0)) * 2.0);
+   //         xCursor = ((point.x - (w / 2.0)) * 2.0);
+   //         yCursor = ((point.y - (h / 2.0)) * 2.0);
 
    //      }
    //      else
    //      {
 
-   //         //xCursor = point.x();
-   //         //yCursor = point.y();
+   //         //xCursor = point.x;
+   //         //yCursor = point.y;
 
-   //         xCursor = point.x();
-   //         yCursor = point.y();
+   //         xCursor = point.x;
+   //         yCursor = point.y;
 
    //      }
 
@@ -260,8 +260,8 @@ namespace app_graphics3d_landen
 
    //   host_to_client()(point);
 
-   //   m_mousestate.m_position.x = point.x();
-   //   m_mousestate.m_position.y = point.y();
+   //   m_mousestate.m_position.x = point.x;
+   //   m_mousestate.m_position.y = point.y;
    //   m_mousestate.m_buttons.left = true;
 
    //}
@@ -278,8 +278,8 @@ namespace app_graphics3d_landen
 
    //   host_to_client()(point);
 
-   //   m_mousestate.m_position.x = point.x();
-   //   m_mousestate.m_position.y = point.y();
+   //   m_mousestate.m_position.x = point.x;
+   //   m_mousestate.m_position.y = point.y;
    //   m_mousestate.m_buttons.left = false;
 
    //}

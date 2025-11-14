@@ -112,8 +112,9 @@ namespace gpu_vulkan
          auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
          const VkFormat format = VK_FORMAT_R32G32B32A32_SFLOAT;
-         const int32_t dim = 64;
-         const uint32_t numMips = static_cast<uint32_t>(floor(log2(dim))) + 1;
+         const int32_t dim = m_udiffuse_irradiance_mapWidth;
+         //const uint32_t numMips = static_cast<uint32_t>(floor(log2(dim))) + 1;
+         const uint32_t numMips = 1;
 
          // create irradiance cubemap (same as before)
          VkImageCreateInfo imageCI = vkinit::imageCreateInfo();
@@ -383,6 +384,8 @@ namespace gpu_vulkan
             glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // +Z
             glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // -Z
          };
+
+         //numMips = 1; // for diffuse irradiance, we only need the first mip
 
          // Main loop: mips and faces (matches Sascha's approach)
          for (uint32_t m = 0; m < numMips; ++m)

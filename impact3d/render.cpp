@@ -295,9 +295,9 @@ namespace graphics3d_impact3d
 
             ////{
 
-            ////   float x = (float) psession->get_cursor_position().x();
+            ////   float x = (float) psession->get_cursor_position().x;
 
-            ////   float y = (float) psession->get_cursor_position().y();
+            ////   float y = (float) psession->get_cursor_position().y;
 
             ////   m_pgpucontext->m_pgpuprogram->m_pshader->setVec2("mouse", x, y);
             ////   m_pgpucontext->m_pgpuprogram->m_pshader->setVec2("iMouse", x, y);

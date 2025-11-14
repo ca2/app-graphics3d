@@ -248,8 +248,8 @@ namespace user
 
       host_to_client()(point);
 
-      m_pengine->m_pinput->m_mousestate.m_position.x = (float) point.x();
-      m_pengine->m_pinput->m_mousestate.m_position.y = (float) point.y();
+      m_pengine->m_pinput->m_mousestate.m_position.x = (float) point.x;
+      m_pengine->m_pinput->m_mousestate.m_position.y = (float) point.y;
       m_pengine->m_pinput->m_mousestate.m_buttons.left = true;
 
       set_mouse_capture();
@@ -270,8 +270,8 @@ namespace user
 
       host_to_client()(point);
 
-      m_pengine->m_pinput->m_mousestate.m_position.x = (float) point.x();
-      m_pengine->m_pinput->m_mousestate.m_position.y = (float) point.y();
+      m_pengine->m_pinput->m_mousestate.m_position.x = (float) point.x;
+      m_pengine->m_pinput->m_mousestate.m_position.y = (float) point.y;
       m_pengine->m_pinput->m_mousestate.m_buttons.left = false;
 
       
