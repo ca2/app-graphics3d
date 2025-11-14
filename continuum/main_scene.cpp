@@ -189,7 +189,7 @@ namespace app_graphics3d_continuum
          ppointlight->m_color = lightColors[i];
          auto rotateLight = 
             floating_matrix4(1.f).rotated(
-            (i * ::two_π<float>) / lightColors.size(),
+            ::radians((i * ::two_π<float>) / lightColors.size()),
             { 0.f, 1.f, 0.f });
          ppointlight->m_fLightIntensity = 1.0f;
          ppointlight->transform().m_vec3Position = floating_sequence3(rotateLight * floating_sequence4(-1.f, 1.7f, 0.5f, 1.f));
@@ -238,25 +238,30 @@ namespace app_graphics3d_continuum
 
       
          floating_matrix4 matrixImpact;
-         if (m_pimmersionlayer->m_pengine->m_fYScale < 0)
-         {
-            matrixImpact = glm::lookAtRH(pcamera->m_locationPosition,
+
+         //auto pgpucontext = 
+         matrixImpact = m_pgpucontext->lookAt(pcamera->m_locationPosition,
                                          pcamera->m_locationPosition + pcamera->m_poleFront,
                              pcamera->m_poleWorldUp);
-            // matrixImpact[2][0] = -matrixImpact[2][0];
-            // matrixImpact[2][1] = -matrixImpact[2][1];
-            // matrixImpact[2][2] = -matrixImpact[2][2];
-            // matrixImpact[2][3] = -matrixImpact[2][3];
-         }
-         else
-         {
-            matrixImpact =
-               glm::lookAtRH(pcamera->m_locationPosition, pcamera->m_locationPosition + pcamera->m_poleFront, pcamera->m_poleWorldUp);
-         }
+         //if (m_pimmersionlayer->m_pengine->m_fYScale < 0)
+         //{
+         //   matrixImpact = glm::lookAtRH(pcamera->m_locationPosition,
+         //                                pcamera->m_locationPosition + pcamera->m_poleFront,
+         //                    pcamera->m_poleWorldUp);
+         //   // matrixImpact[2][0] = -matrixImpact[2][0];
+         //   // matrixImpact[2][1] = -matrixImpact[2][1];
+         //   // matrixImpact[2][2] = -matrixImpact[2][2];
+         //   // matrixImpact[2][3] = -matrixImpact[2][3];
+         //}
+         //else
+         //{
+         //   matrixImpact =
+         //      glm::lookAtRH(pcamera->m_locationPosition, pcamera->m_locationPosition + pcamera->m_poleFront, pcamera->m_poleWorldUp);
+         //}
          pcamera->m_matrixImpact = matrixImpact;
          //}
 
-         pcamera->m_matrixAntImpact = glm::inverse(pcamera->m_matrixImpact);
+         pcamera->m_matrixAntImpact = pcamera->m_matrixImpact.inversed();
 
 
 

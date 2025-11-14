@@ -1079,7 +1079,7 @@ namespace gpu_vulkan
                                                                  : floating_sequence3(0.0f))
                                    .normalized();
                   vert.gltf_uv =
-                     bufferTexCoords ? floating_sequence2(&bufferTexCoords[v * 2]) : floating_sequence3(0.0f);
+                     bufferTexCoords ? floating_sequence2(&bufferTexCoords[v * 2]) : floating_sequence2(0.0f);
 						if (bufferColors) {
 							switch (numColorComponents) {
 							case 3:
@@ -1272,7 +1272,7 @@ namespace gpu_vulkan
 				material.metallicFactor = static_cast<float>(mat.values["metallicFactor"].Factor());
 			}
 			if (mat.values.find("baseColorFactor") != mat.values.end()) {
-				material.baseColorFactor = glm::make_vec4(mat.values["baseColorFactor"].ColorFactor().data());
+				material.baseColorFactor = floating_sequence4(mat.values["baseColorFactor"].ColorFactor().data());
 			}
          if (m_bExternalPbr)
          {
@@ -1481,7 +1481,7 @@ namespace gpu_vulkan
 							// Pre-transform vertex positions by node-hierarchy
 							if (preTransform) {
 								vertex.pos = floating_sequence3(localMatrix * floating_sequence4(vertex.pos, 1.0f));
-								vertex.normal = glm::normalize(floating_matrix3(localMatrix) * vertex.normal);
+								vertex.normal = (floating_matrix3(localMatrix) * vertex.normal).normalized();
 							}
 							// Flip Y-Axis of vertex positions
 							if (flipY) {
@@ -1988,12 +1988,12 @@ namespace gpu_vulkan
 								break;
 						}
 						case  AnimationChannel::PathType::ROTATION: {
-								glm::quat q1;
+								floating_quaternion q1;
 								q1.x = sampler.outputsVec4[i].x;
 								q1.y = sampler.outputsVec4[i].y;
 								q1.z = sampler.outputsVec4[i].z;
 								q1.w = sampler.outputsVec4[i].w;
-								glm::quat q2;
+								floating_quaternion q2;
 								q2.x = sampler.outputsVec4[i + 1].x;
 								q2.y = sampler.outputsVec4[i + 1].y;
 								q2.z = sampler.outputsVec4[i + 1].z;

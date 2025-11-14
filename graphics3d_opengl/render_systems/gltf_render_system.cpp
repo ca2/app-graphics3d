@@ -172,7 +172,7 @@ namespace graphics3d_opengl
             // floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
 
             floating_matrix4 world = pscenerenderable->transform().getMatrix() * pmesh->uniformBlock.matrix;
-            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
+            floating_matrix4 normalMat = world.inversed().transposed();
 
             m_ppipelineOpaque->set_matrix4("modelMatrix", world);
             m_ppipelineOpaque->set_matrix4("normalMatrix", normalMat);
