@@ -9,9 +9,9 @@
 
 
 // libs
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_FORCE_LEFT_HANDED
-#include <glm/gtc/matrix_transform.hpp>
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_LEFT_HANDED
+//#include <glm/gtc/matrix_transform.hpp>
 #include <D3D11.h>
 #include <D2D1.h>
 #include <D2D1_1.h>

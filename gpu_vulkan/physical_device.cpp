@@ -4,6 +4,9 @@
 #include "physical_device.h"
 
 
+#include <assert.h>
+
+
 namespace gpu_vulkan
 {
 
