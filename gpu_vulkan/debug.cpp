@@ -9,6 +9,9 @@
 #include "debug.h"
 
 
+#include <assert.h>
+
+
 namespace vulkan
 {
 
@@ -140,7 +143,7 @@ namespace vulkan
          vkCmdInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdInsertDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT"));
       }
 
-      void cmdBeginLabel(VkCommandBuffer cmdbuffer, ::string caption, glm::vec4 color)
+      void cmdBeginLabel(VkCommandBuffer cmdbuffer, ::string caption, floating_sequence4 color)
       {
          if (!vkCmdBeginDebugUtilsLabelEXT) {
             return;

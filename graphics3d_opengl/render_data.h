@@ -77,9 +77,9 @@ namespace graphics3d_opengl
 
 
       // Misc
-      ::array<glm::mat4> boxModelMatrices; // Declare as a member variable
-      ::array<glm::mat4> wallModelMatrices;
-      ::array<glm::vec3> wallPositions;
+      ::array<floating_matrix4> boxModelMatrices; // Declare as a member variable
+      ::array<floating_matrix4> wallModelMatrices;
+      ::array<floating_sequence3> wallPositions;
 
 
 

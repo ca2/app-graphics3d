@@ -13,15 +13,15 @@
 
 namespace vkc {
 	struct ::graphics3d::transform {
-		glm::vec3 translation{};
-		glm::vec3 scale{ 1.f, 1.f, 1.f };
-		glm::vec3 rotation{};
+		floating_sequence3 translation{};
+		floating_sequence3 scale{ 1.f, 1.f, 1.f };
+		floating_sequence3 rotation{};
 
 		// Matrix corrsponds to Translate * Ry * Rx * Rz * Scale
 		// Rotations correspond to Tait-bryan angles of Y(1), X(2), Z(3)
 
-		glm::mat4 mat4();
-		glm::mat3 normalMatrix();
+		floating_matrix4 mat4();
+		floating_matrix3 normalMatrix();
 
 	};
 
@@ -39,7 +39,7 @@ namespace vkc {
 			return VkcGameObject{ currentId++ };
 		}
 
-		static VkcGameObject makePointLight(float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
+		static VkcGameObject makePointLight(float intensity = 10.f, float radius = 0.1f, floating_sequence3 color = floating_sequence3(1.f));
 
 		VkcGameObject(const VkcGameObject&) = delete;
 		VkcGameObject& operator=(const VkcGameObject&) = delete;
@@ -49,7 +49,7 @@ namespace vkc {
 		id_t getId() { return id; }
 
 		::graphics3d::transform transform;
-		glm::vec3 color{};
+		floating_sequence3 color{};
 
 		::pointer<VkcModel> model{};
 		

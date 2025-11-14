@@ -97,7 +97,7 @@ namespace gpu_vulkan
 			float alphaCutoff = 1.0f;
 			float metallicFactor = 1.0f;
 			float roughnessFactor = 1.0f;
-			glm::vec4 baseColorFactor = glm::vec4(1.0f);
+			floating_sequence4 baseColorFactor = floating_sequence4(1.0f);
 			::pointer<::gpu_vulkan::texture> baseColorTexture;
          ::pointer<::gpu_vulkan::texture> metallicRoughnessTexture;
          ::pointer<::gpu_vulkan::texture> normalTexture;
@@ -124,14 +124,14 @@ namespace gpu_vulkan
 			Material * m_pmaterial;
 
 			struct Dimensions {
-				glm::vec3 min = glm::vec3(FLT_MAX);
-				glm::vec3 max = glm::vec3(-FLT_MAX);
-				glm::vec3 size;
-				glm::vec3 center;
+				floating_sequence3 min = floating_sequence3(FLT_MAX);
+				floating_sequence3 max = floating_sequence3(-FLT_MAX);
+				floating_sequence3 size;
+				floating_sequence3 center;
 				float radius;
 			} dimensions;
 
-			void setDimensions(glm::vec3 min, glm::vec3 max);
+			void setDimensions(floating_sequence3 min, floating_sequence3 max);
 			Primitive(uint32_t firstIndex, uint32_t indexCount, Material * pmaterial) : firstIndex(firstIndex), indexCount(indexCount), m_pmaterial(pmaterial) {};
 		};
 
@@ -153,12 +153,12 @@ namespace gpu_vulkan
 			} uniformBuffer;
 
 			struct UniformBlock {
-				glm::mat4 matrix;
-				glm::mat4 jointMatrix[64]{};
+				floating_matrix4 matrix;
+				floating_matrix4 jointMatrix[64]{};
 				float jointcount{ 0 };
 			} uniformBlock;
 
-			Mesh(::gpu::context * pcontext, glm::mat4 matrix);
+			Mesh(::gpu::context * pcontext, floating_matrix4 matrix);
 			~Mesh();
 		};
 
@@ -168,7 +168,7 @@ namespace gpu_vulkan
 		struct Skin {
 			std::string name;
 			Node* skeletonRoot = nullptr;
-			std::vector<glm::mat4> inverseBindMatrices;
+			std::vector<floating_matrix4> inverseBindMatrices;
 			std::vector<Node*> joints;
 		};
 
@@ -179,16 +179,16 @@ namespace gpu_vulkan
 			Node* parent;
 			uint32_t index;
 			std::vector<Node*> children;
-			glm::mat4 matrix;
+			floating_matrix4 matrix;
 			std::string name;
 			Mesh* mesh;
 			Skin* skin;
 			int32_t skinIndex = -1;
-			glm::vec3 translation{};
-			glm::vec3 scale{ 1.0f };
+			floating_sequence3 translation{};
+			floating_sequence3 scale{ 1.0f };
 			glm::quat rotation{};
-			glm::mat4 localMatrix();
-			glm::mat4 getMatrix();
+			floating_matrix4 localMatrix();
+			floating_matrix4 getMatrix();
 			void update();
 			~Node();
 		};
@@ -210,7 +210,7 @@ namespace gpu_vulkan
 			enum InterpolationType { LINEAR, STEP, CUBICSPLINE };
 			InterpolationType interpolation;
 			std::vector<float> inputs;
-			std::vector<glm::vec4> outputsVec4;
+			std::vector<floating_sequence4> outputsVec4;
 		};
 
 		/*
@@ -238,13 +238,13 @@ namespace gpu_vulkan
       };
 
 		struct Vertex {
-			glm::vec3 pos;
-			glm::vec3 normal;
-			glm::vec2 gltf_uv;
-			glm::vec4 color;
-			//glm::vec4 joint0;
-			//glm::vec4 weight0;
-			glm::vec4 tangent;
+			floating_sequence3 pos;
+			floating_sequence3 normal;
+			floating_sequence2 gltf_uv;
+			floating_sequence4 color;
+			//floating_sequence4 joint0;
+			//floating_sequence4 weight0;
+			floating_sequence4 tangent;
 			//static VkVertexInputBindingDescription vertexInputBindingDescription;
 			//static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
 			//static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
@@ -266,13 +266,13 @@ namespace gpu_vulkan
       };
       		struct Vertex2
       {
-         glm::vec3 pos;
-         glm::vec3 normal;
-         glm::vec2 uv;
-         glm::vec4 color;
-         glm::vec4 joint0;
-         glm::vec4 weight0;
-         glm::vec4 tangent;
+         floating_sequence3 pos;
+         floating_sequence3 normal;
+         floating_sequence2 uv;
+         floating_sequence4 color;
+         floating_sequence4 joint0;
+         floating_sequence4 weight0;
+         floating_sequence4 tangent;
          // static VkVertexInputBindingDescription vertexInputBindingDescription;
          // static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
          // static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
@@ -348,10 +348,10 @@ namespace gpu_vulkan
          
 
 			struct Dimensions {
-				glm::vec3 min = glm::vec3(FLT_MAX);
-				glm::vec3 max = glm::vec3(-FLT_MAX);
-				glm::vec3 size;
-				glm::vec3 center;
+				floating_sequence3 min = floating_sequence3(FLT_MAX);
+				floating_sequence3 max = floating_sequence3(-FLT_MAX);
+				floating_sequence3 size;
+				floating_sequence3 center;
 				float radius;
 			} dimensions;
 
@@ -385,7 +385,7 @@ namespace gpu_vulkan
 			void drawNode(Node* node, uint32_t uFrameIndex,  VkCommandBuffer commandBuffer, uint32_t renderFlags = 0, VkPipelineLayout pipelineLayout = VK_NULL_HANDLE, uint32_t bindImageSet = 1);
 
 
-			void getNodeDimensions(Node* node, glm::vec3& min, glm::vec3& max);
+			void getNodeDimensions(Node* node, floating_sequence3& min, floating_sequence3& max);
 			void getSceneDimensions();
 			void updateAnimation(uint32_t index, float time);
 			Node* findNode(Node* parent, uint32_t index);

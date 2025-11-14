@@ -29,9 +29,9 @@ namespace gpu_directx12
       //::gpu::element             m_ibo_elements;
 
       //::array<unsigned short>    m_indexes;
-      //::array<::glm::vec3>       m_vertexes;
-      //::array<::glm::vec2>       m_uvs;
-      //::array<::glm::vec3>       m_normals;
+      //::array<::floating_sequence3>       m_vertexes;
+      //::array<::floating_sequence2>       m_uvs;
+      //::array<::floating_sequence3>       m_normals;
 
       //::gpu::payload             m_payloadTexture;
       //::gpu::element             m_uniformTexture;

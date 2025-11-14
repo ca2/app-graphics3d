@@ -1795,7 +1795,7 @@ namespace gpu_vulkan
 //   }
 //
 //
-////   void shader::setVec2(const ::scoped_string & scopedstrName, const glm::vec2& value)
+////   void shader::setVec2(const ::scoped_string & scopedstrName, const floating_sequence2& value)
 ////   {
 ////
 ////      GLint i = glGetUniformLocation(m_uId, pszName);
@@ -1823,7 +1823,7 @@ namespace gpu_vulkan
 //   }
 //
 //
-////   void shader::setVec3(const ::scoped_string & scopedstrName, const glm::vec3& value)
+////   void shader::setVec3(const ::scoped_string & scopedstrName, const floating_sequence3& value)
 ////   {
 ////
 ////      GLint i = glGetUniformLocation(m_uId, pszName);
@@ -1852,7 +1852,7 @@ namespace gpu_vulkan
 //   }
 //
 //
-////   void shader::setVec4(const ::scoped_string & scopedstrName, const glm::vec4& value)
+////   void shader::setVec4(const ::scoped_string & scopedstrName, const floating_sequence4& value)
 ////   {
 ////
 ////      GLint i = glGetUniformLocation(m_uId, pszName);

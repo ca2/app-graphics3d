@@ -66,7 +66,7 @@ namespace graphics3d_directx11
 		//void update_global_ubo(::gpu::context* pgpucontext) override;
 		//void on_render_frame() override;
 
-		//glm::vec3 camera_pole_up() override;
+		//floating_sequence3 camera_pole_up() override;
 
 		
 	};

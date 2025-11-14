@@ -41,7 +41,7 @@ namespace glc
       if (m_prenderdataCurrentScene) 
       {
 
-         glm::vec3 cameraPosition = pcamera->GetPosition(); // Get the camera's current position
+         floating_sequence3 cameraPosition = pcamera->GetPosition(); // Get the camera's current position
          m_prenderdataCurrentScene->Update(deltaTime); // Pass both delta time and camera position
 
       }

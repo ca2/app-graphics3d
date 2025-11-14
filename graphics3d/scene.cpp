@@ -111,7 +111,7 @@ namespace graphics3d
    //{
    //     return ::graphics3d::scene_base::get_skybox_cube_model();
    //   //auto pmodelbuffer = øcreate_new<::gpu::model_buffer>();
-   //   //::array_base<glm::vec3> vertexa = {// positions
+   //   //::array_base<floating_sequence3> vertexa = {// positions
    //   //                                   {-1.0f, 1.0f, -1.0f},  {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f},
    //   //                                   {1.0f, -1.0f, -1.0f},  {1.0f, 1.0f, -1.0f},   {-1.0f, 1.0f, -1.0f},
 

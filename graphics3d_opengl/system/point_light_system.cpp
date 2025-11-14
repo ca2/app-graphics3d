@@ -19,8 +19,8 @@
 //
 //
 //   struct PointLightPushConstants {
-//      glm::vec4 position{};
-//      glm::vec4 color{};
+//      floating_sequence4 position{};
+//      floating_sequence4 color{};
 //      float radius;
 //   };
 //
@@ -122,8 +122,8 @@
 //         auto& obj = frameInfo.gameObjects[it->second];
 //         ::cast < ::graphics3d::point_light > ppointlight = obj;
 //         PointLightPushConstants push{};
-//         push.position = glm::vec4(obj->m_transform.translation, 1.f);
-//         push.color = glm::vec4(obj->m_color, ppointlight->m_pointlightcomponent.lightIntensity);
+//         push.position = floating_sequence4(obj->m_transform.translation, 1.f);
+//         push.color = floating_sequence4(obj->m_color, ppointlight->m_pointlightcomponent.lightIntensity);
 //         push.radius = obj->m_transform.scale.x;
 //
 //         vkCmdPushConstants(
@@ -141,7 +141,7 @@
 //   void point_light_system::update(FrameInfo& frameInfo, GlobalUbo& ubo)
 //   {
 //
-//      auto rotateLight = glm::rotate(glm::mat4(1.f), 0.5f * frameInfo.frameTime, { 0.f, -1.f, 0.f });
+//      auto rotateLight = glm::rotate(floating_matrix4(1.f), 0.5f * frameInfo.frameTime, { 0.f, -1.f, 0.f });
 //
 //      int lightIndex = 0;
 //
@@ -158,13 +158,13 @@
 //
 //         // update light position
 //         ppointlight->m_transform.translation =
-//            glm::vec3(rotateLight * glm::vec4(ppointlight->m_transform.translation, 1.f));
+//            floating_sequence3(rotateLight * floating_sequence4(ppointlight->m_transform.translation, 1.f));
 //
 //         // copy light to ubo
 //         ubo.pointLights[lightIndex].position = 
-//            glm::vec4(ppointlight->m_transform.translation, 1.f);
+//            floating_sequence4(ppointlight->m_transform.translation, 1.f);
 //         ubo.pointLights[lightIndex].color = 
-//            glm::vec4(obj->m_color, ppointlight->m_pointlightcomponent.lightIntensity);
+//            floating_sequence4(obj->m_color, ppointlight->m_pointlightcomponent.lightIntensity);
 //
 //         lightIndex += 1;
 //      }

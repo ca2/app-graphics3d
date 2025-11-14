@@ -27,13 +27,13 @@ namespace graphics3d_opengl
 //      // Deadzone
 //      float m_MouseDeadZone;
 //      // Inertia
-//      glm::vec3 m_Velocity;
+//      floating_sequence3 m_Velocity;
 //      // ::graphics3d::camera attributes
-//      glm::vec3 m_Position;
-//      glm::vec3 m_Front;
-//      glm::vec3 m_Up;
-//      glm::vec3 m_Right;
-//      glm::vec3 m_WorldUp;
+//      floating_sequence3 m_Position;
+//      floating_sequence3 m_Front;
+//      floating_sequence3 m_Up;
+//      floating_sequence3 m_Right;
+//      floating_sequence3 m_WorldUp;
 //
 //      // Euler angles
 //      float m_fYaw;
@@ -57,7 +57,7 @@ namespace graphics3d_opengl
 //      ::pointer < ::glc::GlContainer > m_pimpact;
 //
 //
-//      ::graphics3d::camera(glc::GlContainer * pimpact, glm::vec3 position, float yaw, float pitch);
+//      ::graphics3d::camera(glc::GlContainer * pimpact, floating_sequence3 position, float yaw, float pitch);
 //
 //      // Process input for mouse movement
 //      void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
@@ -66,10 +66,10 @@ namespace graphics3d_opengl
 //      void ProcessKeyboardInput(int direction, float deltaTime);
 //
 //      // Get the view matrix
-//      glm::mat4 GetViewMatrix() const;
+//      floating_matrix4 GetViewMatrix() const;
 //
 //
-//      glm::vec3 GetPosition() const;
+//      floating_sequence3 GetPosition() const;
 //
 //
 //      void UpdateIdleMovement(float deltaTime); // Add this line

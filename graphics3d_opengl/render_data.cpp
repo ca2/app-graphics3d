@@ -94,9 +94,9 @@
 //      //m_Skybox->initialize(this);
 //      //m_SkyboxShader->initialize(this);
 //
-//      ::array<glm::mat4> planeModelMatrices(m_PlaneInstanceCount);
-//      ::array<glm::mat4> sphereModelMatrices(m_SphereInstanceCount);
-//      ::array<glm::mat4> wallModelMatricies(m_WallInstanceCount);
+//      ::array<floating_matrix4> planeModelMatrices(m_PlaneInstanceCount);
+//      ::array<floating_matrix4> sphereModelMatrices(m_SphereInstanceCount);
+//      ::array<floating_matrix4> wallModelMatricies(m_WallInstanceCount);
 //
 //      // Model instances
 //      // Create a random number generator
@@ -110,8 +110,8 @@
 //         float randomX = dis(gen);
 //         float randomY = dis(gen);
 //         float randomZ = dis(gen);
-//         boxModelMatrices[i] = glm::translate(glm::mat4(1.0f), glm::vec3(randomX, randomY, randomZ));
-//         //boxModelMatrices[i] = glm::scale(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 10.0f));
+//         boxModelMatrices[i] = glm::translate(floating_matrix4(1.0f), floating_sequence3(randomX, randomY, randomZ));
+//         //boxModelMatrices[i] = glm::scale(floating_matrix4(1.0f), floating_sequence3(10.0f, 10.0f, 10.0f));
 //      }
 //
 //      // Plane instances
@@ -122,8 +122,8 @@
 //         float randomX = dis(gen);
 //         float randomY = dis(gen) - 5.0f; // Shift downwards
 //         float randomZ = dis(gen);
-//         planeModelMatrices[i] = glm::translate(glm::mat4(1.0f), glm::vec3(randomX, explicitY, randomZ));
-//         planeModelMatrices[i] = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 100.0f));
+//         planeModelMatrices[i] = glm::translate(floating_matrix4(1.0f), floating_sequence3(randomX, explicitY, randomZ));
+//         planeModelMatrices[i] = glm::scale(floating_matrix4(1.0f), floating_sequence3(100.0f, 100.0f, 100.0f));
 //      }
 //
 //      // Sphere instances
@@ -131,7 +131,7 @@
 //         float randomX = dis(gen);
 //         float randomY = dis(gen);
 //         float randomZ = dis(gen);
-//         sphereModelMatrices[i] = glm::translate(glm::mat4(1.0f), glm::vec3(randomX, randomY, randomZ));
+//         sphereModelMatrices[i] = glm::translate(floating_matrix4(1.0f), floating_sequence3(randomX, randomY, randomZ));
 //      }
 //
 //      // Wall Instances
@@ -140,7 +140,7 @@
 //         float randomX = dis(gen);
 //         float randomY = dis(gen) + 5.0f;
 //         float randomZ = dis(gen);
-//         wallModelMatricies[i] = glm::translate(glm::mat4(1.0f), glm::vec3(randomX, y, randomZ));
+//         wallModelMatricies[i] = glm::translate(floating_matrix4(1.0f), floating_sequence3(randomX, y, randomZ));
 //
 //      }
 //
@@ -154,7 +154,7 @@
 //   }
 //
 //   void render_data::Update(float deltaTime) {
-//      glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f);
+//      floating_sequence3 rotationAxis(0.0f, 1.0f, 0.0f);
 //      float rotationSpeed = glm::radians(50.0f) * deltaTime;
 //
 //      // Update box model matrices with rotation (this part is working as expected)
@@ -172,8 +172,8 @@
 //   render_data::render_data()
 //      : m_Shader(nullptr),
 //      m_WallShader(nullptr),
-//      boxModelMatrices(m_BoxInstanceCount, glm::mat4(1.0f)),
-//      wallModelMatrices(m_WallInstanceCount, glm::mat4(1.0f))
+//      boxModelMatrices(m_BoxInstanceCount, floating_matrix4(1.0f)),
+//      wallModelMatrices(m_WallInstanceCount, floating_matrix4(1.0f))
 //
 //   {
 //
@@ -259,11 +259,11 @@
 //
 //
 //      // Calculate view and projection matrices
-//      glm::mat4 view = pcamera->GetViewMatrix();
-//      glm::mat4 projection = glm::perspective(glm::radians(pcamera->GetZoom()), 1280.0f / 720.0f, 0.1f, 1000.0f);
+//      floating_matrix4 view = pcamera->GetViewMatrix();
+//      floating_matrix4 projection = glm::perspective(glm::radians(pcamera->GetZoom()), 1280.0f / 720.0f, 0.1f, 1000.0f);
 //
 //      // sky_box
-//      glm::mat4 skyboxView = glm::mat4(glm::mat3(view)); // Remove translation from the view matrix
+//      floating_matrix4 skyboxView = floating_matrix4(floating_matrix3(view)); // Remove translation from the view matrix
 //      m_SkyboxShader->Bind();
 //      m_SkyboxShader->SetUniformMat4f("view", skyboxView);
 //      m_SkyboxShader->SetUniformMat4f("projection", projection);
@@ -302,7 +302,7 @@
 //
 //
 //      // Get camera position
-//      glm::vec3 cameraPosition = pcamera->GetPosition();
+//      floating_sequence3 cameraPosition = pcamera->GetPosition();
 //
 //      m_WallShader->SetUniform3f("cameraPos", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 //

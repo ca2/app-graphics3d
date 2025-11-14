@@ -19,7 +19,7 @@ namespace graphics3d_opengl
       //::graphics3d::camera::setPerspectiveProjection(fovy, aspect, fNear, fFar);
       //const float tanHalfFovy = tan(fovy / 2.f);
 
-      //m_matrixProjection = glm::mat4{ 0.0f };
+      //m_matrixProjection = floating_matrix4{ 0.0f };
       //m_matrixProjection[0][0] = 1.f / (aspect * tanHalfFovy);
       //m_matrixProjection[1][1] = 1.f / (tanHalfFovy);
       //m_matrixProjection[2][2] = (fFar + fNear) / (fNear - fFar);      // <-- key change
@@ -29,7 +29,7 @@ namespace graphics3d_opengl
    }
 //
 //   // Constructor
-//   ::graphics3d::camera::graphics3d::camera(glc::GlContainer* pimpact, glm::vec3 position, float fYaw, float fPitch)
+//   ::graphics3d::camera::graphics3d::camera(glc::GlContainer* pimpact, floating_sequence3 position, float fYaw, float fPitch)
 //   {
 //
 //      m_pimpact = pimpact;
@@ -39,8 +39,8 @@ namespace graphics3d_opengl
 //      m_Position = position;
 //      m_fYaw = fYaw;
 //      m_fPitch = fPitch;
-//      m_Front = glm::vec3(0.0f, 0.0f, -1.0f);
-//      m_WorldUp = glm::vec3(0.0f, -1.0f, 0.0f);
+//      m_Front = floating_sequence3(0.0f, 0.0f, -1.0f);
+//      m_WorldUp = floating_sequence3(0.0f, -1.0f, 0.0f);
 //      m_Zoom = 75.0f;
 //      m_MovementSpeed = 20.5f;
 //
@@ -150,7 +150,7 @@ namespace graphics3d_opengl
 //   }
 //   // Update the camera vectors based on yaw and pitch
 //   void ::graphics3d::camera::UpdateCameraVectors() {
-//      glm::vec3 front;
+//      floating_sequence3 front;
 //      front.x = cos(m_fYaw) * cos(m_fPitch);
 //      front.y = sin(m_fPitch);
 //      front.z = sin(m_fYaw) * cos(m_fPitch);
@@ -171,11 +171,11 @@ namespace graphics3d_opengl
 //      m_MovementSpeed = speed;
 //   }
 //   // Get the view matrix
-//   glm::mat4 ::graphics3d::camera::GetViewMatrix() const {
+//   floating_matrix4 ::graphics3d::camera::GetViewMatrix() const {
 //      return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
 //   }
 //   // Get the camera position
-//   glm::vec3 ::graphics3d::camera::GetPosition() const {
+//   floating_sequence3 ::graphics3d::camera::GetPosition() const {
 //      return m_Position;
 //   }
 //

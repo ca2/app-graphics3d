@@ -551,7 +551,7 @@ namespace gpu_vulkan
 	/*
 		gltf primitive
 	*/
-	void  gltf::Primitive::setDimensions(glm::vec3 min, glm::vec3 max) {
+	void  gltf::Primitive::setDimensions(floating_sequence3 min, floating_sequence3 max) {
 		dimensions.min = min;
 		dimensions.max = max;
 		dimensions.size = max - min;
@@ -562,7 +562,7 @@ namespace gpu_vulkan
 	/*
 		gltf mesh
 	*/
-	gltf::Mesh::Mesh(::gpu::context * pgpucontext, glm::mat4 matrix) {
+	gltf::Mesh::Mesh(::gpu::context * pgpucontext, floating_matrix4 matrix) {
 		this->m_pgpucontext = pgpucontext;
 		::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 		::cast < ::gpu_vulkan::device > pgpudevice = pcontext->m_pgpudevice;
@@ -596,12 +596,12 @@ namespace gpu_vulkan
 	/*
 		gltf node
 	*/
-	glm::mat4 gltf::Node::localMatrix() {
-		return glm::translate(glm::mat4(1.0f), translation) * glm::mat4(rotation) * glm::scale(glm::mat4(1.0f), scale) * matrix;
+	floating_matrix4 gltf::Node::localMatrix() {
+		return glm::translate(floating_matrix4(1.0f), translation) * floating_matrix4(rotation) * glm::scale(floating_matrix4(1.0f), scale) * matrix;
 	}
 
-	glm::mat4 gltf::Node::getMatrix() {
-		glm::mat4 m = localMatrix();
+	floating_matrix4 gltf::Node::getMatrix() {
+		floating_matrix4 m = localMatrix();
 		Node* p = parent;
 		while (p) {
 			m = p->localMatrix() * m;
@@ -612,14 +612,14 @@ namespace gpu_vulkan
 
 	void gltf::Node::update() {
 		if (mesh) {
-			glm::mat4 m = getMatrix();
+			floating_matrix4 m = getMatrix();
 			if (skin) {
 				mesh->uniformBlock.matrix = m;
 				// Update join matrices
-				glm::mat4 inverseTransform = glm::inverse(m);
+				floating_matrix4 inverseTransform = glm::inverse(m);
 				for (size_t i = 0; i < skin->joints.size(); i++) {
 					Node* jointNode = skin->joints[i];
-					glm::mat4 jointMat = jointNode->getMatrix() * skin->inverseBindMatrices[i];
+					floating_matrix4 jointMat = jointNode->getMatrix() * skin->inverseBindMatrices[i];
 					jointMat = inverseTransform * jointMat;
 					mesh->uniformBlock.jointMatrix[i] = jointMat;
 				}
@@ -627,7 +627,7 @@ namespace gpu_vulkan
 				memcpy(mesh->uniformBuffer.mapped, &mesh->uniformBlock, sizeof(mesh->uniformBlock));
 			}
 			else {
-				memcpy(mesh->uniformBuffer.mapped, &m, sizeof(glm::mat4));
+				memcpy(mesh->uniformBuffer.mapped, &m, sizeof(floating_matrix4));
 			}
 		}
 
@@ -870,8 +870,8 @@ namespace gpu_vulkan
    // Compute tangents from indexed mesh data
    void computeTangents(std::vector<gpu_vulkan::gltf::Vertex> &vertices, const std::vector<uint32_t> &indices)
    {
-      std::vector<glm::vec3> tan1(vertices.size(), glm::vec3(0.0f));
-      std::vector<glm::vec3> tan2(vertices.size(), glm::vec3(0.0f));
+      std::vector<floating_sequence3> tan1(vertices.size(), floating_sequence3(0.0f));
+      std::vector<floating_sequence3> tan2(vertices.size(), floating_sequence3(0.0f));
 
       // Step 1: accumulate per-triangle tangents and bitangents
       for (size_t i = 0; i < indices.size(); i += 3)
@@ -880,16 +880,16 @@ namespace gpu_vulkan
          uint32_t i2 = indices[i + 1];
          uint32_t i3 = indices[i + 2];
 
-         const glm::vec3 &v1 = vertices[i1].pos;
-         const glm::vec3 &v2 = vertices[i2].pos;
-         const glm::vec3 &v3 = vertices[i3].pos;
+         const floating_sequence3 &v1 = vertices[i1].pos;
+         const floating_sequence3 &v2 = vertices[i2].pos;
+         const floating_sequence3 &v3 = vertices[i3].pos;
 
-         const glm::vec2 &w1 = vertices[i1].gltf_uv;
-         const glm::vec2 &w2 = vertices[i2].gltf_uv;
-         const glm::vec2 &w3 = vertices[i3].gltf_uv;
+         const floating_sequence2 &w1 = vertices[i1].gltf_uv;
+         const floating_sequence2 &w2 = vertices[i2].gltf_uv;
+         const floating_sequence2 &w3 = vertices[i3].gltf_uv;
 
-         glm::vec3 e1 = v2 - v1;
-         glm::vec3 e2 = v3 - v1;
+         floating_sequence3 e1 = v2 - v1;
+         floating_sequence3 e2 = v3 - v1;
 
          float x1 = e1.x, x2 = e2.x;
          float y1 = e1.y, y2 = e2.y;
@@ -906,8 +906,8 @@ namespace gpu_vulkan
          else
             r = 1.0f / r;
 
-         glm::vec3 sdir = (e1 * t2 - e2 * t1) * r;
-         glm::vec3 tdir = (e2 * s1 - e1 * s2) * r;
+         floating_sequence3 sdir = (e1 * t2 - e2 * t1) * r;
+         floating_sequence3 tdir = (e2 * s1 - e1 * s2) * r;
 
          tan1[i1] += sdir;
          tan1[i2] += sdir;
@@ -921,11 +921,11 @@ namespace gpu_vulkan
       // Step 2: orthogonalize and compute handedness
       for (size_t i = 0; i < vertices.size(); ++i)
       {
-         const glm::vec3 &n = vertices[i].normal;
-         const glm::vec3 &t = tan1[i];
+         const floating_sequence3 &n = vertices[i].normal;
+         const floating_sequence3 &t = tan1[i];
 
          // Gram-Schmidt orthogonalize
-         glm::vec3 tangent = glm::normalize(t - n * glm::dot(n, t));
+         floating_sequence3 tangent = glm::normalize(t - n * glm::dot(n, t));
 
          // Determine handedness (sign)
          float sign = (glm::dot(glm::cross(n, t), tan2[i]) < 0.0f) ? -1.0f : 1.0f;
@@ -944,7 +944,7 @@ namespace gpu_vulkan
 		newNode->parent = parent;
 		newNode->name = node.name;
 		newNode->skinIndex = node.skin;
-		newNode->matrix = glm::mat4(1.0f);
+		newNode->matrix = floating_matrix4(1.0f);
 
 
 		::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
@@ -953,17 +953,17 @@ namespace gpu_vulkan
 
 
 		// Generate local node matrix
-		glm::vec3 translation = glm::vec3(0.0f);
+		floating_sequence3 translation = floating_sequence3(0.0f);
 		if (node.translation.size() == 3) {
 			translation = glm::make_vec3(node.translation.data());
 			newNode->translation = translation;
 		}
-		glm::mat4 rotation = glm::mat4(1.0f);
+		floating_matrix4 rotation = floating_matrix4(1.0f);
 		if (node.rotation.size() == 4) {
 			glm::quat q = glm::make_quat(node.rotation.data());
-			newNode->rotation = glm::mat4(q);
+			newNode->rotation = floating_matrix4(q);
 		}
-		glm::vec3 scale = glm::vec3(1.0f);
+		floating_sequence3 scale = floating_sequence3(1.0f);
 		if (node.scale.size() == 3) {
 			scale = glm::make_vec3(node.scale.data());
 			newNode->scale = scale;
@@ -971,7 +971,7 @@ namespace gpu_vulkan
 		if (node.matrix.size() == 16) {
 			newNode->matrix = glm::make_mat4x4(node.matrix.data());
 			if (globalscale != 1.0f) {
-				//newNode->matrix = glm::scale(newNode->matrix, glm::vec3(globalscale));
+				//newNode->matrix = glm::scale(newNode->matrix, floating_sequence3(globalscale));
 			}
 		};
 
@@ -996,8 +996,8 @@ namespace gpu_vulkan
 				uint32_t vertexStart = static_cast<uint32_t>(vertexBuffer.size());
 				uint32_t indexCount = 0;
 				uint32_t vertexCount = 0;
-				glm::vec3 posMin{};
-				glm::vec3 posMax{};
+				floating_sequence3 posMin{};
+				floating_sequence3 posMax{};
 				bool hasSkin = false;
             bool bHasStoredTangents = false;
 
@@ -1019,8 +1019,8 @@ namespace gpu_vulkan
 					const tinygltf::Accessor& posAccessor = model.accessors[primitive.attributes.find("POSITION")->second];
 					const tinygltf::BufferView& posView = model.bufferViews[posAccessor.bufferView];
 					bufferPos = reinterpret_cast<const float*>(&(model.buffers[posView.buffer].data[posAccessor.byteOffset + posView.byteOffset]));
-					posMin = glm::vec3(posAccessor.minValues[0], posAccessor.minValues[1], posAccessor.minValues[2]);
-					posMax = glm::vec3(posAccessor.maxValues[0], posAccessor.maxValues[1], posAccessor.maxValues[2]);
+					posMin = floating_sequence3(posAccessor.minValues[0], posAccessor.minValues[1], posAccessor.minValues[2]);
+					posMax = floating_sequence3(posAccessor.maxValues[0], posAccessor.maxValues[1], posAccessor.maxValues[2]);
 
 					if (primitive.attributes.find("NORMAL") != primitive.attributes.end()) {
 						const tinygltf::Accessor& normAccessor = model.accessors[primitive.attributes.find("NORMAL")->second];
@@ -1071,23 +1071,23 @@ namespace gpu_vulkan
 
 					for (size_t v = 0; v < posAccessor.count; v++) {
 						Vertex vert{};
-						vert.pos = glm::vec4(glm::make_vec3(&bufferPos[v * 3]), 1.0f);
-						vert.normal = glm::normalize(glm::vec3(bufferNormals ? glm::make_vec3(&bufferNormals[v * 3]) : glm::vec3(0.0f)));
-						vert.gltf_uv = bufferTexCoords ? glm::make_vec2(&bufferTexCoords[v * 2]) : glm::vec3(0.0f);
+						vert.pos = floating_sequence4(glm::make_vec3(&bufferPos[v * 3]), 1.0f);
+						vert.normal = glm::normalize(floating_sequence3(bufferNormals ? glm::make_vec3(&bufferNormals[v * 3]) : floating_sequence3(0.0f)));
+						vert.gltf_uv = bufferTexCoords ? glm::make_vec2(&bufferTexCoords[v * 2]) : floating_sequence3(0.0f);
 						if (bufferColors) {
 							switch (numColorComponents) {
 							case 3:
-								vert.color = glm::vec4(glm::make_vec3(&bufferColors[v * 3]), 1.0f);
+								vert.color = floating_sequence4(glm::make_vec3(&bufferColors[v * 3]), 1.0f);
 							case 4:
 								vert.color = glm::make_vec4(&bufferColors[v * 4]);
 							}
 						}
 						else {
-							vert.color = glm::vec4(1.0f);
+							vert.color = floating_sequence4(1.0f);
 						}
-						vert.tangent = bufferTangents ? glm::vec4(glm::make_vec4(&bufferTangents[v * 4])) : glm::vec4(0.0f);
-						//vert.joint0 = hasSkin ? glm::vec4(glm::make_vec4(&bufferJoints[v * 4])) : glm::vec4(0.0f);
-						//vert.weight0 = hasSkin ? glm::make_vec4(&bufferWeights[v * 4]) : glm::vec4(0.0f);
+						vert.tangent = bufferTangents ? floating_sequence4(glm::make_vec4(&bufferTangents[v * 4])) : floating_sequence4(0.0f);
+						//vert.joint0 = hasSkin ? floating_sequence4(glm::make_vec4(&bufferJoints[v * 4])) : floating_sequence4(0.0f);
+						//vert.weight0 = hasSkin ? glm::make_vec4(&bufferWeights[v * 4]) : floating_sequence4(0.0f);
 						vertexBuffer.push_back(vert);
 					}
 				}
@@ -1180,7 +1180,7 @@ namespace gpu_vulkan
 				const tinygltf::BufferView& bufferView = gltfModel.bufferViews[accessor.bufferView];
 				const tinygltf::Buffer& buffer = gltfModel.buffers[bufferView.buffer];
 				newSkin->inverseBindMatrices.resize(accessor.count);
-				memcpy(newSkin->inverseBindMatrices.data(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(glm::mat4));
+				memcpy(newSkin->inverseBindMatrices.data(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(floating_matrix4));
 			}
 
 			m_skins.push_back(newSkin);
@@ -1467,14 +1467,14 @@ namespace gpu_vulkan
 			const bool flipY = fileLoadingFlags & FileLoadingFlags::FlipY;
 			for (Node* node : m_linearNodes) {
 				if (node->mesh) {
-					const glm::mat4 localMatrix = node->getMatrix();
+					const floating_matrix4 localMatrix = node->getMatrix();
 					for (Primitive* primitive : node->mesh->primitives) {
 						for (uint32_t i = 0; i < primitive->vertexCount; i++) {
 							Vertex& vertex = vertexBuffer[primitive->firstVertex + i];
 							// Pre-transform vertex positions by node-hierarchy
 							if (preTransform) {
-								vertex.pos = glm::vec3(localMatrix * glm::vec4(vertex.pos, 1.0f));
-								vertex.normal = glm::normalize(glm::mat3(localMatrix) * vertex.normal);
+								vertex.pos = floating_sequence3(localMatrix * floating_sequence4(vertex.pos, 1.0f));
+								vertex.normal = glm::normalize(floating_matrix3(localMatrix) * vertex.normal);
 							}
 							// Flip Y-Axis of vertex positions
 							if (flipY) {
@@ -1805,12 +1805,12 @@ namespace gpu_vulkan
 	}
 
 
-	void  gltf::Model::getNodeDimensions(Node* node, glm::vec3& min, glm::vec3& max)
+	void  gltf::Model::getNodeDimensions(Node* node, floating_sequence3& min, floating_sequence3& max)
 	{
 		if (node->mesh) {
 			for (Primitive* primitive : node->mesh->primitives) {
-				glm::vec4 locMin = glm::vec4(primitive->dimensions.min, 1.0f) * node->getMatrix();
-				glm::vec4 locMax = glm::vec4(primitive->dimensions.max, 1.0f) * node->getMatrix();
+				floating_sequence4 locMin = floating_sequence4(primitive->dimensions.min, 1.0f) * node->getMatrix();
+				floating_sequence4 locMax = floating_sequence4(primitive->dimensions.max, 1.0f) * node->getMatrix();
 				if (locMin.x < min.x) { min.x = locMin.x; }
 				if (locMin.y < min.y) { min.y = locMin.y; }
 				if (locMin.z < min.z) { min.z = locMin.z; }
@@ -1826,8 +1826,8 @@ namespace gpu_vulkan
 
 	void  gltf::Model::getSceneDimensions()
 	{
-		dimensions.min = glm::vec3(FLT_MAX);
-		dimensions.max = glm::vec3(-FLT_MAX);
+		dimensions.min = floating_sequence3(FLT_MAX);
+		dimensions.max = floating_sequence3(-FLT_MAX);
 		for (auto node : m_nodes) {
 			getNodeDimensions(node, dimensions.min, dimensions.max);
 		}
@@ -1893,17 +1893,17 @@ namespace gpu_vulkan
 
 					switch (accessor.type) {
 					case TINYGLTF_TYPE_VEC3: {
-							glm::vec3* buf = new glm::vec3[accessor.count];
-							memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(glm::vec3));
+							floating_sequence3* buf = new floating_sequence3[accessor.count];
+							memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(floating_sequence3));
 							for (size_t index = 0; index < accessor.count; index++) {
-								sampler.outputsVec4.push_back(glm::vec4(buf[index], 0.0f));
+								sampler.outputsVec4.push_back(floating_sequence4(buf[index], 0.0f));
 							}
 							delete[] buf;
 							break;
 					}
 					case TINYGLTF_TYPE_VEC4: {
-							glm::vec4* buf = new glm::vec4[accessor.count];
-							memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(glm::vec4));
+							floating_sequence4* buf = new floating_sequence4[accessor.count];
+							memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(floating_sequence4));
 							for (size_t index = 0; index < accessor.count; index++) {
 								sampler.outputsVec4.push_back(buf[index]);
 							}
@@ -1971,13 +1971,13 @@ namespace gpu_vulkan
 					if (u <= 1.0f) {
 						switch (channel.path) {
 						case  AnimationChannel::PathType::TRANSLATION: {
-								glm::vec4 trans = glm::mix(sampler.outputsVec4[i], sampler.outputsVec4[i + 1], u);
-								channel.node->translation = glm::vec3(trans);
+								floating_sequence4 trans = glm::mix(sampler.outputsVec4[i], sampler.outputsVec4[i + 1], u);
+								channel.node->translation = floating_sequence3(trans);
 								break;
 						}
 						case  AnimationChannel::PathType::SCALE: {
-								glm::vec4 trans = glm::mix(sampler.outputsVec4[i], sampler.outputsVec4[i + 1], u);
-								channel.node->scale = glm::vec3(trans);
+								floating_sequence4 trans = glm::mix(sampler.outputsVec4[i], sampler.outputsVec4[i + 1], u);
+								channel.node->scale = floating_sequence3(trans);
 								break;
 						}
 						case  AnimationChannel::PathType::ROTATION: {
@@ -2080,13 +2080,13 @@ END_GPU_PROPERTIES()
 //
 //		struct Vertex
 //{
-//   glm::vec3 pos;
-//   glm::vec3 normal;
-//   glm::vec2 uv;
-//   glm::vec4 color;
-//   glm::vec4 joint0;
-//   glm::vec4 weight0;
-//   glm::vec4 tangent;
+//   floating_sequence3 pos;
+//   floating_sequence3 normal;
+//   floating_sequence2 uv;
+//   floating_sequence4 color;
+//   floating_sequence4 joint0;
+//   floating_sequence4 weight0;
+//   floating_sequence4 tangent;
 //   // static VkVertexInputBindingDescription vertexInputBindingDescription;
 //   // static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
 //   // static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;

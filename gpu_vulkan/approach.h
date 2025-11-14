@@ -2,9 +2,9 @@
 
 
 #include "bred/gpu/bred_approach.h"
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-//#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
-#include <glm/glm.hpp>
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+////#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
+//#include <glm/glm.hpp>
 
 
 namespace gpu_vulkan
@@ -113,8 +113,8 @@ namespace gpu_vulkan
 
       ///** @brief State of gamepad input (only used on Android) */
       //struct {
-      //   glm::vec2 axisLeft = glm::vec2(0.0f);
-      //   glm::vec2 axisRight = glm::vec2(0.0f);
+      //   floating_sequence2 axisLeft = floating_sequence2(0.0f);
+      //   floating_sequence2 axisRight = floating_sequence2(0.0f);
       //} gamePadState;
 
       ///** @brief State of mouse/touch input */
@@ -124,7 +124,7 @@ namespace gpu_vulkan
       //      bool right = false;
       //      bool middle = false;
       //   } buttons;
-      //   glm::vec2 position;
+      //   floating_sequence2 position;
       //} mouseState;
 
       VkClearColorValue defaultClearColor = { { 0.025f, 0.025f, 0.025f, 1.0f } };

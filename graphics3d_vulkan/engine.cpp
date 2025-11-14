@@ -391,11 +391,11 @@ namespace graphics3d_vulkan
       //    globalSetLayout->getDescriptorSetLayout()
       //};
 
-      ////camera camera{ glm::vec3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
-      ////{ glm::vec3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
+      ////camera camera{ floating_sequence3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
+      ////{ floating_sequence3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
       //auto camera = m_pscene->get_default_camera();
 
-      ////VkcCamera camera(glm::vec3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
+      ////VkcCamera camera(floating_sequence3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
 
       //auto viewerObject = øcreate <::graphics3d::scene_object>();
       //papp->m_pimpact->m_bLastMouse = true;

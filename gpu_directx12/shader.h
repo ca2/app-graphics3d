@@ -149,18 +149,18 @@ namespace gpu_directx12
 //
 //      virtual void setFloat(const ::scoped_string & scopedstrName, float value) override;
 //
-//      //virtual void setVec2(const ::scoped_string & scopedstrName, const glm::vec2& value) override;
+//      //virtual void setVec2(const ::scoped_string & scopedstrName, const floating_sequence2& value) override;
 //      virtual void setVec2(const ::scoped_string & scopedstrName, float x, float y) override;
 //
-//      //virtual void setVec3(const ::scoped_string & scopedstrName, const glm::vec3& value) override;
+//      //virtual void setVec3(const ::scoped_string & scopedstrName, const floating_sequence3& value) override;
 //      virtual void setVec3(const ::scoped_string & scopedstrName, float x, float y, float z) override;
 //
-//      //virtual void setVec4(const ::scoped_string & scopedstrName, const glm::vec4& value) override;
+//      //virtual void setVec4(const ::scoped_string & scopedstrName, const floating_sequence4& value) override;
 //      virtual void setVec4(const ::scoped_string & scopedstrName, float x, float y, float z, float w) override;
 //
-//      //virtual void setMat2(const ::scoped_string & scopedstrName, const glm::mat2& mat) override;
-//      //virtual void setMat3(const ::scoped_string & scopedstrName, const glm::mat3& mat) override;
-//      //virtual void setMat4(const ::scoped_string & scopedstrName, const glm::mat4& mat) override;
+//      //virtual void setMat2(const ::scoped_string & scopedstrName, const floating_matrix2& mat) override;
+//      //virtual void setMat3(const ::scoped_string & scopedstrName, const floating_matrix3& mat) override;
+//      //virtual void setMat4(const ::scoped_string & scopedstrName, const floating_matrix4& mat) override;
 //      virtual void setMat2(const ::scoped_string & scopedstrName, const float p[2*2]) override;
 //      virtual void setMat3(const ::scoped_string & scopedstrName, const float p[3*3]) override;
 //      virtual void setMat4(const ::scoped_string & scopedstrName, const float p[4*4]) override;

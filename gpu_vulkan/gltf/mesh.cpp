@@ -113,7 +113,7 @@ namespace gpu_vulkan
          //{
          //   // albedo
          //   pshader->set_int("material.useTextureAlbedo", m_pmaterial->useTextureAlbedo);
-         //   pshader->set_seq3("material.albedo", m_pmaterial->m_seq3Albedo);
+         //   pshader->set_sequence3("material.albedo", m_pmaterial->m_seq3Albedo);
          //   if (m_pmaterial->useTextureAlbedo)
          //   {
          //      int iTextureIndex = ::gpu::e_gltf_texture_albedo;
@@ -158,7 +158,7 @@ namespace gpu_vulkan
          //   }
 
          //   pshader->set_int("material.useTextureEmissive", m_pmaterial->useTextureEmissive);
-         //   pshader->set_seq3("material.emissive", m_pmaterial->m_seq3Emissive);
+         //   pshader->set_sequence3("material.emissive", m_pmaterial->m_seq3Emissive);
          //   if (m_pmaterial->useTextureEmissive)
          //   {
          //      glActiveTexture(GL_TEXTURE0 + ::gpu::e_gltf_texture_emissive);
@@ -175,7 +175,7 @@ namespace gpu_vulkan
          //   // albedo
          //               //;
          //   //pshader->set_int("material.useTextureAlbedo", m_pmaterial->useTextureAlbedo);
-         //   //pshader->set_seq3("material.albedo", m_pmaterial->m_seq3Albedo);
+         //   //pshader->set_sequence3("material.albedo", m_pmaterial->m_seq3Albedo);
          //   if (m_pmaterial->useTextureAlbedo)
          //   {
          //      int iTextureIndex = ::gpu::e_gltf_texture_albedo;
@@ -226,7 +226,7 @@ namespace gpu_vulkan
          //   //}
 
          //   //pshader->set_int("material.useTextureEmissive", m_pmaterial->useTextureEmissive);
-         //   //pshader->set_seq3("material.emissive", m_pmaterial->m_seq3Emissive);
+         //   //pshader->set_sequence3("material.emissive", m_pmaterial->m_seq3Emissive);
          //   //if (m_pmaterial->useTextureEmissive)
          //   //{
          //   //   glActiveTexture(GL_TEXTURE0 + ::gpu::e_gltf_texture_emissive);

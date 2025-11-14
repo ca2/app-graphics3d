@@ -33,10 +33,10 @@ namespace vulkan
    //   } uniformBuffers;
 
    //   struct UniformData {
-   //      glm::mat4 projection;
-   //      glm::mat4 view;
-   //      glm::mat4 model;
-   //      glm::vec4 lightPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+   //      floating_matrix4 projection;
+   //      floating_matrix4 view;
+   //      floating_matrix4 model;
+   //      floating_sequence4 lightPos = floating_sequence4(0.0f, 0.0f, 0.0f, 1.0f);
    //   } uniformData;
 
    //   struct {
@@ -77,8 +77,8 @@ namespace vulkan
    //      VkDescriptorImageInfo descriptor;
    //   } offscreenPass{};
 
-   //   glm::vec3 modelPosition = glm::vec3(0.0f, -1.0f, 0.0f);
-   //   glm::vec3 modelRotation = glm::vec3(0.0f);
+   //   floating_sequence3 modelPosition = floating_sequence3(0.0f, -1.0f, 0.0f);
+   //   floating_sequence3 modelRotation = floating_sequence3(0.0f);
 
    //   VulkanExample20();
    //   ~VulkanExample20();

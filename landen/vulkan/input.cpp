@@ -7,11 +7,11 @@
 namespace vkc {
 
    MNKController::MNKController(float sensitivity, float yaw, float pitch)
-      : _sensitivity(sensitivity), _yaw(yaw), _pitch(pitch), _cameraDirection(glm::vec3(0.0f, 0.0f, -1.0f)), _cameraPosition(glm::vec3(0.0f, 0.0f, 3.0f)) {
+      : _sensitivity(sensitivity), _yaw(yaw), _pitch(pitch), _cameraDirection(floating_sequence3(0.0f, 0.0f, -1.0f)), _cameraPosition(floating_sequence3(0.0f, 0.0f, 3.0f)) {
    }
    //void MNKController::moveInPlaneXZ(
    //    vkc::VkContainer * pvkcontainer, float dt, VkcGameObject& gameObject) {
-   //    glm::vec3 rotate{ 0 };
+   //    floating_sequence3 rotate{ 0 };
    //    if (pvkcontainer->get_key_state(m_keymap.lookRight) == ::user::e_key_state_pressed) rotate.y += 1.f;
    //    if (pvkcontainer->get_key_state(m_keymap.lookLeft) == ::user::e_key_state_pressed) rotate.y -= 1.f;
    //    if (pvkcontainer->get_key_state(m_keymap.lookUp) == ::user::e_key_state_pressed) rotate.x += 1.f;
@@ -26,11 +26,11 @@ namespace vkc {
    //    gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y, glm::two_pi<float>());
 
    //    float yaw = gameObject.transform.rotation.y;
-   //    const glm::vec3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
-   //    const glm::vec3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
-   //    const glm::vec3 upDir{ 0.f, -1.f, 0.f };
+   //    const floating_sequence3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
+   //    const floating_sequence3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
+   //    const floating_sequence3 upDir{ 0.f, -1.f, 0.f };
 
-   //    glm::vec3 moveDir{ 0.f };
+   //    floating_sequence3 moveDir{ 0.f };
    //    if (pvkcontainer->get_key_state(m_keymap.moveForward) == ::user::e_key_state_pressed) moveDir += forwardDir;
    //    if (pvkcontainer->get_key_state(m_keymap.moveBackward) == ::user::e_key_state_pressed) moveDir -= forwardDir;
    //    if (pvkcontainer->get_key_state(m_keymap.moveRight) == ::user::e_key_state_pressed) moveDir += rightDir;
@@ -68,7 +68,7 @@ namespace vkc {
          _pitch = -89.0f;
 
       // Update camera direction based on yaw and pitch
-      glm::vec3 direction;
+      floating_sequence3 direction;
       direction.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
       direction.y = sin(glm::radians(_pitch));
       direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
@@ -84,10 +84,10 @@ namespace vkc {
    //        _cameraPosition -= _cameraDirection * cameraSpeed;
    //    }
    //    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-   //        _cameraPosition -= glm::normalize(glm::cross(_cameraDirection, glm::vec3(0.0f, 1.0f, 0.0f))) * cameraSpeed;
+   //        _cameraPosition -= glm::normalize(glm::cross(_cameraDirection, floating_sequence3(0.0f, 1.0f, 0.0f))) * cameraSpeed;
    //    }
    //    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-   //        _cameraPosition += glm::normalize(glm::cross(_cameraDirection, glm::vec3(0.0f, 1.0f, 0.0f))) * cameraSpeed;
+   //        _cameraPosition += glm::normalize(glm::cross(_cameraDirection, floating_sequence3(0.0f, 1.0f, 0.0f))) * cameraSpeed;
    //    }
    //}
 
@@ -127,11 +127,11 @@ namespace vkc {
    void MNKController::updateMovement(vkc::VkContainer* pvkcontainer, float dt, VkcGameObject& gameObject)
    {
       float yaw = gameObject.transform.rotation.y;
-      const glm::vec3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
-      const glm::vec3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
-      const glm::vec3 upDir{ 0.f, -1.f, 0.f };
+      const floating_sequence3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
+      const floating_sequence3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
+      const floating_sequence3 upDir{ 0.f, -1.f, 0.f };
 
-      glm::vec3 moveDir{ 0.f };
+      floating_sequence3 moveDir{ 0.f };
       if (pvkcontainer->get_key_state(m_keymap.moveForward) == ::user::e_key_state_pressed) moveDir += forwardDir;
       if (pvkcontainer->get_key_state(m_keymap.moveBackward) == ::user::e_key_state_pressed) moveDir -= forwardDir;
       if (pvkcontainer->get_key_state(m_keymap.moveRight) == ::user::e_key_state_pressed) moveDir += rightDir;
@@ -152,9 +152,9 @@ namespace vkc {
    }
 
 
-   glm::vec3 MNKController::getCameraDirection() const { return _cameraDirection; }
+   floating_sequence3 MNKController::getCameraDirection() const { return _cameraDirection; }
 
-   glm::vec3 MNKController::getCameraPosition() const { return _cameraPosition; }
+   floating_sequence3 MNKController::getCameraPosition() const { return _cameraPosition; }
 
    void MNKController::handleMouseInput(vkc::VkContainer* pvkcontainer)
    {

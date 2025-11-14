@@ -82,8 +82,8 @@ m_pskybox = pskybox;
       {
          //Timer timer;
 
-         // glm::mat4 model = gpu::gltf::mIndentity4;
-         // glm::mat4 cameraAngles[] =
+         // floating_matrix4 model = gpu::gltf::mIndentity4;
+         // floating_matrix4 cameraAngles[] =
          // {
          //    glm::lookAt(gpu::gltf::origin, gpu::gltf::unitX, -gpu::gltf::unitY),
          //    glm::lookAt(gpu::gltf::origin, -gpu::gltf::unitX, -gpu::gltf::unitY),
@@ -92,7 +92,7 @@ m_pskybox = pskybox;
          //    glm::lookAt(gpu::gltf::origin, gpu::gltf::unitZ, -gpu::gltf::unitY),
          //    glm::lookAt(gpu::gltf::origin, -gpu::gltf::unitZ, -gpu::gltf::unitY)
          // };
-         // glm::mat4 projection = glm::perspective(
+         // floating_matrix4 projection = glm::perspective(
          //    glm::radians(90.0f), // 90 degrees to cover one face
          //    1.0f, // its a square
          //    0.1f,

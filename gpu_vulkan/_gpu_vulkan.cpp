@@ -550,10 +550,10 @@ namespace vulkan
 
        struct Vertex2
    {
-      glm::vec3 position{};
-      glm::vec3 color{};
-      glm::vec3 normal{};
-      glm::vec2 uv{};
+      floating_sequence3 position{};
+      floating_sequence3 color{};
+      floating_sequence3 normal{};
+      floating_sequence2 uv{};
 
    };
    ::array_base<VkVertexInputBindingDescription> getBindingDescriptions2()

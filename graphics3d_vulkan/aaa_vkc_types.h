@@ -43,11 +43,11 @@ struct AllocatedBuffer {
 
 struct Vertex {
 
-    glm::vec3 position;
+    floating_sequence3 position;
     float uv_x;
-    glm::vec3 normal;
+    floating_sequence3 normal;
     float uv_y;
-    glm::vec4 color;
+    floating_sequence4 color;
 };
 
 // holds the resources needed for a mesh
@@ -60,7 +60,7 @@ struct GPUMeshBuffers {
 
 // push constants for our mesh object draws
 struct GPUDrawPushConstants {
-    glm::mat4 worldMatrix;
+    floating_matrix4 worldMatrix;
     VkDeviceAddress vertexBuffer;
 };
 struct AllocatedImage {
@@ -72,12 +72,12 @@ struct AllocatedImage {
 };
 
 struct GPUSceneData {
-    glm::mat4 view;
-    glm::mat4 proj;
-    glm::mat4 viewproj;
-    glm::vec4 ambientColor;
-    glm::vec4 sunlightDirection; // w for sun power
-    glm::vec4 sunlightColor;
+    floating_matrix4 view;
+    floating_matrix4 proj;
+    floating_matrix4 viewproj;
+    floating_sequence4 ambientColor;
+    floating_sequence4 sunlightDirection; // w for sun power
+    floating_sequence4 sunlightColor;
 };
 
 //> mat_types
@@ -101,7 +101,7 @@ struct DrawContext;
 
 class IRenderable {
 
-    virtual void Draw(const glm::mat4& topMatrix, DrawContext& ctx) = 0;
+    virtual void Draw(const floating_matrix4& topMatrix, DrawContext& ctx) = 0;
 };
 
 // implementation of a drawable scene node.
@@ -113,10 +113,10 @@ struct Node : public IRenderable {
     std::weak_ptr<Node> parent;
     ::array<::pointer<Node>> children;
 
-    glm::mat4 localTransform;
-    glm::mat4 worldTransform;
+    floating_matrix4 localTransform;
+    floating_matrix4 worldTransform;
 
-    void refreshTransform(const glm::mat4& parentMatrix)
+    void refreshTransform(const floating_matrix4& parentMatrix)
     {
         worldTransform = parentMatrix * localTransform;
         for (auto c : children) {
@@ -124,7 +124,7 @@ struct Node : public IRenderable {
         }
     }
 
-    virtual void Draw(const glm::mat4& topMatrix, DrawContext& ctx)
+    virtual void Draw(const floating_matrix4& topMatrix, DrawContext& ctx)
     {
         // draw children
         for (auto& c : children) {

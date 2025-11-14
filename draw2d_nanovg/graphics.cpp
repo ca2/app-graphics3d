@@ -8769,8 +8769,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //vkVertex2f((VKfloat)rectangle.left(), (VKfloat)rectangle.bottom());
 
       struct Vertex {
-         glm::vec2 pos;
-         glm::vec3 color;
+         floating_sequence2 pos;
+         floating_sequence3 color;
       };
 
       std::vector<Vertex> vertexes = {

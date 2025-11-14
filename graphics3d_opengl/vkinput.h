@@ -32,8 +32,8 @@ namespace graphics3d_opengl
       float _sensitivity;  // Sensitivity factor for mouse movement
       float _yaw;          // ::graphics3d::camera yaw (horizontal rotation)
       float _pitch;        // ::graphics3d::camera pitch (vertical rotation)
-      glm::vec3 _cameraDirection; // ::graphics3d::camera direction vector
-      glm::vec3 _cameraPosition;
+      floating_sequence3 _cameraDirection; // ::graphics3d::camera direction vector
+      floating_sequence3 _cameraPosition;
 
       ::block as_block()
       {
@@ -62,8 +62,8 @@ namespace graphics3d_opengl
       void processKeyboardInput(float deltaTime);
       void handleMouseInput();
 
-      glm::vec3 getCameraDirection() const;
-      glm::vec3 getCameraPosition() const;
+      floating_sequence3 getCameraDirection() const;
+      floating_sequence3 getCameraPosition() const;
 
 
       ::pointer<::user::graphics3d > m_pimpact;

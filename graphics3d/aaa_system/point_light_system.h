@@ -11,8 +11,8 @@ namespace graphics3d
 
 
    //struct PointLightPushConstants {
-   //   glm::vec4 position{};
-   //   glm::vec4 color{};
+   //   floating_sequence4 position{};
+   //   floating_sequence4 color{};
    //   float radius;
    //};
 

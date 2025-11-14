@@ -304,7 +304,7 @@ namespace gpu_vulkan
          // Push block
          struct PushBlock
          {
-            glm::mat4 mvp;
+            floating_matrix4 mvp;
             float deltaPhi;
             float deltaTheta;
          } pushBlock;
@@ -376,13 +376,13 @@ namespace gpu_vulkan
                                   VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, cubemapRange);
 
          // Setup matrices (same as Sascha)
-         ::array_base<glm::mat4> matrices = {
-            glm::lookAt(glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // +X
-            glm::lookAt(glm::vec3(0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // -X
-            glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), // +Y
-            glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)), // -Y
-            glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // +Z
-            glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // -Z
+         ::array_base<floating_matrix4> matrices = {
+            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +X
+            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(-1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -X
+            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, 1.0f)), // +Y
+            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, -1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, -1.0f)), // -Y
+            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, 1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +Z
+            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, -1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -Z
          };
 
          //numMips = 1; // for diffuse irradiance, we only need the first mip

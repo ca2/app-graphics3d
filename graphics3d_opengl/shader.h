@@ -40,12 +40,12 @@
 //
 //      void _set_int(const char* name, int value) const;
 //      void _set_float(const char* name, float value) const;
-//      void _set_vec2(const char* name, const glm::vec2& value) const;
-//      void _set_vec3(const char* name, const glm::vec3& value) const;
-//      void _set_vec4(const char* name, const glm::vec4& value) const;
-//      void _set_mat2(const char* name, const glm::mat2& matrix) const;
-//      void _set_mat3(const char* name, const glm::mat3& matrix) const;
-//      void _set_mat4(const char* name, const glm::mat4& matrix) const;
+//      void _set_vec2(const char* name, const floating_sequence2& value) const;
+//      void _set_vec3(const char* name, const floating_sequence3& value) const;
+//      void _set_vec4(const char* name, const floating_sequence4& value) const;
+//      void _set_matrix2(const char* name, const floating_matrix2& matrix) const;
+//      void _set_matrix3(const char* name, const floating_matrix3& matrix) const;
+//      void _set_matrix4(const char* name, const floating_matrix4& matrix) const;
 //
 //      void push_properties() override;
 //

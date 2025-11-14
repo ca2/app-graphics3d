@@ -44,7 +44,7 @@ namespace graphics3d_opengl
       }
 
       // Set uniform mat4
-      void SetUniformMat4f(const std::string& name, const glm::mat4& matrix) const {
+      void SetUniformMat4f(const std::string& name, const floating_matrix4& matrix) const {
          GLint location = glGetUniformLocation(ID, name.c_str());
          if (location == -1) {
             std::cerr << "Uniform " << name << " not found!" << std::endl;
@@ -63,7 +63,7 @@ namespace graphics3d_opengl
          glUniform3f(location, v0, v1, v2);
       }
 
-      void setVec3(const std::string& name, const glm::vec3& value) const {
+      void setVec3(const std::string& name, const floating_sequence3& value) const {
          GLint location = glGetUniformLocation(ID, name.c_str());
          if (location == -1) {
             std::cerr << "Uniform " << name << " not found!" << std::endl;

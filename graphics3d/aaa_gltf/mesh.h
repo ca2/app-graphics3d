@@ -38,8 +38,8 @@ namespace gpu
          unsigned_int_array m_indexa;
          ::pointer<::gpu::gltf::material> m_pmaterial;
          struct UniformBlock {
-            glm::mat4 matrix;
-            glm::mat4 jointMatrix[64]{};
+            floating_matrix4 matrix;
+            floating_matrix4 jointMatrix[64]{};
             float jointcount{ 0 };
          } uniformBlock;
 

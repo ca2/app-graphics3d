@@ -18,10 +18,10 @@ namespace vkc {
     virtual public ::particle{
     public:
         struct Vertex {
-            glm::vec3 position{};
-            glm::vec3 color{};
-            glm::vec3 normal{};
-            glm::vec2 uv{};
+            floating_sequence3 position{};
+            floating_sequence3 color{};
+            floating_sequence3 normal{};
+            floating_sequence2 uv{};
 
             static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
             static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();

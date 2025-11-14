@@ -134,7 +134,7 @@
 //      ////GLCheckError("");
 //
 //      //////// Vertex layout
-//      //////glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+//      //////glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(floating_sequence3), (void*)0);
 //      //////glEnableVertexAttribArray(0);
 //
 //      //glBindVertexArray(0);

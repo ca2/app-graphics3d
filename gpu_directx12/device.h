@@ -316,7 +316,7 @@ namespace gpu_directx12
       //ID3D12Device1* draw_get_d3d11_device1();
 
       int get_type_size(::gpu::enum_type etype) override;
-      void set_mat4(void* p, const ::glm::mat4& mat4) override;
+      void set_matrix4(void* p, const floating_matrix4& mat4) override;
       ::gpu::payload load_dds(const ::scoped_string& scopedstrImagePath) override;
       ::file::path shader_path(const ::file::path& pathShader) override;
 

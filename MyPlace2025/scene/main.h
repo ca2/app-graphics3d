@@ -78,9 +78,9 @@ namespace app_graphics3d_MyPlace2025
 
 
       // Misc
-      std::vector<glm::mat4> boxModelMatrices; // Declare as a member variable
-      std::vector<glm::mat4> wallModelMatrices;
-      std::vector<glm::vec3> wallPositions;
+      std::vector<floating_matrix4> boxModelMatrices; // Declare as a member variable
+      std::vector<floating_matrix4> wallModelMatrices;
+      std::vector<floating_sequence3> wallPositions;
 
 
 

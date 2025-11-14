@@ -37,8 +37,8 @@ namespace graphics3d_directx11
       struct push_constants
       {
 
-         glm::mat4 modelMatrix;
-         glm::mat4 normalMatrix;
+         floating_matrix4 modelMatrix;
+         floating_matrix4 normalMatrix;
 
          int useTextureAlbedo;//0
          int useTextureMetallicRoughness;//4
@@ -51,17 +51,17 @@ namespace graphics3d_directx11
 
          // 20
 
-         ::glm::vec3 albedo;//20
+         ::floating_sequence3 albedo;//20
          float metallic;//32
          float roughness;//36
          float ambientOcclusion;//40
-         ::glm::vec3 emissive;//44
+         ::floating_sequence3 emissive;//44
          float fPadding4;
          // 36
 
          // 56
 
-         ::glm::vec3 cameraPosition;//56
+         ::floating_sequence3 cameraPosition;//56
          float bloomBrightnessCutoff;//68
          // 72
 

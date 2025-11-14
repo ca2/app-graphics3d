@@ -271,8 +271,8 @@ namespace graphics3d_directx11
    //            if (!node->mesh)
    //               continue;
    //
-   //            glm::mat4 world = pgameobject->getTransform().mat4() * node->getMatrix();
-   //            glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+   //            floating_matrix4 world = pgameobject->getTransform().mat4() * node->getMatrix();
+   //            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
    //            memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
    //            memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
    //
@@ -816,8 +816,8 @@ namespace graphics3d_directx11
    //          if (!node->mesh)
    //             continue;
    //
-   //          glm::mat4 world = go->getTransform().mat4() * node->getMatrix();
-   //          glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+   //          floating_matrix4 world = go->getTransform().mat4() * node->getMatrix();
+   //          floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
    //
    //          memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
    //          memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
@@ -925,8 +925,8 @@ namespace graphics3d_directx11
    //         if (!node->mesh)
    //            continue;
 
-   //         glm::mat4 world = psceneobject->transform().getMatrix() * node->getMatrix();
-   //         glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+   //         floating_matrix4 world = psceneobject->transform().getMatrix() * node->getMatrix();
+   //         floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
    //         memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
    //         memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
 
@@ -988,8 +988,8 @@ namespace graphics3d_directx11
 //            if (!node->mesh)
 //               continue;
 //
-//            glm::mat4 world = go->getTransform().mat4() * node->getMatrix();
-//            glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+//            floating_matrix4 world = go->getTransform().mat4() * node->getMatrix();
+//            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
 //
 //            memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
 //            memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
@@ -1162,8 +1162,8 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
             //    if (!node->mesh)
             //       continue;
 
-               //glm::mat4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
-//              glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+               //floating_matrix4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
+//              floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
             //   //memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
             //   //memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
 
@@ -1192,13 +1192,13 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
             //      auto prendersystem = this;
 
-                  //pshader->set_mat4("modelMatrix", world);
-                  //pshader->set_mat4("normalMatrix", normalMat);
+                  //pshader->set_matrix4("modelMatrix", world);
+                  //pshader->set_matrix4("normalMatrix", normalMat);
             //      bool bAlbedo = pgltfmodel->m_materials[0].baseColorTexture.is_set();
             //      bAlbedo = bAlbedo && !m_bDisableAlbedo;
             //      pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
 
-            //          glm::vec3 seq3Albedo = {};
+            //          floating_sequence3 seq3Albedo = {};
             //      if (prendersystem->m_bForceDefaultAmbientOcclusionFactor)
             //      {
 
@@ -1207,13 +1207,13 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
             //      else
             //      {
 
-            //         seq3Albedo = ::glm::vec3(pgltfmodel->m_materials[0].baseColorFactor.r,
+            //         seq3Albedo = ::floating_sequence3(pgltfmodel->m_materials[0].baseColorFactor.r,
             //                                   pgltfmodel->m_materials[0].baseColorFactor.g,
             //                                   pgltfmodel->m_materials[0].baseColorFactor.b);
 
             //      }
 
-            //      pshader->set_seq3("albedo", seq3Albedo);
+            //      pshader->set_sequence3("albedo", seq3Albedo);
 
             //      bool bMetallicRoughness = pgltfmodel->m_materials[0].metallicRoughnessTexture.is_set();
             //      bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
@@ -1266,7 +1266,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
             //      }
             //      pshader->set_float("ambientOcclusion", fAmbientOcclusion);
 
-            //      glm::vec3 seq3Emission = {};
+            //      floating_sequence3 seq3Emission = {};
             //      if (prendersystem->m_bForceDefaultEmission)
             //      {
 
@@ -1277,7 +1277,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
             //         //seq3Emission = pgltfmodel->m_materials[0].m_seq3Emissive;
             //      }
-            //      pshader->set_seq3("emissive", seq3Emission);
+            //      pshader->set_sequence3("emissive", seq3Emission);
 
 
             //      bool bEmissive = pgltfmodel->m_materials[0].emissiveTexture.is_set();
@@ -1386,16 +1386,16 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //   int useTextureAmbientOcclusion;
 //   int useTextureEmissive;
 //
-//   ::glm::vec3 albedo;
+//   ::floating_sequence3 albedo;
 //   float metallic;
 //   float roughness;
 //   float ambientOcclusion;
-//   ::glm::vec3 emissive;
+//   ::floating_sequence3 emissive;
 //
 //
 //   //    vec4 _pad1;
 //
-//   ::glm::vec3 cameraPosition;
+//   ::floating_sequence3 cameraPosition;
 //   float bloomBrightnessCutoff;
 //   // pad to 16-byte boundary
 //   float _pad0;

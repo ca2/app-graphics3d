@@ -263,8 +263,8 @@ namespace graphics3d_vulkan
    //            if (!node->mesh)
    //               continue;
    //
-   //            glm::mat4 world = pgameobject->getTransform().mat4() * node->getMatrix();
-   //            glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+   //            floating_matrix4 world = pgameobject->getTransform().mat4() * node->getMatrix();
+   //            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
    //            memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
    //            memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
    //
@@ -703,8 +703,8 @@ namespace graphics3d_vulkan
    //          if (!node->mesh)
    //             continue;
    //
-   //          glm::mat4 world = go->getTransform().mat4() * node->getMatrix();
-   //          glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+   //          floating_matrix4 world = go->getTransform().mat4() * node->getMatrix();
+   //          floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
    //
    //          memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
    //          memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
@@ -812,8 +812,8 @@ namespace graphics3d_vulkan
    //         if (!node->mesh)
    //            continue;
 
-   //         glm::mat4 world = psceneobject->transform().getMatrix() * node->getMatrix();
-   //         glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+   //         floating_matrix4 world = psceneobject->transform().getMatrix() * node->getMatrix();
+   //         floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
    //         memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
    //         memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
 
@@ -875,8 +875,8 @@ namespace graphics3d_vulkan
 //            if (!node->mesh)
 //               continue;
 //
-//            glm::mat4 world = go->getTransform().mat4() * node->getMatrix();
-//            glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+//            floating_matrix4 world = go->getTransform().mat4() * node->getMatrix();
+//            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
 //
 //            memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
 //            memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
@@ -993,8 +993,8 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
             if (!node->mesh)
                continue;
 
-            glm::mat4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
-            glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+            floating_matrix4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
+            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
 
             memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
             memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));

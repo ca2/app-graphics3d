@@ -292,13 +292,13 @@ namespace graphics3d_opengl
             //if (!node->mesh)
               // continue;
 
-            glm::mat4 world = pscenerenderable->transform().getMatrix() * pmesh->uniformBlock.matrix;
-            glm::mat4 normalMat = glm::transpose(glm::inverse(world));
+            floating_matrix4 world = pscenerenderable->transform().getMatrix() * pmesh->uniformBlock.matrix;
+            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
 
-            m_ppipelineOpaque->set_mat4("modelMatrix", world);
-            m_ppipelineOpaque->set_mat4("normalMatrix", normalMat);
-            //m_ppipelineOpaque->set_mat4("view", pscene->global_ubo().mat4("view"));
-            //m_ppipelineOpaque->set_mat4("projection", pscene->global_ubo().mat4("projection"));
+            m_ppipelineOpaque->set_matrix4("modelMatrix", world);
+            m_ppipelineOpaque->set_matrix4("normalMatrix", normalMat);
+            //m_ppipelineOpaque->set_matrix4("view", pscene->global_ubo().mat4("view"));
+            //m_ppipelineOpaque->set_matrix4("projection", pscene->global_ubo().mat4("projection"));
 
             //memcpy(pmesh->uniformBuffer.mapped, &world, sizeof(world));
             //memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));

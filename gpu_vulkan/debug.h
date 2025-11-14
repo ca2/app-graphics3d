@@ -9,10 +9,10 @@
 #pragma once
 #include "vulkan/vulkan.h"
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-//#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
-#include <glm/glm.hpp>
+//#define GLM_FORCE_RADIANS
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+////#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
+//#include <glm/glm.hpp>
 
 namespace vulkan
 {
@@ -38,7 +38,7 @@ namespace vulkan
    namespace debugutils
    {
       void setup(VkInstance instance);
-      void cmdBeginLabel(VkCommandBuffer cmdbuffer, ::string caption, glm::vec4 color);
+      void cmdBeginLabel(VkCommandBuffer cmdbuffer, ::string caption, floating_sequence4 color);
       void cmdEndLabel(VkCommandBuffer cmdbuffer);
       
       void insertDebugLabel(VkCommandBuffer cmd, const ::scoped_string& scopedstrMessage, const ::color::color& color);

@@ -34,8 +34,8 @@
 //      float _sensitivity;  // Sensitivity factor for mouse movement
 //      float _yaw;          // Camera yaw (horizontal rotation)
 //      float _pitch;        // Camera pitch (vertical rotation)
-//      glm::vec3 _cameraDirection; // Camera direction vector
-//      glm::vec3 _cameraPosition;
+//      floating_sequence3 _cameraDirection; // Camera direction vector
+//      floating_sequence3 _cameraPosition;
 //
 //      ::block as_block()
 //      {
@@ -64,8 +64,8 @@
 //      void processKeyboardInput(float deltaTime);
 //      void handleMouseInput();
 //
-//      glm::vec3 getCameraDirection() const;
-//      glm::vec3 getCameraPosition() const;
+//      floating_sequence3 getCameraDirection() const;
+//      floating_sequence3 getCameraPosition() const;
 //
 //
 //      ::pointer<::user::graphics3d > m_pimpact;

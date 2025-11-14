@@ -79,7 +79,7 @@
 //      }
 //      glUniform1f(location, value);
 //   }
-//   void shader::_set_vec2(const char* name, const glm::vec2& value) const {
+//   void shader::_set_vec2(const char* name, const floating_sequence2& value) const {
 //      //Bind();  // Ensure the shader program is bound
 //      GLint location = glGetUniformLocation(m_ProgramID, name);
 //      if (location == -1) {
@@ -88,7 +88,7 @@
 //      }
 //      glUniform2f(location, value.x, value.y);
 //   }
-//   void shader::_set_vec3(const char * name, const glm::vec3& value) const {
+//   void shader::_set_vec3(const char * name, const floating_sequence3& value) const {
 //      //Bind();  // Ensure the shader program is bound
 //      GLint location = glGetUniformLocation(m_ProgramID, name);
 //      if (location == -1) {
@@ -97,7 +97,7 @@
 //      }
 //      glUniform3f(location, value.x, value.y, value.z);
 //   }
-//   void shader::_set_vec4(const char* name, const glm::vec4& value) const {
+//   void shader::_set_vec4(const char* name, const floating_sequence4& value) const {
 //      //Bind();  // Ensure the shader program is bound
 //      GLint location = glGetUniformLocation(m_ProgramID, name);
 //      if (location == -1) {
@@ -107,7 +107,7 @@
 //      glUniform4f(location, value.x, value.y, value.z, value.w);
 //   }
 //
-//   void shader::_set_mat2(const char* name, const glm::mat2& matrix) const
+//   void shader::_set_matrix2(const char* name, const floating_matrix2& matrix) const
 //   {
 //      GLint location = glGetUniformLocation(m_ProgramID, name);
 //      if (location == -1) {
@@ -118,7 +118,7 @@
 //   }
 //
 //
-//   void shader::_set_mat3(const char *  name, const glm::mat3& matrix) const
+//   void shader::_set_matrix3(const char *  name, const floating_matrix3& matrix) const
 //   {
 //      GLint location = glGetUniformLocation(m_ProgramID, name);
 //      if (location == -1) {
@@ -128,7 +128,7 @@
 //      glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 //   }
 //
-//   void shader::_set_mat4(const char * name, const glm::mat4& matrix) const
+//   void shader::_set_matrix4(const char * name, const floating_matrix4& matrix) const
 //   {
 //      GLint location = glGetUniformLocation(m_ProgramID, name);
 //      if (location == -1) {
@@ -164,22 +164,22 @@
 //            _set_float(p->m_pszName, *(float*)(m_properties.data() + iLen));
 //            break;
 //         case ::gpu::e_type_seq2:
-//            _set_vec2(p->m_pszName, *(glm::vec2*)(m_properties.data() + iLen));
+//            _set_vec2(p->m_pszName, *(floating_sequence2*)(m_properties.data() + iLen));
 //            break;
 //         case ::gpu::e_type_seq3:
-//            _set_vec3(p->m_pszName, *(glm::vec3*)(m_properties.data() + iLen));
+//            _set_vec3(p->m_pszName, *(floating_sequence3*)(m_properties.data() + iLen));
 //            break;
 //         case ::gpu::e_type_seq4:
-//            _set_vec4(p->m_pszName, *(glm::vec4*)(m_properties.data() + iLen));
+//            _set_vec4(p->m_pszName, *(floating_sequence4*)(m_properties.data() + iLen));
 //            break;
 //         case ::gpu::e_type_mat2:
-//            _set_mat2(p->m_pszName, *(glm::mat2*)(m_properties.data() + iLen));
+//            _set_matrix2(p->m_pszName, *(floating_matrix2*)(m_properties.data() + iLen));
 //            break;
 //         case ::gpu::e_type_mat3:
-//            _set_mat3(p->m_pszName, *(glm::mat3*)(m_properties.data() + iLen));
+//            _set_matrix3(p->m_pszName, *(floating_matrix3*)(m_properties.data() + iLen));
 //            break;
 //         case ::gpu::e_type_mat4:
-//            _set_mat4(p->m_pszName, *(glm::mat4*)(m_properties.data() + iLen));
+//            _set_matrix4(p->m_pszName, *(floating_matrix4*)(m_properties.data() + iLen));
 //               break;
 //
 //         }

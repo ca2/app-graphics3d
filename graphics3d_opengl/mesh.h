@@ -23,7 +23,7 @@ namespace graphics3d_opengl
       //unsigned int m_IndexOffset;
       //unsigned int m_IndexCount;
       //unsigned int m_VertexOffset;
-      //::array<glm::mat4> m_ModelMatrices;
+      //::array<floating_matrix4> m_ModelMatrices;
       // New instance buffer
       //unsigned int m_InstanceVBO;
 
@@ -41,8 +41,8 @@ namespace graphics3d_opengl
       void unbind() override;
       unsigned int GetIndexCount() const override;
       unsigned int GetIndexOffset() const override;
-      void SetInstanceModelMatrices(const ::array<glm::mat4>& modelmatricies) override;
-      void UpdateInstanceModelMatrices(const ::array<glm::mat4>& modelMatrices) override;
+      void SetInstanceModelMatrices(const ::array<floating_matrix4>& modelmatricies) override;
+      void UpdateInstanceModelMatrices(const ::array<floating_matrix4>& modelMatrices) override;
       void draw_instanced() override;
 
 

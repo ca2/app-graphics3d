@@ -24,7 +24,7 @@ namespace graphics3d_hello3d
 
       class ::time            m_timeLastDraw;
       // Initial position : on +Z
-      //::locationd             m_locationglm::vec3 position = glm::vec3(0, 0, 5);
+      //::locationd             m_locationglm::vec3 position = floating_sequence3(0, 0, 5);
       ::location_double          m_location{0., 0., 5.};
       // Initial horizontal angle : toward -Z
       //float horizontalAngle = 3.14f;

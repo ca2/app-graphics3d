@@ -229,10 +229,10 @@ namespace gpu_vulkan
 
       //   // Compute the MVP matrix from keyboard and mouse input
       //   //computeMatricesFromInputs();
-      //   ::glm::mat4 matrixProjection = (::glm::mat4 &)projection_matrix();
-      //   ::glm::mat4 matrixView = (::glm::mat4 &)view_matrix();
-      //   ::glm::mat4 matrixModel = glm::mat4(1.0);
-      //   ::glm::mat4 matrixMVP = matrixProjection * matrixView * matrixModel;
+      //   floating_matrix4 matrixProjection = (floating_matrix4 &)projection_matrix();
+      //   floating_matrix4 matrixView = (floating_matrix4 &)view_matrix();
+      //   floating_matrix4 matrixModel = floating_matrix4(1.0);
+      //   floating_matrix4 matrixMVP = matrixProjection * matrixView * matrixModel;
 
       //   // Send our transformation to the currently bound shader,
       //   // in the "MVP" uniform
@@ -240,16 +240,16 @@ namespace gpu_vulkan
 
       //}
 
-      ////glm::mat4 getViewMatrix() {
+      ////floating_matrix4 getViewMatrix() {
       ////   return ViewMatrix;
       ////}
-      ////glm::mat4 getProjectionMatrix() {
+      ////floating_matrix4 getProjectionMatrix() {
       ////   return ProjectionMatrix;
       ////}
 
 
       ////// Initial position : on +Z
-      ////glm::vec3 position = glm::vec3(0, 0, 5);
+      ////floating_sequence3 position = floating_sequence3(0, 0, 5);
       ////// Initial horizontal angle : toward -Z
       ////float horizontalAngle = 3.14f;
       ////// Initial vertical angle : none
@@ -3925,7 +3925,7 @@ VkFormat context::findDepthFormat()
 //   // --- Pipeline layout & push constants ---
 //   struct PushBlock
 //   {
-//      glm::mat4 mvp;
+//      floating_matrix4 mvp;
 //      float roughness;
 //      uint32_t numSamples = 32u;
 //   } pushBlock;
@@ -4001,13 +4001,13 @@ VkFormat context::findDepthFormat()
 //                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
 
 //   // Setup matrices and viewports
-//   ::array_base<glm::mat4> matrices = {
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // +X
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // -X
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), // +Y
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)), // -Y
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // +Z
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // -Z
+//   ::array_base<floating_matrix4> matrices = {
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +X
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(-1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -X
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, 1.0f)), // +Y
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, -1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, -1.0f)), // -Y
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, 1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +Z
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, -1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -Z
 //   };
 
 //   VkViewport viewport = vkinit::viewport((float)dim, (float)dim, 0.0f, 1.0f);
@@ -4346,7 +4346,7 @@ VkFormat context::findDepthFormat()
 //   // --- Pipeline layout & push constants ---
 //   struct PushBlock
 //   {
-//      glm::mat4 mvp;
+//      floating_matrix4 mvp;
 //      float roughness;
 //      uint32_t numSamples = 32u;
 //   } pushBlock;
@@ -4433,13 +4433,13 @@ VkFormat context::findDepthFormat()
 //                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
 //
 //   // Setup matrices and viewports
-//   ::array_base<glm::mat4> matrices = {
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // +X
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // -X
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), // +Y
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)), // -Y
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // +Z
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // -Z
+//   ::array_base<floating_matrix4> matrices = {
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +X
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(-1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -X
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, 1.0f)), // +Y
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, -1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, -1.0f)), // -Y
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, 1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +Z
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, -1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -Z
 //   };
 //
 //   VkViewport viewport = vkinit::viewport((float)dim, (float)dim, 0.0f, 1.0f);
@@ -4772,7 +4772,7 @@ VkFormat context::findDepthFormat()
 //   // Push block
 //   struct PushBlock
 //   {
-//      glm::mat4 mvp;
+//      floating_matrix4 mvp;
 //      float deltaPhi;
 //      float deltaTheta;
 //   } pushBlock;
@@ -4839,13 +4839,13 @@ VkFormat context::findDepthFormat()
 //                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, cubemapRange);
 //
 //   // Setup matrices (same as Sascha)
-//   ::array_base<glm::mat4> matrices = {
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // +X
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // -X
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)), // +Y
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)), // -Y
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // +Z
-//      glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)), // -Z
+//   ::array_base<floating_matrix4> matrices = {
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +X
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(-1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -X
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, 1.0f)), // +Y
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, -1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, -1.0f)), // -Y
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, 1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +Z
+//      glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, -1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -Z
 //   };
 //
 //   // Main loop: mips and faces (matches Sascha's approach)

@@ -234,22 +234,22 @@ namespace graphics3d_impact3d
 
    // Projection matrix : 45degrees Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
       auto matrixProjection = ::glm::perspective(fRadian, 4.0f / 3.0f, 0.1f, 100.0f);
-       //auto matrixProjection = ::glm::mat4(fRadian, 4.0f / 3.0f, 0.1f, 100.0f);
-        //auto matrixProjection = ::glm::mat4();
+       //auto matrixProjection = ::floating_matrix4(fRadian, 4.0f / 3.0f, 0.1f, 100.0f);
+        //auto matrixProjection = ::floating_matrix4();
       // Camera matrix
       // 
       
-      //auto loc = ::glm::vec3(m_location.x, m_location.y, m_location.z);
-      auto campos = ::glm::vec3(camera_position().x, camera_position().y, camera_position().z());
+      //auto loc = ::floating_sequence3(m_location.x, m_location.y, m_location.z);
+      auto campos = ::floating_sequence3(camera_position().x, camera_position().y, camera_position().z());
       //sauto locdir = loc + 2;
-      auto r = ::glm::vec3(right().x, right().y, right().z());
+      auto r = ::floating_sequence3(right().x, right().y, right().z());
       auto up = ::glm::cross(campos, r);
       auto matrixImpact = ::glm::lookAt(
          campos, // Camera is here
-         //::glm::vec3(m_location.x, m_location.y, m_location.z),           // Camera is here
-         ::glm::vec3(0.f, 0.f, 0.f),          // and looks here : at the same position, plus "direction"
+         //::floating_sequence3(m_location.x, m_location.y, m_location.z),           // Camera is here
+         ::floating_sequence3(0.f, 0.f, 0.f),          // and looks here : at the same position, plus "direction"
          up
-         //::glm::vec3(0.f, 1.f, 0.f)// Head is up (set to 0,-1,0 to look upside-down)
+         //::floating_sequence3(0.f, 1.f, 0.f)// Head is up (set to 0,-1,0 to look upside-down)
       );
 
       auto prender = get_document()->m_prender;
@@ -499,21 +499,21 @@ namespace graphics3d_impact3d
    //   verticalAngle += mouseSpeed * float(768 / 2 - ypos);
 
    //   // Direction : Spherical coordinates to Cartesian coordinates conversion
-   //   glm::vec3 direction(
+   //   floating_sequence3 direction(
    //      cos(verticalAngle) * sin(horizontalAngle),
    //      sin(verticalAngle),
    //      cos(verticalAngle) * cos(horizontalAngle)
    //   );
 
    //   // Right vector
-   //   glm::vec3 right = glm::vec3(
+   //   floating_sequence3 right = floating_sequence3(
    //      sin(horizontalAngle - 3.14f / 2.0f),
    //      0,
    //      cos(horizontalAngle - 3.14f / 2.0f)
    //   );
 
    //   // Up vector
-   //   glm::vec3 up = glm::cross(right, direction);
+   //   floating_sequence3 up = glm::cross(right, direction);
 
    //   // Move forward
    //   //if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {

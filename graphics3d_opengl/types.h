@@ -72,11 +72,11 @@
 
 //struct Vertex {
 //
-//    glm::vec3 position;
+//    floating_sequence3 position;
 //    float uv_x;
-//    glm::vec3 normal;
+//    floating_sequence3 normal;
 //    float uv_y;
-//    glm::vec4 color;
+//    floating_sequence4 color;
 //};
 
 // // holds the resources needed for a mesh
@@ -89,7 +89,7 @@
 
 //// push constants for our mesh object draws
 //struct GPUDrawPushConstants {
-//    glm::mat4 worldMatrix;
+//    floating_matrix4 worldMatrix;
 //    VkDeviceAddress vertexBuffer;
 //};
 // struct AllocatedImage {
@@ -101,12 +101,12 @@
 // };
 
 struct GPUSceneData {
-    glm::mat4 view;
-    glm::mat4 proj;
-    glm::mat4 viewproj;
-    glm::vec4 ambientColor;
-    glm::vec4 sunlightDirection; // w for sun power
-    glm::vec4 sunlightColor;
+    floating_matrix4 view;
+    floating_matrix4 proj;
+    floating_matrix4 viewproj;
+    floating_sequence4 ambientColor;
+    floating_sequence4 sunlightDirection; // w for sun power
+    floating_sequence4 sunlightColor;
 };
 
 //> mat_types
@@ -130,7 +130,7 @@ struct DrawContext;
 
 class IRenderable {
 
-    virtual void Draw(const glm::mat4& topMatrix, DrawContext& ctx) = 0;
+    virtual void Draw(const floating_matrix4& topMatrix, DrawContext& ctx) = 0;
 };
 
 
@@ -148,10 +148,10 @@ struct Node :
     std::weak_ptr<Node> parent;
     ::array<::pointer<Node>> children;
 
-    glm::mat4 localTransform;
-    glm::mat4 worldTransform;
+    floating_matrix4 localTransform;
+    floating_matrix4 worldTransform;
 
-    void refreshTransform(const glm::mat4& parentMatrix)
+    void refreshTransform(const floating_matrix4& parentMatrix)
     {
         worldTransform = parentMatrix * localTransform;
         for (auto c : children) {
@@ -159,7 +159,7 @@ struct Node :
         }
     }
 
-    virtual void Draw(const glm::mat4& topMatrix, DrawContext& ctx)
+    virtual void Draw(const floating_matrix4& topMatrix, DrawContext& ctx)
     {
         // draw children
         for (auto& c : children) {
@@ -176,7 +176,7 @@ struct Node :
 //      bool right = false;
 //      bool middle = false;
 //   } m_buttons;
-//   glm::vec2 position;
+//   floating_sequence2 position;
 //};
 //
 //
@@ -193,15 +193,15 @@ struct Node :
    //   //float TexID;
 
    //         // position
-   //   glm::vec3 Position;
+   //   floating_sequence3 Position;
    //   // normal
-   //   glm::vec3 Normal;
+   //   floating_sequence3 Normal;
    //   // texCoords
-   //   glm::vec2 TexCoords;
+   //   floating_sequence2 TexCoords;
    //   // tangent
-   //   glm::vec3 Tangent;
+   //   floating_sequence3 Tangent;
    //   // bitangent
-   //   glm::vec3 Bitangent;
+   //   floating_sequence3 Bitangent;
    //   //bone indexes which will influence this vertex
    //   int m_BoneIDs[MAX_BONE_INFLUENCE];
    //   //weights from each bone
@@ -209,15 +209,15 @@ struct Node :
    //};
    //struct Vertex {
    //   // position
-   //   glm::vec3 Position;
+   //   floating_sequence3 Position;
    //   // normal
-   //   glm::vec3 Normal;
+   //   floating_sequence3 Normal;
    //   // texCoords
-   //   glm::vec2 TexCoords;
+   //   floating_sequence2 TexCoords;
    //   // tangent
-   //   glm::vec3 Tangent;
+   //   floating_sequence3 Tangent;
    //   // bitangent
-   //   glm::vec3 Bitangent;
+   //   floating_sequence3 Bitangent;
    //   //bone indexes which will influence this vertex
    //   int m_BoneIDs[MAX_BONE_INFLUENCE];
    //   //weights from each bone
@@ -235,7 +235,7 @@ struct Node :
 //      bool right = false;
 //      bool middle = false;
 //   } buttons;
-//   glm::vec2 position;
+//   floating_sequence2 position;
 //};
 //
 //

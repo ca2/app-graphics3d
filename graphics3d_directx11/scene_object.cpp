@@ -7,7 +7,7 @@
 //
 //	interlocked_long_long application_object:: s_interlockedll;
 //
-//	glm::mat4 ::graphics3d::transform::mat4()
+//	floating_matrix4 ::graphics3d::transform::mat4()
 //	{
 //		const float c3 = glm::cos(rotation.z);
 //		const float s3 = glm::sin(rotation.z);
@@ -15,7 +15,7 @@
 //		const float s2 = glm::sin(rotation.x);
 //		const float c1 = glm::cos(rotation.y);
 //		const float s1 = glm::sin(rotation.y);
-//		return glm::mat4{
+//		return floating_matrix4{
 //			{
 //				scale.x * (c1 * c3 + s1 * s2 * s3),
 //				scale.x * (c2 * s3),
@@ -36,16 +36,16 @@
 //			},
 //			{translation.x, translation.y, translation.z, 1.0f} };
 //	}
-//	glm::mat3 ::graphics3d::transform::normalMatrix() {
+//	floating_matrix3 ::graphics3d::transform::normalMatrix() {
 //		const float c3 = glm::cos(rotation.z);
 //		const float s3 = glm::sin(rotation.z);
 //		const float c2 = glm::cos(rotation.x);
 //		const float s2 = glm::sin(rotation.x);
 //		const float c1 = glm::cos(rotation.y);
 //		const float s1 = glm::sin(rotation.y);
-//		const glm::vec3 invScale = 1.0f / scale;
+//		const floating_sequence3 invScale = 1.0f / scale;
 //
-//		return glm::mat3{
+//		return floating_matrix3{
 //			{
 //				invScale.x * (c1 * c3 + s1 * s2 * s3),
 //				invScale.x * (c2 * s3),
@@ -68,10 +68,10 @@
 //		};
 //	}
 //
-//	//point_light(float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
+//	//point_light(float intensity = 10.f, float radius = 0.1f, floating_sequence3 color = floating_sequence3(1.f));
 //	//
 //
-//	point_light::point_light(float intensity, float radius, glm::vec3 color)
+//	point_light::point_light(float intensity, float radius, floating_sequence3 color)
 //	{
 //		m_color = color;
 //		m_transform.scale.x = radius;

@@ -7041,8 +7041,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //vkVertex2f((VKfloat)rectangle.left(), (VKfloat)rectangle.bottom());
 
       struct Vertex {
-         glm::vec2 pos;
-         glm::vec3 color;
+         floating_sequence2 pos;
+         floating_sequence3 color;
       };
 
       std::vector<Vertex> vertexes = {

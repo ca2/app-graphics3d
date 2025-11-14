@@ -30,10 +30,10 @@ public:
    } uniformBuffers;
 
    struct UniformData {
-      glm::mat4 projection;
-      glm::mat4 view;
-      glm::mat4 model;
-      glm::vec4 lightPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+      floating_matrix4 projection;
+      floating_matrix4 view;
+      floating_matrix4 model;
+      floating_sequence4 lightPos = floating_sequence4(0.0f, 0.0f, 0.0f, 1.0f);
    } uniformData;
 
    struct {
@@ -74,16 +74,16 @@ public:
       VkDescriptorImageInfo descriptor;
    } offscreenPass{};
 
-   glm::vec3 modelPosition = glm::vec3(0.0f, -1.0f, 0.0f);
-   glm::vec3 modelRotation = glm::vec3(0.0f);
+   floating_sequence3 modelPosition = floating_sequence3(0.0f, -1.0f, 0.0f);
+   floating_sequence3 modelRotation = floating_sequence3(0.0f);
 
    VulkanExample() : VulkanExampleBase()
    {
       title = "Offscreen rendering";
       timerSpeed *= 0.25f;
       camera.type = Camera::CameraType::lookat;
-      camera.setPosition(glm::vec3(0.0f, 1.0f, -6.0f));
-      camera.setRotation(glm::vec3(-2.5f, 0.0f, 0.0f));
+      camera.setPosition(floating_sequence3(0.0f, 1.0f, -6.0f));
+      camera.setRotation(floating_sequence3(-2.5f, 0.0f, 0.0f));
       camera.setRotationSpeed(0.5f);
       camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
       // The scene shader uses a clipping plane, so this feature has to be enabled
@@ -551,13 +551,13 @@ public:
       uniformData.view = camera.matrices.view;
 
       // Model
-      uniformData.model = glm::mat4(1.0f);
-      uniformData.model = glm::rotate(uniformData.model, glm::radians(modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+      uniformData.model = floating_matrix4(1.0f);
+      uniformData.model = glm::rotate(uniformData.model, glm::radians(modelRotation.y), floating_sequence3(0.0f, 1.0f, 0.0f));
       uniformData.model = glm::translate(uniformData.model, modelPosition);
       memcpy(uniformBuffers.vsShared.mapped, &uniformData, sizeof(UniformData));
 
       // Mirror
-      uniformData.model = glm::mat4(1.0f);
+      uniformData.model = floating_matrix4(1.0f);
       memcpy(uniformBuffers.vsMirror.mapped, &uniformData, sizeof(UniformData));
    }
 
@@ -565,9 +565,9 @@ public:
    {
       uniformData.projection = camera.matrices.perspective;
       uniformData.view = camera.matrices.view;
-      uniformData.model = glm::mat4(1.0f);
-      uniformData.model = glm::rotate(uniformData.model, glm::radians(modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-      uniformData.model = glm::scale(uniformData.model, glm::vec3(1.0f, -1.0f, 1.0f));
+      uniformData.model = floating_matrix4(1.0f);
+      uniformData.model = glm::rotate(uniformData.model, glm::radians(modelRotation.y), floating_sequence3(0.0f, 1.0f, 0.0f));
+      uniformData.model = glm::scale(uniformData.model, floating_sequence3(1.0f, -1.0f, 1.0f));
       uniformData.model = glm::translate(uniformData.model, modelPosition);
       memcpy(uniformBuffers.vsOffScreen.mapped, &uniformData, sizeof(UniformData));
    }

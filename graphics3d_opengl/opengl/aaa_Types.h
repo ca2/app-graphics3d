@@ -28,15 +28,15 @@ namespace glc
       //float TexID;
 
             // position
-      glm::vec3 Position;
+      floating_sequence3 Position;
       // normal
-      glm::vec3 Normal;
+      floating_sequence3 Normal;
       // texCoords
-      glm::vec2 TexCoords;
+      floating_sequence2 TexCoords;
       // tangent
-      glm::vec3 Tangent;
+      floating_sequence3 Tangent;
       // bitangent
-      glm::vec3 Bitangent;
+      floating_sequence3 Bitangent;
       //bone indexes which will influence this vertex
       int m_BoneIDs[MAX_BONE_INFLUENCE];
       //weights from each bone
@@ -44,15 +44,15 @@ namespace glc
    };
    //struct Vertex {
    //   // position
-   //   glm::vec3 Position;
+   //   floating_sequence3 Position;
    //   // normal
-   //   glm::vec3 Normal;
+   //   floating_sequence3 Normal;
    //   // texCoords
-   //   glm::vec2 TexCoords;
+   //   floating_sequence2 TexCoords;
    //   // tangent
-   //   glm::vec3 Tangent;
+   //   floating_sequence3 Tangent;
    //   // bitangent
-   //   glm::vec3 Bitangent;
+   //   floating_sequence3 Bitangent;
    //   //bone indexes which will influence this vertex
    //   int m_BoneIDs[MAX_BONE_INFLUENCE];
    //   //weights from each bone
@@ -70,7 +70,7 @@ struct mouseState
       bool right = false;
       bool middle = false;
    } buttons;
-   glm::vec2 position;
+   floating_sequence2 position;
 };
 
 

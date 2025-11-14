@@ -19,15 +19,15 @@ namespace graphics3d_opengl
 
    struct Vertex {
       // position
-      glm::vec3 Position;
+      floating_sequence3 Position;
       // normal
-      glm::vec3 Normal;
+      floating_sequence3 Normal;
       // texCoords
-      glm::vec2 TexCoords;
+      floating_sequence2 TexCoords;
       // tangent
-      glm::vec3 Tangent;
+      floating_sequence3 Tangent;
       // bitangent
-      glm::vec3 Bitangent;
+      floating_sequence3 Bitangent;
       //bone indexes which will influence this vertex
       int m_BoneIDs[MAX_BONE_INFLUENCE];
       //weights from each bone
@@ -113,7 +113,7 @@ namespace graphics3d_opengl
          // load data into vertex buffers
          glBindBuffer(GL_ARRAY_BUFFER, VBO);
          // A great thing about structs is that their memory layout is sequential for all its items.
-         // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
+         // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a floating_sequence3/2 array which
          // again translates to 3/2 floats which translates to a byte array.
          glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(Vertex), &vertexes[0], GL_DYNAMIC_DRAW);
 

@@ -500,21 +500,21 @@ namespace graphics3d_impact3d
    //   verticalAngle += mouseSpeed * float(768 / 2 - ypos);
 
    //   // Direction : Spherical coordinates to Cartesian coordinates conversion
-   //   glm::vec3 direction(
+   //   floating_sequence3 direction(
    //      cos(verticalAngle) * sin(horizontalAngle),
    //      sin(verticalAngle),
    //      cos(verticalAngle) * cos(horizontalAngle)
    //   );
 
    //   // Right vector
-   //   glm::vec3 right = glm::vec3(
+   //   floating_sequence3 right = floating_sequence3(
    //      sin(horizontalAngle - 3.14f / 2.0f),
    //      0,
    //      cos(horizontalAngle - 3.14f / 2.0f)
    //   );
 
    //   // Up vector
-   //   glm::vec3 up = glm::cross(right, direction);
+   //   floating_sequence3 up = glm::cross(right, direction);
 
    //   // Move forward
    //   if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {

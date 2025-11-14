@@ -15,12 +15,12 @@
 //      _sensitivity = sensitivity;
 //      _yaw = yaw;
 //      _pitch = pitch;
-//      _cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
-//      _cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+//      _cameraDirection = floating_sequence3(0.0f, 0.0f, -1.0f);
+//      _cameraPosition = floating_sequence3(0.0f, 0.0f, 3.0f);
 //   }
 //   //void MNKController::moveInPlaneXZ(
 //   //    ::user::graphics3d * pimpact, float dt, application_object& gameObject) {
-//   //    glm::vec3 rotate{ 0 };
+//   //    floating_sequence3 rotate{ 0 };
 //   //    if (key(e_key_lookRight) == ::user::e_key_state_pressed) rotate.y += 1.f;
 //   //    if (key(e_key_lookLeft) == ::user::e_key_state_pressed) rotate.y -= 1.f;
 //   //    if (key(e_key_lookUp) == ::user::e_key_state_pressed) rotate.x += 1.f;
@@ -35,11 +35,11 @@
 //   //    gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y, glm::two_pi<float>());
 //
 //   //    float yaw = gameObject.transform.rotation.y;
-//   //    const glm::vec3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
-//   //    const glm::vec3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
-//   //    const glm::vec3 upDir{ 0.f, -1.f, 0.f };
+//   //    const floating_sequence3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
+//   //    const floating_sequence3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
+//   //    const floating_sequence3 upDir{ 0.f, -1.f, 0.f };
 //
-//   //    glm::vec3 moveDir{ 0.f };
+//   //    floating_sequence3 moveDir{ 0.f };
 //   //    if (key(e_key_moveForward) == ::user::e_key_state_pressed) moveDir += forwardDir;
 //   //    if (key(e_key_moveBackward) == ::user::e_key_state_pressed) moveDir -= forwardDir;
 //   //    if (key(e_key_moveRight) == ::user::e_key_state_pressed) moveDir += rightDir;
@@ -77,7 +77,7 @@
 //         _pitch = -89.0f;
 //
 //      // Update camera direction based on yaw and pitch
-//      glm::vec3 direction;
+//      floating_sequence3 direction;
 //      direction.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
 //      direction.y = sin(glm::radians(_pitch));
 //      direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
@@ -93,10 +93,10 @@
 //   //        _cameraPosition -= _cameraDirection * cameraSpeed;
 //   //    }
 //   //    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-//   //        _cameraPosition -= glm::normalize(glm::cross(_cameraDirection, glm::vec3(0.0f, 1.0f, 0.0f))) * cameraSpeed;
+//   //        _cameraPosition -= glm::normalize(glm::cross(_cameraDirection, floating_sequence3(0.0f, 1.0f, 0.0f))) * cameraSpeed;
 //   //    }
 //   //    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-//   //        _cameraPosition += glm::normalize(glm::cross(_cameraDirection, glm::vec3(0.0f, 1.0f, 0.0f))) * cameraSpeed;
+//   //        _cameraPosition += glm::normalize(glm::cross(_cameraDirection, floating_sequence3(0.0f, 1.0f, 0.0f))) * cameraSpeed;
 //   //    }
 //   //}
 //
@@ -143,11 +143,11 @@
 //   {
 //
 //      float yaw = pobject->m_transform.rotation.y;
-//      const glm::vec3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
-//      const glm::vec3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
-//      const glm::vec3 upDir{ 0.f, -1.f, 0.f };
+//      const floating_sequence3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
+//      const floating_sequence3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
+//      const floating_sequence3 upDir{ 0.f, -1.f, 0.f };
 //
-//      glm::vec3 moveDir{ 0.f };
+//      floating_sequence3 moveDir{ 0.f };
 //      {
 //         using namespace ::graphics3d;
 //         if (key(e_key_moveForward) == ::user::e_key_state_pressed) moveDir += forwardDir;
@@ -172,9 +172,9 @@
 //   }
 //
 //
-//   glm::vec3 MNKController::getCameraDirection() const { return _cameraDirection; }
+//   floating_sequence3 MNKController::getCameraDirection() const { return _cameraDirection; }
 //
-//   glm::vec3 MNKController::getCameraPosition() const { return _cameraPosition; }
+//   floating_sequence3 MNKController::getCameraPosition() const { return _cameraPosition; }
 //
 //   void MNKController::handleMouseInput()
 //   {

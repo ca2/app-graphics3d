@@ -38,7 +38,7 @@ namespace directx12
    //namespace debugutils
    //{
    //   void setup(VkInstance instance);
-   //   void cmdBeginLabel(VkCommandBuffer cmdbuffer, ::string caption, glm::vec4 color);
+   //   void cmdBeginLabel(VkCommandBuffer cmdbuffer, ::string caption, floating_sequence4 color);
    //   void cmdEndLabel(VkCommandBuffer cmdbuffer);
    //}
 } // namespace debug
