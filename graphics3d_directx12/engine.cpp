@@ -521,7 +521,7 @@ namespace graphics3d_directx12
 
       //      float aspect = m_prenderer->getAspectRatio();
 
-      //      camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+      //      camera.setPerspectiveProjection(::radians(50.f), aspect, 0.1f, 100.f);
 
       //      if (auto commandBuffer = m_prenderer->beginFrame())
       //      {

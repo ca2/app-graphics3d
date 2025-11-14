@@ -56,8 +56,8 @@ namespace app_graphics3d_continuum
       ~input() override;
 
 
-      void initialize_input(float sensitivity = 0.001f, float yaw = glm::radians(-90.0f),
-                            float pitch = glm::radians(0.0f));
+      void initialize_input(float sensitivity = 0.001f, float yaw = ::radians(-90.0f),
+                            float pitch = ::radians(0.0f));
 
       //void moveInPlaneXZ(::user::graphics3d * pimpact, float dt, application_object& gameObject);
 

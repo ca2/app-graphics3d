@@ -56,7 +56,7 @@ namespace app_graphics3d_continuum
 
       m_poleWorldUp = {0.0f, 1.0f, 0.0f};
 
-      m_fZoom = glm::radians(75.0f);
+      m_fZoom = ::radians(75.0f);
 
       m_fMovementSpeed = 8.0f;
 
@@ -77,7 +77,7 @@ namespace app_graphics3d_continuum
       if (constrainPitch)
       {
 
-         m_fPitch = minimum_maximum(m_fPitch, glm::radians(-89.0f), glm::radians(89.0f));
+         m_fPitch = minimum_maximum(m_fPitch, ::radians(-89.0f), ::radians(89.0f));
       }
 
       UpdateCameraVectors();

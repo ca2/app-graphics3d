@@ -552,7 +552,7 @@ public:
 
       // Model
       uniformData.model = floating_matrix4(1.0f);
-      uniformData.model = glm::rotate(uniformData.model, glm::radians(modelRotation.y), floating_sequence3(0.0f, 1.0f, 0.0f));
+      uniformData.model = glm::rotate(uniformData.model, ::radians(modelRotation.y), floating_sequence3(0.0f, 1.0f, 0.0f));
       uniformData.model = glm::translate(uniformData.model, modelPosition);
       memcpy(uniformBuffers.vsShared.mapped, &uniformData, sizeof(UniformData));
 
@@ -566,7 +566,7 @@ public:
       uniformData.projection = camera.matrices.perspective;
       uniformData.view = camera.matrices.view;
       uniformData.model = floating_matrix4(1.0f);
-      uniformData.model = glm::rotate(uniformData.model, glm::radians(modelRotation.y), floating_sequence3(0.0f, 1.0f, 0.0f));
+      uniformData.model = glm::rotate(uniformData.model, ::radians(modelRotation.y), floating_sequence3(0.0f, 1.0f, 0.0f));
       uniformData.model = glm::scale(uniformData.model, floating_sequence3(1.0f, -1.0f, 1.0f));
       uniformData.model = glm::translate(uniformData.model, modelPosition);
       memcpy(uniformBuffers.vsOffScreen.mapped, &uniformData, sizeof(UniformData));

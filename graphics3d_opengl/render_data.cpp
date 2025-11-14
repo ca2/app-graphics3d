@@ -155,7 +155,7 @@
 //
 //   void render_data::Update(float deltaTime) {
 //      floating_sequence3 rotationAxis(0.0f, 1.0f, 0.0f);
-//      float rotationSpeed = glm::radians(50.0f) * deltaTime;
+//      float rotationSpeed = ::radians(50.0f) * deltaTime;
 //
 //      // Update box model matrices with rotation (this part is working as expected)
 //      for (int i = 0; i < m_BoxInstanceCount; ++i) {
@@ -260,7 +260,7 @@
 //
 //      // Calculate view and projection matrices
 //      floating_matrix4 view = pcamera->GetViewMatrix();
-//      floating_matrix4 projection = glm::perspective(glm::radians(pcamera->GetZoom()), 1280.0f / 720.0f, 0.1f, 1000.0f);
+//      floating_matrix4 projection = glm::perspective(::radians(pcamera->GetZoom()), 1280.0f / 720.0f, 0.1f, 1000.0f);
 //
 //      // sky_box
 //      floating_matrix4 skyboxView = floating_matrix4(floating_matrix3(view)); // Remove translation from the view matrix

@@ -61,7 +61,7 @@ namespace app_graphics3d_continuum
 
          float aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
 
-         pcamera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+         pcamera->setPerspectiveProjection(::radians(50.f), aspect, 0.1f, 100.f);
          //pcamera->m_pimpact = m_pimpact;
          m_pcameraDefault = pcamera;
 

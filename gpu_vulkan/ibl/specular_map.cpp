@@ -464,7 +464,7 @@ namespace gpu_vulkan
                vkCmdSetScissor(pcommandbufferCmd->m_vkcommandbuffer, 0, 1, &scissor);
 
                // push constants (projection * view)
-               pushBlock.mvp = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 512.0f) * matrices[f];
+               pushBlock.mvp = glm::perspective(::radians(90.0f), 1.0f, 0.1f, 512.0f) * matrices[f];
                pushBlock.mvp[1][1] *= -1.0f; // flip y
 
                vkCmdPushConstants(pcommandbufferCmd->m_vkcommandbuffer, ppipelinePrefilter->m_vkpipelinelayout,

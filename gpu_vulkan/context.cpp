@@ -24,10 +24,10 @@
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 // #define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
 #include <chrono>
-#include "glm/mat4x4.hpp"
+//#include "glm/mat4x4.hpp"
 #include "gltf_model.h"
 #include "initializers.h"
 #include "vk_init.h"
@@ -4042,7 +4042,7 @@ VkFormat context::findDepthFormat()
 //         vkCmdSetScissor(pcommandbufferCmd->m_vkcommandbuffer, 0, 1, &scissor);
 
 //         // push constants (projection * view)
-//         pushBlock.mvp = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 512.0f) * matrices[f];
+//         pushBlock.mvp = glm::perspective(::radians(90.0f), 1.0f, 0.1f, 512.0f) * matrices[f];
 //         pushBlock.mvp[1][1] *= -1.0f; // flip y
 
 //         vkCmdPushConstants(pcommandbufferCmd->m_vkcommandbuffer, prefilterPipeline.getPipelineLayout(),
@@ -4474,7 +4474,7 @@ VkFormat context::findDepthFormat()
 //         vkCmdSetScissor(pcommandbufferCmd->m_vkcommandbuffer, 0, 1, &scissor);
 //
 //         // push constants (projection * view)
-//         pushBlock.mvp = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 512.0f) * matrices[f];
+//         pushBlock.mvp = glm::perspective(::radians(90.0f), 1.0f, 0.1f, 512.0f) * matrices[f];
 //         pushBlock.mvp[1][1] *= -1.0f; // flip y
 //
 //         vkCmdPushConstants(pcommandbufferCmd->m_vkcommandbuffer, prefilterPipeline->m_vkpipelinelayout,
@@ -4871,7 +4871,7 @@ VkFormat context::findDepthFormat()
 //         vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 //
 //         // push constants
-//         pushBlock.mvp = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 512.0f) * matrices[face];
+//         pushBlock.mvp = glm::perspective(::radians(90.0f), 1.0f, 0.1f, 512.0f) * matrices[face];
 //         vkCmdPushConstants(pcommandbuffer->m_vkcommandbuffer, ppipelineIrradiance->_pipeline_layout(),
 //                            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushBlock),
 //                            &pushBlock);

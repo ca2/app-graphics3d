@@ -150,9 +150,9 @@ namespace app_graphics3d_continuum
 
    //   // Update camera direction based on yaw and pitch
    //   floating_sequence3 direction;
-   //   direction.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-   //   direction.y = sin(glm::radians(_pitch));
-   //   direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+   //   direction.x = cos(::radians(_yaw)) * cos(::radians(_pitch));
+   //   direction.y = sin(::radians(_pitch));
+   //   direction.z = sin(::radians(_yaw)) * cos(::radians(_pitch));
    //   _cameraDirection = glm::normalize(direction);
 
    //}

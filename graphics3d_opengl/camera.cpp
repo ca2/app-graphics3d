@@ -86,8 +86,8 @@ namespace graphics3d_opengl
 //      //if (m_fYaw > 2.0f * MATH_PI) m_fYaw -= 2.0f * MATH_PI;
 //      //if (m_fYaw < 0.0f) m_fYaw += 2.0f * MATH_PI;
 //      m_fYaw= glm::mod(m_fYaw, glm::two_pi<float>());
-//      //gameObject.transform.rotation.x = glm::radians(_pitch);
-//      //gameObject.transform.rotation.y = glm::radians(_yaw);
+//      //gameObject.transform.rotation.x = ::radians(_pitch);
+//      //gameObject.transform.rotation.y = ::radians(_yaw);
 //
 //      UpdateCameraVectors();
 //   }
