@@ -53,7 +53,7 @@ namespace app_graphics3d_continuum
 
       m_fYaw = geometry2d::atan2(direction.z, direction.x);
 
-      m_fPitch = asin(direction.y);
+      m_fPitch = geometry2d::asin(direction.y);
 
       m_poleWorldUp = {0.0f, 1.0f, 0.0f};
 

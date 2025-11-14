@@ -556,7 +556,7 @@ namespace gpu_vulkan
 		dimensions.max = max;
 		dimensions.size = max - min;
 		dimensions.center = (min + max) / 2.0f;
-		dimensions.radius = glm::distance(min, max) / 2.0f;
+      dimensions.radius = min.distance(max) / 2.0f;
 	}
 
 	/*
@@ -597,7 +597,9 @@ namespace gpu_vulkan
 		gltf node
 	*/
 	floating_matrix4 gltf::Node::localMatrix() {
-		return glm::translate(floating_matrix4(1.0f), translation) * floating_matrix4(rotation) * glm::scale(floating_matrix4(1.0f), scale) * matrix;
+      return floating_matrix4::translation(translation) * 
+         floating_matrix4(rotation) *
+             floating_matrix4::scaling(scale) * matrix;
 	}
 
 	floating_matrix4 gltf::Node::getMatrix() {
