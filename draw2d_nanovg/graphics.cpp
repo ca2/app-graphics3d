@@ -8773,14 +8773,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          floating_sequence3 color;
       };
 
-      std::vector<Vertex> vertexes = {
+      ::array_base<Vertex> vertexes = {
           {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}}, // Bottom-left
           {{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}}, // Bottom-right
           {{ 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}, // Top-right
           {{-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}}, // Top-left
       };
 
-      std::vector<uint16_t> indexes = {
+      ::array_base<unsigned short> indexes = {
           0, 1, 2, 2, 3, 0 // Two triangles
       };
 

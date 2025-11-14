@@ -242,7 +242,8 @@ namespace app_graphics3d_continuum
       // }
       // else
       {
-         return glm::lookAt(m_locationPosition, m_locationPosition + m_poleFront, m_poleUp);
+         auto pgpucontext = m_pengine->get_gpu_context();
+         return pgpucontext->lookAt(m_locationPosition, m_locationPosition + m_poleFront, m_poleUp);
       }
    }
 

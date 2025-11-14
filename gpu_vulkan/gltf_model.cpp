@@ -967,11 +967,11 @@ namespace gpu_vulkan
 		}
 		floating_sequence3 scale = floating_sequence3(1.0f);
 		if (node.scale.size() == 3) {
-			scale = glm::make_vec3(node.scale.data());
+         scale = floating_sequence3(node.scale.data());
 			newNode->scale = scale;
 		}
 		if (node.matrix.size() == 16) {
-			newNode->matrix = glm::make_mat4x4(node.matrix.data());
+			newNode->matrix = floating_matrix4(node.matrix.data());
 			if (globalscale != 1.0f) {
 				//newNode->matrix = glm::scale(newNode->matrix, floating_sequence3(globalscale));
 			}
@@ -1073,21 +1073,26 @@ namespace gpu_vulkan
 
 					for (size_t v = 0; v < posAccessor.count; v++) {
 						Vertex vert{};
-						vert.pos = floating_sequence4(glm::make_vec3(&bufferPos[v * 3]), 1.0f);
-						vert.normal = glm::normalize(floating_sequence3(bufferNormals ? glm::make_vec3(&bufferNormals[v * 3]) : floating_sequence3(0.0f)));
-						vert.gltf_uv = bufferTexCoords ? glm::make_vec2(&bufferTexCoords[v * 2]) : floating_sequence3(0.0f);
+						vert.pos = floating_sequence4(floating_sequence3(&bufferPos[v * 3]), 1.0f);
+						vert.normal = floating_sequence3(bufferNormals ? 
+                     floating_sequence3(&bufferNormals[v * 3])
+                                                                 : floating_sequence3(0.0f))
+                                   .normalized();
+                  vert.gltf_uv =
+                     bufferTexCoords ? floating_sequence2(&bufferTexCoords[v * 2]) : floating_sequence3(0.0f);
 						if (bufferColors) {
 							switch (numColorComponents) {
 							case 3:
-								vert.color = floating_sequence4(glm::make_vec3(&bufferColors[v * 3]), 1.0f);
+                           vert.color = floating_sequence4(floating_sequence3(&bufferColors[v * 3]), 1.0f);
 							case 4:
-								vert.color = glm::make_vec4(&bufferColors[v * 4]);
+                        vert.color = floating_sequence4(&bufferColors[v * 4]);
 							}
 						}
 						else {
 							vert.color = floating_sequence4(1.0f);
 						}
-						vert.tangent = bufferTangents ? floating_sequence4(glm::make_vec4(&bufferTangents[v * 4])) : floating_sequence4(0.0f);
+                  vert.tangent = bufferTangents ? floating_sequence4(floating_sequence4(&bufferTangents[v * 4]))
+                                                : floating_sequence4(0.0f);
 						//vert.joint0 = hasSkin ? floating_sequence4(glm::make_vec4(&bufferJoints[v * 4])) : floating_sequence4(0.0f);
 						//vert.weight0 = hasSkin ? glm::make_vec4(&bufferWeights[v * 4]) : floating_sequence4(0.0f);
 						vertexBuffer.push_back(vert);

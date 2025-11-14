@@ -18,9 +18,9 @@
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_FORCE_LEFT_HANDED
-#include <glm/mat4x4.hpp>
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_LEFT_HANDED
+//#include <glm/mat4x4.hpp>
 #include "initializers.h"
 #include "acme_windows_common/dxgi_surface_bindable.h"
 #include "windowing_win32/window.h"

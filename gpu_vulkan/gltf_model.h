@@ -186,7 +186,7 @@ namespace gpu_vulkan
 			int32_t skinIndex = -1;
 			floating_sequence3 translation{};
 			floating_sequence3 scale{ 1.0f };
-			float_quaternion rotation{};
+			floating_matrix4 rotation{};
 			floating_matrix4 localMatrix();
 			floating_matrix4 getMatrix();
 			void update();

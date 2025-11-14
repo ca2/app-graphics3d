@@ -201,12 +201,12 @@ namespace app_graphics3d_continuum
          _yaw = pcamera->m_fYaw;
          _pitch = pcamera->m_fPitch;
 
-         if (_yaw > glm::two_pi<float>())
-            _yaw -= glm::two_pi<float>();
+         if (_yaw > ::two_π<float>)
+            _yaw -= ::two_π<float>;
          if (_yaw < 0.0f)
-            _yaw += glm::two_pi<float>();
+            _yaw += ::two_π<float>;
 
-         _pitch = glm::clamp(_pitch, -1.5f, 1.5f);
+         _pitch = geometry::clamp(_pitch, -1.5f, 1.5f);
 
          if (m_b_001AbsoluteMousePosition)
          {
@@ -224,17 +224,17 @@ namespace app_graphics3d_continuum
          }
 
          // Optional: wrap yaw
-         if (_yaw > glm::two_pi<float>())
-            _yaw -= glm::two_pi<float>();
+         if (_yaw > ::two_π<float>)
+            _yaw -= ::two_π<float>;
          if (_yaw < 0.0f)
-            _yaw += glm::two_pi<float>();
+            _yaw += ::two_π<float>;
 
          // Clamp pitch to avoid flipping
-         _pitch = glm::clamp(_pitch, -1.5f, 1.5f);
+         _pitch = geometry::clamp(_pitch, -1.5f, 1.5f);
 
 
-         pcamera->m_fPitch = _pitch;
-         pcamera->m_fYaw = _yaw;
+         pcamera->m_fPitch = ::radians(_pitch);
+         pcamera->m_fYaw = ::radians(_yaw);
 
          pcamera->UpdateCameraVectors();
 
@@ -321,13 +321,13 @@ namespace app_graphics3d_continuum
             if (pinput->key(e_key_moveDown) == ::user::e_key_state_pressed)
                moveDir -= upDir;
 
-            if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon())
+            if (moveDir.squared_modulus() > std::numeric_limits<float>::epsilon())
             {
 
                ::cast<camera> pcameraCurrent = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent;
 
                pcameraCurrent->m_locationPosition +=
-                  m_fMoveSpeed * m_pengine->dt() * glm::normalize(moveDir);
+                  m_fMoveSpeed * m_pengine->dt() * moveDir.normalized();
             }
 
             if (pinput->key(e_key_Exit) == ::user::e_key_state_pressed)

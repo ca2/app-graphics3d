@@ -1,15 +1,15 @@
 ﻿// directx11_guide.h : Include file for standard system include files,
 // or project specific include files.
 #pragma once
-#define GLM_FORCE_RADIANS
-#define GLM_ENABLE_EXPERIMENTAL
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_FORCE_LEFT_HANDED
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#pragma once
+//#define GLM_FORCE_RADIANS
+//#define GLM_ENABLE_EXPERIMENTAL
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_LEFT_HANDED
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/gtc/matrix_inverse.hpp>
+//#include <glm/gtc/type_ptr.hpp>
+//#pragma once
 
 #include <memory>
 #include <optional>
@@ -26,8 +26,8 @@
 
 #include <iostream>
 
-#include <glm/mat4x4.hpp>
-#include <glm/vec4.hpp>
+//#include <glm/mat4x4.hpp>
+//#include <glm/vec4.hpp>
 
 #include <cstdlib> // For abort()
 

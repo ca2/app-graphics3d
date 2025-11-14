@@ -32,9 +32,9 @@
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #include "windowing_win32/window.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/gtc/type_ptr.hpp>
 #include <math.h>
 #include <dwmapi.h>
 #include "acme/prototype/geometry2d/_defer_item.h"
@@ -5888,7 +5888,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       pshader->_set_int("text", 0);
       //auto pcontext = gpu_context();
 
-      floating_matrix4 projection = glm::ortho(
+      floating_matrix4 projection = gpu_context()->ortho(
          0.0f,
          static_cast<float>(pcontext->m_rectangle.width()),
          static_cast<float>(pcontext->m_rectangle.height()),
