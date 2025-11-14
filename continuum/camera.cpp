@@ -8,6 +8,7 @@
 //#include <glm/gtc/type_ptr.hpp>
 #include "aura/platform/application.h"
 #include "bred/graphics3d/engine.h"
+#include "acme/prototype/geometry2d/angle.h"
 
 // std
 #include <cassert>
@@ -50,7 +51,7 @@ namespace app_graphics3d_continuum
 
       auto direction = (target - camera).normalized();
 
-      m_fYaw = geometry::atan2(direction.z, direction.x);
+      m_fYaw = geometry2d::atan2(direction.z, direction.x);
 
       m_fPitch = asin(direction.y);
 
