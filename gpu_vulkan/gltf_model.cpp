@@ -1840,7 +1840,7 @@ namespace gpu_vulkan
 		}
 		dimensions.size = dimensions.max - dimensions.min;
 		dimensions.center = (dimensions.min + dimensions.max) / 2.0f;
-		dimensions.radius = glm::distance(dimensions.min, dimensions.max) / 2.0f;
+		dimensions.radius = dimensions.min.distance(dimensions.max) / 2.0f;
 	}
 
 	void gltf::Model::loadAnimations(tinygltf::Model& gltfModel)
@@ -1978,12 +1978,12 @@ namespace gpu_vulkan
 					if (u <= 1.0f) {
 						switch (channel.path) {
 						case  AnimationChannel::PathType::TRANSLATION: {
-								floating_sequence4 trans = glm::mix(sampler.outputsVec4[i], sampler.outputsVec4[i + 1], u);
+                        floating_sequence4 trans = sampler.outputsVec4[i].mix(sampler.outputsVec4[i + 1], u);
 								channel.node->translation = floating_sequence3(trans);
 								break;
 						}
 						case  AnimationChannel::PathType::SCALE: {
-								floating_sequence4 trans = glm::mix(sampler.outputsVec4[i], sampler.outputsVec4[i + 1], u);
+								floating_sequence4 trans = sampler.outputsVec4[i].mix(sampler.outputsVec4[i + 1], u);
 								channel.node->scale = floating_sequence3(trans);
 								break;
 						}
@@ -1998,7 +1998,7 @@ namespace gpu_vulkan
 								q2.y = sampler.outputsVec4[i + 1].y;
 								q2.z = sampler.outputsVec4[i + 1].z;
 								q2.w = sampler.outputsVec4[i + 1].w;
-								channel.node->rotation = glm::normalize(glm::slerp(q1, q2, u));
+								channel.node->rotation = q1.slerp(q2, u).normalized();
 								break;
 						}
 						}
