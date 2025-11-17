@@ -36,7 +36,3 @@
 //
 //
 //} // namespace graphics3d
-//
-//
-//
-//

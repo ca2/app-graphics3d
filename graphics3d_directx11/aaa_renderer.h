@@ -99,10 +99,6 @@
 //
 //			::pointer < context > m_pgpucontext;
 //			::pointer < renderer > m_prenderer;
-//
-//
-//
-//
 //			OffScreenSampler();
 //			~OffScreenSampler();
 //

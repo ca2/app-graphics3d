@@ -15,14 +15,6 @@
 //#include "gpu_directx11/context.h"
 //#include "gpu_directx11/renderer.h"
 //
-//
-//
-//#define GLM_ENABLE_EXPERIMENTAL
-//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-//#define GLM_FORCE_LEFT_HANDED
-//#include <glm/gtx/hash.hpp>
-//
-//
 //// lib headers
 //#define TINYOBJLOADER_IMPLEMENTATION
 //#include <tiny_obj_loader.h>

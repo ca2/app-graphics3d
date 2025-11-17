@@ -1091,10 +1091,6 @@
 //
 //         //ComPtr<ID2D1Device2> d2dDevice;
 //         //d2dFactory->CreateDevice(dxgiDevice.Get(), &d2dDevice);
-//
-//
-//
-//
 //         pd3d11->wrappedResource.as(pd3d11->dxgiSurface);
 //
 //         D2D1_BITMAP_PROPERTIES1 bmpProps = {};

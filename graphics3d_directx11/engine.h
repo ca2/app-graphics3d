@@ -9,10 +9,6 @@
 
 
 //// libs
-//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-//#define GLM_FORCE_LEFT_HANDED
-//#include <glm/gtc/matrix_transform.hpp>
-//
 //// std
 //#include <memory>
 //#include <unordered_map>

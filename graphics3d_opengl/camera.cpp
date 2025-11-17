@@ -1,8 +1,8 @@
 #include "framework.h"
 #include "camera.h"
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
-//#include <glm/gtc/type_ptr.hpp>
+//
+//
+//
 //#include <cmath> // For sin and cos functions
 //
 //
@@ -189,13 +189,5 @@ namespace graphics3d_opengl
 //         m_Zoom = 45.0f;
 //   }
 //
-//
-//
-//
-//
 } // namespace graphics3d_opengl
-//
-//
-//
-//
 //

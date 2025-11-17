@@ -7,8 +7,8 @@
 #include "bred/graphics3d/skybox.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/immersion_layer.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+
+
 //#include "bred/graphics3d/cube_map.h"
 #include "bred/graphics3d/mesh.h"
 #include <cmath>
@@ -18,8 +18,8 @@
 #include "bred/graphics3d/shape_factory.h"
 //#include "common.h"
 #include <random>
-#include <glm/gtc/matrix_transform.hpp>  // For matrix transforms like rotate, translate
-#include <glm/gtc/constants.hpp> 
+  // For matrix transforms like rotate, translate
+ 
 
 
 namespace app_graphics3d_MyPlace2025

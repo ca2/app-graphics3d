@@ -15,10 +15,6 @@
 //#include "gpu_directx12/buffer.h"
 //#include "gpu_directx12/context.h"
 //#include "gpu_directx12/renderer.h"
-//
-//
-//
-//
 //namespace graphics3d_directx12
 //{
 //

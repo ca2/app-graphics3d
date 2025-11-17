@@ -22,10 +22,6 @@
 //      virtual public ::gpu_directx12::swap_chain
 //   {
 //   public:
-//
-//
-//
-//
 //      //::pointer < swap_chain_texture > m_ptextureRenderTargetBackBuffer;
 //      //::comptr<ID3D12Resource> m_pd3d12resourceBackBuffer;
 //      //::comptr<ID3D11Resource> m_pd3d11resourceWrapped;
@@ -37,10 +33,6 @@
 //      ::comptr<ID2D1DeviceContext> d2dContext;
 //
 //      ::pointer < texture >           m_ptextureMainBackBuffer;
-//
-//
-//
-//
 //      ::pointer < ::gpu_directx12::device > m_pgpudevice;
 //
 //      //::comptr<ID3D11Device> m_pd3d11device;

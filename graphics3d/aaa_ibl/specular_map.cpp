@@ -3,8 +3,8 @@
 #include "framework.h"
 #include "specular_map.h"
 
-#include "glm/glm.hpp"
-#include <glm/gtc/matrix_transform.hpp>
+
+
 
 //#include "constants.h"
 //#include "cube.h"

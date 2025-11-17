@@ -32,9 +32,9 @@
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #include "windowing_win32/window.h"
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
-//#include <glm/gtc/type_ptr.hpp>
+//
+//
+//
 #include <math.h>
 #include <dwmapi.h>
 #include "acme/prototype/geometry2d/_defer_item.h"

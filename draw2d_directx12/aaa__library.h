@@ -3,10 +3,6 @@
 
 //
 //#include "directx12/_library.h"
-//
-//
-//
-//
 //#include "factory_exchange.h"
 //
 //

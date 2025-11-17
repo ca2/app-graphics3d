@@ -24,10 +24,10 @@
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
-//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-// #define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
+//
+//   // Optional — depends on your conventions
 #include <chrono>
-//#include "glm/mat4x4.hpp"
+//
 #include "gltf_model.h"
 #include "initializers.h"
 #include "vk_init.h"

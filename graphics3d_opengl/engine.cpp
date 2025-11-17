@@ -19,9 +19,9 @@
 #include "system/point_light_system.h"
 #include "bred/user/user/graphics3d.h"
 
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
-//#include <glm/gtc/type_ptr.hpp>
+//
+//
+//
 
 
 #pragma comment( lib, "glu32" )

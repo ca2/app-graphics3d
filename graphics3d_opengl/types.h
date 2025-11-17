@@ -5,32 +5,28 @@
 
 #include "bred/graphics3d/types.h"
 
-#define GLM_FORCE_RADIANS
-//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_ENABLE_EXPERIMENTAL
-
 
 #pragma warning(push, 0)
-//#define GLM_FORCE_SILENT_WARNINGS
-#define GLM_ENABLE_EXPERIMENTAL
-//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//
+
+//
 #include <glad/glad.h>
 //#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
+
 #include <string>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include "glm/gtx/hash.hpp"
+
+
+
 //#include "Math.h"
 #pragma warning(pop)
 //#include "Defines.h"
 #include "_constant.h"
 
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-#include <glm/gtc/type_ptr.hpp>
+
+
+
+
 #pragma once
 
 #include <memory>
@@ -48,8 +44,8 @@
 
 #include <iostream>
 
-#include <glm/mat4x4.hpp>
-#include <glm/vec4.hpp>
+
+
 
 #include <cstdlib> // For abort()
 //

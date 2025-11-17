@@ -4,7 +4,7 @@
 
 #include "bred/gpu/properties.h"
 #include "bred/graphics3d/scene_system.h"
-#include <glm/glm.hpp>
+
 
 
 namespace app_graphics3d_continuum

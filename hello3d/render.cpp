@@ -267,10 +267,6 @@ namespace graphics3d_hello3d
 //      return ::success;
 //
 //   }
-//
-//
-//
-//
 //   ::e_status render::set_font(const ::string & strFont)
 //   {
 //

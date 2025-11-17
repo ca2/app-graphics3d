@@ -9,7 +9,7 @@
 ////#include "window.h"
 //#include "acme/constant/user_key.h"
 //#include "bred/graphics3d/key_map.h"
-//#include <glm/glm.hpp>
+//
 //
 //
 //namespace graphics3d_directx12 
@@ -27,10 +27,6 @@
 //      double m_dMouseLastY = 0.0;
 //      double m_Δx = 0.;
 //      double m_Δy = 0.;
-//
-//
-//
-//
 //      float _sensitivity;  // Sensitivity factor for mouse movement
 //      float _yaw;          // Camera yaw (horizontal rotation)
 //      float _pitch;        // Camera pitch (vertical rotation)

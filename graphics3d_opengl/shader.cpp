@@ -1,9 +1,9 @@
 #include "framework.h"
 //#include "context.h"
 //#include "glad.h"
-//#include "glm/glm.hpp"
-//#include "glm/gtc/matrix_transform.hpp"
-//#include "glm/gtc/type_ptr.hpp"
+//
+//
+//
 //#include "acme/filesystem/filesystem/file_context.h"
 //#include "shader.h"
 //#include "bred/user/user/graphics3d.h"
@@ -191,10 +191,6 @@
 //         p++;
 //
 //      }
-//
-//
-//
-//
 //   }
 //
 //   //// Read shader source code from file

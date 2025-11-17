@@ -39,10 +39,6 @@
 //
 //      bool WasKeyPressed(::user::e_key ekey); // Helper to check if key was pressed once
 //   };
-//
-//
-//
-//
 //} // namespace graphics3d_opengl
 //
 //

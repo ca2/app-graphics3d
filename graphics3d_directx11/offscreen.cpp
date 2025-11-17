@@ -938,7 +938,3 @@
 ////	//offscreenPass.descriptor.imageView = offscreenPass.color.view;
 ////	//offscreenPass.descriptor.sampler = offscreenPass.sampler;
 ////}
-//
-//
-//
-//

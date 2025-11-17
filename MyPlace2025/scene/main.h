@@ -2,7 +2,7 @@
 
 #include <string>
 #include <memory>
-#include <glm/glm.hpp>
+
 #include "bred/graphics3d/scene.h"
 #include "bred/graphics3d/mesh.h"
 //#include "shader.h"

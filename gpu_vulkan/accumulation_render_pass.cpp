@@ -89,10 +89,6 @@
 //
 //   }
 //
-//
-//
-//
-//
 //   void accumulation_render_pass::on_init_render_pass()
 //   {
 //

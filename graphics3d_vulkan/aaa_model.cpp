@@ -16,12 +16,8 @@
 //#include "acme/filesystem/filesystem/directory_context.h"
 //#include "acme/filesystem/filesystem/path_system.h"
 //
+////  // Optional — depends on your conventions
 //
-//
-//#define GLM_ENABLE_EXPERIMENTAL
-//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-////#define GLM_FORCE_LEFT_HANDED  // Optional — depends on your conventions
-//#include <glm/gtx/hash.hpp>
 //// lib headers
 //#define TINYOBJLOADER_IMPLEMENTATION
 //#include <tiny_obj_loader.h>

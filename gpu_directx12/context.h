@@ -111,10 +111,6 @@ namespace gpu_directx12
 //      //   uint32_t transfer;
 //      //} m_queuefamilyindexes;
 //
-//
-//
-//
-//
 //      //graphics3d_directx12::context
 //#if defined(NDEBUG)
 //      const bool enableValidationLayers = false;

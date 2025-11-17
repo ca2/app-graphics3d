@@ -4,9 +4,9 @@
 #include "_.h"
 #include "core/user/userex/_userex.h"
 #include "gpu_opengl/_gpu_opengl.h"
-#include "glm/vec2.hpp"
-#include "glm/vec3.hpp"
-#include "glm/vec4.hpp"
+
+
+
 
 
 namespace user

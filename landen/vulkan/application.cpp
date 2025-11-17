@@ -21,10 +21,10 @@
 //#define VMA_IMPLEMENTATION
 //#include <vma/vk_mem_alloc.h>
 
-#define GLM_FORCE_RADIANS	
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
+	
+
+
+
 
 // Project source specific includes
 #include "vk_application.h"

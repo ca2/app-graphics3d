@@ -14,13 +14,13 @@
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/types.h"
 #include "gpu_directx12/descriptors.h"
-//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-//#define GLM_FORCE_LEFT_HANDED
-//#include "glm/mat4x4.hpp"
+//
+//
+//
 #include "initializers.h"
 #include "windowing_win32/window.h"
 #pragma comment(lib, "dcomp")
-//#include <glm/glm.hpp>
+//
 #include <DirectXMath.h>
 
 #pragma comment(lib, "d3d12.lib")

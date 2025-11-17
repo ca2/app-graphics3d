@@ -1226,10 +1226,6 @@ namespace draw2d_direct2d_directx12
 //}
 //
 //
-//
-//
-//
-//
 //namespace draw2d_direct2d_directx12
 //{
 //   void path::CreatePathTextRenderer(FLOAT pixelsPerDip, IDWriteTextRenderer **textRenderer)

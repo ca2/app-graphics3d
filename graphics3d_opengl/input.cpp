@@ -120,7 +120,3 @@
 //
 //
 //} // namespace graphics3d_opengl
-//
-//
-//
-//

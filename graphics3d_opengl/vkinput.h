@@ -4,7 +4,7 @@
 //#include "window.h"
 #include "acme/constant/user_key.h"
 #include "cube/key_map.h"
-#include <glm/glm.hpp>
+
 
 namespace graphics3d_opengl 
 {

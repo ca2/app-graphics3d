@@ -17,7 +17,7 @@
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/types.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
-//#include <glm/mat4x4.hpp>
+
 #include <assert.h>
 
 using namespace vulkan;
@@ -161,10 +161,6 @@ namespace gpu_vulkan
 //
 ////glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 ////int iError18 = glGetError();
-//
-//
-//
-//
 //      //ASSERT(m_itaskGpu == ::current_itask());
 //
 //      ////      glClearColor(0.0f, 0.0f, 0.4f, 0.0f);

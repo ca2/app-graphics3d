@@ -10,8 +10,8 @@
 
 
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/hash.hpp>
+
+
 
 // lib headers
 #define TINYOBJLOADER_IMPLEMENTATION

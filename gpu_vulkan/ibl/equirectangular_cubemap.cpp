@@ -9,8 +9,8 @@
 #include "bred/graphics3d/skybox.h"
 #include "gpu/timer.h"
 
-#include <glm/gtc/matrix_transform.hpp>
-#include "glm/glm.hpp"
+
+
 
 #include "gpu/gltf/_constant.h"
 #include "gpu_vulkan/_gpu_vulkan.h"

@@ -3,8 +3,8 @@
 //#include "renderer.h"
 //#include "shader.h"
 //#include "cube_map.h"
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
+//
+//
 //#include "mesh.h"
 //#include <cmath>
 //#include <vector>
@@ -12,8 +12,8 @@
 //#include "shapes.h"
 ////#include "common.h"
 //#include <random>
-//#include <glm/gtc/matrix_transform.hpp>  // For matrix transforms like rotate, translate
-//#include <glm/gtc/constants.hpp> 
+//  // For matrix transforms like rotate, translate
+// 
 //
 //
 //namespace graphics3d_opengl
@@ -314,16 +314,8 @@
 //      m_Shader->Unbind();
 //   }
 //
-//
-//
-//
-//
 //   render_data::~render_data() {}
 //
 //
 //
 //} // namespace graphics3d_opengl
-//
-//
-//
-//

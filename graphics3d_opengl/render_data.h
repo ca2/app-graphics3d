@@ -2,7 +2,7 @@
 
 #include <string>
 #include <memory>
-#include <glm/glm.hpp>
+
 #include "renderer.h"
 #include "shader.h"
 #include "mesh.h"
