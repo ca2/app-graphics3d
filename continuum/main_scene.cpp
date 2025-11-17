@@ -192,7 +192,7 @@ namespace app_graphics3d_continuum
             ::radians((i * _2πf) / lightColors.size()),
             { 0.f, 1.f, 0.f });
          ppointlight->m_fLightIntensity = 1.0f;
-         ppointlight->transform().m_vec3Position = floating_sequence3(rotateLight * floating_sequence4(-1.f, 1.7f, 0.5f, 1.f));
+         ppointlight->transform().m_sequence3Position = floating_sequence3(rotateLight * floating_sequence4(-1.f, 1.7f, 0.5f, 1.f));
          //m_pointlighta.add(ppointlight);
 
       }

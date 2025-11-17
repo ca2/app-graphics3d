@@ -188,13 +188,13 @@ namespace graphics3d
          //auto pobject = (*pframe->scene_objects())[it->element2()];
          //::cast<point_light> ppointlight = pobject;
          ::gpu::point_light_push_constants pushconstants{};
-         pushconstants.position = floating_sequence4(ppointlight->transform().m_vec3Position, 1.0f);
+         pushconstants.position = floating_sequence4(ppointlight->transform().m_sequence3Position, 1.0f);
          pushconstants.color = floating_sequence4(
             ppointlight->color().f32_red(),
             ppointlight->color().f32_green(),
             ppointlight->color().f32_blue(),
             ppointlight->m_fLightIntensity);
-         pushconstants.radius = ppointlight->transform().m_vec3Scale.x;
+         pushconstants.radius = ppointlight->transform().m_sequence3Scale.x;
 
          m_pshader->set_push_properties(::as_memory_block(pushconstants));
 
@@ -238,11 +238,11 @@ namespace graphics3d
       {
 
          // update light position
-         ppointlight->m_transform.m_vec3Position =
-            floating_sequence3(rotateLight * floating_sequence4(ppointlight->m_transform.m_vec3Position, 1.f));
+         ppointlight->m_transform.m_sequence3Position =
+            floating_sequence3(rotateLight * floating_sequence4(ppointlight->m_transform.m_sequence3Position, 1.f));
 
          // copy light to ubo
-         globalubo["pointLights"][lightIndex]["position"] = floating_sequence4(ppointlight->m_transform.m_vec3Position, 1.f);
+         globalubo["pointLights"][lightIndex]["position"] = floating_sequence4(ppointlight->m_transform.m_sequence3Position, 1.f);
          globalubo["pointLights"][lightIndex]["color"] =
             floating_sequence4(ppointlight->m_color.f32_red(),
             ppointlight->m_color.f32_green(),
