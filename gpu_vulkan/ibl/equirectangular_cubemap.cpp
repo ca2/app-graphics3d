@@ -88,12 +88,17 @@ namespace gpu_vulkan
 
          floating_matrix4 model = ::gpu::gltf::mIndentity4;
 
-         floating_matrix4 cameraAngles[] = {glm::lookAt(::gpu::gltf::origin, ::gpu::gltf::unitX, -::gpu::gltf::unitY),
-                                     glm::lookAt(::gpu::gltf::origin, -::gpu::gltf::unitX, -::gpu::gltf::unitY),
-                                     glm::lookAt(::gpu::gltf::origin, ::gpu::gltf::unitY, ::gpu::gltf::unitZ),
-                                     glm::lookAt(::gpu::gltf::origin, -::gpu::gltf::unitY, -::gpu::gltf::unitZ),
-                                     glm::lookAt(::gpu::gltf::origin, ::gpu::gltf::unitZ, -::gpu::gltf::unitY),
-                                     glm::lookAt(::gpu::gltf::origin, -::gpu::gltf::unitZ, -::gpu::gltf::unitY)};
+         using namespace geometry3d;
+
+         floating_matrix4 cameraAngles[] = 
+         {
+            ::graphics3d::lookAt(origin, unitX, -unitY),
+            ::graphics3d::lookAt(origin, -unitX, -unitY),
+            ::graphics3d::lookAt(origin, unitY, unitZ),  
+            ::graphics3d::lookAt(origin, -unitY, -unitZ),
+            ::graphics3d::lookAt(origin, unitZ, -unitY), 
+            ::graphics3d::lookAt(origin, -unitZ, -unitY)
+         };
          
          floating_matrix4 projection = glm::perspective(::radians(90.0f), // 90 degrees to cover one face
                                                  1.0f, // its a square
