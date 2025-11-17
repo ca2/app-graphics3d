@@ -19,7 +19,7 @@ namespace graphics3d
 
 		::pointer < ::graphics3d::engine > m_pengine;
       ::floating_sequence3 m_sequence3Position;
-      ::floating_sequence3 m_sequence3Rotation;
+      ::floating_sequence3 m_quaternionRotation;
 
 
 
@@ -30,8 +30,8 @@ namespace graphics3d
       virtual floating_sequence3 position();
       virtual floating_sequence3 rotation();
 
-      inline auto &yaw() { return m_sequence3Rotation.y; }
-      inline auto &pitch() { return m_sequence3Rotation.x; }
+      inline auto &yaw() { return m_quaternionRotation.y; }
+      inline auto &pitch() { return m_quaternionRotation.x; }
 
       virtual ::block as_block();
 
