@@ -241,13 +241,13 @@ namespace app_graphics3d_continuum
 
          //auto pgpucontext = 
          matrixImpact = m_pgpucontext->lookAt(pcamera->m_locationPosition,
-                                         pcamera->m_locationPosition + pcamera->m_poleFront,
-                             pcamera->m_poleWorldUp);
+                                         pcamera->m_locationPosition + pcamera->m_sequence3Front,
+                             pcamera->m_sequence3WorldUp);
          //if (m_pimmersionlayer->m_pengine->m_fYScale < 0)
          //{
          //   matrixImpact = glm::lookAtRH(pcamera->m_locationPosition,
-         //                                pcamera->m_locationPosition + pcamera->m_poleFront,
-         //                    pcamera->m_poleWorldUp);
+         //                                pcamera->m_locationPosition + pcamera->m_sequence3Front,
+         //                    pcamera->m_sequence3WorldUp);
          //   // matrixImpact[2][0] = -matrixImpact[2][0];
          //   // matrixImpact[2][1] = -matrixImpact[2][1];
          //   // matrixImpact[2][2] = -matrixImpact[2][2];
@@ -256,12 +256,12 @@ namespace app_graphics3d_continuum
          //else
          //{
          //   matrixImpact =
-         //      glm::lookAtRH(pcamera->m_locationPosition, pcamera->m_locationPosition + pcamera->m_poleFront, pcamera->m_poleWorldUp);
+         //      glm::lookAtRH(pcamera->m_locationPosition, pcamera->m_locationPosition + pcamera->m_sequence3Front, pcamera->m_sequence3WorldUp);
          //}
          pcamera->m_matrixImpact = matrixImpact;
          //}
 
-         pcamera->m_matrixAntImpact = pcamera->m_matrixImpact.inversed();
+         pcamera->m_matrixInversedImpact = pcamera->m_matrixImpact.inversed();
 
 
 

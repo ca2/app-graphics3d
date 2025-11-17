@@ -23,7 +23,7 @@ namespace graphics3d_opengl
 //
 //      float m_LastX; // Last mouse x position
 //      float m_LastY; // Last mouse y position
-//      float m_MouseSensitivity; // Sensitivity factor for mouse input
+//      float m_angleCursorPixel; // Sensitivity factor for mouse input
 //      // Deadzone
 //      float m_MouseDeadZone;
 //      // Inertia

@@ -56,7 +56,7 @@ namespace graphics3d_directx11
 
 	//	//float m_LastX; // Last mouse x position
 	//	//float m_LastY; // Last mouse y position
-	//	float m_MouseSensitivity = 0.1f; // Sensitivity factor for mouse input
+	//	float m_angleCursorPixel = 0.1f; // Sensitivity factor for mouse input
 	//	// Deadzone
 	//	float m_MouseDeadZone;
 	//	// Inertia

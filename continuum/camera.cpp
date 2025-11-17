@@ -36,7 +36,7 @@ namespace app_graphics3d_continuum
 
       m_fPitch = pitch;
 
-      m_poleWorldUp = {0.0f, 1.0f, 0.0f};
+      m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
 
       m_fZoom = 75.0f;
 
@@ -57,7 +57,7 @@ namespace app_graphics3d_continuum
 
       m_fPitch = geometry2d::asin(direction.y);
 
-      m_poleWorldUp = {0.0f, 1.0f, 0.0f};
+      m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
 
       m_fZoom = ::radians(75.0f);
 
@@ -93,13 +93,13 @@ namespace app_graphics3d_continuum
       auto velocity = m_fMovementSpeed * deltaTime; // Use movement speed
 
       if (direction == FORWARD)
-         m_locationPosition += m_poleFront * velocity;
+         m_locationPosition += m_sequence3Front * velocity;
       if (direction == BACKWARD)
-         m_locationPosition -= m_poleFront * velocity;
+         m_locationPosition -= m_sequence3Front * velocity;
       if (direction == LEFT)
-         m_locationPosition -= m_poleRight * velocity;
+         m_locationPosition -= m_sequence3Right * velocity;
       if (direction == RIGHT)
-         m_locationPosition += m_poleRight * velocity;
+         m_locationPosition += m_sequence3Right * velocity;
    }
 
 
@@ -167,19 +167,19 @@ namespace app_graphics3d_continuum
       m_matrixImpact[3][0] = -u.dotted(position);
       m_matrixImpact[3][1] = -v.dotted(position);
       m_matrixImpact[3][2] = -w.dotted(position);
-      m_matrixAntImpact = floating_matrix4{1.f};
-      m_matrixAntImpact[0][0] = u.x;
-      m_matrixAntImpact[0][1] = u.y;
-      m_matrixAntImpact[0][2] = u.z;
-      m_matrixAntImpact[1][0] = v.x;
-      m_matrixAntImpact[1][1] = v.y;
-      m_matrixAntImpact[1][2] = v.z;
-      m_matrixAntImpact[2][0] = w.x;
-      m_matrixAntImpact[2][1] = w.y;
-      m_matrixAntImpact[2][2] = w.z;
-      m_matrixAntImpact[3][0] = position.x;
-      m_matrixAntImpact[3][1] = position.y;
-      m_matrixAntImpact[3][2] = position.z;
+      m_matrixInversedImpact = floating_matrix4{1.f};
+      m_matrixInversedImpact[0][0] = u.x;
+      m_matrixInversedImpact[0][1] = u.y;
+      m_matrixInversedImpact[0][2] = u.z;
+      m_matrixInversedImpact[1][0] = v.x;
+      m_matrixInversedImpact[1][1] = v.y;
+      m_matrixInversedImpact[1][2] = v.z;
+      m_matrixInversedImpact[2][0] = w.x;
+      m_matrixInversedImpact[2][1] = w.y;
+      m_matrixInversedImpact[2][2] = w.z;
+      m_matrixInversedImpact[3][0] = position.x;
+      m_matrixInversedImpact[3][1] = position.y;
+      m_matrixInversedImpact[3][2] = position.z;
    }
 
 
@@ -203,7 +203,7 @@ namespace app_graphics3d_continuum
 
    //   m_matrixImpact = GetViewMatrix();
 
-   //   m_matrixAntImpact = glm::inverse(m_matrixImpact);
+   //   m_matrixInversedImpact = glm::inverse(m_matrixImpact);
 
    //}
 
@@ -216,11 +216,11 @@ namespace app_graphics3d_continuum
       front.x = cos(m_fPitch) * cos(m_fYaw);
       front.y = sin(m_fPitch);
       front.z = cos(m_fPitch) * sin(m_fYaw);
-      this->m_poleFront = front.normalized();
+      this->m_sequence3Front = front.normalized();
 
       // Re-calculate the right and up vector
-      this->m_poleRight = this->m_poleFront.crossed(m_poleWorldUp).normalized();
-      this->m_poleUp = this->m_poleRight.crossed(this->m_poleFront).normalized();
+      this->m_sequence3Right = this->m_sequence3Front.crossed(m_sequence3WorldUp).normalized();
+      this->m_sequence3Up = this->m_sequence3Right.crossed(this->m_sequence3Front).normalized();
    }
 
 
@@ -238,12 +238,12 @@ namespace app_graphics3d_continuum
 
       // if (m_pengine->m_fYScale < 0.f)
       //{
-      //    return glm::lookAtRH(m_locationPosition, m_locationPosition + m_poleFront, m_poleUp);
+      //    return glm::lookAtRH(m_locationPosition, m_locationPosition + m_sequence3Front, m_sequence3Up);
       // }
       // else
       {
          auto pgpucontext = m_pengine->get_gpu_context();
-         return pgpucontext->lookAt(m_locationPosition, m_locationPosition + m_poleFront, m_poleUp);
+         return pgpucontext->lookAt(m_locationPosition, m_locationPosition + m_sequence3Front, m_sequence3Up);
       }
    }
 
@@ -266,19 +266,19 @@ namespace app_graphics3d_continuum
 
       if (direction == FORWARD)
       {
-         m_locationPosition += m_poleFront * teleportDistance;
+         m_locationPosition += m_sequence3Front * teleportDistance;
       }
       else if (direction == BACKWARD)
       {
-         m_locationPosition -= m_poleFront * teleportDistance;
+         m_locationPosition -= m_sequence3Front * teleportDistance;
       }
       else if (direction == LEFT)
       {
-         m_locationPosition -= m_poleRight * teleportDistance;
+         m_locationPosition -= m_sequence3Right * teleportDistance;
       }
       else if (direction == RIGHT)
       {
-         m_locationPosition += m_poleRight * teleportDistance;
+         m_locationPosition += m_sequence3Right * teleportDistance;
       }
    }
 

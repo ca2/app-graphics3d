@@ -19,50 +19,49 @@ namespace app_graphics3d_continuum
 		RIGHT
 	};
 
-
-	struct camera_t
-	{
-
-		//void calculateMouseOffset(float xoffset, float yoffset);
-//private:
-		floating_matrix4		m_matrixProjection{ 1.f };
-		floating_matrix4		m_matrixImpact{ 1.f };
-		floating_matrix4		m_matrixAntImpact{ 1.f };
-
-		//float m_LastX; // Last mouse x position
-		//float m_LastY; // Last mouse y position
-		float				m_MouseSensitivity = 0.1f; // Sensitivity factor for mouse input
-		// Deadzone
-		float				m_MouseDeadZone;
-		// Inertia
-		floating_sequence3				m_poleVelocity;
-		// Camera attributes
-		floating_sequence3				m_locationPosition;
-		floating_sequence3				m_poleFront{ 0.0f, 0.0f, -1.0f };  // Camera direction (forward vector)
-		floating_sequence3				m_poleUp{ 0.0f, 1.0f, 0.0f };     // Up vector
-		floating_sequence3				m_poleRight{ 1.0f, 0.0f, 0.0f };   // Right vector (cross product)
-		floating_sequence3				m_poleWorldUp;
-
-		// Euler angles
-      float_angle    m_fYaw = 0.0_degree;
-		float_angle		m_fPitch = -90.0_degree;
-
-		// Camera options
-		float				m_fZoom;
-		float				m_fMovementSpeed;  // Added movement speed
-
-		::block as_block()
-		{
-
-			return as_memory_block(*this);
-
-		}
-
-	};
+//
+//	struct camera_t
+//	{
+//
+//		//void calculateMouseOffset(float xoffset, float yoffset);
+////private:
+//		floating_matrix4		m_matrixProjection{ 1.f };
+//		floating_matrix4		m_matrixImpact{ 1.f };
+//		floating_matrix4		m_matrixInversedImpact{ 1.f };
+//
+//		//float m_LastX; // Last mouse x position
+//		//float m_LastY; // Last mouse y position
+//		float				m_angleCursorPixel = 0.1f; // Sensitivity factor for mouse input
+//		// Deadzone
+//		float				m_MouseDeadZone;
+//		// Inertia
+//		floating_sequence3				m_sequence3Velocity;
+//		// Camera attributes
+//		floating_sequence3				m_locationPosition;
+//		floating_sequence3				m_sequence3Front{ 0.0f, 0.0f, -1.0f };  // Camera direction (forward vector)
+//		floating_sequence3				m_sequence3Up{ 0.0f, 1.0f, 0.0f };     // Up vector
+//		floating_sequence3				m_sequence3Right{ 1.0f, 0.0f, 0.0f };   // Right vector (cross product)
+//		floating_sequence3				m_sequence3WorldUp;
+//
+//		// Euler angles
+//      float_angle    m_fYaw = 0.0_degree;
+//		float_angle		m_fPitch = -90.0_degree;
+//
+//		// Camera options
+//		float				m_fZoom;
+//		float				m_fMovementSpeed;  // Added movement speed
+//
+//		::block as_block()
+//		{
+//
+//			return as_memory_block(*this);
+//
+//		}
+//
+//	};
 
 	
 	class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM camera :
-		virtual public camera_t,
 		virtual public ::graphics3d::camera
 	{
 	public:
@@ -86,7 +85,7 @@ namespace app_graphics3d_continuum
 		virtual void setPerspectiveProjection(float fovy, float aspect, float near, float far);
 		const floating_matrix4& getProjection() const { return m_matrixProjection; }
 		const floating_matrix4& getView() const { return m_matrixImpact; }
-		const floating_matrix4& getInverseView() const { return m_matrixAntImpact; }
+		const floating_matrix4& getInverseView() const { return m_matrixInversedImpact; }
 
 		// Get zoom (field of view)
 		float GetZoom() const;
