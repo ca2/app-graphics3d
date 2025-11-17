@@ -201,10 +201,10 @@ namespace app_graphics3d_continuum
          _yaw = pcamera->m_fYaw;
          _pitch = pcamera->m_fPitch;
 
-         if (_yaw > ::two_π<float>)
-            _yaw -= ::two_π<float>;
+         if (_yaw > _2πf)
+            _yaw -= _2πf;
          if (_yaw < 0.0f)
-            _yaw += ::two_π<float>;
+            _yaw += _2πf;
 
          _pitch = geometry::clamp(_pitch, -1.5f, 1.5f);
 
@@ -224,10 +224,10 @@ namespace app_graphics3d_continuum
          }
 
          // Optional: wrap yaw
-         if (_yaw > ::two_π<float>)
-            _yaw -= ::two_π<float>;
+         if (_yaw > _2πf)
+            _yaw -= _2πf;
          if (_yaw < 0.0f)
-            _yaw += ::two_π<float>;
+            _yaw += _2πf;
 
          // Clamp pitch to avoid flipping
          _pitch = geometry::clamp(_pitch, -1.5f, 1.5f);
