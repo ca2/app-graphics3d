@@ -421,16 +421,17 @@ namespace gpu_vulkan
          // Transition target cubemap to transfer dst
          ::vulkan::setImageLayout(pcommandbufferCmd->m_vkcommandbuffer, pgputexturePrefilteredCube->m_vkimage,
                                   VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
-
+         using namespace graphics3d;
          // Setup matrices and viewports
          ::array_base<floating_matrix4> matrices = {
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +X
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(-1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -X
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, 1.0f)), // +Y
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, -1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, -1.0f)), // -Y
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, 1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +Z
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, -1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -Z
+            lookAt(origin, rot180Y(-unitX), -unitY),
+            lookAt(origin, rot180Y(unitX), -unitY), 
+            lookAt(origin, rot180Y(unitY), unitZ), 
+            lookAt(origin, rot180Y(-unitY), -unitZ),
+            lookAt(origin, rot180Y(unitZ), -unitY),
+            lookAt(origin, rot180Y(-unitZ), -unitY)
          };
+      };
 
          VkViewport viewport = vkinit::viewport((float)dim, (float)dim, 0.0f, 1.0f);
          VkRect2D scissor = vkinit::rect2D(dim, dim, 0, 0);
