@@ -154,6 +154,25 @@ namespace graphics3d_opengl
    }
 
 
+   floating_matrix4 engine::perspective(float fovyRadians, float aspect, float zNear, float zFar)
+   {
+      float f = 1.0f / tanf(fovyRadians * 0.5f);
+
+      floating_matrix4 M(0.0f); // initialize all elements to 0
+
+      M[0][0] = f / aspect;
+      M[1][1] = f;
+
+      M[2][2] = (zFar + zNear) / (zNear - zFar);
+      M[2][3] = -1.0f;
+
+      M[3][2] = (2.0f * zFar * zNear) / (zNear - zFar);
+
+      return M;
+   }
+
+
+
 } // namespace graphics3d_opengl
 
 

@@ -115,6 +115,14 @@ namespace graphics3d_opengl
 		void on_render_frame() override;
 
 
+      floating_matrix4 ortho(float left, float right, float bottom, float top, float zNear = -1.0f,
+                             float zFar = 1.0f) override;
+
+
+      floating_matrix4 perspective(float fovyRadians, float aspect, float zNear, float zFar);
+
+
+
 	};
 
 

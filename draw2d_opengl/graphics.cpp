@@ -5888,7 +5888,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       pshader->_set_int("text", 0);
       //auto pcontext = gpu_context();
 
-      floating_matrix4 projection = gpu_context()->ortho(
+      floating_matrix4 projection = gpu_context()->m_pengine->ortho(
          0.0f,
          static_cast<float>(pcontext->m_rectangle.width()),
          static_cast<float>(pcontext->m_rectangle.height()),

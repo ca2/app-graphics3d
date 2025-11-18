@@ -424,12 +424,12 @@ namespace gpu_vulkan
          using namespace graphics3d;
          // Setup matrices and viewports
          ::array_base<floating_matrix4> matrices = {
-            lookAt(origin, rot180Y(-unitX), -unitY),
-            lookAt(origin, rot180Y(unitX), -unitY), 
-            lookAt(origin, rot180Y(unitY), unitZ), 
-            lookAt(origin, rot180Y(-unitY), -unitZ),
-            lookAt(origin, rot180Y(unitZ), -unitY),
-            lookAt(origin, rot180Y(-unitZ), -unitY)
+            lookAt(origin, -unitX, -unitY),
+            lookAt(origin, unitX, -unitY), 
+            lookAt(origin, unitY, unitZ), 
+            lookAt(origin, -unitY, -unitZ),
+            lookAt(origin, unitZ, -unitY),
+            lookAt(origin, -unitZ, -unitY)
          };
       };
 

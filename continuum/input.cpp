@@ -35,8 +35,10 @@ namespace app_graphics3d_continuum
    }
 
 
-
-   void input::initialize_input(float sensitivity, float yaw, float pitch)
+   void input::initialize_input(
+      const float_angle &angleCursorPixel,
+      const float_angle &angleYaw,
+      const float_angle &anglePitch)
    {
 
       m_dCursorX = 0.;
@@ -44,12 +46,16 @@ namespace app_graphics3d_continuum
       m_bFirstMouse = true;
       m_bLastMouse = false;
 
-      m_f_001UpdateLookSensitivity = sensitivity;
+      m_anglePixelCursor = anglePixelCursor;
+
       _yaw = yaw;
       _pitch = pitch;
+
       _cameraDirection = floating_sequence3(0.0f, 0.0f, -1.0f);
       _cameraPosition = floating_sequence3(0.0f, 0.0f, 3.0f);
+
    }
+
    //void input::moveInPlaneXZ(
    //    ::user::graphics3d * pimpact, float dt, application_object& gameObject) {
    //    floating_sequence3 rotate{ 0 };
@@ -181,8 +187,8 @@ namespace app_graphics3d_continuum
       auto xOffset = m_Δx;
       auto yOffset = m_Δy;
 
-      xOffset *= m_f_001UpdateLookSensitivity;
-      yOffset *= m_f_001UpdateLookSensitivity;
+      auto angleΔYaw = xOffset * m_f_001UpdateLookSensitivity;
+      auto angleΔPitch = yOffset * m_f_001UpdateLookSensitivity;
 
       auto pengine = m_pengine;
 

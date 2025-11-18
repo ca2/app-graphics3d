@@ -7,6 +7,7 @@
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context.h"
 #include "bred/graphics3d/_functions.h"
+#include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/skybox.h"
 #include "gpu/timer.h"
 
@@ -101,7 +102,7 @@ namespace gpu_vulkan
             lookAt(origin, -unitZ, -unitY)
          };
          
-         floating_matrix4 projection = m_pgpucontext->perspective(
+         floating_matrix4 projection = m_pgpucontext->m_pengine->perspective(
             90_degrees, // 90 degrees to cover one face
                                                  1.0f, // its a square
                                                  0.1f, 2.0f);

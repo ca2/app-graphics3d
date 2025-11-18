@@ -12,10 +12,6 @@
 #include "acme/prototype/geometry2d/angle.h"
 
 
-// std
-#include <cassert>
-#include <limits>
-
 
 namespace app_graphics3d_continuum
 {
@@ -32,17 +28,19 @@ namespace app_graphics3d_continuum
 
       m_locationPosition = position;
 
-      m_angleYaw = yaw;
+      //m_angleYaw = yaw;
 
-      m_anglePitch = pitch;
+      //m_anglePitch = pitch;
+
+      m_quaternionRotation.set_yaw_and_pitch(yaw, pitch);
 
       m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
 
-      m_fZoom = 75.0f;
+      m_angleFovY = 75_degrees;
 
       m_fMovementSpeed = 8.0f;
 
-      UpdateCameraVectors();
+      //UpdateCameraVectors();
    }
 
 
@@ -53,37 +51,42 @@ namespace app_graphics3d_continuum
 
       auto direction = (target - camera).normalized();
 
-      m_angleYaw = geometry2d::atan2(direction.z, direction.x);
+      auto yaw = geometry::atan2(direction.z, direction.x);
 
-      m_anglePitch = geometry2d::asin(direction.y);
+      auto pitch = geometry::asin(direction.y);
+
+      m_quaternionRotation.set_yaw_and_pitch(yaw, pitch);
 
       m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
 
-      m_fZoom = ::radians(75.0f);
+      m_angleFovY = 75f_degrees;
 
       m_fMovementSpeed = 8.0f;
 
-      UpdateCameraVectors();
+      //UpdateCameraVectors();
    }
+
 
    // Mouse movement processing
    void camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch)
    {
 
-      const float sensitivity = 0.1f; // Adjust this value to your liking
-      xoffset *= sensitivity;
-      yoffset *= sensitivity;
+      const float_angle angleCursorPixel = 0.1f_degrees; // Adjust this value to your liking
+      auto angleΔYaw = xoffset * angleCursorPixel;
+      auto angleΔPitch = yoffset * angleCursorPixel;
 
-      m_angleYaw += ::radians(xoffset);
-      m_anglePitch += ::radians(yoffset);
+      m_quaternionRotation.offset_yaw_and_pitch_with_constraints(angleΔYaw, angleΔPitch, -89f_degrees, 89f_degrees);
 
-      if (constrainPitch)
-      {
+      //m_angleYaw += ::radians(xoffset);
+      //m_anglePitch += ::radians(yoffset);
 
-         m_anglePitch = minimum_maximum(m_anglePitch, ::radians(-89.0f), ::radians(89.0f));
-      }
+      //if (constrainPitch)
+      //{
 
-      UpdateCameraVectors();
+      //   m_anglePitch = minimum_maximum(m_anglePitch, ::radians(-89.0f), ::radians(89.0f));
+      //}
+
+      //UpdateCameraVectors();
    }
 
 
@@ -116,35 +119,35 @@ namespace app_graphics3d_continuum
    }
 
 
-   // This is the method being used below as opposed to ortho ^
-   void camera::setPerspectiveProjection(float fovy, float aspect, float fNear, float fFar)
-   {
+   //// This is the method being used below as opposed to ortho ^
+   //void camera::setPerspectiveProjection(const float_angle & angleFovY, float aspect, float fNear, float fFar)
+   //{
 
-      auto pgpucontext = m_pengine->get_gpu_context();
-      
-      m_matrixProjection = pgpucontext->perspective(fovy, aspect, fNear, fFar);
+   //   auto pgpucontext = m_pengine->get_gpu_context();
+   //   
+   //   m_matrixProjection = pgpucontext->m_pengine->perspective(angleFovY, aspect, fNear, fFar);
 
 
-      //if (m_pengine->m_fYScale < 0.f)
-      //{
+   //   //if (m_pengine->m_fYScale < 0.f)
+   //   //{
 
-         //m_matrixProjection = glm::perspectiveRH_ZO(fovy, aspect, fNear, fFar);
-      //}
-      //else
-      //{
+   //      //m_matrixProjection = glm::perspectiveRH_ZO(fovy, aspect, fNear, fFar);
+   //   //}
+   //   //else
+   //   //{
 
-        // m_matrixProjection = glm::perspective(fovy, aspect, fNear, fFar);
-      //}
+   //     // m_matrixProjection = glm::perspective(fovy, aspect, fNear, fFar);
+   //   //}
 
-      /*assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
-      const float tanHalfFovy = tan(fovy / 2.f);
-      m_matrixProjection = floating_matrix4{ 0.0f };
-      m_matrixProjection[0][0] = 1.f / (aspect * tanHalfFovy);
-      m_matrixProjection[1][1] = 1.f / (tanHalfFovy);
-      m_matrixProjection[2][2] = fFar / (fFar - fNear);
-      m_matrixProjection[2][3] = 1.f;
-      m_matrixProjection[3][2] = -(fFar * fNear) / (fFar - fNear);*/
-   }
+   //   /*assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
+   //   const float tanHalfFovy = tan(fovy / 2.f);
+   //   m_matrixProjection = floating_matrix4{ 0.0f };
+   //   m_matrixProjection[0][0] = 1.f / (aspect * tanHalfFovy);
+   //   m_matrixProjection[1][1] = 1.f / (tanHalfFovy);
+   //   m_matrixProjection[2][2] = fFar / (fFar - fNear);
+   //   m_matrixProjection[2][3] = 1.f;
+   //   m_matrixProjection[3][2] = -(fFar * fNear) / (fFar - fNear);*/
+   //}
 
 
    void camera::setViewDirection(const ::floating_sequence3 & position, const ::floating_sequence3 & direction, const ::floating_sequence3 & up)
@@ -208,47 +211,47 @@ namespace app_graphics3d_continuum
    //}
 
 
-   void camera::UpdateCameraVectors()
-   {
+   //void camera::UpdateCameraVectors()
+   //{
 
-      // Calculate the new front vector based on yaw and pitch
-      floating_sequence3 front;
-      front.x = cos(m_anglePitch) * cos(m_angleYaw);
-      front.y = sin(m_anglePitch);
-      front.z = cos(m_anglePitch) * sin(m_angleYaw);
-      this->m_sequence3Front = front.normalized();
+   //   // Calculate the new front vector based on yaw and pitch
+   //   floating_sequence3 front;
+   //   front.x = cos(m_anglePitch) * cos(m_angleYaw);
+   //   front.y = sin(m_anglePitch);
+   //   front.z = cos(m_anglePitch) * sin(m_angleYaw);
+   //   this->m_sequence3Front = front.normalized();
 
-      // Re-calculate the right and up vector
-      this->m_sequence3Right = this->m_sequence3Front.crossed(m_sequence3WorldUp).normalized();
-      this->m_sequence3Up = this->m_sequence3Right.crossed(this->m_sequence3Front).normalized();
-   }
-
-
-   // Get the camera's zoom (field of view)
-   float camera::GetZoom() const { return m_fZoom; }
+   //   // Re-calculate the right and up vector
+   //   this->m_sequence3Right = this->m_sequence3Front.crossed(m_sequence3WorldUp).normalized();
+   //   this->m_sequence3Up = this->m_sequence3Right.crossed(this->m_sequence3Front).normalized();
+   //}
 
 
-   // Set the movement speed of the camera
-   void camera::SetMovementSpeed(float speed) { m_fMovementSpeed = speed; }
+   //// Get the camera's zoom (field of view)
+   //float camera::GetZoom() const { return m_fZoom; }
 
 
-   // Get the view matrix
-   floating_matrix4 camera::GetViewMatrix() const
-   {
+   //// Set the movement speed of the camera
+   //void camera::SetMovementSpeed(float speed) { m_fMovementSpeed = speed; }
 
-      // if (m_pengine->m_fYScale < 0.f)
-      //{
-      //    return glm::lookAtRH(m_locationPosition, m_locationPosition + m_sequence3Front, m_sequence3Up);
-      // }
-      // else
-      {
-         auto pgpucontext = m_pengine->get_gpu_context();
-         return pgpucontext->lookAt(m_locationPosition, m_locationPosition + m_sequence3Front, m_sequence3Up);
-      }
-   }
 
-   // Get the camera position
-   floating_sequence3 camera::GetPosition() const { return m_locationPosition; }
+   //// Get the view matrix
+   //floating_matrix4 camera::GetViewMatrix() const
+   //{
+
+   //   // if (m_pengine->m_fYScale < 0.f)
+   //   //{
+   //   //    return glm::lookAtRH(m_locationPosition, m_locationPosition + m_sequence3Front, m_sequence3Up);
+   //   // }
+   //   // else
+   //   {
+   //      auto pgpucontext = m_pengine->get_gpu_context();
+   //      return pgpucontext->lookAt(m_locationPosition, m_locationPosition + m_sequence3Front, m_sequence3Up);
+   //   }
+   //}
+
+   //// Get the camera position
+   //floating_sequence3 camera::GetPosition() const { return m_locationPosition; }
 
    void camera::Jump(float jumpHeight)
    {

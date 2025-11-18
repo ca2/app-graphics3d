@@ -33,9 +33,9 @@ namespace app_graphics3d_continuum
       float    m_fLookSpeed{ 1.5f };
 
       bool  m_b_001AbsoluteMousePosition;
-      float m_f_001UpdateLookSensitivity;  // Sensitivity factor for mouse movement
-      float _yaw;          // Camera yaw (horizontal rotation)
-      float _pitch;        // Camera pitch (vertical rotation)
+      float_angle m_angleCursorPixel; // Sensitivity factor for mouse movement
+      float_angle m_angleYaw;          // Camera yaw (horizontal rotation)
+      float_angle m_anglePitch; // Camera pitch (vertical rotation)
       floating_sequence3 _cameraDirection; // Camera direction vector
       floating_sequence3 _cameraPosition;
       ::block as_block() { return as_memory_block(*this); }
@@ -56,8 +56,10 @@ namespace app_graphics3d_continuum
       ~input() override;
 
 
-      void initialize_input(float sensitivity = 0.001f, float yaw = ::radians(-90.0f),
-                            float pitch = ::radians(0.0f));
+      void initialize_input(
+         const float_angle & angleCursorPixel = 0.1f_degrees, 
+         const float_angle & angleYaw = -90f_degrees,
+         const float_angle & anglePitch = 0f_degrees);
 
       //void moveInPlaneXZ(::user::graphics3d * pimpact, float dt, application_object& gameObject);
 

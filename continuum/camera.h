@@ -82,18 +82,18 @@ namespace app_graphics3d_continuum
 
 //		void setViewYXZ(const ::floating_sequence3 & position, floating_sequence3 rotation);
 
-		virtual void setPerspectiveProjection(float fovy, float aspect, float near, float far);
-		const floating_matrix4& getProjection() const { return m_matrixProjection; }
-		const floating_matrix4& getView() const { return m_matrixImpact; }
-		const floating_matrix4& getInverseView() const { return m_matrixInversedImpact; }
+		//virtual void setPerspectiveProjection(const float_angle & angleFovY, float aspect, float near, float far);
+		//const floating_matrix4& getProjection() const { return m_matrixProjection; }
+		//const floating_matrix4& getView() const { return m_matrixImpact; }
+		//const floating_matrix4& getInverseView() const { return m_matrixInversedImpact; }
 
 		// Get zoom (field of view)
-		float GetZoom() const;
+		//float GetZoom() const;
 		// Get the view matrix
-		floating_matrix4 GetViewMatrix() const;
+		//floating_matrix4 GetViewMatrix() const;
 
 
-		floating_sequence3 GetPosition() const;
+		//floating_sequence3 GetPosition() const;
 		// Set movement speed
 		void SetMovementSpeed(float speed);
 		// new shit
@@ -102,7 +102,7 @@ namespace app_graphics3d_continuum
 
 		//floating_sequence3 pole_up();
 		// Update camera vectors
-		void UpdateCameraVectors();
+		//void UpdateCameraVectors();
 
 
 		// from MyPlace2025@V0idsEmbrace@Twitch
