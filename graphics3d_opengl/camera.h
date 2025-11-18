@@ -36,8 +36,8 @@ namespace graphics3d_opengl
 //      floating_sequence3 m_WorldUp;
 //
 //      // Euler angles
-//      float m_fYaw;
-//      float m_fPitch;
+//      float m_angleYaw;
+//      float m_anglePitch;
 //
 //      // ::graphics3d::camera options
 //      float m_Zoom;
@@ -57,7 +57,7 @@ namespace graphics3d_opengl
 //      ::pointer < ::glc::GlContainer > m_pimpact;
 //
 //
-//      ::graphics3d::camera(glc::GlContainer * pimpact, floating_sequence3 position, float yaw, float pitch);
+//      ::graphics3d::camera(glc::GlContainer * pimpact, const ::floating_sequence3 & position, float yaw, float pitch);
 //
 //      // Process input for mouse movement
 //      void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);

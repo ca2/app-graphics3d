@@ -18,13 +18,13 @@ namespace graphics3d_opengl
 	class CLASS_DECL_GRAPHICS3D_OPENGL camera {
 	public:
 		camera() {};
-		camera(floating_sequence3 position, float yaw, float pitch);
+		camera(const ::floating_sequence3 & position, float yaw, float pitch);
 
 		void setOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
-		void setViewDirection(floating_sequence3 position, floating_sequence3 direction, floating_sequence3 up = floating_sequence3{ 0.f, -1.f, 0.f });
-		void setViewTarget(floating_sequence3 position, floating_sequence3 target, floating_sequence3 up = floating_sequence3{ 0.f, -1.f, 0.f });
+		void setViewDirection(const ::floating_sequence3 & position, const ::floating_sequence3 & direction, const ::floating_sequence3 & up = floating_sequence3{ 0.f, -1.f, 0.f });
+		void setViewTarget(const ::floating_sequence3 & position, const ::floating_sequence3 & target, const ::floating_sequence3 & up = floating_sequence3{ 0.f, -1.f, 0.f });
 
-		void setViewYXZ(floating_sequence3 position, floating_sequence3 rotation);
+		void setViewYXZ(const ::floating_sequence3 & position, floating_sequence3 rotation);
 
 		void setPerspectiveProjection(float fovy, float aspect, float near, float far);
 		const floating_matrix4& getProjection() const { return projectionMatrix; }

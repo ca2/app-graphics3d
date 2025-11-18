@@ -882,9 +882,9 @@ namespace gpu_vulkan
          uint32_t i2 = indices[i + 1];
          uint32_t i3 = indices[i + 2];
 
-         const floating_sequence3 &v1 = vertices[i1].pos;
-         const floating_sequence3 &v2 = vertices[i2].pos;
-         const floating_sequence3 &v3 = vertices[i3].pos;
+         const ::floating_sequence3 &v1 = vertices[i1].pos;
+         const ::floating_sequence3 &v2 = vertices[i2].pos;
+         const ::floating_sequence3 &v3 = vertices[i3].pos;
 
          const floating_sequence2 &w1 = vertices[i1].gltf_uv;
          const floating_sequence2 &w2 = vertices[i2].gltf_uv;

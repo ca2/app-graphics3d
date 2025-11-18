@@ -44,8 +44,8 @@ namespace app_graphics3d_continuum
 //		floating_sequence3				m_sequence3WorldUp;
 //
 //		// Euler angles
-//      float_angle    m_fYaw = 0.0_degree;
-//		float_angle		m_fPitch = -90.0_degree;
+//      float_angle    m_angleYaw = 0.0_degree;
+//		float_angle		m_anglePitch = -90.0_degree;
 //
 //		// Camera options
 //		float				m_fZoom;
@@ -70,17 +70,17 @@ namespace app_graphics3d_continuum
 		::pointer < ::graphics3d::engine > m_pengine;
 		camera();
 		~camera() override;
-		//camera(floating_sequence3 position, float yaw, float pitch);
-		//camera(floating_sequence3 position, floating_sequence3 to, floating_sequence3 from);
+		//camera(const ::floating_sequence3 & position, float yaw, float pitch);
+		//camera(const ::floating_sequence3 & position, floating_sequence3 to, floating_sequence3 from);
 
-		virtual void initialize_camera(floating_sequence3 position, float_angle yaw, float_angle pitch);
+		virtual void initialize_camera(const ::floating_sequence3 & position, const float_angle & yaw, const float_angle & pitch);
 		virtual void initialize_camera(floating_sequence3 target, floating_sequence3 camera);
 
 		void setOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
-		void setViewDirection(floating_sequence3 position, floating_sequence3 direction, floating_sequence3 up = floating_sequence3{ 0.f, -1.f, 0.f });
-		void setViewTarget(floating_sequence3 position, floating_sequence3 target, floating_sequence3 up = floating_sequence3{ 0.f, -1.f, 0.f });
+		void setViewDirection(const ::floating_sequence3 & position, const ::floating_sequence3 & direction, const ::floating_sequence3 & up = floating_sequence3{ 0.f, -1.f, 0.f });
+		void setViewTarget(const ::floating_sequence3 & position, const ::floating_sequence3 & target, const ::floating_sequence3 & up = floating_sequence3{ 0.f, -1.f, 0.f });
 
-//		void setViewYXZ(floating_sequence3 position, floating_sequence3 rotation);
+//		void setViewYXZ(const ::floating_sequence3 & position, floating_sequence3 rotation);
 
 		virtual void setPerspectiveProjection(float fovy, float aspect, float near, float far);
 		const floating_matrix4& getProjection() const { return m_matrixProjection; }

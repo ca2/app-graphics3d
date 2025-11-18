@@ -15,7 +15,7 @@
 namespace graphics3d_vulkan {
 
 
-    //camera::camera(floating_sequence3 position, float yaw, float pitch)
+    //camera::camera(const ::floating_sequence3 & position, float yaw, float pitch)
     //    : m_Position(position), m_Yaw(yaw), m_Pitch(pitch),
     //    m_WorldUp(floating_sequence3(0.0f, 1.0f, 0.0f)),
     //    m_Zoom(75.0f), m_MovementSpeed(8.0f) {
@@ -76,7 +76,7 @@ namespace graphics3d_vulkan {
     //    projectionMatrix[3][2] = -(fFar * fNear) / (fFar - fNear);
     //}
 
-    //void camera::setViewDirection(floating_sequence3 position, floating_sequence3 direction, floating_sequence3 up) {
+    //void camera::setViewDirection(const ::floating_sequence3 & position, const ::floating_sequence3 & direction, const ::floating_sequence3 & up) {
     //    const floating_sequence3 w{ glm::normalize(direction) };
     //    const floating_sequence3 u{ glm::normalize(glm::cross(w, up)) };
     //    const floating_sequence3 v{ glm::cross(w, u) };
@@ -110,11 +110,11 @@ namespace graphics3d_vulkan {
 
     //}
 
-    //void camera::setViewTarget(floating_sequence3 position, floating_sequence3 target, floating_sequence3 up) {
+    //void camera::setViewTarget(const ::floating_sequence3 & position, const ::floating_sequence3 & target, const ::floating_sequence3 & up) {
     //    setViewDirection(position, target - position, up);
     //}
 
-    //void camera::setViewYXZ(floating_sequence3 position, floating_sequence3 rotation) {
+    //void camera::setViewYXZ(const ::floating_sequence3 & position, floating_sequence3 rotation) {
     //    const float c3 = glm::cos(rotation.z);
     //    const float s3 = glm::sin(rotation.z);
     //    const float c2 = glm::cos(rotation.x);

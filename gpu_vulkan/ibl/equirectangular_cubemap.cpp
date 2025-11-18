@@ -6,6 +6,7 @@
 #include "equirectangular_cubemap.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context.h"
+#include "bred/graphics3d/_functions.h"
 #include "bred/graphics3d/skybox.h"
 #include "gpu/timer.h"
 
@@ -88,19 +89,20 @@ namespace gpu_vulkan
 
          floating_matrix4 model = ::gpu::gltf::mIndentity4;
 
-         using namespace geometry3d;
+         using namespace graphics3d;
 
          floating_matrix4 cameraAngles[] = 
          {
-            ::graphics3d::lookAt(origin, unitX, -unitY),
-            ::graphics3d::lookAt(origin, -unitX, -unitY),
-            ::graphics3d::lookAt(origin, unitY, unitZ),  
-            ::graphics3d::lookAt(origin, -unitY, -unitZ),
-            ::graphics3d::lookAt(origin, unitZ, -unitY), 
-            ::graphics3d::lookAt(origin, -unitZ, -unitY)
+            lookAt(origin, unitX, -unitY),
+            lookAt(origin, -unitX, -unitY),
+            lookAt(origin, unitY, unitZ),  
+            lookAt(origin, -unitY, -unitZ),
+            lookAt(origin, unitZ, -unitY), 
+            lookAt(origin, -unitZ, -unitY)
          };
          
-         floating_matrix4 projection = glm::perspective(::radians(90.0f), // 90 degrees to cover one face
+         floating_matrix4 projection = m_pgpucontext->perspective(
+            90_degrees, // 90 degrees to cover one face
                                                  1.0f, // its a square
                                                  0.1f, 2.0f);
 

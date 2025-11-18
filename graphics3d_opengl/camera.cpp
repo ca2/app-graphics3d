@@ -29,7 +29,7 @@ namespace graphics3d_opengl
    }
 //
 //   // Constructor
-//   ::graphics3d::camera::graphics3d::camera(glc::GlContainer* pimpact, floating_sequence3 position, float fYaw, float fPitch)
+//   ::graphics3d::camera::graphics3d::camera(glc::GlContainer* pimpact, const ::floating_sequence3 & position, float fYaw, float fPitch)
 //   {
 //
 //      m_pimpact = pimpact;
@@ -37,8 +37,8 @@ namespace graphics3d_opengl
 //      initialize(pimpact);
 //
 //      m_Position = position;
-//      m_fYaw = fYaw;
-//      m_fPitch = fPitch;
+//      m_angleYaw = fYaw;
+//      m_anglePitch = fPitch;
 //      m_Front = floating_sequence3(0.0f, 0.0f, -1.0f);
 //      m_WorldUp = floating_sequence3(0.0f, -1.0f, 0.0f);
 //      m_Zoom = 75.0f;
@@ -68,24 +68,24 @@ namespace graphics3d_opengl
 //      //gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y, glm::two_pi<float>());
 //      if (m_pimpact->is_absolute_mouse_position())
 //      {
-//         m_fYaw = Δx;
-//         m_fPitch = Δy;
+//         m_angleYaw = Δx;
+//         m_anglePitch = Δy;
 //      }
 //      else
 //      {
 //
-//         m_fYaw += Δx;
-//         m_fPitch += Δy;
+//         m_angleYaw += Δx;
+//         m_anglePitch += Δy;
 //
 //      }
 //
 //      // Clamp pitch to avoid flipping
-//      m_fPitch = glm::clamp(m_fPitch, -1.5f, 1.5f);
+//      m_anglePitch = glm::clamp(m_anglePitch, -1.5f, 1.5f);
 //
 //      // Optional: wrap yaw
-//      //if (m_fYaw > 2.0f * MATH_PI) m_fYaw -= 2.0f * MATH_PI;
-//      //if (m_fYaw < 0.0f) m_fYaw += 2.0f * MATH_PI;
-//      m_fYaw= glm::mod(m_fYaw, glm::two_pi<float>());
+//      //if (m_angleYaw > 2.0f * MATH_PI) m_angleYaw -= 2.0f * MATH_PI;
+//      //if (m_angleYaw < 0.0f) m_angleYaw += 2.0f * MATH_PI;
+//      m_angleYaw= glm::mod(m_angleYaw, glm::two_pi<float>());
 //      //gameObject.transform.rotation.x = ::radians(_pitch);
 //      //gameObject.transform.rotation.y = ::radians(_yaw);
 //
@@ -151,9 +151,9 @@ namespace graphics3d_opengl
 //   // Update the camera vectors based on yaw and pitch
 //   void ::graphics3d::camera::UpdateCameraVectors() {
 //      floating_sequence3 front;
-//      front.x = cos(m_fYaw) * cos(m_fPitch);
-//      front.y = sin(m_fPitch);
-//      front.z = sin(m_fYaw) * cos(m_fPitch);
+//      front.x = cos(m_angleYaw) * cos(m_anglePitch);
+//      front.y = sin(m_anglePitch);
+//      front.z = sin(m_angleYaw) * cos(m_anglePitch);
 //      m_Front = glm::normalize(front);
 //
 //      // Update right and up vectors
