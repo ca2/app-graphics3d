@@ -374,15 +374,15 @@ namespace gpu_vulkan
          VkImageSubresourceRange cubemapRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, numMips, 0, 6};
          ::vulkan::setImageLayout(pcommandbuffer->m_vkcommandbuffer, pgputextureIrradianceCube->m_vkimage,
                                   VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, cubemapRange);
-
+         using namespace graphics3d;
          // Setup matrices (same as Sascha)
          ::array_base<floating_matrix4> matrices = {
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +X
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(-1.0f, 0.0f, 0.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -X
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, 1.0f)), // +Y
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, -1.0f, 0.0f), floating_sequence3(0.0f, 0.0f, -1.0f)), // -Y
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, 1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // +Z
-            glm::lookAt(floating_sequence3(0.0f), floating_sequence3(0.0f, 0.0f, -1.0f), floating_sequence3(0.0f, -1.0f, 0.0f)), // -Z
+            lookAt(origin, unitX, -unitY),
+            lookAt(origin, -unitX, -unitY),
+            lookAt(origin, unitY, unitZ),  
+            lookAt(origin, -unitY, -unitZ),
+            lookAt(origin, unitZ, -unitY), 
+            lookAt(origin, -unitZ, -unitY)
          };
 
          //numMips = 1; // for diffuse irradiance, we only need the first mip
