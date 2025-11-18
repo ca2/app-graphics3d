@@ -46,13 +46,13 @@ namespace app_graphics3d_continuum
       m_bFirstMouse = true;
       m_bLastMouse = false;
 
-      m_anglePixelCursor = anglePixelCursor;
+      m_angleCursorPixel = angleCursorPixel;
 
-      _yaw = yaw;
-      _pitch = pitch;
+      //m_angleYaw = angleYaw;
+      //m_anglePitch = anglePitch;
 
-      _cameraDirection = floating_sequence3(0.0f, 0.0f, -1.0f);
-      _cameraPosition = floating_sequence3(0.0f, 0.0f, 3.0f);
+      //_cameraDirection = floating_sequence3(0.0f, 0.0f, -1.0f);
+      //_cameraPosition = floating_sequence3(0.0f, 0.0f, 3.0f);
 
    }
 
@@ -187,8 +187,8 @@ namespace app_graphics3d_continuum
       auto xOffset = m_Δx;
       auto yOffset = m_Δy;
 
-      auto angleΔYaw = xOffset * m_f_001UpdateLookSensitivity;
-      auto angleΔPitch = yOffset * m_f_001UpdateLookSensitivity;
+      auto angleΔYaw = xOffset * m_angleCursorPixel;
+      auto angleΔPitch = yOffset * m_angleCursorPixel;
 
       auto pengine = m_pengine;
 
@@ -204,45 +204,36 @@ namespace app_graphics3d_continuum
       {
 
          // limit pitch values between about +/- 85ish degrees
-         _yaw = pcamera->m_angleYaw;
-         _pitch = pcamera->m_anglePitch;
+         auto yaw = pcamera->yaw();
+         auto pitch = pcamera->pitch();
 
-         if (_yaw > _2πf)
-            _yaw -= _2πf;
-         if (_yaw < 0.0f)
-            _yaw += _2πf;
+         //if (_yaw > _2πf)
+         //   _yaw -= _2πf;
+         //if (_yaw < 0.0f)
+         //   _yaw += _2πf;
 
-         _pitch = geometry::clamp(_pitch, -1.5f, 1.5f);
+         //_pitch = geometry::clamp(_pitch, -1.5f, 1.5f);
 
          if (m_b_001AbsoluteMousePosition)
          {
 
-            _yaw = (float)xOffset;
-            _pitch = (float)yOffset;
+            yaw = angleΔYaw;
+            pitch = angleΔPitch;
+
          }
          else
          {
 
-            if (xOffset != 0.f)
-                           _yaw += (float)xOffset;
-            if (yOffset != 0.f)
-               _pitch += (float)yOffset;
+            yaw += angleΔYaw;
+            pitch += angleΔPitch;
+
          }
 
-         // Optional: wrap yaw
-         if (_yaw > _2πf)
-            _yaw -= _2πf;
-         if (_yaw < 0.0f)
-            _yaw += _2πf;
+         pitch = ::geometry::clamp(pitch, -89f_degrees, 89f_degrees);
 
-         // Clamp pitch to avoid flipping
-         _pitch = geometry::clamp(_pitch, -1.5f, 1.5f);
+         pcamera->m_quaternionRotation.set_yaw_and_pitch(yaw, pitch);
 
-
-         pcamera->m_anglePitch = ::radians(_pitch);
-         pcamera->m_angleYaw = ::radians(_yaw);
-
-         pcamera->UpdateCameraVectors();
+         pcamera->update_vectors();
 
       }
 
@@ -304,10 +295,12 @@ namespace app_graphics3d_continuum
       if (pcamera)
       {
 
-         float yaw = pcamera->m_angleYaw;
-         const floating_sequence3 forwardDir{cos(yaw), 0.f, sin(yaw)};
-         const floating_sequence3 rightDir{forwardDir.z, 0.f, -forwardDir.x};
-         const floating_sequence3 upDir{0.f, -1.f, 0.f};
+         auto forwardDir = pcamera->front();
+         auto rightDir = pcamera->right();
+         auto upDir = pcamera->up();
+         //const floating_sequence3 forwardDir{cos(yaw), 0.f, sin(yaw)};
+         //const floating_sequence3 rightDir{forwardDir.z, 0.f, -forwardDir.x};
+         //const floating_sequence3 upDir{0.f, -1.f, 0.f};
 
          auto pinput = m_pengine->m_pinput;
 
@@ -616,12 +609,12 @@ namespace app_graphics3d_continuum
    }
 
 
-   ::block input::as_block()
-   {
-      
-      return input_t::as_block();
+   //::block input::as_block()
+   //{
+   //   
+   //   return input_t::as_block();
 
-   }
+   //}
 
 
    void input::prepare_mouse_input()

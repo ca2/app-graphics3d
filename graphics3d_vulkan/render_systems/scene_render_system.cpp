@@ -244,7 +244,7 @@ namespace graphics3d_vulkan
                continue;
 
             floating_matrix4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
-            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
+            floating_matrix4 normalMat = world.inversed().transposed();
 
             memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
             memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));

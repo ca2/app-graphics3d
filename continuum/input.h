@@ -11,41 +11,8 @@ namespace app_graphics3d_continuum
 {
 
 
-   struct input_t 
-   {
-      //KeyMappings keys{};
-      bool   m_bMouseAbsolute;
-
-      double m_dMouseLastX = 0.0;
-      double m_dMouseLastY = 0.0;
-      double m_Δx = 0.;
-      double m_Δy = 0.;
-
-      bool m_bWasLeft = false;
-
-
-      double   m_dCursorX;
-      double   m_dCursorY;
-      bool		m_bFirstMouse;
-      bool		m_bLastMouse;
-
-      float    m_fMoveSpeed{ 3.f };
-      float    m_fLookSpeed{ 1.5f };
-
-      bool  m_b_001AbsoluteMousePosition;
-      float_angle m_angleCursorPixel; // Sensitivity factor for mouse movement
-      float_angle m_angleYaw;          // Camera yaw (horizontal rotation)
-      float_angle m_anglePitch; // Camera pitch (vertical rotation)
-      floating_sequence3 _cameraDirection; // Camera direction vector
-      floating_sequence3 _cameraPosition;
-      ::block as_block() { return as_memory_block(*this); }
-
-   };
-
-
-
    class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM input :
-      virtual public input_t,
+//      virtual public input_t,
       virtual public ::graphics3d::input
    {
    public:
@@ -108,7 +75,7 @@ namespace app_graphics3d_continuum
       float getX() const { return (float) m_Δx; }
       float getY() const { return (float) m_Δy; }
 
-            ::block as_block() override;
+            //::block as_block() override;
 
    };
 

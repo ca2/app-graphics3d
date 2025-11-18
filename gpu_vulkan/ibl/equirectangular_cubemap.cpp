@@ -88,9 +88,9 @@ namespace gpu_vulkan
 
          ::pointer < ::gpu_vulkan::command_buffer > pgpucommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
 
-         floating_matrix4 model = ::gpu::gltf::mIndentity4;
-
          using namespace graphics3d;
+
+         floating_matrix4 model = mIndentity4;
 
          floating_matrix4 cameraAngles[] = 
          {
@@ -133,7 +133,7 @@ namespace gpu_vulkan
 
             pcontext->_001BeginRenderPass(pgpucommandbuffer, m_pframebuffer, i, escene);
             
-            m_pshaderHdri->setModelViewProjectionMatrices(model, cameraAngles[i], projection);
+            m_pshaderHdri->setModelViewProjection(model, cameraAngles[i], projection);
             
             //m_pframebuffer->setCubeFace(i, m_pshaderHdri);
 

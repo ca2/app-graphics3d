@@ -11,6 +11,7 @@
 #include "app-graphics3d/gpu_vulkan/queue.h"
 #include "app-graphics3d/gpu_vulkan/texture.h"
 #include "app-graphics3d/gpu_vulkan/vk_init.h"
+#include "bred/graphics3d/_functions.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
@@ -431,7 +432,7 @@ namespace gpu_vulkan
             lookAt(origin, unitZ, -unitY),
             lookAt(origin, -unitZ, -unitY)
          };
-      };
+//      };
 
          VkViewport viewport = vkinit::viewport((float)dim, (float)dim, 0.0f, 1.0f);
          VkRect2D scissor = vkinit::rect2D(dim, dim, 0, 0);
@@ -465,7 +466,8 @@ namespace gpu_vulkan
                vkCmdSetScissor(pcommandbufferCmd->m_vkcommandbuffer, 0, 1, &scissor);
 
                // push constants (projection * view)
-               pushBlock.mvp = glm::perspective(::radians(90.0f), 1.0f, 0.1f, 512.0f) * matrices[f];
+               pushBlock.mvp = m_pgpucontext->m_pengine->perspective(
+                  90f_degrees, 1.0f, 0.1f, 512.0f) * matrices[f];
                pushBlock.mvp[1][1] *= -1.0f; // flip y
 
                vkCmdPushConstants(pcommandbufferCmd->m_vkcommandbuffer, ppipelinePrefilter->m_vkpipelinelayout,

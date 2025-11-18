@@ -154,9 +154,9 @@ namespace graphics3d_opengl
    }
 
 
-   floating_matrix4 engine::perspective(float fovyRadians, float aspect, float zNear, float zFar)
+   floating_matrix4 engine::perspective(const float_angle &angleFovY, float aspect, float zNear, float zFar)
    {
-      float f = 1.0f / tanf(fovyRadians * 0.5f);
+      float f = 1.0f / tanf(angleFovY.radians() * 0.5f);
 
       floating_matrix4 M(0.0f); // initialize all elements to 0
 

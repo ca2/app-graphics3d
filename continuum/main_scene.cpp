@@ -61,7 +61,11 @@ namespace app_graphics3d_continuum
 
          float aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
 
-         pcamera->setPerspectiveProjection(::radians(50.f), aspect, 0.1f, 100.f);
+         pcamera->m_angleFovY = 50f_degrees;
+         pcamera->m_fAspectRatio = aspect;
+         pcamera->m_fNearZ  = 0.1f;
+         pcamera->m_fNearZ = 100.f;
+
          //pcamera->m_pimpact = m_pimpact;
          m_pcameraDefault = pcamera;
 
@@ -239,40 +243,40 @@ namespace app_graphics3d_continuum
       
          floating_matrix4 matrixImpact;
 
-         //auto pgpucontext = 
-         matrixImpact = m_pgpucontext->lookAt(pcamera->m_locationPosition,
-                                         pcamera->m_locationPosition + pcamera->m_sequence3Front,
-                             pcamera->m_sequence3WorldUp);
-         //if (m_pimmersionlayer->m_pengine->m_fYScale < 0)
-         //{
-         //   matrixImpact = glm::lookAtRH(pcamera->m_locationPosition,
+         ////auto pgpucontext = 
+         //matrixImpact = m_pgpucontext->lookAt(pcamera->m_locationPosition,
          //                                pcamera->m_locationPosition + pcamera->m_sequence3Front,
          //                    pcamera->m_sequence3WorldUp);
-         //   // matrixImpact[2][0] = -matrixImpact[2][0];
-         //   // matrixImpact[2][1] = -matrixImpact[2][1];
-         //   // matrixImpact[2][2] = -matrixImpact[2][2];
-         //   // matrixImpact[2][3] = -matrixImpact[2][3];
+         ////if (m_pimmersionlayer->m_pengine->m_fYScale < 0)
+         ////{
+         ////   matrixImpact = glm::lookAtRH(pcamera->m_locationPosition,
+         ////                                pcamera->m_locationPosition + pcamera->m_sequence3Front,
+         ////                    pcamera->m_sequence3WorldUp);
+         ////   // matrixImpact[2][0] = -matrixImpact[2][0];
+         ////   // matrixImpact[2][1] = -matrixImpact[2][1];
+         ////   // matrixImpact[2][2] = -matrixImpact[2][2];
+         ////   // matrixImpact[2][3] = -matrixImpact[2][3];
+         ////}
+         ////else
+         ////{
+         ////   matrixImpact =
+         ////      glm::lookAtRH(pcamera->m_locationPosition, pcamera->m_locationPosition + pcamera->m_sequence3Front, pcamera->m_sequence3WorldUp);
+         ////}
+         //pcamera->m_matrixImpact = matrixImpact;
          //}
-         //else
-         //{
-         //   matrixImpact =
-         //      glm::lookAtRH(pcamera->m_locationPosition, pcamera->m_locationPosition + pcamera->m_sequence3Front, pcamera->m_sequence3WorldUp);
-         //}
-         pcamera->m_matrixImpact = matrixImpact;
-         //}
 
-         pcamera->m_matrixInversedImpact = pcamera->m_matrixImpact.inversed();
+//         pcamera->m_matrixInversedImpact = pcamera->m_matrixImpact.inversed();
 
 
 
-      auto projection = pcamera->getProjection();
+      auto projection = pcamera->projection();
       globalubo["projection"] = projection;
 
-      auto view = pcamera->getView();
-      globalubo["view"] = view;
+      auto impact = pcamera->impact();
+      globalubo["view"] = impact;
 
-      auto inverseView = pcamera->getInverseView();
-      globalubo["invView"] = inverseView;
+      auto inversedImpact = pcamera->inversed_impact();
+      globalubo["invView"] = inversedImpact;
 
       if (m_ppointlightrendersystem)
       {
