@@ -2,6 +2,7 @@
 // camilo on 2025-09-29 18:21 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "diffuse_irradiance_map.h"
+#include "bred/graphics3d/_functions.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
