@@ -505,7 +505,25 @@ namespace graphics3d_vulkan
    }
 
 
+   floating_matrix4 engine::perspective(const float_angle &angleFovY, float aspect, float zNear, float zFar)
+   {
 
+    float f = 1.0f / tanf(angleFovY.radians() * 0.5f);
+
+      floating_matrix4 M(0.0f);
+
+      M[0][0] = f / aspect; // X
+      M[1][1] = f; // Y
+
+      M[2][2] = zFar / (zFar - zNear);
+      M[2][3] = 1.0f;
+
+      M[3][2] = -(zFar * zNear) / (zFar - zNear);
+      M[3][3] = 0.0f;
+
+      return M;
+
+   }
 
 
 } // graphics3d_vulkan

@@ -413,7 +413,7 @@ namespace graphics3d_vulkan
       pshaderOpaque->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
       pshaderOpaque->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
       m_pshaderOpaque->m_propertiesPushShared.set_properties(ppropertiesPush);
-      pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushShared);
+      pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushShared, false);
       //m_pshaderOpaque->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
       //m_pshaderOpaque->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       //pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushVertex);
@@ -431,7 +431,7 @@ namespace graphics3d_vulkan
       pshaderMask->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
       pshaderMask->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
       m_pshaderMask->m_propertiesPushShared.set_properties(ppropertiesPush);
-      pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushShared);
+      pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushShared, false);
       //m_pshaderMask->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
       //m_pshaderMask->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       //pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushVertex);
@@ -449,7 +449,7 @@ namespace graphics3d_vulkan
       pshaderBlend->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
       pshaderBlend->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
       m_pshaderBlend->m_propertiesPushShared.set_properties(ppropertiesPush);
-      pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushShared);
+      pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushShared, false);
       //m_pshaderBlend->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
       //m_pshaderBlend->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       //pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushVertex);
@@ -1064,9 +1064,12 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
       //auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
          auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
 
+      int iRenderable = -1;
 
       for (auto &[id, pscenerenderable]: scenerenderables)
       {
+
+         iRenderable++;
 
          if (!pscenerenderable)
          {
@@ -1104,8 +1107,25 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
             if (!node->mesh)
                continue;
 
-            floating_matrix4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
-            floating_matrix4 normalMat = world.inversed().transposed();
+            auto matrixObject = pscenerenderable->transform().getMatrix();
+
+            auto matrixNode = node->getMatrix();
+
+            floating_matrix4 world =  matrixObject * matrixNode;
+
+            // Extract upper-left 3×3 from world
+            floating_matrix3 world3x3 = floating_matrix3(world);
+
+            float det2 = floating_matrix3(world3x3).determinant();
+            information("deteterminant of model matrix is %f\n", det2);
+
+
+            floating_matrix4 normalMat(world3x3);
+
+            // Compute normal matrix correctly
+            normalMat = normalMat.inversed().transposed();
+
+
             //memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
             //memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
 
@@ -1349,6 +1369,6 @@ GPU_PROPERTY("metallic", ::gpu::e_type_float)
 GPU_PROPERTY("roughness", ::gpu::e_type_float)
 GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_float)
 GPU_PROPERTY("emissive", ::gpu::e_type_seq3)
-GPU_PROPERTY("cameraPosition", ::gpu::e_type_seq3)
+//GPU_PROPERTY("cameraPosition", ::gpu::e_type_seq3)
 GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_float)
 END_GPU_PROPERTIES()

@@ -32,7 +32,7 @@ namespace app_graphics3d_continuum
 
       //m_anglePitch = pitch;
 
-      m_quaternionRotation.set_yaw_and_pitch(yaw, pitch);
+      m_rotation.set(yaw, pitch);
 
       m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
 
@@ -55,7 +55,7 @@ namespace app_graphics3d_continuum
 
       auto pitch = geometry::asin(direction.y);
 
-      m_quaternionRotation.set_yaw_and_pitch(yaw, pitch);
+      m_rotation.set(yaw, pitch);
 
       m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
 
@@ -75,7 +75,7 @@ namespace app_graphics3d_continuum
       auto angleΔYaw = xoffset * angleCursorPixel;
       auto angleΔPitch = yoffset * angleCursorPixel;
 
-      m_quaternionRotation.offset_yaw_and_pitch_with_constraints(angleΔYaw, angleΔPitch, -89f_degrees, 89f_degrees);
+      m_rotation.offset(angleΔYaw, angleΔPitch, -89f_degrees, 89f_degrees);
 
       //m_angleYaw += ::radians(xoffset);
       //m_anglePitch += ::radians(yoffset);

@@ -147,6 +147,7 @@ namespace graphics3d_opengl
             continue;
          }
 
+         glDisable(GL_CULL_FACE);
          auto erenderabletype = prenderable->m_erenderabletype;
 
          if (erenderabletype != ::gpu::e_renderable_type_gltf)
@@ -171,12 +172,71 @@ namespace graphics3d_opengl
             // floating_matrix4 world = psceneobject->transform().getMatrix() * pmesh->uniformBlock.matrix;
             // floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
 
-            floating_matrix4 world = pscenerenderable->transform().getMatrix() * pmesh->uniformBlock.matrix;
-            floating_matrix4 normalMat = world.inversed().transposed();
+            auto matrixTransform = pscenerenderable->transform().getMatrix();
 
-            m_ppipelineOpaque->set_matrix4("modelMatrix", world);
-            m_ppipelineOpaque->set_matrix4("normalMatrix", normalMat);
+            auto matrix = pmesh->uniformBlock.matrix;
 
+            float det = floating_matrix3(pmesh->uniformBlock.matrix).determinant();
+            information("deteterminant of model matrix is %f\n", det);
+
+            floating_matrix4 world = matrixTransform * matrix;
+
+            // Extract upper-left 3×3 from world
+            floating_matrix3 world3x3 = floating_matrix3(world);
+
+            float det2 = floating_matrix3(world3x3).determinant();
+            information("deteterminant of model matrix is %f\n", det2);
+
+
+            floating_matrix4 normalMat(world3x3);
+
+            // Compute normal matrix correctly
+            normalMat = normalMat.inversed().transposed();
+
+            pshader->set_matrix4("modelMatrix", world);
+            pshader->set_matrix4("normalMatrix", normalMat);
+
+            float x_multiplier = 1.0f;
+            float y_multiplier = 1.0f;
+            float z_multiplier = 1.0f;
+
+            if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_vulkan)
+            {
+
+               if (pgpucontext->m_eapi == ::gpu::e_api_opengl)
+               {
+
+                  y_multiplier = -1.f;
+                  z_multiplier = -1.f;
+                  //x_multiplier = -1.f;
+               }
+            }
+            else if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_z_minus)
+            {
+
+               if (pgpucontext->m_eapi == ::gpu::e_api_opengl)
+               {
+
+                  //y_multiplier = -1.f;
+                  z_multiplier = -1.f;
+               }
+            }
+            else if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_y_up)
+            {
+
+               if (pgpucontext->m_eapi == ::gpu::e_api_opengl)
+               {
+
+                  y_multiplier = -1.f;
+                  z_multiplier = -1.f;
+
+               }
+
+            }
+
+            pshader->set_float("x_multiplier", x_multiplier);
+            pshader->set_float("y_multiplier", y_multiplier);
+            pshader->set_float("z_multiplier", z_multiplier);
 
             // memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
             // memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));

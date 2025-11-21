@@ -414,7 +414,7 @@ namespace graphics3d_directx11
       //pshaderOpaque->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
       //pshaderOpaque->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
       m_pshaderOpaque->m_propertiesPushShared.set_properties(ppropertiesPush);
-      pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushShared);
+      pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushShared, false);
       //m_pshaderOpaque->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
       //m_pshaderOpaque->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       //pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushVertex);
@@ -432,7 +432,7 @@ namespace graphics3d_directx11
       //pshaderMask->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
       //pshaderMask->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
       m_pshaderMask->m_propertiesPushShared.set_properties(ppropertiesPush);
-      pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushShared);
+      pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushShared, false);
       //m_pshaderMask->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
       //m_pshaderMask->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       //pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushVertex);
@@ -450,7 +450,7 @@ namespace graphics3d_directx11
       //pshaderBlend->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
       //pshaderBlend->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
       m_pshaderBlend->m_propertiesPushShared.set_properties(ppropertiesPush);
-      pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushShared);
+      pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushShared, false);
       //m_pshaderBlend->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
       //m_pshaderBlend->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       //pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushVertex);
@@ -1419,6 +1419,6 @@ GPU_PROPERTY("roughness", ::gpu::e_type_float)
 GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_float)
 GPU_PROPERTY("emissive", ::gpu::e_type_seq3)
 GPU_PROPERTY("fPadding4", ::gpu::e_type_float)
-GPU_PROPERTY("cameraPosition", ::gpu::e_type_seq3)
+//GPU_PROPERTY("cameraPosition", ::gpu::e_type_seq3)
 GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_float)
 END_GPU_PROPERTIES()

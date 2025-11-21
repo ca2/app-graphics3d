@@ -83,7 +83,7 @@ namespace gpu_vulkan
       void _001EndRenderPass(::gpu::command_buffer *pcommandbuffer);
 
 
-      void layout_push_constants(::gpu::properties &properties) override;
+      void layout_push_constants(::gpu::properties &properties, bool bGlobalUbo) override;
 
 
       virtual VkCommandPool

@@ -802,7 +802,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::layout_push_constants(::gpu::properties & properties)
+   void context::layout_push_constants(::gpu::properties & properties, bool bGlobalUbo)
    {
 
       auto pproperty = properties.m_pproperties;
@@ -820,7 +820,27 @@ namespace gpu_vulkan
 
          int iSize = iItemSize;
 
-         if (pproperty->m_etype == ::gpu::e_type_seq3)
+         if (iItemSize == 4)
+         {
+
+            if (iSizeWithSamplers % 4 != 0)
+            {
+
+               iSizeWithSamplers += 4 - iSizeWithSamplers % 4;
+
+            }
+
+         }
+         else if (iItemSize == 8)
+         {
+
+            if (iSizeWithSamplers % 8 != 0)
+            {
+
+               iSizeWithSamplers += 8 - iSizeWithSamplers % 8;
+            }
+         }
+         else if (iItemSize == 12)
          {
 
             if (iSizeWithSamplers % 16 != 0)
@@ -830,9 +850,26 @@ namespace gpu_vulkan
 
             }
 
-            //iSize = 16;
+            if (bGlobalUbo) // layout 420
+            {
+
+               iSize = 16;
+
+            }
 
          }
+         else
+         {
+
+            if (iSizeWithSamplers % 16 != 0)
+            {
+
+               iSizeWithSamplers += 16 - iSizeWithSamplers % 16;
+            }
+
+            // iSize = 16;
+         }
+
 
          ::gpu::property_data data;
 

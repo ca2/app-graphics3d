@@ -25,7 +25,7 @@ layout(std140, set = 0, binding = 0) uniform GlobalUbo {
     mat4 view;
     mat4 invView;
     vec4 ambientLightColor;
-    vec4 viewPos;
+    vec3 cameraPosition;
     // pointLights array
     PointLight pointLights[10];
     int numLights;
@@ -74,7 +74,7 @@ layout(set = 2, binding = 4) uniform sampler2D textureEmissive;
 layout(push_constant) uniform PushConsts 
 {
     
-        mat4 modelMatrix;
+    mat4 modelMatrix;
     mat4 normalMatrix; // inverse-transpose of model
 
     // booleans promoted to ints (std140 rules); use 0/1 in C++ when updating
@@ -91,7 +91,7 @@ layout(push_constant) uniform PushConsts
     float ambientOcclusion;
     vec3 emissive;
 
-    vec3 cameraPosition;
+    //vec3 cameraPosition;
     float bloomBrightnessCutoff;
 
 } pushConsts;
@@ -190,7 +190,7 @@ void main() {
     vec3 emissive = getEmissive();
 
     // camera position: prefer push constant, fallback to globalUbo.viewPos.xyz
-    vec3 cameraPos = pushConsts.cameraPosition;
+    vec3 cameraPos = globalUbo.cameraPosition;
     // If you don't use push constants, you can use globalUbo.viewPos.xyz instead.
     // vec3 cameraPos = globalUbo.viewPos.xyz;
 

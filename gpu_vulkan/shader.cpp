@@ -13,6 +13,7 @@
 #include "render_target.h"
 #include "texture.h"
 #include "bred/gpu/frame.h"
+#include "bred/gpu/frame_storage.h"
 
 
 namespace gpu_vulkan
@@ -1009,12 +1010,23 @@ namespace gpu_vulkan
 
          auto uBlockSizeWithoutSamplers = (uint32_t)m_propertiesPushShared.m_blockWithoutSamplers.size();
 
+         auto pmemory = øallocate ::memory();
+
+         pmemory->assign(m_propertiesPushShared.m_blockWithoutSamplers.data(),
+                         m_propertiesPushShared.m_blockWithoutSamplers.size());
+         auto f0 = ((float *)pmemory->data())[0];
+         auto f1 = ((float *)pmemory->data())[1];
+         auto f2 = ((float *)pmemory->data())[2];
          vkCmdPushConstants(
             pcommandbuffer->m_vkcommandbuffer, m_ppipeline->_pipeline_layout(),
             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 
             iPushConstantsOffset,
             uBlockSizeWithoutSamplers,
-            m_propertiesPushShared.m_blockWithoutSamplers.data());
+            pmemory->data());
+
+         auto pframestorage = prenderer->m_pgpucontext->m_pgpudevice->current_frame_storage();
+
+         pframestorage->m_memorya.add(pmemory);
 
          iPushConstantsOffset += uBlockSizeWithoutSamplers;
 

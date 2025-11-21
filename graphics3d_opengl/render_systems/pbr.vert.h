@@ -28,7 +28,7 @@ layout(std140) uniform GlobalUbo {
     mat4 view;
     mat4 invView;
     vec4 ambientLightColor;
-    vec4 viewPos;
+    vec3 cameraPosition;
     PointLight pointLights[10];
     int numLights;
     int padding1;
@@ -44,7 +44,7 @@ void main() {
     gl_Position = projection * view * modelMatrix * vec4(aPos, 1.0f);
     textureCoordinates = aTextureCoordinates;
 
-    mat3 normalMat = transpose(mat3(normalMatrix));
+    mat3 normalMat = mat3(normalMatrix);
 
     vec3 N = normalize(normalMat * aNormal);
     vec3 T = normalize(normalMat * aTangent.xyz);

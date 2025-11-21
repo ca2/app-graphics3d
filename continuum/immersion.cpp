@@ -65,7 +65,7 @@ namespace app_graphics3d_continuum
 
          m_pengine->m_transform.m_sequence3Position = pcamera->m_locationPosition;
 
-         m_pengine->m_transform.m_quaternionRotation = pcamera->m_quaternionRotation;
+         m_pengine->m_transform.m_rotation = pcamera->m_rotation;
 
          //m_pengine->m_transform.m_quaternionRotation.y = pcamera->m_angleYaw;
 

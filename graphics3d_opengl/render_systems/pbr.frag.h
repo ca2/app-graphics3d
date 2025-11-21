@@ -33,7 +33,7 @@ layout(std140) uniform GlobalUbo {
     mat4 view;
     mat4 invView;
     vec4 ambientLightColor;
-	 vec4 viewPos;
+	 vec3 cameraPosition;
     PointLight pointLights[10];
     int numLights; // Needs to be padded to 16 bytes in std140 layout
     // Add padding to align to 16 bytes
@@ -65,7 +65,6 @@ struct Material {
 
 uniform Material material;
 
-uniform vec3 cameraPosition;
 
 // lights
 //uniform vec3 lightPositions[4];
@@ -78,6 +77,10 @@ const float PREFILTERED_ENV_MAP_LOD = 4.0; // how many mipmap levels
 uniform samplerCube diffuseIrradianceMap;
 uniform samplerCube prefilteredEnvMap;
 uniform sampler2D brdfConvolutionMap;
+
+uniform float x_multiplier;
+uniform float y_multiplier;
+uniform float z_multiplier;
 
 // Post parameters
 uniform float bloomBrightnessCutoff;
@@ -189,7 +192,19 @@ void main() {
 	}
 
 	vec3 v = normalize(cameraPosition - worldCoordinates); // view vector pointing at camera
+   //vec3 v = normalize(worldCoordinates - cameraPosition); // view vector pointing at camera
+
+   //vec3 N = normalize(n);
+
+	float NdotV = max(dot(n, v), 0.0);
+
+
 	vec3 r = reflect(-v, n); // reflection
+
+   vec3 sampleR = r;
+   r.x *= x_multiplier;
+   r.y *= y_multiplier;
+   r.z *= z_multiplier;
 
 	// f0 is the "surface reflection at zero incidence"
 	// for PBR-metallic we assume dialectrics all have 0.04
@@ -254,17 +269,16 @@ void main() {
 	}
 
 	// Indirect lighting (IBL)
-	vec3 kSpecular = fresnelSchlickRoughness(max(dot(n, v), 0.0), f0, roughness); // aka F
-    vec3 kDiffuse = 1.0 - kSpecular;
+	vec3 kSpecular = fresnelSchlickRoughness(NdotV, f0, roughness); // aka F
+   vec3 kDiffuse = 1.0 - kSpecular;
 	kDiffuse *= 1.0 - metallic; // metallic materials should have no diffuse component
 
 	// diffuse
-    vec3 irradiance = texture(diffuseIrradianceMap, n).rgb;
-    vec3 diffuse = irradiance * albedo;
+   vec3 irradiance = texture(diffuseIrradianceMap, n).rgb;
+   vec3 diffuse = irradiance * albedo;
 
 	// specular
 	vec3 prefilteredEnvMapColor = textureLod(prefilteredEnvMap, r, roughness * PREFILTERED_ENV_MAP_LOD).rgb;
-	float NdotV = max(dot(n, v), 0.0);
 	vec2 brdf = texture(brdfConvolutionMap, vec2(NdotV, roughness)).rg;
 	vec3 specular = prefilteredEnvMapColor * (kSpecular * brdf.x + brdf.y);
 
@@ -276,7 +290,22 @@ void main() {
 	// Outputs
 
 	// main color output
-	FragColor = vec4(color, 1.0);
+	//FragColor = vec4(color, 1.0);
+   FragColor = vec4(texture(prefilteredEnvMap, r).rgb, 1.0);
+//vec3 N = normalize(n);  // ignore normal map
+//FragColor = vec4(n * 0.5 + 0.5, 1.0);
+//fragColor = vec4(normalize(N) * 0.5 + 0.5, 1.0);
+
+//if (n.y > 0.0)
+//    FragColor = vec4(0.2, 1.0, 0.2, 1.0); // greenish for positive Y
+//else
+//    FragColor = vec4(1.0, 0.2, 0.6, 1.0); // magenta-ish for negative Y
+
+
+//vec3 colA = texture(prefilteredEnvMap, r).rgb;
+//vec3 colB = texture(prefilteredEnvMap, vec3(r.x * x_multiplier, r.y * y_multiplier, r.z * z_multiplier)).rgb;
+//// show difference or one of them
+//FragColor = vec4(colB, 1.0); // then try colB
 
 	// bloom color output
 	// use greyscale conversion here because not all colors are equally "bright"

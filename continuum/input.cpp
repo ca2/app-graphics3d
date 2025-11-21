@@ -204,8 +204,10 @@ namespace app_graphics3d_continuum
       {
 
          // limit pitch values between about +/- 85ish degrees
-         auto yaw = pcamera->yaw();
-         auto pitch = pcamera->pitch();
+         auto rotation = pcamera->rotation();
+         //;
+         //;
+         //auto pitch = pcamera->pitch();
 
          //if (_yaw > _2πf)
          //   _yaw -= _2πf;
@@ -217,21 +219,19 @@ namespace app_graphics3d_continuum
          if (m_b_001AbsoluteMousePosition)
          {
 
-            yaw = angleΔYaw;
-            pitch = angleΔPitch;
+            rotation.set(angleΔYaw, angleΔPitch);
 
          }
          else
          {
 
-            yaw += angleΔYaw;
-            pitch += angleΔPitch;
+            rotation.offset(angleΔPitch, angleΔPitch, -89f_degrees, 89f_degrees);
 
          }
 
-         pitch = ::geometry::clamp(pitch, -89f_degrees, 89f_degrees);
+         //pitch = ::geometry::clamp(pitch, -89f_degrees, 89f_degrees);
 
-         pcamera->m_quaternionRotation.set_yaw_and_pitch(yaw, pitch);
+         pcamera->m_rotation = rotation;
 
          pcamera->update_vectors();
 

@@ -596,54 +596,77 @@ namespace gpu_vulkan
 	/*
 		gltf node
 	*/
-	floating_matrix4 gltf::Node::localMatrix() {
-      return floating_matrix4::translation(translation) * 
-         floating_matrix4(rotation) *
-             floating_matrix4::scaling(scale) * matrix;
+	floating_matrix4 gltf::Node::localMatrix() 
+   {
+
+      auto T = floating_matrix4::translation(m_sequence3Translation);
+
+      auto R = floating_matrix4(m_matrixRotation);
+
+      auto S = floating_matrix4::scaling(m_sequence3Scale);
+
+      auto M = m_matrix;
+
+      return T * R * S * M;
+
 	}
 
-	floating_matrix4 gltf::Node::getMatrix() {
-		floating_matrix4 m = localMatrix();
-		Node* p = parent;
-		while (p) {
-			m = p->localMatrix() * m;
-			p = p->parent;
+
+	floating_matrix4 gltf::Node::getMatrix() 
+   {
+
+		floating_matrix4 matrix = localMatrix();
+
+		Node* pnode = m_pnodeParent;
+
+		while (pnode) 
+      {
+
+			matrix = pnode->localMatrix() * matrix;
+
+			pnode = pnode->m_pnodeParent;
+
 		}
-		return m;
+
+		return matrix;
+
 	}
 
-	void gltf::Node::update() {
-		if (mesh) {
+
+	void gltf::Node::update()
+   {
+
+		if (m_pmesh) {
 			floating_matrix4 m = getMatrix();
-			if (skin) {
-				mesh->uniformBlock.matrix = m;
+			if (m_pskin) {
+				m_pmesh->uniformBlock.matrix = m;
 				// Update join matrices
 				floating_matrix4 inverseTransform = m.inversed();
-				for (size_t i = 0; i < skin->joints.size(); i++) {
-					Node* jointNode = skin->joints[i];
-					floating_matrix4 jointMat = jointNode->getMatrix() * skin->inverseBindMatrices[i];
+				for (size_t i = 0; i < m_pskin->joints.size(); i++) {
+					Node* jointNode = m_pskin->joints[i];
+					floating_matrix4 jointMat = jointNode->getMatrix() * m_pskin->inverseBindMatrices[i];
 					jointMat = inverseTransform * jointMat;
-					mesh->uniformBlock.jointMatrix[i] = jointMat;
+					m_pmesh->uniformBlock.jointMatrix[i] = jointMat;
 				}
-				mesh->uniformBlock.jointcount = (float)skin->joints.size();
-				memcpy(mesh->uniformBuffer.mapped, &mesh->uniformBlock, sizeof(mesh->uniformBlock));
+				m_pmesh->uniformBlock.jointcount = (float)m_pskin->joints.size();
+				memcpy(m_pmesh->uniformBuffer.mapped, &m_pmesh->uniformBlock, sizeof(m_pmesh->uniformBlock));
 			}
 			else {
-				memcpy(mesh->uniformBuffer.mapped, &m, sizeof(floating_matrix4));
+				memcpy(m_pmesh->uniformBuffer.mapped, &m, sizeof(floating_matrix4));
 			}
 		}
 
-		for (auto& child : children) {
-			child->update();
+		for (auto& pnodeChild : m_nodeaChildren) {
+			pnodeChild->update();
 		}
 	}
 
 	gltf::Node::~Node() {
-		if (mesh) {
-			delete mesh;
+		if (m_pmesh) {
+			delete m_pmesh;
 		}
-		for (auto& child : children) {
-			delete child;
+		for (auto& pnodeChild : m_nodeaChildren) {
+			delete pnodeChild;
 		}
 	}
 
@@ -702,11 +725,11 @@ namespace gpu_vulkan
 	//	return &pipelineVertexInputStateCreateInfo;
 	//}
 
-	gpu_vulkan::texture* gltf::Model::getTexture(uint32_t index)
+	gpu_vulkan::texture* gltf::Model::getTexture(uint32_t uIndex)
 	{
 
-		if (index < m_textures.size()) {
-			return m_textures[index];
+		if (uIndex < m_textures.size()) {
+			return m_textures[uIndex];
 		}
 		return nullptr;
 	}
@@ -850,11 +873,11 @@ namespace gpu_vulkan
 		//for (auto texture : m_textures) {
 		//	texture.destroy();
 		//}
-		for (auto node : m_nodes) {
-			delete node;
+		for (auto pnode : m_nodes) {
+			delete pnode;
 		}
-		for (auto skin : m_skins) {
-			delete skin;
+		for (auto pskin : m_skins) {
+			delete pskin;
 		}
 		//if (descriptorSetLayoutUbo != VK_NULL_HANDLE) {
 		//	vkDestroyDescriptorSetLayout(pcontext->logicalDevice(), descriptorSetLayoutUbo, nullptr);
@@ -939,14 +962,14 @@ namespace gpu_vulkan
       }
    }
 
-	void   gltf::Model::loadNode( Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale)
+	void   gltf::Model::loadNode( Node* pnodeParent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale)
 	{
 		Node* newNode = new Node{};
-		newNode->index = nodeIndex;
-		newNode->parent = parent;
-		newNode->name = node.name;
-		newNode->skinIndex = node.skin;
-		newNode->matrix = floating_matrix4(1.0f);
+		newNode->m_uIndex = nodeIndex;
+		newNode->m_pnodeParent = pnodeParent;
+		newNode->m_strName = node.name.c_str();
+		newNode->m_iSkinIndex = node.skin;
+		newNode->m_matrix = floating_matrix4(1.0f);
 
 
 		::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
@@ -958,7 +981,7 @@ namespace gpu_vulkan
 		floating_sequence3 translation = floating_sequence3(0.0f);
 		if (node.translation.size() == 3) {
 			translation = floating_sequence3(node.translation.data());
-			newNode->translation = translation;
+			newNode->m_sequence3Translation = translation;
 		}
 		floating_matrix4 rotation = floating_matrix4(1.0f);
 		if (node.rotation.size() == 4) {
@@ -978,15 +1001,15 @@ namespace gpu_vulkan
 		};
 
 		// Node with children
-		if (node.children.size() > 0) {
-			for (auto i = 0; i < node.children.size(); i++) {
-				loadNode(newNode, model.nodes[node.children[i]], node.children[i], model, indexBuffer, vertexBuffer, globalscale);
+		if (node.m_nodeaChildren.has_elements()) {
+			for (auto i = 0; i < node.m_nodeaChildren.size(); i++) {
+				loadNode(newNode, model.nodes[node.m_nodeaChildren[i]], node.m_nodeaChildren[i], model, indexBuffer, vertexBuffer, globalscale);
 			}
 		}
 
 		// Node contains mesh data
-		if (node.mesh > -1) {
-			const tinygltf::Mesh mesh = model.meshes[node.mesh];
+		if (node.m_pmesh > -1) {
+			const tinygltf::Mesh pmesh = model.meshes[node.m_pmesh];
 			Mesh* newMesh = new Mesh(pcontext, newNode->matrix);
 			newMesh->name = mesh.name;
 			for (size_t j = 0; j < mesh.primitives.size(); j++) {
@@ -1111,8 +1134,8 @@ namespace gpu_vulkan
 					case TINYGLTF_PARAMETER_TYPE_UNSIGNED_INT: {
 							uint32_t* buf = new uint32_t[accessor.count];
 							memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint32_t));
-							for (size_t index = 0; index < accessor.count; index++) {
-								indexBuffer.push_back(buf[index] + vertexStart);
+							for (size_t uIndex = 0; uIndex < accessor.count; uIndex++) {
+								indexBuffer.push_back(buf[uIndex] + vertexStart);
 							}
 							delete[] buf;
 							break;
@@ -1120,8 +1143,8 @@ namespace gpu_vulkan
 					case TINYGLTF_PARAMETER_TYPE_UNSIGNED_SHORT: {
 							uint16_t* buf = new uint16_t[accessor.count];
 							memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint16_t));
-							for (size_t index = 0; index < accessor.count; index++) {
-								indexBuffer.push_back(buf[index] + vertexStart);
+							for (size_t uIndex = 0; uIndex < accessor.count; uIndex++) {
+								indexBuffer.push_back(buf[uIndex] + vertexStart);
 							}
 							delete[] buf;
 							break;
@@ -1129,8 +1152,8 @@ namespace gpu_vulkan
 					case TINYGLTF_PARAMETER_TYPE_UNSIGNED_BYTE: {
 							uint8_t* buf = new uint8_t[accessor.count];
 							memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint8_t));
-							for (size_t index = 0; index < accessor.count; index++) {
-								indexBuffer.push_back(buf[index] + vertexStart);
+							for (size_t uIndex = 0; uIndex < accessor.count; uIndex++) {
+								indexBuffer.push_back(buf[uIndex] + vertexStart);
 							}
 							delete[] buf;
 							break;
@@ -1151,10 +1174,10 @@ namespace gpu_vulkan
 				newPrimitive->setDimensions(posMin, posMax);
 				newMesh->primitives.push_back(newPrimitive);
 			}
-			newNode->mesh = newMesh;
+			newNode->m_pmesh = newMesh;
 		}
-		if (parent) {
-			parent->children.push_back(newNode);
+		if (pnodeParent) {
+			pnodeParent->children.add(newNode);
 		}
 		else {
 			m_nodes.push_back(newNode);
@@ -1176,7 +1199,7 @@ namespace gpu_vulkan
 			// Find joint nodes
 			for (int jointIndex : source.joints) {
 				Node* node = nodeFromIndex(jointIndex);
-				if (node) {
+				if (pnode) {
 					newSkin->joints.push_back(nodeFromIndex(jointIndex));
 				}
 			}
@@ -1208,7 +1231,7 @@ namespace gpu_vulkan
 
          //auto memory = file()->as_memory(image.m_path.c_str());
          //texture.fromglTfImage(image, memory.data(), memory.size(), pgpucontext, transferQueue, false);
-			//texture.index = static_cast<uint32_t>(m_textures.size());
+			//texture.uIndex = static_cast<uint32_t>(m_textures.size());
 			//m_textures.push_back(texture);
 		}
 		// Create an empty texture to be used for empty material images
@@ -1443,14 +1466,14 @@ namespace gpu_vulkan
 			}
 			loadSkins(gltfModel);
 
-			for (auto node : m_linearNodes) {
+			for (auto pnode : m_linearNodes) {
 				// Assign skins
-				if (node->skinIndex > -1) {
-					node->skin = m_skins[node->skinIndex];
+				if (pnode->skinIndex > -1) {
+					pnode->m_pskin = m_skins[pnode->skinIndex];
 				}
 				// Initial pose
-				if (node->mesh) {
-					node->update();
+				if (pnode->m_pmesh) {
+					pnode->update();
 				}
 			}
 		}
@@ -1472,10 +1495,10 @@ namespace gpu_vulkan
 			const bool preTransform = fileLoadingFlags & FileLoadingFlags::PreTransformVertices;
 			const bool preMultiplyColor = fileLoadingFlags & FileLoadingFlags::PreMultiplyVertexColors;
 			const bool flipY = fileLoadingFlags & FileLoadingFlags::FlipY;
-			for (Node* node : m_linearNodes) {
-				if (node->mesh) {
-					const floating_matrix4 localMatrix = node->getMatrix();
-					for (Primitive* primitive : node->mesh->primitives) {
+			for (Node* pnode : m_linearNodes) {
+				if (pnode->m_pmesh) {
+					const floating_matrix4 localMatrix = pnode->getMatrix();
+					for (Primitive* primitive : pnode->m_pmesh->primitives) {
 						for (uint32_t i = 0; i < primitive->vertexCount; i++) {
 							Vertex& vertex = vertexBuffer[primitive->firstVertex + i];
 							// Pre-transform vertex positions by node-hierarchy
@@ -1586,8 +1609,8 @@ namespace gpu_vulkan
 		// Setup descriptors
 		uint32_t uboCount{ 0 };
 		uint32_t imageCount{ 0 };
-		for (auto node : m_linearNodes) {
-			if (node->mesh) {
+		for (auto pnode : m_linearNodes) {
+			if (pnode->m_pmesh) {
 				uboCount++;
 			}
 		}
@@ -1635,7 +1658,7 @@ namespace gpu_vulkan
 				//	descriptorLayoutCI.pBindings = setLayoutBindings.data();
 				//	VK_CHECK_RESULT(vkCreateDescriptorSetLayout(pcontext->logicalDevice(), &descriptorLayoutCI, nullptr, &descriptorSetLayoutUbo));
 				//}
-				for (auto node : m_nodes) {
+				for (auto pnode : m_nodes) {
                prepareNodeDescriptor(node, pcontext->m_psetdescriptorlayoutGlobal->m_vkdescriptorsetlayout);
 				}
 			}
@@ -1749,11 +1772,11 @@ namespace gpu_vulkan
 
 
 
-	void gltf::Model::drawNode(Node *node, uint32_t uFrameIndex, VkCommandBuffer commandBuffer, uint32_t renderFlags,
+	void gltf::Model::drawNode(Node *pnode, uint32_t uFrameIndex, VkCommandBuffer commandBuffer, uint32_t renderFlags,
                               VkPipelineLayout pipelineLayout, uint32_t bindImageSet)
 	{
-		if (node->mesh) {
-			for (Primitive* primitive : node->mesh->primitives) {
+		if (pnode->m_pmesh) {
+			for (Primitive* primitive : pnode->m_pmesh->primitives) {
 				bool skip = false;
 				auto pmaterial = primitive->m_pmaterial;
 				if (renderFlags & RenderFlags::RenderOpaqueNodes) {
@@ -1776,8 +1799,8 @@ namespace gpu_vulkan
 				}
 			}
 		}
-		for (auto& child : node->children) {
-			drawNode(child, uFrameIndex, commandBuffer, renderFlags, pipelineLayout, bindImageSet);
+		for (auto& pnodeChild : pnode->m_nodeaChildren) {
+			drawNode(pnodeChild, uFrameIndex, commandBuffer, renderFlags, pipelineLayout, bindImageSet);
 		}
 	}
    void gltf::Model::bind(VkCommandBuffer commandBuffer)
@@ -1806,18 +1829,18 @@ namespace gpu_vulkan
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertices.buffer, offsets);
 			vkCmdBindIndexBuffer(commandBuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
 		}
-		for (auto& node : m_nodes) {
-			drawNode(node, uFrameIndex, commandBuffer, renderFlags, pipelineLayout, bindImageSet);
+		for (auto& pnode : m_nodes) {
+			drawNode(pnode, uFrameIndex, commandBuffer, renderFlags, pipelineLayout, bindImageSet);
 		}
 	}
 
 
-	void  gltf::Model::getNodeDimensions(Node* node, floating_sequence3& min, floating_sequence3& max)
+	void  gltf::Model::getNodeDimensions(Node* pnode, floating_sequence3& min, floating_sequence3& max)
 	{
-		if (node->mesh) {
-			for (Primitive* primitive : node->mesh->primitives) {
-				floating_sequence4 locMin = floating_sequence4(primitive->dimensions.min, 1.0f) * node->getMatrix();
-				floating_sequence4 locMax = floating_sequence4(primitive->dimensions.max, 1.0f) * node->getMatrix();
+		if (pnode->m_pmesh) {
+			for (Primitive* primitive : pnode->m_pmesh->primitives) {
+				floating_sequence4 locMin = floating_sequence4(primitive->dimensions.min, 1.0f) * pnode->getMatrix();
+				floating_sequence4 locMax = floating_sequence4(primitive->dimensions.max, 1.0f) * pnode->getMatrix();
 				if (locMin.x < min.x) { min.x = locMin.x; }
 				if (locMin.y < min.y) { min.y = locMin.y; }
 				if (locMin.z < min.z) { min.z = locMin.z; }
@@ -1826,8 +1849,8 @@ namespace gpu_vulkan
 				if (locMax.z > max.z) { max.z = locMax.z; }
 			}
 		}
-		for (auto child : node->children) {
-			getNodeDimensions(child, min, max);
+		for (auto pnodeChild : pnode->m_nodeaChildren) {
+			getNodeDimensions(pnodeChild, min, max);
 		}
 	}
 
@@ -1835,8 +1858,8 @@ namespace gpu_vulkan
 	{
 		dimensions.min = floating_sequence3(FLT_MAX);
 		dimensions.max = floating_sequence3(-FLT_MAX);
-		for (auto node : m_nodes) {
-			getNodeDimensions(node, dimensions.min, dimensions.max);
+		for (auto pnode : m_nodes) {
+			getNodeDimensions(pnode, dimensions.min, dimensions.max);
 		}
 		dimensions.size = dimensions.max - dimensions.min;
 		dimensions.center = (dimensions.min + dimensions.max) / 2.0f;
@@ -1876,8 +1899,8 @@ namespace gpu_vulkan
 
 					float* buf = new float[accessor.count];
 					memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(float));
-					for (size_t index = 0; index < accessor.count; index++) {
-						sampler.inputs.push_back(buf[index]);
+					for (size_t uIndex = 0; uIndex < accessor.count; uIndex++) {
+						sampler.inputs.push_back(buf[uIndex]);
 					}
 					delete[] buf;
 					for (auto input : sampler.inputs) {
@@ -1902,8 +1925,8 @@ namespace gpu_vulkan
 					case TINYGLTF_TYPE_VEC3: {
 							floating_sequence3* buf = new floating_sequence3[accessor.count];
 							memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(floating_sequence3));
-							for (size_t index = 0; index < accessor.count; index++) {
-								sampler.outputsVec4.push_back(floating_sequence4(buf[index], 0.0f));
+							for (size_t uIndex = 0; uIndex < accessor.count; uIndex++) {
+								sampler.outputsVec4.push_back(floating_sequence4(buf[uIndex], 0.0f));
 							}
 							delete[] buf;
 							break;
@@ -1911,8 +1934,8 @@ namespace gpu_vulkan
 					case TINYGLTF_TYPE_VEC4: {
 							floating_sequence4* buf = new floating_sequence4[accessor.count];
 							memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(floating_sequence4));
-							for (size_t index = 0; index < accessor.count; index++) {
-								sampler.outputsVec4.push_back(buf[index]);
+							for (size_t uIndex = 0; uIndex < accessor.count; uIndex++) {
+								sampler.outputsVec4.push_back(buf[uIndex]);
 							}
 							delete[] buf;
 							break;
@@ -1957,13 +1980,13 @@ namespace gpu_vulkan
 		}
 	}
 
-	void  gltf::Model::updateAnimation(uint32_t index, float time)
+	void  gltf::Model::updateAnimation(uint32_t uIndex, float time)
 	{
-		if (index > static_cast<uint32_t>(m_animations.size()) - 1) {
-			information() << "No animation with index " << index;
+		if (uIndex > static_cast<uint32_t>(m_animations.size()) - 1) {
+			information() << "No animation with index " << uIndex;
 			return;
 		}
-		Animation& animation = m_animations[index];
+		Animation& animation = m_animations[uIndex];
 
 		bool updated = false;
 		for (auto& channel : animation.channels) {
@@ -2008,8 +2031,8 @@ namespace gpu_vulkan
 			}
 		}
 		if (updated) {
-			for (auto& node : m_nodes) {
-				node->update();
+			for (auto& pnode : m_nodes) {
+				pnode->update();
 			}
 		}
 	}
@@ -2017,13 +2040,13 @@ namespace gpu_vulkan
 	/*
 		Helper functions
 	*/
-	gltf::Node* gltf::Model::findNode(Node* parent, uint32_t index) {
+	gltf::Node* gltf::Model::findNode(Node* pnodeParent, uint32_t uIndex) {
 		Node* nodeFound = nullptr;
-		if (parent->index == index) {
-			return parent;
+		if (pnodeParent->uIndex == uIndex) {
+			return pnodeParent;
 		}
-		for (auto& child : parent->children) {
-			nodeFound = findNode(child, index);
+		for (auto& pnodeChild : pnodeParent->m_nodeaChildren) {
+			nodeFound = findNode(pnodeChild, uIndex);
 			if (nodeFound) {
 				break;
 			}
@@ -2031,10 +2054,10 @@ namespace gpu_vulkan
 		return nodeFound;
 	}
 
-	gltf::Node* gltf::Model::nodeFromIndex(uint32_t index) {
+	gltf::Node* gltf::Model::nodeFromIndex(uint32_t uIndex) {
 		Node* nodeFound = nullptr;
-		for (auto& node : m_nodes) {
-			nodeFound = findNode(node, index);
+		for (auto& pnode : m_nodes) {
+			nodeFound = findNode(pnode, uIndex);
 			if (nodeFound) {
 				break;
 			}
@@ -2042,8 +2065,8 @@ namespace gpu_vulkan
 		return nodeFound;
 	}
 
-	void  gltf::Model::prepareNodeDescriptor( Node* node, VkDescriptorSetLayout descriptorSetLayout) {
-		if (node->mesh) {
+	void  gltf::Model::prepareNodeDescriptor( Node* pnode, VkDescriptorSetLayout descriptorSetLayout) {
+		if (pnode->m_pmesh) {
 			VkDescriptorSetAllocateInfo descriptorSetAllocInfo{};
 			descriptorSetAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 			descriptorSetAllocInfo.descriptorPool = m_descriptorPool;
@@ -2053,20 +2076,20 @@ namespace gpu_vulkan
 			::cast < ::gpu_vulkan::device > pgpudevice = pcontext->m_pgpudevice;
 			auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
-			VK_CHECK_RESULT(vkAllocateDescriptorSets(pcontext->logicalDevice(), &descriptorSetAllocInfo, &node->mesh->uniformBuffer.descriptorSet));
+			VK_CHECK_RESULT(vkAllocateDescriptorSets(pcontext->logicalDevice(), &descriptorSetAllocInfo, &node->m_pmesh->uniformBuffer.descriptorSet));
 
 			VkWriteDescriptorSet writeDescriptorSet{};
 			writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			writeDescriptorSet.descriptorCount = 1;
-			writeDescriptorSet.dstSet = node->mesh->uniformBuffer.descriptorSet;
+			writeDescriptorSet.dstSet = node->m_pmesh->uniformBuffer.descriptorSet;
 			writeDescriptorSet.dstBinding = 0;
-			writeDescriptorSet.pBufferInfo = &node->mesh->uniformBuffer.descriptor;
+			writeDescriptorSet.pBufferInfo = &node->m_pmesh->uniformBuffer.descriptor;
 
 			vkUpdateDescriptorSets(pcontext->logicalDevice(), 1, &writeDescriptorSet, 0, nullptr);
 		}
-		for (auto& child : node->children) {
-			prepareNodeDescriptor(child, descriptorSetLayout);
+		for (auto& pnodeChild : node->m_nodeaChildren) {
+			prepareNodeDescriptor(pnodeChild, descriptorSetLayout);
 		}
 	}
 

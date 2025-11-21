@@ -26,7 +26,7 @@ layout (set = 0, binding = 0, std140) uniform GlobalUbo {
     mat4 view;
     mat4 invView;
     vec4 ambientLightColor;
-    vec4 viewPos;
+    vec3 cameraPosition;
     PointLight pointLights[10];
     int numLights;
     int padding1;
@@ -35,14 +35,34 @@ layout (set = 0, binding = 0, std140) uniform GlobalUbo {
 } ubo;
 
 // Push constants for model transforms (Vulkan-style)
-layout (push_constant) uniform PushConstants {
+layout(push_constant) uniform PushConsts 
+{
+    
     mat4 modelMatrix;
     mat4 normalMatrix; // inverse-transpose of model
-} pushConstants;
+
+    // booleans promoted to ints (std140 rules); use 0/1 in C++ when updating
+
+    int useTextureAlbedo;
+    int useTextureMetallicRoughness;
+    int useTextureNormal;
+    int useTextureAmbientOcclusion;
+    int useTextureEmissive;
+
+    vec3 albedo;
+    float metallic;
+    float roughness;
+    float ambientOcclusion;
+    vec3 emissive;
+
+    //vec3 cameraPosition;
+    float bloomBrightnessCutoff;
+
+} pushConsts;
 
 void main() {
     // Transform position to world space
-    vec4 worldPos = pushConstants.modelMatrix * vec4(aPos, 1.0);
+    vec4 worldPos = pushConsts.modelMatrix * vec4(aPos, 1.0);
     worldCoordinates = worldPos.xyz;
 
     // Final clip-space position
@@ -52,7 +72,7 @@ void main() {
     textureCoordinates = aTextureCoordinates;
 
     // Normal, tangent, bitangent in world space
-    mat3 normalMat = transpose(mat3(pushConstants.normalMatrix));
+    mat3 normalMat = transpose(mat3(pushConsts.normalMatrix));
 
     vec3 N = normalize(normalMat * aNormal);
     vec3 T = normalize(normalMat * aTangent.xyz);

@@ -61,7 +61,7 @@ namespace graphics3d_directx11
 
          // 56
 
-         ::floating_sequence3 cameraPosition;//56
+         //::floating_sequence3 cameraPosition;//56
          float bloomBrightnessCutoff;//68
          // 72
 

@@ -172,21 +172,25 @@ namespace gpu_vulkan
 			gltf node
 		*/
 		struct CLASS_DECL_GPU_VULKAN Node {
-			Node* parent;
-			uint32_t index;
-			std::vector<Node*> children;
-			floating_matrix4 matrix;
-			std::string name;
-			Mesh* mesh;
-			Skin* skin;
-			int32_t skinIndex = -1;
-			floating_sequence3 translation{};
-			floating_sequence3 scale{ 1.0f };
-			floating_matrix4 rotation{};
-			floating_matrix4 localMatrix();
+			Node* m_pnodeParent;
+			uint32_t m_uIndex;
+			::array_base<Node*> m_nodeaChildren;
+			floating_matrix4 m_matrix;
+			::string m_strName;
+			Mesh* m_pmesh;
+			Skin* m_pskin;
+			int32_t m_iSkinIndex = -1;
+			floating_sequence3 m_sequence3Translation{};
+			floating_sequence3 m_sequence3Scale{ 1.0f };
+			floating_matrix4 m_matrixRotation{};
+
+         
+  			~Node();
+
+         floating_matrix4 localMatrix();
 			floating_matrix4 getMatrix();
 			void update();
-			~Node();
+
 		};
 
 		/*

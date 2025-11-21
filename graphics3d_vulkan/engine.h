@@ -62,7 +62,7 @@ namespace graphics3d_vulkan
 		//void on_render_frame() override;
 
 
-
+      floating_matrix4 perspective(const float_angle &angleFovY, float aspect, float zNear, float zFar) override;
 		
 	};
 

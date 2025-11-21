@@ -58,7 +58,7 @@ namespace graphics3d_vulkan
 
          // 56
 
-         ::floating_sequence3 cameraPosition;//56
+         //::floating_sequence3 cameraPosition;//56
          float bloomBrightnessCutoff;//68
          // 72
 
