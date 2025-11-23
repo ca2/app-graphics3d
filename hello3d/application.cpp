@@ -67,9 +67,9 @@ namespace graphics3d_hello3d
       add_impact_system(
          "main", __initialize_new ::user::single_document_template(
                                "main",
-                               ::type < ::user::document >(),
-                               ::type < main_frame >(),
-                               ::type < pane_impact >()));
+                               ::as_type < ::user::document >(),
+                               ::as_type < main_frame >(),
+                               ::as_type < pane_impact >()));
 
       //m_ptemplateMain = pdoctemplate;
 
@@ -77,9 +77,9 @@ namespace graphics3d_hello3d
 
       //auto pmultidoctemplate = __initialize_new ::user::multiple_document_template(
       //   "main",
-      //   ::type < document >(),
-      //   ::type < frame >(),
-      //   ::type < impact >()));
+      //   ::as_type < document >(),
+      //   ::as_type < frame >(),
+      //   ::as_type < impact >()));
 
       //m_ptemplateImpact = pmultidoctemplate;
 

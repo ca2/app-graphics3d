@@ -78,10 +78,10 @@ namespace app_graphics3d_landen
       add_impact_system(
          "main"_ansi, __initialize_new ::user::single_document_template(
                           "main"_ansi,
-                          ::type < ::app_graphics3d_landen::document >(),
-                          ::type < ::app_graphics3d_landen::frame >(),       // top level SDI frame::windowing::window
-                        ::type < ::app_graphics3d_landen::impact >()));
-      //::type < ::app_core_vulken::pane_impact >()));
+                          ::as_type < ::app_graphics3d_landen::document >(),
+                          ::as_type < ::app_graphics3d_landen::frame >(),       // top level SDI frame::windowing::window
+                        ::as_type < ::app_graphics3d_landen::impact >()));
+      //::as_type < ::app_core_vulken::pane_impact >()));
       
       //add_document_template(pdocumenttemplate);
       //
@@ -91,10 +91,10 @@ namespace app_graphics3d_landen
       //   "impact"_ansi,
       //   __initialize_new ::user::single_document_template(
       //                    "main"_ansi,
-      //                    ::type < ::app_core_vulken::document >(),
-      //                    ::type < ::app_core_vulken::child_frame >(),       // top level SDI frame::windowing::window
-      //                    //::type < ::app_core_vulken::main_impact >()));
-      //               ::type < ::app_core_vulken::impact >()));
+      //                    ::as_type < ::app_core_vulken::document >(),
+      //                    ::as_type < ::app_core_vulken::child_frame >(),       // top level SDI frame::windowing::window
+      //                    //::as_type < ::app_core_vulken::main_impact >()));
+      //               ::as_type < ::app_core_vulken::impact >()));
    
       //add_document_template(pdocumenttemplate);
 
