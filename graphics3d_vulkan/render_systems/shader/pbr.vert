@@ -72,7 +72,7 @@ void main() {
     textureCoordinates = aTextureCoordinates;
 
     // Normal, tangent, bitangent in world space
-    mat3 normalMat = transpose(mat3(pushConsts.normalMatrix));
+    mat3 normalMat = mat3(pushConsts.normalMatrix);
 
     vec3 N = normalize(normalMat * aNormal);
     vec3 T = normalize(normalMat * aTangent.xyz);

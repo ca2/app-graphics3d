@@ -238,23 +238,23 @@ namespace graphics3d_vulkan
 
          pgltfmodel->bind(pframe->m_pgpucommandbuffer);
 
-         for (auto *node: pgltfmodel->m_linearNodes)
+         for (auto *pnode: pgltfmodel->m_nodeaLinear)
          {
-            if (!node->mesh)
+            if (!pnode->m_pmesh)
                continue;
 
-            floating_matrix4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
+            floating_matrix4 world = pscenerenderable->transform().getMatrix() * pnode->getMatrix();
             floating_matrix4 normalMat = world.inversed().transposed();
 
-            memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
-            memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
+            memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
+            memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
 
-            for (auto *primitive: node->mesh->primitives)
+            for (auto *primitive: pnode->m_pmesh->primitives)
             {
 
 
                std::array<VkDescriptorSet, 2> sets = {vkdescriptorsetGlobal, // set 0
-                                                      node->mesh->uniformBuffer.descriptorSet};
+                                                      pnode->m_pmesh->uniformBuffer.descriptorSet};
 
 
                vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
@@ -274,7 +274,7 @@ namespace graphics3d_vulkan
                      break;
                }
 
-               pgltfmodel->drawNode(node, pcommandbuffer->m_iFrameIndex, pcommandbuffer->m_vkcommandbuffer,
+               pgltfmodel->drawNode(pnode, pcommandbuffer->m_iFrameIndex, pcommandbuffer->m_vkcommandbuffer,
                                     ::gpu_vulkan::gltf::RenderFlags::BindImages,
                                m_pipelineLayout, 2);
                warnedThisFrame = false;

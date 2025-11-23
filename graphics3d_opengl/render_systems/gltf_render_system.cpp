@@ -191,7 +191,7 @@ namespace graphics3d_opengl
             floating_matrix4 normalMat(world3x3);
 
             // Compute normal matrix correctly
-            normalMat = normalMat.inversed().transposed();
+            normalMat.inverse().transpose();
 
             pshader->set_matrix4("modelMatrix", world);
             pshader->set_matrix4("normalMatrix", normalMat);

@@ -105,6 +105,7 @@ namespace gpu_vulkan
 
 			::array_base < VkDescriptorSet >m_descriptorseta;
 
+         Material() {}
 			Material(::gpu::context* pcontext) : m_pgpucontext(pcontext) {};
 			void addDescriptorSet(VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags, ::gpu_vulkan::texture* fallbackTexture);
 		};
@@ -180,9 +181,9 @@ namespace gpu_vulkan
 			Mesh* m_pmesh;
 			Skin* m_pskin;
 			int32_t m_iSkinIndex = -1;
-			floating_sequence3 m_sequence3Translation{};
-			floating_sequence3 m_sequence3Scale{ 1.0f };
-			floating_matrix4 m_matrixRotation{};
+			floating_sequence3 m_sequence3Translation;
+			floating_sequence3 m_sequence3Scale{1.0f};
+			floating_matrix4 m_matrixRotation{1.0f};
 
          
   			~Node();
@@ -198,9 +199,9 @@ namespace gpu_vulkan
 		*/
 		struct AnimationChannel {
 			enum PathType { TRANSLATION, ROTATION, SCALE };
-			PathType path;
-			Node* node;
-			uint32_t samplerIndex;
+			PathType m_epath;
+			Node* m_pnode;
+			uint32_t m_uSamplerIndex;
 		};
 
 		/*
@@ -208,18 +209,18 @@ namespace gpu_vulkan
 		*/
 		struct AnimationSampler {
 			enum InterpolationType { LINEAR, STEP, CUBICSPLINE };
-			InterpolationType interpolation;
-			std::vector<float> inputs;
-			std::vector<floating_sequence4> outputsVec4;
+			InterpolationType m_einterpolation;
+			float_array m_faInput;
+			::array_base<floating_sequence4> m_sequence4aOutput;
 		};
 
 		/*
 			gltf animation
 		*/
 		struct Animation {
-			std::string name;
-			std::vector<AnimationSampler> samplers;
-			std::vector<AnimationChannel> channels;
+			::string m_strName;
+         ::array_base<AnimationSampler> m_samplera;
+			::array_base<AnimationChannel> m_channela;
 			float start = std::numeric_limits<float>::max();
 			float end = std::numeric_limits<float>::min();
 		};
@@ -333,15 +334,15 @@ namespace gpu_vulkan
 				VkDeviceMemory memory;
 			} indices;
 
-			std::vector<Node*> m_nodes;
-			std::vector<Node*> m_linearNodes;
+			::comparable_array_base<Node *> m_nodea;
+         ::comparable_array_base<Node *> m_nodeaLinear;
 
-			std::vector<Skin*> m_skins;
+			::comparable_array_base<Skin*> m_skina;
 
 
-			::pointer_array<::gpu_vulkan::texture> m_textures;
-			std::vector<Material> m_materials;
-			std::vector<Animation> m_animations;
+			::pointer_array<::gpu_vulkan::texture> m_texturea;
+			::array_base<Material> m_materiala;
+			array_base<Animation> m_animationa;
 
 
          //::array_base<VkDescriptorSet> m_vkdescriptorsetaPbr;

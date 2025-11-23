@@ -259,22 +259,22 @@ namespace graphics3d_vulkan
    //
    //         prenderable->bind(pframe->m_pgpucommandbuffer);
    //
-   //         for (auto *node: prenderable->m_linearNodes)
+   //         for (auto *pnode: prenderable->m_nodeaLinear)
    //         {
    //
-   //            if (!node->mesh)
+   //            if (!pnode->m_pmesh)
    //               continue;
    //
-   //            floating_matrix4 world = pgameobject->getTransform().mat4() * node->getMatrix();
+   //            floating_matrix4 world = pgameobject->getTransform().mat4() * pnode->getMatrix();
    //            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
-   //            memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
-   //            memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
+   //            memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
+   //            memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
    //
    //            vkCmdBindDescriptorSets(frame.m_pcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 1,
    //            1,
-   //                                    &node->mesh->uniformBuffer.descriptorSet, 0, nullptr);
+   //                                    &pnode->m_pmesh->uniformBuffer.descriptorSet, 0, nullptr);
    //
-   //            const auto &mat = node->mesh->primitives[0]->material;
+   //            const auto &mat = pnode->m_pmesh->primitives[0]->material;
    //            switch (mat.alphaMode)
    //            {
    //               case ::graphics3d::gltf::Material::ALPHAMODE_OPAQUE:
@@ -290,7 +290,7 @@ namespace graphics3d_vulkan
    //            }
    //
    //
-   //            model->drawNode(node, frame.m_pcommandbuffer, ::graphics3d::gltf::RenderFlags::BindImages,
+   //            model->drawNode(pnode, frame.m_pcommandbuffer, ::graphics3d::gltf::RenderFlags::BindImages,
    //            m_pipelineLayout,
    //                            2 // bindImageSet
    //            );
@@ -578,7 +578,7 @@ namespace graphics3d_vulkan
                if (!pgltfmodel)
                   continue;
 
-               //for (auto &material: pgltfmodel->m_materials)
+               //for (auto &material: pgltfmodel->m_materiala)
                //{
                //   if (material.baseColorTexture != nullptr)
                //   {
@@ -600,9 +600,9 @@ namespace graphics3d_vulkan
 
                // pgltfmodel->bind(pgpucommandbuffer);
 
-               // for (auto *node: pgltfmodel->m_pgltfmodel->m_linearNodes)
+               // for (auto *pnode: pgltfmodel->m_pgltfmodel->m_nodeaLinear)
                //{
-               //    if (!node->mesh)
+               //    if (!pnode->m_pmesh)
                //       continue;
 
 
@@ -810,23 +810,23 @@ namespace graphics3d_vulkan
    //
    //       model->bind(frame.commandBuffer);
    //
-   //       for (auto *node: model->m_linearNodes)
+   //       for (auto *pnode: model->m_nodeaLinear)
    //       {
-   //          if (!node->mesh)
+   //          if (!pnode->m_pmesh)
    //             continue;
    //
-   //          floating_matrix4 world = go->getTransform().mat4() * node->getMatrix();
+   //          floating_matrix4 world = go->getTransform().mat4() * pnode->getMatrix();
    //          floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
    //
-   //          memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
-   //          memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
+   //          memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
+   //          memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
    //
-   //          for (auto *primitive: node->mesh->primitives)
+   //          for (auto *primitive: pnode->m_pmesh->primitives)
    //          {
    //             // --- Bind sets 0 & 1 (global + node UBO) ---
    //             std::array<VkDescriptorSet, 2> sets01 = {
    //                frame.globalDescriptorSet, // set 0
-   //                node->mesh->uniformBuffer.descriptorSet // set 1
+   //                pnode->m_pmesh->uniformBuffer.descriptorSet // set 1
    //             };
    //             vkCmdBindDescriptorSets(frame.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
    //                                     static_cast<uint32_t>(sets01.size()), sets01.data(), 0, nullptr);
@@ -918,21 +918,21 @@ namespace graphics3d_vulkan
 
    //      pmodel->bind(pframe->m_pgpucommandbuffer);
 
-   //      for (auto *node: pmodel->m_linearNodes)
+   //      for (auto *pnode: pmodel->m_nodeaLinear)
    //      {
 
-   //         if (!node->mesh)
+   //         if (!pnode->m_pmesh)
    //            continue;
 
-   //         floating_matrix4 world = psceneobject->transform().getMatrix() * node->getMatrix();
+   //         floating_matrix4 world = psceneobject->transform().getMatrix() * pnode->getMatrix();
    //         floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
-   //         memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
-   //         memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
+   //         memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
+   //         memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
 
    //         vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-   //                                 m_pipelineLayout, 1, 1, &node->mesh->uniformBuffer.descriptorSet, 0, nullptr);
+   //                                 m_pipelineLayout, 1, 1, &pnode->m_pmesh->uniformBuffer.descriptorSet, 0, nullptr);
 
-   //         auto pmaterial = node->mesh->primitives[0]->m_pmaterial;
+   //         auto pmaterial = pnode->m_pmesh->primitives[0]->m_pmaterial;
    //         switch (pmaterial->alphaMode)
    //         {
    //            case ::gpu_vulkan::gltf::Material::ALPHAMODE_OPAQUE:
@@ -950,7 +950,7 @@ namespace graphics3d_vulkan
 
    //         pmodel->gltfDraw(pcommandbuffer->m_vkcommandbuffer, ::gpu_vulkan::gltf::RenderFlags::RenderNone,
    //                          m_pipelineLayout, 2);
-   //         // pmodel->drawNode(node,
+   //         // pmodel->drawNode(pnode,
    //         //  pcommandbuffer->m_vkcommandbuffer,
    //         //::gpu_vulkan::gltf::RenderFlags::BindImages,
    //         // m_pipelineLayout,
@@ -982,23 +982,23 @@ namespace graphics3d_vulkan
 //
 //         model->bind(frame.commandBuffer);
 //
-//         for (auto *node: model->m_linearNodes)
+//         for (auto *pnode: model->m_nodeaLinear)
 //         {
-//            if (!node->mesh)
+//            if (!pnode->m_pmesh)
 //               continue;
 //
-//            floating_matrix4 world = go->getTransform().mat4() * node->getMatrix();
+//            floating_matrix4 world = go->getTransform().mat4() * pnode->getMatrix();
 //            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
 //
-//            memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
-//            memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
+//            memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
+//            memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
 //
-//            for (auto *primitive: node->mesh->primitives)
+//            for (auto *primitive: pnode->m_pmesh->primitives)
 //            {
 //                --- Bind sets 0 & 1 (global + node UBO) ---
 //               std::array<VkDescriptorSet, 2> sets01 = {
 //                  frame.globalDescriptorSet, // set 0
-//                  node->mesh->uniformBuffer.descriptorSet // set 1
+//                  pnode->m_pmesh->uniformBuffer.descriptorSet // set 1
 //               };
 //               vkCmdBindDescriptorSets(frame.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
 //                                       static_cast<uint32_t>(sets01.size()), sets01.data(), 0, nullptr);
@@ -1102,14 +1102,14 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
          pgltfmodel->bind(pframe->m_pgpucommandbuffer);
 
-         for (auto *node: pgltfmodel->m_linearNodes)
+         for (auto *pnode: pgltfmodel->m_nodeaLinear)
          {
-            if (!node->mesh)
+            if (!pnode->m_pmesh)
                continue;
 
             auto matrixObject = pscenerenderable->transform().getMatrix();
 
-            auto matrixNode = node->getMatrix();
+            auto matrixNode = pnode->getMatrix();
 
             floating_matrix4 world =  matrixObject * matrixNode;
 
@@ -1126,10 +1126,10 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
             normalMat = normalMat.inversed().transposed();
 
 
-            //memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
-            //memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
+            //memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
+            //memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
 
-            for (auto *primitive: node->mesh->primitives)
+            for (auto *primitive: pnode->m_pmesh->primitives)
             {
 
                               // Pick pipeline by alpha mode
@@ -1153,7 +1153,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
                pshader->set_matrix4("modelMatrix", world);
                pshader->set_matrix4("normalMatrix", normalMat);
-               bool bAlbedo = pgltfmodel->m_materials[0].baseColorTexture.is_set();
+               bool bAlbedo = pgltfmodel->m_materiala[0].baseColorTexture.is_set();
                bAlbedo = bAlbedo && !m_bDisableAlbedo;
                pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
 
@@ -1166,18 +1166,18 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                else
                {
 
-                  seq3Albedo = ::floating_sequence3(pgltfmodel->m_materials[0].baseColorFactor.r,
-                                            pgltfmodel->m_materials[0].baseColorFactor.g,
-                                            pgltfmodel->m_materials[0].baseColorFactor.b);
+                  seq3Albedo = ::floating_sequence3(pgltfmodel->m_materiala[0].baseColorFactor.r,
+                                            pgltfmodel->m_materiala[0].baseColorFactor.g,
+                                            pgltfmodel->m_materiala[0].baseColorFactor.b);
 
                }
 
                pshader->set_sequence3("albedo", seq3Albedo);
 
-               bool bMetallicRoughness = pgltfmodel->m_materials[0].metallicRoughnessTexture.is_set();
+               bool bMetallicRoughness = pgltfmodel->m_materiala[0].metallicRoughnessTexture.is_set();
                bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
                pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
-               bool bNormal = pgltfmodel->m_materials[0].normalTexture.is_set();
+               bool bNormal = pgltfmodel->m_materiala[0].normalTexture.is_set();
 
 
                            float fMetallic = 0.0f;
@@ -1189,7 +1189,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                else
                {
 
-                  fMetallic = pgltfmodel->m_materials[0].metallicFactor;
+                  fMetallic = pgltfmodel->m_materiala[0].metallicFactor;
                }
                float fRoughness = 0.0f;
                if (prendersystem->m_bForceDefaultRoughnessFactor)
@@ -1200,14 +1200,14 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                else
                {
 
-                  fRoughness = pgltfmodel->m_materials[0].roughnessFactor;
+                  fRoughness = pgltfmodel->m_materiala[0].roughnessFactor;
                }
                pshader->set_float("metallic", fMetallic);
                pshader->set_float("roughness", fRoughness);
 
                bNormal = bNormal && !m_bDisableNormal;
                pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
-               bool bAmbientOcclusion = pgltfmodel->m_materials[0].occlusionTexture.is_set();
+               bool bAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture.is_set();
                bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
                pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
 
@@ -1222,7 +1222,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                else
                {
 
-                  //fAmbientOcclusion = pgltfmodel->m_materials[0].occlusionTexture->m_fAmbientOcclusion;
+                  //fAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture->m_fAmbientOcclusion;
                }
                pshader->set_float("ambientOcclusion", fAmbientOcclusion);
 
@@ -1235,44 +1235,44 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                else
                {
 
-                  //seq3Emission = pgltfmodel->m_materials[0].m_seq3Emissive;
+                  //seq3Emission = pgltfmodel->m_materiala[0].m_seq3Emissive;
                }
                pshader->set_sequence3("emissive", seq3Emission);
 
 
-               bool bEmissive = pgltfmodel->m_materials[0].emissiveTexture.is_set();
+               bool bEmissive = pgltfmodel->m_materiala[0].emissiveTexture.is_set();
                bEmissive = bEmissive && !m_bDisableEmissive;
                pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
 
-               //auto metallicFactor = pgltfmodel->m_materials[0].metallicFactor;
+               //auto metallicFactor = pgltfmodel->m_materiala[0].metallicFactor;
                //if (m_bForceDefaultMetallicFactor)
                //   metallicFactor = m_fDefaultMetallicFactor;
                //pshader->set_float("metallic", metallicFactor);
-               //auto roughnessFactor = pgltfmodel->m_materials[0].roughnessFactor;
+               //auto roughnessFactor = pgltfmodel->m_materiala[0].roughnessFactor;
                //if (m_bForceDefaultRoughnessFactor)
                //   roughnessFactor = m_fDefaultRoughnessFactor;
                //pshader->set_float("roughness", roughnessFactor);
-               //pshader->set_float("ambientOcclusion", pgltfmodel->m_materials[0].am);
+               //pshader->set_float("ambientOcclusion", pgltfmodel->m_materiala[0].am);
                pshader->push_properties(pcommandbuffer);
 
 
                //// --- Bind sets 0 & 1 (global + node UBO) ---
                //std::array<VkDescriptorSet, 2> sets01 = {
                //   frame.globalDescriptorSet, // set 0
-               //   node->mesh->uniformBuffer.descriptorSet // set 1
+               //   pnode->m_pmesh->uniformBuffer.descriptorSet // set 1
                //};
                //// xxxxxxxxxxxxxxxxx
-               ////// --- Bind sets 0 & 1 (global + node UBO) ---
+               ////// --- Bind sets 0 & 1 (global + pnode UBO) ---
                // std::array<VkDescriptorSet, 2> sets01 = {
                //   vkdescriptorsetGlobal, // set 0
-               //    node->mesh->uniformBuffer.descriptorSet // set 1
+               //    pnode->m_pmesh->uniformBuffer.descriptorSet // set 1
                // };
                //vkCmdBindDescriptorSets(
                //   pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                //   m_pipelineLayout, 0,
                //   (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
                 //// --- Bind sets 0 (global) ---
-               // node UBO transformed in Push Constants and set above
+               // pnode UBO transformed in Push Constants and set above
                 std::array<VkDescriptorSet, 1> sets01 = {
                    vkdescriptorsetGlobal // set 0
                 };
@@ -1281,7 +1281,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
                //// --- Bind our PBR set (set = 2) ---
                 // --- Bind our PBR set (set = 1) ---
-               if (pgltfmodel->m_materials.size() <= 0)
+               if (pgltfmodel->m_materiala.size() <= 0)
                {
 
                   if (!warnedThisFrame)
@@ -1303,10 +1303,10 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                                        // m_pipelineLayout, 3, 1,
                                        pshader->m_ppipeline->m_vkpipelinelayout, 1, 1, &iblSet, 0, nullptr);
 
-               if (pgltfmodel->m_materials[0].m_descriptorseta.has_element())
+               if (pgltfmodel->m_materiala[0].m_descriptorseta.has_element())
                {
                   VkDescriptorSet pbrSet =
-                     pgltfmodel->m_materials[0].m_descriptorseta[pframe->m_pgpucommandbuffer->m_iFrameIndex];
+                     pgltfmodel->m_materiala[0].m_descriptorseta[pframe->m_pgpucommandbuffer->m_iFrameIndex];
                   if (pbrSet == VK_NULL_HANDLE)
                   {
                      if (!warnedThisFrame)

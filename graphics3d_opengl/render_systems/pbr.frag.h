@@ -155,20 +155,41 @@ vec3 calculateNormal(vec3 tangentNormal) {
 	return normalize(TBN * norm); // tangent --> world
 }
 
+// ACES Filmic Tone Mapping (Narkowicz 2015)
+vec3 ACESFilm(vec3 x)
+{
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+    return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+}
+
+// gamma correction
+vec3 toSRGB(vec3 x) {
+    return pow(x, vec3(1.0 / 2.2));
+}
+vec3 linearToSrgb(vec3 c) { return pow(c, vec3(1.0 / 2.2)); }
+vec3 srgbToLinear(vec3 c) { return pow(c, vec3(2.2)); }
+
 void main() {
 	// retrieve all the material properties
+   vec2 uv = textureCoordinates;
+
+   uv.y = 1.0 - uv.y; 
 
 	// albedo
 	vec3 albedo = material.albedo;
 	if (material.useTextureAlbedo) {
-		albedo = texture(material.textureAlbedo, textureCoordinates).rgb;
+		albedo = texture(material.textureAlbedo, uv).rgb;
 	}
 
 	// metallic/roughness
 	float metallic = material.metallic;
 	float roughness = material.roughness;
 	if (material.useTextureMetallicRoughness) {
-		vec3 metallicRoughness = texture(material.textureMetallicRoughness, textureCoordinates).rgb;
+		vec3 metallicRoughness = texture(material.textureMetallicRoughness, uv).rgb;
 		metallic = metallicRoughness.b;
 		roughness = metallicRoughness.g;
 	}
@@ -176,19 +197,19 @@ void main() {
 	// normal
 	vec3 n = normal; // interpolated vertex normal
 	if (material.useTextureNormal) {
-		n = calculateNormal(texture(material.textureNormal, textureCoordinates).rgb);
+		n = calculateNormal(texture(material.textureNormal, uv).rgb);
 	}
 
 	// ambient occlusion
 	float ao = material.ambientOcclusion;
 	if (material.useTextureAmbientOcclusion) {
-		ao = texture(material.textureAmbientOcclusion, textureCoordinates).r;
+		ao = texture(material.textureAmbientOcclusion, uv).r;
 	}
 
 	// emissive
 	vec3 emissive = material.emissive;
 	if (material.useTextureEmissive) {
-		emissive = texture(material.textureEmissive, textureCoordinates).rgb;
+		emissive = texture(material.textureEmissive, uv).rgb;
 	}
 
 	vec3 v = normalize(cameraPosition - worldCoordinates); // view vector pointing at camera
@@ -196,15 +217,17 @@ void main() {
 
    //vec3 N = normalize(n);
 
+
 	float NdotV = max(dot(n, v), 0.0);
 
 
 	vec3 r = reflect(-v, n); // reflection
 
-   vec3 sampleR = r;
    r.x *= x_multiplier;
    r.y *= y_multiplier;
    r.z *= z_multiplier;
+
+
 
 	// f0 is the "surface reflection at zero incidence"
 	// for PBR-metallic we assume dialectrics all have 0.04
@@ -281,17 +304,27 @@ void main() {
 	vec3 prefilteredEnvMapColor = textureLod(prefilteredEnvMap, r, roughness * PREFILTERED_ENV_MAP_LOD).rgb;
 	vec2 brdf = texture(brdfConvolutionMap, vec2(NdotV, roughness)).rg;
 	vec3 specular = prefilteredEnvMapColor * (kSpecular * brdf.x + brdf.y);
+//vec3 specular = prefilteredEnvMapColor;
+//vec3 specular = albedo;
 
 	vec3 ambient = (kDiffuse * diffuse + specular) * ao; // indirect lighting
+   //vec3 ambient = (kDiffuse * diffuse + specular); // indirect lighting
+   //vec3 ambient = specular; // indirect lighting
 
 	// Combine emissive + indirect + direct
 	vec3 color = emissive + ambient + Lo;
+   //vec3 color = ambient;
 
 	// Outputs
 
 	// main color output
-	//FragColor = vec4(color, 1.0);
-   FragColor = vec4(texture(prefilteredEnvMap, r).rgb, 1.0);
+   //FragColor = vec4(albedo, 1.0);
+    const float EXPOSURE = 0.3;
+    vec3 outColor = ACESFilm(color * EXPOSURE);
+    outColor = toSRGB(outColor);
+	FragColor = vec4(outColor, 1.0);
+
+   //FragColor = vec4(texture(prefilteredEnvMap, r).rgb, 1.0);
 //vec3 N = normalize(n);  // ignore normal map
 //FragColor = vec4(n * 0.5 + 0.5, 1.0);
 //fragColor = vec4(normalize(N) * 0.5 + 0.5, 1.0);
