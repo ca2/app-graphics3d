@@ -45,7 +45,7 @@ namespace gpu_vulkan
 
    context::context()
    {
-
+      m_eapi = ::gpu::e_api_vulkan;
 #ifdef WINDOWS_DESKTOP
       m_formatImageDefault = VK_FORMAT_B8G8R8A8_UNORM;
 #else
@@ -5813,6 +5813,27 @@ void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::
 
 }
 
+   
+floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotation)
+{
+
+         auto &anglePitch = rotation.m_anglePitch;
+
+   auto &angleYaw = rotation.m_angleYaw;
+
+   floating_sequence3 front;
+   front.x = anglePitch.cos() * angleYaw.cos();
+   front.y = anglePitch.sin();
+   front.z = -anglePitch.cos() * angleYaw.sin();
+
+   front.normalize();
+
+   return front;
+//}
+//
+//
+//   return {};
+}
 
 
 

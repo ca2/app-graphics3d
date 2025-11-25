@@ -57,6 +57,7 @@ layout(push_constant) uniform PushConsts
 
     //vec3 cameraPosition;
     float bloomBrightnessCutoff;
+    vec3 multiplier;
 
 } pushConsts;
 
@@ -76,7 +77,7 @@ void main() {
 
     vec3 N = normalize(normalMat * aNormal);
     vec3 T = normalize(normalMat * aTangent.xyz);
-    vec3 B = cross(N, T) * aTangent.w;
+    vec3 B = cross( N,T) * aTangent.w;
 
     normal = N;
     tangent = T;

@@ -96,8 +96,8 @@ namespace gpu_vulkan
          {
             lookAt(origin, unitX, -unitY),
             lookAt(origin, -unitX, -unitY),
-            lookAt(origin, unitY, unitZ),  
-            lookAt(origin, -unitY, -unitZ),
+            lookAt(origin, -unitY, -unitZ), 
+            lookAt(origin, unitY, unitZ),
             lookAt(origin, unitZ, -unitY), 
             lookAt(origin, -unitZ, -unitY)
          };
@@ -137,7 +137,7 @@ namespace gpu_vulkan
             
             //m_pframebuffer->setCubeFace(i, m_pshaderHdri);
 
-            auto pmat1 = (floating_matrix4 *)m_pshaderHdri->m_propertiesPushShared.m_blockWithoutSamplers.data();
+            m_pshaderHdri->set_sequence3("multiplier", {1.f, 1.f, 1.f});
 
             m_pshaderHdri->push_properties(pgpucommandbuffer);
                ///            pgpucommandbuffer->cle

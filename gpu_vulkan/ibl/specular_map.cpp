@@ -84,6 +84,46 @@ namespace gpu_vulkan
                initialize_scene_object(pscenebase);
 
       }
+            
+      //rh
+      floating_matrix4 lookAtRH_withFlip(
+         ::floating_sequence3 eye, 
+         ::floating_sequence3 center,
+         ::floating_sequence3 worldUp,
+         bool bFlipX, 
+         bool bFlipZ)
+      {
+
+         auto M = ::graphics3d::lookAt(eye, center, worldUp);
+
+         // Flip X axis (right column)
+         if (bFlipX)
+         {
+            M[0][0] = -M[0][0];
+            M[1][0] = -M[1][0];
+            M[2][0] = -M[2][0];
+         }
+
+         // Flip Z axis (forward column)
+         if (bFlipZ)
+         {
+            M[0][2] = -M[0][2];
+            M[1][2] = -M[1][2];
+            M[2][2] = -M[2][2];
+         }
+
+         // Recompute translation so it matches the flipped axes
+         floating_sequence3 rx = {M[0][0], M[1][0], M[2][0]};
+         floating_sequence3 uy = {M[0][1], M[1][1], M[2][1]};
+         floating_sequence3 fz = {M[0][2], M[1][2], M[2][2]};
+
+         M[3][0] = -rx.dotted(eye);
+         M[3][1] = -uy.dotted(eye);
+         M[3][2] = fz.dotted(eye);
+
+         return M;
+
+      }
 
 
       void specular_map::computePrefilteredEnvMap(::gpu::command_buffer *pgpucommandbuffer)
@@ -425,10 +465,10 @@ namespace gpu_vulkan
          using namespace graphics3d;
          // Setup matrices and viewports
          ::array_base<floating_matrix4> matrices = {
-            lookAt(origin, -unitX, -unitY),
-            lookAt(origin, unitX, -unitY), 
-            lookAt(origin, unitY, unitZ), 
-            lookAt(origin, -unitY, -unitZ),
+            lookAt(origin, unitX, -unitY),
+            lookAt(origin, -unitX, -unitY), 
+            lookAtRH_withFlip(origin, -unitY, -unitZ, 0, 1), 
+            lookAtRH_withFlip(origin, unitY, unitZ, 0, 1),
             lookAt(origin, unitZ, -unitY),
             lookAt(origin, -unitZ, -unitY)
          };

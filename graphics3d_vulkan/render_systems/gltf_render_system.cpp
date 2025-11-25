@@ -1100,6 +1100,8 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
          if (!pgltfmodel)
             continue;
 
+         ::string strName = pscenerenderable->m_strName;
+
          pgltfmodel->bind(pframe->m_pgpucommandbuffer);
 
          for (auto *pnode: pgltfmodel->m_nodeaLinear)
@@ -1151,6 +1153,47 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
                auto prendersystem = this;
 
+               ::floating_sequence3 multiplier;
+
+               if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_vulkan)
+               {
+
+                  if (pgpucontext->m_eapi == ::gpu::e_api_vulkan)
+                  {
+
+                     multiplier.y = -1.f;
+                     multiplier.z = -1.f;
+                     // x_multiplier = -1.f;
+                  }
+
+               }
+               else if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_z_minus)
+               {
+
+                  if (pgpucontext->m_eapi == ::gpu::e_api_vulkan)
+                  {
+
+                     // y_multiplier = -1.f;
+                     multiplier.z = -1.f;
+
+                  }
+
+               }
+               else if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_y_up)
+               {
+
+                  if (pgpucontext->m_eapi == ::gpu::e_api_vulkan)
+                  {
+
+                     multiplier.y = -1.f;
+                     multiplier.z = -1.f;
+
+                  }
+
+               }
+
+               pshader->set_sequence3("multiplier", multiplier);
+
                pshader->set_matrix4("modelMatrix", world);
                pshader->set_matrix4("normalMatrix", normalMat);
                bool bAlbedo = pgltfmodel->m_materiala[0].baseColorTexture.is_set();
@@ -1158,7 +1201,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
 
                    floating_sequence3 seq3Albedo = {};
-               if (prendersystem->m_bForceDefaultAmbientOcclusionFactor)
+               if (prendersystem->m_bForceDefaultAlbedo)
                {
 
                   seq3Albedo = prendersystem->m_seq3DefaultAlbedo;
@@ -1223,6 +1266,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                {
 
                   //fAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture->m_fAmbientOcclusion;
+                  fAmbientOcclusion = 1.f;
                }
                pshader->set_float("ambientOcclusion", fAmbientOcclusion);
 
@@ -1371,4 +1415,5 @@ GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_float)
 GPU_PROPERTY("emissive", ::gpu::e_type_seq3)
 //GPU_PROPERTY("cameraPosition", ::gpu::e_type_seq3)
 GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_float)
+GPU_PROPERTY("multiplier", ::gpu::e_type_seq3)
 END_GPU_PROPERTIES()

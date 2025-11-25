@@ -274,7 +274,7 @@ namespace gpu_vulkan
                                 int iAssimpTextureType) override;
       
 
-
+   floating_sequence3 front(const ::graphics3d::floating_rotation &rotation) override;
 
    };
 

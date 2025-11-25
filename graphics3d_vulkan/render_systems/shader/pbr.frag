@@ -93,6 +93,7 @@ layout(push_constant) uniform PushConsts
 
     //vec3 cameraPosition;
     float bloomBrightnessCutoff;
+    vec3 multiplier;
 
 } pushConsts;
 
@@ -195,7 +196,7 @@ void main() {
     // vec3 cameraPos = globalUbo.viewPos.xyz;
 
     vec3 v = normalize(cameraPos - worldPos);
-    vec3 r = reflect(-v, n);
+    vec3 r = reflect(-v, n);//r *=pushConsts.multiplier;
 
     vec3 f0 = vec3(0.04);
     f0 = mix(f0, albedo, metallic);
@@ -255,6 +256,8 @@ void main() {
 
     FragColor = vec4(color, 1.0);
     //FragColor = vec4(albedo, 1.0);
+    //FragColor = vec4(specularIBL, 1.0);
+    //FragColor = vec4(vec3(ao), 1.0);
     //FragColor = vec4(tangent*0.5+0.5, 1.0); // visualize tangent
 
     //float greyscaleBrightness = dot(FragColor.rgb, GREYSCALE_WEIGHT_VECTOR);
