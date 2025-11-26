@@ -58,6 +58,9 @@ namespace graphics3d_directx11
 
 		void on_render_frame() override;
 
+      
+      floating_matrix4 perspective(const float_angle &angleFovY, float aspect, float zNear, float zFar) override;
+
 		//void create_global_ubo(::gpu::context* pgpucontext) override;
 		//void update_global_ubo(::gpu::context* pgpucontext) override;
 		//void on_render_frame() override;
