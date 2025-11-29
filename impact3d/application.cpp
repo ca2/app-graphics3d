@@ -68,9 +68,9 @@ namespace graphics3d_impact3d
       add_impact_system(
          "main", __initialize_new ::user::single_document_template(
                                "main",
-                               ::as_type < ::user::document >(),
-                               ::as_type < main_frame >(),
-                               ::as_type < pane_impact >()));
+                               typeid(::user::document ),
+                               typeid(main_frame ),
+                               typeid(pane_impact )));
 
       //m_ptemplateMain = pdoctemplate;
 
@@ -79,9 +79,9 @@ namespace graphics3d_impact3d
       add_impact_system(
          "impact", __initialize_new ::user::single_document_template(
          "main",
-         ::as_type < document >(),
-         ::as_type < frame >(),
-         ::as_type < impact >()));
+         typeid(document ),
+         typeid(frame ),
+         typeid(impact )));
 
       //m_ptemplateImpact = pdoctemplate;
 
