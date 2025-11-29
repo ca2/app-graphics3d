@@ -375,17 +375,17 @@ namespace macos
 //      }
 //
 //      ShowWindow(m_hwnd, SW_SHOW);
-//      //wp_move(m_hwnd, r.left(), r.top(), r.right(), r.bottom());
+//      //wp_move(m_hwnd, r.left, r.top, r.right, r.bottom);
 //
-//      m_rectParentClient.left() = 0;
-//      m_rectParentClient.top() = 0;
-//      m_rectParentClient.right() = m_cx;
-//      m_rectParentClient.bottom() = m_cy;
+//      m_rectParentClient.left = 0;
+//      m_rectParentClient.top = 0;
+//      m_rectParentClient.right = m_cx;
+//      m_rectParentClient.bottom = m_cy;
 //
 //      MapWindowPoints(0, hwndWallpaper, (LPPOINT)&m_rectParentClient, 2);
 //
 //      SetWindowPos(m_hwnd, 0,
-//      m_rectParentClient.left(), m_rectParentClient.top(),
+//      m_rectParentClient.left, m_rectParentClient.top,
 //      m_rectParentClient.width(), m_rectParentClient.height(), SWP_NOZORDER | SWP_SHOWWINDOW);
 //
 //      //return 0;

@@ -135,10 +135,10 @@ namespace draw2d_directx12
 
       ::double_arc arc{};
 
-      arc.left() = x;
-      arc.top() = y;
-      arc.right() =x + cx;
-      arc.bottom() = y + cy;
+      arc.left = x;
+      arc.top = y;
+      arc.right =x + cx;
+      arc.bottom = y + cy;
       arc.m_pointBegin.x = x + cx;
       arc.m_pointBegin.y = y + cy / 2.0;
       arc.m_pointEnd.x = x + cx;
@@ -151,8 +151,8 @@ namespace draw2d_directx12
 
       //arc.m_pointCenter.x = x + cx / 2.0;
       //arc.m_pointCenter.y = y + cy / 2.0;
-      //arc.m_sizeRadius.cx() = cx / 2.0;
-      //arc.m_sizeRadius.cy() = cy / 2.0;
+      //arc.m_sizeRadius.cx = cx / 2.0;
+      //arc.m_sizeRadius.cy = cy / 2.0;
       //arc.m_pointBegin.x = x;
       //arc.m_pointBegin.y = y + cy / 2.0;
       //arc.m_pointEnd.x = x + cx;
@@ -392,8 +392,8 @@ namespace draw2d_directx12
    //   //pointCenter.x = (FLOAT)arc.center().x;
    //   //pointCenter.y = (FLOAT)arc.center().y;
 
-   //   //double rx = arc.radius().cx();
-   //   //double ry = arc.radius().cy();
+   //   //double rx = arc.radius().cx;
+   //   //double ry = arc.radius().cy;
 
    //   //pointStart.x = arc.m_pointBegin.x;
    //   //pointStart.y = arc.m_pointBegin.y;
@@ -682,10 +682,10 @@ namespace draw2d_directx12
 
       //::double_rectangle rectangle;
 
-      //rectangle.left()      = (int) (arc.m_pointCenter.x - arc.m_sizeRadius.cx());
-      //rectangle.right()     = (int) (arc.m_pointCenter.x + arc.m_sizeRadius.cx());
-      //rectangle.top()       = (int) (arc.m_pointCenter.y - arc.m_sizeRadius.cy());
-      //rectangle.bottom()    = (int) (arc.m_pointCenter.y + arc.m_sizeRadius.cy());
+      //rectangle.left      = (int) (arc.m_pointCenter.x - arc.m_sizeRadius.cx);
+      //rectangle.right     = (int) (arc.m_pointCenter.x + arc.m_sizeRadius.cx);
+      //rectangle.top       = (int) (arc.m_pointCenter.y - arc.m_sizeRadius.cy);
+      //rectangle.bottom    = (int) (arc.m_pointCenter.y + arc.m_sizeRadius.cy);
 
       //bool bOk = internal_add_arc(pgraphics, parc);
 
@@ -803,7 +803,7 @@ namespace draw2d_directx12
    bool path::_set(::draw2d::graphics* pgraphics, const ::double_rectangle & rectangle)
    {
 
-      return internal_add_rectangle(pgraphics, rectangle.left(), rectangle.top(), rectangle.width(), rectangle.height());
+      return internal_add_rectangle(pgraphics, rectangle.left, rectangle.top, rectangle.width(), rectangle.height());
 
    }
 
@@ -811,7 +811,7 @@ namespace draw2d_directx12
    //bool path::_set(::draw2d::graphics* pgraphics, const ::double_rectangle& rectangle)
    //{
 
-   //   return internal_add_rect(pgraphics, rectangle.left(), rectangle.top(), rectangle.width(), rectangle.height());
+   //   return internal_add_rect(pgraphics, rectangle.left, rectangle.top, rectangle.width(), rectangle.height());
 
    //}
 
@@ -819,7 +819,7 @@ namespace draw2d_directx12
    bool path::_set(::draw2d::graphics * pgraphics, const ::double_ellipse & ellipse)
    {
 
-      return internal_add_ellipse(pgraphics, ellipse.left(), ellipse.top(), ellipse.width(), ellipse.height());
+      return internal_add_ellipse(pgraphics, ellipse.left, ellipse.top, ellipse.width(), ellipse.height());
 
    }
 
@@ -959,10 +959,10 @@ namespace draw2d_directx12
 
    //   //::double_rectangle rectangle;
 
-   //   //rectangle.left()      = (int) (arc.m_pointCenter.x - arc.m_sizeRadius.cx());
-   //   //rectangle.right()     = (int) (arc.m_pointCenter.x + arc.m_sizeRadius.cx());
-   //   //rectangle.top()       = (int) (arc.m_pointCenter.y - arc.m_sizeRadius.cy());
-   //   //rectangle.bottom()    = (int) (arc.m_pointCenter.y + arc.m_sizeRadius.cy());
+   //   //rectangle.left      = (int) (arc.m_pointCenter.x - arc.m_sizeRadius.cx);
+   //   //rectangle.right     = (int) (arc.m_pointCenter.x + arc.m_sizeRadius.cx);
+   //   //rectangle.top       = (int) (arc.m_pointCenter.y - arc.m_sizeRadius.cy);
+   //   //rectangle.bottom    = (int) (arc.m_pointCenter.y + arc.m_sizeRadius.cy);
 
    //   //bool bOk = internal_add_arc(pgraphics, parc);
 

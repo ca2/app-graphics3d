@@ -56,6 +56,18 @@ namespace app_graphics3d_continuum
 
       //set_bitmap_source("Simple papp!!");
 
+         set_timer(100100, 1_s,
+                   [this]()
+                   {
+                      ::string strTitle;
+                      strTitle = "continuum";
+
+                      strTitle += " draw2d_" + system()->component_factory_implementation_name("draw2d");
+                      strTitle += " gpu_" + system()->component_factory_implementation_name("gpu");
+
+                      set_window_text(strTitle);
+                   });
+
    }
 
 

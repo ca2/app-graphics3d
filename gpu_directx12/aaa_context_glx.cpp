@@ -57,9 +57,9 @@ namespace directx12
 
       }
 
-      int w = size.cx();
+      int w = size.cx;
 
-      int h = size.cy();
+      int h = size.cy;
 
       int attribList[]=
       {
@@ -246,8 +246,8 @@ namespace directx12
 
       int bufferAttribList[]=
       {
-         GLX_PBUFFER_WIDTH, size.cx(),
-         GLX_PBUFFER_HEIGHT, size.cy(),
+         GLX_PBUFFER_WIDTH, size.cx,
+         GLX_PBUFFER_HEIGHT, size.cy,
          None
 
       };

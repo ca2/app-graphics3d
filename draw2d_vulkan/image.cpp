@@ -11,8 +11,8 @@ namespace draw2d_vulkan
    image::image::image()
    {
 
-      m_sizeWnd.cx()         = 0;
-      m_sizeWnd.cy()         = 0;
+      m_sizeWnd.cx         = 0;
+      m_sizeWnd.cy         = 0;
       m_hbitmap            = nullptr;
       m_phost = nullptr;
       zero(m_bitmapinfo);
@@ -74,19 +74,19 @@ namespace draw2d_vulkan
 
       m_bitmapinfo = {};
 
-      int iStride = size.cx() * 4;
+      int iStride = size.cx * 4;
 
       //{
       //   iGoodStride
       //}
 
       m_bitmapinfo.bmiHeader.biSize          = sizeof (BITMAPINFOHEADER);
-      m_bitmapinfo.bmiHeader.biWidth         = size.cx();
-      m_bitmapinfo.bmiHeader.biHeight        =- size.cy();
+      m_bitmapinfo.bmiHeader.biWidth         = size.cx;
+      m_bitmapinfo.bmiHeader.biHeight        =- size.cy;
       m_bitmapinfo.bmiHeader.biPlanes        = 1;
       m_bitmapinfo.bmiHeader.biBitCount      = 32;
       m_bitmapinfo.bmiHeader.biCompression   = BI_RGB;
-      m_bitmapinfo.bmiHeader.biSizeImage     = iStride  * size.cy();
+      m_bitmapinfo.bmiHeader.biSizeImage     = iStride  * size.cy;
 
       øconstruct(m_pbitmap);
 
@@ -268,7 +268,7 @@ namespace draw2d_vulkan
 
       throw ::exception(todo, "::vulkan::image::image");
 
-      //bool bOk = GetDIBits(VK2D_HDC(pgraphics), (HBITMAP) pbitmap->get_os_data(), 0, m_size.cy(), get_data(), &(m_bitmapinfo), DIB_RGB_COLORS) != false;
+      //bool bOk = GetDIBits(VK2D_HDC(pgraphics), (HBITMAP) pbitmap->get_os_data(), 0, m_size.cy, get_data(), &(m_bitmapinfo), DIB_RGB_COLORS) != false;
 
       //VK2D_GRAPHICS(pgraphics)->set(pbitmap);
 
@@ -640,8 +640,8 @@ namespace draw2d_vulkan
    //void image::FillStippledGlass ( int R, int G, int B )
    //{
    //   color32_t color=rgb ( B, G, R );
-   //   int w=m_size.cx();
-   //   int h=m_size.cy();
+   //   int w=m_size.cx;
+   //   int h=m_size.cy;
 
    //   for ( int j=0; j<w; j++ )
    //   {
@@ -850,8 +850,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->width())<m_size.cx()) ? pimage.width() : m_size.cx()-x;
-   //   int Δy=((y+pimage->height())<m_size.cy()) ? pimage.height() : m_size.cy()-y;
+   //   int Δx=((x+pimage->width())<m_size.cx) ? pimage.width() : m_size.cx-x;
+   //   int Δy=((y+pimage->height())<m_size.cy) ? pimage.height() : m_size.cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -863,7 +863,7 @@ namespace draw2d_vulkan
    //      image = create_image ( Δx, Δy );
 
    //   // Prepare buffer Addresses
-   //   color32_t *src=m_pcolorref+(py*m_size.cx())+px;
+   //   color32_t *src=m_pcolorref+(py*m_size.cx)+px;
    //   color32_t *dst=pimage->get_data();
 
    //   // Do copy
@@ -871,7 +871,7 @@ namespace draw2d_vulkan
    //   {
    //      for ( int i=0; i<Δx; i++ )
    //         dst[i]=src[i];
-   //      src+=m_size.cx();
+   //      src+=m_size.cx;
    //      dst+=pimage->width();
    //   }
    //}
@@ -881,8 +881,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->width())<m_size.cx()) ? pimage.width() : m_size.cx()-x;
-   //   int Δy=((y+pimage->height())<m_size.cy()) ? pimage.height() : m_size.cy()-y;
+   //   int Δx=((x+pimage->width())<m_size.cx) ? pimage.width() : m_size.cx-x;
+   //   int Δy=((y+pimage->height())<m_size.cy) ? pimage.height() : m_size.cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -892,7 +892,7 @@ namespace draw2d_vulkan
 
    //   // Prepare buffer Addresses
    //   color32_t *src=pimage->get_data()+((py-y)*pimage->width())+px-x;
-   //   color32_t *dst=m_pcolorref+(py*m_size.cx())+px;
+   //   color32_t *dst=m_pcolorref+(py*m_size.cx)+px;
 
    //   // Do Paste
    //   while ( Δy-- )
@@ -900,7 +900,7 @@ namespace draw2d_vulkan
    //      for ( int i=0; i<Δx; i++ )
    //         dst[i]=src[i];
    //      src+=pimage->width();
-   //      dst+=m_size.cx();
+   //      dst+=m_size.cx;
    //   }
    //}
 
@@ -909,8 +909,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+w)<m_size.cx()) ? w : m_size.cx()-x;
-   //   int Δy=((y+h)<m_size.cy()) ? h : m_size.cy()-y;
+   //   int Δx=((x+w)<m_size.cx) ? w : m_size.cx-x;
+   //   int Δy=((y+h)<m_size.cy) ? h : m_size.cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -919,7 +919,7 @@ namespace draw2d_vulkan
    //      return;
 
    //   // Prepare buffer Address
-   //   color32_t *dst=m_pcolorref+(py*m_size.cx())+px;
+   //   color32_t *dst=m_pcolorref+(py*m_size.cx)+px;
    //   color32_t color=rgb ( B, G, R );
 
    //   // Do Fill
@@ -929,7 +929,7 @@ namespace draw2d_vulkan
    //      {
    //         dst[i]=color;
    //      }
-   //      dst+=m_size.cx();
+   //      dst+=m_size.cx;
    //   }
    //}
 
@@ -938,8 +938,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+w)<m_size.cx()) ? w : m_size.cx()-x;
-   //   int Δy=((y+h)<m_size.cy()) ? h : m_size.cy()-y;
+   //   int Δx=((x+w)<m_size.cx) ? w : m_size.cx-x;
+   //   int Δy=((y+h)<m_size.cy) ? h : m_size.cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -948,7 +948,7 @@ namespace draw2d_vulkan
    //      return;
 
    //   // Prepare buffer Address
-   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*m_size.cx())+px)*4;
+   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*m_size.cx)+px)*4;
 
    //   // Do FillGlass
    //   while ( Δy-- )
@@ -960,7 +960,7 @@ namespace draw2d_vulkan
    //         dst[2]=(unsigned char)(((R-dst[2])*A+(dst[2]<<8))>>8);
    //         dst+=4;
    //      }
-   //      dst+=(m_size.cx()-Δx)<<2;
+   //      dst+=(m_size.cx-Δx)<<2;
    //   }
    //}
 
@@ -969,8 +969,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+w)<m_size.cx()) ? w : m_size.cx()-x;
-   //   int Δy=((y+h)<m_size.cy()) ? h : m_size.cy()-y;
+   //   int Δx=((x+w)<m_size.cx) ? w : m_size.cx-x;
+   //   int Δy=((y+h)<m_size.cy) ? h : m_size.cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -979,7 +979,7 @@ namespace draw2d_vulkan
    //      return;
 
    //   // Prepare buffer Address
-   //   color32_t *dst=m_pcolorref+(py*m_size.cx())+px;
+   //   color32_t *dst=m_pcolorref+(py*m_size.cx)+px;
    //   color32_t color=rgb ( B, G, R );
 
    //   // Do FillStippledGlass
@@ -989,7 +989,7 @@ namespace draw2d_vulkan
    //      {
    //         dst[i]=((i+j)&0x1) ? dst[i] : color;
    //      }
-   //      dst+=m_size.cx();
+   //      dst+=m_size.cx;
    //   }
    //}
 
@@ -998,8 +998,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->width())<m_size.cx()) ? pimage.width() : m_size.cx()-x;
-   //   int Δy=((y+pimage->height())<m_size.cy()) ? pimage.height() : m_size.cy()-y;
+   //   int Δx=((x+pimage->width())<m_size.cx) ? pimage.width() : m_size.cx-x;
+   //   int Δy=((y+pimage->height())<m_size.cy) ? pimage.height() : m_size.cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -1009,7 +1009,7 @@ namespace draw2d_vulkan
 
    //   // Prepare buffer Addresses
    //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->width())+px-x)*4;
-   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*m_size.cx())+px)*4;
+   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*m_size.cx)+px)*4;
 
    //   // Do Blend
    //   while ( Δy-- )
@@ -1022,7 +1022,7 @@ namespace draw2d_vulkan
    //         dst+=4;
    //         src+=4;
    //      }
-   //      dst+=(m_size.cx()-Δx)<<2;
+   //      dst+=(m_size.cx-Δx)<<2;
    //      src+=(pimage->width()-Δx)<<2;
    //   }
    //}
@@ -1032,8 +1032,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->cx())<cx) ? pimage->cx() : cx-x;
-   //   int Δy=((y+pimage->cy())<cy) ? pimage->cy() : cy-y;
+   //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
+   //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -1042,7 +1042,7 @@ namespace draw2d_vulkan
    //      return;
 
    //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx())+px-x)*4;
+   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
 
    //   // Do Darken
@@ -1057,7 +1057,7 @@ namespace draw2d_vulkan
    //         src+=4;
    //      }
    //      dst+=(cx-Δx)<<2;
-   //      src+=(pimage->cx()-Δx)<<2;
+   //      src+=(pimage->cx-Δx)<<2;
    //   }
    //}
 
@@ -1066,8 +1066,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->cx())<cx) ? pimage->cx() : cx-x;
-   //   int Δy=((y+pimage->cy())<cy) ? pimage->cy() : cy-y;
+   //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
+   //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -1076,7 +1076,7 @@ namespace draw2d_vulkan
    //      return;
 
    //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx())+px-x)*4;
+   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
 
    //   // Do Difference
@@ -1095,7 +1095,7 @@ namespace draw2d_vulkan
    //         src+=4;
    //      }
    //      dst+=(cx-Δx)<<2;
-   //      src+=(pimage->cx()-Δx)<<2;
+   //      src+=(pimage->cx-Δx)<<2;
    //   }
    //}
 
@@ -1104,8 +1104,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->cx())<cx) ? pimage->cx() : cx-x;
-   //   int Δy=((y+pimage->cy())<cy) ? pimage->cy() : cy-y;
+   //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
+   //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -1114,7 +1114,7 @@ namespace draw2d_vulkan
    //      return;
 
    //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx())+px-x)*4;
+   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
 
    //   // Do Lighten
@@ -1129,7 +1129,7 @@ namespace draw2d_vulkan
    //         src+=4;
    //      }
    //      dst+=(cx-Δx)<<2;
-   //      src+=(pimage->cx()-Δx)<<2;
+   //      src+=(pimage->cx-Δx)<<2;
    //   }
    //}
 
@@ -1138,8 +1138,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->cx())<cx) ? pimage->cx() : cx-x;
-   //   int Δy=((y+pimage->cy())<cy) ? pimage->cy() : cy-y;
+   //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
+   //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -1148,7 +1148,7 @@ namespace draw2d_vulkan
    //      return;
 
    //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx())+px-x)*4;
+   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
 
    //   // Do Multiply
@@ -1163,7 +1163,7 @@ namespace draw2d_vulkan
    //         src+=4;
    //      }
    //      dst+=(cx-Δx)<<2;
-   //      src+=(pimage->cx()-Δx)<<2;
+   //      src+=(pimage->cx-Δx)<<2;
    //   }
    //}
 
@@ -1172,8 +1172,8 @@ namespace draw2d_vulkan
    //   // Clip Rect
    //   int px=(x>=0) ? x : 0;
    //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->cx())<cx) ? pimage->cx() : cx-x;
-   //   int Δy=((y+pimage->cy())<cy) ? pimage->cy() : cy-y;
+   //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
+   //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
    //   Δx=(x>=0) ? Δx : Δx + x;
    //   Δy=(y>=0) ? Δy : Δy + y;
 
@@ -1182,7 +1182,7 @@ namespace draw2d_vulkan
    //      return;
 
    //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx())+px-x)*4;
+   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
 
    //   // Do Screen
@@ -1197,7 +1197,7 @@ namespace draw2d_vulkan
    //         src+=4;
    //      }
    //      dst+=(cx-Δx)<<2;
-   //      src+=(pimage->cx()-Δx)<<2;
+   //      src+=(pimage->cx-Δx)<<2;
    //   }
    //}
 
@@ -1798,8 +1798,8 @@ namespace draw2d_vulkan
    //  // image image;
    ////   pimage->Paste(this);
 
-   //   int cx = this->cx();
-   //   int cy = this->cy();
+   //   int cx = this->cx;
+   //   int cy = this->cy;
 
    //   int l = maximum(cx, cy);
 
@@ -1883,8 +1883,8 @@ namespace draw2d_vulkan
    //void image::Rotate034(image image, double dAngle, double dScale)
    //{
    //
-   //   int cx = this->cx();
-   //   int cy = this->cy();
+   //   int cx = this->cx;
+   //   int cy = this->cy;
 
    //   int l = maximum(cx, cy);
 
@@ -1974,8 +1974,8 @@ namespace draw2d_vulkan
    //   int imin = - imax;
 
 
-   //   int joff = cy / 2 + rectangle.left();
-   //   int ioff = cx / 2 + rectangle.top();
+   //   int joff = cy / 2 + rectangle.left;
+   //   int ioff = cx / 2 + rectangle.top;
 
    //   //int iAngle = iStep % 360;
    //   //int iAngle = iStep;
@@ -2152,8 +2152,8 @@ namespace draw2d_vulkan
 
    //void image::xor(image image)
    //{
-   //   if(cx != pimage->cx()
-   //   || cy != pimage->cy())
+   //   if(cx != pimage->cx
+   //   || cy != pimage->cy)
    //   {
    //      return;
    //   }
@@ -2171,8 +2171,8 @@ namespace draw2d_vulkan
    //void image::create_frame(::int_size size, int iFrameCount)
    //{
    //   int iSliceCount = (int) sqrt((double) iFrameCount);
-   //   int iFrameWidth = size.cx() / iSliceCount;
-   //   int iFrameHeight = size.cy() / iSliceCount;
+   //   int iFrameWidth = size.cx / iSliceCount;
+   //   int iFrameHeight = size.cy / iSliceCount;
    //   create(iFrameWidth, iFrameHeight);
    //}
 
@@ -2386,7 +2386,7 @@ namespace draw2d_vulkan
 
       }
 
-      //plusplus::rectF rectangleDest(0, 0, (plusplus::REAL) m_size.cx(), (plusplus::REAL) m_size.cy());
+      //plusplus::rectF rectangleDest(0, 0, (plusplus::REAL) m_size.cx, (plusplus::REAL) m_size.cy);
 
       //plusplus::rectF rectangleSource(0, 0, (plusplus::REAL) pimage->width(), (plusplus::REAL) pimage->height());
 
@@ -2426,9 +2426,9 @@ namespace draw2d_vulkan
          if (!m_pbitmap)
          {
 
-      /*      m_size.cx() = 0;
+      /*      m_size.cx = 0;
 
-            m_size.cy() = 0;
+            m_size.cy = 0;
 
             m_iScan = 0;*/
 
@@ -2465,7 +2465,7 @@ namespace draw2d_vulkan
    // void image::fill_channel(int intensity, color::color::color::rgba::echannel echannel)
    // {
    //     int offset = ((int)echannel) % 4;
-   //    int size=m_size.cx()*cy;
+   //    int size=m_size.cx*cy;
 
    //    unsigned char * pb;
 
@@ -2537,7 +2537,7 @@ namespace draw2d_vulkan
 
    /*   int image::width()
       {
-         return m_size.cx();
+         return m_size.cx;
       }
 
       int image::height()
@@ -2567,7 +2567,7 @@ namespace draw2d_vulkan
 ////
 ////         map();
 ////
-////         //pre_multiply_alpha((unsigned int *) get_data(),m_size.cx(),m_size.cy(),m_size.cx() * 4);
+////         //pre_multiply_alpha((unsigned int *) get_data(),m_size.cx,m_size.cy,m_size.cx * 4);
 ////
 ////         unsigned char *dstR=(unsigned char*)get_data();
 ////         unsigned char *dstG=dstR + 1;
@@ -2651,7 +2651,7 @@ namespace draw2d_vulkan
 //         // separately. This is much faster than the below case where the image
 //         // width is not a multiple of 4.
 //
-//         int totalBytes = b->m_sizeOut.cx() * b.m_sizeOut.cy() * 4;
+//         int totalBytes = b->m_sizeOut.cx * b.m_sizeOut.cy * 4;
 //         unsigned char * p = (unsigned char*)b->m_memOut.get_data();
 //         for (int i = 0; i < totalBytes; i += 4)
 //         {
@@ -2663,7 +2663,7 @@ namespace draw2d_vulkan
 //      }
 //
 //
-//      puserinteraction->get_window_graphics()->update_window(puserinteraction->get_handle(),(color32_t*)b->m_memOut.get_data(),rectangle, b->m_sizeOut.cx(), b.m_sizeOut.cy(), b.m_sizeOut.cx() * 4,bTransferBuffer);
+//      puserinteraction->get_window_graphics()->update_window(puserinteraction->get_handle(),(color32_t*)b->m_memOut.get_data(),rectangle, b->m_sizeOut.cx, b.m_sizeOut.cy, b.m_sizeOut.cx * 4,bTransferBuffer);
 //      b->m_bFlashed = true;
 //
 //      return true;
@@ -2690,10 +2690,10 @@ namespace draw2d_vulkan
 //      //      unsigned int dw = ::get_last_error();
 //      ::int_size size = pbitmap->get_size();
 //
-//      rectx.left() = 0;
-//      rectx.top() = 0;
-//      rectx.right() = size.cx();
-//      rectx.bottom() = size.cy();
+//      rectx.left = 0;
+//      rectx.top = 0;
+//      rectx.right = size.cx;
+//      rectx.bottom = size.cy;
 //
 //      try
 //      {
@@ -2723,14 +2723,14 @@ namespace draw2d_vulkan
 //         m_pgraphics-> set_origin(::int_point());
 //         puserinteraction->_000OnDraw(pimage->get_graphics());
 //         m_pgraphics->set_origin(::int_point());
-//         //(dynamic_cast<::win::graphics * >(pgraphics))->FillSolidRect(rectangleUpdate.left(), rectangleUpdate.top(), 100, 100, 255);
+//         //(dynamic_cast<::win::graphics * >(pgraphics))->FillSolidRect(rectangleUpdate.left, rectangleUpdate.top, 100, 100, 255);
 //         m_pgraphics->SelectClipRgn(nullptr);
 //         m_pgraphics->set_origin(::int_point());
 //
 //         m_pgraphics->SelectClipRgn( nullptr);
-//         m_pgraphics->BitBlt(rectanglePaint.left(), rectanglePaint.top(),
+//         m_pgraphics->BitBlt(rectanglePaint.left, rectanglePaint.top,
 //            rectanglePaint.width(), rectanglePaint.height(),
-//            pgraphics, rectangleUpdate.left(), rectangleUpdate.top(),
+//            pgraphics, rectangleUpdate.left, rectangleUpdate.top,
 //            SRCCOPY);
 //
 //      }
@@ -2806,9 +2806,9 @@ namespace draw2d_vulkan
 
       ::pointer < graphics > pgraphics = m_pgraphics;
 
-      int cx = pgraphics->m_sizeWindow.cx();
+      int cx = pgraphics->m_sizeWindow.cx;
 
-      int cy = pgraphics->m_sizeWindow.cy();
+      int cy = pgraphics->m_sizeWindow.cy;
 
       bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
@@ -2854,7 +2854,7 @@ namespace draw2d_vulkan
       m_pgraphics->thread_select();
 
       //xxxopengl>>>>vulkan 
-      //vkDrawPixels(m_size.cx(), m_size.cy(), VK_BGRA, VK_UNSIGNED_BYTE, m_pimage32Raw);
+      //vkDrawPixels(m_size.cx, m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, m_pimage32Raw);
 
       m_bMapped = false;
 
@@ -2867,7 +2867,7 @@ namespace draw2d_vulkan
    {
     /*  if (m_phost == nullptr)
       {
-         m_phost = create_offscreen_context(ppixmap->m_size.cx(), ppixmap.m_size.cy());
+         m_phost = create_offscreen_context(ppixmap->m_size.cx, ppixmap.m_size.cy);
 
       }
 */
@@ -2906,7 +2906,7 @@ namespace draw2d_vulkan
 
       vkReadBuffer(VK_BACK);
 
-      vkReadPixels(0, 0, ppixmap->m_size.cx(), ppixmap.m_size.cy(), VK_BGRA, VK_UNSIGNED_BYTE, ppixmap.m_pimage32);
+      vkReadPixels(0, 0, ppixmap->m_size.cx, ppixmap.m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, ppixmap.m_pimage32);
 
       *///return true;
 

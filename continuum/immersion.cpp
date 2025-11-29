@@ -33,7 +33,7 @@ namespace app_graphics3d_continuum
    ::pointer<::graphics3d::scene_base> immersion::create_main_scene()
    {
 
-      auto pinput = øallocate ::app_graphics3d_continuum::input();
+      auto pinput = øcreate_new < ::app_graphics3d_continuum::input>();
 
       pinput->initialize_input();
 

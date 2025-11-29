@@ -245,8 +245,8 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
  /*     D3D11_VIEWPORT vp = {};
       vp.TopLeftX = 0;
       vp.TopLeftY = 0;
-      vp.Width = static_cast<float>(m_size.cx());
-      vp.Height = static_cast<float>(m_size.cy());
+      vp.Width = static_cast<float>(m_size.cx);
+      vp.Height = static_cast<float>(m_size.cy);
       vp.MinDepth = 0.0f;
       vp.MaxDepth = 1.0f;
       pgpucontext->m_pcontext->RSSetViewports(1, &vp);*/
@@ -254,16 +254,16 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       D3D12_VIEWPORT viewport = {};
       viewport.TopLeftX = 0;
       viewport.TopLeftY = 0;
-      viewport.Width = static_cast<float>(m_size.cx());
-      viewport.Height = static_cast<float>(m_size.cy());
+      viewport.Width = static_cast<float>(m_size.cx);
+      viewport.Height = static_cast<float>(m_size.cy);
       viewport.MinDepth = 0.0f;
       viewport.MaxDepth = 1.0f;
 
       D3D12_RECT scissorRect = {};
       scissorRect.left = 0;
       scissorRect.top = 0;
-      scissorRect.right = m_size.cx();
-      scissorRect.bottom = m_size.cy();
+      scissorRect.right = m_size.cx;
+      scissorRect.bottom = m_size.cy;
 
       //::cast < renderer > prenderer = m_pgpurenderer;
 

@@ -97,23 +97,23 @@ namespace app_graphics3d_continuum
    //}
 
 
-   void input::_001OnMouseOut()
-   {
+   //void input::_001OnMouseOut()
+   //{
 
-      reset_mouse_last_position();
+   //   reset_mouse_last_position();
 
-      ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pengine->m_pimmersionlayer;
-
-
-                  if (pimmersion->m_emouse == ::app_graphics3d_continuum::e_mouse_updateLook)
-      {
-
-         //m_pengine->m_pinput->_001OnMouseOut();
-      }
+   //   ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pengine->m_pimmersionlayer;
 
 
+   //               if (pimmersion->m_emouse == ::app_graphics3d_continuum::e_mouse_updateLook)
+   //   {
 
-   }
+   //      //m_pengine->m_pinput->_001OnMouseOut();
+   //   }
+
+
+
+   //}
 
 
    void input::reset_mouse_last_position()
@@ -184,8 +184,8 @@ namespace app_graphics3d_continuum
    void input::process_mouse_input_updateLook()
    {
 
-      auto xOffset = m_Δx;
-      auto yOffset = m_Δy;
+      auto xOffset = m_sequence2MouseRawΔ.x;
+      auto yOffset = m_sequence2MouseRawΔ.y;
 
       auto angleΔYaw = xOffset * m_angleCursorPixel;
       auto angleΔPitch = yOffset * m_angleCursorPixel;
@@ -452,76 +452,76 @@ namespace app_graphics3d_continuum
    }
 
 
-   void input::_001OnMouseMove(const ::int_point& point)
-   {
-
-      //m_mousestate.position.x = point.x;
-//m_mousestate.position.y = point.y;
-//m_mousestate.m_buttons.left = true;
-//         pmouse->m_p
-
-      double w = m_pengine->m_pusergraphics3d->m_iWidth;
-
-      double h = m_pengine->m_pusergraphics3d->m_iHeight;
-
-      if (m_bLastMouse)
-      {
-
-         m_bLastMouse = false;
-         m_bFirstMouse = true;
-
-      }
-
-      double xCursor;
-      double yCursor;
-
-      if (m_b_001AbsoluteMousePosition)
-      {
-
-         xCursor = ((point.x - (w / 2.0)) * 2.0);
-         yCursor = ((point.y - (h / 2.0)) * 2.0);
-
-      }
-      else
-      {
-
-         //xCursor = point.x;
-         //yCursor = point.y;
-
-         xCursor = point.x;
-         yCursor = point.y;
-
-      }
-
-      m_dCursorX = xCursor;
-
-      m_dCursorY = yCursor;
-
-      m_pengine->m_pusergraphics3d->track_mouse_leave();
-
-      m_pengine->m_pusergraphics3d->m_pengine->on_mouse_move((float)xCursor, (float)yCursor);
-
-   }
+//   void input::_001OnMouseMove(const ::int_point& point)
+//   {
+//
+//      //m_mousestate.position.x = point.x;
+////m_mousestate.position.y = point.y;
+////m_mousestate.m_buttons.left = true;
+////         pmouse->m_p
+//
+//      double w = m_pengine->m_pusergraphics3d->m_iWidth;
+//
+//      double h = m_pengine->m_pusergraphics3d->m_iHeight;
+//
+//      if (m_bLastMouse)
+//      {
+//
+//         m_bLastMouse = false;
+//         m_bFirstMouse = true;
+//
+//      }
+//
+//      double xCursor;
+//      double yCursor;
+//
+//      if (m_b_001AbsoluteMousePosition)
+//      {
+//
+//         xCursor = ((point.x - (w / 2.0)) * 2.0);
+//         yCursor = ((point.y - (h / 2.0)) * 2.0);
+//
+//      }
+//      else
+//      {
+//
+//         //xCursor = point.x;
+//         //yCursor = point.y;
+//
+//         xCursor = point.x;
+//         yCursor = point.y;
+//
+//      }
+//
+//      m_dCursorX = xCursor;
+//
+//      m_dCursorY = yCursor;
+//
+//      m_pengine->m_pusergraphics3d->track_mouse_leave();
+//
+//      m_pengine->m_pusergraphics3d->m_pengine->on_mouse_move((float)xCursor, (float)yCursor);
+//
+//   }
 
 
    void input::_001PrepareMouseInput()
    {
 
-      double x, y;
-      double newx, newy;
+      floating_sequence2 sequence2;
+      floating_sequence2 sequence2New;
 
       if (m_b_001AbsoluteMousePosition)
       {
 
-         newx = m_dCursorX * 1.25 * MATH_PI;
-         newy = m_dCursorY * 1.25 * MATH_PI / 2.0;
+         sequence2New.x = m_dCursorX * 1.25 * MATH_PI;
+         sequence2New.y = m_dCursorY * 1.25 * MATH_PI / 2.0;
 
       }
       else
       {
 
-         newx = m_dCursorX;
-         newy = m_dCursorY;
+         sequence2New.x = m_dCursorX;
+         sequence2New.y = m_dCursorY;
 
       }
       //glfwGetCursorPos(window, &xpos, &ypos);
@@ -540,8 +540,8 @@ namespace app_graphics3d_continuum
          //if (m_bFirstMouse)
          if (!m_bWasLeft && m_mousestate.m_buttons.left)
          {
-            m_dMouseLastX = newx;
-            m_dMouseLastY = newy;
+            //m_dMouseLastX = newx;
+            //m_dMouseLastY = newy;
             m_bWasLeft = true;
 
          }
@@ -560,23 +560,21 @@ namespace app_graphics3d_continuum
          if (m_b_001AbsoluteMousePosition)
          {
 
-            x = m_dMouseLastX + (newx - m_dMouseLastX) * 0.05;
-            y = m_dMouseLastY + (newy - m_dMouseLastY) * 0.05;
+            sequence2 = m_sequence2MouseLast + (sequence2New - m_sequence2MouseLast) * 0.05;
 
          }
          else
          {
 
-            x = newx;
-            y = newy;
+            sequence2 = sequence2New;
 
          }
 
          if (m_b_001AbsoluteMousePosition)
          {
 
-            m_Δx = x;
-            m_Δy = -y;  // reversed Y
+            m_sequence2MouseRawΔ.x = sequence2.x;
+            m_sequence2MouseRawΔ.y = -sequence2.y; // reversed Y
 
          }
          else
@@ -584,13 +582,16 @@ namespace app_graphics3d_continuum
 
             //m_Δx = x - m_dMouseLastX;
             //m_Δy = m_dMouseLastY - y;  // reversed Y
-            m_Δx = m_Δx + static_cast<float>(m_dMouseLastX -x - m_Δx) * 0.1;
-            m_Δy = m_Δy + static_cast<float>(y- m_dMouseLastY  - m_Δy) * 0.1;  // reversed Y
+            m_sequence2MouseRawΔ.x =
+               m_sequence2MouseRawΔ.x + static_cast<float>(m_sequence2MouseLast.x - sequence2.x - m_sequence2MouseRawΔ.x) * 0.1;
+            m_sequence2MouseRawΔ.y = m_sequence2MouseRawΔ.y + static_cast<float>(sequence2.y - m_sequence2MouseLast.y - m_sequence2MouseRawΔ.y) * 0.1; // reversed Y
 
          }
 
-         m_dMouseLastX = x;
-         m_dMouseLastY = y;
+         //m_dMouseLastX = x;
+         //m_dMouseLastY = y;
+
+         m_sequence2MouseLast = sequence2;
 
       }
       else
@@ -599,8 +600,8 @@ namespace app_graphics3d_continuum
          if (!m_b_001AbsoluteMousePosition)
          {
 
-            m_Δx *= 0.90;
-            m_Δy *= 0.90;
+            m_sequence2MouseRawΔ.x *= 0.90;
+            m_sequence2MouseRawΔ.y *= 0.90;
 
          }
 
@@ -623,13 +624,13 @@ namespace app_graphics3d_continuum
          //m_pengine->m_pusergraphics3d->prepare_mouse_input();
 
 
-         ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pengine->m_pimmersionlayer;
+      //   ::cast<::app_graphics3d_continuum::immersion> pimmersion = m_pengine->m_pimmersionlayer;
    
-      if (pimmersion->m_emouse == ::app_graphics3d_continuum::e_mouse_updateLook)
-      {
+      //if (pimmersion->m_emouse == ::app_graphics3d_continuum::e_mouse_updateLook)
+      //{
 
-         _001PrepareMouseInput();
-      }
+      //   _001PrepareMouseInput();
+      //}
 
 
    }

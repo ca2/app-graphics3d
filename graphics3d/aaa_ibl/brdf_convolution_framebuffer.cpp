@@ -36,10 +36,10 @@ namespace gpu
          // m_uHeight = height;
 
          ødefer_construct(m_ptexture);
-         m_ptexture->m_rectangleTarget.left()=0;
-         m_ptexture->m_rectangleTarget.top()=0;
-         m_ptexture->m_rectangleTarget.right()=width;
-         m_ptexture->m_rectangleTarget.bottom()=height;
+         m_ptexture->m_rectangleTarget.left=0;
+         m_ptexture->m_rectangleTarget.top=0;
+         m_ptexture->m_rectangleTarget.right=width;
+         m_ptexture->m_rectangleTarget.bottom=height;
 
          on_initialize_BrdfConvolutionFramebuffer();
 

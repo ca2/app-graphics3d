@@ -288,8 +288,8 @@ namespace draw2d_nanovg
 
       //m_nanovgsurface = nanovg_surface_create(
       //   m_pdc,
-      //   sizeWindow.cx(),
-      //   sizeWindow.cy()
+      //   sizeWindow.cx,
+      //   sizeWindow.cy
       //);
 
       //m_pdc = nanovg_create(m_nanovgsurface);
@@ -416,8 +416,8 @@ namespace draw2d_nanovg
       //dwStyle &= ~WS_BORDER;
       //int x = 0;
       //int y = 0;
-      //int nWidth = size.cx();
-      //int nHeight = size.cy();
+      //int nWidth = size.cx;
+      //int nHeight = size.cy;
       //HWND hWndParent = nullptr;
       //HMENU hMenu = nullptr;
       /////HINSTANCE hInstance = psystem->m_hinstance;
@@ -601,8 +601,8 @@ namespace draw2d_nanovg
       //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
       //m_pdc = nanovg_device_create(&createinfo);
-      //m_nanovgsurface = nanovg_surface_create(m_pdc, pwindow->m_sizeWindow.cx(),
-      //   pwindow->m_sizeWindow.cy());
+      //m_nanovgsurface = nanovg_surface_create(m_pdc, pwindow->m_sizeWindow.cx,
+      //   pwindow->m_sizeWindow.cy);
 
       //m_pdc = nanovg_create(m_nanovgsurface);
       //if (!m_pgpucontext)
@@ -874,7 +874,7 @@ namespace draw2d_nanovg
 
    //int_size graphics::set_context_extents(const ::int_size & size)
    //{
-   //   return set_context_extents(size.cx(), size.cy());
+   //   return set_context_extents(size.cx, size.cy);
    //}
 
    int_point graphics::SetWindowOrg(const ::int_point& point)
@@ -884,7 +884,7 @@ namespace draw2d_nanovg
 
    int_size graphics::set_window_ext(const ::int_size& size)
    {
-      return set_window_ext(size.cx(), size.cy());
+      return set_window_ext(size.cx, size.cy);
    }
 
    void graphics::DPtoLP(::double_point* lpPoints, ::collection::count nCount)
@@ -1227,7 +1227,7 @@ namespace draw2d_nanovg
 
          //VkvgPattern ppattern = nanovg_pattern_create_radial(pbrush->m_point.x - x, pbrush->m_point.y - y, 0,
          //   pbrush->m_point.x - x, pbrush->m_point.y - y,
-         //   maximum(pbrush->m_size.cx(), pbrush->m_size.cy()));
+         //   maximum(pbrush->m_size.cx, pbrush->m_size.cy));
 
          //nanovg_pattern_add_color_stop(ppattern, 0., __expand_float_rgba(pbrush->m_color1));
 
@@ -1292,11 +1292,11 @@ namespace draw2d_nanovg
 
       //   /* Add a Coons patch */
       //   nanovg_mesh_pattern_begin_patch(ppattern);
-      //   nanovg_mesh_pattern_move_to(ppattern, inner.right(), inner.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.right(), outer.top());
-      //   nanovg_mesh_pattern_curve_to(ppattern, inner.right() + KR, outer.top(), outer.right(), inner.top() - KR, outer.right(),
-      //      inner.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
+      //   nanovg_mesh_pattern_move_to(ppattern, inner.right, inner.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.right, outer.top);
+      //   nanovg_mesh_pattern_curve_to(ppattern, inner.right + KR, outer.top, outer.right, inner.top - KR, outer.right,
+      //      inner.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.top);
       //   //nanovg_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
       //   //nanovg_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
       //   //nanovg_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
@@ -1309,10 +1309,10 @@ namespace draw2d_nanovg
 
 
       //   nanovg_mesh_pattern_begin_patch(ppattern);
-      //   nanovg_mesh_pattern_move_to(ppattern, inner.right(), inner.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, outer.right(), inner.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, outer.right(), inner.bottom());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
+      //   nanovg_mesh_pattern_move_to(ppattern, inner.right, inner.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, outer.right, inner.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, outer.right, inner.bottom);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -1352,11 +1352,11 @@ namespace draw2d_nanovg
 
 
       //   nanovg_mesh_pattern_begin_patch(ppattern);
-      //   nanovg_mesh_pattern_move_to(ppattern, inner.right(), inner.bottom());
-      //   nanovg_mesh_pattern_line_to(ppattern, outer.right(), inner.bottom());
-      //   nanovg_mesh_pattern_curve_to(ppattern, outer.right(), inner.bottom() + KR, inner.right() + KR, outer.bottom(),
-      //      inner.right(), outer.bottom());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
+      //   nanovg_mesh_pattern_move_to(ppattern, inner.right, inner.bottom);
+      //   nanovg_mesh_pattern_line_to(ppattern, outer.right, inner.bottom);
+      //   nanovg_mesh_pattern_curve_to(ppattern, outer.right, inner.bottom + KR, inner.right + KR, outer.bottom,
+      //      inner.right, outer.bottom);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -1365,10 +1365,10 @@ namespace draw2d_nanovg
 
 
       //   nanovg_mesh_pattern_begin_patch(ppattern);
-      //   nanovg_mesh_pattern_move_to(ppattern, inner.right(), inner.bottom());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.right(), outer.bottom());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.left(), outer.bottom());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   nanovg_mesh_pattern_move_to(ppattern, inner.right, inner.bottom);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.right, outer.bottom);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.left, outer.bottom);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -1377,10 +1377,10 @@ namespace draw2d_nanovg
 
 
       //   nanovg_mesh_pattern_begin_patch(ppattern);
-      //   nanovg_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   nanovg_mesh_pattern_move_to(ppattern, inner.left, inner.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color1));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color1));
@@ -1396,11 +1396,11 @@ namespace draw2d_nanovg
 
 
       //   nanovg_mesh_pattern_begin_patch(ppattern);
-      //   nanovg_mesh_pattern_move_to(ppattern, inner.left(), inner.bottom());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.left(), outer.bottom());
-      //   nanovg_mesh_pattern_curve_to(ppattern, inner.left() - KR, outer.bottom(), outer.left(), inner.bottom() + KR, outer.left(),
-      //      inner.bottom());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   nanovg_mesh_pattern_move_to(ppattern, inner.left, inner.bottom);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.left, outer.bottom);
+      //   nanovg_mesh_pattern_curve_to(ppattern, inner.left - KR, outer.bottom, outer.left, inner.bottom + KR, outer.left,
+      //      inner.bottom);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -1409,10 +1409,10 @@ namespace draw2d_nanovg
 
 
       //   nanovg_mesh_pattern_begin_patch(ppattern);
-      //   nanovg_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, outer.left(), inner.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, outer.left(), inner.bottom());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   nanovg_mesh_pattern_move_to(ppattern, inner.left, inner.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, outer.left, inner.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, outer.left, inner.bottom);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -1431,11 +1431,11 @@ namespace draw2d_nanovg
 
 
       //   nanovg_mesh_pattern_begin_patch(ppattern);
-      //   nanovg_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, outer.left(), inner.top());
-      //   nanovg_mesh_pattern_curve_to(ppattern, outer.left(), inner.top() - KR, inner.left() - KR, outer.top(), inner.left(),
-      //      outer.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.left(), inner.top());
+      //   nanovg_mesh_pattern_move_to(ppattern, inner.left, inner.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, outer.left, inner.top);
+      //   nanovg_mesh_pattern_curve_to(ppattern, outer.left, inner.top - KR, inner.left - KR, outer.top, inner.left,
+      //      outer.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.left, inner.top);
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -1444,10 +1444,10 @@ namespace draw2d_nanovg
 
 
       //   nanovg_mesh_pattern_begin_patch(ppattern);
-      //   nanovg_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.left(), outer.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.right(), outer.top());
-      //   nanovg_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
+      //   nanovg_mesh_pattern_move_to(ppattern, inner.left, inner.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.left, outer.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.right, outer.top);
+      //   nanovg_mesh_pattern_line_to(ppattern, inner.right, inner.top);
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   nanovg_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -1559,10 +1559,10 @@ namespace draw2d_nanovg
       nvgBeginPath(m_pdc);
 
       nvgRect(m_pdc,
-         (float)rectangle.left(),
-         (float)rectangle.top(),
-         (float)(rectangle.right() - rectangle.left()),
-         (float)(rectangle.bottom() - rectangle.top()));
+         (float)rectangle.left,
+         (float)rectangle.top,
+         (float)(rectangle.right - rectangle.left),
+         (float)(rectangle.bottom - rectangle.top));
 
       fill(pbrush);
       //vkBegin(VK_QUADS);
@@ -1788,7 +1788,7 @@ namespace draw2d_nanovg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hBitmap, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
+//      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hBitmap, 0, point.x, point.y, size.cx, size.cy, nFlags|DST_BITMAP) != false;
 //      return false;
 //
 //   }
@@ -1797,7 +1797,7 @@ namespace draw2d_nanovg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)pBitmap->get_os_data(), 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
+//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)pBitmap->get_os_data(), 0, point.x, point.y, size.cx, size.cy, nFlags|DST_BITMAP) != false;
 //
 //      return false;
 //
@@ -1807,7 +1807,7 @@ namespace draw2d_nanovg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hIcon, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_ICON) != false;
+//      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hIcon, 0, point.x, point.y, size.cx, size.cy, nFlags|DST_ICON) != false;
 //
 //      return false;
 //
@@ -1818,7 +1818,7 @@ namespace draw2d_nanovg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)hIcon, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_ICON) != false;
+//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)hIcon, 0, point.x, point.y, size.cx, size.cy, nFlags|DST_ICON) != false;
 //      return false;
 //
 //   }
@@ -1828,7 +1828,7 @@ namespace draw2d_nanovg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, hBrush,  nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x, point.y, size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
+//      //return ::DrawState(m_hdc, hBrush,  nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x, point.y, size.cx, size.cy, nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
 //      return false;
 //
 //   }
@@ -1838,7 +1838,7 @@ namespace draw2d_nanovg
 //   {
 //
 //      // ASSERT(m_hdc != nullptr);
-//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x, point.y, size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
+//      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x, point.y, size.cx, size.cy, nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
 //      return false;
 //
 //   }
@@ -1848,7 +1848,7 @@ namespace draw2d_nanovg
 //   {
 //      // ASSERT(m_hdc != nullptr);
 //      //return ::DrawState(m_hdc, hBrush,
-//          //               lpDrawProc, lData, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
+//          //               lpDrawProc, lData, 0, point.x, point.y, size.cx, size.cy, nFlags|DST_COMPLEX) != false;
 //      return false;
 //
 //   }
@@ -1858,7 +1858,7 @@ namespace draw2d_nanovg
 //   {
 //      // ASSERT(m_hdc != nullptr);
 //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(),
-//        //                 lpDrawProc, lData, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
+//        //                 lpDrawProc, lData, 0, point.x, point.y, size.cx, size.cy, nFlags|DST_COMPLEX) != false;
 //      return false;
 //
 //   }
@@ -1896,8 +1896,8 @@ namespace draw2d_nanovg
    {
 
       // ASSERT(m_hdc != nullptr);
-      //return ::Chord(m_hdc,rectangleParam.left(),rectangleParam.top(),
-      //               rectangleParam.right(),rectangleParam.bottom(),ptStart.x,ptStart.y,
+      //return ::Chord(m_hdc,rectangleParam.left,rectangleParam.top,
+      //               rectangleParam.right,rectangleParam.bottom,ptStart.x,ptStart.y,
       //               ptEnd.x, ptEnd.y) != false;
 
       return false;
@@ -2169,9 +2169,9 @@ namespace draw2d_nanovg
 
    //   //set_smooth_mode(::draw2d::e_smooth_mode_high);
 
-   //   //return (m_pgraphics->DrawEllipse(vk2d_pen(),(plusplus::REAL)rectangleParam.left(),(plusplus::REAL)rectangleParam.top(),
-   //   //                                 (plusplus::REAL)(rectangleParam.right() - rectangleParam.left()),
-   //   //                                 (plusplus::REAL)(rectangleParam.bottom() - rectangleParam.top()))) == plusplus::Status::Ok;
+   //   //return (m_pgraphics->DrawEllipse(vk2d_pen(),(plusplus::REAL)rectangleParam.left,(plusplus::REAL)rectangleParam.top,
+   //   //                                 (plusplus::REAL)(rectangleParam.right - rectangleParam.left),
+   //   //                                 (plusplus::REAL)(rectangleParam.bottom - rectangleParam.top))) == plusplus::Status::Ok;
 
    //   return true;
 
@@ -2195,9 +2195,9 @@ namespace draw2d_nanovg
 
    //   //set_smooth_mode(::draw2d::e_smooth_mode_high);
 
-   //   //return (m_pgraphics->FillEllipse(vk2d_brush(),(plusplus::REAL)rectangleParam.left(),(plusplus::REAL)rectangleParam.top(),
-   //   //                                 (plusplus::REAL)(rectangleParam.right() - rectangleParam.left()),
-   //   //                                 (plusplus::REAL)(rectangleParam.bottom() - rectangleParam.top()))) == plusplus::Status::Ok;
+   //   //return (m_pgraphics->FillEllipse(vk2d_brush(),(plusplus::REAL)rectangleParam.left,(plusplus::REAL)rectangleParam.top,
+   //   //                                 (plusplus::REAL)(rectangleParam.right - rectangleParam.left),
+   //   //                                 (plusplus::REAL)(rectangleParam.bottom - rectangleParam.top))) == plusplus::Status::Ok;
 
    //   return true;
 
@@ -2218,8 +2218,8 @@ namespace draw2d_nanovg
    //{
 
    //   // ASSERT(m_hdc != nullptr);
-   //   //return ::Pie(m_hdc, rectangleParam.left(), rectangleParam.top(),
-   //   //             rectangleParam.right(), rectangleParam.bottom(), ptStart.x, ptStart.y,
+   //   //return ::Pie(m_hdc, rectangleParam.left, rectangleParam.top,
+   //   //             rectangleParam.right, rectangleParam.bottom, ptStart.x, ptStart.y,
    //   //             ptEnd.x, ptEnd.y) != false;
 
    //   return false;
@@ -2556,7 +2556,7 @@ namespace draw2d_nanovg
 
       draw_rectangle(rectangleParam);
 
-      //return ::double_rectangle(rectangleParam.left(), rectangleParam.top(), rectangleParam.right(), rectangleParam.bottom());
+      //return ::double_rectangle(rectangleParam.left, rectangleParam.top, rectangleParam.right, rectangleParam.bottom);
 
       //return bOk1 && bOk2;
 
@@ -2576,10 +2576,10 @@ namespace draw2d_nanovg
       nvgBeginPath(m_pdc);
 
       nvgRect(m_pdc,
-         (float)rectangle.left(),
-         (float)rectangle.top(),
-         (float)(rectangle.right() - rectangle.left()),
-         (float)(rectangle.bottom() - rectangle.top()));
+         (float)rectangle.left,
+         (float)rectangle.top,
+         (float)(rectangle.right - rectangle.left),
+         (float)(rectangle.bottom - rectangle.top));
 
       draw(ppen);
       //vkBegin(VK_QUADS);
@@ -2628,8 +2628,8 @@ namespace draw2d_nanovg
    void graphics::round_rectangle(const ::double_rectangle& rectangleParam, const ::int_point& point)
    {
       //// ASSERT(m_hdc != nullptr);
-      //return ::RoundRect(m_hdc, rectangleParam.left(), rectangleParam.top(),
-        //                 rectangleParam.right(), rectangleParam.bottom(), point.x, point.y) != false;
+      //return ::RoundRect(m_hdc, rectangleParam.left, rectangleParam.top,
+        //                 rectangleParam.right, rectangleParam.bottom, point.x, point.y) != false;
 
       //return false;
 
@@ -3326,8 +3326,8 @@ namespace draw2d_nanovg
    void graphics::arc_to(const ::int_rectangle& rectangleParam, const ::int_point& pointStart, const ::int_point& pointEnd)
    {
       // ASSERT(m_hdc != nullptr);
-      //return ArcTo(rectangleParam.left(), rectangleParam.top(), rectangleParam.right(),
-        //           rectangleParam.bottom(), ptStart.x, ptStart.y, ptEnd.x, ptEnd.y);
+      //return ArcTo(rectangleParam.left, rectangleParam.top, rectangleParam.right,
+        //           rectangleParam.bottom, ptStart.x, ptStart.y, ptEnd.x, ptEnd.y);
 
       //return false;
 
@@ -3898,14 +3898,14 @@ namespace draw2d_nanovg
    bool graphics::_set(const ::double_arc& arc)
    {
 
-      if (arc.radius().cx() <= 0.0000001)
+      if (arc.radius().cx <= 0.0000001)
       {
 
          return false;
 
       }
 
-      if (arc.radius().cy() <= 0.0000001)
+      if (arc.radius().cy <= 0.0000001)
       {
 
          return 0;
@@ -3918,18 +3918,18 @@ namespace draw2d_nanovg
 
       nvgTranslate(m_pdc, (float)arc.center().x, (float)arc.center().y);
 
-      nvgScale(m_pdc, 1.0, (float)(arc.radius().cy() / arc.radius().cx()));
+      nvgScale(m_pdc, 1.0, (float)(arc.radius().cy / arc.radius().cx));
 
       if (arc.m_angleExt > 0)
       {
 
-         nvgArc(m_pdc, (float)0.0, (float)0.0, (float)arc.radius().cx(), (float)arc.m_angleBeg, (float)arc.m_angleEnd2, NVG_CCW);
+         nvgArc(m_pdc, (float)0.0, (float)0.0, (float)arc.radius().cx, (float)arc.m_angleBeg, (float)arc.m_angleEnd2, NVG_CCW);
 
       }
       else
       {
 
-         nvgArc(m_pdc, (float)0.0, (float)0.0, (float)arc.radius().cx(), (float)arc.m_angleBeg, (float)arc.m_angleEnd2, NVG_CW);
+         nvgArc(m_pdc, (float)0.0, (float)0.0, (float)arc.radius().cx, (float)arc.m_angleBeg, (float)arc.m_angleEnd2, NVG_CW);
 
       }
 
@@ -4223,8 +4223,8 @@ namespace draw2d_nanovg
    //
    //    nanovg_rectangle(
    //      m_pdc,
-   //      rectangle.left(),
-   //      rectangle.top(),
+   //      rectangle.left,
+   //      rectangle.top,
    //      rectangle.width(),
    //      rectangle.height());
    //
@@ -4240,8 +4240,8 @@ namespace draw2d_nanovg
 
       nvgRect(
          m_pdc,
-         (float)rectangle.left(),
-         (float)rectangle.top(),
+         (float)rectangle.left,
+         (float)rectangle.top,
          (float)rectangle.width(),
          (float)rectangle.height());
 
@@ -4711,7 +4711,7 @@ namespace draw2d_nanovg
    //bool graphics::PlayMetaFile(HENHMETAFILE hEnhMF, const ::double_rectangle & rectangleBounds)
    //{
 
-   //   //plusplus::rectF ::double_rectangle((plusplus::REAL) rectangleBounds.left(),(plusplus::REAL) rectangleBounds.top(),(plusplus::REAL) width(rectangleBounds),(plusplus::REAL) height(rectangleBounds));
+   //   //plusplus::rectF ::double_rectangle((plusplus::REAL) rectangleBounds.left,(plusplus::REAL) rectangleBounds.top,(plusplus::REAL) width(rectangleBounds),(plusplus::REAL) height(rectangleBounds));
 
    //   //plusplus::Metafile* pMeta = ___new plusplus::Metafile (hEnhMF, false);
 
@@ -4813,7 +4813,7 @@ namespace draw2d_nanovg
 ////         keep < image > keep(&m_pimageAlphaBlend, nullptr, m_pimageAlphaBlend, true);
 ////
 ////
-////         return BitBlt(ptDest.x, ptDest.y, size.cx(), size.cy(), imageWork.get_graphics(), pointSrc.x, pointSrc.y);
+////         return BitBlt(ptDest.x, ptDest.y, size.cx, size.cy, imageWork.get_graphics(), pointSrc.x, pointSrc.y);
 ////
 ////
 ////      }
@@ -5101,8 +5101,8 @@ namespace draw2d_nanovg
 
       //         }
       //         ASSERT(cxPerInch != 0 && cyPerInch != 0);
-      //         LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), HIMETRIC_INCH, cxPerInch);
-      //         LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), HIMETRIC_INCH, cyPerInch);
+      //         LPSIZE32->cx = MulDiv(LPSIZE32->cx, HIMETRIC_INCH, cxPerInch);
+      //         LPSIZE32->cy = MulDiv(LPSIZE32->cy, HIMETRIC_INCH, cyPerInch);
       //      }
    }
 
@@ -5136,8 +5136,8 @@ namespace draw2d_nanovg
 
       //         }
       //         ASSERT(cxPerInch != 0 && cyPerInch != 0);
-      //         LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), cxPerInch, HIMETRIC_INCH);
-      //         LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), cyPerInch, HIMETRIC_INCH);
+      //         LPSIZE32->cx = MulDiv(LPSIZE32->cx, cxPerInch, HIMETRIC_INCH);
+      //         LPSIZE32->cy = MulDiv(LPSIZE32->cy, cyPerInch, HIMETRIC_INCH);
       //      }
    }
 
@@ -5203,7 +5203,7 @@ namespace draw2d_nanovg
    //         ::draw2d::region rgnOutside, rgnInside;
    //         rgnOutside.create_rect(rectangle);
    //         const ::double_rectangle & rectangle = *rectangle;
-   //         rectangle.inflate(-size.cx(), -size.cy());
+   //         rectangle.inflate(-size.cx, -size.cy);
    //         rectangle.intersect(rectangle, rectangle);
    //         rgnInside.create_rect(rectangle);
    //         rgnNew.create_rect(0, 0, 0, 0);
@@ -5229,7 +5229,7 @@ namespace draw2d_nanovg
    //            rgnLast.create_rect(0, 0, 0, 0);
    //            rgnOutside.SetRectRgn(lpRectLast);
    //            rectangle = *lpRectLast;
-   //            rectangle.inflate(-sizeLast.cx(), -sizeLast.cy());
+   //            rectangle.inflate(-sizeLast.cx, -sizeLast.cy);
    //            rectangle.intersect(rectangle, lpRectLast);
    //            rgnInside.SetRectRgn(rectangle);
    //            rgnLast.CombineRgn(&rgnOutside, &rgnInside, RGN_XOR);
@@ -5247,7 +5247,7 @@ namespace draw2d_nanovg
    //            SelectClipRgn(&rgnLast);
    //            get_clip_box(&rectangle);
    //            pBrushOld = SelectObject(pBrushLast);
-   //            PatBlt(rectangle.left(), rectangle.top(), rectangle.width(), rectangle.height(), PATINVERT);
+   //            PatBlt(rectangle.left, rectangle.top, rectangle.width(), rectangle.height(), PATINVERT);
    //            SelectObject(pBrushOld);
    //            pBrushOld = nullptr;
    //         }
@@ -5256,7 +5256,7 @@ namespace draw2d_nanovg
    //         SelectClipRgn(rgnUpdate.get_os_data() != nullptr ? &rgnUpdate : &rgnNew);
    //         get_clip_box(&rectangle);
    //         pBrushOld = SelectObject(pBrush);
-   //         PatBlt(rectangle.left(), rectangle.top(), rectangle.width(), rectangle.height(), PATINVERT);
+   //         PatBlt(rectangle.left, rectangle.top, rectangle.width(), rectangle.height(), PATINVERT);
 
    //         // cleanup DC
    //         if (pBrushOld != nullptr)
@@ -5333,8 +5333,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //   const ::e_border & eborder)
 //{
 
-//   //draw3d_rectangle(rectangleParam.left(), rectangleParam.top(), rectangleParam.right() - rectangleParam.left(),
-//     //         rectangleParam.bottom() - rectangleParam.top(), clrTopLeft, clrBottomRight);
+//   //draw3d_rectangle(rectangleParam.left, rectangleParam.top, rectangleParam.right - rectangleParam.left,
+//     //         rectangleParam.bottom - rectangleParam.top, clrTopLeft, clrBottomRight);
 
 //}
 
@@ -6119,10 +6119,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //m_pgraphics->GetClipBounds(rectangle);
 
-      //rectangle.left() = rectangle.X;
-      //rectangle.top() = rectangle.Y;
-      //rectangle.right() = rectangle.X + rectangle.Width;
-      //rectangle.bottom() = rectangle.Y + rectangle.Height;
+      //rectangle.left = rectangle.X;
+      //rectangle.top = rectangle.Y;
+      //rectangle.right = rectangle.X + rectangle.Width;
+      //rectangle.bottom = rectangle.Y + rectangle.Height;
 
       return 1;
 
@@ -6174,11 +6174,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //double nRetVal = ERROR;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = ::ExcludeClipRect(m_hdc, rectangleParam.left(), rectangleParam.top(),
-      //                               rectangleParam.right(), rectangleParam.bottom());
+      //   nRetVal = ::ExcludeClipRect(m_hdc, rectangleParam.left, rectangleParam.top,
+      //                               rectangleParam.right, rectangleParam.bottom);
       //if(m_hdc != nullptr)
-      //   nRetVal = ::ExcludeClipRect(m_hdc, rectangleParam.left(), rectangleParam.top(),
-      //                               rectangleParam.right(), rectangleParam.bottom());
+      //   nRetVal = ::ExcludeClipRect(m_hdc, rectangleParam.left, rectangleParam.top,
+      //                               rectangleParam.right, rectangleParam.bottom);
 
       //return nRetVal;
 
@@ -6210,9 +6210,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       int nRetVal = 0;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = ::IntersectClipRect(m_hdc,rectangleBounds.left(),rectangleBounds.top(),rectangleBounds.right(),rectangleBounds.bottom());
+      //   nRetVal = ::IntersectClipRect(m_hdc,rectangleBounds.left,rectangleBounds.top,rectangleBounds.right,rectangleBounds.bottom);
       //if(m_hdc != nullptr)
-      //   nRetVal = ::IntersectClipRect(m_hdc,rectangleBounds.left(),rectangleBounds.top(),rectangleBounds.right(),rectangleBounds.bottom());
+      //   nRetVal = ::IntersectClipRect(m_hdc,rectangleBounds.left,rectangleBounds.top,rectangleBounds.right,rectangleBounds.bottom);
 
       return nRetVal;
 
@@ -6240,9 +6240,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       int nRetVal = 0;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = ::OffsetClipRgn(m_hdc, size.cx(), size.cy());
+      //   nRetVal = ::OffsetClipRgn(m_hdc, size.cx, size.cy);
       //if(m_hdc != nullptr)
-      //   nRetVal = ::OffsetClipRgn(m_hdc, size.cx(), size.cy());
+      //   nRetVal = ::OffsetClipRgn(m_hdc, size.cx, size.cy);
 
       return nRetVal;
 
@@ -6685,8 +6685,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //int_size sizeWinExt = GetWindowExt();
       //int_size sizeVpExt = get_context_extents();
-      //LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), abs(sizeVpExt.cx()), abs(sizeWinExt.cx()));
-      //LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), abs(sizeVpExt.cy()), abs(sizeWinExt.cy()));
+      //LPSIZE32->cx = MulDiv(LPSIZE32->cx, abs(sizeVpExt.cx), abs(sizeWinExt.cx));
+      //LPSIZE32->cy = MulDiv(LPSIZE32->cy, abs(sizeVpExt.cy), abs(sizeWinExt.cy));
 
    }
 
@@ -6698,8 +6698,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //int_size sizeWinExt = GetWindowExt();
       //int_size sizeVpExt = get_context_extents();
-      //LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), abs(sizeWinExt.cx()), abs(sizeVpExt.cx()));
-      //LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), abs(sizeWinExt.cy()), abs(sizeVpExt.cy()));
+      //LPSIZE32->cx = MulDiv(LPSIZE32->cx, abs(sizeWinExt.cx), abs(sizeVpExt.cx));
+      //LPSIZE32->cy = MulDiv(LPSIZE32->cy, abs(sizeWinExt.cy), abs(sizeVpExt.cy));
 
    }
 
@@ -6814,10 +6814,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //{
 
 
-      //   pmNew->Translate((plusplus::REAL) rectangleParam.left(),(plusplus::REAL) rectangleParam.top());
+      //   pmNew->Translate((plusplus::REAL) rectangleParam.left,(plusplus::REAL) rectangleParam.top);
       //   pmNew->Scale((plusplus::REAL) m_pfont->m_dFontWidth,(plusplus::REAL) 1.0,plusplus::MatrixOrderAppend);
 
-      //   plusplus::rectF float_rectangle(0,0,(plusplus::REAL) ((rectangleParam.right() - rectangleParam.left()) * m_pfont->m_dFontWidth),(plusplus::REAL) (rectangleParam.bottom() - rectangleParam.top()));
+      //   plusplus::rectF float_rectangle(0,0,(plusplus::REAL) ((rectangleParam.right - rectangleParam.left) * m_pfont->m_dFontWidth),(plusplus::REAL) (rectangleParam.bottom - rectangleParam.top));
 
       //   m_pgraphics->SetTransform(pmNew);
 
@@ -6943,9 +6943,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             pango_layout_get_pixel_size(playout, &width, &height);
 
-            //size.cx() = ;
+            //size.cx = ;
 
-            //size.cy() = height;
+            //size.cy = height;
 
             g_object_unref(playout);                         // free the layout
 
@@ -6976,9 +6976,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             nvgTextMetrics(m_pdc, &ascender, &descender, &lineh);
 
-            //size.cx() = x;
+            //size.cx = x;
 
-            //size.cy() = x;
+            //size.cy = x;
 
             return { x_advance, lineh };
 
@@ -6996,18 +6996,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::double_size size;
 
-      size.cx() = 0.0;
+      size.cx = 0.0;
 
-      size.cy() = 0.0;
+      size.cy = 0.0;
 
       for (auto& strLine : straLines)
       {
 
          auto sizeLine = get_text_extent(strLine, str.length());
 
-         size.cx() = maximum(size.cx(), sizeLine.cx());
+         size.cx = maximum(size.cx, sizeLine.cx);
 
-         size.cy() += sizeLine.cy();
+         size.cy += sizeLine.cy;
 
       }
 
@@ -7024,7 +7024,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   if (!get_text_extent(size, lpszString, nCount, 0))
    //      return ::int_size(0, 0);
 
-   //   return ::int_size(size.cx(), size.cy());
+   //   return ::int_size(size.cx, size.cy);
 
    //}
 
@@ -7037,7 +7037,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if(!get_text_extent(size, str, (double) str.length(), 0))
          return ::int_size(0, 0);
 
-      return ::int_size((long) size.cx(), (long) size.cy());
+      return ::int_size((long) size.cx, (long) size.cy);
 
    }*/
 
@@ -7146,9 +7146,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //      //FT_Done_Face(face);
 //      //FT_Done_FreeType(ft);
 //
-//      size.cx() = s.cx();
+//      size.cx = s.cx;
 //
-//      size.cy() = s.cy();
+//      size.cy = s.cy;
 //
 //      return true;
 //
@@ -7171,9 +7171,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
 //        // return false;
 //
-//      size.cx() = s.cx();
+//      size.cx = s.cx;
 //
-//      size.cy() = s.cy();
+//      size.cy = s.cy;
 //
 //      return true;
 //
@@ -7196,9 +7196,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //      //if (::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
 //        // return false;
 //
-//      size.cx() = s.cx();
+//      size.cx = s.cx;
 //
-//      size.cy() = s.cy();
+//      size.cy = s.cy;
 //
 //      return true;
 //
@@ -7407,7 +7407,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          nvgTextAlign(m_pdc, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
 
-         x = rectangle.right();
+         x = rectangle.right;
 
       }
       else if (ealign & e_align_horizontal_center)
@@ -7415,7 +7415,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          nvgTextAlign(m_pdc, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
 
-         x = (rectangle.right() + rectangle.left()) / 2.f;
+         x = (rectangle.right + rectangle.left) / 2.f;
 
       }
       else
@@ -7423,7 +7423,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          nvgTextAlign(m_pdc, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
 
-         x = rectangle.left();
+         x = rectangle.left;
 
       }
 
@@ -7434,7 +7434,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (ealign & e_align_bottom)
       {
 
-         y = rectangle.bottom() - lineh * stra.size();
+         y = rectangle.bottom - lineh * stra.size();
 
       }
       else if (ealign & e_align_vertical_center)
@@ -7446,7 +7446,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       else
       {
 
-         y = rectangle.top();
+         y = rectangle.top;
 
       }
 
@@ -7499,7 +7499,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       for (auto& strLine : stra)
       {
 
-         //nanovg_move_to(m_pdc, rectangle.left() + Δx, rectangle.top() + Δy + e.ascent + sz.cy() * (i) / stra.get_size());
+         //nanovg_move_to(m_pdc, rectangle.left + Δx, rectangle.top + Δy + e.ascent + sz.cy * (i) / stra.get_size());
 
          //nvgMoveTo(m_pdc, , );
 
@@ -8056,10 +8056,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //   //plusplus::PointF points[2];
 
-      //   //points[0].X    = (plusplus::REAL) rectangleParam.left();
-      //   //points[0].Y    = (plusplus::REAL) rectangleParam.top();
-      //   //points[1].X    = (plusplus::REAL) rectangleParam.right();
-      //   //points[1].Y    = (plusplus::REAL) rectangleParam.bottom();
+      //   //points[0].X    = (plusplus::REAL) rectangleParam.left;
+      //   //points[0].Y    = (plusplus::REAL) rectangleParam.top;
+      //   //points[1].X    = (plusplus::REAL) rectangleParam.right;
+      //   //points[1].Y    = (plusplus::REAL) rectangleParam.bottom;
 
       //   //m.TransformPoints(points, 2);
 
@@ -8067,10 +8067,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //   //::double_rectangle ::double_rectangle;
 
-      //   //rectangle.left()      = (::double) points[0].X;
-      //   //rectangle.top()       = (::double) points[0].Y;
-      //   //rectangle.right()     = (::double) points[1].X;
-      //   //rectangle.bottom()    = (::double) points[1].Y;
+      //   //rectangle.left      = (::double) points[0].X;
+      //   //rectangle.top       = (::double) points[0].Y;
+      //   //rectangle.right     = (::double) points[1].X;
+      //   //rectangle.bottom    = (::double) points[1].Y;
 
       //   //plusplus::Bitmap * pbitmap = ((plusplus::Bitmap *) m_pbitmap->get_os_data());
 
@@ -8763,10 +8763,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::_vk_rectangle(const ::double_rectangle& rectangle)
    {
 
-      //vkVertex2f((VKfloat)rectangle.left(), (VKfloat)rectangle.top());
-      //vkVertex2f((VKfloat)rectangle.right(), (VKfloat)rectangle.top());
-      //vkVertex2f((VKfloat)rectangle.right(), (VKfloat)rectangle.bottom());
-      //vkVertex2f((VKfloat)rectangle.left(), (VKfloat)rectangle.bottom());
+      //vkVertex2f((VKfloat)rectangle.left, (VKfloat)rectangle.top);
+      //vkVertex2f((VKfloat)rectangle.right, (VKfloat)rectangle.top);
+      //vkVertex2f((VKfloat)rectangle.right, (VKfloat)rectangle.bottom);
+      //vkVertex2f((VKfloat)rectangle.left, (VKfloat)rectangle.bottom);
 
       struct Vertex {
          floating_sequence2 pos;
@@ -8841,32 +8841,32 @@ namespace opengl
 
       //double d = 1.0;
 
-      ////vkViewport(0, 0, size.cx() * d, size.cy() * d);
-      //vkViewport(0, 0, size.cx(), size.cy());
+      ////vkViewport(0, 0, size.cx * d, size.cy * d);
+      //vkViewport(0, 0, size.cx, size.cy);
 
       //vkMatrixMode(VK_PROJECTION);
       //vkLoadIdentity();
-      ////vkOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
-      ////vkOrtho(0, size.cx() * d, size.cy() * d, 0.0f, 000.0f, 1000.0f);
-      //////vkOrtho(0, size.cx() * d, 0.0f, size.cy() * d, 000.0f, 1000.0f);
-      ////vkOrtho(0, size.cx(), size.cy(), 0.0f, -1000.0f, 1000.0f);
-      //vkOrtho(0.f, size.cx(), 0.f, -size.cy(), -1.0f, 1.0f);
+      ////vkOrtho(0, size.cx * d, size.cy * d, 0.0f, 000.0f, 1000.0f);
+      ////vkOrtho(0, size.cx * d, size.cy * d, 0.0f, 000.0f, 1000.0f);
+      //////vkOrtho(0, size.cx * d, 0.0f, size.cy * d, 000.0f, 1000.0f);
+      ////vkOrtho(0, size.cx, size.cy, 0.0f, -1000.0f, 1000.0f);
+      //vkOrtho(0.f, size.cx, 0.f, -size.cy, -1.0f, 1.0f);
 
 
       //vkMatrixMode(VK_PROJECTION);
       //vkLoadIdentity();
       //if (bYSwap)
       //{
-      //   vkOrtho(0.0f, size.cx(), size.cy(), 0, -1.0f, 1.0f);  // Flip Y
+      //   vkOrtho(0.0f, size.cx, size.cy, 0, -1.0f, 1.0f);  // Flip Y
       //}
       //else
       //{
-      //   vkOrtho(0.0f, size.cx(), 0, size.cy(), -1.0f, 1.0f);  // Flip Y
+      //   vkOrtho(0.0f, size.cx, 0, size.cy, -1.0f, 1.0f);  // Flip Y
       //}
       ////auto left = 0.;
-      ////auto right = (double) size.cx();
+      ////auto right = (double) size.cx;
       ////auto bottom = 0.;
-      ////auto top = (double)size.cy();
+      ////auto top = (double)size.cy;
       ////double dFar = 1.0;
       ////double dNear = -1.0;
       ////double tx = -(right + left) / (right - left);
@@ -8885,7 +8885,7 @@ namespace opengl
       ////vkLoadIdentity();
 
 
-      ////vkuOrtho2D(0.f, size.cx(), 0.f, size.cy());
+      ////vkuOrtho2D(0.f, size.cx, 0.f, size.cy);
       ////vkMatrixMode(VK_MODELVIEW);
       ////vkLoadIdentity();
 

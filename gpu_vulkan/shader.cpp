@@ -645,8 +645,8 @@ namespace gpu_vulkan
 
       uint32_t w = ptextureDst->m_rectangleTarget.width();
       uint32_t h = ptextureDst->m_rectangleTarget.height();
-      int x = ptextureDst->m_rectangleTarget.left();
-      int bottom = ptextureDst->m_rectangleTarget.bottom();
+      int x = ptextureDst->m_rectangleTarget.left;
+      int bottom = ptextureDst->m_rectangleTarget.bottom;
       int y = h - bottom;
 
       renderPassBeginInfo.renderArea.offset = {x, y};
@@ -1350,9 +1350,9 @@ namespace gpu_vulkan
 
    //      VkImageView imageviewa[] = { get_image_view() };
 
-   //      uint32_t w = m_ptexture->size().cx();
+   //      uint32_t w = m_ptexture->size().cx;
 
-   //      uint32_t h = m_ptexture->size().cy();
+   //      uint32_t h = m_ptexture->size().cy;
 
    //      VkFramebufferCreateInfo framebufferCreateInfo =
    //      {

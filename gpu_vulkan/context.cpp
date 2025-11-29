@@ -299,8 +299,8 @@ namespace gpu_vulkan
       //         glBindFramebuffer(GL_READ_FRAMEBUFFER, readFboId);
       //         glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
       //            GL_TEXTURE_2D, m_gluTextureBitmap1, 0);
-      //         glBlitFramebuffer(0, 0, m_sizeBitmap1.cx(), m_sizeBitmap1.cy(),
-      //            0, 0, m_size.cx(), m_size.cy(),
+      //         glBlitFramebuffer(0, 0, m_sizeBitmap1.cx, m_sizeBitmap1.cy,
+      //            0, 0, m_size.cx, m_size.cy,
       //            GL_COLOR_BUFFER_BIT, GL_LINEAR);
       //         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
       //         glDeleteFramebuffers(1, &readFboId);*/
@@ -375,15 +375,15 @@ namespace gpu_vulkan
       //
       //         //vertical_swap_copy_image32_swap_red_blue(
       //            ((image32_t *)m_memorySwap.data())->vertical_swap_copy_swap_red_blue(
-      //            m_sizeBitmap1.cx(),
-      //            m_sizeBitmap1.cy(),
-      //            m_sizeBitmap1.cx() * 4,
+      //            m_sizeBitmap1.cx,
+      //            m_sizeBitmap1.cy,
+      //            m_sizeBitmap1.cx * 4,
       //            pimage->get_data(),
       //            pimage->m_iScan);
       //
       //         //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-      //         //   m_sizeBitmap1.cx(),
-      //         //   m_sizeBitmap1.cy(),
+      //         //   m_sizeBitmap1.cx,
+      //         //   m_sizeBitmap1.cy,
       //         //   0, GL_RGBA, GL_UNSIGNED_BYTE,
       //         //   m_memorySwap.data()); // upload image data to the textur
       //
@@ -732,8 +732,8 @@ namespace gpu_vulkan
 
       //   if (!::SetWindowPos(m_hwnd,
       //      nullptr, 0, 0,
-      //      size.cx()
-      //      , size.cy(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE
+      //      size.cx
+      //      , size.cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE
       //      | SWP_NOCOPYBITS | SWP_NOSENDCHANGING
       //      | SWP_NOREPOSITION | SWP_NOREDRAW))
       //   {
@@ -763,8 +763,8 @@ namespace gpu_vulkan
       //   dwStyle &= ~WS_BORDER;
       //   int x = 0;
       //   int y = 0;
-      //   int nWidth = size.cx();
-      //   int nHeight = size.cy();
+      //   int nWidth = size.cx;
+      //   int nHeight = size.cy;
       //   HWND hWndParent = nullptr;
       //   HMENU hMenu = nullptr;
       //   HINSTANCE hInstance = ::GetModuleHandleW(L"gpu_vulkan.dll");
@@ -805,98 +805,111 @@ namespace gpu_vulkan
    void context::layout_push_constants(::gpu::properties & properties, bool bGlobalUbo)
    {
 
-      auto pproperty = properties.m_pproperties;
-
-      ::collection::index i = 0;
-
-      int iSizeWithSamplers = 0;
-
-      int iSizeWithoutSamplers = 0;
-
-      while (pproperty->m_pszName)
+      if (bGlobalUbo)
       {
 
-         int iItemSize = pproperty->get_item_size(true);
+         _layout_std140_or_std430(properties, ::gpu::e_layout_std140);
 
-         int iSize = iItemSize;
+      }
+      else
+      {
 
-         if (iItemSize == 4)
-         {
-
-            if (iSizeWithSamplers % 4 != 0)
-            {
-
-               iSizeWithSamplers += 4 - iSizeWithSamplers % 4;
-
-            }
-
-         }
-         else if (iItemSize == 8)
-         {
-
-            if (iSizeWithSamplers % 8 != 0)
-            {
-
-               iSizeWithSamplers += 8 - iSizeWithSamplers % 8;
-            }
-         }
-         else if (iItemSize == 12)
-         {
-
-            if (iSizeWithSamplers % 16 != 0)
-            {
-
-               iSizeWithSamplers += 16 - iSizeWithSamplers % 16;
-
-            }
-
-            if (bGlobalUbo) // layout 420
-            {
-
-               iSize = 16;
-
-            }
-
-         }
-         else
-         {
-
-            if (iSizeWithSamplers % 16 != 0)
-            {
-
-               iSizeWithSamplers += 16 - iSizeWithSamplers % 16;
-            }
-
-            // iSize = 16;
-         }
-
-
-         ::gpu::property_data data;
-
-         data.m_iOffset = iSizeWithSamplers;
-
-         properties.m_propertydataa.set_at_grow(i, data);
-
-         i++;
-
-         iSizeWithSamplers += iSize;
-
-         ::string strName(pproperty->m_pszName);
-
-         if (!strName.begins("sampler:"))
-         {
-
-            iSizeWithoutSamplers = iSizeWithSamplers;
-
-         }
-
-         pproperty++;
+         _layout_std140_or_std430(properties, ::gpu::e_layout_std430);
 
       }
 
-      properties.m_memory.set_size(iSizeWithSamplers);
-      properties.m_blockWithoutSamplers = properties.m_memory(0, iSizeWithoutSamplers);
-      properties.m_blockWithSamplers = properties.m_memory;
+      //auto pproperty = properties.m_pproperties;
+
+      //::collection::index i = 0;
+
+      //int iSizeWithSamplers = 0;
+
+      //int iSizeWithoutSamplers = 0;
+
+      //while (pproperty->m_pszName)
+      //{
+
+      //   int iItemSize = pproperty->get_item_size(true);
+
+      //   int iSize = iItemSize;
+
+      //   if (iItemSize == 4)
+      //   {
+
+      //      if (iSizeWithSamplers % 4 != 0)
+      //      {
+
+      //         iSizeWithSamplers += 4 - iSizeWithSamplers % 4;
+
+      //      }
+
+      //   }
+      //   else if (iItemSize == 8)
+      //   {
+
+      //      if (iSizeWithSamplers % 8 != 0)
+      //      {
+
+      //         iSizeWithSamplers += 8 - iSizeWithSamplers % 8;
+      //      }
+      //   }
+      //   else if (iItemSize == 12)
+      //   {
+
+      //      if (iSizeWithSamplers % 16 != 0)
+      //      {
+
+      //         iSizeWithSamplers += 16 - iSizeWithSamplers % 16;
+
+      //      }
+
+      //      if (bGlobalUbo) // layout 140 
+      //      {
+
+      //         iSize = 16;
+
+      //      }
+
+      //   }
+      //   else
+      //   {
+
+      //      if (iSizeWithSamplers % 16 != 0)
+      //      {
+
+      //         iSizeWithSamplers += 16 - iSizeWithSamplers % 16;
+      //      }
+
+      //      // iSize = 16;
+      //   }
+
+
+      //   ::gpu::property_data data;
+
+      //   data.m_iOffset = iSizeWithSamplers;
+
+      //   properties.m_propertydataa.set_at_grow(i, data);
+
+      //   i++;
+
+      //   iSizeWithSamplers += iSize;
+
+      //   ::string strName(pproperty->m_pszName);
+
+      //   if (!strName.begins("sampler:"))
+      //   {
+
+      //      iSizeWithoutSamplers = iSizeWithSamplers;
+
+      //   }
+
+      //   pproperty++;
+
+      //}
+
+      //properties.m_memory.set_size(iSizeWithSamplers);
+      //properties.m_blockWithoutSamplers = properties.m_memory(0, iSizeWithoutSamplers);
+      //properties.m_blockWithSamplers = properties.m_memory;
 
    }
 
@@ -1622,8 +1635,8 @@ namespace gpu_vulkan
       //      //memset(&BIH, 0, sizeof(pwindow->m_bitmapinfoheaderProto));
 
       //      //BIH.biSize = sizeof(pwindow->m_bitmapinfoheaderProto);        // размер структуры
-      //      //BIH.biWidth = m_size.cx();       // геометрия
-      //      //BIH.biHeight = m_size.cy();      // битмапа
+      //      //BIH.biWidth = m_size.cx;       // геометрия
+      //      //BIH.biHeight = m_size.cy;      // битмапа
       //      //BIH.biPlanes = 1;          // один план
       //      //BIH.biBitCount = 32;       // 24 bits per pixel
       //      //BIH.biCompression = BI_RGB;// без сжатия// создаем новый DC в памяти
@@ -1702,7 +1715,7 @@ namespace gpu_vulkan
 
             // #ifdef WINDOWS_DESKTOP
             //
-            //       ::SetWindowPos(m_hwnd, 0, 0, 0, size.cx(), size.cy(), SWP_NOZORDER | SWP_NOMOVE | SWP_HIDEWINDOW);
+            //       ::SetWindowPos(m_hwnd, 0, 0, 0, size.cx, size.cy, SWP_NOZORDER | SWP_NOMOVE | SWP_HIDEWINDOW);
             //
             // #else
 
@@ -1719,10 +1732,10 @@ namespace gpu_vulkan
 
             // make_current();
 
-            // glViewport(0, 0, size.cx(), size.cy());
+            // glViewport(0, 0, size.cx, size.cy);
             // glMatrixMode(GL_PROJECTION);
             // glLoadIdentity();
-            // glOrtho(0, size.cx(), 0, size.cy(), -10, 10);
+            // glOrtho(0, size.cx, 0, size.cy, -10, 10);
             // glMatrixMode(GL_MODELVIEW);
             // glutPostRedisplay();
 
@@ -2582,7 +2595,7 @@ namespace gpu_vulkan
          }
          else
          {
-            region.imageOffset = {(int32_t)rectangleSubImage.left(), (int32_t)rectangleSubImage.top(), 0};
+            region.imageOffset = {(int32_t)rectangleSubImage.left, (int32_t)rectangleSubImage.top, 0};
             region.imageExtent = {(uint32_t)rectangleSubImage.width(), (uint32_t)rectangleSubImage.height(), 1};
          }
       }
@@ -2669,8 +2682,8 @@ namespace gpu_vulkan
    //      region.imageSubresource.layerCount = 1;
 
    //      region.imageOffset = {
-   //         (int32_t)pgpupixmap->m_rectangle.left(),
-   //         (int32_t)pgpupixmap->m_rectangle.top(), 0 };
+   //         (int32_t)pgpupixmap->m_rectangle.left,
+   //         (int32_t)pgpupixmap->m_rectangle.top, 0 };
    //      region.imageExtent = {
    //         (uint32_t)pgpupixmap->m_rectangle.width(),
    //         (uint32_t)pgpupixmap->m_rectangle.height(), 1 };
@@ -2945,6 +2958,7 @@ namespace gpu_vulkan
             .build(m_descriptorsetsGlobal[i]);
 
          m_uboBuffers[i]->unmap();
+
       }
 
       // auto globalSetLayout = m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
@@ -3260,9 +3274,9 @@ namespace gpu_vulkan
 
                   int h = r.height();
 
-                  r.top() = iH - r.bottom();
+                  r.top = iH - r.bottom;
 
-                  r.bottom() = r.top() + h;
+                  r.bottom = r.top + h;
 
                   pcommandbuffer->set_viewport(r);
 
@@ -3299,26 +3313,26 @@ namespace gpu_vulkan
 
                   // 1. Define viewport and scissor rectangle
                   // D3D12_VIEWPORT viewport = {};
-                  // viewport.TopLeftX = ptextureSrc->m_rectangleTarget.left();
-                  // viewport.TopLeftY = ptextureSrc->m_rectangleTarget.top();
+                  // viewport.TopLeftX = ptextureSrc->m_rectangleTarget.left;
+                  // viewport.TopLeftY = ptextureSrc->m_rectangleTarget.top;
                   // viewport.Width = static_cast<float>(ptextureSrc->m_rectangleTarget.width());
                   // viewport.Height = static_cast<float>(ptextureSrc->m_rectangleTarget.height());
                   // viewport.MinDepth = 0.0f;
                   // viewport.MaxDepth = 1.0f;
 
                   // D3D12_RECT scissorRect = {};
-                  // scissorRect.left = ptextureSrc->m_rectangleTarget.left();
-                  // scissorRect.top = ptextureSrc->m_rectangleTarget.top();
-                  // scissorRect.right = ptextureSrc->m_rectangleTarget.right();
-                  // scissorRect.bottom = ptextureSrc->m_rectangleTarget.bottom();
+                  // scissorRect.left = ptextureSrc->m_rectangleTarget.left;
+                  // scissorRect.top = ptextureSrc->m_rectangleTarget.top;
+                  // scissorRect.right = ptextureSrc->m_rectangleTarget.right;
+                  // scissorRect.bottom = ptextureSrc->m_rectangleTarget.bottom;
 
 
                   ////// 4. Set the viewport and scissor
                   // pcommandlist->RSSetViewports(1, &viewport);
                   // pcommandlist->RSSetScissorRects(1, &scissorRect);
                   // D3D11_VIEWPORT vp = {};
-                  // vp.TopLeftX = ptexture->m_rectangleTarget.left();
-                  // vp.TopLeftY = ptexture->m_rectangleTarget.top();
+                  // vp.TopLeftX = ptexture->m_rectangleTarget.left;
+                  // vp.TopLeftY = ptexture->m_rectangleTarget.top;
                   // vp.Width = static_cast<float>(ptexture->m_rectangleTarget.width());
                   // vp.Height = static_cast<float>(ptexture->m_rectangleTarget.height());
                   // vp.MinDepth = 0.0f;

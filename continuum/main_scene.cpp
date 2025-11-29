@@ -4,6 +4,7 @@
 #include "application.h"
 #include "camera.h"
 #include "impact.h"
+#include "input.h"
 #include "main_scene.h"
 #include "bred/gpu/context.h"
 #include "bred/graphics3d/asset_manager.h"
@@ -231,8 +232,6 @@ namespace app_graphics3d_continuum
    void main_scene::on_update(::gpu::context* pgpucontext)
    {
 
-      //m_pskyboxrendersystem->set_skybox(current_sky_box());
-
       auto& globalubo = this->global_ubo();
 
       //pgpucontext->clear(::argb(.5f, 0.f, 0.f, 0.5f));
@@ -268,6 +267,43 @@ namespace app_graphics3d_continuum
 //         pcamera->m_matrixInversedImpact = pcamera->m_matrixImpact.inversed();
 
 
+      //auto &globalubo = this->global_ubo();
+
+         auto pimmersion = m_pimmersionlayer;
+
+         auto pscene = pimmersion->m_pscene;
+
+         auto pgpucamera = pscene->camera();
+
+         //::cast<camera> pcamera = pgpucamera;
+
+         auto dt = m_pimmersionlayer->m_pengine->dt();
+
+         ::cast<input> pinput = m_pimmersionlayer->m_pengine->m_pinput;
+
+         auto &transform = m_pimmersionlayer->m_pengine->m_transform;
+
+         pinput->_017Update(dt, transform);
+
+         auto positionTransform = transform.m_sequence3Position;
+
+         pcamera->m_sequence3Position = positionTransform;
+
+         pcamera->m_rotation = transform.m_rotation;
+
+         auto aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
+
+         pcamera->m_fAspectRatio = aspect;
+
+         pcamera->m_fNearZ = 0.1f;
+
+         pcamera->m_fFarZ = 100.0f;
+
+         pcamera->m_angleFovY = 45.0f_degrees;
+
+         pcamera->update_vectors();
+
+         pcamera->update();
 
       auto projection = pcamera->projection();
       globalubo["projection"] = projection;
@@ -289,16 +325,6 @@ namespace app_graphics3d_continuum
    }
 
 
-   //::graphics3d::skybox* main_scene::get_skybox()
-   //{
-
-   //   ::string strSkybox = m_papp->m_strSkybox;
-
-   //   return m_mapSkybox[strSkybox];
-
-   //}
-
-   
    void main_scene::on_render(::gpu::context * pgpucontext)
    {
 
@@ -310,8 +336,6 @@ namespace app_graphics3d_continuum
          m_pskyboxrendersystem->render(pgpucontext, this);
 
       }
-
-      //return;
 
       if (m_pwavefrontobjrendersystem)
       {

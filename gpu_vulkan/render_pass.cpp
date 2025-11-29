@@ -110,13 +110,13 @@ namespace gpu_vulkan
       if (size.has_area())
       {
 
-         if (m_extent.width != size.cx() ||
-            m_extent.height != size.cy())
+         if (m_extent.width != size.cx ||
+            m_extent.height != size.cy)
          {
 
-            m_extent.width = size.cx();
+            m_extent.width = size.cx;
 
-            m_extent.height = size.cy();
+            m_extent.height = size.cy;
 
             on_init_render_pass();
 

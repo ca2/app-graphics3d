@@ -251,16 +251,16 @@ namespace graphics3d_vulkan
       //      auto rectangleUpper = pgpucontextUpper->rectangle();
 
       //      VkViewport vp = {
-      //         (float)rectangleUpper.left(),
-      //         (float)rectangleUpper.top(),
+      //         (float)rectangleUpper.left,
+      //         (float)rectangleUpper.top,
       //         (float)rectangleUpper.width(),
       //         (float)rectangleUpper.height(),
       //         0.0f, 1.0f };
 
       //      VkRect2D sc = {
       //         {
-      //            rectangleUpper.left(),
-      //            rectangleUpper.top(),
+      //            rectangleUpper.left,
+      //            rectangleUpper.top,
       //         },
       //         {
       //            rectangleUpper.width(),

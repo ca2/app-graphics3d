@@ -293,15 +293,15 @@ namespace graphics3d_directx12
       //      //auto rectangleUpper = pcontextUpper->rectangle();
 
       //      //VkViewport vp = {
-      //      //   (float)rectangleUpper.left(),
-      //      //   (float)rectangleUpper.top(),
+      //      //   (float)rectangleUpper.left,
+      //      //   (float)rectangleUpper.top,
       //      //   (float)rectangleUpper.width(),
       //      //   (float)rectangleUpper.height(),
       //      //   0.0f, 1.0f };
       //      //VkRect2D sc = {
       //      //   {
-      //      //   (float)rectangleUpper.left(),
-      //      //   (float)rectangleUpper.top(),
+      //      //   (float)rectangleUpper.left,
+      //      //   (float)rectangleUpper.top,
       //      //   },
       //      //   {
       //      //            (float)rectangleUpper.width(),

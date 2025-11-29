@@ -301,8 +301,8 @@ namespace gpu_vulkan
    //   //         glBindFramebuffer(GL_READ_FRAMEBUFFER, readFboId);
    //   //         glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
    //   //            GL_TEXTURE_2D, m_gluTextureBitmap1, 0);
-   //   //         glBlitFramebuffer(0, 0, m_sizeBitmap1.cx(), m_sizeBitmap1.cy(),
-   //   //            0, 0, m_size.cx(), m_size.cy(),
+   //   //         glBlitFramebuffer(0, 0, m_sizeBitmap1.cx, m_sizeBitmap1.cy,
+   //   //            0, 0, m_size.cx, m_size.cy,
    //   //            GL_COLOR_BUFFER_BIT, GL_LINEAR);
    //   //         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
    //   //         glDeleteFramebuffers(1, &readFboId);*/
@@ -374,15 +374,15 @@ namespace gpu_vulkan
    //   //
    //   //         //vertical_swap_copy_image32_swap_red_blue(
    //   //            ((image32_t *)m_memorySwap.data())->vertical_swap_copy_swap_red_blue(
-   //   //            m_sizeBitmap1.cx(),
-   //   //            m_sizeBitmap1.cy(),
-   //   //            m_sizeBitmap1.cx() * 4,
+   //   //            m_sizeBitmap1.cx,
+   //   //            m_sizeBitmap1.cy,
+   //   //            m_sizeBitmap1.cx * 4,
    //   //            pimage->get_data(),
    //   //            pimage->m_iScan);
    //   //
    //   //         //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-   //   //         //   m_sizeBitmap1.cx(),
-   //   //         //   m_sizeBitmap1.cy(),
+   //   //         //   m_sizeBitmap1.cx,
+   //   //         //   m_sizeBitmap1.cy,
    //   //         //   0, GL_RGBA, GL_UNSIGNED_BYTE,
    //   //         //   m_memorySwap.data()); // upload image data to the textur
    //   //
@@ -711,8 +711,8 @@ namespace gpu_vulkan
 
       //   if (!::SetWindowPos(m_hwnd,
       //      nullptr, 0, 0,
-      //      size.cx()
-      //      , size.cy(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE
+      //      size.cx
+      //      , size.cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE
       //      | SWP_NOCOPYBITS | SWP_NOSENDCHANGING
       //      | SWP_NOREPOSITION | SWP_NOREDRAW))
       //   {
@@ -742,8 +742,8 @@ namespace gpu_vulkan
       //   dwStyle &= ~WS_BORDER;
       //   int x = 0;
       //   int y = 0;
-      //   int nWidth = size.cx();
-      //   int nHeight = size.cy();
+      //   int nWidth = size.cx;
+      //   int nHeight = size.cy;
       //   HWND hWndParent = nullptr;
       //   HMENU hMenu = nullptr;
       //   HINSTANCE hInstance = ::GetModuleHandleW(L"gpu_vulkan.dll");
@@ -1624,8 +1624,8 @@ namespace gpu_vulkan
    //   //      //memset(&BIH, 0, sizeof(pwindow->m_bitmapinfoheaderProto));
 
    //   //      //BIH.biSize = sizeof(pwindow->m_bitmapinfoheaderProto);        // размер структуры
-   //   //      //BIH.biWidth = m_size.cx();       // геометрия
-   //   //      //BIH.biHeight = m_size.cy();      // битмапа
+   //   //      //BIH.biWidth = m_size.cx;       // геометрия
+   //   //      //BIH.biHeight = m_size.cy;      // битмапа
    //   //      //BIH.biPlanes = 1;          // один план
    //   //      //BIH.biBitCount = 32;       // 24 bits per pixel
    //   //      //BIH.biCompression = BI_RGB;// без сжатия// создаем новый DC в памяти
@@ -1712,7 +1712,7 @@ namespace gpu_vulkan
 
    //   //#ifdef WINDOWS_DESKTOP
    //   //
-   //   //      ::SetWindowPos(m_hwnd, 0, 0, 0, size.cx(), size.cy(), SWP_NOZORDER | SWP_NOMOVE | SWP_HIDEWINDOW);
+   //   //      ::SetWindowPos(m_hwnd, 0, 0, 0, size.cx, size.cy, SWP_NOZORDER | SWP_NOMOVE | SWP_HIDEWINDOW);
    //   //
    //   //#else
 
@@ -1729,10 +1729,10 @@ namespace gpu_vulkan
 
    //         make_current();
 
-   //         //glViewport(0, 0, size.cx(), size.cy());
+   //         //glViewport(0, 0, size.cx, size.cy);
    //         //glMatrixMode(GL_PROJECTION);
    //         //glLoadIdentity();
-   //         //glOrtho(0, size.cx(), 0, size.cy(), -10, 10);
+   //         //glOrtho(0, size.cx, 0, size.cy, -10, 10);
    //         //glMatrixMode(GL_MODELVIEW);
    //         //glutPostRedisplay();
 

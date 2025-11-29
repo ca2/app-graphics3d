@@ -420,8 +420,8 @@ namespace gpu_vulkan
    //
    //         ::int_size size;
    //
-   //         size.cx() = m_extentRenderer.width;
-   //         size.cy() = m_extentRenderer.height;
+   //         size.cx = m_extentRenderer.width;
+   //         size.cy = m_extentRenderer.height;
    //
    //         pgpurenderpass->initialize_render_target(this, size, pgpurenderpass.m_p);
    //
@@ -1256,10 +1256,10 @@ namespace gpu_vulkan
          true);
 
       //_synchronous_lock synchronouslock(m_pgpucontext->m_pmutexOffscreen);
-      //   m_pgpucontext->m_sizeOffscreen.cx() = m_vkextent2d.width;
-      //m_pgpucontext->m_sizeOffscreen.cy() = m_vkextent2d.height;
+      //   m_pgpucontext->m_sizeOffscreen.cx = m_vkextent2d.width;
+      //m_pgpucontext->m_sizeOffscreen.cy = m_vkextent2d.height;
       //m_pgpucontext->m_iScanOffscreen = subResourceLayout.rowPitch;
-      //auto area = m_pgpucontext->m_iScanOffscreen * m_pgpucontext->m_sizeOffscreen.cy();
+      //auto area = m_pgpucontext->m_iScanOffscreen * m_pgpucontext->m_sizeOffscreen.cy;
       //m_pgpucontext->m_memoryOffscreen.set_size(area);
       //m_pgpucontext->m_memoryOffscreen.assign(imagedata, area);
       //callback((void *)imagedata,
@@ -1781,15 +1781,15 @@ namespace gpu_vulkan
       //	vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
       //	auto rectangle = m_rectangle;
       //	VkViewport vp = {
-      //	   (float)rectangle.left(),
-      //	   (float)rectangle.top(),
+      //	   (float)rectangle.left,
+      //	   (float)rectangle.top,
       //	   (float)rectangle.width(),
       //	   (float)rectangle.height(),
       //	   0.0f, 1.0f };
       //	VkRect2D sc = {
       //	   {
-      //	   (float)rectangle.left(),
-      //	   (float)rectangle.top(),
+      //	   (float)rectangle.left,
+      //	   (float)rectangle.top,
       //	   },
       //	   {
       //				   (float)rectangle.width(),
@@ -2315,16 +2315,16 @@ namespace gpu_vulkan
       pmodelbuffer->bind(pcommandbuffer);
 
       //VkViewport vp = {
-      //   (float)rectangle.left(),
-      //   (float)rectangle.top(),
+      //   (float)rectangle.left,
+      //   (float)rectangle.top,
       //   (float)rectangle.width(),
       //   (float)rectangle.height(),
       //   0.0f, 1.0f };
 
       //VkRect2D sc = {
       //   {
-      //      rectangle.left(),
-      //      rectangle.top(),
+      //      rectangle.left,
+      //      rectangle.top,
       //   },
       //   {
       //      (uint32_t)rectangle.width(),
@@ -2538,7 +2538,7 @@ namespace gpu_vulkan
                .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                .renderPass = m_prenderpassCopy->m_vkrenderpass,
                .framebuffer = ptextureDst->framebuffer(m_prenderpassCopy),
-               .renderArea = {{rectangleTarget.left(), rectangleTarget.top()},
+               .renderArea = {{rectangleTarget.left, rectangleTarget.top},
             {(uint32_t)rectangleTarget.width(),(uint32_t)rectangleTarget.height()}},
             //.clearValueCount = 1,
             //.pClearValues = &clearColor
@@ -3158,16 +3158,16 @@ namespace gpu_vulkan
 
 
       //VkViewport vp = {
-      //   (float)rectanglePlacement.left(),
-      //   (float)rectanglePlacement.top(),
+      //   (float)rectanglePlacement.left,
+      //   (float)rectanglePlacement.top,
       //   (float)rectanglePlacement.width(),
       //   (float)rectanglePlacement.height(),
       //   0.0f, 1.0f };
 
       //VkRect2D sc = {
       //   {
-      //      rectanglePlacement.left(),
-      //      rectanglePlacement.top(),
+      //      rectanglePlacement.left,
+      //      rectanglePlacement.top,
       //   },
       //   {
       //      (uint32_t)rectanglePlacement.width(),
@@ -4679,16 +4679,16 @@ namespace gpu_vulkan
       auto rectangle = m_pgpucontext->rectangle();
 
       VkViewport vp = {
-         (float)rectangle.left(),
-         (float)rectangle.top(),
+         (float)rectangle.left,
+         (float)rectangle.top,
          (float)rectangle.width(),
          (float)rectangle.height(),
          0.0f, 1.0f };
 
       VkRect2D sc = {
          {
-            rectangle.left(),
-            rectangle.top(),
+            rectangle.left,
+            rectangle.top,
          },
          {
             (uint32_t)rectangle.width(),
@@ -4929,7 +4929,7 @@ namespace gpu_vulkan
                .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                .renderPass = m_prenderpassBlend2->m_vkrenderpass,
                .framebuffer = vkframebuffer,
-               .renderArea = {{rectangleTarget.left(), rectangleTarget.top()},
+               .renderArea = {{rectangleTarget.left, rectangleTarget.top},
             {(uint32_t)rectangleTarget.width(),(uint32_t)rectangleTarget.height()}},
             //.clearValueCount = 1,
             //.pClearValues = &clearColor

@@ -457,8 +457,8 @@ namespace gpu_vulkan
 
       VkViewport viewport =
       {
-         (float)rectangle.left(),
-         (float)rectangle.top(),
+         (float)rectangle.left,
+         (float)rectangle.top,
          (float)rectangle.width(),
          (float)rectangle.height(),
          0.0f, 1.0f
@@ -476,8 +476,8 @@ namespace gpu_vulkan
       {
 
          {
-            rectangle.left(),
-            rectangle.top(),
+            rectangle.left,
+            rectangle.top,
          },
          {
             (uint32_t)rectangle.width(),

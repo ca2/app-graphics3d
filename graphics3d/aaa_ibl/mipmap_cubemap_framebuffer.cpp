@@ -40,10 +40,10 @@ namespace gpu
          //
 
          ødefer_construct(m_ptexture);
-         m_ptexture->m_rectangleTarget.left()=0;
-         m_ptexture->m_rectangleTarget.top()=0;
-         m_ptexture->m_rectangleTarget.right()=width;
-         m_ptexture->m_rectangleTarget.bottom()=height;
+         m_ptexture->m_rectangleTarget.left=0;
+         m_ptexture->m_rectangleTarget.top=0;
+         m_ptexture->m_rectangleTarget.right=width;
+         m_ptexture->m_rectangleTarget.bottom=height;
          m_ptexture->m_mipLevels=0;
 
          on_initialize_mipmap_cubemap_framebuffer();
@@ -106,10 +106,10 @@ namespace gpu
       void mipmap_cubemap_framebuffer::setMipLevel(unsigned int level)
       {
          m_ptexture->m_mipLevels = level;
-         m_ptexture->m_sizeMip.cx() =
+         m_ptexture->m_sizeMip.cx =
             (unsigned int)((double) m_ptexture->m_rectangleTarget.width() *
                ::pow((double)0.5, (double) m_ptexture->m_mipLevels));
-         m_ptexture->m_sizeMip.cy() =
+         m_ptexture->m_sizeMip.cy =
             (unsigned int)((double) m_ptexture->m_rectangleTarget.height() *
                ::pow((double)0.5, (double) m_ptexture->m_mipLevels));
          //

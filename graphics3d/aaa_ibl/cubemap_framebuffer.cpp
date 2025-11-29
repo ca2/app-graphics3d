@@ -33,10 +33,10 @@ namespace gpu
       void cubemap_framebuffer::initialize_cubemap_framebuffer(int width, int height)
       {
 ødefer_construct(m_ptexture);
-         m_ptexture->m_rectangleTarget.left()=0;
-         m_ptexture->m_rectangleTarget.top()=0;
-         m_ptexture->m_rectangleTarget.right()=width;
-         m_ptexture->m_rectangleTarget.bottom()=height;
+         m_ptexture->m_rectangleTarget.left=0;
+         m_ptexture->m_rectangleTarget.top=0;
+         m_ptexture->m_rectangleTarget.right=width;
+         m_ptexture->m_rectangleTarget.bottom=height;
 
          on_initialize_cubemap_framebuffer();
 

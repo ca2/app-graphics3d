@@ -34,7 +34,7 @@ namespace app_graphics3d_continuum
 
       m_rotation.set(yaw, pitch);
 
-      m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
+      //m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
 
       m_angleFovY = 75_degrees;
 

@@ -1135,9 +1135,9 @@ float4 main(PSInput input) : SV_TARGET {
 
          pdevice->defer_throw_hresult(hr);
 
-         m_size.cx() = (int)m_desc.Width;
+         m_size.cx = (int)m_desc.Width;
 
-         m_size.cy() = (int)m_desc.Height;
+         m_size.cy = (int)m_desc.Height;
 
       }
 
@@ -1329,7 +1329,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //m_pcpubuffersampler->sample(poffscreenrendertargetview->current_texture());
 
-      // You can now read `m_size.cy()` rows, each of aligned pitch `footprint.Footprint.RowPitch`
+      // You can now read `m_size.cy` rows, each of aligned pitch `footprint.Footprint.RowPitch`
       UINT w = 0;
       UINT h = 0;
       UINT s = 0;
@@ -1360,10 +1360,10 @@ float4 main(PSInput input) : SV_TARGET {
       //if()
       //// Example:
       //uint8_t* row = reinterpret_cast<uint8_t*>(data);
-      //for (int y = 0; y < m_size.cy(); ++y)
+      //for (int y = 0; y < m_size.cy; ++y)
       //{
       //   auto pixel = reinterpret_cast<uint32_t*>(row);
-      //   for (int x = 0; x < m_size.cx(); ++x)
+      //   for (int x = 0; x < m_size.cx; ++x)
       //   {
       //      uint32_t rgba = pixel[x];
       //      // process pixel
@@ -1473,10 +1473,10 @@ float4 main(PSInput input) : SV_TARGET {
    //   //   (int)subResourceLayout.rowPitch);
 
    ////   //_synchronous_lock synchronouslock(m_pgpucontext->m_pmutexOffscreen);
-   ////   //   m_pgpucontext->m_sizeOffscreen.cx() = m_vkextent2d.width;
-   ////   //m_pgpucontext->m_sizeOffscreen.cy() = m_vkextent2d.height;
+   ////   //   m_pgpucontext->m_sizeOffscreen.cx = m_vkextent2d.width;
+   ////   //m_pgpucontext->m_sizeOffscreen.cy = m_vkextent2d.height;
    ////   //m_pgpucontext->m_iScanOffscreen = subResourceLayout.rowPitch;
-   ////   //auto area = m_pgpucontext->m_iScanOffscreen * m_pgpucontext->m_sizeOffscreen.cy();
+   ////   //auto area = m_pgpucontext->m_iScanOffscreen * m_pgpucontext->m_sizeOffscreen.cy;
    ////   //m_pgpucontext->m_memoryOffscreen.set_size(area);
    ////   //m_pgpucontext->m_memoryOffscreen.assign(imagedata, area);
    ////   //callback((void *)imagedata,
@@ -2210,15 +2210,15 @@ float4 main(PSInput input) : SV_TARGET {
       //	vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
       //	auto rectangle = m_rectangle;
       //	VkViewport vp = {
-      //	   (float)rectangle.left(),
-      //	   (float)rectangle.top(),
+      //	   (float)rectangle.left,
+      //	   (float)rectangle.top,
       //	   (float)rectangle.width(),
       //	   (float)rectangle.height(),
       //	   0.0f, 1.0f };
       //	VkRect2D sc = {
       //	   {
-      //	   (float)rectangle.left(),
-      //	   (float)rectangle.top(),
+      //	   (float)rectangle.left,
+      //	   (float)rectangle.top,
       //	   },
       //	   {
       //				   (float)rectangle.width(),
@@ -2795,15 +2795,15 @@ float4 main(PSInput input) : SV_TARGET {
    //   vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
    //   VkViewport vp = {
-   //      (float)rectangle.left(),
-   //      (float)rectangle.top(),
+   //      (float)rectangle.left,
+   //      (float)rectangle.top,
    //      (float)rectangle.width(),
    //      (float)rectangle.height(),
    //      0.0f, 1.0f };
    //   VkRect2D sc = {
    //      {
-   //      (float)rectangle.left(),
-   //      (float)rectangle.top(),
+   //      (float)rectangle.left,
+   //      (float)rectangle.top,
    //      },
    //      {
    //               (float)rectangle.width(),
@@ -2970,15 +2970,15 @@ float4 main(PSInput input) : SV_TARGET {
    //   vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
    //   VkViewport vp = {
-   //      (float)rectangle.left(),
-   //      (float)rectangle.top(),
+   //      (float)rectangle.left,
+   //      (float)rectangle.top,
    //      (float)rectangle.width(),
    //      (float)rectangle.height(),
    //      0.0f, 1.0f };
    //   VkRect2D sc = {
    //      {
-   //      (float)rectangle.left(),
-   //      (float)rectangle.top(),
+   //      (float)rectangle.left,
+   //      (float)rectangle.top,
    //      },
    //      {
    //               (float)rectangle.width(),
@@ -3258,15 +3258,15 @@ float4 main(PSInput input) : SV_TARGET {
    //   vkCmdBindIndexBuffer(commandBuffer, pmodel->m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
    //   VkViewport vp = {
-   //      (float)rectangle.left(),
-   //      (float)rectangle.top(),
+   //      (float)rectangle.left,
+   //      (float)rectangle.top,
    //      (float)rectangle.width(),
    //      (float)rectangle.height(),
    //      0.0f, 1.0f };
    //   VkRect2D sc = {
    //      {
-   //      (float)rectangle.left(),
-   //      (float)rectangle.top(),
+   //      (float)rectangle.left,
+   //      (float)rectangle.top,
    //      },
    //      {
    //               (float)rectangle.width(),
@@ -3342,10 +3342,10 @@ float4 main(PSInput input) : SV_TARGET {
       auto sizeHost = m_pgpucontext->m_rectangle.size();
 
       const auto& rect = player->texture()->m_rectangleTarget;
-      float left = ((float)rect.left() / (float) sizeHost.width()) * 2.0f - 1.0f;
-      float right = ((float)rect.right() / (float) sizeHost.width()) * 2.0f - 1.0f;
-      float top = 1.0f - ((float)rect.top() / (float) sizeHost.height()) * 2.0f;
-      float bottom = 1.0f - ((float) rect.bottom() / (float) sizeHost.height()) * 2.0f;
+      float left = ((float)rect.left / (float) sizeHost.width()) * 2.0f - 1.0f;
+      float right = ((float)rect.right / (float) sizeHost.width()) * 2.0f - 1.0f;
+      float top = 1.0f - ((float)rect.top / (float) sizeHost.height()) * 2.0f;
+      float bottom = 1.0f - ((float) rect.bottom / (float) sizeHost.height()) * 2.0f;
 
       ::graphics3d::sequence2_uv quad[] = {
           {{left, top}, {0, 0}},
@@ -3664,15 +3664,15 @@ float4 main(PSInput input) : SV_TARGET {
 
 
       //  VkViewport vp = {
-      //     (float)rectanglePlacement.left(),
-      //     (float)rectanglePlacement.top(),
+      //     (float)rectanglePlacement.left,
+      //     (float)rectanglePlacement.top,
       //     (float)rectanglePlacement.width(),
       //     (float)rectanglePlacement.height(),
       //     0.0f, 1.0f };
       //  VkRect2D sc = {
       //     {
-      //     (float)rectanglePlacement.left(),
-      //     (float)rectanglePlacement.top(),
+      //     (float)rectanglePlacement.left,
+      //     (float)rectanglePlacement.top,
       //     },
       //     {
       //     (float)rectanglePlacement.width(),

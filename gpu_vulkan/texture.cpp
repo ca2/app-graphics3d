@@ -1600,11 +1600,11 @@ void texture::create_sampler()
       auto pphysicaldevice = pdevice->m_pphysicaldevice;
 
       //this->m_pDevice = device;
-      m_rectangleTarget.left() = 0;
-      m_rectangleTarget.top() = 0;
+      m_rectangleTarget.left = 0;
+      m_rectangleTarget.top = 0;
       // this->m_pDevice = pdevice;
-      m_rectangleTarget.right() = ktxTexture->baseWidth;
-      m_rectangleTarget.bottom() = ktxTexture->baseHeight;
+      m_rectangleTarget.right = ktxTexture->baseWidth;
+      m_rectangleTarget.bottom = ktxTexture->baseHeight;
       m_iMipCount = ktxTexture->numLevels;
 
       ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
@@ -2065,11 +2065,11 @@ void texture::create_sampler()
 
       auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
-      m_rectangleTarget.left() = 0;
-      m_rectangleTarget.top() = 0;
+      m_rectangleTarget.left = 0;
+      m_rectangleTarget.top = 0;
       //this->m_pDevice = pdevice;
-      m_rectangleTarget.right() = ktxTexture->baseWidth;
-      m_rectangleTarget.bottom() = ktxTexture->baseHeight;
+      m_rectangleTarget.right = ktxTexture->baseWidth;
+      m_rectangleTarget.bottom = ktxTexture->baseHeight;
       m_iMipCount = ktxTexture->numLevels;
 
       ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);

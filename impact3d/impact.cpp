@@ -347,10 +347,10 @@ namespace graphics3d_impact3d
 
             m_doubleRatSpeedHpp = 0.01;
 
-            //m_angleHorizontal.m_d += m_doubleRatSpeedHpp * (size.cx() / 2.0 - m_sizeMouseDelta.cx());
-            //m_angleVertical.m_d += m_doubleRatSpeedHpp * (size.cy() / 2.0 - m_sizeMouseDelta.cy());
-            m_angleHorizontal.m_fAngle += m_doubleRatSpeedHpp * (- m_sizeMouseDelta.cx());
-            m_angleVertical.m_fAngle += m_doubleRatSpeedHpp * ( - m_sizeMouseDelta.cy());
+            //m_angleHorizontal.m_d += m_doubleRatSpeedHpp * (size.cx / 2.0 - m_sizeMouseDelta.cx);
+            //m_angleVertical.m_d += m_doubleRatSpeedHpp * (size.cy / 2.0 - m_sizeMouseDelta.cy);
+            m_angleHorizontal.m_fAngle += m_doubleRatSpeedHpp * (- m_sizeMouseDelta.cx);
+            m_angleVertical.m_fAngle += m_doubleRatSpeedHpp * ( - m_sizeMouseDelta.cy);
 
          }
 

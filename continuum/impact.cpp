@@ -248,8 +248,8 @@ namespace app_graphics3d_continuum
          else
          {
 
-            point.x = mathematics()->random(0, (int)(rectangleX.width() - size.cx()));
-            point.y = mathematics()->random(0, (int)(rectangleX.height() - size.cy() * 2));
+            point.x = mathematics()->random(0, (int)(rectangleX.width() - size.cx));
+            point.y = mathematics()->random(0, (int)(rectangleX.height() - size.cy * 2));
 
          }
 
@@ -265,7 +265,7 @@ namespace app_graphics3d_continuum
 
                x = 0;
 
-               y += size.cy();
+               y += size.cy;
 
                bWhite = true;
 
@@ -294,7 +294,7 @@ namespace app_graphics3d_continuum
 
             auto s = pgraphics->get_text_extent(strItem);
 
-            x += s.cx();
+            x += s.cx;
 
             bWhite = !bWhite;
 
@@ -306,7 +306,7 @@ namespace app_graphics3d_continuum
 
          pgraphics->set_text_color(color);
 
-         pgraphics->text_out(point.x, point.y + y + size.cy(), strText);
+         pgraphics->text_out(point.x, point.y + y + size.cy, strText);
 
          pgraphics->set_smooth_mode(::draw2d::e_smooth_mode_none);
 
@@ -385,21 +385,6 @@ namespace app_graphics3d_continuum
    }
 
 
-   //void impact::on_load_engine()
-   //{
-
-   //   ::user::graphics3d::on_load_engine();
-
-   //}
-
-   //bool impact::is_absolute_mouse_position()
-   //{
-
-   //   return get_app()->is_absolute_mouse_position();
-
-   //}
-
-
    ::pointer < ::prodevian::immersion > impact::create_immersion()
    {
 
@@ -408,14 +393,6 @@ namespace app_graphics3d_continuum
       return pimmersion;
 
    }
-
-
-   //void impact::on_load_engine()
-   //{
-
-   //   ::user::graphics3d::on_load_engine();
-
-   //}
 
 
    ::pointer < ::graphics3d::key_map > impact::get_default_key_map()

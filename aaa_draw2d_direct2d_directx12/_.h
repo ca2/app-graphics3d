@@ -29,10 +29,10 @@
 //   //{
 //
 //   //   return D2D1::Rect<FLOAT>(
-//   //      (FLOAT)(rectangle.left()),
-//   //      (FLOAT)(rectangle.top()),
-//   //      (FLOAT)(rectangle.right()),
-//   //      (FLOAT)(rectangle.bottom())
+//   //      (FLOAT)(rectangle.left),
+//   //      (FLOAT)(rectangle.top),
+//   //      (FLOAT)(rectangle.right),
+//   //      (FLOAT)(rectangle.bottom)
 //   //      );
 //
 //   //}

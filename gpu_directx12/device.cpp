@@ -96,8 +96,8 @@ namespace gpu_directx12
 
       //   if (!::SetWindowPos(m_hwnd,
       //      nullptr, 0, 0,
-      //      size.cx()
-      //      , size.cy(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE
+      //      size.cx
+      //      , size.cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE
       //      | SWP_NOCOPYBITS | SWP_NOSENDCHANGING
       //      | SWP_NOREPOSITION | SWP_NOREDRAW))
       //   {
@@ -127,8 +127,8 @@ namespace gpu_directx12
       //   dwStyle &= ~WS_BORDER;
       //   int x = 0;
       //   int y = 0;
-      //   int nWidth = size.cx();
-      //   int nHeight = size.cy();
+      //   int nWidth = size.cx;
+      //   int nHeight = size.cy;
       //   HWND hWndParent = nullptr;
       //   HMENU hMenu = nullptr;
       //   HINSTANCE hInstance = ::GetModuleHandleW(L"gpu_directx12.dll");

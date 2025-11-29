@@ -1032,8 +1032,8 @@
 //
 //         //D3D12_RESOURCE_DESC texDesc = {};
 //         //texDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-//         //texDesc.Width = size.cx();
-//         //texDesc.Height = size.cy();
+//         //texDesc.Width = size.cx;
+//         //texDesc.Height = size.cy;
 //         //texDesc.DepthOrArraySize = 1;
 //         //texDesc.MipLevels = 1;
 //         //texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM; // D2D-compatible
@@ -1232,7 +1232,7 @@
 //
 //      //      //}
 //
-//      //      D2D1_SIZE_U sizeu = D2D1::SizeU(size.cx(), size.cy());
+//      //      D2D1_SIZE_U sizeu = D2D1::SizeU(size.cx, size.cy);
 //
 //      //      if (sizeu.width <= 0)
 //      //      {

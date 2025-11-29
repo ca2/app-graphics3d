@@ -45,9 +45,9 @@ namespace graphics3d_directx11
          int useTextureNormal;//8
          int useTextureAmbientOcclusion;//12
          int useTextureEmissive;//16
-         int padding1;
-         int padding2;
-         int padding3;
+         //int padding1;
+         //int padding2;
+         //int padding3;
 
          // 20
 
@@ -56,7 +56,7 @@ namespace graphics3d_directx11
          float roughness;//36
          float ambientOcclusion;//40
          ::floating_sequence3 emissive;//44
-         float fPadding4;
+         //float fPadding4;
          // 36
 
          // 56
@@ -64,6 +64,7 @@ namespace graphics3d_directx11
          //::floating_sequence3 cameraPosition;//56
          float bloomBrightnessCutoff;//68
          // 72
+         ::floating_sequence3 multiplier; // 44
 
       };
 

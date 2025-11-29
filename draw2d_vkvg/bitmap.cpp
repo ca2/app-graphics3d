@@ -112,13 +112,13 @@ namespace draw2d_vkvg
 
       __UNREFERENCED_PARAMETER(pgraphics);
 
-      m_sizeOut.cx() = size.cx();
+      m_sizeOut.cx = size.cx;
 
-      m_sizeOut.cy() = size.cy();
+      m_sizeOut.cy = size.cy;
 
-      m_iStride = 4 * size.cx();
+      m_iStride = 4 * size.cx;
 
-      m_memOut.set_size(abs(m_iStride * size.cy()));
+      m_memOut.set_size(abs(m_iStride * size.cy));
 
       if (m_memOut.data() == nullptr)
       {
@@ -138,7 +138,7 @@ namespace draw2d_vkvg
 
       if(piScan != nullptr)
       {
-         *piScan = size.cx() * sizeof(color32_t);
+         *piScan = size.cx * sizeof(color32_t);
       }
 
       m_osdata[0] = (void *) 1;
@@ -361,25 +361,25 @@ namespace draw2d_vkvg
    void bitmap::create_texture(int iResampleQuality)
    {
 
-      //m_sizeIn.cx() = 1;
-      //m_sizeIn.cy() = 1;
+      //m_sizeIn.cx = 1;
+      //m_sizeIn.cy = 1;
 
-      //while (m_sizeIn.cx() < m_sizeOut.cx())
+      //while (m_sizeIn.cx < m_sizeOut.cx)
       //{
 
-      //   m_sizeIn.cx() *= 2;
+      //   m_sizeIn.cx *= 2;
 
       //}
 
-      //while(m_sizeIn.cy() < m_sizeOut.cy())
+      //while(m_sizeIn.cy < m_sizeOut.cy)
       //{
 
-      //   m_sizeIn.cy() *= 2;
+      //   m_sizeIn.cy *= 2;
 
       //}
 
 
-      //resizeBilinear(m_memIn, m_sizeIn.cx(), m_sizeIn.cy(), (int*)m_memOut.data(), m_sizeOut.cx(), m_sizeOut.cy());
+      //resizeBilinear(m_memIn, m_sizeIn.cx, m_sizeIn.cy, (int*)m_memOut.data(), m_sizeOut.cx, m_sizeOut.cy);
 
       //vkGenTextures(1, &m_texture);
 
@@ -412,7 +412,7 @@ namespace draw2d_vkvg
 
       //}
 
-      //vkTexImage2D(VK_TEXTURE_2D, 0, 4, m_sizeIn.cx(), m_sizeIn.cy(), 0, VK_BGRA_EXT, VK_UNSIGNED_BYTE, m_memIn.data());
+      //vkTexImage2D(VK_TEXTURE_2D, 0, 4, m_sizeIn.cx, m_sizeIn.cy, 0, VK_BGRA_EXT, VK_UNSIGNED_BYTE, m_memIn.data());
       //e = vkGetError();
 
 
@@ -518,18 +518,18 @@ namespace draw2d_vkvg
 //                        //   height = 1;										// Making Height Equal One
 //                        //}
 //
-//                        vkContext(0, 0, m_sizeOut.cx(), m_sizeOut.cy());						// Reset The Current Context
+//                        vkContext(0, 0, m_sizeOut.cx, m_sizeOut.cy);						// Reset The Current Context
 //
 //                        vkMatrixMode(VK_PROJECTION);						// Select The Projection Matrix
 //                        vkLoadIdentity();									// Reset The Projection Matrix
 //
 //                        // Calculate The Aspect Ratio Of The Window
-//                        vkuPerspective(45.0f, (VKfloat)m_sizeOut.cx() / (VKfloat)m_sizeOut.cy(), 0.1f, 100.0f);
+//                        vkuPerspective(45.0f, (VKfloat)m_sizeOut.cx / (VKfloat)m_sizeOut.cy, 0.1f, 100.0f);
 //
 //                        vkMatrixMode(VK_MODELVIEW);							// Select The Modelview Matrix
 //                        vkLoadIdentity();									// Reset The Modelview Matrix
 //                        vkTranslatef(-1.0, -1.0, 0);
-//                        vkScalef(2.0/(float)m_sizeOut.cx(), 2.0/(float)m_sizeOut.cy(), 0);
+//                        vkScalef(2.0/(float)m_sizeOut.cx, 2.0/(float)m_sizeOut.cy, 0);
 //
 //                     }
 //
@@ -577,7 +577,7 @@ namespace draw2d_vkvg
 //
 //         color32_t * pdata = (color32_t *) m_memOut.data();
 //
-//         vkReadPixels(0, 0, m_sizeOut.cx(), m_sizeOut.cy(), VK_BGRA_EXT, VK_UNSIGNED_BYTE, pdata);
+//         vkReadPixels(0, 0, m_sizeOut.cx, m_sizeOut.cy, VK_BGRA_EXT, VK_UNSIGNED_BYTE, pdata);
 //         e = vkGetError();
 //
 //         information("error " + ::as_string((int)e));
@@ -745,7 +745,7 @@ namespace draw2d_vkvg
 //         return false;
 //      }
 //
-//      if (!(g_hPBuffer = wglCreatePbufferARB(g_hDC, format, m_sizeOut.cx(), m_sizeOut.cy(), 0)))
+//      if (!(g_hPBuffer = wglCreatePbufferARB(g_hDC, format, m_sizeOut.cx, m_sizeOut.cy, 0)))
 //      {
 //         MessageBox(0, _T("wglCreatePbufferARB() failed"), _T("Error"), e_message_box_icon_stop);
 //         return false;

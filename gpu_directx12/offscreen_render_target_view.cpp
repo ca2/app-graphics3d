@@ -83,8 +83,8 @@ namespace gpu_directx12
 
       //// 1. Create offscreen render target texture
       //D3D11_TEXTURE2D_DESC texDesc = {};
-      //texDesc.Width = m_size.cx();
-      //texDesc.Height = m_size.cy();
+      //texDesc.Width = m_size.cx;
+      //texDesc.Height = m_size.cy;
       //texDesc.MipLevels = 1;
       //texDesc.ArraySize = 1;
       //texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;

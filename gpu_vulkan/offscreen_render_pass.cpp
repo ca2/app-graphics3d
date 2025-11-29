@@ -500,8 +500,8 @@ namespace gpu_vulkan
 
    //   auto size = m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->m_size;
 
-   //   m_extent.width = size.cx();
-   //   m_extent.height = size.cy();
+   //   m_extent.width = size.cx;
+   //   m_extent.height = size.cy;
 
    // 
    //   //image.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;

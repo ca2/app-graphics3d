@@ -686,8 +686,8 @@ namespace gpu_directx12
    //      );
 
    //   // Dimensions of update
-   //   UINT updateWidth = rectangle.right() - rectangle.left();
-   //   UINT updateHeight = rectangle.bottom() - rectangle.top();
+   //   UINT updateWidth = rectangle.right - rectangle.left;
+   //   UINT updateHeight = rectangle.bottom - rectangle.top;
 
    //   // Describe destination
    //   D3D12_RESOURCE_DESC texDesc = m_presource->GetDesc();
@@ -752,7 +752,7 @@ namespace gpu_directx12
 
    //   pcommandbuffer->m_pcommandlist->CopyTextureRegion(
    //      &dstLoc,
-   //      rectangle.left(), rectangle.top(), 0, // destination position
+   //      rectangle.left, rectangle.top, 0, // destination position
    //      &srcLoc,
    //      &srcBox
    //   );
@@ -1031,8 +1031,8 @@ namespace gpu_directx12
 
       UINT srcRowPitch = rectangle.width() * bytesPerPixel;
       BYTE* dst = (BYTE *) m_pMap + m_footprint.Offset + 
-         rectangle.left() * bytesPerPixel
-         + rectangle.top() * m_footprint.Footprint.RowPitch;
+         rectangle.left * bytesPerPixel
+         + rectangle.top * m_footprint.Footprint.RowPitch;
 
       auto cpuPixels = data;
 
@@ -1059,11 +1059,11 @@ namespace gpu_directx12
       damageNew.m_copylocationSource.PlacedFootprint = m_footprint;
 
       damageNew.m_boxSource = CD3DX12_BOX(
-         rectangle.left(), rectangle.top(),
-         0, rectangle.right(), rectangle.bottom(), 1);
+         rectangle.left, rectangle.top,
+         0, rectangle.right, rectangle.bottom, 1);
 
-      damageNew.m_iLeft = rectangle.left();
-      damageNew.m_iTop = rectangle.top();
+      damageNew.m_iLeft = rectangle.left;
+      damageNew.m_iTop = rectangle.top;
 
       // ⚠️ caller is responsible for:
       // - Transitioning dstTexture into COPY_DEST before this call

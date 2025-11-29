@@ -40,7 +40,7 @@ namespace draw2d_vkvg
    
    void region::SetRectRgn(const ::int_rectangle & rectangle)
    { 
-      ::SetRectRgn((HRGN)get_os_data(), rectangle.left(), rectangle.top(), rectangle.right(), rectangle.bottom()); 
+      ::SetRectRgn((HRGN)get_os_data(), rectangle.left, rectangle.top, rectangle.right, rectangle.bottom); 
    }
 
    int region::CombineRgn(const ::draw2d::region* pRgn1, const ::draw2d::region* pRgn2, int nCombineMode)
@@ -74,10 +74,10 @@ namespace draw2d_vkvg
       //((region *) this)->m_pregion->GetBounds(&rectangle, &plusplus::Graphics((HDC) nullptr));
 
 
-      //lprect->left() = rectangle.X;
-      //lprect->top() = rectangle.Y;
-      //lprect->right() = rectangle.X + rectangle.Width;
-      //lprect->bottom() = rectangle.Y + rectangle.Height;
+      //lprect->left = rectangle.X;
+      //lprect->top = rectangle.Y;
+      //lprect->right = rectangle.X + rectangle.Width;
+      //lprect->bottom = rectangle.Y + rectangle.Height;
       
       return true;
 
@@ -112,7 +112,7 @@ namespace draw2d_vkvg
    { 
       //ASSERT(get_os_data() != nullptr); return ::rectInRegion((HRGN)get_os_data(), rectangle); 
 
-      plusplus::rectF float_rectangle((plusplus::REAL) rectangle.left(), (plusplus::REAL) rectangle.top(), (plusplus::REAL) (rectangle.right() - rectangle.left()), (plusplus::REAL) (rectangle.bottom() - rectangle.top()));
+      plusplus::rectF float_rectangle((plusplus::REAL) rectangle.left, (plusplus::REAL) rectangle.top, (plusplus::REAL) (rectangle.right - rectangle.left), (plusplus::REAL) (rectangle.bottom - rectangle.top));
       
       ASSERT(get_os_data() != nullptr); //return ::PtInRegion((HRGN)get_os_data(), x, y); 
 

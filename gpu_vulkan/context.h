@@ -85,6 +85,8 @@ namespace gpu_vulkan
 
       void layout_push_constants(::gpu::properties &properties, bool bGlobalUbo) override;
 
+      //void layout_std140(::gpu::properties &properties, bool bGlobalUbo) override;
+
 
       virtual VkCommandPool
       createCommandPool(uint32_t queueFamilyIndex,

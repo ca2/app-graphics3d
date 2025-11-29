@@ -35,8 +35,8 @@ namespace app_graphics3d_continuum
       void process_keyboard_input() override;
 
 
-      void _001OnMouseMove(const ::int_point & point) override;
-      void _001OnMouseOut() override;
+      //void _001OnMouseMove(const ::int_point & point) override;
+      //void _001OnMouseOut() override;
       void _001PrepareMouseInput();
       void process_mouse_input_updateLook();
       void _001UpdateLook();
@@ -72,8 +72,8 @@ namespace app_graphics3d_continuum
       // Existing functions...
       //void handleMouseInput(GLFWwindow* window);
 
-      float getX() const { return (float) m_Δx; }
-      float getY() const { return (float) m_Δy; }
+      //float getX() const { return (float) m_Δx; }
+      //float getY() const { return (float) m_Δy; }
 
             //::block as_block() override;
 

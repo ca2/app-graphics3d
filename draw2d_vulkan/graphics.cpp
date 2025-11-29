@@ -448,7 +448,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //int_size graphics::set_context_extents(const ::int_size & size)
    //{
-   //   return set_context_extents(size.cx(), size.cy());
+   //   return set_context_extents(size.cx, size.cy);
    //}
 
    int_point graphics::SetWindowOrg(const ::int_point& point)
@@ -458,7 +458,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    int_size graphics::set_window_ext(const ::int_size& size)
    {
-      return set_window_ext(size.cx(), size.cy());
+      return set_window_ext(size.cx, size.cy);
    }
 
    void graphics::DPtoLP(::double_point* lpPoints, ::collection::count nCount)
@@ -739,7 +739,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //   cairo_pattern_t* ppattern = cairo_pattern_create_radial(pbrush->m_point.x - x, pbrush->m_point.y - y, 0,
       //      pbrush->m_point.x - x, pbrush->m_point.y - y,
-      //      maximum(pbrush->m_size.cx(), pbrush->m_size.cy()));
+      //      maximum(pbrush->m_size.cx, pbrush->m_size.cy));
 
       //   cairo_pattern_add_color_stop_rgba(ppattern, 0., __expand_float_rgba(pbrush->m_color1));
 
@@ -804,11 +804,11 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //   /* Add a Coons patch */
       //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), outer.top());
-      //   cairo_mesh_pattern_curve_to(ppattern, inner.right() + KR, outer.top(), outer.right(), inner.top() - KR, outer.right(),
-      //      inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
+      //   cairo_mesh_pattern_move_to(ppattern, inner.right, inner.top);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right, outer.top);
+      //   cairo_mesh_pattern_curve_to(ppattern, inner.right + KR, outer.top, outer.right, inner.top - KR, outer.right,
+      //      inner.top);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.top);
       //   //cairo_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
       //   //cairo_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
       //   //cairo_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
@@ -821,10 +821,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
       //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.right(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.right(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
+      //   cairo_mesh_pattern_move_to(ppattern, inner.right, inner.top);
+      //   cairo_mesh_pattern_line_to(ppattern, outer.right, inner.top);
+      //   cairo_mesh_pattern_line_to(ppattern, outer.right, inner.bottom);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -864,11 +864,11 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
       //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.right(), inner.bottom());
-      //   cairo_mesh_pattern_curve_to(ppattern, outer.right(), inner.bottom() + KR, inner.right() + KR, outer.bottom(),
-      //      inner.right(), outer.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
+      //   cairo_mesh_pattern_move_to(ppattern, inner.right, inner.bottom);
+      //   cairo_mesh_pattern_line_to(ppattern, outer.right, inner.bottom);
+      //   cairo_mesh_pattern_curve_to(ppattern, outer.right, inner.bottom + KR, inner.right + KR, outer.bottom,
+      //      inner.right, outer.bottom);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -877,10 +877,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
       //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.right(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), outer.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), outer.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   cairo_mesh_pattern_move_to(ppattern, inner.right, inner.bottom);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right, outer.bottom);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left, outer.bottom);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -889,10 +889,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
       //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   cairo_mesh_pattern_move_to(ppattern, inner.left, inner.top);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.top);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color1));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color1));
@@ -908,11 +908,11 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
       //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), outer.bottom());
-      //   cairo_mesh_pattern_curve_to(ppattern, inner.left() - KR, outer.bottom(), outer.left(), inner.bottom() + KR, outer.left(),
-      //      inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   cairo_mesh_pattern_move_to(ppattern, inner.left, inner.bottom);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left, outer.bottom);
+      //   cairo_mesh_pattern_curve_to(ppattern, inner.left - KR, outer.bottom, outer.left, inner.bottom + KR, outer.left,
+      //      inner.bottom);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -921,10 +921,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
       //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.left(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.left(), inner.bottom());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.bottom());
+      //   cairo_mesh_pattern_move_to(ppattern, inner.left, inner.top);
+      //   cairo_mesh_pattern_line_to(ppattern, outer.left, inner.top);
+      //   cairo_mesh_pattern_line_to(ppattern, outer.left, inner.bottom);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -943,11 +943,11 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
       //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, outer.left(), inner.top());
-      //   cairo_mesh_pattern_curve_to(ppattern, outer.left(), inner.top() - KR, inner.left() - KR, outer.top(), inner.left(),
-      //      outer.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), inner.top());
+      //   cairo_mesh_pattern_move_to(ppattern, inner.left, inner.top);
+      //   cairo_mesh_pattern_line_to(ppattern, outer.left, inner.top);
+      //   cairo_mesh_pattern_curve_to(ppattern, outer.left, inner.top - KR, inner.left - KR, outer.top, inner.left,
+      //      outer.top);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left, inner.top);
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -956,10 +956,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
       //   cairo_mesh_pattern_begin_patch(ppattern);
-      //   cairo_mesh_pattern_move_to(ppattern, inner.left(), inner.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.left(), outer.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), outer.top());
-      //   cairo_mesh_pattern_line_to(ppattern, inner.right(), inner.top());
+      //   cairo_mesh_pattern_move_to(ppattern, inner.left, inner.top);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.left, outer.top);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right, outer.top);
+      //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.top);
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
       //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
@@ -1087,10 +1087,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
       // size(100, 100) l = (0 - 100 / 2) / 100 = -0.5
       // size(100, 100) r = (100 - 100 / 2) / 100 = 0.5
 
-      float l = (float)(2. * (rectangle.left() - size.cx() / 2.) / (size.cx()));
-      float r = (float)(2. * (rectangle.right() - size.cx() / 2.) / (size.cx()));
-      float t = (float)(2. * (rectangle.bottom() - size.cy() / 2.) / (size.cy()));
-      float b = (float)(2. * (rectangle.top() - size.cy() / 2.) / (size.cy()));
+      float l = (float)(2. * (rectangle.left - size.cx / 2.) / (size.cx));
+      float r = (float)(2. * (rectangle.right - size.cx / 2.) / (size.cx));
+      float t = (float)(2. * (rectangle.bottom - size.cy / 2.) / (size.cy));
+      float b = (float)(2. * (rectangle.top - size.cy / 2.) / (size.cy));
 
       //  0 l,t
       //  1 r,t
@@ -1177,7 +1177,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       // //  3 l,b
 
       // ::geometry2d::matrix m;
-      // m.scale(2.0 / size.cx(), 2.0 / size.cy());
+      // m.scale(2.0 / size.cx, 2.0 / size.cy);
       // m.translate(-1.0, -1.0);
 
       // ::double_point points[4];
@@ -1279,7 +1279,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //  3 l,b
 
    //   ::geometry2d::matrix m;
-   //   m.scale(2.0 / size.cx(), 2.0 / size.cy());
+   //   m.scale(2.0 / size.cx, 2.0 / size.cy);
    //   m.translate(-1.0, -1.0);
 
    //   ::double_point points[4];
@@ -1403,10 +1403,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
       // size(100, 100) l = (0 - 100 / 2) / 100 = -0.5
       // size(100, 100) r = (100 - 100 / 2) / 100 = 0.5
 
-      //float l = (float) (2.* (rectangle.left() - size.cx()/2.)/ (size.cx()));
-      //float r = (float)(2. * (rectangle.right() - size.cx()/2.) / (size.cx()));
-      //float t = (float)(2. * (rectangle.bottom() - size.cy()/2.) / (size.cy()));
-      //float b = (float)(2. * (rectangle.top() - size.cy()/2.) / (size.cy()));
+      //float l = (float) (2.* (rectangle.left - size.cx/2.)/ (size.cx));
+      //float r = (float)(2. * (rectangle.right - size.cx/2.) / (size.cx));
+      //float t = (float)(2. * (rectangle.bottom - size.cy/2.) / (size.cy));
+      //float b = (float)(2. * (rectangle.top - size.cy/2.) / (size.cy));
 
       //  0 l,t
       //  1 r,t
@@ -1414,7 +1414,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //  3 l,b
 
       ::geometry2d::matrix m;
-      m.scale(2.0 / size.cx(), 2.0 / size.cy());
+      m.scale(2.0 / size.cx, 2.0 / size.cy);
       m.translate(-1.0, -1.0);
 
       ::double_point points[2];
@@ -1700,8 +1700,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
    //   pshader->unbind();
-   //   //vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
-   //     // rectangle.bottom() - rectangle.top());
+   //   //vkvg_rectangle(m_pdc, rectangle.left, rectangle.top, rectangle.right - rectangle.left,
+   //     // rectangle.bottom - rectangle.top);
 
    //   //m_particleaResetOnTopFrameEnd.add(pmodelbufferRectangle);
 
@@ -1910,8 +1910,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
    //   pshader->unbind();
-   //   //vkvg_rectangle(m_pdc, rectangle.left(), rectangle.top(), rectangle.right() - rectangle.left(),
-   //     // rectangle.bottom() - rectangle.top());
+   //   //vkvg_rectangle(m_pdc, rectangle.left, rectangle.top, rectangle.right - rectangle.left,
+   //     // rectangle.bottom - rectangle.top);
 
    //   auto logicalDevice = pgpucontext->logicalDevice();
 
@@ -2126,7 +2126,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
- //      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hBitmap, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
+ //      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hBitmap, 0, point.x, point.y, size.cx, size.cy, nFlags|DST_BITMAP) != false;
  //      return false;
  //
  //   }
@@ -2135,7 +2135,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
- //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)pBitmap->get_os_data(), 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_BITMAP) != false;
+ //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)pBitmap->get_os_data(), 0, point.x, point.y, size.cx, size.cy, nFlags|DST_BITMAP) != false;
  //
  //      return false;
  //
@@ -2145,7 +2145,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
- //      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hIcon, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_ICON) != false;
+ //      //return ::DrawState(m_hdc, hBrush, nullptr, (LPARAM)hIcon, 0, point.x, point.y, size.cx, size.cy, nFlags|DST_ICON) != false;
  //
  //      return false;
  //
@@ -2156,7 +2156,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
- //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)hIcon, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_ICON) != false;
+ //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)hIcon, 0, point.x, point.y, size.cx, size.cy, nFlags|DST_ICON) != false;
  //      return false;
  //
  //   }
@@ -2166,7 +2166,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
- //      //return ::DrawState(m_hdc, hBrush,  nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x, point.y, size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
+ //      //return ::DrawState(m_hdc, hBrush,  nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x, point.y, size.cx, size.cy, nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
  //      return false;
  //
  //   }
@@ -2176,7 +2176,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
- //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x, point.y, size.cx(), size.cy(), nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
+ //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(), nullptr, (LPARAM)lpszText, (WPARAM)nTextLen, point.x, point.y, size.cx, size.cy, nFlags|(bPrefixText ? DST_PREFIXTEXT : DST_TEXT)) != false;
  //      return false;
  //
  //   }
@@ -2186,7 +2186,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   {
  //      // ASSERT(m_hdc != nullptr);
  //      //return ::DrawState(m_hdc, hBrush,
- //          //               lpDrawProc, lData, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
+ //          //               lpDrawProc, lData, 0, point.x, point.y, size.cx, size.cy, nFlags|DST_COMPLEX) != false;
  //      return false;
  //
  //   }
@@ -2196,7 +2196,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   {
  //      // ASSERT(m_hdc != nullptr);
  //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(),
- //        //                 lpDrawProc, lData, 0, point.x, point.y, size.cx(), size.cy(), nFlags|DST_COMPLEX) != false;
+ //        //                 lpDrawProc, lData, 0, point.x, point.y, size.cx, size.cy, nFlags|DST_COMPLEX) != false;
  //      return false;
  //
  //   }
@@ -2234,8 +2234,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
    {
 
       // ASSERT(m_hdc != nullptr);
-      //return ::Chord(m_hdc,rectangleParam.left(),rectangleParam.top(),
-      //               rectangleParam.right(),rectangleParam.bottom(),ptStart.x,ptStart.y,
+      //return ::Chord(m_hdc,rectangleParam.left,rectangleParam.top,
+      //               rectangleParam.right,rectangleParam.bottom,ptStart.x,ptStart.y,
       //               ptEnd.x, ptEnd.y) != false;
 
       return false;
@@ -2267,7 +2267,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //set_smooth_mode(::draw2d::e_smooth_mode_high);
 
-      //return (m_pgraphics->DrawEllipse(vk2d_pen(),rectangleParam.left(),rectangleParam.top(),rectangleParam.right() - rectangleParam.left(),rectangleParam.bottom() - rectangleParam.top())) == plusplus::Status::Ok;
+      //return (m_pgraphics->DrawEllipse(vk2d_pen(),rectangleParam.left,rectangleParam.top,rectangleParam.right - rectangleParam.left,rectangleParam.bottom - rectangleParam.top)) == plusplus::Status::Ok;
 
       //return true;
 
@@ -2291,7 +2291,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //set_smooth_mode(::draw2d::e_smooth_mode_high);
 
-  //      return (m_pgraphics->FillEllipse(vk2d_brush(), rectangleParam.left(), rectangleParam.top(), rectangleParam.right() - rectangleParam.left(), rectangleParam.bottom() - rectangleParam.top())) == plusplus::Status::Ok;
+  //      return (m_pgraphics->FillEllipse(vk2d_brush(), rectangleParam.left, rectangleParam.top, rectangleParam.right - rectangleParam.left, rectangleParam.bottom - rectangleParam.top)) == plusplus::Status::Ok;
 
       //return true;
 
@@ -2315,9 +2315,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   //set_smooth_mode(::draw2d::e_smooth_mode_high);
 
-   //   //return (m_pgraphics->DrawEllipse(vk2d_pen(),(plusplus::REAL)rectangleParam.left(),(plusplus::REAL)rectangleParam.top(),
-   //   //                                 (plusplus::REAL)(rectangleParam.right() - rectangleParam.left()),
-   //   //                                 (plusplus::REAL)(rectangleParam.bottom() - rectangleParam.top()))) == plusplus::Status::Ok;
+   //   //return (m_pgraphics->DrawEllipse(vk2d_pen(),(plusplus::REAL)rectangleParam.left,(plusplus::REAL)rectangleParam.top,
+   //   //                                 (plusplus::REAL)(rectangleParam.right - rectangleParam.left),
+   //   //                                 (plusplus::REAL)(rectangleParam.bottom - rectangleParam.top))) == plusplus::Status::Ok;
 
    //   return true;
 
@@ -2341,9 +2341,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   //set_smooth_mode(::draw2d::e_smooth_mode_high);
 
-   //   //return (m_pgraphics->FillEllipse(vk2d_brush(),(plusplus::REAL)rectangleParam.left(),(plusplus::REAL)rectangleParam.top(),
-   //   //                                 (plusplus::REAL)(rectangleParam.right() - rectangleParam.left()),
-   //   //                                 (plusplus::REAL)(rectangleParam.bottom() - rectangleParam.top()))) == plusplus::Status::Ok;
+   //   //return (m_pgraphics->FillEllipse(vk2d_brush(),(plusplus::REAL)rectangleParam.left,(plusplus::REAL)rectangleParam.top,
+   //   //                                 (plusplus::REAL)(rectangleParam.right - rectangleParam.left),
+   //   //                                 (plusplus::REAL)(rectangleParam.bottom - rectangleParam.top))) == plusplus::Status::Ok;
 
    //   return true;
 
@@ -2364,8 +2364,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //{
 
    //   // ASSERT(m_hdc != nullptr);
-   //   //return ::Pie(m_hdc, rectangleParam.left(), rectangleParam.top(),
-   //   //             rectangleParam.right(), rectangleParam.bottom(), ptStart.x, ptStart.y,
+   //   //return ::Pie(m_hdc, rectangleParam.left, rectangleParam.top,
+   //   //             rectangleParam.right, rectangleParam.bottom, ptStart.x, ptStart.y,
    //   //             ptEnd.x, ptEnd.y) != false;
 
    //   return false;
@@ -2702,7 +2702,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       draw_rectangle(rectangleParam);
 
-      //return ::double_rectangle(rectangleParam.left(), rectangleParam.top(), rectangleParam.right(), rectangleParam.bottom());
+      //return ::double_rectangle(rectangleParam.left, rectangleParam.top, rectangleParam.right, rectangleParam.bottom);
 
       //return bOk1 && bOk2;
 
@@ -2769,8 +2769,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
    void graphics::round_rectangle(const ::double_rectangle& rectangleParam, const ::int_point& point)
    {
       //// ASSERT(m_hdc != nullptr);
-      //return ::RoundRect(m_hdc, rectangleParam.left(), rectangleParam.top(),
-        //                 rectangleParam.right(), rectangleParam.bottom(), point.x, point.y) != false;
+      //return ::RoundRect(m_hdc, rectangleParam.left, rectangleParam.top,
+        //                 rectangleParam.right, rectangleParam.bottom, point.x, point.y) != false;
 
       //return false;
 
@@ -3408,8 +3408,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
    void graphics::arc_to(const ::int_rectangle& rectangleParam, const ::int_point& pointStart, const ::int_point& pointEnd)
    {
       // ASSERT(m_hdc != nullptr);
-      //return ArcTo(rectangleParam.left(), rectangleParam.top(), rectangleParam.right(),
-        //           rectangleParam.bottom(), ptStart.x, ptStart.y, ptEnd.x, ptEnd.y);
+      //return ArcTo(rectangleParam.left, rectangleParam.top, rectangleParam.right,
+        //           rectangleParam.bottom, ptStart.x, ptStart.y, ptEnd.x, ptEnd.y);
 
       //return false;
 
@@ -3782,7 +3782,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //bool graphics::PlayMetaFile(HENHMETAFILE hEnhMF, const ::double_rectangle & rectangleBounds)
    //{
 
-   //   //plusplus::rectF ::double_rectangle((plusplus::REAL) rectangleBounds.left(),(plusplus::REAL) rectangleBounds.top(),(plusplus::REAL) width(rectangleBounds),(plusplus::REAL) height(rectangleBounds));
+   //   //plusplus::rectF ::double_rectangle((plusplus::REAL) rectangleBounds.left,(plusplus::REAL) rectangleBounds.top,(plusplus::REAL) width(rectangleBounds),(plusplus::REAL) height(rectangleBounds));
 
    //   //plusplus::Metafile* pMeta = ___new plusplus::Metafile (hEnhMF, false);
 
@@ -3884,7 +3884,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  ////         keep < image > keep(&m_pimageAlphaBlend, nullptr, m_pimageAlphaBlend, true);
  ////
  ////
- ////         return BitBlt(ptDest.x, ptDest.y, size.cx(), size.cy(), imageWork.get_graphics(), pointSrc.x, pointSrc.y);
+ ////         return BitBlt(ptDest.x, ptDest.y, size.cx, size.cy, imageWork.get_graphics(), pointSrc.x, pointSrc.y);
  ////
  ////
  ////      }
@@ -4162,8 +4162,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //         }
       //         ASSERT(cxPerInch != 0 && cyPerInch != 0);
-      //         LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), HIMETRIC_INCH, cxPerInch);
-      //         LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), HIMETRIC_INCH, cyPerInch);
+      //         LPSIZE32->cx = MulDiv(LPSIZE32->cx, HIMETRIC_INCH, cxPerInch);
+      //         LPSIZE32->cy = MulDiv(LPSIZE32->cy, HIMETRIC_INCH, cyPerInch);
       //      }
    }
 
@@ -4197,8 +4197,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //         }
       //         ASSERT(cxPerInch != 0 && cyPerInch != 0);
-      //         LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), cxPerInch, HIMETRIC_INCH);
-      //         LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), cyPerInch, HIMETRIC_INCH);
+      //         LPSIZE32->cx = MulDiv(LPSIZE32->cx, cxPerInch, HIMETRIC_INCH);
+      //         LPSIZE32->cy = MulDiv(LPSIZE32->cy, cyPerInch, HIMETRIC_INCH);
       //      }
    }
 
@@ -4264,7 +4264,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //         ::draw2d::region rgnOutside, rgnInside;
    //         rgnOutside.create_rect(rectangle);
    //         const ::double_rectangle & rectangle = *rectangle;
-   //         rectangle.inflate(-size.cx(), -size.cy());
+   //         rectangle.inflate(-size.cx, -size.cy);
    //         rectangle.intersect(rectangle, rectangle);
    //         rgnInside.create_rect(rectangle);
    //         rgnNew.create_rect(0, 0, 0, 0);
@@ -4290,7 +4290,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //            rgnLast.create_rect(0, 0, 0, 0);
    //            rgnOutside.SetRectRgn(lpRectLast);
    //            rectangle = *lpRectLast;
-   //            rectangle.inflate(-sizeLast.cx(), -sizeLast.cy());
+   //            rectangle.inflate(-sizeLast.cx, -sizeLast.cy);
    //            rectangle.intersect(rectangle, lpRectLast);
    //            rgnInside.SetRectRgn(rectangle);
    //            rgnLast.CombineRgn(&rgnOutside, &rgnInside, RGN_XOR);
@@ -4308,7 +4308,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //            SelectClipRgn(&rgnLast);
    //            get_clip_box(&rectangle);
    //            pBrushOld = SelectObject(pBrushLast);
-   //            PatBlt(rectangle.left(), rectangle.top(), rectangle.width(), rectangle.height(), PATINVERT);
+   //            PatBlt(rectangle.left, rectangle.top, rectangle.width(), rectangle.height(), PATINVERT);
    //            SelectObject(pBrushOld);
    //            pBrushOld = nullptr;
    //         }
@@ -4317,7 +4317,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //         SelectClipRgn(rgnUpdate.get_os_data() != nullptr ? &rgnUpdate : &rgnNew);
    //         get_clip_box(&rectangle);
    //         pBrushOld = SelectObject(pBrush);
-   //         PatBlt(rectangle.left(), rectangle.top(), rectangle.width(), rectangle.height(), PATINVERT);
+   //         PatBlt(rectangle.left, rectangle.top, rectangle.width(), rectangle.height(), PATINVERT);
 
    //         // cleanup DC
    //         if (pBrushOld != nullptr)
@@ -4358,8 +4358,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   const ::e_border & eborder)
  //{
 
- //   //draw3d_rectangle(rectangleParam.left(), rectangleParam.top(), rectangleParam.right() - rectangleParam.left(),
- //     //         rectangleParam.bottom() - rectangleParam.top(), clrTopLeft, clrBottomRight);
+ //   //draw3d_rectangle(rectangleParam.left, rectangleParam.top, rectangleParam.right - rectangleParam.left,
+ //     //         rectangleParam.bottom - rectangleParam.top, clrTopLeft, clrBottomRight);
 
  //}
 
@@ -5061,10 +5061,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //m_pgraphics->GetClipBounds(rectangle);
 
-      //rectangle.left() = rectangle.X;
-      //rectangle.top() = rectangle.Y;
-      //rectangle.right() = rectangle.X + rectangle.Width;
-      //rectangle.bottom() = rectangle.Y + rectangle.Height;
+      //rectangle.left = rectangle.X;
+      //rectangle.top = rectangle.Y;
+      //rectangle.right = rectangle.X + rectangle.Width;
+      //rectangle.bottom = rectangle.Y + rectangle.Height;
 
       return 1;
 
@@ -5116,11 +5116,11 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //double nRetVal = ERROR;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = ::ExcludeClipRect(m_hdc, rectangleParam.left(), rectangleParam.top(),
-      //                               rectangleParam.right(), rectangleParam.bottom());
+      //   nRetVal = ::ExcludeClipRect(m_hdc, rectangleParam.left, rectangleParam.top,
+      //                               rectangleParam.right, rectangleParam.bottom);
       //if(m_hdc != nullptr)
-      //   nRetVal = ::ExcludeClipRect(m_hdc, rectangleParam.left(), rectangleParam.top(),
-      //                               rectangleParam.right(), rectangleParam.bottom());
+      //   nRetVal = ::ExcludeClipRect(m_hdc, rectangleParam.left, rectangleParam.top,
+      //                               rectangleParam.right, rectangleParam.bottom);
 
       //return nRetVal;
 
@@ -5152,9 +5152,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
       int nRetVal = 0;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = ::IntersectClipRect(m_hdc,rectangleBounds.left(),rectangleBounds.top(),rectangleBounds.right(),rectangleBounds.bottom());
+      //   nRetVal = ::IntersectClipRect(m_hdc,rectangleBounds.left,rectangleBounds.top,rectangleBounds.right,rectangleBounds.bottom);
       //if(m_hdc != nullptr)
-      //   nRetVal = ::IntersectClipRect(m_hdc,rectangleBounds.left(),rectangleBounds.top(),rectangleBounds.right(),rectangleBounds.bottom());
+      //   nRetVal = ::IntersectClipRect(m_hdc,rectangleBounds.left,rectangleBounds.top,rectangleBounds.right,rectangleBounds.bottom);
 
       return nRetVal;
 
@@ -5182,9 +5182,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
       int nRetVal = 0;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = ::OffsetClipRgn(m_hdc, size.cx(), size.cy());
+      //   nRetVal = ::OffsetClipRgn(m_hdc, size.cx, size.cy);
       //if(m_hdc != nullptr)
-      //   nRetVal = ::OffsetClipRgn(m_hdc, size.cx(), size.cy());
+      //   nRetVal = ::OffsetClipRgn(m_hdc, size.cx, size.cy);
 
       return nRetVal;
 
@@ -5627,8 +5627,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //int_size sizeWinExt = GetWindowExt();
       //int_size sizeVpExt = get_context_extents();
-      //LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), abs(sizeVpExt.cx()), abs(sizeWinExt.cx()));
-      //LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), abs(sizeVpExt.cy()), abs(sizeWinExt.cy()));
+      //LPSIZE32->cx = MulDiv(LPSIZE32->cx, abs(sizeVpExt.cx), abs(sizeWinExt.cx));
+      //LPSIZE32->cy = MulDiv(LPSIZE32->cy, abs(sizeVpExt.cy), abs(sizeWinExt.cy));
 
    }
 
@@ -5640,8 +5640,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //int_size sizeWinExt = GetWindowExt();
       //int_size sizeVpExt = get_context_extents();
-      //LPSIZE32->cx() = MulDiv(LPSIZE32->cx(), abs(sizeWinExt.cx()), abs(sizeVpExt.cx()));
-      //LPSIZE32->cy() = MulDiv(LPSIZE32->cy(), abs(sizeWinExt.cy()), abs(sizeVpExt.cy()));
+      //LPSIZE32->cx = MulDiv(LPSIZE32->cx, abs(sizeWinExt.cx), abs(sizeVpExt.cx));
+      //LPSIZE32->cy = MulDiv(LPSIZE32->cy, abs(sizeWinExt.cy), abs(sizeVpExt.cy));
 
    }
 
@@ -5756,10 +5756,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //{
 
 
-      //   pmNew->Translate((plusplus::REAL) rectangleParam.left(),(plusplus::REAL) rectangleParam.top());
+      //   pmNew->Translate((plusplus::REAL) rectangleParam.left,(plusplus::REAL) rectangleParam.top);
       //   pmNew->Scale((plusplus::REAL) m_pfont->m_dFontWidth,(plusplus::REAL) 1.0,plusplus::MatrixOrderAppend);
 
-      //   plusplus::rectF float_rectangle(0,0,(plusplus::REAL) ((rectangleParam.right() - rectangleParam.left()) * m_pfont->m_dFontWidth),(plusplus::REAL) (rectangleParam.bottom() - rectangleParam.top()));
+      //   plusplus::rectF float_rectangle(0,0,(plusplus::REAL) ((rectangleParam.right - rectangleParam.left) * m_pfont->m_dFontWidth),(plusplus::REAL) (rectangleParam.bottom - rectangleParam.top));
 
       //   m_pgraphics->SetTransform(pmNew);
 
@@ -5852,7 +5852,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   if (!get_text_extent(size, lpszString, nCount, 0))
    //      return ::int_size(0, 0);
 
-   //   return ::int_size(size.cx(), size.cy());
+   //   return ::int_size(size.cx, size.cy);
 
    //}
 
@@ -5865,7 +5865,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       if(!get_text_extent(size, str, (double) str.length(), 0))
         return ::int_size(0, 0);
 
-      return ::int_size((long) size.cx(), (long) size.cy());
+      return ::int_size((long) size.cx, (long) size.cy);
 
    }*/
 
@@ -5974,9 +5974,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //      //FT_Done_Face(face);
  //      //FT_Done_FreeType(ft);
  //
- //      size.cx() = s.cx();
+ //      size.cx = s.cx;
  //
- //      size.cy() = s.cy();
+ //      size.cy = s.cy;
  //
  //      return true;
  //
@@ -5999,9 +5999,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
  //        // return false;
  //
- //      size.cx() = s.cx();
+ //      size.cx = s.cx;
  //
- //      size.cy() = s.cy();
+ //      size.cy = s.cy;
  //
  //      return true;
  //
@@ -6024,9 +6024,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //      //if (::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
  //        // return false;
  //
- //      size.cx() = s.cx();
+ //      size.cx = s.cx;
  //
- //      size.cy() = s.cy();
+ //      size.cy = s.cy;
  //
  //      return true;
  //
@@ -6692,10 +6692,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //   //plusplus::PointF points[2];
 
-      //   //points[0].X    = (plusplus::REAL) rectangleParam.left();
-      //   //points[0].Y    = (plusplus::REAL) rectangleParam.top();
-      //   //points[1].X    = (plusplus::REAL) rectangleParam.right();
-      //   //points[1].Y    = (plusplus::REAL) rectangleParam.bottom();
+      //   //points[0].X    = (plusplus::REAL) rectangleParam.left;
+      //   //points[0].Y    = (plusplus::REAL) rectangleParam.top;
+      //   //points[1].X    = (plusplus::REAL) rectangleParam.right;
+      //   //points[1].Y    = (plusplus::REAL) rectangleParam.bottom;
 
       //   //m.TransformPoints(points, 2);
 
@@ -6703,10 +6703,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //   //::double_rectangle ::double_rectangle;
 
-      //   //rectangle.left()      = (::double) points[0].X;
-      //   //rectangle.top()       = (::double) points[0].Y;
-      //   //rectangle.right()     = (::double) points[1].X;
-      //   //rectangle.bottom()    = (::double) points[1].Y;
+      //   //rectangle.left      = (::double) points[0].X;
+      //   //rectangle.top       = (::double) points[0].Y;
+      //   //rectangle.right     = (::double) points[1].X;
+      //   //rectangle.bottom    = (::double) points[1].Y;
 
       //   //plusplus::Bitmap * pbitmap = ((plusplus::Bitmap *) m_pbitmap->get_os_data());
 
@@ -7035,10 +7035,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    void graphics::_vk_rectangle(const ::double_rectangle& rectangle)
    {
 
-      //vkVertex2f((VKfloat)rectangle.left(), (VKfloat)rectangle.top());
-      //vkVertex2f((VKfloat)rectangle.right(), (VKfloat)rectangle.top());
-      //vkVertex2f((VKfloat)rectangle.right(), (VKfloat)rectangle.bottom());
-      //vkVertex2f((VKfloat)rectangle.left(), (VKfloat)rectangle.bottom());
+      //vkVertex2f((VKfloat)rectangle.left, (VKfloat)rectangle.top);
+      //vkVertex2f((VKfloat)rectangle.right, (VKfloat)rectangle.top);
+      //vkVertex2f((VKfloat)rectangle.right, (VKfloat)rectangle.bottom);
+      //vkVertex2f((VKfloat)rectangle.left, (VKfloat)rectangle.bottom);
 
       struct Vertex {
          floating_sequence2 pos;
@@ -7092,7 +7092,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       ::geometry2d::matrix contextmatrix;
 
-      contextmatrix.scale(2.0 / size.cx(), -2.0 / size.cy());
+      contextmatrix.scale(2.0 / size.cx, -2.0 / size.cy);
 
       contextmatrix.translate(-1.0, 1.0);
 

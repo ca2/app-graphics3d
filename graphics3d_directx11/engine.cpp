@@ -151,13 +151,14 @@ namespace graphics3d_directx11
 
    floating_matrix4 engine::perspective(const float_angle & angleFovY, float aspect, float zNear, float zFar)
    {
-       floating_matrix4 M;
+       
+      floating_matrix4 M;
 
-       auto zn = zNear;
-       auto zf = zFar;
+      auto zn = zNear;
 
-
-      //float f = 1.0f / ::std::tan(angleFovY.radians() * 0.5f);
+      auto zf = zFar;
+      
+      float f = 1.0f / ::std::tan(angleFovY.radians() * 0.5f);
 
       //floating_matrix4 M;
 
@@ -184,7 +185,27 @@ namespace graphics3d_directx11
       //M[3][2] = -1;
       //M[3][3] = 0;
 
-      float f = 1.0f / std::tan(angleFovY.radians() * 0.5f);
+      //float f = 1.0f / std::tan(angleFovY.radians() * 0.5f);
+
+      //M[0][0] = f / aspect;
+      //M[0][1] = 0;
+      //M[0][2] = 0;
+      //M[0][3] = 0;
+
+      //M[1][0] = 0;
+      //M[1][1] = f;
+      //M[1][2] = 0;
+      //M[1][3] = 0;
+
+      //M[2][0] = 0;
+      //M[2][1] = 0;
+      //M[2][2] = zf / (zn - zf);
+      //M[2][3] = -1;
+
+      //M[3][0] = 0;
+      //M[3][1] = 0;
+      //M[3][2] = (zn * zf) / (zn - zf);
+      //M[3][3] = 0;
 
       M[0][0] = f / aspect;
       M[0][1] = 0;
@@ -198,12 +219,12 @@ namespace graphics3d_directx11
 
       M[2][0] = 0;
       M[2][1] = 0;
-      M[2][2] = zf / (zn - zf);
+      M[2][2] = zFar / (zNear - zFar);
       M[2][3] = -1;
 
       M[3][0] = 0;
       M[3][1] = 0;
-      M[3][2] = (zn * zf) / (zn - zf);
+      M[3][2] = (zNear * zFar) / (zNear - zFar);
       M[3][3] = 0;
 
       return M;
@@ -527,7 +548,7 @@ namespace graphics3d_directx11
 
          //pgraphics2d->m_pdevicecontext->DrawBitmap(
          //   bitmap,
-         //   D2D1::RectF(r.left(), r.top(), r.width(), r.height()),
+         //   D2D1::RectF(r.left, r.top, r.width(), r.height()),
          //   1.0f, // opacity
          //   D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
          //   nullptr // source rect (optional)
@@ -552,11 +573,11 @@ namespace graphics3d_directx11
                }
 
             }
-            int iBottom= r.bottom();
+            int iBottom= r.bottom;
 
             int iHostBottom = rHost.height();
 
-            int iTop = r.top();
+            int iTop = r.top;
 
             int iNewTop = iHostBottom - iBottom;
 
@@ -564,7 +585,7 @@ namespace graphics3d_directx11
             bitmap,
             D2D1::Point2F(0.f, 0.f),
             D2D1::RectF(
-               (FLOAT) r.left(),
+               (FLOAT) r.left,
                (FLOAT) iNewTop, 
                (FLOAT) r.width(),
                (FLOAT) r.height()),

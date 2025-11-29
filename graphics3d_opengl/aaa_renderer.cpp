@@ -78,7 +78,7 @@
 //      glPushMatrix();
 //      glPushAttrib(GL_ALL_ATTRIB_BITS);
 //
-//      glViewport(r.left(), sizeHost.cy() - r.height() - r.top(), r.width(), r.height());
+//      glViewport(r.left, sizeHost.cy - r.height() - r.top, r.width(), r.height());
 //
 //      glMatrixMode(GL_MODELVIEW);
 //      glLoadIdentity();
@@ -243,9 +243,9 @@
 //
 //      //      //m_pixmap.map();
 //      //
-//      //      auto cx = m_pixmap.m_size.cx();
+//      //      auto cx = m_pixmap.m_size.cx;
 //      //
-//      //      auto cy = m_pixmap.m_size.cy();
+//      //      auto cy = m_pixmap.m_size.cy;
 //      //
 //      //      //auto sizeNeeded = cx * cy * 4;
 //      //

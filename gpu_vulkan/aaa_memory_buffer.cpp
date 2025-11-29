@@ -54,7 +54,7 @@ namespace gpu_vulkan
       // //  3 l,b
 
       // ::geometry2d::matrix m;
-      // m.scale(2.0 / size.cx(), 2.0 / size.cy());
+      // m.scale(2.0 / size.cx, 2.0 / size.cy);
       // m.translate(-1.0, -1.0);
 
       // ::double_point points[4];

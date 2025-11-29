@@ -8,8 +8,8 @@ namespace draw2d_gdiplus
    image::image()
    {
 
-      m_sizeWnd.cx() = 0;
-      m_sizeWnd.cy() = 0;
+      m_sizeWnd.cx = 0;
+      m_sizeWnd.cy = 0;
       m_hbitmap = nullptr;
 
       zero(m_bitmapinfo);
@@ -95,13 +95,13 @@ namespace draw2d_gdiplus
       if (m_pbitmap.is_null())
       {
 
-         m_sizeRaw.cx() = 0;
+         m_sizeRaw.cx = 0;
 
-         m_sizeRaw.cy() = 0;
+         m_sizeRaw.cy = 0;
 
-         m_sizeAlloc.cx() = 0;
+         m_sizeAlloc.cx = 0;
 
-         m_sizeAlloc.cy() = 0;
+         m_sizeAlloc.cy = 0;
 
          m_iScan = 0;
 
@@ -112,13 +112,13 @@ namespace draw2d_gdiplus
       if (!m_pbitmap->host_bitmap(nullptr, ppixmap))
       {
 
-         m_sizeRaw.cx() = 0;
+         m_sizeRaw.cx = 0;
 
-         m_sizeRaw.cy() = 0;
+         m_sizeRaw.cy = 0;
 
-         m_sizeAlloc.cx() = 0;
+         m_sizeAlloc.cx = 0;
 
-         m_sizeAlloc.cy() = 0;
+         m_sizeAlloc.cy = 0;
 
          m_iScan = 0;
 
@@ -236,15 +236,15 @@ namespace draw2d_gdiplus
       m_pgraphics->SetViewportOrg(origin());
 
       m_pgraphics->m_pimage = this;
-      //m_sizeRaw.cx() = width;
-      //m_sizeRaw.cy() = height;
+      //m_sizeRaw.cx = width;
+      //m_sizeRaw.cy = height;
       m_sizeAlloc = size;
-      //m_sizeAlloc.cy() = height;
+      //m_sizeAlloc.cy = height;
 
       if (pbitmapPrevious && pgraphicsPrevious)
       {
 
-         Gdiplus::Rect r(0, 0, pbitmapPrevious->m_size.cx(), pbitmapPrevious->m_size.cy());
+         Gdiplus::Rect r(0, 0, pbitmapPrevious->m_size.cx, pbitmapPrevious->m_size.cy);
          __graphics(m_pgraphics)->m_pgraphics->DrawImage(
             pbitmapPrevious.cast <::draw2d_gdiplus::bitmap>()->m_pbitmap,
             r, r.X, r.Y, r.Width, r.Height, Gdiplus::UnitPixel);
@@ -383,7 +383,7 @@ namespace draw2d_gdiplus
          if (pointSrc.x < 0)
          {
 
-            rectangleTarget.left() -= pointSrc.x;
+            rectangleTarget.left -= pointSrc.x;
 
             pointSrc.x = 0;
 
@@ -392,51 +392,51 @@ namespace draw2d_gdiplus
          if (pointSrc.y < 0)
          {
 
-            rectangleTarget.top() -= pointSrc.y;
+            rectangleTarget.top -= pointSrc.y;
 
             pointSrc.y = 0;
 
          }
 
-         if (rectangleTarget.left() < 0)
+         if (rectangleTarget.left < 0)
          {
 
-            size.cx() += rectangleTarget.left();
+            size.cx += rectangleTarget.left;
 
-            pointSrc.x -= rectangleTarget.left();
+            pointSrc.x -= rectangleTarget.left;
 
-            rectangleTarget.left() = 0;
+            rectangleTarget.left = 0;
 
          }
 
-         if (size.cx() < 0)
-         {
-
-            return true;
-
-         }
-
-         if (rectangleTarget.top() < 0)
-         {
-
-            size.cy() += rectangleTarget.top();
-
-            pointSrc.y -= rectangleTarget.top();
-
-            rectangleTarget.top() = 0;
-
-         }
-
-         if (size.cy() < 0)
+         if (size.cx < 0)
          {
 
             return true;
 
          }
 
-         int xEnd = minimum(size.cx(), minimum(pimageSrc->width() - pointSrc.x, pimageDst->width() - rectangleTarget.left()));
+         if (rectangleTarget.top < 0)
+         {
 
-         int yEnd = minimum(size.cy(), minimum(pimageSrc->height() - pointSrc.y, pimageDst->height() - rectangleTarget.top()));
+            size.cy += rectangleTarget.top;
+
+            pointSrc.y -= rectangleTarget.top;
+
+            rectangleTarget.top = 0;
+
+         }
+
+         if (size.cy < 0)
+         {
+
+            return true;
+
+         }
+
+         int xEnd = minimum(size.cx, minimum(pimageSrc->width() - pointSrc.x, pimageDst->width() - rectangleTarget.left));
+
+         int yEnd = minimum(size.cy, minimum(pimageSrc->height() - pointSrc.y, pimageDst->height() - rectangleTarget.top));
 
          if (xEnd < 0)
          {
@@ -456,7 +456,7 @@ namespace draw2d_gdiplus
 
          int scanSrc = pimageSrc->scan_size();
 
-         unsigned char * pdst = &((unsigned char *)pimageDst->colorref())[scanDst * rectangleTarget.top() + rectangleTarget.left() * sizeof(::color::color)];
+         unsigned char * pdst = &((unsigned char *)pimageDst->colorref())[scanDst * rectangleTarget.top + rectangleTarget.left * sizeof(::color::color)];
 
          unsigned char * psrc = &((unsigned char *)pimageSrc->colorref())[scanSrc * pointSrc.y + pointSrc.x * sizeof(::color::color)];
 

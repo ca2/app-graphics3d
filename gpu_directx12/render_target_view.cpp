@@ -391,8 +391,8 @@ namespace gpu_directx12
 
    //   
    //   D3D11_TEXTURE2D_DESC depthDesc = {};
-   //   depthDesc.Width = m_size.cx();
-   //   depthDesc.Height = m_size.cy();
+   //   depthDesc.Width = m_size.cx;
+   //   depthDesc.Height = m_size.cy;
    //   depthDesc.MipLevels = 1;
    //   depthDesc.ArraySize = 1;
    //   int MorePrecisionNoStencil = 0;

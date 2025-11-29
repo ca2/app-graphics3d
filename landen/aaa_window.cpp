@@ -54,13 +54,13 @@ namespace app_core_vulken
 
       auto r1 = rectangleX;
 
-      r1.right() = 300;
+      r1.right = 300;
 
       pgraphics->fill_rectangle(r1, argb(155, 255, 168, 230));
 
       auto r2 = rectangleX;
 
-      r2.left() = r1.right();
+      r2.left = r1.right;
 
       pgraphics->fill_rectangle(r2, argb(155, 155, 255, 230));
 
