@@ -78,19 +78,25 @@ namespace app_graphics3d_continuum
 
       ::core::application::init_instance();
 
-      add_impact_system(
-         "main", __initialize_new ::user::single_document_template(
-         "main",
-         typeid(document),
-         typeid(main_frame ),
-         typeid(pane_impact )));
+      auto typeinfoDocument = ::type<document>();
+      auto typeinfoMainFrame = ::type<main_frame>();
+      auto typeinfoPaneImpact = ::type<pane_impact>();
+
+      auto pimpactsystemMain = 
+         __initialize_new ::user::single_document_template(
+            "main",
+            typeinfoDocument,
+            typeinfoMainFrame, 
+            typeinfoPaneImpact);
+
+      add_impact_system("main", pimpactsystemMain);
       
       add_impact_system(
          "impact", __initialize_new::user::single_document_template(
             "impact",
-            typeid(document),
-            typeid(main_frame ),
-            typeid(impact)));
+            ::type<document>(),
+            ::type<main_frame>(),
+            ::type<impact>()));
 
 #if defined(APPLE_IOS)
 
