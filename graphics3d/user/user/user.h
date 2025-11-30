@@ -24,7 +24,7 @@ namespace bred
       //::user::multiple_document_template *         m_ptemplateProgress2;
 
 
-      // map_base < ::type, ::user::impact_system * >      m_mapTemplate;
+      // map_base < ::platform::type, ::user::impact_system * >      m_mapTemplate;
 
       // atom_map_base < ::user::impact_system * >           m_mapimpactsystem;
 
@@ -534,7 +534,7 @@ namespace bred
       //      //::pointer<::user::document>  create_form(::pointer<::user::interaction>userinteractionParent =
       //      nullptr, ::payload payload = ::payload(::e_type_empty_argument), ::payload varArgs =
       //      ::payload(::e_type_empty_argument));
-      //      //::pointer<::user::document>  create_form(::type point,
+      //      //::pointer<::user::document>  create_form(::platform::type point,
       //      ::pointer<::user::interaction>userinteractionParent, ::payload payload =
       //      ::payload(::e_type_empty_argument), ::payload varArgs = ::payload(::e_type_empty_argument));
       //      //::pointer<::user::document>  create_form(::user::form_callback* pcallback,
@@ -549,7 +549,7 @@ namespace bred
       //      //template < typename VIEW >
       //      //::pointer<::user::document>  create_child_form(::pointer<::user::interaction>userinteractionParent,
       //      ::payload payload = ::payload(::e_type_empty_argument));
-      //      //::pointer<::user::document>  create_child_form(::type point,
+      //      //::pointer<::user::document>  create_child_form(::platform::type point,
       //      ::pointer<::user::interaction>userinteractionParent, ::payload payload =
       //      ::payload(::e_type_empty_argument));
       //      //::pointer<::user::document>  create_child_form(::pointer<::user::form>impact, ::user::form_callback*
