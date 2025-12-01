@@ -9,7 +9,7 @@
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
     <Filter Include="Source Files\render_systems">
-      <UniqueIdentifier>{7549d886-8d19-4c0d-aefb-fd4011a475ad}</UniqueIdentifier>
+      <UniqueIdentifier>{65f88613-ad4a-4db8-a740-c9ff05ff121d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\render_systems">
       <UniqueIdentifier>{25f2e7e8-ee34-48d0-b575-ea265b4fb5bc}</UniqueIdentifier>
@@ -55,12 +55,6 @@
     <ClCompile Include="scene_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="system\basic_render_system.cpp">
-      <Filter>Source Files\render_systems</Filter>
-    </ClCompile>
-    <ClCompile Include="system\point_light_system.cpp">
-      <Filter>Source Files\render_systems</Filter>
-    </ClCompile>
     <ClCompile Include="_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -97,14 +91,17 @@
     <ClCompile Include="texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="render_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="render_systems\gltf_render_system.cpp">
       <Filter>Source Files\render_systems</Filter>
     </ClCompile>
     <ClCompile Include="render_systems\scene_render_system.cpp">
       <Filter>Source Files\render_systems</Filter>
     </ClCompile>
-    <ClCompile Include="render_system.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="render_systems\wavefront_obj_render_system.cpp">
+      <Filter>Source Files\render_systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +211,9 @@
       <Filter>Header Files\render_systems</Filter>
     </ClInclude>
     <ClInclude Include="render_systems\pbr.vert.h">
+      <Filter>Header Files\render_systems</Filter>
+    </ClInclude>
+    <ClInclude Include="render_systems\wavefront_obj_render_system.h">
       <Filter>Header Files\render_systems</Filter>
     </ClInclude>
   </ItemGroup>

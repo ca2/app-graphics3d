@@ -63,7 +63,7 @@ namespace app_graphics3d_continuum
 
          ::cast<::app_graphics3d_continuum::camera> pcamera = pcameraScene;
 
-         m_pengine->m_transform.m_sequence3Position = pcamera->m_locationPosition;
+         m_pengine->m_transform.m_sequence3Position = pcamera->m_sequence3Position;
 
          m_pengine->m_transform.m_rotation = pcamera->m_rotation;
 

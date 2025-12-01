@@ -130,7 +130,7 @@ namespace graphics3d_opengl
             //if (!node->mesh)
               // continue;
 
-            floating_matrix4 world = pscenerenderable->transform().getMatrix() * pmesh->uniformBlock.matrix;
+            floating_matrix4 world = pscenerenderable->model_matrix();
             floating_matrix4 normalMat = world.inversed().transposed();
 
             m_ppipelineOpaque->set_matrix4("modelMatrix", world);

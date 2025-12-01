@@ -243,7 +243,7 @@ namespace graphics3d_vulkan
             if (!pnode->m_pmesh)
                continue;
 
-            floating_matrix4 world = pscenerenderable->transform().getMatrix() * pnode->getMatrix();
+            floating_matrix4 world = pscenerenderable->model_matrix() * pnode->getMatrix();
             floating_matrix4 normalMat = world.inversed().transposed();
 
             memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));

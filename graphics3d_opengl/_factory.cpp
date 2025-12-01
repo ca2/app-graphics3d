@@ -8,6 +8,7 @@
 #include "shader.h"
 #include "render_systems/gltf_render_system.h"
 #include "render_systems/scene_render_system.h"
+#include "render_systems/wavefront_obj_render_system.h"
 #include "aura/platform/application.h"
 #include "bred/graphics3d/scene_object.h"
 //#include "networking.h"
@@ -36,6 +37,7 @@ IMPLEMENT_FACTORY(graphics3d_opengl)
 
    pfactory->add_factory_item< ::graphics3d_opengl::gltf_render_system, ::graphics3d::gltf_render_system>();
    pfactory->add_factory_item<::graphics3d_opengl::scene_render_system, ::graphics3d::scene_render_system>();
+   pfactory->add_factory_item<::graphics3d_opengl::wavefront_obj_render_system, ::graphics3d::wavefront_obj_render_system>();
 
 
 }

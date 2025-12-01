@@ -1109,7 +1109,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
             if (!pnode->m_pmesh)
                continue;
 
-            auto matrixObject = pscenerenderable->transform().getMatrix();
+            auto matrixObject = pscenerenderable->model_matrix();
 
             auto matrixNode = pnode->getMatrix();
 

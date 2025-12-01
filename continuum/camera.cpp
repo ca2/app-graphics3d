@@ -26,7 +26,7 @@ namespace app_graphics3d_continuum
    void camera::initialize_camera(const ::floating_sequence3 & position, const float_angle & yaw, const float_angle & pitch)
    {
 
-      m_locationPosition = position;
+      m_sequence3Position = position;
 
       //m_angleYaw = yaw;
 
@@ -47,7 +47,7 @@ namespace app_graphics3d_continuum
    void camera::initialize_camera(floating_sequence3 target, floating_sequence3 camera)
    {
 
-      m_locationPosition = camera;
+      m_sequence3Position = camera;
 
       auto direction = (target - camera).normalized();
 
@@ -57,7 +57,7 @@ namespace app_graphics3d_continuum
 
       m_rotation.set(yaw, pitch);
 
-      m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
+      //m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
 
       m_angleFovY = 75f_degrees;
 
@@ -96,13 +96,13 @@ namespace app_graphics3d_continuum
       auto velocity = m_fMovementSpeed * deltaTime; // Use movement speed
 
       if (direction == FORWARD)
-         m_locationPosition += m_sequence3Front * velocity;
+         m_sequence3Position += m_sequence3Front * velocity;
       if (direction == BACKWARD)
-         m_locationPosition -= m_sequence3Front * velocity;
+         m_sequence3Position -= m_sequence3Front * velocity;
       if (direction == LEFT)
-         m_locationPosition -= m_sequence3Right * velocity;
+         m_sequence3Position -= m_sequence3Right * velocity;
       if (direction == RIGHT)
-         m_locationPosition += m_sequence3Right * velocity;
+         m_sequence3Position += m_sequence3Right * velocity;
    }
 
 
@@ -196,7 +196,7 @@ namespace app_graphics3d_continuum
    // void camera::setViewYXZ(const ::floating_sequence3 & position, floating_sequence3 rotation)
    //{
 
-   //   m_locationPosition = position;
+   //   m_sequence3Position = position;
 
    //   m_anglePitch = rotation.x;
 
@@ -241,26 +241,26 @@ namespace app_graphics3d_continuum
 
    //   // if (m_pengine->m_fYScale < 0.f)
    //   //{
-   //   //    return glm::lookAtRH(m_locationPosition, m_locationPosition + m_sequence3Front, m_sequence3Up);
+   //   //    return glm::lookAtRH(m_sequence3Position, m_sequence3Position + m_sequence3Front, m_sequence3Up);
    //   // }
    //   // else
    //   {
    //      auto pgpucontext = m_pengine->get_gpu_context();
-   //      return pgpucontext->lookAt(m_locationPosition, m_locationPosition + m_sequence3Front, m_sequence3Up);
+   //      return pgpucontext->lookAt(m_sequence3Position, m_sequence3Position + m_sequence3Front, m_sequence3Up);
    //   }
    //}
 
    //// Get the camera position
-   //floating_sequence3 camera::GetPosition() const { return m_locationPosition; }
+   //floating_sequence3 camera::GetPosition() const { return m_sequence3Position; }
 
    void camera::Jump(float jumpHeight)
    {
-      m_locationPosition.y += jumpHeight; // Move up by jumpHeight units
+      m_sequence3Position.y += jumpHeight; // Move up by jumpHeight units
    }
 
    void camera::TeleportDownward(float distance)
    {
-      m_locationPosition.y -= distance; // Move down by the specified distance
+      m_sequence3Position.y -= distance; // Move down by the specified distance
    }
 
    void camera::TeleportInDirection(int direction)
@@ -269,19 +269,19 @@ namespace app_graphics3d_continuum
 
       if (direction == FORWARD)
       {
-         m_locationPosition += m_sequence3Front * teleportDistance;
+         m_sequence3Position += m_sequence3Front * teleportDistance;
       }
       else if (direction == BACKWARD)
       {
-         m_locationPosition -= m_sequence3Front * teleportDistance;
+         m_sequence3Position -= m_sequence3Front * teleportDistance;
       }
       else if (direction == LEFT)
       {
-         m_locationPosition -= m_sequence3Right * teleportDistance;
+         m_sequence3Position -= m_sequence3Right * teleportDistance;
       }
       else if (direction == RIGHT)
       {
-         m_locationPosition += m_sequence3Right * teleportDistance;
+         m_sequence3Position += m_sequence3Right * teleportDistance;
       }
    }
 
@@ -300,8 +300,8 @@ namespace app_graphics3d_continuum
       float offsetY = amplitude * cos(frequency * elapsedTime);
 
       // Apply the oscillation to the camera position
-      m_locationPosition.x += offsetX;
-      m_locationPosition.y += offsetY;
+      m_sequence3Position.x += offsetX;
+      m_sequence3Position.y += offsetY;
    }
 
 

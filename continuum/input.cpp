@@ -325,7 +325,7 @@ namespace app_graphics3d_continuum
 
                ::cast<camera> pcameraCurrent = m_pengine->m_pimmersionlayer->m_pscene->m_pcameraCurrent;
 
-               pcameraCurrent->m_locationPosition +=
+               pcameraCurrent->m_sequence3Position +=
                   m_fMoveSpeed * m_pengine->dt() * moveDir.normalized();
             }
 

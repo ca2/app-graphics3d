@@ -1,43 +1,26 @@
 cmake_minimum_required(VERSION 3.16)
-project(gpu CXX)
+project(graphics3d CXX)
 
 
 list(APPEND library_source
-   gltf/material.h
-   gltf/mesh.cpp
-   gltf/mesh.h
-   gltf/model.cpp
-   gltf/model.h
-   gltf/vertex.h
-   ibl/brdf_convolution_framebuffer.cpp
-   ibl/brdf_convolution_framebuffer.h
-   ibl/cubemap_framebuffer.cpp
-   ibl/cubemap_framebuffer.h
-   ibl/diffuse_irradiance_map.cpp
-   ibl/diffuse_irradiance_map.h
-   ibl/equirectangular_cubemap.cpp
-   ibl/equirectangular_cubemap.h
-   ibl/hdri_cube.cpp
-   ibl/hdri_cube.h
-   ibl/mipmap_cubemap_framebuffer.cpp
-   ibl/mipmap_cubemap_framebuffer.h
-   ibl/specular_map.cpp
-   ibl/specular_map.h
-
-   ibl/_.h
-   gltf/_.h
+   #render_systems/gltf_render_system.cpp
+   #render_systems/gltf_render_system.h
+   #render_systems/point_light_render_system.cpp
+   #render_systems/point_light_render_system.h
+   #render_systems/scene_render_system.cpp
+   #render_systems/scene_render_system.h
+   #render_systems/skybox_ibl_render_system.cpp
+   #render_systems/skybox_ibl_render_system.h
+   #render_systems/skybox_render_system.cpp
+   #render_systems/skybox_render_system.h
+   #render_systems/wavefront_obj_render_system.cpp
+   #render_systems/wavefront_obj_render_system.h
    _.cpp
-   assimp_iosystem.h
+   _.h
    framework.cpp
    framework.h
-   context.cpp
-   context.h
-   cube.cpp
-   cube.h
-   full_screen_quad.cpp
-   full_screen_quad.h
-   hdr_texture.cpp
-   hdr_texture.h
+   scene.cpp
+   scene.h
 )
 
 if (MACOS)
@@ -62,6 +45,7 @@ aura
 axis
 berg
 bred
+   gpu
 )
 
 
@@ -69,9 +53,7 @@ list(APPEND static_library_references ${library_references})
 list(TRANSFORM static_library_references PREPEND static_)
 
 
-add_library(${PROJECT_NAME} SHARED ${library_source}
-   _ktx.cpp
-   _ktx.h)
+add_library(${PROJECT_NAME} SHARED ${library_source})
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
 

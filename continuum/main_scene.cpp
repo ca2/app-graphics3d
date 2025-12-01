@@ -141,7 +141,11 @@ namespace app_graphics3d_continuum
 
          auto & flatVase = scene_renderable("matter://models/flat_vase.obj");
          flatVase.translate({ -.5f, 0.f, 0.f });
-         flatVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
+         //flatVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
+         flatVase.scale({3.f, 1.5f, 3.f}); // The vase is upside down.
+         //flatVase.m_matrixRotation = ::floating_matrix4(1.f).rotate(::floating_sequence3(1, 0, 0), 180.f_degrees);
+         flatVase.m_ecoordinatesystem = ::gpu::e_coordinate_system_vulkan;
+         flatVase.m_strName = "Flat Vase";
 
       }
 
@@ -149,7 +153,11 @@ namespace app_graphics3d_continuum
 
          auto &floor = scene_renderable("matter://models/quad.obj");
          floor.translate({0.f, 0.f, 0.f});
-         floor.scale({5.f, -1.f, 5.f * fXScale });
+         //floor.scale({5.f, -1.f, 5.f * fXScale });
+         floor.scale({5.f, 1.f, 5.f});
+         ///floor.m_matrixRotation = ::floating_matrix4(1.f).rotate(::floating_sequence3(1, 0, 0), 180.f_degrees);
+         floor.m_ecoordinatesystem = ::gpu::e_coordinate_system_vulkan;
+         floor.m_strName = "Floor";
 
       }
 
@@ -157,7 +165,11 @@ namespace app_graphics3d_continuum
 
          auto &smoothVase = scene_renderable("matter://models/smooth_vase.obj");
          smoothVase.translate({.5f, .0f, 0.f});
-         smoothVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
+         //smoothVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
+         smoothVase.scale({3.f, 1.5f, 3.f}); // The vase is upside down.
+         //smoothVase.m_matrixRotation = ::floating_matrix4(1.f).rotate(::floating_sequence3(1, 0, 0), 180.f_degrees);
+         smoothVase.m_ecoordinatesystem = ::gpu::e_coordinate_system_vulkan;
+         smoothVase.m_strName = "Smooth Vase";
 
       }
 
@@ -166,14 +178,16 @@ namespace app_graphics3d_continuum
          auto &stoneSphere = scene_renderable("matter://models/StoneSphere.obj");
          stoneSphere.translate({ .0f, 0.0f, 0.f });
          stoneSphere.scale({.25f, .25f, .25f });
+         stoneSphere.m_strName = "Stone Sphere";
 
       }
 
       {
 
          auto &woodBarrel = scene_renderable("matter://models/Barrel_OBJ.obj");
-         woodBarrel.translate({ 1.f, 0.f, 1.0f });
+         woodBarrel.translate({ 1.5f, 0.f, 1.0f });
          woodBarrel.scale({1.f, 1.f, 1.f });
+         woodBarrel.m_strName = "Wood Barrel";
 
       }
 
@@ -197,8 +211,9 @@ namespace app_graphics3d_continuum
             ::radians((i * _2πf) / lightColors.size()),
             { 0.f, 1.f, 0.f });
          ppointlight->m_fLightIntensity = 1.0f;
-         ppointlight->transform().m_sequence3Position = floating_sequence3(rotateLight * floating_sequence4(-1.f, 1.7f, 0.5f, 1.f));
+         ppointlight->m_sequence3Translation = floating_sequence3(rotateLight * floating_sequence4(-1.f, 1.7f, 0.5f, 1.f));
          //m_pointlighta.add(ppointlight);
+         ppointlight->m_strName.format("Point Light {}", i);
 
       }
 
@@ -211,7 +226,7 @@ namespace app_graphics3d_continuum
 
 
 
-      øconstruct_new(m_pwavefrontobjrendersystem);
+      øconstruct(m_pwavefrontobjrendersystem);
 
       m_pwavefrontobjrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
 
@@ -283,6 +298,8 @@ namespace app_graphics3d_continuum
 
          auto &transform = m_pimmersionlayer->m_pengine->m_transform;
 
+         transform.m_sequence3Position = pcamera->m_sequence3Position;
+
          pinput->_017Update(dt, transform);
 
          auto positionTransform = transform.m_sequence3Position;
@@ -295,11 +312,11 @@ namespace app_graphics3d_continuum
 
          pcamera->m_fAspectRatio = aspect;
 
-         pcamera->m_fNearZ = 0.1f;
+         //pcamera->m_fNearZ = 0.1f;
 
-         pcamera->m_fFarZ = 100.0f;
+         //pcamera->m_fFarZ = 100.0f;
 
-         pcamera->m_angleFovY = 45.0f_degrees;
+         //pcamera->m_angleFovY = 45.0f_degrees;
 
          pcamera->update_vectors();
 
@@ -311,7 +328,8 @@ namespace app_graphics3d_continuum
       auto impact = pcamera->impact();
       globalubo["view"] = impact;
 
-      auto inversedImpact = pcamera->inversed_impact();
+      //auto inversedImpact = pcamera->inversed_impact();
+      auto inversedImpact = impact.inversed();
       globalubo["invView"] = inversedImpact;
 
       if (m_ppointlightrendersystem)

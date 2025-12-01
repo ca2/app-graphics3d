@@ -46,7 +46,11 @@ VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
 
-    float4 positionWorld = mul(float4(input.position, 1.0f), modelMatrix);      // model * vec
+    float3 inputPosition = input.position;
+
+    inputPosition.y = -inputPosition.y;
+
+    float4 positionWorld = mul(float4(inputPosition, 1.0f), modelMatrix);      // model * vec
     output.pos = mul(mul(positionWorld, view), projection);                    // projection * view * model * vec
     output.fragNormalWorld = normalize(mul((float3x3)normalMatrix, input.normal));
     output.fragPosWorld = positionWorld.xyz;

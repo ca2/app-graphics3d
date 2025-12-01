@@ -735,6 +735,7 @@
     <ClCompile Include="render_system.cpp" />
     <ClCompile Include="render_systems\gltf_render_system.cpp" />
     <ClCompile Include="render_systems\scene_render_system.cpp" />
+    <ClCompile Include="render_systems\wavefront_obj_render_system.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene_object.cpp" />
     <ClCompile Include="buffer.cpp" />
@@ -793,8 +794,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="system\basic_render_system.cpp" />
-    <ClCompile Include="system\point_light_system.cpp" />
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="window.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -823,6 +822,7 @@
     <ClInclude Include="render_systems\pbr.frag.h" />
     <ClInclude Include="render_systems\pbr.vert.h" />
     <ClInclude Include="render_systems\scene_render_system.h" />
+    <ClInclude Include="render_systems\wavefront_obj_render_system.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="scene_object.h" />
     <ClInclude Include="buffer.h" />

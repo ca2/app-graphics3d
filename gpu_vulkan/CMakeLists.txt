@@ -5,6 +5,23 @@ project(gpu_vulkan CXX)
 message(STATUS "PROJECT_NAME is ${PROJECT_NAME}")
 
 list(APPEND library_source
+   gltf/_constant.h
+   gltf/material.h
+   gltf/mesh.cpp
+   gltf/mesh.h
+   gltf/model.cpp
+   gltf/model.h
+   gltf/vertex.h
+   ibl/cubemap_framebuffer.cpp
+   ibl/cubemap_framebuffer.h
+   ibl/diffuse_irradiance_map.cpp
+   ibl/diffuse_irradiance_map.h
+   ibl/equirectangular_cubemap.cpp
+   ibl/equirectangular_cubemap.h
+   ibl/hdri_cube.cpp
+   ibl/hdri_cube.h
+   ibl/specular_map.cpp
+   ibl/specular_map.h
         _.cpp
         _.h
         _factory.cpp
@@ -27,6 +44,8 @@ list(APPEND library_source
         cpu_buffer.h
         context.cpp
         context.h
+   cube.cpp
+   cube.h
         debug.cpp
         debug.h
         descriptors.cpp

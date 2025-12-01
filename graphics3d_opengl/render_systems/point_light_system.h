@@ -2,7 +2,7 @@
 
 #include "bred/graphics3d/camera.h"
 #include "context.h"
-#include "frame_info.h"
+//#include "frame_info.h"
 #include "scene_object.h"
 #include "pipeline.h"
 

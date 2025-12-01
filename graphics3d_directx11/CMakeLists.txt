@@ -3,16 +3,24 @@ project(graphics3d_directx11 CXX)
 
 
 list(APPEND library_source
+   render_systems/gltf_render_system.cpp
+   render_systems/gltf_render_system.h
+   render_systems/scene_render_system.cpp
+   render_systems/scene_render_system.h
         _.cpp
         _.h
         _directx11.h
         _factory.cpp
-        buffer.h
-        camera.h
+        #buffer.h
+        #camera.h
         engine.cpp
         engine.h
         framework.cpp
         framework.h
+   #render_pass.cpp
+   #render_pass.h
+   render_system.cpp
+   render_system.h
         #model.cpp
         #model.h
 )
@@ -29,7 +37,9 @@ list(APPEND library_references
         imgui
         acme_windows_common
         directx11
+   gpu
         gpu_directx11
+   graphics3d
 )
 
 

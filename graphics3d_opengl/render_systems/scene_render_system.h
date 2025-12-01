@@ -26,7 +26,7 @@ namespace graphics3d_opengl
 {
 
 
-   class scene_render_system : virtual public ::graphics3d::scene_render_system,
+   class CLASS_DECL_GRAPHICS3D_OPENGL scene_render_system : virtual public ::graphics3d::scene_render_system,
                                virtual public ::graphics3d_opengl::render_system
    {
    public:

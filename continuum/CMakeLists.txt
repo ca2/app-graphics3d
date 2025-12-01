@@ -109,6 +109,7 @@ list(APPEND library_references
         berg
     bred
     core
+   graphics3d
 )
 
 
