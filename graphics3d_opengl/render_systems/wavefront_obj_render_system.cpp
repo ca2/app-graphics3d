@@ -83,9 +83,9 @@ namespace graphics3d_opengl
 
       auto n = ::floating_matrix3(matrixModel).inversed().transposed();
 
-      n = -1.f * n;
+      //n = -1.f * n;
 
-      matrixNormal = n;
+      //matrixNormal = n;
 
    }
 
@@ -95,6 +95,8 @@ namespace graphics3d_opengl
                                           ::graphics3d::scene_renderable *pscenerenderable)
 
 	{
+
+       glDisable(GL_CULL_FACE);
 
        if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_vulkan)
        {
