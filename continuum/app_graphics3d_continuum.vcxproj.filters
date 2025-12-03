@@ -28,7 +28,7 @@
     <ClCompile Include="main_scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="global_ubo.cpp">
+    <ClCompile Include="aaa_global_ubo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
@@ -66,7 +66,7 @@
     <ClInclude Include="_vulkan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="global_ubo.h">
+    <ClInclude Include="aaa_global_ubo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphics3d\main_scene.h">

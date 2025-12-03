@@ -2,10 +2,11 @@
 #include "wavefront_obj_render_system.h"
 #include "bred/gpu/renderable.h"
 #include "bred/graphics3d/scene_renderable.h"
-#include "shaders/wavefront.vert.h"
-#include "shaders/wavefront.frag.h"
+//#include "shader/wavefront.vert.spv.inl"
+//#include "shader/wavefront.frag.spv.inl"
 
-namespace graphics3d_opengl
+
+namespace graphics3d_vulkan
 {
 
 
@@ -109,7 +110,12 @@ namespace graphics3d_opengl
    ::memory wavefront_obj_render_system::vert_shader_memory()
    {
 
-      return g_psz_wavefront_vert; 
+            static unsigned int pvertexshader[] = {
+#include "render_systems/shader/wavefront.vert.spv.inl"
+      };
+
+      return ::as_memory_block(pvertexshader);
+
       
    }
 
@@ -117,7 +123,11 @@ namespace graphics3d_opengl
    ::memory wavefront_obj_render_system::frag_shader_memory()
    {
 
-      return g_psz_wavefront_frag; 
+            static unsigned int pfragmentshader[] = {
+#include "render_systems/shader/wavefront.frag.spv.inl"
+      };
+
+      return ::as_memory_block(pfragmentshader);
 
    }
 
@@ -130,18 +140,18 @@ namespace graphics3d_opengl
 
        //glDisable(GL_CULL_FACE);
 
-       glEnable(GL_CULL_FACE);
+       //glEnable(GL_CULL_FACE);
 
        if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_znf)
        {
 
-         glFrontFace(GL_CW);
+         //glFrontFace(GL_CW);
 
        }
        else
        {
 
-         glFrontFace(GL_CCW);
+         //glFrontFace(GL_CCW);
          
        }
 
@@ -163,7 +173,7 @@ namespace graphics3d_opengl
 	}
 
 
-} // namespace graphics3d_opengl
+} // namespace graphics3d_vulkan
 
 
 

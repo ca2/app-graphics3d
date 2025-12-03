@@ -40,8 +40,6 @@ namespace app_graphics3d_continuum
 
       m_papp->m_pmainscene = this;
 
-
-
    }
 
 
@@ -60,12 +58,12 @@ namespace app_graphics3d_continuum
          pcamera->m_pengine = m_pimmersionlayer->m_pengine;
          pcamera->initialize_camera(target, camera);
 
-         float aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
+         //float aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
 
          pcamera->m_angleFovY = 50f_degrees;
-         pcamera->m_fAspectRatio = aspect;
+         //pcamera->m_fAspectRatio = aspect;
          pcamera->m_fNearZ  = 0.1f;
-         pcamera->m_fNearZ = 100.f;
+         pcamera->m_fFarZ = 100.f;
 
          //pcamera->m_pimpact = m_pimpact;
          m_pcameraDefault = pcamera;
@@ -80,8 +78,7 @@ namespace app_graphics3d_continuum
    void main_scene::on_load_scene(::gpu::context* pgpucontext)
    {
 
-      m_gpupropertiesGlobalUbo.set<::app_graphics3d_continuum::global_ubo>();
-
+      m_gpupropertiesGlobalUbo.set<::graphics3d::global_ubo1>();
 
       //::graphics3d::sky_box::cube cube = {
 
@@ -115,10 +112,11 @@ namespace app_graphics3d_continuum
       //  }
       //};
 
-//      m_Skybox = øallocate::graphics3d::sky_box();
+      // m_Skybox = øallocate::graphics3d::sky_box();
 
+      ::string strSkybox = m_papp->m_strSkybox;
 
-      m_strSkybox = m_papp->m_strSkybox;
+      m_strSkybox = strSkybox;
 
       for (auto& strSkybox : m_papp->m_straSkybox)
       {
@@ -131,7 +129,7 @@ namespace app_graphics3d_continuum
 
       }
 
-
+      m_pskyboxCurrent2 = m_mapSkybox[m_strSkybox];
 
       float fXScale;
 
@@ -178,6 +176,7 @@ namespace app_graphics3d_continuum
          auto &stoneSphere = scene_renderable("matter://models/StoneSphere.obj");
          stoneSphere.translate({ .0f, 0.0f, 0.f });
          stoneSphere.scale({.25f, .25f, .25f });
+         stoneSphere.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
          stoneSphere.m_strName = "Stone Sphere";
 
       }
@@ -187,6 +186,7 @@ namespace app_graphics3d_continuum
          auto &woodBarrel = scene_renderable("matter://models/Barrel_OBJ.obj");
          woodBarrel.translate({ 1.5f, 0.f, 1.0f });
          woodBarrel.scale({1.f, 1.f, 1.f });
+         woodBarrel.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
          woodBarrel.m_strName = "Wood Barrel";
 
       }
@@ -322,15 +322,27 @@ namespace app_graphics3d_continuum
 
          pcamera->update();
 
+         float fNearZ = pcamera->m_fNearZ;
+         float fFarZ = pcamera->m_fFarZ;
+
       auto projection = pcamera->projection();
       globalubo["projection"] = projection;
 
       auto impact = pcamera->impact();
       globalubo["view"] = impact;
 
+
+      ::floating_sequence4 seq4AmbientLightColor(0.2f, 0.2f, 0.2f, 0.2f);
+      globalubo["ambientLightColor"] = seq4AmbientLightColor;
+            
+
       //auto inversedImpact = pcamera->inversed_impact();
       auto inversedImpact = impact.inversed();
       globalubo["invView"] = inversedImpact;
+
+      auto cameraPosition = pcamera->position();
+      globalubo["cameraPosition"] = cameraPosition;
+
 
       if (m_ppointlightrendersystem)
       {

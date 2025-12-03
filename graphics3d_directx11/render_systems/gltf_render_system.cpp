@@ -21,7 +21,7 @@
 #include "bred/gpu/frame.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/engine.h"
-#include "bred/graphics3d/global_ubo.h"
+#include "bred/graphics3d/global_ubo1.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
@@ -102,7 +102,7 @@ namespace graphics3d_directx11
       // m_ppipelineBlend->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
       //                                     "matter://shaders/gltf_frag.frag");
 
-      auto ppropertiesUbo = ::gpu_properties<::graphics3d::global_ubo>();
+      auto ppropertiesUbo = ::gpu_properties<::graphics3d::global_ubo1>();
       //auto ppropertiesPushVertex = ::gpu_properties<::gpu::model_normal>();
       //auto ppropertiesPushFragment = ::gpu_properties<fragment_push_constants>();
       auto ppropertiesPush = ::gpu_properties<push_constants>();

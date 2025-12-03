@@ -14,6 +14,12 @@
     <Filter Include="Header Files\render_systems">
       <UniqueIdentifier>{25f2e7e8-ee34-48d0-b575-ea265b4fb5bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\render_systems\shaders">
+      <UniqueIdentifier>{8426a530-e30c-42df-9e93-d3834c3499a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\render_systems\shaders">
+      <UniqueIdentifier>{68615f34-6cd9-4152-ac07-6768a64d8912}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -216,5 +222,19 @@
     <ClInclude Include="render_systems\wavefront_obj_render_system.h">
       <Filter>Header Files\render_systems</Filter>
     </ClInclude>
+    <ClInclude Include="render_systems\shaders\wavefront.frag.h">
+      <Filter>Header Files\render_systems\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="render_systems\shaders\wavefront.vert.h">
+      <Filter>Header Files\render_systems\shaders</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="render_systems\shaders\wavefront.vert">
+      <Filter>Source Files\render_systems\shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="render_systems\shaders\wavefront.frag">
+      <Filter>Source Files\render_systems\shaders</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

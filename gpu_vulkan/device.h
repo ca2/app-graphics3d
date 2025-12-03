@@ -166,7 +166,7 @@ namespace gpu_vulkan
       ::gpu::queue *present_queue() override;
 
 
-      virtual void defer_shader_memory(::memory& memory, const ::file::path& pathShader);
+      void defer_shader_memory(::memory& memory, const ::file::path& pathShader) override;
 
 
 

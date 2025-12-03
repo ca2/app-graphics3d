@@ -1,16 +1,16 @@
-// From bred/graphics3d/render_systems/wavefront_obj_render_system.h
-// by camilo on 2025-11-30 21:59 <3ThomasBorregaardSorensen!!
+// From graphics3d_opengl/render_systems/wavefront_obj_render_system.h
+// by camilo on 2025-12-03 03:16 <3ThomasBorregaardSorensen!!
 #pragma once
 
 
 #include "bred/graphics3d/render_systems/wavefront_obj_render_system.h"
 
 
-namespace graphics3d_opengl
+namespace graphics3d_vulkan
 {
 
 
-	class CLASS_DECL_GRAPHICS3D_OPENGL wavefront_obj_render_system
+	class CLASS_DECL_GRAPHICS3D_VULKAN wavefront_obj_render_system
        :
 		virtual public ::graphics3d::wavefront_obj_render_system
 	{
@@ -34,6 +34,6 @@ namespace graphics3d_opengl
 	};
 
 
-} // namespace graphics3d_opengl
+} // namespace graphics3d_vulkan
 
 

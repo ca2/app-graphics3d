@@ -3,7 +3,7 @@
 
 #include "bred/user/user/graphics3d.h"
 #include "berg/user/user/show.h"
-#include "app-graphics3d/continuum/global_ubo.h"
+#include "bred/graphics3d/global_ubo1.h"
 
 
 namespace app_graphics3d_continuum
