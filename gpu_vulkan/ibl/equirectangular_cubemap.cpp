@@ -107,6 +107,8 @@ namespace gpu_vulkan
                                                  1.0f, // its a square
                                                  0.1f, 2.0f);
 
+         //projection[1][1] *= -1; // Invert Y for Vulkan  
+
          m_pgpucontext->m_rectangle.set(0, 0, m_uCubemapWidth, m_uCubemapHeight);
 
          ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;

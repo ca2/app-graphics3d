@@ -2936,6 +2936,15 @@ namespace gpu_vulkan
    //}
 
 
+   void context::layout_global_ubo(::gpu::properties *pproperties)
+   {
+      
+      _layout_std140_or_std430(*pproperties, ::gpu::e_layout_std140); 
+   
+   }
+
+
+
    void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
    {
 
@@ -5831,14 +5840,15 @@ void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::
 floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotation)
 {
 
-         auto &anglePitch = rotation.m_anglePitch;
+   auto &anglePitch = rotation.m_anglePitch;
 
    auto &angleYaw = rotation.m_angleYaw;
 
    floating_sequence3 front;
+
    front.x = anglePitch.cos() * angleYaw.cos();
    front.y = anglePitch.sin();
-   front.z = -anglePitch.cos() * angleYaw.sin();
+   front.z = anglePitch.cos() * angleYaw.sin();
 
    front.normalize();
 

@@ -32,7 +32,7 @@ namespace graphics3d_vulkan
    engine::engine()
    {
 
-      m_fYScale = -1.f;
+      //m_fYScale = -1.f;
 
    }
 
@@ -505,6 +505,15 @@ namespace graphics3d_vulkan
    }
 
 
+   void engine::calculate_impact(::floating_matrix4 &matrixImpact, const ::graphics3d::camera &camera)
+   {
+
+      ::graphics3d::engine::calculate_impact(matrixImpact, camera);
+
+      ///matrixImpact[2][2] *= -1.f;
+
+   }
+
    floating_matrix4 engine::perspective(const float_angle &angleFovY, float aspect, float zNear, float zFar)
    {
 
@@ -535,7 +544,7 @@ namespace graphics3d_vulkan
     M[3][2] = (zNear * zFar) / (zNear - zFar);
 
     // Vulkan requires Y-flip because its framebuffer space has Y down.
-    M[1][1] *= -1.0f;
+     //M[1][1] *= -1.0f;
       return M;
 
    }

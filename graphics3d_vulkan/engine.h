@@ -61,7 +61,7 @@ namespace graphics3d_vulkan
 		//void update_global_ubo(::gpu::context* pgpucontext) override;
 		//void on_render_frame() override;
 
-
+      void calculate_impact(::floating_matrix4 &matrixImpact, const ::graphics3d::camera &camera) override;
       floating_matrix4 perspective(const float_angle &angleFovY, float aspect, float zNear, float zFar) override;
 		
 	};
