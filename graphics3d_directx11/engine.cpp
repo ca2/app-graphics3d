@@ -152,7 +152,7 @@ namespace graphics3d_directx11
    floating_matrix4 engine::perspective(const float_angle & angleFovY, float aspect, float zNear, float zFar)
    {
        
-      floating_matrix4 M;
+      floating_matrix4 M(0.f);
 
       auto zn = zNear;
 
@@ -160,10 +160,52 @@ namespace graphics3d_directx11
       
       float f = 1.0f / ::std::tan(angleFovY.radians() * 0.5f);
 
-      //floating_matrix4 M;
+      ////floating_matrix4 M;
 
-      //auto zn = zNear;
-      //auto zf = zFar;
+      ////auto zn = zNear;
+      ////auto zf = zFar;
+
+      ////M[0][0] = f / aspect;
+      ////M[0][1] = 0;
+      ////M[0][2] = 0;
+      ////M[0][3] = 0;
+
+      ////M[1][0] = 0;
+      ////M[1][1] = f;
+      ////M[1][2] = 0;
+      ////M[1][3] = 0;
+
+      ////M[2][0] = 0;
+      ////M[2][1] = 0;
+      ////M[2][2] = zf / (zn - zf);
+      ////M[2][3] = (zn * zf) / (zn - zf);
+
+      ////M[3][0] = 0;
+      ////M[3][1] = 0;
+      ////M[3][2] = -1;
+      ////M[3][3] = 0;
+
+      ////float f = 1.0f / std::tan(angleFovY.radians() * 0.5f);
+
+      ////M[0][0] = f / aspect;
+      ////M[0][1] = 0;
+      ////M[0][2] = 0;
+      ////M[0][3] = 0;
+
+      ////M[1][0] = 0;
+      ////M[1][1] = f;
+      ////M[1][2] = 0;
+      ////M[1][3] = 0;
+
+      ////M[2][0] = 0;
+      ////M[2][1] = 0;
+      ////M[2][2] = zf / (zn - zf);
+      ////M[2][3] = -1;
+
+      ////M[3][0] = 0;
+      ////M[3][1] = 0;
+      ////M[3][2] = (zn * zf) / (zn - zf);
+      ////M[3][3] = 0;
 
       //M[0][0] = f / aspect;
       //M[0][1] = 0;
@@ -177,57 +219,57 @@ namespace graphics3d_directx11
 
       //M[2][0] = 0;
       //M[2][1] = 0;
-      //M[2][2] = zf / (zn - zf);
-      //M[2][3] = (zn * zf) / (zn - zf);
-
-      //M[3][0] = 0;
-      //M[3][1] = 0;
-      //M[3][2] = -1;
-      //M[3][3] = 0;
-
-      //float f = 1.0f / std::tan(angleFovY.radians() * 0.5f);
-
-      //M[0][0] = f / aspect;
-      //M[0][1] = 0;
-      //M[0][2] = 0;
-      //M[0][3] = 0;
-
-      //M[1][0] = 0;
-      //M[1][1] = f;
-      //M[1][2] = 0;
-      //M[1][3] = 0;
-
-      //M[2][0] = 0;
-      //M[2][1] = 0;
-      //M[2][2] = zf / (zn - zf);
+      //M[2][2] = zFar / (zNear - zFar);
       //M[2][3] = -1;
 
       //M[3][0] = 0;
       //M[3][1] = 0;
-      //M[3][2] = (zn * zf) / (zn - zf);
+      //M[3][2] = (zNear * zFar) / (zNear - zFar);
       //M[3][3] = 0;
 
-      M[0][0] = f / aspect;
-      M[0][1] = 0;
-      M[0][2] = 0;
-      M[0][3] = 0;
+      //{
+         //floating_matrix4 M;
 
-      M[1][0] = 0;
-      M[1][1] = f;
-      M[1][2] = 0;
-      M[1][3] = 0;
+         //float f = 1.0f / std::tan(fovY * 0.5f);
 
-      M[2][0] = 0;
-      M[2][1] = 0;
-      M[2][2] = zFar / (zNear - zFar);
-      M[2][3] = -1;
+      //   M[0][0] = f / aspect;
+      //   M[0][1] = 0.0f;
+      //   M[0][2] = 0.0f;
+      //   M[0][3] = 0.0f;
 
-      M[3][0] = 0;
-      M[3][1] = 0;
-      M[3][2] = (zNear * zFar) / (zNear - zFar);
-      M[3][3] = 0;
+      //   M[1][0] = 0.0f;
+      //   M[1][1] = f;
+      //   M[1][2] = 0.0f;
+      //   M[1][3] = 0.0f;
 
-      return M;
+      //   M[2][0] = 0.0f;
+      //   M[2][1] = 0.0f;
+      //   M[2][2] = zf / (zn - zf);
+      //   M[2][3] = -1.0f;
+
+      //   M[3][0] = 0.0f;
+      //   M[3][1] = 0.0f;
+      //   M[3][2] = (zn * zf) / (zn - zf);
+      //   M[3][3] = 0.0f;
+
+      ////   return M;
+      ////}
+      //return M;
+      //floating_matrix4 perspectiveRH_DX11(float fovY, float aspect, float zn, float zf)
+      //{
+         //floating_matrix4 M(0.0f);
+
+         //float f = 1.0f / std::tan(fovY * 0.5f);
+
+         M[0][0] = f / aspect;
+         M[1][1] = f;
+         M[2][2] = zf / (zn - zf);
+         M[2][3] = -1.0f;
+         M[3][2] = (zn * zf) / (zn - zf);
+         M[3][3] = 0.0f;
+
+         return M;
+//      }
 
    }
 

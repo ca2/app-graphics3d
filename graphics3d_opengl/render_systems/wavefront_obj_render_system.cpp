@@ -5,6 +5,7 @@
 #include "shaders/wavefront.vert.h"
 #include "shaders/wavefront.frag.h"
 
+
 namespace graphics3d_opengl
 {
 
@@ -132,20 +133,20 @@ namespace graphics3d_opengl
 
        glEnable(GL_CULL_FACE);
 
-       if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_znf)
-       {
+       //if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_znf)
+       //{
 
-         glFrontFace(GL_CW);
+       //  glFrontFace(GL_CW);
 
-       }
-       else
-       {
+       //}
+       //else
+       //{
 
-         glFrontFace(GL_CCW);
-         
-       }
+       //  glFrontFace(GL_CCW);
+       //  
+       //}
 
-       //glFrontFace(GL_CCW);
+       glFrontFace(GL_CCW);
 
        //glFrontFace(GL_CCW);
 

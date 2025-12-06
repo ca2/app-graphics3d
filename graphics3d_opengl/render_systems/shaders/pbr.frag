@@ -1,11 +1,4 @@
-﻿// This file was automatically generated from a command line like:
-// application_build_helper --inline-text "specularenv.vert"
-#pragma once
-
-
-const char g_psz_pbr_frag[] = R"vert_text(
-
-#version 330 core
+﻿#version 330 core
 
 #define PI 3.1415926535897932384626433832795
 #define GREYSCALE_WEIGHT_VECTOR vec3(0.2126, 0.7152, 0.0722)
@@ -349,9 +342,6 @@ void main() {
 float greyscaleBrightness = dot(FragColor.rgb, GREYSCALE_WEIGHT_VECTOR);
 BloomColor = greyscaleBrightness > bloomBrightnessCutoff ? FragColor : vec4(0.0);
 }
-
-)vert_text";
-
 
 
 

@@ -37,8 +37,8 @@ namespace app_graphics3d_continuum
 
       pinput->initialize_input();
 
-      pinput->m_fMoveSpeed = 3.f;
-      pinput->m_fLookSpeed = 1.5f;
+      //pinput->m_fMoveSpeed = 3.f;
+      //pinput->m_fLookSpeed = 1.5f;
 
       m_pengine->m_pinput = pinput;
 

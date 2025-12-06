@@ -20,6 +20,9 @@
     <Filter Include="Header Files\render_systems">
       <UniqueIdentifier>{4cc54b2f-bd44-48c7-b57b-bb558bc17de4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\render_systems\shader">
+      <UniqueIdentifier>{bbc9d0e2-b0fb-43e4-9269-f3b0dd0fdf38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -78,6 +81,12 @@
     </ClCompile>
     <ClCompile Include="render_system.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render_systems\wavefront_obj_render_system.cpp">
+      <Filter>Source Files\render_systems</Filter>
+    </ClCompile>
+    <ClCompile Include="render_systems\skybox_render_system.cpp">
+      <Filter>Source Files\render_systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +170,12 @@
     </ClInclude>
     <ClInclude Include="render_system.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render_systems\wavefront_obj_render_system.h">
+      <Filter>Header Files\system</Filter>
+    </ClInclude>
+    <ClInclude Include="render_systems\skybox_render_system.h">
+      <Filter>Header Files\render_systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

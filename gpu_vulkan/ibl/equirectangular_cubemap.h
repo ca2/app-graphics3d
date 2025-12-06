@@ -7,7 +7,7 @@
 #include "gpu/ibl/cubemap_framebuffer.h"
 #include "bred/gpu/shader.h"
 #include "gpu/ibl/equirectangular_cubemap.h"
-#include "gpu/ibl/hdri_cube.h"
+//#include "gpu/ibl/hdri_cube.h"
 
 
 namespace gpu_vulkan

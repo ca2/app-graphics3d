@@ -1,28 +1,36 @@
 #version 450
 
 layout(location = 0) in vec3 modelCoordinates;
-layout(location = 0) out vec4 FragColor;
+layout(location = 0) out vec4 outColor;
 
-// Equirectangular projection HDRI texture
 layout(set = 0, binding = 0) uniform sampler2D hdri;
 
-vec2 sphericalToCartesian(vec3 v)
+const float PI = 3.14159265359;
+
+
+void main()
 {
-    float phi = atan(v.z, -v.x);       // horizontal angle
-    float theta = asin(v.y);          // vertical angle
+//    vec3 dir = normalize(faceRot[pc.faceIndex] * modelCoordinates);
 
-    // normalize to 0..1
-    vec2 uv;
-    uv.x = 0.5 + phi * (0.15915494309189535);   // 1 / (2π)
-    uv.y = 0.5 + theta * (0.3183098861837907);  // 1 / π (note the minus!)
+//    float phi   = atan(-dir.z, dir.x);   // longitude: -pi..pi
+//    float theta = asin(dir.y);          // latitude: -pi/2..pi/2
 
-    return uv;
-}
+//    float u = phi / (2.0 * PI) + 0.5;
+//    float v = theta / PI + 0.5;
 
-void main() {
-	vec3 sampleDirection = normalize(modelCoordinates);
-	vec2 uv = sphericalToCartesian(sampleDirection);
-	vec3 color = texture(hdri, uv).rgb;
+//    outColor = texture(hdri, vec2(u, v));
 
-	FragColor = vec4(color, 1.0);
+    vec3 dir = normalize(modelCoordinates);
+
+    float phi = atan(dir.z, dir.x);
+    
+    float theta = acos(dir.y);
+
+    float u = mod(0.75 + ((phi + PI) / (2.0 * PI)), 1.0);
+    
+    float v = theta / PI;
+    
+    outColor = texture(hdri, vec2(1.0 - u, v));
+
+
 }

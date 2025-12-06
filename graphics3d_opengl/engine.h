@@ -10,7 +10,7 @@
 #include "input.h"
 //#include "renderer.h"
 #include "mesh.h"
-#include "shader.h"
+//#include "shader.h"
 #include "camera.h" // Include the ::graphics3d::camera header
 //#include "application.h"
 //#include "apex/platform/app_consumer.h"

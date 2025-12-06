@@ -5,17 +5,18 @@
 
 
 
+// ---------- Global UBO (set 0 binding 0) ----------
 cbuffer GlobalUbo : register(b0)
 {
     float4x4 projection;
     float4x4 view;
     float4x4 invView;
-    float4 ambientLightColor; // w is intensity
-
+    float4 ambientLightColor;
+    float4 cameraPosition;
     PointLight pointLights[10];
     int numLights;
-    float3 _padding; // Padding for alignment
 };
+
 
 // Cube map sampler
 TextureCube skybox : register(t0);   // Texture bound at register t0

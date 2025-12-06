@@ -52,6 +52,9 @@
     <ClCompile Include="render_systems\wavefront_obj_render_system.cpp">
       <Filter>Source Files\render_system</Filter>
     </ClCompile>
+    <ClCompile Include="render_systems\skybox_render_system.cpp">
+      <Filter>Source Files\render_system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -93,6 +96,9 @@
     <ClInclude Include="render_systems\wavefront_obj_render_system.h">
       <Filter>Header Files\render_systems</Filter>
     </ClInclude>
+    <ClInclude Include="render_systems\skybox_render_system.h">
+      <Filter>Header Files\render_systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="render_systems\shader\pbr.frag.spv.inl">
@@ -107,6 +113,18 @@
     <None Include="render_systems\shader\wavefront.vert.spv.inl">
       <Filter>Header Files\render_systems\shader</Filter>
     </None>
+    <None Include="render_systems\shader\skybox.frag.spv.inl">
+      <Filter>Header Files\render_systems\shader</Filter>
+    </None>
+    <None Include="render_systems\shader\skybox.vert.spv.inl">
+      <Filter>Header Files\render_systems\shader</Filter>
+    </None>
+    <None Include="render_systems\shader\skybox_hdr.frag.spv.inl">
+      <Filter>Header Files\render_systems\shader</Filter>
+    </None>
+    <None Include="render_systems\shader\tonemapping.glsl">
+      <Filter>Source Files\render_system\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="render_systems\shader\pbr.frag">
@@ -119,6 +137,21 @@
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
     <CustomBuild Include="render_systems\shader\wavefront.vert">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="render_systems\shader\skybox.frag">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="render_systems\shader\skybox.vert">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="render_systems\shader\skybox_hdr.frag">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="render_systems\shader\scene.frag">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="render_systems\shader\scene.vert">
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include <vulkan/vulkan.h>
-#include "bred/graphics3d/model.h"
+//#include "bred/graphics3d/model.h"
 #include "gpu/gltf/model_base.h"
 //#include "vk_tools/vk_init.h"
 //#include "vulkan_wrapper/vulkan_descriptor.h"

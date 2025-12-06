@@ -3,17 +3,18 @@ struct PointLight {
     float4 color;
 };
 
-cbuffer GlobalUbo : register(b0) {
+// ---------- Global UBO (set 0 binding 0) ----------
+cbuffer GlobalUbo : register(b0)
+{
     float4x4 projection;
     float4x4 view;
     float4x4 invView;
     float4 ambientLightColor;
+    float4 cameraPosition;
     PointLight pointLights[10];
     int numLights;
-    int padding1;
-    int padding2;
-    int padding3;
 };
+
 
 struct VertexInput {
     float3 position : POSITION;

@@ -15,10 +15,13 @@
 #include "gpu_opengl/ibl/diffuse_irradiance_map.h"
 #include "gpu_opengl/ibl/specular_map.h"
 //#include "app/gpu_opengl/vk_init.h"
+#include "shaders/scene.vert.h"
+#include "shaders/scene.frag.h"
 
 
 namespace graphics3d_opengl
 {
+
 
    scene_render_system::scene_render_system()
    {
@@ -39,21 +42,19 @@ namespace graphics3d_opengl
 
       ::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
 
-      øconstruct(m_ppipelineOpaque);
-      øconstruct(m_ppipelineMask);
-      øconstruct(m_ppipelineBlend);
+      øconstruct(m_pshaderOpaque);
+      øconstruct(m_pshaderMask);
+      øconstruct(m_pshaderBlend);
 
-      m_ppipelineOpaque->initialize_shader(pgpucontext->m_pgpurenderer,
-         "matter://shaders/scene_vert.vert",
-         "matter://shaders/scene_frag.frag");
+      m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, 
+         ::as_memory_block(g_psz_scene_vert),
+         ::as_memory_block(g_psz_scene_frag));
 
-      m_ppipelineMask->initialize_shader(pgpucontext->m_pgpurenderer,
-         "matter://shaders/scene_vert.vert",
-         "matter://shaders/scene_frag.frag");
+      m_pshaderMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, ::as_memory_block(g_psz_scene_vert),
+                                         ::as_memory_block(g_psz_scene_frag));
 
-      m_ppipelineBlend->initialize_shader(pgpucontext->m_pgpurenderer,
-         "matter://shaders/scene_vert.vert",
-         "matter://shaders/scene_frag.frag");
+      m_pshaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, ::as_memory_block(g_psz_scene_vert),
+                                          ::as_memory_block(g_psz_scene_frag));
 
    }
 
@@ -67,13 +68,13 @@ namespace graphics3d_opengl
 
       ::cast<::gpu_opengl::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
 
-      pgpucontext->defer_bind(m_ppipelineOpaque);
+      pgpucontext->defer_bind(m_pshaderOpaque);
 
       auto &scenerenderables = pscene->scene_renderables();
 
       ::cast < ::gpu_opengl::context > pcontext = pcommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext;
 
-      auto pshader =pcontext->m_pshaderBound;
+      auto pshader = pcontext->m_pshaderBound;
 
       ::cast<::gpu_opengl::renderer> prenderer = pcontext->m_pgpurenderer;
 
@@ -110,7 +111,7 @@ namespace graphics3d_opengl
          if (erenderabletype != ::gpu::e_renderable_type_gltf)
          {
             
-            continue; // not mine, skip
+            continue;
 
          }
 
@@ -127,58 +128,29 @@ namespace graphics3d_opengl
 
          for (auto pmesh: pgltfmodel->m_mesha)
          {
-            //if (!node->mesh)
-              // continue;
 
             floating_matrix4 world = pscenerenderable->model_matrix();
-            floating_matrix4 normalMat = world.inversed().transposed();
+            floating_matrix3 matrix3World(world);
+            auto matrix3Normal = matrix3World.inversed().transposed();
+            floating_matrix4 normalMat = matrix3Normal;
 
-            m_ppipelineOpaque->set_matrix4("modelMatrix", world);
-            m_ppipelineOpaque->set_matrix4("normalMatrix", normalMat);
-            //m_ppipelineOpaque->set_matrix4("view", pscene->global_ubo().mat4("view"));
-            //m_ppipelineOpaque->set_matrix4("projection", pscene->global_ubo().mat4("projection"));
+            m_pshaderOpaque->set_matrix4("modelMatrix", world);
+            m_pshaderOpaque->set_matrix4("normalMatrix", normalMat);
 
-            //memcpy(pmesh->uniformBuffer.mapped, &world, sizeof(world));
-            //memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
             m_erendersystem = ::graphics3d::e_render_system_gltf_scene;
             pcommandbuffer->m_prendersystem = this;
             pmesh->draw(pcommandbuffer);
-            // for (auto *primitive: node->mesh->primitives)
-            // {
-            //
-            //
-            //    std::array<VkDescriptorSet, 2> sets = {vkdescriptorsetGlobal, // set 0
-            //                                           node->mesh->uniformBuffer.descriptorSet};
-            //
-            //
-            //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
-            //                            static_cast<uint32_t>(sets.size()), sets.data(), 0, nullptr);
-            //
-            //    switch (primitive->m_pmaterial->alphaMode)
-            //    {
-            //       case ::gpu_opengl::gltf::Material::ALPHAMODE_OPAQUE:
-            //          m_ppipelineOpaque->bind(pcommandbuffer);
-            //          break;
-            //       case ::gpu_opengl::gltf::Material::ALPHAMODE_MASK:
-            //          m_ppipelineMask->bind(pcommandbuffer);
-            //          break;
-            //       case ::gpu_opengl::gltf::Material::ALPHAMODE_BLEND:
-            //       default:
-            //          m_ppipelineBlend->bind(pcommandbuffer);
-            //          break;
-            //    }
-            //
-            //    pgltfmodel->drawNode(node, pcommandbuffer->m_vkcommandbuffer,
-            //                         ::gpu_opengl::gltf::RenderFlags::BindImages,
-            //                    m_pipelineLayout, 2);
-            //    warnedThisFrame = false;
-            // }
+
          }
+
       }
 
-      pgpucontext->defer_unbind(m_ppipelineOpaque);
+      pgpucontext->defer_unbind(m_pshaderOpaque);
 
    }
 
 
 } // namespace graphics3d_opengl
+
+
+

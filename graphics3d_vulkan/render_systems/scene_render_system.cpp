@@ -1,5 +1,6 @@
 #include "framework.h"
 #include "scene_render_system.h"
+#include "bred/gpu/frame.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
@@ -11,6 +12,8 @@
 #include "app-graphics3d/gpu_vulkan/render_pass.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "app-graphics3d/gpu_vulkan/vk_init.h"
+//#include "shader/scene.vert.spv.inl"
+//#include "shader/scene.frag.spv.inl"
 
 
 namespace graphics3d_vulkan
@@ -78,11 +81,20 @@ namespace graphics3d_vulkan
       ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
       ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
 
-      ::memory vert;
-      ::memory frag;
 
-      pgpudevice->defer_shader_memory(vert, "matter://shaders/scene_vert.vert");
-      pgpudevice->defer_shader_memory(frag, "matter://shaders/scene_frag.frag");
+      static unsigned int pvertshader[] = {
+#include "shader/scene.vert.spv.inl"
+      };
+
+      static unsigned int pfragshader[] = {
+#include "shader/scene.frag.spv.inl"
+      };
+
+      ::memory vert(as_memory_block(pvertshader));
+      ::memory frag(as_memory_block(pfragshader));
+
+      pgpudevice->defer_shader_memory(vert, "");
+      pgpudevice->defer_shader_memory(frag, "");
 
       ::array_base<VkVertexInputBindingDescription> bindings = {
          vkinit::vertexInputBindingDescription(0, sizeof(::gpu_vulkan::gltf::Vertex), VK_VERTEX_INPUT_RATE_VERTEX)};

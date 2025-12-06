@@ -1,14 +1,15 @@
 // Created by camilo on 2025-05-17 02:54 <3ThomasBorregaardSorensen!!
 #include "framework.h"
 #include "camera.h"
-#include "context.h"
+//#include "context.h"
 #include "engine.h"
-#include "frame.h"
+//#include "frame.h"
 //#include "model.h"
-#include "shader.h"
+//#include "shader.h"
 #include "render_systems/gltf_render_system.h"
 #include "render_systems/scene_render_system.h"
 #include "render_systems/wavefront_obj_render_system.h"
+#include "render_systems/skybox_render_system.h"
 #include "aura/platform/application.h"
 #include "bred/graphics3d/scene_object.h"
 //#include "networking.h"
@@ -38,6 +39,7 @@ IMPLEMENT_FACTORY(graphics3d_opengl)
    pfactory->add_factory_item< ::graphics3d_opengl::gltf_render_system, ::graphics3d::gltf_render_system>();
    pfactory->add_factory_item<::graphics3d_opengl::scene_render_system, ::graphics3d::scene_render_system>();
    pfactory->add_factory_item<::graphics3d_opengl::wavefront_obj_render_system, ::graphics3d::wavefront_obj_render_system>();
+   pfactory->add_factory_item<::graphics3d_opengl::skybox_render_system, ::graphics3d::skybox_render_system>();
 
 
 }

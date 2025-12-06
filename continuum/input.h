@@ -23,59 +23,59 @@ namespace app_graphics3d_continuum
       ~input() override;
 
 
-      void initialize_input(
-         const float_angle & angleCursorPixel = 0.1f_degrees, 
-         const float_angle & angleYaw = -90f_degrees,
-         const float_angle & anglePitch = 0f_degrees);
+   //   void initialize_input(
+   //      const float_angle & angleCursorPixel = 0.1f_degrees, 
+   //      const float_angle & angleYaw = -90f_degrees,
+   //      const float_angle & anglePitch = 0f_degrees);
 
-      //void moveInPlaneXZ(::user::graphics3d * pimpact, float dt, application_object& gameObject);
+   //   //void moveInPlaneXZ(::user::graphics3d * pimpact, float dt, application_object& gameObject);
 
-      void prepare_mouse_input() override;
-      void process_mouse_input() override;
-      void process_keyboard_input() override;
-
-
-      //void _001OnMouseMove(const ::int_point & point) override;
-      //void _001OnMouseOut() override;
-      void _001PrepareMouseInput();
-      void process_mouse_input_updateLook();
-      void _001UpdateLook();
-
-      //void processMouseMovement(float xOffset, float yOffset);
-      void processKeyboardInput(float deltaTime);
-      //void handleMouseInput();
-
-      void process_keyboard_input_updateMovement();
-      void process_keyboard_input_spaceExplorer();
-
-      void reset_mouse_last_position();
-   
-      floating_sequence3 getCameraDirection() const;
-      floating_sequence3 getCameraPosition() const;
+   //   void prepare_mouse_input() override;
+   //   void process_mouse_input() override;
+   //   void process_keyboard_input() override;
 
 
-      //::pointer<::user::graphics3d > m_pusergraphics3d;
-      //::pointer<::graphics3d::engine > m_pengine;
-      //::pointer<::graphics3d::key_map > m_pkeymap;
+   //   //void _001OnMouseMove(const ::int_point & point) override;
+   //   //void _001OnMouseOut() override;
+   //   void _001PrepareMouseInput();
+   //   void process_mouse_input_updateLook();
+   //   void _001UpdateLook();
+
+   //   //void processMouseMovement(float xOffset, float yOffset);
+   //   void processKeyboardInput(float deltaTime);
+   //   //void handleMouseInput();
+
+   //   void process_keyboard_input_updateMovement();
+   //   void process_keyboard_input_spaceExplorer();
+
+   //   void reset_mouse_last_position();
+   //
+   //   floating_sequence3 getCameraDirection() const;
+   //   floating_sequence3 getCameraPosition() const;
 
 
-
-      //public:
-          //double lastX = 400.0;
-          //double lastY = 300.0;
-          //bool firstMouse = true;
-
-   //public:
+   //   //::pointer<::user::graphics3d > m_pusergraphics3d;
+   //   //::pointer<::graphics3d::engine > m_pengine;
+   //   //::pointer<::graphics3d::key_map > m_pkeymap;
 
 
 
-      // Existing functions...
-      //void handleMouseInput(GLFWwindow* window);
+   //   //public:
+   //       //double lastX = 400.0;
+   //       //double lastY = 300.0;
+   //       //bool firstMouse = true;
 
-      //float getX() const { return (float) m_Δx; }
-      //float getY() const { return (float) m_Δy; }
+   ////public:
 
-            //::block as_block() override;
+
+
+   //   // Existing functions...
+   //   //void handleMouseInput(GLFWwindow* window);
+
+   //   //float getX() const { return (float) m_Δx; }
+   //   //float getY() const { return (float) m_Δy; }
+
+   //         //::block as_block() override;
 
    };
 

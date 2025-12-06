@@ -22,8 +22,9 @@
 #include "gpu_opengl/ibl/diffuse_irradiance_map.h"
 #include "gpu_opengl/ibl/specular_map.h"
 // #include <stdexcept>
-#include "pbr.frag.h"
-#include "pbr.vert.h"
+#include "shaders/pbr.frag.h"
+#include "shaders/pbr.vert.h"
+
 
 namespace graphics3d_opengl
 {
@@ -47,9 +48,9 @@ namespace graphics3d_opengl
 
       ::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
 
-      øconstruct(m_ppipelineOpaque);
-      øconstruct(m_ppipelineMask);
-      øconstruct(m_ppipelineBlend);
+      øconstruct(m_pshaderOpaque);
+      øconstruct(m_pshaderMask);
+      øconstruct(m_pshaderBlend);
 
       // m_ppipelineOpaque->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
       //                                      "matter://shaders/gltf_frag.frag");
@@ -59,14 +60,14 @@ namespace graphics3d_opengl
 
       // m_ppipelineBlend->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
       //                                     "matter://shaders/gltf_frag.frag");
-      m_ppipelineOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_pbr_vert),
-                                                      as_memory_block(g_psz_pbr_frag));
+      m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_pbr_vert),
+                                                     as_memory_block(g_psz_pbr_frag));
 
-      m_ppipelineMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_pbr_vert),
+      m_pshaderMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_pbr_vert),
                                                     as_memory_block(g_psz_pbr_frag));
 
 
-      m_ppipelineBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_pbr_vert),
+      m_pshaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_pbr_vert),
                                                      as_memory_block(g_psz_pbr_frag));
    }
 
@@ -88,7 +89,7 @@ namespace graphics3d_opengl
 
       ::cast<::gpu_opengl::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
 
-      pgpucontext->defer_bind(m_ppipelineOpaque);
+      pgpucontext->defer_bind(m_pshaderOpaque);
       auto &scenerenderables = pscenebase->scene_renderables();
 
       //   //// xxxxxxxxxxxxxxxxx
@@ -248,7 +249,7 @@ namespace graphics3d_opengl
 
       }
 
-      pgpucontext->defer_unbind(m_ppipelineOpaque);
+      pgpucontext->defer_unbind(m_pshaderOpaque);
 
    }
 

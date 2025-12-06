@@ -137,7 +137,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto & flatVase = scene_renderable("matter://models/flat_vase.obj");
+         auto & flatVase = scene_renderable("matter://models/flat_vase.obj", true);
          flatVase.translate({ -.5f, 0.f, 0.f });
          //flatVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
          flatVase.scale({3.f, 1.5f, 3.f}); // The vase is upside down.
@@ -149,7 +149,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto &floor = scene_renderable("matter://models/quad.obj");
+         auto &floor = scene_renderable("matter://models/quad.obj", true);
          floor.translate({0.f, 0.f, 0.f});
          //floor.scale({5.f, -1.f, 5.f * fXScale });
          floor.scale({5.f, 1.f, 5.f});
@@ -161,7 +161,7 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto &smoothVase = scene_renderable("matter://models/smooth_vase.obj");
+         auto &smoothVase = scene_renderable("matter://models/smooth_vase.obj", true);
          smoothVase.translate({.5f, .0f, 0.f});
          //smoothVase.scale({3.f, -1.5f, 3.f * fXScale }); // The vase is upside down.
          smoothVase.scale({3.f, 1.5f, 3.f}); // The vase is upside down.
@@ -173,20 +173,20 @@ namespace app_graphics3d_continuum
 
       {
 
-         auto &stoneSphere = scene_renderable("matter://models/StoneSphere.obj");
+         auto &stoneSphere = scene_renderable("matter://models/StoneSphere.obj", false);
          stoneSphere.translate({ .0f, 0.0f, 0.f });
          stoneSphere.scale({.25f, .25f, .25f });
-         stoneSphere.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
+         //stoneSphere.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
          stoneSphere.m_strName = "Stone Sphere";
 
       }
 
       {
 
-         auto &woodBarrel = scene_renderable("matter://models/Barrel_OBJ.obj");
+         auto &woodBarrel = scene_renderable("matter://models/Barrel_OBJ.obj", false);
          woodBarrel.translate({ 1.5f, 0.f, 1.0f });
          woodBarrel.scale({1.f, 1.f, 1.f });
-         woodBarrel.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
+         //woodBarrel.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
          woodBarrel.m_strName = "Wood Barrel";
 
       }
@@ -218,7 +218,7 @@ namespace app_graphics3d_continuum
       }
 
 
-      øconstruct_new(m_pskyboxrendersystem);
+      øconstruct(m_pskyboxrendersystem);
 
       m_pskyboxrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
 

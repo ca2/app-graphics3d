@@ -14,7 +14,8 @@
 //#include "sockets/basic/listen_socket_impl.h"
 #include "render_systems/gltf_render_system.h"
 #include "render_systems/scene_render_system.h"
-
+#include "render_systems/wavefront_obj_render_system.h"
+#include "render_systems/skybox_render_system.h"
 
 
 IMPLEMENT_FACTORY(graphics3d_directx11)
@@ -37,6 +38,8 @@ IMPLEMENT_FACTORY(graphics3d_directx11)
 
    pfactory->add_factory_item<::graphics3d_directx11::gltf_render_system, ::graphics3d::gltf_render_system>();
    pfactory->add_factory_item<::graphics3d_directx11::scene_render_system, ::graphics3d::scene_render_system>();
+   pfactory->add_factory_item<::graphics3d_directx11::wavefront_obj_render_system, ::graphics3d::wavefront_obj_render_system>();
+   pfactory->add_factory_item<::graphics3d_directx11::skybox_render_system, ::graphics3d::skybox_render_system>();
 
 
 }

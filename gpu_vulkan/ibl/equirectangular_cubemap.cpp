@@ -21,7 +21,7 @@
 #include "gpu_vulkan/texture.h"
 // #include "timer.h"
 #include "cubemap_framebuffer.h"
-#include "hdri_cube.h"
+//#include "hdri_cube.h"
 
 
 namespace gpu_vulkan
@@ -71,16 +71,6 @@ namespace gpu_vulkan
       }
 
 
-      // equirectangular_cubemap::equirectangular_cubemap(const ::string &engineRoot, const ::string &hdriPath) {
-      //     ::string hdriVertexShaderPath = engineRoot + "/src/ibl/shaders/hdri_cube.vert";
-      //     ::string hdriFragmentShaderPath = engineRoot + "/src/ibl/shaders/hdri_cube.frag";
-      //
-      //     hdriShader = std::make_unique<Shader>(hdriVertexShaderPath.c_str(), hdriFragmentShaderPath.c_str());
-      //     hdri_cube = std::make_unique<hdri_cube>(hdriPath);
-      //     framebuffer = std::make_unique<cubemap_framebuffer>(cubemapWidth, cubemapHeight);
-      // }
-
-
       void equirectangular_cubemap::compute()
       {
 
@@ -96,8 +86,8 @@ namespace gpu_vulkan
          {
             lookAt(origin, unitX, -unitY),
             lookAt(origin, -unitX, -unitY),
-            lookAt(origin, -unitY, -unitZ), 
-            lookAt(origin, unitY, unitZ),
+            lookAt(origin, unitY, unitZ), 
+            lookAt(origin, -unitY, -unitZ),
             lookAt(origin, unitZ, -unitY), 
             lookAt(origin, -unitZ, -unitY)
          };
@@ -128,7 +118,7 @@ namespace gpu_vulkan
          auto escene = ::gpu::e_scene_srgb;
 
          m_pshaderHdri->_bind(pgpucommandbuffer, escene);
-         m_pshaderHdri->bind_source(pgpucommandbuffer, m_phdricube->m_ptextureHdr);
+         m_pshaderHdri->bind_source(pgpucommandbuffer,m_ptextureHdr);
 
          for (auto i = 0; i < 6; i++)
          {
@@ -139,23 +129,18 @@ namespace gpu_vulkan
             
             //m_pframebuffer->setCubeFace(i, m_pshaderHdri);
 
-            m_pshaderHdri->set_sequence3("multiplier", {1.f, 1.f, 1.f});
+            //m_pshaderHdri->set_sequence3("multiplier", {1.f, 1.f, 1.f});
+            m_pshaderHdri->set_int("faceIndex", i);
 
             m_pshaderHdri->push_properties(pgpucommandbuffer);
-               ///            pgpucommandbuffer->cle
-            //;
-            //;
-            //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            
-   //         GLCheckError("");
 
-                // auto pshader = pcommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->
-            //   m_pshaderBound;
+            m_prenderableCube->bind(pgpucommandbuffer);
 
-            m_phdricube->draw(pgpucommandbuffer);
+            m_prenderableCube->draw(pgpucommandbuffer);
+
+            m_prenderableCube->unbind(pgpucommandbuffer);
 
             pcontext->_001EndRenderPass(pgpucommandbuffer);
-
 
          }
 
@@ -165,27 +150,7 @@ namespace gpu_vulkan
 
          timer.logDifference("Rendered equirectangular cubemap");
 
-         //GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-         //if (status != GL_FRAMEBUFFER_COMPLETE)
-         //{
-
-         //   printf("Framebuffer incomplete!\n");
-         //}
-
-         //// timer.logDifference("Rendered specular brdf convolution map");
-
-         //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         //GLCheckError("");
       }
-
-
-      //unsigned int equirectangular_cubemap::getCubemapId()
-      //{
-
-      //   ::cast<cubemap_framebuffer> pframebuffer = m_pframebuffer;
-      //   return pframebuffer->getCubemapTextureId();
-      //}
 
 
    } // namespace ibl

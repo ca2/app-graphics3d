@@ -13,14 +13,15 @@
 // * If you are looking for a complete gltf implementation, check out https://github.com/SaschaWillems/Vulkan-gltf-PBR/
 // */
 #include "framework.h"
-#include "acme/filesystem/filesystem/file_context.h"
-#include "gpu_vulkan/physical_device.h"
 #include "gltf_model.h"
 #include "command_buffer.h"
 #include "descriptors.h"
 #include "render_target.h"
 #include "vk_init.h"
 #include "context.h"
+#include "acme/filesystem/filesystem/file_context.h"
+#include "bred/gpu/renderer.h"
+#include "gpu_vulkan/physical_device.h"
 #include "aura/graphics/image/context.h"
 #include "gpu_vulkan/texture.h"
 #include <filesystem> // C++17

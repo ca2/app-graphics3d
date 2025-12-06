@@ -206,11 +206,8 @@
     <ClInclude Include="ibl\cubemap_framebuffer.h">
       <Filter>Header Files\ibl</Filter>
     </ClInclude>
-    <ClInclude Include="ibl\hdri_cube.h">
+    <ClInclude Include="ibl\aaa_hdri_cube.h">
       <Filter>Header Files\ibl</Filter>
-    </ClInclude>
-    <ClInclude Include="cube.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -348,12 +345,6 @@
     </ClCompile>
     <ClCompile Include="ibl\equirectangular_cubemap.cpp">
       <Filter>Source Files\ibl</Filter>
-    </ClCompile>
-    <ClCompile Include="ibl\hdri_cube.cpp">
-      <Filter>Source Files\ibl</Filter>
-    </ClCompile>
-    <ClCompile Include="cube.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ibl\cubemap_framebuffer.cpp">
       <Filter>Source Files\ibl</Filter>

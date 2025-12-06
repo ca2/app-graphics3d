@@ -4,7 +4,7 @@
 //#include <string>
 //#include <vector>
 #include "acme/prototype/collection/static_array.h"
-#include "bred/graphics3d/model.h"
+//#include "bred/graphics3d/model.h"
 //#include "bred/graphics3d/render_system.h"
 #include "bred/graphics3d/shape_factory.h"
 #include "bred/graphics3d/scene_object.h"

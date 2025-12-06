@@ -1,7 +1,6 @@
 #include "framework.h"
 //#include "GLFW/glfw3.h"  
 #include "mesh.h"
-#include "texture.h"
 #include "gpu_opengl/shader.h"
 #include "gpu_opengl/texture.h"
 #include <glad/glad.h>

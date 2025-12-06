@@ -60,9 +60,9 @@ namespace graphics3d_opengl
       //VkDescriptorSetLayout m_iblSetLayout;
       //VkDescriptorSet m_iblDescriptorSet;
 
-      ::pointer<::gpu::shader> m_ppipelineOpaque;
-      ::pointer<::gpu::shader> m_ppipelineMask;
-      ::pointer<::gpu::shader> m_ppipelineBlend;
+      //::pointer<::gpu::shader> m_ppipelineOpaque;
+      //::pointer<::gpu::shader> m_ppipelineMask;
+      //::pointer<::gpu::shader> m_ppipelineBlend;
       // VkPipelineLayout m_pipelineLayout;
 
       //IAssetProvider &m_assets;

@@ -1,10 +1,10 @@
 #include "framework.h"
-#include "context.h"
+//#include "context.h"
 #include "engine.h"
 #include "bred/graphics3d/input.h"
 #include "bred/graphics3d/scene_base.h"
 #include "mesh.h"
-#include "shader.h"
+//#include "shader.h"
 #include <iostream>
 #include "camera.h"
 #include "bred/gpu/bred_approach.h"
