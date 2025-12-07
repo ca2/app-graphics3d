@@ -16,6 +16,7 @@
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/skybox.h"
+#include "bred/gltf/vertex.h"
 #include <array>
 #include <chrono>
 
@@ -393,7 +394,7 @@ namespace gpu_vulkan
          // Vertex input: vec3 position only (location 0)
          VkVertexInputBindingDescription bindingDesc{};
          bindingDesc.binding = 0;
-         bindingDesc.stride = sizeof(::gpu_vulkan::gltf::Vertex);
+         bindingDesc.stride = sizeof(::gpu::gltf::vertex);
          bindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
          VkVertexInputAttributeDescription attrDesc{};

@@ -586,19 +586,19 @@ namespace graphics3d_vulkan
       pgpudevice->defer_shader_memory(frag, fragSpv);
 
       std::vector<VkVertexInputBindingDescription> bindings = {
-         vkinit::vertexInputBindingDescription(0, sizeof(::gpu_vulkan::gltf::Vertex), VK_VERTEX_INPUT_RATE_VERTEX)};
+         vkinit::vertexInputBindingDescription(0, sizeof(::gpu::gltf::vertex), VK_VERTEX_INPUT_RATE_VERTEX)};
 
       std::vector<VkVertexInputAttributeDescription> attributes = {
          vkinit::vertexInputAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT,
-                                                 offsetof(::gpu_vulkan::gltf::Vertex, pos)),
+                                                 offsetof(::gpu::gltf::vertex, pos)),
          vkinit::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT,
-                                                 offsetof(::gpu_vulkan::gltf::Vertex, normal)),
+                                                 offsetof(::gpu::gltf::vertex, normal)),
          vkinit::vertexInputAttributeDescription(0, 2, VK_FORMAT_R32G32_SFLOAT,
-                                                 offsetof(::gpu_vulkan::gltf::Vertex, uv)),
+                                                 offsetof(::gpu::gltf::vertex, uv)),
          vkinit::vertexInputAttributeDescription(0, 3, VK_FORMAT_R32G32B32A32_SFLOAT,
-                                                 offsetof(::gpu_vulkan::gltf::Vertex, color)),
+                                                 offsetof(::gpu::gltf::vertex, color)),
          vkinit::vertexInputAttributeDescription(0, 4, VK_FORMAT_R32G32B32A32_SFLOAT,
-                                                 offsetof(::gpu_vulkan::gltf::Vertex, tangent))};
+                                                 offsetof(::gpu::gltf::vertex, tangent))};
 
       // OPAQUE
       ::vulkan::pipeline_configuration opaqueConfig{};

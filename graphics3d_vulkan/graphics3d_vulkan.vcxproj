@@ -808,7 +808,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="render_systems\shader\pbr.frag">
+    <CustomBuild Include="render_systems\shader\gltf.frag">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
 application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>
@@ -835,7 +835,7 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
     </CustomBuild>
-    <CustomBuild Include="render_systems\shader\pbr.vert">
+    <CustomBuild Include="render_systems\shader\gltf.vert">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
 application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>
@@ -862,8 +862,8 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
     </CustomBuild>
-    <None Include="render_systems\shader\pbr.frag.spv.inl" />
-    <None Include="render_systems\shader\pbr.vert.spv.inl" />
+    <None Include="render_systems\shader\gltf.frag.spv.inl" />
+    <None Include="render_systems\shader\gltf.vert.spv.inl" />
     <CustomBuild Include="render_systems\shader\wavefront.frag">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
@@ -1027,6 +1027,33 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
     </CustomBuild>
     <CustomBuild Include="render_systems\shader\scene.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
+application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).spv.inl</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="render_systems\shader\scene_alpha_mask_0_5.frag">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator -V "%(FullPath)" -o "%(RelativeDir)%(Filename)%(Extension).spv"
 application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Extension).spv" "%(RelativeDir)%(Filename)%(Extension).spv.inl"</Command>

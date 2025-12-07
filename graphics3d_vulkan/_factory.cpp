@@ -25,7 +25,7 @@ IMPLEMENT_FACTORY(graphics3d_vulkan)
 
    //pfactory->add_factory_item < ::graphics3d_vulkan::camera, ::graphics3d::camera >();
 
-   pfactory->add_factory_item<::graphics3d::camera>();
+   //pfactory->add_factory_item<::graphics3d::camera>();
 
    //pfactory->add_factory_item < ::graphics3d_vulkan::model_buffer, ::graphics3d::model >();
 

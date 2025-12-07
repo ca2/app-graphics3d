@@ -1,103 +1,69 @@
+// Changed by camilo on 2025-12-07 08:38 <3ThomasBorregaardSørensen!!
 #pragma once
-////#include <GLFW/glfw3.h>
-//
-////#include "Core/gl_container.h"
-//
-// 
+
+
 #include "bred/graphics3d/camera.h"
-//
+
+
 namespace graphics3d_opengl
 {
-//
-//
-//   enum CameraMovement 
-//   {
-//      FORWARD,
-//      BACKWARD,
-//      LEFT,
-//      RIGHT
-//   };
-//
-//   struct camera_t
-//   {
-//
-//      float m_LastX; // Last mouse x position
-//      float m_LastY; // Last mouse y position
-//      float m_angleCursorPixel; // Sensitivity factor for mouse input
-//      // Deadzone
-//      float m_MouseDeadZone;
-//      // Inertia
-//      floating_sequence3 m_Velocity;
-//      // ::graphics3d::camera attributes
-//      floating_sequence3 m_Position;
-//      floating_sequence3 m_Front;
-//      floating_sequence3 m_Up;
-//      floating_sequence3 m_Right;
-//      floating_sequence3 m_WorldUp;
-//
-//      // Euler angles
-//      float m_angleYaw;
-//      float m_anglePitch;
-//
-//      // ::graphics3d::camera options
-//      float m_Zoom;
-//      float m_MovementSpeed;  // Added movement speed
-//
-//
-//   };
-//
+
+
    class camera :
       virtual public ::graphics3d::camera
-//      virtual public camera_t
    {
    public:
 
-      void setPerspectiveProjection(float fovy, float aspect, float near, float far);
-//
-//      ::pointer < ::glc::GlContainer > m_pimpact;
-//
-//
-//      ::graphics3d::camera(glc::GlContainer * pimpact, const ::floating_sequence3 & position, float yaw, float pitch);
-//
-//      // Process input for mouse movement
-//      void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
-//
-//      // Process input for keyboard movement
-//      void ProcessKeyboardInput(int direction, float deltaTime);
-//
-//      // Get the view matrix
-//      floating_matrix4 GetViewMatrix() const;
-//
-//
-//      floating_sequence3 GetPosition() const;
-//
-//
-//      void UpdateIdleMovement(float deltaTime); // Add this line
-//
-//      // Get zoom (field of view)
-//      float GetZoom() const;
-//
-//      // Set movement speed
-//      void SetMovementSpeed(float speed);
-//
-//      //void scroll_callback(glc::GlContainer* window, double xoffset, double yoffset);
-//
-//      void scroll_callback(glc::GlContainer* pglconatainer, double xoffset, double yoffset);
-//
-//
-//      void Jump(float jumpHeight);
-//
-//      void TeleportDownward(float distance); // Moves the camera down
-//
-//      void TeleportInDirection(int direction);
-//   //private:
-//
-//
-//      // Update camera vectors
-//      void UpdateCameraVectors();
+
+      camera();
+      ~camera();
+
+//      void setPerspectiveProjection(float fovy, float aspect, float near, float far);
+////
+////      ::pointer < ::glc::GlContainer > m_pimpact;
+////
+////
+////      ::graphics3d::camera(glc::GlContainer * pimpact, const ::floating_sequence3 & position, float yaw, float pitch);
+////
+////      // Process input for mouse movement
+////      void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
+////
+////      // Process input for keyboard movement
+////      void ProcessKeyboardInput(int direction, float deltaTime);
+////
+////      // Get the view matrix
+////      floating_matrix4 GetViewMatrix() const;
+////
+////
+////      floating_sequence3 GetPosition() const;
+////
+////
+////      void UpdateIdleMovement(float deltaTime); // Add this line
+////
+////      // Get zoom (field of view)
+////      float GetZoom() const;
+////
+////      // Set movement speed
+////      void SetMovementSpeed(float speed);
+////
+////      //void scroll_callback(glc::GlContainer* window, double xoffset, double yoffset);
+////
+////      void scroll_callback(glc::GlContainer* pglconatainer, double xoffset, double yoffset);
+////
+////
+////      void Jump(float jumpHeight);
+////
+////      void TeleportDownward(float distance); // Moves the camera down
+////
+////      void TeleportInDirection(int direction);
+////   //private:
+////
+////
+////      // Update camera vectors
+////      void UpdateCameraVectors();
    };
-//
-//
+
 } // namespace graphics3d_opengl
-//
-//
+
+
+

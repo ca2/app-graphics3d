@@ -1,62 +1,106 @@
-// gltf.vert
+//
+// scene.vert Vulkan
+//
+
 #version 450
-#extension GL_KHR_vulkan_glsl : enable
 
-//— Vertex inputs
-layout(location = 0) in vec3  inPos;
-layout(location = 1) in vec3  inNormal;
-layout(location = 2) in vec2  inUV;
-layout(location = 3) in vec4  inColor;
-layout(location = 4) in vec4  inTangent;   // .xyz = tangent, .w = bitangent sign
 
-//— Scene UBO (set 0)
-struct PointLight {
+// Vertex inputs
+layout(location = 0) in vec3 inputWorldCoordinate;
+layout(location = 1) in vec3 inputNormal;
+layout(location = 2) in vec2 inputTextureCoordinate;
+layout(location = 3) in vec4 inputColor;
+layout(location = 4) in vec4 inputTangent;   // .xyz = tangent, .w = bitangent sign
+
+
+// Outputs to fragment shader
+layout (location = 0) out vec3 fragmentWorldCoordinate;
+layout (location = 1) out vec3 fragmentNormal;
+layout (location = 2) out vec2 fragmentTextureCoordinate;
+layout (location = 3) out vec4 fragmentColor;
+layout (location = 4) out vec3 fragmentTangent;
+layout (location = 5) out vec3 fragmentBitangent;
+
+
+// Must match fragment shader
+struct PointLight 
+{
+
     vec4 position;
     vec4 color;
+
 };
 
 
-layout(set = 0, binding = 0) uniform GlobalUbo {
-        mat4 projection;
+// UBO: matches fragment shader binding and structure
+layout (set = 0, binding = 0, std140) uniform GlobalUbo 
+{
+
+    mat4 projection;
     mat4 view;
     mat4 invView;
     vec4 ambientLightColor;
-	 vec4 viewPos;
-PointLight pointLights[10];
+    vec3 cameraPosition;
+    PointLight pointLights[10];
     int numLights;
-} ubo;
+    int padding1;
+    int padding2;
+    int padding3;
+
+} globalUbo;
 
 
-layout(set = 1, binding = 0) uniform PerNode {
+// Push constants for model transforms (Vulkan-style)
+layout(push_constant) uniform PushConsts 
+{
+    
     mat4 modelMatrix;
-    mat4 normalMatrix;           // inverse-transpose of model
-} perNode;
+    mat4 normalMatrix; // inverse-transpose of model
 
-//— Outputs to fragment
-layout(location = 0) out vec3  fragNormal;
-layout(location = 1) out vec4  fragColor;
-layout(location = 2) out vec2  fragUV;
-layout(location = 3) out vec3  fragViewVec;
-layout(location = 4) out vec3  fragWorldPos;
-layout(location = 5) out vec4  fragTangent;
+    // booleans promoted to ints (std140 rules); use 0/1 in C++ when updating
 
-void main() {
-    // world-space position
-    vec4 worldPos = perNode.modelMatrix * vec4(inPos, 1.0);
-    gl_Position   = ubo.projection * ubo.view * worldPos;
+    int useTextureAlbedo;
+    int useTextureNormal;
+    //int useTextureMetallicRoughness;
+    //int useTextureAmbientOcclusion;
+    //int useTextureEmissive;
 
-    // normals & tangents in world-space
-    fragNormal   = normalize(mat3(perNode.normalMatrix) * inNormal);
-    vec3 tangentWS = normalize(mat3(perNode.normalMatrix) * inTangent.xyz);
-    fragTangent = vec4(tangentWS, inTangent.w);
-    // color & UV
-    fragColor    = inColor;
-    fragUV       = inUV;
+    vec3 albedo;
+    float metallic;
+    float roughness;
+    float ambientOcclusion;
+    vec3 emissive;
 
-    // view & light vectors
-    vec3 camPos = ubo.viewPos.xyz;
-    fragWorldPos = worldPos.xyz;
+    //vec3 cameraPosition;
+    float bloomBrightnessCutoff;
+    vec3 multiplier;
 
-    fragViewVec  = camPos   - worldPos.xyz;
+} pushConsts;
+
+
+void main() 
+{
+
+    vec4 worldPosition = pushConsts.modelMatrix * vec4(inputWorldCoordinate, 1.0);
+    gl_Position   = globalUbo.projection * globalUbo.view * worldPosition;
+
+
+    mat3 normalMat = mat3(pushConsts.normalMatrix);
+
+
+    vec3 normal = normalize(normalMat * inputNormal);
+    vec3 tangent = normalize(normalMat * inputTangent.xyz);
+    vec3 bitangent = cross(normal, tangent) * inputTangent.w;
+
+
+    fragmentWorldCoordinate         = worldPosition.xyz;
+    fragmentNormal                  = normal;
+    fragmentTextureCoordinate       = inputTextureCoordinate;
+    fragmentColor                   = inputColor;
+    fragmentTangent                 = tangent;
+    fragmentBitangent               = bitangent;
 
 }
+
+
+

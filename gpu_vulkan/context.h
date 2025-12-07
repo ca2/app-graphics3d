@@ -37,7 +37,8 @@ namespace gpu_vulkan
 
 
       ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGlobal;
-      ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGltfImage;
+      ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGltfImage4;
+      ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutSceneGltfImage4;
       ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutIbl;
       ::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
       ::pointer_array<::gpu_vulkan::memory_buffer>					m_uboBuffers;
@@ -63,6 +64,10 @@ namespace gpu_vulkan
       VkFormat findDepthFormat();
 
       VkSampler _001VkSampler();
+
+
+      ::gpu_vulkan::descriptor_set_layout *descriptor_set_layout_gltf();
+      ::gpu_vulkan::descriptor_set_layout *descriptor_set_layout_scene_gltf();
 
 
       //void gpu_debug_message(const ::scoped_string& scopedstr) override;

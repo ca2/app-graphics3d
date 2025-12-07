@@ -106,7 +106,7 @@ namespace graphics3d_directx11
       //auto ppropertiesPushVertex = ::gpu_properties<::gpu::model_normal>();
       //auto ppropertiesPushFragment = ::gpu_properties<fragment_push_constants>();
       auto ppropertiesPush = ::gpu_properties<push_constants>();
-      auto pinputlayout = pgpucontext->input_layout(::gpu_properties < ::gpu::gltf::vertex >());
+      auto pinputlayout = pgpucontext->input_layout < ::gpu::gltf::vertex >();
 
       //::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
 

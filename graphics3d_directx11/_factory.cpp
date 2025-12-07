@@ -23,7 +23,7 @@ IMPLEMENT_FACTORY(graphics3d_directx11)
 
    //pfactory->add_factory_item < ::graphics3d_directx11::frame, ::graphics3d::frame >();
 
-   pfactory->add_factory_item < ::graphics3d_directx11::camera, ::graphics3d::camera >();
+   //pfactory->add_factory_item < ::graphics3d_directx11::camera, ::graphics3d::camera >();
 
    //pfactory->add_factory_item < ::graphics3d_directx11::model, ::graphics3d::model_base >();
 

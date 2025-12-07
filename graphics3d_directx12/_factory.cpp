@@ -11,7 +11,7 @@
 IMPLEMENT_FACTORY(graphics3d_directx12)
 {
 
-   pfactory->add_factory_item < ::graphics3d_directx12::camera, ::graphics3d::camera >();
+   //pfactory->add_factory_item < ::graphics3d_directx12::camera, ::graphics3d::camera >();
 
    //pfactory->add_factory_item < ::graphics3d_directx12::model, ::graphics3d::model >();
 

@@ -103,11 +103,28 @@ namespace gpu_vulkan
 			::pointer<::gpu_vulkan::texture> specularGlossinessTexture;
          ::pointer<::gpu_vulkan::texture> diffuseTexture;
 
-			::array_base < VkDescriptorSet >m_descriptorseta;
+			::array_base < VkDescriptorSet >m_descriptorsetaGltf4;
+
+         ::array_base<VkDescriptorSet> m_descriptorsetaSceneGltf4;
+
+                  uint32_t m_uDescriptorBindingFlags = 0;
+
+
 
          Material() {}
 			Material(::gpu::context* pcontext) : m_pgpucontext(pcontext) {};
-			void addDescriptorSet(VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags, ::gpu_vulkan::texture* fallbackTexture);
+			
+         
+         void addDescriptor(int iCount, ::array_base<VkDescriptorSet> & a, VkDescriptorPool descriptorPool,
+                                    VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags,
+                                    ::gpu_vulkan::texture *fallbackTexture);
+         ::array_base<VkDescriptorSet> &descriptor_set_array_gltf(gltf::Model * pmodel);
+         ::array_base<VkDescriptorSet> &descriptor_set_array_scene_gltf(gltf::Model *pmodel);
+
+         //void addDescriptorSetSceneGltf4(VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout,
+         //                      uint32_t descriptorBindingFlags, ::gpu_vulkan::texture *fallbackTexture);
+
+
 		};
 
 		/*
@@ -238,23 +255,23 @@ namespace gpu_vulkan
          Tangent
       };
 
-		struct Vertex {
-			floating_sequence3 pos;
-			floating_sequence3 normal;
-			floating_sequence2 gltf_uv;
-			floating_sequence4 color;
-			//floating_sequence4 joint0;
-			//floating_sequence4 weight0;
-			floating_sequence4 tangent;
-			//static VkVertexInputBindingDescription vertexInputBindingDescription;
-			//static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
-			//static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
-			//static VkVertexInputBindingDescription inputBindingDescription(uint32_t binding);
-			//static VkVertexInputAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
-			//static std::vector<VkVertexInputAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
-			///** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
-			//static VkPipelineVertexInputStateCreateInfo* getPipelineVertexInputState(const std::vector<VertexComponent> components);
-		};
+		//struct Vertex {
+		//	floating_sequence3 pos;
+		//	floating_sequence3 normal;
+		//	floating_sequence2 gltf_uv;
+		//	floating_sequence4 color;
+		//	//floating_sequence4 joint0;
+		//	//floating_sequence4 weight0;
+		//	floating_sequence4 tangent;
+		//	//static VkVertexInputBindingDescription vertexInputBindingDescription;
+		//	//static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
+		//	//static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
+		//	//static VkVertexInputBindingDescription inputBindingDescription(uint32_t binding);
+		//	//static VkVertexInputAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
+		//	//static std::vector<VkVertexInputAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
+		//	///** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
+		//	//static VkPipelineVertexInputStateCreateInfo* getPipelineVertexInputState(const std::vector<VertexComponent> components);
+		//};
       enum class Vertex2Component
       {
          Position,
@@ -294,16 +311,18 @@ namespace gpu_vulkan
 			PreMultiplyVertexColors = 0x00000002,
 			FlipY = 0x00000004,
 			DontLoadImages = 0x00000008,
+         //OnlySceneImages = 0x00000010, // Only Albedo and Normal
          //UseFsCallbacks = 0x00000010
 		};
 
 		enum RenderFlags {
          RenderNone = 0x00000000,
-			BindImages = 0x00000001,
 			RenderOpaqueNodes = 0x00000002,
 			RenderAlphaMaskedNodes = 0x00000004,
-			RenderAlphaBlendedNodes = 0x00000008
-		};
+			RenderAlphaBlendedNodes = 0x00000008,
+         BindGltfImages = 0x00000010,
+         BindJustSceneImages = 0x00000020,
+      };
 
 		/*
 			gltf model loading and rendering class
@@ -313,14 +332,9 @@ namespace gpu_vulkan
 		public:
 
 
-			::gpu_vulkan::texture* getTexture(uint32_t index);
-			::pointer < gpu_vulkan::texture > emptyTexture;
-			void createEmptyTexture(VkQueue transferQueue);
 		//public:
 			///::gpu::context* m_pgpucontext = nullptr;
 			VkDescriptorPool m_descriptorPool;
-
-
 
 
 			struct Vertices {
@@ -360,15 +374,24 @@ namespace gpu_vulkan
 			bool m_bBuffersBound = false;
 			::std::string m_path1;
 
+         ::pointer<gpu_vulkan::texture> emptyTexture2;
+
+
 			Model();
 			~Model();
-			void loadNode(gltf::Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale);
+
+
+			void loadNode(gltf::Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<::gpu::gltf::vertex>& vertexBuffer, float globalscale);
 			void loadSkins(tinygltf::Model& gltfModel);
 			void loadImages(tinygltf::Model& gltfModel, ::gpu::context * pcontext, VkQueue transferQueue);
 			void loadMaterials(tinygltf::Model& gltfModel);
 			void loadAnimations(tinygltf::Model& gltfModel);
 
 			void loadFromFile(std::string filename, ::gpu::context * pcontext, VkQueue transferQueue, uint32_t fileLoadingFlags = FileLoadingFlags::None, float scale = 1.0f);
+
+         ::gpu_vulkan::texture *getTexture(uint32_t index);
+         void createEmptyTexture(VkQueue transferQueue);
+         ::gpu_vulkan::texture *empty_texture();
 
 
          void bind(VkCommandBuffer cmd);
@@ -406,4 +429,4 @@ namespace gpu_vulkan
 
 
 
-DECLARE_GPU_PROPERTIES(CLASS_DECL_BRED, ::gpu_vulkan::gltf::Vertex);
+//DECLARE_GPU_PROPERTIES(CLASS_DECL_BRED, ::gpu::gltf::vertex);

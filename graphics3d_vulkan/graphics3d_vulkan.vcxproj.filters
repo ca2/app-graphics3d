@@ -101,10 +101,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="render_systems\shader\pbr.frag.spv.inl">
+    <None Include="render_systems\shader\gltf.frag.spv.inl">
       <Filter>Header Files\render_systems\shader</Filter>
     </None>
-    <None Include="render_systems\shader\pbr.vert.spv.inl">
+    <None Include="render_systems\shader\gltf.vert.spv.inl">
       <Filter>Header Files\render_systems\shader</Filter>
     </None>
     <None Include="render_systems\shader\wavefront.frag.spv.inl">
@@ -127,10 +127,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="render_systems\shader\pbr.frag">
+    <CustomBuild Include="render_systems\shader\gltf.frag">
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="render_systems\shader\pbr.vert">
+    <CustomBuild Include="render_systems\shader\gltf.vert">
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
     <CustomBuild Include="render_systems\shader\wavefront.frag">
@@ -152,6 +152,9 @@
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
     <CustomBuild Include="render_systems\shader\scene.vert">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="render_systems\shader\scene_alpha_mask_0_5.frag">
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
   </ItemGroup>

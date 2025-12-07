@@ -36,27 +36,27 @@ layout(std140) uniform GlobalUbo {
 };
 
 
-struct Material {
-  bool useTextureAlbedo;
-  bool useTextureMetallicRoughness;
-  bool useTextureNormal;
-  bool useTextureAmbientOcclusion;
-  bool useTextureEmissive;
+//struct PushConstants {
+  uniform bool useTextureAlbedo;
+  uniform bool useTextureMetallicRoughness;
+  uniform bool useTextureNormal;
+  uniform bool useTextureAmbientOcclusion;
+  uniform bool useTextureEmissive;
 
-  vec3 albedo;
-  float metallic;
-  float roughness;
-  float ambientOcclusion;
-  vec3 emissive;
+  uniform vec3 albedo;
+  uniform float metallic;
+  uniform float roughness;
+  uniform float ambientOcclusion;
+  uniform vec3 emissive;
 
-  sampler2D textureAlbedo;
-  sampler2D textureMetallicRoughness;
-  sampler2D textureNormal;
-  sampler2D textureAmbientOcclusion;
-  sampler2D textureEmissive;
-};
+  uniform sampler2D textureAlbedo;
+  uniform sampler2D textureMetallicRoughness;
+  uniform sampler2D textureNormal;
+  uniform sampler2D textureAmbientOcclusion;
+  uniform sampler2D textureEmissive;
+//};
 
-uniform Material material;
+//uniform PushConstants pushConsts;
 
 
 // lights
@@ -173,36 +173,36 @@ void main() {
    uv.y = 1.0 - uv.y; 
 
 	// albedo
-	vec3 albedo = material.albedo;
-	if (material.useTextureAlbedo) {
-		albedo = texture(material.textureAlbedo, uv).rgb;
+	vec3 albedo = albedo;
+	if (useTextureAlbedo) {
+		albedo = texture(textureAlbedo, uv).rgb;
 	}
 
 	// metallic/roughness
-	float metallic = material.metallic;
-	float roughness = material.roughness;
-	if (material.useTextureMetallicRoughness) {
-		vec3 metallicRoughness = texture(material.textureMetallicRoughness, uv).rgb;
+	float metallic = metallic;
+	float roughness = roughness;
+	if (useTextureMetallicRoughness) {
+		vec3 metallicRoughness = texture(textureMetallicRoughness, uv).rgb;
 		metallic = metallicRoughness.b;
 		roughness = metallicRoughness.g;
 	}
 
 	// normal
 	vec3 n = normal; // interpolated vertex normal
-	if (material.useTextureNormal) {
-		n = calculateNormal(texture(material.textureNormal, uv).rgb);
+	if (useTextureNormal) {
+		n = calculateNormal(texture(textureNormal, uv).rgb);
 	}
 
 	// ambient occlusion
-	float ao = material.ambientOcclusion;
-	if (material.useTextureAmbientOcclusion) {
-		ao = texture(material.textureAmbientOcclusion, uv).r;
+	float ao = ambientOcclusion;
+	if (useTextureAmbientOcclusion) {
+		ao = texture(textureAmbientOcclusion, uv).r;
 	}
 
 	// emissive
-	vec3 emissive = material.emissive;
-	if (material.useTextureEmissive) {
-		emissive = texture(material.textureEmissive, uv).rgb;
+	vec3 emissive = emissive;
+	if (useTextureEmissive) {
+		emissive = texture(textureEmissive, uv).rgb;
 	}
 
 	vec3 v = normalize(cameraPosition - worldCoordinates); // view vector pointing at camera

@@ -1,7 +1,3 @@
-//
-// scene.frag Vulkan
-//
-
 #version 450
 #extension GL_KHR_vulkan_glsl : enable
 #extension GL_GOOGLE_include_directive : enable
@@ -10,9 +6,10 @@
 #define PI 3.1415926535897932384626433832795
 #define GREYSCALE_WEIGHT_VECTOR vec3(0.2126, 0.7152, 0.0722)
 
-layout(location = 0) out vec4 outputColor; // regular output
+layout(location = 0) out vec4 FragColor; // regular output
 //layout(location = 1) out vec4 BloomColor; // output to be used by bloom shader
 
+// vertex inputs (match your vertex shader locations)
 layout (location = 0) in vec3 fragmentWorldCoordinate;
 layout (location = 1) in vec3 fragmentNormal;
 layout (location = 2) in vec2 fragmentTextureCoordinate;
@@ -20,8 +17,8 @@ layout (location = 3) in vec4 fragmentColor;
 layout (location = 4) in vec3 fragmentTangent;
 layout (location = 5) in vec3 fragmentBitangent;
 
-struct PointLight 
-{
+
+struct PointLight {
     vec4 position;
     vec4 color;
 };
@@ -42,6 +39,27 @@ layout(std140, set = 0, binding = 0) uniform GlobalUbo {
     int padding3;
 } globalUbo;
 
+//// ---------- Material scalar properties (no samplers) (set 0 binding 1) ----------
+//layout(std140, set = 0, binding = 1) uniform MaterialProps {
+//    // booleans promoted to ints (std140 rules); use 0/1 in C++ when updating
+//    int useTextureAlbedo;
+//    int useTextureMetallicRoughness;
+//    int useTextureNormal;
+//    int useTextureAmbientOcclusion;
+//    int useTextureEmissive;
+//
+//    vec3 albedo;
+//    float metallic;
+//    float roughness;
+//    float ambientOcclusion;
+//    vec3 emissive;
+//
+//    // pad to 16-byte boundary
+//    float _pad0;
+//    vec4 _pad1;
+//} pushConsts;
+//
+//
 // IBL maps
 layout(set = 1, binding = 0) uniform samplerCube diffuseIrradianceMap;
 layout(set = 1, binding = 1) uniform samplerCube prefilteredEnvMap;
@@ -65,16 +83,20 @@ layout(push_constant) uniform PushConsts
 
     int useTextureAlbedo;
     int useTextureNormal;
-    int useAlphaMask;
+    //int useTextureMetallicRoughness;
+    //int useTextureAmbientOcclusion;
+    //int useTextureEmissive;
 
     vec3 albedo;
     float metallic;
     float roughness;
     float ambientOcclusion;
     vec3 emissive;
-    float alphaMaskCutoff;
 
+    //vec3 cameraPosition;
     float bloomBrightnessCutoff;
+    //int     useAlphaMask;
+    //float alphaMaskCutOff;
     vec3 multiplier;
 
 } pushConsts;
@@ -87,8 +109,8 @@ vec4 getAlbedo() {
     }
     return a;
 }
-//const bool  ALPHA_MASK = false;
-//const float ALPHA_MASK_CUTOFF = 0.0;
+const bool  ALPHA_MASK = true;
+const float ALPHA_MASK_CUTOFF = 0.5;
 
 // Constants
 const float METALLIC_VALUE  = 1.0;
@@ -105,15 +127,22 @@ void main() {
 
     vec4 texColor = getAlbedo() * fragmentColor;
 
-    if (pushConsts.useAlphaMask != 0 && texColor.a < pushConsts.alphaMaskCutoff) 
+    if (ALPHA_MASK && texColor.a < ALPHA_MASK_CUTOFF) 
     {
         discard;
     }
 
-    mat3 TBN = mat3(fragmentTangent, fragmentBitangent, fragmentNormal);
+    // Normal Mapping
+    //vec3 N = normalize(inNormal);
+    vec3 N = fragmentNormal;
+    //vec3 T = normalize(inTangent.xyz);
+    vec3 T = fragmentTangent;
+    //vec3 B = cross(N, T) * inTangent.w;
+    vec3 B = fragmentBitangent; 
+    mat3 TBN = mat3(T, B, N);
 
     vec3 nMap = texture(textureNormal, fragmentTextureCoordinate).xyz * 2.0 - 1.0;
-    vec3 N = normalize(TBN * nMap);
+    N = normalize(TBN * nMap);
 
     //vec3 V = normalize(inViewVec);
 
@@ -128,9 +157,7 @@ void main() {
 
 
     // Direct Light
-    vec3 ambient = globalUbo.ambientLightColor.rgb * texColor.rgb * globalUbo.ambientLightColor.a;
-    //vec3 lighting = vec3(0.0);
-    vec3 lighting = ambient;
+    vec3 lighting = vec3(0.0);
 
     for (int i = 0; i < globalUbo.numLights; ++i) {
 
@@ -161,7 +188,7 @@ void main() {
     float metallic  = METALLIC_VALUE;
     float roughness = clamp(ROUGHNESS_VALUE, 0.04, 1.0);
     float ao        = AO_VALUE;
-    if (pushConsts.useAlphaMask != 0) { ao = 0.02f; }
+    if (ALPHA_MASK) { ao = 0.02f; }
     //vec3 albedo = srgbToLinear(texColor.rgb);
     vec3 albedo = texColor.rgb;
 
@@ -194,7 +221,7 @@ void main() {
     vec3 color = lighting + ambientIBL;
     //color = ACESFilm(color * EXPOSURE);
 
-    outputColor = vec4(color, texColor.a);
+    FragColor = vec4(color, texColor.a);
 
 }
 

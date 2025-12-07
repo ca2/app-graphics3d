@@ -62,8 +62,8 @@ layout(set = 1, binding = 2) uniform sampler2D brdfConvolutionMap;
 
 // ---------- Combined image samplers (set 1) ----------
 layout(set = 2, binding = 0) uniform sampler2D textureAlbedo;
-layout(set = 2, binding = 1) uniform sampler2D textureMetallicRoughness;
-layout(set = 2, binding = 2) uniform sampler2D textureNormal;
+layout(set = 2, binding = 1) uniform sampler2D textureNormal;
+layout(set = 2, binding = 2) uniform sampler2D textureMetallicRoughness;
 layout(set = 2, binding = 3) uniform sampler2D textureAmbientOcclusion;
 layout(set = 2, binding = 4) uniform sampler2D textureEmissive;
 

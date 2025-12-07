@@ -24,6 +24,7 @@
 #include "gltf_render_system.h"
 #include "gpu_vulkan/gltf_model.h"
 #include "gpu_vulkan/shader.h"
+#include "bred/gltf/vertex.h"
 
 
 namespace graphics3d_vulkan
@@ -51,7 +52,7 @@ namespace graphics3d_vulkan
    {
 
       static unsigned int pvertexshader[] = {
-#include "render_systems/shader/pbr.vert.spv.inl"
+#include "render_systems/shader/gltf.vert.spv.inl"
       };
 
       return ::as_memory_block(pvertexshader);
@@ -62,32 +63,15 @@ namespace graphics3d_vulkan
    {
 
       static unsigned int pfragmentshader[] = {
-#include "render_systems/shader/pbr.frag.spv.inl"
+#include "render_systems/shader/gltf.frag.spv.inl"
       };
 
       return ::as_memory_block(pfragmentshader);
    }
 
 
-   // void gltf_render_system::initialize_GltfRenderSystem(
-
-   //   ::gpu_vulkan::descriptor_set_layout *psetdescriptorlayoutGlobal)
-   //{
-   //   //m_device = device;
-
-   //   m_pdescriptorsetlayoutUbo = psetdescriptorlayoutGlobal;
-
-
-   //   //m_assets = assets;
-   //}
-
-
-   // void gltf_render_system::init(::gpu_vulkan::descriptor_set_layout *psetdescriptorlayoutGlobal,
-   //::pointer<::gpu_vulkan::descriptor_set_layout> &descriptorPool, size_t frameCount)
    void gltf_render_system::on_prepare(::gpu::context *pgpucontext)
    {
-      // m_pdescriptorsetlayoutUbo = globalSetLayout;
-
       
       ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
 
@@ -95,22 +79,10 @@ namespace graphics3d_vulkan
       øconstruct(m_pshaderMask);
       øconstruct(m_pshaderBlend);
 
-      // m_ppipelineOpaque->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
-      //                                      "matter://shaders/gltf_frag.frag");
-
-      // m_ppipelineMask->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
-      //                                    "matter://shaders/gltf_frag.frag");
-
-      // m_ppipelineBlend->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
-      //                                     "matter://shaders/gltf_frag.frag");
 
       auto ppropertiesUbo = ::gpu_properties<::graphics3d::global_ubo1>();
-      //auto ppropertiesPushVertex = ::gpu_properties<::gpu::model_normal>();
-      //auto ppropertiesPushFragment = ::gpu_properties<fragment_push_constants>();
       auto ppropertiesPush = ::gpu_properties<push_constants>();
-      auto pinputlayout = pgpucontext->input_layout(::gpu_properties < ::gpu_vulkan::gltf::Vertex >());
-
-      //::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+      auto pinputlayout = pgpucontext->input_layout < ::gpu::gltf::vertex >();
 
       m_pdescriptorsetlayoutIbl =
          ::gpu_vulkan::descriptor_set_layout::Builder(pcontext)
@@ -366,406 +338,6 @@ namespace graphics3d_vulkan
    }
 
 
-   //void gltf_render_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
-   //{
-
-   //   ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
-
-   //   auto descriptorsetlayout0 = globalSetLayout;
-   //   auto descriptorsetlayout1 = pcontext->m_psetdescriptorlayoutGlobal->m_vkdescriptorsetlayout;
-   //   auto descriptorsetlayout2 = m_pdescriptorsetlayoutPbr->getDescriptorSetLayout();
-   //   auto descriptorsetlayout3 = m_pdescriptorsetlayoutIbl->getDescriptorSetLayout();
-
-   //   const std::vector<VkDescriptorSetLayout> layouts = {
-   //      descriptorsetlayout0,
-   //      descriptorsetlayout1,
-   //      descriptorsetlayout2,
-   //      descriptorsetlayout3,
-
-   //   };
-
-
-   //   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-   //   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-   //   pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(layouts.size());
-   //   pipelineLayoutInfo.pSetLayouts = layouts.data();
-
-
-   //   if (vkCreatePipelineLayout(pcontext->logicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) !=
-   //       VK_SUCCESS)
-   //   {
-
-   //      throw ::exception(error_failed, "Failed to create GLTF pipeline layout");
-   //   }
-   //}
-
-
-   //void gltf_render_system::createPipeline(VkRenderPass renderPass)
-   //{
-
-   //   ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
-   //   ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
-
-   //   assert(m_pipelineLayout != VK_NULL_HANDLE);
-
-   //   auto vertSpv = "matter://shaders/gltf_vert.vert";
-   //   auto fragSpv = "matter://shaders/gltf_frag.frag";
-
-   //   ::memory vert;
-   //   ::memory frag;
-
-   //   pgpudevice->defer_shader_memory(vert, vertSpv);
-   //   pgpudevice->defer_shader_memory(frag, fragSpv);
-
-   //   std::vector<VkVertexInputBindingDescription> bindings = {
-   //      vkinit::vertexInputBindingDescription(0, sizeof(::gpu_vulkan::gltf::Vertex), VK_VERTEX_INPUT_RATE_VERTEX)};
-
-   //   std::vector<VkVertexInputAttributeDescription> attributes = {
-   //      vkinit::vertexInputAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT,
-   //                                              offsetof(::gpu_vulkan::gltf::Vertex, pos)),
-   //      vkinit::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32B32_SFLOAT,
-   //                                              offsetof(::gpu_vulkan::gltf::Vertex, normal)),
-   //      vkinit::vertexInputAttributeDescription(0, 2, VK_FORMAT_R32G32_SFLOAT,
-   //                                              offsetof(::gpu_vulkan::gltf::Vertex, uv)),
-   //      vkinit::vertexInputAttributeDescription(0, 3, VK_FORMAT_R32G32B32A32_SFLOAT,
-   //                                              offsetof(::gpu_vulkan::gltf::Vertex, color)),
-   //      vkinit::vertexInputAttributeDescription(0, 4, VK_FORMAT_R32G32B32A32_SFLOAT,
-   //                                              offsetof(::gpu_vulkan::gltf::Vertex, tangent))};
-
-   //   // OPAQUE
-   //   ::vulkan::pipeline_configuration opaqueConfig{};
-   //   ::vulkan::defaultPipelineConfigInfo2(opaqueConfig);
-
-   //   opaqueConfig.pipelineLayout = m_pipelineLayout;
-   //   opaqueConfig.renderPass = renderPass;
-   //   opaqueConfig.bindingDescriptions = bindings;
-   //   opaqueConfig.attributeDescriptions = attributes;
-
-   //   m_opaquePipeline = øcreate_new<::gpu_vulkan::pipeline>();
-
-   //   m_opaquePipeline->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, opaqueConfig);
-
-   //   // MASK
-   //   ::vulkan::pipeline_configuration maskConfig{};
-   //   ::vulkan::defaultPipelineConfigInfo2(maskConfig);
-   //   maskConfig.pipelineLayout = m_pipelineLayout;
-   //   maskConfig.renderPass = renderPass;
-   //   maskConfig.bindingDescriptions = bindings;
-   //   maskConfig.attributeDescriptions = attributes;
-   //   maskConfig.colorBlendAttachments[0].blendEnable = VK_FALSE;
-
-   //   struct SpecData
-   //   {
-   //      VkBool32 alphaMask;
-   //      float cutoff;
-   //   };
-   //   static SpecData specData{VK_TRUE, 0.5f};
-   //   static VkSpecializationMapEntry mapEntries[2] = {{0, offsetof(SpecData, alphaMask), sizeof(VkBool32)},
-   //                                                    {1, offsetof(SpecData, cutoff), sizeof(float)}};
-   //   static VkSpecializationInfo specInfo{};
-   //   specInfo.mapEntryCount = 2;
-   //   specInfo.pMapEntries = mapEntries;
-   //   specInfo.dataSize = sizeof(specData);
-   //   specInfo.pData = &specData;
-
-   //   maskConfig.fragSpecInfo = &specInfo;
-
-   //   // m_maskPipeline = std::make_unique<VkSandboxPipeline>(m_device, vertSpv, fragSpv, maskConfig);
-   //   m_maskPipeline = øcreate_new<::gpu_vulkan::pipeline>();
-
-   //   m_maskPipeline->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, maskConfig);
-
-   //   // BLEND
-   //   ::vulkan::pipeline_configuration blendConfig{};
-   //   ::vulkan::defaultPipelineConfigInfo2(blendConfig);
-   //   blendConfig.pipelineLayout = m_pipelineLayout;
-   //   blendConfig.renderPass = renderPass;
-   //   blendConfig.bindingDescriptions = bindings;
-   //   blendConfig.attributeDescriptions = attributes;
-
-   //   blendConfig.colorBlendAttachments[0].blendEnable = VK_TRUE;
-   //   blendConfig.colorBlendAttachments[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-   //   blendConfig.colorBlendAttachments[0].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-   //   blendConfig.colorBlendAttachments[0].colorBlendOp = VK_BLEND_OP_ADD;
-   //   blendConfig.colorBlendAttachments[0].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-   //   blendConfig.colorBlendAttachments[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-   //   blendConfig.colorBlendAttachments[0].alphaBlendOp = VK_BLEND_OP_ADD;
-
-   //   blendConfig.colorBlendAttachments[0].colorWriteMask =
-   //      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-
-   //   // m_blendPipeline = std::make_unique<VkSandboxPipeline>(m_device, vertSpv, fragSpv, blendConfig);
-   //   m_blendPipeline = øcreate_new<::gpu_vulkan::pipeline>();
-
-   //   m_blendPipeline->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, blendConfig);
-   //}
-
-   // void gltf_render_system::on_prepare(::gpu::context *pgpucontext)
-   //{
-   //
-
-   //   initialize_GltfRenderSystem()
-   //
-   //}
-
-
-   // void gltf_render_system::render(FrameInfo &frame)
-   //{
-   //    static bool warnedThisFrame = false;
-   //
-   //    for (auto &[id, go]: frame.gameObjects)
-   //    {
-   //
-   //       if (go->getPreferredRenderTag() != RenderTag::Gltf)
-   //       {
-   //          continue; // not mine, skip
-   //       }
-   //       auto baseModel = go->getModel();
-   //       if (!baseModel)
-   //          continue;
-   //
-   //       auto model = std::dynamic_pointer_cast<vkglTF::Model>(baseModel);
-   //       if (!model)
-   //          continue;
-   //
-   //       model->bind(frame.commandBuffer);
-   //
-   //       for (auto *pnode: model->m_nodeaLinear)
-   //       {
-   //          if (!pnode->m_pmesh)
-   //             continue;
-   //
-   //          floating_matrix4 world = go->getTransform().mat4() * pnode->getMatrix();
-   //          floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
-   //
-   //          memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
-   //          memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
-   //
-   //          for (auto *primitive: pnode->m_pmesh->primitives)
-   //          {
-   //             // --- Bind sets 0 & 1 (global + node UBO) ---
-   //             std::array<VkDescriptorSet, 2> sets01 = {
-   //                frame.globalDescriptorSet, // set 0
-   //                pnode->m_pmesh->uniformBuffer.descriptorSet // set 1
-   //             };
-   //             vkCmdBindDescriptorSets(frame.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
-   //                                     static_cast<uint32_t>(sets01.size()), sets01.data(), 0, nullptr);
-   //
-   //             // --- Bind our PBR set (set = 2) ---
-   //             VkDescriptorSet pbrSet = m_pdescriptorsetlayoutUbo[frame.frameIndex];
-   //             if (pbrSet == VK_NULL_HANDLE)
-   //             {
-   //                if (!warnedThisFrame)
-   //                { /*spdlog::warn("PBR set null");*/
-   //                   warnedThisFrame = true;
-   //                }
-   //                continue;
-   //             }
-   //             vkCmdBindDescriptorSets(frame.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 2, 1,
-   //                                     &pbrSet, 0, nullptr);
-   //
-   //             // --- Bind IBL set (set = 3) ---
-   //             VkDescriptorSet iblSet = m_vkdescriptorsetaIbl[frame.frameIndex];
-   //             if (iblSet == VK_NULL_HANDLE)
-   //             {
-   //                continue;
-   //             }
-   //             vkCmdBindDescriptorSets(frame.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 3, 1,
-   //                                     &iblSet, 0, nullptr);
-   //
-   //             // Pick pipeline by alpha mode
-   //             switch (primitive->material.alphaMode)
-   //             {
-   //                case vkglTF::Material::ALPHAMODE_OPAQUE:
-   //                   m_opaquePipeline->bind(frame.commandBuffer);
-   //                   break;
-   //                case vkglTF::Material::ALPHAMODE_MASK:
-   //                   m_maskPipeline->bind(frame.commandBuffer);
-   //                   break;
-   //                case vkglTF::Material::ALPHAMODE_BLEND:
-   //                default:
-   //                   m_blendPipeline->bind(frame.commandBuffer);
-   //                   break;
-   //             }
-   //
-   //             model->gltfDraw(frame.commandBuffer, vkglTF::RenderFlags::RenderNone, m_pipelineLayout, 2);
-   //             warnedThisFrame = false;
-   //          }
-   //       }
-   //    }
-
-
-   //void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
-   //{
-
-   //   // vkCmdBindDescriptorSets(
-   //   //     frame.m_pcommandbuffer,
-   //   //     VK_PIPELINE_BIND_POINT_GRAPHICS,
-   //   //     m_pipelineLayout,
-   //   //     0, 1,
-   //   //     &frame.globalDescriptorSet,
-   //   //     0, nullptr);
-
-   //   auto pframe = ::gpu::current_frame();
-
-   //   ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
-
-   //   auto &sceneobjects = pscene->scene_objects();
-
-   //   for (auto &[id, pobject]: sceneobjects)
-   //   {
-
-   //      ::cast<::graphics3d::scene_object> psceneobject = pobject;
-
-   //      if (!psceneobject)
-   //      {
-
-   //         continue;
-   //      }
-
-   //      auto prenderable = psceneobject->renderable();
-
-   //      if (!prenderable || prenderable->m_erenderabletype != ::gpu::e_renderable_type_gltf)
-   //      {
-
-   //         continue;
-   //      }
-
-   //      ::cast<::gpu_vulkan::gltf::Model> pmodel = prenderable;
-
-   //      if (!pmodel)
-   //         continue;
-
-   //      pmodel->bind(pframe->m_pgpucommandbuffer);
-
-   //      for (auto *pnode: pmodel->m_nodeaLinear)
-   //      {
-
-   //         if (!pnode->m_pmesh)
-   //            continue;
-
-   //         floating_matrix4 world = psceneobject->transform().getMatrix() * pnode->getMatrix();
-   //         floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
-   //         memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
-   //         memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
-
-   //         vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-   //                                 m_pipelineLayout, 1, 1, &pnode->m_pmesh->uniformBuffer.descriptorSet, 0, nullptr);
-
-   //         auto pmaterial = pnode->m_pmesh->primitives[0]->m_pmaterial;
-   //         switch (pmaterial->alphaMode)
-   //         {
-   //            case ::gpu_vulkan::gltf::Material::ALPHAMODE_OPAQUE:
-   //               m_opaquePipeline->bind(pcommandbuffer);
-   //               break;
-   //            case ::gpu_vulkan::gltf::Material::ALPHAMODE_MASK:
-   //               m_maskPipeline->bind(pcommandbuffer);
-   //               break;
-   //            case ::gpu_vulkan::gltf::Material::ALPHAMODE_BLEND:
-   //            default:
-   //               m_blendPipeline->bind(pcommandbuffer);
-   //               break;
-   //         }
-
-
-   //         pmodel->gltfDraw(pcommandbuffer->m_vkcommandbuffer, ::gpu_vulkan::gltf::RenderFlags::RenderNone,
-   //                          m_pipelineLayout, 2);
-   //         // pmodel->drawNode(pnode,
-   //         //  pcommandbuffer->m_vkcommandbuffer,
-   //         //::gpu_vulkan::gltf::RenderFlags::BindImages,
-   //         // m_pipelineLayout,
-   //         //              2 // bindImageSet
-   //         //);
-   //      }
-   //   }
-   //}
-
-
-//void GltfRenderSystem::render(FrameInfo &frame)
-//   {
-//      static bool warnedThisFrame = false;
-//
-//      for (auto &[id, go]: frame.gameObjects)
-//      {
-//
-//         if (go->getPreferredRenderTag() != RenderTag::Gltf)
-//         {
-//            continue; // not mine, skip
-//         }
-//         auto baseModel = go->getModel();
-//         if (!baseModel)
-//            continue;
-//
-//         auto model = std::dynamic_pointer_cast<vkglTF::Model>(baseModel);
-//         if (!model)
-//            continue;
-//
-//         model->bind(frame.commandBuffer);
-//
-//         for (auto *pnode: model->m_nodeaLinear)
-//         {
-//            if (!pnode->m_pmesh)
-//               continue;
-//
-//            floating_matrix4 world = go->getTransform().mat4() * pnode->getMatrix();
-//            floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
-//
-//            memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
-//            memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
-//
-//            for (auto *primitive: pnode->m_pmesh->primitives)
-//            {
-//                --- Bind sets 0 & 1 (global + node UBO) ---
-//               std::array<VkDescriptorSet, 2> sets01 = {
-//                  frame.globalDescriptorSet, // set 0
-//                  pnode->m_pmesh->uniformBuffer.descriptorSet // set 1
-//               };
-//               vkCmdBindDescriptorSets(frame.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
-//                                       static_cast<uint32_t>(sets01.size()), sets01.data(), 0, nullptr);
-//
-//                --- Bind our PBR set (set = 2) ---
-//               VkDescriptorSet pbrSet = m_pdescriptorsetlayoutUbo[frame.frameIndex];
-//               if (pbrSet == VK_NULL_HANDLE)
-//               {
-//                  if (!warnedThisFrame)
-//                  { /*spdlog::warn("PBR set null");*/
-//                     warnedThisFrame = true;
-//                  }
-//                  continue;
-//               }
-//               vkCmdBindDescriptorSets(frame.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 2, 1,
-//                                       &pbrSet, 0, nullptr);
-//
-//                --- Bind IBL set (set = 3) ---
-//               VkDescriptorSet iblSet = m_vkdescriptorsetaIbl[frame.frameIndex];
-//               if (iblSet == VK_NULL_HANDLE)
-//               {
-//                  continue;
-//               }
-//               vkCmdBindDescriptorSets(frame.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 3, 1,
-//                                       &iblSet, 0, nullptr);
-//
-//                Pick pipeline by alpha mode
-//               switch (primitive->material.alphaMode)
-//               {
-//                  case vkglTF::Material::ALPHAMODE_OPAQUE:
-//                     m_opaquePipeline->bind(frame.commandBuffer);
-//                     break;
-//                  case vkglTF::Material::ALPHAMODE_MASK:
-//                     m_maskPipeline->bind(frame.commandBuffer);
-//                     break;
-//                  case vkglTF::Material::ALPHAMODE_BLEND:
-//                  default:
-//                     m_blendPipeline->bind(frame.commandBuffer);
-//                     break;
-//               }
-//
-//               model->gltfDraw(frame.commandBuffer, vkglTF::RenderFlags::RenderNone, m_pipelineLayout, 2);
-//               warnedThisFrame = false;
-//            }
-//         }
-//      }
-//   }
 
 void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    {
@@ -1067,10 +639,10 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                                        // m_pipelineLayout, 3, 1,
                                        pshader->m_ppipeline->m_vkpipelinelayout, 1, 1, &iblSet, 0, nullptr);
 
-               if (pgltfmodel->m_materiala[0].m_descriptorseta.has_element())
+               if (pgltfmodel->m_materiala[0].descriptor_set_array_gltf(pgltfmodel).has_element())
                {
                   VkDescriptorSet pbrSet =
-                     pgltfmodel->m_materiala[0].m_descriptorseta[pframe->m_pgpucommandbuffer->m_iFrameIndex];
+                     pgltfmodel->m_materiala[0].descriptor_set_array_gltf(pgltfmodel)[pframe->m_pgpucommandbuffer->m_iFrameIndex];
                   if (pbrSet == VK_NULL_HANDLE)
                   {
                      if (!warnedThisFrame)

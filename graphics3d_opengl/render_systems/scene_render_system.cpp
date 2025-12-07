@@ -17,7 +17,11 @@
 //#include "app/gpu_opengl/vk_init.h"
 #include "shaders/scene.vert.h"
 #include "shaders/scene.frag.h"
-
+#include "gpu_opengl/ibl/diffuse_irradiance_map.h"
+#include "gpu_opengl/ibl/specular_map.h"
+#include "app-graphics3d/graphics3d/scene.h"
+#include "gpu_opengl/_gpu_opengl.h"
+#include "bred/gltf/vertex.h"
 
 namespace graphics3d_opengl
 {
@@ -48,18 +52,33 @@ namespace graphics3d_opengl
 
       m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, 
          ::as_memory_block(g_psz_scene_vert),
-         ::as_memory_block(g_psz_scene_frag));
+         ::as_memory_block(g_psz_scene_frag), {},
+         {
+            
+         },
+         pgpucontext->input_layout <::gpu::gltf::vertex>());
 
+      m_pshaderMask->m_bEnableBlend = true;
       m_pshaderMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, ::as_memory_block(g_psz_scene_vert),
-                                         ::as_memory_block(g_psz_scene_frag));
+                                                  ::as_memory_block(g_psz_scene_frag), {},
+                                                  {
 
+                                                  },
+                                                  pgpucontext->input_layout<::gpu::gltf::vertex>());
+
+      m_pshaderBlend->m_bDisableDepthTest = true;
+      m_pshaderBlend->m_bEnableBlend = true;
       m_pshaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, ::as_memory_block(g_psz_scene_vert),
-                                          ::as_memory_block(g_psz_scene_frag));
+                                                   ::as_memory_block(g_psz_scene_frag), {},
+                                                   {
+
+                                                   },
+                                                   pgpucontext->input_layout<::gpu::gltf::vertex>());
 
    }
 
 
-   void scene_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
+   void scene_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscenebase)
    {
 
       static bool warnedThisFrame = false;
@@ -68,13 +87,13 @@ namespace graphics3d_opengl
 
       ::cast<::gpu_opengl::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
 
-      pgpucontext->defer_bind(m_pshaderOpaque);
+      //pgpucontext->defer_bind(m_pshaderOpaque);
 
-      auto &scenerenderables = pscene->scene_renderables();
+      auto &scenerenderables = pscenebase->scene_renderables();
 
       ::cast < ::gpu_opengl::context > pcontext = pcommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext;
 
-      auto pshader = pcontext->m_pshaderBound;
+      ::gpu::shader * pshader = nullptr;
 
       ::cast<::gpu_opengl::renderer> prenderer = pcontext->m_pgpurenderer;
 
@@ -129,13 +148,71 @@ namespace graphics3d_opengl
          for (auto pmesh: pgltfmodel->m_mesha)
          {
 
-            floating_matrix4 world = pscenerenderable->model_matrix();
+            floating_matrix4 matrixObject = pscenerenderable->model_matrix();
+
+            auto matrixNode = pmesh->uniformBlock.matrix;
+
+            floating_matrix4 world = matrixObject * matrixNode;
+
             floating_matrix3 matrix3World(world);
             auto matrix3Normal = matrix3World.inversed().transposed();
             floating_matrix4 normalMat = matrix3Normal;
+            bool bChangedShader = false;
+                           // Pick pipeline by alpha mode
+            switch (pmesh->m_pmaterial->alphaMode)
+            {
+               case ::gpu::gltf::material::ALPHAMODE_OPAQUE:
+                  bChangedShader = pgpucontext->defer_bind(m_pshaderOpaque);
+                  m_pshaderOpaque->set_int("useAlphaMask", 0);
+                  break;
+               case ::gpu::gltf::material::ALPHAMODE_MASK:
+                  bChangedShader = pgpucontext->defer_bind(m_pshaderMask);
+                  m_pshaderBlend->set_int("useAlphaMask", 1);
+                  break;
+               case ::gpu::gltf::material::ALPHAMODE_BLEND:
+               default:
+                  bChangedShader = pgpucontext->defer_bind(m_pshaderBlend);
+                  m_pshaderBlend->set_int("useAlphaMask", 0);
+                  break;
+            }
 
-            m_pshaderOpaque->set_matrix4("modelMatrix", world);
-            m_pshaderOpaque->set_matrix4("normalMatrix", normalMat);
+            auto pshader = pgpucontext->m_pshaderBound;
+
+            if (bChangedShader)
+            {
+               ::cast<::graphics3d::scene> pscene = pscenebase;
+                     //// xxxxxxxxxxxxxxxxx
+               // auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+               // auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
+               //  IBL stuff
+               glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
+               GLCheckError("");
+               pshader->set_int("diffuseIrradianceMap", TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
+               ::cast<::gpu_opengl::ibl::diffuse_irradiance_map> pirradiancemap = pscene->m_pibldiffuseirradiancemap;
+               int iCubemapId = pirradiancemap->getCubemapId();
+               glBindTexture(GL_TEXTURE_CUBE_MAP, iCubemapId);
+               GLCheckError("");
+
+               glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_PREFILTERED_ENV_MAP);
+               GLCheckError("");
+               pshader->set_int("prefilteredEnvMap", TEXTURE_UNIT_PREFILTERED_ENV_MAP);
+               ::cast<::gpu_opengl::ibl::specular_map> pspecularmap = pscene->m_piblspecularmap;
+               int iPrefilteredEnvMapId = pspecularmap->getPrefilteredEnvMapId();
+               glBindTexture(GL_TEXTURE_CUBE_MAP, iPrefilteredEnvMapId);
+               GLCheckError("");
+
+               glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
+               GLCheckError("");
+               pshader->set_int("brdfConvolutionMap", TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
+               int iBrdfConvolutionMapId = pspecularmap->getBrdfConvolutionMapId();
+               glBindTexture(GL_TEXTURE_2D, iBrdfConvolutionMapId);
+               GLCheckError("");
+
+
+            }
+
+            pshader->set_matrix4("modelMatrix", world);
+            pshader->set_matrix4("normalMatrix", normalMat);
 
             m_erendersystem = ::graphics3d::e_render_system_gltf_scene;
             pcommandbuffer->m_prendersystem = this;
@@ -145,7 +222,10 @@ namespace graphics3d_opengl
 
       }
 
-      pgpucontext->defer_unbind(m_pshaderOpaque);
+      if (pshader)
+      {
+         pgpucontext->defer_unbind(pshader);
+      }
 
    }
 

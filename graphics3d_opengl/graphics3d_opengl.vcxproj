@@ -986,6 +986,9 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="render_systems\shaders\tonemapping.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

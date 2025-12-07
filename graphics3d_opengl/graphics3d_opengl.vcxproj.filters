@@ -189,4 +189,9 @@
       <Filter>Source Files\render_systems\shaders</Filter>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="render_systems\shaders\tonemapping.glsl">
+      <Filter>Source Files\render_systems\shaders</Filter>
+    </None>
+  </ItemGroup>
 </Project>

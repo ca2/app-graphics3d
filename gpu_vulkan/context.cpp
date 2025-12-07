@@ -402,6 +402,8 @@ namespace gpu_vulkan
    //}
 
 
+
+
    VkSampler context::_001VkSampler()
    {
 
@@ -4008,7 +4010,7 @@ VkFormat context::findDepthFormat()
 //   // Vertex input: vec3 position only (location 0)
 //   VkVertexInputBindingDescription bindingDesc{};
 //   bindingDesc.binding = 0;
-//   bindingDesc.stride = sizeof(::gpu_vulkan::gltf::Vertex);
+//   bindingDesc.stride = sizeof(::gpu::gltf::vertex);
 //   bindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
 //   VkVertexInputAttributeDescription attrDesc{};
@@ -4429,7 +4431,7 @@ VkFormat context::findDepthFormat()
 //   // Vertex input: vec3 position only (location 0)
 //   VkVertexInputBindingDescription bindingDesc{};
 //   bindingDesc.binding = 0;
-//   bindingDesc.stride = sizeof(::gpu_vulkan::gltf::Vertex);
+//   bindingDesc.stride = sizeof(::gpu::gltf::vertex);
 //   bindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 //
 //   VkVertexInputAttributeDescription attrDesc{};
@@ -5633,6 +5635,155 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
    // m_mapgltfModel[name] = model;
    return pmodel;
 }
+
+
+   ::gpu_vulkan::descriptor_set_layout *context::descriptor_set_layout_gltf()
+{
+
+
+   if (!m_psetdescriptorlayoutGltfImage4)
+   {
+      m_psetdescriptorlayoutGltfImage4 =
+
+         // binding 0 → baseColor (albedo)
+         // binding 1 → normal map
+         // binding 2 → metallic map
+         // binding 3 → roughness map
+         // binding 4 → ambient occlusion map
+         descriptor_set_layout::Builder(this)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+            .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+            .addBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+            .addBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+            .addBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+            .build();
+
+      //// Always push exactly two bindings:
+      ////  • binding 0 = base-color sampler
+      ////  • binding 1 = normal-map sampler
+      // std::array<VkDescriptorSetLayoutBinding, 5> setLayoutBindings = {
+      //	// binding 0 → baseColor (albedo)
+      //	vkinit::descriptorSetLayoutBinding(
+      //		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      //		VK_SHADER_STAGE_FRAGMENT_BIT,
+      //		/*binding=*/ 0
+      //	),
+      //		// binding 1 → normal map
+      //		vkinit::descriptorSetLayoutBinding(
+      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+      //			/*binding=*/ 1
+      //		),
+      //		// binding 2 → metallic map
+      //		vkinit::descriptorSetLayoutBinding(
+      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+      //			/*binding=*/ 2
+      //		),
+      //		// binding 3 → roughness map
+      //		vkinit::descriptorSetLayoutBinding(
+      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+      //			/*binding=*/ 3
+      //		),
+      //		// binding 4 → ambient occlusion map
+      //		vkinit::descriptorSetLayoutBinding(
+      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+      //			/*binding=*/ 4
+      //		)
+      // };
+
+
+      // VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
+      // descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+      // descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
+      // descriptorLayoutCI.pBindings = setLayoutBindings.data();
+      // VK_CHECK_RESULT(vkCreateDescriptorSetLayout(
+      //	pcontext->logicalDevice(),
+      //	&descriptorLayoutCI,
+      //	nullptr,
+      //             &pcontext->m_psetdescriptorlayoutGltfImage->m_vkdescriptorsetlayout
+      //));
+   }
+
+   return m_psetdescriptorlayoutGltfImage4;
+}
+
+
+
+::gpu_vulkan::descriptor_set_layout *context::descriptor_set_layout_scene_gltf() 
+{
+
+   if (!m_psetdescriptorlayoutSceneGltfImage4)
+   {
+      m_psetdescriptorlayoutSceneGltfImage4 =
+
+         // binding 0 → baseColor (albedo)
+         // binding 1 → normal map
+         // binding 2 → metallic map
+         // binding 3 → roughness map
+         // binding 4 → ambient occlusion map
+         descriptor_set_layout::Builder(this)
+            .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+            .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+            .build();
+
+      //// Always push exactly two bindings:
+      ////  • binding 0 = base-color sampler
+      ////  • binding 1 = normal-map sampler
+      // std::array<VkDescriptorSetLayoutBinding, 5> setLayoutBindings = {
+      //	// binding 0 → baseColor (albedo)
+      //	vkinit::descriptorSetLayoutBinding(
+      //		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      //		VK_SHADER_STAGE_FRAGMENT_BIT,
+      //		/*binding=*/ 0
+      //	),
+      //		// binding 1 → normal map
+      //		vkinit::descriptorSetLayoutBinding(
+      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+      //			/*binding=*/ 1
+      //		),
+      //		// binding 2 → metallic map
+      //		vkinit::descriptorSetLayoutBinding(
+      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+      //			/*binding=*/ 2
+      //		),
+      //		// binding 3 → roughness map
+      //		vkinit::descriptorSetLayoutBinding(
+      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+      //			/*binding=*/ 3
+      //		),
+      //		// binding 4 → ambient occlusion map
+      //		vkinit::descriptorSetLayoutBinding(
+      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+      //			/*binding=*/ 4
+      //		)
+      // };
+
+
+      // VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
+      // descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+      // descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
+      // descriptorLayoutCI.pBindings = setLayoutBindings.data();
+      // VK_CHECK_RESULT(vkCreateDescriptorSetLayout(
+      //	pcontext->logicalDevice(),
+      //	&descriptorLayoutCI,
+      //	nullptr,
+      //             &pcontext->m_psetdescriptorlayoutGltfImage->m_vkdescriptorsetlayout
+      //));
+   }
+
+   return m_psetdescriptorlayoutSceneGltfImage4;
+
+}
+
+
+
 
 
 ::pointer<::gpu::texture> context::load_cube_map(const ::scoped_string &scopedstrName, const ::file::path &path,

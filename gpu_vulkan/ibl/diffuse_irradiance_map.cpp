@@ -8,6 +8,7 @@
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/skybox.h"
+#include "bred/gltf/vertex.h"
 #include "gpu/ibl/cubemap_framebuffer.h"
 #include "app-graphics3d/gpu_vulkan/_gpu_vulkan.h"
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
@@ -323,7 +324,7 @@ namespace gpu_vulkan
          // Vertex input: location 0 is a vec3 position (adjust if your skybox vertex layout differs)
          VkVertexInputBindingDescription bindingDesc{};
          bindingDesc.binding = 0;
-         bindingDesc.stride = sizeof(::gpu_vulkan::gltf::Vertex);
+         bindingDesc.stride = sizeof(::gpu::gltf::vertex);
          bindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
          VkVertexInputAttributeDescription attrDesc{};
          attrDesc.binding = 0;
