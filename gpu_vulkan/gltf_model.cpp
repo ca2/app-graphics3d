@@ -1175,8 +1175,8 @@ namespace gpu_vulkan
          // m_texturea.push_back(texture);
       }
       // Create an empty texture to be used for empty material images
-      //createEmptyTexture(transferQueue);
-      //emptyTexture->m_descriptor3.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      createEmptyTexture(transferQueue);
+      emptyTexture2->m_descriptor3.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
    }
 
    ::gpu::texture *gltf::Model::loadMaterialTexture2(const ::scoped_string &scopedstr, tinygltf::Material &material,
@@ -1932,9 +1932,7 @@ namespace gpu_vulkan
       if (!emptyTexture2)
       {
 
-         ::cast < ::gpu_vulkan::queue> pqueueTransfer = m_pgpucontext->m_pgpudevice->transfer_queue();
-
-         createEmptyTexture(pqueueTransfer->m_vkqueue);
+         throw ::exception(error_wrong_state);
 
       }
 

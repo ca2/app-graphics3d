@@ -91,110 +91,151 @@ vec4 getAlbedo() {
 //const float ALPHA_MASK_CUTOFF = 0.0;
 
 // Constants
-const float METALLIC_VALUE  = 1.0;
-const float ROUGHNESS_VALUE = 1.0;
-const float AO_VALUE        = 0.3;
+//const float METALLIC_VALUE  = 1.0;
+//const float ROUGHNESS_VALUE = 1.0;
+//const float AO_VALUE        = 0.3;
 
-const float DIRECT_LIGHT_INTENSITY = 0.25;
-const float IBL_INTENSITY          = 1.0;
-const float EXPOSURE               = 1.0; 
-
-
-
-void main() {
-
-    vec4 texColor = getAlbedo() * fragmentColor;
-
-    if (pushConsts.useAlphaMask != 0 && texColor.a < pushConsts.alphaMaskCutoff) 
-    {
-        discard;
-    }
-
-    mat3 TBN = mat3(fragmentTangent, fragmentBitangent, fragmentNormal);
-
-    vec3 nMap = texture(textureNormal, fragmentTextureCoordinate).xyz * 2.0 - 1.0;
-    vec3 N = normalize(TBN * nMap);
-
-    //vec3 V = normalize(inViewVec);
-
-    // camera position: prefer push constant, fallback to globalUbo.viewPos.xyz
-    vec3 cameraPos = globalUbo.cameraPosition;
-    // If you don't use push constants, you can use globalUbo.viewPos.xyz instead.
-    // vec3 cameraPos = globalUbo.viewPos.xyz;
-
-    vec3 V = normalize(cameraPos - fragmentWorldCoordinate);
-
-    float NdotV = max(dot(N, V), 0.0);
+const float DIRECT_LIGHT_CONTRIBUTION   = 1.0;
+const float AMBIENT_CONTRIBUTION        = 0.3;
+const float EXPOSURE                    = 1.0; 
 
 
-    // Direct Light
-    vec3 ambient = globalUbo.ambientLightColor.rgb * texColor.rgb * globalUbo.ambientLightColor.a;
-    //vec3 lighting = vec3(0.0);
-    vec3 lighting = ambient;
+void main() 
+{
 
-    for (int i = 0; i < globalUbo.numLights; ++i) {
+   vec4 texColor = getAlbedo() * fragmentColor;
 
-        vec3 L = normalize(globalUbo.pointLights[i].position.xyz - fragmentWorldCoordinate);
-        vec3 H = normalize(L + V);
+   if (pushConsts.useAlphaMask != 0 && texColor.a < pushConsts.alphaMaskCutoff) 
+   {
+   
+      discard;
+   
+   }
 
-        float NdotL = max(dot(N, L), 0.0);
-        if (NdotL <= 0.0) continue;
+   vec3 N = fragmentNormal;
+   
+   if (pushConsts.useTextureNormal != 0) 
+   {
+   
+      vec3 nMap;
+      
+      if(false)
+      {
+      
+         nMap.xy = texture(textureNormal, fragmentTextureCoordinate).xy * 2.0 - 1.0;
+         
+         nMap.z = sqrt(1.0 - clamp(dot(nMap.xy, nMap.xy), 0.0, 1.0));
+      
+      }
+      else
+      {
+      
+         nMap = texture(textureNormal, fragmentTextureCoordinate).xyz * 2.0 - 1.0;
+      
+      }
+      
+      mat3 TBN = mat3(fragmentTangent, fragmentBitangent, fragmentNormal);
+      
+      N = normalize(TBN * nMap);
+   
+   }
+ 
+   //vec3 nMap = texture(textureNormal, fragmentTextureCoordinate).xyz * 2.0 - 1.0;
+   //vec3 N = normalize(TBN * nMap);
+   //vec3 V = normalize(inViewVec);
+   //camera position: prefer push constant, fallback to globalUbo.viewPos.xyz
+   
+   vec3 cameraPos = globalUbo.cameraPosition;
+   // If you don't use push constants, you can use globalUbo.viewPos.xyz instead.
+   // vec3 cameraPos = globalUbo.viewPos.xyz;
 
-        float NdotH = max(dot(N, H), 0.0);
+   vec3 V = normalize(cameraPos - fragmentWorldCoordinate);
 
-        vec3 lightCol = globalUbo.pointLights[i].color.rgb * globalUbo.pointLights[i].color.a;
+   float NdotV = max(dot(N, V), 0.0);
 
-        // Simple Blinn-Phong for direct light
-        float specPower = 32.0;
-        float spec = pow(max(dot(H, N), 0.0), specPower);
+   // Direct Light
+   //vec3 ambient = globalUbo.ambientLightColor.rgb * texColor.rgb * globalUbo.ambientLightColor.a;
+   vec3 lighting = vec3(0.0);
+   //vec3 lighting = ambient;
 
-        vec3 diffuse = texColor.rgb * NdotL * lightCol;
-        vec3 specular = spec * lightCol;
+   for (int i = 0; i < globalUbo.numLights; ++i) 
+   {
 
-        lighting += diffuse + specular;
-    }
+      vec3 L = normalize(globalUbo.pointLights[i].position.xyz - fragmentWorldCoordinate);
+       
+      vec3 H = normalize(L + V);
 
-    lighting *= DIRECT_LIGHT_INTENSITY;
+      float NdotL = max(dot(N, L), 0.0);
+       
+      if (NdotL <= 0.0) continue;
 
+      float NdotH = max(dot(N, H), 0.0);
 
-    // Image-Based Lighting
-    float metallic  = METALLIC_VALUE;
-    float roughness = clamp(ROUGHNESS_VALUE, 0.04, 1.0);
-    float ao        = AO_VALUE;
-    if (pushConsts.useAlphaMask != 0) { ao = 0.02f; }
-    //vec3 albedo = srgbToLinear(texColor.rgb);
-    vec3 albedo = texColor.rgb;
+      vec3 lightCol = globalUbo.pointLights[i].color.rgb * globalUbo.pointLights[i].color.a;
 
-    // Base reflectance
-    vec3 F0 = mix(vec3(0.04), albedo, metallic);
+      // Simple Blinn-Phong for direct light
+      float specPower = 32.0;
+       
+      float spec = pow(max(dot(H, N), 0.0), specPower);
 
-    // Diffuse IBL
-    vec3 irradiance = texture(diffuseIrradianceMap, N).rgb;
-    vec3 diffuseIBL = irradiance * albedo;
+      vec3 diffuse = texColor.rgb * NdotL * lightCol;
+       
+      vec3 specular = spec * lightCol;
 
-    // Specular IBL
-    vec3 R = reflect(-V, N);
+      lighting += diffuse + specular;
 
-    int mipCount = textureQueryLevels(prefilteredEnvMap);
-    float maxLod = float(max(0, mipCount - 1));
+   }
 
-    vec3 prefiltered = textureLod(prefilteredEnvMap, R, roughness * maxLod).rgb;
-    vec2 brdf = texture(brdfConvolutionMap, vec2(NdotV, roughness)).rg;
+   lighting *= DIRECT_LIGHT_CONTRIBUTION;
 
-    vec3 F = fresnelSchlick(NdotV, F0);
-    vec3 kS = F;
-    vec3 kD = (1.0 - kS) * (1.0 - metallic);
+   vec3 ambientIBL;
 
-    vec3 specIBL = prefiltered * (kS * brdf.x + brdf.y);
+   {
 
-    vec3 ambientIBL = (diffuseIBL * kD + specIBL) * ao * IBL_INTENSITY;
+      // Image-Based Lighting
+      float metallic  = pushConsts.metallic;
+      float roughness = clamp(pushConsts.roughness, 0.04, 1.0);
+      float ao        = pushConsts.ambientOcclusion;
+      if (pushConsts.useAlphaMask != 0) { ao = 0.02f; }
+      //vec3 albedo = srgbToLinear(texColor.rgb);
+      vec3 albedo = texColor.rgb;
 
-    // Final Composite
-    //vec3 color = lighting + ambientIBL + texColor.rgb * globalUbo.ambientLightColor.rgb;
-    vec3 color = lighting + ambientIBL;
-    //color = ACESFilm(color * EXPOSURE);
+      // Base reflectance
+      vec3 F0 = mix(vec3(0.04), albedo, metallic);
 
-    outputColor = vec4(color, texColor.a);
+      // Diffuse IBL
+      vec3 irradiance = texture(diffuseIrradianceMap, N).rgb;
+      vec3 diffuseIBL = irradiance * albedo;
+
+      // Specular IBL
+      vec3 R = reflect(-V, N);
+
+      int mipCount = textureQueryLevels(prefilteredEnvMap);
+      float maxLod = float(max(0, mipCount - 1));
+
+      vec3 prefiltered = textureLod(prefilteredEnvMap, R, roughness * maxLod).rgb;
+      vec2 brdf = texture(brdfConvolutionMap, vec2(NdotV, roughness)).rg;
+
+      vec3 F = fresnelSchlick(NdotV, F0);
+      vec3 kS = F;
+      vec3 kD = (1.0 - kS) * (1.0 - metallic);
+
+      vec3 specIBL = prefiltered * (kS * brdf.x + brdf.y);
+
+      ambientIBL = (diffuseIBL * kD + specIBL) * ao * AMBIENT_CONTRIBUTION;
+
+   }
+
+   // Final Composite
+   //vec3 color = lighting + ambientIBL + texColor.rgb * globalUbo.ambientLightColor.rgb;
+   vec3 color = lighting + ambientIBL;
+   //color = ACESFilm(color * EXPOSURE);
+
+   //outputColor = vec4(color, texColor.a);
+
+   outputColor = vec4(lighting, texColor.a);
+
+   //outputColor = texColor;
 
 }
 

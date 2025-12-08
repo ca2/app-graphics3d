@@ -639,7 +639,10 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                                        // m_pipelineLayout, 3, 1,
                                        pshader->m_ppipeline->m_vkpipelinelayout, 1, 1, &iblSet, 0, nullptr);
 
-               if (pgltfmodel->m_materiala[0].descriptor_set_array_gltf(pgltfmodel).has_element())
+               if (pgltfmodel->m_materiala.has_element() &&
+                  pgltfmodel->m_materiala[0]
+                      .descriptor_set_array_gltf(pgltfmodel)
+                      .has_element())
                {
                   VkDescriptorSet pbrSet =
                      pgltfmodel->m_materiala[0].descriptor_set_array_gltf(pgltfmodel)[pframe->m_pgpucommandbuffer->m_iFrameIndex];

@@ -407,6 +407,12 @@
     <CustomBuild Include="ibl\shader\hdricube.frag">
       <Filter>Source Files\ibl\shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="ibl\shader\brdfconvolution.frag">
+      <Filter>Source Files\ibl\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ibl\shader\brdfconvolution.vert">
+      <Filter>Source Files\ibl\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\image_blend.frag.spv.inl">

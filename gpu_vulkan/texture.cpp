@@ -205,29 +205,16 @@ namespace gpu_vulkan
    }
 
 
-   texture::~texture() {}
-
-
-   void texture::initialize_image_texture(::gpu::renderer *prenderer, const ::int_rectangle &rectangleTarget,
-                                          bool bWithDepth, const ::pointer_array<::image::image> &imagea,
-                                          enum_type etype)
+   texture::~texture()
    {
+   
+      m_vkimage = nullptr;
+   
+   }
 
-      if (m_vkimage && m_rectangleTarget == rectangleTarget && m_pgpurenderer == prenderer)
-      {
 
-         return;
-      }
-
-      auto currentSize = m_rectangleTarget.size();
-
-      ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, imagea, etype);
-
-      if (m_vkimage && currentSize == rectangleTarget.size() && m_pgpurenderer == prenderer)
-      {
-
-         return;
-      }
+   void texture::create_image()
+   {
 
       ASSERT(!(m_etype & ::gpu::texture::e_type_depth));
 
@@ -240,18 +227,23 @@ namespace gpu_vulkan
       VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
 
       imagecreateinfo.imageType = VK_IMAGE_TYPE_2D;
+
       if (m_bSrgb)
       {
 
          m_vkformat = VK_FORMAT_R32G32B32A32_SFLOAT;
+
       }
       else
       {
+
          m_vkformat = pcontext->m_formatImageDefault;
+
       }
+
       imagecreateinfo.format = m_vkformat;
-      imagecreateinfo.extent.width = rectangleTarget.width();
-      imagecreateinfo.extent.height = rectangleTarget.height();
+      imagecreateinfo.extent.width = m_rectangleTarget.width();
+      imagecreateinfo.extent.height = m_rectangleTarget.height();
       imagecreateinfo.extent.depth = 1;
       imagecreateinfo.mipLevels = m_iMipCount;
       if (m_etype == e_type_cube_map)
@@ -321,6 +313,26 @@ namespace gpu_vulkan
       {
 
          get_depth_image();
+
+      }
+
+   }
+
+
+   void texture::initialize_image_texture(::gpu::renderer *prenderer, const ::int_rectangle &rectangleTarget,
+                                          bool bWithDepth, const ::pointer_array<::image::image> &imagea,
+                                          enum_type etype)
+   {
+
+      auto currentSize = m_rectangleTarget.size();
+
+      if (!m_vkimage || currentSize != rectangleTarget.size() && m_pgpurenderer != prenderer)
+      {
+
+         ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, imagea, etype);
+
+         create_image();
+
       }
 
       if (imagea.has_element())
@@ -333,6 +345,24 @@ namespace gpu_vulkan
          }
       }
    }
+
+
+   //void texture::initialize_cubemap_image_texture_with_mipmap(::gpu::renderer *pgpurenderer,
+   //                                                           const ::int_rectangle &rectangleTarget, int iMipCount,
+   //                                                           bool bRenderTarget, bool bShaderResourceView)
+   //{
+
+   //   ::gpu::texture::initialize_cubemap_image_texture_with_mipmap(pgpurenderer, rectangleTarget, iMipCount,
+   //                                                                bRenderTarget, bShaderResourceView);
+
+   //   //m_pgpurenderer = pgpurenderer;
+   //   //m_rectangleTarget = rectangleTarget;
+   //   //m_iMipCount = iMipCount;
+   //   //m_bRenderTarget = bRenderTarget;
+   //   //m_bShaderResourceView = bShaderResourceView;
+
+   //}
+
 
 
    void texture::_LoadCubeMap(const ::pointer_array<::image::image> &imagea)

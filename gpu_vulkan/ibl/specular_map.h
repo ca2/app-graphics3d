@@ -68,6 +68,7 @@ namespace gpu_vulkan
          /**
           * Render the pre-filtered environment map.
           */
+         void _computePrefilteredEnvMap_2025(::gpu::command_buffer *pgpucommandbuffer);
          void computePrefilteredEnvMap(::gpu::command_buffer *pgpucommandbuffer) override;
 
 
@@ -82,6 +83,8 @@ namespace gpu_vulkan
           * Render the BRDF convolution map.
           */
          void computeBrdfConvolutionMap() override;
+
+         void _computeBrdfConvolutionMap_2025();
 
 
          /**

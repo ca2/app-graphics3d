@@ -11,12 +11,16 @@
 #include "app-graphics3d/gpu_vulkan/queue.h"
 #include "app-graphics3d/gpu_vulkan/texture.h"
 #include "app-graphics3d/gpu_vulkan/vk_init.h"
+#include "bred/gpu/context_lock.h"
+#include "gpu/full_screen_quad.h"
 #include "bred/graphics3d/_functions.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/immersion_layer.h"
+#include "bred/graphics3d/render_system.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/skybox.h"
 #include "bred/gltf/vertex.h"
+#include "gpu/timer.h"
 #include <array>
 #include <chrono>
 
@@ -61,7 +65,7 @@ namespace gpu_vulkan
       ::block specular_map::embedded_brdf_convolution_vert()
       {
          static unsigned int g_uaBrdfConvolutionVertexShader[] = {
-#include "ibl/shader/filtered_cube.vert.spv.inl"
+#include "ibl/shader/brdfconvolution.vert.spv.inl"
          };
          return as_memory_block(g_uaBrdfConvolutionVertexShader);
       }
@@ -71,7 +75,7 @@ namespace gpu_vulkan
       {
 
          static unsigned int g_uaBrdfConvolutionFragmentShader[] = {
-#include "ibl/shader/prefiltered_env_map.frag.spv.inl"
+#include "ibl/shader/brdfconvolution.frag.spv.inl"
          };
          return as_memory_block(g_uaBrdfConvolutionFragmentShader);
       }
@@ -82,7 +86,9 @@ namespace gpu_vulkan
       //::graphics3d::renderable * prenderableSkybox)
       // const ::scoped_string & scopedstrengineRoot, const unsigned int uEnvironmentCubemapId)
       {
-               initialize_scene_object(pscenebase);
+               //initialize_scene_object(pscenebase);
+
+               ::gpu::ibl::specular_map::initialize_specular_map(pscenebase);
 
       }
             
@@ -130,6 +136,127 @@ namespace gpu_vulkan
       void specular_map::computePrefilteredEnvMap(::gpu::command_buffer *pgpucommandbuffer)
       {
 
+         ::gpu::ibl::specular_map::computePrefilteredEnvMap(pgpucommandbuffer);
+
+         //::gpu::Timer timer;
+
+         //::gpu::context_lock contextlock(m_pgpucontext);
+
+         //// auto pgpucommandbuffer =
+         //// m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
+
+         //using namespace graphics3d;
+
+         //floating_matrix4 model = mIndentity4;
+
+         //floating_matrix4 cameraAngles[] = {lookAt(origin, unitX, -unitY), lookAt(origin, -unitX, -unitY),
+         //                                   lookAt(origin, unitY, unitZ),  lookAt(origin, -unitY, -unitZ),
+         //                                   lookAt(origin, unitZ, -unitY), lookAt(origin, -unitZ, -unitY)};
+
+         //floating_matrix4 projection =
+         //   m_pgpucontext->m_pengine->perspective(90.0f_degrees, // 90 degrees to cover one face
+         //                                         1.0f, // its a square
+         //                                         0.1f, 2.0f);
+
+         //auto pskybox = m_pscene->current_skybox();
+
+         //// auto prenderable = pskybox->m_prenderable;
+
+         //auto ptexture = pskybox->m_ptexture;
+
+         //// auto pcube = øcreate < ::gpu::cube >();
+         ////::cast < ::gpu_gpu::context > pcontext = m_pgpucontext;
+         //// auto pcube = øcreate<::gpu::cube>();
+         //auto prenderableCube = m_pgpucontext->m_pengine->shape_factory()->create_cube_001(m_pgpucontext, 2.f);
+         //// pcube->initialize_gpu_cube(m_pgpucontext);
+         ////::cast<::gpu_opengl::texture> ptextureSkybox = ptexture;
+         //auto ptextureSkybox = ptexture;
+
+         //// m_pframebufferPrefilteredEnvMap->bind();
+         //// m_pshaderPrefilteredEnvMap->_bind();
+         //m_pshaderPrefilteredEnvMap->bind(nullptr, m_pframebufferPrefilteredEnvMap->m_ptexture);
+         //// m_pshaderPrefilteredEnvMap->set_int("environmentCubemap", 0);
+
+         /////::cast<::gpu_opengl::shader> pshaderPrefilteredEnvMap = m_pshaderPrefilteredEnvMap;
+
+         //auto pshaderPrefilteredEnvMap = m_pshaderPrefilteredEnvMap;
+
+         //auto mipCount = m_iPrefilteredEnvMapMipCount;
+
+         //for (auto iCurrentMip = 0; iCurrentMip < mipCount; iCurrentMip++)
+         //{
+
+         //   m_pframebufferPrefilteredEnvMap->set_current_mip(iCurrentMip);
+
+         //   auto mipWidth = m_pframebufferPrefilteredEnvMap->mip_width();
+
+         //   auto mipHeight = m_pframebufferPrefilteredEnvMap->mip_height();
+
+         //   //glViewport(0, 0, mipWidth, mipHeight);
+         //   //GLCheckError("");
+         //   // 
+
+         //   ::int_rectangle r(0, 0, mipWidth, mipHeight);
+
+         //   m_pgpucontext->set_viewport(pgpucommandbuffer, r);
+         //   
+         //   // 
+         //   // each mip level has increasing roughness
+         //   float roughness = (float)iCurrentMip / (float)(mipCount - 1);
+         //   m_pshaderPrefilteredEnvMap->set_float("roughness", roughness);
+
+         //   // render to each side of the cubemap
+         //   for (auto iFace = 0; iFace < 6; iFace++)
+         //   {
+
+         //      ::string strMessage;
+
+         //      strMessage.format("prefiltered_env_map mip {} face {}", iCurrentMip, iFace);
+
+         //      m_pgpucontext->start_debug_happening(pgpucommandbuffer, strMessage);
+
+         //      m_pshaderPrefilteredEnvMap->setModelViewProjection(model, cameraAngles[iFace], projection);
+         //      m_pframebufferPrefilteredEnvMap->set_cube_face(iFace);
+
+         //      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         //      //GLCheckError("");
+
+         //      //glBindTexture(GL_TEXTURE_CUBE_MAP, ptextureSkybox->m_gluTextureID);
+         //      //GLCheckError("");
+         //      pshaderPrefilteredEnvMap->set_int("environmentCubemap", 0);
+         //      // pcube->draw(pgpucommandbuffer);
+         //      ::graphics3d::render_system rendersystemScope;
+         //      rendersystemScope.m_erendersystem = ::graphics3d::e_render_system_skybox_ibl;
+         //      pgpucommandbuffer->m_prendersystem = &rendersystemScope;
+         //      m_pshaderPrefilteredEnvMap->push_properties(pgpucommandbuffer);
+         //      prenderableCube->bind(pgpucommandbuffer);
+         //      prenderableCube->draw(pgpucommandbuffer);
+         //      prenderableCube->unbind(pgpucommandbuffer);
+         //      pgpucommandbuffer->m_prendersystem = nullptr;
+
+         //      m_pgpucontext->end_debug_happening(pgpucommandbuffer);
+         //   }
+         //}
+
+         //timer.logDifference("Rendered specular pre-filtered environment map");
+
+         ////GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+         ////if (status != GL_FRAMEBUFFER_COMPLETE)
+         ////{
+
+         ////   warning() << "Framebuffer incomplete! with status " << status;
+         ////}
+
+         ////glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         ////GLCheckError("");
+      }
+
+
+
+      void specular_map::_computePrefilteredEnvMap_2025(::gpu::command_buffer *pgpucommandbuffer)
+      {
+
          ::pointer<::gpu::texture> pgputexturePrefilteredCubeNew;
 
          øconstruct(pgputexturePrefilteredCubeNew);
@@ -146,6 +273,7 @@ namespace gpu_vulkan
             error("bad argument");
 
             throw ::exception(error_failed);
+
          }
 
          ::cast<::gpu_vulkan::context> pgpucontext = m_pgpucontext;
@@ -607,10 +735,67 @@ namespace gpu_vulkan
 
 
 
+      void specular_map::computeBrdfConvolutionMap()
+      {
+
+         ::gpu::ibl::specular_map::computeBrdfConvolutionMap();
+
+         //// Timer timer;
+
+         //::gpu::context_lock contextlock(m_pgpucontext);
+
+         //auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
+
+         //auto pfullscreenquad = øcreate<::gpu::full_screen_quad>();
+
+         //pfullscreenquad->initialize_full_screen_quad(m_pgpucontext);
+         //// m_pbrdfconvolutionframebuffer->bind();
+
+         ////     auto pskybox = m_pscene->current_skybox();
+
+         ////// auto prenderable = pskybox->m_prenderable;
+
+         //// auto ptexture = pskybox->m_ptexture;
+
+         //// m_pshaderBrdfConvolution->bind(m_pbrdfconvolutionframebuffer->m_ptexture, ptexture);
+         //m_pshaderBrdfConvolution->bind(pcommandbuffer, m_pbrdfconvolutionframebuffer->m_ptexture);
+         //// m_pshaderPrefilteredEnvMap->set_int("environmentCubemap", 0);
+
+         ////glViewport(0, 0, m_uBrdfConvolutionMapWidth, m_uBrdfConvolutionMapHeight);
+         ////GLCheckError("");
+         ////glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         ////GLCheckError("");
+
+         //::int_rectangle rectangleViewport;
+
+         //rectangleViewport.set(0, 0, m_uBrdfConvolutionMapWidth, m_uBrdfConvolutionMapHeight);
+
+         //m_pgpucontext->set_viewport(pcommandbuffer, rectangleViewport);
+
+         //m_pgpucontext->clear(m_pbrdfconvolutionframebuffer->m_ptexture, ::color::transparent);
+
+         //pfullscreenquad->bind(pcommandbuffer);
+         //pfullscreenquad->draw(pcommandbuffer);
+         //pfullscreenquad->unbind(pcommandbuffer);
+
+         ////GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+         ////if (status != GL_FRAMEBUFFER_COMPLETE)
+         ////{
+
+         ////   printf("Framebuffer incomplete!\n");
+         ////}
+
+         ////// timer.logDifference("Rendered specular brdf convolution map");
+
+         ////glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         ////GLCheckError("");
+      }
+
 
 
       //::pointer<::gpu::texture> context::generateBRDFlut()
-      void specular_map::computeBrdfConvolutionMap()
+      void specular_map::_computeBrdfConvolutionMap_2025()
       {
 
          ::pointer<::gpu::texture> pgputextureLutBrdfNew;

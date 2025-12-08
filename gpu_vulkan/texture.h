@@ -172,8 +172,14 @@ namespace gpu_vulkan
       ~texture() override;
 
 
+      void create_image() override;
+
+
       void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea = {}, enum_type etype = e_type_image) override;
-      void initialize_depth_texture(::gpu::renderer* pgpurenderer, const ::int_rectangle& rectangleTarget) override;
+      //void initialize_cubemap_image_texture_with_mipmap(::gpu::renderer *pgpurenderer,
+      //                                                           const ::int_rectangle &rectangleTarget, int iMipCount,
+      //                                                           bool bRenderTarget, bool bShaderResourceView) override;
+      void initialize_depth_texture(::gpu::renderer *pgpurenderer, const ::int_rectangle &rectangleTarget) override;
       void initialize_image_texture(::gpu::renderer *prenderer, const ::file::path & path, bool bIsSrgb);
       void initialize_hdr_texture_on_memory(::gpu::renderer *pgpurenderer, const ::block &block) override;
       //virtual void load_Cubemap(const ::file::path & path);
