@@ -68,8 +68,8 @@ list(APPEND library_source
         document.h
         framework.cpp
         framework.h
-   global_ubo.cpp
-   global_ubo.h
+   #global_ubo.cpp
+   #global_ubo.h
         impact.cpp
         impact.h
    input.cpp

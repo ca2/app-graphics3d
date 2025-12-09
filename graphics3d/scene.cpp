@@ -229,7 +229,7 @@ namespace graphics3d
 
       }
 
-      return m_pibldiffuseirradiancemap->m_pdiffuseIrradianceFramebuffer->m_ptexture;
+      return m_pibldiffuseirradiancemap->m_pframebufferDiffuseIrradiance->m_ptexture;
    }
    // ::pointer<::gpu::texture> loadCubemap(
    //    const ::scoped_string& name,
@@ -250,7 +250,7 @@ namespace graphics3d
          piblspecularmap->computeBrdfConvolutionMap();
       }
 
-      return piblspecularmap->m_pbrdfconvolutionframebuffer->m_ptexture;
+      return piblspecularmap->m_pframebufferBrdfConvolution->m_ptexture;
    }
 
 

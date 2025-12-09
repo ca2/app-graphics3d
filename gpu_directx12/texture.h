@@ -138,8 +138,8 @@ namespace gpu_directx12
       texture();
       ~texture() override;
 
-
-      void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangle, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype) override;
+      void create_image(const ::pointer_array < ::image::image > * pimagea);
+      //void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangle, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype) override;
 
       void _new_state(ID3D12GraphicsCommandList* pcommandlist, D3D12_RESOURCE_STATES estate);
 

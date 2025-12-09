@@ -570,7 +570,7 @@ namespace gpu_vulkan
 
          bool bWithDepth = false;
 
-         pgputexture->initialize_image_texture(m_pgpucontext->m_pgpurenderer, rectangleTarget, bWithDepth);
+         pgputexture->initialize_texture(m_pgpucontext->m_pgpurenderer, rectangleTarget, bWithDepth);
 
          ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
 

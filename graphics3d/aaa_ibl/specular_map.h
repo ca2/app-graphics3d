@@ -61,11 +61,11 @@ namespace gpu
          ~specular_map() override;
 
 
-         virtual ::block embedded_prefiltered_env_map_vert();
-         virtual ::block embedded_prefiltered_env_map_frag();
+         virtual ::block prefiltered_environment_map_vert_memory();
+         virtual ::block prefiltered_environment_map_frag_memory();
 
-         virtual ::block embedded_brdf_convolution_vert();
-         virtual ::block embedded_brdf_convolution_frag();
+         virtual ::block brdf_convolution_vert_memory();
+         virtual ::block brdf_convolution_frag_memory();
 
 
          //virtual void initialize_specular_map(::gpu::context  * pgpucontext,  const ::scoped_string & scopedstrengineRoot, const unsigned int environmentCubemapId);

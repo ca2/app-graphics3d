@@ -38,7 +38,7 @@ namespace gpu
 
 
 
-      ::block specular_map::embedded_prefiltered_env_map_vert()
+      ::block specular_map::prefiltered_environment_map_vert_memory()
       {
 
          return {};
@@ -46,14 +46,14 @@ namespace gpu
       }
 
 
-      ::block specular_map::embedded_prefiltered_env_map_frag()
+      ::block specular_map::prefiltered_environment_map_frag_memory()
       {
 
 return {};
 
       }
 
-      ::block specular_map::embedded_brdf_convolution_vert()
+      ::block specular_map::brdf_convolution_vert_memory()
       {
 
 return {};
@@ -61,7 +61,7 @@ return {};
       }
 
 
-      ::block specular_map::embedded_brdf_convolution_frag()
+      ::block specular_map::brdf_convolution_frag_memory()
       {
 
 return {};
@@ -92,8 +92,8 @@ return {};
 
          m_pshaderPrefilteredEnvMap->initialize_shader_with_block(
             pgpucontext->m_pgpurenderer,
-            embedded_prefiltered_env_map_vert(),
-            embedded_prefiltered_env_map_frag());
+            prefiltered_environment_map_vert_memory(),
+            prefiltered_environment_map_frag_memory());
 
 
          øconstruct(m_pframebufferPrefilteredEnvMap);
@@ -108,8 +108,8 @@ return {};
 
          m_pshaderBrdfConvolution->initialize_shader_with_block(
             pgpucontext->m_pgpurenderer,
-            embedded_brdf_convolution_vert(),
-            embedded_brdf_convolution_frag());
+            brdf_convolution_vert_memory(),
+            brdf_convolution_frag_memory());
 
          øconstruct(m_pbrdfconvolutionframebuffer);
 

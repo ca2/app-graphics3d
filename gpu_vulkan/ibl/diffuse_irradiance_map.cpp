@@ -475,9 +475,9 @@ namespace gpu_vulkan
          auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
          information("Generating irradiance cube took {} ms", tDiff);
 
-         ødefer_construct_new(m_pdiffuseIrradianceFramebuffer);
+         ødefer_construct_new(m_pframebufferDiffuseIrradiance);
 
-         m_pdiffuseIrradianceFramebuffer->m_ptexture = pgputextureIrradianceCubeNew;
+         m_pframebufferDiffuseIrradiance->m_ptexture = pgputextureIrradianceCubeNew;
 
          //return pgputextureIrradianceCubeNew;
       }

@@ -43,7 +43,7 @@ namespace gpu_vulkan
       specular_map::~specular_map() {}
 
 
-      ::block specular_map::embedded_prefiltered_env_map_vert()
+      ::memory specular_map::prefiltered_environment_map_vert_memory()
       {
          static unsigned int g_uaPrefilteredEnvMapVertexShader[] = {
 #include "ibl/shader/filtered_cube.vert.spv.inl"
@@ -52,7 +52,7 @@ namespace gpu_vulkan
       }
 
 
-      ::block specular_map::embedded_prefiltered_env_map_frag()
+      ::memory specular_map::prefiltered_environment_map_frag_memory()
       {
 
          static unsigned int g_uaPrefilteredEnvMapFragmentShader[] = {
@@ -62,7 +62,7 @@ namespace gpu_vulkan
       }
 
       
-      ::block specular_map::embedded_brdf_convolution_vert()
+      ::memory specular_map::brdf_convolution_vert_memory()
       {
          static unsigned int g_uaBrdfConvolutionVertexShader[] = {
 #include "ibl/shader/brdfconvolution.vert.spv.inl"
@@ -71,7 +71,7 @@ namespace gpu_vulkan
       }
 
 
-      ::block specular_map::embedded_brdf_convolution_frag()
+      ::memory specular_map::brdf_convolution_frag_memory()
       {
 
          static unsigned int g_uaBrdfConvolutionFragmentShader[] = {
@@ -550,8 +550,8 @@ namespace gpu_vulkan
          // auto vert = file()->as_memory("matter://shaders/filtered_cube.vert");
          // auto frag = file()->as_memory("matter://shaders/prefiltered_env_map.frag");
 
-         auto vert = embedded_prefiltered_env_map_vert();
-         auto frag = embedded_prefiltered_env_map_frag();
+         auto vert = prefiltered_environment_map_vert_memory();
+         auto frag = prefiltered_environment_map_frag_memory();
 
          if (frag.is_empty())
          {
@@ -1053,9 +1053,9 @@ namespace gpu_vulkan
          auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
          information() << "Generating BRDF LUT took " << tDiff << " ms";
 
-         ødefer_construct_new(m_pbrdfconvolutionframebuffer);
+         ødefer_construct_new(m_pframebufferBrdfConvolution);
 
-         m_pbrdfconvolutionframebuffer->m_ptexture = pgputextureLutBrdfNew;
+         m_pframebufferBrdfConvolution->m_ptexture = pgputextureLutBrdfNew;
 
       }
 

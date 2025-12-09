@@ -5,8 +5,12 @@ project(graphics3d_directx11 CXX)
 list(APPEND library_source
    render_systems/gltf_render_system.cpp
    render_systems/gltf_render_system.h
+   render_systems/skybox_render_system.cpp
+   render_systems/skybox_render_system.h
    render_systems/scene_render_system.cpp
    render_systems/scene_render_system.h
+   render_systems/wavefront_obj_render_system.cpp
+   render_systems/wavefront_obj_render_system.h
         _.cpp
         _.h
         _directx11.h

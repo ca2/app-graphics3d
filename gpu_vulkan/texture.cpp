@@ -213,7 +213,7 @@ namespace gpu_vulkan
    }
 
 
-   void texture::create_image()
+   void texture::create_texture(const ::pointer_array < ::image::image > *pimagea)
    {
 
       ASSERT(!(m_etype & ::gpu::texture::e_type_depth));
@@ -319,32 +319,32 @@ namespace gpu_vulkan
    }
 
 
-   void texture::initialize_image_texture(::gpu::renderer *prenderer, const ::int_rectangle &rectangleTarget,
-                                          bool bWithDepth, const ::pointer_array<::image::image> &imagea,
-                                          enum_type etype)
-   {
-
-      auto currentSize = m_rectangleTarget.size();
-
-      if (!m_vkimage || currentSize != rectangleTarget.size() && m_pgpurenderer != prenderer)
-      {
-
-         ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, imagea, etype);
-
-         create_image();
-
-      }
-
-      if (imagea.has_element())
-      {
-
-         if (m_etype == e_type_cube_map)
-         {
-
-            _LoadCubeMap(imagea);
-         }
-      }
-   }
+   // void texture::initialize_image_texture(::gpu::renderer *prenderer, const ::int_rectangle &rectangleTarget,
+   //                                        bool bWithDepth, const ::pointer_array<::image::image> &imagea,
+   //                                        enum_type etype)
+   // {
+   //
+   //    auto currentSize = m_rectangleTarget.size();
+   //
+   //    if (!m_vkimage || currentSize != rectangleTarget.size() && m_pgpurenderer != prenderer)
+   //    {
+   //
+   //       ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, imagea, etype);
+   //
+   //       create_image();
+   //
+   //    }
+   //
+   //    if (imagea.has_element())
+   //    {
+   //
+   //       if (m_etype == e_type_cube_map)
+   //       {
+   //
+   //          _LoadCubeMap(imagea);
+   //       }
+   //    }
+   // }
 
 
    //void texture::initialize_cubemap_image_texture_with_mipmap(::gpu::renderer *pgpurenderer,
@@ -2896,8 +2896,11 @@ void texture::create_sampler()
 //      vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
 //#pragma endregion
 //   }
-   void texture::initialize_image_texture(::gpu::renderer *pgpurenderer, const ::file::path &pathImage, bool isSrgb)
+
+
+   void texture::initialize_texture_from_file_path(::gpu::renderer *pgpurenderer, const ::file::path &pathImage, bool isSrgb)
    {
+
       this->m_pgpurenderer = pgpurenderer;
 
       if (pathImage.case_insensitive_ends(".ktx"))

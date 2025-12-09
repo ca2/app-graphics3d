@@ -758,7 +758,7 @@ namespace gpu_vulkan
       ptexture->m_bTransferDst = true;
       ptexture->m_bCpuRead = true;
 
-      ptexture->initialize_image_texture(m_pcontext->get_gpu_renderer(),
+      ptexture->initialize_texture(m_pcontext->get_gpu_renderer(),
          ::int_rectangle(size),
          m_prenderer->m_pgpurendertarget->m_bWithDepth);
 

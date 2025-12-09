@@ -848,7 +848,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                ::cast<::gpu_directx11::ibl::specular_map> pspecularmap = pscene->m_piblspecularmap;
 
                ::cast<::gpu_directx11::texture> ptextureIrradiance =
-                  pirradiancemap->m_pdiffuseIrradianceFramebuffer->m_ptexture;
+                  pirradiancemap->m_pframebufferDiffuseIrradiance->m_ptexture;
 
                ID3D11SamplerState *sampler = nullptr;
                ID3D11ShaderResourceView *srv[3] = {};
@@ -897,7 +897,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
                }
 
-               ::cast<::gpu_directx11::texture> ptextureBrdf = pspecularmap->m_pbrdfconvolutionframebuffer->m_ptexture;
+               ::cast<::gpu_directx11::texture> ptextureBrdf = pspecularmap->m_pframebufferBrdfConvolution->m_ptexture;
 
                if (ptextureBrdf)
                {

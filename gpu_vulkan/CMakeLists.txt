@@ -18,8 +18,8 @@ list(APPEND library_source
    ibl/diffuse_irradiance_map.h
    ibl/equirectangular_cubemap.cpp
    ibl/equirectangular_cubemap.h
-   ibl/hdri_cube.cpp
-   ibl/hdri_cube.h
+   #ibl/hdri_cube.cpp
+   #ibl/hdri_cube.h
    ibl/specular_map.cpp
    ibl/specular_map.h
         _.cpp
@@ -44,8 +44,8 @@ list(APPEND library_source
         cpu_buffer.h
         context.cpp
         context.h
-   cube.cpp
-   cube.h
+   #cube.cpp
+   #cube.h
         debug.cpp
         debug.h
         descriptors.cpp

@@ -30,245 +30,472 @@ namespace gpu_directx12
    }
 
 
-   void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype)
+   void texture::create_image(const ::pointer_array < ::image::image > *pimagea)
    {
 
-      auto size = m_rectangleTarget.size();
-
-      if (rectangleTarget != m_rectangleTarget)
+      DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
+      // 1. Create the texture resource
+      D3D12_RESOURCE_DESC textureDesc = {};
+      textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+      textureDesc.Width = m_rectangleTarget.width();
+      textureDesc.Height = m_rectangleTarget.height();
+      if (m_etype == e_type_cube_map)
       {
+         if (textureDesc.Width != textureDesc.Height)
+         {
 
-         ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, imagea, etype);
+            throw ::exception(error_wrong_state);
+
+         }
+         textureDesc.DepthOrArraySize = 6;
+      }
+      else
+      {
+         textureDesc.DepthOrArraySize = 1;
 
       }
 
-      if (rectangleTarget.size() != size)
+      textureDesc.MipLevels = 1;
+      //textureDesc.DepthOrArraySize = 1;
+      textureDesc.Format = format;
+      textureDesc.SampleDesc.Count = 1;
+      textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+
+      if (m_bRenderTarget)
       {
 
-         DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
-         // 1. Create the texture resource
-         D3D12_RESOURCE_DESC textureDesc = {};
+         textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+      }
+
+      D3D12_CLEAR_VALUE* pclearvalue = nullptr;
+
+      D3D12_CLEAR_VALUE clearValue = {};
+
+      if (m_bRenderTarget)
+      {
+
+         pclearvalue = &clearValue;
+
+         clearValue.Format = format;
+         //clearValue.Color[0] = 0.5f * 0.5f;
+         //clearValue.Color[1] = 0.75f * 0.5f;
+         //clearValue.Color[2] = 0.9f * 0.5f;
+         //clearValue.Color[3] = 0.5f;
+         clearValue.Color[0] = 0.f * 0.5f;
+         clearValue.Color[1] = 0.f * 0.5f;
+         clearValue.Color[2] = 0. * 0.5f;
+         clearValue.Color[3] = 0.f;
+
+      }
+
+      //clearValue.Color = { 0.5f, 0.75f, 0.9f, 0.5f };
+
+      ::cast < ::gpu_directx12::device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+
+      CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
+
+      D3D12_HEAP_FLAGS eheap;
+
+      if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+      {
+
+         eheap = D3D12_HEAP_FLAG_NONE;
+
          textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-         textureDesc.Width = rectangleTarget.width();
-         textureDesc.Height = rectangleTarget.height();
-         if (m_etype == e_type_cube_map)
-         {
-            if (textureDesc.Width != textureDesc.Height)
-            {
-
-               throw ::exception(error_wrong_state);
-
-            }
-            textureDesc.DepthOrArraySize = 6;
-         }
-         else
-         {
-            textureDesc.DepthOrArraySize = 1;
-
-         }
-
+         //textureDesc.Width = width;
+         //textureDesc.Height = height;
+            //textureDesc.DepthOrArraySize = 1;
          textureDesc.MipLevels = 1;
-         //textureDesc.DepthOrArraySize = 1;
-         textureDesc.Format = format;
+         textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  // MUST be D3D11-compatible format
          textureDesc.SampleDesc.Count = 1;
          textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 
-         if (m_bRenderTarget)
+         m_bRenderTarget = false;
+
+         m_bShaderResource = false;
+
+      }
+      else
+      {
+
+         eheap = D3D12_HEAP_FLAG_NONE;
+
+      }
+
+      D3D12_RESOURCE_STATES stateInitial;
+
+      if (m_bRenderTarget)
+      {
+
+         stateInitial = D3D12_RESOURCE_STATE_RENDER_TARGET;
+
+      }
+      else
+      {
+
+         stateInitial = D3D12_RESOURCE_STATE_COPY_DEST;
+
+      }
+
+      HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+         &heapproperties,
+         eheap,
+         &textureDesc,
+         stateInitial,
+         pclearvalue,
+         __interface_of(m_presource));
+
+      pdevice->defer_throw_hresult(hrCreateCommittedResource);
+
+      m_estate = stateInitial;
+
+      if (::is_set(pimagea) && pimagea->has_element())
+      {
+
+         int iCount;
+
+
+         if (m_etype == e_type_cube_map)
          {
+            iCount = 6;
+            if (pimagea->first()->width() != m_rectangleTarget.width()
+               || pimagea->first()->height() != m_rectangleTarget.height())
+            {
 
-            textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+               throw ::exception(error_failed);
 
-         }
-
-         D3D12_CLEAR_VALUE* pclearvalue = nullptr;
-
-         D3D12_CLEAR_VALUE clearValue = {};
-
-         if (m_bRenderTarget)
-         {
-
-            pclearvalue = &clearValue;
-
-            clearValue.Format = format;
-            //clearValue.Color[0] = 0.5f * 0.5f;
-            //clearValue.Color[1] = 0.75f * 0.5f;
-            //clearValue.Color[2] = 0.9f * 0.5f;
-            //clearValue.Color[3] = 0.5f;
-            clearValue.Color[0] = 0.f * 0.5f;
-            clearValue.Color[1] = 0.f * 0.5f;
-            clearValue.Color[2] = 0. * 0.5f;
-            clearValue.Color[3] = 0.f;
-
-         }
-
-         //clearValue.Color = { 0.5f, 0.75f, 0.9f, 0.5f };
-
-         ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
-
-         CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
-
-         D3D12_HEAP_FLAGS eheap;
-
-         if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
-         {
-
-            eheap = D3D12_HEAP_FLAG_NONE;
-
-            textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-            //textureDesc.Width = width;
-            //textureDesc.Height = height;
-               //textureDesc.DepthOrArraySize = 1;
-            textureDesc.MipLevels = 1;
-            textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  // MUST be D3D11-compatible format
-            textureDesc.SampleDesc.Count = 1;
-            textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-
-            m_bRenderTarget = false;
-
-            m_bShaderResource = false;
+            }
 
          }
          else
          {
+            iCount = 1;
+            if (pimagea->first()->size() != m_rectangleTarget.size())
+            {
 
-            eheap = D3D12_HEAP_FLAG_NONE;
+               throw ::exception(error_failed);
+
+            }
 
          }
 
-         D3D12_RESOURCE_STATES stateInitial;
+         ::comptr<ID3D12Resource> presourceUpload;
 
-         if (m_bRenderTarget)
+         const UINT64 presourceUploadBufferSize = GetRequiredIntermediateSize(m_presource, 0, iCount);
+
+         CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
+
+         auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(presourceUploadBufferSize);
+
+         pdevice->m_pdevice->CreateCommittedResource(
+            &propertiesUpload,
+            D3D12_HEAP_FLAG_NONE,
+            &descUpload,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            __interface_of(presourceUpload));
+
+
+         // 3. Prepare subresources
+         D3D12_SUBRESOURCE_DATA subresources[6];
+         if (m_etype == e_type_cube_map)
          {
-
-            stateInitial = D3D12_RESOURCE_STATE_RENDER_TARGET;
-
+            for (int i = 0; i < 6; ++i) {
+               auto ppixmap = (*pimagea)[i];
+               subresources[i].pData = ppixmap->data(); // Your CPU data pointer
+               subresources[i].RowPitch = ppixmap->m_iScan;  // 512 * 4
+               subresources[i].SlicePitch = textureDesc.Width * textureDesc.Height * 4;
+               //subresources[i].SlicePitch = 0;
+            }
          }
          else
          {
-
-            stateInitial = D3D12_RESOURCE_STATE_COPY_DEST;
-
+            auto ppixmap = pimagea->first();
+            subresources[0].pData = ppixmap->data();            // pointer to your bitmap data (RGBA8, etc.)
+            subresources[0].RowPitch = ppixmap->m_iScan;
+            subresources[0].SlicePitch = subresources[0].RowPitch * ppixmap->height();
          }
 
-         HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
-            &heapproperties,
-            eheap,
-            &textureDesc,
-            stateInitial,
-            pclearvalue,
-            __interface_of(m_presource));
+         ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
 
-         pdevice->defer_throw_hresult(hrCreateCommittedResource);
-
-         m_estate = stateInitial;
-
-         if (imagea.has_element())
+         if (!pcommandbuffer)
          {
 
-            int iCount;
-
-
-            if (m_etype == e_type_cube_map)
-            {
-               iCount = 6;
-               if (imagea.first()->width() != rectangleTarget.width()
-                  || imagea.first()->height() != rectangleTarget.height())
-               {
-
-                  throw ::exception(error_failed);
-
-               }
-
-            }
-            else
-            {
-               iCount = 1;
-               if (imagea.first()->size() != rectangleTarget.size())
-               {
-
-                  throw ::exception(error_failed);
-
-               }
-
-            }
-
-            ::comptr<ID3D12Resource> presourceUpload;
-
-            const UINT64 presourceUploadBufferSize = GetRequiredIntermediateSize(m_presource, 0, iCount);
-
-            CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
-
-            auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(presourceUploadBufferSize);
-
-            pdevice->m_pdevice->CreateCommittedResource(
-               &propertiesUpload,
-               D3D12_HEAP_FLAG_NONE,
-               &descUpload,
-               D3D12_RESOURCE_STATE_GENERIC_READ,
-               nullptr,
-               __interface_of(presourceUpload));
-
-
-            // 3. Prepare subresources
-            D3D12_SUBRESOURCE_DATA subresources[6];
-            if (m_etype == e_type_cube_map)
-            {
-               for (int i = 0; i < 6; ++i) {
-                  auto ppixmap = imagea[i];
-                  subresources[i].pData = ppixmap->data(); // Your CPU data pointer
-                  subresources[i].RowPitch = ppixmap->m_iScan;  // 512 * 4
-                  subresources[i].SlicePitch = textureDesc.Width * textureDesc.Height * 4;
-                  //subresources[i].SlicePitch = 0;
-               }
-            }
-            else
-            {
-               auto ppixmap = imagea.first();
-               subresources[0].pData = ppixmap->data();            // pointer to your bitmap data (RGBA8, etc.)
-               subresources[0].RowPitch = ppixmap->m_iScan;
-               subresources[0].SlicePitch = subresources[0].RowPitch * ppixmap->height();
-            }
-
-            ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
-
-            if (!pcommandbuffer)
-            {
-
-               pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
-
-            }
-
-            UpdateSubresources(
-               pcommandbuffer->m_pcommandlist,
-               m_presource,
-               presourceUpload, 0, 0, iCount,
-               subresources);
-
-            comptr < IUnknown > punknownResourceUpdate(presourceUpload);
-
-            pcommandbuffer->m_comptraHold.add(punknownResourceUpdate);
+            pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
          }
 
-         new_texture.set_new_texture();
+         UpdateSubresources(
+            pcommandbuffer->m_pcommandlist,
+            m_presource,
+            presourceUpload, 0, 0, iCount,
+            subresources);
 
-         if (m_bRenderTarget || m_pheapRenderTargetView)
-         {
+         comptr < IUnknown > punknownResourceUpdate(presourceUpload);
 
-            create_render_target();
+         pcommandbuffer->m_comptraHold.add(punknownResourceUpdate);
 
-         }
+      }
 
-         if (m_bShaderResource || m_pheapRenderTargetView)
-         {
+      new_texture.set_new_texture();
 
-            create_shader_resource();
+      if (m_bRenderTarget || m_pheapRenderTargetView)
+      {
 
-         }
+         create_render_target();
+
+      }
+
+      if (m_bShaderResource || m_pheapRenderTargetView)
+      {
+
+         create_shader_resource();
 
       }
 
    }
+
+
+   // void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype)
+   // {
+   //
+   //    auto size = m_rectangleTarget.size();
+   //
+   //    if (rectangleTarget != m_rectangleTarget)
+   //    {
+   //
+   //       ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, imagea, etype);
+   //
+   //    }
+   //
+   //    if (rectangleTarget.size() != size)
+   //    {
+   //
+   //       DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
+   //       // 1. Create the texture resource
+   //       D3D12_RESOURCE_DESC textureDesc = {};
+   //       textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+   //       textureDesc.Width = rectangleTarget.width();
+   //       textureDesc.Height = rectangleTarget.height();
+   //       if (m_etype == e_type_cube_map)
+   //       {
+   //          if (textureDesc.Width != textureDesc.Height)
+   //          {
+   //
+   //             throw ::exception(error_wrong_state);
+   //
+   //          }
+   //          textureDesc.DepthOrArraySize = 6;
+   //       }
+   //       else
+   //       {
+   //          textureDesc.DepthOrArraySize = 1;
+   //
+   //       }
+   //
+   //       textureDesc.MipLevels = 1;
+   //       //textureDesc.DepthOrArraySize = 1;
+   //       textureDesc.Format = format;
+   //       textureDesc.SampleDesc.Count = 1;
+   //       textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+   //
+   //       if (m_bRenderTarget)
+   //       {
+   //
+   //          textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+   //
+   //       }
+   //
+   //       D3D12_CLEAR_VALUE* pclearvalue = nullptr;
+   //
+   //       D3D12_CLEAR_VALUE clearValue = {};
+   //
+   //       if (m_bRenderTarget)
+   //       {
+   //
+   //          pclearvalue = &clearValue;
+   //
+   //          clearValue.Format = format;
+   //          //clearValue.Color[0] = 0.5f * 0.5f;
+   //          //clearValue.Color[1] = 0.75f * 0.5f;
+   //          //clearValue.Color[2] = 0.9f * 0.5f;
+   //          //clearValue.Color[3] = 0.5f;
+   //          clearValue.Color[0] = 0.f * 0.5f;
+   //          clearValue.Color[1] = 0.f * 0.5f;
+   //          clearValue.Color[2] = 0. * 0.5f;
+   //          clearValue.Color[3] = 0.f;
+   //
+   //       }
+   //
+   //       //clearValue.Color = { 0.5f, 0.75f, 0.9f, 0.5f };
+   //
+   //       ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+   //
+   //       CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
+   //
+   //       D3D12_HEAP_FLAGS eheap;
+   //
+   //       if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+   //       {
+   //
+   //          eheap = D3D12_HEAP_FLAG_NONE;
+   //
+   //          textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+   //          //textureDesc.Width = width;
+   //          //textureDesc.Height = height;
+   //             //textureDesc.DepthOrArraySize = 1;
+   //          textureDesc.MipLevels = 1;
+   //          textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  // MUST be D3D11-compatible format
+   //          textureDesc.SampleDesc.Count = 1;
+   //          textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+   //
+   //          m_bRenderTarget = false;
+   //
+   //          m_bShaderResource = false;
+   //
+   //       }
+   //       else
+   //       {
+   //
+   //          eheap = D3D12_HEAP_FLAG_NONE;
+   //
+   //       }
+   //
+   //       D3D12_RESOURCE_STATES stateInitial;
+   //
+   //       if (m_bRenderTarget)
+   //       {
+   //
+   //          stateInitial = D3D12_RESOURCE_STATE_RENDER_TARGET;
+   //
+   //       }
+   //       else
+   //       {
+   //
+   //          stateInitial = D3D12_RESOURCE_STATE_COPY_DEST;
+   //
+   //       }
+   //
+   //       HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+   //          &heapproperties,
+   //          eheap,
+   //          &textureDesc,
+   //          stateInitial,
+   //          pclearvalue,
+   //          __interface_of(m_presource));
+   //
+   //       pdevice->defer_throw_hresult(hrCreateCommittedResource);
+   //
+   //       m_estate = stateInitial;
+   //
+   //       if (imagea.has_element())
+   //       {
+   //
+   //          int iCount;
+   //
+   //
+   //          if (m_etype == e_type_cube_map)
+   //          {
+   //             iCount = 6;
+   //             if (imagea.first()->width() != rectangleTarget.width()
+   //                || imagea.first()->height() != rectangleTarget.height())
+   //             {
+   //
+   //                throw ::exception(error_failed);
+   //
+   //             }
+   //
+   //          }
+   //          else
+   //          {
+   //             iCount = 1;
+   //             if (imagea.first()->size() != rectangleTarget.size())
+   //             {
+   //
+   //                throw ::exception(error_failed);
+   //
+   //             }
+   //
+   //          }
+   //
+   //          ::comptr<ID3D12Resource> presourceUpload;
+   //
+   //          const UINT64 presourceUploadBufferSize = GetRequiredIntermediateSize(m_presource, 0, iCount);
+   //
+   //          CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
+   //
+   //          auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(presourceUploadBufferSize);
+   //
+   //          pdevice->m_pdevice->CreateCommittedResource(
+   //             &propertiesUpload,
+   //             D3D12_HEAP_FLAG_NONE,
+   //             &descUpload,
+   //             D3D12_RESOURCE_STATE_GENERIC_READ,
+   //             nullptr,
+   //             __interface_of(presourceUpload));
+   //
+   //
+   //          // 3. Prepare subresources
+   //          D3D12_SUBRESOURCE_DATA subresources[6];
+   //          if (m_etype == e_type_cube_map)
+   //          {
+   //             for (int i = 0; i < 6; ++i) {
+   //                auto ppixmap = imagea[i];
+   //                subresources[i].pData = ppixmap->data(); // Your CPU data pointer
+   //                subresources[i].RowPitch = ppixmap->m_iScan;  // 512 * 4
+   //                subresources[i].SlicePitch = textureDesc.Width * textureDesc.Height * 4;
+   //                //subresources[i].SlicePitch = 0;
+   //             }
+   //          }
+   //          else
+   //          {
+   //             auto ppixmap = imagea.first();
+   //             subresources[0].pData = ppixmap->data();            // pointer to your bitmap data (RGBA8, etc.)
+   //             subresources[0].RowPitch = ppixmap->m_iScan;
+   //             subresources[0].SlicePitch = subresources[0].RowPitch * ppixmap->height();
+   //          }
+   //
+   //          ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
+   //
+   //          if (!pcommandbuffer)
+   //          {
+   //
+   //             pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+   //
+   //          }
+   //
+   //          UpdateSubresources(
+   //             pcommandbuffer->m_pcommandlist,
+   //             m_presource,
+   //             presourceUpload, 0, 0, iCount,
+   //             subresources);
+   //
+   //          comptr < IUnknown > punknownResourceUpdate(presourceUpload);
+   //
+   //          pcommandbuffer->m_comptraHold.add(punknownResourceUpdate);
+   //
+   //       }
+   //
+   //       new_texture.set_new_texture();
+   //
+   //       if (m_bRenderTarget || m_pheapRenderTargetView)
+   //       {
+   //
+   //          create_render_target();
+   //
+   //       }
+   //
+   //       if (m_bShaderResource || m_pheapRenderTargetView)
+   //       {
+   //
+   //          create_shader_resource();
+   //
+   //       }
+   //
+   //    }
+   //
+   // }
 
 
    void texture::_new_state(ID3D12GraphicsCommandList* pcommandlist, D3D12_RESOURCE_STATES estateNew)

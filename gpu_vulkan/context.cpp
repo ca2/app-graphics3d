@@ -5974,6 +5974,8 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
       return nullptr;
    }
 }
+
+
 void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::file::path &path,
                                    int iAssimpTextureType)
 {
@@ -5981,7 +5983,7 @@ void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::
    if (ødefer_construct(ptexture))
    {
    
-       ptexture->initialize_image_texture(m_pgpurenderer, path, false);
+       ptexture->initialize_texture_from_file_path(m_pgpurenderer, path, false);
    
     }
 
