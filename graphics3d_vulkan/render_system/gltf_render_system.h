@@ -63,8 +63,8 @@ namespace graphics3d_vulkan
 
       void on_prepare(::gpu::context *pgpucontext) override;
 
-      virtual ::block embedded_pbr_vert();
-      virtual ::block embedded_pbr_frag();
+      virtual ::memory gltf_vert_memory() override;
+      virtual ::memory gltf_frag_memory() override;
 
 
       void on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene) override;

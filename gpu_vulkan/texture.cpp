@@ -1,5 +1,6 @@
 // Created by camilo on 2025-06-08 18:14 < 3ThomasBorregaardSørensen!!
 #include "framework.h"
+#include "binding.h"
 #include "texture.h"
 #include "buffer.h"
 #include "command_buffer.h"
@@ -1134,7 +1135,7 @@ namespace gpu_vulkan
    }
 
 
-   VkDescriptorSet texture::descriptor_set(::gpu_vulkan::shader *pshader)
+   VkDescriptorSet texture::descriptor_set(::gpu_vulkan::shader *pshader, ::gpu::command_buffer *pgpucommandbuffer)
    {
 
       auto &shader = m_mapShader[pshader];
@@ -1155,13 +1156,13 @@ namespace gpu_vulkan
 
       unsigned int uSamplerBinding = 0;
 
-      auto pbinding = pshader->get_first_image_sampler_binding();
+      auto pgpubindingset = pshader->get_first_image_sampler_binding_set();
 
-      int iSet = pbinding->m_iSet;
+      ::cast<::gpu_vulkan::binding_set> pbindingset = pgpubindingset.m_pbindingset;
 
-      auto &playout = pshader->m_descriptorsetlayouta[iSet];
+      auto playout = pbindingset->descriptor_set_layout(pgpucommandbuffer);
 
-      auto &ppool = pshader->m_descriptorpoola[iSet];
+      auto ppool = pbindingset->m_pdescriptorpool;
 
       // if (pshader->m_bindingSampler.is_set())
       //   uSamplerBinding = pshader->m_bindingSampler.m_uBinding;

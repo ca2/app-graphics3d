@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "binding.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "physical_device.h"
@@ -964,9 +965,9 @@ namespace gpu_vulkan
 
          //m_pshaderPresent->m_bindingSampler.set();
 
-         auto &bindingSampler = m_pshaderPresent->binding();
+         auto bindingSampler = m_pshaderPresent->binding();
 
-         bindingSampler.m_ebinding = ::gpu::e_binding_sampler2d;
+         bindingSampler.m_pbinding->m_ebinding = ::gpu::e_binding_sampler2d;
 
          m_pshaderPresent->m_bDisableDepthTest = true;
 

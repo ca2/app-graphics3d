@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "accumulation_render_pass.h"
 #include "approach.h"
+#include "binding.h"
 #include "command_buffer.h"
 #include "descriptors.h"
 #include "frame.h"
@@ -1990,8 +1991,8 @@ namespace gpu_vulkan
          m_pshaderImageBlend->m_bEnableBlend = true;
          m_pshaderImageBlend->m_bDisableDepthTest = true;
 
-         auto &bindingSampler = m_pshaderImageBlend->binding();
-         //m_pshaderImageBlend->m_bindingSampler.set();
+         auto pbindingSampler = m_pshaderImageBlend->binding();
+         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
 
          ::cast < device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
@@ -2038,7 +2039,9 @@ namespace gpu_vulkan
             this,
             as_memory_block(g_uaImageBlendVertexShader),
             as_memory_block(g_uaImageBlendFragmentShader),
-            { ::gpu::shader::e_descriptor_set_slot_local }, pshader->m_descriptorsetlayouta[0],
+            { ::gpu::shader::e_descriptor_set_slot_local }, 
+            {},
+            //pshader->m_descriptorsetlayouta[0],
             m_pgpucontext->input_layout<::graphics3d::sequence2_uv>()
          );
 
@@ -2463,9 +2466,9 @@ namespace gpu_vulkan
          m_pgpucontext->øconstruct(m_pshaderCopyImage);
 
          m_pshaderCopyImage->m_pgpurenderer = this;
-         auto &bindingSampler = m_pshaderCopyImage->binding();
+         auto pbindingSampler = m_pshaderCopyImage->binding();
 
-         bindingSampler.m_ebinding = ::gpu::e_binding_sampler2d;
+         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
          // Image Blend descriptors
 //if (!m_psetdescriptorlayoutImageBlend)
          //{
@@ -4861,8 +4864,8 @@ namespace gpu_vulkan
 
          m_pshaderBlend2->m_pgpurenderer = this;
          //m_pshaderBlend2->m_bindingSampler.set();
-         auto & bindingSampler = m_pshaderBlend2->binding();
-         bindingSampler.m_ebinding = ::gpu::e_binding_sampler2d;
+         auto pbindingSampler = m_pshaderBlend2->binding();
+         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
          // Image Blend descriptors
 //if (!m_psetdescriptorlayoutImageBlend)
          //{

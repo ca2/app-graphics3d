@@ -1,5 +1,6 @@
 #include "framework.h"
 #include "approach.h"
+#include "binding.h"
 #include "command_buffer.h"
 #include "frame.h"
 #include "program.h"
@@ -76,6 +77,9 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
    pfactory->add_factory_item<::gpu::full_screen_quad>();
    //pfactory->add_factory_item<::gpu_vulkan::ibl::hdri_cube, ::gpu::ibl::hdri_cube>();
    //pfactory->add_factory_item<::gpu_vulkan::cube, ::gpu::cube>();
+
+   pfactory->add_factory_item<::gpu_vulkan::binding, ::gpu::binding>();
+   pfactory->add_factory_item<::gpu_vulkan::binding_set, ::gpu::binding_set>();
    
 
 }

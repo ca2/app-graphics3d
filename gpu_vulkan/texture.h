@@ -260,7 +260,7 @@ namespace gpu_vulkan
       VkImageView get_depth_image_view();
 
 
-      VkDescriptorSet descriptor_set(::gpu_vulkan::shader* pshader);
+      VkDescriptorSet descriptor_set(::gpu_vulkan::shader* pshader, ::gpu::command_buffer * pgpucommandbuffer);
 
 
       virtual ::gpu_vulkan::render_pass * get_render_pass();

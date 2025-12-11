@@ -2,6 +2,8 @@
 #pragma once
 
 
+#include "descriptors.h"
+#include "acme/prototype/prototype/pointer.h"
 #include "bred/gpu/binding.h"
 
 
@@ -18,6 +20,16 @@ namespace gpu_vulkan
    class binding_set : virtual public ::gpu::binding_set
    {
    public:
+
+      
+      ::pointer < ::gpu_vulkan::descriptor_set_layout > m_pdescriptorsetlayout1;
+      ::pointer <::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
+
+
+      virtual ::gpu_vulkan::descriptor_set_layout *descriptor_set_layout(::gpu::command_buffer * pgpucommandbuffer);
+
+      virtual void create_descriptor_set_layout(::gpu::command_buffer *pgpucommandbuffer);
+
 
    };
 

@@ -2,6 +2,7 @@
 // Co-creating with V0idsEmbrace@Twitch with
 // camilo on 2025-05-19 04:59 <3ThomasBorregaardSorensen!!
 #include "approach.h"
+#include "binding.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/frame_storage.h"
 #include "command_buffer.h"
@@ -13,6 +14,7 @@
 #include "renderer.h"
 #include "shader.h"
 #include "texture.h"
+#include "bred/graphics3d/engine.h"
 
 
 namespace gpu_vulkan
@@ -126,7 +128,7 @@ namespace gpu_vulkan
    void shader::on_initialize_shader() {}
 
 
-   void shader::_create_pipeline(::gpu::texture *pgputextureTarget)
+   void shader::_create_pipeline(::gpu::texture *pgputextureTarget, ::gpu::command_buffer * pgpucommandbuffer)
    {
 
       ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
@@ -365,96 +367,41 @@ namespace gpu_vulkan
             //   auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
       //   pipelineconfiguration.descriptorSetLayouts.add(globalSetLayout);
 
-
+      ::pointer_array<::gpu_vulkan::descriptor_set_layout> descriptorsetlayouta;
+      ::pointer_array<::gpu_vulkan::descriptor_pool> descriptorpoola;
                   int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-      int iSetSeed = 0;
-      for (auto &pbindingset: m_bindingseta)
-      {
-         ødefer_construct_new(pbindingset);
+      if (m_pbindingseta)
+                  {
+                     int iSetSeed = 0;
+                     for (auto &pgpubindingset: *m_pbindingseta)
+                     {
+                        pgpubindingset.m_iSet = iSetSeed++;
 
-         pbindingset->m_iSet = iSetSeed++;
+                        if (pgpubindingset->first()->is_global_ubo())
+                        {
 
-         if (pbindingset->first()->is_global_ubo())
-         {
+                           //   auto globalSetLayout =
+                           //   pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+                           //   pipelineconfiguration.descriptorSetLayouts.add(globalSetLayout);
+                           auto pgpubindingsetGlobalUbo = pgpucontext->m_pengine->global_ubo1_binding_set();
 
-              //   auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-            //   pipelineconfiguration.descriptorSetLayouts.add(globalSetLayout);
-              auto pdescriptorsetlayout = pgpucontext->m_psetdescriptorlayoutGlobal;
-              pdescriptorsetlayout->m_iIndex = pbindingset->m_iSet;
+                           ::cast<::gpu_vulkan::binding_set> pbindingsetGlobalUbo = pgpubindingsetGlobalUbo;
 
-            m_descriptorsetlayouta.ø(pbindingset->m_iSet) = pdescriptorsetlayout;
-              continue;
-         }
+                           auto pdescriptorsetlayout = pbindingsetGlobalUbo->descriptor_set_layout(pgpucommandbuffer);
 
-         auto builder = ::gpu_vulkan::descriptor_set_layout::Builder(m_pgpurenderer->m_pgpucontext);
+                           descriptorsetlayouta.ø(pgpubindingset.m_iSet) =pdescriptorsetlayout;
+                           
+                           continue;
+                        }
 
-         for (auto &pbinding: *pbindingset)
-         {
-            auto flags = (VkShaderStageFlags)0;
+                        ::cast<::gpu_vulkan::binding_set> pbindingset = pgpubindingset.m_pbindingset;
 
-            if (!pbinding->m_bVertexShader && !pbinding->m_bFragmentShader)
-            {
-               if (pbinding->is_image_sampler())
-               {
-                  pbinding->m_bFragmentShader=true;
-               }
-               else
-               {
-                  pbinding->m_bVertexShader = true;
-                  pbinding->m_bFragmentShader = true;
-               }
-            }
+                        descriptorsetlayouta.ø(pgpubindingset.m_iSet) = pbindingset->descriptor_set_layout(pgpucommandbuffer);
 
-            if (pbinding->m_bVertexShader)
-            {
-
-               flags |= VK_SHADER_STAGE_VERTEX_BIT;
-
-            }
-
-            if (pbinding->m_bFragmentShader)
-            {
-
-               flags |= VK_SHADER_STAGE_FRAGMENT_BIT;
-
-            }
-
-            VkDescriptorType type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-
-            if (pbinding->is_image_sampler())
-            {
-
-               type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-            }
-
-            builder.addBinding(pbinding->m_iSlot, type, flags);
-
-         }
-
-         auto pdescriptorsetlayout = builder.build();
-
-         pdescriptorsetlayout->m_iIndex = pbindingset->m_iSet;
-
-         m_descriptorsetlayouta.ø(pdescriptorsetlayout->m_iIndex) = pdescriptorsetlayout;
-
-         auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
-
-         pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
-         pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
-         pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
-         pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
-
-         auto pdescriptorpool = pdescriptorpoolbuilder->build();
-
-         pdescriptorpool->m_iIndex = pbindingset->m_iSet;
-
-         m_descriptorpoola.ø(pdescriptorpool->m_iIndex)= pdescriptorpool;
-
-      }
-
-      
+                        descriptorpoola.ø(pgpubindingset.m_iSet) = pbindingset->m_pdescriptorsetlayout1;
+                     }
+                  }
 
       //      //m_psetdescriptorlayout =
       //      //   
@@ -608,17 +555,20 @@ namespace gpu_vulkan
          auto setLayout = pset->getDescriptorSetLayout();
 
          pipelineconfiguration.descriptorSetLayouts.add(setLayout);
+
       }
 
-      for(auto & pdescriptorsetlayout : m_descriptorsetlayouta)
+      int iSet = -1;
+
+      for(auto & pdescriptorsetlayout : descriptorsetlayouta)
       {
+
+         iSet++;
 
          if (pdescriptorsetlayout)
          {
 
             auto samplerSetLayout = pdescriptorsetlayout->getDescriptorSetLayout();
-
-            auto iSet = pdescriptorsetlayout->m_iIndex;
 
             pipelineconfiguration.descriptorSetLayouts.ø(iSet) = samplerSetLayout;
 
@@ -902,7 +852,7 @@ namespace gpu_vulkan
       if (!m_ppipeline)
       {
 
-         _create_pipeline(pgputexture);
+         _create_pipeline(pgputexture, pgpucommandbuffer);
       }
 
       m_ppipeline->bind(pcommandbuffer);
@@ -1498,10 +1448,10 @@ void shader::on_before_draw(::gpu::command_buffer * pgpucommandbuffer)
 
    ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-   for (auto &pbindingset: m_bindingseta)
+   for (auto &pbindingset: *m_pbindingseta)
    {
 
-      for (auto &pbinding: *pbindingset)
+      for (auto &pbinding: *pbindingset.m_pbindingset)
       {
 
          if (pbinding->is_global_ubo())
@@ -1522,12 +1472,12 @@ void shader::on_before_draw(::gpu::command_buffer * pgpucommandbuffer)
 
             ::cast<texture> ptexture = pbinding->m_ptexture;
 
-            auto vkdescriptorset = ptexture->descriptor_set(this);
+            auto vkdescriptorset = ptexture->descriptor_set(this, pgpucommandbuffer);
 
                vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer,
                                     VK_PIPELINE_BIND_POINT_GRAPHICS, // Bind point
                                     m_ppipeline->_pipeline_layout(), // Layout used when pipeline was created
-                                    pbinding->m_iSet, // First set (set = 0)
+                                    pbindingset.m_iSet, // First set (set = 0)
                                     1, // Descriptor set count
                                     &vkdescriptorset, // Pointer to descriptor set
                                     0, // Dynamic offset count
@@ -1703,7 +1653,7 @@ void shader::bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::textur
 
    auto pbinding = get_first_image_sampler_binding();
 
-   uSet = pbinding->m_iSet;
+   uSet = pbinding.m_iSet;
 
    pbinding->m_ptexture = ptexture;
 

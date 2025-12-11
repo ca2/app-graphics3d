@@ -816,6 +816,7 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
     <ClCompile Include="accumulation_render_pass.cpp" />
     <ClCompile Include="approach_win32.cpp" />
     <ClCompile Include="assimp.cpp" />
+    <ClCompile Include="binding.cpp" />
     <ClCompile Include="buffer.cpp" />
     <ClCompile Include="gltf\mesh.cpp" />
     <ClCompile Include="gltf\model.cpp" />

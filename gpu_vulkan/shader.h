@@ -91,8 +91,10 @@ namespace gpu_vulkan
       ::comparable_array<VkDynamicState> m_dynamicstateaEnable;
 
       //VkDescriptorSet   m_vkdescriptorset;
-      ::pointer_array <::gpu_vulkan::descriptor_set_layout>  m_descriptorsetlayouta;
-      ::pointer_array <::gpu_vulkan::descriptor_pool>       m_descriptorpoola;
+      //;
+      //;
+      //::pointer_array<::gpu_vulkan::descriptor_set_layout> m_descriptorsetlayouta;
+      //::pointer_array <::gpu_vulkan::descriptor_pool>       m_descriptorpoola;
 
 
 
@@ -154,7 +156,7 @@ namespace gpu_vulkan
 
       void on_initialize_shader() override;
 
-      virtual void _create_pipeline(::gpu::texture * pgputextureTarget);
+      virtual void _create_pipeline(::gpu::texture * pgputextureTarget, ::gpu::command_buffer * pgpucommandbuffer);
 
       void bind(::gpu::command_buffer *pgpucommandbuffer,::gpu::texture *pgputextureTarget,
                 ::gpu::texture *pgputextureSource) override;

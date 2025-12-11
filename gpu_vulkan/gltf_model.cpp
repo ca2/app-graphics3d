@@ -14,7 +14,11 @@
 // * If you are looking for a complete gltf implementation, check out https://github.com/SaschaWillems/Vulkan-gltf-PBR/
 // */
 #include "framework.h"
-
+#include "binding.h"
+#include "command_buffer.h"
+#include "context.h"
+#include "descriptors.h"
+#include "device.h"
 #include "gltf_model.h"
 #include <acme/constant/status.h>
 #include <acme/exception/exception.h>
@@ -32,7 +36,7 @@
 #include <bred/gpu/context.h>
 #include "bred/gpu/properties.h"
 #include "bred/gltf/vertex.h"
-#include <bred/gpu/texture.h>
+#include "bred/gpu/texture.h"
 #include <cassert>
 #include <cfloat>
 #include <cmath>
@@ -47,13 +51,10 @@
 #include "aura/graphics/image/context.h"
 #include "bred/gpu/render_target.h"
 #include "bred/gpu/renderer.h"
-#include "command_buffer.h"
-#include "context.h"
-#include "descriptors.h"
-#include "device.h"
 #include "gpu_vulkan/physical_device.h"
 #include "gpu_vulkan/queue.h"
 #include "gpu_vulkan/texture.h"
+#include "bred/graphics3d/engine.h"
 #include "vk_init.h"
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -1621,10 +1622,18 @@ namespace gpu_vulkan
             //	VK_CHECK_RESULT(vkCreateDescriptorSetLayout(pcontext->logicalDevice(), &descriptorLayoutCI, nullptr,
             //&descriptorSetLayoutUbo));
             //}
+            
             for (auto pnode: m_nodea)
             {
-               prepareNodeDescriptor(pnode, pcontext->m_psetdescriptorlayoutGlobal->m_vkdescriptorsetlayout);
+
+               ::cast < ::gpu_vulkan::binding_set > pbindingset = pcontext->m_pengine->global_ubo1_binding_set();
+               
+               auto pdescriptorsetlayout = pbindingset->descriptor_set_layout(pgpucommandbufferCopy);
+
+               prepareNodeDescriptor(pnode, pdescriptorsetlayout->m_vkdescriptorsetlayout);
+
             }
+
          }
 
          //// Descriptors for per-material images

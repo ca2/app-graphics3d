@@ -355,6 +355,9 @@
     <ClCompile Include="ibl\aaa_cubemap_framebuffer.cpp">
       <Filter>Source Files\ibl</Filter>
     </ClCompile>
+    <ClCompile Include="binding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="deployment.rc">

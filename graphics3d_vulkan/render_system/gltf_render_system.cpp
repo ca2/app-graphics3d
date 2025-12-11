@@ -48,7 +48,7 @@ namespace graphics3d_vulkan
    }
 
 
-   ::block gltf_render_system::embedded_pbr_vert()
+   ::memory gltf_render_system::gltf_vert_memory()
    {
 
       static unsigned int pvertexshader[] = {
@@ -60,7 +60,7 @@ namespace graphics3d_vulkan
    }
 
 
-   ::block gltf_render_system::embedded_pbr_frag()
+   ::memory gltf_render_system::gltf_frag_memory()
    {
 
       static unsigned int pfragmentshader[] = {

@@ -11,6 +11,7 @@
 #include "renderer.h"
 #include "shader.h"
 #include "texture.h"
+#include "bred/gpu/binding.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/types.h"
 #include "acme/operating_system/windows_common/com/hresult_exception.h"
@@ -183,7 +184,7 @@ namespace gpu_directx12
             //rootParameters[0].InitAsDescriptorTable(1, &ranges[i],
             //   D3D12_SHADER_VISIBILITY_ALL); //|              D3D12_SHADER_VISIBILITY_PIXEL);
 
-            if (m_bindingseta.has_global_ubo())
+            if (m_pbindingseta->has_global_ubo())
             {
 
                //ranges.øadd().Init(
@@ -247,11 +248,11 @@ namespace gpu_directx12
             if (has_image_sampler())
             {
 
-               auto pbinding = get_first_image_sampler_binding();
+               auto binding = get_first_image_sampler_binding();
 
                UINT ShaderRegister;
 
-               ShaderRegister = pbinding->m_iSlot;
+               ShaderRegister = binding.m_pbinding->m_iSlot;
 
                //if (m_bindingCubeSampler.is_set())
                //{

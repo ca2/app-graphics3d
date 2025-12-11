@@ -1,16 +1,6 @@
 #include "framework.h"
+#include "binding.h"
 #include "context.h"
-#include "acme/filesystem/filesystem/file_context.h"
-#include "acme/platform/application.h"
-#include "acme/prototype/mathematics/mathematics.h"
-#include "app-graphics3d/gpu_vulkan/descriptors.h"
-#include "approach.h"
-#include "aura/graphics/image/image.h"
-#include "bred/gpu/compositor.h"
-#include "bred/gpu/frame.h"
-#include "bred/gpu/layer.h"
-#include "bred/gpu/pixmap.h"
-#include "bred/gpu/types.h"
 #include "buffer.h"
 #include "command_buffer.h"
 #include "debug.h"
@@ -24,6 +14,19 @@
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
+#include "acme/filesystem/filesystem/file_context.h"
+#include "acme/platform/application.h"
+#include "acme/prototype/mathematics/mathematics.h"
+#include "app-graphics3d/gpu_vulkan/descriptors.h"
+#include "approach.h"
+#include "aura/graphics/image/image.h"
+#include "bred/gpu/compositor.h"
+#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
+#include "bred/gpu/pixmap.h"
+#include "bred/gpu/types.h"
+#include "bred/graphics3d/engine.h"
+
 //
 //   // Optional — depends on your conventions
 #include <chrono>
@@ -2884,7 +2887,19 @@ namespace gpu_vulkan
    //    vkDestroyFence(this->logicalDevice(), fence, nullptr);
    // }
 
-   ::gpu_vulkan::descriptor_pool *context::get_global_pool(int iFrameCount) { return m_pdescriptorpoolGlobal; }
+   ::gpu_vulkan::descriptor_pool *context::get_global_pool(int iFrameCount, ::gpu::command_buffer *pgpucommandbuffer)
+   {
+
+      ::cast<::gpu_vulkan::engine> pengine = m_pengine;
+
+      ::cast<::gpu_vulkan::binding_set> pbindingset = pengine->global_ubo1_binding_set();
+
+      ::cast<::gpu_vulkan::descriptor_set_layout> pdescriptorsetlayout =
+         pbindingset->descriptor_set_layout(pgpucommandbuffer);
+
+      return m_pdescriptorpoolGlobal; 
+   
+   }
 
 
    // bool context::hasStencilComponent(VkFormat format)
@@ -3162,9 +3177,9 @@ namespace gpu_vulkan
          // m_pshaderBlend3->m_pgpurenderer = this;
          //m_pshaderBlend3->m_bindingSampler.set();
          // 
-         auto &bindingSampler = m_pshaderBlend3->binding();
+         auto pbindingSampler = m_pshaderBlend3->binding();
 
-         bindingSampler.m_ebinding = ::gpu::e_binding_sampler2d;
+         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
          // Image Blend descriptors
          // if (!m_psetdescriptorlayoutImageBlend)
 

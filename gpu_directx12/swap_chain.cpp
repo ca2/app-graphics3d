@@ -7,7 +7,7 @@
 #include "swap_chain.h"
 #include "texture.h"
 #include "windowing_win32/window.h"
-
+#include "bred/gpu/binding.h"
 
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
@@ -153,8 +153,8 @@ namespace gpu_directx12
 
          øconstruct_new(m_pshaderPresent);
 
-         auto & bindingSampler = m_pshaderPresent->binding();
-         bindingSampler.m_ebinding = ::gpu::e_binding_sampler2d;
+         auto pbindingSampler = m_pshaderPresent->binding();
+         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
          m_pshaderPresent->m_bDisableDepthTest = true;
          const char* fullscreen_vertex_shader = R"shader(// fullscreen_vs.hlsl
       struct VSOut {

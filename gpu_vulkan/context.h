@@ -36,13 +36,13 @@ namespace gpu_vulkan
       VkCommandPool m_vkcommandpoolPresent;
 
 
-      ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGlobal;
-      ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGltfImage4;
-      ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutSceneGltfImage4;
-      ::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutIbl;
-      ::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
+      //::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGlobal;
+      //::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGltfImage4;
+      //::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutSceneGltfImage4;
+      //::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutIbl;
+      //::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
       ::pointer_array<::gpu_vulkan::memory_buffer>					m_uboBuffers;
-      ::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolGlobal;
+      //::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolGlobal;
 
 
       ::pointer <::gpu::shader>                m_pshaderBlend3;
@@ -203,7 +203,7 @@ namespace gpu_vulkan
             //descriptor_set_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
       virtual VkDescriptorSet getGlobalDescriptorSet(::gpu_vulkan::renderer* prenderer, ::collection::index iFrameIndex = -1);
 
-      ::gpu_vulkan::descriptor_pool* get_global_pool(int iFrameCount);
+      ::gpu_vulkan::descriptor_pool* get_global_pool(int iFrameCount, ::gpu::command_buffer * pgpucommandbuffer);
 
       //void transitionImageLayout(
       //   VkImage image,

@@ -2,6 +2,7 @@
 #include "acme/platform/application.h"
 #include "approach.h"
 #include "aura/graphics/image/image.h"
+#include "bred/gpu/binding.h"
 #include "bred/gpu/compositor.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/layer.h"
@@ -2113,9 +2114,10 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
          m_pshaderBlend3->m_bEnableBlend = true;
          //m_pshaderBlend3->m_bindingSampler.set(0);
-         auto &bindingSampler = m_pshaderBlend3->binding();
+         auto pbindingSampler = m_pshaderBlend3->binding();
 
-         bindingSampler.m_ebinding = ::gpu::e_binding_sampler2d;
+         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
+
          m_pshaderBlend3->m_bDisableDepthTest = true;
 
          m_pshaderBlend3->initialize_shader_with_block(
