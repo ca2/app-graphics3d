@@ -1,0 +1,241 @@
+// From application_object by camilo on 2025-05-17 01:10 <3ThomasBorregaardSorensen!!
+#include "../framework.h"
+#include "descriptors.h"
+#include "buffer.h"
+#include "../engine.h"
+#include "frame_info.h"
+#include "../input.h"
+#include "offscreen_render_pass.h"
+#include "renderer.h"
+#include "swap_chain_render_pass.h"
+#include "cube/application.h"
+#include "cube/camera.h"
+#include "bred/user/user/graphics3d.h"
+#include "cube/scene.h"
+#include "../system/basic_render_system.h"
+#include "../system/point_light_system.h"
+#include "acme/platform/application.h"
+#include "apex/database/client.h"
+#include "apex/database/stream.h"
+//#include "graphics3d/container.h"
+#include <chrono>
+
+
+namespace graphics3d_opengl
+{
+
+
+
+   engine::engine()
+   {
+
+
+   }
+
+
+   engine::~engine()
+   {
+
+
+   }
+
+
+   void engine::run()
+   {
+
+      auto papp = get_app();
+
+      øconstruct(m_pgpucontext);
+
+      m_pgpucontext->initialize_context(papp->m_pimpact);
+
+      øconstruct_new(m_prenderer);
+
+      m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontext);
+
+      auto pglobalpoolbuilder = øallocate descriptor_pool::Builder();
+
+      pglobalpoolbuilder->initialize_builder(m_pgpucontext);
+      pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
+      pglobalpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, render_pass::MAX_FRAMES_IN_FLIGHT);
+
+      m_pglobalpool = pglobalpoolbuilder->build();
+
+      //m_pglobalpool->initialize_pool(pgpucontext);
+
+      //= øallocate
+      //   descriptor_pool::Builder(pgpucontext)
+      //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
+      //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
+      //   .build();
+      m_pscene->on_load_scene();
+
+      //pgpucontext = øallocate context(m_popengldevice);
+
+      ::pointer_array<buffer> uboBuffers;
+
+      uboBuffers.set_size(render_pass::MAX_FRAMES_IN_FLIGHT);
+
+      ::cast < context > pgpucontext = m_pgpucontext;
+
+      for (int i = 0; i < uboBuffers.size(); i++)
+      {
+
+         uboBuffers[i] = øallocate buffer();
+
+         uboBuffers[i]->initialize_buffer(
+            pgpucontext,
+            sizeof(GlobalUbo),
+            1,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+         uboBuffers[i]->map();
+
+      }
+      auto globalSetLayout = descriptor_set_layout::Builder(pgpucontext)
+         .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
+         .build();
+
+
+      ::array<VkDescriptorSet> globalDescriptorSets(render_pass::MAX_FRAMES_IN_FLIGHT);
+
+      for (int i = 0; i < globalDescriptorSets.size(); i++)
+      {
+
+         auto bufferInfo = uboBuffers[i]->descriptorInfo();
+
+         descriptor_writer(*globalSetLayout, *m_pglobalpool)
+            .writeBuffer(0, &bufferInfo)
+            .build(globalDescriptorSets[i]);
+
+      }
+
+      SimpleRenderSystem simpleRenderSystem{
+          pgpucontext,
+          m_prenderer->getRenderPass(),
+          globalSetLayout->getDescriptorSetLayout() };
+
+      point_light_system pointLightSystem{
+          pgpucontext,
+          m_prenderer->getRenderPass(),
+          globalSetLayout->getDescriptorSetLayout()
+      };
+
+      //camera camera{ floating_sequence3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
+      //{ floating_sequence3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
+      auto camera = papp->get_default_camera();
+
+      //VkcCamera camera(floating_sequence3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
+
+      auto viewerObject = øcreate <::cube::scene_object>();
+      papp->m_pimpact->m_bLastMouse = true;
+      viewerObject->m_transform.translation.z = -2.5f;
+      MNKController cameraController;
+
+      cameraController.m_pimpact = papp->m_pimpact;
+      cameraController.m_pkeymap = papp->m_pimpact->m_pkeymap;
+      /*    glfwSetInputMode(_window.getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+          glfwSetWindowUserPointer(_window.getGLFWwindow(), &cameraController);*/
+      cameraController.m_bMouseAbsolute;
+
+      ::pointer <::database::client> pdatabaseclient = m_papplication;
+
+      if (pdatabaseclient)
+      {
+
+         pdatabaseclient->datastream()->get_block("camera", as_memory_block(camera));
+         pdatabaseclient->datastream()->get_block("transform", as_memory_block(viewerObject->m_transform));
+         pdatabaseclient->datastream()->get_block("camera_controller", cameraController.as_block());
+
+      }
+
+      auto pimpact = papp->m_pimpact;
+
+      auto currentTime = std::chrono::high_resolution_clock::now();
+      //while (!_window.shouldClose())
+      while (!pimpact->m_bShouldClose && task_get_run())
+      {
+
+         task_iteration();
+         //glfwPollEvents();
+
+         auto newTime = std::chrono::high_resolution_clock::now();
+
+         float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+
+         currentTime = newTime;
+
+         cameraController.handleMouseInput();
+
+         cameraController.updateLook(cameraController.getX(), cameraController.getY(), viewerObject);
+
+         cameraController.updateMovement(frameTime, viewerObject);
+
+         //cameraController.moveInPlaneXZ(m_pimpact, frameTime, viewerObject);
+
+         camera.setViewYXZ(viewerObject->m_transform.translation, viewerObject->m_transform.rotation);
+
+         if (m_prenderer->m_pvkcrenderpass->width() > 0
+            && m_prenderer->m_pvkcrenderpass->height() > 0)
+         {
+
+            float aspect = m_prenderer->getAspectRatio();
+
+            camera.setPerspectiveProjection(::radians(50.f), aspect, 0.1f, 100.f);
+
+            if (auto commandBuffer = m_prenderer->beginFrame())
+            {
+
+               int frameIndex = m_prenderer->getFrameIndex();
+
+               FrameInfo frameInfo{ frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex], m_pscene->m_mapObjects };
+
+               // update
+               GlobalUbo ubo{};
+               ubo.projection = camera.getProjection();
+               ubo.view = camera.getView();
+               ubo.inverseView = camera.getInverseView();
+               pointLightSystem.update(frameInfo, ubo);
+               uboBuffers[frameIndex]->writeToBuffer(&ubo);
+               uboBuffers[frameIndex]->flush();
+
+               // render
+               m_prenderer->beginRenderPass(commandBuffer);
+
+               simpleRenderSystem.renderGameObjects(frameInfo);
+               pointLightSystem.render(frameInfo);
+
+               m_prenderer->endRenderPass(commandBuffer);
+               m_prenderer->endFrame();
+
+            }
+
+         }
+
+      }
+
+      if (pdatabaseclient)
+      {
+
+         pdatabaseclient->datastream()->set("camera_controller", cameraController.as_block());
+         pdatabaseclient->datastream()->set("transform", as_memory_block(viewerObject->m_transform));
+         pdatabaseclient->datastream()->set("camera", as_memory_block(camera));
+
+      }
+
+      if (pgpucontext->logicalDevice() != VK_NULL_HANDLE)
+      {
+
+         vkDeviceWaitIdle(pgpucontext->logicalDevice());
+
+      }
+
+
+
+   }
+
+
+} // graphics3d_opengl
+
+
