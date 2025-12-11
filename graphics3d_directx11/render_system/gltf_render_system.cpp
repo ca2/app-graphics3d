@@ -8,7 +8,7 @@
 //#include "gpu_directx11/gltf_model.h"
 #include "gpu_directx11/gltf/model.h"
 #include "gpu_directx11/ibl/diffuse_irradiance_map.h"
-#include "gpu_directx11/ibl/brdf_convolution_framebuffer.h"
+//#include "gpu_directx11/ibl/brdf_convolution_framebuffer.h"
 #include "gpu_directx11/ibl/specular_map.h"
 //#include "gpu_directx11/pipeline.h"
 //#include "gpu_directx11/render_pass.h"
@@ -138,11 +138,14 @@ namespace graphics3d_directx11
       //m_pshaderOpaque->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       //pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushVertex);
       //pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushFragment);
+
+      m_pshaderOpaque->set_global_ubo();
+
       m_pshaderOpaque->initialize_shader_with_block(
          pgpucontext->m_pgpurenderer, 
          embedded_pbr_vert(),
          embedded_pbr_frag(), 
-         {::gpu::shader::e_descriptor_set_slot_global}, 
+         {}, 
          {}, 
          pinputlayout);
 
@@ -156,11 +159,12 @@ namespace graphics3d_directx11
       //m_pshaderMask->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       //pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushVertex);
       //pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushFragment);
+      m_pshaderMask->set_global_ubo();
       m_pshaderMask->initialize_shader_with_block(
          pgpucontext->m_pgpurenderer, 
          embedded_pbr_vert(), 
          embedded_pbr_frag(),
-         {::gpu::shader::e_descriptor_set_slot_global}, 
+         {}, 
          {}, 
          pinputlayout);
 
@@ -174,11 +178,12 @@ namespace graphics3d_directx11
       //m_pshaderBlend->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       //pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushVertex);
       //pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushFragment);
+      m_pshaderBlend->set_global_ubo();
       m_pshaderBlend->initialize_shader_with_block(
          pgpucontext->m_pgpurenderer, 
          embedded_pbr_vert(),
          embedded_pbr_frag(),
-         {::gpu::shader::e_descriptor_set_slot_global}, 
+         {}, 
          {},
          pinputlayout);
 
@@ -848,7 +853,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                ::cast<::gpu_directx11::ibl::specular_map> pspecularmap = pscene->m_piblspecularmap;
 
                ::cast<::gpu_directx11::texture> ptextureIrradiance =
-                  pirradiancemap->m_pframebufferDiffuseIrradiance->m_ptexture;
+                  pirradiancemap->m_ptextureDiffuseIrradianceCubemap;
 
                ID3D11SamplerState *sampler = nullptr;
                ID3D11ShaderResourceView *srv[3] = {};
@@ -872,7 +877,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                }
 
                ::cast<::gpu_directx11::texture> ptextureEnvMap =
-                  pspecularmap->m_pframebufferPrefilteredEnvMap->m_ptexture;
+                  pspecularmap->m_ptexturePrefilteredEnvMapCubemap;
 
                if (ptextureEnvMap)
                {
@@ -897,7 +902,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
                }
 
-               ::cast<::gpu_directx11::texture> ptextureBrdf = pspecularmap->m_pframebufferBrdfConvolution->m_ptexture;
+               ::cast<::gpu_directx11::texture> ptextureBrdf = pspecularmap->m_ptextureBrdfConvolutionMap;
 
                if (ptextureBrdf)
                {

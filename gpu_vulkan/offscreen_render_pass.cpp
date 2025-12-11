@@ -73,10 +73,11 @@ namespace gpu_vulkan
    }
 
 
-   void offscreen_render_pass::update_render_pass(::gpu::context* pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
+   void offscreen_render_pass::update_render_pass(::gpu::context *pgpucontext, ::gpu::texture *pgputextureTarget,
+                                                  ::pointer<::gpu_vulkan::render_pass> previous)
    {
 
-      render_pass::update_render_pass(pgpucontext, previous);
+      render_pass::update_render_pass(pgpucontext, pgputextureTarget, previous);
       //m_bNeedRebuild = false;
       //init();
       // Cleans up old swap chain since it's no longer needed after resizing
@@ -520,7 +521,7 @@ namespace gpu_vulkan
 
    //      pgputexture->m_bRenderTarget = true;
 
-   //      pgputexture->initialize_image_texture(m_pgpucontext->m_pgpurenderer, size, m_bWithDepth);
+   //      pgputexture->initialize_image_texture(m_pgpucontext->m_pgpurenderer, size, m_flags.m_bWithDepth);
 
    //      ::cast < texture > ptexture = pgputexture;
 

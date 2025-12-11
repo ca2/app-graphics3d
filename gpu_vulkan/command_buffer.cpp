@@ -523,6 +523,33 @@ namespace gpu_vulkan
    }
 
 
+   void command_buffer::begin_render(::gpu::shader *pgpushader, ::gpu::texture *pgputextureTarget)
+   {
+
+      ::cast<::gpu_vulkan::texture> ptextureTarget = pgputextureTarget;
+
+      ptextureTarget->_set_state(this,
+
+                                       {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+
+      ::gpu::command_buffer::begin_render(pgpushader, pgputextureTarget);
+
+      m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->begin_render(this, pgputextureTarget);
+
+   }
+
+
+   void command_buffer::end_render()
+   {
+
+      ::gpu::command_buffer::end_render();
+
+      m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->end_render(this);
+
+   }
+
+
 } // namespace gpu_vulkan
 
 

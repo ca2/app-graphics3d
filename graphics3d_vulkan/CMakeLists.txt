@@ -10,14 +10,14 @@ list(APPEND library_source
         #camera.h
    #render_systems/basic_render_system.cpp
    #render_systems/basic_render_system.h
-   render_systems/gltf_render_system.cpp
-   render_systems/gltf_render_system.h
-   render_systems/skybox_render_system.cpp
-   render_systems/skybox_render_system.h
-   render_systems/scene_render_system.cpp
-   render_systems/scene_render_system.h
-   render_systems/wavefront_obj_render_system.cpp
-   render_systems/wavefront_obj_render_system.h
+   render_system/gltf_render_system.cpp
+   render_system/gltf_render_system.h
+   render_system/skybox_render_system.cpp
+   render_system/skybox_render_system.h
+   render_system/scene_render_system.cpp
+   render_system/scene_render_system.h
+   render_system/wavefront_obj_render_system.cpp
+   render_system/wavefront_obj_render_system.h
    render_system.cpp
    render_system.h
         engine.cpp

@@ -155,9 +155,13 @@ namespace gpu_directx12
 
             ødefer_construct(ptexture);
 
-            ptexture->m_bRenderTarget = true;
+            ::gpu::texture_attributes textureattributes(::int_rectangle{m_pgpurenderer->m_pgpucontext->m_rectangle.size()});
 
-            ptexture->initialize_texture(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size(), m_bWithDepth);
+            ::gpu::texture_flags textureflags;
+            textureflags.m_bRenderTarget = true;
+            textureflags.m_bWithDepth = m_bWithDepth;
+
+            ptexture->initialize_texture(m_pgpurenderer,  textureattributes, textureflags);
 
             ////if (bCreateRenderTargetView)
             //{

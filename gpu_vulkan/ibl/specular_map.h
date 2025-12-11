@@ -4,8 +4,8 @@
 
 
 #include "bred/gpu/shader.h"
-#include "gpu/ibl/brdf_convolution_framebuffer.h"
-#include "gpu/ibl/mipmap_cubemap_framebuffer.h"
+//#include "gpu/ibl/brdf_convolution_framebuffer.h"
+//#include "gpu/ibl/mipmap_cubemap_framebuffer.h"
 #include "gpu/ibl/specular_map.h"
 
 

@@ -8,11 +8,11 @@
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/immersion_layer.h"
-#include "gpu/ibl/brdf_convolution_framebuffer.h"
-#include "gpu/ibl/cubemap_framebuffer.h"
+//#include "gpu/ibl/brdf_convolution_framebuffer.h"
+//#include "gpu/ibl/cubemap_framebuffer.h"
 #include "gpu/ibl/diffuse_irradiance_map.h"
 #include "gpu/ibl/equirectangular_cubemap.h"
-#include "gpu/ibl/mipmap_cubemap_framebuffer.h"
+//#include "gpu/ibl/mipmap_cubemap_framebuffer.h"
 #include "gpu/ibl/specular_map.h"
 #include "bred/prodevian/actor.h"
 #include "openssl/ct.h"
@@ -195,7 +195,7 @@ namespace graphics3d
          m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
       }
 
-      return piblspecularmap->m_pframebufferPrefilteredEnvMap->m_ptexture;
+      return piblspecularmap->m_ptexturePrefilteredEnvMapCubemap;
    }
 
    /// generate irradianceCube
@@ -229,7 +229,7 @@ namespace graphics3d
 
       }
 
-      return m_pibldiffuseirradiancemap->m_pframebufferDiffuseIrradiance->m_ptexture;
+      return m_pibldiffuseirradiancemap->m_ptextureDiffuseIrradianceCubemap;
    }
    // ::pointer<::gpu::texture> loadCubemap(
    //    const ::scoped_string& name,
@@ -250,7 +250,8 @@ namespace graphics3d
          piblspecularmap->computeBrdfConvolutionMap();
       }
 
-      return piblspecularmap->m_pframebufferBrdfConvolution->m_ptexture;
+      return piblspecularmap->m_ptextureBrdfConvolutionMap;
+
    }
 
 

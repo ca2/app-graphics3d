@@ -74,24 +74,22 @@ namespace gpu_vulkan
    }
 
 
-   void render_pass::update_render_pass(::gpu::context *pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
+   void render_pass::update_render_pass(::gpu::context *pgpucontext, ::gpu::texture *pgputextureTarget,
+                                        ::pointer<::gpu_vulkan::render_pass> previous)
    {
 
       //::gpu_vulkan::render_pass::initialize_render_pass(pgpurenderer, size, previous);
       m_pgpucontext = pgpucontext;
 
-      if (m_pgpucontext->m_escene == ::gpu::e_scene_3d)
-      {
+      m_bWithDepth = pgputextureTarget->m_textureflags.m_bWithDepth;
 
-         m_bWithDepth = true;
-      }
-
-      _update_render_pass(pgpucontext, previous);
+      _update_render_pass(pgpucontext, pgputextureTarget, previous);
 
    }
 
 
-   void render_pass::_update_render_pass(::gpu::context * pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous)
+   void render_pass::_update_render_pass(::gpu::context *pgpucontext, ::gpu::texture *pgputextureTarget,
+                                         ::pointer<::gpu_vulkan::render_pass> previous)
    {
 
          //::gpu_vulkan::render_pass::initialize_render_pass(pgpurenderer, size, previous);
@@ -101,7 +99,7 @@ namespace gpu_vulkan
 
       //m_ptexturea = ptexturea;
 
-      auto size = pgpucontext->m_rectangle.size();
+      auto size = pgputextureTarget->size();
 
       m_prenderpassOld = previous;
 
@@ -574,7 +572,7 @@ namespace gpu_vulkan
 
    //      int iAttachmentCount;
 
-   //      if (m_bWithDepth)
+   //      if (m_flags.m_bWithDepth)
    //      {
 
    //         VkImageView depthImageView = getDepthImageView(i);
@@ -624,7 +622,7 @@ namespace gpu_vulkan
    //void render_pass::createDepthResources()
    //{
 
-   //   if (!m_bWithDepth)
+   //   if (!m_flags.m_bWithDepth)
    //   {
 
    //      return;

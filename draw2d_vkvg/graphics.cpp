@@ -5823,7 +5823,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          }
 
-         ptextureCurrent->_attach(vkimage, ::gpu::texture::e_type_image);
+         ptextureCurrent->_attach(vkimage, ::gpu::e_texture_image);
 
          ptextureCurrent->m_state.m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
          ptextureCurrent->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;

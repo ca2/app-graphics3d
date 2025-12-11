@@ -7,6 +7,8 @@
 #include "input.h"
 #include "main_scene.h"
 #include "bred/gpu/context.h"
+#include "bred/gpu/renderer.h"
+#include "bred/gpu/render_target.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/camera.h"
 #include "bred/graphics3d/engine.h"
@@ -202,17 +204,19 @@ namespace app_graphics3d_continuum
            argb(1.f, 1.f, 1.f, 1.f)
       };
 
+       auto orbit_center = floating_sequence3(0.f, 2.0f, 0.0f);
+
       for (int i = 0; i < lightColors.size(); i++) 
       {
-         auto ppointlight = create_point_light(0.2f, 0.1f);
-         ppointlight->m_color = lightColors[i];
-         auto rotateLight = 
+         auto ppointlight = create_point_light(1.0f, 0.1f, lightColors[i]);
+         auto rotateLight =
             floating_matrix4(1.f).rotated(
             ::radians((i * _2πf) / lightColors.size()),
             { 0.f, 1.f, 0.f });
-         ppointlight->m_fLightIntensity = 1.0f;
-         ppointlight->m_sequence3Translation = floating_sequence3(rotateLight * floating_sequence4(-1.f, 1.7f, 0.5f, 1.f));
-         //m_pointlighta.add(ppointlight);
+          ::floating_sequence3 hand(1.0f, 0.f, 0.f);
+          auto rotated_hand = rotateLight * hand;
+            auto position = orbit_center + rotated_hand;
+         ppointlight->m_sequence3Translation = position;
          ppointlight->m_strName.format("Point Light {}", i);
 
       }
@@ -358,7 +362,13 @@ namespace app_graphics3d_continuum
    void main_scene::on_render(::gpu::context * pgpucontext)
    {
 
-      //pgpucontext->clear(rgba(0.5f, 0.75f, 1.0f, 1.0f)); // Clear with a light blue color
+      auto prenderer = pgpucontext->m_pgpurenderer;
+
+      auto prendertarget = prenderer->m_pgpurendertarget;
+
+      auto ptexture = prendertarget->current_texture(::gpu::current_frame());
+
+      pgpucontext->clear(ptexture, ::argb(1.0f, 0.5f, 0.75f, 1.0f)); // Clear with a light blue color
 
       if (m_pskyboxrendersystem)
       {

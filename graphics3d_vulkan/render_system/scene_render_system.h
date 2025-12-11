@@ -44,7 +44,6 @@ namespace graphics3d_vulkan
 
 
       ::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutIbl;
-      ::array_base<VkDescriptorSet> m_vkdescriptorsetaIbl;
       ::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutPbr;
       ::pointer<::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
 

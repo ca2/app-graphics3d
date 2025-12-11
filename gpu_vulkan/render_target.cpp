@@ -74,86 +74,90 @@ namespace gpu_vulkan
    }
 
 
-   ::gpu_vulkan::render_pass* render_target::render_pass_with_depth()
-   {
+   //::gpu_vulkan::render_pass *render_target::get_render_pass(::gpu::texture *pgputextureTarget)
+   //{
 
-      if(!m_prenderpassDepth)
-      {
+   //   ::cast<::gpu_vulkan::texture> ptexture = pgputextureTarget;
 
-         m_prenderpassDepth = create_render_pass(true);
+   //   return ptexture->get_render_pass();
 
-      }
+   //   //if(!m_prenderpassDepth)
+   //   //{
 
-      return m_prenderpassDepth;
+   //   //   m_prenderpassDepth = create_render_pass(true);
 
-   }
+   //   //}
 
+   //   //return m_prenderpassDepth;
 
-   ::gpu_vulkan::render_pass* render_target::render_pass_no_depth()
-   {
-
-      if(!m_prenderpassNoDepth)
-      {
-
-         m_prenderpassNoDepth = create_render_pass(false);
-
-      }
-
-      return m_prenderpassNoDepth;
-
-   }
+   //}
 
 
-      ::gpu_vulkan::render_pass *render_target::render_pass_srgb()
-   {
+   //::gpu_vulkan::render_pass* render_target::render_pass_no_depth()
+   //{
 
-      if (!m_prenderpassSrgb)
-      {
+   //   if(!m_prenderpassNoDepth)
+   //   {
 
-         m_prenderpassSrgb = create_render_pass(false, true);
-      }
+   //      m_prenderpassNoDepth = create_render_pass(false);
 
-      return m_prenderpassSrgb;
-   }
+   //   }
 
-   ::gpu_vulkan::render_pass* render_target::render_pass2(bool bWithDepth)
-   {
+   //   return m_prenderpassNoDepth;
 
-      if (bWithDepth)
-      {
-
-         return render_pass_with_depth();
-
-      }
-      else
-      {
-
-         return render_pass_no_depth();
-
-      }
+   //}
 
 
-   }
+   //   ::gpu_vulkan::render_pass *render_target::render_pass_srgb()
+   //{
+
+   //   if (!m_prenderpassSrgb)
+   //   {
+
+   //      m_prenderpassSrgb = create_render_pass(false, true);
+   //   }
+
+   //   return m_prenderpassSrgb;
+   //}
+
+   //::gpu_vulkan::render_pass* render_target::render_pass2(bool bWithDepth)
+   //{
+
+   //   if (bWithDepth)
+   //   {
+
+   //      return render_pass_with_depth();
+
+   //   }
+   //   else
+   //   {
+
+   //      return render_pass_no_depth();
+
+   //   }
 
 
-   ::pointer <::gpu_vulkan::render_pass > render_target::create_render_pass(bool bWithDepth, bool bSrgb)
-   {
+   //}
 
-      auto prenderpass = øallocate offscreen_render_pass();
 
-      prenderpass->m_bWithDepth = bWithDepth;
+   //::pointer <::gpu_vulkan::render_pass > render_target::create_render_pass(bool bWithDepth, bool bSrgb)
+   //{
 
-      prenderpass->m_bSrgb = bSrgb;
+   //   auto prenderpass = øallocate offscreen_render_pass();
 
-      prenderpass->initialize(this);
+   //   prenderpass->m_bWithDepth = bWithDepth;
 
-      prenderpass->_update_render_pass(m_pgpurenderer->m_pgpucontext, prenderpass->m_prenderpassOld);
+   //   prenderpass->m_bSrgb = bSrgb;
 
-      //prenderpass->on_init_render_pass();
+   //   prenderpass->initialize(this);
 
-      return prenderpass;
+   //   prenderpass->_update_render_pass(m_pgpurenderer->m_pgpucontext, prenderpass->m_prenderpassOld);
 
-   }
+   //   //prenderpass->on_init_render_pass();
+
+   //   return prenderpass;
+
+   //}
 
 
 
@@ -172,12 +176,13 @@ namespace gpu_vulkan
    }
 
 
-   void render_target::on_create_render_target_texture(::gpu::texture* pgputexture)
+   void render_target::on_create_render_target_texture(::gpu::texture_attributes &textureattributes,
+                                                       ::gpu::texture_flags &textureflags)
    {
 
-      ::gpu::render_target::on_create_render_target_texture(pgputexture);
+      ::gpu::render_target::on_create_render_target_texture(textureattributes, textureflags);
 
-      pgputexture->m_bTransferDst = true;
+      textureflags.m_bTransferTarget = true;
 
    }
 
@@ -553,7 +558,7 @@ namespace gpu_vulkan
 
    //      int iAttachmentCount;
 
-   //      if (m_bWithDepth)
+   //      if (m_flags.m_bWithDepth)
    //      {
 
    //         VkImageView depthImageView = getDepthImageView(i);
@@ -603,7 +608,7 @@ namespace gpu_vulkan
    //void render_target::createDepthResources()
    //{
 
-   //   if (!m_bWithDepth)
+   //   if (!m_flags.m_bWithDepth)
    //   {
 
    //      return;

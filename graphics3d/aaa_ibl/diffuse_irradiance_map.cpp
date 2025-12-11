@@ -65,8 +65,8 @@ namespace gpu
          // embedded_diffuse_irradiance_vert();
          // embedded_diffuse_irradiance_frag();
          //
-         // ::file::path pathDiffuseIrradianceVertexShader = scopedstrengineRoot + "/src/ibl/shaders/diffuseirradiance.vert";
-         // ::file::path pathDiffuseIrradianceFragmentShader = scopedstrengineRoot + "/src/ibl/shaders/diffuseirradiance.frag";
+         // ::file::path pathDiffuseIrradianceVertexShader = scopedstrengineRoot + "/src/ibl/shaders/diffuse_irradiance_map.vert";
+         // ::file::path pathDiffuseIrradianceFragmentShader = scopedstrengineRoot + "/src/ibl/shaders/diffuse_irradiance_map.frag";
 
          øconstruct(m_pshaderDiffuseIrradiance);
 

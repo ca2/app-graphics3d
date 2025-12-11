@@ -1801,17 +1801,17 @@ namespace gpu_vulkan
       // Define the static member here (outside any class/function)
 
       emptyTexture->m_pgpurenderer = m_pgpucontext->m_pgpurenderer;
-      emptyTexture->m_rectangleTarget.set_width(1);
-      emptyTexture->m_rectangleTarget.set_height(1);
-      emptyTexture->m_iLayerCount = 1;
-      emptyTexture->m_iMipCount = 1;
+      emptyTexture->m_textureattributes.m_rectangleTarget.set_width(1);
+      emptyTexture->m_textureattributes.m_rectangleTarget.set_height(1);
+      emptyTexture->m_textureattributes.m_iLayerCount = 1;
+      emptyTexture->m_textureattributes.m_iMipCount = 1;
 
       ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
       ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
       auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
 
-      size_t bufferSize = emptyTexture->m_rectangleTarget.area() * 4;
+      size_t bufferSize = emptyTexture->m_textureattributes.m_rectangleTarget.area() * 4;
       unsigned char *buffer = new unsigned char[bufferSize];
       memset(buffer, 0, bufferSize);
       VkBuffer stagingBuffer;
@@ -1841,8 +1841,8 @@ namespace gpu_vulkan
       VkBufferImageCopy bufferCopyRegion = {};
       bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       bufferCopyRegion.imageSubresource.layerCount = 1;
-      bufferCopyRegion.imageExtent.width = emptyTexture->m_rectangleTarget.width();
-      bufferCopyRegion.imageExtent.height = emptyTexture->m_rectangleTarget.height();
+      bufferCopyRegion.imageExtent.width = emptyTexture->width();
+      bufferCopyRegion.imageExtent.height = emptyTexture->height();
       bufferCopyRegion.imageExtent.depth = 1;
 
       // Create optimal tiled target image
@@ -1855,8 +1855,8 @@ namespace gpu_vulkan
       imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
       imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
       imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      imageCreateInfo.extent.width = emptyTexture->m_rectangleTarget.width();
-      imageCreateInfo.extent.height = emptyTexture->m_rectangleTarget.height();
+      imageCreateInfo.extent.width = emptyTexture->width();
+      imageCreateInfo.extent.height = emptyTexture->height();
       imageCreateInfo.extent.depth = 1;
       imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
       VK_CHECK_RESULT(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &emptyTexture->m_vkimage));

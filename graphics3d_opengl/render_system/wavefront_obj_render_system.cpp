@@ -2,8 +2,8 @@
 #include "wavefront_obj_render_system.h"
 #include "bred/gpu/renderable.h"
 #include "bred/graphics3d/scene_renderable.h"
-#include "shaders/wavefront.vert.h"
-#include "shaders/wavefront.frag.h"
+#include "shader/wavefront.vert.h"
+#include "shader/wavefront.frag.h"
 
 
 namespace graphics3d_opengl

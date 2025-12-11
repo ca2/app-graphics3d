@@ -15,14 +15,14 @@
 #include "gpu_opengl/ibl/diffuse_irradiance_map.h"
 #include "gpu_opengl/ibl/specular_map.h"
 //#include "app/gpu_opengl/vk_init.h"
-#include "shaders/scene.vert.h"
-#include "shaders/scene.frag.h"
+#include "shader/scene.vert.h"
+#include "shader/scene.frag.h"
 #include "gpu_opengl/ibl/diffuse_irradiance_map.h"
 #include "gpu_opengl/ibl/specular_map.h"
 #include "app-graphics3d/graphics3d/scene.h"
 #include "gpu_opengl/_gpu_opengl.h"
 #include "bred/gltf/vertex.h"
-#include "gpu/ibl/cubemap_framebuffer.h"
+//#include "gpu/ibl/cubemap_framebuffer.h"
 
 namespace graphics3d_opengl
 {
@@ -194,7 +194,7 @@ namespace graphics3d_opengl
                pshader->bind_source2(pcommandbuffer,
                   TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP,
                   "diffuseIrradianceMap",
-                  pirradiancemap->m_pframebufferDiffuseIrradiance->m_ptexture);
+                  pirradiancemap->m_ptextureDiffuseIrradianceCubemap);
                // //  IBL stuff
                // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
                // GLCheckError("");
@@ -220,7 +220,7 @@ namespace graphics3d_opengl
                pshader->bind_source2(pcommandbuffer,
                TEXTURE_UNIT_PREFILTERED_ENV_MAP,
                "prefilteredEnvMap",
-               pspecularmap->m_pframebufferPrefilteredEnvMap->m_ptexture);
+               pspecularmap->m_ptexturePrefilteredEnvMapCubemap);
 
 
                // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
@@ -233,7 +233,7 @@ namespace graphics3d_opengl
                pshader->bind_source2(pcommandbuffer,
                TEXTURE_UNIT_BRDF_CONVOLUTION_MAP,
                "brdfConvolutionMap",
-               pspecularmap->m_pframebufferBrdfConvolution->m_ptexture);
+               pspecularmap->m_ptextureBrdfConvolutionMap);
 
             }
 

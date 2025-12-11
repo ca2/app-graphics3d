@@ -84,7 +84,7 @@ namespace gpu_vulkan
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;
 
       void _001BeginRenderPass(::gpu::command_buffer *pcommandbuffer, ::gpu::texture * pgputexture = nullptr);
-      void _001BeginRenderPass(::gpu::command_buffer *pcommandbuffer, ::gpu::ibl::cubemap_framebuffer * pgpucubeframebuffer, int iFace, ::gpu::enum_scene escene);
+      void _001BeginRenderPassWithCubemap(::gpu::command_buffer *pcommandbuffer, ::gpu::texture * pgputexture, int iFace, ::gpu::enum_scene escene);
       void _001EndRenderPass(::gpu::command_buffer *pcommandbuffer);
 
 
@@ -141,6 +141,8 @@ namespace gpu_vulkan
 
       //graphics3d_vulkan::context
 
+      void begin_render(::gpu::command_buffer *pgpucommandbuffer,::gpu::texture * pgputexture = nullptr)override;
+      void end_render(::gpu::command_buffer *pgpucommandbuffer)override;
 
       //VkCommandPool getCommandPool() { return m_vkcommandpool; }
       //VkDevice logicalDevice() { return m_vkdevice; }

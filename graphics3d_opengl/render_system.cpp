@@ -37,7 +37,7 @@ namespace graphics3d_opengl
    //    //         m_pgpurenderpass->initialize_gpu_context_object(m_pengine->gpu_context());
    //
    //    //   m_pgpurenderpass->m_bLoadClearOp = false;
-   //    //         m_pgpurenderpass->m_bWithDepth = true;
+   //    //         m_pgpurenderpass->m_flags.m_bWithDepth = true;
    //
    //    //   m_pgpurenderpass->createRenderPass();
    //

@@ -110,7 +110,7 @@ namespace gpu_directx12
       D3D12_CPU_DESCRIPTOR_HANDLE      m_handleSampler;
       //UINT m_rtvDescriptorSize;
       //bool m_bRenderTarget;
-      bool m_bShaderResource;
+      //bool m_bShaderResource;
 
       class d3d11 :
          virtual public ::particle
@@ -138,7 +138,7 @@ namespace gpu_directx12
       texture();
       ~texture() override;
 
-      void create_image(const ::pointer_array < ::image::image > * pimagea);
+      void _create_texture(const ::gpu::texture_data & data);
       //void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangle, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype) override;
 
       void _new_state(ID3D12GraphicsCommandList* pcommandlist, D3D12_RESOURCE_STATES estate);

@@ -12,8 +12,8 @@ list(APPEND library_source
    gltf/model.cpp
    gltf/model.h
    gltf/vertex.h
-   ibl/cubemap_framebuffer.cpp
-   ibl/cubemap_framebuffer.h
+   #ibl/cubemap_framebuffer.cpp
+   #ibl/cubemap_framebuffer.h
    ibl/diffuse_irradiance_map.cpp
    ibl/diffuse_irradiance_map.h
    ibl/equirectangular_cubemap.cpp
@@ -22,6 +22,8 @@ list(APPEND library_source
    #ibl/hdri_cube.h
    ibl/specular_map.cpp
    ibl/specular_map.h
+
+
         _.cpp
         _.h
         _factory.cpp
@@ -52,7 +54,13 @@ list(APPEND library_source
         descriptors.h
         device.cpp
         device.h
-        #image_directx.cpp
+
+   gltf_model.cpp
+   gltf_model.h
+   _tinygltf.cpp
+   vkresult_exception.cpp
+   vkresult_exception.h     #image_directx.cpp
+
         image_vulkan.cpp
         input_layout.cpp
         input_layout.h
@@ -126,12 +134,7 @@ else ()
 endif ()
 
 
-add_library(${PROJECT_NAME} SHARED ${library_source}
-        gltf_model.cpp
-        gltf_model.h
-        _tinygltf.cpp
-        vkresult_exception.cpp
-        vkresult_exception.h)
+add_library(${PROJECT_NAME} SHARED ${library_source})
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
 if (NOT ${NO_PRECOMPILED_HEADER})

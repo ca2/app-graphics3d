@@ -17,36 +17,36 @@ namespace graphics3d_vulkan
    {
    public:
 
-      struct push_constants
-      {
+      //struct push_constants
+      //{
 
-         floating_matrix4 modelMatrix;
-         floating_matrix4 normalMatrix;
+      //   floating_matrix4 modelMatrix;
+      //   floating_matrix4 normalMatrix;
 
-         int useTextureAlbedo;//0
-         int useTextureMetallicRoughness;//4
-         int useTextureNormal;//8
-         int useTextureAmbientOcclusion;//12
-         int useTextureEmissive;//16
+      //   int useTextureAlbedo;//0
+      //   int useTextureMetallicRoughness;//4
+      //   int useTextureNormal;//8
+      //   int useTextureAmbientOcclusion;//12
+      //   int useTextureEmissive;//16
 
-         // 20
+      //   // 20
 
-         ::floating_sequence3 albedo;//20
-         float metallic;//32
-         float roughness;//36
-         float ambientOcclusion;//40
-         ::floating_sequence3 emissive;//44
+      //   ::floating_sequence3 albedo;//20
+      //   float metallic;//32
+      //   float roughness;//36
+      //   float ambientOcclusion;//40
+      //   ::floating_sequence3 emissive;//44
 
-         // 36
+      //   // 36
 
-         // 56
+      //   // 56
 
-         //::floating_sequence3 cameraPosition;//56
-         float bloomBrightnessCutoff;//68
-         // 72
-         floating_sequence3 multiplier;
+      //   //::floating_sequence3 cameraPosition;//56
+      //   float bloomBrightnessCutoff;//68
+      //   // 72
+      //   floating_sequence3 multiplier;
 
-      };
+      //};
 
 
       ::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutIbl;
@@ -76,7 +76,7 @@ namespace graphics3d_vulkan
 } // namespace graphics3d_vulkan
  
 
-DECLARE_GPU_PROPERTIES(CLASS_DECL_GRAPHICS3D_VULKAN, ::graphics3d_vulkan::gltf_render_system::push_constants)
-
-
-
+//DECLARE_GPU_PROPERTIES(CLASS_DECL_GRAPHICS3D_VULKAN, ::graphics3d_vulkan::gltf_render_system::push_constants)
+//
+//
+//

@@ -183,7 +183,7 @@ namespace gpu_directx12
             //rootParameters[0].InitAsDescriptorTable(1, &ranges[i],
             //   D3D12_SHADER_VISIBILITY_ALL); //|              D3D12_SHADER_VISIBILITY_PIXEL);
 
-            if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+            if (m_bindingseta.has_global_ubo())
             {
 
                //ranges.øadd().Init(
@@ -242,24 +242,30 @@ namespace gpu_directx12
 
             }
 
-            if (m_bindingSampler.is_set() || m_bindingCubeSampler.is_set())
+            //if (m_bindingSampler.is_set() || m_bindingCubeSampler.is_set())
+
+            if (has_image_sampler())
             {
+
+               auto pbinding = get_first_image_sampler_binding();
 
                UINT ShaderRegister;
 
-               if (m_bindingCubeSampler.is_set())
-               {
+               ShaderRegister = pbinding->m_iSlot;
 
-                  ShaderRegister = m_bindingCubeSampler.m_uBinding;
+               //if (m_bindingCubeSampler.is_set())
+               //{
 
-               }
-               else
-               {
+               //   ShaderRegister = m_bindingCubeSampler.m_uBinding;
 
-                  ShaderRegister = m_bindingSampler.m_uBinding;
+               //}
+               //else
+               //{
 
-               }
-               
+               //   ShaderRegister = m_bindingSampler.m_uBinding;
+
+               //}
+               //
                //CD3DX12_DESCRIPTOR_RANGE texRange;
                ranges.add_new().Init(
                   D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 
@@ -966,7 +972,8 @@ namespace gpu_directx12
 
       }
 
-      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      //if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      if (has_global_ubo())
       {
 
          auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();

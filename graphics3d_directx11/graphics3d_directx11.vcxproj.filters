@@ -8,20 +8,14 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Header Files\system">
-      <UniqueIdentifier>{25f2e7e8-ee34-48d0-b575-ea265b4fb5bc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\aaa_system">
       <UniqueIdentifier>{7549d886-8d19-4c0d-aefb-fd4011a475ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\render_systems">
+    <Filter Include="Source Files\render_system">
       <UniqueIdentifier>{d34456e3-1895-444d-bb46-163824bcd77f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\render_systems">
+    <Filter Include="Header Files\render_system">
       <UniqueIdentifier>{4cc54b2f-bd44-48c7-b57b-bb558bc17de4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\render_systems\shader">
-      <UniqueIdentifier>{bbc9d0e2-b0fb-43e4-9269-f3b0dd0fdf38}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -73,20 +67,20 @@
     <ClCompile Include="aaa_system\point_light_system.cpp">
       <Filter>Source Files\aaa_system</Filter>
     </ClCompile>
-    <ClCompile Include="render_systems\gltf_render_system.cpp">
-      <Filter>Source Files\render_systems</Filter>
-    </ClCompile>
-    <ClCompile Include="render_systems\scene_render_system.cpp">
-      <Filter>Source Files\render_systems</Filter>
-    </ClCompile>
     <ClCompile Include="render_system.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="render_systems\wavefront_obj_render_system.cpp">
-      <Filter>Source Files\render_systems</Filter>
+    <ClCompile Include="render_system\gltf_render_system.cpp">
+      <Filter>Source Files\render_system</Filter>
     </ClCompile>
-    <ClCompile Include="render_systems\skybox_render_system.cpp">
-      <Filter>Source Files\render_systems</Filter>
+    <ClCompile Include="render_system\scene_render_system.cpp">
+      <Filter>Source Files\render_system</Filter>
+    </ClCompile>
+    <ClCompile Include="render_system\skybox_render_system.cpp">
+      <Filter>Source Files\render_system</Filter>
+    </ClCompile>
+    <ClCompile Include="render_system\wavefront_obj_render_system.cpp">
+      <Filter>Source Files\render_system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -147,35 +141,26 @@
     <ClInclude Include="scene_object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="system\basic_render_system.h">
-      <Filter>Header Files\system</Filter>
-    </ClInclude>
-    <ClInclude Include="system\point_light_system.h">
-      <Filter>Header Files\system</Filter>
-    </ClInclude>
-    <ClInclude Include="aaa_system\point_light_system.h">
-      <Filter>Header Files\system</Filter>
-    </ClInclude>
     <ClInclude Include="frame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="render_systems\scene_render_system.h">
-      <Filter>Header Files\render_systems</Filter>
-    </ClInclude>
-    <ClInclude Include="render_systems\gltf_render_system.h">
-      <Filter>Header Files\render_systems</Filter>
-    </ClInclude>
     <ClInclude Include="render_system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="render_systems\wavefront_obj_render_system.h">
-      <Filter>Header Files\system</Filter>
+    <ClInclude Include="render_system\wavefront_obj_render_system.h">
+      <Filter>Header Files\render_system</Filter>
     </ClInclude>
-    <ClInclude Include="render_systems\skybox_render_system.h">
-      <Filter>Header Files\render_systems</Filter>
+    <ClInclude Include="render_system\skybox_render_system.h">
+      <Filter>Header Files\render_system</Filter>
+    </ClInclude>
+    <ClInclude Include="render_system\scene_render_system.h">
+      <Filter>Header Files\render_system</Filter>
+    </ClInclude>
+    <ClInclude Include="render_system\gltf_render_system.h">
+      <Filter>Header Files\render_system</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

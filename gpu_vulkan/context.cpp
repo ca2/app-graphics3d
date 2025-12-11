@@ -34,7 +34,7 @@
 
 #include "pipeline.h"
 #include "queue.h"
-#include "gpu_vulkan/ibl/cubemap_framebuffer.h"
+//#include "gpu_vulkan/ibl/cubemap_framebuffer.h"
 
 using namespace vulkan;
 
@@ -1869,6 +1869,40 @@ namespace gpu_vulkan
    }
 
 
+   void context::begin_render(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptexture)
+   {
+
+      if (::is_null(ptexture))
+      {
+
+         ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_frame());
+
+      }
+
+      if (ptexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
+      {
+
+         _001BeginRenderPassWithCubemap(pgpucommandbuffer, ptexture, ptexture->m_iCurrentFace, m_escene);
+
+      }
+      else
+      {
+
+         _001BeginRenderPass(pgpucommandbuffer, ptexture);
+
+      }
+
+   }
+
+
+   void context::end_render(::gpu::command_buffer *pgpucommandbuffer) 
+   {
+   
+      _001EndRenderPass(pgpucommandbuffer);
+   
+   }
+
+
    //// class member functions
    ////context::context(::graphics3d_vulkan::VulkanDevice* pgpudevice) :
    ///this->logicalDevice(){pgpudevice->logicalDevice} {
@@ -2542,7 +2576,7 @@ namespace gpu_vulkan
 
       int iRegionCount;
 
-      if (ptexture->m_etype == ::gpu::texture::e_type_cube_map)
+      if (ptexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
       {
 
          iRegionCount = 6;
@@ -2634,7 +2668,7 @@ namespace gpu_vulkan
 
    //   int iRegionCount = 1;
 
-   //   //if (ptexture->m_etype == ::gpu::texture::e_type_cube_map)
+   //   //if (ptexture->m_etype == ::gpu::e_texture_cube_map)
    //   //{
 
    //   //   iRegionCount = 6;
@@ -2788,6 +2822,13 @@ namespace gpu_vulkan
       {
 
          throw ::exception(error_failed, "failed to create image!");
+      }
+
+      if ((::iptr) image == 0x1150000000115)
+      {
+
+         ::information() << "image 0x1150000000115";
+
       }
 
       VkMemoryRequirements memRequirements;
@@ -3065,7 +3106,7 @@ namespace gpu_vulkan
 
    //   ::cast < renderer > prenderer = get_gpu_renderer();
 
-   //   prenderer->_copy_image(ptexture, ptexture->m_rectangleTarget, true);
+   //   prenderer->_copy_image(ptexture, ptexture->rectangle(), true);
 
    //}
 
@@ -3115,11 +3156,15 @@ namespace gpu_vulkan
          øconstruct(m_pshaderBlend3);
 
          m_pshaderBlend3->m_bEnableBlend = true;
-         m_pshaderBlend3->m_bindingSampler.set();
+         //m_pshaderBlend3->m_bindingSampler.set();
          m_pshaderBlend3->m_bDisableDepthTest = true;
          // m_pshaderBlend3->m_bT
          // m_pshaderBlend3->m_pgpurenderer = this;
-         m_pshaderBlend3->m_bindingSampler.set();
+         //m_pshaderBlend3->m_bindingSampler.set();
+         // 
+         auto &bindingSampler = m_pshaderBlend3->binding();
+
+         bindingSampler.m_ebinding = ::gpu::e_binding_sampler2d;
          // Image Blend descriptors
          // if (!m_psetdescriptorlayoutImageBlend)
 
@@ -3258,11 +3303,12 @@ namespace gpu_vulkan
          }
 
 
-         _001BeginRenderPass(pcommandbuffer, ptextureDst);
+         //_001BeginRenderPass(pcommandbuffer, ptextureDst);
 
          if (1)
          {
             int iLayer = 0;
+            pcommandbuffer->begin_render(m_pshaderBlend3, ptextureDst);
             for (auto player: *playera)
             {
 
@@ -3275,13 +3321,14 @@ namespace gpu_vulkan
                   //   ptextureSrc->_scoped_state(pcommandbuffer, {0, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                   //                                               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT});
 
-                  m_pshaderBlend3->bind(pcommandbuffer, ptextureDst, ptextureSrc);
+                  
+                  m_pshaderBlend3->bind_source(pcommandbuffer, ptextureSrc);
 
                   // pcommandbuffer->set_viewport(ptextureSrc->m_rectangleTarget);
 
                   // pcommandbuffer->set_scissor(ptextureSrc->m_rectangleTarget.size());
 
-                  auto r = ptextureSrc->m_rectangleTarget;
+                  auto r = ptextureSrc->rectangle();
 
                   int h = r.height();
 
@@ -3342,10 +3389,10 @@ namespace gpu_vulkan
                   // pcommandlist->RSSetViewports(1, &viewport);
                   // pcommandlist->RSSetScissorRects(1, &scissorRect);
                   // D3D11_VIEWPORT vp = {};
-                  // vp.TopLeftX = ptexture->m_rectangleTarget.left;
-                  // vp.TopLeftY = ptexture->m_rectangleTarget.top;
-                  // vp.Width = static_cast<float>(ptexture->m_rectangleTarget.width());
-                  // vp.Height = static_cast<float>(ptexture->m_rectangleTarget.height());
+                  // vp.TopLeftX = ptexture->rectangle().left;
+                  // vp.TopLeftY = ptexture->rectangle().top;
+                  // vp.Width = static_cast<float>(ptexture->rectangle().width());
+                  // vp.Height = static_cast<float>(ptexture->rectangle().height());
                   // vp.MinDepth = 0.0f;
                   // vp.MaxDepth = 1.0f;
                   // m_pcontext->RSSetViewports(1, &vp);
@@ -3363,11 +3410,12 @@ namespace gpu_vulkan
 
                iLayer++;
             }
+            pcommandbuffer->end_render();
          }
          //}
       }
 
-      _001EndRenderPass(pcommandbuffer);
+      //_001EndRenderPass(pcommandbuffer);
 
       
                      for (auto player: *playera)
@@ -4031,7 +4079,7 @@ VkFormat context::findDepthFormat()
 //   cfg.pushConstantRanges = {pushRange};
 
 //   // shader paths (match your project layout)
-//   std::string vert = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/filtered_cube.vert.spv";
+//   std::string vert = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/prefiltered_environment_map.vert.spv";
 //   std::string frag = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/prefiltered_env_map.spv";
 
 //   if (frag.empty())
@@ -4454,10 +4502,10 @@ VkFormat context::findDepthFormat()
 //   // shader paths (match your project layout)
 //   ::memory vert;
 //   ::memory frag;
-//   pdevice->defer_shader_memory(vert, "matter://shaders/filtered_cube.vert");
-//   pdevice->defer_shader_memory(frag, "matter://shaders/prefiltered_env_map.frag");
-//   // auto vert = file()->as_memory("matter://shaders/filtered_cube.vert");
-//   // auto frag = file()->as_memory("matter://shaders/prefiltered_env_map.frag");
+//   pdevice->defer_shader_memory(vert, "matter://shaders/prefiltered_environment_map.vert");
+//   pdevice->defer_shader_memory(frag, "matter://shaders/prefiltered_environment_map.frag");
+//   // auto vert = file()->as_memory("matter://shaders/prefiltered_environment_map.vert");
+//   // auto frag = file()->as_memory("matter://shaders/prefiltered_environment_map.frag");
 //
 //   if (frag.is_empty())
 //   {
@@ -4879,13 +4927,13 @@ VkFormat context::findDepthFormat()
 //
 //   pipelineconfiguration.pipelineLayout = VK_NULL_HANDLE;
 //
-//   // std::string vert = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/filtered_cube.vert.spv";
+//   // std::string vert = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/prefiltered_environment_map.vert.spv";
 //   // std::string frag = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/irradiance_cube.frag.spv";
 //   auto ppipelineIrradiance = øcreate<pipeline>();
 //
 //   ::memory vert;
 //   ::memory frag;
-//   pgpudevice->defer_shader_memory(vert, "matter://shaders/filtered_cube.vert");
+//   pgpudevice->defer_shader_memory(vert, "matter://shaders/prefiltered_environment_map.vert");
 //   pgpudevice->defer_shader_memory(frag, "matter://shaders/irradiance_cube.frag");
 //
 //
@@ -5004,10 +5052,6 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 {
 
    
-      {
-
-      //////////////////////////////////////////
-
 
       ::cast<context> pgpucontext = this;
 
@@ -5032,12 +5076,12 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
       ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
       //::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast<render_pass> prenderpass = prenderer->render_pass2();
+      //::cast<render_pass> prenderpass = prenderer->render_pass2();
 
 
-      renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
+      //renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
       // if (prenderer->m_pgpulayer)
-      {
+      //{
          ::cast<::gpu_vulkan::texture> ptexture;
          
          if (pgputexture) 
@@ -5058,9 +5102,13 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 
             warning() << "what?";
          }
+         ::cast<render_pass> prenderpass = ptexture->get_render_pass();
+
+
+         renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
 
          renderPassBeginInfo.framebuffer = ptexture->framebuffer(prenderpass);
-      }
+      //}
       // else
       //{
 
@@ -5097,24 +5145,22 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 
 
       renderPassBeginInfo.renderArea.offset = {0, 0};
-      renderPassBeginInfo.renderArea.extent = {(uint32_t)pgpucontext->m_rectangle.width(),
-                                               (uint32_t)pgpucontext->m_rectangle.height()};
+      renderPassBeginInfo.renderArea.extent = {(uint32_t)pgputexture->width(),
+                                               (uint32_t)pgputexture->height()};
 
 
       vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 
-      //////////////////////////////////////////
-   }
-
 }
 
 
-void context::_001BeginRenderPass(::gpu::command_buffer *pgpucommandbuffer,
-                                  ::gpu::ibl::cubemap_framebuffer *pgpucubemapframebuffer, int iFace,
+void context::_001BeginRenderPassWithCubemap(::gpu::command_buffer *pgpucommandbuffer,
+                                  ::gpu::texture *pgputexture, int iFace,
                                   ::gpu::enum_scene escene)
 {
 
+   ASSERT(pgputexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map);
 
    {
 
@@ -5144,16 +5190,16 @@ void context::_001BeginRenderPass(::gpu::command_buffer *pgpucommandbuffer,
       ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
       //::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast<render_pass> prenderpass = prenderer->render_pass2(escene);
-
+      ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
+      ::cast<render_pass> prenderpass = ptexture->get_render_pass();
 
       renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
       // if (prenderer->m_pgpulayer)
       {
 
-         ::cast<::gpu_vulkan::ibl::cubemap_framebuffer> pcubemapframebuffer;
+         //::cast<::gpu_vulkan::ibl::cubemap_framebuffer> pcubemapframebuffer;
 
-         pcubemapframebuffer = pgpucubemapframebuffer;
+         //pcubemapframebuffer = pgpucubemapframebuffer;
 
          //if (pgputexture)
          //{
@@ -5172,7 +5218,7 @@ void context::_001BeginRenderPass(::gpu::command_buffer *pgpucommandbuffer,
          //   warning() << "what?";
          //}
 
-         renderPassBeginInfo.framebuffer = pcubemapframebuffer->framebuffer(prenderpass, iFace);
+         renderPassBeginInfo.framebuffer = ptexture->framebuffer(prenderpass, iFace);
 
       }
       // else
@@ -5221,8 +5267,8 @@ void context::_001BeginRenderPass(::gpu::command_buffer *pgpucommandbuffer,
 
 
       renderPassBeginInfo.renderArea.offset = {0, 0};
-      renderPassBeginInfo.renderArea.extent = {(uint32_t)pgpucontext->m_rectangle.width(),
-                                               (uint32_t)pgpucontext->m_rectangle.height()};
+      renderPassBeginInfo.renderArea.extent = {(uint32_t)ptexture->width(),
+                                               (uint32_t)ptexture->height()};
 
 
       vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);

@@ -15,8 +15,8 @@ namespace gpu_directx12
    texture::texture()
    {
 
-      m_bRenderTarget = false;
-      m_bShaderResource = false;
+      //m_bRenderTarget = false;
+      m_textureflags.m_bShaderResource = false;
       //m_rtvDescriptorSize = 0;
 
       new_texture.set_new_texture();
@@ -30,16 +30,16 @@ namespace gpu_directx12
    }
 
 
-   void texture::create_image(const ::pointer_array < ::image::image > *pimagea)
+   void texture::_create_texture(const ::gpu::texture_data & texturedata)
    {
 
       DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
       // 1. Create the texture resource
       D3D12_RESOURCE_DESC textureDesc = {};
       textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-      textureDesc.Width = m_rectangleTarget.width();
-      textureDesc.Height = m_rectangleTarget.height();
-      if (m_etype == e_type_cube_map)
+      textureDesc.Width = this->width();
+      textureDesc.Height = this->height();
+      if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
       {
          if (textureDesc.Width != textureDesc.Height)
          {
@@ -61,7 +61,7 @@ namespace gpu_directx12
       textureDesc.SampleDesc.Count = 1;
       textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 
-      if (m_bRenderTarget)
+      if (m_textureflags.m_bRenderTarget)
       {
 
          textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
@@ -72,7 +72,7 @@ namespace gpu_directx12
 
       D3D12_CLEAR_VALUE clearValue = {};
 
-      if (m_bRenderTarget)
+      if (m_textureflags.m_bRenderTarget)
       {
 
          pclearvalue = &clearValue;
@@ -111,9 +111,9 @@ namespace gpu_directx12
          textureDesc.SampleDesc.Count = 1;
          textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 
-         m_bRenderTarget = false;
+         m_textureflags.m_bRenderTarget = false;
 
-         m_bShaderResource = false;
+         m_textureflags.m_bShaderResource = false;
 
       }
       else
@@ -125,7 +125,7 @@ namespace gpu_directx12
 
       D3D12_RESOURCE_STATES stateInitial;
 
-      if (m_bRenderTarget)
+      if (m_textureflags.m_bRenderTarget)
       {
 
          stateInitial = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -150,17 +150,16 @@ namespace gpu_directx12
 
       m_estate = stateInitial;
 
-      if (::is_set(pimagea) && pimagea->has_element())
+      if (texturedata.is_image_array())
       {
 
          int iCount;
 
 
-         if (m_etype == e_type_cube_map)
+         if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
          {
             iCount = 6;
-            if (pimagea->first()->width() != m_rectangleTarget.width()
-               || pimagea->first()->height() != m_rectangleTarget.height())
+            if (texturedata.imagea().first()->size() != this->size())
             {
 
                throw ::exception(error_failed);
@@ -171,7 +170,7 @@ namespace gpu_directx12
          else
          {
             iCount = 1;
-            if (pimagea->first()->size() != m_rectangleTarget.size())
+            if (texturedata.imagea().first()->size() != this->size())
             {
 
                throw ::exception(error_failed);
@@ -199,10 +198,10 @@ namespace gpu_directx12
 
          // 3. Prepare subresources
          D3D12_SUBRESOURCE_DATA subresources[6];
-         if (m_etype == e_type_cube_map)
+         if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
          {
             for (int i = 0; i < 6; ++i) {
-               auto ppixmap = (*pimagea)[i];
+               auto ppixmap = texturedata.imagea()[i];
                subresources[i].pData = ppixmap->data(); // Your CPU data pointer
                subresources[i].RowPitch = ppixmap->m_iScan;  // 512 * 4
                subresources[i].SlicePitch = textureDesc.Width * textureDesc.Height * 4;
@@ -211,7 +210,7 @@ namespace gpu_directx12
          }
          else
          {
-            auto ppixmap = pimagea->first();
+            auto ppixmap = texturedata.imagea().first();
             subresources[0].pData = ppixmap->data();            // pointer to your bitmap data (RGBA8, etc.)
             subresources[0].RowPitch = ppixmap->m_iScan;
             subresources[0].SlicePitch = subresources[0].RowPitch * ppixmap->height();
@@ -240,14 +239,14 @@ namespace gpu_directx12
 
       new_texture.set_new_texture();
 
-      if (m_bRenderTarget || m_pheapRenderTargetView)
+      if (m_textureflags.m_bRenderTarget || m_pheapRenderTargetView)
       {
 
          create_render_target();
 
       }
 
-      if (m_bShaderResource || m_pheapRenderTargetView)
+      if (m_textureflags.m_bShaderResource || m_pheapRenderTargetView)
       {
 
          create_shader_resource();
@@ -278,7 +277,7 @@ namespace gpu_directx12
    //       textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
    //       textureDesc.Width = rectangleTarget.width();
    //       textureDesc.Height = rectangleTarget.height();
-   //       if (m_etype == e_type_cube_map)
+   //       if (m_etype == ::gpu::e_texture_cube_map)
    //       {
    //          if (textureDesc.Width != textureDesc.Height)
    //          {
@@ -395,7 +394,7 @@ namespace gpu_directx12
    //          int iCount;
    //
    //
-   //          if (m_etype == e_type_cube_map)
+   //          if (m_etype == ::gpu::e_texture_cube_map)
    //          {
    //             iCount = 6;
    //             if (imagea.first()->width() != rectangleTarget.width()
@@ -438,7 +437,7 @@ namespace gpu_directx12
    //
    //          // 3. Prepare subresources
    //          D3D12_SUBRESOURCE_DATA subresources[6];
-   //          if (m_etype == e_type_cube_map)
+   //          if (m_etype == ::gpu::e_texture_cube_map)
    //          {
    //             for (int i = 0; i < 6; ++i) {
    //                auto ppixmap = imagea[i];
@@ -525,7 +524,7 @@ namespace gpu_directx12
    void texture::create_render_target()
    {
 
-      if (m_bRenderTarget)
+      if (m_textureflags.m_bRenderTarget)
       {
 
          if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
@@ -584,7 +583,7 @@ namespace gpu_directx12
       DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
       D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
       srvDesc.Format = format;
-      if (m_etype == e_type_cube_map)
+      if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
       {
 
          srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
@@ -614,7 +613,7 @@ namespace gpu_directx12
       samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
       samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
       samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-      if (m_etype == e_type_cube_map)
+      if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
       {
 
          samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
@@ -654,8 +653,8 @@ namespace gpu_directx12
          // 2. Describe depth stencil resource
          D3D12_RESOURCE_DESC depthDesc = {};
          depthDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-         depthDesc.Width = m_rectangleTarget.width();
-         depthDesc.Height = m_rectangleTarget.height();
+         depthDesc.Width = this->width();
+         depthDesc.Height = this->height();
          depthDesc.MipLevels = 1;
          depthDesc.DepthOrArraySize = 1;
          depthDesc.Format = DXGI_FORMAT_D32_FLOAT;

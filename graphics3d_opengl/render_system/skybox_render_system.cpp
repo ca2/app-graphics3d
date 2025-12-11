@@ -14,9 +14,9 @@
 #include "bred/graphics3d/shape_factory.h"
 #include "bred/graphics3d/skybox.h"
 #include "bred/graphics3d/skybox.h"
-#include "shaders/skybox.vert.h"
-#include "shaders/skybox.frag.h"
-#include "shaders/skybox_hdr.frag.h"
+#include "shader/skybox.vert.h"
+#include "shader/skybox.frag.h"
+#include "shader/skybox_hdr.frag.h"
 
 
 namespace graphics3d_opengl

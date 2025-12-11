@@ -43,7 +43,7 @@ namespace graphics3d_vulkan
 
     
             static unsigned int pvertexshader[] = {
-#include "render_systems/shader/skybox.vert.spv.inl"
+#include "shader/skybox.vert.spv.inl"
       };
 
       return ::as_memory_block(pvertexshader);
@@ -58,7 +58,7 @@ namespace graphics3d_vulkan
       
     
             static unsigned int pfragmentshader[] = {
-#include "render_systems/shader/skybox.frag.spv.inl"
+#include "shader/skybox.frag.spv.inl"
       };
 
       return ::as_memory_block(pfragmentshader);
@@ -71,14 +71,12 @@ namespace graphics3d_vulkan
 
 
       static unsigned int pfragmentshader[] = {
-#include "render_systems/shader/skybox_hdr.frag.spv.inl"
+#include "shader/skybox_hdr.frag.spv.inl"
       };
 
       return ::as_memory_block(pfragmentshader);
 
-
    }
-
 
 
    void skybox_render_system::on_prepare(gpu::context *pgpucontext)
@@ -87,7 +85,6 @@ namespace graphics3d_vulkan
       ::graphics3d::skybox_render_system::on_prepare(pgpucontext);
 
    }
-
 
 
    void skybox_render_system::on_render(::gpu::context* pgpucontext, ::graphics3d::scene_base* pscene)

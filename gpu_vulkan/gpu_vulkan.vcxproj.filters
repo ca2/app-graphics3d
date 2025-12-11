@@ -39,6 +39,9 @@
     <Filter Include="Source Files\ibl\operating_system">
       <UniqueIdentifier>{7d5251d2-1d85-456a-b600-24603712b07d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ibl\_aaa">
+      <UniqueIdentifier>{f657b272-73d2-46ca-a01d-d447624f8bc7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -203,11 +206,14 @@
     <ClInclude Include="ibl\equirectangular_cubemap.h">
       <Filter>Header Files\ibl</Filter>
     </ClInclude>
-    <ClInclude Include="ibl\cubemap_framebuffer.h">
+    <ClInclude Include="ibl\aaa_cubemap_framebuffer.h">
       <Filter>Header Files\ibl</Filter>
     </ClInclude>
     <ClInclude Include="ibl\aaa_hdri_cube.h">
       <Filter>Header Files\ibl</Filter>
+    </ClInclude>
+    <ClInclude Include="binding.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -346,7 +352,7 @@
     <ClCompile Include="ibl\equirectangular_cubemap.cpp">
       <Filter>Source Files\ibl</Filter>
     </ClCompile>
-    <ClCompile Include="ibl\cubemap_framebuffer.cpp">
+    <ClCompile Include="ibl\aaa_cubemap_framebuffer.cpp">
       <Filter>Source Files\ibl</Filter>
     </ClCompile>
   </ItemGroup>
@@ -392,25 +398,28 @@
     <CustomBuild Include="shader\white_to_color.vert">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="ibl\shader\diffuseirradiance.frag">
+    <CustomBuild Include="ibl\shader\brdf_convolution_map.frag">
       <Filter>Source Files\ibl\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="ibl\shader\filtered_cube.vert">
+    <CustomBuild Include="ibl\shader\brdf_convolution_map.vert">
       <Filter>Source Files\ibl\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="ibl\shader\prefiltered_env_map.frag">
+    <CustomBuild Include="ibl\shader\diffuse_irradiance_map.frag">
       <Filter>Source Files\ibl\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="ibl\shader\hdricube.vert">
+    <CustomBuild Include="ibl\shader\diffuse_irradiance_map.vert">
       <Filter>Source Files\ibl\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="ibl\shader\hdricube.frag">
+    <CustomBuild Include="ibl\shader\equirectangular_cubemap.frag">
       <Filter>Source Files\ibl\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="ibl\shader\brdfconvolution.frag">
+    <CustomBuild Include="ibl\shader\equirectangular_cubemap.vert">
       <Filter>Source Files\ibl\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="ibl\shader\brdfconvolution.vert">
+    <CustomBuild Include="ibl\shader\prefiltered_environment_map.frag">
+      <Filter>Source Files\ibl\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ibl\shader\prefiltered_environment_map.vert">
       <Filter>Source Files\ibl\shader</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -456,6 +465,18 @@
     </None>
     <None Include="ibl\shader\hdricube.vert.spv.inl">
       <Filter>Header Files\ibl\shader</Filter>
+    </None>
+    <None Include="ibl\_aaa\aaa_cubemap_framebuffer.cpp">
+      <Filter>Source Files\ibl\_aaa</Filter>
+    </None>
+    <None Include="ibl\_aaa\aaa_cubemap_framebuffer.h">
+      <Filter>Source Files\ibl\_aaa</Filter>
+    </None>
+    <None Include="ibl\_aaa\aaa_hdri_cube.cpp">
+      <Filter>Source Files\ibl\_aaa</Filter>
+    </None>
+    <None Include="ibl\_aaa\aaa_hdri_cube.h">
+      <Filter>Source Files\ibl\_aaa</Filter>
     </None>
   </ItemGroup>
 </Project>

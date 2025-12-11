@@ -36,10 +36,10 @@ namespace gpu
          // m_uHeight = height;
 
          ødefer_construct(m_ptexture);
-         m_ptexture->m_rectangleTarget.left=0;
-         m_ptexture->m_rectangleTarget.top=0;
-         m_ptexture->m_rectangleTarget.right=width;
-         m_ptexture->m_rectangleTarget.bottom=height;
+         m_ptexture->rectangle().left=0;
+         m_ptexture->rectangle().top=0;
+         m_ptexture->rectangle().right=width;
+         m_ptexture->rectangle().bottom=height;
 
          on_initialize_BrdfConvolutionFramebuffer();
 
@@ -86,13 +86,13 @@ namespace gpu
 
       unsigned int brdf_convolution_framebuffer::getWidth()
       {
-         return m_ptexture->m_rectangleTarget.width();
+         return m_ptexture->rectangle().width();
       }
 
 
       unsigned int brdf_convolution_framebuffer::getHeight()
       {
-         return m_ptexture->m_rectangleTarget.height();
+         return m_ptexture->rectangle().height();
       }
       //
       //

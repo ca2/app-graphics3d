@@ -73,8 +73,9 @@ namespace gpu_vulkan
       virtual bool should_use_advanced_pipeline_synchronization();
 
 
-      virtual void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {});
-      virtual void _update_render_pass(::gpu::context *pgpucontext, ::pointer<::gpu_vulkan::render_pass> previous = {});
+      virtual void update_render_pass(::gpu::context* pgpucontext, ::gpu::texture * pgputextureTarget, ::pointer <::gpu_vulkan::render_pass>previous = {});
+      virtual void _update_render_pass(::gpu::context *pgpucontext, ::gpu::texture *pgputextureTarget,
+                                       ::pointer<::gpu_vulkan::render_pass> previous = {});
 
       //virtual void on_before_begin_render(frame* pframe, ::gpu::texture * pgputexture);
 

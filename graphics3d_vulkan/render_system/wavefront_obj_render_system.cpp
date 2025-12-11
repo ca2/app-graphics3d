@@ -111,8 +111,9 @@ namespace graphics3d_vulkan
    {
 
             static unsigned int pvertexshader[] = {
-#include "render_systems/shader/wavefront.vert.spv.inl"
-      };
+#include "render_system/shader/wavefront.vert.spv.inl"
+
+            };
 
       return ::as_memory_block(pvertexshader);
 
@@ -124,8 +125,9 @@ namespace graphics3d_vulkan
    {
 
             static unsigned int pfragmentshader[] = {
-#include "render_systems/shader/wavefront.frag.spv.inl"
-      };
+#include "render_system/shader/wavefront.frag.spv.inl"
+
+            };
 
       return ::as_memory_block(pfragmentshader);
 

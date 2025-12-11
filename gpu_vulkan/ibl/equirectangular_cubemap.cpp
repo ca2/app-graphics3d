@@ -20,7 +20,7 @@
 #include "gpu_vulkan/context.h"
 #include "gpu_vulkan/texture.h"
 // #include "timer.h"
-#include "cubemap_framebuffer.h"
+//#include "cubemap_framebuffer.h"
 //#include "hdri_cube.h"
 
 
@@ -50,7 +50,8 @@ namespace gpu_vulkan
       {
 
          static unsigned int pvertexshader[] = {
-#include "shader/hdricube.vert.spv.inl"
+#include "shader/equirectangular_cubemap.vert.spv.inl"
+
          };
 
          return ::as_memory_block(pvertexshader);
@@ -63,7 +64,8 @@ namespace gpu_vulkan
 
          static unsigned int pfragmentshader[] = 
          {
-#include "shader/hdricube.frag.spv.inl"
+#include "shader/equirectangular_cubemap.frag.spv.inl"
+
          };
 
       return ::as_memory_block(pfragmentshader);
@@ -74,81 +76,83 @@ namespace gpu_vulkan
       void equirectangular_cubemap::compute()
       {
 
-         ::gpu::Timer timer;
+         ::gpu::ibl::equirectangular_cubemap::compute();
 
-         ::pointer < ::gpu_vulkan::command_buffer > pgpucommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
+         //::gpu::Timer timer;
 
-         using namespace graphics3d;
+         //::pointer < ::gpu_vulkan::command_buffer > pgpucommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
 
-         floating_matrix4 model = mIndentity4;
+         //using namespace graphics3d;
 
-         floating_matrix4 cameraAngles[] = 
-         {
-            lookAt(origin, unitX, -unitY),
-            lookAt(origin, -unitX, -unitY),
-            lookAt(origin, unitY, unitZ), 
-            lookAt(origin, -unitY, -unitZ),
-            lookAt(origin, unitZ, -unitY), 
-            lookAt(origin, -unitZ, -unitY)
-         };
-         
-         floating_matrix4 projection = m_pgpucontext->m_pengine->perspective(
-            90_degrees, // 90 degrees to cover one face
-                                                 1.0f, // its a square
-                                                 0.1f, 2.0f);
+         //floating_matrix4 model = mIndentity4;
 
-         //projection[1][1] *= -1; // Invert Y for Vulkan  
+         //floating_matrix4 cameraAngles[] = 
+         //{
+         //   lookAt(origin, unitX, -unitY),
+         //   lookAt(origin, -unitX, -unitY),
+         //   lookAt(origin, unitY, unitZ), 
+         //   lookAt(origin, -unitY, -unitZ),
+         //   lookAt(origin, unitZ, -unitY), 
+         //   lookAt(origin, -unitZ, -unitY)
+         //};
+         //
+         //floating_matrix4 projection = m_pgpucontext->m_pengine->perspective(
+         //   90_degrees, // 90 degrees to cover one face
+         //                                        1.0f, // its a square
+         //                                        0.1f, 2.0f);
 
-         m_pgpucontext->m_rectangle.set(0, 0, m_uCubemapWidth, m_uCubemapHeight);
+         ////projection[1][1] *= -1; // Invert Y for Vulkan  
 
-         ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
-         // render the equirectangular HDR texture to a cubemap
-         //m_pframebuffer->bind();
-         // render to each side of the cubemap
+         //m_pgpucontext->m_rectangle.set(0, 0, m_uCubemapWidth, m_uCubemapHeight);
 
-         ::cast<::gpu_vulkan::texture> ptextureFramebuffer = m_pframebuffer->m_ptexture;
+         //::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
+         //// render the equirectangular HDR texture to a cubemap
+         ////m_pframebuffer->bind();
+         //// render to each side of the cubemap
 
-         ptextureFramebuffer->_set_state(pgpucommandbuffer, {
+         //::cast<::gpu_vulkan::texture> ptextureFramebuffer = m_pframebuffer->m_ptexture;
 
-                                                               VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                                                               VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                                               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-            });
+         //ptextureFramebuffer->_set_state(pgpucommandbuffer, {
 
-         auto escene = ::gpu::e_scene_srgb;
+         //                                                      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         //                                                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+         //                                                      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+         //   });
 
-         m_pshaderHdri->_bind(pgpucommandbuffer, escene);
-         m_pshaderHdri->bind_source(pgpucommandbuffer,m_ptextureHdr);
+         //auto escene = ::gpu::e_scene_srgb;
 
-         for (auto i = 0; i < 6; i++)
-         {
+         //m_pshaderHdri->_bind(pgpucommandbuffer, escene);
+         //m_pshaderHdri->bind_source(pgpucommandbuffer,m_ptextureHdr);
 
-            pcontext->_001BeginRenderPass(pgpucommandbuffer, m_pframebuffer, i, escene);
-            
-            m_pshaderHdri->setModelViewProjection(model, cameraAngles[i], projection);
-            
-            //m_pframebuffer->setCubeFace(i, m_pshaderHdri);
+         //for (auto i = 0; i < 6; i++)
+         //{
 
-            //m_pshaderHdri->set_sequence3("multiplier", {1.f, 1.f, 1.f});
-            m_pshaderHdri->set_int("faceIndex", i);
+         //   pcontext->_001BeginRenderPassWithCubemap(pgpucommandbuffer, m_ptexture, i, escene);
+         //   
+         //   m_pshaderHdri->setModelViewProjection(model, cameraAngles[i], projection);
+         //   
+         //   //m_pframebuffer->setCubeFace(i, m_pshaderHdri);
 
-            m_pshaderHdri->push_properties(pgpucommandbuffer);
+         //   //m_pshaderHdri->set_sequence3("multiplier", {1.f, 1.f, 1.f});
+         //   m_pshaderHdri->set_int("faceIndex", i);
 
-            m_prenderableCube->bind(pgpucommandbuffer);
+         //   m_pshaderHdri->push_properties(pgpucommandbuffer);
 
-            m_prenderableCube->draw(pgpucommandbuffer);
+         //   m_prenderableCube->bind(pgpucommandbuffer);
 
-            m_prenderableCube->unbind(pgpucommandbuffer);
+         //   m_prenderableCube->draw(pgpucommandbuffer);
 
-            pcontext->_001EndRenderPass(pgpucommandbuffer);
+         //   m_prenderableCube->unbind(pgpucommandbuffer);
 
-         }
+         //   pcontext->_001EndRenderPass(pgpucommandbuffer);
 
-         pcontext->endSingleTimeCommands(pgpucommandbuffer);
+         //}
 
-         m_pframebuffer->generateMipmap();
+         //pcontext->endSingleTimeCommands(pgpucommandbuffer);
 
-         timer.logDifference("Rendered equirectangular cubemap");
+         //m_pframebuffer->generateMipmap();
+
+         //timer.logDifference("Rendered equirectangular cubemap");
 
       }
 

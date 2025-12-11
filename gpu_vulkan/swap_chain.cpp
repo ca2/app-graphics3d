@@ -566,7 +566,7 @@ namespace gpu_vulkan
          rectangleTarget.set_width(extent.width);
          rectangleTarget.set_height(extent.height);
 
-         pgputexture->m_bTransferDst = true;
+         pgputexture->m_textureflags.m_bTransferTarget = true;
 
          bool bWithDepth = false;
 
@@ -663,7 +663,7 @@ namespace gpu_vulkan
    //   subpass.colorAttachmentCount = 1;
    //   subpass.pColorAttachments = &colorAttachmentRef;
 
-   //   if (m_bWithDepth)
+   //   if (m_flags.m_bWithDepth)
    //   {
    //      subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
@@ -701,7 +701,7 @@ namespace gpu_vulkan
    //   VkRenderPassCreateInfo renderPassInfo = {};
    //   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 
-   //   if (m_bWithDepth)
+   //   if (m_flags.m_bWithDepth)
    //   {
    //      renderPassInfo.attachmentCount = 2;
    //   }
@@ -962,7 +962,11 @@ namespace gpu_vulkan
 
          pgpucontext->øconstruct(m_pshaderPresent);
 
-         m_pshaderPresent->m_bindingSampler.set();
+         //m_pshaderPresent->m_bindingSampler.set();
+
+         auto &bindingSampler = m_pshaderPresent->binding();
+
+         bindingSampler.m_ebinding = ::gpu::e_binding_sampler2d;
 
          m_pshaderPresent->m_bDisableDepthTest = true;
 
@@ -980,7 +984,11 @@ namespace gpu_vulkan
 
          m_pshaderPresent->m_bDisableDepthTest = true;
 
-         m_pshaderPresent->m_bindingSampler.set();
+         //m_pshaderPresent->m_bindingSampler.set();
+
+         //auto &bindingSampler = m_pshaderPresent->binding();
+
+         //bindingSampler.m_bImageSampler = true;
 
          m_pshaderPresent->m_bClearColor = true;
 

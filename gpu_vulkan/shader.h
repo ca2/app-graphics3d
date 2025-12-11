@@ -91,8 +91,8 @@ namespace gpu_vulkan
       ::comparable_array<VkDynamicState> m_dynamicstateaEnable;
 
       //VkDescriptorSet   m_vkdescriptorset;
-      ::pointer<::gpu_vulkan::descriptor_set_layout>  m_psetdescriptorlayout;
-      ::pointer <::gpu_vulkan::descriptor_pool>       m_pdescriptorpool;
+      ::pointer_array <::gpu_vulkan::descriptor_set_layout>  m_descriptorsetlayouta;
+      ::pointer_array <::gpu_vulkan::descriptor_pool>       m_descriptorpoola;
 
 
 
@@ -100,6 +100,7 @@ namespace gpu_vulkan
       ::pointer < ::gpu_vulkan::shader > m_pshaderPresent;
       VkRenderPass            m_vkrenderpassCurrent;
       ::int_map<::pointer<::gpu_vulkan::descriptor_set_layout>> m_mapDescriptorSetLayout;
+      ::array_base<VkDescriptorSet> m_vkdescriptorseta;
 
 
       shader();
@@ -130,12 +131,18 @@ namespace gpu_vulkan
 
       //void _create_pipeline_layout(int iPushPropertiesSize);
 
-      virtual render_pass* render_pass2(::gpu::enum_scene escene);
+      //virtual render_pass *render_pass2(::gpu::texture *pgputextureTarget);
+
+      virtual void _defer_prepare_pipeline(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputexture);
+
       virtual void create_descriptor_layout();
 
-      void draw() override;
+      virtual void _update_vk_descriptor_set(int iFrameCount);
 
-      bool has_sampler();
+      void draw() override;
+      void on_before_draw(::gpu::command_buffer *pgpucommandbuffer) override;
+
+      //bool has_sampler();
       //class shader_sampler * shader_sampler();
       //class shader_texture * shader_texture(::gpu::texture* ptexture, bool bSampler);
 
@@ -147,7 +154,7 @@ namespace gpu_vulkan
 
       void on_initialize_shader() override;
 
-      virtual void _create_pipeline(::gpu::enum_scene escene);
+      virtual void _create_pipeline(::gpu::texture * pgputextureTarget);
 
       void bind(::gpu::command_buffer *pgpucommandbuffer,::gpu::texture *pgputextureTarget,
                 ::gpu::texture *pgputextureSource) override;
@@ -155,11 +162,10 @@ namespace gpu_vulkan
       void bind(::gpu::command_buffer *pgpucommandbuffe) override;
       void unbind(::gpu::command_buffer *pgpucommandbuffer) override;
       virtual void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget);
-      void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_scene escene) override;
+      //void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_scene escene) override;
 
 
       void push_properties(::gpu::command_buffer *pgpucommandbuffer) override;
-
 
       //void set_push_properties(::gpu::command_buffer *pgpucommandbuffer, const ::block &block) override;
 

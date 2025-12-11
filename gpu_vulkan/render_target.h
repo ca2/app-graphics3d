@@ -30,9 +30,9 @@ namespace gpu_vulkan
       //::array<VkFramebuffer> m_framebuffers;
       //VkRenderPass m_vkrenderpass;
 
-      ::pointer < ::gpu_vulkan::render_pass > m_prenderpassDepth;
-      ::pointer < ::gpu_vulkan::render_pass > m_prenderpassNoDepth;
-      ::pointer<::gpu_vulkan::render_pass> m_prenderpassSrgb;
+      //::pointer < ::gpu_vulkan::render_pass > m_prenderpassDepth;
+      //::pointer < ::gpu_vulkan::render_pass > m_prenderpassNoDepth;
+      //::pointer<::gpu_vulkan::render_pass> m_prenderpassSrgb;
 
 
 
@@ -72,13 +72,17 @@ namespace gpu_vulkan
       void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous = {}) override;
 
 
-      virtual ::gpu_vulkan::render_pass *render_pass_srgb();
-      virtual ::gpu_vulkan::render_pass* render_pass_with_depth();
-      virtual ::gpu_vulkan::render_pass* render_pass_no_depth();
+      //virtual ::gpu_vulkan::render_pass *render_pass_srgb(::gpu::texture * pgputextureTarget);
+      //virtual ::gpu_vulkan::render_pass *render_pass_with_depth(::gpu::texture *pgputextureTarget);
+      //virtual ::gpu_vulkan::render_pass *render_pass_no_depth(::gpu::texture *pgputextureTarget);
+      // virtual ::gpu_vulkan::render_pass *render_pass_srgb(::gpu::texture * pgputextureTarget);
+      // virtual ::gpu_vulkan::render_pass *render_pass_with_depth(::gpu::texture *pgputextureTarget);
+      //virtual ::gpu_vulkan::render_pass *get_render_pass(::gpu::texture *pgputextureTarget);
 
-      virtual ::gpu_vulkan::render_pass* render_pass2(bool bWithDepth);
+      //virtual ::gpu_vulkan::render_pass *render_pass2(::gpu::texture *pgputextureTarget);
 
-      virtual ::pointer <::gpu_vulkan::render_pass > create_render_pass(bool bWithDepth, bool bSrgb = false);
+      //virtual ::pointer <::gpu_vulkan::render_pass > create_render_pass(bool bWithDepth, bool bSrgb = false);
+      //virtual ::pointer<::gpu_vulkan::render_pass> create_render_pass(::gpu::texture * pgputextureTarget);
 
 
 
@@ -119,7 +123,8 @@ namespace gpu_vulkan
       void on_init() override;
 
 
-      void on_create_render_target_texture(::gpu::texture* pgputexture) override;
+      void on_create_render_target_texture(::gpu::texture_attributes &textureattributes,
+                                           ::gpu::texture_flags &textureflags) override;
 
       //virtual void createRenderPassImpl();
       //virtual void createImageViews();

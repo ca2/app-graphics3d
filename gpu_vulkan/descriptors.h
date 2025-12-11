@@ -39,6 +39,7 @@ namespace gpu_vulkan
       ::pointer < context > m_pgpucontext;
       VkDescriptorSetLayout m_vkdescriptorsetlayout;
       ::map<unsigned int, VkDescriptorSetLayoutBinding> m_bindings;
+      int m_iIndex = -1;
 
    };
 
@@ -93,7 +94,7 @@ namespace gpu_vulkan
 
       ::pointer < context > m_pgpucontext;
       VkDescriptorPool m_vkdescriptorpool;
-
+      int m_iIndex = -1;
    };
 
 

@@ -2112,7 +2112,10 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
          ødefer_construct_new(m_pshaderBlend3);
 
          m_pshaderBlend3->m_bEnableBlend = true;
-         m_pshaderBlend3->m_bindingSampler.set(0);
+         //m_pshaderBlend3->m_bindingSampler.set(0);
+         auto &bindingSampler = m_pshaderBlend3->binding();
+
+         bindingSampler.m_ebinding = ::gpu::e_binding_sampler2d;
          m_pshaderBlend3->m_bDisableDepthTest = true;
 
          m_pshaderBlend3->initialize_shader_with_block(
@@ -2241,28 +2244,28 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
                               // 1. Define viewport and scissor rectangle
                D3D12_VIEWPORT viewport = {};
-               viewport.TopLeftX = (FLOAT) ptextureSrc->m_rectangleTarget.left;
-               viewport.TopLeftY = (FLOAT) ptextureSrc->m_rectangleTarget.top;
-               viewport.Width = static_cast<float>(ptextureSrc->m_rectangleTarget.width());
-               viewport.Height = static_cast<float>(ptextureSrc->m_rectangleTarget.height());
+               viewport.TopLeftX = (FLOAT) ptextureSrc->rectangle().left;
+               viewport.TopLeftY = (FLOAT) ptextureSrc->rectangle().top;
+               viewport.Width = static_cast<float>(ptextureSrc->rectangle().width());
+               viewport.Height = static_cast<float>(ptextureSrc->rectangle().height());
                viewport.MinDepth = 0.0f;
                viewport.MaxDepth = 1.0f;
 
                D3D12_RECT scissorRect = {};
-               scissorRect.left = ptextureSrc->m_rectangleTarget.left;
-               scissorRect.top = ptextureSrc->m_rectangleTarget.top;
-               scissorRect.right = ptextureSrc->m_rectangleTarget.right;
-               scissorRect.bottom = ptextureSrc->m_rectangleTarget.bottom;
+               scissorRect.left = ptextureSrc->rectangle().left;
+               scissorRect.top = ptextureSrc->rectangle().top;
+               scissorRect.right = ptextureSrc->rectangle().right;
+               scissorRect.bottom = ptextureSrc->rectangle().bottom;
 
 
                //// 4. Set the viewport and scissor
                pcommandlist->RSSetViewports(1, &viewport);
                pcommandlist->RSSetScissorRects(1, &scissorRect);
                //D3D11_VIEWPORT vp = {};
-               //vp.TopLeftX = ptexture->m_rectangleTarget.left;
-               //vp.TopLeftY = ptexture->m_rectangleTarget.top;
-               //vp.Width = static_cast<float>(ptexture->m_rectangleTarget.width());
-               //vp.Height = static_cast<float>(ptexture->m_rectangleTarget.height());
+               //vp.TopLeftX = ptexture->rectangle().left;
+               //vp.TopLeftY = ptexture->rectangle().top;
+               //vp.Width = static_cast<float>(ptexture->rectangle().width());
+               //vp.Height = static_cast<float>(ptexture->rectangle().height());
                //vp.MinDepth = 0.0f;
                //vp.MaxDepth = 1.0f;
                //m_pcontext->RSSetViewports(1, &vp);

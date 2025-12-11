@@ -63,6 +63,11 @@ namespace gpu_vulkan
       void draw_indexes(int iIndexCount) override;
 
 
+      void begin_render(::gpu::shader *pgpushader, ::gpu::texture *pgputextureTarget) override;
+      void end_render() override;
+
+
+
    };
 
 

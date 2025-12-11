@@ -3341,7 +3341,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto sizeHost = m_pgpucontext->m_rectangle.size();
 
-      const auto& rect = player->texture()->m_rectangleTarget;
+      const auto& rect = player->texture()->rectangle();
       float left = ((float)rect.left / (float) sizeHost.width()) * 2.0f - 1.0f;
       float right = ((float)rect.right / (float) sizeHost.width()) * 2.0f - 1.0f;
       float top = 1.0f - ((float)rect.top / (float) sizeHost.height()) * 2.0f;

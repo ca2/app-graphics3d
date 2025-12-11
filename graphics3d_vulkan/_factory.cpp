@@ -12,10 +12,10 @@
 //#include "sockets/basic/socket_handler.h"
 //#include "sockets/basic/tcp_socket.h"
 //#include "sockets/basic/listen_socket_impl.h"
-#include "render_systems/gltf_render_system.h"
-#include "render_systems/scene_render_system.h"
-#include "render_systems/wavefront_obj_render_system.h"
-#include "render_systems/skybox_render_system.h"
+#include "render_system/gltf_render_system.h"
+#include "render_system/scene_render_system.h"
+#include "render_system/wavefront_obj_render_system.h"
+#include "render_system/skybox_render_system.h"
 
 
 IMPLEMENT_FACTORY(graphics3d_vulkan)

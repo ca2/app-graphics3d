@@ -45,15 +45,24 @@ namespace gpu_vulkan
 
          ::cast<gpu_vulkan::context> pcontext = m_pgpucontext;
 
-         ptexture->m_iMipCount = (uint32_t)(floor(::log2((double)::maximum(ptexture->m_rectangleTarget.width(),
-                                                                           ptexture->m_rectangleTarget.height()))) +
-                                            1.0);
-         ptexture->m_bTransferSrc = true;
-         ptexture->m_bWithDepth = false;
-         ptexture->m_bSrgb = true;
-         ptexture->initialize_texture(
-            m_pgpucontext->m_pgpurenderer, ptexture->m_rectangleTarget, true,
-                                            nullptr, ::gpu::texture::e_type_cube_map);
+         ::gpu::texture_attributes textureattributes(ptexture->rectangle());
+
+         textureattributes.m_iMipCount = (uint32_t)(floor(::log2((double)::maximum(ptexture->rectangle().width(),
+                                                                           ptexture->rectangle().height()))) +
+
+
+                                                                           1.0);
+
+                                                                           textureattributes.m_iLayerCount = 6;
+                                                                           textureattributes.m_etexture = ::gpu::e_texture_cube_map;
+         textureattributes.m_iFloat = 1;
+
+
+         ::gpu::texture_flags textureflags;
+         textureflags.m_bTransferSource = true;
+         textureflags.m_bWithDepth = false;
+
+         ptexture->initialize_texture(m_pgpucontext->m_pgpurenderer, textureattributes, textureflags);
 
         
          for (uint32_t i = 0; i < 6; ++i)
@@ -81,8 +90,8 @@ namespace gpu_vulkan
          //   framebufferInfo.renderPass = renderPass;
          //   framebufferInfo.attachmentCount = 1;
          //   framebufferInfo.pAttachments = attachments;
-         //   framebufferInfo.width = ptexture->m_rectangleTarget.width();
-         //   framebufferInfo.height = ptexture->m_rectangleTarget.height();
+         //   framebufferInfo.width = ptexture->rectangle().width();
+         //   framebufferInfo.height = ptexture->rectangle().height();
          //   framebufferInfo.layers = 1;
          //   VK_CHECK_RESULT(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[i]));
 
@@ -100,7 +109,7 @@ namespace gpu_vulkan
          //ptexture->m_gluType = GL_TEXTURE_CUBE_MAP;
          //glBindRenderbuffer(GL_RENDERBUFFER, ptexture->m_gluDepthStencilRBO);
          //GLCheckError("");
-         //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, ptexture->m_rectangleTarget.width(), ptexture->m_rectangleTarget.height());
+         //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, ptexture->rectangle().width(), ptexture->rectangle().height());
          //GLCheckError("");
 
          //// attach the depth buffer
@@ -121,8 +130,8 @@ namespace gpu_vulkan
          //      GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
          //      0,
          //      GL_RGB16F,
-         //      ptexture->m_rectangleTarget.width(),
-         //      ptexture->m_rectangleTarget.height(),
+         //      ptexture->rectangle().width(),
+         //      ptexture->rectangle().height(),
          //      0,
          //      GL_RGB,
          //      GL_FLOAT,
@@ -194,13 +203,13 @@ namespace gpu_vulkan
 
          int iAttachmentCount = 1;
 
-         //if (prenderpass->m_bWithDepth)
+         //if (prenderpass->m_flags.m_bWithDepth)
          //{
 
-         //   if (!m_bWithDepth)
+         //   if (!m_flags.m_bWithDepth)
          //   {
 
-         //      m_bWithDepth = true;
+         //      m_flags.m_bWithDepth = true;
          //   }
 
          //   VkImageView depthImageView = get_depth_image_view();
@@ -220,8 +229,8 @@ namespace gpu_vulkan
          framebufferInfo.renderPass = prenderpass->m_vkrenderpass;
          framebufferInfo.attachmentCount = 1;
          framebufferInfo.pAttachments = attachments;
-         framebufferInfo.width = m_ptexture->m_rectangleTarget.width();
-         framebufferInfo.height = m_ptexture->m_rectangleTarget.height();
+         framebufferInfo.width = m_ptexture->rectangle().width();
+         framebufferInfo.height = m_ptexture->rectangle().height();
          framebufferInfo.layers = 1;
          
          VK_CHECK_RESULT(vkCreateFramebuffer(pcontext->logicalDevice(), &framebufferInfo, nullptr,
@@ -335,9 +344,9 @@ namespace gpu_vulkan
          
          ::cast<gpu_vulkan::physical_device> pphysicaldevice = pdevice->m_pphysicaldevice;
 
-         auto width = ptexture->m_rectangleTarget.width();
+         auto width = ptexture->rectangle().width();
 
-         auto height = ptexture->m_rectangleTarget.height();
+         auto height = ptexture->rectangle().height();
 
          ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
@@ -356,8 +365,8 @@ namespace gpu_vulkan
             pcommandbufferCopy->m_vkcommandbuffer,
             ptexture->m_vkimage, 
             ptexture->m_vkformat,
-            ptexture->m_rectangleTarget.width(), ptexture->m_rectangleTarget.height(),
-            ptexture->m_iMipCount);
+            ptexture->rectangle().width(), ptexture->rectangle().height(),
+            ptexture->m_textureattributes.m_iMipCount);
 
          pcontext->endSingleTimeCommands(pcommandbufferCopy);
 
@@ -377,7 +386,7 @@ namespace gpu_vulkan
          };
          imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
          imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
-         imageViewCreateInfo.subresourceRange.levelCount = ptexture->m_iMipCount;
+         imageViewCreateInfo.subresourceRange.levelCount = ptexture->m_textureattributes.m_iMipCount;
          imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
          imageViewCreateInfo.subresourceRange.layerCount = 6;
          VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &imageViewCreateInfo, nullptr, &ptexture->m_vkimageview));
@@ -392,7 +401,7 @@ namespace gpu_vulkan
          samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
          samplerCreateInfo.mipLodBias = 0.0f;
          samplerCreateInfo.minLod = 0.0f;
-         samplerCreateInfo.maxLod = float(ptexture->m_iMipCount);
+         samplerCreateInfo.maxLod = float(ptexture->m_textureattributes.m_iMipCount);
          samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
          samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
          samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;

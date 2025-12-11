@@ -92,9 +92,9 @@ namespace gpu_directx12
 
          øconstruct_new(ptextureSwapChain);
 
-         ptextureSwapChain->m_bRenderTarget = true;
+         ptextureSwapChain->m_textureflags.m_bRenderTarget = true;
 
-         ptextureSwapChain->m_bShaderResource = false;
+         ptextureSwapChain->m_textureflags.m_bShaderResource = false;
 
          //ptextureSwapChain->m_bDepthStencil = false;
 
@@ -153,7 +153,8 @@ namespace gpu_directx12
 
          øconstruct_new(m_pshaderPresent);
 
-         m_pshaderPresent->m_bindingSampler.set();
+         auto & bindingSampler = m_pshaderPresent->binding();
+         bindingSampler.m_ebinding = ::gpu::e_binding_sampler2d;
          m_pshaderPresent->m_bDisableDepthTest = true;
          const char* fullscreen_vertex_shader = R"shader(// fullscreen_vs.hlsl
       struct VSOut {

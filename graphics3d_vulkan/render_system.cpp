@@ -22,30 +22,30 @@ namespace graphics3d_vulkan
    render_system ::~render_system() {}
 
 
-   ::gpu_vulkan::render_pass *render_system::render_pass2()
-   {
+   //::gpu_vulkan::render_pass *render_system::render_pass2()
+   //{
 
-    ::cast<::gpu_vulkan::renderer> prenderer = m_pengine->gpu_context()->m_pgpurenderer;
+   // ::cast<::gpu_vulkan::renderer> prenderer = m_pengine->gpu_context()->m_pgpurenderer;
 
-    return prenderer->render_pass2();
+   // return prenderer->render_pass2();
 
-      //if (!m_pgpurenderpass)
-      //{
+   //   //if (!m_pgpurenderpass)
+   //   //{
 
-      //         øconstruct(m_pgpurenderpass);
+   //   //         øconstruct(m_pgpurenderpass);
 
-      //         m_pgpurenderpass->initialize_gpu_context_object(m_pengine->gpu_context());
+   //   //         m_pgpurenderpass->initialize_gpu_context_object(m_pengine->gpu_context());
 
-      //   m_pgpurenderpass->m_bLoadClearOp = false;
-      //         m_pgpurenderpass->m_bWithDepth = true;
+   //   //   m_pgpurenderpass->m_bLoadClearOp = false;
+   //   //         m_pgpurenderpass->m_flags.m_bWithDepth = true;
 
-      //   m_pgpurenderpass->createRenderPass();
+   //   //   m_pgpurenderpass->createRenderPass();
 
-      //}
+   //   //}
 
-      //return m_pgpurenderpass;
+   //   //return m_pgpurenderpass;
 
-   }
+   //}
 
    
    
@@ -58,11 +58,11 @@ namespace graphics3d_vulkan
       
       auto pframe = ::gpu::current_frame();
 
-      auto prenderpass = render_pass2();
+      //auto prenderpass = render_pass2();
 
       auto prendertarget = prenderer->m_pgpurendertarget;
 
-      auto vkrenderpass = prenderpass->m_vkrenderpass;
+      
 
       ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
 
@@ -72,6 +72,13 @@ namespace graphics3d_vulkan
          warning() << "what?";
 
       }
+
+
+      //::cast<::gpu_vulkan::texture> ptexture = m_ptextureTarget;
+
+      auto prenderpass = ptexture->get_render_pass();
+
+      auto vkrenderpass = prenderpass->m_vkrenderpass;
 
       VkRenderPassBeginInfo renderPassBeginInfo = vkinit::renderPassBeginInfo();
       renderPassBeginInfo.renderPass = vkrenderpass;

@@ -22,9 +22,9 @@
 #include "gpu_opengl/ibl/diffuse_irradiance_map.h"
 #include "gpu_opengl/ibl/specular_map.h"
 // #include <stdexcept>
-#include "shaders/pbr.frag.h"
-#include "shaders/pbr.vert.h"
-#include "gpu/ibl/cubemap_framebuffer.h"
+#include "shader/pbr.frag.h"
+#include "shader/pbr.vert.h"
+//#include "gpu/ibl/cubemap_framebuffer.h"
 
 
 namespace graphics3d_opengl
@@ -128,19 +128,19 @@ namespace graphics3d_opengl
                pshader->bind_source2(pcommandbuffer,
                   TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP,
                   "diffuseIrradianceMap",
-                  pirradiancemap->m_pframebufferDiffuseIrradiance->m_ptexture);
+                  pirradiancemap->m_ptextureDiffuseIrradianceCubemap);
           ::cast<::gpu_opengl::ibl::specular_map> pspecularmap = pscene->m_piblspecularmap;
 
                pshader->bind_source2(pcommandbuffer,
                TEXTURE_UNIT_PREFILTERED_ENV_MAP,
                "prefilteredEnvMap",
-               pspecularmap->m_pframebufferPrefilteredEnvMap->m_ptexture);
+               pspecularmap->m_ptexturePrefilteredEnvMapCubemap);
 
 
                pshader->bind_source2(pcommandbuffer,
                TEXTURE_UNIT_BRDF_CONVOLUTION_MAP,
                "brdfConvolutionMap",
-               pspecularmap->m_pframebufferBrdfConvolution->m_ptexture);
+               pspecularmap->m_ptextureBrdfConvolutionMap);
 
 
 

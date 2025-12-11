@@ -141,9 +141,9 @@ namespace gpu_vulkan
       }
 
 
-      virtual ::gpu_vulkan::render_pass *render_pass2();
+      //virtual ::gpu_vulkan::render_pass *render_pass2();
 
-      virtual ::gpu_vulkan::render_pass *render_pass2(::gpu::enum_scene escene);
+//      virtual ::gpu_vulkan::render_pass *render_pass2(::gpu::texture * pgputexture);
 
       void sample();
       //void resolve_color_and_alpha_accumulation_buffers();
