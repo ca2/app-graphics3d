@@ -1,9 +1,9 @@
 // Created by camilo on 2025-06-11 00:50 <3ThomasBorregaardSørensen!!
-#include "framework.h"
-#include "context.h"
-#include "device.h"
-#include "memory_buffer.h"
-#include "physical_device.h"
+#include "../framework.h"
+#include "../context.h"
+#include "../device.h"
+#include "../memory_buffer.h"
+#include "../physical_device.h"
 
 
 namespace gpu_vulkan

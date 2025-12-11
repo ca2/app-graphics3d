@@ -6,9 +6,9 @@
 //  Copyright (c) 2020 Camilo Sasuke Thomas Borregaard Soerensen. All rights reserved.
 //
 
-#include "framework.h"
-#include "cpu_buffer.h"
-#include "context_cgl.h"
+#include "../framework.h"
+#include "../cpu_buffer.h"
+#include "../context_cgl.h"
 #include "vulkan.h"
 #include "aura/graphics/image/image.h"
 #include "aura/platform/system.h"

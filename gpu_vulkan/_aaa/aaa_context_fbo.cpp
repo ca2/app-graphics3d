@@ -5,9 +5,9 @@
 //  Created by Camilo Sasuke Thomas Borregaard Soerensen on 25/07/20.
 //  Copyright (c) 2020 Camilo Sasuke Thomas Borregaard Soerensen. All rights reserved.
 //
-#include "framework.h"
+#include "../framework.h"
 #include <Vulkan/Vulkan.h>
-#include "context_fbo.h"
+#include "../context_fbo.h"
 #include "vulkan.h"
 #include "aura/platform/system.h"
 

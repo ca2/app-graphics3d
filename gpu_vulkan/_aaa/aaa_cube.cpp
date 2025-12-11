@@ -2,9 +2,9 @@
 // camilo on 2025-09-27 ~02:27 <3ThomasBorregaardSorensen!!
 // From gpu_opengl/cube.cpp by
 // camilo on 2025-10-10 22:34 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "../framework.h"
 #include "cube.h"
-#include "_gpu_vulkan.h"
+#include "../_gpu_vulkan.h"
 #include "gpu_vulkan/model_buffer.h"
 
 
