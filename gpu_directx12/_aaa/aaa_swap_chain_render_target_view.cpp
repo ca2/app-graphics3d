@@ -1,7 +1,7 @@
-#include "framework.h"
+#include "../framework.h"
 #include "swap_chain_render_target_view.h"
-#include "physical_device.h"
-#include "renderer.h"
+#include "../physical_device.h"
+#include "../renderer.h"
 
 
 

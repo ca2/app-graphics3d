@@ -92,12 +92,12 @@
 #endif
 
 
-#include "buffer.h"
+#include "../buffer.h"
 
-#include "context.h"
+#include "../context.h"
 
-#include "shader.h"
-#include "program.h"
+#include "../shader.h"
+#include "../program.h"
 
 #include "directx12.h"
 
