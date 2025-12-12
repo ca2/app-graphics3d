@@ -103,9 +103,10 @@ namespace gpu_vulkan
 			::pointer<::gpu_vulkan::texture> specularGlossinessTexture;
          ::pointer<::gpu_vulkan::texture> diffuseTexture;
 
-			::array_base < VkDescriptorSet >m_descriptorsetaGltf4;
+         //::pointer<::gpu_vulkan::binding_set> m_pbindingset;
+			::map_base < ::gpu::binding_set * , ::array_base < VkDescriptorSet  > >m_mapdescriptorset;
 
-         ::array_base<VkDescriptorSet> m_descriptorsetaSceneGltf4;
+         //::array_base<VkDescriptorSet> m_descriptorsetaSceneGltf4;
 
                   uint32_t m_uDescriptorBindingFlags = 0;
 
@@ -113,13 +114,24 @@ namespace gpu_vulkan
 
          Material() {}
 			Material(::gpu::context* pcontext) : m_pgpucontext(pcontext) {};
+          
+         
+         //virtual void update_binding_set( ::gpu::binding_set * pgpubindingset,
+           // uint32_t descriptorBindingFlags,
+             //                        ::gpu_vulkan::texture *fallbackTexture);
+         virtual void update_binding_set(::gpu::binding_slot_set * pgpubindinslotset, uint32_t descriptorBindingFlags,
+                                         ::gpu_vulkan::texture *fallbackTexture);
 			
          
-         void addDescriptor(int iCount, ::array_base<VkDescriptorSet> & a, VkDescriptorPool descriptorPool,
-                                    VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags,
-                                    ::gpu_vulkan::texture *fallbackTexture);
-         ::array_base<VkDescriptorSet> &descriptor_set_array_gltf(gltf::Model * pmodel);
-         ::array_base<VkDescriptorSet> &descriptor_set_array_scene_gltf(gltf::Model *pmodel);
+         //void addDescriptor(int iCount, ::array_base<VkDescriptorSet> & a, VkDescriptorPool descriptorPool,
+         //                           VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags,
+         //                           ::gpu_vulkan::texture *fallbackTexture);
+         //::array_base<VkDescriptorSet> &descriptor_set_array_gltf(gltf::Model * pmodel);
+         //::array_base<VkDescriptorSet> &descriptor_set_array_scene_gltf(gltf::Model *pmodel);
+
+         //::array_base<VkDescriptorSet> &descriptor_set_array(gltf::Model *pmodel,
+           //                                                             ::gpu::binding_set *pgpubindingset);
+        
 
          //void addDescriptorSetSceneGltf4(VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout,
          //                      uint32_t descriptorBindingFlags, ::gpu_vulkan::texture *fallbackTexture);
@@ -320,8 +332,8 @@ namespace gpu_vulkan
 			RenderOpaqueNodes = 0x00000002,
 			RenderAlphaMaskedNodes = 0x00000004,
 			RenderAlphaBlendedNodes = 0x00000008,
-         BindGltfImages = 0x00000010,
-         BindJustSceneImages = 0x00000020,
+         //BindGltfImages = 0x00000010,
+         //BindJustSceneImages = 0x00000020,
       };
 
 		/*
@@ -398,15 +410,19 @@ namespace gpu_vulkan
 			void bind(::gpu::command_buffer * pgpucommandbuffer)override;
          void draw(::gpu::command_buffer *pgpucommandbuffer) override;
 
-			void gltfDraw(
-				VkCommandBuffer cmd,
-            uint32_t uFrameIndex, 
-				uint32_t renderFlags = 0,
-				VkPipelineLayout pipelineLayout = VK_NULL_HANDLE,
-				uint32_t bindImageSet = 1
+			void gltfDraw(::gpu::command_buffer *pgpucommandbuffer, 
+				//VkCommandBuffer cmd,
+            //uint32_t uFrameIndex, 
+            //::gpu::binding_set_pointer pbindingset,
+				uint32_t renderFlags = 0
+            //,				VkPipelineLayout pipelineLayout = VK_NULL_HANDLE
 			);
 
-			void drawNode(Node* node, uint32_t uFrameIndex,  VkCommandBuffer commandBuffer, uint32_t renderFlags = 0, VkPipelineLayout pipelineLayout = VK_NULL_HANDLE, uint32_t bindImageSet = 1);
+			//void drawNode(::gpu::command_buffer * pgpucommandbuffer, Node* node, uint32_t uFrameIndex, VkCommandBuffer commandBuffer, ::gpu::binding_set_pointer pbindingset, uint32_t renderFlags = 0, VkPipelineLayout pipelineLayout = VK_NULL_HANDLE);
+         //void drawNode(::gpu::command_buffer *pgpucommandbuffer, 
+         //   Node *node, uint32_t uFrameIndex,
+         //   ::gpu::binding_set_pointer pbindingset, uint32_t renderFlags = 0);
+         void drawNode(::gpu::command_buffer *pgpucommandbuffer, Node *node, uint32_t renderFlags = 0);
 
 
 			void getNodeDimensions(Node* node, floating_sequence3& min, floating_sequence3& max);
@@ -414,7 +430,7 @@ namespace gpu_vulkan
 			void updateAnimation(uint32_t index, float time);
 			Node* findNode(Node* parent, uint32_t index);
 			Node* nodeFromIndex(uint32_t index);
-			void prepareNodeDescriptor(gltf::Node* node, VkDescriptorSetLayout descriptorSetLayout);
+			//void prepareNodeDescriptor(gltf::Node* node, VkDescriptorSetLayout descriptorSetLayout);
 
          ::gpu::texture *loadMaterialTexture2(const ::scoped_string &scopedstr, tinygltf::Material &material,
                                               tinygltf::Model &gltfModel, const ::scoped_string &scopedstrType,

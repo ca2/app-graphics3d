@@ -348,8 +348,8 @@ namespace gpu_directx12
       //ID3D11Device* __get_d3d11_device();
       //ID3D11DeviceContext* __get_d3d11_device_context();
 
-      void create_global_ubo(int iSize, int iFrameCount) override;
-      void update_global_ubo(const ::block& block) override;
+      //void create_global_ubo(int iSize, int iFrameCount) override;
+      void update_global_ubo1(::gpu::block * pblockGlobalUbo1) override;
 
 
       void engine_on_frame_context_initialization() override;

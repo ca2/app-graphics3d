@@ -365,121 +365,121 @@ namespace gpu_vulkan
    gltf::Model::Model() {}
 
 
-   /*
-      gltf material
-   */
-   void gltf::Material::addDescriptor(int iCount, ::array_base<VkDescriptorSet> &a, VkDescriptorPool descriptorPool,
-                                      VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags,
-                                      gpu_vulkan::texture *fallbackTexture)
-   {
+   ///*
+   //   gltf material
+   //*/
+   //void gltf::Material::addDescriptor(int iCount, ::array_base<VkDescriptorSet> &a, VkDescriptorPool descriptorPool,
+   //                                   VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags,
+   //                                   gpu_vulkan::texture *fallbackTexture)
+   //{
 
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
-      ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
-      auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
+   //   ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
+   //   ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
+   //   auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
-      VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
+   //   VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
 
-      // Allocate descriptor set
-      VkDescriptorSetAllocateInfo allocInfo{};
-      allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-      allocInfo.descriptorPool = descriptorPool;
-      allocInfo.descriptorSetCount = 1;
-      allocInfo.pSetLayouts = &descriptorSetLayout;
-      VK_CHECK_RESULT(vkAllocateDescriptorSets(pcontext->logicalDevice(), &allocInfo, &descriptorSet));
+   //   // Allocate descriptor set
+   //   VkDescriptorSetAllocateInfo allocInfo{};
+   //   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+   //   allocInfo.descriptorPool = descriptorPool;
+   //   allocInfo.descriptorSetCount = 1;
+   //   allocInfo.pSetLayouts = &descriptorSetLayout;
+   //   VK_CHECK_RESULT(vkAllocateDescriptorSets(pcontext->logicalDevice(), &allocInfo, &descriptorSet));
 
-      // Prepare image infos with fallback
-      VkDescriptorImageInfo baseColorImageInfo =
-         (baseColorTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageBaseColor))
-            ? baseColorTexture->m_descriptor3
-            : fallbackTexture->m_descriptor3;
+   //   // Prepare image infos with fallback
+   //   VkDescriptorImageInfo baseColorImageInfo =
+   //      (baseColorTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageBaseColor))
+   //         ? baseColorTexture->m_descriptor3
+   //         : fallbackTexture->m_descriptor3;
 
-      VkDescriptorImageInfo normalImageInfo =
-         (normalTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageNormalMap))
-            ? normalTexture->m_descriptor3
-            : fallbackTexture->m_descriptor3;
+   //   VkDescriptorImageInfo normalImageInfo =
+   //      (normalTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageNormalMap))
+   //         ? normalTexture->m_descriptor3
+   //         : fallbackTexture->m_descriptor3;
 
-      VkDescriptorImageInfo metallicRoughnessImageInfo =
-         (metallicRoughnessTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageMetallicMap))
-            ? metallicRoughnessTexture->m_descriptor3
-            : fallbackTexture->m_descriptor3;
+   //   VkDescriptorImageInfo metallicRoughnessImageInfo =
+   //      (metallicRoughnessTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageMetallicMap))
+   //         ? metallicRoughnessTexture->m_descriptor3
+   //         : fallbackTexture->m_descriptor3;
 
-      // If you have a separate roughness texture, bind it here, otherwise fallback
-      // VkDescriptorImageInfo roughnessImageInfo = fallbackTexture->m_descriptor3;
+   //   // If you have a separate roughness texture, bind it here, otherwise fallback
+   //   // VkDescriptorImageInfo roughnessImageInfo = fallbackTexture->m_descriptor3;
 
-      VkDescriptorImageInfo occlusionImageInfo =
-         (occlusionTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageAOMap))
-            ? occlusionTexture->m_descriptor3
-            : fallbackTexture->m_descriptor3;
+   //   VkDescriptorImageInfo occlusionImageInfo =
+   //      (occlusionTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageAOMap))
+   //         ? occlusionTexture->m_descriptor3
+   //         : fallbackTexture->m_descriptor3;
 
-      VkDescriptorImageInfo emissiveImageInfo =
-         (occlusionTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageEmissiveMap))
-            ? emissiveTexture->m_descriptor3
-            : fallbackTexture->m_descriptor3;
+   //   VkDescriptorImageInfo emissiveImageInfo =
+   //      (occlusionTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageEmissiveMap))
+   //         ? emissiveTexture->m_descriptor3
+   //         : fallbackTexture->m_descriptor3;
 
-      ::array_base<VkWriteDescriptorSet> writeDescriptorSets;
+   //   ::array_base<VkWriteDescriptorSet> writeDescriptorSets;
 
-      writeDescriptorSets.set_size(iCount);
+   //   writeDescriptorSets.set_size(iCount);
 
-      writeDescriptorSets[0] = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                nullptr,
-                                descriptorSet,
-                                0,
-                                0,
-                                1,
-                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                &baseColorImageInfo,
-                                nullptr,
-                                nullptr};
-      writeDescriptorSets[1] = {
-         VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    nullptr,          descriptorSet, 1,      0, 1,
-         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &normalImageInfo, nullptr,       nullptr};
+   //   writeDescriptorSets[0] = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+   //                             nullptr,
+   //                             descriptorSet,
+   //                             0,
+   //                             0,
+   //                             1,
+   //                             VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+   //                             &baseColorImageInfo,
+   //                             nullptr,
+   //                             nullptr};
+   //   writeDescriptorSets[1] = {
+   //      VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    nullptr,          descriptorSet, 1,      0, 1,
+   //      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &normalImageInfo, nullptr,       nullptr};
 
-      if (iCount >= 3)
-      {
-         writeDescriptorSets[2] = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                   nullptr,
-                                   descriptorSet,
-                                   2,
-                                   0,
-                                   1,
-                                   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                   &metallicRoughnessImageInfo,
-                                   nullptr,
-                                   nullptr};
-         //    writeDescriptorSets[3] = {
-         //	VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, descriptorSet, 3, 0, 1,
-         //	VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &roughnessImageInfo, nullptr, nullptr
-         //};
-         writeDescriptorSets[3] = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                   nullptr,
-                                   descriptorSet,
-                                   3,
-                                   0,
-                                   1,
-                                   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                   &occlusionImageInfo,
-                                   nullptr,
-                                   nullptr};
-         writeDescriptorSets[4] = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                   nullptr,
-                                   descriptorSet,
-                                   4,
-                                   0,
-                                   1,
-                                   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                   &emissiveImageInfo,
-                                   nullptr,
-                                   nullptr};
+   //   if (iCount >= 3)
+   //   {
+   //      writeDescriptorSets[2] = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+   //                                nullptr,
+   //                                descriptorSet,
+   //                                2,
+   //                                0,
+   //                                1,
+   //                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+   //                                &metallicRoughnessImageInfo,
+   //                                nullptr,
+   //                                nullptr};
+   //      //    writeDescriptorSets[3] = {
+   //      //	VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, descriptorSet, 3, 0, 1,
+   //      //	VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &roughnessImageInfo, nullptr, nullptr
+   //      //};
+   //      writeDescriptorSets[3] = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+   //                                nullptr,
+   //                                descriptorSet,
+   //                                3,
+   //                                0,
+   //                                1,
+   //                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+   //                                &occlusionImageInfo,
+   //                                nullptr,
+   //                                nullptr};
+   //      writeDescriptorSets[4] = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+   //                                nullptr,
+   //                                descriptorSet,
+   //                                4,
+   //                                0,
+   //                                1,
+   //                                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+   //                                &emissiveImageInfo,
+   //                                nullptr,
+   //                                nullptr};
 
-      }
+   //   }
 
-      vkUpdateDescriptorSets(
-         pcontext->logicalDevice(), 
-         static_cast<uint32_t>(writeDescriptorSets.size()),
-         writeDescriptorSets.data(), 0, nullptr);
+   //   vkUpdateDescriptorSets(
+   //      pcontext->logicalDevice(), 
+   //      static_cast<uint32_t>(writeDescriptorSets.size()),
+   //      writeDescriptorSets.data(), 0, nullptr);
 
-      a.add(descriptorSet);
-   }
+   //   a.add(descriptorSet);
+   //}
 
 
    //::array_base<VkDescriptorSet> &gltf::Material::descriptor_set_array_gltf()
@@ -1623,16 +1623,16 @@ namespace gpu_vulkan
             //&descriptorSetLayoutUbo));
             //}
             
-            for (auto pnode: m_nodea)
-            {
-
-               ::cast < ::gpu_vulkan::binding_set > pbindingset = pcontext->m_pengine->global_ubo1_binding_set();
-               
-               auto pdescriptorsetlayout = pbindingset->descriptor_set_layout(pgpucommandbufferCopy);
-
-               prepareNodeDescriptor(pnode, pdescriptorsetlayout->m_vkdescriptorsetlayout);
-
-            }
+            // for (auto pnode: m_nodea)
+            // {
+            //
+            //    ::cast < ::gpu_vulkan::binding_set > pbindingset = pcontext->m_pengine->global_ubo1_binding_set();
+            //
+            //    auto pdescriptorsetlayout = pbindingset->descriptor_set_layout(pgpucommandbufferCopy);
+            //
+            //    prepareNodeDescriptor(pnode, pdescriptorsetlayout->m_vkdescriptorsetlayout);
+            //
+            // }
 
          }
 
@@ -1752,51 +1752,105 @@ namespace gpu_vulkan
    }
 
 
-   ::array_base<VkDescriptorSet> &gltf::Material::descriptor_set_array_gltf(gltf::Model *pmodel)
+
+   void gltf::Material::update_binding_set(::gpu::binding_slot_set *pgpubindinslotset, uint32_t descriptorBindingFlags,
+                          ::gpu_vulkan::texture * ptextureFallback)
    {
-      if (m_descriptorsetaGltf4.is_empty() && m_uDescriptorBindingFlags)
+
+      ::pointer_array<::gpu_vulkan::texture> texturea;
+
+      // Albedo
+      texturea.add((baseColorTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageBaseColor))
+            ? baseColorTexture.m_p
+                      : ptextureFallback);
+
+      // Normal
+      texturea.add((normalTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageNormalMap))
+                      ? normalTexture.m_p
+                      : ptextureFallback);
+
+      // Metallic/Roughness
+      texturea.add((metallicRoughnessTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageMetallicMap))
+                      ? metallicRoughnessTexture.m_p
+                      : ptextureFallback);
+
+      // If you have a separate roughness texture, bind it here, otherwise fallback
+      // VkDescriptorImageInfo roughnessImageInfo = fallbackTexture->m_descriptor3;
+      // Ambient Occlusion
+      texturea.add(
+         (occlusionTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageAOMap))
+                      ? occlusionTexture.m_p
+                      : ptextureFallback);
+
+      // Emissive
+      texturea.add(
+         (occlusionTexture && (descriptorBindingFlags & DescriptorBindingFlags::ImageEmissiveMap))
+                      ? emissiveTexture.m_p
+                      : ptextureFallback);
+
+      int iCommonCount = minimum(texturea.count(), pgpubindinslotset->size());
+
+      for (int i = 0; i < iCommonCount; i++)
       {
-         ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
-         auto pdescriptorsetlayout = pcontext->descriptor_set_layout_gltf();
 
-         for (int i = 0; i < m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->get_frame_count(); i++)
-         {
-            // if ((fileLoadingFlags & FileLoadingFlags::OnlySceneImages))
-            //{
+         pgpubindinslotset->binding(i)->m_ptexture = texturea[i];
 
-            addDescriptor(5, m_descriptorsetaGltf4, pmodel->m_descriptorPool,
-                             pdescriptorsetlayout->m_vkdescriptorsetlayout,
-               
-                             m_uDescriptorBindingFlags, pmodel->empty_texture());
-         }
       }
 
-      return m_descriptorsetaGltf4;
    }
 
 
-   ::array_base<VkDescriptorSet> &gltf::Material::descriptor_set_array_scene_gltf(gltf::Model *pmodel)
-   {
-      if (m_descriptorsetaSceneGltf4.is_empty() && m_uDescriptorBindingFlags)
-      {
+   //::array_base<VkDescriptorSet> &gltf::Material::descriptor_set_array(gltf::Model *pmodel,
+   //                                                                    ::gpu::binding_set *pgpubindingset)
+   //{
+   //   //if (m_descriptorsetaGltf4.is_empty() && m_uDescriptorBindingFlags)
+   //   //{
+   //      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
-         ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
-         auto pdescriptorsetlayout = pcontext->descriptor_set_layout_scene_gltf();
-         for (int i = 0; i < m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->get_frame_count(); i++)
-         {
-            // if ((fileLoadingFlags & FileLoadingFlags::OnlySceneImages))
-            //{
+   //      auto pengine = m_pgpucontext->m_pengine;
 
-            addDescriptor(2, m_descriptorsetaSceneGltf4, pmodel->m_descriptorPool,
-                             
-               pdescriptorsetlayout->m_vkdescriptorsetlayout,
-               
-                             m_uDescriptorBindingFlags, pmodel->empty_texture());
-         }
-      }
+   //      ::cast<::gpu_vulkan::binding_set> pbindingset = pgpubindingset;
 
-      return m_descriptorsetaSceneGltf4;
-   }
+   //      auto pdescriptorsetlayout = pbindingset->descriptor_set_layout_gltf();
+
+   //      for (int i = 0; i < m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->get_frame_count(); i++)
+   //      {
+   //         // if ((fileLoadingFlags & FileLoadingFlags::OnlySceneImages))
+   //         //{
+
+   //         addDescriptor(5, m_descriptorsetaGltf4, pmodel->m_descriptorPool,
+   //                          pdescriptorsetlayout->m_vkdescriptorsetlayout,
+   //            
+   //                          m_uDescriptorBindingFlags, pmodel->empty_texture());
+   //      }
+   ////   }
+
+   //  // return m_descriptorsetaGltf4;
+   //}
+
+
+   //::array_base<VkDescriptorSet> &gltf::Material::descriptor_set_array_scene_gltf(gltf::Model *pmodel)
+   //{
+   //   if (m_descriptorsetaSceneGltf4.is_empty() && m_uDescriptorBindingFlags)
+   //   {
+
+   //      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
+   //      auto pdescriptorsetlayout = pcontext->descriptor_set_layout_scene_gltf();
+   //      for (int i = 0; i < m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->get_frame_count(); i++)
+   //      {
+   //         // if ((fileLoadingFlags & FileLoadingFlags::OnlySceneImages))
+   //         //{
+
+   //         addDescriptor(2, m_descriptorsetaSceneGltf4, pmodel->m_descriptorPool,
+   //                          
+   //            pdescriptorsetlayout->m_vkdescriptorsetlayout,
+   //            
+   //                          m_uDescriptorBindingFlags, pmodel->empty_texture());
+   //      }
+   //   }
+
+   //   return m_descriptorsetaSceneGltf4;
+   //}
 
 
    
@@ -1950,8 +2004,13 @@ namespace gpu_vulkan
    }
 
 
-   void gltf::Model::drawNode(Node *pnode, uint32_t uFrameIndex, VkCommandBuffer commandBuffer, uint32_t renderFlags,
-                              VkPipelineLayout pipelineLayout, uint32_t bindImageSet)
+   //void gltf::Model::drawNode(void drawNode(::gpu::command_buffer * pgpucommandbuffer, Node* node, uint32_t uFrameIndex, VkCommandBuffer commandBuffer, ::gpu::binding_set_pointer pbindingset, uint32_t renderFlags = 0, VkPipelineLayout pipelineLayout = VK_NULL_HANDLE);Node *pnode, uint32_t uFrameIndex, VkCommandBuffer commandBuffer,
+   //                           ::gpu::binding_set_pointer pbindingset, uint32_t renderFlags,
+   //                           VkPipelineLayout pipelineLayout) void gltf::Model::
+   void gltf::Model::drawNode(::gpu::command_buffer *pgpucommandbuffer, Node *pnode,
+                             uint32_t renderFlags)
+//               Node * pnode, uint32_t uFrameIndex, VkCommandBuffer commandBuffer,
+  //             ::gpu::binding_set_pointer pbindingset, uint32_t renderFlags, VkPipelineLayout pipelineLayout)
    {
       if (pnode->m_pmesh)
       {
@@ -1973,27 +2032,46 @@ namespace gpu_vulkan
             }
             if (!skip)
             {
-               if (renderFlags & RenderFlags::BindGltfImages)
-               {
-                  auto &descriptorSet = pmaterial->descriptor_set_array_gltf(this)[uFrameIndex];
-                  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, bindImageSet,
-                                          1, &descriptorSet, 0, nullptr);
-               }
-               else if (renderFlags & RenderFlags::BindJustSceneImages)
-               {
-                  auto &descriptorSet = pmaterial->descriptor_set_array_scene_gltf(this)[uFrameIndex];
-                  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, bindImageSet,
-                                          1, &descriptorSet, 0, nullptr);
-               }
-               vkCmdDrawIndexed(commandBuffer, primitive->indexCount, 1, primitive->firstIndex, 0, 0);
+
+               //if (::is_set(pbindingset.m_pbindingset))
+               //{
+
+               //   auto &descriptorSet = pmaterial->descriptor_set_array(this, pbindingset.m_pbindingset)[uFrameIndex];
+
+               //   vkCmdBindDescriptorSets(
+               //      commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
+               //                           pbindingset.m_iSet,
+               //                           1, &descriptorSet, 0, nullptr);
+               //}
+               //else if (renderFlags & RenderFlags::BindJustSceneImages)
+               //{
+               //   auto &descriptorSet = pmaterial->descriptor_set_array_scene_gltf(this)[uFrameIndex];
+               //   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, bindImageSet,
+               //                           1, &descriptorSet, 0, nullptr);
+               //}
+               pshader->binding_set(2, pmaterial->m_pbindingset);
+               auto pshader = pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pshaderBound;
+               pshader->on_before_draw(pgpucommandbuffer);
+               ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
+               vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer,
+                  primitive->indexCount, 1, primitive->firstIndex, 0, 0);
+
             }
+
          }
+
       }
+
       for (auto &pnodeChild: pnode->m_nodeaChildren)
       {
-         drawNode(pnodeChild, uFrameIndex, commandBuffer, renderFlags, pipelineLayout, bindImageSet);
+
+         drawNode(pgpucommandbuffer, pnodeChild, renderFlags);
+
       }
+
    }
+
+
    void gltf::Model::bind(VkCommandBuffer commandBuffer)
    {
       const VkDeviceSize offsets[1] = {0};
@@ -2006,25 +2084,31 @@ namespace gpu_vulkan
       ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
       bind(pcommandbuffer->m_vkcommandbuffer);
    }
+
+
    void gltf::Model::draw(::gpu::command_buffer *pgpucommandbuffer)
    {
+      
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-      gltfDraw(pcommandbuffer->m_vkcommandbuffer, pgpucommandbuffer->m_iFrameIndex);
+      
+      //gltfDraw(pcommandbuffer, pgpucommandbuffer->m_iFrameIndex, pgpucommandbuffer->m_pbindingsetCurrent);
+      gltfDraw(pcommandbuffer);
+
    }
 
 
-   void gltf::Model::gltfDraw(VkCommandBuffer commandBuffer, uint32_t uFrameIndex, uint32_t renderFlags,
-                              VkPipelineLayout pipelineLayout, uint32_t bindImageSet)
+   void gltf::Model::gltfDraw(::gpu::command_buffer * pgpucommandbuffer, uint32_t renderFlags)
    {
+      ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
       if (!m_bBuffersBound)
       {
          const VkDeviceSize offsets[1] = {0};
-         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertices.buffer, offsets);
-         vkCmdBindIndexBuffer(commandBuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
+         vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vertices.buffer, offsets);
+         vkCmdBindIndexBuffer(pcommandbuffer->m_vkcommandbuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
       }
       for (auto &pnode: m_nodea)
       {
-         drawNode(pnode, uFrameIndex, commandBuffer, renderFlags, pipelineLayout, bindImageSet);
+         drawNode(pcommandbuffer, pnode, renderFlags);
       }
    }
 
@@ -2327,37 +2411,37 @@ namespace gpu_vulkan
       return nodeFound;
    }
 
-   void gltf::Model::prepareNodeDescriptor(Node *pnode, VkDescriptorSetLayout descriptorSetLayout)
-   {
-      if (pnode->m_pmesh)
-      {
-         VkDescriptorSetAllocateInfo descriptorSetAllocInfo{};
-         descriptorSetAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-         descriptorSetAllocInfo.descriptorPool = m_descriptorPool;
-         descriptorSetAllocInfo.pSetLayouts = &descriptorSetLayout;
-         descriptorSetAllocInfo.descriptorSetCount = 1;
-         ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
-         ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
-         auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
-
-         VK_CHECK_RESULT(vkAllocateDescriptorSets(pcontext->logicalDevice(), &descriptorSetAllocInfo,
-                                                  &pnode->m_pmesh->uniformBuffer.descriptorSet));
-
-         VkWriteDescriptorSet writeDescriptorSet{};
-         writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-         writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-         writeDescriptorSet.descriptorCount = 1;
-         writeDescriptorSet.dstSet = pnode->m_pmesh->uniformBuffer.descriptorSet;
-         writeDescriptorSet.dstBinding = 0;
-         writeDescriptorSet.pBufferInfo = &pnode->m_pmesh->uniformBuffer.descriptor;
-
-         vkUpdateDescriptorSets(pcontext->logicalDevice(), 1, &writeDescriptorSet, 0, nullptr);
-      }
-      for (auto &pnodeChild: pnode->m_nodeaChildren)
-      {
-         prepareNodeDescriptor(pnodeChild, descriptorSetLayout);
-      }
-   }
+   // void gltf::Model::prepareNodeDescriptor(Node *pnode, VkDescriptorSetLayout descriptorSetLayout)
+   // {
+   //    if (pnode->m_pmesh)
+   //    {
+   //       VkDescriptorSetAllocateInfo descriptorSetAllocInfo{};
+   //       descriptorSetAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+   //       descriptorSetAllocInfo.descriptorPool = m_descriptorPool;
+   //       descriptorSetAllocInfo.pSetLayouts = &descriptorSetLayout;
+   //       descriptorSetAllocInfo.descriptorSetCount = 1;
+   //       ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
+   //       ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
+   //       auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
+   //
+   //       VK_CHECK_RESULT(vkAllocateDescriptorSets(pcontext->logicalDevice(), &descriptorSetAllocInfo,
+   //                                                &pnode->m_pmesh->uniformBuffer.descriptorSet));
+   //
+   //       VkWriteDescriptorSet writeDescriptorSet{};
+   //       writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+   //       writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+   //       writeDescriptorSet.descriptorCount = 1;
+   //       writeDescriptorSet.dstSet = pnode->m_pmesh->uniformBuffer.descriptorSet;
+   //       writeDescriptorSet.dstBinding = 0;
+   //       writeDescriptorSet.pBufferInfo = &pnode->m_pmesh->uniformBuffer.descriptor;
+   //
+   //       vkUpdateDescriptorSets(pcontext->logicalDevice(), 1, &writeDescriptorSet, 0, nullptr);
+   //    }
+   //    for (auto &pnodeChild: pnode->m_nodeaChildren)
+   //    {
+   //       prepareNodeDescriptor(pnodeChild, descriptorSetLayout);
+   //    }
+   // }
 
 
 } // namespace gpu_vulkan

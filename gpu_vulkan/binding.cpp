@@ -17,10 +17,25 @@ namespace gpu_vulkan
       if (!m_pdescriptorsetlayout1)
       {
 
-         create_descriptor_set_layout(pgpucommandbuffer);
+         defer_update_binding_set(pgpucommandbuffer);
+
       }
 
       return m_pdescriptorsetlayout1;
+
+   }
+
+
+   void binding_set::defer_update_binding_set(::gpu::command_buffer * pgpucommandbuffer)
+   {
+
+      
+      if (!m_pdescriptorsetlayout1)
+      {
+
+         create_descriptor_set_layout(pgpucommandbuffer);
+
+      }
 
    }
 
@@ -98,6 +113,32 @@ namespace gpu_vulkan
       m_pdescriptorpool = pdescriptorpool;
 
    }
+
+
+   void binding_set::defer_create_update_descriptor_set(::gpu::command_buffer * pgpucommandbuffer,
+                                                        ::array_base<VkDescriptorSet> &descriptorseta,
+                                                        ::array_base<VkDescriptorBufferInfo> &bufferinfoa)
+   {
+
+      for (int i = 0; i < bufferinfoa.size(); i++)
+      {
+
+         descriptor_writer(*m_pdescriptorsetlayout1, *m_pdescriptorpool)
+            .writeBuffer(0, bufferinfoa[i])
+            .build(descriptorseta.ø(i));
+      }
+
+   }
+
+
+   void binding_set::defer_create_update_descriptor_set(::gpu::command_buffer * pgpucommandbuffer,
+                                                     ::array_base<VkDescriptorSet> & descriptorseta)
+
+   {
+
+
+
+      }
 
 
 //      //m_psetdescriptorlayout =

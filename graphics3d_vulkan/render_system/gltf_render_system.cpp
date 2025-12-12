@@ -362,7 +362,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
       ////// xxxxxxxxxxxxxxxxx
       //auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-         auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
+         //auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
 
       int iRenderable = -1;
 
@@ -617,11 +617,11 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                //   (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
                 //// --- Bind sets 0 (global) ---
                // pnode UBO transformed in Push Constants and set above
-                std::array<VkDescriptorSet, 1> sets01 = {
-                   vkdescriptorsetGlobal // set 0
-                };
-                vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                        pshader->m_ppipeline->m_vkpipelinelayout, 0, (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
+                // std::array<VkDescriptorSet, 1> sets01 = {
+                //    vkdescriptorsetGlobal // set 0
+                // };
+                // vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                //                         pshader->m_ppipeline->m_vkpipelinelayout, 0, (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
 
                //// --- Bind our PBR set (set = 2) ---
                 // --- Bind our PBR set (set = 1) ---
@@ -666,11 +666,14 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                //                           // m_pipelineLayout, 2, 1,
                //                           pshader->m_ppipeline->m_vkpipelinelayout, 2, 1, &pbrSet, 0, nullptr);
                //}
+               auto pgpubindingset = pcontext->gltf_pbr_binding_set();
 
-               pshader->on_before_draw(pframe->m_pgpucommandbuffer);
-               pgltfmodel->gltfDraw(pcommandbuffer->m_vkcommandbuffer, 
-                  pframe->m_pgpucommandbuffer->m_iFrameIndex,::gpu_vulkan::gltf::RenderNone, pshader->m_ppipeline->m_vkpipelinelayout, 2);
+               auto pbindingset = pshader->binding_set(2, pgpubindingset);
+
+               pgltfmodel->gltfDraw(pcommandbuffer, 0);
+
                warnedThisFrame = false;
+
             }
          }
       }

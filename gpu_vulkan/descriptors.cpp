@@ -163,7 +163,7 @@ namespace gpu_vulkan
    }
 
    descriptor_writer & descriptor_writer::writeBuffer(
-       uint32_t binding, VkDescriptorBufferInfo * bufferInfo) {
+       uint32_t binding, VkDescriptorBufferInfo bufferInfo) {
       assert(m_setLayout.m_bindings.count(binding) == 1 && "Layout does not contain specified binding");
 
       auto & bindingDescription = m_setLayout.m_bindings[binding];
@@ -176,7 +176,7 @@ namespace gpu_vulkan
       vkwritedescriptorset.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
       vkwritedescriptorset.descriptorType = bindingDescription.descriptorType;
       vkwritedescriptorset.dstBinding = binding;
-      vkwritedescriptorset.pBufferInfo = bufferInfo;
+      vkwritedescriptorset.pBufferInfo = &bufferInfo;
       vkwritedescriptorset.descriptorCount = 1;
 
       m_vkwritedescriptorseta.add(vkwritedescriptorset);

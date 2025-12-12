@@ -965,9 +965,9 @@ namespace gpu_vulkan
 
          //m_pshaderPresent->m_bindingSampler.set();
 
-         auto bindingSampler = m_pshaderPresent->binding();
+         auto pbindingSampler = m_pshaderPresent->binding();
 
-         bindingSampler.m_pbinding->m_ebinding = ::gpu::e_binding_sampler2d;
+         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
 
          m_pshaderPresent->m_bDisableDepthTest = true;
 

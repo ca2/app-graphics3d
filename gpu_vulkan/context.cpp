@@ -1,5 +1,6 @@
 #include "framework.h"
 #include "binding.h"
+#include "block.h"
 #include "context.h"
 #include "buffer.h"
 #include "command_buffer.h"
@@ -2887,19 +2888,16 @@ namespace gpu_vulkan
    //    vkDestroyFence(this->logicalDevice(), fence, nullptr);
    // }
 
-   ::gpu_vulkan::descriptor_pool *context::get_global_pool(int iFrameCount, ::gpu::command_buffer *pgpucommandbuffer)
-   {
+   //::gpu_vulkan::descriptor_pool *context::get_global_pool(int iFrameCount, ::gpu::command_buffer *pgpucommandbuffer)
+   //{
 
-      ::cast<::gpu_vulkan::engine> pengine = m_pengine;
+   //   auto pengine = m_pengine;
 
-      ::cast<::gpu_vulkan::binding_set> pbindingset = pengine->global_ubo1_binding_set();
+   //   ::cast<::gpu_vulkan::binding_set> pbindingset = pengine->global_ubo1_binding_set();
 
-      ::cast<::gpu_vulkan::descriptor_set_layout> pdescriptorsetlayout =
-         pbindingset->descriptor_set_layout(pgpucommandbuffer);
-
-      return m_pdescriptorpoolGlobal; 
-   
-   }
+   //   return pbindingset->m_pdescriptorpool; 
+   //
+   //}
 
 
    // bool context::hasStencilComponent(VkFormat format)
@@ -3003,59 +3001,50 @@ namespace gpu_vulkan
 
 
 
-   void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
+   // ::pointer < ::gpu::block > context::create_global_ubo1(const ::gpu::property * ppropertyProperties)
+   // //void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
+   // {
+   //
+   //    //::cast<::gpu_vulkan::binding_set> pbindingset = m_pengine->global_ubo1_binding_set();
+   //
+   //    m_penginm_pblock
+   //
+   //             // auto pdescriptorsetlayout = pbindingset->descriptor_set_layout(pgpucommandbuffer);
+   //
+   //       //      auto pdescriptorpool = pbindingset->m_pdescriptorpool;
+   //
+   //       m_uboBuffers.set_size(iFrameCount);
+   //
+   //    ::array_base<VkDescriptorBufferInfo> bufferinfoa;
+   //
+   //    for (int i = 0; i < m_uboBuffers.size(); i++)
+   //    {
+   //
+   //       ødefer_construct_new(m_uboBuffers[i]);
+   //
+   //       m_uboBuffers[i]->_initialize_buffer(this, iGlobalUboSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+   //                                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+   //
+   //       m_uboBuffers[i]->map(0, m_uboBuffers[i]->m_size);
+   //
+   //       bufferinfoa.add(m_uboBuffers[i]->descriptorInfo());
+   //
+   //       m_uboBuffers[i]->unmap();
+   //    }
+   //
+   //    // pbindingset->defer_create_update_descriptor_set(pgpucommandbuffer, m_descriptorsetsGlobal, bufferinfoa);
+   //
+   //    // auto globalSetLayout = m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+   //
+   //
+   // }
+
+
+   void context::update_global_ubo1(::gpu::block * pblockGlobalUbo1)
    {
 
-      m_uboBuffers.set_size(iFrameCount);
+      pblockGlobalUbo1->update_frame(m_pgpurenderer);
 
-      for (int i = 0; i < m_uboBuffers.size(); i++)
-      {
-
-         ødefer_construct_new(m_uboBuffers[i]);
-
-         m_uboBuffers[i]->_initialize_buffer(this, iGlobalUboSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                                             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-
-         m_uboBuffers[i]->map(0, m_uboBuffers[i]->m_size);
-
-         auto bufferInfo = m_uboBuffers[i]->descriptorInfo();
-
-         descriptor_writer(*m_psetdescriptorlayoutGlobal, *m_pdescriptorpoolGlobal)
-            .writeBuffer(0, &bufferInfo)
-            .build(m_descriptorsetsGlobal[i]);
-
-         m_uboBuffers[i]->unmap();
-
-      }
-
-      // auto globalSetLayout = m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-   }
-
-
-   void context::update_global_ubo(const ::block &block)
-   {
-
-      auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
-
-      if (iFrameIndex < 0 || iFrameIndex >= m_uboBuffers.size())
-      {
-
-         return;
-      }
-
-      if (!m_uboBuffers[iFrameIndex])
-      {
-
-         return;
-      }
-
-      m_uboBuffers[iFrameIndex]->map();
-
-      m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
-
-      m_uboBuffers[iFrameIndex]->flush();
-
-      m_uboBuffers[iFrameIndex]->unmap();
    }
 
 
@@ -3068,52 +3057,52 @@ namespace gpu_vulkan
    void context::onBeforePreloadGlobalAssets()
    {
 
-      // Global UBO descriptors
-      if (!m_psetdescriptorlayoutGlobal)
-      {
-
-         auto pgpurenderer = get_gpu_renderer();
-
-         m_psetdescriptorlayoutGlobal =
-            descriptor_set_layout::Builder(this)
-               .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
-               .build();
-
-         auto iFrameCount = pgpurenderer->m_pgpurendertarget->get_frame_count();
-
-         m_descriptorsetsGlobal.resize(iFrameCount);
-
-         auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
-
-         pdescriptorpoolbuilder->initialize_builder(this);
-         pdescriptorpoolbuilder->setMaxSets(iFrameCount);
-         pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount);
-
-         m_pdescriptorpoolGlobal = pdescriptorpoolbuilder->build();
-      }
-
-
-   }
-
-
-   VkDescriptorSet context::getGlobalDescriptorSet(::gpu_vulkan::renderer *prenderer, ::collection::index iFrameIndex)
-   {
-
-      // if (m_globalDescriptorSets.is_empty())
+      //// Global UBO descriptors
+      //if (!m_psetdescriptorlayoutGlobal)
       //{
 
+      //   auto pgpurenderer = get_gpu_renderer();
 
+      //   m_psetdescriptorlayoutGlobal =
+      //      descriptor_set_layout::Builder(this)
+      //         .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
+      //         .build();
+
+      //   auto iFrameCount = pgpurenderer->m_pgpurendertarget->get_frame_count();
+
+      //   m_descriptorsetsGlobal.resize(iFrameCount);
+
+      //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+
+      //   pdescriptorpoolbuilder->initialize_builder(this);
+      //   pdescriptorpoolbuilder->setMaxSets(iFrameCount);
+      //   pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount);
+
+      //   m_pdescriptorpoolGlobal = pdescriptorpoolbuilder->build();
       //}
 
-      if (iFrameIndex < 0)
-      {
 
-         iFrameIndex = prenderer->m_pgpurendertarget->get_frame_index();
-
-      }
-
-      return m_descriptorsetsGlobal[iFrameIndex];
    }
+
+
+   // VkDescriptorSet context::getGlobalDescriptorSet(::gpu_vulkan::renderer *prenderer, ::collection::index iFrameIndex)
+   // {
+   //
+   //    // if (m_globalDescriptorSets.is_empty())
+   //    //{
+   //
+   //
+   //    //}
+   //
+   //    if (iFrameIndex < 0)
+   //    {
+   //
+   //       iFrameIndex = prenderer->m_pgpurendertarget->get_frame_index();
+   //
+   //    }
+   //
+   //    return m_descriptorsetsGlobal[iFrameIndex];
+   // }
 
 
    // void context::copy(::gpu::texture* ptexture)
@@ -5697,151 +5686,160 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
    return pmodel;
 }
 
-
-   ::gpu_vulkan::descriptor_set_layout *context::descriptor_set_layout_gltf()
-{
-
-
-   if (!m_psetdescriptorlayoutGltfImage4)
-   {
-      m_psetdescriptorlayoutGltfImage4 =
-
-         // binding 0 → baseColor (albedo)
-         // binding 1 → normal map
-         // binding 2 → metallic map
-         // binding 3 → roughness map
-         // binding 4 → ambient occlusion map
-         descriptor_set_layout::Builder(this)
-            .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-            .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-            .addBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-            .addBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-            .addBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-            .build();
-
-      //// Always push exactly two bindings:
-      ////  • binding 0 = base-color sampler
-      ////  • binding 1 = normal-map sampler
-      // std::array<VkDescriptorSetLayoutBinding, 5> setLayoutBindings = {
-      //	// binding 0 → baseColor (albedo)
-      //	vkinit::descriptorSetLayoutBinding(
-      //		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      //		VK_SHADER_STAGE_FRAGMENT_BIT,
-      //		/*binding=*/ 0
-      //	),
-      //		// binding 1 → normal map
-      //		vkinit::descriptorSetLayoutBinding(
-      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      //			VK_SHADER_STAGE_FRAGMENT_BIT,
-      //			/*binding=*/ 1
-      //		),
-      //		// binding 2 → metallic map
-      //		vkinit::descriptorSetLayoutBinding(
-      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      //			VK_SHADER_STAGE_FRAGMENT_BIT,
-      //			/*binding=*/ 2
-      //		),
-      //		// binding 3 → roughness map
-      //		vkinit::descriptorSetLayoutBinding(
-      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      //			VK_SHADER_STAGE_FRAGMENT_BIT,
-      //			/*binding=*/ 3
-      //		),
-      //		// binding 4 → ambient occlusion map
-      //		vkinit::descriptorSetLayoutBinding(
-      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      //			VK_SHADER_STAGE_FRAGMENT_BIT,
-      //			/*binding=*/ 4
-      //		)
-      // };
-
-
-      // VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
-      // descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-      // descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
-      // descriptorLayoutCI.pBindings = setLayoutBindings.data();
-      // VK_CHECK_RESULT(vkCreateDescriptorSetLayout(
-      //	pcontext->logicalDevice(),
-      //	&descriptorLayoutCI,
-      //	nullptr,
-      //             &pcontext->m_psetdescriptorlayoutGltfImage->m_vkdescriptorsetlayout
-      //));
-   }
-
-   return m_psetdescriptorlayoutGltfImage4;
-}
-
-
-
-::gpu_vulkan::descriptor_set_layout *context::descriptor_set_layout_scene_gltf() 
-{
-
-   if (!m_psetdescriptorlayoutSceneGltfImage4)
-   {
-      m_psetdescriptorlayoutSceneGltfImage4 =
-
-         // binding 0 → baseColor (albedo)
-         // binding 1 → normal map
-         // binding 2 → metallic map
-         // binding 3 → roughness map
-         // binding 4 → ambient occlusion map
-         descriptor_set_layout::Builder(this)
-            .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-            .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-            .build();
-
-      //// Always push exactly two bindings:
-      ////  • binding 0 = base-color sampler
-      ////  • binding 1 = normal-map sampler
-      // std::array<VkDescriptorSetLayoutBinding, 5> setLayoutBindings = {
-      //	// binding 0 → baseColor (albedo)
-      //	vkinit::descriptorSetLayoutBinding(
-      //		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      //		VK_SHADER_STAGE_FRAGMENT_BIT,
-      //		/*binding=*/ 0
-      //	),
-      //		// binding 1 → normal map
-      //		vkinit::descriptorSetLayoutBinding(
-      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      //			VK_SHADER_STAGE_FRAGMENT_BIT,
-      //			/*binding=*/ 1
-      //		),
-      //		// binding 2 → metallic map
-      //		vkinit::descriptorSetLayoutBinding(
-      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      //			VK_SHADER_STAGE_FRAGMENT_BIT,
-      //			/*binding=*/ 2
-      //		),
-      //		// binding 3 → roughness map
-      //		vkinit::descriptorSetLayoutBinding(
-      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      //			VK_SHADER_STAGE_FRAGMENT_BIT,
-      //			/*binding=*/ 3
-      //		),
-      //		// binding 4 → ambient occlusion map
-      //		vkinit::descriptorSetLayoutBinding(
-      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      //			VK_SHADER_STAGE_FRAGMENT_BIT,
-      //			/*binding=*/ 4
-      //		)
-      // };
+//
+//   ::gpu_vulkan::descriptor_set_layout *context::descriptor_set_layout_gltf()
+//{
+//
+//
+//   if (!m_psetdescriptorlayoutGltfImage4)
+//   {
+//      m_psetdescriptorlayoutGltfImage4 =
+//
+//         // binding 0 → baseColor (albedo)
+//         // binding 1 → normal map
+//         // binding 2 → metallic map
+//         // binding 3 → roughness map
+//         // binding 4 → ambient occlusion map
+//         descriptor_set_layout::Builder(this)
+//            .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+//            .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+//            .addBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+//            .addBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+//            .addBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+//            .build();
+//
+//      //// Always push exactly two bindings:
+//      ////  • binding 0 = base-color sampler
+//      ////  • binding 1 = normal-map sampler
+//      // std::array<VkDescriptorSetLayoutBinding, 5> setLayoutBindings = {
+//      //	// binding 0 → baseColor (albedo)
+//      //	vkinit::descriptorSetLayoutBinding(
+//      //		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//      //		VK_SHADER_STAGE_FRAGMENT_BIT,
+//      //		/*binding=*/ 0
+//      //	),
+//      //		// binding 1 → normal map
+//      //		vkinit::descriptorSetLayoutBinding(
+//      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+//      //			/*binding=*/ 1
+//      //		),
+//      //		// binding 2 → metallic map
+//      //		vkinit::descriptorSetLayoutBinding(
+//      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+//      //			/*binding=*/ 2
+//      //		),
+//      //		// binding 3 → roughness map
+//      //		vkinit::descriptorSetLayoutBinding(
+//      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+//      //			/*binding=*/ 3
+//      //		),
+//      //		// binding 4 → ambient occlusion map
+//      //		vkinit::descriptorSetLayoutBinding(
+//      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+//      //			/*binding=*/ 4
+//      //		)
+//      // };
+//
+//
+//      // VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
+//      // descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+//      // descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
+//      // descriptorLayoutCI.pBindings = setLayoutBindings.data();
+//      // VK_CHECK_RESULT(vkCreateDescriptorSetLayout(
+//      //	pcontext->logicalDevice(),
+//      //	&descriptorLayoutCI,
+//      //	nullptr,
+//      //             &pcontext->m_psetdescriptorlayoutGltfImage->m_vkdescriptorsetlayout
+//      //));
+//   }
+//
+//   return m_psetdescriptorlayoutGltfImage4;
+//}
 
 
-      // VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
-      // descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-      // descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
-      // descriptorLayoutCI.pBindings = setLayoutBindings.data();
-      // VK_CHECK_RESULT(vkCreateDescriptorSetLayout(
-      //	pcontext->logicalDevice(),
-      //	&descriptorLayoutCI,
-      //	nullptr,
-      //             &pcontext->m_psetdescriptorlayoutGltfImage->m_vkdescriptorsetlayout
-      //));
-   }
 
-   return m_psetdescriptorlayoutSceneGltfImage4;
-
-}
+//::gpu_vulkan::descriptor_set_layout *context::descriptor_set_layout_scene_gltf() 
+//{
+//
+//   auto pengine = m_pengine;
+//
+//   ::cast < ::gpu_vulkan::binding_set > pbindingset = pengine->scene_gltf_pbr_binding_set();
+//
+//   pbindingset->defer_update_binding_set(pgpucommandbuffer);
+//
+//   return pbindingset->m_pdescriptorsetlayout1;
+//   
+//
+//   if (!m_psetdescriptorlayoutSceneGltfImage4)
+//   {
+//      m_psetdescriptorlayoutSceneGltfImage4 =
+//
+//         // binding 0 → baseColor (albedo)
+//         // binding 1 → normal map
+//         // binding 2 → metallic map
+//         // binding 3 → roughness map
+//         // binding 4 → ambient occlusion map
+//         descriptor_set_layout::Builder(this)
+//            .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+//            .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+//            .build();
+//
+//      //// Always push exactly two bindings:
+//      ////  • binding 0 = base-color sampler
+//      ////  • binding 1 = normal-map sampler
+//      // std::array<VkDescriptorSetLayoutBinding, 5> setLayoutBindings = {
+//      //	// binding 0 → baseColor (albedo)
+//      //	vkinit::descriptorSetLayoutBinding(
+//      //		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//      //		VK_SHADER_STAGE_FRAGMENT_BIT,
+//      //		/*binding=*/ 0
+//      //	),
+//      //		// binding 1 → normal map
+//      //		vkinit::descriptorSetLayoutBinding(
+//      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+//      //			/*binding=*/ 1
+//      //		),
+//      //		// binding 2 → metallic map
+//      //		vkinit::descriptorSetLayoutBinding(
+//      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+//      //			/*binding=*/ 2
+//      //		),
+//      //		// binding 3 → roughness map
+//      //		vkinit::descriptorSetLayoutBinding(
+//      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+//      //			/*binding=*/ 3
+//      //		),
+//      //		// binding 4 → ambient occlusion map
+//      //		vkinit::descriptorSetLayoutBinding(
+//      //			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//      //			VK_SHADER_STAGE_FRAGMENT_BIT,
+//      //			/*binding=*/ 4
+//      //		)
+//      // };
+//
+//
+//      // VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
+//      // descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+//      // descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
+//      // descriptorLayoutCI.pBindings = setLayoutBindings.data();
+//      // VK_CHECK_RESULT(vkCreateDescriptorSetLayout(
+//      //	pcontext->logicalDevice(),
+//      //	&descriptorLayoutCI,
+//      //	nullptr,
+//      //             &pcontext->m_psetdescriptorlayoutGltfImage->m_vkdescriptorsetlayout
+//      //));
+//   }
+//
+//   return m_psetdescriptorlayoutSceneGltfImage4;
+//
+//}
 
 
 

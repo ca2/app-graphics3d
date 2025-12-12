@@ -215,6 +215,9 @@
     <ClInclude Include="binding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -356,6 +359,9 @@
       <Filter>Source Files\ibl</Filter>
     </ClCompile>
     <ClCompile Include="binding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

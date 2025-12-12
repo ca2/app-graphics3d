@@ -6,6 +6,7 @@
 #include "impact.h"
 #include "input.h"
 #include "main_scene.h"
+#include "bred/gpu/block.h"
 #include "bred/gpu/context.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/render_target.h"
@@ -80,7 +81,7 @@ namespace app_graphics3d_continuum
    void main_scene::on_load_scene(::gpu::context* pgpucontext)
    {
 
-      m_gpupropertiesGlobalUbo.set<::graphics3d::global_ubo1>();
+      ///m_gpupropertiesGlobalUbo.set<::graphics3d::global_ubo1>();
 
       //::graphics3d::sky_box::cube cube = {
 
@@ -251,7 +252,11 @@ namespace app_graphics3d_continuum
    void main_scene::on_update(::gpu::context* pgpucontext)
    {
 
-      auto& globalubo = this->global_ubo();
+      //auto& globalubo = this->global_ubo();
+
+      auto pblockGlobalUbo1 = this->global_ubo1(pgpucontext);
+
+      auto &globalUbo1 = *pblockGlobalUbo1;
 
       //pgpucontext->clear(::argb(.5f, 0.f, 0.f, 0.5f));
 
@@ -330,22 +335,22 @@ namespace app_graphics3d_continuum
          float fFarZ = pcamera->m_fFarZ;
 
       auto projection = pcamera->projection();
-      globalubo["projection"] = projection;
+      globalUbo1["projection"] = projection;
 
       auto impact = pcamera->impact();
-      globalubo["view"] = impact;
+      globalUbo1["view"] = impact;
 
 
       ::floating_sequence4 seq4AmbientLightColor(0.2f, 0.2f, 0.2f, 0.2f);
-      globalubo["ambientLightColor"] = seq4AmbientLightColor;
+      globalUbo1["ambientLightColor"] = seq4AmbientLightColor;
             
 
       //auto inversedImpact = pcamera->inversed_impact();
       auto inversedImpact = impact.inversed();
-      globalubo["invView"] = inversedImpact;
+      globalUbo1["invView"] = inversedImpact;
 
       auto cameraPosition = pcamera->position();
-      globalubo["cameraPosition"] = cameraPosition;
+      globalUbo1["cameraPosition"] = cameraPosition;
 
 
       if (m_ppointlightrendersystem)

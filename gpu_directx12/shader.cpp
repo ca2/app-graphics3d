@@ -2,6 +2,7 @@
 // Co-creating with V0idsEmbrace@Twitch with
 // camilo on 2025-05-19 04:59 <3ThomasBorregaardSorensen!!
 #include "approach.h"
+#include "block.h"
 #include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
@@ -16,6 +17,10 @@
 #include "bred/gpu/types.h"
 #include "acme/operating_system/windows_common/com/hresult_exception.h"
 #include <d3dcompiler.h>
+
+#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/immersion_layer.h"
+#include "bred/graphics3d/scene_base.h"
 //#include "bred/user/user/graphics3d.h"
 
 
@@ -184,7 +189,7 @@ namespace gpu_directx12
             //rootParameters[0].InitAsDescriptorTable(1, &ranges[i],
             //   D3D12_SHADER_VISIBILITY_ALL); //|              D3D12_SHADER_VISIBILITY_PIXEL);
 
-            if (m_pbindingseta->has_global_ubo())
+            if (m_pbindingslotseta->has_global_ubo())
             {
 
                //ranges.øadd().Init(
@@ -248,11 +253,11 @@ namespace gpu_directx12
             if (has_image_sampler())
             {
 
-               auto binding = get_first_image_sampler_binding();
+               auto pbindingslot = get_first_image_sampler_binding_slot();
 
                UINT ShaderRegister;
 
-               ShaderRegister = binding.m_pbinding->m_iSlot;
+               ShaderRegister = pbindingslot->m_pbinding->m_iSlot;
 
                //if (m_bindingCubeSampler.is_set())
                //{
@@ -979,8 +984,14 @@ namespace gpu_directx12
 
          auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
+         auto pscene = pcontext->m_pengine->m_pimmersionlayer->m_pscene;
+
+         auto pgpublockGlobalUbo1 = pscene->global_ubo1(pcontext);
+
+         ::cast<::gpu_directx12::block > pblockGlobalUbo1 = pgpublockGlobalUbo1;
+
          //pcommandlist->SetGraphicsRootDescriptorTable(0, prenderer->m_pheapCbv->GetGPUDescriptorHandleForHeapStart());
-         pcommandlist->SetGraphicsRootConstantBufferView(0, prenderer->m_presourceGlobalUBO->GetGPUVirtualAddress());
+         pcommandlist->SetGraphicsRootConstantBufferView(0, pblockGlobalUbo1->m_presource->GetGPUVirtualAddress());
 
       }
 

@@ -28,6 +28,7 @@
 #define USE_PIX
 #include <pix.h>
 
+#include "bred/gpu/block.h"
 #include "bred/gpu/queue.h"
 
 using namespace directx12;
@@ -1569,88 +1570,91 @@ namespace gpu_directx12
    //}
 
 
-   void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
+   // void context::create_global_ubo(int iGlobalUboSize, int iFrameCount)
+   // {
+   //
+   //    ::cast < renderer > prenderer = m_pgpurenderer;
+   //
+   //    ::cast < device > pgpudevice = m_pgpudevice;
+   //
+   //    CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+   //
+   //    CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(
+   //       ::directx12::Align256(iGlobalUboSize));
+   //
+   //    pgpudevice->m_pdevice->CreateCommittedResource(
+   //       &heapProps,
+   //       D3D12_HEAP_FLAG_NONE,
+   //       &bufferDesc,
+   //       D3D12_RESOURCE_STATE_GENERIC_READ,
+   //       nullptr,
+   //       __interface_of(prenderer->m_presourceGlobalUBO));
+   //
+   //    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+   //
+   //    cbvDesc.BufferLocation = prenderer->m_presourceGlobalUBO->GetGPUVirtualAddress();
+   //
+   //    cbvDesc.SizeInBytes = ::directx12::Align256(iGlobalUboSize); // must be 256-byte aligned
+   //
+   //    auto handle = prenderer->m_pheapCbv->GetCPUDescriptorHandleForHeapStart();
+   //
+   //    pgpudevice->m_pdevice->CreateConstantBufferView(&cbvDesc, handle);
+   //
+   //    CD3DX12_RANGE readRange(0, 0);
+   //
+   //    prenderer->m_presourceGlobalUBO->Map(
+   //       0, &readRange,
+   //       &prenderer->m_pGlobalUBO);
+   //
+   // }
+
+
+   void context::update_global_ubo1(::gpu::block *pblockGlobalUbo1)
    {
 
-      ::cast < renderer > prenderer = m_pgpurenderer;
-
-      ::cast < device > pgpudevice = m_pgpudevice;
-
-      CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
-
-      CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(
-         ::directx12::Align256(iGlobalUboSize));
-
-      pgpudevice->m_pdevice->CreateCommittedResource(
-         &heapProps,
-         D3D12_HEAP_FLAG_NONE,
-         &bufferDesc,
-         D3D12_RESOURCE_STATE_GENERIC_READ,
-         nullptr,
-         __interface_of(prenderer->m_presourceGlobalUBO));
-
-      D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-
-      cbvDesc.BufferLocation = prenderer->m_presourceGlobalUBO->GetGPUVirtualAddress();
-
-      cbvDesc.SizeInBytes = ::directx12::Align256(iGlobalUboSize); // must be 256-byte aligned
-
-      auto handle = prenderer->m_pheapCbv->GetCPUDescriptorHandleForHeapStart();
-
-      pgpudevice->m_pdevice->CreateConstantBufferView(&cbvDesc, handle);
-
-      CD3DX12_RANGE readRange(0, 0);
-
-      prenderer->m_presourceGlobalUBO->Map(
-         0, &readRange,
-         &prenderer->m_pGlobalUBO);
-
-   }
-
-
-   void context::update_global_ubo(const ::block& block)
-   {
-
-      auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
-
-
-      //MyGlobalData globalData = { /* your values */ };
-      ::cast < renderer > prenderer = m_pgpurenderer;
-      //      UINT8* mappedPtr = nullptr;
-        //    D3D12_RANGE readRange = {}; // no read access
-          //  m_uboBuffers[iFrameIndex]->m_presourceBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mappedPtr));
-            //memcpy(mappedPtr, block.data(), block.size());
-      auto dataTarget = prenderer->m_pGlobalUBO;
-      memcpy(dataTarget, block.data(), block.size());
-
-
-      //m_uboBuffers[iFrameIndex]->m_presourceBuffer->Unmap(0, nullptr);
-
-      //m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
-
-      //m_uboBuffers[iFrameIndex]->flush();
-
-      //ID3D11Buffer* globalUBOBuffer = nullptr;
-      //D3D11_BUFFER_DESC cbd = {};
-      //cbd.Usage = D3D11_USAGE_DYNAMIC;
-      //cbd.ByteWidth = block;
-      //cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-      //cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-      //device->CreateBuffer(&cbd, nullptr, &globalUBOBuffer);
-      //if (m_pbufferGlobalUbo)
-      //{
-
-      //   D3D11_MAPPED_SUBRESOURCE mapped;
-      //   m_pcontext->Map(m_pbufferGlobalUbo, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-      //   memcpy(mapped.pData, block.data(), block.size());
-      //   m_pcontext->Unmap(m_pbufferGlobalUbo, 0);
-
-
-      //}
-
-      //m_pbufferGlobalUbo
-      //m_pbufferGlobalUbo
+      ::gpu::context::update_global_ubo1(pblockGlobalUbo1);
+      // pblockGlobalUbo1->update_frame(m_pgpurenderer);
+      //
+      // auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+      //
+      //
+      // //MyGlobalData globalData = { /* your values */ };
+      // ::cast < renderer > prenderer = m_pgpurenderer;
+      // //      UINT8* mappedPtr = nullptr;
+      //   //    D3D12_RANGE readRange = {}; // no read access
+      //     //  m_uboBuffers[iFrameIndex]->m_presourceBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mappedPtr));
+      //       //memcpy(mappedPtr, block.data(), block.size());
+      // auto dataTarget = prenderer->m_pGlobalUBO;
+      // memcpy(dataTarget, block.data(), block.size());
+      //
+      //
+      // //m_uboBuffers[iFrameIndex]->m_presourceBuffer->Unmap(0, nullptr);
+      //
+      // //m_uboBuffers[iFrameIndex]->writeToBuffer(block.data());
+      //
+      // //m_uboBuffers[iFrameIndex]->flush();
+      //
+      // //ID3D11Buffer* globalUBOBuffer = nullptr;
+      // //D3D11_BUFFER_DESC cbd = {};
+      // //cbd.Usage = D3D11_USAGE_DYNAMIC;
+      // //cbd.ByteWidth = block;
+      // //cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+      // //cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+      //
+      // //device->CreateBuffer(&cbd, nullptr, &globalUBOBuffer);
+      // //if (m_pbufferGlobalUbo)
+      // //{
+      //
+      // //   D3D11_MAPPED_SUBRESOURCE mapped;
+      // //   m_pcontext->Map(m_pbufferGlobalUbo, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+      // //   memcpy(mapped.pData, block.data(), block.size());
+      // //   m_pcontext->Unmap(m_pbufferGlobalUbo, 0);
+      //
+      //
+      // //}
+      //
+      // //m_pbufferGlobalUbo
+      // //m_pbufferGlobalUbo
 
    }
 

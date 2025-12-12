@@ -34,6 +34,10 @@ list(APPEND library_source
         approach.h
         assimp.cpp
         assimp.h
+   binding.cpp
+   binding.h
+   block.cpp
+   block.h
         buffer.cpp
         buffer.h
         command_buffer.cpp

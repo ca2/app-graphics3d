@@ -41,7 +41,7 @@ namespace gpu_vulkan
       //::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutSceneGltfImage4;
       //::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutIbl;
       //::array<VkDescriptorSet>                                 m_descriptorsetsGlobal;
-      ::pointer_array<::gpu_vulkan::memory_buffer>					m_uboBuffers;
+      //::pointer_array<::gpu_vulkan::memory_buffer>					m_uboBuffers;
       //::pointer <::gpu_vulkan::descriptor_pool>                m_pdescriptorpoolGlobal;
 
 
@@ -66,8 +66,8 @@ namespace gpu_vulkan
       VkSampler _001VkSampler();
 
 
-      ::gpu_vulkan::descriptor_set_layout *descriptor_set_layout_gltf();
-      ::gpu_vulkan::descriptor_set_layout *descriptor_set_layout_scene_gltf();
+      //::gpu_vulkan::descriptor_set_layout *descriptor_set_layout_gltf();
+      //::gpu_vulkan::descriptor_set_layout *descriptor_set_layout_scene_gltf();
 
 
       //void gpu_debug_message(const ::scoped_string& scopedstr) override;
@@ -201,9 +201,9 @@ namespace gpu_vulkan
       //bool checkDeviceExtensionSupport(VkPhysicalDevice pvkcdevice);
 
             //descriptor_set_layout* get_set_descriptor_layout(::gpu::context * pgpucontext);
-      virtual VkDescriptorSet getGlobalDescriptorSet(::gpu_vulkan::renderer* prenderer, ::collection::index iFrameIndex = -1);
+      //virtual VkDescriptorSet getGlobalDescriptorSet(::gpu_vulkan::renderer* prenderer, ::collection::index iFrameIndex = -1);
 
-      ::gpu_vulkan::descriptor_pool* get_global_pool(int iFrameCount, ::gpu::command_buffer * pgpucommandbuffer);
+      //::gpu_vulkan::descriptor_pool* get_global_pool(int iFrameCount, ::gpu::command_buffer * pgpucommandbuffer);
 
       //void transitionImageLayout(
       //   VkImage image,
@@ -220,8 +220,8 @@ namespace gpu_vulkan
 
       void layout_global_ubo(::gpu::properties *pproperties) override;
 
-      void create_global_ubo(int iSize, int iFrameCount) override;
-      void update_global_ubo(const ::block& block) override;
+      //void create_global_ubo(int iSize, int iFrameCount) override;
+      void update_global_ubo1(::gpu::block * pblockGlobalUbo1) override;
 
 
       void engine_on_frame_context_initialization() override;

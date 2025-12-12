@@ -3,8 +3,12 @@
 // camilo on 2025-05-19 04:59 <3ThomasBorregaardSorensen!!
 #include "approach.h"
 #include "binding.h"
+#include "block.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/frame_storage.h"
+#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/immersion_layer.h"
+#include "bred/graphics3d/scene_base.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "descriptors.h"
@@ -14,7 +18,6 @@
 #include "renderer.h"
 #include "shader.h"
 #include "texture.h"
-#include "bred/graphics3d/engine.h"
 
 
 namespace gpu_vulkan
@@ -128,7 +131,7 @@ namespace gpu_vulkan
    void shader::on_initialize_shader() {}
 
 
-   void shader::_create_pipeline(::gpu::texture *pgputextureTarget, ::gpu::command_buffer * pgpucommandbuffer)
+   void shader::_create_pipeline(::gpu::texture *pgputextureTarget, ::gpu::command_buffer *pgpucommandbuffer)
    {
 
       ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
@@ -358,53 +361,57 @@ namespace gpu_vulkan
 
       // pipelineconfiguration.pipelineLayout = m_vkpipelinelayout;
 
-      //if (m_bindingUbo.is_set())
+      // if (m_bindingUbo.is_set())
       //{
 
-        // if (m_bindingSampler.is_set())
-         //{
+      // if (m_bindingSampler.is_set())
+      //{
 
-            //   auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+      //   auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
       //   pipelineconfiguration.descriptorSetLayouts.add(globalSetLayout);
 
       ::pointer_array<::gpu_vulkan::descriptor_set_layout> descriptorsetlayouta;
       ::pointer_array<::gpu_vulkan::descriptor_pool> descriptorpoola;
-                  int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-      if (m_pbindingseta)
-                  {
-                     int iSetSeed = 0;
-                     for (auto &pgpubindingset: *m_pbindingseta)
-                     {
-                        pgpubindingset.m_iSet = iSetSeed++;
+      if (m_pbindingslotseta)
+      {
 
-                        if (pgpubindingset->first()->is_global_ubo())
-                        {
+         update_binding_slots();
 
-                           //   auto globalSetLayout =
-                           //   pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-                           //   pipelineconfiguration.descriptorSetLayouts.add(globalSetLayout);
-                           auto pgpubindingsetGlobalUbo = pgpucontext->m_pengine->global_ubo1_binding_set();
+         for (auto &bindingslotset: *m_pbindingslotseta)
+         {
+            
+            if (bindingslotset.m_pbindingset->first()->is_global_ubo())
+            {
 
-                           ::cast<::gpu_vulkan::binding_set> pbindingsetGlobalUbo = pgpubindingsetGlobalUbo;
+               // auto pscene = pgpucontext->m_pengine->m_pimmersionlayer->m_pscene;
 
-                           auto pdescriptorsetlayout = pbindingsetGlobalUbo->descriptor_set_layout(pgpucommandbuffer);
+               // auto pblockGlobalUbo1 = pscene->global_ubo1(pgpucontext);
+               //    auto globalSetLayout =
+               //    pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+               //    pipelineconfiguration.descriptorSetLayouts.add(globalSetLayout);
+               auto pgpubindingsetGlobalUbo = pgpucontext->global_ubo1_binding_set();
 
-                           descriptorsetlayouta.ø(pgpubindingset.m_iSet) =pdescriptorsetlayout;
-                           
-                           continue;
-                        }
+               ::cast<::gpu_vulkan::binding_set> pbindingsetGlobalUbo = pgpubindingsetGlobalUbo;
 
-                        ::cast<::gpu_vulkan::binding_set> pbindingset = pgpubindingset.m_pbindingset;
+               auto pdescriptorsetlayout = pbindingsetGlobalUbo->descriptor_set_layout(pgpucommandbuffer);
 
-                        descriptorsetlayouta.ø(pgpubindingset.m_iSet) = pbindingset->descriptor_set_layout(pgpucommandbuffer);
+               descriptorsetlayouta.ø(bindingslotset.m_iSet) = pdescriptorsetlayout;
 
-                        descriptorpoola.ø(pgpubindingset.m_iSet) = pbindingset->m_pdescriptorsetlayout1;
-                     }
-                  }
+               continue;
+            }
+
+            ::cast<::gpu_vulkan::binding_set> pbindingset = bindingslotset.m_pbindingset;
+
+            descriptorsetlayouta.ø(bindingslotset.m_iSet) = pbindingset->descriptor_set_layout(pgpucommandbuffer);
+
+            descriptorpoola.ø(bindingslotset.m_iSet) = pbindingset->m_pdescriptorsetlayout1;
+         }
+      }
 
       //      //m_psetdescriptorlayout =
-      //      //   
+      //      //
       //      //      .addBinding(m_bindingUbo.m_uBinding, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
       //      //                  VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
       //      //      .addBinding(m_bindingSampler.m_uBinding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -442,7 +449,7 @@ namespace gpu_vulkan
       //      m_pdescriptorpool = pdescriptorpoolbuilder->build();
       //   }
       //}
-      //else if (m_bindingSampler.is_set())
+      // else if (m_bindingSampler.is_set())
       //{
 
       //   {
@@ -464,7 +471,7 @@ namespace gpu_vulkan
       //      m_pdescriptorpool = pdescriptorpoolbuilder->build();
       //   }
       //}
-      //else if (m_bindingCubeSampler.is_set())
+      // else if (m_bindingCubeSampler.is_set())
       //{
 
       //   {
@@ -540,7 +547,7 @@ namespace gpu_vulkan
       }
       //::array<VkDescriptorSetLayout> descriptorSetLayouts;
 
-      //if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      // if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
       //{
 
       //   auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
@@ -555,12 +562,11 @@ namespace gpu_vulkan
          auto setLayout = pset->getDescriptorSetLayout();
 
          pipelineconfiguration.descriptorSetLayouts.add(setLayout);
-
       }
 
       int iSet = -1;
 
-      for(auto & pdescriptorsetlayout : descriptorsetlayouta)
+      for (auto &pdescriptorsetlayout: descriptorsetlayouta)
       {
 
          iSet++;
@@ -571,13 +577,12 @@ namespace gpu_vulkan
             auto samplerSetLayout = pdescriptorsetlayout->getDescriptorSetLayout();
 
             pipelineconfiguration.descriptorSetLayouts.ø(iSet) = samplerSetLayout;
-
          }
 
-         //if (m_bindingSampler.is_set())
-           // m_bindingSampler.m_uSet = uSet;
-         //else if (m_bindingCubeSampler.is_set())
-           // m_bindingCubeSampler.m_uSet = uSet;
+         // if (m_bindingSampler.is_set())
+         //  m_bindingSampler.m_uSet = uSet;
+         // else if (m_bindingCubeSampler.is_set())
+         //  m_bindingCubeSampler.m_uSet = uSet;
       }
 
       for (auto &pair: m_mapDescriptorSetLayout)
@@ -772,7 +777,6 @@ namespace gpu_vulkan
          m_ptextureTarget = m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_frame());
 
          ptextureTarget = m_ptextureTarget;
-
       }
 
       auto prenderpass = ptextureTarget->get_render_pass();
@@ -875,7 +879,7 @@ namespace gpu_vulkan
       vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
 
-      //if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      // if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
       //{
 
       //   auto globalDescriptorSet = pgpucontext->getGlobalDescriptorSet(prenderer);
@@ -883,807 +887,799 @@ namespace gpu_vulkan
       //   vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
       //                           m_ppipeline->_pipeline_layout(), 0, 1, &globalDescriptorSet, 0, nullptr);
       //}
-
    }
 
 
-// void shader::_bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_scene escene)
-//{
+   // void shader::_bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_scene escene)
+   //{
 
-//   ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+   //   ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-//   ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
+   //   ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
 
-//   ::cast<renderer> prenderer = m_pgpurenderer;
+   //   ::cast<renderer> prenderer = m_pgpurenderer;
 
-//   //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
-//   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+   //   //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
+   //   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-//   if (!m_ppipeline)
-//   {
-
-//      _create_pipeline(pgput);
-
-//   }
-
-//   m_ppipeline->bind(pcommandbuffer);
-
-//   auto rectangle = pgpucontext->m_rectangle;
-//   auto size = rectangle.size();
-//   VkViewport vp = {
-//      (float)0.f,
-//      (float)0.f,
-//      (float)size.width(),
-//      (float)size.height(),
-//      0.0f, 1.0f};
-
-//   VkRect2D sc = {
-//      {
-//         0,
-//         0,
-//      },
-//      {
-//         (uint32_t)size.width(),
-//         (uint32_t)size.height(),
-//      }
-//   };
-
-//   vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
-
-//   vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
-
-
-//   if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
-//   {
-
-//      auto globalDescriptorSet = pgpucontext->getGlobalDescriptorSet(prenderer);
-
-//      vkCmdBindDescriptorSets(
-//         pcommandbuffer->m_vkcommandbuffer,
-//         VK_PIPELINE_BIND_POINT_GRAPHICS,
-//         m_ppipeline->_pipeline_layout(),
-//         0,
-//         1,
-//         &globalDescriptorSet,
-//         0,
-//         nullptr);
-
-//   }
-
-//}
-
-
-void shader::unbind(::gpu::command_buffer *pgpucommandbuffer)
-{
-
-   ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
-
-   ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
-
-   ::cast<renderer> prenderer = m_pgpurenderer;
-
-   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-   //
-   //      {
-   //
+   //   if (!m_ppipeline)
    //   {
-   //
-   //      if (pgpucontext->m_pgpudevice->m_iLayer == 0)
-   //      {
-   //
-   //         VkClearAttachment clearAttachment = {
-   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-   //            .colorAttachment = 0,
-   //            .clearValue={.color = {0.5f, 0.0f, 0.0f, 0.5f}} // Red
-   //         };
-   //
-   //         VkClearRect clearRect = {
-   //             .rect = {
-   //                 .offset = {100, 100},
-   //                 .extent = {100, 100}
-   //             },
-   //             .baseArrayLayer = 0,
-   //             .layerCount = 1
-   //         };
-   //
-   //         vkCmdClearAttachments(
-   //            pcommandbuffer->m_vkcommandbuffer,
-   //            1,
-   //            &clearAttachment,
-   //            1,
-   //            &clearRect);
-   //
-   //      }
-   //      else if (pgpucontext->m_pgpudevice->m_iLayer == 1)
-   //      {
-   //
-   //         VkClearAttachment clearAttachment = {
-   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-   //            .colorAttachment = 0,
-   //            .clearValue = {.color = {0.0f, 0.5f, 0.0f, 0.5f} } // Green
-   //         };
-   //
-   //         VkClearRect clearRect = {
-   //             .rect = {
-   //                 .offset = {200, 100},
-   //                 .extent = {100, 100}
-   //             },
-   //             .baseArrayLayer = 0,
-   //             .layerCount = 1
-   //         };
-   //
-   //         vkCmdClearAttachments(
-   //            pcommandbuffer->m_vkcommandbuffer,
-   //            1,
-   //            &clearAttachment,
-   //            1,
-   //            &clearRect);
-   //
-   //
-   //      }
-   //      else if (pgpucontext->m_pgpudevice->m_iLayer == 2)
-   //      {
-   //
-   //         VkClearAttachment clearAttachment = {
-   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-   //            .colorAttachment = 0,
-   //            .clearValue = {.color = {0.0f, 0.0f, 0.5f, 0.5f} } // Blue
-   //         };
-   //
-   //         VkClearRect clearRect = {
-   //             .rect = {
-   //                 .offset = {300, 100},
-   //                 .extent = {100, 100}
-   //             },
-   //             .baseArrayLayer = 0,
-   //             .layerCount = 1
-   //         };
-   //
-   //         vkCmdClearAttachments(
-   //            pcommandbuffer->m_vkcommandbuffer,
-   //            1,
-   //            &clearAttachment,
-   //            1,
-   //            &clearRect);
-   //
-   //      }
-   //
+
+   //      _create_pipeline(pgput);
+
    //   }
-   //
+
+   //   m_ppipeline->bind(pcommandbuffer);
+
+   //   auto rectangle = pgpucontext->m_rectangle;
+   //   auto size = rectangle.size();
+   //   VkViewport vp = {
+   //      (float)0.f,
+   //      (float)0.f,
+   //      (float)size.width(),
+   //      (float)size.height(),
+   //      0.0f, 1.0f};
+
+   //   VkRect2D sc = {
+   //      {
+   //         0,
+   //         0,
+   //      },
+   //      {
+   //         (uint32_t)size.width(),
+   //         (uint32_t)size.height(),
+   //      }
+   //   };
+
+   //   vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+
+   //   vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
+
+
+   //   if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+   //   {
+
+   //      auto globalDescriptorSet = pgpucontext->getGlobalDescriptorSet(prenderer);
+
+   //      vkCmdBindDescriptorSets(
+   //         pcommandbuffer->m_vkcommandbuffer,
+   //         VK_PIPELINE_BIND_POINT_GRAPHICS,
+   //         m_ppipeline->_pipeline_layout(),
+   //         0,
+   //         1,
+   //         &globalDescriptorSet,
+   //         0,
+   //         nullptr);
+
+   //   }
+
    //}
 
 
-   // vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
-}
-
-
-void shader::push_properties(::gpu::command_buffer *pgpucommandbuffer)
-{
-
-   ::cast<renderer> prenderer = m_pgpurenderer;
-
-   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-
-   int iPushConstantsOffset = 0;
-
-   if (m_propertiesPushShared.m_blockWithoutSamplers.size() > 0)
+   void shader::unbind(::gpu::command_buffer *pgpucommandbuffer)
    {
 
-      auto uBlockSizeWithoutSamplers = (uint32_t)m_propertiesPushShared.m_blockWithoutSamplers.size();
+      ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-      auto pmemory = øallocate ::memory();
+      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      pmemory->assign(m_propertiesPushShared.m_blockWithoutSamplers.data(),
-                      m_propertiesPushShared.m_blockWithoutSamplers.size());
-      auto f0 = ((float *)pmemory->data())[0];
-      auto f1 = ((float *)pmemory->data())[1];
-      auto f2 = ((float *)pmemory->data())[2];
-      vkCmdPushConstants(pcommandbuffer->m_vkcommandbuffer, m_ppipeline->_pipeline_layout(),
-                         VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, iPushConstantsOffset,
-                         uBlockSizeWithoutSamplers, pmemory->data());
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
-      auto pframestorage = prenderer->m_pgpucontext->m_pgpudevice->current_frame_storage();
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+      //
+      //      {
+      //
+      //   {
+      //
+      //      if (pgpucontext->m_pgpudevice->m_iLayer == 0)
+      //      {
+      //
+      //         VkClearAttachment clearAttachment = {
+      //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //            .colorAttachment = 0,
+      //            .clearValue={.color = {0.5f, 0.0f, 0.0f, 0.5f}} // Red
+      //         };
+      //
+      //         VkClearRect clearRect = {
+      //             .rect = {
+      //                 .offset = {100, 100},
+      //                 .extent = {100, 100}
+      //             },
+      //             .baseArrayLayer = 0,
+      //             .layerCount = 1
+      //         };
+      //
+      //         vkCmdClearAttachments(
+      //            pcommandbuffer->m_vkcommandbuffer,
+      //            1,
+      //            &clearAttachment,
+      //            1,
+      //            &clearRect);
+      //
+      //      }
+      //      else if (pgpucontext->m_pgpudevice->m_iLayer == 1)
+      //      {
+      //
+      //         VkClearAttachment clearAttachment = {
+      //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //            .colorAttachment = 0,
+      //            .clearValue = {.color = {0.0f, 0.5f, 0.0f, 0.5f} } // Green
+      //         };
+      //
+      //         VkClearRect clearRect = {
+      //             .rect = {
+      //                 .offset = {200, 100},
+      //                 .extent = {100, 100}
+      //             },
+      //             .baseArrayLayer = 0,
+      //             .layerCount = 1
+      //         };
+      //
+      //         vkCmdClearAttachments(
+      //            pcommandbuffer->m_vkcommandbuffer,
+      //            1,
+      //            &clearAttachment,
+      //            1,
+      //            &clearRect);
+      //
+      //
+      //      }
+      //      else if (pgpucontext->m_pgpudevice->m_iLayer == 2)
+      //      {
+      //
+      //         VkClearAttachment clearAttachment = {
+      //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //            .colorAttachment = 0,
+      //            .clearValue = {.color = {0.0f, 0.0f, 0.5f, 0.5f} } // Blue
+      //         };
+      //
+      //         VkClearRect clearRect = {
+      //             .rect = {
+      //                 .offset = {300, 100},
+      //                 .extent = {100, 100}
+      //             },
+      //             .baseArrayLayer = 0,
+      //             .layerCount = 1
+      //         };
+      //
+      //         vkCmdClearAttachments(
+      //            pcommandbuffer->m_vkcommandbuffer,
+      //            1,
+      //            &clearAttachment,
+      //            1,
+      //            &clearRect);
+      //
+      //      }
+      //
+      //   }
+      //
+      //}
 
-      pframestorage->m_memorya.add(pmemory);
 
-      iPushConstantsOffset += uBlockSizeWithoutSamplers;
+      // vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
    }
 
-   if (m_propertiesPushVertex.m_blockWithoutSamplers.size() > 0)
+
+   void shader::push_properties(::gpu::command_buffer *pgpucommandbuffer)
    {
 
-      vkCmdPushConstants(pcommandbuffer->m_vkcommandbuffer, m_ppipeline->_pipeline_layout(), VK_SHADER_STAGE_VERTEX_BIT,
-                         iPushConstantsOffset, (uint32_t)m_propertiesPushVertex.m_blockWithoutSamplers.size(),
-                         m_propertiesPushVertex.m_blockWithoutSamplers.data());
+      ::cast<renderer> prenderer = m_pgpurenderer;
 
-      // iPushConstantsOffset += m_propertiesPushVertex.m_blockWithoutSamplers.size();
-   }
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-   if (m_propertiesPushFragment.m_blockWithoutSamplers.size() > 0)
-   {
+      int iPushConstantsOffset = 0;
 
-      vkCmdPushConstants(pcommandbuffer->m_vkcommandbuffer, m_ppipeline->_pipeline_layout(),
-                         VK_SHADER_STAGE_FRAGMENT_BIT, iPushConstantsOffset,
-                         (uint32_t)m_propertiesPushFragment.m_blockWithoutSamplers.size(),
-                         m_propertiesPushFragment.m_blockWithoutSamplers.data());
-
-      // iPushConstantsOffset += m_propertiesPushFragment.m_blockWithoutSamplers.size();
-   }
-
-   // set_push_properties(pgpucommandbuffer, m_propertiesPushShared.m_blockWithoutSamplers);
-   // set_push_properties(pgpucommandbuffer, m_propertiesPushVertex.m_blockWithoutSamplers);
-   // set_push_properties(pgpucommandbuffer, m_propertiesPushFragment.m_blockWithoutSamplers);
-   //::gpu::shader::push_properties();
-   // set_push_properties(m_propertiesPush.m_block);
-   /*     ::cast < renderer > prenderer = m_pgpurenderer;
-
-        ::cast < command_buffer > pcommandbuffer = ::gpu::current_command_buffer();
-
-        vkCmdPushConstants(
-           pcommandbuffer->m_vkcommandbuffer,
-           m_vkpipelinelayout,
-           VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-           0,
-           (uint32_t)m_propertiesPush.size(),
-           m_propertiesPush.data());*/
-}
-//bool shader::has_sampler() { return m_bindingSampler.is_set() || m_bindingCubeSampler.is_set(); }
-
-//bool shader::has_sampler() { return ::gpu::shader::has_sampler(); }
-
-
-// void shader::set_push_properties(::gpu::command_buffer *pgpucommandbuffer, const ::block &block)
-//{::gpu::    binding &binding(int iSet = 0, int iSlot = 0);
-
-//   ::cast<renderer> prenderer = m_pgpurenderer;
-
-//   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-
-//   vkCmdPushConstants(
-//      pcommandbuffer->m_vkcommandbuffer,
-//      m_ppipeline->_pipeline_layout(),
-//      VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-//      0,
-//      (uint32_t)block.size(),
-//      block.data());
-//   //::cast < renderer > prenderer = m_pgpurenderer;
-
-//   //::cast < command_buffer > pcommandbuffer = ::gpu::current_command_buffer();
-
-//   //vkCmdPushConstants(
-//   //   pcommandbuffer->m_vkcommandbuffer,
-
-
-//   //vkCmdPushConstants(cmdBuf, irradiancePipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT |
-//   VK_SHADER_STAGE_FRAGMENT_BIT, 0, block.size(), block.data());
-//}
-
-
-// class shader_sampler* shader::shader_sampler()
-//{
-
-//   if (nok(m_pshadersampler))
-//   {
-
-//      øconstruct_new(m_pshadersampler);
-
-//      m_pshadersampler->m_pshader = this;
-
-//   }
-
-//   return m_pshadersampler;
-
-//}
-
-
-// shader_sampler::shader_sampler() :
-//    m_descriptorsetlayout{}
-//{
-
-//   m_uSet = 0;
-//   m_pshader = nullptr;
-//   m_vksampler = VK_NULL_HANDLE;
-//   m_vkrenderpass2 = VK_NULL_HANDLE;
-
-//}
-
-
-// shader_sampler::~shader_sampler()
-//{
-
-//   ::cast < context > pcontext = m_pshader->m_pgpurenderer->m_pgpucontext;
-
-//   if (m_vkrenderpass2)
-//   {
-
-//      vkDestroyRenderPass(
-//         pcontext->logicalDevice(),
-//         m_vkrenderpass2,
-//         nullptr
-//      );
-
-//   }
-
-//   if (m_vksampler)
-//   {
-
-//      vkDestroySampler(
-//         pcontext->logicalDevice(),
-//         m_vksampler,
-//         nullptr
-//      );
-
-//   }
-
-//}
-
-
-// VkRenderPass shader_sampler::get_render_pass()
-//{
-
-//   if (!m_pshader->has_shader_sampler())
-//   {
-
-//      throw ::exception(error_wrong_state);
-
-//   }
-
-//   if (m_vkrenderpass2 != VK_NULL_HANDLE)
-//   {
-
-//      return m_vkrenderpass2;
-
-//   }
-
-//   ::cast < context > pcontext = m_pshader->m_pgpurenderer->m_pgpucontext;
-
-//   VkAttachmentDescription colorAttachment = {
-//      .format = pcontext->m_formatImageDefault,
-//      .samples = VK_SAMPLE_COUNT_1_BIT,
-//      .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-//      .finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-//   };
-
-//   if (m_pshader->m_bClearColor)
-//   {
-
-//      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; //// ← clears to clearColor at start
-//      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-
-//   }
-//   else
-//   {
-
-//      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD; // Blend onto existing dstImage
-//      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-//   }
-
-//   VkAttachmentReference colorRef =
-//   {
-
-//      .attachment = 0,
-//      .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-
-//   };
-
-//   VkSubpassDescription subpass =
-//   {
-
-//      .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-//      .colorAttachmentCount = 1,
-//      .pColorAttachments = &colorRef
-
-//   };
-
-//   VkRenderPassCreateInfo renderPassInfo =
-//   {
-
-//      .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-//      .attachmentCount = 1,
-//      .pAttachments = &colorAttachment,
-//      .subpassCount = 1,
-//      .pSubpasses = &subpass
-
-//   };
-
-//   VK_CHECK_RESULT(vkCreateRenderPass(
-//      pcontext->logicalDevice(),
-//      &renderPassInfo, NULL,
-//      &m_vkrenderpass2));
-
-//   return m_vkrenderpass2;
-
-//}
-
-
-// shader_texture::shader_texture() :
-//    m_vkdescriptorset{}
-//{
-
-//   //m_vkframebuffer2 = VK_NULL_HANDLE;
-//   m_vkimageview = VK_NULL_HANDLE;
-//   m_pshadersampler = nullptr;
-
-//}
-
-
-// shader_texture::~shader_texture()
-//{
-
-//   ::cast < context > pcontext = m_pshadersampler->m_pshader->m_pgpurenderer->m_pgpucontext;
-
-//   for(auto & vkframebuffer2 : m_mapVkFramebuffer2.payloads())
-//   {
-
-//      vkDestroyFramebuffer(
-//         pcontext->logicalDevice(),
-//         vkframebuffer2,
-//         nullptr);
-
-//   }
-
-//   if (m_vkimageview)
-//   {
-
-//      vkDestroyImageView(
-//         pcontext->logicalDevice(),
-//         m_vkimageview,
-//         nullptr);
-
-//   }
-
-//}
-
-
-// void shader_texture::initialize_shader_texture(shader_sampler* pshadersampler, texture* ptexture)
-//{
-
-//   m_pshadersampler = pshadersampler;
-
-//   m_ptexture = ptexture;
-
-//}
-
-
-// VkImageView shader_texture::get_image_view()
-//{
-
-//   if (!m_vkimageview)
-//   {
-
-//      ::cast < context > pcontext = m_pshadersampler->m_pshader->m_pgpurenderer->m_pgpucontext;
-//      VkImageViewCreateInfo viewInfo =
-//      {
-//         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-//         .image = m_ptexture->m_vkimage,
-//         .viewType = VK_IMAGE_VIEW_TYPE_2D,
-//         .format = pcontext->m_formatImageDefault,
-//         .subresourceRange =
-//         {
-//            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-//            .baseMipLevel = 0,
-//            .levelCount = 1,
-//            .baseArrayLayer = 0,
-//            .layerCount = 1
-//         }
-//      };
-
-//      VK_CHECK_RESULT(vkCreateImageView(
-//         pcontext->logicalDevice(),
-//         &viewInfo,
-//         NULL,
-//         &m_vkimageview));
-
-//   }
-
-//   return m_vkimageview;
-
-//}
-
-
-// VkFramebuffer shader_texture::get_framebuffer(::gpu_vulkan::render_pass * prenderpass)
-//{
-
-//   auto& vkframebuffer2 = m_mapVkFramebuffer2[prenderpass->m_vkrenderpass];
-
-//   if (!vkframebuffer2)
-//   {
-
-//      ::cast < context > pcontext = m_pshadersampler->m_pshader->m_pgpurenderer->m_pgpucontext;
-
-//      VkImageView imageviewa[] = { get_image_view() };
-
-//      uint32_t w = m_ptexture->size().cx;
-
-//      uint32_t h = m_ptexture->size().cy;
-
-//      VkFramebufferCreateInfo framebufferCreateInfo =
-//      {
-//         .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-//         .renderPass = prenderpass->m_vkrenderpass,
-//         .attachmentCount = 1,
-//         .pAttachments = imageviewa,
-//         .width = w,
-//         .height = h,
-//         .layers = 1
-//      };
-
-//      VK_CHECK_RESULT(vkCreateFramebuffer(
-//         pcontext->logicalDevice(),
-//         &framebufferCreateInfo, NULL,
-//         &vkframebuffer2));
-
-//   }
-
-//   return vkframebuffer2;
-
-//}
-
-
-void shader::create_descriptor_layout() {}
-
-
-
-void shader::_update_vk_descriptor_set(int iFrameCount) 
-{
-
-   m_vkdescriptorseta.resize(iFrameCount); 
-
-}
-
-
-
-
-// render_pass *shader::render_pass2(::gpu::texture * pgputextureTarget)
-//{
-
-//   ::cast<renderer> prenderer = m_pgpurenderer;
-
-//   return prenderer->render_pass2(pgputextureTarget);
-
-//}
-void shader::on_before_draw(::gpu::command_buffer * pgpucommandbuffer)
-{
-
-   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-
-   for (auto &pbindingset: *m_pbindingseta)
-   {
-
-      for (auto &pbinding: *pbindingset.m_pbindingset)
+      if (m_propertiesPushShared.m_blockWithoutSamplers.size() > 0)
       {
 
-         if (pbinding->is_global_ubo())
-         {
+         auto uBlockSizeWithoutSamplers = (uint32_t)m_propertiesPushShared.m_blockWithoutSamplers.size();
 
-            ::cast<context> pcontext = m_pgpurenderer->m_pgpucontext;
+         auto pmemory = øallocate ::memory();
 
-            ::cast<renderer> prenderer = m_pgpurenderer;
+         pmemory->assign(m_propertiesPushShared.m_blockWithoutSamplers.data(),
+                         m_propertiesPushShared.m_blockWithoutSamplers.size());
+         auto f0 = ((float *)pmemory->data())[0];
+         auto f1 = ((float *)pmemory->data())[1];
+         auto f2 = ((float *)pmemory->data())[2];
+         vkCmdPushConstants(pcommandbuffer->m_vkcommandbuffer, m_ppipeline->_pipeline_layout(),
+                            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, iPushConstantsOffset,
+                            uBlockSizeWithoutSamplers, pmemory->data());
 
-            auto globalDescriptorSet = pcontext->getGlobalDescriptorSet(prenderer);
+         auto pframestorage = prenderer->m_pgpucontext->m_pgpudevice->current_frame_storage();
 
-            vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                    m_ppipeline->_pipeline_layout(), 0, 1, &globalDescriptorSet, 0, nullptr);
+         pframestorage->m_memorya.add(pmemory);
 
-         }
-         else if (pbinding->is_image_sampler())
-         {
-
-            ::cast<texture> ptexture = pbinding->m_ptexture;
-
-            auto vkdescriptorset = ptexture->descriptor_set(this, pgpucommandbuffer);
-
-               vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer,
-                                    VK_PIPELINE_BIND_POINT_GRAPHICS, // Bind point
-                                    m_ppipeline->_pipeline_layout(), // Layout used when pipeline was created
-                                    pbindingset.m_iSet, // First set (set = 0)
-                                    1, // Descriptor set count
-                                    &vkdescriptorset, // Pointer to descriptor set
-                                    0, // Dynamic offset count
-                                    NULL // Dynamic offsets
-            );
-
-
-         }
-
+         iPushConstantsOffset += uBlockSizeWithoutSamplers;
       }
 
+      if (m_propertiesPushVertex.m_blockWithoutSamplers.size() > 0)
+      {
+
+         vkCmdPushConstants(pcommandbuffer->m_vkcommandbuffer, m_ppipeline->_pipeline_layout(),
+                            VK_SHADER_STAGE_VERTEX_BIT, iPushConstantsOffset,
+                            (uint32_t)m_propertiesPushVertex.m_blockWithoutSamplers.size(),
+                            m_propertiesPushVertex.m_blockWithoutSamplers.data());
+
+         // iPushConstantsOffset += m_propertiesPushVertex.m_blockWithoutSamplers.size();
+      }
+
+      if (m_propertiesPushFragment.m_blockWithoutSamplers.size() > 0)
+      {
+
+         vkCmdPushConstants(pcommandbuffer->m_vkcommandbuffer, m_ppipeline->_pipeline_layout(),
+                            VK_SHADER_STAGE_FRAGMENT_BIT, iPushConstantsOffset,
+                            (uint32_t)m_propertiesPushFragment.m_blockWithoutSamplers.size(),
+                            m_propertiesPushFragment.m_blockWithoutSamplers.data());
+
+         // iPushConstantsOffset += m_propertiesPushFragment.m_blockWithoutSamplers.size();
+      }
+
+      // set_push_properties(pgpucommandbuffer, m_propertiesPushShared.m_blockWithoutSamplers);
+      // set_push_properties(pgpucommandbuffer, m_propertiesPushVertex.m_blockWithoutSamplers);
+      // set_push_properties(pgpucommandbuffer, m_propertiesPushFragment.m_blockWithoutSamplers);
+      //::gpu::shader::push_properties();
+      // set_push_properties(m_propertiesPush.m_block);
+      /*     ::cast < renderer > prenderer = m_pgpurenderer;
+
+           ::cast < command_buffer > pcommandbuffer = ::gpu::current_command_buffer();
+
+           vkCmdPushConstants(
+              pcommandbuffer->m_vkcommandbuffer,
+              m_vkpipelinelayout,
+              VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+              0,
+              (uint32_t)m_propertiesPush.size(),
+              m_propertiesPush.data());*/
    }
+   // bool shader::has_sampler() { return m_bindingSampler.is_set() || m_bindingCubeSampler.is_set(); }
 
-         // if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
-   //{
+   // bool shader::has_sampler() { return ::gpu::shader::has_sampler(); }
 
-   //   auto globalDescriptorSet = pgpucontext->getGlobalDescriptorSet(prenderer);
 
-   //   vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-   //                           m_ppipeline->_pipeline_layout(), 0, 1, &globalDescriptorSet, 0, nullptr);
+   // void shader::set_push_properties(::gpu::command_buffer *pgpucommandbuffer, const ::block &block)
+   //{::gpu::    binding &binding(int iSet = 0, int iSlot = 0);
+
+   //   ::cast<renderer> prenderer = m_pgpurenderer;
+
+   //   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+   //   vkCmdPushConstants(
+   //      pcommandbuffer->m_vkcommandbuffer,
+   //      m_ppipeline->_pipeline_layout(),
+   //      VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+   //      0,
+   //      (uint32_t)block.size(),
+   //      block.data());
+   //   //::cast < renderer > prenderer = m_pgpurenderer;
+
+   //   //::cast < command_buffer > pcommandbuffer = ::gpu::current_command_buffer();
+
+   //   //vkCmdPushConstants(
+   //   //   pcommandbuffer->m_vkcommandbuffer,
+
+
+   //   //vkCmdPushConstants(cmdBuf, irradiancePipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT |
+   //   VK_SHADER_STAGE_FRAGMENT_BIT, 0, block.size(), block.data());
    //}
 
 
-}
+   // class shader_sampler* shader::shader_sampler()
+   //{
 
-void shader::draw()
-{
+   //   if (nok(m_pshadersampler))
+   //   {
 
-   ::cast<renderer> prenderer = m_pgpurenderer;
+   //      øconstruct_new(m_pshadersampler);
 
-   ::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
+   //      m_pshadersampler->m_pshader = this;
 
-   vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0);
-}
+   //   }
 
+   //   return m_pshadersampler;
 
-// class shader_texture* shader::shader_texture(::gpu::texture* pgputexture, bool bSampler)
-//{
-
-//   ::cast < texture > ptexture = pgputexture;
-
-//   auto pshadersampler = shader_sampler();
-
-//   auto& pshadertexture = pshadersampler->m_shadertexturemap[ptexture->m_vkimage];
-
-//   ::cast < renderer >prenderer = m_pgpurenderer;
-
-//   if (!pshadertexture)
-//   {
-
-//      øconstruct_new(pshadertexture);
-
-//      pshadertexture->initialize_shader_texture(pshadersampler, ptexture);
-
-//      //imagestructa.set_size(prenderer->get_frame_count());
-
-//      //for (int i = 0; i < imagestructa.size(); i++)
-//      //{
-
-//         //auto& imagestruct = *pshadertexture;
-
-//      VkImageViewCreateInfo viewInfo =
-//      {
-//   .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-//   .image = ptexture->m_vkimage,  // <-- Your existing VkImage
-//   .viewType = ptexture->_get_image_view_type(),
-//   .format = VK_FORMAT_B8G8R8A8_UNORM,  // <-- Match your image's format
-//   .components = {
-//      .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-//      .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-//      .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-//      .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-//   },
-//   .subresourceRange = {
-//      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-//      .baseMipLevel = 0,
-//      .levelCount = 1,
-//      .baseArrayLayer = 0,
-//      .layerCount = ptexture->_get_layer_count(),
-//   },
-//      };
-
-//      ::cast < context > pcontext = m_pgpurenderer->m_pgpucontext;
-
-//      //VkImageView imageView;
-//      if (vkCreateImageView(
-//         pcontext->logicalDevice(),
-//         &viewInfo, NULL,
-//         &pshadertexture->m_vkimageview) != VK_SUCCESS) {
-//         // Handle error
-//      }
-
-//      ::cast < device > pgpudevice = pcontext->m_pgpudevice;
-
-//      if (bSampler)
-//      {
-
-//         VkDescriptorImageInfo imageinfo;
-
-//         imageinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-//         imageinfo.imageView = pshadertexture->m_vkimageview;
-//         imageinfo.sampler = pcontext->_001VkSampler();
-
-//         auto& playout = shader_sampler()->m_psetdescriptorlayout;
-
-//         auto& ppool = shader_sampler()->m_pdescriptorpool;
-
-//         unsigned int uSamplerBinding = 0;
-
-//         if (m_bindingSampler.is_set())
-//            uSamplerBinding = m_bindingSampler.m_uBinding;
-//         else if (m_bindingCubeSampler.is_set())
-//            uSamplerBinding = m_bindingCubeSampler.m_uBinding;
-
-//         descriptor_writer(*playout, *ppool)
-//            .writeImage(uSamplerBinding, &imageinfo)
-//            .build(pshadertexture->m_vkdescriptorset);
+   //}
 
 
-//      }
-//      //   auto descriptorSetLayout = s1()->m_psetdescriptorlayout->getDescriptorSetLayout();
+   // shader_sampler::shader_sampler() :
+   //    m_descriptorsetlayout{}
+   //{
 
-//      //   VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
-//      //.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-//      //.setLayoutCount = 1,
-//      //.pSetLayouts = &descriptorSetLayout,
-//      //   };
+   //   m_uSet = 0;
+   //   m_pshader = nullptr;
+   //   m_vksampler = VK_NULL_HANDLE;
+   //   m_vkrenderpass2 = VK_NULL_HANDLE;
 
-//      //   //VkPipelineLayout pipelineLayout;
-//      //   if (vkCreatePipelineLayout(pcontext->logicalDevice(),
-//      //      &pipelineLayoutInfo,
-//      //      NULL,
-
-//      //      &m_vkpipelinelayout) != VK_SUCCESS) {
-//      //      // Handle error
-//      //   }
-
-//      //}
-
-//   }
-
-//   return pshadertexture;
-
-//}
+   //}
 
 
-void shader::bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputexture, int iSlot)
-{
+   // shader_sampler::~shader_sampler()
+   //{
 
-   ::cast<texture> ptexture = pgputexture;
-   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+   //   ::cast < context > pcontext = m_pshader->m_pgpurenderer->m_pgpucontext;
 
-   if (ptexture->m_state.m_vkimagelayout != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+   //   if (m_vkrenderpass2)
+   //   {
+
+   //      vkDestroyRenderPass(
+   //         pcontext->logicalDevice(),
+   //         m_vkrenderpass2,
+   //         nullptr
+   //      );
+
+   //   }
+
+   //   if (m_vksampler)
+   //   {
+
+   //      vkDestroySampler(
+   //         pcontext->logicalDevice(),
+   //         m_vksampler,
+   //         nullptr
+   //      );
+
+   //   }
+
+   //}
+
+
+   // VkRenderPass shader_sampler::get_render_pass()
+   //{
+
+   //   if (!m_pshader->has_shader_sampler())
+   //   {
+
+   //      throw ::exception(error_wrong_state);
+
+   //   }
+
+   //   if (m_vkrenderpass2 != VK_NULL_HANDLE)
+   //   {
+
+   //      return m_vkrenderpass2;
+
+   //   }
+
+   //   ::cast < context > pcontext = m_pshader->m_pgpurenderer->m_pgpucontext;
+
+   //   VkAttachmentDescription colorAttachment = {
+   //      .format = pcontext->m_formatImageDefault,
+   //      .samples = VK_SAMPLE_COUNT_1_BIT,
+   //      .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+   //      .finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+   //   };
+
+   //   if (m_pshader->m_bClearColor)
+   //   {
+
+   //      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; //// ← clears to clearColor at start
+   //      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+   //   }
+   //   else
+   //   {
+
+   //      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD; // Blend onto existing dstImage
+   //      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+   //   }
+
+   //   VkAttachmentReference colorRef =
+   //   {
+
+   //      .attachment = 0,
+   //      .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+
+   //   };
+
+   //   VkSubpassDescription subpass =
+   //   {
+
+   //      .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+   //      .colorAttachmentCount = 1,
+   //      .pColorAttachments = &colorRef
+
+   //   };
+
+   //   VkRenderPassCreateInfo renderPassInfo =
+   //   {
+
+   //      .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+   //      .attachmentCount = 1,
+   //      .pAttachments = &colorAttachment,
+   //      .subpassCount = 1,
+   //      .pSubpasses = &subpass
+
+   //   };
+
+   //   VK_CHECK_RESULT(vkCreateRenderPass(
+   //      pcontext->logicalDevice(),
+   //      &renderPassInfo, NULL,
+   //      &m_vkrenderpass2));
+
+   //   return m_vkrenderpass2;
+
+   //}
+
+
+   // shader_texture::shader_texture() :
+   //    m_vkdescriptorset{}
+   //{
+
+   //   //m_vkframebuffer2 = VK_NULL_HANDLE;
+   //   m_vkimageview = VK_NULL_HANDLE;
+   //   m_pshadersampler = nullptr;
+
+   //}
+
+
+   // shader_texture::~shader_texture()
+   //{
+
+   //   ::cast < context > pcontext = m_pshadersampler->m_pshader->m_pgpurenderer->m_pgpucontext;
+
+   //   for(auto & vkframebuffer2 : m_mapVkFramebuffer2.payloads())
+   //   {
+
+   //      vkDestroyFramebuffer(
+   //         pcontext->logicalDevice(),
+   //         vkframebuffer2,
+   //         nullptr);
+
+   //   }
+
+   //   if (m_vkimageview)
+   //   {
+
+   //      vkDestroyImageView(
+   //         pcontext->logicalDevice(),
+   //         m_vkimageview,
+   //         nullptr);
+
+   //   }
+
+   //}
+
+
+   // void shader_texture::initialize_shader_texture(shader_sampler* pshadersampler, texture* ptexture)
+   //{
+
+   //   m_pshadersampler = pshadersampler;
+
+   //   m_ptexture = ptexture;
+
+   //}
+
+
+   // VkImageView shader_texture::get_image_view()
+   //{
+
+   //   if (!m_vkimageview)
+   //   {
+
+   //      ::cast < context > pcontext = m_pshadersampler->m_pshader->m_pgpurenderer->m_pgpucontext;
+   //      VkImageViewCreateInfo viewInfo =
+   //      {
+   //         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+   //         .image = m_ptexture->m_vkimage,
+   //         .viewType = VK_IMAGE_VIEW_TYPE_2D,
+   //         .format = pcontext->m_formatImageDefault,
+   //         .subresourceRange =
+   //         {
+   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+   //            .baseMipLevel = 0,
+   //            .levelCount = 1,
+   //            .baseArrayLayer = 0,
+   //            .layerCount = 1
+   //         }
+   //      };
+
+   //      VK_CHECK_RESULT(vkCreateImageView(
+   //         pcontext->logicalDevice(),
+   //         &viewInfo,
+   //         NULL,
+   //         &m_vkimageview));
+
+   //   }
+
+   //   return m_vkimageview;
+
+   //}
+
+
+   // VkFramebuffer shader_texture::get_framebuffer(::gpu_vulkan::render_pass * prenderpass)
+   //{
+
+   //   auto& vkframebuffer2 = m_mapVkFramebuffer2[prenderpass->m_vkrenderpass];
+
+   //   if (!vkframebuffer2)
+   //   {
+
+   //      ::cast < context > pcontext = m_pshadersampler->m_pshader->m_pgpurenderer->m_pgpucontext;
+
+   //      VkImageView imageviewa[] = { get_image_view() };
+
+   //      uint32_t w = m_ptexture->size().cx;
+
+   //      uint32_t h = m_ptexture->size().cy;
+
+   //      VkFramebufferCreateInfo framebufferCreateInfo =
+   //      {
+   //         .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+   //         .renderPass = prenderpass->m_vkrenderpass,
+   //         .attachmentCount = 1,
+   //         .pAttachments = imageviewa,
+   //         .width = w,
+   //         .height = h,
+   //         .layers = 1
+   //      };
+
+   //      VK_CHECK_RESULT(vkCreateFramebuffer(
+   //         pcontext->logicalDevice(),
+   //         &framebufferCreateInfo, NULL,
+   //         &vkframebuffer2));
+
+   //   }
+
+   //   return vkframebuffer2;
+
+   //}
+
+
+   void shader::create_descriptor_layout() {}
+
+
+   void shader::_update_vk_descriptor_set(int iFrameCount) { m_vkdescriptorseta.resize(iFrameCount); }
+
+
+   // render_pass *shader::render_pass2(::gpu::texture * pgputextureTarget)
+   //{
+
+   //   ::cast<renderer> prenderer = m_pgpurenderer;
+
+   //   return prenderer->render_pass2(pgputextureTarget);
+
+   //}
+   void shader::on_before_draw(::gpu::command_buffer *pgpucommandbuffer)
    {
-      throw ::exception(error_wrong_state);
 
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      for (auto &bindingslotset: *m_pbindingslotseta)
+      {
+
+         for (auto &bindingslot: bindingslotset)
+         {
+
+            if (bindingslot.m_pbinding->is_global_ubo())
+            {
+
+               ::cast<context> pcontext = m_pgpurenderer->m_pgpucontext;
+
+               auto pengine = pcontext->m_pengine;
+
+               auto pscene = pcontext->m_pengine->m_pimmersionlayer->m_pscene;
+
+               ::cast<::gpu_vulkan::block> pblockGlobalUbo1 = pscene->global_ubo1(pcontext);
+
+               ::cast<renderer> prenderer = m_pgpurenderer;
+
+               auto vkdescriptorset = pblockGlobalUbo1->descriptor_set(&bindingslotset, pgpucommandbuffer);
+
+               // VkDescriptorSetLayout vkdescriptorsetlayout = pdescriptorsetlayout->m_vkdescriptorsetlayout;
+
+               vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                       m_ppipeline->_pipeline_layout(), 0, 1, &vkdescriptorset, 0, nullptr);
+            }
+            else if (bindingslot.m_pbinding->is_image_sampler())
+            {
+
+               ::cast<texture> ptexture = bindingslot.m_ptexture;
+
+               auto vkdescriptorset = ptexture->descriptor_set(this, pgpucommandbuffer);
+
+               vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer,
+                                       VK_PIPELINE_BIND_POINT_GRAPHICS, // Bind point
+                                       m_ppipeline->_pipeline_layout(), // Layout used when pipeline was created
+                                       bindingslotset.m_iSet, // First set (set = 0)
+                                       1, // Descriptor set count
+                                       &vkdescriptorset, // Pointer to descriptor set
+                                       0, // Dynamic offset count
+                                       NULL // Dynamic offsets
+               );
+            }
+         }
+      }
+
+      // if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+      //{
+
+      //   auto globalDescriptorSet = pgpucontext->getGlobalDescriptorSet(prenderer);
+
+      //   vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+      //                           m_ppipeline->_pipeline_layout(), 0, 1, &globalDescriptorSet, 0, nullptr);
+      //}
    }
-   // auto pshadertexture = this->shader_texture(pgputexture, true);
 
-   // for (int i = 0; i < prenderer->get_frame_count(); i++)
+   void shader::draw()
+   {
+
+      ::cast<renderer> prenderer = m_pgpurenderer;
+
+      ::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
+
+      vkCmdDraw(pcommandbuffer->m_vkcommandbuffer, 6, 1, 0, 0);
+   }
+
+
+   // class shader_texture* shader::shader_texture(::gpu::texture* pgputexture, bool bSampler)
    //{
 
+   //   ::cast < texture > ptexture = pgputexture;
 
-   // auto& pdescriptorset = s1()->m_imagedescriptorset[image];
-   // auto pcommandbuffer = this->getCurrentCommandBuffer();
+   //   auto pshadersampler = shader_sampler();
 
-   ::cast<renderer> prenderer = m_pgpurenderer;
+   //   auto& pshadertexture = pshadersampler->m_shadertexturemap[ptexture->m_vkimage];
 
-   //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
-   //::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+   //   ::cast < renderer >prenderer = m_pgpurenderer;
 
-   unsigned int uSet = 0;
+   //   if (!pshadertexture)
+   //   {
 
-   auto pbinding = get_first_image_sampler_binding();
+   //      øconstruct_new(pshadertexture);
 
-   uSet = pbinding.m_iSet;
+   //      pshadertexture->initialize_shader_texture(pshadersampler, ptexture);
 
-   pbinding->m_ptexture = ptexture;
+   //      //imagestructa.set_size(prenderer->get_frame_count());
 
-   //if (m_bindingSampler.is_set())
-   //   uSet = m_bindingSampler.m_uSet;
-   //else if (m_bindingCubeSampler.is_set())
-   //   uSet = m_bindingCubeSampler.m_uSet;
+   //      //for (int i = 0; i < imagestructa.size(); i++)
+   //      //{
 
-   //auto vkdescriptorset = ptexture->descriptor_set(this);
+   //         //auto& imagestruct = *pshadertexture;
 
-   //if ((((::uptr)vkdescriptorset) & 0xffff) == 0x357)
-   //{
+   //      VkImageViewCreateInfo viewInfo =
+   //      {
+   //   .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+   //   .image = ptexture->m_vkimage,  // <-- Your existing VkImage
+   //   .viewType = ptexture->_get_image_view_type(),
+   //   .format = VK_FORMAT_B8G8R8A8_UNORM,  // <-- Match your image's format
+   //   .components = {
+   //      .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+   //      .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+   //      .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+   //      .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+   //   },
+   //   .subresourceRange = {
+   //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+   //      .baseMipLevel = 0,
+   //      .levelCount = 1,
+   //      .baseArrayLayer = 0,
+   //      .layerCount = ptexture->_get_layer_count(),
+   //   },
+   //      };
 
-   //   vkdescriptorset = ptexture->descriptor_set(this);
+   //      ::cast < context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+   //      //VkImageView imageView;
+   //      if (vkCreateImageView(
+   //         pcontext->logicalDevice(),
+   //         &viewInfo, NULL,
+   //         &pshadertexture->m_vkimageview) != VK_SUCCESS) {
+   //         // Handle error
+   //      }
+
+   //      ::cast < device > pgpudevice = pcontext->m_pgpudevice;
+
+   //      if (bSampler)
+   //      {
+
+   //         VkDescriptorImageInfo imageinfo;
+
+   //         imageinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+   //         imageinfo.imageView = pshadertexture->m_vkimageview;
+   //         imageinfo.sampler = pcontext->_001VkSampler();
+
+   //         auto& playout = shader_sampler()->m_psetdescriptorlayout;
+
+   //         auto& ppool = shader_sampler()->m_pdescriptorpool;
+
+   //         unsigned int uSamplerBinding = 0;
+
+   //         if (m_bindingSampler.is_set())
+   //            uSamplerBinding = m_bindingSampler.m_uBinding;
+   //         else if (m_bindingCubeSampler.is_set())
+   //            uSamplerBinding = m_bindingCubeSampler.m_uBinding;
+
+   //         descriptor_writer(*playout, *ppool)
+   //            .writeImage(uSamplerBinding, &imageinfo)
+   //            .build(pshadertexture->m_vkdescriptorset);
+
+
+   //      }
+   //      //   auto descriptorSetLayout = s1()->m_psetdescriptorlayout->getDescriptorSetLayout();
+
+   //      //   VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
+   //      //.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+   //      //.setLayoutCount = 1,
+   //      //.pSetLayouts = &descriptorSetLayout,
+   //      //   };
+
+   //      //   //VkPipelineLayout pipelineLayout;
+   //      //   if (vkCreatePipelineLayout(pcontext->logicalDevice(),
+   //      //      &pipelineLayoutInfo,
+   //      //      NULL,
+
+   //      //      &m_vkpipelinelayout) != VK_SUCCESS) {
+   //      //      // Handle error
+   //      //   }
+
+   //      //}
+
+   //   }
+
+   //   return pshadertexture;
 
    //}
 
-   // Bind pipeline and descriptor sets
-   //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-   //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
-   //vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer,
-   //                        VK_PIPELINE_BIND_POINT_GRAPHICS, // Bind point
-   //                        m_ppipeline->_pipeline_layout(), // Layout used when pipeline was created
-   //                        uSet, // First set (set = 0)
-   //                        1, // Descriptor set count
-   //                        &vkdescriptorset, // Pointer to descriptor set
-   //                        0, // Dynamic offset count
-   //                        NULL // Dynamic offsets
-   //);
-}
+
+   void shader::bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputexture, int iSlot)
+   {
+
+      ::cast<texture> ptexture = pgputexture;
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      if (ptexture->m_state.m_vkimagelayout != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+      {
+         throw ::exception(error_wrong_state);
+      }
+      // auto pshadertexture = this->shader_texture(pgputexture, true);
+
+      // for (int i = 0; i < prenderer->get_frame_count(); i++)
+      //{
+
+
+      // auto& pdescriptorset = s1()->m_imagedescriptorset[image];
+      // auto pcommandbuffer = this->getCurrentCommandBuffer();
+
+      ::cast<renderer> prenderer = m_pgpurenderer;
+
+      //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
+      //::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      unsigned int uSet = 0;
+
+      auto pbindingslot = get_first_image_sampler_binding_slot();
+
+      uSet = pbindingslot->m_iSet;
+
+      pbindingslot->m_ptexture = ptexture;
+
+      // if (m_bindingSampler.is_set())
+      //    uSet = m_bindingSampler.m_uSet;
+      // else if (m_bindingCubeSampler.is_set())
+      //    uSet = m_bindingCubeSampler.m_uSet;
+
+      // auto vkdescriptorset = ptexture->descriptor_set(this);
+
+      // if ((((::uptr)vkdescriptorset) & 0xffff) == 0x357)
+      //{
+
+      //   vkdescriptorset = ptexture->descriptor_set(this);
+
+      //}
+
+      // Bind pipeline and descriptor sets
+      //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+      //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
+      // vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer,
+      //                        VK_PIPELINE_BIND_POINT_GRAPHICS, // Bind point
+      //                        m_ppipeline->_pipeline_layout(), // Layout used when pipeline was created
+      //                        uSet, // First set (set = 0)
+      //                        1, // Descriptor set count
+      //                        &vkdescriptorset, // Pointer to descriptor set
+      //                        0, // Dynamic offset count
+      //                        NULL // Dynamic offsets
+      //);
+   }
 
 
 } // namespace gpu_vulkan

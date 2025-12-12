@@ -152,7 +152,7 @@ float4 main(PSInput input) : SV_TARGET {
    renderer::renderer()
    {
       
-      m_pGlobalUBO = nullptr;
+      //m_pGlobalUBO = nullptr;
       m_hlsClear.m_dL = 0.75;
       m_hlsClear.m_dS = 0.5;
 

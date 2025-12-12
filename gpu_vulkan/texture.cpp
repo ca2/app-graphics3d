@@ -1156,9 +1156,9 @@ namespace gpu_vulkan
 
       unsigned int uSamplerBinding = 0;
 
-      auto pgpubindingset = pshader->get_first_image_sampler_binding_set();
+      auto pgpubindingslotset = pshader->get_first_image_sampler_binding_slot_set();
 
-      ::cast<::gpu_vulkan::binding_set> pbindingset = pgpubindingset.m_pbindingset;
+      ::cast<::gpu_vulkan::binding_set> pbindingset = pgpubindingslotset->m_pbindingset;
 
       auto playout = pbindingset->descriptor_set_layout(pgpucommandbuffer);
 

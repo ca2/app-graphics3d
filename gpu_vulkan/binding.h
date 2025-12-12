@@ -28,7 +28,17 @@ namespace gpu_vulkan
 
       virtual ::gpu_vulkan::descriptor_set_layout *descriptor_set_layout(::gpu::command_buffer * pgpucommandbuffer);
 
+      virtual void defer_update_binding_set(::gpu::command_buffer *pgpucommandbuffer);
+
       virtual void create_descriptor_set_layout(::gpu::command_buffer *pgpucommandbuffer);
+
+
+      virtual void defer_create_update_descriptor_set(::gpu::command_buffer *pgpucommandbuffer,
+                                                      ::array_base<VkDescriptorSet> &descriptorseta,
+                                                      ::array_base<VkDescriptorBufferInfo> &bufferinfoa);
+
+      virtual void defer_create_update_descriptor_set(::gpu::command_buffer *pgpucommandbuffer,
+                                                      ::array_base<VkDescriptorSet> &descriptorseta);
 
 
    };
