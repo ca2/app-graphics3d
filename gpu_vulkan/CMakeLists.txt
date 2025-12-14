@@ -59,8 +59,8 @@ list(APPEND library_source
         device.cpp
         device.h
 
-   gltf_model.cpp
-   gltf_model.h
+   #gltf_model.cpp
+   #gltf_model.h
    _tinygltf.cpp
    vkresult_exception.cpp
    vkresult_exception.h     #image_directx.cpp

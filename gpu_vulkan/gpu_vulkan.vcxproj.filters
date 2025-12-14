@@ -146,7 +146,7 @@
     <ClInclude Include="pixmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gltf_model.h">
+    <ClInclude Include="aaa_gltf_model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="_gpu_directx.h">
@@ -328,7 +328,7 @@
     <ClCompile Include="pixmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gltf_model.cpp">
+    <ClCompile Include="aaa_gltf_model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="queue.cpp">

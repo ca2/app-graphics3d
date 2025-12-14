@@ -145,7 +145,7 @@ namespace gpu_directx12
 
       class d3d11* d3d11();
 
-      void blend(::gpu::texture* ptexture) override;
+      //void blend(::gpu::texture* ptexture) override;
 
 
       void create_render_target();

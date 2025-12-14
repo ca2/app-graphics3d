@@ -5,7 +5,7 @@
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
 #include "app-graphics3d/gpu_vulkan/device.h"
-#include "app-graphics3d/gpu_vulkan/gltf_model.h"
+#include "app-graphics3d/gpu_vulkan/gltf/model.h"
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
 #include "app-graphics3d/gpu_vulkan/pipeline.h"
 #include "app-graphics3d/gpu_vulkan/queue.h"
@@ -562,7 +562,7 @@ namespace gpu_vulkan
 //            if (descriptorsetlayout != VK_NULL_HANDLE)
 //               vkDestroyDescriptorSetLayout(pgpucontext->logicalDevice(), descriptorsetlayout, nullptr);
 //            if (descriptorpool != VK_NULL_HANDLE)
-//               vkDestroyDescriptorPool(pgpucontext->logicalDevice(), descriptorpool, nullptr);
+//               aaavkDestroyDescriptorPool(pgpucontext->logicalDevice(), descriptorpool, nullptr);
 //            throw ::exception(error_failed, "Prefilter fragment shader SPIR-V not found");
 //         }
 //
@@ -707,7 +707,7 @@ namespace gpu_vulkan
 //         if (offscreen.image != VK_NULL_HANDLE)
 //            vkDestroyImage(pgpucontext->logicalDevice(), offscreen.image, nullptr);
 //         if (descriptorpool != VK_NULL_HANDLE)
-//            vkDestroyDescriptorPool(pgpucontext->logicalDevice(), descriptorpool, nullptr);
+//            aaavkDestroyDescriptorPool(pgpucontext->logicalDevice(), descriptorpool, nullptr);
 //         if (descriptorsetlayout != VK_NULL_HANDLE)
 //            vkDestroyDescriptorSetLayout(pgpucontext->logicalDevice(), descriptorsetlayout, nullptr);
 //

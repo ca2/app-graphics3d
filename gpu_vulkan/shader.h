@@ -78,9 +78,12 @@ namespace gpu_vulkan
    public:
 
 
-      ::pointer < pipeline > m_ppipeline;
 
 
+      ::pointer < pipeline > m_ppipelineCurrent;
+
+
+      ::map_base<VkRenderPass, ::pointer<pipeline>> m_mapRenderPassPipeline;
 
       //bool m_bClearColor;
       //::color::color m_colorClear;
@@ -102,7 +105,7 @@ namespace gpu_vulkan
       ::pointer < ::gpu_vulkan::shader > m_pshaderPresent;
       VkRenderPass            m_vkrenderpassCurrent;
       ::int_map<::pointer<::gpu_vulkan::descriptor_set_layout>> m_mapDescriptorSetLayout;
-      ::array_base<VkDescriptorSet> m_vkdescriptorseta;
+      ::pointer < ::array<VkDescriptorSet> > m_pvkdescriptorseta;
 
 
       shader();
@@ -135,14 +138,14 @@ namespace gpu_vulkan
 
       //virtual render_pass *render_pass2(::gpu::texture *pgputextureTarget);
 
-      virtual void _defer_prepare_pipeline(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputexture);
+      virtual void _defer_set_current_pipeline(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputexture);
 
       virtual void create_descriptor_layout();
 
       virtual void _update_vk_descriptor_set(int iFrameCount);
 
       void draw() override;
-      void on_before_draw(::gpu::command_buffer *pgpucommandbuffer) override;
+      //void on_before_draw(::gpu::command_buffer *pgpucommandbuffer) override;
 
       //bool has_sampler();
       //class shader_sampler * shader_sampler();
@@ -156,12 +159,12 @@ namespace gpu_vulkan
 
       void on_initialize_shader() override;
 
-      virtual void _create_pipeline(::gpu::texture * pgputextureTarget, ::gpu::command_buffer * pgpucommandbuffer);
+      virtual ::pointer <pipeline> _create_pipeline(::gpu::texture * pgputextureTarget, ::gpu::command_buffer * pgpucommandbuffer);
 
-      void bind(::gpu::command_buffer *pgpucommandbuffer,::gpu::texture *pgputextureTarget,
-                ::gpu::texture *pgputextureSource) override;
+      //void bind(::gpu::command_buffer *pgpucommandbuffer,::gpu::texture *pgputextureTarget,
+        //        ::gpu::texture *pgputextureSource) override;
       void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget) override;
-      void bind(::gpu::command_buffer *pgpucommandbuffe) override;
+      //void bind(::gpu::command_buffer *pgpucommandbuffe) override;
       void unbind(::gpu::command_buffer *pgpucommandbuffer) override;
       virtual void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget);
       //void _bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_scene escene) override;
@@ -171,8 +174,13 @@ namespace gpu_vulkan
 
       //void set_push_properties(::gpu::command_buffer *pgpucommandbuffer, const ::block &block) override;
 
+      void bind_slot_set(::gpu::command_buffer *pgpucommandbuffer, int iSet,
+                         ::gpu::binding_slot_set *pgpubindingslotset);
 
-      void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptexture, int iSlot) override;
+
+      void bind_block(::gpu::command_buffer *pgpucommandbuffer, ::gpu::block *pgpublock, int iSlot = 0) override;
+
+      void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptexture, int iSlot = 0) override;
 
 
    };

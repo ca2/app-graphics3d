@@ -234,7 +234,7 @@ namespace gpu_vulkan
 
       //void _on_frame_draw(::gpu_vulkan::renderer* prendererUpper);
 
-      void copy(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource) override;
+      //void copy(::gpu::texture* pgputextureTarget, ::gpu::texture* pgputextureSource) override;
 
       ::gpu::shader * _get_image_blend_shader();
 
@@ -245,7 +245,7 @@ namespace gpu_vulkan
       void soft_restore_context() override;
 
 
-      void blend(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource) override;
+      //void blend(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource) override;
 
    };
 

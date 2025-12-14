@@ -182,107 +182,108 @@ namespace graphics3d_directx11
    //}
 
 
-   void scene_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
+   void scene_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscenebase)
    {
 
+      ::graphics3d::scene_render_system::on_render(pgpucontext, pscenebase);
 
-      static bool warnedThisFrame = false;
+      //static bool warnedThisFrame = false;
 
-      auto pframe = ::gpu::current_frame();
+      //auto pframe = ::gpu::current_frame();
 
-      //::cast<::gpu_directx11::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
-      auto pcommandbuffer = pframe->m_pgpucommandbuffer;
+      ////::cast<::gpu_directx11::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+      //auto pcommandbuffer = pframe->m_pgpucommandbuffer;
 
-      auto &scenerenderables = pscene->scene_renderables();
+      //auto &scenerenderables = pscene->scene_renderables();
 
-      //   //// xxxxxxxxxxxxxxxxx
-      ::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
-      ::cast<::gpu_directx11::renderer> prenderer = pcontext->m_pgpurenderer;
+      ////   //// xxxxxxxxxxxxxxxxx
+      //::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
+      //::cast<::gpu_directx11::renderer> prenderer = pcontext->m_pgpurenderer;
 
-      //////// xxxxxxxxxxxxxxxxx
-      //// auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-      //auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
-
-
-      for (auto &[id, pscenerenderable]: scenerenderables)
-      {
-
-         if (!pscenerenderable)
-         {
-
-            debug("Hey, there is a null object named '{}' in scene objects map.", id);
-
-            continue;
-
-         }
-
-         if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_scene)
-         {
-
-            continue;
-
-         }
-
-                 auto prenderable = pscenerenderable->renderable();
-         if (!prenderable)
-            continue;
-
-         auto erenderabletype = prenderable->m_erenderabletype;
-
-         if (erenderabletype != ::gpu::e_renderable_type_gltf)
-         {
-            continue; // not mine, skip
-         }
-         ::cast<::gpu_directx11::gltf::model> pgltfmodel = prenderable;
-
-         if (!pgltfmodel)
-            continue;
-
-         pgltfmodel->bind(pframe->m_pgpucommandbuffer);
-
-         //for (auto *node: pgltfmodel->m_linearNodes)
-         //{
-         //   if (!node->mesh)
-         //      continue;
-
-         //   floating_matrix4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
-         //   floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
-
-         //   memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
-         //   memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
-
-         //   for (auto *primitive: node->mesh->primitives)
-         //   {
+      ////////// xxxxxxxxxxxxxxxxx
+      ////// auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+      ////auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
 
 
-         //      std::array<VkDescriptorSet, 2> sets = {vkdescriptorsetGlobal, // set 0
-         //                                             node->mesh->uniformBuffer.descriptorSet};
+      //for (auto &[id, pscenerenderable]: scenerenderables)
+      //{
+
+      //   if (!pscenerenderable)
+      //   {
+
+      //      debug("Hey, there is a null object named '{}' in scene objects map.", id);
+
+      //      continue;
+
+      //   }
+
+      //   if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_scene)
+      //   {
+
+      //      continue;
+
+      //   }
+
+      //           auto prenderable = pscenerenderable->renderable();
+      //   if (!prenderable)
+      //      continue;
+
+      //   auto erenderabletype = prenderable->m_erenderabletype;
+
+      //   if (erenderabletype != ::gpu::e_renderable_type_gltf)
+      //   {
+      //      continue; // not mine, skip
+      //   }
+      //   ::cast<::gpu_directx11::gltf::model> pgltfmodel = prenderable;
+
+      //   if (!pgltfmodel)
+      //      continue;
+
+      //   pgltfmodel->bind(pframe->m_pgpucommandbuffer);
+
+      //   //for (auto *node: pgltfmodel->m_linearNodes)
+      //   //{
+      //   //   if (!node->mesh)
+      //   //      continue;
+
+      //   //   floating_matrix4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
+      //   //   floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
+
+      //   //   memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
+      //   //   memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
+
+      //   //   for (auto *primitive: node->mesh->primitives)
+      //   //   {
 
 
-         //      vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
-         //                              static_cast<uint32_t>(sets.size()), sets.data(), 0, nullptr);
+      //   //      std::array<VkDescriptorSet, 2> sets = {vkdescriptorsetGlobal, // set 0
+      //   //                                             node->mesh->uniformBuffer.descriptorSet};
 
-         //      switch (primitive->m_pmaterial->alphaMode)
-         //      {
-         //         case ::gpu_directx11::gltf::Material::ALPHAMODE_OPAQUE:
-         //            m_ppipelineOpaque->bind(pcommandbuffer);
-         //            break;
-         //         case ::gpu_directx11::gltf::Material::ALPHAMODE_MASK:
-         //            m_ppipelineMask->bind(pcommandbuffer);
-         //            break;
-         //         case ::gpu_directx11::gltf::Material::ALPHAMODE_BLEND:
-         //         default:
-         //            m_ppipelineBlend->bind(pcommandbuffer);
-         //            break;
-         //      }
 
-         //      pgltfmodel->drawNode(node, pcommandbuffer->m_iFrameIndex, pcommandbuffer->m_vkcommandbuffer,
-         //                           ::gpu_directx11::gltf::RenderFlags::BindImages,
-         //                      m_pipelineLayout, 2);
-         //      warnedThisFrame = false;
-         //   }
-         //}
-      }
+      //   //      vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
+      //   //                              static_cast<uint32_t>(sets.size()), sets.data(), 0, nullptr);
+
+      //   //      switch (primitive->m_pmaterial->alphaMode)
+      //   //      {
+      //   //         case ::gpu_directx11::gltf::Material::ALPHAMODE_OPAQUE:
+      //   //            m_ppipelineOpaque->bind(pcommandbuffer);
+      //   //            break;
+      //   //         case ::gpu_directx11::gltf::Material::ALPHAMODE_MASK:
+      //   //            m_ppipelineMask->bind(pcommandbuffer);
+      //   //            break;
+      //   //         case ::gpu_directx11::gltf::Material::ALPHAMODE_BLEND:
+      //   //         default:
+      //   //            m_ppipelineBlend->bind(pcommandbuffer);
+      //   //            break;
+      //   //      }
+
+      //   //      pgltfmodel->drawNode(node, pcommandbuffer->m_iFrameIndex, pcommandbuffer->m_vkcommandbuffer,
+      //   //                           ::gpu_directx11::gltf::RenderFlags::BindImages,
+      //   //                      m_pipelineLayout, 2);
+      //   //      warnedThisFrame = false;
+      //   //   }
+      //   //}
+      //}
    }
 
 

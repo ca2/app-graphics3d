@@ -2,6 +2,7 @@
 #include "framework.h"
 #include "scene.h"
 #include "acme/filesystem/filesystem/file_context.h"
+#include "bred/gpu/binding.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/device.h"
 #include "bred/gpu/texture.h"
@@ -251,6 +252,36 @@ namespace graphics3d
       }
 
       return piblspecularmap->m_ptextureBrdfConvolutionMap;
+
+   }
+
+
+   ::gpu::binding_slot_set *scene::ibl_binding_slot_set()
+   {
+
+      if (!m_pbindingslotsetIbl1)
+      {
+
+         ASSERT(::is_set(m_ptextureIrradianceCube));
+         ASSERT(::is_set(m_ptexturePrefilteredCube));
+         ASSERT(::is_set(m_ptextureLuBrdf));
+
+         øconstruct(m_pbindingslotsetIbl1);
+
+         m_pbindingslotsetIbl1->m_pbindingset = m_pgpucontext->ibl1_binding_set();
+
+         auto pbindingslot0 = m_pbindingslotsetIbl1->binding_slot(0);
+         pbindingslot0->m_ptexture = m_ptextureIrradianceCube;
+
+         auto pbindingslot1 = m_pbindingslotsetIbl1->binding_slot(1);
+         pbindingslot1->m_ptexture = m_ptexturePrefilteredCube;
+
+         auto pbindingslot2 = m_pbindingslotsetIbl1->binding_slot(2);
+         pbindingslot2->m_ptexture = m_ptextureLuBrdf;
+
+      }
+
+      return m_pbindingslotsetIbl1;
 
    }
 

@@ -502,7 +502,7 @@ namespace gpu_vulkan
    void command_buffer::draw(::gpu_vulkan::model_buffer* pmodelbuffer)
    {
 
-      pmodelbuffer->draw(this);
+      pmodelbuffer->draw2(this);
 
    }
 
@@ -534,8 +534,6 @@ namespace gpu_vulkan
                                         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
       ::gpu::command_buffer::begin_render(pgpushader, pgputextureTarget);
-
-      m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->begin_render(this, pgputextureTarget);
 
    }
 

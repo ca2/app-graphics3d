@@ -202,53 +202,53 @@ namespace gpu_directx12
    }
 
 
-   void context::start_drawing()
-   {
-
-
-      //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo_elements);
-//int iError16 = glGetError();
-
-//int size = 0; 
-//glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-//int iError17 = glGetError();
-
-//glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
-//int iError18 = glGetError();
-
-
-
-
-      //ASSERT(is_current_task());
-
-      ////      glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
-      //      // Clear the screen
-      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      ////glClear(GL_COLOR_BUFFER_BIT);
-
-      //if (m_pprogram && m_pprogram->m_pshader)
-      //{
-
-      //   m_pprogram->m_pshader->use();
-
-      //}
-      //// Use our shader
-      ////glUseProgram(programID);
-
-      //// be sure to activate the shader
-      ////glUseProgram(shaderProgram);
-
-      //// update the uniform color
-      ////float timeValue = glfwGetTime();
-      ////float greenValue = sin(timeValue) / 2.0f + 0.5f;
-      ////int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-      ////glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
-      ////return ::success;
-
-   }
+//   void context::start_drawing()
+//   {
+//
+//
+//      //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo_elements);
+////int iError16 = glGetError();
+//
+////int size = 0; 
+////glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+////int iError17 = glGetError();
+//
+////glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+////int iError18 = glGetError();
+//
+//
+//
+//
+//      //ASSERT(is_current_task());
+//
+//      ////      glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+//
+//      //      // Clear the screen
+//      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//      ////glClear(GL_COLOR_BUFFER_BIT);
+//
+//      //if (m_pprogram && m_pprogram->m_pshader)
+//      //{
+//
+//      //   m_pprogram->m_pshader->use();
+//
+//      //}
+//      //// Use our shader
+//      ////glUseProgram(programID);
+//
+//      //// be sure to activate the shader
+//      ////glUseProgram(shaderProgram);
+//
+//      //// update the uniform color
+//      ////float timeValue = glfwGetTime();
+//      ////float greenValue = sin(timeValue) / 2.0f + 0.5f;
+//      ////int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+//      ////glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+//
+//      ////return ::success;
+//
+//   }
 
 
 

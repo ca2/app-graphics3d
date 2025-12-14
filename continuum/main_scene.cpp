@@ -15,9 +15,9 @@
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/point_light.h"
 #include "bred/graphics3d/scene_object.h"
-#include "bred/graphics3d/render_systems/wavefront_obj_render_system.h"
-#include "bred/graphics3d/render_systems/point_light_render_system.h"
-#include "bred/graphics3d/render_systems/skybox_render_system.h"
+#include "bred/graphics3d/render_system/wavefront_obj_render_system.h"
+#include "bred/graphics3d/render_system/point_light_render_system.h"
+#include "bred/graphics3d/render_system/skybox_render_system.h"
 
 
 namespace app_graphics3d_continuum

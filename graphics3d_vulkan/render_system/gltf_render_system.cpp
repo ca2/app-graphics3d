@@ -5,7 +5,7 @@
 #include "acme/filesystem/filesystem/file_context.h"
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
-#include "app-graphics3d/gpu_vulkan/gltf_model.h"
+//#include "app-graphics3d/gpu_vulkan/gltf_model.h"
 #include "app-graphics3d/gpu_vulkan/gltf/model.h"
 #include "app-graphics3d/gpu_vulkan/pipeline.h"
 #include "app-graphics3d/gpu_vulkan/render_pass.h"
@@ -22,7 +22,7 @@
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
 #include "gltf_render_system.h"
-#include "gpu_vulkan/gltf_model.h"
+//#include "gpu_vulkan/gltf_model.h"
 #include "gpu_vulkan/shader.h"
 #include "bred/gltf/vertex.h"
 
@@ -349,334 +349,337 @@ namespace graphics3d_vulkan
 
 void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene)
    {
-      static bool warnedThisFrame = false;
 
-            auto pframe = ::gpu::current_frame();
-
-         ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
-
-         auto &scenerenderables = pscene->scene_renderables();
-      //   //// xxxxxxxxxxxxxxxxx
-      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
-         ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
-
-      ////// xxxxxxxxxxxxxxxxx
-      //auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-         //auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
-
-      int iRenderable = -1;
-
-      for (auto &[id, pscenerenderable]: scenerenderables)
-      {
-
-         iRenderable++;
-
-         if (!pscenerenderable)
-         {
-
-            continue;
-
-         }
-
-         if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_ibl)
-         {
-
-            continue;
-         }
-
-
-         auto prenderable = pscenerenderable->renderable();
-         if (!prenderable)
-            continue;
-
-         auto erenderabletype = prenderable->m_erenderabletype;
-
-         if (erenderabletype != ::gpu::e_renderable_type_gltf)
-         {
-            continue; // not mine, skip
-         }
-         ::cast<::gpu_vulkan::gltf::Model> pgltfmodel = prenderable;
-
-         if (!pgltfmodel)
-            continue;
-
-         ::string strName = pscenerenderable->m_strName;
-
-         pgltfmodel->bind(pframe->m_pgpucommandbuffer);
-
-         for (auto *pnode: pgltfmodel->m_nodeaLinear)
-         {
-            if (!pnode->m_pmesh)
-               continue;
-
-            auto matrixObject = pscenerenderable->model_matrix();
-
-            auto matrixNode = pnode->getMatrix();
-
-            floating_matrix4 world =  matrixObject * matrixNode;
-
-            // Extract upper-left 3×3 from world
-            floating_matrix3 world3x3 = floating_matrix3(world);
-
-            float det2 = floating_matrix3(world3x3).determinant();
-            information("deteterminant of model matrix is %f\n", det2);
-
-
-            floating_matrix4 normalMat(world3x3);
-
-            // Compute normal matrix correctly
-            normalMat = normalMat.inversed().transposed();
-
-
-            //memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
-            //memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
-
-            for (auto *primitive: pnode->m_pmesh->primitives)
-            {
-
-                              // Pick pipeline by alpha mode
-               switch (primitive->m_pmaterial->alphaMode)
-               {
-                  case ::gpu_vulkan::gltf::Material::ALPHAMODE_OPAQUE:
-                     pgpucontext->defer_bind(m_pshaderOpaque);
-                     break;
-                  case ::gpu_vulkan::gltf::Material::ALPHAMODE_MASK:
-                     pgpucontext->defer_bind(m_pshaderMask);
-                     break;
-                  case ::gpu_vulkan::gltf::Material::ALPHAMODE_BLEND:
-                  default:
-                     pgpucontext->defer_bind(m_pshaderBlend);
-                     break;
-               }
-
-               ::cast<::gpu_vulkan::shader> pshader = pgpucontext->m_pshaderBound;
-
-               auto prendersystem = this;
-
-               ::floating_sequence3 multiplier;
-
-               if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_vulkan)
-               {
-
-                  if (pgpucontext->m_eapi == ::gpu::e_api_vulkan)
-                  {
-
-                     multiplier.y = -1.f;
-                     multiplier.z = -1.f;
-                     // x_multiplier = -1.f;
-                  }
-
-               }
-               else if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_z_minus)
-               {
-
-                  if (pgpucontext->m_eapi == ::gpu::e_api_vulkan)
-                  {
-
-                     // y_multiplier = -1.f;
-                     multiplier.z = -1.f;
-
-                  }
-
-               }
-               else if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_y_up)
-               {
-
-                  if (pgpucontext->m_eapi == ::gpu::e_api_vulkan)
-                  {
-
-                     multiplier.y = -1.f;
-                     multiplier.z = -1.f;
-
-                  }
-
-               }
-
-               pshader->set_sequence3("multiplier", multiplier);
-
-               pshader->set_matrix4("modelMatrix", world);
-               pshader->set_matrix4("normalMatrix", normalMat);
-               bool bAlbedo = pgltfmodel->m_materiala[0].baseColorTexture.is_set();
-               bAlbedo = bAlbedo && !m_bDisableAlbedo;
-               pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
-
-                   floating_sequence3 seq3Albedo = {};
-               if (prendersystem->m_bForceDefaultAlbedo)
-               {
-
-                  seq3Albedo = prendersystem->m_seq3DefaultAlbedo;
-               }
-               else
-               {
-
-                  seq3Albedo = ::floating_sequence3(pgltfmodel->m_materiala[0].baseColorFactor.r,
-                                            pgltfmodel->m_materiala[0].baseColorFactor.g,
-                                            pgltfmodel->m_materiala[0].baseColorFactor.b);
-
-               }
-
-               pshader->set_sequence3("albedo", seq3Albedo);
-
-               bool bMetallicRoughness = pgltfmodel->m_materiala[0].metallicRoughnessTexture.is_set();
-               bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
-               pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
-               bool bNormal = pgltfmodel->m_materiala[0].normalTexture.is_set();
-
-
-                           float fMetallic = 0.0f;
-               if (prendersystem->m_bForceDefaultMetallicFactor)
-               {
-
-                  fMetallic = prendersystem->m_fDefaultMetallicFactor;
-               }
-               else
-               {
-
-                  fMetallic = pgltfmodel->m_materiala[0].metallicFactor;
-               }
-               float fRoughness = 0.0f;
-               if (prendersystem->m_bForceDefaultRoughnessFactor)
-               {
-
-                  fRoughness = prendersystem->m_fDefaultRoughnessFactor;
-               }
-               else
-               {
-
-                  fRoughness = pgltfmodel->m_materiala[0].roughnessFactor;
-               }
-               pshader->set_float("metallic", fMetallic);
-               pshader->set_float("roughness", fRoughness);
-
-               bNormal = bNormal && !m_bDisableNormal;
-               pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
-               bool bAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture.is_set();
-               bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
-               pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
-
-
-
-                           float fAmbientOcclusion = 0.0f;
-               if (prendersystem->m_bForceDefaultAmbientOcclusionFactor)
-               {
-
-                  fAmbientOcclusion = prendersystem->m_fDefaultAmbientOcclusionFactor;
-               }
-               else
-               {
-
-                  //fAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture->m_fAmbientOcclusion;
-                  fAmbientOcclusion = 1.f;
-               }
-               pshader->set_float("ambientOcclusion", fAmbientOcclusion);
-
-               floating_sequence3 seq3Emission = {};
-               if (prendersystem->m_bForceDefaultEmission)
-               {
-
-                  seq3Emission = prendersystem->m_seq3DefaultEmission;
-               }
-               else
-               {
-
-                  //seq3Emission = pgltfmodel->m_materiala[0].m_seq3Emissive;
-               }
-               pshader->set_sequence3("emissive", seq3Emission);
-
-
-               bool bEmissive = pgltfmodel->m_materiala[0].emissiveTexture.is_set();
-               bEmissive = bEmissive && !m_bDisableEmissive;
-               pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
-
-               //auto metallicFactor = pgltfmodel->m_materiala[0].metallicFactor;
-               //if (m_bForceDefaultMetallicFactor)
-               //   metallicFactor = m_fDefaultMetallicFactor;
-               //pshader->set_float("metallic", metallicFactor);
-               //auto roughnessFactor = pgltfmodel->m_materiala[0].roughnessFactor;
-               //if (m_bForceDefaultRoughnessFactor)
-               //   roughnessFactor = m_fDefaultRoughnessFactor;
-               //pshader->set_float("roughness", roughnessFactor);
-               //pshader->set_float("ambientOcclusion", pgltfmodel->m_materiala[0].am);
-               pshader->push_properties(pcommandbuffer);
-
-
-               //// --- Bind sets 0 & 1 (global + node UBO) ---
-               //std::array<VkDescriptorSet, 2> sets01 = {
-               //   frame.globalDescriptorSet, // set 0
-               //   pnode->m_pmesh->uniformBuffer.descriptorSet // set 1
-               //};
-               //// xxxxxxxxxxxxxxxxx
-               ////// --- Bind sets 0 & 1 (global + pnode UBO) ---
-               // std::array<VkDescriptorSet, 2> sets01 = {
-               //   vkdescriptorsetGlobal, // set 0
-               //    pnode->m_pmesh->uniformBuffer.descriptorSet // set 1
-               // };
-               //vkCmdBindDescriptorSets(
-               //   pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-               //   m_pipelineLayout, 0,
-               //   (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
-                //// --- Bind sets 0 (global) ---
-               // pnode UBO transformed in Push Constants and set above
-                // std::array<VkDescriptorSet, 1> sets01 = {
-                //    vkdescriptorsetGlobal // set 0
-                // };
-                // vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                //                         pshader->m_ppipeline->m_vkpipelinelayout, 0, (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
-
-               //// --- Bind our PBR set (set = 2) ---
-                // --- Bind our PBR set (set = 1) ---
-               if (pgltfmodel->m_materiala.size() <= 0)
-               {
-
-                  if (!warnedThisFrame)
-                  { /*spdlog::warn("PBR set null");*/
-                     warnedThisFrame = true;
-                  }
-                  continue;
-               }
-
-               //               //// --- Bind IBL set (set = 3) ---
-               //// --- Bind IBL set (set = 2) ---
-               //VkDescriptorSet iblSet =
-               //   m_vkdescriptorsetaIbl[pcontext->m_pgpurenderer->m_pgpurendertarget->get_frame_index()];
-               //if (iblSet == VK_NULL_HANDLE)
-               //{
-               //   continue;
-               //}
-               //vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-               //                        // m_pipelineLayout, 3, 1,
-               //                        pshader->m_ppipeline->m_vkpipelinelayout, 1, 1, &iblSet, 0, nullptr);
-
-               //if (pgltfmodel->m_materiala.has_element() &&
-               //   pgltfmodel->m_materiala[0]
-               //       .descriptor_set_array_gltf(pgltfmodel)
-               //       .has_element())
-               //{
-               //   VkDescriptorSet pbrSet =
-               //      pgltfmodel->m_materiala[0].descriptor_set_array_gltf(pgltfmodel)[pframe->m_pgpucommandbuffer->m_iFrameIndex];
-               //   if (pbrSet == VK_NULL_HANDLE)
-               //   {
-               //      if (!warnedThisFrame)
-               //      { /*spdlog::warn("PBR set null");*/
-               //         warnedThisFrame = true;
-               //      }
-               //      continue;
-               //   }
-               //   vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-               //                           // m_pipelineLayout, 2, 1,
-               //                           pshader->m_ppipeline->m_vkpipelinelayout, 2, 1, &pbrSet, 0, nullptr);
-               //}
-               auto pgpubindingset = pcontext->gltf_pbr_binding_set();
-
-               auto pbindingset = pshader->binding_set(2, pgpubindingset);
-
-               pgltfmodel->gltfDraw(pcommandbuffer, 0);
-
-               warnedThisFrame = false;
-
-            }
-         }
-      }
+      ::graphics3d::gltf_render_system::on_render(pgpucontext, pscene);
+      //
+      // static bool warnedThisFrame = false;
+      //
+      //       auto pframe = ::gpu::current_frame();
+      //
+      //    ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+      //
+      //    auto &scenerenderables = pscene->scene_renderables();
+      // //   //// xxxxxxxxxxxxxxxxx
+      // ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+      //    ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
+      //
+      // ////// xxxxxxxxxxxxxxxxx
+      // //auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+      //    //auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
+      //
+      // int iRenderable = -1;
+      //
+      // for (auto &[id, pscenerenderable]: scenerenderables)
+      // {
+      //
+      //    iRenderable++;
+      //
+      //    if (!pscenerenderable)
+      //    {
+      //
+      //       continue;
+      //
+      //    }
+      //
+      //    if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_ibl)
+      //    {
+      //
+      //       continue;
+      //    }
+      //
+      //
+      //    auto prenderable = pscenerenderable->renderable();
+      //    if (!prenderable)
+      //       continue;
+      //
+      //    auto erenderabletype = prenderable->m_erenderabletype;
+      //
+      //    if (erenderabletype != ::gpu::e_renderable_type_gltf)
+      //    {
+      //       continue; // not mine, skip
+      //    }
+      //    ::cast<::gpu_vulkan::gltf::model> pgltfmodel = prenderable;
+      //
+      //    if (!pgltfmodel)
+      //       continue;
+      //
+      //    ::string strName = pscenerenderable->m_strName;
+      //
+      //    pgltfmodel->bind(pframe->m_pgpucommandbuffer);
+      //
+      //    for (auto *pnode: pgltfmodel->m_nodeaLinear)
+      //    {
+      //       if (!pnode->m_pmesh)
+      //          continue;
+      //
+      //       auto matrixObject = pscenerenderable->model_matrix();
+      //
+      //       auto matrixNode = pnode->getMatrix();
+      //
+      //       floating_matrix4 world =  matrixObject * matrixNode;
+      //
+      //       // Extract upper-left 3×3 from world
+      //       floating_matrix3 world3x3 = floating_matrix3(world);
+      //
+      //       float det2 = floating_matrix3(world3x3).determinant();
+      //       information("deteterminant of model matrix is %f\n", det2);
+      //
+      //
+      //       floating_matrix4 normalMat(world3x3);
+      //
+      //       // Compute normal matrix correctly
+      //       normalMat = normalMat.inversed().transposed();
+      //
+      //
+      //       //memcpy(pnode->m_pmesh->uniformBuffer.mapped, &world, sizeof(world));
+      //       //memcpy((char *)pnode->m_pmesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
+      //
+      //       for (auto *primitive: pnode->m_pmesh->primitives)
+      //       {
+      //
+      //                         // Pick pipeline by alpha mode
+      //          switch (primitive->m_pmaterial->alphaMode)
+      //          {
+      //             case ::gpu_vulkan::gltf::Material::ALPHAMODE_OPAQUE:
+      //                pgpucontext->defer_bind(m_pshaderOpaque);
+      //                break;
+      //             case ::gpu_vulkan::gltf::Material::ALPHAMODE_MASK:
+      //                pgpucontext->defer_bind(m_pshaderMask);
+      //                break;
+      //             case ::gpu_vulkan::gltf::Material::ALPHAMODE_BLEND:
+      //             default:
+      //                pgpucontext->defer_bind(m_pshaderBlend);
+      //                break;
+      //          }
+      //
+      //          ::cast<::gpu_vulkan::shader> pshader = pgpucontext->m_pshaderBound;
+      //
+      //          auto prendersystem = this;
+      //
+      //          ::floating_sequence3 multiplier;
+      //
+      //          if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_vulkan)
+      //          {
+      //
+      //             if (pgpucontext->m_eapi == ::gpu::e_api_vulkan)
+      //             {
+      //
+      //                multiplier.y = -1.f;
+      //                multiplier.z = -1.f;
+      //                // x_multiplier = -1.f;
+      //             }
+      //
+      //          }
+      //          else if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_z_minus)
+      //          {
+      //
+      //             if (pgpucontext->m_eapi == ::gpu::e_api_vulkan)
+      //             {
+      //
+      //                // y_multiplier = -1.f;
+      //                multiplier.z = -1.f;
+      //
+      //             }
+      //
+      //          }
+      //          else if (pgltfmodel->m_ecoordinatesystem == ::gpu::e_coordinate_system_y_up)
+      //          {
+      //
+      //             if (pgpucontext->m_eapi == ::gpu::e_api_vulkan)
+      //             {
+      //
+      //                multiplier.y = -1.f;
+      //                multiplier.z = -1.f;
+      //
+      //             }
+      //
+      //          }
+      //
+      //          pshader->set_sequence3("multiplier", multiplier);
+      //
+      //          pshader->set_matrix4("modelMatrix", world);
+      //          pshader->set_matrix4("normalMatrix", normalMat);
+      //          bool bAlbedo = pgltfmodel->m_materiala[0].baseColorTexture.is_set();
+      //          bAlbedo = bAlbedo && !m_bDisableAlbedo;
+      //          pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
+      //
+      //              floating_sequence3 seq3Albedo = {};
+      //          if (prendersystem->m_bForceDefaultAlbedo)
+      //          {
+      //
+      //             seq3Albedo = prendersystem->m_seq3DefaultAlbedo;
+      //          }
+      //          else
+      //          {
+      //
+      //             seq3Albedo = ::floating_sequence3(pgltfmodel->m_materiala[0].baseColorFactor.r,
+      //                                       pgltfmodel->m_materiala[0].baseColorFactor.g,
+      //                                       pgltfmodel->m_materiala[0].baseColorFactor.b);
+      //
+      //          }
+      //
+      //          pshader->set_sequence3("albedo", seq3Albedo);
+      //
+      //          bool bMetallicRoughness = pgltfmodel->m_materiala[0].metallicRoughnessTexture.is_set();
+      //          bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
+      //          pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
+      //          bool bNormal = pgltfmodel->m_materiala[0].normalTexture.is_set();
+      //
+      //
+      //                      float fMetallic = 0.0f;
+      //          if (prendersystem->m_bForceDefaultMetallicFactor)
+      //          {
+      //
+      //             fMetallic = prendersystem->m_fDefaultMetallicFactor;
+      //          }
+      //          else
+      //          {
+      //
+      //             fMetallic = pgltfmodel->m_materiala[0].metallicFactor;
+      //          }
+      //          float fRoughness = 0.0f;
+      //          if (prendersystem->m_bForceDefaultRoughnessFactor)
+      //          {
+      //
+      //             fRoughness = prendersystem->m_fDefaultRoughnessFactor;
+      //          }
+      //          else
+      //          {
+      //
+      //             fRoughness = pgltfmodel->m_materiala[0].roughnessFactor;
+      //          }
+      //          pshader->set_float("metallic", fMetallic);
+      //          pshader->set_float("roughness", fRoughness);
+      //
+      //          bNormal = bNormal && !m_bDisableNormal;
+      //          pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
+      //          bool bAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture.is_set();
+      //          bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
+      //          pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
+      //
+      //
+      //
+      //                      float fAmbientOcclusion = 0.0f;
+      //          if (prendersystem->m_bForceDefaultAmbientOcclusionFactor)
+      //          {
+      //
+      //             fAmbientOcclusion = prendersystem->m_fDefaultAmbientOcclusionFactor;
+      //          }
+      //          else
+      //          {
+      //
+      //             //fAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture->m_fAmbientOcclusion;
+      //             fAmbientOcclusion = 1.f;
+      //          }
+      //          pshader->set_float("ambientOcclusion", fAmbientOcclusion);
+      //
+      //          floating_sequence3 seq3Emission = {};
+      //          if (prendersystem->m_bForceDefaultEmission)
+      //          {
+      //
+      //             seq3Emission = prendersystem->m_seq3DefaultEmission;
+      //          }
+      //          else
+      //          {
+      //
+      //             //seq3Emission = pgltfmodel->m_materiala[0].m_seq3Emissive;
+      //          }
+      //          pshader->set_sequence3("emissive", seq3Emission);
+      //
+      //
+      //          bool bEmissive = pgltfmodel->m_materiala[0].emissiveTexture.is_set();
+      //          bEmissive = bEmissive && !m_bDisableEmissive;
+      //          pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
+      //
+      //          //auto metallicFactor = pgltfmodel->m_materiala[0].metallicFactor;
+      //          //if (m_bForceDefaultMetallicFactor)
+      //          //   metallicFactor = m_fDefaultMetallicFactor;
+      //          //pshader->set_float("metallic", metallicFactor);
+      //          //auto roughnessFactor = pgltfmodel->m_materiala[0].roughnessFactor;
+      //          //if (m_bForceDefaultRoughnessFactor)
+      //          //   roughnessFactor = m_fDefaultRoughnessFactor;
+      //          //pshader->set_float("roughness", roughnessFactor);
+      //          //pshader->set_float("ambientOcclusion", pgltfmodel->m_materiala[0].am);
+      //          pshader->push_properties(pcommandbuffer);
+      //
+      //
+      //          //// --- Bind sets 0 & 1 (global + node UBO) ---
+      //          //std::array<VkDescriptorSet, 2> sets01 = {
+      //          //   frame.globalDescriptorSet, // set 0
+      //          //   pnode->m_pmesh->uniformBuffer.descriptorSet // set 1
+      //          //};
+      //          //// xxxxxxxxxxxxxxxxx
+      //          ////// --- Bind sets 0 & 1 (global + pnode UBO) ---
+      //          // std::array<VkDescriptorSet, 2> sets01 = {
+      //          //   vkdescriptorsetGlobal, // set 0
+      //          //    pnode->m_pmesh->uniformBuffer.descriptorSet // set 1
+      //          // };
+      //          //vkCmdBindDescriptorSets(
+      //          //   pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+      //          //   m_pipelineLayout, 0,
+      //          //   (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
+      //           //// --- Bind sets 0 (global) ---
+      //          // pnode UBO transformed in Push Constants and set above
+      //           // std::array<VkDescriptorSet, 1> sets01 = {
+      //           //    vkdescriptorsetGlobal // set 0
+      //           // };
+      //           // vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+      //           //                         pshader->m_ppipeline->m_vkpipelinelayout, 0, (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
+      //
+      //          //// --- Bind our PBR set (set = 2) ---
+      //           // --- Bind our PBR set (set = 1) ---
+      //          if (pgltfmodel->m_materiala.size() <= 0)
+      //          {
+      //
+      //             if (!warnedThisFrame)
+      //             { /*spdlog::warn("PBR set null");*/
+      //                warnedThisFrame = true;
+      //             }
+      //             continue;
+      //          }
+      //
+      //          //               //// --- Bind IBL set (set = 3) ---
+      //          //// --- Bind IBL set (set = 2) ---
+      //          //VkDescriptorSet iblSet =
+      //          //   m_vkdescriptorsetaIbl[pcontext->m_pgpurenderer->m_pgpurendertarget->get_frame_index()];
+      //          //if (iblSet == VK_NULL_HANDLE)
+      //          //{
+      //          //   continue;
+      //          //}
+      //          //vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+      //          //                        // m_pipelineLayout, 3, 1,
+      //          //                        pshader->m_ppipeline->m_vkpipelinelayout, 1, 1, &iblSet, 0, nullptr);
+      //
+      //          //if (pgltfmodel->m_materiala.has_element() &&
+      //          //   pgltfmodel->m_materiala[0]
+      //          //       .descriptor_set_array_gltf(pgltfmodel)
+      //          //       .has_element())
+      //          //{
+      //          //   VkDescriptorSet pbrSet =
+      //          //      pgltfmodel->m_materiala[0].descriptor_set_array_gltf(pgltfmodel)[pframe->m_pgpucommandbuffer->m_iFrameIndex];
+      //          //   if (pbrSet == VK_NULL_HANDLE)
+      //          //   {
+      //          //      if (!warnedThisFrame)
+      //          //      { /*spdlog::warn("PBR set null");*/
+      //          //         warnedThisFrame = true;
+      //          //      }
+      //          //      continue;
+      //          //   }
+      //          //   vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+      //          //                           // m_pipelineLayout, 2, 1,
+      //          //                           pshader->m_ppipeline->m_vkpipelinelayout, 2, 1, &pbrSet, 0, nullptr);
+      //          //}
+      //          auto pgpubindingset = pcontext->gltf_pbr_binding_set();
+      //
+      //          auto pbindingset = pshader->binding_set(2, pgpubindingset);
+      //
+      //          pgltfmodel->gltfDraw(pcommandbuffer, 0);
+      //
+      //          warnedThisFrame = false;
+      //
+      //       }
+      //    }
+      // }
    }
 
 } // namespace graphics3d_vulkan

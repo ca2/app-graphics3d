@@ -773,7 +773,7 @@ namespace gpu_vulkan
       //	vkDestroyDescriptorSetLayout(pcontext->logicalDevice(), descriptorSetLayoutImage, nullptr);
       //	descriptorSetLayoutImage = VK_NULL_HANDLE;
       // }
-      vkDestroyDescriptorPool(pcontext->logicalDevice(), m_descriptorPool, nullptr);
+      aaavkDestroyDescriptorPool(pcontext->logicalDevice(), m_descriptorPool, nullptr);
       //emptyTexture->destroy();
    }
 
@@ -1793,7 +1793,7 @@ namespace gpu_vulkan
       for (int i = 0; i < iCommonCount; i++)
       {
 
-         pgpubindinslotset->binding(i)->m_ptexture = texturea[i];
+         pgpubindinslotset->binding_slot(i)->m_ptexture = texturea[i];
 
       }
 
@@ -2049,8 +2049,8 @@ namespace gpu_vulkan
                //   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, bindImageSet,
                //                           1, &descriptorSet, 0, nullptr);
                //}
-               pshader->binding_set(2, pmaterial->m_pbindingset);
                auto pshader = pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pshaderBound;
+               pshader->binding_slot_set(2, pmaterial->m_pbindingset);
                pshader->on_before_draw(pgpucommandbuffer);
                ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
                vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer,

@@ -234,7 +234,7 @@ namespace gpu_directx12
    }
 
 
-   void model_buffer::bind(::gpu::command_buffer* pgpucommandbuffer)
+   void model_buffer::bind2(::gpu::command_buffer* pgpucommandbuffer)
    {
 
       if (!m_pbufferVertex && !m_pbufferIndex)
@@ -348,7 +348,7 @@ namespace gpu_directx12
    }
 
 
-   void model_buffer::draw(::gpu::command_buffer* pgpucommandbuffer)
+   void model_buffer::draw2(::gpu::command_buffer* pgpucommandbuffer)
    {
 
       if (m_pcommandbufferLoading)

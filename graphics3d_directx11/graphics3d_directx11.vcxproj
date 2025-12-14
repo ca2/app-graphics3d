@@ -832,6 +832,9 @@
     <ProjectReference Include="..\..\app\gpu\gpu.vcxproj">
       <Project>{d728fd54-84d0-4b93-9d34-43338f285886}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\graphics3d\graphics3d.vcxproj">
+      <Project>{beca2c96-6cfd-4793-a2b8-1fce9bd31682}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

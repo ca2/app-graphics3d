@@ -722,12 +722,12 @@ namespace gpu_directx12
    }
 
 
-   void texture::blend(::gpu::texture* ptexture)
-   {
+   //void texture::blend(::gpu::texture* ptexture)
+   //{
 
 
 
-   }
+   //}
 
 
    void texture::_initialize_gpu_texture(::gpu::renderer* prenderer, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain)

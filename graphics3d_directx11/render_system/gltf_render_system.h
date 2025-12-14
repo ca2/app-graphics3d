@@ -5,7 +5,7 @@
 
 // #include "SceneFoundry/graphics3d/render_system.h"
 
-#include "bred/graphics3d/render_systems/gltf_render_system.h"
+#include "app-graphics3d/graphics3d/render_system/gltf_render_system.h"
 #include "app-graphics3d/graphics3d_directx11/render_system.h"
 
 // #include "SceneFoundry/graphics3d/asset_provider_i.h"

@@ -13,7 +13,7 @@
 //#include "vulkan_wrapper/vulkan_renderer.h"
 
 #include "app-graphics3d/graphics3d_directx11/render_system.h"
-#include "bred/graphics3d/render_systems/scene_render_system.h"
+#include "app-graphics3d/graphics3d/render_system/scene_render_system.h"
 
 //
 //// STD

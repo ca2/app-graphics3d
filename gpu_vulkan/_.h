@@ -79,7 +79,9 @@ namespace gpu_vulkan
 
       class mesh;
 
-      class Model;
+      class material;
+
+      //class Model;
 
    }
 

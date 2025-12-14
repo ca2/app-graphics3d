@@ -6,7 +6,7 @@
 #include "command_buffer.h"
 #include "debug.h"
 #include "device.h"
-#include "gltf_model.h"
+#include "gltf/model.h"
 #include "memory_buffer.h"
 #include "physical_device.h"
 #include "program.h"
@@ -32,7 +32,7 @@
 //   // Optional — depends on your conventions
 #include <chrono>
 //
-#include "gltf_model.h"
+//#include "gltf_model.h"
 #include "initializers.h"
 #include "vk_init.h"
 
@@ -175,50 +175,50 @@ namespace gpu_vulkan
    }
 
 
-   void context::start_drawing()
-   {
+   //void context::start_drawing()
+   //{
 
 
-      // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo_elements);
-      // int iError16 = glGetError();
+   //   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo_elements);
+   //   // int iError16 = glGetError();
 
-      // int size = 0;
-      // glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-      // int iError17 = glGetError();
+   //   // int size = 0;
+   //   // glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+   //   // int iError17 = glGetError();
 
-      // glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
-      // int iError18 = glGetError();
+   //   // glDrawElements(GL_TRIANGLES, size / sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+   //   // int iError18 = glGetError();
 
 
-      // ASSERT(is_current_task());
+   //   // ASSERT(is_current_task());
 
-      ////      glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+   //   ////      glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-      //      // Clear the screen
-      // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   //   //      // Clear the screen
+   //   // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      ////glClear(GL_COLOR_BUFFER_BIT);
+   //   ////glClear(GL_COLOR_BUFFER_BIT);
 
-      // if (m_pprogram && m_pprogram->m_pshader)
-      //{
+   //   // if (m_pprogram && m_pprogram->m_pshader)
+   //   //{
 
-      //   m_pprogram->m_pshader->use();
+   //   //   m_pprogram->m_pshader->use();
 
-      //}
-      //// Use our shader
-      ////glUseProgram(programID);
+   //   //}
+   //   //// Use our shader
+   //   ////glUseProgram(programID);
 
-      //// be sure to activate the shader
-      ////glUseProgram(shaderProgram);
+   //   //// be sure to activate the shader
+   //   ////glUseProgram(shaderProgram);
 
-      //// update the uniform color
-      ////float timeValue = glfwGetTime();
-      ////float greenValue = sin(timeValue) / 2.0f + 0.5f;
-      ////int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-      ////glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+   //   //// update the uniform color
+   //   ////float timeValue = glfwGetTime();
+   //   ////float greenValue = sin(timeValue) / 2.0f + 0.5f;
+   //   ////int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+   //   ////glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
-      ////return ::success;
-   }
+   //   ////return ::success;
+   //}
 
 
    void context::global_transform()
@@ -3146,6 +3146,8 @@ namespace gpu_vulkan
       ::gpu::scoped_command_buffer scopedcommanbuffer(pcommandbuffer);
       // pcommandbuffer->begin_command_buffer(false);
 
+      VkImage vkimageTarget = ptexture->m_vkimage;
+
       if (::nok(m_pshaderBlend3))
       {
 
@@ -3229,7 +3231,7 @@ namespace gpu_vulkan
       {
 
          // 2. Clear
-         VkClearColorValue clearColor = {.float32 = {0.0f, 0.0f, 0.0f, 0.0f}};
+         VkClearColorValue clearColor = {.float32 = {0.5f, 0.5f, 0.0f, 0.5f}};
          VkImageSubresourceRange range = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -3297,8 +3299,31 @@ namespace gpu_vulkan
                      for (auto player: *playera)
          {
 
-            // if (iLayer == 2)
-            {
+            //// if (iLayer == 2)
+            //{
+            //   ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
+            //   ptextureSrc->_set_state(
+            //      pcommandbuffer,  {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT});
+
+            //}
+            //{
+            //   ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
+            //   // 2. Clear
+            //   VkClearColorValue clearColor = {.float32 = {0.1f, 0.5f, 0.25f, 0.8f}};
+            //   VkImageSubresourceRange range = {
+            //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            //      .baseMipLevel = 0,
+            //      .levelCount = 1,
+            //      .baseArrayLayer = 0,
+            //      .layerCount = 1,
+            //   };
+
+            //   vkCmdClearColorImage(vkcommandbuffer, ptextureSrc->m_vkimage, 
+            //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            //                        &clearColor, 1, &range);
+            //}
+
+               {
 
                ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
                ptextureSrc->_set_state(
@@ -3326,7 +3351,7 @@ namespace gpu_vulkan
                   //                                               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT});
 
                   
-                  m_pshaderBlend3->bind_source(pcommandbuffer, ptextureSrc);
+                  pcommandbuffer->set_source(ptextureSrc);
 
                   // pcommandbuffer->set_viewport(ptextureSrc->m_rectangleTarget);
 
@@ -3344,11 +3369,12 @@ namespace gpu_vulkan
 
                   pcommandbuffer->set_scissor(r);
 
+                  //m_pshaderBlend3->on_before_draw(pcommandbuffer);
 
                   //{
 
                   //   // 2. Clear
-                  //   VkClearColorValue clearColor = { .float32 = { 0.95f * 0.5f, 0.95f * 0.5f, 0.50f * 0.5f, 0.5f } };
+                  //   VkClearColorValue clearColor = { .float32 = { 0.90f * 0.5f, 0.95f * 0.5f, 0.50f * 0.5f, 0.5f } };
                   //   VkImageSubresourceRange range = {
                   //       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                   //       .baseMipLevel = 0,
@@ -3406,7 +3432,8 @@ namespace gpu_vulkan
 
 
                   // pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-                  vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
+                  //vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
+                  pcommandbuffer->draw_vertexes(3);
 
 
                   m_pshaderBlend3->unbind(pcommandbuffer);
@@ -3414,7 +3441,31 @@ namespace gpu_vulkan
 
                iLayer++;
             }
+            
             pcommandbuffer->end_render();
+
+            //{
+
+            //   ptextureDst->_set_state(
+            //      pcommandbuffer,
+            //      {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT}
+
+            //      );
+
+            //   // 2. Clear
+            //   VkClearColorValue clearColor = {.float32 = {0.50f * 0.5f, 0.95f * 0.5f, 0.50f * 0.5f, 0.5f}};
+            //   VkImageSubresourceRange range = {
+            //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            //      .baseMipLevel = 0,
+            //      .levelCount = 1,
+            //      .baseArrayLayer = 0,
+            //      .layerCount = 1,
+            //   };
+
+            //   vkCmdClearColorImage(vkcommandbuffer, ptextureDst->m_vkimage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            //                        &clearColor, 1, &range);
+            //}
+
          }
          //}
       }
@@ -4094,7 +4145,7 @@ VkFormat context::findDepthFormat()
 //      if (descriptorsetlayout != VK_NULL_HANDLE)
 //         vkDestroyDescriptorSetLayout(this->logicalDevice(), descriptorsetlayout, nullptr);
 //      if (descriptorpool != VK_NULL_HANDLE)
-//         vkDestroyDescriptorPool(this->logicalDevice(), descriptorpool, nullptr);
+//         aaavkDestroyDescriptorPool(this->logicalDevice(), descriptorpool, nullptr);
 //      throw std::runtime_error("Prefilter fragment shader SPIR-V not found");
 //   }
 
@@ -4222,7 +4273,7 @@ VkFormat context::findDepthFormat()
 //   if (offscreen.image != VK_NULL_HANDLE)
 //      vkDestroyImage(this->logicalDevice(), offscreen.image, nullptr);
 //   if (descriptorpool != VK_NULL_HANDLE)
-//      vkDestroyDescriptorPool(this->logicalDevice(), descriptorpool, nullptr);
+//      aaavkDestroyDescriptorPool(this->logicalDevice(), descriptorpool, nullptr);
 //   if (descriptorsetlayout != VK_NULL_HANDLE)
 //      vkDestroyDescriptorSetLayout(this->logicalDevice(), descriptorsetlayout, nullptr);
 
@@ -4519,7 +4570,7 @@ VkFormat context::findDepthFormat()
 //      if (descriptorsetlayout != VK_NULL_HANDLE)
 //         vkDestroyDescriptorSetLayout(this->logicalDevice(), descriptorsetlayout, nullptr);
 //      if (descriptorpool != VK_NULL_HANDLE)
-//         vkDestroyDescriptorPool(this->logicalDevice(), descriptorpool, nullptr);
+//         aaavkDestroyDescriptorPool(this->logicalDevice(), descriptorpool, nullptr);
 //      throw ::exception(error_failed, "Prefilter fragment shader SPIR-V not found");
 //   }
 //
@@ -4654,7 +4705,7 @@ VkFormat context::findDepthFormat()
 //   if (offscreen.image != VK_NULL_HANDLE)
 //      vkDestroyImage(this->logicalDevice(), offscreen.image, nullptr);
 //   if (descriptorpool != VK_NULL_HANDLE)
-//      vkDestroyDescriptorPool(this->logicalDevice(), descriptorpool, nullptr);
+//      aaavkDestroyDescriptorPool(this->logicalDevice(), descriptorpool, nullptr);
 //   if (descriptorsetlayout != VK_NULL_HANDLE)
 //      vkDestroyDescriptorSetLayout(this->logicalDevice(), descriptorsetlayout, nullptr);
 //
@@ -5674,13 +5725,13 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
    // if (auto it = m_mapgltfModel.find(name); it != m_mapgltfModel.end())
    //  return it->element2();
 
-   auto pmodel = øcreate_new<::gpu_vulkan::gltf::Model>();
+   auto pmodel = øcreate_new<::gpu_vulkan::gltf::model>();
 
    *((::gpu::renderable_t *)pmodel) = model;
 
    ::cast<::gpu_vulkan::queue> pqueueGraphics = m_pgpudevice->graphics_queue();
 
-   pmodel->loadFromFile(model.m_pathRenderable.c_str(), this, pqueueGraphics->m_vkqueue, model.m_iFlags, model.m_fScale);
+   pmodel->initialize_gpu_gltf_model(this, model);
 
    // m_mapgltfModel[name] = model;
    return pmodel;
@@ -6013,9 +6064,9 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
                  static_cast<uint64_t>(reinterpret_cast<uintptr_t>(view)));
       }
 
-      ptexture->m_descriptor3.sampler = sampler;
-      ptexture->m_descriptor3.imageView = view;
-      ptexture->m_descriptor3.imageLayout = imageLayout;
+      //ptexture->m_descriptor3.sampler = sampler;
+      //ptexture->m_descriptor3.imageView = view;
+      //ptexture->m_descriptor3.imageLayout = imageLayout;
 
       information("[AssetManager] Texture '{}' loaded OK (view: {}, sampler: {})", name,
                   (view != VK_NULL_HANDLE ? "valid" : "null"), (sampler != VK_NULL_HANDLE ? "valid" : "null"));
@@ -6071,6 +6122,149 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
 //   return {};
 }
 
+
+::pointer<::gpu::texture> context::create_empty_texture()
+{
+
+      //void gltf::Model::createEmptyTexture(VkQueue transferQueue)
+//   {
+
+      auto pgputextureEmpty = øcreate< ::gpu::texture>();
+
+      ::cast<::gpu_vulkan::texture> ptextureEmpty = pgputextureEmpty;
+      
+
+      // Define the static member here (outside any class/function)
+
+      ptextureEmpty->m_pgpurenderer = m_pgpurenderer;
+      ptextureEmpty->m_textureattributes.m_rectangleTarget.set_width(1);
+      ptextureEmpty->m_textureattributes.m_rectangleTarget.set_height(1);
+      ptextureEmpty->m_textureattributes.m_iLayerCount = 1;
+      ptextureEmpty->m_textureattributes.m_iMipCount = 1;
+
+      ::cast<::gpu_vulkan::context> pcontext = this;
+      ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
+      auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
+
+
+      size_t bufferSize = ptextureEmpty->m_textureattributes.m_rectangleTarget.area() * 4;
+      //::memory memory;
+      //memory.set_size(bufferSize);
+      //memory.zeroe();
+      //unsigned char *buffer = new unsigned char[bufferSize];
+      //memset(buffer, 0, bufferSize);
+      VkBuffer stagingBuffer;
+      VkDeviceMemory stagingMemory;
+      VkBufferCreateInfo bufferCreateInfo = vkinit::bufferCreateInfo();
+      bufferCreateInfo.size = bufferSize;
+      // This buffer is used as a transfer source for the buffer copy
+      bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+      bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+      VK_CHECK_RESULT(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
+
+      VkMemoryAllocateInfo memAllocInfo = vkinit::memoryAllocateInfo();
+      VkMemoryRequirements memReqs;
+      vkGetBufferMemoryRequirements(pcontext->logicalDevice(), stagingBuffer, &memReqs);
+      memAllocInfo.allocationSize = memReqs.size;
+      memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(
+         memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+      VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
+      VK_CHECK_RESULT(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
+
+      // Copy texture data into staging buffer
+      uint8_t *data;
+      VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
+      ::zero(data, bufferSize);
+      vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
+
+      VkBufferImageCopy bufferCopyRegion = {};
+      bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      bufferCopyRegion.imageSubresource.layerCount = 1;
+      bufferCopyRegion.imageExtent.width = ptextureEmpty->width();
+      bufferCopyRegion.imageExtent.height = ptextureEmpty->height();
+      bufferCopyRegion.imageExtent.depth = 1;
+
+      // Create optimal tiled target image
+      VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
+      imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+      imageCreateInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+      imageCreateInfo.mipLevels = 1;
+      imageCreateInfo.arrayLayers = 1;
+      imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+      imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+      imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      imageCreateInfo.extent.width = ptextureEmpty->width();
+      imageCreateInfo.extent.height = ptextureEmpty->height();
+      imageCreateInfo.extent.depth = 1;
+      imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+      VK_CHECK_RESULT(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &ptextureEmpty->m_vkimage));
+
+      vkGetImageMemoryRequirements(pcontext->logicalDevice(), ptextureEmpty->m_vkimage, &memReqs);
+      memAllocInfo.allocationSize = memReqs.size;
+      memAllocInfo.memoryTypeIndex =
+         pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+      VK_CHECK_RESULT(
+         vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &ptextureEmpty->m_vkdevicememory));
+      VK_CHECK_RESULT(
+         vkBindImageMemory(pcontext->logicalDevice(), ptextureEmpty->m_vkimage, ptextureEmpty->m_vkdevicememory, 0));
+
+      VkImageSubresourceRange subresourceRange{};
+      subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      subresourceRange.baseMipLevel = 0;
+      subresourceRange.levelCount = 1;
+      subresourceRange.layerCount = 1;
+
+      // VkCommandBuffer pcommandbufferCopy->m_vkcommandbuffer =
+      // pcontext->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
+
+      auto pgpucommandbufferCopy = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+
+      ::cast<command_buffer> pcommandbufferCopy = pgpucommandbufferCopy;
+
+      vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, ptextureEmpty->m_vkimage, VK_IMAGE_LAYOUT_UNDEFINED,
+                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
+      vkCmdCopyBufferToImage(pcommandbufferCopy->m_vkcommandbuffer, stagingBuffer, ptextureEmpty->m_vkimage,
+                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
+      vulkan::setImageLayout(pcommandbufferCopy->m_vkcommandbuffer, ptextureEmpty->m_vkimage,
+                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                             subresourceRange);
+      // pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, transferQueue);
+      pcontext->endSingleTimeCommands(pcommandbufferCopy);
+      ptextureEmpty->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+      // Clean up staging resources
+      vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
+      vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
+
+      VkSamplerCreateInfo samplerCreateInfo = vkinit::samplerCreateInfo();
+      samplerCreateInfo.magFilter = VK_FILTER_LINEAR;
+      samplerCreateInfo.minFilter = VK_FILTER_LINEAR;
+      samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+      samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;
+      samplerCreateInfo.maxAnisotropy = 1.0f;
+      VK_CHECK_RESULT(
+         vkCreateSampler(pcontext->logicalDevice(), &samplerCreateInfo, nullptr, &ptextureEmpty->m_vksampler3));
+
+      VkImageViewCreateInfo viewCreateInfo = vkinit::imageViewCreateInfo();
+      viewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+      viewCreateInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+      viewCreateInfo.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+      viewCreateInfo.subresourceRange.levelCount = 1;
+      viewCreateInfo.image = ptextureEmpty->m_vkimage;
+      VK_CHECK_RESULT(
+         vkCreateImageView(pcontext->logicalDevice(), &viewCreateInfo, nullptr, &ptextureEmpty->m_vkimageview));
+
+   //   ptextureEmpty->m_descriptor3.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+   //   ptextureEmpty->m_descriptor3.imageView = ptextureEmpty->m_vkimageview;
+   //   ptextureEmpty->m_descriptor3.sampler = ptextureEmpty->m_vksampler3;
+   //}
+      return ::transfer(pgputextureEmpty);
+
+}
 
 
 } // namespace gpu_vulkan

@@ -1019,8 +1019,13 @@ namespace gpu_vulkan
 
       //{
 
+      //   auto scopedstateSrc = ptextureSrc->_scoped_state(
+      //      pcommandbuffer,
+      //      {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT}
+      //   );
+
       //   // 2. Clear
-      //   VkClearColorValue clearColor = { .float32 = { 0.95f * 0.5f, 0.75f * 0.5f, 0.95f * 0.5f, 0.5f } };
+      //   VkClearColorValue clearColor = { .float32 = { 0.95f * 0.5f, 0.90f * 0.5f, 0.92f * 0.5f, 0.5f } };
       //   VkImageSubresourceRange range = {
       //       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
       //       .baseMipLevel = 0,
@@ -1060,7 +1065,8 @@ namespace gpu_vulkan
          }
       );
 
-      m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain, ptextureSrc);
+      pcommandbuffer->begin_render(m_pshaderPresent, ptextureSwapChain);
+      pcommandbuffer->set_source(ptextureSrc);
 
       pcommandbuffer->m_semaphoreaWaitToSubmit.add(ptextureSrc->synchronization()->m_vksemaphoreRenderFinished);
       pcommandbuffer->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -1070,7 +1076,10 @@ namespace gpu_vulkan
       pcommandbuffer->set_scissor(pgpucontext->m_rectangle.size());
 
 
-      pgpucontext->_001BeginRenderPass(pcommandbuffer, ptextureSwapChain);
+      //pgpucontext->_001BeginRenderPass(pcommandbuffer, ptextureSwapChain);
+
+      ///m_pshaderPresent->on_before_draw(pcommandbuffer);
+
 
       //pgpucontext->m_pcontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
       //pgpucontext->m_pcontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
@@ -1110,10 +1119,14 @@ namespace gpu_vulkan
       //pcommandlist->RSSetViewports(1, &viewport);
       //pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       //pcommandlist->DrawInstanced(3, 1, 0, 0);
-      vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
+      //vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
+
+      pcommandbuffer->draw_vertexes(3);
 
 
-      pgpucontext->_001EndRenderPass(pcommandbuffer);
+      //pgpucontext->_001EndRenderPass(pcommandbuffer);
+
+      pcommandbuffer->end_render();
 
       //{
 
@@ -1136,6 +1149,7 @@ namespace gpu_vulkan
       //      &range);
 
       //}
+
 
 
       m_pshaderPresent->unbind(pcommandbuffer);

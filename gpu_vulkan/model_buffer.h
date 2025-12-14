@@ -81,9 +81,9 @@ namespace gpu_vulkan
       //virtual void * _map(memsize start, memsize count);
       //virtual void unmap();
 
-      virtual void bind(::gpu::command_buffer* pcommandbuffer);
+      void bind2(::gpu::command_buffer* pcommandbuffer) override;
 
-      virtual void draw(::gpu::command_buffer* pcommandbuffer);
+      void draw2(::gpu::command_buffer* pcommandbuffer) override;
 
       
 

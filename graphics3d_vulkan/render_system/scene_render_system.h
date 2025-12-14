@@ -3,7 +3,7 @@
 
 
 #include "app-graphics3d/graphics3d_vulkan/render_system.h"
-#include "bred/graphics3d/render_systems/scene_render_system.h"
+#include "app-graphics3d/graphics3d/render_system/scene_render_system.h"
 #include "bred/gpu/properties.h"
 
 
@@ -17,35 +17,35 @@ namespace graphics3d_vulkan
    public:
 
 
-      struct push_constants
-      {
+      //struct push_constants
+      //{
 
-         floating_matrix4 modelMatrix;
-         floating_matrix4 normalMatrix;
+      //   floating_matrix4 modelMatrix;
+      //   floating_matrix4 normalMatrix;
 
-         int useTextureAlbedo;
-         int useTextureNormal;
-         //int useTextureMetallicRoughness;
-         //int useTextureAmbientOcclusion; 
-         //int useTextureEmissive; 
+      //   int useTextureAlbedo;
+      //   int useTextureNormal;
+      //   //int useTextureMetallicRoughness;
+      //   //int useTextureAmbientOcclusion; 
+      //   //int useTextureEmissive; 
 
-         ::floating_sequence3 albedo; 
-         float metallic; 
-         float roughness; 
-         float ambientOcclusion; 
-         ::floating_sequence3 emissive; // 44
+      //   ::floating_sequence3 albedo; 
+      //   float metallic; 
+      //   float roughness; 
+      //   float ambientOcclusion; 
+      //   ::floating_sequence3 emissive; // 44
 
-         float bloomBrightnessCutoff; 
-         //int useAlphaMask;
-         //float alphaMaskCutOff;
-         floating_sequence3 multiplier;
+      //   float bloomBrightnessCutoff; 
+      //   //int useAlphaMask;
+      //   //float alphaMaskCutOff;
+      //   floating_sequence3 multiplier;
 
-      };
+      //};
 
 
-      ::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutIbl;
-      ::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutPbr;
-      ::pointer<::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
+      //::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutIbl;
+      //::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutPbr;
+      //::pointer<::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
 
       
 
@@ -74,7 +74,6 @@ namespace graphics3d_vulkan
 
 
 
-DECLARE_GPU_PROPERTIES(CLASS_DECL_GRAPHICS3D_VULKAN, ::graphics3d_vulkan::scene_render_system::push_constants);
 
 
 

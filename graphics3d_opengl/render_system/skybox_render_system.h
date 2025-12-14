@@ -3,7 +3,7 @@
 #pragma once
 
 
-#include "bred/graphics3d/render_systems/skybox_render_system.h"
+#include "bred/graphics3d/render_system/skybox_render_system.h"
 
 
 namespace graphics3d_opengl

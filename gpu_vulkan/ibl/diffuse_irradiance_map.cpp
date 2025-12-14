@@ -14,7 +14,7 @@
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
 #include "app-graphics3d/gpu_vulkan/device.h"
-#include "app-graphics3d/gpu_vulkan/gltf_model.h"
+#include "app-graphics3d/gpu_vulkan/gltf/model.h"
 #include "app-graphics3d/gpu_vulkan/pipeline.h"
 #include "app-graphics3d/gpu_vulkan/queue.h"
 #include "app-graphics3d/gpu_vulkan/physical_device.h"

@@ -3336,8 +3336,10 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
+      auto ptextureTarget = m_pgpurendertarget->current_texture(::gpu::current_frame());
 
-      pshader->bind(pcommandbuffer, m_pgpurendertarget->current_texture(::gpu::current_frame()), ptexture);
+      pshader->bind(pcommandbuffer, ptextureTarget);
+      pshader->bind_source(pcommandbuffer, ptexture);
 
       auto sizeHost = m_pgpucontext->m_rectangle.size();
 

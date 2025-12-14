@@ -94,6 +94,13 @@ namespace gpu_vulkan
 
       auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
+      if (iFrameIndex < 0)
+      {
+
+         ::warning("iFrameIndex < 0 (1) at gpu_vulkan::layer");
+
+      }
+
       auto pcommandbufferLayer = m_commandbufferaLayer[iFrameIndex];
 
       return pcommandbufferLayer;

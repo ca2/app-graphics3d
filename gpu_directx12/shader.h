@@ -85,11 +85,11 @@ namespace gpu_directx12
       void on_initialize_shader() override;
       void draw() override;
 
-      void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget,
-                ::gpu::texture *pgputextureSource) override;
+      //void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget,
+        //        ::gpu::texture *pgputextureSource) override;
       void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget) override;
       void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureSource, int iSlot) override;
-      void bind(::gpu::command_buffer *pgpucommandbuffer) override;
+      //void bind(::gpu::command_buffer *pgpucommandbuffer) override;
       void unbind(::gpu::command_buffer *pgpucommandbuffer) override;
 
 

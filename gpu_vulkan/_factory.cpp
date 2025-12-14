@@ -25,6 +25,9 @@
 //#include "app-graphics3d/gpu_vulkan/ibl/hdri_cube.h"
 #include "app-graphics3d/gpu_vulkan/ibl/specular_map.h"
 #include "gpu/full_screen_quad.h"
+#include "gltf/mesh.h"
+#include "gltf/model.h"
+//#include "gltf/node.h"
 //#include "app-graphics3d/gpu_vulkan/cube.h"
 
 
@@ -81,7 +84,12 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item<::gpu_vulkan::binding, ::gpu::binding>();
    pfactory->add_factory_item<::gpu_vulkan::binding_set, ::gpu::binding_set>();
+   pfactory->add_factory_item<::gpu_vulkan::binding_slot_set, ::gpu::binding_slot_set>();
    pfactory->add_factory_item<::gpu_vulkan::block, ::gpu::block>();
+
+   pfactory->add_factory_item<::gpu_vulkan::gltf::mesh, ::gpu::gltf::mesh>();
+   pfactory->add_factory_item<::gpu_vulkan::gltf::model, ::gpu::gltf::model>();
+   //pfactory->add_factory_item<::gpu_vulkan::gltf::node, ::gpu::gltf::node>();
    
 
 }

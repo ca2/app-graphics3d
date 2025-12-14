@@ -23,6 +23,7 @@ namespace graphics3d
       ::pointer<::gpu::texture> m_ptextureLuBrdf;
       ::pointer<::gpu::texture> m_ptextureIrradianceCube;
       ::pointer<::gpu::texture> m_ptexturePrefilteredCube;
+      ::pointer<::gpu::binding_slot_set> m_pbindingslotsetIbl1;
 
 
       scene();
@@ -65,7 +66,7 @@ namespace graphics3d
       /// @return lutBrdf
       virtual ::pointer<::gpu::texture> generate_ibl_brdf_lut();
 
-
+      virtual ::gpu::binding_slot_set *ibl_binding_slot_set();
 
    };
 

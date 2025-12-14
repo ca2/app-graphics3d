@@ -1023,6 +1023,32 @@ namespace gpu_vulkan
       }
    }
 
+
+   VkSampler texture::get_vk_sampler()
+   {
+
+      if (m_vksamplerDedicated)
+      {
+         return m_vksamplerDedicated;
+      }
+      else if (m_vksampler3)
+      {
+         return m_vksampler3;
+      }
+      else
+      {
+
+         ::cast<context> pcontext = m_pgpurenderer->m_pgpucontext;
+
+         return pcontext->_001VkSampler();
+      }
+
+      //::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+
+      //return pcontext->_001VkSampler();
+
+   }
+
    VkFramebuffer texture::framebuffer(::gpu_vulkan::render_pass * prenderpass, int iFace)
    {
 
@@ -1097,40 +1123,91 @@ namespace gpu_vulkan
 
       pbufferStaging->_assign(data, size);
 
-      m_pgpurenderer->post_on_after_end_frame(
-         [this, pcontext, pbufferStaging, rectangle]()
-         {
+      if (ødefer_construct_new(m_p_001OnAfterEndFrame))
+      {
 
-            auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+         m_pgpurenderer->post_on_after_end_frame(
+            [this, pcontext]()
+            {
+               auto p = ::transfer(m_p_001OnAfterEndFrame);
 
-            pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging, rectangle);
+               auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
-            pcontext->endSingleTimeCommands(pcommandbuffer);
-
-         });
-
-      m_pgpurenderer->post_on_just_before_frame_next_start(
-         [this, pcontext]()
-         {
-
-            auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
-
-            ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer; 
-
-            _set_state(pcommandbuffer, 
+               for (auto &pitem: p->m_itema)
                {
 
-                  VK_ACCESS_TRANSFER_READ_BIT,
-                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                  VK_PIPELINE_STAGE_TRANSFER_BIT
+                  pcontext->copyBufferToImage(pcommandbuffer, pitem->m_ptexture, pitem->m_pbufferStaging,
+                                              pitem->m_rectangle);
+               }
 
-               });
+               pcontext->endSingleTimeCommands(pcommandbuffer);
+            });
+
+      }
+
+      auto ponafterendframeitem = øcreate_new<_001OnAfterEndFrameItem>();
+      ponafterendframeitem->m_ptexture=this;
+      ponafterendframeitem->m_pcontext = pcontext;
+      ponafterendframeitem->m_pbufferStaging = pbufferStaging;
+      ponafterendframeitem->m_rectangle = rectangle;
+      m_p_001OnAfterEndFrame->m_itema.add(ponafterendframeitem);
+
+      //m_pgpurenderer->post_on_after_end_frame(
+      //   [this, pcontext, pbufferStaging, rectangle]()
+      //   {
+
+      //      auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+
+      //      pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging, rectangle);
+
+      //      pcontext->endSingleTimeCommands(pcommandbuffer);
+
+      //   });
+
+      if (ødefer_construct_new(m_p_001OnNextFrameStart))
+      {
+         m_pgpurenderer->post_on_just_before_frame_next_start(
+            [this, pcontext]()
+            {
+
+               auto p = ::transfer(m_p_001OnNextFrameStart);
+               auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+
+               ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+               for (auto &ptexture: p->m_texturea)
+               {
+
+                  ptexture->_set_state(pcommandbuffer,
+                                     {
+
+                                                VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                                VK_PIPELINE_STAGE_TRANSFER_BIT
+
+                                             });
+               }
 
 
-            pcontext->endSingleTimeCommands(pcommandbuffer);
+               pcontext->endSingleTimeCommands(pcommandbuffer);
+            });
+      }
 
-         });
+      m_p_001OnNextFrameStart->m_texturea.add_unique(this);
 
+   }
+
+
+   VkDescriptorImageInfo texture::descriptor_info()
+   {
+
+
+      VkDescriptorImageInfo imageinfo;
+
+      imageinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      imageinfo.imageView = this->get_image_view();
+      imageinfo.sampler = this->get_vk_sampler();
+
+      return imageinfo;
 
    }
 
@@ -1138,12 +1215,46 @@ namespace gpu_vulkan
    VkDescriptorSet texture::descriptor_set(::gpu_vulkan::shader *pshader, ::gpu::command_buffer *pgpucommandbuffer)
    {
 
-      auto &shader = m_mapShader[pshader];
+      auto iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex;
 
-      if (!shader.m_bNew)
+      auto iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
+
+      auto iSerial = pgpucommandbuffer->m_iSerial;
+
+      if (iSerial == 74)
       {
 
-         return shader.m_vkdescriptorset;
+         information("iSerial == 74");
+
+      }
+
+      if (iFrame < 0)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      auto &pdescriptorseta = m_mapShaderDescriptorSetArray[pshader];
+
+      if (pdescriptorseta && pdescriptorseta->size() >= iFrameCount)
+      {
+
+         ASSERT(pdescriptorseta->size() >= iFrameCount && pdescriptorseta->element_at(iFrame));
+
+         //if ((((::uptr)shader.m_pvkdescriptorseta[iFrame]) & 0xffff) == 0x287)
+         //{
+
+         //   ::information("(shader.m_vkdescriptorseta[iFrame] & 0xffff) == 0x287");
+         //}
+         //else if ((((::uptr)shader.m_vkdescriptorseta[iFrame]) & 0xffff) == 0x1e5)
+         //{
+
+         //   ::information("(shader.m_vkdescriptorseta[iFrame] & 0xffff) == 0x1e5");
+         //}
+
+         return pdescriptorseta->element_at(iFrame);
+
       }
 
       VkDescriptorImageInfo imageinfo;
@@ -1169,11 +1280,41 @@ namespace gpu_vulkan
       //else if (pshader->m_bindingCubeSampler.is_set())
       //   uSamplerBinding = pshader->m_bindingCubeSampler.m_uBinding;
 
-      descriptor_writer(*playout, *ppool).writeImage(uSamplerBinding, &imageinfo).build(shader.m_vkdescriptorset);
+      pdescriptorseta = ppool->allocate_descriptor_set_array(this);
 
-      shader.m_bNew = false;
 
-      return shader.m_vkdescriptorset;
+      for (int i = 0; i < iFrameCount; i++)
+      {
+
+         if (!pdescriptorseta->ø(i))
+         {
+
+            VkDescriptorSet vkdescriptorset = VK_NULL_HANDLE;
+
+            descriptor_writer(*playout, *ppool).writeImage(uSamplerBinding, &imageinfo).build(vkdescriptorset);
+
+            pdescriptorseta->ø(i) = vkdescriptorset;
+
+         }
+
+      }
+
+      auto vkdescriptorsetFrame = pdescriptorseta->element_at(iFrame);
+
+      if ((((::uptr)vkdescriptorsetFrame) & 0xffff) == 0x287)
+      {
+
+         ::information("(vkdescriptorset & 0xffff) == 0x287");
+
+      }
+      else if ((((::uptr)vkdescriptorsetFrame) & 0xffff) == 0x1e5)
+      {
+
+         ::information("(vkdescriptorset & 0xffff) == 0x1e5");
+      }
+
+      return vkdescriptorsetFrame;
+
    }
 
 
@@ -1569,7 +1710,7 @@ void texture::create_sampler()
 
       //CreateSampler();
       create_sampler();
-      UpdateDescriptor();
+      //UpdateDescriptor();
 
       return true;
    }
@@ -2103,7 +2244,7 @@ void texture::create_sampler()
       VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewCreateInfo, nullptr, &m_vkimageview));
 
       // Update descriptor for shader sampling
-      UpdateDescriptor();
+      ///UpdateDescriptor();
 
       return true;
    }
@@ -2491,35 +2632,35 @@ void texture::create_sampler()
       vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
 
       // Update descriptor image info member that can be used for setting up descriptor sets
-      UpdateDescriptor();
+      //UpdateDescriptor();
 
    }
 
 
    
-	void texture::UpdateDescriptor()
-   {
+	//void texture::UpdateDescriptor()
+ //  {
 
-      if (m_vksamplerDedicated)
-      {
-         m_descriptor3.sampler = m_vksamplerDedicated;
-      }
-      else if (m_vksampler3)
-      {
+ //     if (m_vksamplerDedicated)
+ //     {
+ //        m_descriptor3.sampler = m_vksamplerDedicated;
+ //     }
+ //     else if (m_vksampler3)
+ //     {
 
-         m_descriptor3.sampler = m_vksampler3;
-      }
-      else
-      {
-         
-         ::cast<context> pcontext = m_pgpurenderer->m_pgpucontext;
-         
-         m_descriptor3.sampler = pcontext->_001VkSampler();
+ //        m_descriptor3.sampler = m_vksampler3;
+ //     }
+ //     else
+ //     {
+ //        
+ //        ::cast<context> pcontext = m_pgpurenderer->m_pgpucontext;
+ //        
+ //        m_descriptor3.sampler = pcontext->_001VkSampler();
 
-      }
-      m_descriptor3.imageView = get_image_view();
-      m_descriptor3.imageLayout = m_state.m_vkimagelayout;
-   }
+ //     }
+ //     m_descriptor3.imageView = get_image_view();
+ //     m_descriptor3.imageLayout = m_state.m_vkimagelayout;
+ //  }
 
 
    bool texture::is_in_shader_sampling_state()
@@ -2756,10 +2897,10 @@ void texture::create_sampler()
       
       pcontext->endSingleTimeCommands(pcommandbuffer);
 
-      //vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
-      m_descriptor3.imageView = m_vkimageview;
-      m_descriptor3.sampler = m_vksampler3;
-      m_descriptor3.imageLayout = m_state.m_vkimagelayout;
+      ////vkFreeMemory(pcontext->logicalDevice(), stagingMemory, nullptr);
+      //m_descriptor3.imageView = m_vkimageview;
+      //m_descriptor3.sampler = m_vksampler3;
+      //m_descriptor3.imageLayout = m_state.m_vkimagelayout;
 
 
       // Create image view
@@ -3607,9 +3748,9 @@ void texture::create_sampler()
       viewInfo.subresourceRange.levelCount = m_textureattributes.m_iMipCount;
       VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewInfo, nullptr, &m_vkimageview));
 
-      m_descriptor3.sampler = m_vksampler3;
-      m_descriptor3.imageView = m_vkimageview;
-      m_descriptor3.imageLayout = m_state.m_vkimagelayout;
+      //m_descriptor3.sampler = m_vksampler3;
+      //m_descriptor3.imageView = m_vkimageview;
+      //m_descriptor3.imageLayout = m_state.m_vkimagelayout;
 
    }
 

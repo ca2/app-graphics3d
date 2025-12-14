@@ -8,6 +8,13 @@
 namespace gpu_vulkan
 {
 
+   class descriptor_set_array : virtual public ::raw_array<VkDescriptorSet>
+   {
+   public:
+
+      //::pointer<::array<VkDescriptorSet>> m_pvkdescriptorseta;
+   };
+
 
    class CLASS_DECL_GPU_VULKAN descriptor_set_layout :
       virtual public ::particle
@@ -44,6 +51,7 @@ namespace gpu_vulkan
    };
 
 
+
    class CLASS_DECL_GPU_VULKAN descriptor_pool :
       virtual public ::particle
    {
@@ -66,7 +74,6 @@ namespace gpu_vulkan
          Builder & setPoolFlags(VkDescriptorPoolCreateFlags flags);
          Builder & setMaxSets(uint32_t count);
          ::pointer<descriptor_pool> build() const;
-
       private:
          ::pointer < context > m_pgpucontext;
          ::array<VkDescriptorPoolSize> poolSizes{};
@@ -88,10 +95,20 @@ namespace gpu_vulkan
          VkDescriptorSet & descriptor,
                               uint32_t variableDescriptorCount) const;
 
-      void freeDescriptors(::array<VkDescriptorSet> & descriptors) const;
+      void freeDescriptors(::pointer < descriptor_set_array > && pdescriptorseta) const;
 
       void resetPool();
 
+      ::pointer<descriptor_set_array> allocate_descriptor_set_array(::particle * p)
+      {
+
+         auto pdescriptorseta = p->øcreate_new < descriptor_set_array>();
+         m_descriptorset2a.add(pdescriptorseta);
+         return pdescriptorseta;
+
+      }
+
+      ::pointer_array<::gpu_vulkan::descriptor_set_array> m_descriptorset2a;
       ::pointer < context > m_pgpucontext;
       VkDescriptorPool m_vkdescriptorpool;
       int m_iIndex = -1;
@@ -116,8 +133,10 @@ namespace gpu_vulkan
       uint32_t m_uVariableDescriptorCount = 0;
    };
 
+   
+   
 
-} // namespace graphics3d_vulkan
+} // namespace gpu_vulkan
 
 
 

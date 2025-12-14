@@ -2262,13 +2262,15 @@ void main() {
 
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
-      pcontext->defer_bind(pshader);
+      auto ptextureTarget = pcommandbuffer->m_pgpurendertarget->current_texture(::gpu::current_frame());
 
-      pmodelbuffer->bind(pcommandbuffer);
+      pcommandbuffer->begin_render(pshader, ptextureTarget);
 
-      pmodelbuffer->draw(pcommandbuffer);
+      //pmodelbuffer->bind(pcommandbuffer);
 
-      pmodelbuffer->unbind(pcommandbuffer);
+      pcommandbuffer->draw(pmodelbuffer);
+//
+      //      pmodelbuffer->unbind(pcommandbuffer);
 
       pcontext->defer_unbind(pshader);
    }
@@ -5879,7 +5881,8 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       }
 
-      pcontext->defer_bind(m_pgpushaderTextOut);
+      //pcontext->defer_bind(m_pgpushaderTextOut);
+
       auto color = m_pbrush->m_color;
       //shader.use();
       ::cast<::gpu_opengl::shader>pshader = m_pgpushaderTextOut;
@@ -5985,7 +5988,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
                pmodelbuffer->initialize_gpu_context_object(pcontext);
 
-               pmodelbuffer->bind(pcommandbuffer);
+               pmodelbuffer->bind2(pcommandbuffer);
 
                pmodelbuffer->create_vertexes < ::graphics3d::sequence2_uv>(6);
 
@@ -6016,13 +6019,13 @@ color = vec4(c.r,c.g, c.b, c.a);
 
             //pcommandbuffer->draw(ch.m_ppixmap);
 
-            pmodelbuffer->bind(pcommandbuffer);
+            pmodelbuffer->bind2(pcommandbuffer);
 
             pmodelbuffer->m_pbufferVertex->bind();
 
             pmodelbuffer->set_vertexes(vertexes);
 
-            pmodelbuffer->draw(pcommandbuffer);
+            pmodelbuffer->draw2(pcommandbuffer);
 
             //pmodelbuffer->unbind(pcommandbuffer);
 

@@ -109,6 +109,15 @@ namespace gpu_vulkan
    }
 
    descriptor_pool::~descriptor_pool() {
+
+            for (auto &pdescriptorset: m_descriptorset2a)
+      {
+
+         pdescriptorset->clear();
+      }
+      m_descriptorset2a.clear();
+
+
       if (m_vkdescriptorpool != VK_NULL_HANDLE) {
          vkDestroyDescriptorPool(m_pgpucontext->logicalDevice(), m_vkdescriptorpool, nullptr);
          m_vkdescriptorpool = VK_NULL_HANDLE;
@@ -144,15 +153,24 @@ namespace gpu_vulkan
       return true;
    }
 
-   void descriptor_pool::freeDescriptors(::array<VkDescriptorSet> & descriptors) const {
+   void descriptor_pool::freeDescriptors(::pointer<descriptor_set_array> &&pdescriptorseta) const
+   {
+      auto p = ::transfer(pdescriptorseta);
       vkFreeDescriptorSets(
           m_pgpucontext->logicalDevice(),
           m_vkdescriptorpool,
-          static_cast<uint32_t>(descriptors.size()),
-          descriptors.data());
+                                             static_cast<uint32_t>(p->size()),
+          p->data());
    }
 
    void descriptor_pool::resetPool() {
+      for (auto & pdescriptorset : m_descriptorset2a)
+      {
+
+         pdescriptorset->clear();
+
+      }
+      m_descriptorset2a.clear();
       vkResetDescriptorPool(m_pgpucontext->logicalDevice(), m_vkdescriptorpool, 0);
    }
 
@@ -211,8 +229,9 @@ namespace gpu_vulkan
    descriptor_writer &descriptor_writer::writeImage(uint32_t binding, const VkDescriptorImageInfo *imageInfos,
                                                     uint32_t count)
    {
-      assert(m_setLayout.m_bindings.count(binding) == 1 && "Layout does not contain specified binding");
-      assert(m_setLayout.m_bindings[binding].descriptorCount >= count && "Too many image descriptors for binding");
+      ASSERT(m_setLayout.m_bindings.count(binding) == 1 && "Layout does not contain specified binding");
+      auto &bindingDescriptorCount = m_setLayout.m_bindings[binding].descriptorCount;
+      ASSERT(bindingDescriptorCount >= count && "Too many image descriptors for binding");
 
 
       m_uVariableDescriptorCount = count;

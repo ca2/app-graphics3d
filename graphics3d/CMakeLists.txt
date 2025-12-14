@@ -15,6 +15,13 @@ list(APPEND library_source
    #render_systems/skybox_render_system.h
    #render_systems/wavefront_obj_render_system.cpp
    #render_systems/wavefront_obj_render_system.h
+   render_system/gltf_render_system.cpp
+   render_system/gltf_render_system.h
+   render_system/pbr_with_ibl_render_system.cpp
+   render_system/pbr_with_ibl_render_system.h
+   render_system/scene_render_system.cpp
+   render_system/scene_render_system.h
+
    _.cpp
    _.h
    framework.cpp

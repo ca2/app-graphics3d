@@ -234,7 +234,9 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-      m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain, ptextureSrc);
+      //m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain, ptextureSrc);
+      m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain);
+      m_pshaderPresent->bind_source(pcommandbuffer, ptextureSrc, 0);
       //pgpucontext->m_pcontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
       //pgpucontext->m_pcontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
 

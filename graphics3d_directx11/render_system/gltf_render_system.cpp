@@ -774,364 +774,367 @@ namespace graphics3d_directx11
 
 void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscenebase)
    {
-      static bool warnedThisFrame = false;
 
-            auto pframe = ::gpu::current_frame();
-
-         //::cast<::gpu_directx11::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
-            ::cast<::graphics3d::scene> pscene = pscenebase;
-      
-         auto &scenerenderables = pscene->scene_renderables();
-      //   //// xxxxxxxxxxxxxxxxx
-      ::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
-
-      ::cast<::gpu_directx11::renderer> prenderer = pcontext->m_pgpurenderer;
-      
-   
-      ////// xxxxxxxxxxxxxxxxx
-      //auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-         //auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
-
-      for (auto &[id, pscenerenderable]: scenerenderables)
-         {
-
-            if (!pscenerenderable)
-            {
-
-               continue;
-            }
-
-            if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_ibl)
-            {
-
-               continue;
-            }
-
-
-            auto prenderable = pscenerenderable->renderable();
-            if (!prenderable)
-               continue;
-
-            auto erenderabletype = prenderable->m_erenderabletype;
-
-            if (erenderabletype != ::gpu::e_renderable_type_gltf)
-            {
-               continue; // not mine, skip
-            }
-            ::cast<::gpu_directx11::gltf::model> pgltfmodel = prenderable;
-
-            if (!pgltfmodel)
-               continue;
-
-            m_erendersystem = ::graphics3d::e_render_system_gltf_ibl;
-
-            pframe->m_pgpucommandbuffer->m_prendersystem = this;
-
-
-            // for (auto *node: pgltfmodel->m_linearNodes)
-            //{
-            //    if (!node->mesh)
-            //       continue;
-
-               //floating_matrix4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
-//              floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
-            //   //memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
-            //   //memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
-
-             //for (auto pmesh: pgltfmodel->m_mesha)
-               //{
-
-            //                     // Pick pipeline by alpha mode
-                  /*switch (pmesh->m_pmaterial->alphaMode)
-                  {
-                     case ::gpu_directx11::gltf::Material::ALPHAMODE_OPAQUE:
-                  */      
-            if (pgpucontext->defer_bind(m_pshaderOpaque))
-            {
-
-                  ::cast<::gpu_directx11::ibl::diffuse_irradiance_map> pirradiancemap = pscene->m_pibldiffuseirradiancemap;
-               ::cast<::gpu_directx11::ibl::specular_map> pspecularmap = pscene->m_piblspecularmap;
-
-               ::cast<::gpu_directx11::texture> ptextureIrradiance =
-                  pirradiancemap->m_ptextureDiffuseIrradianceCubemap;
-
-               ID3D11SamplerState *sampler = nullptr;
-               ID3D11ShaderResourceView *srv[3] = {};
-
-               if (ptextureIrradiance)
-               {
-                  if (!ptextureIrradiance->m_pshaderresourceview)
-                  {
-                     warning("irradiance shader resource view not set");
-
-                  }
-                  srv[0] = ptextureIrradiance->m_pshaderresourceview;
-                  //pcontext->m_pcontext->PSSetShaderResources(0, 1, srv);
-                  // glActiveTexture(GL_TEXTURE0 + e_gltf_texture_albedo);
-                  // shader.setInt("material.textureAlbedo", e_gltf_texture_albedo);
-                  // glBindTexture(GL_TEXTURE_2D, m_pmaterial->textureAlbedo->mId);
-                  if (!sampler && ptextureIrradiance->m_psamplerstate)
-                  {
-                     sampler = ptextureIrradiance->m_psamplerstate;
-                  }
-               }
-
-               ::cast<::gpu_directx11::texture> ptextureEnvMap =
-                  pspecularmap->m_ptexturePrefilteredEnvMapCubemap;
-
-               if (ptextureEnvMap)
-               {
-
-                  if (!ptextureEnvMap->m_pshaderresourceview)
-                  {
-                     
-                     warning("env map shader resource view not set");
-
-                  }
-
-                  srv[1] = ptextureEnvMap->m_pshaderresourceview;
-
-                  //pcontext->m_pcontext->PSSetShaderResources(1, 1, srv);
-
-                  if (!sampler && ptextureEnvMap->m_psamplerstate)
-                  {
-
-                     sampler = ptextureEnvMap->m_psamplerstate;
-
-                  }
-
-               }
-
-               ::cast<::gpu_directx11::texture> ptextureBrdf = pspecularmap->m_ptextureBrdfConvolutionMap;
-
-               if (ptextureBrdf)
-               {
-                  if (!ptextureBrdf->m_pshaderresourceview)
-                  {
-                     warning("brdf shader resource view not set");
-                  }
-
-                  srv[2] = ptextureBrdf->m_pshaderresourceview;
-                  //pcontext->m_pcontext->PSSetShaderResources(2, 1, srv);
-                  // glActiveTexture(GL_TEXTURE0 + e_gltf_texture_albedo);
-                  // shader.setInt("material.textureAlbedo", e_gltf_texture_albedo);
-                  // glBindTexture(GL_TEXTURE_2D, m_pmaterial->textureAlbedo->mId);
-                  if (!sampler && ptextureBrdf->m_psamplerstate)
-                  {
-                     sampler = ptextureBrdf->m_psamplerstate;
-                  }
-               }
-
-               if (sampler)
-               {
-                  
-                  ID3D11SamplerState *samplers[1] = {sampler};
-                  
-                  pcontext->m_pcontext->PSSetSamplers(0, 1, samplers);
-
-                  pcontext->m_pcontext->PSSetShaderResources(0, 3, srv);
-
-               }
-
-            }
-                       /* break;
-                     case ::gpu_directx11::gltf::Material::ALPHAMODE_MASK:
-                        pgpucontext->defer_bind(m_pshaderMask);
-                        break;
-                     case ::gpu_directx11::gltf::Material::ALPHAMODE_BLEND:
-                     default:
-                        pgpucontext->defer_bind(m_pshaderBlend);
-                        break;
-                  }*/
-            m_pscenerenderableCurrent = pscenerenderable;
-                              pgltfmodel->bind(pframe->m_pgpucommandbuffer);
-
-
-            //      ::cast<::gpu_directx11::shader> pshader = pgpucontext->m_pshaderBound;
-
-            //      auto prendersystem = this;
-
-                  //pshader->set_matrix4("modelMatrix", world);
-                  //pshader->set_matrix4("normalMatrix", normalMat);
-            //      bool bAlbedo = pgltfmodel->m_materials[0].baseColorTexture.is_set();
-            //      bAlbedo = bAlbedo && !m_bDisableAlbedo;
-            //      pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
-
-            //          floating_sequence3 seq3Albedo = {};
-            //      if (prendersystem->m_bForceDefaultAmbientOcclusionFactor)
-            //      {
-
-            //         seq3Albedo = prendersystem->m_seq3DefaultAlbedo;
-            //      }
-            //      else
-            //      {
-
-            //         seq3Albedo = ::floating_sequence3(pgltfmodel->m_materials[0].baseColorFactor.r,
-            //                                   pgltfmodel->m_materials[0].baseColorFactor.g,
-            //                                   pgltfmodel->m_materials[0].baseColorFactor.b);
-
-            //      }
-
-            //      pshader->set_sequence3("albedo", seq3Albedo);
-
-            //      bool bMetallicRoughness = pgltfmodel->m_materials[0].metallicRoughnessTexture.is_set();
-            //      bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
-            //      pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
-            //      bool bNormal = pgltfmodel->m_materials[0].normalTexture.is_set();
-
-
-            //                  float fMetallic = 0.0f;
-            //      if (prendersystem->m_bForceDefaultMetallicFactor)
-            //      {
-
-            //         fMetallic = prendersystem->m_fDefaultMetallicFactor;
-            //      }
-            //      else
-            //      {
-
-            //         fMetallic = pgltfmodel->m_materials[0].metallicFactor;
-            //      }
-            //      float fRoughness = 0.0f;
-            //      if (prendersystem->m_bForceDefaultRoughnessFactor)
-            //      {
-
-            //         fRoughness = prendersystem->m_fDefaultRoughnessFactor;
-            //      }
-            //      else
-            //      {
-
-            //         fRoughness = pgltfmodel->m_materials[0].roughnessFactor;
-            //      }
-            //      pshader->set_float("metallic", fMetallic);
-            //      pshader->set_float("roughness", fRoughness);
-
-            //      bNormal = bNormal && !m_bDisableNormal;
-            //      pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
-            //      bool bAmbientOcclusion = pgltfmodel->m_materials[0].occlusionTexture.is_set();
-            //      bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
-            //      pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
-
-
-            //                  float fAmbientOcclusion = 0.0f;
-            //      if (prendersystem->m_bForceDefaultAmbientOcclusionFactor)
-            //      {
-
-            //         fAmbientOcclusion = prendersystem->m_fDefaultAmbientOcclusionFactor;
-            //      }
-            //      else
-            //      {
-
-            //         //fAmbientOcclusion = pgltfmodel->m_materials[0].occlusionTexture->m_fAmbientOcclusion;
-            //      }
-            //      pshader->set_float("ambientOcclusion", fAmbientOcclusion);
-
-            //      floating_sequence3 seq3Emission = {};
-            //      if (prendersystem->m_bForceDefaultEmission)
-            //      {
-
-            //         seq3Emission = prendersystem->m_seq3DefaultEmission;
-            //      }
-            //      else
-            //      {
-
-            //         //seq3Emission = pgltfmodel->m_materials[0].m_seq3Emissive;
-            //      }
-            //      pshader->set_sequence3("emissive", seq3Emission);
-
-
-            //      bool bEmissive = pgltfmodel->m_materials[0].emissiveTexture.is_set();
-            //      bEmissive = bEmissive && !m_bDisableEmissive;
-            //      pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
-
-            //      //auto metallicFactor = pgltfmodel->m_materials[0].metallicFactor;
-            //      //if (m_bForceDefaultMetallicFactor)
-            //      //   metallicFactor = m_fDefaultMetallicFactor;
-            //      //pshader->set_float("metallic", metallicFactor);
-            //      //auto roughnessFactor = pgltfmodel->m_materials[0].roughnessFactor;
-            //      //if (m_bForceDefaultRoughnessFactor)
-            //      //   roughnessFactor = m_fDefaultRoughnessFactor;
-            //      //pshader->set_float("roughness", roughnessFactor);
-            //      //pshader->set_float("ambientOcclusion", pgltfmodel->m_materials[0].am);
-            //      pshader->push_properties(pcommandbuffer);
-
-
-            //      //// --- Bind sets 0 & 1 (global + node UBO) ---
-            //      //std::array<VkDescriptorSet, 2> sets01 = {
-            //      //   frame.globalDescriptorSet, // set 0
-            //      //   node->mesh->uniformBuffer.descriptorSet // set 1
-            //      //};
-            //      //// xxxxxxxxxxxxxxxxx
-            //      ////// --- Bind sets 0 & 1 (global + node UBO) ---
-            //      // std::array<VkDescriptorSet, 2> sets01 = {
-            //      //   vkdescriptorsetGlobal, // set 0
-            //      //    node->mesh->uniformBuffer.descriptorSet // set 1
-            //      // };
-            //      //vkCmdBindDescriptorSets(
-            //      //   pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-            //      //   m_pipelineLayout, 0,
-            //      //   (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
-            //       //// --- Bind sets 0 (global) ---
-            //      // node UBO transformed in Push Constants and set above
-            //       std::array<VkDescriptorSet, 1> sets01 = {
-            //          vkdescriptorsetGlobal // set 0
-            //       };
-            //       vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-            //                               pshader->m_ppipeline->m_vkpipelinelayout, 0, (uint32_t)sets01.size(),
-            //                               sets01.data(), 0, nullptr);
-
-            //      //// --- Bind our PBR set (set = 2) ---
-            //       // --- Bind our PBR set (set = 1) ---
-            //      if (pgltfmodel->m_materials.size() <= 0)
-            //      {
-
-            //         if (!warnedThisFrame)
-            //         { /*spdlog::warn("PBR set null");*/
-            //            warnedThisFrame = true;
-            //         }
-            //         continue;
-            //      }
-
-            //                     //// --- Bind IBL set (set = 3) ---
-            //      // --- Bind IBL set (set = 2) ---
-            //      VkDescriptorSet iblSet =
-            //         m_vkdescriptorsetaIbl[pcontext->m_pgpurenderer->m_pgpurendertarget->get_frame_index()];
-            //      if (iblSet == VK_NULL_HANDLE)
-            //      {
-            //         continue;
-            //      }
-            //      vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-            //                              // m_pipelineLayout, 3, 1,
-            //                              pshader->m_ppipeline->m_vkpipelinelayout, 1, 1, &iblSet, 0, nullptr);
-
-
-            //       VkDescriptorSet pbrSet =
-            //         pgltfmodel->m_materials[0].m_descriptorseta[pframe->m_pgpucommandbuffer->m_iFrameIndex];
-            //      if (pbrSet == VK_NULL_HANDLE)
-            //      {
-            //         if (!warnedThisFrame)
-            //         { /*spdlog::warn("PBR set null");*/
-            //            warnedThisFrame = true;
-            //         }
-            //         continue;
-            //      }
-            //      vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-            //                              //m_pipelineLayout, 2, 1,
-            //                              pshader->m_ppipeline->m_vkpipelinelayout, 2, 1,
-            //                              &pbrSet, 0, nullptr);
-
-            //      pgltfmodel->gltfDraw(pcommandbuffer->m_vkcommandbuffer,
-            //         pframe->m_pgpucommandbuffer->m_iFrameIndex,::gpu_directx11::gltf::RenderNone,
-            //         pshader->m_ppipeline->m_vkpipelinelayout, 2);
-            //      warnedThisFrame = false;
-         //}
-         //   }
-         //}
-
-			pgltfmodel->draw(pframe->m_pgpucommandbuffer);
-
-            pgltfmodel->unbind(pframe->m_pgpucommandbuffer);
-
-      }
+   ::graphics3d::gltf_render_system::on_render(pgpucontext, pscenebase);
+
+//      static bool warnedThisFrame = false;
+//
+//            auto pframe = ::gpu::current_frame();
+//
+//         //::cast<::gpu_directx11::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+//            ::cast<::graphics3d::scene> pscene = pscenebase;
+//      
+//         auto &scenerenderables = pscene->scene_renderables();
+//      //   //// xxxxxxxxxxxxxxxxx
+//      ::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
+//
+//      ::cast<::gpu_directx11::renderer> prenderer = pcontext->m_pgpurenderer;
+//      
+//   
+//      ////// xxxxxxxxxxxxxxxxx
+//      //auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+//         //auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer);
+//
+//      for (auto &[id, pscenerenderable]: scenerenderables)
+//         {
+//
+//            if (!pscenerenderable)
+//            {
+//
+//               continue;
+//            }
+//
+//            if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_ibl)
+//            {
+//
+//               continue;
+//            }
+//
+//
+//            auto prenderable = pscenerenderable->renderable();
+//            if (!prenderable)
+//               continue;
+//
+//            auto erenderabletype = prenderable->m_erenderabletype;
+//
+//            if (erenderabletype != ::gpu::e_renderable_type_gltf)
+//            {
+//               continue; // not mine, skip
+//            }
+//            ::cast<::gpu_directx11::gltf::model> pgltfmodel = prenderable;
+//
+//            if (!pgltfmodel)
+//               continue;
+//
+//            m_erendersystem = ::graphics3d::e_render_system_gltf_ibl;
+//
+//            pframe->m_pgpucommandbuffer->m_prendersystem = this;
+//
+//
+//            // for (auto *node: pgltfmodel->m_linearNodes)
+//            //{
+//            //    if (!node->mesh)
+//            //       continue;
+//
+//               //floating_matrix4 world = pscenerenderable->transform().getMatrix() * node->getMatrix();
+////              floating_matrix4 normalMat = glm::transpose(glm::inverse(world));
+//            //   //memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
+//            //   //memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));
+//
+//             //for (auto pmesh: pgltfmodel->m_mesha)
+//               //{
+//
+//            //                     // Pick pipeline by alpha mode
+//                  /*switch (pmesh->m_pmaterial->alphaMode)
+//                  {
+//                     case ::gpu_directx11::gltf::Material::ALPHAMODE_OPAQUE:
+//                  */      
+//            if (pgpucontext->defer_bind(m_pshaderOpaque))
+//            {
+//
+//                  ::cast<::gpu_directx11::ibl::diffuse_irradiance_map> pirradiancemap = pscene->m_pibldiffuseirradiancemap;
+//               ::cast<::gpu_directx11::ibl::specular_map> pspecularmap = pscene->m_piblspecularmap;
+//
+//               ::cast<::gpu_directx11::texture> ptextureIrradiance =
+//                  pirradiancemap->m_ptextureDiffuseIrradianceCubemap;
+//
+//               ID3D11SamplerState *sampler = nullptr;
+//               ID3D11ShaderResourceView *srv[3] = {};
+//
+//               if (ptextureIrradiance)
+//               {
+//                  if (!ptextureIrradiance->m_pshaderresourceview)
+//                  {
+//                     warning("irradiance shader resource view not set");
+//
+//                  }
+//                  srv[0] = ptextureIrradiance->m_pshaderresourceview;
+//                  //pcontext->m_pcontext->PSSetShaderResources(0, 1, srv);
+//                  // glActiveTexture(GL_TEXTURE0 + e_gltf_texture_albedo);
+//                  // shader.setInt("material.textureAlbedo", e_gltf_texture_albedo);
+//                  // glBindTexture(GL_TEXTURE_2D, m_pmaterial->textureAlbedo->mId);
+//                  if (!sampler && ptextureIrradiance->m_psamplerstate)
+//                  {
+//                     sampler = ptextureIrradiance->m_psamplerstate;
+//                  }
+//               }
+//
+//               ::cast<::gpu_directx11::texture> ptextureEnvMap =
+//                  pspecularmap->m_ptexturePrefilteredEnvMapCubemap;
+//
+//               if (ptextureEnvMap)
+//               {
+//
+//                  if (!ptextureEnvMap->m_pshaderresourceview)
+//                  {
+//                     
+//                     warning("env map shader resource view not set");
+//
+//                  }
+//
+//                  srv[1] = ptextureEnvMap->m_pshaderresourceview;
+//
+//                  //pcontext->m_pcontext->PSSetShaderResources(1, 1, srv);
+//
+//                  if (!sampler && ptextureEnvMap->m_psamplerstate)
+//                  {
+//
+//                     sampler = ptextureEnvMap->m_psamplerstate;
+//
+//                  }
+//
+//               }
+//
+//               ::cast<::gpu_directx11::texture> ptextureBrdf = pspecularmap->m_ptextureBrdfConvolutionMap;
+//
+//               if (ptextureBrdf)
+//               {
+//                  if (!ptextureBrdf->m_pshaderresourceview)
+//                  {
+//                     warning("brdf shader resource view not set");
+//                  }
+//
+//                  srv[2] = ptextureBrdf->m_pshaderresourceview;
+//                  //pcontext->m_pcontext->PSSetShaderResources(2, 1, srv);
+//                  // glActiveTexture(GL_TEXTURE0 + e_gltf_texture_albedo);
+//                  // shader.setInt("material.textureAlbedo", e_gltf_texture_albedo);
+//                  // glBindTexture(GL_TEXTURE_2D, m_pmaterial->textureAlbedo->mId);
+//                  if (!sampler && ptextureBrdf->m_psamplerstate)
+//                  {
+//                     sampler = ptextureBrdf->m_psamplerstate;
+//                  }
+//               }
+//
+//               if (sampler)
+//               {
+//                  
+//                  ID3D11SamplerState *samplers[1] = {sampler};
+//                  
+//                  pcontext->m_pcontext->PSSetSamplers(0, 1, samplers);
+//
+//                  pcontext->m_pcontext->PSSetShaderResources(0, 3, srv);
+//
+//               }
+//
+//            }
+//                       /* break;
+//                     case ::gpu_directx11::gltf::Material::ALPHAMODE_MASK:
+//                        pgpucontext->defer_bind(m_pshaderMask);
+//                        break;
+//                     case ::gpu_directx11::gltf::Material::ALPHAMODE_BLEND:
+//                     default:
+//                        pgpucontext->defer_bind(m_pshaderBlend);
+//                        break;
+//                  }*/
+//            m_pscenerenderableCurrent = pscenerenderable;
+//                              pgltfmodel->bind(pframe->m_pgpucommandbuffer);
+//
+//
+//            //      ::cast<::gpu_directx11::shader> pshader = pgpucontext->m_pshaderBound;
+//
+//            //      auto prendersystem = this;
+//
+//                  //pshader->set_matrix4("modelMatrix", world);
+//                  //pshader->set_matrix4("normalMatrix", normalMat);
+//            //      bool bAlbedo = pgltfmodel->m_materials[0].baseColorTexture.is_set();
+//            //      bAlbedo = bAlbedo && !m_bDisableAlbedo;
+//            //      pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
+//
+//            //          floating_sequence3 seq3Albedo = {};
+//            //      if (prendersystem->m_bForceDefaultAmbientOcclusionFactor)
+//            //      {
+//
+//            //         seq3Albedo = prendersystem->m_seq3DefaultAlbedo;
+//            //      }
+//            //      else
+//            //      {
+//
+//            //         seq3Albedo = ::floating_sequence3(pgltfmodel->m_materials[0].baseColorFactor.r,
+//            //                                   pgltfmodel->m_materials[0].baseColorFactor.g,
+//            //                                   pgltfmodel->m_materials[0].baseColorFactor.b);
+//
+//            //      }
+//
+//            //      pshader->set_sequence3("albedo", seq3Albedo);
+//
+//            //      bool bMetallicRoughness = pgltfmodel->m_materials[0].metallicRoughnessTexture.is_set();
+//            //      bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
+//            //      pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
+//            //      bool bNormal = pgltfmodel->m_materials[0].normalTexture.is_set();
+//
+//
+//            //                  float fMetallic = 0.0f;
+//            //      if (prendersystem->m_bForceDefaultMetallicFactor)
+//            //      {
+//
+//            //         fMetallic = prendersystem->m_fDefaultMetallicFactor;
+//            //      }
+//            //      else
+//            //      {
+//
+//            //         fMetallic = pgltfmodel->m_materials[0].metallicFactor;
+//            //      }
+//            //      float fRoughness = 0.0f;
+//            //      if (prendersystem->m_bForceDefaultRoughnessFactor)
+//            //      {
+//
+//            //         fRoughness = prendersystem->m_fDefaultRoughnessFactor;
+//            //      }
+//            //      else
+//            //      {
+//
+//            //         fRoughness = pgltfmodel->m_materials[0].roughnessFactor;
+//            //      }
+//            //      pshader->set_float("metallic", fMetallic);
+//            //      pshader->set_float("roughness", fRoughness);
+//
+//            //      bNormal = bNormal && !m_bDisableNormal;
+//            //      pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
+//            //      bool bAmbientOcclusion = pgltfmodel->m_materials[0].occlusionTexture.is_set();
+//            //      bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
+//            //      pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
+//
+//
+//            //                  float fAmbientOcclusion = 0.0f;
+//            //      if (prendersystem->m_bForceDefaultAmbientOcclusionFactor)
+//            //      {
+//
+//            //         fAmbientOcclusion = prendersystem->m_fDefaultAmbientOcclusionFactor;
+//            //      }
+//            //      else
+//            //      {
+//
+//            //         //fAmbientOcclusion = pgltfmodel->m_materials[0].occlusionTexture->m_fAmbientOcclusion;
+//            //      }
+//            //      pshader->set_float("ambientOcclusion", fAmbientOcclusion);
+//
+//            //      floating_sequence3 seq3Emission = {};
+//            //      if (prendersystem->m_bForceDefaultEmission)
+//            //      {
+//
+//            //         seq3Emission = prendersystem->m_seq3DefaultEmission;
+//            //      }
+//            //      else
+//            //      {
+//
+//            //         //seq3Emission = pgltfmodel->m_materials[0].m_seq3Emissive;
+//            //      }
+//            //      pshader->set_sequence3("emissive", seq3Emission);
+//
+//
+//            //      bool bEmissive = pgltfmodel->m_materials[0].emissiveTexture.is_set();
+//            //      bEmissive = bEmissive && !m_bDisableEmissive;
+//            //      pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
+//
+//            //      //auto metallicFactor = pgltfmodel->m_materials[0].metallicFactor;
+//            //      //if (m_bForceDefaultMetallicFactor)
+//            //      //   metallicFactor = m_fDefaultMetallicFactor;
+//            //      //pshader->set_float("metallic", metallicFactor);
+//            //      //auto roughnessFactor = pgltfmodel->m_materials[0].roughnessFactor;
+//            //      //if (m_bForceDefaultRoughnessFactor)
+//            //      //   roughnessFactor = m_fDefaultRoughnessFactor;
+//            //      //pshader->set_float("roughness", roughnessFactor);
+//            //      //pshader->set_float("ambientOcclusion", pgltfmodel->m_materials[0].am);
+//            //      pshader->push_properties(pcommandbuffer);
+//
+//
+//            //      //// --- Bind sets 0 & 1 (global + node UBO) ---
+//            //      //std::array<VkDescriptorSet, 2> sets01 = {
+//            //      //   frame.globalDescriptorSet, // set 0
+//            //      //   node->mesh->uniformBuffer.descriptorSet // set 1
+//            //      //};
+//            //      //// xxxxxxxxxxxxxxxxx
+//            //      ////// --- Bind sets 0 & 1 (global + node UBO) ---
+//            //      // std::array<VkDescriptorSet, 2> sets01 = {
+//            //      //   vkdescriptorsetGlobal, // set 0
+//            //      //    node->mesh->uniformBuffer.descriptorSet // set 1
+//            //      // };
+//            //      //vkCmdBindDescriptorSets(
+//            //      //   pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+//            //      //   m_pipelineLayout, 0,
+//            //      //   (uint32_t)sets01.size(), sets01.data(), 0, nullptr);
+//            //       //// --- Bind sets 0 (global) ---
+//            //      // node UBO transformed in Push Constants and set above
+//            //       std::array<VkDescriptorSet, 1> sets01 = {
+//            //          vkdescriptorsetGlobal // set 0
+//            //       };
+//            //       vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+//            //                               pshader->m_ppipeline->m_vkpipelinelayout, 0, (uint32_t)sets01.size(),
+//            //                               sets01.data(), 0, nullptr);
+//
+//            //      //// --- Bind our PBR set (set = 2) ---
+//            //       // --- Bind our PBR set (set = 1) ---
+//            //      if (pgltfmodel->m_materials.size() <= 0)
+//            //      {
+//
+//            //         if (!warnedThisFrame)
+//            //         { /*spdlog::warn("PBR set null");*/
+//            //            warnedThisFrame = true;
+//            //         }
+//            //         continue;
+//            //      }
+//
+//            //                     //// --- Bind IBL set (set = 3) ---
+//            //      // --- Bind IBL set (set = 2) ---
+//            //      VkDescriptorSet iblSet =
+//            //         m_vkdescriptorsetaIbl[pcontext->m_pgpurenderer->m_pgpurendertarget->get_frame_index()];
+//            //      if (iblSet == VK_NULL_HANDLE)
+//            //      {
+//            //         continue;
+//            //      }
+//            //      vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+//            //                              // m_pipelineLayout, 3, 1,
+//            //                              pshader->m_ppipeline->m_vkpipelinelayout, 1, 1, &iblSet, 0, nullptr);
+//
+//
+//            //       VkDescriptorSet pbrSet =
+//            //         pgltfmodel->m_materials[0].m_descriptorseta[pframe->m_pgpucommandbuffer->m_iFrameIndex];
+//            //      if (pbrSet == VK_NULL_HANDLE)
+//            //      {
+//            //         if (!warnedThisFrame)
+//            //         { /*spdlog::warn("PBR set null");*/
+//            //            warnedThisFrame = true;
+//            //         }
+//            //         continue;
+//            //      }
+//            //      vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+//            //                              //m_pipelineLayout, 2, 1,
+//            //                              pshader->m_ppipeline->m_vkpipelinelayout, 2, 1,
+//            //                              &pbrSet, 0, nullptr);
+//
+//            //      pgltfmodel->gltfDraw(pcommandbuffer->m_vkcommandbuffer,
+//            //         pframe->m_pgpucommandbuffer->m_iFrameIndex,::gpu_directx11::gltf::RenderNone,
+//            //         pshader->m_ppipeline->m_vkpipelinelayout, 2);
+//            //      warnedThisFrame = false;
+//         //}
+//         //   }
+//         //}
+//
+//			pgltfmodel->draw(pframe->m_pgpucommandbuffer);
+//
+//            pgltfmodel->unbind(pframe->m_pgpucommandbuffer);
+//
+//      }
    }
 
 } // namespace graphics3d_directx11

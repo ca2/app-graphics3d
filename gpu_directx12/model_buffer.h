@@ -94,9 +94,9 @@ namespace gpu_directx12
 
       ::gpu::command_buffer* _defer_get_loading_command_buffer() override;
 
-      void bind(::gpu::command_buffer* pcommandbuffer) override;
+      void bind2(::gpu::command_buffer* pcommandbuffer) override;
 
-      void draw(::gpu::command_buffer* pcommandbuffer) override;
+      void draw2(::gpu::command_buffer* pcommandbuffer) override;
 
 
       //void createVertexBuffers(const ::array<::graphics3d::Vertex>& vertexes);

@@ -4,6 +4,7 @@
 
 
 #include "bred/gpu/texture.h"
+#include "app-graphics3d/gpu_vulkan/descriptors.h"
 
 namespace tinygltf
 {
@@ -60,7 +61,29 @@ namespace gpu_vulkan
 
    public:
 
-      
+      class _001OnAfterEndFrameItem :
+         virtual public ::particle
+      {
+      public:
+         ::pointer<texture> m_ptexture;
+         ::pointer<::gpu_vulkan::context> m_pcontext;
+         ::pointer<buffer> m_pbufferStaging;
+         ::int_rectangle m_rectangle;
+
+      };
+      class _001OnAfterEndFrame : virtual public ::particle
+      {
+      public:
+         ::pointer_array<_001OnAfterEndFrameItem> m_itema;
+      };
+      class _001OnNextFrameStart : virtual public ::particle
+      {
+      public:
+         ::pointer_array<texture> m_texturea;
+      };
+      ::pointer<_001OnAfterEndFrame> m_p_001OnAfterEndFrame;
+      ::pointer<_001OnNextFrameStart> m_p_001OnNextFrameStart;
+
       struct render_pass_t
       {
 
@@ -167,13 +190,7 @@ namespace gpu_vulkan
 
       };
 
-      struct shader_t
-      {
 
-         bool m_bNew = true;
-         VkDescriptorSet m_vkdescriptorset = VK_NULL_HANDLE;
-
-      };
 
 
       bool                       m_bOwnImage;
@@ -184,7 +201,7 @@ namespace gpu_vulkan
       //int                        m_iMipCount;
       /// Does every texture needs its own sampler?
       VkSampler                  m_vksampler3;
-      VkDescriptorImageInfo      m_descriptor3;
+      //VkDescriptorImageInfo      m_descriptor3;
       VkSampler                  m_vksamplerDedicated;
       //VkImage                    m_vkimageDepth;
       //VkDeviceMemory             m_vkdevicememoryDepth;
@@ -192,7 +209,7 @@ namespace gpu_vulkan
       //VkImageView                m_vkimageviewDepth;
       ::pointer < texture_synchronization >           m_ptexturesynchronization;
       map<VkRenderPass, VkFramebuffer >             m_mapFramebuffer;
-      map<::gpu_vulkan::shader *, shader_t >             m_mapShader;
+      map<::gpu_vulkan::shader *, ::pointer<::gpu_vulkan::descriptor_set_array>> m_mapShaderDescriptorSetArray;
       //map<::gpu_vulkan::render_target*, texture_synchronization > m_mapSynchronization;
       ::pointer<class cube> m_pcube;
 
@@ -255,10 +272,13 @@ namespace gpu_vulkan
 
       VkImageView get_image_view(int iIndex = -1);
 
+      VkSampler get_vk_sampler();
+
       VkImage get_depth_image();
 
       VkImageView get_depth_image_view();
 
+      VkDescriptorImageInfo descriptor_info();
 
       VkDescriptorSet descriptor_set(::gpu_vulkan::shader* pshader, ::gpu::command_buffer * pgpucommandbuffer);
 
@@ -303,7 +323,7 @@ namespace gpu_vulkan
          VkImageLayout imageLayout);
 
 
-      void UpdateDescriptor();
+      //void UpdateDescriptor();
 
       bool is_in_shader_sampling_state() override;
 

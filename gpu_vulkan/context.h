@@ -55,7 +55,7 @@ namespace gpu_vulkan
       string _001GetIntroFragment() override;
 
       void draw() override;
-      void start_drawing() override;
+      //void start_drawing() override;
       void global_transform() override;
       void render() override;
 
@@ -227,6 +227,9 @@ namespace gpu_vulkan
       void engine_on_frame_context_initialization() override;
 
       void onBeforePreloadGlobalAssets() override;
+
+
+      ::pointer<::gpu::texture> create_empty_texture() override;
 
 
       //void copy(::gpu::texture* ptexture) override;

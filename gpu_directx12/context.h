@@ -183,7 +183,7 @@ namespace gpu_directx12
       void end_debug_happening(::gpu::command_buffer * pgpucommandbuffer) override;
 
       void draw() override;
-      void start_drawing() override;
+      //void start_drawing() override;
       void global_transform() override;
       void render() override;
       void on_start_layer(::gpu::layer* player);

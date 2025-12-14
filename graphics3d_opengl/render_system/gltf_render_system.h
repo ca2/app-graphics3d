@@ -5,7 +5,7 @@
 
 // #include "SceneFoundry/graphics3d/render_system.h"
 
-#include "bred/graphics3d/render_systems/gltf_render_system.h"
+#include "app-graphics3d/graphics3d/render_system/gltf_render_system.h"
 #include "app-graphics3d/graphics3d_opengl/render_system.h"
 
 // #include "SceneFoundry/graphics3d/asset_provider_i.h"
@@ -34,9 +34,6 @@ namespace graphics3d_opengl
    {
    public:
 
-       const int TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP = 10;
-      const int TEXTURE_UNIT_PREFILTERED_ENV_MAP = 11;
-      const int TEXTURE_UNIT_BRDF_CONVOLUTION_MAP = 12;
 
       enum BloomDirection
       {

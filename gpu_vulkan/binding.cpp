@@ -5,6 +5,7 @@
 #include "descriptors.h"
 #include "render_target.h"
 #include "renderer.h"
+#include "app-graphics3d/gpu_vulkan/texture.h"
 
 
 namespace gpu_vulkan
@@ -116,7 +117,7 @@ namespace gpu_vulkan
 
 
    void binding_set::defer_create_update_descriptor_set(::gpu::command_buffer * pgpucommandbuffer,
-                                                        ::array_base<VkDescriptorSet> &descriptorseta,
+                                                        ::array<VkDescriptorSet> &descriptorseta,
                                                         ::array_base<VkDescriptorBufferInfo> &bufferinfoa)
    {
 
@@ -131,8 +132,57 @@ namespace gpu_vulkan
    }
 
 
+   ::array<VkDescriptorSet> & binding_slot_set::descriptor_set(::gpu::command_buffer * pgpucommandbuffer)
+   {
+
+      if (!m_pvkdescriptorseta)
+      {
+
+         øconstruct_new(m_pvkdescriptorseta);
+
+         auto iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
+
+         ::cast<::gpu_vulkan::binding_set> pbindingset = m_pbindingset;
+
+         for (int i = 0; i < iFrameCount; i++)
+         {
+
+            auto pdescriptosetlayout = pbindingset->descriptor_set_layout(pgpucommandbuffer);
+
+            auto vkdescriptorwriter = descriptor_writer(*pdescriptosetlayout, *pbindingset->m_pdescriptorpool);
+
+            ::array_base<VkDescriptorImageInfo> vkdescriptorimageinfoa;
+
+            auto iSlotCount = this->size();
+
+            vkdescriptorimageinfoa.set_size(iSlotCount);
+
+            for (int iSlot = 0; iSlot < this->size(); iSlot++)
+            {
+
+               auto &vkdescriptorimageinfo = vkdescriptorimageinfoa[iSlot];
+
+               ::cast<::gpu_vulkan::texture> ptexture = this->element_at(iSlot).m_ptexture;
+
+               vkdescriptorimageinfo = ptexture->descriptor_info();
+
+               vkdescriptorwriter.writeImage(0, &vkdescriptorimageinfo);
+
+            }
+               
+            vkdescriptorwriter.build(m_pvkdescriptorseta->ø(i));
+
+         }
+
+      }
+
+      return *m_pvkdescriptorseta;
+
+   }
+
+
    void binding_set::defer_create_update_descriptor_set(::gpu::command_buffer * pgpucommandbuffer,
-                                                     ::array_base<VkDescriptorSet> & descriptorseta)
+                                                     ::array<VkDescriptorSet> & descriptorseta)
 
    {
 

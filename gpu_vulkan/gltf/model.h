@@ -28,7 +28,7 @@ namespace gpu_vulkan
       {
       public:
 
-                  ::pointer<::gpu_vulkan::gltf::Model> m_pgltfmodel;
+                  //::pointer<::gpu_vulkan::gltf::Model> m_pgltfmodel;
 
          // // data
          // ::pointer_array<mesh> m_mesha;

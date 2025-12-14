@@ -110,7 +110,7 @@
 //
 //    descriptor_pool::~descriptor_pool() {
 //        if (descriptorPool != VK_NULL_HANDLE) {
-//            vkDestroyDescriptorPool(m_pgpucontext->logicalDevice(), descriptorPool, nullptr);
+//            aaavkDestroyDescriptorPool(m_pgpucontext->logicalDevice(), descriptorPool, nullptr);
 //            descriptorPool = VK_NULL_HANDLE;
 //        }
 //    }
@@ -132,7 +132,7 @@
 //    }
 //
 //    void descriptor_pool::freeDescriptors(::array<VkDescriptorSet>& descriptors) const {
-//        vkFreeDescriptorSets(
+//        aaavkFreeDescriptorSets(
 //            m_pgpucontext->logicalDevice(),
 //            descriptorPool,
 //            static_cast<uint32_t>(descriptors.size()),
@@ -140,7 +140,7 @@
 //    }
 //
 //    void descriptor_pool::resetPool() {
-//        vkResetDescriptorPool(m_pgpucontext->logicalDevice(), descriptorPool, 0);
+//        aaavkResetDescriptorPool(m_pgpucontext->logicalDevice(), descriptorPool, 0);
 //    }
 //
 //    // *************** Descriptor Writer *********************

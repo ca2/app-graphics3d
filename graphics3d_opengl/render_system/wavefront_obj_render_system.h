@@ -3,7 +3,7 @@
 #pragma once
 
 
-#include "bred/graphics3d/render_systems/wavefront_obj_render_system.h"
+#include "bred/graphics3d/render_system/wavefront_obj_render_system.h"
 
 
 namespace graphics3d_opengl

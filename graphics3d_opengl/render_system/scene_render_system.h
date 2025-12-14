@@ -2,15 +2,16 @@
 
 
 #include "app-graphics3d/graphics3d_opengl/render_system.h"
-#include "bred/graphics3d/render_systems/scene_render_system.h"
+#include "app-graphics3d/graphics3d/render_system/scene_render_system.h"
 
 
 namespace graphics3d_opengl
 {
 
 
-   class CLASS_DECL_GRAPHICS3D_OPENGL scene_render_system : virtual public ::graphics3d::scene_render_system,
-                               virtual public ::graphics3d_opengl::render_system
+   class CLASS_DECL_GRAPHICS3D_OPENGL scene_render_system :
+      virtual public ::graphics3d::scene_render_system,
+      virtual public ::graphics3d_opengl::render_system
    {
    public:
       const int TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP = 10;

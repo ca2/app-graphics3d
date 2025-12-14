@@ -3,12 +3,13 @@
 #include "framework.h"
 #include "mesh.h"
 #include "bred/gltf/vertex.h"
+#include "bred/gpu/model_buffer.h"
 #include "gpu_vulkan/texture.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context.h"
 #include "bred/gpu/render_target.h"
 #include "bred/gpu/renderer.h"
-
+#include "gpu_vulkan/command_buffer.h"
 //#include <glad/glad.h>
 
 
@@ -47,8 +48,9 @@ namespace gpu_vulkan
       //}
 
 
-      void mesh::draw(::gpu::command_buffer *pcommandbuffer)
+      void mesh::draw2(::gpu::command_buffer *pgpucommandbuffer)
       {
+         m_pmodelbuffer->bind2(pgpucommandbuffer);
          //// // albedo
          //// shader.setBool("material.useTextureAlbedo", m_pmaterial->useTextureAlbedo);
          //// shader.setVec3("material.albedo", m_pmaterial->albedo);
@@ -253,12 +255,56 @@ namespace gpu_vulkan
          //glBindVertexArray(m_uVAO);
          //glDrawElements(GL_TRIANGLES, m_indexa.size(), GL_UNSIGNED_INT, 0);
          //glBindVertexArray(0);
+         //bool skip = false;
+         //auto pmaterial = m_pmaterial;
+         //if (renderFlags & RenderFlags::RenderOpaqueNodes)
+         //{
+         //   skip = (pmaterial->alphaMode != Material::ALPHAMODE_OPAQUE);
+         //}
+         //if (renderFlags & RenderFlags::RenderAlphaMaskedNodes)
+         //{
+         //   skip = (pmaterial->alphaMode != Material::ALPHAMODE_MASK);
+         //}
+         //if (renderFlags & RenderFlags::RenderAlphaBlendedNodes)
+         //{
+         //   skip = (pmaterial->alphaMode != Material::ALPHAMODE_BLEND);
+         //}
+         //if (!skip)
+         {
+
+            // if (::is_set(pbindingset.m_pbindingset))
+            //{
+
+            //   auto &descriptorSet = pmaterial->descriptor_set_array(this, pbindingset.m_pbindingset)[uFrameIndex];
+
+            //   vkCmdBindDescriptorSets(
+            //      commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
+            //                           pbindingset.m_iSet,
+            //                           1, &descriptorSet, 0, nullptr);
+            //}
+            // else if (renderFlags & RenderFlags::BindJustSceneImages)
+            //{
+            //   auto &descriptorSet = pmaterial->descriptor_set_array_scene_gltf(this)[uFrameIndex];
+            //   vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, bindImageSet,
+            //                           1, &descriptorSet, 0, nullptr);
+            //}
+            auto pshader = pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pshaderBound;
+            //pshader->binding_slot_set(2, m_pmaterial->m_pbindingset);
+            //pshader->on_before_draw(pgpucommandbuffer);
+            ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
+            //::cast<::gpu::vulkan> pcommandbuffer = pgpucommandbuffer;
+            //vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, m_indexa.size(), 1, primitive->firstIndex, 0, 0);
+            vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, m_modeldata.m_indexes.size(), 1, 0, 0, 0);
+         }
 
       }
 
 
-      void mesh::init()
+      void mesh::on_initialize_gpu_gltf_mesh()
       {
+
+         ::gpu::gltf::mesh::on_initialize_gpu_gltf_mesh();
+
          // // create our data structures
          // glGenVertexArrays(1, &mVAO);
          // glGenBuffers(1, &mVBO);

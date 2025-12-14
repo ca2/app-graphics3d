@@ -104,7 +104,7 @@ namespace gpu_vulkan
          ::pointer<::gpu_vulkan::texture> diffuseTexture;
 
          //::pointer<::gpu_vulkan::binding_set> m_pbindingset;
-			::map_base < ::gpu::binding_set * , ::array_base < VkDescriptorSet  > >m_mapdescriptorset;
+			::map_base < ::gpu::binding_set * , ::pointer < ::array < VkDescriptorSet > > >m_mapdescriptorset;
 
          //::array_base<VkDescriptorSet> m_descriptorsetaSceneGltf4;
 

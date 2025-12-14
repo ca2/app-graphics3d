@@ -3,7 +3,7 @@
 #pragma once
 
 
-#include "bred/graphics3d/render_systems/gltf_render_system.h"
+#include "app-graphics3d/graphics3d/render_system/gltf_render_system.h"
 #include "app-graphics3d/graphics3d_vulkan/render_system.h"
 
 
@@ -49,10 +49,10 @@ namespace graphics3d_vulkan
       //};
 
 
-      ::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutIbl;
-      ::array_base<VkDescriptorSet> m_vkdescriptorsetaIbl;
-      ::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutPbr;
-      ::pointer<::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
+      //::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutIbl;
+      //::array_base<VkDescriptorSet> m_vkdescriptorsetaIbl;
+      //::pointer<::gpu_vulkan::descriptor_set_layout> m_pdescriptorsetlayoutPbr;
+      //::pointer<::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
 
 
 

@@ -784,20 +784,20 @@ namespace gpu_directx12
    }
 
 
-   void shader::bind(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture *pgputextureTarget, ::gpu::texture *pgputextureSource)
-   {
+   //void shader::bind(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture *pgputextureTarget, ::gpu::texture *pgputextureSource)
+   //{
 
-      bind(pgpucommandbuffer, pgputextureTarget);
+   //   bind(pgpucommandbuffer, pgputextureTarget);
 
-      bind_source(pgpucommandbuffer, pgputextureSource, 0);
+   //   bind_source(pgpucommandbuffer, pgputextureSource, 0);
 
-   }
+   //}
 
 
    void shader::bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
    {
 
-      bind(pgpucommandbuffer);
+      //bind(pgpucommandbuffer);
 
 
       ::cast < ::gpu_directx12::texture > ptextureDst = pgputextureTarget;
@@ -958,61 +958,61 @@ namespace gpu_directx12
    }
 
 
-   void shader::bind(::gpu::command_buffer *pgpucommandbuffer)
-   {
+   //void shader::bind(::gpu::command_buffer *pgpucommandbuffer)
+   //{
 
-      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
+   //   ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-      ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
+   //   ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+   //   ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
-      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+   //   auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      pcommandlist->SetPipelineState(m_ppipelinestate);  // ID3D12PipelineState*
+   //   pcommandlist->SetPipelineState(m_ppipelinestate);  // ID3D12PipelineState*
 
-      if (m_prootsignature)
-      {
+   //   if (m_prootsignature)
+   //   {
 
-         pcommandlist->SetGraphicsRootSignature(m_prootsignature);
+   //      pcommandlist->SetGraphicsRootSignature(m_prootsignature);
 
-      }
+   //   }
 
-      //if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
-      if (has_global_ubo())
-      {
+   //   //if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
+   //   if (has_global_ubo())
+   //   {
 
-         auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+   //      auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
-         auto pscene = pcontext->m_pengine->m_pimmersionlayer->m_pscene;
+   //      auto pscene = pcontext->m_pengine->m_pimmersionlayer->m_pscene;
 
-         auto pgpublockGlobalUbo1 = pscene->global_ubo1(pcontext);
+   //      auto pgpublockGlobalUbo1 = pscene->global_ubo1(pcontext);
 
-         ::cast<::gpu_directx12::block > pblockGlobalUbo1 = pgpublockGlobalUbo1;
+   //      ::cast<::gpu_directx12::block > pblockGlobalUbo1 = pgpublockGlobalUbo1;
 
-         //pcommandlist->SetGraphicsRootDescriptorTable(0, prenderer->m_pheapCbv->GetGPUDescriptorHandleForHeapStart());
-         pcommandlist->SetGraphicsRootConstantBufferView(0, pblockGlobalUbo1->m_presource->GetGPUVirtualAddress());
+   //      //pcommandlist->SetGraphicsRootDescriptorTable(0, prenderer->m_pheapCbv->GetGPUDescriptorHandleForHeapStart());
+   //      pcommandlist->SetGraphicsRootConstantBufferView(0, pblockGlobalUbo1->m_presource->GetGPUVirtualAddress());
 
-      }
+   //   }
 
-      m_iPush = 0;
+   //   m_iPush = 0;
 
-      if (m_etopology == ::gpu::e_topology_triangle_strip)
-      {
+   //   if (m_etopology == ::gpu::e_topology_triangle_strip)
+   //   {
 
-         pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+   //      pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-      }
-      else if (m_etopology == ::gpu::e_topology_triangle_list)
-      {
+   //   }
+   //   else if (m_etopology == ::gpu::e_topology_triangle_list)
+   //   {
 
-         pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+   //      pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-      }
+   //   }
 
 
 
-   }
+   //}
 
 
    void shader::unbind(::gpu::command_buffer *pgpucommandbuffer)

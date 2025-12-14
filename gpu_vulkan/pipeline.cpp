@@ -110,8 +110,20 @@ namespace gpu_vulkan
       ::cast < context > pgpucontext = m_pgpurenderer->m_pgpucontext;
       ::cast < device > pgpudevice = pgpucontext->m_pgpudevice;
 
-      create_shader_module(blockVertexShader, &m_vkshadermoduleVertex);
-      create_shader_module(blockFragmentShader, &m_vkshadermoduleFragment);
+      if (!m_vkshadermoduleVertex)
+      {
+
+         create_shader_module(blockVertexShader, &m_vkshadermoduleVertex);
+
+      }
+
+      if (!m_vkshadermoduleFragment)
+      {
+
+         create_shader_module(blockFragmentShader, &m_vkshadermoduleFragment);
+
+      }
+
       VkPipelineShaderStageCreateInfo shaderStages[2];
       shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
       shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;

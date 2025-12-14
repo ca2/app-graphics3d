@@ -34,11 +34,11 @@ namespace gpu_vulkan
 
 
       virtual void defer_create_update_descriptor_set(::gpu::command_buffer *pgpucommandbuffer,
-                                                      ::array_base<VkDescriptorSet> &descriptorseta,
+                                                      ::array<VkDescriptorSet> &descriptorseta,
                                                       ::array_base<VkDescriptorBufferInfo> &bufferinfoa);
 
       virtual void defer_create_update_descriptor_set(::gpu::command_buffer *pgpucommandbuffer,
-                                                      ::array_base<VkDescriptorSet> &descriptorseta);
+                                                      ::array<VkDescriptorSet> &descriptorseta);
 
 
    };
@@ -49,6 +49,17 @@ namespace gpu_vulkan
    //public:
    //   bool has_global_ubo() const;
    //};
+
+   class CLASS_DECL_GPU_VULKAN binding_slot_set : virtual public ::gpu::binding_slot_set
+   {
+   public:
+
+
+      ::pointer < ::array<VkDescriptorSet > > m_pvkdescriptorseta;
+
+      ::array<VkDescriptorSet> & descriptor_set(::gpu::command_buffer * pgpucommandbuffer);
+
+   };
 
 
 } // namespace gpu_vulkan

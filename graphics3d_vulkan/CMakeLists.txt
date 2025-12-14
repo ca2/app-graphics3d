@@ -39,6 +39,7 @@ list(APPEND library_references
         bred
         imgui
         gpu_vulkan
+   graphics3d
 )
 
 
