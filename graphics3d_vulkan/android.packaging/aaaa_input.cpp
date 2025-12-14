@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "../framework.h"
 //#include "input.h"
 //#include "scene_object.h"
 //#include "bred/user/user/graphics3d.h"

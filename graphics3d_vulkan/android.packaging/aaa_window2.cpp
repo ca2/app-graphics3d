@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "../framework.h"
 //#include "window.h"
 ////#include <GLFW/glfw3.h>
 //#include <stdexcept>
