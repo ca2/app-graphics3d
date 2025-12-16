@@ -53,27 +53,26 @@ namespace graphics3d_opengl
 
       m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, 
          ::as_memory_block(g_psz_scene_vert),
-         ::as_memory_block(g_psz_scene_frag), {},
-         {
-            
-         },
+         ::as_memory_block(g_psz_scene_frag), 
+         //{},
+         //{},
          pgpucontext->input_layout <::gpu::gltf::vertex>());
 
       m_pshaderMask->m_bEnableBlend = true;
       m_pshaderMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, ::as_memory_block(g_psz_scene_vert),
-                                                  ::as_memory_block(g_psz_scene_frag), {},
-                                                  {
-
-                                                  },
+                                                  ::as_memory_block(g_psz_scene_frag),
+         //{},
+           //                                       {},
                                                   pgpucontext->input_layout<::gpu::gltf::vertex>());
 
       m_pshaderBlend->m_bDisableDepthTest = true;
       m_pshaderBlend->m_bEnableBlend = true;
       m_pshaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, ::as_memory_block(g_psz_scene_vert),
-                                                   ::as_memory_block(g_psz_scene_frag), {},
-                                                   {
-
-                                                   },
+                                                   ::as_memory_block(g_psz_scene_frag), 
+         //{},
+           //                                        {
+         //
+           //                                        },
                                                    pgpucontext->input_layout<::gpu::gltf::vertex>());
 
    }

@@ -42,9 +42,9 @@ namespace graphics3d_vulkan
       CLASS_DECL_GRAPHICS3D_VULKAN VkImageSubresourceRange image_subresource_range(VkImageAspectFlags aspectMask);
 
       CLASS_DECL_GRAPHICS3D_VULKAN VkSemaphoreSubmitInfo semaphore_submit_info(VkPipelineStageFlags2 stageMask, VkSemaphore semaphore);
-      CLASS_DECL_GRAPHICS3D_VULKAN VkDescriptorSetLayoutBinding descriptorset_layout_binding(VkDescriptorType type, VkShaderStageFlags stageFlags,
+      CLASS_DECL_GRAPHICS3D_VULKAN aaaVkDescriptorSetLayoutBinding descriptorset_layout_binding(VkDescriptorType type, VkShaderStageFlags stageFlags,
          uint32_t binding);
-      CLASS_DECL_GRAPHICS3D_VULKAN VkDescriptorSetLayoutCreateInfo descriptorset_layout_create_info(VkDescriptorSetLayoutBinding* bindings,
+      CLASS_DECL_GRAPHICS3D_VULKAN aaaVkDescriptorSetLayoutCreateInfo descriptorset_layout_create_info(aaaVkDescriptorSetLayoutBinding* bindings,
          uint32_t bindingCount);
       CLASS_DECL_GRAPHICS3D_VULKAN VkWriteDescriptorSet write_descriptor_image(VkDescriptorType type, VkDescriptorSet dstSet,
          VkDescriptorImageInfo* imageInfo, uint32_t binding);

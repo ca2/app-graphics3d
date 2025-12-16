@@ -80,7 +80,7 @@ namespace graphics3d_directx11
       
       
       ::pointer<::gpu_directx11::descriptor_pool> m_pdescriptorpool;
-      //VkDescriptorSetLayout m_iblSetLayout;
+      //aaaVkDescriptorSetLayout m_iblSetLayout;
       //VkDescriptorSet m_iblDescriptorSet;
 
       //::pointer<::gpu_directx11::pipeline> m_opaquePipeline;
@@ -122,7 +122,7 @@ namespace graphics3d_directx11
          //;
       ///;::gpu_directx11::descriptor_set_layout *psetdescriptorlayoutGlobal);
 
-      //void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+      //void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);
       //void createPipeline(VkRenderPass renderPass);
 
       

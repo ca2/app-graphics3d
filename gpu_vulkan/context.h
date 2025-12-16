@@ -84,7 +84,7 @@ namespace gpu_vulkan
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;
 
       void _001BeginRenderPass(::gpu::command_buffer *pcommandbuffer, ::gpu::texture * pgputexture = nullptr);
-      void _001BeginRenderPassWithCubemap(::gpu::command_buffer *pcommandbuffer, ::gpu::texture * pgputexture, int iFace, ::gpu::enum_scene escene);
+      //void _001BeginRenderPassWithCubemap(::gpu::command_buffer *pcommandbuffer, ::gpu::texture * pgputexture, int iFace, ::gpu::enum_scene escene);
       void _001EndRenderPass(::gpu::command_buffer *pcommandbuffer);
 
 

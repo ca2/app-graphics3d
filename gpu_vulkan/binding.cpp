@@ -29,7 +29,6 @@ namespace gpu_vulkan
 
    void binding_set::defer_update_binding_set(::gpu::command_buffer * pgpucommandbuffer)
    {
-
       
       if (!m_pdescriptorsetlayout1)
       {
@@ -91,45 +90,25 @@ namespace gpu_vulkan
 
       auto pdescriptorsetlayout = builder.build();
 
-      //pdescriptorsetlayout->m_iIndex = pbindingset.m_iSet;
-
       m_pdescriptorsetlayout1 = pdescriptorsetlayout;
 
-      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
-
-      int iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
-
-      pdescriptorpoolbuilder->initialize_builder(pcontext);
-      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
-      pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iFrameCount * 10);
-      pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iFrameCount * 10);
-
-      auto pdescriptorpool = pdescriptorpoolbuilder->build();
-
-      //pdescriptorpool->m_iIndex = pbindingset.m_iSet;
-
-
-      //m_descriptorpoola.ø(pdescriptorpool->m_iIndex) = pdescriptorpool;
-
-      m_pdescriptorpool = pdescriptorpool;
-
    }
 
 
-   void binding_set::defer_create_update_descriptor_set(::gpu::command_buffer * pgpucommandbuffer,
-                                                        ::array<VkDescriptorSet> &descriptorseta,
-                                                        ::array_base<VkDescriptorBufferInfo> &bufferinfoa)
-   {
+   //void binding_set::defer_create_update_descriptor_set(::gpu::command_buffer * pgpucommandbuffer,
+   //                                                     ::array<VkDescriptorSet> &descriptorseta,
+   //                                                     ::array_base<VkDescriptorBufferInfo> &bufferinfoa)
+   //{
 
-      for (int i = 0; i < bufferinfoa.size(); i++)
-      {
+   //   for (int i = 0; i < bufferinfoa.size(); i++)
+   //   {
 
-         descriptor_writer(*m_pdescriptorsetlayout1, *m_pdescriptorpool)
-            .writeBuffer(0, bufferinfoa[i])
-            .build(descriptorseta.ø(i));
-      }
+   //      descriptor_writer(*m_pdescriptorsetlayout1, *m_pdescriptorpool)
+   //         .writeBuffer(0, bufferinfoa[i])
+   //         .build(descriptorseta.ø(i));
+   //   }
 
-   }
+   //}
 
 
    ::array<VkDescriptorSet> & binding_slot_set::descriptor_set(::gpu::command_buffer * pgpucommandbuffer)
@@ -149,7 +128,9 @@ namespace gpu_vulkan
 
             auto pdescriptosetlayout = pbindingset->descriptor_set_layout(pgpucommandbuffer);
 
-            auto vkdescriptorwriter = descriptor_writer(*pdescriptosetlayout, *pbindingset->m_pdescriptorpool);
+            auto pdescriptorpool = this->descriptor_pool(pgpucommandbuffer);
+
+            auto vkdescriptorwriter = descriptor_writer(*pdescriptosetlayout, *pdescriptorpool);
 
             ::array_base<VkDescriptorImageInfo> vkdescriptorimageinfoa;
 
@@ -166,7 +147,7 @@ namespace gpu_vulkan
 
                vkdescriptorimageinfo = ptexture->descriptor_info();
 
-               vkdescriptorwriter.writeImage(0, &vkdescriptorimageinfo);
+               vkdescriptorwriter.writeImage(iSlot, &vkdescriptorimageinfo);
 
             }
                
@@ -181,14 +162,14 @@ namespace gpu_vulkan
    }
 
 
-   void binding_set::defer_create_update_descriptor_set(::gpu::command_buffer * pgpucommandbuffer,
-                                                     ::array<VkDescriptorSet> & descriptorseta)
+   //void binding_set::defer_create_update_descriptor_set(::gpu::command_buffer * pgpucommandbuffer,
+   //                                                  ::array<VkDescriptorSet> & descriptorseta)
 
-   {
+   //{
 
 
 
-      }
+   //   }
 
 
 //      //m_psetdescriptorlayout =
@@ -290,6 +271,63 @@ namespace gpu_vulkan
 //      .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
 //      .build();
 //}
+
+
+   ::gpu_vulkan::descriptor_pool *binding_slot_set::descriptor_pool(::gpu::command_buffer *pgpucommandbuffer)
+   {
+
+         if (!m_pdescriptorpool)
+         {
+
+            defer_update_binding_slot_set(pgpucommandbuffer);
+         }
+
+         return m_pdescriptorpool;
+      }
+
+
+      void binding_slot_set::defer_update_binding_slot_set(::gpu::command_buffer *pgpucommandbuffer)
+      {
+         // pdescriptorsetlayout->m_iIndex = pbindingset.m_iSet;
+
+         if (m_pdescriptorpool)
+         {
+            
+            return;
+
+         }
+
+         auto pgpucontext = pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext;
+
+         auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+
+         int iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
+
+         pdescriptorpoolbuilder->initialize_builder(pgpucontext);
+
+         ::collection::count iMaxSets = iFrameCount * m_pbindingset->size() * 2;
+         pdescriptorpoolbuilder->setMaxSets(iMaxSets);
+
+         ::collection::count iUniformBuffer = iFrameCount * m_pbindingset->uniform_buffer_count() * 2;
+         if (iUniformBuffer > 0)
+         {
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, iUniformBuffer);
+         }
+         ::collection::count iImageSampler = iFrameCount * m_pbindingset->image_sampler_count() * 2;
+         if (iImageSampler > 0)
+         {
+            pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, iImageSampler);
+         }
+
+         auto pdescriptorpool = pdescriptorpoolbuilder->build();
+
+         // pdescriptorpool->m_iIndex = pbindingset.m_iSet;
+
+         // m_descriptorpoola.ø(pdescriptorpool->m_iIndex) = pdescriptorpool;
+
+         m_pdescriptorpool = pdescriptorpool;
+
+      }
 
 
 } // namespace gpu_vulkan

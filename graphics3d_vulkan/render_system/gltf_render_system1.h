@@ -46,7 +46,7 @@ namespace graphics3d_vulkan
       
       
       ::pointer<::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
-      //VkDescriptorSetLayout m_iblSetLayout;
+      //aaaVkDescriptorSetLayout m_iblSetLayout;
       //VkDescriptorSet m_iblDescriptorSet;
 
       ::pointer<::gpu_vulkan::pipeline> m_opaquePipeline;
@@ -85,7 +85,7 @@ namespace graphics3d_vulkan
          //;
       ///;::gpu_vulkan::descriptor_set_layout *psetdescriptorlayoutGlobal);
 
-      void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+      void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);
       void createPipeline(VkRenderPass renderPass);
 
       

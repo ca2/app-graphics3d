@@ -47,7 +47,7 @@
 //
 //      auto globalSetLayout = pengine->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
 //
-//      ::array<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+//      ::array<aaaVkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
 //
 //      VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 //      pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

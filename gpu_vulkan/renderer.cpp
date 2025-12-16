@@ -1670,7 +1670,7 @@ namespace gpu_vulkan
       //		//   .pBindings = &samplerLayoutBinding,
       //		//};
 
-      //		//VkDescriptorSetLayout descriptorSetLayout;
+      //		//aaaVkDescriptorSetLayout descriptorSetLayout;
       //		//if (vkCreateDescriptorSetLayout(device, &layoutInfo, NULL, &descriptorSetLayout) != VK_SUCCESS) 
       //		//{
       //		//   // Handle error
@@ -2000,8 +2000,8 @@ namespace gpu_vulkan
             this,
             as_memory_block(g_uaImageBlendVertexShader),
             as_memory_block(g_uaImageBlendFragmentShader),
-            { ::gpu::shader::e_descriptor_set_slot_s1 },
-            {}, 
+            //{ ::gpu::shader::e_descriptor_set_slot_s1 },
+            //{}, 
             m_pgpucontext->input_layout<::graphics3d::sequence2_uv>());
 
       }
@@ -2039,8 +2039,8 @@ namespace gpu_vulkan
             this,
             as_memory_block(g_uaImageBlendVertexShader),
             as_memory_block(g_uaImageBlendFragmentShader),
-            { ::gpu::shader::e_descriptor_set_slot_local }, 
-            {},
+            //{ ::gpu::shader::e_descriptor_set_slot_local }, 
+            //{},
             //pshader->m_descriptorsetlayouta[0],
             m_pgpucontext->input_layout<::graphics3d::sequence2_uv>()
          );
@@ -3525,7 +3525,9 @@ namespace gpu_vulkan
 
             renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
 
-            renderPassBeginInfo.framebuffer = ptexture->framebuffer(prenderpass);
+            auto &layer = ptexture->current_layer(prenderpass);
+
+            renderPassBeginInfo.framebuffer = layer.m_vkframebuffer;
          //}
          // else
          //{

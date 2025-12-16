@@ -15,7 +15,7 @@ namespace graphics3d
    }
 
    //scene_render_system::scene_render_system(VkSandboxDevice &device, VkRenderPass renderPass,
-     //                                       VkDescriptorSetLayout globalSetLayout, IAssetProvider &assets) :
+     //                                       aaaVkDescriptorSetLayout globalSetLayout, IAssetProvider &assets) :
        //m_device(device), m_globalSetLayout(globalSetLayout), m_assets(assets)
    //{
    //}
@@ -27,7 +27,7 @@ namespace graphics3d
 
 
    //void scene_render_system::init(VkSandboxDevice &device, VkRenderPass renderPass,
-   //                               VkDescriptorSetLayout globalSetLayout, VkSandboxDescriptorPool &descriptorPool,
+   //                               aaaVkDescriptorSetLayout globalSetLayout, VkSandboxDescriptorPool &descriptorPool,
    //                               size_t frameCount)
    //{
    //   m_globalSetLayout = globalSetLayout;
@@ -48,9 +48,9 @@ namespace graphics3d
    }
 
 
-   //void scene_render_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
+   //void scene_render_system::createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout)
    //{
-   //   const std::vector<VkDescriptorSetLayout> layouts = {globalSetLayout, vkglTF::descriptorSetLayoutUbo,
+   //   const std::vector<aaaVkDescriptorSetLayout> layouts = {globalSetLayout, vkglTF::descriptorSetLayoutUbo,
    //                                                       vkglTF::descriptorSetLayoutImage};
 
    //   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};

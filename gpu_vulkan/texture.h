@@ -15,6 +15,7 @@ namespace tinygltf
 namespace gpu_vulkan
 {
 
+   class binding_slot_set;
 
    class texture_synchronization :
       virtual public ::particle
@@ -41,7 +42,6 @@ namespace gpu_vulkan
       VkFramebuffer _get_frame_buffer(::gpu_vulkan::render_pass* prenderpass);
 
       VkFence in_flight_fence();
-
 
       //virtual texture_synchronization& synchronization(::gpu::render_target * prendertarget);
 
@@ -132,37 +132,65 @@ namespace gpu_vulkan
       };
 
 
-      class cube : virtual public ::particle
+      struct layer
+      {
+         /// @brief [0] -> color, [1] -> depth
+         VkImageView m_vkimageviewaAttachment[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+         VkFramebuffer m_vkframebuffer = VK_NULL_HANDLE;
+         ::int_size m_size{-1, -1};
+         int m_iLayerCount = -1;
+         bool is_empty() const
+         {
+
+            return m_vkimageviewaAttachment[0] == VK_NULL_HANDLE || m_vkframebuffer == VK_NULL_HANDLE;
+
+         }
+
+         void create_framebuffer(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass);
+         void _create_framebuffer(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass, int iAttachmentCount);
+         void create_color_attachment(::gpu_vulkan::texture *ptexture);
+         void create_depth_attachment(::gpu_vulkan::texture *ptexture);
+
+      };
+
+      class layer_array : virtual public ::array_base<layer>
+      {
+      public:
+      };
+
+
+      class mip_layer_array : virtual public ::array_base<layer_array>
+      {
+      public:
+      };
+
+      class render_pass_mip_layer_array : virtual public map<VkRenderPass, mip_layer_array>
       {
       public:
 
-         struct render_pass_t
-         {
-
-            VkFramebuffer m_framebuffera[6] = {};
-
-         };
-
-         struct framebuffer_cube
-         {
-
-            VkFramebuffer m_framebuffera[6] = {};
-
-         };
-
-         map<VkRenderPass, framebuffer_cube> m_mapFramebufferCube;
-
-         VkImageView m_imageviewa[6] = {};
-         int m_iImageViewCount = 0;
-
-         map<::gpu_vulkan::render_pass *, render_pass_t> m_mapRenderPass;
-
-         void create_image_views(::gpu_vulkan::texture *ptexture);
-         VkImageView get_image_view(::gpu_vulkan::texture * ptexture, int iIndex);
-         VkFramebuffer framebuffer(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass, int iFace);
-         VkFramebuffer _framebuffer(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass, int iFace);
+         texture::layer &layer(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass);
+         //VkFramebuffer _framebuffer(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass,
+         //                                 int iLayer, int iMip);
 
       };
+
+         
+
+         ///VkImageView m_imageviewa[6] = {};
+         ///int m_iImageViewCount = 0;
+         //::pointer_array<::gpu_vulkan::render_pass> m_renderpassa;
+
+         //map<::gpu_vulkan::render_pass *, ::array_base < render_pass_t >> m_mapRenderPass;
+
+//         void create_image_views(::gpu_vulkan::texture *ptexture, int iLayer, int iMip);
+//         VkImageView get_image_view(::gpu_vulkan::texture * ptexture, int iLayer, int iMip);
+//         //VkFramebuffer framebuffer2(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass, int iMip);
+//         //VkFramebuffer _framebuffer2(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass, int iMip);
+//         VkFramebuffer layer_framebuffer(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass,
+//                                         int iLayer, int iMip);
+//         VkFramebuffer _layer_framebuffer(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass, int iLayer, int iMip);
+////         ::gpu_vulkan::render_pass * get_render_pass(::gpu_vulkan::texture *ptexture, int iIndex);
+//      };
 
       class scoped_state
       {
@@ -210,11 +238,14 @@ namespace gpu_vulkan
       ::pointer < texture_synchronization >           m_ptexturesynchronization;
       map<VkRenderPass, VkFramebuffer >             m_mapFramebuffer;
       map<::gpu_vulkan::shader *, ::pointer<::gpu_vulkan::descriptor_set_array>> m_mapShaderDescriptorSetArray;
-      //map<::gpu_vulkan::render_target*, texture_synchronization > m_mapSynchronization;
-      ::pointer<class cube> m_pcube;
+      map<::gpu_vulkan::shader *, ::pointer<::gpu_vulkan::binding_slot_set>> m_mapBindingSlotSet1;
+      // map<::gpu_vulkan::render_target*, texture_synchronization > m_mapSynchronization;
+      /// indexed by mip
+      render_pass_mip_layer_array m_mapRenderPassMipLayer;
 
       map < ::gpu_vulkan::render_pass *, render_pass_t > m_mapRenderPass;
       ::pointer<::gpu_vulkan::render_pass> m_prenderpass;
+      ::pointer<::gpu_vulkan::render_pass> m_prenderpassFace;
 
 
       texture();
@@ -223,7 +254,7 @@ namespace gpu_vulkan
 
       void _create_texture(const ::gpu::texture_data & texturedata) override;
 
-      class cube &cube();
+      struct texture::layer &current_layer(::gpu_vulkan::render_pass * prenderpass);
       // void initialize_image_texture(::gpu::renderer* prenderer,
       //    const ::int_rectangle& rectangleTarget,
       //    bool bWithDepth,
@@ -255,8 +286,6 @@ namespace gpu_vulkan
 
          return { pcommandbuffer, this, stateRestore };
 
-        
-
       }
 
       void _attach(VkImage vkimage, ::gpu::enum_texture etexture);
@@ -270,7 +299,7 @@ namespace gpu_vulkan
 
       VkImageView get_image();
 
-      VkImageView get_image_view(int iIndex = -1);
+      VkImageView get_image_view();
 
       VkSampler get_vk_sampler();
 
@@ -280,17 +309,31 @@ namespace gpu_vulkan
 
       VkDescriptorImageInfo descriptor_info();
 
-      VkDescriptorSet descriptor_set(::gpu_vulkan::shader* pshader, ::gpu::command_buffer * pgpucommandbuffer);
+      /// @brief Singular descriptor set (_001 case here), when the texture is the only binding
+      /// in the descriptorset
+      /// @param pshader 
+      /// @param pgpucommandbuffer 
+      /// @return 
+      VkDescriptorSet _001DescriptorSet(::gpu_vulkan::shader* pshader, ::gpu::command_buffer * pgpucommandbuffer);
 
+      /// @brief Singular binding slot set (_001 case here), when the texture is
+      /// the only binding in the descriptor set
+      ::gpu::binding_slot_set *_001BindingSlotSet(::gpu_vulkan::shader *psahder,
+                                                  ::gpu::command_buffer *pgpucommandbuffer);
+
+
+      bool _is_ok() const override;
 
       virtual ::gpu_vulkan::render_pass * get_render_pass();
+      //virtual ::gpu_vulkan::render_pass *get_face_render_pass();
       virtual void update_render_pass();
+      ///virtual void update_face_render_pass();
 
-      VkFramebuffer framebuffer(::gpu_vulkan::render_pass * prenderpass);
-      VkFramebuffer _framebuffer(::gpu_vulkan::render_pass* prenderpass);
+      //VkFramebuffer framebuffer2(::gpu_vulkan::render_pass * prenderpass, int iMip = -1);
+      //VkFramebuffer _framebuffer2(::gpu_vulkan::render_pass* prenderpass, int iMip = -1);
 
-      VkFramebuffer framebuffer(::gpu_vulkan::render_pass *prenderpass, int iFace);
-      VkFramebuffer _framebuffer(::gpu_vulkan::render_pass *prenderpass, int iFace);
+      //VkFramebuffer layer_framebuffer(::gpu_vulkan::render_pass *prenderpass, int iLayer, int iMip = -1);
+      //VkFramebuffer _layer_framebuffer(::gpu_vulkan::render_pass *prenderpass, int iLayer, int iMip = -1);
 
 
       // VkFramebuffer create_framebuffer(VkRenderPass renderpass);
@@ -329,6 +372,8 @@ namespace gpu_vulkan
 
       void _fromglTfImage(tinygltf::Image * pgltfimage, const ::file::path & path, ::gpu::renderer * pgpurender,  bool isSrgb);
       void on_finish_load_texture();
+
+      void generate_mipmap(::gpu::command_buffer *pgpucommandbuffer) override;
 
    };
 

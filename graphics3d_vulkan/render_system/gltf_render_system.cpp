@@ -75,7 +75,7 @@ namespace graphics3d_vulkan
    void gltf_render_system::on_prepare(::gpu::context *pgpucontext)
    {
       
-      ::graphics3d::gltf_render_system::on_prepare(pgpucontext);
+      ::graphics3d::pbr_with_ibl_render_system::on_prepare(pgpucontext);
 
 
       //::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();

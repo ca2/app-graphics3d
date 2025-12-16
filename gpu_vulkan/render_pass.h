@@ -35,6 +35,9 @@ namespace gpu_vulkan
       VkExtent2D m_extent;
       ::pointer < render_pass > m_prenderpassOld;
 
+               VkAttachmentDescription m_attachmentColor;
+
+
       //map < ::gpu::texture*, texture_t > m_mapTexture;
       
       VkRenderPass m_vkrenderpass;
@@ -76,8 +79,7 @@ namespace gpu_vulkan
       virtual void update_render_pass(::gpu::context* pgpucontext, ::gpu::texture * pgputextureTarget, ::pointer <::gpu_vulkan::render_pass>previous = {});
       virtual void _update_render_pass(::gpu::context *pgpucontext, ::gpu::texture *pgputextureTarget,
                                        ::pointer<::gpu_vulkan::render_pass> previous = {});
-
-      //virtual void on_before_begin_render(frame* pframe, ::gpu::texture * pgputexture);
+      // virtual void on_before_begin_render(frame* pframe, ::gpu::texture * pgputexture);
 
 
       virtual int get_frame_index();
@@ -116,6 +118,7 @@ namespace gpu_vulkan
 
 
       virtual void on_init_render_pass();
+      //virtual void on_init_face_render_pass();
       //virtual void createRenderPassImpl();
       //virtual void createImageViews();
       //virtual void createDepthResources();

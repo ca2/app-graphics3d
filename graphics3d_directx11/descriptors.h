@@ -41,11 +41,11 @@
 //        descriptor_set_layout(const descriptor_set_layout&) = delete;
 //        descriptor_set_layout& operator=(const descriptor_set_layout&) = delete;
 //
-//        VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
+//        aaaVkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
 //
 //    private:
 //        ::pointer < context > m_pgpucontext;
-//        VkDescriptorSetLayout descriptorSetLayout;
+//        aaaVkDescriptorSetLayout descriptorSetLayout;
 //        ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings;
 //
 //        friend class descriptor_writer;
@@ -92,7 +92,7 @@
 //        descriptor_pool& operator=(const descriptor_pool&) = delete;
 //
 //        bool allocateDescriptor(
-//            const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
+//            const aaaVkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
 //
 //        void freeDescriptors(::array<VkDescriptorSet>& descriptors) const;
 //

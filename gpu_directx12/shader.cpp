@@ -207,46 +207,46 @@ namespace gpu_directx12
 
             }
 
-            if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
-            {
+         //   if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
+         //   {
 
 
 
-               //if (m_pLocalDescriptorSet)
-               //{
+         //      //if (m_pLocalDescriptorSet)
+         //      //{
 
-               //   ::cast < ::gpu_directx12::descriptor_set_layout > pset = m_pLocalDescriptorSet;
+         //      //   ::cast < ::gpu_directx12::descriptor_set_layout > pset = m_pLocalDescriptorSet;
 
-               //   auto setLayout = pset->getDescriptorSetLayout();
+         //      //   auto setLayout = pset->getDescriptorSetLayout();
 
-               //   descriptorSetLayouts.add(setLayout);
+         //      //   aaadescriptorSetLayouts.add(setLayout);
 
-               //}
+         //      //}
 
-         //      rootParameters.element_at_grow(1).InitAsConstantBufferView(1); // b1: ObjectMatrices
-               //ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+         ////      rootParameters.element_at_grow(1).InitAsConstantBufferView(1); // b1: ObjectMatrices
+         //      //ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
-               UINT ShaderRegister;
+         //      UINT ShaderRegister;
 
-               if (m_iPushConstants < 0)
-               {
+         //      if (m_iPushConstants < 0)
+         //      {
 
-                  ShaderRegister = 1;
+         //         ShaderRegister = 1;
 
-               }
-               else
-               {
+         //      }
+         //      else
+         //      {
 
-                  ShaderRegister = m_iPushConstants;
+         //         ShaderRegister = m_iPushConstants;
 
-               }
-               rootParameters.add_new().InitAsConstantBufferView(ShaderRegister);
+         //      }
+         //      rootParameters.add_new().InitAsConstantBufferView(ShaderRegister);
 
-               m_iPushConstantsBufferIndex = rootParameters.get_upper_bound();
+         //      m_iPushConstantsBufferIndex = rootParameters.get_upper_bound();
 
 
 
-            }
+         //   }
 
             //if (m_bindingSampler.is_set() || m_bindingCubeSampler.is_set())
 
@@ -439,7 +439,7 @@ namespace gpu_directx12
 
       //      //   auto setLayout = pset->getDescriptorSetLayout();
 
-      //      //   descriptorSetLayouts.add(setLayout);
+      //      //   aaadescriptorSetLayouts.add(setLayout);
 
       //      //}
 
@@ -754,32 +754,32 @@ namespace gpu_directx12
 
       create_vertex_and_pixel_shader(m_memoryVertex, m_memoryFragment);
 
-      if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
-      {
-         int iNumberOfObjects = 256;
-         UINT constantBufferSize = ::directx12::Align256((UINT) m_propertiesPushShared.size(false)) * iNumberOfObjects;    // CB size is required to be 256-byte aligned.
-         CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
-         auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
-         HRESULT hrCreateCommittedResource = pgpudevice->m_pdevice->CreateCommittedResource(
-            &heapproperties,
-            D3D12_HEAP_FLAG_NONE,
-            &resourcedesc,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            __interface_of(m_presourcePushProperties));
-         pgpudevice->defer_throw_hresult(hrCreateCommittedResource);
+      //if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
+      //{
+      //   int iNumberOfObjects = 256;
+      //   UINT constantBufferSize = ::directx12::Align256((UINT) m_propertiesPushShared.size(false)) * iNumberOfObjects;    // CB size is required to be 256-byte aligned.
+      //   CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
+      //   auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
+      //   HRESULT hrCreateCommittedResource = pgpudevice->m_pdevice->CreateCommittedResource(
+      //      &heapproperties,
+      //      D3D12_HEAP_FLAG_NONE,
+      //      &resourcedesc,
+      //      D3D12_RESOURCE_STATE_GENERIC_READ,
+      //      nullptr,
+      //      __interface_of(m_presourcePushProperties));
+      //   pgpudevice->defer_throw_hresult(hrCreateCommittedResource);
 
 
-         UINT descriptorSize = pgpudevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+      //   UINT descriptorSize = pgpudevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-         D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-         cbvDesc.BufferLocation = m_presourcePushProperties->GetGPUVirtualAddress();
-         cbvDesc.SizeInBytes = constantBufferSize;
-         int iDescriptor = 1; // 1 - second descriptor, first descriptor (0) is the global ubo
-         CD3DX12_CPU_DESCRIPTOR_HANDLE objectCBHandle(prenderer->m_pheapCbv->GetCPUDescriptorHandleForHeapStart(), iDescriptor, descriptorSize);
-         pgpudevice->m_pdevice->CreateConstantBufferView(&cbvDesc, objectCBHandle);
+      //   D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+      //   cbvDesc.BufferLocation = m_presourcePushProperties->GetGPUVirtualAddress();
+      //   cbvDesc.SizeInBytes = constantBufferSize;
+      //   int iDescriptor = 1; // 1 - second descriptor, first descriptor (0) is the global ubo
+      //   CD3DX12_CPU_DESCRIPTOR_HANDLE objectCBHandle(prenderer->m_pheapCbv->GetCPUDescriptorHandleForHeapStart(), iDescriptor, descriptorSize);
+      //   pgpudevice->m_pdevice->CreateConstantBufferView(&cbvDesc, objectCBHandle);
 
-      }
+      //}
 
    }
 

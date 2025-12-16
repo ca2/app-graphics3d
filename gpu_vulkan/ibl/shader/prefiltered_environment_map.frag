@@ -1,15 +1,18 @@
 // prefiltered_env_map.frag
 #version 450
 
-layout (location = 0) in vec3 inPos;
+layout (location = 0) in vec3 modelCoordinates;
 layout (location = 0) out vec4 outColor;
 
-layout (binding = 0) uniform samplerCube samplerEnv;
+layout (binding = 0) uniform samplerCube environmentCubemap;
 
-layout(push_constant, std140) uniform PushConsts {
-	layout (offset = 64) float roughness;
-	layout (offset = 68) uint numSamples;
-} consts;
+// Push constant block (no set, no binding)
+layout(push_constant) uniform PushConstants 
+{
+	mat4 mvp;
+	float roughness;
+	int numSamples;
+} pc;
 
 const float PI = 3.1415926536;
 
@@ -70,9 +73,9 @@ vec3 prefilterEnvMap(vec3 R, float roughness)
 	vec3 V = R;
 	vec3 color = vec3(0.0);
 	float totalWeight = 0.0;
-	float envMapDim = float(textureSize(samplerEnv, 0).s);
-	for(uint i = 0u; i < consts.numSamples; i++) {
-		vec2 Xi = hammersley2d(i, consts.numSamples);
+	float envMapDim = float(textureSize(environmentCubemap, 0).s);
+	for(uint i = 0u; i < pc.numSamples; i++) {
+		vec2 Xi = hammersley2d(i, pc.numSamples);
 		vec3 H = importanceSample_GGX(Xi, roughness, N);
 		vec3 L = 2.0 * dot(V, H) * H - V;
 		float dotNL = clamp(dot(N, L), 0.0, 1.0);
@@ -85,12 +88,12 @@ vec3 prefilterEnvMap(vec3 R, float roughness)
 			// Probability Distribution Function
 			float pdf = D_GGX(dotNH, roughness) * dotNH / (4.0 * dotVH) + 0.0001;
 			// Slid angle of current smple
-			float omegaS = 1.0 / (float(consts.numSamples) * pdf);
+			float omegaS = 1.0 / (float(pc.numSamples) * pdf);
 			// Solid angle of 1 pixel across all cube faces
 			float omegaP = 4.0 * PI / (6.0 * envMapDim * envMapDim);
 			// Biased (+1.0) mip level for better result
 			float mipLevel = roughness == 0.0 ? 0.0 : max(0.5 * log2(omegaS / omegaP) + 1.0, 0.0f);
-			color += textureLod(samplerEnv, L, mipLevel).rgb * dotNL;
+			color += textureLod(environmentCubemap, L, mipLevel).rgb * dotNL;
 			totalWeight += dotNL;
 
 		}
@@ -101,6 +104,6 @@ vec3 prefilterEnvMap(vec3 R, float roughness)
 
 void main()
 {		
-	vec3 N = normalize(inPos);
-	outColor = vec4(prefilterEnvMap(N, consts.roughness), 1.0);
+	vec3 N = normalize(modelCoordinates);
+	outColor = vec4(prefilterEnvMap(N, pc.roughness), 1.0);
 }

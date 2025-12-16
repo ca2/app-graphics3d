@@ -59,7 +59,7 @@ namespace graphics3d_vulkan
 
       void on_prepare_2025(::gpu::context *pgpucontext);
       void on_prepare(::gpu::context *pgpucontext) override;
-      //void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+      //void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);
       //void createPipeline(VkRenderPass renderPass);
 
       

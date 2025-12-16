@@ -23,7 +23,6 @@ namespace gpu_vulkan
 
       
       ::pointer < ::gpu_vulkan::descriptor_set_layout > m_pdescriptorsetlayout1;
-      ::pointer <::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
 
 
       virtual ::gpu_vulkan::descriptor_set_layout *descriptor_set_layout(::gpu::command_buffer * pgpucommandbuffer);
@@ -33,13 +32,13 @@ namespace gpu_vulkan
       virtual void create_descriptor_set_layout(::gpu::command_buffer *pgpucommandbuffer);
 
 
-      virtual void defer_create_update_descriptor_set(::gpu::command_buffer *pgpucommandbuffer,
-                                                      ::array<VkDescriptorSet> &descriptorseta,
-                                                      ::array_base<VkDescriptorBufferInfo> &bufferinfoa);
+      //virtual void defer_create_update_descriptor_set(::gpu::command_buffer *pgpucommandbuffer,
+        //                                              ::array<VkDescriptorSet> &descriptorseta,
+          //                                            ::array_base<VkDescriptorBufferInfo> &bufferinfoa);
 
-      virtual void defer_create_update_descriptor_set(::gpu::command_buffer *pgpucommandbuffer,
-                                                      ::array<VkDescriptorSet> &descriptorseta);
-
+      //virtual void defer_create_update_descriptor_set(::gpu::command_buffer *pgpucommandbuffer,
+        //                                              ::array<VkDescriptorSet> &descriptorseta);
+      
 
    };
 
@@ -54,10 +53,18 @@ namespace gpu_vulkan
    {
    public:
 
+      ::pointer<::gpu_vulkan::descriptor_pool> m_pdescriptorpool;
 
       ::pointer < ::array<VkDescriptorSet > > m_pvkdescriptorseta;
 
       ::array<VkDescriptorSet> & descriptor_set(::gpu::command_buffer * pgpucommandbuffer);
+      
+
+      virtual ::gpu_vulkan::descriptor_pool *descriptor_pool(::gpu::command_buffer *pgpucommandbuffer);
+      
+      
+      virtual void defer_update_binding_slot_set(::gpu::command_buffer *pgpucommandbuffer);
+
 
    };
 

@@ -1883,13 +1883,13 @@ namespace gpu_vulkan
 
       }
 
-      if (ptexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
-      {
+      //if (ptexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
+      //{
 
-         _001BeginRenderPassWithCubemap(pgpucommandbuffer, ptexture, ptexture->m_iCurrentFace, m_escene);
+      //   _001BeginRenderPassWithCubemap(pgpucommandbuffer, ptexture, ptexture->m_iCurrentFace, m_escene);
 
-      }
-      else
+      //}
+      //else
       {
 
          _001BeginRenderPass(pgpucommandbuffer, ptexture);
@@ -3182,7 +3182,8 @@ namespace gpu_vulkan
 
          m_pshaderBlend3->initialize_shader_with_block(
             m_pgpurenderer, ::as_memory_block(full_screen_triangle_vertex_shader),
-            ::as_memory_block(full_screen_triangle_fragment_shader), {}, {}, {},
+            ::as_memory_block(full_screen_triangle_fragment_shader), {},
+            //{}, {},
             // this means the vertex input layout will be null/empty
             // the full screen shader is embed in the shader code
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
@@ -4056,7 +4057,7 @@ VkFormat context::findDepthFormat()
 //   }
 
 //   // --- Descriptor layout / pool / set ---
-//   VkDescriptorSetLayout descriptorsetlayout = VK_NULL_HANDLE;
+//   aaaVkDescriptorSetLayout descriptorsetlayout = VK_NULL_HANDLE;
 //   ::array_base<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 //      vkinit::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT,
 //                                         0),
@@ -4130,7 +4131,7 @@ VkFormat context::findDepthFormat()
 //   cfg.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 //   cfg.dynamicStateInfo.pDynamicStates = cfg.dynamicStateEnables.data();
 //   cfg.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(cfg.dynamicStateEnables.size());
-//   cfg.descriptorSetLayouts = {descriptorsetlayout};
+//   cfg.aaadescriptorSetLayouts = {descriptorsetlayout};
 //   cfg.pushConstantRanges = {pushRange};
 
 //   // shader paths (match your project layout)
@@ -4479,7 +4480,7 @@ VkFormat context::findDepthFormat()
 //   }
 //
 //   // --- Descriptor layout / pool / set ---
-//   VkDescriptorSetLayout descriptorsetlayout = VK_NULL_HANDLE;
+//   aaaVkDescriptorSetLayout descriptorsetlayout = VK_NULL_HANDLE;
 //   ::array_base<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 //      vkinit::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 //   };
@@ -4551,7 +4552,7 @@ VkFormat context::findDepthFormat()
 //   cfg.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 //   cfg.dynamicStateInfo.pDynamicStates = cfg.dynamicStateEnables.data();
 //   cfg.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(cfg.dynamicStateEnables.size());
-//   cfg.descriptorSetLayouts = {descriptorsetlayout};
+//   cfg.aaadescriptorSetLayouts = {descriptorsetlayout};
 //   cfg.pushConstantRanges = {pushRange};
 //
 //   // shader paths (match your project layout)
@@ -4913,7 +4914,7 @@ VkFormat context::findDepthFormat()
 //   }
 //
 //   // Descriptor layout/pool/set (same as before)
-//   VkDescriptorSetLayout descriptorsetlayout;
+//   aaaVkDescriptorSetLayout descriptorsetlayout;
 //   ::array_base<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 //      vkinit::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 //   };
@@ -4972,7 +4973,7 @@ VkFormat context::findDepthFormat()
 //   pipelineconfiguration.dynamicStateInfo.pDynamicStates = pipelineconfiguration.dynamicStateEnables.data();
 //   pipelineconfiguration.dynamicStateInfo.dynamicStateCount =
 //      uint32_t(pipelineconfiguration.dynamicStateEnables.size());
-//   pipelineconfiguration.descriptorSetLayouts = {descriptorsetlayout};
+//   pipelineconfiguration.aaadescriptorSetLayouts = {descriptorsetlayout};
 //
 //   VkPushConstantRange pushRange{};
 //   pushRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -5162,7 +5163,9 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 
          renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
 
-         renderPassBeginInfo.framebuffer = ptexture->framebuffer(prenderpass);
+         auto & layer = ptexture->current_layer(prenderpass);
+
+         renderPassBeginInfo.framebuffer = layer.m_vkframebuffer;
       //}
       // else
       //{
@@ -5200,8 +5203,8 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 
 
       renderPassBeginInfo.renderArea.offset = {0, 0};
-      renderPassBeginInfo.renderArea.extent = {(uint32_t)pgputexture->width(),
-                                               (uint32_t)pgputexture->height()};
+      renderPassBeginInfo.renderArea.extent = {(uint32_t)layer.m_size.width(),
+                                               (uint32_t)layer.m_size.height()};
 
 
       vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -5210,128 +5213,134 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 }
 
 
-void context::_001BeginRenderPassWithCubemap(::gpu::command_buffer *pgpucommandbuffer,
-                                  ::gpu::texture *pgputexture, int iFace,
-                                  ::gpu::enum_scene escene)
-{
-
-   ASSERT(pgputexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map);
-
-   {
-
-      //////////////////////////////////////////
-
-
-      ::cast<context> pgpucontext = this;
-
-      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
-
-      ::cast<renderer> prenderer = m_pgpurenderer;
-      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-
-      //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
-
-      VkRenderPassBeginInfo renderPassBeginInfo{};
-
-      renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-
-      // if (has_sampler())
-      //{
-
-      //   throw ::exception(error_wrong_state, "use bind(txtDst, txtDsr)");
-
-      //}
-
-      ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
-      //::cast<renderer> prenderer = m_pgpurenderer;
-
-      ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
-      ::cast<render_pass> prenderpass = ptexture->get_render_pass();
-
-      renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
-      // if (prenderer->m_pgpulayer)
-      {
-
-         //::cast<::gpu_vulkan::ibl::cubemap_framebuffer> pcubemapframebuffer;
-
-         //pcubemapframebuffer = pgpucubemapframebuffer;
-
-         //if (pgputexture)
-         //{
-
-         //   ptexture = pgputexture;
-         //}
-         //else
-         //{
-
-         //   ptexture = prendertarget->current_texture(::gpu::current_frame());
-         //}
-
-         //if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
-         //{
-
-         //   warning() << "what?";
-         //}
-
-         renderPassBeginInfo.framebuffer = ptexture->framebuffer(prenderpass, iFace);
-
-      }
-      // else
-      //{
-
-      //   renderPassBeginInfo.framebuffer =
-      //   prenderpass->getFrameBuffer(prenderer->m_pgpurendertarget->get_frame_index());
-
-      //}
-
-      VkClearValue clearValues[2]{};
-      // clearValues[0].color = { 0.5f* 0.5f, 0.75f*0.5f, 0.95f* 0.5f, 0.5f };
-      bool bClearColor = true;
-      // if (m_bClearColor)
-      if (bClearColor)
-      {
-
-         ::color::color colorClear(color::transparent);
-
-         auto fR = colorClear.f32_red();
-         auto fG = colorClear.f32_green();
-         auto fB = colorClear.f32_blue();
-         auto fA = colorClear.f32_opacity();
-
-
-
-         clearValues[0].color = {fR * fA, fG * fA, fB * fA, fA};
-
-         if (escene == ::gpu::e_scene_3d)
-         {
-            clearValues[1].depthStencil = {1.0f, 0};
-            renderPassBeginInfo.clearValueCount = 2;
-         }
-         else
-         {
-            renderPassBeginInfo.clearValueCount = 1;
-         }
-         renderPassBeginInfo.pClearValues = clearValues;
-      }
-      else
-      {
-
-         renderPassBeginInfo.clearValueCount = 0;
-         renderPassBeginInfo.pClearValues = nullptr;
-      }
-
-
-      renderPassBeginInfo.renderArea.offset = {0, 0};
-      renderPassBeginInfo.renderArea.extent = {(uint32_t)ptexture->width(),
-                                               (uint32_t)ptexture->height()};
-
-
-      vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-
-      //////////////////////////////////////////
-   }
-}
+//void context::_001BeginRenderPassWithCubemap(::gpu::command_buffer *pgpucommandbuffer,
+//                                  ::gpu::texture *pgputexture, int iFace,
+//                                  ::gpu::enum_scene escene)
+//{
+//
+//   ASSERT(pgputexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map);
+//
+//   {
+//
+//      //////////////////////////////////////////
+//
+//
+//      ::cast<context> pgpucontext = this;
+//
+//      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
+//
+//      ::cast<renderer> prenderer = m_pgpurenderer;
+//      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+//
+//      //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
+//
+//      VkRenderPassBeginInfo renderPassBeginInfo{};
+//
+//      renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+//
+//      // if (has_sampler())
+//      //{
+//
+//      //   throw ::exception(error_wrong_state, "use bind(txtDst, txtDsr)");
+//
+//      //}
+//
+//      ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
+//      //::cast<renderer> prenderer = m_pgpurenderer;
+//
+//      ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
+//      ::cast<render_pass> prenderpass;
+//      
+//      prenderpass = ptexture->get_render_pass();
+//
+//      renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
+//      // if (prenderer->m_pgpulayer)
+//      {
+//
+//         //::cast<::gpu_vulkan::ibl::cubemap_framebuffer> pcubemapframebuffer;
+//
+//         //pcubemapframebuffer = pgpucubemapframebuffer;
+//
+//         //if (pgputexture)
+//         //{
+//
+//         //   ptexture = pgputexture;
+//         //}
+//         //else
+//         //{
+//
+//         //   ptexture = prendertarget->current_texture(::gpu::current_frame());
+//         //}
+//
+//         //if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+//         //{
+//
+//         //   warning() << "what?";
+//         // 
+//         // 
+//         //}
+//
+//
+//
+//         renderPassBeginInfo.framebuffer = ptexture->framebuffer(prenderpass, ptexture->m_iCurrentMip, iFace);
+//
+//      }
+//      // else
+//      //{
+//
+//      //   renderPassBeginInfo.framebuffer =
+//      //   prenderpass->getFrameBuffer(prenderer->m_pgpurendertarget->get_frame_index());
+//
+//      //}
+//
+//      VkClearValue clearValues[2]{};
+//      // clearValues[0].color = { 0.5f* 0.5f, 0.75f*0.5f, 0.95f* 0.5f, 0.5f };
+//      bool bClearColor = true;
+//      // if (m_bClearColor)
+//      if (bClearColor)
+//      {
+//
+//         ::color::color colorClear(color::transparent);
+//
+//         auto fR = colorClear.f32_red();
+//         auto fG = colorClear.f32_green();
+//         auto fB = colorClear.f32_blue();
+//         auto fA = colorClear.f32_opacity();
+//
+//
+//
+//         clearValues[0].color = {fR * fA, fG * fA, fB * fA, fA};
+//
+//         if (escene == ::gpu::e_scene_3d)
+//         {
+//            clearValues[1].depthStencil = {1.0f, 0};
+//            renderPassBeginInfo.clearValueCount = 2;
+//         }
+//         else
+//         {
+//            renderPassBeginInfo.clearValueCount = 1;
+//         }
+//         renderPassBeginInfo.pClearValues = clearValues;
+//      }
+//      else
+//      {
+//
+//         renderPassBeginInfo.clearValueCount = 0;
+//         renderPassBeginInfo.pClearValues = nullptr;
+//      }
+//
+//
+//      renderPassBeginInfo.renderArea.offset = {0, 0};
+//      renderPassBeginInfo.renderArea.extent = {(uint32_t)ptexture->width(),
+//                                               (uint32_t)ptexture->height()};
+//
+//
+//      vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+//
+//
+//      //////////////////////////////////////////
+//   }
+//}
 
 
 void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
@@ -5576,7 +5585,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //   VK_CHECK_RESULT(vkCreateFramebuffer(this->logicalDevice(), &framebufferCI, nullptr, &framebuffer));
 //
 //   // Descriptors
-//   VkDescriptorSetLayout descriptorsetlayout;
+//   aaaVkDescriptorSetLayout descriptorsetlayout;
 //   ::array_base<VkDescriptorSetLayoutBinding> setLayoutBindings = {};
 //   VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI = vkinit::descriptorSetLayoutCreateInfo(setLayoutBindings);
 //   VK_CHECK_RESULT(
@@ -6090,12 +6099,16 @@ void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::
                                    int iAssimpTextureType)
 {
 
-   if (ødefer_construct(ptexture))
+   auto ptextureNew = øcreate<::gpu::texture>();
+
+   ptextureNew->initialize_texture_from_file_path(m_pgpurenderer, path, false);
+   
+   if (ptextureNew->is_ok())
    {
-   
-       ptexture->initialize_texture_from_file_path(m_pgpurenderer, path, false);
-   
-    }
+
+      ptexture = ptextureNew;
+
+   }
 
 }
 

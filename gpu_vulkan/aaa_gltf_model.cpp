@@ -369,7 +369,7 @@ namespace gpu_vulkan
    //   gltf material
    //*/
    //void gltf::Material::addDescriptor(int iCount, ::array_base<VkDescriptorSet> &a, VkDescriptorPool descriptorPool,
-   //                                   VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags,
+   //                                   aaaVkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags,
    //                                   gpu_vulkan::texture *fallbackTexture)
    //{
 
@@ -496,7 +496,7 @@ namespace gpu_vulkan
    // void gltf::terial::addDescriptor(
    //       ::array_base<VkDescriptorSet> &a,
    //       VkDescriptorPool descriptorPool,
-   //       VkDescriptorSetLayout descriptorSetLayout,
+   //       aaaVkDescriptorSetLayout descriptorSetLayout,
    //       uint32_t descriptorBindingFlags, gpu_vulkan::texture *fallbackTexture)
    //{
 
@@ -1612,10 +1612,10 @@ namespace gpu_vulkan
          {
             // Layout is global, so only create if it hasn't already been created before
             // if (descriptorSetLayoutUbo == VK_NULL_HANDLE) {
-            //	std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
+            //	std::vector<aaaVkDescriptorSetLayoutBinding> setLayoutBindings = {
             //		vkinit::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
             //	};
-            //	VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
+            //	aaaVkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
             //	descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
             //	descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
             //	descriptorLayoutCI.pBindings = setLayoutBindings.data();
@@ -1662,7 +1662,7 @@ namespace gpu_vulkan
          //                  //// Always push exactly two bindings:
          //                  ////  • binding 0 = base-color sampler
          //                  ////  • binding 1 = normal-map sampler
-         //                  // std::array<VkDescriptorSetLayoutBinding, 5> setLayoutBindings = {
+         //                  // std::array<aaaVkDescriptorSetLayoutBinding, 5> setLayoutBindings = {
          //                  //	// binding 0 → baseColor (albedo)
          //                  //	vkinit::descriptorSetLayoutBinding(
          //                  //		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -1696,7 +1696,7 @@ namespace gpu_vulkan
          //                  // };
 
 
-         //                  // VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
+         //                  // aaaVkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
          //                  // descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
          //                  // descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
          //                  // descriptorLayoutCI.pBindings = setLayoutBindings.data();
@@ -2411,7 +2411,7 @@ namespace gpu_vulkan
       return nodeFound;
    }
 
-   // void gltf::Model::prepareNodeDescriptor(Node *pnode, VkDescriptorSetLayout descriptorSetLayout)
+   // void gltf::Model::prepareNodeDescriptor(Node *pnode, aaaVkDescriptorSetLayout descriptorSetLayout)
    // {
    //    if (pnode->m_pmesh)
    //    {

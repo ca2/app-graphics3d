@@ -55,9 +55,9 @@ public:
    } descriptorSets;
 
    struct {
-      VkDescriptorSetLayout textured{ VK_NULL_HANDLE };
-      VkDescriptorSetLayout shaded{ VK_NULL_HANDLE };
-   } descriptorSetLayouts;
+      aaaVkDescriptorSetLayout textured{ VK_NULL_HANDLE };
+      aaaVkDescriptorSetLayout shaded{ VK_NULL_HANDLE };
+   } aaadescriptorSetLayouts;
 
    // Framebuffer for offscreen rendering
    struct FrameBufferAttachment {
@@ -117,8 +117,8 @@ public:
          vkDestroyPipelineLayout(device, pipelineLayouts.textured, nullptr);
          vkDestroyPipelineLayout(device, pipelineLayouts.shaded, nullptr);
 
-         vkDestroyDescriptorSetLayout(device, descriptorSetLayouts.shaded, nullptr);
-         vkDestroyDescriptorSetLayout(device, descriptorSetLayouts.textured, nullptr);
+         vkDestroyDescriptorSetLayout(device, aaadescriptorSetLayouts.shaded, nullptr);
+         vkDestroyDescriptorSetLayout(device, aaadescriptorSetLayouts.textured, nullptr);
 
          // Uniform buffers
          uniformBuffers.vsShared.destroy();
@@ -422,7 +422,7 @@ public:
          vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
       };
       descriptorLayoutInfo = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
-      VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutInfo, nullptr, &descriptorSetLayouts.shaded));
+      VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutInfo, nullptr, &aaadescriptorSetLayouts.shaded));
 
       // Textured layouts
       setLayoutBindings = {
@@ -432,11 +432,11 @@ public:
          vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
       };
       descriptorLayoutInfo = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
-      VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutInfo, nullptr, &descriptorSetLayouts.textured));
+      VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutInfo, nullptr, &aaadescriptorSetLayouts.textured));
 
       // Sets
       // Mirror plane descriptor set
-      VkDescriptorSetAllocateInfo allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayouts.textured, 1);
+      VkDescriptorSetAllocateInfo allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &aaadescriptorSetLayouts.textured, 1);
       VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSets.mirror));
       ::array<VkWriteDescriptorSet> writeDescriptorSets = {
          // Binding 0 : Vertex shader uniform buffer
@@ -447,7 +447,7 @@ public:
       vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
       // Shaded descriptor sets
-      allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayouts.shaded, 1);
+      allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &aaadescriptorSetLayouts.shaded, 1);
       // Model
       VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSets.model));
       ::array<VkWriteDescriptorSet> modelWriteDescriptorSets = {
@@ -469,10 +469,10 @@ public:
    void preparePipelines()
    {
       // Layouts
-      VkPipelineLayoutCreateInfo pipelineLayoutInfo = vks::initializers::pipelineLayoutCreateInfo(&descriptorSetLayouts.shaded, 1);
+      VkPipelineLayoutCreateInfo pipelineLayoutInfo = vks::initializers::pipelineLayoutCreateInfo(&aaadescriptorSetLayouts.shaded, 1);
       VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayouts.shaded));
 
-      pipelineLayoutInfo = vks::initializers::pipelineLayoutCreateInfo(&descriptorSetLayouts.textured, 1);
+      pipelineLayoutInfo = vks::initializers::pipelineLayoutCreateInfo(&aaadescriptorSetLayouts.textured, 1);
       VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayouts.textured));
 
       // Pipelines

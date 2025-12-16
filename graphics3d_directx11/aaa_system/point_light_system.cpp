@@ -20,7 +20,7 @@ namespace graphics3d_directx11
 
 
    point_light_system::point_light_system(
-      ::gpu::context * pgpucontext, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
+      ::gpu::context * pgpucontext, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout)
       : m_pgpucontext{ pgpucontext }
    {
 
@@ -41,7 +41,7 @@ namespace graphics3d_directx11
    void point_light_system::createPipelineLayout() {
 
       
-      VkDescriptorSetLayout globalSetLayout
+      aaaVkDescriptorSetLayout globalSetLayout
       m_pshader = m_pengine->create_shader()
       {
 
@@ -52,12 +52,12 @@ namespace graphics3d_directx11
       pushConstantRange.offset = 0;
       pushConstantRange.size = sizeof(PointLightPushConstants);
 
-      ::array<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+      ::array<aaaVkDescriptorSetLayout> aaadescriptorSetLayouts{ globalSetLayout };
 
       VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
       pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-      pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
-      pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+      pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(aaadescriptorSetLayouts.size());
+      pipelineLayoutInfo.pSetLayouts = aaadescriptorSetLayouts.data();
       pipelineLayoutInfo.pushConstantRangeCount = 1;
       pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
       //pipelineLayoutInfo.pPushConstantRanges = nullptr;

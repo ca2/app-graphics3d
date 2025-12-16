@@ -44,7 +44,7 @@ namespace app_graphics3d_continuum
       void on_render(::gpu::context* pgpucontext, ::graphics3d::scene * pscene) override;
       
 
-      //void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+      //void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);
       //void createPipeline(VkRenderPass renderPass);
       //VkPipelineLayout pipelineLayout;
 

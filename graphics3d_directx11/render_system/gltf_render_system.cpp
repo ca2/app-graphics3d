@@ -145,8 +145,8 @@ namespace graphics3d_directx11
          pgpucontext->m_pgpurenderer, 
          embedded_pbr_vert(),
          embedded_pbr_frag(), 
-         {}, 
-         {}, 
+         //{}, 
+         //{}, 
          pinputlayout);
 
       ::cast<::gpu_directx11::shader> pshaderMask = m_pshaderMask;
@@ -164,8 +164,8 @@ namespace graphics3d_directx11
          pgpucontext->m_pgpurenderer, 
          embedded_pbr_vert(), 
          embedded_pbr_frag(),
-         {}, 
-         {}, 
+         //{}, 
+         //{}, 
          pinputlayout);
 
       ::cast<::gpu_directx11::shader> pshaderBlend = m_pshaderBlend;
@@ -183,8 +183,8 @@ namespace graphics3d_directx11
          pgpucontext->m_pgpurenderer, 
          embedded_pbr_vert(),
          embedded_pbr_frag(),
-         {}, 
-         {},
+         //{}, 
+         //{},
          pinputlayout);
 
 
@@ -371,7 +371,7 @@ namespace graphics3d_directx11
    }
 
 
-   //void gltf_render_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
+   //void gltf_render_system::createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout)
    //{
 
    //   ::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
@@ -381,7 +381,7 @@ namespace graphics3d_directx11
    //   auto descriptorsetlayout2 = m_pdescriptorsetlayoutPbr->getDescriptorSetLayout();
    //   auto descriptorsetlayout3 = m_pdescriptorsetlayoutIbl->getDescriptorSetLayout();
 
-   //   const std::vector<VkDescriptorSetLayout> layouts = {
+   //   const std::vector<aaaVkDescriptorSetLayout> layouts = {
    //      descriptorsetlayout0,
    //      descriptorsetlayout1,
    //      descriptorsetlayout2,

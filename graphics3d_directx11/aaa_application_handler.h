@@ -64,8 +64,8 @@ namespace graphics3d_directx11
    //   } descriptorSets;
 
    //   struct {
-   //      VkDescriptorSetLayout textured{ VK_NULL_HANDLE };
-   //      VkDescriptorSetLayout shaded{ VK_NULL_HANDLE };
+   //      aaaVkDescriptorSetLayout textured{ VK_NULL_HANDLE };
+   //      aaaVkDescriptorSetLayout shaded{ VK_NULL_HANDLE };
    //   } descriptorSetLayouts;
 
    //   // Framebuffer for offscreen rendering

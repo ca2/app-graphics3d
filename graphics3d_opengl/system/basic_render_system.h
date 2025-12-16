@@ -11,7 +11,7 @@
 //	{
 //	public:
 //		
-//		//SimpleRenderSystem(context *pvkcdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
+//		//SimpleRenderSystem(context *pvkcdevice, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout);
 //		SimpleRenderSystem();
 //		~SimpleRenderSystem();
 //
@@ -23,7 +23,7 @@
 //	
 //
 //
-//		//void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+//		//void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);
 //		//void createPipeline(VkRenderPass renderPass);
 //
 //		//context* m_pgpucontext;

@@ -18,7 +18,7 @@
 //        VkShaderStageFlags stageFlags,
 //        uint32_t count) {
 //        assert(bindings.count(binding) == 0 && "Binding already in use");
-//        VkDescriptorSetLayoutBinding layoutBinding{};
+//        aaaVkDescriptorSetLayoutBinding layoutBinding{};
 //        layoutBinding.binding = binding;
 //        layoutBinding.descriptorType = descriptorType;
 //        layoutBinding.descriptorCount = count;
@@ -37,14 +37,14 @@
 //    // *************** Descriptor Set Layout *********************
 //
 //    descriptor_set_layout::descriptor_set_layout(
-//        ::gpu::context *pgpucontext, ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings)
+//        ::gpu::context *pgpucontext, ::map<uint32_t, aaaVkDescriptorSetLayoutBinding> bindings)
 //        : m_pgpucontext{ pgpucontext }, bindings{ bindings } {
-//        ::array<VkDescriptorSetLayoutBinding> setLayoutBindings{};
+//        ::array<aaaVkDescriptorSetLayoutBinding> setLayoutBindings{};
 //        for (auto kv : bindings) {
 //            setLayoutBindings.add(kv.element2());
 //        }
 //
-//        VkDescriptorSetLayoutCreateInfo descriptorSetLayoutInfo{};
+//        aaaVkDescriptorSetLayoutCreateInfo descriptorSetLayoutInfo{};
 //        descriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 //        descriptorSetLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
 //        descriptorSetLayoutInfo.pBindings = setLayoutBindings.data();
@@ -116,7 +116,7 @@
 //    }
 //
 //    bool descriptor_pool::allocateDescriptor(
-//        const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const {
+//        const aaaVkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const {
 //        VkDescriptorSetAllocateInfo allocInfo{};
 //        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 //        allocInfo.descriptorPool = descriptorPool;

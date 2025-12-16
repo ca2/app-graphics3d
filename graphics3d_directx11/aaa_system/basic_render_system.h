@@ -20,7 +20,7 @@ namespace graphics3d_directx11
 	virtual public ::particle 
 	{
 	public:
-		SimpleRenderSystem(context *pvkcdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
+		SimpleRenderSystem(context *pvkcdevice, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout);
 		~SimpleRenderSystem();
 
 		SimpleRenderSystem(const SimpleRenderSystem&) = delete;
@@ -28,7 +28,7 @@ namespace graphics3d_directx11
 
 		void renderGameObjects(FrameInfo& frameInfo);
 	private:
-		void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+		void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);
 		void createPipeline(VkRenderPass renderPass);
 
 		context* m_pcontext;

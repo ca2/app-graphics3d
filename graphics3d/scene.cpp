@@ -262,9 +262,9 @@ namespace graphics3d
       if (!m_pbindingslotsetIbl1)
       {
 
-         ASSERT(::is_set(m_ptextureIrradianceCube));
-         ASSERT(::is_set(m_ptexturePrefilteredCube));
-         ASSERT(::is_set(m_ptextureLuBrdf));
+         ASSERT(::is_ok(m_ptextureIrradianceCube));
+         ASSERT(::is_ok(m_ptexturePrefilteredCube));
+         ASSERT(::is_ok(m_ptextureLuBrdf));
 
          øconstruct(m_pbindingslotsetIbl1);
 

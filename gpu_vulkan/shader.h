@@ -25,7 +25,7 @@ namespace gpu_vulkan
    //   VkSampler m_vksampler;
    //   unsigned int m_uSet;
    //   VkRenderPass m_vkrenderpass2;
-   //   VkDescriptorSetLayout m_descriptorsetlayout;
+   //   aaaVkDescriptorSetLayout m_descriptorsetlayout;
    //   //VkPipelineLayout pipelineLayout;
    //   // VkPipeline pipeline;
    //   ///VkDescriptorPool descPool;
@@ -104,8 +104,8 @@ namespace gpu_vulkan
       //::pointer < shader_sampler >     m_pshadersampler;
       ::pointer < ::gpu_vulkan::shader > m_pshaderPresent;
       VkRenderPass            m_vkrenderpassCurrent;
-      ::int_map<::pointer<::gpu_vulkan::descriptor_set_layout>> m_mapDescriptorSetLayout;
-      ::pointer < ::array<VkDescriptorSet> > m_pvkdescriptorseta;
+      //::int_map<::pointer<::gpu_vulkan::descriptor_set_layout>> m_mapDescriptorSetLayout;
+      //::pointer < ::array<VkDescriptorSet> > m_pvkdescriptorseta;
 
 
       shader();
@@ -142,7 +142,7 @@ namespace gpu_vulkan
 
       virtual void create_descriptor_layout();
 
-      virtual void _update_vk_descriptor_set(int iFrameCount);
+      //virtual void _update_vk_descriptor_set(int iFrameCount);
 
       void draw() override;
       //void on_before_draw(::gpu::command_buffer *pgpucommandbuffer) override;

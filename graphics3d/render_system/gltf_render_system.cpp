@@ -18,7 +18,7 @@ namespace graphics3d
    // gltf_render_system::gltf_render_system(
    //     graphics3d::device * pdevice,
    //     VkRenderPass renderPass,
-   //     VkDescriptorSetLayout globalSetLayout,
+   //     aaaVkDescriptorSetLayout globalSetLayout,
    //     IAssetProvider& assets
    // ) :
    //     m_pgpudevice(pdevice),
@@ -42,7 +42,7 @@ namespace graphics3d
    // void gltf_render_system::init(
    //    graphics3d::device * pdevice,
    //     VkRenderPass renderPass,
-   //     VkDescriptorSetLayout globalSetLayout,
+   //     aaaVkDescriptorSetLayout globalSetLayout,
    //    graphics3d::sandbox_descriptor_pool& descriptorPool,
    //     size_t frameCount
    // ) {
@@ -88,320 +88,322 @@ namespace graphics3d
    void gltf_render_system::on_prepare(::gpu::context *pgpucontext)
    {
 
-      auto prenderer = pgpucontext->m_pgpurenderer;
-
-      m_pshader = øcreate<::gpu::shader>();
-
-      m_pshader->set_global_ubo();
-      //auto & bindingUbo = m_pshader->binding();
-      //bindingUbo.m_strUniform = "ubo";
-      //bindingUbo.m_ebinding = ::gpu::e_binding_global_ubo;
-      
-         
-      //m_pshader->initialize_shader(
-      //      pgpucontext->m_pgpurenderer,
-      //   "matter://shaders/vert.vert",
-      //   "matter://shaders/frag.frag",
-      //   {::gpu::shader::e_descriptor_set_slot_local}, {},
-      //   pgpucontext->input_layout<::graphics3d::Vertex>()
-
-      //);
-
-      // m_pshader->m_bClearColor = true;
-      // m_pshader->m_colorClear = argb(0.8f, 0.1f, 0.5f, 0.1f);
-
-            auto pcontext = m_pengine->gpu_context();
-
-       øconstruct(m_pshaderOpaque);
-       øconstruct(m_pshaderMask);
-       øconstruct(m_pshaderBlend);
-
-
-       auto ppropertiesUbo = ::gpu_properties<::graphics3d::global_ubo1>();
-       auto ppropertiesPush = ::gpu_properties<push_constants>();
-       auto pinputlayout = pgpucontext->input_layout < ::gpu::gltf::vertex >();
+      ::graphics3d::pbr_with_ibl_render_system::on_prepare(pgpucontext);
+
+      ////auto prenderer = pgpucontext->m_pgpurenderer;
+
+      ////m_pshader = øcreate<::gpu::shader>();
+
+      ////m_pshader->set_global_ubo();
+      ////auto & bindingUbo = m_pshader->binding();
+      ////bindingUbo.m_strUniform = "ubo";
+      ////bindingUbo.m_ebinding = ::gpu::e_binding_global_ubo;
+      //
+      //   
+      ////m_pshader->initialize_shader(
+      ////      pgpucontext->m_pgpurenderer,
+      ////   "matter://shaders/vert.vert",
+      ////   "matter://shaders/frag.frag",
+      ////   {::gpu::shader::e_descriptor_set_slot_local}, {},
+      ////   pgpucontext->input_layout<::graphics3d::Vertex>()
+
+      ////);
+
+      //// m_pshader->m_bClearColor = true;
+      //// m_pshader->m_colorClear = argb(0.8f, 0.1f, 0.5f, 0.1f);
+
+      // auto pcontext = m_pengine->gpu_context();
+
+      // øconstruct(m_pshaderOpaque);
+      // øconstruct(m_pshaderMask);
+      // øconstruct(m_pshaderBlend);
+
+
+      // auto ppropertiesUbo = ::gpu_properties<::graphics3d::global_ubo1>();
+      // auto ppropertiesPush = ::gpu_properties<push_constants>();
+      // auto pinputlayout = pgpucontext->input_layout < ::gpu::gltf::vertex >();
 
-
-       
-      
 
-       //m_pdescriptorsetlayoutIbl =
-       //   ::gpu_vulkan::descriptor_set_layout::Builder(pcontext)
-       //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-       //      .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-       //      .addBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-       //      .build();
+      // 
+      //
 
-       //m_pdescriptorsetlayoutPbr =
-       //   ::gpu_vulkan::descriptor_set_layout::Builder(pcontext)
-       //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT) // albedo
-       //      .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT) // normal
-       //      .addBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT) //
-       //      metallicRoughness .addBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-       //      // ao .addBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT) // emissive
-       //      .build();
+      // //m_pdescriptorsetlayoutIbl =
+      // //   ::gpu_vulkan::descriptor_set_layout::Builder(pcontext)
+      // //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      // //      .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      // //      .addBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      // //      .build();
 
+      // //m_pdescriptorsetlayoutPbr =
+      // //   ::gpu_vulkan::descriptor_set_layout::Builder(pcontext)
+      // //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT) // albedo
+      // //      .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT) // normal
+      // //      .addBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT) //
+      // //      metallicRoughness .addBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      // //      // ao .addBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT) // emissive
+      // //      .build();
 
 
 
-      //::cast<::gpu_vulkan::shader> pshaderOpaque = m_pshaderOpaque;
-       m_pshaderOpaque->binding_set(0, pgpucontext->global_ubo1_binding_set());
-       m_pshaderOpaque->binding_set(1, pgpucontext->ibl1_binding_set());
-       m_pshaderOpaque->binding_set(2, pgpucontext->gltf_pbr_binding_set());
-       //pshaderOpaque->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
-       //pshaderOpaque->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
-       m_pshaderOpaque->m_propertiesPushShared.set_properties(ppropertiesPush);
-       pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushShared, false);
-      //m_pshaderOpaque->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
-      //m_pshaderOpaque->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
-      //pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushVertex);
-      //pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushFragment);
-       m_pshaderOpaque->set_global_ubo();
-       m_pshaderOpaque->initialize_shader_with_block(
-          pgpucontext->m_pgpurenderer,
-          gltf_vert_memory(),
-          gltf_frag_memory(),
-          {},
-          {},
-          pinputlayout);
 
+      ////::cast<::gpu_vulkan::shader> pshaderOpaque = m_pshaderOpaque;
+      // m_pshaderOpaque->binding_set(0, pgpucontext->global_ubo1_binding_set());
+      // m_pshaderOpaque->binding_set(1, pgpucontext->ibl1_binding_set());
+      // m_pshaderOpaque->binding_set(2, pgpucontext->gltf_pbr_binding_set());
+      // //pshaderOpaque->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
+      // //pshaderOpaque->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
+      // m_pshaderOpaque->m_propertiesPushShared.set_properties(ppropertiesPush);
+      // pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushShared, false);
+      ////m_pshaderOpaque->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
+      ////m_pshaderOpaque->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
+      ////pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushVertex);
+      ////pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushFragment);
+      // m_pshaderOpaque->set_global_ubo();
+      // m_pshaderOpaque->initialize_shader_with_block(
+      //    pgpucontext->m_pgpurenderer,
+      //    gltf_vert_memory(),
+      //    gltf_frag_memory(),
+      //    //{},
+      //    //{},
+      //    pinputlayout);
 
-      auto pshaderMask = m_pshaderMask;
 
-       //pshaderMask->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
-       //pshaderMask->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
+      //auto pshaderMask = m_pshaderMask;
 
-      m_pshaderMask->binding_set(0, pgpucontext->global_ubo1_binding_set());
-      m_pshaderMask->binding_set(1, pgpucontext->ibl1_binding_set());
-      m_pshaderMask->binding_set(2, pgpucontext->gltf_pbr_binding_set());
+      // //pshaderMask->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
+      // //pshaderMask->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
 
+      //m_pshaderMask->binding_set(0, pgpucontext->global_ubo1_binding_set());
+      //m_pshaderMask->binding_set(1, pgpucontext->ibl1_binding_set());
+      //m_pshaderMask->binding_set(2, pgpucontext->gltf_pbr_binding_set());
 
-       m_pshaderMask->m_propertiesPushShared.set_properties(ppropertiesPush);
-       m_pshaderMask->set_global_ubo();
-       pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushShared, false);
-      //m_pshaderMask->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
-      //m_pshaderMask->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
-      //pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushVertex);
-      //pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushFragment);
-       m_pshaderMask->initialize_shader_with_block(
-          pgpucontext->m_pgpurenderer, gltf_vert_memory(), gltf_frag_memory(),
-                                                   {},
-          {},
-          pinputlayout);
 
-      auto pshaderBlend = m_pshaderBlend;
+      // m_pshaderMask->m_propertiesPushShared.set_properties(ppropertiesPush);
+      // m_pshaderMask->set_global_ubo();
+      // pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushShared, false);
+      ////m_pshaderMask->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
+      ////m_pshaderMask->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
+      ////pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushVertex);
+      ////pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushFragment);
+      // m_pshaderMask->initialize_shader_with_block(
+      //    pgpucontext->m_pgpurenderer, gltf_vert_memory(), gltf_frag_memory(),
+      //                                             //{},
+      //    //{},
+      //    pinputlayout);
 
-       //pshaderBlend->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
-       //pshaderBlend->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
+      //auto pshaderBlend = m_pshaderBlend;
 
-      m_pshaderBlend->binding_set(0, pgpucontext->global_ubo1_binding_set());
-      m_pshaderBlend->binding_set(1, pgpucontext->ibl1_binding_set());
-      m_pshaderBlend->binding_set(2, pgpucontext->gltf_pbr_binding_set());
+      // //pshaderBlend->m_mapDescriptorSetLayout[1] = m_pdescriptorsetlayoutIbl;
+      // //pshaderBlend->m_mapDescriptorSetLayout[2] = m_pdescriptorsetlayoutPbr;
 
+      //m_pshaderBlend->binding_set(0, pgpucontext->global_ubo1_binding_set());
+      //m_pshaderBlend->binding_set(1, pgpucontext->ibl1_binding_set());
+      //m_pshaderBlend->binding_set(2, pgpucontext->gltf_pbr_binding_set());
 
 
-       m_pshaderBlend->m_propertiesPushShared.set_properties(ppropertiesPush);
-       m_pshaderBlend->set_global_ubo();
-       pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushShared, false);
-      //m_pshaderBlend->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
-      //m_pshaderBlend->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
-      //pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushVertex);
-      //pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushFragment);
-       m_pshaderBlend->initialize_shader_with_block(
-          pgpucontext->m_pgpurenderer, gltf_vert_memory(), gltf_frag_memory(),
-                                                    {},
-          {},
-          pinputlayout);
 
+      // m_pshaderBlend->m_propertiesPushShared.set_properties(ppropertiesPush);
+      // m_pshaderBlend->set_global_ubo();
+      // pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushShared, false);
+      ////m_pshaderBlend->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
+      ////m_pshaderBlend->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
+      ////pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushVertex);
+      ////pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushFragment);
+      // m_pshaderBlend->initialize_shader_with_block(
+      //    pgpucontext->m_pgpurenderer, gltf_vert_memory(), gltf_frag_memory(),
+      //                                              //{},
+      //    //{},
+      //    pinputlayout);
 
-      //createPipelineLayout(pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout());
 
-      //auto prenderpass = render_pass2();
+      ////createPipelineLayout(pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout());
 
-      //createPipeline(prenderpass->m_vkrenderpass);
+      ////auto prenderpass = render_pass2();
 
-      //::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
+      ////createPipeline(prenderpass->m_vkrenderpass);
 
-      //::cast<::gpu_vulkan::render_target> prendertarget = prenderer->m_pgpurendertarget;
+      ////::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
 
-      //auto frameCount = prendertarget->get_frame_count();
+      ////::cast<::gpu_vulkan::render_target> prendertarget = prenderer->m_pgpurendertarget;
 
-      //m_vkdescriptorsetaIbl.resize(frameCount);
+      ////auto frameCount = prendertarget->get_frame_count();
 
-      //auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      ////m_vkdescriptorsetaIbl.resize(frameCount);
 
-      //pdescriptorpoolbuilder->initialize_builder(pcontext);
-      //pdescriptorpoolbuilder->setMaxSets(frameCount * 10);
-      //pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, frameCount * 100);
+      ////auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
 
-      //m_pdescriptorpool = pdescriptorpoolbuilder->build();
+      ////pdescriptorpoolbuilder->initialize_builder(pcontext);
+      ////pdescriptorpoolbuilder->setMaxSets(frameCount * 10);
+      ////pdescriptorpoolbuilder->addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, frameCount * 100);
 
+      ////m_pdescriptorpool = pdescriptorpoolbuilder->build();
 
-      //auto passetmanager = m_pengine->m_pimmersionlayer->m_passetmanager;
 
-      //::cast<::graphics3d::scene> pscene = m_pengine->m_pimmersionlayer->m_pscene;
+      ////auto passetmanager = m_pengine->m_pimmersionlayer->m_passetmanager;
 
-      //for (uint32_t i = 0; i < frameCount; i++)
-      //{
+      ////::cast<::graphics3d::scene> pscene = m_pengine->m_pimmersionlayer->m_pscene;
 
-      //   VkDescriptorSet set;
+      ////for (uint32_t i = 0; i < frameCount; i++)
+      ////{
 
-      //   // m_pdescriptorpool->allocateDescriptor(m_pdescriptorsetlayoutIbl->getDescriptorSetLayout(), set,
-      //   //                                 /*setIndex=*/0);
-      //   m_pdescriptorpool->allocateDescriptor(
-      //      m_pdescriptorsetlayoutIbl->getDescriptorSetLayout(), set, 0);
+      ////   VkDescriptorSet set;
 
-      //   ::cast<::gpu_vulkan::texture> ptextureIrrad = pscene->m_ptextureIrradianceCube;
-      //   ::cast<::gpu_vulkan::texture> ptexturePrefltr = pscene->m_ptexturePrefilteredCube;
-      //   ::cast<::gpu_vulkan::texture> ptextureBrdf = pscene->m_ptextureLuBrdf;
-      //   // auto irradianceInfo = m_assets.getIrradianceDescriptor();
-      //   // auto prefilterInfo = m_assets.getPrefilteredDescriptor();
+      ////   // m_pdescriptorpool->allocateDescriptor(m_pdescriptorsetlayoutIbl->getDescriptorSetLayout(), set,
+      ////   //                                 /*setIndex=*/0);
+      ////   m_pdescriptorpool->allocateDescriptor(
+      ////      m_pdescriptorsetlayoutIbl->getDescriptorSetLayout(), set, 0);
 
-      //   auto irradianceInfo = ptextureIrrad->m_descriptor3;
-      //   auto prefilterInfo = ptexturePrefltr->m_descriptor3;
-      //   auto brdfInfo = ptextureBrdf->m_descriptor3;
+      ////   ::cast<::gpu_vulkan::texture> ptextureIrrad = pscene->m_ptextureIrradianceCube;
+      ////   ::cast<::gpu_vulkan::texture> ptexturePrefltr = pscene->m_ptexturePrefilteredCube;
+      ////   ::cast<::gpu_vulkan::texture> ptextureBrdf = pscene->m_ptextureLuBrdf;
+      ////   // auto irradianceInfo = m_assets.getIrradianceDescriptor();
+      ////   // auto prefilterInfo = m_assets.getPrefilteredDescriptor();
 
+      ////   auto irradianceInfo = ptextureIrrad->m_descriptor3;
+      ////   auto prefilterInfo = ptexturePrefltr->m_descriptor3;
+      ////   auto brdfInfo = ptextureBrdf->m_descriptor3;
 
-      //   ::gpu_vulkan::descriptor_writer(*m_pdescriptorsetlayoutIbl, *m_pdescriptorpool)
-      //      .writeImage(0, &irradianceInfo)
-      //      .writeImage(1, &prefilterInfo)
-      //      .writeImage(2, &brdfInfo)
-      //      .build(set);
 
-      //   m_vkdescriptorsetaIbl[i] = set;
-      //}
+      ////   ::gpu_vulkan::descriptor_writer(*m_pdescriptorsetlayoutIbl, *m_pdescriptorpool)
+      ////      .writeImage(0, &irradianceInfo)
+      ////      .writeImage(1, &prefilterInfo)
+      ////      .writeImage(2, &brdfInfo)
+      ////      .build(set);
 
-      //for (uint32_t uFrameIndex = 0; uFrameIndex < frameCount; uFrameIndex++)
-      //{
-      //   VkDescriptorSet set;
-      //   // m_pdescriptorpool->allocateDescriptor(m_pdescriptorsetlayoutPbr->getDescriptorSetLayout(), set,
-      //*setIndex=*/0); /   //
-      
-       
-       //m_pdescriptorpool->allocateDescriptor(m_pdescriptorsetlayoutPbr->getDescriptorSetLayout(), set);
+      ////   m_vkdescriptorsetaIbl[i] = set;
+      ////}
 
-      //   // auto logDescriptor = [&](const char *name, const VkDescriptorImageInfo &info)
-      //   //{
-      //   //    information("{} - sampler: {}, imageView: {}, layout: {}", name, (uint64_t)info.sampler,
-      //   //                 (uint64_t)info.imageView, (int)info.imageLayout);
-      //   // };
+      ////for (uint32_t uFrameIndex = 0; uFrameIndex < frameCount; uFrameIndex++)
+      ////{
+      ////   VkDescriptorSet set;
+      ////   // m_pdescriptorpool->allocateDescriptor(m_pdescriptorsetlayoutPbr->getDescriptorSetLayout(), set,
+      ////*setIndex=*/0); /   //
+      //
+      // 
+      // //m_pdescriptorpool->allocateDescriptor(m_pdescriptorsetlayoutPbr->getDescriptorSetLayout(), set);
 
-      //   if (1)
-      //   {
+      ////   // auto logDescriptor = [&](const char *name, const VkDescriptorImageInfo &info)
+      ////   //{
+      ////   //    information("{} - sampler: {}, imageView: {}, layout: {}", name, (uint64_t)info.sampler,
+      ////   //                 (uint64_t)info.imageView, (int)info.imageLayout);
+      ////   // };
 
-      //      auto &scenerenderables = pscene->scene_renderables();
+      ////   if (1)
+      ////   {
 
-      //      //   //// xxxxxxxxxxxxxxxxx
-      //      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
-      //      ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
+      ////      auto &scenerenderables = pscene->scene_renderables();
 
-      //      ////// xxxxxxxxxxxxxxxxx
-      //      // auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-      //      auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer, uFrameIndex);
+      ////      //   //// xxxxxxxxxxxxxxxxx
+      ////      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
+      ////      ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
 
+      ////      ////// xxxxxxxxxxxxxxxxx
+      ////      // auto globalSetLayout = pcontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
+      ////      auto vkdescriptorsetGlobal = pcontext->getGlobalDescriptorSet(prenderer, uFrameIndex);
 
-      //      for (auto &[id, pscenerenderable]: scenerenderables)
-      //      {
 
-      //         if (!pscenerenderable)
-      //         {
+      ////      for (auto &[id, pscenerenderable]: scenerenderables)
+      ////      {
 
-      //            continue;
-      //         }
+      ////         if (!pscenerenderable)
+      ////         {
 
-      //         if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_ibl)
-      //         {
+      ////            continue;
+      ////         }
 
-      //            continue;
-      //         }
+      ////         if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_ibl)
+      ////         {
 
+      ////            continue;
+      ////         }
 
-      //         auto prenderable = pscenerenderable->renderable();
-      //         if (!prenderable)
-      //            continue;
 
-      //         auto erenderabletype = prenderable->m_erenderabletype;
+      ////         auto prenderable = pscenerenderable->renderable();
+      ////         if (!prenderable)
+      ////            continue;
 
-      //         if (erenderabletype != ::gpu::e_renderable_type_gltf)
-      //         {
-      //            continue; // not mine, skip
-      //         }
-      //         ::cast<::gpu_vulkan::gltf::Model> pgltfmodel = prenderable;
+      ////         auto erenderabletype = prenderable->m_erenderabletype;
 
-      //         if (!pgltfmodel)
-      //            continue;
+      ////         if (erenderabletype != ::gpu::e_renderable_type_gltf)
+      ////         {
+      ////            continue; // not mine, skip
+      ////         }
+      ////         ::cast<::gpu_vulkan::gltf::Model> pgltfmodel = prenderable;
 
-      //         //for (auto &material: pgltfmodel->m_materiala)
-      //         //{
-      //         //   if (material.baseColorTexture != nullptr)
-      //         //   {
-      //         //      material.addDescriptorSet(
-      //         //         m_pdescriptorpool->m_vkdescriptorpool,
-      //         //         m_pdescriptorsetlayoutPbr->m_vkdescriptorsetlayout,
-      //         //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageBaseColor |
-      //         //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageMetallicMap |
-      //         //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageNormalMap |
-      //         //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageAOMap |
-      //         //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageEmissiveMap,
-      //         //         pgltfmodel->emptyTexture);
-      //         //   }
-      //         //}
+      ////         if (!pgltfmodel)
+      ////            continue;
 
+      ////         //for (auto &material: pgltfmodel->m_materiala)
+      ////         //{
+      ////         //   if (material.baseColorTexture != nullptr)
+      ////         //   {
+      ////         //      material.addDescriptorSet(
+      ////         //         m_pdescriptorpool->m_vkdescriptorpool,
+      ////         //         m_pdescriptorsetlayoutPbr->m_vkdescriptorsetlayout,
+      ////         //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageBaseColor |
+      ////         //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageMetallicMap |
+      ////         //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageNormalMap |
+      ////         //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageAOMap |
+      ////         //         ::gpu_vulkan::gltf::DescriptorBindingFlags::ImageEmissiveMap,
+      ////         //         pgltfmodel->emptyTexture);
+      ////         //   }
+      ////         //}
 
-      //         //pgltfmodel->m_vkdescriptorsetaPbr.resize(frameCount);
 
+      ////         //pgltfmodel->m_vkdescriptorsetaPbr.resize(frameCount);
 
-      //         // pgltfmodel->bind(pgpucommandbuffer);
 
-      //         // for (auto *pnode: pgltfmodel->m_pgltfmodel->m_nodeaLinear)
-      //         //{
-      //         //    if (!pnode->m_pmesh)
-      //         //       continue;
+      ////         // pgltfmodel->bind(pgpucommandbuffer);
 
+      ////         // for (auto *pnode: pgltfmodel->m_pgltfmodel->m_nodeaLinear)
+      ////         //{
+      ////         //    if (!pnode->m_pmesh)
+      ////         //       continue;
 
-      //         //::cast<::gpu_vulkan::texture> ptextureAlbedo = pgltfmodel->y;
-      //         //::cast<::gpu_vulkan::texture> ptextureNormal = passetmanager->getTexture("cerberus_normal");
-      //         //::cast<::gpu_vulkan::texture> ptextureMetallic = passetmanager->getTexture("cerberus_metallic");
-      //         //::cast<::gpu_vulkan::texture> ptextureRoughness = passetmanager->getTexture("cerberus_roughness");
-      //         //::cast<::gpu_vulkan::texture> ptextureAo = passetmanager->getTexture("cerberus_ao");*/
 
+      ////         //::cast<::gpu_vulkan::texture> ptextureAlbedo = pgltfmodel->y;
+      ////         //::cast<::gpu_vulkan::texture> ptextureNormal = passetmanager->getTexture("cerberus_normal");
+      ////         //::cast<::gpu_vulkan::texture> ptextureMetallic = passetmanager->getTexture("cerberus_metallic");
+      ////         //::cast<::gpu_vulkan::texture> ptextureRoughness = passetmanager->getTexture("cerberus_roughness");
+      ////         //::cast<::gpu_vulkan::texture> ptextureAo = passetmanager->getTexture("cerberus_ao");*/
 
-      //         // VkDescriptorImageInfo albedoInfo = m_assets.getTextureDescriptor("cerberus_albedo");
-      //         // VkDescriptorImageInfo normalInfo = m_assets.getTextureDescriptor("cerberus_normal");
-      //         // VkDescriptorImageInfo metallicInfo = m_assets.getTextureDescriptor("cerberus_metallic");
-      //         // VkDescriptorImageInfo roughnessInfo = m_assets.getTextureDescriptor("cerberus_roughness");
-      //         // VkDescriptorImageInfo aoInfo = m_assets.getTextureDescriptor("cerberus_ao");
 
-      //         //VkDescriptorImageInfo albedoInfo = ptextureAlbedo->m_descriptor3;
-      //         //VkDescriptorImageInfo normalInfo = ptextureNormal->m_descriptor3;
-      //         //VkDescriptorImageInfo metallicInfo = ptextureMetallic->m_descriptor3;
-      //         //VkDescriptorImageInfo roughnessInfo = ptextureRoughness->m_descriptor3;
-      //         //VkDescriptorImageInfo aoInfo = ptextureAo->m_descriptor3;
+      ////         // VkDescriptorImageInfo albedoInfo = m_assets.getTextureDescriptor("cerberus_albedo");
+      ////         // VkDescriptorImageInfo normalInfo = m_assets.getTextureDescriptor("cerberus_normal");
+      ////         // VkDescriptorImageInfo metallicInfo = m_assets.getTextureDescriptor("cerberus_metallic");
+      ////         // VkDescriptorImageInfo roughnessInfo = m_assets.getTextureDescriptor("cerberus_roughness");
+      ////         // VkDescriptorImageInfo aoInfo = m_assets.getTextureDescriptor("cerberus_ao");
 
-      //         // logDescriptor("albedo", albedoInfo);
-      //         // logDescriptor("normal", normalInfo);
-      //         // logDescriptor("metallic", metallicInfo);
-      //         // logDescriptor("roughness", roughnessInfo);
-      //         // logDescriptor("ao", aoInfo);
+      ////         //VkDescriptorImageInfo albedoInfo = ptextureAlbedo->m_descriptor3;
+      ////         //VkDescriptorImageInfo normalInfo = ptextureNormal->m_descriptor3;
+      ////         //VkDescriptorImageInfo metallicInfo = ptextureMetallic->m_descriptor3;
+      ////         //VkDescriptorImageInfo roughnessInfo = ptextureRoughness->m_descriptor3;
+      ////         //VkDescriptorImageInfo aoInfo = ptextureAo->m_descriptor3;
 
-      //         //::gpu_vulkan::descriptor_writer(*m_pdescriptorsetlayoutPbr, *m_pdescriptorpool)
-      //         //   .writeImage(0, &albedoInfo)
-      //         //   .writeImage(1, &normalInfo)
-      //         //   .writeImage(2, &metallicInfo)
-      //         //   .writeImage(3, &roughnessInfo)
-      //         //   .writeImage(4, &aoInfo)
-      //         //   .build(set);
+      ////         // logDescriptor("albedo", albedoInfo);
+      ////         // logDescriptor("normal", normalInfo);
+      ////         // logDescriptor("metallic", metallicInfo);
+      ////         // logDescriptor("roughness", roughnessInfo);
+      ////         // logDescriptor("ao", aoInfo);
 
-      //         //pgltfmodel->m_vkdescriptorsetaPbr[uFrameIndex] = set;
-      //      }
-      //   }
-      //}
+      ////         //::gpu_vulkan::descriptor_writer(*m_pdescriptorsetlayoutPbr, *m_pdescriptorpool)
+      ////         //   .writeImage(0, &albedoInfo)
+      ////         //   .writeImage(1, &normalInfo)
+      ////         //   .writeImage(2, &metallicInfo)
+      ////         //   .writeImage(3, &roughnessInfo)
+      ////         //   .writeImage(4, &aoInfo)
+      ////         //   .build(set);
+
+      ////         //pgltfmodel->m_vkdescriptorsetaPbr[uFrameIndex] = set;
+      ////      }
+      ////   }
+      ////}
 
    }
 
 
-   // void gltf_render_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
-   //     const ::array_base<VkDescriptorSetLayout> layouts = {
+   // void gltf_render_system::createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout) {
+   //     const ::array_base<aaaVkDescriptorSetLayout> layouts = {
    //         globalSetLayout,
    //         graphics3d::gltf::descriptorSetLayoutUbo,
    //         graphics3d::gltf::descriptorSetLayoutImage,

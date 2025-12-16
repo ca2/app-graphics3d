@@ -32,21 +32,21 @@
 //
 //        private:
 //            ::pointer < context > m_pgpucontext;
-//            ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
+//            ::map<uint32_t, aaaVkDescriptorSetLayoutBinding> bindings{};
 //        };
 //
 //        descriptor_set_layout(
-//            context * pvkcdevice, ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
+//            context * pvkcdevice, ::map<uint32_t, aaaVkDescriptorSetLayoutBinding> bindings);
 //        ~descriptor_set_layout();
 //        descriptor_set_layout(const descriptor_set_layout&) = delete;
 //        descriptor_set_layout& operator=(const descriptor_set_layout&) = delete;
 //
-//        VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
+//        aaaVkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
 //
 //    private:
 //        ::pointer < context > m_pgpucontext;
-//        VkDescriptorSetLayout descriptorSetLayout;
-//        ::map<uint32_t, VkDescriptorSetLayoutBinding> bindings;
+//        aaaVkDescriptorSetLayout descriptorSetLayout;
+//        ::map<uint32_t, aaaVkDescriptorSetLayoutBinding> bindings;
 //
 //        friend class descriptor_writer;
 //    };
@@ -86,7 +86,7 @@
 //        descriptor_pool& operator=(const descriptor_pool&) = delete;
 //
 //        bool allocateDescriptor(
-//            const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
+//            const aaaVkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
 //
 //        void freeDescriptors(::array<VkDescriptorSet>& descriptors) const;
 //

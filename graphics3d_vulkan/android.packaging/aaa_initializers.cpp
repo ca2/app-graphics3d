@@ -202,10 +202,10 @@ namespace graphics3d_vulkan
 
 
 
-      VkDescriptorSetLayoutBinding descriptorset_layout_binding(VkDescriptorType type, VkShaderStageFlags stageFlags,
+      aaaVkDescriptorSetLayoutBinding descriptorset_layout_binding(VkDescriptorType type, VkShaderStageFlags stageFlags,
          uint32_t binding)
       {
-         VkDescriptorSetLayoutBinding setbind = {};
+         aaaVkDescriptorSetLayoutBinding setbind = {};
          setbind.binding = binding;
          setbind.descriptorCount = 1;
          setbind.descriptorType = type;
@@ -215,10 +215,10 @@ namespace graphics3d_vulkan
          return setbind;
       }
 
-      VkDescriptorSetLayoutCreateInfo descriptorset_layout_create_info(VkDescriptorSetLayoutBinding* bindings,
+      aaaVkDescriptorSetLayoutCreateInfo descriptorset_layout_create_info(aaaVkDescriptorSetLayoutBinding* bindings,
          uint32_t bindingCount)
       {
-         VkDescriptorSetLayoutCreateInfo info = {};
+         aaaVkDescriptorSetLayoutCreateInfo info = {};
          info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
          info.pNext = nullptr;
 

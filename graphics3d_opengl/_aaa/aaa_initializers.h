@@ -42,9 +42,9 @@
 //      CLASS_DECL_GRAPHICS3D_OPENGL VkImageSubresourceRange image_subresource_range(VkImageAspectFlags aspectMask);
 //
 //      CLASS_DECL_GRAPHICS3D_OPENGL VkSemaphoreSubmitInfo semaphore_submit_info(VkPipelineStageFlags2 stageMask, VkSemaphore semaphore);
-//      CLASS_DECL_GRAPHICS3D_OPENGL VkDescriptorSetLayoutBinding descriptorset_layout_binding(VkDescriptorType type, VkShaderStageFlags stageFlags,
+//      CLASS_DECL_GRAPHICS3D_OPENGL aaaVkDescriptorSetLayoutBinding descriptorset_layout_binding(VkDescriptorType type, VkShaderStageFlags stageFlags,
 //         uint32_t binding);
-//      CLASS_DECL_GRAPHICS3D_OPENGL VkDescriptorSetLayoutCreateInfo descriptorset_layout_create_info(VkDescriptorSetLayoutBinding* bindings,
+//      CLASS_DECL_GRAPHICS3D_OPENGL aaaVkDescriptorSetLayoutCreateInfo descriptorset_layout_create_info(aaaVkDescriptorSetLayoutBinding* bindings,
 //         uint32_t bindingCount);
 //      CLASS_DECL_GRAPHICS3D_OPENGL VkWriteDescriptorSet write_descriptor_image(VkDescriptorType type, VkDescriptorSet dstSet,
 //         VkDescriptorImageInfo* imageInfo, uint32_t binding);

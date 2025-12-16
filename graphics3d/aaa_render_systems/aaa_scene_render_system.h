@@ -31,13 +31,13 @@ namespace graphics3d
    public:
 
 
-      // scene_render_system(VkSandboxDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
+      // scene_render_system(VkSandboxDevice &device, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout,
       //                 IAssetProvider & assets);
       scene_render_system();
       ~scene_render_system();
 
 
-      // void init(VkSandboxDevice & device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
+      // void init(VkSandboxDevice & device, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout,
       //           VkSandboxDescriptorPool & descriptorPool, size_t frameCount) override;
 
       // void render(FrameInfo & frame) override;
@@ -46,13 +46,13 @@ namespace graphics3d
 
       void on_render(::gpu::context *pgpucontext, ::graphics3d::scene_base *pscene) override;
       // private:
-      // void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+      // void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);
       // void createPipeline(VkRenderPass renderPass);
 
       // VkSandboxDevice & m_device;
 
-      // VkDescriptorSetLayout m_globalSetLayout;
-      /*VkDescriptorSetLayout m_iblSetLayout;
+      // aaaVkDescriptorSetLayout m_globalSetLayout;
+      /*aaaVkDescriptorSetLayout m_iblSetLayout;
       VkDescriptorSet m_iblDescriptorSet;*/
 
       // std::unique_ptr<VkSandboxPipeline> m_opaquePipeline;

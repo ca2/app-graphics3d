@@ -106,6 +106,12 @@ namespace gpu_vulkan
           VK_SUCCESS) {
          throw ::exception(error_failed, "failed to create descriptor pool!");
       }
+      if ((((::uptr)m_vkdescriptorpool) & 0xffff) == 0x027b)
+      {
+
+               ::information("(((::uptr)m_vkdescriptorpool) & 0xffff) == 0x027b");
+
+      }
    }
 
    descriptor_pool::~descriptor_pool() {

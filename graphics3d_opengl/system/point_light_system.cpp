@@ -21,7 +21,7 @@
 //   };
 //
 //   //point_light_system::point_light_system(
-//     // context* pvkcdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
+//     // context* pvkcdevice, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout)
 //   point_light_system::point_light_system(
 //      context* pvkcdevice)
 //   : m_pgpucontext{ pvkcdevice }
@@ -41,13 +41,13 @@
 //   }
 //
 //
-//   //void point_light_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
+//   //void point_light_system::createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout) {
 //   //   VkPushConstantRange pushConstantRange{};
 //   //   pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 //   //   pushConstantRange.offset = 0;
 //   //   pushConstantRange.size = sizeof(PointLightPushConstants);
 //
-//   //   ::array<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+//   //   ::array<aaaVkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
 //
 //   //   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 //   //   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

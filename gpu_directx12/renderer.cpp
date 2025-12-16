@@ -2095,7 +2095,7 @@ float4 main(PSInput input) : SV_TARGET {
       //		//   .pBindings = &samplerLayoutBinding,
       //		//};
 
-      //		//VkDescriptorSetLayout descriptorSetLayout;
+      //		//aaaVkDescriptorSetLayout descriptorSetLayout;
       //		//if (vkCreateDescriptorSetLayout(device, &layoutInfo, NULL, &descriptorSetLayout) != VK_SUCCESS) 
       //		//{
       //		//   // Handle error
@@ -2377,9 +2377,9 @@ float4 main(PSInput input) : SV_TARGET {
             this,
             as_block(g_pszImageBlendVertexShader),
             as_block(g_pszImageBlendFragmentShader),
-            {},
+            //{},
             //{ ::gpu::shader::e_descriptor_set_shader_resource_view_and_sampler },
-            m_psetdescriptorlayoutImageBlend,
+            //m_psetdescriptorlayoutImageBlend,
             m_pgpucontext->input_layout<::graphics3d::sequence2_uv>()
          );
 
@@ -2416,8 +2416,8 @@ float4 main(PSInput input) : SV_TARGET {
             this,
             as_memory_block(g_pszImageBlendVertexShader),
             as_memory_block(g_pszImageBlendFragmentShader),
-            { ::gpu::shader::e_descriptor_set_slot_local },
-            m_psetdescriptorlayoutImageBlend,
+            //{ ::gpu::shader::e_descriptor_set_slot_local },
+            //m_psetdescriptorlayoutImageBlend,
             pinputlayoutEmpty);
 
       }

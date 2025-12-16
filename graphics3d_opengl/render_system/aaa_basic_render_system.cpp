@@ -20,7 +20,7 @@ namespace graphics3d_vulkan {
 	};
 
 
-	SimpleRenderSystem::SimpleRenderSystem(::gpu::context * pdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
+	SimpleRenderSystem::SimpleRenderSystem(::gpu::context * pdevice, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout)
 		: m_pgpucontext{ pdevice } {
 		createPipelineLayout(globalSetLayout);
 		createPipeline(renderPass);
@@ -33,14 +33,14 @@ namespace graphics3d_vulkan {
 
 
 
-	void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
+	void SimpleRenderSystem::createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout) {
 
 		VkPushConstantRange pushConstantRange{};
 		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 		pushConstantRange.offset = 0;
 		pushConstantRange.size = sizeof(SimplePushConstantData);
 
-		::array<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+		::array<aaaVkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

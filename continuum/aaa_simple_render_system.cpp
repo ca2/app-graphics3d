@@ -30,7 +30,7 @@ namespace app_graphics3d_continuum
 
 	///::gpu::property * simple_
 
-	//simple_render_system::simple_render_system(context * pdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
+	//simple_render_system::simple_render_system(context * pdevice, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout)
 	simple_render_system::simple_render_system()
 	{
 

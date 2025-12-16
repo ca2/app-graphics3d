@@ -282,7 +282,7 @@ namespace gpu_vulkan
          //}
 
          //// Descriptor layout/pool/set (same as before)
-         //VkDescriptorSetLayout descriptorsetlayout;
+         //aaaVkDescriptorSetLayout descriptorsetlayout;
          //::array_base<VkDescriptorSetLayoutBinding> setLayoutBindings = {
          //   vkinit::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT,
          //                                      0),
@@ -344,7 +344,7 @@ namespace gpu_vulkan
          //pipelineconfiguration.dynamicStateInfo.pDynamicStates = pipelineconfiguration.dynamicStateEnables.data();
          //pipelineconfiguration.dynamicStateInfo.dynamicStateCount =
          //   uint32_t(pipelineconfiguration.dynamicStateEnables.size());
-         //pipelineconfiguration.descriptorSetLayouts = {descriptorsetlayout};
+         //pipelineconfiguration.aaadescriptorSetLayouts = {descriptorsetlayout};
 
          //VkPushConstantRange pushRange{};
          //pushRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;

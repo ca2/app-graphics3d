@@ -463,7 +463,7 @@ namespace gpu_vulkan
 //         }
 //
 //         // --- Descriptor layout / pool / set ---
-//         VkDescriptorSetLayout descriptorsetlayout = VK_NULL_HANDLE;
+//         aaaVkDescriptorSetLayout descriptorsetlayout = VK_NULL_HANDLE;
 //         ::array_base<VkDescriptorSetLayoutBinding> setLayoutBindings = {
 //            vkinit::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT,
 //                                               0),
@@ -540,7 +540,7 @@ namespace gpu_vulkan
 //         cfg.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 //         cfg.dynamicStateInfo.pDynamicStates = cfg.dynamicStateEnables.data();
 //         cfg.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(cfg.dynamicStateEnables.size());
-//         cfg.descriptorSetLayouts = {descriptorsetlayout};
+//         cfg.aaadescriptorSetLayouts = {descriptorsetlayout};
 //         cfg.pushConstantRanges = {pushRange};
 //
 //         // shader paths (match your project layout)
@@ -930,7 +930,7 @@ namespace gpu_vulkan
          //VK_CHECK_RESULT(vkCreateFramebuffer(pgpucontext->logicalDevice(), &framebufferCI, nullptr, &framebuffer));
 
          //// Descriptors
-         //VkDescriptorSetLayout descriptorsetlayout;
+         //aaaVkDescriptorSetLayout descriptorsetlayout;
          //::array_base<VkDescriptorSetLayoutBinding> setLayoutBindings = {};
          //VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI =
          //   vkinit::descriptorSetLayoutCreateInfo(setLayoutBindings);
@@ -1065,3 +1065,8 @@ namespace gpu_vulkan
    } // namespace ibl
 
 } // namespace gpu_vulkan
+
+
+
+
+

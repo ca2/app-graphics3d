@@ -19,7 +19,7 @@ namespace graphics3d_vulkan
 
 
    point_light_system::point_light_system(
-      ::gpu::context * pgpucontext, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
+      ::gpu::context * pgpucontext, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout)
       : m_pgpucontext{ pgpucontext }
    {
 
@@ -40,7 +40,7 @@ namespace graphics3d_vulkan
    void point_light_system::createPipelineLayout() {
 
       
-      VkDescriptorSetLayout globalSetLayout
+      aaaVkDescriptorSetLayout globalSetLayout
       m_pshader = m_pengine->create_shader()
       {
 
@@ -51,7 +51,7 @@ namespace graphics3d_vulkan
       pushConstantRange.offset = 0;
       pushConstantRange.size = sizeof(PointLightPushConstants);
 
-      ::array<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+      ::array<aaaVkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
 
       VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
       pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

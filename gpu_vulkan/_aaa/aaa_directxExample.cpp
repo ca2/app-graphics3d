@@ -55,8 +55,8 @@ public:
    } descriptorSets;
 
    struct {
-      VkDescriptorSetLayout textured{ VK_NULL_HANDLE };
-      VkDescriptorSetLayout shaded{ VK_NULL_HANDLE };
+      aaaVkDescriptorSetLayout textured{ VK_NULL_HANDLE };
+      aaaVkDescriptorSetLayout shaded{ VK_NULL_HANDLE };
    } descriptorSetLayouts;
 
    // Framebuffer for offscreen rendering
@@ -413,8 +413,8 @@ public:
       VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &descriptorPool));
 
       // Layout
-      ::array<VkDescriptorSetLayoutBinding> setLayoutBindings;
-      VkDescriptorSetLayoutCreateInfo descriptorLayoutInfo;
+      ::array<aaaVkDescriptorSetLayoutBinding> setLayoutBindings;
+      aaaVkDescriptorSetLayoutCreateInfo descriptorLayoutInfo;
 
       // Shaded layout
       setLayoutBindings = {

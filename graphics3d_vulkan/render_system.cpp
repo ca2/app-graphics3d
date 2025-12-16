@@ -87,7 +87,8 @@ namespace graphics3d_vulkan
       renderPassBeginInfo.clearValueCount = 0;
       //renderPassBeginInfo.pClearValues = clearValues;
       renderPassBeginInfo.pClearValues = nullptr;
-      renderPassBeginInfo.framebuffer = ptexture->framebuffer(prenderpass);
+      auto & layer = ptexture->current_layer(prenderpass);
+      renderPassBeginInfo.framebuffer = layer.m_vkframebuffer;
 
       ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
 

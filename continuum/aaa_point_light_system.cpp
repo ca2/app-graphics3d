@@ -46,7 +46,7 @@ namespace app_graphics3d_continuum
 
 
    void point_light_system::initialize_point_light_system(::graphics3d::engine * pengine)
-      //context* pvkcdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
+      //context* pvkcdevice, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout)
       //: m_pgpucontext{ pvkcdevice }
    {
 
@@ -74,7 +74,7 @@ namespace app_graphics3d_continuum
 
 
 
-   void point_light_system::on_prepare(::gpu::context * pgpucontext)//(VkDescriptorSetLayout globalSetLayout) 
+   void point_light_system::on_prepare(::gpu::context * pgpucontext)//(aaaVkDescriptorSetLayout globalSetLayout) 
    {
 
       auto prenderer = pgpucontext->m_pgpurenderer;
@@ -96,7 +96,7 @@ namespace app_graphics3d_continuum
       //pushConstantRange.offset = 0;
       //pushConstantRange.size = sizeof(PointLightPushConstants);
 
-      //std::vector<VkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
+      //std::vector<aaaVkDescriptorSetLayout> descriptorSetLayouts{ globalSetLayout };
 
       //VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
       //pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

@@ -34,8 +34,8 @@ namespace graphics3d_directx11
       
       //VkSandboxDevice &m_device;
 
-      //VkDescriptorSetLayout m_globalSetLayout;
-      /*VkDescriptorSetLayout m_iblSetLayout;
+      //aaaVkDescriptorSetLayout m_globalSetLayout;
+      /*aaaVkDescriptorSetLayout m_iblSetLayout;
       VkDescriptorSet m_iblDescriptorSet;*/
 
       ::pointer<::gpu_directx11::pipeline> m_ppipelineOpaque;
@@ -52,7 +52,7 @@ namespace graphics3d_directx11
       // std::vector<VkDescriptorSet>				  m_pbrDescriptorSets;
 
 
-      //scene_render_system(VkSandboxDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
+      //scene_render_system(VkSandboxDevice &device, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout,
         //                IAssetProvider &assets);
       scene_render_system();
       ~scene_render_system();
@@ -60,14 +60,14 @@ namespace graphics3d_directx11
       //scene_render_system(const scene_render_system &) = delete;
       //scene_render_system &operator=(const scene_render_system &) = delete;
 
-      //void init(VkSandboxDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
+      //void init(VkSandboxDevice &device, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout,
       //          VkSandboxDescriptorPool &descriptorPool, size_t frameCount) override;
 
       //void render(FrameInfo &frame) override;
 
       void on_prepare(::gpu::context *pgpucontext) override;
    //private:
-      //void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+      //void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);
       //void createPipeline(VkRenderPass renderPass);
 
       

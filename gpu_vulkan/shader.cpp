@@ -88,14 +88,14 @@ namespace gpu_vulkan
    //    // //pushConstantRange.size = sizeof(PointLightPushConstants);
    //    // pushConstantRange.size = iPushPropertiesSize;
    //    //
-   //    // ::array<VkDescriptorSetLayout> descriptorSetLayouts;
+   //    // ::array<aaaVkDescriptorSetLayout> aaadescriptorSetLayouts;
    //    //
    //    // if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
    //    // {
    //    //
    //    //    auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
    //    //
-   //    //    descriptorSetLayouts.add(globalSetLayout);
+   //    //    aaadescriptorSetLayouts.add(globalSetLayout);
    //    //
    //    // }
    //    //
@@ -106,7 +106,7 @@ namespace gpu_vulkan
    //    //
    //    //    auto setLayout = pset->getDescriptorSetLayout();
    //    //
-   //    //    descriptorSetLayouts.add(setLayout);
+   //    //    aaadescriptorSetLayouts.add(setLayout);
    //    //
    //    // }
    //    //
@@ -115,7 +115,7 @@ namespace gpu_vulkan
    //    //
    //    //    auto samplerSetLayout = m_psetdescriptorlayout->getDescriptorSetLayout();
    //    //
-   //    //    auto uSet = (unsigned int)descriptorSetLayouts.add(samplerSetLayout);
+   //    //    auto uSet = (unsigned int)aaadescriptorSetLayouts.add(samplerSetLayout);
    //    //
    //    //    if (m_bindingSampler.is_set())
    //    //       m_bindingSampler.m_uSet = uSet;
@@ -368,7 +368,7 @@ namespace gpu_vulkan
       //{
 
       //   auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-      //   pipelineconfiguration.descriptorSetLayouts.add(globalSetLayout);
+      //   pipelineconfiguration.aaadescriptorSetLayouts.add(globalSetLayout);
 
       ::pointer_array<::gpu_vulkan::descriptor_set_layout> descriptorsetlayouta;
       ::pointer_array<::gpu_vulkan::descriptor_pool> descriptorpoola;
@@ -390,7 +390,7 @@ namespace gpu_vulkan
                // auto pblockGlobalUbo1 = pscene->global_ubo1(pgpucontext);
                //    auto globalSetLayout =
                //    pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-               //    pipelineconfiguration.descriptorSetLayouts.add(globalSetLayout);
+               //    pipelineconfiguration.aaadescriptorSetLayouts.add(globalSetLayout);
                auto pgpubindingsetGlobalUbo = pgpucontext->global_ubo1_binding_set();
 
                ::cast<::gpu_vulkan::binding_set> pbindingsetGlobalUbo = pgpubindingsetGlobalUbo;
@@ -545,24 +545,24 @@ namespace gpu_vulkan
          pipelineconfiguration.pushConstantRanges.add(pushConstantRange);
          // pushConstantRange.size = iPushPropertiesSize;
       }
-      //::array<VkDescriptorSetLayout> descriptorSetLayouts;
+      //::array<aaaVkDescriptorSetLayout> aaadescriptorSetLayouts;
 
       // if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
       //{
 
       //   auto globalSetLayout = pgpucontext->m_psetdescriptorlayoutGlobal->getDescriptorSetLayout();
-      //   pipelineconfiguration.descriptorSetLayouts.add(globalSetLayout);
+      //   pipelineconfiguration.aaadescriptorSetLayouts.add(globalSetLayout);
       //}
 
-      if (m_pLocalDescriptorSet)
-      {
+      //if (m_pLocalDescriptorSet)
+      //{
 
-         ::cast<::gpu_vulkan::descriptor_set_layout> pset = m_pLocalDescriptorSet;
+      //   ::cast<::gpu_vulkan::descriptor_set_layout> pset = m_pLocalDescriptorSet;
 
-         auto setLayout = pset->getDescriptorSetLayout();
+      //   auto setLayout = pset->getDescriptorSetLayout();
 
-         pipelineconfiguration.descriptorSetLayouts.add(setLayout);
-      }
+      //   pipelineconfiguration.aaadescriptorSetLayouts.add(setLayout);
+      //}
 
       int iSet = -1;
 
@@ -585,15 +585,15 @@ namespace gpu_vulkan
          //  m_bindingCubeSampler.m_uSet = uSet;
       }
 
-      for (auto &pair: m_mapDescriptorSetLayout)
-      {
+      //for (auto &pair: m_mapDescriptorSetLayout)
+      //{
 
-         auto uSet = (unsigned int)pair.element1();
+      //   auto uSet = (unsigned int)pair.element1();
 
-         auto descriptorsetlayout = pair.element2()->getDescriptorSetLayout();
+      //   auto descriptorsetlayout = pair.element2()->getDescriptorSetLayout();
 
-         pipelineconfiguration.descriptorSetLayouts.element_at_grow(uSet) = descriptorsetlayout;
-      }
+      //   pipelineconfiguration.aaadescriptorSetLayouts.element_at_grow(uSet) = descriptorsetlayout;
+      //}
 
 
       pgpudevice->defer_shader_memory(m_memoryVertex, m_pathVertex);
@@ -669,7 +669,10 @@ namespace gpu_vulkan
       // auto pshadertextureDst = shader_texture(ptextureDst, false);
 
       renderPassBeginInfo.renderPass = prenderpass->m_vkrenderpass;
-      renderPassBeginInfo.framebuffer = ptextureDst->framebuffer(prenderpass);
+
+      auto &layer = ptextureDst->current_layer(prenderpass);
+
+      renderPassBeginInfo.framebuffer = layer.m_vkframebuffer;
 
       uint32_t w = ptextureDst->width();
       uint32_t h = ptextureDst->height();
@@ -1443,14 +1446,14 @@ namespace gpu_vulkan
    void shader::create_descriptor_layout() {}
 
 
-   void shader::_update_vk_descriptor_set(int iFrameCount) 
-   {
+   //void shader::_update_vk_descriptor_set(int iFrameCount) 
+   //{
 
-      ødefer_construct_new(m_pvkdescriptorseta);
-      
-      m_pvkdescriptorseta->set_size(iFrameCount); 
-   
-   }
+   //   ødefer_construct_new(m_pvkdescriptorseta);
+   //   
+   //   m_pvkdescriptorseta->set_size(iFrameCount); 
+   //
+   //}
 
 
    // render_pass *shader::render_pass2(::gpu::texture * pgputextureTarget)
@@ -1492,7 +1495,7 @@ namespace gpu_vulkan
 
    //      //      auto vkdescriptorset = pblockGlobalUbo1->descriptor_set(pbindingslotset, pgpucommandbuffer);
 
-   //      //      // VkDescriptorSetLayout vkdescriptorsetlayout = pdescriptorsetlayout->m_vkdescriptorsetlayout;
+   //      //      // aaaVkDescriptorSetLayout vkdescriptorsetlayout = pdescriptorsetlayout->m_vkdescriptorsetlayout;
 
    //      //      vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
    //      //                              m_ppipelineCurrent->_pipeline_layout(), 0, 1, &vkdescriptorset, 0, nullptr);
@@ -1702,12 +1705,12 @@ namespace gpu_vulkan
       // else if (m_bindingCubeSampler.is_set())
       //    uSet = m_bindingCubeSampler.m_uSet;
 
-      auto vkdescriptorset = ptexture->descriptor_set(this, pgpucommandbuffer);
+      auto vkdescriptorset = ptexture->_001DescriptorSet(this, pgpucommandbuffer);
 
       if ((((::uptr)vkdescriptorset) & 0xffff) == 0x357)
       {
 
-         vkdescriptorset = ptexture->descriptor_set(this, pgpucommandbuffer);
+         //vkdescriptorset = ptexture->descriptor_set(this, pgpucommandbuffer);
 
       }
 
@@ -1766,12 +1769,13 @@ namespace gpu_vulkan
       //   vkdescriptorset = pblock->descriptor_set(pbindingslotset, pgpucommandbuffer);
       //}
       int iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex;
+      auto vkpipelinelayout = pshader->m_ppipelineCurrent->_pipeline_layout();
       // Bind pipeline and descriptor sets
       //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
       //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
       vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer,
                               VK_PIPELINE_BIND_POINT_GRAPHICS, // Bind point
-                              pshader->m_ppipelineCurrent->_pipeline_layout(), // Layout used when pipeline was created
+                              vkpipelinelayout, // Layout used when pipeline was created
                               iSet, // First set (set = 0)
                               1, // Descriptor set count
                               &vkdescriptorseta[iFrame], // Pointer to descriptor set

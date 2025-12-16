@@ -48,6 +48,8 @@ namespace gpu_vulkan
       ::map<unsigned int, VkDescriptorSetLayoutBinding> m_bindings;
       //int m_iIndex = -1;
 
+      ::gpu_vulkan::descriptor_pool * descriptor_pool(::gpu::command_buffer *pgpucommandbuffer);
+
    };
 
 

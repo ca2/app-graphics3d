@@ -124,10 +124,123 @@ namespace gpu_vulkan
 
    }
 
+   //   void render_pass::_update_face_render_pass(::gpu::context *pgpucontext, ::gpu::texture *pgputextureTarget,
+   //                                      ::pointer<::gpu_vulkan::render_pass> previous)
+   //{
+   //      m_bFace = true;
+   //   //::gpu_vulkan::render_pass::initialize_render_pass(pgpurenderer, size, previous);
+   //   m_pgpucontext = pgpucontext;
+
+
+   //   // m_ptexturea = ptexturea;
+
+   //   auto size = pgputextureTarget->size();
+
+   //   m_prenderpassOld = previous;
+
+   //   m_bNeedRebuild = false;
+
+   //   if (size.has_area())
+   //   {
+
+   //      if (m_extent.width != size.cx || m_extent.height != size.cy)
+   //      {
+
+   //         m_extent.width = size.cx;
+
+   //         m_extent.height = size.cy;
+
+   //         on_init_face_render_pass();
+   //      }
+   //   }
+   //}
+
+
+   //void render_pass::update_render_pass(::gpu::context * pgpucontext, VkImageView vkimageview,
+   //                                     VkFramebuffer vkframebuffer)
+   //{
+
+   //   ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext->m_pgpurenderer->m_pgpucontext;
+
+   //   auto & colorAttachment = m_attachmentColor;
+   //   if (m_bSrgb)
+   //   {
+   //      colorAttachment.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+   //   }
+   //   else
+   //   {
+   //      colorAttachment.format = pcontext->m_formatImageDefault;
+   //   }
+   //   colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+   //   // colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+   //   if (m_bLoadClearOp)
+   //   {
+   //      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+   //      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+   //   }
+   //   else
+   //   {
+   //      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+   //      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+   //   }
+   //   colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+   //   colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+   //   colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+   //   colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+   //   VkAttachmentReference colorAttachmentRef = {};
+   //   colorAttachmentRef.attachment = 0;
+   //   colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+   //   VkSubpassDescription subpass = {};
+   //   subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+   //   subpass.colorAttachmentCount = 1;
+   //   subpass.pColorAttachments = &colorAttachmentRef;
+   //   //if (m_bWithDepth)
+   //   //{
+   //   //   subpass.pDepthStencilAttachment = &depthAttachmentRef;
+   //   //}
+
+   //   VkSubpassDependency dependency = {};
+   //   dependency.dstSubpass = 0;
+   //   dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+   //   dependency.dstStageMask =
+   //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+   //   dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+   //   dependency.srcAccessMask = 0;
+   //   dependency.srcStageMask =
+   //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+
+   //   VkAttachmentDescription attachments[1] = {colorAttachment};
+   //   // VkAttachmentDescription attachments[1] = { colorAttachment };
+   //   VkRenderPassCreateInfo renderPassInfo = {};
+   //   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+   //   //if (m_bWithDepth)
+   //   //{
+   //   //   renderPassInfo.attachmentCount = 2;
+   //   //}
+   //   //else
+   //   {
+   //      renderPassInfo.attachmentCount = 1;
+   //   }
+   //   renderPassInfo.pAttachments = attachments;
+   //   renderPassInfo.subpassCount = 1;
+   //   renderPassInfo.pSubpasses = &subpass;
+   //   renderPassInfo.dependencyCount = 1;
+   //   renderPassInfo.pDependencies = &dependency;
+
+   //   if (vkCreateRenderPass(pcontext->logicalDevice(), &renderPassInfo, nullptr, &m_vkrenderpass) != VK_SUCCESS)
+   //   {
+
+   //      throw ::exception(error_failed, "failed to create render pass!");
+   //   }
+
+   //}
+
+
 
    void render_pass::on_init_render_pass()
    {
-
       //createRenderPassImpl();
       //createImageViews();
       createRenderPass();
@@ -138,6 +251,19 @@ namespace gpu_vulkan
       //m_pvkcrenderpassOld = nullptr;
 
    }
+
+
+   //   void render_pass::on_init_face_render_pass()
+   //{
+   //   // createRenderPassImpl();
+   //   // createImageViews();
+   //   createRenderPass();
+   //   // createDepthResources();
+   //   // createFramebuffers();
+   //   // createSyncObjects();
+   //   //  Cleans up old swap chain since it's no longer needed after resizing
+   //   // m_pvkcrenderpassOld = nullptr;
+   //}
 
    int render_pass::get_frame_index()
    {

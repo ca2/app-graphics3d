@@ -44,13 +44,13 @@ namespace gpu_vulkan
 		};
 
 
-		//extern VkDescriptorSetLayout descriptorSetLayoutImage;
-		//extern VkDescriptorSetLayout descriptorSetLayoutUbo;
-		//extern VkDescriptorSetLayout descriptorSetLayoutIbl;
+		//extern aaaVkDescriptorSetLayout descriptorSetLayoutImage;
+		//extern aaaVkDescriptorSetLayout descriptorSetLayoutUbo;
+		//extern aaaVkDescriptorSetLayout descriptorSetLayoutIbl;
 		//extern VkMemoryPropertyFlags memoryPropertyFlags;
 		//extern uint32_t descriptorBindingFlags;
-      //CLASS_DECL_GPU_VULKAN VkDescriptorSetLayout ubo_descriptor_set_layout();
-      //CLASS_DECL_GPU_VULKAN VkDescriptorSetLayout image_descriptor_set_layout();
+      //CLASS_DECL_GPU_VULKAN aaaVkDescriptorSetLayout ubo_descriptor_set_layout();
+      //CLASS_DECL_GPU_VULKAN aaaVkDescriptorSetLayout image_descriptor_set_layout();
 		struct Node;
 
 //		/*
@@ -124,7 +124,7 @@ namespace gpu_vulkan
 			
          
          //void addDescriptor(int iCount, ::array_base<VkDescriptorSet> & a, VkDescriptorPool descriptorPool,
-         //                           VkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags,
+         //                           aaaVkDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags,
          //                           ::gpu_vulkan::texture *fallbackTexture);
          //::array_base<VkDescriptorSet> &descriptor_set_array_gltf(gltf::Model * pmodel);
          //::array_base<VkDescriptorSet> &descriptor_set_array_scene_gltf(gltf::Model *pmodel);
@@ -133,7 +133,7 @@ namespace gpu_vulkan
            //                                                             ::gpu::binding_set *pgpubindingset);
         
 
-         //void addDescriptorSetSceneGltf4(VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout,
+         //void addDescriptorSetSceneGltf4(VkDescriptorPool descriptorPool, aaaVkDescriptorSetLayout descriptorSetLayout,
          //                      uint32_t descriptorBindingFlags, ::gpu_vulkan::texture *fallbackTexture);
 
 
@@ -430,7 +430,7 @@ namespace gpu_vulkan
 			void updateAnimation(uint32_t index, float time);
 			Node* findNode(Node* parent, uint32_t index);
 			Node* nodeFromIndex(uint32_t index);
-			//void prepareNodeDescriptor(gltf::Node* node, VkDescriptorSetLayout descriptorSetLayout);
+			//void prepareNodeDescriptor(gltf::Node* node, aaaVkDescriptorSetLayout descriptorSetLayout);
 
          ::gpu::texture *loadMaterialTexture2(const ::scoped_string &scopedstr, tinygltf::Material &material,
                                               tinygltf::Model &gltfModel, const ::scoped_string &scopedstrType,

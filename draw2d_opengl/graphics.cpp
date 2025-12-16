@@ -5874,8 +5874,8 @@ color = vec4(c.r,c.g, c.b, c.a);
             pcontext->m_pgpurenderer,
             pvertexshader,
             pfragmentshader,
-            {},
-            {},
+            //{},
+            //{},
             pcontext->input_layout<::graphics3d::sequence2_uv>()
          );
 

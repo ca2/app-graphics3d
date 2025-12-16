@@ -33,7 +33,7 @@ namespace graphics3d_vulkan
    //   // gltf_render_system::gltf_render_system(
    //   //     graphics3d::device * pdevice,
    //   //     VkRenderPass renderPass,
-   //   //     VkDescriptorSetLayout globalSetLayout,
+   //   //     aaaVkDescriptorSetLayout globalSetLayout,
    //   //     IAssetProvider& assets
    //   // ) :
    //   //     m_pgpudevice(pdevice),
@@ -54,7 +54,7 @@ namespace graphics3d_vulkan
    //   // void gltf_render_system::init(
    //   //    graphics3d::device * pdevice,
    //   //     VkRenderPass renderPass,
-   //   //     VkDescriptorSetLayout globalSetLayout,
+   //   //     aaaVkDescriptorSetLayout globalSetLayout,
    //   //    graphics3d::sandbox_descriptor_pool& descriptorPool,
    //   //     size_t frameCount
    //   // ) {
@@ -102,7 +102,7 @@ namespace graphics3d_vulkan
    //
    //
    //      m_pdescriptorsetlayoutUbo;
-   //      VkDescriptorSetLayout m_iblSetLayout;
+   //      aaaVkDescriptorSetLayout m_iblSetLayout;
    //      VkDescriptorSet m_iblDescriptorSet;
    //
    //      auto prenderer = pgpucontext->m_pgpurenderer;
@@ -119,8 +119,8 @@ namespace graphics3d_vulkan
    //   }
    //
    //
-   //   // void gltf_render_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
-   //   //     const ::array_base<VkDescriptorSetLayout> layouts = {
+   //   // void gltf_render_system::createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout) {
+   //   //     const ::array_base<aaaVkDescriptorSetLayout> layouts = {
    //   //         globalSetLayout,
    //   //         graphics3d::gltf::descriptorSetLayoutUbo,
    //   //         graphics3d::gltf::descriptorSetLayoutImage,
@@ -534,7 +534,7 @@ namespace graphics3d_vulkan
    }
 
 
-   void gltf_render_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
+   void gltf_render_system::createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout)
    {
 
       ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
@@ -544,7 +544,7 @@ namespace graphics3d_vulkan
       auto descriptorsetlayout2 = m_pdescriptorsetlayoutPbr->getDescriptorSetLayout();
       auto descriptorsetlayout3 = m_pdescriptorsetlayoutIbl->getDescriptorSetLayout();
 
-      const std::vector<VkDescriptorSetLayout> layouts = {
+      const std::vector<aaaVkDescriptorSetLayout> layouts = {
          descriptorsetlayout0,
          descriptorsetlayout1,
          descriptorsetlayout2,

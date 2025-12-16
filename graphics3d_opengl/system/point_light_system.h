@@ -19,7 +19,7 @@
 //
 //
 //        //point_light_system(
-//          //  context *pdevice, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
+//          //  context *pdevice, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout);
 //       point_light_system(context* pdevice);
 //        ~point_light_system();
 //
@@ -28,7 +28,7 @@
 //        //void render(FrameInfo& frameInfo);
 //        //void update(FrameInfo& framInfo, GlobalUbo& ubo);
 //
-//        //void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+//        //void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);
 //        //void createPipeline(VkRenderPass renderPass);
 //
 //        ::pointer < context > m_pgpucontext;

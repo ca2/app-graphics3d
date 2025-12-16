@@ -1000,8 +1000,8 @@ namespace gpu_vulkan
             ::as_memory_block(fullscreen_vertex_shader),
             ::as_memory_block(fullscreen_fragment_shader),
             {},
-            {},
-            {},
+            //{},
+            //{},
             // this means the vertex input layout will be null/empty
             // the full screen shader is embed in the shader code
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions

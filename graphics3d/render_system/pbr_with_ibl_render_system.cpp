@@ -132,7 +132,7 @@ namespace graphics3d
       pshaderOpaque->m_bEnableBlend = false;
       pshaderOpaque->binding_set(0, pgpucontext->global_ubo1_binding_set());
       pshaderOpaque->binding_set(1, pgpucontext->ibl1_binding_set());
-      pshaderOpaque->binding_set(2, pgpucontext->scene_gltf_pbr_binding_set());
+      pshaderOpaque->binding_set(2, pbr_binding_set());
       m_pshaderOpaque->m_propertiesPushShared.set_properties(ppropertiesPush);
       pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushShared, false);
       // m_pshaderOpaque->m_propertiesPushVertex.set_properties(ppropertiesPushVertex);
@@ -140,14 +140,14 @@ namespace graphics3d
       // pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushVertex);
       // pgpucontext->layout_push_constants(m_pshaderOpaque->m_propertiesPushFragment);
       m_pshaderOpaque->set_global_ubo();
-      m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, memoryVert, memoryFrag, {}, {},
+      m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, memoryVert, memoryFrag,// {}, {},
                                                     pinputlayout);
 
       auto pshaderMask = m_pshaderMask;
       pshaderMask->m_bEnableBlend = true;
       pshaderMask->binding_set(0, pgpucontext->global_ubo1_binding_set());
       pshaderMask->binding_set(1, pgpucontext->ibl1_binding_set());
-      pshaderMask->binding_set(2, pgpucontext->scene_gltf_pbr_binding_set());
+      pshaderMask->binding_set(2, pbr_binding_set());
       m_pshaderMask->m_propertiesPushShared.set_properties(ppropertiesPush);
       m_pshaderMask->set_global_ubo();
       pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushShared, false);
@@ -155,14 +155,14 @@ namespace graphics3d
       // m_pshaderMask->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       // pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushVertex);
       // pgpucontext->layout_push_constants(m_pshaderMask->m_propertiesPushFragment);
-      m_pshaderMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, memoryVert, memoryFrag, {}, {},
+      m_pshaderMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, memoryVert, memoryFrag, //{}, {},
                                                   pinputlayout);
 
       auto pshaderBlend = m_pshaderBlend;
 
       pshaderBlend->binding_set(0, pgpucontext->global_ubo1_binding_set());
       pshaderBlend->binding_set(1, pgpucontext->ibl1_binding_set());
-      pshaderBlend->binding_set(2, pgpucontext->scene_gltf_pbr_binding_set());
+      pshaderBlend->binding_set(2, pbr_binding_set());
       pshaderBlend->m_bEnableBlend = true;
       m_pshaderBlend->m_propertiesPushShared.set_properties(ppropertiesPush);
       m_pshaderBlend->set_global_ubo();
@@ -171,7 +171,7 @@ namespace graphics3d
       // m_pshaderBlend->m_propertiesPushFragment.set_properties(ppropertiesPushFragment);
       // pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushVertex);
       // pgpucontext->layout_push_constants(m_pshaderBlend->m_propertiesPushFragment);
-      m_pshaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, memoryVert, memoryFrag, {}, {},
+      m_pshaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, memoryVert, memoryFrag,// {}, {},
                                                    pinputlayout);
 
    }
@@ -266,8 +266,9 @@ namespace graphics3d
              //for (auto *primitive: pmesh->primitives)
              //{
              //auto ptextureTarget = pframe->m_pgpucommandbuffer->m_pgpurendertarget->current_texture(pframe);
+             auto ealphamode = pmesh->m_pmaterial->alphaMode;
                                // Pick pipeline by alpha mode
-                switch (pmesh->m_pmaterial->alphaMode)
+                switch (ealphamode)
                 {
                    case ::gpu::gltf::material::ALPHAMODE_OPAQUE:
                       pframe->m_pgpucommandbuffer->set_shader(m_pshaderOpaque);
@@ -335,7 +336,7 @@ namespace graphics3d
       
                 pshader->set_matrix4("modelMatrix", world);
                 pshader->set_matrix4("normalMatrix", normalMat);
-                bool bAlbedo = pmesh->m_pmaterial->m_texturea[::gpu::gltf::e_texture_albedo].is_set();
+                bool bAlbedo = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_albedo].is_set();
                 bAlbedo = bAlbedo && !m_bDisableAlbedo;
                 pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
       
@@ -354,10 +355,10 @@ namespace graphics3d
       
                 pshader->set_sequence3("albedo", seq3Albedo);
       
-                bool bMetallicRoughness = pmesh->m_pmaterial->m_texturea[::gpu::gltf::e_texture_metallic_roughness].is_set();
+                bool bMetallicRoughness = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_metallic_roughness].is_set();
                 bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
                 pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
-                bool bNormal = pmesh->m_pmaterial->m_texturea[::gpu::gltf::e_texture_normal].is_set();
+                bool bNormal = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_normal].is_set();
       
       
                             float fMetallic = 0.0f;
@@ -387,7 +388,7 @@ namespace graphics3d
       
                 bNormal = bNormal && !m_bDisableNormal;
                 pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
-                bool bAmbientOcclusion = pmesh->m_pmaterial->m_texturea[::gpu::gltf::e_texture_ambient_occlusion].is_set();
+                bool bAmbientOcclusion = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_ambient_occlusion].is_set();
                 bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
                 pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
       
@@ -421,7 +422,7 @@ namespace graphics3d
                 pshader->set_sequence3("emissive", seq3Emission);
       
       
-                bool bEmissive = pmesh->m_pmaterial->m_texturea[::gpu::gltf::e_texture_emissive].is_set();
+                bool bEmissive = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_emissive].is_set();
                 bEmissive = bEmissive && !m_bDisableEmissive;
                 pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
       
@@ -514,7 +515,7 @@ namespace graphics3d
                 //if (pgpubindingset->size() == 2)
                 //pgltfmodel
 
-                pcommandbuffer->bind_slot_set(2, pbindingslotsetIbl);
+                pcommandbuffer->bind_slot_set(2, pbindingslotsetPbr);
       
                 pcommandbuffer->draw(pgltfmodel);
       

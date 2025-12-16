@@ -32,7 +32,7 @@ namespace graphics3d_vulkan
 
    }
    //scene_render_system::scene_render_system(VkSandboxDevice &device, VkRenderPass renderPass,
-   //                                     VkDescriptorSetLayout globalSetLayout, IAssetProvider &assets) :
+   //                                     aaaVkDescriptorSetLayout globalSetLayout, IAssetProvider &assets) :
    //    m_device(device), m_globalSetLayout(globalSetLayout), m_assets(assets)
    //{
    //}

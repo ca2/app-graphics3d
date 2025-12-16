@@ -86,12 +86,6 @@ namespace gpu_vulkan
 
          void _computeBrdfConvolutionMap_2025();
 
-
-         /**
-          * Get the GL texture ID of the computed BRDF convolution map.
-          * @return
-          */
-         //unsigned int getBrdfConvolutionMapId();
       };
 
 
@@ -99,3 +93,6 @@ namespace gpu_vulkan
 
 
 } // namespace gpu_opengl
+
+
+

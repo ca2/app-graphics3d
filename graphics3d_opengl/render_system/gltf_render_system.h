@@ -54,7 +54,7 @@ namespace graphics3d_opengl
       
       
       //::pointer<::gpu_opengl::descriptor_pool> m_pdescriptorpool;
-      //VkDescriptorSetLayout m_iblSetLayout;
+      //aaaVkDescriptorSetLayout m_iblSetLayout;
       //VkDescriptorSet m_iblDescriptorSet;
 
       //::pointer<::gpu::shader> m_ppipelineOpaque;
@@ -93,7 +93,7 @@ namespace graphics3d_opengl
          //;
       ///;::gpu_opengl::descriptor_set_layout *psetdescriptorlayoutGlobal);
 
-      //void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
+      //void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);
       //void createPipeline(VkRenderPass renderPass);
 
       

@@ -40,20 +40,32 @@ namespace gpu_vulkan
    texture_synchronization::~texture_synchronization() {}
 
 
-   ::gpu_vulkan::render_pass * texture::get_render_pass()
+   ::gpu_vulkan::render_pass *texture::get_render_pass()
    {
 
       if (!m_prenderpass)
       {
 
          update_render_pass();
-
       }
 
       return m_prenderpass;
-
    }
-   
+
+
+   //::gpu_vulkan::render_pass *texture::get_face_render_pass() 
+   //{
+
+   //   if (!m_prenderpassFace)
+   //   {
+
+   //      update_face_render_pass();
+   //   }
+
+   //   return m_prenderpassFace;
+   //}
+
+
    
    void texture::update_render_pass()
    {
@@ -78,22 +90,42 @@ namespace gpu_vulkan
    }
 
 
+   //void texture::update_face_render_pass()
+   //{
 
-   VkFramebuffer texture::framebuffer(::gpu_vulkan::render_pass *prenderpass)
-   {
+   //   if (!m_prenderpassFace)
+   //   {
 
-      auto &renderpass = m_mapRenderPass[prenderpass];
+   //      m_prenderpassFace = øallocate offscreen_render_pass();
 
-      if (!renderpass.m_vkframebuffer)
-      {
+   //   }
 
-         renderpass.m_vkframebuffer = _framebuffer(prenderpass);
+   //   m_prenderpassFace->m_bWithDepth = m_textureflags.m_bWithDepth;
 
-      }
+   //   m_prenderpassFace->m_bSrgb = m_textureattributes.m_iFloat >= 1;
 
-      return renderpass.m_vkframebuffer;
+   //   m_prenderpassFace->initialize(this);
 
-   }
+   //   m_prenderpassFace->_update_face_render_pass(m_pgpurenderer->m_pgpucontext, this, m_prenderpass->m_prenderpassOld);
+
+   //}
+
+
+   //VkFramebuffer texture::framebuffer2(::gpu_vulkan::render_pass *prenderpass, int iMip)
+   //{
+
+   //   auto &renderpass = m_mapRenderPass[prenderpass];
+
+   //   if (!renderpass.m_vkframebuffer)
+   //   {
+
+   //      renderpass.m_vkframebuffer = _framebuffer2(prenderpass, iMip);
+
+   //   }
+
+   //   return renderpass.m_vkframebuffer;
+
+   //}
 
 
    //   VkFramebuffer texture_synchronization::_get_frame_buffer(::gpu_vulkan::render_pass * prenderpass)
@@ -154,6 +186,14 @@ namespace gpu_vulkan
    //   return vkframebuffer;
 
    //}
+
+
+   bool texture::_is_ok() const
+   {
+
+      return m_vkimage != VK_NULL_HANDLE;
+
+   }
 
 
    VkFence texture_synchronization::in_flight_fence()
@@ -251,21 +291,18 @@ namespace gpu_vulkan
    
    }
 
-   class texture::cube & texture::cube()
+   
+   class texture::layer &texture::current_layer(::gpu_vulkan::render_pass *prenderpass)
    {
 
-      ASSERT(m_textureattributes.m_etexture == ::gpu::e_texture_cube_map);
+      //ASSERT(m_textureattributes.m_etexture == ::gpu::e_texture_cube_map);
 
-      if (!m_pcube)
-      {
+      auto &layer = m_mapRenderPassMipLayer.layer(this, prenderpass);
 
-         øconstruct_new(m_pcube);
-
-      }
-
-      return *m_pcube;
+      return layer;
 
    }
+
 
    void texture::_create_texture(const ::gpu::texture_data & data)
    {
@@ -369,6 +406,29 @@ namespace gpu_vulkan
       }
 
       pcontext->createImageWithInfo(imagecreateinfo, properties, m_vkimage, m_vkdevicememory);
+
+      if ((((::uptr)m_vkimage) & 0xffff) == 0x014d)
+      {
+
+         information("((((::uptr)m_vkimage) & 0xffff) == 0x014d)");
+
+      }
+      else if ((((::uptr)m_vkimage) & 0xffff) == 0x0063)
+      {
+
+         information("((((::uptr)m_vkimage) & 0xffff) == 0x0063)");
+      }
+      else if ((((::uptr)m_vkimage) & 0xffff) == 0x016a)
+      {
+
+         information("((((::uptr)m_vkimage) & 0xffff) == 0x016a)");
+      }
+      else if ((((::uptr)m_vkimage) & 0xffff) == 0x00a7)
+      {
+
+         information("((((::uptr)m_vkimage) & 0xffff) == 0x00a7)");
+      }
+      
 
       if (data.is_image_array())
       {
@@ -614,6 +674,20 @@ namespace gpu_vulkan
 
       /// be safe if m_iMipCount wasn't set
       uint32_t iMipCount = this->mip_count(); 
+
+      if (m_iCurrentLayer >= 0)
+      {
+
+         layerCount = 1;
+
+      }
+
+      if (m_iCurrentMip >= 0)
+      {
+
+         iMipCount = 1;
+
+      }
 
       // If old layout is UNDEFINED, the src access must be 0 and src stage can be TOP_OF_PIPE
       if (layoutOld == VK_IMAGE_LAYOUT_UNDEFINED)
@@ -876,135 +950,274 @@ namespace gpu_vulkan
 
    //}
 
-   void texture::cube::create_image_views(::gpu_vulkan::texture * ptexture)
+
+   void texture::layer::_create_framebuffer(::gpu_vulkan::texture * ptexture, ::gpu_vulkan::render_pass * prenderpass, int iAttachmentCount)
    {
-
-      if (m_iImageViewCount < 6)
-      {
-
-         ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpurenderer->m_pgpucontext;
-
-         m_iImageViewCount = 6;
-
-         for (uint32_t i = 0; i < m_iImageViewCount; ++i)
-         {
-            VkImageViewCreateInfo faceView{};
-            faceView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            faceView.image = ptexture->m_vkimage;
-            faceView.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            faceView.format = ptexture->m_vkformat;
-            faceView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            faceView.subresourceRange.baseMipLevel = 0;
-            faceView.subresourceRange.levelCount = 1;
-            faceView.subresourceRange.baseArrayLayer = i; // <--- select the cube face
-            faceView.subresourceRange.layerCount = 1;
-            VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &faceView, nullptr, &m_imageviewa[i]));
-         }
-
-      }
-
-   }
-
-   VkImageView texture::cube::get_image_view(::gpu_vulkan::texture * ptexture, int iIndex)
-   {
-
-      if (m_iImageViewCount < 6)
-      {
-
-         create_image_views(ptexture);
-
-      }
-
-      return m_imageviewa[iIndex];
-
-   }
-
-
-   VkFramebuffer texture::cube::framebuffer(::gpu_vulkan::texture * ptexture, ::gpu_vulkan::render_pass *prenderpass, int iFace)
-   {
-
-      auto &renderpass = m_mapRenderPass[prenderpass];
-
-      if (!renderpass.m_framebuffera[iFace])
-      {
-
-         renderpass.m_framebuffera[iFace] = _framebuffer(ptexture, prenderpass, iFace);
-      }
-
-      return renderpass.m_framebuffera[iFace];
-   }
-
-
-   VkFramebuffer texture::cube::_framebuffer(::gpu_vulkan::texture * ptexture, ::gpu_vulkan::render_pass *prenderpass, int iFace)
-   {
-
-      auto &framebuffercube = m_mapFramebufferCube[prenderpass->m_vkrenderpass];
-
-      if (framebuffercube.m_framebuffera[iFace])
-      {
-
-         return framebuffercube.m_framebuffera[iFace];
-      
-      
-      }
 
       ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpurenderer->m_pgpucontext;
 
-      VkImageView attachments[1];
-
-      attachments[0] = get_image_view(ptexture, iFace);
-
-      int iAttachmentCount = 1;
-
-      // if (prenderpass->m_flags.m_bWithDepth)
-      //{
-
-      //   if (!m_flags.m_bWithDepth)
-      //   {
-
-      //      m_flags.m_bWithDepth = true;
-      //   }
-
-      //   VkImageView depthImageView = get_depth_image_view();
-
-      //   attachments[1] = depthImageView;
-
-      //   iAttachmentCount = 2;
-      //}
-      // else
-      //{
-
-      //   iAttachmentCount = 1;
-      //}
-
       VkFramebufferCreateInfo framebufferInfo{};
       framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-      framebufferInfo.renderPass = prenderpass->m_vkrenderpass;
-      framebufferInfo.attachmentCount = 1;
-      framebufferInfo.pAttachments = attachments;
-      framebufferInfo.width = ptexture->rectangle().width();
-      framebufferInfo.height = ptexture->rectangle().height();
-      framebufferInfo.layers = 1;
+      framebufferInfo.renderPass = prenderpass->getRenderPass();
+      framebufferInfo.attachmentCount = iAttachmentCount;
+      framebufferInfo.pAttachments = m_vkimageviewaAttachment;
 
-      VK_CHECK_RESULT(vkCreateFramebuffer(pcontext->logicalDevice(), &framebufferInfo, nullptr,
-                                          &framebuffercube.m_framebuffera[iFace]));
-
-      return framebuffercube.m_framebuffera[iFace];
-   }
-
-
-
-   VkImageView texture::get_image_view(int iIndex)
-   {
-
-      if (iIndex >= 0 
-         && m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
+      if (ptexture->m_iCurrentLayer < 0)
       {
 
-         return cube().get_image_view(this, iIndex);
+         m_size = ptexture->rectangle().size();
+         m_iLayerCount = ptexture->m_textureattributes.m_iLayerCount;
 
       }
       else
+      {
+
+         m_size.cx = ptexture->mip_width();
+         m_size.cy = ptexture->mip_height();
+         m_iLayerCount = 1;
+
+      }
+
+      framebufferInfo.width = m_size.cx;
+      framebufferInfo.height = m_size.cy;
+      framebufferInfo.layers = m_iLayerCount;
+
+      VK_CHECK_RESULT(vkCreateFramebuffer(pcontext->logicalDevice(), &framebufferInfo, nullptr, &m_vkframebuffer));
+
+   }
+
+
+   void texture::layer::create_framebuffer(::gpu_vulkan::texture *ptexture, ::gpu_vulkan::render_pass *prenderpass)
+   {
+
+      int iAttachmentCount = 1;
+
+      if (!m_vkimageviewaAttachment[0])
+      {
+
+         create_color_attachment(ptexture);
+
+      }
+
+      if (!m_vkimageviewaAttachment[1] && prenderpass->m_bWithDepth)
+      {
+
+         create_depth_attachment(ptexture);
+
+         iAttachmentCount++;
+
+      }
+
+      if (!m_vkframebuffer)
+      {
+
+         _create_framebuffer(ptexture, prenderpass, iAttachmentCount);
+
+      }
+
+   }
+
+
+   void texture::layer::create_color_attachment(::gpu_vulkan::texture *ptexture)
+   {
+
+      ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpurenderer->m_pgpucontext;
+
+      VkImageViewCreateInfo faceView{};
+      faceView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+      faceView.image = ptexture->m_vkimage;
+      faceView.viewType = VK_IMAGE_VIEW_TYPE_2D;
+      faceView.format = ptexture->m_vkformat;
+      faceView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      faceView.subresourceRange.baseMipLevel = maximum(0, ptexture->m_iCurrentMip);
+      faceView.subresourceRange.levelCount = ptexture->m_iCurrentLayer < 0 ? ptexture->m_textureattributes.m_iMipCount : 1;
+      faceView.subresourceRange.baseArrayLayer = maximum(0, ptexture->m_iCurrentLayer); // <--- select the cube face
+      faceView.subresourceRange.layerCount = ptexture->m_iCurrentLayer < 0 ? ptexture->m_textureattributes.m_iLayerCount : 1;
+      VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &faceView, nullptr, &m_vkimageviewaAttachment[0]));
+
+   }
+
+
+   void texture::layer::create_depth_attachment(::gpu_vulkan::texture *ptexture)
+   {
+
+      ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpurenderer->m_pgpucontext;
+
+      VkFormat depthFormat = pcontext->findDepthFormat();
+
+      VkImageViewCreateInfo faceView{};
+      faceView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+      faceView.image = ptexture->get_depth_image();
+      faceView.viewType = VK_IMAGE_VIEW_TYPE_2D;
+      faceView.format = depthFormat;
+      faceView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+      faceView.subresourceRange.baseMipLevel = maximum(0, ptexture->m_iCurrentMip);
+      faceView.subresourceRange.levelCount = ptexture->m_iCurrentLayer < 0 ? ptexture->m_textureattributes.m_iMipCount : 1;
+      faceView.subresourceRange.baseArrayLayer = maximum(0, ptexture->m_iCurrentLayer); // <--- select the cube face
+      faceView.subresourceRange.layerCount = ptexture->m_iCurrentLayer < 0 ? ptexture->m_textureattributes.m_iLayerCount : 1;
+      VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &faceView, nullptr, &m_vkimageviewaAttachment[1]));
+
+   }
+
+
+   texture::layer &texture::render_pass_mip_layer_array::layer(::gpu_vulkan::texture *ptexture,
+                                                               ::gpu_vulkan::render_pass *prenderpass)
+   {
+
+      auto vkrenderpass = prenderpass->getRenderPass();
+
+      int iMip = maximum(0, ptexture->m_iCurrentMip);
+
+      int iLayerPlusOne = maximum(0, ptexture->m_iCurrentLayer + 1);
+
+      auto &layer = (*this)[vkrenderpass].ø(iMip).ø(iLayerPlusOne);
+
+      if (layer.is_empty())
+      {
+
+         layer.create_framebuffer(ptexture, prenderpass);
+
+      }
+
+      return layer;
+
+   }
+
+
+   //VkImageView texture::cube::get_image_view(::gpu_vulkan::texture * ptexture, int iIndex)
+   //{
+
+   //   if (m_iImageViewCount < 6)
+   //   {
+
+   //      create_image_views(ptexture);
+
+   //   }
+
+   //   return m_imageviewa[iIndex];
+
+   //}
+
+
+   //VkFramebuffer texture::cube::layer_framebuffer(::gpu_vulkan::texture *ptexture,
+   //                                               ::gpu_vulkan::render_pass *prenderpass,int iLayer, int iMip)
+   //{
+
+   //   auto &renderpass = m_mapRenderPass[prenderpass].ø(constrain(iMip, 0, 1024));
+
+   //   if (!renderpass.m_framebuffera[iLayer])
+   //   {
+
+   //      renderpass.m_framebuffera[iLayer] = _layer_framebuffer(ptexture, prenderpass, iLayer, iMip);
+   //   }
+
+   //   return renderpass.m_framebuffera[iLayer];
+   //}
+
+
+   //VkFramebuffer texture::cube::framebuffer2(::gpu_vulkan::texture * ptexture, ::gpu_vulkan::render_pass *prenderpass, int iMip)
+   //{
+
+   //   auto &renderpass = m_mapRenderPass[prenderpass].ø(constrain(iMip, 0, 1024));
+
+   //   if (!renderpass.m_framebuffera[iLayer])
+   //   {
+
+   //      renderpass.m_framebuffera[iLayer] = _layer_framebuffer(ptexture, prenderpass, iLayer, iMip);
+   //   }
+
+   //   return renderpass.m_framebuffera[iLayer];
+   //}
+
+
+   //VkFramebuffer texture::cube::_framebuffer2(::gpu_vulkan::texture * ptexture, ::gpu_vulkan::render_pass *prenderpass, int iMip)
+   //{
+
+   //   auto &framebuffercube = m_mapFramebufferCube[prenderpass->m_vkrenderpass].ø(0);
+
+   //   if (framebuffercube.m_framebuffera[iFace])
+   //   {
+
+   //      return framebuffercube.m_framebuffera[iFace];
+   //   
+   //   
+   //   }
+
+   //   ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpurenderer->m_pgpucontext;
+
+   //   VkImageView attachments[1];
+
+   //   attachments[0] = get_image_view(ptexture, iFace);
+
+   //   int iAttachmentCount = 1;
+
+   //   // if (prenderpass->m_flags.m_bWithDepth)
+   //   //{
+
+   //   //   if (!m_flags.m_bWithDepth)
+   //   //   {
+
+   //   //      m_flags.m_bWithDepth = true;
+   //   //   }
+
+   //   //   VkImageView depthImageView = get_depth_image_view();
+
+   //   //   attachments[1] = depthImageView;
+
+   //   //   iAttachmentCount = 2;
+   //   //}
+   //   // else
+   //   //{
+
+   //   //   iAttachmentCount = 1;
+   //   //}
+
+   //   VkFramebufferCreateInfo framebufferInfo{};
+   //   framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+   //   framebufferInfo.renderPass = prenderpass->m_vkrenderpass;
+   //   framebufferInfo.attachmentCount = 1;
+   //   framebufferInfo.pAttachments = attachments;
+   //   framebufferInfo.width = ptexture->rectangle().width();
+   //   framebufferInfo.height = ptexture->rectangle().height();
+   //   framebufferInfo.layers = 1;
+
+   //   VK_CHECK_RESULT(vkCreateFramebuffer(pcontext->logicalDevice(), &framebufferInfo, nullptr,
+   //                                       &framebuffercube.m_framebuffera[iFace]));
+
+   //   return framebuffercube.m_framebuffera[iFace];
+   //}
+
+
+   //::gpu_vulkan::render_pass * texture::cube::get_render_pass(::gpu_vulkan::texture * ptexture, int iIndex)
+   //{
+
+   //   auto & prenderpass = m_renderpassa[iIndex];
+
+   //   if (!prenderpass)
+   //   {
+
+   //      øconstruct(prenderpass);
+
+   //      prenderpass->on_init_render_pass
+
+   //   }
+
+   //   return prenderpass;
+
+   //}
+
+
+   VkImageView texture::get_image_view()
+   {
+
+      //if (iIndex >= 0 
+      //   && m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
+      //{
+
+      //   return cube().get_image_view(this, iIndex);
+
+      //}
+      //else
       {
 
          if (m_textureflags.m_bCpuRead)
@@ -1049,20 +1262,21 @@ namespace gpu_vulkan
 
    }
 
-   VkFramebuffer texture::framebuffer(::gpu_vulkan::render_pass * prenderpass, int iFace)
-   {
+   
+   //VkFramebuffer texture::framebuffer2(::gpu_vulkan::render_pass * prenderpass, int iMip)
+   //{
 
-      return cube().framebuffer(this , prenderpass, iFace);
+   //   return mip_layer_array().framebuffer(this , prenderpass, iFace, iMip);
 
-   }
+   //}
 
 
-   VkFramebuffer texture::_framebuffer(::gpu_vulkan::render_pass * prenderpass, int iFace)
-   {
+   //VkFramebuffer texture::_framebuffer(::gpu_vulkan::render_pass * prenderpass, int iFace)
+   //{
 
-      return cube()._framebuffer(this, prenderpass, iFace);
+   //   return cube()._framebuffer(this, prenderpass, iFace, iMip);
 
-   }
+   //}
 
 
    void texture::create_image_view()
@@ -1212,7 +1426,7 @@ namespace gpu_vulkan
    }
 
 
-   VkDescriptorSet texture::descriptor_set(::gpu_vulkan::shader *pshader, ::gpu::command_buffer *pgpucommandbuffer)
+   VkDescriptorSet texture::_001DescriptorSet(::gpu_vulkan::shader *pshader, ::gpu::command_buffer *pgpucommandbuffer)
    {
 
       auto iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex;
@@ -1267,13 +1481,21 @@ namespace gpu_vulkan
 
       unsigned int uSamplerBinding = 0;
 
-      auto pgpubindingslotset = pshader->get_first_image_sampler_binding_slot_set();
+      // bind source expects the image to be the only binding
+      // in the descriptor set
+      // to avoid running out of descriptors when using a certain
+      // size for the descriptor pool, going to store the
+      // descriptor pool in the texture.
+
+      auto pgpubindingslotset = _001BindingSlotSet(pshader, pgpucommandbuffer);
 
       ::cast<::gpu_vulkan::binding_set> pbindingset = pgpubindingslotset->m_pbindingset;
 
+      ::cast<::gpu_vulkan::binding_slot_set> pbindingslotset = pgpubindingslotset;
+
       auto playout = pbindingset->descriptor_set_layout(pgpucommandbuffer);
 
-      auto ppool = pbindingset->m_pdescriptorpool;
+      auto ppool = pbindingslotset->descriptor_pool(pgpucommandbuffer);
 
       // if (pshader->m_bindingSampler.is_set())
       //   uSamplerBinding = pshader->m_bindingSampler.m_uBinding;
@@ -1318,63 +1540,109 @@ namespace gpu_vulkan
    }
 
 
-   VkFramebuffer texture::_framebuffer(::gpu_vulkan::render_pass *prenderpass)
+
+         /// @brief Singular binding slot set (_001 case here), when the texture is
+   /// the only binding in the descriptor set
+   ::gpu::binding_slot_set * texture::_001BindingSlotSet(::gpu_vulkan::shader * pshader,
+                                                      ::gpu::command_buffer * pgpucommandbuffer)
    {
 
-      if (m_textureflags.m_bCpuRead)
+      auto &pbindingslotset = m_mapBindingSlotSet1[pshader];
+
+      if (pbindingslotset)
       {
 
-         return VK_NULL_HANDLE;
+         return pbindingslotset;
+
       }
 
-      auto &framebuffer = m_mapFramebuffer[prenderpass->m_vkrenderpass];
+      øconstruct_new(pbindingslotset);
 
-      if (framebuffer)
-      {
-         return framebuffer;
-      }
+      int iSet = 0;
 
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      int iBinding = 0;
 
-      VkImageView attachments[2];
+      pbindingslotset->m_pbindingset = pshader->_001GetSingularImageBindingSet(iSet);
 
-      attachments[0] = get_image_view();
+      pbindingslotset->m_iSet = iSet;
 
-      int iAttachmentCount;
+      auto & bindingslot = pbindingslotset->add_new();
 
-      if (prenderpass->m_bWithDepth)
-      {
+      bindingslot.m_pbinding = pbindingslotset->m_pbindingset->first();
 
-         if (!m_textureflags.m_bWithDepth)
-         {
+      ASSERT(bindingslot.m_pbinding->is_image_sampler());
 
-            m_textureflags.m_bWithDepth = true;
-         }
+      bindingslot.m_iSet = iSet;
 
-         VkImageView depthImageView = get_depth_image_view();
+      bindingslot.m_iSlot = 0;
 
-         attachments[1] = depthImageView;
+      bindingslot.m_ptexture = this;
 
-         iAttachmentCount = 2;
-      }
-      else
-      {
+      return pbindingslotset;
 
-         iAttachmentCount = 1;
-      }
-
-      VkFramebufferCreateInfo fbInfo = {.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-                                        .renderPass = prenderpass->m_vkrenderpass,
-                                        .attachmentCount = (uint32_t)iAttachmentCount,
-                                        .pAttachments = attachments,
-                                        .width = (uint32_t)this->width(),
-                                        .height = (uint32_t)this->height(),
-                                        .layers = 1};
-
-      VK_CHECK_RESULT(vkCreateFramebuffer(pcontext->logicalDevice(), &fbInfo, NULL, &framebuffer));
-
-      return framebuffer;
    }
+
+
+   //VkFramebuffer texture::_framebuffer(::gpu_vulkan::render_pass *prenderpass, int iMip)
+   //{
+
+   //   ASSERT(iMip <= 0); // not yet implemented different mip level support
+   //   // other than mip 0
+
+   //   if (m_textureflags.m_bCpuRead)
+   //   {
+
+   //      return VK_NULL_HANDLE;
+   //   }
+
+   //   auto &framebuffer = m_mapFramebuffer[prenderpass->m_vkrenderpass];
+
+   //   if (framebuffer)
+   //   {
+   //      return framebuffer;
+   //   }
+
+   //   ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+
+   //   VkImageView attachments[2];
+
+   //   attachments[0] = get_image_view();
+
+   //   int iAttachmentCount;
+
+   //   if (prenderpass->m_bWithDepth)
+   //   {
+
+   //      if (!m_textureflags.m_bWithDepth)
+   //      {
+
+   //         m_textureflags.m_bWithDepth = true;
+   //      }
+
+   //      VkImageView depthImageView = get_depth_image_view();
+
+   //      attachments[1] = depthImageView;
+
+   //      iAttachmentCount = 2;
+   //   }
+   //   else
+   //   {
+
+   //      iAttachmentCount = 1;
+   //   }
+
+   //   VkFramebufferCreateInfo fbInfo = {.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+   //                                     .renderPass = prenderpass->m_vkrenderpass,
+   //                                     .attachmentCount = (uint32_t)iAttachmentCount,
+   //                                     .pAttachments = attachments,
+   //                                     .width = (uint32_t)this->width(),
+   //                                     .height = (uint32_t)this->height(),
+   //                                     .layers = 1};
+
+   //   VK_CHECK_RESULT(vkCreateFramebuffer(pcontext->logicalDevice(), &fbInfo, NULL, &framebuffer));
+
+   //   return framebuffer;
+   //}
 
 
    VkImageView texture::get_depth_image_view()
@@ -1394,7 +1662,7 @@ namespace gpu_vulkan
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
             viewInfo.image = get_depth_image();
             viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            viewInfo.format = m_vkformat = depthFormat;
+            viewInfo.format = depthFormat;
             viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
             viewInfo.subresourceRange.baseMipLevel = 0;
             viewInfo.subresourceRange.levelCount = 1;
@@ -3270,10 +3538,19 @@ void texture::create_sampler()
       {
 
          _fromglTfImage(nullptr, pathImage, pgpurenderer, isSrgb);
+
       }
       else
       {
 
+         auto pimage = image()->get_image(pathImage);
+
+         if (::is_ok(pimage))
+         {
+
+            initialize_texture_from_image(m_pgpurenderer, {pimage});
+
+         }
 
       }
 
@@ -3787,6 +4064,190 @@ void texture::create_sampler()
          );
       }
 
+
+   }
+
+
+   //      void generateCubemapMipmaps(VkCommandBuffer cmd, VkImage image, VkFormat format, int32_t width, int32_t height,
+   //                            uint32_t mipLevels)
+   //{
+
+   //   int32_t mipWidth = width;
+
+   //   int32_t mipHeight = height;
+
+   //   for (uint32_t i = 1; i < mipLevels; i++)
+   //   {
+
+   //      VkImageMemoryBarrier barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+   //      barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED; // first use
+   //      barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+   //      barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+   //      barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+   //      barrier.image = image;
+   //      barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   //      barrier.subresourceRange.baseMipLevel = i;
+   //      barrier.subresourceRange.levelCount = 1;
+   //      barrier.subresourceRange.baseArrayLayer = 0;
+   //      barrier.subresourceRange.layerCount = 6;
+   //      barrier.srcAccessMask = 0;
+   //      barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+   //      vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
+   //                           nullptr, 1, &barrier);
+
+   //      VkImageBlit blit{};
+   //      blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   //      blit.srcSubresource.mipLevel = i - 1;
+   //      blit.srcSubresource.baseArrayLayer = 0;
+   //      blit.srcSubresource.layerCount = 6;
+   //      blit.srcOffsets[0] = {0, 0, 0};
+   //      blit.srcOffsets[1] = {mipWidth, mipHeight, 1};
+
+   //      blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   //      blit.dstSubresource.mipLevel = i;
+   //      blit.dstSubresource.baseArrayLayer = 0;
+   //      blit.dstSubresource.layerCount = 6;
+   //      blit.dstOffsets[0] = {0, 0, 0};
+   //      blit.dstOffsets[1] = {std::max(1, mipWidth / 2), std::max(1, mipHeight / 2), 1};
+
+   //      vkCmdBlitImage(cmd, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+   //                     1, &blit, VK_FILTER_LINEAR);
+
+   //      // Transition this mip level to SRC for the next iteration
+   //      barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+   //      barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+   //      barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+   //      barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+   //      vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
+   //                           nullptr, 1, &barrier);
+
+   //      mipWidth = std::max(1, mipWidth / 2);
+   //      mipHeight = std::max(1, mipHeight / 2);
+   //   }
+
+   //   // Finally transition all mips to SHADER_READ_ONLY_OPTIMAL
+   //   VkImageMemoryBarrier barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+   //   barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+   //   barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+   //   barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+   //   barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+   //   barrier.image = image;
+   //   barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+   //   barrier.subresourceRange.baseMipLevel = 0;
+   //   barrier.subresourceRange.levelCount = mipLevels;
+   //   barrier.subresourceRange.baseArrayLayer = 0;
+   //   barrier.subresourceRange.layerCount = 6;
+
+   //   vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0,
+   //                        nullptr, 1, &barrier);
+
+   //}
+
+   
+   void texture::generate_mipmap(::gpu::command_buffer *pgpucommandbuffer)
+   {
+
+      ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      VkCommandBuffer cmd = pcommandbuffer->m_vkcommandbuffer;
+
+      int32_t mipWidth = this->width();
+
+      int32_t mipHeight = this->height();
+
+      // First, transition all mips to VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+      VkImageMemoryBarrier barrierStart{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+      barrierStart.oldLayout = m_state.m_vkimagelayout;
+      barrierStart.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+      barrierStart.srcAccessMask = m_state.m_vkaccessflags;
+      barrierStart.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+      barrierStart.image = m_vkimage;
+      barrierStart.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      barrierStart.subresourceRange.baseMipLevel = 0;
+      barrierStart.subresourceRange.levelCount = m_textureattributes.m_iMipCount;
+      barrierStart.subresourceRange.baseArrayLayer = 0;
+      barrierStart.subresourceRange.layerCount = m_textureattributes.m_iLayerCount;
+
+      vkCmdPipelineBarrier(cmd, m_state.m_vkpipelinestageflags,
+         VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
+                           nullptr, 1, &barrierStart);
+
+
+      for (uint32_t i = 1; i < m_textureattributes.m_iMipCount; i++)
+      {
+
+         VkImageMemoryBarrier barrierTransition{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+         barrierTransition.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED; // first use
+         barrierTransition.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+         barrierTransition.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+         barrierTransition.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+         barrierTransition.image = m_vkimage;
+         barrierTransition.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+         barrierTransition.subresourceRange.baseMipLevel = i;
+         barrierTransition.subresourceRange.levelCount = 1;
+         barrierTransition.subresourceRange.baseArrayLayer = 0;
+         barrierTransition.subresourceRange.layerCount = m_textureattributes.m_iLayerCount;
+         barrierTransition.srcAccessMask = 0;
+         barrierTransition.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+         vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
+                              nullptr, 1, &barrierTransition);
+
+         VkImageBlit blit{};
+         blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+         blit.srcSubresource.mipLevel = i - 1;
+         blit.srcSubresource.baseArrayLayer = 0;
+         blit.srcSubresource.layerCount = m_textureattributes.m_iLayerCount;
+         blit.srcOffsets[0] = {0, 0, 0};
+         blit.srcOffsets[1] = {mipWidth, mipHeight, 1};
+
+         auto iNextHalfW = std::max(1, mipWidth / 2);
+         auto iNextHalfH = std::max(1, mipHeight / 2);
+
+         blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+         blit.dstSubresource.mipLevel = i;
+         blit.dstSubresource.baseArrayLayer = 0;
+         blit.dstSubresource.layerCount = m_textureattributes.m_iLayerCount;
+         blit.dstOffsets[0] = {0, 0, 0};
+         blit.dstOffsets[1] = {iNextHalfW, iNextHalfH, 1};
+
+         vkCmdBlitImage(cmd, m_vkimage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, m_vkimage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                        1, &blit, VK_FILTER_LINEAR);
+
+         // Transition this mip level to SRC for the next iteration
+         barrierTransition.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+         barrierTransition.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+         barrierTransition.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+         barrierTransition.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+         vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
+                              nullptr, 1, &barrierTransition);
+
+         mipWidth = iNextHalfW;
+         mipHeight = iNextHalfH;
+      }
+
+      m_state.m_vkaccessflags = VK_ACCESS_TRANSFER_READ_BIT;
+      m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+      m_state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_TRANSFER_BIT;
+
+      //// Finally transition all mips to SHADER_READ_ONLY_OPTIMAL
+      //VkImageMemoryBarrier barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+      //barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+      //barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      //barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+      //barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+      //barrier.image = m_vkimage;
+      //barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      //barrier.subresourceRange.baseMipLevel = 0;
+      //barrier.subresourceRange.levelCount = m_textureattributes.m_iMipCount;
+      //barrier.subresourceRange.baseArrayLayer = 0;
+      //barrier.subresourceRange.layerCount = m_textureattributes.m_iLayerCount;
+
+      //vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0,
+      //                     nullptr, 1, &barrier);
 
    }
 

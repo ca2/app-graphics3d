@@ -87,9 +87,11 @@ namespace gpu_vulkan
 
       ::cast<::gpu_vulkan::binding_set> pbindingset = pgpubindingslotset->m_pbindingset;
 
+      ::cast<::gpu_vulkan::binding_slot_set> pbindingslotset = pgpubindingslotset;
+
       auto playout = pbindingset->descriptor_set_layout(pgpucommandbuffer);
 
-      auto ppool = pbindingset->m_pdescriptorpool;
+      auto ppool = pbindingslotset->descriptor_pool(pgpucommandbuffer);
 
       auto iFrameIndex = pgpucommandbuffer->m_pgpurendertarget->get_frame_index();
 

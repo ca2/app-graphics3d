@@ -23,7 +23,7 @@ namespace graphics3d_directx11
 
    }
    //scene_render_system::scene_render_system(VkSandboxDevice &device, VkRenderPass renderPass,
-   //                                     VkDescriptorSetLayout globalSetLayout, IAssetProvider &assets) :
+   //                                     aaaVkDescriptorSetLayout globalSetLayout, IAssetProvider &assets) :
    //    m_device(device), m_globalSetLayout(globalSetLayout), m_assets(assets)
    //{
    //}
@@ -34,7 +34,7 @@ namespace graphics3d_directx11
       }
 
 
-   //void scene_render_system::init(VkSandboxDevice &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout,
+   //void scene_render_system::init(VkSandboxDevice &device, VkRenderPass renderPass, aaaVkDescriptorSetLayout globalSetLayout,
    //                             VkSandboxDescriptorPool &descriptorPool, size_t frameCount)
    //{
    void scene_render_system::on_prepare(::gpu::context *pgpucontext)
@@ -50,11 +50,11 @@ namespace graphics3d_directx11
    }
 
 
-   //void scene_render_system::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
+   //void scene_render_system::createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout)
    //{
 
    //   ::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
-   //   const ::array_base<VkDescriptorSetLayout> layouts = {
+   //   const ::array_base<aaaVkDescriptorSetLayout> layouts = {
    //      globalSetLayout, 
    //      pcontext->m_psetdescriptorlayoutGlobal->m_vkdescriptorsetlayout,
    //      pcontext->m_psetdescriptorlayoutGltfImage->m_vkdescriptorsetlayout};
