@@ -66,7 +66,7 @@ namespace graphics3d_vulkan
 
       ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
 
-      if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+      if (ptexture->mip_layer_state(0, 0).m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       {
 
          warning() << "what?";

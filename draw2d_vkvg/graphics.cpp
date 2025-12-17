@@ -5825,9 +5825,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          ptextureCurrent->_attach(vkimage, ::gpu::e_texture_image);
 
-         ptextureCurrent->m_state.m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-         ptextureCurrent->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-         ptextureCurrent->m_state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+         ptextureCurrent->mip_layer_state(0, 0).m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+         ptextureCurrent->mip_layer_state(0, 0).m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+         ptextureCurrent->mip_layer_state(0, 0).m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
       }
 

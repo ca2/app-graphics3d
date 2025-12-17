@@ -735,7 +735,7 @@ namespace gpu_vulkan
 
       ::cast<texture> ptexture = ptextureDst;
 
-      if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+      if (ptexture->mip_layer_state(0, 0).m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       {
 
          warning() << "what?";
@@ -1671,7 +1671,7 @@ namespace gpu_vulkan
       ::cast<texture> ptexture = pgputexture;
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      if (ptexture->m_state.m_vkimagelayout != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+      if (ptexture->mip_layer_state(0, 0).m_vkimagelayout != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
       {
          throw ::exception(error_wrong_state);
       }

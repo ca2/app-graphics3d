@@ -879,7 +879,7 @@ namespace gpu_vulkan
   //    VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
   //    VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
       //ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-      VkPipelineStageFlags vkpipelinestageflagsWait = ptexture->m_state.m_vkpipelinestageflags;
+      VkPipelineStageFlags vkpipelinestageflagsWait = ptexture->mip_layer_state(0, 0).m_vkpipelinestageflags;
       {
          //VkImageMemoryBarrier barrier = {
          //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -1010,7 +1010,7 @@ namespace gpu_vulkan
             vkCmdClearColorImage(
                pcommandbuffer->m_vkcommandbuffer,
                ptextureRef->m_vkimage,
-               ptextureRef->m_state.m_vkimagelayout,
+                                 ptextureRef->mip_layer_state(0, 0).m_vkimagelayout,
                &clearColor,
                1,
                &subresourceRange
@@ -1030,8 +1030,8 @@ namespace gpu_vulkan
          vkCmdCopyImage(
             pcommandbuffer->m_vkcommandbuffer,
             //colorAttachment.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-            ptexture->m_vkimage, ptexture->m_state.m_vkimagelayout,
-            ptextureRef->m_vkimage, ptextureRef->m_state.m_vkimagelayout,
+                        ptexture->m_vkimage, ptexture->mip_layer_state(0, 0).m_vkimagelayout, ptextureRef->m_vkimage,
+                        ptextureRef->mip_layer_state(0, 0).m_vkimagelayout,
             1,
             &imageCopyRegion);
 
@@ -3382,7 +3382,7 @@ namespace gpu_vulkan
          };
          vkCmdClearColorImage(pcommandbuffer->m_vkcommandbuffer,
             ptexture->m_vkimage,
-            ptexture->m_state.m_vkimagelayout,
+                              ptexture->mip_layer_state(0, 0).m_vkimagelayout,
             &clearColor,
             1, // rangeCount
             &range
@@ -3515,7 +3515,7 @@ namespace gpu_vulkan
 
             ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
 
-            if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+            if (ptexture->mip_layer_state(0, 0).m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
             {
 
                warning() << "what?";
@@ -4275,9 +4275,9 @@ namespace gpu_vulkan
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            .srcAccessMask = ptexture->m_state.m_vkaccessflags,
+            .srcAccessMask = ptexture->mip_layer_state(0, 0).m_vkaccessflags,
             .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-            .oldLayout = ptexture->m_state.m_vkimagelayout,
+            .oldLayout = ptexture->mip_layer_state(0, 0).m_vkimagelayout,
             .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
             .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
             .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -4291,13 +4291,12 @@ namespace gpu_vulkan
             },
          };
 
-         ptexture->m_state.m_vkaccessflags = VK_ACCESS_SHADER_READ_BIT;
+         ptexture->mip_layer_state(0, 0).m_vkaccessflags = VK_ACCESS_SHADER_READ_BIT;
 
-         ptexture->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+         ptexture->mip_layer_state(0, 0).m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
          vkCmdPipelineBarrier(
-            pcommandbuffer->m_vkcommandbuffer,
-            ptexture->m_state.m_vkpipelinestageflags,
+            pcommandbuffer->m_vkcommandbuffer, ptexture->mip_layer_state(0, 0).m_vkpipelinestageflags,
             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
             0,
             0, NULL,
@@ -4305,7 +4304,7 @@ namespace gpu_vulkan
             1, &barrier
          );
 
-         ptexture->m_state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+         ptexture->mip_layer_state(0, 0).m_vkpipelinestageflags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 
          m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
@@ -4344,9 +4343,9 @@ namespace gpu_vulkan
 
          VkImageMemoryBarrier barrier = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            .srcAccessMask = ptexture->m_state.m_vkaccessflags,
+            .srcAccessMask = ptexture->mip_layer_state(0, 0).m_vkaccessflags,
             .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-            .oldLayout = ptexture->m_state.m_vkimagelayout,
+            .oldLayout = ptexture->mip_layer_state(0, 0).m_vkimagelayout,
             .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
             .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -4360,12 +4359,11 @@ namespace gpu_vulkan
             },
          };
 
-         ptexture->m_state.m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-         ptexture->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+         ptexture->mip_layer_state(0, 0).m_vkaccessflags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+         ptexture->mip_layer_state(0, 0).m_vkimagelayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
          vkCmdPipelineBarrier(
-            pcommandbuffer->m_vkcommandbuffer,
-            ptexture->m_state.m_vkpipelinestageflags,
+            pcommandbuffer->m_vkcommandbuffer, ptexture->mip_layer_state(0, 0).m_vkpipelinestageflags,
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             0,
             0, NULL,
@@ -4373,7 +4371,7 @@ namespace gpu_vulkan
             1, &barrier
          );
 
-         ptexture->m_state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+         ptexture->mip_layer_state(0, 0).m_vkpipelinestageflags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
          m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 

@@ -5153,7 +5153,7 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 
          }
 
-         if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+         if (ptexture->mip_layer_state(0, 0).m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
          {
 
             warning() << "what?";
@@ -6027,7 +6027,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
    // Create the texture wrapper tied to this device
    auto pgputexture = øcreate<::gpu::texture>();
    ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
-   ptexture->m_state.m_vkimagelayout = imageLayout;
+   ptexture->mip_layer_state(0, 0).m_vkimagelayout = imageLayout;
    ptexture->m_vkformat = format;
    ptexture->m_pgpurenderer = m_pgpurenderer;
 
@@ -6244,7 +6244,7 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
                              subresourceRange);
       // pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, transferQueue);
       pcontext->endSingleTimeCommands(pcommandbufferCopy);
-      ptextureEmpty->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      ptextureEmpty->mip_layer_state(0, 0).m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
       // Clean up staging resources
       vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);

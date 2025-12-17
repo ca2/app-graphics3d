@@ -206,7 +206,7 @@ namespace gpu_vulkan
 
          {
 
-            m_state = m_ptexture->m_state;
+            m_state = m_ptexture->mip_layer_state(0, 0);
 
          }
          ~scoped_state()
@@ -225,7 +225,7 @@ namespace gpu_vulkan
       VkImage                    m_vkimage;
       VkFormat                   m_vkformat;
       VkDeviceMemory             m_vkdevicememory;
-      state_t                    m_state;
+      ::array_base < ::array_base < state_t > > m_state2a;
       //int                        m_iMipCount;
       /// Does every texture needs its own sampler?
       VkSampler                  m_vksampler3;
@@ -276,11 +276,13 @@ namespace gpu_vulkan
 
       void _set_state(::gpu_vulkan::command_buffer * pcommandbuffer, 
          state_t state);
-      scoped_state _scoped_state(::gpu_vulkan::command_buffer* pcommandbuffer,
+      void _set_all_states(::gpu_vulkan::command_buffer *pcommandbuffer, state_t state);
+      void _set_state(::gpu_vulkan::command_buffer *pcommandbuffer, state_t state, int iMip, int iLayer);
+       scoped_state _scoped_state(::gpu_vulkan::command_buffer* pcommandbuffer,
          state_t state)
       {
 
-         auto stateRestore = m_state;
+         auto stateRestore = mip_layer_state(0, 0);
 
          _set_state(pcommandbuffer, state);
 
@@ -296,6 +298,16 @@ namespace gpu_vulkan
 
       virtual void create_image_view();
       virtual void create_sampler();
+
+
+      void set_all_states(const state_t &state);
+
+      state_t & mip_layer_state(int iMip, int iLayer)
+      {
+
+         return m_state2a.ø(iMip).ø(iLayer);
+
+      }
 
       VkImageView get_image();
 
