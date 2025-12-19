@@ -69,9 +69,13 @@ namespace gpu_vulkan
       //::gpu_vulkan::descriptor_set_layout *descriptor_set_layout_gltf();
       //::gpu_vulkan::descriptor_set_layout *descriptor_set_layout_scene_gltf();
 
-
+      //::gpu::texture *texture(const ::file::path &path) override;
       //void gpu_debug_message(const ::scoped_string& scopedstr) override;
       void start_debug_happening(::gpu::command_buffer * pgpucommandbuffer, const ::scoped_string& scopedstr) override;
+      
+      
+      void on_cube_map_face_image(::image::image *pimage) override;
+
 
       void on_start_layer(::gpu::layer* player) override;
       void on_end_layer(::gpu::layer *player) override;
@@ -288,6 +292,8 @@ namespace gpu_vulkan
       
 
    floating_sequence3 front(const ::graphics3d::floating_rotation &rotation) override;
+
+   void load_ktxTexture(::pointer<::gpu::texture> &ptexture, void *p_ktxTexture) override;
 
    };
 

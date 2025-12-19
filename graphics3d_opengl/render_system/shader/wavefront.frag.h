@@ -30,7 +30,7 @@ layout(std140) uniform GlobalUbo {
     int padding1;
     int padding2;
     int padding3;
-};
+} globalUbo;
 
  
 // Instead of push constants, use a second uniform block or separate uniforms
@@ -45,16 +45,16 @@ void main() {
     //outColor = vec4(0.5*0.5, 0.75*0.5, 0.95*0.5, .5);
     //return;
   //}
-  vec3 diffuseLight = ambientLightColor.xyz * ambientLightColor.w;
+  vec3 diffuseLight = globalUbo.ambientLightColor.xyz * globalUbo.ambientLightColor.w;
   vec3 specularLight = vec3(0.0);
   vec3 surfaceNormal = normalize(fragNormalWorld);
 
-  vec3 cameraPosWorld = cameraPosition;
+  vec3 cameraPosWorld = globalUbo.cameraPosition;
   vec3 viewDirection = normalize(cameraPosWorld - fragPosWorld);
 
-  for (int i = 0; i < numLights; i++) 
+  for (int i = 0; i < globalUbo.numLights; i++) 
   {
-    PointLight light = pointLights[i];
+    PointLight light = globalUbo.pointLights[i];
     vec3 directionToLight = light.position.xyz - fragPosWorld;
     float attenuation = 1.0 / dot(directionToLight, directionToLight); // distance squared
     directionToLight = normalize(directionToLight);

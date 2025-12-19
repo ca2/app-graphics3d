@@ -56,6 +56,33 @@ namespace graphics3d_vulkan
    }
 
 
+   
+
+   ::memory scene_render_system::pbr_with_ibl_vert_memory()
+   {
+
+      static unsigned int pvertexshader[] = {
+#include "render_system/shader/scene.vert.spv.inl"
+
+      };
+
+      return ::as_memory_block(pvertexshader);
+   }
+
+
+   ::memory scene_render_system::pbr_with_ibl_frag_memory()
+   {
+
+      static unsigned int pfragmentshader[] = {
+#include "render_system/shader/scene.frag.spv.inl"
+
+      };
+
+      return ::as_memory_block(pfragmentshader);
+   }
+
+
+
    void scene_render_system::on_prepare(::gpu::context *pgpucontext)
    {
 

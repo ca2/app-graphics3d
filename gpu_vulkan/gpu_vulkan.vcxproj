@@ -829,6 +829,7 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
     <ClCompile Include="binding.cpp" />
     <ClCompile Include="block.cpp" />
     <ClCompile Include="buffer.cpp" />
+    <ClCompile Include="context_ktx.cpp" />
     <ClCompile Include="gltf\mesh.cpp" />
     <ClCompile Include="gltf\model.cpp" />
     <ClCompile Include="aaa_gltf_model.cpp">

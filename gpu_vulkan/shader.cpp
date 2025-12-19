@@ -1730,59 +1730,39 @@ namespace gpu_vulkan
    }
 
 
-      void shader::bind_slot_set(::gpu::command_buffer *pgpucommandbuffer, int iSet,
+   void shader::bind_slot_set(::gpu::command_buffer *pgpucommandbuffer, int iSet,
                               ::gpu::binding_slot_set *pgpubindingslotset)
    {
 
-         
-      
       ::cast<::gpu_vulkan::binding_slot_set> pbindingslotset = pgpubindingslotset;
+
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-
-      // if (ptexture->m_state.m_vkimagelayout != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-      //{
-      //    throw ::exception(error_wrong_state);
-      // }
-      //  auto pshadertexture = this->shader_texture(pgputexture, true);
-
-      // for (int i = 0; i < prenderer->get_frame_count(); i++)
-      //{
-
-
-      // auto& pdescriptorset = s1()->m_imagedescriptorset[image];
-      // auto pcommandbuffer = this->getCurrentCommandBuffer();
-
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 
       ::cast<::gpu_vulkan::shader> pshader = prenderer->m_pgpucontext->m_pshaderBound;
 
-      //::cast<command_buffer> pcommandbuffer = ::gpu::current_command_buffer();
-      //::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
-
-
       auto & vkdescriptorseta = pbindingslotset->descriptor_set(pgpucommandbuffer);
 
-      //if ((((::uptr)vkdescriptorset) & 0xffff) == 0x357)
-      //{
-
-      //   vkdescriptorset = pblock->descriptor_set(pbindingslotset, pgpucommandbuffer);
-      //}
       int iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex;
+
       auto vkpipelinelayout = pshader->m_ppipelineCurrent->_pipeline_layout();
-      // Bind pipeline and descriptor sets
-      //      vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-      //    vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer, ...);
+
+      VkDescriptorSet vkdescriptorset = vkdescriptorseta[iFrame];
+
+      VkDescriptorSet vkdescriptorsetaBind[1];
+
+      vkdescriptorsetaBind[0] = vkdescriptorset;
+
       vkCmdBindDescriptorSets(pcommandbuffer->m_vkcommandbuffer,
                               VK_PIPELINE_BIND_POINT_GRAPHICS, // Bind point
                               vkpipelinelayout, // Layout used when pipeline was created
                               iSet, // First set (set = 0)
                               1, // Descriptor set count
-                              &vkdescriptorseta[iFrame], // Pointer to descriptor set
+                              vkdescriptorsetaBind, // Pointer to descriptor set
                               0, // Dynamic offset count
                               NULL // Dynamic offsets
       );
-
 
    }
 

@@ -248,7 +248,16 @@ namespace graphics3d
       //if (!piblspecularmap->m_pbrdfconvolutionframebuffer)
       {
 
-         piblspecularmap->computeBrdfConvolutionMap();
+         //piblspecularmap->computeBrdfConvolutionMap();
+
+         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
+         // this->flushCommandBuffer(layoutCmd, m_vkqueueTransfer3, true);
+
+         m_pgpucontext->start_debug_happening(pcommandbuffer, "compute Brdf Convolution Map");
+         piblspecularmap->computeBrdfConvolutionMap(pcommandbuffer);
+         m_pgpucontext->end_debug_happening(pcommandbuffer);
+         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
+
       }
 
       return piblspecularmap->m_ptextureBrdfConvolutionMap;
@@ -268,7 +277,9 @@ namespace graphics3d
 
          øconstruct(m_pbindingslotsetIbl1);
 
-         m_pbindingslotsetIbl1->m_pbindingset = m_pgpucontext->ibl1_binding_set();
+         auto pbindingset = m_pgpucontext->ibl1_binding_set();
+
+         m_pbindingslotsetIbl1->initialize_binding_slot_set(pbindingset);
 
          auto pbindingslot0 = m_pbindingslotsetIbl1->binding_slot(0);
          pbindingslot0->m_ptexture = m_ptextureIrradianceCube;

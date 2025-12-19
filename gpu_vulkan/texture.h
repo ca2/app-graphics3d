@@ -251,7 +251,7 @@ namespace gpu_vulkan
       texture();
       ~texture() override;
 
-
+      void _set_data(const ::gpu::texture_data &data);
       void _create_texture(const ::gpu::texture_data & texturedata) override;
 
       struct texture::layer &current_layer(::gpu_vulkan::render_pass * prenderpass);
@@ -263,6 +263,9 @@ namespace gpu_vulkan
       //void initialize_cubemap_image_texture_with_mipmap(::gpu::renderer *pgpurenderer,
       //                                                           const ::int_rectangle &rectangleTarget, int iMipCount,
       //                                                           bool bRenderTarget, bool bShaderResourceView) override;
+
+      void _set_image_data(const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat);
+      
       void initialize_depth_texture(::gpu::renderer *pgpurenderer, const ::int_rectangle &rectangleTarget) override;
       void initialize_texture_from_file_path(::gpu::renderer *prenderer, const ::file::path & path, bool bIsSrgb);
       void initialize_hdr_texture_on_memory(::gpu::renderer *pgpurenderer, const ::block &block) override;
@@ -367,6 +370,8 @@ namespace gpu_vulkan
 
       virtual bool KTXLoadFromFile(const ::file::path &path, VkFormat format, VkQueue copyQueue,
                                     VkImageUsageFlags imageUsageFlags, VkImageLayout imageLayout, bool forceLinear);
+      virtual bool KTXLoadFrom_ktxTexture(void * p_ktxTexture, VkFormat format, VkQueue copyQueue,
+                                   VkImageUsageFlags imageUsageFlags, VkImageLayout imageLayout, bool forceLinear);
 
 
       virtual void KtxLoadCubemapFromFile(

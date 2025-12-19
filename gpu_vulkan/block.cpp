@@ -2,6 +2,7 @@
 #include "framework.h"
 #include "binding.h"
 #include "block.h"
+#include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "memory_buffer.h"
@@ -16,19 +17,36 @@ namespace gpu_vulkan
    block::block() {}
 
 
-   block::~block() {}
+   block::~block() {
+   
+      if (m_uboBuffers.has_element())
+      {
+         
+         if (((::uptr)m_uboBuffers[0]->m_pbuffer->m_vkbuffer & 0xffff) == 0x019b)
+         {
 
+            information("~block (m_vkbuffer & 0xffff) == 0x019b");
 
-   void block::initialize_gpu_block(::gpu::context *pgpucontext)
-   {
+         }
 
-      ::gpu::block::initialize_gpu_block(pgpucontext);
+      }
 
+   
    }
+
+
+   //void block::initialize_gpu_block(::gpu::context *pgpucontext)
+   //{
+
+   //   ::gpu::block::initialize_gpu_block(pgpucontext);
+
+   //}
 
 
    void block::create_gpu_block(::gpu::context *pgpucontext)
    {
+
+      ::gpu::block::create_gpu_block(pgpucontext);
 
       auto iFrameCount = pgpucontext->m_pgpurenderer->m_pgpurendertarget->get_frame_count();
       
@@ -46,6 +64,13 @@ namespace gpu_vulkan
          m_uboBuffers[i]->_initialize_buffer(pgpucontext, iBufferSize,
             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                                              VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+         if (((::uptr)m_uboBuffers[i]->m_pbuffer->m_vkbuffer & 0xffff) == 0x019b)
+         {
+
+            information("(m_vkbuffer & 0xffff) == 0x019b");
+
+         }
       
          m_uboBuffers[i]->map(0, m_uboBuffers[i]->m_size);
       
@@ -101,7 +126,7 @@ namespace gpu_vulkan
       //      .writeBuffer(0, &bufferInfo)
       //      .build(globalDescriptorSets[i]);
       ::gpu_vulkan::descriptor_writer(*playout, *ppool)
-         .writeBuffer(uSamplerBinding, bufferInfo)
+         .writeBuffer(uSamplerBinding, &bufferInfo)
          .build(m_vkdescriptorset);
 
       return m_vkdescriptorset;
@@ -135,6 +160,23 @@ namespace gpu_vulkan
       m_uboBuffers[iFrameIndex]->unmap();
 
    }
+
+
+   VkDescriptorBufferInfo block::descriptor_info(::gpu::command_buffer *pgpucommandbuffer)
+   {
+
+
+      VkDescriptorBufferInfo bufferinfo;
+
+      auto &pbuffer = m_uboBuffers[pgpucommandbuffer->m_iCommandBufferFrameIndex];
+
+      bufferinfo.buffer = pbuffer->m_pbuffer->m_vkbuffer;
+      bufferinfo.offset = 0;
+      bufferinfo.range = pbuffer->m_pbuffer->m_size;
+
+      return bufferinfo;
+   }
+
 
 
 } // namespace gpu_vulkan

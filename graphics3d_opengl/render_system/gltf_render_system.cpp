@@ -22,8 +22,8 @@
 #include "gpu_opengl/ibl/diffuse_irradiance_map.h"
 #include "gpu_opengl/ibl/specular_map.h"
 // #include <stdexcept>
-#include "shader/pbr.frag.h"
-#include "shader/pbr.vert.h"
+#include "app-graphics3d/graphics3d_opengl//render_system/shader/gltf.frag.h"
+#include "app-graphics3d/graphics3d_opengl//render_system/shader/gltf.vert.h"
 //#include "gpu/ibl/cubemap_framebuffer.h"
 
 
@@ -41,35 +41,58 @@ namespace graphics3d_opengl
    }
 
 
+   
+   ::memory gltf_render_system::pbr_with_ibl_vert_memory()
+   {
+
+//      static unsigned int pvertexshader[] = {
+//#include "render_system/shader/gltf.vert.spv.inl"
+//
+//      };
+
+      return ::as_memory_block(g_psz_gltf_vert);
+   }
+
+
+   ::memory gltf_render_system::pbr_with_ibl_frag_memory()
+   {
+
+      
+      return ::as_memory_block(g_psz_gltf_frag);
+   }
+
+
    // void gltf_render_system::init(::gpu_opengl::descriptor_set_layout *psetdescriptorlayoutGlobal,
    //::pointer<::gpu_opengl::descriptor_set_layout> &descriptorPool, size_t frameCount)
    void gltf_render_system::on_prepare(::gpu::context *pgpucontext)
    {
-      // m_pdescriptorsetlayoutUbo = globalSetLayout;
 
-      ::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
+      ::graphics3d::gltf_render_system::on_prepare(pgpucontext);
+      //// m_pdescriptorsetlayoutUbo = globalSetLayout;
 
-      øconstruct(m_pshaderOpaque);
-      øconstruct(m_pshaderMask);
-      øconstruct(m_pshaderBlend);
+      //::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
 
-      // m_ppipelineOpaque->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
-      //                                      "matter://shaders/gltf_frag.frag");
+      //øconstruct(m_pshaderOpaque);
+      //øconstruct(m_pshaderMask);
+      //øconstruct(m_pshaderBlend);
 
-      // m_ppipelineMask->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
-      //                                    "matter://shaders/gltf_frag.frag");
+      //// m_ppipelineOpaque->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
+      ////                                      "matter://shaders/gltf_frag.frag");
 
-      // m_ppipelineBlend->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
-      //                                     "matter://shaders/gltf_frag.frag");
-      m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_pbr_vert),
-                                                     as_memory_block(g_psz_pbr_frag));
+      //// m_ppipelineMask->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
+      ////                                    "matter://shaders/gltf_frag.frag");
 
-      m_pshaderMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_pbr_vert),
-                                                    as_memory_block(g_psz_pbr_frag));
+      //// m_ppipelineBlend->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
+      ////                                     "matter://shaders/gltf_frag.frag");
+      //m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_gltf_vert),
+      //                                               as_memory_block(g_psz_gltf_frag));
+
+      //m_pshaderMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_gltf_vert),
+      //                                            as_memory_block(g_psz_gltf_frag));
 
 
-      m_pshaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_pbr_vert),
-                                                     as_memory_block(g_psz_pbr_frag));
+      //m_pshaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, as_memory_block(g_psz_gltf_vert),
+      //                                             as_memory_block(g_psz_gltf_frag));
    }
 
 

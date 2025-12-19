@@ -122,7 +122,7 @@ namespace gpu_vulkan
    public:
       descriptor_writer(descriptor_set_layout & setLayout, descriptor_pool & pool);
 
-      descriptor_writer & writeBuffer(uint32_t binding, VkDescriptorBufferInfo bufferInfo);
+      descriptor_writer & writeBuffer(uint32_t binding, VkDescriptorBufferInfo * pbufferInfo);
       descriptor_writer & writeImage(uint32_t binding, VkDescriptorImageInfo * imageInfo);
       descriptor_writer & writeImage(uint32_t binding, const VkDescriptorImageInfo *imageInfos, uint32_t count);
 

@@ -132,12 +132,6 @@
     <ClInclude Include="render_system\gltf_render_system.h">
       <Filter>Header Files\render_system</Filter>
     </ClInclude>
-    <ClInclude Include="render_system\shader\pbr.frag.h">
-      <Filter>Header Files\render_system\shader</Filter>
-    </ClInclude>
-    <ClInclude Include="render_system\shader\pbr.vert.h">
-      <Filter>Header Files\render_system\shader</Filter>
-    </ClInclude>
     <ClInclude Include="render_system\shader\scene.frag.h">
       <Filter>Header Files\render_system\shader</Filter>
     </ClInclude>
@@ -165,12 +159,18 @@
     <ClInclude Include="render_system\shader\wavefront.vert.h">
       <Filter>Header Files\render_system\shader</Filter>
     </ClInclude>
+    <ClInclude Include="render_system\shader\gltf.frag.h">
+      <Filter>Header Files\render_system\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="render_system\shader\gltf.vert.h">
+      <Filter>Header Files\render_system\shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="render_system\shader\pbr.frag">
+    <CustomBuild Include="render_system\shader\gltf.frag">
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="render_system\shader\pbr.vert">
+    <CustomBuild Include="render_system\shader\gltf.vert">
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
     <CustomBuild Include="render_system\shader\scene.frag">

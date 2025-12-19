@@ -82,7 +82,7 @@ namespace gpu_vulkan
          /**
           * Render the BRDF convolution map.
           */
-         void computeBrdfConvolutionMap() override;
+         void computeBrdfConvolutionMap(::gpu::command_buffer *pgpucommandbuffer) override;
 
          void _computeBrdfConvolutionMap_2025();
 

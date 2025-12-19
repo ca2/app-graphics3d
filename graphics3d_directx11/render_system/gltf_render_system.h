@@ -34,61 +34,61 @@ namespace graphics3d_directx11
    {
    public:
 
-      struct push_constants
-      {
+      //struct push_constants
+      //{
 
-         floating_matrix4 modelMatrix;
-         floating_matrix4 normalMatrix;
+      //   floating_matrix4 modelMatrix;
+      //   floating_matrix4 normalMatrix;
 
-         int useTextureAlbedo;//0
-         int useTextureMetallicRoughness;//4
-         int useTextureNormal;//8
-         int useTextureAmbientOcclusion;//12
-         int useTextureEmissive;//16
-         //int padding1;
-         //int padding2;
-         //int padding3;
+      //   int useTextureAlbedo;//0
+      //   int useTextureMetallicRoughness;//4
+      //   int useTextureNormal;//8
+      //   int useTextureAmbientOcclusion;//12
+      //   int useTextureEmissive;//16
+      //   //int padding1;
+      //   //int padding2;
+      //   //int padding3;
 
-         // 20
+      //   // 20
 
-         ::floating_sequence3 albedo;//20
-         float metallic;//32
-         float roughness;//36
-         float ambientOcclusion;//40
-         ::floating_sequence3 emissive;//44
-         //float fPadding4;
-         // 36
+      //   ::floating_sequence3 albedo;//20
+      //   float metallic;//32
+      //   float roughness;//36
+      //   float ambientOcclusion;//40
+      //   ::floating_sequence3 emissive;//44
+      //   //float fPadding4;
+      //   // 36
 
-         // 56
+      //   // 56
 
-         //::floating_sequence3 cameraPosition;//56
-         float bloomBrightnessCutoff;//68
-         // 72
-         ::floating_sequence3 multiplier; // 44
+      //   //::floating_sequence3 cameraPosition;//56
+      //   float bloomBrightnessCutoff;//68
+      //   // 72
+      //   ::floating_sequence3 multiplier; // 44
 
-      };
+      //};
 
 
-      //VkSandboxDevice &m_device;
+      ////VkSandboxDevice &m_device;
 
-      ::pointer<::gpu_directx11::descriptor_set_layout> m_pdescriptorsetlayoutIbl;
-      //::array_base<VkDescriptorSet> m_vkdescriptorsetaIbl;
+      //::pointer<::gpu_directx11::descriptor_set_layout> m_pdescriptorsetlayoutIbl;
+      ////::array_base<VkDescriptorSet> m_vkdescriptorsetaIbl;
 
-      ::pointer<::gpu_directx11::descriptor_set_layout> m_pdescriptorsetlayoutPbr;
+      //::pointer<::gpu_directx11::descriptor_set_layout> m_pdescriptorsetlayoutPbr;
 
-      //::pointer<::gpu_directx11::descriptor_set_layout> m_pdescriptorsetlayoutUbo;
-      
-      
-      ::pointer<::gpu_directx11::descriptor_pool> m_pdescriptorpool;
-      //aaaVkDescriptorSetLayout m_iblSetLayout;
-      //VkDescriptorSet m_iblDescriptorSet;
+      ////::pointer<::gpu_directx11::descriptor_set_layout> m_pdescriptorsetlayoutUbo;
+      //
+      //
+      //::pointer<::gpu_directx11::descriptor_pool> m_pdescriptorpool;
+      ////aaaVkDescriptorSetLayout m_iblSetLayout;
+      ////VkDescriptorSet m_iblDescriptorSet;
 
-      //::pointer<::gpu_directx11::pipeline> m_opaquePipeline;
-      //::pointer<::gpu_directx11::pipeline> m_maskPipeline;
-      //::pointer<::gpu_directx11::pipeline> m_blendPipeline;
-      //VkPipelineLayout m_pipelineLayout;
+      ////::pointer<::gpu_directx11::pipeline> m_opaquePipeline;
+      ////::pointer<::gpu_directx11::pipeline> m_maskPipeline;
+      ////::pointer<::gpu_directx11::pipeline> m_blendPipeline;
+      ////VkPipelineLayout m_pipelineLayout;
 
-      //IAssetProvider &m_assets;
+      ////IAssetProvider &m_assets;
 
 
 
@@ -106,8 +106,8 @@ namespace graphics3d_directx11
 
       void on_prepare(::gpu::context *pgpucontext) override;
 
-      virtual ::block embedded_pbr_vert();
-      virtual ::block embedded_pbr_frag();
+      ::memory pbr_with_ibl_vert_memory() override;
+      ::memory pbr_with_ibl_frag_memory() override;
 
       //void initialize_GltfRenderSystem(VkRenderPass renderPass,
       //   ::gpu_directx11::descriptor_set_layout *psetdescriptorlayoutGlobal, 
@@ -136,5 +136,5 @@ namespace graphics3d_directx11
  
 
 
-DECLARE_GPU_PROPERTIES(CLASS_DECL_GRAPHICS3D_DIRECTX11, ::graphics3d_directx11::gltf_render_system::push_constants)
+//DECLARE_GPU_PROPERTIES(CLASS_DECL_GRAPHICS3D_DIRECTX11, ::graphics3d_directx11::gltf_render_system::push_constants)
 

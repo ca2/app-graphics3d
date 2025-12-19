@@ -14,9 +14,9 @@ namespace graphics3d_opengl
       virtual public ::graphics3d_opengl::render_system
    {
    public:
-      const int TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP = 10;
-      const int TEXTURE_UNIT_PREFILTERED_ENV_MAP = 11;
-      const int TEXTURE_UNIT_BRDF_CONVOLUTION_MAP = 12;
+      //const int TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP = 10;
+      //const int TEXTURE_UNIT_PREFILTERED_ENV_MAP = 11;
+      //const int TEXTURE_UNIT_BRDF_CONVOLUTION_MAP = 12;
 
       enum BloomDirection {
          BOTH = 0,
@@ -25,12 +25,17 @@ namespace graphics3d_opengl
      };
 
 
-      ::pointer<::gpu::shader> m_pshaderOpaque;
-      ::pointer<::gpu::shader> m_pshaderMask;
-      ::pointer<::gpu::shader> m_pshaderBlend;
+      //::pointer<::gpu::shader> m_pshaderOpaque;
+      //::pointer<::gpu::shader> m_pshaderMask;
+      //::pointer<::gpu::shader> m_pshaderBlend;
 
       scene_render_system();
       ~scene_render_system();
+
+
+                  virtual ::memory pbr_with_ibl_vert_memory() override;
+      virtual ::memory pbr_with_ibl_frag_memory() override;
+
 
       void on_prepare(::gpu::context *pgpucontext) override;
  

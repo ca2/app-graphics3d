@@ -7092,9 +7092,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       ::geometry2d::matrix contextmatrix;
 
-      contextmatrix.scale(2.0 / size.cx, -2.0 / size.cy);
+      contextmatrix.scale(2.0 / size.cx, 2.0 / size.cy);
 
-      contextmatrix.translate(-1.0, 1.0);
+      contextmatrix.translate(-1.0, -1.0);
 
       return contextmatrix;
 

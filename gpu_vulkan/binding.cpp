@@ -1,11 +1,13 @@
 // Created by camilo on 2025-12-11 08:28 <3ThomasBorregaardSørensen!!
 #include "framework.h"
 #include "binding.h"
+#include "block.h"
 #include "command_buffer.h"
 #include "descriptors.h"
 #include "render_target.h"
 #include "renderer.h"
 #include "app-graphics3d/gpu_vulkan/texture.h"
+#include "acme/prototype/prototype/address_object.h"
 
 
 namespace gpu_vulkan
@@ -111,6 +113,20 @@ namespace gpu_vulkan
    //}
 
 
+   binding_slot_set::binding_slot_set()
+   {
+
+
+         }
+   binding_slot_set ::~binding_slot_set()
+   {
+
+
+
+   }
+
+
+
    ::array<VkDescriptorSet> & binding_slot_set::descriptor_set(::gpu::command_buffer * pgpucommandbuffer)
    {
 
@@ -121,10 +137,16 @@ namespace gpu_vulkan
 
          auto iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
 
+         m_pvkdescriptorseta->set_size(iFrameCount);
+
          ::cast<::gpu_vulkan::binding_set> pbindingset = m_pbindingset;
 
          for (int i = 0; i < iFrameCount; i++)
          {
+
+            ::array_base<address_object < VkDescriptorImageInfo>> vkdescriptorimageinfoa;
+
+            ::array_base<address_object<VkDescriptorBufferInfo>> vkdescriptorbufferinfoa;
 
             auto pdescriptosetlayout = pbindingset->descriptor_set_layout(pgpucommandbuffer);
 
@@ -132,26 +154,47 @@ namespace gpu_vulkan
 
             auto vkdescriptorwriter = descriptor_writer(*pdescriptosetlayout, *pdescriptorpool);
 
-            ::array_base<VkDescriptorImageInfo> vkdescriptorimageinfoa;
-
             auto iSlotCount = this->size();
 
-            vkdescriptorimageinfoa.set_size(iSlotCount);
-
-            for (int iSlot = 0; iSlot < this->size(); iSlot++)
+            for (int iSlot = 0; iSlot < iSlotCount; iSlot++)
             {
 
-               auto &vkdescriptorimageinfo = vkdescriptorimageinfoa[iSlot];
+               auto &bindingslot = this->element_at(iSlot);
 
-               ::cast<::gpu_vulkan::texture> ptexture = this->element_at(iSlot).m_ptexture;
+               if (bindingslot.m_ptexture)
+               {
 
-               vkdescriptorimageinfo = ptexture->descriptor_info();
+                  ::cast<::gpu_vulkan::texture> ptexture = bindingslot.m_ptexture;
 
-               vkdescriptorwriter.writeImage(iSlot, &vkdescriptorimageinfo);
+                  auto &vkdescriptorimageinfo = *vkdescriptorimageinfoa.add_new().m_p;
+
+                  VkImage vkimage = ptexture->m_vkimage;
+
+                  vkdescriptorimageinfo = ptexture->descriptor_info();
+
+                  vkdescriptorwriter.writeImage(iSlot, &vkdescriptorimageinfo);
+
+               }
+               else if (bindingslot.m_pblock)
+               {
+
+                  ::cast<::gpu_vulkan::block> pblock = bindingslot.m_pblock;
+
+                  auto &vkdescriptorbufferinfo = *vkdescriptorbufferinfoa.add_new().m_p;
+
+                  vkdescriptorbufferinfo = pblock->descriptor_info(pgpucommandbuffer);
+
+                  vkdescriptorwriter.writeBuffer(iSlot, &vkdescriptorbufferinfo);
+
+               }
 
             }
+
+            VkDescriptorSet vkdescriptorset = VK_NULL_HANDLE;
                
-            vkdescriptorwriter.build(m_pvkdescriptorseta->ø(i));
+            vkdescriptorwriter.build(vkdescriptorset);
+
+            (*m_pvkdescriptorseta)[i] = vkdescriptorset;
 
          }
 

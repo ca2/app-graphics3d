@@ -27,7 +27,7 @@ layout(std140) uniform GlobalUbo {
     vec4 viewPos;
     PointLight pointLights[10];
     int numLights;
-};
+} globalUbo;
 
 
 uniform vec3 multiplier;

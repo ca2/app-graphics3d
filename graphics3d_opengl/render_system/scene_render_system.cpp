@@ -23,6 +23,9 @@
 #include "gpu_opengl/_gpu_opengl.h"
 #include "bred/gltf/vertex.h"
 //#include "gpu/ibl/cubemap_framebuffer.h"
+#include "shader/scene.frag.h"
+#include "shader/scene.vert.h"
+
 
 namespace graphics3d_opengl
 {
@@ -41,39 +44,57 @@ namespace graphics3d_opengl
    
    }
 
+   ::memory scene_render_system::pbr_with_ibl_vert_memory()
+   {
+
+      //      static unsigned int pvertexshader[] = {
+      // #include "render_system/shader/gltf.vert.spv.inl"
+      //
+      //      };
+
+      return ::as_memory_block(g_psz_scene_vert);
+   }
+
+
+   ::memory scene_render_system::pbr_with_ibl_frag_memory()
+   { 
+      return ::as_memory_block(g_psz_scene_frag); 
+   }
 
    void scene_render_system::on_prepare(::gpu::context *pgpucontext)
    {
 
-      ::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
+      ::graphics3d::scene_render_system::on_prepare(pgpucontext);
 
-      øconstruct(m_pshaderOpaque);
-      øconstruct(m_pshaderMask);
-      øconstruct(m_pshaderBlend);
+      //::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
 
-      m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, 
-         ::as_memory_block(g_psz_scene_vert),
-         ::as_memory_block(g_psz_scene_frag), 
-         //{},
-         //{},
-         pgpucontext->input_layout <::gpu::gltf::vertex>());
+      //øconstruct(m_pshaderOpaque);
+      //øconstruct(m_pshaderMask);
+      //øconstruct(m_pshaderBlend);
 
-      m_pshaderMask->m_bEnableBlend = true;
-      m_pshaderMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, ::as_memory_block(g_psz_scene_vert),
-                                                  ::as_memory_block(g_psz_scene_frag),
-         //{},
-           //                                       {},
-                                                  pgpucontext->input_layout<::gpu::gltf::vertex>());
+      //m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, 
+      //   ::as_memory_block(g_psz_scene_vert),
+      //   ::as_memory_block(g_psz_scene_frag), 
+      //   //{},
+      //   //{},
+      //   pgpucontext->input_layout <::gpu::gltf::vertex>());
 
-      m_pshaderBlend->m_bDisableDepthTest = true;
-      m_pshaderBlend->m_bEnableBlend = true;
-      m_pshaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, ::as_memory_block(g_psz_scene_vert),
-                                                   ::as_memory_block(g_psz_scene_frag), 
-         //{},
-           //                                        {
-         //
-           //                                        },
-                                                   pgpucontext->input_layout<::gpu::gltf::vertex>());
+      //m_pshaderMask->m_bEnableBlend = true;
+      //m_pshaderMask->initialize_shader_with_block(pgpucontext->m_pgpurenderer, ::as_memory_block(g_psz_scene_vert),
+      //                                            ::as_memory_block(g_psz_scene_frag),
+      //   //{},
+      //     //                                       {},
+      //                                            pgpucontext->input_layout<::gpu::gltf::vertex>());
+
+      //m_pshaderBlend->m_bDisableDepthTest = true;
+      //m_pshaderBlend->m_bEnableBlend = true;
+      //m_pshaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, ::as_memory_block(g_psz_scene_vert),
+      //                                             ::as_memory_block(g_psz_scene_frag), 
+      //   //{},
+      //     //                                        {
+      //   //
+      //     //                                        },
+      //                                             pgpucontext->input_layout<::gpu::gltf::vertex>());
 
    }
 

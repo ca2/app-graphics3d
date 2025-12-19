@@ -23,7 +23,7 @@ namespace gpu_vulkan
       ~block() override;
 
 
-      void initialize_gpu_block(::gpu::context *pgpucontext) override;
+      //void initialize_gpu_block(::gpu::context *pgpucontext) override;
 
 
       void create_gpu_block(::gpu::context *pgpucontext) override;
@@ -33,6 +33,10 @@ namespace gpu_vulkan
 
 
       void update_frame(gpu::renderer* pgpurenderer) override;
+
+
+      virtual VkDescriptorBufferInfo descriptor_info(::gpu::command_buffer *pgpucommandbuffer);
+     
 
 
    };

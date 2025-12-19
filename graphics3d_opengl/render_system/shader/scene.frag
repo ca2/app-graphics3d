@@ -40,11 +40,11 @@ uniform vec3 albedo;
 uniform float metallic;
 uniform float roughness;
 uniform float ambientOcclusion;
-uniform vec3 emissive; 
+//uniform vec3 emissive; 
 uniform float alphaMaskCutoff;
 
-uniform float bloomBrightnessCutoff;
-uniform vec3 multiplier;
+//uniform float bloomBrightnessCutoff;
+///uniform vec3 multiplier;
 
 // ---------- Samplers (must be standalone uniforms in GL) ----------
 uniform samplerCube diffuseIrradianceMap;
@@ -72,9 +72,9 @@ vec4 getAlbedo() {
     }
 }
 
-const float DIRECT_LIGHT_INTENSITY = 0.25;
+const float DIRECT_LIGHT_INTENSITY = 0.29;
 const float IBL_INTENSITY          = 1.0;
-const float EXPOSURE               = 1.0;
+const float EXPOSURE               = 0.5;
 
 //
 // NOTE: fresnelSchlick and ACESFilm not defined here — add them to a shared GL shader header.
@@ -144,7 +144,8 @@ void main() {
     float NdotV = max(dot(N, V), 0.0);
 
     // Direct lighting (ambient + point lights)
-    vec3 ambient = globalUbo.ambientLightColor.rgb * texColor.rgb * globalUbo.ambientLightColor.a;
+    //vec3 ambient = globalUbo.ambientLightColor.rgb * texColor.rgb * globalUbo.ambientLightColor.a;
+    vec3 ambient = vec3(0.0, 0.0, 0.0);
     vec3 lighting = ambient;
 
     for (int i = 0; i < globalUbo.numLights; ++i) {
@@ -173,6 +174,7 @@ void main() {
     float fAmbientOcclusion        = ambientOcclusion;
     if (useAlphaMask != 0) { fAmbientOcclusion = 0.02; }
 
+    //vec3 albedo = srgbToLinear(texColor.rgb); // assume already linear or convert with srgbToLinear()
     vec3 albedo = texColor.rgb; // assume already linear or convert with srgbToLinear()
 
     vec3 F0 = mix(vec3(0.04), albedo, fMetallic);
@@ -199,7 +201,7 @@ void main() {
 
     // Final composite
     vec3 color = lighting + ambientIBL;
-    // color = ACESFilm(color * EXPOSURE); // optionally apply tonemapping
+    color = ACESFilm(color * EXPOSURE); // optionally apply tonemapping
 
     outputColor = vec4(color, texColor.a);
     ////outputColor = texColor;

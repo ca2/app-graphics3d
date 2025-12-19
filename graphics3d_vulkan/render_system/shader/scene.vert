@@ -43,9 +43,6 @@ layout (set = 0, binding = 0, std140) uniform GlobalUbo
     vec3 cameraPosition;
     PointLight pointLights[10];
     int numLights;
-    int padding1;
-    int padding2;
-    int padding3;
 
 } globalUbo;
 
@@ -61,6 +58,7 @@ layout(push_constant) uniform PushConsts
 
     int useTextureAlbedo;
     int useTextureNormal;
+    int useAlphaMask;
     //int useTextureMetallicRoughness;
     //int useTextureAmbientOcclusion;
     //int useTextureEmissive;
@@ -69,11 +67,12 @@ layout(push_constant) uniform PushConsts
     float metallic;
     float roughness;
     float ambientOcclusion;
-    vec3 emissive;
+    //vec3 emissive;
+    float alphaMaskCutoff;
 
     //vec3 cameraPosition;
-    float bloomBrightnessCutoff;
-    vec3 multiplier;
+    //float bloomBrightnessCutoff;
+    //vec3 multiplier;
 
 } pushConsts;
 

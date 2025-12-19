@@ -1,10 +1,12 @@
 #include "framework.h"
 #include "pbr_with_ibl_render_system.h"
+#include "bred/gpu/block.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/render_target.h"
+#include "bred/gpu/texture.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
@@ -199,24 +201,34 @@ namespace graphics3d
           auto pblockGlobalUbo1 = pscene->global_ubo1(pgpucontext);
       
        int iRenderable = -1;
+
+       ::gpu::gltf::material::AlphaMode alphamodeLast = ::gpu::gltf::material::ALPHAMODE_NONE;
+       ::cast<::gpu::shader> pshader;
       
-       for (auto &[id, pscenerenderable]: scenerenderables)
+       for (auto &[id, pscenerenderableItem]: scenerenderables)
        {
       
           iRenderable++;
       
+          if (!pscenerenderableItem)
+          {
+      
+             continue;
+      
+          }
+
+         ::cast<::graphics3d::scene_renderable> pscenerenderable = pscenerenderableItem;
           if (!pscenerenderable)
-          {
-      
              continue;
-      
-          }
-      
-          if (pscenerenderable->m_erendersystem != ::graphics3d::e_render_system_gltf_ibl)
+
+
+          auto erenderableRenderSystem = pscenerenderable->m_erendersystem;
+
+                if (m_erendersystem != erenderableRenderSystem)
           {
-      
-             continue;
+             continue; // not mine, skip
           }
+
       
       
           auto prenderable = pscenerenderable->renderable();
@@ -224,16 +236,23 @@ namespace graphics3d
              continue;
       
           auto erenderabletype = prenderable->m_erenderabletype;
-      
+
           if (erenderabletype != ::gpu::e_renderable_type_gltf)
           {
              continue; // not mine, skip
           }
+
+          
+
+
           ::cast<::gpu::gltf::model> pgltfmodel = prenderable;
       
           if (!pgltfmodel)
              continue;
-      
+
+
+
+
           ::string strName = pscenerenderable->m_strName;
       
           for (auto & pmesh: pgltfmodel->m_mesha)
@@ -267,7 +286,9 @@ namespace graphics3d
              //{
              //auto ptextureTarget = pframe->m_pgpucommandbuffer->m_pgpurendertarget->current_texture(pframe);
              auto ealphamode = pmesh->m_pmaterial->alphaMode;
-                               // Pick pipeline by alpha mode
+             if (ealphamode != alphamodeLast)
+             {
+                // Pick pipeline by alpha mode
                 switch (ealphamode)
                 {
                    case ::gpu::gltf::material::ALPHAMODE_OPAQUE:
@@ -283,13 +304,16 @@ namespace graphics3d
                 }
 
 
-      
-                ::cast<::gpu::shader> pshader = pgpucontext->m_pshaderBound;
+                pshader = pgpucontext->m_pshaderBound;
+
+                auto pbindingslotsetGlobalUbo1 = pblockGlobalUbo1->binding_slot_set(
+                   pframe->m_pgpucommandbuffer, pgpucontext->global_ubo1_binding_set());
                 auto pbindingslotsetIbl = pscene->ibl_binding_slot_set();
 
-                pframe->m_pgpucommandbuffer->set_block(pblockGlobalUbo1);
+                pframe->m_pgpucommandbuffer->bind_slot_set(0, pbindingslotsetGlobalUbo1);
                 pframe->m_pgpucommandbuffer->bind_slot_set(1, pbindingslotsetIbl);
-                //pgltfmodel->bind2(pframe->m_pgpucommandbuffer);
+                // pgltfmodel->bind2(pframe->m_pgpucommandbuffer);
+             }
           
                 auto prendersystem = this;
       
@@ -339,6 +363,22 @@ namespace graphics3d
                 bool bAlbedo = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_albedo].is_set();
                 bAlbedo = bAlbedo && !m_bDisableAlbedo;
                 pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
+
+                if (m_erendersystem == ::graphics3d::e_render_system_gltf_scene)
+                {
+                   if (ealphamode == ::gpu::gltf::material::ALPHAMODE_MASK)
+                   {
+                      pshader->set_int("useAlphaMask", 1);
+                      pshader->set_float("alphaMaskCutoff", 0.5f);
+                   }
+                   else
+                   {
+                      pshader->set_int("useAlphaMask", 0);
+                      pshader->set_float("alphaMaskCutoff", 0.f);
+                   }
+                }
+
+                pshader->set_float("prefilteredEnvMapMaxLod", pscene->m_ptexturePrefilteredCube->m_textureattributes.m_iMipCount - 1);
       
                     floating_sequence3 seq3Albedo = {};
                 if (prendersystem->m_bForceDefaultAlbedo)
@@ -357,11 +397,13 @@ namespace graphics3d
       
                 bool bMetallicRoughness = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_metallic_roughness].is_set();
                 bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
-                pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
+                if (m_bImplMetallic)
+                {
+                   pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
+                }
                 bool bNormal = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_normal].is_set();
       
-      
-                            float fMetallic = 0.0f;
+                float fMetallic = 0.0f;
                 if (prendersystem->m_bForceDefaultMetallicFactor)
                 {
       
@@ -390,7 +432,10 @@ namespace graphics3d
                 pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
                 bool bAmbientOcclusion = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_ambient_occlusion].is_set();
                 bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
-                pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
+                if (m_bImplAO)
+                {
+                   pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
+                }
       
       
       
@@ -419,12 +464,22 @@ namespace graphics3d
       
                    //seq3Emission = pmesh->m_pmaterial->m_seq3Emissive;
                 }
-                pshader->set_sequence3("emissive", seq3Emission);
+                if (m_bImplEmissive)
+                {
+                   pshader->set_sequence3("emissive", seq3Emission);
+                }
+
+                ::floating_sequence3 seq3(1.f, 1.f, 1.f);
+
+                pshader->set_sequence3("multiplier", seq3);
       
       
                 bool bEmissive = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_emissive].is_set();
                 bEmissive = bEmissive && !m_bDisableEmissive;
-                pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
+                if (m_bImplEmissive)
+                {
+                   pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
+                }
       
                 //auto metallicFactor = pmesh->m_pmaterial->metallicFactor;
                 //if (m_bForceDefaultMetallicFactor)
@@ -508,16 +563,18 @@ namespace graphics3d
                 //                           // m_pipelineLayout, 2, 1,
                 //                           pshader->m_ppipeline->m_vkpipelinelayout, 2, 1, &pbrSet, 0, nullptr);
                 //}
-                auto pgpubindingsetPbr = pbr_binding_set();
       
-                //auto pbindingset = pshader->binding_set(2, pgpubindingset);
+
+                                auto pgpubindingsetPbr = pbr_binding_set();
+
+                // auto pbindingset = pshader->binding_set(2, pgpubindingset);
                 auto pbindingslotsetPbr = pmesh->m_pmaterial->pbr_binding_slot_set(pgpubindingsetPbr, pgltfmodel);
-                //if (pgpubindingset->size() == 2)
-                //pgltfmodel
+                // if (pgpubindingset->size() == 2)
+                // pgltfmodel
 
                 pcommandbuffer->bind_slot_set(2, pbindingslotsetPbr);
-      
-                pcommandbuffer->draw(pgltfmodel);
+
+                pcommandbuffer->draw(pmesh);
       
                 //warnedThisFrame = false;
       

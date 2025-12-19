@@ -71,6 +71,8 @@ namespace graphics3d_opengl
 
       ::cast<::gpu_opengl::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
 
+      pcommandbuffer->m_prendersystem = this;
+
       on_render(pgpucontext, pscene);
       
    }

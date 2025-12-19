@@ -1,4 +1,9 @@
-﻿#version 330 core
+﻿// This file was automatically generated from a command line like:
+// application_build_helper --inline-text "gltf.vert"
+#pragma once
+
+
+const char g_psz_gltf_vert[] = R"vert_text(#version 330 core
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
@@ -28,14 +33,14 @@ layout(std140) uniform GlobalUbo {
     int padding1;
     int padding2;
     int padding3;
-};
+} globalUbo;
 
 uniform mat4 modelMatrix;
 uniform mat4 normalMatrix;   // inverse-transpose of model
 
 void main() {
     worldCoordinates = (modelMatrix * vec4(aPos, 1.0f)).xyz;
-    gl_Position = projection * view * modelMatrix * vec4(aPos, 1.0f);
+    gl_Position = globalUbo.projection * globalUbo.view * modelMatrix * vec4(aPos, 1.0f);
     textureCoordinates = aTextureCoordinates;
 
     mat3 normalMat = mat3(normalMatrix);
@@ -48,6 +53,11 @@ void main() {
     tangent   = T;
     bitangent = B;
 }
+
+
+
+)vert_text";
+
 
 
 

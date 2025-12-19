@@ -28,15 +28,15 @@ layout(std140) uniform GlobalUbo {
     vec4 viewPos;
     PointLight pointLights[10];
     int numLights;
-};
+} globalUbo;
 
 out vec3 vDirection;
 
 void main() {
     // remove translation:
-    mat4 rotView = mat4(mat3(view));
+    mat4 rotView = mat4(mat3(globalUbo.view));
 
-    vec4 clipPos = projection * rotView * vec4(inPos, 1.0);
+    vec4 clipPos = globalUbo.projection * rotView * vec4(inPos, 1.0);
     gl_Position = clipPos.xyww; // Depth = 1.0 (far plane)
 
     vDirection = inPos;

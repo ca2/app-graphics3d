@@ -2469,6 +2469,14 @@ namespace gpu_vulkan
          throw ::exception(error_failed, "failed to create vertex buffer!");
       }
 
+            if (((::uptr)pbuffer->m_vkbuffer & 0xffff) == 0x019b)
+      {
+
+         information("~buffer (m_vkbuffer & 0xffff) == 0x019b");
+      }
+
+
+
       VkMemoryRequirements memRequirements;
       vkGetBufferMemoryRequirements(this->logicalDevice(), pbuffer->m_vkbuffer, &memRequirements);
 
@@ -3362,9 +3370,9 @@ namespace gpu_vulkan
 
                   int h = r.height();
 
-                  r.top = iH - r.bottom;
+                  //r.top = iH - r.bottom;
 
-                  r.bottom = r.top + h;
+                  //r.bottom = r.top + h;
 
                   pcommandbuffer->set_viewport(r);
 
@@ -5937,6 +5945,14 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
    auto ptexture = loadCubemap(scopedstrName, path, vkformat, vkqueueCopy, usageFlags, initialLayout);
 
    return ptexture;
+
+}
+
+
+void context::on_cube_map_face_image(::image::image * pimage)
+{
+
+   //pimage->rotate(180_degrees);
 
 }
 

@@ -23,10 +23,7 @@ namespace graphics3d_directx11
    class application_object;
 
    class model;
-   //class context;
    class input;
-   //class camera;
-   class pipeline;
 
    class engine;
 

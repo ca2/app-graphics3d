@@ -26,11 +26,11 @@ void main()
     
     float theta = acos(dir.y);
 
-    float u = mod(0.75 + ((phi + PI) / (2.0 * PI)), 1.0);
+    float u = mod(0.25 + ((phi + PI) / (2.0 * PI)), 1.0);
     
     float v = theta / PI;
     
-    outColor = texture(hdri, vec2(1.0 - u, v));
+    outColor = texture(hdri, vec2(u, v));
 
 
 }

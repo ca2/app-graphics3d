@@ -761,8 +761,8 @@
     <ClInclude Include="render_data.h" />
     <ClInclude Include="render_system\gltf_render_system.h" />
     <ClInclude Include="render_system\scene_render_system.h" />
-    <ClInclude Include="render_system\shader\pbr.frag.h" />
-    <ClInclude Include="render_system\shader\pbr.vert.h" />
+    <ClInclude Include="render_system\shader\gltf.frag.h" />
+    <ClInclude Include="render_system\shader\gltf.vert.h" />
     <ClInclude Include="render_system\shader\scene.frag.h" />
     <ClInclude Include="render_system\shader\scene.vert.h" />
     <ClInclude Include="render_system\shader\scene_frag.frag.h" />
@@ -813,7 +813,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="render_system\shader\pbr.frag">
+    <CustomBuild Include="render_system\shader\gltf.frag">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
@@ -832,7 +832,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
     </CustomBuild>
-    <CustomBuild Include="render_system\shader\pbr.vert">
+    <CustomBuild Include="render_system\shader\gltf.vert">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>

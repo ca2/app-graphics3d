@@ -37,9 +37,6 @@ layout(std140, set = 0, binding = 0) uniform GlobalUbo {
     // pointLights array
     PointLight pointLights[10];
     int numLights;
-    int padding1;
-    int padding2;
-    int padding3;
 } globalUbo;
 
 // IBL maps
@@ -71,20 +68,21 @@ layout(push_constant) uniform PushConsts
     float metallic;
     float roughness;
     float ambientOcclusion;
-    vec3 emissive;
+//    vec3 emissive;
     float alphaMaskCutoff;
 
-    float bloomBrightnessCutoff;
-    vec3 multiplier;
+    //float bloomBrightnessCutoff;
+    //vec3 multiplier;
 
 } pushConsts;
 
 // Helper wrappers
 vec4 getAlbedo() {
-    vec4 a = vec4(pushConsts.albedo, 1.0);
-    if (pushConsts.useTextureAlbedo != 0) {
-        a = texture(textureAlbedo, fragmentTextureCoordinate);
-    }
+    //vec4 a = vec4(pushConsts.albedo, 1.0);
+
+    //if (pushConsts.useTextureAlbedo != 0) {
+    vec4    a = texture(textureAlbedo, fragmentTextureCoordinate);
+    //}
     return a;
 }
 //const bool  ALPHA_MASK = false;
@@ -95,9 +93,9 @@ vec4 getAlbedo() {
 //const float ROUGHNESS_VALUE = 1.0;
 //const float AO_VALUE        = 0.3;
 
-const float DIRECT_LIGHT_CONTRIBUTION   = 1.0;
+const float DIRECT_LIGHT_CONTRIBUTION   = 0.29;
 const float AMBIENT_CONTRIBUTION        = 0.3;
-const float EXPOSURE                    = 1.0; 
+const float EXPOSURE                    = 0.5; 
 
 
 void main() 
@@ -114,32 +112,29 @@ void main()
 
    vec3 N = fragmentNormal;
    
-   if (pushConsts.useTextureNormal != 0) 
+   
+   vec3 nMap;
+      
+   if(false)
    {
-   
-      vec3 nMap;
       
-      if(false)
-      {
-      
-         nMap.xy = texture(textureNormal, fragmentTextureCoordinate).xy * 2.0 - 1.0;
+      nMap.xy = texture(textureNormal, fragmentTextureCoordinate).xy * 2.0 - 1.0;
          
-         nMap.z = sqrt(1.0 - clamp(dot(nMap.xy, nMap.xy), 0.0, 1.0));
+      nMap.z = sqrt(1.0 - clamp(dot(nMap.xy, nMap.xy), 0.0, 1.0));
       
-      }
-      else
-      {
-      
-         nMap = texture(textureNormal, fragmentTextureCoordinate).xyz * 2.0 - 1.0;
-      
-      }
-      
-      mat3 TBN = mat3(fragmentTangent, fragmentBitangent, fragmentNormal);
-      
-      N = normalize(TBN * nMap);
-   
    }
- 
+   else
+   {
+      
+      nMap = texture(textureNormal, fragmentTextureCoordinate).xyz * 2.0 - 1.0;
+      
+   }
+      
+   mat3 TBN = mat3(fragmentTangent, fragmentBitangent, fragmentNormal);
+      
+   N = normalize(TBN * nMap);
+   
+
    //vec3 nMap = texture(textureNormal, fragmentTextureCoordinate).xyz * 2.0 - 1.0;
    //vec3 N = normalize(TBN * nMap);
    //vec3 V = normalize(inViewVec);
@@ -229,7 +224,7 @@ void main()
    // Final Composite
    //vec3 color = lighting + ambientIBL + texColor.rgb * globalUbo.ambientLightColor.rgb;
    vec3 color = lighting + ambientIBL;
-   //color = ACESFilm(color * EXPOSURE);
+   color = ACESFilm(color * EXPOSURE);
 
    //outputColor = vec4(color, texColor.a);
 

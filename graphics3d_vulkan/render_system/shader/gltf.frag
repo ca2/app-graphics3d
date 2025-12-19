@@ -7,11 +7,12 @@ layout(location = 0) out vec4 FragColor; // regular output
 //layout(location = 1) out vec4 BloomColor; // output to be used by bloom shader
 
 // vertex inputs (match your vertex shader locations)
-layout(location = 0) in vec3 worldCoordinates;
-layout(location = 1) in vec2 textureCoordinates;
-layout(location = 2) in vec3 tangent;
-layout(location = 3) in vec3 bitangent;
-layout(location = 4) in vec3 normal;
+layout (location = 0) in vec3 fragmentWorldCoordinate;
+layout (location = 1) in vec3 fragmentNormal;
+layout (location = 2) in vec2 fragmentTextureCoordinate;
+layout (location = 3) in vec4 fragmentColor;
+layout (location = 4) in vec3 fragmentTangent;
+layout (location = 5) in vec3 fragmentBitangent;
 
 struct PointLight {
     vec4 position;
@@ -19,20 +20,20 @@ struct PointLight {
 };
 
 
-// ---------- Global UBO (set 0 binding 0) ----------
-layout(std140, set = 0, binding = 0) uniform GlobalUbo {
+// UBO: matches fragment shader binding and structure
+layout (set = 0, binding = 0, std140) uniform GlobalUbo 
+{
+
     mat4 projection;
     mat4 view;
     mat4 invView;
     vec4 ambientLightColor;
     vec3 cameraPosition;
-    // pointLights array
     PointLight pointLights[10];
     int numLights;
-    int padding1;
-    int padding2;
-    int padding3;
+
 } globalUbo;
+
 
 //// ---------- Material scalar properties (no samplers) (set 0 binding 1) ----------
 //layout(std140, set = 0, binding = 1) uniform MaterialProps {
@@ -101,7 +102,7 @@ layout(push_constant) uniform PushConsts
 vec3 getAlbedo() {
     vec3 a = pushConsts.albedo;
     if (pushConsts.useTextureAlbedo != 0) {
-        a = texture(textureAlbedo, textureCoordinates).rgb;
+        a = texture(textureAlbedo, fragmentTextureCoordinate).rgb;
     }
     return a;
 }
@@ -110,7 +111,7 @@ void getMetallicRoughness(out float metallic, out float roughness) {
     metallic = pushConsts.metallic;
     roughness = pushConsts.roughness;
     if (pushConsts.useTextureMetallicRoughness != 0) {
-        vec3 mr = texture(textureMetallicRoughness, textureCoordinates).rgb;
+        vec3 mr = texture(textureMetallicRoughness, fragmentTextureCoordinate).rgb;
         metallic = mr.b;
         roughness = mr.g;
     }
@@ -119,10 +120,10 @@ void getMetallicRoughness(out float metallic, out float roughness) {
 vec3 getNormal(vec3 interpNormal) {
     vec3 n = interpNormal;
     if (pushConsts.useTextureNormal != 0) {
-        vec3 tangentNormal = texture(textureNormal, textureCoordinates).rgb;
+        vec3 tangentNormal = texture(textureNormal, fragmentTextureCoordinate).rgb;
         // convert from [0,1] to [-1,1]
         vec3 norm = normalize(tangentNormal * 2.0 - 1.0);
-        mat3 TBN = mat3(tangent, bitangent, normal);
+        mat3 TBN = mat3(fragmentTangent, fragmentBitangent, fragmentNormal);
         n = normalize(TBN * norm);
     }
     return n;
@@ -131,7 +132,7 @@ vec3 getNormal(vec3 interpNormal) {
 float getAO() {
     float ao = pushConsts.ambientOcclusion;
     if (pushConsts.useTextureAmbientOcclusion != 0) {
-        ao = texture(textureAmbientOcclusion, textureCoordinates).r;
+        ao = texture(textureAmbientOcclusion, fragmentTextureCoordinate).r;
     }
     return ao;
 }
@@ -139,7 +140,7 @@ float getAO() {
 vec3 getEmissive() {
     vec3 e = pushConsts.emissive;
     if (pushConsts.useTextureEmissive != 0) {
-        e = texture(textureEmissive, textureCoordinates).rgb;
+        e = texture(textureEmissive, fragmentTextureCoordinate).rgb;
     }
     return e;
 }
@@ -179,14 +180,14 @@ float geometrySmith(vec3 n, vec3 v, vec3 l, float roughness) {
 
 // ---------- main ----------
 void main() {
-    vec3 worldPos = worldCoordinates;
+    vec3 worldPos = fragmentWorldCoordinate;
     vec3 albedo = getAlbedo();
 
     float metallic;
     float roughness;
     getMetallicRoughness(metallic, roughness);
 
-    vec3 n = getNormal(normal);
+    vec3 n = getNormal(fragmentNormal);
     float ao = getAO();
     vec3 emissive = getEmissive();
 
@@ -256,9 +257,10 @@ void main() {
 
     FragColor = vec4(color, 1.0);
     //FragColor = vec4(albedo, 1.0);
+    //FragColor = vec4(float(0), float(pushConsts.useTextureAlbedo), float(0), 1.0);
     //FragColor = vec4(specularIBL, 1.0);
     //FragColor = vec4(vec3(ao), 1.0);
-    //FragColor = vec4(tangent*0.5+0.5, 1.0); // visualize tangent
+    //FragColor = vec4(fragmentTangent*0.5+0.5, 1.0); // visualize fragmentTangent
 
     //float greyscaleBrightness = dot(FragColor.rgb, GREYSCALE_WEIGHT_VECTOR);
     //BloomColor = greyscaleBrightness > pushConsts.bloomBrightnessCutoff ? FragColor : vec4(0.0);

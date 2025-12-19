@@ -18,10 +18,10 @@ namespace gpu_directx12
    block::~block() {}
 
 
-   void block::initialize_gpu_block(::gpu::context *pgpucontext)
+   void block::create_gpu_block(::gpu::context *pgpucontext)
    {
 
-      ::gpu::block::initialize_gpu_block(pgpucontext);
+      ::gpu::block::create_gpu_block(pgpucontext);
 
    }
 

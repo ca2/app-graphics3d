@@ -33,13 +33,13 @@ layout(std140) uniform GlobalUbo {
     int padding1;
     int padding2;
     int padding3;
-};
+} globalUbo;
 
 
 //struct PushConstants {
   uniform bool useTextureAlbedo;
-  uniform bool useTextureMetallicRoughness;
   uniform bool useTextureNormal;
+  uniform bool useTextureMetallicRoughness;
   uniform bool useTextureAmbientOcclusion;
   uniform bool useTextureEmissive;
 
@@ -50,8 +50,8 @@ layout(std140) uniform GlobalUbo {
   uniform vec3 emissive;
 
   uniform sampler2D textureAlbedo;
-  uniform sampler2D textureMetallicRoughness;
   uniform sampler2D textureNormal;
+  uniform sampler2D textureMetallicRoughness;
   uniform sampler2D textureAmbientOcclusion;
   uniform sampler2D textureEmissive;
 //};
@@ -71,12 +71,10 @@ uniform samplerCube diffuseIrradianceMap;
 uniform samplerCube prefilteredEnvMap;
 uniform sampler2D brdfConvolutionMap;
 
-uniform float x_multiplier;
-uniform float y_multiplier;
-uniform float z_multiplier;
 
 // Post parameters
 uniform float bloomBrightnessCutoff;
+uniform vec3 multiplier;
 
 // Fresnel function (Fresnel-Schlick approximation)
 //
@@ -173,18 +171,18 @@ void main() {
    uv.y = 1.0 - uv.y; 
 
 	// albedo
-	vec3 albedo = albedo;
+	vec3 l_albedo = albedo;
 	if (useTextureAlbedo) {
-		albedo = texture(textureAlbedo, uv).rgb;
+		l_albedo = texture(textureAlbedo, uv).rgb;
 	}
 
 	// metallic/roughness
-	float metallic = metallic;
-	float roughness = roughness;
+	float l_metallic = metallic;
+	float l_roughness = roughness;
 	if (useTextureMetallicRoughness) {
 		vec3 metallicRoughness = texture(textureMetallicRoughness, uv).rgb;
-		metallic = metallicRoughness.b;
-		roughness = metallicRoughness.g;
+		l_metallic = metallicRoughness.b;
+		l_roughness = metallicRoughness.g;
 	}
 
 	// normal
@@ -200,12 +198,12 @@ void main() {
 	}
 
 	// emissive
-	vec3 emissive = emissive;
+	vec3 l_emissive = emissive;
 	if (useTextureEmissive) {
-		emissive = texture(textureEmissive, uv).rgb;
+		l_emissive = texture(textureEmissive, uv).rgb;
 	}
 
-	vec3 v = normalize(cameraPosition - worldCoordinates); // view vector pointing at camera
+	vec3 v = normalize(globalUbo.cameraPosition - worldCoordinates); // view vector pointing at camera
    //vec3 v = normalize(worldCoordinates - cameraPosition); // view vector pointing at camera
 
    //vec3 N = normalize(n);
@@ -216,9 +214,7 @@ void main() {
 
 	vec3 r = reflect(-v, n); // reflection
 
-   r.x *= x_multiplier;
-   r.y *= y_multiplier;
-   r.z *= z_multiplier;
+   r *= multiplier;
 
 
 
@@ -226,20 +222,20 @@ void main() {
 	// for PBR-metallic we assume dialectrics all have 0.04
 	// for metals the value comes from the albedo map
 	vec3 f0 = vec3(0.04);
-	f0 = mix(f0, albedo, metallic);
+	f0 = mix(f0, l_albedo, l_metallic);
 
 	vec3 Lo = vec3(0.0); // total radiance out
 
 	// Direct lighting
 	// Sum up the radiance contributions of each light source.
 	// This loop is essentially the integral of the rendering equation.
-	for (int i = 0; i < 4; i++) {
-		vec3 l = normalize(pointLights[i].position.xyz  - worldCoordinates); // light vector
+	for (int i = 0; i < globalUbo.numLights; i++) {
+		vec3 l = normalize(globalUbo.pointLights[i].position.xyz  - worldCoordinates); // light vector
 		vec3 h = normalize(v + l);
 
-		float distance = length(pointLights[i].position.xyz  - worldCoordinates);
+		float distance = length(globalUbo.pointLights[i].position.xyz  - worldCoordinates);
 		float attenuation = 1.0 / (distance * distance); // inverse square law
-		vec3 radiance = pointLights[i].color.rgb * attenuation; // aka Li
+		vec3 radiance = globalUbo.pointLights[i].color.rgb * attenuation; // aka Li
 
 		// calculate Cook-Torrance specular BRDF term
 		//
@@ -250,14 +246,14 @@ void main() {
 		//
 
 		// Normal Distribution term (D)
-		float dTerm = ndfTrowbridgeReitzGGX(n, h, roughness);
+		float dTerm = ndfTrowbridgeReitzGGX(n, h, l_roughness);
 
 		// Fresnel term (F)
 		// Determines the ratio of light reflected vs. absorbed
 		vec3 fTerm = fresnelSchlick(max(dot(h, v), 0.0), f0);
 
 		// Geometry term (G)
-		float gTerm = geometrySmith(n, v, l, roughness);
+		float gTerm = geometrySmith(n, v, l, l_roughness);
 
 
 		vec3 numerator = dTerm * fTerm * gTerm;
@@ -268,7 +264,7 @@ void main() {
 
 		vec3 kSpecular = fTerm;
 		vec3 kDiffuse = vec3(1.0) - kSpecular;
-		kDiffuse *= 1.0 - metallic; // metallic materials should have no diffuse component
+		kDiffuse *= 1.0 - l_metallic; // metallic materials should have no diffuse component
 
 		// now calculate full Cook-Torrance with both diffuse + specular
 		//
@@ -276,7 +272,7 @@ void main() {
 		//
 		// where f_lambert = c / pi
 
-		vec3 diffuse = kDiffuse * albedo / PI;
+		vec3 diffuse = kDiffuse * l_albedo / PI;
 		vec3 cookTorranceBrdf = diffuse + specular;
 		float nDotL = max(dot(n, l), 0.0);
 
@@ -285,38 +281,42 @@ void main() {
 	}
 
 	// Indirect lighting (IBL)
-	vec3 kSpecular = fresnelSchlickRoughness(NdotV, f0, roughness); // aka F
+	vec3 kSpecular = fresnelSchlickRoughness(NdotV, f0, l_roughness); // aka F
    vec3 kDiffuse = 1.0 - kSpecular;
-	kDiffuse *= 1.0 - metallic; // metallic materials should have no diffuse component
+	kDiffuse *= 1.0 - l_metallic; // metallic materials should have no diffuse component
 
 	// diffuse
    vec3 irradiance = texture(diffuseIrradianceMap, n).rgb;
-   vec3 diffuse = irradiance * albedo;
+   vec3 diffuse = irradiance * l_albedo;
 
 	// specular
-	vec3 prefilteredEnvMapColor = textureLod(prefilteredEnvMap, r, roughness * PREFILTERED_ENV_MAP_LOD).rgb;
-	vec2 brdf = texture(brdfConvolutionMap, vec2(NdotV, roughness)).rg;
+	vec3 prefilteredEnvMapColor = textureLod(prefilteredEnvMap, r, l_roughness * PREFILTERED_ENV_MAP_LOD).rgb;
+	vec2 brdf = texture(brdfConvolutionMap, vec2(NdotV, l_roughness)).rg;
 	vec3 specular = prefilteredEnvMapColor * (kSpecular * brdf.x + brdf.y);
 //vec3 specular = prefilteredEnvMapColor;
-//vec3 specular = albedo;
+//vec3 specular = l_albedo;
 
 	vec3 ambient = (kDiffuse * diffuse + specular) * ao; // indirect lighting
    //vec3 ambient = (kDiffuse * diffuse + specular); // indirect lighting
    //vec3 ambient = specular; // indirect lighting
 
 	// Combine emissive + indirect + direct
-	vec3 color = emissive + ambient + Lo;
+	vec3 color = l_emissive + ambient + Lo;
    //vec3 color = ambient;
 
 	// Outputs
 
 	// main color output
-   //FragColor = vec4(albedo, 1.0);
-    const float EXPOSURE = 0.3;
-    vec3 outColor = ACESFilm(color * EXPOSURE);
-    outColor = toSRGB(outColor);
-	FragColor = vec4(outColor, 1.0);
+	vec3 outColor = color;
 
+//    const float EXPOSURE = 0.3;
+//    vec3 outColor = ACESFilm(outColor * EXPOSURE);
+//    outColor = toSRGB(outColor);
+
+	FragColor = vec4(outColor, 1.0);
+   //FragColor = vec4(l_albedo, 1.0);
+	//FragColor = vec4(0.0, float(useTextureAlbedo), 0.0, 1.0);
+	//FragColor = vec4(specular, 1.0);
    //FragColor = vec4(texture(prefilteredEnvMap, r).rgb, 1.0);
 //vec3 N = normalize(n);  // ignore normal map
 //FragColor = vec4(n * 0.5 + 0.5, 1.0);
@@ -336,7 +336,7 @@ void main() {
 	// bloom color output
 	// use greyscale conversion here because not all colors are equally "bright"
     //float greyscaleBrightness = dot(FragColor.rgb, GREYSCALE_WEIGHT_VECTOR);
-	//BloomColor = greyscaleBrightness > bloomBrightnessCutoff ? vec4(emissive, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
+	//BloomColor = greyscaleBrightness > bloomBrightnessCutoff ? vec4(l_emissive, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
 
 // Fix bloom
 float greyscaleBrightness = dot(FragColor.rgb, GREYSCALE_WEIGHT_VECTOR);

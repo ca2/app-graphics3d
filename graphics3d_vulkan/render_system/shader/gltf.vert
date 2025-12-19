@@ -1,18 +1,19 @@
 #version 450
 
-// Vertex attributes
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTextureCoordinates;
-layout (location = 3) in vec4 aColor;
-layout (location = 4) in vec4 aTangent;
+// Vertex inputs
+layout(location = 0) in vec3 inputWorldCoordinate;
+layout(location = 1) in vec3 inputNormal;
+layout(location = 2) in vec2 inputTextureCoordinate;
+layout(location = 3) in vec4 inputColor;
+layout(location = 4) in vec4 inputTangent;   // .xyz = tangent, .w = bitangent sign
 
 // Outputs to fragment shader
-layout (location = 0) out vec3 worldCoordinates;
-layout (location = 1) out vec2 textureCoordinates;
-layout (location = 2) out vec3 tangent;
-layout (location = 3) out vec3 bitangent;
-layout (location = 4) out vec3 normal;
+layout (location = 0) out vec3 fragmentWorldCoordinate;
+layout (location = 1) out vec3 fragmentNormal;
+layout (location = 2) out vec2 fragmentTextureCoordinate;
+layout (location = 3) out vec4 fragmentColor;
+layout (location = 4) out vec3 fragmentTangent;
+layout (location = 5) out vec3 fragmentBitangent;
 
 // Must match fragment shader
 struct PointLight {
@@ -20,8 +21,11 @@ struct PointLight {
     vec4 color;
 };
 
+
 // UBO: matches fragment shader binding and structure
-layout (set = 0, binding = 0, std140) uniform GlobalUbo {
+layout (set = 0, binding = 0, std140) uniform GlobalUbo 
+{
+
     mat4 projection;
     mat4 view;
     mat4 invView;
@@ -29,10 +33,9 @@ layout (set = 0, binding = 0, std140) uniform GlobalUbo {
     vec3 cameraPosition;
     PointLight pointLights[10];
     int numLights;
-    int padding1;
-    int padding2;
-    int padding3;
-} ubo;
+
+} globalUbo;
+
 
 // Push constants for model transforms (Vulkan-style)
 layout(push_constant) uniform PushConsts 
@@ -62,24 +65,24 @@ layout(push_constant) uniform PushConsts
 } pushConsts;
 
 void main() {
-    // Transform position to world space
-    vec4 worldPos = pushConsts.modelMatrix * vec4(aPos, 1.0);
-    worldCoordinates = worldPos.xyz;
 
-    // Final clip-space position
-    gl_Position = ubo.projection * ubo.view * worldPos;
+    vec4 worldPosition = pushConsts.modelMatrix * vec4(inputWorldCoordinate, 1.0);
+    gl_Position   = globalUbo.projection * globalUbo.view * worldPosition;
 
-    // Pass through texture coordinates
-    textureCoordinates = aTextureCoordinates;
 
     // Normal, tangent, bitangent in world space
     mat3 normalMat = mat3(pushConsts.normalMatrix);
 
-    vec3 N = normalize(normalMat * aNormal);
-    vec3 T = normalize(normalMat * aTangent.xyz);
-    vec3 B = cross( N,T) * aTangent.w;
 
-    normal = N;
-    tangent = T;
-    bitangent = B;
+    vec3 normal = normalize(normalMat * inputNormal);
+    vec3 tangent = normalize(normalMat * inputTangent.xyz);
+    vec3 bitangent = cross(normal, tangent) * inputTangent.w;
+
+    fragmentWorldCoordinate         = worldPosition.xyz;
+    fragmentNormal                  = normal;
+    fragmentTextureCoordinate       = inputTextureCoordinate;
+    fragmentColor                   = inputColor;
+    fragmentTangent                 = tangent;
+    fragmentBitangent               = bitangent;
+
 }

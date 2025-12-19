@@ -70,6 +70,9 @@ namespace graphics3d_opengl
       gltf_render_system();
       ~gltf_render_system();
 
+            virtual ::memory pbr_with_ibl_vert_memory() override;
+      virtual ::memory pbr_with_ibl_frag_memory() override;
+
 
       //virtual void init(VkRenderPass renderPass, 
       //   ::gpu_opengl::descriptor_set_layout * psetdescriptorlayoutGlobal,

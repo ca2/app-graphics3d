@@ -25,6 +25,10 @@ namespace graphics3d
    scene_render_system::scene_render_system()
    {
 
+      m_bImplMetallic = false;
+      m_bImplAO = false;
+      m_bImplEmissive = false;
+      m_erendersystem = e_render_system_gltf_scene;
 
    }
 
@@ -1074,6 +1078,7 @@ GPU_PROPERTY("modelMatrix", ::gpu::e_type_mat4)
 GPU_PROPERTY("normalMatrix", ::gpu::e_type_mat4)
 GPU_PROPERTY("useTextureAlbedo", ::gpu::e_type_int)
 GPU_PROPERTY("useTextureNormal", ::gpu::e_type_int)
+GPU_PROPERTY("useAlphaMask", ::gpu::e_type_int)
 // GPU_PROPERTY("useTextureMetallicRoughness", ::gpu::e_type_int)
 // GPU_PROPERTY("useTextureAmbientOcclusion", ::gpu::e_type_int)
 // GPU_PROPERTY("useTextureEmissive", ::gpu::e_type_int)
@@ -1081,10 +1086,12 @@ GPU_PROPERTY("albedo", ::gpu::e_type_seq3)
 GPU_PROPERTY("metallic", ::gpu::e_type_float)
 GPU_PROPERTY("roughness", ::gpu::e_type_float)
 GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_float)
-GPU_PROPERTY("emissive", ::gpu::e_type_seq3)
+GPU_PROPERTY("alphaMaskCutoff", ::gpu::e_type_float)
+GPU_PROPERTY("prefilteredEnvMapMaxLod", ::gpu::e_type_float)
+//GPU_PROPERTY("emissive", ::gpu::e_type_seq3)
 // GPU_PROPERTY("cameraPosition", ::gpu::e_type_seq3)
-GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_float)
+//GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_float)
 // GPU_PROPERTY("useAlphaMask", ::gpu::e_type_int)
 // GPU_PROPERTY("alphaMaskCutOff", ::gpu::e_type_float)
-GPU_PROPERTY("multiplier", ::gpu::e_type_seq3)
+///GPU_PROPERTY("multiplier", ::gpu::e_type_seq3)
 END_GPU_PROPERTIES()

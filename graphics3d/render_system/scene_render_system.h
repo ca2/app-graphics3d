@@ -38,6 +38,7 @@ namespace graphics3d
          // int useAlphaMask;
          // float alphaMaskCutOff;
          floating_sequence3 multiplier;
+         float prefilteredEnvMapMaxLod;
       };
 
 

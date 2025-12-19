@@ -27,9 +27,6 @@ layout(std140, set = 0, binding = 0) uniform GlobalUbo {
     // pointLights array
     PointLight pointLights[10];
     int numLights;
-    int padding1;
-    int padding2;
-    int padding3;
 } globalUbo;
 
 layout(push_constant) uniform Push {

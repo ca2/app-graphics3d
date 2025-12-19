@@ -1,9 +1,4 @@
-﻿// This file was automatically generated from a command line like:
-// application_build_helper --inline-text "pbr.vert"
-#pragma once
-
-
-const char g_psz_pbr_vert[] = R"vert_text(#version 330 core
+﻿#version 330 core
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
@@ -53,11 +48,6 @@ void main() {
     tangent   = T;
     bitangent = B;
 }
-
-
-
-)vert_text";
-
 
 
 

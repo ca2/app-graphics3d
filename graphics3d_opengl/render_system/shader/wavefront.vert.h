@@ -32,7 +32,7 @@ layout(std140) uniform GlobalUbo {
     int padding1;
     int padding2;
     int padding3;
-};
+} globalUbo;
 
  
 // Instead of push constants, use a second uniform block or separate uniforms
@@ -41,7 +41,7 @@ uniform mat4 normalMatrix;
  
 void main() {
     vec4 positionWorld = modelMatrix * vec4(position, 1.0);
-    gl_Position = projection * view * positionWorld;
+    gl_Position = globalUbo.projection * globalUbo.view * positionWorld;
  
     fragNormalWorld = normalize(mat3(normalMatrix) * normal);
     fragPosWorld = positionWorld.xyz;

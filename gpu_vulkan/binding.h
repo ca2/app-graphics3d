@@ -57,6 +57,9 @@ namespace gpu_vulkan
 
       ::pointer < ::array<VkDescriptorSet > > m_pvkdescriptorseta;
 
+      binding_slot_set();
+      ~binding_slot_set() override;
+
       ::array<VkDescriptorSet> & descriptor_set(::gpu::command_buffer * pgpucommandbuffer);
       
 

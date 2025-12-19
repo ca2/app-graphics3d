@@ -134,9 +134,9 @@ namespace app_graphics3d_continuum
 
       m_pskyboxCurrent2 = m_mapSkybox[m_strSkybox];
 
-      float fXScale;
+      ///float fXScale;
 
-      fXScale = m_pimmersionlayer->m_pengine->m_fYScale;
+      ///fXScale = m_pimmersionlayer->m_pengine->m_fYScale;
 
       {
 
@@ -373,7 +373,7 @@ namespace app_graphics3d_continuum
 
       auto ptexture = prendertarget->current_texture(::gpu::current_frame());
 
-      pgpucontext->clear(ptexture, ::argb(1.0f, 0.5f, 0.75f, 1.0f)); // Clear with a light blue color
+      //pgpucontext->clear(ptexture, ::argb(1.0f, 0.5f, 0.75f, 1.0f)); // Clear with a light blue color
 
       if (m_pskyboxrendersystem)
       {

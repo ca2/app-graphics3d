@@ -33,6 +33,7 @@ namespace graphics3d_vulkan
    {
 
       //m_fYScale = -1.f;
+      //m_fInputPitchFlip = -1.0f;
 
    }
 
@@ -544,7 +545,7 @@ namespace graphics3d_vulkan
     M[3][2] = (zNear * zFar) / (zNear - zFar);
 
     // Vulkan requires Y-flip because its framebuffer space has Y down.
-     //M[1][1] *= -1.0f;
+     M[1][1] *= -1.0f;
       return M;
 
    }

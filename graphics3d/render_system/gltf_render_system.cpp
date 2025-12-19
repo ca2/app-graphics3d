@@ -31,6 +31,7 @@ namespace graphics3d
    gltf_render_system::gltf_render_system()
    {
 
+      m_erendersystem = e_render_system_gltf_ibl;
 
    }
 
