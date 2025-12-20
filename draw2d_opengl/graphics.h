@@ -164,7 +164,7 @@ namespace draw2d_opengl
       int_point SetBrushOrg(int x, int y);
       int_point SetBrushOrg(const ::int_point & point);
       //int EnumObjects(int nObjectType,
-        //                  int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData);
+        //                  int (CALLBACK* lpfn)(void *, LPARAM), LPARAM lpData);
 
       // Type-safe selection helpers
    public:
@@ -195,10 +195,10 @@ namespace draw2d_opengl
       int SetROP2(int nDrawMode);
       int set_interpolation_mode(int nStretchMode);
 
-      //bool GetColorAdjustment(LPCOLORADJUSTMENT lpColorAdjust) const;
-      //bool SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust);
-
-//#if (_WIN32_WINNT >= 0x0500)
+//       bool GetColorAdjustment(LPCOLORADJUSTMENT lpColorAdjust) const;
+//       bool SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust);
+//
+// #if (_WIN32_WINNT >= 0x0500)
 //
 //       color32_t GetDCBrushColor() const;
 //       color32_t SetDCBrushColor(color32_t crColor);
@@ -488,11 +488,11 @@ namespace draw2d_opengl
       //int_size GetAspectRatioFilter() const;
 
       //bool GetCharABCWidths(unsigned int nFirstChar, unsigned int nLastChar, LPABC lpabc) const;
-      //unsigned int GetFontData(unsigned int dwTable, unsigned int dwOffset, LPVOID lpData, unsigned int cbData) const;
+      //unsigned int GetFontData(unsigned int dwTable, unsigned int dwOffset, void * lpData, unsigned int cbData) const;
       //int GetKerningPairs(int nPairs, LPKERNINGPAIR lpkrnpair) const;
       //unsigned int GetOutlineTextMetrics(unsigned int cbData, LPOUTLINETEXTMETRICW lpotm) const;
       //unsigned int GetGlyphOutline(unsigned int nChar, const ::e_align & ealign = e_align_top_left, const ::e_draw_text & edrawtext = e_draw_text_none, LPGLYPHMETRICS lpgm,
-      //                         unsigned int cbBuffer, LPVOID lpBuffer, const MAT2* lpmat2) const;
+      //                         unsigned int cbBuffer, void * lpBuffer, const MAT2* lpmat2) const;
 
       //bool GetCharABCWidths(unsigned int nFirstChar, unsigned int nLastChar,
                             //LPABCFLOAT lpABCF) const;
