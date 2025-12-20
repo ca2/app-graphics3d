@@ -96,13 +96,13 @@ namespace draw2d_opengl
 
    }
 
-   bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap)
-   {
-
-      __UNREFERENCED_PARAMETER(pgraphics);
-
-      return false;
-   }
+   // bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap)
+   // {
+   //
+   //    __UNREFERENCED_PARAMETER(pgraphics);
+   //
+   //    return false;
+   // }
 
 
    void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::int_size& size, void** ppcolorref, int* piScan)

@@ -164,7 +164,7 @@ namespace draw2d_opengl
       int_point SetBrushOrg(int x, int y);
       int_point SetBrushOrg(const ::int_point & point);
       //int EnumObjects(int nObjectType,
-        //                  int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData);
+        //                  int (CALLBACK* lpfn)(void *, LPARAM), LPARAM lpData);
 
       // Type-safe selection helpers
    public:
@@ -195,27 +195,27 @@ namespace draw2d_opengl
       int SetROP2(int nDrawMode);
       int set_interpolation_mode(int nStretchMode);
 
-      bool GetColorAdjustment(LPCOLORADJUSTMENT lpColorAdjust) const;
-      bool SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust);
-
-#if (_WIN32_WINNT >= 0x0500)
-
-      color32_t GetDCBrushColor() const;
-      color32_t SetDCBrushColor(color32_t crColor);
-
-      color32_t GetDCPenColor() const;
-      color32_t SetDCPenColor(color32_t crColor);
-
-#endif
+//       bool GetColorAdjustment(LPCOLORADJUSTMENT lpColorAdjust) const;
+//       bool SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust);
+//
+// #if (_WIN32_WINNT >= 0x0500)
+//
+//       color32_t GetDCBrushColor() const;
+//       color32_t SetDCBrushColor(color32_t crColor);
+//
+//       color32_t GetDCPenColor() const;
+//       color32_t SetDCPenColor(color32_t crColor);
+//
+// #endif
 
       // Graphics mode
       int SetGraphicsMode(int iMode);
       int GetGraphicsMode() const;
 
-      // World transform
-      bool SetWorldTransform(const XFORM* pXform);
-      bool ModifyWorldTransform(const XFORM* pXform,unsigned int iMode);
-      bool GetWorldTransform(XFORM* pXform) const;
+      // // World transform
+      // bool SetWorldTransform(const XFORM* pXform);
+      // bool ModifyWorldTransform(const XFORM* pXform,unsigned int iMode);
+      // bool GetWorldTransform(XFORM* pXform) const;
 
       // Mapping Functions
       virtual int GetMapMode() const;
@@ -402,8 +402,8 @@ namespace draw2d_opengl
 //                  int nWidth, int nHeight, ::draw2d::bitmap& maskBitmap, int xMask, int yMask);
       void SetPixelV(int x, int y, ::color::color crColor);
       void SetPixelV(const ::int_point & point, ::color::color crColor);
-      bool GradientFill(TRIVERTEX* pVertices, ULONG nVertices,
-                        void * pMesh, ULONG nMeshElements, unsigned int dwMode);
+      // bool GradientFill(TRIVERTEX* pVertices, ULONG nVertices,
+      //                   void * pMesh, ULONG nMeshElements, unsigned int dwMode);
       void TransparentBlt(int xDest, int yDest, int nDestWidth, int nDestHeight,
                           ::draw2d::graphics * pgraphicsSrc, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight,
                           unsigned int clrTransparent);
@@ -488,11 +488,11 @@ namespace draw2d_opengl
       //int_size GetAspectRatioFilter() const;
 
       //bool GetCharABCWidths(unsigned int nFirstChar, unsigned int nLastChar, LPABC lpabc) const;
-      //unsigned int GetFontData(unsigned int dwTable, unsigned int dwOffset, LPVOID lpData, unsigned int cbData) const;
+      //unsigned int GetFontData(unsigned int dwTable, unsigned int dwOffset, void * lpData, unsigned int cbData) const;
       //int GetKerningPairs(int nPairs, LPKERNINGPAIR lpkrnpair) const;
       //unsigned int GetOutlineTextMetrics(unsigned int cbData, LPOUTLINETEXTMETRICW lpotm) const;
       //unsigned int GetGlyphOutline(unsigned int nChar, const ::e_align & ealign = e_align_top_left, const ::e_draw_text & edrawtext = e_draw_text_none, LPGLYPHMETRICS lpgm,
-      //                         unsigned int cbBuffer, LPVOID lpBuffer, const MAT2* lpmat2) const;
+      //                         unsigned int cbBuffer, void * lpBuffer, const MAT2* lpmat2) const;
 
       //bool GetCharABCWidths(unsigned int nFirstChar, unsigned int nLastChar,
                             //LPABCFLOAT lpABCF) const;
@@ -509,18 +509,18 @@ namespace draw2d_opengl
 #endif
 
       // Printer/Device Escape Functions
-      virtual int Escape(int nEscape, int nCount, const ::scoped_string & lpszInData, LPVOID lpOutData);
+      virtual int Escape(int nEscape, int nCount, const ::scoped_string & lpszInData, void * lpOutData);
       int Escape(int nEscape, int nInputSize,  const char * lpszInputData,int nOutputSize, char * lpszOutputData);
       int DrawEscape(int nEscape, int nInputSize, const ::scoped_string & lpszInputData);
 
-      // Escape helpers
-      int StartDoc(const ::scoped_string & lpszDocName);  // old Win3.0 version
-      int StartDoc(LPDOCINFO lpDocInfo);
-      int StartPage();
-      int EndPage();
-      int SetAbortProc(bool (CALLBACK* lpfn)(HDC, int));
-      int AbortDoc();
-      int EndDoc();
+      // // Escape helpers
+      // int StartDoc(const ::scoped_string & lpszDocName);  // old Win3.0 version
+      // int StartDoc(LPDOCINFO lpDocInfo);
+      // int StartPage();
+      // int EndPage();
+      // int SetAbortProc(bool (CALLBACK* lpfn)(HDC, int));
+      // int AbortDoc();
+      // int EndDoc();
 
       // MetaFile Functions
       //bool PlayMetaFile(HMETAFILE hMF);
@@ -553,7 +553,7 @@ namespace draw2d_opengl
       void SelectClipPath(int nMode);
 
       // Misc Helper Functions
-      static ::draw2d::brush* GetHalftoneBrush();
+      //static ::draw2d::brush* GetHalftoneBrush();
       //void DrawDragRect(const ::int_rectangle & rectangle, const ::int_size & size,
       //                  const ::int_rectangle & lpRectLast, const ::int_size & sizeLast,
       //                  ::draw2d::brush* pBrush = nullptr, ::draw2d::brush* pBrushLast = nullptr);
