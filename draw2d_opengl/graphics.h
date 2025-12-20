@@ -163,8 +163,8 @@ namespace draw2d_opengl
       int_point GetBrushOrg() const;
       int_point SetBrushOrg(int x, int y);
       int_point SetBrushOrg(const ::int_point & point);
-      int EnumObjects(int nObjectType,
-                          int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData);
+      //int EnumObjects(int nObjectType,
+        //                  int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData);
 
       // Type-safe selection helpers
    public:

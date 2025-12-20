@@ -9,7 +9,7 @@
 #if defined(WINDOWS_DESKTOP)
 #define VK_USE_PLATFORM_WIN32_KHR
 #else
-#error "wwwwwhat?!?!"
+#define VK_USE_PLATFORM_WAYLAND_KHR
 #endif
 
 

@@ -387,7 +387,7 @@ namespace gpu_vulkan
 
       bool is_in_shader_sampling_state() override;
 
-      void _fromglTfImage(tinygltf::Image * pgltfimage, const ::file::path & path, ::gpu::renderer * pgpurender,  bool isSrgb);
+      //void _fromglTfImage(tinygltf::Image * pgltfimage, const ::file::path & path, ::gpu::renderer * pgpurender,  bool isSrgb);
       void on_finish_load_texture();
 
       void generate_mipmap(::gpu::command_buffer *pgpucommandbuffer) override;

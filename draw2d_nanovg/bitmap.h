@@ -8,11 +8,11 @@
 //#include <VK/vk.h>
 //#include <VK/vku.h>
 //#include <VK/vkext.h>
-#ifdef LINUX
-#include <VK/vkx.h>
-#endif
-
-#pragma warning (disable : 4244)
+// #ifdef LINUX
+// #include <VK/vkx.h>
+// #endif
+//
+// #pragma warning (disable : 4244)
 
 //#include <opengl/opengl.h>
 

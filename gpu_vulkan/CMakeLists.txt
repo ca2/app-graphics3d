@@ -61,7 +61,7 @@ list(APPEND library_source
 
    #gltf_model.cpp
    #gltf_model.h
-   _tinygltf.cpp
+   #aaa_tinygltf.cpp
    vkresult_exception.cpp
    vkresult_exception.h     #image_directx.cpp
 
@@ -180,10 +180,8 @@ elseif (${LINUX} OR ${__BSD__} OR ${ANDROID})
         list(APPEND extra_pkg_modules gl osmesa)
     endif ()
 
-    #if (USE_PKGCONFIG)
-    pkg_check_modules(PKGCONFIG glew egl assimp ${extra_pkg_modules})
+    pkg_check_modules(PKGCONFIG vulkan assimp ${extra_pkg_modules})
 
-    #endif ()
     target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive ${EXTRA_CXX_TARGET_COMPILER_OPTIONS}>)
     target_compile_options(static_${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fpermissive ${EXTRA_CXX_TARGET_COMPILER_OPTIONS}>)
     target_compile_definitions(static_${PROJECT_NAME} PRIVATE CUBE)

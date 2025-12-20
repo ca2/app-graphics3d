@@ -31,14 +31,9 @@
 #include "gpu_opengl/renderer.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
+#ifdef WINDOWS_DESKTOP
 #include "windowing_win32/window.h"
-//
-//
-//
-#include <math.h>
 #include <dwmapi.h>
-#include "acme/prototype/geometry2d/_defer_item.h"
-//#include <gl/freeglut.h>
 #define GLAD_GLAPI_EXPORT
 
 #include <glad/glad_wgl.h>
@@ -47,12 +42,20 @@
 #define WGL_CONTEXT_PROFILE_MASK_ARB 0x9126
 #define FONT_POINT_DENOMINATOR 28.0
 #define FONT_PIXEL_DENOMINATOR 35.0
+HGLRC initialize_opengl_version(HDC hdc, int iMajor, int iMinor);
+#endif
+//
+//
+//
+#include <math.h>
+#include "acme/prototype/geometry2d/_defer_item.h"
+//#include <gl/freeglut.h>
 //int  opengl_init();
 
 #define __expand_float_pre_rgba(color) (color.f32_opacity()*color.f32_red()),(color.f32_opacity()* color.f32_green()), (color.f32_opacity()*color.f32_blue()), color.f32_opacity()
 
 
-HGLRC initialize_opengl_version(HDC hdc, int iMajor, int iMinor);
+
 
 
 namespace opengl
@@ -62,9 +65,9 @@ namespace opengl
 
 }
 
-
+#ifdef WINDOWS_DESKTOP
 BOOL CALLBACK draw2d_opengl_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p);
-
+#endif
 
 class draw2d_opengl_enum_fonts
 {

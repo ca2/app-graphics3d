@@ -293,7 +293,7 @@ namespace gpu_vulkan
 
    floating_sequence3 front(const ::graphics3d::floating_rotation &rotation) override;
 
-   void load_ktxTexture(::pointer<::gpu::texture> &ptexture, void *p_ktxTexture) override;
+   void load_ktxTexture(::gpu::texture * pgputexture, void *p_ktxTexture) override;
 
    };
 

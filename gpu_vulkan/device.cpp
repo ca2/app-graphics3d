@@ -673,13 +673,13 @@ namespace gpu_vulkan
    //   //m_iMatrixUniform = uniformMatrix.m_iUniform;
 
    //}
-
-   ::pointer < ::gpu::device > allocate_system_context(::particle* pparticle)
-   {
-
-      return pparticle->øcreate_new <device>();
-
-   }
+   //
+   // ::pointer < ::gpu::device > allocate_system_context(::particle* pparticle)
+   // {
+   //
+   //    return pparticle->øcreate_new <device>();
+   //
+   // }
 
 
    //device::device()
