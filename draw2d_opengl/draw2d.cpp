@@ -5,6 +5,10 @@
 #include "acme/platform/application.h"
 #include "acme/prototype/prototype/memory.h"
 
+
+
+#ifdef WINDOWS
+
 int g_iDpiY = -1;
 int get_y_dpi()
 {
@@ -25,7 +29,7 @@ int get_y_dpi()
    return g_iDpiY;
 }
 
-
+#endif
 
 //CLASS_DECL_DRAW2D_OPENGL void initialize_opengl();
 //CLASS_DECL_DRAW2D_OPENGL void terminate_opengl();
@@ -239,11 +243,11 @@ namespace draw2d_opengl
 
    //}
 
-
-   LRESULT CALLBACK opengl_window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
-   {
-      return DefWindowProc(hwnd, message, wparam, lparam);
-   }
+   //
+   // LRESULT CALLBACK opengl_window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
+   // {
+   //    return DefWindowProc(hwnd, message, wparam, lparam);
+   // }
 
 
    int  draw2d::opengl_init()

@@ -48,14 +48,14 @@ float LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.00f };
 //
 //#endif
 
-#include <assert.h>
-#ifdef WINDOWS
-#include <tchar.h>
-#endif // WINDOWS
-#ifdef  assert
-#define verify(expr) if(!expr) assert(0)
-#else verify(expr) expr
-#endif
+// #include <assert.h>
+// #ifdef WINDOWS
+// #include <tchar.h>
+// #endif // WINDOWS
+// #ifdef  assert
+// #define verify(expr) if(!expr) assert(0)
+// #else verify(expr) expr
+// #endif
 
 namespace draw2d_nanovg
 {
@@ -165,7 +165,7 @@ namespace draw2d_nanovg
       return 0;
 
    }
-   unsigned int bitmap::GetBitmapBits(unsigned int dwCount, LPVOID lpBits) const
+   unsigned int bitmap::GetBitmapBits(unsigned int dwCount, void * lpBits) const
    {
       //return ::GetBitmapBits((HBITMAP)get_handle(), dwCount, lpBits);
       return 0;
@@ -238,12 +238,12 @@ namespace draw2d_nanovg
    }
 
 
-   int bitmap::GetBitmap(BITMAP* pBitMap)
-   {
-      //   ASSERT(get_handle() != nullptr);
-      // return ::GetObject(get_handle(), sizeof(BITMAP), pBitMap);
-      return 0;
-   }
+   // int bitmap::GetBitmap(BITMAP* pBitMap)
+   // {
+   //    //   ASSERT(get_handle() != nullptr);
+   //    // return ::GetObject(get_handle(), sizeof(BITMAP), pBitMap);
+   //    return 0;
+   // }
 
 
    /////////////////////////////////////////////////////////////////////////////
@@ -310,31 +310,31 @@ namespace draw2d_nanovg
    }
 
 
-   HBITMAP bitmap::_GetHBITMAP()
-   {
-
-      //if(m_pbitmap == nullptr)
-      //   return nullptr;
-      //
-      //HBITMAP hbitmap = nullptr;
-
-      //plusplus::Color colorBk(0,0,0,0);
-
-      //m_pbitmap->GetHBITMAP(colorBk,&hbitmap);
-
-      //return hbitmap;
-      return nullptr;
-
-   }
-
-
-   void bitmap::_ReleaseHBITMAP(HBITMAP hbitmap)
-   {
-
-      ::DeleteObject(hbitmap);
-
-
-   }
+   // HBITMAP bitmap::_GetHBITMAP()
+   // {
+   //
+   //    //if(m_pbitmap == nullptr)
+   //    //   return nullptr;
+   //    //
+   //    //HBITMAP hbitmap = nullptr;
+   //
+   //    //plusplus::Color colorBk(0,0,0,0);
+   //
+   //    //m_pbitmap->GetHBITMAP(colorBk,&hbitmap);
+   //
+   //    //return hbitmap;
+   //    return nullptr;
+   //
+   // }
+   //
+   //
+   // void bitmap::_ReleaseHBITMAP(HBITMAP hbitmap)
+   // {
+   //
+   //    ::DeleteObject(hbitmap);
+   //
+   //
+   // }
 
 
    void bitmap::destroy_bitmap()
@@ -678,7 +678,7 @@ namespace draw2d_nanovg
       //   Cleanup();
       //   return false;
       //}
-      ::DestroyWindow(m_hwnd);
+      //::DestroyWindow(m_hwnd);
       return true;
    }
 

@@ -47,15 +47,15 @@ GLfloat LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.00f };
 //
 //
 //#endif
-
-#include <assert.h>
-#ifdef WINDOWS
-#include <tchar.h>
-#endif // WINDOWS
-#ifdef  assert
-#define verify(expr) if(!expr) assert(0)
-#else verify(expr) expr
-#endif
+//
+// #include <assert.h>
+// #ifdef WINDOWS
+// #include <tchar.h>
+// #endif // WINDOWS
+// #ifdef  assert
+// #define verify(expr) if(!expr) assert(0)
+// #else verify(expr) expr
+// #endif
 
 namespace draw2d_opengl
 {
@@ -554,6 +554,7 @@ namespace draw2d_opengl
    void bitmap::defer_reveal()
    {
 
+#ifdef WINDOWS_DESKTOP
       if (m_bFlashed)
       {
 
@@ -579,7 +580,7 @@ namespace draw2d_opengl
          information("error " + ::as_string((int)e));
 
       }
-
+#endif
    }
 
 
@@ -632,7 +633,7 @@ namespace draw2d_opengl
 
 
       return true;
-#else
+#elif defined(WITH_X11) && !defined(DESKTOP_ENVIRONMENT_GNOME)
 
 
 
@@ -686,6 +687,11 @@ namespace draw2d_opengl
 
       glXMakeContextCurrent(dpy, PBuffer, PBuffer, PBufferCtx);
 
+#else
+
+
+      throw todo;
+
 #endif
    }
 
@@ -704,7 +710,7 @@ namespace draw2d_opengl
       //   Cleanup();
       //   return false;
       //}
-      ::DestroyWindow(g_hWnd);
+      //::DestroyWindow(g_hWnd);
       return true;
    }
 

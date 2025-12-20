@@ -7,7 +7,7 @@ project(_app_graphics3d_continuum CXX)
 list(APPEND application_source main.cpp)
 
 
-if(MSVC)
+if(${WIN32})
     list(APPEND application_source ../deployment.rc main.rc)
 endif()
 
@@ -28,6 +28,7 @@ set(LOCAL_APPID ${LOCAL_ROOT_FOLDER_NAME}/${LOCAL_APP_FOLDER_NAME})
 
 message(STATUS "_pbr-renderer LOCAL_APPID is ${LOCAL_APPID}")
 
+if(${WIN32})
 # Create zip
 add_custom_command(
    OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../_matter.zip"
@@ -42,6 +43,7 @@ set_source_files_properties(
    PROPERTIES
    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../_matter.zip"
 )
+endif()
 
 list(APPEND executable_references
         acme

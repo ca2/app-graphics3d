@@ -68,10 +68,12 @@ namespace opengl
 }
 
 
-
+#ifdef WINDOWS_DESKTOP
 
 
 BOOL CALLBACK draw2d_nanovg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p);
+
+#endif
 
 
 class draw2d_nanovg_enum_fonts
@@ -663,12 +665,12 @@ namespace draw2d_nanovg
    }
 
 
-   int graphics::EnumObjects(int nObjectType, int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData)
-   {
-      // ASSERT(m_hdc != nullptr);
-      //return ::EnumObjects(m_hdc, nObjectType, (GOBJENUMPROC)lpfn, lpData);
-      return 0;
-   }
+   // int graphics::EnumObjects(int nObjectType, int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData)
+   // {
+   //    // ASSERT(m_hdc != nullptr);
+   //    //return ::EnumObjects(m_hdc, nObjectType, (GOBJENUMPROC)lpfn, lpData);
+   //    return 0;
+   // }
 
    ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pbitmap)
    {

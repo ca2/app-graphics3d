@@ -20,9 +20,9 @@ namespace draw2d_nanovg
    public:
 
 
-      HBITMAP                          m_hbitmap;
-      class ::long_long_size                   m_sizeWnd;
-      BITMAPINFO                       m_bitmapinfo;
+      //HBITMAP                          m_hbitmap;
+      //class ::long_long_size                   m_sizeWnd;
+      //BITMAPINFO                       m_bitmapinfo;
       OffscreenContext *               m_phost;
 
 
