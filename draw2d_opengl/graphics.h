@@ -212,7 +212,7 @@ namespace draw2d_opengl
       int SetGraphicsMode(int iMode);
       int GetGraphicsMode() const;
 
-      // // World transform
+      // World transform
       // bool SetWorldTransform(const XFORM* pXform);
       // bool ModifyWorldTransform(const XFORM* pXform,unsigned int iMode);
       // bool GetWorldTransform(XFORM* pXform) const;
