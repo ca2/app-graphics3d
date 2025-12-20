@@ -5,16 +5,16 @@
 
 
 void resizeBilinear(memory & m, int w2, int h2, int * pixels, int w, int h);
-#ifdef WITH_X11
-Display * x11_get_display();
-#endif
-#ifdef LINUX
-#define WIDTH 3200
-#define HEIGHT 1800
-
-const int sbAttrib[] = { VKX_DOUBLEBUFFER, 0, VKX_RED_SIZE, 1,VKX_GREEN_SIZE, 1, VKX_BLUE_SIZE, 1,VKX_ALPHA_SIZE, 1, VKX_DEPTH_SIZE, 16,None };
-int pbAttrib[] = { VKX_PBUFFER_WIDTH, WIDTH,VKX_PBUFFER_HEIGHT, HEIGHT,VKX_PRESERVED_CONTENTS, True,None };
-#endif
+// #ifdef WITH_X11
+// Display * x11_get_display();
+// #endif
+// #ifdef LINUX
+// #define WIDTH 3200
+// #define HEIGHT 1800
+//
+// const int sbAttrib[] = { VKX_DOUBLEBUFFER, 0, VKX_RED_SIZE, 1,VKX_GREEN_SIZE, 1, VKX_BLUE_SIZE, 1,VKX_ALPHA_SIZE, 1, VKX_DEPTH_SIZE, 16,None };
+// int pbAttrib[] = { VKX_PBUFFER_WIDTH, WIDTH,VKX_PBUFFER_HEIGHT, HEIGHT,VKX_PRESERVED_CONTENTS, True,None };
+// #endif
 
 //extern CLASS_DECL_AXIS thread_int_ptr < DWORD_PTR > t_time1;
 float LightAmbient[] = { 0.5f, 0.5f, 0.5f, 1.00f };
@@ -64,8 +64,8 @@ namespace draw2d_nanovg
    bitmap::bitmap()
    {
 
-      m_hwnd = nullptr;
-      m_hinstance = nullptr;
+      //m_hwnd = nullptr;
+      //m_hinstance = nullptr;
       m_bTexture = false;
       m_bPBuffer = false;
       m_bFlashed = false;
@@ -98,13 +98,13 @@ namespace draw2d_nanovg
 
    }
 
-   bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap)
-   {
-
-      __UNREFERENCED_PARAMETER(pgraphics);
-
-      return false;
-   }
+   // bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap)
+   // {
+   //
+   //    __UNREFERENCED_PARAMETER(pgraphics);
+   //
+   //    return false;
+   // }
 
 
    void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::int_size& size, void** ppcolorref, int* piScan)

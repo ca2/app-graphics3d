@@ -96,13 +96,13 @@ namespace draw2d_opengl
 
    }
 
-   bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap)
-   {
-
-      __UNREFERENCED_PARAMETER(pgraphics);
-
-      return false;
-   }
+   // bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap)
+   // {
+   //
+   //    __UNREFERENCED_PARAMETER(pgraphics);
+   //
+   //    return false;
+   // }
 
 
    void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::int_size& size, void** ppcolorref, int* piScan)
@@ -161,7 +161,7 @@ namespace draw2d_opengl
       return 0;
 
    }
-   unsigned int bitmap::GetBitmapBits(unsigned int dwCount, LPVOID lpBits) const
+   unsigned int bitmap::GetBitmapBits(unsigned int dwCount, void * lpBits) const
    {
       //return ::GetBitmapBits((HBITMAP)get_handle(), dwCount, lpBits);
       return 0;
@@ -234,12 +234,12 @@ namespace draw2d_opengl
    }
 
 
-   int bitmap::GetBitmap(BITMAP* pBitMap)
-   {
-      //   ASSERT(get_handle() != nullptr);
-      // return ::GetObject(get_handle(), sizeof(BITMAP), pBitMap);
-      return 0;
-   }
+   // int bitmap::GetBitmap(BITMAP* pBitMap)
+   // {
+   //    //   ASSERT(get_handle() != nullptr);
+   //    // return ::GetObject(get_handle(), sizeof(BITMAP), pBitMap);
+   //    return 0;
+   // }
 
 
    /////////////////////////////////////////////////////////////////////////////
@@ -306,31 +306,31 @@ namespace draw2d_opengl
    }
 
 
-   HBITMAP bitmap::_GetHBITMAP()
-   {
-
-      //if(m_pbitmap == nullptr)
-      //   return nullptr;
-      //
-      //HBITMAP hbitmap = nullptr;
-
-      //plusplus::Color colorBk(0,0,0,0);
-
-      //m_pbitmap->GetHBITMAP(colorBk,&hbitmap);
-
-      //return hbitmap;
-      return nullptr;
-
-   }
-
-
-   void bitmap::_ReleaseHBITMAP(HBITMAP hbitmap)
-   {
-
-      ::DeleteObject(hbitmap);
-
-
-   }
+   // HBITMAP bitmap::_GetHBITMAP()
+   // {
+   //
+   //    //if(m_pbitmap == nullptr)
+   //    //   return nullptr;
+   //    //
+   //    //HBITMAP hbitmap = nullptr;
+   //
+   //    //plusplus::Color colorBk(0,0,0,0);
+   //
+   //    //m_pbitmap->GetHBITMAP(colorBk,&hbitmap);
+   //
+   //    //return hbitmap;
+   //    return nullptr;
+   //
+   // }
+   //
+   //
+   // void bitmap::_ReleaseHBITMAP(HBITMAP hbitmap)
+   // {
+   //
+   //    ::DeleteObject(hbitmap);
+   //
+   //
+   // }
 
    void bitmap::destroy_bitmap()
    {
@@ -338,18 +338,18 @@ namespace draw2d_opengl
       m_bTexture = false;
       m_bPBuffer = false;
 
-      if (g_hDC)
-      {
-         if (g_hRC)
-         {
-            wglMakeCurrent(g_hDC, 0);
-            wglDeleteContext(g_hRC);
-            g_hRC = 0;
-         }
-
-         DeleteDC(g_hDC);
-         g_hDC = 0;
-      }
+      // if (g_hDC)
+      // {
+      //    if (g_hRC)
+      //    {
+      //       wglMakeCurrent(g_hDC, 0);
+      //       wglDeleteContext(g_hRC);
+      //       g_hRC = 0;
+      //    }
+      //
+      //    DeleteDC(g_hDC);
+      //    g_hDC = 0;
+      // }
 
 
    }

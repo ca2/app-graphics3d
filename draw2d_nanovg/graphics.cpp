@@ -32,16 +32,19 @@
 #include "aura/user/user/interaction.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/swap_chain.h"
-#include "windowing_win32/window.h"
 #include "aura/graphics/write_text/text_out.h"
 #include "aura/graphics/write_text/draw_text.h"
 #include "acme/prototype/geometry2d/_defer_item.h"
 #include "aura/graphics/write_text/_defer_geometry2d_item.h"
 
+#if defined(WINDOWS_DESKTOP)
+#include "windowing_win32/window.h"
+#include <dwmapi.h>
+#endif
 #define NANOVG_GL3
 #include <nanovg_gl.h>
 #include <math.h>
-#include <dwmapi.h>
+
 ////#include <vk/freeglut.h>
 //#define VKAD_GLAPI_EXPORT
 

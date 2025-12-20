@@ -402,8 +402,8 @@ namespace draw2d_opengl
 //                  int nWidth, int nHeight, ::draw2d::bitmap& maskBitmap, int xMask, int yMask);
       void SetPixelV(int x, int y, ::color::color crColor);
       void SetPixelV(const ::int_point & point, ::color::color crColor);
-      bool GradientFill(TRIVERTEX* pVertices, ULONG nVertices,
-                        void * pMesh, ULONG nMeshElements, unsigned int dwMode);
+      // bool GradientFill(TRIVERTEX* pVertices, ULONG nVertices,
+      //                   void * pMesh, ULONG nMeshElements, unsigned int dwMode);
       void TransparentBlt(int xDest, int yDest, int nDestWidth, int nDestHeight,
                           ::draw2d::graphics * pgraphicsSrc, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight,
                           unsigned int clrTransparent);
@@ -553,7 +553,7 @@ namespace draw2d_opengl
       void SelectClipPath(int nMode);
 
       // Misc Helper Functions
-      static ::draw2d::brush* GetHalftoneBrush();
+      ///static ::draw2d::brush* GetHalftoneBrush();
       //void DrawDragRect(const ::int_rectangle & rectangle, const ::int_size & size,
       //                  const ::int_rectangle & lpRectLast, const ::int_size & sizeLast,
       //                  ::draw2d::brush* pBrush = nullptr, ::draw2d::brush* pBrushLast = nullptr);

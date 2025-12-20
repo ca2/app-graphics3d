@@ -11,8 +11,8 @@ namespace draw2d_nanovg
 
       //m_pfont     = nullptr;
       //m_bUpdated = false;
-      m_hdcFont = nullptr;
-      m_hfont = nullptr;
+    //  m_hdcFont = nullptr;
+//      m_hfont = nullptr;
       //m_baseFont = 0;
 
 
@@ -34,14 +34,14 @@ namespace draw2d_nanovg
    font::~font()
    {
 
-      if (m_hdcFont != nullptr)
-      {
-
-         ::DeleteDC(m_hdcFont);
-         ::DeleteObject(m_hfont);
-         //vkDeleteLists(m_baseFont, 256);
-
-      }
+      // if (m_hdcFont != nullptr)
+      // {
+      //
+      //    ::DeleteDC(m_hdcFont);
+      //    ::DeleteObject(m_hfont);
+      //    //vkDeleteLists(m_baseFont, 256);
+      //
+      // }
 
    }
 

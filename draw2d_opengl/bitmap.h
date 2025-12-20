@@ -27,7 +27,7 @@
 #define WGL_PBUFFER_LOST_ARB                      0x2036
 #define WGL_PBUFFER_WIDTH_ARB                     0x2034
 
-DECLARE_HANDLE(HPBUFFERARB);
+///DECLARE_HANDLE(HPBUFFERARB);
 
 
 //-----------------------------------------------------------------------------
@@ -170,7 +170,7 @@ namespace draw2d_opengl
       bool LoadBitmap(unsigned int nIDResource);
       bool LoadOEMBitmap(unsigned int nIDBitmap); // for OBM_/OCR_/OIC_
       bool CreateBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight, unsigned int nPlanes, unsigned int nBitcount, const void * lpBits, int stride);
-      bool CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap);
+      //bool CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap);
       void CreateCompatibleBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       void CreateDiscardableBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       
@@ -178,11 +178,11 @@ namespace draw2d_opengl
       void CreateDIBitmap(::draw2d::graphics * pgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
 
 
-      int GetBitmap(BITMAP* pBitMap);
+      //int GetBitmap(BITMAP* pBitMap);
 
 
       unsigned int SetBitmapBits(unsigned int dwCount, const void * lpBits);
-      unsigned int GetBitmapBits(unsigned int dwCount, LPVOID lpBits) const;
+      unsigned int GetBitmapBits(unsigned int dwCount, void * lpBits) const;
       ::int_size SetBitmapDimension(int nWidth, int nHeight);
       ::int_size GetBitmapDimension() const;
 
@@ -192,8 +192,8 @@ namespace draw2d_opengl
       //virtual void attach(void * posdata);
       virtual void * detach();
 
-      virtual HBITMAP _GetHBITMAP();
-      virtual void _ReleaseHBITMAP(HBITMAP hbitmap);
+      //virtual HBITMAP _GetHBITMAP();
+      //virtual void _ReleaseHBITMAP(HBITMAP hbitmap);
 
    };
 
