@@ -184,15 +184,15 @@ namespace graphics3d_opengl
 //                           // Pick pipeline by alpha mode
 //            switch (pmesh->m_pmaterial->alphaMode)
 //            {
-//               case ::gpu::gltf::material::ALPHAMODE_OPAQUE:
+//               case ::gpu::model::material::ALPHAMODE_OPAQUE:
 //                  bChangedShader = pgpucontext->defer_bind(m_pshaderOpaque);
 //                  m_pshaderOpaque->set_int("useAlphaMask", 0);
 //                  break;
-//               case ::gpu::gltf::material::ALPHAMODE_MASK:
+//               case ::gpu::model::material::ALPHAMODE_MASK:
 //                  bChangedShader = pgpucontext->defer_bind(m_pshaderMask);
 //                  m_pshaderBlend->set_int("useAlphaMask", 1);
 //                  break;
-//               case ::gpu::gltf::material::ALPHAMODE_BLEND:
+//               case ::gpu::model::material::ALPHAMODE_BLEND:
 //               default:
 //                  bChangedShader = pgpucontext->defer_bind(m_pshaderBlend);
 //                  m_pshaderBlend->set_int("useAlphaMask", 0);

@@ -202,7 +202,7 @@ namespace graphics3d
       
        int iRenderable = -1;
 
-       ::gpu::gltf::material::AlphaMode alphamodeLast = ::gpu::gltf::material::ALPHAMODE_NONE;
+       ::gpu::model::material::AlphaMode alphamodeLast = ::gpu::model::material::ALPHAMODE_NONE;
        ::cast<::gpu::shader> pshader;
       
        for (auto &[id, pscenerenderableItem]: scenerenderables)
@@ -245,7 +245,7 @@ namespace graphics3d
           
 
 
-          ::cast<::gpu::gltf::model> pgltfmodel = prenderable;
+          ::cast<::gpu::model::model> pgltfmodel = prenderable;
       
           if (!pgltfmodel)
              continue;
@@ -291,13 +291,13 @@ namespace graphics3d
                 // Pick pipeline by alpha mode
                 switch (ealphamode)
                 {
-                   case ::gpu::gltf::material::ALPHAMODE_OPAQUE:
+                   case ::gpu::model::material::ALPHAMODE_OPAQUE:
                       pframe->m_pgpucommandbuffer->set_shader(m_pshaderOpaque);
                       break;
-                   case ::gpu::gltf::material::ALPHAMODE_MASK:
+                   case ::gpu::model::material::ALPHAMODE_MASK:
                       pframe->m_pgpucommandbuffer->set_shader(m_pshaderMask);
                       break;
-                   case ::gpu::gltf::material::ALPHAMODE_BLEND:
+                   case ::gpu::model::material::ALPHAMODE_BLEND:
                    default:
                       pframe->m_pgpucommandbuffer->set_shader(m_pshaderBlend);
                       break;
@@ -360,13 +360,13 @@ namespace graphics3d
       
                 pshader->set_matrix4("modelMatrix", world);
                 pshader->set_matrix4("normalMatrix", normalMat);
-                bool bAlbedo = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_albedo].is_set();
+                bool bAlbedo = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_albedo].is_set();
                 bAlbedo = bAlbedo && !m_bDisableAlbedo;
                 pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
 
                 if (m_erendersystem == ::graphics3d::e_render_system_gltf_scene)
                 {
-                   if (ealphamode == ::gpu::gltf::material::ALPHAMODE_MASK)
+                   if (ealphamode == ::gpu::model::material::ALPHAMODE_MASK)
                    {
                       pshader->set_int("useAlphaMask", 1);
                       pshader->set_float("alphaMaskCutoff", 0.5f);
@@ -395,13 +395,13 @@ namespace graphics3d
       
                 pshader->set_sequence3("albedo", seq3Albedo);
       
-                bool bMetallicRoughness = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_metallic_roughness].is_set();
+                bool bMetallicRoughness = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_metallic_roughness].is_set();
                 bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
                 if (m_bImplMetallic)
                 {
                    pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
                 }
-                bool bNormal = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_normal].is_set();
+                bool bNormal = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_normal].is_set();
       
                 float fMetallic = 0.0f;
                 if (prendersystem->m_bForceDefaultMetallicFactor)
@@ -430,7 +430,7 @@ namespace graphics3d
       
                 bNormal = bNormal && !m_bDisableNormal;
                 pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
-                bool bAmbientOcclusion = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_ambient_occlusion].is_set();
+                bool bAmbientOcclusion = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_ambient_occlusion].is_set();
                 bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
                 if (m_bImplAO)
                 {
@@ -474,7 +474,7 @@ namespace graphics3d
                 pshader->set_sequence3("multiplier", seq3);
       
       
-                bool bEmissive = pmesh->m_pmaterial->m_textureaPbr[::gpu::gltf::e_texture_emissive].is_set();
+                bool bEmissive = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_emissive].is_set();
                 bEmissive = bEmissive && !m_bDisableEmissive;
                 if (m_bImplEmissive)
                 {

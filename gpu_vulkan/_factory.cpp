@@ -87,9 +87,9 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
    pfactory->add_factory_item<::gpu_vulkan::binding_slot_set, ::gpu::binding_slot_set>();
    pfactory->add_factory_item<::gpu_vulkan::block, ::gpu::block>();
 
-   pfactory->add_factory_item<::gpu_vulkan::gltf::mesh, ::gpu::gltf::mesh>();
-   pfactory->add_factory_item<::gpu_vulkan::gltf::model, ::gpu::gltf::model>();
-   //pfactory->add_factory_item<::gpu_vulkan::gltf::node, ::gpu::gltf::node>();
+   pfactory->add_factory_item<::gpu_vulkan::gltf::mesh, ::gpu::model::mesh>();
+   pfactory->add_factory_item<::gpu_vulkan::gltf::model, ::gpu::model::model>();
+   //pfactory->add_factory_item<::gpu_vulkan::gltf::node, ::gpu::model::node>();
    
 
 }

@@ -250,7 +250,7 @@ namespace graphics3d_vulkan
    //         if (!prenderable || prenderable->m_erenderabletype != ::gpu::e_renderabled_type_gltf)
    //) continue;
    //
-   //         ::cast<::gpu::gltf::Model> model = baseModel;
+   //         ::cast<::gpu::model::Model> model = baseModel;
    //
    //         if (!prenderable)
    //            continue;

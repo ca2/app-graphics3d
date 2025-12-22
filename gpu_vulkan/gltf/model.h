@@ -3,14 +3,11 @@
 
 #pragma once
 
-#include <assimp/Importer.hpp>
-#include <assimp/material.h>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-//#include "stb_image/stb_image.h"
-
-//#include <map>
-#include "gpu/gltf/model.h"
+//#include <assimp/Importer.hpp>
+//#include <assimp/material.h>
+//#include <assimp/postprocess.h>
+//#include <assimp/scene.h>
+#include "gpu/model/model.h"
 #include "gpu_opengl/gltf/mesh.h"
 
 
@@ -24,7 +21,7 @@ namespace gpu_vulkan
        * A collection of meshes.
        */
       class model :
-         virtual public ::gpu::gltf::model
+         virtual public ::gpu::model::model
       {
       public:
 
@@ -56,7 +53,7 @@ namespace gpu_vulkan
           * present in the model file.
           * @param path
           */
-         //void load_gltf_model(const ::scoped_string &scopedstr, ::gpu::gltf::material *pmaterial, bool flipTexturesVertically);
+         //void load_gltf_model(const ::scoped_string &scopedstr, ::gpu::model::material *pmaterial, bool flipTexturesVertically);
 
 
          //Model(::string path, std::shared_ptr<Material> material, bool flipTexturesVertically);
@@ -73,7 +70,7 @@ namespace gpu_vulkan
 
 
          // convert assimp mesh to our own mesh class
-         //::pointer < ::gpu::gltf::mesh > processMesh(aiMesh *mesh, const aiScene *scene) override;
+         //::pointer < ::gpu::model::mesh > processMesh(aiMesh *mesh, const aiScene *scene) override;
 
 
          // loads the first texture of given type

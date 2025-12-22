@@ -279,7 +279,7 @@ namespace gpu_vulkan
   //    /// @return lutBrdf
   //    virtual ::pointer < ::gpu::texture > generateBRDFlut();
 
-      ::pointer<::graphics3d::renderable> _load_gltf_model(const ::gpu::renderable_t & model) override;
+      ::pointer<::graphics3d::renderable> _load_model(const ::gpu::renderable_t & model) override;
 
 
       
@@ -288,7 +288,7 @@ namespace gpu_vulkan
                                          VkImageLayout newLayout, uint32_t mizLevels, uint32_t layerCount);
 
    void load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::file::path &path,
-                                int iAssimpTextureType) override;
+                                bool bSrgb) override;
       
 
    floating_sequence3 front(const ::graphics3d::floating_rotation &rotation) override;

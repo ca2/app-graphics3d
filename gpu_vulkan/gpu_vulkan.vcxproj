@@ -945,7 +945,6 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="_.cpp" />
     <ClCompile Include="_gpu_vulkan.cpp" />
-    <ClCompile Include="_tinygltf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="deployment.rc" />

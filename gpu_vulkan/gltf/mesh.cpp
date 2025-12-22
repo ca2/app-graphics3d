@@ -36,7 +36,7 @@ namespace gpu_vulkan
 
 
       //void mesh::initialize_gpu_gltf_mesh(const ::array_base<::gpu::gltf::vertex> &vertexa,
-      //                             const ::unsigned_int_array &indexa, ::gpu::gltf::material *pmaterial)
+      //                             const ::unsigned_int_array &indexa, ::gpu::model::material *pmaterial)
       //{
 
       //   m_vertexa = vertexa;
@@ -303,7 +303,7 @@ namespace gpu_vulkan
       void mesh::on_initialize_gpu_gltf_mesh()
       {
 
-         ::gpu::gltf::mesh::on_initialize_gpu_gltf_mesh();
+         ::gpu::model::mesh::on_initialize_gpu_gltf_mesh();
 
          // // create our data structures
          // glGenVertexArrays(1, &mVAO);

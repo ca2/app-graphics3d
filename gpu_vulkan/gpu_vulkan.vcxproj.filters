@@ -334,9 +334,6 @@
     <ClCompile Include="queue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="_tinygltf.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="vkresult_exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
