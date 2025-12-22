@@ -35,7 +35,7 @@ list(APPEND library_references
         axis
         berg
         bred
-        imgui
+        #imgui
         gpu_opengl
    graphics3d
         graphics3d_khronos

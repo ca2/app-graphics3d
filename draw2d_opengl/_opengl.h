@@ -13,7 +13,9 @@
 //#include <GL/glu.h>
 //#include <GL/glext.h>
 #ifdef LINUX
-#include <GL/glx.h>
+//#include <GL/glx.h>
+//#define GLAD_GLAPI_EXPORT
+#include <glad/glad.h>
 #endif
 
 #endif

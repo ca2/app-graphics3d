@@ -45,6 +45,8 @@
 #define FONT_POINT_DENOMINATOR 28.0
 #define FONT_PIXEL_DENOMINATOR 35.0
 HGLRC initialize_opengl_version(HDC hdc, int iMajor, int iMinor);
+#else
+#include "aura/windowing/window.h"
 #endif
 //
 //
@@ -4760,7 +4762,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    unsigned int graphics::SetTextAlign(unsigned int nFlags)
    {
 
-      unsigned int nRetVal = GDI_ERROR;
+      //unsigned int nRetVal = GDI_ERROR;
+
+      unsigned int nRetVal = 1;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::SetTextAlign(m_hdc, nFlags);
@@ -4821,30 +4825,30 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   typedef unsigned int (CALLBACK* __GDIGETLAYOUTPROC)(HDC);
-   typedef unsigned int (CALLBACK* __GDISETLAYOUTPROC)(HDC, unsigned int);
+   // typedef unsigned int (CALLBACK* __GDIGETLAYOUTPROC)(HDC);
+   // typedef unsigned int (CALLBACK* __GDISETLAYOUTPROC)(HDC, unsigned int);
 
    unsigned int graphics::GetLayout() const
    {
 
-      HINSTANCE hInst = ::GetModuleHandleA("GDI32.DLL");
-
-      ASSERT(hInst != nullptr);
-
-      /*      unsigned int dwGetLayout = LAYOUT_LTR;
-            __GDIGETLAYOUTPROC pfn;
-            pfn = (__GDIGETLAYOUTPROC) GetProcAddress(hInst, "GetLayout");
-            // if they API is available, just call it. If it is not
-            // available, indicate an error.
-            if (pfn != nullptr)
-               dwGetLayout = (*pfn)(m_hdc);
-            else
-            {
-               dwGetLayout = GDI_ERROR;
-               set_last_error(ERROR_CALL_NOT_IMPLEMENTED);
-            }*/
-
-            //return dwGetLayout;
+      // HINSTANCE hInst = ::GetModuleHandleA("GDI32.DLL");
+      //
+      // ASSERT(hInst != nullptr);
+      //
+      // /*      unsigned int dwGetLayout = LAYOUT_LTR;
+      //       __GDIGETLAYOUTPROC pfn;
+      //       pfn = (__GDIGETLAYOUTPROC) GetProcAddress(hInst, "GetLayout");
+      //       // if they API is available, just call it. If it is not
+      //       // available, indicate an error.
+      //       if (pfn != nullptr)
+      //          dwGetLayout = (*pfn)(m_hdc);
+      //       else
+      //       {
+      //          dwGetLayout = GDI_ERROR;
+      //          set_last_error(ERROR_CALL_NOT_IMPLEMENTED);
+      //       }*/
+      //
+      //       //return dwGetLayout;
 
       return 0;
 
@@ -4953,16 +4957,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   bool graphics::SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust)
-   {
-      // ASSERT(m_hdc != nullptr);
-      bool bResult = false;
-      //if (m_hdc != m_hdc)
-      //   bResult = ::SetColorAdjustment(m_hdc, lpColorAdjust) != false;
-      //if (m_hdc != nullptr)
-      //   bResult = ::SetColorAdjustment(m_hdc, lpColorAdjust) != false;
-      return bResult;
-   }
+   // bool graphics::SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust)
+   // {
+   //    // ASSERT(m_hdc != nullptr);
+   //    bool bResult = false;
+   //    //if (m_hdc != m_hdc)
+   //    //   bResult = ::SetColorAdjustment(m_hdc, lpColorAdjust) != false;
+   //    //if (m_hdc != nullptr)
+   //    //   bResult = ::SetColorAdjustment(m_hdc, lpColorAdjust) != false;
+   //    return bResult;
+   // }
 
 
    void graphics::poly_bezier_to(const ::double_point* lpPoints, ::collection::count nCount)
@@ -5055,116 +5059,116 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   /////////////////////////////////////////////////////////////////////////////
-   // Special handling for metafile playback
-
-   double CALLBACK __enum_meta_file_procedure(HDC hDC,
-      HANDLETABLE* pHandleTable, METARECORD* pMetaRec, double nHandles, LPARAM lParam)
-   {
-      return 1;
-      //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)lParam;
-      //      ASSERT_VALID(pgraphics);
-      //
-      //      switch (pMetaRec->rdFunction)
-      //      {
-      //      // these records have effects different for each graphics derived class
-      //      case META_SETMAPMODE:
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SETWINDOWEXT:
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_window_ext(
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SETWINDOWORG:
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SetWindowOrg(
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SETVIEWPORTEXT:
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_context_extents(
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SETVIEWPORTORG:
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_origin(
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SCALEWINDOWEXT:
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->scale_window_ext(
-      //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SCALEVIEWPORTEXT:
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->scale_context_extents(
-      //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_OFFSETVIEWPORTORG:
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->offset_origin(
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SAVEDC:
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SaveDC();
-      //         break;
-      //      case META_RESTOREDC:
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SETBKCOLOR:
-      //      {
-      //         auto pbrush = øcreate < ::draw2d::brush >();
-      //         
-      //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
-      //      }
-      //      break;
-      //      case META_SETTEXTCOLOR:
-      //      {
-      //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
-      //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
-      //      }
-      //      break;
-      //
-      //      // need to watch out for SelectObject(HFONT), for custom font mapping
-      //      case META_SELECTOBJECT:
-      //      {
-      //         HGDIOBJ hObject = pHandleTable->objectHandle[pMetaRec->rdParm[0]];
-      //         unsigned int nObjType = GetObjectType(hObject);
-      //         if (nObjType == 0)
-      //         {
-      //            // object type is unknown, determine if it is a font
-      //            HFONT hStockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
-      //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hStockFont);
-      //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hObject);
-      //            if (hObjOld == hStockFont)
-      //            {
-      //               // got the stock object back, so must be selecting a font
-      //               throw ::not_implemented();
-      ////                  (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
-      //               break;  // don't play the default record
-      //            }
-      //            else
-      //            {
-      //               // didn't get the stock object back, so restore everything
-      //               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hFontOld);
-      //               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hObjOld);
-      //            }
-      //            // and fall through to PlayMetaFileRecord...
-      //         }
-      //         else if (nObjType == OBJ_FONT)
-      //         {
-      //            // play back as graphics::SelectObject(::write_text::font*)
-      ////               (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
-      //            throw ::not_implemented();
-      //            break;  // don't play the default record
-      //         }
-      //      }
-      //      // fall through...
-      //
-      //      default:
-      //         ::PlayMetaFileRecord(hDC, pHandleTable, pMetaRec, nHandles);
-      //         break;
-      //      }
-      //
-      //      return 1;
-   }
+   // /////////////////////////////////////////////////////////////////////////////
+   // // Special handling for metafile playback
+   //
+   // double CALLBACK __enum_meta_file_procedure(HDC hDC,
+   //    HANDLETABLE* pHandleTable, METARECORD* pMetaRec, double nHandles, LPARAM lParam)
+   // {
+   //    return 1;
+   //    //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)lParam;
+   //    //      ASSERT_VALID(pgraphics);
+   //    //
+   //    //      switch (pMetaRec->rdFunction)
+   //    //      {
+   //    //      // these records have effects different for each graphics derived class
+   //    //      case META_SETMAPMODE:
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SETWINDOWEXT:
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_window_ext(
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SETWINDOWORG:
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SetWindowOrg(
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SETVIEWPORTEXT:
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_context_extents(
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SETVIEWPORTORG:
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_origin(
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SCALEWINDOWEXT:
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->scale_window_ext(
+   //    //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SCALEVIEWPORTEXT:
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->scale_context_extents(
+   //    //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_OFFSETVIEWPORTORG:
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->offset_origin(
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SAVEDC:
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SaveDC();
+   //    //         break;
+   //    //      case META_RESTOREDC:
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SETBKCOLOR:
+   //    //      {
+   //    //         auto pbrush = øcreate < ::draw2d::brush >();
+   //    //
+   //    //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
+   //    //      }
+   //    //      break;
+   //    //      case META_SETTEXTCOLOR:
+   //    //      {
+   //    //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
+   //    //      }
+   //    //      break;
+   //    //
+   //    //      // need to watch out for SelectObject(HFONT), for custom font mapping
+   //    //      case META_SELECTOBJECT:
+   //    //      {
+   //    //         HGDIOBJ hObject = pHandleTable->objectHandle[pMetaRec->rdParm[0]];
+   //    //         unsigned int nObjType = GetObjectType(hObject);
+   //    //         if (nObjType == 0)
+   //    //         {
+   //    //            // object type is unknown, determine if it is a font
+   //    //            HFONT hStockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
+   //    //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hStockFont);
+   //    //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hObject);
+   //    //            if (hObjOld == hStockFont)
+   //    //            {
+   //    //               // got the stock object back, so must be selecting a font
+   //    //               throw ::not_implemented();
+   //    ////                  (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+   //    //               break;  // don't play the default record
+   //    //            }
+   //    //            else
+   //    //            {
+   //    //               // didn't get the stock object back, so restore everything
+   //    //               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hFontOld);
+   //    //               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hObjOld);
+   //    //            }
+   //    //            // and fall through to PlayMetaFileRecord...
+   //    //         }
+   //    //         else if (nObjType == OBJ_FONT)
+   //    //         {
+   //    //            // play back as graphics::SelectObject(::write_text::font*)
+   //    ////               (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+   //    //            throw ::not_implemented();
+   //    //            break;  // don't play the default record
+   //    //         }
+   //    //      }
+   //    //      // fall through...
+   //    //
+   //    //      default:
+   //    //         ::PlayMetaFileRecord(hDC, pHandleTable, pMetaRec, nHandles);
+   //    //         break;
+   //    //      }
+   //    //
+   //    //      return 1;
+   // }
 
 
    //bool graphics::PlayMetaFile(HMETAFILE hMF)
@@ -7118,7 +7122,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
 
 
-
+#ifdef WINDOWS_DESKTOP
 BOOL CALLBACK draw2d_opengl_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p)
 {
 
@@ -7143,7 +7147,7 @@ BOOL CALLBACK draw2d_opengl_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpnt
 
 }
 
-
+#endif
 
 
 

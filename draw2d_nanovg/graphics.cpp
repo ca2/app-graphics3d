@@ -40,6 +40,9 @@
 #if defined(WINDOWS_DESKTOP)
 #include "windowing_win32/window.h"
 #include <dwmapi.h>
+#else
+#include "aura/windowing/window.h"
+
 #endif
 #define NANOVG_GL3
 #include <nanovg_gl.h>
@@ -71,7 +74,7 @@ namespace opengl
 #ifdef WINDOWS_DESKTOP
 
 
-BOOL CALLBACK draw2d_nanovg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p);
+BOOL CALLBACK draw2d_nanovg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, void * p);
 
 #endif
 
@@ -426,7 +429,7 @@ namespace draw2d_nanovg
       //HWND hWndParent = nullptr;
       //HMENU hMenu = nullptr;
       /////HINSTANCE hInstance = psystem->m_hinstance;
-      //LPVOID lpParam = nullptr;
+      //void * lpParam = nullptr;
 
       ////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y,  nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
       //HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, nullptr, lpParam);
@@ -665,7 +668,7 @@ namespace draw2d_nanovg
    }
 
 
-   // int graphics::EnumObjects(int nObjectType, int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData)
+   // int graphics::EnumObjects(int nObjectType, int (CALLBACK* lpfn)(void *, LPARAM), LPARAM lpData)
    // {
    //    // ASSERT(m_hdc != nullptr);
    //    //return ::EnumObjects(m_hdc, nObjectType, (GOBJENUMPROC)lpfn, lpData);
@@ -823,29 +826,29 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::GetWorldTransform(XFORM* pXform) const
-   {
-
-
-
-      //m_pgraphics->GetTransform(((graphics *)this)->m_pm);
-
-      //plusplus::REAL ::double_rectangle[6];
-
-      //m_pm->GetElements(rectangle);
-
-      //pXform->eM11 = ::double_rectangle[0];
-      //pXform->eM12 = ::double_rectangle[1];
-      //pXform->eM21 = ::double_rectangle[2];
-      //pXform->eM22 = ::double_rectangle[3];
-
-      //pXform->eDx = ::double_rectangle[4];
-      //pXform->eDy = ::double_rectangle[5];
-
-
-      return true;
-
-   }
+   // bool graphics::GetWorldTransform(XFORM* pXform) const
+   // {
+   //
+   //
+   //
+   //    //m_pgraphics->GetTransform(((graphics *)this)->m_pm);
+   //
+   //    //plusplus::REAL ::double_rectangle[6];
+   //
+   //    //m_pm->GetElements(rectangle);
+   //
+   //    //pXform->eM11 = ::double_rectangle[0];
+   //    //pXform->eM12 = ::double_rectangle[1];
+   //    //pXform->eM21 = ::double_rectangle[2];
+   //    //pXform->eM22 = ::double_rectangle[3];
+   //
+   //    //pXform->eDx = ::double_rectangle[4];
+   //    //pXform->eDy = ::double_rectangle[5];
+   //
+   //
+   //    return true;
+   //
+   // }
 
    int_size graphics::get_context_extents() const
    {
@@ -1699,9 +1702,9 @@ namespace draw2d_nanovg
    //   //   if(::GetIconInfo((HICON)picon->m_picon,&ii))
    //   //   {
 
-   //   //      ::GetObject(ii.hbmColor,sizeof(biC),(LPVOID)&biC);
+   //   //      ::GetObject(ii.hbmColor,sizeof(biC),(void *)&biC);
 
-   //   //      ::GetObject(ii.hbmMask,sizeof(biM),(LPVOID)&biM);
+   //   //      ::GetObject(ii.hbmMask,sizeof(biM),(void *)&biM);
 
    //   //   }
 
@@ -2915,7 +2918,7 @@ namespace draw2d_nanovg
       //   return false;
 
       //}
-
+#if defined(WINDOWS_DESKTOP)
       ::pointer<font>pfont = m_pfont;
 
       TEXTMETRIC tm;
@@ -2925,6 +2928,9 @@ namespace draw2d_nanovg
       lpMetrics->m_dAscent = tm.tmAscent;
       lpMetrics->m_dHeight = tm.tmHeight;
       lpMetrics->m_dDescent = tm.tmDescent;
+
+#endif
+      
       //lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
 
       //if (m_pgraphics == nullptr)
@@ -3078,7 +3084,7 @@ namespace draw2d_nanovg
 
 
    // Printer Escape Functions
-   int graphics::Escape(int nEscape, int nCount, const ::scoped_string& lpszInData, LPVOID lpOutData)
+   int graphics::Escape(int nEscape, int nCount, const ::scoped_string& lpszInData, void * lpOutData)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::Escape(m_hdc, nEscape, nCount, lpszInData, lpOutData);
@@ -3145,7 +3151,7 @@ namespace draw2d_nanovg
    //}
 
 
-   //unsigned int graphics::GetFontData(unsigned int dwTable, unsigned int dwOffset, LPVOID lpData,
+   //unsigned int graphics::GetFontData(unsigned int dwTable, unsigned int dwOffset, void * lpData,
    //                               unsigned int cbData) const
    //{
    //   // ASSERT(m_hdc != nullptr);
@@ -3165,7 +3171,7 @@ namespace draw2d_nanovg
 
 
    //unsigned int graphics::GetGlyphOutline(unsigned int nChar, const ::e_align & ealign, const ::e_draw_text & edrawtext, LPGLYPHMETRICS lpgm,
-   //                                   unsigned int cbBuffer, LPVOID lpBuffer, const MAT2* lpmat2) const
+   //                                   unsigned int cbBuffer, void * lpBuffer, const MAT2* lpmat2) const
    //{
    //   // ASSERT(m_hdc != nullptr);
    //   //return ::GetGlyphOutline(m_hdc, nChar, nFormat,
@@ -3175,79 +3181,79 @@ namespace draw2d_nanovg
    //}
 
 
-   // ::user::document handling functions
-   int graphics::StartDoc(LPDOCINFO lpDocInfo)
-   {
-
-      //ASSERT(m_hdc != nullptr);
-
-      //return ::StartDoc(m_hdc, lpDocInfo);
-      return 0;
-
-   }
-
-
-   int graphics::StartPage()
-   {
-
-      //ASSERT(m_hdc != nullptr);
-
-      //::StartPage(m_hdc);
-
-      //m_pgraphics = ___new plusplus::Graphics (m_hdc);
-
-      //m_pgraphics->SetPageUnit(plusplus::UnitPixel);
-
-      return 1;
-
-   }
-
-
-   int graphics::EndPage()
-   {
-
-      /* ASSERT(m_hdc != nullptr);
-
-       delete m_pgraphics;
-
-      */
-      //return ::EndPage(m_hdc);
-      return 0;
-
-   }
-
-
-   int graphics::SetAbortProc(bool (CALLBACK* lpfn)(HDC, int))
-   {
-
-      //ASSERT(m_hdc != nullptr);
-
-      //return ::SetAbortProc(m_hdc, (ABORTPROC)lpfn);
-      return 0;
-
-   }
-
-
-   int graphics::AbortDoc()
-   {
-
-      //ASSERT(m_hdc != nullptr);
-
-      //return ::AbortDoc(m_hdc);
-      return 0;
-
-   }
-
-
-   int graphics::EndDoc()
-   {
-
-      //ASSERT(m_hdc != nullptr);
-
-      //return ::EndDoc(m_hdc);
-      return 0;
-
-   }
+//    // ::user::document handling functions
+//    int graphics::StartDoc(LPDOCINFO lpDocInfo)
+//    {
+//
+//       //ASSERT(m_hdc != nullptr);
+//
+//       //return ::StartDoc(m_hdc, lpDocInfo);
+//       return 0;
+//
+//    }
+//
+//
+//    int graphics::StartPage()
+//    {
+//
+//       //ASSERT(m_hdc != nullptr);
+//
+//       //::StartPage(m_hdc);
+//
+//       //m_pgraphics = ___new plusplus::Graphics (m_hdc);
+//
+//       //m_pgraphics->SetPageUnit(plusplus::UnitPixel);
+//
+//       return 1;
+//
+//    }
+//
+//
+//    int graphics::EndPage()
+//    {
+//
+//       /* ASSERT(m_hdc != nullptr);
+//
+//        delete m_pgraphics;
+//
+//       */
+//       //return ::EndPage(m_hdc);
+//       return 0;
+//
+//    }
+//
+//
+//    int graphics::SetAbortProc(bool (CALLBACK* lpfn)(HDC, int))
+//    {
+//
+//       //ASSERT(m_hdc != nullptr);
+//
+//       //return ::SetAbortProc(m_hdc, (ABORTPROC)lpfn);
+//       return 0;
+//
+//    }
+//
+//
+//    int graphics::AbortDoc()
+//    {
+//
+//       //ASSERT(m_hdc != nullptr);
+//
+//       //return ::AbortDoc(m_hdc);
+//       return 0;
+//
+//    }
+//
+//
+//    int graphics::EndDoc()
+//    {
+//
+//       //ASSERT(m_hdc != nullptr);
+//
+//       //return ::EndDoc(m_hdc);
+//       return 0;
+//
+//    }
 
 
    //   bool graphics::MaskBlt(double x, double y, double nWidth, double nHeight, ::draw2d::graphics * pgraphicsSrc,
@@ -3359,13 +3365,13 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::GetColorAdjustment(LPCOLORADJUSTMENT lpColorAdjust) const
-   {
-      // ASSERT(m_hdc != nullptr);
-      //return ::GetColorAdjustment(m_hdc, lpColorAdjust) != false;
-      return false;
-
-   }
+   // bool graphics::GetColorAdjustment(LPCOLORADJUSTMENT lpColorAdjust) const
+   // {
+   //    // ASSERT(m_hdc != nullptr);
+   //    //return ::GetColorAdjustment(m_hdc, lpColorAdjust) != false;
+   //    return false;
+   //
+   // }
 
 
    ::draw2d::pen* graphics::get_current_pen()
@@ -3427,7 +3433,7 @@ namespace draw2d_nanovg
    }
 
 
-   int graphics::Escape(int nEscape, int nInputSize, __in_bcount(nInputSize) const char* lpszInputData, int nOutputSize, __out_bcount(nOutputSize) char* lpszOutputData)
+   int graphics::Escape(int nEscape, int nInputSize, const char* lpszInputData, int nOutputSize, char* lpszOutputData)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::ExtEscape(m_hdc, nEscape, nInputSize, lpszInputData, nOutputSize, lpszOutputData);
@@ -4989,14 +4995,14 @@ namespace draw2d_nanovg
    //
    //
 
-   // Always Inline. Functions only in Win98/Win2K or later
-
-   inline color32_t graphics::GetDCBrushColor() const
-   {
-      // ASSERT(m_hdc != nullptr);
-      //return ::GetDCBrushColor(m_hdc);
-      return color::transparent;
-   }
+   // // Always Inline. Functions only in Win98/Win2K or later
+   //
+   // inline color32_t graphics::GetDCBrushColor() const
+   // {
+   //    // ASSERT(m_hdc != nullptr);
+   //    //return ::GetDCBrushColor(m_hdc);
+   //    return color::transparent;
+   // }
 
 
    ::gpu::frame* graphics::end_gpu_layer(::gpu::frame * pgpuframe)
@@ -5009,50 +5015,50 @@ namespace draw2d_nanovg
    }
 
 
-   inline color32_t graphics::SetDCBrushColor(color32_t crColor)
-   {
-      // ASSERT(m_hdc != nullptr);
-      //return ::SetDCBrushColor(m_hdc, crColor);
-      return color::transparent;
-
-   }
-
-
-   inline color32_t graphics::GetDCPenColor() const
-   {
-      // ASSERT(m_hdc != nullptr);
-      //return ::GetDCPenColor(m_hdc);
-      return color::transparent;
-
-
-   }
-
-
-   inline color32_t graphics::SetDCPenColor(color32_t crColor)
-   {
-      // ASSERT(m_hdc != nullptr);
-      //return ::SetDCPenColor(m_hdc, crColor);
-      return color::transparent;
-
-   }
-
-
-   inline bool graphics::GetCharABCWidthsI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPABC lpabc) const
-   {
-      // ASSERT(m_hdc != nullptr);
-      //return ::GetCharABCWidthsI(m_hdc, giFirst, cgi, pgi, lpabc) != false;
-      return false;
-
-   }
-
-
-   inline bool graphics::GetCharWidthI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPINT lpBuffer) const
-   {
-      // ASSERT(m_hdc != nullptr);
-      //return ::GetCharWidthI(m_hdc, giFirst, cgi, pgi, lpBuffer) != false;
-      return false;
-
-   }
+   // inline color32_t graphics::SetDCBrushColor(color32_t crColor)
+   // {
+   //    // ASSERT(m_hdc != nullptr);
+   //    //return ::SetDCBrushColor(m_hdc, crColor);
+   //    return color::transparent;
+   //
+   // }
+   //
+   //
+   // inline color32_t graphics::GetDCPenColor() const
+   // {
+   //    // ASSERT(m_hdc != nullptr);
+   //    //return ::GetDCPenColor(m_hdc);
+   //    return color::transparent;
+   //
+   //
+   // }
+   //
+   //
+   // inline color32_t graphics::SetDCPenColor(color32_t crColor)
+   // {
+   //    // ASSERT(m_hdc != nullptr);
+   //    //return ::SetDCPenColor(m_hdc, crColor);
+   //    return color::transparent;
+   //
+   // }
+   //
+   //
+   // inline bool graphics::GetCharABCWidthsI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPABC lpabc) const
+   // {
+   //    // ASSERT(m_hdc != nullptr);
+   //    //return ::GetCharABCWidthsI(m_hdc, giFirst, cgi, pgi, lpabc) != false;
+   //    return false;
+   //
+   // }
+   //
+   //
+   // inline bool graphics::GetCharWidthI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPINT lpBuffer) const
+   // {
+   //    // ASSERT(m_hdc != nullptr);
+   //    //return ::GetCharWidthI(m_hdc, giFirst, cgi, pgi, lpBuffer) != false;
+   //    return false;
+   //
+   // }
 
 
    //inline bool graphics::GetTextExtentExPointI(LPWORD pgiIn, double cgi, double nMaxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE32 LPSIZE32) const
@@ -5165,31 +5171,31 @@ namespace draw2d_nanovg
 
    }
 
-   /////////////////////////////////////////////////////////////////////////////
-   // special graphics drawing primitives/helpers
-
-   ::draw2d::brush* graphics::GetHalftoneBrush()
-   {
-      /*      ::aura::LockGlobals(CRIT_HALFTONEBRUSH);
-            if (gen_HalftoneBrush == nullptr)
-            {
-               unsigned short grayPattern[8];
-               for (double i = 0; i < 8; i++)
-                  grayPattern[i] = (unsigned short)(0x5555 << (i & 1));
-               HBITMAP grayBitmap = CreateBitmap(8, 8, 1, 1, grayPattern);
-               if (grayBitmap != nullptr)
-               {
-                  gen_HalftoneBrush = ::CreatePatternBrush(grayBitmap);
-                  ::DeleteObject(grayBitmap);
-               }
-            }
-            if (!gen_WingdixTerm)
-               gen_WingdixTerm = (char)!atexit(&__win_gdi_x_term);
-            ::aura::UnlockGlobals(CRIT_HALFTONEBRUSH);
-
-      //      return ::draw2d_nanovg::brush::from_handle(papp, gen_HalftoneBrush);*/
-      return nullptr;
-   }
+//    /////////////////////////////////////////////////////////////////////////////
+//    // special graphics drawing primitives/helpers
+//
+//    ::draw2d::brush* graphics::GetHalftoneBrush()
+//    {
+//       /*      ::aura::LockGlobals(CRIT_HALFTONEBRUSH);
+//             if (gen_HalftoneBrush == nullptr)
+//             {
+//                unsigned short grayPattern[8];
+//                for (double i = 0; i < 8; i++)
+//                   grayPattern[i] = (unsigned short)(0x5555 << (i & 1));
+//                HBITMAP grayBitmap = CreateBitmap(8, 8, 1, 1, grayPattern);
+//                if (grayBitmap != nullptr)
+//                {
+//                   gen_HalftoneBrush = ::CreatePatternBrush(grayBitmap);
+//                   ::DeleteObject(grayBitmap);
+//                }
+//             }
+//             if (!gen_WingdixTerm)
+//                gen_WingdixTerm = (char)!atexit(&__win_gdi_x_term);
+//             ::aura::UnlockGlobals(CRIT_HALFTONEBRUSH);
+//
+//       //      return ::draw2d_nanovg::brush::from_handle(papp, gen_HalftoneBrush);*/
+//       return nullptr;
+//    }
 
 
    //void graphics::DrawDragRect(const ::double_rectangle & rectangle, const ::int_size & size, const ::double_rectangle & lpRectLast, const ::int_size & sizeLast, ::draw2d::brush* pBrush, ::draw2d::brush* pBrushLast)
@@ -5629,18 +5635,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //      //set_handle1(nullptr);
    //   }
 
-      /////////////////////////////////////////////////////////////////////////////
-      // Out-of-line routines
-
-   int graphics::StartDoc(const ::scoped_string& lpszDocName)
-   {
-      //DOCINFO di;
-      //memory_set(&di, 0, sizeof(DOCINFO));
-      //di.cbSize = sizeof(DOCINFO);
-      //di.lpszDocName = lpszDocName;
-      //return StartDoc(&di);
-      return -1;
-   }
+   //    /////////////////////////////////////////////////////////////////////////////
+   //    // Out-of-line routines
+   //
+   // int graphics::StartDoc(const ::scoped_string& lpszDocName)
+   // {
+   //    //DOCINFO di;
+   //    //memory_set(&di, 0, sizeof(DOCINFO));
+   //    //di.cbSize = sizeof(DOCINFO);
+   //    //di.lpszDocName = lpszDocName;
+   //    //return StartDoc(&di);
+   //    return -1;
+   // }
 
 
    int graphics::save_graphics_context()
@@ -5752,8 +5758,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    int graphics::SelectObject(::draw2d::region* pRgn)
    {
-      int nRetVal = GDI_ERROR;
-      //if(m_hdc != nullptr && m_hdc != m_hdc)
+      int nRetVal = 1;
+      //int nRetVal = GDI_ERROR;
+      ////if(m_hdc != nullptr && m_hdc != m_hdc)
       //   nRetVal = (double)(iptr)::SelectObject(m_hdc, (HGDIOBJ) pRgn->get_os_data());
       //if(m_hdc != nullptr)
       //   nRetVal = (double)(iptr)::SelectObject(m_hdc, (HGDIOBJ) pRgn->get_os_data());
@@ -5845,44 +5852,44 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   bool graphics::SetWorldTransform(const XFORM* pXform)
-   {
-
-      //plusplus::REAL ::double_rectangle[6];
-
-      //::double_rectangle[0] = pXform->eDx;
-      //::double_rectangle[1] = pXform->eDy;
-
-      //::double_rectangle[2] = pXform->eM11;
-      //::double_rectangle[3] = pXform->eM12;
-      //::double_rectangle[4] = pXform->eM21;
-      //::double_rectangle[5] = pXform->eM22;
-
-      //plusplus::Matrix m;
-
-      //m.SetElements(::double_rectangle[2],::double_rectangle[3],::double_rectangle[4],::double_rectangle[5],::double_rectangle[0],::double_rectangle[1]);
-
-      //m_pgraphics->SetTransform(&m);
-
-      return true;
-
-   }
-
-
-   bool graphics::ModifyWorldTransform(const XFORM* pXform, unsigned int iMode)
-   {
-      bool nRetVal = 0;
-      //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //{
-      //   nRetVal = ::ModifyWorldTransform(m_hdc, pXform, iMode) != false;
-      //}
-      //if(m_hdc != nullptr)
-      //{
-      //   nRetVal = ::ModifyWorldTransform(m_hdc, pXform, iMode) != false;
-      //}
-      return nRetVal;
-
-   }
+   // bool graphics::SetWorldTransform(const XFORM* pXform)
+   // {
+   //
+   //    //plusplus::REAL ::double_rectangle[6];
+   //
+   //    //::double_rectangle[0] = pXform->eDx;
+   //    //::double_rectangle[1] = pXform->eDy;
+   //
+   //    //::double_rectangle[2] = pXform->eM11;
+   //    //::double_rectangle[3] = pXform->eM12;
+   //    //::double_rectangle[4] = pXform->eM21;
+   //    //::double_rectangle[5] = pXform->eM22;
+   //
+   //    //plusplus::Matrix m;
+   //
+   //    //m.SetElements(::double_rectangle[2],::double_rectangle[3],::double_rectangle[4],::double_rectangle[5],::double_rectangle[0],::double_rectangle[1]);
+   //
+   //    //m_pgraphics->SetTransform(&m);
+   //
+   //    return true;
+   //
+   // }
+   //
+   //
+   // bool graphics::ModifyWorldTransform(const XFORM* pXform, unsigned int iMode)
+   // {
+   //    bool nRetVal = 0;
+   //    //if(m_hdc != nullptr && m_hdc != m_hdc)
+   //    //{
+   //    //   nRetVal = ::ModifyWorldTransform(m_hdc, pXform, iMode) != false;
+   //    //}
+   //    //if(m_hdc != nullptr)
+   //    //{
+   //    //   nRetVal = ::ModifyWorldTransform(m_hdc, pXform, iMode) != false;
+   //    //}
+   //    return nRetVal;
+   //
+   // }
 
 
    int graphics::SetMapMode(int nMapMode)
@@ -6256,8 +6263,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    unsigned int graphics::SetTextAlign(unsigned int nFlags)
    {
+      //unsigned int nRetVal = GDI_ERROR;
 
-      unsigned int nRetVal = GDI_ERROR;
+      unsigned int nRetVal = 1;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::SetTextAlign(m_hdc, nFlags);
@@ -6318,30 +6326,30 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   typedef unsigned int (CALLBACK* __GDIGETLAYOUTPROC)(HDC);
-   typedef unsigned int (CALLBACK* __GDISETLAYOUTPROC)(HDC, unsigned int);
+   // typedef unsigned int (CALLBACK* __GDIGETLAYOUTPROC)(HDC);
+   // typedef unsigned int (CALLBACK* __GDISETLAYOUTPROC)(HDC, unsigned int);
 
    unsigned int graphics::GetLayout() const
    {
 
-      HINSTANCE hInst = ::GetModuleHandleA("GDI32.DLL");
-
-      ASSERT(hInst != nullptr);
-
-      /*      unsigned int dwGetLayout = LAYOUT_LTR;
-            __GDIGETLAYOUTPROC pfn;
-            pfn = (__GDIGETLAYOUTPROC) GetProcAddress(hInst, "GetLayout");
-            // if they API is available, just call it. If it is not
-            // available, indicate an error.
-            if (pfn != nullptr)
-               dwGetLayout = (*pfn)(m_hdc);
-            else
-            {
-               dwGetLayout = GDI_ERROR;
-               set_last_error(ERROR_CALL_NOT_IMPLEMENTED);
-            }*/
-
-            //return dwGetLayout;
+      // HINSTANCE hInst = ::GetModuleHandleA("GDI32.DLL");
+      //
+      // ASSERT(hInst != nullptr);
+      //
+      // /*      unsigned int dwGetLayout = LAYOUT_LTR;
+      //       __GDIGETLAYOUTPROC pfn;
+      //       pfn = (__GDIGETLAYOUTPROC) GetProcAddress(hInst, "GetLayout");
+      //       // if they API is available, just call it. If it is not
+      //       // available, indicate an error.
+      //       if (pfn != nullptr)
+      //          dwGetLayout = (*pfn)(m_hdc);
+      //       else
+      //       {
+      //          dwGetLayout = GDI_ERROR;
+      //          set_last_error(ERROR_CALL_NOT_IMPLEMENTED);
+      //       }*/
+      //
+      //       //return dwGetLayout;
 
       return 0;
 
@@ -6450,16 +6458,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   bool graphics::SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust)
-   {
-      // ASSERT(m_hdc != nullptr);
-      bool bResult = false;
-      //if (m_hdc != m_hdc)
-      //   bResult = ::SetColorAdjustment(m_hdc, lpColorAdjust) != false;
-      //if (m_hdc != nullptr)
-      //   bResult = ::SetColorAdjustment(m_hdc, lpColorAdjust) != false;
-      return bResult;
-   }
+   // bool graphics::SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust)
+   // {
+   //    // ASSERT(m_hdc != nullptr);
+   //    bool bResult = false;
+   //    //if (m_hdc != m_hdc)
+   //    //   bResult = ::SetColorAdjustment(m_hdc, lpColorAdjust) != false;
+   //    //if (m_hdc != nullptr)
+   //    //   bResult = ::SetColorAdjustment(m_hdc, lpColorAdjust) != false;
+   //    return bResult;
+   // }
 
 
    void graphics::poly_bezier_to(const ::double_point* lpPoints, ::collection::count nCount)
@@ -6551,117 +6559,117 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    }
 
-
-   /////////////////////////////////////////////////////////////////////////////
-   // Special handling for metafile playback
-
-   double CALLBACK __enum_meta_file_procedure(HDC hDC,
-      HANDLETABLE* pHandleTable, METARECORD* pMetaRec, double nHandles, LPARAM lParam)
-   {
-      return 1;
-      //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)lParam;
-      //      ASSERT_VALID(pgraphics);
-      //
-      //      switch (pMetaRec->rdFunction)
-      //      {
-      //      // these records have effects different for each graphics derived class
-      //      case META_SETMAPMODE:
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SETWINDOWEXT:
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->set_window_ext(
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SETWINDOWORG:
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SetWindowOrg(
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SETVIEWPORTEXT:
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->set_context_extents(
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SETVIEWPORTORG:
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->set_origin(
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SCALEWINDOWEXT:
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->scale_window_ext(
-      //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SCALEVIEWPORTEXT:
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->scale_context_extents(
-      //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_OFFSETVIEWPORTORG:
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->offset_origin(
-      //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SAVEDC:
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SaveDC();
-      //         break;
-      //      case META_RESTOREDC:
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
-      //         break;
-      //      case META_SETBKCOLOR:
-      //      {
-      //         auto pbrush = øcreate < ::draw2d::brush >();
-      //         
-      //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(brush);
-      //      }
-      //      break;
-      //      case META_SETTEXTCOLOR:
-      //      {
-      //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
-      //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(brush);
-      //      }
-      //      break;
-      //
-      //      // need to watch out for SelectObject(HFONT), for custom font mapping
-      //      case META_SELECTOBJECT:
-      //      {
-      //         HGDIOBJ hObject = pHandleTable->objectHandle[pMetaRec->rdParm[0]];
-      //         unsigned int nObjType = GetObjectType(hObject);
-      //         if (nObjType == 0)
-      //         {
-      //            // object type is unknown, determine if it is a font
-      //            HFONT hStockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
-      //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hStockFont);
-      //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hObject);
-      //            if (hObjOld == hStockFont)
-      //            {
-      //               // got the stock object back, so must be selecting a font
-      //               throw ::not_implemented();
-      ////                  (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(::draw2d_nanovg::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
-      //               break;  // don't play the default record
-      //            }
-      //            else
-      //            {
-      //               // didn't get the stock object back, so restore everything
-      //               ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hFontOld);
-      //               ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hObjOld);
-      //            }
-      //            // and fall through to PlayMetaFileRecord...
-      //         }
-      //         else if (nObjType == OBJ_FONT)
-      //         {
-      //            // play back as graphics::SelectObject(::write_text::font*)
-      ////               (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(::draw2d_nanovg::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
-      //            throw ::not_implemented();
-      //            break;  // don't play the default record
-      //         }
-      //      }
-      //      // fall through...
-      //
-      //      default:
-      //         ::PlayMetaFileRecord(hDC, pHandleTable, pMetaRec, nHandles);
-      //         break;
-      //      }
-      //
-      //      return 1;
-   }
+   //
+   // /////////////////////////////////////////////////////////////////////////////
+   // // Special handling for metafile playback
+   //
+   // double CALLBACK __enum_meta_file_procedure(HDC hDC,
+   //    HANDLETABLE* pHandleTable, METARECORD* pMetaRec, double nHandles, LPARAM lParam)
+   // {
+   //    return 1;
+   //    //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)lParam;
+   //    //      ASSERT_VALID(pgraphics);
+   //    //
+   //    //      switch (pMetaRec->rdFunction)
+   //    //      {
+   //    //      // these records have effects different for each graphics derived class
+   //    //      case META_SETMAPMODE:
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SETWINDOWEXT:
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->set_window_ext(
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SETWINDOWORG:
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SetWindowOrg(
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SETVIEWPORTEXT:
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->set_context_extents(
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SETVIEWPORTORG:
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->set_origin(
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SCALEWINDOWEXT:
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->scale_window_ext(
+   //    //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SCALEVIEWPORTEXT:
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->scale_context_extents(
+   //    //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_OFFSETVIEWPORTORG:
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->offset_origin(
+   //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SAVEDC:
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SaveDC();
+   //    //         break;
+   //    //      case META_RESTOREDC:
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
+   //    //         break;
+   //    //      case META_SETBKCOLOR:
+   //    //      {
+   //    //         auto pbrush = øcreate < ::draw2d::brush >();
+   //    //
+   //    //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(brush);
+   //    //      }
+   //    //      break;
+   //    //      case META_SETTEXTCOLOR:
+   //    //      {
+   //    //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(brush);
+   //    //      }
+   //    //      break;
+   //    //
+   //    //      // need to watch out for SelectObject(HFONT), for custom font mapping
+   //    //      case META_SELECTOBJECT:
+   //    //      {
+   //    //         HGDIOBJ hObject = pHandleTable->objectHandle[pMetaRec->rdParm[0]];
+   //    //         unsigned int nObjType = GetObjectType(hObject);
+   //    //         if (nObjType == 0)
+   //    //         {
+   //    //            // object type is unknown, determine if it is a font
+   //    //            HFONT hStockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
+   //    //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hStockFont);
+   //    //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hObject);
+   //    //            if (hObjOld == hStockFont)
+   //    //            {
+   //    //               // got the stock object back, so must be selecting a font
+   //    //               throw ::not_implemented();
+   //    ////                  (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(::draw2d_nanovg::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+   //    //               break;  // don't play the default record
+   //    //            }
+   //    //            else
+   //    //            {
+   //    //               // didn't get the stock object back, so restore everything
+   //    //               ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hFontOld);
+   //    //               ::SelectObject((dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->m_hdc, hObjOld);
+   //    //            }
+   //    //            // and fall through to PlayMetaFileRecord...
+   //    //         }
+   //    //         else if (nObjType == OBJ_FONT)
+   //    //         {
+   //    //            // play back as graphics::SelectObject(::write_text::font*)
+   //    ////               (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->SelectObject(::draw2d_nanovg::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+   //    //            throw ::not_implemented();
+   //    //            break;  // don't play the default record
+   //    //         }
+   //    //      }
+   //    //      // fall through...
+   //    //
+   //    //      default:
+   //    //         ::PlayMetaFileRecord(hDC, pHandleTable, pMetaRec, nHandles);
+   //    //         break;
+   //    //      }
+   //    //
+   //    //      return 1;
+   // }
 
 
    //bool graphics::PlayMetaFile(HMETAFILE hMF)
@@ -8805,9 +8813,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 
 
+#ifdef WINDOWS_DESKTOP
 
-
-BOOL CALLBACK draw2d_nanovg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p)
+BOOL CALLBACK draw2d_nanovg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, void * p)
 {
 
    draw2d_nanovg_enum_fonts* pfonts = (draw2d_nanovg_enum_fonts*)p;
@@ -8832,7 +8840,7 @@ BOOL CALLBACK draw2d_nanovg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpnt
 }
 
 
-
+#endif
 
 
 namespace opengl
