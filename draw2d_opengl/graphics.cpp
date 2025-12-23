@@ -2261,6 +2261,8 @@ void main() {
       if (pmodelbuffer->is_new())
       {
 
+         pmodelbuffer->initialize_gpu_context_object(pcontext);
+
          pmodelbuffer->create_vertexes< ::graphics3d::sequence2_color>(24);
 
       }

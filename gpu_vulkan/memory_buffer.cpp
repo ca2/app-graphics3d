@@ -377,7 +377,7 @@ namespace gpu_vulkan
 
       auto pmap = _map(0, block.size());
       
-      writeToBuffer((void*)block.size(), block.size());
+      writeToBuffer((void*)block.data(), block.size());
       
       _unmap();
 

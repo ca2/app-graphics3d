@@ -659,6 +659,13 @@ namespace gpu_vulkan
    void model_buffer::bind2(::gpu::command_buffer* pgpucommandbuffer)
    {
 
+      if (::is_null(m_pmodeldatabase2))
+      {
+
+         return;
+
+      }
+
       if (m_pmodeldatabase2->is_dummy())
       {
 
