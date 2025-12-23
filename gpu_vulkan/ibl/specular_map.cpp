@@ -20,7 +20,7 @@
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/skybox.h"
 #include "bred/gltf/vertex.h"
-#include "gpu/timer.h"
+#include "bred/platform/timer.h"
 #include <array>
 #include <chrono>
 
@@ -139,7 +139,7 @@ namespace gpu_vulkan
 
          ::gpu::ibl::specular_map::computePrefilteredEnvMap(pgpucommandbuffer);
 
-         //::gpu::Timer timer;
+         //::bred::Timer timer;
 
          //::gpu::context_lock contextlock(m_pgpucontext);
 
