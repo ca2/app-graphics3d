@@ -16,8 +16,9 @@ namespace draw2d_nanovg
    {
    public:
 
-      
-      //HDC                           m_hdcFont;
+      #ifdef WINDOWS_DESKTOP
+      HDC                           m_hdcFont;
+       #endif
       //HFONT                         m_hfont;
 //      VKuint	                     m_baseFont;				// Base Display List For The Font Set
 //

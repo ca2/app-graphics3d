@@ -5737,22 +5737,22 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 // }
 
 
-::pointer<::graphics3d::renderable> context::_load_gltf_model(const ::gpu::renderable_t &model)
-{
-   // if (auto it = m_mapgltfModel.find(name); it != m_mapgltfModel.end())
-   //  return it->element2();
-
-   auto pmodel = øcreate_new<::gpu_vulkan::gltf::model>();
-
-   *((::gpu::renderable_t *)pmodel) = model;
-
-   ::cast<::gpu_vulkan::queue> pqueueGraphics = m_pgpudevice->graphics_queue();
-
-   pmodel->initialize_gpu_gltf_model(this, model);
-
-   // m_mapgltfModel[name] = model;
-   return pmodel;
-}
+//::pointer<::graphics3d::renderable> context::_load_model(const ::gpu::renderable_t &model)
+//{
+//   // if (auto it = m_mapgltfModel.find(name); it != m_mapgltfModel.end())
+//   //  return it->element2();
+//
+//   auto pmodel = øcreate_new<::gpu_vulkan::gltf::model>();
+//
+//   *((::gpu::renderable_t *)pmodel) = model;
+//
+//   ::cast<::gpu_vulkan::queue> pqueueGraphics = m_pgpudevice->graphics_queue();
+//
+//   pmodel->initialize_gpu_model(this, model);
+//
+//   // m_mapgltfModel[name] = model;
+//   return pmodel;
+//}
 
 //
 //   ::gpu_vulkan::descriptor_set_layout *context::descriptor_set_layout_gltf()
@@ -6112,12 +6112,12 @@ void context::on_cube_map_face_image(::image::image * pimage)
 
 
 void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::file::path &path,
-                                   int iAssimpTextureType)
+                                   bool bSrgb)
 {
 
    auto ptextureNew = øcreate<::gpu::texture>();
 
-   ptextureNew->initialize_texture_from_file_path(m_pgpurenderer, path, false);
+   ptextureNew->initialize_texture_from_file_path(m_pgpurenderer, path, bSrgb);
    
    if (ptextureNew->is_ok())
    {

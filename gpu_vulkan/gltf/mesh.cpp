@@ -294,16 +294,17 @@ namespace gpu_vulkan
             ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
             //::cast<::gpu::vulkan> pcommandbuffer = pgpucommandbuffer;
             //vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, m_indexa.size(), 1, primitive->firstIndex, 0, 0);
-            vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, m_modeldata.m_indexes.size(), 1, 0, 0, 0);
+            vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, m_pmodeldata->index_count(), 1, 0, 0,
+                             0);
          }
 
       }
 
 
-      void mesh::on_initialize_gpu_gltf_mesh()
+      void mesh::on_initialize_gpu_mesh()
       {
 
-         ::gpu::model::mesh::on_initialize_gpu_gltf_mesh();
+         ::gpu::model::mesh::on_initialize_gpu_mesh();
 
          // // create our data structures
          // glGenVertexArrays(1, &mVAO);

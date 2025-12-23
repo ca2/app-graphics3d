@@ -103,8 +103,8 @@ namespace gpu_directx12
       //void createIndexBuffers(const ::array<uint32_t>& indexes);
 
 
-      void static_initialize_vertex_buffer(const void* data, memsize iTypeSize, ::collection::count iVertexCount) override;
-      void static_initialize_index_buffer(const void* data, memsize iTypeSize, ::collection::count iIndexCount) override;
+      void _static_initialize_vertex_buffer(const ::block &block) override;
+      void _static_initialize_index_buffer(const ::block &block) override;
 
 
    };

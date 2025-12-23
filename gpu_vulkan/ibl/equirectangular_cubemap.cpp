@@ -14,7 +14,7 @@
 
 
 
-#include "gpu/gltf/_constant.h"
+#include "gpu/model/_constant.h"
 #include "gpu_vulkan/_gpu_vulkan.h"
 #include "gpu_vulkan/command_buffer.h"
 #include "gpu_vulkan/context.h"

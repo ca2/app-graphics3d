@@ -4,6 +4,12 @@
 #include "acme/prototype/prototype/memory.h"
 #include "aura/graphics/draw2d/bitmap.h"
 
+#ifdef WINDOWS_DESKTOP
+
+#include "acme/_operating_system.h"
+#include <glad/glad.h>
+#include <glad/glad_wgl.h>
+#endif
 
 //#include <GL/gl.h>
 //#include <GL/glu.h>

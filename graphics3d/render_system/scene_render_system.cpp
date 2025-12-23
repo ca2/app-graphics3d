@@ -10,7 +10,7 @@
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/global_ubo1.h"
 #include "bred/graphics3d/scene_base.h"
-#include "gpu/gltf/model.h"
+#include "gpu/model/model.h"
 #include "gpu/ibl/diffuse_irradiance_map.h"
 #include "gpu/ibl/specular_map.h"
 #include "app-graphics3d/graphics3d/scene.h"

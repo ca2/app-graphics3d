@@ -36,7 +36,7 @@ namespace gpu_directx12
    }
 
 
-   void memory_buffer::on_initialize_memory_buffer(const void* dataStatic, memsize sizeStatic)
+   void memory_buffer::on_initialize_memory_buffer(const ::block & block)
    {
 
       auto etype = m_etype;
@@ -89,12 +89,12 @@ namespace gpu_directx12
       else if (etype == ::gpu::memory_buffer::e_type_vertex_buffer)
       {
 
-         if (dataStatic)
+         if (block.data())
          {
 
             m_bDynamic = false;
 
-            auto vertexBufferSize = (UINT)sizeStatic;
+            auto vertexBufferSize = (UINT)block.size();
 
             // Create default heap resources
             CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
@@ -122,7 +122,7 @@ namespace gpu_directx12
             void* data = nullptr;
             D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
             m_presourceUpload->Map(0, &range, &data);
-            memcpy(data, dataStatic, vertexBufferSize);
+            memcpy(data, block.data(), vertexBufferSize);
             m_presourceUpload->Unmap(0, nullptr);
 
             ::cast < ::gpu_directx12::command_buffer > pcommandbufferLoading = m_pmodelbuffer->_defer_get_loading_command_buffer();
@@ -144,12 +144,12 @@ namespace gpu_directx12
       else if (etype == ::gpu::memory_buffer::e_type_index_buffer)
       {
 
-         if (dataStatic)
+         if (block.data())
          {
 
             m_bDynamic = false;
 
-            auto indexBufferSize = (UINT)sizeStatic;
+            auto indexBufferSize = (UINT)block.size();
 
             CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
             CD3DX12_RESOURCE_DESC ibDesc = CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize);
@@ -173,7 +173,7 @@ namespace gpu_directx12
             void* data = nullptr;
             D3D12_RANGE range = { 0, 0 }; // We don’t intend to read from it
             m_presourceUpload->Map(0, &range, &data);
-            memcpy(data, dataStatic, indexBufferSize);
+            memcpy(data, block.data(), indexBufferSize);
             m_presourceUpload->Unmap(0, nullptr);
 
             ::cast < ::gpu_directx12::command_buffer> pcommandbufferLoading = m_pmodelbuffer->_defer_get_loading_command_buffer();
@@ -361,8 +361,8 @@ namespace gpu_directx12
                auto& vertexbufferview = pmodelbuffer->m_vertexbufferview;
 
                vertexbufferview.BufferLocation = this->m_presource->GetGPUVirtualAddress() + pgpuframestorage->m_iBufferOffset;
-               vertexbufferview.StrideInBytes = pmodelbuffer->m_iVertexTypeSize;
-               vertexbufferview.SizeInBytes = pmodelbuffer->m_iVertexByteSize;
+               vertexbufferview.StrideInBytes = pmodelbuffer->m_pmodeldatabase2->vertex_type_size();
+               vertexbufferview.SizeInBytes = pmodelbuffer->m_pmodeldatabase2->vertex_bytes();
 
                //pmodelbuffer->m_bNew = false;
 

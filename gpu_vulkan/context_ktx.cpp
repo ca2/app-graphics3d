@@ -48,7 +48,7 @@ namespace gpu_vulkan
 {
 
 
-   void context::load_ktxTexture(::pointer<::gpu::texture> &pgputexture, void *p_ktxTexture)
+   void context::load_ktxTexture(::gpu::texture *pgputexture, void *p_ktxTexture)
    {
 
       ::cast<::gpu_vulkan::queue> pqueueGraphics = m_pgpudevice->graphics_queue();

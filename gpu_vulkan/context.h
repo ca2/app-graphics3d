@@ -279,7 +279,7 @@ namespace gpu_vulkan
   //    /// @return lutBrdf
   //    virtual ::pointer < ::gpu::texture > generateBRDFlut();
 
-      ::pointer<::graphics3d::renderable> _load_model(const ::gpu::renderable_t & model) override;
+      //::pointer<::graphics3d::renderable> _load_model(const ::gpu::renderable_t & model) override;
 
 
       

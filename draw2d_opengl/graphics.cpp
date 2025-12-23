@@ -2261,7 +2261,7 @@ void main() {
       if (pmodelbuffer->is_new())
       {
 
-         pmodelbuffer->create_vertex_array< ::graphics3d::sequence2_color>(24);
+         pmodelbuffer->create_vertexes< ::graphics3d::sequence2_color>(24);
 
       }
 

@@ -11,7 +11,7 @@
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
 #include "bred/graphics3d/types.h"
-#include "gpu/gltf/model.h"
+#include "gpu/model/model.h"
 #include "bred/graphics3d/global_ubo1.h"
 #include "app-graphics3d/graphics3d/scene.h"
 
@@ -235,9 +235,9 @@ namespace graphics3d
           if (!prenderable)
              continue;
       
-          auto erenderabletype = prenderable->m_erenderabletype;
+          auto egpumodel = prenderable->m_egpumodel;
 
-          if (erenderabletype != ::gpu::e_renderable_type_gltf)
+          if (egpumodel != ::gpu::e_model_gltf)
           {
              continue; // not mine, skip
           }
