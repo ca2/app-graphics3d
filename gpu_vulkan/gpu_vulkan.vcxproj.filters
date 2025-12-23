@@ -364,6 +364,9 @@
     <ClCompile Include="context_ktx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="texture_ktx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="deployment.rc">
@@ -431,6 +434,12 @@
     <CustomBuild Include="ibl\shader\prefiltered_environment_map.vert">
       <Filter>Source Files\ibl\shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="shader\rgba_from_b_g.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\rgba_from_b_g.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\image_blend.frag.spv.inl">
@@ -486,6 +495,12 @@
     </None>
     <None Include="ibl\_aaa\aaa_hdri_cube.h">
       <Filter>Source Files\ibl\_aaa</Filter>
+    </None>
+    <None Include="shader\rgba_from_b_g.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\rgba_from_b_g.vert.spv.inl">
+      <Filter>Header Files\shader</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -6058,7 +6058,7 @@ void context::on_cube_map_face_image(::image::image * pimage)
       if (strExtension == "ktx" || strExtension == "ktx2")
       {
          ::cast<::gpu_vulkan::queue> pqueueTransfer = m_pgpudevice->transfer_queue();
-         ok = ptexture->KTXLoadFromFile(path, format, pqueueTransfer->m_vkqueue, usageFlags, imageLayout,
+         ok = ptexture->KTXLoadFromFile(path, pqueueTransfer->m_vkqueue, usageFlags, imageLayout,
                                         /*forceLinear=*/false);
 
          if (!ok)
@@ -6295,5 +6295,34 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
 
 }
 
+::memory context::rgba_from_b_g_vert_memory()
+{
+
+   unsigned int p_rgba_from_b_g_vert_memory[] = {
+#include "shader/rgba_from_b_g.vert.spv.inl"
+   };
+
+return (::block)p_rgba_from_b_g_vert_memory;
+
+    }
+
+       ::memory context::rgba_from_b_g_frag_memory()
+    {
+          unsigned int p_rgba_from_b_g_frag_memory[] = {
+#include "shader/rgba_from_b_g.frag.spv.inl"
+          };
+
+          return (::block)p_rgba_from_b_g_frag_memory;
+    }
+
+::pointer<::gpu::texture> context::rgba_from_b_g(::gpu::texture * pgputextureMetallic,
+                                        ::gpu::texture * pgputextureRoughness)
+{
+
+   auto pgputextureMetallicRoughness = ::gpu_gpu::context::rgba_from_b_g(pgputextureMetallic, pgputextureRoughness);
+
+
+   return pgputextureMetallicRoughness;
+}
 
 } // namespace gpu_vulkan

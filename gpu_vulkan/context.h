@@ -294,6 +294,15 @@ namespace gpu_vulkan
    floating_sequence3 front(const ::graphics3d::floating_rotation &rotation) override;
 
    void load_ktxTexture(::gpu::texture * pgputexture, void *p_ktxTexture) override;
+   // quite a work arround;
+   // use just the metallic;
+   // oh, please try to create something like:
+   // ptextureMetallicRoughness =
+   // m_pgpucontext->rgb_from_b_g(ptextureMetallic, ptextureRoughness);
+    ::memory rgba_from_b_g_vert_memory() override;
+    ::memory rgba_from_b_g_frag_memory() override;
+
+   ::pointer < ::gpu::texture> rgba_from_b_g(::gpu::texture * pgputextureMetallic, ::gpu::texture * pgputextureRoughness) override;
 
    };
 

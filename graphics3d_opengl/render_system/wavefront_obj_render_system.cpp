@@ -33,6 +33,8 @@ namespace graphics3d_opengl
 
       auto s = pscenerenderable->m_sequence3Scaling;
 
+      auto pszName = pscenerenderable->m_strName.c_str();
+
       if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_vulkan)
       {
     
@@ -41,6 +43,16 @@ namespace graphics3d_opengl
          //s.z = -s.z;
       
       }
+      else
+      {
+
+         //s.x = -s.x;
+         //s.y = -s.y;
+         //s.z = -s.z;
+
+      }
+
+      //s.y = -s.y;
       //else if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_znf)
       //{
 
@@ -90,6 +102,8 @@ namespace graphics3d_opengl
 
          auto pszName2 = strName2.c_str();
 
+         information("");
+
          // ::information("model ({}) matrix determinant (< 0): {}",
          //    strName2,
          //    determinant);
@@ -129,9 +143,24 @@ namespace graphics3d_opengl
       ::graphics3d::scene_renderable *pscenerenderable)
 	{
 
-       //glDisable(GL_CULL_FACE);
+       glDisable(GL_CULL_FACE);
 
-       glEnable(GL_CULL_FACE);
+       //glEnable(GL_CULL_FACE);
+
+       //auto pszName = pscenerenderable->m_strName.c_str();
+
+       //if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_vulkan)
+       //{
+
+       //   glFrontFace(GL_CCW);
+
+       //}
+       //else
+       //{
+
+       //   glFrontFace(GL_CW);
+
+       //}
 
        //if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_znf)
        //{
@@ -146,7 +175,7 @@ namespace graphics3d_opengl
        //  
        //}
 
-       glFrontFace(GL_CCW);
+       
 
        //glFrontFace(GL_CCW);
 
