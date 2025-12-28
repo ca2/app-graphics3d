@@ -161,7 +161,7 @@ namespace draw2d_opengl
       return 0;
 
    }
-   unsigned int bitmap::GetBitmapBits(unsigned int dwCount, LPVOID lpBits) const
+   unsigned int bitmap::GetBitmapBits(unsigned int dwCount, void * lpBits) const
    {
       //return ::GetBitmapBits((HBITMAP)get_handle(), dwCount, lpBits);
       return 0;
@@ -234,20 +234,21 @@ namespace draw2d_opengl
    }
 
 
-   int bitmap::GetBitmap(BITMAP* pBitMap)
-   {
-      //   ASSERT(get_handle() != nullptr);
-      // return ::GetObject(get_handle(), sizeof(BITMAP), pBitMap);
-      return 0;
-   }
-
+   // int bitmap::GetBitmap(BITMAP* pBitMap)
+   // {
+   //    //   ASSERT(get_handle() != nullptr);
+   //    // return ::GetObject(get_handle(), sizeof(BITMAP), pBitMap);
+   //    return 0;
+   // }
+   //
 
    /////////////////////////////////////////////////////////////////////////////
 
 
    //void bitmap::dump(dump_context & dumpcontext) const
    //{
-   //   ::draw2d::object::dump(dumpcontext);
+   //   ::draw2d::object::dump(dumpcontext)exi
+   //   t;
 
    //   /*         if (get_handle() == nullptr)
    //               return;
