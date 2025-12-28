@@ -368,9 +368,9 @@ namespace gpu_vulkan
 
       virtual bool imaging_load_from_file(const ::file::path &path);
 
-      virtual bool KTXLoadFromFile(const ::file::path &path, VkFormat format, VkQueue copyQueue,
+      virtual bool KTXLoadFromFile(const ::file::path &path, VkQueue copyQueue,
                                     VkImageUsageFlags imageUsageFlags, VkImageLayout imageLayout, bool forceLinear);
-      virtual bool KTXLoadFrom_ktxTexture(void * p_ktxTexture, VkFormat format, VkQueue copyQueue,
+      virtual bool KTXLoadFrom_ktxTexture(void * p_ktxTexture, VkQueue copyQueue,
                                    VkImageUsageFlags imageUsageFlags, VkImageLayout imageLayout, bool forceLinear);
 
 

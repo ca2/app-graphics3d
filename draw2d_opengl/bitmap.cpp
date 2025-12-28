@@ -47,15 +47,15 @@ GLfloat LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.00f };
 //
 //
 //#endif
-
-#include <assert.h>
-#ifdef WINDOWS
-#include <tchar.h>
-#endif // WINDOWS
-#ifdef  assert
-#define verify(expr) if(!expr) assert(0)
-#else verify(expr) expr
-#endif
+//
+// #include <assert.h>
+// #ifdef WINDOWS
+// #include <tchar.h>
+// #endif // WINDOWS
+// #ifdef  assert
+// #define verify(expr) if(!expr) assert(0)
+// #else verify(expr) expr
+// #endif
 
 namespace draw2d_opengl
 {
@@ -307,31 +307,31 @@ namespace draw2d_opengl
    }
 
 
-   HBITMAP bitmap::_GetHBITMAP()
-   {
-
-      //if(m_pbitmap == nullptr)
-      //   return nullptr;
-      //
-      //HBITMAP hbitmap = nullptr;
-
-      //plusplus::Color colorBk(0,0,0,0);
-
-      //m_pbitmap->GetHBITMAP(colorBk,&hbitmap);
-
-      //return hbitmap;
-      return nullptr;
-
-   }
-
-
-   void bitmap::_ReleaseHBITMAP(HBITMAP hbitmap)
-   {
-
-      ::DeleteObject(hbitmap);
-
-
-   }
+   // HBITMAP bitmap::_GetHBITMAP()
+   // {
+   //
+   //    //if(m_pbitmap == nullptr)
+   //    //   return nullptr;
+   //    //
+   //    //HBITMAP hbitmap = nullptr;
+   //
+   //    //plusplus::Color colorBk(0,0,0,0);
+   //
+   //    //m_pbitmap->GetHBITMAP(colorBk,&hbitmap);
+   //
+   //    //return hbitmap;
+   //    return nullptr;
+   //
+   // }
+   //
+   //
+   // void bitmap::_ReleaseHBITMAP(HBITMAP hbitmap)
+   // {
+   //
+   //    ::DeleteObject(hbitmap);
+   //
+   //
+   // }
 
    void bitmap::destroy_bitmap()
    {
@@ -339,18 +339,18 @@ namespace draw2d_opengl
       m_bTexture = false;
       m_bPBuffer = false;
 
-      if (g_hDC)
-      {
-         if (g_hRC)
-         {
-            wglMakeCurrent(g_hDC, 0);
-            wglDeleteContext(g_hRC);
-            g_hRC = 0;
-         }
-
-         DeleteDC(g_hDC);
-         g_hDC = 0;
-      }
+      // if (g_hDC)
+      // {
+      //    if (g_hRC)
+      //    {
+      //       wglMakeCurrent(g_hDC, 0);
+      //       wglDeleteContext(g_hRC);
+      //       g_hRC = 0;
+      //    }
+      //
+      //    DeleteDC(g_hDC);
+      //    g_hDC = 0;
+      // }
 
 
    }
@@ -555,6 +555,7 @@ namespace draw2d_opengl
    void bitmap::defer_reveal()
    {
 
+#ifdef WINDOWS_DESKTOP
       if (m_bFlashed)
       {
 
@@ -580,7 +581,7 @@ namespace draw2d_opengl
          information("error " + ::as_string((int)e));
 
       }
-
+#endif
    }
 
 
@@ -633,7 +634,7 @@ namespace draw2d_opengl
 
 
       return true;
-#else
+#elif defined(WITH_X11) && !defined(DESKTOP_ENVIRONMENT_GNOME)
 
 
 
@@ -687,6 +688,11 @@ namespace draw2d_opengl
 
       glXMakeContextCurrent(dpy, PBuffer, PBuffer, PBufferCtx);
 
+#else
+
+
+      throw todo;
+
 #endif
    }
 
@@ -705,7 +711,7 @@ namespace draw2d_opengl
       //   Cleanup();
       //   return false;
       //}
-      ::DestroyWindow(g_hWnd);
+      //::DestroyWindow(g_hWnd);
       return true;
    }
 

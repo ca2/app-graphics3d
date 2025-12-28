@@ -5,16 +5,16 @@
 
 
 void resizeBilinear(memory & m, int w2, int h2, int * pixels, int w, int h);
-#ifdef WITH_X11
-Display * x11_get_display();
-#endif
-#ifdef LINUX
-#define WIDTH 3200
-#define HEIGHT 1800
-
-const int sbAttrib[] = { VKX_DOUBLEBUFFER, 0, VKX_RED_SIZE, 1,VKX_GREEN_SIZE, 1, VKX_BLUE_SIZE, 1,VKX_ALPHA_SIZE, 1, VKX_DEPTH_SIZE, 16,None };
-int pbAttrib[] = { VKX_PBUFFER_WIDTH, WIDTH,VKX_PBUFFER_HEIGHT, HEIGHT,VKX_PRESERVED_CONTENTS, True,None };
-#endif
+// #ifdef WITH_X11
+// Display * x11_get_display();
+// #endif
+// #ifdef LINUX
+// #define WIDTH 3200
+// #define HEIGHT 1800
+//
+// const int sbAttrib[] = { VKX_DOUBLEBUFFER, 0, VKX_RED_SIZE, 1,VKX_GREEN_SIZE, 1, VKX_BLUE_SIZE, 1,VKX_ALPHA_SIZE, 1, VKX_DEPTH_SIZE, 16,None };
+// int pbAttrib[] = { VKX_PBUFFER_WIDTH, WIDTH,VKX_PBUFFER_HEIGHT, HEIGHT,VKX_PRESERVED_CONTENTS, True,None };
+// #endif
 
 //extern CLASS_DECL_AXIS thread_int_ptr < DWORD_PTR > t_time1;
 float LightAmbient[] = { 0.5f, 0.5f, 0.5f, 1.00f };
@@ -48,14 +48,14 @@ float LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.00f };
 //
 //#endif
 
-#include <assert.h>
-#ifdef WINDOWS
-#include <tchar.h>
-#endif // WINDOWS
-#ifdef  assert
-#define verify(expr) if(!expr) assert(0)
-#else verify(expr) expr
-#endif
+// #include <assert.h>
+// #ifdef WINDOWS
+// #include <tchar.h>
+// #endif // WINDOWS
+// #ifdef  assert
+// #define verify(expr) if(!expr) assert(0)
+// #else verify(expr) expr
+// #endif
 
 namespace draw2d_nanovg
 {
@@ -64,8 +64,8 @@ namespace draw2d_nanovg
    bitmap::bitmap()
    {
 
-      m_hwnd = nullptr;
-      m_hinstance = nullptr;
+      //m_hwnd = nullptr;
+      //m_hinstance = nullptr;
       m_bTexture = false;
       m_bPBuffer = false;
       m_bFlashed = false;
@@ -98,13 +98,13 @@ namespace draw2d_nanovg
 
    }
 
-   bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap)
-   {
-
-      __UNREFERENCED_PARAMETER(pgraphics);
-
-      return false;
-   }
+   // bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap)
+   // {
+   //
+   //    __UNREFERENCED_PARAMETER(pgraphics);
+   //
+   //    return false;
+   // }
 
 
    void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::int_size& size, void** ppcolorref, int* piScan)
@@ -165,7 +165,7 @@ namespace draw2d_nanovg
       return 0;
 
    }
-   unsigned int bitmap::GetBitmapBits(unsigned int dwCount, LPVOID lpBits) const
+   unsigned int bitmap::GetBitmapBits(unsigned int dwCount, void * lpBits) const
    {
       //return ::GetBitmapBits((HBITMAP)get_handle(), dwCount, lpBits);
       return 0;
@@ -238,12 +238,12 @@ namespace draw2d_nanovg
    }
 
 
-   int bitmap::GetBitmap(BITMAP* pBitMap)
-   {
-      //   ASSERT(get_handle() != nullptr);
-      // return ::GetObject(get_handle(), sizeof(BITMAP), pBitMap);
-      return 0;
-   }
+   // int bitmap::GetBitmap(BITMAP* pBitMap)
+   // {
+   //    //   ASSERT(get_handle() != nullptr);
+   //    // return ::GetObject(get_handle(), sizeof(BITMAP), pBitMap);
+   //    return 0;
+   // }
 
 
    /////////////////////////////////////////////////////////////////////////////
@@ -310,31 +310,31 @@ namespace draw2d_nanovg
    }
 
 
-   HBITMAP bitmap::_GetHBITMAP()
-   {
-
-      //if(m_pbitmap == nullptr)
-      //   return nullptr;
-      //
-      //HBITMAP hbitmap = nullptr;
-
-      //plusplus::Color colorBk(0,0,0,0);
-
-      //m_pbitmap->GetHBITMAP(colorBk,&hbitmap);
-
-      //return hbitmap;
-      return nullptr;
-
-   }
-
-
-   void bitmap::_ReleaseHBITMAP(HBITMAP hbitmap)
-   {
-
-      ::DeleteObject(hbitmap);
-
-
-   }
+   // HBITMAP bitmap::_GetHBITMAP()
+   // {
+   //
+   //    //if(m_pbitmap == nullptr)
+   //    //   return nullptr;
+   //    //
+   //    //HBITMAP hbitmap = nullptr;
+   //
+   //    //plusplus::Color colorBk(0,0,0,0);
+   //
+   //    //m_pbitmap->GetHBITMAP(colorBk,&hbitmap);
+   //
+   //    //return hbitmap;
+   //    return nullptr;
+   //
+   // }
+   //
+   //
+   // void bitmap::_ReleaseHBITMAP(HBITMAP hbitmap)
+   // {
+   //
+   //    ::DeleteObject(hbitmap);
+   //
+   //
+   // }
 
 
    void bitmap::destroy_bitmap()
@@ -678,7 +678,7 @@ namespace draw2d_nanovg
       //   Cleanup();
       //   return false;
       //}
-      ::DestroyWindow(m_hwnd);
+      //::DestroyWindow(m_hwnd);
       return true;
    }
 

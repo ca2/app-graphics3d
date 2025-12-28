@@ -206,10 +206,10 @@ namespace draw2d_nanovg
    //}
 
 
-   LRESULT CALLBACK opengl_window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
-   {
-      return DefWindowProc(hwnd, message, wparam, lparam);
-   }
+   // LRESULT CALLBACK opengl_window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
+   // {
+   //    return DefWindowProc(hwnd, message, wparam, lparam);
+   // }
 
 
    int  draw2d::opengl_init()

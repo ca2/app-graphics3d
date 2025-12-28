@@ -8,4 +8,7 @@
 #pragma comment(lib, "ktx.lib")
 
 
-#endif
+#endif 
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>

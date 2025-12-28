@@ -339,7 +339,7 @@ namespace gpu_vulkan
 		/*
 			gltf model loading and rendering class
 		*/
-		class CLASS_DECL_GPU_VULKAN Model : public ::gpu::gltf::model_base
+		class CLASS_DECL_GPU_VULKAN Model : public ::gpu::model::model_base
 		{
 		public:
 

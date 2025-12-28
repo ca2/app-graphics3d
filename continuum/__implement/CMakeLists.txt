@@ -7,7 +7,7 @@ project(_app_graphics3d_continuum CXX)
 list(APPEND application_source main.cpp)
 
 
-if(MSVC)
+if(${WIN32})
     list(APPEND application_source ../deployment.rc main.rc)
 endif()
 
@@ -28,6 +28,7 @@ set(LOCAL_APPID ${LOCAL_ROOT_FOLDER_NAME}/${LOCAL_APP_FOLDER_NAME})
 
 message(STATUS "_pbr-renderer LOCAL_APPID is ${LOCAL_APPID}")
 
+if(${WIN32})
 # Create zip
 add_custom_command(
    OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../_matter.zip"
@@ -42,6 +43,7 @@ set_source_files_properties(
    PROPERTIES
    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../_matter.zip"
 )
+endif()
 
 list(APPEND executable_references
         acme
@@ -56,18 +58,6 @@ list(APPEND executable_references
 )
 
 
-if(${LINUX} OR ${__BSD__})
-
-
-   add_custom_command(
-      OUTPUT ${PROJECT_SOURCE_DIR}/../.link_object/_matter.zip.o
-      COMMAND ${APPLICATION_BUILD_HELPER_BINARY} --prepare-application ${PROJECT_SOURCE_DIR}
-      COMMENT "Generating ${PROJECT_SOURCE_DIR}/../.link_object/_matter.zip.o"
-   )
-
-   target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/../.link_object/_matter.zip.o)
-
-endif()
 
 
 if (MSVC)
@@ -94,9 +84,14 @@ add_dependencies(${PROJECT_NAME} ${default_node})
 add_dependencies(${PROJECT_NAME} ${default_draw2d})
 add_dependencies(${PROJECT_NAME} ${default_write_text})
 add_dependencies(${PROJECT_NAME} ${app_common_dependencies})
+add_dependencies(${PROJECT_NAME} fs_raw_folder_protocol_dropbox)
 add_dependencies(${PROJECT_NAME} crypto_openssl)
 add_dependencies(${PROJECT_NAME} experience_core)
 add_dependencies(${PROJECT_NAME} folder_zip)
+
+if(${WITH_X11_OPERATING_AMBIENT})
+    add_dependencies(${PROJECT_NAME} operating_ambient_x11)
+endif()
 
 if(${WIN32})
 add_dependencies(${PROJECT_NAME} draw2d_direct2d)
@@ -112,6 +107,9 @@ if(${WITH_VULKAN})
 add_dependencies(${PROJECT_NAME} gpu_vulkan)
 add_dependencies(${PROJECT_NAME} draw2d_vulkan)
 add_dependencies(${PROJECT_NAME} draw2d_vkvg)
+endif()
+if(${WITH_OPENGL})
+add_dependencies(${PROJECT_NAME} typeface_freetype)
 endif()
 
 if(${WIN32})

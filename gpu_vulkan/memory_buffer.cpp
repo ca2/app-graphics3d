@@ -34,10 +34,10 @@ namespace gpu_vulkan
 
 
 
-   void memory_buffer::on_initialize_memory_buffer(const void* dataStatic, memsize sizeStatic)
+   void memory_buffer::on_initialize_memory_buffer(const ::block &block)
    {
 
-      if (sizeStatic > 0)
+      if (block.size() > 0)
       {
 
          if (m_etype == e_type_vertex_buffer)
@@ -46,7 +46,7 @@ namespace gpu_vulkan
             ::cast < context > pcontext = m_pcontext;
 
             m_pbuffer = pcontext->create_buffer(
-               sizeStatic,
+               block.size(),
                VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                m_bDynamic ?
                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 
@@ -87,7 +87,7 @@ namespace gpu_vulkan
             ::cast < context > pcontext = m_pcontext;
 
             m_pbuffer = pcontext->create_buffer(
-               sizeStatic,
+               block.size(),
                VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                m_bDynamic ?
                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
@@ -100,10 +100,10 @@ namespace gpu_vulkan
 
       }
 
-      if (m_pbuffer && ::is_set(dataStatic))
+      if (m_pbuffer && ::is_set(block.data()))
       {
 
-         m_pbuffer->assign(dataStatic, sizeStatic);
+         m_pbuffer->assign(block.data(), block.size());
 
 
       }
@@ -372,19 +372,19 @@ namespace gpu_vulkan
    }
 
 
-   void memory_buffer::on_set_memory_buffer(const void* dataStatic, memsize sizeStatic)
+   void memory_buffer::on_set_memory_buffer(const ::block & block)
    {
 
-      auto pmap = _map(0, sizeStatic);
+      auto pmap = _map(0, block.size());
       
-      writeToBuffer((void*)dataStatic, sizeStatic);
+      writeToBuffer((void*)block.data(), block.size());
       
       _unmap();
 
    }
 
 
-   void memory_buffer::_on_set_memory_buffer(const void* dataStatic, memsize sizeStatic)
+   void memory_buffer::_on_set_memory_buffer(const ::block &block)
    {
 
       ::cast < context > pcontext = m_pcontext;
@@ -394,9 +394,9 @@ namespace gpu_vulkan
          m_pbuffer->m_vkbuffer, 
          m_pbuffer->m_vkdevicememory, 0);
 
-      auto pmap = _map(0, sizeStatic);
+      auto pmap = _map(0, block.size());
 
-      writeToBuffer((void*)dataStatic, sizeStatic);
+      writeToBuffer((void*)block.data(), block.size());
 
       _unmap();
 

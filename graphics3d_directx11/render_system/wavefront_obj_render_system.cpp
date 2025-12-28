@@ -35,6 +35,8 @@ namespace graphics3d_directx11
 
       auto s = pscenerenderable->m_sequence3Scaling;
 
+      auto pszName = pscenerenderable->m_strName.c_str();
+
       if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_vulkan)
       {
     
@@ -42,6 +44,12 @@ namespace graphics3d_directx11
 
          //s.z = -s.z;
       
+      }
+      else
+      {
+
+         s.z = -s.z;
+
       }
       //else if (pscenerenderable->m_ecoordinatesystem == ::gpu::e_coordinate_system_znf)
       //{

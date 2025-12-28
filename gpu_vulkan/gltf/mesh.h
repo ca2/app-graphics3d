@@ -3,22 +3,8 @@
 #pragma once
 
 
-#include "gpu/gltf/mesh.h"
+#include "gpu/model/mesh.h"
 
-// #include "bred/gpu/context_object.h"
-// #include "bred/graphics3d/renderable.h"
-
-
-// #include <assimp/Importer.hpp>
-// #include <assimp/postprocess.h>
-// #include <assimp/scene.h>
-// 
-// //#include <string>
-// //#include <vector>
-//
-// #include "gpu/gltf/material.h"
-// #include "gpu/gltf/mesh.h"
-// #include "bred/gpu/shader.h"
 
 
 namespace gpu_vulkan
@@ -31,7 +17,7 @@ namespace gpu_vulkan
        * A gltf_mesh is a collection of geometry paired with a material.
        */
       class mesh :
-         virtual public ::gpu::gltf::mesh
+         virtual public ::gpu::model::mesh
       {
       public:
 
@@ -48,10 +34,10 @@ namespace gpu_vulkan
 
 
          //void initialize_gpu_gltf_mesh(const ::array_base<::gpu::gltf::vertex> &vertexa,
-         //                          const ::unsigned_int_array &indexa, ::gpu::gltf::material *pmaterial) override;
+         //                          const ::unsigned_int_array &indexa, ::gpu::model::material *pmaterial) override;
 
 
-         void on_initialize_gpu_gltf_mesh() override;
+         void on_initialize_gpu_mesh() override;
 
          void draw2(::gpu::command_buffer *pcommandbuffer) override;
          // private:

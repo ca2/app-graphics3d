@@ -12,7 +12,9 @@
 #include "bred/gpu/shader.h"
 #include "aura/platform/application.h"
 #include "gpu_opengl/context.h"
+#ifdef WINDOWS_DESKTOP
 #include "gpu_opengl/device_win32.h"
+#endif
 #include "gpu_opengl/frame_buffer.h"
 #include "gpu_opengl/lock.h"
 #include "system/basic_render_system.h"

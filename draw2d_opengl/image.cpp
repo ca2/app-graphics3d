@@ -11,11 +11,11 @@ namespace draw2d_opengl
    image::image::image()
    {
 
-      m_sizeWnd.cx         = 0;
-      m_sizeWnd.cy         = 0;
-      m_hbitmap            = nullptr;
+      // m_sizeWnd.cx         = 0;
+      // m_sizeWnd.cy         = 0;
+      // m_hbitmap            = nullptr;
       m_phost = nullptr;
-      zero(m_bitmapinfo);
+//      zero(m_bitmapinfo);
 
    }
 
@@ -72,7 +72,7 @@ namespace draw2d_opengl
 
       }
 
-      m_bitmapinfo = {};
+      //m_bitmapinfo = {};
 
       int iStride = size.cx * 4;
 
@@ -80,13 +80,13 @@ namespace draw2d_opengl
       //   iGoodStride
       //}
 
-      m_bitmapinfo.bmiHeader.biSize          = sizeof (BITMAPINFOHEADER);
-      m_bitmapinfo.bmiHeader.biWidth         = size.cx;
-      m_bitmapinfo.bmiHeader.biHeight        =- size.cy;
-      m_bitmapinfo.bmiHeader.biPlanes        = 1;
-      m_bitmapinfo.bmiHeader.biBitCount      = 32;
-      m_bitmapinfo.bmiHeader.biCompression   = BI_RGB;
-      m_bitmapinfo.bmiHeader.biSizeImage     = iStride  * size.cy;
+      // m_bitmapinfo.bmiHeader.biSize          = sizeof (BITMAPINFOHEADER);
+      // m_bitmapinfo.bmiHeader.biWidth         = size.cx;
+      // m_bitmapinfo.bmiHeader.biHeight        =- size.cy;
+      // m_bitmapinfo.bmiHeader.biPlanes        = 1;
+      // m_bitmapinfo.bmiHeader.biBitCount      = 32;
+      // m_bitmapinfo.bmiHeader.biCompression   = BI_RGB;
+      // m_bitmapinfo.bmiHeader.biSizeImage     = iStride  * size.cy;
 
       øconstruct(m_pbitmap);
 

@@ -25,9 +25,6 @@ layout(std140) uniform GlobalUbo {
     vec3 cameraPosition;
     PointLight pointLights[10];
     int numLights;
-    int padding1;
-    int padding2;
-    int padding3;
 } globalUbo;
 
 uniform mat4 modelMatrix;

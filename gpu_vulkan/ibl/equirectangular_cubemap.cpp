@@ -9,12 +9,12 @@
 #include "bred/graphics3d/_functions.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/skybox.h"
-#include "gpu/timer.h"
+#include "bred/platform/timer.h"
 
 
 
 
-#include "gpu/gltf/_constant.h"
+#include "gpu/model/_constant.h"
 #include "gpu_vulkan/_gpu_vulkan.h"
 #include "gpu_vulkan/command_buffer.h"
 #include "gpu_vulkan/context.h"
@@ -78,7 +78,7 @@ namespace gpu_vulkan
 
          ::gpu::ibl::equirectangular_cubemap::compute();
 
-         //::gpu::Timer timer;
+         //::bred::Timer timer;
 
          //::pointer < ::gpu_vulkan::command_buffer > pgpucommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
 

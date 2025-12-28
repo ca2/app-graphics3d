@@ -4,6 +4,12 @@
 #include "acme/prototype/prototype/memory.h"
 #include "aura/graphics/draw2d/bitmap.h"
 
+#ifdef WINDOWS_DESKTOP
+
+#include "acme/_operating_system.h"
+#include <glad/glad.h>
+#include <glad/glad_wgl.h>
+#endif
 
 //#include <GL/gl.h>
 //#include <GL/glu.h>
@@ -27,7 +33,7 @@
 #define WGL_PBUFFER_LOST_ARB                      0x2036
 #define WGL_PBUFFER_WIDTH_ARB                     0x2034
 
-DECLARE_HANDLE(HPBUFFERARB);
+///DECLARE_HANDLE(HPBUFFERARB);
 
 
 //-----------------------------------------------------------------------------
@@ -178,7 +184,7 @@ namespace draw2d_opengl
       void CreateDIBitmap(::draw2d::graphics * pgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
 
 
-      //int GetBitmap(BITMAP* pBitMap);//
+      //int GetBitmap(BITMAP* pBitMap);
 
 
       unsigned int SetBitmapBits(unsigned int dwCount, const void * lpBits);
@@ -192,8 +198,8 @@ namespace draw2d_opengl
       //virtual void attach(void * posdata);
       virtual void * detach();
 
-      virtual HBITMAP _GetHBITMAP();
-      virtual void _ReleaseHBITMAP(HBITMAP hbitmap);
+      //virtual HBITMAP _GetHBITMAP();
+      //virtual void _ReleaseHBITMAP(HBITMAP hbitmap);
 
    };
 

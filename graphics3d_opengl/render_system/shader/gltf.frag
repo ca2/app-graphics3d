@@ -30,9 +30,6 @@ layout(std140) uniform GlobalUbo {
     PointLight pointLights[10];
     int numLights; // Needs to be padded to 16 bytes in std140 layout
     // Add padding to align to 16 bytes
-    int padding1;
-    int padding2;
-    int padding3;
 } globalUbo;
 
 

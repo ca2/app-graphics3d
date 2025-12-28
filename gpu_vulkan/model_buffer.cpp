@@ -26,9 +26,9 @@ namespace gpu_vulkan
 
       m_pMap = nullptr;
 
-      m_iVertexCount = 0;
+      //m_iVertexCount = 0;
 
-      m_iIndexCount = 0;
+      //m_iIndexCount = 0;
 
    }
 
@@ -659,7 +659,14 @@ namespace gpu_vulkan
    void model_buffer::bind2(::gpu::command_buffer* pgpucommandbuffer)
    {
 
-      if (m_bDummy)
+      if (::is_null(m_pmodeldatabase2))
+      {
+
+         return;
+
+      }
+
+      if (m_pmodeldatabase2->is_dummy())
       {
 
          return;
@@ -687,13 +694,13 @@ namespace gpu_vulkan
 
             VkIndexType vkindextype;
 
-            if (m_iIndexTypeSize == 1)
+            if (m_pmodeldatabase2->index_type_size() == 1)
             {
 
                vkindextype = VK_INDEX_TYPE_UINT8;
 
             }
-            else if (m_iIndexByteSize == 2)
+            else if (m_pmodeldatabase2->index_type_size() == 2)
             {
                
                vkindextype = VK_INDEX_TYPE_UINT16;
@@ -720,7 +727,7 @@ namespace gpu_vulkan
    void model_buffer::draw2(::gpu::command_buffer* pgpucommandbuffer)
    {
 
-      if (m_pbufferVertex || m_bDummy)
+      if (m_pbufferVertex || m_pmodeldatabase2->is_dummy())
       {
 
          ::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
@@ -729,8 +736,7 @@ namespace gpu_vulkan
          {
 
             vkCmdDrawIndexed(
-               pcommandbuffer->m_vkcommandbuffer,
-               m_iIndexCount, 1, 0, 0, 0);
+               pcommandbuffer->m_vkcommandbuffer, m_pmodeldatabase2->index_count(), 1, 0, 0, 0);
 
          }
          else
@@ -746,8 +752,7 @@ namespace gpu_vulkan
             //}
 
             vkCmdDraw(
-               pcommandbuffer->m_vkcommandbuffer,
-               m_iVertexCount, 1, 0, 0);
+               pcommandbuffer->m_vkcommandbuffer, m_pmodeldatabase2->vertex_count(), 1, 0, 0);
          }
 
       }

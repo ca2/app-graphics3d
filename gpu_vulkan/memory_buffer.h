@@ -48,7 +48,7 @@ namespace gpu_vulkan
       //void initialize_memory_buffer_with_context(::gpu::context* pgpucontext, memsize size, ::gpu::memory_buffer::enum_type etype) override;
       //void initialize_memory_buffer_with_model_buffer(::gpu::model_buffer* ppmodelbuffer, memsize size, ::gpu::memory_buffer::enum_type etype) override;
 
-      void on_initialize_memory_buffer(const void* dataStatic = nullptr, memsize sizeStatic = 0) override;
+      void on_initialize_memory_buffer(const ::block &block = {}) override;
 
       bool is_initialized() const override;
       //VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
@@ -77,8 +77,8 @@ namespace gpu_vulkan
       VkDeviceSize getBufferSize() const { return m_size; }
 
       static VkDeviceSize getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment);
-      void on_set_memory_buffer(const void* dataStatic, memsize sizeStatic) override;
-      void _on_set_memory_buffer(const void* dataStatic = nullptr, memsize sizeStatic = 0) override;
+      void on_set_memory_buffer(const ::block &block) override;
+      void _on_set_memory_buffer(const ::block &block) override;
 
    };
 

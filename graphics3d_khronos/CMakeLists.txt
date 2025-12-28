@@ -25,8 +25,6 @@ list(APPEND library_references
         axis
         berg
         bred
-        imgui
-        gpu_vulkan
 )
 
 

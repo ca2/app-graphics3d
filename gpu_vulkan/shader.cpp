@@ -879,7 +879,7 @@ namespace gpu_vulkan
 
       m_ppipelineCurrent->bind(pcommandbuffer);
 
-      auto rectangle = pgpucontext->m_rectangle;
+      auto rectangle = pgputexture->m_textureattributes.m_rectangleTarget;
       auto size = rectangle.size();
       VkViewport vp = {(float)0.f, (float)0.f, (float)size.width(), (float)size.height(), 0.0f, 1.0f};
 

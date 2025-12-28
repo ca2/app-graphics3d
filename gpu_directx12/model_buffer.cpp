@@ -187,32 +187,32 @@ namespace gpu_directx12
    //}
 
 
-   void model_buffer::static_initialize_vertex_buffer(const void* data, memsize iTypeSize, ::collection::count iVertexCount)
+   void model_buffer::_static_initialize_vertex_buffer(const ::block &block)
    {
 
-      ::gpu::model_buffer::static_initialize_vertex_buffer(data, iTypeSize, iVertexCount);
+      ::gpu::model_buffer::_static_initialize_vertex_buffer(block);
 
       ::cast < memory_buffer > pbufferVertex = m_pbufferVertex;
 
       m_vertexbufferview.BufferLocation = pbufferVertex->m_presource->GetGPUVirtualAddress();
-      m_vertexbufferview.StrideInBytes = iTypeSize;
-      m_vertexbufferview.SizeInBytes = (UINT) ( iTypeSize * iVertexCount);
+      m_vertexbufferview.StrideInBytes = m_pmodeldatabase2->vertex_type_size();
+      m_vertexbufferview.SizeInBytes = (UINT) block.size();
 
 
    }
 
 
 
-   void model_buffer::static_initialize_index_buffer(const void* data, memsize iTypeSize, ::collection::count iIndexCount)
+   void model_buffer::_static_initialize_index_buffer(const ::block &block)
    {
 
-      ::gpu::model_buffer::static_initialize_index_buffer(data, iTypeSize, iIndexCount);
+      ::gpu::model_buffer::_static_initialize_index_buffer(block);
 
       ::cast < memory_buffer > pbufferIndex = m_pbufferIndex;
 
       m_indexbufferview.BufferLocation = pbufferIndex->m_presource->GetGPUVirtualAddress();
       m_indexbufferview.Format = DXGI_FORMAT_R32_UINT;
-      m_indexbufferview.SizeInBytes = (UINT) (iIndexCount * iTypeSize);
+      m_indexbufferview.SizeInBytes = (UINT) (block.size());
 
    }
 
@@ -284,7 +284,7 @@ namespace gpu_directx12
 
          m_bNew = false;
 
-         if (m_iIndexCount > 0)
+         if (m_pmodeldatabase2->index_count() > 0)
          {
 
             ::cast < memory_buffer > pbufferIndex = m_pbufferIndex;
@@ -321,7 +321,7 @@ namespace gpu_directx12
 
       }
 
-      if (m_bDummy)
+      if (m_pmodeldatabase2->is_dummy())
       {
 
          pcommandlist->IASetVertexBuffers(0, 0, nullptr);
@@ -338,7 +338,7 @@ namespace gpu_directx12
 
 
 
-      if (m_iIndexCount > 0)
+      if (m_pmodeldatabase2->index_count() > 0)
       {
 
          pcommandlist->IASetIndexBuffer(&m_indexbufferview);
@@ -383,12 +383,11 @@ namespace gpu_directx12
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      if (m_iIndexCount > 0)
+      if (m_pmodeldatabase2->index_count() > 0)
       {
 
          //   vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
-         pcommandlist->DrawIndexedInstanced(
-            m_iIndexCount,        // Number of indexes to draw
+         pcommandlist->DrawIndexedInstanced(m_pmodeldatabase2->index_count(), // Number of indexes to draw
             1,
             0,                 // Start index location in the index buffer
             0,                  // Base vertex location (added to each index)
@@ -400,8 +399,7 @@ namespace gpu_directx12
       {
       
          //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
-         pcommandlist->DrawInstanced(
-            m_iVertexCount,       // Number of vertexes to draw
+         pcommandlist->DrawInstanced(m_pmodeldatabase2->vertex_count(), // Number of vertexes to draw
             1,
             0,                  // Start vertex location
             0

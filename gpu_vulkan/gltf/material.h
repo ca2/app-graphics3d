@@ -15,7 +15,7 @@ namespace gpu_vulkan
 
 
       class CLASS_DECL_GPU_VULKAN material :
-         virtual public ::gpu::gltf::material
+         virtual public ::gpu::model::material
       {
 
       public:

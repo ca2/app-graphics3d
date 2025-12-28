@@ -77,7 +77,7 @@ if (MSVC)
     target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
     target_link_libraries(${PROJECT_NAME} PRIVATE glu32 opengl32 glad)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${library_references})
-elseif (${LINUX})
+elseif (${LINUX} OR ${__BSD__})
 
     #if(USE_PKGCONFIG)
     pkg_check_modules(PKGCONFIG vulkan)
@@ -91,7 +91,7 @@ elseif (${LINUX})
     target_compile_options(${PROJECT_NAME} PRIVATE ${PKGCONFIG_CFLAGS})
     target_link_options(${PROJECT_NAME} PRIVATE ${PKGCONFIG_LDFLAGS})
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${library_references} ${global_library_references} ${PKGCONFIG_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE glad nanovg ${library_references} ${global_library_references} ${PKGCONFIG_LIBRARIES})
     target_link_options(${PROJECT_NAME} PRIVATE -Wl,-z,defs)
     # target_link_options(static_${PROJECT_NAME} PRIVATE --whole-archive)
 

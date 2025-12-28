@@ -279,7 +279,7 @@ namespace gpu_vulkan
   //    /// @return lutBrdf
   //    virtual ::pointer < ::gpu::texture > generateBRDFlut();
 
-      ::pointer<::graphics3d::renderable> _load_gltf_model(const ::gpu::renderable_t & model) override;
+      //::pointer<::graphics3d::renderable> _load_model(const ::gpu::renderable_t & model) override;
 
 
       
@@ -288,12 +288,21 @@ namespace gpu_vulkan
                                          VkImageLayout newLayout, uint32_t mizLevels, uint32_t layerCount);
 
    void load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::file::path &path,
-                                int iAssimpTextureType) override;
+                                bool bSrgb) override;
       
 
    floating_sequence3 front(const ::graphics3d::floating_rotation &rotation) override;
 
    void load_ktxTexture(::gpu::texture * pgputexture, void *p_ktxTexture) override;
+   // quite a work arround;
+   // use just the metallic;
+   // oh, please try to create something like:
+   // ptextureMetallicRoughness =
+   // m_pgpucontext->rgb_from_b_g(ptextureMetallic, ptextureRoughness);
+    ::memory rgba_from_b_g_vert_memory() override;
+    ::memory rgba_from_b_g_frag_memory() override;
+
+   ::pointer < ::gpu::texture> rgba_from_b_g(::gpu::texture * pgputextureMetallic, ::gpu::texture * pgputextureRoughness) override;
 
    };
 

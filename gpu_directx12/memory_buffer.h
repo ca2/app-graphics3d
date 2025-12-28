@@ -41,7 +41,7 @@ namespace gpu_directx12
 
 
 
-      void on_initialize_memory_buffer(const void* dataStatic = nullptr, memsize sizeStatic = 0) override;
+      void on_initialize_memory_buffer(const ::block &block = {}) override;
 
 
       bool is_initialized() const override;
