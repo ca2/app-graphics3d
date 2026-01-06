@@ -240,14 +240,15 @@ namespace draw2d_opengl
    //    // return ::GetObject(get_handle(), sizeof(BITMAP), pBitMap);
    //    return 0;
    // }
-
+   //
 
    /////////////////////////////////////////////////////////////////////////////
 
 
    //void bitmap::dump(dump_context & dumpcontext) const
    //{
-   //   ::draw2d::object::dump(dumpcontext);
+   //   ::draw2d::object::dump(dumpcontext)exi
+   //   t;
 
    //   /*         if (get_handle() == nullptr)
    //               return;

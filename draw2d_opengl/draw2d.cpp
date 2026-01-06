@@ -187,7 +187,20 @@ namespace draw2d_opengl
    string draw2d::write_text_get_default_implementation_name()
    {
 
+#if defined(WIN32)
+
       return "win32";
+
+#elif defined(LINUX)
+
+      return "pango";
+
+#else
+
+#error "not defined"
+
+#endif
+
 
    }
 

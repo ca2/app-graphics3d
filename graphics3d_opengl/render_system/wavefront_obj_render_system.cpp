@@ -102,7 +102,7 @@ namespace graphics3d_opengl
 
          auto pszName2 = strName2.c_str();
 
-         information("");
+         //information("");
 
          // ::information("model ({}) matrix determinant (< 0): {}",
          //    strName2,
