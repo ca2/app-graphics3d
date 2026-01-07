@@ -59,7 +59,7 @@ namespace app_graphics3d_continuum
 
       //m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
 
-      m_angleFovY = 75f_degrees;
+      m_angleFovY = 75_f_degrees;
 
       m_fMovementSpeed = 8.0f;
 
@@ -71,7 +71,7 @@ namespace app_graphics3d_continuum
    void camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch)
    {
 
-      const float_angle angleCursorPixel = 0.1f_degrees; // Adjust this value to your liking
+      const float_angle angleCursorPixel = 0.1_f_degrees; // Adjust this value to your liking
       auto angleΔYaw = xoffset * angleCursorPixel;
       auto angleΔPitch = yoffset * angleCursorPixel;
 

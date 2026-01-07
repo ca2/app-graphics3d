@@ -110,16 +110,17 @@ namespace gpu_vulkan
 
       virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size);
 
-      void on_create_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size) override;
+      void on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
+                             ::acme::windowing::window *pwindow, const ::int_size &size) override;
 
 
       VkDevice logicalDevice();
 
       virtual void _create_offscreen_window(const ::int_size & size);
 
-      void defer_create_window_context(::windowing::window * pwindow) override;
-      void _defer_create_window_context(::windowing::window * pwindow) override;
-      virtual void _create_window_context(::windowing::window * pwindow);
+      void defer_create_window_context(::acme::windowing::window *pwindow) override;
+      void _defer_create_window_context(::acme::windowing::window * pwindow) override;
+      virtual void _create_window_context(::acme::windowing::window *pwindow);
 
       //virtual void _create_window_buffer();
       void _create_cpu_buffer(const ::int_size & size) override;
