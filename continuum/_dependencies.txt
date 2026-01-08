@@ -1,3 +1,6 @@
+default_draw2d
+default_operating_ambient
+app/crypto_openssl
 app-graphics3d/graphics3d_opengl
 app-graphics3d/graphics3d_vulkan
 app-graphics3d/graphics3d_directx11

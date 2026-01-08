@@ -108,7 +108,7 @@ namespace gpu_vulkan
 
 
 
-      virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size);
+      virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::int_size& size);
 
       void on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
                              ::acme::windowing::window *pwindow, const ::int_size &size) override;

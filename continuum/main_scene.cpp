@@ -63,7 +63,7 @@ namespace app_graphics3d_continuum
 
          //float aspect = m_pimmersionlayer->m_pengine->m_pusergraphics3d->getAspectRatio();
 
-         pcamera->m_angleFovY = 50f_degrees;
+         pcamera->m_angleFovY = 50_f_degrees;
          //pcamera->m_fAspectRatio = aspect;
          pcamera->m_fNearZ  = 0.1f;
          pcamera->m_fFarZ = 100.f;

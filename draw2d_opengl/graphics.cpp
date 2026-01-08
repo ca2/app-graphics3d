@@ -6772,7 +6772,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       auto pcontext = gpu_context();
 
-      ::gpu::context_lock contextlock(pcontext);
+      //::gpu::context_lock contextlock(pcontext);
 
       ::gpu::graphics::start_gpu_layer(pgpuframe);
 

@@ -797,7 +797,7 @@ namespace gpu_vulkan
 
 
    void context::_create_context_win32(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
-                                       ::windowing::window *pwindow, const ::int_size &size)
+                                       ::acme::windowing::window *pwindow, const ::int_size &size)
    {
 
       if (!pgpudevice)
@@ -949,7 +949,7 @@ namespace gpu_vulkan
 
 
    void context::on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
-                                   ::windowing::window *pwindow, const ::int_size &size)
+                                   ::acme::windowing::window *pwindow, const ::int_size &size)
    {
 
       // m_itaskGpu = ::current_itask();
@@ -1444,7 +1444,7 @@ namespace gpu_vulkan
    //}
 
 
-   void context::_create_window_context(::windowing::window *pwindowParam)
+   void context::_create_window_context(::acme::windowing::window *pwindowParam)
    {
 
       // m_itaskGpu = ::current_itask();
@@ -1681,7 +1681,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::defer_create_window_context(::windowing::window *pwindow)
+   void context::defer_create_window_context(::acme::windowing::window *pwindow)
    {
 
       // if (m_hrc)
@@ -1695,7 +1695,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::_defer_create_window_context(::windowing::window *pwindow) { _create_window_context(pwindow); }
+   void context::_defer_create_window_context(::acme::windowing::window *pwindow) { _create_window_context(pwindow); }
 
 
    void context::resize_cpu_buffer(const ::int_size &sizeParam)

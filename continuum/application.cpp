@@ -200,7 +200,7 @@ namespace app_graphics3d_continuum
 #endif
 
 
-   void application::create_options_body(::user::interaction* pparent)
+   void application::create_options_body(const ::atom & atom, ::user::interaction* pparent)
    {
 
       auto pstillTitle = create_label<::user::still>(pparent, "graphics3d continuum Options");
@@ -246,6 +246,8 @@ namespace app_graphics3d_continuum
             };
 
          create_label<::user::still>(playoutLine, "Absolute Mouse Position");
+
+         
 
       }
 

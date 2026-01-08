@@ -80,7 +80,7 @@ namespace gpu_directx12
 
 
 
-   void context::on_create_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size)
+   void context::on_create_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::int_size& size)
    {
 
       m_pgpudevice = pgpudevice;
@@ -1178,11 +1178,7 @@ namespace gpu_directx12
    }
 
 
-
-
-
-
-   void context::_create_window_context(::windowing::window* pwindowParam)
+   void context::_create_window_context(::acme::windowing::window* pwindowParam)
    {
 
       //m_itaskGpu = ::current_itask();
@@ -1419,7 +1415,7 @@ namespace gpu_directx12
    }
 
 
-   void context::defer_create_window_context(::windowing::window* pwindow)
+   void context::defer_create_window_context(::acme::windowing::window* pwindow)
    {
 
       //if (m_hrc)
@@ -1434,7 +1430,7 @@ namespace gpu_directx12
    }
 
 
-   void context::_defer_create_window_context(::windowing::window* pwindow)
+   void context::_defer_create_window_context(::acme::windowing::window* pwindow)
    {
 
       _create_window_context(pwindow);

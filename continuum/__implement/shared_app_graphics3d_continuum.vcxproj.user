@@ -5,4 +5,8 @@
     <LocalDebuggerCommandArguments>"C:\Users\camilo\g3d-labs\main\source\app-graphics3d\_matter\continuum\_std\_std\textures\SpaceSkybox\back.png"</LocalDebuggerCommandArguments>
     <LocalDebuggerCommandArgumentsHistory>"C:\Users\camilo\g3d-labs\main\source\app-graphics3d\_matter\continuum\_std\_std\textures\SpaceSkybox\back.png"|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LocalDebuggerCommand>C:\Users\camilo\application\app-graphics3d\continuum\binary\shared_app_graphics3d_continuum.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

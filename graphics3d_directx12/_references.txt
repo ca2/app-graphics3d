@@ -1,1 +1,1 @@
-app/core
+app-graphics3d/gpu_directx12

@@ -1,2 +1,1 @@
-app/core
-port/glad
+app-graphics3d/gpu_vulkan

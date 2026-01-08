@@ -75,7 +75,7 @@ namespace app_graphics3d_continuum
       auto angleΔYaw = xoffset * angleCursorPixel;
       auto angleΔPitch = yoffset * angleCursorPixel;
 
-      m_rotation.offset(angleΔYaw, angleΔPitch, -89f_degrees, 89f_degrees);
+      m_rotation.offset(angleΔYaw, angleΔPitch, -89_f_degrees, 89_f_degrees);
 
       //m_angleYaw += ::radians(xoffset);
       //m_anglePitch += ::radians(yoffset);

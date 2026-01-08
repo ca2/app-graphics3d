@@ -46,7 +46,7 @@ namespace app_graphics3d_continuum
       virtual long long increment_reference_count() override;
       virtual long long decrement_reference_count() override;
 #endif
-      void create_options_body(::user::interaction* pparent);
+      void create_options_body(const ::atom & atom, ::user::interaction* pparent) override;
 
 
       bool is_absolute_mouse_position();

@@ -61,6 +61,9 @@ namespace app_graphics3d_continuum
    }
 
 
+
+
+
    void pane_impact::on_message_create(::message::message * pmessage)
    {
 
@@ -74,6 +77,7 @@ namespace app_graphics3d_continuum
       get_app()->m_ppaneimpact = this;
 
       set_tab("Options", APP_OPTIONS_IMPACT);
+      set_tab("GPU", "options_impact_handler://gpu");
       //set_tab("gcom", GCOM_IMPACT);
       set_tab("hello_multiverse", MAIN_IMPACT);
       set_tab("switcher", MAIN_SWITCHER_IMPACT);
@@ -82,6 +86,8 @@ namespace app_graphics3d_continuum
 #if 1
       set_tab("Open", FILEMANAGER_IMPACT);
 #endif
+
+      m_mapoptionsimpacthandler.set_at("options_impact_handler://gpu", get_app());
 
 #if DEBUG_GCOM
 
@@ -284,42 +290,51 @@ namespace app_graphics3d_continuum
    void pane_impact::on_create_impact(::user::impact_data * pimpactdata)
    {
 
-      switch (pimpactdata->id().as_int())
+      //if (pimpactdata->id().is_text())
+      //{
+
+      //   if (pimpactdata->id() == "gpu_options")
+      //   {
+      //   }
+      //}
+      //else
       {
-         //case GCOM_IMPACT:
-         //{
+         switch (pimpactdata->id().as_int())
+         {
+               // case GCOM_IMPACT:
+               //{
 
-         //   create_impact < gcom >(pimpactdata);
+               //   create_impact < gcom >(pimpactdata);
 
-         //}
+               //}
 
-         //break;
-      case MAIN_IMPACT:
-      {
+               // break;
+            case MAIN_IMPACT:
+            {
 
-         auto prequest = m_pusersystem->m_prequest;
+               auto prequest = m_pusersystem->m_prequest;
 
-         auto & payloadFile = prequest->m_payloadFile;
+               auto &payloadFile = prequest->m_payloadFile;
 
-         auto papp = get_app();
+               auto papp = get_app();
 
-         information() << "pane_impact::on_create_impact MAIN_IMPACT";
+               information() << "pane_impact::on_create_impact MAIN_IMPACT";
 
-         get_app()->impact_system("impact")->open_document_file(papp, payloadFile, true, pimpactdata->m_pplaceholder);
+               get_app()->impact_system("impact")->open_document_file(papp, payloadFile, true,
+                                                                      pimpactdata->m_pplaceholder);
+            }
+            break;
+            case MAIN_SWITCHER_IMPACT:
+            {
 
-      }
-      break;
-      case MAIN_SWITCHER_IMPACT:
-      {
+               // create_impact < switcher_impact >(
+               //    get_app()->impact_system("impact")->get_document(),
+               //    pimpactdata->m_pplaceholder);
 
-         //create_impact < switcher_impact >(
-         //   get_app()->impact_system("impact")->get_document(),
-         //   pimpactdata->m_pplaceholder);
-
-         //get_app()->impact_system("impact")->get_document()->id_update_all_impacts(id_update_render);
-
-      }
-      break;
+               // get_app()->impact_system("impact")->get_document()->id_update_all_impacts(id_update_render);
+            }
+            break;
+         }
       }
 
       ::userex::pane_tab_impact::on_create_impact(pimpactdata);
