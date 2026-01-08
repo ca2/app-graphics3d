@@ -124,8 +124,9 @@ namespace gpu_directx12
    void block::update_frame(::gpu::renderer * pgpurenderer)
    {
 
+      auto pgpurendertarget = pgpurenderer->render_target();
 
-         auto iFrameIndex = pgpurenderer->m_pgpurendertarget->get_frame_index();
+         auto iFrameIndex = pgpurendertarget->get_frame_index();
 
 
          //MyGlobalData globalData = { /* your values */ };

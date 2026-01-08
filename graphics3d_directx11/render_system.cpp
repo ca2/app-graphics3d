@@ -60,7 +60,7 @@ namespace graphics3d_directx11
 
       //auto prenderpass = render_pass2();
 
-      auto prendertarget = prenderer->m_pgpurendertarget;
+      auto prendertarget = prenderer->render_target();
 
       //auto vkrenderpass = prenderpass->m_vkrenderpass;
 

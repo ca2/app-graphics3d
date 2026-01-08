@@ -369,9 +369,9 @@ namespace app_graphics3d_continuum
 
       auto prenderer = pgpucontext->m_pgpurenderer;
 
-      auto prendertarget = prenderer->m_pgpurendertarget;
+      auto pgpurendertarget = prenderer->render_target();
 
-      auto ptexture = prendertarget->current_texture(::gpu::current_frame());
+      auto ptexture = pgpurendertarget->current_texture(::gpu::current_frame());
 
       //pgpucontext->clear(ptexture, ::argb(1.0f, 0.5f, 0.75f, 1.0f)); // Clear with a light blue color
 

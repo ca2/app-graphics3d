@@ -555,8 +555,10 @@ float4 main(PSInput input) : SV_TARGET {
 
             ::cast < command_buffer > pdx12commandbuffer = pcommandbuffer;
 
+            auto pgpurendertarget = this->render_target();
+
             pdx12commandbuffer->initialize_command_buffer(
-               m_pgpurendertarget,
+               pgpurendertarget,
                m_pgpucontext->m_pgpudevice->graphics_queue(),
                ::gpu::e_command_buffer_graphics
                );
@@ -635,8 +637,10 @@ float4 main(PSInput input) : SV_TARGET {
 
          ::cast < command_buffer > pcommandbuffer = m_pcommandbufferLoadAssets;
 
+         auto pgpurendertarget = this->render_target();
+
          pcommandbuffer->initialize_command_buffer(
-            m_pgpurendertarget,
+            pgpurendertarget,
             m_pgpucontext->m_pgpudevice->transfer_queue(),
             ::gpu::e_command_buffer_copy);
             //m_pcommandqueueCopy, D3D12_COMMAND_LIST_TYPE_COPY, this);
@@ -676,7 +680,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       }
 
-      ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
+      auto pgpurendertarget = this->render_target();
+
+      ::cast < render_target_view > pgpurendertargetview = pgpurendertarget;
 
       assert(!isFrameStarted && "Can't call beginFrame while already in progress");
 
@@ -1321,7 +1327,7 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
       ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
-      ::cast < render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
+      ::cast < render_target_view > prendertargetview = prenderer->render_target();
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
       ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_frame());
       ID3D12Resource* presourceOffscreenTexture = ptextureCurrent->m_presource;
@@ -1509,7 +1515,7 @@ float4 main(PSInput input) : SV_TARGET {
       /////auto& memory = m_pimagetarget->m_imagebuffer.m_memory;
       ::cast< context > pgpucontext = m_pgpucontext;
       ::cast< renderer > prenderer = this;
-      ::cast < render_target_view > prendertargetview = prenderer->m_pgpurendertarget;
+      ::cast < render_target_view > prendertargetview = prenderer->render_target();
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
       ::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
       ID3D12Device* device = pgpudevice->m_pdevice;
@@ -3336,7 +3342,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      auto ptextureTarget = m_pgpurendertarget->current_texture(::gpu::current_frame());
+      auto pgpurendertarget = this->render_target();
+
+      auto ptextureTarget = pgpurendertarget->current_texture(::gpu::current_frame());
 
       pshader->bind(pcommandbuffer, ptextureTarget);
       pshader->bind_source(pcommandbuffer, ptexture);
@@ -3705,9 +3713,11 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::_on_begin_render(::gpu::frame * pgpuframe)
    {
 
-      ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
+      auto pgpurendertarget = this->render_target();
 
-      if (!m_pgpurendertarget->m_bRenderTargetInit)
+      ::cast < render_target_view > pgpurendertargetview = pgpurendertarget;
+
+      if (!pgpurendertarget->m_bRenderTargetInit)
       {
 
          return;
@@ -5356,7 +5366,26 @@ float4 main(PSInput input) : SV_TARGET {
 
 
    }
+   float renderer::getAspectRatio() const
+   {
 
+      // if (m_bOffScreen
+
+
+      auto pgpurendertarget = ((renderer*)this)->render_target();
+
+      ::cast<render_target_view> pgpurendertargetview = pgpurendertarget;
+
+      return pgpurendertargetview->extentAspectRatio();
+   }
+   // else
+   //{
+
+   //	return m_pvkcswapchain->extentAspectRatio();
+
+   //}
+
+//}
 
 } // namespace gpu_directx12
 

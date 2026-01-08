@@ -332,7 +332,9 @@ namespace gpu_vulkan
       pipelineconfiguration.dynamicStateInfo.dynamicStateCount =
          (uint32_t)pipelineconfiguration.dynamicStateEnables.size();
 
-      ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
+      auto pgpurendertarget = m_pgpurenderer->render_target();
+
+      ::cast<render_target> prendertarget = pgpurendertarget;
 
       ::cast<::gpu_vulkan::texture> ptextureTarget = pgputextureTarget;
 
@@ -372,7 +374,8 @@ namespace gpu_vulkan
 
       ::pointer_array<::gpu_vulkan::descriptor_set_layout> descriptorsetlayouta;
       ::pointer_array<::gpu_vulkan::descriptor_pool> descriptorpoola;
-      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+
+      int iFrameCount = pgpurendertarget->get_frame_count();
 
       if (m_pbindingslotseta)
       {
@@ -645,7 +648,9 @@ namespace gpu_vulkan
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
+      auto pgpurendertarget = m_pgpurenderer->render_target();
+
+      ::cast<render_target> prendertarget = pgpurendertarget;
 
       ::cast<::gpu_vulkan::texture> ptextureTarget = m_ptextureTarget;
 

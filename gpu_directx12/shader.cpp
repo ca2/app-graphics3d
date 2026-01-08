@@ -567,9 +567,11 @@ namespace gpu_directx12
 
       //return rootSignature;
 
+         auto pgpurendertarget = m_pgpurenderer->render_target();
+
          if (m_pbindingslotseta)
          {
-            int iFrameCount = pcontext->m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+            int iFrameCount = pgpurendertarget->get_frame_count();
             for (int iFrame = 0; iFrame < iFrameCount; iFrame++)
             {
                // auto &pheap = pbindingset->m_heapa1.ø(iFrame);

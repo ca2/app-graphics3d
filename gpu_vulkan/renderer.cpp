@@ -530,7 +530,9 @@ namespace gpu_vulkan
    void renderer::create_command_buffers()
    {
 
-      m_commandbuffera.set_size(m_pgpurendertarget->get_frame_count());
+      auto pgpurendertarget = render_target();
+
+      m_commandbuffera.set_size(pgpurendertarget->get_frame_count());
 
       //::array<VkCommandBuffer > a;
 
@@ -562,8 +564,10 @@ namespace gpu_vulkan
 
          //pcommandbuffer->m_pgpuqueue = m_pgpucontext->graphics_queue();
 
+         auto pgpurendertarget = this->render_target();
+
          pcommandbuffer->initialize_command_buffer(
-            m_pgpurendertarget,
+            pgpurendertarget,
             m_pgpucontext->m_pgpudevice->graphics_queue(),
             ::gpu::e_command_buffer_graphics);
 
@@ -617,7 +621,7 @@ namespace gpu_vulkan
       //if (m_bOffScreen)
       {
 
-         ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+         ::cast < render_pass > pgpurenderpass = this->render_target();
 
          auto result = pgpurenderpass->acquireNextImage();
 
@@ -735,7 +739,9 @@ namespace gpu_vulkan
    void renderer::cpu_buffer_sampler::update(const ::int_size& size)
    {
 
-      auto& ptexture = m_texturea.element_at_grow(m_prenderer->m_pgpurendertarget->get_frame_index());
+      auto pgpurendertarget = m_prenderer->render_target();
+
+      auto& ptexture = m_texturea.element_at_grow(pgpurendertarget->get_frame_index());
 
       if (ptexture &&
          ptexture->rectangle().size() == size)
@@ -762,7 +768,7 @@ namespace gpu_vulkan
 
       textureflags.m_bTransferTarget = true;
       textureflags.m_bCpuRead = true;
-      textureflags.m_bWithDepth = m_prenderer->m_pgpurendertarget->m_bWithDepth;
+      textureflags.m_bWithDepth = pgpurendertarget->m_bWithDepth;
 
       ptexture->initialize_texture(m_pcontext->get_gpu_renderer(), textureattributes, textureflags);
 
@@ -856,7 +862,9 @@ namespace gpu_vulkan
    void renderer::cpu_buffer_sampler::sample(::gpu::texture* pgputexture)
    {
 
-      auto iFrameIndex = m_prenderer->m_pgpurendertarget->get_frame_index();
+      auto pgpurendertarget = m_prenderer->render_target();
+
+      auto iFrameIndex = pgpurendertarget->get_frame_index();
 
       auto& ptextureRef = m_texturea.element_at_grow(iFrameIndex);
 
@@ -1162,7 +1170,9 @@ namespace gpu_vulkan
       ::array<VkPipelineStageFlags> waitStages;
       waitStages.add(vkpipelinestageflagsWait);
 
-      ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
+      //auto pgpurendertarget = m_prenderer->render_target();
+
+      ::cast < ::gpu_vulkan::render_target > prendertarget = pgpurendertarget;
       //::cast < texture > ptexture = pgputexture;
          //auto prenderpass = prendertarget->render_pass();
 
@@ -1203,7 +1213,9 @@ namespace gpu_vulkan
    void renderer::cpu_buffer_sampler::send_sample()
    {
 
-      auto& ptextureRef = m_texturea.element_at_grow(m_prenderer->m_pgpurendertarget->get_frame_index());
+      auto pgpurendertarget = m_prenderer->render_target();
+
+      auto& ptextureRef = m_texturea.element_at_grow(pgpurendertarget->get_frame_index());
 
       if (!ptextureRef)
       {
@@ -1339,7 +1351,7 @@ namespace gpu_vulkan
   //      if (callback)
       {
 
-         ::cast < render_target > prendertarget = m_pgpurendertarget;
+         ::cast < ::gpu_vulkan::render_target > prendertarget = prendertarget;
 
          m_pcpubuffersampler->update(m_pgpucontext->m_rectangle.size());
          {
@@ -1832,7 +1844,10 @@ namespace gpu_vulkan
 
       }
 
-      ::cast < render_target > prendertarget = m_pgpurendertarget;
+
+      auto pgpurendertarget = this->render_target();
+
+      ::cast < ::gpu_vulkan::render_target > prendertarget = pgpurendertarget;
 
       //::cast < render_pass > prenderpass = prendertarget->render_pass();
 
@@ -2315,7 +2330,9 @@ namespace gpu_vulkan
 
       auto pshaderImageBlend = _get_image_blend_shader();
 
-      auto ptextureTarget = m_pgpurendertarget->current_texture(::gpu::current_frame());
+      auto pgpurendertarget = this->render_target();
+
+      auto ptextureTarget = pgpurendertarget->current_texture(::gpu::current_frame());
 
       pshaderImageBlend->bind(pcommandbuffer, ptextureTarget);
 
@@ -2778,7 +2795,9 @@ namespace gpu_vulkan
 
       auto pshader = _get_image_blend_shader();
 
-      auto ptextureTarget = m_pgpurendertarget->current_texture(::gpu::current_frame());
+      auto pgpurendertarget = this->render_target();
+
+      auto ptextureTarget = pgpurendertarget->current_texture(::gpu::current_frame());
 
       pshader->bind(pcommandbuffer, ptextureTarget);
       pshader->bind_source(pcommandbuffer, pgputexture, 0);
@@ -2903,7 +2922,9 @@ namespace gpu_vulkan
    void renderer::_blend_renderer(::gpu_vulkan::renderer* prendererSrc, bool bYSwap)
    {
 
-      ::cast < render_target > prendertargetSrc = prendererSrc->m_pgpurendertarget;
+      auto pgpurendertarget = prendererSrc->render_target();
+
+      ::cast < ::gpu_vulkan::render_target > prendertargetSrc = pgpurendertarget;
 
       //::cast < render_pass > pgpurenderpassSrc = prendererSrc->m_pgpurendertarget;
 
@@ -3071,7 +3092,9 @@ namespace gpu_vulkan
 
       auto pshader = _get_image_blend_shader();
 
-      auto ptextureTarget = m_pgpurendertarget->current_texture(::gpu::current_frame());
+      //auto pgpurendertarget = this->render_target();
+
+      auto ptextureTarget = pgpurendertarget->current_texture(::gpu::current_frame());
 
       pshader->bind(pcommandbuffer, ptextureTarget);
       
@@ -3234,7 +3257,9 @@ namespace gpu_vulkan
 
       ::cast < command_buffer > pcommandbuffer = this->getCurrentCommandBuffer2(::gpu::current_frame());
 
-      ::cast < render_pass > pgpurenderpass = m_pgpurendertarget;
+      auto pgpurendertarget = this->render_target();
+
+      ::cast < render_pass > pgpurenderpass = pgpurendertarget;
 
       //if (m_bOffScreen)
       {
@@ -3352,7 +3377,7 @@ namespace gpu_vulkan
       //pgpurenderpass->m_iCurrentFrame = (pgpurenderpass->m_iCurrentFrame + 1) % 
       //   get_frame_count();
 
-      ::cast < render_target > prendertarget = m_pgpurendertarget;
+      ::cast < ::gpu_vulkan::render_target > prendertarget = this->render_target();
 
       //auto prenderpass = prendertarget->render_pass();
 
@@ -3503,7 +3528,7 @@ namespace gpu_vulkan
 
          //}
 
-         ::cast<render_target> prendertarget = this->m_pgpurendertarget;
+         ::cast<::gpu_vulkan::render_target> prendertarget = this->render_target();
          //::cast<renderer> prenderer = m_pgpurenderer;
 
          //::cast<render_pass> prenderpass = prenderer->render_pass2();
@@ -3982,9 +4007,9 @@ namespace gpu_vulkan
 
       ASSERT(ecommandbufferstate != ::gpu::command_buffer::e_state_recording);
 
-      ::cast < ::gpu_vulkan::render_target > prendertarget = m_pgpurendertarget;
+      ::cast < ::gpu_vulkan::render_target > prendertarget = this->render_target();
 
-      ::cast < ::gpu_vulkan::texture > ptexture = m_pgpurendertarget->current_texture(::gpu::current_frame());
+      ::cast < ::gpu_vulkan::texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
 
       auto psynchronization = ptexture->synchronization();
 
@@ -4038,7 +4063,7 @@ namespace gpu_vulkan
 
       ::cast < renderer > prenderer = m_pgpucontext->m_pgpurenderer;
 
-      ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
+      ::cast < ::gpu_vulkan::render_target > prendertarget = prenderer->render_target();
 
       ::cast < texture  > ptexture = prendertarget->current_texture(::gpu::current_frame());
       
@@ -4122,7 +4147,7 @@ namespace gpu_vulkan
       else
       {
 
-         ::cast < render_target > prendertargetOutput = m_pgpurendertarget;
+         ::cast < ::gpu_vulkan::render_target > prendertargetOutput = this->render_target();
 
          //prenderpassOutput = prendertargetOutput->render_pass();
 
@@ -4400,7 +4425,7 @@ namespace gpu_vulkan
 
       m_pgpucontext->set_placement(prenderer->m_pgpucontext->rectangle());
 
-      ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
+      ::cast < ::gpu_vulkan::render_target > prendertarget = prenderer->render_target();
 
       //::cast < render_pass > prenderpass = prendertarget->render_pass();
 
@@ -4500,7 +4525,7 @@ namespace gpu_vulkan
       if (auto pframe = beginFrame())
       {
 
-         ::cast < render_target > prendertargetSrc = prendererSrc->m_pgpurendertarget;
+         ::cast < ::gpu_vulkan::render_target > prendertargetSrc = prendererSrc->render_target();
 
          //::cast < render_pass > prenderpassSrc = prendertargetSrc->render_pass();
 
@@ -4652,7 +4677,7 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::renderer > prendererSource = prendererSourceParam;
 
-      ::cast < render_target > prendertargetSource = prendererSource->m_pgpurendertarget;
+      ::cast < ::gpu_vulkan::render_target > prendertargetSource = prendererSource->render_target();
 
       //auto prenderpassSource = prendertargetSource->render_pass();
 

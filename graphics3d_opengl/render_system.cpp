@@ -65,7 +65,7 @@ namespace graphics3d_opengl
       
       auto pframe = ::gpu::current_frame();
 
-      auto prendertarget = prenderer->m_pgpurendertarget;
+      auto prendertarget = prenderer->render_target();
 
       ::cast<::gpu_opengl::texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
 

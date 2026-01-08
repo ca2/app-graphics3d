@@ -1876,10 +1876,12 @@ namespace gpu_vulkan
    void context::begin_render(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptexture)
    {
 
+      auto pgpurendertarget = m_pgpurenderer->render_target();
+
       if (::is_null(ptexture))
       {
 
-         ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_frame());
+         ptexture = pgpurendertarget->current_texture(::gpu::current_frame());
 
       }
 
@@ -3128,7 +3130,9 @@ namespace gpu_vulkan
 
       ::cast<renderer> pgpurenderer = m_pgpurenderer;
 
-      ::cast<render_target> prendertarget = pgpurenderer->m_pgpurendertarget;
+      auto pgpurendertarget = m_pgpurenderer->render_target();
+
+      ::cast<render_target> prendertarget = pgpurendertarget;
 
       ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
 
@@ -3541,10 +3545,10 @@ namespace gpu_vulkan
    void context::on_start_layer(::gpu::layer *player)
    {
 
-     
+     auto pgpurendertarget = m_pgpurenderer->render_target();
 
       ::cast<::gpu_vulkan::texture> ptexture =
-         m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_frame());
+         pgpurendertarget->current_texture(::gpu::current_frame());
 
       ::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
@@ -3553,7 +3557,9 @@ namespace gpu_vulkan
 
          ::cast<gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
 
-         ::cast<render_target> prendertarget = m_pgpurenderer->m_pgpurendertarget;
+         auto pgpurendertarget = m_pgpurenderer->render_target();
+
+         ::cast<render_target> prendertarget = pgpurendertarget;
 
          //::cast < render_pass > prenderpass = prendertarget->render_pass();
 
@@ -3695,9 +3701,11 @@ void context::on_end_layer(::gpu::layer *player)
 void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource)
 {
 
-   int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+   auto pgpurendertarget = m_pgpurenderer->render_target();
 
-   int iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+   int iFrameCount = pgpurendertarget->get_frame_count();
+
+   int iFrameIndex = pgpurendertarget->get_frame_index();
 
    ::pointer<command_buffer> pcommandbuffer;
 
@@ -5137,7 +5145,9 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 
       //}
 
-      ::cast<render_target> prendertarget = prenderer->m_pgpurendertarget;
+      auto pgpurendertarget = prenderer->render_target();
+
+      ::cast<render_target> prendertarget = pgpurendertarget;
       //::cast<renderer> prenderer = m_pgpurenderer;
 
       //::cast<render_pass> prenderpass = prenderer->render_pass2();

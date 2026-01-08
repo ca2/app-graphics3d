@@ -665,7 +665,7 @@ namespace gpu_vulkan
 
       ::cast<context> pgpucontext = pcontext;
 
-      ::cast<render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
+      ::cast<render_pass> prenderpass = m_pgpurenderer->render_target();
 
       VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
 

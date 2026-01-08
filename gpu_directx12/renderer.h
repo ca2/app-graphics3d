@@ -205,25 +205,28 @@ namespace gpu_directx12
       //void _resolve_color_and_alpha_accumulation_buffers();
       void swap_chain();
 
-      float getAspectRatio() const
-      {
+      float getAspectRatio() const;
 
-         //if (m_bOffScreen)
-         {
+      //{
 
-            ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
+      //   //if (m_bOffScreen
 
-            return pgpurendertargetview->extentAspectRatio();
 
-         }
-         //else
-         //{
+      //   auto pgpurendertarget = m_pgpurenderer->render_target();
 
-         //	return m_pvkcswapchain->extentAspectRatio();
+      //      ::cast < render_target_view > pgpurendertargetview = m_pgpurendertarget;
 
-         //}
+      //      return pgpurendertargetview->extentAspectRatio();
 
-      }
+      //   }
+      //   //else
+      //   //{
+
+      //   //	return m_pvkcswapchain->extentAspectRatio();
+
+      //   //}
+
+      //}
 
 
       virtual ::gpu_directx12::vertex_buffer < ::graphics3d::sequence2_uv > * 

@@ -1732,7 +1732,9 @@ namespace gpu_directx12
 
          auto pdxgidevice = _get_dxgi_device();
 
-         auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+         auto pgpurendertarget = m_pgpurenderer->render_target();
+
+         auto iFrameIndex = pgpurendertarget->get_frame_index();
 
          auto etypeRenderer = m_pgpurenderer->m_pgpucontext->m_etype;
 
@@ -1813,7 +1815,9 @@ namespace gpu_directx12
 
       auto pdxgidevice = _get_dxgi_device();
 
-      auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+      auto pgpurendertarget = m_pgpurenderer->render_target();
+
+      auto iFrameIndex = pgpurendertarget->get_frame_index();
 
       auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
 

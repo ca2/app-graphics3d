@@ -267,7 +267,15 @@ namespace gpu_vulkan
 
    int render_pass::get_frame_index()
    {
-      return m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->get_frame_index(); 
+
+      auto pgpucontext = m_pgpucontext;
+
+      auto pgpurenderer = pgpucontext->m_pgpurenderer;
+
+      auto pgpurendertarget = pgpurenderer->render_target();
+
+      return pgpurendertarget->get_frame_index(); 
+
    }
 
    //::gpu::texture* render_pass::current_texture()

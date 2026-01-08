@@ -60,7 +60,9 @@ namespace graphics3d_vulkan
 
       //auto prenderpass = render_pass2();
 
-      auto prendertarget = prenderer->m_pgpurendertarget;
+      auto pgpurendertarget = prenderer->render_target();
+
+      auto prendertarget = pgpurendertarget;
 
       
 

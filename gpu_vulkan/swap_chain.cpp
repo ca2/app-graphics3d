@@ -87,7 +87,7 @@ namespace gpu_vulkan
 
       auto prenderer = pcontext->m_pgpurenderer;
 
-      ::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
+      ::cast < render_target > prendertarget = prenderer->render_target();
 
       ::cast < texture > ptexture = current_swap_chain_texture();
 
@@ -223,7 +223,7 @@ namespace gpu_vulkan
 
       uint32_t* imageIndex = &m_uCurrentSwapChainImage;
 
-      auto prendertarget = pcontext->m_pgpurenderer->m_pgpurendertarget;
+      auto prendertarget = pcontext->m_pgpurenderer->render_target();
 
       auto currentFrame = prendertarget->get_frame_index();
 
@@ -459,7 +459,7 @@ namespace gpu_vulkan
 
       auto prenderer = pcontext->m_pgpurenderer;
 
-      auto prendertarget = prenderer->m_pgpurendertarget;
+      auto prendertarget = prenderer->render_target();
 
       auto pgpucontext = pcontext;
 
@@ -889,9 +889,7 @@ namespace gpu_vulkan
 
          auto prenderer = pcontext->m_pgpurenderer;
 
-         auto prendertarget = prenderer->m_pgpurendertarget;
-
-
+         auto prendertarget = prenderer->render_target();
 
          VkExtent2D actualExtent;
 
@@ -938,7 +936,7 @@ namespace gpu_vulkan
 
       ::cast < renderer > pgpurenderer = pgpucontext->m_pgpurenderer;
 
-      ::cast < render_target > prendertarget = pgpurenderer->m_pgpurendertarget;
+      ::cast < render_target > prendertarget = pgpurenderer->render_target();
 
       ::cast < ::gpu_vulkan::texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
 
