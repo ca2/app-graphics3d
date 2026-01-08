@@ -5019,7 +5019,34 @@ namespace gpu_vulkan
 //
 //   }
 
+      VkRenderPass renderer::getRenderPass() const
+   {
 
+      ::cast<render_pass> prenderpass = ((renderer *)this)->render_target();
+      return prenderpass->getRenderPass();
+      // return m_bOffScreen ?
+      // m_pvkcoffscreen->getRenderPass():
+      // m_pvkcswapchain->getRenderPass();
+   }
+
+
+            float renderer::getAspectRatio() const
+   {
+
+      // if (m_bOffScreen)
+      {
+
+         ::cast<render_pass> prenderpass = ((renderer *)this)->render_target();
+
+         return prenderpass->extentAspectRatio();
+      }
+      // else
+      //{
+
+      //	return m_pvkcswapchain->extentAspectRatio();
+
+      //}
+   }
 
 } // namespace gpu_vulkan
 

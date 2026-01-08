@@ -285,7 +285,7 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
-      ::cast < ::gpu_vulkan::render_target > prendertarget = pcontext->m_pgpurenderer->m_pgpurendertarget;
+      ::cast < ::gpu_vulkan::render_target > prendertarget = pcontext->m_pgpurenderer->render_target();
 
       ::cast < ::gpu_vulkan::texture > ptextureSrc = prendertarget->current_texture(::gpu::current_frame());
 

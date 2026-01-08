@@ -128,17 +128,7 @@ namespace gpu_vulkan
 
       //}
 
-      VkRenderPass getRenderPass() const
-      {
-
-         ::cast < render_pass > prenderpass = m_pgpurendertarget;
-
-         return prenderpass->getRenderPass();
-         //return m_bOffScreen ?
-            //m_pvkcoffscreen->getRenderPass():
-            //m_pvkcswapchain->getRenderPass(); 
-
-      }
+      VkRenderPass getRenderPass() const;
 
 
       //virtual ::gpu_vulkan::render_pass *render_pass2();
@@ -154,25 +144,25 @@ namespace gpu_vulkan
       //void on_end_layer(::gpu::layer* player) override;
 
 
-      float getAspectRatio() const
-      {
+      float getAspectRatio() const;
+      //{
 
-         //if (m_bOffScreen)
-         {
+      //   //if (m_bOffScreen)
+      //   {
 
-            ::cast < render_pass > prenderpass = m_pgpurendertarget;
+      //      ::cast<render_pass> prenderpass = ((renderer *)this)->render_target();
 
-            return prenderpass->extentAspectRatio();
+      //      return prenderpass->extentAspectRatio();
 
-         }
-         //else
-         //{
+      //   }
+      //   //else
+      //   //{
 
-         //	return m_pvkcswapchain->extentAspectRatio();
+      //   //	return m_pvkcswapchain->extentAspectRatio();
 
-         //}
+      //   //}
 
-      }
+      //}
 
 
       /*bool isFrameInProgress() const { return isFrameStarted; }*/

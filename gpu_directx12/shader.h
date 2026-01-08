@@ -15,8 +15,21 @@ namespace gpu_directx12
       virtual public ::gpu::shader
    {
    public:
+      
+      
       int m_iPush ;
+      int m_iPushMax = 0;
+      int m_iLast_BindFrame  = -1;
       ::comptr <ID3D12PipelineState> m_ppipelinestate ;
+
+
+      ::array_base<::comptr<ID3D12DescriptorHeap>> m_heapa1;
+      ::array_base<::comptr<ID3D12DescriptorHeap>> m_heapaSampler1;
+      int m_iHeapIndex = 0;
+      int m_iHeapCount = 1024;
+      int m_iHeapSamplerIndex = 0;
+      int m_iHeapSamplerCount = 64;
+
 
       //::comptr < ID3D11PixelShader> m_ppixelshader;
 
@@ -36,7 +49,7 @@ namespace gpu_directx12
       //bool m_bEnableBlend = false;
       //bool m_bDisableDepthTest = false;
 
-      ::comptr<ID3D12Resource> m_presourcePushProperties;
+      ::array_base<::comptr<ID3D12Resource>> m_resourceaPushProperties;
       int m_iShaderResourceViewDescriptorTableRootParameterIndex = -1;
       int m_iSamplerDescriptorTableRootParameterIndex = -1;
       int m_iPushConstantsBufferIndex = -1;
@@ -47,6 +60,8 @@ namespace gpu_directx12
 
       void create_root_signature();
 
+
+      void _on_more_push();
 
       virtual ::comptr < ID3DBlob> create_vertex_shader_blob(const ::block& block);
       virtual ::comptr < ID3DBlob> create_pixel_shader_blob(const ::block& block);
@@ -89,12 +104,14 @@ namespace gpu_directx12
         //        ::gpu::texture *pgputextureSource) override;
       void bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget) override;
       void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureSource, int iSlot) override;
-      //void bind(::gpu::command_buffer *pgpucommandbuffer) override;
+      virtual void _bind(::gpu::command_buffer *pgpucommandbuffer);
       void unbind(::gpu::command_buffer *pgpucommandbuffer) override;
 
 
       void push_properties(::gpu::command_buffer *pgpucommandbuffer) override;
 
+          void bind_slot_set(::gpu::command_buffer *pgpucommandbuffer, int iSet,
+                         ::gpu::binding_slot_set *pgpubindingslotset) override;
 
    };
 

@@ -742,7 +742,10 @@ namespace gpu_vulkan
          else
          {
 
-            ::cast < texture > ptexture = m_pgpucontext->m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_frame());
+
+            auto prendertarget = m_pgpucontext->m_pgpurenderer->render_target();
+
+            ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
 
             //if (ptexture && ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
             //{

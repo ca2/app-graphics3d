@@ -1,5 +1,7 @@
 #include "framework.h"
 #include "approach.h"
+#include "binding.h"
+#include "block.h"
 #include "command_buffer.h"
 #include "program.h"
 #include "shader.h"
@@ -14,6 +16,8 @@
 #include "frame.h"
 #include "swap_chain.h"
 #include "texture.h"
+#include "gltf/mesh.h"
+#include "gltf/model.h"
 #include "bred/gpu/frame_ephemeral.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
@@ -51,10 +55,16 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item < ::gpu::pixmap >();
 
+   pfactory->add_factory_item<::gpu_directx12::gltf::mesh, ::gpu::model::mesh>();
+   pfactory->add_factory_item<::gpu_directx12::gltf::model, ::gpu::model::model>();
+
 
    pfactory->add_factory_item < ::gpu_directx12::frame_storage, ::gpu::frame_storage >();
 
    pfactory->add_factory_item < ::gpu::frame_ephemeral >();
+   pfactory->add_factory_item<::gpu_directx12::binding, ::gpu::binding>();
+   pfactory->add_factory_item<::gpu_directx12::binding_set, ::gpu::binding_set>();
+   pfactory->add_factory_item<::gpu_directx12::block, ::gpu::block>();
 
 
 }

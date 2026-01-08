@@ -189,12 +189,12 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_Target {
     
 //if(uv.x >0.5)
 //{
-  // return float4(0.1*0.5, 0.8*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
+// return float4(0.1*0.5, 0.8*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
 //}
 //else
-//{
+{
 return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
-//}
+}
 }
 )shader";
 
@@ -283,7 +283,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       //FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
 
       //pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView, 
-        // colorRGBA2, 0, nullptr);
+      //   colorRGBA2, 0, nullptr);
 
       //{
 

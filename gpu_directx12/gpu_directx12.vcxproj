@@ -687,6 +687,8 @@
   <ItemGroup>
     <ClInclude Include="aaa_accumulation_render_pass.h" />
     <ClInclude Include="assimp.h" />
+    <ClInclude Include="binding.h" />
+    <ClInclude Include="block.h" />
     <ClInclude Include="buffer.h" />
     <ClInclude Include="command_buffer.h" />
     <ClInclude Include="cpu_buffer.h" />
@@ -700,6 +702,14 @@
     <ClInclude Include="dxgi_debug.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="frame_storage.h" />
+    <ClInclude Include="gltf\aaa_vertex.h" />
+    <ClInclude Include="gltf\material.h" />
+    <ClInclude Include="gltf\mesh.h" />
+    <ClInclude Include="gltf\model.h" />
+    <ClInclude Include="gltf\_constant.h" />
+    <ClInclude Include="ibl\diffuse_irradiance_map.h" />
+    <ClInclude Include="ibl\equirectangular_cubemap.h" />
+    <ClInclude Include="ibl\specular_map.h" />
     <ClInclude Include="initializers.h" />
     <ClInclude Include="input_layout.h" />
     <ClInclude Include="memory_buffer.h" />
@@ -733,6 +743,11 @@
     </ClCompile>
     <ClCompile Include="block.cpp" />
     <ClCompile Include="frame_storage.cpp" />
+    <ClCompile Include="gltf\mesh.cpp" />
+    <ClCompile Include="gltf\model.cpp" />
+    <ClCompile Include="ibl\diffuse_irradiance_map.cpp" />
+    <ClCompile Include="ibl\equirectangular_cubemap.cpp" />
+    <ClCompile Include="ibl\specular_map.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="assimp.cpp" />
     <ClCompile Include="buffer.cpp" />
@@ -983,6 +998,9 @@ application_build_helper --binary-to-unsigned-int "$(ProjectDir)/shader/%(Filena
     </ProjectReference>
     <ProjectReference Include="..\..\app\bred\bred.vcxproj">
       <Project>{dfbf067f-aff9-4bd6-a5e1-72af984d1476}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\gpu\gpu.vcxproj">
+      <Project>{d728fd54-84d0-4b93-9d34-43338f285886}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2660,6 +2660,34 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
    //}
 
 
+      floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotation)
+   {
+
+      // throw ::interface_only();
+      //  sequence_type<FLOATING, 3> front() const
+      //{
+
+      //   floating_sequence3 front(m_anglePitch.cos() * m_angleYaw.cos(), m_anglePitch.sin(),
+      //                            m_anglePitch.cos() * m_angleYaw.sin());
+
+      //   front.normalize();
+
+      //   return front;
+      //}
+      floating_sequence3 front;
+      front.x = rotation.m_anglePitch.cos() * rotation.m_angleYaw.cos();
+      front.y = rotation.m_anglePitch.sin();
+      front.z = rotation.m_anglePitch.cos() * rotation.m_angleYaw.sin();
+      // front.z = rotation.m_anglePitch.cos() * rotation.m_angleYaw.cos();
+      // front.z = -front.z;
+      front.normalize();
+
+      return front;
+   }
+
+
+
+
 } // namespace gpu_directx12
 
 

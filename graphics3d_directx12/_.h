@@ -2,6 +2,7 @@
 
 
 #include "gpu_directx12/_.h"
+#include "app-graphics3d/graphics3d/_.h"
 #include "_directx12.h"
 
 

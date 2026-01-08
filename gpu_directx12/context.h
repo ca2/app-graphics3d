@@ -382,6 +382,9 @@ namespace gpu_directx12
       IDXGIDevice* _get_dxgi_device() override;
       ::gpu::swap_chain* get_swap_chain() override;
 
+
+      floating_sequence3 front(const ::graphics3d::floating_rotation &rotation) override;
+
    };
 
 

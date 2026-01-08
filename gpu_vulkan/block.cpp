@@ -48,7 +48,9 @@ namespace gpu_vulkan
 
       ::gpu::block::create_gpu_block(pgpucontext);
 
-      auto iFrameCount = pgpucontext->m_pgpurenderer->m_pgpurendertarget->get_frame_count();
+      auto prendertarget = pgpucontext->m_pgpurenderer->render_target();
+
+      auto iFrameCount = prendertarget->get_frame_count();
       
       m_uboBuffers.set_size(iFrameCount);
       
@@ -137,7 +139,9 @@ namespace gpu_vulkan
    void block::update_frame(gpu::renderer* pgpurenderer)
    {
 
-      auto iFrameIndex = pgpurenderer->m_pgpurendertarget->get_frame_index();
+      auto prendertarget = pgpurenderer->render_target();
+
+      auto iFrameIndex = prendertarget->get_frame_index();
 
       if (iFrameIndex < 0 || iFrameIndex >= m_uboBuffers.size())
       {

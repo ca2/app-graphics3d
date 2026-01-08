@@ -134,6 +134,10 @@ namespace gpu_directx12
          //    D3D12_RANGE readRange = {}; // no read access
          //  m_uboBuffers[iFrameIndex]->m_presourceBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mappedPtr));
          //memcpy(mappedPtr, block.data(), block.size());
+
+
+         resource();
+
          auto pData = m_pData;
          memcpy(pData, this->data(false), this->size(false));
 

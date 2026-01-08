@@ -572,7 +572,7 @@ namespace gpu_directx12
       D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
       srvHeapDesc.NumDescriptors = 1;
       srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-      srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+      srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
       HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(
          &srvHeapDesc, __interface_of(m_pheapShaderResourceView));
@@ -605,7 +605,7 @@ namespace gpu_directx12
       D3D12_DESCRIPTOR_HEAP_DESC samplerHeapDesc = {};
       samplerHeapDesc.NumDescriptors = 1;
       samplerHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-      samplerHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+      samplerHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
       pdevice->m_pdevice->CreateDescriptorHeap(&samplerHeapDesc, __interface_of(m_pheapSampler));
 
       D3D12_SAMPLER_DESC samplerDesc = {};
