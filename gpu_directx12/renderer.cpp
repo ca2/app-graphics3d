@@ -770,7 +770,7 @@ float4 main(PSInput input) : SV_TARGET {
 
             ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_frame());
 
-            auto presourceTexture = ptextureCurrent->m_presource;
+            auto presourceTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
 
             if (presourceTexture)
             {
@@ -1076,7 +1076,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //D3D11_TEXTURE2D_DESC desc;
 
-      m_desc = ptexture->m_presource->GetDesc();
+      m_desc = ptexture->m_pd3d12resourceTexture->m_presource->GetDesc();
       //EnsureStagingTextureMatches(pTexture, desc);
 
 
@@ -1094,13 +1094,13 @@ float4 main(PSInput input) : SV_TARGET {
          ::gpu::e_device_target_swap_chain)
       {
 
-         ptexture->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+         ptexture->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 
       }
       else
       {
 
-         ptexture->_new_state(pcommandlist, D3D12_RESOURCE_STATE_COPY_SOURCE);
+         ptexture->set_state(pcommandbuffer, ::gpu::e_texture_state_copy_source);
 
       }
 
@@ -1186,7 +1186,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto location1 = CD3DX12_TEXTURE_COPY_LOCATION(m_presourceStagingTexture, m_footprint);
 
-      auto location2 = CD3DX12_TEXTURE_COPY_LOCATION(ptexture->m_presource, 0);
+      auto location2 = CD3DX12_TEXTURE_COPY_LOCATION(ptexture->m_pd3d12resourceTexture->m_presource, 0);
       // Copy to staging buffer
       pcommandlist->CopyTextureRegion(
          &location1,
@@ -1330,7 +1330,7 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast < render_target_view > prendertargetview = prenderer->render_target();
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
       ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_frame());
-      ID3D12Resource* presourceOffscreenTexture = ptextureCurrent->m_presource;
+      ID3D12Resource *presourceOffscreenTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
 
 
       //m_pcpubuffersampler->sample(poffscreenrendertargetview->current_texture());
@@ -1521,7 +1521,7 @@ float4 main(PSInput input) : SV_TARGET {
       ID3D12Device* device = pgpudevice->m_pdevice;
       //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
       ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_frame());
-      ID3D12Resource* presourceOffscreenTexture = ptextureCurrent->m_presource;
+      ID3D12Resource *presourceOffscreenTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
       //if (!pdevice || !context || !offscreenTexture)
       if (!device || !presourceOffscreenTexture)
       {
@@ -3743,7 +3743,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      ptextureCurrent->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+      ptextureCurrent->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
       ID3D12DescriptorHeap* ppHeaps[] = { m_pheapCbv };
 
@@ -3843,7 +3843,7 @@ float4 main(PSInput input) : SV_TARGET {
 
             //::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture();
 
-            auto presourceTexture = ptextureCurrent->m_presource;
+            auto presourceTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
 
             //if (presourceTexture)
             //{

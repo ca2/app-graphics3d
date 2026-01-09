@@ -209,7 +209,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      ptextureSwapChain->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+      ptextureSwapChain->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
       if (!ptextureSwapChain->m_pheapRenderTargetView)
       {
@@ -232,7 +232,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       ::cast < texture > ptextureSrc = pgputexture;
 
-      ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+      ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 
       //m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain, ptextureSrc);
       m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain);
@@ -318,7 +318,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
          auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-         ptextureSwapChain->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PRESENT);
+         ptextureSwapChain->set_state(pcommandbuffer,::gpu::e_texture_state_present );
 
       }
 

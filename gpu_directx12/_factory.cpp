@@ -18,6 +18,7 @@
 #include "texture.h"
 #include "gltf/mesh.h"
 #include "gltf/model.h"
+#include "gpu/full_screen_quad.h"
 #include "bred/gpu/frame_ephemeral.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
@@ -57,6 +58,8 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu::layer >();
 
    pfactory->add_factory_item < ::gpu::pixmap >();
+
+   pfactory->add_factory_item<::gpu::full_screen_quad>();
 
    pfactory->add_factory_item<::gpu_directx12::gltf::mesh, ::gpu::model::mesh>();
    pfactory->add_factory_item<::gpu_directx12::gltf::model, ::gpu::model::model>();

@@ -143,27 +143,30 @@ namespace gpu_directx12
 
       }
 
-      HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
-         &heapproperties,
-         eheap,
-         &textureDesc,
-         stateInitial,
-         pclearvalue,
-         __interface_of(m_presource));
+      m_pd3d12resourceTexture->m_state.m_resourcestates=stateInitial;
 
-      pdevice->defer_throw_hresult(hrCreateCommittedResource);
+      m_pd3d12resourceTexture->create(&heapproperties, eheap, &textureDesc, pclearvalue);
 
-      m_estate = stateInitial;
+
+      //HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+         
+         //__interface_of(m_presourceTexture));
+
+      //pdevice->defer_throw_hresult(hrCreateCommittedResource);
+
+      m_pd3d12resourceTexture->set_name(m_strTextureName);
+
+      //m_state = stateInitial;
 
       if (texturedata.is_image_array())
       {
 
-         int iCount;
+         //int iCount;
 
 
          if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
          {
-            iCount = 6;
+           // iCount = 6;
             if (texturedata.imagea().first()->size() != this->size())
             {
 
@@ -174,7 +177,7 @@ namespace gpu_directx12
          }
          else
          {
-            iCount = 1;
+            //iCount = 1;
             if (texturedata.imagea().first()->size() != this->size())
             {
 
@@ -184,61 +187,18 @@ namespace gpu_directx12
 
          }
 
-         ::comptr<ID3D12Resource> presourceUpload;
-
-         const UINT64 presourceUploadBufferSize = GetRequiredIntermediateSize(m_presource, 0, iCount);
-
-         CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
-
-         auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(presourceUploadBufferSize);
-
-         pdevice->m_pdevice->CreateCommittedResource(
-            &propertiesUpload,
-            D3D12_HEAP_FLAG_NONE,
-            &descUpload,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            __interface_of(presourceUpload));
-
-
-         // 3. Prepare subresources
-         D3D12_SUBRESOURCE_DATA subresources[6];
-         if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
-         {
-            for (int i = 0; i < 6; ++i) {
-               auto ppixmap = texturedata.imagea()[i];
-               subresources[i].pData = ppixmap->data(); // Your CPU data pointer
-               subresources[i].RowPitch = ppixmap->m_iScan;  // 512 * 4
-               subresources[i].SlicePitch = textureDesc.Width * textureDesc.Height * 4;
-               //subresources[i].SlicePitch = 0;
-            }
-         }
-         else
-         {
-            auto ppixmap = texturedata.imagea().first();
-            subresources[0].pData = ppixmap->data();            // pointer to your bitmap data (RGBA8, etc.)
-            subresources[0].RowPitch = ppixmap->m_iScan;
-            subresources[0].SlicePitch = subresources[0].RowPitch * ppixmap->height();
-         }
-
-         ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
+         ::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
 
          if (!pcommandbuffer)
          {
 
             pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
-
+         
          }
 
-         UpdateSubresources(
-            pcommandbuffer->m_pcommandlist,
-            m_presource,
-            presourceUpload, 0, 0, iCount,
-            subresources);
+         auto pstaticuploadbuffer = _get_static_upload_buffer();
 
-         comptr < IUnknown > punknownResourceUpdate(presourceUpload);
-
-         pcommandbuffer->m_comptraHold.add(punknownResourceUpdate);
+         pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, texturedata);
 
       }
 
@@ -387,7 +347,7 @@ namespace gpu_directx12
    //          &textureDesc,
    //          stateInitial,
    //          pclearvalue,
-   //          __interface_of(m_presource));
+   //          __interface_of(m_presourceTexture));
    //
    //       pdevice->defer_throw_hresult(hrCreateCommittedResource);
    //
@@ -425,7 +385,7 @@ namespace gpu_directx12
    //
    //          ::comptr<ID3D12Resource> presourceUpload;
    //
-   //          const UINT64 presourceUploadBufferSize = GetRequiredIntermediateSize(m_presource, 0, iCount);
+   //          const UINT64 presourceUploadBufferSize = GetRequiredIntermediateSize(m_presourceTexture, 0, iCount);
    //
    //          CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
    //
@@ -471,7 +431,7 @@ namespace gpu_directx12
    //
    //          UpdateSubresources(
    //             pcommandbuffer->m_pcommandlist,
-   //             m_presource,
+   //             m_presourceTexture,
    //             presourceUpload, 0, 0, iCount,
    //             subresources);
    //
@@ -502,28 +462,6 @@ namespace gpu_directx12
    // }
 
 
-   void texture::_new_state(ID3D12GraphicsCommandList* pcommandlist, D3D12_RESOURCE_STATES estateNew)
-   {
-
-      if (m_estate != estateNew)
-      {
-
-         // Transition to copy source
-         D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-            m_presource,
-            m_estate, // Adjust if needed
-            estateNew
-         );
-
-         pcommandlist->ResourceBarrier(1, &barrier);
-
-         m_estate = estateNew;
-
-         //pcommandBuffer->submit_command_buffer();
-
-      }
-
-   }
 
 
    void texture::initialize_hdr_texture_on_memory(::gpu::renderer *prenderer, const ::block &block)
@@ -552,6 +490,10 @@ namespace gpu_directx12
       m_textureattributes.m_rectangleTarget.left = 0;
       m_textureattributes.m_rectangleTarget.top = 0;
       m_textureattributes.m_rectangleTarget.set_size(width, height);
+      m_textureattributes.m_iLayerCount = 1;
+      m_textureattributes.m_iMipCount = 1;
+      m_textureattributes.m_iBitsPerChannel = 32;
+      m_textureattributes.m_iChannelCount = 4;
 
       // ------------------------------------------------------------
       // Expand to RGBA if needed
@@ -616,13 +558,47 @@ namespace gpu_directx12
 
       CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
 
-      device->CreateCommittedResource(&heapproperties, D3D12_HEAP_FLAG_NONE, &texDesc,
-                                      D3D12_RESOURCE_STATE_COPY_DEST, nullptr, __interface_of(m_presource));
+            D3D12_RESOURCE_STATES stateInitial;
+
+      if (m_textureflags.m_bRenderTarget)
+      {
+
+         stateInitial = D3D12_RESOURCE_STATE_RENDER_TARGET;
+      }
+      else
+      {
+
+         stateInitial = D3D12_RESOURCE_STATE_COPY_DEST;
+      }
+
+      //m_state = stateInitial;
+
+      m_pd3d12resourceTexture->m_state.m_resourcestates = stateInitial;
+
+      m_pd3d12resourceTexture->create(&heapproperties, D3D12_HEAP_FLAG_NONE, &texDesc);
+      //auto hrCreateCommittedResource = device->CreateCommittedResource(&heapproperties, D3D12_HEAP_FLAG_NONE, &texDesc, stateInitial, nullptr,
+        //                              __interface_of(m_presourceTexture));
+
+      //pdevice->defer_throw_hresult(hrCreateCommittedResource);
+
+      m_pd3d12resourceTexture->set_name(m_strTextureName);
+
+      ::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
+
+      if (!pcommandbuffer)
+      {
+
+         pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+      }
+
+      auto pstaticuploadbuffer = _get_static_upload_buffer();
+      ::gpu::texture_data texturedata(src);
+      pcommandbuffer->m_particleaHold.add(pstaticuploadbuffer);
+
+      pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, texturedata);
 
 
-      auto puploadbuffer = _get_upload_buffer();
-
-      puploadbuffer->update_pixels(m_textureattributes.m_rectangleTarget, src);
       // ------------------------------------------------------------
       // Create upload buffer
       // ------------------------------------------------------------
@@ -695,7 +671,7 @@ namespace gpu_directx12
          m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
          //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart());
 
-         pdevice->m_pdevice->CreateRenderTargetView(m_presource, nullptr, m_handleRenderTargetView);
+         pdevice->m_pdevice->CreateRenderTargetView(m_pd3d12resourceTexture->m_presource, nullptr, m_handleRenderTargetView);
 
 
       }
@@ -746,7 +722,7 @@ namespace gpu_directx12
 
       m_handleShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
 
-      pdevice->m_pdevice->CreateShaderResourceView(m_presource, &srvDesc, m_handleShaderResourceView);
+      pdevice->m_pdevice->CreateShaderResourceView(m_pd3d12resourceTexture->m_presource, &srvDesc, m_handleShaderResourceView);
 
       // Descriptor heap for Sampler
       D3D12_DESCRIPTOR_HEAP_DESC samplerHeapDesc = {};
@@ -882,11 +858,11 @@ namespace gpu_directx12
 
       m_pgpurenderer = prenderer;
 
-      if (!m_presource)
+      if (!m_pd3d12resourceTexture || !m_pd3d12resourceTexture->m_presource)
       {
 
          auto hrSwapChainGetBuffer = pdxgiswapchain->GetBuffer(
-            uCurrentBufferIndex, __interface_of(m_presource));
+            uCurrentBufferIndex, __interface_of(m_pd3d12resourceTexture->m_presource));
 
          ::defer_throw_hresult(hrSwapChainGetBuffer);
 
@@ -917,7 +893,7 @@ namespace gpu_directx12
       //         //for (UINT n = 0; n < FrameCount; n++)
       //         {
       //         pgpudevice->m_pdevice->CreateRenderTargetView(
-      //            m_presource, nullptr, m_handleRenderTargetView);
+      //            m_presourceTexture, nullptr, m_handleRenderTargetView);
       //            //rtvHandle.Offset(1, m_rtvDescriptorSize);
       //         }
       //      }
@@ -972,7 +948,7 @@ namespace gpu_directx12
             ////   //m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
             ////   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-            ////   pdevice->m_pdevice->CreateRenderTargetView(m_presource, nullptr, m_handleRenderTargetView);
+            ////   pdevice->m_pdevice->CreateRenderTargetView(m_presourceTexture, nullptr, m_handleRenderTargetView);
 
             ////}
 
@@ -999,7 +975,7 @@ namespace gpu_directx12
 
             ////   //m_handleShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
 
-            ////   //pdevice->m_pdevice->CreateShaderResourceView(m_presource, &srvDesc, m_handleShaderResourceView);
+            ////   //pdevice->m_pdevice->CreateShaderResourceView(m_presourceTexture, &srvDesc, m_handleShaderResourceView);
 
             ////}
 
@@ -1063,7 +1039,7 @@ namespace gpu_directx12
    //   UINT updateHeight = rectangle.bottom - rectangle.top;
 
    //   // Describe destination
-   //   D3D12_RESOURCE_DESC texDesc = m_presource->GetDesc();
+   //   D3D12_RESOURCE_DESC texDesc = m_presourceTexture->GetDesc();
 
    //   // Compute layout
    //   D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
@@ -1112,7 +1088,7 @@ namespace gpu_directx12
 
    //   // Copy into texture
    //   D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
-   //   dstLoc.pResource = m_presource;
+   //   dstLoc.pResource = m_presourceTexture;
    //   dstLoc.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
    //   dstLoc.SubresourceIndex = 0;
 
@@ -1155,7 +1131,7 @@ namespace gpu_directx12
 
    //   // 2. Create an intermediate UPLOAD buffer big enough for this region
    //   const UINT64 uploadBufferSize =
-   //      GetRequiredIntermediateSize(m_presource, 0, 1);
+   //      GetRequiredIntermediateSize(m_presourceTexture, 0, 1);
 
    //   ::comptr<ID3D12Resource> presourceUpload;
    //   CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
@@ -1178,7 +1154,7 @@ namespace gpu_directx12
    //   //    UpdateSubresources takes care of mapping & copying
    //   UpdateSubresources(
    //      pcommandbuffer->m_pcommandlist,
-   //      m_presource, 
+   //      m_presourceTexture, 
    //      presourceUpload,
    //      0, 0, 1, &subresource);
 
@@ -1188,6 +1164,7 @@ namespace gpu_directx12
    {
 
       m_pMap = nullptr;
+      
    }
 
 
@@ -1209,7 +1186,7 @@ namespace gpu_directx12
 
       m_ptexture = ptexture;
 
-      auto presource = ptexture->m_presource.m_p;
+      auto & presource = ptexture->m_pd3d12resourceTexture->m_presource;
 
       // 2. Create an intermediate UPLOAD buffer big enough for this region
       const UINT64 uploadBufferSize =
@@ -1230,6 +1207,8 @@ namespace gpu_directx12
 
       ::defer_throw_hresult(hrCreateCommittedResource);
 
+      m_presourceUpload->SetName(::wstring(ptexture->m_strTextureName + " Upload"));
+
       m_descTexture = presource->GetDesc();
 
       pdevice->m_pdevice->GetCopyableFootprints(
@@ -1244,6 +1223,169 @@ namespace gpu_directx12
 
 
    }
+
+
+      texture::static_upload_buffer::static_upload_buffer() {
+         //m_pMap = nullptr; 
+          }
+
+
+   texture::static_upload_buffer::~static_upload_buffer()
+         {
+            
+            
+            //unmap();
+         }
+
+
+   void texture::static_upload_buffer::initialize_static_upload_buffer(texture *ptexture)
+   {
+
+      ::cast<renderer> prenderer = ptexture->m_pgpurenderer;
+
+      ::cast<::gpu_directx12::device> pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+
+      m_ptexture = ptexture;
+
+      auto & presource = ptexture->m_pd3d12resourceTexture->m_presource;
+
+      //::comptr<ID3D12Resource> presourceUpload;
+
+      auto iCount = ptexture->m_textureattributes.m_iLayerCount;
+
+      const UINT64 presourceUploadBufferSize = GetRequiredIntermediateSize(presource, 0, iCount);
+
+      CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
+
+      auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(presourceUploadBufferSize);
+
+      pdevice->m_pdevice->CreateCommittedResource(&propertiesUpload, D3D12_HEAP_FLAG_NONE, &descUpload,
+                                                  D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+                                                  __interface_of(m_pd3d12resourceUpload->m_presource));
+
+
+
+   }
+
+
+   void texture::static_upload_buffer::update_with_texture_data(::gpu::command_buffer *pgpucommandbuffer,
+                                                                const ::gpu::texture_data &texturedata)
+   {
+
+
+            // 3. Prepare subresources
+      D3D12_SUBRESOURCE_DATA subresources[6];
+
+      if (texturedata.is_image_array())
+      {
+         if (m_ptexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
+         {
+            for (int i = 0; i < 6; ++i)
+            {
+               auto ppixmap = texturedata.imagea()[i];
+               subresources[i].pData = ppixmap->data(); // Your CPU data pointer
+               subresources[i].RowPitch = ppixmap->m_iScan; // 512 * 4
+               subresources[i].SlicePitch = m_ptexture->m_resourcedesc.Width * m_ptexture->m_resourcedesc.Height * 4;
+               // subresources[i].SlicePitch = 0;
+            }
+         }
+         else if (texturedata.imagea().size() == 1)
+         {
+            auto ppixmap = texturedata.imagea().first();
+            subresources[0].pData = ppixmap->data(); // pointer to your bitmap data (RGBA8, etc.)
+            subresources[0].RowPitch = ppixmap->m_iScan;
+            subresources[0].SlicePitch = subresources[0].RowPitch * ppixmap->height();
+         }
+      }
+      else
+      {
+
+         subresources[0].pData = texturedata.raw_scoped_data();
+         subresources[0].RowPitch = m_ptexture->m_resourcedesc.Width * m_ptexture->m_textureattributes.m_iBitsPerChannel
+            * m_ptexture->m_textureattributes.m_iChannelCount/8;
+         subresources[0].SlicePitch = subresources[0].RowPitch * m_ptexture->m_resourcedesc.Height;
+
+      }
+
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      //::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
+
+      //if (!pcommandbuffer)
+      //{
+
+      //   pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //}
+
+      auto iCount = m_ptexture->m_textureattributes.m_iLayerCount;
+
+      UpdateSubresources(pcommandbuffer->m_pcommandlist, m_ptexture->m_pd3d12resourceTexture->m_presource, m_pd3d12resourceUpload->m_presource, 0, 0, iCount, subresources);
+
+      comptr<IUnknown> punknownResourceUpdate(m_pd3d12resourceUpload->m_presource);
+
+      pcommandbuffer->m_comptraHold.add(punknownResourceUpdate);
+
+
+      //// 2. Create an intermediate UPLOAD buffer big enough for this region
+      // const UINT64 uploadBufferSize = GetRequiredIntermediateSize(presource, 0, 1);
+
+      // CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+      // CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+
+      // HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+      //    &heapProps, D3D12_HEAP_FLAG_NONE, &bufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+      //    IID_PPV_ARGS(&m_presourceUpload));
+
+      //::defer_throw_hresult(hrCreateCommittedResource);
+
+      // m_descTexture = presource->GetDesc();
+
+      // pdevice->m_pdevice->GetCopyableFootprints(&m_descTexture, // texture description
+      //                                           0, // first subresource
+      //                                           1, // num subresources
+      //                                           0, // base offset
+      //                                           &m_footprint, // out: layout for subresource
+      //                                           &m_uNumRows, // out: number of rows
+      //                                           &m_uRowSizeInBytes, // out: bytes per row (unpadded)
+      //                                           &m_uUploadBufferSize); // out: required buffer size
+
+      //::cast<::gpu_directx12::device> pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+
+      //// ------------------------------------------------------------
+      //// Create upload buffer
+      //// ------------------------------------------------------------
+      //UINT64 uploadSize = 0;
+      //device->GetCopyableFootprints(&texDesc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadSize);
+
+      //device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
+      //                                &CD3DX12_RESOURCE_DESC::Buffer(uploadSize), D3D12_RESOURCE_STATE_GENERIC_READ,
+      //                                nullptr, IID_PPV_ARGS(&out.upload));
+
+      //// ------------------------------------------------------------
+      //// Upload texture data
+      //// ------------------------------------------------------------
+      //D3D12_SUBRESOURCE_DATA sub = {};
+      //sub.pData = src;
+      //sub.RowPitch = width * 4 * sizeof(float);
+      //sub.SlicePitch = sub.RowPitch * height;
+
+      //UpdateSubresources(cmd, out.resource.Get(), out.upload.Get(), 0, 0, 1, &sub);
+
+      //// ------------------------------------------------------------
+      //// Transition to SRV
+      //// ------------------------------------------------------------
+
+  //     auto resourcebarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+    //     m_ptexture->m_presourceTexture, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+
+      //m_ptexture->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
+
+//      pcommandbuffer->m_pcommandlist->ResourceBarrier(1, &resourcebarrier);
+
+
+   }
+
 
 
 
@@ -1272,6 +1414,20 @@ namespace gpu_directx12
       ::cast < texture::upload_buffer > puploadbuffer = pobject;
 
       return puploadbuffer;
+
+   }
+
+
+   texture::static_upload_buffer *texture::_get_static_upload_buffer()
+   {
+
+      ::cast<renderer> prenderer = m_pgpurenderer;
+
+      øconstruct_new(m_pstaticuploadbuffer);
+
+      m_pstaticuploadbuffer->initialize_static_upload_buffer(this);
+
+      return m_pstaticuploadbuffer;
 
    }
 
@@ -1357,9 +1513,9 @@ namespace gpu_directx12
 
          {
 
-            texture_guard guard(
+            resource_state_guard guard(
                pcommandbuffer->m_pcommandlist,
-               m_ptexture,
+               m_ptexture->m_pd3d12resourceTexture,
                D3D12_RESOURCE_STATE_COPY_DEST);
 
             for (auto& damage : m_damagea)
@@ -1422,7 +1578,7 @@ namespace gpu_directx12
       //damage damage;
       // Copy into texture
       //D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
-      damageNew.m_copylocationTarget.pResource = m_ptexture->m_presource;
+      damageNew.m_copylocationTarget.pResource = m_ptexture->m_pd3d12resourceTexture->m_presource;
       damageNew.m_copylocationTarget.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
       damageNew.m_copylocationTarget.SubresourceIndex = 0;
 
@@ -1457,7 +1613,7 @@ namespace gpu_directx12
 
       auto puploadbuffer = _get_upload_buffer();
 
-      //D3D12_RESOURCE_DESC texDesc = m_presource->GetDesc();
+      //D3D12_RESOURCE_DESC texDesc = m_presourceTexture->GetDesc();
 
 
       puploadbuffer->update_pixels(rectangle, data);
@@ -1466,6 +1622,39 @@ namespace gpu_directx12
 
 
    }
+
+
+
+   void texture::set_state(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_texture_state etexturestate)
+   {
+
+      ::gpu::texture::set_state(pgpucommandbuffer, etexturestate);
+
+      ::cast<::gpu_directx12::command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      if (etexturestate == ::gpu::e_texture_state_shader_read)
+      {
+         m_pd3d12resourceTexture->_set_state(pcommandbuffer, {D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE});
+      }
+      else if (etexturestate == ::gpu::e_texture_state_color_attachment)
+      {
+         m_pd3d12resourceTexture->_set_state(pcommandbuffer, {D3D12_RESOURCE_STATE_RENDER_TARGET});
+      }
+      else if (etexturestate == ::gpu::e_texture_state_copy_target)
+      {
+         m_pd3d12resourceTexture->_set_state(pcommandbuffer, {D3D12_RESOURCE_STATE_COPY_DEST});
+      }
+      else if (etexturestate == ::gpu::e_texture_state_copy_source)
+      {
+         m_pd3d12resourceTexture->_set_state(pcommandbuffer, {D3D12_RESOURCE_STATE_COPY_SOURCE});
+      }
+      else if (etexturestate == ::gpu::e_texture_state_present)
+      {
+         m_pd3d12resourceTexture->_set_state(pcommandbuffer, {D3D12_RESOURCE_STATE_PRESENT});
+
+      }
+   }
+
 
 
 } // namespace gpu_directx12

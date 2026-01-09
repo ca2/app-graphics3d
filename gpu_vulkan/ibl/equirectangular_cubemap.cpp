@@ -73,10 +73,10 @@ namespace gpu_vulkan
       }
 
 
-      void equirectangular_cubemap::compute()
+      void equirectangular_cubemap::compute_equirectangular_cubemap(::gpu::command_buffer *pgpucommandbuffer)
       {
 
-         ::gpu::ibl::equirectangular_cubemap::compute();
+         ::gpu::ibl::equirectangular_cubemap::compute_equirectangular_cubemap(pgpucommandbuffer);
 
          //::bred::Timer timer;
 

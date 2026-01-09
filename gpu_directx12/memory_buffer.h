@@ -18,8 +18,9 @@ namespace gpu_directx12
 
       //bool m_bStatic;
 
-      ::comptr<ID3D12Resource> m_presource;
-      ::comptr<ID3D12Resource> m_presourceUpload;
+      //::comptr<ID3D12Resource> m_presourceMemoryBuffer;
+      ::pointer<d3d12_resource> m_pd3d12resourceMemoryBuffer;
+      ::pointer<d3d12_resource> m_pd3d12resourceMemoryBufferUpload;
 
 
       //context* m_pgpucontext;
@@ -60,7 +61,7 @@ namespace gpu_directx12
 
       void _complete_map_allocate(::gpu::memory_buffer* pmemorybufferSource, ::gpu::frame_storage* pgpuframestorage, int size) override;
 
-
+     void set_state(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_buffer_state etexturestate) override;
    };
 
 

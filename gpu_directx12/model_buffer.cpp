@@ -15,7 +15,7 @@
 #include "aura/platform/application.h"
 //#include "bred/user/user/graphics3d.h"
 #include "bred/gpu/model_buffer.h"
-#include "gpu_directx12/buffer.h"
+//#include "gpu_directx12/buffer.h"
 #include "gpu_directx12/context.h"
 #include "gpu_directx12/renderer.h"
 
@@ -194,7 +194,7 @@ namespace gpu_directx12
 
       ::cast < memory_buffer > pbufferVertex = m_pbufferVertex;
 
-      m_vertexbufferview.BufferLocation = pbufferVertex->m_presource->GetGPUVirtualAddress();
+      m_vertexbufferview.BufferLocation = pbufferVertex->m_pd3d12resourceMemoryBuffer->gpu_address();
       m_vertexbufferview.StrideInBytes = m_pmodeldatabase2->vertex_type_size();
       m_vertexbufferview.SizeInBytes = (UINT) block.size();
 
@@ -210,7 +210,7 @@ namespace gpu_directx12
 
       ::cast < memory_buffer > pbufferIndex = m_pbufferIndex;
 
-      m_indexbufferview.BufferLocation = pbufferIndex->m_presource->GetGPUVirtualAddress();
+      m_indexbufferview.BufferLocation = pbufferIndex->m_pd3d12resourceMemoryBufferUpload->gpu_address();
       m_indexbufferview.Format = DXGI_FORMAT_R32_UINT;
       m_indexbufferview.SizeInBytes = (UINT) (block.size());
 
@@ -284,38 +284,47 @@ namespace gpu_directx12
 
          m_bNew = false;
 
-         if (m_pmodeldatabase2->index_count() > 0)
+         if (m_pbufferIndex)
          {
 
-            ::cast < memory_buffer > pbufferIndex = m_pbufferIndex;
+            m_pbufferIndex->set_state(pgpucommandbuffer, ::gpu::e_buffer_state_index);
 
-            D3D12_RESOURCE_BARRIER barrier = {};
-            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            barrier.Transition.pResource = pbufferIndex->m_presource;
-            barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-            barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-            barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_INDEX_BUFFER;
+            //::cast < memory_buffer > pbufferIndex = m_pbufferIndex;
 
-            pcommandlist->ResourceBarrier(1, &barrier);
+            //D3D12_RESOURCE_BARRIER barrier = {};
+            //barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+            //barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+            //barrier.Transition.pResource = pbufferIndex->m_presourceMemoryBufferUpload;
+            //barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+            //barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+            //barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_INDEX_BUFFER;
+
+            //pcommandlist->ResourceBarrier(1, &barrier);
 
          }
 
-         ::cast < memory_buffer > pbufferVertex = m_pbufferVertex;
+         //::cast < memory_buffer > pbufferVertex = m_pbufferVertex;
 
-         if(pbufferVertex && pbufferVertex->m_presource)
+         //if(pbufferVertex && pbufferVertex->m_presourceMemoryBufferUpload)
+         //{
+
+         //   D3D12_RESOURCE_BARRIER barrier = {};
+
+         //   barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+         //   barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+         //   barrier.Transition.pResource = pbufferVertex->m_presourceMemoryBufferUpload;
+         //   barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+         //   barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+         //   barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+
+         //   pcommandlist->ResourceBarrier(1, &barrier);
+
+         //}
+
+         if (m_pbufferVertex)
          {
 
-            D3D12_RESOURCE_BARRIER barrier = {};
-
-            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            barrier.Transition.pResource = pbufferVertex->m_presource;
-            barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-            barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-            barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-
-            pcommandlist->ResourceBarrier(1, &barrier);
+            m_pbufferVertex->set_state(pgpucommandbuffer, ::gpu::e_buffer_state_vertex);
 
          }
 

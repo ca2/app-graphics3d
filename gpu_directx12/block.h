@@ -17,7 +17,8 @@ namespace gpu_directx12
       //comptr < ID3D11Buffer>              m_pbufferGlobalUbo;
       //comptr < ID3D11Buffer>              m_pbuffer;
 
-      ::comptr<ID3D12Resource> m_presource;
+      //::comptr<ID3D12Resource> m_presourceBlock;
+      ::pointer<d3d12_resource> m_pd3d12resourceBlock;
       void* m_pData;
 
 

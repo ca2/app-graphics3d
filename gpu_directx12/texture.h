@@ -81,6 +81,43 @@ namespace gpu_directx12
 
       };
 
+      class static_upload_buffer : virtual public ::particle
+      {
+      public:
+
+
+         void initialize_static_upload_buffer(texture *ptexture);
+
+         D3D12_RESOURCE_DESC m_descTexture;
+
+         UINT64 m_uUploadBufferSize = 0;
+         UINT64 m_uRowSizeInBytes = 0;
+         UINT m_uNumRows = 0;
+
+         D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_footprint;
+
+
+//         ::array_base<damage> m_damagea;
+
+         ::gpu_directx12::texture *m_ptexture;
+         ::pointer<d3d12_resource> m_pd3d12resourceUpload;
+
+         //void *m_pMap = nullptr;
+
+         static_upload_buffer();
+         ~static_upload_buffer();
+
+
+         //void map();
+         //void unmap();
+
+
+         //void on_end_frame() override;
+
+         //virtual void upload_damaged_regions();
+
+         void update_with_texture_data(::gpu::command_buffer *pgpucommandbuffer, const ::gpu::texture_data &data);
+      };
 
       struct
       {
@@ -96,11 +133,14 @@ namespace gpu_directx12
 
       }new_texture;
 
+      ::pointer<d3d12_resource> m_pd3d12resourceTexture;
+
+      ::pointer<static_upload_buffer> m_pstaticuploadbuffer;
       D3D12_RESOURCE_DESC              m_resourcedesc;
-      ::comptr<ID3D12Resource>         m_presource;
       ::comptr<ID3D12Resource>         m_presourceDepthStencilView;
       ::comptr<ID3D12DescriptorHeap>   m_pheapRenderTargetView;
-      D3D12_RESOURCE_STATES            m_estate;
+      //D3D12_RESOURCE_STATES            m_estate;
+
       D3D12_CPU_DESCRIPTOR_HANDLE      m_handleRenderTargetView;
       ::comptr<ID3D12DescriptorHeap>   m_pheapShaderResourceView;
       D3D12_CPU_DESCRIPTOR_HANDLE      m_handleShaderResourceView;
@@ -111,6 +151,8 @@ namespace gpu_directx12
       //UINT m_rtvDescriptorSize;
       //bool m_bRenderTarget;
       //bool m_bShaderResource;
+
+      //state_t m_state;
 
       //DXGI_FORMAT m_dxgiformat;
 
@@ -143,7 +185,6 @@ namespace gpu_directx12
       void _create_texture(const ::gpu::texture_data & data);
       //void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangle, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype) override;
 
-      void _new_state(ID3D12GraphicsCommandList* pcommandlist, D3D12_RESOURCE_STATES estate);
 
       class d3d11* d3d11();
 
@@ -163,39 +204,16 @@ namespace gpu_directx12
 
       virtual upload_buffer * _get_upload_buffer();
 
+      virtual static_upload_buffer *_get_static_upload_buffer();
 
       void initialize_hdr_texture_on_memory(::gpu::renderer *prenderer, const ::block &block) override;
 
-   };
 
-
-   class texture_guard
-   {
-   public:
-
-      texture* m_ptexture;
-      ID3D12GraphicsCommandList* m_pcommandlist;
-      D3D12_RESOURCE_STATES m_estateOld;
-
-      texture_guard(ID3D12GraphicsCommandList* pcommandlist, texture* ptexture, D3D12_RESOURCE_STATES estate)
-      {
-
-         m_ptexture = ptexture;
-         m_pcommandlist = pcommandlist;
-         m_estateOld = m_ptexture->m_estate;
-
-         m_ptexture->_new_state(m_pcommandlist, estate);
-
-      }
-
-      ~texture_guard()
-      {
-
-         m_ptexture->_new_state(m_pcommandlist, m_estateOld);
-
-      }
+            void set_state(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_texture_state etexturestate) override;
+      
 
    };
+
 
 
 

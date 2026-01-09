@@ -148,6 +148,18 @@ namespace gpu_directx12
    }
 
 
+   void command_buffer::_copy_buffer(d3d12_resource *pd3d12resourceTargetBuffer,
+                                     d3d12_resource *pd3d12resourceSourceBuffer, memsize size)
+   {
+
+      m_pcommandlist->CopyBufferRegion(pd3d12resourceTargetBuffer->m_presource, 0, pd3d12resourceSourceBuffer->m_presource, 0,
+                                       size);
+
+
+
+   }
+
+
    void command_buffer::submit_command_buffer(::gpu::layer* pgpulayer)
    {
 

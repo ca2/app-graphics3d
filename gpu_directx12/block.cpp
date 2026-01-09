@@ -11,8 +11,16 @@
 namespace gpu_directx12
 {
 
+   
+   interlocked_count g_iBlockSerial;
 
-   block::block() {}
+
+   block::block() {
+   
+         m_iBlockSerial = ++g_iBlockSerial;
+      m_strBlockName.format("Block {}", m_iBlockSerial);
+
+   }
 
 
    block::~block() {}
@@ -29,10 +37,10 @@ namespace gpu_directx12
    ID3D12Resource * block::resource()
    {
 
-      if (m_presource)
+      if (m_pd3d12resourceBlock && m_pd3d12resourceBlock->m_presource)
       {
 
-         return m_presource;
+         return m_pd3d12resourceBlock->m_presource;
 
       }
 
@@ -47,17 +55,23 @@ namespace gpu_directx12
       CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(
          ::directx12::Align256(iBufferSize));
 
-      pgpudevice->m_pdevice->CreateCommittedResource(
+      øconstruct_new(m_pd3d12resourceBlock);
+
+      auto hrCreateCommittedResource = pgpudevice->m_pdevice->CreateCommittedResource(
          &heapProps,
          D3D12_HEAP_FLAG_NONE,
          &bufferDesc,
          D3D12_RESOURCE_STATE_GENERIC_READ,
          nullptr,
-         __interface_of(m_presource));
+         __interface_of(m_pd3d12resourceBlock->m_presource));
+
+      pgpudevice->defer_throw_hresult(hrCreateCommittedResource);
+
+      m_pd3d12resourceBlock->m_presource->SetName(::wstring(m_strBlockName));
 
       D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
 
-      cbvDesc.BufferLocation = m_presource->GetGPUVirtualAddress();
+      cbvDesc.BufferLocation = m_pd3d12resourceBlock->m_presource->GetGPUVirtualAddress();
 
       cbvDesc.SizeInBytes = ::directx12::Align256(iBufferSize); // must be 256-byte aligned
 
@@ -67,11 +81,11 @@ namespace gpu_directx12
 
       CD3DX12_RANGE readRange(0, 0);
 
-      m_presource->Map(
+      m_pd3d12resourceBlock->m_presource->Map(
          0, &readRange,
          &m_pData);
 
-      return m_presource;
+      return m_pd3d12resourceBlock->m_presource;
 
    }
 

@@ -14,7 +14,7 @@ namespace gpu_directx12
    public:
 
 
-      ::comptr<ID3D12Resource >           m_presourceBuffer;
+      ::comptr<ID3D12Resource >           m_presourceBuffer1;
       ::comptr<ID3D12DescriptorHeap >     m_pheap;
       uint8_t*                            m_pMapped;
       D3D12_CPU_DESCRIPTOR_HANDLE         m_handle;

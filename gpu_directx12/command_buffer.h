@@ -45,7 +45,8 @@ namespace gpu_directx12
 
       void begin_command_buffer(bool bOneTime) override;
 
-
+      virtual void _copy_buffer(d3d12_resource *pd3d12resourceTargetBuffer, d3d12_resource *pd3d12resourceSourceBuffer,
+                        memsize size);
    };
 
 

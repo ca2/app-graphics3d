@@ -55,7 +55,7 @@ namespace gpu_vulkan
          /**
           * Render the equirectangular cubemap.
           */
-         void compute();
+         void compute_equirectangular_cubemap(::gpu::command_buffer * pgpucommandbuffer) override;
 
 
          /**

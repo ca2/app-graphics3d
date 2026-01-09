@@ -7,7 +7,7 @@
 #include "bred/gpu/frame.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/types.h"
-#include "buffer.h"
+//#include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
@@ -361,6 +361,17 @@ namespace gpu_directx12
    }
 
 
+   void context::_construct_new(::pointer<d3d12_resource> &pd3d12resource)
+   {
+
+      øconstruct_new(pd3d12resource);
+
+      pd3d12resource->initialize_d3d12_context(this);
+
+
+   }
+
+
    class context::d3d11on12* context::d3d11on12()
    {
 
@@ -688,7 +699,7 @@ namespace gpu_directx12
       //barrier2.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
       //pcommandlist->ResourceBarrier(1, &barrier2);
 
-      pcommandlist->CopyResource(ptextureDst->m_presource, ptextureSrc->m_presource);
+      pcommandlist->CopyResource(ptextureDst->m_presourceTexture, ptextureSrc->m_presourceTexture);
 
       //pcommandbuffer->submit_command_buffer();
 
@@ -1775,9 +1786,9 @@ namespace gpu_directx12
             D3D11_RESOURCE_FLAGS flags = {};
             //flags.BindFlags = D3D11_BIND_RENDER_TARGET;
             flags.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-            assert(ptexture->m_presource); // Confirm it’s non-null
+            assert(ptexture->m_presourceTexture); // Confirm it’s non-null
             HRESULT hrCreateWrappedResource = d3d11on12()->m_pd3d11on12->CreateWrappedResource(
-               ptexture->m_presource,
+               ptexture->m_presourceTexture,
                &flags,
                D3D12_RESOURCE_STATE_RENDER_TARGET,
                D3D12_RESOURCE_STATE_RENDER_TARGET,

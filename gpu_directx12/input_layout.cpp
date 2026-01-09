@@ -39,6 +39,11 @@ namespace gpu_directx12
          return "TEXCOORD";
 
       }
+      else if (scopedstr.case_insensitive_equals("tangent"))
+      {
+
+         return "TEXCOORD";
+      }
       else
       {
 
@@ -96,12 +101,19 @@ namespace gpu_directx12
    D3D12_INPUT_LAYOUT_DESC input_layout::_get_d3d12_input_layout_desc()
    {
 
+      if (m_desca.has_element())
+      {
+
+         return {m_desca.data(), (UINT)m_desca.size()};
+      }
+
       auto countInputLayout = this->count();
 
       if (countInputLayout > 0)
       {
 
          int iSemanticIndex = 0;
+         int iTextCoordSemanticIndex = 0;
          int iInputSlot = 0;
          D3D12_INPUT_CLASSIFICATION classification = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
          UINT DataStepRate = 0;
@@ -122,7 +134,14 @@ namespace gpu_directx12
             D3D12_INPUT_ELEMENT_DESC desc{};
 
             desc.SemanticName = input_layout_semantic_name_from_gpu_property_name(name);
-            desc.SemanticIndex = iSemanticIndex;
+            if (!strcmp(desc.SemanticName, "TEXCOORD"))
+            {
+               desc.SemanticIndex = iTextCoordSemanticIndex++;
+            }
+            else
+            {
+               desc.SemanticIndex = iSemanticIndex;
+            }
             desc.Format = input_layout_format_from_gpu_property_type(type);
             desc.InputSlot = iInputSlot;
             desc.AlignedByteOffset = offset;

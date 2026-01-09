@@ -689,7 +689,6 @@
     <ClInclude Include="assimp.h" />
     <ClInclude Include="binding.h" />
     <ClInclude Include="block.h" />
-    <ClInclude Include="buffer.h" />
     <ClInclude Include="command_buffer.h" />
     <ClInclude Include="cpu_buffer.h" />
     <ClInclude Include="context.h" />
@@ -750,7 +749,6 @@
     <ClCompile Include="ibl\specular_map.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="assimp.cpp" />
-    <ClCompile Include="buffer.cpp" />
     <ClCompile Include="command_buffer.cpp" />
     <ClCompile Include="cpu_buffer.cpp" />
     <ClCompile Include="context.cpp" />

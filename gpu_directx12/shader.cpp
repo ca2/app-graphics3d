@@ -4,7 +4,7 @@
 #include "approach.h"
 #include "binding.h"
 #include "block.h"
-#include "buffer.h"
+//#include "buffer.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "descriptors.h"
@@ -265,17 +265,18 @@ namespace gpu_directx12
 
                   ::cast<::gpu_directx12::binding_set> pbindingset = pbindingslotset->m_pbindingset;
 
+                  int iBaseRegister1 = pbindingset->first()->m_iBindingPoint2;
 
                   auto &srvRange = ranges.add_new();
                   srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
                                 pbindingset->get_count(), // t0..t4
-                                0 // base register t0
+                                iBaseRegister1 // base register t0
                   );
 
                   auto &samplerRange = ranges.add_new();
                   samplerRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER,
                                     1, // s0
-                                    0);
+                                    iBaseRegister1);
 
                   rootParameters.add_new().InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
@@ -1343,7 +1344,7 @@ namespace gpu_directx12
          ::cast<::gpu_directx12::block > pblockGlobalUbo1 = pgpublockGlobalUbo1;
 
          //pcommandlist->SetGraphicsRootDescriptorTable(0, prenderer->m_pheapCbv->GetGPUDescriptorHandleForHeapStart());
-         pcommandlist->SetGraphicsRootConstantBufferView(0, pblockGlobalUbo1->m_presource->GetGPUVirtualAddress());
+         pcommandlist->SetGraphicsRootConstantBufferView(0, pblockGlobalUbo1->m_presourceBlock->GetGPUVirtualAddress());
 
       }
 

@@ -194,7 +194,7 @@ namespace gpu_directx12
 
       virtual ID3D12CommandQueue* command_queue();
       virtual ID3D12CommandQueue* copy_command_queue();
-
+      virtual void _construct_new(::pointer<d3d12_resource> &pd3d12resource);
 
       virtual d3d11on12* d3d11on12();
 
