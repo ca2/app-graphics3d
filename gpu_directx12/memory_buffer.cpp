@@ -63,7 +63,7 @@ namespace gpu_directx12
          desc.SampleDesc.Count = 1;
          desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-         ::cast<::gpu_directx12::context> pcontext = pcontext;
+         ::cast<::gpu_directx12::context> pcontext = m_pcontext;
 
          pcontext->_construct_new(m_pd3d12resourceMemoryBuffer);
 

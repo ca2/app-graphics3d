@@ -628,6 +628,13 @@ float4 main(PSInput input) : SV_TARGET {
    ::gpu::command_buffer* renderer::getLoadAssetsCommandBuffer()
    {
 
+      if (m_pgpucontext->m_pcommandbufferMain)
+      {
+
+         return m_pgpucontext->m_pcommandbufferMain;
+
+      }
+
       if (!m_pcommandbufferLoadAssets)
       {
 
@@ -4953,26 +4960,26 @@ float4 main(PSInput input) : SV_TARGET {
             if (pcontextMainDraw2d == pcontext)
             {
 
-               informationf("good good good");
+               //informationf("good good good");
 
             }
             else
             {
 
-               informationf("bad bad bad");
+               warning("bad bad bad");
 
             }
 
             if (pcommandqueue == pcontextMainDraw2d->m_pcommandqueue)
             {
 
-               informationf("good good good (2)");
+               //informationf("good good good (2)");
 
             }
             else
             {
 
-               informationf("bad bad bad");
+               warning("bad bad bad (2)");
 
             }
 

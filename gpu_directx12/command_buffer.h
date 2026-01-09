@@ -47,6 +47,9 @@ namespace gpu_directx12
 
       virtual void _copy_buffer(d3d12_resource *pd3d12resourceTargetBuffer, d3d12_resource *pd3d12resourceSourceBuffer,
                         memsize size);
+
+      virtual void _copy_resource(texture *ptextureTarget, texture *ptextureSource);
+
    };
 
 

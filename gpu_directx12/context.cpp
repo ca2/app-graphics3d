@@ -366,7 +366,7 @@ namespace gpu_directx12
 
       øconstruct_new(pd3d12resource);
 
-      pd3d12resource->initialize_d3d12_context(this);
+      pd3d12resource->initialize_d3d12_resource(this);
 
 
    }
@@ -678,8 +678,8 @@ namespace gpu_directx12
 
       //texture_guard guard2(pcommandlist, ptextureSrc, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
-      ptextureDst->_new_state(pcommandlist, D3D12_RESOURCE_STATE_COPY_DEST);
-      ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_COPY_SOURCE);
+      ptextureDst->set_state(pcommandbuffer, ::gpu::e_texture_state_copy_target);
+      ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_copy_source);
 
       //// Transition source to COPY_SOURCE
       //D3D12_RESOURCE_BARRIER barrier1 = {};
@@ -699,7 +699,7 @@ namespace gpu_directx12
       //barrier2.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
       //pcommandlist->ResourceBarrier(1, &barrier2);
 
-      pcommandlist->CopyResource(ptextureDst->m_presourceTexture, ptextureSrc->m_presourceTexture);
+      pcommandbuffer->_copy_resource(ptextureDst, ptextureSrc);
 
       //pcommandbuffer->submit_command_buffer();
 
@@ -1786,9 +1786,9 @@ namespace gpu_directx12
             D3D11_RESOURCE_FLAGS flags = {};
             //flags.BindFlags = D3D11_BIND_RENDER_TARGET;
             flags.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-            assert(ptexture->m_presourceTexture); // Confirm it’s non-null
+            assert(ptexture->m_pd3d12resourceTexture->m_presource); // Confirm it’s non-null
             HRESULT hrCreateWrappedResource = d3d11on12()->m_pd3d11on12->CreateWrappedResource(
-               ptexture->m_presourceTexture,
+               ptexture->m_pd3d12resourceTexture->m_presource,
                &flags,
                D3D12_RESOURCE_STATE_RENDER_TARGET,
                D3D12_RESOURCE_STATE_RENDER_TARGET,
@@ -2212,7 +2212,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
       }
 
-      ptextureDst->_new_state(pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+      ptextureDst->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
 
       float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
@@ -2264,7 +2264,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
                ::cast < ::gpu_directx12::texture > ptextureSrc = player->texture();
 
-               ptextureSrc->_new_state(pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+               ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
                m_pshaderBlend3->bind_source(pcommandbuffer,  ptextureSrc, 0);
 

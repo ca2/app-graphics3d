@@ -127,7 +127,7 @@ namespace gpu_directx12
       ::defer_throw_hresult(m_pcommandlist->Close()); // Must be closed before Reset()
 
       HRESULT hrCreateFeence =
-         pdevice->m_pdevice->CreateFence(0, D3D12_FENCE_FLAG_NONE,
+         pdevice->m_pdevice->CreateFence(m_fenceValue, D3D12_FENCE_FLAG_NONE,
             __interface_of(m_pfence));
 
       ::defer_throw_hresult(hrCreateFeence);
@@ -135,7 +135,7 @@ namespace gpu_directx12
       // 5. Create fence + event for GPU sync
       m_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
-      m_fenceValue = 1;
+      ///m_fenceValue = 1;
 
    }
 
@@ -151,6 +151,12 @@ namespace gpu_directx12
    void command_buffer::_copy_buffer(d3d12_resource *pd3d12resourceTargetBuffer,
                                      d3d12_resource *pd3d12resourceSourceBuffer, memsize size)
    {
+      pd3d12resourceTargetBuffer->_set_state(this, D3D12_RESOURCE_STATE_COPY_DEST);
+      if (!pd3d12resourceSourceBuffer->m_bUpload)
+      {
+         pd3d12resourceSourceBuffer->_set_state(this, D3D12_RESOURCE_STATE_COPY_SOURCE);
+      }
+
 
       m_pcommandlist->CopyBufferRegion(pd3d12resourceTargetBuffer->m_presource, 0, pd3d12resourceSourceBuffer->m_presource, 0,
                                        size);
@@ -160,10 +166,23 @@ namespace gpu_directx12
    }
 
 
+   void command_buffer::_copy_resource(texture * ptextureTarget, texture * ptextureSource)
+   {
+
+
+
+            m_pcommandlist->CopyResource(ptextureTarget->m_pd3d12resourceTexture->m_presource, ptextureSource->m_pd3d12resourceTexture->m_presource);
+
+
+   }
+
+
    void command_buffer::submit_command_buffer(::gpu::layer* pgpulayer)
    {
 
       ::cast < ::gpu_directx12::device > pdevice = m_prenderer->m_pgpucontext->m_pgpudevice;
+      
+      //informationf("Going to close Command List : 0x%016llx", m_pcommandlist.m_p);
 
       HRESULT hrCloseCommandList = m_pcommandlist->Close();
 
@@ -181,9 +200,11 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::device > pdevice = m_prenderer->m_pgpucontext->m_pgpudevice;
 
-      UINT64 uploadFenceValue = ++m_fenceValue;
+      //UINT64 uploadFenceValue = ++m_fenceValue;
 
-      HRESULT hrSignalCommandQueue = m_pcommandqueue->Signal(m_pfence, uploadFenceValue);
+      m_fenceValue++;
+
+      auto hrSignalCommandQueue = m_pcommandqueue->Signal(m_pfence, m_fenceValue);
 
       pdevice->defer_throw_hresult(hrSignalCommandQueue);
 

@@ -270,8 +270,8 @@ namespace graphics3d
              floating_matrix3 world3x3 = floating_matrix3(world);
       
              float det2 = floating_matrix3(world3x3).determinant();
-             information("deteterminant of model matrix is %f\n", det2);
-      
+             
+//             information("deteterminant of model matrix is {}", det2);
       
              floating_matrix4 normalMat(world3x3);
       

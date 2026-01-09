@@ -40,7 +40,7 @@ namespace gpu_directx12
    }
 
 
-   void d3d12_resource::initialize_d3d12_context(::gpu::context * pgpucontext)
+   void d3d12_resource::initialize_d3d12_resource(::gpu::context * pgpucontext)
    {
 
       m_pcontext = pgpucontext;
@@ -57,7 +57,7 @@ namespace gpu_directx12
       CD3DX12_RESOURCE_DESC vbDesc = CD3DX12_RESOURCE_DESC::Buffer(block.size());
 
       //m_pd3d12resourceMemoryBuffer->create(&defaultHeap, D3D12_HEAP_FLAG_NONE, &vbDesc);
-
+      m_state.m_resourcestates = D3D12_RESOURCE_STATE_COPY_DEST;
       create(&defaultHeap, D3D12_HEAP_FLAG_NONE, &vbDesc);
       set_name(scopedstrName);
       // pdevice->defer_throw_hresult(hresultCreateCommittedResource);
@@ -75,6 +75,7 @@ namespace gpu_directx12
       pd3d12resourceUpload->map_assign(block);
 
       ::cast<::gpu_directx12::command_buffer> pcommandbufferLoading;
+
       ::cast<::gpu_directx12::renderer> prenderer = m_pcontext->m_pgpurenderer;
 
       if (::is_set(prenderer))
@@ -126,6 +127,7 @@ namespace gpu_directx12
    void d3d12_resource::create_upload(D3D12_HEAP_FLAGS HeapFlags, const D3D12_RESOURCE_DESC *pDesc)
    {
       m_state.m_resourcestates = D3D12_RESOURCE_STATE_GENERIC_READ;
+      m_bUpload = true;
       CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
       create(&uploadHeap, HeapFlags, pDesc);
    }

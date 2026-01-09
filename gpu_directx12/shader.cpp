@@ -265,7 +265,7 @@ namespace gpu_directx12
 
                   ::cast<::gpu_directx12::binding_set> pbindingset = pbindingslotset->m_pbindingset;
 
-                  int iBaseRegister1 = pbindingset->first()->m_iBindingPoint2;
+                  int iBaseRegister1 = maximum(0, pbindingset->first()->m_iBindingPoint2);
 
                   auto &srvRange = ranges.add_new();
                   srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
@@ -1014,7 +1014,7 @@ namespace gpu_directx12
 
       //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
-      ptextureDst->_new_state(pcommandbuffer->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+      ptextureDst->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -1072,7 +1072,7 @@ namespace gpu_directx12
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      ptextureSrc->_new_state(pcommandbuffer->m_pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+      ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -1344,7 +1344,8 @@ namespace gpu_directx12
          ::cast<::gpu_directx12::block > pblockGlobalUbo1 = pgpublockGlobalUbo1;
 
          //pcommandlist->SetGraphicsRootDescriptorTable(0, prenderer->m_pheapCbv->GetGPUDescriptorHandleForHeapStart());
-         pcommandlist->SetGraphicsRootConstantBufferView(0, pblockGlobalUbo1->m_presourceBlock->GetGPUVirtualAddress());
+         pcommandlist->SetGraphicsRootConstantBufferView(
+            0, pblockGlobalUbo1->m_pd3d12resourceBlock->gpu_address());
 
       }
 

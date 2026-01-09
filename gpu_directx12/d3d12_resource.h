@@ -29,6 +29,7 @@ namespace gpu_directx12
       ::comptr<ID3D12Resource> m_presource;
       //D3D12_VERTEX_BUFFER_VIEW& vbView,
       state_t m_state;
+      bool m_bUpload = false;
       void *m_pPersistentMap;
       ::pointer < ::gpu_directx12::context > m_pcontext;
       //VkDeviceMemory m_vkdevicememory;
@@ -39,7 +40,7 @@ namespace gpu_directx12
       ~d3d12_resource();
 
 
-      virtual void initialize_d3d12_context(::gpu::context *pgpucontext);
+      virtual void initialize_d3d12_resource(::gpu::context *pgpucontext);
 
 
       virtual void create_named_buffer_with_upload(const ::scoped_string & scopedstrName, const ::block &block, ::pointer < d3d12_resource > & pd3d12resourceUpload);
@@ -72,6 +73,7 @@ namespace gpu_directx12
 
 
       D3D12_VERTEX_BUFFER_VIEW m_vertextbufferview;
+      ::pointer<d3d12_resource> m_pd3d12resourceUpload;
 
 
       vertex_buffer()
@@ -91,9 +93,13 @@ namespace gpu_directx12
 
          UINT size = (UINT) (c * sizeof(VERTEX));
 
-         initialize_resource(pcontext, size);
+         //initialize_d3de12_resource(pcontext, size);
 
-         m_vertextbufferview.BufferLocation = m_presource->GetGPUVirtualAddress();
+         initialize_d3d12_resource(pcontext);
+
+         create_named_buffer_with_upload("vertex_buffer", size, m_pd3d12resourceUpload);
+
+         m_vertextbufferview.BufferLocation = this->gpu_address();
          m_vertextbufferview.SizeInBytes = (UINT)size;
          m_vertextbufferview.StrideInBytes = sizeof(VERTEX);
 

@@ -136,12 +136,22 @@ namespace gpu_directx12
          stateInitial = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
       }
-      else
+      else if (m_textureflags.m_bShaderResource)
+      {
+
+         stateInitial = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+
+      }
+      else 
       {
 
          stateInitial = D3D12_RESOURCE_STATE_COPY_DEST;
 
       }
+
+      ::cast<::gpu_directx12::context> pcontext = m_pgpurenderer->m_pgpucontext;
+
+      pcontext->_construct_new(m_pd3d12resourceTexture);
 
       m_pd3d12resourceTexture->m_state.m_resourcestates=stateInitial;
 
@@ -201,6 +211,27 @@ namespace gpu_directx12
          pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, texturedata);
 
       }
+      else if (texturedata.is_raw_scoped_data())
+      {
+
+
+         
+      ::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
+
+         if (!pcommandbuffer)
+         {
+
+            pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+         }
+
+         auto pstaticuploadbuffer = _get_static_upload_buffer();
+         //::gpu::texture_data texturedata(texturedata.raw_scoped_data());
+         pcommandbuffer->m_particleaHold.add(pstaticuploadbuffer);
+
+         pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, texturedata);
+
+
+      }
 
       new_texture.set_new_texture();
 
@@ -217,6 +248,8 @@ namespace gpu_directx12
          create_shader_resource();
 
       }
+
+      set_ok_flag();
 
    }
 
@@ -573,6 +606,10 @@ namespace gpu_directx12
 
       //m_state = stateInitial;
 
+      ::cast<::gpu_directx12::context> pcontext = m_pgpurenderer->m_pgpucontext;
+
+      pcontext->_construct_new(m_pd3d12resourceTexture);
+
       m_pd3d12resourceTexture->m_state.m_resourcestates = stateInitial;
 
       m_pd3d12resourceTexture->create(&heapproperties, D3D12_HEAP_FLAG_NONE, &texDesc);
@@ -598,7 +635,7 @@ namespace gpu_directx12
 
       pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, texturedata);
 
-
+      set_ok_flag();
       // ------------------------------------------------------------
       // Create upload buffer
       // ------------------------------------------------------------
@@ -860,6 +897,10 @@ namespace gpu_directx12
 
       if (!m_pd3d12resourceTexture || !m_pd3d12resourceTexture->m_presource)
       {
+
+         ::cast<::gpu_directx12::context> pcontext = prenderer->m_pgpucontext;
+
+         pcontext->_construct_new(m_pd3d12resourceTexture);
 
          auto hrSwapChainGetBuffer = pdxgiswapchain->GetBuffer(
             uCurrentBufferIndex, __interface_of(m_pd3d12resourceTexture->m_presource));
@@ -1243,7 +1284,9 @@ namespace gpu_directx12
 
       ::cast<renderer> prenderer = ptexture->m_pgpurenderer;
 
-      ::cast<::gpu_directx12::device> pdevice = prenderer->m_pgpucontext->m_pgpudevice;
+      ::cast<::gpu_directx12::context> pcontext = prenderer->m_pgpucontext;
+
+      ::cast<::gpu_directx12::device> pdevice = pcontext->m_pgpudevice;
 
       m_ptexture = ptexture;
 
@@ -1258,6 +1301,8 @@ namespace gpu_directx12
       CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
 
       auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(presourceUploadBufferSize);
+
+      pcontext->_construct_new(m_pd3d12resourceUpload);
 
       pdevice->m_pdevice->CreateCommittedResource(&propertiesUpload, D3D12_HEAP_FLAG_NONE, &descUpload,
                                                   D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
