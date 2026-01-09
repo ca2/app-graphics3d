@@ -1009,7 +1009,9 @@ namespace gpu_directx12
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       ptextureDst->_new_state(pcommandbuffer->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
@@ -1064,7 +1066,10 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       ptextureSrc->_new_state(pcommandbuffer->m_pcommandlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
@@ -1310,7 +1315,8 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -1446,7 +1452,9 @@ namespace gpu_directx12
              m_propertiesPushShared.data(false), m_propertiesPushShared.size(false));
       m_resourceaPushProperties[m_iPush/256]->Unmap(0, nullptr);
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
 
       int iBlockSize = ::directx12::Align256((UINT)m_propertiesPushShared.size(false));

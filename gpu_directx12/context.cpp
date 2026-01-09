@@ -850,7 +850,9 @@ namespace gpu_directx12
 
       auto prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -866,7 +868,9 @@ namespace gpu_directx12
 
       auto prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -2699,6 +2703,50 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
       return front;
    }
 
+
+   void context::set_viewport(::gpu::command_buffer *pgpucommandbuffer, const ::int_rectangle &rectangle)
+   {
+
+
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      D3D12_VIEWPORT viewport = {};
+      viewport.TopLeftX = (FLOAT)rectangle.left;
+      viewport.TopLeftY = (FLOAT)rectangle.top;
+      viewport.Width = static_cast<float>(rectangle.width());
+      viewport.Height = static_cast<float>(rectangle.height());
+      viewport.MinDepth = 0.0f;
+      viewport.MaxDepth = 1.0f;
+
+      //// 4. Set the viewport and scissor
+      pcommandlist->RSSetViewports(1, &viewport);
+
+
+   }
+
+
+   void context::set_scissor(::gpu::command_buffer *pgpucommandbuffer, const ::int_rectangle &rectangle)
+   {
+
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      D3D11_RECT scissorRect;
+      // scissorRect.left = pgputextureSource->m_rectangleTarget.left;
+      // scissorRect.top = pgputextureSource->m_rectangleTarget.top;
+      // scissorRect.right = pgputextureSource->m_rectangleTarget.right;
+      // scissorRect.bottom = pgputextureSource->m_rectangleTarget.bottom;
+      scissorRect.left = rectangle.left;
+      scissorRect.top = rectangle.top;
+      scissorRect.right = rectangle.right;
+      scissorRect.bottom = rectangle.bottom;
+
+      pcommandlist->RSSetScissorRects(1, &scissorRect);
+
+   }
 
 
 

@@ -6,7 +6,7 @@
 #include "acme/graphics/image/pixmap.h"
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/frame.h"
-
+#include <stb/stb_image.h>
 
 namespace gpu_directx12
 {
@@ -20,6 +20,9 @@ namespace gpu_directx12
       //m_rtvDescriptorSize = 0;
 
       new_texture.set_new_texture();
+
+
+      //m_dxgiformat = DXGI_FORMAT_UNKNOWN;
 
    }
 
@@ -35,7 +38,9 @@ namespace gpu_directx12
 
       DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
       // 1. Create the texture resource
-      D3D12_RESOURCE_DESC textureDesc = {};
+
+      auto &textureDesc = m_resourcedesc;
+      ::zero(textureDesc);
       textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
       textureDesc.Width = this->width();
       textureDesc.Height = this->height();
@@ -521,6 +526,148 @@ namespace gpu_directx12
    }
 
 
+   void texture::initialize_hdr_texture_on_memory(::gpu::renderer *prenderer, const ::block &block)
+   {
+      //Dx12Texture out = {};
+
+      m_pgpurenderer = prenderer;
+
+      auto data = block.data();
+
+      auto size = block.size();
+
+      // ------------------------------------------------------------
+      // Load image (float)
+      // ------------------------------------------------------------
+      int width = 0, height = 0, channels = 0;
+
+      stbi_set_flip_vertically_on_load(0);
+      float *image = stbi_loadf_from_memory((const stbi_uc *)data, (int)size, &width, &height, &channels, 0);
+
+      if (!image)
+      {
+         throw ::exception(error_failed, "stbi_loadf_from_memory failed");
+      }
+
+      m_textureattributes.m_rectangleTarget.left = 0;
+      m_textureattributes.m_rectangleTarget.top = 0;
+      m_textureattributes.m_rectangleTarget.set_size(width, height);
+
+      // ------------------------------------------------------------
+      // Expand to RGBA if needed
+      // ------------------------------------------------------------
+      ::memory rgba;
+      float *src = image;
+
+      if (channels != 4)
+      {
+         size_t pixels = size_t(width) * height;
+         rgba.set_size(pixels * 4 * sizeof(float));
+
+         if (channels == 3)
+         {
+            for (size_t i = 0; i < pixels; ++i)
+            {
+               rgba[i * 4 + 0] = src[i * 3 + 0];
+               rgba[i * 4 + 1] = src[i * 3 + 1];
+               rgba[i * 4 + 2] = src[i * 3 + 2];
+               rgba[i * 4 + 3] = 1.0f;
+            }
+         }
+         else if (channels == 1)
+         {
+            for (size_t i = 0; i < pixels; ++i)
+            {
+               float v = src[i];
+               rgba[i * 4 + 0] = v;
+               rgba[i * 4 + 1] = v;
+               rgba[i * 4 + 2] = v;
+               rgba[i * 4 + 3] = 1.0f;
+            }
+         }
+         else
+         {
+            stbi_image_free(image);
+            throw ::exception(error_failed, "Unsupported channel count");
+         }
+
+         src = (float *) rgba.data();
+         channels = 4;
+      }
+
+      // ------------------------------------------------------------
+      // Create GPU texture (DEFAULT heap)
+      // ------------------------------------------------------------
+      auto &texDesc = m_resourcedesc;
+      ::zero(texDesc);
+      texDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+      texDesc.Width = width;
+      texDesc.Height = height;
+      texDesc.DepthOrArraySize = 1;
+      texDesc.MipLevels = 1;
+      texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      texDesc.SampleDesc.Count = 1;
+      texDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+
+
+      ::cast<::gpu_directx12::device> pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+
+      auto device = pdevice->m_pdevice;
+
+      CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
+
+      device->CreateCommittedResource(&heapproperties, D3D12_HEAP_FLAG_NONE, &texDesc,
+                                      D3D12_RESOURCE_STATE_COPY_DEST, nullptr, __interface_of(m_presource));
+
+
+      auto puploadbuffer = _get_upload_buffer();
+
+      puploadbuffer->update_pixels(m_textureattributes.m_rectangleTarget, src);
+      // ------------------------------------------------------------
+      // Create upload buffer
+      // ------------------------------------------------------------
+      //UINT64 uploadSize = 0;
+      //device->GetCopyableFootprints(&texDesc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadSize);
+
+      //device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
+      //                                &CD3DX12_RESOURCE_DESC::Buffer(uploadSize), D3D12_RESOURCE_STATE_GENERIC_READ,
+      //                                nullptr, IID_PPV_ARGS(&out.upload));
+
+      //// ------------------------------------------------------------
+      //// Upload texture data
+      //// ------------------------------------------------------------
+      //D3D12_SUBRESOURCE_DATA sub = {};
+      //sub.pData = src;
+      //sub.RowPitch = width * 4 * sizeof(float);
+      //sub.SlicePitch = sub.RowPitch * height;
+
+      //UpdateSubresources(cmd, out.resource.Get(), out.upload.Get(), 0, 0, 1, &sub);
+
+      //// ------------------------------------------------------------
+      //// Transition to SRV
+      //// ------------------------------------------------------------
+      //cmd->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(out.resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+      //                                                              D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+
+      //// ------------------------------------------------------------
+      //// Create SRV (CPU descriptor heap)
+      //// ------------------------------------------------------------
+      //D3D12_SHADER_RESOURCE_VIEW_DESC srv = {};
+      //srv.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      //srv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+      //srv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+      //srv.Texture2D.MipLevels = 1;
+
+      //device->CreateShaderResourceView(out.resource.Get(), &srv, cpuSrv);
+
+      //out.cpuSrv = cpuSrv;
+
+      stbi_image_free(image);
+      //return out;
+   }
+
+
+
    void texture::create_render_target()
    {
 
@@ -580,7 +727,7 @@ namespace gpu_directx12
       pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
       // 5. Create SRV
-      DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
+      DXGI_FORMAT format = m_resourcedesc.Format;
       D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
       srvDesc.Format = format;
       if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)

@@ -22,6 +22,9 @@
 #include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
 //#include "direct2d_draw2d_swap_chain.h"
+#include "ibl/diffuse_irradiance_map.h"
+#include "ibl/equirectangular_cubemap.h"
+#include "ibl/specular_map.h"
 
 
 
@@ -57,6 +60,10 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item<::gpu_directx12::gltf::mesh, ::gpu::model::mesh>();
    pfactory->add_factory_item<::gpu_directx12::gltf::model, ::gpu::model::model>();
+
+   pfactory->add_factory_item<::gpu_directx12::ibl::diffuse_irradiance_map, ::gpu::ibl::diffuse_irradiance_map>();
+   pfactory->add_factory_item<::gpu_directx12::ibl::specular_map, ::gpu::ibl::specular_map>();
+   pfactory->add_factory_item<::gpu_directx12::ibl::equirectangular_cubemap, ::gpu::ibl::equirectangular_cubemap>();
 
 
    pfactory->add_factory_item < ::gpu_directx12::frame_storage, ::gpu::frame_storage >();

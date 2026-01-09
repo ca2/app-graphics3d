@@ -2712,6 +2712,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    void graphics::draw_rectangle(const ::double_rectangle& rectangle, ::draw2d::pen* ppen)
    {
 
+      ::gpu::graphics::draw_rectangle(rectangle, ppen);
       //if (::is_set(ppen))
       //{
 
@@ -5646,8 +5647,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::draw_text(const ::scoped_string& str, const ::double_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
+   void graphics::draw_text(const ::scoped_string& scopedstr, const ::double_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
    {
+
+      ::gpu::graphics::draw_text(scopedstr, rectangle, ealign, edrawtext);
 
       //::double_rectangle rectangle;
 

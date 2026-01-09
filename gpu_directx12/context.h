@@ -390,6 +390,11 @@ namespace gpu_directx12
 
       floating_sequence3 front(const ::graphics3d::floating_rotation &rotation) override;
 
+
+      void set_viewport(::gpu::command_buffer *pgpucommandbuffer, const ::int_rectangle &rectangle) override;
+      void set_scissor(::gpu::command_buffer *pgpucommandbuffer, const ::int_rectangle &rectangle) override;
+
+
    };
 
 

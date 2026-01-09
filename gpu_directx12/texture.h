@@ -56,7 +56,7 @@ namespace gpu_directx12
          UINT   m_uNumRows = 0;
 
          D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_footprint;
-
+         
 
          ::array_base < damage > m_damagea;
 
@@ -96,7 +96,7 @@ namespace gpu_directx12
 
       }new_texture;
 
-      
+      D3D12_RESOURCE_DESC              m_resourcedesc;
       ::comptr<ID3D12Resource>         m_presource;
       ::comptr<ID3D12Resource>         m_presourceDepthStencilView;
       ::comptr<ID3D12DescriptorHeap>   m_pheapRenderTargetView;
@@ -111,6 +111,8 @@ namespace gpu_directx12
       //UINT m_rtvDescriptorSize;
       //bool m_bRenderTarget;
       //bool m_bShaderResource;
+
+      //DXGI_FORMAT m_dxgiformat;
 
       class d3d11 :
          virtual public ::particle
@@ -160,6 +162,9 @@ namespace gpu_directx12
       void set_pixels(const ::int_rectangle& rectangle, const void* data) override;
 
       virtual upload_buffer * _get_upload_buffer();
+
+
+      void initialize_hdr_texture_on_memory(::gpu::renderer *prenderer, const ::block &block) override;
 
    };
 
