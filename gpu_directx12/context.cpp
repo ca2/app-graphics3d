@@ -1605,6 +1605,16 @@ namespace gpu_directx12
    // }
 
 
+   
+   void context::layout_global_ubo(::gpu::properties *pproperties) 
+   {
+   
+      _layout_hlsl(*pproperties); 
+   
+   }
+
+
+
    void context::update_global_ubo1(::gpu::block *pblockGlobalUbo1)
    {
 

@@ -4,6 +4,7 @@
 #include "bred/gpu/hlsl_context.h"
 #include "acme/prototype/prototype/memory.h"
 #include "gpu_directx12/device.h"
+#include "gpu/context.h"
 #include <d3d11_3.h>
 #include <d3d11_4.h>
 
@@ -14,6 +15,7 @@ namespace gpu_directx12
 
    class CLASS_DECL_GPU_DIRECTX12 context :
       virtual public ::gpu::hlsl_context,
+      virtual public ::gpu_gpu::context,
       virtual public ::dxgi_device_source
    {
    public:
@@ -195,6 +197,9 @@ namespace gpu_directx12
 
 
       virtual d3d11on12* d3d11on12();
+
+
+      void layout_global_ubo(::gpu::properties *pproperties) override;
 
 
       ::pointer < ::gpu::command_buffer > beginSingleTimeCommands(::gpu::queue * pgpuqueue, ::gpu::enum_command_buffer ecommandbuffer = ::gpu::e_command_buffer_graphics) override;

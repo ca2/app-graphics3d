@@ -56,6 +56,8 @@ namespace gpu_directx12
 
       void mesh::draw2(::gpu::command_buffer *pcommandbuffer)
       {
+
+         ::gpu::model::mesh::draw2(pcommandbuffer);
          //::cast<::gpu_directx12::context> pcontext = m_pgpucontext;
          ////
          //// glActiveTexture(GL_TEXTURE0);
