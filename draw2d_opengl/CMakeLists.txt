@@ -80,7 +80,7 @@ if (MSVC)
 elseif (${LINUX})
 
     #if(USE_PKGCONFIG)
-    pkg_check_modules(PKGCONFIG vulkan)
+    pkg_check_modules(PKGCONFIG x11 gl glx)
     #endif()
 
 

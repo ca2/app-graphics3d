@@ -2,12 +2,14 @@
 #include "_opengl.h"
 #include "bitmap.h"
 #include "acme/exception/interface_only.h"
+#include "acme/windowing/display.h"
+#include "acme/windowing/windowing.h"
 
 
 void resizeBilinear(memory & m, int w2, int h2, int * pixels, int w, int h);
-#ifdef WITH_X11
-Display * x11_get_display();
-#endif
+//#ifdef WITH_X11
+//Display * x11_get_display();
+//#endif
 #ifdef LINUX
 #define WIDTH 3200
 #define HEIGHT 1800
@@ -636,9 +638,9 @@ namespace draw2d_opengl
       return true;
 #elif defined(WITH_X11) && !defined(DESKTOP_ENVIRONMENT_GNOME)
 
+      ::system()->acme_windowing()->acme_display()->get_os_display_handle(&dpy, sizeof(dpy));
 
-
-      if (!(dpy = x11_get_display()))
+      if (!dpy)
       {
          fprintf(stderr, "could not open display");
          return false;
@@ -677,12 +679,12 @@ namespace draw2d_opengl
       PBuffer = glXCreatePbuffer(dpy, fbc[0], pbAttrib);
       PBufferCtx = glXCreateNewContext(dpy, fbc[0], GLX_RGBA_TYPE, 0, GL_TRUE);
 
-      cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen), vi->draw2d, AllocNone);
+      cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen), vi->visual, AllocNone);
       swa.colormap = cmap;
       swa.border_pixel = 0;
       swa.event_mask = ExposureMask | ButtonPressMask | StructureNotifyMask;
       win = XCreateWindow(dpy, RootWindow(dpy, vi->screen), 0, 0, WIDTH, HEIGHT,
-                          0, vi->depth, InputOutput, vi->draw2d,
+                          0, vi->depth, InputOutput, vi->visual,
                           CWBorderPixel | CWColormap | CWEventMask,
                           &swa);
 
