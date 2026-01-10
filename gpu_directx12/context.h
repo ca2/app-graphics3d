@@ -394,6 +394,8 @@ namespace gpu_directx12
       void set_viewport(::gpu::command_buffer *pgpucommandbuffer, const ::int_rectangle &rectangle) override;
       void set_scissor(::gpu::command_buffer *pgpucommandbuffer, const ::int_rectangle &rectangle) override;
 
+      void load_ktxTexture(::gpu::texture *pgputexture, void *p_ktxTexture) override;
+      void load_ktxTexture_cube_map(::gpu::texture *pgputexture, void *p_ktxTexture) override;
 
    };
 

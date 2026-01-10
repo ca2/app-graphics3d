@@ -1467,7 +1467,13 @@ namespace gpu_directx12
 
       auto iCount = ptexture->m_textureattributes.m_iLayerCount;
 
-      const UINT64 uUploadBufferSize = GetRequiredIntermediateSize(presource, 0, iCount);
+      if (m_iResourceCount < 0)
+      {
+         m_iResourceCount = iCount;
+
+      }
+
+      const UINT64 uUploadBufferSize = GetRequiredIntermediateSize(presource, 0, m_iResourceCount);
 
       CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
 
@@ -1634,12 +1640,14 @@ namespace gpu_directx12
    }
 
 
-   texture::static_upload_buffer *texture::_get_static_upload_buffer()
+   texture::static_upload_buffer *texture::_get_static_upload_buffer(int iResourceCount)
    {
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 
       øconstruct_new(m_pstaticuploadbuffer);
+
+      m_pstaticuploadbuffer->m_iResourceCount = iResourceCount;
 
       m_pstaticuploadbuffer->initialize_static_upload_buffer(this);
 

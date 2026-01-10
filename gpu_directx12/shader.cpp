@@ -1636,6 +1636,8 @@ namespace gpu_directx12
 
          m_iPush = 0;
 
+         m_iHeapIndex = 0;
+
       }
 
       if (m_etopology == ::gpu::e_topology_triangle_strip)

@@ -286,6 +286,9 @@
     <ClCompile Include="ibl\specular_map.cpp">
       <Filter>Source Files\ibl</Filter>
     </ClCompile>
+    <ClCompile Include="context_ktx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="deployment.rc">

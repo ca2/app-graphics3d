@@ -26,7 +26,7 @@ namespace gpu_directx12
       ::array_base<::comptr<ID3D12DescriptorHeap>> m_heapa1;
       ::array_base<::comptr<ID3D12DescriptorHeap>> m_heapaSampler1;
       int m_iHeapIndex = 0;
-      int m_iHeapCount = 1024;
+      int m_iHeapCount = 8192;
       int m_iHeapSamplerIndex = 0;
       int m_iHeapSamplerCount = 64;
       DXGI_FORMAT m_dxgiformatRenderTargetView;

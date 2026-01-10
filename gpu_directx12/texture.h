@@ -93,6 +93,7 @@ namespace gpu_directx12
          UINT64 m_uUploadBufferSize = 0;
          UINT64 m_uRowSizeInBytes = 0;
          UINT m_uNumRows = 0;
+         int m_iResourceCount = -1;
 
          D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_footprint;
 
@@ -280,7 +281,7 @@ namespace gpu_directx12
 
       virtual upload_buffer * _get_upload_buffer();
 
-      virtual static_upload_buffer *_get_static_upload_buffer();
+      virtual static_upload_buffer *_get_static_upload_buffer(int iResourceCount = -1);
 
       void initialize_hdr_texture_on_memory(::gpu::renderer *prenderer, const ::block &block) override;
 

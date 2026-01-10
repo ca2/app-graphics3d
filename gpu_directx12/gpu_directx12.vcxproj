@@ -220,6 +220,7 @@
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
       <FixedBaseAddress>false</FixedBaseAddress>
+      <AdditionalDependencies>ktx.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>
@@ -347,6 +348,7 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <MergeSections>
       </MergeSections>
+      <AdditionalDependencies>ktx.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>
@@ -489,6 +491,7 @@
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
       <FixedBaseAddress>false</FixedBaseAddress>
+      <AdditionalDependencies>ktx.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)../..core/include/manifest.dll.embed.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
@@ -602,6 +605,7 @@
       </IgnoreSpecificDefaultLibraries>
       <MapFileName>$(TargetDir)$(TargetName).map</MapFileName>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalDependencies>ktx.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)../..core/include/manifest.dll.embed.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
@@ -741,6 +745,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="block.cpp" />
+    <ClCompile Include="context_ktx.cpp" />
     <ClCompile Include="frame_storage.cpp" />
     <ClCompile Include="gltf\mesh.cpp" />
     <ClCompile Include="gltf\model.cpp" />
