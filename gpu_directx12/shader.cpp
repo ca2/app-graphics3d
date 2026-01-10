@@ -32,6 +32,45 @@ namespace gpu_directx12
 {
 
 
+   ::comptr<ID3DBlob> create_computer_shader_blob(const ::block &block)
+   {
+
+      comptr<ID3DBlob> pblobShader;
+      comptr<ID3DBlob> pblobError;
+
+      auto data = (const char *)block.data();
+
+      auto size = block.size();
+
+      HRESULT hr = D3DCompile(data, // pointer to shader source
+                              size, // size of shader source
+                              nullptr, // optional source name
+                              nullptr, // macro definitions
+                              nullptr, // include handler
+                              "main", // entry point
+                              "cs_5_0", // target profile (e.g., vs_5_0, ps_5_0)
+                              0, // compile flags
+                              0, // effect flags
+                              &pblobShader, // compiled shader
+                              &pblobError // error messages
+      );
+
+      if (FAILED(hr))
+      {
+
+         if (pblobError)
+         {
+
+            ::string strError((const char *)pblobError->GetBufferPointer(), pblobError->GetBufferSize());
+
+            throw ::exception(error_failed);
+         }
+      }
+
+      return pblobShader;
+   }
+
+
    shader::shader()
    {
 
@@ -1018,8 +1057,7 @@ namespace gpu_directx12
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      D3D12_CPU_DESCRIPTOR_HANDLE handlea[] = {
-      ptextureDst->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart()};
+      D3D12_CPU_DESCRIPTOR_HANDLE handlea[] = {ptextureDst->current_layer().m_handleRenderTargetView};
 
       D3D12_CPU_DESCRIPTOR_HANDLE depth[1]{};
       D3D12_CPU_DESCRIPTOR_HANDLE * dpth=nullptr;
@@ -1042,6 +1080,46 @@ namespace gpu_directx12
 
    }
 
+
+      void shader::defer_bind_frame_buffer_layer(::gpu::command_buffer *pgpucommandbuffer,
+                                              ::gpu::texture *pgputextureTarget)
+   {
+
+      ::cast<texture> ptexture = pgputextureTarget;
+
+      if (ptexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
+      {
+
+         if (ptexture->m_iCurrentLayer >= 0)
+         {
+
+                  ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+            auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      D3D12_CPU_DESCRIPTOR_HANDLE handlea[] = {ptexture->current_layer().m_handleRenderTargetView};
+
+            D3D12_CPU_DESCRIPTOR_HANDLE depth[1]{};
+            D3D12_CPU_DESCRIPTOR_HANDLE *dpth = nullptr;
+            if (ptexture->m_pheapDepthStencilView && !m_bDisableDepthTest)
+            {
+               depth[0] = ptexture->m_handleDepthStencilView;
+               dpth = depth;
+            }
+
+            // if(ptextureDst->m_ph)
+
+            pcommandlist->OMSetRenderTargets(1, handlea, FALSE, dpth);
+
+         }
+      }
+   }
+
+      void shader::on_bind_already_bound(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
+   {
+
+      defer_bind_frame_buffer_layer(pgpucommandbuffer, pgputextureTarget);
+   }
 
    void shader::bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptextureSource, int iSlot)
    {

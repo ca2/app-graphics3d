@@ -10,7 +10,7 @@
 
 namespace gpu_directx12
 {
-
+   ::comptr<ID3DBlob> create_computer_shader_blob(const ::block &block);
 
    texture::texture()
    {
@@ -60,7 +60,7 @@ namespace gpu_directx12
 
       }
 
-      textureDesc.MipLevels = 1;
+      textureDesc.MipLevels = m_textureattributes.m_iMipCount;
       //textureDesc.DepthOrArraySize = 1;
       textureDesc.Format = format;
       textureDesc.SampleDesc.Count = 1;
@@ -70,6 +70,13 @@ namespace gpu_directx12
       {
 
          textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+      }
+
+      if (textureDesc.MipLevels > 1)
+      {
+
+         textureDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
       }
 
@@ -531,13 +538,16 @@ namespace gpu_directx12
       // ------------------------------------------------------------
       // Expand to RGBA if needed
       // ------------------------------------------------------------
-      ::memory rgba;
+      ::memory memory;
       float *src = image;
 
       if (channels != 4)
       {
          size_t pixels = size_t(width) * height;
-         rgba.set_size(pixels * 4 * sizeof(float));
+         auto sizeInBytes = pixels * 4 * sizeof(float);
+         memory.set_size(sizeInBytes);
+
+         auto rgba= (float *)memory.data();
 
          if (channels == 3)
          {
@@ -566,7 +576,7 @@ namespace gpu_directx12
             throw ::exception(error_failed, "Unsupported channel count");
          }
 
-         src = (float *) rgba.data();
+         src = rgba;
          channels = 4;
       }
 
@@ -591,15 +601,23 @@ namespace gpu_directx12
 
       CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
 
-            D3D12_RESOURCE_STATES stateInitial;
+      D3D12_RESOURCE_STATES stateInitial;
 
-      if (m_textureflags.m_bRenderTarget)
+      //if (m_textureflags.m_bRenderTarget)
+      //{
+
+      //   stateInitial = D3D12_RESOURCE_STATE_RENDER_TARGET;
+      //}
+      //else if (m_textureflags.m_bShaderResource)
+      //{
+
+      //   stateInitial = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+      //}
+      //else
       {
 
-         stateInitial = D3D12_RESOURCE_STATE_RENDER_TARGET;
-      }
-      else
-      {
+         // There's texture data (hdr image).
+         // First operation will copying data to texture.
 
          stateInitial = D3D12_RESOURCE_STATE_COPY_DEST;
       }
@@ -680,6 +698,154 @@ namespace gpu_directx12
    }
 
 
+   void texture::layer::_create_render_target_view(::gpu_directx12::texture *ptexture, 
+                                            int iAttachmentCount)
+   {
+
+   ::cast < ::gpu_directx12::device > pdevice = ptexture->m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+
+      //dx12_framebuffer fb{};
+
+      if (ptexture->m_iCurrentLayer < 0)
+      {
+         m_size.cx = ptexture->rectangle().width();
+         m_size.cy = ptexture->rectangle().height();
+         m_iLayerCount = ptexture->m_textureattributes.m_iLayerCount;
+      }
+      else
+      {
+         m_size.cx = ptexture->mip_width();
+         m_size.cy = ptexture->mip_height();
+         m_iLayerCount = 1;
+      }
+
+      //fb.rtvHandles.resize(attachmentCount);
+
+      //for (int i = 0; i < iAttachmentCount; ++i)
+      //{
+         // Allocate RTV descriptor
+         m_handleRenderTargetView = ptexture->_allocate_render_target_view_handle();
+
+         D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+         rtvDesc.Format = ptexture->m_resourcedesc.Format;
+         rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
+         rtvDesc.Texture2DArray.MipSlice = maximum(0,ptexture->m_iCurrentMip);
+         rtvDesc.Texture2DArray.FirstArraySlice = (ptexture->m_iCurrentLayer < 0) ? 0 : ptexture->m_iCurrentLayer;
+         rtvDesc.Texture2DArray.ArraySize = maximum(1,m_iLayerCount);
+         rtvDesc.Texture2DArray.PlaneSlice = 0;
+
+         pdevice->m_pdevice->CreateRenderTargetView(ptexture->m_pd3d12resourceTexture->m_presource, &rtvDesc,
+                                                    m_handleRenderTargetView);
+
+
+      //}
+
+      //m_dx12_framebuffer = fb;
+   }
+
+
+   void texture::layer::create_render_target_view(::gpu_directx12::texture *ptexture)
+   {
+
+      int iAttachmentCount = 1;
+
+      if (ptexture->m_textureflags.m_bWithDepth)
+      {
+
+         iAttachmentCount++;
+
+      }
+
+      _create_render_target_view(ptexture, iAttachmentCount);
+
+   }
+
+
+   D3D12_CPU_DESCRIPTOR_HANDLE texture::_allocate_render_target_view_handle()
+   {
+
+      if (!m_pheapRenderTargetView)
+      {
+
+         if (m_iRenderTargetViewHandleCount < 0)
+         {
+
+            int iMipCount = m_textureattributes.m_iMipCount;
+
+            if (iMipCount <= 0)
+            {
+
+               iMipCount = m_textureattributes.maximum_mip_count();
+            }
+
+            m_iRenderTargetViewHandleCount = m_textureattributes.m_iLayerCount * iMipCount + 2;
+         }
+
+         if (m_iRenderTargetViewHandleCount <= 0)
+         {
+
+            return {};
+
+         }
+               ::cast<device> pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+         m_uRenderTargetViewIncrement = pdevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+         // 2. Create RTV descriptor heap
+         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+               rtvHeapDesc.NumDescriptors = m_iRenderTargetViewHandleCount;
+         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+         HRESULT hrCreateDescriptorHeap =
+            pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
+
+         pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
+         m_iRenderTargetViewHandle = 0;
+      }
+      if (m_iRenderTargetViewHandle < 0)
+      {
+
+         return {};
+
+      }
+      if (m_iRenderTargetViewHandle > m_iRenderTargetViewHandleCount)
+      {
+
+         throw ::exception(error_failed);
+
+      }
+      
+      //// 3. Create RTV
+//      m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
+      CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+                                              m_iRenderTargetViewHandle * 
+         m_uRenderTargetViewIncrement);
+
+      m_iRenderTargetViewHandle++;
+
+      return rtvHandle;
+
+   }
+      class texture::layer &texture::current_layer()
+   {
+
+      // ASSERT(m_textureattributes.m_etexture == ::gpu::e_texture_cube_map);
+
+      int iMip = maximum(0, m_iCurrentMip);
+
+      int iLayerPlusOne = maximum(0, m_iCurrentLayer + 1);
+
+      auto &layer = this->m_miplayera.ø(iMip).ø(iLayerPlusOne);
+
+      if (layer.is_empty())
+      {
+
+         layer.create_render_target_view(this);
+
+      }
+
+      return layer;
+   }
+
+
 
    void texture::create_render_target()
    {
@@ -694,21 +860,8 @@ namespace gpu_directx12
 
          }
 
-         ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
-         // 2. Create RTV descriptor heap
-         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-         rtvHeapDesc.NumDescriptors = 1;
-         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-         HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
 
-         pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
-
-         //// 3. Create RTV
-         m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
-         //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart());
-
-         pdevice->m_pdevice->CreateRenderTargetView(m_pd3d12resourceTexture->m_presource, nullptr, m_handleRenderTargetView);
+         //pdevice->m_pdevice->CreateRenderTargetView(m_pd3d12resourceTexture->m_presource, nullptr, m_handleRenderTargetView);
 
 
       }
@@ -897,6 +1050,11 @@ namespace gpu_directx12
 
       if (!m_pd3d12resourceTexture || !m_pd3d12resourceTexture->m_presource)
       {
+
+         m_textureattributes.m_iMipCount = 1;
+         m_textureattributes.m_iLayerCount = 1;
+         m_iCurrentMip = 0;
+         m_iCurrentLayer = 0;
 
          ::cast<::gpu_directx12::context> pcontext = prenderer->m_pgpucontext;
 
@@ -1296,11 +1454,11 @@ namespace gpu_directx12
 
       auto iCount = ptexture->m_textureattributes.m_iLayerCount;
 
-      const UINT64 presourceUploadBufferSize = GetRequiredIntermediateSize(presource, 0, iCount);
+      const UINT64 uUploadBufferSize = GetRequiredIntermediateSize(presource, 0, iCount);
 
       CD3DX12_HEAP_PROPERTIES propertiesUpload(D3D12_HEAP_TYPE_UPLOAD);
 
-      auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(presourceUploadBufferSize);
+      auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(uUploadBufferSize);
 
       pcontext->_construct_new(m_pd3d12resourceUpload);
 
@@ -1700,7 +1858,196 @@ namespace gpu_directx12
       }
    }
 
+   void texture::generate_mipmap(::gpu::command_buffer * pgpucommandbuffer)
+   {
 
+      if (!m_pmipmapgenerator)
+      {
+         øconstruct_new(m_pmipmapgenerator);
+
+         m_pmipmapgenerator->initialize_mip_map_generator(this);
+      }
+      m_pmipmapgenerator->generate(pgpucommandbuffer);
+   }
+
+   texture::mip_map_generator::mip_map_generator()
+   {
+
+
+   }
+   texture::mip_map_generator::~mip_map_generator() {}
+
+
+   void texture::mip_map_generator::initialize_mip_map_generator(::gpu_directx12::texture *ptexture)
+   {
+
+      m_ptexture = ptexture;
+
+      CD3DX12_DESCRIPTOR_RANGE ranges[2];
+      ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0
+      ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0); // u0
+
+      CD3DX12_ROOT_PARAMETER rootParams[2];
+      rootParams[0].InitAsDescriptorTable(1, &ranges[0]);
+      rootParams[1].InitAsDescriptorTable(1, &ranges[1]);
+
+      CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
+      rootSigDesc.Init(_countof(rootParams), rootParams, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE);
+
+      ::comptr<ID3DBlob> sigBlob, errorBlob;
+      D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &sigBlob, &errorBlob);
+
+      ::cast<::gpu_directx12::device> pdevice = m_ptexture->m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      auto hrCreateRootSignature =pdevice->m_pdevice->CreateRootSignature(
+         0, sigBlob->GetBufferPointer(), sigBlob->GetBufferSize(),
+                                              __interface_of(m_prootsignatureMipMap));
+      pdevice->defer_throw_hresult(hrCreateRootSignature);
+      const char compute_shader[] = R"comp(
+      Texture2D<float4> SrcMip : register(t0);
+      RWTexture2D<float4> DstMip : register(u0);
+
+      [numthreads(8, 8, 1)] void main(uint3 id : SV_DispatchThreadID)
+      {
+         uint2 dst = id.xy;
+         uint2 src = dst * 2;
+
+         float4 sum = SrcMip.Load(int3(src, 0)) + SrcMip.Load(int3(src + uint2(1, 0), 0)) +
+                      SrcMip.Load(int3(src + uint2(0, 1), 0)) + SrcMip.Load(int3(src + uint2(1, 1), 0));
+
+         DstMip[dst] = sum * 0.25f;
+      }
+)comp";
+
+      auto blockComputeShader = ::as_memory_block(compute_shader);
+
+      auto pblob = create_computer_shader_blob(blockComputeShader);
+
+      D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc{};
+      psoDesc.pRootSignature = m_prootsignatureMipMap;
+      psoDesc.CS = CD3DX12_SHADER_BYTECODE(pblob);
+
+      auto hrCreateComputePipelineState =
+         pdevice->m_pdevice->CreateComputePipelineState(&psoDesc, __interface_of(m_ppipelinestateMipMap));
+      pdevice->defer_throw_hresult(hrCreateComputePipelineState);
+
+      m_iLayerCount = m_ptexture->m_textureattributes.m_iLayerCount;
+
+      m_iMipCount = m_ptexture->mip_count();
+
+      UINT srvCount = m_iMipCount * m_iLayerCount;
+      UINT uavCount = m_iMipCount * m_iLayerCount;
+
+      UINT totalDescriptors = srvCount + uavCount;
+      D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
+      heapDesc.NumDescriptors = totalDescriptors;
+      heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+      heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+
+      
+      auto hrCreateDescriptorHeap =
+         pdevice->m_pdevice->CreateDescriptorHeap(&heapDesc, __interface_of(m_pheapMipMap));
+      pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
+
+      UINT descriptorSize =
+         pdevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+      m_cpuBase = m_pheapMipMap->GetCPUDescriptorHandleForHeapStart();
+      m_gpuBase = m_pheapMipMap->GetGPUDescriptorHandleForHeapStart();
+
+      for (UINT mip = 0; mip < m_iMipCount; mip++)
+      {
+         for (UINT face = 0; face < m_iLayerCount; face++)
+         {
+            UINT i = idx(mip, face);
+
+            D3D12_SHADER_RESOURCE_VIEW_DESC srv{};
+            srv.Format = m_ptexture->m_resourcedesc.Format;
+            srv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+            srv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+            srv.Texture2DArray.MostDetailedMip = mip;
+            srv.Texture2DArray.MipLevels = 1;
+            srv.Texture2DArray.FirstArraySlice = face;
+            srv.Texture2DArray.ArraySize = 1;
+            srv.Texture2DArray.PlaneSlice = 0;
+
+            auto cpu = m_cpuBase;
+            cpu.ptr += i * descriptorSize;
+
+            pdevice->m_pdevice->CreateShaderResourceView(m_ptexture->m_pd3d12resourceTexture->m_presource, &srv, cpu);
+
+            m_handleaShaderResourceView.ø(i) = m_gpuBase;
+            m_handleaShaderResourceView.ø(i).ptr += i * descriptorSize;
+         }
+      }
+
+      UINT uavBase = srvCount;
+
+      for (UINT mip = 0; mip < m_iMipCount; mip++)
+      {
+         for (UINT face = 0; face < m_iLayerCount; face++)
+         {
+            UINT i = idx(mip, face);
+
+            D3D12_UNORDERED_ACCESS_VIEW_DESC uav{};
+            uav.Format = m_ptexture->m_resourcedesc.Format;
+            uav.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2DARRAY;
+            uav.Texture2DArray.MipSlice = mip;
+            uav.Texture2DArray.FirstArraySlice = face;
+            uav.Texture2DArray.ArraySize = 1;
+            uav.Texture2DArray.PlaneSlice = 0;
+
+            auto cpu = m_cpuBase;
+            cpu.ptr += (uavBase + i) * descriptorSize;
+
+            pdevice->m_pdevice->CreateUnorderedAccessView(m_ptexture->m_pd3d12resourceTexture->m_presource, nullptr, &uav, cpu);
+
+            m_handleaUnorderedAccessView.ø(i) = m_gpuBase;
+            m_handleaUnorderedAccessView.ø(i).ptr += (uavBase + i) * descriptorSize;
+         }
+      }
+
+   }
+
+   void texture::mip_map_generator::generate(::gpu::command_buffer *pgpucommandbuffer)
+   {
+
+      ::cast<::gpu_directx12::command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      auto cmd = pcommandbuffer->m_pcommandlist.m_p;
+      ID3D12DescriptorHeap *heaps[] = {m_pheapMipMap};
+      cmd->SetDescriptorHeaps(1, heaps);
+      m_ptexture->m_pd3d12resourceTexture->_set_state(pcommandbuffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+      int w = m_ptexture->m_textureattributes.m_rectangleTarget.width();
+      int h = m_ptexture->m_textureattributes.m_rectangleTarget.height();
+      for (UINT mip = 1; mip < m_iMipCount; mip++)
+      {
+         for (UINT face = 0; face < m_iLayerCount; face++)
+         {
+            UINT srcIndex = idx(mip - 1, face);
+            UINT dstIndex = idx(mip, face);
+
+            //auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+              // m_ptexture->m_pd3d12resourceTexture->m_presource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+               //D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES);
+               
+//            cmd->ResourceBarrier(1, &barrier);
+
+            cmd->SetPipelineState(m_ppipelinestateMipMap);
+            cmd->SetComputeRootSignature(m_prootsignatureMipMap);
+
+            cmd->SetComputeRootDescriptorTable(0, m_handleaShaderResourceView[srcIndex]);
+            cmd->SetComputeRootDescriptorTable(1, m_handleaUnorderedAccessView[dstIndex]);
+
+            UINT w1 = ::maximum(1u, w >> mip);
+            UINT h1 = ::maximum(1u, h >> mip);
+
+            cmd->Dispatch(w1, h1, 1);
+         }
+      }
+
+   }
 
 } // namespace gpu_directx12
 

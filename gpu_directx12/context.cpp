@@ -43,7 +43,7 @@ namespace gpu_directx12
    context::context()
    {
 
-
+      m_eapi = ::gpu::e_api_directx12;
       //m_vksampler001 = nullptr;
       //m_bOffscreen = true;
       //      m_emode = e_mode_none;
@@ -2085,6 +2085,8 @@ namespace gpu_directx12
    }
 
 
+      floating_matrix4 context::defer_transpose(const floating_matrix4 &m) { return m.transposed(); }
+
 
    void context::merge_layers(::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera)
    {
@@ -2205,18 +2207,18 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
       ::cast <::gpu_directx12::texture > ptextureDst = ptextureTarget;
       ////float clearColor[4] = { 0.95f * 0.5f, 0.95f * 0.5f, 0.25f * 0.5f, 0.5f }; // Clear to transparent
       ////m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
-      if (!ptextureDst->m_handleRenderTargetView.ptr)
-      {
+      //if (!ptextureDst->m_handleRenderTargetView.ptr)
+      //{
 
-         ptextureDst->create_render_target();
+      //   ptextureDst->create_render_target();
 
-      }
+      //}
 
       ptextureDst->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
 
       float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
-      pcommandlist->ClearRenderTargetView(ptextureDst->m_handleRenderTargetView, clearColor, 0, nullptr);
+      pcommandlist->ClearRenderTargetView(ptextureDst->current_layer().m_handleRenderTargetView, clearColor, 0, nullptr);
 
 
 

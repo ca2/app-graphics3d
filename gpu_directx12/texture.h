@@ -133,15 +133,91 @@ namespace gpu_directx12
 
       }new_texture;
 
-      ::pointer<d3d12_resource> m_pd3d12resourceTexture;
+            struct layer
+      {
+         /// @brief [0] -> color, [1] -> depth
+         //VkImageView m_vkimageviewaAttachment[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+         //VkFramebuffer m_vkframebuffer = VK_NULL_HANDLE;
 
+               //UINT width;
+         //UINT height;
+         //UINT layerCount;
+
+         D3D12_CPU_DESCRIPTOR_HANDLE m_handleRenderTargetView{};
+         D3D12_CPU_DESCRIPTOR_HANDLE m_handleDepthStencilView{};
+         ::int_size m_size{-1, -1};
+         int m_iLayerCount = -1;
+         bool is_empty() const
+         {
+
+            return !m_handleRenderTargetView.ptr;
+         }
+
+         void create_render_target_view(::gpu_directx12::texture *ptexture);
+         void _create_render_target_view(::gpu_directx12::texture *ptexture, int iAttachmentCount);
+         //void create_color_attachment(::gpu_vulkan::texture *ptexture);
+         //void create_depth_attachment(::gpu_vulkan::texture *ptexture);
+      };
+
+            class mip_map_generator :
+               virtual public particle
+            {
+
+               public:
+
+                  ::comptr<ID3D12RootSignature> m_prootsignatureMipMap;
+               ::pointer<texture> m_ptexture;
+
+               ::comptr<ID3D12PipelineState> m_ppipelinestateMipMap;
+               ::comptr<ID3D12DescriptorHeap> m_pheapMipMap;
+               D3D12_CPU_DESCRIPTOR_HANDLE m_cpuBase;
+               D3D12_GPU_DESCRIPTOR_HANDLE m_gpuBase;
+
+               ::array_base< D3D12_GPU_DESCRIPTOR_HANDLE> m_handleaShaderResourceView;
+               ::array_base<D3D12_GPU_DESCRIPTOR_HANDLE> m_handleaUnorderedAccessView;
+               int m_iMipCount;
+               int m_iLayerCount;
+               mip_map_generator();
+               ~mip_map_generator();
+
+               int idx(UINT mip, UINT face)
+               { 
+                  return mip * m_iLayerCount + face; 
+               
+               }
+
+
+               virtual void initialize_mip_map_generator(texture *ptexture);
+
+               void generate(::gpu::command_buffer * pgpucommandbuffer);
+
+            };
+
+                  class layer_array : virtual public ::array_base<layer>
+      {
+      public:
+      };
+
+
+      class mip_layer_array : virtual public ::array_base<layer_array>
+      {
+      public:
+      };
+
+
+      mip_layer_array m_miplayera;
+
+      ::pointer<d3d12_resource> m_pd3d12resourceTexture;
+      ::pointer<mip_map_generator> m_pmipmapgenerator;
       ::pointer<static_upload_buffer> m_pstaticuploadbuffer;
       D3D12_RESOURCE_DESC              m_resourcedesc;
       ::comptr<ID3D12Resource>         m_presourceDepthStencilView;
       ::comptr<ID3D12DescriptorHeap>   m_pheapRenderTargetView;
       //D3D12_RESOURCE_STATES            m_estate;
-
-      D3D12_CPU_DESCRIPTOR_HANDLE      m_handleRenderTargetView;
+      int m_iRenderTargetViewHandleCount = -1;
+      int m_iRenderTargetViewHandle= -1;
+      UINT m_uRenderTargetViewIncrement = 0;
+      
       ::comptr<ID3D12DescriptorHeap>   m_pheapShaderResourceView;
       D3D12_CPU_DESCRIPTOR_HANDLE      m_handleShaderResourceView;
       ::comptr<ID3D12DescriptorHeap>   m_pheapDepthStencilView;
@@ -184,13 +260,13 @@ namespace gpu_directx12
 
       void _create_texture(const ::gpu::texture_data & data);
       //void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangle, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype) override;
-
+      D3D12_CPU_DESCRIPTOR_HANDLE _allocate_render_target_view_handle();
 
       class d3d11* d3d11();
 
       //void blend(::gpu::texture* ptexture) override;
 
-
+      struct texture::layer &current_layer();
       void create_render_target();
 
       void create_shader_resource();
@@ -210,7 +286,7 @@ namespace gpu_directx12
 
 
             void set_state(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_texture_state etexturestate) override;
-      
+      void generate_mipmap(::gpu::command_buffer *pgpucommandbuffer) override;
 
    };
 

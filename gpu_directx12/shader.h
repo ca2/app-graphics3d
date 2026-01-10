@@ -106,7 +106,8 @@ namespace gpu_directx12
       void bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureSource, int iSlot) override;
       virtual void _bind(::gpu::command_buffer *pgpucommandbuffer);
       void unbind(::gpu::command_buffer *pgpucommandbuffer) override;
-
+      void on_bind_already_bound(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget);
+      void defer_bind_frame_buffer_layer(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget);
 
       void push_properties(::gpu::command_buffer *pgpucommandbuffer) override;
 
