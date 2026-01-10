@@ -72,8 +72,7 @@ namespace gpu_directx12
 
 
    shader::shader()
-   {
-
+   { m_dxgiformatRenderTargetView = DXGI_FORMAT_UNKNOWN;
    }
 
 
@@ -769,14 +768,218 @@ namespace gpu_directx12
 
 
 
-   void shader::create_vertex_and_pixel_shader(const ::block& blockVertex, const ::block& blockPixel)
-   {
+   //void shader::create_vertex_and_pixel_shader(const ::block& blockVertex, const ::block& blockPixel)
+   //{
 
+   //   //::array < D3D12_INPUT_ELEMENT_DESC > layout;
+
+   //   //auto countInputLayout = m_propertiesInputLayout.count();
+
+   //   //if (countInputLayout > 0)
+   //   //{
+
+   //   //   int iSemanticIndex = 0;
+   //   //   int iInputSlot = 0;
+   //   //   D3D12_INPUT_CLASSIFICATION classification = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+   //   //   UINT DataStepRate = 0;
+   //   //   int iOffset = 0;
+   //   //   int iNextOffset = 0;
+
+   //   //   for (::collection::index iInputLayout = 0; iInputLayout < countInputLayout; iInputLayout++)
+   //   //   {
+
+   //   //      auto pproperty = m_propertiesInputLayout.m_pproperties + iInputLayout;
+
+   //   //      auto name = pproperty->m_pszName;
+   //   //      auto type = pproperty->m_etype;
+   //   //      auto offset = iNextOffset;
+   //   //      iNextOffset = offset + input_layout_aligned_property_size(pproperty->get_item_size());
+
+   //   //      D3D12_INPUT_ELEMENT_DESC desc{};
+
+   //   //      desc.SemanticName = input_layout_semantic_name_from_gpu_property_name(name);
+   //   //      desc.SemanticIndex = iSemanticIndex;
+   //   //      desc.Format = input_layout_format_from_gpu_property_type(type);
+   //   //      desc.InputSlot = iInputSlot;
+   //   //      desc.AlignedByteOffset = offset;
+   //   //      desc.InputSlotClass = classification;
+   //   //      desc.InstanceDataStepRate = DataStepRate;
+
+   //   //      layout.add(desc);
+
+   //   //   }
+
+   //   //   //// Input layout
+   //   //   //D3D12_INPUT_ELEMENT_DESC layout[] = {
+   //   //   //    {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+   //   //   //    {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+   //   //   //};
+
+   //   //}
+   //  /* else
+   //   {
+
+   //      UINT uOffset0 = offsetof(gpu::Vertex, position);
+   //      UINT uOffset1 = offsetof(gpu::Vertex, color);
+   //      UINT uOffset2 = offsetof(gpu::Vertex, normal);
+   //      UINT uOffset3 = offsetof(gpu::Vertex, uv);
+
+
+   //      layout.add({ "POSITION" , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+   //      if (m_iVertexLevel == 2)
+   //      {
+   //         layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32A32_FLOAT , 0, uOffset1, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+   //      }
+   //      else
+   //      {
+   //         layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset1, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+
+   //      }
+
+   //      if (m_iVertexLevel > 2 || m_iVertexLevel < 0)
+   //      {
+   //         layout.add({ "NORMAL"   , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset2, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+   //         layout.add({ "TEXCOORD" , 0, DXGI_FORMAT_R32G32_FLOAT    , 0, uOffset3, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+   //      }
+
+   //   }*/
+
+   //   //auto data = layout.data();
+
+   //   //auto size = layout.size();
+
+   //   ::cast < input_layout > pinputlayout = m_pinputlayout;
+
+   //   auto pblobVertex = create_vertex_shader_blob(blockVertex);
+
+   //   auto pblobPixel = create_pixel_shader_blob(blockPixel);
+
+   //   ::cast < ::gpu_directx12::device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+
+   //   ::cast < ::gpu_directx12::context > pcontext = m_pgpurenderer->m_pgpucontext;
+
+   //   create_root_signature();
+
+   //   // Describe and create the graphics pipeline state object (PSO).
+   //   D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+   //   if (pinputlayout)
+   //   {
+   //      psoDesc.InputLayout = pinputlayout->_get_d3d12_input_layout_desc();
+   //   }
+   //   psoDesc.pRootSignature = m_prootsignature;
+   //   psoDesc.VS = CD3DX12_SHADER_BYTECODE(pblobVertex);
+   //   psoDesc.PS = CD3DX12_SHADER_BYTECODE(pblobPixel);
+   //   CD3DX12_RASTERIZER_DESC rasterizerdesc(D3D12_DEFAULT);
+
+   //   rasterizerdesc.CullMode = as_d3d12_cull_mode(m_ecullmode);
+
+   //   psoDesc.RasterizerState = rasterizerdesc;
+
+   //   if (m_bEnableBlend)
+   //   {
+   //      D3D12_BLEND_DESC blendDesc = {};
+   //      blendDesc.AlphaToCoverageEnable = FALSE;
+   //      blendDesc.IndependentBlendEnable = FALSE;
+
+   //      D3D12_RENDER_TARGET_BLEND_DESC rtBlendDesc = {};
+   //      rtBlendDesc.BlendEnable = TRUE;
+   //      rtBlendDesc.SrcBlend = D3D12_BLEND_ONE;
+   //      rtBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+   //      rtBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+   //      rtBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+   //      rtBlendDesc.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+   //      rtBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+   //      rtBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+   //      blendDesc.RenderTarget[0] = rtBlendDesc;
+
+   //      //D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+   //      // ... (fill in shaders, input layout, root signature, etc.)
+   //      psoDesc.BlendState = blendDesc;
+   //      psoDesc.NumRenderTargets = 1;
+   //      psoDesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
+   //   }
+   //   else
+   //   {
+   //      psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+   //   }
+   //   psoDesc.SampleMask = UINT_MAX;
+   //   psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+   //   psoDesc.NumRenderTargets = 1;
+   //   psoDesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
+   //   psoDesc.SampleDesc.Count = 1;
+
+   //   if (m_bDisableDepthTest)
+   //   {
+   //      
+   //      D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
+   //      depthStencilDesc.DepthEnable = FALSE;
+   //      depthStencilDesc.StencilEnable = FALSE;
+   //      psoDesc.DepthStencilState = depthStencilDesc;
+
+   //   }
+   //   else
+   //   {
+
+   //      D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
+   //      depthStencilDesc.DepthEnable = TRUE;
+   //      if (m_bDepthTestButNoDepthWrite)
+   //      {
+   //         depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+   //      }
+   //      else
+   //      {
+   //         depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+   //      }
+   //      if (m_bLequalDepth)
+   //      {
+   //         depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+   //      }
+   //      else
+   //      {
+   //         depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+
+   //      }
+   //      depthStencilDesc.StencilEnable = FALSE;
+   //      psoDesc.DepthStencilState = depthStencilDesc;
+   //      psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT; // must match your DSV
+
+   //   }
+
+   //   HRESULT hrCreateGraphicsPipelineState =
+   //      pgpudevice->m_pdevice->CreateGraphicsPipelineState(&psoDesc, __interface_of(m_ppipelinestate));
+
+   //   ::defer_throw_hresult(hrCreateGraphicsPipelineState);
+
+   //}
+
+
+   void shader::_defer_set_current_pipeline(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * pgputexture)
+   {
+      ::cast<::gpu_directx12::texture> ptexture = pgputexture;
+      if (m_ppipelinestate &&
+         m_dxgiformatRenderTargetView == ptexture->m_resourcedesc.Format)
+      {
+
+         return;
+
+      }
+
+      if (ptexture->m_resourcedesc.Format == DXGI_FORMAT_UNKNOWN)
+      {
+
+         ptexture->m_resourcedesc = ptexture->m_pd3d12resourceTexture->m_presource->GetDesc();
+      }
+
+      m_dxgiformatRenderTargetView = ptexture->m_resourcedesc.Format;
+      
       //::array < D3D12_INPUT_ELEMENT_DESC > layout;
 
-      //auto countInputLayout = m_propertiesInputLayout.count();
+      // auto countInputLayout = m_propertiesInputLayout.count();
 
-      //if (countInputLayout > 0)
+      // if (countInputLayout > 0)
       //{
 
       //   int iSemanticIndex = 0;
@@ -817,49 +1020,52 @@ namespace gpu_directx12
       //   //};
 
       //}
-     /* else
-      {
+      /* else
+       {
 
-         UINT uOffset0 = offsetof(gpu::Vertex, position);
-         UINT uOffset1 = offsetof(gpu::Vertex, color);
-         UINT uOffset2 = offsetof(gpu::Vertex, normal);
-         UINT uOffset3 = offsetof(gpu::Vertex, uv);
-
-
-         layout.add({ "POSITION" , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
-         if (m_iVertexLevel == 2)
-         {
-            layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32A32_FLOAT , 0, uOffset1, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
-         }
-         else
-         {
-            layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset1, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+          UINT uOffset0 = offsetof(gpu::Vertex, position);
+          UINT uOffset1 = offsetof(gpu::Vertex, color);
+          UINT uOffset2 = offsetof(gpu::Vertex, normal);
+          UINT uOffset3 = offsetof(gpu::Vertex, uv);
 
 
-         }
+          layout.add({ "POSITION" , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset0,
+       D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }); if (m_iVertexLevel == 2)
+          {
+             layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32A32_FLOAT , 0, uOffset1,
+       D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+          }
+          else
+          {
+             layout.add({ "COLOR"    , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset1,
+       D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 
-         if (m_iVertexLevel > 2 || m_iVertexLevel < 0)
-         {
-            layout.add({ "NORMAL"   , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset2, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
-            layout.add({ "TEXCOORD" , 0, DXGI_FORMAT_R32G32_FLOAT    , 0, uOffset3, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 
-         }
+          }
 
-      }*/
+          if (m_iVertexLevel > 2 || m_iVertexLevel < 0)
+          {
+             layout.add({ "NORMAL"   , 0, DXGI_FORMAT_R32G32B32_FLOAT , 0, uOffset2,
+       D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }); layout.add({ "TEXCOORD" , 0, DXGI_FORMAT_R32G32_FLOAT    , 0,
+       uOffset3, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 
-      //auto data = layout.data();
+          }
 
-      //auto size = layout.size();
+       }*/
 
-      ::cast < input_layout > pinputlayout = m_pinputlayout;
+      // auto data = layout.data();
 
-      auto pblobVertex = create_vertex_shader_blob(blockVertex);
+      // auto size = layout.size();
 
-      auto pblobPixel = create_pixel_shader_blob(blockPixel);
+      ::cast<input_layout> pinputlayout = m_pinputlayout;
 
-      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      auto pblobVertex = create_vertex_shader_blob(m_memoryVertex);
 
-      ::cast < ::gpu_directx12::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      auto pblobPixel = create_pixel_shader_blob(m_memoryFragment);
+
+      ::cast<::gpu_directx12::device> pgpudevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+
+      ::cast<::gpu_directx12::context> pcontext = m_pgpurenderer->m_pgpucontext;
 
       create_root_signature();
 
@@ -896,11 +1102,11 @@ namespace gpu_directx12
 
          blendDesc.RenderTarget[0] = rtBlendDesc;
 
-         //D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-         // ... (fill in shaders, input layout, root signature, etc.)
+         // D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+         //  ... (fill in shaders, input layout, root signature, etc.)
          psoDesc.BlendState = blendDesc;
          psoDesc.NumRenderTargets = 1;
-         psoDesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
+         psoDesc.RTVFormats[0] = m_dxgiformatRenderTargetView;
       }
       else
       {
@@ -909,17 +1115,16 @@ namespace gpu_directx12
       psoDesc.SampleMask = UINT_MAX;
       psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
       psoDesc.NumRenderTargets = 1;
-      psoDesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
+      psoDesc.RTVFormats[0] = m_dxgiformatRenderTargetView;
       psoDesc.SampleDesc.Count = 1;
 
       if (m_bDisableDepthTest)
       {
-         
+
          D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
          depthStencilDesc.DepthEnable = FALSE;
          depthStencilDesc.StencilEnable = FALSE;
          psoDesc.DepthStencilState = depthStencilDesc;
-
       }
       else
       {
@@ -941,12 +1146,10 @@ namespace gpu_directx12
          else
          {
             depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
-
          }
          depthStencilDesc.StencilEnable = FALSE;
          psoDesc.DepthStencilState = depthStencilDesc;
          psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT; // must match your DSV
-
       }
 
       HRESULT hrCreateGraphicsPipelineState =
@@ -954,6 +1157,15 @@ namespace gpu_directx12
 
       ::defer_throw_hresult(hrCreateGraphicsPipelineState);
 
+            //create_vertex_and_pixel_shader(m_memoryVertex, m_memoryFragment);
+
+      // if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
+      //{
+      //
+      if (m_propertiesPushShared.size(true) > 0 && m_iPush >= m_iPushMax)
+      {
+         _on_more_push();
+      }
    }
       
 
@@ -972,16 +1184,7 @@ namespace gpu_directx12
 
       pgpudevice->defer_shader_memory(m_memoryFragment, m_pathFragment);
 
-      create_vertex_and_pixel_shader(m_memoryVertex, m_memoryFragment);
 
-      //if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
-      //{
-      // 
-      if (m_propertiesPushShared.size(true) > 0
-         && m_iPush >= m_iPushMax)
-      {
-         _on_more_push();
-      }
 
    }
 
@@ -1034,6 +1237,7 @@ namespace gpu_directx12
 
    void shader::bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
    {
+      _defer_set_current_pipeline(pgpucommandbuffer, pgputextureTarget);
 
       _bind(pgpucommandbuffer);
 

@@ -29,7 +29,7 @@ namespace gpu_directx12
       int m_iHeapCount = 1024;
       int m_iHeapSamplerIndex = 0;
       int m_iHeapSamplerCount = 64;
-
+      DXGI_FORMAT m_dxgiformatRenderTargetView;
 
       //::comptr < ID3D11PixelShader> m_ppixelshader;
 
@@ -62,10 +62,11 @@ namespace gpu_directx12
 
 
       void _on_more_push();
+      virtual void _defer_set_current_pipeline(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputexture);
 
       virtual ::comptr < ID3DBlob> create_vertex_shader_blob(const ::block& block);
       virtual ::comptr < ID3DBlob> create_pixel_shader_blob(const ::block& block);
-      virtual void create_vertex_and_pixel_shader(const ::block& blockVertex, const ::block& blockPixel);
+      //virtual void create_vertex_and_pixel_shader(const ::block& blockVertex, const ::block& blockPixel);
       //virtual void create_pixel_shader(const ::block& block);
       //void bind(VkCommandBuffer commandBuffer);
 

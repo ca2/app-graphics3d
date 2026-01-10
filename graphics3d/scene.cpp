@@ -187,13 +187,10 @@ namespace graphics3d
 
       //if (!piblspecularmap->m_pframebufferPrefilteredEnvMap)
       {
-         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
-         // this->flushCommandBuffer(layoutCmd, m_vkqueueTransfer3, true);
-
+         auto pcommandbuffer = m_pgpucontext->m_pcommandbufferMain;
          m_pgpucontext->start_debug_happening(pcommandbuffer, "compute ibl_prefiltered_env_map");
          piblspecularmap->computePrefilteredEnvMap(pcommandbuffer);
          m_pgpucontext->end_debug_happening(pcommandbuffer);
-         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
       }
 
       return piblspecularmap->m_ptexturePrefilteredEnvMapCubemap;
@@ -219,14 +216,14 @@ namespace graphics3d
 
       //if (!m_pibldiffuseirradiancemap->m_pdiffuseIrradianceFramebuffer)
       {
-         auto pcommandbuffer =
-            m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
+         //auto pcommandbuffer =
+           // m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
          // this->flushCommandBuffer(layoutCmd, m_vkqueueTransfer3, true);
-
+         auto pcommandbuffer = m_pgpucontext->m_pcommandbufferMain;
          m_pgpucontext->start_debug_happening(pcommandbuffer, "compute irradianceMap");
          m_pibldiffuseirradiancemap->computeIrradianceMap(pcommandbuffer);
          m_pgpucontext->end_debug_happening(pcommandbuffer);
-         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
+         //m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
       }
 
@@ -250,13 +247,14 @@ namespace graphics3d
 
          //piblspecularmap->computeBrdfConvolutionMap();
 
-         auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
+         //auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
+         auto pcommandbuffer = m_pgpucontext->m_pcommandbufferMain;
          // this->flushCommandBuffer(layoutCmd, m_vkqueueTransfer3, true);
 
          m_pgpucontext->start_debug_happening(pcommandbuffer, "compute Brdf Convolution Map");
          piblspecularmap->computeBrdfConvolutionMap(pcommandbuffer);
          m_pgpucontext->end_debug_happening(pcommandbuffer);
-         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
+         //m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
 
       }
 

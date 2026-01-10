@@ -36,7 +36,7 @@ namespace gpu_directx12
    void texture::_create_texture(const ::gpu::texture_data & texturedata)
    {
 
-      DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
+      DXGI_FORMAT format;
       // 1. Create the texture resource
 
       auto &textureDesc = m_resourcedesc;
@@ -57,6 +57,19 @@ namespace gpu_directx12
       else
       {
          textureDesc.DepthOrArraySize = 1;
+
+      }
+
+      if (m_textureattributes.m_iChannelCount == 2)
+      {
+
+          format = DXGI_FORMAT_R8G8_UNORM;
+
+      }
+      else
+      {
+
+          format = DXGI_FORMAT_B8G8R8A8_UNORM;
 
       }
 

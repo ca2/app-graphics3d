@@ -392,11 +392,15 @@ namespace gpu_directx12
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-      if (m_pmodeldatabase2->index_count() > 0)
+
+      int iIndexCount = m_pmodeldatabase2->index_count();
+
+      if (iIndexCount > 0)
       {
 
          //   vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
-         pcommandlist->DrawIndexedInstanced(m_pmodeldatabase2->index_count(), // Number of indexes to draw
+         
+         pcommandlist->DrawIndexedInstanced(iIndexCount, // Number of indexes to draw
             1,
             0,                 // Start index location in the index buffer
             0,                  // Base vertex location (added to each index)
@@ -407,8 +411,9 @@ namespace gpu_directx12
       else 
       {
       
+         auto iVertexCount = m_pmodeldatabase2->vertex_count();
          //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
-         pcommandlist->DrawInstanced(m_pmodeldatabase2->vertex_count(), // Number of vertexes to draw
+         pcommandlist->DrawInstanced(iVertexCount, // Number of vertexes to draw
             1,
             0,                  // Start vertex location
             0
