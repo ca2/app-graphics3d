@@ -2,19 +2,28 @@
 #include "_vulkan.h"
 #include "bitmap.h"
 #include "acme/exception/interface_only.h"
+#include "acme/windowing/display.h"
+#include "acme/windowing/windowing.h"
 
-
+#if defined(WITH_X11)
+#include <X11/Xlib.h>
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_xlib.h>
+#elif defined(WITH_XCB)
+#include <xcb/xcb.h>
+#include <vulkan/vulkan_xcb.h>
+#endif
 void resizeBilinear(memory & m, int w2, int h2, int * pixels, int w, int h);
-#ifdef WITH_X11
-Display * x11_get_display();
-#endif
-#ifdef LINUX
-#define WIDTH 3200
-#define HEIGHT 1800
+//#ifdef WITH_X11
+//Display * x11_get_display();
+//#endif
+//#ifdef LINUX
+//#define WIDTH 3200
+//#define HEIGHT 1800
 
-const int sbAttrib[] = { VKX_DOUBLEBUFFER, 0, VKX_RED_SIZE, 1,VKX_GREEN_SIZE, 1, VKX_BLUE_SIZE, 1,VKX_ALPHA_SIZE, 1, VKX_DEPTH_SIZE, 16,None };
-int pbAttrib[] = { VKX_PBUFFER_WIDTH, WIDTH,VKX_PBUFFER_HEIGHT, HEIGHT,VKX_PRESERVED_CONTENTS, True,None };
-#endif
+//const int sbAttrib[] = { VKX_DOUBLEBUFFER, 0, VKX_RED_SIZE, 1,VKX_GREEN_SIZE, 1, VKX_BLUE_SIZE, 1,VKX_ALPHA_SIZE, 1, VKX_DEPTH_SIZE, 16,None };
+//int pbAttrib[] = { VKX_PBUFFER_WIDTH, WIDTH,VKX_PBUFFER_HEIGHT, HEIGHT,VKX_PRESERVED_CONTENTS, True,None };
+//#endif
 
 //extern CLASS_DECL_AXIS thread_int_ptr < DWORD_PTR > t_time1;
 float LightAmbient[] = { 0.5f, 0.5f, 0.5f, 1.00f };
@@ -64,8 +73,12 @@ namespace draw2d_vulkan
    bitmap::bitmap()
    {
 
+#if defined(WINDOWS_DESKTOP)
+
+
       m_hwnd = nullptr;
       m_hinstance = nullptr;
+#endif
       m_bTexture = false;
       m_bPBuffer = false;
       m_bFlashed = false;
@@ -98,6 +111,9 @@ namespace draw2d_vulkan
 
    }
 
+#if defined(WINDOWS_DESKTOP)
+
+
    bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap)
    {
 
@@ -106,7 +122,7 @@ namespace draw2d_vulkan
       return false;
    }
 
-
+#endif
    void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::int_size& size, void** ppcolorref, int* piScan)
    {
 
@@ -163,7 +179,7 @@ namespace draw2d_vulkan
       return 0;
 
    }
-   unsigned int bitmap::GetBitmapBits(unsigned int dwCount, LPVOID lpBits) const
+   unsigned int bitmap::GetBitmapBits(unsigned int dwCount, void * lpBits) const
    {
       //return ::GetBitmapBits((HBITMAP)get_handle(), dwCount, lpBits);
       return 0;
@@ -236,13 +252,16 @@ namespace draw2d_vulkan
    }
 
 
+#if defined(WINDOWS_DESKTOP)
+
+
    int bitmap::GetBitmap(BITMAP* pBitMap)
    {
       //   ASSERT(get_handle() != nullptr);
       // return ::GetObject(get_handle(), sizeof(BITMAP), pBitMap);
       return 0;
    }
-
+#endif
 
    /////////////////////////////////////////////////////////////////////////////
 
@@ -308,6 +327,10 @@ namespace draw2d_vulkan
    }
 
 
+#if defined(WINDOWS_DESKTOP)
+
+
+
    HBITMAP bitmap::_GetHBITMAP()
    {
 
@@ -334,6 +357,8 @@ namespace draw2d_vulkan
 
    }
 
+
+#endif
 
    void bitmap::destroy_bitmap()
    {
@@ -603,11 +628,49 @@ namespace draw2d_vulkan
       VkResult result = vkCreateWin32SurfaceKHR(m_vkinstance, &createInfo, nullptr, &surface);
 
       return true;
+#elif defined(WITH_X11)
+
+
+      VkSurfaceKHR surface = VK_NULL_HANDLE;
+
+      VkXlibSurfaceCreateInfoKHR createInfo = {};
+      createInfo.sType  = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+      createInfo.dpy    = m_display;   // Display*
+      createInfo.window = m_window;    // X11 Window
+
+      VkResult result =
+          vkCreateXlibSurfaceKHR(
+              m_vkinstance,
+              &createInfo,
+              NULL,
+              &surface
+          );
+
+      if (result != VK_SUCCESS)
+      {
+         return false;
+      }
+
+      return true;
+
+#elif defined(WITH_XCB)
+
+
+
+      VkXcbSurfaceCreateInfoKHR createInfo = {};
+      createInfo.sType      = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+      createInfo.connection = m_xcb_connection;
+      createInfo.window     = m_xcb_window;
+
+      vkCreateXcbSurfaceKHR(instance, &createInfo, NULL, &surface);
+
 #else
 
+      auto dpy = (Display*) ::system()->acme_windowing()->acme_display()->_get_x11_display();
 
 
-      if (!(dpy = x11_get_display()))
+      //if (!(dpy = x11_get_display()))
+      if (!dpy)
       {
          fprintf(stderr, "could not open display");
          return false;
@@ -675,7 +738,9 @@ namespace draw2d_vulkan
       //   Cleanup();
       //   return false;
       //}
+#if defined(WINDOWS_DESKTOP)
       ::DestroyWindow(m_hwnd);
+#endif
       return true;
    }
 

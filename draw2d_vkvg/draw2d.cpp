@@ -204,12 +204,12 @@ namespace draw2d_vkvg
 
    //}
 
-
+#if defined(WINDOWS_DESKTOP)
    LRESULT CALLBACK vulkan_window_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
    {
       return DefWindowProc(hwnd, message, wparam, lparam);
    }
-
+#endif
 
    int  draw2d::vulkan_init()
    {

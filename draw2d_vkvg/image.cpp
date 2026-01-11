@@ -10,11 +10,17 @@ namespace draw2d_vkvg
    image::image::image()
    {
 
+
+#if defined(WINDOWS_DESKTOP)
+
+      m_hbitmap            = nullptr;
+      zero(m_bitmapinfo);
+
+#endif
+
       m_sizeWnd.cx         = 0;
       m_sizeWnd.cy         = 0;
-      m_hbitmap            = nullptr;
       m_phost = nullptr;
-      zero(m_bitmapinfo);
 
    }
 
@@ -71,9 +77,10 @@ namespace draw2d_vkvg
 
       }
 
-      m_bitmapinfo = {};
-
       int iStride = size.cx * 4;
+
+#if defined(WINDOWS_DESKTOP)
+      m_bitmapinfo = {};
 
       //{
       //   iGoodStride
@@ -86,6 +93,8 @@ namespace draw2d_vkvg
       m_bitmapinfo.bmiHeader.biBitCount      = 32;
       m_bitmapinfo.bmiHeader.biCompression   = BI_RGB;
       m_bitmapinfo.bmiHeader.biSizeImage     = iStride  * size.cy;
+
+#endif
 
       øconstruct(m_pbitmap);
 

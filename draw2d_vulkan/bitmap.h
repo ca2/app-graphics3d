@@ -8,14 +8,20 @@
 //#include <VK/vk.h>
 //#include <VK/vku.h>
 //#include <VK/vkext.h>
-#ifdef LINUX
-#include <VK/vkx.h>
-#endif
+//#ifdef LINUX
+//#include <VK/vkx.h>
+//#endif
 
 #pragma warning (disable : 4244)
 
+#if defined(WITH_X11)
+#include <X11/Xlib.h>
 #include <vulkan/vulkan.h>
-
+#include <vulkan/vulkan_xlib.h>
+#elif defined(WITH_XCB)
+#include <vulkan/vulkan.h>
+#include <xcb/xcb.h>
+#endif
 
 //#define WGL_DRAW_TO_PBUFFER_ARB                   0x202D
 //#define WGL_MAX_PBUFFER_HEIGHT_ARB                0x2030
@@ -114,6 +120,11 @@ namespace draw2d_vulkan
 #if defined(WINDOWS_DESKTOP)
       HWND m_hwnd;
       HINSTANCE m_hinstance;
+#elif defined(WITH_X11)
+      Display * m_display;
+      Window m_window;
+#elif defined(WITH_XCB)
+      xcb_connection_t m_xcb_connection;
 #endif
 //#ifdef WINDOWS
 //
@@ -176,19 +187,24 @@ namespace draw2d_vulkan
       bool LoadBitmap(unsigned int nIDResource);
       bool LoadOEMBitmap(unsigned int nIDBitmap); // for OBM_/OCR_/OIC_
       bool CreateBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight, unsigned int nPlanes, unsigned int nBitcount, const void * lpBits, int stride);
+#if defined(WINDOWS_DESKTOP)
       bool CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap);
+#endif
       void CreateCompatibleBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       void CreateDiscardableBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       
       void create_bitmap(::draw2d::graphics * pgraphics, const ::int_size& size, void** ppcolorref, int* piScan) override;
       void CreateDIBitmap(::draw2d::graphics * pgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
 
+#if defined(WINDOWS_DESKTOP)
 
       int GetBitmap(BITMAP* pBitMap);
 
+#endif
+
 
       unsigned int SetBitmapBits(unsigned int dwCount, const void * lpBits);
-      unsigned int GetBitmapBits(unsigned int dwCount, LPVOID lpBits) const;
+      unsigned int GetBitmapBits(unsigned int dwCount, void * lpBits) const;
       ::int_size SetBitmapDimension(int nWidth, int nHeight);
       ::int_size GetBitmapDimension() const;
 
@@ -198,8 +214,11 @@ namespace draw2d_vulkan
       //virtual void attach(void * posdata);
       virtual void * detach();
 
+#if defined(WINDOWS_DESKTOP)
+
       virtual HBITMAP _GetHBITMAP();
       virtual void _ReleaseHBITMAP(HBITMAP hbitmap);
+#endif
 
    };
 

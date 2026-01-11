@@ -16,9 +16,13 @@ namespace draw2d_vulkan
    {
    public:
 
-      
+
+#if defined(WINDOWS_DESKTOP)
+
       HDC                           m_hdcFont;
       HFONT                         m_hfont;
+
+#endif
 //      VKuint	                     m_baseFont;				// Base Display List For The Font Set
 //
 //#ifdef WINDOWS

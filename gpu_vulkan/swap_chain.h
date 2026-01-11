@@ -76,6 +76,8 @@ namespace gpu_vulkan
       void present(::gpu::texture * pgputexture) override;
 
 
+      int swap_chain_frame_count() override;
+
    };
 
 

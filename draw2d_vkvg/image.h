@@ -19,10 +19,11 @@ namespace draw2d_vkvg
    {
    public:
 
-
+#if defined(WINDOWS_DESKTOP)
       HBITMAP                          m_hbitmap;
-      class ::long_long_size                   m_sizeWnd;
       BITMAPINFO                       m_bitmapinfo;
+#endif
+      ::long_long_size                 m_sizeWnd;
       OffscreenContext *               m_phost;
 
 

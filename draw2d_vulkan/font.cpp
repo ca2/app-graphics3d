@@ -12,8 +12,12 @@ namespace draw2d_vulkan
 
       //m_pfont     = nullptr;
       //m_bUpdated = false;
+#if defined(WINDOWS_DESKTOP)
+
       m_hdcFont = nullptr;
       m_hfont = nullptr;
+
+#endif
       //m_baseFont = 0;
 
 
@@ -35,6 +39,8 @@ namespace draw2d_vulkan
    font::~font()
    {
 
+#if defined(WINDOWS_DESKTOP)
+
       if (m_hdcFont != nullptr)
       {
 
@@ -43,7 +49,7 @@ namespace draw2d_vulkan
          //vkDeleteLists(m_baseFont, 256);
 
       }
-
+#endif
    }
 
 
@@ -73,18 +79,25 @@ namespace draw2d_vulkan
 
    void font::destroy()
    {
+#if defined(WINDOWS_DESKTOP)
+
       if (m_hdcFont != nullptr)
       {
          ::DeleteDC(m_hdcFont);
          ::DeleteObject(m_hfont);
          //vkDeleteLists(m_baseFont, 256);
       }
-
+#endif
    }
 
 
    void font::create(::draw2d::graphics * pgraphics, char iCreate)
    {
+
+
+#if defined(WINDOWS_DESKTOP)
+
+
 
       if (m_hdcFont == nullptr || is_modified(iCreate))
       {
@@ -125,6 +138,8 @@ namespace draw2d_vulkan
                                        //::DeleteDC(hDC);
 
       }
+
+#endif
 
       //return m_hfont;
 

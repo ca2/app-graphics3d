@@ -5,6 +5,9 @@
 #if defined(WINDOWS_DESKTOP)
 #include "windowing_win32/_.h"
 #include "acme/_operating_system.h"
+#elif defined(WITH_X11)
+#include "windowing_x11/_.h"
+#include "acme/_operating_system.h"
 #endif
 #include "gpu_vulkan/_.h"
 

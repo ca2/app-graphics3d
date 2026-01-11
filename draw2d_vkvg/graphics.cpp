@@ -29,15 +29,22 @@
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #include "bred/gpu/swap_chain.h"
-#include "windowing_win32/window.h"
 #include "aura/graphics/write_text/text_out.h"
 #include "aura/graphics/write_text/draw_text.h"
 #include "acme/prototype/geometry2d/_defer_item.h"
 #include "aura/graphics/write_text/_defer_geometry2d_item.h"
 
+#if defined(WINDOWS_DESKTOP)
+#include "windowing_win32/window.h"
+#include <dwmapi.h>
+#elif defined(WITH_X11)
+#include "windowing_x11/window.h"
+#else
+
+
+#endif
 
 #include <math.h>
-#include <dwmapi.h>
 ////#include <vk/freeglut.h>
 //#define VKAD_GLAPI_EXPORT
 
@@ -63,8 +70,10 @@ namespace vulkan
 
 
 
-
+#if defined(WINDOWS_DESKTOP)
 BOOL CALLBACK draw2d_vkvg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p);
+#endif
+
 
 
 class draw2d_vkvg_enum_fonts
@@ -653,12 +662,16 @@ namespace draw2d_vkvg
    }
 
 
+#if defined(WINDOWS_DESKTOP)
+
    int graphics::EnumObjects(int nObjectType, int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::EnumObjects(m_hdc, nObjectType, (GOBJENUMPROC)lpfn, lpData);
       return 0;
    }
+
+#endif
 
    ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pbitmap)
    {
@@ -811,6 +824,9 @@ namespace draw2d_vkvg
    }
 
 
+#if defined(WINDOWS_DESKTOP)
+
+
    bool graphics::GetWorldTransform(XFORM* pXform) const
    {
 
@@ -834,6 +850,9 @@ namespace draw2d_vkvg
       return true;
 
    }
+
+
+#endif
 
    int_size graphics::get_context_extents() const
    {
@@ -2847,6 +2866,7 @@ namespace draw2d_vkvg
 
       ::pointer<font>pfont = m_pfont;
 
+#if defined(WINDOWS_DESKTOP)
       TEXTMETRIC tm;
 
       GetTextMetrics(pfont->m_hdcFont, &tm);
@@ -2854,6 +2874,8 @@ namespace draw2d_vkvg
       lpMetrics->m_dAscent = tm.tmAscent;
       lpMetrics->m_dHeight = tm.tmHeight;
       lpMetrics->m_dDescent = tm.tmDescent;
+
+#endif
       //lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
 
       //if (m_pgraphics == nullptr)
@@ -3007,7 +3029,7 @@ namespace draw2d_vkvg
 
 
    // Printer Escape Functions
-   int graphics::Escape(int nEscape, int nCount, const ::scoped_string& lpszInData, LPVOID lpOutData)
+   int graphics::Escape(int nEscape, int nCount, const ::scoped_string& lpszInData, void * lpOutData)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::Escape(m_hdc, nEscape, nCount, lpszInData, lpOutData);
@@ -3104,6 +3126,10 @@ namespace draw2d_vkvg
    //}
 
 
+#if defined(WINDOWS_DESKTOP)
+
+
+
    // ::user::document handling functions
    int graphics::StartDoc(LPDOCINFO lpDocInfo)
    {
@@ -3178,6 +3204,8 @@ namespace draw2d_vkvg
 
    }
 
+
+#endif
 
    //   bool graphics::MaskBlt(double x, double y, double nWidth, double nHeight, ::draw2d::graphics * pgraphicsSrc,
    //                          double xSrc, double ySrc, ::draw2d::bitmap& maskBitmap, double xMask, double yMask)
@@ -3288,6 +3316,9 @@ namespace draw2d_vkvg
    }
 
 
+#if defined(WINDOWS_DESKTOP)
+
+
    bool graphics::GetColorAdjustment(LPCOLORADJUSTMENT lpColorAdjust) const
    {
       // ASSERT(m_hdc != nullptr);
@@ -3295,6 +3326,9 @@ namespace draw2d_vkvg
       return false;
 
    }
+
+
+#endif
 
 
    ::draw2d::pen* graphics::get_current_pen()
@@ -3356,7 +3390,7 @@ namespace draw2d_vkvg
    }
 
 
-   int graphics::Escape(int nEscape, int nInputSize, __in_bcount(nInputSize) const char* lpszInputData, int nOutputSize, __out_bcount(nOutputSize) char* lpszOutputData)
+   int graphics::Escape(int nEscape, int nInputSize, const char* lpszInputData, int nOutputSize, char* lpszOutputData)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::ExtEscape(m_hdc, nEscape, nInputSize, lpszInputData, nOutputSize, lpszOutputData);
@@ -4855,13 +4889,18 @@ namespace draw2d_vkvg
 
    // Always Inline. Functions only in Win98/Win2K or later
 
-   inline color32_t graphics::GetDCBrushColor() const
+
+#if defined(WINDOWS_DESKTOP)
+
+   color32_t graphics::GetDCBrushColor() const
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetDCBrushColor(m_hdc);
       return color::transparent;
    }
 
+
+#endif
 
    ::gpu::frame* graphics::end_gpu_layer(::gpu::frame * pgpuframe)
    {
@@ -4873,7 +4912,9 @@ namespace draw2d_vkvg
    }
 
 
-   inline color32_t graphics::SetDCBrushColor(color32_t crColor)
+#if defined(WINDOWS_DESKTOP)
+
+   color32_t graphics::SetDCBrushColor(color32_t crColor)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::SetDCBrushColor(m_hdc, crColor);
@@ -4882,7 +4923,7 @@ namespace draw2d_vkvg
    }
 
 
-   inline color32_t graphics::GetDCPenColor() const
+   color32_t graphics::GetDCPenColor() const
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetDCPenColor(m_hdc);
@@ -4892,7 +4933,7 @@ namespace draw2d_vkvg
    }
 
 
-   inline color32_t graphics::SetDCPenColor(color32_t crColor)
+   color32_t graphics::SetDCPenColor(color32_t crColor)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::SetDCPenColor(m_hdc, crColor);
@@ -4901,7 +4942,7 @@ namespace draw2d_vkvg
    }
 
 
-   inline bool graphics::GetCharABCWidthsI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPABC lpabc) const
+   bool graphics::GetCharABCWidthsI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPABC lpabc) const
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetCharABCWidthsI(m_hdc, giFirst, cgi, pgi, lpabc) != false;
@@ -4910,7 +4951,7 @@ namespace draw2d_vkvg
    }
 
 
-   inline bool graphics::GetCharWidthI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPINT lpBuffer) const
+   bool graphics::GetCharWidthI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPINT lpBuffer) const
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetCharWidthI(m_hdc, giFirst, cgi, pgi, lpBuffer) != false;
@@ -4918,6 +4959,8 @@ namespace draw2d_vkvg
 
    }
 
+
+#endif
 
    //inline bool graphics::GetTextExtentExPointI(LPWORD pgiIn, double cgi, double nMaxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE32 LPSIZE32) const
    //{
@@ -5029,6 +5072,9 @@ namespace draw2d_vkvg
 
    }
 
+
+#if defined(WINDOWS_DESKTOP)
+
    /////////////////////////////////////////////////////////////////////////////
    // special graphics drawing primitives/helpers
 
@@ -5055,6 +5101,8 @@ namespace draw2d_vkvg
       return nullptr;
    }
 
+
+#endif
 
    //void graphics::DrawDragRect(const ::double_rectangle & rectangle, const ::int_size & size, const ::double_rectangle & lpRectLast, const ::int_size & sizeLast, ::draw2d::brush* pBrush, ::draw2d::brush* pBrushLast)
    //{
@@ -5490,6 +5538,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //      //set_handle1(nullptr);
    //   }
 
+#if defined(WINDOWS_DESKTOP)
+
       /////////////////////////////////////////////////////////////////////////////
       // Out-of-line routines
 
@@ -5503,6 +5553,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       return -1;
    }
 
+
+#endif
 
    int graphics::save_graphics_context()
    {
@@ -5613,7 +5665,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    int graphics::SelectObject(::draw2d::region* pRgn)
    {
-      int nRetVal = GDI_ERROR;
+      //int nRetVal = GDI_ERROR;
+      int nRetVal = 0;
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   nRetVal = (double)(iptr)::SelectObject(m_hdc, (HGDIOBJ) pRgn->get_os_data());
       //if(m_hdc != nullptr)
@@ -5705,6 +5758,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    }
 
+#if defined(WINDOWS_DESKTOP)
+
+
 
    bool graphics::SetWorldTransform(const XFORM* pXform)
    {
@@ -5744,6 +5800,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       return nRetVal;
 
    }
+
+#endif
 
 
    int graphics::SetMapMode(int nMapMode)
@@ -6130,7 +6188,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    unsigned int graphics::SetTextAlign(unsigned int nFlags)
    {
 
-      unsigned int nRetVal = GDI_ERROR;
+      //unsigned int nRetVal = GDI_ERROR;
+
+      //unsigned int nRetVal = GDI_ERROR;
+
+      unsigned int nRetVal = 0;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::SetTextAlign(m_hdc, nFlags);
@@ -6191,11 +6253,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
+#if defined(WINDOWS_DESKTOP)
+
    typedef unsigned int (CALLBACK* __GDIGETLAYOUTPROC)(HDC);
    typedef unsigned int (CALLBACK* __GDISETLAYOUTPROC)(HDC, unsigned int);
 
+#endif
+
    unsigned int graphics::GetLayout() const
    {
+
+
+#if defined(WINDOWS_DESKTOP)
 
       HINSTANCE hInst = ::GetModuleHandleA("GDI32.DLL");
 
@@ -6215,6 +6284,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             }*/
 
             //return dwGetLayout;
+
+#endif
 
       return 0;
 
@@ -6323,6 +6394,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
+#if defined(WINDOWS_DESKTOP)
+
    bool graphics::SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust)
    {
       // ASSERT(m_hdc != nullptr);
@@ -6333,6 +6406,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //   bResult = ::SetColorAdjustment(m_hdc, lpColorAdjust) != false;
       return bResult;
    }
+
+#endif
 
 
    void graphics::poly_bezier_to(const ::double_point* lpPoints, ::collection::count nCount)
@@ -6423,6 +6498,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       return 0;
 
    }
+
+
+#if defined(WINDOWS_DESKTOP)
+
 
 
    /////////////////////////////////////////////////////////////////////////////
@@ -6535,6 +6614,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //
       //      return 1;
    }
+
+#endif
+
 
 
    //bool graphics::PlayMetaFile(HMETAFILE hMF)
@@ -8358,7 +8440,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 
 
-
+#if defined(WINDOWS_DESKTOP)
 
 BOOL CALLBACK draw2d_vkvg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p)
 {
@@ -8384,6 +8466,9 @@ BOOL CALLBACK draw2d_vkvg_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm,
 
 }
 
+
+
+#endif
 
 
 

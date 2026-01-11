@@ -373,7 +373,8 @@ namespace gpu_vulkan
       VkResult result = vkQueuePresentKHR(pqueuePresent->m_vkqueue, &presentInfo);
 
       //currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-      m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % m_ptextureaSwapChain->size();
+      int iSize = m_ptextureaSwapChain->size();
+      m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % iSize;
 
       return result;
 
@@ -422,6 +423,21 @@ namespace gpu_vulkan
       //auto result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
 
       //return result;
+
+   }
+
+
+   int swap_chain::swap_chain_frame_count()
+   {
+
+      if (::is_null(m_ptextureaSwapChain))
+      {
+
+         return 0;
+
+      }
+
+      return m_ptextureaSwapChain->size();
 
    }
 

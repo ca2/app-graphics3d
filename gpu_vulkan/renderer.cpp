@@ -532,7 +532,29 @@ namespace gpu_vulkan
 
       auto pgpurendertarget = render_target();
 
-      m_commandbuffera.set_size(pgpurendertarget->get_frame_count());
+      int iFrameCount;
+
+      if (m_pgpucontext->m_eoutput ==::gpu:: e_output_swap_chain)
+      {
+
+         iFrameCount = m_pgpucontext->get_swap_chain()->swap_chain_frame_count();
+
+         // if (iFrameCount <= 0)
+         // {
+         //
+         //    iFrameCount = pgpurendertarget->get_frame_count();
+         //
+         //}
+
+      }
+      else
+      {
+
+         iFrameCount = pgpurendertarget->get_frame_count();
+
+      }
+
+      m_commandbuffera.set_size(iFrameCount);
 
       //::array<VkCommandBuffer > a;
 

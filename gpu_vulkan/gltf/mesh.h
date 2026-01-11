@@ -37,7 +37,7 @@ namespace gpu_vulkan
          //                          const ::unsigned_int_array &indexa, ::gpu::model::material *pmaterial) override;
 
 
-         void on_initialize_gpu_mesh() override;
+         //void on_initialize_gpu_mesh() override;
 
          void draw2(::gpu::command_buffer *pcommandbuffer) override;
          // private:

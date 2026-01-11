@@ -2,8 +2,8 @@
 #include "framework.h"
 #include "approach.h"
 #include "physical_device.h"
-#include "windowing_win32/_.h"
-#include "windowing_win32/window.h"
+#include "windowing_x11/_.h"
+#include "windowing_x11/window.h"
 
 
 namespace gpu_vulkan
@@ -22,15 +22,24 @@ namespace gpu_vulkan
 
       ::cast <::gpu_vulkan::approach > pgpu = m_pgpuapproach;
 
-      ::cast < ::windowing_win32::window > pwindow = pwindowParam;
+      ::cast < ::windowing_x11::window > pwindow = pwindowParam;
       // Surface creation
       VkSurfaceKHR surface;
-      VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {
-          .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
-          .hinstance = (HINSTANCE)::system()->m_hinstanceThis,
-          .hwnd = pwindow->m_hwnd
+      VkXlibSurfaceCreateInfoKHR surfaceCreateInfo = {
+          .sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
+          //.hinstance = (HINSTANCE)::system()->m_hinstanceThis,
+          //.hwnd = pwindow->m_hwnd
+         .dpy = pwindow->__x11_Display(),
+         .window = pwindow->__x11_Window()
       };
-      auto result = vkCreateWin32SurfaceKHR(pgpu->m_vkinstance, &surfaceCreateInfo, NULL, &m_vksurfacekhr);
+      auto result = vkCreateXlibSurfaceKHR(pgpu->m_vkinstance, &surfaceCreateInfo, NULL, &m_vksurfacekhr);
+
+      if (result != VK_SUCCESS)
+      {
+
+         throw ::exception(error_failed, "failed to create vulkan KHR surface");
+
+      }
 
       return result;
 

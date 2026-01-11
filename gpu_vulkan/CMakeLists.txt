@@ -22,82 +22,81 @@ list(APPEND library_source
    #ibl/hdri_cube.h
    ibl/specular_map.cpp
    ibl/specular_map.h
-
-
-        _.cpp
-        _.h
-        _factory.cpp
-        _gpu_vulkan.cpp
-        accumulation_render_pass.cpp
-        accumulation_render_pass.h
-        approach.cpp
-        approach.h
-        assimp.cpp
-        assimp.h
+   _.cpp
+   _.h
+   _factory.cpp
+   _gpu_vulkan.cpp
+   accumulation_render_pass.cpp
+   accumulation_render_pass.h
+   approach.cpp
+   approach.h
+   assimp.cpp
+   assimp.h
    binding.cpp
    binding.h
    block.cpp
    block.h
-        buffer.cpp
-        buffer.h
-        command_buffer.cpp
-        command_buffer.h
-        context.cpp
-        context.h
-        context_object.cpp
-        context_object.h
-        cpu_buffer.cpp
-        cpu_buffer.h
-        context.cpp
-        context.h
+   buffer.cpp
+   buffer.h
+   command_buffer.cpp
+   command_buffer.h
+   context.cpp
+   context.h
+   context_ktx.cpp
+   context_object.cpp
+   context_object.h
+   cpu_buffer.cpp
+   cpu_buffer.h
+   context.cpp
+   context.h
    #cube.cpp
    #cube.h
-        debug.cpp
-        debug.h
-        descriptors.cpp
-        descriptors.h
-        device.cpp
-        device.h
-
+   debug.cpp
+   debug.h
+   descriptors.cpp
+   descriptors.h
+   device.cpp
+   device.h
    #gltf_model.cpp
    #gltf_model.h
    #aaa_tinygltf.cpp
    vkresult_exception.cpp
    vkresult_exception.h     #image_directx.cpp
-
-        image_vulkan.cpp
-        input_layout.cpp
-        input_layout.h
-        framework.cpp
-        framework.h
-        layer.cpp
-        layer.h
-        memory_buffer.cpp
-        memory_buffer.h
-        model_buffer.cpp
-        model_buffer.h
-        object.cpp
-        object.h
-        offscreen_render_pass.cpp
-        offscreen_render_pass.h
-        physical_device.cpp
-        physical_device.h
-        pipeline.cpp
-        pipeline.h
+   image_vulkan.cpp
+   input_layout.cpp
+   input_layout.h
+   framework.cpp
+   framework.h
+   layer.cpp
+   layer.h
+   memory_buffer.cpp
+   memory_buffer.h
+   model_buffer.cpp
+   model_buffer.h
+   object.cpp
+   object.h
+   offscreen_render_pass.cpp
+   offscreen_render_pass.h
+   physical_device.cpp
+   physical_device.h
+   pipeline.cpp
+   pipeline.h
    queue.cpp
    queue.h
-        render_pass.cpp
-        render_pass.h
-        render_target.cpp
-        render_target.h
-        renderer.cpp
-        renderer.h
-        shader.cpp
-        shader.h
-        swap_chain.cpp
-        swap_chain.h
-        texture.cpp
-        texture.h)
+   render_pass.cpp
+   render_pass.h
+   render_target.cpp
+   render_target.h
+   renderer.cpp
+   renderer.h
+   shader.cpp
+   shader.h
+   swap_chain.cpp
+   swap_chain.h
+   texture.cpp
+   texture.h
+   texture_ktx.cpp
+)
 
 
 if (${WIN32})
@@ -108,24 +107,33 @@ if (${WIN32})
             operating_system/windows.cpp
     )
 
+elseif (${WITH_X11})
+
+    list(APPEND library_source
+       approach_x11.cpp
+       #windowing_system_x11
+       operating_system/x11.cpp
+    )
+
 endif()
 
 list(APPEND library_references
-        acme
-        apex
-        aqua
-        aura
-        axis
-        berg
-        bred
-   gpu
+    acme
+    apex
+    aqua
+    aura
+    axis
+    berg
+    bred
+    gpu
+    ktx
 )
 
-    if (${LINUX} OR ${__BSD__})
+if (${LINUX} OR ${__BSD__})
 
     list(APPEND library_references
             aura_posix
-            #windowing_system_x11
+            windowing_x11
     )
 
 else ()

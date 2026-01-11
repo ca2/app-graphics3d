@@ -3,11 +3,11 @@ project(graphics3d_vulkan CXX)
 
 
 list(APPEND library_source
-        _.cpp
-        _.h
-        _factory.cpp
-        #camera.cpp
-        #camera.h
+   _.cpp
+   _.h
+   _factory.cpp
+   #camera.cpp
+   #camera.h
    #render_systems/basic_render_system.cpp
    #render_systems/basic_render_system.h
    render_system/gltf_render_system.cpp
@@ -20,25 +20,25 @@ list(APPEND library_source
    render_system/wavefront_obj_render_system.h
    render_system.cpp
    render_system.h
-        engine.cpp
-        engine.h
-        framework.cpp
-        framework.h
-        #model.cpp
-        #model.h
+   engine.cpp
+   engine.h
+   framework.cpp
+   framework.h
+   #model.cpp
+   #model.h
 )
 
 
 list(APPEND library_references
-        acme
-        apex
-        aqua
-        aura
-        axis
-        berg
-        bred
-        imgui
-        gpu_vulkan
+   acme
+   apex
+   aqua
+   aura
+   axis
+   berg
+   bred
+   #imgui
+   gpu_vulkan
    graphics3d
 )
 

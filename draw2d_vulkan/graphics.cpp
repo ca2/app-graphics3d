@@ -30,12 +30,16 @@
 #include "gpu_vulkan/device.h"
 #include "gpu_vulkan/model_buffer.h"
 #include "gpu_vulkan/swap_chain.h"
+#ifdef WINDOWS_DESKTOP
 #include "windowing_win32/window.h"
-
+#elif defined(WITH_X11)
+#include "windowing_x11/window.h"
+#endif
 
 #include <math.h>
+#ifdef WINDOWS_DESKTOP
 #include <dwmapi.h>
-
+#endif
 
 namespace vulkan
 {
@@ -44,9 +48,9 @@ namespace vulkan
 
 }
 
-
+#ifdef WINDOWS_DESKTOP
 BOOL CALLBACK draw2d_vulkan_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, unsigned int FontType, LPVOID p);
-
+#endif
 
 class draw2d_vulkan_enum_fonts
 {
@@ -304,12 +308,16 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
+#if defined(WINDOWS_DESKTOP)
+
    int graphics::EnumObjects(int nObjectType, int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData)
    {
 
       return 0;
 
    }
+
+#endif
 
    ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pbitmap)
    {
@@ -410,12 +418,16 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
+#if defined(WINDOWS_DESKTOP)
+
    bool graphics::GetWorldTransform(XFORM* pXform) const
    {
 
       return true;
 
    }
+
+#endif
 
    int_size graphics::get_context_extents() const
    {
@@ -3216,7 +3228,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
    // Printer Escape Functions
-   int graphics::Escape(int nEscape, int nCount, const ::scoped_string& lpszInData, LPVOID lpOutData)
+   int graphics::Escape(int nEscape, int nCount, const ::scoped_string& lpszInData, void * lpOutData)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::Escape(m_hdc, nEscape, nCount, lpszInData, lpOutData);
@@ -3252,6 +3264,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
+#if defined(WINDOWS_DESKTOP)
 
    // ::user::document handling functions
    int graphics::StartDoc(LPDOCINFO lpDocInfo)
@@ -3326,6 +3339,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
       return 0;
 
    }
+
+
+#endif
 
 
    //   bool graphics::MaskBlt(double x, double y, double nWidth, double nHeight, ::draw2d::graphics * pgraphicsSrc,
@@ -3437,6 +3453,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
+#if defined(WINDOWS_DESKTOP)
+
    bool graphics::GetColorAdjustment(LPCOLORADJUSTMENT lpColorAdjust) const
    {
       // ASSERT(m_hdc != nullptr);
@@ -3445,6 +3463,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    }
 
+#endif
 
    ::draw2d::pen* graphics::get_current_pen()
    {
@@ -3505,7 +3524,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   int graphics::Escape(int nEscape, int nInputSize, __in_bcount(nInputSize) const char* lpszInputData, int nOutputSize, __out_bcount(nOutputSize) char* lpszOutputData)
+   int graphics::Escape(int nEscape, int nInputSize, const char* lpszInputData, int nOutputSize, char* lpszOutputData)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::ExtEscape(m_hdc, nEscape, nInputSize, lpszInputData, nOutputSize, lpszOutputData);
@@ -4058,7 +4077,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    // Always Inline. Functions only in Win98/Win2K or later
 
-   inline color32_t graphics::GetDCBrushColor() const
+
+#if defined(WINDOWS_DESKTOP)
+
+
+
+   color32_t graphics::GetDCBrushColor() const
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetDCBrushColor(m_hdc);
@@ -4066,7 +4090,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   inline color32_t graphics::SetDCBrushColor(color32_t crColor)
+   color32_t graphics::SetDCBrushColor(color32_t crColor)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::SetDCBrushColor(m_hdc, crColor);
@@ -4075,7 +4099,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   inline color32_t graphics::GetDCPenColor() const
+   color32_t graphics::GetDCPenColor() const
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetDCPenColor(m_hdc);
@@ -4085,7 +4109,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   inline color32_t graphics::SetDCPenColor(color32_t crColor)
+   color32_t graphics::SetDCPenColor(color32_t crColor)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::SetDCPenColor(m_hdc, crColor);
@@ -4094,7 +4118,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   inline bool graphics::GetCharABCWidthsI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPABC lpabc) const
+   bool graphics::GetCharABCWidthsI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPABC lpabc) const
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetCharABCWidthsI(m_hdc, giFirst, cgi, pgi, lpabc) != false;
@@ -4103,7 +4127,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   inline bool graphics::GetCharWidthI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPINT lpBuffer) const
+   bool graphics::GetCharWidthI(unsigned int giFirst, unsigned int cgi, LPWORD pgi, LPINT lpBuffer) const
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetCharWidthI(m_hdc, giFirst, cgi, pgi, lpBuffer) != false;
@@ -4111,7 +4135,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    }
 
-
+#endif
    //inline bool graphics::GetTextExtentExPointI(LPWORD pgiIn, double cgi, double nMaxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE32 LPSIZE32) const
    //{
    //   ENSURE(LPSIZE32 != nullptr);
@@ -4222,6 +4246,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    }
 
+
+#if defined(WINDOWS_DESKTOP)
+
+
    /////////////////////////////////////////////////////////////////////////////
    // special graphics drawing primitives/helpers
 
@@ -4248,6 +4276,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
       return nullptr;
    }
 
+
+#endif
 
    //void graphics::DrawDragRect(const ::double_rectangle & rectangle, const ::int_size & size, const ::double_rectangle & lpRectLast, const ::int_size & sizeLast, ::draw2d::brush* pBrush, ::draw2d::brush* pBrushLast)
    //{
@@ -4650,6 +4680,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //      //set_handle1(nullptr);
    //   }
 
+#if defined(WINDOWS_DESKTOP)
+
+
+
       /////////////////////////////////////////////////////////////////////////////
       // Out-of-line routines
 
@@ -4663,6 +4697,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       return -1;
    }
 
+#endif
 
    int graphics::save_graphics_context()
    {
@@ -4772,7 +4807,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
    int graphics::SelectObject(::draw2d::region* pRgn)
    {
 
-      int nRetVal = GDI_ERROR;
+//      int nRetVal = GDI_ERROR;
+
+      int nRetVal = 0;
 
       return nRetVal;
 
@@ -4859,6 +4896,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
+#if defined(WINDOWS_DESKTOP)
+
    bool graphics::SetWorldTransform(const XFORM* pXform)
    {
 
@@ -4897,6 +4936,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
       return nRetVal;
 
    }
+
+
+#endif
 
 
    int graphics::SetMapMode(int nMapMode)
@@ -5195,7 +5237,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
    unsigned int graphics::SetTextAlign(unsigned int nFlags)
    {
 
-      unsigned int nRetVal = GDI_ERROR;
+      //unsigned int nRetVal = GDI_ERROR;
+
+      unsigned int nRetVal =0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::SetTextAlign(m_hdc, nFlags);
@@ -5256,11 +5300,18 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
+#if defined(WINDOWS_DESKTOP)
+
+
    typedef unsigned int (CALLBACK* __GDIGETLAYOUTPROC)(HDC);
    typedef unsigned int (CALLBACK* __GDISETLAYOUTPROC)(HDC, unsigned int);
+#endif
+
 
    unsigned int graphics::GetLayout() const
    {
+#if defined(WINDOWS_DESKTOP)
+
 
       HINSTANCE hInst = ::GetModuleHandleA("GDI32.DLL");
 
@@ -5280,6 +5331,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
            }*/
 
            //return dwGetLayout;
+#endif
 
       return 0;
 
@@ -5388,6 +5440,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
+
+#if defined(WINDOWS_DESKTOP)
+
+
+
+
    bool graphics::SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust)
    {
       // ASSERT(m_hdc != nullptr);
@@ -5398,6 +5456,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //   bResult = ::SetColorAdjustment(m_hdc, lpColorAdjust) != false;
       return bResult;
    }
+
+
+#endif
 
 
    void graphics::poly_bezier_to(const ::double_point* lpPoints, ::collection::count nCount)
@@ -5490,7 +5551,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   /////////////////////////////////////////////////////////////////////////////
+#if defined(WINDOWS_DESKTOP)
+
+  /////////////////////////////////////////////////////////////////////////////
    // Special handling for metafile playback
 
    double CALLBACK __enum_meta_file_procedure(HDC hDC,
@@ -5601,6 +5664,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //      return 1;
    }
 
+
+#endif
 
    //bool graphics::PlayMetaFile(HMETAFILE hMF)
    //{
@@ -7107,6 +7172,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 } // namespace draw2d_vulkan
 
 
+#if defined(WINDOWS_DESKTOP)
+
 
 
 
@@ -7135,7 +7202,7 @@ BOOL CALLBACK draw2d_vulkan_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpnt
 }
 
 
-
+#endif
 
 
 namespace vulkan

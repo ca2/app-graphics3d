@@ -5,10 +5,14 @@
 #include "object.h"
 
 
+#if defined(WINDOWS_DESKTOP)
+
 #define minimum minimum
 #define maximum maximum
 #include <GdiPlus.h>
 
+
+#endif
 
 namespace draw2d_vkvg
 {

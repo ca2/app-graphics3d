@@ -104,9 +104,10 @@ namespace draw2d_vulkan
       int_point GetBrushOrg() const;
       int_point SetBrushOrg(int x, int y);
       int_point SetBrushOrg(const ::int_point& point);
+#if defined(WINDOWS_DESKTOP)
       int EnumObjects(int nObjectType,
          int (CALLBACK* lpfn)(LPVOID, LPARAM), LPARAM lpData);
-
+#endif
    public:
 
       ::draw2d_vulkan::draw2d* draw2d_vulkan();
@@ -134,6 +135,7 @@ namespace draw2d_vulkan
       int SetPolyFillMode(int nPolyFillMode);
       int SetROP2(int nDrawMode);
       int set_interpolation_mode(int nStretchMode);
+#if defined(WINDOWS_DESKTOP)
 
       bool GetColorAdjustment(LPCOLORADJUSTMENT lpColorAdjust) const;
       bool SetColorAdjustment(const COLORADJUSTMENT* lpColorAdjust);
@@ -147,15 +149,17 @@ namespace draw2d_vulkan
       color32_t SetDCPenColor(color32_t crColor);
 
 #endif
-
+#endif
       // Graphics mode
       int SetGraphicsMode(int iMode);
       int GetGraphicsMode() const;
 
+#if defined(WINDOWS_DESKTOP)
       // World transform
       bool SetWorldTransform(const XFORM* pXform);
       bool ModifyWorldTransform(const XFORM* pXform, unsigned int iMode);
       bool GetWorldTransform(XFORM* pXform) const;
+#endif
 
       // Mapping Functions
       virtual int GetMapMode() const;
@@ -339,8 +343,13 @@ namespace draw2d_vulkan
       //                  int nWidth, int nHeight, ::draw2d::bitmap& maskBitmap, int xMask, int yMask);
       void SetPixelV(int x, int y, ::color::color crColor);
       void SetPixelV(const ::int_point& point, ::color::color crColor);
+
+#if defined(WINDOWS_DESKTOP)
+
       bool GradientFill(TRIVERTEX* pVertices, ULONG nVertices,
          void* pMesh, ULONG nMeshElements, unsigned int dwMode);
+#endif
+
       void TransparentBlt(int xDest, int yDest, int nDestWidth, int nDestHeight,
          ::draw2d::graphics* pgraphicsSrc, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight,
          unsigned int clrTransparent);
@@ -446,9 +455,11 @@ namespace draw2d_vulkan
 #endif
 
       // Printer/Device Escape Functions
-      virtual int Escape(int nEscape, int nCount, const ::scoped_string& lpszInData, LPVOID lpOutData);
+      virtual int Escape(int nEscape, int nCount, const ::scoped_string& lpszInData, void * lpOutData);
       int Escape(int nEscape, int nInputSize, const char* lpszInputData, int nOutputSize, char* lpszOutputData);
       int DrawEscape(int nEscape, int nInputSize, const ::scoped_string& lpszInputData);
+
+#if defined(WINDOWS_DESKTOP)
 
       // Escape helpers
       int StartDoc(const ::scoped_string& lpszDocName);  // old Win3.0 version
@@ -458,6 +469,7 @@ namespace draw2d_vulkan
       int SetAbortProc(bool (CALLBACK* lpfn)(HDC, int));
       int AbortDoc();
       int EndDoc();
+#endif
 
       // MetaFile Functions
       //bool PlayMetaFile(HMETAFILE hMF);
@@ -495,8 +507,12 @@ namespace draw2d_vulkan
       //int GetPath(::int_point * lpPoints, LPBYTE lpTypes,::collection::count nCount) const;
       void SelectClipPath(int nMode);
 
+
+#if defined(WINDOWS_DESKTOP)
+
       // Misc Helper Functions
       static ::draw2d::brush* GetHalftoneBrush();
+#endif
       //void DrawDragRect(const ::int_rectangle & rectangle, const ::int_size & size,
       //                  const ::int_rectangle & lpRectLast, const ::int_size & sizeLast,
       //                  ::draw2d::brush* pBrush = nullptr, ::draw2d::brush* pBrushLast = nullptr);

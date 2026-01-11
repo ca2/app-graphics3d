@@ -2494,7 +2494,11 @@ namespace gpu_vulkan
          throw ::exception(error_failed, "failed to allocate vertex buffer memory!");
       }
 
-      vkBindBufferMemory(this->logicalDevice(), pbuffer->m_vkbuffer, pbuffer->m_vkdevicememory, 0);
+      auto vkbuffer = pbuffer->m_vkbuffer;
+
+      auto vkdevicememory = pbuffer->m_vkdevicememory;
+
+      vkBindBufferMemory(this->logicalDevice(), vkbuffer, vkdevicememory, 0);
 
       return pbuffer;
    }

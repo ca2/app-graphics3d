@@ -9,6 +9,8 @@
 
 #if defined(WINDOWS_DESKTOP)
 #define VK_USE_PLATFORM_WIN32_KHR
+#elif defined(LINUX)
+#define VK_USE_PLATFORM_XLIB_KHR
 #else
 #error "wwwwwhat?!?!"
 #endif

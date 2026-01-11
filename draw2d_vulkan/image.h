@@ -5,6 +5,9 @@
 
 
 #include "aura/graphics/image/image.h"
+#if defined(WITH_X11)
+#include <X11/Xlib.h>
+#endif
 
 
 struct OffscreenContext;
@@ -19,15 +22,21 @@ namespace draw2d_vulkan
    {
    public:
 
-
+#if defined(WINDOWS_DESKTOP)
       HBITMAP                          m_hbitmap;
-      class ::long_long_size                   m_sizeWnd;
       BITMAPINFO                       m_bitmapinfo;
+#elif defined(WITH_X11)
+      XImage*        m_ximage;     // CPU bitmap equivalent
+      Pixmap         m_pixmap;     // Optional server-side drawable
+      Visual*        m_visual;
+      int            m_depth;
+#endif
+      ::long_long_size           m_sizeWnd;
       OffscreenContext *               m_phost;
 
 
       image();
-      virtual ~image();
+      ~image() override;
 
 
       virtual ::draw2d::graphics * _get_graphics() const;

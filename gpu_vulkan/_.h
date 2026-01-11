@@ -7,6 +7,8 @@
 
 #if defined(WINDOWS_DESKTOP)
 #include "windowing_win32/_.h"
+#elif defined(WITH_X11)
+#include "windowing_x11/_.h"
 #endif
 #undef USUAL_OPERATING_SYSTEM_SUPPRESSIONS
 #include "acme/_operating_system.h"

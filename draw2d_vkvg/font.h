@@ -16,10 +16,14 @@ namespace draw2d_vkvg
    {
    public:
 
-      
+#if defined(WINDOWS_DESKTOP)
+
       HDC                           m_hdcFont;
       HFONT                         m_hfont;
-//      VKuint	                     m_baseFont;				// Base Display List For The Font Set
+
+#endif
+
+      //      VKuint	                     m_baseFont;				// Base Display List For The Font Set
 //
 //#ifdef WINDOWS
 //      VKYPHMETRICSFLOAT             m_gmf[256];	// Storage For Information About Our Outline Font Characters

@@ -284,6 +284,8 @@ namespace gpu_vulkan
          // Enable surface extensions depending on os
 #if defined(_WIN32)
          instanceExtensions.add(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+         instanceExtensions.add(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
          instanceExtensions.add(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
 #elif defined(_DIRECT2DISPLAY)
