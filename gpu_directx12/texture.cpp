@@ -21,6 +21,12 @@ namespace gpu_directx12
 
       new_texture.set_new_texture();
 
+      if (m_iTextureSerial == 0xd)
+      {
+
+         ::warning("m_iTextureSerial == 0xd");
+
+      }
 
       //m_dxgiformat = DXGI_FORMAT_UNKNOWN;
 

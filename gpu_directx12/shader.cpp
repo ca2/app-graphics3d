@@ -1256,7 +1256,12 @@ namespace gpu_directx12
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      if (ptextureDst->m_iTextureSerial == 0xd)
+      {
 
+         warning("m_iTextureSerial == 0xd");
+
+      }
       ptextureDst->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
@@ -1353,6 +1358,13 @@ namespace gpu_directx12
 
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      if (ptextureSrc->m_iTextureSerial == 0xd)
+      {
+
+         warning("ptextureSrc->m_iTextureSerial == 0xd");
+
+      }
 
       ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 
@@ -1843,6 +1855,7 @@ namespace gpu_directx12
 
                      ptexture->create_shader_resource();
                   }
+                  ptexture->set_state(pgpucommandbuffer, ::gpu::e_texture_state_shader_read);
                   UINT inc =
                      pgpudevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
                   auto h2 = ptexture->m_handleShaderResourceView;
