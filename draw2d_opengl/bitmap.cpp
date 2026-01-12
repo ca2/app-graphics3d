@@ -638,7 +638,9 @@ namespace draw2d_opengl
       return true;
 #elif defined(WITH_X11) && !defined(DESKTOP_ENVIRONMENT_GNOME)
 
-      ::system()->acme_windowing()->acme_display()->get_os_display_handle(&dpy, sizeof(dpy));
+      //::system()->acme_windowing()->acme_display()->get_os_display_handle(&dpy, sizeof(dpy));
+
+      dpy = (Display *) ::system()->acme_windowing()->acme_display()->_get_x11_display();
 
       if (!dpy)
       {
