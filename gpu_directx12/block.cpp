@@ -57,7 +57,7 @@ namespace gpu_directx12
 
       øconstruct_new(m_pd3d12resourceBlock);
 
-      auto hrCreateCommittedResource = pgpudevice->m_pdevice->CreateCommittedResource(
+      auto hrCreateCommittedResource = pgpudevice->m_pd3d12device->CreateCommittedResource(
          &heapProps,
          D3D12_HEAP_FLAG_NONE,
          &bufferDesc,
@@ -77,7 +77,7 @@ namespace gpu_directx12
 
       auto handle = prenderer->m_pheapCbv->GetCPUDescriptorHandleForHeapStart();
 
-      pgpudevice->m_pdevice->CreateConstantBufferView(&cbvDesc, handle);
+      pgpudevice->m_pd3d12device->CreateConstantBufferView(&cbvDesc, handle);
 
       CD3DX12_RANGE readRange(0, 0);
 

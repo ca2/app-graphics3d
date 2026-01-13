@@ -21,6 +21,7 @@
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 #include "approach.h"
 #include "aura/graphics/image/image.h"
+#include "aura/windowing/window.h"
 #include "bred/gpu/compositor.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/layer.h"
@@ -1681,7 +1682,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::defer_create_window_context(::acme::windowing::window *pwindow)
+   void context::defer_create_window_context(::acme::windowing::window *pacmewindowingwindow)
    {
 
       // if (m_hrc)
@@ -1691,7 +1692,10 @@ namespace gpu_vulkan
 
       //}
 
-      //::vulkan::context::defer_create_window_context(pwindow);
+      ::cast<::windowing::window> pwindow = pacmewindowingwindow;
+
+      create_window_context(m_pgpudevice, pwindow);
+
    }
 
 
@@ -3225,7 +3229,7 @@ namespace gpu_vulkan
 
       //   ::cast < ::gpu_directx11::device > pgpudevice = m_pgpudevice;
 
-      //   HRESULT hr = pgpudevice->m_pdevice->CreateBlendState(&blendDesc, &m_pd3d11blendstateBlend3);
+      //   HRESULT hr = pgpudevice->m_pd3d12device->CreateBlendState(&blendDesc, &m_pd3d11blendstateBlend3);
       //   ::defer_throw_hresult(hr);
 
       //}

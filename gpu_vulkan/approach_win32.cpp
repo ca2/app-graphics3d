@@ -22,10 +22,10 @@ namespace gpu_vulkan
 
 
 
-   void approach::on_create_window(::acme::windowing::window* pwindowParam)
+   void approach::on_create_window(::acme::windowing::window* pacmewindowingwindow)
    {
 
-      ::cast < ::windowing_win32::window > pwindow = pwindowParam;
+      ::cast<::windowing_win32::window> pwindow = pacmewindowingwindow;
 
       auto hwnd = pwindow->m_hwnd;
 
@@ -167,6 +167,9 @@ namespace gpu_vulkan
       bb.hRgnBlur = hRgn;
       bb.fEnable = TRUE;
       DwmEnableBlurBehindWindow(hwnd, &bb);
+
+
+      ::gpu::bred_approach::on_create_window(pacmewindowingwindow);
 
    }
 

@@ -207,7 +207,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device();
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteraction->m_pacmewindowingwindow);
 
       auto pgpucontextNew = pgpudevice->main_draw2d_context();
 
@@ -217,25 +217,25 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       pcontext->m_pgpucompositor = this;
 
-      pcontext->defer_create_window_context(pwindow);
+      //pcontext->create_gpu_context(pgpudevice, );
 
-      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
+      //::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
 
-      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
-      {
+      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      //{
 
-         auto pcontextMain = pgpudevice->main_context();
+      //   auto pcontextMain = pgpudevice->main_context();
 
-         auto pswapchain = pcontextMain->get_swap_chain();
+      //   auto pswapchain = pcontextMain->get_swap_chain();
 
-         if (!pswapchain->m_bSwapChainInitialized)
-         {
+      //   if (!pswapchain->m_bSwapChainInitialized)
+      //   {
 
-            pswapchain->initialize_swap_chain_window(pcontextMain, puserinteraction->window());
+      //      pswapchain->initialize_swap_chain_window(pcontextMain, puserinteraction->window());
 
-         }
+      //   }
 
-      }
+      //}
 
       set_ok_flag();
 
@@ -7019,7 +7019,23 @@ auto iContextHeight = pcontext->m_rectangle.height()
    void graphics::on_gpu_context_placement_change(const ::int_rectangle& rectanglePlacement)
    {
 
-      ::gpu::graphics::on_gpu_context_placement_change(rectanglePlacement);
+      ::acme::windowing::window *pacmewindowingwindow = nullptr;
+      
+      if (::is_set(m_puserinteraction))
+      {
+         
+         pacmewindowingwindow = m_puserinteraction->m_pacmewindowingwindow.m_p;
+
+      }
+
+      if (::is_null(pacmewindowingwindow))
+      {
+
+         pacmewindowingwindow = ::system()->m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+
+      }
+
+      ::gpu::graphics::on_gpu_context_placement_change(rectanglePlacement, pacmewindowingwindow);
 
       auto sizeNew = rectanglePlacement.size();
 

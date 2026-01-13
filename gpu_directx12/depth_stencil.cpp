@@ -33,7 +33,7 @@ namespace gpu_directx12
       //dsvHeapDesc.NumDescriptors = 1;
       //dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
       //dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      //pdevice->m_pdevice->CreateDescriptorHeap(&dsvHeapDesc, __interface_of(m_pheap));
+      //pdevice->m_pd3d12device->CreateDescriptorHeap(&dsvHeapDesc, __interface_of(m_pheap));
 
       // 2. Describe depth stencil resource
       D3D12_RESOURCE_DESC depthDesc = {};
@@ -56,7 +56,7 @@ namespace gpu_directx12
       CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
 
       // 3. Create depth stencil resource
-      pdevice->m_pdevice->CreateCommittedResource(
+      pdevice->m_pd3d12device->CreateCommittedResource(
          &heapproperties,
          D3D12_HEAP_FLAG_NONE,
          &depthDesc,

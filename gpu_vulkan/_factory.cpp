@@ -50,7 +50,7 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu_vulkan::cpu_buffer, ::gpu::cpu_buffer >();
    pfactory->add_factory_item < ::gpu_vulkan::renderer, ::gpu::renderer >();
 
-   pfactory->add_factory_item < ::gpu_vulkan::object, ::gpu::object >();
+   //pfactory->add_factory_item < ::gpu_vulkan::object, ::gpu::object >();
    pfactory->add_factory_item < ::gpu_vulkan::texture, ::gpu::texture >();
 
    pfactory->add_factory_item < ::gpu_vulkan::device, ::gpu::device >();

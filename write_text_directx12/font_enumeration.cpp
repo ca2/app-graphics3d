@@ -4,6 +4,7 @@
 //#include "directx12/directx12.h"
 #include "acme/platform/application.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
+#include "acme/user/user/interaction.h"
 #include "bred/gpu/bred_approach.h"
 #include <dwrite.h>
 
@@ -30,15 +31,15 @@ namespace write_text_directx12
 
       ::write_text::font_enumeration::on_initialize_particle();
 
-      ::gpu_directx12::object::on_initialize_particle();
+      //::gpu_directx12::object::on_initialize_particle();
 
       auto papproach = m_papplication->get_gpu_approach();
 
-      auto pdevice = papproach->get_gpu_device();
+      auto pdevice = papproach->get_gpu_device(::system()->m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow);
 
       //auto pdirectx12 = ::gpu_directx12::from_gpu_device(pdevice);
 
-      initialize_directx12_object(m_pgpudevice);
+      //initialize_directx12_object(m_pgpudevice);
 
    }
 

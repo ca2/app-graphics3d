@@ -14,8 +14,7 @@ namespace draw2d_directx12
 
 
    class internal_font :
-      virtual public ::write_text::internal_font,
-      virtual public ::gpu_directx12::object
+      virtual public ::write_text::internal_font //,    virtual public ::gpu_directx12::object
    {
    public:
 

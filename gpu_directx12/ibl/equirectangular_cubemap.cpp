@@ -87,7 +87,7 @@ namespace gpu_directx12
 
          //ID3D11DeviceContext *pcontextImmediate1 = nullptr;
          //   
-         //pcontext->m_pgpudevice->m_pdevice1->GetImmediateContext(&pcontextImmediate1);
+         //pcontext->m_pgpudevice->m_pd3d12device1->GetImmediateContext(&pcontextImmediate1);
 
          //auto pcontext2 = pcontext->m_pcontext;
 

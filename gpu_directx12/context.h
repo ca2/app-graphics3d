@@ -176,7 +176,7 @@ namespace gpu_directx12
 
       void on_create_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::int_size& size) override;
 
-      virtual void initialize_gpu_context_swap_chain(::gpu::device* pgpudevice, ::windowing::window* pwindow);
+      virtual void _initialize_gpu_context_swap_chain(::gpu::device* pgpudevice, ::acme::windowing::window* pacmewindowingwindow);
 
       string _001GetIntroProjection() override;
       string _001GetIntroFragment() override;

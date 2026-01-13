@@ -11,8 +11,8 @@ namespace write_text_directx12
 
 
    class CLASS_DECL_WRITE_TEXT_DIRECTX12 write_text :
-      virtual public ::write_text::write_text,
-      virtual public ::gpu_directx12::object
+      virtual public ::write_text::write_text //,
+      //virtual public ::gpu_directx12::object
    {
    public:
 

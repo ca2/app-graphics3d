@@ -248,7 +248,7 @@ namespace gpu_directx12
       //   desc.BindFlags = 0;
       //   desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 
-      //   pdevice->m_pdevice->CreateTexture2D(&desc, nullptr, &pd3d11textureStaging);
+      //   pdevice->m_pd3d12device->CreateTexture2D(&desc, nullptr, &pd3d11textureStaging);
       //   pcontext->m_pcontext->CopyResource(pd3d11textureStaging, ptexture->m_ptextureOffscreen);
 
       //   

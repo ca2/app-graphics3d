@@ -19,7 +19,6 @@ namespace gpu_directx12
       
       int m_iPush ;
       int m_iPushMax = 0;
-      int m_iLast_BindFrame  = -1;
       ::comptr <ID3D12PipelineState> m_ppipelinestate ;
 
 

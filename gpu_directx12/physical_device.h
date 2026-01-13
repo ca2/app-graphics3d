@@ -53,7 +53,7 @@ namespace gpu_directx12
 
       //VkSurfaceKHR surface() { return m_vksurfacekhr; }
 
-      HRESULT createWindowSurface(::windowing::window* pwindow);
+      //HRESULT createWindowSurface(::acme::windowing::window* pwindow);
 
       //uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
       //VkFormat findSupportedFormat(

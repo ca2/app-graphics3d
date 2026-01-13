@@ -104,7 +104,7 @@ namespace gpu_directx12
 
    //   CD3DX12_RESOURCE_DESC vbDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
 
-   //   pdevice->m_pdevice->CreateCommittedResource(
+   //   pdevice->m_pd3d12device->CreateCommittedResource(
    //      &defaultHeap, D3D12_HEAP_FLAG_NONE,
    //      &vbDesc, D3D12_RESOURCE_STATE_COMMON,
    //      nullptr, __interface_of(m_presourceVertexBufferGPU));
@@ -112,7 +112,7 @@ namespace gpu_directx12
    //   // Create upload heap resources
    //   CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
 
-   //   pdevice->m_pdevice->CreateCommittedResource(
+   //   pdevice->m_pd3d12device->CreateCommittedResource(
    //      &uploadHeap, D3D12_HEAP_FLAG_NONE,
    //      &vbDesc, D3D12_RESOURCE_STATE_COMMON,
    //      nullptr, __interface_of(m_presourceVertexBufferUpload));
@@ -154,14 +154,14 @@ namespace gpu_directx12
    //      CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
    //      CD3DX12_RESOURCE_DESC ibDesc = CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize);
 
-   //      pdevice->m_pdevice->CreateCommittedResource(
+   //      pdevice->m_pd3d12device->CreateCommittedResource(
    //         &defaultHeap, D3D12_HEAP_FLAG_NONE,
    //         &ibDesc, D3D12_RESOURCE_STATE_COMMON,
    //         nullptr, __interface_of(m_presourceIndexBufferGPU));
 
    //      CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
 
-   //      pdevice->m_pdevice->CreateCommittedResource(
+   //      pdevice->m_pd3d12device->CreateCommittedResource(
    //         &uploadHeap, D3D12_HEAP_FLAG_NONE,
    //         &ibDesc, D3D12_RESOURCE_STATE_COMMON,
    //         nullptr, __interface_of(m_presourceIndexBufferUpload));

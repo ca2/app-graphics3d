@@ -67,9 +67,9 @@ namespace gpu_directx12
       //rtvHeapDesc.NumDescriptors = m_pgpurenderer->m_iDefaultFrameCount;
       //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
       //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      //HRESULT hrCreateDescriptorHeapRtv = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap));
+      //HRESULT hrCreateDescriptorHeapRtv = pdevice->m_pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap));
       //pdevice->defer_throw_hresult(hrCreateDescriptorHeapRtv);
-      //m_rtvDescriptorSize = pdevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+      //m_rtvDescriptorSize = pdevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 
       //// Describe and create a depth stencil view (DSV) descriptor heap.
@@ -77,7 +77,7 @@ namespace gpu_directx12
       //dsvHeapDesc.NumDescriptors = 1;
       //dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
       //dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      //HRESULT hrCreateDescriptorHeapDsv = pdevice->m_pdevice->CreateDescriptorHeap(&dsvHeapDesc, __interface_of(m_dsvHeap));
+      //HRESULT hrCreateDescriptorHeapDsv = pdevice->m_pd3d12device->CreateDescriptorHeap(&dsvHeapDesc, __interface_of(m_dsvHeap));
       //pdevice->defer_throw_hresult(hrCreateDescriptorHeapDsv);
 
 
@@ -95,7 +95,7 @@ namespace gpu_directx12
       //
       //::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
-      //auto pdevice = pgpudevice->m_pdevice;
+      //auto pdevice = pgpudevice->m_pd3d12device;
 
       //HRESULT hrCreateTexture = pdevice->CreateTexture2D(&texDesc, nullptr, &m_ptextureOffscreen);
 
@@ -142,6 +142,18 @@ namespace gpu_directx12
 
       //}
 
+
+      ::int_size sizeRenderTarget;
+      
+      sizeRenderTarget = m_pgpurenderer->m_sizeRenderer;
+
+      if (sizeRenderTarget.is_empty())
+      {
+
+         throw ::exception(error_wrong_state, "render target rectangle cannot be empty");
+
+      }
+
       {
 
          //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
@@ -155,7 +167,9 @@ namespace gpu_directx12
 
             ødefer_construct(ptexture);
 
-            ::gpu::texture_attributes textureattributes(::int_rectangle{m_pgpurenderer->m_pgpucontext->m_rectangle.size()});
+            ::int_rectangle rectangleRenderTarget(sizeRenderTarget);
+
+            ::gpu::texture_attributes textureattributes(rectangleRenderTarget);
 
             ::gpu::texture_flags textureflags;
             textureflags.m_bRenderTarget = true;
@@ -171,7 +185,7 @@ namespace gpu_directx12
             //   //rtvHeapDesc.NumDescriptors = 1;
             //   //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
             //   //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-            //   //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
+            //   //HRESULT hrCreateDescriptorHeap = pdevice->m_pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
 
             //   //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
@@ -183,7 +197,7 @@ namespace gpu_directx12
 
             //   ::cast < texture > ptexture = m_texturea[i];
 
-            //   pgpudevice->m_pdevice->CreateRenderTargetView(ptexture->m_presource, nullptr, rtvHandle);
+            //   pgpudevice->m_pd3d12device->CreateRenderTargetView(ptexture->m_presource, nullptr, rtvHandle);
             //   
             //   rtvHandle.Offset(1, m_rtvDescriptorSize);
 
@@ -199,7 +213,7 @@ namespace gpu_directx12
          //   //srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
          //   //srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
          //   //
-         //   //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&srvHeapDesc, __interface_of(m_pheapShaderResourceView));
+         //   //HRESULT hrCreateDescriptorHeap = pdevice->m_pd3d12device->CreateDescriptorHeap(&srvHeapDesc, __interface_of(m_pheapShaderResourceView));
 
          //   //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
@@ -213,7 +227,7 @@ namespace gpu_directx12
 
          //   //m_handleShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
 
-         //   //pdevice->m_pdevice->CreateShaderResourceView(m_presource, &srvDesc, m_handleShaderResourceView);
+         //   //pdevice->m_pd3d12device->CreateShaderResourceView(m_presource, &srvDesc, m_handleShaderResourceView);
 
          //}
 

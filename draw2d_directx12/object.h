@@ -11,8 +11,7 @@ namespace draw2d_directx12
 
 
    class CLASS_DECL_DRAW2D_DIRECTX12 object :
-      virtual public ::draw2d::object,
-      virtual public ::gpu_directx12::object
+      virtual public ::draw2d::object //,    virtual public ::gpu_directx12::object
    {
    public:
 

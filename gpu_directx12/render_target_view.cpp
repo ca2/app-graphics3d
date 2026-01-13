@@ -379,7 +379,7 @@ namespace gpu_directx12
       ////m_handle = m_pheap->GetCPUDescriptorHandleForHeapStart();
       //::cast < device>pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-      //pdevice->m_pdevice->CreateDepthStencilView(m_pdepthstencil->m_presource, &dsvDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+      //pdevice->m_pd3d12device->CreateDepthStencilView(m_pdepthstencil->m_presource, &dsvDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
 
 
@@ -409,7 +409,7 @@ namespace gpu_directx12
    //   depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
    //   ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
 
-   //   auto pdevice = pgpudevice->m_pdevice;
+   //   auto pdevice = pgpudevice->m_pd3d12device;
 
    //   HRESULT hrCreateTexture = pdevice->CreateTexture2D(&depthDesc, nullptr, &m_ptextureDepthStencil);
 

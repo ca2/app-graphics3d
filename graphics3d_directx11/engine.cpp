@@ -542,7 +542,7 @@ namespace graphics3d_directx11
          ::cast < ::gpu_directx11::render_target_view > prendertargetview = prenderer->render_target();
          ::cast < ::gpu_directx11::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
          ::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
-         ID3D11Device* device = pgpudevice->m_pdevice;
+         ID3D11Device* device = pgpudevice->m_pd3d11device;
          ID3D11DeviceContext* context = pgpucontext->m_pcontext;
          ::cast < ::gpu_directx11::texture > ptexture = poffscreenrendertargetview->current_texture(::gpu::current_frame());
          ID3D11Texture2D* offscreenTexture = ptexture->m_ptextureOffscreen;

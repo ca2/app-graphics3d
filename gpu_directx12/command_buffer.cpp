@@ -107,7 +107,7 @@ namespace gpu_directx12
 
       ::cast<gpu_directx12::device> pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
-      HRESULT hr = pdevice->m_pdevice->CreateCommandAllocator(
+      HRESULT hr = pdevice->m_pd3d12device->CreateCommandAllocator(
          m_ecommandlisttype,  // Type: DIRECT for graphics
          __interface_of(m_pcommandallocator)
       );
@@ -116,7 +116,7 @@ namespace gpu_directx12
 
       //auto& pcommandlist = m_framea.element_at_grow(iFrame);
       // 4. Create command list (can be reused)
-      ::defer_throw_hresult(pdevice->m_pdevice->CreateCommandList(
+      ::defer_throw_hresult(pdevice->m_pd3d12device->CreateCommandList(
          0,
          m_ecommandlisttype,
          m_pcommandallocator, // initial allocator
@@ -127,7 +127,7 @@ namespace gpu_directx12
       ::defer_throw_hresult(m_pcommandlist->Close()); // Must be closed before Reset()
 
       HRESULT hrCreateFeence =
-         pdevice->m_pdevice->CreateFence(m_fenceValue, D3D12_FENCE_FLAG_NONE,
+         pdevice->m_pd3d12device->CreateFence(m_fenceValue, D3D12_FENCE_FLAG_NONE,
             __interface_of(m_pfence));
 
       ::defer_throw_hresult(hrCreateFeence);

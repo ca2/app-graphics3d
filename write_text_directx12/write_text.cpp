@@ -27,14 +27,14 @@ namespace write_text_directx12
 
       auto pfont = ::write_text::write_text::font(pfontfamily, fontsize, iFontWeight);
 
-      ::cast < ::gpu_directx12::object > pdirectx12object = pfont;
+      //::cast < ::gpu_directx12::object > pdirectx12object = pfont;
 
-      if (pdirectx12object)
-      {
+      //if (pdirectx12object)
+      //{
 
-         pdirectx12object->initialize_directx12_object(m_pgpudevice);
+      //   pdirectx12object->initialize_directx12_object(m_pgpudevice);
 
-      }
+      //}
 
       return pfont;
 

@@ -29,7 +29,7 @@ namespace draw2d_directx12
 
       initialize(pgraphics);
 
-      initialize_directx12_object(pgraphics->gpu_context()->m_pgpudevice);
+      //initialize_directx12_object(pgraphics->gpu_context()->m_pgpudevice);
 
    }
 
@@ -126,14 +126,14 @@ namespace draw2d_directx12
    void object::defer_update(::draw2d::graphics* pgraphics, char i) const
    {
 
-      if (!m_pgpudevice)
-      {
+      //if (!m_pgpudevice)
+      //{
 
-         ::cast < graphics> pdirectx12graphics = pgraphics;
+      //   ::cast < graphics> pdirectx12graphics = pgraphics;
 
-         ((object*)this)->initialize_draw2d_directx12_object(pdirectx12graphics);
+      //   ((object*)this)->initialize_draw2d_directx12_object(pdirectx12graphics);
 
-      }
+      //}
 
       ::draw2d::object::defer_update(pgraphics, i);
 

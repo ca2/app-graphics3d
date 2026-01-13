@@ -280,7 +280,7 @@ namespace gpu_directx12
       }
       _construct_new(ptexture->m_pd3d12resourceTexture);
       CreateDx12TextureFromKtx(ptexture,
-         pdevice->m_pdevice, pcommandbufferLoading->m_pcommandlist, pktxtexture);
+         pdevice->m_pd3d12device, pcommandbufferLoading->m_pcommandlist, pktxtexture);
 
       //ptexture->m_pd3d12resourceTexture->m_presource = tex.m_presourceTexture;
       //ptexture->m_pd3d12resourceTextureUpload = tex.m_presourceTextureUpload;
@@ -315,7 +315,7 @@ namespace gpu_directx12
 
             _construct_new(ptexture->m_pd3d12resourceTexture);
 
-      CreateDx12TextureFromKtx(ptexture, pdevice->m_pdevice, pcommandbufferLoading->m_pcommandlist, pktxtexture
+      CreateDx12TextureFromKtx(ptexture, pdevice->m_pd3d12device, pcommandbufferLoading->m_pcommandlist, pktxtexture
                                                 );
 
             //_construct_new(ptexture->m_pd3d12resourceTexture);

@@ -43,7 +43,7 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item < ::gpu_directx12::texture, ::gpu::texture >();
 
-   pfactory->add_factory_item < ::gpu_directx12::object, ::gpu::object >();
+   //pfactory->add_factory_item < ::gpu_directx12::object, ::gpu::object >();
 
    pfactory->add_factory_item < ::gpu_directx12::device, ::gpu::device >();
 

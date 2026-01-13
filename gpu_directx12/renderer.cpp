@@ -174,7 +174,8 @@ float4 main(PSInput input) : SV_TARGET {
       cbvHeapDesc.NumDescriptors = 2;
       cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
       cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-      HRESULT hrCreateDescriptorHeapCbv=pgpudevice->m_pdevice->CreateDescriptorHeap(&cbvHeapDesc, __interface_of(m_pheapCbv));
+      auto pd3d12device = pgpudevice->m_pd3d12device;
+      HRESULT hrCreateDescriptorHeapCbv = pd3d12device->CreateDescriptorHeap(&cbvHeapDesc, __interface_of(m_pheapCbv));
       pgpudevice->defer_throw_hresult(hrCreateDescriptorHeapCbv);
 
       if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
@@ -922,7 +923,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //   // 2. Create rasterizer state object
       //   //ID3D11RasterizerState* pRasterizerState = nullptr;
-      //   HRESULT hr = m_pgpudevice->m_pdevice->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
+      //   HRESULT hr = m_pgpudevice->m_pd3d12device->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
       //   if (FAILED(hr)) {
       //      // Handle error (e.g., log or exit)
       //      throw ::hresult_exception(hr);
@@ -1138,7 +1139,7 @@ float4 main(PSInput input) : SV_TARGET {
          bufferDesc.SampleDesc.Count = 1;
          bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-         HRESULT hr = pdevice->m_pdevice->CreateCommittedResource(
+         HRESULT hr = pdevice->m_pd3d12device->CreateCommittedResource(
             &heapProps,
             D3D12_HEAP_FLAG_NONE,
             &bufferDesc,
@@ -1162,9 +1163,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       //// Command allocator + list (reuse if created earlier)
       //::comptr < ID3D12CommandAllocator > pcommandallocatorQuick;
-      //pdevice->defer_throw_hresult(pdevice->m_pdevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __interface_of(pcommandallocatorQuick)));
+      //pdevice->defer_throw_hresult(pdevice->m_pd3d12device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __interface_of(pcommandallocatorQuick)));
       //::comptr < ID3D12GraphicsCommandList > pcommandlistQuick;
-      //pdevice->defer_throw_hresult(pdevice->m_pdevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, pcommandallocatorQuick, nullptr, __interface_of(pcommandlistQuick)));
+      //pdevice->defer_throw_hresult(pdevice->m_pd3d12device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, pcommandallocatorQuick, nullptr, __interface_of(pcommandlistQuick)));
 
       //pdevice->defer_throw_hresult(pcommandlistQuick->Close());
 
@@ -1175,7 +1176,7 @@ float4 main(PSInput input) : SV_TARGET {
       // Setup footprint
       UINT64 totalBytes = 0;
 
-      m_pgpucontext->m_pgpudevice->m_pdevice->GetCopyableFootprints(
+      m_pgpucontext->m_pgpudevice->m_pd3d12device->GetCopyableFootprints(
          &m_desc,
          0, 1, 0,
          &m_footprint, nullptr, nullptr, &totalBytes);
@@ -1346,7 +1347,7 @@ float4 main(PSInput input) : SV_TARGET {
       UINT w = 0;
       UINT h = 0;
       UINT s = 0;
-      GetTextureSizeInfo(pdevice->m_pdevice, presourceOffscreenTexture, w, h, s);
+      GetTextureSizeInfo(pdevice->m_pd3d12device, presourceOffscreenTexture, w, h, s);
       auto pcpubuffer = m_pgpucontext->m_pcpubuffer;
 
       if (pcpubuffer && w > 0 && h > 0 && s >0)
@@ -1525,7 +1526,7 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast < render_target_view > prendertargetview = prenderer->render_target();
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
       ::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
-      ID3D12Device* device = pgpudevice->m_pdevice;
+      ID3D12Device* device = pgpudevice->m_pd3d12device;
       //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
       ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_frame());
       ID3D12Resource *presourceOffscreenTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
@@ -1724,7 +1725,7 @@ float4 main(PSInput input) : SV_TARGET {
       //auto prendertargetview = prenderer->m_prendertargetview;
       //::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
       //::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
-      //ID3D11Device* device = pgpudevice->m_pdevice;
+      //ID3D11Device* device = pgpudevice->m_pd3d12device;
       //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
       //ID3D11Texture2D* offscreenTexture = poffscreenrendertargetview->m_ptextureOffscreen;
       //if (!device || !context || !offscreenTexture)
@@ -3389,7 +3390,7 @@ float4 main(PSInput input) : SV_TARGET {
       //::comptr<ID3D12Resource> vertexBuffer;
       //CreateImageBlendVertexBuffer(
         // vertexBuffer, vbView,
-         //pdevice->m_pdevice, quad, vertexCount);
+         //pdevice->m_pd3d12device, quad, vertexCount);
 
       //// Upload and bind vertex buffer (simplified)
       //// This assumes you're using an upload heap for the quad vertexes
@@ -4056,7 +4057,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //   // 2. Create rasterizer state object
       //   //ID3D11RasterizerState* pRasterizerState = nullptr;
-      //   HRESULT hr = m_pgpudevice->m_pdevice->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
+      //   HRESULT hr = m_pgpudevice->m_pd3d12device->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
       //   if (FAILED(hr)) {
       //      // Handle error (e.g., log or exit)
       //      throw ::hresult_exception(hr);
@@ -4388,7 +4389,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //   //   // 2. Create rasterizer state object
    //   //   //ID3D11RasterizerState* pRasterizerState = nullptr;
-   //   //   HRESULT hr = m_pgpudevice->m_pdevice->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
+   //   //   HRESULT hr = m_pgpudevice->m_pd3d12device->CreateRasterizerState(&rasterizerDesc, &m_prasterizerstate);
    //   //   if (FAILED(hr)) {
    //   //      // Handle error (e.g., log or exit)
    //   //      throw ::hresult_exception(hr);
@@ -4562,7 +4563,7 @@ float4 main(PSInput input) : SV_TARGET {
       //         // code simplicity and because there are very few verts to actually transfer.
       //         CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_UPLOAD);
       //         auto resourcedesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-      //         pdevice->defer_throw_hresult(pdevice->m_pdevice->CreateCommittedResource(
+      //         pdevice->defer_throw_hresult(pdevice->m_pd3d12device->CreateCommittedResource(
       //            &heapproperties,
       //            D3D12_HEAP_FLAG_NONE,
       //            &resourcedesc,

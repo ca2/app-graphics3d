@@ -262,7 +262,7 @@ namespace draw2d_nanovg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device();
+      auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
 
       auto pgpucontextNew = pgpudevice->main_draw2d_context();
 
@@ -346,7 +346,7 @@ namespace draw2d_nanovg
    bool graphics::opengl_create_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
    {
 
-      on_gpu_context_placement_change(rectanglePlacement);
+      on_gpu_context_placement_change(rectanglePlacement, m_puserinteraction->m_pacmewindowingwindow);
 
       //if (!draw2d_nanovg()->m_popenglcontext) {
       //   informationf("MS GDI - RegisterClass failed");
@@ -376,7 +376,7 @@ namespace draw2d_nanovg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device();
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteraction->m_pacmewindowingwindow);
 
 
       ::cast < ::gpu_opengl::context > pcontextOpengl = gpu_context();
@@ -581,7 +581,7 @@ namespace draw2d_nanovg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device();
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteraction->m_pacmewindowingwindow);
 
       auto pgpucontext = pgpudevice->main_context();
 
@@ -8568,7 +8568,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::cast < ::windowing::window > pwindow = m_puserinteraction->m_pacmewindowingwindow;
 
-            m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device()->create_window_context(pwindow);
+            m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device(m_puserinteraction->m_pacmewindowingwindow)->create_window_context(pwindow);
 
             //m_pgpucontextOutput->create_window_buffer(pwindow);
 

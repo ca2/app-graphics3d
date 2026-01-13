@@ -69,7 +69,7 @@ namespace gpu_directx12
 
          // Create upload buffer
          HRESULT hresultCreateCommittedResource =
-            pdevice->m_pdevice->CreateCommittedResource(
+            pdevice->m_pd3d12device->CreateCommittedResource(
                &heapProps,
                D3D12_HEAP_FLAG_NONE,
                &desc,
@@ -131,7 +131,7 @@ namespace gpu_directx12
 
             //pcontext->_construct_new(m_pd3d12resourceMemoryBuffer);
             //m_pd3d12resourceMemoryBuffer->create(&ibDesc);
-            ////auto hresultCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+            ////auto hresultCreateCommittedResource = pdevice->m_pd3d12device->CreateCommittedResource(
             ////   &defaultHeap, D3D12_HEAP_FLAG_NONE,
             ////   &ibDesc, D3D12_RESOURCE_STATE_COMMON,
             ////   nullptr, __interface_of(m_presourceMemoryBuffer));
@@ -140,7 +140,7 @@ namespace gpu_directx12
 
             ////CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
 
-            ////auto hresultCreateCommittedResourceUpload = pdevice->m_pdevice->CreateCommittedResource(
+            ////auto hresultCreateCommittedResourceUpload = pdevice->m_pd3d12device->CreateCommittedResource(
             ////   &uploadHeap, D3D12_HEAP_FLAG_NONE,
             ////   &ibDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
             ////   nullptr, __interface_of(m_presourceMemoryBufferUpload));
@@ -212,7 +212,7 @@ namespace gpu_directx12
 
       //::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
 
-      //auto pd3d11device = pgpudevice->m_pdevice;
+      //auto pd3d11device = pgpudevice->m_pd3d12device;
 
       //D3D11_SUBRESOURCE_DATA data{};
 

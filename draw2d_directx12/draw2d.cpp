@@ -67,14 +67,14 @@ namespace draw2d_directx12
    bool draw2d::lock_device()
    {
 
-      auto pdirectx12 = m_pgpudevice;
+      //auto pdirectx12 = m_pgpudevice;
 
-      if (!pdirectx12)
-      {
+      //if (!pdirectx12)
+      //{
 
-         return false;
+      //   return false;
 
-      }
+      //}
 
       //auto pmultithread = pdirectx12->m_pd2d1multithread.m_p;
 
@@ -95,7 +95,7 @@ namespace draw2d_directx12
    void draw2d::unlock_device()
    {
       
-      auto pdirectx12 = m_pgpudevice;
+      //auto pdirectx12 = m_pgpudevice;
 
       //auto pmultithread = pdirectx12->m_pd2d1multithread.m_p;
 

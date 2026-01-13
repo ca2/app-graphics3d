@@ -696,12 +696,12 @@ namespace gpu_vulkan
    //}
 
 
-   bool device::is_mesa()
-   {
+   //bool device::is_mesa()
+   //{
 
-      return m_bMesa;
+   //   return m_bMesa;
 
-   }
+   //}
 
 
    void device::_create_offscreen_window(const ::int_size& size)
@@ -769,6 +769,27 @@ namespace gpu_vulkan
 
    }
 
+
+   bool device::_is_ok() const
+   {
+
+      if (!m_pphysicaldevice)
+      {
+
+         return false;
+
+      }
+
+      if (m_vkdevice == VK_NULL_HANDLE)
+      {
+
+         return false;
+
+      }
+
+      return true;
+
+   }
 
    void device::initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproachParam, ::windowing::window * pwindow)
    {

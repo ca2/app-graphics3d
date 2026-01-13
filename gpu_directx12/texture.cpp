@@ -184,7 +184,7 @@ namespace gpu_directx12
       m_pd3d12resourceTexture->create(&heapproperties, eheap, &textureDesc, pclearvalue);
 
 
-      //HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+      //HRESULT hrCreateCommittedResource = pdevice->m_pd3d12device->CreateCommittedResource(
          
          //__interface_of(m_presourceTexture));
 
@@ -400,7 +400,7 @@ namespace gpu_directx12
    //
    //       }
    //
-   //       HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+   //       HRESULT hrCreateCommittedResource = pdevice->m_pd3d12device->CreateCommittedResource(
    //          &heapproperties,
    //          eheap,
    //          &textureDesc,
@@ -450,7 +450,7 @@ namespace gpu_directx12
    //
    //          auto descUpload = CD3DX12_RESOURCE_DESC::Buffer(presourceUploadBufferSize);
    //
-   //          pdevice->m_pdevice->CreateCommittedResource(
+   //          pdevice->m_pd3d12device->CreateCommittedResource(
    //             &propertiesUpload,
    //             D3D12_HEAP_FLAG_NONE,
    //             &descUpload,
@@ -616,7 +616,7 @@ namespace gpu_directx12
 
       ::cast<::gpu_directx12::device> pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-      auto device = pdevice->m_pdevice;
+      auto device = pdevice->m_pd3d12device;
 
       CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
 
@@ -753,7 +753,7 @@ namespace gpu_directx12
          rtvDesc.Texture2DArray.ArraySize = maximum(1,m_iLayerCount);
          rtvDesc.Texture2DArray.PlaneSlice = 0;
 
-         pdevice->m_pdevice->CreateRenderTargetView(ptexture->m_pd3d12resourceTexture->m_presource, &rtvDesc,
+         pdevice->m_pd3d12device->CreateRenderTargetView(ptexture->m_pd3d12resourceTexture->m_presource, &rtvDesc,
                                                     m_handleRenderTargetView);
 
 
@@ -807,14 +807,14 @@ namespace gpu_directx12
 
          }
                ::cast<device> pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
-         m_uRenderTargetViewIncrement = pdevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+         m_uRenderTargetViewIncrement = pdevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
          // 2. Create RTV descriptor heap
          D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
                rtvHeapDesc.NumDescriptors = m_iRenderTargetViewHandleCount;
          rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
          rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
          HRESULT hrCreateDescriptorHeap =
-            pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
+            pdevice->m_pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
 
          pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
          m_iRenderTargetViewHandle = 0;
@@ -880,7 +880,7 @@ namespace gpu_directx12
          }
 
 
-         //pdevice->m_pdevice->CreateRenderTargetView(m_pd3d12resourceTexture->m_presource, nullptr, m_handleRenderTargetView);
+         //pdevice->m_pd3d12device->CreateRenderTargetView(m_pd3d12resourceTexture->m_presource, nullptr, m_handleRenderTargetView);
 
 
       }
@@ -906,7 +906,7 @@ namespace gpu_directx12
       srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
       srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
-      HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(
+      HRESULT hrCreateDescriptorHeap = pdevice->m_pd3d12device->CreateDescriptorHeap(
          &srvHeapDesc, __interface_of(m_pheapShaderResourceView));
 
       pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
@@ -931,14 +931,14 @@ namespace gpu_directx12
 
       m_handleShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
 
-      pdevice->m_pdevice->CreateShaderResourceView(m_pd3d12resourceTexture->m_presource, &srvDesc, m_handleShaderResourceView);
+      pdevice->m_pd3d12device->CreateShaderResourceView(m_pd3d12resourceTexture->m_presource, &srvDesc, m_handleShaderResourceView);
 
       // Descriptor heap for Sampler
       D3D12_DESCRIPTOR_HEAP_DESC samplerHeapDesc = {};
       samplerHeapDesc.NumDescriptors = 1;
       samplerHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
       samplerHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      pdevice->m_pdevice->CreateDescriptorHeap(&samplerHeapDesc, __interface_of(m_pheapSampler));
+      pdevice->m_pd3d12device->CreateDescriptorHeap(&samplerHeapDesc, __interface_of(m_pheapSampler));
 
       D3D12_SAMPLER_DESC samplerDesc = {};
       samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
@@ -962,7 +962,7 @@ namespace gpu_directx12
 
       m_handleSampler = m_pheapSampler->GetCPUDescriptorHandleForHeapStart();
 
-      pdevice->m_pdevice->CreateSampler(&samplerDesc, m_handleSampler);
+      pdevice->m_pd3d12device->CreateSampler(&samplerDesc, m_handleSampler);
 
    }
 
@@ -1003,7 +1003,7 @@ namespace gpu_directx12
          CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
 
          // 3. Create depth stencil resource
-         pdevice->m_pdevice->CreateCommittedResource(
+         pdevice->m_pd3d12device->CreateCommittedResource(
             &heapproperties,
             D3D12_HEAP_FLAG_NONE,
             &depthDesc,
@@ -1016,7 +1016,7 @@ namespace gpu_directx12
          dsvHeapDesc.NumDescriptors = 1;
          dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
          dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-         HRESULT hrCreateDescriptorHeapDsv = pdevice->m_pdevice->CreateDescriptorHeap(
+         HRESULT hrCreateDescriptorHeapDsv = pdevice->m_pd3d12device->CreateDescriptorHeap(
             &dsvHeapDesc, __interface_of(m_pheapDepthStencilView));
          pdevice->defer_throw_hresult(hrCreateDescriptorHeapDsv);
 
@@ -1029,7 +1029,7 @@ namespace gpu_directx12
          m_handleDepthStencilView = m_pheapDepthStencilView->GetCPUDescriptorHandleForHeapStart();
          //::cast < device>pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
 
-         pdevice->m_pdevice->CreateDepthStencilView(
+         pdevice->m_pd3d12device->CreateDepthStencilView(
             m_presourceDepthStencilView, &dsvDesc,
             m_handleDepthStencilView);
 
@@ -1096,7 +1096,7 @@ namespace gpu_directx12
       //         rtvHeapDesc.NumDescriptors = 1;
       //         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
       //         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      //         auto hrCreateDescriptorHeap = pgpudevice->m_pdevice->CreateDescriptorHeap(
+      //         auto hrCreateDescriptorHeap = pgpudevice->m_pd3d12device->CreateDescriptorHeap(
       //            &rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
       //
       ////         m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -1110,13 +1110,13 @@ namespace gpu_directx12
       //         // Create a RTV for each frame.
       //         //for (UINT n = 0; n < FrameCount; n++)
       //         {
-      //         pgpudevice->m_pdevice->CreateRenderTargetView(
+      //         pgpudevice->m_pd3d12device->CreateRenderTargetView(
       //            m_presourceTexture, nullptr, m_handleRenderTargetView);
       //            //rtvHandle.Offset(1, m_rtvDescriptorSize);
       //         }
       //      }
       //
-            //auto pdevice = pgpudevice->m_pdevice;
+            //auto pdevice = pgpudevice->m_pd3d12device;
 
             //HRESULT hrCreateTexture = pdxgiswapchain->GetBuffer(0, __interface_of(m_ptextureOffscreen));
 
@@ -1158,7 +1158,7 @@ namespace gpu_directx12
             ////   //rtvHeapDesc.NumDescriptors = 1;
             ////   //rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
             ////   //rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-            ////   //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
+            ////   //HRESULT hrCreateDescriptorHeap = pdevice->m_pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_pheapRenderTargetView));
 
             ////   //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
@@ -1166,7 +1166,7 @@ namespace gpu_directx12
             ////   //m_handleRenderTargetView = m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart();
             ////   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-            ////   pdevice->m_pdevice->CreateRenderTargetView(m_presourceTexture, nullptr, m_handleRenderTargetView);
+            ////   pdevice->m_pd3d12device->CreateRenderTargetView(m_presourceTexture, nullptr, m_handleRenderTargetView);
 
             ////}
 
@@ -1179,7 +1179,7 @@ namespace gpu_directx12
             ////   //srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
             ////   //srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
             ////   //
-            ////   //HRESULT hrCreateDescriptorHeap = pdevice->m_pdevice->CreateDescriptorHeap(&srvHeapDesc, __interface_of(m_pheapShaderResourceView));
+            ////   //HRESULT hrCreateDescriptorHeap = pdevice->m_pd3d12device->CreateDescriptorHeap(&srvHeapDesc, __interface_of(m_pheapShaderResourceView));
 
             ////   //pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
@@ -1193,7 +1193,7 @@ namespace gpu_directx12
 
             ////   //m_handleShaderResourceView = m_pheapShaderResourceView->GetCPUDescriptorHandleForHeapStart();
 
-            ////   //pdevice->m_pdevice->CreateShaderResourceView(m_presourceTexture, &srvDesc, m_handleShaderResourceView);
+            ////   //pdevice->m_pd3d12device->CreateShaderResourceView(m_presourceTexture, &srvDesc, m_handleShaderResourceView);
 
             ////}
 
@@ -1224,7 +1224,7 @@ namespace gpu_directx12
 //
 //      ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 //
-//      pdevice->m_pdevice->CreateCommittedResource(
+//      pdevice->m_pd3d12device->CreateCommittedResource(
 //         &heapProps,
 //         D3D12_HEAP_FLAG_NONE,
 //         &bufDesc,
@@ -1262,7 +1262,7 @@ namespace gpu_directx12
    //   // Compute layout
    //   D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
    //   UINT64 totalBytes = 0;
-   //   pdevice->m_pdevice->GetCopyableFootprints(
+   //   pdevice->m_pd3d12device->GetCopyableFootprints(
    //      &texDesc, 0, 1, 0,
    //      &footprint, nullptr, nullptr, &totalBytes
    //   );
@@ -1273,7 +1273,7 @@ namespace gpu_directx12
    //   //CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
    //   //CD3DX12_RESOURCE_DESC bufDesc = CD3DX12_RESOURCE_DESC::Buffer(totalBytes);
 
-   //   //pdevice->m_pdevice->CreateCommittedResource(
+   //   //pdevice->m_pd3d12device->CreateCommittedResource(
    //   //   &heapProps,
    //   //   D3D12_HEAP_FLAG_NONE,
    //   //   &bufDesc,
@@ -1356,7 +1356,7 @@ namespace gpu_directx12
    //   CD3DX12_RESOURCE_DESC   bufferDesc =
    //      CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
 
-   //   pdevice->m_pdevice->CreateCommittedResource(
+   //   pdevice->m_pd3d12device->CreateCommittedResource(
    //      &heapProps,
    //      D3D12_HEAP_FLAG_NONE,
    //      &bufferDesc,
@@ -1415,7 +1415,7 @@ namespace gpu_directx12
          CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
 
       HRESULT hrCreateCommittedResource = 
-         pdevice->m_pdevice->CreateCommittedResource(
+         pdevice->m_pd3d12device->CreateCommittedResource(
          &heapProps,
          D3D12_HEAP_FLAG_NONE,
          &bufferDesc,
@@ -1429,7 +1429,7 @@ namespace gpu_directx12
 
       m_descTexture = presource->GetDesc();
 
-      pdevice->m_pdevice->GetCopyableFootprints(
+      pdevice->m_pd3d12device->GetCopyableFootprints(
          &m_descTexture,      // texture description
          0,             // first subresource
          1,             // num subresources
@@ -1487,7 +1487,7 @@ namespace gpu_directx12
 
       pcontext->_construct_new(m_pd3d12resourceUpload);
 
-      pdevice->m_pdevice->CreateCommittedResource(&propertiesUpload, D3D12_HEAP_FLAG_NONE, &descUpload,
+      pdevice->m_pd3d12device->CreateCommittedResource(&propertiesUpload, D3D12_HEAP_FLAG_NONE, &descUpload,
                                                   D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
                                                   __interface_of(m_pd3d12resourceUpload->m_presource));
 
@@ -1560,7 +1560,7 @@ namespace gpu_directx12
       // CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
       // CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
 
-      // HRESULT hrCreateCommittedResource = pdevice->m_pdevice->CreateCommittedResource(
+      // HRESULT hrCreateCommittedResource = pdevice->m_pd3d12device->CreateCommittedResource(
       //    &heapProps, D3D12_HEAP_FLAG_NONE, &bufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
       //    IID_PPV_ARGS(&m_presourceUpload));
 
@@ -1568,7 +1568,7 @@ namespace gpu_directx12
 
       // m_descTexture = presource->GetDesc();
 
-      // pdevice->m_pdevice->GetCopyableFootprints(&m_descTexture, // texture description
+      // pdevice->m_pd3d12device->GetCopyableFootprints(&m_descTexture, // texture description
       //                                           0, // first subresource
       //                                           1, // num subresources
       //                                           0, // base offset
@@ -1925,7 +1925,7 @@ namespace gpu_directx12
       D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &sigBlob, &errorBlob);
 
       ::cast<::gpu_directx12::device> pdevice = m_ptexture->m_pgpurenderer->m_pgpucontext->m_pgpudevice;
-      auto hrCreateRootSignature =pdevice->m_pdevice->CreateRootSignature(
+      auto hrCreateRootSignature =pdevice->m_pd3d12device->CreateRootSignature(
          0, sigBlob->GetBufferPointer(), sigBlob->GetBufferSize(),
                                               __interface_of(m_prootsignatureMipMap));
       pdevice->defer_throw_hresult(hrCreateRootSignature);
@@ -1954,7 +1954,7 @@ namespace gpu_directx12
       psoDesc.CS = CD3DX12_SHADER_BYTECODE(pblob);
 
       auto hrCreateComputePipelineState =
-         pdevice->m_pdevice->CreateComputePipelineState(&psoDesc, __interface_of(m_ppipelinestateMipMap));
+         pdevice->m_pd3d12device->CreateComputePipelineState(&psoDesc, __interface_of(m_ppipelinestateMipMap));
       pdevice->defer_throw_hresult(hrCreateComputePipelineState);
 
       m_iLayerCount = m_ptexture->m_textureattributes.m_iLayerCount;
@@ -1972,11 +1972,11 @@ namespace gpu_directx12
 
       
       auto hrCreateDescriptorHeap =
-         pdevice->m_pdevice->CreateDescriptorHeap(&heapDesc, __interface_of(m_pheapMipMap));
+         pdevice->m_pd3d12device->CreateDescriptorHeap(&heapDesc, __interface_of(m_pheapMipMap));
       pdevice->defer_throw_hresult(hrCreateDescriptorHeap);
 
       UINT descriptorSize =
-         pdevice->m_pdevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+         pdevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
       m_cpuBase = m_pheapMipMap->GetCPUDescriptorHandleForHeapStart();
       m_gpuBase = m_pheapMipMap->GetGPUDescriptorHandleForHeapStart();
@@ -2001,7 +2001,7 @@ namespace gpu_directx12
             auto cpu = m_cpuBase;
             cpu.ptr += i * descriptorSize;
 
-            pdevice->m_pdevice->CreateShaderResourceView(m_ptexture->m_pd3d12resourceTexture->m_presource, &srv, cpu);
+            pdevice->m_pd3d12device->CreateShaderResourceView(m_ptexture->m_pd3d12resourceTexture->m_presource, &srv, cpu);
 
             m_handleaShaderResourceView.ø(i) = m_gpuBase;
             m_handleaShaderResourceView.ø(i).ptr += i * descriptorSize;
@@ -2027,7 +2027,7 @@ namespace gpu_directx12
             auto cpu = m_cpuBase;
             cpu.ptr += (uavBase + i) * descriptorSize;
 
-            pdevice->m_pdevice->CreateUnorderedAccessView(m_ptexture->m_pd3d12resourceTexture->m_presource, nullptr, &uav, cpu);
+            pdevice->m_pd3d12device->CreateUnorderedAccessView(m_ptexture->m_pd3d12resourceTexture->m_presource, nullptr, &uav, cpu);
 
             m_handleaUnorderedAccessView.ø(i) = m_gpuBase;
             m_handleaUnorderedAccessView.ø(i).ptr += (uavBase + i) * descriptorSize;

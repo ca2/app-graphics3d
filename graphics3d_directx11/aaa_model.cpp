@@ -147,7 +147,7 @@
 //
 //      ::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
 //
-//      auto pd3d11device = pgpudevice->m_pdevice;
+//      auto pd3d11device = pgpudevice->m_pd3d12device;
 //
 //      auto hresult = pd3d11device->CreateBuffer(&bd, &initData, &m_pbufferVertex);
 //
@@ -213,7 +213,7 @@
 //
 //         ::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
 //
-//         auto hresult = pgpudevice->m_pdevice->CreateBuffer(&bd, &initData, &m_pbufferIndice);
+//         auto hresult = pgpudevice->m_pd3d12device->CreateBuffer(&bd, &initData, &m_pbufferIndice);
 //
 //         if (FAILED(hresult))
 //         {

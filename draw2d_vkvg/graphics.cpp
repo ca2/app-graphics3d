@@ -257,7 +257,7 @@ namespace draw2d_vkvg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device();
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteraction->m_pacmewindowingwindow);
 
       auto pgpucontextNew = pgpudevice->main_draw2d_context();
 
@@ -340,7 +340,7 @@ namespace draw2d_vkvg
    bool graphics::vulkan_create_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
    {
 
-      on_gpu_context_placement_change(rectanglePlacement);
+      on_gpu_context_placement_change(rectanglePlacement,  m_puserinteraction->m_pacmewindowingwindow);
 
       //if (!draw2d_vkvg()->m_pvulkancontext) {
       //   informationf("MS GDI - RegisterClass failed");
@@ -370,7 +370,7 @@ namespace draw2d_vkvg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device();
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteraction->m_pacmewindowingwindow);
 
 
       ::cast < ::gpu_vulkan::context > pcontextVulkan = gpu_context();
@@ -575,7 +575,7 @@ namespace draw2d_vkvg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device();
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteraction->m_pacmewindowingwindow);
 
       auto pgpucontext = pgpudevice->main_context();
 
@@ -5073,36 +5073,36 @@ namespace draw2d_vkvg
    }
 
 
-#if defined(WINDOWS_DESKTOP)
-
-   /////////////////////////////////////////////////////////////////////////////
-   // special graphics drawing primitives/helpers
-
-   ::draw2d::brush* graphics::GetHalftoneBrush()
-   {
-      /*      ::aura::LockGlobals(CRIT_HALFTONEBRUSH);
-            if (gen_HalftoneBrush == nullptr)
-            {
-               unsigned short grayPattern[8];
-               for (double i = 0; i < 8; i++)
-                  grayPattern[i] = (unsigned short)(0x5555 << (i & 1));
-               HBITMAP grayBitmap = CreateBitmap(8, 8, 1, 1, grayPattern);
-               if (grayBitmap != nullptr)
-               {
-                  gen_HalftoneBrush = ::CreatePatternBrush(grayBitmap);
-                  ::DeleteObject(grayBitmap);
-               }
-            }
-            if (!gen_WingdixTerm)
-               gen_WingdixTerm = (char)!atexit(&__win_gdi_x_term);
-            ::aura::UnlockGlobals(CRIT_HALFTONEBRUSH);
-
-      //      return ::draw2d_vkvg::brush::from_handle(papp, gen_HalftoneBrush);*/
-      return nullptr;
-   }
-
-
-#endif
+//#if defined(WINDOWS_DESKTOP)
+//
+//   /////////////////////////////////////////////////////////////////////////////
+//   // special graphics drawing primitives/helpers
+//
+//   ::draw2d::brush* graphics::GetHalftoneBrush()
+//   {
+//      /*      ::aura::LockGlobals(CRIT_HALFTONEBRUSH);
+//            if (gen_HalftoneBrush == nullptr)
+//            {
+//               unsigned short grayPattern[8];
+//               for (double i = 0; i < 8; i++)
+//                  grayPattern[i] = (unsigned short)(0x5555 << (i & 1));
+//               HBITMAP grayBitmap = CreateBitmap(8, 8, 1, 1, grayPattern);
+//               if (grayBitmap != nullptr)
+//               {
+//                  gen_HalftoneBrush = ::CreatePatternBrush(grayBitmap);
+//                  ::DeleteObject(grayBitmap);
+//               }
+//            }
+//            if (!gen_WingdixTerm)
+//               gen_WingdixTerm = (char)!atexit(&__win_gdi_x_term);
+//            ::aura::UnlockGlobals(CRIT_HALFTONEBRUSH);
+//
+//      //      return ::draw2d_vkvg::brush::from_handle(papp, gen_HalftoneBrush);*/
+//      return nullptr;
+//   }
+//
+//
+//#endif
 
    //void graphics::DrawDragRect(const ::double_rectangle & rectangle, const ::int_size & size, const ::double_rectangle & lpRectLast, const ::int_size & sizeLast, ::draw2d::brush* pBrush, ::draw2d::brush* pBrushLast)
    //{

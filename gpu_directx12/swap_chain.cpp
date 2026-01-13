@@ -116,7 +116,7 @@ namespace gpu_directx12
       //   blendDesc.RenderTarget[0].BlendEnable = FALSE;  // Disable blending
       //   blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-      //   HRESULT hr = pgpudevice->m_pdevice->CreateBlendState(&blendDesc, &m_pblendstateDisabled);
+      //   HRESULT hr = pgpudevice->m_pd3d12device->CreateBlendState(&blendDesc, &m_pblendstateDisabled);
       //   ::defer_throw_hresult(hr);
 
       //}
@@ -134,7 +134,7 @@ namespace gpu_directx12
       // 
       //   ::cast < ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
 
-      //   pgpudevice->m_pdevice->CreateRenderTargetView(
+      //   pgpudevice->m_pd3d12device->CreateRenderTargetView(
       //      m_ptextureSwapChain, nullptr, &m_prendertargetviewSwapChain);
 
       //}
@@ -358,12 +358,12 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
    }
 
 
-   void swap_chain::initialize_swap_chain_window(::gpu::context* pgpucontext, ::windowing::window* pwindow)
+   void swap_chain::initialize_swap_chain_window(::gpu::context* pgpucontext, ::acme::windowing::window* pacmewindowingwindow)
    {
 
-      ::gpu::swap_chain::initialize_swap_chain_window(pgpucontext, pwindow);
+      ::gpu::swap_chain::initialize_swap_chain_window(pgpucontext, pacmewindowingwindow);
 
-      ::cast < ::windowing_win32::window > pwin32window = pwindow;
+      ::cast < ::windowing_win32::window > pwin32window = pacmewindowingwindow;
 
       ::cast < context > pcontext = pgpucontext;
 
@@ -389,6 +389,27 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
    }
 
+
+      int swap_chain::swap_chain_frame_count() 
+      {
+
+         UINT frame_count = 0;
+         DXGI_SWAP_CHAIN_DESC1 desc;
+         HRESULT hr = m_pdxgiswapchain->GetDesc1(&desc);
+
+         if (SUCCEEDED(hr))
+         {
+             frame_count= desc.BufferCount;
+            // Use frame_count here
+         }
+         else
+         {
+            throw ::exception(error_failed);
+         }
+
+         return frame_count;
+      
+      }
 
 
 } // namespace gpu_directx12

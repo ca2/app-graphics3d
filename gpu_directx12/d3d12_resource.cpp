@@ -114,7 +114,10 @@ namespace gpu_directx12
       //if (m_state.m_resourcestates == )
       ::cast<::gpu_directx12::device> pdevice = m_pcontext->m_pgpudevice;
       
-      auto hrCreateCommittedResource =pdevice->m_pdevice->CreateCommittedResource(
+      auto pd3d12device = pdevice->m_pd3d12device;
+
+      auto hrCreateCommittedResource =
+         pd3d12device->CreateCommittedResource(
          pHeapProperties, HeapFlags,
          pDesc, m_state.m_resourcestates,
          pOptimizedClearValue, __interface_of(m_presource));
@@ -190,7 +193,7 @@ namespace gpu_directx12
 
    //   ::cast < device > pdevice = m_pcontext->m_pgpudevice;
 
-   //   pdevice->m_pdevice->CreateCommittedResource(
+   //   pdevice->m_pd3d12device->CreateCommittedResource(
    //      &heapProps,
    //      D3D12_HEAP_FLAG_NONE,
    //      &bufferDesc,

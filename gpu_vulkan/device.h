@@ -106,6 +106,9 @@ namespace gpu_vulkan
       ~device() override;
 
 
+      bool _is_ok() const override;
+
+
       void initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproach, ::windowing::window *pwindow) override;
       void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::int_rectangle& rectanglePlacement) override;
 
@@ -204,7 +207,7 @@ namespace gpu_vulkan
 
       //void make_current() override;
 
-      bool is_mesa() override;
+      //bool is_mesa() override;
 
       //void render();
 

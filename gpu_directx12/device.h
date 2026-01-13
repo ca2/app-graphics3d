@@ -27,7 +27,7 @@ namespace gpu_directx12
 
 #endif
 
-      comptr<ID3D12Device>                            m_pdevice;
+      comptr<ID3D12Device>                            m_pd3d12device;
       //comptr<ID3D11Device1>                           m_pdevice1;
       //comptr<IDXGIDevice>                             m_pdxgidevice;
       comptr<IDXGIFactory4>                           m_pdxgifactory4;
@@ -140,7 +140,7 @@ namespace gpu_directx12
       ~device() override;
 
 
-
+      bool _is_ok() const override;
 
       void list_dred_breadcrumbs();
 
@@ -148,7 +148,7 @@ namespace gpu_directx12
 
       virtual void get_debug_interface(UINT& dxgiFactoryFlags);
 
-      virtual void initialize_swap_chain(::windowing::window* pwindow);
+      //virtual void initialize_swap_chain(::windowing::window* pwindow);
       virtual void initialize_cpu_buffer(const ::int_size & size);
       
 
@@ -245,7 +245,7 @@ namespace gpu_directx12
 
       //void make_current() override;
 
-      bool is_mesa() override;
+      //bool is_mesa() override;
 
       //void render();
 

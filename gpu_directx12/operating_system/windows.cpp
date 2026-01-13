@@ -10,33 +10,33 @@ namespace gpu_directx12
 {
 
 
-   HRESULT physical_device::createWindowSurface(::windowing::window* pwindowParam)
-   {
+   //HRESULT physical_device::createWindowSurface(::acme::windowing::window* pwindowParam)
+   //{
 
-      //if (m_vksurfacekhr)
-      //{
+   //   //if (m_vksurfacekhr)
+   //   //{
 
-      //   return VK_SUCCESS;
+   //   //   return VK_SUCCESS;
 
-      //}
+   //   //}
 
-      //::cast <::gpu_directx12::approach > pgpu = m_pgpuapproach;
+   //   //::cast <::gpu_directx12::approach > pgpu = m_pgpuapproach;
 
-      //::cast < ::windowing_win32::window > pwindow = pwindowParam;
-      //// Surface creation
-      //VkSurfaceKHR surface;
-      //VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {
-      //    .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
-      //    .hinstance = (HINSTANCE)::system()->m_hinstanceThis,
-      //    .hwnd = pwindow->m_hwnd
-      //};
-      //auto result = vkCreateWin32SurfaceKHR(pgpu->m_vkinstance, &surfaceCreateInfo, NULL, &m_vksurfacekhr);
+   //   //::cast < ::windowing_win32::window > pwindow = pwindowParam;
+   //   //// Surface creation
+   //   //VkSurfaceKHR surface;
+   //   //VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {
+   //   //    .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+   //   //    .hinstance = (HINSTANCE)::system()->m_hinstanceThis,
+   //   //    .hwnd = pwindow->m_hwnd
+   //   //};
+   //   //auto result = vkCreateWin32SurfaceKHR(pgpu->m_vkinstance, &surfaceCreateInfo, NULL, &m_vksurfacekhr);
 
-      //return result;
+   //   //return result;
 
-      return S_OK;
+   //   return S_OK;
 
-   }
+   //}
 
 
 } // namespace gpu_directx12

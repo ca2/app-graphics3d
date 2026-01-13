@@ -81,12 +81,12 @@ namespace gpu_directx12
    }
 
 
-   bool device::is_mesa()
-   {
+   //bool device::is_mesa()
+   //{
 
-      return m_bMesa;
+   //   return m_bMesa;
 
-   }
+   //}
 
 
    void device::_create_offscreen_window(const ::int_size& size)
@@ -160,7 +160,7 @@ namespace gpu_directx12
 
       ::gpu::device::initialize_gpu_device_for_swap_chain(pgpuapproachParam, pwindow);
 
-      initialize_swap_chain(pwindow);
+      //initialize_swap_chain(pwindow);
 
       ::cast < approach > pgpuapproach = pgpuapproachParam;
 
@@ -177,10 +177,10 @@ namespace gpu_directx12
 
       m_pphysicaldevice = pphysicaldevice;
 
-      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      if (!m_pd3d12device)
       {
-
-         m_pphysicaldevice->createWindowSurface(pwindow);
+         
+         _create_d3d12_device();
 
       }
 
@@ -1092,70 +1092,75 @@ namespace gpu_directx12
    }
 
 
-   void device::initialize_swap_chain(::windowing::window* pwindow)
+   //void device::initialize_swap_chain(::windowing::window* pwindow)
+   //{
+
+   //   ::cast < ::windowing_win32::window > pwin32window = pwindow;
+
+   //   auto r = pwindow->get_window_rectangle();
+
+   //   if (!m_pd3d12device)
+   //   {
+
+   //      _create_d3d12_device();
+
+   //   }
+
+
+   //   //if (m_bUseWarpDevice)
+   //   //{
+
+   //   //   ::comptr<IDXGIAdapter> warpAdapter;
+
+   //   //   ::defer_throw_hresult(
+   //   //      m_pdxgifactory4->EnumWarpAdapter(__interface_of(warpAdapter)));
+
+   //   //   ::defer_throw_hresult(D3D12CreateDevice(
+   //   //      warpAdapter,
+   //   //      D3D_FEATURE_LEVEL_11_0,
+   //   //      __interface_of(m_pdevice)
+   //   //   ));
+
+   //   //}
+   //   //else
+   //   //{
+
+   //   //   ::comptr < IDXGIAdapter1> hardwareAdapter;
+
+   //   //   GetHardwareAdapter(m_pdxgifactory4, &hardwareAdapter);
+
+   //   //   ::defer_throw_hresult(D3D12CreateDevice(
+   //   //      hardwareAdapter,
+   //   //      D3D_FEATURE_LEVEL_11_0,
+   //   //      __interface_of(m_pdevice)
+   //   //   ));
+
+   //   //}
+
+   //   //if (1)
+   //   //{
+
+   //   //   ::comptr<ID3D12InfoQueue> infoQueue;
+
+   //   //   m_pdevice.as(infoQueue);
+
+   //   //   if (infoQueue)
+   //   //   {
+   //   //      infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+   //   //      infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+   //   //      //infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
+   //   //   }
+
+   //   //}
+
+
+   //}
+
+
+   bool device::_is_ok() const
    {
 
-      ::cast < ::windowing_win32::window > pwin32window = pwindow;
-
-      auto r = pwindow->get_window_rectangle();
-
-      if (!m_pdevice)
-      {
-
-         _create_d3d12_device();
-
-      }
-
-
-      //if (m_bUseWarpDevice)
-      //{
-
-      //   ::comptr<IDXGIAdapter> warpAdapter;
-
-      //   ::defer_throw_hresult(
-      //      m_pdxgifactory4->EnumWarpAdapter(__interface_of(warpAdapter)));
-
-      //   ::defer_throw_hresult(D3D12CreateDevice(
-      //      warpAdapter,
-      //      D3D_FEATURE_LEVEL_11_0,
-      //      __interface_of(m_pdevice)
-      //   ));
-
-      //}
-      //else
-      //{
-
-      //   ::comptr < IDXGIAdapter1> hardwareAdapter;
-
-      //   GetHardwareAdapter(m_pdxgifactory4, &hardwareAdapter);
-
-      //   ::defer_throw_hresult(D3D12CreateDevice(
-      //      hardwareAdapter,
-      //      D3D_FEATURE_LEVEL_11_0,
-      //      __interface_of(m_pdevice)
-      //   ));
-
-      //}
-
-      //if (1)
-      //{
-
-      //   ::comptr<ID3D12InfoQueue> infoQueue;
-
-      //   m_pdevice.as(infoQueue);
-
-      //   if (infoQueue)
-      //   {
-      //      infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
-      //      infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
-      //      //infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
-      //   }
-
-      //}
-
-      ::cast < context > pcontextMain = main_context();
-
-      pcontextMain->initialize_gpu_context_swap_chain(this, pwindow);
+      return m_pd3d12device.is_set();
 
    }
 
@@ -1332,7 +1337,7 @@ namespace gpu_directx12
       //      );
 
 
-      if (!m_pdevice)
+      if (!m_pd3d12device)
       {
 
          _create_d3d12_device();
@@ -1345,7 +1350,7 @@ namespace gpu_directx12
    void device::_create_d3d12_device()
    {
 
-      if (!m_pdevice)
+      if (!m_pd3d12device)
       {
 
 
@@ -1403,7 +1408,7 @@ namespace gpu_directx12
             ::defer_throw_hresult(D3D12CreateDevice(
                warpAdapter,
                D3D_FEATURE_LEVEL_11_0,
-               __interface_of(m_pdevice)
+               __interface_of(m_pd3d12device)
             ));
          }
          else
@@ -1414,13 +1419,13 @@ namespace gpu_directx12
             ::defer_throw_hresult(D3D12CreateDevice(
                hardwareAdapter,
                D3D_FEATURE_LEVEL_11_0,
-               __interface_of(m_pdevice)
+               __interface_of(m_pd3d12device)
             ));
          }
 
          ::comptr<ID3D12InfoQueue> infoQueue;
 
-         m_pdevice.as(infoQueue);
+         m_pd3d12device.as(infoQueue);
 
          if (infoQueue)
          {
