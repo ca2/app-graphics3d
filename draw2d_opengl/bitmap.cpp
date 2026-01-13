@@ -681,16 +681,18 @@ namespace draw2d_opengl
       PBuffer = glXCreatePbuffer(dpy, fbc[0], pbAttrib);
       PBufferCtx = glXCreateNewContext(dpy, fbc[0], GLX_RGBA_TYPE, 0, GL_TRUE);
 
-      cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen), vi->visual, AllocNone);
-      swa.colormap = cmap;
-      swa.border_pixel = 0;
-      swa.event_mask = ExposureMask | ButtonPressMask | StructureNotifyMask;
-      win = XCreateWindow(dpy, RootWindow(dpy, vi->screen), 0, 0, WIDTH, HEIGHT,
-                          0, vi->depth, InputOutput, vi->visual,
-                          CWBorderPixel | CWColormap | CWEventMask,
-                          &swa);
-
+      // cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen), vi->visual, AllocNone);
+      // swa.colormap = cmap;
+      // swa.border_pixel = 0;
+      // swa.event_mask = ExposureMask | ButtonPressMask | StructureNotifyMask;
+      // win = XCreateWindow(dpy, RootWindow(dpy, vi->screen), 0, 0, WIDTH, HEIGHT,
+      //                     0, vi->depth, InputOutput, vi->visual,
+      //                     CWBorderPixel | CWColormap | CWEventMask,
+      //                     &swa);
+      //
       glXMakeContextCurrent(dpy, PBuffer, PBuffer, PBufferCtx);
+
+      return true;
 
 #else
 

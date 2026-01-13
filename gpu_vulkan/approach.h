@@ -272,7 +272,7 @@ namespace gpu_vulkan
 
 //      void engine_on_frame_context_initialization(::gpu::context* pgpucontext) override;
 
-      void on_create_window(::acme::windowing::window* pwindow) override; 
+      void gpu_on_create_window(::acme::windowing::window* pwindow) override;
 
 
    };

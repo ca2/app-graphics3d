@@ -21,9 +21,10 @@ namespace gpu_vulkan
 {
 
 
-
-   void approach::on_create_window(::acme::windowing::window* pwindowParam)
+   void approach::gpu_on_create_window(::acme::windowing::window* pacmewindowingwindow)
    {
+
+      ::gpu::bred_approach::gpu_on_create_window(pacmewindowingwindow);
 
       // ::cast < ::windowing_x11::window > pwindow = pwindowParam;
       //
