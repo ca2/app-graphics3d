@@ -307,16 +307,16 @@ namespace gpu_vulkan
 //         imageCI.tiling = VK_IMAGE_TILING_OPTIMAL;
 //         imageCI.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 //         imageCI.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-//         VK_CHECK_RESULT(vkCreateImage(pgpucontext->logicalDevice(), &imageCI, nullptr, &pgputexturePrefilteredCube->m_vkimage));
+//         VkCheckResult(vkCreateImage(pgpucontext->logicalDevice(), &imageCI, nullptr, &pgputexturePrefilteredCube->m_vkimage));
 //         VkMemoryAllocateInfo memAlloc = vkinit::memoryAllocateInfo();
 //         VkMemoryRequirements memReqs;
 //         vkGetImageMemoryRequirements(pgpucontext->logicalDevice(), pgputexturePrefilteredCube->m_vkimage, &memReqs);
 //         memAlloc.allocationSize = memReqs.size;
 //         memAlloc.memoryTypeIndex =
 //            pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//         VK_CHECK_RESULT(
+//         VkCheckResult(
 //            vkAllocateMemory(pgpucontext->logicalDevice(), &memAlloc, nullptr, &pgputexturePrefilteredCube->m_vkdevicememory));
-//         VK_CHECK_RESULT(vkBindImageMemory(pgpucontext->logicalDevice(), pgputexturePrefilteredCube->m_vkimage,
+//         VkCheckResult(vkBindImageMemory(pgpucontext->logicalDevice(), pgputexturePrefilteredCube->m_vkimage,
 //                                           pgputexturePrefilteredCube->m_vkdevicememory, 0));
 //         // Image view
 //         VkImageViewCreateInfo viewCI = vkinit::imageViewCreateInfo();
@@ -327,7 +327,7 @@ namespace gpu_vulkan
 //         viewCI.subresourceRange.levelCount = numMips;
 //         viewCI.subresourceRange.layerCount = 6;
 //         viewCI.image = pgputexturePrefilteredCube->m_vkimage;
-//         VK_CHECK_RESULT(
+//         VkCheckResult(
 //            vkCreateImageView(pgpucontext->logicalDevice(), &viewCI, nullptr, &pgputexturePrefilteredCube->m_vkimageview));
 //         // Sampler
 //         VkSamplerCreateInfo samplerCI = vkinit::samplerCreateInfo();
@@ -340,7 +340,7 @@ namespace gpu_vulkan
 //         samplerCI.minLod = 0.0f;
 //         samplerCI.maxLod = static_cast<float>(numMips);
 //         samplerCI.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-//         VK_CHECK_RESULT(
+//         VkCheckResult(
 //            vkCreateSampler(pgpucontext->logicalDevice(), &samplerCI, nullptr, &pgputexturePrefilteredCube->m_vksamplerDedicated));
 //
 //         pgputexturePrefilteredCube->m_descriptor3.imageView = pgputexturePrefilteredCube->m_vkimageview;
@@ -392,7 +392,7 @@ namespace gpu_vulkan
 //         renderPassCI.dependencyCount = 2;
 //         renderPassCI.pDependencies = dependencies.data();
 //         VkRenderPass renderpass;
-//         VK_CHECK_RESULT(vkCreateRenderPass(pgpucontext->logicalDevice(), &renderPassCI, nullptr, &renderpass));
+//         VkCheckResult(vkCreateRenderPass(pgpucontext->logicalDevice(), &renderPassCI, nullptr, &renderpass));
 //
 //         struct
 //         {
@@ -418,7 +418,7 @@ namespace gpu_vulkan
 //            imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 //            imageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 //            imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-//            VK_CHECK_RESULT(vkCreateImage(pgpucontext->logicalDevice(), &imageCreateInfo, nullptr, &offscreen.image));
+//            VkCheckResult(vkCreateImage(pgpucontext->logicalDevice(), &imageCreateInfo, nullptr, &offscreen.image));
 //
 //            VkMemoryAllocateInfo memAlloc = vkinit::memoryAllocateInfo();
 //            VkMemoryRequirements memReqs;
@@ -426,8 +426,8 @@ namespace gpu_vulkan
 //            memAlloc.allocationSize = memReqs.size;
 //            memAlloc.memoryTypeIndex =
 //               pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//            VK_CHECK_RESULT(vkAllocateMemory(pgpucontext->logicalDevice(), &memAlloc, nullptr, &offscreen.memory));
-//            VK_CHECK_RESULT(vkBindImageMemory(pgpucontext->logicalDevice(), offscreen.image, offscreen.memory, 0));
+//            VkCheckResult(vkAllocateMemory(pgpucontext->logicalDevice(), &memAlloc, nullptr, &offscreen.memory));
+//            VkCheckResult(vkBindImageMemory(pgpucontext->logicalDevice(), offscreen.image, offscreen.memory, 0));
 //
 //            VkImageViewCreateInfo colorImageView = vkinit::imageViewCreateInfo();
 //            colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -440,7 +440,7 @@ namespace gpu_vulkan
 //            colorImageView.subresourceRange.baseArrayLayer = 0;
 //            colorImageView.subresourceRange.layerCount = 1;
 //            colorImageView.image = offscreen.image;
-//            VK_CHECK_RESULT(vkCreateImageView(pgpucontext->logicalDevice(), &colorImageView, nullptr, &offscreen.view));
+//            VkCheckResult(vkCreateImageView(pgpucontext->logicalDevice(), &colorImageView, nullptr, &offscreen.view));
 //
 //            VkFramebufferCreateInfo fbufCreateInfo = vkinit::framebufferCreateInfo();
 //            fbufCreateInfo.renderPass = renderpass;
@@ -449,7 +449,7 @@ namespace gpu_vulkan
 //            fbufCreateInfo.width = dim;
 //            fbufCreateInfo.height = dim;
 //            fbufCreateInfo.layers = 1;
-//            VK_CHECK_RESULT(
+//            VkCheckResult(
 //               vkCreateFramebuffer(pgpucontext->logicalDevice(), &fbufCreateInfo, nullptr, &offscreen.framebuffer));
 //
 //            // VkCommandBuffer layoutCmd = m_device.createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
@@ -470,7 +470,7 @@ namespace gpu_vulkan
 //         };
 //         VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI =
 //            vkinit::descriptorSetLayoutCreateInfo(setLayoutBindings);
-//         VK_CHECK_RESULT(vkCreateDescriptorSetLayout(pgpucontext->logicalDevice(), &descriptorsetlayoutCI, nullptr,
+//         VkCheckResult(vkCreateDescriptorSetLayout(pgpucontext->logicalDevice(), &descriptorsetlayoutCI, nullptr,
 //                                                     &descriptorsetlayout));
 //
 //         // Descriptor Pool
@@ -478,14 +478,14 @@ namespace gpu_vulkan
 //         ::array_base<VkDescriptorPoolSize> poolSizes = {
 //            vkinit::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
 //         VkDescriptorPoolCreateInfo descriptorPoolCI = vkinit::descriptorPoolCreateInfo(poolSizes, 2);
-//         VK_CHECK_RESULT(
+//         VkCheckResult(
 //            vkCreateDescriptorPool(pgpucontext->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
 //
 //         // Allocate descriptor set
 //         VkDescriptorSet descriptorset = VK_NULL_HANDLE;
 //         VkDescriptorSetAllocateInfo allocInfo =
 //            vkinit::descriptorSetAllocateInfo(descriptorpool, &descriptorsetlayout, 1);
-//         VK_CHECK_RESULT(vkAllocateDescriptorSets(pgpucontext->logicalDevice(), &allocInfo, &descriptorset));
+//         VkCheckResult(vkAllocateDescriptorSets(pgpucontext->logicalDevice(), &allocInfo, &descriptorset));
 //
 //         // Write the environment cubemap descriptor (make sure pgputextureSkybox is valid)
 //         if (!pgputextureSkybox)
@@ -513,7 +513,7 @@ namespace gpu_vulkan
 //         VkPipelineLayoutCreateInfo pipelineLayoutCI = vkinit::pipelineLayoutCreateInfo(&descriptorsetlayout, 1);
 //         pipelineLayoutCI.pushConstantRangeCount = 1;
 //         pipelineLayoutCI.pPushConstantRanges = &pushRange;
-//         VK_CHECK_RESULT(
+//         VkCheckResult(
 //            vkCreatePipelineLayout(pgpucontext->logicalDevice(), &pipelineLayoutCI, nullptr, &pipelineLayoutLocal));
 //
 //         // --- Pipeline creation using your VkSandboxPipeline wrapper (vertex pos only) ---
@@ -828,15 +828,15 @@ namespace gpu_vulkan
          //imageCI.samples = VK_SAMPLE_COUNT_1_BIT;
          //imageCI.tiling = VK_IMAGE_TILING_OPTIMAL;
          //imageCI.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-         //VK_CHECK_RESULT(vkCreateImage(pgpucontext->logicalDevice(), &imageCI, nullptr, &pgputextureLutBrdf->m_vkimage));
+         //VkCheckResult(vkCreateImage(pgpucontext->logicalDevice(), &imageCI, nullptr, &pgputextureLutBrdf->m_vkimage));
          //VkMemoryAllocateInfo memAlloc = vkinit::memoryAllocateInfo();
          //VkMemoryRequirements memReqs;
          //vkGetImageMemoryRequirements(pgpucontext->logicalDevice(), pgputextureLutBrdf->m_vkimage, &memReqs);
          //memAlloc.allocationSize = memReqs.size;
          //memAlloc.memoryTypeIndex =
          //   pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-         //VK_CHECK_RESULT(vkAllocateMemory(pgpucontext->logicalDevice(), &memAlloc, nullptr, &pgputextureLutBrdf->m_vkdevicememory));
-         //VK_CHECK_RESULT(vkBindImageMemory(pgpucontext->logicalDevice(), pgputextureLutBrdf->m_vkimage, pgputextureLutBrdf->m_vkdevicememory, 0));
+         //VkCheckResult(vkAllocateMemory(pgpucontext->logicalDevice(), &memAlloc, nullptr, &pgputextureLutBrdf->m_vkdevicememory));
+         //VkCheckResult(vkBindImageMemory(pgpucontext->logicalDevice(), pgputextureLutBrdf->m_vkimage, pgputextureLutBrdf->m_vkdevicememory, 0));
 
 
          //// Image view
@@ -848,7 +848,7 @@ namespace gpu_vulkan
          //viewCI.subresourceRange.levelCount = 1;
          //viewCI.subresourceRange.layerCount = 1;
          //viewCI.image = pgputextureLutBrdf->m_vkimage;
-         //VK_CHECK_RESULT(vkCreateImageView(pgpucontext->logicalDevice(), &viewCI, nullptr, &pgputextureLutBrdf->m_vkimageview));
+         //VkCheckResult(vkCreateImageView(pgpucontext->logicalDevice(), &viewCI, nullptr, &pgputextureLutBrdf->m_vkimageview));
 
          //// pgputextureLutBrdf->m_vksampler3 = _001VkSampler();
 
@@ -863,7 +863,7 @@ namespace gpu_vulkan
          //samplerCI.minLod = 0.0f;
          //samplerCI.maxLod = 1.0f;
          //samplerCI.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-         //VK_CHECK_RESULT(vkCreateSampler(pgpucontext->logicalDevice(), &samplerCI, nullptr, &pgputextureLutBrdf->m_vksamplerDedicated));
+         //VkCheckResult(vkCreateSampler(pgpucontext->logicalDevice(), &samplerCI, nullptr, &pgputextureLutBrdf->m_vksamplerDedicated));
 
          //pgputextureLutBrdf->m_descriptor3.imageView = pgputextureLutBrdf->m_vkimageview;
          //pgputextureLutBrdf->m_descriptor3.sampler = pgputextureLutBrdf->m_vksamplerDedicated;
@@ -916,7 +916,7 @@ namespace gpu_vulkan
          //renderPassCI.pDependencies = dependencies.data();
 
          //VkRenderPass renderpass = VK_NULL_HANDLE;
-         //VK_CHECK_RESULT(vkCreateRenderPass(pgpucontext->logicalDevice(), &renderPassCI, nullptr, &renderpass));
+         //VkCheckResult(vkCreateRenderPass(pgpucontext->logicalDevice(), &renderPassCI, nullptr, &renderpass));
 
          //VkFramebufferCreateInfo framebufferCI = vkinit::framebufferCreateInfo();
          //framebufferCI.renderPass = renderpass;
@@ -927,14 +927,14 @@ namespace gpu_vulkan
          //framebufferCI.layers = 1;
 
          //VkFramebuffer framebuffer;
-         //VK_CHECK_RESULT(vkCreateFramebuffer(pgpucontext->logicalDevice(), &framebufferCI, nullptr, &framebuffer));
+         //VkCheckResult(vkCreateFramebuffer(pgpucontext->logicalDevice(), &framebufferCI, nullptr, &framebuffer));
 
          //// Descriptors
          //aaaVkDescriptorSetLayout descriptorsetlayout;
          //::array_base<VkDescriptorSetLayoutBinding> setLayoutBindings = {};
          //VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI =
          //   vkinit::descriptorSetLayoutCreateInfo(setLayoutBindings);
-         //VK_CHECK_RESULT(
+         //VkCheckResult(
          //   vkCreateDescriptorSetLayout(pgpucontext->logicalDevice(), &descriptorsetlayoutCI, nullptr, &descriptorsetlayout));
 
          //// Descriptor Pool
@@ -942,18 +942,18 @@ namespace gpu_vulkan
          //   vkinit::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
          //VkDescriptorPoolCreateInfo descriptorPoolCI = vkinit::descriptorPoolCreateInfo(poolSizes, 2);
          //VkDescriptorPool descriptorpool;
-         //VK_CHECK_RESULT(vkCreateDescriptorPool(pgpucontext->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
+         //VkCheckResult(vkCreateDescriptorPool(pgpucontext->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
 
          //// Descriptor sets
          //VkDescriptorSet descriptorset;
          //VkDescriptorSetAllocateInfo allocInfo =
          //   vkinit::descriptorSetAllocateInfo(descriptorpool, &descriptorsetlayout, 1);
-         //VK_CHECK_RESULT(vkAllocateDescriptorSets(pgpucontext->logicalDevice(), &allocInfo, &descriptorset));
+         //VkCheckResult(vkAllocateDescriptorSets(pgpucontext->logicalDevice(), &allocInfo, &descriptorset));
 
          //// Pipeline layout
          //VkPipelineLayout pipelinelayout;
          //VkPipelineLayoutCreateInfo pipelineLayoutCI = vkinit::pipelineLayoutCreateInfo(&descriptorsetlayout, 1);
-         //VK_CHECK_RESULT(vkCreatePipelineLayout(pgpucontext->logicalDevice(), &pipelineLayoutCI, nullptr, &pipelinelayout));
+         //VkCheckResult(vkCreatePipelineLayout(pgpucontext->logicalDevice(), &pipelineLayoutCI, nullptr, &pipelinelayout));
 
          //// Pipeline
          //VkPipelineInputAssemblyStateCreateInfo inputAssemblyState =

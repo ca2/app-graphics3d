@@ -1314,7 +1314,7 @@ namespace gpu_vulkan
 
    //   };
 
-   //   VK_CHECK_RESULT(vkCreateRenderPass(
+   //   VkCheckResult(vkCreateRenderPass(
    //      pcontext->logicalDevice(),
    //      &renderPassInfo, NULL,
    //      &m_vkrenderpass2));
@@ -1396,7 +1396,7 @@ namespace gpu_vulkan
    //         }
    //      };
 
-   //      VK_CHECK_RESULT(vkCreateImageView(
+   //      VkCheckResult(vkCreateImageView(
    //         pcontext->logicalDevice(),
    //         &viewInfo,
    //         NULL,
@@ -1436,7 +1436,7 @@ namespace gpu_vulkan
    //         .layers = 1
    //      };
 
-   //      VK_CHECK_RESULT(vkCreateFramebuffer(
+   //      VkCheckResult(vkCreateFramebuffer(
    //         pcontext->logicalDevice(),
    //         &framebufferCreateInfo, NULL,
    //         &vkframebuffer2));

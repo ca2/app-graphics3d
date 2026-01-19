@@ -813,7 +813,7 @@ namespace gpu_vulkan
       //   VK_IMAGE_USAGE_SAMPLED_BIT;
       //// Create the image
       ////VkImage dstImage;
-      //VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
+      //VkCheckResult(vkCreateImage(m_pgpucontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
       //// Create memory to back up the image
       //VkMemoryRequirements memRequirements;
       //VkMemoryAllocateInfo memAllocInfo(initializers::memoryAllocateInfo());
@@ -821,8 +821,8 @@ namespace gpu_vulkan
       //memAllocInfo.allocationSize = memRequirements.size;
       //// Memory must be host visible to copy from
       //memAllocInfo.memoryTypeIndex = m_pgpucontext->m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-      //VK_CHECK_RESULT(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
-      //VK_CHECK_RESULT(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
+      //VkCheckResult(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
+      //VkCheckResult(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
 
       //if (1)
       //{
@@ -905,9 +905,9 @@ namespace gpu_vulkan
   //// Do the actual blit from the offscreen image to our host visible destination image
   //    VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->m_pgpudevice->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
   //    VkCommandBuffer copyCmd;
-  //    VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
+  //    VkCheckResult(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
   //    VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-  //    VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
+  //    VkCheckResult(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
       //ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
       VkPipelineStageFlags vkpipelinestageflagsWait = ptexture->mip_layer_state(0, 0).m_vkpipelinestageflags;
       {
@@ -1218,7 +1218,7 @@ namespace gpu_vulkan
       //   VK_PIPELINE_STAGE_TRANSFER_BIT,
       //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
-      //VK_CHECK_RESULT(vkEndCommandBuffer(copyCmd));
+      //VkCheckResult(vkEndCommandBuffer(copyCmd));
 
       //::cast < offscreen_render_pass > ppass = m_prenderer->m_pgpurendertarget;
 
@@ -1390,9 +1390,9 @@ namespace gpu_vulkan
             //// Do the actual blit from the offscreen image to our host visible destination image
             //VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
             //VkCommandBuffer copyCmd;
-            //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
+            //VkCheckResult(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
             //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-            //VK_CHECK_RESULT(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
+            //VkCheckResult(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
 
             //// Transition destination image to transfer destination layout
             //::graphics3d_vulkan::tools::insertImageMemoryBarrier(
@@ -1437,13 +1437,13 @@ namespace gpu_vulkan
             //	VK_PIPELINE_STAGE_TRANSFER_BIT,
             //	VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
 
-            //VK_CHECK_RESULT(vkEndCommandBuffer(copyCmd));
+            //VkCheckResult(vkEndCommandBuffer(copyCmd));
 
             //submitWork(copyCmd, queue);
 
             //submitInfo.commandBufferCount = 1;
             //submitInfo.pCommandBuffers = &copyCmd;
-            //VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
+            //VkCheckResult(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
 
 
             //// Get layout of the image (including row pitch)
@@ -2217,9 +2217,9 @@ namespace gpu_vulkan
       //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
       //auto pcommandbuffer;
-      //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &pcommandbuffer->m_vkcommandbuffer));
+      //VkCheckResult(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &pcommandbuffer->m_vkcommandbuffer));
       //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-      //VK_CHECK_RESULT(vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &cmdBufInfo));
+      //VkCheckResult(vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &cmdBufInfo));
 
 
       //m_procedureaAfterEndRender.add(
@@ -2486,7 +2486,7 @@ namespace gpu_vulkan
 //      //.descriptorSetCount = 1,
 //      //.pSetLayouts = &m_psetdescriptorlayoutBlend2->descriptorSetLayout
 //      //     };
-//      //     VK_CHECK_RESULT(vkAllocateDescriptorSets(
+//      //     VkCheckResult(vkAllocateDescriptorSets(
 //      //        pcontext->logicalDevice(),
 //      //        &allocInfo, &m_pblend2->descSet));
 //
@@ -2681,9 +2681,9 @@ namespace gpu_vulkan
       //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
       //auto pcommandbuffer;
-      //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &pcommandbuffer->m_vkcommandbuffer));
+      //VkCheckResult(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &pcommandbuffer->m_vkcommandbuffer));
       //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-      //VK_CHECK_RESULT(vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &cmdBufInfo));
+      //VkCheckResult(vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &cmdBufInfo));
 
 
       //m_procedureaAfterEndRender.add(
@@ -2981,9 +2981,9 @@ namespace gpu_vulkan
       //VkCommandBufferAllocateInfo commandBufferAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
 
       //auto pcommandbuffer;
-      //VK_CHECK_RESULT(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &pcommandbuffer->m_vkcommandbuffer));
+      //VkCheckResult(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &commandBufferAllocateInfo, &pcommandbuffer->m_vkcommandbuffer));
       //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-      //VK_CHECK_RESULT(vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &cmdBufInfo));
+      //VkCheckResult(vkBeginCommandBuffer(pcommandbuffer->m_vkcommandbuffer, &cmdBufInfo));
 
 
       //m_procedureaAfterEndRender.add(
@@ -4816,7 +4816,7 @@ namespace gpu_vulkan
 
    //   auto device = pcontext->logicalDevice();
 
-   //   VK_CHECK_RESULT(
+   //   VkCheckResult(
    //      vkCreateRenderPass(
    //         device,
    //         &renderPassInfo,
@@ -4900,7 +4900,7 @@ namespace gpu_vulkan
 //      //.descriptorSetCount = 1,
 //      //.pSetLayouts = &m_psetdescriptorlayoutBlend2->descriptorSetLayout
 //      //     };
-//      //     VK_CHECK_RESULT(vkAllocateDescriptorSets(
+//      //     VkCheckResult(vkAllocateDescriptorSets(
 //      //        pcontext->logicalDevice(),
 //      //        &allocInfo, &m_pblend2->descSet));
 //

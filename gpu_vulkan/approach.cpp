@@ -148,7 +148,7 @@ namespace gpu_vulkan
       // Physical device
       uint32_t gpuCount = 0;
       // Get number of available physical devices
-      VK_CHECK_RESULT(vkEnumeratePhysicalDevices(m_vkinstance, &gpuCount, nullptr));
+      VkCheckResult(vkEnumeratePhysicalDevices(m_vkinstance, &gpuCount, nullptr));
       if (gpuCount == 0) {
          //::vuexitFatal("No device with Vulkan support found", -1);
          throw ::exception(error_failed);
@@ -245,10 +245,10 @@ namespace gpu_vulkan
       //VkSemaphoreCreateInfo semaphoreCreateInfo = vks::initializers::semaphoreCreateInfo();
       //// Create a semaphore used to synchronize image presentation
       //// Ensures that the image is displayed before we start submitting new commands to the queue
-      //VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.presentComplete));
+      //VkCheckResult(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.presentComplete));
       //// Create a semaphore used to synchronize command submission
       //// Ensures that the image is not presented until all commands have been submitted and executed
-      //VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.renderComplete));
+      //VkCheckResult(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphores.renderComplete));
 
       //// Set up submit info structure
       //// Semaphores will stay the same during application lifetime

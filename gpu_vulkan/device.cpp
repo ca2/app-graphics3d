@@ -2336,7 +2336,7 @@ namespace gpu_vulkan
       // Create the buffer handle
       VkBufferCreateInfo bufferCreateInfo = vkinit::bufferCreateInfo(usageFlags, size);
       bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-      VK_CHECK_RESULT(vkCreateBuffer(m_vkdevice, &bufferCreateInfo, nullptr, buffer));
+      VkCheckResult(vkCreateBuffer(m_vkdevice, &bufferCreateInfo, nullptr, buffer));
 
       // Create the memory backing up the buffer handle
       VkMemoryRequirements memReqs;
@@ -2352,13 +2352,13 @@ namespace gpu_vulkan
          allocFlagsInfo.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
          memAlloc.pNext = &allocFlagsInfo;
       }
-      VK_CHECK_RESULT(vkAllocateMemory(m_vkdevice, &memAlloc, nullptr, memory));
+      VkCheckResult(vkAllocateMemory(m_vkdevice, &memAlloc, nullptr, memory));
 
       // If a pointer to the buffer data has been passed, map the buffer and copy over the data
       if (data != nullptr)
       {
          void* mapped;
-         VK_CHECK_RESULT(vkMapMemory(m_vkdevice, *memory, 0, size, 0, &mapped));
+         VkCheckResult(vkMapMemory(m_vkdevice, *memory, 0, size, 0, &mapped));
          memcpy(mapped, data, size);
          // If host coherency hasn't been requested, do a manual flush to make writes visible
          if ((memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
@@ -2373,7 +2373,7 @@ namespace gpu_vulkan
       }
 
       // Attach the memory to the buffer object
-      VK_CHECK_RESULT(vkBindBufferMemory(m_vkdevice, *buffer, *memory, 0));
+      VkCheckResult(vkBindBufferMemory(m_vkdevice, *buffer, *memory, 0));
 
       return VK_SUCCESS;
    }
@@ -2534,9 +2534,9 @@ namespace gpu_vulkan
    //   //m_submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
    //   VkFenceCreateInfo fenceInfo = initializers::fenceCreateInfo();
    //   VkFence fence;
-   //   VK_CHECK_RESULT(vkCreateFence(m_vkdevice, &fenceInfo, nullptr, &fence));
-   //   VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-   //   VK_CHECK_RESULT(vkWaitForFences(m_vkdevice, 1, &fence, VK_TRUE, UINT64_MAX));
+   //   VkCheckResult(vkCreateFence(m_vkdevice, &fenceInfo, nullptr, &fence));
+   //   VkCheckResult(vkQueueSubmit(queue, 1, &submitInfo, fence));
+   //   VkCheckResult(vkWaitForFences(m_vkdevice, 1, &fence, VK_TRUE, UINT64_MAX));
    //   vkDestroyFence(m_vkdevice, fence, nullptr);
    //}
 
@@ -2550,9 +2550,9 @@ namespace gpu_vulkan
    //   //m_submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
    //   VkFenceCreateInfo fenceInfo = initializers::fence_create_info();
    //   VkFence fence;
-   //   VK_CHECK_RESULT(vkCreateFence(m_vkdevice, &fenceInfo, nullptr, &fence));
-   //   VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-   //   VK_CHECK_RESULT(vkWaitForFences(m_vkdevice, 1, &fence, VK_TRUE, UINT64_MAX));
+   //   VkCheckResult(vkCreateFence(m_vkdevice, &fenceInfo, nullptr, &fence));
+   //   VkCheckResult(vkQueueSubmit(queue, 1, &submitInfo, fence));
+   //   VkCheckResult(vkWaitForFences(m_vkdevice, 1, &fence, VK_TRUE, UINT64_MAX));
    //   vkDestroyFence(m_vkdevice, fence, nullptr);
    //}
 

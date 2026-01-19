@@ -2438,12 +2438,13 @@ namespace draw2d_opengl
 
          ((image *)this)->øconstruct(((image*)this)->m_pgraphics);
 
+         auto pgraphics = ((image *)this)->m_pgraphics.m_p;
 
-         ((image *)this)->m_pgraphics->set(m_pbitmap);
+         pgraphics->set(m_pbitmap);
 
-         ((image *)this)->m_pgraphics->create_memory_graphics(m_size);
+         pgraphics->create_memory_graphics(m_size);
 
-         ((image *)this)->m_pgraphics->m_pimage = (image *) this;
+         pgraphics->m_pimage = (image *) this;
 
          return m_pgraphics;
 

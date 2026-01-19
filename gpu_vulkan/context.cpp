@@ -942,7 +942,7 @@ namespace gpu_vulkan
       
       VkCommandPool cmdPool;
       
-      VK_CHECK_RESULT(vkCreateCommandPool(this->logicalDevice(), &cmdPoolInfo, nullptr, &cmdPool));
+      VkCheckResult(vkCreateCommandPool(this->logicalDevice(), &cmdPoolInfo, nullptr, &cmdPool));
 
       return cmdPool;
 
@@ -1263,7 +1263,7 @@ namespace gpu_vulkan
    //      cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
    //      cmdPoolInfo.flags = createFlags;
    //      VkCommandPool cmdPool;
-   //      VK_CHECK_RESULT(vkCreateCommandPool(this->logicalDevice(), &cmdPoolInfo, nullptr, &cmdPool));
+   //      VkCheckResult(vkCreateCommandPool(this->logicalDevice(), &cmdPoolInfo, nullptr, &cmdPool));
    //      return cmdPool;
    //   }
    //
@@ -2170,7 +2170,7 @@ namespace gpu_vulkan
    //
    //    }
    //
-   //    VK_CHECK_RESULT(vkEndCommandBuffer(commandBuffer));
+   //    VkCheckResult(vkEndCommandBuffer(commandBuffer));
    //
    //    VkSubmitInfo submitInfo = vkinit::submitInfo();
    //
@@ -2183,13 +2183,13 @@ namespace gpu_vulkan
    //
    //    VkFence fence;
    //
-   //    VK_CHECK_RESULT(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
+   //    VkCheckResult(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
    //
    //    // Submit to the queue
-   //    VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
+   //    VkCheckResult(vkQueueSubmit(queue, 1, &submitInfo, fence));
    //
    //    // Wait for the fence to signal that command buffer has finished executing
-   //    VK_CHECK_RESULT(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT));
+   //    VkCheckResult(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT));
    //
    //    vkDestroyFence(this->logicalDevice(), fence, nullptr);
    //
@@ -2884,9 +2884,9 @@ namespace gpu_vulkan
       // m_submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
       VkFenceCreateInfo fenceInfo = initializers::fenceCreateInfo();
       VkFence fence;
-      VK_CHECK_RESULT(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
-      VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-      VK_CHECK_RESULT(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX));
+      VkCheckResult(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
+      VkCheckResult(vkQueueSubmit(queue, 1, &submitInfo, fence));
+      VkCheckResult(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX));
       vkDestroyFence(this->logicalDevice(), fence, nullptr);
    }
 
@@ -2900,9 +2900,9 @@ namespace gpu_vulkan
    //    //m_submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
    //    VkFenceCreateInfo fenceInfo = initializers::fence_create_info();
    //    VkFence fence;
-   //    VK_CHECK_RESULT(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
-   //    VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
-   //    VK_CHECK_RESULT(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX));
+   //    VkCheckResult(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
+   //    VkCheckResult(vkQueueSubmit(queue, 1, &submitInfo, fence));
+   //    VkCheckResult(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX));
    //    vkDestroyFence(this->logicalDevice(), fence, nullptr);
    // }
 
@@ -3934,14 +3934,14 @@ VkFormat context::findDepthFormat()
 //   imageCI.tiling = VK_IMAGE_TILING_OPTIMAL;
 //   imageCI.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 //   imageCI.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-//   VK_CHECK_RESULT(vkCreateImage(this->logicalDevice(), &imageCI, nullptr, &prefilteredCube->m_vkimage));
+//   VkCheckResult(vkCreateImage(this->logicalDevice(), &imageCI, nullptr, &prefilteredCube->m_vkimage));
 //   VkMemoryAllocateInfo memAlloc = vkinit::memoryAllocateInfo();
 //   VkMemoryRequirements memReqs;
 //   vkGetImageMemoryRequirements(this->logicalDevice(), prefilteredCube->m_vkimage, &memReqs);
 //   memAlloc.allocationSize = memReqs.size;
 //   memAlloc.memoryTypeIndex = pphysicaldevice->findMemoryType(memReqs.memoryTypeBits,
-//   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT); VK_CHECK_RESULT(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr,
-//   &prefilteredCube->m_vkdevicememory)); VK_CHECK_RESULT(
+//   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT); VkCheckResult(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr,
+//   &prefilteredCube->m_vkdevicememory)); VkCheckResult(
 //      vkBindImageMemory(this->logicalDevice(), prefilteredCube->m_vkimage, prefilteredCube->m_vkdevicememory, 0));
 //   // Image view
 //   VkImageViewCreateInfo viewCI = vkinit::imageViewCreateInfo();
@@ -3952,7 +3952,7 @@ VkFormat context::findDepthFormat()
 //   viewCI.subresourceRange.levelCount = numMips;
 //   viewCI.subresourceRange.layerCount = 6;
 //   viewCI.image = prefilteredCube->m_vkimage;
-//   VK_CHECK_RESULT(vkCreateImageView(this->logicalDevice(), &viewCI, nullptr, &prefilteredCube->m_vkimageview));
+//   VkCheckResult(vkCreateImageView(this->logicalDevice(), &viewCI, nullptr, &prefilteredCube->m_vkimageview));
 //   // Sampler
 //   VkSamplerCreateInfo samplerCI = vkinit::samplerCreateInfo();
 //   samplerCI.magFilter = VK_FILTER_LINEAR;
@@ -3964,7 +3964,7 @@ VkFormat context::findDepthFormat()
 //   samplerCI.minLod = 0.0f;
 //   samplerCI.maxLod = static_cast<float>(numMips);
 //   samplerCI.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-//   VK_CHECK_RESULT(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &prefilteredCube->m_sampler));
+//   VkCheckResult(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &prefilteredCube->m_sampler));
 
 //   prefilteredCube->m_descriptor.imageView = prefilteredCube->m_vkimageview;
 //   prefilteredCube->m_descriptor.sampler = prefilteredCube->m_sampler;
@@ -4015,7 +4015,7 @@ VkFormat context::findDepthFormat()
 //   renderPassCI.dependencyCount = 2;
 //   renderPassCI.pDependencies = dependencies.data();
 //   VkRenderPass renderpass;
-//   VK_CHECK_RESULT(vkCreateRenderPass(this->logicalDevice(), &renderPassCI, nullptr, &renderpass));
+//   VkCheckResult(vkCreateRenderPass(this->logicalDevice(), &renderPassCI, nullptr, &renderpass));
 
 //   struct
 //   {
@@ -4041,7 +4041,7 @@ VkFormat context::findDepthFormat()
 //      imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 //      imageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 //      imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-//      VK_CHECK_RESULT(vkCreateImage(this->logicalDevice(), &imageCreateInfo, nullptr, &offscreen.image));
+//      VkCheckResult(vkCreateImage(this->logicalDevice(), &imageCreateInfo, nullptr, &offscreen.image));
 
 //      VkMemoryAllocateInfo memAlloc = vkinit::memoryAllocateInfo();
 //      VkMemoryRequirements memReqs;
@@ -4049,8 +4049,8 @@ VkFormat context::findDepthFormat()
 //      memAlloc.allocationSize = memReqs.size;
 //      memAlloc.memoryTypeIndex =
 //         pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//      VK_CHECK_RESULT(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &offscreen.memory));
-//      VK_CHECK_RESULT(vkBindImageMemory(this->logicalDevice(), offscreen.image, offscreen.memory, 0));
+//      VkCheckResult(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &offscreen.memory));
+//      VkCheckResult(vkBindImageMemory(this->logicalDevice(), offscreen.image, offscreen.memory, 0));
 
 //      VkImageViewCreateInfo colorImageView = vkinit::imageViewCreateInfo();
 //      colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -4063,7 +4063,7 @@ VkFormat context::findDepthFormat()
 //      colorImageView.subresourceRange.baseArrayLayer = 0;
 //      colorImageView.subresourceRange.layerCount = 1;
 //      colorImageView.image = offscreen.image;
-//      VK_CHECK_RESULT(vkCreateImageView(this->logicalDevice(), &colorImageView, nullptr, &offscreen.view));
+//      VkCheckResult(vkCreateImageView(this->logicalDevice(), &colorImageView, nullptr, &offscreen.view));
 
 //      VkFramebufferCreateInfo fbufCreateInfo = vkinit::framebufferCreateInfo();
 //      fbufCreateInfo.renderPass = renderpass;
@@ -4072,7 +4072,7 @@ VkFormat context::findDepthFormat()
 //      fbufCreateInfo.width = dim;
 //      fbufCreateInfo.height = dim;
 //      fbufCreateInfo.layers = 1;
-//      VK_CHECK_RESULT(vkCreateFramebuffer(this->logicalDevice(), &fbufCreateInfo, nullptr, &offscreen.framebuffer));
+//      VkCheckResult(vkCreateFramebuffer(this->logicalDevice(), &fbufCreateInfo, nullptr, &offscreen.framebuffer));
 
 //      VkCommandBuffer layoutCmd = m_device.createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 //      tools::setImageLayout(layoutCmd, offscreen.image, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED,
@@ -4087,7 +4087,7 @@ VkFormat context::findDepthFormat()
 //                                         0),
 //   };
 //   VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI =
-//   vkinit::descriptorSetLayoutCreateInfo(setLayoutBindings); VK_CHECK_RESULT(
+//   vkinit::descriptorSetLayoutCreateInfo(setLayoutBindings); VkCheckResult(
 //      vkCreateDescriptorSetLayout(this->logicalDevice(), &descriptorsetlayoutCI, nullptr, &descriptorsetlayout));
 
 //   // Descriptor Pool
@@ -4095,13 +4095,13 @@ VkFormat context::findDepthFormat()
 //   ::array_base<VkDescriptorPoolSize> poolSizes = {
 //      vkinit::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
 //   VkDescriptorPoolCreateInfo descriptorPoolCI = vkinit::descriptorPoolCreateInfo(poolSizes, 2);
-//   VK_CHECK_RESULT(vkCreateDescriptorPool(this->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
+//   VkCheckResult(vkCreateDescriptorPool(this->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
 
 //   // Allocate descriptor set
 //   VkDescriptorSet descriptorset = VK_NULL_HANDLE;
 //   VkDescriptorSetAllocateInfo allocInfo =
 //      vkinit::descriptorSetAllocateInfo(descriptorpool, &descriptorsetlayout, 1);
-//   VK_CHECK_RESULT(vkAllocateDescriptorSets(this->logicalDevice(), &allocInfo, &descriptorset));
+//   VkCheckResult(vkAllocateDescriptorSets(this->logicalDevice(), &allocInfo, &descriptorset));
 
 //   // Write the environment cubemap descriptor (make sure environmentCube is valid)
 //   if (!environmentCube)
@@ -4129,7 +4129,7 @@ VkFormat context::findDepthFormat()
 //   VkPipelineLayoutCreateInfo pipelineLayoutCI = vkinit::pipelineLayoutCreateInfo(&descriptorsetlayout, 1);
 //   pipelineLayoutCI.pushConstantRangeCount = 1;
 //   pipelineLayoutCI.pPushConstantRanges = &pushRange;
-//   VK_CHECK_RESULT(vkCreatePipelineLayout(this->logicalDevice(), &pipelineLayoutCI, nullptr, &pipelineLayoutLocal));
+//   VkCheckResult(vkCreatePipelineLayout(this->logicalDevice(), &pipelineLayoutCI, nullptr, &pipelineLayoutLocal));
 
 //   // --- Pipeline creation using your VkSandboxPipeline wrapper (vertex pos only) ---
 //   ::vulkan::pipeline_configuration cfg{};
@@ -4353,15 +4353,15 @@ VkFormat context::findDepthFormat()
 //   imageCI.tiling = VK_IMAGE_TILING_OPTIMAL;
 //   imageCI.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 //   imageCI.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-//   VK_CHECK_RESULT(vkCreateImage(this->logicalDevice(), &imageCI, nullptr, &prefilteredCube->m_vkimage));
+//   VkCheckResult(vkCreateImage(this->logicalDevice(), &imageCI, nullptr, &prefilteredCube->m_vkimage));
 //   VkMemoryAllocateInfo memAlloc = vkinit::memoryAllocateInfo();
 //   VkMemoryRequirements memReqs;
 //   vkGetImageMemoryRequirements(this->logicalDevice(), prefilteredCube->m_vkimage, &memReqs);
 //   memAlloc.allocationSize = memReqs.size;
 //   memAlloc.memoryTypeIndex =
 //      pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//   VK_CHECK_RESULT(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &prefilteredCube->m_vkdevicememory));
-//   VK_CHECK_RESULT(
+//   VkCheckResult(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &prefilteredCube->m_vkdevicememory));
+//   VkCheckResult(
 //      vkBindImageMemory(this->logicalDevice(), prefilteredCube->m_vkimage, prefilteredCube->m_vkdevicememory, 0));
 //   // Image view
 //   VkImageViewCreateInfo viewCI = vkinit::imageViewCreateInfo();
@@ -4372,7 +4372,7 @@ VkFormat context::findDepthFormat()
 //   viewCI.subresourceRange.levelCount = numMips;
 //   viewCI.subresourceRange.layerCount = 6;
 //   viewCI.image = prefilteredCube->m_vkimage;
-//   VK_CHECK_RESULT(vkCreateImageView(this->logicalDevice(), &viewCI, nullptr, &prefilteredCube->m_vkimageview));
+//   VkCheckResult(vkCreateImageView(this->logicalDevice(), &viewCI, nullptr, &prefilteredCube->m_vkimageview));
 //   // Sampler
 //   VkSamplerCreateInfo samplerCI = vkinit::samplerCreateInfo();
 //   samplerCI.magFilter = VK_FILTER_LINEAR;
@@ -4384,7 +4384,7 @@ VkFormat context::findDepthFormat()
 //   samplerCI.minLod = 0.0f;
 //   samplerCI.maxLod = static_cast<float>(numMips);
 //   samplerCI.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-//   VK_CHECK_RESULT(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &prefilteredCube->m_vksamplerDedicated));
+//   VkCheckResult(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &prefilteredCube->m_vksamplerDedicated));
 //
 //   prefilteredCube->m_descriptor3.imageView = prefilteredCube->m_vkimageview;
 //   prefilteredCube->m_descriptor3.sampler = prefilteredCube->m_vksamplerDedicated;
@@ -4435,7 +4435,7 @@ VkFormat context::findDepthFormat()
 //   renderPassCI.dependencyCount = 2;
 //   renderPassCI.pDependencies = dependencies.data();
 //   VkRenderPass renderpass;
-//   VK_CHECK_RESULT(vkCreateRenderPass(this->logicalDevice(), &renderPassCI, nullptr, &renderpass));
+//   VkCheckResult(vkCreateRenderPass(this->logicalDevice(), &renderPassCI, nullptr, &renderpass));
 //
 //   struct
 //   {
@@ -4461,7 +4461,7 @@ VkFormat context::findDepthFormat()
 //      imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 //      imageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 //      imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-//      VK_CHECK_RESULT(vkCreateImage(this->logicalDevice(), &imageCreateInfo, nullptr, &offscreen.image));
+//      VkCheckResult(vkCreateImage(this->logicalDevice(), &imageCreateInfo, nullptr, &offscreen.image));
 //
 //      VkMemoryAllocateInfo memAlloc = vkinit::memoryAllocateInfo();
 //      VkMemoryRequirements memReqs;
@@ -4469,8 +4469,8 @@ VkFormat context::findDepthFormat()
 //      memAlloc.allocationSize = memReqs.size;
 //      memAlloc.memoryTypeIndex =
 //         pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//      VK_CHECK_RESULT(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &offscreen.memory));
-//      VK_CHECK_RESULT(vkBindImageMemory(this->logicalDevice(), offscreen.image, offscreen.memory, 0));
+//      VkCheckResult(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &offscreen.memory));
+//      VkCheckResult(vkBindImageMemory(this->logicalDevice(), offscreen.image, offscreen.memory, 0));
 //
 //      VkImageViewCreateInfo colorImageView = vkinit::imageViewCreateInfo();
 //      colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -4483,7 +4483,7 @@ VkFormat context::findDepthFormat()
 //      colorImageView.subresourceRange.baseArrayLayer = 0;
 //      colorImageView.subresourceRange.layerCount = 1;
 //      colorImageView.image = offscreen.image;
-//      VK_CHECK_RESULT(vkCreateImageView(this->logicalDevice(), &colorImageView, nullptr, &offscreen.view));
+//      VkCheckResult(vkCreateImageView(this->logicalDevice(), &colorImageView, nullptr, &offscreen.view));
 //
 //      VkFramebufferCreateInfo fbufCreateInfo = vkinit::framebufferCreateInfo();
 //      fbufCreateInfo.renderPass = renderpass;
@@ -4492,7 +4492,7 @@ VkFormat context::findDepthFormat()
 //      fbufCreateInfo.width = dim;
 //      fbufCreateInfo.height = dim;
 //      fbufCreateInfo.layers = 1;
-//      VK_CHECK_RESULT(vkCreateFramebuffer(this->logicalDevice(), &fbufCreateInfo, nullptr, &offscreen.framebuffer));
+//      VkCheckResult(vkCreateFramebuffer(this->logicalDevice(), &fbufCreateInfo, nullptr, &offscreen.framebuffer));
 //
 //      // VkCommandBuffer layoutCmd = m_device.createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 //      auto pgpucommandbufferLayoutCmd = this->beginSingleTimeCommands(transfer_queue());
@@ -4509,7 +4509,7 @@ VkFormat context::findDepthFormat()
 //      vkinit::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 //   };
 //   VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI = vkinit::descriptorSetLayoutCreateInfo(setLayoutBindings);
-//   VK_CHECK_RESULT(
+//   VkCheckResult(
 //      vkCreateDescriptorSetLayout(this->logicalDevice(), &descriptorsetlayoutCI, nullptr, &descriptorsetlayout));
 //
 //   // Descriptor Pool
@@ -4517,12 +4517,12 @@ VkFormat context::findDepthFormat()
 //   ::array_base<VkDescriptorPoolSize> poolSizes = {
 //      vkinit::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
 //   VkDescriptorPoolCreateInfo descriptorPoolCI = vkinit::descriptorPoolCreateInfo(poolSizes, 2);
-//   VK_CHECK_RESULT(vkCreateDescriptorPool(this->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
+//   VkCheckResult(vkCreateDescriptorPool(this->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
 //
 //   // Allocate descriptor set
 //   VkDescriptorSet descriptorset = VK_NULL_HANDLE;
 //   VkDescriptorSetAllocateInfo allocInfo = vkinit::descriptorSetAllocateInfo(descriptorpool, &descriptorsetlayout, 1);
-//   VK_CHECK_RESULT(vkAllocateDescriptorSets(this->logicalDevice(), &allocInfo, &descriptorset));
+//   VkCheckResult(vkAllocateDescriptorSets(this->logicalDevice(), &allocInfo, &descriptorset));
 //
 //   // Write the environment cubemap descriptor (make sure environmentCube is valid)
 //   if (!environmentCube)
@@ -4550,7 +4550,7 @@ VkFormat context::findDepthFormat()
 //   VkPipelineLayoutCreateInfo pipelineLayoutCI = vkinit::pipelineLayoutCreateInfo(&descriptorsetlayout, 1);
 //   pipelineLayoutCI.pushConstantRangeCount = 1;
 //   pipelineLayoutCI.pPushConstantRanges = &pushRange;
-//   VK_CHECK_RESULT(vkCreatePipelineLayout(this->logicalDevice(), &pipelineLayoutCI, nullptr, &pipelineLayoutLocal));
+//   VkCheckResult(vkCreatePipelineLayout(this->logicalDevice(), &pipelineLayoutCI, nullptr, &pipelineLayoutLocal));
 //
 //   // --- Pipeline creation using your VkSandboxPipeline wrapper (vertex pos only) ---
 //   ::vulkan::pipeline_configuration cfg{};
@@ -4793,7 +4793,7 @@ VkFormat context::findDepthFormat()
 //   imageCI.tiling = VK_IMAGE_TILING_OPTIMAL;
 //   imageCI.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 //   imageCI.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-//   VK_CHECK_RESULT(vkCreateImage(this->logicalDevice(), &imageCI, nullptr, &irradianceCube->m_vkimage));
+//   VkCheckResult(vkCreateImage(this->logicalDevice(), &imageCI, nullptr, &irradianceCube->m_vkimage));
 //
 //   VkMemoryRequirements memReqs;
 //   vkGetImageMemoryRequirements(this->logicalDevice(), irradianceCube->m_vkimage, &memReqs);
@@ -4801,8 +4801,8 @@ VkFormat context::findDepthFormat()
 //   memAlloc.allocationSize = memReqs.size;
 //   memAlloc.memoryTypeIndex =
 //      pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//   VK_CHECK_RESULT(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &irradianceCube->m_vkdevicememory));
-//   VK_CHECK_RESULT(
+//   VkCheckResult(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &irradianceCube->m_vkdevicememory));
+//   VkCheckResult(
 //      vkBindImageMemory(this->logicalDevice(), irradianceCube->m_vkimage, irradianceCube->m_vkdevicememory, 0));
 //
 //   // view & sampler
@@ -4815,7 +4815,7 @@ VkFormat context::findDepthFormat()
 //   viewCI.subresourceRange.baseArrayLayer = 0;
 //   viewCI.subresourceRange.layerCount = 6;
 //   viewCI.image = irradianceCube->m_vkimage;
-//   VK_CHECK_RESULT(vkCreateImageView(this->logicalDevice(), &viewCI, nullptr, &irradianceCube->m_vkimageview));
+//   VkCheckResult(vkCreateImageView(this->logicalDevice(), &viewCI, nullptr, &irradianceCube->m_vkimageview));
 //
 //   VkSamplerCreateInfo samplerCI = vkinit::samplerCreateInfo();
 //   samplerCI.magFilter = VK_FILTER_LINEAR;
@@ -4827,7 +4827,7 @@ VkFormat context::findDepthFormat()
 //   samplerCI.minLod = 0.0f;
 //   samplerCI.maxLod = static_cast<float>(numMips);
 //   samplerCI.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-//   VK_CHECK_RESULT(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &irradianceCube->m_vksamplerDedicated));
+//   VkCheckResult(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &irradianceCube->m_vksamplerDedicated));
 //
 //   irradianceCube->m_descriptor3.imageView = irradianceCube->m_vkimageview;
 //   irradianceCube->m_descriptor3.sampler = irradianceCube->m_vksamplerDedicated;
@@ -4875,7 +4875,7 @@ VkFormat context::findDepthFormat()
 //   renderPassCI.dependencyCount = static_cast<uint32_t>(dependencies.size());
 //   renderPassCI.pDependencies = dependencies.data();
 //   VkRenderPass renderpass;
-//   VK_CHECK_RESULT(vkCreateRenderPass(this->logicalDevice(), &renderPassCI, nullptr, &renderpass));
+//   VkCheckResult(vkCreateRenderPass(this->logicalDevice(), &renderPassCI, nullptr, &renderpass));
 //
 //   // offscreen color image (1 mip, reused for all mips/faces)
 //   struct
@@ -4900,14 +4900,14 @@ VkFormat context::findDepthFormat()
 //      imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 //      imageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 //      imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-//      VK_CHECK_RESULT(vkCreateImage(this->logicalDevice(), &imageCreateInfo, nullptr, &offscreen.image));
+//      VkCheckResult(vkCreateImage(this->logicalDevice(), &imageCreateInfo, nullptr, &offscreen.image));
 //
 //      vkGetImageMemoryRequirements(this->logicalDevice(), offscreen.image, &memReqs);
 //      memAlloc.allocationSize = memReqs.size;
 //      memAlloc.memoryTypeIndex =
 //         pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//      VK_CHECK_RESULT(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &offscreen.memory));
-//      VK_CHECK_RESULT(vkBindImageMemory(this->logicalDevice(), offscreen.image, offscreen.memory, 0));
+//      VkCheckResult(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &offscreen.memory));
+//      VkCheckResult(vkBindImageMemory(this->logicalDevice(), offscreen.image, offscreen.memory, 0));
 //
 //      VkImageViewCreateInfo colorImageView = vkinit::imageViewCreateInfo();
 //      colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -4918,7 +4918,7 @@ VkFormat context::findDepthFormat()
 //      colorImageView.subresourceRange.baseArrayLayer = 0;
 //      colorImageView.subresourceRange.layerCount = 1;
 //      colorImageView.image = offscreen.image;
-//      VK_CHECK_RESULT(vkCreateImageView(this->logicalDevice(), &colorImageView, nullptr, &offscreen.view));
+//      VkCheckResult(vkCreateImageView(this->logicalDevice(), &colorImageView, nullptr, &offscreen.view));
 //
 //      VkFramebufferCreateInfo fbufCreateInfo = vkinit::framebufferCreateInfo();
 //      fbufCreateInfo.renderPass = renderpass;
@@ -4927,7 +4927,7 @@ VkFormat context::findDepthFormat()
 //      fbufCreateInfo.width = dim;
 //      fbufCreateInfo.height = dim;
 //      fbufCreateInfo.layers = 1;
-//      VK_CHECK_RESULT(vkCreateFramebuffer(this->logicalDevice(), &fbufCreateInfo, nullptr, &offscreen.framebuffer));
+//      VkCheckResult(vkCreateFramebuffer(this->logicalDevice(), &fbufCreateInfo, nullptr, &offscreen.framebuffer));
 //
 //      // VkCommandBuffer layoutCmd = this->beginSingleTimeCommands((VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 //      ::pointer<::gpu_vulkan::command_buffer> pcommandbuffer = this->beginSingleTimeCommands(transfer_queue());
@@ -4943,18 +4943,18 @@ VkFormat context::findDepthFormat()
 //      vkinit::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
 //   };
 //   VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI = vkinit::descriptorSetLayoutCreateInfo(setLayoutBindings);
-//   VK_CHECK_RESULT(
+//   VkCheckResult(
 //      vkCreateDescriptorSetLayout(this->logicalDevice(), &descriptorsetlayoutCI, nullptr, &descriptorsetlayout));
 //
 //   ::array_base<VkDescriptorPoolSize> poolSizes = {
 //      vkinit::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
 //   VkDescriptorPoolCreateInfo descriptorPoolCI = vkinit::descriptorPoolCreateInfo(poolSizes, 2);
 //   VkDescriptorPool descriptorpool;
-//   VK_CHECK_RESULT(vkCreateDescriptorPool(this->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
+//   VkCheckResult(vkCreateDescriptorPool(this->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
 //
 //   VkDescriptorSet descriptorset;
 //   VkDescriptorSetAllocateInfo allocInfo = vkinit::descriptorSetAllocateInfo(descriptorpool, &descriptorsetlayout, 1);
-//   VK_CHECK_RESULT(vkAllocateDescriptorSets(this->logicalDevice(), &allocInfo, &descriptorset));
+//   VkCheckResult(vkAllocateDescriptorSets(this->logicalDevice(), &allocInfo, &descriptorset));
 //   VkWriteDescriptorSet writeDescriptorSet = vkinit::writeDescriptorSet(
 //      descriptorset, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &environmentCube->m_descriptor3);
 //   vkUpdateDescriptorSets(this->logicalDevice(), 1, &writeDescriptorSet, 0, nullptr);
@@ -5509,15 +5509,15 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //   imageCI.samples = VK_SAMPLE_COUNT_1_BIT;
 //   imageCI.tiling = VK_IMAGE_TILING_OPTIMAL;
 //   imageCI.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-//   VK_CHECK_RESULT(vkCreateImage(this->logicalDevice(), &imageCI, nullptr, &lutBrdf->m_vkimage));
+//   VkCheckResult(vkCreateImage(this->logicalDevice(), &imageCI, nullptr, &lutBrdf->m_vkimage));
 //   VkMemoryAllocateInfo memAlloc = vkinit::memoryAllocateInfo();
 //   VkMemoryRequirements memReqs;
 //   vkGetImageMemoryRequirements(this->logicalDevice(), lutBrdf->m_vkimage, &memReqs);
 //   memAlloc.allocationSize = memReqs.size;
 //   memAlloc.memoryTypeIndex =
 //      pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//   VK_CHECK_RESULT(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &lutBrdf->m_vkdevicememory));
-//   VK_CHECK_RESULT(vkBindImageMemory(this->logicalDevice(), lutBrdf->m_vkimage, lutBrdf->m_vkdevicememory, 0));
+//   VkCheckResult(vkAllocateMemory(this->logicalDevice(), &memAlloc, nullptr, &lutBrdf->m_vkdevicememory));
+//   VkCheckResult(vkBindImageMemory(this->logicalDevice(), lutBrdf->m_vkimage, lutBrdf->m_vkdevicememory, 0));
 //
 //
 //   // Image view
@@ -5529,7 +5529,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //   viewCI.subresourceRange.levelCount = 1;
 //   viewCI.subresourceRange.layerCount = 1;
 //   viewCI.image = lutBrdf->m_vkimage;
-//   VK_CHECK_RESULT(vkCreateImageView(this->logicalDevice(), &viewCI, nullptr, &lutBrdf->m_vkimageview));
+//   VkCheckResult(vkCreateImageView(this->logicalDevice(), &viewCI, nullptr, &lutBrdf->m_vkimageview));
 //
 //   //lutBrdf->m_vksampler3 = _001VkSampler();
 //
@@ -5544,7 +5544,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //   samplerCI.minLod = 0.0f;
 //   samplerCI.maxLod = 1.0f;
 //   samplerCI.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-//   VK_CHECK_RESULT(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &lutBrdf->m_vksamplerDedicated));
+//   VkCheckResult(vkCreateSampler(this->logicalDevice(), &samplerCI, nullptr, &lutBrdf->m_vksamplerDedicated));
 //
 //   lutBrdf->m_descriptor3.imageView = lutBrdf->m_vkimageview;
 //   lutBrdf->m_descriptor3.sampler = lutBrdf->m_vksamplerDedicated;
@@ -5597,7 +5597,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //   renderPassCI.pDependencies = dependencies.data();
 //
 //   VkRenderPass renderpass = VK_NULL_HANDLE;
-//   VK_CHECK_RESULT(vkCreateRenderPass(this->logicalDevice(), &renderPassCI, nullptr, &renderpass));
+//   VkCheckResult(vkCreateRenderPass(this->logicalDevice(), &renderPassCI, nullptr, &renderpass));
 //
 //   VkFramebufferCreateInfo framebufferCI = vkinit::framebufferCreateInfo();
 //   framebufferCI.renderPass = renderpass;
@@ -5608,13 +5608,13 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //   framebufferCI.layers = 1;
 //
 //   VkFramebuffer framebuffer;
-//   VK_CHECK_RESULT(vkCreateFramebuffer(this->logicalDevice(), &framebufferCI, nullptr, &framebuffer));
+//   VkCheckResult(vkCreateFramebuffer(this->logicalDevice(), &framebufferCI, nullptr, &framebuffer));
 //
 //   // Descriptors
 //   aaaVkDescriptorSetLayout descriptorsetlayout;
 //   ::array_base<VkDescriptorSetLayoutBinding> setLayoutBindings = {};
 //   VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI = vkinit::descriptorSetLayoutCreateInfo(setLayoutBindings);
-//   VK_CHECK_RESULT(
+//   VkCheckResult(
 //      vkCreateDescriptorSetLayout(this->logicalDevice(), &descriptorsetlayoutCI, nullptr, &descriptorsetlayout));
 //
 //   // Descriptor Pool
@@ -5622,17 +5622,17 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //      vkinit::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
 //   VkDescriptorPoolCreateInfo descriptorPoolCI = vkinit::descriptorPoolCreateInfo(poolSizes, 2);
 //   VkDescriptorPool descriptorpool;
-//   VK_CHECK_RESULT(vkCreateDescriptorPool(this->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
+//   VkCheckResult(vkCreateDescriptorPool(this->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
 //
 //   // Descriptor sets
 //   VkDescriptorSet descriptorset;
 //   VkDescriptorSetAllocateInfo allocInfo = vkinit::descriptorSetAllocateInfo(descriptorpool, &descriptorsetlayout, 1);
-//   VK_CHECK_RESULT(vkAllocateDescriptorSets(this->logicalDevice(), &allocInfo, &descriptorset));
+//   VkCheckResult(vkAllocateDescriptorSets(this->logicalDevice(), &allocInfo, &descriptorset));
 //
 //   // Pipeline layout
 //   VkPipelineLayout pipelinelayout;
 //   VkPipelineLayoutCreateInfo pipelineLayoutCI = vkinit::pipelineLayoutCreateInfo(&descriptorsetlayout, 1);
-//   VK_CHECK_RESULT(vkCreatePipelineLayout(this->logicalDevice(), &pipelineLayoutCI, nullptr, &pipelinelayout));
+//   VkCheckResult(vkCreatePipelineLayout(this->logicalDevice(), &pipelineLayoutCI, nullptr, &pipelinelayout));
 //
 //   // Pipeline
 //   VkPipelineInputAssemblyStateCreateInfo inputAssemblyState =
@@ -5835,7 +5835,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //      // descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 //      // descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
 //      // descriptorLayoutCI.pBindings = setLayoutBindings.data();
-//      // VK_CHECK_RESULT(vkCreateDescriptorSetLayout(
+//      // VkCheckResult(vkCreateDescriptorSetLayout(
 //      //	pcontext->logicalDevice(),
 //      //	&descriptorLayoutCI,
 //      //	nullptr,
@@ -5915,7 +5915,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //      // descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 //      // descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
 //      // descriptorLayoutCI.pBindings = setLayoutBindings.data();
-//      // VK_CHECK_RESULT(vkCreateDescriptorSetLayout(
+//      // VkCheckResult(vkCreateDescriptorSetLayout(
 //      //	pcontext->logicalDevice(),
 //      //	&descriptorLayoutCI,
 //      //	nullptr,
@@ -6207,7 +6207,7 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
       // This buffer is used as a transfer source for the buffer copy
       bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
       bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-      VK_CHECK_RESULT(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
+      VkCheckResult(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
 
       VkMemoryAllocateInfo memAllocInfo = vkinit::memoryAllocateInfo();
       VkMemoryRequirements memReqs;
@@ -6215,12 +6215,12 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
       memAllocInfo.allocationSize = memReqs.size;
       memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(
          memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-      VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
-      VK_CHECK_RESULT(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
+      VkCheckResult(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
+      VkCheckResult(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
 
       // Copy texture data into staging buffer
       uint8_t *data;
-      VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
+      VkCheckResult(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
       ::zero(data, bufferSize);
       vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
 
@@ -6245,15 +6245,15 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
       imageCreateInfo.extent.height = ptextureEmpty->height();
       imageCreateInfo.extent.depth = 1;
       imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-      VK_CHECK_RESULT(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &ptextureEmpty->m_vkimage));
+      VkCheckResult(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &ptextureEmpty->m_vkimage));
 
       vkGetImageMemoryRequirements(pcontext->logicalDevice(), ptextureEmpty->m_vkimage, &memReqs);
       memAllocInfo.allocationSize = memReqs.size;
       memAllocInfo.memoryTypeIndex =
          pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-      VK_CHECK_RESULT(
+      VkCheckResult(
          vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &ptextureEmpty->m_vkdevicememory));
-      VK_CHECK_RESULT(
+      VkCheckResult(
          vkBindImageMemory(pcontext->logicalDevice(), ptextureEmpty->m_vkimage, ptextureEmpty->m_vkdevicememory, 0));
 
       VkImageSubresourceRange subresourceRange{};
@@ -6293,7 +6293,7 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
       samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
       samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;
       samplerCreateInfo.maxAnisotropy = 1.0f;
-      VK_CHECK_RESULT(
+      VkCheckResult(
          vkCreateSampler(pcontext->logicalDevice(), &samplerCreateInfo, nullptr, &ptextureEmpty->m_vksampler3));
 
       VkImageViewCreateInfo viewCreateInfo = vkinit::imageViewCreateInfo();
@@ -6302,7 +6302,7 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
       viewCreateInfo.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
       viewCreateInfo.subresourceRange.levelCount = 1;
       viewCreateInfo.image = ptextureEmpty->m_vkimage;
-      VK_CHECK_RESULT(
+      VkCheckResult(
          vkCreateImageView(pcontext->logicalDevice(), &viewCreateInfo, nullptr, &ptextureEmpty->m_vkimageview));
 
    //   ptextureEmpty->m_descriptor3.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

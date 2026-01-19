@@ -385,7 +385,7 @@ namespace gpu_vulkan
    //   allocInfo.descriptorPool = descriptorPool;
    //   allocInfo.descriptorSetCount = 1;
    //   allocInfo.pSetLayouts = &descriptorSetLayout;
-   //   VK_CHECK_RESULT(vkAllocateDescriptorSets(pcontext->logicalDevice(), &allocInfo, &descriptorSet));
+   //   VkCheckResult(vkAllocateDescriptorSets(pcontext->logicalDevice(), &allocInfo, &descriptorSet));
 
    //   // Prepare image infos with fallback
    //   VkDescriptorImageInfo baseColorImageInfo =
@@ -512,7 +512,7 @@ namespace gpu_vulkan
    //   allocInfo.descriptorPool = descriptorPool;
    //   allocInfo.descriptorSetCount = 1;
    //   allocInfo.pSetLayouts = &descriptorSetLayout;
-   //   VK_CHECK_RESULT(vkAllocateDescriptorSets(pcontext->logicalDevice(), &allocInfo, &descriptorSet));
+   //   VkCheckResult(vkAllocateDescriptorSets(pcontext->logicalDevice(), &allocInfo, &descriptorSet));
 
    //   // Prepare image infos with fallback
    //   VkDescriptorImageInfo baseColorImageInfo =
@@ -623,10 +623,10 @@ namespace gpu_vulkan
       auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
       this->uniformBlock.matrix = matrix;
-      VK_CHECK_RESULT(pgpudevice->createBuffer(
+      VkCheckResult(pgpudevice->createBuffer(
          VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
          sizeof(uniformBlock), &uniformBuffer.buffer, &uniformBuffer.memory, &uniformBlock));
-      VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), uniformBuffer.memory, 0, sizeof(uniformBlock), 0,
+      VkCheckResult(vkMapMemory(pcontext->logicalDevice(), uniformBuffer.memory, 0, sizeof(uniformBlock), 0,
                                   &uniformBuffer.mapped));
       uniformBuffer.descriptor = {uniformBuffer.buffer, 0, sizeof(uniformBlock)};
    };
@@ -1517,22 +1517,22 @@ namespace gpu_vulkan
 
       // Create staging buffers
       // Vertex data
-      VK_CHECK_RESULT(pgpudevice->createBuffer(
+      VkCheckResult(pgpudevice->createBuffer(
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
          vertexBufferSize, &vertexStaging.buffer, &vertexStaging.memory, vertexBuffer.data()));
       // Index data
-      VK_CHECK_RESULT(pgpudevice->createBuffer(
+      VkCheckResult(pgpudevice->createBuffer(
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
          indexBufferSize, &indexStaging.buffer, &indexStaging.memory, indexBuffer.data()));
       VkMemoryPropertyFlags memoryPropertyFlags = 0;
 
       // Create device local buffers
       // Vertex buffer
-      VK_CHECK_RESULT(pgpudevice->createBuffer(
+      VkCheckResult(pgpudevice->createBuffer(
          VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | memoryPropertyFlags,
          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBufferSize, &vertices.buffer, &vertices.memory));
       // Index buffer
-      VK_CHECK_RESULT(pgpudevice->createBuffer(
+      VkCheckResult(pgpudevice->createBuffer(
          VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | memoryPropertyFlags,
          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBufferSize, &indices.buffer, &indices.memory));
 
@@ -1605,7 +1605,7 @@ namespace gpu_vulkan
       descriptorPoolCI.pPoolSizes = poolSizes.data();
       descriptorPoolCI.maxSets =
          uboCount + materialCount * pgpucontext->m_pgpurenderer->m_pgpurendertarget->get_frame_count();
-      VK_CHECK_RESULT(vkCreateDescriptorPool(pcontext->logicalDevice(), &descriptorPoolCI, nullptr, &m_descriptorPool));
+      VkCheckResult(vkCreateDescriptorPool(pcontext->logicalDevice(), &descriptorPoolCI, nullptr, &m_descriptorPool));
 
       // Descriptors for per-node uniform buffers
       {
@@ -1619,7 +1619,7 @@ namespace gpu_vulkan
             //	descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
             //	descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
             //	descriptorLayoutCI.pBindings = setLayoutBindings.data();
-            //	VK_CHECK_RESULT(vkCreateDescriptorSetLayout(pcontext->logicalDevice(), &descriptorLayoutCI, nullptr,
+            //	VkCheckResult(vkCreateDescriptorSetLayout(pcontext->logicalDevice(), &descriptorLayoutCI, nullptr,
             //&descriptorSetLayoutUbo));
             //}
             
@@ -1700,7 +1700,7 @@ namespace gpu_vulkan
          //                  // descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
          //                  // descriptorLayoutCI.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
          //                  // descriptorLayoutCI.pBindings = setLayoutBindings.data();
-         //                  // VK_CHECK_RESULT(vkCreateDescriptorSetLayout(
+         //                  // VkCheckResult(vkCreateDescriptorSetLayout(
          //                  //	pcontext->logicalDevice(),
          //                  //	&descriptorLayoutCI,
          //                  //	nullptr,
@@ -1884,7 +1884,7 @@ namespace gpu_vulkan
       // This buffer is used as a transfer source for the buffer copy
       bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
       bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-      VK_CHECK_RESULT(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
+      VkCheckResult(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
 
       VkMemoryAllocateInfo memAllocInfo = vkinit::memoryAllocateInfo();
       VkMemoryRequirements memReqs;
@@ -1892,12 +1892,12 @@ namespace gpu_vulkan
       memAllocInfo.allocationSize = memReqs.size;
       memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(
          memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-      VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
-      VK_CHECK_RESULT(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
+      VkCheckResult(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
+      VkCheckResult(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
 
       // Copy texture data into staging buffer
       uint8_t *data;
-      VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
+      VkCheckResult(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
       memcpy(data, buffer, bufferSize);
       vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
 
@@ -1922,15 +1922,15 @@ namespace gpu_vulkan
       imageCreateInfo.extent.height = emptyTexture->height();
       imageCreateInfo.extent.depth = 1;
       imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-      VK_CHECK_RESULT(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &emptyTexture->m_vkimage));
+      VkCheckResult(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &emptyTexture->m_vkimage));
 
       vkGetImageMemoryRequirements(pcontext->logicalDevice(), emptyTexture->m_vkimage, &memReqs);
       memAllocInfo.allocationSize = memReqs.size;
       memAllocInfo.memoryTypeIndex =
          pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-      VK_CHECK_RESULT(
+      VkCheckResult(
          vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &emptyTexture->m_vkdevicememory));
-      VK_CHECK_RESULT(
+      VkCheckResult(
          vkBindImageMemory(pcontext->logicalDevice(), emptyTexture->m_vkimage, emptyTexture->m_vkdevicememory, 0));
 
       VkImageSubresourceRange subresourceRange{};
@@ -1970,7 +1970,7 @@ namespace gpu_vulkan
       samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
       samplerCreateInfo.compareOp = VK_COMPARE_OP_NEVER;
       samplerCreateInfo.maxAnisotropy = 1.0f;
-      VK_CHECK_RESULT(
+      VkCheckResult(
          vkCreateSampler(pcontext->logicalDevice(), &samplerCreateInfo, nullptr, &emptyTexture->m_vksampler3));
 
       VkImageViewCreateInfo viewCreateInfo = vkinit::imageViewCreateInfo();
@@ -1979,7 +1979,7 @@ namespace gpu_vulkan
       viewCreateInfo.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
       viewCreateInfo.subresourceRange.levelCount = 1;
       viewCreateInfo.image = emptyTexture->m_vkimage;
-      VK_CHECK_RESULT(
+      VkCheckResult(
          vkCreateImageView(pcontext->logicalDevice(), &viewCreateInfo, nullptr, &emptyTexture->m_vkimageview));
 
       emptyTexture->m_descriptor3.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -2424,7 +2424,7 @@ namespace gpu_vulkan
    //       ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
    //       auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
    //
-   //       VK_CHECK_RESULT(vkAllocateDescriptorSets(pcontext->logicalDevice(), &descriptorSetAllocInfo,
+   //       VkCheckResult(vkAllocateDescriptorSets(pcontext->logicalDevice(), &descriptorSetAllocInfo,
    //                                                &pnode->m_pmesh->uniformBuffer.descriptorSet));
    //
    //       VkWriteDescriptorSet writeDescriptorSet{};

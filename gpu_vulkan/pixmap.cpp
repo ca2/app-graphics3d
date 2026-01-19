@@ -111,7 +111,7 @@
 //          }
 //      };
 //
-//      VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewInfo, NULL, &m_vkimageview));
+//      VkCheckResult(vkCreateImageView(pcontext->logicalDevice(), &viewInfo, NULL, &m_vkimageview));
 //
 //      return m_vkimageview;
 //

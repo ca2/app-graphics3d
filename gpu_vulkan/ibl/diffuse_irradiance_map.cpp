@@ -134,7 +134,7 @@ namespace gpu_vulkan
          //imageCI.tiling = VK_IMAGE_TILING_OPTIMAL;
          //imageCI.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
          //imageCI.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-         //VK_CHECK_RESULT(vkCreateImage(pgpucontext->logicalDevice(), &imageCI, nullptr, &pgputextureIrradianceCube->m_vkimage));
+         //VkCheckResult(vkCreateImage(pgpucontext->logicalDevice(), &imageCI, nullptr, &pgputextureIrradianceCube->m_vkimage));
 
          //VkMemoryRequirements memReqs;
          //vkGetImageMemoryRequirements(pgpucontext->logicalDevice(), pgputextureIrradianceCube->m_vkimage, &memReqs);
@@ -142,9 +142,9 @@ namespace gpu_vulkan
          //memAlloc.allocationSize = memReqs.size;
          //memAlloc.memoryTypeIndex =
          //   pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-         //VK_CHECK_RESULT(
+         //VkCheckResult(
          //   vkAllocateMemory(pgpucontext->logicalDevice(), &memAlloc, nullptr, &pgputextureIrradianceCube->m_vkdevicememory));
-         //VK_CHECK_RESULT(
+         //VkCheckResult(
          //   vkBindImageMemory(pgpucontext->logicalDevice(), pgputextureIrradianceCube->m_vkimage, pgputextureIrradianceCube->m_vkdevicememory, 0));
 
          //// view & sampler
@@ -157,7 +157,7 @@ namespace gpu_vulkan
          //viewCI.subresourceRange.baseArrayLayer = 0;
          //viewCI.subresourceRange.layerCount = 6;
          //viewCI.image = pgputextureIrradianceCube->m_vkimage;
-         //VK_CHECK_RESULT(vkCreateImageView(pgpucontext->logicalDevice(), &viewCI, nullptr, &pgputextureIrradianceCube->m_vkimageview));
+         //VkCheckResult(vkCreateImageView(pgpucontext->logicalDevice(), &viewCI, nullptr, &pgputextureIrradianceCube->m_vkimageview));
 
          //VkSamplerCreateInfo samplerCI = vkinit::samplerCreateInfo();
          //samplerCI.magFilter = VK_FILTER_LINEAR;
@@ -169,7 +169,7 @@ namespace gpu_vulkan
          //samplerCI.minLod = 0.0f;
          //samplerCI.maxLod = static_cast<float>(numMips);
          //samplerCI.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-         //VK_CHECK_RESULT(
+         //VkCheckResult(
          //   vkCreateSampler(pgpucontext->logicalDevice(), &samplerCI, nullptr, &pgputextureIrradianceCube->m_vksamplerDedicated));
          //auto &desc3 = pgputextureIrradianceCube->m_descriptor3;
          //desc3.imageView = pgputextureIrradianceCube->m_vkimageview;
@@ -218,7 +218,7 @@ namespace gpu_vulkan
          //renderPassCI.dependencyCount = static_cast<uint32_t>(dependencies.size());
          //renderPassCI.pDependencies = dependencies.data();
          //VkRenderPass renderpass;
-         //VK_CHECK_RESULT(vkCreateRenderPass(pgpucontext->logicalDevice(), &renderPassCI, nullptr, &renderpass));
+         //VkCheckResult(vkCreateRenderPass(pgpucontext->logicalDevice(), &renderPassCI, nullptr, &renderpass));
 
          //// offscreen color image (1 mip, reused for all mips/faces)
          //struct
@@ -243,14 +243,14 @@ namespace gpu_vulkan
          //   imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
          //   imageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
          //   imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-         //   VK_CHECK_RESULT(vkCreateImage(pgpucontext->logicalDevice(), &imageCreateInfo, nullptr, &offscreen.image));
+         //   VkCheckResult(vkCreateImage(pgpucontext->logicalDevice(), &imageCreateInfo, nullptr, &offscreen.image));
 
          //   vkGetImageMemoryRequirements(pgpucontext->logicalDevice(), offscreen.image, &memReqs);
          //   memAlloc.allocationSize = memReqs.size;
          //   memAlloc.memoryTypeIndex =
          //      pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-         //   VK_CHECK_RESULT(vkAllocateMemory(pgpucontext->logicalDevice(), &memAlloc, nullptr, &offscreen.memory));
-         //   VK_CHECK_RESULT(vkBindImageMemory(pgpucontext->logicalDevice(), offscreen.image, offscreen.memory, 0));
+         //   VkCheckResult(vkAllocateMemory(pgpucontext->logicalDevice(), &memAlloc, nullptr, &offscreen.memory));
+         //   VkCheckResult(vkBindImageMemory(pgpucontext->logicalDevice(), offscreen.image, offscreen.memory, 0));
 
          //   VkImageViewCreateInfo colorImageView = vkinit::imageViewCreateInfo();
          //   colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -261,7 +261,7 @@ namespace gpu_vulkan
          //   colorImageView.subresourceRange.baseArrayLayer = 0;
          //   colorImageView.subresourceRange.layerCount = 1;
          //   colorImageView.image = offscreen.image;
-         //   VK_CHECK_RESULT(vkCreateImageView(pgpucontext->logicalDevice(), &colorImageView, nullptr, &offscreen.view));
+         //   VkCheckResult(vkCreateImageView(pgpucontext->logicalDevice(), &colorImageView, nullptr, &offscreen.view));
 
          //   VkFramebufferCreateInfo fbufCreateInfo = vkinit::framebufferCreateInfo();
          //   fbufCreateInfo.renderPass = renderpass;
@@ -270,7 +270,7 @@ namespace gpu_vulkan
          //   fbufCreateInfo.width = dim;
          //   fbufCreateInfo.height = dim;
          //   fbufCreateInfo.layers = 1;
-         //   VK_CHECK_RESULT(
+         //   VkCheckResult(
          //      vkCreateFramebuffer(pgpucontext->logicalDevice(), &fbufCreateInfo, nullptr, &offscreen.framebuffer));
 
          //   // VkCommandBuffer layoutCmd = pgpucontext->beginSingleTimeCommands((VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
@@ -289,19 +289,19 @@ namespace gpu_vulkan
          //};
          //VkDescriptorSetLayoutCreateInfo descriptorsetlayoutCI =
          //   vkinit::descriptorSetLayoutCreateInfo(setLayoutBindings);
-         //VK_CHECK_RESULT(
+         //VkCheckResult(
          //   vkCreateDescriptorSetLayout(pgpucontext->logicalDevice(), &descriptorsetlayoutCI, nullptr, &descriptorsetlayout));
 
          //::array_base<VkDescriptorPoolSize> poolSizes = {
          //   vkinit::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
          //VkDescriptorPoolCreateInfo descriptorPoolCI = vkinit::descriptorPoolCreateInfo(poolSizes, 2);
          //VkDescriptorPool descriptorpool;
-         //VK_CHECK_RESULT(vkCreateDescriptorPool(pgpucontext->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
+         //VkCheckResult(vkCreateDescriptorPool(pgpucontext->logicalDevice(), &descriptorPoolCI, nullptr, &descriptorpool));
 
          //VkDescriptorSet descriptorset;
          //VkDescriptorSetAllocateInfo allocInfo =
          //   vkinit::descriptorSetAllocateInfo(descriptorpool, &descriptorsetlayout, 1);
-         //VK_CHECK_RESULT(vkAllocateDescriptorSets(pgpucontext->logicalDevice(), &allocInfo, &descriptorset));
+         //VkCheckResult(vkAllocateDescriptorSets(pgpucontext->logicalDevice(), &allocInfo, &descriptorset));
          //VkWriteDescriptorSet writeDescriptorSet = vkinit::writeDescriptorSet(
          //   descriptorset, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &pgputextureSkybox->m_descriptor3);
          //vkUpdateDescriptorSets(pgpucontext->logicalDevice(), 1, &writeDescriptorSet, 0, nullptr);

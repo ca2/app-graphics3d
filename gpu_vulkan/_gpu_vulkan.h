@@ -25,7 +25,7 @@
 
 CLASS_DECL_GPU_VULKAN void _vk_check_result(VkResult f, const char *pszFile, int iLine);
 
-#define VK_CHECK_RESULT(f)	                        \
+#define VkCheckResult(f)	                        \
 {				                                       \
 	VkResult res = (f);                             \
    if (res != VK_SUCCESS)                          \

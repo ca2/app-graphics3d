@@ -5965,7 +5965,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       //auto pcontext = gpu_context();
 
       point.y = pcontext->m_rectangle.height() - point.y - pface->m_iPixelSize;
-
+      auto pgpurenderer = pcontext->m_pgpurenderer;
       glDisable(GL_CULL_FACE);
       GLCheckError("");
       //glEnable(GL_BLEND);
@@ -5990,7 +5990,9 @@ color = vec4(c.r,c.g, c.b, c.a);
              {{xpos + w, ypos + h},{ 1.0f, 0.0f} }
          };
          // render glyph texture over quad
-         if (ch.m_ppixmap)
+
+         auto ppixmap = ch.get_gpu_pixmap(pgpurenderer);
+         if (ppixmap)
          {
 
 
@@ -6013,7 +6015,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
             //pmodelbuffer->set_vertex_array(vertexes, 6);
 
-            ch.m_ppixmap->bind_texture(pshader);
+            ppixmap->bind_texture(pshader);
             //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
             //GLCheckError("");
             //// update content of VBO memory
@@ -7165,7 +7167,7 @@ namespace opengl
 
       //double d = 1.0;
       ////glViewport(0, 0, size.cx * d, size.cy * d);
-      glViewport(0, 0, size.cx, size.cy);
+      //glViewport(0, 0, size.cx, size.cy);
       //glMatrixMode(GL_PROJECTION);
       //glLoadIdentity();
       ////glOrtho(0, size.cx * d, size.cy * d, 0.0f, 000.0f, 1000.0f);

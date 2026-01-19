@@ -370,12 +370,12 @@
 //            ptexture->m_vkimage,
 //            ptexture->m_vkdevicememory
 //         );
-//         //VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &image, nullptr, &m_images[i]));
+//         //VkCheckResult(vkCreateImage(m_pgpucontext->logicalDevice(), &image, nullptr, &m_images[i]));
 //         //vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_images[i], &memReqs);
 //         //memAlloc.allocationSize = memReqs.size;
 //         //memAlloc.memoryTypeIndex = m_pgpucontext->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//         //VK_CHECK_RESULT(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAlloc, nullptr, &m_imagememories[i]));
-//         //VK_CHECK_RESULT(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_images[i], m_imagememories[i], 0));
+//         //VkCheckResult(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAlloc, nullptr, &m_imagememories[i]));
+//         //VkCheckResult(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_images[i], m_imagememories[i], 0));
 //
 //      }
 //
@@ -392,7 +392,7 @@
 //      samplerInfo.minLod = 0.0f;
 //      samplerInfo.maxLod = 1.0f;
 //      samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-//      VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerInfo, nullptr, &m_vksampler));
+//      VkCheckResult(vkCreateSampler(pcontext->logicalDevice(), &samplerInfo, nullptr, &m_vksampler));
 //
 //      m_extent.width = m_ptexturea->element_at(0)->width();
 //      m_extent.height = m_ptexturea->element_at(0)->height();
@@ -441,12 +441,12 @@
 //            m_imagesAlphaAccumulation[i],
 //            m_imagememoriesAlphaAccumulation[i]
 //         );
-//         //VK_CHECK_RESULT(vkCreateImage(m_pgpucontext->logicalDevice(), &image, nullptr, &m_images[i]));
+//         //VkCheckResult(vkCreateImage(m_pgpucontext->logicalDevice(), &image, nullptr, &m_images[i]));
 //         //vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_images[i], &memReqs);
 //         //memAlloc.allocationSize = memReqs.size;
 //         //memAlloc.memoryTypeIndex = m_pgpucontext->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//         //VK_CHECK_RESULT(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAlloc, nullptr, &m_imagememories[i]));
-//         //VK_CHECK_RESULT(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_images[i], m_imagememories[i], 0));
+//         //VkCheckResult(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAlloc, nullptr, &m_imagememories[i]));
+//         //VkCheckResult(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_images[i], m_imagememories[i], 0));
 //
 //      }
 //
@@ -463,7 +463,7 @@
 //      //samplerInfo.minLod = 0.0f;
 //      //samplerInfo.maxLod = 1.0f;
 //      //samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-//      //VK_CHECK_RESULT(vkCreateSampler(m_pgpucontext->logicalDevice(), &samplerInfo, nullptr, &m_vksampler));
+//      //VkCheckResult(vkCreateSampler(m_pgpucontext->logicalDevice(), &samplerInfo, nullptr, &m_vksampler));
 //
 //      //m_extent = windowExtent;
 //
@@ -880,12 +880,12 @@
 ////	////VkMemoryAllocateInfo memAlloc = initializers::memory_allocate_info();
 ////	////VkMemoryRequirements memReqs;
 ////
-////	////VK_CHECK_RESULT(vkCreateImage(context, &image, nullptr, &offscreenPass.color.image));
+////	////VkCheckResult(vkCreateImage(context, &image, nullptr, &offscreenPass.color.image));
 ////	////vkGetImageMemoryRequirements(context, offscreenPass.color.image, &memReqs);
 ////	////memAlloc.allocationSize = memReqs.size;
 ////	////memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-////	////VK_CHECK_RESULT(vkAllocateMemory(context, &memAlloc, nullptr, &offscreenPass.color.mem));
-////	////VK_CHECK_RESULT(vkBindImageMemory(context, offscreenPass.color.image, offscreenPass.color.mem, 0));
+////	////VkCheckResult(vkAllocateMemory(context, &memAlloc, nullptr, &offscreenPass.color.mem));
+////	////VkCheckResult(vkBindImageMemory(context, offscreenPass.color.image, offscreenPass.color.mem, 0));
 ////
 ////	////VkImageViewCreateInfo colorImageView = initializers::imageViewCreateInfo();
 ////	////colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -897,7 +897,7 @@
 ////	////colorImageView.subresourceRange.baseArrayLayer = 0;
 ////	////colorImageView.subresourceRange.layerCount = 1;
 ////	////colorImageView.image = offscreenPass.color.image;
-////	////VK_CHECK_RESULT(vkCreateImageView(context, &colorImageView, nullptr, &offscreenPass.color.view));
+////	////VkCheckResult(vkCreateImageView(context, &colorImageView, nullptr, &offscreenPass.color.view));
 ////
 ////	//// Create sampler to sample from the attachment in the fragment shader
 ////	//VkSamplerCreateInfo samplerInfo = initializers::samplerCreateInfo();
@@ -912,18 +912,18 @@
 ////	//samplerInfo.minLod = 0.0f;
 ////	//samplerInfo.maxLod = 1.0f;
 ////	//samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-////	//VK_CHECK_RESULT(vkCreateSampler(context, &samplerInfo, nullptr, &offscreenPass.sampler));
+////	//VkCheckResult(vkCreateSampler(context, &samplerInfo, nullptr, &offscreenPass.sampler));
 ////
 ////	//// Depth stencil attachment
 ////	//image.format = fbDepthFormat;
 ////	//image.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 ////
-////	//VK_CHECK_RESULT(vkCreateImage(context, &image, nullptr, &offscreenPass.depth.image));
+////	//VkCheckResult(vkCreateImage(context, &image, nullptr, &offscreenPass.depth.image));
 ////	//vkGetImageMemoryRequirements(context, offscreenPass.depth.image, &memReqs);
 ////	//memAlloc.allocationSize = memReqs.size;
 ////	//memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-////	//VK_CHECK_RESULT(vkAllocateMemory(context, &memAlloc, nullptr, &offscreenPass.depth.mem));
-////	//VK_CHECK_RESULT(vkBindImageMemory(context, offscreenPass.depth.image, offscreenPass.depth.mem, 0));
+////	//VkCheckResult(vkAllocateMemory(context, &memAlloc, nullptr, &offscreenPass.depth.mem));
+////	//VkCheckResult(vkBindImageMemory(context, offscreenPass.depth.image, offscreenPass.depth.mem, 0));
 ////
 ////	//VkImageViewCreateInfo depthStencilView = initializers::imageViewCreateInfo();
 ////	//depthStencilView.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -939,7 +939,7 @@
 ////	//depthStencilView.subresourceRange.baseArrayLayer = 0;
 ////	//depthStencilView.subresourceRange.layerCount = 1;
 ////	//depthStencilView.image = offscreenPass.depth.image;
-////	//VK_CHECK_RESULT(vkCreateImageView(context, &depthStencilView, nullptr, &offscreenPass.depth.view));
+////	//VkCheckResult(vkCreateImageView(context, &depthStencilView, nullptr, &offscreenPass.depth.view));
 ////
 ////	//// Create a separate render pass for the offscreen rendering as it may differ from the one used for scene rendering
 ////
@@ -1001,7 +1001,7 @@
 ////	//renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
 ////	//renderPassInfo.pDependencies = dependencies.data();
 ////
-////	//VK_CHECK_RESULT(vkCreateRenderPass(context, &renderPassInfo, nullptr, &offscreenPass.renderPass));
+////	//VkCheckResult(vkCreateRenderPass(context, &renderPassInfo, nullptr, &offscreenPass.renderPass));
 ////
 ////	//VkImageView attachments[2];
 ////	//attachments[0] = offscreenPass.color.view;
@@ -1015,7 +1015,7 @@
 ////	//fbufCreateInfo.height = offscreenPass.height;
 ////	//fbufCreateInfo.layers = 1;
 ////
-////	//VK_CHECK_RESULT(vkCreateFramebuffer(context, &fbufCreateInfo, nullptr, &offscreenPass.frameBuffer));
+////	//VkCheckResult(vkCreateFramebuffer(context, &fbufCreateInfo, nullptr, &offscreenPass.frameBuffer));
 ////
 ////	//// Fill a descriptor for later use in a descriptor set
 ////	//offscreenPass.descriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

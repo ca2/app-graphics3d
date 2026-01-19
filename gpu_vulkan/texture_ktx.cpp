@@ -90,7 +90,7 @@ namespace gpu_vulkan
          bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
          bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-         VK_CHECK_RESULT(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
+         VkCheckResult(vkCreateBuffer(pcontext->logicalDevice(), &bufferCreateInfo, nullptr, &stagingBuffer));
 
          // Get memory requirements for the staging buffer (alignment, memory type bits)
          vkGetBufferMemoryRequirements(pcontext->logicalDevice(), stagingBuffer, &memReqs);
@@ -100,12 +100,12 @@ namespace gpu_vulkan
          memAllocInfo.memoryTypeIndex = pphysicaldevice->findMemoryType(
             memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-         VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
-         VK_CHECK_RESULT(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
+         VkCheckResult(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &stagingMemory));
+         VkCheckResult(vkBindBufferMemory(pcontext->logicalDevice(), stagingBuffer, stagingMemory, 0));
 
          // Copy texture data into staging buffer
          uint8_t *data;
-         VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
+         VkCheckResult(vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, memReqs.size, 0, (void **)&data));
          memcpy(data, ktxTextureData, ktxTextureSize);
          vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
 
@@ -155,7 +155,7 @@ namespace gpu_vulkan
 
             imageCreateInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
          }
-         VK_CHECK_RESULT(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &m_vkimage));
+         VkCheckResult(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &m_vkimage));
 
          vkGetImageMemoryRequirements(pcontext->logicalDevice(), m_vkimage, &memReqs);
 
@@ -163,8 +163,8 @@ namespace gpu_vulkan
 
          memAllocInfo.memoryTypeIndex =
             pphysicaldevice->findMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-         VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
-         VK_CHECK_RESULT(vkBindImageMemory(pcontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
+         VkCheckResult(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
+         VkCheckResult(vkBindImageMemory(pcontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
 
          VkImageSubresourceRange subresourceRange = {};
          subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -223,7 +223,7 @@ namespace gpu_vulkan
          imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
          // Load mip map level 0 to linear tiling image
-         VK_CHECK_RESULT(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &mappableImage));
+         VkCheckResult(vkCreateImage(pcontext->logicalDevice(), &imageCreateInfo, nullptr, &mappableImage));
 
          // Get memory requirements for this image
          // like size and alignment
@@ -236,10 +236,10 @@ namespace gpu_vulkan
             memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
          // Allocate host memory
-         VK_CHECK_RESULT(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &mappableMemory));
+         VkCheckResult(vkAllocateMemory(pcontext->logicalDevice(), &memAllocInfo, nullptr, &mappableMemory));
 
          // Bind allocated image for use
-         VK_CHECK_RESULT(vkBindImageMemory(pcontext->logicalDevice(), mappableImage, mappableMemory, 0));
+         VkCheckResult(vkBindImageMemory(pcontext->logicalDevice(), mappableImage, mappableMemory, 0));
 
          // Get sub resource layout
          // Mip map count, array layer, etc.
@@ -255,7 +255,7 @@ namespace gpu_vulkan
          vkGetImageSubresourceLayout(pcontext->logicalDevice(), mappableImage, &subRes, &subResLayout);
 
          // Map image memory
-         VK_CHECK_RESULT(vkMapMemory(pcontext->logicalDevice(), mappableMemory, 0, memReqs.size, 0, &data));
+         VkCheckResult(vkMapMemory(pcontext->logicalDevice(), mappableMemory, 0, memReqs.size, 0, &data));
 
          // Copy image data into memory
          memcpy(data, ktxTextureData, memReqs.size);
@@ -300,7 +300,7 @@ namespace gpu_vulkan
 
       samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 
-      VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerCreateInfo, nullptr, &m_vksamplerDedicated));
+      VkCheckResult(vkCreateSampler(pcontext->logicalDevice(), &samplerCreateInfo, nullptr, &m_vksamplerDedicated));
 
       // Create image view
       VkImageViewCreateInfo viewCreateInfo{};
@@ -309,7 +309,7 @@ namespace gpu_vulkan
       viewCreateInfo.format = vkformat;
       viewCreateInfo.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, (uint32_t)m_textureattributes.m_iMipCount, 0, 1};
       viewCreateInfo.image = m_vkimage;
-      VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &viewCreateInfo, nullptr, &m_vkimageview));
+      VkCheckResult(vkCreateImageView(pcontext->logicalDevice(), &viewCreateInfo, nullptr, &m_vkimageview));
 
       // Update descriptor for shader sampling
       /// UpdateDescriptor();

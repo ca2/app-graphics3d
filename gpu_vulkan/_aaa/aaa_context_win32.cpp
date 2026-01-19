@@ -369,7 +369,7 @@ namespace gpu_vulkan
       cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
       cmdPoolInfo.flags = createFlags;
       VkCommandPool cmdPool;
-      VK_CHECK_RESULT(vkCreateCommandPool(m_device, &cmdPoolInfo, nullptr, &cmdPool));
+      VkCheckResult(vkCreateCommandPool(m_device, &cmdPoolInfo, nullptr, &cmdPool));
       return cmdPool;
    }
 

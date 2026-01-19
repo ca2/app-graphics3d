@@ -77,7 +77,7 @@ namespace gpu_vulkan
             faceView.subresourceRange.levelCount = 1;
             faceView.subresourceRange.baseArrayLayer = i; // <--- select the cube face
             faceView.subresourceRange.layerCount = 1;
-            VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &faceView, nullptr, &m_imageviewa[i]));
+            VkCheckResult(vkCreateImageView(pcontext->logicalDevice(), &faceView, nullptr, &m_imageviewa[i]));
          }
          
          //for (uint32_t i = 0; i < 6; ++i)
@@ -93,7 +93,7 @@ namespace gpu_vulkan
          //   framebufferInfo.width = ptexture->rectangle().width();
          //   framebufferInfo.height = ptexture->rectangle().height();
          //   framebufferInfo.layers = 1;
-         //   VK_CHECK_RESULT(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[i]));
+         //   VkCheckResult(vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[i]));
 
          //}
 
@@ -233,7 +233,7 @@ namespace gpu_vulkan
          framebufferInfo.height = m_ptexture->rectangle().height();
          framebufferInfo.layers = 1;
          
-         VK_CHECK_RESULT(vkCreateFramebuffer(pcontext->logicalDevice(), &framebufferInfo, nullptr,
+         VkCheckResult(vkCreateFramebuffer(pcontext->logicalDevice(), &framebufferInfo, nullptr,
                                              &framebuffercube.m_framebuffera[iFace]));
 
          return framebuffercube.m_framebuffera[iFace];
@@ -389,7 +389,7 @@ namespace gpu_vulkan
          imageViewCreateInfo.subresourceRange.levelCount = ptexture->m_textureattributes.m_iMipCount;
          imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
          imageViewCreateInfo.subresourceRange.layerCount = 6;
-         VK_CHECK_RESULT(vkCreateImageView(pcontext->logicalDevice(), &imageViewCreateInfo, nullptr, &ptexture->m_vkimageview));
+         VkCheckResult(vkCreateImageView(pcontext->logicalDevice(), &imageViewCreateInfo, nullptr, &ptexture->m_vkimageview));
 
          // Create sampler
          VkSamplerCreateInfo samplerCreateInfo = {};
@@ -415,7 +415,7 @@ namespace gpu_vulkan
          samplerCreateInfo.compareOp = VK_COMPARE_OP_ALWAYS;
          samplerCreateInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
          samplerCreateInfo.unnormalizedCoordinates = VK_FALSE;
-         VK_CHECK_RESULT(vkCreateSampler(pcontext->logicalDevice(), &samplerCreateInfo, nullptr, &ptexture->m_vksampler3));
+         VkCheckResult(vkCreateSampler(pcontext->logicalDevice(), &samplerCreateInfo, nullptr, &ptexture->m_vksampler3));
 
          ptexture->m_state.m_vkaccessflags = VK_ACCESS_SHADER_READ_BIT;
          ptexture->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

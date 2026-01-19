@@ -391,7 +391,7 @@ namespace vulkan
    //         moduleCreateInfo.pCode = (uint32_t *)shaderCode;
    //         moduleCreateInfo.flags = 0;
    //
-   //         VK_CHECK_RESULT(vkCreateShaderModule(device, &moduleCreateInfo, NULL, &shaderModule));
+   //         VkCheckResult(vkCreateShaderModule(device, &moduleCreateInfo, NULL, &shaderModule));
    //
    //         delete[] shaderCode;
    //
@@ -418,7 +418,7 @@ namespace vulkan
    //            moduleCreateInfo.codeSize = size;
    //            moduleCreateInfo.pCode = (uint32_t *)shaderCode;
    //
-   //            VK_CHECK_RESULT(vkCreateShaderModule(device, &moduleCreateInfo, NULL, &shaderModule));
+   //            VkCheckResult(vkCreateShaderModule(device, &moduleCreateInfo, NULL, &shaderModule));
    //
    //            delete[] shaderCode;
    //
