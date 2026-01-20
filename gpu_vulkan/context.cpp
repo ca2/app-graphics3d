@@ -2457,6 +2457,14 @@ namespace gpu_vulkan
                                             VkMemoryPropertyFlags properties)
    {
 
+
+      if (size <= 0)
+      {
+
+         throw ::exception(error_failed, "size must be greater than zero!");
+
+      }
+
       VkBufferCreateInfo bufferInfo{};
       bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
       bufferInfo.size = size;
