@@ -416,7 +416,7 @@ namespace gpu_vulkan
       else if (channel_count == 4 && bit_count_per_channel == 8 && !bFloat)
       {
          auto vkformatGuess1 = pphysicaldevice->findSupportedFormat(
-            {VK_FORMAT_B8G8R8A8_UNORM}, 
+            {pcontext->m_formatImageDefault},
             VK_IMAGE_TILING_OPTIMAL,
             VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 
