@@ -90,9 +90,9 @@ namespace graphics3d_vulkan
 
          auto pszName2 = strName2.c_str();
 
-         ::information("model ({}) matrix determinant (< 0): {}", 
-            strName2,
-            determinant);
+         //::information("model ({}) matrix determinant (< 0): {}",
+           // strName2,
+            //determinant);
 
          //modelMatrix = modelMatrix * ::floating_matrix4::scaling({-1.f, 1.f, 1.f});
 

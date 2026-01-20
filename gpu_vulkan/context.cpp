@@ -1059,6 +1059,10 @@ namespace gpu_vulkan
       //
       // }
 
+      ::string strCommandListName = pcommandbuffer->m_strName;
+
+      auto timeStart = ::time::now();
+
       vkQueueSubmit(vkqueue, 1, psubmitinfo, fence);
 
       vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
@@ -1066,6 +1070,10 @@ namespace gpu_vulkan
       vkQueueWaitIdle(vkqueue);
 
       vkDestroyFence(this->logicalDevice(), fence, NULL);
+
+      auto timeElapsed = timeStart.elapsed();
+
+      information("endSingleTimeCommands took {} ms. (thread={},cmdlst_name={})", timeElapsed.floating_millisecond(), ::current_task_name(), strCommandListName);
 
    }
 
@@ -3170,6 +3178,8 @@ namespace gpu_vulkan
       /// vkResetFences(this->logicalDevice(), 1, &fence);
 
       ::pointer<command_buffer> pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
+
+      pcommandbuffer->m_strName = "gpu_vulkan::context::merge_layers";
 
       ::gpu::scoped_command_buffer scopedcommanbuffer(pcommandbuffer);
       // pcommandbuffer->begin_command_buffer(false);
