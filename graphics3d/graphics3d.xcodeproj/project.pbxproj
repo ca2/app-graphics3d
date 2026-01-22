@@ -127,6 +127,27 @@
 			remoteGlobalIDString = 9A81898B2A71CC42008F470C;
 			remoteInfo = static_gpu;
 		};
+		9A85828C2F229962001D08D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A857B922F22903F001D08D1 /* gpu.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A2818FE25242488009FA9CB;
+			remoteInfo = gpu;
+		};
+		9A85828E2F229962001D08D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A857B922F22903F001D08D1 /* gpu.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A8E9EB9282A3210005FF778;
+			remoteInfo = ios_gpu;
+		};
+		9A8582902F229962001D08D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A857B922F22903F001D08D1 /* gpu.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A81898B2A71CC42008F470C;
+			remoteInfo = static_gpu;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -392,6 +413,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9A8582872F229962001D08D1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9A85828D2F229962001D08D1 /* libgpu.dylib */,
+				9A85828F2F229962001D08D1 /* libios_gpu.a */,
+				9A8582912F229962001D08D1 /* libstatic_gpu.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -556,6 +587,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 9A8582872F229962001D08D1 /* Products */;
+					ProjectRef = 9A857B922F22903F001D08D1 /* gpu.xcodeproj */;
+				},
+				{
 					ProductGroup = 9A857D9A2F2290E7001D08D1 /* Products */;
 					ProjectRef = 9A857D992F2290E7001D08D1 /* gpu.xcodeproj */;
 				},
@@ -589,6 +624,27 @@
 			fileType = "compiled.mach-o.dylib";
 			path = libstatic_gpu.a;
 			remoteRef = 9A857DA52F2290E7001D08D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9A85828D2F229962001D08D1 /* libgpu.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libgpu.dylib;
+			remoteRef = 9A85828C2F229962001D08D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9A85828F2F229962001D08D1 /* libios_gpu.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_gpu.a;
+			remoteRef = 9A85828E2F229962001D08D1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9A8582912F229962001D08D1 /* libstatic_gpu.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libstatic_gpu.a;
+			remoteRef = 9A8582902F229962001D08D1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

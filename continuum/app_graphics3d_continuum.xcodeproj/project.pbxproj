@@ -121,6 +121,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9A85827F2F229962001D08D1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -181,6 +188,10 @@
 			productRefGroup = 9A857A402F228C99001D08D1 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = 9A85827F2F229962001D08D1 /* Products */;
+					ProjectRef = 9A857A682F228E08001D08D1 /* core.xcodeproj */;
+				},
 				{
 					ProductGroup = 9A857A8B2F228EB5001D08D1 /* Products */;
 					ProjectRef = 9A857A872F228EB4001D08D1 /* graphics3d.xcodeproj */;
