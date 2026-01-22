@@ -73,24 +73,6 @@
 		9A857B522F228EF6001D08D1 /* gltf_render_system.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857AB42F228EF6001D08D1 /* gltf_render_system.h */; };
 		9A857B532F228EF6001D08D1 /* camera.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857AA82F228EF6001D08D1 /* camera.h */; };
 		9A857B542F228EF6001D08D1 /* actor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857AA62F228EF6001D08D1 /* actor.h */; };
-		9A857B802F228FDF001D08D1 /* graphics3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857B782F228FDF001D08D1 /* graphics3d.h */; };
-		9A857B812F228FDF001D08D1 /* _.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857B7D2F228FDF001D08D1 /* _.h */; };
-		9A857B822F228FDF001D08D1 /* user.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857B7A2F228FDF001D08D1 /* user.h */; };
-		9A857B832F228FDF001D08D1 /* aaa_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A857B7E2F228FDF001D08D1 /* aaa_context.cpp */; };
-		9A857B842F228FDF001D08D1 /* graphics3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A857B792F228FDF001D08D1 /* graphics3d.cpp */; };
-		9A857B852F228FDF001D08D1 /* user.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A857B7B2F228FDF001D08D1 /* user.cpp */; };
-		9A857B862F228FDF001D08D1 /* aaa_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A857B7E2F228FDF001D08D1 /* aaa_context.cpp */; };
-		9A857B872F228FDF001D08D1 /* graphics3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A857B792F228FDF001D08D1 /* graphics3d.cpp */; };
-		9A857B882F228FDF001D08D1 /* user.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A857B7B2F228FDF001D08D1 /* user.cpp */; };
-		9A857B892F228FDF001D08D1 /* graphics3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857B782F228FDF001D08D1 /* graphics3d.h */; };
-		9A857B8A2F228FDF001D08D1 /* _.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857B7D2F228FDF001D08D1 /* _.h */; };
-		9A857B8B2F228FDF001D08D1 /* user.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857B7A2F228FDF001D08D1 /* user.h */; };
-		9A857B8C2F228FDF001D08D1 /* aaa_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A857B7E2F228FDF001D08D1 /* aaa_context.cpp */; };
-		9A857B8D2F228FDF001D08D1 /* graphics3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A857B792F228FDF001D08D1 /* graphics3d.cpp */; };
-		9A857B8E2F228FDF001D08D1 /* user.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A857B7B2F228FDF001D08D1 /* user.cpp */; };
-		9A857B8F2F228FDF001D08D1 /* graphics3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857B782F228FDF001D08D1 /* graphics3d.h */; };
-		9A857B902F228FDF001D08D1 /* _.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857B7D2F228FDF001D08D1 /* _.h */; };
-		9A857B912F228FDF001D08D1 /* user.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A857B7A2F228FDF001D08D1 /* user.h */; };
 		9A8E9E6E282A3210005FF778 /* framework.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A2819A825242523009FA9CB /* framework.h */; };
 		9A8E9E78282A3210005FF778 /* _.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A2819AC25242523009FA9CB /* _.h */; };
 		9A8E9E94282A3210005FF778 /* framework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A28192E25242523009FA9CB /* framework.cpp */; };
@@ -226,12 +208,6 @@
 		9A857B752F228F2F001D08D1 /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
 		9A857B762F228F2F001D08D1 /* utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utilities.h; sourceTree = "<group>"; };
 		9A857B772F228F2F001D08D1 /* window_input.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = window_input.h; sourceTree = "<group>"; };
-		9A857B782F228FDF001D08D1 /* graphics3d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graphics3d.h; sourceTree = "<group>"; };
-		9A857B792F228FDF001D08D1 /* graphics3d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graphics3d.cpp; sourceTree = "<group>"; };
-		9A857B7A2F228FDF001D08D1 /* user.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = user.h; sourceTree = "<group>"; };
-		9A857B7B2F228FDF001D08D1 /* user.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = user.cpp; sourceTree = "<group>"; };
-		9A857B7D2F228FDF001D08D1 /* _.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = _.h; sourceTree = "<group>"; };
-		9A857B7E2F228FDF001D08D1 /* aaa_context.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = aaa_context.cpp; sourceTree = "<group>"; };
 		9A857B922F22903F001D08D1 /* gpu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gpu.xcodeproj; path = ../../app/gpu/gpu.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9A857D992F2290E7001D08D1 /* gpu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gpu.xcodeproj; path = /Volumes/hstorage/Users/camilo/SceneFoundry/main/source/app/gpu/gpu.xcodeproj; sourceTree = "<absolute>"; };
 		9A8E9EB9282A3210005FF778 /* libios_graphics3d.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libios_graphics3d.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -264,7 +240,6 @@
 				9A857A9A2F228EF6001D08D1 /* game */,
 				9A857AB32F228EF6001D08D1 /* prodevian */,
 				9A857ABA2F228EF6001D08D1 /* render_system */,
-				9A857B7F2F228FDF001D08D1 /* user */,
 				9A2819AC25242523009FA9CB /* _.h */,
 				9A28198D25242523009FA9CB /* _.cpp */,
 				9A03B7BC2A25B8F700A0E33E /* _____debug.xcconfig */,
@@ -382,27 +357,6 @@
 			path = render_system;
 			sourceTree = "<group>";
 		};
-		9A857B7C2F228FDF001D08D1 /* user */ = {
-			isa = PBXGroup;
-			children = (
-				9A857B782F228FDF001D08D1 /* graphics3d.h */,
-				9A857B792F228FDF001D08D1 /* graphics3d.cpp */,
-				9A857B7A2F228FDF001D08D1 /* user.h */,
-				9A857B7B2F228FDF001D08D1 /* user.cpp */,
-			);
-			path = user;
-			sourceTree = "<group>";
-		};
-		9A857B7F2F228FDF001D08D1 /* user */ = {
-			isa = PBXGroup;
-			children = (
-				9A857B7C2F228FDF001D08D1 /* user */,
-				9A857B7D2F228FDF001D08D1 /* _.h */,
-				9A857B7E2F228FDF001D08D1 /* aaa_context.cpp */,
-			);
-			path = user;
-			sourceTree = "<group>";
-		};
 		9A857D9A2F2290E7001D08D1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -446,9 +400,6 @@
 				9A857AF92F228EF6001D08D1 /* camera.h in Headers */,
 				9A857AFA2F228EF6001D08D1 /* actor.h in Headers */,
 				9A281A1C25242524009FA9CB /* _.h in Headers */,
-				9A857B8F2F228FDF001D08D1 /* graphics3d.h in Headers */,
-				9A857B902F228FDF001D08D1 /* _.h in Headers */,
-				9A857B912F228FDF001D08D1 /* user.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -472,9 +423,6 @@
 				9A857B532F228EF6001D08D1 /* camera.h in Headers */,
 				9A857B542F228EF6001D08D1 /* actor.h in Headers */,
 				9A8189522A71CC42008F470C /* _.h in Headers */,
-				9A857B892F228FDF001D08D1 /* graphics3d.h in Headers */,
-				9A857B8A2F228FDF001D08D1 /* _.h in Headers */,
-				9A857B8B2F228FDF001D08D1 /* user.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,9 +446,6 @@
 				9A857B132F228EF6001D08D1 /* camera.h in Headers */,
 				9A857B142F228EF6001D08D1 /* actor.h in Headers */,
 				9A8E9E78282A3210005FF778 /* _.h in Headers */,
-				9A857B802F228FDF001D08D1 /* graphics3d.h in Headers */,
-				9A857B812F228FDF001D08D1 /* _.h in Headers */,
-				9A857B822F228FDF001D08D1 /* user.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -684,9 +629,6 @@
 				9A857AD42F228EF6001D08D1 /* scene_render_system.cpp in Sources */,
 				9A857AD52F228EF6001D08D1 /* game_object.cpp in Sources */,
 				9A857AD62F228EF6001D08D1 /* pbr_with_ibl_render_system.cpp in Sources */,
-				9A857B8C2F228FDF001D08D1 /* aaa_context.cpp in Sources */,
-				9A857B8D2F228FDF001D08D1 /* graphics3d.cpp in Sources */,
-				9A857B8E2F228FDF001D08D1 /* user.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -701,9 +643,6 @@
 				9A857B2E2F228EF6001D08D1 /* scene_render_system.cpp in Sources */,
 				9A857B2F2F228EF6001D08D1 /* game_object.cpp in Sources */,
 				9A857B302F228EF6001D08D1 /* pbr_with_ibl_render_system.cpp in Sources */,
-				9A857B862F228FDF001D08D1 /* aaa_context.cpp in Sources */,
-				9A857B872F228FDF001D08D1 /* graphics3d.cpp in Sources */,
-				9A857B882F228FDF001D08D1 /* user.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -718,9 +657,6 @@
 				9A857B1B2F228EF6001D08D1 /* scene_render_system.cpp in Sources */,
 				9A857B1C2F228EF6001D08D1 /* game_object.cpp in Sources */,
 				9A857B1D2F228EF6001D08D1 /* pbr_with_ibl_render_system.cpp in Sources */,
-				9A857B832F228FDF001D08D1 /* aaa_context.cpp in Sources */,
-				9A857B842F228FDF001D08D1 /* graphics3d.cpp in Sources */,
-				9A857B852F228FDF001D08D1 /* user.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -834,6 +770,7 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				SYSTEM_HEADER_SEARCH_PATHS = (
 					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/include",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/configuration",
 					"$(WorkspaceDir)/port/include",
 					"$(WorkspaceDir)/source/app/include",
 				);
@@ -956,6 +893,7 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				SYSTEM_HEADER_SEARCH_PATHS = (
 					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/include",
+					"$(WorkspaceDir)/operating_system/operating_system-$(PLATFORM_MODIFIER)/configuration",
 					"$(WorkspaceDir)/port/include",
 					"$(WorkspaceDir)/source/app/include",
 				);
