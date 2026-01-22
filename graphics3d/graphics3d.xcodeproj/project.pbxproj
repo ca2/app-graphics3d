@@ -241,7 +241,6 @@
 			children = (
 				9A857B922F22903F001D08D1 /* gpu.xcodeproj */,
 				9A857A9A2F228EF6001D08D1 /* game */,
-				9A857A9F2F228EF6001D08D1 /* graphics3d */,
 				9A857AB32F228EF6001D08D1 /* prodevian */,
 				9A857ABA2F228EF6001D08D1 /* render_system */,
 				9A857B7F2F228FDF001D08D1 /* user */,
@@ -321,13 +320,6 @@
 				9A857A992F228EF6001D08D1 /* skybox.cpp */,
 			);
 			path = game;
-			sourceTree = "<group>";
-		};
-		9A857A9F2F228EF6001D08D1 /* graphics3d */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = graphics3d;
 			sourceTree = "<group>";
 		};
 		9A857AB32F228EF6001D08D1 /* prodevian */ = {
