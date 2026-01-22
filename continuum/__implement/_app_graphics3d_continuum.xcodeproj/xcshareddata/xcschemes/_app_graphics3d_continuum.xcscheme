@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "070B8EE91B6E53F900D26137"
-               BuildableName = "_app_simple_application.app"
-               BlueprintName = "_app_simple_application"
-               ReferencedContainer = "container:_app_simple_application.xcodeproj">
+               BuildableName = "_app_simple_continuum.app"
+               BlueprintName = "_app_graphics3d_continuum"
+               ReferencedContainer = "container:_app_graphics3d_continuum.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "070B8EE91B6E53F900D26137"
-            BuildableName = "_app_simple_application.app"
-            BlueprintName = "_app_simple_application"
-            ReferencedContainer = "container:_app_simple_application.xcodeproj">
+            BuildableName = "_app_simple_continuum.app"
+            BlueprintName = "_app_graphics3d_continuum"
+            ReferencedContainer = "container:_app_graphics3d_continuum.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -57,16 +57,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "070B8EE91B6E53F900D26137"
-            BuildableName = "_app_simple_application.app"
-            BlueprintName = "_app_simple_application"
-            ReferencedContainer = "container:_app_simple_application.xcodeproj">
+            BuildableName = "_app_simple_continuum.app"
+            BlueprintName = "_app_graphics3d_continuum"
+            ReferencedContainer = "container:_app_graphics3d_continuum.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
