@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "070B8EE91B6E53F900D26137"
-               BuildableName = "_app_simple_continuum.app"
+               BuildableName = "_app_graphics3d_continuum.app"
                BlueprintName = "_app_graphics3d_continuum"
                ReferencedContainer = "container:_app_graphics3d_continuum.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "070B8EE91B6E53F900D26137"
-            BuildableName = "_app_simple_continuum.app"
+            BuildableName = "_app_graphics3d_continuum.app"
             BlueprintName = "_app_graphics3d_continuum"
             ReferencedContainer = "container:_app_graphics3d_continuum.xcodeproj">
          </BuildableReference>
@@ -61,7 +61,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "070B8EE91B6E53F900D26137"
-            BuildableName = "_app_simple_continuum.app"
+            BuildableName = "_app_graphics3d_continuum.app"
             BlueprintName = "_app_graphics3d_continuum"
             ReferencedContainer = "container:_app_graphics3d_continuum.xcodeproj">
          </BuildableReference>

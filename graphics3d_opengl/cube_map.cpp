@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "gpu_opengl/_gpu_opengl.h"
 #include "cube_map.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include <stb/stb_image.h>

@@ -7,10 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A112C702F2374B600360960 /* libnetworking_bsd.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A112C5F2F23749100360960 /* libnetworking_bsd.dylib */; };
+		9A112C712F2374B600360960 /* libnetworking_bsd.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A112C5F2F23749100360960 /* libnetworking_bsd.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A112C742F23750500360960 /* libfolder_zip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A4E96A12785379F00B74C76 /* libfolder_zip.dylib */; };
 		9A1D5ECB2751AC11003D9B5F /* libwindowing_macos.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A1D5EC92751AC11003D9B5F /* libwindowing_macos.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9A22748B27CF40980042BAC2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A22748A27CF40980042BAC2 /* main.cpp */; };
 		9A23A7DE26CEEA6C00F98012 /* libdatabase_sqlite3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9AE12EC52661EA22009F476A /* libdatabase_sqlite3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9A273C8329CF176100CBEB97 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A273C7F29CF176000CBEB97 /* InfoPlist.strings */; };
+		9A35D5652F23766A00998589 /* libimaging_coreimage.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A35D5592F23762F00998589 /* libimaging_coreimage.dylib */; };
+		9A35D5662F23766A00998589 /* libimaging_coreimage.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A35D5592F23762F00998589 /* libimaging_coreimage.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A35D56A2F23775500998589 /* libgraphics3d.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A35D5692F23775500998589 /* libgraphics3d.dylib */; };
+		9A35D56B2F23775500998589 /* libgraphics3d.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A35D5692F23775500998589 /* libgraphics3d.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A35D56C2F23775500998589 /* libgraphics3d_opengl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A91230A2F22C9AF002F52F3 /* libgraphics3d_opengl.dylib */; };
+		9A35D56D2F23775500998589 /* libgraphics3d_opengl.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A91230A2F22C9AF002F52F3 /* libgraphics3d_opengl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A35D56F2F23775C00998589 /* libgpu.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A35D56E2F23775C00998589 /* libgpu.dylib */; };
+		9A35D5702F23775C00998589 /* libgpu.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A35D56E2F23775C00998589 /* libgpu.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9A4CC8882F2370EA00D9A73A /* libberg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A4CC8872F2370EA00D9A73A /* libberg.dylib */; };
 		9A4E96B0278537D300B74C76 /* libfolder_zip.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A4E96A12785379F00B74C76 /* libfolder_zip.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9A71B8272A469E1000F9FC3D /* libunac.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A71B8252A469E1000F9FC3D /* libunac.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -107,6 +118,34 @@
 			remoteGlobalIDString = 9A81F48027500224003F38EC;
 			remoteInfo = experience_core;
 		};
+		9A112C5E2F23749100360960 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A4CC8892F23748100D9A73A /* networking_bsd.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AC019342748A002006BEBCC;
+			remoteInfo = networking_bsd;
+		};
+		9A112C602F23749100360960 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A4CC8892F23748100D9A73A /* networking_bsd.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9AA14DBB282A17C600B1621E;
+			remoteInfo = ios_networking_bsd;
+		};
+		9A112C622F23749100360960 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A4CC8892F23748100D9A73A /* networking_bsd.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A818E562A71D978008F470C;
+			remoteInfo = static_networking_bsd;
+		};
+		9A112C722F2374DD00360960 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A4CC8892F23748100D9A73A /* networking_bsd.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9AC019332748A002006BEBCC;
+			remoteInfo = networking_bsd;
+		};
 		9A191D452CF3D880001239A6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A46319E2CF3846600426444 /* operating_ambient_macos.xcodeproj */;
@@ -121,19 +160,40 @@
 			remoteGlobalIDString = 9A0DB38F2864309200D061F7;
 			remoteInfo = database_sqlite3;
 		};
-		9A4333192F232B5A00705FD8 /* PBXContainerItemProxy */ = {
+		9A35D5582F23762F00998589 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9A4333162F232B5A00705FD8 /* gpu_opengl.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9A43332C2F232BA800705FD8;
-			remoteInfo = gpu_opengl;
-		};
-		9A43331E2F232B5A00705FD8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9A4333162F232B5A00705FD8 /* gpu_opengl.xcodeproj */;
+			containerPortal = 9A112C752F23761E00360960 /* imaging_coreimage.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9A574B9816AAB906000CC4EF;
-			remoteInfo = gpu_opengl;
+			remoteInfo = imaging_coreimage;
+		};
+		9A35D55A2F23762F00998589 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A112C752F23761E00360960 /* imaging_coreimage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 07B65764190F3CA2002DAADE;
+			remoteInfo = ios_imaging_coreimage;
+		};
+		9A35D55C2F23762F00998589 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A112C752F23761E00360960 /* imaging_coreimage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 07B65773190F3CA2002DAADE;
+			remoteInfo = math_iosTests;
+		};
+		9A35D5632F23764D00998589 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A112C752F23761E00360960 /* imaging_coreimage.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A574B9716AAB906000CC4EF;
+			remoteInfo = imaging_coreimage;
+		};
+		9A35D5672F23773E00998589 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A8585E02F22C74B001D08D1 /* graphics3d_opengl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A43333C2F232BB900705FD8;
+			remoteInfo = graphics3d_opengl;
 		};
 		9A4E96A02785379F00B74C76 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -280,6 +340,7 @@
 				9AC01E3E2748D129006BEBCC /* libcrypto_openssl.dylib in Embed Libraries */,
 				9A71B8272A469E1000F9FC3D /* libunac.dylib in Embed Libraries */,
 				9AB3DE85278386270025099F /* libcrypto.dylib in Embed Libraries */,
+				9A35D5702F23775C00998589 /* libgpu.dylib in Embed Libraries */,
 				9AFFC73426786C6B00C4104F /* libacme.dylib in Embed Libraries */,
 				9A90BC832B549EC2002BFC9E /* libarchive.dylib in Embed Libraries */,
 				9A1D5ECB2751AC11003D9B5F /* libwindowing_macos.dylib in Embed Libraries */,
@@ -298,6 +359,7 @@
 				9AFFC73826786C6B00C4104F /* libacme_macos.dylib in Embed Libraries */,
 				9AFFC73E26786C6B00C4104F /* libapex_apple.dylib in Embed Libraries */,
 				9AB15C0029A87A8800DFDF90 /* libacme_darwin.dylib in Embed Libraries */,
+				9A35D56D2F23775500998589 /* libgraphics3d_opengl.dylib in Embed Libraries */,
 				9AED730C2751960F00397A57 /* libexperience_core.dylib in Embed Libraries */,
 				9AFFC74D26786C8700C4104F /* libaura_macos.dylib in Embed Libraries */,
 				9A842CB5271BDA9E00C64F6F /* libdraw2d_quartz2d.dylib in Embed Libraries */,
@@ -305,10 +367,13 @@
 				9AE7A3BC2D1CD5EC00070257 /* libinnate_ui_appkit.dylib in Embed Libraries */,
 				9A23A7DE26CEEA6C00F98012 /* libdatabase_sqlite3.dylib in Embed Libraries */,
 				9A4E96B0278537D300B74C76 /* libfolder_zip.dylib in Embed Libraries */,
+				9A35D56B2F23775500998589 /* libgraphics3d.dylib in Embed Libraries */,
 				9AE7A3BF2D1CD5FC00070257 /* libnano_graphics_quartz2d.dylib in Embed Libraries */,
 				9AEC3F662D1AB0AB00F9E621 /* libnode_macos.dylib in Embed Libraries */,
 				9AFFC73A26786C6B00C4104F /* libacme_posix.dylib in Embed Libraries */,
 				9AFFC74226786C6B00C4104F /* libapex_posix.dylib in Embed Libraries */,
+				9A35D5662F23766A00998589 /* libimaging_coreimage.dylib in Embed Libraries */,
+				9A112C712F2374B600360960 /* libnetworking_bsd.dylib in Embed Libraries */,
 				9AE7A3B92D1CD5E300070257 /* libacme_windowing_kit.dylib in Embed Libraries */,
 				9AFFC73C26786C6B00C4104F /* libapex.dylib in Embed Libraries */,
 				9AFFC74926786C6B00C4104F /* libaura_apple.dylib in Embed Libraries */,
@@ -326,13 +391,16 @@
 		9A00E12C26611D5900517464 /* draw2d_quartz2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = draw2d_quartz2d.xcodeproj; path = "../../../../operating_system/operating_system-apple/draw2d_quartz2d/draw2d_quartz2d.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		9A00E19B26611D5E00517464 /* write_text_quartz2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = write_text_quartz2d.xcodeproj; path = "../../../../operating_system/operating_system-apple/write_text_quartz2d/write_text_quartz2d.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		9A00E644266170F400517464 /* experience_core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = experience_core.xcodeproj; path = ../../../app/experience_core/experience_core.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9A112C752F23761E00360960 /* imaging_coreimage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = imaging_coreimage.xcodeproj; path = "../../../../operating_system/operating_system-apple/imaging_coreimage/imaging_coreimage.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		9A1D5EC92751AC11003D9B5F /* libwindowing_macos.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libwindowing_macos.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A22748A27CF40980042BAC2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		9A273C8029CF176000CBEB97 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		9A353E76266249C00060257B /* libapp_simple_application.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libapp_simple_application.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A4333162F232B5A00705FD8 /* gpu_opengl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gpu_opengl.xcodeproj; path = /Volumes/hstorage/Users/camilo/SceneFoundry/main/source/app/gpu_opengl/gpu_opengl.xcodeproj; sourceTree = "<absolute>"; };
+		9A35D5692F23775500998589 /* libgraphics3d.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libgraphics3d.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A35D56E2F23775C00998589 /* libgpu.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libgpu.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A46319E2CF3846600426444 /* operating_ambient_macos.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = operating_ambient_macos.xcodeproj; path = "../../../../operating_system/operating_system-macos/operating_ambient_macos/operating_ambient_macos.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		9A4CC8872F2370EA00D9A73A /* libberg.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libberg.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A4CC8892F23748100D9A73A /* networking_bsd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = networking_bsd.xcodeproj; path = ../../../app/networking_bsd/networking_bsd.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9A4E969A2785379F00B74C76 /* folder_zip.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = folder_zip.xcodeproj; path = ../../../app/folder_zip/folder_zip.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9A71B8252A469E1000F9FC3D /* libunac.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libunac.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A842CB1271BDA6B00C64F6F /* libwindowing_macos.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libwindowing_macos.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -383,9 +451,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A112C702F2374B600360960 /* libnetworking_bsd.dylib in Frameworks */,
 				9A4CC8882F2370EA00D9A73A /* libberg.dylib in Frameworks */,
+				9A35D5652F23766A00998589 /* libimaging_coreimage.dylib in Frameworks */,
+				9A112C742F23750500360960 /* libfolder_zip.dylib in Frameworks */,
 				9AC01E2F2748D057006BEBCC /* libaxis.dylib in Frameworks */,
+				9A35D56A2F23775500998589 /* libgraphics3d.dylib in Frameworks */,
 				9AC01E2E2748D046006BEBCC /* libaura.dylib in Frameworks */,
+				9A35D56F2F23775C00998589 /* libgpu.dylib in Frameworks */,
+				9A35D56C2F23775500998589 /* libgraphics3d_opengl.dylib in Frameworks */,
 				9A857A642F228D62001D08D1 /* libapp_graphics3d_continuum.dylib in Frameworks */,
 				9AC01E2D2748D03C006BEBCC /* libaqua.dylib in Frameworks */,
 				9AFFC71F26786B6A00C4104F /* libacme.dylib in Frameworks */,
@@ -412,9 +486,10 @@
 				9A00E12C26611D5900517464 /* draw2d_quartz2d.xcodeproj */,
 				9A00E644266170F400517464 /* experience_core.xcodeproj */,
 				9A4E969A2785379F00B74C76 /* folder_zip.xcodeproj */,
-				9A4333162F232B5A00705FD8 /* gpu_opengl.xcodeproj */,
 				9A8585E02F22C74B001D08D1 /* graphics3d_opengl.xcodeproj */,
 				9A46319E2CF3846600426444 /* operating_ambient_macos.xcodeproj */,
+				9A112C752F23761E00360960 /* imaging_coreimage.xcodeproj */,
+				9A4CC8892F23748100D9A73A /* networking_bsd.xcodeproj */,
 				9AE12E992661EA0B009F476A /* regular_expression_pcre2.xcodeproj */,
 				9A00E19B26611D5E00517464 /* write_text_quartz2d.xcodeproj */,
 				9AED730D2751963A00397A57 /* __implement */,
@@ -461,6 +536,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9A112C512F23749100360960 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9A112C5F2F23749100360960 /* libnetworking_bsd.dylib */,
+				9A112C612F23749100360960 /* libios_networking_bsd.a */,
+				9A112C632F23749100360960 /* libstatic_networking_bsd.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9A191D3F2CF3D880001239A6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -477,19 +562,21 @@
 			path = en.lproj;
 			sourceTree = "<group>";
 		};
+		9A35D54B2F23762F00998589 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9A35D5592F23762F00998589 /* libimaging_coreimage.dylib */,
+				9A35D55B2F23762F00998589 /* libios_imaging_coreimage.a */,
+				9A35D55D2F23762F00998589 /* math_iosTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9A3E0BA12309FBD400B5459B /* Library */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Library;
-			sourceTree = "<group>";
-		};
-		9A4333172F232B5A00705FD8 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				9A43331F2F232B5A00705FD8 /* libgpu_opengl.dylib */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		9A4E969B2785379F00B74C76 /* Products */ = {
@@ -541,6 +628,8 @@
 		9ADF1D2922C16DBB00456537 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9A35D56E2F23775C00998589 /* libgpu.dylib */,
+				9A35D5692F23775500998589 /* libgraphics3d.dylib */,
 				9A4CC8872F2370EA00D9A73A /* libberg.dylib */,
 				9AE7A3BD2D1CD5FC00070257 /* libnano_graphics_quartz2d.dylib */,
 				9AE7A3BA2D1CD5EC00070257 /* libinnate_ui_appkit.dylib */,
@@ -634,7 +723,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				9A43331A2F232B5A00705FD8 /* PBXTargetDependency */,
+				9A35D5682F23773E00998589 /* PBXTargetDependency */,
+				9A35D5642F23764D00998589 /* PBXTargetDependency */,
+				9A112C732F2374DD00360960 /* PBXTargetDependency */,
 				9A857DB52F229167001D08D1 /* PBXTargetDependency */,
 				9AEC3D392D1A96A900F9E621 /* PBXTargetDependency */,
 				9A4E96AE278537B700B74C76 /* PBXTargetDependency */,
@@ -724,12 +815,16 @@
 					ProjectRef = 9A4E969A2785379F00B74C76 /* folder_zip.xcodeproj */;
 				},
 				{
-					ProductGroup = 9A4333172F232B5A00705FD8 /* Products */;
-					ProjectRef = 9A4333162F232B5A00705FD8 /* gpu_opengl.xcodeproj */;
-				},
-				{
 					ProductGroup = 9A9123042F22C9AF002F52F3 /* Products */;
 					ProjectRef = 9A8585E02F22C74B001D08D1 /* graphics3d_opengl.xcodeproj */;
+				},
+				{
+					ProductGroup = 9A35D54B2F23762F00998589 /* Products */;
+					ProjectRef = 9A112C752F23761E00360960 /* imaging_coreimage.xcodeproj */;
+				},
+				{
+					ProductGroup = 9A112C512F23749100360960 /* Products */;
+					ProjectRef = 9A4CC8892F23748100D9A73A /* networking_bsd.xcodeproj */;
 				},
 				{
 					ProductGroup = 9A191D3F2CF3D880001239A6 /* Products */;
@@ -774,6 +869,27 @@
 			remoteRef = 9A00E19F26611D5E00517464 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		9A112C5F2F23749100360960 /* libnetworking_bsd.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libnetworking_bsd.dylib;
+			remoteRef = 9A112C5E2F23749100360960 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9A112C612F23749100360960 /* libios_networking_bsd.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libios_networking_bsd.a;
+			remoteRef = 9A112C602F23749100360960 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9A112C632F23749100360960 /* libstatic_networking_bsd.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libstatic_networking_bsd.a;
+			remoteRef = 9A112C622F23749100360960 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		9A191D462CF3D880001239A6 /* liboperating_ambient_macos.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
@@ -781,11 +897,25 @@
 			remoteRef = 9A191D452CF3D880001239A6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		9A43331F2F232B5A00705FD8 /* libgpu_opengl.dylib */ = {
+		9A35D5592F23762F00998589 /* libimaging_coreimage.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
-			path = libgpu_opengl.dylib;
-			remoteRef = 9A43331E2F232B5A00705FD8 /* PBXContainerItemProxy */;
+			path = libimaging_coreimage.dylib;
+			remoteRef = 9A35D5582F23762F00998589 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9A35D55B2F23762F00998589 /* libios_imaging_coreimage.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libios_imaging_coreimage.a;
+			remoteRef = 9A35D55A2F23762F00998589 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9A35D55D2F23762F00998589 /* math_iosTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = math_iosTests.xctest;
+			remoteRef = 9A35D55C2F23762F00998589 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9A4E96A12785379F00B74C76 /* libfolder_zip.dylib */ = {
@@ -996,15 +1126,25 @@
 			name = experience_core;
 			targetProxy = 9A00E651266171C800517464 /* PBXContainerItemProxy */;
 		};
+		9A112C732F2374DD00360960 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = networking_bsd;
+			targetProxy = 9A112C722F2374DD00360960 /* PBXContainerItemProxy */;
+		};
 		9A23A7D426CEEA5600F98012 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = database_sqlite3;
 			targetProxy = 9A23A7D326CEEA5600F98012 /* PBXContainerItemProxy */;
 		};
-		9A43331A2F232B5A00705FD8 /* PBXTargetDependency */ = {
+		9A35D5642F23764D00998589 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = gpu_opengl;
-			targetProxy = 9A4333192F232B5A00705FD8 /* PBXContainerItemProxy */;
+			name = imaging_coreimage;
+			targetProxy = 9A35D5632F23764D00998589 /* PBXContainerItemProxy */;
+		};
+		9A35D5682F23773E00998589 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = graphics3d_opengl;
+			targetProxy = 9A35D5672F23773E00998589 /* PBXContainerItemProxy */;
 		};
 		9A4E96AE278537B700B74C76 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

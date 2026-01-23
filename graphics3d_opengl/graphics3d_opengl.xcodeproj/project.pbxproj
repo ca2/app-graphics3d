@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A35D5732F23778200998589 /* skybox_render_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43346E2F232D1500705FD8 /* skybox_render_system.cpp */; };
+		9A35D5742F23778200998589 /* scene_render_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43346C2F232D1500705FD8 /* scene_render_system.cpp */; };
+		9A35D5752F23778200998589 /* gltf_render_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43346A2F232D1500705FD8 /* gltf_render_system.cpp */; };
+		9A35D5762F23778200998589 /* wavefront_obj_render_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334702F232D1500705FD8 /* wavefront_obj_render_system.cpp */; };
+		9A35D5792F2377C200998589 /* libgraphics3d.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A35D5782F23778300998589 /* libgraphics3d.dylib */; };
 		9A4334CD2F232D9400705FD8 /* _factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43340D2F232D1500705FD8 /* _factory.cpp */; };
 		9A4334CE2F232D9A00705FD8 /* _.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334072F232D1500705FD8 /* _.cpp */; };
 		9A4334CF2F232DAB00705FD8 /* input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334282F232D1500705FD8 /* input.cpp */; };
@@ -19,6 +24,7 @@
 		9A4334D62F232DAB00705FD8 /* render_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334722F232D1500705FD8 /* render_system.cpp */; };
 		9A4334D72F232DAB00705FD8 /* descriptors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43341C2F232D1500705FD8 /* descriptors.cpp */; };
 		9A4334D82F232DAB00705FD8 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334182F232D1500705FD8 /* context.cpp */; };
+		9A8A57742F23855D00FBC673 /* glad.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A8A57732F23855D00FBC673 /* glad.dylib */; };
 		9AC7C7292F232F3200A059F9 /* libaxis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C7282F232F3200A059F9 /* libaxis.dylib */; };
 		9AC7C72B2F232F3200A059F9 /* libberg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C72A2F232F3200A059F9 /* libberg.dylib */; };
 		9AC7C72D2F232F3200A059F9 /* libbred.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C72C2F232F3200A059F9 /* libbred.dylib */; };
@@ -31,6 +37,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		9A35D5772F23778300998589 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A0FEEE32F232EC300548DC3 /* graphics3d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A9124D12F2325B9002F52F3;
+			remoteInfo = graphics3d;
+		};
+		9A8A576D2F23789F00FBC673 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A35D57A2F23785600998589 /* gpu_opengl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A43332C2F232BA800705FD8;
+			remoteInfo = gpu_opengl;
+		};
 		9AC7C7252F232F0F00A059F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9A0FEEE32F232EC300548DC3 /* graphics3d.xcodeproj */;
@@ -42,6 +62,7 @@
 
 /* Begin PBXFileReference section */
 		9A0FEEE32F232EC300548DC3 /* graphics3d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = graphics3d.xcodeproj; path = ../graphics3d/graphics3d.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9A35D57A2F23785600998589 /* gpu_opengl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gpu_opengl.xcodeproj; path = ../../app/gpu_opengl/gpu_opengl.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9A43333D2F232BB900705FD8 /* libgraphics3d_opengl.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libgraphics3d_opengl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A4334062F232D1500705FD8 /* _.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = _.h; sourceTree = "<group>"; };
 		9A4334072F232D1500705FD8 /* _.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = _.cpp; sourceTree = "<group>"; };
@@ -49,7 +70,7 @@
 		9A4334092F232D1500705FD8 /* _____release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "_____release.xcconfig"; sourceTree = "<group>"; };
 		9A43340A2F232D1500705FD8 /* _constant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = _constant.h; sourceTree = "<group>"; };
 		9A43340D2F232D1500705FD8 /* _factory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = _factory.cpp; sourceTree = "<group>"; };
-		9A43340E2F232D1500705FD8 /* _opengl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = _opengl.h; sourceTree = "<group>"; };
+		9A43340E2F232D1500705FD8 /* _graphics3d_opengl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = _graphics3d_opengl.h; sourceTree = "<group>"; };
 		9A4334142F232D1500705FD8 /* buffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = buffer.cpp; sourceTree = "<group>"; };
 		9A4334152F232D1500705FD8 /* camera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = camera.h; sourceTree = "<group>"; };
 		9A4334162F232D1500705FD8 /* camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = camera.cpp; sourceTree = "<group>"; };
@@ -112,6 +133,7 @@
 		9A4334792F232D1500705FD8 /* point_light_system.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = point_light_system.cpp; sourceTree = "<group>"; };
 		9A43347B2F232D1500705FD8 /* targetver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
 		9A43347C2F232D1500705FD8 /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		9A8A57732F23855D00FBC673 /* glad.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = glad.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AC7C7282F232F3200A059F9 /* libaxis.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaxis.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AC7C72A2F232F3200A059F9 /* libberg.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libberg.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AC7C72C2F232F3200A059F9 /* libbred.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libbred.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -128,6 +150,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A8A57742F23855D00FBC673 /* glad.dylib in Frameworks */,
+				9A35D5792F2377C200998589 /* libgraphics3d.dylib in Frameworks */,
 				9AC7C7372F232F5D00A059F9 /* libaqua.dylib in Frameworks */,
 				9AC7C7392F232F5D00A059F9 /* libaura.dylib in Frameworks */,
 				9AC7C7332F232F5100A059F9 /* libacme.dylib in Frameworks */,
@@ -147,6 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				9A0FEEE32F232EC300548DC3 /* graphics3d.xcodeproj */,
+				9A35D57A2F23785600998589 /* gpu_opengl.xcodeproj */,
 				9A43334A2F232C1500705FD8 /* graphics3d_opengl */,
 				9AC7C7272F232F3200A059F9 /* Frameworks */,
 				9A43333E2F232BB900705FD8 /* Products */,
@@ -172,7 +197,7 @@
 				9A4334072F232D1500705FD8 /* _.cpp */,
 				9A43340A2F232D1500705FD8 /* _constant.h */,
 				9A43340D2F232D1500705FD8 /* _factory.cpp */,
-				9A43340E2F232D1500705FD8 /* _opengl.h */,
+				9A43340E2F232D1500705FD8 /* _graphics3d_opengl.h */,
 				9A4334142F232D1500705FD8 /* buffer.cpp */,
 				9A4334152F232D1500705FD8 /* camera.h */,
 				9A4334162F232D1500705FD8 /* camera.cpp */,
@@ -261,9 +286,17 @@
 			path = system;
 			sourceTree = "<group>";
 		};
+		9A8A57682F23789000FBC673 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9AC7C7202F232F0300A059F9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				9A35D5782F23778300998589 /* libgraphics3d.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -271,6 +304,7 @@
 		9AC7C7272F232F3200A059F9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9A8A57732F23855D00FBC673 /* glad.dylib */,
 				9AC7C7362F232F5D00A059F9 /* libaqua.dylib */,
 				9AC7C7382F232F5D00A059F9 /* libaura.dylib */,
 				9AC7C7322F232F5100A059F9 /* libacme.dylib */,
@@ -309,6 +343,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9A8A576E2F23789F00FBC673 /* PBXTargetDependency */,
 				9AC7C7262F232F0F00A059F9 /* PBXTargetDependency */,
 			);
 			name = graphics3d_opengl;
@@ -346,6 +381,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 9A8A57682F23789000FBC673 /* Products */;
+					ProjectRef = 9A35D57A2F23785600998589 /* gpu_opengl.xcodeproj */;
+				},
+				{
 					ProductGroup = 9AC7C7202F232F0300A059F9 /* Products */;
 					ProjectRef = 9A0FEEE32F232EC300548DC3 /* graphics3d.xcodeproj */;
 				},
@@ -356,6 +395,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		9A35D5782F23778300998589 /* libgraphics3d.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libgraphics3d.dylib;
+			remoteRef = 9A35D5772F23778300998589 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		9AE0345F2F234186003579EA /* ShellScript */ = {
@@ -393,6 +442,10 @@
 				9A4334D22F232DAB00705FD8 /* buffer.cpp in Sources */,
 				9A4334D32F232DAB00705FD8 /* camera.cpp in Sources */,
 				9A4334D42F232DAB00705FD8 /* mesh.cpp in Sources */,
+				9A35D5732F23778200998589 /* skybox_render_system.cpp in Sources */,
+				9A35D5742F23778200998589 /* scene_render_system.cpp in Sources */,
+				9A35D5752F23778200998589 /* gltf_render_system.cpp in Sources */,
+				9A35D5762F23778200998589 /* wavefront_obj_render_system.cpp in Sources */,
 				9A4334D52F232DAB00705FD8 /* cube_map.cpp in Sources */,
 				9A4334D62F232DAB00705FD8 /* render_system.cpp in Sources */,
 				9A4334D72F232DAB00705FD8 /* descriptors.cpp in Sources */,
@@ -403,6 +456,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		9A8A576E2F23789F00FBC673 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = gpu_opengl;
+			targetProxy = 9A8A576D2F23789F00FBC673 /* PBXContainerItemProxy */;
+		};
 		9AC7C7262F232F0F00A059F9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = graphics3d;

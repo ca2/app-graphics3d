@@ -2,7 +2,7 @@
 
 
 #include "gpu_opengl/_.h"
-#include "_opengl.h"
+#include "_graphics3d_opengl.h"
 #include "app-graphics3d/graphics3d/_.h"
 
 
