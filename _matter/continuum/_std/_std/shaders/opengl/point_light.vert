@@ -1,4 +1,4 @@
-#version 420
+#version 410
 
 const vec2 OFFSETS[6] = vec2[](
   vec2(-1.0, -1.0),
@@ -42,8 +42,8 @@ const float LIGHT_RADIUS = 0.05;
 
 void main() {
  fragOffset = OFFSETS[gl_VertexID];
-  vec3 cameraRightWorld = {view[0][0], view[1][0], view[2][0]};
-  vec3 cameraUpWorld = {view[0][1], view[1][1], view[2][1]};
+  vec3 cameraRightWorld = vec3(view[0][0], view[1][0], view[2][0]);
+  vec3 cameraUpWorld = vec3(view[0][1], view[1][1], view[2][1]);
 
   vec3 positionWorld = position.xyz
     + radius * fragOffset.x * cameraRightWorld

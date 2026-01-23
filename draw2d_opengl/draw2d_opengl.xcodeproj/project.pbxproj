@@ -17,6 +17,7 @@
 		9A3BC89B2F2399040043B263 /* libgpu.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A3BC89A2F2399040043B263 /* libgpu.dylib */; };
 		9A3BC89C2F2399040043B263 /* libgpu_opengl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A3BC8882F2398C90043B263 /* libgpu_opengl.dylib */; };
 		9A3BC89E2F239B4A0043B263 /* glad.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A3BC89D2F239B4A0043B263 /* glad.dylib */; };
+		9A5A9D652F23D72F00F3FA1F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A5A9D642F23D72F00F3FA1F /* OpenGL.framework */; };
 		9AC9427C2F23978B00038E29 /* image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC9426A2F23978B00038E29 /* image.cpp */; };
 		9AC9427D2F23978B00038E29 /* path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC942712F23978B00038E29 /* path.cpp */; };
 		9AC9427E2F23978B00038E29 /* bitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AC942582F23978B00038E29 /* bitmap.cpp */; };
@@ -69,6 +70,13 @@
 			remoteGlobalIDString = 9A43332C2F232BA800705FD8;
 			remoteInfo = gpu_opengl;
 		};
+		9AD590072F23CBF900356667 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A3BC8B92F23CBDD0043B263 /* typeface_quartz2d.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A3BC8A72F23C9E80043B263;
+			remoteInfo = typeface_quartz2d;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -81,7 +89,9 @@
 		9A3BC8982F2399040043B263 /* libbred.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libbred.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A3BC89A2F2399040043B263 /* libgpu.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libgpu.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A3BC89D2F239B4A0043B263 /* glad.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = glad.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A3BC8B92F23CBDD0043B263 /* typeface_quartz2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = typeface_quartz2d.xcodeproj; path = "../../../operating_system/operating_system-apple/typeface_quartz2d/typeface_quartz2d.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		9A3D39722F2398A300460530 /* gpu_opengl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gpu_opengl.xcodeproj; path = ../../app/gpu_opengl/gpu_opengl.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9A5A9D642F23D72F00F3FA1F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		9A8A577E2F2396C800FBC673 /* libdraw2d_opengl.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libdraw2d_opengl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AC942522F23978B00038E29 /* _.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = _.h; sourceTree = "<group>"; };
 		9AC942532F23978B00038E29 /* _.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = _.cpp; sourceTree = "<group>"; };
@@ -128,6 +138,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A5A9D652F23D72F00F3FA1F /* OpenGL.framework in Frameworks */,
 				9A3BC89E2F239B4A0043B263 /* glad.dylib in Frameworks */,
 				9A3BC88D2F2399040043B263 /* libacme.dylib in Frameworks */,
 				9A3BC88F2F2399040043B263 /* libapex.dylib in Frameworks */,
@@ -155,6 +166,7 @@
 		9A3BC88B2F2399040043B263 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9A5A9D642F23D72F00F3FA1F /* OpenGL.framework */,
 				9A3BC89D2F239B4A0043B263 /* glad.dylib */,
 				9A3BC88C2F2399040043B263 /* libacme.dylib */,
 				9A3BC88E2F2399040043B263 /* libapex.dylib */,
@@ -172,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				9A3D39722F2398A300460530 /* gpu_opengl.xcodeproj */,
+				9A3BC8B92F23CBDD0043B263 /* typeface_quartz2d.xcodeproj */,
 				9AC942512F23975E00038E29 /* draw2d_opengl */,
 				9A3BC88B2F2399040043B263 /* Frameworks */,
 				9A8A577F2F2396C800FBC673 /* Products */,
@@ -231,6 +244,13 @@
 			name = draw2d_opengl;
 			sourceTree = "<group>";
 		};
+		9AD590022F23CBED00356667 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -275,6 +295,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9AD590082F23CBF900356667 /* PBXTargetDependency */,
 				9A3BC88A2F2398EA0043B263 /* PBXTargetDependency */,
 			);
 			name = draw2d_opengl;
@@ -314,6 +335,10 @@
 				{
 					ProductGroup = 9A3BC8842F2398C90043B263 /* Products */;
 					ProjectRef = 9A3D39722F2398A300460530 /* gpu_opengl.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AD590022F23CBED00356667 /* Products */;
+					ProjectRef = 9A3BC8B92F23CBDD0043B263 /* typeface_quartz2d.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -363,6 +388,11 @@
 			isa = PBXTargetDependency;
 			name = gpu_opengl;
 			targetProxy = 9A3BC8892F2398EA0043B263 /* PBXContainerItemProxy */;
+		};
+		9AD590082F23CBF900356667 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = typeface_quartz2d;
+			targetProxy = 9AD590072F23CBF900356667 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -416,6 +446,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = framework.h;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -509,6 +540,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = framework.h;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;

@@ -56,7 +56,7 @@ namespace graphics3d_opengl
          auto mem = file()->as_memory(facesCubemap[i].c_str());
          unsigned char* data = stbi_load_from_memory(
             (const stbi_uc*)mem.data(),
-            mem.size(), &width, &height, &nrChannels, 0);
+            (int) mem.size(), &width, &height, &nrChannels, 0);
 
          if (data) {
             // Load the texture data into the cubemap

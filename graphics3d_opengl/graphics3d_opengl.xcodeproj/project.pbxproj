@@ -24,6 +24,7 @@
 		9A4334D62F232DAB00705FD8 /* render_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334722F232D1500705FD8 /* render_system.cpp */; };
 		9A4334D72F232DAB00705FD8 /* descriptors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43341C2F232D1500705FD8 /* descriptors.cpp */; };
 		9A4334D82F232DAB00705FD8 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334182F232D1500705FD8 /* context.cpp */; };
+		9A5A9D692F23D74300F3FA1F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A5A9D662F23D74300F3FA1F /* OpenGL.framework */; };
 		9A8A57742F23855D00FBC673 /* glad.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A8A57732F23855D00FBC673 /* glad.dylib */; };
 		9AC7C7292F232F3200A059F9 /* libaxis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C7282F232F3200A059F9 /* libaxis.dylib */; };
 		9AC7C72B2F232F3200A059F9 /* libberg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C72A2F232F3200A059F9 /* libberg.dylib */; };
@@ -133,6 +134,7 @@
 		9A4334792F232D1500705FD8 /* point_light_system.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = point_light_system.cpp; sourceTree = "<group>"; };
 		9A43347B2F232D1500705FD8 /* targetver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
 		9A43347C2F232D1500705FD8 /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		9A5A9D662F23D74300F3FA1F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		9A8A57732F23855D00FBC673 /* glad.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = glad.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AC7C7282F232F3200A059F9 /* libaxis.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libaxis.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AC7C72A2F232F3200A059F9 /* libberg.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libberg.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -150,6 +152,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A5A9D692F23D74300F3FA1F /* OpenGL.framework in Frameworks */,
 				9A8A57742F23855D00FBC673 /* glad.dylib in Frameworks */,
 				9A35D5792F2377C200998589 /* libgraphics3d.dylib in Frameworks */,
 				9AC7C7372F232F5D00A059F9 /* libaqua.dylib in Frameworks */,
@@ -304,6 +307,7 @@
 		9AC7C7272F232F3200A059F9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9A5A9D662F23D74300F3FA1F /* OpenGL.framework */,
 				9A8A57732F23855D00FBC673 /* glad.dylib */,
 				9AC7C7362F232F5D00A059F9 /* libaqua.dylib */,
 				9AC7C7382F232F5D00A059F9 /* libaura.dylib */,

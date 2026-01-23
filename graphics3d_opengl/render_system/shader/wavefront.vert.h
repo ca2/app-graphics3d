@@ -1,9 +1,9 @@
-﻿// This file was automatically generated from a command line like:
+// This file was automatically generated from a command line like:
 // application_build_helper --inline-text "wavefront.vert"
 #pragma once
 
 
-const char g_psz_wavefront_vert[] = R"vert_text(#version 420 core
+const char g_psz_wavefront_vert[] = R"vert_text(#version 410 core
  
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;

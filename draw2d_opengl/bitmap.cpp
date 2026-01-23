@@ -411,8 +411,14 @@ namespace draw2d_opengl
 
       }
 
+#if defined(__APPLE__)
+      glTexImage2D(GL_TEXTURE_2D, 0, 4, m_sizeIn.cx, m_sizeIn.cy, 0, GL_BGRA, GL_UNSIGNED_BYTE, m_memIn.data());
+
+#else
       glTexImage2D(GL_TEXTURE_2D, 0, 4, m_sizeIn.cx, m_sizeIn.cy, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, m_memIn.data());
-      e = glGetError();
+#endif
+      
+      GLCheckError("");
 
 
 

@@ -183,8 +183,8 @@ namespace draw2d_opengl
       bool LoadOEMBitmap(unsigned int nIDBitmap); // for OBM_/OCR_/OIC_
       bool CreateBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight, unsigned int nPlanes, unsigned int nBitcount, const void * lpBits, int stride);
       //bool CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap);
-      void CreateCompatibleBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
-      void CreateDiscardableBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
+      void CreateCompatibleBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight) override;
+      void CreateDiscardableBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight) override;
       
       void create_bitmap(::draw2d::graphics * pgraphics, const ::int_size& size, void** ppcolorref, int* piScan) override;
       void CreateDIBitmap(::draw2d::graphics * pgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
@@ -193,16 +193,16 @@ namespace draw2d_opengl
       //int GetBitmap(BITMAP* pBitMap);
 
 
-      unsigned int SetBitmapBits(unsigned int dwCount, const void * lpBits);
-      unsigned int GetBitmapBits(unsigned int dwCount, void * lpBits) const;
+      unsigned int SetBitmapBits(unsigned int dwCount, const void * lpBits) override;
+      unsigned int GetBitmapBits(unsigned int dwCount, void * lpBits) const override;
       ::int_size SetBitmapDimension(int nWidth, int nHeight);
-      ::int_size GetBitmapDimension() const;
+      ::int_size GetBitmapDimension() const override;
 
       // void dump(dump_context & dumpcontext) const override;
 
 
       //virtual void attach(void * posdata);
-      virtual void * detach();
+      virtual void * detach() override;
 
       //virtual HBITMAP _GetHBITMAP();
       //virtual void _ReleaseHBITMAP(HBITMAP hbitmap);
