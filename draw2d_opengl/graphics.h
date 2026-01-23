@@ -71,9 +71,9 @@ namespace draw2d_opengl
       //oswindow get_window_handle() const;
 //      ::windowing::window * GetWindow() const;
 
-      virtual void thread_select();
+      void thread_select() override;
       void do_on_context(const ::procedure & procedure) override;
-         ::geometry2d::matrix context_matrix(enum_transform_context etransformcontext);
+         ::geometry2d::matrix context_matrix(enum_transform_context etransformcontext) override;
          ::geometry2d::matrix context_scale_matrix() override;
       void start_gpu_layer(::gpu::frame * pgpuframe) override;
       ::gpu::frame * end_gpu_layer(::gpu::frame * pgpuframe) override;
@@ -116,7 +116,7 @@ namespace draw2d_opengl
 
       // for bidi and mirrored localization
       unsigned int GetLayout() const;
-      unsigned int SetLayout(unsigned int dwLayout);
+      unsigned int SetLayout(unsigned int dwLayout) override;
 
 
       //HDC get_hdc();
@@ -300,23 +300,23 @@ namespace draw2d_opengl
 
       //using ::draw2d::graphics::Arc;
       //bool arc(double x1, double y1, double x2, double y2,int x3,int y3,int x4,int y4);
-      void arc(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4);
+      void arc(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4) override;
 
       //bool Arc(int x1,int y1,int x2,int y2,double start, double extends);
       void arc(double x1,double y1,double x2,double y2,double start, double extends);
 
-      void angle_arc(double x, double y, double nRadius,::double_angle fStartAngle, ::double_angle fSweepAngle);
-      void arc_to(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
+      void angle_arc(double x, double y, double nRadius,::double_angle fStartAngle, ::double_angle fSweepAngle) override;
+      void arc_to(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) override;
       void arc_to(const ::int_rectangle & rectangle, const ::int_point & pointStart, const ::int_point & pointEnd);
       //int GetArcDirection() const;
       //int SetArcDirection(int nArcDirection);
 
       //void polydraw(const ::double_point* lpPoints, const unsigned char* lpTypes,::collection::count nCount);
-      void polyline_to(const ::double_point * lpPoints,::collection::count nCount);
-      void poly_polyline(const ::double_point * lpPoints, const int * lpPolyPoints,::collection::count nCount);
+      void polyline_to(const ::double_point * lpPoints,::collection::count nCount) override;
+      void poly_polyline(const ::double_point * lpPoints, const int * lpPolyPoints,::collection::count nCount) override;
 
-      void poly_bezier(const ::double_point * lpPoints,::collection::count nCount);
-      void poly_bezier_to(const ::double_point * lpPoints,::collection::count nCount);
+      void poly_bezier(const ::double_point * lpPoints,::collection::count nCount) override;
+      void poly_bezier_to(const ::double_point * lpPoints,::collection::count nCount) override;
 
       // Simple Drawing Functions
 
@@ -377,7 +377,7 @@ namespace draw2d_opengl
       void draw_rectangle(const ::double_rectangle & rectangle) override;
       void draw_rectangle(const ::double_rectangle& rectangle, ::draw2d::pen * ppen) override;
       //virtual bool FillRectangle(int x1, int y1, int x2, int y2);
-      void fill_rectangle(const ::double_rectangle & rectangle);
+      void fill_rectangle(const ::double_rectangle & rectangle) override;
       //void round_rectangle(double x1, double y1, double x2, double y2, double x3, double y3) override;
       void round_rectangle(const ::double_rectangle & rectangle, const ::int_point & point);
 
@@ -430,7 +430,7 @@ namespace draw2d_opengl
 
       //void draw_text_ex(const ::scoped_string & str,const ::int_rectangle & rectangle, const ::e_align & ealign = e_align_top_left, const ::e_draw_text & edrawtext = e_draw_text_none,LPDRAWTEXTPARAMS lpDTParams = nullptr);
 
-      void draw_text(const ::scoped_string & str,const ::double_rectangle & rectangle, const ::e_align & ealign = e_align_top_left, const ::e_draw_text & edrawtext = e_draw_text_none);
+      void draw_text(const ::scoped_string & str,const ::double_rectangle & rectangle, const ::e_align & ealign = e_align_top_left, const ::e_draw_text & edrawtext = e_draw_text_none) override;
 
       //void draw_text_ex(const ::string & str, const ::double_rectangle & prectd, const ::e_align & ealign = e_align_top_left, const ::e_draw_text & edrawtext = e_draw_text_none) override;
 
@@ -541,16 +541,16 @@ namespace draw2d_opengl
       float GetMiterLimit() override;
       void SetMiterLimit(float fMiterLimit) override;
 
-      void draw(::draw2d::path * ppath);
-      void draw(::draw2d::path * ppath, ::draw2d::pen * ppen);
-      void fill(::draw2d::path * ppath);
-      void fill(::draw2d::path * ppath, ::draw2d::brush * pbrush);
+      void draw(::draw2d::path * ppath) override;
+      void draw(::draw2d::path * ppath, ::draw2d::pen * ppen) override;
+      void fill(::draw2d::path * ppath) override;
+      void fill(::draw2d::path * ppath, ::draw2d::brush * pbrush) override;
 
 
       //float GetMiterLimit() const;
       //bool SetMiterLimit(float fMiterLimit);
       //int GetPath(::int_point * lpPoints, LPBYTE lpTypes,::collection::count nCount) const;
-      void SelectClipPath(int nMode);
+      void SelectClipPath(int nMode) override;
 
       // Misc Helper Functions
       ///static ::draw2d::brush* GetHalftoneBrush();

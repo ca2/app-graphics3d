@@ -1,5 +1,5 @@
 #include "framework.h"
-#include "_opengl.h"
+#include "_draw2d_opengl.h"
 #include "draw2d.h"
 #include "acme/exception/resource.h"
 #include "acme/platform/application.h"
@@ -194,6 +194,10 @@ namespace draw2d_opengl
 #elif defined(LINUX)
 
       return "pango";
+
+#elif defined(__APPLE__)
+
+      return "quartz2d";
 
 #else
 

@@ -1,7 +1,6 @@
 #include "framework.h"
-#include "gpu_opengl/_gpu_opengl.h"
+#include "_draw2d_opengl.h"
 #include "_draw2d.h"
-#include "_opengl.h"
 #include "draw2d.h"
 #include "pen.h"
 #include "path.h"

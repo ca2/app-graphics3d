@@ -5,20 +5,23 @@
 #undef USUAL_OPERATING_SYSTEM_SUPPRESSIONS
 #include "acme/_operating_system.h"
 
-#ifdef WINDOWS_DESKTOP
-#define GLAD_GLAPI_EXPORT
-#include <glad/glad.h>
-#else
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-//#include <GL/glext.h>
-#ifdef LINUX
-//#include <GL/glx.h>
-//#define GLAD_GLAPI_EXPORT
-#include <glad/glad.h>
-#endif
+#include "gpu_opengl/_gpu_opengl.h"
 
-#endif
+//
+//#ifdef WINDOWS_DESKTOP
+//#define GLAD_GLAPI_EXPORT
+//#include <glad/glad.h>
+//#else
+////#include <GL/gl.h>
+////#include <GL/glu.h>
+////#include <GL/glext.h>
+//#ifdef LINUX
+////#include <GL/glx.h>
+////#define GLAD_GLAPI_EXPORT
+//#include <glad/glad.h>
+//#endif
+//
+//#endif
 
 //#include "factory_exchange.h"
 //

@@ -331,8 +331,8 @@ namespace app_graphics3d_continuum
 
          pcamera->update();
 
-         float fNearZ = pcamera->m_fNearZ;
-         float fFarZ = pcamera->m_fFarZ;
+         //float fNearZ = pcamera->m_fNearZ;
+         //float fFarZ = pcamera->m_fFarZ;
 
       auto projection = pcamera->projection();
       globalUbo1["projection"] = projection;

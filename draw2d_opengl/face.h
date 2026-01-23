@@ -26,11 +26,11 @@ namespace draw2d_opengl
       //virtual character& get_character(const ::scoped_string& scopedstr);
 
 
-      virtual void create_character(::typeface::character& ch, const ::scoped_string& scopedstr);
+      virtual void create_character(::typeface::character& ch, const ::scoped_string& scopedstr) override;
 
       void create_draw_buffers();
 
-      void create_texture(::typeface::character& ch, const unsigned char* p);
+      void create_texture(::typeface::character& ch, const unsigned char* p) override;
 
 
    };

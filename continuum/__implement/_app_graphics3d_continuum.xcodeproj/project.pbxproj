@@ -42,6 +42,8 @@
 		9AC01E2E2748D046006BEBCC /* libaura.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AFFC73126786C6A00C4104F /* libaura.dylib */; };
 		9AC01E2F2748D057006BEBCC /* libaxis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AFFC75026786CAD00C4104F /* libaxis.dylib */; };
 		9AC01E3E2748D129006BEBCC /* libcrypto_openssl.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9AC01E3A2748D0E0006BEBCC /* libcrypto_openssl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9AC942A82F23982200038E29 /* libdraw2d_opengl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC942452F23974B00038E29 /* libdraw2d_opengl.dylib */; };
+		9AC942A92F23982200038E29 /* libdraw2d_opengl.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9AC942452F23974B00038E29 /* libdraw2d_opengl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9AE7A3B72D1CD5E300070257 /* libacme_windowing_appkit.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9AE7A3B42D1CD5E300070257 /* libacme_windowing_appkit.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9AE7A3B92D1CD5E300070257 /* libacme_windowing_kit.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9AE7A3B52D1CD5E300070257 /* libacme_windowing_kit.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9AE7A3BC2D1CD5EC00070257 /* libinnate_ui_appkit.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9AE7A3BA2D1CD5EC00070257 /* libinnate_ui_appkit.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -300,6 +302,20 @@
 			remoteGlobalIDString = 9AC019332748A002006BEBCC;
 			remoteInfo = crypto_openssl;
 		};
+		9AC942442F23974B00038E29 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A8A57852F2396F600FBC673 /* draw2d_opengl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A8A577E2F2396C800FBC673;
+			remoteInfo = draw2d_opengl;
+		};
+		9AC942A62F23980900038E29 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A8A57852F2396F600FBC673 /* draw2d_opengl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A8A577D2F2396C800FBC673;
+			remoteInfo = draw2d_opengl;
+		};
 		9AE12EBD2661EA0B009F476A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9AE12E992661EA0B009F476A /* regular_expression_pcre2.xcodeproj */;
@@ -350,6 +366,7 @@
 				9A857A652F228D62001D08D1 /* libapp_graphics3d_continuum.dylib in Embed Libraries */,
 				9AFFC74726786C6B00C4104F /* libaura.dylib in Embed Libraries */,
 				9AB15C0429A87A8A00DFDF90 /* libaura_darwin.dylib in Embed Libraries */,
+				9AC942A92F23982200038E29 /* libdraw2d_opengl.dylib in Embed Libraries */,
 				9A842CB7271BDAC200C64F6F /* libwrite_text_quartz2d.dylib in Embed Libraries */,
 				9A9A190E2AFC36F000FA9BEB /* libdarwin.dylib in Embed Libraries */,
 				9AE7A3B72D1CD5E300070257 /* libacme_windowing_appkit.dylib in Embed Libraries */,
@@ -406,6 +423,7 @@
 		9A842CB1271BDA6B00C64F6F /* libwindowing_macos.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libwindowing_macos.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A857A462F228CD4001D08D1 /* app_graphics3d_continuum.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = app_graphics3d_continuum.xcodeproj; path = ../app_graphics3d_continuum.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9A8585E02F22C74B001D08D1 /* graphics3d_opengl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = graphics3d_opengl.xcodeproj; path = ../../graphics3d_opengl/graphics3d_opengl.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9A8A57852F2396F600FBC673 /* draw2d_opengl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = draw2d_opengl.xcodeproj; path = ../../draw2d_opengl/draw2d_opengl.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9A8C816C2783F879000C8587 /* _matter.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = _matter.zip; path = ../_matter.zip; sourceTree = "<group>"; };
 		9A8F4D682A26D53B00097EE1 /* _____debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "_____debug.xcconfig"; path = "../_____debug.xcconfig"; sourceTree = "<group>"; };
 		9A8F4D752A26D53C00097EE1 /* _____release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "_____release.xcconfig"; path = "../_____release.xcconfig"; sourceTree = "<group>"; };
@@ -454,6 +472,7 @@
 				9A112C702F2374B600360960 /* libnetworking_bsd.dylib in Frameworks */,
 				9A4CC8882F2370EA00D9A73A /* libberg.dylib in Frameworks */,
 				9A35D5652F23766A00998589 /* libimaging_coreimage.dylib in Frameworks */,
+				9AC942A82F23982200038E29 /* libdraw2d_opengl.dylib in Frameworks */,
 				9A112C742F23750500360960 /* libfolder_zip.dylib in Frameworks */,
 				9AC01E2F2748D057006BEBCC /* libaxis.dylib in Frameworks */,
 				9A35D56A2F23775500998589 /* libgraphics3d.dylib in Frameworks */,
@@ -483,6 +502,7 @@
 				9A857A462F228CD4001D08D1 /* app_graphics3d_continuum.xcodeproj */,
 				9AC01E332748D0E0006BEBCC /* crypto_openssl.xcodeproj */,
 				9AE12EC02661EA22009F476A /* database_sqlite3.xcodeproj */,
+				9A8A57852F2396F600FBC673 /* draw2d_opengl.xcodeproj */,
 				9A00E12C26611D5900517464 /* draw2d_quartz2d.xcodeproj */,
 				9A00E644266170F400517464 /* experience_core.xcodeproj */,
 				9A4E969A2785379F00B74C76 /* folder_zip.xcodeproj */,
@@ -625,6 +645,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9AC9423E2F23974B00038E29 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AC942452F23974B00038E29 /* libdraw2d_opengl.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9ADF1D2922C16DBB00456537 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -723,6 +751,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9AC942A72F23980900038E29 /* PBXTargetDependency */,
 				9A35D5682F23773E00998589 /* PBXTargetDependency */,
 				9A35D5642F23764D00998589 /* PBXTargetDependency */,
 				9A112C732F2374DD00360960 /* PBXTargetDependency */,
@@ -801,6 +830,10 @@
 				{
 					ProductGroup = 9AE12EC12661EA22009F476A /* Products */;
 					ProjectRef = 9AE12EC02661EA22009F476A /* database_sqlite3.xcodeproj */;
+				},
+				{
+					ProductGroup = 9AC9423E2F23974B00038E29 /* Products */;
+					ProjectRef = 9A8A57852F2396F600FBC673 /* draw2d_opengl.xcodeproj */;
 				},
 				{
 					ProductGroup = 9A00E12D26611D5900517464 /* Products */;
@@ -1002,6 +1035,13 @@
 			remoteRef = 9AC01E392748D0E0006BEBCC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		9AC942452F23974B00038E29 /* libdraw2d_opengl.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libdraw2d_opengl.dylib;
+			remoteRef = 9AC942442F23974B00038E29 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		9AE12EBE2661EA0B009F476A /* libregular_expression_pcre2.dylib */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.dylib";
@@ -1160,6 +1200,11 @@
 			isa = PBXTargetDependency;
 			name = crypto_openssl;
 			targetProxy = 9AC01E3B2748D0F5006BEBCC /* PBXContainerItemProxy */;
+		};
+		9AC942A72F23980900038E29 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = draw2d_opengl;
+			targetProxy = 9AC942A62F23980900038E29 /* PBXContainerItemProxy */;
 		};
 		9AEC3D392D1A96A900F9E621 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

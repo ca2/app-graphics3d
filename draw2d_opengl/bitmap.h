@@ -20,8 +20,14 @@
 
 #pragma warning (disable : 4244)
 
+
+#if defined (__APPLE__)
+#include "gpu_opengl/_gpu_opengl.h"
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
+
+#endif
 
 
 #define WGL_DRAW_TO_PBUFFER_ARB                   0x202D
@@ -124,7 +130,7 @@ namespace draw2d_opengl
       HGLRC g_hPBufferRC;
       HPBUFFERARB g_hPBuffer;
 
-#else
+#elif defined(LINUX) || defined(__BSD__)
       Display *dpy;
       Window win;
       GLXContext PBufferCtx;
