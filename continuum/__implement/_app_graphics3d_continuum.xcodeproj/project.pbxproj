@@ -321,7 +321,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		070B8EEA1B6E53F900D26137 /* _app_simple_continuum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = _app_simple_continuum.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		070B8EEA1B6E53F900D26137 /* _app_graphics3d_continuum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = _app_graphics3d_continuum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		070B8EFD1B6E53FA00D26137 /* _app_graphics3d_continuum_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = _app_graphics3d_continuum_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A00E12C26611D5900517464 /* draw2d_quartz2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = draw2d_quartz2d.xcodeproj; path = "../../../../operating_system/operating_system-apple/draw2d_quartz2d/draw2d_quartz2d.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		9A00E19B26611D5E00517464 /* write_text_quartz2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = write_text_quartz2d.xcodeproj; path = "../../../../operating_system/operating_system-apple/write_text_quartz2d/write_text_quartz2d.xcodeproj"; sourceTree = SOURCE_ROOT; };
@@ -428,7 +428,7 @@
 		070B8EEB1B6E53F900D26137 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				070B8EEA1B6E53F900D26137 /* _app_simple_continuum.app */,
+				070B8EEA1B6E53F900D26137 /* _app_graphics3d_continuum.app */,
 				070B8EFD1B6E53FA00D26137 /* _app_graphics3d_continuum_Tests.xctest */,
 			);
 			name = Products;
@@ -646,7 +646,7 @@
 			);
 			name = _app_graphics3d_continuum;
 			productName = "Hello Multiverse!!";
-			productReference = 070B8EEA1B6E53F900D26137 /* _app_simple_continuum.app */;
+			productReference = 070B8EEA1B6E53F900D26137 /* _app_graphics3d_continuum.app */;
 			productType = "com.apple.product-type.application";
 		};
 		070B8EFC1B6E53FA00D26137 /* _app_graphics3d_continuum_Tests */ = {
@@ -1213,9 +1213,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/macos/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Simple Application";
-				PRODUCT_BUNDLE_IDENTIFIER = "app-simple.continuum";
-				PRODUCT_NAME = _app_simple_continuum;
+				INFOPLIST_KEY_CFBundleDisplayName = continuum;
+				PRODUCT_BUNDLE_IDENTIFIER = "app-graphics3d.continuum";
+				PRODUCT_NAME = _app_graphics3d_continuum;
 			};
 			name = Debug;
 		};
@@ -1224,9 +1224,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/macos/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Simple Application";
-				PRODUCT_BUNDLE_IDENTIFIER = "app-simple.continuum";
-				PRODUCT_NAME = _app_simple_continuum;
+				INFOPLIST_KEY_CFBundleDisplayName = continuum;
+				PRODUCT_BUNDLE_IDENTIFIER = "app-graphics3d.continuum";
+				PRODUCT_NAME = _app_graphics3d_continuum;
 			};
 			name = Release;
 		};
