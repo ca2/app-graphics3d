@@ -25,7 +25,6 @@
 		9A4334D72F232DAB00705FD8 /* descriptors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43341C2F232D1500705FD8 /* descriptors.cpp */; };
 		9A4334D82F232DAB00705FD8 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334182F232D1500705FD8 /* context.cpp */; };
 		9A5A9D692F23D74300F3FA1F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A5A9D662F23D74300F3FA1F /* OpenGL.framework */; };
-		9A8A57742F23855D00FBC673 /* glad.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A8A57732F23855D00FBC673 /* glad.dylib */; };
 		9AC7C7292F232F3200A059F9 /* libaxis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C7282F232F3200A059F9 /* libaxis.dylib */; };
 		9AC7C72B2F232F3200A059F9 /* libberg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C72A2F232F3200A059F9 /* libberg.dylib */; };
 		9AC7C72D2F232F3200A059F9 /* libbred.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC7C72C2F232F3200A059F9 /* libbred.dylib */; };
@@ -153,7 +152,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9A5A9D692F23D74300F3FA1F /* OpenGL.framework in Frameworks */,
-				9A8A57742F23855D00FBC673 /* glad.dylib in Frameworks */,
 				9A35D5792F2377C200998589 /* libgraphics3d.dylib in Frameworks */,
 				9AC7C7372F232F5D00A059F9 /* libaqua.dylib in Frameworks */,
 				9AC7C7392F232F5D00A059F9 /* libaura.dylib in Frameworks */,
