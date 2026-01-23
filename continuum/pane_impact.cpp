@@ -180,7 +180,7 @@ namespace app_graphics3d_continuum
 
             auto ptabpane = get_tab_by_id(GCOM_IMPACT);
 
-            auto pchild = ptabpane->m_pplaceholder->get_child_by_id("hello_multiverse_gcom");
+            //auto pchild = ptabpane->m_pplaceholder->get_child_by_id("hello_multiverse_gcom");
 
             //::pointer < impact_base >  pimpactbase = pchild;
 

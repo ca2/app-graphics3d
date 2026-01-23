@@ -174,11 +174,6 @@ namespace graphics3d
    }
 
 
-   /// @brief generatePrefilteredEnvMap
-   /// @param environmentCubeExisting
-   /// @param prenderableSkybox
-   /// @return
-   //::pointer<::gpu::texture> scene::generateIblPrefilteredEnvMap(::gpu::texture *environmentCubeExisting,
    ::pointer<::gpu::texture> scene::generate_ibl_prefiltered_env_map(
                                                                 ::graphics3d::renderable *prenderableSkybox)
    {

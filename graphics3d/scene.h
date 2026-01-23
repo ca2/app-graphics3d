@@ -40,11 +40,6 @@ namespace graphics3d
 
       //virtual ::gpu::ibl::equirectangular_cubemap *equirectangular_cubemap();
       virtual ::gpu::ibl::specular_map *ibl_specular_map();
-      /// @brief generatePrefilteredEnvMap
-      /// @param environmentCubeExisting
-      /// @param prenderableSkybox
-      /// @return
-      //virtual ::pointer<::gpu::texture> generate_ibl_prefiltered_env_map(::gpu::texture *environmentCubeExisting,
       virtual ::pointer<::gpu::texture> generate_ibl_prefiltered_env_map(
          ::graphics3d::renderable *prenderableSkybox);
 

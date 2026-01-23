@@ -264,7 +264,7 @@ namespace app_graphics3d_continuum
       ::cast<::app_graphics3d_continuum::camera> pcamera = camera();
 
       
-         floating_matrix4 matrixImpact;
+         //floating_matrix4 matrixImpact;
 
          ////auto pgpucontext = 
          //matrixImpact = m_pgpucontext->lookAt(pcamera->m_locationPosition,
@@ -297,7 +297,7 @@ namespace app_graphics3d_continuum
 
          auto pscene = pimmersion->m_pscene;
 
-         auto pgpucamera = pscene->camera();
+         //auto pgpucamera = pscene->camera();
 
          //::cast<camera> pcamera = pgpucamera;
 
