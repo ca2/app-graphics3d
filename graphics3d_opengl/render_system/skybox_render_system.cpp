@@ -73,7 +73,6 @@ namespace graphics3d_opengl
    void skybox_render_system::on_render(::gpu::context* pgpucontext, ::graphics3d::scene_base* pscene)
 	{
 
-
       ::graphics3d::skybox_render_system::on_render(pgpucontext, pscene);
 		
 	}
