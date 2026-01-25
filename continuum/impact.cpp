@@ -148,7 +148,37 @@ namespace app_graphics3d_continuum
 
    void impact::_001OnDraw(::draw2d::graphics_pointer & pgraphics)
    {
+      
+      auto rectangleX = this->rectangle();
 
+      if (rectangleX.is_empty())
+      {
+
+         return;
+         
+      }
+      
+#if 0
+
+      ::double_rectangle rectangleClipBox;
+
+      // pgraphics->reset_clip();
+
+      // pgraphics->get_clip_box(rectangleClipBox);
+
+      auto matrix = pgraphics->m_matrix;
+
+      // auto origin = pgraphics->origin();
+
+      pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
+      ::get_task()->payload("debug") = 123;
+      pgraphics->fill_rectangle(rectangleX, argb(108, 128, 128, 128));
+      ::get_task()->payload("debug") = 0;
+
+      ::user::graphics3d::_001OnDraw(pgraphics);
+
+#endif
+      
       draw_gpu_statistics(pgraphics);
 
    }
