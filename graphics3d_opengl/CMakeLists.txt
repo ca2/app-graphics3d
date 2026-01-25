@@ -28,21 +28,30 @@ list(APPEND library_source
 
 
 list(APPEND library_references
-        acme
-        apex
-        aqua
-        aura
-        axis
-        berg
-        bred
-        #imgui
-        gpu_opengl
-   graphics3d
-        graphics3d_khronos
+         acme
+         apex
+         aqua
+         aura
+         axis
+         berg
+         bred
+         gpu
+         gpu_opengl
+         graphics3d
+         graphics3d_khronos
 )
 
+if(${LINUX})
 
-add_library(${PROJECT_NAME} SHARED ${library_source})
+   list(APPEND library_references
+      glad
+   )
+
+endif()
+
+
+
+      add_library(${PROJECT_NAME} SHARED ${library_source})
 add_library(static_${PROJECT_NAME} STATIC ${library_source})
 
 
