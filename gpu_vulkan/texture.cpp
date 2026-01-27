@@ -33,7 +33,6 @@
 CLASS_DECL_GPU_VULKAN VkFormat get_ktx_vk_format(ktxTexture *pktxtexture, int & iChannelCount, int &iBitsPerChannel);
 
 
-
 namespace gpu_vulkan
 {
 
@@ -310,6 +309,8 @@ namespace gpu_vulkan
 
    void texture::_set_image_data(const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat)
    {
+
+      information("texture::_set_image_data");
 
       ::gpu::context_lock contextlock(m_pgpurenderer->m_pgpucontext);
 
@@ -1035,7 +1036,9 @@ namespace gpu_vulkan
    void texture::_set_state(::gpu_vulkan::command_buffer *pcommandbuffer, state_t state)
    {
 
-      ASSERT(pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording);
+      auto estate = pcommandbuffer->m_estate;
+
+      ASSERT(estate == ::gpu::command_buffer::e_state_recording);
 
       VkImage image = m_vkimage;
 
@@ -1053,6 +1056,7 @@ namespace gpu_vulkan
          iMip = m_iCurrentMip;
 
          iMipCount = 1;
+
       }
       else
       {
@@ -1060,6 +1064,7 @@ namespace gpu_vulkan
          iMip = 0;
 
          iMipCount = this->mip_count();
+
       }
 
       if (m_iCurrentLayer >= 0)
@@ -1068,6 +1073,7 @@ namespace gpu_vulkan
          iLayer = m_iCurrentLayer;
 
          iLayerCount = 1;
+
       }
       else
       {
@@ -1075,6 +1081,7 @@ namespace gpu_vulkan
          iLayer = 0;
 
          iLayerCount = this->layer_count();
+
       }
 
       VkAccessFlags accessOld = mip_layer_state(iMip, iLayer).m_vkaccessflags;
@@ -1101,16 +1108,20 @@ namespace gpu_vulkan
          {
 
             stageOld = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
          }
+
       }
 
       // If no stage bits provided, derive conservative ones from access masks / layouts
       auto derive_stage_from_access = [](VkAccessFlags access) -> VkPipelineStageFlags
       {
+
          if (access == 0)
          {
 
             return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
          }
 
          VkPipelineStageFlags stages = 0;
@@ -1119,45 +1130,53 @@ namespace gpu_vulkan
          {
 
             stages |= VK_PIPELINE_STAGE_TRANSFER_BIT;
+
          }
 
          if (access & (VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT))
          {
 
             stages |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+
          }
 
          if (access & (VK_ACCESS_HOST_READ_BIT | VK_ACCESS_HOST_WRITE_BIT))
          {
 
             stages |= VK_PIPELINE_STAGE_HOST_BIT;
+
          }
 
          if (access & (VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT))
          {
 
             stages |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
          }
 
          if (stages == 0)
          {
 
             stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
          }
 
          return stages;
+
       };
 
       if (stageOld == 0)
       {
 
          stageOld = derive_stage_from_access(accessOld);
+
       }
 
       if (stageNew == 0)
       {
 
          stageNew = derive_stage_from_access(accessNew);
+
       }
 
       // If new layout is transfer dst and no dst access set, set transfer write
@@ -1170,7 +1189,9 @@ namespace gpu_vulkan
          {
 
             stageNew |= VK_PIPELINE_STAGE_TRANSFER_BIT;
+
          }
+
       }
 
       // If new layout is shader read only and no shader read access set, set it
@@ -1184,7 +1205,9 @@ namespace gpu_vulkan
          {
 
             stageNew |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+
          }
+
       }
 
       // Build barrier
@@ -1208,22 +1231,26 @@ namespace gpu_vulkan
       {
 
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+
       }
       else if (m_textureattributes.m_etexture == ::gpu::e_texture_depth_stencil)
       {
 
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+
       }
       else if (m_textureattributes.m_etexture == ::gpu::e_texture_image ||
                m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
       {
 
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
       }
       else
       {
 
          throw ::exception(error_wrong_state);
+
       }
 
       // Finally call barrier
@@ -1242,9 +1269,10 @@ namespace gpu_vulkan
          if (m_iCurrentLayer >= 0)
          {
 
-            auto &state = mip_layer_state(m_iCurrentMip, m_iCurrentLayer);
+            auto & state = mip_layer_state(m_iCurrentMip, m_iCurrentLayer);
 
             state = stateNew;
+
          }
          else
          {
@@ -1252,12 +1280,14 @@ namespace gpu_vulkan
             for (int iLayer = 0; iLayer < this->layer_count(); iLayer++)
             {
 
-
-               auto &state = mip_layer_state(m_iCurrentMip, iLayer);
+               auto & state = mip_layer_state(m_iCurrentMip, iLayer);
 
                state = stateNew;
+
             }
+
          }
+
       }
       else if (m_iCurrentLayer >= 0)
       {
@@ -1266,24 +1296,44 @@ namespace gpu_vulkan
          {
 
             auto & state = mip_layer_state(iMip, m_iCurrentLayer);
+
             state = stateNew;
+
          }
+
       }
-   else
-   {
-
-
-      for (int iMip = 0; iMip < this->mip_count(); iMip++)
+      else
       {
 
-         for (int iLayer = 0; iLayer < this->layer_count(); iLayer++)
+         for (int iMip = 0; iMip < this->mip_count(); iMip++)
          {
 
-            auto & state = mip_layer_state(iMip, iLayer);
-            state = stateNew;
+            for (int iLayer = 0; iLayer < this->layer_count(); iLayer++)
+            {
+
+               auto & state = mip_layer_state(iMip, iLayer);
+
+               state = stateNew;
+
+               informationf("\"%s\".state(%d, %d) = %s", m_strTextureName.c_str(), iMip, iLayer, vk_image_layout_text(state.m_vkimagelayout).c_str());
+
+               if (m_iTextureSerial == 12)
+               {
+
+                  if (state.m_vkimagelayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+                  {
+
+                     information("vkimagelayout");
+
+                  }
+
+               }
+
+            }
+
          }
+
       }
-   }
 
       //// Update stored state
       //m_state.m_vkimagelayout = layoutNew;
@@ -2331,6 +2381,8 @@ void texture::create_sampler()
 
    bool texture::imaging_load_from_file(const ::file::path &path)
    {
+
+      information("texture::imaging_load_from_file");
       ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
       ::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
 

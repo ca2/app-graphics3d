@@ -10,6 +10,7 @@
 #include "render_target.h"
 #include "queue.h"
 #include "texture.h"
+#include "fence.h"
 
 
 namespace gpu_vulkan
@@ -193,8 +194,7 @@ namespace gpu_vulkan
       const ::pointer_array < ::gpu::texture >& gputextureaSource,
       const ::array < VkSemaphore >& semaphoreaWait,
       const ::array < VkPipelineStageFlags >& stageaWait,
-      const ::array < VkSemaphore >& semaphoreaSignal,
-      VkFence* pvkfence)
+      const ::array < VkSemaphore >& semaphoreaSignal)
    {
 
       auto& ecommandbufferstate = m_estate;
@@ -355,7 +355,11 @@ namespace gpu_vulkan
 
       bool bCreatedFence = false;
 
-      if (fence)
+      ::cast < ::gpu_vulkan::fence > pfence = m_pgpufence;
+
+      VkFence vkfence = VK_NULL_HANDLE;
+
+      if (m_pgpufence)
          //{
 
          //   VkFenceCreateInfo fenceInfo = {
@@ -375,28 +379,38 @@ namespace gpu_vulkan
          //}
          //else
       {
-         vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
 
-         vkResetFences(pcontext->logicalDevice(), 1, &fence);
+         vkfence = pfence->m_vkfence;
+
+         if (vkfence == VK_NULL_HANDLE)
+         {
+
+            throw ::exception(error_wrong_state);
+
+         }
+
+         vkWaitForFences(pcontext->logicalDevice(), 1, &vkfence, VK_TRUE, UINT64_MAX);
+
+         vkResetFences(pcontext->logicalDevice(), 1, &vkfence);
 
       }
 
       ::cast < ::gpu_vulkan::queue > pqueue = m_pgpuqueue;
 
       //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
-      if (vkQueueSubmit(pqueue->m_vkqueue, 1, &submitInfo, fence) != VK_SUCCESS)
+      if (vkQueueSubmit(pqueue->m_vkqueue, 1, &submitInfo, vkfence) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed, "failed to submit draw command buffer!");
 
       }
 
-      if (pvkfence)
-      {
-
-         *pvkfence = fence;
-
-      }
+      // if (pvkfence)
+      // {
+      //
+      //    *pvkfence = fence;
+      //
+      // }
 
       ecommandbufferstate = ::gpu::command_buffer::e_state_submitted;
 

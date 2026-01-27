@@ -382,8 +382,12 @@ namespace gpu_vulkan
 
          update_binding_slots();
 
+         int iBindingSlotSet = -1;
+
          for (auto &pbindingslotset: *m_pbindingslotseta)
          {
+
+            iBindingSlotSet++;
             
             if (pbindingslotset->m_pbindingset->first()->is_global_ubo())
             {
@@ -403,6 +407,7 @@ namespace gpu_vulkan
                descriptorsetlayouta.ø(pbindingslotset->m_iSet) = pdescriptorsetlayout;
 
                continue;
+
             }
 
             ::cast<::gpu_vulkan::binding_set> pbindingset = pbindingslotset->m_pbindingset;
@@ -410,7 +415,9 @@ namespace gpu_vulkan
             descriptorsetlayouta.ø(pbindingslotset->m_iSet) = pbindingset->descriptor_set_layout(pgpucommandbuffer);
 
             descriptorpoola.ø(pbindingslotset->m_iSet) = pbindingset->m_pdescriptorsetlayout1;
+
          }
+
       }
 
       //      //m_psetdescriptorlayout =
@@ -1674,21 +1681,27 @@ namespace gpu_vulkan
    {
 
       ::cast<texture> ptexture = pgputexture;
+
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      if (ptexture->mip_layer_state(0, 0).m_vkimagelayout != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+      auto vkimage = ptexture->m_vkimage;
+
+      auto vkimagelayoutSourceTexture = ptexture->mip_layer_state(0, 0).m_vkimagelayout;
+
+      if (vkimagelayoutSourceTexture != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
       {
+
          throw ::exception(error_wrong_state);
+
       }
+
       // auto pshadertexture = this->shader_texture(pgputexture, true);
 
       // for (int i = 0; i < prenderer->get_frame_count(); i++)
       //{
 
-
       // auto& pdescriptorset = s1()->m_imagedescriptorset[image];
       // auto pcommandbuffer = this->getCurrentCommandBuffer();
-
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 

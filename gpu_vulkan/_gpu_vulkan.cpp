@@ -685,3 +685,35 @@ void _vk_check_result(VkResult  f, const char *pszFile, int iLine)
 
 
 #endif
+
+CLASS_DECL_GPU_VULKAN ::string vk_image_layout_text(VkImageLayout vkimagelayout)
+{
+
+   switch (vkimagelayout)
+   {
+      case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+         return "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL";
+      case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+         return "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL";
+      case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL:
+         return "VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL";
+      case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+         return "VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL";
+      case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+         return "VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL";
+      default:
+      {
+
+         ::string str;
+
+         str.formatf("%d", vkimagelayout);
+
+         return str;
+
+      }
+      break;
+   }
+
+}
+
+

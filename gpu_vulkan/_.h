@@ -42,6 +42,8 @@ namespace gpu_vulkan
 
    class device;
 
+   class fence;
+
    class pipeline;
 
    class renderer;

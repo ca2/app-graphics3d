@@ -51,13 +51,21 @@ namespace gpu_vulkan
 
       virtual void draw(::gpu_vulkan::model_buffer* pmodelbuffer);
 
+      // virtual VkResult submitCommandBuffers(
+      //    ::gpu::texture* pgputextureTarget,
+      //    const ::pointer_array < ::gpu::texture >& gputextureaSource,
+      //    const ::array < VkSemaphore >& semaphoreaWait,
+      //    const ::array < VkPipelineStageFlags >& stageaWait,
+      //    const ::array < VkSemaphore >& semaphoreaSignal,
+      //    VkFence * pvkfence = nullptr);
+
+
       virtual VkResult submitCommandBuffers(
          ::gpu::texture* pgputextureTarget,
          const ::pointer_array < ::gpu::texture >& gputextureaSource,
          const ::array < VkSemaphore >& semaphoreaWait,
          const ::array < VkPipelineStageFlags >& stageaWait,
-         const ::array < VkSemaphore >& semaphoreaSignal,
-         VkFence * pvkfence = nullptr);
+         const ::array < VkSemaphore >& semaphoreaSignal);
 
       void draw_vertexes(int iVertexCount) override;
       void draw_indexes(int iIndexCount) override;

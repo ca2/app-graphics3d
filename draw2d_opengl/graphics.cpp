@@ -226,23 +226,46 @@ void main() {
    }
 
 
-   void graphics::create_memory_graphics(const ::int_size& sizeParam)
+   void graphics::create_memory_graphics(const ::int_size & size)
    {
 
-      ::int_size size(sizeParam);
+      ::gpu::graphics::create_memory_graphics(size);
 
-      if (sizeParam.is_empty())
-      {
+      // ::int_size size(sizeParam);
+      //
+      // if (sizeParam.is_empty())
+      // {
+      //
+      //    size = { 1920, 1080 };
+      //
+      // }
+      //
+      // opengl_create_offscreen_buffer(size);
+      //
+      // set_ok_flag();
 
-         size = { 1920, 1080 };
+   }
 
-      }
+
+   void graphics::_create_memory_graphics(const ::int_size& size)
+   {
 
       opengl_create_offscreen_buffer(size);
 
-      set_ok_flag();
+      // __UNREFERENCED_PARAMETER(size);
+      //
+      // CreateCompatibleDC(nullptr);
+      // //if (!CreateCompatibleDC(nullptr))
+      // //{
+      //
+      // //   return false;
+      //
+      // //}
+      //
+      // //return true;
 
    }
+
 
 
    //void graphics::set_hint_window_output()
@@ -345,6 +368,8 @@ void main() {
 
       ::opengl::resize(size, bYSwap);
 
+      set_ok_flag();
+
    }
 
 
@@ -390,6 +415,10 @@ void main() {
       m_sizeScaleOutput = { 1.0, -1.0 };
 
       m_pointTranslateOutput = { 0.0, (double)size.cy };
+
+      auto pgpucontext = gpu_context();
+
+      auto pgpurenderer = pgpucontext->get_gpu_renderer();
 
       //auto pgpucontext = pgpudevice->get_main_context();
 
@@ -7094,14 +7123,32 @@ color = vec4(c.r,c.g, c.b, c.a);
    bool graphics::_is_ok() const
    {
 
-      //return ::is_set(this) & ::is_set(m_hglrc);
+      if (!::is_set(this))
+      {
 
-      auto pcontext = ((graphics*)this)->gpu_context();
+         return false;
 
-      return ::is_set(this)
-         && ::is_set(pcontext)
-         && ::is_set(pcontext->m_pgpurenderer);
-         
+      }
+
+      auto pgpucontext = ((graphics*)this)->gpu_context();
+
+      if (!::is_set(pgpucontext))
+      {
+
+         return false;
+
+      }
+
+      auto pgpurenderer = pgpucontext->m_pgpurenderer;
+
+      if (!::is_set(pgpurenderer))
+      {
+
+         return false;
+
+      }
+
+      return true;
 
    }
 

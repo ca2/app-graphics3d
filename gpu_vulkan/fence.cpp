@@ -1,10 +1,80 @@
 //
-// Created by camilo on 26/01/2026.
+// Created by camilo on 2026-01-06 23:50 <3ThomasBorregaardSørensen!!
 //
-
+#include "framework.h"
 #include "fence.h"
+
+#include "device.h"
+#include "bred/gpu/context.h"
 
 
 namespace gpu_vulkan
 {
+
+
+   fence::fence()
+   {
+
+      m_vkfence = VK_NULL_HANDLE;
+
+   }
+
+
+   fence::~fence()
+   {
+
+      if (m_vkfence != VK_NULL_HANDLE)
+      {
+
+         ::cast < ::gpu_vulkan::device > pdevice = m_pgpucontext->m_pgpudevice;
+
+         vkDestroyFence(pdevice->m_vkdevice, m_vkfence, nullptr);
+
+      }
+
+   }
+
+
+   void fence::initialize_gpu_fence(::gpu::context * pgpucontext)
+   {
+
+      ::gpu::fence::initialize_gpu_fence(pgpucontext);
+
+      ::cast < ::gpu_vulkan::device > pdevice = m_pgpucontext->m_pgpudevice;
+
+      VkFenceCreateInfo fenceCreateInfo = {};
+
+      fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+      fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; // Initial state is signaled, meaning we don't need to wait for it when it's created
+
+      VkResult result = vkCreateFence(pdevice->m_vkdevice, &fenceCreateInfo, nullptr, &m_vkfence);
+
+      if (result != VK_SUCCESS)
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+   }
+
+
+   void fence::wait_gpu_fence()
+   {
+
+      ::cast < ::gpu_vulkan::device > pdevice = m_pgpucontext->m_pgpudevice;
+
+      // Wait for the fence to be signaled
+      auto result = vkWaitForFences(pdevice->m_vkdevice, 1, &m_vkfence, VK_TRUE, UINT64_MAX); // VK_TRUE: wait for all fences, UINT64_MAX: wait indefinitely
+
+      if (result != VK_SUCCESS)
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+   }
+
+
 } // gpu_vulkan

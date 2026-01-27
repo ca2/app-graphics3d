@@ -884,6 +884,8 @@ namespace gpu_vulkan
    void renderer::cpu_buffer_sampler::sample(::gpu::texture* pgputexture)
    {
 
+      information("cpu_buffer_sampler::sample");
+
       auto pgpurendertarget = m_prenderer->render_target();
 
       auto iFrameIndex = pgpurendertarget->get_frame_index();
@@ -4091,45 +4093,50 @@ namespace gpu_vulkan
       
       ::gpu_vulkan::texture* pgputextureOutput = nullptr;
 
-      if (eoutput == ::gpu::e_output_swap_chain)
+      if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
       {
 
-         ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
+         if (eoutput == ::gpu::e_output_swap_chain)
+         {
 
-         //auto result = pswapchain->acquireNextImage();
+            ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
 
-         //if (result == VK_ERROR_OUT_OF_DATE_KHR
-         //   || pswapchain->m_bNeedRebuild)
-         //{
-         //   vkDeviceWaitIdle(m_pgpucontext->logicalDevice());
-         //   pswapchain->on_init_render_pass();
-         //   //set_placement(size);
-         //   //throw ::exception(todo, "resize?!?!");
-         //   //return nullptr;
-         //   return;
-         //}
-         //if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-         //   throw ::exception(error_failed, "Failed to aquire swap chain image");
-         //}
+            //auto result = pswapchain->acquireNextImage();
 
-         ::cast < ::gpu_vulkan::texture > ptextureSwapChain = pswapchain->current_swap_chain_texture();
+            //if (result == VK_ERROR_OUT_OF_DATE_KHR
+            //   || pswapchain->m_bNeedRebuild)
+            //{
+            //   vkDeviceWaitIdle(m_pgpucontext->logicalDevice());
+            //   pswapchain->on_init_render_pass();
+            //   //set_placement(size);
+            //   //throw ::exception(todo, "resize?!?!");
+            //   //return nullptr;
+            //   return;
+            //}
+            //if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+            //   throw ::exception(error_failed, "Failed to aquire swap chain image");
+            //}
 
-         pgputextureOutput = ptextureSwapChain;
+            ::cast < ::gpu_vulkan::texture > ptextureSwapChain = pswapchain->current_swap_chain_texture();
 
-         pgputextureOutput->_set_state(
-            pcommandbuffer,
-            {
-            0,
-            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
-            }
-         );
+            pgputextureOutput = ptextureSwapChain;
 
-      }
-      else
-      {
+            pgputextureOutput->_set_state(
+               pcommandbuffer,
+               {
+               0,
+               VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+               VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
+               }
+            );
 
-         pgputextureOutput = ptexture;
+         }
+         else
+         {
+
+            pgputextureOutput = ptexture;
+
+         }
 
       }
 

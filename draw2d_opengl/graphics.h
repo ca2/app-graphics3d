@@ -119,6 +119,9 @@ namespace draw2d_opengl
       unsigned int SetLayout(unsigned int dwLayout) override;
 
 
+      void _create_memory_graphics(const ::int_size & size) override;
+
+
       //HDC get_hdc();
       //void release_hdc(HDC hdc);
 

@@ -250,4 +250,7 @@ namespace vulkan
 } // namespace vulkan
 
 
+CLASS_DECL_GPU_VULKAN ::string vk_image_layout_text(VkImageLayout vkimagelayout);
+
+
 

@@ -2601,6 +2601,8 @@ namespace gpu_vulkan
 
       // auto pcommandbuffer = beginSingleTimeCommands();
 
+      information("copyBufferToImage");
+
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       ptexture->_set_state(pcommandbuffer, {
@@ -3148,9 +3150,12 @@ namespace gpu_vulkan
 
    //}
 
+   int g_iMergeLayersSerial = -1;
 
    void context::merge_layers(::gpu::texture *ptextureTarget, ::pointer_array<::gpu::layer> *playera)
    {
+
+      g_iMergeLayersSerial++;
 
       ::cast<renderer> pgpurenderer = m_pgpurenderer;
 
@@ -3227,30 +3232,8 @@ namespace gpu_vulkan
             ::gpu::shader::e_flag_clear_default_bindings_and_attributes_descriptions
 
          );
+
       }
-
-
-      // if (!m_pd3d11blendstateBlend3)
-      //{
-
-      //   D3D12_BLEND_DESC blendDesc = { 0 };
-      //   blendDesc.RenderTarget[0].BlendEnable = TRUE;
-      //   blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;              // Premultiplied alpha
-      //   blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;   // Use inverse of alpha
-      //   blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-
-      //   blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;         // Alpha blending (optional)
-      //   blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
-      //   blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-
-      //   blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-      //   ::cast < ::gpu_directx11::device > pgpudevice = m_pgpudevice;
-
-      //   HRESULT hr = pgpudevice->m_pd3d12device->CreateBlendState(&blendDesc, &m_pd3d11blendstateBlend3);
-      //   ::defer_throw_hresult(hr);
-
-      //}
 
       ::cast<renderer> prenderer = m_pgpurenderer;
 
@@ -3258,15 +3241,15 @@ namespace gpu_vulkan
 
       ::cast<::gpu_vulkan::texture> ptextureDst = ptextureTarget;
 
-      ptextureDst->_set_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                               VK_PIPELINE_STAGE_TRANSFER_BIT});
-
+      //ptextureDst->_set_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      //                                         VK_PIPELINE_STAGE_TRANSFER_BIT});
 
       pcommandbuffer->set_viewport(m_rectangle.size());
 
       pcommandbuffer->set_scissor(m_rectangle.size());
 
       ::pointer_array<::gpu::texture> textureaSrc;
+
       {
 
          // 2. Clear
@@ -3281,7 +3264,10 @@ namespace gpu_vulkan
 
          vkCmdClearColorImage(vkcommandbuffer, ptextureDst->m_vkimage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                               &clearColor, 1, &range);
+
       }
+
+      auto layera = *playera;
 
       {
 
@@ -3326,16 +3312,9 @@ namespace gpu_vulkan
          //}
 
 
-         // ID3D11RenderTargetView* rendertargetview[] = { ptextureDst->m_prendertargetview };
+         information("merge_layers : going to set source textures state to shader read only optimal");
 
-         // m_p(1, rendertargetview, nullptr);
-
-         // m_pcontext->OMSetBlendState(g_blendState, nullptr, 0xffffffff);
-         // g_context->VSSetShader(g_vs, nullptr, 0);
-         // g_context->PSSetShader(g_ps, nullptr, 0);
-         // g_context->PSSetSamplers(0, 1, &g_sampler);
-
-                     for (auto player: *playera)
+         for (auto player: layera)
          {
 
             //// if (iLayer == 2)
@@ -3362,34 +3341,46 @@ namespace gpu_vulkan
             //                        &clearColor, 1, &range);
             //}
 
-               {
+            {
 
                ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
-               ptextureSrc->_set_state(
-                  pcommandbuffer, {0, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT});
-            }
-         }
 
+               ptextureSrc->_set_state(
+               pcommandbuffer,
+          {
+             0,
+             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+                  }
+               );
+
+            }
+
+         }
 
          //_001BeginRenderPass(pcommandbuffer, ptextureDst);
 
          if (1)
          {
+
             int iLayer = 0;
+
             pcommandbuffer->begin_render(m_pshaderBlend3, ptextureDst);
-            for (auto player: *playera)
+
+            for (auto player: layera)
             {
 
                // if (iLayer == 2)
                {
 
                   ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
+
                   textureaSrc.add(ptextureSrc.m_p);
+
                   //auto scopedstateLayer =
                   //   ptextureSrc->_scoped_state(pcommandbuffer, {0, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                   //                                               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT});
 
-                  
                   pcommandbuffer->set_source(ptextureSrc);
 
                   // pcommandbuffer->set_viewport(ptextureSrc->m_rectangleTarget);
@@ -3476,9 +3467,11 @@ namespace gpu_vulkan
 
 
                   m_pshaderBlend3->unbind(pcommandbuffer);
+
                }
 
                iLayer++;
+
             }
             
             pcommandbuffer->end_render();
@@ -3511,39 +3504,23 @@ namespace gpu_vulkan
 
       //_001EndRenderPass(pcommandbuffer);
 
-      
-                     for (auto player: *playera)
+      for (auto player: layera)
       {
 
          // if (iLayer == 2)
          {
 
             ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
+
             ptextureSrc->_set_state(
                pcommandbuffer, 
                {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+
          }
+
       }
 
-      ////::cast <texture > ptextureDst = ptextureTarget;
-      //{
-      //
-      //   float clearColor2[4] = { 0.95f * 0.5f, 0.75f * 0.5f, 0.95f * 0.5f, 0.5f }; // Clear to transparent
-      //
-      //   D3D12_RECT r[1];
-      //
-      //   r[0].left = 100;
-      //   r[0].top = 200;
-      //   r[0].right = 200;
-      //   r[0].bottom = 300;
-      //
-      //   pcommandlist->ClearRenderTargetView(
-      //      ptextureDst->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
-      //      clearColor2,
-      //      1, r);
-
-      //}
       // if (!m_pgpurenderer->isFrameStarted)
       {
 
@@ -3551,20 +3528,30 @@ namespace gpu_vulkan
          {
 
             throw ::exception(error_failed);
-         }
-         VkFence fence = VK_NULL_HANDLE;
-         pcommandbuffer->submitCommandBuffers(ptextureTarget, textureaSrc, {}, {}, {}, &fence);
 
-         if (fence)
-         {
-
-            vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
          }
+
+         //VkFence fence = VK_NULL_HANDLE;
+
+         auto pgpufence = pcommandbuffer->insert_gpu_fence();
+
+         pcommandbuffer->submitCommandBuffers(ptextureTarget, textureaSrc, {}, {}, {});
+
+         //if (fence)
+         //{
+
+            //vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+         //}
+
+         pgpufence->wait_gpu_fence();
 
          ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
 
          vkQueueWaitIdle(pqueue->m_vkqueue);
+
       }
+
    }
 
 
@@ -3724,7 +3711,7 @@ void context::on_end_layer(::gpu::layer *player)
 }
 
 
-void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource)
+void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource, ::pointer < ::gpu::fence > * pgpufence)
 {
 
    auto pgpurendertarget = m_pgpurenderer->render_target();
@@ -3797,19 +3784,29 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
 
          throw ::exception(error_failed);
       }
-      VkFence fence = VK_NULL_HANDLE;
-      pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {}, &fence);
 
-      if (fence)
+      if (::is_set(pgpufence))
       {
 
-         vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+         *pgpufence = pcommandbuffer->insert_gpu_fence();
+
       }
+
+      //VkFence fence = VK_NULL_HANDLE;
+      pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {});
+
+      // if (fence)
+      // {
+      //
+      //    vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+      // }
 
       ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
 
       vkQueueWaitIdle(pqueue->m_vkqueue);
+
    }
+
 }
 
 

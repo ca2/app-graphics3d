@@ -1,19 +1,38 @@
 //
-// Created by camilo on 26/01/2026.
+// Created by camilo on 2026-01-06 23:50 <3ThomasBorregaardSørensen!!
 //
+#pragma once
 
-#ifndef SCENEFOUNDRY_FENCE_H
-#define SCENEFOUNDRY_FENCE_H
+
+#include "bred/gpu/fence.h"
 
 
 namespace gpu_vulkan
 {
 
-   class fence
+
+   class fence :
+   virtual public ::gpu::fence
    {
+   public:
+
+
+      VkFence m_vkfence;
+
+
+      fence();
+      ~fence() override;
+
+
+      void initialize_gpu_fence(::gpu::context * pgpucontext) override;
+
+      void wait_gpu_fence() override;
+
 
    };
 
-} // gpu_vulkan
 
-#endif //SCENEFOUNDRY_FENCE_H
+} // namespace gpu_vulkan
+
+
+
