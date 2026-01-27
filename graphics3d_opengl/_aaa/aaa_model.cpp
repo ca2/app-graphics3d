@@ -39,14 +39,14 @@
 //      initialize(pgpurenderer);
 //
 //      glBindVertexArray(m_gluVao);
-//      GLCheckError("");
+//      ::opengl::check_error("");
 //
 //      createVertexBuffers(blockVertices);
 //
 //      createIndexBuffers(blockIndices);
 //
 //      glBindVertexArray(0);
-//      GLCheckError("");
+//      ::opengl::check_error("");
 //
 //      //defer_set_input_layout(pgpurenderer->m_pgpucontext->input_layout<::graphics3d::Vertex>());
 //
@@ -63,7 +63,7 @@
 //      this->m_iVertexCount = iVertices;
 //
 //      //glGenVertexArrays(1, &m_gluVAO);
-//      // GLCheckError("");
+//      // ::opengl::check_error("");
 //
 //   }
 //
@@ -89,20 +89,20 @@
 //
 //      //}
 //      //glGenVertexArrays(1, &m_gluVAO);
-//      //GLCheckError("");
+//      //::opengl::check_error("");
 //      //glGenBuffers(1, &m_gluVBO);
-//      //GLCheckError("");
+//      //::opengl::check_error("");
 //
 //      //glBindVertexArray(m_gluVAO);
-//      //GLCheckError("");
+//      //::opengl::check_error("");
 //
 //      //glBindBuffer(GL_ARRAY_BUFFER, m_gluVBO);
-//      //GLCheckError("");
+//      //::opengl::check_error("");
 //      //glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(::graphics3d::Vertex), vertices.data(), GL_STATIC_DRAW);
-//      //GLCheckError("");
+//      //::opengl::check_error("");
 //
 //      //glBindVertexArray(0);
-//      //GLCheckError("");
+//      //::opengl::check_error("");
 //
 //   }
 //
@@ -115,30 +115,30 @@
 //      //set_index_array<uint32_t>(indices.data(), indices.size());
 //
 //      //glBindVertexArray(m_gluVao);
-//      //GLCheckError("");
+//      //::opengl::check_error("");
 //
 //      //::cast < ::gpu_opengl::memory_buffer > pbuffer = m_pbufferIndex;
 //
 //      //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pbuffer->m_gluVbo);
-//      //GLCheckError("");
+//      //::opengl::check_error("");
 //
 //      ////glGenBuffers(1, &m_gluEBO);
-//      ////GLCheckError("");
+//      ////::opengl::check_error("");
 //
 //      ////// Upload indices (from f lines)
 //      ////glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_gluEBO);
-//      ////GLCheckError("");
+//      ////::opengl::check_error("");
 //
 //      ////m_cIndexes = indices.size();
 //      ////glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_cIndexes, indices.data(), GL_STATIC_DRAW);
-//      ////GLCheckError("");
+//      ////::opengl::check_error("");
 //
 //      //////// Vertex layout
 //      //////glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(floating_sequence3), (void*)0);
 //      //////glEnableVertexAttribArray(0);
 //
 //      //glBindVertexArray(0);
-//      //GLCheckError("");
+//      //::opengl::check_error("");
 //
 //   }
 //
@@ -150,7 +150,7 @@
 //
 //      gpu_opengl::model_buffer::bind(pcommandbuffer);
 //      // glBindVertexArray(m_gluVAO);
-//      // GLCheckError("");
+//      // ::opengl::check_error("");
 //
 //   }
 //
@@ -166,14 +166,14 @@
 //      //{
 //
 //      //	glDrawArrays(GL_TRIANGLES, 0, m_iVertices);
-//      //	GLCheckError("");
+//      //	::opengl::check_error("");
 //
 //      //}
 //      //else
 //      //{
 //
 //      //	glDrawElements(GL_TRIANGLES, m_cIndexes, GL_UNSIGNED_INT, 0);
-//      //	GLCheckError("");
+//      //	::opengl::check_error("");
 //
 //      //}
 //
@@ -189,7 +189,7 @@
 //
 //
 //      //glBindVertexArray(0);
-//      //GLCheckError("");
+//      //::opengl::check_error("");
 //
 //   }
 //

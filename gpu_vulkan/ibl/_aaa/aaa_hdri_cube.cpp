@@ -72,7 +72,7 @@
           ::cast<::gpu_vulkan::texture> ptexture = m_ptextureHdr;
           // draw mesh
           //glBindTexture(GL_TEXTURE_2D, ptexture->m_gluTextureID);
-          //GLCheckError("");
+          //::opengl::check_error("");
           //m_pcube->Draw();
           //m_pcube->bind(pcommandbuffer);
           //pcommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pshaderBound->bind_source(pcommandbuffer, ptexture);

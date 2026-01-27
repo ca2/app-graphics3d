@@ -122,16 +122,16 @@
 //   //{
 //
 //   //   // Clear the screen 
-//   //   GLCheckError();
+//   //   ::opengl::check_error();
 //   //   glClearColor(0.678f, 0.847f, 0.902f, 1.0f);
 //   //   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//   //   GLCheckError();
+//   //   ::opengl::check_error();
 //   //}
 //
 //   // sky_box
 //   void renderer::DrawSkybox(const mesh* pskyboxMesh, ::gpu::shader* pshader) const
 //   {
-//      GLCheckError();
+//      ::opengl::check_error();
 //      // Disable depth writing for the skybox
 //      glDepthFunc(GL_LEQUAL);
 //      glEnable(GL_BLEND);
@@ -144,14 +144,14 @@
 //
 //      glDepthFunc(GL_LESS);
 //      pshader->unbind();
-//      GLCheckError();
+//      ::opengl::check_error();
 //   }
 //
 //
 //   void renderer::DrawInstanced(const ::array<mesh*>& meshes, ::gpu::shader* pshader, unsigned int instanceCount) const
 //   {
 //
-//      GLCheckError();
+//      ::opengl::check_error();
 //
 //      for (const mesh* mesh : meshes) {
 //         mesh->Bind();
@@ -159,7 +159,7 @@
 //         mesh->Unbind();
 //      }
 //
-//      GLCheckError();
+//      ::opengl::check_error();
 //   }
 //
 //

@@ -418,7 +418,7 @@ namespace draw2d_opengl
       glTexImage2D(GL_TEXTURE_2D, 0, 4, m_sizeIn.cx, m_sizeIn.cy, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, m_memIn.data());
 #endif
       
-      GLCheckError("");
+      ::opengl::check_error("");
 
 
 

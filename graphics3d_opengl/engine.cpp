@@ -71,9 +71,7 @@ namespace graphics3d_opengl
    void engine::on_render_frame()
    {
 
-      auto pcontext = gpu_context();
-
-      ::gpu::context_lock contextlock(pcontext);
+      //auto pcontext = gpu_context();
 
       ::graphics3d::engine::on_render_frame();
 
@@ -104,9 +102,9 @@ namespace graphics3d_opengl
       ::gpu::context_lock contextlock(pcontext);
 
       //glPushMatrix();
-      //GLCheckError("");
+      //::opengl::check_error("");
       //glPushAttrib(GL_ALL_ATTRIB_BITS);
-      //GLCheckError("");
+      //::opengl::check_error("");
 
    }
 
@@ -119,9 +117,9 @@ namespace graphics3d_opengl
       ::gpu::context_lock contextlock(pcontext);
 
       //glPopAttrib();
-      //GLCheckError("");
+      //::opengl::check_error("");
       //glPopMatrix();
-      //GLCheckError("");
+      //::opengl::check_error("");
 
    }
 

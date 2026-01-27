@@ -43,9 +43,9 @@ namespace gpu_directx11
 
          //////// framebuffer
          //////glGenFramebuffers(1, &ptexture->m_gluFbo);
-         //////GLCheckError("");
+         //////::opengl::check_error("");
          //////glBindFramebuffer(GL_FRAMEBUFFER, ptexture->m_gluFbo);
-         //////GLCheckError("");
+         //////::opengl::check_error("");
 
          ////auto w = ptexture->rectangle().width();
 
@@ -53,36 +53,36 @@ namespace gpu_directx11
 
          ////// depth buffer
          ////glGenRenderbuffers(1, &ptexture->m_gluDepthStencilRBO);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
          ////glBindRenderbuffer(GL_RENDERBUFFER, ptexture->m_gluDepthStencilRBO);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
          ////glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, w, h);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
 
          ////// attach the depth buffer
          ////glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ptexture->m_gluDepthStencilRBO);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
 
          ////// color texture
          ////glGenTextures(1, &ptexture->m_gluTextureID);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
          ////ptexture->m_gluType = GL_TEXTURE_2D;
          ////glBindTexture(GL_TEXTURE_2D, ptexture->m_gluTextureID);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
 
          ////glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, w, h, 0, GL_RG, GL_FLOAT, 0);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
          ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
          ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
          ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
          ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
 
          ////glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ptexture->m_gluTextureID, 0);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
 
          ////GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -94,7 +94,7 @@ namespace gpu_directx11
          ////}
 
          ////glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
 
 
       }
@@ -105,7 +105,7 @@ namespace gpu_directx11
          
          //::cast < gpu_directx11::texture>ptexture = m_ptexture;
          //glBindFramebuffer(GL_FRAMEBUFFER, ptexture->m_gluFbo);
-         //GLCheckError("");
+         //::opengl::check_error("");
       }
 
 

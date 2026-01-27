@@ -158,7 +158,7 @@ namespace app_graphics3d_continuum
          
       }
       
-#if 0
+#if 1
 
       ::double_rectangle rectangleClipBox;
 

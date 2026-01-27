@@ -194,7 +194,7 @@ namespace gpu_vulkan
          //   auto mipHeight = m_pframebufferPrefilteredEnvMap->mip_height();
 
          //   //glViewport(0, 0, mipWidth, mipHeight);
-         //   //GLCheckError("");
+         //   //::opengl::check_error("");
          //   // 
 
          //   ::int_rectangle r(0, 0, mipWidth, mipHeight);
@@ -220,10 +220,10 @@ namespace gpu_vulkan
          //      m_pframebufferPrefilteredEnvMap->set_cube_face(iFace);
 
          //      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         //      //GLCheckError("");
+         //      //::opengl::check_error("");
 
          //      //glBindTexture(GL_TEXTURE_CUBE_MAP, ptextureSkybox->m_gluTextureID);
-         //      //GLCheckError("");
+         //      //::opengl::check_error("");
          //      pshaderPrefilteredEnvMap->set_int("environmentCubemap", 0);
          //      // pcube->draw(pgpucommandbuffer);
          //      ::graphics3d::render_system rendersystemScope;
@@ -250,7 +250,7 @@ namespace gpu_vulkan
          ////}
 
          ////glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
       }
 
 
@@ -763,9 +763,9 @@ namespace gpu_vulkan
          //// m_pshaderPrefilteredEnvMap->set_int("environmentCubemap", 0);
 
          ////glViewport(0, 0, m_uBrdfConvolutionMapWidth, m_uBrdfConvolutionMapHeight);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
          ////glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
 
          //::int_rectangle rectangleViewport;
 
@@ -790,7 +790,7 @@ namespace gpu_vulkan
          ////// timer.logDifference("Rendered specular brdf convolution map");
 
          ////glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         ////GLCheckError("");
+         ////::opengl::check_error("");
       }
 
 

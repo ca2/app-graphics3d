@@ -66,28 +66,28 @@ namespace gpu_directx11
 
          //// framebuffer
          //glGenFramebuffers(1, &ptexture->m_gluFbo);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glBindFramebuffer(GL_FRAMEBUFFER, ptexture->m_gluFbo);
-         //GLCheckError("");
+         //::opengl::check_error("");
 
          //// depth buffer
          //glGenRenderbuffers(1, &ptexture->m_gluDepthStencilRBO);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //ptexture->m_gluType = GL_TEXTURE_CUBE_MAP;
          //glBindRenderbuffer(GL_RENDERBUFFER, ptexture->m_gluDepthStencilRBO);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, ptexture->rectangle().width(), ptexture->rectangle().height());
-         //GLCheckError("");
+         //::opengl::check_error("");
 
          //// attach the depth buffer
          //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ptexture->m_gluDepthStencilRBO);
-         //GLCheckError("");
+         //::opengl::check_error("");
 
          //// cubemap
          //glGenTextures(1, &ptexture->m_gluTextureID);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glBindTexture(ptexture->m_gluType, ptexture->m_gluTextureID);
-         //GLCheckError("");
+         //::opengl::check_error("");
 
          //int width = ptexture->rectangle().width();
          //int height = ptexture->rectangle().height();
@@ -106,20 +106,20 @@ namespace gpu_directx11
          //      GL_RGB,
          //      GL_FLOAT,
          //      nullptr);
-         //   GLCheckError("");
+         //   ::opengl::check_error("");
 
          //}
 
          //glTexParameteri(ptexture->m_gluType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glTexParameteri(ptexture->m_gluType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glTexParameteri(ptexture->m_gluType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glTexParameteri(ptexture->m_gluType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glTexParameteri(ptexture->m_gluType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-         //GLCheckError("");
+         //::opengl::check_error("");
 
          //GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -130,7 +130,7 @@ namespace gpu_directx11
          //}
 
          //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         //GLCheckError("");
+         //::opengl::check_error("");
 
       }
 
@@ -140,7 +140,7 @@ namespace gpu_directx11
          
          /*::cast < gpu_directx11::texture>ptexture = m_ptexture;
          glBindFramebuffer(GL_FRAMEBUFFER, ptexture->m_gluFbo);
-         GLCheckError("");*/
+         ::opengl::check_error("");*/
       }
 
 
@@ -148,11 +148,11 @@ namespace gpu_directx11
       {
          //::cast < gpu_directx11::texture>ptexture = m_ptexture;
          //glBindTexture(GL_TEXTURE_CUBE_MAP, ptexture->m_gluTextureID);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-         //GLCheckError("");
+         //::opengl::check_error("");
          ::cast<gpu_directx11::texture> ptexture = m_ptexture;
          ::cast<gpu_directx11::context> pcontext = m_pgpucontext;
 
@@ -191,7 +191,7 @@ namespace gpu_directx11
          // --- Bind the cube face as render target ---
          pcontext->m_pcontext->OMSetRenderTargets(1, &rtvPtr, nullptr);
 
-         //GLCheckError("");
+         //::opengl::check_error("");
          //
          ////if (m_strSamplerUniform.has_character())
          ////{

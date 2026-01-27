@@ -71,7 +71,7 @@
           ::cast<::gpu_directx11::texture> ptexture = m_ptextureHdr;
           //// draw mesh
           //glBindTexture(GL_TEXTURE_2D, ptexture->m_gluTextureID);
-          //GLCheckError("");
+          //::opengl::check_error("");
           ////m_pcube->Draw();
           ////m_pcube->bind(pcommandbuffer);
           m_pcube->draw(pcommandbuffer);

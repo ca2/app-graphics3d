@@ -5,7 +5,7 @@
 //#include "GLFW/glfw3.h"
 #include <iostream>
 
-#define GLCheckError() GLError::CheckError(__FILE__, __LINE__)
+#define ::opengl::check_error() GLError::CheckError(__FILE__, __LINE__)
 
 class GLError {
 public:

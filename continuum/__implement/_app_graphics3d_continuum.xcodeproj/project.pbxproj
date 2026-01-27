@@ -25,6 +25,8 @@
 		9A4CC8882F2370EA00D9A73A /* libberg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A4CC8872F2370EA00D9A73A /* libberg.dylib */; };
 		9A4E96B0278537D300B74C76 /* libfolder_zip.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A4E96A12785379F00B74C76 /* libfolder_zip.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9A71B8272A469E1000F9FC3D /* libunac.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A71B8252A469E1000F9FC3D /* libunac.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A7EE7472F26AD7C006AA868 /* libfs_raw_folder_protocol_dropbox.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A7EE73D2F26AC35006AA868 /* libfs_raw_folder_protocol_dropbox.dylib */; };
+		9A7EE7482F26AD7C006AA868 /* libfs_raw_folder_protocol_dropbox.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A7EE73D2F26AC35006AA868 /* libfs_raw_folder_protocol_dropbox.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9A842CB5271BDA9E00C64F6F /* libdraw2d_quartz2d.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A00E13326611D5A00517464 /* libdraw2d_quartz2d.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9A842CB7271BDAC200C64F6F /* libwrite_text_quartz2d.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9A00E1A026611D5E00517464 /* libwrite_text_quartz2d.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9A857A642F228D62001D08D1 /* libapp_graphics3d_continuum.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A857A4D2F228CD4001D08D1 /* libapp_graphics3d_continuum.dylib */; };
@@ -213,6 +215,20 @@
 			remoteGlobalIDString = 9AC09A2C274DFC67008B042E;
 			remoteInfo = folder_zip;
 		};
+		9A7EE73C2F26AC35006AA868 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A5A9D6A2F26AC0D00F3FA1F /* fs_raw_folder_protocol_dropbox.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9A668EA92C5829050068BD50;
+			remoteInfo = fs_raw_folder_protocol_dropbox;
+		};
+		9A7EE7452F26AC4C006AA868 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A5A9D6A2F26AC0D00F3FA1F /* fs_raw_folder_protocol_dropbox.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A668EA82C5829050068BD50;
+			remoteInfo = fs_raw_folder_protocol_dropbox;
+		};
 		9A83645228E538E90009BAF5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9AC01E332748D0E0006BEBCC /* crypto_openssl.xcodeproj */;
@@ -387,6 +403,7 @@
 				9AE7A3BC2D1CD5EC00070257 /* libinnate_ui_appkit.dylib in Embed Libraries */,
 				9A23A7DE26CEEA6C00F98012 /* libdatabase_sqlite3.dylib in Embed Libraries */,
 				9A4E96B0278537D300B74C76 /* libfolder_zip.dylib in Embed Libraries */,
+				9A7EE7482F26AD7C006AA868 /* libfs_raw_folder_protocol_dropbox.dylib in Embed Libraries */,
 				9A35D56B2F23775500998589 /* libgraphics3d.dylib in Embed Libraries */,
 				9AE7A3BF2D1CD5FC00070257 /* libnano_graphics_quartz2d.dylib in Embed Libraries */,
 				9AEC3F662D1AB0AB00F9E621 /* libnode_macos.dylib in Embed Libraries */,
@@ -422,6 +439,7 @@
 		9A4CC8872F2370EA00D9A73A /* libberg.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libberg.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A4CC8892F23748100D9A73A /* networking_bsd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = networking_bsd.xcodeproj; path = ../../../app/networking_bsd/networking_bsd.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9A4E969A2785379F00B74C76 /* folder_zip.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = folder_zip.xcodeproj; path = ../../../app/folder_zip/folder_zip.xcodeproj; sourceTree = SOURCE_ROOT; };
+		9A5A9D6A2F26AC0D00F3FA1F /* fs_raw_folder_protocol_dropbox.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = fs_raw_folder_protocol_dropbox.xcodeproj; path = ../../../app/fs_raw_folder_protocol_dropbox/fs_raw_folder_protocol_dropbox.xcodeproj; sourceTree = SOURCE_ROOT; };
 		9A71B8252A469E1000F9FC3D /* libunac.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libunac.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A842CB1271BDA6B00C64F6F /* libwindowing_macos.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libwindowing_macos.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A857A462F228CD4001D08D1 /* app_graphics3d_continuum.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = app_graphics3d_continuum.xcodeproj; path = ../app_graphics3d_continuum.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -484,6 +502,7 @@
 				9A35D56F2F23775C00998589 /* libgpu.dylib in Frameworks */,
 				9A35D56C2F23775500998589 /* libgraphics3d_opengl.dylib in Frameworks */,
 				9A857A642F228D62001D08D1 /* libapp_graphics3d_continuum.dylib in Frameworks */,
+				9A7EE7472F26AD7C006AA868 /* libfs_raw_folder_protocol_dropbox.dylib in Frameworks */,
 				9AC01E2D2748D03C006BEBCC /* libaqua.dylib in Frameworks */,
 				9AD590182F23CC1700356667 /* libtypeface_quartz2d.dylib in Frameworks */,
 				9AFFC71F26786B6A00C4104F /* libacme.dylib in Frameworks */,
@@ -511,6 +530,7 @@
 				9A00E12C26611D5900517464 /* draw2d_quartz2d.xcodeproj */,
 				9A00E644266170F400517464 /* experience_core.xcodeproj */,
 				9A4E969A2785379F00B74C76 /* folder_zip.xcodeproj */,
+				9A5A9D6A2F26AC0D00F3FA1F /* fs_raw_folder_protocol_dropbox.xcodeproj */,
 				9A8585E02F22C74B001D08D1 /* graphics3d_opengl.xcodeproj */,
 				9A46319E2CF3846600426444 /* operating_ambient_macos.xcodeproj */,
 				9A112C752F23761E00360960 /* imaging_coreimage.xcodeproj */,
@@ -610,6 +630,14 @@
 				9A4E96A12785379F00B74C76 /* libfolder_zip.dylib */,
 				9A83645D28E538E90009BAF5 /* libios_folder_zip.a */,
 				9A8F4D712A26D53C00097EE1 /* libstatic_folder_zip.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9A7EE7322F26AC35006AA868 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9A7EE73D2F26AC35006AA868 /* libfs_raw_folder_protocol_dropbox.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -757,6 +785,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9A7EE7462F26AC4C006AA868 /* PBXTargetDependency */,
 				9AC942A72F23980900038E29 /* PBXTargetDependency */,
 				9A35D5682F23773E00998589 /* PBXTargetDependency */,
 				9A35D5642F23764D00998589 /* PBXTargetDependency */,
@@ -852,6 +881,10 @@
 				{
 					ProductGroup = 9A4E969B2785379F00B74C76 /* Products */;
 					ProjectRef = 9A4E969A2785379F00B74C76 /* folder_zip.xcodeproj */;
+				},
+				{
+					ProductGroup = 9A7EE7322F26AC35006AA868 /* Products */;
+					ProjectRef = 9A5A9D6A2F26AC0D00F3FA1F /* fs_raw_folder_protocol_dropbox.xcodeproj */;
 				},
 				{
 					ProductGroup = 9A9123042F22C9AF002F52F3 /* Products */;
@@ -962,6 +995,13 @@
 			fileType = "compiled.mach-o.dylib";
 			path = libfolder_zip.dylib;
 			remoteRef = 9A4E96A02785379F00B74C76 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9A7EE73D2F26AC35006AA868 /* libfs_raw_folder_protocol_dropbox.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libfs_raw_folder_protocol_dropbox.dylib;
+			remoteRef = 9A7EE73C2F26AC35006AA868 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9A83645328E538E90009BAF5 /* libios_crypto_openssl.a */ = {
@@ -1196,6 +1236,11 @@
 			isa = PBXTargetDependency;
 			name = folder_zip;
 			targetProxy = 9A4E96AD278537B700B74C76 /* PBXContainerItemProxy */;
+		};
+		9A7EE7462F26AC4C006AA868 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = fs_raw_folder_protocol_dropbox;
+			targetProxy = 9A7EE7452F26AC4C006AA868 /* PBXContainerItemProxy */;
 		};
 		9A857DB52F229167001D08D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

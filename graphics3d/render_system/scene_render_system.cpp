@@ -596,21 +596,21 @@ namespace graphics3d
       //                               pirradiancemap->m_ptextureDiffuseIrradianceCubemap);
       //         // //  IBL stuff
       //         // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
-      //         // GLCheckError("");
+      //         // ::opengl::check_error("");
       //         // pshader->set_int("diffuseIrradianceMap", TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
       //         // ::cast<::gpu_opengl::ibl::diffuse_irradiance_map> pirradiancemap = pscene->m_pibldiffuseirradiancemap;
       //         // int iCubemapId = pirradiancemap->getCubemapId();
       //         // glBindTexture(GL_TEXTURE_CUBE_MAP, iCubemapId);
-      //         // GLCheckError("");
+      //         // ::opengl::check_error("");
 
       //         // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_PREFILTERED_ENV_MAP);
-      //         // GLCheckError("");
+      //         // ::opengl::check_error("");
       //         // pshader->set_int("prefilteredEnvMap", TEXTURE_UNIT_PREFILTERED_ENV_MAP);
       //         // ::cast<::gpu_opengl::ibl::specular_map> pspecularmap = pscene->m_piblspecularmap;
       //         // ::cast<::gpu_opengl::texture> pspecularmap = pscene->m_piblspecularmap;
       //         // int iPrefilteredEnvMapId = pspecularmap->m_pframebufferPrefilteredEnvMap->m_ptexture();
       //         // glBindTexture(GL_TEXTURE_CUBE_MAP, iPrefilteredEnvMapId);
-      //         // GLCheckError("");
+      //         // ::opengl::check_error("");
 
       //         //::cast<::gpu_opengl::texture> pspecularmap = pscene->m_piblspecularmap;
       //         auto pspecularmap = pscene->m_piblspecularmap;
@@ -621,11 +621,11 @@ namespace graphics3d
 
 
       //         // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
-      //         // GLCheckError("");
+      //         // ::opengl::check_error("");
       //         // pshader->set_int("brdfConvolutionMap", TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
       //         // int iBrdfConvolutionMapId = pspecularmap->getBrdfConvolutionMapId();
       //         // glBindTexture(GL_TEXTURE_2D, iBrdfConvolutionMapId);
-      //         // GLCheckError("");
+      //         // ::opengl::check_error("");
 
       //         pshader->bind_source2(pcommandbuffer, TEXTURE_UNIT_BRDF_CONVOLUTION_MAP, "brdfConvolutionMap",
       //                               pspecularmap->m_ptextureBrdfConvolutionMap);

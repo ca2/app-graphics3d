@@ -8349,7 +8349,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       nvgEndFrame(m_pdc);
 
       glFlush();
-      GLCheckError("");
+      ::opengl::check_error("");
 
       m_bHadEndLayer = true;
 

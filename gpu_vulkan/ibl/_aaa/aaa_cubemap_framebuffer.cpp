@@ -99,28 +99,28 @@ namespace gpu_vulkan
 
          // framebuffer
          //glGenFramebuffers(1, &ptexture->m_gluFbo);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glBindFramebuffer(GL_FRAMEBUFFER, ptexture->m_gluFbo);
-         //GLCheckError("");
+         //::opengl::check_error("");
 
          //// depth buffer
          //glGenRenderbuffers(1, &ptexture->m_gluDepthStencilRBO);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //ptexture->m_gluType = GL_TEXTURE_CUBE_MAP;
          //glBindRenderbuffer(GL_RENDERBUFFER, ptexture->m_gluDepthStencilRBO);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, ptexture->rectangle().width(), ptexture->rectangle().height());
-         //GLCheckError("");
+         //::opengl::check_error("");
 
          //// attach the depth buffer
          //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ptexture->m_gluDepthStencilRBO);
-         //GLCheckError("");
+         //::opengl::check_error("");
 
          //// cubemap
          //glGenTextures(1, &ptexture->m_gluTextureID);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glBindTexture(GL_TEXTURE_CUBE_MAP, ptexture->m_gluTextureID);
-         //GLCheckError("");
+         //::opengl::check_error("");
 
          //// specify/allocate each face for the cubemap
          //for (auto i = 0; i < 6; i++)
@@ -136,20 +136,20 @@ namespace gpu_vulkan
          //      GL_RGB,
          //      GL_FLOAT,
          //      nullptr);
-         //   GLCheckError("");
+         //   ::opengl::check_error("");
 
          //}
 
          //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-         //GLCheckError("");
+         //::opengl::check_error("");
          //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-         //GLCheckError("");
+         //::opengl::check_error("");
 
          //GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -160,7 +160,7 @@ namespace gpu_vulkan
          //}
 
          //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         //GLCheckError("");
+         //::opengl::check_error("");
 
       }
 
@@ -248,7 +248,7 @@ namespace gpu_vulkan
          ::cast<gpu_vulkan::context> pcontext = m_pgpucontext;
          pcontext->m_pshaderBound->bind(pgpucommandbuffer, ptexture);
          //glBindFramebuffer(GL_FRAMEBUFFER, ptexture->m_gluFbo);
-         ///GLCheckError("");
+         ///::opengl::check_error("");
       }
 
 
@@ -437,7 +437,7 @@ namespace gpu_vulkan
          //   GL_TEXTURE_CUBE_MAP_POSITIVE_X + index,
          //   ptexture->m_gluTextureID,
          //   0);
-         //GLCheckError("");
+         //::opengl::check_error("");
       }
 
 
