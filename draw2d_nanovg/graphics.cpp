@@ -8297,10 +8297,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //}
 
-   void graphics::do_on_context(const ::procedure& procedure)
+
+   void graphics::send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure)
    {
 
-      ::gpu::graphics::do_on_context(procedure);
+      ::gpu::graphics::send_on_context(pgraphicscontext, procedure);
 
       //auto pgpucontext = gpu_context();
 
@@ -8417,7 +8418,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             auto uTexture = ptexture->m_gluTextureID;
 
-            auto uFbo = ptexture->m_gluFbo;
+            auto uFbo = ptexture->frame_buffer_object();
 
             strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
 
@@ -8604,7 +8605,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             auto uTexture = ptexture->m_gluTextureID;
 
-            auto uFbo = ptexture->m_gluFbo;
+            auto uFbo = ptexture->frame_buffer_object();
 
             strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
 

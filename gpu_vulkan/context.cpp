@@ -34,6 +34,7 @@
 #include <chrono>
 //
 //#include "gltf_model.h"
+#include "fence.h"
 #include "initializers.h"
 #include "vk_init.h"
 
@@ -1025,22 +1026,45 @@ namespace gpu_vulkan
 
       }
 
-      VkFence fence;
 
-      VkFenceCreateInfo fenceInfo = {
-         .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-         .pNext = NULL,
-         .flags = 0 // 0 = fence starts in unsignaled state
-      };
+      VkFence vkfence = VK_NULL_HANDLE;
+      // VkFence fence;
+      //
+      // VkFenceCreateInfo fenceInfo = {
+      //    .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+      //    .pNext = NULL,
+      //    .flags = 0 // 0 = fence starts in unsignaled state
+      // };
+      //
+      // VkResult result = vkCreateFence(this->logicalDevice(), &fenceInfo, NULL, &fence);
+      //
+      // if (result != VK_SUCCESS)
+      // {
+      //
+      //    fprintf(stderr, "Failed to create fence\n");
+      //
+      // }
 
-      VkResult result = vkCreateFence(this->logicalDevice(), &fenceInfo, NULL, &fence);
+      ::cast < ::gpu_vulkan::fence > pfence = pcommandbuffer->m_pgpufence;
 
-      if (result != VK_SUCCESS)
+      //bool bCreatedFenceHere = false;
+
+      if (::is_set(pfence))
       {
 
-         fprintf(stderr, "Failed to create fence\n");
-         
+         vkfence = pfence->m_vkfence;
+
       }
+      // else
+      // {
+      //
+      //    pfence = pcommandbuffer->insert_gpu_fence();
+      //
+      //    vkfence = pfence->m_vkfence;
+      //
+      //    bCreatedFenceHere = true;
+      //
+      // }
 
       ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
 
@@ -1063,13 +1087,22 @@ namespace gpu_vulkan
 
       auto timeStart = ::time::now();
 
-      vkQueueSubmit(vkqueue, 1, psubmitinfo, fence);
+      vkQueueSubmit(vkqueue, 1, psubmitinfo, vkfence);
 
-      vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+      // if (bCreatedFenceHere)
+      // {
+      //
+      //    pfence->wait_gpu_fence();
+      //
+      //    vkQueueWaitIdle(vkqueue);
+      //
+      // }
 
-      vkQueueWaitIdle(vkqueue);
-
-      vkDestroyFence(this->logicalDevice(), fence, NULL);
+      // vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+      //
+      // vkQueueWaitIdle(vkqueue);
+      //
+      // vkDestroyFence(this->logicalDevice(), fence, NULL);
 
       auto timeElapsed = timeStart.elapsed();
 
@@ -3152,7 +3185,7 @@ namespace gpu_vulkan
 
    int g_iMergeLayersSerial = -1;
 
-   void context::merge_layers(::gpu::texture *ptextureTarget, ::pointer_array<::gpu::layer> *playera)
+   void context::merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture *ptextureTarget, ::pointer_array<::gpu::layer> *playera)
    {
 
       g_iMergeLayersSerial++;
@@ -3165,28 +3198,30 @@ namespace gpu_vulkan
 
       ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
 
-      ::cast<swap_chain> pswapchain = m_pgpuswapchain;
-
-      auto psynchronization = ptexture->synchronization();
-
-      auto fence = psynchronization->in_flight_fence();
-
-      pgpurenderer->wait_swap_chain_command_buffer_ready();
-
-      /*if (fence)
-      {
-
-         vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
-
-      }*/
-
+      // ::cast<swap_chain> pswapchain = m_pgpuswapchain;
+      //
+      // //auto psynchronization = ptexture->synchronization();
+      //
+      // auto fence = pswapchain->frame(pswapchain->m_iCurrentSwapChainFrame).inFlightFence;
+      //
+      // //pgpurenderer->wait_swap_chain_command_buffer_ready();
+      //
+      // if (fence)
+      // {
+      //
+      //    vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+      //
+      // }
+      //
       /// vkResetFences(this->logicalDevice(), 1, &fence);
 
-      ::pointer<command_buffer> pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
+      //::pointer<command_buffer> pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
 
-      pcommandbuffer->m_strName = "gpu_vulkan::context::merge_layers";
+      ::cast < ::gpu_vulkan::command_buffer > pcommandbuffer = pgpucommandbuffer;
 
-      ::gpu::scoped_command_buffer scopedcommanbuffer(pcommandbuffer);
+      pgpucommandbuffer->m_strName = "gpu_vulkan::context::merge_layers";
+
+      ::gpu::scoped_command_buffer scopedcommanbuffer(pgpucommandbuffer);
       // pcommandbuffer->begin_command_buffer(false);
 
       VkImage vkimageTarget = ptexture->m_vkimage;
@@ -3210,7 +3245,7 @@ namespace gpu_vulkan
          // m_pshaderBlend3->m_bT
          // m_pshaderBlend3->m_pgpurenderer = this;
          //m_pshaderBlend3->m_bindingSampler.set();
-         // 
+         //
          auto pbindingSampler = m_pshaderBlend3->binding();
 
          pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
@@ -3279,7 +3314,7 @@ namespace gpu_vulkan
                                                                         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                                                         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
-         int iH = ptextureDst->m_pgpurenderer->m_pgpucontext->m_rectangle.height();
+         int iH = ptextureDst->m_pgpucontext->m_rectangle.height();
 
          // if (!ptextureDst->m_handleRenderTargetView.ptr)
          //{
@@ -3336,7 +3371,7 @@ namespace gpu_vulkan
             //      .layerCount = 1,
             //   };
 
-            //   vkCmdClearColorImage(vkcommandbuffer, ptextureSrc->m_vkimage, 
+            //   vkCmdClearColorImage(vkcommandbuffer, ptextureSrc->m_vkimage,
             //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             //                        &clearColor, 1, &range);
             //}
@@ -3358,8 +3393,6 @@ namespace gpu_vulkan
 
          }
 
-         //_001BeginRenderPass(pcommandbuffer, ptextureDst);
-
          if (1)
          {
 
@@ -3377,132 +3410,27 @@ namespace gpu_vulkan
 
                   textureaSrc.add(ptextureSrc.m_p);
 
-                  //auto scopedstateLayer =
-                  //   ptextureSrc->_scoped_state(pcommandbuffer, {0, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                  //                                               VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT});
-
                   pcommandbuffer->set_source(ptextureSrc);
 
-                  // pcommandbuffer->set_viewport(ptextureSrc->m_rectangleTarget);
-
-                  // pcommandbuffer->set_scissor(ptextureSrc->m_rectangleTarget.size());
-
                   auto r = ptextureSrc->rectangle();
-
-                  int h = r.height();
-
-                  //r.top = iH - r.bottom;
-
-                  //r.bottom = r.top + h;
 
                   pcommandbuffer->set_viewport(r);
 
                   pcommandbuffer->set_scissor(r);
 
-                  //m_pshaderBlend3->on_before_draw(pcommandbuffer);
-
-                  //{
-
-                  //   // 2. Clear
-                  //   VkClearColorValue clearColor = { .float32 = { 0.90f * 0.5f, 0.95f * 0.5f, 0.50f * 0.5f, 0.5f } };
-                  //   VkImageSubresourceRange range = {
-                  //       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                  //       .baseMipLevel = 0,
-                  //       .levelCount = 1,
-                  //       .baseArrayLayer = 0,
-                  //       .layerCount = 1,
-                  //   };
-
-                  //   vkCmdClearColorImage(
-                  //      vkcommandbuffer,
-                  //      ptextureDst->m_vkimage,
-                  //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                  //      &clearColor,
-                  //      1,
-                  //      &range);
-
-                  //}
-
-
-                  // ID3D11SamplerState* samplerstatea[] =
-                  //{ ptexture->m_psamplerstate };
-                  // ID3D11ShaderResourceView* sharedresourceviewa[] =
-                  //{ ptexture->m_pshaderresourceview };
-
-                  // 1. Define viewport and scissor rectangle
-                  // D3D12_VIEWPORT viewport = {};
-                  // viewport.TopLeftX = ptextureSrc->m_rectangleTarget.left;
-                  // viewport.TopLeftY = ptextureSrc->m_rectangleTarget.top;
-                  // viewport.Width = static_cast<float>(ptextureSrc->m_rectangleTarget.width());
-                  // viewport.Height = static_cast<float>(ptextureSrc->m_rectangleTarget.height());
-                  // viewport.MinDepth = 0.0f;
-                  // viewport.MaxDepth = 1.0f;
-
-                  // D3D12_RECT scissorRect = {};
-                  // scissorRect.left = ptextureSrc->m_rectangleTarget.left;
-                  // scissorRect.top = ptextureSrc->m_rectangleTarget.top;
-                  // scissorRect.right = ptextureSrc->m_rectangleTarget.right;
-                  // scissorRect.bottom = ptextureSrc->m_rectangleTarget.bottom;
-
-
-                  ////// 4. Set the viewport and scissor
-                  // pcommandlist->RSSetViewports(1, &viewport);
-                  // pcommandlist->RSSetScissorRects(1, &scissorRect);
-                  // D3D11_VIEWPORT vp = {};
-                  // vp.TopLeftX = ptexture->rectangle().left;
-                  // vp.TopLeftY = ptexture->rectangle().top;
-                  // vp.Width = static_cast<float>(ptexture->rectangle().width());
-                  // vp.Height = static_cast<float>(ptexture->rectangle().height());
-                  // vp.MinDepth = 0.0f;
-                  // vp.MaxDepth = 1.0f;
-                  // m_pcontext->RSSetViewports(1, &vp);
-
-                  // m_pcontext->PSSetSamplers(0, 1, samplerstatea);
-                  // m_pcontext->PSSetShaderResources(0, 1, sharedresourceviewa);
-
-
-                  // pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-                  //vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
                   pcommandbuffer->draw_vertexes(3);
-
-
-                  m_pshaderBlend3->unbind(pcommandbuffer);
 
                }
 
                iLayer++;
 
             }
-            
+
             pcommandbuffer->end_render();
 
-            //{
-
-            //   ptextureDst->_set_state(
-            //      pcommandbuffer,
-            //      {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT}
-
-            //      );
-
-            //   // 2. Clear
-            //   VkClearColorValue clearColor = {.float32 = {0.50f * 0.5f, 0.95f * 0.5f, 0.50f * 0.5f, 0.5f}};
-            //   VkImageSubresourceRange range = {
-            //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            //      .baseMipLevel = 0,
-            //      .levelCount = 1,
-            //      .baseArrayLayer = 0,
-            //      .layerCount = 1,
-            //   };
-
-            //   vkCmdClearColorImage(vkcommandbuffer, ptextureDst->m_vkimage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            //                        &clearColor, 1, &range);
-            //}
-
          }
-         //}
-      }
 
-      //_001EndRenderPass(pcommandbuffer);
+      }
 
       for (auto player: layera)
       {
@@ -3513,7 +3441,7 @@ namespace gpu_vulkan
             ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
 
             ptextureSrc->_set_state(
-               pcommandbuffer, 
+               pcommandbuffer,
                {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
@@ -3521,36 +3449,27 @@ namespace gpu_vulkan
 
       }
 
-      // if (!m_pgpurenderer->isFrameStarted)
-      {
-
-         if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
-         {
-
-            throw ::exception(error_failed);
-
-         }
-
-         //VkFence fence = VK_NULL_HANDLE;
-
-         auto pgpufence = pcommandbuffer->insert_gpu_fence();
-
-         pcommandbuffer->submitCommandBuffers(ptextureTarget, textureaSrc, {}, {}, {});
-
-         //if (fence)
-         //{
-
-            //vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
-
-         //}
-
-         pgpufence->wait_gpu_fence();
-
-         ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
-
-         vkQueueWaitIdle(pqueue->m_vkqueue);
-
-      }
+      // // if (!m_pgpurenderer->isFrameStarted)
+      // {
+      //
+      //    if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
+      //    {
+      //
+      //       throw ::exception(error_failed);
+      //
+      //    }
+      //
+      //    //auto pgpufence = pcommandbuffer->insert_gpu_fence();
+      //
+      //    pcommandbuffer->submitCommandBuffers(ptextureTarget, textureaSrc, {}, {}, {});
+      //
+      //    //pgpufence->wait_gpu_fence();
+      //
+      //    //::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
+      //
+      //    //vkQueueWaitIdle(pqueue->m_vkqueue);
+      //
+      //}
 
    }
 
@@ -3714,6 +3633,8 @@ void context::on_end_layer(::gpu::layer *player)
 void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource, ::pointer < ::gpu::fence > * pgpufence)
 {
 
+      throw todo;
+
    auto pgpurendertarget = m_pgpurenderer->render_target();
 
    int iFrameCount = pgpurendertarget->get_frame_count();
@@ -3722,7 +3643,7 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
 
    ::pointer<command_buffer> pcommandbuffer;
 
-   if (m_pgpurenderer->isFrameStarted)
+   if (m_pgpurenderer->m_bFrameStarted)
    {
 
       pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
@@ -3776,7 +3697,7 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
                      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
    }
 
-   if (!m_pgpurenderer->isFrameStarted)
+   if (!m_pgpurenderer->m_bFrameStarted)
    {
 
       if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
@@ -3793,7 +3714,9 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
       }
 
       //VkFence fence = VK_NULL_HANDLE;
-      pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {});
+      //pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {});
+
+      pcommandbuffer->submit_command_buffer(nullptr);
 
       // if (fence)
       // {
@@ -3870,7 +3793,7 @@ VkFormat context::findDepthFormat()
 
    ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
 
-   ptexture->m_pgpurenderer = m_pgpurenderer;
+   ptexture->m_pgpucontext = m_pgpurenderer;
 
    try
    {
@@ -6078,7 +6001,7 @@ void context::on_cube_map_face_image(::image::image * pimage)
    ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
    ptexture->mip_layer_state(0, 0).m_vkimagelayout = imageLayout;
    ptexture->m_vkformat = format;
-   ptexture->m_pgpurenderer = m_pgpurenderer;
+   ptexture->m_pgpucontext = m_pgpurenderer;
 
    ::string strExtension = path.final_extension();
 
@@ -6150,7 +6073,7 @@ void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::
 
    auto ptextureNew = øcreate<::gpu::texture>();
 
-   ptextureNew->initialize_texture_from_file_path(m_pgpurenderer, path, bSrgb);
+   ptextureNew->initialize_texture_from_file_path(this, path, bSrgb);
    
    if (ptextureNew->is_ok())
    {
@@ -6198,7 +6121,7 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
 
       // Define the static member here (outside any class/function)
 
-      ptextureEmpty->m_pgpurenderer = m_pgpurenderer;
+      ptextureEmpty->m_pgpucontext = this;
       ptextureEmpty->m_textureattributes.m_rectangleTarget.set_width(1);
       ptextureEmpty->m_textureattributes.m_rectangleTarget.set_height(1);
       ptextureEmpty->m_textureattributes.m_iLayerCount = 1;

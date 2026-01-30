@@ -83,7 +83,7 @@ namespace draw2d_vkvg
       bool is_gpu_oriented() override;
 
       virtual void thread_select();
-      void do_on_context(const ::procedure & procedure) override;
+      void send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure & procedure) override;
 
       //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;

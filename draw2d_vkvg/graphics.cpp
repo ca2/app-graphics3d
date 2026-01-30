@@ -5851,10 +5851,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ødefer_construct(m_ptextureCurrent);
 
-      if (!m_ptextureCurrent->m_pgpurenderer)
+      if (!m_ptextureCurrent->m_pgpucontext)
       {
 
-         m_ptextureCurrent->m_pgpurenderer = gpu_context()->m_pgpurenderer;
+         m_ptextureCurrent->m_pgpucontext = gpu_context();
 
       }
 
@@ -5870,10 +5870,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             øconstruct(m_ptextureCurrent);
 
-            if (!m_ptextureCurrent->m_pgpurenderer)
+            if (!m_ptextureCurrent->m_pgpucontext)
             {
 
-               m_ptextureCurrent->m_pgpurenderer = gpu_context()->m_pgpurenderer;
+               m_ptextureCurrent->m_pgpucontext = gpu_context()->m_pgpurenderer;
 
             }
 
@@ -8232,16 +8232,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //}
 
-   void graphics::do_on_context(const ::procedure& procedure)
+
+   void graphics::send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure)
    {
 
-      ::gpu::graphics::do_on_context(procedure);
+      ::gpu::graphics::send_on_context(pgraphicscontext, procedure);
 
       //auto pgpucontext = gpu_context();
 
       //pgpucontext->_send(procedure);
 
    }
+
 
    void graphics::initialize(::particle* pparticle)
    {

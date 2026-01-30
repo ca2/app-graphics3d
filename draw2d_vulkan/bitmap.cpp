@@ -63,7 +63,8 @@ float LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.00f };
 #endif // WINDOWS
 #ifdef  assert
 #define verify(expr) if(!expr) assert(0)
-#else verify(expr) expr
+#else
+#define verify(expr) expr
 #endif
 
 namespace draw2d_vulkan

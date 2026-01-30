@@ -51,7 +51,7 @@ namespace draw2d_vulkan
       bool is_gpu_oriented() override;
 
       virtual void thread_select();
-      void do_on_context(const ::procedure& procedure) override;
+      void send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure) override;
 
       void* detach() override;
 

@@ -6989,10 +6989,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::do_on_context(const ::procedure& procedure)
+   void graphics::send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure)
    {
 
-      ::gpu::graphics::do_on_context(procedure);
+      ::gpu::graphics::send_on_context(pgraphicscontext, procedure);
 
       //m_pgpucontextCompositor->send(procedure);
 

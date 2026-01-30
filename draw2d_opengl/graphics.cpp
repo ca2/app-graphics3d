@@ -6788,10 +6788,11 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //}
 
-   void graphics::do_on_context(::draw2d::graphics_context & graphicscontext, const ::procedure& procedure)
+
+   void graphics::send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure)
    {
 
-      ::gpu::graphics::do_on_context(graphicscontext, procedure);
+      ::gpu::graphics::send_on_context(pgraphicscontext, procedure);
 
       //m_pgpucontextCompositor->send(procedure);
 

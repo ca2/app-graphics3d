@@ -15,12 +15,26 @@ namespace gpu_vulkan
    public:
 
 
-      VkSwapchainKHR                m_vkswapchain;
-      uint32_t                      m_uCurrentSwapChainImage;
-      ::pointer < ::gpu::context >  m_pgpucontextSwapChain;
-      ::pointer < ::gpu::shader > m_pshaderPresent;
-      ::pointer < ::gpu_vulkan::render_pass > m_prenderpass;
+      VkSwapchainKHR                            m_vkswapchain;
+      uint32_t                                  m_uCurrentSwapChainImage;
+      ::pointer < ::gpu::context >              m_pgpucontextSwapChain;
+      ::pointer < ::gpu::shader >               m_pshaderPresent;
+      ::pointer < ::gpu_vulkan::render_pass >   m_prenderpass;
 
+
+      ::array_base<VkPipelineStageFlags>        m_vkpipelinestageflagsaWait;
+
+      //::pointer_array<::gpu::semaphore>       m_semaphoreaSignal;
+
+
+      struct frame_sync
+      {
+         VkFence                                inFlightFence = VK_NULL_HANDLE;
+         VkSemaphore                            imageAvailable = VK_NULL_HANDLE;
+         VkSemaphore                            renderFinished = VK_NULL_HANDLE;
+      };
+
+      ::array_base < frame_sync > m_framesynca;
 
       //bool m_bNeedRebuild;
 
@@ -28,10 +42,19 @@ namespace gpu_vulkan
       swap_chain();
       ~swap_chain();
 
+
+      virtual bool create_frame_sync(frame_sync& frame);
+      virtual void destroy_frame_sync(frame_sync& frame);
+
+
+
       void on_new_swap_chain() override;
 
       //int get_frame_index();
       virtual bool should_use_advanced_pipeline_synchronization();
+
+
+      virtual frame_sync& frame(::collection::index iFrameIndex);
 
       //virtual ::gpu::texture* current_texture();
       //virtual void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {});
@@ -55,13 +78,28 @@ namespace gpu_vulkan
 
       //int get_frame_index() override;
 
-      virtual VkResult acquireNextImage();
-      virtual VkResult submitCommandBuffers2(
-         command_buffer * pcommandbuffer,
-         ::gpu::texture * pgputexture,
-         const ::array < VkSemaphore >& semaphoreaWait,
-         const ::array < VkPipelineStageFlags >& stageaWait,
-         const ::array < VkSemaphore >& semaphoreaSignal);
+      // virtual VkResult acquireNextImage_2025();
+      // virtual VkResult submitCommandBuffers2_2025(
+      //    command_buffer * pcommandbuffer,
+      //    ::gpu::texture * pgputexture,
+      //    const ::array < VkSemaphore >& semaphoreaWait,
+      //    const ::array < VkPipelineStageFlags >& stageaWait,
+      //    const ::array < VkSemaphore >& semaphoreaSignal);
+
+
+      void acquireNextImage();
+ //      VkResult submitCommandBuffers2(
+ // command_buffer* pcommandbuffer,
+ // ::gpu::texture* pgputexture,
+ // const ::array<VkSemaphore>& externalWaitSemaphores,
+ // const ::array<VkPipelineStageFlags>& externalWaitStages,
+ // const ::array<VkSemaphore>& externalSignalSemaphores);
+      //void submitCommandBuffers2(
+      //   command_buffer* pcommandbuffer,
+      //   ::gpu::texture* pgputexture);
+
+      void present(::gpu::texture * pgputexture) override;
+
       virtual int get_image_index() const;
 
       void create_images();
@@ -73,7 +111,9 @@ namespace gpu_vulkan
       VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
 
-      void present(::gpu::texture * pgputexture) override;
+      //void present(::gpu::texture * pgputexture) override;
+
+      //void present() override;
 
 
       int swap_chain_frame_count() override;

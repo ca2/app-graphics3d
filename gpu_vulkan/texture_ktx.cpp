@@ -48,7 +48,7 @@ namespace gpu_vulkan
 
       }
 
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
       ::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
 
       auto pphysicaldevice = pdevice->m_pphysicaldevice;

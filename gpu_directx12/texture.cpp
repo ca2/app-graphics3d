@@ -721,7 +721,7 @@ namespace gpu_directx12
                                             int iAttachmentCount)
    {
 
-   ::cast < ::gpu_directx12::device > pdevice = ptexture->m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+   ::cast < ::gpu_directx12::device > pdevice = ptexture->m_pgpucontext->m_pgpudevice;
 
       //dx12_framebuffer fb{};
 
@@ -1398,7 +1398,7 @@ namespace gpu_directx12
    void texture::upload_buffer::initialize_upload_buffer(texture* ptexture)
    {
 
-      ::cast < renderer > prenderer = ptexture->m_pgpurenderer;
+      ::cast < renderer > prenderer = ptexture->m_pgpucontext;
 
       ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
@@ -1459,7 +1459,7 @@ namespace gpu_directx12
    void texture::static_upload_buffer::initialize_static_upload_buffer(texture *ptexture)
    {
 
-      ::cast<renderer> prenderer = ptexture->m_pgpurenderer;
+      ::cast<renderer> prenderer = ptexture->m_pgpucontext;
 
       ::cast<::gpu_directx12::context> pcontext = prenderer->m_pgpucontext;
 
@@ -1733,7 +1733,7 @@ namespace gpu_directx12
          //unmap();
 
 
-         ::cast < renderer > prenderer = m_ptexture->m_pgpurenderer;
+         ::cast < renderer > prenderer = m_ptexture->m_pgpucontext;
 
          ::cast < context > pcontext = prenderer->m_pgpucontext;
 
@@ -1924,7 +1924,7 @@ namespace gpu_directx12
       ::comptr<ID3DBlob> sigBlob, errorBlob;
       D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &sigBlob, &errorBlob);
 
-      ::cast<::gpu_directx12::device> pdevice = m_ptexture->m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      ::cast<::gpu_directx12::device> pdevice = m_ptexture->m_pgpucontext->m_pgpudevice;
       auto hrCreateRootSignature =pdevice->m_pd3d12device->CreateRootSignature(
          0, sigBlob->GetBufferPointer(), sigBlob->GetBufferSize(),
                                               __interface_of(m_prootsignatureMipMap));

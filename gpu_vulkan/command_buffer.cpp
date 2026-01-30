@@ -11,6 +11,7 @@
 #include "queue.h"
 #include "texture.h"
 #include "fence.h"
+#include "semaphore.h"
 
 
 namespace gpu_vulkan
@@ -148,7 +149,6 @@ namespace gpu_vulkan
       //if (prenderpass)
       if (prendertarget)
       {
-
          auto vkcommandbuffer = m_vkcommandbuffer;
 
          if (vkEndCommandBuffer(vkcommandbuffer) != VK_SUCCESS)
@@ -161,65 +161,127 @@ namespace gpu_vulkan
          ::cast < layer > playerPrevious = m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_previous_layer(player);
 
 
-         ::array < VkSemaphore > semaphoreaWait;
-         ::array < VkPipelineStageFlags > stageaWait;
+         ::comparable_array< VkSemaphore > vksemaphoreaWait;
+         ::array_base < VkPipelineStageFlags > vkpipelinestageaWait;
+         ::comparable_array < VkSemaphore > vksemaphoreaSignal;
 
          if (playerPrevious)
          {
 
-            semaphoreaWait.add(playerPrevious->m_vksemaphoreRenderFinished);
-            stageaWait.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            if (vksemaphoreaWait.add_unique(playerPrevious->m_vksemaphoreRenderFinished))
+            {
+
+               vkpipelinestageaWait.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+
+            }
 
          }
 
-         auto vksemaphoreRenderFinished = player->m_vksemaphoreRenderFinished;
+         for (auto & pgpusemaphore : m_semaphoreaWait)
+         {
 
-         auto ptexture = prendertarget->current_texture(::gpu::current_frame());
+            ::cast < ::gpu_vulkan::semaphore > psemaphore = pgpusemaphore;
 
-         submitCommandBuffers(
-            ptexture,
-            {},
-            semaphoreaWait,
-            stageaWait,
-            { vksemaphoreRenderFinished });
+            if (psemaphore)
+            {
 
 
+               if (psemaphore->m_vksemaphore != VK_NULL_HANDLE)
+               {
+
+                  if (vksemaphoreaWait.add_unique(psemaphore->m_vksemaphore))
+                  {
+
+                     vkpipelinestageaWait.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+
+                  }
+
+               }
+
+            }
+
+         }
+
+         if (::is_set(player))
+         {
+
+            auto vksemaphoreRenderFinished = player->m_vksemaphoreRenderFinished;
+
+            if (vksemaphoreRenderFinished != VK_NULL_HANDLE)
+            {
+
+               vksemaphoreaSignal.add_unique(vksemaphoreRenderFinished);
+
+            }
+
+         }
+
+         for (auto & pgpusemaphore : m_semaphoreaWait)
+         {
+
+            ::cast < ::gpu_vulkan::semaphore > psemaphore = pgpusemaphore;
+
+            if (psemaphore)
+            {
+
+               if (psemaphore->m_vksemaphore != VK_NULL_HANDLE)
+               {
+
+                  vksemaphoreaSignal.add_unique(psemaphore->m_vksemaphore);
+
+               }
+
+            }
+
+         }
+
+         //       auto ptexture = prendertarget->current_texture(::gpu::current_frame());
+         //
+         //       submitCommandBuffers(
+         //          ptexture,
+         //          {},
+         //          vksemaphoreaWait,
+         //          vkpipelinestageaWait,
+         //          vksemaphoreaSignal);
+         //
+         //
+         //    }
+         //
+         // }
+         //
+         //
+         // VkResult command_buffer::submitCommandBuffers(
+         //    ::gpu::texture* pgputextureTarget,
+         //    const ::pointer_array < ::gpu::texture >& gputextureaSource,
+         //    const ::array < VkSemaphore >& semaphoreaWait,
+         //    const ::array < VkPipelineStageFlags >& stageaWait,
+         //    const ::array < VkSemaphore >& semaphoreaSignal)
+         // {
       }
-
-   }
-
-
-   VkResult command_buffer::submitCommandBuffers(
-      ::gpu::texture* pgputextureTarget,
-      const ::pointer_array < ::gpu::texture >& gputextureaSource,
-      const ::array < VkSemaphore >& semaphoreaWait,
-      const ::array < VkPipelineStageFlags >& stageaWait,
-      const ::array < VkSemaphore >& semaphoreaSignal)
-   {
 
       auto& ecommandbufferstate = m_estate;
 
       ASSERT(ecommandbufferstate == ::gpu::command_buffer::e_state_recording);
 
-      ::pointer < ::gpu_vulkan::texture > ptextureDst;
+      // ::pointer < ::gpu_vulkan::texture > ptextureDst;
+      //
+      // if (pgputextureTarget)
+      // {
+      //
+      //    ptextureDst = pgputextureTarget;
+      //
+      // }
+      //
+      // ::pointer_array < ::gpu_vulkan::texture > textureaSrc;
+      //
+      // for (auto& pgputextureSource : gputextureaSource)
+      // {
+      //
+      //    textureaSrc.add(pgputextureSource);
+      //
+      // }
 
-      if (pgputextureTarget)
-      {
-
-         ptextureDst = pgputextureTarget;
-
-      }
-
-      ::pointer_array < ::gpu_vulkan::texture > textureaSrc;
-
-      for (auto& pgputextureSource : gputextureaSource)
-      {
-
-         textureaSrc.add(pgputextureSource);
-
-      }
-
-      ::cast < ::gpu_vulkan::render_target > prendertarget = m_pgpurendertarget;
+      //::cast < ::gpu_vulkan::render_target > prendertarget = m_pgpurendertarget;
 
       ::cast < ::gpu_vulkan::renderer > prenderer = prendertarget->m_pgpurenderer;
 
@@ -231,23 +293,23 @@ namespace gpu_vulkan
 
       ///auto prenderpass = prendertarget->render_pass2(bWithDepth);
 
-      ::gpu_vulkan::texture_synchronization* psynchronizationDst = nullptr;
+      // ::gpu_vulkan::texture_synchronization* psynchronizationDst = nullptr;
+      //
+      // if (ptextureDst)
+      // {
+      //
+      //    psynchronizationDst = ptextureDst->synchronization();
+      //
+      // }
 
-      if (ptextureDst)
-      {
-
-         psynchronizationDst = ptextureDst->synchronization();
-
-      }
-
-      ::array< ::gpu_vulkan::texture_synchronization*> synchronizationaSrc;
-
-      for (auto& ptextureSrc : textureaSrc)
-      {
-
-         synchronizationaSrc.add(ptextureSrc->synchronization());
-
-      }
+      // ::array< ::gpu_vulkan::texture_synchronization*> synchronizationaSrc;
+      //
+      // for (auto& ptextureSrc : textureaSrc)
+      // {
+      //
+      //    synchronizationaSrc.add(ptextureSrc->synchronization());
+      //
+      // }
 
 
       //if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
@@ -262,53 +324,73 @@ namespace gpu_vulkan
       VkSubmitInfo submitInfo = {};
       submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-      ::array<VkSemaphore> waitSemaphores(semaphoreaWait);
-      ::array<VkPipelineStageFlags> waitStages(stageaWait);
-      for (auto psynchronizationSrc : synchronizationaSrc)
+      ::comparable_array<VkSemaphore> vksemaphoreaWait;
+      ::array_base<VkPipelineStageFlags> vkpipelinestageflagsaWait;
+      ::comparable_array<VkSemaphore> vksemaphoreaSignal;
+      for (auto & pgpusemaphore : m_semaphoreaWait)
       {
-         if (psynchronizationSrc && psynchronizationSrc->m_iImageAvailable > 0)
+         ::cast < ::gpu_vulkan::semaphore > psemaphore = pgpusemaphore;
+         if (psemaphore)
          {
-            waitSemaphores.add(psynchronizationSrc->m_vksemaphoreAvailable);
-            waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-
+            auto vksemaphore = psemaphore->m_vksemaphore;
+            if (vksemaphore != VK_NULL_HANDLE)
+            {
+               vksemaphoreaWait.add(vksemaphore);
+               vkpipelinestageflagsaWait.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            }
          }
       }
-      for (auto psynchronizationSrc : synchronizationaSrc)
-      {
-         if (psynchronizationSrc && psynchronizationSrc->m_iRendering > 0)
-         {
-            waitSemaphores.add(psynchronizationSrc->m_vksemaphoreRenderFinished);
-            waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-            psynchronizationSrc->m_iRendering = 0;
-         }
-      }
-      waitStages.append(::transfer(m_stageaWaitToSubmit));
-      waitSemaphores.append(::transfer(m_semaphoreaWaitToSubmit));
-      submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
-      submitInfo.pWaitSemaphores = waitSemaphores.data();
-      submitInfo.pWaitDstStageMask = waitStages.data();
+      // for (auto psynchronizationSrc : synchronizationaSrc)
+      // {
+      //    if (psynchronizationSrc && psynchronizationSrc->m_iRendering > 0)
+      //    {
+      //       waitSemaphores.add(psynchronizationSrc->m_vksemaphoreRenderFinished);
+      //       waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+      //       psynchronizationSrc->m_iRendering = 0;
+      //    }
+      // }
+      //waitStages.append(::transfer(m_stageaWaitToSubmit));
+      //waitSemaphores.append(::transfer(m_semaphoreaWaitToSubmit));
+      submitInfo.waitSemaphoreCount = (uint32_t)vksemaphoreaWait.size();
+      submitInfo.pWaitSemaphores = vksemaphoreaWait.data();
+      submitInfo.pWaitDstStageMask = vkpipelinestageflagsaWait.data();
 
       VkCommandBuffer vkcommandbuffera[] = { m_vkcommandbuffer };
       submitInfo.commandBufferCount = 1;
       submitInfo.pCommandBuffers = vkcommandbuffera;
 
-      ::comparable_array<VkSemaphore> signalSemaphores(semaphoreaSignal);
+      //::comparable_array<VkSemaphore> signalSemaphores(semaphoreaSignal);
 
-      // && texture.m_vksemaphoreRenderFinished)
-      if (psynchronizationDst && psynchronizationDst->m_vksemaphoreRenderFinished)
+      for (auto & pgpusemaphore : m_semaphoreaSignal)
       {
-
-         signalSemaphores.add_unique(psynchronizationDst->m_vksemaphoreRenderFinished);
-         psynchronizationDst->m_iRendering = 1;
-
+         ::cast < ::gpu_vulkan::semaphore > psemaphore = pgpusemaphore;
+         if (psemaphore)
+         {
+            auto vksemaphore = psemaphore->m_vksemaphore;
+            if (vksemaphore != VK_NULL_HANDLE)
+            {
+               vksemaphoreaSignal.add(vksemaphore);
+               //waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+            }
+         }
       }
 
-      if (signalSemaphores.has_elements())
-      {
 
-         signalSemaphores.append_unique(signalSemaphores);
-
-      }
+      // // && texture.m_vksemaphoreRenderFinished)
+      // if (psynchronizationDst && psynchronizationDst->m_vksemaphoreRenderFinished)
+      // {
+      //
+      //    signalSemaphores.add_unique(psynchronizationDst->m_vksemaphoreRenderFinished);
+      //    psynchronizationDst->m_iRendering = 1;
+      //
+      // }
+      //
+      // if (signalSemaphores.has_elements())
+      // {
+      //
+      //    signalSemaphores.append_unique(signalSemaphores);
+      //
+      // }
 
       //if (::gpu::current_frame()->m_pgpulayer)
       //{
@@ -336,22 +418,22 @@ namespace gpu_vulkan
 
       //}
 
-      signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
+      //signalSemaphores.append(::transfer(m_semaphoreaSignalOnSubmit));
 
-      submitInfo.signalSemaphoreCount = (uint32_t)signalSemaphores.count();
+      submitInfo.signalSemaphoreCount = (uint32_t)vksemaphoreaSignal.count();
 
-      submitInfo.pSignalSemaphores = signalSemaphores.data();
+      submitInfo.pSignalSemaphores = vksemaphoreaSignal.data();
 
       //vkResetFences(m_pgpucontext->logicalDevice(), 1, &inFlightFences[m_pgpurenderer->get_frame_index()]);
 
-      VkFence fence = VK_NULL_HANDLE;
-
-      if (psynchronizationDst)
-      {
-
-         fence = psynchronizationDst->in_flight_fence();
-
-      }
+      // VkFence fence = VK_NULL_HANDLE;
+      //
+      // if (psynchronizationDst)
+      // {
+      //
+      //    fence = psynchronizationDst->in_flight_fence();
+      //
+      // }
 
       bool bCreatedFence = false;
 
@@ -438,7 +520,7 @@ namespace gpu_vulkan
 
       //auto result = vkQueuePresentKHR(m_pgpucontext->presentQueue(), &presentInfo);
 
-      return VK_SUCCESS;
+      //return VK_SUCCESS;
 
    }
 

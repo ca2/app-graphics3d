@@ -84,7 +84,7 @@ namespace gpu_vulkan
 
       m_prenderpass->initialize(this);
 
-      m_prenderpass->_update_render_pass(m_pgpurenderer->m_pgpucontext, this, m_prenderpass->m_prenderpassOld);
+      m_prenderpass->_update_render_pass(m_pgpucontext, this, m_prenderpass->m_prenderpassOld);
 
       // prenderpass->on_init_render_pass();
 
@@ -109,7 +109,7 @@ namespace gpu_vulkan
 
    //   m_prenderpassFace->initialize(this);
 
-   //   m_prenderpassFace->_update_face_render_pass(m_pgpurenderer->m_pgpucontext, this, m_prenderpass->m_prenderpassOld);
+   //   m_prenderpassFace->_update_face_render_pass(m_pgpucontext, this, m_prenderpass->m_prenderpassOld);
 
    //}
 
@@ -205,7 +205,7 @@ namespace gpu_vulkan
       if (!m_vkfenceInFlight2)
       {
 
-         ::cast<::gpu_vulkan::context> pcontext = m_ptexture->m_pgpurenderer->m_pgpucontext;
+         ::cast<::gpu_vulkan::context> pcontext = m_ptexture->m_pgpucontext;
 
          VkFenceCreateInfo fenceInfo = {};
          fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -236,7 +236,7 @@ namespace gpu_vulkan
 
          øconstruct_new(psynchronization);
 
-         ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+         ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
          // synchronization.m_prendertarget = nullptr;
 
@@ -312,7 +312,7 @@ namespace gpu_vulkan
 
       information("texture::_set_image_data");
 
-      ::gpu::context_lock contextlock(m_pgpurenderer->m_pgpucontext);
+      ::gpu::context_lock contextlock(m_pgpucontext);
 
       auto blockData = p;
 
@@ -342,9 +342,9 @@ namespace gpu_vulkan
 
       m_textureflags.m_bWithDepth = false;
 
-      ::cast<::gpu_vulkan::device> pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      ::cast<::gpu_vulkan::device> pdevice = m_pgpucontext->m_pgpudevice;
 
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
       ::cast<::gpu_vulkan::physical_device> pphysicaldevice = pdevice->m_pphysicaldevice;
 
@@ -662,11 +662,9 @@ namespace gpu_vulkan
 
       }
 
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
-      ::cast<context> pgpucontext = pcontext;
-
-      ::cast<render_pass> prenderpass = m_pgpurenderer->render_target();
+      ::cast<render_pass> prenderpass = m_pgpucontext->m_pgpurenderer->render_target();
 
       VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
 
@@ -836,14 +834,14 @@ namespace gpu_vulkan
 
 
 
-   // void texture::initialize_image_texture(::gpu::renderer *prenderer, const ::int_rectangle &rectangleTarget,
+   // void texture::initialize_image_texture(::gpu::context *prenderer, const ::int_rectangle &rectangleTarget,
    //                                        bool bWithDepth, const ::pointer_array<::image::image> &imagea,
    //                                        enum_type etype)
    // {
    //
    //    auto currentSize = m_rectangleTarget.size();
    //
-   //    if (!m_vkimage || currentSize != rectangleTarget.size() && m_pgpurenderer != prenderer)
+   //    if (!m_vkimage || currentSize != rectangleTarget.size() && m_pgpucontext != prenderer)
    //    {
    //
    //       ::gpu::texture::initialize_image_texture(prenderer, rectangleTarget, bWithDepth, imagea, etype);
@@ -864,15 +862,15 @@ namespace gpu_vulkan
    // }
 
 
-   //void texture::initialize_cubemap_image_texture_with_mipmap(::gpu::renderer *pgpurenderer,
+   //void texture::initialize_cubemap_image_texture_with_mipmap(::gpu::context *pgpucontext,
    //                                                           const ::int_rectangle &rectangleTarget, int iMipCount,
    //                                                           bool bRenderTarget, bool bShaderResourceView)
    //{
 
-   //   ::gpu::texture::initialize_cubemap_image_texture_with_mipmap(pgpurenderer, rectangleTarget, iMipCount,
+   //   ::gpu::texture::initialize_cubemap_image_texture_with_mipmap(pgpucontext, rectangleTarget, iMipCount,
    //                                                                bRenderTarget, bShaderResourceView);
 
-   //   //m_pgpurenderer = pgpurenderer;
+   //   //m_pgpucontext = pgpucontext;
    //   //m_rectangleTarget = rectangleTarget;
    //   //m_iMipCount = iMipCount;
    //   //m_bRenderTarget = bRenderTarget;
@@ -887,9 +885,7 @@ namespace gpu_vulkan
 
       defer_throw_if_cube_map_images_are_not_ok(imagea);
 
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
-
-      ::cast<context> pgpucontext = pcontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
       ::cast<device> pdevice = pcontext->m_pgpudevice;
 
@@ -902,7 +898,7 @@ namespace gpu_vulkan
       VkDeviceSize totalSize = layerSize * 6;
 
       auto pbufferStaging =
-         pgpucontext->create_buffer(totalSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+         pcontext->create_buffer(totalSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
       pbufferStaging->_assign_cube_map(imagea);
@@ -925,10 +921,10 @@ namespace gpu_vulkan
    }
 
 
-   void texture::initialize_depth_texture(::gpu::renderer *pgpurenderer, const ::int_rectangle &rectangleTarget)
+   void texture::initialize_depth_texture(::gpu::context *pgpucontext, const ::int_rectangle &rectangleTarget)
    {
 
-      if (m_textureattributes.m_rectangleTarget == rectangleTarget && m_pgpurenderer == pgpurenderer)
+      if (m_textureattributes.m_rectangleTarget == rectangleTarget && m_pgpucontext == pgpucontext)
       {
 
          return;
@@ -936,12 +932,13 @@ namespace gpu_vulkan
 
       auto currentSize = m_textureattributes.m_rectangleTarget.size();
 
-      ::gpu::texture::initialize_depth_texture(pgpurenderer, rectangleTarget);
+      ::gpu::texture::initialize_depth_texture(pgpucontext, rectangleTarget);
 
-      if (currentSize == rectangleTarget.size() && m_pgpurenderer == pgpurenderer)
+      if (currentSize == rectangleTarget.size() && m_pgpucontext == pgpucontext)
       {
 
          return;
+
       }
 
       ASSERT(m_textureattributes.m_etexture & ::gpu::e_texture_depth);
@@ -953,11 +950,11 @@ namespace gpu_vulkan
       ////else
       ////{
 
-      //::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
+      //::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
       //::cast < context > pgpucontext = pcontext;
 
-      //::cast < render_pass > prenderpass = m_pgpurenderer->m_pgpurendertarget;
+      //::cast < render_pass > prenderpass = m_pgpucontext->m_pgpurendertarget;
 
       // VkImageCreateInfo imagecreateinfo = ::vulkan::initializers::imageCreateInfo();
 
@@ -1315,7 +1312,7 @@ namespace gpu_vulkan
 
                state = stateNew;
 
-               informationf("\"%s\".state(%d, %d) = %s", m_strTextureName.c_str(), iMip, iLayer, vk_image_layout_text(state.m_vkimagelayout).c_str());
+               //informationf("\"%s\".state(%d, %d) = %s", m_strTextureName.c_str(), iMip, iLayer, vk_image_layout_text(state.m_vkimagelayout).c_str());
 
                if (m_iTextureSerial == 12)
                {
@@ -1323,7 +1320,7 @@ namespace gpu_vulkan
                   if (state.m_vkimagelayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
                   {
 
-                     information("vkimagelayout");
+                     //information("vkimagelayout");
 
                   }
 
@@ -1361,7 +1358,7 @@ namespace gpu_vulkan
             return m_vkimage;
          }
 
-         ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+         ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
          VkFormat depthFormat = pcontext->findDepthFormat();
          VkImageCreateInfo imageInfo{};
@@ -1387,7 +1384,7 @@ namespace gpu_vulkan
 
          pcontext->createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
 
-         //::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+         //::cast < command_buffer > pcommandbuffer = m_pgpucontext->getCurrentCommandBuffer2(::gpu::current_frame());
 
          //_new_state(
          //   pcommandbuffer,
@@ -1429,7 +1426,7 @@ namespace gpu_vulkan
 
    //   ødefer_construct_new(m_ptextureDepth);
 
-   //   m_ptextureDepth->initialize_depth_texture(m_pgpurenderer, m_rectangleTarget);
+   //   m_ptextureDepth->initialize_depth_texture(m_pgpucontext, m_rectangleTarget);
 
    //   return m_ptextureDepth;
 
@@ -1439,7 +1436,7 @@ namespace gpu_vulkan
    void texture::layer::_create_framebuffer(::gpu_vulkan::texture * ptexture, ::gpu_vulkan::render_pass * prenderpass, int iAttachmentCount)
    {
 
-      ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpucontext;
 
       VkFramebufferCreateInfo framebufferInfo{};
       framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -1506,7 +1503,7 @@ namespace gpu_vulkan
    void texture::layer::create_color_attachment(::gpu_vulkan::texture *ptexture)
    {
 
-      ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpucontext;
 
       VkImageViewCreateInfo faceView{};
       faceView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -1526,7 +1523,7 @@ namespace gpu_vulkan
    void texture::layer::create_depth_attachment(::gpu_vulkan::texture *ptexture)
    {
 
-      ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpucontext;
 
       VkFormat depthFormat = pcontext->findDepthFormat();
 
@@ -1628,7 +1625,7 @@ namespace gpu_vulkan
    //   
    //   }
 
-   //   ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpurenderer->m_pgpucontext;
+   //   ::cast<::gpu_vulkan::context> pcontext = ptexture->m_pgpucontext;
 
    //   VkImageView attachments[1];
 
@@ -1736,12 +1733,12 @@ namespace gpu_vulkan
       else
       {
 
-         ::cast<context> pcontext = m_pgpurenderer->m_pgpucontext;
+         ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
          return pcontext->_001VkSampler();
       }
 
-      //::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      //::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
       //return pcontext->_001VkSampler();
 
@@ -1767,8 +1764,7 @@ namespace gpu_vulkan
    void texture::create_image_view()
    {
 
-      
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
       VkImageViewType viewType;
       if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
       {
@@ -1814,7 +1810,7 @@ namespace gpu_vulkan
 
       VkDeviceSize size = rectangle.area() * 4;
 
-      ::pointer<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::pointer<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
       auto pbufferStaging =
          pcontext->create_buffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -1825,7 +1821,7 @@ namespace gpu_vulkan
       if (ødefer_construct_new(m_p_001OnAfterEndFrame))
       {
 
-         m_pgpurenderer->post_on_after_end_frame(
+         m_pgpucontext->m_pgpurenderer->post_on_after_end_frame(
             [this, pcontext]()
             {
                auto p = ::transfer(m_p_001OnAfterEndFrame);
@@ -1851,7 +1847,7 @@ namespace gpu_vulkan
       ponafterendframeitem->m_rectangle = rectangle;
       m_p_001OnAfterEndFrame->m_itema.add(ponafterendframeitem);
 
-      //m_pgpurenderer->post_on_after_end_frame(
+      //m_pgpucontext->post_on_after_end_frame(
       //   [this, pcontext, pbufferStaging, rectangle]()
       //   {
 
@@ -1865,7 +1861,8 @@ namespace gpu_vulkan
 
       if (ødefer_construct_new(m_p_001OnNextFrameStart))
       {
-         m_pgpurenderer->post_on_just_before_frame_next_start(
+
+         m_pgpucontext->m_pgpurenderer->post_on_just_before_frame_next_start(
             [this, pcontext]()
             {
 
@@ -1958,7 +1955,7 @@ namespace gpu_vulkan
 
       VkDescriptorImageInfo imageinfo;
 
-      ::cast<context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
       imageinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
       imageinfo.imageView = get_image_view();
@@ -2087,7 +2084,7 @@ namespace gpu_vulkan
    //      return framebuffer;
    //   }
 
-   //   ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+   //   ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
    //   VkImageView attachments[2];
 
@@ -2139,7 +2136,7 @@ namespace gpu_vulkan
          if (!m_vkimageview)
          {
 
-            ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+            ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
             VkFormat depthFormat = pcontext->findDepthFormat();
 
@@ -2297,7 +2294,7 @@ namespace gpu_vulkan
    VkDeviceMemory texture::AllocateMemory(VkMemoryRequirements memRequirements, VkMemoryPropertyFlags properties)
    {
             
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
       ::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
             auto pphysicaldevice = pdevice->m_pphysicaldevice;
       VkMemoryAllocateInfo allocInfo{};
@@ -2319,7 +2316,7 @@ namespace gpu_vulkan
                                       VkImageCreateFlags flags)
    {
 
-            ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+            ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
       ::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
 
 
@@ -2356,7 +2353,7 @@ namespace gpu_vulkan
 void texture::create_sampler()
    {
 
-         ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+         ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
       ::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
 
       VkSamplerCreateInfo samplerInfo{};
@@ -2383,7 +2380,7 @@ void texture::create_sampler()
    {
 
       information("texture::imaging_load_from_file");
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
       ::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
 
 
@@ -2746,7 +2743,7 @@ void texture::create_sampler()
       KTXLoadFrom_ktxTexture(ktxTexture, copyQueue, imageUsageFlags, imageLayout, forceLinear);
       
 
-      //::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      //::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
       //::cast<::gpu_vulkan::device> pdevice = pcontext->m_pgpudevice;
 
       //auto pphysicaldevice = pdevice->m_pphysicaldevice;
@@ -3215,7 +3212,7 @@ void texture::create_sampler()
       ktxResult result = loadKTXFile(this, filename, &pktxtexture);
       ASSERT(result == KTX_SUCCESS);
 
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
       ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
 
@@ -3417,7 +3414,7 @@ void texture::create_sampler()
  //     else
  //     {
  //        
- //        ::cast<context> pcontext = m_pgpurenderer->m_pgpucontext;
+ //        ::cast<context> pcontext = m_pgpucontext;
  //        
  //        m_descriptor3.sampler = pcontext->_001VkSampler();
 
@@ -3446,12 +3443,12 @@ void texture::create_sampler()
    }
 
 
-   void texture::initialize_hdr_texture_on_memory(::gpu::renderer *pgpurenderer, const ::block &block)
+   void texture::initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block)
    {
 
-      ::gpu::context_lock contextlock(pgpurenderer->m_pgpucontext);
+      ::gpu::context_lock contextlock(pgpucontext);
 
-      m_pgpurenderer = pgpurenderer;
+      m_pgpucontext = pgpucontext;
 
       auto blockData = block.data();
 
@@ -3483,9 +3480,9 @@ void texture::create_sampler()
 
       m_textureflags.m_bWithDepth = false;
 
-      ::cast<::gpu_vulkan::device> pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      ::cast<::gpu_vulkan::device> pdevice = m_pgpucontext->m_pgpudevice;
 
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
       ::cast<::gpu_vulkan::physical_device> pphysicaldevice = pdevice->m_pphysicaldevice;
 
@@ -3728,9 +3725,9 @@ void texture::create_sampler()
 //   {
 //      //RenderSystem &renderSystem = RenderSystem::instance();
 //      ///TextureManager &textureManager = TextureManager::instance();
-//      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+//      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 //      ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
-//      ::cast<::gpu_vulkan::renderer> prenderer = m_pgpurenderer;
+//      ::cast<::gpu_vulkan::context> prenderer = m_pgpucontext;
 //      auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 //
 //      VkImageFormatProperties formatProperties;
@@ -4029,15 +4026,15 @@ void texture::create_sampler()
 //   }
 
 
-   void texture::initialize_texture_from_file_path(::gpu::renderer *pgpurenderer, const ::file::path &pathImage, bool isSrgb)
+   void texture::initialize_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path &pathImage, bool isSrgb)
    {
 
-      this->m_pgpurenderer = pgpurenderer;
+      this->m_pgpucontext = pgpucontext;
 
       if (pathImage.case_insensitive_ends(".ktx"))
       {
 
-         pgpurenderer->m_pgpucontext->load_ktx_texture_from_file_path(this, pathImage);
+         pgpucontext->load_ktx_texture_from_file_path(this, pathImage);
 
       }
       else
@@ -4052,7 +4049,7 @@ void texture::create_sampler()
 
             imagea.add(pimage);
 
-            initialize_texture_from_image(m_pgpurenderer, imagea);
+            initialize_texture_from_image(m_pgpucontext, imagea);
 
          }
 
@@ -4061,12 +4058,12 @@ void texture::create_sampler()
    }
 
 //    void texture::_fromglTfImage(tinygltf::Image *pgltfimage, const ::file::path & path,
-//                                ::gpu::renderer * pgpurenderer, bool isSrgb)
+//                                ::gpu::context * pgpucontext, bool isSrgb)
 //    {
-//       this->m_pgpurenderer = pgpurenderer;
-//       ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+//       this->m_pgpucontext = pgpucontext;
+//       ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 //       ::cast<::gpu_vulkan::device> pgpudevice = pcontext->m_pgpudevice;
-//       ::cast<::gpu_vulkan::renderer> prenderer = pgpurenderer;
+//       ::cast<::gpu_vulkan::context> prenderer = pgpucontext;
 //       auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 //
 //       bool isKtx = false;
@@ -4402,7 +4399,7 @@ void texture::create_sampler()
 //
 //
 //
-//          this->m_pgpurenderer = pcontext->m_pgpurenderer;
+//          this->m_pgpucontext = pcontext->m_pgpucontext;
 //
 //          m_textureattributes.m_rectangleTarget.set_width(pktxtexture->baseWidth);
 //          m_textureattributes.m_rectangleTarget.set_height(pktxtexture->baseHeight);
@@ -4518,7 +4515,7 @@ void texture::create_sampler()
 
    void texture::on_finish_load_texture()
    {
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
       
       VkSamplerCreateInfo samplerInfo{};
       samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;

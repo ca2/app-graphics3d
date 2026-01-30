@@ -1,19 +1,36 @@
 //
-// Created by camilo on 28/01/2026.
+// Created by camilo on 2026-01-28 23:0s0 <3ThomasBorregaardSørensen!!
 //
+#pragma once
 
-#ifndef SCENEFOUNDRY_SEMAPHORE_H
-#define SCENEFOUNDRY_SEMAPHORE_H
+
+#include "bred/gpu/semaphore.h"
 
 
 namespace gpu_vulkan
 {
 
-   class semaphore
+
+   class CLASS_DECL_GPU_VULKAN semaphore :
+      virtual public ::gpu::semaphore
    {
+   public:
+
+
+      VkSemaphore m_vksemaphore;
+
+
+      semaphore();
+      ~semaphore() override;
+
+
+      void initialize_gpu_semaphore(::gpu::context * pgpucontext) override;
+
 
    };
 
-} // gpu_vulkan
 
-#endif //SCENEFOUNDRY_SEMAPHORE_H
+} // namespace gpu_vulkan
+
+
+

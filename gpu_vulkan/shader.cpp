@@ -1703,7 +1703,9 @@ namespace gpu_vulkan
       // auto& pdescriptorset = s1()->m_imagedescriptorset[image];
       // auto pcommandbuffer = this->getCurrentCommandBuffer();
 
-      ::cast<renderer> prenderer = m_pgpurenderer;
+      //::cast<renderer> prenderer = m_pgpurenderer;
+
+      ::cast < ::gpu_vulkan::renderer> prenderer = pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer;
 
       ::cast<::gpu_vulkan::shader> pshader = prenderer->m_pgpucontext->m_pshaderBound;
 
@@ -1756,7 +1758,7 @@ namespace gpu_vulkan
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      ::cast<renderer> prenderer = m_pgpurenderer;
+      ::cast<renderer> prenderer = pcommandbuffer->m_pgpurendertarget->m_pgpurenderer;
 
       ::cast<::gpu_vulkan::shader> pshader = prenderer->m_pgpucontext->m_pshaderBound;
 

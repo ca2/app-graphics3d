@@ -138,7 +138,7 @@ namespace gpu_vulkan
       void sample();
       //void resolve_color_and_alpha_accumulation_buffers();
       //void _resolve_color_and_alpha_accumulation_buffers();
-      void swap_chain();
+      //void swap_chain();
 
 
       //void on_end_layer(::gpu::layer* player) override;

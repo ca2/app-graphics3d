@@ -2,6 +2,7 @@
 // Created by camilo on 2026-01-06 23:50 <3ThomasBorregaardSørensen!!
 //
 #include "framework.h"
+#include "context.h"
 #include "fence.h"
 
 #include "device.h"
@@ -62,10 +63,14 @@ namespace gpu_vulkan
    void fence::wait_gpu_fence()
    {
 
-      ::cast < ::gpu_vulkan::device > pdevice = m_pgpucontext->m_pgpudevice;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+
+      auto vkdevice = pcontext->logicalDevice();
+
+      auto vkfence = m_vkfence;
 
       // Wait for the fence to be signaled
-      auto result = vkWaitForFences(pdevice->m_vkdevice, 1, &m_vkfence, VK_TRUE, UINT64_MAX); // VK_TRUE: wait for all fences, UINT64_MAX: wait indefinitely
+      auto result = vkWaitForFences(vkdevice, 1, &vkfence, VK_TRUE, UINT64_MAX); // VK_TRUE: wait for all fences, UINT64_MAX: wait indefinitely
 
       if (result != VK_SUCCESS)
       {

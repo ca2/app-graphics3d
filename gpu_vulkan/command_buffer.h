@@ -22,9 +22,9 @@ namespace gpu_vulkan
       VkFence                 m_vkfence;
 
       //bool m_bPresentQueue;
-      ::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
-      ::array < VkSemaphore> m_semaphoreaWaitToSubmit;
-      ::array < VkPipelineStageFlags > m_stageaWaitToSubmit;
+      //::array < VkSemaphore> m_semaphoreaSignalOnSubmit;
+      //::array < VkSemaphore> m_semaphoreaWaitToSubmit;
+      ::array < VkPipelineStageFlags > m_vkpipelinestageflagsaWait;
 
 
 
@@ -60,12 +60,12 @@ namespace gpu_vulkan
       //    VkFence * pvkfence = nullptr);
 
 
-      virtual VkResult submitCommandBuffers(
-         ::gpu::texture* pgputextureTarget,
-         const ::pointer_array < ::gpu::texture >& gputextureaSource,
-         const ::array < VkSemaphore >& semaphoreaWait,
-         const ::array < VkPipelineStageFlags >& stageaWait,
-         const ::array < VkSemaphore >& semaphoreaSignal);
+      // virtual VkResult submitCommandBuffers(
+      //    ::gpu::texture* pgputextureTarget,
+      //    const ::pointer_array < ::gpu::texture >& gputextureaSource,
+      //    const ::array < VkSemaphore >& semaphoreaWait,
+      //    const ::array < VkPipelineStageFlags >& stageaWait,
+      //    const ::array < VkSemaphore >& semaphoreaSignal);
 
       void draw_vertexes(int iVertexCount) override;
       void draw_indexes(int iIndexCount) override;
