@@ -148,7 +148,7 @@ void main() {
       //m_hdc = nullptr;
       //m_hdcGraphics = nullptr;
       m_ewritetextrendering = ::write_text::e_rendering_anti_alias_grid_fit;
-      m_dFontFactor = 1.0;
+//      m_dFontFactor = 1.0;
 
    }
 
