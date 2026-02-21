@@ -136,7 +136,7 @@ namespace draw2d_direct2d_directx12
       //              const char * lpszOutput, const void * lpInitData) override;
       //bool CreateIC(const ::string & lpszDriverName, const ::string & lpszDeviceName,
       //              const char * lpszOutput, const void * lpInitData) override;
-      void CreateCompatibleDC(::draw2d::graphics * pgraphics) override;
+      void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
       void _create_memory_graphics(const ::int_size& size = {}) override;
       void defer_set_size(const ::int_size& size = {}) override;
 

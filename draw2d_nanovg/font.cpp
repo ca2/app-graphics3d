@@ -91,7 +91,7 @@ namespace draw2d_nanovg
       //
       //    //m_bFont = true;
       //
-      //    ((font *)this)->m_hdcFont = ::CreateCompatibleDC(nullptr);
+      //    ((font *)this)->m_hdcFont = ::create_compatible_graphics(nullptr);
       //
       //    //xxxopengl>>>>opengl((font *)this)->m_baseFont = vkGenLists(256);								// Storage For 256 Characters
       //

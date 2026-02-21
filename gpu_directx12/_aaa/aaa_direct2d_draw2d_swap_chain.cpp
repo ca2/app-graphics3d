@@ -1188,7 +1188,7 @@
 //      //      //if (FAILED(hr))
 //      //      //{
 //
-//      //      //   warning() << "graphics::CreateCompatibleDC, CreateDeviceContext (1) " << hresult_text(hr);
+//      //      //   warning() << "graphics::create_compatible_graphics, CreateDeviceContext (1) " << hresult_text(hr);
 //
 //      //      //   //return false;
 //
@@ -1226,7 +1226,7 @@
 //      //      //if (FAILED(hr))
 //      //      //{
 //
-//      //      //   warning() << "graphics::CreateCompatibleDC, QueryInterface (2) " << hresult_text(hr);
+//      //      //   warning() << "graphics::create_compatible_graphics, QueryInterface (2) " << hresult_text(hr);
 //
 //      //      //   throw ::exception(error_failed);
 //
@@ -1291,7 +1291,7 @@
 //      //      if (FAILED(hr))
 //      //      {
 //
-//      //         warning() << "graphics::CreateCompatibleDC, CreateCompatibleRenderTarget (3) " << hresult_text(hr);
+//      //         warning() << "graphics::create_compatible_graphics, CreateCompatibleRenderTarget (3) " << hresult_text(hr);
 //
 //      //         throw ::exception(error_failed);
 //

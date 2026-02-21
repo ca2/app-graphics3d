@@ -334,7 +334,7 @@ namespace draw2d_nanovg
    }
 
 
-   void graphics::CreateCompatibleDC(::draw2d::graphics* pgraphics)
+   void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
    {
 
       opengl_create_offscreen_buffer({ 0, 0, 1920, 1080 });
@@ -1686,7 +1686,7 @@ namespace draw2d_nanovg
 
    //   //   HBITMAP hbitmap = ::CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, (void **) &pimage32, nullptr, 0);
 
-   //   //   HDC hdc = ::CreateCompatibleDC(nullptr);
+   //   //   HDC hdc = ::create_compatible_graphics(nullptr);
 
    //   //   HBITMAP hbitmapOld = (HBITMAP) ::SelectObject(hdc, hbitmap);
 
@@ -8180,7 +8180,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //   draw2d_nanovg_enum_fonts fonts(itema);
 
-   //   //HDC hdc = ::CreateCompatibleDC(nullptr);
+   //   //HDC hdc = ::create_compatible_graphics(nullptr);
 
    //   //::EnumFontFamilies(hdc,(LPCTSTR)nullptr,(FONTENUMPROC)draw2d_nanovg_EnumFamCallBack,(LPARAM)&fonts);
 

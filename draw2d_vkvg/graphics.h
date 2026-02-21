@@ -139,7 +139,7 @@ namespace draw2d_vkvg
       void create_memory_graphics(const ::int_size & size = {}) override;
       void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::int_size& size) override;
-      void CreateCompatibleDC(::draw2d::graphics * pgraphics) override;
+      void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
 
       virtual bool vulkan_create_offscreen_buffer(const ::int_rectangle & rectanglePlacement);
       virtual bool vulkan_delete_offscreen_buffer();

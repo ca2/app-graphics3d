@@ -242,7 +242,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::CreateCompatibleDC(::draw2d::graphics* pgraphics)
+   void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
    {
 
       vulkan_create_offscreen_buffer({ 0, 0, 1920, 1080 });
@@ -2028,7 +2028,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   //   HBITMAP hbitmap = ::CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, (void **) &pimage32, nullptr, 0);
 
-   //   //   HDC hdc = ::CreateCompatibleDC(nullptr);
+   //   //   HDC hdc = ::create_compatible_graphics(nullptr);
 
    //   //   HBITMAP hbitmapOld = (HBITMAP) ::SelectObject(hdc, hbitmap);
 
@@ -6871,7 +6871,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   draw2d_vulkan_enum_fonts fonts(itema);
 
-   //   //HDC hdc = ::CreateCompatibleDC(nullptr);
+   //   //HDC hdc = ::create_compatible_graphics(nullptr);
 
    //   //::EnumFontFamilies(hdc,(LPCTSTR)nullptr,(FONTENUMPROC)draw2d_vulkan_EnumFamCallBack,(LPARAM)&fonts);
 

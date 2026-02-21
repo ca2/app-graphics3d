@@ -144,7 +144,7 @@ namespace draw2d_direct2d_directx12
    //}
 
    
-   void graphics::CreateCompatibleDC(::draw2d::graphics* pgraphics)
+   void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
    {
 
       _create_memory_graphics({ 256, 256 });
@@ -243,7 +243,7 @@ namespace draw2d_direct2d_directx12
             //if (FAILED(hr))
             //{
 
-            //   warning() << "graphics::CreateCompatibleDC, CreateDeviceContext (1) " << hresult_text(hr);
+            //   warning() << "graphics::create_compatible_graphics, CreateDeviceContext (1) " << hresult_text(hr);
 
             //   //return false;
 
@@ -281,7 +281,7 @@ namespace draw2d_direct2d_directx12
             //if (FAILED(hr))
             //{
 
-            //   warning() << "graphics::CreateCompatibleDC, QueryInterface (2) " << hresult_text(hr);
+            //   warning() << "graphics::create_compatible_graphics, QueryInterface (2) " << hresult_text(hr);
 
             //   throw ::exception(error_failed);
 
@@ -346,7 +346,7 @@ namespace draw2d_direct2d_directx12
             if (FAILED(hr))
             {
 
-               warning() << "graphics::CreateCompatibleDC, CreateCompatibleRenderTarget (3) " << hresult_text(hr);
+               warning() << "graphics::create_compatible_graphics, CreateCompatibleRenderTarget (3) " << hresult_text(hr);
 
                throw ::exception(error_failed);
 
@@ -803,7 +803,7 @@ namespace draw2d_direct2d_directx12
       //if(m_prendertarget == nullptr)
       //{
 
-        // CreateCompatibleDC(nullptr);
+        // create_compatible_graphics(nullptr);
 
       //}
 
@@ -1444,7 +1444,7 @@ namespace draw2d_direct2d_directx12
 //
 //         HBITMAP hbitmap = ::CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, (void **) &pimage32, nullptr, 0);
 //
-//         HDC hdc = ::CreateCompatibleDC(nullptr);
+//         HDC hdc = ::create_compatible_graphics(nullptr);
 //
 //         HBITMAP hbitmapOld = (HBITMAP) ::SelectObject(hdc, hbitmap);
 //
