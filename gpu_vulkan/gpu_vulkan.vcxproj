@@ -696,6 +696,7 @@
     <ClInclude Include="buffer.h" />
     <ClInclude Include="context_cgl.h" />
     <ClInclude Include="context_fbo.h" />
+    <ClInclude Include="fence.h" />
     <ClInclude Include="gltf\material.h" />
     <ClInclude Include="gltf\mesh.h" />
     <ClInclude Include="gltf\model.h" />
@@ -809,6 +810,7 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
     <ClInclude Include="render_pass.h" />
     <ClInclude Include="render_target.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="semaphore.h" />
     <ClInclude Include="shader.frag.spv.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="aaa_swap_chain.h" />
@@ -830,6 +832,7 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
     <ClCompile Include="block.cpp" />
     <ClCompile Include="buffer.cpp" />
     <ClCompile Include="context_ktx.cpp" />
+    <ClCompile Include="fence.cpp" />
     <ClCompile Include="gltf\mesh.cpp" />
     <ClCompile Include="gltf\model.cpp" />
     <ClCompile Include="aaa_gltf_model.cpp">
@@ -916,6 +919,7 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="render_pass.cpp" />
     <ClCompile Include="render_target.cpp" />
+    <ClCompile Include="semaphore.cpp" />
     <ClCompile Include="swap_chain.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="texture_ktx.cpp" />

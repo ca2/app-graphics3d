@@ -666,14 +666,15 @@ namespace gpu_directx12
    }
 
 
-   void context::copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource)
+   void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource,
+                      ::pointer<::gpu::fence> *pgpufence)
    {
 
       ::cast < ::gpu_directx12::texture > ptextureDst = ptextureTarget;
 
       ::cast < ::gpu_directx12::texture > ptextureSrc = ptextureSource;
 
-      ::cast < renderer > prenderer = ptextureSrc->m_pgpurenderer;
+      ::cast < renderer > prenderer = ptextureSrc->m_pgpucontext->m_pgpurenderer;
 
       //auto pcommandbuffer = prenderer->beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE_DIRECT);
 
@@ -2122,7 +2123,8 @@ if (m_itask.is_null())
       floating_matrix4 context::defer_transpose(const floating_matrix4 &m) { return m.transposed(); }
 
 
-   void context::merge_layers(::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera)
+   void context::merge_layers(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptextureTarget,
+                                 ::pointer_array<::gpu::layer> *playera)
    {
 
       if (!m_pshaderBlend3)

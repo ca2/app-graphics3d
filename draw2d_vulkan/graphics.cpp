@@ -115,7 +115,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       m_pimageAlphaBlend = nullptr;
       m_size.set(0, 0);
       m_ewritetextrendering = ::write_text::e_rendering_anti_alias_grid_fit;
-      m_dFontFactor = 1.0;
+      //m_dFontFactor = 1.0;
 
    }
 

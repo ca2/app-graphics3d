@@ -26,6 +26,8 @@ namespace gpu_vulkan
 
       //::pointer_array<::gpu::semaphore>       m_semaphoreaSignal;
 
+      ::pointer_array<::gpu::semaphore>         m_semaphoreaWait;
+
 
       struct frame_sync
       {
@@ -86,7 +88,7 @@ namespace gpu_vulkan
       //    const ::array < VkPipelineStageFlags >& stageaWait,
       //    const ::array < VkSemaphore >& semaphoreaSignal);
 
-
+      void swap_buffers() override;
       void acquireNextImage();
  //      VkResult submitCommandBuffers2(
  // command_buffer* pcommandbuffer,

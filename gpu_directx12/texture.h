@@ -274,7 +274,7 @@ namespace gpu_directx12
 
       void create_depth_resources();
 
-      virtual void _initialize_gpu_texture(::gpu::renderer* prenderer, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain);
+      virtual void _initialize_gpu_texture(::gpu::context * pgpucontext, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain);
 
 
       void set_pixels(const ::int_rectangle& rectangle, const void* data) override;
@@ -283,10 +283,10 @@ namespace gpu_directx12
 
       virtual static_upload_buffer *_get_static_upload_buffer(int iResourceCount = -1);
 
-      void initialize_hdr_texture_on_memory(::gpu::renderer *prenderer, const ::block &block) override;
+      void initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
 
 
-            void set_state(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_texture_state etexturestate) override;
+      void set_state(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_texture_state etexturestate) override;
       void generate_mipmap(::gpu::command_buffer *pgpucommandbuffer) override;
 
    };

@@ -692,7 +692,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < render_target_view > pgpurendertargetview = pgpurendertarget;
 
-      assert(!isFrameStarted && "Can't call beginFrame while already in progress");
+      assert(!m_bFrameStarted && "Can't call beginFrame while already in progress");
 
       //if (m_bOffScreen)
       {

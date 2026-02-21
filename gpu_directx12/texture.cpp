@@ -122,13 +122,13 @@ namespace gpu_directx12
 
       //clearValue.Color = { 0.5f, 0.75f, 0.9f, 0.5f };
 
-      ::cast < ::gpu_directx12::device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
 
       CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
 
       D3D12_HEAP_FLAGS eheap;
 
-      if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+      if (m_pgpucontext->m_bD3D11On12Shared)
       {
 
          eheap = D3D12_HEAP_FLAG_NONE;
@@ -175,7 +175,7 @@ namespace gpu_directx12
 
       }
 
-      ::cast<::gpu_directx12::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_directx12::context> pcontext = m_pgpucontext;
 
       pcontext->_construct_new(m_pd3d12resourceTexture);
 
@@ -223,12 +223,12 @@ namespace gpu_directx12
 
          }
 
-         ::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
+         ::cast<command_buffer> pcommandbuffer = m_pgpucontext->m_pgpurenderer->getLoadAssetsCommandBuffer();
 
          if (!pcommandbuffer)
          {
 
-            pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+            pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
          
          }
 
@@ -242,12 +242,12 @@ namespace gpu_directx12
 
 
          
-      ::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
+      ::cast<command_buffer> pcommandbuffer = m_pgpucontext->m_pgpurenderer->getLoadAssetsCommandBuffer();
 
          if (!pcommandbuffer)
          {
 
-            pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+            pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
          }
 
          auto pstaticuploadbuffer = _get_static_upload_buffer();
@@ -523,11 +523,11 @@ namespace gpu_directx12
 
 
 
-   void texture::initialize_hdr_texture_on_memory(::gpu::renderer *prenderer, const ::block &block)
+   void texture::initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block)
    {
       //Dx12Texture out = {};
 
-      m_pgpurenderer = prenderer;
+      m_pgpucontext = pgpucontext;
 
       auto data = block.data();
 
@@ -614,7 +614,7 @@ namespace gpu_directx12
       texDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 
 
-      ::cast<::gpu_directx12::device> pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      ::cast<::gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
 
       auto device = pdevice->m_pd3d12device;
 
@@ -643,7 +643,7 @@ namespace gpu_directx12
 
       //m_state = stateInitial;
 
-      ::cast<::gpu_directx12::context> pcontext = m_pgpurenderer->m_pgpucontext;
+      ::cast<::gpu_directx12::context> pcontext = m_pgpucontext;
 
       pcontext->_construct_new(m_pd3d12resourceTexture);
 
@@ -657,12 +657,12 @@ namespace gpu_directx12
 
       m_pd3d12resourceTexture->set_name(m_strTextureName);
 
-      ::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getLoadAssetsCommandBuffer();
+      ::cast<command_buffer> pcommandbuffer = m_pgpucontext->m_pgpurenderer->getLoadAssetsCommandBuffer();
 
       if (!pcommandbuffer)
       {
 
-         pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+         pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
       }
 
@@ -806,7 +806,7 @@ namespace gpu_directx12
             return {};
 
          }
-               ::cast<device> pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+               ::cast<device> pdevice = m_pgpucontext->m_pgpudevice;
          m_uRenderTargetViewIncrement = pdevice->m_pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
          // 2. Create RTV descriptor heap
          D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
@@ -872,7 +872,7 @@ namespace gpu_directx12
       if (m_textureflags.m_bRenderTarget)
       {
 
-         if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+         if (m_pgpucontext->m_bD3D11On12Shared)
          {
 
             return;
@@ -898,7 +898,7 @@ namespace gpu_directx12
 
       //}
 
-      ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+      ::cast < device > pdevice = m_pgpucontext->m_pgpudevice;
 
       // 4. Create SRV descriptor heap
       D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
@@ -972,13 +972,13 @@ namespace gpu_directx12
 
       if (!m_handleDepthStencilView.ptr)
       {
-         if (m_pgpurenderer->m_pgpucontext->m_bD3D11On12Shared)
+         if (m_pgpucontext->m_bD3D11On12Shared)
          {
 
             return;
 
          }
-         ::cast < device > pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;
+         ::cast < device > pdevice = m_pgpucontext->m_pgpudevice;
 
 
 
@@ -1062,10 +1062,10 @@ namespace gpu_directx12
    //}
 
 
-   void texture::_initialize_gpu_texture(::gpu::renderer* prenderer, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain)
+   void texture::_initialize_gpu_texture(::gpu::context * pgpucontext, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain)
    {
 
-      m_pgpurenderer = prenderer;
+      m_pgpucontext = pgpucontext;
 
       if (!m_pd3d12resourceTexture || !m_pd3d12resourceTexture->m_presource)
       {
@@ -1075,7 +1075,7 @@ namespace gpu_directx12
          m_iCurrentMip = 0;
          m_iCurrentLayer = 0;
 
-         ::cast<::gpu_directx12::context> pcontext = prenderer->m_pgpucontext;
+         ::cast<::gpu_directx12::context> pcontext = pgpucontext;
 
          pcontext->_construct_new(m_pd3d12resourceTexture);
 
@@ -1620,7 +1620,7 @@ namespace gpu_directx12
    texture::upload_buffer* texture::_get_upload_buffer()
    {
 
-      ::cast < renderer > prenderer = m_pgpurenderer;
+      ::cast < renderer > prenderer = m_pgpucontext->m_pgpurenderer;
 
       ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
@@ -1649,7 +1649,7 @@ namespace gpu_directx12
    texture::static_upload_buffer *texture::_get_static_upload_buffer(int iResourceCount)
    {
 
-      ::cast<renderer> prenderer = m_pgpurenderer;
+      ::cast<renderer> prenderer = m_pgpucontext->m_pgpurenderer;
 
       øconstruct_new(m_pstaticuploadbuffer);
 
@@ -1735,7 +1735,7 @@ namespace gpu_directx12
 
          ::cast < renderer > prenderer = m_ptexture->m_pgpucontext;
 
-         ::cast < context > pcontext = prenderer->m_pgpucontext;
+         ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 
          auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(nullptr);
 

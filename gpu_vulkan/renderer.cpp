@@ -3385,8 +3385,8 @@ namespace gpu_vulkan
          {
             //pswapchain->m_stageaWaitToSubmit.clear();
             //pswapchain->m_semaphoreaWaitToSubmit.clear();
-            pcommandbuffer->m_semaphoreaWaitToSubmit.clear();
-            pcommandbuffer->m_stageaWaitToSubmit.clear();
+            pcommandbuffer->m_semaphoreaWait.clear();
+            pcommandbuffer->m_vkpipelinestageflagsaWait.clear();
          }
 
       }
@@ -4213,24 +4213,27 @@ namespace gpu_vulkan
 
             ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
 
-            result = pswapchain->submitCommandBuffers2(
-               pcommandbuffer,
-               pgputextureOutput,
-               {}, {}, {});
+            //result = pswapchain->submitCommandBuffers2(
+              // pcommandbuffer,
+               //pgputextureOutput,
+               //{}, {}, {});
+
+            pswapchain->present(pgputextureOutput);
 
          }
          else
          {
 
-            result = pcommandbuffer->submitCommandBuffers(
-               pgputextureOutput,
+            //result = pcommandbuffer->submitCommandBuffers(
+            pcommandbuffer->submit_command_buffer(nullptr);/*
                {},
-               {}, {}, {});
+               {},
+               {}, {}, {});*/
 
          }
 
-         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-            m_bNeedToRecreateSwapChain)
+         //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+            if(m_bNeedToRecreateSwapChain)
          {
 
             m_bNeedToRecreateSwapChain = false;
@@ -4238,12 +4241,12 @@ namespace gpu_vulkan
             defer_update_renderer();
 
          }
-         else if (result != VK_SUCCESS)
-         {
+         //else if (result != VK_SUCCESS)
+         //{
 
-            throw ::exception(error_failed, "failed to present swap chain image!");
+         //   throw ::exception(error_failed, "failed to present swap chain image!");
 
-         }
+         //}
 
       }
 
@@ -4577,13 +4580,13 @@ namespace gpu_vulkan
 
          //::cast < render_pass > prenderpassSrc = prendertargetSrc->render_pass();
 
-         ::cast < ::gpu_vulkan::texture > ptextureSrc = prendertargetSrc->m_ptexturea->element_at(prendertargetSrc->get_frame_index());
+         //::cast < ::gpu_vulkan::texture > ptextureSrc = prendertargetSrc->m_ptexturea->element_at(prendertargetSrc->get_frame_index());
 
-         auto psynchronizationSrc = ptextureSrc->synchronization();
+         //auto psynchronizationSrc = ptextureSrc->synchronization();
 
-         ::cast < command_buffer > pcommandbuffer = pframe->m_pgpucommandbuffer;
+         //::cast < command_buffer > pcommandbuffer = pframe->m_pgpucommandbuffer;
 
-         pcommandbuffer->m_semaphoreaSignalOnSubmit.add(psynchronizationSrc->m_vksemaphoreAvailable);
+         //pcommandbuffer->m_semaphoreaSignal.add(psynchronizationSrc->m_vksemaphoreAvailable);
 
 
          //on_begin_frame();

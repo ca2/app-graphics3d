@@ -99,7 +99,7 @@ namespace gpu_directx12
          //ptextureSwapChain->m_bDepthStencil = false;
 
          ptextureSwapChain->_initialize_gpu_texture(
-            pgpurenderer,
+            pgpurenderer->m_pgpucontext,
             m_iSwapChainIndex,
             m_pdxgiswapchain);
 

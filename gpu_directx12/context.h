@@ -319,7 +319,8 @@ namespace gpu_directx12
 
       //void submitWork(VkCommandBuffer cmdBuffer, VkQueue queue);
 
-      void copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource) override;
+      void copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource,
+                ::pointer<::gpu::fence> *pgpufence) override;
 
       //public:
       //void _createInstance();
@@ -381,7 +382,8 @@ namespace gpu_directx12
       void on_create_texture(::gpu::texture* pgputext) override;
       //void on_take_snapshot(::gpu::layer* pgpulayer) override;
       floating_matrix4 defer_transpose(const floating_matrix4 &m) override;
-      void merge_layers(::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera) override;
+      void merge_layers(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptextureTarget,
+                        ::pointer_array<::gpu::layer> *playera) override;
 
       //void swap_buffers();
       IDXGIDevice* _get_dxgi_device() override;

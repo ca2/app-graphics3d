@@ -6,6 +6,7 @@
 #include "queue.h"
 #include "renderer.h"
 #include "render_target.h"
+#include "semaphore.h"
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
@@ -210,10 +211,20 @@ namespace gpu_vulkan
           VK_NULL_HANDLE,         // no fence (GPU-GPU sync only)
           &m_uCurrentSwapChainImage);
 
+      //      if (vkresultAcquireNextImage == VK_ERROR_OUT_OF_DATE_KHR || vkresultAcquireNextImage == VK_SUBOPTIMAL_KHR)
+      //{
+
+      //   m_iSwapSeed++;
+      //}
+
+
       if (result == VK_ERROR_OUT_OF_DATE_KHR)
       {
          // Swapchain must be recreated by caller
-         return result;
+         //return result;
+         throw ::exception(
+             error_failed,
+            "vkAcquireNextImageKHR failed with VK_ERROR_OUT_OF_DATE_KHR - swap chain needs to be recreated");
       }
 
       if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
@@ -223,7 +234,7 @@ namespace gpu_vulkan
              "vkAcquireNextImageKHR failed");
       }
 
-      return result;
+      //return result;
    }
 
 
@@ -488,7 +499,9 @@ namespace gpu_vulkan
    // }
 
 
-   void swap_chain::submitCommandBuffers2(command_buffer* pcommandbuffer, ::gpu::texture* pgputexture)
+   //void swap_chain::submitCommandBuffers2(command_buffer* pcommandbuffer, ::gpu::texture* pgputexture)
+   //void swap_chain::present(::gpu::texture *pgputexture)
+   void swap_chain::swap_buffers()
    {
     // // --------------------------------------------------------------------
     // // Context + frame
@@ -613,24 +626,42 @@ namespace gpu_vulkan
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores    = &frame.renderFinished;
+    ::comparable_array<VkSemaphore> vksemaphoreaWait;
+    //::array_base<VkPipelineStageFlags> vkpipelinestageflagsaWait;
+    //::comparable_array<VkSemaphore> vksemaphoreaSignal;
+    for (auto &pgpusemaphore: m_semaphoreaWait)
+    {
+       ::cast<::gpu_vulkan::semaphore> psemaphore = pgpusemaphore;
+       if (psemaphore)
+       {
+          auto vksemaphore = psemaphore->m_vksemaphore;
+          if (vksemaphore != VK_NULL_HANDLE)
+          {
+             vksemaphoreaWait.add(vksemaphore);
+             //vkpipelinestageflagsaWait.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+          }
+       }
+    }
+
+    presentInfo.waitSemaphoreCount = vksemaphoreaWait.size();
+    presentInfo.pWaitSemaphores = vksemaphoreaWait.data();
+
 
     presentInfo.swapchainCount     = 1;
     presentInfo.pSwapchains        = &m_vkswapchain;
     presentInfo.pImageIndices      = &m_uCurrentSwapChainImage;
-      ::cast < ::gpu_vulkan::queue > pqueuePresent = pcontext->m_pgpudevice->present_queue();
+      ::cast < ::gpu_vulkan::queue > pqueuePresent = m_pgpucontext->m_pgpudevice->present_queue();
     auto presentQueue =
         pqueuePresent->m_vkqueue;
 
-      res = vkQueuePresentKHR(presentQueue, &presentInfo);
+    VkResult  res = vkQueuePresentKHR(presentQueue, &presentInfo);
 
       // Advance frame
       int iSize = m_ptextureaSwapChain->size();
 
       m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % iSize;
 
-      return res;
+      ///return res;
 
    }
 
@@ -1237,15 +1268,9 @@ namespace gpu_vulkan
 
       ::cast < swap_chain > pswapchain = pgpucontext->m_pgpuswapchain;
 
-      VkResult vkresultAcquireNextImage = pswapchain->acquireNextImage();
+      acquireNextImage();
+      //VkResult vkresultAcquireNextImage = pswapchain->acquireNextImage();
 
-      if (vkresultAcquireNextImage == VK_ERROR_OUT_OF_DATE_KHR 
-         || vkresultAcquireNextImage == VK_SUBOPTIMAL_KHR) 
-      {
-         
-         m_iSwapSeed++;
-
-      }
 
       defer_check_swap_chain();
 
@@ -1361,8 +1386,8 @@ namespace gpu_vulkan
       pcommandbuffer->begin_render(m_pshaderPresent, ptextureSwapChain);
       pcommandbuffer->set_source(ptextureSrc);
 
-      pcommandbuffer->m_semaphoreaWaitToSubmit.add(ptextureSrc->synchronization()->m_vksemaphoreRenderFinished);
-      pcommandbuffer->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+//      pcommandbuffer->m_semaphoreaWaitToSubmit.add(ptextureSrc->synchronization()->m_vksemaphoreRenderFinished);
+  //    pcommandbuffer->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
       pcommandbuffer->set_viewport(pgpucontext->m_rectangle.size());
 
