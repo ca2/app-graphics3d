@@ -581,7 +581,7 @@ namespace draw2d_vulkan
       virtual void set(::draw2d::bitmap* pbitmap) override;
       virtual ::draw2d::object* set_stock_object(int nIndex) override;
 
-      void CreateWindowDC(oswindow wnd) override;
+      void create_window_graphics(oswindow wnd) override;
       void is_valid_update_window_thread() override;
 
 

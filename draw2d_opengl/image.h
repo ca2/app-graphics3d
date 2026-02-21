@@ -30,9 +30,9 @@ namespace draw2d_opengl
       virtual ~image();
 
 
-      virtual ::draw2d::graphics * _get_graphics() const;
-      virtual ::draw2d::bitmap_pointer get_bitmap() const;
-      virtual ::draw2d::bitmap_pointer detach_bitmap();
+      ::draw2d::graphics * _get_graphics() const override;
+      ::draw2d::bitmap_pointer get_bitmap() const override;
+      ::draw2d::bitmap_pointer detach_bitmap() override;
 
       //virtual ::draw2d::graphics * get_graphics();
 
@@ -46,7 +46,7 @@ namespace draw2d_opengl
 
       virtual void create(const ::int_size& size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1, bool bPreserve = false) override;
 
-      virtual void create(::draw2d::graphics* pgraphics);
+      void create(::draw2d::graphics* pgraphics) override;
 
       void destroy() override;
 

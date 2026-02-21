@@ -8200,7 +8200,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 
 
-   void graphics::CreateWindowDC(oswindow wnd)
+   void graphics::create_window_graphics(oswindow wnd)
    {
 
       // http://stackoverflow.com/questions/4052940/how-to-make-an-opengl-rendering-context-with-transparent-background

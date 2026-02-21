@@ -6891,7 +6891,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
 
-   void graphics::CreateWindowDC(oswindow wnd)
+   void graphics::create_window_graphics(oswindow wnd)
    {
 
       // http://stackoverflow.com/questions/4052940/how-to-make-an-vulkan-rendering-context-with-transparent-background

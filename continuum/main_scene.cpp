@@ -369,7 +369,7 @@ namespace app_graphics3d_continuum
 
       auto prenderer = pgpucontext->m_pgpurenderer;
 
-      auto pgpurendertarget = prenderer->render_target();
+      //auto pgpurendertarget = prenderer->render_target();
 
       //auto ptexture = pgpurendertarget->current_texture(::gpu::current_frame());
 

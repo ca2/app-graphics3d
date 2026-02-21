@@ -288,953 +288,951 @@ namespace draw2d_opengl
    //}
 
 
-   /*void image::Fill ( int R, int G, int B )
-   {
-      color32_t color=rgb ( B, G, R );
-      long long size = area();
-
-      color32_t * pcr;
-
-      long long iSize32 = size / 32;
-      int i;
-      for (i=0; i < iSize32; i+=32 )
-      {
-         pcr = &m_pcolorref[i];
-         pcr[0] = color;
-         pcr[1] = color;
-         pcr[2] = color;
-         pcr[3] = color;
-         pcr[4] = color;
-         pcr[5] = color;
-         pcr[6] = color;
-         pcr[7] = color;
-         pcr[8] = color;
-         pcr[9] = color;
-         pcr[10] = color;
-         pcr[11] = color;
-         pcr[12] = color;
-         pcr[13] = color;
-         pcr[14] = color;
-         pcr[15] = color;
-         pcr[16] = color;
-         pcr[17] = color;
-         pcr[18] = color;
-         pcr[19] = color;
-         pcr[20] = color;
-         pcr[21] = color;
-         pcr[22] = color;
-         pcr[23] = color;
-         pcr[24] = color;
-         pcr[25] = color;
-         pcr[26] = color;
-         pcr[27] = color;
-         pcr[28] = color;
-         pcr[29] = color;
-         pcr[30] = color;
-         pcr[31] = color;
-      }
-
-      for (i=0; i<int_size; i++ )
-      {
-         m_pcolorref[i]=color;
-      }
-   }
-
-   void image::set_rgb(int R, int G, int B)
-   {
-      long long size = area();
-
-      unsigned char * pbyte = (unsigned char *) m_pcolorref;
-
-      int i;
-      for (i=0; i<int_size; i++ )
-      {
-         *pbyte++ = (unsigned char) R;
-         *pbyte++ = (unsigned char) G;
-         *pbyte++ = (unsigned char) B;
-         pbyte++;
-      }
-   }
-
-   void image::ToAlpha(int i)
-   {
-      unsigned char *dst=(unsigned char*)m_pcolorref;
-      long long size = area();
-
-      while ( size-- )
-      {
-         dst[3] = dst[i];
-         dst+=4;
-      }
-   }
-
-   void image::from_alpha()
-   {
-      unsigned char *dst=(unsigned char*)m_pcolorref;
-      long long size = area();
-
-      while ( size-- )
-      {
-         dst[0] = dst[3];
-         dst[1] = dst[3];
-         dst[2] = dst[3];
-         dst+=4;
-      }
-   }
-
-   //DIB = DIB * SRC_ALPHA
-
-   void image::mult_alpha(image imageWork, bool bPreserveAlpha)
-   {
-      image::mult_alpha(imageWork, bPreserveAlpha);
-      return ;
-      /*
-      if(area() <= 0)
-         return;
+// // void image::Fill ( int R, int G, int B )
+// //    {
+// //       color32_t color=rgb ( B, G, R );
+// //       long long size = area();
+
+// //       color32_t * pcr;
+
+// //       long long iSize32 = size / 32;
+// //       int i;
+// //       for (i=0; i < iSize32; i+=32 )
+// //       {
+// //          pcr = &m_pcolorref[i];
+// //          pcr[0] = color;
+// //          pcr[1] = color;
+// //          pcr[2] = color;
+// //          pcr[3] = color;
+// //          pcr[4] = color;
+// //          pcr[5] = color;
+// //          pcr[6] = color;
+// //          pcr[7] = color;
+// //          pcr[8] = color;
+// //          pcr[9] = color;
+// //          pcr[10] = color;
+// //          pcr[11] = color;
+// //          pcr[12] = color;
+// //          pcr[13] = color;
+// //          pcr[14] = color;
+// //          pcr[15] = color;
+// //          pcr[16] = color;
+// //          pcr[17] = color;
+// //          pcr[18] = color;
+// //          pcr[19] = color;
+// //          pcr[20] = color;
+// //          pcr[21] = color;
+// //          pcr[22] = color;
+// //          pcr[23] = color;
+// //          pcr[24] = color;
+// //          pcr[25] = color;
+// //          pcr[26] = color;
+// //          pcr[27] = color;
+// //          pcr[28] = color;
+// //          pcr[29] = color;
+// //          pcr[30] = color;
+// //          pcr[31] = color;
+// //       }
+
+// //       for (i=0; i<int_size; i++ )
+// //       {
+// //          m_pcolorref[i]=color;
+// //       }
+// //    }
+
+// //    void image::set_rgb(int R, int G, int B)
+// //    {
+// //       long long size = area();
+
+// //       unsigned char * pbyte = (unsigned char *) m_pcolorref;
+
+// //       int i;
+// //       for (i=0; i<int_size; i++ )
+// //       {
+// //          *pbyte++ = (unsigned char) R;
+// //          *pbyte++ = (unsigned char) G;
+// //          *pbyte++ = (unsigned char) B;
+// //          pbyte++;
+// //       }
+// //    }
+
+// //    void image::ToAlpha(int i)
+// //    {
+// //       unsigned char *dst=(unsigned char*)m_pcolorref;
+// //       long long size = area();
+
+// //       while ( size-- )
+// //       {
+// //          dst[3] = dst[i];
+// //          dst+=4;
+// //       }
+// //    }
+
+// //    void image::from_alpha()
+// //    {
+// //       unsigned char *dst=(unsigned char*)m_pcolorref;
+// //       long long size = area();
+
+// //       while ( size-- )
+// //       {
+// //          dst[0] = dst[3];
+// //          dst[1] = dst[3];
+// //          dst[2] = dst[3];
+// //          dst+=4;
+// //       }
+// //    }
+
+// //    //DIB = DIB * SRC_ALPHA
+
+// //    void image::mult_alpha(image imageWork, bool bPreserveAlpha)
+// //    {
+// //       image::mult_alpha(imageWork, bPreserveAlpha);
+// //       return ;
+// //       // // if(area() <= 0)
+// //       // //    return;
 
-      //return image::mult_alpha(nullptr, true);
-      image imageWork;
+// //       // // //return image::mult_alpha(nullptr, true);
+// //       // // image imageWork;
 
-      if(imageWork == nullptr)
-      {
-         imageWork.create(this);
-         imageWork = imageWork;
-      }
+// //       // // if(imageWork == nullptr)
+// //       // // {
+// //       // //    imageWork.create(this);
+// //       // //    imageWork = imageWork;
+// //       // // }
 
-      if(imageWork = create_image({width(),  height())})
-         return;
+// //       // // if(imageWork = create_image({width(),  height())})
+// //       // //    return;
 
-      imageWork.FillByte(0);
+// //       // // imageWork.FillByte(0);
 
-      imageWork.channel_from(::color::e_channel_opacity, this);
+// //       // // imageWork.channel_from(::color::e_channel_opacity, this);
 
-      imageWork.channel_invert(::color::e_channel_opacity);
+// //       // // imageWork.channel_invert(::color::e_channel_opacity);
 
 
-      BLENDFUNCTION bf;
+// //       // // BLENDFUNCTION bf;
 
-      bf.BlendOp = AC_SRC_OVER;
-      bf.BlendFlags = 0;
-      bf.SourceConstantAlpha = 255;
-      bf.AlphaFormat = AC_SRC_ALPHA;
-
-      get_graphics()->alpha_blend(size(), imageWork.get_graphics(), bf);
-
-      if(bPreserveAlpha)
-      {
-
-         imageWork.channel_invert(::color::e_channel_opacity);
-
-         ::color::e_channel_from(::color::e_channel_opacity, imageWork);
-
-      }
-
-      */
-
-   //}
-
-   //void image::Map(int ToRgb, int FromRgb)
-   //{
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-
-   //   while ( size-- )
-   //   {
-   //      *dst = (unsigned char) (*dst == FromRgb ? ToRgb : *dst);
-   //      dst+=4;
-   //   }
-   //}
-
-
-   //void image::ToAlphaAndFill(int i, color32_t color32)
-   //{
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-
-   //   unsigned char uchB = ::blue(color32);
-   //   unsigned char uchG = ::green(color32);
-   //   unsigned char uchR = ::red(color32);
-
-   //   while ( size-- )
-   //   {
-   //      dst[3] = dst[i];
-   //      dst[0] = uchB;
-   //      dst[1] = uchG;
-   //      dst[2] = uchR;
-   //      dst+=4;
-   //   }
-   //}
-
-   //void image::GrayToARGB(color32_t color32)
-   //{
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-
-   //   unsigned int dwB = ::blue(color32);
-   //   unsigned int dwG = ::green(color32);
-   //   unsigned int dwR = ::red(color32);
-
-   //   while (size-- > 0)
-   //   {
-   //      dst[3] = dst[0];
-   //      dst[0] = (unsigned char)(((dwB * dst[3]) / 256) & 0xff);
-   //      dst[1] = (unsigned char)(((dwG * dst[3]) / 256) & 0xff);
-   //      dst[2] = (unsigned char)(((dwR * dst[3]) / 256) & 0xff);
-   //      dst+=4;
-   //   }
-   //}
-
-
-   //void image::BitBlt(imagepimage, int op)
-   //{
-   //   if(op == 123) // zero dest rgb, invert alpha, and OR src rgb
-   //   {
-   //      long long isize = area();
-   //      LPDWORD lpbitsSrc= (LPDWORD) pimage->get_data();
-   //      LPDWORD lpbitsDest= (LPDWORD) m_pcolorref;
-
-   //      color32_t _colorref = rgb ( 0, 0, 0 ) | (255 << 24);
-   //      color32_t colorrefa[2];
-   //      colorrefa[0] = _colorref;
-   //      colorrefa[1] = _colorref;
-
-   //      color32_t _colorrefN = rgb ( 255, 255, 255) | (0 << 24);
-   //      color32_t colorrefaN[2];
-   //      colorrefaN[0] = _colorrefN;
-   //      colorrefaN[1] = _colorrefN;
-   //      throw ::exception(todo);
-   //   }
-
-   //}
-
-
-   //void image::Invert()
-   //{
-   //   long long size = area();
-   //   LPBYTE lpb = (LPBYTE) m_pcolorref;
-   //   for ( int i=0; i<int_size; i++ )
-   //   {
-   //      lpb[0] = 255 - lpb[0];
-   //      lpb[1] = 255 - lpb[1];
-   //      lpb[2] = 255 - lpb[2];
-   //      lpb += 4;
-   //   }
-   //}
-
-   //void image::color::e_channel_invert(color::color::color::rgba::echannel echannel)
-   //{
-   //   long long int_size   = area();
-   //   register long long long_long_size = size / 64;
-   //   LPBYTE lpb = (LPBYTE) m_pcolorref;
-   //   lpb += ((int)echannel) % 4;
-   //   register long long i = 0;
-   //   for(; i < long_long_size; i++)
-   //   {
-   //      lpb[4 *  0] = 255 - lpb[4 *  0];
-   //      lpb[4 *  1] = 255 - lpb[4 *  1];
-   //      lpb[4 *  2] = 255 - lpb[4 *  2];
-   //      lpb[4 *  3] = 255 - lpb[4 *  3];
-   //      lpb[4 *  4] = 255 - lpb[4 *  4];
-   //      lpb[4 *  5] = 255 - lpb[4 *  5];
-   //      lpb[4 *  6] = 255 - lpb[4 *  6];
-   //      lpb[4 *  7] = 255 - lpb[4 *  7];
-   //      lpb[4 *  8] = 255 - lpb[4 *  8];
-   //      lpb[4 *  9] = 255 - lpb[4 *  9];
-   //      lpb[4 * 10] = 255 - lpb[4 * 10];
-   //      lpb[4 * 11] = 255 - lpb[4 * 11];
-   //      lpb[4 * 12] = 255 - lpb[4 * 12];
-   //      lpb[4 * 13] = 255 - lpb[4 * 13];
-   //      lpb[4 * 14] = 255 - lpb[4 * 14];
-   //      lpb[4 * 15] = 255 - lpb[4 * 15];
-   //      lpb[4 * 16] = 255 - lpb[4 * 16];
-   //      lpb[4 * 17] = 255 - lpb[4 * 17];
-   //      lpb[4 * 18] = 255 - lpb[4 * 18];
-   //      lpb[4 * 19] = 255 - lpb[4 * 19];
-   //      lpb[4 * 20] = 255 - lpb[4 * 20];
-   //      lpb[4 * 21] = 255 - lpb[4 * 21];
-   //      lpb[4 * 22] = 255 - lpb[4 * 22];
-   //      lpb[4 * 23] = 255 - lpb[4 * 23];
-   //      lpb[4 * 24] = 255 - lpb[4 * 24];
-   //      lpb[4 * 25] = 255 - lpb[4 * 25];
-   //      lpb[4 * 26] = 255 - lpb[4 * 26];
-   //      lpb[4 * 27] = 255 - lpb[4 * 27];
-   //      lpb[4 * 28] = 255 - lpb[4 * 28];
-   //      lpb[4 * 29] = 255 - lpb[4 * 29];
-   //      lpb[4 * 30] = 255 - lpb[4 * 30];
-   //      lpb[4 * 31] = 255 - lpb[4 * 31];
-
-   //      lpb[4 * 32] = 255 - lpb[4 * 32];
-   //      lpb[4 * 33] = 255 - lpb[4 * 33];
-   //      lpb[4 * 34] = 255 - lpb[4 * 34];
-   //      lpb[4 * 35] = 255 - lpb[4 * 35];
-   //      lpb[4 * 36] = 255 - lpb[4 * 36];
-   //      lpb[4 * 37] = 255 - lpb[4 * 37];
-   //      lpb[4 * 38] = 255 - lpb[4 * 38];
-   //      lpb[4 * 39] = 255 - lpb[4 * 39];
-   //      lpb[4 * 40] = 255 - lpb[4 * 40];
-   //      lpb[4 * 41] = 255 - lpb[4 * 41];
-   //      lpb[4 * 42] = 255 - lpb[4 * 42];
-   //      lpb[4 * 43] = 255 - lpb[4 * 43];
-   //      lpb[4 * 44] = 255 - lpb[4 * 44];
-   //      lpb[4 * 45] = 255 - lpb[4 * 45];
-   //      lpb[4 * 46] = 255 - lpb[4 * 46];
-   //      lpb[4 * 47] = 255 - lpb[4 * 47];
-   //      lpb[4 * 48] = 255 - lpb[4 * 48];
-   //      lpb[4 * 49] = 255 - lpb[4 * 49];
-   //      lpb[4 * 50] = 255 - lpb[4 * 50];
-   //      lpb[4 * 51] = 255 - lpb[4 * 51];
-   //      lpb[4 * 52] = 255 - lpb[4 * 52];
-   //      lpb[4 * 53] = 255 - lpb[4 * 53];
-   //      lpb[4 * 54] = 255 - lpb[4 * 54];
-   //      lpb[4 * 55] = 255 - lpb[4 * 55];
-   //      lpb[4 * 56] = 255 - lpb[4 * 56];
-   //      lpb[4 * 57] = 255 - lpb[4 * 57];
-   //      lpb[4 * 58] = 255 - lpb[4 * 58];
-   //      lpb[4 * 59] = 255 - lpb[4 * 59];
-   //      lpb[4 * 60] = 255 - lpb[4 * 60];
-   //      lpb[4 * 61] = 255 - lpb[4 * 61];
-   //      lpb[4 * 62] = 255 - lpb[4 * 62];
-   //      lpb[4 * 63] = 255 - lpb[4 * 63];
-
-   //      lpb += 4 * 64;
-   //   }
-   //   i *= 64;
-   //   for(; i < size; i++ )
-   //   {
-   //      *lpb = 255 - *lpb;
-   //      lpb += 4;
-   //   }
-   //}
-   //void image::color::e_channel_multiply(color::color::color::rgba::echannel echannel, double dRate)
-   //{
-   //   if(dRate < 0)
-   //      return;
-   //   register long long size = area();
-   //   LPBYTE lpb = (LPBYTE) get_data();
-   //   lpb += ((int)echannel) % 4;
-   //   register int iDiv = 256 * 256;
-   //   register int iMul = (int) (dRate * ((double) iDiv));
-   //   register int iRes;
-   //   for(register long long i = 0; i < size; i++)
-   //   {
-   //      iRes = *lpb * iMul / iDiv;
-   //      *lpb = (unsigned char) (iRes > 255 ? 255 : iRes);
-   //      lpb += 4;
-   //   }
-   //}
-
-   //void image::FillGlass ( int R, int G, int B, int A )
-   //{
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-   //
-   //   while ( size-- )
-   //   {
-   //      dst[0]=(unsigned char)(((B-dst[0])*A+(dst[0]<<8))>>8);
-   //      dst[1]=(unsigned char)(((G-dst[1])*A+(dst[1]<<8))>>8);
-   //      dst[2]=(unsigned char)(((R-dst[2])*A+(dst[2]<<8))>>8);
-   //      dst+=4;
-   //   }
-   //}
-
-   //void image::FillStippledGlass ( int R, int G, int B )
-   //{
-   //   color32_t color=rgb ( B, G, R );
-   //   int w=m_size.cx;
-   //   int h=m_size.cy;
-
-   //   for ( int j=0; j<w; j++ )
-   //   {
-   //      for ( int i=0; i<h; i++ )
-   //      {
-   //         m_pcolorref[j*w+i]=((i+j)&0x1) ? m_pcolorref[j*w+i] : color;
-   //      }
-   //   }
-   //}
-
-   //void imagecopy(image image)
-   //{
-   //   // If DibSize Wrong Re-create image
-   //   if (pimage->get_size() != m_size)
-   //      image = create_image (m_size);
-   //   // do copy
-   //   ::memory_copy ( pimage->get_data(), m_pcolorref, (size_t) area() * sizeof(color32_t) );
-   //}
-
-
-   //void image::Paste ( image image )
-   //{
-   //   // If DibSize Wrong Re-create image
-   //   if (m_size !=pimage.get_size() )
-   //      create ( pimage->get_size() );
-   //   // do Paste
-   //   ::memory_copy ( m_pcolorref, pimage->get_data(), (size_t) area() * sizeof(color32_t) );
-   //}
-
-   //bool image::color_blend(color32_t color32, unsigned char bAlpha)
-   //{
-
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-
-   //   unsigned int dwB = ::blue(color32);
-   //   unsigned int dwG = ::green(color32);
-   //   unsigned int dwR = ::red(color32);
-   //
-   //   unsigned int dwB_ = dwB << 8;
-   //   unsigned int dwG_ = dwG << 8;
-   //   unsigned int dwR_ = dwR << 8;
-   //
-   //   while ( size-- )
-   //   {
-   //      dst[0]=(unsigned char)(((dst[0]-dwB)*bAlpha+dwB_)>>8);
-   //      dst[1]=(unsigned char)(((dst[1]-dwG)*bAlpha+dwG_)>>8);
-   //      dst[2]=(unsigned char)(((dst[2]-dwG)*bAlpha+dwR_)>>8);
-   //      dst+=4;
-   //   }
-   //   return true;
-   //}
-
-
-   //void image::Blend (image image, int A )
-   //{
-   //   if(size() != pimage->size())
-   //      return;
-
-   //   unsigned char *src=(unsigned char*)pimage->get_data();
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-   //
-   //   while ( size-- )
-   //   {
-   //      dst[0]=(unsigned char)(((src[0]-dst[0])*A+(dst[0]<<8))>>8);
-   //      dst[1]=(unsigned char)(((src[1]-dst[1])*A+(dst[1]<<8))>>8);
-   //      dst[2]=(unsigned char)(((src[2]-dst[2])*A+(dst[2]<<8))>>8);
-   //      dst+=4;
-   //      src+=4;
-   //   }
-   //}
-
-   //bool image::Blend(imagepimage, imagepimageA, int A)
-   //{
-   //   if(size() != pimage->size() ||
-   //      size() != imageA.size())
-   //      return false;
-
-   //   unsigned char *src=(unsigned char*)pimage->get_data();
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   unsigned char *alf=(unsigned char*)imageA.m_pcolorref;
-   //   long long size = area();
-
-   //   A = 2 - A;
-   //
-   //   while ( size-- )
-   //   {
-   //      dst[0]=(unsigned char)(((src[0]-dst[0])*alf[A]+(dst[0]<<8))>>8);
-   //      dst[1]=(unsigned char)(((src[1]-dst[1])*alf[A]+(dst[1]<<8))>>8);
-   //      dst[2]=(unsigned char)(((src[2]-dst[2])*alf[A]+(dst[2]<<8))>>8);
-   //      dst+=4;
-   //      src+=4;
-   //      alf+=4;
-   //   }
-
-   //   return true;
-   //}
-
-   //void image::Darken (image image )
-   //{
-   //   if(size() != pimage->size())
-   //      return;
-
-   //   unsigned char *src=(unsigned char*)pimage->get_data();
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-   //
-   //   while ( size-- )
-   //   {
-   //      dst[0]=(unsigned char)((src[0]<dst[0]) ? src[0] : dst[0]);
-   //      dst[1]=(unsigned char)((src[1]<dst[1]) ? src[1] : dst[1]);
-   //      dst[2]=(unsigned char)((src[2]<dst[2]) ? src[2] : dst[2]);
-   //      dst+=4;
-   //      src+=4;
-   //   }
-   //}
-
-   //void image::Difference (image image )
-   //{
-   //   if(size() != pimage->size())
-   //      return;
-
-   //   unsigned char *src=(unsigned char*)pimage->get_data();
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-   //
-   //   while ( size-- )
-   //   {
-   //      int Difference;
-   //      Difference=src[0]-dst[0];
-   //      dst[0]=(unsigned char)((Difference<0) ? -Difference : Difference);
-   //      Difference=src[1]-dst[1];
-   //      dst[1]=(unsigned char)((Difference<0) ? -Difference : Difference);
-   //      Difference=src[2]-dst[2];
-   //      dst[2]=(unsigned char)((Difference<0) ? -Difference : Difference);
-   //      dst+=4;
-   //      src+=4;
-   //   }
-   //}
-
-   //void image::Lighten (image image )
-   //{
-   //   if(size() != pimage->size())
-   //      return;
-
-   //   unsigned char *src=(unsigned char*)pimage->get_data();
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-   //
-   //   while ( size-- )
-   //   {
-   //      dst[0]=(unsigned char)((src[0]>dst[0]) ? src[0] : dst[0]);
-   //      dst[1]=(unsigned char)((src[1]>dst[1]) ? src[1] : dst[1]);
-   //      dst[2]=(unsigned char)((src[2]>dst[2]) ? src[2] : dst[2]);
-   //      dst+=4;
-   //      src+=4;
-   //   }
-   //}
-
-
-   //void image::Multiply (image image )
-   //{
-   //   if(size() != pimage->size())
-   //      return;
-
-   //   unsigned char *src=(unsigned char*)pimage->get_data();
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-   //
-   //   while ( size-- )
-   //   {
-   //      dst[0]=(unsigned char)(((src[0])*(dst[0]))>>8);
-   //      dst[1]=(unsigned char)(((src[1])*(dst[1]))>>8);
-   //      dst[2]=(unsigned char)(((src[2])*(dst[2]))>>8);
-   //      dst+=4;
-   //      src+=4;
-   //   }
-   //}
-
-   //void image::Screen (image image )
-   //{
-   //   if(size() != pimage->size())
-   //      return;
-
-   //   unsigned char *src=(unsigned char*)pimage->get_data();
-   //   unsigned char *dst=(unsigned char*)m_pcolorref;
-   //   long long size = area();
-   //
-   //   while ( size-- )
-   //   {
-   //      dst[0]=(unsigned char)(255-(((255-src[0])*(255-dst[0]))>>8));
-   //      dst[1]=(unsigned char)(255-(((255-src[1])*(255-dst[1]))>>8));
-   //      dst[2]=(unsigned char)(255-(((255-src[2])*(255-dst[2]))>>8));
-   //      dst+=4;
-   //      src+=4;
-   //   }
-   //}
-
-   ////////////////////////////////////////////////////////////////////////
-   //// Rectangle Functions
-   ////////////////////////////////////////////////////////////////////////
-
-   //void image::copy (image image, int x, int y )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->width())<m_size.cx) ? pimage.width() : m_size.cx-x;
-   //   int Δy=((y+pimage->height())<m_size.cy) ? pimage.height() : m_size.cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to copy return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-   //   // If DibSize Wrong Re-create image
-   //   if ( (Δx!=pimage->width()) || (Δy!=pimage->height()) )
-   //      image = create_image ( Δx, Δy );
-
-   //   // Prepare buffer Addresses
-   //   color32_t *src=m_pcolorref+(py*m_size.cx)+px;
-   //   color32_t *dst=pimage->get_data();
-
-   //   // Do copy
-   //   while ( Δy-- )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //         dst[i]=src[i];
-   //      src+=m_size.cx;
-   //      dst+=pimage->width();
-   //   }
-   //}
-
-   //void image::PasteRect (image image, int x, int y )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->width())<m_size.cx) ? pimage.width() : m_size.cx-x;
-   //   int Δy=((y+pimage->height())<m_size.cy) ? pimage.height() : m_size.cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to Paste return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-
-   //   // Prepare buffer Addresses
-   //   color32_t *src=pimage->get_data()+((py-y)*pimage->width())+px-x;
-   //   color32_t *dst=m_pcolorref+(py*m_size.cx)+px;
-
-   //   // Do Paste
-   //   while ( Δy-- )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //         dst[i]=src[i];
-   //      src+=pimage->width();
-   //      dst+=m_size.cx;
-   //   }
-   //}
-
-   //void image::FillRect ( int x, int y, int w, int h, int R, int G, int B )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+w)<m_size.cx) ? w : m_size.cx-x;
-   //   int Δy=((y+h)<m_size.cy) ? h : m_size.cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to Fill return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-
-   //   // Prepare buffer Address
-   //   color32_t *dst=m_pcolorref+(py*m_size.cx)+px;
-   //   color32_t color=rgb ( B, G, R );
-
-   //   // Do Fill
-   //   while ( Δy-- )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //      {
-   //         dst[i]=color;
-   //      }
-   //      dst+=m_size.cx;
-   //   }
-   //}
-
-   //void image::FillGlassRect ( int x, int y, int w, int h, int R, int G, int B, int A )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+w)<m_size.cx) ? w : m_size.cx-x;
-   //   int Δy=((y+h)<m_size.cy) ? h : m_size.cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to FillGlass return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-
-   //   // Prepare buffer Address
-   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*m_size.cx)+px)*4;
-
-   //   // Do FillGlass
-   //   while ( Δy-- )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //      {
-   //         dst[0]=(unsigned char)(((B-dst[0])*A+(dst[0]<<8))>>8);
-   //         dst[1]=(unsigned char)(((G-dst[1])*A+(dst[1]<<8))>>8);
-   //         dst[2]=(unsigned char)(((R-dst[2])*A+(dst[2]<<8))>>8);
-   //         dst+=4;
-   //      }
-   //      dst+=(m_size.cx-Δx)<<2;
-   //   }
-   //}
-
-   //void image::FillStippledGlassRect ( int x, int y, int w, int h, int R, int G, int B )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+w)<m_size.cx) ? w : m_size.cx-x;
-   //   int Δy=((y+h)<m_size.cy) ? h : m_size.cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to FillStippledGlass return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-
-   //   // Prepare buffer Address
-   //   color32_t *dst=m_pcolorref+(py*m_size.cx)+px;
-   //   color32_t color=rgb ( B, G, R );
-
-   //   // Do FillStippledGlass
-   //   for ( int j=0; j<Δy; j++ )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //      {
-   //         dst[i]=((i+j)&0x1) ? dst[i] : color;
-   //      }
-   //      dst+=m_size.cx;
-   //   }
-   //}
-
-   //void image::BlendRect (image image, int x, int y, int A )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->width())<m_size.cx) ? pimage.width() : m_size.cx-x;
-   //   int Δy=((y+pimage->height())<m_size.cy) ? pimage.height() : m_size.cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to Blend return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-
-   //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->width())+px-x)*4;
-   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*m_size.cx)+px)*4;
-
-   //   // Do Blend
-   //   while ( Δy-- )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //      {
-   //         dst[0]=(unsigned char)(((src[0]-dst[0])*A+(dst[0]<<8))>>8);
-   //         dst[1]=(unsigned char)(((src[1]-dst[1])*A+(dst[1]<<8))>>8);
-   //         dst[2]=(unsigned char)(((src[2]-dst[2])*A+(dst[2]<<8))>>8);
-   //         dst+=4;
-   //         src+=4;
-   //      }
-   //      dst+=(m_size.cx-Δx)<<2;
-   //      src+=(pimage->width()-Δx)<<2;
-   //   }
-   //}
-
-   //void image::DarkenRect (image image, int x, int y )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
-   //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to Darken return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-
-   //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
-   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
-
-   //   // Do Darken
-   //   while ( Δy-- )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //      {
-   //         dst[0]=(unsigned char)((src[0]<dst[0]) ? src[0] : dst[0]);
-   //         dst[1]=(unsigned char)((src[1]<dst[1]) ? src[1] : dst[1]);
-   //         dst[2]=(unsigned char)((src[2]<dst[2]) ? src[2] : dst[2]);
-   //         dst+=4;
-   //         src+=4;
-   //      }
-   //      dst+=(cx-Δx)<<2;
-   //      src+=(pimage->cx-Δx)<<2;
-   //   }
-   //}
-
-   //void image::DifferenceRect (image image, int x, int y )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
-   //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to Difference return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-
-   //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
-   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
-
-   //   // Do Difference
-   //   while ( Δy-- )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //      {
-   //         int Difference;
-   //         Difference=src[0]-dst[0];
-   //         dst[0]=(unsigned char)((Difference<0) ? -Difference : Difference);
-   //         Difference=src[1]-dst[1];
-   //         dst[1]=(unsigned char)((Difference<0) ? -Difference : Difference);
-   //         Difference=src[2]-dst[2];
-   //         dst[2]=(unsigned char)((Difference<0) ? -Difference : Difference);
-   //         dst+=4;
-   //         src+=4;
-   //      }
-   //      dst+=(cx-Δx)<<2;
-   //      src+=(pimage->cx-Δx)<<2;
-   //   }
-   //}
-
-   //void image::LightenRect (image image, int x, int y )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
-   //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to Lighten return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-
-   //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
-   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
-
-   //   // Do Lighten
-   //   while ( Δy-- )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //      {
-   //         dst[0]=(unsigned char)((src[0]>dst[0]) ? src[0] : dst[0]);
-   //         dst[1]=(unsigned char)((src[1]>dst[1]) ? src[1] : dst[1]);
-   //         dst[2]=(unsigned char)((src[2]>dst[2]) ? src[2] : dst[2]);
-   //         dst+=4;
-   //         src+=4;
-   //      }
-   //      dst+=(cx-Δx)<<2;
-   //      src+=(pimage->cx-Δx)<<2;
-   //   }
-   //}
-
-   //void image::MultiplyRect (image image, int x, int y )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
-   //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to Multiply return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-
-   //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
-   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
-
-   //   // Do Multiply
-   //   while ( Δy-- )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //      {
-   //         dst[0]=(unsigned char)(((src[0])*(dst[0]))>>8);
-   //         dst[1]=(unsigned char)(((src[1])*(dst[1]))>>8);
-   //         dst[2]=(unsigned char)(((src[2])*(dst[2]))>>8);
-   //         dst+=4;
-   //         src+=4;
-   //      }
-   //      dst+=(cx-Δx)<<2;
-   //      src+=(pimage->cx-Δx)<<2;
-   //   }
-   //}
-
-   //void image::ScreenRect (image image, int x, int y )
-   //{
-   //   // Clip Rect
-   //   int px=(x>=0) ? x : 0;
-   //   int py=(y>=0) ? y : 0;
-   //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
-   //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
-   //   Δx=(x>=0) ? Δx : Δx + x;
-   //   Δy=(y>=0) ? Δy : Δy + y;
-
-   //   // If Nothing to Screen return
-   //   if ( (Δx<=0) || (Δy<=0) )
-   //      return;
-
-   //   // Prepare buffer Addresses
-   //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
-   //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
-
-   //   // Do Screen
-   //   while ( Δy-- )
-   //   {
-   //      for ( int i=0; i<Δx; i++ )
-   //      {
-   //         dst[0]=(unsigned char)(255-(((255-src[0])*(255-dst[0]))>>8));
-   //         dst[1]=(unsigned char)(255-(((255-src[1])*(255-dst[1]))>>8));
-   //         dst[2]=(unsigned char)(255-(((255-src[2])*(255-dst[2]))>>8));
-   //         dst+=4;
-   //         src+=4;
-   //      }
-   //      dst+=(cx-Δx)<<2;
-   //      src+=(pimage->cx-Δx)<<2;
-   //   }
-   //}
-
-   //////////////////////////////////////////////////////////////////////
-   // Line Functions
-   //////////////////////////////////////////////////////////////////////
-
-   /*void image::Line ( int x1, int y1, int x2, int y2, int R, int G, int B )
-   {
-      int Δx, Δy, k1, k2, d, x, y;
-      color32_t color=rgb ( B, G, R );
-
-      Δx=x2-x1;
-      Δy=y2-y1;
-      d=(Δy<<1)-Δx;
-      k1=Δy<<1;
-      k2=(Δy-Δx)<<1;
-      x=x1;
-      y=y1;
-
-      m_pcolorref[y*cx+x]=color;
-      while (x<Δx)
-      {
-         if (d<=0)
-         {
-            d+=k1;
-            x++;
-         }
-         else
-         {
-            d+=k2;
-            x++;
-            y++;
-         }
-         m_pcolorref[y*cx+x]=color;
-      }
-   }*/
+// //       // // bf.BlendOp = AC_SRC_OVER;
+// //       // // bf.BlendFlags = 0;
+// //       // // bf.SourceConstantAlpha = 255;
+// //       // // bf.AlphaFormat = AC_SRC_ALPHA;
+
+// //       // // get_graphics()->alpha_blend(size(), imageWork.get_graphics(), bf);
+
+// //       // // if(bPreserveAlpha)
+// //       // // {
+
+// //       // //    imageWork.channel_invert(::color::e_channel_opacity);
+
+// //       // //    ::color::e_channel_from(::color::e_channel_opacity, imageWork);
+
+// //       // // }
+
+
+// //    //}
+
+// //    //void image::Map(int ToRgb, int FromRgb)
+// //    //{
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+
+// //    //   while ( size-- )
+// //    //   {
+// //    //      *dst = (unsigned char) (*dst == FromRgb ? ToRgb : *dst);
+// //    //      dst+=4;
+// //    //   }
+// //    //}
+
+
+// //    //void image::ToAlphaAndFill(int i, color32_t color32)
+// //    //{
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+
+// //    //   unsigned char uchB = ::blue(color32);
+// //    //   unsigned char uchG = ::green(color32);
+// //    //   unsigned char uchR = ::red(color32);
+
+// //    //   while ( size-- )
+// //    //   {
+// //    //      dst[3] = dst[i];
+// //    //      dst[0] = uchB;
+// //    //      dst[1] = uchG;
+// //    //      dst[2] = uchR;
+// //    //      dst+=4;
+// //    //   }
+// //    //}
+
+// //    //void image::GrayToARGB(color32_t color32)
+// //    //{
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+
+// //    //   unsigned int dwB = ::blue(color32);
+// //    //   unsigned int dwG = ::green(color32);
+// //    //   unsigned int dwR = ::red(color32);
+
+// //    //   while (size-- > 0)
+// //    //   {
+// //    //      dst[3] = dst[0];
+// //    //      dst[0] = (unsigned char)(((dwB * dst[3]) / 256) & 0xff);
+// //    //      dst[1] = (unsigned char)(((dwG * dst[3]) / 256) & 0xff);
+// //    //      dst[2] = (unsigned char)(((dwR * dst[3]) / 256) & 0xff);
+// //    //      dst+=4;
+// //    //   }
+// //    //}
+
+
+// //    //void image::BitBlt(imagepimage, int op)
+// //    //{
+// //    //   if(op == 123) // zero dest rgb, invert alpha, and OR src rgb
+// //    //   {
+// //    //      long long isize = area();
+// //    //      LPDWORD lpbitsSrc= (LPDWORD) pimage->get_data();
+// //    //      LPDWORD lpbitsDest= (LPDWORD) m_pcolorref;
+
+// //    //      color32_t _colorref = rgb ( 0, 0, 0 ) | (255 << 24);
+// //    //      color32_t colorrefa[2];
+// //    //      colorrefa[0] = _colorref;
+// //    //      colorrefa[1] = _colorref;
+
+// //    //      color32_t _colorrefN = rgb ( 255, 255, 255) | (0 << 24);
+// //    //      color32_t colorrefaN[2];
+// //    //      colorrefaN[0] = _colorrefN;
+// //    //      colorrefaN[1] = _colorrefN;
+// //    //      throw ::exception(todo);
+// //    //   }
+
+// //    //}
+
+
+// //    //void image::Invert()
+// //    //{
+// //    //   long long size = area();
+// //    //   LPBYTE lpb = (LPBYTE) m_pcolorref;
+// //    //   for ( int i=0; i<int_size; i++ )
+// //    //   {
+// //    //      lpb[0] = 255 - lpb[0];
+// //    //      lpb[1] = 255 - lpb[1];
+// //    //      lpb[2] = 255 - lpb[2];
+// //    //      lpb += 4;
+// //    //   }
+// //    //}
+
+// //    //void image::color::e_channel_invert(color::color::color::rgba::echannel echannel)
+// //    //{
+// //    //   long long int_size   = area();
+// //    //   register long long long_long_size = size / 64;
+// //    //   LPBYTE lpb = (LPBYTE) m_pcolorref;
+// //    //   lpb += ((int)echannel) % 4;
+// //    //   register long long i = 0;
+// //    //   for(; i < long_long_size; i++)
+// //    //   {
+// //    //      lpb[4 *  0] = 255 - lpb[4 *  0];
+// //    //      lpb[4 *  1] = 255 - lpb[4 *  1];
+// //    //      lpb[4 *  2] = 255 - lpb[4 *  2];
+// //    //      lpb[4 *  3] = 255 - lpb[4 *  3];
+// //    //      lpb[4 *  4] = 255 - lpb[4 *  4];
+// //    //      lpb[4 *  5] = 255 - lpb[4 *  5];
+// //    //      lpb[4 *  6] = 255 - lpb[4 *  6];
+// //    //      lpb[4 *  7] = 255 - lpb[4 *  7];
+// //    //      lpb[4 *  8] = 255 - lpb[4 *  8];
+// //    //      lpb[4 *  9] = 255 - lpb[4 *  9];
+// //    //      lpb[4 * 10] = 255 - lpb[4 * 10];
+// //    //      lpb[4 * 11] = 255 - lpb[4 * 11];
+// //    //      lpb[4 * 12] = 255 - lpb[4 * 12];
+// //    //      lpb[4 * 13] = 255 - lpb[4 * 13];
+// //    //      lpb[4 * 14] = 255 - lpb[4 * 14];
+// //    //      lpb[4 * 15] = 255 - lpb[4 * 15];
+// //    //      lpb[4 * 16] = 255 - lpb[4 * 16];
+// //    //      lpb[4 * 17] = 255 - lpb[4 * 17];
+// //    //      lpb[4 * 18] = 255 - lpb[4 * 18];
+// //    //      lpb[4 * 19] = 255 - lpb[4 * 19];
+// //    //      lpb[4 * 20] = 255 - lpb[4 * 20];
+// //    //      lpb[4 * 21] = 255 - lpb[4 * 21];
+// //    //      lpb[4 * 22] = 255 - lpb[4 * 22];
+// //    //      lpb[4 * 23] = 255 - lpb[4 * 23];
+// //    //      lpb[4 * 24] = 255 - lpb[4 * 24];
+// //    //      lpb[4 * 25] = 255 - lpb[4 * 25];
+// //    //      lpb[4 * 26] = 255 - lpb[4 * 26];
+// //    //      lpb[4 * 27] = 255 - lpb[4 * 27];
+// //    //      lpb[4 * 28] = 255 - lpb[4 * 28];
+// //    //      lpb[4 * 29] = 255 - lpb[4 * 29];
+// //    //      lpb[4 * 30] = 255 - lpb[4 * 30];
+// //    //      lpb[4 * 31] = 255 - lpb[4 * 31];
+
+// //    //      lpb[4 * 32] = 255 - lpb[4 * 32];
+// //    //      lpb[4 * 33] = 255 - lpb[4 * 33];
+// //    //      lpb[4 * 34] = 255 - lpb[4 * 34];
+// //    //      lpb[4 * 35] = 255 - lpb[4 * 35];
+// //    //      lpb[4 * 36] = 255 - lpb[4 * 36];
+// //    //      lpb[4 * 37] = 255 - lpb[4 * 37];
+// //    //      lpb[4 * 38] = 255 - lpb[4 * 38];
+// //    //      lpb[4 * 39] = 255 - lpb[4 * 39];
+// //    //      lpb[4 * 40] = 255 - lpb[4 * 40];
+// //    //      lpb[4 * 41] = 255 - lpb[4 * 41];
+// //    //      lpb[4 * 42] = 255 - lpb[4 * 42];
+// //    //      lpb[4 * 43] = 255 - lpb[4 * 43];
+// //    //      lpb[4 * 44] = 255 - lpb[4 * 44];
+// //    //      lpb[4 * 45] = 255 - lpb[4 * 45];
+// //    //      lpb[4 * 46] = 255 - lpb[4 * 46];
+// //    //      lpb[4 * 47] = 255 - lpb[4 * 47];
+// //    //      lpb[4 * 48] = 255 - lpb[4 * 48];
+// //    //      lpb[4 * 49] = 255 - lpb[4 * 49];
+// //    //      lpb[4 * 50] = 255 - lpb[4 * 50];
+// //    //      lpb[4 * 51] = 255 - lpb[4 * 51];
+// //    //      lpb[4 * 52] = 255 - lpb[4 * 52];
+// //    //      lpb[4 * 53] = 255 - lpb[4 * 53];
+// //    //      lpb[4 * 54] = 255 - lpb[4 * 54];
+// //    //      lpb[4 * 55] = 255 - lpb[4 * 55];
+// //    //      lpb[4 * 56] = 255 - lpb[4 * 56];
+// //    //      lpb[4 * 57] = 255 - lpb[4 * 57];
+// //    //      lpb[4 * 58] = 255 - lpb[4 * 58];
+// //    //      lpb[4 * 59] = 255 - lpb[4 * 59];
+// //    //      lpb[4 * 60] = 255 - lpb[4 * 60];
+// //    //      lpb[4 * 61] = 255 - lpb[4 * 61];
+// //    //      lpb[4 * 62] = 255 - lpb[4 * 62];
+// //    //      lpb[4 * 63] = 255 - lpb[4 * 63];
+
+// //    //      lpb += 4 * 64;
+// //    //   }
+// //    //   i *= 64;
+// //    //   for(; i < size; i++ )
+// //    //   {
+// //    //      *lpb = 255 - *lpb;
+// //    //      lpb += 4;
+// //    //   }
+// //    //}
+// //    //void image::color::e_channel_multiply(color::color::color::rgba::echannel echannel, double dRate)
+// //    //{
+// //    //   if(dRate < 0)
+// //    //      return;
+// //    //   register long long size = area();
+// //    //   LPBYTE lpb = (LPBYTE) get_data();
+// //    //   lpb += ((int)echannel) % 4;
+// //    //   register int iDiv = 256 * 256;
+// //    //   register int iMul = (int) (dRate * ((double) iDiv));
+// //    //   register int iRes;
+// //    //   for(register long long i = 0; i < size; i++)
+// //    //   {
+// //    //      iRes = *lpb * iMul / iDiv;
+// //    //      *lpb = (unsigned char) (iRes > 255 ? 255 : iRes);
+// //    //      lpb += 4;
+// //    //   }
+// //    //}
+
+// //    //void image::FillGlass ( int R, int G, int B, int A )
+// //    //{
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+// //    //
+// //    //   while ( size-- )
+// //    //   {
+// //    //      dst[0]=(unsigned char)(((B-dst[0])*A+(dst[0]<<8))>>8);
+// //    //      dst[1]=(unsigned char)(((G-dst[1])*A+(dst[1]<<8))>>8);
+// //    //      dst[2]=(unsigned char)(((R-dst[2])*A+(dst[2]<<8))>>8);
+// //    //      dst+=4;
+// //    //   }
+// //    //}
+
+// //    //void image::FillStippledGlass ( int R, int G, int B )
+// //    //{
+// //    //   color32_t color=rgb ( B, G, R );
+// //    //   int w=m_size.cx;
+// //    //   int h=m_size.cy;
+
+// //    //   for ( int j=0; j<w; j++ )
+// //    //   {
+// //    //      for ( int i=0; i<h; i++ )
+// //    //      {
+// //    //         m_pcolorref[j*w+i]=((i+j)&0x1) ? m_pcolorref[j*w+i] : color;
+// //    //      }
+// //    //   }
+// //    //}
+
+// //    //void imagecopy(image image)
+// //    //{
+// //    //   // If DibSize Wrong Re-create image
+// //    //   if (pimage->get_size() != m_size)
+// //    //      image = create_image (m_size);
+// //    //   // do copy
+// //    //   ::memory_copy ( pimage->get_data(), m_pcolorref, (size_t) area() * sizeof(color32_t) );
+// //    //}
+
+
+// //    //void image::Paste ( image image )
+// //    //{
+// //    //   // If DibSize Wrong Re-create image
+// //    //   if (m_size !=pimage.get_size() )
+// //    //      create ( pimage->get_size() );
+// //    //   // do Paste
+// //    //   ::memory_copy ( m_pcolorref, pimage->get_data(), (size_t) area() * sizeof(color32_t) );
+// //    //}
+
+// //    //bool image::color_blend(color32_t color32, unsigned char bAlpha)
+// //    //{
+
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+
+// //    //   unsigned int dwB = ::blue(color32);
+// //    //   unsigned int dwG = ::green(color32);
+// //    //   unsigned int dwR = ::red(color32);
+// //    //
+// //    //   unsigned int dwB_ = dwB << 8;
+// //    //   unsigned int dwG_ = dwG << 8;
+// //    //   unsigned int dwR_ = dwR << 8;
+// //    //
+// //    //   while ( size-- )
+// //    //   {
+// //    //      dst[0]=(unsigned char)(((dst[0]-dwB)*bAlpha+dwB_)>>8);
+// //    //      dst[1]=(unsigned char)(((dst[1]-dwG)*bAlpha+dwG_)>>8);
+// //    //      dst[2]=(unsigned char)(((dst[2]-dwG)*bAlpha+dwR_)>>8);
+// //    //      dst+=4;
+// //    //   }
+// //    //   return true;
+// //    //}
+
+
+// //    //void image::Blend (image image, int A )
+// //    //{
+// //    //   if(size() != pimage->size())
+// //    //      return;
+
+// //    //   unsigned char *src=(unsigned char*)pimage->get_data();
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+// //    //
+// //    //   while ( size-- )
+// //    //   {
+// //    //      dst[0]=(unsigned char)(((src[0]-dst[0])*A+(dst[0]<<8))>>8);
+// //    //      dst[1]=(unsigned char)(((src[1]-dst[1])*A+(dst[1]<<8))>>8);
+// //    //      dst[2]=(unsigned char)(((src[2]-dst[2])*A+(dst[2]<<8))>>8);
+// //    //      dst+=4;
+// //    //      src+=4;
+// //    //   }
+// //    //}
+
+// //    //bool image::Blend(imagepimage, imagepimageA, int A)
+// //    //{
+// //    //   if(size() != pimage->size() ||
+// //    //      size() != imageA.size())
+// //    //      return false;
+
+// //    //   unsigned char *src=(unsigned char*)pimage->get_data();
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   unsigned char *alf=(unsigned char*)imageA.m_pcolorref;
+// //    //   long long size = area();
+
+// //    //   A = 2 - A;
+// //    //
+// //    //   while ( size-- )
+// //    //   {
+// //    //      dst[0]=(unsigned char)(((src[0]-dst[0])*alf[A]+(dst[0]<<8))>>8);
+// //    //      dst[1]=(unsigned char)(((src[1]-dst[1])*alf[A]+(dst[1]<<8))>>8);
+// //    //      dst[2]=(unsigned char)(((src[2]-dst[2])*alf[A]+(dst[2]<<8))>>8);
+// //    //      dst+=4;
+// //    //      src+=4;
+// //    //      alf+=4;
+// //    //   }
+
+// //    //   return true;
+// //    //}
+
+// //    //void image::Darken (image image )
+// //    //{
+// //    //   if(size() != pimage->size())
+// //    //      return;
+
+// //    //   unsigned char *src=(unsigned char*)pimage->get_data();
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+// //    //
+// //    //   while ( size-- )
+// //    //   {
+// //    //      dst[0]=(unsigned char)((src[0]<dst[0]) ? src[0] : dst[0]);
+// //    //      dst[1]=(unsigned char)((src[1]<dst[1]) ? src[1] : dst[1]);
+// //    //      dst[2]=(unsigned char)((src[2]<dst[2]) ? src[2] : dst[2]);
+// //    //      dst+=4;
+// //    //      src+=4;
+// //    //   }
+// //    //}
+
+// //    //void image::Difference (image image )
+// //    //{
+// //    //   if(size() != pimage->size())
+// //    //      return;
+
+// //    //   unsigned char *src=(unsigned char*)pimage->get_data();
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+// //    //
+// //    //   while ( size-- )
+// //    //   {
+// //    //      int Difference;
+// //    //      Difference=src[0]-dst[0];
+// //    //      dst[0]=(unsigned char)((Difference<0) ? -Difference : Difference);
+// //    //      Difference=src[1]-dst[1];
+// //    //      dst[1]=(unsigned char)((Difference<0) ? -Difference : Difference);
+// //    //      Difference=src[2]-dst[2];
+// //    //      dst[2]=(unsigned char)((Difference<0) ? -Difference : Difference);
+// //    //      dst+=4;
+// //    //      src+=4;
+// //    //   }
+// //    //}
+
+// //    //void image::Lighten (image image )
+// //    //{
+// //    //   if(size() != pimage->size())
+// //    //      return;
+
+// //    //   unsigned char *src=(unsigned char*)pimage->get_data();
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+// //    //
+// //    //   while ( size-- )
+// //    //   {
+// //    //      dst[0]=(unsigned char)((src[0]>dst[0]) ? src[0] : dst[0]);
+// //    //      dst[1]=(unsigned char)((src[1]>dst[1]) ? src[1] : dst[1]);
+// //    //      dst[2]=(unsigned char)((src[2]>dst[2]) ? src[2] : dst[2]);
+// //    //      dst+=4;
+// //    //      src+=4;
+// //    //   }
+// //    //}
+
+
+// //    //void image::Multiply (image image )
+// //    //{
+// //    //   if(size() != pimage->size())
+// //    //      return;
+
+// //    //   unsigned char *src=(unsigned char*)pimage->get_data();
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+// //    //
+// //    //   while ( size-- )
+// //    //   {
+// //    //      dst[0]=(unsigned char)(((src[0])*(dst[0]))>>8);
+// //    //      dst[1]=(unsigned char)(((src[1])*(dst[1]))>>8);
+// //    //      dst[2]=(unsigned char)(((src[2])*(dst[2]))>>8);
+// //    //      dst+=4;
+// //    //      src+=4;
+// //    //   }
+// //    //}
+
+// //    //void image::Screen (image image )
+// //    //{
+// //    //   if(size() != pimage->size())
+// //    //      return;
+
+// //    //   unsigned char *src=(unsigned char*)pimage->get_data();
+// //    //   unsigned char *dst=(unsigned char*)m_pcolorref;
+// //    //   long long size = area();
+// //    //
+// //    //   while ( size-- )
+// //    //   {
+// //    //      dst[0]=(unsigned char)(255-(((255-src[0])*(255-dst[0]))>>8));
+// //    //      dst[1]=(unsigned char)(255-(((255-src[1])*(255-dst[1]))>>8));
+// //    //      dst[2]=(unsigned char)(255-(((255-src[2])*(255-dst[2]))>>8));
+// //    //      dst+=4;
+// //    //      src+=4;
+// //    //   }
+// //    //}
+
+// //    ////////////////////////////////////////////////////////////////////////
+// //    //// Rectangle Functions
+// //    ////////////////////////////////////////////////////////////////////////
+
+// //    //void image::copy (image image, int x, int y )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+pimage->width())<m_size.cx) ? pimage.width() : m_size.cx-x;
+// //    //   int Δy=((y+pimage->height())<m_size.cy) ? pimage.height() : m_size.cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to copy return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+// //    //   // If DibSize Wrong Re-create image
+// //    //   if ( (Δx!=pimage->width()) || (Δy!=pimage->height()) )
+// //    //      image = create_image ( Δx, Δy );
+
+// //    //   // Prepare buffer Addresses
+// //    //   color32_t *src=m_pcolorref+(py*m_size.cx)+px;
+// //    //   color32_t *dst=pimage->get_data();
+
+// //    //   // Do copy
+// //    //   while ( Δy-- )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //         dst[i]=src[i];
+// //    //      src+=m_size.cx;
+// //    //      dst+=pimage->width();
+// //    //   }
+// //    //}
+
+// //    //void image::PasteRect (image image, int x, int y )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+pimage->width())<m_size.cx) ? pimage.width() : m_size.cx-x;
+// //    //   int Δy=((y+pimage->height())<m_size.cy) ? pimage.height() : m_size.cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to Paste return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+
+// //    //   // Prepare buffer Addresses
+// //    //   color32_t *src=pimage->get_data()+((py-y)*pimage->width())+px-x;
+// //    //   color32_t *dst=m_pcolorref+(py*m_size.cx)+px;
+
+// //    //   // Do Paste
+// //    //   while ( Δy-- )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //         dst[i]=src[i];
+// //    //      src+=pimage->width();
+// //    //      dst+=m_size.cx;
+// //    //   }
+// //    //}
+
+// //    //void image::FillRect ( int x, int y, int w, int h, int R, int G, int B )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+w)<m_size.cx) ? w : m_size.cx-x;
+// //    //   int Δy=((y+h)<m_size.cy) ? h : m_size.cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to Fill return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+
+// //    //   // Prepare buffer Address
+// //    //   color32_t *dst=m_pcolorref+(py*m_size.cx)+px;
+// //    //   color32_t color=rgb ( B, G, R );
+
+// //    //   // Do Fill
+// //    //   while ( Δy-- )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //      {
+// //    //         dst[i]=color;
+// //    //      }
+// //    //      dst+=m_size.cx;
+// //    //   }
+// //    //}
+
+// //    //void image::FillGlassRect ( int x, int y, int w, int h, int R, int G, int B, int A )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+w)<m_size.cx) ? w : m_size.cx-x;
+// //    //   int Δy=((y+h)<m_size.cy) ? h : m_size.cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to FillGlass return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+
+// //    //   // Prepare buffer Address
+// //    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*m_size.cx)+px)*4;
+
+// //    //   // Do FillGlass
+// //    //   while ( Δy-- )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //      {
+// //    //         dst[0]=(unsigned char)(((B-dst[0])*A+(dst[0]<<8))>>8);
+// //    //         dst[1]=(unsigned char)(((G-dst[1])*A+(dst[1]<<8))>>8);
+// //    //         dst[2]=(unsigned char)(((R-dst[2])*A+(dst[2]<<8))>>8);
+// //    //         dst+=4;
+// //    //      }
+// //    //      dst+=(m_size.cx-Δx)<<2;
+// //    //   }
+// //    //}
+
+// //    //void image::FillStippledGlassRect ( int x, int y, int w, int h, int R, int G, int B )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+w)<m_size.cx) ? w : m_size.cx-x;
+// //    //   int Δy=((y+h)<m_size.cy) ? h : m_size.cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to FillStippledGlass return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+
+// //    //   // Prepare buffer Address
+// //    //   color32_t *dst=m_pcolorref+(py*m_size.cx)+px;
+// //    //   color32_t color=rgb ( B, G, R );
+
+// //    //   // Do FillStippledGlass
+// //    //   for ( int j=0; j<Δy; j++ )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //      {
+// //    //         dst[i]=((i+j)&0x1) ? dst[i] : color;
+// //    //      }
+// //    //      dst+=m_size.cx;
+// //    //   }
+// //    //}
+
+// //    //void image::BlendRect (image image, int x, int y, int A )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+pimage->width())<m_size.cx) ? pimage.width() : m_size.cx-x;
+// //    //   int Δy=((y+pimage->height())<m_size.cy) ? pimage.height() : m_size.cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to Blend return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+
+// //    //   // Prepare buffer Addresses
+// //    //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->width())+px-x)*4;
+// //    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*m_size.cx)+px)*4;
+
+// //    //   // Do Blend
+// //    //   while ( Δy-- )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //      {
+// //    //         dst[0]=(unsigned char)(((src[0]-dst[0])*A+(dst[0]<<8))>>8);
+// //    //         dst[1]=(unsigned char)(((src[1]-dst[1])*A+(dst[1]<<8))>>8);
+// //    //         dst[2]=(unsigned char)(((src[2]-dst[2])*A+(dst[2]<<8))>>8);
+// //    //         dst+=4;
+// //    //         src+=4;
+// //    //      }
+// //    //      dst+=(m_size.cx-Δx)<<2;
+// //    //      src+=(pimage->width()-Δx)<<2;
+// //    //   }
+// //    //}
+
+// //    //void image::DarkenRect (image image, int x, int y )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
+// //    //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to Darken return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+
+// //    //   // Prepare buffer Addresses
+// //    //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
+// //    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
+
+// //    //   // Do Darken
+// //    //   while ( Δy-- )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //      {
+// //    //         dst[0]=(unsigned char)((src[0]<dst[0]) ? src[0] : dst[0]);
+// //    //         dst[1]=(unsigned char)((src[1]<dst[1]) ? src[1] : dst[1]);
+// //    //         dst[2]=(unsigned char)((src[2]<dst[2]) ? src[2] : dst[2]);
+// //    //         dst+=4;
+// //    //         src+=4;
+// //    //      }
+// //    //      dst+=(cx-Δx)<<2;
+// //    //      src+=(pimage->cx-Δx)<<2;
+// //    //   }
+// //    //}
+
+// //    //void image::DifferenceRect (image image, int x, int y )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
+// //    //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to Difference return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+
+// //    //   // Prepare buffer Addresses
+// //    //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
+// //    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
+
+// //    //   // Do Difference
+// //    //   while ( Δy-- )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //      {
+// //    //         int Difference;
+// //    //         Difference=src[0]-dst[0];
+// //    //         dst[0]=(unsigned char)((Difference<0) ? -Difference : Difference);
+// //    //         Difference=src[1]-dst[1];
+// //    //         dst[1]=(unsigned char)((Difference<0) ? -Difference : Difference);
+// //    //         Difference=src[2]-dst[2];
+// //    //         dst[2]=(unsigned char)((Difference<0) ? -Difference : Difference);
+// //    //         dst+=4;
+// //    //         src+=4;
+// //    //      }
+// //    //      dst+=(cx-Δx)<<2;
+// //    //      src+=(pimage->cx-Δx)<<2;
+// //    //   }
+// //    //}
+
+// //    //void image::LightenRect (image image, int x, int y )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
+// //    //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to Lighten return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+
+// //    //   // Prepare buffer Addresses
+// //    //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
+// //    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
+
+// //    //   // Do Lighten
+// //    //   while ( Δy-- )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //      {
+// //    //         dst[0]=(unsigned char)((src[0]>dst[0]) ? src[0] : dst[0]);
+// //    //         dst[1]=(unsigned char)((src[1]>dst[1]) ? src[1] : dst[1]);
+// //    //         dst[2]=(unsigned char)((src[2]>dst[2]) ? src[2] : dst[2]);
+// //    //         dst+=4;
+// //    //         src+=4;
+// //    //      }
+// //    //      dst+=(cx-Δx)<<2;
+// //    //      src+=(pimage->cx-Δx)<<2;
+// //    //   }
+// //    //}
+
+// //    //void image::MultiplyRect (image image, int x, int y )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
+// //    //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to Multiply return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+
+// //    //   // Prepare buffer Addresses
+// //    //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
+// //    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
+
+// //    //   // Do Multiply
+// //    //   while ( Δy-- )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //      {
+// //    //         dst[0]=(unsigned char)(((src[0])*(dst[0]))>>8);
+// //    //         dst[1]=(unsigned char)(((src[1])*(dst[1]))>>8);
+// //    //         dst[2]=(unsigned char)(((src[2])*(dst[2]))>>8);
+// //    //         dst+=4;
+// //    //         src+=4;
+// //    //      }
+// //    //      dst+=(cx-Δx)<<2;
+// //    //      src+=(pimage->cx-Δx)<<2;
+// //    //   }
+// //    //}
+
+// //    //void image::ScreenRect (image image, int x, int y )
+// //    //{
+// //    //   // Clip Rect
+// //    //   int px=(x>=0) ? x : 0;
+// //    //   int py=(y>=0) ? y : 0;
+// //    //   int Δx=((x+pimage->cx)<cx) ? pimage->cx : cx-x;
+// //    //   int Δy=((y+pimage->cy)<cy) ? pimage->cy : cy-y;
+// //    //   Δx=(x>=0) ? Δx : Δx + x;
+// //    //   Δy=(y>=0) ? Δy : Δy + y;
+
+// //    //   // If Nothing to Screen return
+// //    //   if ( (Δx<=0) || (Δy<=0) )
+// //    //      return;
+
+// //    //   // Prepare buffer Addresses
+// //    //   unsigned char *src=(unsigned char *)pimage->get_data()+(((py-y)*pimage->cx)+px-x)*4;
+// //    //   unsigned char *dst=(unsigned char *)m_pcolorref+((py*cx)+px)*4;
+
+// //    //   // Do Screen
+// //    //   while ( Δy-- )
+// //    //   {
+// //    //      for ( int i=0; i<Δx; i++ )
+// //    //      {
+// //    //         dst[0]=(unsigned char)(255-(((255-src[0])*(255-dst[0]))>>8));
+// //    //         dst[1]=(unsigned char)(255-(((255-src[1])*(255-dst[1]))>>8));
+// //    //         dst[2]=(unsigned char)(255-(((255-src[2])*(255-dst[2]))>>8));
+// //    //         dst+=4;
+// //    //         src+=4;
+// //    //      }
+// //    //      dst+=(cx-Δx)<<2;
+// //    //      src+=(pimage->cx-Δx)<<2;
+// //    //   }
+// //    //}
+
+// //    //////////////////////////////////////////////////////////////////////
+// //    // Line Functions
+// //    //////////////////////////////////////////////////////////////////////
+
+// //    /*void image::Line ( int x1, int y1, int x2, int y2, int R, int G, int B )
+// //    {
+// //       int Δx, Δy, k1, k2, d, x, y;
+// //       color32_t color=rgb ( B, G, R );
+
+// //       Δx=x2-x1;
+// //       Δy=y2-y1;
+// //       d=(Δy<<1)-Δx;
+// //       k1=Δy<<1;
+// //       k2=(Δy-Δx)<<1;
+// //       x=x1;
+// //       y=y1;
+
+// //       m_pcolorref[y*cx+x]=color;
+// //       while (x<Δx)
+// //       {
+// //          if (d<=0)
+// //          {
+// //             d+=k1;
+// //             x++;
+// //          }
+// //          else
+// //          {
+// //             d+=k2;
+// //             x++;
+// //             y++;
+// //          }
+// //          m_pcolorref[y*cx+x]=color;
+// //       }
+// //    }
 
 //   void image::Line ( int x1, int y1, int x2, int y2, int R, int G, int B )
 //   {
@@ -2825,11 +2823,11 @@ namespace draw2d_opengl
 
       //glReadPixels(0, 0, m_size.cx, m_size.cy, GL_ARGB, GL_UNSIGNED_BYTE, m_pimage32Raw);
 
-      int i1280 = GL_INVALID_ENUM;
-
-      int i1281 = GL_INVALID_VALUE;
-
-      int iError = glGetError();
+//      int i1280 = GL_INVALID_ENUM;
+//
+//      int i1281 = GL_INVALID_VALUE;
+//
+//      int iError = glGetError();
 
       m_bMapped = true;
 

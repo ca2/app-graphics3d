@@ -99,28 +99,28 @@ namespace draw2d_opengl
 
 
 
-   const char proto_vert[] = R"vert(
-#version 330 core
-
-layout(location = 0) in vec2 inPos;
-layout(location = 1) in vec4 inColor;
-
-out vec4 fragColor;
-
-void main() {
-    gl_Position = vec4(inPos, 0.0, 1.0);
-    fragColor = inColor;
-})vert";
-   const char proto_frag[] = R"frag(
-            #version 330 core
-
-               in vec4 fragColor;      // Input from the vertex shader (location = 0)
-            out vec4 outColor;      // Output to framebuffer (location = 0)
-
-            void main() {
-               outColor = fragColor;
-            }
-)frag";
+//   const char proto_vert[] = R"vert(
+//#version 330 core
+//
+//layout(location = 0) in vec2 inPos;
+//layout(location = 1) in vec4 inColor;
+//
+//out vec4 fragColor;
+//
+//void main() {
+//    gl_Position = vec4(inPos, 0.0, 1.0);
+//    fragColor = inColor;
+//})vert";
+//   const char proto_frag[] = R"frag(
+//            #version 330 core
+//
+//               in vec4 fragColor;      // Input from the vertex shader (location = 0)
+//            out vec4 outColor;      // Output to framebuffer (location = 0)
+//
+//            void main() {
+//               outColor = fragColor;
+//            }
+//)frag";
 
    //ATOM class_atom = NULL;
 
@@ -254,8 +254,8 @@ void main() {
 
       // __UNREFERENCED_PARAMETER(size);
       //
-      // CreateCompatibleDC(nullptr);
-      // //if (!CreateCompatibleDC(nullptr))
+      // create_compatible_graphics(nullptr);
+      // //if (!create_compatible_graphics(nullptr))
       // //{
       //
       // //   return false;
@@ -295,7 +295,7 @@ void main() {
    }
 
 
-   void graphics::CreateCompatibleDC(::draw2d::graphics* pgraphics)
+   void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
    {
 
       opengl_create_offscreen_buffer({ 1920, 1080 });
@@ -416,9 +416,9 @@ void main() {
 
       m_pointTranslateOutput = { 0.0, (double)size.cy };
 
-      auto pgpucontext = gpu_context();
+//      auto pgpucontext = gpu_context();
 
-      auto pgpurenderer = pgpucontext->get_gpu_renderer();
+//      auto pgpurenderer = pgpucontext->get_gpu_renderer();
 
       //auto pgpucontext = pgpudevice->get_main_context();
 
@@ -1063,7 +1063,7 @@ void main() {
 
       }
 
-      bool bOk1 = false;
+      //bool bOk1 = false;
 
       //plusplus::Point * ppoints = ___new plusplus::Point[nCount];
 
@@ -1099,7 +1099,7 @@ void main() {
    void graphics::arc(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
    {
 
-      auto pmathematics = mathematics();
+      //auto pmathematics = mathematics();
 
       double centerx = (x2 + x1) / 2.0;
       double centery = (y2 + y1) / 2.0;
@@ -1534,7 +1534,7 @@ void main() {
 
    //   //   HBITMAP hbitmap = ::CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, (void **) &pimage32, nullptr, 0);
 
-   //   //   HDC hdc = ::CreateCompatibleDC(nullptr);
+   //   //   HDC hdc = ::create_compatible_graphics(nullptr);
 
    //   //   HBITMAP hbitmapOld = (HBITMAP) ::SelectObject(hdc, hbitmap);
 
@@ -2252,7 +2252,7 @@ void main() {
 
       auto pshader = rectangle_shader();
 
-      float g_z = 0.0f; // Assuming z is 0 for 2D rendering, adjust as needed
+      //float g_z = 0.0f; // Assuming z is 0 for 2D rendering, adjust as needed
 
       ::block_array < ::double_point, 4 > pointa1;
 
@@ -3337,7 +3337,7 @@ void main() {
 
    void graphics::draw(::draw2d::path* ppath, ::draw2d::pen* ppen)
    {
-      bool bLastPoint = false;
+      //bool bLastPoint = false;
       ::double_point pointLast;
       for (int i = 0; i < ppath->m_itema.size(); i++)
       {
@@ -4933,7 +4933,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::arc_to(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
    {
       // ASSERT(m_hdc != nullptr);
-      bool bResult = false;
+      //bool bResult = false;
       //bool bResult = ::ArcTo(m_hdc, x1, y1, x2, y2, x3, y3, x4, y4) != false;
       //if (m_hdc != m_hdc)
       //{
@@ -6633,7 +6633,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //   draw2d_opengl_enum_fonts fonts(itema);
 
-   //   //HDC hdc = ::CreateCompatibleDC(nullptr);
+   //   //HDC hdc = ::create_compatible_graphics(nullptr);
 
    //   //::EnumFontFamilies(hdc,(LPCTSTR)nullptr,(FONTENUMPROC)draw2d_opengl_EnumFamCallBack,(LPARAM)&fonts);
 
@@ -6654,7 +6654,7 @@ color = vec4(c.r,c.g, c.b, c.a);
    ::geometry2d::matrix graphics::context_matrix(enum_transform_context etransformcontext)
    {
 
-      auto pcontext = gpu_context();
+      //auto pcontext = gpu_context();
 
       ::geometry2d::matrix contextmatrix;
 
@@ -6691,7 +6691,7 @@ color = vec4(c.r,c.g, c.b, c.a);
    }
 
 
-   void graphics::CreateWindowDC(oswindow wnd)
+   void graphics::create_window_graphics(const ::operating_system::window & operatingsystemwindow)
    {
 
       // http://stackoverflow.com/questions/4052940/how-to-make-an-opengl-rendering-context-with-transparent-background
@@ -6802,7 +6802,7 @@ color = vec4(c.r,c.g, c.b, c.a);
    void graphics::start_gpu_layer(::gpu::frame * pgpuframe)
    {
 
-      auto pcontext = gpu_context();
+      //auto pcontext = gpu_context();
 
       //::gpu::context_lock contextlock(pcontext);
 
@@ -6817,7 +6817,7 @@ color = vec4(c.r,c.g, c.b, c.a);
       //glDisable(GL_DEPTH_TEST); // Disable depth testing
       //::opengl::check_error("");
 
-      auto ealphamode = m_ealphamode;
+      //auto ealphamode = m_ealphamode;
       m_ealphamode = ::draw2d::e_alpha_mode_none; // Set alpha mode to blend for GPU layer
       set_alpha_mode(m_ealphamode);
 

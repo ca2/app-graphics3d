@@ -100,7 +100,7 @@ namespace graphics3d_opengl
 		//private:
 		//void ProcessInput(float deltaTime);
 		//static void MouseCallback(::user::graphics3d* pglContainer, double xpos, double ypos);
-		virtual void initialize_engine(::user::graphics3d* pimpact);
+		void initialize_engine(::user::graphics3d* pimpact) override;
 
 		//virtual void handle_mouse_move(double dCursorX, double dCursorY) override;
 

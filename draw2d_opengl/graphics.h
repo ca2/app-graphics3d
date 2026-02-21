@@ -136,7 +136,7 @@ namespace draw2d_opengl
                     const char * lpszOutput, const void * lpInitData);
       void create_memory_graphics(const ::int_size & size = {}) override;
       void create_window_graphics(::windowing::window * pwindow) override;
-      void CreateCompatibleDC(::draw2d::graphics * pgraphics) override;
+      void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
 
       //void set_hint_window_output() override;
 
@@ -625,7 +625,7 @@ namespace draw2d_opengl
       virtual void set(::draw2d::bitmap* pbitmap) override;
       virtual ::draw2d::object* set_stock_object(int nIndex) override;
 
-      void CreateWindowDC(oswindow wnd) override;
+      void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
       void is_valid_update_window_thread() override;
 
 

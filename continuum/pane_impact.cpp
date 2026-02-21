@@ -177,8 +177,10 @@ namespace app_graphics3d_continuum
 
          if (get_impact_id() == GCOM_IMPACT)
          {
+            
+            get_tab_by_id(GCOM_IMPACT);
 
-            auto ptabpane = get_tab_by_id(GCOM_IMPACT);
+            //auto ptabpane = get_tab_by_id(GCOM_IMPACT);
 
             //auto pchild = ptabpane->m_pplaceholder->get_child_by_id("hello_multiverse_gcom");
 
@@ -230,7 +232,9 @@ namespace app_graphics3d_continuum
       else if (get_impact_id() == FONTSEL_IMPACT)
       {
 
-         auto pinteractionFont = get_font_interaction();
+         //auto pinteractionFont = get_font_interaction();
+         
+         get_font_interaction();
 
          //if (m_pimpactLastImpact != nullptr && ::is_set(pinteractionFont))
          //{
@@ -245,7 +249,9 @@ namespace app_graphics3d_continuum
       else if (get_impact_id() == COLORSEL_IMPACT)
       {
 
-         auto pinteractionColor = get_color_interaction();
+         //auto pinteractionColor = get_color_interaction();
+         
+         get_color_interaction();
 
          //if (m_pimpactLastImpact != nullptr && ::is_set(pinteractionColor))
          //{
@@ -259,7 +265,9 @@ namespace app_graphics3d_continuum
       if (m_pimpactdataOld != nullptr && m_pimpactdataOld->id() == FONTSEL_IMPACT)
       {
 
-         auto pinteractionFont = get_font_interaction();
+         //auto pinteractionFont = get_font_interaction();
+         
+         get_font_interaction();
 
          //if (m_pimpactLastImpact != nullptr && ::is_set(pinteractionFont))
          //{
