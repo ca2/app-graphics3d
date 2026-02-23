@@ -378,7 +378,8 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
          __interface_of(pdcompositiondevice)));
 
 
-      ::defer_throw_hresult(pdcompositiondevice->CreateTargetForHwnd(pwin32window->m_hwnd,
+      ::defer_throw_hresult(
+         pdcompositiondevice->CreateTargetForHwnd(pwin32window->_HWND(),
          true,
          &pdcompositiontarget));
 

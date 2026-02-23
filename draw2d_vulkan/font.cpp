@@ -105,7 +105,7 @@ namespace draw2d_vulkan
 
          //m_bFont = true;
 
-         ((font *)this)->m_hdcFont = ::create_compatible_graphics(nullptr);
+         ((font *)this)->m_hdcFont = ::CreateCompatibleDC(nullptr);
 
          //xxxopengl>>>>vulkan((font *)this)->m_baseFont = vkGenLists(256);								// Storage For 256 Characters
 

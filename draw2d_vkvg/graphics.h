@@ -708,7 +708,7 @@ namespace draw2d_vkvg
       virtual void set(::draw2d::bitmap* pbitmap) override;
       virtual ::draw2d::object* set_stock_object(int nIndex) override;
 
-      void create_window_graphics(oswindow wnd) override;
+      void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
       void is_valid_update_window_thread() override;
 
 

@@ -2028,7 +2028,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   //   HBITMAP hbitmap = ::CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, (void **) &pimage32, nullptr, 0);
 
-   //   //   HDC hdc = ::create_compatible_graphics(nullptr);
+   //   //   HDC hdc = ::CreateCompatibleDC(nullptr);
 
    //   //   HBITMAP hbitmapOld = (HBITMAP) ::SelectObject(hdc, hbitmap);
 
@@ -6871,7 +6871,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   draw2d_vulkan_enum_fonts fonts(itema);
 
-   //   //HDC hdc = ::create_compatible_graphics(nullptr);
+   //   //HDC hdc = ::CreateCompatibleDC(nullptr);
 
    //   //::EnumFontFamilies(hdc,(LPCTSTR)nullptr,(FONTENUMPROC)draw2d_vulkan_EnumFamCallBack,(LPARAM)&fonts);
 
@@ -6891,7 +6891,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
 
-   void graphics::create_window_graphics(oswindow wnd)
+   void graphics::create_window_graphics(const ::operating_system::window & operatingwindowingwindow)
    {
 
       // http://stackoverflow.com/questions/4052940/how-to-make-an-vulkan-rendering-context-with-transparent-background

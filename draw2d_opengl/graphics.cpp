@@ -1534,7 +1534,7 @@ namespace draw2d_opengl
 
    //   //   HBITMAP hbitmap = ::CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, (void **) &pimage32, nullptr, 0);
 
-   //   //   HDC hdc = ::create_compatible_graphics(nullptr);
+   //   //   HDC hdc = ::CreateCompatibleDC(nullptr);
 
    //   //   HBITMAP hbitmapOld = (HBITMAP) ::SelectObject(hdc, hbitmap);
 
@@ -6633,7 +6633,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //   draw2d_opengl_enum_fonts fonts(itema);
 
-   //   //HDC hdc = ::create_compatible_graphics(nullptr);
+   //   //HDC hdc = ::CreateCompatibleDC(nullptr);
 
    //   //::EnumFontFamilies(hdc,(LPCTSTR)nullptr,(FONTENUMPROC)draw2d_opengl_EnumFamCallBack,(LPARAM)&fonts);
 

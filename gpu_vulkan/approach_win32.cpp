@@ -27,7 +27,7 @@ namespace gpu_vulkan
 
       ::cast<::windowing_win32::window> pwindow = pacmewindowingwindow;
 
-      auto hwnd = pwindow->m_hwnd;
+      auto hwnd = pwindow->_HWND();
 
       // Vulkan context setup
       HDC hdc = GetDC(hwnd);

@@ -748,7 +748,7 @@ namespace gpu_directx12
 
          RECT rect = {};
 
-         GetWindowRect(pwin32window->m_hwnd, &rect);
+         GetWindowRect(pwin32window->_HWND(), &rect);
 
          dxgiswapchaindesc1.Width = rect.right - rect.left;
          dxgiswapchaindesc1.Height = rect.bottom - rect.top;
