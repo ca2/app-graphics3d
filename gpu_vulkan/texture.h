@@ -30,10 +30,14 @@ namespace gpu_vulkan
       //bool                          m_bAdvancedPipelineSynchronization = false;
       int                           m_iImageAvailable = -1;
       int                           m_iRendering = -1;
-      VkSemaphore                   m_vksemaphoreAvailable = VK_NULL_HANDLE;
-      VkSemaphore                   m_vksemaphoreRenderFinished = VK_NULL_HANDLE;
-      VkFence                       m_vkfenceInFlight2 = VK_NULL_HANDLE;
-      VkFence                       m_vkfenceImageInFlight = VK_NULL_HANDLE;
+      //VkSemaphore                   m_vksemaphoreAvailable = VK_NULL_HANDLE;
+      //VkSemaphore                   m_vksemaphoreRenderFinished = VK_NULL_HANDLE;
+      //VkFence                       m_vkfenceInFlight2 = VK_NULL_HANDLE;
+      //VkFence                       m_vkfenceImageInFlight = VK_NULL_HANDLE;
+      ::pointer<::gpu::semaphore> m_pgpusemaphoreAvailable;
+      ::pointer<::gpu::semaphore> m_pgpusemaphoreRenderFinished;
+      ::pointer<::gpu::fence> m_pgpufenceInFlight;
+      ::pointer<::gpu::fence> m_pgpufenceImageInFlight;
 
       texture_synchronization();
       ~texture_synchronization();
@@ -41,7 +45,9 @@ namespace gpu_vulkan
       VkFramebuffer get_frame_buffer(::gpu_vulkan::render_pass * prenderpass);
       VkFramebuffer _get_frame_buffer(::gpu_vulkan::render_pass* prenderpass);
 
-      VkFence in_flight_fence();
+      //VkFence in_flight_fence();
+
+      ::gpu::fence *in_flight_fence();
 
       //virtual texture_synchronization& synchronization(::gpu::render_target * prendertarget);
 
