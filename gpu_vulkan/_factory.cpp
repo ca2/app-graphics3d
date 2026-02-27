@@ -15,6 +15,7 @@
 #include "pipeline.h"
 #include "render_target.h"
 #include "renderer.h"
+#include "semaphore.h"
 #include "swap_chain.h"
 #include "texture.h"
 #include "bred/gpu/pixmap.h"
@@ -84,6 +85,7 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
    //pfactory->add_factory_item<::gpu_vulkan::cube, ::gpu::cube>();
 
    pfactory->add_factory_item<::gpu_vulkan::fence, ::gpu::fence>();
+   pfactory->add_factory_item<::gpu_vulkan::semaphore, ::gpu::semaphore>();
 
    pfactory->add_factory_item<::gpu_vulkan::binding, ::gpu::binding>();
    pfactory->add_factory_item<::gpu_vulkan::binding_set, ::gpu::binding_set>();

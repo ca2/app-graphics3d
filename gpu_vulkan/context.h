@@ -161,7 +161,7 @@ namespace gpu_vulkan
 
       ::pointer < ::gpu::command_buffer > beginSingleTimeCommands(::gpu::queue * pgpuqueue, ::gpu::enum_command_buffer ecommandbuffer = ::gpu::e_command_buffer_graphics) override;
       void endSingleTimeCommands(::gpu::command_buffer * pcommandbuffer);
-      void endSingleTimeCommands(command_buffer * pcommandbuffer, int iSubmitCount, VkSubmitInfo * psubmitinfo);
+      //void endSingleTimeCommands(command_buffer * pcommandbuffer, int iSubmitCount, VkSubmitInfo * psubmitinfo);
       void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
       void copyBufferToImage(::gpu::command_buffer* pcommandbuffer, ::gpu_vulkan::texture* ptexture, ::gpu_vulkan::buffer* pbuffer, const ::int_rectangle& rectangleSubImage = {});
 ///      void copyBufferToImage(::gpu::command_buffer* pcommandbuffer, ::gpu::pixmap* pixmap, ::gpu_vulkan::buffer* pbuffer);

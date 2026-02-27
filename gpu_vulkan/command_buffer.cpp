@@ -177,63 +177,63 @@ namespace gpu_vulkan
 
          }
 
-         for (auto & pgpusemaphore : m_semaphoreaWait)
-         {
+         //for (auto & pgpusemaphore : m_semaphoreaWait)
+         //{
 
-            ::cast < ::gpu_vulkan::semaphore > psemaphore = pgpusemaphore;
+         //   ::cast < ::gpu_vulkan::semaphore > psemaphore = pgpusemaphore;
 
-            if (psemaphore)
-            {
+         //   if (psemaphore)
+         //   {
 
 
-               if (psemaphore->m_vksemaphore != VK_NULL_HANDLE)
-               {
+         //      if (psemaphore->m_vksemaphore != VK_NULL_HANDLE)
+         //      {
 
-                  if (vksemaphoreaWait.add_unique(psemaphore->m_vksemaphore))
-                  {
+         //         if (vksemaphoreaWait.add_unique(psemaphore->m_vksemaphore))
+         //         {
 
-                     vkpipelinestageaWait.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+         //            vkpipelinestageaWait.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
-                  }
+         //         }
 
-               }
+         //      }
 
-            }
+         //   }
 
-         }
+         //}
 
-         if (::is_set(player))
-         {
+         //if (::is_set(player))
+         //{
 
-            auto vksemaphoreRenderFinished = player->m_vksemaphoreRenderFinished;
+         //   auto vksemaphoreRenderFinished = player->m_vksemaphoreRenderFinished;
 
-            if (vksemaphoreRenderFinished != VK_NULL_HANDLE)
-            {
+         //   if (vksemaphoreRenderFinished != VK_NULL_HANDLE)
+         //   {
 
-               vksemaphoreaSignal.add_unique(vksemaphoreRenderFinished);
+         //      vksemaphoreaSignal.add_unique(vksemaphoreRenderFinished);
 
-            }
+         //   }
 
-         }
+         //}
 
-         for (auto & pgpusemaphore : m_semaphoreaWait)
-         {
+         //for (auto & pgpusemaphore : m_semaphoreaSignal)
+         //{
 
-            ::cast < ::gpu_vulkan::semaphore > psemaphore = pgpusemaphore;
+         //   ::cast < ::gpu_vulkan::semaphore > psemaphore = pgpusemaphore;
 
-            if (psemaphore)
-            {
+         //   if (psemaphore)
+         //   {
 
-               if (psemaphore->m_vksemaphore != VK_NULL_HANDLE)
-               {
+         //      if (psemaphore->m_vksemaphore != VK_NULL_HANDLE)
+         //      {
 
-                  vksemaphoreaSignal.add_unique(psemaphore->m_vksemaphore);
+         //         vksemaphoreaSignal.add_unique(psemaphore->m_vksemaphore);
 
-               }
+         //      }
 
-            }
+         //   }
 
-         }
+         //}
 
          //       auto ptexture = prendertarget->current_texture(::gpu::current_frame());
          //
@@ -340,6 +340,7 @@ namespace gpu_vulkan
             }
          }
       }
+      //m_semaphoreaWait.clear();
       // for (auto psynchronizationSrc : synchronizationaSrc)
       // {
       //    if (psynchronizationSrc && psynchronizationSrc->m_iRendering > 0)
@@ -374,7 +375,7 @@ namespace gpu_vulkan
             }
          }
       }
-
+      //m_semaphoreaSignal.clear();
 
       // // && texture.m_vksemaphoreRenderFinished)
       // if (psynchronizationDst && psynchronizationDst->m_vksemaphoreRenderFinished)
@@ -441,7 +442,9 @@ namespace gpu_vulkan
 
       VkFence vkfence = VK_NULL_HANDLE;
 
-      if (m_pgpufence)
+      bool bCreatedFenceHere = false;
+
+      if (pfence)
          //{
 
          //   VkFenceCreateInfo fenceInfo = {
@@ -476,16 +479,85 @@ namespace gpu_vulkan
          vkResetFences(pcontext->logicalDevice(), 1, &vkfence);
 
       }
+      else if (m_bFenceWaitIfNoPreexistingFence)
+      {
 
-      ::cast < ::gpu_vulkan::queue > pqueue = m_pgpuqueue;
+         //      ::cast<::gpu_vulkan::fence> pfence = pcommandbuffer->m_pgpufence;
+
+         // bool bCreatedFenceHere = false;
+
+         // if (::is_set(pfence))
+         //{
+
+         //   vkfence = pfence->m_vkfence;
+         //}
+         // else
+         //{
+
+         pfence = this->insert_gpu_fence(false);
+
+         vkfence = pfence->m_vkfence;
+
+         bCreatedFenceHere = true;
+         //}
+      }
+
+               ::cast<::gpu_vulkan::queue> pqueue = this->m_pgpuqueue;
+
+      VkQueue vkqueue = pqueue->m_vkqueue;
+
+
+
+         // if (pcommandbuffer->m_ecommandbuffer == ::gpu::e_command_buffer_present)
+         // {
+         //
+         //    vkqueue = m_vkqueuePresent;
+         //
+         // }
+         // else
+         // {
+         //
+         //    vkqueue = m_vkqueueGraphics;
+         //
+         // }
+
+         ::string strCommandListName = this->m_strName;
+
+         auto timeStart = ::time::now();
+
+
+      //}
+
+      //::cast < ::gpu_vulkan::queue > pqueue = m_pgpuqueue;
 
       //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
-      if (vkQueueSubmit(pqueue->m_vkqueue, 1, &submitInfo, vkfence) != VK_SUCCESS)
+      if (vkQueueSubmit(vkqueue, 1, &submitInfo, vkfence) != VK_SUCCESS)
       {
 
          throw ::exception(error_failed, "failed to submit draw command buffer!");
 
       }
+
+            if (bCreatedFenceHere)
+      {
+
+         pfence->wait_gpu_fence();
+
+         vkQueueWaitIdle(vkqueue);
+         
+         auto timeElapsed = timeStart.elapsed();
+
+         information("submit_command_buffer with Fence and queue wait took {} ms. (thread={},cmdlst_name={})", timeElapsed.floating_millisecond(),
+                     ::current_task_name(), strCommandListName);
+
+      }
+
+      // vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+      //
+      // vkQueueWaitIdle(vkqueue);
+      //
+      // vkDestroyFence(this->logicalDevice(), fence, NULL);
+
 
       // if (pvkfence)
       // {

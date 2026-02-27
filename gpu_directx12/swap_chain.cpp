@@ -230,7 +230,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       //}
 
 
-      ::cast < texture > ptextureSrc = pgputexture;
+      ::cast < ::gpu_directx12::texture > ptextureSrc = pgputexture;
 
       ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 

@@ -49,6 +49,15 @@ namespace gpu_vulkan
 
       }
 
+      auto u = (::uptr) m_vksemaphore;
+
+      if ((u & 0xffff) == 0x0232)
+      {
+
+         information("vkSemaphore (u & 0xffff) == 0x0232");
+
+      }
+
    }
 
 

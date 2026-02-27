@@ -16,7 +16,7 @@ namespace gpu_vulkan
 
 
       VkSwapchainKHR                            m_vkswapchain;
-      uint32_t                                  m_uCurrentSwapChainImage;
+      //int                                       m_iCurrentSwapChainImage;
       ::pointer < ::gpu::context >              m_pgpucontextSwapChain;
       ::pointer < ::gpu::shader >               m_pshaderPresent;
       ::pointer < ::gpu_vulkan::render_pass >   m_prenderpass;
@@ -26,17 +26,8 @@ namespace gpu_vulkan
 
       //::pointer_array<::gpu::semaphore>       m_semaphoreaSignal;
 
-      ::pointer_array<::gpu::semaphore>         m_semaphoreaWait;
+      //::pointer_array<::gpu::semaphore>         m_semaphoreaWait;
 
-
-      struct frame_sync
-      {
-         VkFence                                inFlightFence = VK_NULL_HANDLE;
-         VkSemaphore                            imageAvailable = VK_NULL_HANDLE;
-         VkSemaphore                            renderFinished = VK_NULL_HANDLE;
-      };
-
-      ::array_base < frame_sync > m_framesynca;
 
       //bool m_bNeedRebuild;
 
@@ -45,10 +36,7 @@ namespace gpu_vulkan
       ~swap_chain();
 
 
-      virtual bool create_frame_sync(frame_sync& frame);
-      virtual void destroy_frame_sync(frame_sync& frame);
-
-
+      void on_new_frame() override;
 
       void on_new_swap_chain() override;
 
@@ -56,7 +44,6 @@ namespace gpu_vulkan
       virtual bool should_use_advanced_pipeline_synchronization();
 
 
-      virtual frame_sync& frame(::collection::index iFrameIndex);
 
       //virtual ::gpu::texture* current_texture();
       //virtual void update_render_pass(::gpu::context* pgpucontext, ::pointer <::gpu_vulkan::render_pass>previous = {});

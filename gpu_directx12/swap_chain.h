@@ -25,7 +25,7 @@ namespace gpu_directx12
       ::comptr < ID3D12RootSignature > m_prootsignature;
 
       HANDLE m_handleSharedTexture;
-      ::pointer_array < texture > m_textureaSwapChain;
+      ::pointer_array < ::gpu_directx12::texture > m_textureaSwapChain;
       //VkSwapchainKHR       m_vkswapchain;
       uint32_t             m_uCurrentSwapChainImage;
       //::int_size m_size;

@@ -14,6 +14,7 @@
 #include "renderer.h"
 #include "offscreen_render_pass.h"
 #include "physical_device.h"
+#include "render_target.h"
 #include "swap_chain.h"
 #include "texture.h"
 #include "bred/gpu/cpu_buffer.h"
@@ -714,7 +715,7 @@ namespace gpu_vulkan
 
       //}
 
-      _on_begin_render();
+      on_begin_render(::gpu::current_frame());
 
    }
 
@@ -947,7 +948,7 @@ namespace gpu_vulkan
          //ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
          //ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_TRANSFER_BIT;
 
-         auto scopedstate = ptexture->_scoped_state(pcommandbuffer,
+         ptexture->_set_state(pcommandbuffer,
             {
             VK_ACCESS_TRANSFER_READ_BIT,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -1201,13 +1202,19 @@ namespace gpu_vulkan
          //auto prenderpass = prendertarget->render_pass();
 
       auto psynchronization = ptexture->synchronization();
-      VkSemaphore vksemaphore = psynchronization->m_vksemaphoreRenderFinished;
-      waitSemaphores.add(vksemaphore);
-      submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
-      submitInfo.pWaitSemaphores = waitSemaphores.data();
-      submitInfo.pWaitDstStageMask = waitStages.data();
+      if (psynchronization->m_pgpusemaphoreRenderFinished)
+      {
+         pcommandbuffer->m_semaphoreaWait.add_unique(psynchronization->m_pgpusemaphoreRenderFinished);
+      }
+      ////VkSemaphore vksemaphore = psynchronization->m_vksemaphoreRenderFinished;
+      //waitSemaphores.add(vksemaphore);
+      //submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
+      //submitInfo.pWaitSemaphores = waitSemaphores.data();
+      //submitInfo.pWaitDstStageMask = waitStages.data();
 
-      m_pcontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
+      m_pcontext->endSingleTimeCommands(pcommandbuffer);
+
+      //m_pcontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
       //// Transition destination image to general layout, which is the required layout for mapping the image memory later on
       //insertImageMemoryBarrier(
       //   copyCmd,
@@ -1293,7 +1300,7 @@ namespace gpu_vulkan
          ptextureRef->width(),
          ptextureRef->height(),
          (int)subResourceLayout.rowPitch,
-         true);
+         false);
 
       //_synchronous_lock synchronouslock(m_pgpucontext->m_pmutexOffscreen);
       //   m_pgpucontext->m_sizeOffscreen.cx = m_vkextent2d.width;
@@ -1375,7 +1382,7 @@ namespace gpu_vulkan
   //      if (callback)
       {
 
-         ::cast < ::gpu_vulkan::render_target > prendertarget = prendertarget;
+         ::cast < ::gpu_vulkan::render_target > prendertarget = m_pgpurendertarget2;
 
          m_pcpubuffersampler->update(m_pgpucontext->m_rectangle.size());
          {
@@ -1912,7 +1919,7 @@ namespace gpu_vulkan
    void renderer::on_end_draw()
    {
 
-      _on_end_render();
+      _on_end_render(::gpu::current_frame());
 
       for (auto& procedure : m_procedureaAfterEndRender)
       {
@@ -2655,6 +2662,15 @@ namespace gpu_vulkan
 //   }
 //
 
+   
+   void renderer::on_new_frame()
+   {
+
+      ::gpu::renderer::on_new_frame();
+
+   }
+
+
    void renderer::_set_image(::gpu::texture* pgputexture, const ::int_rectangle& rectangle, bool bYSwap)
    {
 
@@ -3274,98 +3290,104 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::_on_begin_render()
+   //void renderer::_on_begin_render()
+   //{
+
+   //   //::cast < frame > pframe = pframeParam;
+
+   //   //auto pcommandbuffer = pframe->m_pcommandbuffer->m_vkcommandbuffer;
+
+   //   ::cast < command_buffer > pcommandbuffer = this->getCurrentCommandBuffer2(::gpu::current_frame());
+
+   //   auto pgpurendertarget = this->render_target();
+
+   //   ::cast < render_pass > pgpurenderpass = pgpurendertarget;
+
+   //   //if (m_bOffScreen)
+   //   {
+
+   //      assert(m_bFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
+   //      assert(
+   //         pcommandbuffer == getCurrentCommandBuffer2(::gpu::current_frame()) &&
+   //         "Can't begin render pass on command buffer from a different frame");
+
+
+
+
+   //      //VkRenderPassBeginInfo renderPassInfo{};
+   //      //renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+   //      //renderPassInfo.renderPass = pgpurenderpass->getRenderPass();
+   //      //renderPassInfo.framebuffer = pgpurenderpass->getCurrentFrameBuffer();
+
+   //      //renderPassInfo.renderArea.offset = { 0, 0 };
+   //      //renderPassInfo.renderArea.extent = pgpurenderpass->getExtent();
+
+   //      //VkClearValue clearValues[2];
+   //      ////clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
+   //      //clearValues[0].color = { 0.f, 0.0f, 0.0f, 0.0f };
+   //      //clearValues[1].depthStencil = { 1.0f, 0 };
+   //      //renderPassInfo.clearValueCount = 2;
+   //      //renderPassInfo.pClearValues = clearValues;
+
+   //      ////vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+   //      VkViewport viewport{};
+   //      viewport.x = 0.0f;
+   //      viewport.y = 0.0f;
+   //      viewport.width = static_cast<float>(pgpurenderpass->getExtent().width);
+   //      viewport.height = static_cast<float>(pgpurenderpass->getExtent().height);
+   //      viewport.minDepth = 0.0f;
+   //      viewport.maxDepth = 1.0f;
+   //      VkRect2D scissor{ {0, 0}, pgpurenderpass->getExtent() };
+   //      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
+   //      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
+
+   //   }
+   //   //else
+   //   //{
+
+   //   //	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
+   //   //	assert(
+   //   //		pcommandbuffer == getCurrentCommandBuffer() &&
+   //   //		"Can't begin render pass on command buffer from a different frame");
+
+   //   //	VkRenderPassBeginInfo renderPassInfo{};
+   //   //	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+   //   //	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
+   //   //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(m_uCurrentSwapChainImage);
+
+   //   //	renderPassInfo.renderArea.offset = { 0, 0 };
+   //   //	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
+
+   //   //	std::array<VkClearValue, 2> clearValues{};
+   //   //	clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
+   //   //	clearValues[1].depthStencil = { 1.0f, 0 };
+   //   //	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+   //   //	renderPassInfo.pClearValues = clearValues.data();
+
+   //   //	vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+   //   //	VkViewport viewport{};
+   //   //	viewport.x = 0.0f;
+   //   //	viewport.y = 0.0f;
+   //   //	viewport.width = static_cast<float>(vkcSwapChain->getSwapChainExtent().width);
+   //   //	viewport.height = static_cast<float>(vkcSwapChain->getSwapChainExtent().height);
+   //   //	viewport.minDepth = 0.0f;
+   //   //	viewport.maxDepth = 1.0f;
+   //   //	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
+   //   //	vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
+   //   //	vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
+
+
+   //   //}
+   //}
+
+   void renderer::on_begin_render(::gpu::frame * pframe)
    {
 
-      //::cast < frame > pframe = pframeParam;
+      ::gpu::renderer::on_begin_render(pframe);
 
-      //auto pcommandbuffer = pframe->m_pcommandbuffer->m_vkcommandbuffer;
-
-      ::cast < command_buffer > pcommandbuffer = this->getCurrentCommandBuffer2(::gpu::current_frame());
-
-      auto pgpurendertarget = this->render_target();
-
-      ::cast < render_pass > pgpurenderpass = pgpurendertarget;
-
-      //if (m_bOffScreen)
-      {
-
-         assert(m_bFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
-         assert(
-            pcommandbuffer == getCurrentCommandBuffer2(::gpu::current_frame()) &&
-            "Can't begin render pass on command buffer from a different frame");
-
-
-
-
-         //VkRenderPassBeginInfo renderPassInfo{};
-         //renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-         //renderPassInfo.renderPass = pgpurenderpass->getRenderPass();
-         //renderPassInfo.framebuffer = pgpurenderpass->getCurrentFrameBuffer();
-
-         //renderPassInfo.renderArea.offset = { 0, 0 };
-         //renderPassInfo.renderArea.extent = pgpurenderpass->getExtent();
-
-         //VkClearValue clearValues[2];
-         ////clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-         //clearValues[0].color = { 0.f, 0.0f, 0.0f, 0.0f };
-         //clearValues[1].depthStencil = { 1.0f, 0 };
-         //renderPassInfo.clearValueCount = 2;
-         //renderPassInfo.pClearValues = clearValues;
-
-         ////vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-         VkViewport viewport{};
-         viewport.x = 0.0f;
-         viewport.y = 0.0f;
-         viewport.width = static_cast<float>(pgpurenderpass->getExtent().width);
-         viewport.height = static_cast<float>(pgpurenderpass->getExtent().height);
-         viewport.minDepth = 0.0f;
-         viewport.maxDepth = 1.0f;
-         VkRect2D scissor{ {0, 0}, pgpurenderpass->getExtent() };
-         vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
-         vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
-
-      }
-      //else
-      //{
-
-      //	assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
-      //	assert(
-      //		pcommandbuffer == getCurrentCommandBuffer() &&
-      //		"Can't begin render pass on command buffer from a different frame");
-
-      //	VkRenderPassBeginInfo renderPassInfo{};
-      //	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-      //	renderPassInfo.renderPass = m_pvkcswapchain->getRenderPass();
-      //	renderPassInfo.framebuffer = m_pvkcswapchain->getFrameBuffer(m_uCurrentSwapChainImage);
-
-      //	renderPassInfo.renderArea.offset = { 0, 0 };
-      //	renderPassInfo.renderArea.extent = m_pvkcswapchain->getExtent();
-
-      //	std::array<VkClearValue, 2> clearValues{};
-      //	clearValues[0].color = { 2.01f, 0.01f, 0.01f, 1.0f };
-      //	clearValues[1].depthStencil = { 1.0f, 0 };
-      //	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-      //	renderPassInfo.pClearValues = clearValues.data();
-
-      //	vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-      //	VkViewport viewport{};
-      //	viewport.x = 0.0f;
-      //	viewport.y = 0.0f;
-      //	viewport.width = static_cast<float>(vkcSwapChain->getSwapChainExtent().width);
-      //	viewport.height = static_cast<float>(vkcSwapChain->getSwapChainExtent().height);
-      //	viewport.minDepth = 0.0f;
-      //	viewport.maxDepth = 1.0f;
-      //	VkRect2D scissor{ {0, 0}, vkcSwapChain->getSwapChainExtent() };
-      //	vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
-      //	vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
-
-
-      //}
    }
-
 
    void renderer::_on_begin_render(::gpu::frame* pframeParam)
    {
@@ -3442,6 +3464,8 @@ namespace gpu_vulkan
       }
 
       ::cast < texture > ptextureDepth;
+
+      auto escene = m_pgpucontext->m_escene;
 
       //if (pframeParam->m_pgpulayer)
       //{
@@ -3716,173 +3740,175 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::on_end_render(::gpu::frame* pframeParam)
+   void renderer::on_end_render(::gpu::frame* pframe)
    {
 
-      //m_prenderstate->on_happening(::gpu::e_happening_end_render);
+      ::gpu::renderer::on_end_render(pframe);
 
-      ::cast < frame > pframe = pframeParam;
+      ////m_prenderstate->on_happening(::gpu::e_happening_end_render);
 
-      ::cast < command_buffer > pcommandbuffer = pframe->m_pgpucommandbuffer;
+      //::cast < frame > pframe = pframeParam;
 
-      assert(m_bFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
-      //assert(
-        // pcommandbuffer == getCurrentCommandBuffer2(::gpu::current_frame()) &&
-         //"Can't end render pass on command buffer from a different frame");
-      //vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
+      //::cast < command_buffer > pcommandbuffer = pframe->m_pgpucommandbuffer;
 
-      //{
+      //assert(m_bFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
+      ////assert(
+      //  // pcommandbuffer == getCurrentCommandBuffer2(::gpu::current_frame()) &&
+      //   //"Can't end render pass on command buffer from a different frame");
+      ////vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
 
-      //   ::cast < texture > ptexture = m_pgpurendertarget->current_texture();
+      ////{
 
-      //   VkClearColorValue clearColor = {
-      //         .float32 = { 0.5f, 0.0f, 0.5f, 0.5f }  // R, G, B, A
-      //   };
+      ////   ::cast < texture > ptexture = m_pgpurendertarget->current_texture();
 
-      //   VkImageSubresourceRange subresourceRange = {
-      //       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-      //       .baseMipLevel = 0,
-      //       .levelCount = 1,
-      //       .baseArrayLayer = 0,
-      //       .layerCount = 1,
-      //   };
+      ////   VkClearColorValue clearColor = {
+      ////         .float32 = { 0.5f, 0.0f, 0.5f, 0.5f }  // R, G, B, A
+      ////   };
 
-      //   vkCmdClearColorImage(
-      //      pcommandbuffer->m_vkcommandbuffer,
-      //      ptexture->m_vkimage,
-      //      ptexture->m_vkimagelayout,
-      //      &clearColor,
-      //      1,
-      //      &subresourceRange
-      //   );
+      ////   VkImageSubresourceRange subresourceRange = {
+      ////       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      ////       .baseMipLevel = 0,
+      ////       .levelCount = 1,
+      ////       .baseArrayLayer = 0,
+      ////       .layerCount = 1,
+      ////   };
 
-      //}
+      ////   vkCmdClearColorImage(
+      ////      pcommandbuffer->m_vkcommandbuffer,
+      ////      ptexture->m_vkimage,
+      ////      ptexture->m_vkimagelayout,
+      ////      &clearColor,
+      ////      1,
+      ////      &subresourceRange
+      ////   );
 
-      //{
+      ////}
 
-      //   {
+      ////{
 
-      //      if (m_pgpucontext->m_pgpudevice->m_iLayer == 0)
-      //      {
+      ////   {
 
-      //         VkClearAttachment clearAttachment = {
-      //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-      //            .colorAttachment = 0,
-      //            .clearValue={.color = {0.5f, 0.0f, 0.0f, 0.5f}} // Red
-      //         };
+      ////      if (m_pgpucontext->m_pgpudevice->m_iLayer == 0)
+      ////      {
 
-      //         VkClearRect clearRect = {
-      //             .rect = {
-      //                 .offset = {100, 100},
-      //                 .extent = {100, 100}
-      //             },
-      //             .baseArrayLayer = 0,
-      //             .layerCount = 1
-      //         };
+      ////         VkClearAttachment clearAttachment = {
+      ////            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      ////            .colorAttachment = 0,
+      ////            .clearValue={.color = {0.5f, 0.0f, 0.0f, 0.5f}} // Red
+      ////         };
 
-      //         vkCmdClearAttachments(
-      //            pcommandbuffer->m_vkcommandbuffer,
-      //            1,
-      //            &clearAttachment,
-      //            1,
-      //            &clearRect);
+      ////         VkClearRect clearRect = {
+      ////             .rect = {
+      ////                 .offset = {100, 100},
+      ////                 .extent = {100, 100}
+      ////             },
+      ////             .baseArrayLayer = 0,
+      ////             .layerCount = 1
+      ////         };
 
-      //      }
-      //      else if (m_pgpucontext->m_pgpudevice->m_iLayer == 1)
-      //      {
+      ////         vkCmdClearAttachments(
+      ////            pcommandbuffer->m_vkcommandbuffer,
+      ////            1,
+      ////            &clearAttachment,
+      ////            1,
+      ////            &clearRect);
 
-      //         VkClearAttachment clearAttachment = {
-      //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-      //            .colorAttachment = 0,
-      //            .clearValue = {.color = {0.0f, 0.5f, 0.0f, 0.5f} } // Green
-      //         };
+      ////      }
+      ////      else if (m_pgpucontext->m_pgpudevice->m_iLayer == 1)
+      ////      {
 
-      //         VkClearRect clearRect = {
-      //             .rect = {
-      //                 .offset = {200, 100},
-      //                 .extent = {100, 100}
-      //             },
-      //             .baseArrayLayer = 0,
-      //             .layerCount = 1
-      //         };
+      ////         VkClearAttachment clearAttachment = {
+      ////            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      ////            .colorAttachment = 0,
+      ////            .clearValue = {.color = {0.0f, 0.5f, 0.0f, 0.5f} } // Green
+      ////         };
 
-      //         vkCmdClearAttachments(
-      //            pcommandbuffer->m_vkcommandbuffer,
-      //            1,
-      //            &clearAttachment,
-      //            1,
-      //            &clearRect);
+      ////         VkClearRect clearRect = {
+      ////             .rect = {
+      ////                 .offset = {200, 100},
+      ////                 .extent = {100, 100}
+      ////             },
+      ////             .baseArrayLayer = 0,
+      ////             .layerCount = 1
+      ////         };
 
-
-      //      }
-      //      else if (m_pgpucontext->m_pgpudevice->m_iLayer == 2)
-      //      {
-
-      //         VkClearAttachment clearAttachment = {
-      //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-      //            .colorAttachment = 0,
-      //            .clearValue = {.color = {0.0f, 0.0f, 0.5f, 0.5f} } // Blue
-      //         };
-
-      //         VkClearRect clearRect = {
-      //             .rect = {
-      //                 .offset = {200, 100},
-      //                 .extent = {100, 100}
-      //             },
-      //             .baseArrayLayer = 0,
-      //             .layerCount = 1
-      //         };
-
-      //         vkCmdClearAttachments(
-      //            pcommandbuffer->m_vkcommandbuffer,
-      //            1,
-      //            &clearAttachment,
-      //            1,
-      //            &clearRect);
-
-      //      }
-
-      //   }
-
-      //}
+      ////         vkCmdClearAttachments(
+      ////            pcommandbuffer->m_vkcommandbuffer,
+      ////            1,
+      ////            &clearAttachment,
+      ////            1,
+      ////            &clearRect);
 
 
-      gpu::renderer::on_end_render(pframe);
+      ////      }
+      ////      else if (m_pgpucontext->m_pgpudevice->m_iLayer == 2)
+      ////      {
 
-      //if (m_iSentLayerCount > 0)
-      //{
+      ////         VkClearAttachment clearAttachment = {
+      ////            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      ////            .colorAttachment = 0,
+      ////            .clearValue = {.color = {0.0f, 0.0f, 0.5f, 0.5f} } // Blue
+      ////         };
 
-      //   ::cast < context > pcontextMain = m_pgpucontext->m_pgpudevice->m_pgpucontextMain;
+      ////         VkClearRect clearRect = {
+      ////             .rect = {
+      ////                 .offset = {200, 100},
+      ////                 .extent = {100, 100}
+      ////             },
+      ////             .baseArrayLayer = 0,
+      ////             .layerCount = 1
+      ////         };
 
-      //   ::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontextMain->get_swap_chain();
+      ////         vkCmdClearAttachments(
+      ////            pcommandbuffer->m_vkcommandbuffer,
+      ////            1,
+      ////            &clearAttachment,
+      ////            1,
+      ////            &clearRect);
 
-      //   ::cast < layer > playerLast = pframe->m_pgpulayer;
+      ////      }
 
-      //   auto vksemaphoreRenderFinished = playerLast->m_vksemaphoreRenderFinished;
+      ////   }
 
-      //   pswapchain->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_TRANSFER_BIT);
-      //   pswapchain->m_semaphoreaWaitToSubmit.add(vksemaphoreRenderFinished);
+      ////}
 
-      //}
+
+      //gpu::renderer::on_end_render(pframe);
+
+      ////if (m_iSentLayerCount > 0)
+      ////{
+
+      ////   ::cast < context > pcontextMain = m_pgpucontext->m_pgpudevice->m_pgpucontextMain;
+
+      ////   ::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontextMain->get_swap_chain();
+
+      ////   ::cast < layer > playerLast = pframe->m_pgpulayer;
+
+      ////   auto vksemaphoreRenderFinished = playerLast->m_vksemaphoreRenderFinished;
+
+      ////   pswapchain->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_TRANSFER_BIT);
+      ////   pswapchain->m_semaphoreaWaitToSubmit.add(vksemaphoreRenderFinished);
+
+      ////}
 
    }
 
 
-   //void renderer::on_end_render(::graphics3d::frame * pframeParam)
-   void renderer::_on_end_render()
+   void renderer::_on_end_render(::gpu::frame * pframe)
+   //void renderer::_on_end_render()
    {
 
       //::cast < frame > pframe = pframeParam;
 
       //auto pcommandbuffer = pframe->m_pcommandbuffer->m_vkcommandbuffer;
 
-      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast<command_buffer> pcommandbuffer = getCurrentCommandBuffer2(pframe);
 
       assert(m_bFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
-      assert(
-         pcommandbuffer == getCurrentCommandBuffer2(::gpu::current_frame()) &&
+      assert(pcommandbuffer == getCurrentCommandBuffer2(pframe) &&
          "Can't end render pass on command buffer from a different frame");
       vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
+
    }
 
 
@@ -4020,7 +4046,7 @@ namespace gpu_vulkan
       //	return pcommandbuffer->m_vkcommandbuffer;
 
       //}
-      m_prenderstate->on_happening(::gpu::e_happening_begin_frame);
+      
    }
 
 
@@ -4039,9 +4065,18 @@ namespace gpu_vulkan
 
       auto psynchronization = ptexture->synchronization();
 
-      VkFence fence = psynchronization->in_flight_fence();
+      //VkFence fence = psynchronization->in_flight_fence();
 
-      vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+      auto pfence = psynchronization->in_flight_fence();
+
+      if (::is_set(pfence))
+      {
+
+         pfence->wait_gpu_fence();
+
+      }
+
+      //vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
 
       //vkResetFences(pcontext->logicalDevice(), 1, &fence);
 
@@ -4060,16 +4095,23 @@ namespace gpu_vulkan
 
       auto psynchronization = ptexture->synchronization();
 
-      VkFence fence = VK_NULL_HANDLE;
+      //VkFence fence = VK_NULL_HANDLE;
       
       if (psynchronization)
       {
        
-         fence = psynchronization->in_flight_fence();
+         auto pfence = psynchronization->in_flight_fence();
+
+         if (::is_set(pfence))
+         {
+
+            pfence->wait_gpu_fence();
+
+         }
 
       }
 
-      vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+      //vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
 
       //vkResetFences(pcontext->logicalDevice(), 1, &fence);
 
@@ -4134,18 +4176,14 @@ namespace gpu_vulkan
             //   throw ::exception(error_failed, "Failed to aquire swap chain image");
             //}
 
-            ::cast < ::gpu_vulkan::texture > ptextureSwapChain = pswapchain->current_swap_chain_texture();
+          //::cast<::gpu_vulkan::swap_chain> pswapchain = m_pgpucontext->get_swap_chain();
 
-            pgputextureOutput = ptextureSwapChain;
+          //auto result = pswapchain->submitCommandBuffers2(
+          //   pcommandbuffer,
+          //   pgputextureOutput,
+          //  {}, {}, {});
 
-            pgputextureOutput->_set_state(
-               pcommandbuffer,
-               {
-               0,
-               VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-               VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
-               }
-            );
+
 
          }
          else
@@ -4159,19 +4197,19 @@ namespace gpu_vulkan
 
       //m_pgpucontext->defer_unbind_shader();
 
-      if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
-      {
+      //if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
+      //{
 
-         auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
+      //   auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
-         if (vkEndCommandBuffer(vkcommandbuffer) != VK_SUCCESS)
-         {
+      //   if (vkEndCommandBuffer(vkcommandbuffer) != VK_SUCCESS)
+      //   {
 
-            throw ::exception(error_failed, "failed to record command buffer!");
+      //      throw ::exception(error_failed, "failed to record command buffer!");
 
-         }
+      //   }
 
-      }
+      //}
 
       //render_pass* prenderpassOutput;
 
@@ -4211,14 +4249,28 @@ namespace gpu_vulkan
          if (eoutput == ::gpu::e_output_swap_chain)
          {
 
-            ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
+         /*   ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
 
-            //result = pswapchain->submitCommandBuffers2(
-              // pcommandbuffer,
-               //pgputextureOutput,
-               //{}, {}, {});
+            ::cast<::gpu_vulkan::texture> ptextureSwapChain = pswapchain->current_swap_chain_texture();
 
-            pswapchain->present(pgputextureOutput);
+            pgputextureOutput = ptextureSwapChain;
+
+            pgputextureOutput->_set_state(pcommandbuffer,
+                                          {0, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT});
+
+
+            uint32_t frameIndex = pswapchain->m_iCurrentSwapChainFrame;
+
+            swap_chain::frame_sync &frame = pswapchain->frame(frameIndex);
+
+            if (::is_set(frame.m_pgpusemaphoreImageAvailable))
+            {
+
+               pcommandbuffer->m_semaphoreaWait.add(frame.m_pgpusemaphoreImageAvailable);
+
+            }
+
+            pswapchain->present(pgputextureOutput);*/
 
          }
          else
@@ -4231,6 +4283,11 @@ namespace gpu_vulkan
                {}, {}, {});*/
 
          }
+
+
+//                     pcommandbuffer->submit_command_buffer(nullptr);
+
+
 
          //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
             if(m_bNeedToRecreateSwapChain)
@@ -4556,12 +4613,22 @@ namespace gpu_vulkan
          //::cast < render_pass > pgpurenderpass = prenderer->m_pgpurendertarget;
 
          auto psynchronization = ptexture->synchronization();
-         waitSemaphores.add(psynchronization->m_vksemaphoreRenderFinished);
+         auto psemaphore = psynchronization->m_pgpusemaphoreRenderFinished;
+         if (::is_set(psemaphore))
+         {
+
+            pcommandbuffer->m_semaphoreaWait.add_unique(psemaphore);
+
+         }
+
+         m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
+
+         /*waitSemaphores.add(psynchronization->m_vksemaphoreRenderFinished);
          submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
          submitInfo.pWaitSemaphores = waitSemaphores.data();
          submitInfo.pWaitDstStageMask = waitStages.data();
 
-         m_pgpucontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
+         m_pgpucontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);*/
 
          //m_prendererResolve->pgpurenderpass->m_semaphoreaWaitToSubmit.add(
          //   pgpurenderpass->renderFinishedSemaphores[iPassCurrentFrame]
@@ -4758,19 +4825,21 @@ namespace gpu_vulkan
       ::cast < ::gpu_vulkan::texture> ptextureSource = prendertargetSource->m_ptexturea->element_at(prendertargetSource->get_frame_index());
       auto psynchronizationSource = ptextureSource->synchronization();
       if (psynchronizationSource
-         && psynchronizationSource->m_vksemaphoreRenderFinished)
+         && psynchronizationSource->m_pgpusemaphoreRenderFinished)
       {
-         waitSemaphores.add(psynchronizationSource->m_vksemaphoreRenderFinished);
+         ///waitSemaphores.add(psynchronizationSource->m_vksemaphoreRenderFinished);
+
+         pcommandbuffer->m_semaphoreaWait.add_unique(psynchronizationSource->m_pgpusemaphoreRenderFinished);
 
       }
       
-      submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
-      submitInfo.pWaitSemaphores = waitSemaphores.data();
-      submitInfo.pWaitDstStageMask = waitStages.data();
+      //submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
+      //submitInfo.pWaitSemaphores = waitSemaphores.data();
+      //submitInfo.pWaitDstStageMask = waitStages.data();
 
       //vkQueueWaitIdle(pgpucontext->graphicsQueue());
 
-      m_pgpucontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
+      //m_pgpucontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
 
       auto rectangle = prendererSource->m_pgpucontext->rectangle();
 

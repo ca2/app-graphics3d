@@ -24,7 +24,7 @@ namespace gpu_vulkan
       ~fence() override;
 
 
-      void initialize_gpu_fence(::gpu::context * pgpucontext) override;
+      void initialize_gpu_fence(::gpu::context * pgpucontext, bool bCreateSignaled) override;
 
       void wait_gpu_fence() override;
 

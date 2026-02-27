@@ -193,8 +193,8 @@ namespace gpu_vulkan
       void on_context_resize() override;
 
       void on_begin_draw() override;
-      virtual void _on_begin_render();
-      virtual void _on_end_render();
+      void _on_begin_render(::gpu::frame *pgpuframe) override;
+      void _on_end_render(::gpu::frame * pgpuframe) override;
       void on_end_draw() override;
 
    //public:
@@ -208,10 +208,13 @@ namespace gpu_vulkan
       //void prepareOffScreen();
 
       ::pointer < ::gpu::frame > beginFrame() override;
-      void _on_begin_render(::gpu::frame* pframeParam) override;
+      void on_begin_render(::gpu::frame* pframeParam) override;
       void on_end_render(::gpu::frame* pframeParam) override;
       void endFrame() override;
       //void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
+
+
+      void on_new_frame() override;
 
 
       void _set_image(::gpu::texture * pgputexture, const ::int_rectangle& rectangle, bool bYSwap);

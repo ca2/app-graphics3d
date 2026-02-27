@@ -36,17 +36,23 @@ namespace gpu_vulkan
    }
 
 
-   void fence::initialize_gpu_fence(::gpu::context * pgpucontext)
+   void fence::initialize_gpu_fence(::gpu::context *pgpucontext, bool bCreateSignaled)
    {
 
-      ::gpu::fence::initialize_gpu_fence(pgpucontext);
+      ::gpu::fence::initialize_gpu_fence(pgpucontext, bCreateSignaled);
 
-      ::cast < ::gpu_vulkan::device > pdevice = m_pgpucontext->m_pgpudevice;
+      ::cast<::gpu_vulkan::device> pdevice = m_pgpucontext->m_pgpudevice;
 
       VkFenceCreateInfo fenceCreateInfo = {};
 
       fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-      fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; // Initial state is signaled, meaning we don't need to wait for it when it's created
+      if (bCreateSignaled)
+      {
+      
+         fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; // Initial state is signaled, meaning we don't need to
+         // wait
+         //  for it when it's created
+      }  
 
       VkResult result = vkCreateFence(pdevice->m_vkdevice, &fenceCreateInfo, nullptr, &m_vkfence);
 

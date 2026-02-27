@@ -199,26 +199,35 @@ namespace gpu_vulkan
    }
 
 
-   VkFence texture_synchronization::in_flight_fence()
+   ::gpu::fence * texture_synchronization::in_flight_fence()
    {
 
-      if (!m_vkfenceInFlight2)
+      if (!m_pgpufenceInFlight)
       {
 
          ::cast<::gpu_vulkan::context> pcontext = m_ptexture->m_pgpucontext;
 
-         VkFenceCreateInfo fenceInfo = {};
-         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+         øconstruct_new(m_pgpufenceInFlight);
 
-         if (vkCreateFence(pcontext->logicalDevice(), &fenceInfo, nullptr, &m_vkfenceInFlight2) != VK_SUCCESS)
-         {
+         m_pgpufenceInFlight->initialize_gpu_fence(pcontext, true);
 
-            throw ::exception(error_failed, "failed to create fence!");
-         }
+         //return m_pgpufenceInFlight;
+
+         //VkFenceCreateInfo fenceInfo = {};
+         //fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+         //fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+         //if (vkCreateFence(pcontext->logicalDevice(), &fenceInfo, nullptr, &m_vkfenceInFlight2) != VK_SUCCESS)
+         //{
+
+         //   throw ::exception(error_failed, "failed to create fence!");
+         //}
       }
 
-      return m_vkfenceInFlight2;
+      //return m_vkfenceInFlight2;
+
+      return m_pgpufenceInFlight;
+
    }
 
 
@@ -242,23 +251,31 @@ namespace gpu_vulkan
 
          psynchronization->m_ptexture = this;
 
-         VkSemaphoreCreateInfo semaphoreInfo = {};
-         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+         øconstruct(psynchronization->m_pgpusemaphoreAvailable);
+
+         psynchronization->m_pgpusemaphoreAvailable->initialize_gpu_semaphore(pcontext);
+
+         øconstruct(psynchronization->m_pgpusemaphoreRenderFinished);
+
+         psynchronization->m_pgpusemaphoreRenderFinished->initialize_gpu_semaphore(pcontext);
+
+         //VkSemaphoreCreateInfo semaphoreInfo = {};
+         //semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
          psynchronization->m_iImageAvailable = 0;
 
-         if (vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr,
-                               &psynchronization->m_vksemaphoreAvailable) != VK_SUCCESS
+         //if (vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr,
+         //                      &psynchronization->m_vksemaphoreAvailable) != VK_SUCCESS
 
-             ||
+         //    ||
 
-             vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr,
-                               &psynchronization->m_vksemaphoreRenderFinished) != VK_SUCCESS)
+         //    vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr,
+         //                      &psynchronization->m_vksemaphoreRenderFinished) != VK_SUCCESS)
 
-         {
+         //{
 
-            throw ::exception(error_failed, "failed to create synchronization objects for a frame!");
-         }
+         //   throw ::exception(error_failed, "failed to create synchronization objects for a frame!");
+         //}
       }
 
       return psynchronization;
@@ -475,6 +492,13 @@ namespace gpu_vulkan
       auto logicalDevice = pcontext->logicalDevice();
 
       VkCheckResult(vkCreateImage(logicalDevice, &imageCreateInfo, nullptr, &m_vkimage));
+
+      if (((::uptr) m_vkimage & 0xff) == 0xf)
+      {
+
+         information("vkimage 0xf");
+
+      }
 
       VkMemoryRequirements memoryRequirements;
       vkGetImageMemoryRequirements(pcontext->logicalDevice(), m_vkimage, &memoryRequirements);
@@ -790,6 +814,11 @@ namespace gpu_vulkan
       {
 
          information("((((::uptr)m_vkimage) & 0xffff) == 0x0159)");
+      }
+      else if ((((::uptr)m_vkimage) & 0xffff) == 0x000f)
+      {
+
+         information("((((::uptr)m_vkimage) & 0xffff) == 0x000f)");
       }
       
       
@@ -1911,7 +1940,7 @@ namespace gpu_vulkan
    VkDescriptorSet texture::_001DescriptorSet(::gpu_vulkan::shader *pshader, ::gpu::command_buffer *pgpucommandbuffer)
    {
 
-      auto iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex;
+      auto iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
       auto iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
 

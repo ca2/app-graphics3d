@@ -172,7 +172,7 @@ namespace gpu_vulkan
 
       VkDescriptorBufferInfo bufferinfo;
 
-      auto &pbuffer = m_uboBuffers[pgpucommandbuffer->m_iCommandBufferFrameIndex];
+      auto &pbuffer = m_uboBuffers[pgpucommandbuffer->m_iCommandBufferFrameIndex2];
 
       bufferinfo.buffer = pbuffer->m_pbuffer->m_vkbuffer;
       bufferinfo.offset = 0;

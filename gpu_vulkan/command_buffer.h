@@ -20,6 +20,7 @@ namespace gpu_vulkan
       VkCommandBufferLevel    m_vkcommandbufferlevel;
       VkCommandPool           m_vkcommandpool;
       VkFence                 m_vkfence;
+      bool                    m_bFenceWaitIfNoPreexistingFence = false;
 
       //bool m_bPresentQueue;
       //::array < VkSemaphore> m_semaphoreaSignalOnSubmit;

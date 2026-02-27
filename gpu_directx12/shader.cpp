@@ -1333,10 +1333,10 @@ namespace gpu_directx12
    void shader::bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptextureSource, int iSlot)
    {
 
-      int iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex;
+      int iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
       if (ptextureSource == m_pgputextureBound && 
-         iFrame == m_iFrameBound)
+         iFrameIndex == m_iFrameBound)
       {
 
          return;
@@ -1481,7 +1481,7 @@ namespace gpu_directx12
 
 
          //auto &pheap = pbindingset->m_heapa1[iFrame];
-         auto &pheap = m_heapa1[iFrame];
+         auto &pheap = m_heapa1[iFrameIndex];
 
          // pbindingset->m_pheap1 Should had been created at create_root_signature()
          ASSERT(pheap);
@@ -1507,7 +1507,7 @@ namespace gpu_directx12
       if (pbindingset->m_iXYZ_IndexSampler >= 0)
       {
          //auto &pheapSampler = pbindingset->m_heapaSampler1[iFrame];
-         auto &pheapSampler = m_heapaSampler1[iFrame];
+         auto &pheapSampler = m_heapaSampler1[iFrameIndex];
          // pbindingset->m_pheapSampler1 Should had been created at create_root_signature()
          ASSERT(pheapSampler);
          //{
@@ -1594,7 +1594,7 @@ namespace gpu_directx12
 
       m_pgputextureBound = ptextureSource;
 
-      m_iFrameBound = iFrame;
+      m_iFrameBound = iFrameIndex;
 
    }
 
@@ -1602,9 +1602,9 @@ namespace gpu_directx12
    void shader::_bind(::gpu::command_buffer *pgpucommandbuffer)
    {
 
-      bool bNewFrame = m_iFrameBound != pgpucommandbuffer->m_iCommandBufferFrameIndex;
+      bool bNewFrame = m_iFrameBound != pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
-      m_iFrameBound = pgpucommandbuffer->m_iCommandBufferFrameIndex;
+      m_iFrameBound = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
@@ -1624,7 +1624,7 @@ namespace gpu_directx12
 
       }
 
-      auto iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex;
+      auto iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
       //if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
       if (has_global_ubo())
@@ -1670,10 +1670,10 @@ namespace gpu_directx12
 
          ::array<ID3D12DescriptorHeap *> heapa;
 
-         auto &pheap = m_heapa1[iFrame];
+         auto &pheap = m_heapa1[iFrameIndex];
          heapa.add(pheap);
 
-         auto &pheapSampler = m_heapaSampler1[iFrame];
+         auto &pheapSampler = m_heapaSampler1[iFrameIndex];
          heapa.add(pheapSampler);
 
          //for (int i = 0; i < binding_slot_set_array()->size(); i++)
@@ -1797,7 +1797,7 @@ namespace gpu_directx12
 
       // auto &vkdescriptorseta = pbindingslotset->descriptor_set(pgpucommandbuffer);
 
-      int iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex;
+      int iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
       // auto vkpipelinelayout = pshader->m_ppipelineCurrent->_pipeline_layout();
 
@@ -1831,7 +1831,7 @@ namespace gpu_directx12
 
 
          //auto &pheap = pbindingset->m_heapa1[iFrame];
-         auto &pheap = m_heapa1[iFrame];
+         auto &pheap = m_heapa1[iFrameIndex];
          // pbindingset->m_pheap1 Should had been created at create_root_signature()
          ASSERT(pheap);
          {
@@ -1885,7 +1885,7 @@ namespace gpu_directx12
          }
 
          //auto &pheapSampler = pbindingset->m_heapaSampler1[iFrame];
-         auto &pheapSampler = m_heapaSampler1[iFrame];
+         auto &pheapSampler = m_heapaSampler1[iFrameIndex];
          ASSERT(pheapSampler);
          {
 

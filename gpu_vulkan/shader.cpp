@@ -1764,11 +1764,11 @@ namespace gpu_vulkan
 
       auto & vkdescriptorseta = pbindingslotset->descriptor_set(pgpucommandbuffer);
 
-      int iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex;
+      int iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
       auto vkpipelinelayout = pshader->m_ppipelineCurrent->_pipeline_layout();
 
-      VkDescriptorSet vkdescriptorset = vkdescriptorseta[iFrame];
+      VkDescriptorSet vkdescriptorset = vkdescriptorseta[iFrameIndex];
 
       VkDescriptorSet vkdescriptorsetaBind[1];
 

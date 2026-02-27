@@ -25,7 +25,7 @@ namespace gpu_vulkan
 
       m_iSwapSeed = 0;
       m_iCurrentSwapSerial = 0;
-      m_uCurrentSwapChainImage = 0;
+      m_iCurrentSwapChainImage = -1;
 
    }
 
@@ -72,29 +72,6 @@ namespace gpu_vulkan
 
    }
 
-
-   swap_chain::frame_sync& swap_chain::frame(::collection::index iFrameIndex)
-   {
-
-      if (iFrameIndex < 0 || iFrameIndex > 16)
-      {
-
-         throw ::exception(error_failed, "invalid frame index!");
-
-      }
-
-      auto & framesync = m_framesynca.ø(iFrameIndex);
-
-      if (!framesync.inFlightFence)
-      {
-
-         create_frame_sync(framesync);
-
-      }
-
-      return framesync;
-
-   }
 
    void swap_chain::initialize_gpu_swap_chain(::gpu::renderer* pgpurenderer)
    {
@@ -194,7 +171,13 @@ namespace gpu_vulkan
 
    void swap_chain::acquireNextImage()
    {
+      
       ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
+
+      auto pdevice = pcontext->m_pgpudevice;
+
+      //pdevice->m_iCurrentFrame2
+
       auto renderer = pcontext->m_pgpurenderer;
 
       // Frame index MUST match submitCommandBuffers2
@@ -203,13 +186,26 @@ namespace gpu_vulkan
 
       VkDevice device = pcontext->logicalDevice();
 
+
+      frame.m_pgpufenceInFlight->wait_gpu_fence();
+
+      frame.m_pgpufenceInFlight->reset_gpu_fence();
+
+      ::cast<::gpu_vulkan::semaphore> psemaphoreImageAvailable = frame.m_pgpusemaphoreImageAvailable;
+
+      uint32_t uImageIndex = 0;
+
       VkResult result = vkAcquireNextImageKHR(
           device,
           m_vkswapchain,
           UINT64_MAX,
-          frame.imageAvailable,   // signal when image is ready
+         psemaphoreImageAvailable->m_vksemaphore, // signal when image is ready
           VK_NULL_HANDLE,         // no fence (GPU-GPU sync only)
-          &m_uCurrentSwapChainImage);
+          &uImageIndex);
+
+      m_iCurrentSwapChainImage = uImageIndex;
+
+      pdevice->m_iCurrentImage = m_iCurrentSwapChainImage;
 
       //      if (vkresultAcquireNextImage == VK_ERROR_OUT_OF_DATE_KHR || vkresultAcquireNextImage == VK_SUBOPTIMAL_KHR)
       //{
@@ -244,6 +240,14 @@ namespace gpu_vulkan
    //   return (int) ::gpu_vulkan::render_pass::get_frame_index();
 
    //}
+
+
+   void swap_chain::on_new_frame()
+   {
+
+      acquireNextImage();
+
+   }
 
 
    void swap_chain::on_new_swap_chain()
@@ -629,7 +633,7 @@ namespace gpu_vulkan
     ::comparable_array<VkSemaphore> vksemaphoreaWait;
     //::array_base<VkPipelineStageFlags> vkpipelinestageflagsaWait;
     //::comparable_array<VkSemaphore> vksemaphoreaSignal;
-    for (auto &pgpusemaphore: m_semaphoreaWait)
+    for (auto &pgpusemaphore: m_gpusemaphoreaWait)
     {
        ::cast<::gpu_vulkan::semaphore> psemaphore = pgpusemaphore;
        if (psemaphore)
@@ -642,14 +646,15 @@ namespace gpu_vulkan
           }
        }
     }
-
+    m_gpusemaphoreaWait.clear();
     presentInfo.waitSemaphoreCount = vksemaphoreaWait.size();
     presentInfo.pWaitSemaphores = vksemaphoreaWait.data();
 
 
     presentInfo.swapchainCount     = 1;
     presentInfo.pSwapchains        = &m_vkswapchain;
-    presentInfo.pImageIndices      = &m_uCurrentSwapChainImage;
+    ::uint32_t uImageIndex = m_iCurrentSwapChainImage;
+    presentInfo.pImageIndices = &uImageIndex;
       ::cast < ::gpu_vulkan::queue > pqueuePresent = m_pgpucontext->m_pgpudevice->present_queue();
     auto presentQueue =
         pqueuePresent->m_vkqueue;
@@ -660,6 +665,9 @@ namespace gpu_vulkan
       int iSize = m_ptextureaSwapChain->size();
 
       m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % iSize;
+
+
+      m_pgpucontext->m_pgpudevice->m_iCurrentFrame3 = m_iCurrentSwapChainFrame;
 
       ///return res;
 
@@ -684,7 +692,7 @@ namespace gpu_vulkan
    int swap_chain::get_image_index() const
    {
 
-      return m_uCurrentSwapChainImage;
+      return m_iCurrentSwapChainImage;
 
    }
 
@@ -1088,76 +1096,6 @@ namespace gpu_vulkan
    //   //}
    //}
 
-   bool swap_chain::create_frame_sync(
-       frame_sync& frame)
-   {
-
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
-      auto vkdevice = pcontext->logicalDevice();
-      // ----------------------------------------------------
-      // Fence (CPU → GPU)
-      // ----------------------------------------------------
-
-      VkFenceCreateInfo fenceInfo{};
-      fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-
-      // Start signaled so first frame doesn't stall
-      fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-      if (vkCreateFence(
-              vkdevice,
-              &fenceInfo,
-              nullptr,
-              &frame.inFlightFence) != VK_SUCCESS)
-      {
-         return false;
-      }
-
-      // ----------------------------------------------------
-      // Semaphores (GPU → GPU)
-      // ----------------------------------------------------
-
-      VkSemaphoreCreateInfo semaphoreInfo{};
-      semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-      if (vkCreateSemaphore(
-              vkdevice,
-              &semaphoreInfo,
-              nullptr,
-              &frame.imageAvailable) != VK_SUCCESS)
-      {
-         return false;
-      }
-
-      if (vkCreateSemaphore(
-              vkdevice,
-              &semaphoreInfo,
-              nullptr,
-              &frame.renderFinished) != VK_SUCCESS)
-      {
-         return false;
-      }
-
-      return true;
-   }
-
-   void swap_chain::destroy_frame_sync(frame_sync& frame)
-   {
-
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontextSwapChain;
-      auto vkdevice = pcontext->logicalDevice();
-
-      if (frame.inFlightFence != VK_NULL_HANDLE)
-         vkDestroyFence(vkdevice, frame.inFlightFence, nullptr);
-
-      if (frame.imageAvailable != VK_NULL_HANDLE)
-         vkDestroySemaphore(vkdevice, frame.imageAvailable, nullptr);
-
-      if (frame.renderFinished != VK_NULL_HANDLE)
-         vkDestroySemaphore(vkdevice, frame.renderFinished, nullptr);
-
-      frame = {};
-   }
 
 
    VkSurfaceFormatKHR swap_chain::chooseSwapSurfaceFormat(const ::array<VkSurfaceFormatKHR>& availableFormats)
@@ -1268,7 +1206,7 @@ namespace gpu_vulkan
 
       ::cast < swap_chain > pswapchain = pgpucontext->m_pgpuswapchain;
 
-      acquireNextImage();
+      //acquireNextImage();
       //VkResult vkresultAcquireNextImage = pswapchain->acquireNextImage();
 
 
@@ -1329,7 +1267,7 @@ namespace gpu_vulkan
 
       ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
-      pcommandbuffer->begin_command_buffer(false);
+      //pcommandbuffer->begin_command_buffer(false);
 
       auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
@@ -1365,7 +1303,8 @@ namespace gpu_vulkan
       //pgpurenderer->m_pgpucontext->m_iOverrideFrame = get_image_index();
 
 
-      auto scopedstateSwapChain = ptextureSwapChain->_scoped_state(pcommandbuffer,
+      ptextureSwapChain->_set_state(
+         pcommandbuffer,
          {
          VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
@@ -1373,7 +1312,7 @@ namespace gpu_vulkan
          }
       );
 
-      auto scopedstateSrc = ptextureSrc->_scoped_state(
+      ptextureSrc->_set_state(
          pcommandbuffer,
          {
          0,
@@ -1445,6 +1384,10 @@ namespace gpu_vulkan
       //pgpucontext->_001EndRenderPass(pcommandbuffer);
 
       pcommandbuffer->end_render();
+
+                  ptextureSwapChain->_set_state(pcommandbuffer,
+                                    {0, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT});
+
 
       //{
 

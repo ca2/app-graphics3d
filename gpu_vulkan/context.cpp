@@ -1004,111 +1004,115 @@ namespace gpu_vulkan
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      VkCommandBuffer commandbuffers[] = {pcommandbuffer->m_vkcommandbuffer};
+      pcommandbuffer->m_bFenceWaitIfNoPreexistingFence = true;
 
-      VkSubmitInfo submitInfo{};
-      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-      submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = commandbuffers;
+      pcommandbuffer->submit_command_buffer(nullptr);
 
-      endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
+      //VkCommandBuffer commandbuffers[] = {pcommandbuffer->m_vkcommandbuffer};
 
-   }
+      //VkSubmitInfo submitInfo{};
+      //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+      //submitInfo.commandBufferCount = 1;
+      //submitInfo.pCommandBuffers = commandbuffers;
 
-
-   void context::endSingleTimeCommands(command_buffer *pcommandbuffer, int iSubmitCount, VkSubmitInfo *psubmitinfo)
-   {
-
-      if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
-      {
-         
-         throw ::exception(error_failed);
-
-      }
-
-
-      VkFence vkfence = VK_NULL_HANDLE;
-      // VkFence fence;
-      //
-      // VkFenceCreateInfo fenceInfo = {
-      //    .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-      //    .pNext = NULL,
-      //    .flags = 0 // 0 = fence starts in unsignaled state
-      // };
-      //
-      // VkResult result = vkCreateFence(this->logicalDevice(), &fenceInfo, NULL, &fence);
-      //
-      // if (result != VK_SUCCESS)
-      // {
-      //
-      //    fprintf(stderr, "Failed to create fence\n");
-      //
-      // }
-
-      ::cast < ::gpu_vulkan::fence > pfence = pcommandbuffer->m_pgpufence;
-
-      //bool bCreatedFenceHere = false;
-
-      if (::is_set(pfence))
-      {
-
-         vkfence = pfence->m_vkfence;
-
-      }
-      // else
-      // {
-      //
-      //    pfence = pcommandbuffer->insert_gpu_fence();
-      //
-      //    vkfence = pfence->m_vkfence;
-      //
-      //    bCreatedFenceHere = true;
-      //
-      // }
-
-      ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
-
-      VkQueue vkqueue = pqueue->m_vkqueue;
-
-      // if (pcommandbuffer->m_ecommandbuffer == ::gpu::e_command_buffer_present)
-      // {
-      //
-      //    vkqueue = m_vkqueuePresent;
-      //
-      // }
-      // else
-      // {
-      //
-      //    vkqueue = m_vkqueueGraphics;
-      //
-      // }
-
-      ::string strCommandListName = pcommandbuffer->m_strName;
-
-      auto timeStart = ::time::now();
-
-      vkQueueSubmit(vkqueue, 1, psubmitinfo, vkfence);
-
-      // if (bCreatedFenceHere)
-      // {
-      //
-      //    pfence->wait_gpu_fence();
-      //
-      //    vkQueueWaitIdle(vkqueue);
-      //
-      // }
-
-      // vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
-      //
-      // vkQueueWaitIdle(vkqueue);
-      //
-      // vkDestroyFence(this->logicalDevice(), fence, NULL);
-
-      auto timeElapsed = timeStart.elapsed();
-
-      information("endSingleTimeCommands took {} ms. (thread={},cmdlst_name={})", timeElapsed.floating_millisecond(), ::current_task_name(), strCommandListName);
+      //endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
 
    }
+
+
+   //void context::endSingleTimeCommands(command_buffer *pcommandbuffer, int iSubmitCount, VkSubmitInfo *psubmitinfo)
+   //{
+
+   //   if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
+   //   {
+   //      
+   //      throw ::exception(error_failed);
+
+   //   }
+
+
+   //   VkFence vkfence = VK_NULL_HANDLE;
+   //   // VkFence fence;
+   //   //
+   //   // VkFenceCreateInfo fenceInfo = {
+   //   //    .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+   //   //    .pNext = NULL,
+   //   //    .flags = 0 // 0 = fence starts in unsignaled state
+   //   // };
+   //   //
+   //   // VkResult result = vkCreateFence(this->logicalDevice(), &fenceInfo, NULL, &fence);
+   //   //
+   //   // if (result != VK_SUCCESS)
+   //   // {
+   //   //
+   //   //    fprintf(stderr, "Failed to create fence\n");
+   //   //
+   //   // }
+
+   //   ::cast < ::gpu_vulkan::fence > pfence = pcommandbuffer->m_pgpufence;
+
+   //   bool bCreatedFenceHere = false;
+
+   //   if (::is_set(pfence))
+   //   {
+
+   //      vkfence = pfence->m_vkfence;
+
+   //   }
+   //    else
+   //    {
+   //   
+   //       pfence = pcommandbuffer->insert_gpu_fence(false);
+   //   
+   //       vkfence = pfence->m_vkfence;
+   //   
+   //       bCreatedFenceHere = true;
+   //   
+   //    }
+
+   //   ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
+
+   //   VkQueue vkqueue = pqueue->m_vkqueue;
+
+   //   // if (pcommandbuffer->m_ecommandbuffer == ::gpu::e_command_buffer_present)
+   //   // {
+   //   //
+   //   //    vkqueue = m_vkqueuePresent;
+   //   //
+   //   // }
+   //   // else
+   //   // {
+   //   //
+   //   //    vkqueue = m_vkqueueGraphics;
+   //   //
+   //   // }
+
+   //   ::string strCommandListName = pcommandbuffer->m_strName;
+
+   //   auto timeStart = ::time::now();
+
+   //   vkQueueSubmit(vkqueue, 1, psubmitinfo, vkfence);
+
+   //   if (bCreatedFenceHere)
+   //   {
+   //   
+   //      pfence->wait_gpu_fence();
+   //   
+   //       vkQueueWaitIdle(vkqueue);
+   //   
+   //   }
+
+   //   // vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+   //   //
+   //   // vkQueueWaitIdle(vkqueue);
+   //   //
+   //   // vkDestroyFence(this->logicalDevice(), fence, NULL);
+
+   //   auto timeElapsed = timeStart.elapsed();
+
+   //   information("endSingleTimeCommands took {} ms. (thread={},cmdlst_name={})", timeElapsed.floating_millisecond(), ::current_task_name(), strCommandListName);
+
+   //}
 
 
    VkDevice context::logicalDevice()
@@ -3276,8 +3280,8 @@ namespace gpu_vulkan
 
       ::cast<::gpu_vulkan::texture> ptextureDst = ptextureTarget;
 
-      //ptextureDst->_set_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      //                                         VK_PIPELINE_STAGE_TRANSFER_BIT});
+      ptextureDst->_set_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                               VK_PIPELINE_STAGE_TRANSFER_BIT});
 
       pcommandbuffer->set_viewport(m_rectangle.size());
 
@@ -3497,12 +3501,16 @@ namespace gpu_vulkan
 
          auto psynchronization = ptexture->synchronization();
 
-         VkFence fence = psynchronization->in_flight_fence();
+         ///VkFence fence = psynchronization->in_flight_fence();
 
-         if (fence)
+         auto pfence = psynchronization->in_flight_fence();
+
+         if (::is_set(pfence))
          {
 
-            vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+            pfence->wait_gpu_fence();
+
+            //vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
          }
 
          pcommandbuffer->begin_command_buffer(false);
@@ -3625,7 +3633,7 @@ void context::on_end_layer(::gpu::layer *player)
       //}
 
 
-      vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
+      //vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
    }
 }
 
@@ -3633,7 +3641,7 @@ void context::on_end_layer(::gpu::layer *player)
 void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource, ::pointer < ::gpu::fence > * pgpufence)
 {
 
-      throw todo;
+//      throw todo;
 
    auto pgpurendertarget = m_pgpurenderer->render_target();
 
@@ -3709,7 +3717,7 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
       if (::is_set(pgpufence))
       {
 
-         *pgpufence = pcommandbuffer->insert_gpu_fence();
+         *pgpufence = pcommandbuffer->insert_gpu_fence(true);
 
       }
 
