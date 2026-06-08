@@ -57,7 +57,7 @@ namespace app_graphics3d_continuum
          floating_sequence3 target = floating_sequence3(0.0f, 0.0f, 0.0f); // Look at origin
          //floating_sequence3 direction = glm::normalize(target - cameraPos);
          //camera camera{ floating_sequence3(0.0f, 2.0f, -15.0f), -90.0f, 0.0f };
-         auto pcamera = øcreate_new<::app_graphics3d_continuum::camera>();
+         auto pcamera = create_newø<::app_graphics3d_continuum::camera>();
          pcamera->m_pengine = m_pimmersionlayer->m_pengine;
          pcamera->initialize_camera(target, camera);
 
@@ -115,7 +115,7 @@ namespace app_graphics3d_continuum
       //  }
       //};
 
-      // m_Skybox = øallocate::graphics3d::sky_box();
+      // m_Skybox = allocateø::graphics3d::sky_box();
 
       ::string strSkybox = m_papp->m_strSkybox;
 
@@ -126,7 +126,7 @@ namespace app_graphics3d_continuum
 
          auto& pskybox = m_mapSkybox[strSkybox];
 
-         ødefer_construct_new(pskybox);
+         defer_construct_newø(pskybox);
 
          pskybox->initialize_sky_box(this, strSkybox);
 
@@ -223,7 +223,7 @@ namespace app_graphics3d_continuum
       }
 
 
-      øconstruct(m_pskyboxrendersystem);
+      constructø(m_pskyboxrendersystem);
 
       m_pskyboxrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
 
@@ -231,7 +231,7 @@ namespace app_graphics3d_continuum
 
 
 
-      øconstruct(m_pwavefrontobjrendersystem);
+      constructø(m_pwavefrontobjrendersystem);
 
       m_pwavefrontobjrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
 
@@ -239,7 +239,7 @@ namespace app_graphics3d_continuum
       //m_prenderer->getRenderPass(),
       //globalSetLayout->getDescriptorSetLayout() };
 
-      øconstruct_new(m_ppointlightrendersystem);
+      construct_newø(m_ppointlightrendersystem);
 
       m_ppointlightrendersystem->initialize_render_system(m_pimmersionlayer->m_pengine);
 

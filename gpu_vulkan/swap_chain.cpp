@@ -716,7 +716,7 @@ namespace gpu_vulkan
 
       }
 
-      øconstruct_new(m_ptextureaSwapChain);
+      construct_newø(m_ptextureaSwapChain);
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
@@ -821,9 +821,9 @@ namespace gpu_vulkan
 
          auto & pgputexture = m_ptextureaSwapChain->element_at(i);
 
-         ødefer_construct(pgputexture);
+         defer_constructø(pgputexture);
 
-         ::int_rectangle rectangleTarget;
+         ::i32_rectangle rectangleTarget;
 
          rectangleTarget.left = 0;
          rectangleTarget.top = 0;
@@ -1217,7 +1217,7 @@ namespace gpu_vulkan
       if (::nok(m_pshaderPresent))
       {
 
-         pgpucontext->øconstruct(m_pshaderPresent);
+         pgpucontext->constructø(m_pshaderPresent);
 
          //m_pshaderPresent->m_bindingSampler.set();
 

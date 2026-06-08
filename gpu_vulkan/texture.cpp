@@ -75,7 +75,7 @@ namespace gpu_vulkan
 
       if (!m_prenderpass)
       {
-         m_prenderpass = øallocate offscreen_render_pass();
+         m_prenderpass = allocateø offscreen_render_pass();
       }
 
       m_prenderpass->m_bWithDepth = m_textureflags.m_bWithDepth;
@@ -99,7 +99,7 @@ namespace gpu_vulkan
    //   if (!m_prenderpassFace)
    //   {
 
-   //      m_prenderpassFace = øallocate offscreen_render_pass();
+   //      m_prenderpassFace = allocateø offscreen_render_pass();
 
    //   }
 
@@ -207,7 +207,7 @@ namespace gpu_vulkan
 
          ::cast<::gpu_vulkan::context> pcontext = m_ptexture->m_pgpucontext;
 
-         øconstruct_new(m_pgpufenceInFlight);
+         construct_newø(m_pgpufenceInFlight);
 
          m_pgpufenceInFlight->initialize_gpu_fence(pcontext, true);
 
@@ -243,7 +243,7 @@ namespace gpu_vulkan
       if (!psynchronization)
       {
 
-         øconstruct_new(psynchronization);
+         construct_newø(psynchronization);
 
          ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
@@ -251,11 +251,11 @@ namespace gpu_vulkan
 
          psynchronization->m_ptexture = this;
 
-         øconstruct(psynchronization->m_pgpusemaphoreAvailable);
+         constructø(psynchronization->m_pgpusemaphoreAvailable);
 
          psynchronization->m_pgpusemaphoreAvailable->initialize_gpu_semaphore(pcontext);
 
-         øconstruct(psynchronization->m_pgpusemaphoreRenderFinished);
+         constructø(psynchronization->m_pgpusemaphoreRenderFinished);
 
          psynchronization->m_pgpusemaphoreRenderFinished->initialize_gpu_semaphore(pcontext);
 
@@ -355,7 +355,7 @@ namespace gpu_vulkan
       //   return;
       //}
 
-      //m_textureattributes.m_rectangleTarget = ::int_rectangle(::int_size(width, height));
+      //m_textureattributes.m_rectangleTarget = ::i32_rectangle(::i32_size(width, height));
 
       m_textureflags.m_bWithDepth = false;
 
@@ -863,7 +863,7 @@ namespace gpu_vulkan
 
 
 
-   // void texture::initialize_image_texture(::gpu::context *prenderer, const ::int_rectangle &rectangleTarget,
+   // void texture::initialize_image_texture(::gpu::context *prenderer, const ::i32_rectangle &rectangleTarget,
    //                                        bool bWithDepth, const ::pointer_array<::image::image> &imagea,
    //                                        enum_type etype)
    // {
@@ -892,7 +892,7 @@ namespace gpu_vulkan
 
 
    //void texture::initialize_cubemap_image_texture_with_mipmap(::gpu::context *pgpucontext,
-   //                                                           const ::int_rectangle &rectangleTarget, int iMipCount,
+   //                                                           const ::i32_rectangle &rectangleTarget, int iMipCount,
    //                                                           bool bRenderTarget, bool bShaderResourceView)
    //{
 
@@ -950,7 +950,7 @@ namespace gpu_vulkan
    }
 
 
-   void texture::initialize_depth_texture(::gpu::context *pgpucontext, const ::int_rectangle &rectangleTarget)
+   void texture::initialize_depth_texture(::gpu::context *pgpucontext, const ::i32_rectangle &rectangleTarget)
    {
 
       if (m_textureattributes.m_rectangleTarget == rectangleTarget && m_pgpucontext == pgpucontext)
@@ -1453,7 +1453,7 @@ namespace gpu_vulkan
 
    //   }
 
-   //   ødefer_construct_new(m_ptextureDepth);
+   //   defer_construct_newø(m_ptextureDepth);
 
    //   m_ptextureDepth->initialize_depth_texture(m_pgpucontext, m_rectangleTarget);
 
@@ -1581,7 +1581,7 @@ namespace gpu_vulkan
 
       int iLayerPlusOne = maximum(0, ptexture->m_iCurrentLayer + 1);
 
-      auto &layer = (*this)[vkrenderpass].ø(iMip).ø(iLayerPlusOne);
+      auto &layer = (*this)[vkrenderpass].atø(iMip).atø(iLayerPlusOne);
 
       if (layer.is_empty())
       {
@@ -1707,7 +1707,7 @@ namespace gpu_vulkan
    //   if (!prenderpass)
    //   {
 
-   //      øconstruct(prenderpass);
+   //      constructø(prenderpass);
 
    //      prenderpass->on_init_render_pass
 
@@ -1834,7 +1834,7 @@ namespace gpu_vulkan
    }
 
 
-   void texture::set_pixels(const ::int_rectangle &rectangle, const void *data)
+   void texture::set_pixels(const ::i32_rectangle &rectangle, const void *data)
    {
 
       VkDeviceSize size = rectangle.area() * 4;
@@ -1847,7 +1847,7 @@ namespace gpu_vulkan
 
       pbufferStaging->_assign(data, size);
 
-      if (ødefer_construct_new(m_p_001OnAfterEndFrame))
+      if (defer_construct_newø(m_p_001OnAfterEndFrame))
       {
 
          m_pgpucontext->m_pgpurenderer->post_on_after_end_frame(
@@ -1869,7 +1869,7 @@ namespace gpu_vulkan
 
       }
 
-      auto ponafterendframeitem = øcreate_new<_001OnAfterEndFrameItem>();
+      auto ponafterendframeitem = create_newø<_001OnAfterEndFrameItem>();
       ponafterendframeitem->m_ptexture=this;
       ponafterendframeitem->m_pcontext = pcontext;
       ponafterendframeitem->m_pbufferStaging = pbufferStaging;
@@ -1888,7 +1888,7 @@ namespace gpu_vulkan
 
       //   });
 
-      if (ødefer_construct_new(m_p_001OnNextFrameStart))
+      if (defer_construct_newø(m_p_001OnNextFrameStart))
       {
 
          m_pgpucontext->m_pgpurenderer->post_on_just_before_frame_next_start(
@@ -2019,14 +2019,14 @@ namespace gpu_vulkan
       for (int i = 0; i < iFrameCount; i++)
       {
 
-         if (!pdescriptorseta->ø(i))
+         if (!pdescriptorseta->atø(i))
          {
 
             VkDescriptorSet vkdescriptorset = VK_NULL_HANDLE;
 
             descriptor_writer(*playout, *ppool).writeImage(uSamplerBinding, &imageinfo).build(vkdescriptorset);
 
-            pdescriptorseta->ø(i) = vkdescriptorset;
+            pdescriptorseta->atø(i) = vkdescriptorset;
 
          }
 
@@ -2067,7 +2067,7 @@ namespace gpu_vulkan
 
       }
 
-      øconstruct_new(pbindingslotset);
+      construct_newø(pbindingslotset);
 
       int iSet = 0;
 
@@ -2465,7 +2465,7 @@ void texture::create_sampler()
                                        1); // layerCount
 
                auto pcommandbuffer = pcontext->beginSingleTimeCommands(nullptr);
-               ::int_rectangle r(::int_point(0, 0), ::int_size(texWidth, texHeight));
+               ::i32_rectangle r(::i32_point(0, 0), ::i32_size(texWidth, texHeight));
                pcontext->copyBufferToImage(pcommandbuffer, this, pbuffer, r);
                                       // 1 // layerCount
       pcontext->endSingleTimeCommands(nullptr);
@@ -3505,7 +3505,7 @@ void texture::create_sampler()
 
       }
 
-      m_textureattributes.m_rectangleTarget = ::int_rectangle(::int_size(width, height));
+      m_textureattributes.m_rectangleTarget = ::i32_rectangle(::i32_size(width, height));
 
       m_textureflags.m_bWithDepth = false;
 

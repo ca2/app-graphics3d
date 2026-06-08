@@ -320,7 +320,7 @@ namespace macos
 //      char wndclass[512];
 //      HWND hwndWallpaper = _get_wallpaper_window();
 //      UINT styleFilter, styleExFilter;
-//      int_rectangle r;
+//      i32_rectangle r;
 //
 //      *wndclass = 0;
 //      GetClassNameA(m_hwnd, wndclass, sizeof(wndclass) - 1);

@@ -66,7 +66,7 @@ namespace vkc {
 		VkcGameObject gameObj = VkcGameObject::createGameObject();
 		gameObj.color = color;
 		gameObj.transform.scale.x = radius;
-		gameObj.pointLight = øallocate PointLightComponent();
+		gameObj.pointLight = allocateø PointLightComponent();
 		gameObj.pointLight->lightIntensity = intensity;
 		return gameObj;
 	}

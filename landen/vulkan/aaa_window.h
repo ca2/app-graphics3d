@@ -16,7 +16,7 @@
 //
 //		//bool shouldClose() { return glfwWindowShouldClose(window); }
 //		bool shouldClose() { return false; }
-//		::int_size getExtent() { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }
+//		::i32_size getExtent() { return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }
 //		bool wasWindowResized() { return framebufferResized; }
 //		void resetWindowResizedFlag() { framebufferResized = false; }
 //		//GLFWwindow* getGLFWwindow() const { return window; }

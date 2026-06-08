@@ -30,7 +30,7 @@ namespace app_graphics3d_continuum
    {
 
       
-      m_flagNonClient -= e_non_client_background;
+      m_enonclient -= ::user::e_non_client_background;
       m_iSequence = 0;
       m_bNeedFullRedrawOnResize = true;
       
@@ -160,7 +160,7 @@ namespace app_graphics3d_continuum
       
 #if 1
 
-      ::double_rectangle rectangleClipBox;
+      ::f64_rectangle rectangleClipBox;
 
       // pgraphics->reset_clip();
 
@@ -236,7 +236,7 @@ namespace app_graphics3d_continuum
 
                } catch (...) {
                   auto pmessagebox = message_box("No file loaded...");
-                  pmessagebox->async();
+                  post(pmessagebox);
                }
                
             });
@@ -255,7 +255,7 @@ namespace app_graphics3d_continuum
    ::pointer < ::prodevian::immersion > impact::create_immersion()
    {
 
-      auto pimmersion = øcreate_new<::app_graphics3d_continuum::immersion>();
+      auto pimmersion = create_newø<::app_graphics3d_continuum::immersion>();
 
       return pimmersion;
 
@@ -265,7 +265,7 @@ namespace app_graphics3d_continuum
    ::pointer < ::graphics3d::key_map > impact::get_default_key_map()
    {
 
-      auto pmap = øcreate_new < ::graphics3d::key_map>();
+      auto pmap = create_newø < ::graphics3d::key_map>();
       using namespace ::graphics3d;
 
       pmap->map(e_key_moveLeft, ::user::e_key_a);

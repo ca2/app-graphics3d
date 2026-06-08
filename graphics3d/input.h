@@ -55,7 +55,7 @@ namespace graphics3d
 
 
 
-      virtual void _001OnMouseMove(const ::int_point &point);
+      virtual void _001OnMouseMove(const ::i32_point &point);
       virtual void _001OnMouseOut();
 
 

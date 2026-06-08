@@ -52,7 +52,7 @@
 //      //::comptr<ID3D11Texture2D> m_ptextureShared;
 //      //VkSwapchainKHR       m_vkswapchain;
 //      //uint32_t             m_uCurrentSwapChainImage;
-//      //::int_size m_size;
+//      //::i32_size m_size;
 //
 //      //::comptr<ID3D11SamplerState> m_psamplerstateLinear;
 //      // ::comptr<ID3D11ShaderResourceView> m_pshaderresourceviewShader;
@@ -100,7 +100,7 @@
 //
 //      void present() override;
 //
-//      virtual void _create_offscreen_graphics_for_swap_chain_blitting(::gpu_directx12::context *pcontext, ::draw2d_direct2d::graphics* pgraphics, const ::int_size& size = {});
+//      virtual void _create_offscreen_graphics_for_swap_chain_blitting(::gpu_directx12::context *pcontext, ::draw2d_direct2d::graphics* pgraphics, const ::i32_size& size = {});
 //
 //   };
 //

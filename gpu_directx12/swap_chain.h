@@ -28,7 +28,7 @@ namespace gpu_directx12
       ::pointer_array < ::gpu_directx12::texture > m_textureaSwapChain;
       //VkSwapchainKHR       m_vkswapchain;
       uint32_t             m_uCurrentSwapChainImage;
-      //::int_size m_size;
+      //::i32_size m_size;
 
 
       comptr<IDCompositionDevice> m_pdcompositiondevice;
@@ -52,7 +52,7 @@ namespace gpu_directx12
 
 
 
-      void initialize_render_target(::gpu::renderer* prenderer, const ::int_size& size, ::pointer <::gpu::render_target>previous) override;
+      void initialize_render_target(::gpu::renderer* prenderer, const ::i32_size& size, ::pointer <::gpu::render_target>previous) override;
 
 
       void on_init() override;

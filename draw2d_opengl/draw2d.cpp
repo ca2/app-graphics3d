@@ -79,11 +79,11 @@ namespace draw2d_opengl
 
    //   if (pfont->m_fontsize.eunit() == e_unit_point)
    //   {
-   //      iPixelSize = points_to_pixels(pfont->m_fontsize.as_int());
+   //      iPixelSize = points_to_pixels(pfont->m_fontsize.as_i32());
    //   }
    //   else
    //   {
-   //      iPixelSize = pfont->m_fontsize.as_int();
+   //      iPixelSize = pfont->m_fontsize.as_i32();
    //   }
 
    //   ::string strFontFamilyName = pfont->m_pfontfamily->family_name(this);
@@ -93,7 +93,7 @@ namespace draw2d_opengl
    //   if (!pface)
    //   {
 
-   //      øconstruct(pface);
+   //      constructø(pface);
 
    //      pface->m_strFontName = strFontFamilyName;
 
@@ -221,7 +221,7 @@ namespace draw2d_opengl
 
    //   }
 
-   //   øconstruct_new(pfont);
+   //   construct_newø(pfont);
 
    //   pfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
 
@@ -270,7 +270,7 @@ namespace draw2d_opengl
    int  draw2d::opengl_init()
    {
 
-      //øconstruct(m_popenglcontext);
+      //constructø(m_popenglcontext);
 
       //if (m_atomClass)
       //{

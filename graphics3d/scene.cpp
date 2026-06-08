@@ -111,7 +111,7 @@ namespace graphics3d
    //::pointer<::graphics3d::renderable> scene::get_skybox_cube_model()
    //{
    //     return ::graphics3d::scene_base::get_skybox_cube_model();
-   //   //auto pmodelbuffer = øcreate_new<::gpu::model_buffer>();
+   //   //auto pmodelbuffer = create_newø<::gpu::model_buffer>();
    //   //::array_base<floating_sequence3> vertexa = {// positions
    //   //                                   {-1.0f, 1.0f, -1.0f},  {-1.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f},
    //   //                                   {1.0f, -1.0f, -1.0f},  {1.0f, 1.0f, -1.0f},   {-1.0f, 1.0f, -1.0f},
@@ -141,7 +141,7 @@ namespace graphics3d
    //   if (!m_piblequirectangularcubemap)
    //   {
 
-   //      øconstruct(m_piblequirectangularcubemap);
+   //      constructø(m_piblequirectangularcubemap);
 
    //      //;
    //      //;
@@ -162,7 +162,7 @@ namespace graphics3d
       if (!m_piblspecularmap)
       {
 
-         øconstruct(m_piblspecularmap);
+         constructø(m_piblspecularmap);
 
          //m_piblspecularmap->initialize_specular_map(this, m_prenderableSkybox);
          m_piblspecularmap->initialize_specular_map(this);
@@ -202,7 +202,7 @@ namespace graphics3d
       if (!m_pibldiffuseirradiancemap)
       {
 
-         øconstruct(m_pibldiffuseirradiancemap);
+         constructø(m_pibldiffuseirradiancemap);
          //m_pibldiffuseirradiancemap->initialize_diffuse_irradiance_map(
            // this, m_prenderableSkybox);
          m_pibldiffuseirradiancemap->initialize_diffuse_irradiance_map(
@@ -268,7 +268,7 @@ namespace graphics3d
          ASSERT(::is_ok(m_ptexturePrefilteredCube));
          ASSERT(::is_ok(m_ptextureLuBrdf));
 
-         øconstruct(m_pbindingslotsetIbl1);
+         constructø(m_pbindingslotsetIbl1);
 
          auto pbindingset = m_pgpucontext->ibl1_binding_set();
 

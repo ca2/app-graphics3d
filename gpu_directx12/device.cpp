@@ -48,6 +48,8 @@ namespace gpu_directx12
 
       m_estatus = error_not_initialized;
 
+      m_iCurrentImage = 0;
+
    }
 
 
@@ -76,7 +78,7 @@ namespace gpu_directx12
    ::pointer < ::gpu::device > allocate_system_context(::particle* pparticle)
    {
 
-      return pparticle->øcreate_new <device>();
+      return pparticle->create_newø <device>();
 
    }
 
@@ -89,7 +91,7 @@ namespace gpu_directx12
    //}
 
 
-   void device::_create_offscreen_window(const ::int_size& size)
+   void device::_create_offscreen_window(const ::i32_size& size)
    {
       //if (::IsWindow(m_hwnd))
       //{
@@ -204,7 +206,7 @@ namespace gpu_directx12
    //}
 
 
-   void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::int_rectangle& rectanglePlacement)
+   void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::i32_rectangle& rectanglePlacement)
    {
 
       bool bAddSwapChainSupport = false;
@@ -989,7 +991,7 @@ namespace gpu_directx12
    //   if (!m_pcontextMainDraw2d)
    //   {
 
-   //      øconstruct_new(m_pcontextMainDraw2d);
+   //      construct_newø(m_pcontextMainDraw2d);
 
    //      m_pcontextMainDraw2d->m_etype = ::gpu::context::e_type_draw2d;
 
@@ -1287,7 +1289,7 @@ namespace gpu_directx12
 
 
 
-   void device::initialize_cpu_buffer(const ::int_size& size)
+   void device::initialize_cpu_buffer(const ::i32_size& size)
    {
 
       //      // This flag adds support for surfaces with a different color channel ordering
@@ -1434,7 +1436,7 @@ namespace gpu_directx12
             ////infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE); // Optional
          }
 
-         //ødefer_construct_new(m_pcontextMain);
+         //defer_construct_newø(m_pcontextMain);
 
          //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
          //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -1452,8 +1454,8 @@ namespace gpu_directx12
 
       switch (etype)
       {
-      case ::gpu::e_type_int: return sizeof(int);
-      case ::gpu::e_type_float: return sizeof(float);
+      case ::gpu::e_type_i32: return sizeof(int);
+      case ::gpu::e_type_f32: return sizeof(float);
       case ::gpu::e_type_seq4: return sizeof(::floating_sequence4);
       case ::gpu::e_type_mat4: return sizeof(floating_matrix4);
       case ::gpu::e_type_seq3: return sizeof(::floating_sequence3);

@@ -75,9 +75,9 @@ namespace graphics3d_directx11
       
       //::cast<::gpu_directx11::context> pcontext = m_pengine->gpu_context();
 
-      //øconstruct(m_pshaderOpaque);
-      //øconstruct(m_pshaderMask);
-      //øconstruct(m_pshaderBlend);
+      //constructø(m_pshaderOpaque);
+      //constructø(m_pshaderMask);
+      //constructø(m_pshaderBlend);
 
       //// m_ppipelineOpaque->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
       ////                                      "matter://shaders/gltf_frag.frag");
@@ -189,7 +189,7 @@ namespace graphics3d_directx11
 
       ////m_vkdescriptorsetaIbl.resize(frameCount);
 
-      ////auto pdescriptorpoolbuilder = øallocate::gpu_directx11::descriptor_pool::Builder();
+      ////auto pdescriptorpoolbuilder = allocateø::gpu_directx11::descriptor_pool::Builder();
 
       ////pdescriptorpoolbuilder->initialize_builder(pcontext);
       ////pdescriptorpoolbuilder->setMaxSets(frameCount * 10);
@@ -432,7 +432,7 @@ namespace graphics3d_directx11
    //   opaqueConfig.bindingDescriptions = bindings;
    //   opaqueConfig.attributeDescriptions = attributes;
 
-   //   m_opaquePipeline = øcreate_new<::gpu_directx11::pipeline>();
+   //   m_opaquePipeline = create_newø<::gpu_directx11::pipeline>();
 
    //   m_opaquePipeline->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, opaqueConfig);
 
@@ -462,7 +462,7 @@ namespace graphics3d_directx11
    //   maskConfig.fragSpecInfo = &specInfo;
 
    //   // m_maskPipeline = std::make_unique<VkSandboxPipeline>(m_device, vertSpv, fragSpv, maskConfig);
-   //   m_maskPipeline = øcreate_new<::gpu_directx11::pipeline>();
+   //   m_maskPipeline = create_newø<::gpu_directx11::pipeline>();
 
    //   m_maskPipeline->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, maskConfig);
 
@@ -486,7 +486,7 @@ namespace graphics3d_directx11
    //      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
    //   // m_blendPipeline = std::make_unique<VkSandboxPipeline>(m_device, vertSpv, fragSpv, blendConfig);
-   //   m_blendPipeline = øcreate_new<::gpu_directx11::pipeline>();
+   //   m_blendPipeline = create_newø<::gpu_directx11::pipeline>();
 
    //   m_blendPipeline->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, blendConfig);
    //}
@@ -944,7 +944,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //                  //pshader->set_matrix4("normalMatrix", normalMat);
 //            //      bool bAlbedo = pgltfmodel->m_materials[0].baseColorTexture.is_set();
 //            //      bAlbedo = bAlbedo && !m_bDisableAlbedo;
-//            //      pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
+//            //      pshader->set_i32("useTextureAlbedo", bAlbedo ? 1 : 0);
 //
 //            //          floating_sequence3 seq3Albedo = {};
 //            //      if (prendersystem->m_bForceDefaultAmbientOcclusionFactor)
@@ -965,7 +965,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //
 //            //      bool bMetallicRoughness = pgltfmodel->m_materials[0].metallicRoughnessTexture.is_set();
 //            //      bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
-//            //      pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
+//            //      pshader->set_i32("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
 //            //      bool bNormal = pgltfmodel->m_materials[0].normalTexture.is_set();
 //
 //
@@ -991,14 +991,14 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //
 //            //         fRoughness = pgltfmodel->m_materials[0].roughnessFactor;
 //            //      }
-//            //      pshader->set_float("metallic", fMetallic);
-//            //      pshader->set_float("roughness", fRoughness);
+//            //      pshader->set_f32("metallic", fMetallic);
+//            //      pshader->set_f32("roughness", fRoughness);
 //
 //            //      bNormal = bNormal && !m_bDisableNormal;
-//            //      pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
+//            //      pshader->set_i32("useTextureNormal", bNormal ? 1 : 0);
 //            //      bool bAmbientOcclusion = pgltfmodel->m_materials[0].occlusionTexture.is_set();
 //            //      bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
-//            //      pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
+//            //      pshader->set_i32("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
 //
 //
 //            //                  float fAmbientOcclusion = 0.0f;
@@ -1012,7 +1012,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //
 //            //         //fAmbientOcclusion = pgltfmodel->m_materials[0].occlusionTexture->m_fAmbientOcclusion;
 //            //      }
-//            //      pshader->set_float("ambientOcclusion", fAmbientOcclusion);
+//            //      pshader->set_f32("ambientOcclusion", fAmbientOcclusion);
 //
 //            //      floating_sequence3 seq3Emission = {};
 //            //      if (prendersystem->m_bForceDefaultEmission)
@@ -1030,17 +1030,17 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //
 //            //      bool bEmissive = pgltfmodel->m_materials[0].emissiveTexture.is_set();
 //            //      bEmissive = bEmissive && !m_bDisableEmissive;
-//            //      pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
+//            //      pshader->set_i32("useTextureEmissive", bEmissive ? 1 : 0);
 //
 //            //      //auto metallicFactor = pgltfmodel->m_materials[0].metallicFactor;
 //            //      //if (m_bForceDefaultMetallicFactor)
 //            //      //   metallicFactor = m_fDefaultMetallicFactor;
-//            //      //pshader->set_float("metallic", metallicFactor);
+//            //      //pshader->set_f32("metallic", metallicFactor);
 //            //      //auto roughnessFactor = pgltfmodel->m_materials[0].roughnessFactor;
 //            //      //if (m_bForceDefaultRoughnessFactor)
 //            //      //   roughnessFactor = m_fDefaultRoughnessFactor;
-//            //      //pshader->set_float("roughness", roughnessFactor);
-//            //      //pshader->set_float("ambientOcclusion", pgltfmodel->m_materials[0].am);
+//            //      //pshader->set_f32("roughness", roughnessFactor);
+//            //      //pshader->set_f32("ambientOcclusion", pgltfmodel->m_materials[0].am);
 //            //      pshader->push_properties(pcommandbuffer);
 //
 //
@@ -1153,21 +1153,21 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //BEGIN_GPU_PROPERTIES(::graphics3d_directx11::gltf_render_system::push_constants)
 //GPU_PROPERTY("modelMatrix", ::gpu::e_type_mat4)
 //GPU_PROPERTY("normalMatrix", ::gpu::e_type_mat4)
-//GPU_PROPERTY("useTextureAlbedo", ::gpu::e_type_int)
-//GPU_PROPERTY("useTextureMetallicRoughness", ::gpu::e_type_int)
-//GPU_PROPERTY("useTextureNormal", ::gpu::e_type_int)
-//GPU_PROPERTY("useTextureAmbientOcclusion", ::gpu::e_type_int)
-//GPU_PROPERTY("useTextureEmissive", ::gpu::e_type_int)
-////GPU_PROPERTY("padding1", ::gpu::e_type_int)
-////GPU_PROPERTY("padding2", ::gpu::e_type_int)
-////GPU_PROPERTY("padding3", ::gpu::e_type_int)
+//GPU_PROPERTY("useTextureAlbedo", ::gpu::e_type_i32)
+//GPU_PROPERTY("useTextureMetallicRoughness", ::gpu::e_type_i32)
+//GPU_PROPERTY("useTextureNormal", ::gpu::e_type_i32)
+//GPU_PROPERTY("useTextureAmbientOcclusion", ::gpu::e_type_i32)
+//GPU_PROPERTY("useTextureEmissive", ::gpu::e_type_i32)
+////GPU_PROPERTY("padding1", ::gpu::e_type_i32)
+////GPU_PROPERTY("padding2", ::gpu::e_type_i32)
+////GPU_PROPERTY("padding3", ::gpu::e_type_i32)
 //GPU_PROPERTY("albedo", ::gpu::e_type_seq3)
-//GPU_PROPERTY("metallic", ::gpu::e_type_float)
-//GPU_PROPERTY("roughness", ::gpu::e_type_float)
-//GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_float)
+//GPU_PROPERTY("metallic", ::gpu::e_type_f32)
+//GPU_PROPERTY("roughness", ::gpu::e_type_f32)
+//GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_f32)
 //GPU_PROPERTY("emissive", ::gpu::e_type_seq3)
-////GPU_PROPERTY("fPadding4", ::gpu::e_type_float)
+////GPU_PROPERTY("fPadding4", ::gpu::e_type_f32)
 ////GPU_PROPERTY("cameraPosition", ::gpu::e_type_seq3)
-//GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_float)
+//GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_f32)
 //GPU_PROPERTY("multiplier", ::gpu::e_type_seq3)
 //END_GPU_PROPERTIES()

@@ -144,7 +144,7 @@ namespace app_graphics3d_continuum
          if (ptabpaneFileManager != nullptr && ptabpaneFileManager->m_pplaceholder != nullptr)
          {
 
-            ptabpaneFileManager->m_pplaceholder->hide();
+            ptabpaneFileManager->m_pplaceholder->display(::e_display_hide, {});
 
          }
 
@@ -153,7 +153,7 @@ namespace app_graphics3d_continuum
          if (ptabpaneFontSel != nullptr && ptabpaneFontSel->m_pplaceholder != nullptr)
          {
 
-            ptabpaneFontSel->m_pplaceholder->hide();
+            ptabpaneFontSel->m_pplaceholder->display(::e_display_hide, {});
 
          }
 
@@ -162,7 +162,7 @@ namespace app_graphics3d_continuum
          if (ptabpaneColorSel != nullptr && ptabpaneColorSel->m_pplaceholder != nullptr)
          {
 
-            ptabpaneColorSel->m_pplaceholder->hide();
+            ptabpaneColorSel->m_pplaceholder->display(::e_display_hide, {});
 
          }
 
@@ -307,7 +307,7 @@ namespace app_graphics3d_continuum
       //}
       //else
       {
-         switch (pimpactdata->id().as_int())
+         switch (pimpactdata->id().as_i32())
          {
                // case GCOM_IMPACT:
                //{
@@ -507,7 +507,7 @@ namespace app_graphics3d_continuum
 //
 //                  string str;
 //
-//                  double d = m_prollfps->get_payload()["real"].as_double();
+//                  double d = m_prollfps->get_payload()["real"].as_f64();
 //
 //                  if (m_pimpactLastBase != nullptr)
 //                  {

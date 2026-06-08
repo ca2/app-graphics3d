@@ -4,7 +4,7 @@
 
 
 #include "bred/gpu/shader.h"
-#include "acme/prototype/collection/int_map.h"
+#include "acme/prototype/collection/integer_map.h"
 
 
 namespace gpu_vulkan
@@ -104,7 +104,7 @@ namespace gpu_vulkan
       //::pointer < shader_sampler >     m_pshadersampler;
       ::pointer < ::gpu_vulkan::shader > m_pshaderPresent;
       VkRenderPass            m_vkrenderpassCurrent;
-      //::int_map<::pointer<::gpu_vulkan::descriptor_set_layout>> m_mapDescriptorSetLayout;
+      //::i32_map<::pointer<::gpu_vulkan::descriptor_set_layout>> m_mapDescriptorSetLayout;
       //::pointer < ::array<VkDescriptorSet> > m_pvkdescriptorseta;
 
 
@@ -201,8 +201,8 @@ namespace gpu_vulkan
 //{
 //   //enum enum_type
 //   //{
-//   //   e_type_int,
-//   //   e_type_float,
+//   //   e_type_i32,
+//   //   e_type_f32,
 //
 //   //};
 //

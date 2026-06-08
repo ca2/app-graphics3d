@@ -22,7 +22,7 @@ namespace gpu_directx12
    }
 
 
-   void depth_stencil::initialize_depth_stencil(::gpu::renderer* prenderer, const ::int_size& size)
+   void depth_stencil::initialize_depth_stencil(::gpu::renderer* prenderer, const ::i32_size& size)
    {
 
       m_prenderer = prenderer;

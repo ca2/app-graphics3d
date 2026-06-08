@@ -72,9 +72,9 @@ namespace graphics3d_opengl
 
       //::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
 
-      //øconstruct(m_pshaderOpaque);
-      //øconstruct(m_pshaderMask);
-      //øconstruct(m_pshaderBlend);
+      //constructø(m_pshaderOpaque);
+      //constructø(m_pshaderMask);
+      //constructø(m_pshaderBlend);
 
       //// m_ppipelineOpaque->initialize_shader(pgpucontext->m_pgpurenderer, "matter://shaders/gltf_vert.vert",
       ////                                      "matter://shaders/gltf_frag.frag");
@@ -130,7 +130,7 @@ namespace graphics3d_opengl
       ////  IBL stuff
       //// glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
       //// ::opengl::check_error("");
-      //// pshader->set_int("diffuseIrradianceMap", TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
+      //// pshader->set_i32("diffuseIrradianceMap", TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
       //// ::cast<::gpu_opengl::ibl::diffuse_irradiance_map> pirradiancemap = pscene->m_pibldiffuseirradiancemap;
       //// int iCubemapId = pirradiancemap->getCubemapId();
       //// glBindTexture(GL_TEXTURE_CUBE_MAP, iCubemapId);
@@ -138,7 +138,7 @@ namespace graphics3d_opengl
       ////
       //// glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_PREFILTERED_ENV_MAP);
       //// ::opengl::check_error("");
-      //// pshader->set_int("prefilteredEnvMap", TEXTURE_UNIT_PREFILTERED_ENV_MAP);
+      //// pshader->set_i32("prefilteredEnvMap", TEXTURE_UNIT_PREFILTERED_ENV_MAP);
       //// ::cast<::gpu_opengl::ibl::specular_map> pspecularmap = pscene->m_piblspecularmap;
       //// int iPrefilteredEnvMapId = pspecularmap->getPrefilteredEnvMapId();
       //// glBindTexture(GL_TEXTURE_CUBE_MAP, iPrefilteredEnvMapId);
@@ -146,7 +146,7 @@ namespace graphics3d_opengl
       ////
       //// glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
       //// ::opengl::check_error("");
-      //// pshader->set_int("brdfConvolutionMap", TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
+      //// pshader->set_i32("brdfConvolutionMap", TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
       //// int iBrdfConvolutionMapId = pspecularmap->getBrdfConvolutionMapId();
       //// glBindTexture(GL_TEXTURE_2D, iBrdfConvolutionMapId);
       //// ::opengl::check_error("");
@@ -280,9 +280,9 @@ namespace graphics3d_opengl
 
       //      }
 
-      //      pshader->set_float("x_multiplier", x_multiplier);
-      //      pshader->set_float("y_multiplier", y_multiplier);
-      //      pshader->set_float("z_multiplier", z_multiplier);
+      //      pshader->set_f32("x_multiplier", x_multiplier);
+      //      pshader->set_f32("y_multiplier", y_multiplier);
+      //      pshader->set_f32("z_multiplier", z_multiplier);
 
       //      // memcpy(node->mesh->uniformBuffer.mapped, &world, sizeof(world));
       //      // memcpy((char *)node->mesh->uniformBuffer.mapped + sizeof(world), &normalMat, sizeof(normalMat));

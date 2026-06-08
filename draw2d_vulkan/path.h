@@ -15,18 +15,18 @@ namespace draw2d_vulkan
 
 
       bool                       m_bHasPointInternal;
-      ::double_point                   m_pointLast;
+      ::f64_point                   m_pointLast;
 
 
       path();
       virtual ~path();
 
 
-      virtual bool internal_add_arc(const ::int_rectangle & rectangle, double iStart, double iAngle);
+      virtual bool internal_add_arc(const ::i32_rectangle & rectangle, double iStart, double iAngle);
 
-      virtual double_point internal_last_point();
+      virtual f64_point internal_last_point();
 
-      virtual double_point internal_current_point();
+      virtual f64_point internal_current_point();
 
 
       virtual bool internal_begin_figure(bool bFill, ::draw2d::enum_fill_mode efillmode);
@@ -42,23 +42,23 @@ namespace draw2d_vulkan
 
       virtual void destroy() override;
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_arc& parc) override;
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_arc& parc) override;
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_line& pline) override;
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_line& pline) override;
 
       //virtual bool _set(::draw2d::graphics* pgraphics, const ::lined& pline) override;
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_lines& pline) override;
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_lines& pline) override;
 
       //virtual bool _set(::draw2d::graphics* pgraphics, const ::linesd& pline) override;
 
-      //virtual bool _set(::draw2d::graphics* pgraphics, const ::int_rectangle& prectangle) override;
+      //virtual bool _set(::draw2d::graphics* pgraphics, const ::i32_rectangle& prectangle) override;
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_rectangle& prectangle) override;
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_rectangle& prectangle) override;
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_polygon& ppolygon) override;
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_polygon& ppolygon) override;
 
-      //virtual bool _set(::draw2d::graphics* pgraphics, const ::double_polygon& ppolygond) override;
+      //virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_polygon& ppolygond) override;
 
       virtual bool _set(::draw2d::graphics* pgraphics, const ::write_text::text_out& ptextout) override;
 

@@ -154,7 +154,7 @@ namespace app_core_vulken
    void pane_impact::on_create_impact(::user::impact_data * pimpactdata)
    {
 
-      switch(pimpactdata->id().as_int())
+      switch(pimpactdata->id().as_i32())
       {
       case CONTEXT_MENU_IMPACT:
       {

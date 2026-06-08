@@ -44,8 +44,8 @@ namespace app_graphics3d_continuum
 //		floating_sequence3				m_sequence3WorldUp;
 //
 //		// Euler angles
-//      float_angle    m_angleYaw = 0.0_degree;
-//		float_angle		m_anglePitch = -90.0_degree;
+//      f32_angle    m_angleYaw = 0.0_degree;
+//		f32_angle		m_anglePitch = -90.0_degree;
 //
 //		// Camera options
 //		float				m_fZoom;
@@ -73,7 +73,7 @@ namespace app_graphics3d_continuum
 		//camera(const ::floating_sequence3 & position, float yaw, float pitch);
 		//camera(const ::floating_sequence3 & position, floating_sequence3 to, floating_sequence3 from);
 
-		virtual void initialize_camera(const ::floating_sequence3 & position, const float_angle & yaw, const float_angle & pitch);
+		virtual void initialize_camera(const ::floating_sequence3 & position, const f32_angle & yaw, const f32_angle & pitch);
 		virtual void initialize_camera(floating_sequence3 target, floating_sequence3 camera);
 
 		void setOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
@@ -82,7 +82,7 @@ namespace app_graphics3d_continuum
 
 //		void setViewYXZ(const ::floating_sequence3 & position, floating_sequence3 rotation);
 
-		//virtual void setPerspectiveProjection(const float_angle & angleFovY, float aspect, float near, float far);
+		//virtual void setPerspectiveProjection(const f32_angle & angleFovY, float aspect, float near, float far);
 		//const floating_matrix4& getProjection() const { return m_matrixProjection; }
 		//const floating_matrix4& getView() const { return m_matrixImpact; }
 		//const floating_matrix4& getInverseView() const { return m_matrixInversedImpact; }

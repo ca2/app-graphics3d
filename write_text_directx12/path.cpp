@@ -41,19 +41,19 @@ namespace draw2d_gdiplus
 
 
 
-   double_point path::internal_last_point()
+   f64_point path::internal_last_point()
    {
 
       if(m_bHasPointInternal)
       {
 
-         return double_point((LONG) m_pointInternal.X, (LONG) m_pointInternal.Y);
+         return f64_point((LONG) m_pointInternal.X, (LONG) m_pointInternal.Y);
 
       }
       else
       {
 
-         throw ::exception("path does not have last int_point");
+         throw ::exception("path does not have last i32_point");
 
       }
 
@@ -211,7 +211,7 @@ namespace draw2d_gdiplus
       if (almost_integer(x) && almost_integer(cx) && almost_integer(y) && almost_integer(cy))
       {
 
-         Gdiplus::Rect int_rectangle(
+         Gdiplus::Rect i32_rectangle(
          (INT) (x),
          (INT)(y),
          (INT)(cx),
@@ -234,7 +234,7 @@ namespace draw2d_gdiplus
       else
       {
 
-         Gdiplus::RectF int_rectangle(
+         Gdiplus::RectF i32_rectangle(
          (float)(x),
          (float)(y),
          (float)(cx),
@@ -294,7 +294,7 @@ namespace draw2d_gdiplus
 
    //}
 
-   double_point path::internal_current_point()
+   f64_point path::internal_current_point()
    {
 
       return get_current_point();
@@ -396,7 +396,7 @@ namespace draw2d_gdiplus
 
 
 
-   bool path::internal_add_arc(const ::double_rectangle & rectangle, const ::angle& angleBeg, const ::angle& angleEnd)
+   bool path::internal_add_arc(const ::f64_rectangle & rectangle, const ::angle& angleBeg, const ::angle& angleEnd)
    {
 
       if (m_ppath == nullptr)
@@ -415,7 +415,7 @@ namespace draw2d_gdiplus
 
          m_ppath->AddArc(float_rectangle, (Gdiplus::REAL) angleBeg.degree(), (Gdiplus::REAL) (angleEnd - angleBeg).degree());
 
-         ::Gdiplus::PointF int_point;
+         ::Gdiplus::PointF i32_point;
 
          m_ppath->GetLastPoint(&point);
 
@@ -507,10 +507,10 @@ namespace draw2d_gdiplus
    }
 
 
-   bool path::internal_add_draw_text(::draw2d::graphics * pgraphics, const ::int_rectangle & rectangleParam, const ::scoped_string & scopedstrText, ::write_text::font * pfont, const ::e_align & ealign, const ::e_draw_text & edrawtext)
+   bool path::internal_add_draw_text(::draw2d::graphics * pgraphics, const ::i32_rectangle & rectangleParam, const ::scoped_string & scopedstrText, ::write_text::font * pfont, const ::e_align & ealign, const ::e_draw_text & edrawtext)
    {
 
-      ::double_rectangle rectangle(rectangleParam);
+      ::f64_rectangle rectangle(rectangleParam);
 
       auto estatus = gdiplus_draw_text(pgraphics, this, strText, rectangle, ealign, edrawtext, pfont, 1.0);
 
@@ -550,7 +550,7 @@ namespace draw2d_gdiplus
    bool path::_set(::draw2d::graphics * pgraphics, const ::arc & arc)
    {
 
-      ::double_rectangle rectangle;
+      ::f64_rectangle rectangle;
 
       rectangle.left      = arc.m_pointCenter.x - arc.m_sizeRadius.cx;
       rectangle.right     = arc.m_pointCenter.x + arc.m_sizeRadius.cx;
@@ -571,7 +571,7 @@ namespace draw2d_gdiplus
    }
 
 
-   bool path::_set(::draw2d::graphics * pgraphics, const ::int_rectangle & rectangle)
+   bool path::_set(::draw2d::graphics * pgraphics, const ::i32_rectangle & rectangle)
    {
 
       return internal_add_rect(rectangle.left, rectangle.top,  rectangle.width(), rectangle.height());
@@ -579,7 +579,7 @@ namespace draw2d_gdiplus
    }
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::double_rectangle& rectangle)
+   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_rectangle& rectangle)
    {
 
       return internal_add_rect(rectangle.left, rectangle.top, rectangle.width(), rectangle.height());
@@ -666,7 +666,7 @@ namespace draw2d_gdiplus
    }
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::double_polygon& int_polygon)
+   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_polygon& int_polygon)
    {
 
       ::array < Gdiplus::PointF > pointa;
@@ -718,7 +718,7 @@ namespace draw2d_gdiplus
 
 
 
-   bool path::contains(::draw2d::graphics_pointer& pgraphics, const double_point& point)
+   bool path::contains(::draw2d::graphics_pointer& pgraphics, const f64_point& point)
    {
 
       //return ::draw2d::path::contains(pgraphics, point);

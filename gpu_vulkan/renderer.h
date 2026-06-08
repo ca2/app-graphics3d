@@ -44,7 +44,7 @@ namespace gpu_vulkan
          void initialize_cpu_buffer_sampler(::gpu::context* pgpucontext);
 
          void clear();
-         void update(const ::int_size & size);
+         void update(const ::i32_size & size);
          void destroy();
 
          void sample(::gpu::texture * pgputexture);
@@ -115,7 +115,7 @@ namespace gpu_vulkan
       void initialize_gpu_renderer(::gpu::context* pgpucontext) override;
 
    
-      void on_resize(const ::int_size& size) override;
+      void on_resize(const ::i32_size& size) override;
 
 
       //int width()  override;
@@ -177,7 +177,7 @@ namespace gpu_vulkan
 
       //void defer_update_renderer();
 
-      //void on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous) override;
+      //void on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::i32_size& size, ::gpu::render_target* previous) override;
 
       //::gpu::render_target* back_buffer_render_target() override;
 
@@ -203,7 +203,7 @@ namespace gpu_vulkan
 
       void free_command_buffers() override;
       //void recreateSwapchain();
-      //void set_size(const ::int_size & size) override;
+      //void set_size(const ::i32_size & size) override;
 
       //void prepareOffScreen();
 
@@ -217,10 +217,10 @@ namespace gpu_vulkan
       void on_new_frame() override;
 
 
-      void _set_image(::gpu::texture * pgputexture, const ::int_rectangle& rectangle, bool bYSwap);
+      void _set_image(::gpu::texture * pgputexture, const ::i32_rectangle& rectangle, bool bYSwap);
 
-      void _blend_image(::gpu::texture* pgputexture, const ::int_rectangle& rectangle, bool bYSwap);
-      void _on_graphics_end_draw(::gpu::texture* pgputexture, const ::int_rectangle& rectangle);
+      void _blend_image(::gpu::texture* pgputexture, const ::i32_rectangle& rectangle, bool bYSwap);
+      void _on_graphics_end_draw(::gpu::texture* pgputexture, const ::i32_rectangle& rectangle);
 
       void _blend_renderer(::gpu_vulkan::renderer* prendererSrc, bool bYSwap);
       void _on_graphics_end_draw(::gpu_vulkan::renderer * prendererSrc);

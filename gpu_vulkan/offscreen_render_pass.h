@@ -64,7 +64,7 @@ namespace gpu_vulkan
 		virtual void submitSamplingWork(::gpu::command_buffer * pgpucommandbuffer);
 
 
-		virtual void defer_resize(const ::int_size& size);
+		virtual void defer_resize(const ::i32_size& size);
 
 		//::gpu::texture* current_texture();
 		

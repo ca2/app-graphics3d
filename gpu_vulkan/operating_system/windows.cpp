@@ -28,7 +28,7 @@ namespace gpu_vulkan
       VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {
           .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
           .hinstance = (HINSTANCE)::system()->m_hinstanceThis,
-                                                       .hwnd = pwindow->_HWND()
+                                                       .hwnd = (HWND) pwindow->_HWND()
       };
       auto result = vkCreateWin32SurfaceKHR(pgpu->m_vkinstance, &surfaceCreateInfo, NULL, &m_vksurfacekhr);
 

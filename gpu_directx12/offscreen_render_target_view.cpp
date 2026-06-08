@@ -28,21 +28,21 @@ namespace gpu_directx12
 
 
 
-   //offscreen_render_target_view::offscreen_render_target_view(renderer* pgpurenderer, const ::int_size & size)
+   //offscreen_render_target_view::offscreen_render_target_view(renderer* pgpurenderer, const ::i32_size & size)
    //   : render_target_view(pgpurenderer, size)
    //{
    //   clear_flag(e_flag_success);
    //}
 
 
-   //offscreen_render_target_view::offscreen_render_target_view(renderer* pgpurenderer, const ::int_size& size, ::pointer <render_target_view>previous)
+   //offscreen_render_target_view::offscreen_render_target_view(renderer* pgpurenderer, const ::i32_size& size, ::pointer <render_target_view>previous)
    //   : render_target_view(pgpurenderer, size, previous)
    //{
    //   clear_flag(e_flag_success);
    //}
 
 
-   void offscreen_render_target_view::initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size& size, ::pointer <::gpu::render_target> previous)
+   void offscreen_render_target_view::initialize_render_target(::gpu::renderer* pgpurenderer, const ::i32_size& size, ::pointer <::gpu::render_target> previous)
    {
 
       render_target_view::initialize_render_target(pgpurenderer, size, previous);
@@ -143,7 +143,7 @@ namespace gpu_directx12
       //}
 
 
-      ::int_size sizeRenderTarget;
+      ::i32_size sizeRenderTarget;
       
       sizeRenderTarget = m_pgpurenderer->m_sizeRenderer;
 
@@ -156,6 +156,8 @@ namespace gpu_directx12
 
       {
 
+         defer_construct_newø(m_ptexturea);
+
          //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
          m_ptexturea->set_size(m_pgpurenderer->m_iDefaultFrameCount);
@@ -165,9 +167,9 @@ namespace gpu_directx12
 
             auto& ptexture = m_ptexturea->element_at(i);
 
-            ødefer_construct(ptexture);
+            defer_constructø(ptexture);
 
-            ::int_rectangle rectangleRenderTarget(sizeRenderTarget);
+            ::i32_rectangle rectangleRenderTarget(sizeRenderTarget);
 
             ::gpu::texture_attributes textureattributes(rectangleRenderTarget);
 
@@ -456,7 +458,7 @@ namespace gpu_directx12
    //}
 
 
-   void offscreen_render_target_view::defer_resize(const ::int_size& size)
+   void offscreen_render_target_view::defer_resize(const ::i32_size& size)
    {
 
 

@@ -41,7 +41,7 @@ namespace graphics3d_directx11
 
 		//::file::path _translate_shader_path(const ::file::path& pathShader);
 
-		void defer_update_engine(const ::int_rectangle& rectanglePlacement) override;
+		void defer_update_engine(const ::i32_rectangle& rectanglePlacement) override;
 
 		void _engine_on_frame_context_initialization() override;
 
@@ -59,7 +59,7 @@ namespace graphics3d_directx11
 		void on_render_frame() override;
 
       
-      floating_matrix4 perspective(const float_angle &angleFovY, float aspect, float zNear, float zFar) override;
+      floating_matrix4 perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar) override;
 
 		//void create_global_ubo(::gpu::context* pgpucontext) override;
 		//void update_global_ubo(::gpu::context* pgpucontext) override;

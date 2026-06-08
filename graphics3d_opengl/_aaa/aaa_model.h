@@ -195,7 +195,7 @@
 //      //   textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 //
 //      //   // return a mesh object created from the extracted mesh data
-//      //   return øallocate mesh(vertices, indices, textures);
+//      //   return allocateø mesh(vertices, indices, textures);
 //      //}
 //
 //      //// checks all material textures of a given type and loads the textures if they're not loaded yet.

@@ -46,7 +46,7 @@ namespace draw2d_direct2d_directx12
    }
 
 
-   void image::create_ex(const ::int_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate, int iGoodStride, bool bPreserve)
+   void image::create_ex(const ::i32_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate, int iGoodStride, bool bPreserve)
    {
 
       //::draw2d::lock draw2dlock;
@@ -93,8 +93,8 @@ namespace draw2d_direct2d_directx12
       ::draw2d::bitmap_pointer         pbitmap;
       ::draw2d::graphics_pointer       pgraphics;
 
-      __øconstruct(pbitmap);
-      __øconstruct(pgraphics);
+      __constructø(pbitmap);
+      __constructø(pgraphics);
 
       if (::is_null(pbitmap) || ::is_null(pgraphics))
       {
@@ -155,7 +155,7 @@ namespace draw2d_direct2d_directx12
    }
 
 
-   void image::create(const ::int_size & size, ::enum_flag eflagCreate, int iGoodStride, bool bPreserve)
+   void image::create(const ::i32_size & size, ::enum_flag eflagCreate, int iGoodStride, bool bPreserve)
    {
 
       //auto estatus = 
@@ -174,7 +174,7 @@ namespace draw2d_direct2d_directx12
    }
 
 
-   void image::initialize(const ::int_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate)
+   void image::initialize(const ::i32_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate)
    {
 
       //auto estatus =
@@ -213,7 +213,7 @@ namespace draw2d_direct2d_directx12
 
       }
 
-      ::int_size size = pbitmap->get_size();
+      ::i32_size size = pbitmap->get_size();
 
       create(size);
 
@@ -234,7 +234,7 @@ namespace draw2d_direct2d_directx12
    void image::copy_from(::image::image * pimage, ::enum_flag eflagCreate)
    {
 
-      ::int_size s(pimage->width(), pimage->height());
+      ::i32_size s(pimage->width(), pimage->height());
 
       if (size() != s)
       {
@@ -301,7 +301,7 @@ namespace draw2d_direct2d_directx12
 
 
 
-   //bool image::draw(::draw2d::graphics* pgraphics, const ::int_point & point, const ::int_size & size, const ::int_point & pointSrc)
+   //bool image::draw(::draw2d::graphics* pgraphics, const ::i32_point & point, const ::i32_size & size, const ::i32_point & pointSrc)
    //{
 
    //   return pgraphics->BitBlt(point.x, point.y, size.cx, size.cy, get_graphics(), pointSrc.x, pointSrc.y) != false;
@@ -341,7 +341,7 @@ namespace draw2d_direct2d_directx12
 
          ::image::image_source imagesource(picon);
 
-         ::image::image_drawing_options imagedrawingoptions(::double_size(cx, cy));
+         ::image::image_drawing_options imagedrawingoptions(::f64_size(cx, cy));
 
          ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
 
@@ -358,7 +358,7 @@ namespace draw2d_direct2d_directx12
 
          ::image::image_source imagesource(picon);
 
-         ::image::image_drawing_options imagedrawingoptions(::double_size(cx, cy));
+         ::image::image_drawing_options imagedrawingoptions(::f64_size(cx, cy));
 
          ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
 
@@ -383,7 +383,7 @@ namespace draw2d_direct2d_directx12
 
          ::image::image_source imagesource(picon);
 
-         ::image::image_drawing_options imagedrawingoptions(::double_size(cx, cy));
+         ::image::image_drawing_options imagedrawingoptions(::f64_size(cx, cy));
 
          ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
 
@@ -586,14 +586,14 @@ namespace draw2d_direct2d_directx12
    //   }
    //}
 
-   //void image::rotate(image image, const ::int_rectangle & rectangle, double dAngle, double dScale)
+   //void image::rotate(image image, const ::i32_rectangle & rectangle, double dAngle, double dScale)
    //{
    //   // image image(this);
    //   //   pimage->Paste(this);
 
 
 
-   //   ::int_rectangle rectangle(rectangle);
+   //   ::i32_rectangle rectangle(rectangle);
 
    //   int cx = rectangle.width();
    //   int cy = rectangle.height();
@@ -691,7 +691,7 @@ namespace draw2d_direct2d_directx12
    /*void image::Fill (int A, int R, int G, int B )
    {
    ::color::color color = rgb ( B, G, R ) | (A << 24);
-   int int_size=stride*cy;
+   int i32_size=stride*cy;
 
    ::color::color * pcr;
 
@@ -736,7 +736,7 @@ namespace draw2d_direct2d_directx12
    pcr[31] = color;
    }
 
-   for (i=0; i<int_size; i++ )
+   for (i=0; i<i32_size; i++ )
    {
    m_pcolorref[i]=color;
    }
@@ -803,7 +803,7 @@ namespace draw2d_direct2d_directx12
    //   }
    //}
 
-   //void image::create_frame(::int_size size, int iFrameCount)
+   //void image::create_frame(::i32_size size, int iFrameCount)
    //{
    //   int iSliceCount = (int) sqrt((double) iFrameCount);
    //   int iFrameWidth = size.cx / iSliceCount;
@@ -1010,7 +1010,7 @@ namespace draw2d_direct2d_directx12
    //   }
    //}
 
-   //bool image::_draw_raw(const ::int_rectangle & rectangleTarget, ::image::image * pimage, const ::int_point & pointSrc)
+   //bool image::_draw_raw(const ::i32_rectangle & rectangleTarget, ::image::image * pimage, const ::i32_point & pointSrc)
    //{
 
    //   return ::image::draw(rectangleTarget, pimage, pointSrc);
@@ -1310,7 +1310,7 @@ namespace draw2d_direct2d_directx12
 
    ////   pgraphics->m_iType = 11;
 
-   ////   ::int_size size = m_pbitmapMap->GetBitmapDimension();
+   ////   ::i32_size size = m_pbitmapMap->GetBitmapDimension();
 
    ////   D2D1_SIZE_U sizeu = D2D1::SizeU(size.cx, size.cy);
 
@@ -1453,7 +1453,7 @@ namespace draw2d_direct2d_directx12
 
    //   map(false);
 
-   //   ::int_rectangle rectangle(rectangleWindow);
+   //   ::i32_rectangle rectangle(rectangleWindow);
 
    //   //      papplication->window_graphics_update_window(puserinteraction->get_window_graphics(),puserinteraction->get_handle(),m_pcolorref,rectangle,this->width(), this->height(), m_iScan, bTransferBuffer);
 
@@ -1462,14 +1462,14 @@ namespace draw2d_direct2d_directx12
    //}
 
 
-   void image::blend(const ::int_point & pointDst, ::image::image * pimageSrc, const ::int_point & pointSrc, const ::int_size & sizeParam, unsigned char bA)
+   void image::blend(const ::i32_point & pointDst, ::image::image * pimageSrc, const ::i32_point & pointSrc, const ::i32_size & sizeParam, unsigned char bA)
    {
 
       //return 
       
       //::image::blend(pointDst, pimageSrc, pointSrc, sizeParam, bA);
 
-      //::int_size size(sizeParam);
+      //::i32_size size(sizeParam);
 
       //::draw2d::lock draw2dlock;
 
@@ -1516,7 +1516,7 @@ namespace draw2d_direct2d_directx12
 
       //   bool bSmallerSourceRegion = false;
 
-      //   ::int_size sizeSource;
+      //   ::i32_size sizeSource;
 
       //   {
 
@@ -1578,7 +1578,7 @@ namespace draw2d_direct2d_directx12
 
       //      ::draw2d::savedc k1(pgraphics);
 
-      //      ::int_rectangle rDst;
+      //      ::i32_rectangle rDst;
       //      rDst.left = pointDst.x;
       //      rDst.top = pointDst.y;
       //      rDst.right = pointDst.x + size.cx;
@@ -1652,7 +1652,7 @@ namespace draw2d_direct2d_directx12
 
       //}
 
-      //::int_rectangle rectangleDib1(::int_point(), pimage->get_size());
+      //::i32_rectangle rectangleDib1(::i32_point(), pimage->get_size());
 
       //fill(a_rgb(255, rgb));
 

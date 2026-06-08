@@ -1,4 +1,5 @@
-LIBRARY "draw2d_vulkan"
+;JegElskerDigThomasBorregaardSørensencamiloMummiBilbo!! 2026-06-07 06:40:13
+LIBRARY "draw2d_vkvg"
 
 EXPORTS
 draw2d_vulkan_factory

@@ -27,7 +27,7 @@ namespace gpu_directx12
    }
 
 
-   void render_target_view::initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size& size, ::pointer<::gpu::render_target> previous)
+   void render_target_view::initialize_render_target(::gpu::renderer* pgpurenderer, const ::i32_size& size, ::pointer<::gpu::render_target> previous)
    {
 
       ::gpu::render_target::initialize_render_target(pgpurenderer, size, previous);
@@ -366,7 +366,7 @@ namespace gpu_directx12
       //for (int i = 0; i < m_pgpurenderer->get_frame_count(); i++)
       //{
 
-      //ødefer_construct_new(m_pdepthstencil);
+      //defer_construct_newø(m_pdepthstencil);
 
       //m_pdepthstencil->initialize_depth_stencil(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
 

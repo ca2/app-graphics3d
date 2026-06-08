@@ -23,7 +23,7 @@ namespace graphics3d_hello3d
       if (!m_pgpuprogram)
       {
 
-         ødefer_construct(m_pgpuprogram);
+         defer_constructø(m_pgpuprogram);
 
          ::string strVertex = R"====(
 #version 330 core
@@ -87,11 +87,11 @@ void main()
 
    //   //string strFontFamily = get_font();
 
-   //   //auto ppen = øcreate < ::draw2d::pen > ();
+   //   //auto ppen = createø < ::draw2d::pen > ();
 
-   //   //auto pbrush = øcreate < ::draw2d::brush >();
+   //   //auto pbrush = createø < ::draw2d::brush >();
 
-   //   //auto pfont = øcreate < ::write_text::font > ();
+   //   //auto pfont = createø < ::write_text::font > ();
 
    //   //if (m_iDrawing == 3)
    //   //{
@@ -109,7 +109,7 @@ void main()
    //   //            if (m_pimage1.ok())
    //   //            {
 
-   //   //               øconstruct(m_pimage2);
+   //   //               constructø(m_pimage2);
 
    //   //               m_pimage2->copy_from(m_pimage1);
 
@@ -133,7 +133,7 @@ void main()
 
    //   //}
 
-   //   //int_rectangle rectangle;
+   //   //i32_rectangle rectangle;
 
    //   //int iSize = minimum(m_rectangle.width(), m_rectangle.height());
 
@@ -147,7 +147,7 @@ void main()
 
    //   //rectangle.offset_x(iSize / 5 * m_iDrawing);
    //   //
-   //   //::double_size size(0., 0.);
+   //   //::f64_size size(0., 0.);
    //   //
    //   //bool bDrawText = true;
    //   //
@@ -233,7 +233,7 @@ void main()
 
    //   //pgraphics->ellipse(rectangle);
 
-   //   //::int_rectangle rectangleText;
+   //   //::i32_rectangle rectangleText;
 
    //   //rectangleText.set_size(size);
 
@@ -313,7 +313,7 @@ void main()
       if (!m_pgpuprogram)
       {
 
-         ødefer_construct(m_pgpuprogram);
+         defer_constructø(m_pgpuprogram);
 
          ::string strVertex = R"====(
 #version 330 core

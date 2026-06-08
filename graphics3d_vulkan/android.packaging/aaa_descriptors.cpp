@@ -31,7 +31,7 @@
 //    {
 //        auto pgpucontext = this->m_pgpucontext.m_p;
 //        __refdbg_this(pgpucontext);
-//        return øallocate descriptor_set_layout(m_pgpucontext, bindings);
+//        return allocateø descriptor_set_layout(m_pgpucontext, bindings);
 //    }
 //
 //    // *************** Descriptor Set Layout *********************
@@ -84,7 +84,7 @@
 //    }
 //
 //    ::pointer <descriptor_pool> descriptor_pool::Builder::build() const {
-//        return øallocate descriptor_pool (m_pgpucontext, maxSets, poolFlags, poolSizes);
+//        return allocateø descriptor_pool (m_pgpucontext, maxSets, poolFlags, poolSizes);
 //    }
 //
 //    // *************** Descriptor Pool *********************

@@ -45,7 +45,7 @@ namespace graphics3d_vulkan
    }
 
 
-   void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
+   void engine::defer_update_engine(const ::i32_rectangle& rectanglePlacement)
    {
 
       auto pcontext = gpu_context();
@@ -56,7 +56,7 @@ namespace graphics3d_vulkan
 
       ::graphics3d::engine::defer_update_engine(rectanglePlacement);
 
-      //      øconstruct_new(m_prenderer);
+      //      construct_newø(m_prenderer);
       //
       //      //::graphics3d::engine::m_prenderer = m_prenderer;
       //
@@ -66,13 +66,13 @@ namespace graphics3d_vulkan
       //      m_prenderer->set_placement(rectanglePlacement);
       //      //m_pglobalpool->initialize_pool(pgpucontext);
       //
-      //      //= øallocate
+      //      //= allocateø
       //      //   descriptor_pool::Builder(pgpucontext)
       //      //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //      //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //      //   .build();
       //
-      //      //pgpucontext = øallocate context(m_pvulkandevice);
+      //      //pgpucontext = allocateø context(m_pvulkandevice);
       //      int iGlobalUboSize = m_pimpact->global_ubo_block().size();
       //
       //      if (iGlobalUboSize > 0)
@@ -315,15 +315,15 @@ namespace graphics3d_vulkan
 
       //auto papp = get_app();
 
-      //øconstruct(m_pgpucontextCompositor);
+      //constructø(m_pgpucontextCompositor);
 
       //m_pgpucontextCompositor->initialize_context(papp->m_pimpact);
 
-      //øconstruct_new(m_prenderer);
+      //construct_newø(m_prenderer);
 
       //m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontextCompositor);
 
-      //auto pglobalpoolbuilder = øallocate descriptor_pool::Builder();
+      //auto pglobalpoolbuilder = allocateø descriptor_pool::Builder();
 
       //pglobalpoolbuilder->initialize_builder(m_pgpucontextCompositor);
       //pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
@@ -333,14 +333,14 @@ namespace graphics3d_vulkan
 
       ////m_pglobalpool->initialize_pool(pgpucontext);
 
-      ////= øallocate
+      ////= allocateø
       ////   descriptor_pool::Builder(pgpucontext)
       ////   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       ////   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       ////   .build();
       //m_pscene->on_load_scene();
 
-      ////pgpucontext = øallocate context(m_pvulkandevice);
+      ////pgpucontext = allocateø context(m_pvulkandevice);
 
       //::pointer_array<buffer> uboBuffers;
 
@@ -351,7 +351,7 @@ namespace graphics3d_vulkan
       //for (int i = 0; i < uboBuffers.size(); i++)
       //{
 
-      //   uboBuffers[i] = øallocate buffer();
+      //   uboBuffers[i] = allocateø buffer();
 
       //   uboBuffers[i]->initialize_buffer(
       //      pgpucontext,
@@ -398,7 +398,7 @@ namespace graphics3d_vulkan
 
       ////VkcCamera camera(floating_sequence3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
 
-      //auto viewerObject = øcreate <::graphics3d::scene_object>();
+      //auto viewerObject = createø <::graphics3d::scene_object>();
       //papp->m_pimpact->m_bLastMouse = true;
       //viewerObject->m_transform.translation.z = -2.5f;
       //::graphics3d::input input;
@@ -515,7 +515,7 @@ namespace graphics3d_vulkan
 
    }
 
-   floating_matrix4 engine::perspective(const float_angle &angleFovY, float aspect, float zNear, float zFar)
+   floating_matrix4 engine::perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar)
    {
 
     //float f = 1.0f / tanf(angleFovY.radians() * 0.5f);

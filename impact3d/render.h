@@ -23,7 +23,7 @@ namespace graphics3d_impact3d
       string                              m_strFragment;
       //::pointer<::gpu::context>           m_papplication;
       //::pointer<::gpu::program>           m_pprogram;
-      //int_rectangle                       m_rectangle;
+      //i32_rectangle                       m_rectangle;
       string                              m_strFont1;
       string_map < ::image::image_pointer >      m_pimagemap;
       ::image::image_pointer                     m_pimage1;
@@ -68,7 +68,7 @@ namespace graphics3d_impact3d
 
   //    virtual void _001OnDrawArcs(::draw2d::graphics_pointer & pgraphics, bool bPath);
 
-//      virtual void draw_arc(::draw2d::graphics_pointer & pgraphics, int_rectangle & r, double dStart, double dAngle, bool bPath);
+//      virtual void draw_arc(::draw2d::graphics_pointer & pgraphics, i32_rectangle & r, double dStart, double dAngle, bool bPath);
 
       virtual void on_layout(::draw2d::graphics_pointer & pgraphics) override;
 

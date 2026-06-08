@@ -95,13 +95,13 @@ namespace draw2d_direct2d_directx12
       if (m_fontsize.eunit() == ::e_unit_point)
       {
 
-         fFontSize = (float)pgraphics->m_pdraw2dhost->point_dpi(m_fontsize.as_double());
+         fFontSize = (float)pgraphics->m_pdraw2dhost->point_dpi(m_fontsize.as_f64());
 
       }
       else
       {
 
-         fFontSize = (float)pgraphics->m_pdraw2dhost->dpiy(m_fontsize.as_double());
+         fFontSize = (float)pgraphics->m_pdraw2dhost->dpiy(m_fontsize.as_f64());
 
       }
 
@@ -192,7 +192,7 @@ namespace draw2d_direct2d_directx12
 
          m_textmetric2.m_dAscent = 0;
          m_textmetric2.m_dDescent = 0;
-         m_textmetric2.m_dHeight = m_fontsize.as_double();
+         m_textmetric2.m_dHeight = m_fontsize.as_f64();
          m_textmetric2.m_dInternalLeading = 0;
          m_textmetric2.m_dExternalLeading = 0;
 
@@ -214,7 +214,7 @@ namespace draw2d_direct2d_directx12
 
             m_textmetric2.m_dAscent = 0;
             m_textmetric2.m_dDescent = 0;
-            m_textmetric2.m_dHeight = m_fontsize.as_double();
+            m_textmetric2.m_dHeight = m_fontsize.as_f64();
             m_textmetric2.m_dInternalLeading = 0;
             m_textmetric2.m_dExternalLeading = 0;
 
@@ -243,7 +243,7 @@ namespace draw2d_direct2d_directx12
 
                m_textmetric2.m_dAscent = 0;
                m_textmetric2.m_dDescent = 0;
-               m_textmetric2.m_dHeight = m_fontsize.as_double();
+               m_textmetric2.m_dHeight = m_fontsize.as_f64();
                m_textmetric2.m_dInternalLeading = 0;
                m_textmetric2.m_dExternalLeading = 0;
 
@@ -262,7 +262,7 @@ namespace draw2d_direct2d_directx12
 
             m_textmetric2.m_dAscent = 0;
             m_textmetric2.m_dDescent = 0;
-            m_textmetric2.m_dHeight = m_fontsize.as_double();
+            m_textmetric2.m_dHeight = m_fontsize.as_f64();
             m_textmetric2.m_dInternalLeading = 0;
             m_textmetric2.m_dExternalLeading = 0;
 
@@ -357,7 +357,7 @@ namespace draw2d_direct2d_directx12
 
          m_textmetric2.m_dAscent = 0;
          m_textmetric2.m_dDescent = 0;
-         m_textmetric2.m_dHeight = m_fontsize.as_double();
+         m_textmetric2.m_dHeight = m_fontsize.as_f64();
          m_textmetric2.m_dInternalLeading = 0;
          m_textmetric2.m_dExternalLeading = 0;
 

@@ -54,7 +54,7 @@ namespace gpu_vulkan
       ////VkSwapchainKHR swapChain;
       ////::pointer<render_pass> m_pvkcrenderpassOld;
 
-      //::int_array imageAvailable;
+      //::i32_array imageAvailable;
       //::array<VkSemaphore> imageAvailableSemaphores;
       //::array<VkSemaphore> renderFinishedSemaphores;
       //::array<VkFence>     inFlightFences;
@@ -69,7 +69,7 @@ namespace gpu_vulkan
       ~render_target();
 
 
-      void initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size & size, ::pointer <::gpu::render_target>previous = {}) override;
+      void initialize_render_target(::gpu::renderer* pgpurenderer, const ::i32_size & size, ::pointer <::gpu::render_target>previous = {}) override;
 
 
       //virtual ::gpu_vulkan::render_pass *render_pass_srgb(::gpu::texture * pgputextureTarget);

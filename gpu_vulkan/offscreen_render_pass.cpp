@@ -406,7 +406,7 @@ namespace gpu_vulkan
    }
 
 
-   void offscreen_render_pass::defer_resize(const ::int_size& size)
+   void offscreen_render_pass::defer_resize(const ::i32_size& size)
    {
 
 
@@ -522,7 +522,7 @@ namespace gpu_vulkan
 
    //      auto & pgputexture = m_ptexturea->element_at(i);
 
-   //      ødefer_construct(pgputexture);
+   //      defer_constructø(pgputexture);
 
    //      pgputexture->m_bRenderTarget = true;
 

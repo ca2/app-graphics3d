@@ -85,7 +85,7 @@ namespace gpu_vulkan
 
          //::pointer<::gpu::texture> pgputextureIrradianceCubeNew;
 
-         //øconstruct(pgputextureIrradianceCubeNew);
+         //constructø(pgputextureIrradianceCubeNew);
 
          //::cast<::gpu_vulkan::texture> pgputextureIrradianceCube = pgputextureIrradianceCubeNew;
 
@@ -356,7 +356,7 @@ namespace gpu_vulkan
 
          //// std::string vert = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/prefiltered_environment_map.vert.spv";
          //// std::string frag = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/irradiance_cube.frag.spv";
-         //auto ppipelineIrradiance = øcreate<pipeline>();
+         //auto ppipelineIrradiance = createø<pipeline>();
 
          ////::memory vert;
          ////::memory frag;
@@ -477,7 +477,7 @@ namespace gpu_vulkan
          //auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
          //information("Generating irradiance cube took {} ms", tDiff);
 
-         //ødefer_construct_new(m_pframebufferDiffuseIrradiance);
+         //defer_construct_newø(m_pframebufferDiffuseIrradiance);
 
          //m_pframebufferDiffuseIrradiance->m_ptexture = pgputextureIrradianceCubeNew;
 

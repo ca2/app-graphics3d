@@ -46,7 +46,7 @@
 //
 //      m_pimpact = pgpucontext->m_pimpact;
 //
-//      øconstruct_new(m_poffscreensampler);
+//      construct_newø(m_poffscreensampler);
 //
 //      m_poffscreensampler->initialize_offscreen_sampler(pgpucontext);
 //
@@ -86,7 +86,7 @@
 //      if (m_bOffScreen)
 //      {
 //
-//         m_pvkcrenderpass = øallocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
+//         m_pvkcrenderpass = allocateø offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
 //
 //      }
 //
@@ -166,7 +166,7 @@
 //         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
 //            throw ::exception(error_failed, "failed to begin recording command buffer!");
 //         }
-//         auto pframe = øcreate_new < frame >();
+//         auto pframe = create_newø < frame >();
 //         pframe->commandBuffer = commandBuffer;
 //         m_pframe = pframe;
 //         return m_pframe;

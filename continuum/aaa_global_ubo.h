@@ -21,7 +21,7 @@ namespace app_graphics3d_continuum
 //GPU_PROPERTY("color", ::gpu::e_type_seq4)
 //END_GPU_PROPERTIES()
 
-//GPU_PROPERTY("radius", ::gpu::e_type_float)
+//GPU_PROPERTY("radius", ::gpu::e_type_f32)
 
    // GlobalUbo :
    // floating_matrix4 projection{ 1.f };

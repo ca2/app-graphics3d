@@ -614,7 +614,7 @@ namespace gpu_directx12
             for (int iFrame = 0; iFrame < iFrameCount; iFrame++)
             {
                // auto &pheap = pbindingset->m_heapa1.ø(iFrame);
-               auto &pheap = m_heapa1.ø(iFrame);
+               auto &pheap = m_heapa1.atø(iFrame);
                if (!pheap)
                {
 
@@ -628,7 +628,7 @@ namespace gpu_directx12
                }
 
                // auto &pheapSampler = pbindingset->m_heapaSampler1.ø(iFrame);
-               auto &pheapSampler = m_heapaSampler1.ø(iFrame);
+               auto &pheapSampler = m_heapaSampler1.atø(iFrame);
                if (!pheapSampler)
                {
 
@@ -1207,7 +1207,7 @@ namespace gpu_directx12
             &resourcedesc,
             D3D12_RESOURCE_STATE_GENERIC_READ,
             nullptr,
-            __interface_of(m_resourceaPushProperties.ø(m_iPush/256)));
+            __interface_of(m_resourceaPushProperties.atø(m_iPush/256)));
          pgpudevice->defer_throw_hresult(hrCreateCommittedResource);
 
 

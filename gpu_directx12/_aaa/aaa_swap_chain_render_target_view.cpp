@@ -15,14 +15,14 @@ namespace gpu_directx12
 
 	//}
 
-	swap_chain_render_target_view::swap_chain_render_target_view(renderer* pgpurenderer, const ::int_size & size)
+	swap_chain_render_target_view::swap_chain_render_target_view(renderer* pgpurenderer, const ::i32_size & size)
 		: swap_chain_render_target_view(pgpurenderer, size, {})
 	{
 		//m_bNeedRebuild = false;
 	   //init();
 	}
 
-	swap_chain_render_target_view::swap_chain_render_target_view(renderer* pgpurenderer, const ::int_size & size, ::pointer<render_target_view> previous)
+	swap_chain_render_target_view::swap_chain_render_target_view(renderer* pgpurenderer, const ::i32_size & size, ::pointer<render_target_view> previous)
 		: render_target_view(pgpurenderer, size, previous)
 	{
 

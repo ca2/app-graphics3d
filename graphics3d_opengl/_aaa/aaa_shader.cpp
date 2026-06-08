@@ -157,10 +157,10 @@
 //
 //         switch (p->m_etype)
 //         {
-//         case ::gpu::e_type_int:
+//         case ::gpu::e_type_i32:
 //            _set_int(p->m_pszName, *(int*)(m_properties.data() + iLen));
 //            break;
-//         case ::gpu::e_type_float:
+//         case ::gpu::e_type_f32:
 //            _set_float(p->m_pszName, *(float*)(m_properties.data() + iLen));
 //            break;
 //         case ::gpu::e_type_seq2:

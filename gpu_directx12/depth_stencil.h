@@ -24,7 +24,7 @@ namespace gpu_directx12
       ~depth_stencil() override;
 
 
-      void initialize_depth_stencil(::gpu::renderer* prenderer, const ::int_size& size);
+      void initialize_depth_stencil(::gpu::renderer* prenderer, const ::i32_size& size);
 
 
    };

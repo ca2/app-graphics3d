@@ -284,7 +284,7 @@ namespace app_graphics3d_MyPlace2025
    void pane_impact::on_create_impact(::user::impact_data * pimpactdata)
    {
 
-      switch (pimpactdata->id().as_int())
+      switch (pimpactdata->id().as_i32())
       {
          //case GCOM_IMPACT:
          //{
@@ -484,7 +484,7 @@ namespace app_graphics3d_MyPlace2025
 //
 //                  string str;
 //
-//                  double d = m_prollfps->get_payload()["real"].as_double();
+//                  double d = m_prollfps->get_payload()["real"].as_f64();
 //
 //                  if (m_pimpactLastBase != nullptr)
 //                  {

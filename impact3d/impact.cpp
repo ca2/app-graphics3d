@@ -119,7 +119,7 @@ namespace graphics3d_impact3d
 //
 //      };
 
-      //øconstruct_new(m_prender);
+      //construct_newø(m_prender);
 
       //if(!estatus)
       //{
@@ -330,7 +330,7 @@ namespace graphics3d_impact3d
 
          bool bOk = m_pointLastMouse.x > -10'000.0 && m_pointLastMouse.y > -10'000.0;
 
-         m_sizeMouseDelta = double_point(pmouse->m_pointHost) - m_pointLastMouse;
+         m_sizeMouseDelta = f64_point(pmouse->m_pointHost) - m_pointLastMouse;
 
          m_pointLastMouse = pmouse->m_pointHost;
 

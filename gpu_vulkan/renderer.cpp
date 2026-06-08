@@ -110,7 +110,7 @@ namespace gpu_vulkan
 
 
 
-   void renderer::on_resize(const ::int_size& size)
+   void renderer::on_resize(const ::i32_size& size)
    {
 
       ::gpu::renderer::on_resize(size);
@@ -132,7 +132,7 @@ namespace gpu_vulkan
 
          pgpucontext->create_cpu_buffer(pgpucontext->rectangle().size());
 
-         øconstruct_new(m_pcpubuffersampler);
+         construct_newø(m_pcpubuffersampler);
 
          m_pcpubuffersampler->initialize_cpu_buffer_sampler(pgpucontext);
 
@@ -254,7 +254,7 @@ namespace gpu_vulkan
    }
 
 
-   //void renderer::on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous)
+   //void renderer::on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::i32_size& size, ::gpu::render_target* previous)
    //{
 
    //   ::cast < context > pcontext = m_pgpucontext;
@@ -263,7 +263,7 @@ namespace gpu_vulkan
    //      || eoutput == ::gpu::e_output_gpu_buffer)
    //   {
 
-   //      auto poffscreenrendertargetview = øallocate offscreen_render_pass();
+   //      auto poffscreenrendertargetview = allocateø offscreen_render_pass();
    //      poffscreenrendertargetview->m_formatImage = pcontext->m_formatImageDefault;
    //      m_pgpurendertarget = poffscreenrendertargetview;
 
@@ -279,7 +279,7 @@ namespace gpu_vulkan
    //   else if (eoutput == ::gpu::e_output_swap_chain)
    //   {
    //    
-   //      auto poffscreenrendertargetview = øallocate offscreen_render_pass();
+   //      auto poffscreenrendertargetview = allocateø offscreen_render_pass();
    //      poffscreenrendertargetview->m_formatImage = pcontext->m_formatImageDefault;
    //      m_pgpurendertarget = poffscreenrendertargetview;
 
@@ -287,7 +287,7 @@ namespace gpu_vulkan
    //   else if (eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
    //   {
 
-   //      auto paccumulationrenderpass = øallocate accumulation_render_pass();
+   //      auto paccumulationrenderpass = allocateø accumulation_render_pass();
    //      paccumulationrenderpass->m_formatImage = VK_FORMAT_R32G32B32A32_SFLOAT;
    //      paccumulationrenderpass->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
    //      m_pgpurendertarget = paccumulationrenderpass;
@@ -296,7 +296,7 @@ namespace gpu_vulkan
    //   else if (eoutput == ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers)
    //   {
 
-   //      auto poffscreenrenderpass = øallocate offscreen_render_pass();
+   //      auto poffscreenrenderpass = allocateø offscreen_render_pass();
    //      poffscreenrenderpass->m_formatImage = pcontext->m_formatImageDefault;
    //      m_pgpurendertarget = poffscreenrenderpass;
 
@@ -336,7 +336,7 @@ namespace gpu_vulkan
    //      if (eoutput == ::gpu::e_output_cpu_buffer)
    //      {
    //
-   //         auto poffscreenrenderpass = øallocate offscreen_render_pass();
+   //         auto poffscreenrenderpass = allocateø offscreen_render_pass();
    //#ifdef WINDOWS_DESKTOP
    //         poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //#else
@@ -357,14 +357,14 @@ namespace gpu_vulkan
    //#endif
    //
    //         m_pgpurendertarget = pswapchain.m_p;
-   //         //pgpurenderpass = øallocate swap_chain_render_pass(this, m_extentRenderer, pgpurenderpass);
+   //         //pgpurenderpass = allocateø swap_chain_render_pass(this, m_extentRenderer, pgpurenderpass);
    //         //m_prendererResolve.release();
    //
    //      }
    //      else if (eoutput == ::gpu::e_output_gpu_buffer)
    //      {
    //
-   //         auto poffscreenrenderpass = øallocate offscreen_render_pass();
+   //         auto poffscreenrenderpass = allocateø offscreen_render_pass();
    //#ifdef WINDOWS_DESKTOP
    //         poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //#else
@@ -377,18 +377,18 @@ namespace gpu_vulkan
    //      else if (eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
    //      {
    //
-   //         auto paccumulationrenderpass = øallocate accumulation_render_pass();
+   //         auto paccumulationrenderpass = allocateø accumulation_render_pass();
    //         paccumulationrenderpass->m_formatImage = VK_FORMAT_R32G32B32A32_SFLOAT;
    //         paccumulationrenderpass->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
    //         m_pgpurendertarget = paccumulationrenderpass;
    //
-   //         //øconstruct_new(m_prendererResolve);
+   //         //construct_newø(m_prendererResolve);
    //
    //         //m_prendererResolve->initialize_renderer(m_pgpucontext, ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers);
    //
    //         //m_prendererResolve->set_placement(m_pgpucontext->rectangle);
    //         //
-   //         //            auto poffscreenrenderpass = øallocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, pgpurenderpassResolve);
+   //         //            auto poffscreenrenderpass = allocateø offscreen_render_pass(m_pgpucontext, m_extentRenderer, pgpurenderpassResolve);
    //         //#ifdef WINDOWS_DESKTOP
    //         //            poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //         //#else
@@ -399,7 +399,7 @@ namespace gpu_vulkan
    //      else if (eoutput == ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers)
    //      {
    //
-   //         auto poffscreenrenderpass = øallocate offscreen_render_pass();
+   //         auto poffscreenrenderpass = allocateø offscreen_render_pass();
    //#ifdef WINDOWS_DESKTOP
    //         poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //#else
@@ -420,7 +420,7 @@ namespace gpu_vulkan
    //      if (pgpurenderpass->m_texturea.is_empty())
    //      {
    //
-   //         ::int_size size;
+   //         ::i32_size size;
    //
    //         size.cx = m_extentRenderer.width;
    //         size.cy = m_extentRenderer.height;
@@ -471,7 +471,7 @@ namespace gpu_vulkan
    //
    //      }
    //
-   //      auto poffscreenrenderpass = øallocate offscreen_render_pass();
+   //      auto poffscreenrenderpass = allocateø offscreen_render_pass();
    //#ifdef WINDOWS_DESKTOP
    //      poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //#else
@@ -485,7 +485,7 @@ namespace gpu_vulkan
    //      if (pgpurenderpass->m_texturea.is_empty())
    //      {
    //
-   //         ::int_size size = rectangle.size();
+   //         ::i32_size size = rectangle.size();
    //
    //         pgpurenderpass->initialize_render_target(this, size, pgpurenderpass.m_p);
    //
@@ -515,7 +515,7 @@ namespace gpu_vulkan
 //   ::pointer < ::gpu::render_target > renderer::allocate_offscreen_render_target()
 //   {
 //
-//      auto poffscreenrenderpass = øallocate offscreen_render_pass();
+//      auto poffscreenrenderpass = allocateø offscreen_render_pass();
 //
 //#ifdef WINDOWS_DESKTOP
 //      poffscreenrenderpass->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
@@ -583,7 +583,7 @@ namespace gpu_vulkan
 
          auto& pcommandbuffer = m_commandbuffera[i];
 
-         ødefer_construct(pcommandbuffer);
+         defer_constructø(pcommandbuffer);
 
          //pcommandbuffer->m_pgpuqueue = m_pgpucontext->graphics_queue();
 
@@ -681,7 +681,7 @@ namespace gpu_vulkan
          //}
 
          //m_
-         //auto pframe = øcreate_new < frame >();
+         //auto pframe = create_newø < frame >();
          //pframe->m_pcommandbuffer->m_vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
          //m_pframe = pframe;
          //return m_pframe;
@@ -759,7 +759,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::cpu_buffer_sampler::update(const ::int_size& size)
+   void renderer::cpu_buffer_sampler::update(const ::i32_size& size)
    {
 
       auto pgpurendertarget = m_prenderer->render_target();
@@ -783,9 +783,9 @@ namespace gpu_vulkan
 
       }
 
-      ødefer_construct_new(ptexture);
+      defer_construct_newø(ptexture);
 
-      ::gpu::texture_attributes textureattributes(::int_rectangle{size});
+      ::gpu::texture_attributes textureattributes(::i32_rectangle{size});
 
       ::gpu::texture_flags textureflags;
 
@@ -1667,7 +1667,7 @@ namespace gpu_vulkan
 
       //		int iFrameCount = get_frame_count();
 
-      //		auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      //		auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       //		pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
       //		pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -1680,7 +1680,7 @@ namespace gpu_vulkan
       //	if (nok(m_pshaderResolve))
       //	{
 
-      //		auto pshadervertexinput = øallocate  shader_vertex_input();
+      //		auto pshadervertexinput = allocateø  shader_vertex_input();
 
       //		pshadervertexinput->m_bindings.add(
       //			{
@@ -1692,7 +1692,7 @@ namespace gpu_vulkan
       //		pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
       //		pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 
-      //		auto pshaderResolve = øcreate_new<::gpu_vulkan::shader>();
+      //		auto pshaderResolve = create_newø<::gpu_vulkan::shader>();
 
       //		m_pshaderResolve = pshaderResolve;
 
@@ -1737,7 +1737,7 @@ namespace gpu_vulkan
 
       //	auto& pdescriptor = m_pdescriptorResolve;
 
-      //	if (ødefer_construct_new(pdescriptor))
+      //	if (defer_construct_newø(pdescriptor))
       //	{
 
       //		pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -1809,7 +1809,7 @@ namespace gpu_vulkan
 
       //	auto& pmodel = m_pmodelResolve;
 
-      //	if (ødefer_construct_new(pmodel))
+      //	if (defer_construct_newø(pmodel))
       //	{
 
       //		create_quad_buffers(m_pgpucontext->logicalDevice(),
@@ -1999,7 +1999,7 @@ namespace gpu_vulkan
       if (::nok(m_pshaderImageBlend))
       {
 
-         m_pgpucontext->øconstruct(m_pshaderImageBlend);
+         m_pgpucontext->constructø(m_pshaderImageBlend);
 
          //::cast < shader > pshader = m_pshaderImageBlend;
          //// Image Blend descriptors
@@ -2013,7 +2013,7 @@ namespace gpu_vulkan
 
          //   int iFrameCount = m_pgpurendertarget->get_frame_count();
 
-         //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+         //   auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
          //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
          //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -2023,7 +2023,7 @@ namespace gpu_vulkan
 
          //}
 
-         //auto pinputlayout = øcreate<::gpu::input_layout> ();
+         //auto pinputlayout = createø<::gpu::input_layout> ();
 
 
          //pshadervertexinput->m_bindings.add(
@@ -2065,11 +2065,11 @@ namespace gpu_vulkan
       if (::nok(m_pshaderImageSet))
       {
 
-         m_pgpucontext->øconstruct(m_pshaderImageSet);
+         m_pgpucontext->constructø(m_pshaderImageSet);
 
          ::cast < shader > pshader = m_pshaderImageSet;
 
-         //auto pshadervertexinput = øallocate  shader_vertex_input();
+         //auto pshadervertexinput = allocateø  shader_vertex_input();
 
          //pshadervertexinput->m_bindings.add(
          //   {
@@ -2217,7 +2217,7 @@ namespace gpu_vulkan
    //}
 
 
-   void renderer::_blend_image(::gpu::texture* pgputexture, const ::int_rectangle& rectangle, bool bYSwap)
+   void renderer::_blend_image(::gpu::texture* pgputexture, const ::i32_rectangle& rectangle, bool bYSwap)
    {
 
 
@@ -2347,7 +2347,7 @@ namespace gpu_vulkan
 
       auto& pmodelbuffer = m_imagemodelbuffer[ptexture->m_vkimage];
 
-      if (ødefer_construct_new(pmodelbuffer))
+      if (defer_construct_newø(pmodelbuffer))
       {
 
          pmodelbuffer->sequence2_uv_create_rectangle(pcontext, true, true);
@@ -2451,7 +2451,7 @@ namespace gpu_vulkan
 //      //  if (!m_psha)
 //      //  {
 //
-//      //     øconstruct_new(m_pblend2);
+//      //     construct_newø(m_pblend2);
 //
 //      //     m_pblend2->m_pgpurenderer = this;
 //
@@ -2481,7 +2481,7 @@ namespace gpu_vulkan
 //
 //      //     int iFrameCount = get_frame_count();
 //
-//      //     auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+//      //     auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 //
 //      //     pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
 //      //     pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -2506,7 +2506,7 @@ namespace gpu_vulkan
 //      if (!m_prenderpassCopy)
 //      {
 //
-//         m_prenderpassCopy = øallocate offscreen_render_pass();
+//         m_prenderpassCopy = allocateø offscreen_render_pass();
 //
 //         m_prenderpassCopy->initialize(this);
 //
@@ -2517,7 +2517,7 @@ namespace gpu_vulkan
 //      if (::nok(m_pshaderCopyImage))
 //      {
 //
-//         m_pgpucontext->øconstruct(m_pshaderCopyImage);
+//         m_pgpucontext->constructø(m_pshaderCopyImage);
 //
 //         m_pshaderCopyImage->m_pgpurenderer = this;
 //         auto pbindingSampler = m_pshaderCopyImage->binding();
@@ -2536,7 +2536,7 @@ namespace gpu_vulkan
 //
 //         //   int iFrameCount = m_pgpurendertarget->get_frame_count();
 //
-//         //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+//         //   auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 //
 //         //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
 //         //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -2547,7 +2547,7 @@ namespace gpu_vulkan
 //
 //         //}
 //
-//         auto pinputlayoutEmpty = øcreate<::gpu::input_layout>();
+//         auto pinputlayoutEmpty = createø<::gpu::input_layout>();
 //
 //         //pshadervertexinput->m_bindings.add(
 //         //   {
@@ -2559,7 +2559,7 @@ namespace gpu_vulkan
 //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
 //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 //
-//         //auto pshaderBlend2 = øcreate_new<::gpu_vulkan::shader>();
+//         //auto pshaderBlend2 = create_newø<::gpu_vulkan::shader>();
 //
 //         //m_pshaderCopyImage = pshaderBlend2;
 //
@@ -2671,7 +2671,7 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::_set_image(::gpu::texture* pgputexture, const ::int_rectangle& rectangle, bool bYSwap)
+   void renderer::_set_image(::gpu::texture* pgputexture, const ::i32_rectangle& rectangle, bool bYSwap)
    {
 
       //// Image Blend descriptors
@@ -2684,7 +2684,7 @@ namespace gpu_vulkan
 
       //   int iFrameCount = get_frame_count();
 
-      //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      //   auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
       //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -2820,7 +2820,7 @@ namespace gpu_vulkan
 
       auto& pmodelbuffer = m_imagemodelbuffer[ptexture->m_vkimage];
 
-      if (ødefer_construct_new(pmodelbuffer))
+      if (defer_construct_newø(pmodelbuffer))
       {
 
          pmodelbuffer->sequence2_uv_create_rectangle(pcontext, true, bYSwap);
@@ -2848,7 +2848,7 @@ namespace gpu_vulkan
 
       //  auto& pdescriptor = m_imagedescriptor[image];
 
-      //  //if (ødefer_construct_new(pdescriptor))
+      //  //if (defer_construct_newø(pdescriptor))
       //  {
 
       //     pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -2984,7 +2984,7 @@ namespace gpu_vulkan
 
       //   int iFrameCount = get_frame_count();
 
-      //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      //   auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
       //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -3118,7 +3118,7 @@ namespace gpu_vulkan
 
       auto& pmodelbuffer = m_imagemodelbuffer[ptexture->m_vkimage];
 
-      if (ødefer_construct_new(pmodelbuffer))
+      if (defer_construct_newø(pmodelbuffer))
       {
 
          pmodelbuffer->sequence2_uv_create_rectangle(pcontext, true, bYSwap);
@@ -3146,7 +3146,7 @@ namespace gpu_vulkan
 
       //  auto& pdescriptor = m_imagedescriptor[ptexture->m_vkimage];
 
-      //  if (ødefer_construct_new(pdescriptor))
+      //  if (defer_construct_newø(pdescriptor))
       //  {
 
       //     pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -4010,7 +4010,7 @@ namespace gpu_vulkan
 
       //pcommandbuffer->begin_command_buffer(false);
 
-      //auto pframe = øcreate_new < ::gpu_vulkan::frame >();
+      //auto pframe = create_newø < ::gpu_vulkan::frame >();
 
       //pframe->m_pcommandbuffer = pcommandbuffer.m_p;
 
@@ -4392,7 +4392,7 @@ namespace gpu_vulkan
    //}
 
 
-   void renderer::_on_graphics_end_draw(::gpu::texture* pgputexture, const ::int_rectangle& rectangle)
+   void renderer::_on_graphics_end_draw(::gpu::texture* pgputexture, const ::i32_rectangle& rectangle)
    {
 
       m_pgpucontext->set_placement(rectangle);
@@ -4735,7 +4735,7 @@ namespace gpu_vulkan
 
    //   ::cast <texture > ptexture = pgpurenderpass->m_texturea[prenderer->m_pgpurendertarget->get_frame_index()];
 
-   //   ::int_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
+   //   ::i32_rectangle rectangle = prenderer->m_pgpucontext->rectangle();
 
    //   auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
 
@@ -4952,7 +4952,7 @@ namespace gpu_vulkan
 //      //  if (!m_psha)
 //      //  {
 //
-//      //     øconstruct_new(m_pblend2);
+//      //     construct_newø(m_pblend2);
 //
 //      //     m_pblend2->m_pgpurenderer = this;
 //
@@ -4982,7 +4982,7 @@ namespace gpu_vulkan
 //
 //      //     int iFrameCount = get_frame_count();
 //
-//      //     auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+//      //     auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 //
 //      //     pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
 //      //     pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -5007,7 +5007,7 @@ namespace gpu_vulkan
 //      if (!m_prenderpassBlend2)
 //      {
 //
-//         m_prenderpassBlend2 = øallocate offscreen_render_pass();
+//         m_prenderpassBlend2 = allocateø offscreen_render_pass();
 //
 //         m_prenderpassBlend2->initialize(this);
 //
@@ -5018,7 +5018,7 @@ namespace gpu_vulkan
 //      if (::nok(m_pshaderBlend2))
 //      {
 //
-//         m_pgpucontext->øconstruct(m_pshaderBlend2);
+//         m_pgpucontext->constructø(m_pshaderBlend2);
 //
 //         m_pshaderBlend2->m_pgpurenderer = this;
 //         //m_pshaderBlend2->m_bindingSampler.set();
@@ -5037,7 +5037,7 @@ namespace gpu_vulkan
 //
 //         //   int iFrameCount = m_pgpurendertarget->get_frame_count();
 //
-//         //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+//         //   auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 //
 //         //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
 //         //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -5047,7 +5047,7 @@ namespace gpu_vulkan
 //
 //         //}
 //
-//         auto pinputlayoutEmpty = øcreate<::gpu::input_layout >();
+//         auto pinputlayoutEmpty = createø<::gpu::input_layout >();
 //
 //         //pshadervertexinput->m_bindings.add(
 //         //   {
@@ -5059,7 +5059,7 @@ namespace gpu_vulkan
 //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
 //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 //
-//         //auto pshaderBlend2 = øcreate_new<::gpu_vulkan::shader>();
+//         //auto pshaderBlend2 = create_newø<::gpu_vulkan::shader>();
 //
 //         //m_pshaderBlend2 = pshaderBlend2;
 //

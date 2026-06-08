@@ -96,8 +96,8 @@ namespace gpu_vulkan
    //   //auto vertexSize = sizeof(quadVertices);
    //   //auto indexSize = sizeof(quadIndices);
 
-   //  /* ødefer_construct_new(m_pbufferVertex);
-   //   ødefer_construct_new(m_pbufferIndex);
+   //  /* defer_construct_newø(m_pbufferVertex);
+   //   defer_construct_newø(m_pbufferIndex);
 
    //   m_pbufferVertex->initialize_memory_buffer(pcontext, vertexSize);
    //   m_pbufferIndex->initialize_memory_buffer(pcontext, indexSize);
@@ -224,18 +224,18 @@ namespace gpu_vulkan
 
 
    //void model_buffer::sequence3_color_set_rectangle(
-   //   const ::double_point points1[4],
+   //   const ::f64_point points1[4],
    //   const  ::color::color& color,
-   //   const ::double_size& size)
+   //   const ::f64_size& size)
    //{
 
 
    //   //void editQuadVertexBuffer(
    //   //   VkDevice device,
    //   //   VkDeviceMemory outMemory,
-   //   //   const ::double_point points1[4],
+   //   //   const ::f64_point points1[4],
    //   //   const  ::color::color & color,
-   //   //   const ::double_size & size)
+   //   //   const ::f64_size & size)
    //   //{
    //   //   VkBuffer vertexBuffer;
 
@@ -249,7 +249,7 @@ namespace gpu_vulkan
    //   m.scale(2.0 / size.cx, 2.0 / size.cy);
    //   m.translate(-1.0, -1.0);
 
-   //   ::double_point points[4];
+   //   ::f64_point points[4];
 
    //   points[0] = points1[0]; // top-left
    //   points[1] = points1[1]; // top-right
@@ -299,18 +299,18 @@ namespace gpu_vulkan
 
 
    //void model_buffer::sequence2_color_set_rectangle(
-   //   const ::double_point points1[4],
+   //   const ::f64_point points1[4],
    //   const  ::color::color& color,
-   //   const ::double_size& size)
+   //   const ::f64_size& size)
    //{
 
 
    //   //void editQuadVertexBuffer(
    //   //   VkDevice device,
    //   //   VkDeviceMemory outMemory,
-   //   //   const ::double_point points1[4],
+   //   //   const ::f64_point points1[4],
    //   //   const  ::color::color & color,
-   //   //   const ::double_size & size)
+   //   //   const ::f64_size & size)
    //   //{
    //   //   VkBuffer vertexBuffer;
 
@@ -324,7 +324,7 @@ namespace gpu_vulkan
    //   m.scale(2.0 / size.cx, 2.0 / size.cy);
    //   m.translate(-1.0, -1.0);
 
-   //   ::double_point points[4];
+   //   ::f64_point points[4];
 
    //   points[0] = points1[0]; // top-left
    //   points[1] = points1[1]; // top-right
@@ -364,10 +364,10 @@ namespace gpu_vulkan
 
 //
 //   void model_buffer::sequence3_color_set_line(
-//      const ::double_point& pointA,
-//      const ::double_point& pointB,
+//      const ::f64_point& pointA,
+//      const ::f64_point& pointB,
 //      const  ::color::color& color,
-//      const ::double_size& size)
+//      const ::f64_size& size)
 //   {
 ////      VkBuffer vertexBuffer;
 //      //static const graphics::RectangleVertex quadVertices[] = {
@@ -408,7 +408,7 @@ namespace gpu_vulkan
 //      m.scale(2.0 / size.cx, 2.0 / size.cy);
 //      m.translate(-1.0, -1.0);
 //
-//      ::double_point points[2];
+//      ::f64_point points[2];
 //
 //      points[0] = pointA;
 //      points[1] = pointB;
@@ -491,10 +491,10 @@ namespace gpu_vulkan
 
 
    //void model_buffer::sequence2_color_set_line(
-   //   const ::double_point& pointA,
-   //   const ::double_point& pointB,
+   //   const ::f64_point& pointA,
+   //   const ::f64_point& pointB,
    //   const  ::color::color& color,
-   //   const ::double_size& size)
+   //   const ::f64_size& size)
    //{
    //   //      VkBuffer vertexBuffer;
 
@@ -539,7 +539,7 @@ namespace gpu_vulkan
    //   m.scale(2.0 / size.cx, 2.0 / size.cy);
    //   m.translate(-1.0, -1.0);
 
-   //   ::double_point points[2];
+   //   ::f64_point points[2];
 
    //   points[0] = pointA;
    //   points[1] = pointB;

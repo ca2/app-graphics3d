@@ -44,7 +44,7 @@ namespace sandbox_game
    void scene::init()
    {
 
-      auto pplayer = øcreate_new<player>();
+      auto pplayer = create_newø<player>();
 
       pplayer->initialize_sandbox_player(m_pwindowinput);
 
@@ -311,7 +311,7 @@ namespace sandbox_game
    ::pointer<::graphics3d::scene_object> scene::createGameObject()
    {
 
-      auto pgameobject = øcreate_new <game_object >();
+      auto pgameobject = create_newø <game_object >();
 
       auto idGameObject = m_interlockedcountGameObject++;
 
@@ -325,7 +325,7 @@ namespace sandbox_game
 
    ::pointer<::graphics3d::scene_object> immersion_layer::makePointLight(float intensity, float radius, floating_sequence3 color)
    {
-      auto ppointlight = øallocate ::graphics3d::point_light_scene_object;
+      auto ppointlight = allocateø ::graphics3d::point_light_scene_object;
       this->add_scene_object(ppointlight);
       ppointlight->m_color = color;
       ppointlight->m_transform.scale.x = radius;

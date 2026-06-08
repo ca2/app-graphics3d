@@ -183,7 +183,7 @@ float4 main(PSInput input) : SV_TARGET {
 
          pgpucontext->create_cpu_buffer(pgpucontext->rectangle().size());
 
-         øconstruct_new(m_pcpubuffersampler);
+         construct_newø(m_pcpubuffersampler);
 
          m_pcpubuffersampler->initialize_cpu_buffer_sampler(pgpucontext);
 
@@ -216,7 +216,7 @@ float4 main(PSInput input) : SV_TARGET {
       if (!m_pvertexbufferSeq2UvRectangle)
       {
 
-         ødefer_construct_new(m_pvertexbufferSeq2UvRectangle);
+         defer_construct_newø(m_pvertexbufferSeq2UvRectangle);
 
          m_pvertexbufferSeq2UvRectangle->initialize_vertex_buffer(m_pgpucontext,
             6);
@@ -330,7 +330,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   //void renderer::on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous)
+   //void renderer::on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::i32_size& size, ::gpu::render_target* previous)
    //{
 
    //   //::pointer < ::gpu::render_target > pgpurendertarget;
@@ -341,7 +341,7 @@ float4 main(PSInput input) : SV_TARGET {
    //      || eoutput == ::gpu::e_output_gpu_buffer)
    //   {
 
-   //      auto poffscreenrendertargetview = øallocate offscreen_render_target_view;
+   //      auto poffscreenrendertargetview = allocateø offscreen_render_target_view;
    //      //#ifdef WINDOWS_DESKTOP
    //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //      //#else
@@ -360,7 +360,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   else if (eoutput == ::gpu::e_output_gpu_buffer_to_swap_chain)
    //   {
 
-   //      auto poffscreenrendertargetview = øallocate offscreen_render_target_view;
+   //      auto poffscreenrendertargetview = allocateø offscreen_render_target_view;
    //      //#ifdef WINDOWS_DESKTOP
    //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //      //#else
@@ -409,7 +409,7 @@ float4 main(PSInput input) : SV_TARGET {
    //      || eoutput == ::gpu::e_output_gpu_buffer)
    //   {
 
-   //      auto poffscreenrendertargetview = øallocate offscreen_render_target_view;
+   //      auto poffscreenrendertargetview = allocateø offscreen_render_target_view;
    //      //#ifdef WINDOWS_DESKTOP
    //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //      //#else
@@ -428,7 +428,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   else if (eoutput == ::gpu::e_output_gpu_buffer_to_swap_chain)
    //   {
 
-   //      auto poffscreenrendertargetview = øallocate offscreen_render_target_view;
+   //      auto poffscreenrendertargetview = allocateø offscreen_render_target_view;
    //      //#ifdef WINDOWS_DESKTOP
    //      //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //      //#else
@@ -444,7 +444,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   //      else if (eoutput == ::gpu::e_output_gpu_buffer)
    //   //      {
    //   //
-   //   //         auto poffscreenrendertargetview = øallocate offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
+   //   //         auto poffscreenrendertargetview = allocateø offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
    //   //#ifdef WINDOWS_DESKTOP
    //   //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //   //#else
@@ -457,18 +457,18 @@ float4 main(PSInput input) : SV_TARGET {
    //   //      else if (eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
    //   //      {
    //   //
-   //   //         auto paccumulationrendertargetview = øallocate accumulation_render_target_view(this, m_extentRenderer, m_prendertargetview);
+   //   //         auto paccumulationrendertargetview = allocateø accumulation_render_target_view(this, m_extentRenderer, m_prendertargetview);
    //   //         paccumulationrendertargetview->m_formatImage = VK_FORMAT_R32G32B32A32_SFLOAT;
    //   //         paccumulationrendertargetview->m_formatAlphaAccumulation = VK_FORMAT_R32_SFLOAT;
    //   //         m_prendertargetview = paccumulationrendertargetview;
    //   //
-   //   //         //øconstruct_new(m_prendererResolve);
+   //   //         //construct_newø(m_prendererResolve);
    //   //
    //   //         //m_prendererResolve->initialize_renderer(m_pgpucontext, ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers);
    //   //
    //   //         //m_prendererResolve->set_placement(m_pgpucontext->rectangle);
    //   //         //
-   //   //         //            auto poffscreenrendertargetview = øallocate offscreen_render_target_view(m_pgpucontext, m_extentRenderer, m_prendertargetviewResolve);
+   //   //         //            auto poffscreenrendertargetview = allocateø offscreen_render_target_view(m_pgpucontext, m_extentRenderer, m_prendertargetviewResolve);
    //   //         //#ifdef WINDOWS_DESKTOP
    //   //         //            poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //   //         //#else
@@ -479,7 +479,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   //      else if (eoutput == ::gpu::e_output_resolve_color_and_alpha_accumulation_buffers)
    //   //      {
    //   //
-   //   //         auto poffscreenrendertargetview = øallocate offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
+   //   //         auto poffscreenrendertargetview = allocateø offscreen_render_target_view(this, m_extentRenderer, m_prendertargetview);
    //   //#ifdef WINDOWS_DESKTOP
    //   //         poffscreenrendertargetview->m_formatImage = VK_FORMAT_B8G8R8A8_UNORM;
    //   //#else
@@ -527,7 +527,7 @@ float4 main(PSInput input) : SV_TARGET {
    //::pointer < ::gpu::render_target > renderer::allocate_offscreen_render_target()
    //{
 
-   //   auto poffscreenrendertargetview = øallocate offscreen_render_target_view();
+   //   auto poffscreenrendertargetview = allocateø offscreen_render_target_view();
 
    //   return poffscreenrendertargetview;
 
@@ -551,7 +551,7 @@ float4 main(PSInput input) : SV_TARGET {
          //auto& pcommandbuffer = m_commandbuffera[iFrame];
          auto& pcommandbuffer = m_commandbuffera[iFrame];
 
-         if (ødefer_construct(pcommandbuffer))
+         if (defer_constructø(pcommandbuffer))
          {
 
             ::cast < command_buffer > pdx12commandbuffer = pcommandbuffer;
@@ -639,7 +639,7 @@ float4 main(PSInput input) : SV_TARGET {
       if (!m_pcommandbufferLoadAssets)
       {
 
-         ødefer_construct(m_pcommandbufferLoadAssets);
+         defer_constructø(m_pcommandbufferLoadAssets);
 
          ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
 
@@ -725,7 +725,7 @@ float4 main(PSInput input) : SV_TARGET {
          //}
 
          //m_
-         //auto pframe = øcreate_new < frame >();
+         //auto pframe = create_newø < frame >();
          //pframe->commandBuffer = commandBuffer;
          //m_pframe = pframe;
          //return m_pframe;
@@ -1115,7 +1115,7 @@ float4 main(PSInput input) : SV_TARGET {
       if (m_desc.Width != m_size.width() || m_desc.Height != m_size.height())
       {
 
-         m_presourceStagingTexture.Release();
+         m_presourceStagingTexture.release();
 
          if (m_desc.Format != DXGI_FORMAT_B8G8R8A8_UNORM)
          {
@@ -1516,7 +1516,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //::cast < ::gpu_directx12::offscreen_render_target_view > ptargetview = m_prendertargetview;
 
-      //ødefer_construct(m_pgpucontext->m_pcpubuffer);
+      //defer_constructø(m_pgpucontext->m_pcpubuffer);
 
       //m_pgpucontext->m_pcpubuffer->gpu_read();
 
@@ -1715,7 +1715,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //::cast < ::gpu_directx12::offscreen_render_target_view > ptargetview = m_prendertargetview;
 
-      //ødefer_construct(m_pgpucontext->m_pcpubuffer);
+      //defer_constructø(m_pgpucontext->m_pcpubuffer);
 
       //m_pgpucontext->m_pcpubuffer->gpu_read();
 
@@ -2063,7 +2063,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //		int iFrameCount = get_frame_count();
 
-      //		auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
+      //		auto pdescriptorpoolbuilder = allocateø::gpu_directx12::descriptor_pool::Builder();
 
       //		pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
       //		pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -2076,7 +2076,7 @@ float4 main(PSInput input) : SV_TARGET {
       //	if (!m_pshaderResolve)
       //	{
 
-      //		auto pshadervertexinput = øallocate  shader_vertex_input();
+      //		auto pshadervertexinput = allocateø  shader_vertex_input();
 
       //		pshadervertexinput->m_bindings.add(
       //			{
@@ -2088,7 +2088,7 @@ float4 main(PSInput input) : SV_TARGET {
       //		pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
       //		pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 
-      //		auto pshaderResolve = øcreate_new<::gpu_directx12::shader>();
+      //		auto pshaderResolve = create_newø<::gpu_directx12::shader>();
 
       //		m_pshaderResolve = pshaderResolve;
 
@@ -2133,7 +2133,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //	auto& pdescriptor = m_pdescriptorResolve;
 
-      //	if (ødefer_construct_new(pdescriptor))
+      //	if (defer_construct_newø(pdescriptor))
       //	{
 
       //		pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -2205,7 +2205,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //	auto& pmodel = m_pmodelResolve;
 
-      //	if (ødefer_construct_new(pmodel))
+      //	if (defer_construct_newø(pmodel))
       //	{
 
       //		create_quad_buffers(m_pgpucontext->logicalDevice(),
@@ -2366,7 +2366,7 @@ float4 main(PSInput input) : SV_TARGET {
       if (!m_pshaderImageBlend)
       {
 
-         auto pinputlayoutEmpty = øcreate <::gpu::input_layout >();
+         auto pinputlayoutEmpty = createø <::gpu::input_layout >();
 
          //pshadervertexinput->m_bindings.add(
          //   {
@@ -2378,7 +2378,7 @@ float4 main(PSInput input) : SV_TARGET {
          //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
          //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 
-         auto pshaderImageBlend = øcreate_new<::gpu_directx12::shader>();
+         auto pshaderImageBlend = create_newø<::gpu_directx12::shader>();
 
          m_pshaderImageBlend = pshaderImageBlend;
 
@@ -2410,7 +2410,7 @@ float4 main(PSInput input) : SV_TARGET {
       if (!m_pshaderImageBlend)
       {
 
-         auto pinputlayoutEmpty = øcreate < ::gpu::input_layout > ();
+         auto pinputlayoutEmpty = createø < ::gpu::input_layout > ();
 
          //pshadervertexinput->m_bindings.add(
          //   {
@@ -2422,7 +2422,7 @@ float4 main(PSInput input) : SV_TARGET {
          //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = 0 });
          //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = sizeof(float) * 2 });
 
-         auto pshaderImageBlend = øcreate_new<::gpu_directx12::shader>();
+         auto pshaderImageBlend = create_newø<::gpu_directx12::shader>();
 
          m_pshaderImageBlend = pshaderImageBlend;
 
@@ -2558,7 +2558,7 @@ float4 main(PSInput input) : SV_TARGET {
    //}
 
 
-   //void renderer::_blend_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap)
+   //void renderer::_blend_image(VkImage image, const ::i32_rectangle& rectangle, bool bYSwap)
    //{
 
    //   // Image Blend descriptors
@@ -2571,7 +2571,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //      int iFrameCount = get_frame_count();
 
-   //      auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
+   //      auto pdescriptorpoolbuilder = allocateø::gpu_directx12::descriptor_pool::Builder();
 
    //      pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
    //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -2703,7 +2703,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //   auto& pmodel = m_imagemodel[image];
 
-   //   if (ødefer_construct_new(pmodel))
+   //   if (defer_construct_newø(pmodel))
    //   {
 
    //      create_quad_buffers(m_pgpucontext->logicalDevice(),
@@ -2721,7 +2721,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //   auto& pdescriptor = m_imagedescriptor[image];
 
-   //   if (ødefer_construct_new(pdescriptor))
+   //   if (defer_construct_newø(pdescriptor))
    //   {
 
    //      pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -2845,7 +2845,7 @@ float4 main(PSInput input) : SV_TARGET {
    //}
 
 
-   //void renderer::_copy_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap)
+   //void renderer::_copy_image(VkImage image, const ::i32_rectangle& rectangle, bool bYSwap)
    //{
 
    //   // Image Blend descriptors
@@ -2858,7 +2858,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //      int iFrameCount = get_frame_count();
 
-   //      auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
+   //      auto pdescriptorpoolbuilder = allocateø::gpu_directx12::descriptor_pool::Builder();
 
    //      pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
    //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -2872,7 +2872,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //   auto& pmodel = m_imagemodel[image];
 
-   //   if (ødefer_construct_new(pmodel))
+   //   if (defer_construct_newø(pmodel))
    //   {
 
    //      create_quad_buffers(m_pgpucontext->logicalDevice(),
@@ -2890,7 +2890,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //   auto& pdescriptor = m_imagedescriptor[image];
 
-   //   if (ødefer_construct_new(pdescriptor))
+   //   if (defer_construct_newø(pdescriptor))
    //   {
 
    //      pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -3020,7 +3020,7 @@ float4 main(PSInput input) : SV_TARGET {
    //}
 
 
-   //void renderer::_set_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap)
+   //void renderer::_set_image(VkImage image, const ::i32_rectangle& rectangle, bool bYSwap)
    //{
 
    //   // Image Blend descriptors
@@ -3033,7 +3033,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //      int iFrameCount = get_frame_count();
 
-   //      auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
+   //      auto pdescriptorpoolbuilder = allocateø::gpu_directx12::descriptor_pool::Builder();
 
    //      pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
    //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -3165,7 +3165,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //   auto& pmodel = m_imagemodel[image];
 
-   //   if (ødefer_construct_new(pmodel))
+   //   if (defer_construct_newø(pmodel))
    //   {
 
    //      create_quad_buffers(m_pgpucontext->logicalDevice(),
@@ -3184,7 +3184,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    //   auto& pdescriptor = m_imagedescriptor[image];
 
-   //   if (ødefer_construct_new(pdescriptor))
+   //   if (defer_construct_newø(pdescriptor))
    //   {
 
    //      pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -3428,7 +3428,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //     int iFrameCount = get_frame_count();
 
-      //     auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
+      //     auto pdescriptorpoolbuilder = allocateø::gpu_directx12::descriptor_pool::Builder();
 
       //     pdescriptorpoolbuilder->initialize_builder(m_pgpucontext);
       //     pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -3560,7 +3560,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //  auto& pmodel = m_imagemodel[image];
 
-      //  if (ødefer_construct_new(pmodel))
+      //  if (defer_construct_newø(pmodel))
       //  {
 
       //     create_quad_buffers(m_pgpucontext->logicalDevice(),
@@ -3579,7 +3579,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //  auto& pdescriptor = m_imagedescriptor[image];
 
-      //  if (ødefer_construct_new(pdescriptor))
+      //  if (defer_construct_newø(pdescriptor))
       //  {
 
       //     pdescriptor->m_descriptorsets.set_size(get_frame_count());
@@ -4456,7 +4456,7 @@ float4 main(PSInput input) : SV_TARGET {
 //      if (!m_pshaderHelloTriangle)
 //      {
 //
-//         ødefer_construct_new(m_pshaderHelloTriangle);
+//         defer_construct_newø(m_pshaderHelloTriangle);
 //
 //         m_pshaderHelloTriangle->m_iVertexLevel = 2;
 //
@@ -4593,7 +4593,7 @@ float4 main(PSInput input) : SV_TARGET {
       //   if (!m_pshaderHelloTriangle)
       //   {
 
-      //      ødefer_construct_new(m_pshaderHelloTriangle);
+      //      defer_construct_newø(m_pshaderHelloTriangle);
 
       //      m_pshaderHelloTriangle->m_iVertexLevel = 2;
 
@@ -4661,7 +4661,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       return ::gpu::renderer::beginFrame();
 
-      //auto pframe = øcreate < ::gpu::frame >()
+      //auto pframe = createø < ::gpu::frame >()
 
       //m_iSentLayerCount = 0;
 
@@ -4694,9 +4694,9 @@ float4 main(PSInput input) : SV_TARGET {
       ////   if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
       ////      throw ::exception(error_failed, "failed to begin recording command buffer!");
       ////   }
-      //  //auto pframe = øcreate_new < ::gpu_directx12::frame >();
+      //  //auto pframe = create_newø < ::gpu_directx12::frame >();
       ////   pframe->commandBuffer = commandBuffer;
-      //ødefer_construct(m_pgpurendertarget->m_pframe);
+      //defer_constructø(m_pgpurendertarget->m_pframe);
       ////   on_happening(e_happening_begin_frame);
       ////   return m_pframe;
 
@@ -5021,7 +5021,7 @@ float4 main(PSInput input) : SV_TARGET {
 //      if (!m_pshaderHelloTriangle)
 //      {
 //
-//         ødefer_construct_new(m_pshaderHelloTriangle);
+//         defer_construct_newø(m_pshaderHelloTriangle);
 //
 //         m_pshaderHelloTriangle->m_iVertexLevel = 2;
 //
@@ -5072,7 +5072,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   //void renderer::_on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle)
+   //void renderer::_on_graphics_end_draw(VkImage image, const ::i32_rectangle& rectangle)
    //{
 
    //   m_pgpucontext->set_placement(rectangle);

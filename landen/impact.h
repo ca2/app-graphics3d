@@ -31,7 +31,7 @@ namespace app_graphics3d_landen
 
 //      // void assert_ok() const override;
 //      // void dump(dump_context & dumpcontext) const override;
-      //::int_size size() override;
+      //::i32_size size() override;
 
 
 

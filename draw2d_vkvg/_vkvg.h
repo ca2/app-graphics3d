@@ -36,7 +36,7 @@ namespace vulkan
 {
 
 
-   void resize(const ::int_size & size, bool bYSwap);
+   void resize(const ::i32_size & size, bool bYSwap);
 
 
    //https://community.khronos.org/t/draw-an-arc-in-vulkan/57994/2

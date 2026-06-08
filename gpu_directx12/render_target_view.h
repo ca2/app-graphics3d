@@ -24,24 +24,24 @@ namespace gpu_directx12
       //::pointer < depth_stencil >      m_pdepthstencil;
       UINT m_rtvDescriptorSize;
 
-      //::int_size m_size;
+      //::i32_size m_size;
 
       //::pointer < renderer >  m_pgpurenderer;
 
       ::pointer<render_target_view> m_prendertargetviewOld;
 
-      ::int_array imageAvailable;
+      ::i32_array imageAvailable;
       bool                 m_bNeedRebuild;
 
       //static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
       render_target_view();
-      //render_target_view(renderer* prenderer, const ::int_size & size);
-      //render_target_view(renderer* prenderer, const ::int_size& size, ::pointer <render_target_view>previous);
+      //render_target_view(renderer* prenderer, const ::i32_size & size);
+      //render_target_view(renderer* prenderer, const ::i32_size& size, ::pointer <render_target_view>previous);
       ~render_target_view();
 
 
-      virtual void initialize_render_target(::gpu::renderer* prenderer, const ::int_size& size, ::pointer <::gpu::render_target>previous);
+      virtual void initialize_render_target(::gpu::renderer* prenderer, const ::i32_size& size, ::pointer <::gpu::render_target>previous);
 
 
 

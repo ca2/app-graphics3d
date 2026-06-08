@@ -300,7 +300,7 @@ namespace app_graphics3d_landen
    //}
 
 
-   //::int_size impact::size()
+   //::i32_size impact::size()
    //{
 
    //   return this->raw_rectangle().size();
@@ -326,7 +326,7 @@ namespace app_graphics3d_landen
 
       //m_pparticleImageSynchronization = node()->create_mutex();
 
-      //m_pimage = image()->create_image(int_size{ 1920, 1080 });
+      //m_pimage = image()->create_image(i32_size{ 1920, 1080 });
 
    }
 
@@ -391,31 +391,31 @@ namespace app_graphics3d_landen
 
    //   ////return;
 
-   //   //pgraphics->fill_solid_rectangle(::int_rectangle_dimension(10, 10, 100, 100), argb(128, 200, 220, 255));
+   //   //pgraphics->fill_solid_rectangle(::i32_rectangle_dimension(10, 10, 100, 100), argb(128, 200, 220, 255));
 
    //   ////return;
 
-   //   //pgraphics->fill_solid_rectangle(::int_rectangle_dimension(110, 100, 100, 100), argb(255, 200, 220, 255));
+   //   //pgraphics->fill_solid_rectangle(::i32_rectangle_dimension(110, 100, 100, 100), argb(255, 200, 220, 255));
 
-   //   //auto ppen = øcreate < ::draw2d::pen > ();
+   //   //auto ppen = createø < ::draw2d::pen > ();
 
    //   //ppen->create_solid(10, argb(200, 20, 155, 50));
 
    //   //pgraphics->set(ppen);
 
-   //   //pgraphics->draw_line(::double_point( 0.0, 0.0 ), ::double_point(300.0, 300.0));
+   //   //pgraphics->draw_line(::f64_point( 0.0, 0.0 ), ::f64_point(300.0, 300.0));
 
-   //   //pgraphics->fill_solid_rectangle(::int_rectangle_dimension(10, 150, 100, 100), argb(128, 100, 255, 120));
+   //   //pgraphics->fill_solid_rectangle(::i32_rectangle_dimension(10, 150, 100, 100), argb(128, 100, 255, 120));
 
-   //   //pgraphics->fill_solid_rectangle(::int_rectangle_dimension(110, 150, 100, 100), argb(255, 100, 255, 120));
+   //   //pgraphics->fill_solid_rectangle(::i32_rectangle_dimension(110, 150, 100, 100), argb(255, 100, 255, 120));
 
-   //   //auto ppen2 = øcreate < ::draw2d::pen > ();
+   //   //auto ppen2 = createø < ::draw2d::pen > ();
 
    //   //ppen2->create_solid(5, argb(200, 20, 155, 50));
 
    //   //pgraphics->set(ppen2);
 
-   //   //pgraphics->draw_line(::double_point(300.0, 0.0), ::double_point(100.0, 300.0));
+   //   //pgraphics->draw_line(::f64_point(300.0, 0.0), ::f64_point(100.0, 300.0));
 
    //   //pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
 
@@ -516,7 +516,7 @@ namespace app_graphics3d_landen
    ::pointer < ::graphics3d::key_map > impact::get_default_key_map()
    {
 
-      auto pmap = øcreate_new < ::graphics3d::key_map>();
+      auto pmap = create_newø < ::graphics3d::key_map>();
       using namespace ::graphics3d;
 
       pmap->map(e_key_moveLeft, ::user::e_key_a);

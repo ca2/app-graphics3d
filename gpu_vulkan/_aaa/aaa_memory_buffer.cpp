@@ -57,7 +57,7 @@ namespace gpu_vulkan
       // m.scale(2.0 / size.cx, 2.0 / size.cy);
       // m.translate(-1.0, -1.0);
 
-      // ::double_point points[4];
+      // ::f64_point points[4];
 
       // points[0] = points1[0]; // top-left
       // points[1] = points1[1]; // top-right

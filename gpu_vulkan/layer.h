@@ -24,7 +24,7 @@ namespace gpu_vulkan
       //int m_iLayerIndex = -1;
       //::pointer < renderer >        m_pgpurenderer;
       ////::pointer < renderer >        m_pgpurendererTarget;
-      ////::int_rectangle m_rectangleTarget;
+      ////::i32_rectangle m_rectangleTarget;
       //::pointer_array <texture >    m_texturea;
       //::pointer_array <texture >    m_textureaSource;
       //::pointer < ::gpu::frame > m_pgpuframe;

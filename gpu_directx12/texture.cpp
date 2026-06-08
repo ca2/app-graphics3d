@@ -280,7 +280,7 @@ namespace gpu_directx12
    }
 
 
-   // void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle& rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype)
+   // void texture::initialize_image_texture(::gpu::renderer* prenderer, const ::i32_rectangle& rectangleTarget, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype)
    // {
    //
    //    auto size = m_rectangleTarget.size();
@@ -852,7 +852,7 @@ namespace gpu_directx12
 
       int iLayerPlusOne = maximum(0, m_iCurrentLayer + 1);
 
-      auto &layer = this->m_miplayera.ø(iMip).ø(iLayerPlusOne);
+      auto &layer = this->m_miplayera.atø(iMip).atø(iLayerPlusOne);
 
       if (layer.is_empty())
       {
@@ -1045,7 +1045,7 @@ namespace gpu_directx12
       if (!m_pd3d11)
       {
 
-         øconstruct_new(m_pd3d11);
+         construct_newø(m_pd3d11);
 
       }
 
@@ -1238,7 +1238,7 @@ namespace gpu_directx12
 //   }
 //
 
-   //void texture::set_pixels_problem_to_maintain_upload_buffer_active_while_command_list_is_not_yet_executed(const ::int_rectangle& rectangle, const void* data)
+   //void texture::set_pixels_problem_to_maintain_upload_buffer_active_while_command_list_is_not_yet_executed(const ::i32_rectangle& rectangle, const void* data)
    //{
 
    //   ::cast < renderer > prenderer = m_pgpurenderer;
@@ -1331,7 +1331,7 @@ namespace gpu_directx12
    //}
 
 
-   //void texture::set_pixels_upload_buffer_is_big_exclamation_exclamation_lets_again_try_to_keep_it_around(const ::int_rectangle& rectangle, const void* data)
+   //void texture::set_pixels_upload_buffer_is_big_exclamation_exclamation_lets_again_try_to_keep_it_around(const ::i32_rectangle& rectangle, const void* data)
    //{
 
    //   ::cast < renderer > prenderer = m_pgpurenderer;
@@ -1398,7 +1398,7 @@ namespace gpu_directx12
    void texture::upload_buffer::initialize_upload_buffer(texture* ptexture)
    {
 
-      ::cast < renderer > prenderer = ptexture->m_pgpucontext;
+      ::cast < renderer > prenderer = ptexture->m_pgpucontext->m_pgpurenderer;
 
       ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
@@ -1459,7 +1459,7 @@ namespace gpu_directx12
    void texture::static_upload_buffer::initialize_static_upload_buffer(texture *ptexture)
    {
 
-      ::cast<renderer> prenderer = ptexture->m_pgpucontext;
+      ::cast<renderer> prenderer = ptexture->m_pgpucontext->m_pgpurenderer;
 
       ::cast<::gpu_directx12::context> pcontext = prenderer->m_pgpucontext;
 
@@ -1631,7 +1631,7 @@ namespace gpu_directx12
       if (!pobject)
       {
 
-         auto puploadbuffer = øallocate upload_buffer();
+         auto puploadbuffer = allocateø upload_buffer();
 
          puploadbuffer->initialize_upload_buffer(this);
 
@@ -1651,7 +1651,7 @@ namespace gpu_directx12
 
       ::cast<renderer> prenderer = m_pgpucontext->m_pgpurenderer;
 
-      øconstruct_new(m_pstaticuploadbuffer);
+      construct_newø(m_pstaticuploadbuffer);
 
       m_pstaticuploadbuffer->m_iResourceCount = iResourceCount;
 
@@ -1775,7 +1775,7 @@ namespace gpu_directx12
    }
 
 
-   void texture::upload_buffer::update_pixels(const ::int_rectangle& rectangle, const void* data)
+   void texture::upload_buffer::update_pixels(const ::i32_rectangle& rectangle, const void* data)
    {
 
       map();
@@ -1832,7 +1832,7 @@ namespace gpu_directx12
    }
 
 
-   void texture::set_pixels(const ::int_rectangle& rectangle, const void* data)
+   void texture::set_pixels(const ::i32_rectangle& rectangle, const void* data)
    {
 
       //::cast < renderer > prenderer = m_pgpurenderer;
@@ -1890,7 +1890,7 @@ namespace gpu_directx12
 
       if (!m_pmipmapgenerator)
       {
-         øconstruct_new(m_pmipmapgenerator);
+         construct_newø(m_pmipmapgenerator);
 
          m_pmipmapgenerator->initialize_mip_map_generator(this);
       }
@@ -2003,8 +2003,8 @@ namespace gpu_directx12
 
             pdevice->m_pd3d12device->CreateShaderResourceView(m_ptexture->m_pd3d12resourceTexture->m_presource, &srv, cpu);
 
-            m_handleaShaderResourceView.ø(i) = m_gpuBase;
-            m_handleaShaderResourceView.ø(i).ptr += i * descriptorSize;
+            m_handleaShaderResourceView.atø(i) = m_gpuBase;
+            m_handleaShaderResourceView.atø(i).ptr += i * descriptorSize;
          }
       }
 
@@ -2029,8 +2029,8 @@ namespace gpu_directx12
 
             pdevice->m_pd3d12device->CreateUnorderedAccessView(m_ptexture->m_pd3d12resourceTexture->m_presource, nullptr, &uav, cpu);
 
-            m_handleaUnorderedAccessView.ø(i) = m_gpuBase;
-            m_handleaUnorderedAccessView.ø(i).ptr += (uavBase + i) * descriptorSize;
+            m_handleaUnorderedAccessView.atø(i) = m_gpuBase;
+            m_handleaUnorderedAccessView.atø(i).ptr += (uavBase + i) * descriptorSize;
          }
       }
 

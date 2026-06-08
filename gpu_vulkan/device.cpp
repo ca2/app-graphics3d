@@ -444,7 +444,7 @@ namespace gpu_vulkan
 
 
 
-   //void device::create_offscreen_buffer(const ::int_size& size)
+   //void device::create_offscreen_buffer(const ::i32_size& size)
    //{
 
    //   auto pgpu = application()->get_gpu();
@@ -456,7 +456,7 @@ namespace gpu_vulkan
 
    //   }
 
-   //   ::e_status estatus = øconstruct(m_pbuffer);
+   //   ::e_status estatus = constructø(m_pbuffer);
 
    //   if (!estatus)
    //   {
@@ -488,7 +488,7 @@ namespace gpu_vulkan
    //}
 
 
-   //void device::_create_offscreen_buffer(const ::int_size& size)
+   //void device::_create_offscreen_buffer(const ::i32_size& size)
    //{
 
    //   return ::success_none;
@@ -496,7 +496,7 @@ namespace gpu_vulkan
    //}
 
 
-   //void device::resize_offscreen_buffer(const ::int_size& size)
+   //void device::resize_offscreen_buffer(const ::i32_size& size)
    //{
 
    //   return ::success_none;
@@ -677,7 +677,7 @@ namespace gpu_vulkan
    // ::pointer < ::gpu::device > allocate_system_context(::particle* pparticle)
    // {
    //
-   //    return pparticle->øcreate_new <device>();
+   //    return pparticle->create_newø <device>();
    //
    // }
 
@@ -704,7 +704,7 @@ namespace gpu_vulkan
    //}
 
 
-   void device::_create_offscreen_window(const ::int_size& size)
+   void device::_create_offscreen_window(const ::i32_size& size)
    {
       //if (::IsWindow(m_hwnd))
       //{
@@ -926,7 +926,7 @@ namespace gpu_vulkan
    }
 
 
-   void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::int_rectangle& rectanglePlacement)
+   void device::initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproachParam, const ::i32_rectangle& rectanglePlacement)
    {
 
 
@@ -1211,7 +1211,7 @@ namespace gpu_vulkan
       if (graphicsFamily >= 0)
       {
 
-         auto pqueueGraphics = øcreate_new<::gpu_vulkan::queue>();
+         auto pqueueGraphics = create_newø<::gpu_vulkan::queue>();
 
          pqueueGraphics->initialize_gpu_queue(this);
 
@@ -1230,7 +1230,7 @@ namespace gpu_vulkan
       if (transferFamily >= 0)
       {
 
-         auto pqueueTransfer = øcreate_new<::gpu_vulkan::queue>();
+         auto pqueueTransfer = create_newø<::gpu_vulkan::queue>();
 
          pqueueTransfer->initialize_gpu_queue(this);
 
@@ -1249,7 +1249,7 @@ namespace gpu_vulkan
       if (presentFamily >= 0)
       {
 
-         auto pqueuePresent = øcreate_new<::gpu_vulkan::queue>();
+         auto pqueuePresent = create_newø<::gpu_vulkan::queue>();
 
          pqueuePresent->initialize_gpu_queue(this);
 
@@ -1635,7 +1635,7 @@ namespace gpu_vulkan
 
    //   //   ::GetClientRect(m_hwnd, &rectClient);
 
-   //   //   ::int_size sizeNew = { rectClient.right - rectClient.left,
+   //   //   ::i32_size sizeNew = { rectClient.right - rectClient.left,
    //   //rectClient.bottom - rectClient.top };
    //   //   
    //   //   if (m_size != sizeNew)
@@ -1679,7 +1679,7 @@ namespace gpu_vulkan
    //}
 
 
-   //void device::_create_offscreen_buffer(const ::int_size& size)
+   //void device::_create_offscreen_buffer(const ::i32_size& size)
    //{
 
    //   _create_offscreen_window(size);
@@ -1714,7 +1714,7 @@ namespace gpu_vulkan
    //}
 
 
-   //void device::resize_offscreen_buffer(const ::int_size& sizeParam)
+   //void device::resize_offscreen_buffer(const ::i32_size& sizeParam)
    //{
 
    //   if (m_papplication->m_bUseSwapChainWindow)

@@ -133,7 +133,7 @@ namespace gpu_vulkan
       if (!m_pvkdescriptorseta)
       {
 
-         øconstruct_new(m_pvkdescriptorseta);
+         construct_newø(m_pvkdescriptorseta);
 
          auto iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
 
@@ -225,7 +225,7 @@ namespace gpu_vulkan
 
 //      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-//      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+//      auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
 //      pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
 //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -245,7 +245,7 @@ namespace gpu_vulkan
 
 //      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-//      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+//      auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
 //      pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
 //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -267,7 +267,7 @@ namespace gpu_vulkan
 
 //      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-//      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+//      auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
 //      pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
 //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -289,7 +289,7 @@ namespace gpu_vulkan
 
 //      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-//      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+//      auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
 //      pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
 //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -342,7 +342,7 @@ namespace gpu_vulkan
 
          auto pgpucontext = pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext;
 
-         auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+         auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
          int iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
 

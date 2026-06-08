@@ -15,10 +15,10 @@ namespace graphics3d_hello3d
 {
 
 
-//   void render::draw_arc(::draw2d::graphics_pointer & pgraphics, int_rectangle& r, double dStart, double dAngle, bool bPath)
+//   void render::draw_arc(::draw2d::graphics_pointer & pgraphics, i32_rectangle& r, double dStart, double dAngle, bool bPath)
 //   {
 //
-//      auto pfont = øcreate < ::write_text::font > ();
+//      auto pfont = createø < ::write_text::font > ();
 //
 //      string strFontFamily = get_font();
 //
@@ -52,11 +52,11 @@ namespace graphics3d_hello3d
 //
 //      pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
 //
-//      ::int_size size;
+//      ::i32_size size;
 //
 //      size = size1.maximum(size2);
 //
-//      ::int_rectangle rectangleBack(r);
+//      ::i32_rectangle rectangleBack(r);
 //
 //      rectangleBack.deflate(2, 2);
 //
@@ -68,9 +68,9 @@ namespace graphics3d_hello3d
 //
 //      pgraphics->text_out(rectangleBack.left + 4, rectangleBack.top + size.cy + 8, str2);
 //
-//      auto ppen = øcreate < ::draw2d::pen > ();
+//      auto ppen = createø < ::draw2d::pen > ();
 //
-//      auto pbrush = øcreate < ::draw2d::brush >();
+//      auto pbrush = createø < ::draw2d::brush >();
 //
 //      pbrush->create_null();
 //
@@ -199,7 +199,7 @@ namespace graphics3d_hello3d
 //      daStart.add(45.0);
 //      daAngle.add(-100.0);
 //
-//      ::int_rectangle rClient(m_rectangle);
+//      ::i32_rectangle rClient(m_rectangle);
 //
 //      //if (__bool(papp->m_echeckSimple))
 //      //{
@@ -216,7 +216,7 @@ namespace graphics3d_hello3d
 //
 //      int iColumnCount = 8;
 //
-//      int_rectangle r;
+//      i32_rectangle r;
 //
 //      r.top = 0;
 //

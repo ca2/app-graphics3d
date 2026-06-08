@@ -61,7 +61,7 @@ namespace gpu_vulkan
       for (int i = 0; i < m_uboBuffers.size(); i++)
       {
       
-         ødefer_construct_new(m_uboBuffers[i]);
+         defer_construct_newø(m_uboBuffers[i]);
       
          m_uboBuffers[i]->_initialize_buffer(pgpucontext, iBufferSize,
             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,

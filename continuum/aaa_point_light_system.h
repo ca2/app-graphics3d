@@ -58,5 +58,5 @@ namespace app_graphics3d_continuum
 BEGIN_GPU_PROPERTIES(::app_graphics3d_continuum::point_light2)
 GPU_PROPERTY("position", ::gpu::e_type_seq4)
 GPU_PROPERTY("color", ::gpu::e_type_seq4)
-GPU_PROPERTY("radius", ::gpu::e_type_float)
+GPU_PROPERTY("radius", ::gpu::e_type_f32)
 END_GPU_PROPERTIES()

@@ -60,12 +60,12 @@ namespace graphics3d
 
       //auto modeldataCube = ::graphics3d::shape_factory::create_cube(32.0f);
 
-      //ødefer_construct(m_pmodelCube);
+      //defer_constructø(m_pmodelCube);
 
       //m_pmodelCube->initialize_model(pengine->gpu_context(), modeldataCube);
 
       // Initialize skybox shader
-      ødefer_construct(m_pshader);
+      defer_constructø(m_pshader);
 
       m_pshader->m_bDisableDepthTest = false;
       m_pshader->m_bDepthTestButNoDepthWrite = true;
@@ -191,7 +191,7 @@ namespace graphics3d
 
    //   //auto scanCubeMap = pimageCubeMap->m_iScan;
 
-   //   ::int_point point;
+   //   ::i32_point point;
 
    //   ::pointer_array < ::image::image > imagea;
 
@@ -212,7 +212,7 @@ namespace graphics3d
 
    //   }
 
-   //   ødefer_construct(m_ptextureCubeMap);
+   //   defer_constructø(m_ptextureCubeMap);
 
    //   m_ptextureCubeMap->m_bTransferDst = true;
 
@@ -220,7 +220,7 @@ namespace graphics3d
    //      m_pmodelCube->m_pgpucontext->m_pgpurenderer,
    //      imagea, ::gpu::e_texture_cube_map);
 
-   //   //m_pshader->set_int("skybox", 0);
+   //   //m_pshader->set_i32("skybox", 0);
 
    //   //int width, height, nrChannels;
 

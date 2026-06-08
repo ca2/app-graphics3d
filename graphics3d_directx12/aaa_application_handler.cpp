@@ -99,7 +99,7 @@ namespace graphics3d_directx12
 
       //m_prenderer->initialize_renderer(m_pcontainer, m_pcontext);
 
-      //auto pglobalpoolbuilder = øallocate descriptor_pool::Builder();
+      //auto pglobalpoolbuilder = allocateø descriptor_pool::Builder();
 
       //pglobalpoolbuilder->initialize_builder(m_pcontext);
       //pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
@@ -109,14 +109,14 @@ namespace graphics3d_directx12
 
       ////m_pglobalpool->initialize_pool(m_pcontext);
 
-      ////= øallocate
+      ////= allocateø
       ////   descriptor_pool::Builder(m_pcontext)
       ////   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       ////   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       ////   .build();
       //loadGameObjects();
 
-      ////m_pcontext = øallocate context(m_pdirectx12device);
+      ////m_pcontext = allocateø context(m_pdirectx12device);
 
       //::pointer_array<buffer> uboBuffers;
 
@@ -125,7 +125,7 @@ namespace graphics3d_directx12
       //for (int i = 0; i < uboBuffers.size(); i++) 
       //{
 
-      //   uboBuffers[i] = øallocate buffer();
+      //   uboBuffers[i] = allocateø buffer();
 
       //   uboBuffers[i]->initialize_buffer(
       //      m_pcontext,

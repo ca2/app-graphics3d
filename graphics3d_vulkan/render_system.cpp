@@ -32,7 +32,7 @@ namespace graphics3d_vulkan
    //   //if (!m_pgpurenderpass)
    //   //{
 
-   //   //         øconstruct(m_pgpurenderpass);
+   //   //         constructø(m_pgpurenderpass);
 
    //   //         m_pgpurenderpass->initialize_gpu_context_object(m_pengine->gpu_context());
 

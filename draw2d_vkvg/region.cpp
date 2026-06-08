@@ -38,7 +38,7 @@ namespace draw2d_vkvg
    void region::SetRectRgn(int x1, int y1, int x2, int y2)
    { ASSERT(get_os_data() != nullptr); ::SetRectRgn((HRGN)get_os_data(), x1, y1, x2, y2); }
    
-   void region::SetRectRgn(const ::int_rectangle & rectangle)
+   void region::SetRectRgn(const ::i32_rectangle & rectangle)
    { 
       ::SetRectRgn((HRGN)get_os_data(), rectangle.left, rectangle.top, rectangle.right, rectangle.bottom); 
    }
@@ -60,16 +60,16 @@ namespace draw2d_vkvg
 
    int region::OffsetRgn(int x, int y)
    { ASSERT(get_os_data() != nullptr); return ::OffsetRgn((HRGN)get_os_data(), x, y); }
-   int region::OffsetRgn(const ::int_point & point)
+   int region::OffsetRgn(const ::i32_point & point)
    { ASSERT(get_os_data() != nullptr); return ::OffsetRgn((HRGN)get_os_data(), point.x, point.y); }
 
    */
-   bool region::get_bounding_box(::int_rectangle * lprect) const
+   bool region::get_bounding_box(::i32_rectangle * lprect) const
    {
 
       //((region *)this)->defer_update();
 
-      //plusplus::int_rectangle int_rectangle;
+      //plusplus::i32_rectangle i32_rectangle;
 
       //((region *) this)->m_pregion->GetBounds(&rectangle, &plusplus::Graphics((HDC) nullptr));
 
@@ -94,7 +94,7 @@ namespace draw2d_vkvg
    
    }
    */
-   bool region::contains(const ::int_point & point) const
+   bool region::contains(const ::i32_point & point) const
    { 
 
     /*  ((region *) (this))->defer_update();
@@ -108,7 +108,7 @@ namespace draw2d_vkvg
       return true;
    }
    /*
-   bool region::rectInRegion(const ::int_rectangle & rectangle) const
+   bool region::rectInRegion(const ::i32_rectangle & rectangle) const
    { 
       //ASSERT(get_os_data() != nullptr); return ::rectInRegion((HRGN)get_os_data(), rectangle); 
 
@@ -197,7 +197,7 @@ namespace draw2d_vkvg
 
    //   plusplus::GraphicsPath path;
 
-   //   plusplus::rectF int_rectangle;
+   //   plusplus::rectF i32_rectangle;
 
    //   rectangle.X      = (plusplus::REAL) m_x1;
    //   rectangle.Y      = (plusplus::REAL) m_y1;

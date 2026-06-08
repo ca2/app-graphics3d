@@ -40,21 +40,21 @@ namespace draw2d_vulkan
    //}
 
 
-   double_point path::internal_last_point()
+   f64_point path::internal_last_point()
    {
 
       if(m_bHasPointInternal)
       {
 
-         //return double_point((int) m_pointInternal.X, (int) m_pointInternal.Y);
+         //return f64_point((int) m_pointInternal.X, (int) m_pointInternal.Y);
 
-         return double_point(0, 0);
+         return f64_point(0, 0);
 
       }
       else
       {
 
-         throw ::exception(error_failed, "path does not have last int_point");
+         throw ::exception(error_failed, "path does not have last i32_point");
 
       }
 
@@ -118,7 +118,7 @@ namespace draw2d_vulkan
    bool path::internal_add_rect(int x,int y,int cx,int cy)
    {
 
-      //plusplus::int_rectangle int_rectangle(x,y,cx,cy);
+      //plusplus::i32_rectangle i32_rectangle(x,y,cx,cy);
 
       //bool bOk2 = m_ppath->AddRectangle(rectangle) == plusplus::Status::Ok;
 
@@ -151,7 +151,7 @@ namespace draw2d_vulkan
    }
 
 
-   double_point path::internal_current_point()
+   f64_point path::internal_current_point()
    {
 
       return m_pointLast;
@@ -195,7 +195,7 @@ namespace draw2d_vulkan
 
 
 
-   bool path::internal_add_arc(const ::int_rectangle & rectangle, double iStart, double iAngle)
+   bool path::internal_add_arc(const ::i32_rectangle & rectangle, double iStart, double iAngle)
    {
 
       return true;
@@ -203,7 +203,7 @@ namespace draw2d_vulkan
    }
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::double_arc& parc)
+   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_arc& parc)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -213,7 +213,7 @@ namespace draw2d_vulkan
    }
 
         
-   bool path::_set(::draw2d::graphics* pgraphics, const ::double_line& pline)
+   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_line& pline)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -233,7 +233,7 @@ namespace draw2d_vulkan
    //}
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::double_lines& pline)
+   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_lines& pline)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -253,7 +253,7 @@ namespace draw2d_vulkan
    //}
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::double_rectangle & prectangle)
+   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_rectangle & prectangle)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -263,7 +263,7 @@ namespace draw2d_vulkan
    }
 
 
-   //bool path::_set(::draw2d::graphics* pgraphics, const ::double_rectangle& prectangle)
+   //bool path::_set(::draw2d::graphics* pgraphics, const ::f64_rectangle& prectangle)
    //{
 
    //   throw ::exception(todo("::vulkan::path"));
@@ -273,7 +273,7 @@ namespace draw2d_vulkan
    //}
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::double_polygon& ppolygon)
+   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_polygon& ppolygon)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -283,7 +283,7 @@ namespace draw2d_vulkan
    }
 
 
-   //bool path::_set(::draw2d::graphics* pgraphics, const ::double_polygon& ppolygond)
+   //bool path::_set(::draw2d::graphics* pgraphics, const ::f64_polygon& ppolygond)
    //{
 
    //   throw ::exception(todo("::vulkan::path"));

@@ -74,7 +74,7 @@ namespace gpu_vulkan
          ::pointer<texture> m_ptexture;
          ::pointer<::gpu_vulkan::context> m_pcontext;
          ::pointer<buffer> m_pbufferStaging;
-         ::int_rectangle m_rectangle;
+         ::i32_rectangle m_rectangle;
 
       };
       class _001OnAfterEndFrame : virtual public ::particle
@@ -143,7 +143,7 @@ namespace gpu_vulkan
          /// @brief [0] -> color, [1] -> depth
          VkImageView m_vkimageviewaAttachment[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
          VkFramebuffer m_vkframebuffer = VK_NULL_HANDLE;
-         ::int_size m_size{-1, -1};
+         ::i32_size m_size{-1, -1};
          int m_iLayerCount = -1;
          bool is_empty() const
          {
@@ -262,21 +262,21 @@ namespace gpu_vulkan
 
       struct texture::layer &current_layer(::gpu_vulkan::render_pass * prenderpass);
       // void initialize_image_texture(::gpu::renderer* prenderer,
-      //    const ::int_rectangle& rectangleTarget,
+      //    const ::i32_rectangle& rectangleTarget,
       //    bool bWithDepth,
       //    const ::pointer_array < ::image::image > *pimagea = nullptr,
       //    ::gpu::enum_texture etype = e_type_image) override;
       //void initialize_cubemap_image_texture_with_mipmap(::gpu::renderer *pgpurenderer,
-      //                                                           const ::int_rectangle &rectangleTarget, int iMipCount,
+      //                                                           const ::i32_rectangle &rectangleTarget, int iMipCount,
       //                                                           bool bRenderTarget, bool bShaderResourceView) override;
 
       void _set_image_data(const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat);
       
-      void initialize_depth_texture(::gpu::context *pgpucontext, const ::int_rectangle &rectangleTarget) override;
+      void initialize_depth_texture(::gpu::context *pgpucontext, const ::i32_rectangle &rectangleTarget) override;
       void initialize_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path & path, bool bIsSrgb);
       void initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
       //virtual void load_Cubemap(const ::file::path & path);
-      //void blend(::gpu::texture* ptexture, const ::int_rectangle& rectangleTarget) override;
+      //void blend(::gpu::texture* ptexture, const ::i32_rectangle& rectangleTarget) override;
       //void TransitionImageLayout(
       //   VkImageLayout newLayout,
       //   uint32_t    layerCount);
@@ -314,7 +314,7 @@ namespace gpu_vulkan
       state_t & mip_layer_state(int iMip, int iLayer)
       {
 
-         return m_state2a.ø(iMip).ø(iLayer);
+         return m_state2a.atø(iMip).atø(iLayer);
 
       }
 
@@ -363,7 +363,7 @@ namespace gpu_vulkan
 
       virtual texture_synchronization * synchronization();
       //virtual texture_synchronization* synchronization(::gpu::render_target* prendertarget);
-      void set_pixels(const ::int_rectangle& rectangle, const void* data) override;
+      void set_pixels(const ::i32_rectangle& rectangle, const void* data) override;
 
 
       virtual VkDeviceMemory AllocateMemory(VkMemoryRequirements memRequirements, VkMemoryPropertyFlags properties);

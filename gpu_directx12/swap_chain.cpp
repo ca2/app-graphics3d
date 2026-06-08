@@ -31,7 +31,7 @@ namespace gpu_directx12
    }
 
 
-	void swap_chain::initialize_render_target(::gpu::renderer* pgpurenderer, const ::int_size& size, ::pointer <::gpu::render_target>previous)
+	void swap_chain::initialize_render_target(::gpu::renderer* pgpurenderer, const ::i32_size& size, ::pointer <::gpu::render_target>previous)
 	{
 
 		render_target_view::initialize_render_target(pgpurenderer, size, previous);
@@ -90,7 +90,7 @@ namespace gpu_directx12
       if (!ptextureSwapChain)
       {
 
-         øconstruct_new(ptextureSwapChain);
+         construct_newø(ptextureSwapChain);
 
          ptextureSwapChain->m_textureflags.m_bRenderTarget = true;
 
@@ -151,7 +151,7 @@ namespace gpu_directx12
       if (!m_pshaderPresent)
       {
 
-         øconstruct_new(m_pshaderPresent);
+         construct_newø(m_pshaderPresent);
 
          auto pbindingSampler = m_pshaderPresent->binding();
          pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
@@ -339,6 +339,8 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       //m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
       m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
 
+      gpu::render_target::m_pgpurenderer->m_pgpucontext->m_pgpudevice->m_iCurrentImage = m_iSwapChainIndex;
+
       if (m_iSwapChainIndex < 0)
       {
 
@@ -379,7 +381,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
 
       ::defer_throw_hresult(
-         pdcompositiondevice->CreateTargetForHwnd(pwin32window->_HWND(),
+         pdcompositiondevice->CreateTargetForHwnd((HWND) pwin32window->_HWND(),
          true,
          &pdcompositiontarget));
 

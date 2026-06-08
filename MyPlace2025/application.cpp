@@ -188,7 +188,7 @@ namespace app_graphics3d_MyPlace2025
 
       auto pstillTitle = create_label<::user::still>(pparent, "opengl-land continuum Options");
 
-      ødefer_construct(pstillTitle->m_pfont);
+      defer_constructø(pstillTitle->m_pfont);
 
       pstillTitle->m_pfont->create_font(e_font_sans_ui, 24_pt);
 
@@ -254,15 +254,15 @@ namespace app_graphics3d_MyPlace2025
 
       //m_peditYeeColor->set_text(strYeeColor, ::e_source_initialize);
 
-      //auto pstill = øallocate ::user::still();
+      //auto pstill = allocateø ::user::still();
 
-      //øconstruct_new(m_pedit);
+      //construct_newø(m_pedit);
 
-      //øconstruct_new(m_pbuttonClear);
+      //construct_newø(m_pbuttonClear);
 
-      //øconstruct_new(m_pbuttonSend);
+      //construct_newø(m_pbuttonSend);
 
-      //øconstruct_new(m_pstillReceiver);
+      //construct_newø(m_pstillReceiver);
 
       //m_pstill->create_control(this, "still");
 
@@ -327,7 +327,7 @@ namespace app_graphics3d_MyPlace2025
 
    //               _synchronous_lock synchronouslock(m_pimpact->m_pparticleImageSynchronization);
 
-   //               m_pimpact->m_pimage->image32()->copy(m_pimpact->m_pimage->size().minimum(::int_size(w, h)), m_pimpact->m_pimage->m_iScan, (image32_t*)p, stride);
+   //               m_pimpact->m_pimage->image32()->copy(m_pimpact->m_pimage->size().minimum(::i32_size(w, h)), m_pimpact->m_pimage->m_iScan, (image32_t*)p, stride);
 
    //               for (int y = 0; y < h; y++)
    //               {

@@ -18,11 +18,11 @@ namespace graphics3d_impact3d
 
       //string strFontFamily = get_font();
 
-      //auto ppen = __øcreate < ::draw2d::pen > ();
+      //auto ppen = __createtø < ::draw2d::pen > ();
 
-      //auto pbrush = __øcreate < ::draw2d::brush >();
+      //auto pbrush = __createtø < ::draw2d::brush >();
 
-      //auto pfont = __øcreate < ::write_text::font > ();
+      //auto pfont = __createtø < ::write_text::font > ();
 
       //if (m_iDrawing == 3)
       //{
@@ -40,7 +40,7 @@ namespace graphics3d_impact3d
       //            if (m_pimage1.ok())
       //            {
 
-      //               __øconstruct(m_pimage2);
+      //               __constructø(m_pimage2);
 
       //               m_pimage2->copy_from(m_pimage1);
 
@@ -64,7 +64,7 @@ namespace graphics3d_impact3d
 
       //}
 
-      //int_rectangle rectangle;
+      //i32_rectangle rectangle;
 
       //int iSize = minimum(m_rectangle.width(), m_rectangle.height());
 
@@ -78,7 +78,7 @@ namespace graphics3d_impact3d
 
       //rectangle.offset_x(iSize / 5 * m_iDrawing);
       //
-      //::double_size size(0., 0.);
+      //::f64_size size(0., 0.);
       //
       //bool bDrawText = true;
       //
@@ -164,7 +164,7 @@ namespace graphics3d_impact3d
 
       //pgraphics->ellipse(rectangle);
 
-      //::int_rectangle rectangleText;
+      //::i32_rectangle rectangleText;
 
       //rectangleText.set_size(size);
 

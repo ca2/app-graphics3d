@@ -229,11 +229,11 @@ namespace gpu_directx12
       //HGLRC                         m_hrc;
       //HDC                           m_hdc;
       //HWND                          m_hwnd;
-      //::int_size                        m_sizeNew;
-      //::int_size                        m_size;
+      //::i32_size                        m_sizeNew;
+      //::i32_size                        m_size;
       //HDC                           m_hdcGraphics;
       //float                         m_z;
-      //int_point                         m_pointTranslate;
+      //i32_point                         m_pointTranslate;
       //::pointer<::directx12::buffer>  m_pbuffer;
       //::pointer<::directx12::program> m_pprogram;
       //unsigned int                  VAO;
@@ -271,7 +271,7 @@ namespace gpu_directx12
       //virtual void start();
       //virtual void render();
 
-      //virtual bool create_offscreen_buffer(const ::int_size& size);
+      //virtual bool create_offscreen_buffer(const ::i32_size& size);
       //virtual bool destroy_offscreen_buffer();
 
 

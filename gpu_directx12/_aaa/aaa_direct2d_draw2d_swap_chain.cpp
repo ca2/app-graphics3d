@@ -967,7 +967,7 @@
 //   }
 //
 //
-//   bool context::create_offscreen_graphics_for_swap_chain_blitting(::draw2d_gpu::graphics* pgraphics, const ::int_size& size)
+//   bool context::create_offscreen_graphics_for_swap_chain_blitting(::draw2d_gpu::graphics* pgraphics, const ::i32_size& size)
 //   {
 //
 //      ::cast < ::draw2d_direct2d::graphics > pdirect2dgraphics = pgraphics;
@@ -991,7 +991,7 @@
 //   }
 //
 //
-//   void direct2d_draw2d_swap_chain::_create_offscreen_graphics_for_swap_chain_blitting(::gpu_directx12::context* pcontext, ::draw2d_direct2d::graphics* pgraphics, const ::int_size& size)
+//   void direct2d_draw2d_swap_chain::_create_offscreen_graphics_for_swap_chain_blitting(::gpu_directx12::context* pcontext, ::draw2d_direct2d::graphics* pgraphics, const ::i32_size& size)
 //   {
 //
 //      pcontext->set_placement(size);
@@ -1153,7 +1153,7 @@
 //      //m_pgpucontext->_send([this, size]()
 //      //   {
 //
-//      //      /*::direct2d::direct2d() = øallocate ::draw2d_direct2d::plugin();
+//      //      /*::direct2d::direct2d() = allocateø ::draw2d_direct2d::plugin();
 //
 //      //      ::direct2d::get()->initialize();*/
 //

@@ -140,7 +140,7 @@ namespace gpu_directx12
       //      // each mip level has increasing roughness
       //      float roughness = (float)iMip / (float)(m_iPrefilteredEnvMapMipCount - 1);
 
-      //      m_pshaderPrefilteredEnvMap->set_float("roughness", roughness);
+      //      m_pshaderPrefilteredEnvMap->set_f32("roughness", roughness);
 
       //      // render to each side of the cubemap
       //      for (auto iFace = 0; iFace < 6; iFace++)
@@ -150,7 +150,7 @@ namespace gpu_directx12
       //         
       //         m_pframebufferPrefilteredEnvMap->set_cube_face(iFace);
 
-      //         ::int_rectangle rectangle;
+      //         ::i32_rectangle rectangle;
 
       //         rectangle.set(0, 0, 
       //            m_pframebufferPrefilteredEnvMap->m_ptexture->m_sizeMip.cx,

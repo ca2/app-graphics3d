@@ -195,7 +195,7 @@ namespace gpu_directx11
          //
          ////if (m_strSamplerUniform.has_character())
          ////{
-         ////   pgpushader->set_int(m_strSamplerUniform, 0);
+         ////   pgpushader->set_i32(m_strSamplerUniform, 0);
          ////}
 
       }

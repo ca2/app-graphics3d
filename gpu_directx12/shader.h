@@ -35,7 +35,7 @@ namespace gpu_directx12
       //::comptr <ID3D11InputLayout > m_pinputlayout;
 
       //comptr < ID3D11Buffer> m_pbufferPushConstants;
-      //int_array m_iaSizePushConstants;
+      //i32_array m_iaSizePushConstants;
 
       ::comptr < ID3D12RootSignature > m_prootsignature;
 
@@ -132,8 +132,8 @@ namespace gpu_directx12
 //{
 //   //enum enum_type
 //   //{
-//   //   e_type_int,
-//   //   e_type_float,
+//   //   e_type_i32,
+//   //   e_type_f32,
 //
 //   //};
 //

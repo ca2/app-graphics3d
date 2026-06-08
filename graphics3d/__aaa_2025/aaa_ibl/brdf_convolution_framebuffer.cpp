@@ -35,7 +35,7 @@ namespace gpu
          // m_uWidth = width;
          // m_uHeight = height;
 
-         ødefer_construct(m_ptexture);
+         defer_constructø(m_ptexture);
          m_ptexture->rectangle().left=0;
          m_ptexture->rectangle().top=0;
          m_ptexture->rectangle().right=width;

@@ -134,7 +134,7 @@ namespace gpu_vulkan
          //   //m_pframebuffer->setCubeFace(i, m_pshaderHdri);
 
          //   //m_pshaderHdri->set_sequence3("multiplier", {1.f, 1.f, 1.f});
-         //   m_pshaderHdri->set_int("faceIndex", i);
+         //   m_pshaderHdri->set_i32("faceIndex", i);
 
          //   m_pshaderHdri->push_properties(pgpucommandbuffer);
 

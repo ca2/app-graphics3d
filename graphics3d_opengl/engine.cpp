@@ -78,7 +78,7 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::defer_start(::user::graphics3d* pusergraphics3d, const ::int_rectangle& rectanglePlacement)
+   void engine::defer_start(::user::graphics3d* pusergraphics3d, const ::i32_rectangle& rectanglePlacement)
    {
 
       ::graphics3d::engine::defer_start(pusergraphics3d, rectanglePlacement);
@@ -86,7 +86,7 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::defer_update_engine(const ::int_rectangle& rectanglePlacement)
+   void engine::defer_update_engine(const ::i32_rectangle& rectanglePlacement)
    {
 
       ::graphics3d::engine::defer_update_engine(rectanglePlacement);
@@ -139,7 +139,7 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::on_layout(const ::int_rectangle& rectanglePlacement)
+   void engine::on_layout(const ::i32_rectangle& rectanglePlacement)
    {
 
       ::graphics3d::engine::on_layout(rectanglePlacement);
@@ -154,7 +154,7 @@ namespace graphics3d_opengl
    }
 
 
-   floating_matrix4 engine::perspective(const float_angle &angleFovY, float aspect, float zNear, float zFar)
+   floating_matrix4 engine::perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar)
    {
       float f = 1.0f / tanf(angleFovY.radians() * 0.5f);
 

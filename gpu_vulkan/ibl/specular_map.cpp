@@ -165,9 +165,9 @@ namespace gpu_vulkan
 
          //auto ptexture = pskybox->m_ptexture;
 
-         //// auto pcube = øcreate < ::gpu::cube >();
+         //// auto pcube = createø < ::gpu::cube >();
          ////::cast < ::gpu_gpu::context > pcontext = m_pgpucontext;
-         //// auto pcube = øcreate<::gpu::cube>();
+         //// auto pcube = createø<::gpu::cube>();
          //auto prenderableCube = m_pgpucontext->m_pengine->shape_factory()->create_cube_001(m_pgpucontext, 2.f);
          //// pcube->initialize_gpu_cube(m_pgpucontext);
          ////::cast<::gpu_opengl::texture> ptextureSkybox = ptexture;
@@ -176,7 +176,7 @@ namespace gpu_vulkan
          //// m_pframebufferPrefilteredEnvMap->bind();
          //// m_pshaderPrefilteredEnvMap->_bind();
          //m_pshaderPrefilteredEnvMap->bind(nullptr, m_pframebufferPrefilteredEnvMap->m_ptexture);
-         //// m_pshaderPrefilteredEnvMap->set_int("environmentCubemap", 0);
+         //// m_pshaderPrefilteredEnvMap->set_i32("environmentCubemap", 0);
 
          /////::cast<::gpu_opengl::shader> pshaderPrefilteredEnvMap = m_pshaderPrefilteredEnvMap;
 
@@ -197,14 +197,14 @@ namespace gpu_vulkan
          //   //::opengl::check_error("");
          //   // 
 
-         //   ::int_rectangle r(0, 0, mipWidth, mipHeight);
+         //   ::i32_rectangle r(0, 0, mipWidth, mipHeight);
 
          //   m_pgpucontext->set_viewport(pgpucommandbuffer, r);
          //   
          //   // 
          //   // each mip level has increasing roughness
          //   float roughness = (float)iCurrentMip / (float)(mipCount - 1);
-         //   m_pshaderPrefilteredEnvMap->set_float("roughness", roughness);
+         //   m_pshaderPrefilteredEnvMap->set_f32("roughness", roughness);
 
          //   // render to each side of the cubemap
          //   for (auto iFace = 0; iFace < 6; iFace++)
@@ -224,7 +224,7 @@ namespace gpu_vulkan
 
          //      //glBindTexture(GL_TEXTURE_CUBE_MAP, ptextureSkybox->m_gluTextureID);
          //      //::opengl::check_error("");
-         //      pshaderPrefilteredEnvMap->set_int("environmentCubemap", 0);
+         //      pshaderPrefilteredEnvMap->set_i32("environmentCubemap", 0);
          //      // pcube->draw(pgpucommandbuffer);
          //      ::graphics3d::render_system rendersystemScope;
          //      rendersystemScope.m_erendersystem = ::graphics3d::e_render_system_skybox_ibl;
@@ -260,7 +260,7 @@ namespace gpu_vulkan
 
 //         ::pointer<::gpu::texture> pgputexturePrefilteredCubeNew;
 //
-//         øconstruct(pgputexturePrefilteredCubeNew);
+//         constructø(pgputexturePrefilteredCubeNew);
 //
 //         ::cast<::gpu_vulkan::texture> pgputexturePrefilteredCube = pgputexturePrefilteredCubeNew;
 //
@@ -566,7 +566,7 @@ namespace gpu_vulkan
 //            throw ::exception(error_failed, "Prefilter fragment shader SPIR-V not found");
 //         }
 //
-//         auto ppipelinePrefilter = øcreate<::gpu_vulkan::pipeline>();
+//         auto ppipelinePrefilter = createø<::gpu_vulkan::pipeline>();
 //
 //
 //         ppipelinePrefilter->initialize_graphics_pipeline(
@@ -715,7 +715,7 @@ namespace gpu_vulkan
 //         auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
 //         information("Generating pre-filtered environment cube with {} mip levels took {} ms", numMips, tDiff);
 //
-//         ødefer_construct_new(m_pframebufferPrefilteredEnvMap);
+//         defer_construct_newø(m_pframebufferPrefilteredEnvMap);
 //
 //         m_pframebufferPrefilteredEnvMap->m_ptexture = pgputexturePrefilteredCubeNew;
 
@@ -747,7 +747,7 @@ namespace gpu_vulkan
 
          //auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands(m_pgpucontext->m_pgpudevice->graphics_queue());
 
-         //auto pfullscreenquad = øcreate<::gpu::full_screen_quad>();
+         //auto pfullscreenquad = createø<::gpu::full_screen_quad>();
 
          //pfullscreenquad->initialize_full_screen_quad(m_pgpucontext);
          //// m_pbrdfconvolutionframebuffer->bind();
@@ -760,14 +760,14 @@ namespace gpu_vulkan
 
          //// m_pshaderBrdfConvolution->bind(m_pbrdfconvolutionframebuffer->m_ptexture, ptexture);
          //m_pshaderBrdfConvolution->bind(pcommandbuffer, m_pbrdfconvolutionframebuffer->m_ptexture);
-         //// m_pshaderPrefilteredEnvMap->set_int("environmentCubemap", 0);
+         //// m_pshaderPrefilteredEnvMap->set_i32("environmentCubemap", 0);
 
          ////glViewport(0, 0, m_uBrdfConvolutionMapWidth, m_uBrdfConvolutionMapHeight);
          ////::opengl::check_error("");
          ////glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
          ////::opengl::check_error("");
 
-         //::int_rectangle rectangleViewport;
+         //::i32_rectangle rectangleViewport;
 
          //rectangleViewport.set(0, 0, m_uBrdfConvolutionMapWidth, m_uBrdfConvolutionMapHeight);
 
@@ -801,7 +801,7 @@ namespace gpu_vulkan
 
          //::pointer<::gpu::texture> pgputextureLutBrdfNew;
 
-         //øconstruct(pgputextureLutBrdfNew);
+         //constructø(pgputextureLutBrdfNew);
 
          //::cast<::gpu_vulkan::texture> pgputextureLutBrdf = pgputextureLutBrdfNew;
 
@@ -1004,7 +1004,7 @@ namespace gpu_vulkan
 
          //// Look-up-table (from BRDF) pipeline
 
-         //auto ppipelineBrdf = øcreate_new<pipeline>();
+         //auto ppipelineBrdf = create_newø<pipeline>();
 
          //::memory vert;
          //::memory frag;
@@ -1054,7 +1054,7 @@ namespace gpu_vulkan
          //auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
          //information() << "Generating BRDF LUT took " << tDiff << " ms";
 
-         //ødefer_construct_new(m_pframebufferBrdfConvolution);
+         //defer_construct_newø(m_pframebufferBrdfConvolution);
 
          //m_pframebufferBrdfConvolution->m_ptexture = pgputextureLutBrdfNew;
 

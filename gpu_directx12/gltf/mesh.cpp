@@ -42,7 +42,7 @@ namespace gpu_directx12
 
 
       //void mesh::initialize_gpu_gltf_mesh(const ::array_base<::gpu::gltf::vertex> &vertexa,
-      //                             const ::unsigned_int_array &indexa, ::gpu::model::material *pmaterial)
+      //                             const ::unsigned_i32_array &indexa, ::gpu::model::material *pmaterial)
       //{
 
       //   m_vertexa = vertexa;
@@ -110,7 +110,7 @@ namespace gpu_directx12
 
 
          //   bool bAlbedo = !prendersystem->m_bDisableAlbedo && m_pmaterial->useTextureAlbedo;
-         //   pshader->set_int("useTextureAlbedo", bAlbedo);
+         //   pshader->set_i32("useTextureAlbedo", bAlbedo);
          //   floating_sequence3 seq3Albedo= {};
          //   if (prendersystem->m_bForceDefaultAlbedo)
          //   {
@@ -129,7 +129,7 @@ namespace gpu_directx12
          //      int iTextureIndex = ::gpu::e_gltf_texture_albedo;
          //      //GLenum textureIndex = GL_TEXTURE0 + iTextureIndex;
          //      //glActiveTexture(textureIndex);
-         //      //pshader->set_int("material.textureAlbedo", iTextureIndex);
+         //      //pshader->set_i32("material.textureAlbedo", iTextureIndex);
 
          //      //::cast<::gpu_directx11::texture> ptextureAlbedo = m_pmaterial->m_ptextureAlbedo;
          //      //glBindTexture(GL_TEXTURE_2D, ptextureAlbedo->m_gluTextureID);
@@ -138,7 +138,7 @@ namespace gpu_directx12
          //   bool bMetallicRoughness =
          //      !prendersystem->m_bDisableMetallicRoughness && m_pmaterial->useTextureMetallicRoughness;
 
-         //   pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness);
+         //   pshader->set_i32("useTextureMetallicRoughness", bMetallicRoughness);
          //   float fMetallic = 0.0f;
          //   if (prendersystem->m_bForceDefaultMetallicFactor)
          //   {
@@ -163,31 +163,31 @@ namespace gpu_directx12
 
          //      fRoughness = m_pmaterial->m_fRoughness;
          //   }
-         //   pshader->set_float("metallic", fMetallic);
-         //   pshader->set_float("roughness", fRoughness);
+         //   pshader->set_f32("metallic", fMetallic);
+         //   pshader->set_f32("roughness", fRoughness);
          //   if (bMetallicRoughness)
          //   {
          //      int iTextureIndex = ::gpu::e_gltf_texture_metallic_roughness;
          //      //GLenum textureIndex = GL_TEXTURE0 + iTextureIndex;
          //      //glActiveTexture(textureIndex);
-         //      //pshader->set_int("material.textureMetallicRoughness", iTextureIndex);
+         //      //pshader->set_i32("material.textureMetallicRoughness", iTextureIndex);
          //      //::cast<::gpu_directx11::texture> ptextureMetallicRoughness = m_pmaterial->m_ptextureMetallicRoughness;
          //      //glBindTexture(GL_TEXTURE_2D, ptextureMetallicRoughness->m_gluTextureID);
          //   }
 
          //   bool bNormal = !prendersystem->m_bDisableNormal && m_pmaterial->useTextureNormal;
-         //   pshader->set_int("useTextureNormal", bNormal);
+         //   pshader->set_i32("useTextureNormal", bNormal);
          //   if (bNormal)
          //   {
          //      //glActiveTexture(GL_TEXTURE0 + ::gpu::e_gltf_texture_normal);
-         //      //pshader->set_int("material.textureNormal", ::gpu::e_gltf_texture_normal);
+         //      //pshader->set_i32("material.textureNormal", ::gpu::e_gltf_texture_normal);
          //      //::cast<::gpu_directx11::texture> ptextureNormal = m_pmaterial->m_ptextureNormal;
          //      //glBindTexture(GL_TEXTURE_2D, ptextureNormal->m_gluTextureID);
          //   }
 
          //   bool bAmbientOcclusion =
          //      !prendersystem->m_bDisableAmbientOcclusion && m_pmaterial->useTextureAmbientOcclusion;
-         //   pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion);
+         //   pshader->set_i32("useTextureAmbientOcclusion", bAmbientOcclusion);
          //   float fAmbientOcclusion = 0.0f;
          //   if (prendersystem->m_bForceDefaultAmbientOcclusionFactor)
          //   {
@@ -199,17 +199,17 @@ namespace gpu_directx12
 
          //      fAmbientOcclusion = m_pmaterial->m_fAmbientOcclusion;
          //   }
-         //   pshader->set_float("ambientOcclusion", fAmbientOcclusion);
+         //   pshader->set_f32("ambientOcclusion", fAmbientOcclusion);
          //   if (bAmbientOcclusion)
          //   {
          //      //glActiveTexture(GL_TEXTURE0 + ::gpu::e_gltf_texture_ambient_occlusion);
-         //      //pshader->set_int("material.textureAmbientOcclusion", ::gpu::e_gltf_texture_ambient_occlusion);
+         //      //pshader->set_i32("material.textureAmbientOcclusion", ::gpu::e_gltf_texture_ambient_occlusion);
          //      //::cast<::gpu_directx11::texture> ptextureAmbientOcclusion = m_pmaterial->m_ptextureAmbientOcclusion;
          //      //glBindTexture(GL_TEXTURE_2D, ptextureAmbientOcclusion->m_gluTextureID);
          //   }
 
          //   bool bEmissive = !prendersystem->m_bDisableEmissive && m_pmaterial->useTextureEmissive;
-         //   pshader->set_int("useTextureEmissive", bEmissive);
+         //   pshader->set_i32("useTextureEmissive", bEmissive);
          //   floating_sequence3 seq3Emission = {};
          //   if (prendersystem->m_bForceDefaultEmission)
          //   {
@@ -225,7 +225,7 @@ namespace gpu_directx12
          //   if (bEmissive)
          //   {
          //      //glActiveTexture(GL_TEXTURE0 + ::gpu::e_gltf_texture_emissive);
-         //      //pshader->set_int("material.textureEmissive", ::gpu::e_gltf_texture_emissive);
+         //      //pshader->set_i32("material.textureEmissive", ::gpu::e_gltf_texture_emissive);
          //      //::cast<::gpu_directx11::texture> ptextureEmissive = m_pmaterial->m_ptextureEmissive;
          //      //glBindTexture(GL_TEXTURE_2D, ptextureEmissive->m_gluTextureID);
          //   }
@@ -254,8 +254,8 @@ namespace gpu_directx12
          //   }
          //   //
          //   // shader.setBool("material.useTextureMetallicRoughness", m_pmaterial->useTextureMetallicRoughness);
-         //   //pshader->set_float("metallic", m_pmaterial->m_fMetallic);
-         //   //pshader->set_float("roughness", m_pmaterial->m_fRoughness);
+         //   //pshader->set_f32("metallic", m_pmaterial->m_fMetallic);
+         //   //pshader->set_f32("roughness", m_pmaterial->m_fRoughness);
          //   if (bMetallicRoughness)
          //   {
          //      // glActiveTexture(GL_TEXTURE0 + e_gltf_texture_metallic_roughness);
@@ -290,7 +290,7 @@ namespace gpu_directx12
          //   }
          //   //
          //   // shader.setBool("material.useTextureAmbientOcclusion", m_pmaterial->useTextureAmbientOcclusion);
-         //   //pshader->set_float("material.ambientOcclusion", m_pmaterial->m_fAmbientOcclusion);
+         //   //pshader->set_f32("material.ambientOcclusion", m_pmaterial->m_fAmbientOcclusion);
          //   if (bAmbientOcclusion)
          //   {
          //      //    glActiveTexture(GL_TEXTURE0 + e_gltf_texture_ambient_occlusion);
@@ -339,37 +339,37 @@ namespace gpu_directx12
          //{
          //   // albedo
          //               //;
-         //   //pshader->set_int("material.useTextureAlbedo", m_pmaterial->useTextureAlbedo);
+         //   //pshader->set_i32("material.useTextureAlbedo", m_pmaterial->useTextureAlbedo);
          //   //pshader->set_sequence3("material.albedo", m_pmaterial->m_seq3Albedo);
          //   if (m_pmaterial->useTextureAlbedo)
          //   {
          //      int iTextureIndex = ::gpu::e_gltf_texture_albedo;
          //      //GLenum textureIndex = GL_TEXTURE0 + iTextureIndex;
          //      //glActiveTexture(textureIndex);
-         //      //pshader->set_int("material.textureAlbedo", iTextureIndex);
+         //      //pshader->set_i32("material.textureAlbedo", iTextureIndex);
 
          //      //::cast<::gpu_directx11::texture> ptextureAlbedo = m_pmaterial->m_ptextureAlbedo;
          //      //glBindTexture(GL_TEXTURE_2D, ptextureAlbedo->m_gluTextureID);
          //   }
 
-         //   //pshader->set_int("material.useTextureMetallicRoughness", m_pmaterial->useTextureMetallicRoughness);
-         //   //pshader->set_float("material.metallic", m_pmaterial->m_fMetallic);
-         //   //pshader->set_float("material.roughness", m_pmaterial->m_fRoughness);
+         //   //pshader->set_i32("material.useTextureMetallicRoughness", m_pmaterial->useTextureMetallicRoughness);
+         //   //pshader->set_f32("material.metallic", m_pmaterial->m_fMetallic);
+         //   //pshader->set_f32("material.roughness", m_pmaterial->m_fRoughness);
          //   //if (m_pmaterial->useTextureMetallicRoughness)
          //   //{
          //   //   int iTextureIndex = ::gpu::e_gltf_texture_metallic_roughness;
          //   //   GLenum textureIndex = GL_TEXTURE0 + iTextureIndex;
          //   //   glActiveTexture(textureIndex);
-         //   //   pshader->set_int("material.textureMetallicRoughness", iTextureIndex);
+         //   //   pshader->set_i32("material.textureMetallicRoughness", iTextureIndex);
          //   //   ::cast<::gpu_directx11::texture> ptextureMetallicRoughness = m_pmaterial->m_ptextureMetallicRoughness;
          //   //   glBindTexture(GL_TEXTURE_2D, ptextureMetallicRoughness->m_gluTextureID);
          //   //}
 
-         //   pshader->set_int("material.useTextureNormal", m_pmaterial->useTextureNormal);
+         //   pshader->set_i32("material.useTextureNormal", m_pmaterial->useTextureNormal);
          //   if (m_pmaterial->useTextureNormal)
          //   {
          //      //glActiveTexture(GL_TEXTURE0 + ::gpu::e_gltf_texture_normal);
-         //      //pshader->set_int("material.textureNormal", ::gpu::e_gltf_texture_normal);
+         //      //pshader->set_i32("material.textureNormal", ::gpu::e_gltf_texture_normal);
          //      //::cast<::gpu_directx11::texture> ptextureNormal = m_pmaterial->m_ptextureNormal;
          //      //glBindTexture(GL_TEXTURE_2D, ptextureNormal->m_gluTextureID);
          //   }
@@ -380,22 +380,22 @@ namespace gpu_directx12
 
          //   }
 
-         //   //pshader->set_int("material.useTextureAmbientOcclusion", m_pmaterial->useTextureAmbientOcclusion);
-         //   //pshader->set_float("material.ambientOcclusion", m_pmaterial->m_fAmbientOcclusion);
+         //   //pshader->set_i32("material.useTextureAmbientOcclusion", m_pmaterial->useTextureAmbientOcclusion);
+         //   //pshader->set_f32("material.ambientOcclusion", m_pmaterial->m_fAmbientOcclusion);
          //   //if (m_pmaterial->useTextureAmbientOcclusion)
          //   //{
          //   //   glActiveTexture(GL_TEXTURE0 + ::gpu::e_gltf_texture_ambient_occlusion);
-         //   //   pshader->set_int("material.textureAmbientOcclusion", ::gpu::e_gltf_texture_ambient_occlusion);
+         //   //   pshader->set_i32("material.textureAmbientOcclusion", ::gpu::e_gltf_texture_ambient_occlusion);
          //   //   ::cast<::gpu_directx11::texture> ptextureAmbientOcclusion = m_pmaterial->m_ptextureAmbientOcclusion;
          //   //   glBindTexture(GL_TEXTURE_2D, ptextureAmbientOcclusion->m_gluTextureID);
          //   //}
 
-         //   //pshader->set_int("material.useTextureEmissive", m_pmaterial->useTextureEmissive);
+         //   //pshader->set_i32("material.useTextureEmissive", m_pmaterial->useTextureEmissive);
          //   //pshader->set_sequence3("material.emissive", m_pmaterial->m_seq3Emissive);
          //   //if (m_pmaterial->useTextureEmissive)
          //   //{
          //   //   glActiveTexture(GL_TEXTURE0 + ::gpu::e_gltf_texture_emissive);
-         //   //   pshader->set_int("material.textureEmissive", ::gpu::e_gltf_texture_emissive);
+         //   //   pshader->set_i32("material.textureEmissive", ::gpu::e_gltf_texture_emissive);
          //   //   ::cast<::gpu_directx11::texture> ptextureEmissive = m_pmaterial->m_ptextureEmissive;
          //   //   glBindTexture(GL_TEXTURE_2D, ptextureEmissive->m_gluTextureID);
          //   //}

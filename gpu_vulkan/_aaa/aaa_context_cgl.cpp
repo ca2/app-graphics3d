@@ -21,7 +21,7 @@ namespace vulkan
    ::pointer <::gpu::context > allocate_cgl_context(::particle * pparticle)
    {
 
-      return pparticle->øcreate_new < context_cgl >();
+      return pparticle->create_newø < context_cgl >();
 
    }
 
@@ -43,7 +43,7 @@ namespace vulkan
    }
 
 
-   void context_cgl::_create_offscreen_buffer(const ::int_size & size)
+   void context_cgl::_create_offscreen_buffer(const ::i32_size & size)
    {
 
       auto pgpu = system()->get_gpu();

@@ -27,7 +27,7 @@ namespace gpu_vulkan
 
       ::array<VkVertexInputBindingDescription> bindingDescriptions;
 
-      auto & bindingDescription = bindingDescriptions.ø(0);
+      auto & bindingDescription = bindingDescriptions.atø(0);
 
       bindingDescription.binding = 0;
       bindingDescription.stride = this->size(false);

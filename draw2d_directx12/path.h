@@ -33,7 +33,7 @@ namespace draw2d_directx12
       //comptr<ID2D1GeometrySink>           m_psink;
       //D2D1_FIGURE_BEGIN                   m_d2d2figurebegin;
       //// width 
-      //int_map < comptr<ID2D1GeometryRealization> > m_mapGeometryHollowRealization;
+      //i32_map < comptr<ID2D1GeometryRealization> > m_mapGeometryHollowRealization;
       //comptr<ID2D1GeometryRealization>    m_geometryFilledRealization;
 
 
@@ -52,12 +52,12 @@ namespace draw2d_directx12
 
       //virtual bool is_empty();
       //virtual bool has_current_point();
-      //virtual int_point current_point();
+      //virtual i32_point current_point();
 
       //ID2D1GeometryRealization * _get_stroked_geometry_realization(::draw2d::graphics * pgraphics, int iWidth);
       //ID2D1GeometryRealization * _get_filled_geometry_realization(::draw2d::graphics * pgraphics);
 
-      virtual bool internal_add_arc(::draw2d::graphics * pgraphics, const ::double_arc & arc);
+      virtual bool internal_add_arc(::draw2d::graphics * pgraphics, const ::f64_arc & arc);
 
       virtual bool internal_add_line(::draw2d::graphics* pgraphics, double x, double y);
 
@@ -65,9 +65,9 @@ namespace draw2d_directx12
 
       virtual bool internal_add_ellipse(::draw2d::graphics * pgraphics, double x, double y, double cx, double cy);
 
-      virtual bool internal_add_lines(::draw2d::graphics* pgraphics, const ::int_point_array & pointa, bool bClose);
+      virtual bool internal_add_lines(::draw2d::graphics* pgraphics, const ::i32_point_array & pointa, bool bClose);
 
-      virtual bool internal_add_lines(::draw2d::graphics* pgraphics, const ::double_point_array& pointa, bool bClose);
+      virtual bool internal_add_lines(::draw2d::graphics* pgraphics, const ::f64_point_array& pointa, bool bClose);
 
       virtual bool internal_add_string(::draw2d_directx12::graphics * pgraphics, double x, double y, const ::scoped_string & scopedstrText, ::write_text::font * pfont);
 
@@ -75,7 +75,7 @@ namespace draw2d_directx12
 
       virtual bool internal_start_figure(::draw2d::graphics* pgraphics, double x, double y);
 
-      //virtual bool internal_get_arc(::double_point & pointStart, D2D1_ARC_SEGMENT & arcseg, const ::double_arc & arc);
+      //virtual bool internal_get_arc(::f64_point & pointStart, D2D1_ARC_SEGMENT & arcseg, const ::f64_arc & arc);
 
       virtual void * detach(::draw2d::graphics * pgraphics);
 
@@ -84,7 +84,7 @@ namespace draw2d_directx12
       //virtual bool _set(::draw2d::graphics* pgraphics, ::draw2d::path::begin * pbegin) override;
       //virtual bool _set(::draw2d::graphics* pgraphics, ::draw2d::path::arc * parc) override;
       ////virtual bool _set(::draw2d::graphics* pgraphics, const ::draw2d::path::move & move);
-      //virtual bool _set(::draw2d::graphics* pgraphics, ::draw2d::path::int_rectangle* prectangle) override;
+      //virtual bool _set(::draw2d::graphics* pgraphics, ::draw2d::path::i32_rectangle* prectangle) override;
       //virtual bool _set(::draw2d::graphics* pgraphics, ::draw2d::path::line * pline) override;
       //virtual bool _set(::draw2d::graphics* pgraphics, ::draw2d::path::lines* plines) override;
       //virtual bool _set(::draw2d::graphics* pgraphics, ::draw2d::path::int_polygon* pline) override;
@@ -95,17 +95,17 @@ namespace draw2d_directx12
 
       virtual bool _set(::draw2d::graphics* pgraphics, const ::draw2d::enum_item& eitem);
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_arc& parc);
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_arc& parc);
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_line& pline);
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_line& pline);
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_lines& pline);
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_lines& pline);
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_rectangle & rectangle);
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_rectangle & rectangle);
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_ellipse & ellipse);
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_ellipse & ellipse);
 
-      virtual bool _set(::draw2d::graphics* pgraphics, const ::double_polygon & polygon);
+      virtual bool _set(::draw2d::graphics* pgraphics, const ::f64_polygon & polygon);
 
       virtual bool _set(::draw2d::graphics* pgraphics, const ::write_text::text_out& ptextout);
 

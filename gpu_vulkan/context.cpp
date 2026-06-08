@@ -448,7 +448,7 @@ namespace gpu_vulkan
    }
 
 
-   // void context::create_offscreen_buffer(const ::int_size& size)
+   // void context::create_offscreen_buffer(const ::i32_size& size)
    //{
 
    //   auto pgpu = application()->get_gpu();
@@ -460,7 +460,7 @@ namespace gpu_vulkan
 
    //   }
 
-   //   ::e_status estatus = øconstruct(m_pbuffer);
+   //   ::e_status estatus = constructø(m_pbuffer);
 
    //   if (!estatus)
    //   {
@@ -492,7 +492,7 @@ namespace gpu_vulkan
    //}
 
 
-   // void context::_create_offscreen_buffer(const ::int_size& size)
+   // void context::_create_offscreen_buffer(const ::i32_size& size)
    //{
 
    //   return ::success_none;
@@ -500,7 +500,7 @@ namespace gpu_vulkan
    //}
 
 
-   // void context::resize_offscreen_buffer(const ::int_size& size)
+   // void context::resize_offscreen_buffer(const ::i32_size& size)
    //{
 
    //   return ::success_none;
@@ -672,7 +672,7 @@ namespace gpu_vulkan
    // bool context::defer_construct_new(::pointer < ::gpu_vulkan::memory_buffer >& pmemorybuffer, memsize size)
    //{
 
-   //   if (ødefer_construct_new(pmemorybuffer))
+   //   if (defer_construct_newø(pmemorybuffer))
    //   {
 
    //      pmemorybuffer->initialize_memory_buffer(this, size);
@@ -713,7 +713,7 @@ namespace gpu_vulkan
    ::pointer<::gpu::context> allocate_system_context(::particle *pparticle)
    {
 
-      return pparticle->øcreate_new<context>();
+      return pparticle->create_newø<context>();
    }
 
 
@@ -733,7 +733,7 @@ namespace gpu_vulkan
    bool context::is_mesa() { return m_bMesa; }
 
 
-   void context::_create_offscreen_window(const ::int_size &size)
+   void context::_create_offscreen_window(const ::i32_size &size)
    {
       // if (::IsWindow(m_hwnd))
       //{
@@ -799,7 +799,7 @@ namespace gpu_vulkan
 
 
    void context::_create_context_win32(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
-                                       ::acme::windowing::window *pwindow, const ::int_size &size)
+                                       ::acme::windowing::window *pwindow, const ::i32_size &size)
    {
 
       if (!pgpudevice)
@@ -951,7 +951,7 @@ namespace gpu_vulkan
 
 
    void context::on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
-                                   ::acme::windowing::window *pwindow, const ::int_size &size)
+                                   ::acme::windowing::window *pwindow, const ::i32_size &size)
    {
 
       // m_itaskGpu = ::current_itask();
@@ -1671,7 +1671,7 @@ namespace gpu_vulkan
 
       //   ::GetClientRect(m_hwnd, &rectClient);
 
-      //   ::int_size sizeNew = { rectClient.right - rectClient.left,
+      //   ::i32_size sizeNew = { rectClient.right - rectClient.left,
       // rectClient.bottom - rectClient.top };
       //
       //   if (m_size != sizeNew)
@@ -1716,7 +1716,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_cpu_buffer(const ::int_size &size)
+   void context::_create_cpu_buffer(const ::i32_size &size)
    {
 
       _create_offscreen_window(size);
@@ -1747,7 +1747,7 @@ namespace gpu_vulkan
    void context::_defer_create_window_context(::acme::windowing::window *pwindow) { _create_window_context(pwindow); }
 
 
-   void context::resize_cpu_buffer(const ::int_size &sizeParam)
+   void context::resize_cpu_buffer(const ::i32_size &sizeParam)
    {
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
@@ -2516,7 +2516,7 @@ namespace gpu_vulkan
       bufferInfo.usage = usage;
       bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-      auto pbuffer = øcreate_new<buffer>();
+      auto pbuffer = create_newø<buffer>();
 
       pbuffer->m_pgpucontext = this;
 
@@ -2586,7 +2586,7 @@ namespace gpu_vulkan
 
       //::pointer < command_buffer > pcommandbuffer;
 
-      // ødefer_construct_new(pcommandbuffer);
+      // defer_construct_newø(pcommandbuffer);
 
       // pcommandbuffer->initialize_command_buffer(m_pgpurenderer->m_pgpurendertarget, ecommandbuffer);
 
@@ -2632,7 +2632,7 @@ namespace gpu_vulkan
 
 
    void context::copyBufferToImage(::gpu::command_buffer *pgpucommandbuffer, ::gpu_vulkan::texture *ptexture,
-                                   ::gpu_vulkan::buffer *pbuffer, const ::int_rectangle &rectangleSubImage)
+                                   ::gpu_vulkan::buffer *pbuffer, const ::i32_rectangle &rectangleSubImage)
    // VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
    {
 
@@ -3093,7 +3093,7 @@ namespace gpu_vulkan
    //    for (int i = 0; i < m_uboBuffers.size(); i++)
    //    {
    //
-   //       ødefer_construct_new(m_uboBuffers[i]);
+   //       defer_construct_newø(m_uboBuffers[i]);
    //
    //       m_uboBuffers[i]->_initialize_buffer(this, iGlobalUboSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
    //                                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
@@ -3145,7 +3145,7 @@ namespace gpu_vulkan
 
       //   m_descriptorsetsGlobal.resize(iFrameCount);
 
-      //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      //   auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       //   pdescriptorpoolbuilder->initialize_builder(this);
       //   pdescriptorpoolbuilder->setMaxSets(iFrameCount);
@@ -3241,7 +3241,7 @@ namespace gpu_vulkan
 #include "shader/blend2.frag.spv.inl"
          };
 
-         øconstruct(m_pshaderBlend3);
+         constructø(m_pshaderBlend3);
 
          m_pshaderBlend3->m_bEnableBlend = true;
          //m_pshaderBlend3->m_bindingSampler.set();
@@ -3797,7 +3797,7 @@ VkFormat context::findDepthFormat()
                                                VkImageLayout initialLayout)
 {
 
-   auto pgputexture = øcreate<::gpu::texture>();
+   auto pgputexture = createø<::gpu::texture>();
 
    ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
 
@@ -4260,7 +4260,7 @@ VkFormat context::findDepthFormat()
 //
 //   ::pointer<::gpu::texture> prefilteredCubeNew;
 //
-//   øconstruct(prefilteredCubeNew);
+//   constructø(prefilteredCubeNew);
 //
 //   ::cast<::gpu_vulkan::texture> prefilteredCube = prefilteredCubeNew;
 //
@@ -4545,7 +4545,7 @@ VkFormat context::findDepthFormat()
 //      throw ::exception(error_failed, "Prefilter fragment shader SPIR-V not found");
 //   }
 //
-//   auto prefilterPipeline = øcreate<::gpu_vulkan::pipeline>();
+//   auto prefilterPipeline = createø<::gpu_vulkan::pipeline>();
 //
 //
 //   prefilterPipeline->initialize_graphics_pipeline(m_pgpurenderer, vert, frag, cfg);
@@ -4698,7 +4698,7 @@ VkFormat context::findDepthFormat()
 //
 //   ::pointer<::gpu::texture> irradianceCubeNew;
 //
-//   øconstruct(irradianceCubeNew);
+//   constructø(irradianceCubeNew);
 //
 //   ::cast<::gpu_vulkan::texture> irradianceCube = irradianceCubeNew;
 //
@@ -4955,7 +4955,7 @@ VkFormat context::findDepthFormat()
 //
 //   // std::string vert = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/prefiltered_environment_map.vert.spv";
 //   // std::string frag = std::string(PROJECT_ROOT_DIR) + "/res/shaders/spirV/irradiance_cube.frag.spv";
-//   auto ppipelineIrradiance = øcreate<pipeline>();
+//   auto ppipelineIrradiance = createø<pipeline>();
 //
 //   ::memory vert;
 //   ::memory frag;
@@ -5430,7 +5430,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //
 //   ::pointer<::gpu::texture> lutBrdfNew;
 //
-//   øconstruct(lutBrdfNew);
+//   constructø(lutBrdfNew);
 //
 //   ::cast<::gpu_vulkan::texture> lutBrdf = lutBrdfNew;
 //
@@ -5628,7 +5628,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //
 //   // Look-up-table (from BRDF) pipeline
 //
-//   auto ppipelineBrdf = øcreate_new<pipeline>();
+//   auto ppipelineBrdf = create_newø<pipeline>();
 //
 //   ::memory vert;
 //   ::memory frag;
@@ -5706,7 +5706,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 //   // if (auto it = m_mapgltfModel.find(name); it != m_mapgltfModel.end())
 //   //  return it->element2();
 //
-//   auto pmodel = øcreate_new<::gpu_vulkan::gltf::model>();
+//   auto pmodel = create_newø<::gpu_vulkan::gltf::model>();
 //
 //   *((::gpu::renderable_t *)pmodel) = model;
 //
@@ -6005,7 +6005,7 @@ void context::on_cube_map_face_image(::image::image * pimage)
    information("[AssetManager] Loading texture '{}' from '{}'", name, path);
 
    // Create the texture wrapper tied to this device
-   auto pgputexture = øcreate<::gpu::texture>();
+   auto pgputexture = createø<::gpu::texture>();
    ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
    ptexture->mip_layer_state(0, 0).m_vkimagelayout = imageLayout;
    ptexture->m_vkformat = format;
@@ -6079,7 +6079,7 @@ void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::
                                    bool bSrgb)
 {
 
-   auto ptextureNew = øcreate<::gpu::texture>();
+   auto ptextureNew = createø<::gpu::texture>();
 
    ptextureNew->initialize_texture_from_file_path(this, path, bSrgb);
    
@@ -6122,7 +6122,7 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
       //void gltf::Model::createEmptyTexture(VkQueue transferQueue)
 //   {
 
-      auto pgputextureEmpty = øcreate< ::gpu::texture>();
+      auto pgputextureEmpty = createø< ::gpu::texture>();
 
       ::cast<::gpu_vulkan::texture> ptextureEmpty = pgputextureEmpty;
       

@@ -108,23 +108,23 @@ namespace gpu_vulkan
 
 
 
-      virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::int_size& size);
+      virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::i32_size& size);
 
       void on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
-                             ::acme::windowing::window *pwindow, const ::int_size &size) override;
+                             ::acme::windowing::window *pwindow, const ::i32_size &size) override;
 
 
       VkDevice logicalDevice();
 
-      virtual void _create_offscreen_window(const ::int_size & size);
+      virtual void _create_offscreen_window(const ::i32_size & size);
 
       void defer_create_window_context(::acme::windowing::window *pwindow) override;
       void _defer_create_window_context(::acme::windowing::window * pwindow) override;
       virtual void _create_window_context(::acme::windowing::window *pwindow);
 
       //virtual void _create_window_buffer();
-      void _create_cpu_buffer(const ::int_size & size) override;
-      void resize_cpu_buffer(const ::int_size & size) override;
+      void _create_cpu_buffer(const ::i32_size & size) override;
+      void resize_cpu_buffer(const ::i32_size & size) override;
       void destroy_cpu_buffer() override;
 
       //void make_current() override;
@@ -163,7 +163,7 @@ namespace gpu_vulkan
       void endSingleTimeCommands(::gpu::command_buffer * pcommandbuffer);
       //void endSingleTimeCommands(command_buffer * pcommandbuffer, int iSubmitCount, VkSubmitInfo * psubmitinfo);
       void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-      void copyBufferToImage(::gpu::command_buffer* pcommandbuffer, ::gpu_vulkan::texture* ptexture, ::gpu_vulkan::buffer* pbuffer, const ::int_rectangle& rectangleSubImage = {});
+      void copyBufferToImage(::gpu::command_buffer* pcommandbuffer, ::gpu_vulkan::texture* ptexture, ::gpu_vulkan::buffer* pbuffer, const ::i32_rectangle& rectangleSubImage = {});
 ///      void copyBufferToImage(::gpu::command_buffer* pcommandbuffer, ::gpu::pixmap* pixmap, ::gpu_vulkan::buffer* pbuffer);
       //(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
       void createImageWithInfo(

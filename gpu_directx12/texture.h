@@ -77,7 +77,7 @@ namespace gpu_directx12
 
          virtual void upload_damaged_regions();
 
-         void update_pixels(const ::int_rectangle& rectangle, const void* data);
+         void update_pixels(const ::i32_rectangle& rectangle, const void* data);
 
       };
 
@@ -146,7 +146,7 @@ namespace gpu_directx12
 
          D3D12_CPU_DESCRIPTOR_HANDLE m_handleRenderTargetView{};
          D3D12_CPU_DESCRIPTOR_HANDLE m_handleDepthStencilView{};
-         ::int_size m_size{-1, -1};
+         ::i32_size m_size{-1, -1};
          int m_iLayerCount = -1;
          bool is_empty() const
          {
@@ -260,7 +260,7 @@ namespace gpu_directx12
       ~texture() override;
 
       void _create_texture(const ::gpu::texture_data & data);
-      //void initialize_image_texture(::gpu::renderer* prenderer, const ::int_rectangle & rectangle, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype) override;
+      //void initialize_image_texture(::gpu::renderer* prenderer, const ::i32_rectangle & rectangle, bool bWithDepth, const ::pointer_array < ::image::image >& imagea, enum_type etype) override;
       D3D12_CPU_DESCRIPTOR_HANDLE _allocate_render_target_view_handle();
 
       class d3d11* d3d11();
@@ -277,7 +277,7 @@ namespace gpu_directx12
       virtual void _initialize_gpu_texture(::gpu::context * pgpucontext, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain);
 
 
-      void set_pixels(const ::int_rectangle& rectangle, const void* data) override;
+      void set_pixels(const ::i32_rectangle& rectangle, const void* data) override;
 
       virtual upload_buffer * _get_upload_buffer();
 

@@ -16,7 +16,7 @@ namespace write_text_win32
       bool                                   m_bTrueType;
       bool                                   m_bOther;
       wstring                                m_wstrTopicFaceName;
-      ::int_array                              m_iaCharSet;
+      ::i32_array                              m_iaCharSet;
 
 
       wingdi_font_enum(::write_text::font_enumeration_item_array & itema, bool bRaster, bool bTrueType, bool bOther);
@@ -32,10 +32,10 @@ namespace write_text_win32
       void enum_cs(::write_text::font_enumeration_item * pitem);
 
 
-      static BOOL CALLBACK callback(LPLOGFONTW plf, LPNEWTEXTMETRICW lpntm, unsigned int FontType, LPVOID int_point);
+      static BOOL CALLBACK callback(LPLOGFONTW plf, LPNEWTEXTMETRICW lpntm, unsigned int FontType, LPVOID i32_point);
 
 
-      static BOOL CALLBACK callback_cs(LPLOGFONTW plf, LPNEWTEXTMETRICW lpntm, unsigned int FontType, LPVOID int_point);
+      static BOOL CALLBACK callback_cs(LPLOGFONTW plf, LPNEWTEXTMETRICW lpntm, unsigned int FontType, LPVOID i32_point);
 
 
    };

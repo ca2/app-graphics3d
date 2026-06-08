@@ -68,9 +68,9 @@ namespace graphics3d_opengl
 
       //::cast<::gpu_opengl::context> pcontext = m_pengine->gpu_context();
 
-      //øconstruct(m_pshaderOpaque);
-      //øconstruct(m_pshaderMask);
-      //øconstruct(m_pshaderBlend);
+      //constructø(m_pshaderOpaque);
+      //constructø(m_pshaderMask);
+      //constructø(m_pshaderBlend);
 
       //m_pshaderOpaque->initialize_shader_with_block(pgpucontext->m_pgpurenderer, 
       //   ::as_memory_block(g_psz_scene_vert),
@@ -186,16 +186,16 @@ namespace graphics3d_opengl
 //            {
 //               case ::gpu::model::material::ALPHAMODE_OPAQUE:
 //                  bChangedShader = pgpucontext->defer_bind(m_pshaderOpaque);
-//                  m_pshaderOpaque->set_int("useAlphaMask", 0);
+//                  m_pshaderOpaque->set_i32("useAlphaMask", 0);
 //                  break;
 //               case ::gpu::model::material::ALPHAMODE_MASK:
 //                  bChangedShader = pgpucontext->defer_bind(m_pshaderMask);
-//                  m_pshaderBlend->set_int("useAlphaMask", 1);
+//                  m_pshaderBlend->set_i32("useAlphaMask", 1);
 //                  break;
 //               case ::gpu::model::material::ALPHAMODE_BLEND:
 //               default:
 //                  bChangedShader = pgpucontext->defer_bind(m_pshaderBlend);
-//                  m_pshaderBlend->set_int("useAlphaMask", 0);
+//                  m_pshaderBlend->set_i32("useAlphaMask", 0);
 //                  break;
 //            }
 //
@@ -220,7 +220,7 @@ namespace graphics3d_opengl
 //               // //  IBL stuff
 //               // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
 //               // ::opengl::check_error("");
-//               // pshader->set_int("diffuseIrradianceMap", TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
+//               // pshader->set_i32("diffuseIrradianceMap", TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
 //               // ::cast<::gpu_opengl::ibl::diffuse_irradiance_map> pirradiancemap = pscene->m_pibldiffuseirradiancemap;
 //               // int iCubemapId = pirradiancemap->getCubemapId();
 //               // glBindTexture(GL_TEXTURE_CUBE_MAP, iCubemapId);
@@ -228,7 +228,7 @@ namespace graphics3d_opengl
 //
 //               // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_PREFILTERED_ENV_MAP);
 //               // ::opengl::check_error("");
-//               // pshader->set_int("prefilteredEnvMap", TEXTURE_UNIT_PREFILTERED_ENV_MAP);
+//               // pshader->set_i32("prefilteredEnvMap", TEXTURE_UNIT_PREFILTERED_ENV_MAP);
 //               // ::cast<::gpu_opengl::ibl::specular_map> pspecularmap = pscene->m_piblspecularmap;
 //               // ::cast<::gpu_opengl::texture> pspecularmap = pscene->m_piblspecularmap;
 //               // int iPrefilteredEnvMapId = pspecularmap->m_pframebufferPrefilteredEnvMap->m_ptexture();
@@ -247,7 +247,7 @@ namespace graphics3d_opengl
 //
 //               // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
 //               // ::opengl::check_error("");
-//               // pshader->set_int("brdfConvolutionMap", TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
+//               // pshader->set_i32("brdfConvolutionMap", TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
 //               // int iBrdfConvolutionMapId = pspecularmap->getBrdfConvolutionMapId();
 //               // glBindTexture(GL_TEXTURE_2D, iBrdfConvolutionMapId);
 //               // ::opengl::check_error("");

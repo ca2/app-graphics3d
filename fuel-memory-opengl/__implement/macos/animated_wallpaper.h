@@ -23,7 +23,7 @@ namespace macos
 //		HINSTANCE							m_hinstance;
 //		HWND									m_hwnd;
 
-		int_rectangle   					m_rectParentClient;
+		i32_rectangle   					m_rectParentClient;
 
 		animated_wallpaper();
 		~animated_wallpaper() override;

@@ -47,7 +47,7 @@ namespace opengl
 {
 
 
-   //inline void vertex2f(const ::double_rectangle & rectangle, float fZ)
+   //inline void vertex2f(const ::f64_rectangle & rectangle, float fZ)
    //{
 
    //   glVertex3f((GLfloat)rectangle.left, (GLfloat)rectangle.top, fZ);
@@ -58,7 +58,7 @@ namespace opengl
    //}
 
   
-      //inline void vertex2f(const ::double_polygon& a, float fZ)
+      //inline void vertex2f(const ::f64_polygon& a, float fZ)
       //{
       //   for (auto& p : a)
       //   {
@@ -69,7 +69,7 @@ namespace opengl
 
       //}
 
-   void resize(const ::int_size & size, bool bYSwap);
+   void resize(const ::i32_size & size, bool bYSwap);
 
 
    //https://community.khronos.org/t/draw-an-arc-in-opengl/57994/2

@@ -28,14 +28,14 @@ namespace graphics3d_hello3d
       ::location_double          m_location{0., 0., 5.};
       // Initial horizontal angle : toward -Z
       //float horizontalAngle = 3.14f;
-      //::double_angle             m_angleHorizontal{ π };
-       ::double_angle             m_angleHorizontal{ radians(MATH_PI) };
+      //::f64_angle             m_angleHorizontal{ π };
+       ::f64_angle             m_angleHorizontal{ radians(MATH_PI) };
       //::angle                 m_angleHorizontal{ π };
       // Initial vertical angle : none
-      ::double_angle             m_angleVertical{radians(0.)};
+      ::f64_angle             m_angleVertical{radians(0.)};
       //::angle                 m_angleImpact{ π / 4.0 };
-      //::double_angle             m_angleImpact{ π / 4.0 };
-       ::double_angle             m_angleImpact{radians(MATH_PI / 4.0) };
+      //::f64_angle             m_angleImpact{ π / 4.0 };
+       ::f64_angle             m_angleImpact{radians(MATH_PI / 4.0) };
       // Initial Field of View
       //float initialFoV = 45.0f;
 
@@ -44,8 +44,8 @@ namespace graphics3d_hello3d
 
       class ::time            m_timeDelta;
 
-      ::double_point             m_pointLastMouse;
-      ::double_size              m_sizeMouseDelta;
+      ::f64_point             m_pointLastMouse;
+      ::f64_size              m_sizeMouseDelta;
       ::pointer <render>      m_prender;
       ::string                m_strRender;
 

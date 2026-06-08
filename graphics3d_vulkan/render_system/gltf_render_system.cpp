@@ -80,9 +80,9 @@ namespace graphics3d_vulkan
 
       //::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
 
-      //øconstruct(m_pshaderOpaque);
-      //øconstruct(m_pshaderMask);
-      //øconstruct(m_pshaderBlend);
+      //constructø(m_pshaderOpaque);
+      //constructø(m_pshaderMask);
+      //constructø(m_pshaderBlend);
 
 
       //auto ppropertiesUbo = ::gpu_properties<::graphics3d::global_ubo1>();
@@ -178,7 +178,7 @@ namespace graphics3d_vulkan
 
       ////m_vkdescriptorsetaIbl.resize(frameCount);
 
-      ////auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      ////auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       ////pdescriptorpoolbuilder->initialize_builder(pcontext);
       ////pdescriptorpoolbuilder->setMaxSets(frameCount * 10);
@@ -501,7 +501,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
       //          pshader->set_matrix4("normalMatrix", normalMat);
       //          bool bAlbedo = pgltfmodel->m_materiala[0].baseColorTexture.is_set();
       //          bAlbedo = bAlbedo && !m_bDisableAlbedo;
-      //          pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
+      //          pshader->set_i32("useTextureAlbedo", bAlbedo ? 1 : 0);
       //
       //              floating_sequence3 seq3Albedo = {};
       //          if (prendersystem->m_bForceDefaultAlbedo)
@@ -522,7 +522,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
       //
       //          bool bMetallicRoughness = pgltfmodel->m_materiala[0].metallicRoughnessTexture.is_set();
       //          bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
-      //          pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
+      //          pshader->set_i32("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
       //          bool bNormal = pgltfmodel->m_materiala[0].normalTexture.is_set();
       //
       //
@@ -548,14 +548,14 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
       //
       //             fRoughness = pgltfmodel->m_materiala[0].roughnessFactor;
       //          }
-      //          pshader->set_float("metallic", fMetallic);
-      //          pshader->set_float("roughness", fRoughness);
+      //          pshader->set_f32("metallic", fMetallic);
+      //          pshader->set_f32("roughness", fRoughness);
       //
       //          bNormal = bNormal && !m_bDisableNormal;
-      //          pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
+      //          pshader->set_i32("useTextureNormal", bNormal ? 1 : 0);
       //          bool bAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture.is_set();
       //          bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
-      //          pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
+      //          pshader->set_i32("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
       //
       //
       //
@@ -571,7 +571,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
       //             //fAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture->m_fAmbientOcclusion;
       //             fAmbientOcclusion = 1.f;
       //          }
-      //          pshader->set_float("ambientOcclusion", fAmbientOcclusion);
+      //          pshader->set_f32("ambientOcclusion", fAmbientOcclusion);
       //
       //          floating_sequence3 seq3Emission = {};
       //          if (prendersystem->m_bForceDefaultEmission)
@@ -589,17 +589,17 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
       //
       //          bool bEmissive = pgltfmodel->m_materiala[0].emissiveTexture.is_set();
       //          bEmissive = bEmissive && !m_bDisableEmissive;
-      //          pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
+      //          pshader->set_i32("useTextureEmissive", bEmissive ? 1 : 0);
       //
       //          //auto metallicFactor = pgltfmodel->m_materiala[0].metallicFactor;
       //          //if (m_bForceDefaultMetallicFactor)
       //          //   metallicFactor = m_fDefaultMetallicFactor;
-      //          //pshader->set_float("metallic", metallicFactor);
+      //          //pshader->set_f32("metallic", metallicFactor);
       //          //auto roughnessFactor = pgltfmodel->m_materiala[0].roughnessFactor;
       //          //if (m_bForceDefaultRoughnessFactor)
       //          //   roughnessFactor = m_fDefaultRoughnessFactor;
-      //          //pshader->set_float("roughness", roughnessFactor);
-      //          //pshader->set_float("ambientOcclusion", pgltfmodel->m_materiala[0].am);
+      //          //pshader->set_f32("roughness", roughnessFactor);
+      //          //pshader->set_f32("ambientOcclusion", pgltfmodel->m_materiala[0].am);
       //          pshader->push_properties(pcommandbuffer);
       //
       //
@@ -712,17 +712,17 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //BEGIN_GPU_PROPERTIES(::graphics3d_vulkan::gltf_render_system::push_constants)
 //GPU_PROPERTY("modelMatrix", ::gpu::e_type_mat4)
 //GPU_PROPERTY("normalMatrix", ::gpu::e_type_mat4)
-//GPU_PROPERTY("useTextureAlbedo", ::gpu::e_type_int)
-//GPU_PROPERTY("useTextureMetallicRoughness", ::gpu::e_type_int)
-//GPU_PROPERTY("useTextureNormal", ::gpu::e_type_int)
-//GPU_PROPERTY("useTextureAmbientOcclusion", ::gpu::e_type_int)
-//GPU_PROPERTY("useTextureEmissive", ::gpu::e_type_int)
+//GPU_PROPERTY("useTextureAlbedo", ::gpu::e_type_i32)
+//GPU_PROPERTY("useTextureMetallicRoughness", ::gpu::e_type_i32)
+//GPU_PROPERTY("useTextureNormal", ::gpu::e_type_i32)
+//GPU_PROPERTY("useTextureAmbientOcclusion", ::gpu::e_type_i32)
+//GPU_PROPERTY("useTextureEmissive", ::gpu::e_type_i32)
 //GPU_PROPERTY("albedo", ::gpu::e_type_seq3)
-//GPU_PROPERTY("metallic", ::gpu::e_type_float)
-//GPU_PROPERTY("roughness", ::gpu::e_type_float)
-//GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_float)
+//GPU_PROPERTY("metallic", ::gpu::e_type_f32)
+//GPU_PROPERTY("roughness", ::gpu::e_type_f32)
+//GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_f32)
 //GPU_PROPERTY("emissive", ::gpu::e_type_seq3)
 ////GPU_PROPERTY("cameraPosition", ::gpu::e_type_seq3)
-//GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_float)
+//GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_f32)
 //GPU_PROPERTY("multiplier", ::gpu::e_type_seq3)
 //END_GPU_PROPERTIES()

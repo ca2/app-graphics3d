@@ -56,8 +56,8 @@ namespace app_graphics3d_continuum
 
       //set_bitmap_source("Simple papp!!");
 
-         set_timer(100100, 1_s,
-                   [this]()
+         set_timer(e_timer_update_main_frame_caption, 1_s,
+                   [this](::timer * ptimer)
                    {
                       ::string strTitle;
                       strTitle = "continuum";

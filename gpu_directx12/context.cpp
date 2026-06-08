@@ -80,7 +80,7 @@ namespace gpu_directx12
 
 
 
-   void context::on_create_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::int_size& size)
+   void context::on_create_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::i32_size& size)
    {
 
       m_pgpudevice = pgpudevice;
@@ -373,7 +373,7 @@ namespace gpu_directx12
    void context::_construct_new(::pointer<d3d12_resource> &pd3d12resource)
    {
 
-      øconstruct_new(pd3d12resource);
+      construct_newø(pd3d12resource);
 
       pd3d12resource->initialize_d3d12_resource(this);
 
@@ -395,7 +395,7 @@ namespace gpu_directx12
 
       {
 
-         ødefer_construct_new(m_pd3d11on12);
+         defer_construct_newø(m_pd3d11on12);
 
          if (!m_pd3d11on12->m_pdxgidevice)
          {
@@ -748,7 +748,7 @@ namespace gpu_directx12
 
          RECT rect = {};
 
-         GetWindowRect(pwin32window->_HWND(), &rect);
+         GetWindowRect((HWND) pwin32window->_HWND(), &rect);
 
          dxgiswapchaindesc1.Width = rect.right - rect.left;
          dxgiswapchaindesc1.Height = rect.bottom - rect.top;
@@ -1011,7 +1011,7 @@ namespace gpu_directx12
    ::pointer < ::gpu::context > allocate_system_context(::particle* pparticle)
    {
 
-      return pparticle->øcreate_new <context>();
+      return pparticle->create_newø <context>();
 
    }
 
@@ -1038,7 +1038,7 @@ namespace gpu_directx12
    }
 
 
-   void context::_create_offscreen_window(const ::int_size& size)
+   void context::_create_offscreen_window(const ::i32_size& size)
    {
       //if (::IsWindow(m_hwnd))
       //{
@@ -1107,7 +1107,7 @@ namespace gpu_directx12
 
 
 
-   void context::_create_context_directx12(::gpu::device* pgpudeviceParam, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::int_size& size)
+   void context::_create_context_directx12(::gpu::device* pgpudeviceParam, const ::gpu::enum_output& eoutput, ::windowing::window* pwindow, const ::i32_size& size)
    {
 
       //createInstance();
@@ -1384,7 +1384,7 @@ namespace gpu_directx12
 
       //   ::GetClientRect(m_hwnd, &rectClient);
 
-      //   ::int_size sizeNew = { rectClient.right - rectClient.left,
+      //   ::i32_size sizeNew = { rectClient.right - rectClient.left,
       //rectClient.bottom - rectClient.top };
       //   
       //   if (m_size != sizeNew)
@@ -1428,7 +1428,7 @@ namespace gpu_directx12
    }
 
 
-   void context::_create_cpu_buffer(const ::int_size& size)
+   void context::_create_cpu_buffer(const ::i32_size& size)
    {
 
       _create_offscreen_window(size);
@@ -1488,7 +1488,7 @@ if (m_itask.is_null())
    }
 
 
-   void context::resize_cpu_buffer(const ::int_size& sizeParam)
+   void context::resize_cpu_buffer(const ::i32_size& sizeParam)
    {
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
@@ -1732,7 +1732,7 @@ if (m_itask.is_null())
 
       //   m_descriptorsetsGlobal.resize(iFrameCount);
 
-      //   auto pdescriptorpoolbuilder = øallocate::gpu_directx12::descriptor_pool::Builder();
+      //   auto pdescriptorpoolbuilder = allocateø::gpu_directx12::descriptor_pool::Builder();
 
       //   pdescriptorpoolbuilder->initialize_builder(this);
       //   pdescriptorpoolbuilder->setMaxSets(iFrameCount);
@@ -2097,7 +2097,7 @@ if (m_itask.is_null())
 
    //      throw ::exception(error_wrong_state);
    //   }
-   //   auto psnapshot = øallocate snapshot(_take_snapshot(presourceSource,)
+   //   auto psnapshot = allocateø snapshot(_take_snapshot(presourceSource,)
    //   m_resourceaSnapshot.add();
 
 
@@ -2177,7 +2177,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 }
 )hlsl";
 
-         ødefer_construct_new(m_pshaderBlend3);
+         defer_construct_newø(m_pshaderBlend3);
 
          m_pshaderBlend3->m_bEnableBlend = true;
          //m_pshaderBlend3->m_bindingSampler.set(0);
@@ -2392,7 +2392,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
       //   player->getCurrentCommandBuffer4() = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
 
-      //   //auto pcommanbuffer=øcreate_new < ::gpu_directx12::command_buffer>();
+      //   //auto pcommanbuffer=create_newø < ::gpu_directx12::command_buffer>();
 
       //   //::comptr < ID3D12CommandQueue > pcommandqueue;
 
@@ -2535,7 +2535,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
       if (!m_pgpuswapchain)
       {
 
-         ødefer_construct(m_pgpuswapchain);
+         defer_constructø(m_pgpuswapchain);
 
          ///m_pswapchain->initialize_gpu_swap_chain(this, m_pwindow);
 
@@ -2688,7 +2688,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
    //   ::pointer <command_buffer > pcommandbuffer;
 
-   //   ødefer_construct_new(pcommandbuffer);
+   //   defer_construct_newø(pcommandbuffer);
 
    //   ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
 
@@ -2757,7 +2757,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
    }
 
 
-   void context::set_viewport(::gpu::command_buffer *pgpucommandbuffer, const ::int_rectangle &rectangle)
+   void context::set_viewport(::gpu::command_buffer *pgpucommandbuffer, const ::i32_rectangle &rectangle)
    {
 
 
@@ -2780,7 +2780,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
    }
 
 
-   void context::set_scissor(::gpu::command_buffer *pgpucommandbuffer, const ::int_rectangle &rectangle)
+   void context::set_scissor(::gpu::command_buffer *pgpucommandbuffer, const ::i32_rectangle &rectangle)
    {
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;

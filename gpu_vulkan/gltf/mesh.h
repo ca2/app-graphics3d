@@ -25,7 +25,7 @@ namespace gpu_vulkan
          unsigned int m_uVAO, m_uVBO, m_uEBO;
 
          //array_base<gltf::vertex> m_vertexa;
-         // unsigned_int_array m_indexa;
+         // unsigned_i32_array m_indexa;
          // ::pointer<gltf_material> m_pmaterial;
          //
 
@@ -34,7 +34,7 @@ namespace gpu_vulkan
 
 
          //void initialize_gpu_gltf_mesh(const ::array_base<::gpu::gltf::vertex> &vertexa,
-         //                          const ::unsigned_int_array &indexa, ::gpu::model::material *pmaterial) override;
+         //                          const ::unsigned_i32_array &indexa, ::gpu::model::material *pmaterial) override;
 
 
          //void on_initialize_gpu_mesh() override;

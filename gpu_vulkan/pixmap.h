@@ -25,10 +25,10 @@
 //      ~pixmap() override;
 //
 //
-//      // virtual ::int_size size();
+//      // virtual ::i32_size size();
 //
 //
-//      //void initialize_gpu_pixmap(::gpu::texture * pgpurenderer, const ::int_rectangle & rectangle) override;
+//      //void initialize_gpu_pixmap(::gpu::texture * pgpurenderer, const ::i32_rectangle & rectangle) override;
 //
 //      void on_initialize_gpu_pixmap() override;
 //

@@ -122,7 +122,7 @@ namespace app_graphics3d_landen
 
    //                  _synchronous_lock synchronouslock(m_pimpact->m_pparticleImageSynchronization);
 
-   //                  m_pimpact->m_pimage->image32()->copy(m_pimpact->m_pimage->size().minimum(::int_size(w, h)), m_pimpact->m_pimage->m_iScan, (image32_t*)p, stride);
+   //                  m_pimpact->m_pimage->image32()->copy(m_pimpact->m_pimage->size().minimum(::i32_size(w, h)), m_pimpact->m_pimage->m_iScan, (image32_t*)p, stride);
 
    //                  for (int y = 0; y < h; y++)
    //                  {
@@ -229,14 +229,14 @@ namespace app_graphics3d_landen
       //   if (strMode == "window"_ansi)
       //   {
 
-      //      auto pwindow = øcreate_new < window >();
+      //      auto pwindow = create_newø < window >();
 
       //      //::user::system cs(
       //      //   WS_EX_LAYERED,
       //      //   NULL,
       //      //   "Fuel Lab - OpenGL Testing"_ansi, 
       //      //   WS_VISIBLE,
-      //      //   int_rectangle_dimension(100, 100, 900, 300));
+      //      //   i32_rectangle_dimension(100, 100, 900, 300));
 
       //      //pwindow->create_window_ex(cs);
 

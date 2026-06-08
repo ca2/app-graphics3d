@@ -104,9 +104,9 @@ namespace graphics3d
 //
 //         auto pcontext = m_pengine->gpu_context();
 //
-//         øconstruct(m_pshaderOpaque);
-//         øconstruct(m_pshaderMask);
-//         øconstruct(m_pshaderBlend);
+//         constructø(m_pshaderOpaque);
+//         constructø(m_pshaderMask);
+//         constructø(m_pshaderBlend);
 //
 //         auto memoryVert = scene_gltf_vert_memory();
 //         auto memoryFrag = scene_gltf_frag_memory();
@@ -129,7 +129,7 @@ namespace graphics3d
 //         auto ppropertiesPush = ::gpu_properties<push_constants>();
 //         auto pinputlayout = pgpucontext->input_layout<::gpu::gltf::vertex>();
 //
-//         //øconstruct(m_pbindingsetIbl);
+//         //constructø(m_pbindingsetIbl);
 //
 //         //m_pbindingsetIbl->binding(0)->m_ebinding = ::gpu::e
 //
@@ -205,7 +205,7 @@ namespace graphics3d
 
          //auto frameCount = prendertarget->get_frame_count();
 
-         //auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+         //auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
          //pdescriptorpoolbuilder->initialize_builder(pcontext);
          //pdescriptorpoolbuilder->setMaxSets(frameCount * 10);
@@ -565,16 +565,16 @@ namespace graphics3d
       //      {
       //         case ::gpu::model::material::ALPHAMODE_OPAQUE:
       //            bChangedShader = pgpucontext->defer_bind(m_pshaderOpaque);
-      //            m_pshaderOpaque->set_int("useAlphaMask", 0);
+      //            m_pshaderOpaque->set_i32("useAlphaMask", 0);
       //            break;
       //         case ::gpu::model::material::ALPHAMODE_MASK:
       //            bChangedShader = pgpucontext->defer_bind(m_pshaderMask);
-      //            m_pshaderBlend->set_int("useAlphaMask", 1);
+      //            m_pshaderBlend->set_i32("useAlphaMask", 1);
       //            break;
       //         case ::gpu::model::material::ALPHAMODE_BLEND:
       //         default:
       //            bChangedShader = pgpucontext->defer_bind(m_pshaderBlend);
-      //            m_pshaderBlend->set_int("useAlphaMask", 0);
+      //            m_pshaderBlend->set_i32("useAlphaMask", 0);
       //            break;
       //      }
 
@@ -597,7 +597,7 @@ namespace graphics3d
       //         // //  IBL stuff
       //         // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
       //         // ::opengl::check_error("");
-      //         // pshader->set_int("diffuseIrradianceMap", TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
+      //         // pshader->set_i32("diffuseIrradianceMap", TEXTURE_UNIT_DIFFUSE_IRRADIANCE_MAP);
       //         // ::cast<::gpu_opengl::ibl::diffuse_irradiance_map> pirradiancemap = pscene->m_pibldiffuseirradiancemap;
       //         // int iCubemapId = pirradiancemap->getCubemapId();
       //         // glBindTexture(GL_TEXTURE_CUBE_MAP, iCubemapId);
@@ -605,7 +605,7 @@ namespace graphics3d
 
       //         // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_PREFILTERED_ENV_MAP);
       //         // ::opengl::check_error("");
-      //         // pshader->set_int("prefilteredEnvMap", TEXTURE_UNIT_PREFILTERED_ENV_MAP);
+      //         // pshader->set_i32("prefilteredEnvMap", TEXTURE_UNIT_PREFILTERED_ENV_MAP);
       //         // ::cast<::gpu_opengl::ibl::specular_map> pspecularmap = pscene->m_piblspecularmap;
       //         // ::cast<::gpu_opengl::texture> pspecularmap = pscene->m_piblspecularmap;
       //         // int iPrefilteredEnvMapId = pspecularmap->m_pframebufferPrefilteredEnvMap->m_ptexture();
@@ -622,7 +622,7 @@ namespace graphics3d
 
       //         // glActiveTexture(GL_TEXTURE0 + TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
       //         // ::opengl::check_error("");
-      //         // pshader->set_int("brdfConvolutionMap", TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
+      //         // pshader->set_i32("brdfConvolutionMap", TEXTURE_UNIT_BRDF_CONVOLUTION_MAP);
       //         // int iBrdfConvolutionMapId = pspecularmap->getBrdfConvolutionMapId();
       //         // glBindTexture(GL_TEXTURE_2D, iBrdfConvolutionMapId);
       //         // ::opengl::check_error("");
@@ -895,7 +895,7 @@ namespace graphics3d
       //         pshader->set_matrix4("normalMatrix", normalMat);
       //         bool bAlbedo = pgltfmodel->m_materiala[0].baseColorTexture.is_set();
       //         bAlbedo = bAlbedo && !m_bDisableAlbedo;
-      //         pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
+      //         pshader->set_i32("useTextureAlbedo", bAlbedo ? 1 : 0);
 
       //         floating_sequence3 seq3Albedo = {};
       //         if (prendersystem->m_bForceDefaultAlbedo)
@@ -915,7 +915,7 @@ namespace graphics3d
 
       //         bool bMetallicRoughness = pgltfmodel->m_materiala[0].metallicRoughnessTexture.is_set();
       //         bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
-      //         //pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
+      //         //pshader->set_i32("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
       //         bool bNormal = pgltfmodel->m_materiala[0].normalTexture.is_set();
 
 
@@ -941,14 +941,14 @@ namespace graphics3d
 
       //            fRoughness = pgltfmodel->m_materiala[0].roughnessFactor;
       //         }
-      //         pshader->set_float("metallic", fMetallic);
-      //         pshader->set_float("roughness", fRoughness);
+      //         pshader->set_f32("metallic", fMetallic);
+      //         pshader->set_f32("roughness", fRoughness);
 
       //         bNormal = bNormal && !m_bDisableNormal;
-      //         pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
+      //         pshader->set_i32("useTextureNormal", bNormal ? 1 : 0);
       //         bool bAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture.is_set();
       //         bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
-      //         //pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
+      //         //pshader->set_i32("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
 
 
       //         float fAmbientOcclusion = 0.0f;
@@ -963,7 +963,7 @@ namespace graphics3d
       //            // fAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture->m_fAmbientOcclusion;
       //            fAmbientOcclusion = 1.f;
       //         }
-      //         pshader->set_float("ambientOcclusion", fAmbientOcclusion);
+      //         pshader->set_f32("ambientOcclusion", fAmbientOcclusion);
 
       //         //floating_sequence3 seq3Emission = {};
       //         //if (prendersystem->m_bForceDefaultEmission)
@@ -981,7 +981,7 @@ namespace graphics3d
 
       //         ////bool bEmissive = pgltfmodel->m_materiala[0].emissiveTexture.is_set();
       //         ////bEmissive = bEmissive && !m_bDisableEmissive;
-      //         //pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
+      //         //pshader->set_i32("useTextureEmissive", bEmissive ? 1 : 0);
       //         pshader->push_properties(pcommandbuffer);
 
 
@@ -1076,22 +1076,22 @@ namespace graphics3d
 BEGIN_GPU_PROPERTIES(::graphics3d::scene_render_system::push_constants)
 GPU_PROPERTY("modelMatrix", ::gpu::e_type_mat4)
 GPU_PROPERTY("normalMatrix", ::gpu::e_type_mat4)
-GPU_PROPERTY("useTextureAlbedo", ::gpu::e_type_int)
-GPU_PROPERTY("useTextureNormal", ::gpu::e_type_int)
-GPU_PROPERTY("useAlphaMask", ::gpu::e_type_int)
-// GPU_PROPERTY("useTextureMetallicRoughness", ::gpu::e_type_int)
-// GPU_PROPERTY("useTextureAmbientOcclusion", ::gpu::e_type_int)
-// GPU_PROPERTY("useTextureEmissive", ::gpu::e_type_int)
+GPU_PROPERTY("useTextureAlbedo", ::gpu::e_type_i32)
+GPU_PROPERTY("useTextureNormal", ::gpu::e_type_i32)
+GPU_PROPERTY("useAlphaMask", ::gpu::e_type_i32)
+// GPU_PROPERTY("useTextureMetallicRoughness", ::gpu::e_type_i32)
+// GPU_PROPERTY("useTextureAmbientOcclusion", ::gpu::e_type_i32)
+// GPU_PROPERTY("useTextureEmissive", ::gpu::e_type_i32)
 GPU_PROPERTY("albedo", ::gpu::e_type_seq3)
-GPU_PROPERTY("metallic", ::gpu::e_type_float)
-GPU_PROPERTY("roughness", ::gpu::e_type_float)
-GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_float)
-GPU_PROPERTY("alphaMaskCutoff", ::gpu::e_type_float)
-GPU_PROPERTY("prefilteredEnvMapMaxLod", ::gpu::e_type_float)
+GPU_PROPERTY("metallic", ::gpu::e_type_f32)
+GPU_PROPERTY("roughness", ::gpu::e_type_f32)
+GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_f32)
+GPU_PROPERTY("alphaMaskCutoff", ::gpu::e_type_f32)
+GPU_PROPERTY("prefilteredEnvMapMaxLod", ::gpu::e_type_f32)
 //GPU_PROPERTY("emissive", ::gpu::e_type_seq3)
 // GPU_PROPERTY("cameraPosition", ::gpu::e_type_seq3)
-//GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_float)
-// GPU_PROPERTY("useAlphaMask", ::gpu::e_type_int)
-// GPU_PROPERTY("alphaMaskCutOff", ::gpu::e_type_float)
+//GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_f32)
+// GPU_PROPERTY("useAlphaMask", ::gpu::e_type_i32)
+// GPU_PROPERTY("alphaMaskCutOff", ::gpu::e_type_f32)
 ///GPU_PROPERTY("multiplier", ::gpu::e_type_seq3)
 END_GPU_PROPERTIES()

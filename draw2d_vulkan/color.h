@@ -34,10 +34,10 @@ namespace vulkan
    {
 
       ::vulkan::color(
-         color.m_uchRed,
-         color.m_uchGreen,
-         color.m_uchBlue,
-         color.m_uchOpacity);
+         color.m_u8Red,
+         color.m_u8Green,
+         color.m_u8Blue,
+         color.m_u8Opacity);
 
    }
 
@@ -49,10 +49,10 @@ inline void vulkan_color(::color::color color)
 {
 
    ::vulkan::color(
-      color.byte_red(),
-      color.byte_green(),
-      color.byte_blue(),
-      color.byte_opacity());
+      color.u8_red(),
+      color.u8_green(),
+      color.u8_blue(),
+      color.u8_opacity());
 
 }
 

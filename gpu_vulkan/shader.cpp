@@ -144,7 +144,7 @@ namespace gpu_vulkan
 
       //::cast < render_target > prendertarget = prenderer->m_pgpurendertarget;
 
-      auto ppipeline = øcreate_new<::gpu_vulkan::pipeline>();
+      auto ppipeline = create_newø<::gpu_vulkan::pipeline>();
 
       // prenderer->current_frame_particle_array()->add(m_ppipeline);
 
@@ -167,7 +167,7 @@ namespace gpu_vulkan
 
       //   }
 
-      //   ødefer_construct_new(m_pVertexInput);
+      //   defer_construct_newø(m_pVertexInput);
 
       //   m_pVertexInput->initialize_from_properties(m_propertiesInputLayout);
 
@@ -404,7 +404,7 @@ namespace gpu_vulkan
 
                auto pdescriptorsetlayout = pbindingsetGlobalUbo->descriptor_set_layout(pgpucommandbuffer);
 
-               descriptorsetlayouta.ø(pbindingslotset->m_iSet) = pdescriptorsetlayout;
+               descriptorsetlayouta.atø(pbindingslotset->m_iSet) = pdescriptorsetlayout;
 
                continue;
 
@@ -412,9 +412,9 @@ namespace gpu_vulkan
 
             ::cast<::gpu_vulkan::binding_set> pbindingset = pbindingslotset->m_pbindingset;
 
-            descriptorsetlayouta.ø(pbindingslotset->m_iSet) = pbindingset->descriptor_set_layout(pgpucommandbuffer);
+            descriptorsetlayouta.atø(pbindingslotset->m_iSet) = pbindingset->descriptor_set_layout(pgpucommandbuffer);
 
-            descriptorpoola.ø(pbindingslotset->m_iSet) = pbindingset->m_pdescriptorsetlayout1;
+            descriptorpoola.atø(pbindingslotset->m_iSet) = pbindingset->m_pdescriptorsetlayout1;
 
          }
 
@@ -430,7 +430,7 @@ namespace gpu_vulkan
 
       //      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-      //      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      //      auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       //      pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
       //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -450,7 +450,7 @@ namespace gpu_vulkan
 
       //      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-      //      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      //      auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       //      pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
       //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -472,7 +472,7 @@ namespace gpu_vulkan
 
       //      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-      //      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      //      auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       //      pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
       //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -494,7 +494,7 @@ namespace gpu_vulkan
 
       //      int iFrameCount = m_pgpurenderer->m_pgpurendertarget->get_frame_count();
 
-      //      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      //      auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       //      pdescriptorpoolbuilder->initialize_builder(m_pgpurenderer->m_pgpucontext);
       //      pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -586,7 +586,7 @@ namespace gpu_vulkan
 
             auto samplerSetLayout = pdescriptorsetlayout->getDescriptorSetLayout();
 
-            pipelineconfiguration.descriptorSetLayouts.ø(iSet) = samplerSetLayout;
+            pipelineconfiguration.descriptorSetLayouts.atø(iSet) = samplerSetLayout;
          }
 
          // if (m_bindingSampler.is_set())
@@ -1104,7 +1104,7 @@ namespace gpu_vulkan
 
          auto uBlockSizeWithoutSamplers = (uint32_t)m_propertiesPushShared.m_blockWithoutSamplers.size();
 
-         auto pmemory = øallocate ::memory();
+         auto pmemory = allocateø ::memory();
 
          pmemory->assign(m_propertiesPushShared.m_blockWithoutSamplers.data(),
                          m_propertiesPushShared.m_blockWithoutSamplers.size());
@@ -1199,7 +1199,7 @@ namespace gpu_vulkan
    //   if (nok(m_pshadersampler))
    //   {
 
-   //      øconstruct_new(m_pshadersampler);
+   //      construct_newø(m_pshadersampler);
 
    //      m_pshadersampler->m_pshader = this;
 
@@ -1461,7 +1461,7 @@ namespace gpu_vulkan
    //void shader::_update_vk_descriptor_set(int iFrameCount) 
    //{
 
-   //   ødefer_construct_new(m_pvkdescriptorseta);
+   //   defer_construct_newø(m_pvkdescriptorseta);
    //   
    //   m_pvkdescriptorseta->set_size(iFrameCount); 
    //
@@ -1581,7 +1581,7 @@ namespace gpu_vulkan
    //   if (!pshadertexture)
    //   {
 
-   //      øconstruct_new(pshadertexture);
+   //      construct_newø(pshadertexture);
 
    //      pshadertexture->initialize_shader_texture(pshadersampler, ptexture);
 

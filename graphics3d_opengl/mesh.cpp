@@ -72,7 +72,7 @@ namespace graphics3d_opengl
          strUniform.formatf("%s%d",strTextureType.c_str(), i);
          // now set the sampler to the correct texture unit
          //glUniform1i(glGetUniformLocation(pshader->m_ProgramID, (name + number).c_str()), i);
-         pshader->set_int(strUniform, i);
+         pshader->set_i32(strUniform, i);
          // and finally bind the texture
          glBindTexture(GL_TEXTURE_2D, ptexture->m_gluTextureID);
       }

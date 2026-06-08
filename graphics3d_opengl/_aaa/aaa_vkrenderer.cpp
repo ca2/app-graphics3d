@@ -29,7 +29,7 @@ namespace graphics3d_opengl
 
       m_pgpucontext = pgpucontext;
 
-      øconstruct_new(m_poffscreensampler);
+      construct_newø(m_poffscreensampler);
 
       m_poffscreensampler->initialize_offscreen_sampler(pgpucontext);
 
@@ -64,7 +64,7 @@ namespace graphics3d_opengl
       if (m_bOffScreen)
       {
 
-         m_pvkcrenderpass = øallocate offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
+         m_pvkcrenderpass = allocateø offscreen_render_pass(m_pgpucontext, m_extentRenderer, m_pvkcrenderpass);
 
       }
 

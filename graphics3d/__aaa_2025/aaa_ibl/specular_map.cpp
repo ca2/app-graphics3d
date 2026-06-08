@@ -88,7 +88,7 @@ return {};
          // ::file::path pathPrefilteredEnvMapVertexShader = "matter://shaders/ibl_specularenv.vert";
          // ::file::path pathPrefilteredEnvMapFragmentShader = "matter://shaders/ibl_specularenv.frag";
          //
-         øconstruct(m_pshaderPrefilteredEnvMap);
+         constructø(m_pshaderPrefilteredEnvMap);
 
          m_pshaderPrefilteredEnvMap->initialize_shader_with_block(
             pgpucontext->m_pgpurenderer,
@@ -96,7 +96,7 @@ return {};
             prefiltered_environment_map_frag_memory());
 
 
-         øconstruct(m_pframebufferPrefilteredEnvMap);
+         constructø(m_pframebufferPrefilteredEnvMap);
          m_pframebufferPrefilteredEnvMap->initialize_mipmap_cubemap_framebuffer(
             m_uPrefilteredEnvMapWidth, m_uPrefilteredEnvMapHeight);
 
@@ -104,14 +104,14 @@ return {};
          // ::file::path pathBrdfConvolutionVertexShader= "matter://shaders/ibl_brdfconvolution.vert";
          // ::file::path pathBrdfConvolutionFragmentShader = "matter://shaders/ibl_brdfconvolution.frag";
 
-         øconstruct(m_pshaderBrdfConvolution);
+         constructø(m_pshaderBrdfConvolution);
 
          m_pshaderBrdfConvolution->initialize_shader_with_block(
             pgpucontext->m_pgpurenderer,
             brdf_convolution_vert_memory(),
             brdf_convolution_frag_memory());
 
-         øconstruct(m_pbrdfconvolutionframebuffer);
+         constructø(m_pbrdfconvolutionframebuffer);
 
          m_pbrdfconvolutionframebuffer->initialize_BrdfConvolutionFramebuffer(
             m_uBrdfConvolutionMapWidth, m_uBrdfConvolutionMapHeight);

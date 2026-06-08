@@ -63,7 +63,7 @@ namespace gpu_directx12
 
       //int                           m_gluTextureBitmap1;
       //int                              m_iLastBitmap1Scan;
-      //::int_size                       m_sizeBitmap1;
+      //::i32_size                       m_sizeBitmap1;
 
       //memory                           m_memorySwap;
 
@@ -149,11 +149,11 @@ namespace gpu_directx12
       virtual void get_debug_interface(UINT& dxgiFactoryFlags);
 
       //virtual void initialize_swap_chain(::windowing::window* pwindow);
-      virtual void initialize_cpu_buffer(const ::int_size & size);
+      virtual void initialize_cpu_buffer(const ::i32_size & size);
       
 
       void initialize_gpu_device_for_swap_chain(::gpu::approach* pgpuapproach, ::windowing::window *pwindow) override;
-      void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::int_rectangle& rectanglePlacement) override;
+      void initialize_gpu_device_for_off_screen(::gpu::approach* pgpuapproach, const ::i32_rectangle& rectanglePlacement) override;
 
       //virtual ::gpu::context* main_draw2d_context();
 
@@ -187,10 +187,10 @@ namespace gpu_directx12
 
       //void clear(const ::color::color& color);
 
-      //virtual void create_offscreen_buffer(const ::int_size& size);
-      //virtual void _create_offscreen_buffer(const ::int_size& size);
+      //virtual void create_offscreen_buffer(const ::i32_size& size);
+      //virtual void _create_offscreen_buffer(const ::i32_size& size);
 
-      //virtual void resize_offscreen_buffer(const ::int_size& size);
+      //virtual void resize_offscreen_buffer(const ::i32_size& size);
       //virtual void destroy_offscreen_buffer();
 
    /*   virtual void translate_shader(string & str);
@@ -232,15 +232,15 @@ namespace gpu_directx12
       //virtual VkCommandPool createCommandPool(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags createFlags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
       virtual bool isExtensionSupported(const ::scoped_string& scopedstrExtension);
 
-      virtual void _create_offscreen_window(const ::int_size& size);
+      virtual void _create_offscreen_window(const ::i32_size& size);
 
       //void defer_create_window_context(::windowing::window* pwindow) override;
       //void _defer_create_window_context(::windowing::window* pwindow) override;
       //virtual void _create_window_context(::windowing::window* pwindow);
 
       //virtual void _create_window_buffer();
-      //void _create_offscreen_buffer(const ::int_size& size) override;
-      //void resize_offscreen_buffer(const ::int_size& size) override;
+      //void _create_offscreen_buffer(const ::i32_size& size) override;
+      //void resize_offscreen_buffer(const ::i32_size& size) override;
       //void destroy_offscreen_buffer() override;
 
       //void make_current() override;

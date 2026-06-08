@@ -70,7 +70,7 @@ namespace graphics3d
         std::string vertShaderPath = "matter://Shaders/SpirV/point_light.vert.spv";
         std::string fragShaderPath = "matter://Shaders/SpirV/point_light.frag.spv";
 
-        vkcPipeline = øallocate VkcPipeline();
+        vkcPipeline = allocateø VkcPipeline();
         
         vkcPipeline->initialize_pipeline(
             m_pvkcdevice,

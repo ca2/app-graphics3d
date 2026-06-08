@@ -26,7 +26,7 @@ namespace vulkan
       m_pvkcontainer = pvkcontainer;
       m_pvkcdevice = pvkcdevice;
 
-      øconstruct_new(m_poffscreensampler);
+      construct_newø(m_poffscreensampler);
 
       m_poffscreensampler->initialize_offscreen_sampler(pvkcdevice);
 
@@ -58,7 +58,7 @@ namespace vulkan
       if (m_bOffScreen)
       {
 
-         m_pvkcrenderpass = øallocate VkcOffScreen(m_pvkcdevice, m_extentRenderer, m_pvkcrenderpass);
+         m_pvkcrenderpass = allocateø VkcOffScreen(m_pvkcdevice, m_extentRenderer, m_pvkcrenderpass);
 
       }
 

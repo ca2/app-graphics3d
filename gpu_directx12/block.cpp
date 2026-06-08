@@ -55,7 +55,7 @@ namespace gpu_directx12
       CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(
          ::directx12::Align256(iBufferSize));
 
-      øconstruct_new(m_pd3d12resourceBlock);
+      construct_newø(m_pd3d12resourceBlock);
 
       auto hrCreateCommittedResource = pgpudevice->m_pd3d12device->CreateCommittedResource(
          &heapProps,

@@ -45,7 +45,7 @@ namespace draw2d_opengl
 
       //::pointer<::opengl::context>          m_popenglcontext;
 
-      ::string_map <::int_map<::pointer <face>>> m_mapFaceSize;
+      ::string_map <::i32_map<::pointer <face>>> m_mapFaceSize;
       draw2d();
       ~draw2d() override;
 

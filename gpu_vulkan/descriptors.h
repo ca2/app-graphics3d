@@ -104,7 +104,7 @@ namespace gpu_vulkan
       ::pointer<descriptor_set_array> allocate_descriptor_set_array(::particle * p)
       {
 
-         auto pdescriptorseta = p->øcreate_new < descriptor_set_array>();
+         auto pdescriptorseta = p->create_newø < descriptor_set_array>();
          m_descriptorset2a.add(pdescriptorseta);
          return pdescriptorseta;
 

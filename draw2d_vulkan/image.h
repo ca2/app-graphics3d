@@ -31,7 +31,7 @@ namespace draw2d_vulkan
       Visual*        m_visual;
       int            m_depth;
 #endif
-      ::long_long_size           m_sizeWnd;
+      ::i64_size           m_sizeWnd;
       OffscreenContext *               m_phost;
 
 
@@ -53,7 +53,7 @@ namespace draw2d_vulkan
 
       using ::image::image::create;
 
-      virtual void create(const ::int_size& size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1, bool bPreserve = false) override;
+      virtual void create(const ::i32_size& size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1, bool bPreserve = false) override;
 
       virtual void create(::draw2d::graphics* pgraphics);
 
@@ -62,9 +62,9 @@ namespace draw2d_vulkan
       bool host(::pixmap * ppixmap, ::windowing::window * pwindow) override;
 
       bool from(::draw2d::graphics * pgraphics);
-      //bool from(int_point ptDest, ::draw2d::graphics * pgraphics, const ::int_point & point, ::int_size sz);
+      //bool from(i32_point ptDest, ::draw2d::graphics * pgraphics, const ::i32_point & point, ::i32_size sz);
 
-      //void to(::draw2d::graphics * pgraphics, const ::int_point& point, const ::int_size& size, const ::int_point& pointSrc) override;
+      //void to(::draw2d::graphics * pgraphics, const ::i32_point& point, const ::i32_size& size, const ::i32_point& pointSrc) override;
 
 
       //void SetIconMask(::image::icon * picon, int cx, int cy);
@@ -91,7 +91,7 @@ namespace draw2d_vulkan
       //void mult_alpha(::image::image *pimageWork, bool bPreserveAlpha = true);
       //void set_rgb(int R, int G, int B);
 
-      //void rotate(::image::image *pimage, const ::int_rectangle & rectangle, double dAngle, double dScale);
+      //void rotate(::image::image *pimage, const ::i32_rectangle & rectangle, double dAngle, double dScale);
       //void rotate(::image::image *pimage, double dAngle, double dScale);
       //void Rotate034(::image::image *pimage, double dAngle, double dScale);
 
@@ -146,7 +146,7 @@ namespace draw2d_vulkan
       void Line ( int x1, int y1, int x2, int y2, int R, int G, int B );
       void LineGlass ( int x1, int y1, int x2, int y2, int R, int G, int B, int A );*/
 
-      //void create_frame(::int_size size, int iFrameCount);
+      //void create_frame(::i32_size size, int iFrameCount);
       //void set_frame2(void * lpdata, int iFrame, int iFrameCount);
       //void set_frame1(void * lpdata, int iFrame, int iFrameCount);
       //void get_frame(void * lpdata, int iFrame, int iFrameCount);

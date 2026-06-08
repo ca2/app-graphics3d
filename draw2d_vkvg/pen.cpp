@@ -51,7 +51,7 @@ namespace draw2d_vkvg
       m_nPenStyle    = nPenStyle;
       m_dWidth       = dWidth;
       m_colorColor      = crColor;
-      m_ppen         = øallocate< plusplus::Pen(plusplus::Color >(crColor), dWidth);
+      m_ppen         = allocateø< plusplus::Pen(plusplus::Color >(crColor), dWidth);
 
    }
 
@@ -274,7 +274,7 @@ namespace draw2d_vkvg
                {
                   cr1 = graphicsDest->SetTextColor(cr1);
                   cr2 = graphicsDest->SetBkColor(cr2);
-                  graphicsDest->FillRect(int_rectangle(0, 0, bm.bmWidth, bm.bmHeight), &pbrushChecker);
+                  graphicsDest->FillRect(i32_rectangle(0, 0, bm.bmWidth, bm.bmHeight), &pbrushChecker);
                   graphicsDest->SetTextColor(cr1);
                   graphicsDest->SetBkColor(cr2);
 
@@ -334,7 +334,7 @@ namespace draw2d_vkvg
          // Checker the background with white and crBackground
          cr1 = pgraphics->SetTextColor(cr1);
          cr2 = pgraphics->SetBkColor(cr2);
-         pgraphics->FillRect(int_rectangle(x, y, x + bm.bmWidth, y + bm.bmHeight), &pbrushChecker);
+         pgraphics->FillRect(i32_rectangle(x, y, x + bm.bmWidth, y + bm.bmHeight), &pbrushChecker);
          pgraphics->SetTextColor(cr1);
          pgraphics->SetBkColor(cr2);
 
@@ -362,12 +362,12 @@ namespace draw2d_vkvg
       //   if (m_epen == ::draw2d::e_pen_brush)
       //   {
       //      
-      //      ((pen *) this)->m_ppen = øallocate< plusplus::Pen((plusplus::Brush *) m_br.cast < brush >()->get_os_data(),  >(plusplus::REAL) m_dWidth);
+      //      ((pen *) this)->m_ppen = allocateø< plusplus::Pen((plusplus::Brush *) m_br.cast < brush >()->get_os_data(),  >(plusplus::REAL) m_dWidth);
 
       //   }
       //   else
       //   {
-      //      ((pen *) this)->m_ppen = øallocate< plusplus::Pen(plusplus::Color >(
+      //      ((pen *) this)->m_ppen = allocateø< plusplus::Pen(plusplus::Color >(
       //         color32_byte_opacity(m_color),
       //         color32_byte_red(m_color),
       //         color32_byte_green(m_color),

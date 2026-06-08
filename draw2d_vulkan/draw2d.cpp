@@ -154,7 +154,7 @@ namespace draw2d_vulkan
 
    //   }
 
-   //   øconstruct_new(pfont);
+   //   construct_newø(pfont);
 
    //   pfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
 
@@ -204,7 +204,7 @@ namespace draw2d_vulkan
    int  draw2d::vulkan_init()
    {
 
-      //øconstruct(m_pvulkancontext);
+      //constructø(m_pvulkancontext);
 
       //if (m_atomClass)
       //{

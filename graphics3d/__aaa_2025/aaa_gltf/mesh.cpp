@@ -35,7 +35,7 @@ namespace gpu
       }
 
 
-      void mesh::initialize_gpu_gltf_mesh(const ::raw_array_base<gltf::vertex> &vertexa, const ::unsigned_int_array &indexa,
+      void mesh::initialize_gpu_gltf_mesh(const ::raw_array_base<gltf::vertex> &vertexa, const ::unsigned_i32_array &indexa,
                                           ::gpu::gltf::material *pmaterial)
       {
 
@@ -54,7 +54,7 @@ namespace gpu
          // auto pshader = pcommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pshaderBound;
          //
          // // albedo
-         // pshader->set_int("material.useTextureAlbedo", m_pmaterial->useTextureAlbedo);
+         // pshader->set_i32("material.useTextureAlbedo", m_pmaterial->useTextureAlbedo);
          // pshader->set_sequence3("material.albedo", m_pmaterial->albedo);
          // if (m_pmaterial->useTextureAlbedo)
          // {
@@ -63,7 +63,7 @@ namespace gpu
          //    glBindTexture(GL_TEXTURE_2D, m_pmaterial->textureAlbedo->mId);
          // }
          //
-         // pshader->set_int("material.useTextureMetallicRoughness", m_pmaterial->useTextureMetallicRoughness);
+         // pshader->set_i32("material.useTextureMetallicRoughness", m_pmaterial->useTextureMetallicRoughness);
          // pshader->setFloat("material.metallic", m_pmaterial->metallic);
          // pshader->setFloat("material.roughness", m_pmaterial->roughness);
          // if (m_pmaterial->useTextureMetallicRoughness)
@@ -73,7 +73,7 @@ namespace gpu
          //    glBindTexture(GL_TEXTURE_2D, m_pmaterial->textureMetallicRoughness->mId);
          // }
          //
-         // pshader->set_int("material.useTextureNormal", m_pmaterial->useTextureNormal);
+         // pshader->set_i32("material.useTextureNormal", m_pmaterial->useTextureNormal);
          // if (m_pmaterial->useTextureNormal)
          // {
          //    glActiveTexture(GL_TEXTURE0 + e_gltf_texture_normal);
@@ -81,7 +81,7 @@ namespace gpu
          //    glBindTexture(GL_TEXTURE_2D, m_pmaterial->textureNormal->mId);
          // }
          //
-         // pshader->set_int("material.useTextureAmbientOcclusion", m_pmaterial->useTextureAmbientOcclusion);
+         // pshader->set_i32("material.useTextureAmbientOcclusion", m_pmaterial->useTextureAmbientOcclusion);
          // pshader->setFloat("material.ambientOcclusion", m_pmaterial->ambientOcclusion);
          // if (m_pmaterial->useTextureAmbientOcclusion)
          // {
@@ -90,7 +90,7 @@ namespace gpu
          //    glBindTexture(GL_TEXTURE_2D, m_pmaterial->textureAmbientOcclusion->mId);
          // }
          //
-         // pshader->set_int("material.useTextureEmissive", m_pmaterial->useTextureEmissive);
+         // pshader->set_i32("material.useTextureEmissive", m_pmaterial->useTextureEmissive);
          // pshader->set_sequence3("material.emissive", m_pmaterial->emissive);
          // if (m_pmaterial->useTextureEmissive)
          // {

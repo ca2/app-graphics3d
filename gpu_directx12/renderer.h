@@ -52,7 +52,7 @@ namespace gpu_directx12
 
 
          comptr<ID3D12Resource>       m_presourceStagingTexture;
-         ::int_size              m_size;
+         ::i32_size              m_size;
 
          D3D12_RESOURCE_DESC m_desc;
 
@@ -115,7 +115,7 @@ namespace gpu_directx12
       //bool m_bNeedToRecreateSwapChain = false;
       //bool m_bOffScreen = true;
       //renderer(VkWindow &window, context * pvkcdevice);
-      //::int_size m_sizeRenderer;
+      //::i32_size m_sizeRenderer;
 
       ::pointer<::gpu_directx12::descriptor_set_layout>           m_psetdescriptorlayoutImageBlend;
       ::pointer <::gpu_directx12::descriptor_pool>                m_pdescriptorpoolImageBlend;
@@ -154,7 +154,7 @@ namespace gpu_directx12
          m_pvertexbufferSeq2UvRectangle;
 
 
-      //::int_size m_sizeRenderer;
+      //::i32_size m_sizeRenderer;
 
 
       renderer();
@@ -250,7 +250,7 @@ namespace gpu_directx12
       //int get_frame_count() override;
 
       //void defer_update_renderer() override;
-      //void on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::int_size& size, ::gpu::render_target* previous) override;
+      //void on_defer_update_renderer_allocate_render_target(::gpu::enum_output eoutput, const ::i32_size& size, ::gpu::render_target* previous) override;
 
       //::pointer < ::gpu::render_target > allocate_offscreen_render_target() override;
 
@@ -268,7 +268,7 @@ namespace gpu_directx12
 
       void free_command_buffers() override;
       //void recreateSwapchain();
-      //void set_size(const ::int_size & size) override;
+      //void set_size(const ::i32_size & size) override;
 
       //void prepareOffScreen();
 
@@ -287,10 +287,10 @@ namespace gpu_directx12
 
       void on_final_begin_render() override;
 
-      //void _set_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
+      //void _set_image(VkImage image, const ::i32_rectangle& rectangle, bool bYSwap);
 
-      //void _blend_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
-      //void _on_graphics_end_draw(VkImage image, const ::int_rectangle& rectangle);
+      //void _blend_image(VkImage image, const ::i32_rectangle& rectangle, bool bYSwap);
+      //void _on_graphics_end_draw(VkImage image, const ::i32_rectangle& rectangle);
 
       void blend(::gpu::layer* player);
 
@@ -299,7 +299,7 @@ namespace gpu_directx12
 
       //void _on_frame_draw(::gpu_directx12::renderer* prendererUpper);
 
-      //void _copy_image(VkImage image, const ::int_rectangle& rectangle, bool bYSwap);
+      //void _copy_image(VkImage image, const ::i32_rectangle& rectangle, bool bYSwap);
 
       ::gpu::shader * get_image_blend_shader();
 

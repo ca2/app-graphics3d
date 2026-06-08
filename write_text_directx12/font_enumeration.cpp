@@ -47,7 +47,7 @@ namespace write_text_directx12
    void font_enumeration::on_enumerate_fonts()
    {
 
-      ødefer_construct_new(m_pfontenumerationitema);
+      defer_construct_newø(m_pfontenumerationitema);
 
       m_pfontenumerationitema->erase_all();
 
@@ -156,7 +156,7 @@ namespace write_text_directx12
 
       //      string strName = string((const ::wide_character*)(name));
 
-      //      m_pfontenumerationitema->add(øallocate ::write_text::font_enumeration_item(strName, strName));
+      //      m_pfontenumerationitema->add(allocateø ::write_text::font_enumeration_item(strName, strName));
 
       //   }
 

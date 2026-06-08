@@ -620,7 +620,7 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::set_viewport(const ::int_rectangle& rectangle)
+   void command_buffer::set_viewport(const ::i32_rectangle& rectangle)
    {
 
       VkViewport viewport =
@@ -637,7 +637,7 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::set_scissor(const ::int_rectangle& rectangle)
+   void command_buffer::set_scissor(const ::i32_rectangle& rectangle)
    {
 
       VkRect2D rect2d =

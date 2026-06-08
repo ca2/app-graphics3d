@@ -36,9 +36,9 @@ namespace app_graphics3d_continuum
 
 
 //   void input::initialize_input(
-//      const float_angle &angleCursorPixel,
-//      const float_angle &angleYaw,
-//      const float_angle &anglePitch)
+//      const f32_angle &angleCursorPixel,
+//      const f32_angle &angleYaw,
+//      const f32_angle &anglePitch)
 //   {
 //
 //      m_dCursorX = 0.;
@@ -454,7 +454,7 @@ namespace app_graphics3d_continuum
 //   }
 //
 //
-////   void input::_001OnMouseMove(const ::int_point& point)
+////   void input::_001OnMouseMove(const ::i32_point& point)
 ////   {
 ////
 ////      //m_mousestate.position.x = point.x;

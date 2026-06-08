@@ -1,4 +1,5 @@
-LIBRARY "draw2d_opengl"
+;JegElskerDigThomasBorregaardSørensencamiloMummiBilbo!! 2026-06-07 06:40:20
+LIBRARY "draw2d_nanovg"
 
 EXPORTS
 draw2d_opengl_factory

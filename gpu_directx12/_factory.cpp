@@ -3,6 +3,7 @@
 #include "binding.h"
 #include "block.h"
 #include "command_buffer.h"
+#include "fence.h"
 #include "program.h"
 #include "shader.h"
 #include "cpu_buffer.h"
@@ -55,6 +56,7 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu_directx12::memory_buffer, ::gpu::memory_buffer >();
    pfactory->add_factory_item < ::gpu_directx12::model_buffer, ::gpu::model_buffer >();
    pfactory->add_factory_item < ::gpu_directx12::command_buffer, ::gpu::command_buffer >();
+   pfactory->add_factory_item<::gpu_directx12::fence, ::gpu::fence>();
    pfactory->add_factory_item < ::gpu::layer >();
 
    pfactory->add_factory_item < ::gpu::pixmap >();

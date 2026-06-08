@@ -1,4 +1,4 @@
-// This file was automatically generated from a command line like:
+﻿// This file was automatically generated from a command line like:
 // application_build_helper --inline-text "wavefront.vert"
 #pragma once
 
@@ -44,7 +44,8 @@ void main() {
     fragPosWorld = positionWorld.xyz;
     fragColor = color;
 }
- )vert_text";
+ 
+)vert_text";
 
 
 

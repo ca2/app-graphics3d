@@ -192,7 +192,7 @@ namespace app_graphics3d_MyPlace2025
 
       //m_pparticleImageSynchronization = node()->create_mutex();
 
-      //m_pimage = image()->create_image(int_size{ 1920, 1080 });
+      //m_pimage = image()->create_image(i32_size{ 1920, 1080 });
 
       //get_app()->m_pimpact = this;
 
@@ -264,7 +264,7 @@ namespace app_graphics3d_MyPlace2025
 //
 //      }
 
-      ::double_rectangle rectangleClipBox;
+      ::f64_rectangle rectangleClipBox;
 
       //pgraphics->reset_clip();
 
@@ -284,7 +284,7 @@ namespace app_graphics3d_MyPlace2025
 
 #ifdef DEBUG_WORK
 
-      ::int_rectangle rectangleDryProWithLove_Work(5, 5, 1915, 1075);
+      ::i32_rectangle rectangleDryProWithLove_Work(5, 5, 1915, 1075);
 
       pgraphics->fill_rectangle(rectangleDryProWithLove_Work, argb(255, 150, 200, 255));
 
@@ -318,7 +318,7 @@ namespace app_graphics3d_MyPlace2025
       
       double y = 0.;
       
-      ::int_point point;
+      ::i32_point point;
 
       string strText;
 
@@ -587,7 +587,7 @@ namespace app_graphics3d_MyPlace2025
    ::pointer < ::graphics3d::key_map > impact::get_default_key_map()
    {
 
-      auto pmap = øcreate_new < ::graphics3d::key_map>();
+      auto pmap = create_newø < ::graphics3d::key_map>();
       using namespace ::graphics3d;
 
       pmap->map(e_key_moveLeft, ::user::e_key_a);

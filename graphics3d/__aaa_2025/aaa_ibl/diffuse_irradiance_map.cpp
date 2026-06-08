@@ -68,14 +68,14 @@ namespace gpu
          // ::file::path pathDiffuseIrradianceVertexShader = scopedstrengineRoot + "/src/ibl/shaders/diffuse_irradiance_map.vert";
          // ::file::path pathDiffuseIrradianceFragmentShader = scopedstrengineRoot + "/src/ibl/shaders/diffuse_irradiance_map.frag";
 
-         øconstruct(m_pshaderDiffuseIrradiance);
+         constructø(m_pshaderDiffuseIrradiance);
 
          m_pshaderDiffuseIrradiance->initialize_shader_with_block(
             pgpurenderer,
             embedded_diffuse_irradiance_vert(),
             embedded_diffuse_irradiance_frag());
 
-         øconstruct(m_pdiffuseIrradianceFramebuffer);
+         constructø(m_pdiffuseIrradianceFramebuffer);
 
          m_pdiffuseIrradianceFramebuffer->initialize_cubemap_framebuffer(
             m_udiffuse_irradiance_mapWidth, m_udiffuse_irradiance_mapHeight);

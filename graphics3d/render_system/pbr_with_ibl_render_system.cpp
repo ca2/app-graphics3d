@@ -88,9 +88,9 @@ namespace graphics3d
 
       auto pcontext = m_pengine->gpu_context();
 
-      øconstruct(m_pshaderOpaque);
-      øconstruct(m_pshaderMask);
-      øconstruct(m_pshaderBlend);
+      constructø(m_pshaderOpaque);
+      constructø(m_pshaderMask);
+      constructø(m_pshaderBlend);
 
       auto memoryVert = pbr_with_ibl_vert_memory();
       auto memoryFrag = pbr_with_ibl_frag_memory();
@@ -113,7 +113,7 @@ namespace graphics3d
       auto ppropertiesPush = push_constants_properties();
       auto pinputlayout = pgpucontext->input_layout<::gpu::gltf::vertex>();
 
-      // øconstruct(m_pbindingsetIbl);
+      // constructø(m_pbindingsetIbl);
 
       // m_pbindingsetIbl->binding(0)->m_ebinding = ::gpu::e
 
@@ -362,23 +362,23 @@ namespace graphics3d
                 pshader->set_matrix4("normalMatrix", normalMat);
                 bool bAlbedo = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_albedo].is_set();
                 bAlbedo = bAlbedo && !m_bDisableAlbedo;
-                pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
+                pshader->set_i32("useTextureAlbedo", bAlbedo ? 1 : 0);
 
                 if (m_erendersystem == ::graphics3d::e_render_system_gltf_scene)
                 {
                    if (ealphamode == ::gpu::model::material::ALPHAMODE_MASK)
                    {
-                      pshader->set_int("useAlphaMask", 1);
-                      pshader->set_float("alphaMaskCutoff", 0.5f);
+                      pshader->set_i32("useAlphaMask", 1);
+                      pshader->set_f32("alphaMaskCutoff", 0.5f);
                    }
                    else
                    {
-                      pshader->set_int("useAlphaMask", 0);
-                      pshader->set_float("alphaMaskCutoff", 0.f);
+                      pshader->set_i32("useAlphaMask", 0);
+                      pshader->set_f32("alphaMaskCutoff", 0.f);
                    }
                 }
 
-                pshader->set_float("prefilteredEnvMapMaxLod", pscene->m_ptexturePrefilteredCube->m_textureattributes.m_iMipCount - 1);
+                pshader->set_f32("prefilteredEnvMapMaxLod", pscene->m_ptexturePrefilteredCube->m_textureattributes.m_iMipCount - 1);
       
                     floating_sequence3 seq3Albedo = {};
                 if (prendersystem->m_bForceDefaultAlbedo)
@@ -399,7 +399,7 @@ namespace graphics3d
                 bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
                 if (m_bImplMetallic)
                 {
-                   pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
+                   pshader->set_i32("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
                 }
                 bool bNormal = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_normal].is_set();
       
@@ -425,16 +425,16 @@ namespace graphics3d
       
                    fRoughness = pmesh->m_pmaterial->m_fRoughness;
                 }
-                pshader->set_float("metallic", fMetallic);
-                pshader->set_float("roughness", fRoughness);
+                pshader->set_f32("metallic", fMetallic);
+                pshader->set_f32("roughness", fRoughness);
       
                 bNormal = bNormal && !m_bDisableNormal;
-                pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
+                pshader->set_i32("useTextureNormal", bNormal ? 1 : 0);
                 bool bAmbientOcclusion = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_ambient_occlusion].is_set();
                 bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
                 if (m_bImplAO)
                 {
-                   pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
+                   pshader->set_i32("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
                 }
       
       
@@ -451,7 +451,7 @@ namespace graphics3d
                    //fAmbientOcclusion = pmesh->m_pmaterial->occlusionTexture->m_fAmbientOcclusion;
                    fAmbientOcclusion = 1.f;
                 }
-                pshader->set_float("ambientOcclusion", fAmbientOcclusion);
+                pshader->set_f32("ambientOcclusion", fAmbientOcclusion);
       
                 floating_sequence3 seq3Emission = {};
                 if (prendersystem->m_bForceDefaultEmission)
@@ -478,18 +478,18 @@ namespace graphics3d
                 bEmissive = bEmissive && !m_bDisableEmissive;
                 if (m_bImplEmissive)
                 {
-                   pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
+                   pshader->set_i32("useTextureEmissive", bEmissive ? 1 : 0);
                 }
       
                 //auto metallicFactor = pmesh->m_pmaterial->metallicFactor;
                 //if (m_bForceDefaultMetallicFactor)
                 //   metallicFactor = m_fDefaultMetallicFactor;
-                //pshader->set_float("metallic", metallicFactor);
+                //pshader->set_f32("metallic", metallicFactor);
                 //auto roughnessFactor = pmesh->m_pmaterial->roughnessFactor;
                 //if (m_bForceDefaultRoughnessFactor)
                 //   roughnessFactor = m_fDefaultRoughnessFactor;
-                //pshader->set_float("roughness", roughnessFactor);
-                //pshader->set_float("ambientOcclusion", pmesh->m_pmaterial->am);
+                //pshader->set_f32("roughness", roughnessFactor);
+                //pshader->set_f32("ambientOcclusion", pmesh->m_pmaterial->am);
                 pshader->push_properties(pcommandbuffer);
       
       

@@ -367,7 +367,7 @@ namespace graphics3d_vulkan
 
       m_vkdescriptorsetaIbl.resize(frameCount);
 
-      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       pdescriptorpoolbuilder->initialize_builder(pcontext);
       pdescriptorpoolbuilder->setMaxSets(frameCount * 10);
@@ -609,7 +609,7 @@ namespace graphics3d_vulkan
       opaqueConfig.bindingDescriptions = bindings;
       opaqueConfig.attributeDescriptions = attributes;
 
-      m_opaquePipeline = øcreate_new<::gpu_vulkan::pipeline>();
+      m_opaquePipeline = create_newø<::gpu_vulkan::pipeline>();
 
       m_opaquePipeline->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, opaqueConfig);
 
@@ -639,7 +639,7 @@ namespace graphics3d_vulkan
       maskConfig.fragSpecInfo = &specInfo;
 
       // m_maskPipeline = std::make_unique<VkSandboxPipeline>(m_device, vertSpv, fragSpv, maskConfig);
-      m_maskPipeline = øcreate_new<::gpu_vulkan::pipeline>();
+      m_maskPipeline = create_newø<::gpu_vulkan::pipeline>();
 
       m_maskPipeline->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, maskConfig);
 
@@ -663,7 +663,7 @@ namespace graphics3d_vulkan
          VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
       // m_blendPipeline = std::make_unique<VkSandboxPipeline>(m_device, vertSpv, fragSpv, blendConfig);
-      m_blendPipeline = øcreate_new<::gpu_vulkan::pipeline>();
+      m_blendPipeline = create_newø<::gpu_vulkan::pipeline>();
 
       m_blendPipeline->initialize_graphics_pipeline(pcontext->m_pgpurenderer, vert, frag, blendConfig);
    }

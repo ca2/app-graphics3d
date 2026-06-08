@@ -172,10 +172,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::create_memory_graphics(const ::int_size& size)
+   void graphics::create_memory_graphics(const ::i32_size& size)
    {
 
-      ::int_rectangle rectanglePlacement;
+      ::i32_rectangle rectanglePlacement;
 
       if (size.is_empty())
       {
@@ -196,7 +196,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
 
-   void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::int_size& size)
+   void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size)
    {
 
       ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
@@ -207,7 +207,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteraction->m_pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
 
       auto pgpucontextNew = pgpudevice->main_draw2d_context();
 
@@ -250,7 +250,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   bool graphics::vulkan_create_offscreen_buffer(const ::int_rectangle& rectanglePlacement)
+   bool graphics::vulkan_create_offscreen_buffer(const ::i32_rectangle& rectanglePlacement)
    {
 
       on_gpu_context_placement_change(rectanglePlacement);
@@ -281,26 +281,26 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   int_point graphics::GetBrushOrg() const
+   i32_point graphics::GetBrushOrg() const
    {
-      ::int_point point;
+      ::i32_point point;
 
       return point;
 
    }
 
 
-   int_point graphics::SetBrushOrg(int x, int y)
+   i32_point graphics::SetBrushOrg(int x, int y)
    {
 
-      ::int_point point;
+      ::i32_point point;
 
       return point;
 
    }
 
 
-   int_point graphics::SetBrushOrg(const ::int_point& point)
+   i32_point graphics::SetBrushOrg(const ::i32_point& point)
    {
 
       return point;
@@ -429,68 +429,68 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 #endif
 
-   int_size graphics::get_context_extents() const
+   i32_size graphics::get_context_extents() const
    {
-      ::int_size size;
+      ::i32_size size;
       //::Get_wiewportExtEx(m_hdc, &size);
       return size;
    }
 
-   int_point graphics::GetWindowOrg() const
+   i32_point graphics::GetWindowOrg() const
    {
-      ::int_point point;
+      ::i32_point point;
       //::GetWindowOrgEx(m_hdc, &point);
       return point;
    }
 
-   int_size graphics::GetWindowExt() const
+   i32_size graphics::GetWindowExt() const
    {
-      ::int_size size;
+      ::i32_size size;
       //::GetWindowExtEx(m_hdc, &size);
       return size;
    }
 
    //// non-virtual helpers calling virtual mapping functions
-   //int_point graphics::set_origin(const ::int_point& point)
+   //i32_point graphics::set_origin(const ::i32_point& point)
    //{
 
    //   return set_origin(point.x, point.y);
 
    //}
 
-   //int_size graphics::set_context_extents(const ::int_size & size)
+   //i32_size graphics::set_context_extents(const ::i32_size & size)
    //{
    //   return set_context_extents(size.cx, size.cy);
    //}
 
-   int_point graphics::SetWindowOrg(const ::int_point& point)
+   i32_point graphics::SetWindowOrg(const ::i32_point& point)
    {
       return SetWindowOrg(point.x, point.y);
    }
 
-   int_size graphics::set_window_ext(const ::int_size& size)
+   i32_size graphics::set_window_ext(const ::i32_size& size)
    {
       return set_window_ext(size.cx, size.cy);
    }
 
-   void graphics::DPtoLP(::double_point* lpPoints, ::collection::count nCount)
+   void graphics::DPtoLP(::f64_point* lpPoints, ::collection::count nCount)
    {
       //::DPtoLP(m_hdc, lpPoints, (int) nCount);
    }
 
-   void graphics::DPtoLP(::double_rectangle* prectangle)
+   void graphics::DPtoLP(::f64_rectangle* prectangle)
    {
-      //::DPtoLP(m_hdc, (::double_point *)rectangle, 2);
+      //::DPtoLP(m_hdc, (::f64_point *)rectangle, 2);
    }
 
-   void graphics::LPtoDP(::double_point* lpPoints, ::collection::count nCount)
+   void graphics::LPtoDP(::f64_point* lpPoints, ::collection::count nCount)
    {
       //::LPtoDP(m_hdc, lpPoints, (int)  nCount);
    }
 
-   void graphics::LPtoDP(::double_rectangle* prectangle)
+   void graphics::LPtoDP(::f64_rectangle* prectangle)
    {
-      //::LPtoDP(m_hdc, (::double_point *)rectangle, 2);
+      //::LPtoDP(m_hdc, (::f64_point *)rectangle, 2);
    }
 
    bool graphics::FillRgn(::draw2d::region* pRgn, ::draw2d::brush* pBrush)
@@ -545,7 +545,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   bool graphics::PtVisible(const ::int_point& point) const
+   bool graphics::PtVisible(const ::i32_point& point) const
    {
 
       // ASSERT(m_hdc != nullptr);   // call virtual
@@ -554,7 +554,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //bool graphics::rectVisible(const ::double_rectangle & ::double_rectangle) const
+   //bool graphics::rectVisible(const ::f64_rectangle & ::f64_rectangle) const
    //{
 
    //   // ASSERT(m_hdc != nullptr);
@@ -565,16 +565,16 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //int_point graphics::GetCurrentPosition() const
+   //i32_point graphics::GetCurrentPosition() const
    //{
    //   // ASSERT(m_hdc != nullptr);
-   //   //::int_point point(m_po;
+   //   //::i32_point point(m_po;
    //   //VERIFY(::GetCurrentPositionEx(m_hdc, &point));
    //   //return point;
    //   return ::draw2d::graphics::G;
    //}
 
-   void graphics::polyline(const ::double_point* lpPoints, ::collection::count nCount)
+   void graphics::polyline(const ::f64_point* lpPoints, ::collection::count nCount)
    {
 
       if (nCount <= 0)
@@ -666,7 +666,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    void graphics::arc(double x1, double y1, double w, double h, double start, double extends)
    {
 
-      //::plusplus::double_rectangle ::double_rectangle(x1,y1,w,h);
+      //::plusplus::f64_rectangle ::f64_rectangle(x1,y1,w,h);
 
       //return m_pgraphics->DrawArc(vk2d_pen(),rectangle,(plusplus::REAL) start,(plusplus::REAL) extends) == plusplus::Status::Ok;
 
@@ -788,8 +788,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //else if (pbrush->m_ebrush == ::draw2d::e_brush_box_gradient)
       //{
 
-      //   double_rectangle outer(pbrush->m_point, pbrush->m_size);
-      //   double_rectangle inner(outer);
+      //   f64_rectangle outer(pbrush->m_point, pbrush->m_size);
+      //   f64_rectangle inner(outer);
       //   inner.deflate(pbrush->m_dRadius);
       //   double K = 0.5522847498; // For HalfPi arc (90 degrees)
       //   double KR = K * pbrush->m_dRadius;
@@ -1066,9 +1066,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
       VkDevice device,
       VkPhysicalDevice physicalDevice,
       VkDeviceMemory* outMemory,
-      const ::double_rectangle& rectangle,
+      const ::f64_rectangle& rectangle,
       const  ::color::color& color,
-      const ::double_size& size)
+      const ::f64_size& size)
    {
       VkBuffer vertexBuffer;
 
@@ -1176,9 +1176,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
       VkDevice device,
       VkPhysicalDevice physicalDevice,
       VkDeviceMemory* outMemory/*,
-      const ::double_point points1[4],
+      const ::f64_point points1[4],
       const  ::color::color& color,
-      const ::double_size& size*/)
+      const ::f64_size& size*/)
    {
       VkBuffer vertexBuffer;
 
@@ -1192,7 +1192,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       // m.scale(2.0 / size.cx, 2.0 / size.cy);
       // m.translate(-1.0, -1.0);
 
-      // ::double_point points[4];
+      // ::f64_point points[4];
 
       // points[0] = points1[0]; // top-left
       // points[1] = points1[1]; // top-right
@@ -1278,9 +1278,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //void editQuadVertexBuffer(
    //   VkDevice device,
    //   VkDeviceMemory outMemory,
-   //   const ::double_point points1[4],
+   //   const ::f64_point points1[4],
    //   const  ::color::color& color,
-   //   const ::double_size& size)
+   //   const ::f64_size& size)
    //{
    //   VkBuffer vertexBuffer;
 
@@ -1294,7 +1294,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   m.scale(2.0 / size.cx, 2.0 / size.cy);
    //   m.translate(-1.0, -1.0);
 
-   //   ::double_point points[4];
+   //   ::f64_point points[4];
 
    //   points[0] = points1[0]; // top-left
    //   points[1] = points1[1]; // top-right
@@ -1381,10 +1381,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
       VkDevice device,
       VkPhysicalDevice physicalDevice,
       VkDeviceMemory* outMemory,
-      const ::double_point& pointA,
-      const ::double_point& pointB,
+      const ::f64_point& pointA,
+      const ::f64_point& pointB,
       const  ::color::color& color,
-      const ::double_size& size)
+      const ::f64_size& size)
    {
       VkBuffer vertexBuffer;
 
@@ -1429,7 +1429,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       m.scale(2.0 / size.cx, 2.0 / size.cy);
       m.translate(-1.0, -1.0);
 
-      ::double_point points[2];
+      ::f64_point points[2];
 
       points[0] = pointA;
       points[1] = pointB;
@@ -1496,7 +1496,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //void graphics::_fill_quad(const ::double_point points[4], const ::color::color& color)
+   //void graphics::_fill_quad(const ::f64_point points[4], const ::color::color& color)
    //{
 
    //   auto pcontext = gpu_context();
@@ -1517,7 +1517,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
-   //   //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+   //   //   auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
    //   //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
    //   //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -1537,7 +1537,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
-   //   //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+   //   //   auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
    //   //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
    //   //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -1554,7 +1554,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //      if (!m_pshaderSourceRectangle)
    //      {
 
-   //         //auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
+   //         //auto pshadervertexinput = allocateø::gpu_vulkan::shader_vertex_input();
 
    //         //pshadervertexinput->m_bindings.add(
    //         //   {
@@ -1566,7 +1566,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
    //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-   //         auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
+   //         auto pshaderRectangle = create_newø<::gpu_vulkan::shader>();
 
    //         m_pshaderSourceRectangle = pshaderRectangle;
    //         //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
@@ -1598,7 +1598,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //      if (!m_pshaderBlendRectangle)
    //      {
 
-   //         //auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
+   //         //auto pshadervertexinput = allocateø::gpu_vulkan::shader_vertex_input();
 
    //         //pshadervertexinput->m_bindings.add(
    //         //   {
@@ -1610,7 +1610,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
    //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-   //         auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
+   //         auto pshaderRectangle = create_newø<::gpu_vulkan::shader>();
 
    //         m_pshaderBlendRectangle = pshaderRectangle;
    //         //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
@@ -1671,7 +1671,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   //}
 
-   //   double_point quad[4];
+   //   f64_point quad[4];
 
    //   quad[0] = points[0];
    //   m_m1.transform(quad[0]);
@@ -1730,12 +1730,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::fill_rectangle(const ::double_rectangle& rectangle, ::draw2d::brush* pBrush)
+   void graphics::fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pBrush)
    {
 
       //       _fill_rectangle_2025_05_29(rectangle, pBrush);
 
-      double_point quad[4] = {
+      f64_point quad[4] = {
          {rectangle.top_left()},
          {rectangle.top_right()},
          {rectangle.bottom_right()},
@@ -1747,7 +1747,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //void graphics::_fill_rectangle_2025_05_29(const ::double_rectangle& rectangle, ::draw2d::brush* pbrush)
+   //void graphics::_fill_rectangle_2025_05_29(const ::f64_rectangle& rectangle, ::draw2d::brush* pbrush)
    //{
 
    //   ::cast < ::gpu_vulkan::renderer >pgpurenderer = m_pgpucontextCompositor->m_pgpurenderer;
@@ -1764,7 +1764,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
-   //   //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+   //   //   auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
    //   //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
    //   //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -1784,7 +1784,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //      .addBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
    //   //      .build();
 
-   //   //   auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+   //   //   auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
    //   //   pdescriptorpoolbuilder->initialize_builder(m_pgpucontextCompositor);
    //   //   pdescriptorpoolbuilder->setMaxSets(iFrameCount * 10);
@@ -1801,7 +1801,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //   if (!m_pshaderSourceRectangle)
    //   //   {
 
-   //   //      auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
+   //   //      auto pshadervertexinput = allocateø::gpu_vulkan::shader_vertex_input();
 
    //   //      pshadervertexinput->m_bindings.add(
    //   //         {
@@ -1813,7 +1813,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //      pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
    //   //      pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-   //   //      auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
+   //   //      auto pshaderRectangle = create_newø<::gpu_vulkan::shader>();
 
    //   //      m_pshaderSourceRectangle = pshaderRectangle;
    //   //      //m_pshaderRectangle->m_bDisableDepthTest = true;
@@ -1843,7 +1843,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //      if (!m_pshaderBlendRectangle)
    //      {
 
-   //         //auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
+   //         //auto pshadervertexinput = allocateø::gpu_vulkan::shader_vertex_input();
 
    //         //pshadervertexinput->m_bindings.add(
    //         //   {
@@ -1855,7 +1855,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //         //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
    //         //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
 
-   //         auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
+   //         auto pshaderRectangle = create_newø<::gpu_vulkan::shader>();
 
    //         m_pshaderBlendRectangle = pshaderRectangle;
    //         //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
@@ -1884,7 +1884,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   auto & pmodel = m_pmodelbufferRectangle;
 
-   //   if (ødefer_construct_new(m_pmodelbufferRectangle))
+   //   if (defer_construct_newø(m_pmodelbufferRectangle))
    //   {
 
    //      m_pmodelbufferRectangle
@@ -1951,7 +1951,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::frame_rectangle(const ::double_rectangle& rectangleParam, ::draw2d::brush* pBrush)
+   void graphics::frame_rectangle(const ::f64_rectangle& rectangleParam, ::draw2d::brush* pBrush)
    {
 
       //// ASSERT(m_hdc != nullptr);
@@ -1961,7 +1961,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::invert_rectangle(const ::double_rectangle& rectangleParam)
+   void graphics::invert_rectangle(const ::f64_rectangle& rectangleParam)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -1985,7 +1985,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //}
 
-   //bool graphics::DrawIcon(const ::int_point & point, ::image::icon * picon)
+   //bool graphics::DrawIcon(const ::i32_point & point, ::image::icon * picon)
    //{
 
    //   // ASSERT(m_hdc != nullptr);
@@ -2134,7 +2134,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //}
 
- //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, HBITMAP hBitmap, unsigned int nFlags, HBRUSH hBrush)
+ //   bool graphics::DrawState(const ::i32_point & point, const ::i32_size & size, HBITMAP hBitmap, unsigned int nFlags, HBRUSH hBrush)
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
@@ -2143,7 +2143,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //
  //   }
 
- //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, ::draw2d::bitmap* pBitmap, unsigned int nFlags, ::draw2d::brush* pBrush)
+ //   bool graphics::DrawState(const ::i32_point & point, const ::i32_size & size, ::draw2d::bitmap* pBitmap, unsigned int nFlags, ::draw2d::brush* pBrush)
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
@@ -2153,7 +2153,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //
  //   }
  //
- //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, HICON hIcon, unsigned int nFlags, HBRUSH hBrush)
+ //   bool graphics::DrawState(const ::i32_point & point, const ::i32_size & size, HICON hIcon, unsigned int nFlags, HBRUSH hBrush)
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
@@ -2164,7 +2164,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   }
  //
  //
- //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, HICON hIcon, unsigned int nFlags, ::draw2d::brush* pBrush)
+ //   bool graphics::DrawState(const ::i32_point & point, const ::i32_size & size, HICON hIcon, unsigned int nFlags, ::draw2d::brush* pBrush)
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
@@ -2174,7 +2174,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   }
  //
  //
- //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, const ::string & lpszText, unsigned int nFlags, bool bPrefixText, double nTextLen, HBRUSH hBrush)
+ //   bool graphics::DrawState(const ::i32_point & point, const ::i32_size & size, const ::string & lpszText, unsigned int nFlags, bool bPrefixText, double nTextLen, HBRUSH hBrush)
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
@@ -2184,7 +2184,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   }
  //
  //
- //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, const ::string & lpszText, unsigned int nFlags, bool bPrefixText, double nTextLen, ::draw2d::brush* pBrush)
+ //   bool graphics::DrawState(const ::i32_point & point, const ::i32_size & size, const ::string & lpszText, unsigned int nFlags, bool bPrefixText, double nTextLen, ::draw2d::brush* pBrush)
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
@@ -2194,7 +2194,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   }
  //
  //
- //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, DRAWSTATEPROC lpDrawProc, LPARAM lData, unsigned int nFlags, HBRUSH hBrush)
+ //   bool graphics::DrawState(const ::i32_point & point, const ::i32_size & size, DRAWSTATEPROC lpDrawProc, LPARAM lData, unsigned int nFlags, HBRUSH hBrush)
  //   {
  //      // ASSERT(m_hdc != nullptr);
  //      //return ::DrawState(m_hdc, hBrush,
@@ -2204,7 +2204,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   }
  //
  //
- //   bool graphics::DrawState(const ::int_point & point, const ::int_size & size, DRAWSTATEPROC lpDrawProc, LPARAM lData, unsigned int nFlags, ::draw2d::brush* pBrush)
+ //   bool graphics::DrawState(const ::i32_point & point, const ::i32_size & size, DRAWSTATEPROC lpDrawProc, LPARAM lData, unsigned int nFlags, ::draw2d::brush* pBrush)
  //   {
  //      // ASSERT(m_hdc != nullptr);
  //      //return ::DrawState(m_hdc, (HBRUSH)pBrush->get_os_data(),
@@ -2214,20 +2214,20 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   }
  //
 
- //   bool graphics::DrawEdge(const ::double_rectangle & rectangleParam,unsigned int nEdge,unsigned int nFlags)
+ //   bool graphics::DrawEdge(const ::f64_rectangle & rectangleParam,unsigned int nEdge,unsigned int nFlags)
  //   {
  //
  //      // ASSERT(m_hdc != nullptr);
- //      //return ::DrawEdge(m_hdc,(::double_rectangle *)&rectangleParam,nEdge,nFlags) != false;
+ //      //return ::DrawEdge(m_hdc,(::f64_rectangle *)&rectangleParam,nEdge,nFlags) != false;
  //      return false;
  //
  //   }
  //
 
- //   bool graphics::DrawFrameControl(const ::double_rectangle & rectangleParam,unsigned int nType,unsigned int nState)
+ //   bool graphics::DrawFrameControl(const ::f64_rectangle & rectangleParam,unsigned int nType,unsigned int nState)
  //   {
  //      // ASSERT(m_hdc != nullptr);
- //      //return ::DrawFrameControl(m_hdc,(::double_rectangle *) &rectangleParam,nType,nState) != false;
+ //      //return ::DrawFrameControl(m_hdc,(::f64_rectangle *) &rectangleParam,nType,nState) != false;
  //      return false;
  //
  //   }
@@ -2242,7 +2242,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   bool graphics::Chord(const ::int_rectangle& rectangleParam, const ::int_point& pointStart, const ::int_point& pointEnd)
+   bool graphics::Chord(const ::i32_rectangle& rectangleParam, const ::i32_point& pointStart, const ::i32_point& pointEnd)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -2255,7 +2255,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::DrawFocusRect(const ::int_rectangle& rectangleParam)
+   void graphics::DrawFocusRect(const ::i32_rectangle& rectangleParam)
    {
       // ASSERT(m_hdc != nullptr);
       //::DrawFocusRect(m_hdc,&rectangleParam);
@@ -2274,7 +2274,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::draw_ellipse(const ::double_rectangle& rectangleParam)
+   void graphics::draw_ellipse(const ::f64_rectangle& rectangleParam)
    {
 
       //set_smooth_mode(::draw2d::e_smooth_mode_high);
@@ -2298,7 +2298,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::fill_ellipse(const ::double_rectangle& rectangleParam)
+   void graphics::fill_ellipse(const ::f64_rectangle& rectangleParam)
    {
 
       //set_smooth_mode(::draw2d::e_smooth_mode_high);
@@ -2322,7 +2322,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //bool graphics::draw_ellipse(const ::double_rectangle & rectectParam)
+   //bool graphics::draw_ellipse(const ::f64_rectangle & rectectParam)
    //{
 
    //   //set_smooth_mode(::draw2d::e_smooth_mode_high);
@@ -2348,7 +2348,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //bool graphics::FillEllipse(const ::double_rectangle & rectectParam)
+   //bool graphics::FillEllipse(const ::f64_rectangle & rectectParam)
    //{
 
    //   //set_smooth_mode(::draw2d::e_smooth_mode_high);
@@ -2372,7 +2372,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //bool graphics::Pie(const ::double_rectangle & rectangleParam,const ::int_point & pointStart,const ::int_point & pointEnd)
+   //bool graphics::Pie(const ::f64_rectangle & rectangleParam,const ::i32_point & pointStart,const ::i32_point & pointEnd)
    //{
 
    //   // ASSERT(m_hdc != nullptr);
@@ -2385,7 +2385,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::fill_polygon(const ::double_point* lpPoints, ::collection::count nCount)
+   void graphics::fill_polygon(const ::f64_point* lpPoints, ::collection::count nCount)
    {
 
       //   if(nCount <= 0)
@@ -2432,7 +2432,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //void graphics::fill_polygon(const ::double_point* lpPoints,::collection::count nCount)
+   //void graphics::fill_polygon(const ::f64_point* lpPoints,::collection::count nCount)
    //{
 
    //   //   if(nCount <= 0)
@@ -2476,7 +2476,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::draw_polygon(const ::double_point* lpPoints, ::collection::count nCount)
+   void graphics::draw_polygon(const ::f64_point* lpPoints, ::collection::count nCount)
    {
 
       //if (nCount <= 0)
@@ -2521,7 +2521,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //void graphics::draw_polygon(const ::double_point* lpPoints,::collection::count nCount)
+   //void graphics::draw_polygon(const ::f64_point* lpPoints,::collection::count nCount)
    //{
 
    //   //if(nCount <= 0)
@@ -2565,7 +2565,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::polygon(const ::double_point* lpPoints, ::collection::count nCount)
+   void graphics::polygon(const ::f64_point* lpPoints, ::collection::count nCount)
    {
 
       //if(nCount <= 0)
@@ -2617,7 +2617,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::poly_polygon(const ::double_point* lpPoints, const int* lpPolyCounts, ::collection::count nCount)
+   void graphics::poly_polygon(const ::f64_point* lpPoints, const int* lpPolyCounts, ::collection::count nCount)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -2629,7 +2629,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //bool graphics::double_rectangle(double x1, double y1, double x2, double y2)
+   //bool graphics::f64_rectangle(double x1, double y1, double x2, double y2)
    //{
 
    //   //plusplus::rectF float_rectangle((plusplus::REAL) x1, (plusplus::REAL) y1, (plusplus::REAL) (x2 - x1), (plusplus::REAL) (y2 - y1));
@@ -2645,7 +2645,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //void graphics::polygon(const ::double_point* lpPoints,::collection::count nCount)
+   //void graphics::polygon(const ::f64_point* lpPoints,::collection::count nCount)
    //{
 
    //   //if(nCount <= 0)
@@ -2707,21 +2707,21 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::rectangle(const ::double_rectangle& rectangleParam)
+   void graphics::rectangle(const ::f64_rectangle& rectangleParam)
    {
 
       fill_rectangle(rectangleParam);
 
       draw_rectangle(rectangleParam);
 
-      //return ::double_rectangle(rectangleParam.left, rectangleParam.top, rectangleParam.right, rectangleParam.bottom);
+      //return ::f64_rectangle(rectangleParam.left, rectangleParam.top, rectangleParam.right, rectangleParam.bottom);
 
       //return bOk1 && bOk2;
 
    }
 
 
-   void graphics::draw_rectangle(const ::double_rectangle& rectangle, ::draw2d::pen* ppen)
+   void graphics::draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen* ppen)
    {
 
       ::gpu::graphics::draw_rectangle(rectangle, ppen);
@@ -2750,7 +2750,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::draw_rectangle(const ::double_rectangle& rectangle)
+   void graphics::draw_rectangle(const ::f64_rectangle& rectangle)
    {
 
       draw_rectangle(rectangle, m_ppen);
@@ -2760,7 +2760,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::fill_rectangle(const ::double_rectangle& rectangle)
+   void graphics::fill_rectangle(const ::f64_rectangle& rectangle)
    {
 
       fill_rectangle(rectangle, m_pbrush);
@@ -2779,7 +2779,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::round_rectangle(const ::double_rectangle& rectangleParam, const ::int_point& point)
+   void graphics::round_rectangle(const ::f64_rectangle& rectangleParam, const ::i32_point& point)
    {
       //// ASSERT(m_hdc != nullptr);
       //return ::RoundRect(m_hdc, rectangleParam.left, rectangleParam.top,
@@ -2917,7 +2917,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   ::color::color graphics::GetPixel(const ::int_point& point) const
+   ::color::color graphics::GetPixel(const ::i32_point& point) const
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetPixel(m_hdc, point.x, point.y);
@@ -2934,7 +2934,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   ::color::color graphics::SetPixel(const ::int_point& point, ::color::color crColor)
+   ::color::color graphics::SetPixel(const ::i32_point& point, ::color::color crColor)
    {
 
       //fill_solid_rect_coord(point.x,point.y,1,1,crColor);
@@ -2965,7 +2965,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   }
 
 
-      //int_size graphics::GetTabbedTextExtent(const ::string & lpszString, character_count nCount, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
+      //i32_size graphics::GetTabbedTextExtent(const ::string & lpszString, character_count nCount, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
       //{
 
       //   // ASSERT(m_hdc != nullptr);
@@ -2975,7 +2975,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //}
 
 
-      //int_size graphics::GetTabbedTextExtent(const ::string & str, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
+      //i32_size graphics::GetTabbedTextExtent(const ::string & str, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
       //{
 
       //   // ASSERT(m_hdc != nullptr);
@@ -2985,7 +2985,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //}
 
 
-      //int_size graphics::GetOutputTabbedTextExtent(const ::string & lpszString, character_count nCount, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
+      //i32_size graphics::GetOutputTabbedTextExtent(const ::string & lpszString, character_count nCount, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
       //{
 
       //   // ASSERT(m_hdc != nullptr);
@@ -2996,7 +2996,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //}
 
 
-      //int_size graphics::GetOutputTabbedTextExtent(const ::string & str, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
+      //i32_size graphics::GetOutputTabbedTextExtent(const ::string & str, ::collection::count nTabPositions, LPINT lpnTabStopPositions)
       //{
 
       //   // ASSERT(m_hdc != nullptr);
@@ -3113,7 +3113,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       ////::plusplus::Font font2(pfamilyMono, pfamilyMono->GetEmHeight(((graphics * )this)->vk2d_font()->GetStyle()));
 
       ////wstring wstr(L"123AWZwmc123AWZwmcpQg");
-      ////plusplus::rectF ::double_rectangle(0.f, 0.f, 1024.f * 1024.f, 1024.f * 1024.f);
+      ////plusplus::rectF ::f64_rectangle(0.f, 0.f, 1024.f * 1024.f, 1024.f * 1024.f);
       ////plusplus::rectF rect2;
       ////plusplus::PointF origin(0, 0);
 
@@ -3204,10 +3204,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //int_size graphics::GetAspectRatioFilter() const
+   //i32_size graphics::GetAspectRatioFilter() const
    //{
    //   // ASSERT(m_hdc != nullptr);
-   //   ::int_size size;
+   //   ::i32_size size;
    //   // VERIFY(::GetAspectRatioFilterEx(m_hdc, &size));
    //   return size;
 
@@ -3215,8 +3215,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
    //bool graphics::ScrollDC(double Δx, double Δy,
-   //                        const ::double_rectangle & lpRectScroll,const ::double_rectangle & rectangleClip,
-   //                        ::draw2d::region* pRgnUpdate, ::double_rectangle * lpRectUpdate)
+   //                        const ::f64_rectangle & lpRectScroll,const ::f64_rectangle & rectangleClip,
+   //                        ::draw2d::region* pRgnUpdate, ::f64_rectangle * lpRectUpdate)
    //{
    //   
    //   // ASSERT(m_hdc != nullptr);
@@ -3238,7 +3238,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
    // graphics 3.1 Specific functions
-   unsigned int graphics::SetBoundsRect(const ::double_rectangle& rectangleBounds, unsigned int flags)
+   unsigned int graphics::SetBoundsRect(const ::f64_rectangle& rectangleBounds, unsigned int flags)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::SetBoundsRect(m_hdc, &rectangleBounds, flags);
@@ -3247,7 +3247,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   unsigned int graphics::GetBoundsRect(::double_rectangle* rectangleBounds, unsigned int flags)
+   unsigned int graphics::GetBoundsRect(::f64_rectangle* rectangleBounds, unsigned int flags)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::GetBoundsRect(m_hdc, rectangleBounds, flags);
@@ -3256,7 +3256,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::resize(const ::int_size& sizeWindow)
+   void graphics::resize(const ::i32_size& sizeWindow)
    {
 
       m_sizeWindow = sizeWindow;
@@ -3355,7 +3355,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   }
    //
    //
-   //   bool graphics::PlgBlt(::double_point * lpPoint, ::draw2d::graphics * pgraphicsSrc, double xSrc, double ySrc,
+   //   bool graphics::PlgBlt(::f64_point * lpPoint, ::draw2d::graphics * pgraphicsSrc, double xSrc, double ySrc,
    //                         double nWidth, double nHeight, ::draw2d::bitmap& maskBitmap, double xMask, double yMask)
    //   {
    //
@@ -3403,7 +3403,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::SetPixelV(const ::int_point& point, ::color::color crColor)
+   void graphics::SetPixelV(const ::i32_point& point, ::color::color crColor)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::SetPixelV(m_hdc, point.x, point.y, crColor) != false;
@@ -3412,7 +3412,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::angle_arc(double x, double y, double nRadius, ::double_angle fStartAngle, ::double_angle fSweepAngle)
+   void graphics::angle_arc(double x, double y, double nRadius, ::f64_angle fStartAngle, ::f64_angle fSweepAngle)
    {
       // ASSERT(m_hdc != nullptr);
       //return ::AngleArc(m_hdc, x, y, nRadius, fStartAngle, fSweepAngle) != false;
@@ -3422,7 +3422,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
 
-   void graphics::arc_to(const ::int_rectangle& rectangleParam, const ::int_point& pointStart, const ::int_point& pointEnd)
+   void graphics::arc_to(const ::i32_rectangle& rectangleParam, const ::i32_point& pointStart, const ::i32_point& pointEnd)
    {
       // ASSERT(m_hdc != nullptr);
       //return ArcTo(rectangleParam.left, rectangleParam.top, rectangleParam.right,
@@ -3442,7 +3442,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::poly_polyline(const ::double_point* lpPoints, const int* lpPolyPoints, ::collection::count nCount)
+   void graphics::poly_polyline(const ::f64_point* lpPoints, const int* lpPolyPoints, ::collection::count nCount)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -3501,7 +3501,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::poly_bezier(const ::double_point* lpPoints, ::collection::count nCount)
+   void graphics::poly_bezier(const ::f64_point* lpPoints, ::collection::count nCount)
    {
 
       // ASSERT(m_hdc != nullptr);
@@ -3650,7 +3650,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //void graphics::GetPath(::double_point * lpPoints, unsigned char * lpTypes, ::collection::count nCount)
+   //void graphics::GetPath(::f64_point * lpPoints, unsigned char * lpTypes, ::collection::count nCount)
    //{
 
    //   // ASSERT(m_hdc != nullptr);
@@ -3782,7 +3782,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       // Create a Metafile object from an existing disk metafile.
       Metafile* pMeta = ___new Metafile(L"SampleMetafile.emf", hdc);
       {
-        // Fill a ::double_rectangle and an ellipse in pMeta.
+        // Fill a ::f64_rectangle and an ellipse in pMeta.
         Graphics metaGraphics(pMeta);
         metaGraphics.FillRectangle(&SolidBrush(Color(255, 0, 0, 0)), 0, 0, 100, 100);
      metaGraphics.FillEllipse(&SolidBrush(Color(255, 255, 0, 0)), 100, 0, 200, 100);
@@ -3799,10 +3799,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }*/
 
 
-   //bool graphics::PlayMetaFile(HENHMETAFILE hEnhMF, const ::double_rectangle & rectangleBounds)
+   //bool graphics::PlayMetaFile(HENHMETAFILE hEnhMF, const ::f64_rectangle & rectangleBounds)
    //{
 
-   //   //plusplus::rectF ::double_rectangle((plusplus::REAL) rectangleBounds.left,(plusplus::REAL) rectangleBounds.top,(plusplus::REAL) width(rectangleBounds),(plusplus::REAL) height(rectangleBounds));
+   //   //plusplus::rectF ::f64_rectangle((plusplus::REAL) rectangleBounds.left,(plusplus::REAL) rectangleBounds.top,(plusplus::REAL) width(rectangleBounds),(plusplus::REAL) height(rectangleBounds));
 
    //   //plusplus::Metafile* pMeta = ___new plusplus::Metafile (hEnhMF, false);
 
@@ -3842,7 +3842,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  ////      {
  ////
  ////
- ////         ::double_rectangle rectangleIntersect(m_pointAlphaBlend, m_pimageAlphaBlend->size());
+ ////         ::f64_rectangle rectangleIntersect(m_pointAlphaBlend, m_pimageAlphaBlend->size());
  ////
  ////
  ////         ::image::image_pointer pimageWork = nullptr;
@@ -3851,9 +3851,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
  ////         ::image::image_pointer pimageWork4 = nullptr;
  ////
  ////
- ////         ::int_point pointSrc(xSrc, ySrc);
- ////         ::int_point ptDest(xDest, yDest);
- ////         ::int_size size(nDestWidth, nDestHeight);
+ ////         ::i32_point pointSrc(xSrc, ySrc);
+ ////         ::i32_point ptDest(xDest, yDest);
+ ////         ::i32_size size(nDestWidth, nDestHeight);
  ////
  ////
  ////
@@ -3867,7 +3867,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  ////            return false;
  ////         if(!imageWork = create_image(size))
  ////            return false;
- ////         if(!imageWork.from(::int_point(), pgraphicsSrc, pointSrc, size))
+ ////         if(!imageWork.from(::i32_point(), pgraphicsSrc, pointSrc, size))
  ////            return false;
  ////
  ////
@@ -3895,8 +3895,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
  ////
  ////         imageWork4.Fill(255, 0, 0, 0);
  ////
- ////         imageWork4.from(int_point(maximum(0, m_pointAlphaBlend.x - xDest), maximum(0, m_pointAlphaBlend.y - yDest)),
- ////                         m_pimageAlphaBlend->get_graphics(), int_point(maximum(0, xDest - m_pointAlphaBlend.x), maximum(0, yDest - m_pointAlphaBlend.y)), size);
+ ////         imageWork4.from(i32_point(maximum(0, m_pointAlphaBlend.x - xDest), maximum(0, m_pointAlphaBlend.y - yDest)),
+ ////                         m_pimageAlphaBlend->get_graphics(), i32_point(maximum(0, xDest - m_pointAlphaBlend.x), maximum(0, yDest - m_pointAlphaBlend.y)), size);
  ////
  ////         imageWork.channel_multiply(::color::e_channel_opacity, imageWork4);
  ////
@@ -3969,7 +3969,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       {
 
 
-        ::double_rectangle rectangleIntersect(m_pointAlphaBlend, m_pimageAlphaBlend->size());
+        ::f64_rectangle rectangleIntersect(m_pointAlphaBlend, m_pimageAlphaBlend->size());
 
 
         ::image::image_pointer pimageWork = nullptr;
@@ -3978,9 +3978,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
         ::image::image_pointer pimageWork4 = nullptr;
 
 
-        ::int_point pointSrc(xSrc, ySrc);
-        ::int_point ptDest(xDest, yDest);
-        ::int_size size(nDestWidth, nDestHeight);
+        ::i32_point pointSrc(xSrc, ySrc);
+        ::i32_point ptDest(xDest, yDest);
+        ::i32_size size(nDestWidth, nDestHeight);
 
 
 
@@ -3994,7 +3994,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
           return false;
         if(!imageWork = create_image(size))
           return false;
-        if(!imageWork.from(::int_point(), pgraphicsSrc, pointSrc, size))
+        if(!imageWork.from(::i32_point(), pgraphicsSrc, pointSrc, size))
           return false;
 
 
@@ -4022,8 +4022,8 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
         imageWork4.Fill(255, 0, 0, 0);
 
-        imageWork4.from(int_point(maximum(0, m_pointAlphaBlend.x - xDest), maximum(0, m_pointAlphaBlend.y - yDest)),
-          m_pimageAlphaBlend->get_graphics(), int_point(maximum(0, xDest - m_pointAlphaBlend.x), maximum(0, yDest - m_pointAlphaBlend.y)), size);
+        imageWork4.from(i32_point(maximum(0, m_pointAlphaBlend.x - xDest), maximum(0, m_pointAlphaBlend.y - yDest)),
+          m_pimageAlphaBlend->get_graphics(), i32_point(maximum(0, xDest - m_pointAlphaBlend.x), maximum(0, yDest - m_pointAlphaBlend.y)), size);
 
         imageWork.channel_multiply(::color::e_channel_opacity, imageWork4);
 
@@ -4158,9 +4158,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 #define HIMETRIC_INCH   2540    // HIMETRIC units per inch
 
-   void graphics::DPtoHIMETRIC(::double_size* psize)
+   void graphics::DPtoHIMETRIC(::f64_size* psize)
    {
-      //      ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
+      //      ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::i32_size)));
       //
       //      double nMapMode;
       //      if (this != nullptr && (nMapMode = GetMapMode()) < MM_ISOTROPIC &&
@@ -4193,9 +4193,9 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::HIMETRICtoDP(::double_size* psize)
+   void graphics::HIMETRICtoDP(::f64_size* psize)
    {
-      //      ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
+      //      ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::i32_size)));
       //
       //      double nMapMode;
       //      if (this != nullptr && (nMapMode = GetMapMode()) < MM_ISOTROPIC &&
@@ -4228,18 +4228,18 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::LPtoHIMETRIC(::double_size* psize)
+   void graphics::LPtoHIMETRIC(::f64_size* psize)
    {
-      //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
+      //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::i32_size)));
 
       //LPtoDP(LPSIZE32);
       //DPtoHIMETRIC(LPSIZE32);
    }
 
 
-   void graphics::HIMETRICtoLP(::double_size* psize)
+   void graphics::HIMETRICtoLP(::f64_size* psize)
    {
-      //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
+      //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::i32_size)));
 
       //HIMETRICtoDP(LPSIZE32);
       //DPtoLP(LPSIZE32);
@@ -4279,22 +4279,22 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 #endif
 
-   //void graphics::DrawDragRect(const ::double_rectangle & rectangle, const ::int_size & size, const ::double_rectangle & lpRectLast, const ::int_size & sizeLast, ::draw2d::brush* pBrush, ::draw2d::brush* pBrushLast)
+   //void graphics::DrawDragRect(const ::f64_rectangle & rectangle, const ::i32_size & size, const ::f64_rectangle & lpRectLast, const ::i32_size & sizeLast, ::draw2d::brush* pBrush, ::draw2d::brush* pBrushLast)
    //{
 
    //   //throw ::interface_only();
 
    //   /*
 
-   //         ASSERT(is_memory_segment_ok(rectangle, sizeof(::double_rectangle), false));
+   //         ASSERT(is_memory_segment_ok(rectangle, sizeof(::f64_rectangle), false));
    //         ASSERT(lpRectLast == nullptr ||
-   //            is_memory_segment_ok(lpRectLast, sizeof(::double_rectangle), false));
+   //            is_memory_segment_ok(lpRectLast, sizeof(::f64_rectangle), false));
 
    //         // first, determine the update region and select it
    //         ::draw2d::region rgnNew;
    //         ::draw2d::region rgnOutside, rgnInside;
    //         rgnOutside.create_rect(rectangle);
-   //         const ::double_rectangle & rectangle = *rectangle;
+   //         const ::f64_rectangle & rectangle = *rectangle;
    //         rectangle.inflate(-size.cx, -size.cy);
    //         rectangle.intersect(rectangle, rectangle);
    //         rgnInside.create_rect(rectangle);
@@ -4358,15 +4358,15 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   */
    //}
 
-   /*void graphics::FillSolidRect(const ::double_rectangle & rectangle, color32_t clr)
+   /*void graphics::FillSolidRect(const ::f64_rectangle & rectangle, color32_t clr)
    {
       ::SetBkColor(m_hdc, clr);
       ::ExtTextOut(m_hdc, 0, 0, ETO_OPAQUE, rectangle, nullptr, 0, nullptr);
    }*/
 
-   /*void graphics::fill_rectangle(const double_rectangle & rectangle, color32_t clr)
+   /*void graphics::fill_rectangle(const f64_rectangle & rectangle, color32_t clr)
    {
-      ::double_rectangle rect32;
+      ::f64_rectangle rect32;
       copy(rect32, rectangle);
       FillSolidRect(rect32, clr);
    }
@@ -4377,14 +4377,14 @@ auto iContextHeight = pcontext->m_rectangle.height()
  void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t clr)
  {
    ::SetBkColor(m_hdc, clr);
-   ::double_rectangle rectangle(x, y, x + cx, y + cy);
+   ::f64_rectangle rectangle(x, y, x + cx, y + cy);
    ::ExtTextOut(m_hdc, 0, 0, ETO_OPAQUE, &rectangle, nullptr, 0, nullptr);
  }
 
  */
 
 
- //void graphics::draw_inset_3d_rectangle(const ::double_rectangle & rectangleParam,
+ //void graphics::draw_inset_3d_rectangle(const ::f64_rectangle & rectangleParam,
  //                          const ::color::color & clrTopLeft, const ::color::color & clrBottomRight,
  //   const ::e_border & eborder)
  //{
@@ -4395,7 +4395,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //}
 
  //
- //void graphics::draw_inset_rectangle(const ::double_rectangle & rectangle, const ::color::color & color, const ::e_border & eborder)
+ //void graphics::draw_inset_rectangle(const ::f64_rectangle & rectangle, const ::color::color & color, const ::e_border & eborder)
  //{
 
 
@@ -4442,7 +4442,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //if(hdc != nullptr)
    //   //{
 
-   //   //   m_pgraphics = øallocate< ::plusplus::Graphics( >(HDC) hdc);
+   //   //   m_pgraphics = allocateø< ::plusplus::Graphics( >(HDC) hdc);
 
    //   //   m_pgraphics->SetPageUnit(plusplus::UnitPixel);
 
@@ -4901,19 +4901,19 @@ auto iContextHeight = pcontext->m_rectangle.height()
    bool graphics::SetWorldTransform(const XFORM* pXform)
    {
 
-      //plusplus::REAL ::double_rectangle[6];
+      //plusplus::REAL ::f64_rectangle[6];
 
-      //::double_rectangle[0] = pXform->eDx;
-      //::double_rectangle[1] = pXform->eDy;
+      //::f64_rectangle[0] = pXform->eDx;
+      //::f64_rectangle[1] = pXform->eDy;
 
-      //::double_rectangle[2] = pXform->eM11;
-      //::double_rectangle[3] = pXform->eM12;
-      //::double_rectangle[4] = pXform->eM21;
-      //::double_rectangle[5] = pXform->eM22;
+      //::f64_rectangle[2] = pXform->eM11;
+      //::f64_rectangle[3] = pXform->eM12;
+      //::f64_rectangle[4] = pXform->eM21;
+      //::f64_rectangle[5] = pXform->eM22;
 
       //plusplus::Matrix m;
 
-      //m.SetElements(::double_rectangle[2],::double_rectangle[3],::double_rectangle[4],::double_rectangle[5],::double_rectangle[0],::double_rectangle[1]);
+      //m.SetElements(::f64_rectangle[2],::f64_rectangle[3],::f64_rectangle[4],::f64_rectangle[5],::f64_rectangle[0],::f64_rectangle[1]);
 
       //m_pgraphics->SetTransform(&m);
 
@@ -4953,18 +4953,18 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //int_point graphics::get_origin() const
+   //i32_point graphics::get_origin() const
    //{
 
    //   return ::draw2d::graphics::get_origin();
 
-   //   //::int_point point;
+   //   //::i32_point point;
    //   //::GetContextOrgEx(m_hdc, &point);
 
    //   //if (m_pgraphics == nullptr)
    //   //{
 
-   //   //   return ::int_point();
+   //   //   return ::i32_point();
 
    //   //}
 
@@ -4999,7 +4999,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //int_point graphics::set_origin(int x, int y)
+   //i32_point graphics::set_origin(int x, int y)
    //{
 
    //   return ::draw2d::graphics::set_origin(x, y);
@@ -5007,7 +5007,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //int_point graphics::offset_origin(int nWidth, int nHeight)
+   //i32_point graphics::offset_origin(int nWidth, int nHeight)
    //{
 
    //   return ::draw2d::graphics::offset_origin(nWidth, nHeight);
@@ -5016,12 +5016,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //int_size graphics::set_context_extents(int x, int y)
+   //i32_size graphics::set_context_extents(int x, int y)
    //{
 
    //   return ::draw2d::graphics::set_context_extents(x, y);
 
-   //   //int_size size(0, 0);
+   //   //i32_size size(0, 0);
    //   ////if(m_hdc != nullptr && m_hdc != m_hdc)
    //   ////   ::Set_wiewportExtEx(m_hdc, x, y, &size);
    //   ////if(m_hdc != nullptr)
@@ -5031,12 +5031,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //int_size graphics::scale_context_extents(int xNum, int xDenom, int yNum, int yDenom)
+   //i32_size graphics::scale_context_extents(int xNum, int xDenom, int yNum, int yDenom)
    //{
 
    //   return ::draw2d::graphics::scale_context_extents(xNum, xDenom, yNum, yDenom);
 
-   //   //int_size size(0, 0);
+   //   //i32_size size(0, 0);
    //   ////if(m_hdc != nullptr && m_hdc != m_hdc)
    //   ////   ::scale_context_extentsEx(m_hdc, xNum, xDenom, yNum, yDenom, &size);
    //   ////if(m_hdc != nullptr)
@@ -5045,10 +5045,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   int_point graphics::SetWindowOrg(int x, int y)
+   i32_point graphics::SetWindowOrg(int x, int y)
    {
 
-      ::int_point point;
+      ::i32_point point;
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::SetWindowOrgEx(m_hdc, x, y, &point);
       //if(m_hdc != nullptr)
@@ -5058,10 +5058,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   int_point graphics::offset_window_org(int nWidth, int nHeight)
+   i32_point graphics::offset_window_org(int nWidth, int nHeight)
    {
 
-      ::int_point point;
+      ::i32_point point;
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::OffsetWindowOrgEx(m_hdc, nWidth, nHeight, &point);
       //if(m_hdc != nullptr)
@@ -5071,10 +5071,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   int_size graphics::set_window_ext(int x, int y)
+   i32_size graphics::set_window_ext(int x, int y)
    {
 
-      int_size size(0, 0);
+      i32_size size(0, 0);
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::SetWindowExtEx(m_hdc, x, y, &size);
       //if(m_hdc != nullptr)
@@ -5084,10 +5084,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   int_size graphics::scale_window_ext(int xNum, int xDenom, int yNum, int yDenom)
+   i32_size graphics::scale_window_ext(int xNum, int xDenom, int yNum, int yDenom)
    {
 
-      int_size size(0, 0);
+      i32_size size(0, 0);
       //if(m_hdc != nullptr && m_hdc != m_hdc)
       //   ::ScaleWindowExtEx(m_hdc, xNum, xDenom, yNum, yDenom, &size);
       //if(m_hdc != nullptr)
@@ -5097,10 +5097,10 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   int graphics::get_clip_box(::double_rectangle* prectangle) const
+   int graphics::get_clip_box(::f64_rectangle* prectangle) const
    {
 
-      //plusplus::double_rectangle ::double_rectangle;
+      //plusplus::f64_rectangle ::f64_rectangle;
 
       //m_pgraphics->GetClipBounds(rectangle);
 
@@ -5153,7 +5153,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   int graphics::ExcludeClipRect(const ::int_rectangle& rectangleParam)
+   int graphics::ExcludeClipRect(const ::i32_rectangle& rectangleParam)
    {
 
       //double nRetVal = ERROR;
@@ -5189,7 +5189,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   int graphics::IntersectClipRect(const ::int_rectangle& rectangleBounds)
+   int graphics::IntersectClipRect(const ::i32_rectangle& rectangleBounds)
    {
 
       int nRetVal = 0;
@@ -5219,7 +5219,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   int graphics::OffsetClipRgn(const ::int_size& size)
+   int graphics::OffsetClipRgn(const ::i32_size& size)
    {
 
       int nRetVal = 0;
@@ -5360,22 +5360,22 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    }
    /*
-   void window::screen_to_client(::double_rectangle * prectangle)
+   void window::screen_to_client(::f64_rectangle * prectangle)
    {
    ASSERT(::IsWindow(m_hdc));
-   ::screen_to_client(m_hdc, (::double_point *)::double_rectangle);
-   ::screen_to_client(m_hdc, ((::double_point *)::double_rectangle)+1);
+   ::screen_to_client(m_hdc, (::f64_point *)::f64_rectangle);
+   ::screen_to_client(m_hdc, ((::f64_point *)::f64_rectangle)+1);
    if (GetExStyle() & WS_EX_LAYOUTRTL)
-   ::double_rectangle::swap_left_right(rectangle);
+   ::f64_rectangle::swap_left_right(rectangle);
    }
 
-   void window::client_to_screen(::double_rectangle * prectangle)
+   void window::client_to_screen(::f64_rectangle * prectangle)
    {
    ASSERT(::IsWindow(m_hdc));
-   ::client_to_screen(m_hdc, (::double_point *)::double_rectangle);
-   ::client_to_screen(m_hdc, ((::double_point *)::double_rectangle)+1);
+   ::client_to_screen(m_hdc, (::f64_point *)::f64_rectangle);
+   ::client_to_screen(m_hdc, ((::f64_point *)::f64_rectangle)+1);
    if (GetExStyle() & WS_EX_LAYOUTRTL)
-   ::double_rectangle::swap_left_right(rectangle);
+   ::f64_rectangle::swap_left_right(rectangle);
    }*/
 
 
@@ -5389,7 +5389,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //bool bResult = ::ArcTo(m_hdc, x1, y1, x2, y2, x3, y3, x4, y4) != false;
       //if (m_hdc != m_hdc)
       //{
-      //   ::int_point point;
+      //   ::i32_point point;
       //   VERIFY(::GetCurrentPositionEx(m_hdc, &point));
       //   VERIFY(::MoveToEx(m_hdc, point.x, point.y, nullptr));
       //}
@@ -5408,7 +5408,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   return nResult;
    //}
 
-   //bool graphics::PolyDraw(const ::double_point* lpPoints, const unsigned char* lpTypes, ::collection::count nCount)
+   //bool graphics::PolyDraw(const ::f64_point* lpPoints, const unsigned char* lpTypes, ::collection::count nCount)
    //{
 
    //   // ASSERT(m_hdc != nullptr);
@@ -5418,21 +5418,21 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //   //if (m_hdc != m_hdc)
    //   //{
-   //   //   ::int_point point;
+   //   //   ::i32_point point;
    //   //   VERIFY(::GetCurrentPositionEx(m_hdc, &point));
    //   //   VERIFY(::MoveToEx(m_hdc, point.x, point.y, nullptr));
    //   //}
    //   return bResult;
    //}
 
-   void graphics::polyline_to(const ::double_point* lpPoints, ::collection::count nCount)
+   void graphics::polyline_to(const ::f64_point* lpPoints, ::collection::count nCount)
    {
       // ASSERT(m_hdc != nullptr);
       //bool bResult = false;
       //bool bResult = ::polyline_to(m_hdc, lpPoints, (unsigned int) nCount) != false;
       //if (m_hdc != m_hdc)
       //{
-      //   ::int_point point;
+      //   ::i32_point point;
       //   VERIFY(::GetCurrentPositionEx(m_hdc, &point));
       //   VERIFY(::MoveToEx(m_hdc, point.x, point.y, nullptr));
       //}
@@ -5461,13 +5461,13 @@ auto iContextHeight = pcontext->m_rectangle.height()
 #endif
 
 
-   void graphics::poly_bezier_to(const ::double_point* lpPoints, ::collection::count nCount)
+   void graphics::poly_bezier_to(const ::f64_point* lpPoints, ::collection::count nCount)
    {
       // ASSERT(m_hdc != nullptr);
       //bool bResult = false;      //bool bResult = ::poly_bezier_to(m_hdc, lpPoints, (unsigned int) nCount) != false;
       //if (m_hdc != m_hdc)
       //{
-      //   ::int_point point;
+      //   ::i32_point point;
       //   VERIFY(::GetCurrentPositionEx(m_hdc, &point));
       //   VERIFY(::MoveToEx(m_hdc, point.x, point.y, nullptr));
       //}
@@ -5607,7 +5607,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //         break;
       //      case META_SETBKCOLOR:
       //      {
-      //         auto pbrush = øcreate < ::draw2d::brush >();
+      //         auto pbrush = createø < ::draw2d::brush >();
       //         
       //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
       //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SelectObject(brush);
@@ -5686,38 +5686,38 @@ auto iContextHeight = pcontext->m_rectangle.height()
    // Coordinate transforms
 
 
-   void graphics::LPtoDP(::double_size* LPSIZE32)
+   void graphics::LPtoDP(::f64_size* LPSIZE32)
    {
 
-      //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
+      //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::i32_size)));
 
-      //int_size sizeWinExt = GetWindowExt();
-      //int_size sizeVpExt = get_context_extents();
+      //i32_size sizeWinExt = GetWindowExt();
+      //i32_size sizeVpExt = get_context_extents();
       //LPSIZE32->cx = MulDiv(LPSIZE32->cx, abs(sizeVpExt.cx), abs(sizeWinExt.cx));
       //LPSIZE32->cy = MulDiv(LPSIZE32->cy, abs(sizeVpExt.cy), abs(sizeWinExt.cy));
 
    }
 
 
-   void graphics::DPtoLP(::double_size* psize)
+   void graphics::DPtoLP(::f64_size* psize)
    {
 
-      //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::int_size)));
+      //ASSERT(is_memory_segment_ok(LPSIZE32, sizeof(::i32_size)));
 
-      //int_size sizeWinExt = GetWindowExt();
-      //int_size sizeVpExt = get_context_extents();
+      //i32_size sizeWinExt = GetWindowExt();
+      //i32_size sizeVpExt = get_context_extents();
       //LPSIZE32->cx = MulDiv(LPSIZE32->cx, abs(sizeWinExt.cx), abs(sizeVpExt.cx));
       //LPSIZE32->cy = MulDiv(LPSIZE32->cy, abs(sizeWinExt.cy), abs(sizeVpExt.cy));
 
    }
 
 
-   void graphics::draw_text(const ::scoped_string& scopedstr, const ::double_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
+   void graphics::draw_text(const ::scoped_string& scopedstr, const ::f64_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
    {
 
       ::gpu::graphics::draw_text(scopedstr, rectangle, ealign, edrawtext);
 
-      //::double_rectangle rectangle;
+      //::f64_rectangle rectangle;
 
       //copy(rectangle,&rectangleParam);
 
@@ -5727,7 +5727,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::draw_text(const ::scoped_string& str, const ::int_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
+   void graphics::draw_text(const ::scoped_string& str, const ::i32_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
    {
 
       //try
@@ -5846,7 +5846,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //void graphics::draw_text_ex(const ::scoped_string & str, const ::int_rectangle & rectangleParam, const ::e_align & ealign, const ::e_draw_text & edrawtext, LPDRAWTEXTPARAMS lpDTParams)
+   //void graphics::draw_text_ex(const ::scoped_string & str, const ::i32_rectangle & rectangleParam, const ::e_align & ealign, const ::e_draw_text & edrawtext, LPDRAWTEXTPARAMS lpDTParams)
    //{
 
    //   // ASSERT(m_hdc != nullptr);
@@ -5855,14 +5855,14 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //ASSERT((nFormat & (DT_END_ELLIPSIS | DT_MODIFYSTRING)) != (DT_END_ELLIPSIS | DT_MODIFYSTRING));
    //   //ASSERT((nFormat & (DT_PATH_ELLIPSIS | DT_MODIFYSTRING)) != (DT_PATH_ELLIPSIS | DT_MODIFYSTRING));
    //   //wstring wstr = utf8_to_unicode(str);
-   //   //return ::DrawTextExW(m_hdc,const_cast<wchar_t *>((const wchar_t *)wstr),(double)wcslen(wstr),(::double_rectangle *) &rectangleParam,nFormat,lpDTParams);
+   //   //return ::DrawTextExW(m_hdc,const_cast<wchar_t *>((const wchar_t *)wstr),(double)wcslen(wstr),(::f64_rectangle *) &rectangleParam,nFormat,lpDTParams);
    //   
    //   //return false;
 
    //}
 
 
-   //void graphics::draw_text_ex(const ::scoped_string & str,const ::int_rectangle & rectangleParam, const ::e_align & ealign, const ::e_draw_text & edrawtext,LPDRAWTEXTPARAMS lpDTParams)
+   //void graphics::draw_text_ex(const ::scoped_string & str,const ::i32_rectangle & rectangleParam, const ::e_align & ealign, const ::e_draw_text & edrawtext,LPDRAWTEXTPARAMS lpDTParams)
    //{
 
    //   ::draw2d::graphics::draw_text_ex(str,rectangleParam,ealign, edrawtext,lpDTParams);
@@ -5870,16 +5870,16 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //double_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
-   double_size graphics::_get_text_extent(const ::scoped_string& lpszString)
+   //f64_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
+   f64_size graphics::_get_text_extent(const ::scoped_string& lpszString)
    {
 
       return ::gpu::graphics::_get_text_extent(lpszString);
 
       ////if(lpszString.is_empty())
-      ////   return int_size(0, 0);
+      ////   return i32_size(0, 0);
 
-      //return int_size(0, 0);
+      //return i32_size(0, 0);
 
       ////wstring wstr = lpszString;
 
@@ -5903,7 +5903,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       ////::pointer<font>pfont = m_pfont;
 
-      ////::int_size s = { 0 };
+      ////::i32_size s = { 0 };
 
       ////::GetTextExtentPointW(pfont->m_hdcFont, wstr, wstr.get_length(), &s);
 
@@ -5912,36 +5912,36 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //double_size graphics::get_text_extent(const ::string & lpszString, character_count nCount)
+   //f64_size graphics::get_text_extent(const ::string & lpszString, character_count nCount)
    //{
 
-   //   ::double_size size;
+   //   ::f64_size size;
 
    //   if (!get_text_extent(size, lpszString, nCount, 0))
-   //      return ::int_size(0, 0);
+   //      return ::i32_size(0, 0);
 
-   //   return ::int_size(size.cx, size.cy);
+   //   return ::i32_size(size.cx, size.cy);
 
    //}
 
 
-   /* double_size graphics::get_text_extent(const ::scoped_string & str)
+   /* f64_size graphics::get_text_extent(const ::scoped_string & str)
    {
 
-      ::double_size size;
+      ::f64_size size;
 
       if(!get_text_extent(size, str, (double) str.length(), 0))
-        return ::int_size(0, 0);
+        return ::i32_size(0, 0);
 
-      return ::int_size((long) size.cx, (long) size.cy);
+      return ::i32_size((long) size.cx, (long) size.cy);
 
    }*/
 
 
-   //int_size graphics::GetOutputTextExtent(const ::string & lpszString, character_count nCount)
+   //i32_size graphics::GetOutputTextExtent(const ::string & lpszString, character_count nCount)
    //{
    //   // ASSERT(m_hdc != nullptr);
-   //   ::int_size size;
+   //   ::i32_size size;
    //   //string str(lpszString, nCount);
    //   //wstring wstr = utf8_to_unicode(str);
    //   //VERIFY(::GetTextExtentPoint32W(m_hdc, wstr, (double)wstr.get_length(), &size));
@@ -5950,12 +5950,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   //int_size graphics::GetOutputTextExtent(const ::string & str)
+   //i32_size graphics::GetOutputTextExtent(const ::string & str)
    //{
 
    //   // ASSERT(m_hdc != nullptr);
 
-   //   ::int_size size;
+   //   ::i32_size size;
 
    //   wstring wstr = utf8_to_unicode(str);
 
@@ -5966,7 +5966,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
  //
- //   bool graphics::get_text_extent(double_size & size, const ::string & lpszString, character_count nCount, character_count iIndex)
+ //   bool graphics::get_text_extent(f64_size & size, const ::string & lpszString, character_count nCount, character_count iIndex)
  //   {
  //
  //      //// ASSERT(m_hdc != nullptr);
@@ -5975,7 +5975,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //
  //      ::pointer<font>pfont = m_pfont;
  //
- //      ::int_size s;
+ //      ::i32_size s;
  //
  //      wstring wstr = utf8_to_unicode(string(&lpszString[iIndex], nCount));
  //
@@ -5993,7 +5993,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //      //if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
  //      //   std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
  //
- //      //// Set int_size to load vkyphs as
+ //      //// Set i32_size to load vkyphs as
  //      //FT_Set_Pixel_Sizes(face, 0, 48);
  //
  //      //// Disable unsigned char-alignment restriction
@@ -6051,7 +6051,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   }
  //
  //
- //   bool graphics::get_text_extent(double_size & size, const ::string & lpszString, character_count nCount)
+ //   bool graphics::get_text_extent(f64_size & size, const ::string & lpszString, character_count nCount)
  //   {
  //
  //      //// ASSERT(m_hdc != nullptr);
@@ -6060,7 +6060,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //
  //      ::pointer<font>pfont = m_pfont;
  //
- //      ::int_size s;
+ //      ::i32_size s;
  //
  //      wstring wstr = utf8_to_unicode(lpszString, nCount);
  //
@@ -6076,7 +6076,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   }
  //
  //
- //   bool graphics::get_text_extent(double_size & size, const ::string & str)
+ //   bool graphics::get_text_extent(f64_size & size, const ::string & str)
  //   {
  //
  //      //// ASSERT(m_hdc != nullptr);
@@ -6085,7 +6085,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //
  //      ::pointer<font>pfont = m_pfont;
  //
- //      ::int_size s;
+ //      ::i32_size s;
  //
  //      wstring wstr = utf8_to_unicode(str);
  //
@@ -6101,7 +6101,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
  //   }
 
 
-   //void graphics::fill_rectangle(const double_rectangle& rectangle, color32_t color32)
+   //void graphics::fill_rectangle(const f64_rectangle& rectangle, color32_t color32)
    //{
 
    //   try
@@ -6111,7 +6111,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //      {
 
 
-   //         ::int_size s = m_pbitmap.cast < bitmap>()->m_sizeOut;
+   //         ::i32_size s = m_pbitmap.cast < bitmap>()->m_sizeOut;
 
    //         if (s.area() <= 0)
    //         {
@@ -6184,7 +6184,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       // //auto sinangle = (y1 - y0) / distance;
       // //auto cosangle = (x1 - x0) / distance;
       //
-      // //double_point points[4];
+      // //f64_point points[4];
       //
       // //points[0].x = x0 - cosangle * m_ppen->m_dWidth / 2.0;
       // //points[0].y = y0 - sinangle * m_ppen->m_dWidth / 2.0;
@@ -6202,7 +6202,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //    if (!m_pshaderLine)
       //    {
       //
-      //       //auto pshadervertexinput = øallocate::gpu_vulkan::shader_vertex_input();
+      //       //auto pshadervertexinput = allocateø::gpu_vulkan::shader_vertex_input();
       //
       //       //pshadervertexinput->m_bindings.add(
       //       //   {
@@ -6214,7 +6214,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //       //pshadervertexinput->m_attribs.add({ .location = 0, .binding = 0, .format = VK_FORMAT_R32G32B32_SFLOAT, .offset = offsetof(RectangleVertex, pos) });
       //       //pshadervertexinput->m_attribs.add({ .location = 1, .binding = 0, .format = VK_FORMAT_R32G32B32A32_SFLOAT, .offset = offsetof(RectangleVertex, color) });
       //
-      //       auto pshaderRectangle = øcreate_new<::gpu_vulkan::shader>();
+      //       auto pshaderRectangle = create_newø<::gpu_vulkan::shader>();
       //
       //       m_pshaderLine = pshaderRectangle;
       //       //m_pshaderBlendRectangle->m_bDisableDepthTest = true;
@@ -6251,7 +6251,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //
       // auto color = m_ppen->m_color;
       //
-      // double_point points[2];
+      // f64_point points[2];
       //
       // points[0].x = x1;
       // points[0].y = x1;
@@ -6265,12 +6265,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
       // __TRANSFORM(points[0]);
       // __TRANSFORM(points[1]);
       //
-      // //auto pmodelbuffer = øcreate_new< ::gpu_vulkan::model_buffer>();
+      // //auto pmodelbuffer = create_newø< ::gpu_vulkan::model_buffer>();
       //
       // if (!m_pmodelbufferLine)
       // {
       //
-      //    øconstruct_new(m_pmodelbufferLine);
+      //    construct_newø(m_pmodelbufferLine);
       //
       //    //pmodel->m_vertexBuffer = createLineVertexBuffer(pgpucontext->logicalDevice(),
       //    //   pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
@@ -6538,7 +6538,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::_draw_raw(const ::double_rectangle& rectangleTarget, ::image::image* pimage, const ::image::image_drawing_options& imagedrawingoptionsParam, const ::double_point& pointSrc)
+   void graphics::_draw_raw(const ::f64_rectangle& rectangleTarget, ::image::image* pimage, const ::image::image_drawing_options& imagedrawingoptionsParam, const ::f64_point& pointSrc)
    {
 
 
@@ -6570,7 +6570,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   }
 
 
-      //void graphics::fill_rectangle(const double_rectangle& rectangle, color32_t color32)
+      //void graphics::fill_rectangle(const f64_rectangle& rectangle, color32_t color32)
       //{
 
 
@@ -6737,7 +6737,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   bool graphics::blur(bool bExpand, double dRadius, const ::int_rectangle& rectangleParam)
+   bool graphics::blur(bool bExpand, double dRadius, const ::i32_rectangle& rectangleParam)
    {
 
       //   // Commented Out for Running in cosan machine running Windows 2008
@@ -6769,7 +6769,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       //   ////plusplus::rectF float_rectangle(points[0].X, points[0].Y, points[1].X - points[0].X, points[1].Y - points[0].Y);
 
-      //   //::double_rectangle ::double_rectangle;
+      //   //::f64_rectangle ::f64_rectangle;
 
       //   //rectangle.left      = (::double) points[0].X;
       //   //rectangle.top       = (::double) points[0].Y;
@@ -6961,14 +6961,14 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //oswindow graphics::get_window_handle() const
    //{
 
-   //   if (::is_null(m_puserinteraction))
+   //   if (::is_null(m_puserinteractionDraw2dGraphics))
    //   {
 
    //      return nullptr;
 
    //   }
 
-   //   return m_puserinteraction->get_handle();
+   //   return m_puserinteractionDraw2dGraphics->get_handle();
 
    //}
 
@@ -6982,7 +6982,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   //void graphics::_add_clipping_shape(const ::double_rectangle & rectangle, ::draw2d::region * pregion)
+   //void graphics::_add_clipping_shape(const ::f64_rectangle & rectangle, ::draw2d::region * pregion)
    //{
 
 
@@ -7016,15 +7016,15 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::on_gpu_context_placement_change(const ::int_rectangle& rectanglePlacement)
+   void graphics::on_gpu_context_placement_change(const ::i32_rectangle& rectanglePlacement)
    {
 
       ::acme::windowing::window *pacmewindowingwindow = nullptr;
       
-      if (::is_set(m_puserinteraction))
+      if (::is_set(m_puserinteractionDraw2dGraphics))
       {
          
-         pacmewindowingwindow = m_puserinteraction->m_pacmewindowingwindow.m_p;
+         pacmewindowingwindow = m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow.m_p;
 
       }
 
@@ -7100,7 +7100,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::intersect_clip(const ::double_rectangle& rectangle)
+   void graphics::intersect_clip(const ::f64_rectangle& rectangle)
    {
 
 
@@ -7116,7 +7116,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
 
-   void graphics::_vk_rectangle(const ::double_rectangle& rectangle)
+   void graphics::_vk_rectangle(const ::f64_rectangle& rectangle)
    {
 
       //vkVertex2f((VKfloat)rectangle.left, (VKfloat)rectangle.top);
@@ -7205,7 +7205,7 @@ BOOL CALLBACK draw2d_vulkan_EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpnt
    else if (FontType & TRUETYPE_FONTTYPE)
    {
 
-      pfonts->m_itema.add(øallocate::write_text::font_enumeration_item(lplf->lfFaceName));
+      pfonts->m_itema.add(allocateø::write_text::font_enumeration_item(lplf->lfFaceName));
 
    }
    else

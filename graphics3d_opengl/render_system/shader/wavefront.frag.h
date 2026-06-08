@@ -1,9 +1,9 @@
-// This file was automatically generated from a command line like:
+﻿// This file was automatically generated from a command line like:
 // application_build_helper --inline-text "wavefront.frag"
 #pragma once
 
 
-const char g_psz_wavefront_frag[] = R"frag_text(#version 410
+const char g_psz_wavefront_frag[] = R"frag_text(#version 420
 
 layout (location = 0) in vec3 fragColor;
 layout (location = 1) in vec3 fragPosWorld;

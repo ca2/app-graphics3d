@@ -605,7 +605,7 @@ namespace vulkan
       configInfo.multisampleInfo.alphaToCoverageEnable = VK_FALSE; // Optional
       configInfo.multisampleInfo.alphaToOneEnable = VK_FALSE; // Optional
 
-      configInfo.colorBlendAttachments.ø(0).colorWriteMask =
+      configInfo.colorBlendAttachments.atø(0).colorWriteMask =
          VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
       configInfo.colorBlendAttachments[0].blendEnable = VK_TRUE;
       configInfo.colorBlendAttachments[0].srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional

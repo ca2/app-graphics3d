@@ -74,7 +74,7 @@
 //
 //      _create_pipeline_layout(m_properties.m_memory.size());
 //
-//      øconstruct_new(m_ppipeline);
+//      construct_newø(m_ppipeline);
 //
 //      ::cast <engine> pengine = m_pgpucontext->m_pimpact->m_pengine;
 //

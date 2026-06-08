@@ -62,17 +62,17 @@ namespace gpu
          // ::file::path pathHdriVertexShader = "matter://shaders/ibl_hdri_cube.vert";
          // ::file::path pathHdriFragmentShader = "matter://shaders/ibl_hdri_cube.frag";
 
-         øconstruct(m_pshaderHdri);
+         constructø(m_pshaderHdri);
 
          m_pshaderHdri->initialize_shader_with_block(
             m_pgpucontext->m_pgpurenderer,
             embedded_ibl_hdri_cube_vert(),            embedded_ibl_hdri_cube_frag());
-         øconstruct_new(m_pskybox);
+         construct_newø(m_pskybox);
 
          //auto pscene = pgpucontext->m_pengine->m_pimmersionlayer->m_pscene;
 m_pskybox = pskybox;
          //m_pskybox->initialize_sky_box(pscene, pathHdri);
-         øconstruct(m_pframebuffer);
+         constructø(m_pframebuffer);
 
          m_pframebuffer->initialize_cubemap_framebuffer(m_uCubemapWidth, m_uCubemapHeight);
       }

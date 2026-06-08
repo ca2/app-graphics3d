@@ -45,15 +45,15 @@ namespace graphics3d_opengl
 
       auto papp = get_app();
 
-      øconstruct(m_pgpucontext);
+      constructø(m_pgpucontext);
 
       m_pgpucontext->initialize_context(papp->m_pimpact);
 
-      øconstruct_new(m_prenderer);
+      construct_newø(m_prenderer);
 
       m_prenderer->initialize_renderer(papp->m_pimpact, m_pgpucontext);
 
-      auto pglobalpoolbuilder = øallocate descriptor_pool::Builder();
+      auto pglobalpoolbuilder = allocateø descriptor_pool::Builder();
 
       pglobalpoolbuilder->initialize_builder(m_pgpucontext);
       pglobalpoolbuilder->setMaxSets(render_pass::MAX_FRAMES_IN_FLIGHT);
@@ -63,14 +63,14 @@ namespace graphics3d_opengl
 
       //m_pglobalpool->initialize_pool(pgpucontext);
 
-      //= øallocate
+      //= allocateø
       //   descriptor_pool::Builder(pgpucontext)
       //   .setMaxSets(swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT)
       //   .build();
       m_pscene->on_load_scene();
 
-      //pgpucontext = øallocate context(m_popengldevice);
+      //pgpucontext = allocateø context(m_popengldevice);
 
       ::pointer_array<buffer> uboBuffers;
 
@@ -81,7 +81,7 @@ namespace graphics3d_opengl
       for (int i = 0; i < uboBuffers.size(); i++)
       {
 
-         uboBuffers[i] = øallocate buffer();
+         uboBuffers[i] = allocateø buffer();
 
          uboBuffers[i]->initialize_buffer(
             pgpucontext,
@@ -128,7 +128,7 @@ namespace graphics3d_opengl
 
       //VkcCamera camera(floating_sequence3(0.0f, 2.0f, -10.0f), .0f, 0.0f);
 
-      auto viewerObject = øcreate <::cube::scene_object>();
+      auto viewerObject = createø <::cube::scene_object>();
       papp->m_pimpact->m_bLastMouse = true;
       viewerObject->m_transform.translation.z = -2.5f;
       MNKController cameraController;

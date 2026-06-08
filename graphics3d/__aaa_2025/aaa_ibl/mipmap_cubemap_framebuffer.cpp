@@ -39,7 +39,7 @@ namespace gpu
          // m_uMipLevel = 0;
          //
 
-         ødefer_construct(m_ptexture);
+         defer_constructø(m_ptexture);
          m_ptexture->rectangle().left=0;
          m_ptexture->rectangle().top=0;
          m_ptexture->rectangle().right=width;

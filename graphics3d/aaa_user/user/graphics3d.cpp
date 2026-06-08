@@ -115,7 +115,7 @@ namespace user
    }
 
 
-   void graphics3d::on_mouse_move(const int_point & point)
+   void graphics3d::on_mouse_move(const i32_point & point)
    {
 
       auto pengine = m_pengine;
@@ -137,7 +137,7 @@ namespace user
    }
 
 
-   void graphics3d::defer_initialize_engine(const ::int_rectangle& rectanglePlacement)
+   void graphics3d::defer_initialize_engine(const ::i32_rectangle& rectanglePlacement)
    {
 
       if (!m_pengine)
@@ -157,7 +157,7 @@ namespace user
 
          m_pkeymap->m_pimpact = this;
 
-         øconstruct(m_pengine);
+         constructø(m_pengine);
 
          m_pengine->initialize_engine(this);
 
@@ -386,7 +386,7 @@ namespace user
 
             pcompositor->gpu_context()->m_pgpurenderer->frame_suffix();
 
-            //double_rectangle r;
+            //f64_rectangle r;
 
             //r.left = 400.0;
             //r.top = 200.0;
@@ -501,7 +501,7 @@ namespace user
    ::pointer < ::graphics3d::key_map > graphics3d::get_default_key_map()
    {
 
-      auto pmap = øcreate_new < ::graphics3d::key_map>();
+      auto pmap = create_newø < ::graphics3d::key_map>();
       using namespace ::graphics3d;
 
       pmap->map(e_key_moveLeft, ::user::e_key_a);

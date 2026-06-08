@@ -23,7 +23,7 @@ namespace app_graphics3d_continuum
    camera::~camera() {}
 
 
-   void camera::initialize_camera(const ::floating_sequence3 & position, const float_angle & yaw, const float_angle & pitch)
+   void camera::initialize_camera(const ::floating_sequence3 & position, const f32_angle & yaw, const f32_angle & pitch)
    {
 
       m_sequence3Position = position;
@@ -71,7 +71,7 @@ namespace app_graphics3d_continuum
    void camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch)
    {
 
-      const float_angle angleCursorPixel = 0.1_f_degrees; // Adjust this value to your liking
+      const f32_angle angleCursorPixel = 0.1_f_degrees; // Adjust this value to your liking
       auto angleΔYaw = xoffset * angleCursorPixel;
       auto angleΔPitch = yoffset * angleCursorPixel;
 
@@ -120,7 +120,7 @@ namespace app_graphics3d_continuum
 
 
    //// This is the method being used below as opposed to ortho ^
-   //void camera::setPerspectiveProjection(const float_angle & angleFovY, float aspect, float fNear, float fFar)
+   //void camera::setPerspectiveProjection(const f32_angle & angleFovY, float aspect, float fNear, float fFar)
    //{
 
    //   auto pgpucontext = m_pengine->get_gpu_context();

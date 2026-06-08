@@ -31,10 +31,10 @@ namespace draw2d
       float py = dx * thickness.y * 0.5f;
 
       // Rectangle corners (with extended ends)
-      double_point v0 = { p1.x + px, p1.y + py };
-      double_point v1 = { p1.x - px, p1.y - py };
-      double_point v2 = { p2.x + px, p2.y + py };
-      double_point v3 = { p2.x - px, p2.y - py };
+      f64_point v0 = { p1.x + px, p1.y + py };
+      f64_point v1 = { p1.x - px, p1.y - py };
+      f64_point v2 = { p2.x + px, p2.y + py };
+      f64_point v3 = { p2.x - px, p2.y - py };
 
       // Two triangles (6 vertexes)
       pointa.add({ v0.x, v0.y });
@@ -55,10 +55,10 @@ namespace draw2d
       POINT thickness)
    {
       // Rectangle corners
-      //::double_point p0 = { x,     y };          // bottom-left
-      //::double_point p1 = { x + w,   y };          // bottom-right
-      //::double_point p2 = { x + w,   y + h };          // top-right
-      //::double_point p3 = { x,     y + h };          // top-left
+      //::f64_point p0 = { x,     y };          // bottom-left
+      //::f64_point p1 = { x + w,   y };          // bottom-right
+      //::f64_point p2 = { x + w,   y + h };          // top-right
+      //::f64_point p3 = { x,     y + h };          // top-left
 
       // Each side will have 6 vertexes (2 triangles), 12 floats
       // Total = 4 sides * 12 floats = 48 floats
@@ -67,29 +67,29 @@ namespace draw2d
       // Bottom edge
       make_line_triangles_cap_butt_square(
          pointa,
-         ::double_point{ pointa1[0].x + thickness.x, pointa1[0].y},
-         ::double_point{ pointa1[1].x - thickness.y, pointa1[1].y},
+         ::f64_point{ pointa1[0].x + thickness.x, pointa1[0].y},
+         ::f64_point{ pointa1[1].x - thickness.y, pointa1[1].y},
          thickness);
 
       // Right edge
       make_line_triangles_cap_butt_square(
          pointa,
-         ::double_point{ pointa1[1].x, pointa1[1].y },
-         ::double_point{ pointa1[2].x, pointa1[2].y },
+         ::f64_point{ pointa1[1].x, pointa1[1].y },
+         ::f64_point{ pointa1[2].x, pointa1[2].y },
          thickness);
 
       // Top edge
       make_line_triangles_cap_butt_square(
          pointa,
-         ::double_point{ pointa1[2].x - thickness.x, pointa1[2].y},
-         ::double_point{ pointa1[3].x + thickness.y, pointa1[3].y},
+         ::f64_point{ pointa1[2].x - thickness.x, pointa1[2].y},
+         ::f64_point{ pointa1[3].x + thickness.y, pointa1[3].y},
          thickness);
 
       // Left edge
       make_line_triangles_cap_butt_square(
          pointa,
-         ::double_point{ pointa1[3].x, pointa1[3].y },
-         ::double_point{ pointa1[0].x, pointa1[0].y },
+         ::f64_point{ pointa1[3].x, pointa1[3].y },
+         ::f64_point{ pointa1[0].x, pointa1[0].y },
          thickness);
 
    }

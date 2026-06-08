@@ -35,9 +35,9 @@
 //       void hdri_cube::initialize_hdri_cube(const ::scoped_string &hdriPath)
 //       {
 //
-//          øconstruct(m_phdrtexture);
+//          constructø(m_phdrtexture);
 //
-//          øconstruct(m_pcube);
+//          constructø(m_pcube);
 //
 //       }
 //
@@ -47,7 +47,7 @@
 //          // ///shader.setInt("hdri", 0);
 //          // ::cast < ::gpu_opengl::shader > pshader = pcommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pshaderBound;
 //          //
-//          // pshader->set_int("hdri", 0);
+//          // pshader->set_i32("hdri", 0);
 //          //
 //          // ::cast < ::gpu_opengl::hdr_texture > phdrtexture = m_phdrtexture;
 //          // // draw mesh

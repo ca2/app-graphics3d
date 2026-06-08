@@ -145,7 +145,7 @@ namespace graphics3d
    {
 
 	   // Initialize skybox shader
-	   ødefer_construct(m_pshader);
+	   defer_constructø(m_pshader);
 
 	   m_pshader->m_bDisableDepthTest = false;
 	   m_pshader->m_bDepthTestButNoDepthWrite = true;

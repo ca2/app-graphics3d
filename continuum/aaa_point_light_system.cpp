@@ -54,7 +54,7 @@ namespace app_graphics3d_continuum
       //createPipelineLayout(globalSetLayout);
       //createPipeline(renderPass);
 
-      ødefer_construct(m_pmodelDummy);
+      defer_constructø(m_pmodelDummy);
 
       // ::graphics3d::model::Builder builderDummy;
 
@@ -125,7 +125,7 @@ namespace app_graphics3d_continuum
    //   std::string vertShaderPath = "matter://Shaders/SpirV/point_light.vert.spv";
    //   std::string fragShaderPath = "matter://Shaders/SpirV/point_light.frag.spv";
 
-   //   m_ppipeline = øallocate pipeline();
+   //   m_ppipeline = allocateø pipeline();
 
    //   m_ppipeline->initialize_pipeline(
    //      m_pgpucontext,
@@ -206,7 +206,7 @@ namespace app_graphics3d_continuum
          //PointLightPushConstants push{};
          m_pshader->set_sequence4("position", floating_sequence4(obj->m_transform.translation, 1.f));
          m_pshader->set_sequence4("color", floating_sequence4(obj->m_color, ppointlight->m_pointlightcomponent.lightIntensity));
-         m_pshader->set_float("radius", obj->m_transform.scale.x);
+         m_pshader->set_f32("radius", obj->m_transform.scale.x);
 
          m_pshader->push_properties();
 

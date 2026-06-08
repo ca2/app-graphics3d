@@ -59,7 +59,7 @@ namespace gpu_vulkan
       //for (auto& pcommandbufferLayer : m_commandbufferaLayer)
       //{
 
-      //   ødefer_construct(pcommandbufferLayer);
+      //   defer_constructø(pcommandbufferLayer);
 
       //   pcommandbufferLayer->initialize_command_buffer(m_pgpurenderer->m_pgpurendertarget);
 

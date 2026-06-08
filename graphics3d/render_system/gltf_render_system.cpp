@@ -93,7 +93,7 @@ namespace graphics3d
 
       ////auto prenderer = pgpucontext->m_pgpurenderer;
 
-      ////m_pshader = øcreate<::gpu::shader>();
+      ////m_pshader = createø<::gpu::shader>();
 
       ////m_pshader->set_global_ubo();
       ////auto & bindingUbo = m_pshader->binding();
@@ -115,9 +115,9 @@ namespace graphics3d
 
       // auto pcontext = m_pengine->gpu_context();
 
-      // øconstruct(m_pshaderOpaque);
-      // øconstruct(m_pshaderMask);
-      // øconstruct(m_pshaderBlend);
+      // constructø(m_pshaderOpaque);
+      // constructø(m_pshaderMask);
+      // constructø(m_pshaderBlend);
 
 
       // auto ppropertiesUbo = ::gpu_properties<::graphics3d::global_ubo1>();
@@ -231,7 +231,7 @@ namespace graphics3d
 
       ////m_vkdescriptorsetaIbl.resize(frameCount);
 
-      ////auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+      ////auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
       ////pdescriptorpoolbuilder->initialize_builder(pcontext);
       ////pdescriptorpoolbuilder->setMaxSets(frameCount * 10);
@@ -641,17 +641,17 @@ return pbindingsetGltfPbr;
 BEGIN_GPU_PROPERTIES(::graphics3d::gltf_render_system::push_constants)
 GPU_PROPERTY("modelMatrix", ::gpu::e_type_mat4)
 GPU_PROPERTY("normalMatrix", ::gpu::e_type_mat4)
-GPU_PROPERTY("useTextureAlbedo", ::gpu::e_type_int)
-GPU_PROPERTY("useTextureMetallicRoughness", ::gpu::e_type_int)
-GPU_PROPERTY("useTextureNormal", ::gpu::e_type_int)
-GPU_PROPERTY("useTextureAmbientOcclusion", ::gpu::e_type_int)
-GPU_PROPERTY("useTextureEmissive", ::gpu::e_type_int)
+GPU_PROPERTY("useTextureAlbedo", ::gpu::e_type_i32)
+GPU_PROPERTY("useTextureMetallicRoughness", ::gpu::e_type_i32)
+GPU_PROPERTY("useTextureNormal", ::gpu::e_type_i32)
+GPU_PROPERTY("useTextureAmbientOcclusion", ::gpu::e_type_i32)
+GPU_PROPERTY("useTextureEmissive", ::gpu::e_type_i32)
 GPU_PROPERTY("albedo", ::gpu::e_type_seq3)
-GPU_PROPERTY("metallic", ::gpu::e_type_float)
-GPU_PROPERTY("roughness", ::gpu::e_type_float)
-GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_float)
+GPU_PROPERTY("metallic", ::gpu::e_type_f32)
+GPU_PROPERTY("roughness", ::gpu::e_type_f32)
+GPU_PROPERTY("ambientOcclusion", ::gpu::e_type_f32)
 GPU_PROPERTY("emissive", ::gpu::e_type_seq3)
 // GPU_PROPERTY("cameraPosition", ::gpu::e_type_seq3)
-GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_float)
+GPU_PROPERTY("bloomBrightnessCutoff", ::gpu::e_type_f32)
 GPU_PROPERTY("multiplier", ::gpu::e_type_seq3)
 END_GPU_PROPERTIES()

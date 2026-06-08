@@ -1165,7 +1165,7 @@ namespace gpu_vulkan
       for (tinygltf::Image &image: gltfModel.images)
       {
          ::pointer<::gpu_vulkan::texture> ptexture;
-         øconstruct_new(ptexture);
+         construct_newø(ptexture);
          ptexture->_fromglTfImage(&image, m_pathRenderable.folder(), pgpucontext->m_pgpurenderer, false);
          ptexture->m_iIndex = m_texturea.size();
          m_texturea.add(ptexture);
@@ -1859,7 +1859,7 @@ namespace gpu_vulkan
 
       auto &emptyTexture = this->emptyTexture2;
 
-      øconstruct_new(emptyTexture);
+      construct_newø(emptyTexture);
 
       // Define the static member here (outside any class/function)
 

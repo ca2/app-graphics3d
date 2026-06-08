@@ -44,9 +44,9 @@ namespace gpu_vulkan
 
       virtual void set_line_width(float fLineWidth);
 
-      void set_viewport(const ::int_rectangle & rectangle) override;
+      void set_viewport(const ::i32_rectangle & rectangle) override;
 
-      void set_scissor(const ::int_rectangle& rectangle) override;  
+      void set_scissor(const ::i32_rectangle& rectangle) override;  
 
       //void set_primitive_topology_triangle_strip() override;
 

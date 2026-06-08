@@ -35,7 +35,7 @@ namespace gpu
 
 
          raw_array_base<::gpu::gltf::vertex> m_vertexa;
-         unsigned_int_array m_indexa;
+         unsigned_i32_array m_indexa;
          ::pointer<::gpu::gltf::material> m_pmaterial;
          struct UniformBlock {
             floating_matrix4 matrix;
@@ -48,7 +48,7 @@ namespace gpu
          ~mesh() override;
 
 
-         virtual void initialize_gpu_gltf_mesh(const ::raw_array_base<gltf::vertex> &vertexa, const ::unsigned_int_array &indexa,
+         virtual void initialize_gpu_gltf_mesh(const ::raw_array_base<gltf::vertex> &vertexa, const ::unsigned_i32_array &indexa,
                                    ::gpu::gltf::material *pmaterial);
 
          virtual void init();

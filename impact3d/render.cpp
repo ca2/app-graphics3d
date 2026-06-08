@@ -236,7 +236,7 @@ namespace graphics3d_impact3d
       if (!m_pgpuprogram)
       {
 
-         øconstruct(m_pgpuprogram);
+         constructø(m_pgpuprogram);
 
       }
 
@@ -371,7 +371,7 @@ namespace graphics3d_impact3d
 //
 //         ::image::image_source imagesource(m_pgpucontext->m_pbuffer->m_pimage);
 //
-//         ::double_rectangle rectangleTarget(m_rectangle);
+//         ::f64_rectangle rectangleTarget(m_rectangle);
 //
 //         ::image::image_drawing_options imagedrawingoptions(rectangleTarget);
 //
@@ -460,7 +460,7 @@ namespace graphics3d_impact3d
    void render::set_model_path(const ::payload & payloadFile)
    {
 
-      øconstruct(m_pobject);
+      constructø(m_pobject);
 
       auto pparticle = m_pobject;
 

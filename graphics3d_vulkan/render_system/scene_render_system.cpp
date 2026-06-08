@@ -90,9 +90,9 @@ namespace graphics3d_vulkan
 
 //      ::cast<::gpu_vulkan::context> pcontext = m_pengine->gpu_context();
 //
-//      øconstruct(m_pshaderOpaque);
-//      øconstruct(m_pshaderMask);
-//      øconstruct(m_pshaderBlend);
+//      constructø(m_pshaderOpaque);
+//      constructø(m_pshaderMask);
+//      constructø(m_pshaderBlend);
 //
 //
 //            static unsigned int pvertshader[] = {
@@ -185,7 +185,7 @@ namespace graphics3d_vulkan
 //
 //      auto frameCount = prendertarget->get_frame_count();
 //
-//      auto pdescriptorpoolbuilder = øallocate::gpu_vulkan::descriptor_pool::Builder();
+//      auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 //
 //      pdescriptorpoolbuilder->initialize_builder(pcontext);
 //      pdescriptorpoolbuilder->setMaxSets(frameCount * 10);
@@ -534,7 +534,7 @@ namespace graphics3d_vulkan
       //         pshader->set_matrix4("normalMatrix", normalMat);
       //         bool bAlbedo = pgltfmodel->m_materiala[0].baseColorTexture.is_set();
       //         bAlbedo = bAlbedo && !m_bDisableAlbedo;
-      //         pshader->set_int("useTextureAlbedo", bAlbedo ? 1 : 0);
+      //         pshader->set_i32("useTextureAlbedo", bAlbedo ? 1 : 0);
 
       //         floating_sequence3 seq3Albedo = {};
       //         if (prendersystem->m_bForceDefaultAlbedo)
@@ -554,7 +554,7 @@ namespace graphics3d_vulkan
 
       //         bool bMetallicRoughness = pgltfmodel->m_materiala[0].metallicRoughnessTexture.is_set();
       //         bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
-      //         //pshader->set_int("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
+      //         //pshader->set_i32("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
       //         bool bNormal = pgltfmodel->m_materiala[0].normalTexture.is_set();
 
 
@@ -580,14 +580,14 @@ namespace graphics3d_vulkan
 
       //            fRoughness = pgltfmodel->m_materiala[0].roughnessFactor;
       //         }
-      //         pshader->set_float("metallic", fMetallic);
-      //         pshader->set_float("roughness", fRoughness);
+      //         pshader->set_f32("metallic", fMetallic);
+      //         pshader->set_f32("roughness", fRoughness);
 
       //         bNormal = bNormal && !m_bDisableNormal;
-      //         pshader->set_int("useTextureNormal", bNormal ? 1 : 0);
+      //         pshader->set_i32("useTextureNormal", bNormal ? 1 : 0);
       //         bool bAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture.is_set();
       //         bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
-      //         //pshader->set_int("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
+      //         //pshader->set_i32("useTextureAmbientOcclusion", bAmbientOcclusion ? 1 : 0);
 
 
       //         float fAmbientOcclusion = 0.0f;
@@ -602,7 +602,7 @@ namespace graphics3d_vulkan
       //            // fAmbientOcclusion = pgltfmodel->m_materiala[0].occlusionTexture->m_fAmbientOcclusion;
       //            fAmbientOcclusion = 1.f;
       //         }
-      //         pshader->set_float("ambientOcclusion", fAmbientOcclusion);
+      //         pshader->set_f32("ambientOcclusion", fAmbientOcclusion);
 
       //         //floating_sequence3 seq3Emission = {};
       //         //if (prendersystem->m_bForceDefaultEmission)
@@ -620,7 +620,7 @@ namespace graphics3d_vulkan
 
       //         ////bool bEmissive = pgltfmodel->m_materiala[0].emissiveTexture.is_set();
       //         ////bEmissive = bEmissive && !m_bDisableEmissive;
-      //         //pshader->set_int("useTextureEmissive", bEmissive ? 1 : 0);
+      //         //pshader->set_i32("useTextureEmissive", bEmissive ? 1 : 0);
       //         pshader->push_properties(pcommandbuffer);
 
 

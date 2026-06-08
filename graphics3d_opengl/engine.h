@@ -66,10 +66,10 @@ namespace graphics3d_opengl
 		~engine();
 
 
-		void defer_start(::user::graphics3d * pusergraphics3d, const ::int_rectangle& rectanglePlacement) override;
+		void defer_start(::user::graphics3d * pusergraphics3d, const ::i32_rectangle& rectanglePlacement) override;
 
 
-		void defer_update_engine(const ::int_rectangle& rectanglePlacement) override;
+		void defer_update_engine(const ::i32_rectangle& rectanglePlacement) override;
 
 		void on_begin_frame() override;
 		void on_end_frame() override;
@@ -107,7 +107,7 @@ namespace graphics3d_opengl
 		//
 		//void on_layout(int cx, int cy) override;
 
-		virtual void on_layout(const ::int_rectangle & rectanglePlacement) override;
+		virtual void on_layout(const ::i32_rectangle & rectanglePlacement) override;
 
 		virtual void on_mouse_move(float x, float y) override;
 
@@ -119,7 +119,7 @@ namespace graphics3d_opengl
         //                     float zFar = 1.0f) override;
 
 
-      floating_matrix4 perspective(const float_angle & angleFovY, float aspect, float zNear, float zFar) override;
+      floating_matrix4 perspective(const f32_angle & angleFovY, float aspect, float zNear, float zFar) override;
 
 
 

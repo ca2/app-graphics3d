@@ -24,9 +24,9 @@ namespace app_graphics3d_continuum
 
 
    //   void initialize_input(
-   //      const float_angle & angleCursorPixel = 0.1f_degrees, 
-   //      const float_angle & angleYaw = -90f_degrees,
-   //      const float_angle & anglePitch = 0f_degrees);
+   //      const f32_angle & angleCursorPixel = 0.1f_degrees, 
+   //      const f32_angle & angleYaw = -90f_degrees,
+   //      const f32_angle & anglePitch = 0f_degrees);
 
    //   //void moveInPlaneXZ(::user::graphics3d * pimpact, float dt, application_object& gameObject);
 
@@ -35,7 +35,7 @@ namespace app_graphics3d_continuum
    //   void process_keyboard_input() override;
 
 
-   //   //void _001OnMouseMove(const ::int_point & point) override;
+   //   //void _001OnMouseMove(const ::i32_point & point) override;
    //   //void _001OnMouseOut() override;
    //   void _001PrepareMouseInput();
    //   void process_mouse_input_updateLook();
