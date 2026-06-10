@@ -51,7 +51,8 @@ namespace draw2d_vulkan
       bool is_gpu_oriented() override;
 
       virtual void thread_select();
-      void send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure) override;
+      //void send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure) override;
+      void send(const ::procedure &procedure) override;
 
       void* detach() override;
 
@@ -588,8 +589,11 @@ namespace draw2d_vulkan
       //void _add_clipping_shape(const ::f64_rectangle & rectangle, ::draw2d::region * pregion) override;
 
 
-      void on_begin_draw() override;
-      //void on_end_draw() override;
+      //void start_layer(::e_graphics egraphics) override;
+      //void end_layer(::e_graphics egraphics) override;
+      void start_layer(bool bFirstLayer = false) override;
+      void end_layer(bool bClosingLayer = false) override;
+      // void on_end_draw() override;
       //void on_end_draw() override;
       void on_present() override;
 

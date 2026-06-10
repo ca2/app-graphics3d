@@ -14,7 +14,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "bred/gpu/binding.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/types.h"
 #include "acme/operating_system/windows_common/com/hresult_exception.h"
 #include <d3dcompiler.h>
@@ -1255,7 +1255,7 @@ namespace gpu_directx12
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
       if (ptextureDst->m_iTextureSerial == 0xd)
       {
 
@@ -1354,7 +1354,7 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
@@ -1610,7 +1610,7 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 
-      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
@@ -1750,7 +1750,7 @@ namespace gpu_directx12
              m_propertiesPushShared.data(false), m_propertiesPushShared.size(false));
       m_resourceaPushProperties[m_iPush/256]->Unmap(0, nullptr);
 
-      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
@@ -1772,7 +1772,7 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 

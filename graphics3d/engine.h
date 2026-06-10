@@ -74,8 +74,8 @@ namespace graphics3d
 		virtual void on_begin_frame();
 		virtual void on_end_frame();
 
-		void start_gpu_layer(::gpu::frame * pframe) override;
-		::gpu::frame* end_gpu_layer(::gpu::frame* pframe) override;
+		void start_gpu_layer(::gpu::layer * pgpulayer) override;
+		::gpu::frame* end_gpu_layer(::gpu::layer * pgpulayer) override;
 
 
 		virtual void update_global_ubo(::gpu::context* pgpucontext);

@@ -19,7 +19,7 @@
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/device.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/model_buffer.h"
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/render.h"
@@ -1390,7 +1390,7 @@ namespace draw2d_opengl
    //   pshader->bind();
 
    //   //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-   //   auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+   //   auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
    //   //VkDeviceSize offset = 0;
    //   ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
    //   //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodelbuffer->m_vertexBuffer, &offset);
@@ -2298,9 +2298,9 @@ namespace draw2d_opengl
 
       pmodelbuffer->set_vertexes(quadVertices);
 
-      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
-      //auto ptextureTarget = pcommandbuffer->m_pgpurendertarget->current_texture(::gpu::current_frame());
+      //auto ptextureTarget = pcommandbuffer->m_pgpurendertarget->current_texture(::gpu::current_layer());
 
       pcommandbuffer->set_shader(pshader);
 
@@ -5486,7 +5486,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //      //glBindBuffer(GL_ARRAY_BUFFER, pfont->m_VBO);
       //      //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertexes), vertexes); // be sure to use glBufferSubData and not glBufferData
 
-      //      //auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //      //auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       //      //pcommandbuffer->
 
@@ -5606,7 +5606,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //pmodelbuffer->set_vertexes(quadVertices);
 
-      //auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       //pcontext->defer_bind(pshader);
 
@@ -5733,7 +5733,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //
 //      //glBindVertexArray(pface->m_FaceVAO);
 //      //::opengl::check_error("");
-//      auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+//      auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 //      //pface->m_pmodelbufferBox->bind(pcommandbuffer);
 //
 //      // iterate through all characters
@@ -5826,7 +5826,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //            // 
 //            // 
 //            
-//            auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+//            auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 //
 //            //pcommandbuffer->draw(ch.m_ppixmap);
 //
@@ -5959,7 +5959,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       //glBindVertexArray(pface->m_FaceVAO);
       //::opengl::check_error("");
-      auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      auto pcommandbuffer = pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
       //pface->m_pmodelbufferBox->bind(pcommandbuffer);
 
       // iterate through all characters
@@ -6058,7 +6058,7 @@ color = vec4(c.r,c.g, c.b, c.a);
             // 
             // 
 
-            auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+            auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
             //pcommandbuffer->draw(ch.m_ppixmap);
 
@@ -6789,47 +6789,47 @@ color = vec4(c.r,c.g, c.b, c.a);
    //}
 
 
-   void graphics::send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure)
+   void graphics::send(const ::procedure& procedure)
    {
 
-      ::gpu::graphics::send_on_context(pgraphicscontext, procedure);
+      ::gpu::graphics::send(procedure);
 
       //m_pgpucontextCompositor->send(procedure);
 
    }
 
 
-   void graphics::start_gpu_layer(::gpu::frame * pgpuframe)
-   {
+   //void graphics::start_gpu_layer(::gpu::layer * pgpulayer)
+   //{
 
-      //auto pcontext = gpu_context();
+   //   //auto pcontext = gpu_context();
 
-      //::gpu::context_lock contextlock(pcontext);
+   //   //::gpu::context_lock contextlock(pcontext);
 
-      ::gpu::graphics::start_gpu_layer(pgpuframe);
+   //   ::gpu::graphics::start_gpu_layer(pgpulayer);
 
-      //glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Clear the background to transparent
-      //::opengl::check_error("");
-      //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the color and depth buffers
-      //::opengl::check_error("");
-      //glDepthMask(GL_FALSE); // Disable writing to depth buffer
-      //::opengl::check_error("");
-      //glDisable(GL_DEPTH_TEST); // Disable depth testing
-      //::opengl::check_error("");
+   //   //glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Clear the background to transparent
+   //   //::opengl::check_error("");
+   //   //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the color and depth buffers
+   //   //::opengl::check_error("");
+   //   //glDepthMask(GL_FALSE); // Disable writing to depth buffer
+   //   //::opengl::check_error("");
+   //   //glDisable(GL_DEPTH_TEST); // Disable depth testing
+   //   //::opengl::check_error("");
 
-      //auto ealphamode = m_ealphamode;
-      m_ealphamode = ::draw2d::e_alpha_mode_none; // Set alpha mode to blend for GPU layer
-      set_alpha_mode(m_ealphamode);
+   //   //auto ealphamode = m_ealphamode;
+   //   m_ealphamode = ::draw2d::e_alpha_mode_none; // Set alpha mode to blend for GPU layer
+   //   set_alpha_mode(m_ealphamode);
 
-   }
+   //}
 
 
-   ::gpu::frame * graphics::end_gpu_layer(::gpu::frame * pgpuframe)
-   {
+   //::gpu::frame * graphics::end_gpu_layer(::gpu::layer * pgpulayer)
+   //{
 
-      return ::gpu::graphics::end_gpu_layer(pgpuframe);
+   //   return ::gpu::graphics::end_gpu_layer(pgpulayer);
 
-   }
+   //}
 
 
    ::gpu_opengl::context* graphics::gpu_context()

@@ -4902,14 +4902,14 @@ namespace draw2d_vkvg
 
 #endif
 
-   ::gpu::frame* graphics::end_gpu_layer(::gpu::frame * pgpuframe)
-   {
+   //::gpu::frame* graphics::end_gpu_layer(::gpu::layer * pgpulayer)
+   //{
 
-      vkvg_flush(m_pdc);
+   //   vkvg_flush(m_pdc);
 
-      return ::gpu::graphics::end_gpu_layer(pgpuframe);
+   //   return ::gpu::graphics::end_gpu_layer(pgpulayer);
 
-   }
+   //}
 
 
 #if defined(WINDOWS_DESKTOP)
@@ -5846,7 +5846,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   ::gpu::texture* graphics::current_target_texture(::gpu::frame * pgpuframe)
+   ::gpu::texture* graphics::current_target_texture(::gpu::layer * pgpulayer)
    {
 
       defer_constructø(m_ptextureCurrent);
@@ -8233,10 +8233,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   void graphics::send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure)
+   void graphics::send(const ::procedure& procedure)
    {
 
-      ::gpu::graphics::send_on_context(pgraphicscontext, procedure);
+      ::gpu::graphics::send(procedure);
 
       //auto pgpucontext = gpu_context();
 
@@ -8267,12 +8267,19 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::on_start_layer(::gpu::layer* pgpulayer)
-   {
+   //void graphics::on_start_layer(::gpu::layer* pgpulayer)
+   //{
 
-      vkvg_clear(m_pdc);
+   //   vkvg_clear(m_pdc);
 
-   }
+   //}
+
+   // aaaxyz
+      //void graphics::start_layer(::e_graphics egraphics) 
+      //{
+      //   vkvg_clear(m_pdc); 
+      //
+      //}
 
 
    bool graphics::is_y_flip()
@@ -8283,12 +8290,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::on_begin_draw()
+   void graphics::start_layer(bool bFirstLayer)
    {
 
       thread_select();
 
-      ::gpu::graphics::on_begin_draw();
+      ::gpu::graphics::start_layer(bFirstLayer);
 
       if (m_egraphics & e_graphics_draw)
       {
@@ -8304,7 +8311,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::on_end_draw()
+   void graphics::end_layer(bool bClosingLayer)
    {
 
       if (m_egraphics & e_graphics_draw)
@@ -8339,6 +8346,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          }
 
       }
+
+      ::gpu::graphics::end_layer(bClosingLayer);
 
    }
 

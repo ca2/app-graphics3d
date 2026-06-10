@@ -13,7 +13,7 @@
 #include "acme/platform/application.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 
 
 namespace gpu_vulkan
@@ -1202,7 +1202,7 @@ namespace gpu_vulkan
 
       ::cast < render_target > prendertarget = pgpurenderer->render_target();
 
-      ::cast < ::gpu_vulkan::texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
+      ::cast < ::gpu_vulkan::texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
 
       ::cast < swap_chain > pswapchain = pgpucontext->m_pgpuswapchain;
 
@@ -1265,7 +1265,7 @@ namespace gpu_vulkan
 
       }
 
-      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       //pcommandbuffer->begin_command_buffer(false);
 

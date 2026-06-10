@@ -35,7 +35,7 @@
 //
 //      void set_pixels(const void* data, int w, int h) override;
 //      //virtual void merge_layers(::pointer_array < ::gpu::layer >* playera);
-//      //virtual void blend(::gpu::layer* player);
+//      //virtual void blend(::gpu::layer * pgpulayer);
 //      //virtual void blend(::gpu::texture* ptexture);
 //
 //

@@ -68,12 +68,12 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::on_render_frame()
+   void engine::on_render_layer()
    {
 
       //auto pcontext = gpu_context();
 
-      ::graphics3d::engine::on_render_frame();
+      ::graphics3d::engine::on_render_layer();
 
    }
 
@@ -124,10 +124,10 @@ namespace graphics3d_opengl
    }
 
 
-   void engine::do_frame_step(::gpu::context* pcontext)
+   void engine::do_draw_layer()
    {
 
-      ::graphics3d::engine::do_frame_step(pcontext);
+      ::graphics3d::engine::do_draw_layer();
 
    }
 

@@ -4,7 +4,7 @@
 #include "bred/gltf/vertex.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/render_target.h"
 #include "bred/gpu/renderer.h"
 #include "bred/graphics3d/engine.h"
@@ -490,9 +490,9 @@ namespace graphics3d
 
       //static bool warnedThisFrame = false;
 
-      //auto pframe = ::gpu::current_frame();
+      //auto pgpulayer = ::gpu::current_layer();
 
-      //auto pcommandbuffer = pframe->m_pgpucommandbuffer;
+      //auto pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
       //// pgpucontext->defer_bind(m_pshaderOpaque);
 
@@ -545,7 +545,7 @@ namespace graphics3d
       //      continue;
       //   }
 
-      //   pgltfmodel->bind(pframe->m_pgpucommandbuffer);
+      //   pgltfmodel->bind(pgpulayer->getCurrentCommandBuffer4());
 
       //   for (auto pmesh: pgltfmodel->m_mesha)
       //   {
@@ -730,9 +730,9 @@ namespace graphics3d
 
       // static bool warnedThisFrame = false;
 
-      //            auto pframe = ::gpu::current_frame();
+      //            auto pgpulayer = ::gpu::current_layer();
 
-      //auto pcommandbuffer = pframe->m_pgpucommandbuffer;
+      //auto pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
       // auto &scenerenderables = pscenebase->scene_renderables();
 
@@ -781,7 +781,7 @@ namespace graphics3d
       //   if (!pgltfmodel)
       //      continue;
 
-      //   pgltfmodel->bind(pframe->m_pgpucommandbuffer);
+      //   pgltfmodel->bind(pgpulayer->getCurrentCommandBuffer4());
 
       //   for (auto *pmesh: pgltfmodel->m_mesha)
       //   {
@@ -1037,7 +1037,7 @@ namespace graphics3d
       //         //if (pgltfmodel->m_materiala[0].descriptor_set_array_scene_gltf(pgltfmodel).has_element())
       //         //{
       //         //   VkDescriptorSet pbrSet = pgltfmodel->m_materiala[0].descriptor_set_array_scene_gltf(
-      //         //      pgltfmodel)[pframe->m_pgpucommandbuffer->m_iFrameIndex];
+      //         //      pgltfmodel)[pgpulayer->getCurrentCommandBuffer4()->m_iFrameIndex];
       //         //   if (pbrSet == VK_NULL_HANDLE)
       //         //   {
       //         //      if (!warnedThisFrame)

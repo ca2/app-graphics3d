@@ -141,7 +141,7 @@ namespace gpu_vulkan
       //void swap_chain();
 
 
-      //void on_end_layer(::gpu::layer* player) override;
+      //void on_end_layer(::gpu::layer * pgpulayer) override;
 
 
       float getAspectRatio() const;
@@ -168,7 +168,7 @@ namespace gpu_vulkan
       /*bool isFrameInProgress() const { return isFrameStarted; }*/
 
 
-      ::gpu::command_buffer* getCurrentCommandBuffer2(::gpu::frame * pgpuframe) override;
+      ::gpu::command_buffer* getCurrentCommandBuffer2(::gpu::layer * pgpulayer) override;
 
 
 
@@ -183,7 +183,7 @@ namespace gpu_vulkan
 
       //::pointer < ::gpu::render_target> allocate_offscreen_render_target() override;
 
-      void on_begin_frame() override;
+      //void on_begin_frame() override;
       //::pointer < ::graphics3d::frame> beginFrame() override;
       //void endFrame() override;
       //void on_begin_render(::graphics3d::frame * pframe) override;
@@ -193,8 +193,8 @@ namespace gpu_vulkan
       void on_context_resize() override;
 
       void on_begin_draw() override;
-      void _on_begin_render(::gpu::frame *pgpuframe) override;
-      void _on_end_render(::gpu::frame * pgpuframe) override;
+      void _on_begin_render(::gpu::layer * pgpulayer) override;
+      void _on_end_render(::gpu::layer * pgpulayer) override;
       void on_end_draw() override;
 
    //public:
@@ -207,10 +207,12 @@ namespace gpu_vulkan
 
       //void prepareOffScreen();
 
-      ::pointer < ::gpu::frame > beginFrame() override;
-      void on_begin_render(::gpu::frame* pframeParam) override;
-      void on_end_render(::gpu::frame* pframeParam) override;
-      void endFrame() override;
+      //::pointer < ::gpu::frame > beginFrame() override;
+      void start_frame() override;
+      void on_begin_render(::gpu::layer * pgpulayer) override;
+      void on_end_render(::gpu::layer * pgpulayer) override;
+      //void endFrame() override;
+      void end_frame() override;
       //void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
 
 

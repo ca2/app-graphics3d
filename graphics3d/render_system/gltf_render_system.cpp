@@ -3,7 +3,7 @@
 #include "bred/gltf/vertex.h"
 #include "bred/gpu/binding.h"
 #include "bred/gpu/context.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/renderer.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/global_ubo1.h"
@@ -568,7 +568,7 @@ return pbindingsetGltfPbr;
        //    &frame.globalDescriptorSet,
        //    0, nullptr);
 
-//      auto pframe = ::gpu::current_frame();
+//      auto pgpulayer = ::gpu::current_layer();
 //
 //      auto& sceneobjects = pscene->scene_objects();
 //
@@ -586,7 +586,7 @@ return pbindingsetGltfPbr;
 //
 //         if (!prenderable) continue;
 //
-//         prenderable->bind(pframe->m_pgpucommandbuffer);
+//         prenderable->bind(pgpulayer->getCurrentCommandBuffer4());
 //
 //         for (auto* node : prenderable->m_linearNodes)
 //         {

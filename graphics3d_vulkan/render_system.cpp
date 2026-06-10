@@ -56,7 +56,7 @@ namespace graphics3d_vulkan
       
       ::cast<::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
       
-      auto pframe = ::gpu::current_frame();
+      auto pgpulayer = ::gpu::current_layer();
 
       //auto prenderpass = render_pass2();
 
@@ -66,7 +66,7 @@ namespace graphics3d_vulkan
 
       
 
-      ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
+      ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
 
       if (ptexture->mip_layer_state(0, 0).m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       {
@@ -92,12 +92,12 @@ namespace graphics3d_vulkan
       auto & layer = ptexture->current_layer(prenderpass);
       renderPassBeginInfo.framebuffer = layer.m_vkframebuffer;
 
-      ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+      ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
-      //if (!pframe->m_pgpulayer->m_bRenderTargetFramebufferInitialized)
+      //if (!pgpulayer->m_bRenderTargetFramebufferInitialized)
       //{
 
-      //   pframe->m_pgpulayer->m_bRenderTargetFramebufferInitialized = true;
+      //   pgpulayer->m_bRenderTargetFramebufferInitialized = true;
 
       //   auto width = pcontext->m_rectangle.width();
       //   auto height = pcontext->m_rectangle.height();

@@ -45,7 +45,7 @@ namespace gpu_directx12
 
 
 
-      virtual void on_before_begin_render(frame* pframe);
+      virtual void on_before_begin_render(::gpu::layer * pgpulayer);
 
       //VkFramebuffer getFrameBuffer(int index) { return m_framebuffers[index]; }
       //VkFramebuffer getCurrentFrameBuffer() { return m_framebuffers[get_image_index()]; }

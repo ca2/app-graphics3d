@@ -3,7 +3,7 @@
 #include "skybox_ibl_render_system.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/device.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/shader.h"
 #include "bred/gpu/texture.h"
 #include "bred/graphics3d/model.h"
@@ -196,7 +196,7 @@ namespace graphics3d
 
 	   auto iFrameSerial = pgpudevice->m_iFrameSerial2;
 
-	   auto ptextureDst = pgpurenderer->current_render_target_texture(::gpu::current_frame());
+	   auto ptextureDst = pgpurenderer->current_render_target_texture(::gpu::current_layer());
 
 	   m_pshader->m_bindingCubeSampler.m_strUniform = "skybox";
       m_pshader->m_bindingCubeSampler.m_uSet = 1;
@@ -234,17 +234,17 @@ namespace graphics3d
 		// 	nullptr
 		// );
 
-      auto pframe = ::gpu::current_frame();
+      auto pgpulayer = ::gpu::current_layer();
 
 		//auto prenderable = pskyboxCurrent->renderable();
       auto prenderable = pskyboxCurrent->m_prenderable;
 	   if (prenderable)
 		{
-         pframe->m_pgpucommandbuffer->m_erendersystem = ::gpu::e_render_system_skybox_ibl;
+         pgpulayer->getCurrentCommandBuffer4()->m_erendersystem = ::gpu::e_render_system_skybox_ibl;
 
-			prenderable->bind(pframe->m_pgpucommandbuffer);
+			prenderable->bind(pgpulayer->getCurrentCommandBuffer4());
 
-			prenderable->draw(pframe->m_pgpucommandbuffer);
+			prenderable->draw(pgpulayer->getCurrentCommandBuffer4());
 
 		}
 

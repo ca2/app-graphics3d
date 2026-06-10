@@ -12,7 +12,7 @@
 #include "swap_chain.h"
 #include "initializers.h"
 #include "bred/gpu/cpu_buffer.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/render_state.h"
 #include "bred/gpu/types.h"
@@ -228,10 +228,10 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   ::gpu::command_buffer* renderer::getCurrentCommandBuffer2(::gpu::frame * pgpuframe)
+   ::gpu::command_buffer* renderer::getCurrentCommandBuffer2(::gpu::layer * pgpulayer)
    {
 
-      return ::gpu::renderer::getCurrentCommandBuffer2(pgpuframe);
+      return ::gpu::renderer::getCurrentCommandBuffer2(pgpulayer);
 
       //assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
 
@@ -587,28 +587,30 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::on_end_layer(::gpu::layer* player)
+   void renderer::on_end_layer(::gpu::layer * pgpulayer)
    {
 
-      ::gpu::renderer::on_end_layer(player);
+      ::gpu::renderer::on_end_layer(pgpulayer);
       //m_pgpucontext->on_end_layer(player);
 
-      //auto ptextureTarget = player->texture();
+      //auto ptextureTarget = pgpulayer->texture();
 
-      //auto ptextureSource = player->source_texture();
+      //auto ptextureSource = pgpulayer->source_texture();
 
       //player->m_pcommandbuffer = m_pgpucontext->copy(ptextureTarget, ptextureSource);
 
-//      auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+//      auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 
       ////::cast < context > pcontext = m_pgpucontext;
 
   //    pcommandbuffer->submit_command_buffer();
 
-      if (::gpu::current_frame()->m_pgpulayer == player)
+      if (::gpu::current_layer() == pgpulayer)
       {
 
-         ::gpu::current_frame()->m_pgpulayer.release();
+         //::gpu::current_layer()->m_pgpulayer.release();
+
+         ::gpu::set_current_layer(nullptr);
 
       }
 
@@ -619,7 +621,7 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::WaitForGpu()
    {
 
-      auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+      auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 
       pcommandbuffer->wait_commands_to_execute();
 
@@ -692,7 +694,8 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < render_target_view > pgpurendertargetview = pgpurendertarget;
 
-      assert(!m_bFrameStarted && "Can't call beginFrame while already in progress");
+      assert(m_prenderstate->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
+             "Can't call beginRender while not in began_frame gpu_frame_state");
 
       //if (m_bOffScreen)
       {
@@ -759,10 +762,10 @@ float4 main(PSInput input) : SV_TARGET {
 
       //}
 
-      _on_begin_render(::gpu::current_frame());
+      _on_begin_render(::gpu::current_layer());
 
 
-      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -776,7 +779,7 @@ float4 main(PSInput input) : SV_TARGET {
          if (pgpurendertargetview)
          {
 
-            ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_frame());
+            ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_layer());
 
             auto presourceTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
 
@@ -1094,7 +1097,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::pointer <command_buffer > pcommandbufferBarrier;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -1337,7 +1340,7 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
       ::cast < render_target_view > prendertargetview = prenderer->render_target();
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
-      ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_frame());
+      ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_layer());
       ID3D12Resource *presourceOffscreenTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
 
 
@@ -1528,7 +1531,7 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
       ID3D12Device* device = pgpudevice->m_pd3d12device;
       //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-      ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_frame());
+      ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_layer());
       ID3D12Resource *presourceOffscreenTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
       //if (!pdevice || !context || !offscreenTexture)
       if (!device || !presourceOffscreenTexture)
@@ -2289,7 +2292,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    void renderer::on_end_draw()
    {
-      _on_end_render(::gpu::current_frame());
+      _on_end_render(::gpu::current_layer());
 
       for (auto& procedure : m_procedureaAfterEndRender)
       {
@@ -3340,26 +3343,26 @@ float4 main(PSInput input) : SV_TARGET {
 //}
 
 
-   void renderer::blend(::gpu::layer* player)
+   void renderer::blend(::gpu::layer * pgpulayer)
    {
 
-      ::cast < texture > ptexture = player->texture();
+      ::cast < texture > ptexture = pgpulayer->texture();
 
       auto pshader = get_image_blend_shader();
-      ::cast<command_buffer> pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast<command_buffer> pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
       auto pgpurendertarget = this->render_target();
 
-      auto ptextureTarget = pgpurendertarget->current_texture(::gpu::current_frame());
+      auto ptextureTarget = pgpurendertarget->current_texture(::gpu::current_layer());
 
       pshader->bind(pcommandbuffer, ptextureTarget);
       pshader->bind_source(pcommandbuffer, ptexture);
 
       auto sizeHost = m_pgpucontext->m_rectangle.size();
 
-      const auto& rect = player->texture()->rectangle();
+      const auto& rect = pgpulayer->texture()->rectangle();
       float left = ((float)rect.left / (float) sizeHost.width()) * 2.0f - 1.0f;
       float right = ((float)rect.right / (float) sizeHost.width()) * 2.0f - 1.0f;
       float top = 1.0f - ((float)rect.top / (float) sizeHost.height()) * 2.0f;
@@ -3718,7 +3721,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::_on_begin_render(::gpu::frame * pgpuframe)
+   void renderer::_on_begin_render(::gpu::layer * pgpulayer)
    {
 
       auto pgpurendertarget = this->render_target();
@@ -3734,20 +3737,20 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < texture > ptextureCurrent;
       
-      if (pgpuframe->m_pgpulayer)
+      if (pgpulayer)
       {
 
-         ptextureCurrent = pgpuframe->m_pgpulayer->source_texture();
+         ptextureCurrent = pgpulayer->source_texture();
 
       }
       else
       {
 
-         ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_frame());
+         ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_layer());
 
       } 
 
-      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -3838,7 +3841,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       ////}
 
-      //auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+      //auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 
       //auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -4121,10 +4124,10 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::on_start_layer(::gpu::layer* player)
+   void renderer::on_start_layer(::gpu::layer * pgpulayer)
    {
 
-      ::gpu::renderer::on_start_layer(player);
+      ::gpu::renderer::on_start_layer(pgpulayer);
 
       //m_pgpulayer = player;
 
@@ -4133,10 +4136,10 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::on_begin_render(::gpu::frame* pframeParam)
+   void renderer::on_begin_render(::gpu::layer * pgpulayer)
    {
 
-      ::gpu::renderer::on_begin_render(pframeParam);
+      ::gpu::renderer::on_begin_render(pgpulayer);
 
    }
 
@@ -4229,7 +4232,7 @@ float4 main(PSInput input) : SV_TARGET {
    //   ////	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
    //   ////	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-   //   auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+   //   auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 
    //   auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -4446,10 +4449,10 @@ float4 main(PSInput input) : SV_TARGET {
    //}
 
 
-   void renderer::on_end_render(::gpu::frame* pframeParam)
+   void renderer::on_end_render(::gpu::layer * pgpulayer)
    {
 
-      ::gpu::renderer::on_end_render(pframeParam);
+      ::gpu::renderer::on_end_render(pgpulayer);
 //
 //#ifdef HELLO_TRIANGLE_DEBUG
 //
@@ -4490,7 +4493,7 @@ float4 main(PSInput input) : SV_TARGET {
 //
 //      m_pshaderHelloTriangle->bind();
 //
-//      auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+//      auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 //
 //      auto pcommandlist = pcommandbuffer->m_pcommandlist;
 //
@@ -4518,7 +4521,7 @@ float4 main(PSInput input) : SV_TARGET {
 
 
    //void renderer::on_end_render(::graphics3d::frame * pframeParam)
-   void renderer::_on_end_render(::gpu::frame* pgpuframe)
+   void renderer::_on_end_render(::gpu::layer* pgpulayer)
    {
 
       ////::cast < frame > pframe = pframeParam;
@@ -4634,7 +4637,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //   m_pshaderHelloTriangle->bind();
 
-      //   auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+      //   auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 
       //   auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -4650,16 +4653,17 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::on_begin_frame()
+   //void renderer::on_begin_frame()
+   //{
+
+   //}
+
+
+   //::pointer < ::gpu::frame > renderer::beginFrame()
+   void renderer::start_frame()
    {
 
-   }
-
-
-   ::pointer < ::gpu::frame > renderer::beginFrame()
-   {
-
-      return ::gpu::renderer::beginFrame();
+      return ::gpu::renderer::start_frame();
 
       //auto pframe = createø < ::gpu::frame >()
 
@@ -4784,7 +4788,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-//   void renderer::on_start_layer(::gpu::layer* player)
+//   void renderer::on_start_layer(::gpu::layer * pgpulayer)
 //   {
 //
 ////      ::cast < texture > ptexture = m_pgpurendertarget->current_texture();
@@ -4792,7 +4796,7 @@ float4 main(PSInput input) : SV_TARGET {
 //      //if (ptexture)
 //      //{
 //
-//      //   ptexture->_new_state(getCurrentCommandBuffer2(::gpu::current_frame())->m_pcommandlist,
+//      //   ptexture->_new_state(getCurrentCommandBuffer2(::gpu::current_layer())->m_pcommandlist,
 //      //      D3D12_RESOURCE_STATE_RENDER_TARGET);
 //
 //      //}
@@ -4802,7 +4806,7 @@ float4 main(PSInput input) : SV_TARGET {
 //   }
 
 
-   //void renderer::on_end_layer(::gpu::layer* player)
+   //void renderer::on_end_layer(::gpu::layer * pgpulayer)
    //{
 
    //   m_pgpucontext->on_end_layer(player);
@@ -4822,7 +4826,7 @@ float4 main(PSInput input) : SV_TARGET {
 
 
 
-   void renderer::endFrame()
+   void renderer::end_frame()
    {
 
       //m_prenderstate->on_happening(::gpu::e_happening_end_frame);
@@ -4887,7 +4891,7 @@ float4 main(PSInput input) : SV_TARGET {
       //ID3D12CommandList* ppCommandLists[] = { pcommandlist };
       //m_pcommandqueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-      defer_end_frame_layer_copy();
+      layer_end_copy();
 
       auto eoutput = m_pgpucontext->m_eoutput;
 
@@ -4943,7 +4947,7 @@ float4 main(PSInput input) : SV_TARGET {
       //if (m_iSentLayerCount <= 0)
       {
 
-         auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+         auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 
          ::cast < context > pcontext = m_pgpucontext;
 
@@ -5055,7 +5059,7 @@ float4 main(PSInput input) : SV_TARGET {
 //
 //      m_pshaderHelloTriangle->bind();
 //
-//      auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_frame());
+//      auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
 //
 //      auto pcommandlist = pcommandbuffer->m_pcommandlist;
 //
@@ -5067,7 +5071,7 @@ float4 main(PSInput input) : SV_TARGET {
 //
 //#endif
 
-      ::gpu::renderer::endFrame();
+      ::gpu::renderer::end_frame();
 
    }
 

@@ -7,7 +7,7 @@
 #include "renderer.h"
 #include "swap_chain.h"
 #include "texture.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 
 
 namespace gpu_vulkan
@@ -238,12 +238,12 @@ namespace gpu_vulkan
    //}
 
 
-   //void render_target::on_before_begin_render(frame* pframe)
+   //void render_target::on_before_begin_render(::gpu::layer * pgpulayer)
    //{
 
    //   ::cast < texture > ptextureCurrent = current_texture();
 
-   //   ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+   //   ::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
    //   ptextureCurrent->_set_state(
    //      pcommandbuffer,

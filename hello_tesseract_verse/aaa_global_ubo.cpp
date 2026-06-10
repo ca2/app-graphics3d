@@ -1,0 +1,19 @@
+// Created by camilo on 2025-08-23 21:37 <3ThomasBorregaardSorensen!!
+#include "framework.h"
+//#include "global_ubo.h"
+//
+//
+//BEGIN_GPU_PROPERTIES(::app_graphics3d_hello_tesseract_verse::global_ubo)
+//GPU_PROPERTY("projection", ::gpu::e_type_mat4)
+//GPU_PROPERTY("view", ::gpu::e_type_mat4)
+//GPU_PROPERTY("invView", ::gpu::e_type_mat4)
+//GPU_PROPERTY("ambientLightColor", ::gpu::e_type_seq4)
+//GPU_PROPERTY("pointLights", ::gpu_properties<::gpu::point_light>(), ::app_graphics3d_hello_tesseract_verse::global_ubo::MAX_LIGHTS)
+//GPU_PROPERTY("numLights", ::gpu::e_type_i32)
+//GPU_PROPERTY("padding1", ::gpu::e_type_f32)
+//GPU_PROPERTY("padding2", ::gpu::e_type_f32)
+//GPU_PROPERTY("padding3", ::gpu::e_type_f32)
+//END_GPU_PROPERTIES()
+//
+//
+//

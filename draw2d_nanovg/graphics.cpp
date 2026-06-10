@@ -25,8 +25,9 @@
 #include "gpu_opengl/texture.h"
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/cpu_buffer.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/render.h"
+#include "aura/graphics/graphics/context.h"
 #include "aura/graphics/image/target.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
@@ -5005,14 +5006,14 @@ namespace draw2d_nanovg
    // }
 
 
-   ::gpu::frame* graphics::end_gpu_layer(::gpu::frame * pgpuframe)
-   {
+   //::gpu::frame* graphics::end_gpu_layer(::gpu::layer * pgpulayer)
+   //{
 
-      //nvgFlush(m_pdc);
+   //   //nvgFlush(m_pdc);
 
-      return ::gpu::graphics::end_gpu_layer(pgpuframe);
+   //   return ::gpu::graphics::end_gpu_layer(pgpulayer);
 
-   }
+   //}
 
 
    // inline color32_t graphics::SetDCBrushColor(color32_t crColor)
@@ -5934,10 +5935,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   ::gpu::texture* graphics::current_target_texture(::gpu::frame * pgpuframe)
+   ::gpu::texture* graphics::current_target_texture(::gpu::layer * pgpulayer)
    {
 
-      return ::gpu::graphics::current_target_texture(pgpuframe);
+      return ::gpu::graphics::current_target_texture(pgpulayer);
 
       //defer_constructø(m_ptextureCurrent);
 
@@ -8297,10 +8298,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   void graphics::send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure)
+   void graphics::send(const ::procedure& procedure)
    {
 
-      ::gpu::graphics::send_on_context(pgraphicscontext, procedure);
+      ::gpu::graphics::send(procedure);
 
       //auto pgpucontext = gpu_context();
 
@@ -8316,7 +8317,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // Clear buffers
       auto pgpucontext = gpu_context();
 
-      pgpucontext->clear(pgpucontext->current_target_texture(::gpu::current_frame()), ::color::transparent);
+      pgpucontext->clear(pgpucontext->current_target_texture(::gpu::current_layer()), ::color::transparent);
 
       ::cast < ::gpu::layer > playerPrevious = pgpucontext->m_pgpudevice->get_previous_layer(pgpulayer);
 
@@ -8374,7 +8375,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::on_begin_draw()
+   void graphics::start_layer(bool bFirstLayer)
    {
 
       thread_select();
@@ -8383,9 +8384,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::gpu::context_lock contextlock(gpu_context());
 
-      ::gpu::graphics::on_begin_draw();
+      ::gpu::graphics::start_layer(bFirstLayer);
 
-      if (m_egraphics & e_graphics_draw)
+      //auto pgraphics = pgraphicscontext->draw2d_graphics();
+
+      if (m_egraphics == e_graphics_draw)
       {
 
          auto size = total_size();
@@ -8400,20 +8403,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             strMessage.formatf("ø on_begin_draw");
 
-            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION,
-               GL_DEBUG_TYPE_MARKER,
-               0,
-               GL_DEBUG_SEVERITY_NOTIFICATION,
-               -1,
-               strMessage);
-
+            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
+                                 -1, strMessage);
          }
 
          {
 
             ::string strMessage;
 
-            ::cast < ::gpu_opengl::texture > ptexture = gpu_context()->current_target_texture(::gpu::current_frame());
+            ::cast<::gpu_opengl::texture> ptexture = gpu_context()->current_target_texture(::gpu::current_layer());
 
             auto uTexture = ptexture->m_gluTextureID;
 
@@ -8421,13 +8419,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
 
-            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION,
-               GL_DEBUG_TYPE_MARKER,
-               0,
-               GL_DEBUG_SEVERITY_NOTIFICATION,
-               -1,
-               strMessage);
-
+            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
+                                 -1, strMessage);
          }
 
          {
@@ -8442,16 +8435,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             strMessage.formatf("ø drawFbo=%d readFbo=%d", drawFbo, readFbo);
 
-            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION,
-               GL_DEBUG_TYPE_MARKER,
-               0,
-               GL_DEBUG_SEVERITY_NOTIFICATION,
-               -1,
-               strMessage);
-
+            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
+                                 -1, strMessage);
          }
 
-         nvgBeginFrame(m_pdc, (float) size.width(), (float) size.height(), 1.0f);
+         nvgBeginFrame(m_pdc, (float)size.width(), (float)size.height(), 1.0f);
 
          set_alpha_mode(::draw2d::e_alpha_mode_set);
 
@@ -8464,18 +8452,17 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          reset_clip();
 
          reset_impact_area();
-
       }
 
-      //bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+      // bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
       //::opengl::resize(rectangle.size(), bYSwap);
 
-      //m_z = 0.f;
+      // m_z = 0.f;
 
-      //auto pgpucontext = gpu_context();
+      // auto pgpucontext = gpu_context();
 
-      //if (!pgpucontext->m_pgpurenderer)
+      // if (!pgpucontext->m_pgpurenderer)
       //{
 
       //   constructø(pgpucontext->m_pgpurenderer);
@@ -8498,6 +8485,130 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
+   //void graphics::start_layer(::e_graphics egraphics)
+   //{
+
+   //   thread_select();
+
+   //   m_bHadEndLayer = false;
+
+   //   ::gpu::context_lock contextlock(gpu_context());
+
+   //   ::gpu::graphics::on_begin_draw();
+
+   //   if (m_egraphics & e_graphics_draw)
+   //   {
+
+   //      auto size = total_size();
+
+   //      ::i32_rectangle rectangle;
+
+   //      rectangle.set_size(size);
+
+   //      {
+
+   //         ::string strMessage;
+
+   //         strMessage.formatf("ø on_begin_draw");
+
+   //         glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION,
+   //            GL_DEBUG_TYPE_MARKER,
+   //            0,
+   //            GL_DEBUG_SEVERITY_NOTIFICATION,
+   //            -1,
+   //            strMessage);
+
+   //      }
+
+   //      {
+
+   //         ::string strMessage;
+
+   //         ::cast < ::gpu_opengl::texture > ptexture = gpu_context()->current_target_texture(::gpu::current_layer());
+
+   //         auto uTexture = ptexture->m_gluTextureID;
+
+   //         auto uFbo = ptexture->frame_buffer_object();
+
+   //         strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
+
+   //         glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION,
+   //            GL_DEBUG_TYPE_MARKER,
+   //            0,
+   //            GL_DEBUG_SEVERITY_NOTIFICATION,
+   //            -1,
+   //            strMessage);
+
+   //      }
+
+   //      {
+
+   //         GLint drawFbo = 0;
+   //         glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFbo);
+
+   //         GLint readFbo = 0;
+   //         glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFbo);
+
+   //         ::string strMessage;
+
+   //         strMessage.formatf("ø drawFbo=%d readFbo=%d", drawFbo, readFbo);
+
+   //         glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION,
+   //            GL_DEBUG_TYPE_MARKER,
+   //            0,
+   //            GL_DEBUG_SEVERITY_NOTIFICATION,
+   //            -1,
+   //            strMessage);
+
+   //      }
+
+   //      nvgBeginFrame(m_pdc, (float) size.width(), (float) size.height(), 1.0f);
+
+   //      set_alpha_mode(::draw2d::e_alpha_mode_set);
+
+   //      fill_rectangle(rectangle, ::color::transparent);
+
+   //      set_alpha_mode(::draw2d::e_alpha_mode_blend);
+
+   //      nvgResetScissor(m_pdc);
+
+   //      reset_clip();
+
+   //      reset_impact_area();
+
+   //   }
+
+   //   //bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+
+   //   //::opengl::resize(rectangle.size(), bYSwap);
+
+   //   //m_z = 0.f;
+
+   //   //auto pgpucontext = gpu_context();
+
+   //   //if (!pgpucontext->m_pgpurenderer)
+   //   //{
+
+   //   //   constructø(pgpucontext->m_pgpurenderer);
+
+   //   //   pgpucontext->m_eoutput = ::gpu::e_output_gpu_buffer;
+
+   //   //   pgpucontext->m_escene = ::gpu::e_scene_2d;
+
+   //   //   pgpucontext->m_pgpurenderer->initialize_gpu_renderer(pgpucontext);
+
+   //   //}
+
+   //   ////if (m_callbackImage32CpuBuffer)
+   //   ////{
+
+   //   ////   m_pgpucontext->m_callbackImage32CpuBuffer = m_callbackImage32CpuBuffer;
+
+   //   ////}
+
+   //}
+
+
    //void graphics::defer_add_gpu_render(::gpu::render * pgpurender)
    //{
 
@@ -8516,10 +8627,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::on_end_draw()
+   void graphics::end_layer(bool bClosingLayer)
    {
 
-      if (m_egraphics & e_graphics_draw)
+      if (m_egraphics == e_graphics_draw)
       {
 
          //nanovg_surface_resolve(m_nanovgsurface);
@@ -8600,7 +8711,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::string strMessage;
 
-            ::cast < ::gpu_opengl::texture > ptexture = gpu_context()->current_target_texture(::gpu::current_frame());
+            ::cast < ::gpu_opengl::texture > ptexture = gpu_context()->current_target_texture(::gpu::current_layer());
 
             auto uTexture = ptexture->m_gluTextureID;
 
@@ -8710,6 +8821,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          //m_pimage->copy(m_pgpucontext->m_pcpubuffer->m_pimagetarget->m_pimage);
 
       }
+
+
+      ::gpu::graphics::end_layer(bClosingLayer);
 
    }
 

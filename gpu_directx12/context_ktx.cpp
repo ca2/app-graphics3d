@@ -9,7 +9,7 @@
 #include "aura/user/user/interaction.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context_lock.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/graphics.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/types.h"
@@ -276,7 +276,7 @@ namespace gpu_directx12
       if (!pcommandbufferLoading)
       {
 
-         pcommandbufferLoading = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+         pcommandbufferLoading = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
       }
       _construct_new(ptexture->m_pd3d12resourceTexture);
       CreateDx12TextureFromKtx(ptexture,
@@ -310,7 +310,7 @@ namespace gpu_directx12
       if (!pcommandbufferLoading)
       {
 
-         pcommandbufferLoading = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+         pcommandbufferLoading = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
       }
 
             _construct_new(ptexture->m_pd3d12resourceTexture);

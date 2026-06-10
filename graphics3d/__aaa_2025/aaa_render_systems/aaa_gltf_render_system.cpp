@@ -1,7 +1,7 @@
 #include "framework.h"
 //#include "bred/gpu/gltf_model.h"
 #include "gltf_render_system.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/graphics3d/scene.h"
 //#include "graphics3d/_.h"
 //#include <stdexcept>
@@ -216,7 +216,7 @@ namespace graphics3d
       //     &frame.globalDescriptorSet,
       //     0, nullptr);
 
-//      auto pframe = ::gpu::current_frame();
+//      auto pgpulayer = ::gpu::current_layer();
 //
 //      auto& sceneobjects = pscene->scene_objects();
 //
@@ -234,7 +234,7 @@ namespace graphics3d
 //
 //         if (!prenderable) continue;
 //
-//         prenderable->bind(pframe->m_pgpucommandbuffer);
+//         prenderable->bind(pgpulayer->getCurrentCommandBuffer4());
 //
 //         for (auto* node : prenderable->m_linearNodes)
 //         {

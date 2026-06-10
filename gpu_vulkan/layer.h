@@ -27,7 +27,7 @@ namespace gpu_vulkan
       ////::i32_rectangle m_rectangleTarget;
       //::pointer_array <texture >    m_texturea;
       //::pointer_array <texture >    m_textureaSource;
-      //::pointer < ::gpu::frame > m_pgpuframe;
+      //::pointer < ::gpu::frame > m_pgpulayer;
       ////::comptr < ID3D12Resource > m_presource;
 
       //::pointer < command_buffer >  m_pcommandbufferLayer;

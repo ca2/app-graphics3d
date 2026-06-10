@@ -112,7 +112,7 @@
 //
 //   }
 //
-//   void renderer::on_begin_render(::graphics3d::frame* pframe)
+//   void renderer::on_begin_render(::graphics3d::::gpu::layer * pgpulayer)
 //   {
 //
 //

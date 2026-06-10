@@ -199,7 +199,7 @@
 //
 //      ::cast <::gpu_directx12::device> pgpudevice = pgpucontext->m_pgpudevice;
 //
-//      ::cast < ::gpu_directx12::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+//      ::cast < ::gpu_directx12::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 //
 //      auto pcommandlist = pcommandbuffer->m_pcommandlist;
 //
@@ -286,7 +286,7 @@
 //      ::cast <::gpu_directx12::context> pgpucontext = pgpurenderer->m_pgpucontext;
 //      ::cast <::gpu_directx12::device> pgpudevice = pgpucontext->m_pgpudevice;
 //
-//      ::cast < ::gpu_directx12::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+//      ::cast < ::gpu_directx12::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 //
 //      auto pcommandlist = pcommandbuffer->m_pcommandlist;
 //

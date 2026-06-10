@@ -5,7 +5,7 @@
 #include "renderer.h"
 #include "acme/graphics/image/pixmap.h"
 #include "aura/graphics/image/image.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include <stb/stb_image.h>
 
 namespace gpu_directx12
@@ -228,7 +228,7 @@ namespace gpu_directx12
          if (!pcommandbuffer)
          {
 
-            pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+            pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
          
          }
 
@@ -247,7 +247,7 @@ namespace gpu_directx12
          if (!pcommandbuffer)
          {
 
-            pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+            pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
          }
 
          auto pstaticuploadbuffer = _get_static_upload_buffer();
@@ -484,7 +484,7 @@ namespace gpu_directx12
    //          if (!pcommandbuffer)
    //          {
    //
-   //             pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+   //             pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
    //
    //          }
    //
@@ -662,7 +662,7 @@ namespace gpu_directx12
       if (!pcommandbuffer)
       {
 
-         pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+         pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       }
 
@@ -1243,7 +1243,7 @@ namespace gpu_directx12
 
    //   ::cast < renderer > prenderer = m_pgpurenderer;
    //   
-   //   ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+   //   ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
    //   ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
@@ -1336,7 +1336,7 @@ namespace gpu_directx12
 
    //   ::cast < renderer > prenderer = m_pgpurenderer;
 
-   //   ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+   //   ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
    //   ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
@@ -1542,7 +1542,7 @@ namespace gpu_directx12
       //if (!pcommandbuffer)
       //{
 
-      //   pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //   pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
       //}
 
       auto iCount = m_ptexture->m_textureattributes.m_iLayerCount;
@@ -1837,7 +1837,7 @@ namespace gpu_directx12
 
       //::cast < renderer > prenderer = m_pgpurenderer;
 
-      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       //::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 

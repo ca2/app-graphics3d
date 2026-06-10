@@ -177,8 +177,8 @@ namespace gpu_directx12
       //virtual void endSingleTimeCommands(command_buffer * pcommandbuffer);
 
       void WaitForGpu();
-      //void on_start_layer(::gpu::layer* player);
-      //void on_end_layer(::gpu::layer* player) override;
+      //void on_start_layer(::gpu::layer * pgpulayer);
+      //void on_end_layer(::gpu::layer * pgpulayer) override;
 
       //bool is_starting_frame()const
       //{
@@ -197,7 +197,7 @@ namespace gpu_directx12
 
       //}
 
-      void on_end_layer(::gpu::layer* player);
+      void on_end_layer(::gpu::layer * pgpulayer);
 
       void sample();
       void gpu_blend(::draw2d::graphics * pgraphics);
@@ -241,7 +241,7 @@ namespace gpu_directx12
       //   return commandBuffers[get_frame_index()];
       //}
 
-      ::gpu::command_buffer * getCurrentCommandBuffer2(::gpu::frame* pgpuframe) override;
+      ::gpu::command_buffer * getCurrentCommandBuffer2(::gpu::layer* pgpulayer) override;
 
       ::gpu::command_buffer * getLoadAssetsCommandBuffer() override;
 
@@ -272,17 +272,19 @@ namespace gpu_directx12
 
       //void prepareOffScreen();
 
-      ::pointer < ::gpu::frame > beginFrame() override;
-      void on_start_layer(::gpu::layer* player) override;
-      void on_begin_render(::gpu::frame* pframeParam) override;
-      //virtual void on_begin_render1(::gpu::frame* pframeParam);
-      void on_end_render(::gpu::frame* pframeParam) override;
-      void endFrame() override;
+      //::pointer < ::gpu::frame > beginFrame() override;
+      void start_frame() override;
+      void end_frame() override;
+      void on_start_layer(::gpu::layer * pgpulayer) override;
+      void on_begin_render(::gpu::layer * pgpulayer) override;
+      //virtual void on_begin_render1(::gpu::layer * pgpulayer);
+      void on_end_render(::gpu::layer * pgpulayer) override;
+      //void endFrame() override;
       void endDraw(::gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
-      void on_begin_frame() override;
+      //void on_begin_frame() override;
       void on_begin_draw() override;
-      void _on_begin_render(::gpu::frame* pgpuframe) override;
-      void _on_end_render(::gpu::frame* pgpuframe) override;
+      void _on_begin_render(::gpu::layer* pgpulayer) override;
+      void _on_end_render(::gpu::layer* pgpulayer) override;
       void on_end_draw() override;
 
       void on_final_begin_render() override;
@@ -292,7 +294,7 @@ namespace gpu_directx12
       //void _blend_image(VkImage image, const ::i32_rectangle& rectangle, bool bYSwap);
       //void _on_graphics_end_draw(VkImage image, const ::i32_rectangle& rectangle);
 
-      void blend(::gpu::layer* player);
+      void blend(::gpu::layer * pgpulayer);
 
       void _blend_renderer(::gpu_directx12::renderer* prendererSrc, bool bYSwap);
       void _on_graphics_end_draw(::gpu_directx12::renderer * prendererSrc);

@@ -29,7 +29,7 @@
 #include "bred/gpu/context.h"
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/device.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/swap_chain.h"
 #include "bred/gpu/types.h"
@@ -5509,7 +5509,7 @@ namespace draw2d_directx12
 
          auto prendertarget = prenderer->render_target();
 
-         ::cast < ::gpu_directx12::texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
+         ::cast < ::gpu_directx12::texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
 
          //if (!ptexture->m_prendertargetview)
          //{
@@ -6541,7 +6541,7 @@ namespace draw2d_directx12
    }
 
 
-   void graphics::on_begin_draw()
+   void graphics::start_layer(bool bFirstLayer)
    {
 
       reset_clip();
@@ -6552,7 +6552,7 @@ namespace draw2d_directx12
 
       set_smooth_mode(::draw2d::e_smooth_mode_high);
 
-      ::gpu::graphics::on_begin_draw();
+      ::gpu::graphics::start_layer(bFirstLayer);
 
       //if (m_egraphics == ::e_graphics_draw)
       //{
@@ -6589,7 +6589,7 @@ namespace draw2d_directx12
    //}
 
 
-   void graphics::on_end_draw()
+   void graphics::end_layer(bool bClosingLayer)
    {
 
       if (m_iLayerCount > 0)
@@ -6608,7 +6608,7 @@ namespace draw2d_directx12
 
       //}
 
-      ::gpu::graphics::on_end_draw();
+      ::gpu::graphics::end_layer(bClosingLayer);
 
    }
 
@@ -6629,24 +6629,24 @@ namespace draw2d_directx12
    }
 
 
-   void graphics::start_gpu_layer(::gpu::frame * pgpuframe)
-   {
+   //void graphics::start_gpu_layer(::gpu::layer * pgpulayer)
+   //{
 
-      ::gpu::graphics::start_gpu_layer(pgpuframe);
-      //m_pgpucontextDraw2d->m_pgpudevice->start_stacking_layers();
-      //m_pgpucontextDraw2d->m_pgpurenderer->start_layer(m_puserinteractionDraw2dGraphics->raw_rectangle());
+   //   ::gpu::graphics::start_gpu_layer(pgpulayer);
+   //   //m_pgpucontextDraw2d->m_pgpudevice->start_stacking_layers();
+   //   //m_pgpucontextDraw2d->m_pgpurenderer->start_layer(m_puserinteractionDraw2dGraphics->raw_rectangle());
 
-      
+   //   
 
-   }
+   //}
 
 
-   ::gpu::frame * graphics::end_gpu_layer(::gpu::frame * pgpuframe)
-   {
+   //::gpu::frame * graphics::end_gpu_layer(::gpu::layer * pgpulayer)
+   //{
 
-      return ::gpu::graphics::end_gpu_layer(pgpuframe);
+   //   return ::gpu::graphics::end_gpu_layer(pgpulayer);
 
-   }
+   //}
 
 
    void graphics::set_alpha_mode(::draw2d::enum_alpha_mode ealphamode)

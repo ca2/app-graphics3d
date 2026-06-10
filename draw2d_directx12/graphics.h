@@ -94,9 +94,14 @@ namespace draw2d_directx12
 
       //bool IsPrinting() override;            // true if being used for printing
 
-      
-      void on_begin_draw() override;
-      void on_end_draw() override;
+      //void start_layer(::e_graphics egraphics) override;
+      //void end_layer(::e_graphics egraphics) override;
+      void start_layer(bool bFirstLayer = false) override;
+      void end_layer(bool bClosingLayer = false) override;
+      // void on_begin_layout1() override;
+      //void on_end_layout1() override;
+      //void on_begin_draw1() override;
+      //void on_end_draw1() override;
 
 
       void just_after_new_frame() override;
@@ -105,8 +110,8 @@ namespace draw2d_directx12
       void _bind(int iIndex, int iLayerIndex, IDXGISurface* psurface) override;
 
 
-      void start_gpu_layer(::gpu::frame * pgpuframe) override;
-      ::gpu::frame * end_gpu_layer(::gpu::frame* pgpuframe) override;
+      //void start_gpu_layer(::gpu::layer * pgpulayer) override;
+      //::gpu::frame * end_gpu_layer(::gpu::layer* pgpulayer) override;
 
 
       using ::draw2d::graphics::set;

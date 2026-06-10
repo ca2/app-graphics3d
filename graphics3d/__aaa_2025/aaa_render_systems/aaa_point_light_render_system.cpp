@@ -170,7 +170,7 @@ namespace graphics3d
       //
       pgpucontext->defer_bind(m_pshader);
 
-      auto pframe = ::gpu::current_frame();
+      auto pgpulayer = ::gpu::current_layer();
 
       // vkCmdBindDescriptorSets(
       //     frame.m_pcommandbuffer,
@@ -206,11 +206,11 @@ namespace graphics3d
          //     sizeof(PointLightPushConstants),
          //     &push
          // );
-         m_pmodelDummy->bind(pframe->m_pgpucommandbuffer);
+         m_pmodelDummy->bind(pgpulayer->getCurrentCommandBuffer4());
 
-         m_pmodelDummy->draw(pframe->m_pgpucommandbuffer);
+         m_pmodelDummy->draw(pgpulayer->getCurrentCommandBuffer4());
 
-         //pframe->m_pgpucommandbuffer->draw_vertexes(6);
+         //pgpulayer->getCurrentCommandBuffer4()->draw_vertexes(6);
          //vkCmdDraw(frame.m_pcommandbuffer, 6, 1, 0, 0);
       }
 

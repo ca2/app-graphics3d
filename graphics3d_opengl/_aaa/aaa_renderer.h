@@ -26,7 +26,7 @@
 //
 //      ::pointer < ::graphics3d::frame > beginFrame() override;
 //
-//      virtual void on_begin_render(::graphics3d::frame* pframe);
+//      virtual void on_begin_render(::graphics3d::::gpu::layer * pgpulayer);
 //
 //      void Clear() const;
 //

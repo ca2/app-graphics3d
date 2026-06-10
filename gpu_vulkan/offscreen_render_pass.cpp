@@ -176,7 +176,7 @@ namespace gpu_vulkan
 
    //   //}
 
-   //   if (::gpu::current_frame()->m_pgpulayer)
+   //   if (::gpu::current_layer()->m_pgpulayer)
    //   {
 
    //      //if (m_iSentLayerCount > 0)
@@ -186,7 +186,7 @@ namespace gpu_vulkan
 
    //         ::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontextMain->get_swap_chain();
 
-   //         ::cast < layer > playerLast = ::gpu::current_frame()->m_pgpulayer;
+   //         ::cast < layer > playerLast = ::gpu::current_layer()->m_pgpulayer;
 
    //         auto vksemaphoreRenderFinished = playerLast->m_vksemaphoreRenderFinished;
    //         if (vksemaphoreRenderFinished)
@@ -290,7 +290,7 @@ namespace gpu_vulkan
 
       //::cast < ::gpu_vulkan::render_target > prendertarget = pcontext->m_pgpurenderer->render_target();
 
-      //::cast < ::gpu_vulkan::texture > ptextureSrc = prendertarget->current_texture(::gpu::current_frame());
+      //::cast < ::gpu_vulkan::texture > ptextureSrc = prendertarget->current_texture(::gpu::current_layer());
 
       //::cast < ::gpu_vulkan::command_buffer > pcommandbuffer = pgpucommandbuffer;
 

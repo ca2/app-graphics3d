@@ -81,7 +81,7 @@ namespace graphics3d
 	// 	// 	nullptr
 	// 	// );
 	//
-	//    auto pframe = ::gpu::current_frame();
+	//    auto pgpulayer = ::gpu::current_layer();
 	//
 	//    auto pscene = m_pengine->current_scene();
 	//
@@ -210,7 +210,7 @@ namespace graphics3d
 	{
 
 
-		m_pshader->bind(pgpucontext->current_target_texture(::gpu::current_frame()));
+		m_pshader->bind(pgpucontext->current_target_texture(::gpu::current_layer()));
 
 	   auto pgamelayer = m_pengine->m_pimmersionlayer;
 
@@ -260,7 +260,7 @@ namespace graphics3d
 
 				m_pshader->push_properties();
 
-				auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+				auto pcommandbuffer = pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
 				prenderable->bind(pcommandbuffer);
 

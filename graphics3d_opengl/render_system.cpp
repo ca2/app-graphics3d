@@ -63,13 +63,13 @@ namespace graphics3d_opengl
       
       ::cast<::gpu_opengl::renderer> prenderer = pcontext->m_pgpurenderer;
       
-      auto pframe = ::gpu::current_frame();
+      auto pgpulayer = ::gpu::current_layer();
 
       auto prendertarget = prenderer->render_target();
 
-      ::cast<::gpu_opengl::texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
+      ::cast<::gpu_opengl::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
 
-      ::cast<::gpu_opengl::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+      ::cast<::gpu_opengl::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
       pcommandbuffer->m_prendersystem = this;
 

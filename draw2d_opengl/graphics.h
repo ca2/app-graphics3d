@@ -72,11 +72,12 @@ namespace draw2d_opengl
 //      ::windowing::window * GetWindow() const;
 
       void thread_select() override;
-      void send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure & procedure) override;
+      //void send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure & procedure) override;
+      void send(const ::procedure &procedure) override;
          ::geometry2d::matrix context_matrix(enum_transform_context etransformcontext) override;
          ::geometry2d::matrix context_scale_matrix() override;
-      void start_gpu_layer(::gpu::frame * pgpuframe) override;
-      ::gpu::frame * end_gpu_layer(::gpu::frame * pgpuframe) override;
+      //void start_gpu_layer(::gpu::layer * pgpulayer) override;
+      //::gpu::frame * end_gpu_layer(::gpu::layer * pgpulayer) override;
 
       ::gpu_opengl::context* gpu_context();
 

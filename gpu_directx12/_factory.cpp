@@ -35,7 +35,7 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item < ::gpu_directx12::approach, ::gpu::approach >();
    pfactory->add_factory_item < ::gpu_directx12::context, ::gpu::context >();
-   pfactory->add_factory_item < ::gpu_directx12::frame, ::gpu::frame >();
+   //pfactory->add_factory_item < ::gpu_directx12::frame, ::gpu::frame >();
    pfactory->add_factory_item < ::gpu_directx12::shader, ::gpu::shader >();
    pfactory->add_factory_item < ::gpu_directx12::cpu_buffer, ::gpu::cpu_buffer >();
    pfactory->add_factory_item < ::gpu_directx12::renderer, ::gpu::renderer >();

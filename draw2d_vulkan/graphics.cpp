@@ -20,7 +20,7 @@
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "bred/gpu/cpu_buffer.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/render.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/render_state.h"
@@ -1698,7 +1698,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   pshader->bind();
 
    //   //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-   //   ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+   //   ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
    //   VkDeviceSize offset = 0;
    //   ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
    //   //vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodelbuffer->m_vertexBuffer, &offset);
@@ -1913,7 +1913,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   pshader->bind();
 
    //   //vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-   //   ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+   //   ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
    //   VkDeviceSize offset = 0;
    //   ///vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
    //   vkCmdBindVertexBuffers(pcommandbuffer->m_vkcommandbuffer, 0, 1, &pmodel->m_vertexBuffer, &offset);
@@ -6281,7 +6281,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //
       //    //::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontextCompositor;
       //
-      //    m_pmodelbufferLine->sequence2_color_create_line(::gpu::current_frame());
+      //    m_pmodelbufferLine->sequence2_color_create_line(::gpu::current_layer());
       //
       //    //pmodelbuffer->m_indexBuffer = nullptr;
       //    //pmodelbuffer->m_indexMemory = nullptr;
@@ -6299,7 +6299,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       //
       // ::cast < ::gpu_vulkan::renderer >prenderer = pcontext->m_pgpurenderer;
       //
-      // ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      // ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
       //
       // pcommandbuffer->set_line_width(m_ppen->m_dWidth);
       //
@@ -6989,23 +6989,30 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //}
 
 
-   void graphics::send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure& procedure)
+   void graphics::send(const ::procedure& procedure)
    {
 
-      ::gpu::graphics::send_on_context(pgraphicscontext, procedure);
+      ::gpu::graphics::send(procedure);
 
       //m_pgpucontextCompositor->send(procedure);
 
    }
 
 
-   void graphics::on_begin_draw()
+   void graphics::start_layer(bool bFirstLayer)
    {
 
-      ::gpu::graphics::on_begin_draw();
+      ::gpu::graphics::start_layer(bFirstLayer);
 
    }
 
+
+   void graphics::end_layer(bool bClosingLayer) 
+   {
+      
+      ::gpu::graphics::end_layer(bClosingLayer); 
+   
+   }
 
 
    void graphics::initialize(::particle* pparticle)

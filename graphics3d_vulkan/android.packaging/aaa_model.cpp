@@ -180,7 +180,7 @@
 //
 //      ::cast <::gpu_vulkan::renderer> pgpurenderer = m_pgpurenderer;
 //
-//      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+//      ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 //
 //      if (m_iIndexCount > 0) 
 //      {
@@ -206,7 +206,7 @@
 //
 //         ::cast <::gpu_vulkan::renderer> prenderer = m_pgpurenderer;
 //
-//         ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+//         ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 //
 //         ::cast < ::gpu_vulkan::memory_buffer> pbufferVertex = m_pbufferVertex;
 //

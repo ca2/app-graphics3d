@@ -150,10 +150,10 @@ namespace graphics3d_directx12
    //}
 
 
-   void engine::on_render_frame()
+   void engine::on_render_layer()
    {
 
-      graphics3d::engine::on_render_frame();
+      graphics3d::engine::on_render_layer();
 
    }
 
@@ -204,10 +204,10 @@ namespace graphics3d_directx12
    //}
 
 
-   void engine::do_frame_step(::gpu::context* pcontext)
+   void engine::do_draw_layer()
    {
 
-      ::graphics3d::engine::do_frame_step(pcontext);
+      ::graphics3d::engine::do_draw_layer();
 
       //if (m_rectanglePlacementNew.is_empty())
       //{

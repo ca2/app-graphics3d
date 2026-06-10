@@ -34,7 +34,7 @@
 //		void initialize_render_pass(::gpu::context* pgpucontext, ::pointer_array < ::gpu::texture >* ptexturea, ::pointer <::gpu_vulkan::render_pass>previous) override;
 //
 //
-//		void on_before_begin_render(frame* pframe, ::gpu::texture * pgputexture) override;
+//		void on_before_begin_render(::gpu::layer * pgpulayer, ::gpu::texture * pgputexture) override;
 //
 //
 //		//VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }

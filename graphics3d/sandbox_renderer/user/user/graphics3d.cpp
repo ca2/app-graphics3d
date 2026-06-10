@@ -2,7 +2,7 @@
 #include "graphics3d.h"
 #include "acme/exception/interface_only.h"
 #include "bred/gpu/context.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/input.h"
 #include "bred/graphics3d/scene.h"
@@ -376,7 +376,7 @@ namespace user
 
       ::cast < ::gpu::compositor > pcompositor = pgraphics;
 
-      //::gpu::frame* pgpuframe = nullptr;
+      //::gpu::layer* pgpulayer = nullptr;
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
@@ -394,7 +394,7 @@ namespace user
 
             //pgraphics->fill_solid_rectangle(r, argb(1.0, 0.5, 0.75, 0.95));
             //
-            //pgpuframe = pcompositor->end_gpu_layer(::gpu::current_frame());
+            //pgpulayer = pcompositor->end_gpu_layer(::gpu::current_layer());
 
          }
 
@@ -414,7 +414,7 @@ namespace user
          {
 
             pcompositor->gpu_context()->m_pgpurenderer->frame_prefix();
-            //pcompositor->start_gpu_layer(pgpuframe);
+            //pcompositor->start_gpu_layer(pgpulayer);
 
          }
 

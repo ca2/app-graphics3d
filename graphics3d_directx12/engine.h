@@ -51,7 +51,8 @@ namespace graphics3d_directx12
 
 		void _prepare_frame() override;
 
-		void do_frame_step(::gpu::context * pgpucontextUpper) override;
+		//void do_frame_step(::gpu::context * pgpucontextUpper) override;
+      void do_draw_layer() override;
 
 		void run() override;
 
@@ -60,7 +61,8 @@ namespace graphics3d_directx12
 		void on_after_done_frame_step(::draw2d::graphics_pointer& pgraphics) override;
 		//virtual void on_after_done_frame_step2(::draw2d::graphics_pointer& pgraphics);
 
-		void on_render_frame() override;
+		//void on_render_frame() override;
+      void on_render_layer() override;
 
 		//void create_global_ubo(::gpu::context* pgpucontext) override;
 		//void update_global_ubo(::gpu::context* pgpucontext) override;

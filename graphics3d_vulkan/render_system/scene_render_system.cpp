@@ -1,7 +1,7 @@
 // Changed by camilo on 2025-12-06 21:17 <3ThomasBorregaardSørensen!!
 #include "framework.h"
 #include "scene_render_system.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/global_ubo1.h"
 #include "bred/graphics3d/scene_base.h"
@@ -370,9 +370,9 @@ namespace graphics3d_vulkan
 
       //static bool warnedThisFrame = false;
 
-      //            auto pframe = ::gpu::current_frame();
+      //            auto pgpulayer = ::gpu::current_layer();
 
-      //::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+      //::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
       //auto &scenerenderables = pscene->scene_renderables();
 
@@ -421,7 +421,7 @@ namespace graphics3d_vulkan
       //   if (!pgltfmodel)
       //      continue;
 
-      //   pgltfmodel->bind(pframe->m_pgpucommandbuffer);
+      //   pgltfmodel->bind(pgpulayer->getCurrentCommandBuffer4());
 
       //   for (auto *pnode: pgltfmodel->m_nodeaLinear)
       //   {
@@ -676,7 +676,7 @@ namespace graphics3d_vulkan
       //         //if (pgltfmodel->m_materiala[0].descriptor_set_array_scene_gltf(pgltfmodel).has_element())
       //         //{
       //         //   VkDescriptorSet pbrSet = pgltfmodel->m_materiala[0].descriptor_set_array_scene_gltf(
-      //         //      pgltfmodel)[pframe->m_pgpucommandbuffer->m_iFrameIndex];
+      //         //      pgltfmodel)[pgpulayer->getCurrentCommandBuffer4()->m_iFrameIndex];
       //         //   if (pbrSet == VK_NULL_HANDLE)
       //         //   {
       //         //      if (!warnedThisFrame)

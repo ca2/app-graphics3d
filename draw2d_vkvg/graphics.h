@@ -78,12 +78,12 @@ namespace draw2d_vkvg
 //      ::windowing::window * GetWindow() const;
 
 
-      ::gpu::texture* current_target_texture(::gpu::frame * pgpuframe) override;
+      ::gpu::texture* current_target_texture(::gpu::layer * pgpulayer) override;
 
       bool is_gpu_oriented() override;
 
       virtual void thread_select();
-      void send_on_context(::draw2d::graphics_context * pgraphicscontext, const ::procedure & procedure) override;
+      void send(const ::procedure & procedure) override;
 
       //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
@@ -111,7 +111,7 @@ namespace draw2d_vkvg
       //::draw2d::palette_pointer get_current_palette() const;
       ::write_text::font *    get_current_font() override;
       ::draw2d::bitmap *  get_current_bitmap() override;
-      ::gpu::frame* end_gpu_layer(::gpu::frame * pgpuframe) override;
+      //::gpu::frame* end_gpu_layer(::gpu::layer * pgpulayer) override;
 
       void _draw_raw(const ::f64_rectangle & rectangleTarget, ::image::image *pimage, const ::image::image_drawing_options & imagedrawingoptionsParam, const ::f64_point & pointSrc) override;
 
@@ -717,9 +717,14 @@ namespace draw2d_vkvg
 
       //void _add_clipping_shape(const ::f64_rectangle & rectangle, ::draw2d::region * pregion) override;
 
-      void on_start_layer(::gpu::layer* pgpulayer) override;
-      void on_begin_draw() override;
-      void on_end_draw() override;
+      //void on_start_layer(::gpu::layer* pgpulayer) override;
+      //void on_end_layer(::gpu::layer *pgpulayer) override;
+      //void start_layer(::e_graphics egpugraphics) override;
+      //void end_layer(::e_graphics egpugraphics) override;
+      void start_layer(bool bFirstLayer = false) override;
+      void end_layer(bool bClosingLayer = false) override;
+      // void on_begin_draw() override;
+      //void on_end_draw() override;
       //void on_end_draw() override;
       void on_present() override;
 

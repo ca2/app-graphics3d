@@ -3,7 +3,7 @@
 #include "bred/gpu/block.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/render_target.h"
 #include "bred/gpu/texture.h"
@@ -185,9 +185,9 @@ namespace graphics3d
             
     //   static bool warnedThisFrame = false;
       
-             auto pframe = ::gpu::current_frame();
+             auto pgpulayer = ::gpu::current_layer();
       
-          auto pcommandbuffer = pframe->m_pgpucommandbuffer;
+          auto pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
              ::cast<::graphics3d::scene> pscene = pscenebase;
           auto &scenerenderables = pscenebase->scene_renderables();
        //   //// xxxxxxxxxxxxxxxxx
@@ -284,7 +284,7 @@ namespace graphics3d
       
              //for (auto *primitive: pmesh->primitives)
              //{
-             //auto ptextureTarget = pframe->m_pgpucommandbuffer->m_pgpurendertarget->current_texture(pframe);
+             //auto ptextureTarget = pgpulayer->getCurrentCommandBuffer4()->m_pgpurendertarget->current_texture(pframe);
              auto ealphamode = pmesh->m_pmaterial->alphaMode;
              if (ealphamode != alphamodeLast)
              {
@@ -292,14 +292,14 @@ namespace graphics3d
                 switch (ealphamode)
                 {
                    case ::gpu::model::material::ALPHAMODE_OPAQUE:
-                      pframe->m_pgpucommandbuffer->set_shader(m_pshaderOpaque);
+                      pgpulayer->getCurrentCommandBuffer4()->set_shader(m_pshaderOpaque);
                       break;
                    case ::gpu::model::material::ALPHAMODE_MASK:
-                      pframe->m_pgpucommandbuffer->set_shader(m_pshaderMask);
+                      pgpulayer->getCurrentCommandBuffer4()->set_shader(m_pshaderMask);
                       break;
                    case ::gpu::model::material::ALPHAMODE_BLEND:
                    default:
-                      pframe->m_pgpucommandbuffer->set_shader(m_pshaderBlend);
+                      pgpulayer->getCurrentCommandBuffer4()->set_shader(m_pshaderBlend);
                       break;
                 }
 
@@ -307,12 +307,12 @@ namespace graphics3d
                 pshader = pgpucontext->m_pshaderBound;
 
                 auto pbindingslotsetGlobalUbo1 = pblockGlobalUbo1->binding_slot_set(
-                   pframe->m_pgpucommandbuffer, pgpucontext->global_ubo1_binding_set());
+                   pgpulayer->getCurrentCommandBuffer4(), pgpucontext->global_ubo1_binding_set());
                 auto pbindingslotsetIbl = pscene->ibl_binding_slot_set();
 
-                pframe->m_pgpucommandbuffer->bind_slot_set(0, pbindingslotsetGlobalUbo1);
-                pframe->m_pgpucommandbuffer->bind_slot_set(1, pbindingslotsetIbl);
-                // pgltfmodel->bind2(pframe->m_pgpucommandbuffer);
+                pgpulayer->getCurrentCommandBuffer4()->bind_slot_set(0, pbindingslotsetGlobalUbo1);
+                pgpulayer->getCurrentCommandBuffer4()->bind_slot_set(1, pbindingslotsetIbl);
+                // pgltfmodel->bind2(pgpulayer->getCurrentCommandBuffer4());
              }
           
                 auto prendersystem = this;
@@ -550,7 +550,7 @@ namespace graphics3d
                 //{
                 //   VkDescriptorSet pbrSet =
                 //
-                //pmesh->m_pmaterial->descriptor_set_array_gltf(pgltfmodel)[pframe->m_pgpucommandbuffer->m_iFrameIndex];
+                //pmesh->m_pmaterial->descriptor_set_array_gltf(pgltfmodel)[pgpulayer->getCurrentCommandBuffer4()->m_iFrameIndex];
                 //   if (pbrSet == VK_NULL_HANDLE)
                 //   {
                 //      if (!warnedThisFrame)

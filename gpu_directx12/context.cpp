@@ -4,7 +4,7 @@
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/binding.h"
 #include "bred/gpu/compositor.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/types.h"
 //#include "buffer.h"
@@ -522,7 +522,7 @@ namespace gpu_directx12
 
    }
 
-   //::gpu_directx12::texture* context::_layer_source_texture(::gpu::layer* player)
+   //::gpu_directx12::texture* context::_layer_source_texture(::gpu::layer * pgpulayer)
    //{
 
    //   get_gpu_renderer()->m_pgpurendertarget->current_texture();
@@ -678,7 +678,7 @@ namespace gpu_directx12
 
       //auto pcommandbuffer = prenderer->beginSingleTimeCommands(D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       pcommandbuffer->wait_commands_to_execute();
 
@@ -873,7 +873,7 @@ namespace gpu_directx12
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -889,7 +889,7 @@ namespace gpu_directx12
 
       auto prenderer = m_pgpurenderer;
 
-      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
@@ -1778,7 +1778,7 @@ if (m_itask.is_null())
    //}
 
 
-   void context::__bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player)
+   void context::__bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer)
    {
 
       ASSERT(m_etype == e_type_draw2d);
@@ -1788,7 +1788,7 @@ if (m_itask.is_null())
 
          ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
 
-         ::cast < ::gpu_directx12::texture > ptexture = player->source_texture();
+         ::cast < ::gpu_directx12::texture > ptexture = pgpulayer->source_texture();
 
          auto pdxgidevice = _get_dxgi_device();
 
@@ -1842,7 +1842,7 @@ if (m_itask.is_null())
 
          //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
 
-         //ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_frame())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+         //ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_layer())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 
          d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
@@ -1857,19 +1857,19 @@ if (m_itask.is_null())
 
          ::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
 
-         pdxgisurfacebindable->_bind(iFrameIndex, player->m_iLayerIndex, pdxgisurface);
+         pdxgisurfacebindable->_bind(iFrameIndex, pgpulayer->m_iLayerIndex, pdxgisurface);
 
       }
 
    }
 
 
-   void context::__defer_soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player)
+   void context::__defer_soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer)
    {
 
       ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
 
-      ::cast < ::gpu_directx12::texture > ptexture = player->source_texture();
+      ::cast < ::gpu_directx12::texture > ptexture = pgpulayer->source_texture();
 
       ::cast < device > pdevice = m_pgpudevice;
 
@@ -1964,12 +1964,12 @@ if (m_itask.is_null())
    }
 
 
-   void context::__bind_graphics3d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player)
+   void context::__bind_graphics3d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer)
    {
 
       ASSERT(m_etype != e_type_draw2d);
 
-      //::cast < texture > ptexture = player->source_texture();
+      //::cast < texture > ptexture = pgpulayer->source_texture();
 
       //auto iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
@@ -1977,7 +1977,7 @@ if (m_itask.is_null())
 
       //auto etypeCompositor = pgpucompositor->m_pgpucontextCompositor->m_etype;
 
-      //::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //::cast < command_buffer > pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       //if (!ptexture->m_handleRenderTargetView.ptr)
       //{
@@ -2124,7 +2124,7 @@ if (m_itask.is_null())
 
 
    void context::merge_layers(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptextureTarget,
-                                 ::pointer_array<::gpu::layer> *playera)
+                                 ::pointer_array<::gpu::layer> *pgpulayera)
    {
 
       if (!m_pshaderBlend3)
@@ -2226,7 +2226,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow
          && m_etype == ::gpu::context::e_type_window)
@@ -2296,13 +2296,13 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
       if (1)
       {
          int iLayer = 0;
-         for (auto player : *playera)
+         for (auto pgpulayer : *pgpulayera)
          {
 
             //if (iLayer == 2)
             {
 
-               ::cast < ::gpu_directx12::texture > ptextureSrc = player->texture();
+               ::cast < ::gpu_directx12::texture > ptextureSrc = pgpulayer->texture();
 
                ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
@@ -2382,15 +2382,15 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
    }
 
 
-   void context::on_start_layer(::gpu::layer* player)
+   void context::on_start_layer(::gpu::layer * pgpulayer)
    {
 
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-      //if (player->getCurrentCommandBuffer4() != prenderer->getCurrentCommandBuffer2(::gpu::current_frame()))
+      //if (pgpulayer->getCurrentCommandBuffer4() != prenderer->getCurrentCommandBuffer2(::gpu::current_layer()))
       //{
 
-      //   player->getCurrentCommandBuffer4() = prenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      //   pgpulayer->getCurrentCommandBuffer4() = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       //   //auto pcommanbuffer=create_newø < ::gpu_directx12::command_buffer>();
 
@@ -2418,7 +2418,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
       //if (m_pgpurenderer->m_iSentLayerCount)
       //{
 
-      //   player->getCurrentCommandBuffer4()->wait_commands_to_execute();
+      //   pgpulayer->getCurrentCommandBuffer4()->wait_commands_to_execute();
 
       //}
 
@@ -2436,7 +2436,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
             //_get_dxgi_device();
 
-            ////ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_frame())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+            ////ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_layer())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
             //// 4. Release wrapped resource to allow access from D3D12
 
@@ -2459,27 +2459,27 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
             ////pdxgisurfacebindable->_bind(iFrameIndex, pdxgisurface);
 
-            __bind_draw2d_compositor(m_pgpucompositor, player);
+            __bind_draw2d_compositor(m_pgpucompositor, pgpulayer);
 
          }
          else
          {
 
-            __bind_graphics3d_compositor(m_pgpucompositor, player);
+            __bind_graphics3d_compositor(m_pgpucompositor, pgpulayer);
 
          }
 
-         m_pgpucompositor->on_start_layer(player);
+         m_pgpucompositor->on_start_layer(pgpulayer);
 
       }
 
    }
 
 
-   void context::on_end_layer(::gpu::layer* player)
+   void context::on_end_layer(::gpu::layer * pgpulayer)
    {
 
-      ::gpu::context::on_end_layer(player);
+      ::gpu::context::on_end_layer(pgpulayer);
 
       //if (m_pgpucompositor)
       //{

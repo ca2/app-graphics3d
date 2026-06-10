@@ -8,7 +8,7 @@
 #include "texture.h"
 #include "windowing_win32/window.h"
 #include "bred/gpu/binding.h"
-
+#include "bred/gpu/layer.h"
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
 
@@ -205,7 +205,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       }
 
-      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -314,7 +314,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
          auto& ptextureSwapChain = m_textureaSwapChain[m_iSwapChainIndex];
 
-         ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+         ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
          auto pcommandlist = pcommandbuffer->m_pcommandlist;
 

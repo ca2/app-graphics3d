@@ -1413,7 +1413,7 @@ namespace gpu_vulkan
 
          pcontext->createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
 
-         //::cast < command_buffer > pcommandbuffer = m_pgpucontext->getCurrentCommandBuffer2(::gpu::current_frame());
+         //::cast < command_buffer > pcommandbuffer = m_pgpucontext->getCurrentCommandBuffer2(::gpu::current_layer());
 
          //_new_state(
          //   pcommandbuffer,

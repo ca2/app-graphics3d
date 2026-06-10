@@ -9,7 +9,7 @@
 #include "binding.h"
 #include "block.h"
 #include "bred/gpu/compositor.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/types.h"

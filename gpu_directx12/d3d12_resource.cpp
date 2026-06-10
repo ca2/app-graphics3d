@@ -8,7 +8,7 @@
 #include "d3d12_resource.h"
 #include "physical_device.h"
 #include "renderer.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 
 
 namespace gpu_directx12
@@ -86,7 +86,7 @@ namespace gpu_directx12
       if (!pcommandbufferLoading)
       {
 
-         pcommandbufferLoading = m_pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+         pcommandbufferLoading = m_pcontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       }
 

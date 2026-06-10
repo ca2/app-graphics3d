@@ -14,7 +14,7 @@
 #include "app-graphics3d/gpu_vulkan/texture.h"
 #include "app-graphics3d/gpu_vulkan/vk_init.h"
 #include "app-graphics3d/graphics3d/scene.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/immersion_layer.h"
@@ -238,7 +238,7 @@ namespace graphics3d_vulkan
    //      //     &frame.globalDescriptorSet,
    //      //     0, nullptr);
    //
-   //      auto pframe = ::gpu::current_frame();
+   //      auto pgpulayer = ::gpu::current_layer();
    //
    //      auto &sceneobjects = pscene->scene_objects();
    //
@@ -255,7 +255,7 @@ namespace graphics3d_vulkan
    //         if (!prenderable)
    //            continue;
    //
-   //         prenderable->bind(pframe->m_pgpucommandbuffer);
+   //         prenderable->bind(pgpulayer->getCurrentCommandBuffer4());
    //
    //         for (auto *node: prenderable->m_linearNodes)
    //         {
@@ -774,9 +774,9 @@ namespace graphics3d_vulkan
    //   //     &frame.globalDescriptorSet,
    //   //     0, nullptr);
 
-   //   auto pframe = ::gpu::current_frame();
+   //   auto pgpulayer = ::gpu::current_layer();
 
-   //   ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+   //   ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
    //   auto &sceneobjects = pscene->scene_objects();
 
@@ -804,7 +804,7 @@ namespace graphics3d_vulkan
    //      if (!pmodel)
    //         continue;
 
-   //      pmodel->bind(pframe->m_pgpucommandbuffer);
+   //      pmodel->bind(pgpulayer->getCurrentCommandBuffer4());
 
    //      for (auto *node: pmodel->m_linearNodes)
    //      {
@@ -939,9 +939,9 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
    {
       static bool warnedThisFrame = false;
 
-            auto pframe = ::gpu::current_frame();
+            auto pgpulayer = ::gpu::current_layer();
 
-         ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+         ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
          auto &scenerenderables = pscene->scene_renderables();
 
@@ -986,7 +986,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
          if (!pgltfmodel)
             continue;
 
-         pgltfmodel->bind(pframe->m_pgpucommandbuffer);
+         pgltfmodel->bind(pgpulayer->getCurrentCommandBuffer4());
 
          for (auto *node: pgltfmodel->m_linearNodes)
          {
@@ -1028,7 +1028,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                   continue;
                }
                 VkDescriptorSet pbrSet =
-                  pgltfmodel->m_materials[0].m_descriptorseta[pframe->m_pgpucommandbuffer->m_iFrameIndex];
+                  pgltfmodel->m_materials[0].m_descriptorseta[pgpulayer->getCurrentCommandBuffer4()->m_iFrameIndex];
                if (pbrSet == VK_NULL_HANDLE)
                {
                   if (!warnedThisFrame)
@@ -1067,7 +1067,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
                }
 
                pgltfmodel->gltfDraw(pcommandbuffer->m_vkcommandbuffer, 
-                  pframe->m_pgpucommandbuffer->m_iFrameIndex,::gpu_vulkan::gltf::RenderNone,
+                  pgpulayer->getCurrentCommandBuffer4()->m_iFrameIndex,::gpu_vulkan::gltf::RenderNone,
                                     m_pipelineLayout, 2);
                warnedThisFrame = false;
             }

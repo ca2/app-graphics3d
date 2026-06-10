@@ -23,7 +23,7 @@
 #include "aura/graphics/image/image.h"
 #include "aura/windowing/window.h"
 #include "bred/gpu/compositor.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/types.h"
@@ -1930,7 +1930,7 @@ namespace gpu_vulkan
       if (::is_null(ptexture))
       {
 
-         ptexture = pgpurendertarget->current_texture(::gpu::current_frame());
+         ptexture = pgpurendertarget->current_texture(::gpu::current_layer());
 
       }
 
@@ -3189,7 +3189,7 @@ namespace gpu_vulkan
 
    int g_iMergeLayersSerial = -1;
 
-   void context::merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture *ptextureTarget, ::pointer_array<::gpu::layer> *playera)
+   void context::merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture *ptextureTarget, ::pointer_array<::gpu::layer> *pgpulayera)
    {
 
       g_iMergeLayersSerial++;
@@ -3200,7 +3200,7 @@ namespace gpu_vulkan
 
       ::cast<render_target> prendertarget = pgpurendertarget;
 
-      ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
+      ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
 
       // ::cast<swap_chain> pswapchain = m_pgpuswapchain;
       //
@@ -3306,7 +3306,7 @@ namespace gpu_vulkan
 
       }
 
-      auto layera = *playera;
+      auto gpulayera = *pgpulayera;
 
       {
 
@@ -3353,18 +3353,18 @@ namespace gpu_vulkan
 
          information("merge_layers : going to set source textures state to shader read only optimal");
 
-         for (auto player: layera)
+         for (auto pgpulayer: gpulayera)
          {
 
             //// if (iLayer == 2)
             //{
-            //   ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
+            //   ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
             //   ptextureSrc->_set_state(
             //      pcommandbuffer,  {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT});
 
             //}
             //{
-            //   ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
+            //   ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
             //   // 2. Clear
             //   VkClearColorValue clearColor = {.float32 = {0.1f, 0.5f, 0.25f, 0.8f}};
             //   VkImageSubresourceRange range = {
@@ -3382,7 +3382,7 @@ namespace gpu_vulkan
 
             {
 
-               ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
+               ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
 
                ptextureSrc->_set_state(
                pcommandbuffer,
@@ -3404,13 +3404,13 @@ namespace gpu_vulkan
 
             pcommandbuffer->begin_render(m_pshaderBlend3, ptextureDst);
 
-            for (auto player: layera)
+            for (auto pgpulayer: gpulayera)
             {
 
                // if (iLayer == 2)
                {
 
-                  ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
+                  ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
 
                   textureaSrc.add(ptextureSrc.m_p);
 
@@ -3436,13 +3436,13 @@ namespace gpu_vulkan
 
       }
 
-      for (auto player: layera)
+      for (auto pgpulayer: gpulayera)
       {
 
          // if (iLayer == 2)
          {
 
-            ::cast<::gpu_vulkan::texture> ptextureSrc = player->texture();
+            ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
 
             ptextureSrc->_set_state(
                pcommandbuffer,
@@ -3484,9 +3484,9 @@ namespace gpu_vulkan
      auto pgpurendertarget = m_pgpurenderer->render_target();
 
       ::cast<::gpu_vulkan::texture> ptexture =
-         pgpurendertarget->current_texture(::gpu::current_frame());
+         pgpurendertarget->current_texture(::gpu::current_layer());
 
-      ::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      ::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       if (pcommandbuffer->m_estate != command_buffer::e_state_recording)
       {
@@ -3651,10 +3651,10 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
 
    ::pointer<command_buffer> pcommandbuffer;
 
-   if (m_pgpurenderer->m_bFrameStarted)
+   if (m_pgpurenderer->isFrameInProgress())
    {
 
-      pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_frame());
+      pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
    }
    else
    {
@@ -3705,7 +3705,7 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
                      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
    }
 
-   if (!m_pgpurenderer->m_bFrameStarted)
+   if (!m_pgpurenderer->isFrameInProgress())
    {
 
       if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
@@ -5121,7 +5121,7 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
          else
          {
             
-            ptexture = prendertarget->current_texture(::gpu::current_frame());
+            ptexture = prendertarget->current_texture(::gpu::current_layer());
 
          }
 
@@ -5241,7 +5241,7 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 //         //else
 //         //{
 //
-//         //   ptexture = prendertarget->current_texture(::gpu::current_frame());
+//         //   ptexture = prendertarget->current_texture(::gpu::current_layer());
 //         //}
 //
 //         //if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)

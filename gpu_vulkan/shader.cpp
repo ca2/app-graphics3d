@@ -4,7 +4,7 @@
 #include "approach.h"
 #include "binding.h"
 #include "block.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/frame_storage.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/immersion_layer.h"
@@ -340,7 +340,7 @@ namespace gpu_vulkan
 
       auto prenderpass = ptextureTarget->get_render_pass();
 
-      //::cast<texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
+      //::cast<texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
 
       // if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       //{
@@ -792,7 +792,7 @@ namespace gpu_vulkan
    //   if (!ptextureTarget)
    //   {
 
-   //      m_ptextureTarget = m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_frame());
+   //      m_ptextureTarget = m_pgpurenderer->m_pgpurendertarget->current_texture(::gpu::current_layer());
 
    //      ptextureTarget = m_ptextureTarget;
    //   }
@@ -804,7 +804,7 @@ namespace gpu_vulkan
    //   // if (prenderer->m_pgpulayer)
    //   {
 
-   //      ::cast<texture> ptexture = prendertarget->current_texture(::gpu::current_frame());
+   //      ::cast<texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
 
    //      if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
    //      {

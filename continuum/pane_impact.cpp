@@ -166,7 +166,26 @@ namespace app_graphics3d_continuum
 
          }
 
-         //if (m_pimpactdata->m_pplaceholder)
+         auto ptabpaneAppOptions = get_tab_by_id(APP_OPTIONS_IMPACT);
+
+         if (ptabpaneAppOptions != nullptr && ptabpaneAppOptions->m_pplaceholder != nullptr)
+         {
+
+            ptabpaneAppOptions->m_pplaceholder->display(::e_display_hide, {});
+
+         }
+
+         auto ptabpaneGpuOptions = get_tab_by_id("options_impact_handler://gpu");
+
+         if (ptabpaneGpuOptions != nullptr && ptabpaneGpuOptions->m_pplaceholder != nullptr)
+         {
+
+            ptabpaneGpuOptions->m_pplaceholder->display(::e_display_hide, {});
+
+         }
+
+
+         // if (m_pimpactdata->m_pplaceholder)
          //{
 
          //   m_pimpactdata->m_pplaceholder->get_typed_child(m_pimpactLastBase);

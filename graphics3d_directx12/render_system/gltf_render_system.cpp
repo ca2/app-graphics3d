@@ -18,7 +18,7 @@
 //#include "gpu_directx11/vk_init.h"
 #include "app-graphics3d/graphics3d/scene.h"
 #include "bred/gpu/command_buffer.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/global_ubo1.h"
@@ -597,9 +597,9 @@ namespace graphics3d_directx12
    //   //     &frame.globalDescriptorSet,
    //   //     0, nullptr);
 
-   //   auto pframe = ::gpu::current_frame();
+   //   auto pgpulayer = ::gpu::current_layer();
 
-   //   ::cast<::gpu_directx11::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+   //   ::cast<::gpu_directx11::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
    //   auto &sceneobjects = pscene->scene_objects();
 
@@ -627,7 +627,7 @@ namespace graphics3d_directx12
    //      if (!pmodel)
    //         continue;
 
-   //      pmodel->bind(pframe->m_pgpucommandbuffer);
+   //      pmodel->bind(pgpulayer->getCurrentCommandBuffer4());
 
    //      for (auto *node: pmodel->m_linearNodes)
    //      {
@@ -765,9 +765,9 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 
 //      static bool warnedThisFrame = false;
 //
-//            auto pframe = ::gpu::current_frame();
+//            auto pgpulayer = ::gpu::current_layer();
 //
-//         //::cast<::gpu_directx11::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+//         //::cast<::gpu_directx11::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 //            ::cast<::graphics3d::scene> pscene = pscenebase;
 //      
 //         auto &scenerenderables = pscene->scene_renderables();
@@ -814,7 +814,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //
 //            m_erendersystem = ::graphics3d::e_render_system_gltf_ibl;
 //
-//            pframe->m_pgpucommandbuffer->m_prendersystem = this;
+//            pgpulayer->getCurrentCommandBuffer4()->m_prendersystem = this;
 //
 //
 //            // for (auto *node: pgltfmodel->m_linearNodes)
@@ -933,7 +933,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //                        break;
 //                  }*/
 //            m_pscenerenderableCurrent = pscenerenderable;
-//                              pgltfmodel->bind(pframe->m_pgpucommandbuffer);
+//                              pgltfmodel->bind(pgpulayer->getCurrentCommandBuffer4());
 //
 //
 //            //      ::cast<::gpu_directx11::shader> pshader = pgpucontext->m_pshaderBound;
@@ -1094,7 +1094,7 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //
 //
 //            //       VkDescriptorSet pbrSet =
-//            //         pgltfmodel->m_materials[0].m_descriptorseta[pframe->m_pgpucommandbuffer->m_iFrameIndex];
+//            //         pgltfmodel->m_materials[0].m_descriptorseta[pgpulayer->getCurrentCommandBuffer4()->m_iFrameIndex];
 //            //      if (pbrSet == VK_NULL_HANDLE)
 //            //      {
 //            //         if (!warnedThisFrame)
@@ -1109,16 +1109,16 @@ void gltf_render_system::on_render(::gpu::context *pgpucontext, ::graphics3d::sc
 //            //                              &pbrSet, 0, nullptr);
 //
 //            //      pgltfmodel->gltfDraw(pcommandbuffer->m_vkcommandbuffer,
-//            //         pframe->m_pgpucommandbuffer->m_iFrameIndex,::gpu_directx11::gltf::RenderNone,
+//            //         pgpulayer->getCurrentCommandBuffer4()->m_iFrameIndex,::gpu_directx11::gltf::RenderNone,
 //            //         pshader->m_ppipeline->m_vkpipelinelayout, 2);
 //            //      warnedThisFrame = false;
 //         //}
 //         //   }
 //         //}
 //
-//			pgltfmodel->draw(pframe->m_pgpucommandbuffer);
+//			pgltfmodel->draw(pgpulayer->getCurrentCommandBuffer4());
 //
-//            pgltfmodel->unbind(pframe->m_pgpucommandbuffer);
+//            pgltfmodel->unbind(pgpulayer->getCurrentCommandBuffer4());
 //
 //      }
    }

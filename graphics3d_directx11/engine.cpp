@@ -7,7 +7,7 @@
 #include "offscreen_render_pass.h"
 #include "swap_chain_render_pass.h"
 #include "aura/platform/application.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/user/user/graphics3d.h"
 #include "gpu_directx11/approach.h"
 #include "gpu_directx11/context.h"
@@ -274,18 +274,18 @@ namespace graphics3d_directx11
    }
 
 
-   void engine::on_render_frame()
+   void engine::on_render_layer()
    {
 
-      graphics3d::engine::on_render_frame();
+      graphics3d::engine::on_render_layer();
 
    }
 
 
-   void engine::do_frame_step(::gpu::context * pcontext)
+   void engine::do_draw_layer()
    {
 
-      ::graphics3d::engine::do_frame_step(pcontext);
+      ::graphics3d::engine::do_draw_layer();
 
    }
 
@@ -544,7 +544,7 @@ namespace graphics3d_directx11
          ::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
          ID3D11Device* device = pgpudevice->m_pd3d11device;
          ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-         ::cast < ::gpu_directx11::texture > ptexture = poffscreenrendertargetview->current_texture(::gpu::current_frame());
+         ::cast < ::gpu_directx11::texture > ptexture = poffscreenrendertargetview->current_texture(::gpu::current_layer());
          ID3D11Texture2D* offscreenTexture = ptexture->m_ptextureOffscreen;
          if (!device || !context || !offscreenTexture)
          {

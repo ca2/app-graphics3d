@@ -48,14 +48,16 @@ namespace graphics3d_vulkan
 
 		void _prepare_frame() override;
 
-		void do_frame_step(::gpu::context * pgpucontextUpper) override;
+		//void do_frame_step(::gpu::context * pgpucontextUpper) override;
+      void do_draw_layer() override;
 
 		void run() override;
 
 		void on_begin_frame() override;
 
 
-		void on_render_frame() override;
+		//void on_render_frame() override;
+      void on_render_layer() override;
 
 		//void create_global_ubo(::gpu::context* pgpucontext) override;
 		//void update_global_ubo(::gpu::context* pgpucontext) override;

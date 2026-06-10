@@ -79,7 +79,7 @@
 //		::pointer < ::graphics3d::frame> beginFrame() override;
 //		void endFrame() override;
 //		void on_begin_render(::graphics3d::frame * pframe) override;
-//		void on_end_render(::graphics3d::frame* pframe) override;
+//		void on_end_render(::graphics3d::::gpu::layer * pgpulayer) override;
 //	public:
 //		void create_command_buffers() override;
 //

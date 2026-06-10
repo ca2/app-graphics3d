@@ -13,7 +13,7 @@
 #include "app/gpu_opengl/texture.h"
 // #include "app/gpu_opengl/vk_init.h"
 #include "app-graphics3d/graphics3d/scene.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/immersion_layer.h"
 #include "bred/graphics3d/scene_base.h"
@@ -104,7 +104,7 @@ namespace graphics3d_opengl
 
       //static bool warnedThisFrame = false;
 
-      //auto pframe = ::gpu::current_frame();
+      //auto pgpulayer = ::gpu::current_layer();
 
       //auto pskybox = pscenebase->current_skybox();
 
@@ -114,7 +114,7 @@ namespace graphics3d_opengl
       //   return;
       //}
 
-      //::cast<::gpu_opengl::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+      //::cast<::gpu_opengl::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
       //pgpucontext->defer_bind(m_pshaderOpaque);
       //auto &scenerenderables = pscenebase->scene_renderables();
@@ -208,7 +208,7 @@ namespace graphics3d_opengl
       //   if (!pgltfmodel)
       //      continue;
 
-      //   pgltfmodel->bind(pframe->m_pgpucommandbuffer);
+      //   pgltfmodel->bind(pgpulayer->getCurrentCommandBuffer4());
 
       //   for (auto pmesh: pgltfmodel->m_mesha)
       //   {

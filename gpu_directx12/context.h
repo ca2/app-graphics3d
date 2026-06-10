@@ -188,8 +188,8 @@ namespace gpu_directx12
       //void start_drawing() override;
       void global_transform() override;
       void render() override;
-      void on_start_layer(::gpu::layer* player);
-      void on_end_layer(::gpu::layer* player);
+      void on_start_layer(::gpu::layer * pgpulayer);
+      void on_end_layer(::gpu::layer * pgpulayer);
       void set_bitmap_1(::image::image *pimage) override;
 
       virtual ID3D12CommandQueue* command_queue();
@@ -207,7 +207,7 @@ namespace gpu_directx12
 //      void endSingleTimeCommands(command_buffer* pcommandbuffer, int iSubmitCount, VkSubmitInfo* psubmitinfo);
 
 
-      //virtual ::gpu_directx12::texture* _layer_source_texture(::gpu::layer* player);
+      //virtual ::gpu_directx12::texture* _layer_source_texture(::gpu::layer * pgpulayer);
 
       //void swap_buffers() override;
 
@@ -366,11 +366,11 @@ namespace gpu_directx12
       //bool create_offscreen_graphics_for_swap_chain_blitting(::gpu::graphics* pgraphics, const ::i32_size& size = {}) override;
 
       
-      void __bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player) override;
-      void __defer_soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player) override;
+      void __bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer) override;
+      void __defer_soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer) override;
 
 
-      virtual void __bind_graphics3d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer* player);
+      virtual void __bind_graphics3d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer);
 
       ::gpu::enum_output get_eoutput() override;
 

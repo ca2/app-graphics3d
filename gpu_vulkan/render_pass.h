@@ -79,7 +79,7 @@ namespace gpu_vulkan
       virtual void update_render_pass(::gpu::context* pgpucontext, ::gpu::texture * pgputextureTarget, ::pointer <::gpu_vulkan::render_pass>previous = {});
       virtual void _update_render_pass(::gpu::context *pgpucontext, ::gpu::texture *pgputextureTarget,
                                        ::pointer<::gpu_vulkan::render_pass> previous = {});
-      // virtual void on_before_begin_render(frame* pframe, ::gpu::texture * pgputexture);
+      // virtual void on_before_begin_render(::gpu::layer * pgpulayer, ::gpu::texture * pgputexture);
 
 
       virtual int get_frame_index();

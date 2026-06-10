@@ -10,7 +10,7 @@
 #include "texture.h"
 #include "acme/prototype/geometry2d/matrix.h"
 #include "acme/prototype/prototype/call.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "bred/gpu/types.h"
 #include "bred/graphics3d/types.h"
 
@@ -745,7 +745,7 @@ namespace gpu_vulkan
 
             auto prendertarget = m_pgpucontext->m_pgpurenderer->render_target();
 
-            ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_frame());
+            ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
 
             //if (ptexture && ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
             //{

@@ -10,7 +10,7 @@
 //#include "gpu_directx11/pipeline.h"
 //#include "gpu_directx11/render_pass.h"
 #include "gpu_directx12/renderer.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 //#include "gpu_directx11/vk_init.h"
 #include "gpu/ibl/_hlsl.h"
 

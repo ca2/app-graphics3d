@@ -66,7 +66,7 @@ __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu_vulkan::memory_buffer, ::gpu::memory_buffer >();
    pfactory->add_factory_item < ::gpu_vulkan::model_buffer, ::gpu::model_buffer > ();
 
-   pfactory->add_factory_item < ::gpu_vulkan::frame, ::gpu::frame >();
+   //pfactory->add_factory_item < ::gpu_vulkan::frame, ::gpu::frame >();
    pfactory->add_factory_item < ::gpu_vulkan::pipeline>();
    pfactory->add_factory_item < ::gpu::pixmap >();
 

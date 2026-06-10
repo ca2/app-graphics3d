@@ -86,7 +86,8 @@ namespace graphics3d_opengl
 		//void run_application() override;
 		//void resize(int cx, int cy) override;
 
-		void do_frame_step(::gpu::context * pgpucontextUpper) override;
+		//void do_frame_step(::gpu::context * pgpucontextUpper) override;
+      void do_draw_layer() override;
 
 
 		//virtual void _do_frame_step();
@@ -112,7 +113,8 @@ namespace graphics3d_opengl
 		virtual void on_mouse_move(float x, float y) override;
 
 
-		void on_render_frame() override;
+		//void on_render_frame() override;
+      void on_render_layer() override;
 
 
       //floating_matrix4 ortho(float left, float right, float bottom, float top, float zNear = -1.0f,

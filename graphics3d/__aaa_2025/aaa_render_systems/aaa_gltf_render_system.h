@@ -71,7 +71,7 @@ namespace graphics3d
 		// 	graphics3d::sandbox_descriptor_pool& descriptorPool,
 		// 	size_t frameCount)override;
 
-		//void render(::gpu::frame * pframe) override;
+		//void render(::gpu::layer * pgpulayer) override;
 		void on_render(::gpu::context* pgpucontext, ::graphics3d::scene* pscene) override;
 	//private:
 		//void createPipelineLayout(aaaVkDescriptorSetLayout globalSetLayout);

@@ -32,7 +32,7 @@ namespace gpu_directx12
 		~accumulation_render_target_view();
 
 		
-		void on_before_begin_render(frame* pframe) override;
+		void on_before_begin_render(::gpu::layer * pgpulayer) override;
 
 
 		//VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }

@@ -47,7 +47,8 @@ namespace graphics3d_directx11
 
 		void _prepare_frame() override;
 
-		void do_frame_step(::gpu::context * pgpucontextUpper) override;
+		//void do_frame_step(::gpu::context * pgpucontextUpper) override;
+      void do_draw_layer() override;
 
 		void run() override;
 
@@ -56,7 +57,8 @@ namespace graphics3d_directx11
 		void on_after_done_frame_step(::draw2d::graphics_pointer& pgraphics);
 
 
-		void on_render_frame() override;
+		//void on_render_frame() override;
+      void on_render_layer() override;
 
       
       floating_matrix4 perspective(const f32_angle &angleFovY, float aspect, float zNear, float zFar) override;

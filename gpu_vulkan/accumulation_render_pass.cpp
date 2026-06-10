@@ -109,7 +109,7 @@
 //   }
 //
 //
-//   void accumulation_render_pass::on_before_begin_render(frame* pframe, ::gpu::texture * pgputexture)
+//   void accumulation_render_pass::on_before_begin_render(::gpu::layer * pgpulayer, ::gpu::texture * pgputexture)
 //   {
 //
 //      if (m_pgpucontext->m_pgpurenderer->is_starting_frame())

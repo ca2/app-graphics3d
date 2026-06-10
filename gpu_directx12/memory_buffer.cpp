@@ -5,7 +5,7 @@
 #include "frame_storage.h"
 #include "gpu_directx12/context.h"
 #include "model_buffer.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 /*
  * Encapsulates a directx11 memory_buffer
  *

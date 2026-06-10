@@ -11,7 +11,7 @@
 //#include "app/gpu_opengl/pipeline.h"
 //#include "app/gpu_opengl/render_pass.h"
 #include "app/gpu_opengl/renderer.h"
-#include "bred/gpu/frame.h"
+#include "bred/gpu/layer.h"
 #include "gpu_opengl/ibl/diffuse_irradiance_map.h"
 #include "gpu_opengl/ibl/specular_map.h"
 //#include "app/gpu_opengl/vk_init.h"
@@ -106,9 +106,9 @@ namespace graphics3d_opengl
       //
 //      static bool warnedThisFrame = false;
 //
-//      auto pframe = ::gpu::current_frame();
+//      auto pgpulayer = ::gpu::current_layer();
 //
-//      ::cast<::gpu_opengl::command_buffer> pcommandbuffer = pframe->m_pgpucommandbuffer;
+//      ::cast<::gpu_opengl::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 //
 //      //pgpucontext->defer_bind(m_pshaderOpaque);
 //
@@ -166,7 +166,7 @@ namespace graphics3d_opengl
 //
 //         }
 //
-//         pgltfmodel->bind(pframe->m_pgpucommandbuffer);
+//         pgltfmodel->bind(pgpulayer->getCurrentCommandBuffer4());
 //
 //         for (auto pmesh: pgltfmodel->m_mesha)
 //         {
