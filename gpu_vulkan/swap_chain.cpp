@@ -186,10 +186,10 @@ namespace gpu_vulkan
 
       VkDevice device = pcontext->logicalDevice();
 
+      frame.m_pcommandbufferLastSwapChainPresentation.release();
+
 
       frame.m_pgpufenceInFlight->wait_gpu_fence();
-
-      frame.m_pgpufenceInFlight->reset_gpu_fence();
 
       ::cast<::gpu_vulkan::semaphore> psemaphoreImageAvailable = frame.m_pgpusemaphoreImageAvailable;
 
@@ -1185,7 +1185,7 @@ namespace gpu_vulkan
    }
 
 
-   void swap_chain::present(::gpu::texture* pgputexture)
+   void swap_chain::present(::gpu::texture *pgputexture, ::gpu::command_buffer *pgpucommandbuffer)
    {
 
       //if (!m_papplication->m_gpu.m_bUseSwapChainWindow
@@ -1265,10 +1265,13 @@ namespace gpu_vulkan
 
       }
 
-      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+      //::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       //pcommandbuffer->begin_command_buffer(false);
 
+      //auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
       auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
       ::cast < ::gpu_vulkan::texture > ptextureSrc = pgputexture;

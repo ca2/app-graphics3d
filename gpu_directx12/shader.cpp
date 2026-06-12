@@ -960,7 +960,8 @@ namespace gpu_directx12
    {
       ::cast<::gpu_directx12::texture> ptexture = pgputexture;
       if (m_ppipelinestate &&
-         m_dxgiformatRenderTargetView == ptexture->m_resourcedesc.Format)
+         m_dxgiformatRenderTargetView == ptexture->m_resourcedesc.Format &&
+         m_bPipelineBlendEnabled == m_bEnableBlend)
       {
 
          return;
@@ -974,6 +975,8 @@ namespace gpu_directx12
       }
 
       m_dxgiformatRenderTargetView = ptexture->m_resourcedesc.Format;
+
+      m_ppipelinestate.release();
       
       //::array < D3D12_INPUT_ELEMENT_DESC > layout;
 
@@ -1157,6 +1160,8 @@ namespace gpu_directx12
 
       ::defer_throw_hresult(hrCreateGraphicsPipelineState);
 
+      m_bPipelineBlendEnabled = m_bEnableBlend;
+
             //create_vertex_and_pixel_shader(m_memoryVertex, m_memoryFragment);
 
       // if (m_edescriptorsetslota.contains(e_descriptor_set_slot_local))
@@ -1336,7 +1341,8 @@ namespace gpu_directx12
       int iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
       if (ptextureSource == m_pgputextureBound && 
-         iFrameIndex == m_iFrameBound)
+         iFrameIndex == m_iFrameBound &&
+         pgpucommandbuffer->m_iSerial == m_iCommandBufferSerialSourceBound)
       {
 
          return;
@@ -1596,6 +1602,8 @@ namespace gpu_directx12
 
       m_iFrameBound = iFrameIndex;
 
+      m_iCommandBufferSerialSourceBound = pgpucommandbuffer->m_iSerial;
+
    }
 
 
@@ -1623,6 +1631,8 @@ namespace gpu_directx12
          pcommandlist->SetGraphicsRootSignature(m_prootsignature);
 
       }
+
+      m_iCommandBufferSerialPipelineBound = pgpucommandbuffer->m_iSerial;
 
       auto iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 

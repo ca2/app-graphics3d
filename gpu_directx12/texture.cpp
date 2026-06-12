@@ -1733,7 +1733,7 @@ namespace gpu_directx12
          //unmap();
 
 
-         ::cast < renderer > prenderer = m_ptexture->m_pgpucontext;
+         ::cast < renderer > prenderer = m_ptexture->m_pgpucontext->m_pgpurenderer;
 
          ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 

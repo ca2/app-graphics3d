@@ -274,6 +274,16 @@ namespace gpu_vulkan
    VkResult approach::createInstance()
    {
 
+      uint32_t loaderApiVersion = VK_API_VERSION_1_0;
+      auto pfnEnumerateInstanceVersion = reinterpret_cast<PFN_vkEnumerateInstanceVersion>(
+         vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceVersion"));
+      if (pfnEnumerateInstanceVersion
+         && pfnEnumerateInstanceVersion(&loaderApiVersion) == VK_SUCCESS
+         && m_uApiVersion > loaderApiVersion)
+      {
+         m_uApiVersion = loaderApiVersion;
+      }
+
       ::array<const char*> instanceExtensions;
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)

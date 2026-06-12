@@ -85,12 +85,25 @@ namespace vulkan
          }
 #else
          if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
+            error() << debugMessage;
+            fflush(stdout);
+         }
+         else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+         {
             warning() << debugMessage;
+            fflush(stdout);
          }
-         else {
+         else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+         {
             information() << debugMessage;
+            fflush(stdout);
          }
-         fflush(stdout);
+         else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
+         {
+            ::debug() << debugMessage;
+            fflush(stdout);
+         }
+         
 #endif
 
          // The return value of this callback controls whether the Vulkan call that caused the validation message will be aborted or not

@@ -27,7 +27,9 @@
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/render.h"
+#include "aura/graphics/draw2d/clip.h"
 #include "aura/graphics/graphics/context.h"
+#include "aura/graphics/image/drawing.h"
 #include "aura/graphics/image/target.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
@@ -218,22 +220,24 @@ namespace draw2d_nanovg
    void graphics::create_memory_graphics(const ::i32_size& size)
    {
 
-      ::i32_rectangle rectanglePlacement;
+      ::gpu::graphics::create_memory_graphics(size);
 
-      if (size.is_empty())
-      {
+      //::i32_rectangle rectanglePlacement;
 
-         rectanglePlacement.set_size({ 1920, 1080 });
+      //if (size.is_empty())
+      //{
 
-      }
-      else
-      {
+      //   rectanglePlacement.set_size({ 1920, 1080 });
 
-         rectanglePlacement.set_size(size);
+      //}
+      //else
+      //{
 
-      }
+      //   rectanglePlacement.set_size(size);
 
-      opengl_create_offscreen_buffer(rectanglePlacement);
+      //}
+
+      //opengl_create_offscreen_buffer(rectanglePlacement);
 
    }
 
@@ -290,7 +294,23 @@ namespace draw2d_nanovg
       //createinfo.qIndex = 0;
       //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
+      if (m_pdc)
+      {
+
+         nvgDeleteGL3(m_pdc);
+
+         m_pdc = nullptr;
+
+      }
+
       m_pdc = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+
+      if (!m_pdc)
+      {
+
+         throw ::exception(error_failed, "nvgCreateGL3 failed");
+
+      }
       //m_pdc = nvgCreateGL3(NVG_DEBUG);
 
       //auto sizeWindow = pwindow->m_sizeWindow;
@@ -338,216 +358,230 @@ namespace draw2d_nanovg
    void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
    {
 
-      opengl_create_offscreen_buffer({ 0, 0, 1920, 1080 });
+      ::gpu::graphics::create_compatible_graphics(pgraphics);
+      //opengl_create_offscreen_buffer({ 920, 1080 });
       //opengl_create_offscreen_buffer(pgraphics->m_pimage->size());
 
    }
 
 
-   bool graphics::opengl_create_offscreen_buffer(const ::i32_rectangle& rectanglePlacement)
+   bool graphics::opengl_create_offscreen_buffer(const ::i32_size & sizePlacement)
    {
 
-      on_gpu_context_placement_change(rectanglePlacement, m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+      return opengl_create_offscreen_buffer(sizePlacement);
 
-      //if (!draw2d_nanovg()->m_popenglcontext) {
-      //   informationf("MS GDI - RegisterClass failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-
-      //if (!m_pgpucontext)
+      //if (m_puserinteractionDraw2dGraphics)
       //{
 
-      //   auto pgpuapproach = application()->get_gpu_approach();
-
-      //   if (!m_puserinteractionDraw2dGraphics)
-      //   {
-
-      //      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
-
-      //   }
-
-      //   ASSERT(m_puserinteractionDraw2dGraphics);
-
-      //   auto pgpudevice = pgpuapproach->get_gpu_device();
-
-      //   m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
-
+      //   on_gpu_context_placement_change(rectanglePlacement, m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
       //}
-
-      auto pgpuapproach = application()->get_gpu_approach();
-
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
-
-
-      ::cast < ::gpu_opengl::context > pcontextOpengl = gpu_context();
-      ::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
-
-      //nanovg_device_create_info_t createinfo;
-      //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      //createinfo.deferredResolve = true;
-      //createinfo.inst = papproachOpengl->m_vkinstance;
-      //createinfo.phy = pcontextOpengl->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
-      //createinfo.vkdev = pcontextOpengl->logicalDevice();
-      //createinfo.qFamIdx = pcontextOpengl->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
-      //createinfo.qIndex = 0;
-      //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
-
-      //m_pdc = nanovg_device_create(&createinfo);
-      //m_nanovgsurface = nanovg_surface_create(m_pdc, rectanglePlacement.width(),
-      //   rectanglePlacement.height());
-
-      //m_pdc = nanovg_create(m_nanovgsurface);
-      //if (!m_pgpucontext)
+      //else
       //{
 
-      //   return false;
+      //   on_gpu_context_placement_change(rectanglePlacement, nullptr);
 
       //}
 
 
-      //      ::opengl::resize(size);
-
-
-      //}
-
-      //LPCTSTR lpClassName = L"draw2d_nanovg_offscreen_buffer_window";
-      //LPCTSTR lpWindowName = L"draw2d_nanovg_offscreen_buffer_window";
-      ////unsigned int dwStyle = WS_CAPTION | WS_POPUPWINDOW; // | WS_VISIBLE
-      //unsigned int dwExStyle = 0;
-      //unsigned int dwStyle = WS_OVERLAPPEDWINDOW;
-      //dwStyle |= WS_POPUP;
-      ////dwStyle |= WS_VISIBLE;
-      ////dwStyle |= WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
-      //dwStyle &= ~WS_CAPTION;
-      ////dwStyle = 0;
-      //dwStyle &= ~WS_THICKFRAME;
-      //dwStyle &= ~WS_BORDER;
-      //int x = 0;
-      //int y = 0;
-      //int nWidth = size.cx;
-      //int nHeight = size.cy;
-      //HWND hWndParent = nullptr;
-      //HMENU hMenu = nullptr;
-      /////HINSTANCE hInstance = psystem->m_hinstance;
-      //void * lpParam = nullptr;
-
-      ////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y,  nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-      //HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, nullptr, lpParam);
-
-      //if (window == nullptr) 
-      //{
-      //   informationf("MS GDI - CreateWindow failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-
-      //// create WGL context, make current
-
-      //PIXELFORMATDESCRIPTOR pixformat;
-      //int chosenformat;
-      //HDC hdc = GetDC(window);
-      //if (hdc == nullptr)
-      //{
-      //   informationf("MS GDI - GetDC failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-
-      //ZeroMemory(&pixformat, sizeof(pixformat));
-      //pixformat.nSize = sizeof(pixformat);
-      //pixformat.nVersion = 1;
-      //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-      //pixformat.iPixelType = PFD_TYPE_RGBA;
-      //pixformat.cColorBits = 24;
-      //pixformat.cAlphaBits = 8;
-      //pixformat.cDepthBits = 24;
-      //pixformat.cStencilBits = 8;
-
-      //chosenformat = ChoosePixelFormat(hdc, &pixformat);
-      //if (chosenformat == 0) 
-      //{
-      //   informationf("MS GDI - ChoosePixelFormat failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-
-      //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
-      //if (!spfok) 
-      //{
-      //   informationf("MS GDI - SetPixelFormat failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-
-      //HGLRC hglrcTime = wglCreateContext(hdc);
-      //if (hglrcTime == nullptr)
-      //{
-      //   informationf("MS WGL - wglCreateContext failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   ReleaseDC(m_hwnd, m_hdc);
-      //   return false;
-      //}
-
-      //bool okMakeCurrent = wglMakeCurrent(hdc, hglrcTime);
-      //if (!okMakeCurrent)
-      //{
-      //   informationf("MS WGL - wglMakeCurrent failed");
-      //   informationf("last-error code: %d\n", GetLastError());
-      //   return false;
-      //}
-      ////vkfwInit();
-      //// ... <snip> ... setup a window and a context
-      //
-      //auto wglCurrentContext = wglGetCurrentContext();
-
-      //// Load all Opengl functions using the vkfw loader function
-      //// If you use SDL you can use: https://wiki.libsdl.org/SDL_GL_GetProcAddress
-      ////if (!vkadLoadGLLoader((VKADloadproc)vkfwGetProcAddress)) {
-      ////   std::cout << "Failed to initialize Opengl context" << std::endl;
-      ////   return -1;
+      ////if (!draw2d_nanovg()->m_popenglcontext) {
+      ////   informationf("MS GDI - RegisterClass failed");
+      ////   informationf("last-error code: %d\n", GetLastError());
+      ////   return false;
       ////}
-      //if (!vkadLoadWGL(hdc))
-      //{
-      //   // Problem: vkewInit failed, something is seriously wrong.
-      //   informationf("vkadLoadWGL failed");
-      //   //return false;
-      //   //throw resource_exception();
 
-      //   return false;
+      ////if (!m_pgpucontext)
+      ////{
 
-      //}
-      //int attribs[] =
-      //{
-      //   WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-      //   WGL_CONTEXT_MINOR_VERSION_ARB, 1,
-      //   WGL_CONTEXT_FLAGS_ARB, 0,
-      //   WGL_CONTEXT_PROFILE_MASK_ARB,
-      //   WGL_CONTEXT_COREPROFILE_BIT_ARB, 0
-      //};
+      ////   auto pgpuapproach = application()->get_gpu_approach();
 
-      ////PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
-      ////wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+      ////   if (!m_puserinteractionDraw2dGraphics)
+      ////   {
 
-      //auto hglrc =  wglCreateContextAttribsARB(hdc, 0, attribs);
-      //wglMakeCurrent(nullptr, nullptr);
-      //wglDeleteContext(hglrcTime);
-      //   wglMakeCurrent(hdc, m_hglrc);
-      ////draw2d_nanovg()->defer_initialize_glew();
-      //
-      ////draw2d_nanovg()->defer_initialize_glew();
+      ////      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+
+      ////   }
+
+      ////   ASSERT(m_puserinteractionDraw2dGraphics);
+
+      ////   auto pgpudevice = pgpuapproach->get_gpu_device();
+
+      ////   m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
+
+      ////}
+
+      //auto pgpuapproach = application()->get_gpu_approach();
+
+      //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
 
 
-      //m_hwnd = window;
-      //m_hdc = hdc;
-      //m_hglrc = hglrc;
-      //m_size = size;
+      //::cast < ::gpu_opengl::context > pcontextOpengl = gpu_context();
+      //::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
 
-      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+      ////nanovg_device_create_info_t createinfo;
+      ////createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      ////createinfo.deferredResolve = true;
+      ////createinfo.inst = papproachOpengl->m_vkinstance;
+      ////createinfo.phy = pcontextOpengl->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
+      ////createinfo.vkdev = pcontextOpengl->logicalDevice();
+      ////createinfo.qFamIdx = pcontextOpengl->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
+      ////createinfo.qIndex = 0;
+      ////createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
-      ::opengl::resize(rectanglePlacement.size(), bYSwap);
+      ////m_pdc = nanovg_device_create(&createinfo);
+      ////m_nanovgsurface = nanovg_surface_create(m_pdc, rectanglePlacement.width(),
+      ////   rectanglePlacement.height());
 
-      return true;
+      ////m_pdc = nanovg_create(m_nanovgsurface);
+      ////if (!m_pgpucontext)
+      ////{
+
+      ////   return false;
+
+      ////}
+
+
+      ////      ::opengl::resize(size);
+
+
+      ////}
+
+      ////LPCTSTR lpClassName = L"draw2d_nanovg_offscreen_buffer_window";
+      ////LPCTSTR lpWindowName = L"draw2d_nanovg_offscreen_buffer_window";
+      //////unsigned int dwStyle = WS_CAPTION | WS_POPUPWINDOW; // | WS_VISIBLE
+      ////unsigned int dwExStyle = 0;
+      ////unsigned int dwStyle = WS_OVERLAPPEDWINDOW;
+      ////dwStyle |= WS_POPUP;
+      //////dwStyle |= WS_VISIBLE;
+      //////dwStyle |= WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+      ////dwStyle &= ~WS_CAPTION;
+      //////dwStyle = 0;
+      ////dwStyle &= ~WS_THICKFRAME;
+      ////dwStyle &= ~WS_BORDER;
+      ////int x = 0;
+      ////int y = 0;
+      ////int nWidth = size.cx;
+      ////int nHeight = size.cy;
+      ////HWND hWndParent = nullptr;
+      ////HMENU hMenu = nullptr;
+      ///////HINSTANCE hInstance = psystem->m_hinstance;
+      ////void * lpParam = nullptr;
+
+      //////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y,  nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+      ////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, nullptr, lpParam);
+
+      ////if (window == nullptr) 
+      ////{
+      ////   informationf("MS GDI - CreateWindow failed");
+      ////   informationf("last-error code: %d\n", GetLastError());
+      ////   return false;
+      ////}
+
+      ////// create WGL context, make current
+
+      ////PIXELFORMATDESCRIPTOR pixformat;
+      ////int chosenformat;
+      ////HDC hdc = GetDC(window);
+      ////if (hdc == nullptr)
+      ////{
+      ////   informationf("MS GDI - GetDC failed");
+      ////   informationf("last-error code: %d\n", GetLastError());
+      ////   return false;
+      ////}
+
+      ////ZeroMemory(&pixformat, sizeof(pixformat));
+      ////pixformat.nSize = sizeof(pixformat);
+      ////pixformat.nVersion = 1;
+      ////pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+      ////pixformat.iPixelType = PFD_TYPE_RGBA;
+      ////pixformat.cColorBits = 24;
+      ////pixformat.cAlphaBits = 8;
+      ////pixformat.cDepthBits = 24;
+      ////pixformat.cStencilBits = 8;
+
+      ////chosenformat = ChoosePixelFormat(hdc, &pixformat);
+      ////if (chosenformat == 0) 
+      ////{
+      ////   informationf("MS GDI - ChoosePixelFormat failed");
+      ////   informationf("last-error code: %d\n", GetLastError());
+      ////   return false;
+      ////}
+
+      ////bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
+      ////if (!spfok) 
+      ////{
+      ////   informationf("MS GDI - SetPixelFormat failed");
+      ////   informationf("last-error code: %d\n", GetLastError());
+      ////   return false;
+      ////}
+
+      ////HGLRC hglrcTime = wglCreateContext(hdc);
+      ////if (hglrcTime == nullptr)
+      ////{
+      ////   informationf("MS WGL - wglCreateContext failed");
+      ////   informationf("last-error code: %d\n", GetLastError());
+      ////   ReleaseDC(m_hwnd, m_hdc);
+      ////   return false;
+      ////}
+
+      ////bool okMakeCurrent = wglMakeCurrent(hdc, hglrcTime);
+      ////if (!okMakeCurrent)
+      ////{
+      ////   informationf("MS WGL - wglMakeCurrent failed");
+      ////   informationf("last-error code: %d\n", GetLastError());
+      ////   return false;
+      ////}
+      //////vkfwInit();
+      ////// ... <snip> ... setup a window and a context
+      ////
+      ////auto wglCurrentContext = wglGetCurrentContext();
+
+      ////// Load all Opengl functions using the vkfw loader function
+      ////// If you use SDL you can use: https://wiki.libsdl.org/SDL_GL_GetProcAddress
+      //////if (!vkadLoadGLLoader((VKADloadproc)vkfwGetProcAddress)) {
+      //////   std::cout << "Failed to initialize Opengl context" << std::endl;
+      //////   return -1;
+      //////}
+      ////if (!vkadLoadWGL(hdc))
+      ////{
+      ////   // Problem: vkewInit failed, something is seriously wrong.
+      ////   informationf("vkadLoadWGL failed");
+      ////   //return false;
+      ////   //throw resource_exception();
+
+      ////   return false;
+
+      ////}
+      ////int attribs[] =
+      ////{
+      ////   WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+      ////   WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+      ////   WGL_CONTEXT_FLAGS_ARB, 0,
+      ////   WGL_CONTEXT_PROFILE_MASK_ARB,
+      ////   WGL_CONTEXT_COREPROFILE_BIT_ARB, 0
+      ////};
+
+      //////PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
+      //////wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+
+      ////auto hglrc =  wglCreateContextAttribsARB(hdc, 0, attribs);
+      ////wglMakeCurrent(nullptr, nullptr);
+      ////wglDeleteContext(hglrcTime);
+      ////   wglMakeCurrent(hdc, m_hglrc);
+      //////draw2d_nanovg()->defer_initialize_glew();
+      ////
+      //////draw2d_nanovg()->defer_initialize_glew();
+
+
+      ////m_hwnd = window;
+      ////m_hdc = hdc;
+      ////m_hglrc = hglrc;
+      ////m_size = size;
+
+      //bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+
+      //::opengl::resize(rectanglePlacement.size(), bYSwap);
+
+      //return true;
 
    }
 
@@ -1234,17 +1268,29 @@ namespace draw2d_nanovg
       if (pbrush->m_ebrush == ::draw2d::e_brush_radial_gradient_color)
       {
 
-         //VkvgPattern ppattern = nanovg_pattern_create_radial(pbrush->m_point.x - x, pbrush->m_point.y - y, 0,
-         //   pbrush->m_point.x - x, pbrush->m_point.y - y,
-         //   maximum(pbrush->m_size.cx, pbrush->m_size.cy));
+         auto radius = maximum(::abs(pbrush->m_size.cx), ::abs(pbrush->m_size.cy)) / 2.0;
 
-         //nanovg_pattern_add_color_stop(ppattern, 0., __expand_float_rgba(pbrush->m_color1));
+         if (radius <= 0.0)
+         {
 
-         //nanovg_pattern_add_color_stop(ppattern, 1., __expand_float_rgba(pbrush->m_color2));
+            nvgFillColor(m_pdc, as_nvg_color(pbrush->m_color1));
 
-         //nanovg_set_source(m_pdc, ppattern);
+         }
+         else
+         {
 
-         ////nanovg_pattern_destroy(ppattern);
+            auto paint = nvgRadialGradient(
+               m_pdc,
+               (float)(pbrush->m_point.x - x),
+               (float)(pbrush->m_point.y - y),
+               0.f,
+               (float)radius,
+               as_nvg_color(pbrush->m_color1),
+               as_nvg_color(pbrush->m_color2));
+
+            nvgFillPaint(m_pdc, paint);
+
+         }
 
       }
       else if (pbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
@@ -2239,6 +2285,29 @@ namespace draw2d_nanovg
    void graphics::fill_polygon(const ::f64_point* lpPoints, ::collection::count nCount)
    {
 
+      if (!lpPoints || nCount < 3)
+      {
+
+         return;
+
+      }
+
+      _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      nvgBeginPath(m_pdc);
+      nvgMoveTo(m_pdc, (float)lpPoints[0].x, (float)lpPoints[0].y);
+
+      for (::collection::index i = 1; i < nCount; i++)
+      {
+
+         nvgLineTo(m_pdc, (float)lpPoints[i].x, (float)lpPoints[i].y);
+
+      }
+
+      nvgClosePath(m_pdc);
+
+      fill();
+
       //   if(nCount <= 0)
       //      return true;
 
@@ -2330,6 +2399,29 @@ namespace draw2d_nanovg
    void graphics::draw_polygon(const ::f64_point* lpPoints, ::collection::count nCount)
    {
 
+      if (!lpPoints || nCount < 2)
+      {
+
+         return;
+
+      }
+
+      _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      nvgBeginPath(m_pdc);
+      nvgMoveTo(m_pdc, (float)lpPoints[0].x, (float)lpPoints[0].y);
+
+      for (::collection::index i = 1; i < nCount; i++)
+      {
+
+         nvgLineTo(m_pdc, (float)lpPoints[i].x, (float)lpPoints[i].y);
+
+      }
+
+      nvgClosePath(m_pdc);
+
+      draw();
+
       //if (nCount <= 0)
       //   return true;
 
@@ -2419,6 +2511,30 @@ namespace draw2d_nanovg
    void graphics::polygon(const ::f64_point* lpPoints, ::collection::count nCount)
    {
 
+      if (!lpPoints || nCount < 3)
+      {
+
+         return;
+
+      }
+
+      _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      nvgBeginPath(m_pdc);
+      nvgMoveTo(m_pdc, (float)lpPoints[0].x, (float)lpPoints[0].y);
+
+      for (::collection::index i = 1; i < nCount; i++)
+      {
+
+         nvgLineTo(m_pdc, (float)lpPoints[i].x, (float)lpPoints[i].y);
+
+      }
+
+      nvgClosePath(m_pdc);
+
+      fill();
+      draw();
+
       //if(nCount <= 0)
       //   return true;
 
@@ -2470,6 +2586,49 @@ namespace draw2d_nanovg
 
    void graphics::poly_polygon(const ::f64_point* lpPoints, const int* lpPolyCounts, ::collection::count nCount)
    {
+
+      if (!lpPoints || !lpPolyCounts || nCount <= 0)
+      {
+
+         return;
+
+      }
+
+      _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      nvgBeginPath(m_pdc);
+
+      ::collection::index iPoint = 0;
+
+      for (::collection::index iPolygon = 0; iPolygon < nCount; iPolygon++)
+      {
+
+         auto iPolygonCount = lpPolyCounts[iPolygon];
+
+         if (iPolygonCount < 1)
+         {
+
+            continue;
+
+         }
+
+         nvgMoveTo(m_pdc, (float)lpPoints[iPoint].x, (float)lpPoints[iPoint].y);
+
+         for (int i = 1; i < iPolygonCount; i++)
+         {
+
+            nvgLineTo(m_pdc, (float)lpPoints[iPoint + i].x, (float)lpPoints[iPoint + i].y);
+
+         }
+
+         nvgClosePath(m_pdc);
+
+         iPoint += iPolygonCount;
+
+      }
+
+      fill();
+      draw();
 
       // ASSERT(m_hdc != nullptr);
 
@@ -2912,25 +3071,44 @@ namespace draw2d_nanovg
    void graphics::get_text_metrics(::write_text::text_metric* lpMetrics)
    {
 
-      set(m_pfont);
+      _set(m_pfont);
       //if (!set(m_pfont))
       //{
 
       //   return false;
 
       //}
-#if defined(WINDOWS_DESKTOP)
-      ::pointer<font>pfont = m_pfont;
+      
 
-      TEXTMETRIC tm;
 
-      GetTextMetrics(pfont->m_hdcFont, &tm);
+      float ascender = 0.f;
 
-      lpMetrics->m_dAscent = tm.tmAscent;
-      lpMetrics->m_dHeight = tm.tmHeight;
-      lpMetrics->m_dDescent = tm.tmDescent;
+      float descender = 0.f;
 
-#endif
+      float lineh = 0.f;
+
+      nvgTextMetrics(m_pdc, &ascender, &descender, &lineh);
+
+
+      lpMetrics->m_dAscent = ascender;
+      lpMetrics->m_dDescent = -descender;
+      lpMetrics->m_dHeight = lineh;
+      lpMetrics->m_dInternalLeading = 0.0;
+      lpMetrics->m_dExternalLeading =
+         maximum(0.0, (double)lineh - ((double)ascender - (double)descender));
+       
+//#if defined(WINDOWS_DESKTOP)
+//      ::pointer<font>pfont = m_pfont;
+//
+//      TEXTMETRIC tm;
+//
+//      GetTextMetrics(pfont->m_hdcFont, &tm);
+//
+//      lpMetrics->m_dAscent = tm.tmAscent;
+//      lpMetrics->m_dHeight = tm.tmHeight;
+//      lpMetrics->m_dDescent = tm.tmDescent;
+//
+//#endif
       
       //lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
 
@@ -4277,6 +4455,13 @@ namespace draw2d_nanovg
 
       double ry = ellipse.height() / 2.0;
 
+      if (rx == 0.0 || ry == 0.0)
+      {
+
+         return false;
+
+      }
+
       nvgScale(m_pdc, (float)rx, (float)ry);
 
       nvgArc(m_pdc, (float)0.0, (float)0.0, (float)1.0, (float)0.0, (float)(2.0 * π), NVG_CCW);
@@ -5288,26 +5473,9 @@ namespace draw2d_nanovg
 
       nanovg_keep keep(m_pdc);
 
-#if defined(USE_PANGO)
-
       auto rectangle = ::f64_rectangle(f64_point(x, y), f64_size(65535.0, 65535.0));
 
-      internal_draw_text(scopedstr, rectangle, e_align_none);
-
-#else
-
-      ::i32_rectangle rectangle = i32_rectangle_dimension(
-         int(x),
-         int(y),
-         65535,
-         65535
-      );
-
       internal_draw_text(scopedstr, rectangle, e_align_top_left, e_draw_text_none);
-
-      //return true;
-
-#endif
 
       //return true;
 
@@ -5510,6 +5678,41 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::DeleteDC()
    {
+
+      if (m_pdc)
+      {
+
+         auto pdc = m_pdc;
+
+         m_pdc = nullptr;
+
+         try
+         {
+
+            auto pcontext = gpu_context();
+
+            if (pcontext)
+            {
+
+               ::gpu::context_lock contextlock(pcontext);
+
+               nvgDeleteGL3(pdc);
+
+            }
+            else
+            {
+
+               nvgDeleteGL3(pdc);
+
+            }
+
+         }
+         catch (...)
+         {
+
+         }
+
+      }
 
 
 
@@ -6203,16 +6406,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    int graphics::IntersectClipRect(int x1, int y1, int x2, int y2)
    {
 
-      //double nRetVal = ERROR;
+      intersect_clip(::f64_rectangle(x1, y1, x2, y2));
 
-      int nRetVal = 0;
-
-      //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = ::IntersectClipRect(m_hdc, x1, y1, x2, y2);
-      //if(m_hdc != nullptr)
-      //   nRetVal = ::IntersectClipRect(m_hdc, x1, y1, x2, y2);
-
-      return nRetVal;
+      return 1;
 
    }
 
@@ -6220,14 +6416,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    int graphics::IntersectClipRect(const ::i32_rectangle& rectangleBounds)
    {
 
-      int nRetVal = 0;
+      intersect_clip(rectangleBounds);
 
-      //if(m_hdc != nullptr && m_hdc != m_hdc)
-      //   nRetVal = ::IntersectClipRect(m_hdc,rectangleBounds.left,rectangleBounds.top,rectangleBounds.right,rectangleBounds.bottom);
-      //if(m_hdc != nullptr)
-      //   nRetVal = ::IntersectClipRect(m_hdc,rectangleBounds.left,rectangleBounds.top,rectangleBounds.right,rectangleBounds.bottom);
-
-      return nRetVal;
+      return 1;
 
    }
 
@@ -6718,22 +6909,22 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::draw_text(const ::scoped_string& str, const ::f64_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
+   void graphics::draw_text(const ::scoped_string& scopedstr, const ::f64_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
    {
 
-      //::f64_rectangle rectangle;
+      ::gpu::context_lock contextlock(gpu_context());
 
-      //copy(rectangle,&rectangleParam);
-
-      //return draw_text(str, rectangle, ealign, edrawtext);
-
+      internal_draw_text(scopedstr, rectangle, ealign, edrawtext);
 
    }
 
 
-   void graphics::draw_text(const ::scoped_string& str, const ::i32_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
+   void graphics::draw_text(const ::scoped_string& scopedstr, const ::i32_rectangle& rectangle, const ::e_align& ealign, const ::e_draw_text& edrawtext)
    {
 
+      ::gpu::context_lock contextlock(gpu_context());
+
+      internal_draw_text(scopedstr, rectangle, ealign, edrawtext);
       //try
       //{
 
@@ -6936,8 +7127,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             playout = pango_nanovg_create_layout(m_pdc);                 // init pango layout ready for use
 
-            pango_layout_set_text(playout, scopedstr.m_begin,
-               scopedstr.size());          // sets the text to be associated with the layout (final arg is length, -1
+            pango_layout_set_text(playout, str.m_begin,
+               str.size());          // sets the text to be associated with the layout (final arg is length, -1
 
             // to calculate automatically when passing a nul-terminated string)
             pango_layout_set_font_description(playout,
@@ -6953,7 +7144,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             PangoRectangle pos;
 
-            pango_layout_index_to_pos(playout, iIndex, &pos);
+            pango_layout_index_to_pos(playout, str.size(), &pos);
 
             pango_layout_get_pixel_size(playout, &width, &height);
 
@@ -6972,11 +7163,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          {
 
+            nanovg_keep keep(m_pdc);
+
             _set(m_pfont);
 
-            float textextents[4];
+            nvgTextAlign(m_pdc, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
 
-            auto x_advance = nvgTextBounds(m_pdc, 0.f, 0.f, scopedstr.m_begin, scopedstr.m_end, textextents);
+            auto x_advance = nvgTextBounds(m_pdc, 0.f, 0.f, str.m_begin, str.m_end, nullptr);
 
             //nanovg_font_extents_t fontextents;
 
@@ -6994,7 +7187,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             //size.cy = x;
 
-            return { x_advance, lineh };
+            auto dWidth = (double)x_advance * m_pfont->m_dFontWidth;
+
+            return { dWidth, lineh };
 
          }
 
@@ -7017,13 +7212,19 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       for (auto& strLine : straLines)
       {
 
-         auto sizeLine = get_text_extent(strLine, str.length());
+         auto sizeLine = get_text_extent(strLine, strLine.length());
 
          size.cx = maximum(size.cx, sizeLine.cx);
 
-         size.cy += sizeLine.cy;
-
       }
+
+      _set(m_pfont);
+
+      float lineh = 0.f;
+
+      nvgTextMetrics(m_pdc, nullptr, nullptr, &lineh);
+
+      size.cy = lineh * straLines.size();
 
       return size;
 
@@ -7378,7 +7579,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (str.is_empty())
       {
 
-         throw ::exception(error_invalid_empty_argument);
+         return;
 
       }
 
@@ -7400,89 +7601,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       nanovg_keep keep(m_pdc);
 
-      f64_size sz = get_text_extent(str);
-
       _set(m_pfont);
-
-      float ascender = 0.f;
-
-      float descender = 0.f;
 
       float lineh = 0.f;
 
-      nvgTextMetrics(m_pdc, &ascender, &descender, &lineh);
-
-      float x;
-
-      float y;
-
-      if (ealign & e_align_right)
-      {
-
-         nvgTextAlign(m_pdc, NVG_ALIGN_RIGHT | NVG_ALIGN_TOP);
-
-         x = rectangle.right;
-
-      }
-      else if (ealign & e_align_horizontal_center)
-      {
-
-         nvgTextAlign(m_pdc, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-
-         x = (rectangle.right + rectangle.left) / 2.f;
-
-      }
-      else
-      {
-
-         nvgTextAlign(m_pdc, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-
-         x = rectangle.left;
-
-      }
-
-      string_array stra;
-
-      stra.add_lines(str);
-
-      if (ealign & e_align_bottom)
-      {
-
-         y = rectangle.bottom - lineh * stra.size();
-
-      }
-      else if (ealign & e_align_vertical_center)
-      {
-
-         y = rectangle.center_y() - lineh * stra.size() / 2.f;
-
-      }
-      else
-      {
-
-         y = rectangle.top;
-
-      }
-
-      if (m_pfont->m_dFontWidth != 1.0)
-      {
-
-         //float m[6];
-
-         //nvgCurrentTransform(m_pdc, m);
-
-         nvgScale(m_pdc, (float)m_pfont->m_dFontWidth, (float)1.0);
-
-         //nanovg_set_matrix(m_pdc, &m);
-
-      }
-
-      //if (m_pbrush.is_set())
-      //{
-
-      //    set_os_color(m_pbrush->m_color);
-
-      //}
+      nvgTextMetrics(m_pdc, nullptr, nullptr, &lineh);
 
       if (edrawtext & e_draw_text_expand_tabs)
       {
@@ -7506,7 +7629,108 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      int i = 0;
+      string_array stra;
+
+      stra.add_lines(str);
+
+      if (!stra.has_element())
+      {
+
+         return;
+
+      }
+
+      double x;
+
+      int iHorizontalAlign;
+
+      if (ealign & e_align_right)
+      {
+
+         iHorizontalAlign = NVG_ALIGN_RIGHT;
+
+         x = rectangle.right;
+
+      }
+      else if (ealign & e_align_horizontal_center)
+      {
+
+         iHorizontalAlign = NVG_ALIGN_CENTER;
+
+         x = rectangle.center_x();
+
+      }
+      else
+      {
+
+         iHorizontalAlign = NVG_ALIGN_LEFT;
+
+         x = rectangle.left;
+
+      }
+
+      double y;
+
+      int iVerticalAlign;
+
+      if (ealign & e_align_baseline)
+      {
+
+         iVerticalAlign = NVG_ALIGN_BASELINE;
+
+         y = rectangle.top;
+
+      }
+      else if (ealign & e_align_vertical_center)
+      {
+
+         iVerticalAlign = NVG_ALIGN_MIDDLE;
+
+         y = rectangle.center_y() - lineh * (stra.size() - 1) / 2.0;
+
+      }
+      else if (ealign & e_align_bottom)
+      {
+
+         iVerticalAlign = NVG_ALIGN_BOTTOM;
+
+         y = rectangle.bottom - lineh * (stra.size() - 1);
+
+      }
+      else
+      {
+
+         iVerticalAlign = NVG_ALIGN_TOP;
+
+         y = rectangle.top;
+
+      }
+
+      if (!(ealign & e_align_baseline))
+      {
+
+         // Match draw2d's reference top-origin placement while preserving NanoVG's line metrics.
+         y += nvgTextBaselineOffset(m_pdc);
+
+      }
+
+      nvgTextAlign(m_pdc, iHorizontalAlign | iVerticalAlign);
+
+      if (m_pfont->m_dFontWidth != 1.0)
+      {
+
+         nvgTranslate(m_pdc, (float)x, 0.f);
+         nvgScale(m_pdc, (float)m_pfont->m_dFontWidth, (float)1.0);
+         nvgTranslate(m_pdc, (float)-x, 0.f);
+
+      }
+
+      //if (m_pbrush.is_set())
+      //{
+
+      //    set_os_color(m_pbrush->m_color);
+
+      //}
 
       _fill1();
 
@@ -7541,9 +7765,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          //}
 
-         y += lineh * i;
-
-         i++;
+         y += lineh;
 
       }
 
@@ -7851,6 +8073,83 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::_draw_raw(const ::f64_rectangle& rectangleTarget, ::image::image* pimage, const ::image::image_drawing_options& imagedrawingoptionsParam, const ::f64_point& pointSrc)
    {
 
+      if (!m_pdc || !pimage || rectangleTarget.is_empty() || pimage->is_empty())
+      {
+
+         return;
+
+      }
+
+      pimage->defer_update_image();
+      pimage->map();
+
+      auto sizeImage = pimage->size();
+
+      ::memory memoryRgba;
+
+      memoryRgba.set_size(sizeImage.area() * 4);
+
+      auto ptarget = memoryRgba.data();
+      auto colorindexes = pimage->color_indexes();
+
+      for (int y = 0; y < sizeImage.cy; y++)
+      {
+
+         auto psource = pimage->line_data(y);
+
+         for (int x = 0; x < sizeImage.cx; x++)
+         {
+
+            *ptarget++ = psource->u8_red(colorindexes);
+            *ptarget++ = psource->u8_green(colorindexes);
+            *ptarget++ = psource->u8_blue(colorindexes);
+            *ptarget++ = psource->u8_opacity(colorindexes);
+
+            psource++;
+
+         }
+
+      }
+
+      _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      auto iImage = nvgCreateImageRGBA(
+         m_pdc,
+         sizeImage.cx,
+         sizeImage.cy,
+         NVG_IMAGE_PREMULTIPLIED,
+         memoryRgba.data());
+
+      if (iImage == 0)
+      {
+
+         return;
+
+      }
+
+      nanovg_keep keep(m_pdc);
+
+      auto paint = nvgImagePattern(
+         m_pdc,
+         (float)(rectangleTarget.left - pointSrc.x),
+         (float)(rectangleTarget.top - pointSrc.y),
+         (float)sizeImage.cx,
+         (float)sizeImage.cy,
+         0.f,
+         iImage,
+         imagedrawingoptionsParam.opacity().f32_opacity());
+
+      nvgBeginPath(m_pdc);
+      nvgRect(
+         m_pdc,
+         (float)rectangleTarget.left,
+         (float)rectangleTarget.top,
+         (float)rectangleTarget.width(),
+         (float)rectangleTarget.height());
+      nvgFillPaint(m_pdc, paint);
+      nvgFill(m_pdc);
+
+      nvgDeleteImage(m_pdc, iImage);
 
    }
 
@@ -8452,6 +8751,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          reset_clip();
 
          reset_impact_area();
+
+         update_matrix();
+
       }
 
       // bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
@@ -8633,6 +8935,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (m_egraphics == e_graphics_draw)
       {
 
+         auto pgpucontext = gpu_context();
+
+         ::gpu::context_lock contextlock(pgpucontext);
+
          //nanovg_surface_resolve(m_nanovgsurface);
 
          //m_pgpucontext->m_prenderer->on_end_draw();
@@ -8672,18 +8978,20 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          }
 
-         if (!m_pgpucontextOutput)
-         {
+         //if (!m_pgpucontextOutput)
+         //{
 
-            constructø(m_pgpucontextOutput);
+         //   constructø(m_pgpucontextOutput);
 
-            ::cast < ::windowing::window > pwindow = m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow;
+         //   ::cast < ::windowing::window > pwindow = m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow;
 
-            m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow)->create_window_context(pwindow);
+         //   //m_pgpucontextOutput->create
 
-            //m_pgpucontextOutput->create_window_buffer(pwindow);
+         //   //m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow)->create_window_context(pwindow);
 
-         }
+         //   //m_pgpucontextOutput->create_window_buffer(pwindow);
+
+         //}
 
          if (!m_bHadEndLayer)
          {
@@ -8874,6 +9182,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::intersect_clip(const ::f64_rectangle& rectangle)
    {
 
+      _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      nvgIntersectScissor(
+         m_pdc,
+         (float)rectangle.left,
+         (float)rectangle.top,
+         (float)rectangle.width(),
+         (float)rectangle.height());
+
 
    }
 
@@ -8881,7 +9198,74 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::intersect_clip(const ::draw2d::clip_group& clipgroup)
    {
 
+      ::f64_rectangle rectangleBounds;
 
+      bool bHasBounds = false;
+
+      for (auto& pclipitem : clipgroup)
+      {
+
+         if (!pclipitem)
+         {
+
+            continue;
+
+         }
+
+         ::f64_rectangle rectangleItem;
+
+         switch (pclipitem->clip_item_type())
+         {
+         case ::draw2d::e_clip_item_rectangle:
+            rectangleItem = dynamic_cast<::draw2d::clip_rectangle*>(pclipitem.m_p)->m_item;
+            break;
+         case ::draw2d::e_clip_item_ellipse:
+            rectangleItem = dynamic_cast<::draw2d::clip_ellipse*>(pclipitem.m_p)->m_item;
+            break;
+         case ::draw2d::e_clip_item_polygon:
+            rectangleItem = dynamic_cast<::draw2d::clip_polygon*>(pclipitem.m_p)->m_item.bounding_rect();
+            break;
+         default:
+            continue;
+         }
+
+         if (bHasBounds)
+         {
+
+            rectangleBounds.unite(rectangleItem);
+
+         }
+         else
+         {
+
+            rectangleBounds = rectangleItem;
+
+            bHasBounds = true;
+
+         }
+
+      }
+
+      // NanoVG exposes rectangular scissoring only, so use the bounds of this
+      // union-of-shapes clip group and intersect it with prior clip groups.
+      if (bHasBounds)
+      {
+
+         intersect_clip(rectangleBounds);
+
+      }
+
+
+
+   }
+
+
+   void graphics::reset_clip()
+   {
+
+      _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      nvgResetScissor(m_pdc);
 
    }
 

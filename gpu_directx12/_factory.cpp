@@ -14,6 +14,7 @@
 #include "object.h"
 #include "offscreen_render_target_view.h"
 #include "renderer.h"
+#include "semaphore.h"
 #include "frame.h"
 #include "swap_chain.h"
 #include "texture.h"
@@ -57,6 +58,7 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::gpu_directx12::model_buffer, ::gpu::model_buffer >();
    pfactory->add_factory_item < ::gpu_directx12::command_buffer, ::gpu::command_buffer >();
    pfactory->add_factory_item<::gpu_directx12::fence, ::gpu::fence>();
+   pfactory->add_factory_item<::gpu_directx12::semaphore, ::gpu::semaphore>();
    pfactory->add_factory_item < ::gpu::layer >();
 
    pfactory->add_factory_item < ::gpu::pixmap >();

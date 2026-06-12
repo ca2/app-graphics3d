@@ -142,7 +142,7 @@ namespace gpu_vulkan
 
       ::string m_strTitle = "Vulkan Example";
       ::string m_strName = "vulkanExample";
-      uint32_t m_uApiVersion = VK_API_VERSION_1_0;
+      uint32_t m_uApiVersion = VK_API_VERSION_1_2;
 
       /** @brief Default depth stencil attachment used by the default render pass */
       struct {

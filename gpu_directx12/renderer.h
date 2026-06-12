@@ -287,6 +287,8 @@ namespace gpu_directx12
       void _on_end_render(::gpu::layer* pgpulayer) override;
       void on_end_draw() override;
 
+      void layer_end_submit() override;
+
       void on_final_begin_render() override;
 
       //void _set_image(VkImage image, const ::i32_rectangle& rectangle, bool bYSwap);

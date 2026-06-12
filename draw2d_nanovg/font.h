@@ -16,17 +16,6 @@ namespace draw2d_nanovg
    {
    public:
 
-      #ifdef WINDOWS_DESKTOP
-      HDC                           m_hdcFont;
-       #endif
-      //HFONT                         m_hfont;
-//      VKuint	                     m_baseFont;				// Base Display List For The Font Set
-//
-//#ifdef WINDOWS
-//      VKYPHMETRICSFLOAT             m_gmf[256];	// Storage For Information About Our Outline Font Characters
-//#endif
-
-
 
       font();
       ~font() override;

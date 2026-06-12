@@ -29,6 +29,9 @@ namespace gpu_directx12
       int m_iHeapSamplerIndex = 0;
       int m_iHeapSamplerCount = 64;
       DXGI_FORMAT m_dxgiformatRenderTargetView;
+      bool m_bPipelineBlendEnabled = false;
+      ::i64 m_iCommandBufferSerialPipelineBound = -1;
+      ::i64 m_iCommandBufferSerialSourceBound = -1;
 
       //::comptr < ID3D11PixelShader> m_ppixelshader;
 

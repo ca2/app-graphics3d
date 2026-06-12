@@ -1008,6 +1008,13 @@ namespace gpu_vulkan
 
       pcommandbuffer->submit_command_buffer(nullptr);
 
+      if (pcommandbuffer->m_pgpufence)
+      {
+
+         pcommandbuffer->m_pgpufence->wait_gpu_fence();
+
+      }
+
       //VkCommandBuffer commandbuffers[] = {pcommandbuffer->m_vkcommandbuffer};
 
       //VkSubmitInfo submitInfo{};
@@ -2899,12 +2906,25 @@ namespace gpu_vulkan
       {
 
          throw ::exception(error_failed, "failed to create image!");
+
       }
 
       if ((::iptr) image == 0x1150000000115)
       {
 
          ::information() << "image 0x1150000000115";
+
+      }
+      else if ((::iptr)image == 0x19d000000019d)
+      {
+
+         ::information() << "image 0x19d000000019d";
+
+      }
+      else if ((::iptr)image == 0xe300000000e3)
+      {
+
+         ::information() << "image 0xe300000000e3";
 
       }
 
@@ -3481,54 +3501,8 @@ namespace gpu_vulkan
    void context::on_start_layer(::gpu::layer *player)
    {
 
-     auto pgpurendertarget = m_pgpurenderer->render_target();
-
-      ::cast<::gpu_vulkan::texture> ptexture =
-         pgpurendertarget->current_texture(::gpu::current_layer());
-
-      ::cast<command_buffer> pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
-
-      if (pcommandbuffer->m_estate != command_buffer::e_state_recording)
-      {
-
-         ::cast<gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
-
-         auto pgpurendertarget = m_pgpurenderer->render_target();
-
-         ::cast<render_target> prendertarget = pgpurendertarget;
-
-         //::cast < render_pass > prenderpass = prendertarget->render_pass();
-
-         auto psynchronization = ptexture->synchronization();
-
-         ///VkFence fence = psynchronization->in_flight_fence();
-
-         auto pfence = psynchronization->in_flight_fence();
-
-         if (::is_set(pfence))
-         {
-
-            pfence->wait_gpu_fence();
-
-            //vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
-         }
-
-         pcommandbuffer->begin_command_buffer(false);
-      }
-
-      ptexture->_set_state(pcommandbuffer,
-                           {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
-
-       
-      {
-
-         if (m_pgpucompositor && m_etype == e_type_draw2d)
-         {
-
-            m_pgpucompositor->on_start_layer(player);
-         }
-      }
+      ::gpu_gpu::context::on_start_layer(player);
+    
    }
 
 
@@ -3638,6 +3612,17 @@ void context::on_end_layer(::gpu::layer *player)
 }
 
 
+void context::draw2d_on_end_draw(::gpu::graphics *pgpugraphics) 
+{
+   
+   auto pgpuswapchain = m_pgpudevice->m_pgpucontextMain->get_swap_chain();
+
+   pgpuswapchain->swap_buffers(); 
+
+}
+
+
+
 void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource, ::pointer < ::gpu::fence > * pgpufence)
 {
 
@@ -3651,7 +3636,9 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
 
    ::pointer<command_buffer> pcommandbuffer;
 
-   if (m_pgpurenderer->isFrameInProgress())
+   bool bIsFrameInProgress = m_pgpurenderer->isFrameInProgress();
+
+   if (bIsFrameInProgress)
    {
 
       pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
@@ -3670,11 +3657,19 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
 
       auto scopedstateDst =
          ptextureDst->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                                     VK_PIPELINE_STAGE_TRANSFER_BIT});
+                                                      VK_PIPELINE_STAGE_TRANSFER_BIT});
+
+      auto vkimageSrc = ptextureSrc->m_vkimage;
+
+      if ((::iptr)vkimageSrc == 0xe300000000e3)
+      {
+
+         ::information() << "image 0xe300000000e3";
+      }
 
       auto scopedstateSrc =
          ptextureSrc->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                                                     VK_PIPELINE_STAGE_TRANSFER_BIT});
+                                                      VK_PIPELINE_STAGE_TRANSFER_BIT});
 
       auto srcImage = ptextureSrc->m_vkimage;
 

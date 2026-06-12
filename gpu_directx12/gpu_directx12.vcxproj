@@ -704,6 +704,7 @@
     <ClInclude Include="aaa_direct2d_draw2d_swap_chain.h" />
     <ClInclude Include="dxgi_debug.h" />
     <ClInclude Include="fence.h" />
+    <ClInclude Include="semaphore.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="frame_storage.h" />
     <ClInclude Include="gltf\aaa_vertex.h" />
@@ -748,6 +749,7 @@
     <ClCompile Include="block.cpp" />
     <ClCompile Include="context_ktx.cpp" />
     <ClCompile Include="fence.cpp" />
+    <ClCompile Include="semaphore.cpp" />
     <ClCompile Include="frame_storage.cpp" />
     <ClCompile Include="gltf\mesh.cpp" />
     <ClCompile Include="gltf\model.cpp" />

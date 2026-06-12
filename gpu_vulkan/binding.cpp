@@ -168,11 +168,7 @@ namespace gpu_vulkan
 
                   auto &vkdescriptorimageinfo = *vkdescriptorimageinfoa.add_new().m_p;
 
-                  VkImage vkimage = ptexture->m_vkimage;
-
                   vkdescriptorimageinfo = ptexture->descriptor_info();
-
-                  vkdescriptorwriter.writeImage(iSlot, &vkdescriptorimageinfo);
 
                }
                else if (bindingslot.m_pblock)
@@ -183,6 +179,31 @@ namespace gpu_vulkan
                   auto &vkdescriptorbufferinfo = *vkdescriptorbufferinfoa.add_new().m_p;
 
                   vkdescriptorbufferinfo = pblock->descriptor_info(pgpucommandbuffer);
+
+               }
+
+            }
+
+            int iImageInfo = 0;
+            int iBufferInfo = 0;
+
+            for (int iSlot = 0; iSlot < iSlotCount; iSlot++)
+            {
+
+               auto &bindingslot = this->element_at(iSlot);
+
+               if (bindingslot.m_ptexture)
+               {
+
+                  auto &vkdescriptorimageinfo = *vkdescriptorimageinfoa.element_at(iImageInfo++).m_p;
+
+                  vkdescriptorwriter.writeImage(iSlot, &vkdescriptorimageinfo);
+
+               }
+               else if (bindingslot.m_pblock)
+               {
+
+                  auto &vkdescriptorbufferinfo = *vkdescriptorbufferinfoa.element_at(iBufferInfo++).m_p;
 
                   vkdescriptorwriter.writeBuffer(iSlot, &vkdescriptorbufferinfo);
 

@@ -484,7 +484,7 @@ namespace gpu_vulkan
       imageCreateInfo.pQueueFamilyIndices = nullptr;
       imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-      auto &state = mip_layer_state(0, 0);
+      auto &state = m_state2a.mip_layer_state(0, 0);
       state.m_vkimagelayout = imageCreateInfo.initialLayout;
       state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
       state.m_vkaccessflags = 0;
@@ -846,7 +846,7 @@ namespace gpu_vulkan
    }
 
 
-      void texture::set_all_states(const texture::state_t &state)
+   void texture::set_all_states(const texture::state_t &state)
    {
 
       for (int iMip = 0; iMip < this->mip_count(); iMip++)
@@ -855,12 +855,13 @@ namespace gpu_vulkan
          for (int iLayer = 0; iLayer < this->layer_count(); iLayer++)
          {
 
-            mip_layer_state(iMip, iLayer) = state;
+            m_state2a.mip_layer_state(iMip, iLayer) = state;
+
          }
+
       }
+
    }
-
-
 
 
    // void texture::initialize_image_texture(::gpu::context *prenderer, const ::i32_rectangle &rectangleTarget,
@@ -947,6 +948,7 @@ namespace gpu_vulkan
       );
 
       pcontext->endSingleTimeCommands(pcommandbuffer);
+
    }
 
 
@@ -1059,8 +1061,276 @@ namespace gpu_vulkan
    }
 
 
+   void texture::_set_state(::gpu_vulkan::command_buffer * pcommandbuffer, const state_array_2d & state2a)
+   {
+
+      for (int iMip = 0; iMip < state2a.count(); iMip++)
+      {
+
+         for (int iLayer = 0; iLayer < state2a.element_at(iMip).get_count(); iLayer++)
+         {
+
+            _set_state(pcommandbuffer, state2a.mip_layer_state(iMip, iLayer), iMip, iLayer);
+
+         }
+
+      }
+
+   }
+
+
    void texture::_set_state(::gpu_vulkan::command_buffer *pcommandbuffer, state_t state)
    {
+
+      _set_state(pcommandbuffer, state, m_iCurrentMip, m_iCurrentLayer);
+
+      //auto estate = pcommandbuffer->m_estate;
+
+      //ASSERT(estate == ::gpu::command_buffer::e_state_recording);
+
+      //VkImage image = m_vkimage;
+
+      //int iMip;
+
+      //int iMipCount;
+
+      //int iLayer;
+
+      //int iLayerCount;
+
+      //if (m_iCurrentMip >= 0)
+      //{
+
+      //   iMip = m_iCurrentMip;
+
+      //   iMipCount = 1;
+
+      //}
+      //else
+      //{
+
+      //   iMip = 0;
+
+      //   iMipCount = this->mip_count();
+
+      //}
+
+      //if (m_iCurrentLayer >= 0)
+      //{
+
+      //   iLayer = m_iCurrentLayer;
+
+      //   iLayerCount = 1;
+
+      //}
+      //else
+      //{
+
+      //   iLayer = 0;
+
+      //   iLayerCount = this->layer_count();
+
+      //}
+
+      //VkAccessFlags accessOld = m_state2a.mip_layer_state(iMip, iLayer).m_vkaccessflags;
+      //VkAccessFlags accessNew = state.m_vkaccessflags;
+      //VkImageLayout layoutOld = m_state2a.mip_layer_state(iMip, iLayer).m_vkimagelayout;
+      //VkImageLayout layoutNew = state.m_vkimagelayout;
+      //VkPipelineStageFlags stageOld = m_state2a.mip_layer_state(iMip, iLayer).m_vkpipelinestageflags;
+      //VkPipelineStageFlags stageNew = state.m_vkpipelinestageflags;
+
+      //// Quick no-op
+      //if (layoutOld == layoutNew && accessOld == accessNew && stageOld == stageNew)
+      //{
+
+      //   return;
+
+      //}
+
+      //// If old layout is UNDEFINED, the src access must be 0 and src stage can be TOP_OF_PIPE
+      //if (layoutOld == VK_IMAGE_LAYOUT_UNDEFINED)
+      //{
+
+      //   accessOld = 0;
+
+      //   if (stageOld == 0)
+      //   {
+
+      //      stageOld = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
+      //   }
+
+      //}
+
+      //// If no stage bits provided, derive conservative ones from access masks / layouts
+      //auto derive_stage_from_access = [](VkAccessFlags access) -> VkPipelineStageFlags
+      //{
+
+      //   if (access == 0)
+      //   {
+
+      //      return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
+      //   }
+
+      //   VkPipelineStageFlags stages = 0;
+
+      //   if (access & (VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_TRANSFER_WRITE_BIT))
+      //   {
+
+      //      stages |= VK_PIPELINE_STAGE_TRANSFER_BIT;
+
+      //   }
+
+      //   if (access & (VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT))
+      //   {
+
+      //      stages |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+
+      //   }
+
+      //   if (access & (VK_ACCESS_HOST_READ_BIT | VK_ACCESS_HOST_WRITE_BIT))
+      //   {
+
+      //      stages |= VK_PIPELINE_STAGE_HOST_BIT;
+
+      //   }
+
+      //   if (access & (VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT))
+      //   {
+
+      //      stages |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+      //   }
+
+      //   if (stages == 0)
+      //   {
+
+      //      stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
+      //   }
+
+      //   return stages;
+
+      //};
+
+      //if (stageOld == 0)
+      //{
+
+      //   stageOld = derive_stage_from_access(accessOld);
+
+      //}
+
+      //if (stageNew == 0)
+      //{
+
+      //   stageNew = derive_stage_from_access(accessNew);
+
+      //}
+
+      //// If new layout is transfer dst and no dst access set, set transfer write
+      //if (layoutNew == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && (accessNew & VK_ACCESS_TRANSFER_WRITE_BIT) == 0)
+      //{
+
+      //   accessNew |= VK_ACCESS_TRANSFER_WRITE_BIT;
+
+      //   if ((stageNew & VK_PIPELINE_STAGE_TRANSFER_BIT) == 0)
+      //   {
+
+      //      stageNew |= VK_PIPELINE_STAGE_TRANSFER_BIT;
+
+      //   }
+
+      //}
+
+      //// If new layout is shader read only and no shader read access set, set it
+      //if (layoutNew == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && (accessNew & VK_ACCESS_SHADER_READ_BIT) == 0)
+      //{
+
+      //   accessNew |= VK_ACCESS_SHADER_READ_BIT;
+
+      //   if ((stageNew & (VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_VERTEX_SHADER_BIT |
+      //                    VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT)) == 0)
+      //   {
+
+      //      stageNew |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+
+      //   }
+
+      //}
+
+      //// Build barrier
+      //VkImageMemoryBarrier barrier{};
+      //barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+      //barrier.pNext = nullptr;
+      //barrier.srcAccessMask = accessOld;
+      //barrier.dstAccessMask = accessNew;
+      //barrier.oldLayout = layoutOld;
+      //barrier.newLayout = layoutNew;
+      //barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      //barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      //barrier.image = image;
+      //barrier.subresourceRange.baseMipLevel = iMip;
+      //barrier.subresourceRange.levelCount = maximum(1, iMipCount);
+      //barrier.subresourceRange.baseArrayLayer = iLayer;
+      //barrier.subresourceRange.layerCount = iLayerCount;
+
+      //// Set aspect mask according to texture type
+      //if (m_textureattributes.m_etexture == ::gpu::e_texture_depth)
+      //{
+
+      //   barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+
+      //}
+      //else if (m_textureattributes.m_etexture == ::gpu::e_texture_depth_stencil)
+      //{
+
+      //   barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+
+      //}
+      //else if (m_textureattributes.m_etexture == ::gpu::e_texture_image ||
+      //         m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
+      //{
+
+      //   barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
+      //}
+      //else
+      //{
+
+      //   throw ::exception(error_wrong_state);
+
+      //}
+
+      //// Finally call barrier
+      //vkCmdPipelineBarrier(pcommandbuffer->m_vkcommandbuffer, stageOld, stageNew, 0, 0, nullptr, 0, nullptr, 1,
+      //                     &barrier);
+
+      //state_t stateNew;
+
+      //stateNew.m_vkimagelayout = layoutNew;
+      //stateNew.m_vkaccessflags = accessNew;
+      //stateNew.m_vkpipelinestageflags = stageNew;
+
+      //m_state2a.set_state(stateNew, m_iCurrentMip, m_iCurrentLayer);
+
+      ////// Update stored state
+      ////m_state.m_vkimagelayout = layoutNew;
+      ////m_state.m_vkaccessflags = accessNew;
+      ////m_state.m_vkpipelinestageflags = stageNew;
+
+   }
+
+
+   void texture::_set_state(::gpu_vulkan::command_buffer *pcommandbuffer, state_t state, int iCurrentMip, int iCurrentLayer)
+   {
+
+      if ((::iptr)m_vkimage == 0xe300000000e3)
+      {
+
+         ::information() << "image 0xe300000000e3";
+
+      }
 
       auto estate = pcommandbuffer->m_estate;
 
@@ -1076,13 +1346,12 @@ namespace gpu_vulkan
 
       int iLayerCount;
 
-      if (m_iCurrentMip >= 0)
+      if (iCurrentMip >= 0)
       {
 
-         iMip = m_iCurrentMip;
+         iMip = iCurrentMip;
 
          iMipCount = 1;
-
       }
       else
       {
@@ -1090,16 +1359,14 @@ namespace gpu_vulkan
          iMip = 0;
 
          iMipCount = this->mip_count();
-
       }
 
-      if (m_iCurrentLayer >= 0)
+      if (iCurrentLayer >= 0)
       {
 
-         iLayer = m_iCurrentLayer;
+         iLayer = iCurrentLayer;
 
          iLayerCount = 1;
-
       }
       else
       {
@@ -1107,14 +1374,13 @@ namespace gpu_vulkan
          iLayer = 0;
 
          iLayerCount = this->layer_count();
-
       }
 
-      VkAccessFlags accessOld = mip_layer_state(iMip, iLayer).m_vkaccessflags;
+      VkAccessFlags accessOld = m_state2a.mip_layer_state(iMip, iLayer).m_vkaccessflags;
       VkAccessFlags accessNew = state.m_vkaccessflags;
-      VkImageLayout layoutOld = mip_layer_state(iMip, iLayer).m_vkimagelayout;
+      VkImageLayout layoutOld = m_state2a.mip_layer_state(iMip, iLayer).m_vkimagelayout;
       VkImageLayout layoutNew = state.m_vkimagelayout;
-      VkPipelineStageFlags stageOld = mip_layer_state(iMip, iLayer).m_vkpipelinestageflags;
+      VkPipelineStageFlags stageOld = m_state2a.mip_layer_state(iMip, iLayer).m_vkpipelinestageflags;
       VkPipelineStageFlags stageNew = state.m_vkpipelinestageflags;
 
       // Quick no-op
@@ -1134,20 +1400,16 @@ namespace gpu_vulkan
          {
 
             stageOld = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-
          }
-
       }
 
       // If no stage bits provided, derive conservative ones from access masks / layouts
       auto derive_stage_from_access = [](VkAccessFlags access) -> VkPipelineStageFlags
       {
-
          if (access == 0)
          {
 
             return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-
          }
 
          VkPipelineStageFlags stages = 0;
@@ -1156,53 +1418,45 @@ namespace gpu_vulkan
          {
 
             stages |= VK_PIPELINE_STAGE_TRANSFER_BIT;
-
          }
 
          if (access & (VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT))
          {
 
             stages |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
-
          }
 
          if (access & (VK_ACCESS_HOST_READ_BIT | VK_ACCESS_HOST_WRITE_BIT))
          {
 
             stages |= VK_PIPELINE_STAGE_HOST_BIT;
-
          }
 
          if (access & (VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT))
          {
 
             stages |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-
          }
 
          if (stages == 0)
          {
 
             stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-
          }
 
          return stages;
-
       };
 
       if (stageOld == 0)
       {
 
          stageOld = derive_stage_from_access(accessOld);
-
       }
 
       if (stageNew == 0)
       {
 
          stageNew = derive_stage_from_access(accessNew);
-
       }
 
       // If new layout is transfer dst and no dst access set, set transfer write
@@ -1215,9 +1469,7 @@ namespace gpu_vulkan
          {
 
             stageNew |= VK_PIPELINE_STAGE_TRANSFER_BIT;
-
          }
-
       }
 
       // If new layout is shader read only and no shader read access set, set it
@@ -1231,9 +1483,7 @@ namespace gpu_vulkan
          {
 
             stageNew |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-
          }
-
       }
 
       // Build barrier
@@ -1248,7 +1498,7 @@ namespace gpu_vulkan
       barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
       barrier.image = image;
       barrier.subresourceRange.baseMipLevel = iMip;
-      barrier.subresourceRange.levelCount = iMipCount;
+      barrier.subresourceRange.levelCount = maximum(1, iMipCount);
       barrier.subresourceRange.baseArrayLayer = iLayer;
       barrier.subresourceRange.layerCount = iLayerCount;
 
@@ -1257,27 +1507,36 @@ namespace gpu_vulkan
       {
 
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-
       }
       else if (m_textureattributes.m_etexture == ::gpu::e_texture_depth_stencil)
       {
 
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
-
       }
       else if (m_textureattributes.m_etexture == ::gpu::e_texture_image ||
                m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
       {
 
          barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-
       }
       else
       {
 
          throw ::exception(error_wrong_state);
+      }
+
+      auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
+
+      if ((::iptr)m_vkimage == 0xe300000000e3)
+      {
+
+         ::information() << "image 0xe300000000e3 changing state: ";
+         ::informationf("from access: 0x%08d, layout 0x%08d", barrier.srcAccessMask, barrier.oldLayout);
+         ::informationf("  to access: 0x%08d, layout 0x%08d", barrier.dstAccessMask, barrier.newLayout);
+         ::informationf("with command buffer 0x%016x", vkcommandbuffer);
 
       }
+
 
       // Finally call barrier
       vkCmdPipelineBarrier(pcommandbuffer->m_vkcommandbuffer, stageOld, stageNew, 0, 0, nullptr, 0, nullptr, 1,
@@ -1289,85 +1548,13 @@ namespace gpu_vulkan
       stateNew.m_vkaccessflags = accessNew;
       stateNew.m_vkpipelinestageflags = stageNew;
 
-      if (m_iCurrentMip >= 0)
-      {
-
-         if (m_iCurrentLayer >= 0)
-         {
-
-            auto & state = mip_layer_state(m_iCurrentMip, m_iCurrentLayer);
-
-            state = stateNew;
-
-         }
-         else
-         {
-
-            for (int iLayer = 0; iLayer < this->layer_count(); iLayer++)
-            {
-
-               auto & state = mip_layer_state(m_iCurrentMip, iLayer);
-
-               state = stateNew;
-
-            }
-
-         }
-
-      }
-      else if (m_iCurrentLayer >= 0)
-      {
-
-         for (int iMip = 0; iMip < this->mip_count(); iMip++)
-         {
-
-            auto & state = mip_layer_state(iMip, m_iCurrentLayer);
-
-            state = stateNew;
-
-         }
-
-      }
-      else
-      {
-
-         for (int iMip = 0; iMip < this->mip_count(); iMip++)
-         {
-
-            for (int iLayer = 0; iLayer < this->layer_count(); iLayer++)
-            {
-
-               auto & state = mip_layer_state(iMip, iLayer);
-
-               state = stateNew;
-
-               //informationf("\"%s\".state(%d, %d) = %s", m_strTextureName.c_str(), iMip, iLayer, vk_image_layout_text(state.m_vkimagelayout).c_str());
-
-               if (m_iTextureSerial == 12)
-               {
-
-                  if (state.m_vkimagelayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-                  {
-
-                     //information("vkimagelayout");
-
-                  }
-
-               }
-
-            }
-
-         }
-
-      }
+      m_state2a.set_state(stateNew, iCurrentMip, iCurrentLayer);
 
       //// Update stored state
-      //m_state.m_vkimagelayout = layoutNew;
-      //m_state.m_vkaccessflags = accessNew;
-      //m_state.m_vkpipelinestageflags = stageNew;
-
+      // m_state.m_vkimagelayout = layoutNew;
+      // m_state.m_vkaccessflags = accessNew;
+      // m_state.m_vkpipelinestageflags = stageNew;
    }
-
 
    VkImage texture::get_depth_image()
    {
@@ -1933,6 +2120,132 @@ namespace gpu_vulkan
       imageinfo.sampler = this->get_vk_sampler();
 
       return imageinfo;
+
+   }
+
+
+   texture::state_array_2d::state_array_2d()
+   {
+
+
+
+   }
+
+
+   texture::state_array_2d::~state_array_2d()
+   {
+
+
+
+   }
+
+
+   void texture::state_array_2d::set_state(const state_t &stateNew, int iMip, int iLayer)
+   {
+
+      if (iMip >= 0)
+      {
+
+         if (iLayer >= 0)
+         {
+
+            auto &state = mip_layer_state(iMip, iLayer);
+
+            state = stateNew;
+
+         }
+         else
+         {
+
+            for (int iMip = 0; iMip < this->count(); iMip++)
+            {
+
+               for (int iLayer = 0; iLayer < this->element_at(iMip).count(); iLayer++)
+               {
+                  
+                  auto &state = mip_layer_state(iMip, iLayer);
+
+                  state = stateNew;
+
+               }
+
+            }
+
+         }
+
+      }
+      else if (iLayer >= 0)
+      {
+
+         for (int iMip = 0; iMip < this->count(); iMip++)
+         {
+
+            auto &state = mip_layer_state(iMip, iLayer);
+
+            state = stateNew;
+
+         }
+
+      }
+      else
+      {
+
+         if (iMip < 0)
+         {
+
+            iMip = 0;
+
+         }
+
+         if (iLayer < 0)
+         {
+
+            iLayer = 0;
+
+         }
+
+         for (int iMip = 0; iMip < maximum(1, this->count()); iMip++)
+         {
+
+            for (int iLayer = 0; iLayer < maximum(iMip == 0 ? 1 : 0, this->atø(iMip).count()); iLayer++)
+            {
+
+               auto &state = mip_layer_state(iMip, iLayer);
+
+               state = stateNew;
+
+               // informationf("\"%s\".state(%d, %d) = %s", m_strTextureName.c_str(), iMip, iLayer,
+               // vk_image_layout_text(state.m_vkimagelayout).c_str());
+
+            }
+
+         }
+
+      }
+
+   }
+
+
+   void texture::state_array_2d::synchronize_from(const state_array_2d &state2aSynchronize)
+   {
+
+      for (int iMip = 0; iMip < minimum(state2aSynchronize.count(), maximum(1, this->count())); iMip++)
+      {
+
+         for (int iLayer = 0; iLayer < minimum(state2aSynchronize.element_at(iMip).get_count()
+                                                    , maximum(iMip == 0 ? 1 : 0, this->atø(iMip).count()));
+              iLayer++)
+         {
+
+            auto &state = mip_layer_state(iMip, iLayer);
+
+            auto &stateSynchronized = state2aSynchronize.mip_layer_state(iMip, iLayer);
+
+            state = stateSynchronized;
+
+         }
+
+      }
 
    }
 
@@ -3427,6 +3740,33 @@ void texture::create_sampler()
    }
 
 
+   void texture::from_external_state(::gpu::enum_texture_state etexturestate,
+                                     ::gpu::enum_texture_state etexturestateNow)
+   {
+
+      auto stateExternal = _s_state_from_texture_state(etexturestateNow);
+
+      m_state2aExternal.set_state(stateExternal, m_iCurrentMip, m_iCurrentLayer);
+
+      m_state2a.synchronize_from(m_state2aExternal);
+
+      auto stateNextExternal = _s_state_from_texture_state(etexturestate);
+
+      m_state2aExternal.set_state(stateNextExternal, m_iCurrentMip, m_iCurrentLayer);
+
+   }
+
+
+   void texture::to_external_state(::gpu::command_buffer * pgpucommandbuffer)
+   {
+
+      ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      _set_state(pcommandbuffer, m_state2aExternal);
+
+   }
+
+
    
 	//void texture::UpdateDescriptor()
  //  {
@@ -3456,7 +3796,7 @@ void texture::create_sampler()
    bool texture::is_in_shader_sampling_state()
    {
 
-      if (mip_layer_state(0,0).m_vkimagelayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+      if (m_state2a.mip_layer_state(0,0).m_vkimagelayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
       {
 
          return true;
@@ -3584,7 +3924,7 @@ void texture::create_sampler()
       imageCreateInfo.pQueueFamilyIndices = nullptr;
       imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-      auto &state = mip_layer_state(0, 0);
+      auto &state = m_state2a.mip_layer_state(0, 0);
       state.m_vkimagelayout = imageCreateInfo.initialLayout;
       state.m_vkpipelinestageflags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
       state.m_vkaccessflags = 0;
@@ -4587,31 +4927,9 @@ void texture::create_sampler()
 
       ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      if (etexturestate == ::gpu::e_texture_state_shader_read)
-      {
-         _set_state(pcommandbuffer,
-                              {
+      auto state = _s_state_from_texture_state(etexturestate);
 
-                                 0,
-                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-            }
-
-         );
-      }
-      else if (etexturestate == ::gpu::e_texture_state_color_attachment)
-      {
-
-        _set_state(pcommandbuffer,
-                    {
-
-         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT}
-
-         );
-      }
-
+      _set_state(pcommandbuffer, state);
 
    }
 
@@ -4707,9 +5025,9 @@ void texture::create_sampler()
 
       // First, transition all mips to VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
       VkImageMemoryBarrier barrierStart{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
-      barrierStart.oldLayout = mip_layer_state(0, 0).m_vkimagelayout;
+      barrierStart.oldLayout = m_state2a.mip_layer_state(0, 0).m_vkimagelayout;
       barrierStart.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-      barrierStart.srcAccessMask = mip_layer_state(0, 0).m_vkaccessflags;
+      barrierStart.srcAccessMask = m_state2a.mip_layer_state(0, 0).m_vkaccessflags;
       barrierStart.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
       barrierStart.image = m_vkimage;
       barrierStart.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -4718,7 +5036,7 @@ void texture::create_sampler()
       barrierStart.subresourceRange.baseArrayLayer = 0;
       barrierStart.subresourceRange.layerCount = m_textureattributes.m_iLayerCount;
 
-      vkCmdPipelineBarrier(cmd, mip_layer_state(0, 0).m_vkpipelinestageflags,
+      vkCmdPipelineBarrier(cmd, m_state2a.mip_layer_state(0, 0).m_vkpipelinestageflags,
          VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
                            nullptr, 1, &barrierStart);
 
@@ -4777,9 +5095,9 @@ void texture::create_sampler()
          mipHeight = iNextHalfH;
       }
 
-      mip_layer_state(0, 0).m_vkaccessflags = VK_ACCESS_TRANSFER_READ_BIT;
-      mip_layer_state(0, 0).m_vkimagelayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-      mip_layer_state(0, 0).m_vkpipelinestageflags = VK_PIPELINE_STAGE_TRANSFER_BIT;
+      m_state2a.mip_layer_state(0, 0).m_vkaccessflags = VK_ACCESS_TRANSFER_READ_BIT;
+      m_state2a.mip_layer_state(0, 0).m_vkimagelayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+      m_state2a.mip_layer_state(0, 0).m_vkpipelinestageflags = VK_PIPELINE_STAGE_TRANSFER_BIT;
 
       //// Finally transition all mips to SHADER_READ_ONLY_OPTIMAL
       //VkImageMemoryBarrier barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
@@ -4797,6 +5115,61 @@ void texture::create_sampler()
       //vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0,
       //                     nullptr, 1, &barrier);
 
+   }
+
+
+   texture::state_t texture::_s_state_from_texture_state(::gpu::enum_texture_state etexturestate)
+   {
+
+      if (etexturestate == ::gpu::e_texture_state_none)
+      {
+
+         return {
+
+            0, VK_IMAGE_LAYOUT_UNDEFINED, VK_PIPELINE_STAGE_NONE};
+      }
+      else if (etexturestate == ::gpu::e_texture_state_shader_read)
+      {
+         
+         return {
+
+                       0, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT};
+
+      }
+      else if (etexturestate == ::gpu::e_texture_state_color_attachment)
+      {
+
+         return {
+
+            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+
+      }
+      else if (etexturestate == ::gpu::e_texture_state_copy_target)
+      {
+
+         return
+            {
+
+               VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT
+
+            };
+      }
+      else if (etexturestate == ::gpu::e_texture_state_copy_source)
+      {
+
+         return {
+
+            VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT
+
+         };
+      }
+      else
+      {
+
+         throw ::exception(error_wrong_state, "not implemented");
+
+      }
    }
 
 

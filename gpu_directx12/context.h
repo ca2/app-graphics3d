@@ -377,6 +377,11 @@ namespace gpu_directx12
 
       void on_begin_draw_attach(::gpu::graphics* pgpugraphics) override;
       void draw2d_on_begin_draw(::gpu::graphics* pgpugraphics) override;
+      void draw2d_on_end_draw(::gpu::graphics* pgpugraphics) override;
+
+      bool defer_bind2(::gpu::command_buffer *pgpucommandbuffer, ::gpu::shader *pgpushader,
+                       ::gpu::texture *pgputexture) override;
+      bool defer_bind3(::gpu::command_buffer *pgpucommandbuffer, ::gpu::shader *pgpushader) override;
       
 
       void on_create_texture(::gpu::texture* pgputext) override;

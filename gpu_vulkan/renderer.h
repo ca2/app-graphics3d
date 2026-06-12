@@ -197,6 +197,10 @@ namespace gpu_vulkan
       void _on_end_render(::gpu::layer * pgpulayer) override;
       void on_end_draw() override;
 
+      void layer_end_submit() override;
+
+      void on_start_layer(::gpu::layer *pgpulayer) override;
+
    //public:
 
       void create_command_buffers() override;
@@ -212,6 +216,7 @@ namespace gpu_vulkan
       void on_begin_render(::gpu::layer * pgpulayer) override;
       void on_end_render(::gpu::layer * pgpulayer) override;
       //void endFrame() override;
+      void end_layer(bool bClosingLayer = false) override;
       void end_frame() override;
       //void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
 

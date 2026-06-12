@@ -2120,6 +2120,108 @@ if (m_itask.is_null())
    }
 
 
+   void context::draw2d_on_end_draw(::gpu::graphics* pgpugraphics)
+   {
+
+      if (!m_papplication->m_gpu.m_bUseSwapChainWindow)
+      {
+
+         return;
+
+      }
+
+      auto pcontextMain = m_pgpudevice->m_pgpucontextMain;
+
+      if (!pcontextMain)
+      {
+
+         return;
+
+      }
+
+      auto pswapchain = pcontextMain->get_swap_chain();
+
+      if (pswapchain)
+      {
+
+         pswapchain->swap_buffers();
+
+      }
+
+   }
+
+
+   bool context::defer_bind2(::gpu::command_buffer *pgpucommandbuffer, ::gpu::shader *pgpushader,
+                             ::gpu::texture *pgputexture)
+   {
+
+      ::cast<::gpu_directx12::shader> pshader = pgpushader;
+
+      if (pgpushader == m_pshaderBound &&
+          pshader->m_iCommandBufferSerialPipelineBound == pgpucommandbuffer->m_iSerial)
+      {
+
+         pshader->on_bind_already_bound(pgpucommandbuffer, pgputexture);
+
+         return false;
+
+      }
+
+      if (m_pshaderBound && m_pshaderBound != pgpushader)
+      {
+
+         end_debug_happening(pgpucommandbuffer);
+
+         m_pshaderBound->unbind(pgpucommandbuffer);
+
+      }
+
+      start_debug_happening(pgpucommandbuffer, "shader changing");
+
+      pgpushader->bind(pgpucommandbuffer, pgputexture);
+
+      m_pshaderBound = pgpushader;
+
+      return true;
+
+   }
+
+
+   bool context::defer_bind3(::gpu::command_buffer *pgpucommandbuffer, ::gpu::shader *pgpushader)
+   {
+
+      ::cast<::gpu_directx12::shader> pshader = pgpushader;
+
+      if (pgpushader == m_pshaderBound &&
+          pshader->m_iCommandBufferSerialPipelineBound == pgpucommandbuffer->m_iSerial)
+      {
+
+         return false;
+
+      }
+
+      if (m_pshaderBound && m_pshaderBound != pgpushader)
+      {
+
+         end_debug_happening(pgpucommandbuffer);
+
+         m_pshaderBound->unbind(pgpucommandbuffer);
+
+      }
+
+      start_debug_happening(pgpucommandbuffer, "shader changing");
+
+      auto ptexture = pgpucommandbuffer->m_pgpurendertarget->current_texture(::gpu::current_layer());
+
+      pgpushader->bind(pgpucommandbuffer, ptexture);
+
+      m_pshaderBound = pgpushader;
+
+      return true;
+
+   }
+
+
       floating_matrix4 context::defer_transpose(const floating_matrix4 &m) { return m.transposed(); }
 
 
@@ -2166,14 +2268,6 @@ SamplerState samp : register(s0);
 float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 {
     return tex.Sample(samp, uv); // Assumes premultiplied alpha
-//if(uv.y >0.5)
-//{
-// return float4(0.7*0.5, 0.5*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
-//}
-//else
-//{
-//return tex.Sample(samp, uv);
-//}
 }
 )hlsl";
 
@@ -2226,7 +2320,8 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
       ::cast < renderer > prenderer = m_pgpurenderer;
 
-      ::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+      //::cast < command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow
          && m_etype == ::gpu::context::e_type_window)
@@ -2253,8 +2348,18 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
       ptextureDst->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
 
-      float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
-      pcommandlist->ClearRenderTargetView(ptextureDst->current_layer().m_handleRenderTargetView, clearColor, 0, nullptr);
+      //float clearColor[4] = {0.8f * 0.5f, 0.7f * 0.5f, 0.2f * 0.5f, 0.5f}; // Clear to transparent
+
+      //D3D12_RECT r2[1];
+
+      //r2[0].left = 100;
+      //r2[0].top = 0;
+
+
+      //r2[0].right = r2[0].left + 100;
+      //r2[0].bottom = r2[0].top + 100;
+
+      //pcommandlist->ClearRenderTargetView(ptextureDst->current_layer().m_handleRenderTargetView, clearColor, 0, r2);
 
 
 
@@ -2304,7 +2409,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
                ::cast < ::gpu_directx12::texture > ptextureSrc = pgpulayer->texture();
 
-               ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
+               ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 
                m_pshaderBlend3->bind_source(pcommandbuffer,  ptextureSrc, 0);
 
@@ -2360,24 +2465,14 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
 
       pcommandbuffer->end_render();
 
-      ////::cast <texture > ptextureDst = ptextureTarget;
-      //{
-      //   
-      //   float clearColor2[4] = { 0.95f * 0.5f, 0.75f * 0.5f, 0.95f * 0.5f, 0.5f }; // Clear to transparent
-      //   
-      //   D3D12_RECT r[1];
-      //   
-      //   r[0].left = 100;
-      //   r[0].top = 200;
-      //   r[0].right = 200;
-      //   r[0].bottom = 300;
-      //   
-      //   pcommandlist->ClearRenderTargetView(
-      //      ptextureDst->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
-      //      clearColor2,
-      //      1, r);
+      for (auto pgpulayer : *pgpulayera)
+      {
 
-      //}
+         ::cast<::gpu_directx12::texture> ptextureSrc = pgpulayer->texture();
+
+         ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
+
+      }
 
    }
 

@@ -87,7 +87,7 @@ namespace gpu_vulkan
       //   command_buffer* pcommandbuffer,
       //   ::gpu::texture* pgputexture);
 
-      void present(::gpu::texture * pgputexture) override;
+      void present(::gpu::texture *pgputexture, ::gpu::command_buffer *pgpucommandbuffer) override;
 
       virtual int get_image_index() const;
 

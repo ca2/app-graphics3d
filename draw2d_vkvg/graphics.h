@@ -35,8 +35,9 @@ namespace draw2d_vkvg
       bool                             m_bBeginDrawEndDrawMode;
       VkvgDevice                       m_vkvgdevice;
       VkvgSurface                      m_vkvgsurface;
-      VkvgContext                      m_pdc;
+      VkvgContext                      m_vkvgcontext;
       ::pointer < ::gpu::texture >     m_ptextureCurrent;
+      bool                             m_bSetStateExternally;
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
       //::plusplus::GraphicsPath *     m_ppath;
@@ -97,7 +98,8 @@ namespace draw2d_vkvg
       //virtual HDC DetachPrinter();
       //using draw2d::graphics::fill_rectangle;
       //void fill_rectangle(const f64_rectangle& rectangle, color32_t color32);
-
+      virtual VkvgContext vkvg_context();
+      void on_start_layer_before_begin_render(::gpu::layer *pgpulayer) override;
 
       //virtual void SetAttribDC(HDC hDC);  // set the Attribute DC
       //virtual void SetOutputDC(HDC hDC);  // set the Output DC

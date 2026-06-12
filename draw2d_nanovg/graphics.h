@@ -6,6 +6,7 @@
 #include "bred/gpu/renderer.h"
 
 
+
 //typedef void FN_VKVG_TEXT(VkvgContext, const char*);
 //typedef FN_VKVG_TEXT* PFN_VKVG_TEXT;
 
@@ -35,7 +36,7 @@ namespace draw2d_nanovg
       bool                             m_bHadEndLayer;
       //VkvgDevice                       m_nanovgdevice;
       //VkvgSurface                      m_nanovgsurface;
-      NVGcontext *                     m_pdc;
+      NVGcontext *                     m_pdc = nullptr;
       bool                             m_bHasCurrentPoint;
       //::pointer < ::gpu::texture >     m_ptextureTarget;
       //::plusplus::Matrix *           m_pm;
@@ -54,7 +55,7 @@ namespace draw2d_nanovg
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
-      ::pointer<::gpu::context>             m_pgpucontextOutput;
+      //::pointer<::gpu::context>             m_pgpucontextOutput;
 
    
 
@@ -142,7 +143,7 @@ namespace draw2d_nanovg
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
       void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
 
-      virtual bool opengl_create_offscreen_buffer(const ::i32_rectangle & rectanglePlacement);
+      virtual bool opengl_create_offscreen_buffer(const ::i32_size & sizePlacement);
       virtual bool opengl_delete_offscreen_buffer();
 
       virtual bool opengl_defer_create_window_context(::windowing::window * pwindow);
@@ -639,6 +640,7 @@ namespace draw2d_nanovg
 
       void intersect_clip(const ::draw2d::clip_group & clipgroup) override;
       void intersect_clip(const ::f64_rectangle & rectangle) override;
+      void reset_clip() override;
 
    public:
 //      // void assert_ok() const override;

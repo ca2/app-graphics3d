@@ -133,6 +133,25 @@ namespace gpu_vulkan
 
          }
 
+      };
+
+
+      class state_array_2d : 
+         public ::array_base<::array_base<state_t>>
+      {
+      public:
+
+
+         state_array_2d();
+         ~state_array_2d();
+
+
+         void set_state(const state_t & stateNew, int iMip, int iLayer);
+         void synchronize_from(const state_array_2d &state2aSynchronize);
+
+
+         state_t &mip_layer_state(int iMip, int iLayer) { return this->atø(iMip).atø(iLayer); }
+         const state_t &mip_layer_state(int iMip, int iLayer) const { return (*this)[iMip][iLayer]; }
 
 
       };
@@ -201,29 +220,31 @@ namespace gpu_vulkan
       class scoped_state
       {
       public:
-         ::gpu_vulkan::command_buffer* m_pcommandbuffer;
-         texture* m_ptexture;
-         state_t m_state;
+         
+         
+         ::gpu_vulkan::command_buffer * m_pcommandbuffer;
+         texture * m_ptexture;
+         state_array_2d m_state2a;
 
-         scoped_state(::gpu_vulkan::command_buffer* pcommandbuffer, texture* ptexture, state_t state) :
+
+         scoped_state(::gpu_vulkan::command_buffer* pcommandbuffer, texture* ptexture, const state_array_2d & state2a) :
             m_pcommandbuffer(pcommandbuffer),
             m_ptexture(ptexture),
-            m_state(state)
+            m_state2a(state2a)
 
          {
-
-            m_state = m_ptexture->mip_layer_state(0, 0);
-
          }
+
+
          ~scoped_state()
          {
 
-            m_ptexture->_set_state(m_pcommandbuffer, m_state);
+            m_ptexture->_set_state(m_pcommandbuffer, m_state2a);
 
          }
 
-      };
 
+      };
 
 
 
@@ -231,7 +252,8 @@ namespace gpu_vulkan
       VkImage                    m_vkimage;
       VkFormat                   m_vkformat;
       VkDeviceMemory             m_vkdevicememory;
-      ::array_base < ::array_base < state_t > > m_state2a;
+      state_array_2d             m_state2a;
+      state_array_2d             m_state2aExternal;
       //int                        m_iMipCount;
       /// Does every texture needs its own sampler?
       VkSampler                  m_vksampler3;
@@ -283,21 +305,24 @@ namespace gpu_vulkan
       void set_state(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_texture_state etexturestate) override;
 
 
+      state_t &mip_layer_state(int iMip, int iLayer) { return m_state2a.mip_layer_state(iMip, iLayer); }
       void _set_state(::gpu_vulkan::command_buffer * pcommandbuffer, 
          state_t state);
+      void _set_state(::gpu_vulkan::command_buffer *pcommandbuffer, const state_array_2d & state2a);
       void _set_all_states(::gpu_vulkan::command_buffer *pcommandbuffer, state_t state);
       void _set_state(::gpu_vulkan::command_buffer *pcommandbuffer, state_t state, int iMip, int iLayer);
        scoped_state _scoped_state(::gpu_vulkan::command_buffer* pcommandbuffer,
          state_t state)
       {
 
-         auto stateRestore = mip_layer_state(0, 0);
+         auto state2aRestore = m_state2a;
 
          _set_state(pcommandbuffer, state);
 
-         return { pcommandbuffer, this, stateRestore };
+         return { pcommandbuffer, this, state2aRestore };
 
       }
+
 
       void _attach(VkImage vkimage, ::gpu::enum_texture etexture);
       virtual unsigned int _get_layer_count();
@@ -311,13 +336,6 @@ namespace gpu_vulkan
 
       void set_all_states(const state_t &state);
 
-      state_t & mip_layer_state(int iMip, int iLayer)
-      {
-
-         return m_state2a.atø(iMip).atø(iLayer);
-
-      }
-
       VkImageView get_image();
 
       VkImageView get_image_view();
@@ -329,6 +347,8 @@ namespace gpu_vulkan
       VkImageView get_depth_image_view();
 
       VkDescriptorImageInfo descriptor_info();
+
+      //void __set_state(const state_t &state);
 
       /// @brief Singular descriptor set (_001 case here), when the texture is the only binding
       /// in the descriptorset
@@ -389,6 +409,11 @@ namespace gpu_vulkan
          VkImageLayout imageLayout);
 
 
+      void from_external_state(::gpu::enum_texture_state etexturestate,
+                               ::gpu::enum_texture_state etexturestateNow) override;
+      void to_external_state(::gpu::command_buffer *pgpucommandbuffer) override;
+
+
       //void UpdateDescriptor();
 
       bool is_in_shader_sampling_state() override;
@@ -397,6 +422,10 @@ namespace gpu_vulkan
       void on_finish_load_texture();
 
       void generate_mipmap(::gpu::command_buffer *pgpucommandbuffer) override;
+
+
+      static state_t _s_state_from_texture_state(::gpu::enum_texture_state etexturestate);
+
 
    };
 

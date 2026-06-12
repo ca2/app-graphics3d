@@ -4,8 +4,10 @@
 #include "command_buffer.h"
 #include "depth_stencil.h"
 #include "descriptors.h"
+#include "fence.h"
 #include "frame.h"
 #include "renderer.h"
+#include "semaphore.h"
 #include "texture.h"
 #include "offscreen_render_target_view.h"
 #include "physical_device.h"
@@ -145,6 +147,8 @@ namespace gpu_directx12
 
       reset();
 
+      m_estate = ::gpu::command_buffer::e_state_recording;
+
    }
 
 
@@ -188,9 +192,38 @@ namespace gpu_directx12
 
       pdevice->defer_throw_hresult(hrCloseCommandList);
 
+      for (auto &pgpusemaphore : m_semaphoreaWait)
+      {
+
+         ::cast<::gpu_directx12::semaphore> psemaphore = pgpusemaphore;
+
+         psemaphore->wait(m_pcommandqueue);
+
+      }
+
       ID3D12CommandList* ppCommandLists[] = { m_pcommandlist };
 
       m_pcommandqueue->ExecuteCommandLists(1, ppCommandLists);
+
+      for (auto &pgpusemaphore : m_semaphoreaSignal)
+      {
+
+         ::cast<::gpu_directx12::semaphore> psemaphore = pgpusemaphore;
+
+         psemaphore->signal(m_pcommandqueue);
+
+      }
+
+      ::cast<::gpu_directx12::fence> pfence = m_pgpufence;
+
+      if (pfence)
+      {
+
+         pfence->signal(m_pcommandqueue);
+
+      }
+
+      m_estate = ::gpu::command_buffer::e_state_submitted;
 
    }
 

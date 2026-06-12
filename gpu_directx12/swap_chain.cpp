@@ -46,6 +46,24 @@ namespace gpu_directx12
 	}
 
 
+   bool swap_chain::create_frame_sync(frame_sync &frame)
+   {
+
+      if (!::gpu::swap_chain::create_frame_sync(frame))
+      {
+
+         return false;
+
+      }
+
+      // DXGI acquires back buffers implicitly and cannot signal this Vulkan-style semaphore.
+      frame.m_pgpusemaphoreImageAvailable.release();
+
+      return true;
+
+   }
+
+
    //void swap_chain::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc)
    //{
 
@@ -55,7 +73,7 @@ namespace gpu_directx12
    //}
 
 
-   void swap_chain::present(::gpu::texture * pgputexture)
+   void swap_chain::present(::gpu::texture *pgputexture, ::gpu::command_buffer *pgpucommandbuffer)
    {
 
       ::cast < renderer > pgpurenderer = ::gpu::swap_chain::m_pgpurenderer;
@@ -156,6 +174,7 @@ namespace gpu_directx12
          auto pbindingSampler = m_pshaderPresent->binding();
          pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
          m_pshaderPresent->m_bDisableDepthTest = true;
+         m_pshaderPresent->m_ecullmode = ::gpu::e_cull_mode_none;
          const char* fullscreen_vertex_shader = R"shader(// fullscreen_vs.hlsl
       struct VSOut {
          float4 pos : SV_POSITION;
@@ -205,7 +224,9 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       }
 
-      ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+      //::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+
+      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
@@ -229,8 +250,26 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       //}
 
+      ::cast<::gpu_directx12::texture> ptextureSrc = pgputexture;
 
-      ::cast < ::gpu_directx12::texture > ptextureSrc = pgputexture;
+      // ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
+
+      //{
+
+      //   FLOAT colorRGBA2[] = {0.5f * 0.5f, 0.95f * 0.5f, 0.75f * 0.5f, 0.5f};
+
+      //   D3D12_RECT r[1];
+
+      //   r[0].left = 500;
+      //   r[0].top = 100;
+
+
+      //   r[0].right = r[0].left + 100;
+      //   r[0].bottom = 100 + 100;
+
+      //   pcommandlist->ClearRenderTargetView(ptextureSrc->current_layer().m_handleRenderTargetView, colorRGBA2, 1,
+      //                                       r);
+      //}
 
       ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 
@@ -273,6 +312,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       //// 4. Set the viewport and scissor
       pcommandlist->RSSetViewports(1, &viewport);
+      pcommandlist->RSSetScissorRects(1, &scissorRect);
       pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
       pcommandlist->DrawInstanced(3, 1, 0, 0);
 
@@ -293,10 +333,12 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       //   r[0].left = 200;
       //   r[0].top = 100;
-      //   r[0].right = 300;
-      //   r[0].bottom = 200;
 
-      //   pcommandlist->ClearRenderTargetView(ptextureSwapChain->m_handleRenderTargetView,
+
+      //   r[0].right = 200 + 100;
+      //   r[0].bottom = 100 + 100;
+
+      //   pcommandlist->ClearRenderTargetView(ptextureSwapChain->current_layer().m_handleRenderTargetView,
       //      colorRGBA2, 1, r);
 
       //}
@@ -304,7 +346,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
    }
 
 
-   void swap_chain::set_present_state()
+   void swap_chain::set_present_state(::gpu::command_buffer *pgpucommandbuffer)
    {
 
       ::cast < renderer > pgpurenderer = ::gpu::swap_chain::m_pgpurenderer;
@@ -314,7 +356,9 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
          auto& ptextureSwapChain = m_textureaSwapChain[m_iSwapChainIndex];
 
-         ::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+         //::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+
+         ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
          auto pcommandlist = pcommandbuffer->m_pcommandlist;
 

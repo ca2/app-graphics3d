@@ -913,7 +913,7 @@ namespace gpu_vulkan
   //    VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
   //    VkCheckResult(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
       //ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-      VkPipelineStageFlags vkpipelinestageflagsWait = ptexture->mip_layer_state(0, 0).m_vkpipelinestageflags;
+      VkPipelineStageFlags vkpipelinestageflagsWait = ptexture->m_state2a.mip_layer_state(0, 0).m_vkpipelinestageflags;
       {
          //VkImageMemoryBarrier barrier = {
          //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -1044,7 +1044,7 @@ namespace gpu_vulkan
             vkCmdClearColorImage(
                pcommandbuffer->m_vkcommandbuffer,
                ptextureRef->m_vkimage,
-                                 ptextureRef->mip_layer_state(0, 0).m_vkimagelayout,
+                                 ptextureRef->m_state2a.mip_layer_state(0, 0).m_vkimagelayout,
                &clearColor,
                1,
                &subresourceRange
@@ -1064,8 +1064,8 @@ namespace gpu_vulkan
          vkCmdCopyImage(
             pcommandbuffer->m_vkcommandbuffer,
             //colorAttachment.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                        ptexture->m_vkimage, ptexture->mip_layer_state(0, 0).m_vkimagelayout, ptextureRef->m_vkimage,
-                        ptextureRef->mip_layer_state(0, 0).m_vkimagelayout,
+                        ptexture->m_vkimage, ptexture->m_state2a.mip_layer_state(0, 0).m_vkimagelayout,
+                        ptextureRef->m_vkimage, ptextureRef->m_state2a.mip_layer_state(0, 0).m_vkimagelayout,
             1,
             &imageCopyRegion);
 
@@ -1917,6 +1917,8 @@ namespace gpu_vulkan
    // }
 
 
+
+
    void renderer::on_end_draw()
    {
 
@@ -1990,6 +1992,14 @@ namespace gpu_vulkan
       //	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT;
 
       //}
+
+   }
+
+
+   void renderer::on_start_layer(::gpu::layer * pgpulayer)
+   {
+
+      ::gpu::renderer::on_start_layer(pgpulayer);
 
    }
 
@@ -3388,6 +3398,54 @@ namespace gpu_vulkan
 
       ::gpu::renderer::on_begin_render(pgpulayer);
 
+      auto pgpurendertarget = this->render_target();
+
+      ::cast<::gpu_vulkan::texture> ptexture = pgpulayer->texture();
+
+      ::cast<command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
+
+      if (pcommandbuffer->m_estate != command_buffer::e_state_recording)
+      {
+
+         ::cast<gpu_vulkan::context> pcontext = this->m_pgpucontext;
+
+         auto pgpurendertarget = this->render_target();
+
+         ::cast<::gpu_vulkan::render_target> prendertarget = pgpurendertarget;
+
+         //::cast < render_pass > prenderpass = prendertarget->render_pass();
+
+         auto psynchronization = ptexture->synchronization();
+
+         /// VkFence fence = psynchronization->in_flight_fence();
+
+         auto pfence = psynchronization->in_flight_fence();
+
+         if (::is_set(pfence))
+         {
+
+            pfence->wait_gpu_fence();
+
+            // vkWaitForFences(pcontext->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+         }
+
+         pcommandbuffer->begin_command_buffer(false);
+      }
+
+      ptexture->_set_state(pcommandbuffer,
+                           {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+
+
+      //{
+
+      //   if (m_pgpucompositor && m_etype == e_type_draw2d)
+      //   {
+
+      //      m_pgpucompositor->on_start_layer(player);
+      //   }
+      //}
+
    }
 
    void renderer::_on_begin_render(::gpu::layer * pgpulayer)
@@ -3456,7 +3514,7 @@ namespace gpu_vulkan
          };
          vkCmdClearColorImage(pcommandbuffer->m_vkcommandbuffer,
             ptexture->m_vkimage,
-                              ptexture->mip_layer_state(0, 0).m_vkimagelayout,
+                              ptexture->m_state2a.mip_layer_state(0, 0).m_vkimagelayout,
             &clearColor,
             1, // rangeCount
             &range
@@ -3525,7 +3583,10 @@ namespace gpu_vulkan
 
          ::cast < ::gpu_vulkan::texture > ptextureCurrent = ptexture;
 
-         ::cast < command_buffer > pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+         //::cast < command_buffer > pcommandbuffer = m_pgpucontext->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+
+         ::cast<command_buffer> pcommandbuffer =
+            pgpulayer->getCurrentCommandBuffer4();
 
          ptextureCurrent->_set_state(
             pcommandbuffer,
@@ -3644,8 +3705,9 @@ namespace gpu_vulkan
          renderPassBeginInfo.renderArea.extent = {(uint32_t)pgpucontext->m_rectangle.width(),
                                                   (uint32_t)pgpucontext->m_rectangle.height()};
 
+         auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
-         vkCmdBeginRenderPass(pcommandbuffer->m_vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+         vkCmdBeginRenderPass(vkcommandbuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 
          //////////////////////////////////////////
@@ -3655,8 +3717,8 @@ namespace gpu_vulkan
       //if (m_bOffScreen)
       {
 
-      assert(m_prenderstate->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
-                "Can't call beginRender while not in began_frame gpu_frame_state");
+      //assert(m_prenderstate->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
+        //        "Can't call beginRender while not in began_frame gpu_frame_state");
          assert(
             pcommandbuffer == getCurrentCommandBuffer2(::gpu::current_layer()) &&
             "Can't begin render pass on command buffer from a different frame");
@@ -3904,13 +3966,72 @@ namespace gpu_vulkan
 
       //auto pcommandbuffer = pframe->m_pcommandbuffer->m_vkcommandbuffer;
 
-      ::cast<command_buffer> pcommandbuffer = getCurrentCommandBuffer2(pgpulayer);
+      ::cast<command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
       assert(m_prenderstate->m_egpuframestate == ::gpu::e_gpu_frame_state_began_render &&
              "Can't call beginRender while not in began_frame gpu_frame_state");
       assert(pcommandbuffer == getCurrentCommandBuffer2(pgpulayer) &&
          "Can't end render pass on command buffer from a different frame");
-      vkCmdEndRenderPass(pcommandbuffer->m_vkcommandbuffer);
+      auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
+      vkCmdEndRenderPass(vkcommandbuffer);
+
+   }
+
+
+   void renderer::layer_end_submit()
+   {
+
+         //      throw todo;
+
+         auto pgpurendertarget = this->render_target();
+
+         int iFrameCount = pgpurendertarget->get_frame_count();
+
+         int iFrameIndex = pgpurendertarget->get_frame_index();
+
+         ::pointer<command_buffer> pcommandbuffer;
+
+         bool bIsFrameInProgress = isFrameInProgress();
+
+         ASSERT(bIsFrameInProgress);
+         {
+
+            pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
+         }
+         //else
+         //{
+
+         //   pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
+         //}
+
+         //if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
+         //{
+
+         //   throw ::exception(error_failed);
+         //}
+
+         //if (::is_set(pgpufence))
+         //{
+
+         //   *pgpufence = pcommandbuffer->insert_gpu_fence(true);
+         //}
+
+         // VkFence fence = VK_NULL_HANDLE;
+         // pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {});
+
+         pcommandbuffer->submit_command_buffer(nullptr);
+
+         // if (fence)
+         // {
+         //
+         //    vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+         // }
+
+         ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
+
+         vkQueueWaitIdle(pqueue->m_vkqueue);
+      //}
+
 
    }
 
@@ -4122,250 +4243,451 @@ namespace gpu_vulkan
    }
 
 
+   void renderer::end_layer(bool bClosingLayer)
+   {
+
+            // m_prenderstate->on_happening(::gpu::e_happening_end_frame);
+
+      //if (bClosingLayer)
+      //      {
+
+      //         assert(m_prenderstate->m_egpuframestate == ::gpu::e_gpu_frame_state_began_render &&
+      //                "Can't call endFrame while frame is not in progress");
+
+      //         ::pointer<command_buffer> pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
+
+      //         auto eoutput = m_pgpucontext->m_eoutput;
+
+      //         ::cast<renderer> prenderer = m_pgpucontext->m_pgpurenderer;
+
+      //         ::cast<::gpu_vulkan::render_target> prendertarget = prenderer->render_target();
+
+      //         ::cast<texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
+
+      //         // auto eoutput = m_pgpucontext->m_eoutput;
+
+      //         ::gpu_vulkan::texture *pgputextureOutput = nullptr;
+      //         /* if (eoutput == ::gpu::e_output_cpu_buffer)
+      //         {
+
+      //            sample();
+
+      //         }
+      //         else */
+
+      //         if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
+      //         {
+
+      //            if (eoutput == ::gpu::e_output_gpu_buffer)
+      //            {
+
+      //               layer_end_copy();
+      //            }
+      //            else if (eoutput == ::gpu::e_output_swap_chain)
+      //            {
+
+      //               ::cast<::gpu_vulkan::swap_chain> pswapchain = m_pgpucontext->get_swap_chain();
+
+      //               // auto result = pswapchain->acquireNextImage();
+
+      //               // if (result == VK_ERROR_OUT_OF_DATE_KHR
+      //               //    || pswapchain->m_bNeedRebuild)
+      //               //{
+      //               //    vkDeviceWaitIdle(m_pgpucontext->logicalDevice());
+      //               //    pswapchain->on_init_render_pass();
+      //               //    //set_placement(size);
+      //               //    //throw ::exception(todo, "resize?!?!");
+      //               //    //return nullptr;
+      //               //    return;
+      //               // }
+      //               // if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+      //               //    throw ::exception(error_failed, "Failed to aquire swap chain image");
+      //               // }
+
+      //               //::cast<::gpu_vulkan::swap_chain> pswapchain = m_pgpucontext->get_swap_chain();
+
+      //               // auto result = pswapchain->submitCommandBuffers2(
+      //               //    pcommandbuffer,
+      //               //    pgputextureOutput,
+      //               //   {}, {}, {});
+      //            }
+      //            else
+      //            {
+
+      //               pgputextureOutput = ptexture;
+      //            }
+      //         }
+
+      //         // m_pgpucontext->defer_unbind_shader();
+
+      //         // if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
+      //         //{
+
+      //         //   auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
+
+      //         //   if (vkEndCommandBuffer(vkcommandbuffer) != VK_SUCCESS)
+      //         //   {
+
+      //         //      throw ::exception(error_failed, "failed to record command buffer!");
+
+      //         //   }
+
+      //         //}
+
+      //         // render_pass* prenderpassOutput;
+
+      //         if (eoutput == ::gpu::e_output_swap_chain)
+      //         {
+
+      //            ::cast<::gpu_vulkan::swap_chain> pswapchain = m_pgpucontext->get_swap_chain();
+
+      //            if (pswapchain->m_pgpucontext->m_pgpurenderer)
+      //            {
+
+      //               pswapchain->initialize_gpu_swap_chain(pswapchain->m_pgpucontext->m_pgpurenderer);
+      //            }
+
+      //            // prenderpassOutput = pswapchain;
+      //         }
+      //         else
+      //         {
+
+      //            ::cast<::gpu_vulkan::render_target> prendertargetOutput = this->render_target();
+
+      //            // prenderpassOutput = prendertargetOutput->render_pass();
+
+      //            pgputextureOutput = ptexture;
+      //         }
+
+
+      //         if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
+      //         {
+
+      //            VkResult result;
+
+      //            if (eoutput == ::gpu::e_output_swap_chain)
+      //            {
+
+      //               /*   ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
+
+      //                  ::cast<::gpu_vulkan::texture> ptextureSwapChain = pswapchain->current_swap_chain_texture();
+
+      //                  pgputextureOutput = ptextureSwapChain;
+
+      //                  pgputextureOutput->_set_state(pcommandbuffer,
+      //                                                {0, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+      //                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT});
+
+
+      //                  uint32_t frameIndex = pswapchain->m_iCurrentSwapChainFrame;
+
+      //                  swap_chain::frame_sync &frame = pswapchain->frame(frameIndex);
+
+      //                  if (::is_set(frame.m_pgpusemaphoreImageAvailable))
+      //                  {
+
+      //                     pcommandbuffer->m_semaphoreaWait.add(frame.m_pgpusemaphoreImageAvailable);
+
+      //                  }
+
+      //                  pswapchain->present(pgputextureOutput);*/
+      //            }
+      //            else
+      //            {
+
+      //               // result = pcommandbuffer->submitCommandBuffers(
+      //               pcommandbuffer->submit_command_buffer(nullptr); /*
+      //                   {},
+      //                   {},
+      //                   {}, {}, {});*/
+      //            }
+
+
+      //            //                     pcommandbuffer->submit_command_buffer(nullptr);
+
+
+      //            // if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+      //            if (m_bNeedToRecreateSwapChain)
+      //            {
+
+      //               m_bNeedToRecreateSwapChain = false;
+
+      //               defer_update_renderer();
+      //            }
+      //            // else if (result != VK_SUCCESS)
+      //            //{
+
+      //            //   throw ::exception(error_failed, "failed to present swap chain image!");
+
+      //            //}
+      //         }
+      //      }
+
+      ::gpu::renderer::end_layer(bClosingLayer);
+
+      if (bClosingLayer)
+      {
+
+         // isFrameStarted = false;
+
+         auto eoutput = m_pgpucontext->m_eoutput;
+
+         layer_end_after_submit();
+
+         if (eoutput == ::gpu::e_output_cpu_buffer)
+         {
+
+            sample();
+         }
+      }
+
+   }
+
+
    void renderer::end_frame()
    {
 
-      //m_prenderstate->on_happening(::gpu::e_happening_end_frame);
-
-      assert(m_prenderstate->m_egpuframestate == ::gpu::e_gpu_frame_state_ended_render && "Can't call endFrame while frame is not in progress");
-
-      ::pointer < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
-
-      auto eoutput = m_pgpucontext->m_eoutput;
-
-      ::cast < renderer > prenderer = m_pgpucontext->m_pgpurenderer;
-
-      ::cast < ::gpu_vulkan::render_target > prendertarget = prenderer->render_target();
-
-      ::cast < texture  > ptexture = prendertarget->current_texture(::gpu::current_layer());
-
-      //auto eoutput = m_pgpucontext->m_eoutput;
-      
-      ::gpu_vulkan::texture* pgputextureOutput = nullptr;
-      /* if (eoutput == ::gpu::e_output_cpu_buffer)
-      {
-
-         sample();
-
-      }
-      else */
-
-      if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
-      {
-
-         if (eoutput == ::gpu::e_output_gpu_buffer)
-         {
-
-            layer_end_copy();
-
-         }
-         else if (eoutput == ::gpu::e_output_swap_chain)
-         {
-
-            ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
-
-            //auto result = pswapchain->acquireNextImage();
-
-            //if (result == VK_ERROR_OUT_OF_DATE_KHR
-            //   || pswapchain->m_bNeedRebuild)
-            //{
-            //   vkDeviceWaitIdle(m_pgpucontext->logicalDevice());
-            //   pswapchain->on_init_render_pass();
-            //   //set_placement(size);
-            //   //throw ::exception(todo, "resize?!?!");
-            //   //return nullptr;
-            //   return;
-            //}
-            //if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-            //   throw ::exception(error_failed, "Failed to aquire swap chain image");
-            //}
-
-          //::cast<::gpu_vulkan::swap_chain> pswapchain = m_pgpucontext->get_swap_chain();
-
-          //auto result = pswapchain->submitCommandBuffers2(
-          //   pcommandbuffer,
-          //   pgputextureOutput,
-          //  {}, {}, {});
-
-
-
-         }
-         else
-         {
-
-            pgputextureOutput = ptexture;
-
-         }
-
-      }
-
-      //m_pgpucontext->defer_unbind_shader();
-
-      //if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
-      //{
-
-      //   auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
-
-      //   if (vkEndCommandBuffer(vkcommandbuffer) != VK_SUCCESS)
-      //   {
-
-      //      throw ::exception(error_failed, "failed to record command buffer!");
-
-      //   }
-
-      //}
-
-      //render_pass* prenderpassOutput;
-
-      if (eoutput == ::gpu::e_output_swap_chain)
-      {
-
-         ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
-
-         if (pswapchain->m_pgpucontext->m_pgpurenderer)
-         {
-
-            pswapchain->initialize_gpu_swap_chain(pswapchain->m_pgpucontext->m_pgpurenderer);
-
-         }
-
-         //prenderpassOutput = pswapchain;
-
-      }
-      else
-      {
-
-         ::cast < ::gpu_vulkan::render_target > prendertargetOutput = this->render_target();
-
-         //prenderpassOutput = prendertargetOutput->render_pass();
-
-         pgputextureOutput = ptexture;
-
-      }
-
-     
-
-      if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
-      {
-
-         VkResult result;
-
-         if (eoutput == ::gpu::e_output_swap_chain)
-         {
-
-         /*   ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
-
-            ::cast<::gpu_vulkan::texture> ptextureSwapChain = pswapchain->current_swap_chain_texture();
-
-            pgputextureOutput = ptextureSwapChain;
-
-            pgputextureOutput->_set_state(pcommandbuffer,
-                                          {0, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT});
-
-
-            uint32_t frameIndex = pswapchain->m_iCurrentSwapChainFrame;
-
-            swap_chain::frame_sync &frame = pswapchain->frame(frameIndex);
-
-            if (::is_set(frame.m_pgpusemaphoreImageAvailable))
-            {
-
-               pcommandbuffer->m_semaphoreaWait.add(frame.m_pgpusemaphoreImageAvailable);
-
-            }
-
-            pswapchain->present(pgputextureOutput);*/
-
-         }
-         else
-         {
-
-            //result = pcommandbuffer->submitCommandBuffers(
-            pcommandbuffer->submit_command_buffer(nullptr);/*
-               {},
-               {},
-               {}, {}, {});*/
-
-         }
-
-
-//                     pcommandbuffer->submit_command_buffer(nullptr);
-
-
-
-         //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-            if(m_bNeedToRecreateSwapChain)
-         {
-
-            m_bNeedToRecreateSwapChain = false;
-
-            defer_update_renderer();
-
-         }
-         //else if (result != VK_SUCCESS)
-         //{
-
-         //   throw ::exception(error_failed, "failed to present swap chain image!");
-
-         //}
-
-      }
+//      //m_prenderstate->on_happening(::gpu::e_happening_end_frame);
+//
+//      assert(m_prenderstate->m_egpuframestate == ::gpu::e_gpu_frame_state_ended_render && "Can't call endFrame while frame is not in progress");
+//
+//      ::pointer < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
+//
+//      auto eoutput = m_pgpucontext->m_eoutput;
+//
+//      ::cast < renderer > prenderer = m_pgpucontext->m_pgpurenderer;
+//
+//      ::cast < ::gpu_vulkan::render_target > prendertarget = prenderer->render_target();
+//
+//      ::cast < texture  > ptexture = prendertarget->current_texture(::gpu::current_layer());
+//
+//      //auto eoutput = m_pgpucontext->m_eoutput;
+//      
+//      ::gpu_vulkan::texture* pgputextureOutput = nullptr;
+//      /* if (eoutput == ::gpu::e_output_cpu_buffer)
+//      {
+//
+//         sample();
+//
+//      }
+//      else */
+//
+//      if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
+//      {
+//
+//         if (eoutput == ::gpu::e_output_gpu_buffer)
+//         {
+//
+//            layer_end_copy();
+//
+//         }
+//         else if (eoutput == ::gpu::e_output_swap_chain)
+//         {
+//
+//            ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
+//
+//            //auto result = pswapchain->acquireNextImage();
+//
+//            //if (result == VK_ERROR_OUT_OF_DATE_KHR
+//            //   || pswapchain->m_bNeedRebuild)
+//            //{
+//            //   vkDeviceWaitIdle(m_pgpucontext->logicalDevice());
+//            //   pswapchain->on_init_render_pass();
+//            //   //set_placement(size);
+//            //   //throw ::exception(todo, "resize?!?!");
+//            //   //return nullptr;
+//            //   return;
+//            //}
+//            //if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+//            //   throw ::exception(error_failed, "Failed to aquire swap chain image");
+//            //}
+//
+//          //::cast<::gpu_vulkan::swap_chain> pswapchain = m_pgpucontext->get_swap_chain();
+//
+//          //auto result = pswapchain->submitCommandBuffers2(
+//          //   pcommandbuffer,
+//          //   pgputextureOutput,
+//          //  {}, {}, {});
+//
+//
+//
+//         }
+//         else
+//         {
+//
+//            pgputextureOutput = ptexture;
+//
+//         }
+//
+//      }
+//
+//      //m_pgpucontext->defer_unbind_shader();
+//
+//      //if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
+//      //{
+//
+//      //   auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
+//
+//      //   if (vkEndCommandBuffer(vkcommandbuffer) != VK_SUCCESS)
+//      //   {
+//
+//      //      throw ::exception(error_failed, "failed to record command buffer!");
+//
+//      //   }
+//
+//      //}
+//
+//      //render_pass* prenderpassOutput;
+//
+//      if (eoutput == ::gpu::e_output_swap_chain)
+//      {
+//
+//         ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
+//
+//         if (pswapchain->m_pgpucontext->m_pgpurenderer)
+//         {
+//
+//            pswapchain->initialize_gpu_swap_chain(pswapchain->m_pgpucontext->m_pgpurenderer);
+//
+//         }
+//
+//         //prenderpassOutput = pswapchain;
+//
+//      }
+//      else
+//      {
+//
+//         ::cast < ::gpu_vulkan::render_target > prendertargetOutput = this->render_target();
+//
+//         //prenderpassOutput = prendertargetOutput->render_pass();
+//
+//         pgputextureOutput = ptexture;
+//
+//      }
+//
+//     
+//
+//      if (pcommandbuffer->m_estate == ::gpu::command_buffer::e_state_recording)
+//      {
+//
+//         VkResult result;
+//
+//         if (eoutput == ::gpu::e_output_swap_chain)
+//         {
+//
+//         /*   ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->get_swap_chain();
+//
+//            ::cast<::gpu_vulkan::texture> ptextureSwapChain = pswapchain->current_swap_chain_texture();
+//
+//            pgputextureOutput = ptextureSwapChain;
+//
+//            pgputextureOutput->_set_state(pcommandbuffer,
+//                                          {0, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT});
+//
+//
+//            uint32_t frameIndex = pswapchain->m_iCurrentSwapChainFrame;
+//
+//            swap_chain::frame_sync &frame = pswapchain->frame(frameIndex);
+//
+//            if (::is_set(frame.m_pgpusemaphoreImageAvailable))
+//            {
+//
+//               pcommandbuffer->m_semaphoreaWait.add(frame.m_pgpusemaphoreImageAvailable);
+//
+//            }
+//
+//            pswapchain->present(pgputextureOutput);*/
+//
+//         }
+//         else
+//         {
+//
+//            //result = pcommandbuffer->submitCommandBuffers(
+//            pcommandbuffer->submit_command_buffer(nullptr);/*
+//               {},
+//               {},
+//               {}, {}, {});*/
+//
+//         }
+//
+//
+////                     pcommandbuffer->submit_command_buffer(nullptr);
+//
+//
+//
+//         //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+//            if(m_bNeedToRecreateSwapChain)
+//         {
+//
+//            m_bNeedToRecreateSwapChain = false;
+//
+//            defer_update_renderer();
+//
+//         }
+//         //else if (result != VK_SUCCESS)
+//         //{
+//
+//         //   throw ::exception(error_failed, "failed to present swap chain image!");
+//
+//         //}
+//
+//      }
 
       ::gpu::renderer::end_frame();
 
-      //isFrameStarted = false;
+   //   //isFrameStarted = false;
 
-      //auto eoutput = m_pgpucontext->m_eoutput;
+   //   //auto eoutput = m_pgpucontext->m_eoutput;
 
-      layer_end_after_submit();
+   //   layer_end_after_submit();
 
-      if (eoutput == ::gpu::e_output_cpu_buffer)
-      {
+   //   if (eoutput == ::gpu::e_output_cpu_buffer)
+   //   {
 
-         sample();
+   //      sample();
 
-      }
-       // else if (eoutput == ::gpu::e_output_gpu_buffer)
-      // {
-      //
-      //    defer_end_frame_layer_copy();
-      //
-      // }
-      //else if (m_eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
-   //{
+   //   }
+   //    // else if (eoutput == ::gpu::e_output_gpu_buffer)
+   //   // {
+   //   //
+   //   //    defer_end_frame_layer_copy();
+   //   //
+   //   // }
+   //   //else if (m_eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
+   ////{
 
-   //	resolve_color_and_alpha_accumulation_buffers();
+   ////	resolve_color_and_alpha_accumulation_buffers();
 
-   //}
+   ////}
 
-   //rrentImageIndex = pgpurenderpass->currentFrame;
-   //currentFrameIndex = (currentFrameIndex + 1) % ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT;
+   ////rrentImageIndex = pgpurenderpass->currentFrame;
+   ////currentFrameIndex = (currentFrameIndex + 1) % ::gpu_vulkan::render_pass::MAX_FRAMES_IN_FLIGHT;
 
-   //}
-   //else
-   //{
+   ////}
+   ////else
+   ////{
 
 
-   //	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-   //	auto pcommandbuffer = getCurrentCommandBuffer();
-   //	if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
-   //		throw ::exception(error_failed, "failed to record command buffer!");
-   //	}
-   //	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &m_uCurrentSwapChainImage);
-   //	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-   //	//	vkcWindow.wasWindowResized()) 
-   //	//{
-   //	//	vkcWindow.resetWindowResizedFlag();
-   //	//	recreateSwapchain();
-   //	//}
-   //	//else 
-   //	//	if (result != VK_SUCCESS) {
-   //	//	throw ::exception(error_failed, "failed to present swap chain image!");
-   //	//}
-   //	isFrameStarted = false;
-   //	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT;
+   ////	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
+   ////	auto pcommandbuffer = getCurrentCommandBuffer();
+   ////	if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS) {
+   ////		throw ::exception(error_failed, "failed to record command buffer!");
+   ////	}
+   ////	auto result = m_pvkcswapchain->submitCommandBuffers(&pcommandbuffer->m_vkcommandbuffer, &m_uCurrentSwapChainImage);
+   ////	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+   ////	//	vkcWindow.wasWindowResized()) 
+   ////	//{
+   ////	//	vkcWindow.resetWindowResizedFlag();
+   ////	//	recreateSwapchain();
+   ////	//}
+   ////	//else 
+   ////	//	if (result != VK_SUCCESS) {
+   ////	//	throw ::exception(error_failed, "failed to present swap chain image!");
+   ////	//}
+   ////	isFrameStarted = false;
+   ////	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_pass::MAX_FRAMES_IN_FLIGHT;
 
-   //}
+   ////}
 
 
    }

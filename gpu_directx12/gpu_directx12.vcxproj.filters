@@ -167,6 +167,9 @@
     <ClInclude Include="fence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="semaphore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -293,6 +296,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="fence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="semaphore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
