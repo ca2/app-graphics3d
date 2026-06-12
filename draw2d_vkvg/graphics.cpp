@@ -3604,12 +3604,14 @@ namespace draw2d_vkvg
    void graphics::draw(::draw2d::path* ppath)
    {
 
-      //m_pgraphics->SetSmoothingMode(plusplus::SmoothingModeAntiAlias);
-      //m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
+      if (!_set(ppath))
+      {
 
+         throw ::exception(error_failed);
 
-      //return m_pgraphics->DrawPath(vk2d_pen(),(dynamic_cast < ::draw2d_vkvg::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
-      //return true;
+      }
+
+      draw();
 
    }
 
@@ -3617,9 +3619,14 @@ namespace draw2d_vkvg
    void graphics::draw(::draw2d::path* ppath, ::draw2d::pen* ppen)
    {
 
-      //return m_pgraphics->DrawPath((::plusplus::Pen *) ppen->get_os_data(),(dynamic_cast < ::draw2d_vkvg::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      if (!_set(ppath))
+      {
 
-      //return true;
+         throw ::exception(error_failed);
+
+      }
+
+      draw(ppen);
 
    }
 
@@ -3638,9 +3645,7 @@ namespace draw2d_vkvg
 
       auto vkvgcontext = vkvg_context();
 
-      vkvg_keep keep(vkvgcontext);
-
-      vkvg_new_sub_path(vkvgcontext);
+      vkvg_new_path(vkvgcontext);
 
       //if (!m_bOutline)
       {
@@ -3674,6 +3679,27 @@ namespace draw2d_vkvg
 
    bool graphics::_set(const ::draw2d::enum_item& eitem)
    {
+
+      auto vkvgcontext = vkvg_context();
+
+      if (eitem == ::draw2d::e_item_begin_figure)
+      {
+
+         vkvg_new_sub_path(vkvgcontext);
+
+      }
+      else if (eitem == ::draw2d::e_item_close_figure)
+      {
+
+         vkvg_close_path(vkvgcontext);
+
+      }
+      else if (eitem != ::draw2d::e_item_end_figure)
+      {
+
+         return false;
+
+      }
 
       return true;
 
@@ -3863,24 +3889,16 @@ namespace draw2d_vkvg
 
       auto vkvgcontext = vkvg_context();
 
-      vkvg_keep keep(vkvgcontext);
-
-      vkvg_translate(vkvgcontext, arc.center().x, arc.center().y);
-
-      vkvg_scale(vkvgcontext, 1.0, arc.radius().cy / arc.radius().cx);
-
-      if (arc.m_angleExt > 0)
-      {
-
-         vkvg_arc(vkvgcontext, 0.0, 0.0, arc.radius().cx, arc.m_angleBeg, arc.m_angleEnd2);
-
-      }
-      else
-      {
-
-         vkvg_arc_negative(vkvgcontext, 0.0, 0.0, arc.radius().cx, arc.m_angleBeg, arc.m_angleEnd2);
-
-      }
+      vkvg_move_to(vkvgcontext, arc.m_pointBegin.x, arc.m_pointBegin.y);
+      vkvg_elliptic_arc_to(
+         vkvgcontext,
+         arc.m_pointEnd.x,
+         arc.m_pointEnd.y,
+         fabs(arc.m_angleExt) > π,
+         arc.m_angleExt > 0,
+         arc.radius().cx,
+         arc.radius().cy,
+         0.0f);
 
       return true;
 
@@ -3948,7 +3966,7 @@ namespace draw2d_vkvg
          if (is_different(x, line.m_p1.x, 0.0001) || is_different(y, line.m_p1.y, 0.0001))
          {
 
-            vkvg_line_to(vkvgcontext, line.m_p1.x, line.m_p1.y);
+            vkvg_move_to(vkvgcontext, line.m_p1.x, line.m_p1.y);
 
          }
 
@@ -4212,25 +4230,15 @@ namespace draw2d_vkvg
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
 
-      double Δx = ellipse.center_x();
-
-      double Δy = ellipse.center_y();
-
       auto vkvgcontext = vkvg_context();
 
-      vkvg_translate(vkvgcontext, Δx, Δy);
-
-      double rx = ellipse.width() / 2.0;
-
-      double ry = ellipse.height() / 2.0;
-
-      vkvg_scale(vkvgcontext, rx, ry);
-
-      vkvg_arc(vkvgcontext, 0.0, 0.0, 1.0, 0.0, 2.0 * π);
-
-      vkvg_scale(vkvgcontext, 1.0 / rx, 1.0 / ry);
-
-      vkvg_translate(vkvgcontext, -Δx, -Δy);
+      vkvg_ellipse(
+         vkvgcontext,
+         ellipse.width() / 2.0,
+         ellipse.height() / 2.0,
+         ellipse.center_x(),
+         ellipse.center_y(),
+         0.0f);
 
       return true;
 
@@ -4357,9 +4365,14 @@ namespace draw2d_vkvg
    void graphics::fill(::draw2d::path* ppath, ::draw2d::brush* pbrush)
    {
 
-      //return m_pgraphics->FillPath((::plusplus::Brush *) pbrush->get_os_data(),(dynamic_cast < ::draw2d_vkvg::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      if (!_set(ppath))
+      {
 
-      //return true;
+         throw ::exception(error_failed);
+
+      }
+
+      fill(pbrush);
 
    }
 
@@ -4372,8 +4385,6 @@ namespace draw2d_vkvg
       bool bPen = m_ppen->m_epen != ::draw2d::e_pen_null;
 
       auto vkvgcontext = vkvg_context();
-
-      vkvg_keep keep(vkvgcontext);
 
       if (m_pbrush->m_ebrush != ::draw2d::e_brush_null)
       {
@@ -4396,8 +4407,6 @@ namespace draw2d_vkvg
          }
 
       }
-
-      keep.pulse();
 
       if (bPen)
       {
