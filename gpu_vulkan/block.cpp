@@ -50,7 +50,7 @@ namespace gpu_vulkan
 
       auto prendertarget = pgpucontext->m_pgpurenderer->render_target();
 
-      auto iFrameCount = prendertarget->get_frame_count();
+      auto iFrameCount = prendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
       
       m_uboBuffers.set_size(iFrameCount);
       
@@ -120,7 +120,8 @@ namespace gpu_vulkan
 
       auto ppool = pbindingslotset->descriptor_pool(pgpucommandbuffer);
 
-      auto iFrameIndex = pgpucommandbuffer->m_pgpurendertarget->get_frame_index();
+      auto iFrameIndex =
+         pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
 
       auto bufferInfo = m_uboBuffers[iFrameIndex]->descriptorInfo();
 
@@ -141,7 +142,7 @@ namespace gpu_vulkan
 
       auto prendertarget = pgpurenderer->render_target();
 
-      auto iFrameIndex = prendertarget->get_frame_index();
+      auto iFrameIndex = prendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
 
       if (iFrameIndex < 0 || iFrameIndex >= m_uboBuffers.size())
       {

@@ -67,9 +67,9 @@ namespace graphics3d_hello3d
       set_tab("▲U", "impact:triangle_uniform");
       set_tab("▲+", "impact:triangle_more_attributes");
       set_tab("▮I", "impact:rectangle_texture");
-      set_tab("Font", FONTSEL_IMPACT);
-      set_tab("Color", COLORSEL_IMPACT);
-      set_tab("Open", FILEMANAGER_IMPACT);
+      set_tab("Font", "font_selection_impact");
+      set_tab("Color", "color_selection_impact");
+      set_tab("Open", "file_manager_impact");
 
       set_current_tab_by_id("triangle");
 

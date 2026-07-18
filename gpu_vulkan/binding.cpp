@@ -135,7 +135,8 @@ namespace gpu_vulkan
 
          construct_newø(m_pvkdescriptorseta);
 
-         auto iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
+         auto iFrameCount =
+            pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
 
          m_pvkdescriptorseta->set_size(iFrameCount);
 
@@ -365,7 +366,8 @@ namespace gpu_vulkan
 
          auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
-         int iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
+         int iFrameCount =
+            pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
 
          pdescriptorpoolbuilder->initialize_builder(pgpucontext);
 

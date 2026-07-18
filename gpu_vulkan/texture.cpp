@@ -7,13 +7,13 @@
 #include "context.h"
 #include "descriptors.h"
 #include "device.h"
-#include "framework.h"
 #include "initializers.h"
 #include "physical_device.h"
 #include "queue.h"
 #include "render_target.h"
 #include "renderer.h"
 #include "shader.h"
+#include "bred/gpu/frame.h"
 #include "acme/filesystem/file/exception.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "aura/graphics/image/context.h"
@@ -2037,7 +2037,7 @@ namespace gpu_vulkan
       if (defer_construct_newø(m_p_001OnAfterEndFrame))
       {
 
-         m_pgpucontext->m_pgpurenderer->post_on_after_end_frame(
+         m_pgpucontext->m_pgpudevice->current_frame()->post_on_after_end_frame(
             [this, pcontext]()
             {
                auto p = ::transfer(m_p_001OnAfterEndFrame);
@@ -2078,7 +2078,7 @@ namespace gpu_vulkan
       if (defer_construct_newø(m_p_001OnNextFrameStart))
       {
 
-         m_pgpucontext->m_pgpurenderer->post_on_just_before_frame_next_start(
+         m_pgpucontext->m_pgpudevice->current_frame()->post_on_just_before_frame_next_start(
             [this, pcontext]()
             {
 
@@ -2255,7 +2255,8 @@ namespace gpu_vulkan
 
       auto iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
-      auto iFrameCount = pgpucommandbuffer->m_pgpurendertarget->get_frame_count();
+      auto iFrameCount =
+         pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
 
       auto iSerial = pgpucommandbuffer->m_iSerial;
 

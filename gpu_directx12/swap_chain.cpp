@@ -397,11 +397,11 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
    }
 
 
-   int swap_chain::get_frame_index()
-   {
-      return swap_chain_frame_index();
+   //int swap_chain::get_frame_index()
+   //{
+   //   return swap_chain_frame_index();
 
-   }
+   //}
 
 
    void swap_chain::initialize_swap_chain_window(::gpu::context* pgpucontext, ::acme::windowing::window* pacmewindowingwindow)

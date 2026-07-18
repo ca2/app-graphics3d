@@ -3630,9 +3630,9 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
 
    auto pgpurendertarget = m_pgpurenderer->render_target();
 
-   int iFrameCount = pgpurendertarget->get_frame_count();
+   int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
 
-   int iFrameIndex = pgpurendertarget->get_frame_index();
+   int iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
 
    ::pointer<command_buffer> pcommandbuffer;
 

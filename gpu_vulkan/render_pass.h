@@ -82,7 +82,7 @@ namespace gpu_vulkan
       // virtual void on_before_begin_render(::gpu::layer * pgpulayer, ::gpu::texture * pgputexture);
 
 
-      virtual int get_frame_index();
+      //virtual int get_frame_index();
       //virtual ::gpu::texture* current_texture();
       //VkFramebuffer getFrameBuffer(int index) { return m_framebuffers[index]; }
       //VkFramebuffer getCurrentFrameBuffer() { return m_framebuffers[get_frame_index()]; }

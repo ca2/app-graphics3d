@@ -13,8 +13,8 @@
 #include "initializers.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/layer.h"
-#include "bred/gpu/layer.h"
-#include "bred/gpu/render_state.h"
+//#include "bred/gpu/layer.h"
+#include "bred/gpu/frame.h"
 #include "bred/gpu/types.h"
 #include "bred/graphics3d/types.h"
 #include "gpu_directx12/shader.h"
@@ -694,7 +694,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < render_target_view > pgpurendertargetview = pgpurendertarget;
 
-      assert(m_prenderstate->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
+      assert(m_pgpucontext->m_pgpudevice->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
              "Can't call beginRender while not in began_frame gpu_frame_state");
 
       //if (m_bOffScreen)
@@ -4132,9 +4132,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pgpurendertarget = this->render_target();
 
-      int iFrameCount = pgpurendertarget->get_frame_count();
+      int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
 
-      int iFrameIndex = pgpurendertarget->get_frame_index();
+      int iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
 
       bool bIsFrameInProgress = isFrameInProgress();
 
@@ -4964,133 +4964,133 @@ float4 main(PSInput input) : SV_TARGET {
    //}
 
 
-   //::pointer < ::gpu::frame > renderer::beginFrame()
-   void renderer::start_frame()
-   {
+   ////::pointer < ::gpu::frame > renderer::beginFrame()
+   //void renderer::start_frame()
+   //{
 
-      return ::gpu::renderer::start_frame();
+   //   return ::gpu::renderer::start_frame();
 
-      //auto pframe = createø < ::gpu::frame >()
+   //   //auto pframe = createø < ::gpu::frame >()
 
-      //m_iSentLayerCount = 0;
+   //   //m_iSentLayerCount = 0;
 
-      ////defer_layout();
+   //   ////defer_layout();
 
-      //assert(!isFrameStarted && "Can't call beginFrame while already in progress");
+   //   //assert(!isFrameStarted && "Can't call beginFrame while already in progress");
 
-      //////if (m_bOffScreen)
-      ////{
+   //   //////if (m_bOffScreen)
+   //   ////{
 
-      ////   auto result = m_prendertargetview->acquireNextImage();
+   //   ////   auto result = m_prendertargetview->acquireNextImage();
 
-      ////   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-      ////      //defer_layout();
-      ////      m_prendertargetview->init();
-      ////      //throw ::exception(todo, "resize happened?!?!");
-      ////      return nullptr;
-      ////   }
-      ////   if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-      ////      throw ::exception(error_failed, "Failed to aquire swap chain image");
-      ////   }
+   //   ////   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+   //   ////      //defer_layout();
+   //   ////      m_prendertargetview->init();
+   //   ////      //throw ::exception(todo, "resize happened?!?!");
+   //   ////      return nullptr;
+   //   ////   }
+   //   ////   if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+   //   ////      throw ::exception(error_failed, "Failed to aquire swap chain image");
+   //   ////   }
 
-      ////   isFrameStarted = true;
+   //   ////   isFrameStarted = true;
 
-      ////   auto commandBuffer = getCurrentCommandBuffer();
+   //   ////   auto commandBuffer = getCurrentCommandBuffer();
 
-      ////   VkCommandBufferBeginInfo beginInfo{};
-      ////   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+   //   ////   VkCommandBufferBeginInfo beginInfo{};
+   //   ////   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-      ////   if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-      ////      throw ::exception(error_failed, "failed to begin recording command buffer!");
-      ////   }
-      //  //auto pframe = create_newø < ::gpu_directx12::frame >();
-      ////   pframe->commandBuffer = commandBuffer;
-      //defer_constructø(m_pgpurendertarget->m_pframe);
-      ////   on_happening(e_happening_begin_frame);
-      ////   return m_pframe;
+   //   ////   if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+   //   ////      throw ::exception(error_failed, "failed to begin recording command buffer!");
+   //   ////   }
+   //   //  //auto pframe = create_newø < ::gpu_directx12::frame >();
+   //   ////   pframe->commandBuffer = commandBuffer;
+   //   //defer_constructø(m_pgpurendertarget->m_pframe);
+   //   ////   on_happening(e_happening_begin_frame);
+   //   ////   return m_pframe;
 
-      ////}
-      //////else
-      //////{
+   //   ////}
+   //   //////else
+   //   //////{
 
-      //if (m_commandbuffera.is_empty())
-      //{
+   //   //if (m_commandbuffera.is_empty())
+   //   //{
 
-      //   create_command_buffers();
+   //   //   create_command_buffers();
 
-      //}
+   //   //}
 
-      ////auto& pcommandbuffer = m_commandbuffera[get_frame_index()];
-      //auto& pcommandbuffer = m_commandbuffera[m_pgpurendertarget->get_frame_index()];
+   //   ////auto& pcommandbuffer = m_commandbuffera[get_frame_index()];
+   //   //auto& pcommandbuffer = m_commandbuffera[m_pgpurendertarget->get_frame_index()];
 
-      //auto pcommandbufferLoadAssets = ::transfer(m_pcommandbufferLoadAssets);
+   //   //auto pcommandbufferLoadAssets = ::transfer(m_pcommandbufferLoadAssets);
 
-      //if (pcommandbufferLoadAssets)
-      //{
-      //   m_pcommandbufferLoadAssets2 = pcommandbufferLoadAssets;
-      //   //if (prenderer->m_pcommandbufferLoadAssets)
-      //   //{
+   //   //if (pcommandbufferLoadAssets)
+   //   //{
+   //   //   m_pcommandbufferLoadAssets2 = pcommandbufferLoadAssets;
+   //   //   //if (prenderer->m_pcommandbufferLoadAssets)
+   //   //   //{
 
-      //   //   auto pcommandbufferLoadAssets = ::transfer(prenderer->m_pcommandbufferLoadAssets);
+   //   //   //   auto pcommandbufferLoadAssets = ::transfer(prenderer->m_pcommandbufferLoadAssets);
 
-      //   //   m_papplication->fork([pcommandbufferLoadAssets]()
-      //   //      {
+   //   //   //   m_papplication->fork([pcommandbufferLoadAssets]()
+   //   //   //      {
 
-      //            pcommandbufferLoadAssets->submit_command_buffer(nullptr);
+   //   //            pcommandbufferLoadAssets->submit_command_buffer(nullptr);
 
-      //            //pcommandbufferLoadAssets->wait_for_gpu();
+   //   //            //pcommandbufferLoadAssets->wait_for_gpu();
 
-      ////         });
+   //   ////         });
 
-      ////   }
+   //   ////   }
 
-      ////}
+   //   ////}
 
-      //   //auto pcommandqueue = pcommandbuffer->m_pcommandqueue;
+   //   //   //auto pcommandqueue = pcommandbuffer->m_pcommandqueue;
 
-      //   // Wait on the graphics queue for the copy to complete
-      //   //pcommandqueue->Wait(
-      //      //pcommandbufferLoadAssets->m_pfence,
-      //      //pcommandbufferLoadAssets->m_fenceValue);
+   //   //   // Wait on the graphics queue for the copy to complete
+   //   //   //pcommandqueue->Wait(
+   //   //      //pcommandbufferLoadAssets->m_pfence,
+   //   //      //pcommandbufferLoadAssets->m_fenceValue);
 
-      //            pcommandbufferLoadAssets->wait_commands_to_execute();
+   //   //            pcommandbufferLoadAssets->wait_commands_to_execute();
 
-      //}
+   //   //}
 
 
-      //pcommandbuffer->reset();
+   //   //pcommandbuffer->reset();
 
-      ////::defer_throw_hresult(
-      ////   m_pgraphicscommandlist->Reset(pcommandallocator, pipelineState));
+   //   ////::defer_throw_hresult(
+   //   ////   m_pgraphicscommandlist->Reset(pcommandallocator, pipelineState));
 
-      //////	auto result = m_pvkcswapchain->acquireNextImage(&m_uCurrentSwapChainImage);
+   //   //////	auto result = m_pvkcswapchain->acquireNextImage(&m_uCurrentSwapChainImage);
 
-      //////	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-      //////		recreateRenderPass();
-      //////		return nullptr;
-      //////	}
-      //////	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-      //////		throw ::exception(error_failed, "Failed to aquire swap chain image");
-      //////	}
+   //   //////	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+   //   //////		recreateRenderPass();
+   //   //////		return nullptr;
+   //   //////	}
+   //   //////	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+   //   //////		throw ::exception(error_failed, "Failed to aquire swap chain image");
+   //   //////	}
 
-      //isFrameStarted = true;
+   //   //isFrameStarted = true;
 
-      //////	auto commandBuffer = getCurrentCommandBuffer();
+   //   //////	auto commandBuffer = getCurrentCommandBuffer();
 
-      //////	VkCommandBufferBeginInfo beginInfo{};
-      //////	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+   //   //////	VkCommandBufferBeginInfo beginInfo{};
+   //   //////	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-      //////	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-      //////		throw ::exception(error_failed, "failed to begin recording command buffer!");
-      //////	}
-      //////	return commandBuffer;
+   //   //////	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+   //   //////		throw ::exception(error_failed, "failed to begin recording command buffer!");
+   //   //////	}
+   //   //////	return commandBuffer;
 
-      //////}
-      //m_prenderstate->on_happening(::gpu::e_happening_begin_frame);
+   //   //////}
+   //   //m_prenderstate->on_happening(::gpu::e_happening_begin_frame);
 
-      //return m_pgpurendertarget->m_pframe;
+   //   //return m_pgpurendertarget->m_pframe;
 
-   }
+   //}
 
 
 //   void renderer::on_start_layer(::gpu::layer * pgpulayer)
@@ -5131,259 +5131,259 @@ float4 main(PSInput input) : SV_TARGET {
 
 
 
-   void renderer::end_frame()
-   {
-//
-//      //m_prenderstate->on_happening(::gpu::e_happening_end_frame);
-//
-//      //// 5. Signal and wait (optional but recommended for CPU/GPU sync)
-//      //m_fences[get_frame_index()]++;
-//      //HRESULT hrSignalCommandQueue = m_pcommandqueue->Signal(m_pfence, m_fences[get_frame_index()]);
-//
-//      //::defer_throw_hresult(hrSignalCommandQueue);
-//
-//      //// Wait until the GPU has completed execution
-//      //if (m_pfence->GetCompletedValue() < m_fences[get_frame_index()])
-//      //{
-//      //   m_pfence->SetEventOnCompletion(m_fences[get_frame_index()], pfrmae->m_hFenceEvent);
-//      //   WaitForSingleObject(pframe->m_hFenceEvent, INFINITE);
-//      //}
-//
-//
-//      ////if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
-//      ////{
-//
-//      //assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-//      //auto commandBuffer = getCurrentCommandBuffer();
-//      //if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-//      //{
-//      //   throw ::exception(error_failed, "failed to record command buffer!");
-//      //}
-//
-//      //auto result = m_prendertargetview->submitCommandBuffers(&commandBuffer);
-//
-//      //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-//      //   m_bNeedToRecreateSwapChain)
-//      //{
-//      //   m_bNeedToRecreateSwapChain = false;
-//      //   defer_update_render_target_view();
-//      //}
-//      //else if (result != VK_SUCCESS)
-//      //{
-//      //   throw ::exception(error_failed, "failed to present swap chain image!");
-//      //}
-//
-//
-//      //if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
-//      //{
-//      //   sample();
-//
-//      //}
-//      ////else if (m_eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
-//      ////{
-//
-//      ////	resolve_color_and_alpha_accumulation_buffers();
-//
-//      ////}
-//
-//      //auto pcommandlist = pcommandbuffer->m_pcommandlist;
-//
-//      //HRESULT hrCloseCommandList = pcommandlist->Close();
-//
-//      //::defer_throw_hresult(hrCloseCommandList);
-//
-//      //// 4. Execute the command list
-//      //ID3D12CommandList* ppCommandLists[] = { pcommandlist };
-//      //m_pcommandqueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-//
-//      layer_end_copy();
-//
-//      auto eoutput = m_pgpucontext->m_eoutput;
-//
-//      if (eoutput == ::gpu::e_output_swap_chain)
-//      {
-//
-//         m_pgpucontext->get_swap_chain()->set_present_state();
-//
-//      }
-//      else if (eoutput == ::gpu::e_output_cpu_buffer)
-//      {
-//
-//         this->sample();
-//
-//      }
-//
-//      //else if (eoutput == ::gpu::e_output_gpu_buffer)
-//      //{
-//
-//      //   this->gpu_blend();
-//
-//      //}
-//
-//      ////rrentImageIndex = m_prendertargetview->currentFrame;
-//      ////currentFrameIndex = (currentFrameIndex + 1) % ::gpu_directx12::render_target_view::MAX_FRAMES_IN_FLIGHT;
-//
-//      ////}
-//      ////else
-//      ////{
-//
-//
-//      ////	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
-//      ////	auto commandBuffer = getCurrentCommandBuffer();
-//      ////	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-//      ////		throw ::exception(error_failed, "failed to record command buffer!");
-//      ////	}
-//      ////	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &m_uCurrentSwapChainImage);
-//      ////	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-//      ////	//	vkcWindow.wasWindowResized()) 
-//      ////	//{
-//      ////	//	vkcWindow.resetWindowResizedFlag();
-//      ////	//	recreateSwapchain();
-//      ////	//}
-//      ////	//else 
-//      ////	//	if (result != VK_SUCCESS) {
-//      ////	//	throw ::exception(error_failed, "failed to present swap chain image!");
-//      ////	//}
-//      ////	isFrameStarted = false;
-//      ////	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_target_view::MAX_FRAMES_IN_FLIGHT;
-//
-//      ////}
-//
-//      //if (m_iSentLayerCount <= 0)
-//      {
-//
-//         auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
-//
-//         ::cast < context > pcontext = m_pgpucontext;
-//
-//         auto etypeContext = pcontext->m_etype;
-//
-//         auto eoutputContext = pcontext->m_eoutput;
-//
-//         auto pcommandqueue = pcontext->command_queue();
-//
-//         ::cast < context > pcontextMainDraw2d = m_pgpucontext->m_pgpudevice->m_pgpucontextMainDraw2d;
-//
-//         if (etypeContext == ::gpu::context::e_type_draw2d)
-//         {
-//
-//            if (pcontextMainDraw2d == pcontext)
-//            {
-//
-//               //informationf("good good good");
-//
-//            }
-//            else
-//            {
-//
-//               warning("bad bad bad");
-//
-//            }
-//
-//            if (pcommandqueue == pcontextMainDraw2d->m_pcommandqueue)
-//            {
-//
-//               //informationf("good good good (2)");
-//
-//            }
-//            else
-//            {
-//
-//               warning("bad bad bad (2)");
-//
-//            }
-//
-//
-//         }
-//
-//         pcommandbuffer->submit_command_buffer(nullptr);
-//
-//         pcommandbuffer->wait_commands_to_execute();
-//
-//         if (eoutput == ::gpu::e_output_swap_chain)
-//         {
-//
-//            m_pgpucontext->get_swap_chain()->swap_buffers();
-//
-//         }
-//
-//      }
-//
-//      if (eoutput == ::gpu::e_output_cpu_buffer)
-//      {
-//
-//         m_pcpubuffersampler->send_sample();
-//
-//      }
-//
-//      if (eoutput == ::gpu::e_output_swap_chain)
-//      {
-//
-//         //m_pgpucontext->get_swap_chain()->get_new_swap_chain_index();
-//
-//      }
-//
-//
-//      //
-////#ifdef HELLO_TRIANGLE_DEBUG
+//   void renderer::end_frame()
+//   {
 ////
-////      if (!m_pshaderHelloTriangle)
+////      //m_prenderstate->on_happening(::gpu::e_happening_end_frame);
+////
+////      //// 5. Signal and wait (optional but recommended for CPU/GPU sync)
+////      //m_fences[get_frame_index()]++;
+////      //HRESULT hrSignalCommandQueue = m_pcommandqueue->Signal(m_pfence, m_fences[get_frame_index()]);
+////
+////      //::defer_throw_hresult(hrSignalCommandQueue);
+////
+////      //// Wait until the GPU has completed execution
+////      //if (m_pfence->GetCompletedValue() < m_fences[get_frame_index()])
+////      //{
+////      //   m_pfence->SetEventOnCompletion(m_fences[get_frame_index()], pfrmae->m_hFenceEvent);
+////      //   WaitForSingleObject(pframe->m_hFenceEvent, INFINITE);
+////      //}
+////
+////
+////      ////if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+////      ////{
+////
+////      //assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
+////      //auto commandBuffer = getCurrentCommandBuffer();
+////      //if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+////      //{
+////      //   throw ::exception(error_failed, "failed to record command buffer!");
+////      //}
+////
+////      //auto result = m_prendertargetview->submitCommandBuffers(&commandBuffer);
+////
+////      //if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+////      //   m_bNeedToRecreateSwapChain)
+////      //{
+////      //   m_bNeedToRecreateSwapChain = false;
+////      //   defer_update_render_target_view();
+////      //}
+////      //else if (result != VK_SUCCESS)
+////      //{
+////      //   throw ::exception(error_failed, "failed to present swap chain image!");
+////      //}
+////
+////
+////      //if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+////      //{
+////      //   sample();
+////
+////      //}
+////      ////else if (m_eoutput == ::gpu::e_output_color_and_alpha_accumulation_buffers)
+////      ////{
+////
+////      ////	resolve_color_and_alpha_accumulation_buffers();
+////
+////      ////}
+////
+////      //auto pcommandlist = pcommandbuffer->m_pcommandlist;
+////
+////      //HRESULT hrCloseCommandList = pcommandlist->Close();
+////
+////      //::defer_throw_hresult(hrCloseCommandList);
+////
+////      //// 4. Execute the command list
+////      //ID3D12CommandList* ppCommandLists[] = { pcommandlist };
+////      //m_pcommandqueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+////
+////      layer_end_copy();
+////
+////      auto eoutput = m_pgpucontext->m_eoutput;
+////
+////      if (eoutput == ::gpu::e_output_swap_chain)
 ////      {
 ////
-////         defer_construct_newø(m_pshaderHelloTriangle);
+////         m_pgpucontext->get_swap_chain()->set_present_state();
 ////
-////         m_pshaderHelloTriangle->m_iVertexLevel = 2;
+////      }
+////      else if (eoutput == ::gpu::e_output_cpu_buffer)
+////      {
 ////
-////         m_pshaderHelloTriangle->m_bDisableDepthTest = true;
-////
-////         ::string str(g_pszHelloTriangleHlsl);
-////
-////         ::string strVS(str);
-////
-////         strVS.find_replace("VSMain", "main");
-////
-////         ::string strPS(str);
-////
-////         strPS.find_replace("PSMain", "main");
-////         m_pshaderHelloTriangle->initialize_shader_with_block(
-////            this,
-////            strVS,
-////            strPS);
-////
-////
-////         //m_pshaderHelloTriangle->initialize_shader_with_block(
-////         //   this,
-////         //   strVS,
-////         //   strPS,
-////         //   {
-////         //      ::gpu::shader::e_descriptor_set_slot_global,
-////         //      ::gpu::shader::e_descriptor_set_slot_local
-////         //   });
+////         this->sample();
 ////
 ////      }
 ////
-////      m_pshaderHelloTriangle->bind();
+////      //else if (eoutput == ::gpu::e_output_gpu_buffer)
+////      //{
 ////
-////      auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
+////      //   this->gpu_blend();
 ////
-////      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+////      //}
 ////
-////      pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-////      pcommandlist->IASetVertexBuffers(0, 1, &m_vertexbufferviewHelloTriangle);
-////      pcommandlist->DrawInstanced(3, 1, 0, 0);
+////      ////rrentImageIndex = m_prendertargetview->currentFrame;
+////      ////currentFrameIndex = (currentFrameIndex + 1) % ::gpu_directx12::render_target_view::MAX_FRAMES_IN_FLIGHT;
 ////
-////      m_pshaderHelloTriangle->unbind();
+////      ////}
+////      ////else
+////      ////{
 ////
-////#endif
-
-      // Flush dynamic resources, such as glyph-atlas pixel updates, after the
-      // frame's drawing command lists have been submitted.
-      m_pgpucontext->m_pgpudevice->on_end_frame();
-
-      ::gpu::renderer::end_frame();
-
-   }
-
+////
+////      ////	assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
+////      ////	auto commandBuffer = getCurrentCommandBuffer();
+////      ////	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+////      ////		throw ::exception(error_failed, "failed to record command buffer!");
+////      ////	}
+////      ////	auto result = m_pvkcswapchain->submitCommandBuffers(&commandBuffer, &m_uCurrentSwapChainImage);
+////      ////	//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+////      ////	//	vkcWindow.wasWindowResized()) 
+////      ////	//{
+////      ////	//	vkcWindow.resetWindowResizedFlag();
+////      ////	//	recreateSwapchain();
+////      ////	//}
+////      ////	//else 
+////      ////	//	if (result != VK_SUCCESS) {
+////      ////	//	throw ::exception(error_failed, "failed to present swap chain image!");
+////      ////	//}
+////      ////	isFrameStarted = false;
+////      ////	currentFrameIndex = (currentFrameIndex + 1) % swap_chain_render_target_view::MAX_FRAMES_IN_FLIGHT;
+////
+////      ////}
+////
+////      //if (m_iSentLayerCount <= 0)
+////      {
+////
+////         auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
+////
+////         ::cast < context > pcontext = m_pgpucontext;
+////
+////         auto etypeContext = pcontext->m_etype;
+////
+////         auto eoutputContext = pcontext->m_eoutput;
+////
+////         auto pcommandqueue = pcontext->command_queue();
+////
+////         ::cast < context > pcontextMainDraw2d = m_pgpucontext->m_pgpudevice->m_pgpucontextMainDraw2d;
+////
+////         if (etypeContext == ::gpu::context::e_type_draw2d)
+////         {
+////
+////            if (pcontextMainDraw2d == pcontext)
+////            {
+////
+////               //informationf("good good good");
+////
+////            }
+////            else
+////            {
+////
+////               warning("bad bad bad");
+////
+////            }
+////
+////            if (pcommandqueue == pcontextMainDraw2d->m_pcommandqueue)
+////            {
+////
+////               //informationf("good good good (2)");
+////
+////            }
+////            else
+////            {
+////
+////               warning("bad bad bad (2)");
+////
+////            }
+////
+////
+////         }
+////
+////         pcommandbuffer->submit_command_buffer(nullptr);
+////
+////         pcommandbuffer->wait_commands_to_execute();
+////
+////         if (eoutput == ::gpu::e_output_swap_chain)
+////         {
+////
+////            m_pgpucontext->get_swap_chain()->swap_buffers();
+////
+////         }
+////
+////      }
+////
+////      if (eoutput == ::gpu::e_output_cpu_buffer)
+////      {
+////
+////         m_pcpubuffersampler->send_sample();
+////
+////      }
+////
+////      if (eoutput == ::gpu::e_output_swap_chain)
+////      {
+////
+////         //m_pgpucontext->get_swap_chain()->get_new_swap_chain_index();
+////
+////      }
+////
+////
+////      //
+//////#ifdef HELLO_TRIANGLE_DEBUG
+//////
+//////      if (!m_pshaderHelloTriangle)
+//////      {
+//////
+//////         defer_construct_newø(m_pshaderHelloTriangle);
+//////
+//////         m_pshaderHelloTriangle->m_iVertexLevel = 2;
+//////
+//////         m_pshaderHelloTriangle->m_bDisableDepthTest = true;
+//////
+//////         ::string str(g_pszHelloTriangleHlsl);
+//////
+//////         ::string strVS(str);
+//////
+//////         strVS.find_replace("VSMain", "main");
+//////
+//////         ::string strPS(str);
+//////
+//////         strPS.find_replace("PSMain", "main");
+//////         m_pshaderHelloTriangle->initialize_shader_with_block(
+//////            this,
+//////            strVS,
+//////            strPS);
+//////
+//////
+//////         //m_pshaderHelloTriangle->initialize_shader_with_block(
+//////         //   this,
+//////         //   strVS,
+//////         //   strPS,
+//////         //   {
+//////         //      ::gpu::shader::e_descriptor_set_slot_global,
+//////         //      ::gpu::shader::e_descriptor_set_slot_local
+//////         //   });
+//////
+//////      }
+//////
+//////      m_pshaderHelloTriangle->bind();
+//////
+//////      auto pcommandbuffer = getCurrentCommandBuffer2(::gpu::current_layer());
+//////
+//////      auto pcommandlist = pcommandbuffer->m_pcommandlist;
+//////
+//////      pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//////      pcommandlist->IASetVertexBuffers(0, 1, &m_vertexbufferviewHelloTriangle);
+//////      pcommandlist->DrawInstanced(3, 1, 0, 0);
+//////
+//////      m_pshaderHelloTriangle->unbind();
+//////
+//////#endif
+//
+//      // Flush dynamic resources, such as glyph-atlas pixel updates, after the
+//      // frame's drawing command lists have been submitted.
+//      m_pgpucontext->m_pgpudevice->on_end_frame();
+//
+//      ::gpu::renderer::end_frame();
+//
+//   }
+//
 
    //void renderer::_on_graphics_end_draw(VkImage image, const ::i32_rectangle& rectangle)
    //{

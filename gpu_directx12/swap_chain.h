@@ -67,7 +67,7 @@ namespace gpu_directx12
       void swap_buffers() override;
       int swap_chain_frame_index() override;
 
-      int get_frame_index() override;
+      //int get_frame_index() override;
 
 
 //      VkInstance instance{ VK_NULL_HANDLE };

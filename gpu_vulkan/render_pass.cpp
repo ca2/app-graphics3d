@@ -265,18 +265,18 @@ namespace gpu_vulkan
    //   // m_pvkcrenderpassOld = nullptr;
    //}
 
-   int render_pass::get_frame_index()
-   {
+   //int render_pass::get_frame_index()
+   //{
 
-      auto pgpucontext = m_pgpucontext;
+   //   auto pgpucontext = m_pgpucontext;
 
-      auto pgpurenderer = pgpucontext->m_pgpurenderer;
+   //   auto pgpurenderer = pgpucontext->m_pgpurenderer;
 
-      auto pgpurendertarget = pgpurenderer->render_target();
+   //   auto pgpurendertarget = pgpurenderer->render_target();
 
-      return pgpurendertarget->get_frame_index(); 
+   //   return pgpurendertarget->get_frame_index(); 
 
-   }
+   //}
 
    //::gpu::texture* render_pass::current_texture()
    //{

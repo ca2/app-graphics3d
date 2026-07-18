@@ -140,7 +140,7 @@ namespace gpu_directx12
 
       auto pgpurendertarget = pgpurenderer->render_target();
 
-         auto iFrameIndex = pgpurendertarget->get_frame_index();
+         auto iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
 
 
          //MyGlobalData globalData = { /* your values */ };

@@ -375,7 +375,7 @@ namespace gpu_vulkan
       ::pointer_array<::gpu_vulkan::descriptor_set_layout> descriptorsetlayouta;
       ::pointer_array<::gpu_vulkan::descriptor_pool> descriptorpoola;
 
-      int iFrameCount = pgpurendertarget->get_frame_count();
+      int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
 
       if (m_pbindingslotseta)
       {

@@ -59,9 +59,9 @@ namespace graphics3d_impact3d
 
       set_tab("Menu", MENU_IMPACT);
       set_tab("Main", MAIN_IMPACT);
-      set_tab("Font", FONTSEL_IMPACT);
-      set_tab("Color", COLORSEL_IMPACT);
-      set_tab("Open", FILEMANAGER_IMPACT);
+      set_tab("Font", "font_selection_impact");
+      set_tab("Color", "color_selection_impact");
+      set_tab("Open", "file_manager_impact");
 
       set_current_tab_by_id(MAIN_IMPACT);
 

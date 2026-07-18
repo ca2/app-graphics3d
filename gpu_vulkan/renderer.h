@@ -212,12 +212,12 @@ namespace gpu_vulkan
       //void prepareOffScreen();
 
       //::pointer < ::gpu::frame > beginFrame() override;
-      void start_frame() override;
+      //void start_frame() override;
       void on_begin_render(::gpu::layer * pgpulayer) override;
       void on_end_render(::gpu::layer * pgpulayer) override;
       //void endFrame() override;
       void end_layer(bool bClosingLayer = false) override;
-      void end_frame() override;
+      //void end_frame() override;
       //void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
 
 

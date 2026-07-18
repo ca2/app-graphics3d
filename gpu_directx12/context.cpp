@@ -1794,7 +1794,7 @@ if (m_itask.is_null())
 
          auto pgpurendertarget = m_pgpurenderer->render_target();
 
-         auto iFrameIndex = pgpurendertarget->get_frame_index();
+         auto iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
 
          auto etypeRenderer = m_pgpurenderer->m_pgpucontext->m_etype;
 
@@ -1877,7 +1877,7 @@ if (m_itask.is_null())
 
       auto pgpurendertarget = m_pgpurenderer->render_target();
 
-      auto iFrameIndex = pgpurendertarget->get_frame_index();
+      auto iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
 
       auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
 

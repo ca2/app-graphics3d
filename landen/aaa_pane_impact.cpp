@@ -63,8 +63,8 @@ namespace app_core_vulken
 
       set_tab("Menu"_ansi,MENU_IMPACT);
       set_tab("vulken"_ansi, MAIN_IMPACT);
-      set_tab("Font"_ansi,FONTSEL_IMPACT);
-      set_tab("Open"_ansi, FILEMANAGER_IMPACT);
+      set_tab("Font"_ansi,"font_selection_impact");
+      set_tab("Open"_ansi, "file_manager_impact");
 
       set_current_tab_by_id(MAIN_IMPACT);
 
@@ -91,7 +91,7 @@ namespace app_core_vulken
 //
 //         }
 //
-//         auto ptabpaneFileManager = get_tab_by_id(FILEMANAGER_IMPACT);
+//         auto ptabpaneFileManager = get_tab_by_id("file_manager_impact");
 //
 //         if(ptabpaneFileManager != nullptr && ptabpaneFileManager->m_pplaceholder != nullptr)
 //         {
@@ -134,10 +134,10 @@ namespace app_core_vulken
 //         //m_prollfps->_001SetText(str, ::e_source_database);
 //
 //      }
-////      else if(get_impact_id() == FONTSEL_IMPACT)
+////      else if(get_impact_id() == "font_selection_impact")
 ////      {
 ////
-////         ::pointer<FONTSEL_IMPACT>>m_pholder->get_child_by_id("font_list_impact"_ansi);
+////         ::pointer<"font_selection_impact">>m_pholder->get_child_by_id("font_list_impact"_ansi);
 ////
 ////         if(m_pimpactLast != nullptr && pfontview.is_set())
 ////         {

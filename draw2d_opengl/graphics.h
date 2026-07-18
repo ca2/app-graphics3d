@@ -575,7 +575,7 @@ namespace draw2d_opengl
       //void draw_inset_rectangle(const ::f64_rectangle & rectangle, const ::color::color & color, double dWidth, const ::e_border & eborder = e_border_all) override;
       //void frame_rectangle(const ::f64_rectangle & rectangle, const ::color::color & color, const ::e_border & eborder = e_border_all) override;
 
-      void intersect_clip(const ::draw2d::clip_group & clipgroup) override;
+      void intersect_clip(::draw2d::clip_group * pclipgroup) override;
       void intersect_clip(const ::f64_rectangle & rectangle) override;
 
    public:

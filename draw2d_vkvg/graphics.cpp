@@ -8480,7 +8480,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::intersect_clip(const ::draw2d::clip_group& clipgroup)
+   void graphics::intersect_clip(::draw2d::clip_group * pclipgroup)
    {
 
 

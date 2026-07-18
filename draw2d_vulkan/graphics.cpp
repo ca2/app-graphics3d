@@ -23,7 +23,7 @@
 #include "bred/gpu/layer.h"
 #include "bred/gpu/render.h"
 #include "bred/gpu/renderer.h"
-#include "bred/gpu/render_state.h"
+#include "bred/gpu/frame.h"
 #include "bred/graphics3d/types.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
@@ -7114,7 +7114,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::intersect_clip(const ::draw2d::clip_group& clipgroup)
+   void graphics::intersect_clip(::draw2d::clip_group * pclipgroup)
    {
 
 

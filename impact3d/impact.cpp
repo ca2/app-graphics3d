@@ -29,7 +29,7 @@ namespace graphics3d_impact3d
 
       m_iView = -1;
 
-      //payload(FONTSEL_IMPACT) = true;
+      //payload("font_selection_impact") = true;
 
       m_flagNonClient.erase(e_non_client_background);
 

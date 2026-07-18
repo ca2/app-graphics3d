@@ -15,7 +15,7 @@
 #include "initializers.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/layer.h"
-#include "bred/gpu/render_state.h"
+//#include "bred/gpu/render_state.h"
 #include "gpu_directx12/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"

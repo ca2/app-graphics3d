@@ -12,6 +12,7 @@
 #include "aura/message/user.h"
 #include "aura/graphics/draw2d/draw2d.h"
 #include "apex/database/stream.h"
+#include "acme/user/interface/message_box.h"
 
 
 CLASS_DECL_AURA ::color::color dk_red(); // <3 tbs

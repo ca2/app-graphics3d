@@ -94,7 +94,7 @@ namespace gpu_vulkan
 
       auto prendertarget = m_pgpurenderer->render_target();
 
-      auto iFrameIndex = prendertarget->get_frame_index();
+      auto iFrameIndex = prendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
 
       if (iFrameIndex < 0)
       {

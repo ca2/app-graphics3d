@@ -273,8 +273,8 @@ namespace gpu_directx12
       //void prepareOffScreen();
 
       //::pointer < ::gpu::frame > beginFrame() override;
-      void start_frame() override;
-      void end_frame() override;
+      //void start_frame() override;
+      //void end_frame() override;
       void on_start_layer(::gpu::layer * pgpulayer) override;
       void on_begin_render(::gpu::layer * pgpulayer) override;
       //virtual void on_begin_render1(::gpu::layer * pgpulayer);
