@@ -140,6 +140,9 @@
     <ClInclude Include="buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cube_map_upload.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="render_pass.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -10,6 +10,7 @@
  */
 
 #include "buffer.h"
+#include "cube_map_upload.h"
 #include <assert.h>
 
 namespace gpu_vulkan
@@ -278,39 +279,29 @@ namespace gpu_vulkan
       
       vkMapMemory(pcontext->logicalDevice(), m_vkdevicememory, 0, m_size, 0, &data);
       
-      auto imagea = imageaSource;
-
-      imagea[0]->rotate(180_degrees);
-      imagea[1]->rotate(180_degrees);
-      imagea[4]->rotate(180_degrees);
-      imagea[5]->rotate(180_degrees);
-      swap(imagea[2], imagea[3]);
-      swap(imagea[4], imagea[5]);
-
-      auto pimageFirst = imagea.first();  
+      auto pimageFirst = imageaSource.first();
 
       auto w = pimageFirst->width();
 
       auto h = pimageFirst->height();
 
-      auto layerarea = w * h;
+      const image32_t * psourcefaces[6];
 
-      int iScanDst = w * 4;
+      int sourcescana[6];
       
-      for (int i = 0; i < 6; i++)
+      for (int face = 0; face < 6; face++)
       {
 
-         auto pimage = imagea[i];
+         auto pimage = imageaSource[face];
 
-         int iScanSrc = pimage->m_iScan;
+         psourcefaces[face] = pimage->image32();
 
-         auto pimage32Dst = (image32_t*)data + layerarea * i;
-
-         auto pimage32Src = pimage->image32();  
+         sourcescana[face] = pimage->m_iScan;
          
-         pimage32Dst->copy(w, h, iScanDst, pimage32Src, iScanSrc);
-
       }
+
+      pack_cube_map_for_vulkan(
+         static_cast < image32_t * >(data), w, h, psourcefaces, sourcescana);
 
       vkUnmapMemory(pcontext->logicalDevice(), m_vkdevicememory);
 

@@ -694,6 +694,7 @@
     <ClInclude Include="binding.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="buffer.h" />
+    <ClInclude Include="cube_map_upload.h" />
     <ClInclude Include="context_cgl.h" />
     <ClInclude Include="context_fbo.h" />
     <ClInclude Include="fence.h" />
