@@ -1373,6 +1373,14 @@ namespace gpu_vulkan
 
 
 
+   void renderer::sample_to_cpu_buffer()
+   {
+
+      sample();
+
+   }
+
+
    void renderer::sample()
    {
 
