@@ -19,7 +19,6 @@ namespace gpu_vulkan
       VkCommandBuffer         m_vkcommandbuffer;
       VkCommandBufferLevel    m_vkcommandbufferlevel;
       VkCommandPool           m_vkcommandpool;
-      VkFence                 m_vkfence;
       bool                    m_bFenceWaitIfNoPreexistingFence = false;
 
       //bool m_bPresentQueue;

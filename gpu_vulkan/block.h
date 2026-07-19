@@ -17,8 +17,6 @@ namespace gpu_vulkan
 
       ::pointer_array<::gpu_vulkan::memory_buffer> m_uboBuffers;
 
-      VkDescriptorSet m_vkdescriptorset;
-
       block();
       ~block() override;
 
@@ -36,6 +34,8 @@ namespace gpu_vulkan
 
 
       virtual VkDescriptorBufferInfo descriptor_info(::gpu::command_buffer *pgpucommandbuffer);
+
+      virtual VkDescriptorBufferInfo descriptor_info(::collection::index iFrameIndex);
      
 
 

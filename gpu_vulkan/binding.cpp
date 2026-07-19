@@ -179,7 +179,7 @@ namespace gpu_vulkan
 
                   auto &vkdescriptorbufferinfo = *vkdescriptorbufferinfoa.add_new().m_p;
 
-                  vkdescriptorbufferinfo = pblock->descriptor_info(pgpucommandbuffer);
+                  vkdescriptorbufferinfo = pblock->descriptor_info(i);
 
                }
 

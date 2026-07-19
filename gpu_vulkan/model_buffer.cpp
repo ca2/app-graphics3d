@@ -5,6 +5,7 @@
 #include "context.h"
 #include "memory_buffer.h"
 #include "model_buffer.h"
+#include "model_buffer_upload_diagnostics.h"
 #include "renderer.h"
 #include "render_target.h"
 #include "texture.h"
@@ -734,6 +735,59 @@ namespace gpu_vulkan
 
          if (m_pbufferIndex)
          {
+
+            ::cast < memory_buffer > pbufferVertex = m_pbufferVertex;
+
+            ::cast < memory_buffer > pbufferIndex = m_pbufferIndex;
+
+            auto blockIndexes = m_pmodeldatabase2->index_data();
+
+            auto diagnostic = inspect_model_buffer_upload(
+               m_pmodeldatabase2->vertex_count(),
+               m_pmodeldatabase2->vertex_type_size(),
+               pbufferVertex->m_pbuffer->m_size,
+               m_pmodeldatabase2->index_count(),
+               m_pmodeldatabase2->index_type_size(),
+               pbufferIndex->m_pbuffer->m_size,
+               blockIndexes.data());
+
+            if (!m_bUploadDiagnosticLogged || !diagnostic.is_valid())
+            {
+
+               information(
+                  "gpu_vulkan model buffer upload diagnostic: valid={} model_buffer={} vertex_buffer={} "
+                  "index_buffer={} vertex_count={} vertex_type_bytes={} vertex_required_bytes={} "
+                  "vertex_buffer_bytes={} index_count={} index_type_bytes={} index_required_bytes={} "
+                  "index_buffer_bytes={} maximum_index={} vertex_buffer_large_enough={} "
+                  "index_buffer_large_enough={} index_type_supported={} indexes_in_vertex_range={}",
+                  diagnostic.is_valid(),
+                  (::uptr)this,
+                  (::uptr)pbufferVertex->m_pbuffer->m_vkbuffer,
+                  (::uptr)pbufferIndex->m_pbuffer->m_vkbuffer,
+                  m_pmodeldatabase2->vertex_count(),
+                  m_pmodeldatabase2->vertex_type_size(),
+                  diagnostic.m_uRequiredVertexBytes,
+                  (::u64)pbufferVertex->m_pbuffer->m_size,
+                  m_pmodeldatabase2->index_count(),
+                  m_pmodeldatabase2->index_type_size(),
+                  diagnostic.m_uRequiredIndexBytes,
+                  (::u64)pbufferIndex->m_pbuffer->m_size,
+                  diagnostic.m_uMaximumIndex,
+                  diagnostic.m_bVertexBufferLargeEnough,
+                  diagnostic.m_bIndexBufferLargeEnough,
+                  diagnostic.m_bIndexTypeSupported,
+                  diagnostic.m_bIndexesInVertexRange);
+
+               m_bUploadDiagnosticLogged = true;
+
+            }
+
+            if (!diagnostic.is_valid())
+            {
+
+               throw ::exception(error_failed, "invalid Vulkan model buffer upload");
+
+            }
 
             vkCmdDrawIndexed(
                pcommandbuffer->m_vkcommandbuffer, m_pmodeldatabase2->index_count(), 1, 0, 0, 0);

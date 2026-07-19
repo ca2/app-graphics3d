@@ -1218,6 +1218,8 @@ namespace gpu_vulkan
          vkGetDeviceQueue(this->logicalDevice(), graphicsFamily, 0, &queueGraphics);
 
          pqueueGraphics->m_vkqueue = queueGraphics;
+         pqueueGraphics->m_pqueuehostcalldiagnosticstate =
+            m_queuehostcalldiagnosticregistry.state_for((std::uintptr_t)queueGraphics);
 
          m_pqueueGraphics = pqueueGraphics;
 
@@ -1237,6 +1239,8 @@ namespace gpu_vulkan
          vkGetDeviceQueue(this->logicalDevice(), transferFamily, 0, &queueTransfer);
 
          pqueueTransfer->m_vkqueue = queueTransfer;
+         pqueueTransfer->m_pqueuehostcalldiagnosticstate =
+            m_queuehostcalldiagnosticregistry.state_for((std::uintptr_t)queueTransfer);
 
          m_pqueueTransfer = pqueueTransfer;
 
@@ -1256,10 +1260,24 @@ namespace gpu_vulkan
          vkGetDeviceQueue(this->logicalDevice(), presentFamily, 0, &queuePresent);
 
          pqueuePresent->m_vkqueue = queuePresent;
+         pqueuePresent->m_pqueuehostcalldiagnosticstate =
+            m_queuehostcalldiagnosticregistry.state_for((std::uintptr_t)queuePresent);
 
          m_pqueuePresent = pqueuePresent;
 
       }
+
+      information(
+         "gpu_vulkan queue topology: graphics_family={} transfer_family={} present_family={} "
+         "graphics_queue={} transfer_queue={} present_queue={} graphics_transfer_shared={} graphics_present_shared={}",
+         graphicsFamily,
+         transferFamily,
+         presentFamily,
+         (::uptr)queueGraphics,
+         (::uptr)queueTransfer,
+         (::uptr)queuePresent,
+         queueGraphics != VK_NULL_HANDLE && queueGraphics == queueTransfer,
+         queueGraphics != VK_NULL_HANDLE && queueGraphics == queuePresent);
 
       return result;
 

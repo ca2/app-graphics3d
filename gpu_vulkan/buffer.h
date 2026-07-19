@@ -19,6 +19,12 @@ namespace gpu_vulkan
       VkBuffer          m_vkbuffer;
       VkDeviceMemory    m_vkdevicememory;
       VkDeviceSize      m_size;
+      VkDeviceSize      m_vkdevicesizeAllocation;
+      VkDeviceSize      m_vkdevicesizeAlignment;
+      uint32_t          m_uMemoryTypeBits;
+      uint32_t          m_uMemoryTypeIndex;
+      VkMemoryPropertyFlags m_vkmemorypropertyflagsRequested;
+      VkMemoryPropertyFlags m_vkmemorypropertyflagsSelected;
       uint8_t *         m_pMapped;
 
       //uint32_t m_instanceCount;

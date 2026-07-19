@@ -2,6 +2,7 @@
 #include "accumulation_render_pass.h"
 #include "approach.h"
 #include "binding.h"
+#include "buffer.h"
 #include "command_buffer.h"
 #include "descriptors.h"
 #include "frame.h"
@@ -10,6 +11,7 @@
 #include "layer.h"
 #include "model_buffer.h"
 #include "queue.h"
+#include "render_pass_load_sync.h"
 #include "render_target.h"
 #include "renderer.h"
 #include "offscreen_render_pass.h"
@@ -755,7 +757,7 @@ namespace gpu_vulkan
       //m_vkdevicememory = nullptr;
       //m_vkimage = nullptr;
 
-      m_texturea.clear();
+      m_buffera.clear();
 
    }
 
@@ -765,18 +767,22 @@ namespace gpu_vulkan
 
       auto pgpurendertarget = m_prenderer->render_target();
 
-      auto &ptexture =
-         m_texturea.element_at_grow(pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3());
+      const VkDeviceSize sizeReadback =
+         static_cast<VkDeviceSize>(size.width())
+         * static_cast<VkDeviceSize>(size.height())
+         * 4;
 
-      if (ptexture &&
-         ptexture->rectangle().size() == size)
+      auto & pbuffer =
+         m_buffera.element_at_grow(pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3());
+
+      if (pbuffer && pbuffer->m_size == sizeReadback)
       {
 
          return;
 
       }
 
-      ptexture.release();
+      pbuffer.release();
 
       if (size.is_empty())
       {
@@ -785,85 +791,10 @@ namespace gpu_vulkan
 
       }
 
-      defer_construct_newø(ptexture);
-
-      ::gpu::texture_attributes textureattributes(::i32_rectangle{size});
-
-      ::gpu::texture_flags textureflags;
-
-      textureflags.m_bTransferTarget = true;
-      textureflags.m_bCpuRead = true;
-      textureflags.m_bWithDepth = pgpurendertarget->m_bWithDepth;
-
-      ptexture->initialize_texture(m_pcontext, textureattributes, textureflags);
-
-      //m_vkextent2d.width = vkextent2d.width;
-      //m_vkextent2d.height = vkextent2d.height;
-
-      //VkImageCreateInfo imgCreateInfo(initializers::imageCreateInfo());
-      //imgCreateInfo.imageType = VK_IMAGE_TYPE_2D;
-      //imgCreateInfo.format = VK_FORMAT_B8G8R8A8_UNORM;
-      //imgCreateInfo.extent.width = m_vkextent2d.width;
-      //imgCreateInfo.extent.height = m_vkextent2d.height;
-      //imgCreateInfo.extent.depth = 1;
-      //imgCreateInfo.arrayLayers = 1;
-      //imgCreateInfo.mipLevels = 1;
-      //imgCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      //imgCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      //imgCreateInfo.tiling = VK_IMAGE_TILING_LINEAR;
-      //imgCreateInfo.usage =
-      //   VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-      //   VK_IMAGE_USAGE_SAMPLED_BIT;
-      //// Create the image
-      ////VkImage dstImage;
-      //VkCheckResult(vkCreateImage(m_pgpucontext->logicalDevice(), &imgCreateInfo, nullptr, &m_vkimage));
-      //// Create memory to back up the image
-      //VkMemoryRequirements memRequirements;
-      //VkMemoryAllocateInfo memAllocInfo(initializers::memoryAllocateInfo());
-      //vkGetImageMemoryRequirements(m_pgpucontext->logicalDevice(), m_vkimage, &memRequirements);
-      //memAllocInfo.allocationSize = memRequirements.size;
-      //// Memory must be host visible to copy from
-      //memAllocInfo.memoryTypeIndex = m_pgpucontext->m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-      //VkCheckResult(vkAllocateMemory(m_pgpucontext->logicalDevice(), &memAllocInfo, nullptr, &m_vkdevicememory));
-      //VkCheckResult(vkBindImageMemory(m_pgpucontext->logicalDevice(), m_vkimage, m_vkdevicememory, 0));
-
-      //if (1)
-      //{
-
-      //   auto pcommandbuffer = m_pgpucontext->beginSingleTimeCommands();
-
-      //   VkImageMemoryBarrier barrier = {
-      //      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      //      .srcAccessMask = 0,
-      //      .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-      //      .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      //      .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      //      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      //      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      //      .image = m_vkimage,
-      //      .subresourceRange = {
-      //         .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-      //         .baseMipLevel = 0,
-      //         .levelCount = 1,
-      //         .baseArrayLayer = 0,
-      //         .layerCount = 1
-      //      },
-      //   };
-
-      //   vkCmdPipelineBarrier(
-      //      pcommandbuffer->m_vkcommandbuffer,
-      //      VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-      //      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-      //      0,
-      //      0, NULL,
-      //      0, NULL,
-      //      1, &barrier
-      //   );
-
-      //   m_pgpucontext->endSingleTimeCommands(pcommandbuffer);
-
-      //}
-
+      pbuffer = m_pcontext->create_buffer(
+         sizeReadback,
+         VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
    }
 
@@ -884,18 +815,20 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::cpu_buffer_sampler::sample(::gpu::texture* pgputexture)
+   void renderer::cpu_buffer_sampler::sample(
+      ::gpu::texture* pgputexture,
+      enum_cpu_buffer_sampling_completion ecompletion)
    {
 
-      information("cpu_buffer_sampler::sample");
+      auto uSampleSerial = ++m_uSampleSerial;
 
       auto pgpurendertarget = m_prenderer->render_target();
 
       auto iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
 
-      auto& ptextureRef = m_texturea.element_at_grow(iFrameIndex);
+      auto & pbufferRef = m_buffera.element_at_grow(iFrameIndex);
 
-      if (!ptextureRef)
+      if (!pbufferRef)
       {
 
          return;
@@ -905,16 +838,75 @@ namespace gpu_vulkan
       ::cast < texture > ptexture = pgputexture;
 
       ::pointer < command_buffer > pcommandbuffer = m_pcontext->beginSingleTimeCommands(m_pcontext->m_pgpudevice->graphics_queue());
-      // Create the linear tiled destination image to copy to and to read the memory from
 
-  //// Do the actual blit from the offscreen image to our host visible destination image
+      pcommandbuffer->m_strName = "gpu_vulkan::renderer::cpu_buffer_sampler::sample";
+      pcommandbuffer->m_strAnnotation.formatf(
+         "cpu_sample_serial=%llu cpu_sample_stage_source_transition",
+         (unsigned long long)uSampleSerial);
+
+      if (cpu_buffer_sampling_needs_render_finished_semaphore(ecompletion))
+      {
+
+         auto psynchronization = ptexture->synchronization();
+
+         if (psynchronization->m_pgpusemaphoreRenderFinished)
+         {
+
+            pcommandbuffer->m_semaphoreaWait.add_unique(psynchronization->m_pgpusemaphoreRenderFinished);
+
+         }
+
+      }
+
+      auto & sourcestateBefore = ptexture->m_state2a.mip_layer_state(0, 0);
+
+      if (uSampleSerial <= 3 || uSampleSerial % 120 == 0)
+      {
+
+         ::cast < ::gpu_vulkan::queue > pqueue = pcommandbuffer->m_pgpuqueue;
+
+         information(
+            "gpu_vulkan cpu sample: serial={} frame={} task={} queue={} command_buffer={} "
+            "source_image={} destination_buffer={} destination_memory={} source_size={}x{} destination_bytes={} "
+            "destination_allocation_bytes={} destination_alignment={} destination_memory_type_bits={} "
+            "destination_memory_type_index={} destination_memory_flags_requested={} "
+            "destination_memory_flags_selected={} "
+            "source_format={} source_usage={} source_transfer_source={} source_render_target={} "
+            "source_layout_before={} source_stage_before={} source_access_before={}",
+            uSampleSerial,
+            iFrameIndex,
+            ::current_task_name(),
+            (::uptr)pqueue->m_vkqueue,
+            (::uptr)pcommandbuffer->m_vkcommandbuffer,
+            (::uptr)ptexture->m_vkimage,
+            (::uptr)pbufferRef->m_vkbuffer,
+            (::uptr)pbufferRef->m_vkdevicememory,
+            ptexture->rectangle().width(),
+            ptexture->rectangle().height(),
+            (::u64)pbufferRef->m_size,
+            (::u64)pbufferRef->m_vkdevicesizeAllocation,
+            (::u64)pbufferRef->m_vkdevicesizeAlignment,
+            (::u64)pbufferRef->m_uMemoryTypeBits,
+            pbufferRef->m_uMemoryTypeIndex,
+            (::u64)pbufferRef->m_vkmemorypropertyflagsRequested,
+            (::u64)pbufferRef->m_vkmemorypropertyflagsSelected,
+            (int)ptexture->m_vkformat,
+            (::u64)ptexture->m_vkimageusageflags,
+            ptexture->m_textureflags.m_bTransferSource,
+            ptexture->m_textureflags.m_bRenderTarget,
+            (int)sourcestateBefore.m_vkimagelayout,
+            (::u64)sourcestateBefore.m_vkpipelinestageflags,
+            (::u64)sourcestateBefore.m_vkaccessflags);
+
+      }
+      // Vulkan-native CPU readback: transition the source, copy it to a host-visible buffer,
+      // then establish host-read visibility before mapping the buffer.
   //    VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->m_pgpudevice->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
   //    VkCommandBuffer copyCmd;
   //    VkCheckResult(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
   //    VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
   //    VkCheckResult(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
       //ptexture->_new_state(pcommandbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-      VkPipelineStageFlags vkpipelinestageflagsWait = ptexture->m_state2a.mip_layer_state(0, 0).m_vkpipelinestageflags;
       {
          //VkImageMemoryBarrier barrier = {
          //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -956,6 +948,29 @@ namespace gpu_vulkan
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
             VK_PIPELINE_STAGE_TRANSFER_BIT
             });
+
+         m_pcontext->endSingleTimeCommands(pcommandbuffer);
+
+         pcommandbuffer = m_pcontext->beginSingleTimeCommands(m_pcontext->m_pgpudevice->graphics_queue());
+         pcommandbuffer->m_strName = "gpu_vulkan::renderer::cpu_buffer_sampler::sample";
+         pcommandbuffer->m_strAnnotation.formatf(
+            "cpu_sample_serial=%llu cpu_sample_stage_buffer_fill_probe",
+            (unsigned long long)uSampleSerial);
+
+         vkCmdFillBuffer(
+            pcommandbuffer->m_vkcommandbuffer,
+            pbufferRef->m_vkbuffer,
+            0,
+            VK_WHOLE_SIZE,
+            0);
+
+         m_pcontext->endSingleTimeCommands(pcommandbuffer);
+
+         pcommandbuffer = m_pcontext->beginSingleTimeCommands(m_pcontext->m_pgpudevice->graphics_queue());
+         pcommandbuffer->m_strName = "gpu_vulkan::renderer::cpu_buffer_sampler::sample";
+         pcommandbuffer->m_strAnnotation.formatf(
+            "cpu_sample_serial=%llu cpu_sample_stage_buffer_copy",
+            (unsigned long long)uSampleSerial);
          //}
 
          //{
@@ -992,83 +1007,37 @@ namespace gpu_vulkan
             //   m_ptexture->m_vkaccessflags = VK_ACCESS_TRANSFER_WRITE_BIT;
             //   m_ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
             //   m_ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_TRANSFER_BIT;
-         ptextureRef->_set_state(pcommandbuffer,
-            {
-            VK_ACCESS_TRANSFER_WRITE_BIT,
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            VK_PIPELINE_STAGE_TRANSFER_BIT
-            }
-         );
-         //}
-
-
-         //// Transition source image to transfer destination layout
-         //insertImageMemoryBarrier(
-         //   copyCmd,
-         //   vkimage,
-         //   0,
-         //   VK_ACCESS_TRANSFER_WRITE_BIT,
-         //   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-         //   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-         //   VK_PIPELINE_STAGE_TRANSFER_BIT,
-         //   VK_PIPELINE_STAGE_TRANSFER_BIT,
-         //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
-
-         //// Transition destination image to transfer destination layout
-         //insertImageMemoryBarrier(
-         //   copyCmd,
-         //   m_vkimage,
-         //   0,
-         //   VK_ACCESS_TRANSFER_WRITE_BIT,
-         //   VK_IMAGE_LAYOUT_UNDEFINED,
-         //   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-         //   VK_PIPELINE_STAGE_TRANSFER_BIT,
-         //   VK_PIPELINE_STAGE_TRANSFER_BIT,
-         //   VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
-
-         // colorAttachment.image is already in VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, and does not need to be transitioned
+         VkBufferImageCopy copyRegion{};
+         copyRegion.bufferOffset = 0;
+         copyRegion.bufferRowLength = 0;
+         copyRegion.bufferImageHeight = 0;
+         copyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+         copyRegion.imageSubresource.mipLevel = 0;
+         copyRegion.imageSubresource.baseArrayLayer = 0;
+         copyRegion.imageSubresource.layerCount = 1;
+         copyRegion.imageOffset = { 0, 0, 0 };
+         copyRegion.imageExtent =
          {
+            static_cast<uint32_t>(ptexture->rectangle().width()),
+            static_cast<uint32_t>(ptexture->rectangle().height()),
+            1
+         };
 
-            VkClearColorValue clearColor = {
-                .float32 = { 0.5f, 0.0f, 0.5f, 0.5f }  // R, G, B, A
-            };
-
-            VkImageSubresourceRange subresourceRange = {
-                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                .baseMipLevel = 0,
-                .levelCount = 1,
-                .baseArrayLayer = 0,
-                .layerCount = 1,
-            };
-
-            // Image must already be in VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-            vkCmdClearColorImage(
-               pcommandbuffer->m_vkcommandbuffer,
-               ptextureRef->m_vkimage,
-                                 ptextureRef->m_state2a.mip_layer_state(0, 0).m_vkimagelayout,
-               &clearColor,
-               1,
-               &subresourceRange
-            );
-
-         }
-
-         VkImageCopy imageCopyRegion{};
-         imageCopyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-         imageCopyRegion.srcSubresource.layerCount = 1;
-         imageCopyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-         imageCopyRegion.dstSubresource.layerCount = 1;
-         imageCopyRegion.extent.width = ptexture->rectangle().width();
-         imageCopyRegion.extent.height = ptexture->rectangle().height();
-         imageCopyRegion.extent.depth = 1;
-
-         vkCmdCopyImage(
+         vkCmdCopyImageToBuffer(
             pcommandbuffer->m_vkcommandbuffer,
-            //colorAttachment.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                        ptexture->m_vkimage, ptexture->m_state2a.mip_layer_state(0, 0).m_vkimagelayout,
-                        ptextureRef->m_vkimage, ptextureRef->m_state2a.mip_layer_state(0, 0).m_vkimagelayout,
+            ptexture->m_vkimage,
+            ptexture->m_state2a.mip_layer_state(0, 0).m_vkimagelayout,
+            pbufferRef->m_vkbuffer,
             1,
-            &imageCopyRegion);
+            &copyRegion);
+
+         m_pcontext->endSingleTimeCommands(pcommandbuffer);
+
+         pcommandbuffer = m_pcontext->beginSingleTimeCommands(m_pcontext->m_pgpudevice->graphics_queue());
+         pcommandbuffer->m_strName = "gpu_vulkan::renderer::cpu_buffer_sampler::sample";
+         pcommandbuffer->m_strAnnotation.formatf(
+            "cpu_sample_serial=%llu cpu_sample_stage_host_visibility",
+            (unsigned long long)uSampleSerial);
 
          //{
 
@@ -1131,14 +1100,23 @@ namespace gpu_vulkan
             //m_ptexture->m_vkaccessflags = VK_ACCESS_HOST_READ_BIT;
             //m_ptexture->m_vkimagelayout = VK_IMAGE_LAYOUT_GENERAL;
             //m_ptexture->m_vkpipelinestageflags = VK_PIPELINE_STAGE_HOST_BIT;
-         ptextureRef->_set_state(
-            pcommandbuffer,
-            {
-               VK_ACCESS_HOST_READ_BIT,
-            VK_IMAGE_LAYOUT_GENERAL,
-            VK_PIPELINE_STAGE_HOST_BIT
-            }
-         );
+         VkBufferMemoryBarrier barrier{ VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER };
+         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+         barrier.dstAccessMask = VK_ACCESS_HOST_READ_BIT;
+         barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+         barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+         barrier.buffer = pbufferRef->m_vkbuffer;
+         barrier.offset = 0;
+         barrier.size = VK_WHOLE_SIZE;
+
+         vkCmdPipelineBarrier(
+            pcommandbuffer->m_vkcommandbuffer,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            VK_PIPELINE_STAGE_HOST_BIT,
+            0,
+            0, nullptr,
+            1, &barrier,
+            0, nullptr);
          //}
 
          //{
@@ -1186,28 +1164,6 @@ namespace gpu_vulkan
       }
 
 
-      ::cast < renderer > prenderer = m_pcontext->get_gpu_renderer();
-
-
-      VkSubmitInfo submitInfo{};
-      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-      submitInfo.commandBufferCount = 1;
-      submitInfo.pCommandBuffers = &pcommandbuffer->m_vkcommandbuffer;
-      ::array<VkSemaphore> waitSemaphores;
-      ::array<VkPipelineStageFlags> waitStages;
-      waitStages.add(vkpipelinestageflagsWait);
-
-      //auto pgpurendertarget = m_prenderer->render_target();
-
-      ::cast < ::gpu_vulkan::render_target > prendertarget = pgpurendertarget;
-      //::cast < texture > ptexture = pgputexture;
-         //auto prenderpass = prendertarget->render_pass();
-
-      auto psynchronization = ptexture->synchronization();
-      if (psynchronization->m_pgpusemaphoreRenderFinished)
-      {
-         pcommandbuffer->m_semaphoreaWait.add_unique(psynchronization->m_pgpusemaphoreRenderFinished);
-      }
       ////VkSemaphore vksemaphore = psynchronization->m_vksemaphoreRenderFinished;
       //waitSemaphores.add(vksemaphore);
       //submitInfo.waitSemaphoreCount = (uint32_t)waitSemaphores.size();
@@ -1217,7 +1173,7 @@ namespace gpu_vulkan
       m_pcontext->endSingleTimeCommands(pcommandbuffer);
 
       //m_pcontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
-      //// Transition destination image to general layout, which is the required layout for mapping the image memory later on
+      //// The readback buffer is ready to map after the host-visibility submission completes.
       //insertImageMemoryBarrier(
       //   copyCmd,
       //   m_vkimage,
@@ -1243,15 +1199,61 @@ namespace gpu_vulkan
    }
 
 
-   void renderer::cpu_buffer_sampler::send_sample()
+   void renderer::cpu_buffer_sampler::probe_queue_submission()
+   {
+
+      if (m_bQueueSubmissionProbed)
+      {
+
+         return;
+
+      }
+
+      m_bQueueSubmissionProbed = true;
+
+      auto timeStart = ::time::now();
+
+      try
+      {
+
+         ::pointer < command_buffer > pcommandbuffer =
+            m_pcontext->beginSingleTimeCommands(m_pcontext->m_pgpudevice->graphics_queue());
+
+         pcommandbuffer->m_strName = "gpu_vulkan::renderer::cpu_buffer_sampler::probe_queue_submission";
+         pcommandbuffer->m_strAnnotation = "cpu_sample_empty_queue_probe";
+
+         m_pcontext->endSingleTimeCommands(pcommandbuffer);
+
+      }
+      catch (...)
+      {
+
+         information(
+            "gpu_vulkan cpu sample empty queue probe failed: elapsed_ms={} task={}",
+            timeStart.elapsed().floating_millisecond(),
+            ::current_task_name());
+
+         throw;
+
+      }
+
+      information(
+         "gpu_vulkan cpu sample empty queue probe succeeded: elapsed_ms={} task={}",
+         timeStart.elapsed().floating_millisecond(),
+         ::current_task_name());
+
+   }
+
+
+   void renderer::cpu_buffer_sampler::send_sample(const ::i32_size & sizeSample)
    {
 
       auto pgpurendertarget = m_prenderer->render_target();
 
-      auto &ptextureRef =
-         m_texturea.element_at_grow(pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3());
+      auto & pbufferRef =
+         m_buffera.element_at_grow(pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3());
 
-      if (!ptextureRef)
+      if (!pbufferRef)
       {
 
          return;
@@ -1268,19 +1270,17 @@ namespace gpu_vulkan
 
       //auto callback = m_prenderer->m_callbackImage32CpuBuffer;
 
-      // Get layout of the image (including row pitch)
-      VkImageSubresource subResource{};
-      subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-      VkSubresourceLayout subResourceLayout;
+      const int iWidth = sizeSample.width();
+      const int iHeight = sizeSample.height();
+      void * pData = nullptr;
 
-      vkGetImageSubresourceLayout(m_pcontext->logicalDevice(),
-         ptextureRef->m_vkimage, &subResource, &subResourceLayout);
-
-      const char* imagedata = nullptr;
-      // Map image memory so we can start copying from it
-      vkMapMemory(m_pcontext->logicalDevice(),
-         ptextureRef->m_vkdevicememory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
-      imagedata += subResourceLayout.offset;
+      VkCheckResult(vkMapMemory(
+         m_pcontext->logicalDevice(),
+         pbufferRef->m_vkdevicememory,
+         0,
+         pbufferRef->m_size,
+         0,
+         &pData));
 
       /*
          Save host visible framebuffer image to disk (ppm format)
@@ -1299,10 +1299,10 @@ namespace gpu_vulkan
       auto pcpubuffer = pgpucontext->m_pcpubuffer;
 
       pcpubuffer->set_pixels(
-         imagedata,
-         ptextureRef->width(),
-         ptextureRef->height(),
-         (int)subResourceLayout.rowPitch,
+         pData,
+         iWidth,
+         iHeight,
+         iWidth * 4,
          false);
 
       //_synchronous_lock synchronouslock(m_pgpucontext->m_pmutexOffscreen);
@@ -1325,7 +1325,7 @@ namespace gpu_vulkan
    //}
 
 
-      vkUnmapMemory(m_pcontext->logicalDevice(), ptextureRef->m_vkdevicememory);
+      vkUnmapMemory(m_pcontext->logicalDevice(), pbufferRef->m_vkdevicememory);
 
    }
 
@@ -1386,7 +1386,29 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::queue > pqueueGraphics = m_pgpucontext->m_pgpudevice->graphics_queue();
 
-      vkQueueWaitIdle(pqueueGraphics->m_vkqueue);
+      auto timeQueueIdleStart = ::time::now();
+
+      auto vkresultQueueIdle = pqueueGraphics->wait_idle(
+         "gpu_vulkan::renderer::sample",
+         "cpu_sample_pre_copy");
+
+      auto timeQueueIdleElapsed = timeQueueIdleStart.elapsed();
+
+      if (vkresultQueueIdle != VK_SUCCESS || timeQueueIdleElapsed.floating_millisecond() >= 100.0)
+      {
+
+         information(
+            "gpu_vulkan cpu sample pre-copy queue wait: result={} elapsed_ms={} task={} queue={}",
+            (int)vkresultQueueIdle,
+            timeQueueIdleElapsed.floating_millisecond(),
+            ::current_task_name(),
+            (::uptr)pqueueGraphics->m_vkqueue);
+
+      }
+
+      VkCheckResult(vkresultQueueIdle);
+
+      constexpr auto ecompletion = enum_cpu_buffer_sampling_completion::queue_idle;
 
       //auto callback = m_callbackImage32CpuBuffer;
 
@@ -1395,26 +1417,51 @@ namespace gpu_vulkan
 
          ::cast < ::gpu_vulkan::render_target > prendertarget = m_pgpurendertarget2;
 
-         m_pcpubuffersampler->update(m_pgpucontext->m_rectangle.size());
+         ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
+
+         const auto sizeSample = ptexture->rectangle().size();
+
+         ::cast < texture > ptextureFrameTarget = prendertarget->current_texture(nullptr);
+
+         auto pgpulayer = ::gpu::current_layer();
+
+         if (m_pcpubuffersampler->m_uSampleSerial < 12)
+         {
+
+            information(
+               "gpu_vulkan cpu sample source: next_serial={} frame_index={} layer={} layer_index={} "
+               "selected_texture={} frame_target_texture={} selected_extent={}x{} "
+               "frame_target_extent={}x{}",
+               (unsigned long long)(m_pcpubuffersampler->m_uSampleSerial + 1),
+               m_pgpucontext->m_pgpudevice->get_frame_index3(),
+               (::uptr)pgpulayer,
+               pgpulayer ? pgpulayer->m_iLayerIndex : -1,
+               (::uptr)ptexture.m_p,
+               (::uptr)ptextureFrameTarget.m_p,
+               sizeSample.width(),
+               sizeSample.height(),
+               ptextureFrameTarget->rectangle().width(),
+               ptextureFrameTarget->rectangle().height());
+
+         }
+
+         m_pcpubuffersampler->update(sizeSample);
          {
 
 
+            m_pcpubuffersampler->probe_queue_submission();
 
-            ::cast < texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
 
+            m_pcpubuffersampler->sample(ptexture, ecompletion);
 
-            m_pcpubuffersampler->sample(ptexture);
-
-            //// Create the linear tiled destination image to copy to and to read the memory from
-
-            //// Do the actual blit from the offscreen image to our host visible destination image
+            //// Copy the offscreen image into the host-visible readback buffer.
             //VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(m_pgpucontext->getCommandPool(), VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1);
             //VkCommandBuffer copyCmd;
             //VkCheckResult(vkAllocateCommandBuffers(m_pgpucontext->logicalDevice(), &cmdBufAllocateInfo, &copyCmd));
             //VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
             //VkCheckResult(vkBeginCommandBuffer(copyCmd, &cmdBufInfo));
 
-            //// Transition destination image to transfer destination layout
+            //// The destination buffer has no image layout transition.
             //::graphics3d_vulkan::tools::insertImageMemoryBarrier(
             //	copyCmd,
             //	m_poffscreensampler->m_vkimage,
@@ -1445,7 +1492,7 @@ namespace gpu_vulkan
             //	1,
             //	&imageCopyRegion);
 
-            //// Transition destination image to general layout, which is the required layout for mapping the image memory later on
+            //// Establish buffer host visibility before CPU mapping.
             //::graphics3d_vulkan::tools::insertImageMemoryBarrier(
             //	copyCmd,
             //	dstImage,
@@ -1477,7 +1524,7 @@ namespace gpu_vulkan
             //vkMapMemory(m_pgpucontext->logicalDevice(), dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
             //imagedata += subResourceLayout.offset;
 
-            m_pcpubuffersampler->send_sample();
+            m_pcpubuffersampler->send_sample(sizeSample);
 
             ///*
             //	Save host visible framebuffer image to disk (ppm format)
@@ -2434,7 +2481,7 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::queue > pqueueGraphics = m_pgpucontext->m_pgpudevice->graphics_queue();
 
-      vkQueueWaitIdle(pqueueGraphics->m_vkqueue);
+      pqueueGraphics->wait_idle();
 
       //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 
@@ -2972,7 +3019,7 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::queue > pqueueGraphics = m_pgpucontext->m_pgpudevice->graphics_queue();
 
-      vkQueueWaitIdle(pqueueGraphics->m_vkqueue);
+      pqueueGraphics->wait_idle();
 
       //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 
@@ -3303,7 +3350,7 @@ namespace gpu_vulkan
 
       ::cast < ::gpu_vulkan::queue > pqueueGraphics = m_pgpucontext->m_pgpudevice->graphics_queue();
 
-      vkQueueWaitIdle(pqueueGraphics->m_vkqueue);
+      pqueueGraphics->wait_idle();
 
       //vkFreeCommandBuffers(m_pgpucontext->logicalDevice(), m_pgpucontext->m_vkcommandpool, 1, &pcommandbuffer->m_vkcommandbuffer);
 
@@ -3601,7 +3648,7 @@ namespace gpu_vulkan
          ptextureCurrent->_set_state(
             pcommandbuffer,
             {
-            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+            color_attachment_access(true),
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
             }
@@ -3615,7 +3662,7 @@ namespace gpu_vulkan
             ptextureDepth->_set_state(
                pcommandbuffer,
                {
-               VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+               depth_attachment_access(true),
                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
                }
@@ -4042,7 +4089,7 @@ namespace gpu_vulkan
 
          ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
 
-         vkQueueWaitIdle(pqueue->m_vkqueue);
+         pqueue->wait_idle();
       //}
 
 

@@ -656,10 +656,8 @@ namespace gpu_vulkan
     ::uint32_t uImageIndex = m_iCurrentSwapChainImage;
     presentInfo.pImageIndices = &uImageIndex;
       ::cast < ::gpu_vulkan::queue > pqueuePresent = m_pgpucontext->m_pgpudevice->present_queue();
-    auto presentQueue =
-        pqueuePresent->m_vkqueue;
 
-    VkResult  res = vkQueuePresentKHR(presentQueue, &presentInfo);
+    VkResult  res = pqueuePresent->present(&presentInfo);
 
       // Advance frame
       int iSize = m_ptextureaSwapChain->size();

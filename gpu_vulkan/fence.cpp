@@ -75,8 +75,24 @@ namespace gpu_vulkan
 
       auto vkfence = m_vkfence;
 
+      auto timeStart = ::time::now();
+
       // Wait for the fence to be signaled
       auto result = vkWaitForFences(vkdevice, 1, &vkfence, VK_TRUE, UINT64_MAX); // VK_TRUE: wait for all fences, UINT64_MAX: wait indefinitely
+
+      auto timeElapsed = timeStart.elapsed();
+
+      if (result != VK_SUCCESS || timeElapsed.floating_millisecond() >= 100.0)
+      {
+
+         information(
+            "gpu_vulkan fence wait: result={} elapsed_ms={} task={} fence={}",
+            (int)result,
+            timeElapsed.floating_millisecond(),
+            ::current_task_name(),
+            (::uptr)vkfence);
+
+      }
 
       if (result != VK_SUCCESS)
       {

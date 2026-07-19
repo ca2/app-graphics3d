@@ -18,8 +18,17 @@ namespace gpu_vulkan
 
    buffer::buffer()
    {
+      m_pgpucontext = nullptr;
       m_vkbuffer = VK_NULL_HANDLE;
       m_vkdevicememory = VK_NULL_HANDLE;
+      m_size = 0;
+      m_vkdevicesizeAllocation = 0;
+      m_vkdevicesizeAlignment = 0;
+      m_uMemoryTypeBits = 0;
+      m_uMemoryTypeIndex = 0;
+      m_vkmemorypropertyflagsRequested = 0;
+      m_vkmemorypropertyflagsSelected = 0;
+      m_pMapped = nullptr;
 
    }
 

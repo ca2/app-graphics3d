@@ -2552,6 +2552,17 @@ namespace gpu_vulkan
       allocInfo.memoryTypeIndex =
          m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
 
+      const auto & memoryProperties =
+         m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevicememoryproperties;
+
+      pbuffer->m_vkdevicesizeAllocation = memRequirements.size;
+      pbuffer->m_vkdevicesizeAlignment = memRequirements.alignment;
+      pbuffer->m_uMemoryTypeBits = memRequirements.memoryTypeBits;
+      pbuffer->m_uMemoryTypeIndex = allocInfo.memoryTypeIndex;
+      pbuffer->m_vkmemorypropertyflagsRequested = properties;
+      pbuffer->m_vkmemorypropertyflagsSelected =
+         memoryProperties.memoryTypes[allocInfo.memoryTypeIndex].propertyFlags;
+
       if (vkAllocateMemory(this->logicalDevice(), &allocInfo, nullptr, &pbuffer->m_vkdevicememory) != VK_SUCCESS)
       {
 
@@ -2562,7 +2573,29 @@ namespace gpu_vulkan
 
       auto vkdevicememory = pbuffer->m_vkdevicememory;
 
-      vkBindBufferMemory(this->logicalDevice(), vkbuffer, vkdevicememory, 0);
+      auto vkresultBind = vkBindBufferMemory(this->logicalDevice(), vkbuffer, vkdevicememory, 0);
+
+      if (vkresultBind != VK_SUCCESS)
+      {
+
+         information(
+            "gpu_vulkan buffer memory bind failed: result={} buffer={} memory={} requested_bytes={} "
+            "allocation_bytes={} alignment={} memory_type_bits={} memory_type_index={} "
+            "memory_flags_requested={} memory_flags_selected={}",
+            (int)vkresultBind,
+            (::uptr)vkbuffer,
+            (::uptr)vkdevicememory,
+            (::u64)size,
+            (::u64)pbuffer->m_vkdevicesizeAllocation,
+            (::u64)pbuffer->m_vkdevicesizeAlignment,
+            (::u64)pbuffer->m_uMemoryTypeBits,
+            pbuffer->m_uMemoryTypeIndex,
+            (::u64)pbuffer->m_vkmemorypropertyflagsRequested,
+            (::u64)pbuffer->m_vkmemorypropertyflagsSelected);
+
+         throw ::exception(error_failed, "failed to bind buffer memory!");
+
+      }
 
       return pbuffer;
    }
@@ -2949,7 +2982,7 @@ namespace gpu_vulkan
    }
 
 
-   void context::submitWork(command_buffer *pcommandbuffer, VkQueue queue)
+   void context::submitWork(command_buffer *pcommandbuffer, ::gpu_vulkan::queue *pqueue)
    {
 
       VkSubmitInfo submitInfo = initializers::submitInfo();
@@ -2960,7 +2993,7 @@ namespace gpu_vulkan
       VkFenceCreateInfo fenceInfo = initializers::fenceCreateInfo();
       VkFence fence;
       VkCheckResult(vkCreateFence(this->logicalDevice(), &fenceInfo, nullptr, &fence));
-      VkCheckResult(vkQueueSubmit(queue, 1, &submitInfo, fence));
+      VkCheckResult(pqueue->submit(1, &submitInfo, fence, pcommandbuffer->m_strName, pcommandbuffer->m_strAnnotation));
       VkCheckResult(vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX));
       vkDestroyFence(this->logicalDevice(), fence, nullptr);
    }
@@ -3729,7 +3762,7 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
 
       ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
 
-      vkQueueWaitIdle(pqueue->m_vkqueue);
+      pqueue->wait_idle();
 
    }
 

@@ -21,7 +21,7 @@ namespace gpu_vulkan
    {
    public:
       
-      
+      bool                    m_bUploadDiagnosticLogged = false;
 
 
       model_buffer();

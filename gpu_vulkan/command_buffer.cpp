@@ -24,7 +24,6 @@ namespace gpu_vulkan
       //m_bPresentQueue = false;
       m_vkcommandbuffer = VK_NULL_HANDLE;
       m_vkcommandbufferlevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      m_vkfence = VK_NULL_HANDLE;
       m_vkcommandpool = VK_NULL_HANDLE;
 
 
@@ -94,23 +93,6 @@ namespace gpu_vulkan
       //VkCommandBuffer pcommandbuffer;
       vkAllocateCommandBuffers(pcontext->logicalDevice(), &allocInfo, &m_vkcommandbuffer);
 
-      VkFenceCreateInfo fenceInfo = {};
-      fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-      fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-      if (vkCreateFence(
-         pcontext->logicalDevice(),
-         &fenceInfo,
-         nullptr,
-         &m_vkfence) != VK_SUCCESS
-         )
-      {
-
-         throw ::exception(error_failed, "failed to create fence!");
-
-      }
-
-
    }
 
 
@@ -151,8 +133,18 @@ namespace gpu_vulkan
       {
          auto vkcommandbuffer = m_vkcommandbuffer;
 
-         if (vkEndCommandBuffer(vkcommandbuffer) != VK_SUCCESS)
+         auto vkresultEndCommandBuffer = vkEndCommandBuffer(vkcommandbuffer);
+
+         if (vkresultEndCommandBuffer != VK_SUCCESS)
          {
+
+            information(
+               "gpu_vulkan command buffer end failed: result={} task={} command_buffer={} name={} annotation={}",
+               (int)vkresultEndCommandBuffer,
+               ::current_task_name(),
+               (::uptr)vkcommandbuffer,
+               m_strName,
+               m_strAnnotation);
 
             throw ::exception(error_failed, "failed to record command buffer!");
 
@@ -474,9 +466,41 @@ namespace gpu_vulkan
 
          }
 
-         vkWaitForFences(pcontext->logicalDevice(), 1, &vkfence, VK_TRUE, UINT64_MAX);
+         auto vkresultFenceWait = vkWaitForFences(pcontext->logicalDevice(), 1, &vkfence, VK_TRUE, UINT64_MAX);
 
-         vkResetFences(pcontext->logicalDevice(), 1, &vkfence);
+         if (vkresultFenceWait != VK_SUCCESS)
+         {
+
+            information(
+               "gpu_vulkan pre-submit fence wait failed: result={} task={} fence={} command_buffer={} name={} annotation={}",
+               (int)vkresultFenceWait,
+               ::current_task_name(),
+               (::uptr)vkfence,
+               (::uptr)m_vkcommandbuffer,
+               m_strName,
+               m_strAnnotation);
+
+            throw ::exception(error_failed, "failed waiting for command buffer fence before submit!");
+
+         }
+
+         auto vkresultFenceReset = vkResetFences(pcontext->logicalDevice(), 1, &vkfence);
+
+         if (vkresultFenceReset != VK_SUCCESS)
+         {
+
+            information(
+               "gpu_vulkan pre-submit fence reset failed: result={} task={} fence={} command_buffer={} name={} annotation={}",
+               (int)vkresultFenceReset,
+               ::current_task_name(),
+               (::uptr)vkfence,
+               (::uptr)m_vkcommandbuffer,
+               m_strName,
+               m_strAnnotation);
+
+            throw ::exception(error_failed, "failed resetting command buffer fence before submit!");
+
+         }
 
       }
       else if (m_bFenceWaitIfNoPreexistingFence)
@@ -531,8 +555,23 @@ namespace gpu_vulkan
       //::cast < ::gpu_vulkan::queue > pqueue = m_pgpuqueue;
 
       //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
-      if (vkQueueSubmit(vkqueue, 1, &submitInfo, vkfence) != VK_SUCCESS)
+      auto vkresultQueueSubmit = pqueue->submit(1, &submitInfo, vkfence, m_strName, m_strAnnotation);
+
+      if (vkresultQueueSubmit != VK_SUCCESS)
       {
+
+         information(
+            "gpu_vulkan queue submit failed: result={} task={} queue={} command_buffer={} fence={} "
+            "wait_count={} signal_count={} name={} annotation={}",
+            (int)vkresultQueueSubmit,
+            ::current_task_name(),
+            (::uptr)vkqueue,
+            (::uptr)m_vkcommandbuffer,
+            (::uptr)vkfence,
+            submitInfo.waitSemaphoreCount,
+            submitInfo.signalSemaphoreCount,
+            m_strName,
+            m_strAnnotation);
 
          throw ::exception(error_failed, "failed to submit draw command buffer!");
 
@@ -543,7 +582,23 @@ namespace gpu_vulkan
 
          pfence->wait_gpu_fence();
 
-         vkQueueWaitIdle(vkqueue);
+         auto vkresultQueueIdle = pqueue->wait_idle(m_strName, m_strAnnotation);
+
+         if (vkresultQueueIdle != VK_SUCCESS)
+         {
+
+            information(
+               "gpu_vulkan post-submit queue wait failed: result={} task={} queue={} command_buffer={} name={} annotation={}",
+               (int)vkresultQueueIdle,
+               ::current_task_name(),
+               (::uptr)vkqueue,
+               (::uptr)m_vkcommandbuffer,
+               m_strName,
+               m_strAnnotation);
+
+            throw ::exception(error_failed, "failed waiting for queue after command buffer submit!");
+
+         }
          
          auto timeElapsed = timeStart.elapsed();
 

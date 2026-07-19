@@ -3,6 +3,7 @@
 //#include "AppCore/vk_window.h"
 //#include "graphics3d/container.h"
 #include "context.h"
+#include "cpu_buffer_sampling_sync.h"
 //#include "offscreen.h"
 //#include "swapchain.h"
 #include "render_pass.h"
@@ -30,7 +31,10 @@ namespace gpu_vulkan
          //VkExtent2D			      m_vkextent2d;
          //VkDeviceMemory		      m_vkdevicememory;
          //VkImage				      m_vkimage;
-         ::pointer_array < texture >   m_texturea;
+         ::pointer_array < buffer >    m_buffera;
+
+         ::u64                         m_uSampleSerial = 0;
+         bool                          m_bQueueSubmissionProbed = false;
 
 
          ::pointer < context >   m_pcontext;
@@ -47,9 +51,13 @@ namespace gpu_vulkan
          void update(const ::i32_size & size);
          void destroy();
 
-         void sample(::gpu::texture * pgputexture);
+         void sample(
+            ::gpu::texture * pgputexture,
+            enum_cpu_buffer_sampling_completion ecompletion);
 
-         void send_sample();
+         void probe_queue_submission();
+
+         void send_sample(const ::i32_size & sizeSample);
 
       };
 

@@ -5,6 +5,7 @@
 
 
 #include "bred/gpu/queue.h"
+#include "queue_host_call_diagnostics.h"
 
 
 namespace gpu_vulkan
@@ -19,6 +20,7 @@ namespace gpu_vulkan
 
 
       VkQueue m_vkqueue;
+      std::shared_ptr<queue_host_call_diagnostic_state> m_pqueuehostcalldiagnosticstate;
 
 
       queue();
@@ -26,6 +28,40 @@ namespace gpu_vulkan
 
 
       void initialize_gpu_queue(::gpu::device * pgpudevice) override;
+
+      VkResult submit(
+         std::uint32_t uSubmitCount,
+         const VkSubmitInfo *psubmitinfo,
+         VkFence vkfence,
+         const ::scoped_string &scopedstrName = {},
+         const ::scoped_string &scopedstrAnnotation = {});
+
+      VkResult wait_idle(
+         const ::scoped_string &scopedstrName = {},
+         const ::scoped_string &scopedstrAnnotation = {});
+
+      VkResult present(const VkPresentInfoKHR *ppresentinfo);
+
+
+   };
+
+
+   class queue_host_call_scope
+   {
+   public:
+
+
+      queue_host_call_scope(
+         queue *pqueue,
+         const ::scoped_string &scopedstrOperation,
+         const ::scoped_string &scopedstrName = {},
+         const ::scoped_string &scopedstrAnnotation = {});
+
+
+   private:
+
+
+      scoped_queue_host_call m_scopedqueuehostcall;
 
 
    };

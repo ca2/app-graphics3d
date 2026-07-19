@@ -4,6 +4,10 @@
 #include "mesh.h"
 #include "bred/gltf/vertex.h"
 #include "bred/gpu/model_buffer.h"
+#include "gpu_vulkan/buffer.h"
+#include "gpu_vulkan/memory_buffer.h"
+#include "gpu_vulkan/model_buffer.h"
+#include "gpu_vulkan/model_buffer_upload_diagnostics.h"
 #include "gpu_vulkan/texture.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context.h"
@@ -294,6 +298,70 @@ namespace gpu_vulkan
             ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
             //::cast<::gpu::vulkan> pcommandbuffer = pgpucommandbuffer;
             //vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, m_indexa.size(), 1, primitive->firstIndex, 0, 0);
+
+            ::cast < ::gpu_vulkan::model_buffer > pmodelbuffer = m_pmodelbuffer;
+            ::cast < ::gpu_vulkan::memory_buffer > pbufferVertex = pmodelbuffer->m_pbufferVertex;
+            ::cast < ::gpu_vulkan::memory_buffer > pbufferIndex = pmodelbuffer->m_pbufferIndex;
+
+            if (!pbufferVertex || !pbufferVertex->m_pbuffer || !pbufferIndex || !pbufferIndex->m_pbuffer)
+            {
+
+               throw ::exception(error_failed, "missing Vulkan direct mesh buffer");
+
+            }
+
+            auto blockIndexes = pmodelbuffer->m_pmodeldatabase2->index_data();
+
+            auto diagnostic = inspect_model_buffer_upload(
+               pmodelbuffer->m_pmodeldatabase2->vertex_count(),
+               pmodelbuffer->m_pmodeldatabase2->vertex_type_size(),
+               pbufferVertex->m_pbuffer->m_size,
+               pmodelbuffer->m_pmodeldatabase2->index_count(),
+               pmodelbuffer->m_pmodeldatabase2->index_type_size(),
+               pbufferIndex->m_pbuffer->m_size,
+               blockIndexes.data());
+
+            if (!pmodelbuffer->m_bUploadDiagnosticLogged || !diagnostic.is_valid())
+            {
+
+               information(
+                  "gpu_vulkan direct mesh upload diagnostic: valid={} mesh={} model_data={} model_buffer={} "
+                  "vertex_buffer={} index_buffer={} vertex_count={} vertex_type_bytes={} "
+                  "vertex_required_bytes={} vertex_buffer_bytes={} index_count={} index_type_bytes={} "
+                  "index_required_bytes={} index_buffer_bytes={} maximum_index={} "
+                  "vertex_buffer_large_enough={} index_buffer_large_enough={} index_type_supported={} "
+                  "indexes_in_vertex_range={}",
+                  diagnostic.is_valid(),
+                  (::uptr)this,
+                  (::uptr)m_pmodeldata.m_p,
+                  (::uptr)pmodelbuffer.m_p,
+                  (::uptr)pbufferVertex->m_pbuffer->m_vkbuffer,
+                  (::uptr)pbufferIndex->m_pbuffer->m_vkbuffer,
+                  pmodelbuffer->m_pmodeldatabase2->vertex_count(),
+                  pmodelbuffer->m_pmodeldatabase2->vertex_type_size(),
+                  diagnostic.m_uRequiredVertexBytes,
+                  (::u64)pbufferVertex->m_pbuffer->m_size,
+                  pmodelbuffer->m_pmodeldatabase2->index_count(),
+                  pmodelbuffer->m_pmodeldatabase2->index_type_size(),
+                  diagnostic.m_uRequiredIndexBytes,
+                  (::u64)pbufferIndex->m_pbuffer->m_size,
+                  diagnostic.m_uMaximumIndex,
+                  diagnostic.m_bVertexBufferLargeEnough,
+                  diagnostic.m_bIndexBufferLargeEnough,
+                  diagnostic.m_bIndexTypeSupported,
+                  diagnostic.m_bIndexesInVertexRange);
+
+               pmodelbuffer->m_bUploadDiagnosticLogged = true;
+
+            }
+
+            if (!diagnostic.is_valid())
+            {
+
+               throw ::exception(error_failed, "invalid Vulkan direct mesh buffer upload");
+
+            }
+
             vkCmdDrawIndexed(pcommandbuffer->m_vkcommandbuffer, m_pmodeldata->index_count(), 1, 0, 0,
                              0);
          }

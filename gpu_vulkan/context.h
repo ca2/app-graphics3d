@@ -10,6 +10,9 @@ namespace gpu_vulkan
 {
 
 
+   class queue;
+
+
    class CLASS_DECL_GPU_VULKAN context :
       virtual public ::gpu_gpu::context
    {
@@ -178,7 +181,7 @@ namespace gpu_vulkan
       VkPhysicalDeviceProperties properties;
 
 
-      void submitWork(command_buffer * pcommandbuffer, VkQueue queue);
+      void submitWork(command_buffer *pcommandbuffer, ::gpu_vulkan::queue *pqueue);
 
 
 

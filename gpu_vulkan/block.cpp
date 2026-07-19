@@ -93,46 +93,20 @@ namespace gpu_vulkan
                                          ::gpu::command_buffer *pgpucommandbuffer)
    {
 
-      if (m_vkdescriptorset)
+      ::cast<::gpu_vulkan::binding_slot_set> pbindingslotset = pgpubindingslotset;
+
+      auto &vkdescriptorseta = pbindingslotset->descriptor_set(pgpucommandbuffer);
+
+      auto iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
+
+      if (iFrameIndex < 0 || iFrameIndex >= vkdescriptorseta.size())
       {
 
-         return m_vkdescriptorset;
+         throw ::exception(error_wrong_state, "invalid Vulkan descriptor-set frame index");
 
       }
 
-//      VkDescriptorBufferInfo bufferinfo;
-
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
-
-      //bufferinfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-      //bufferinfo.imageView = get_image_view();
-      //bufferinfo.sampler = pcontext->_001VkSampler();
-
-      unsigned int uSamplerBinding = 0;
-
-      //auto pgpubindingset = pshader->get_first_image_sampler_binding_set();
-
-      ::cast<::gpu_vulkan::binding_set> pbindingset = pgpubindingslotset->m_pbindingset;
-
-      ::cast<::gpu_vulkan::binding_slot_set> pbindingslotset = pgpubindingslotset;
-
-      auto playout = pbindingset->descriptor_set_layout(pgpucommandbuffer);
-
-      auto ppool = pbindingslotset->descriptor_pool(pgpucommandbuffer);
-
-      auto iFrameIndex =
-         pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
-
-      auto bufferInfo = m_uboBuffers[iFrameIndex]->descriptorInfo();
-
-      //   descriptor_writer(*globalSetLayout, *m_pglobalpool)
-      //      .writeBuffer(0, &bufferInfo)
-      //      .build(globalDescriptorSets[i]);
-      ::gpu_vulkan::descriptor_writer(*playout, *ppool)
-         .writeBuffer(uSamplerBinding, &bufferInfo)
-         .build(m_vkdescriptorset);
-
-      return m_vkdescriptorset;
+      return vkdescriptorseta[iFrameIndex];
 
    }
 
@@ -170,10 +144,24 @@ namespace gpu_vulkan
    VkDescriptorBufferInfo block::descriptor_info(::gpu::command_buffer *pgpucommandbuffer)
    {
 
+      return descriptor_info(pgpucommandbuffer->m_iCommandBufferFrameIndex2);
+
+   }
+
+
+   VkDescriptorBufferInfo block::descriptor_info(::collection::index iFrameIndex)
+   {
+
+      if (iFrameIndex < 0 || iFrameIndex >= m_uboBuffers.size() || !m_uboBuffers[iFrameIndex])
+      {
+
+         throw ::exception(error_wrong_state, "invalid Vulkan uniform-buffer frame index");
+
+      }
 
       VkDescriptorBufferInfo bufferinfo;
 
-      auto &pbuffer = m_uboBuffers[pgpucommandbuffer->m_iCommandBufferFrameIndex2];
+      auto &pbuffer = m_uboBuffers[iFrameIndex];
 
       bufferinfo.buffer = pbuffer->m_pbuffer->m_vkbuffer;
       bufferinfo.offset = 0;

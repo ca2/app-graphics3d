@@ -105,6 +105,9 @@ namespace gpu_vulkan
 
       auto pcommandbufferLayer = m_commandbufferaLayer[iFrameIndex];
 
+      pcommandbufferLayer->m_iCommandBufferFrameIndex2 = iFrameIndex;
+      pcommandbufferLayer->m_iCommandBufferImageIndex = iFrameIndex;
+
       return pcommandbufferLayer;
 
    }

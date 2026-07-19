@@ -695,6 +695,7 @@
     <ClInclude Include="block.h" />
     <ClInclude Include="buffer.h" />
     <ClInclude Include="cube_map_upload.h" />
+    <ClInclude Include="cpu_buffer_sampling_sync.h" />
     <ClInclude Include="context_cgl.h" />
     <ClInclude Include="context_fbo.h" />
     <ClInclude Include="fence.h" />
@@ -799,6 +800,7 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
     <ClInclude Include="layer.h" />
     <ClInclude Include="aaa_memory_buffer.h" />
     <ClInclude Include="model_buffer.h" />
+    <ClInclude Include="model_buffer_upload_diagnostics.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="approach.h" />
     <ClInclude Include="offscreen_render_pass.h" />
@@ -807,6 +809,7 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
     <ClInclude Include="pixmap.h" />
     <ClInclude Include="program.h" />
     <ClInclude Include="queue.h" />
+    <ClInclude Include="queue_host_call_diagnostics.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_pass.h" />
     <ClInclude Include="render_target.h" />

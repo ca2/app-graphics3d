@@ -251,6 +251,7 @@ namespace gpu_vulkan
       bool                       m_bOwnImage;
       VkImage                    m_vkimage;
       VkFormat                   m_vkformat;
+      VkImageUsageFlags          m_vkimageusageflags = 0;
       VkDeviceMemory             m_vkdevicememory;
       state_array_2d             m_state2a;
       state_array_2d             m_state2aExternal;

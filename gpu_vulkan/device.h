@@ -5,6 +5,7 @@
 
 #include "bred/gpu/device.h"
 #include "acme/prototype/prototype/memory.h"
+#include "queue_host_call_diagnostics.h"
 
 
 namespace gpu_vulkan
@@ -73,6 +74,7 @@ namespace gpu_vulkan
       ::pointer<gpu::queue> m_pqueueTransfer;
       ::pointer<gpu::queue> m_pqueueGraphics;
       ::pointer<gpu::queue> m_pqueuePresent;
+      queue_host_call_diagnostic_registry m_queuehostcalldiagnosticregistry;
 
 
 

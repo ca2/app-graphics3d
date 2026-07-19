@@ -6,6 +6,7 @@
 #include "bred/gpu/layer.h"
 #include "physical_device.h"
 #include "render_pass.h"
+#include "render_pass_load_sync.h"
 #include "render_target.h"
 #include "renderer.h"
 #include "texture.h"
@@ -651,8 +652,14 @@ namespace gpu_vulkan
 
       VkSubpassDependency dependency = {};
       dependency.dstSubpass = 0;
-      dependency.dstAccessMask =
-         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      const bool bLoadExisting = !m_bLoadClearOp;
+      dependency.dstAccessMask = color_attachment_access(bLoadExisting);
+      if (m_bWithDepth)
+      {
+
+         dependency.dstAccessMask |= depth_attachment_access(bLoadExisting);
+
+      }
       dependency.dstStageMask =
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
       dependency.srcSubpass = VK_SUBPASS_EXTERNAL;

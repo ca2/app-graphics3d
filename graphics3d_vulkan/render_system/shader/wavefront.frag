@@ -32,7 +32,6 @@ layout(push_constant) uniform Push {
 
 void main() 
 {
-  
   vec3 diffuseLight = globalUbo.ambientLightColor.xyz * globalUbo.ambientLightColor.w;
 
   vec3 specularLight = vec3(0.0);
@@ -41,7 +40,8 @@ void main()
   vec3 cameraPosWorld = globalUbo.cameraPosition;
   vec3 viewDirection = normalize(cameraPosWorld - fragPosWorld);
 
-  for (int i = 0; i < globalUbo.numLights; i++) 
+  const int lightCount = clamp(globalUbo.numLights, 0, 10);
+  for (int i = 0; i < lightCount; i++)
   {
 
     PointLight light = globalUbo.pointLights[i];
@@ -64,11 +64,7 @@ void main()
   }
 
   vec3 lightIntensity = diffuseLight + specularLight;
-  
+
   outColor = vec4(lightIntensity * fragColor, 1.0);
-
-  //outColor = vec4(vec3(1.f), 1.0);
-
-  //outColor = vec4(vec3(fragPosWorld.z), 1.0);
 
 }

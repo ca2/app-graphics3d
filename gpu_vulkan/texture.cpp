@@ -758,6 +758,8 @@ namespace gpu_vulkan
          imagecreateinfo.tiling = VK_IMAGE_TILING_OPTIMAL;
       }
 
+      m_vkimageusageflags = imagecreateinfo.usage;
+
       //imagecreateinfo.initialLayout = m_state.m_vkimagelayout;
       imagecreateinfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
