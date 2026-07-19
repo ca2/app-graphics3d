@@ -47,6 +47,7 @@ int main()
    const auto header = read_file("draw2d_nanovg/image.h");
    const auto imageSource = read_file("draw2d_nanovg/image.cpp");
    const auto graphicsSource = read_file("draw2d_nanovg/graphics.cpp");
+   const auto gpuImageSource = read_file("../app/bred/gpu/image.cpp");
 
    assert(header.find("virtual public ::gpu::image") != std::string::npos);
    assert(header.find("void map(") == std::string::npos);
@@ -70,6 +71,16 @@ int main()
       "double image::pi()");
    assert(getGraphics.find("return m_pgraphics;") != std::string::npos);
    assert(getGraphics.find("m_pbitmap") == std::string::npos);
+
+   const auto getGpuGraphics = section(
+      gpuImageSource,
+      "::draw2d::graphics * image::get_graphics() const",
+      "::gpu::texture * image::gpu_texture() const");
+   const auto unmapBeforeGraphics = getGpuGraphics.find("unmap();");
+   const auto returnGpuGraphics = getGpuGraphics.find("return _get_graphics();");
+   assert(unmapBeforeGraphics != std::string::npos);
+   assert(returnGpuGraphics != std::string::npos);
+   assert(unmapBeforeGraphics < returnGpuGraphics);
 
    const auto destroy = section(
       imageSource,
