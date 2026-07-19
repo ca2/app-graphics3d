@@ -46,6 +46,8 @@ int main()
 
    const auto header = read_file("draw2d_nanovg/graphics.h");
    const auto source = read_file("draw2d_nanovg/graphics.cpp");
+   const auto textureHeader = read_file("../app/gpu_opengl/texture.h");
+   const auto textureSource = read_file("../app/gpu_opengl/texture.cpp");
 
    assert(header.find("bool _draw_gpu_image(") != std::string::npos);
    assert(header.find("void _draw_nanovg_image(") != std::string::npos);
@@ -83,6 +85,18 @@ int main()
    assert(gpuPath.find("nvgDeleteImage(m_pdc, iImage);") !=
       std::string::npos);
    assert(gpuPath.find("->map(") == std::string::npos);
+   assert(textureHeader.find("bool has_pending_fence() const;") !=
+      std::string::npos);
+   assert(textureSource.find(
+      "return m_glsyncGpuCommandsCompleteFence != nullptr;") !=
+      std::string::npos);
+   assert(gpuPath.find("has_pending_fence()") <
+      gpuPath.find("wait_fence();"));
+   assert(gpuPath.find("record_gpu_image_fast_path(") !=
+      std::string::npos);
+   assert(source.find("gpu.performance.nanovg_image") !=
+      std::string::npos);
+   assert(drawRaw.find("record_gpu_image_cpu_fallback();") < cpuMap);
 
    return 0;
 

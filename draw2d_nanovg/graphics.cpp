@@ -104,6 +104,15 @@ namespace draw2d_nanovg
 {
 
 
+   static ::i64 performance_steady_nanoseconds()
+   {
+
+      return ::std::chrono::duration_cast<::std::chrono::nanoseconds>(
+         ::std::chrono::steady_clock::now().time_since_epoch()).count();
+
+   }
+
+
    graphics* thread_graphics()
    {
 
@@ -8213,6 +8222,182 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
+   void graphics::reset_gpu_image_performance_diagnostics()
+   {
+
+      auto bEnabled = m_papplication
+         && m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed);
+      auto iIntervalMilliseconds = m_papplication
+         ? m_papplication->m_gpu.m_iPerformanceDiagnosticsIntervalMilliseconds.load(
+            ::std::memory_order_relaxed)
+         : 1'000;
+
+      iIntervalMilliseconds = maximum(
+         100,
+         minimum(60'000, iIntervalMilliseconds));
+
+      m_uPerformanceGpuImageDraws.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceCpuFallbackDraws.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperCreations.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperDeletions.store(0, ::std::memory_order_relaxed);
+      m_uPerformancePendingFenceWaits.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceFenceWaitMicroseconds.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperMicroseconds.store(0, ::std::memory_order_relaxed);
+      m_iPerformanceNextReportNanoseconds.store(
+         performance_steady_nanoseconds()
+            + (::i64)iIntervalMilliseconds * 1'000'000,
+         ::std::memory_order_relaxed);
+      m_bPerformanceDiagnosticsEnabledLast.store(
+         bEnabled,
+         ::std::memory_order_relaxed);
+      m_uPerformanceDiagnosticsGenerationLast.store(
+         m_papplication
+            ? m_papplication->m_gpu.m_uPerformanceDiagnosticsGeneration.load(
+               ::std::memory_order_relaxed)
+            : 0,
+         ::std::memory_order_relaxed);
+
+   }
+
+
+   void graphics::record_gpu_image_fast_path(
+      bool bWaitedForFence,
+      ::u64 uFenceMicroseconds,
+      ::u64 uWrapperMicroseconds)
+   {
+
+      m_uPerformanceGpuImageDraws.fetch_add(1, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperCreations.fetch_add(1, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperDeletions.fetch_add(1, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperMicroseconds.fetch_add(
+         uWrapperMicroseconds,
+         ::std::memory_order_relaxed);
+
+      if (bWaitedForFence)
+      {
+
+         m_uPerformancePendingFenceWaits.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+         m_uPerformanceFenceWaitMicroseconds.fetch_add(
+            uFenceMicroseconds,
+            ::std::memory_order_relaxed);
+
+      }
+
+      report_gpu_image_performance_diagnostics_if_due();
+
+   }
+
+
+   void graphics::record_gpu_image_cpu_fallback()
+   {
+
+      if (!m_papplication
+         || !m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed))
+      {
+
+         return;
+
+      }
+
+      auto uGeneration =
+         m_papplication->m_gpu.m_uPerformanceDiagnosticsGeneration.load(
+            ::std::memory_order_relaxed);
+
+      if (uGeneration != m_uPerformanceDiagnosticsGenerationLast.load(
+         ::std::memory_order_relaxed))
+      {
+
+         reset_gpu_image_performance_diagnostics();
+
+      }
+
+      m_uPerformanceCpuFallbackDraws.fetch_add(
+         1,
+         ::std::memory_order_relaxed);
+      report_gpu_image_performance_diagnostics_if_due();
+
+   }
+
+
+   void graphics::report_gpu_image_performance_diagnostics_if_due()
+   {
+
+      if (!m_papplication
+         || !m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed))
+      {
+
+         return;
+
+      }
+
+      auto iNowNanoseconds = performance_steady_nanoseconds();
+      auto iDeadlineNanoseconds = m_iPerformanceNextReportNanoseconds.load(
+         ::std::memory_order_relaxed);
+
+      if (iNowNanoseconds < iDeadlineNanoseconds)
+      {
+
+         return;
+
+      }
+
+      auto iIntervalMilliseconds = maximum(
+         100,
+         minimum(
+            60'000,
+            m_papplication->m_gpu.m_iPerformanceDiagnosticsIntervalMilliseconds.load(
+               ::std::memory_order_relaxed)));
+      auto iNextNanoseconds = iNowNanoseconds
+         + (::i64)iIntervalMilliseconds * 1'000'000;
+
+      if (!m_iPerformanceNextReportNanoseconds.compare_exchange_strong(
+         iDeadlineNanoseconds,
+         iNextNanoseconds,
+         ::std::memory_order_relaxed))
+      {
+
+         return;
+
+      }
+
+      auto uGpuDraws = m_uPerformanceGpuImageDraws.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uCpuFallbacks = m_uPerformanceCpuFallbackDraws.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperCreations = m_uPerformanceWrapperCreations.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperDeletions = m_uPerformanceWrapperDeletions.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uPendingFenceWaits = m_uPerformancePendingFenceWaits.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uFenceWaitMicroseconds = m_uPerformanceFenceWaitMicroseconds.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperMicroseconds = m_uPerformanceWrapperMicroseconds.exchange(
+         0,
+         ::std::memory_order_relaxed);
+
+      information() << "[gpu.performance.nanovg_image] gpu_draws=" << uGpuDraws
+         << " cpu_fallbacks=" << uCpuFallbacks
+         << " wrapper_creates=" << uWrapperCreations
+         << " wrapper_deletes=" << uWrapperDeletions
+         << " pending_fence_waits=" << uPendingFenceWaits
+         << " fence_wait_us=" << uFenceWaitMicroseconds
+         << " wrapper_us=" << uWrapperMicroseconds;
+
+   }
+
+
    bool graphics::_draw_gpu_image(
       const ::f64_rectangle & rectangleTarget,
       ::image::image * pimage,
@@ -8254,11 +8439,66 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      pgputexture->wait_fence();
+      auto bPerformanceDiagnostics = m_papplication
+         && m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed);
+      auto bPendingFence = false;
+      auto uFenceMicroseconds = (::u64)0;
+
+      if (bPerformanceDiagnostics)
+      {
+
+         auto uGeneration =
+            m_papplication->m_gpu.m_uPerformanceDiagnosticsGeneration.load(
+               ::std::memory_order_relaxed);
+
+         if (uGeneration != m_uPerformanceDiagnosticsGenerationLast.load(
+            ::std::memory_order_relaxed))
+         {
+
+            reset_gpu_image_performance_diagnostics();
+
+         }
+
+         bPendingFence = pgputexture->has_pending_fence();
+
+         if (bPendingFence)
+         {
+
+            auto timeFenceStart = ::std::chrono::steady_clock::now();
+            pgputexture->wait_fence();
+            uFenceMicroseconds = (::u64)::std::chrono::duration_cast<
+               ::std::chrono::microseconds>(
+                  ::std::chrono::steady_clock::now() - timeFenceStart).count();
+
+         }
+         else
+         {
+
+            pgputexture->wait_fence();
+
+         }
+
+      }
+      else
+      {
+
+         pgputexture->wait_fence();
+
+      }
 
       _synchronous_lock synchronouslock(::draw2d_nanovg::mutex());
 
       auto sizeImage = pgpuimage->size();
+      auto timeWrapperStart = ::std::chrono::steady_clock::time_point{};
+
+      if (bPerformanceDiagnostics)
+      {
+
+         timeWrapperStart = ::std::chrono::steady_clock::now();
+
+      }
+
       auto iImage = nvglCreateImageFromHandleGL3(
          m_pdc,
          pgputexture->m_gluTextureID,
@@ -8267,6 +8507,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          NVG_IMAGE_NODELETE |
             NVG_IMAGE_PREMULTIPLIED |
             NVG_IMAGE_FLIPY);
+      auto uWrapperMicroseconds = (::u64)0;
+
+      if (bPerformanceDiagnostics)
+      {
+
+         uWrapperMicroseconds = (::u64)::std::chrono::duration_cast<
+            ::std::chrono::microseconds>(
+               ::std::chrono::steady_clock::now() - timeWrapperStart).count();
+
+      }
 
       if (iImage == 0)
       {
@@ -8284,7 +8534,27 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          imagedrawingoptions,
          pointSrc);
 
+      if (bPerformanceDiagnostics)
+      {
+
+         timeWrapperStart = ::std::chrono::steady_clock::now();
+
+      }
+
       nvgDeleteImage(m_pdc, iImage);
+
+      if (bPerformanceDiagnostics)
+      {
+
+         uWrapperMicroseconds += (::u64)::std::chrono::duration_cast<
+            ::std::chrono::microseconds>(
+               ::std::chrono::steady_clock::now() - timeWrapperStart).count();
+         record_gpu_image_fast_path(
+            bPendingFence,
+            uFenceMicroseconds,
+            uWrapperMicroseconds);
+
+      }
 
       return true;
 
@@ -8317,6 +8587,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          return;
 
       }
+
+      record_gpu_image_cpu_fallback();
 
       pimage->map();
 

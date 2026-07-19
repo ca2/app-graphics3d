@@ -6,6 +6,10 @@
 #include "bred/gpu/renderer.h"
 
 
+#include <atomic>
+#include <chrono>
+
+
 
 //typedef void FN_VKVG_TEXT(VkvgContext, const char*);
 //typedef FN_VKVG_TEXT* PFN_VKVG_TEXT;
@@ -54,6 +58,16 @@ namespace draw2d_nanovg
       ::i32_size                    m_sizeWindow;
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
+      ::std::atomic_bool m_bPerformanceDiagnosticsEnabledLast{false};
+      ::std::atomic<::u64> m_uPerformanceDiagnosticsGenerationLast{0};
+      ::std::atomic<::u64> m_uPerformanceGpuImageDraws{0};
+      ::std::atomic<::u64> m_uPerformanceCpuFallbackDraws{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperCreations{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperDeletions{0};
+      ::std::atomic<::u64> m_uPerformancePendingFenceWaits{0};
+      ::std::atomic<::u64> m_uPerformanceFenceWaitMicroseconds{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperMicroseconds{0};
+      ::std::atomic<::i64> m_iPerformanceNextReportNanoseconds{0};
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       //::pointer<::gpu::context>             m_pgpucontextOutput;
 
@@ -122,6 +136,14 @@ namespace draw2d_nanovg
          ::image::image * pimage,
          const ::image::image_drawing_options & imagedrawingoptions,
          const ::f64_point & pointSrc);
+
+      void reset_gpu_image_performance_diagnostics();
+      void record_gpu_image_fast_path(
+         bool bWaitedForFence,
+         ::u64 uFenceMicroseconds,
+         ::u64 uWrapperMicroseconds);
+      void record_gpu_image_cpu_fallback();
+      void report_gpu_image_performance_diagnostics_if_due();
 
       virtual void _draw_nanovg_image(
          int iImage,
