@@ -117,6 +117,19 @@ namespace draw2d_nanovg
 
       void _draw_raw(const ::f64_rectangle & rectangleTarget, ::image::image *pimage, const ::image::image_drawing_options & imagedrawingoptionsParam, const ::f64_point & pointSrc) override;
 
+      virtual bool _draw_gpu_image(
+         const ::f64_rectangle & rectangleTarget,
+         ::image::image * pimage,
+         const ::image::image_drawing_options & imagedrawingoptions,
+         const ::f64_point & pointSrc);
+
+      virtual void _draw_nanovg_image(
+         int iImage,
+         const ::i32_size & sizeImage,
+         const ::f64_rectangle & rectangleTarget,
+         const ::image::image_drawing_options & imagedrawingoptions,
+         const ::f64_point & pointSrc);
+
       //plusplus::Pen *       vk2d_pen();
       //plusplus::Brush *     vk2d_brush();
       //plusplus::Font *      vk2d_font();

@@ -8180,7 +8180,122 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::_draw_raw(const ::f64_rectangle& rectangleTarget, ::image::image* pimage, const ::image::image_drawing_options& imagedrawingoptionsParam, const ::f64_point& pointSrc)
+   void graphics::_draw_nanovg_image(
+      int iImage,
+      const ::i32_size & sizeImage,
+      const ::f64_rectangle & rectangleTarget,
+      const ::image::image_drawing_options & imagedrawingoptions,
+      const ::f64_point & pointSrc)
+   {
+
+      nanovg_keep keep(m_pdc);
+
+      auto paint = nvgImagePattern(
+         m_pdc,
+         (float)(rectangleTarget.left - pointSrc.x),
+         (float)(rectangleTarget.top - pointSrc.y),
+         (float)sizeImage.cx,
+         (float)sizeImage.cy,
+         0.f,
+         iImage,
+         imagedrawingoptions.opacity().f32_opacity());
+
+      nvgBeginPath(m_pdc);
+      nvgRect(
+         m_pdc,
+         (float)rectangleTarget.left,
+         (float)rectangleTarget.top,
+         (float)rectangleTarget.width(),
+         (float)rectangleTarget.height());
+      nvgFillPaint(m_pdc, paint);
+      nvgFill(m_pdc);
+
+   }
+
+
+   bool graphics::_draw_gpu_image(
+      const ::f64_rectangle & rectangleTarget,
+      ::image::image * pimage,
+      const ::image::image_drawing_options & imagedrawingoptions,
+      const ::f64_point & pointSrc)
+   {
+
+      auto pgpuimage = dynamic_cast < ::gpu::image * >(pimage);
+
+      if (!pgpuimage)
+      {
+
+         return false;
+
+      }
+
+      auto pgputexture = dynamic_cast < ::gpu_opengl::texture * >(
+         pgpuimage->gpu_texture());
+
+      if (!pgputexture || !pgputexture->m_gluTextureID)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG GPU image has no compatible OpenGL texture.");
+
+      }
+
+      auto pgpucontextTexture = pgputexture->context();
+      auto pgpucontextCurrent = gpu_context();
+
+      if (!pgpucontextTexture || !pgpucontextCurrent ||
+          pgpucontextTexture->m_pgpudevice != pgpucontextCurrent->m_pgpudevice)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG GPU image belongs to a different GPU device.");
+
+      }
+
+      pgputexture->wait_fence();
+
+      _synchronous_lock synchronouslock(::draw2d_nanovg::mutex());
+
+      auto sizeImage = pgpuimage->size();
+      auto iImage = nvglCreateImageFromHandleGL3(
+         m_pdc,
+         pgputexture->m_gluTextureID,
+         sizeImage.cx,
+         sizeImage.cy,
+         NVG_IMAGE_NODELETE |
+            NVG_IMAGE_PREMULTIPLIED |
+            NVG_IMAGE_FLIPY);
+
+      if (iImage == 0)
+      {
+
+         throw ::exception(
+            error_failed,
+            "NanoVG failed to wrap the OpenGL GPU image texture.");
+
+      }
+
+      _draw_nanovg_image(
+         iImage,
+         sizeImage,
+         rectangleTarget,
+         imagedrawingoptions,
+         pointSrc);
+
+      nvgDeleteImage(m_pdc, iImage);
+
+      return true;
+
+   }
+
+
+   void graphics::_draw_raw(
+      const ::f64_rectangle & rectangleTarget,
+      ::image::image * pimage,
+      const ::image::image_drawing_options & imagedrawingoptions,
+      const ::f64_point & pointSrc)
    {
 
       if (!m_pdc || !pimage || rectangleTarget.is_empty() || pimage->is_empty())
@@ -8191,6 +8306,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       }
 
       pimage->defer_update_image();
+
+      if (_draw_gpu_image(
+         rectangleTarget,
+         pimage,
+         imagedrawingoptions,
+         pointSrc))
+      {
+
+         return;
+
+      }
+
       pimage->map();
 
       auto sizeImage = pimage->size();
@@ -8221,7 +8348,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      _synchronous_lock ml(::draw2d_nanovg::mutex());
+      _synchronous_lock synchronouslock(::draw2d_nanovg::mutex());
 
       auto iImage = nvgCreateImageRGBA(
          m_pdc,
@@ -8237,27 +8364,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      nanovg_keep keep(m_pdc);
-
-      auto paint = nvgImagePattern(
-         m_pdc,
-         (float)(rectangleTarget.left - pointSrc.x),
-         (float)(rectangleTarget.top - pointSrc.y),
-         (float)sizeImage.cx,
-         (float)sizeImage.cy,
-         0.f,
+      _draw_nanovg_image(
          iImage,
-         imagedrawingoptionsParam.opacity().f32_opacity());
-
-      nvgBeginPath(m_pdc);
-      nvgRect(
-         m_pdc,
-         (float)rectangleTarget.left,
-         (float)rectangleTarget.top,
-         (float)rectangleTarget.width(),
-         (float)rectangleTarget.height());
-      nvgFillPaint(m_pdc, paint);
-      nvgFill(m_pdc);
+         sizeImage,
+         rectangleTarget,
+         imagedrawingoptions,
+         pointSrc);
 
       nvgDeleteImage(m_pdc, iImage);
 
