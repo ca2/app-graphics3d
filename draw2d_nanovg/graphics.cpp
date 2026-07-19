@@ -220,24 +220,129 @@ namespace draw2d_nanovg
    void graphics::create_memory_graphics(const ::i32_size& size)
    {
 
-      ::gpu::graphics::create_memory_graphics(size);
+      ::i32_size sizeMemory(size);
 
-      //::i32_rectangle rectanglePlacement;
+      if (sizeMemory.is_empty())
+      {
 
-      //if (size.is_empty())
-      //{
+         sizeMemory = { 1920, 1080 };
 
-      //   rectanglePlacement.set_size({ 1920, 1080 });
+      }
 
-      //}
-      //else
-      //{
+      ::gpu::graphics::create_memory_graphics(sizeMemory);
 
-      //   rectanglePlacement.set_size(size);
+   }
 
-      //}
 
-      //opengl_create_offscreen_buffer(rectanglePlacement);
+   void graphics::_create_memory_graphics(const ::i32_size& size)
+   {
+
+      auto puserinteraction = m_puserinteractionDraw2dGraphics;
+
+      if (!puserinteraction)
+      {
+
+         puserinteraction = dynamic_cast < ::user::interaction * >(
+            application()->m_pacmeuserinteractionMain.m_p);
+
+      }
+
+      if (!puserinteraction)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "No main interaction is available for NanoVG memory graphics.");
+
+      }
+
+      auto pwindow = puserinteraction->window();
+
+      if (!pwindow)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "No window is available to acquire the OpenGL GPU device.");
+
+      }
+
+      m_puserinteractionDraw2dGraphics = puserinteraction;
+
+      if (m_pdc)
+      {
+
+         auto pgpucontextOld = gpu_context();
+
+         if (!pgpucontextOld)
+         {
+
+            throw ::exception(
+               error_wrong_state,
+               "NanoVG context has no owning OpenGL GPU context.");
+
+         }
+
+         ::gpu::context_lock contextlockOld(pgpucontextOld);
+
+         auto pdcOld = m_pdc;
+         m_pdc = nullptr;
+         nvgDeleteGL3(pdcOld);
+
+      }
+
+      auto pgpuapproach = application()->get_gpu_approach();
+      auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
+
+      if (!pgpudevice)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "Failed to acquire the OpenGL GPU device for NanoVG memory graphics.");
+
+      }
+
+      auto pgpucontextNew = pgpudevice->create_draw2d_context(
+         ::gpu::e_output_gpu_buffer,
+         size);
+
+      if (!pgpucontextNew)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "Failed to create the NanoVG offscreen GPU context.");
+
+      }
+
+      set_gpu_context(pgpucontextNew);
+      pgpucontextNew->m_pgpucompositor = this;
+
+      m_sizeScaleOutput = { 1.0, -1.0 };
+      m_pointTranslateOutput = { 0.0, (double)size.cy };
+      m_size = size;
+      m_sizeWindow = size;
+
+      {
+
+         ::gpu::context_lock contextlockNew(pgpucontextNew);
+
+         pgpucontextNew->get_gpu_renderer();
+         ::opengl::resize(size, false);
+
+         m_pdc = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+
+         if (!m_pdc)
+         {
+
+            throw ::exception(
+               error_failed,
+               "nvgCreateGL3 failed for NanoVG memory graphics.");
+
+         }
+
+      }
 
    }
 
@@ -365,248 +470,248 @@ namespace draw2d_nanovg
    }
 
 
-   bool graphics::opengl_create_offscreen_buffer(const ::i32_size & sizePlacement)
-   {
+   //bool graphics::opengl_create_offscreen_buffer(const ::i32_size & sizePlacement)
+   //{
 
-      return opengl_create_offscreen_buffer(sizePlacement);
+   //   return opengl_create_offscreen_buffer(sizePlacement);
 
-      //if (m_puserinteractionDraw2dGraphics)
-      //{
+   //   //if (m_puserinteractionDraw2dGraphics)
+   //   //{
 
-      //   on_gpu_context_placement_change(rectanglePlacement, m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
-      //}
-      //else
-      //{
+   //   //   on_gpu_context_placement_change(rectanglePlacement, m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+   //   //}
+   //   //else
+   //   //{
 
-      //   on_gpu_context_placement_change(rectanglePlacement, nullptr);
+   //   //   on_gpu_context_placement_change(rectanglePlacement, nullptr);
 
-      //}
-
-
-      ////if (!draw2d_nanovg()->m_popenglcontext) {
-      ////   informationf("MS GDI - RegisterClass failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-
-      ////if (!m_pgpucontext)
-      ////{
-
-      ////   auto pgpuapproach = application()->get_gpu_approach();
-
-      ////   if (!m_puserinteractionDraw2dGraphics)
-      ////   {
-
-      ////      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
-
-      ////   }
-
-      ////   ASSERT(m_puserinteractionDraw2dGraphics);
-
-      ////   auto pgpudevice = pgpuapproach->get_gpu_device();
-
-      ////   m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
-
-      ////}
-
-      //auto pgpuapproach = application()->get_gpu_approach();
-
-      //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+   //   //}
 
 
-      //::cast < ::gpu_opengl::context > pcontextOpengl = gpu_context();
-      //::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
+   //   ////if (!draw2d_nanovg()->m_popenglcontext) {
+   //   ////   informationf("MS GDI - RegisterClass failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
 
-      ////nanovg_device_create_info_t createinfo;
-      ////createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      ////createinfo.deferredResolve = true;
-      ////createinfo.inst = papproachOpengl->m_vkinstance;
-      ////createinfo.phy = pcontextOpengl->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
-      ////createinfo.vkdev = pcontextOpengl->logicalDevice();
-      ////createinfo.qFamIdx = pcontextOpengl->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
-      ////createinfo.qIndex = 0;
-      ////createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+   //   ////if (!m_pgpucontext)
+   //   ////{
 
-      ////m_pdc = nanovg_device_create(&createinfo);
-      ////m_nanovgsurface = nanovg_surface_create(m_pdc, rectanglePlacement.width(),
-      ////   rectanglePlacement.height());
+   //   ////   auto pgpuapproach = application()->get_gpu_approach();
 
-      ////m_pdc = nanovg_create(m_nanovgsurface);
-      ////if (!m_pgpucontext)
-      ////{
+   //   ////   if (!m_puserinteractionDraw2dGraphics)
+   //   ////   {
 
-      ////   return false;
+   //   ////      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
 
-      ////}
+   //   ////   }
 
+   //   ////   ASSERT(m_puserinteractionDraw2dGraphics);
 
-      ////      ::opengl::resize(size);
+   //   ////   auto pgpudevice = pgpuapproach->get_gpu_device();
 
+   //   ////   m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
 
-      ////}
+   //   ////}
 
-      ////LPCTSTR lpClassName = L"draw2d_nanovg_offscreen_buffer_window";
-      ////LPCTSTR lpWindowName = L"draw2d_nanovg_offscreen_buffer_window";
-      //////unsigned int dwStyle = WS_CAPTION | WS_POPUPWINDOW; // | WS_VISIBLE
-      ////unsigned int dwExStyle = 0;
-      ////unsigned int dwStyle = WS_OVERLAPPEDWINDOW;
-      ////dwStyle |= WS_POPUP;
-      //////dwStyle |= WS_VISIBLE;
-      //////dwStyle |= WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
-      ////dwStyle &= ~WS_CAPTION;
-      //////dwStyle = 0;
-      ////dwStyle &= ~WS_THICKFRAME;
-      ////dwStyle &= ~WS_BORDER;
-      ////int x = 0;
-      ////int y = 0;
-      ////int nWidth = size.cx;
-      ////int nHeight = size.cy;
-      ////HWND hWndParent = nullptr;
-      ////HMENU hMenu = nullptr;
-      ///////HINSTANCE hInstance = psystem->m_hinstance;
-      ////void * lpParam = nullptr;
+   //   //auto pgpuapproach = application()->get_gpu_approach();
 
-      //////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y,  nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-      ////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, nullptr, lpParam);
-
-      ////if (window == nullptr) 
-      ////{
-      ////   informationf("MS GDI - CreateWindow failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-
-      ////// create WGL context, make current
-
-      ////PIXELFORMATDESCRIPTOR pixformat;
-      ////int chosenformat;
-      ////HDC hdc = GetDC(window);
-      ////if (hdc == nullptr)
-      ////{
-      ////   informationf("MS GDI - GetDC failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-
-      ////ZeroMemory(&pixformat, sizeof(pixformat));
-      ////pixformat.nSize = sizeof(pixformat);
-      ////pixformat.nVersion = 1;
-      ////pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-      ////pixformat.iPixelType = PFD_TYPE_RGBA;
-      ////pixformat.cColorBits = 24;
-      ////pixformat.cAlphaBits = 8;
-      ////pixformat.cDepthBits = 24;
-      ////pixformat.cStencilBits = 8;
-
-      ////chosenformat = ChoosePixelFormat(hdc, &pixformat);
-      ////if (chosenformat == 0) 
-      ////{
-      ////   informationf("MS GDI - ChoosePixelFormat failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-
-      ////bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
-      ////if (!spfok) 
-      ////{
-      ////   informationf("MS GDI - SetPixelFormat failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-
-      ////HGLRC hglrcTime = wglCreateContext(hdc);
-      ////if (hglrcTime == nullptr)
-      ////{
-      ////   informationf("MS WGL - wglCreateContext failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   ReleaseDC(m_hwnd, m_hdc);
-      ////   return false;
-      ////}
-
-      ////bool okMakeCurrent = wglMakeCurrent(hdc, hglrcTime);
-      ////if (!okMakeCurrent)
-      ////{
-      ////   informationf("MS WGL - wglMakeCurrent failed");
-      ////   informationf("last-error code: %d\n", GetLastError());
-      ////   return false;
-      ////}
-      //////vkfwInit();
-      ////// ... <snip> ... setup a window and a context
-      ////
-      ////auto wglCurrentContext = wglGetCurrentContext();
-
-      ////// Load all Opengl functions using the vkfw loader function
-      ////// If you use SDL you can use: https://wiki.libsdl.org/SDL_GL_GetProcAddress
-      //////if (!vkadLoadGLLoader((VKADloadproc)vkfwGetProcAddress)) {
-      //////   std::cout << "Failed to initialize Opengl context" << std::endl;
-      //////   return -1;
-      //////}
-      ////if (!vkadLoadWGL(hdc))
-      ////{
-      ////   // Problem: vkewInit failed, something is seriously wrong.
-      ////   informationf("vkadLoadWGL failed");
-      ////   //return false;
-      ////   //throw resource_exception();
-
-      ////   return false;
-
-      ////}
-      ////int attribs[] =
-      ////{
-      ////   WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-      ////   WGL_CONTEXT_MINOR_VERSION_ARB, 1,
-      ////   WGL_CONTEXT_FLAGS_ARB, 0,
-      ////   WGL_CONTEXT_PROFILE_MASK_ARB,
-      ////   WGL_CONTEXT_COREPROFILE_BIT_ARB, 0
-      ////};
-
-      //////PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
-      //////wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-
-      ////auto hglrc =  wglCreateContextAttribsARB(hdc, 0, attribs);
-      ////wglMakeCurrent(nullptr, nullptr);
-      ////wglDeleteContext(hglrcTime);
-      ////   wglMakeCurrent(hdc, m_hglrc);
-      //////draw2d_nanovg()->defer_initialize_glew();
-      ////
-      //////draw2d_nanovg()->defer_initialize_glew();
+   //   //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
 
 
-      ////m_hwnd = window;
-      ////m_hdc = hdc;
-      ////m_hglrc = hglrc;
-      ////m_size = size;
+   //   //::cast < ::gpu_opengl::context > pcontextOpengl = gpu_context();
+   //   //::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
 
-      //bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+   //   ////nanovg_device_create_info_t createinfo;
+   //   ////createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+   //   ////createinfo.deferredResolve = true;
+   //   ////createinfo.inst = papproachOpengl->m_vkinstance;
+   //   ////createinfo.phy = pcontextOpengl->m_pgpudevice->m_pphysicaldevice->m_physicaldevice;
+   //   ////createinfo.vkdev = pcontextOpengl->logicalDevice();
+   //   ////createinfo.qFamIdx = pcontextOpengl->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
+   //   ////createinfo.qIndex = 0;
+   //   ////createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
-      //::opengl::resize(rectanglePlacement.size(), bYSwap);
+   //   ////m_pdc = nanovg_device_create(&createinfo);
+   //   ////m_nanovgsurface = nanovg_surface_create(m_pdc, rectanglePlacement.width(),
+   //   ////   rectanglePlacement.height());
 
-      //return true;
+   //   ////m_pdc = nanovg_create(m_nanovgsurface);
+   //   ////if (!m_pgpucontext)
+   //   ////{
 
-   }
+   //   ////   return false;
+
+   //   ////}
 
 
-   bool graphics::opengl_delete_offscreen_buffer()
-   {
+   //   ////      ::opengl::resize(size);
 
-      //if (m_hglrc == NULL && m_hdc == NULL && m_hwnd == NULL)
-      //{
 
-      //   return true;
+   //   ////}
 
-      //}
+   //   ////LPCTSTR lpClassName = L"draw2d_nanovg_offscreen_buffer_window";
+   //   ////LPCTSTR lpWindowName = L"draw2d_nanovg_offscreen_buffer_window";
+   //   //////unsigned int dwStyle = WS_CAPTION | WS_POPUPWINDOW; // | WS_VISIBLE
+   //   ////unsigned int dwExStyle = 0;
+   //   ////unsigned int dwStyle = WS_OVERLAPPEDWINDOW;
+   //   ////dwStyle |= WS_POPUP;
+   //   //////dwStyle |= WS_VISIBLE;
+   //   //////dwStyle |= WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+   //   ////dwStyle &= ~WS_CAPTION;
+   //   //////dwStyle = 0;
+   //   ////dwStyle &= ~WS_THICKFRAME;
+   //   ////dwStyle &= ~WS_BORDER;
+   //   ////int x = 0;
+   //   ////int y = 0;
+   //   ////int nWidth = size.cx;
+   //   ////int nHeight = size.cy;
+   //   ////HWND hWndParent = nullptr;
+   //   ////HMENU hMenu = nullptr;
+   //   ///////HINSTANCE hInstance = psystem->m_hinstance;
+   //   ////void * lpParam = nullptr;
 
-      //wglMakeCurrent(nullptr, nullptr);
-      //wglDeleteContext(m_hglrc);
-      //::ReleaseDC(m_hwnd, m_hdc);
-      //::DestroyWindow(m_hwnd);
-      m_size.set(0, 0);
-      //m_hglrc = NULL;
-      //m_hwnd = NULL;
-      //m_hdc = NULL;
-      return true;
+   //   //////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y,  nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+   //   ////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, nullptr, lpParam);
 
-   }
+   //   ////if (window == nullptr)
+   //   ////{
+   //   ////   informationf("MS GDI - CreateWindow failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
+
+   //   ////// create WGL context, make current
+
+   //   ////PIXELFORMATDESCRIPTOR pixformat;
+   //   ////int chosenformat;
+   //   ////HDC hdc = GetDC(window);
+   //   ////if (hdc == nullptr)
+   //   ////{
+   //   ////   informationf("MS GDI - GetDC failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
+
+   //   ////ZeroMemory(&pixformat, sizeof(pixformat));
+   //   ////pixformat.nSize = sizeof(pixformat);
+   //   ////pixformat.nVersion = 1;
+   //   ////pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+   //   ////pixformat.iPixelType = PFD_TYPE_RGBA;
+   //   ////pixformat.cColorBits = 24;
+   //   ////pixformat.cAlphaBits = 8;
+   //   ////pixformat.cDepthBits = 24;
+   //   ////pixformat.cStencilBits = 8;
+
+   //   ////chosenformat = ChoosePixelFormat(hdc, &pixformat);
+   //   ////if (chosenformat == 0)
+   //   ////{
+   //   ////   informationf("MS GDI - ChoosePixelFormat failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
+
+   //   ////bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
+   //   ////if (!spfok)
+   //   ////{
+   //   ////   informationf("MS GDI - SetPixelFormat failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
+
+   //   ////HGLRC hglrcTime = wglCreateContext(hdc);
+   //   ////if (hglrcTime == nullptr)
+   //   ////{
+   //   ////   informationf("MS WGL - wglCreateContext failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   ReleaseDC(m_hwnd, m_hdc);
+   //   ////   return false;
+   //   ////}
+
+   //   ////bool okMakeCurrent = wglMakeCurrent(hdc, hglrcTime);
+   //   ////if (!okMakeCurrent)
+   //   ////{
+   //   ////   informationf("MS WGL - wglMakeCurrent failed");
+   //   ////   informationf("last-error code: %d\n", GetLastError());
+   //   ////   return false;
+   //   ////}
+   //   //////vkfwInit();
+   //   ////// ... <snip> ... setup a window and a context
+   //   ////
+   //   ////auto wglCurrentContext = wglGetCurrentContext();
+
+   //   ////// Load all Opengl functions using the vkfw loader function
+   //   ////// If you use SDL you can use: https://wiki.libsdl.org/SDL_GL_GetProcAddress
+   //   //////if (!vkadLoadGLLoader((VKADloadproc)vkfwGetProcAddress)) {
+   //   //////   std::cout << "Failed to initialize Opengl context" << std::endl;
+   //   //////   return -1;
+   //   //////}
+   //   ////if (!vkadLoadWGL(hdc))
+   //   ////{
+   //   ////   // Problem: vkewInit failed, something is seriously wrong.
+   //   ////   informationf("vkadLoadWGL failed");
+   //   ////   //return false;
+   //   ////   //throw resource_exception();
+
+   //   ////   return false;
+
+   //   ////}
+   //   ////int attribs[] =
+   //   ////{
+   //   ////   WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+   //   ////   WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+   //   ////   WGL_CONTEXT_FLAGS_ARB, 0,
+   //   ////   WGL_CONTEXT_PROFILE_MASK_ARB,
+   //   ////   WGL_CONTEXT_COREPROFILE_BIT_ARB, 0
+   //   ////};
+
+   //   //////PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
+   //   //////wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+
+   //   ////auto hglrc =  wglCreateContextAttribsARB(hdc, 0, attribs);
+   //   ////wglMakeCurrent(nullptr, nullptr);
+   //   ////wglDeleteContext(hglrcTime);
+   //   ////   wglMakeCurrent(hdc, m_hglrc);
+   //   //////draw2d_nanovg()->defer_initialize_glew();
+   //   ////
+   //   //////draw2d_nanovg()->defer_initialize_glew();
+
+
+   //   ////m_hwnd = window;
+   //   ////m_hdc = hdc;
+   //   ////m_hglrc = hglrc;
+   //   ////m_size = size;
+
+   //   //bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+
+   //   //::opengl::resize(rectanglePlacement.size(), bYSwap);
+
+   //   //return true;
+
+   //}
+
+
+   //bool graphics::opengl_delete_offscreen_buffer()
+   //{
+
+   //   //if (m_hglrc == NULL && m_hdc == NULL && m_hwnd == NULL)
+   //   //{
+
+   //   //   return true;
+
+   //   //}
+
+   //   //wglMakeCurrent(nullptr, nullptr);
+   //   //wglDeleteContext(m_hglrc);
+   //   //::ReleaseDC(m_hwnd, m_hdc);
+   //   //::DestroyWindow(m_hwnd);
+   //   m_size.set(0, 0);
+   //   //m_hglrc = NULL;
+   //   //m_hwnd = NULL;
+   //   //m_hdc = NULL;
+   //   return true;
+
+   //}
 
 
    bool graphics::opengl_defer_create_window_context(::windowing::window* pwindow)
@@ -720,18 +825,7 @@ namespace draw2d_nanovg
 
       }
 
-      opengl_delete_offscreen_buffer();
-
-      if (!opengl_create_offscreen_buffer(pbitmap->get_size()))
-      {
-
-         return NULL;
-
-      }
-
-      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
-
-      ::opengl::resize(pbitmap->get_size(), bYSwap);
+      create_memory_graphics(pbitmap->get_size());
 
       //vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
 
@@ -6141,6 +6235,22 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    ::gpu::texture* graphics::current_target_texture(::gpu::layer * pgpulayer)
    {
 
+      auto pgpuimage = dynamic_cast < ::gpu::image * >(m_pimage);
+
+      if (pgpuimage)
+      {
+
+         auto pgputexture = pgpuimage->gpu_texture();
+
+         if (pgputexture)
+         {
+
+            return pgputexture;
+
+         }
+
+      }
+
       return ::gpu::graphics::current_target_texture(pgpulayer);
 
       //defer_constructø(m_ptextureCurrent);
@@ -8647,6 +8757,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    {
 
       nvgEndFrame(m_pdc);
+
+      auto pgpuimage = dynamic_cast < ::gpu::image * >(m_pimage);
+
+      if (pgpuimage && pgpuimage->gpu_texture())
+      {
+
+         pgpuimage->gpu_texture()->defer_fence();
+
+      }
 
       glFlush();
       ::opengl::check_error("");

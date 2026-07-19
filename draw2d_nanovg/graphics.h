@@ -139,12 +139,13 @@ namespace draw2d_nanovg
       bool CreateIC(const ::scoped_string & lpszDriverName, const ::scoped_string & lpszDeviceName,
                     const char * lpszOutput, const void * lpInitData);
       void create_memory_graphics(const ::i32_size & size = {}) override;
+      void _create_memory_graphics(const ::i32_size & size) override;
       void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
       void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
 
-      virtual bool opengl_create_offscreen_buffer(const ::i32_size & sizePlacement);
-      virtual bool opengl_delete_offscreen_buffer();
+      //virtual bool opengl_create_offscreen_buffer(const ::i32_size & sizePlacement);
+      //virtual bool opengl_delete_offscreen_buffer();
 
       virtual bool opengl_defer_create_window_context(::windowing::window * pwindow);
 

@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "image.h"
 #include "acme/platform/application.h"
+#include "bred/gpu/texture.h"
 
 
 namespace draw2d_nanovg
@@ -51,74 +52,46 @@ namespace draw2d_nanovg
 
 
 
-   void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int iGoodStride, bool bPreserve)
+   void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int, bool)
    {
 
-      if (m_pbitmap.is_set()
-            && m_pbitmap->get_os_data() != nullptr
-            && m_size == size)
-         //return true;
+      if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
+      {
+
          return;
+
+      }
 
       destroy();
 
       if (size.is_empty())
       {
 
-         //return true;
-
          return;
 
       }
 
-      //m_bitmapinfo = {};
+      constructø(m_pgraphics);
+      m_pgraphics->m_pimage = this;
+      m_pgraphics->create_memory_graphics(size);
 
-      int iStride = size.cx * 4;
+      ::cast < ::draw2d_nanovg::graphics > pgraphics = m_pgraphics;
 
-      //{
-      //   iGoodStride
-      //}
-
-      // m_bitmapinfo.bmiHeader.biSize          = sizeof (BITMAPINFOHEADER);
-      // m_bitmapinfo.bmiHeader.biWidth         = size.cx;
-      // m_bitmapinfo.bmiHeader.biHeight        =- size.cy;
-      // m_bitmapinfo.bmiHeader.biPlanes        = 1;
-      // m_bitmapinfo.bmiHeader.biBitCount      = 32;
-      // m_bitmapinfo.bmiHeader.biCompression   = BI_RGB;
-      // m_bitmapinfo.bmiHeader.biSizeImage     = iStride  * size.cy;
-
-      constructø(m_pbitmap);
-
-      image32_t * pimage32 = nullptr;
-      m_pbitmap->create_bitmap(nullptr, size, (void **)&pimage32, &iStride);
-      //if(!m_pbitmap->create_bitmap(nullptr, size, (void **) & pimage32, &iStride))
-      //{
-
-        // return false;
-
-      //}
-
-      if(m_pbitmap->get_os_data() == nullptr)
+      if (!pgraphics || !pgraphics->gpu_context())
       {
 
          destroy();
-
-         //return false;
-
-         return;
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG GPU image has no OpenGL graphics context.");
 
       }
 
-
-      this->::pixmap::initialize(size, pimage32, iStride);
+      initialize_gpu_image(pgraphics->gpu_context(), size);
 
       m_eflagElement = eobjectCreate;
-
-      set_ok_flag();
-
       m_estatus = ::success;
-
-      //return true;
+      set_ok_flag();
 
    }
 
@@ -215,16 +188,11 @@ namespace draw2d_nanovg
    }
 
 
-   void image::destroy ()
+   void image::destroy()
    {
 
-      m_pbitmap.release();
-
-      m_pgraphics.release();
-
-      set_nok();
-
-      //return true;
+      m_phost = nullptr;
+      ::gpu::image::destroy();
 
    }
 
@@ -2405,53 +2373,7 @@ namespace draw2d_nanovg
    ::draw2d::graphics * image::_get_graphics() const
    {
 
-      if (m_pgraphics)
-      {
-
-         return m_pgraphics;
-
-      }
-
-      //::draw2d::graphics * image::_get_graphics()
-      //{
-
-  /*       if (m_pgraphics)
-         {
-
-            return pgraphics;
-
-         }*/
-
-         if (!m_pbitmap)
-         {
-
-      /*      m_size.cx = 0;
-
-            m_size.cy = 0;
-
-            m_iScan = 0;*/
-
-            return m_pgraphics;
-
-         }
-
-         ((image *)this)->constructø(((image*)this)->m_pgraphics);
-
-
-         ((image *)this)->m_pgraphics->set(m_pbitmap);
-
-         ((image *)this)->m_pgraphics->create_memory_graphics(m_size);
-
-         ((image *)this)->m_pgraphics->m_pimage = (image *) this;
-
-         return m_pgraphics;
-
-
-      //unmap();
-
-      //m_pgraphics->set(m_pbitmap);
-
-      //return m_pgraphics;
+      return m_pgraphics;
 
    }
 
@@ -2747,145 +2669,6 @@ namespace draw2d_nanovg
 
 
 
-
-
-   void image::map(bool bApplyTransform) const
-   {
-
-      return;
-
-      if (m_bMapped)
-      {
-
-         //return true;
-
-         return;
-
-      }
-
-      if (!m_pgraphics)
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      if (m_size.is_empty())
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      if (::is_null(m_pimage32Raw))
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      m_pgraphics->thread_select();
-
-      int hasAlphaBits = 0;
-
-      ////xxxopengl>>>>opengl vkGetIntegerv(VK_ALPHA_BITS, &hasAlphaBits);
-
-      //vkFlush();
-
-      //vkReadBuffer(VK_BACK);
-      //vkReadBuffer(VK_FRONT);
-
-
-
-      ::pointer < graphics > pgraphics = m_pgraphics;
-
-      int cx = pgraphics->m_sizeWindow.cx;
-
-      int cy = pgraphics->m_sizeWindow.cy;
-
-      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
-
-      ::opengl::resize(pgraphics->m_sizeWindow, bYSwap);
-
-      // //xxxopengl>>>>opengl 
-      //vkReadBuffer(VK_BACK);
-
-      //vkPixelStorei(VK_PACK_SWAP_BYTES, 0);
-
-      //vkPixelStorei(VK_PACK_ROW_LENGTH, m_iScan/4);
-
-      //vkReadPixels(0, 0, cx, cy, VK_BGRA, VK_UNSIGNED_BYTE, m_pimage32Raw);
-
-      ////vkReadPixels(0, 0, m_size.cx, m_size.cy, VK_ARGB, VK_UNSIGNED_BYTE, m_pimage32Raw);
-
-      //int i1280 = VK_INVALID_ENUM;
-
-      //int i1281 = VK_INVALID_VALUE;
-
-      //int iError = vkGetError();
-
-      m_bMapped = true;
-
-      //return true;
-
-   }
-
-
-   void image::unmap() const
-   {
-
-      if (!m_bMapped)
-      {
-
-         //return true;
-
-         return;
-
-      }
-
-      if (!m_pgraphics)
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      if (m_size.is_empty())
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      if (::is_null(m_pimage32Raw))
-      {
-
-         //return false;
-
-         return;
-
-      }
-
-      m_pgraphics->thread_select();
-
-      //xxxopengl>>>>opengl 
-      //vkDrawPixels(m_size.cx, m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, m_pimage32Raw);
-
-      m_bMapped = false;
-
-      //return true;
-
-   }
 
 
    bool image::host(const ::pixmap* ppixmap)

@@ -4,7 +4,7 @@
 #include "acme/_operating_system.h"
 
 
-#include "aura/graphics/image/image.h"
+#include "bred/gpu/image.h"
 
 
 struct OffscreenContext;
@@ -15,7 +15,7 @@ namespace draw2d_nanovg
 
 
    class CLASS_DECL_DRAW2D_NANOVG image :
-      virtual public ::image::image
+      virtual public ::gpu::image
    {
    public:
 
@@ -146,9 +146,6 @@ namespace draw2d_nanovg
 
       //double pi();
 
-
-      void map(bool bApplyAlphaTransform = true) const override; // some implementations may requrire to map to m_pcolorref before manipulate it
-      void unmap() const override; // some implementations may require to unmap from m_pcolorref to update *os* bitmap
 
       //virtual bool update_window(::aura::draw_interface * puserinteraction, ::message::message * pmessage, bool bTransferBuffer = true) override;
       //virtual bool print_window(::aura::draw_interface * puserinteraction, ::message::message * pmessage) override;
