@@ -16,9 +16,9 @@
 #include "bred/gpu/frame.h"
 #include "acme/filesystem/file/exception.h"
 #include "acme/filesystem/filesystem/file_context.h"
+#include "acme/graphics/image/pixmap.h"
 #include "aura/graphics/image/context.h"
 #include "aura/graphics/image/image.h"
-#include "acme/graphics/image/pixmap.h"
 #include "bred/gpu/context_lock.h"
 #include "vk_init.h"
 #include "gpu/_ktx.h"
@@ -650,19 +650,19 @@ namespace gpu_vulkan
    void texture::_set_data(const ::gpu::texture_data &data)
    {
 
-      if (data.is_image_array())
+      if (data.is_pixmap_array())
       {
       
          if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
          {
       
-            _LoadCubeMap(data.imagea());
+            _LoadCubeMap(data.pixmapa());
 
          }
          else
          {
 
-            auto pimage = data.imagea().first();
+            auto pimage = data.pixmapa().first();
 
             _set_image_data(pimage->data(), pimage->width(), pimage->height(), 4, 8, false);
 
@@ -912,18 +912,18 @@ namespace gpu_vulkan
 
 
 
-   void texture::_LoadCubeMap(const ::pointer_array<::image::image> &imagea)
+   void texture::_LoadCubeMap(const ::pointer_array<::pixmap> &pixmapa)
    {
 
-      defer_throw_if_cube_map_images_are_not_ok(imagea);
+      defer_throw_if_cube_map_pixmaps_are_not_ok(pixmapa);
 
       ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
       ::cast<device> pdevice = pcontext->m_pgpudevice;
 
-      auto w = imagea.first()->width();
+      auto w = pixmapa.first()->width();
 
-      auto h = imagea.first()->height();
+      auto h = pixmapa.first()->height();
 
       VkDeviceSize layerSize = w * h * 4;
 
@@ -933,7 +933,7 @@ namespace gpu_vulkan
          pcontext->create_buffer(totalSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-      pbufferStaging->_assign_cube_map(imagea);
+      pbufferStaging->_assign_cube_map(pixmapa);
 
       ::pointer<command_buffer> pcommandbuffer = pcontext->beginSingleTimeCommands(pdevice->m_pqueueTransfer);
 
@@ -4412,16 +4412,16 @@ void texture::create_sampler()
       else
       {
 
-         auto pimage = image()->get_image(pathImage);
+         auto ppixmap = image()->get_pixmap(pathImage);
 
-         if (::is_ok(pimage))
+         if (::is_ok(ppixmap))
          {
 
-            ::pointer_array<::image::image> imagea;
+            ::pointer_array<::pixmap> pixmapa;
 
-            imagea.add(pimage);
+            pixmapa.add(ppixmap);
 
-            initialize_texture_from_image(m_pgpucontext, imagea);
+            initialize_texture_from_pixmap(m_pgpucontext, pixmapa);
 
          }
 

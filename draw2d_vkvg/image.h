@@ -51,7 +51,7 @@ namespace draw2d_vkvg
 
       void destroy() override;
 
-      bool host(::pixmap * ppixmap, ::windowing::window * pwindow) override;
+      bool host(::pixmap_t * ppixmap, ::windowing::window * pwindow) override;
 
       bool from(::draw2d::graphics * pgraphics);
       //bool from(i32_point ptDest, ::draw2d::graphics * pgraphics, const ::i32_point & point, ::i32_size sz);
@@ -61,7 +61,7 @@ namespace draw2d_vkvg
 
       //void SetIconMask(::image::icon * picon, int cx, int cy);
 
-      bool on_host_read_pixels(::pixmap* ppixmap) const override;
+      bool on_host_read_pixels(::pixmap_t* ppixmap) const override;
 
       //bool color_blend(color32_t color32, unsigned char bAlpha);
       //bool Blend(imagepimage, ::image::image *pimageA, int A);

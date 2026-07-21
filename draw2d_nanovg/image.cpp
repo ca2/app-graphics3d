@@ -1,6 +1,8 @@
 #include "framework.h"
 #include "image.h"
 #include "acme/platform/application.h"
+#include "apex/gpu/approach.h"
+#include "bred/gpu/context_lock.h"
 #include "bred/gpu/texture.h"
 
 
@@ -51,11 +53,51 @@ namespace draw2d_nanovg
    }
 
 
+   void image::create_from_data(const ::i32_size & size, ::image32_t * pimage32, ::i32 iScan, ::enum_flag eflagCreate,
+                   bool bPreserve)
+   {
+
+      // if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
+      if (m_pgputexture && m_pgputexture->size() == size)
+      {
+
+         return;
+      }
+
+      destroy();
+
+      if (size.is_empty())
+      {
+
+         return;
+
+      }
+
+      auto pacmewindowingwindow = m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+
+      auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+
+      _synchronous_lock synchronouslock(pgpudevice->synchronization());
+
+      ::gpu::context_lock contextlock(pgpudevice->m_pgpucontextMain);
+
+      initialize_gpu_image(pgpudevice->m_pgpucontextMain, size);
+
+      m_eflagElement = eflagCreate;
+      m_estatus = ::success;
+      set_ok_flag();
+
+      m_pgputexture->write_pixels(size, pimage32, iScan);
+
+   }
+
+
 
    void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int, bool)
    {
 
-      if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
+      //if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
+      if (m_pgputexture && m_pgputexture->size() == size)
       {
 
          return;
@@ -71,23 +113,13 @@ namespace draw2d_nanovg
 
       }
 
-      constructø(m_pgraphics);
-      m_pgraphics->m_pimage = this;
-      m_pgraphics->create_memory_graphics(size);
+      auto pacmewindowingwindow = m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
-      ::cast < ::draw2d_nanovg::graphics > pgraphics = m_pgraphics;
+      auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
 
-      if (!pgraphics || !pgraphics->gpu_context())
-      {
+      _synchronous_lock synchronouslock(pgpudevice->synchronization());
 
-         destroy();
-         throw ::exception(
-            error_wrong_state,
-            "NanoVG GPU image has no OpenGL graphics context.");
-
-      }
-
-      initialize_gpu_image(pgraphics->gpu_context(), size);
+      initialize_gpu_image(pgpudevice->m_pgpucontextMain, size);
 
       m_eflagElement = eobjectCreate;
       m_estatus = ::success;
@@ -96,7 +128,7 @@ namespace draw2d_nanovg
    }
 
 
-   bool image::host(::pixmap * ppixmap, ::windowing::window * pwindow)
+   bool image::host(::pixmap_t * ppixmap, ::windowing::window * pwindow)
    {
 
       if (::is_null(ppixmap) || ppixmap->nok())
@@ -2373,6 +2405,24 @@ namespace draw2d_nanovg
    ::draw2d::graphics * image::_get_graphics() const
    {
 
+      if (!m_pgraphics)
+      {
+
+         ((::image::image *)this)->constructø(((::image::image*)this)->m_pgraphics);
+         m_pgraphics->m_pimage = (::image::image*)this;
+         m_pgraphics->create_memory_graphics(m_size);
+
+         ::cast<::draw2d_nanovg::graphics> pgraphics = m_pgraphics;
+
+         if (!pgraphics || !pgraphics->gpu_context())
+         {
+
+            ((::image::image*)this)->destroy();
+            throw ::exception(error_wrong_state, "NanoVG GPU image has no OpenGL graphics context.");
+         }
+
+      }
+
       return m_pgraphics;
 
    }
@@ -2684,7 +2734,7 @@ namespace draw2d_nanovg
    }
 
 
-   bool image::on_host_read_pixels(::pixmap* ppixmap) const
+   bool image::on_host_read_pixels(::pixmap_t * ppixmap) const
    {
 
       return false;

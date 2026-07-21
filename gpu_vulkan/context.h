@@ -77,7 +77,7 @@ namespace gpu_vulkan
       void start_debug_happening(::gpu::command_buffer * pgpucommandbuffer, const ::scoped_string& scopedstr) override;
       
       
-      void on_cube_map_face_image(::image::image *pimage) override;
+      void on_cube_map_face_pixmap(::pixmap *ppixmap) override;
 
 
       void on_start_layer(::gpu::layer * pgpulayer) override;

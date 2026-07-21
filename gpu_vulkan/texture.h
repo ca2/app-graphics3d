@@ -379,7 +379,7 @@ namespace gpu_vulkan
 
 
       // VkFramebuffer create_framebuffer(VkRenderPass renderpass);
-      void _LoadCubeMap(const ::pointer_array < ::image::image >& imagea);
+      void _LoadCubeMap(const ::pointer_array < ::pixmap >& pixmapa);
 
 
       virtual texture_synchronization * synchronization();

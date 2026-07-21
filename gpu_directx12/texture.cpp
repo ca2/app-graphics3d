@@ -194,7 +194,7 @@ namespace gpu_directx12
 
       //m_state = stateInitial;
 
-      if (texturedata.is_image_array())
+      if (texturedata.is_pixmap_array())
       {
 
          //int iCount;
@@ -203,7 +203,7 @@ namespace gpu_directx12
          if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
          {
            // iCount = 6;
-            if (texturedata.imagea().first()->size() != this->size())
+            if (texturedata.pixmapa().first()->size() != this->size())
             {
 
                throw ::exception(error_failed);
@@ -214,7 +214,7 @@ namespace gpu_directx12
          else
          {
             //iCount = 1;
-            if (texturedata.imagea().first()->size() != this->size())
+            if (texturedata.pixmapa().first()->size() != this->size())
             {
 
                throw ::exception(error_failed);
@@ -1504,22 +1504,22 @@ namespace gpu_directx12
             // 3. Prepare subresources
       D3D12_SUBRESOURCE_DATA subresources[6];
 
-      if (texturedata.is_image_array())
+      if (texturedata.is_pixmap_array())
       {
          if (m_ptexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
          {
             for (int i = 0; i < 6; ++i)
             {
-               auto ppixmap = texturedata.imagea()[i];
+               auto ppixmap = texturedata.pixmapa()[i];
                subresources[i].pData = ppixmap->data(); // Your CPU data pointer
                subresources[i].RowPitch = ppixmap->m_iScan; // 512 * 4
                subresources[i].SlicePitch = m_ptexture->m_resourcedesc.Width * m_ptexture->m_resourcedesc.Height * 4;
                // subresources[i].SlicePitch = 0;
             }
          }
-         else if (texturedata.imagea().size() == 1)
+         else if (texturedata.pixmapa().size() == 1)
          {
-            auto ppixmap = texturedata.imagea().first();
+            auto ppixmap = texturedata.pixmapa().first();
             subresources[0].pData = ppixmap->data(); // pointer to your bitmap data (RGBA8, etc.)
             subresources[0].RowPitch = ppixmap->m_iScan;
             subresources[0].SlicePitch = subresources[0].RowPitch * ppixmap->height();

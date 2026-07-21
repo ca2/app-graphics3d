@@ -5941,7 +5941,7 @@ void context::_001EndRenderPass(::gpu::command_buffer *pgpucommandbuffer)
 }
 
 
-void context::on_cube_map_face_image(::image::image * pimage)
+void context::on_cube_map_face_pixmap(::pixmap * ppixmap)
 {
 
    //pimage->rotate(180_degrees);

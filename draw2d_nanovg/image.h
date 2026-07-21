@@ -44,13 +44,15 @@ namespace draw2d_nanovg
 
       using ::image::image::create;
 
-      virtual void create(const ::i32_size& size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1, bool bPreserve = false) override;
+      void create_from_data(const ::i32_size &size, ::image32_t *pimage32, ::i32 iScan, ::enum_flag eflagCreate,
+                                   bool bPreserve) override;
+      void create(const ::i32_size& size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1, bool bPreserve = false) override;
 
       virtual void create(::draw2d::graphics* pgraphics);
 
       void destroy() override;
 
-      bool host(::pixmap * ppixmap, ::windowing::window * pwindow) override;
+      bool host(::pixmap_t * ppixmap, ::windowing::window * pwindow) override;
 
       bool from(::draw2d::graphics * pgraphics);
       //bool from(i32_point ptDest, ::draw2d::graphics * pgraphics, const ::i32_point & point, ::i32_size sz);
@@ -60,7 +62,7 @@ namespace draw2d_nanovg
 
       //void SetIconMask(::image::icon * picon, int cx, int cy);
 
-      bool on_host_read_pixels(::pixmap* ppixmap) const override;
+      bool on_host_read_pixels(::pixmap_t * ppixmap) const override;
 
       //bool color_blend(color32_t color32, unsigned char bAlpha);
       //bool Blend(imagepimage, ::image::image *pimageA, int A);

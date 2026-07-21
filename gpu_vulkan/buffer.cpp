@@ -264,20 +264,20 @@ namespace gpu_vulkan
 
 
 
-   void buffer::assign_cube_map(const ::pointer_array < ::image::image >& imagea)
+   void buffer::assign_cube_map(const ::pointer_array < ::pixmap >& pixmapa)
    {
 
       defer_stage([&](buffer* pbuffer)
          {
             
-            pbuffer->_assign_cube_map(imagea);
+            pbuffer->_assign_cube_map(pixmapa);
 
          });
 
    }
 
 
-   void buffer::_assign_cube_map(const ::pointer_array < ::image::image >& imageaSource)
+   void buffer::_assign_cube_map(const ::pointer_array < ::pixmap >& pixmapaSource)
    {
       
       ::cast < context > pcontext = m_pgpucontext;
@@ -288,7 +288,7 @@ namespace gpu_vulkan
       
       vkMapMemory(pcontext->logicalDevice(), m_vkdevicememory, 0, m_size, 0, &data);
       
-      auto pimageFirst = imageaSource.first();
+      auto pimageFirst = pixmapaSource.first();
 
       auto w = pimageFirst->width();
 
@@ -301,7 +301,7 @@ namespace gpu_vulkan
       for (int face = 0; face < 6; face++)
       {
 
-         auto pimage = imageaSource[face];
+         auto pimage = pixmapaSource[face];
 
          psourcefaces[face] = pimage->image32();
 
