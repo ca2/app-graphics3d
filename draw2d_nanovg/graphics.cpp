@@ -278,28 +278,6 @@ namespace draw2d_nanovg
 
       m_puserinteractionDraw2dGraphics = puserinteraction;
 
-      if (m_pdc)
-      {
-
-         auto pgpucontextOld = gpu_context();
-
-         if (!pgpucontextOld)
-         {
-
-            throw ::exception(
-               error_wrong_state,
-               "NanoVG context has no owning OpenGL GPU context.");
-
-         }
-
-         ::gpu::context_lock contextlockOld(pgpucontextOld);
-
-         auto pdcOld = m_pdc;
-         m_pdc = nullptr;
-         nvgDeleteGL3(pdcOld);
-
-      }
-
       auto pgpuapproach = application()->get_gpu_approach();
       auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
 
@@ -312,9 +290,18 @@ namespace draw2d_nanovg
 
       }
 
-      auto pgpucontextNew = pgpudevice->create_draw2d_context(
-         ::gpu::e_output_gpu_buffer,
-         size);
+      if (!context_lease())
+      {
+
+         auto contextlease = pgpudevice->acquire_draw2d_context(
+            ::gpu::e_output_gpu_buffer,
+            size);
+
+         set_context_lease(::transfer(contextlease));
+
+      }
+
+      auto pgpucontextNew = gpu_context();
 
       if (!pgpucontextNew)
       {
@@ -325,7 +312,6 @@ namespace draw2d_nanovg
 
       }
 
-      set_gpu_context(pgpucontextNew);
       pgpucontextNew->m_pgpucompositor = this;
 
       m_sizeScaleOutput = { 1.0, -1.0 };
@@ -340,16 +326,150 @@ namespace draw2d_nanovg
          pgpucontextNew->get_gpu_renderer();
          ::opengl::resize(size, false);
 
-         m_pdc = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
-
          if (!m_pdc)
          {
 
-            throw ::exception(
-               error_failed,
-               "nvgCreateGL3 failed for NanoVG memory graphics.");
+            m_pdc = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+
+            if (!m_pdc)
+            {
+
+               throw ::exception(
+                  error_failed,
+                  "nvgCreateGL3 failed for NanoVG memory graphics.");
+
+            }
 
          }
+
+      }
+
+   }
+
+
+   void graphics::on_acquire_memory_graphics(
+      ::image::image * pimage,
+      const ::i32_size & size)
+   {
+
+      auto pgpucontext = gpu_context();
+
+      if (!pgpucontext || !m_pdc)
+      {
+
+         context_lease().mark_damaged();
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG memory graphics has no warm GPU context.");
+
+      }
+
+      try
+      {
+
+         pgpucontext->send(
+            [this, pgpucontext, pimage, size]()
+            {
+
+               ::gpu::graphics::on_acquire_memory_graphics(pimage, size);
+
+               m_egraphics = ::e_graphics_draw;
+               m_sizeScaleOutput = { 1.0, -1.0 };
+               m_pointTranslateOutput = { 0.0, (double)size.cy };
+               m_size = size;
+               m_sizeWindow = size;
+
+               ::gpu::context_lock contextlock(pgpucontext);
+
+               pgpucontext->m_pgpucompositor = this;
+               pgpucontext->on_resize(size);
+               ::opengl::resize(size, false);
+
+               start_frame();
+               m_bMemoryGraphicsLeaseFrameOpen = true;
+
+               start_layer(true);
+               m_bMemoryGraphicsLeaseLayerOpen = true;
+
+            });
+
+      }
+      catch (...)
+      {
+
+         context_lease().mark_damaged();
+
+         throw;
+
+      }
+
+   }
+
+
+   void graphics::on_release_memory_graphics()
+   {
+
+      auto pgpucontext = gpu_context();
+
+      if (!pgpucontext)
+      {
+
+         context_lease().mark_damaged();
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG memory graphics lost its GPU context.");
+
+      }
+
+      try
+      {
+
+         pgpucontext->send(
+            [this]()
+            {
+
+               if (m_bMemoryGraphicsLeaseLayerOpen)
+               {
+
+                  end_layer(true);
+                  m_bMemoryGraphicsLeaseLayerOpen = false;
+
+               }
+
+               if (m_bMemoryGraphicsLeaseFrameOpen)
+               {
+
+                  end_frame();
+                  m_bMemoryGraphicsLeaseFrameOpen = false;
+
+               }
+
+               glFlush();
+               ::opengl::check_error("");
+
+               auto pgpuimage = dynamic_cast<::gpu::image *>(m_pimage);
+
+               if (pgpuimage && pgpuimage->gpu_texture())
+               {
+
+                  pgpuimage->gpu_texture()->defer_fence();
+
+               }
+
+               ::gpu::graphics::on_release_memory_graphics();
+               m_pimage = nullptr;
+
+            });
+
+      }
+      catch (...)
+      {
+
+         context_lease().mark_damaged();
+
+         throw;
 
       }
 

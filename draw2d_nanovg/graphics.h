@@ -38,6 +38,8 @@ namespace draw2d_nanovg
    public:
 
       bool                             m_bHadEndLayer;
+      bool                             m_bMemoryGraphicsLeaseFrameOpen = false;
+      bool                             m_bMemoryGraphicsLeaseLayerOpen = false;
       //VkvgDevice                       m_nanovgdevice;
       //VkvgSurface                      m_nanovgsurface;
       NVGcontext *                     m_pdc = nullptr;
@@ -175,6 +177,10 @@ namespace draw2d_nanovg
                     const char * lpszOutput, const void * lpInitData);
       void create_memory_graphics(const ::i32_size & size = {}) override;
       void _create_memory_graphics(const ::i32_size & size) override;
+      void on_acquire_memory_graphics(
+         ::image::image * pimage,
+         const ::i32_size & size) override;
+      void on_release_memory_graphics() override;
       void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
       void create_compatible_graphics(::draw2d::graphics * pgraphics) override;

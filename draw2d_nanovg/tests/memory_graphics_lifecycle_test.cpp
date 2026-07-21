@@ -72,11 +72,12 @@ int main()
       "void graphics::create_window_graphics(");
 
    const auto deleteOldNanoVg = backendCreation.find("nvgDeleteGL3(pdcOld);");
+   const auto acquireGpuContext = backendCreation.find("acquire_draw2d_context(");
    const auto createGpuContext = backendCreation.find("create_draw2d_context(");
    const auto gpuBufferOutput = backendCreation.find(
-      "::gpu::e_output_gpu_buffer", createGpuContext);
+      "::gpu::e_output_gpu_buffer", acquireGpuContext);
    const auto assignContext = backendCreation.find(
-      "set_gpu_context(pgpucontextNew);", createGpuContext);
+      "set_context_lease(::transfer(contextlease));", acquireGpuContext);
    const auto assignCompositor = backendCreation.find(
       "pgpucontextNew->m_pgpucompositor = this;", assignContext);
    const auto ensureRenderer = backendCreation.find(
@@ -85,19 +86,20 @@ int main()
       "nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG)",
       ensureRenderer);
 
-   assert(deleteOldNanoVg != std::string::npos);
-   assert(createGpuContext != std::string::npos);
+   assert(deleteOldNanoVg == std::string::npos);
+   assert(acquireGpuContext != std::string::npos);
+   assert(createGpuContext == std::string::npos);
    assert(gpuBufferOutput != std::string::npos);
    assert(assignContext != std::string::npos);
    assert(assignCompositor != std::string::npos);
    assert(ensureRenderer != std::string::npos);
    assert(createNanoVg != std::string::npos);
-   assert(deleteOldNanoVg < createGpuContext);
-   assert(createGpuContext < gpuBufferOutput);
+   assert(acquireGpuContext < gpuBufferOutput);
    assert(gpuBufferOutput < assignContext);
    assert(assignContext < assignCompositor);
    assert(assignCompositor < ensureRenderer);
    assert(ensureRenderer < createNanoVg);
+   assert(backendCreation.find("if (!m_pdc)", ensureRenderer) < createNanoVg);
    assert(backendCreation.find("m_sizeScaleOutput = { 1.0, -1.0 };") !=
       std::string::npos);
    assert(backendCreation.find(

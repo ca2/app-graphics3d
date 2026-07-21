@@ -59,9 +59,8 @@ int main()
       "bool image::host(");
    const auto createGraphics = create.find("create_memory_graphics(size);");
    const auto initializeGpuImage = create.find("initialize_gpu_image(");
-   assert(createGraphics != std::string::npos);
+   assert(createGraphics == std::string::npos);
    assert(initializeGpuImage != std::string::npos);
-   assert(createGraphics < initializeGpuImage);
    assert(create.find("create_bitmap") == std::string::npos);
    assert(create.find("::pixmap::initialize") == std::string::npos);
 
