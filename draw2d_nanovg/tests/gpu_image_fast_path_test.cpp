@@ -77,14 +77,20 @@ int main()
    assert(gpuPath.find("dynamic_cast < ::gpu_opengl::texture * >") !=
       std::string::npos);
    assert(gpuPath.find("wait_fence();") != std::string::npos);
-   assert(gpuPath.find("nvglCreateImageFromHandleGL3(") !=
+   assert(gpuPath.find("acquire_nanovg_gpu_image_wrapper(") !=
       std::string::npos);
-   assert(gpuPath.find("NVG_IMAGE_NODELETE") != std::string::npos);
-   assert(gpuPath.find("NVG_IMAGE_PREMULTIPLIED") != std::string::npos);
-   assert(gpuPath.find("NVG_IMAGE_FLIPY") != std::string::npos);
-   assert(gpuPath.find("nvgDeleteImage(m_pdc, iImage);") !=
+   assert(gpuPath.find("NVG_IMAGE_NODELETE") == std::string::npos);
+   assert(gpuPath.find("nvgDeleteImage(m_pdc, iImage);") ==
       std::string::npos);
    assert(gpuPath.find("->map(") == std::string::npos);
+   const auto wrapperAcquire = section(
+      source,
+      "int graphics::acquire_nanovg_gpu_image_wrapper(",
+      "bool graphics::_draw_gpu_image(");
+   assert(wrapperAcquire.find("NVG_IMAGE_NODELETE") != std::string::npos);
+   assert(wrapperAcquire.find("NVG_IMAGE_PREMULTIPLIED") !=
+      std::string::npos);
+   assert(wrapperAcquire.find("NVG_IMAGE_FLIPY") != std::string::npos);
    assert(textureHeader.find("bool has_pending_fence() const;") !=
       std::string::npos);
    assert(textureSource.find(

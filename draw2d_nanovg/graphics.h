@@ -74,12 +74,18 @@ namespace draw2d_nanovg
       ::std::vector < nanovg_gpu_image_wrapper_cache_entry >
          m_nanovgGpuImageWrapperCache;
       ::u64 m_uNanovgGpuImageWrapperFrameSerial = 0;
+      static constexpr ::u64 s_uNanovgGpuImageWrapperStaleFrames = 120;
+      static constexpr ::std::size_t
+         s_zNanovgGpuImageWrapperPreferredMaximum = 512;
       ::std::atomic_bool m_bPerformanceDiagnosticsEnabledLast{false};
       ::std::atomic<::u64> m_uPerformanceDiagnosticsGenerationLast{0};
       ::std::atomic<::u64> m_uPerformanceGpuImageDraws{0};
       ::std::atomic<::u64> m_uPerformanceCpuFallbackDraws{0};
       ::std::atomic<::u64> m_uPerformanceWrapperCreations{0};
       ::std::atomic<::u64> m_uPerformanceWrapperDeletions{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperCacheHits{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperCacheMisses{0};
+      ::std::atomic<::u64> m_uPerformanceWrapperEvictions{0};
       ::std::atomic<::u64> m_uPerformancePendingFenceWaits{0};
       ::std::atomic<::u64> m_uPerformanceFenceWaitMicroseconds{0};
       ::std::atomic<::u64> m_uPerformanceWrapperMicroseconds{0};

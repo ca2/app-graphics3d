@@ -334,6 +334,7 @@ namespace draw2d_nanovg
          if (!m_pdc)
          {
 
+            clear_nanovg_gpu_image_wrapper_cache();
             m_pdc = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
 
             if (!m_pdc)
@@ -519,6 +520,7 @@ namespace draw2d_nanovg
          nvgDeleteGL3(m_pdc);
 
          m_pdc = nullptr;
+         clear_nanovg_gpu_image_wrapper_cache();
 
       }
 
@@ -5920,6 +5922,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          }
 
+         clear_nanovg_gpu_image_wrapper_cache();
+
       }
 
 
@@ -8344,6 +8348,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       m_uPerformanceCpuFallbackDraws.store(0, ::std::memory_order_relaxed);
       m_uPerformanceWrapperCreations.store(0, ::std::memory_order_relaxed);
       m_uPerformanceWrapperDeletions.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperCacheHits.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperCacheMisses.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceWrapperEvictions.store(0, ::std::memory_order_relaxed);
       m_uPerformancePendingFenceWaits.store(0, ::std::memory_order_relaxed);
       m_uPerformanceFenceWaitMicroseconds.store(0, ::std::memory_order_relaxed);
       m_uPerformanceWrapperMicroseconds.store(0, ::std::memory_order_relaxed);
@@ -8655,6 +8662,17 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          m_uPerformanceWrapperCreations.fetch_add(
             1,
             ::std::memory_order_relaxed);
+         m_uPerformanceWrapperCacheMisses.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+
+      }
+      else
+      {
+
+         m_uPerformanceWrapperCacheHits.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
 
       }
 
@@ -8765,6 +8783,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       auto uWrapperDeletions = m_uPerformanceWrapperDeletions.exchange(
          0,
          ::std::memory_order_relaxed);
+      auto uWrapperCacheHits = m_uPerformanceWrapperCacheHits.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperCacheMisses = m_uPerformanceWrapperCacheMisses.exchange(
+         0,
+         ::std::memory_order_relaxed);
+      auto uWrapperEvictions = m_uPerformanceWrapperEvictions.exchange(
+         0,
+         ::std::memory_order_relaxed);
       auto uPendingFenceWaits = m_uPerformancePendingFenceWaits.exchange(
          0,
          ::std::memory_order_relaxed);
@@ -8779,6 +8806,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          << " cpu_fallbacks=" << uCpuFallbacks
          << " wrapper_creates=" << uWrapperCreations
          << " wrapper_deletes=" << uWrapperDeletions
+         << " wrapper_cache_hits=" << uWrapperCacheHits
+         << " wrapper_cache_misses=" << uWrapperCacheMisses
+         << " wrapper_evictions=" << uWrapperEvictions
+         << " wrapper_cached=" << m_nanovgGpuImageWrapperCache.size()
          << " pending_fence_waits=" << uPendingFenceWaits
          << " fence_wait_us=" << uFenceWaitMicroseconds
          << " wrapper_us=" << uWrapperMicroseconds;
@@ -8839,6 +8870,105 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       bCreatedWrapper = true;
 
       return iImage;
+
+   }
+
+
+   void graphics::maintain_nanovg_gpu_image_wrapper_cache()
+   {
+
+      auto deleteEntry = [this](nanovg_gpu_image_wrapper_cache_entry & entry)
+      {
+
+         nvgDeleteImage(m_pdc, entry.m_iNanovgImage);
+         m_uPerformanceWrapperDeletions.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+         m_uPerformanceWrapperEvictions.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+
+      };
+
+      for (auto iterator = m_nanovgGpuImageWrapperCache.begin();
+           iterator != m_nanovgGpuImageWrapperCache.end();)
+      {
+
+         auto & entry = *iterator;
+         auto bUsedThisFrame =
+            entry.m_uLastUsedFrame == m_uNanovgGpuImageWrapperFrameSerial;
+         auto uUnusedFrames = m_uNanovgGpuImageWrapperFrameSerial
+            >= entry.m_uLastUsedFrame
+            ? m_uNanovgGpuImageWrapperFrameSerial - entry.m_uLastUsedFrame
+            : 0;
+
+         if (!bUsedThisFrame
+            && uUnusedFrames >= s_uNanovgGpuImageWrapperStaleFrames)
+         {
+
+            deleteEntry(entry);
+            iterator = m_nanovgGpuImageWrapperCache.erase(iterator);
+
+         }
+         else
+         {
+
+            ++iterator;
+
+         }
+
+      }
+
+      while (m_nanovgGpuImageWrapperCache.size()
+         > s_zNanovgGpuImageWrapperPreferredMaximum)
+      {
+
+         auto iteratorOldest = m_nanovgGpuImageWrapperCache.end();
+
+         for (auto iterator = m_nanovgGpuImageWrapperCache.begin();
+              iterator != m_nanovgGpuImageWrapperCache.end();
+              ++iterator)
+         {
+
+            if (iterator->m_uLastUsedFrame
+               == m_uNanovgGpuImageWrapperFrameSerial)
+            {
+
+               continue;
+
+            }
+
+            if (iteratorOldest == m_nanovgGpuImageWrapperCache.end()
+               || iterator->m_uLastUsedFrame
+                  < iteratorOldest->m_uLastUsedFrame)
+            {
+
+               iteratorOldest = iterator;
+
+            }
+
+         }
+
+         if (iteratorOldest == m_nanovgGpuImageWrapperCache.end())
+         {
+
+            break;
+
+         }
+
+         deleteEntry(*iteratorOldest);
+         m_nanovgGpuImageWrapperCache.erase(iteratorOldest);
+
+      }
+
+   }
+
+
+   void graphics::clear_nanovg_gpu_image_wrapper_cache()
+   {
+
+      m_nanovgGpuImageWrapperCache.clear();
+      m_uNanovgGpuImageWrapperFrameSerial = 0;
 
    }
 
@@ -9603,6 +9733,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          ptextureDiagnostic,
          iDrawFramebufferBefore);
       nvgEndFrame(m_pdc);
+
+      {
+
+         _synchronous_lock synchronouslock(::draw2d_nanovg::mutex());
+         maintain_nanovg_gpu_image_wrapper_cache();
+
+      }
+
+      ++m_uNanovgGpuImageWrapperFrameSerial;
 
       if (pgpuimage && pgpuimage->gpu_texture())
       {

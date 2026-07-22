@@ -145,13 +145,13 @@ int main()
    const auto gpuPath = source.find("bool graphics::_draw_gpu_image(");
    const auto diagnoseSample = source.find(
       "diagnose_sampled_gpu_image(", gpuPath);
-   const auto wrapper = source.find(
-      "nvglCreateImageFromHandleGL3(", diagnoseSample);
+   const auto wrapperAcquisition = source.find(
+      "acquire_nanovg_gpu_image_wrapper(", diagnoseSample);
    assert(gpuPath != std::string::npos);
    assert(diagnoseSample != std::string::npos);
-   assert(wrapper != std::string::npos);
+   assert(wrapperAcquisition != std::string::npos);
    assert(gpuPath < diagnoseSample);
-   assert(diagnoseSample < wrapper);
+   assert(diagnoseSample < wrapperAcquisition);
 
    return 0;
 
