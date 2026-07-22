@@ -67,6 +67,8 @@ namespace draw2d_nanovg
       ::std::atomic<::u64> m_uPerformancePendingFenceWaits{0};
       ::std::atomic<::u64> m_uPerformanceFenceWaitMicroseconds{0};
       ::std::atomic<::u64> m_uPerformanceWrapperMicroseconds{0};
+      ::std::atomic<::u64> m_uPerformanceRenderedTextureDiagnostics{0};
+      ::std::atomic<::u64> m_uPerformanceSampledTextureDiagnostics{0};
       ::std::atomic<::i64> m_iPerformanceNextReportNanoseconds{0};
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       //::pointer<::gpu::context>             m_pgpucontextOutput;
@@ -143,6 +145,10 @@ namespace draw2d_nanovg
          ::u64 uWrapperMicroseconds);
       void record_gpu_image_cpu_fallback();
       void report_gpu_image_performance_diagnostics_if_due();
+      void diagnose_rendered_gpu_image(::gpu_opengl::texture * pgputexture);
+      void diagnose_sampled_gpu_image(
+         ::gpu_opengl::texture * pgputexture,
+         const ::f64_rectangle & rectangleTarget);
 
       virtual void _draw_nanovg_image(
          int iImage,

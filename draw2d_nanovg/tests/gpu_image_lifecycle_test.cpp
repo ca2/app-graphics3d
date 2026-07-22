@@ -101,12 +101,43 @@ int main()
    assert(imageCast < imageTexture);
    assert(imageTexture < fallback);
 
-   const auto endLayer = section(
+   const auto onEndLayer = section(
       graphicsSource,
       "void graphics::on_end_layer(",
       "void graphics::start_layer(");
-   assert(endLayer.find("gpu_texture()") != std::string::npos);
-   assert(endLayer.find("defer_fence();") != std::string::npos);
+   const auto resolveTarget = onEndLayer.find(
+      "current_target_texture(pgpulayer)");
+   const auto requireTarget = onEndLayer.find(
+      "if (!pgputextureTarget)", resolveTarget);
+   const auto bindTarget = onEndLayer.find(
+      "pgputextureTarget->bind_render_target();", requireTarget);
+   const auto endFrame = onEndLayer.find(
+      "nvgEndFrame(m_pdc);", bindTarget);
+   const auto diagnoseRender = onEndLayer.find(
+      "diagnose_rendered_gpu_image(", endFrame);
+   const auto imageFence = onEndLayer.find(
+      "defer_fence();", endFrame);
+   assert(resolveTarget != std::string::npos);
+   assert(requireTarget != std::string::npos);
+   assert(bindTarget != std::string::npos);
+   assert(endFrame != std::string::npos);
+   assert(diagnoseRender != std::string::npos);
+   assert(imageFence != std::string::npos);
+   assert(resolveTarget < requireTarget);
+   assert(requireTarget < bindTarget);
+   assert(bindTarget < endFrame);
+   assert(endFrame < diagnoseRender);
+   assert(endFrame < imageFence);
+
+   const auto publicEndLayer = section(
+      graphicsSource,
+      "void graphics::end_layer(bool bClosingLayer)",
+      "void graphics::on_present()");
+   assert(publicEndLayer.find("nvgEndFrame(m_pdc);") == std::string::npos);
+   assert(publicEndLayer.find("diagnose_rendered_gpu_image(") ==
+      std::string::npos);
+   assert(publicEndLayer.find(
+      "::gpu::graphics::end_layer(bClosingLayer);") != std::string::npos);
 
    return 0;
 

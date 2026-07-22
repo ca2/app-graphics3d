@@ -14,6 +14,7 @@
 //
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/parallelization/task.h"
+#include "acme/graphics/image/pixmap.h"
 #include "acme/platform/application.h"
 #include "acme/platform/node.h"
 #include "acme/prototype/geometry2d/_text_stream.h"
@@ -8342,6 +8343,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       m_uPerformancePendingFenceWaits.store(0, ::std::memory_order_relaxed);
       m_uPerformanceFenceWaitMicroseconds.store(0, ::std::memory_order_relaxed);
       m_uPerformanceWrapperMicroseconds.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceRenderedTextureDiagnostics.store(0, ::std::memory_order_relaxed);
+      m_uPerformanceSampledTextureDiagnostics.store(0, ::std::memory_order_relaxed);
       m_iPerformanceNextReportNanoseconds.store(
          performance_steady_nanoseconds()
             + (::i64)iIntervalMilliseconds * 1'000'000,
@@ -8355,6 +8358,202 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
                ::std::memory_order_relaxed)
             : 0,
          ::std::memory_order_relaxed);
+
+   }
+
+
+   void graphics::diagnose_rendered_gpu_image(
+      ::gpu_opengl::texture * pgputexture)
+   {
+
+      if (!pgputexture || !m_papplication
+         || !m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed))
+      {
+
+         return;
+
+      }
+
+      auto uGeneration =
+         m_papplication->m_gpu.m_uPerformanceDiagnosticsGeneration.load(
+            ::std::memory_order_relaxed);
+
+      if (uGeneration != m_uPerformanceDiagnosticsGenerationLast.load(
+         ::std::memory_order_relaxed))
+      {
+
+         reset_gpu_image_performance_diagnostics();
+
+      }
+
+      auto uDiagnosticIndex =
+         m_uPerformanceRenderedTextureDiagnostics.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+
+      if (uDiagnosticIndex >= 8)
+      {
+
+         return;
+
+      }
+
+      auto sizeTexture = pgputexture->size();
+
+      if (sizeTexture.is_empty())
+      {
+
+         return;
+
+      }
+
+      ::memory memoryPixmap;
+      ::pixmap pixmap;
+
+      pixmap.pixmap_t::create(
+         memoryPixmap,
+         sizeTexture,
+         sizeTexture.cx * (int)sizeof(::image32_t));
+      pgputexture->read_pixels(&pixmap);
+
+      auto uPixelCount = (::u64)sizeTexture.cx * (::u64)sizeTexture.cy;
+      auto uTransparentPixels = (::u64)0;
+      auto uOpaquePixels = (::u64)0;
+      auto uPartialAlphaPixels = (::u64)0;
+      auto uNonzeroRgbPixels = (::u64)0;
+      auto uBlackOpaquePixels = (::u64)0;
+      auto uPremultipliedViolations = (::u64)0;
+      auto uAlphaMinimum = (::u32)255;
+      auto uAlphaMaximum = (::u32)0;
+      const auto colorindexes = pixmap.m_colorindexes;
+
+      for (auto y = 0; y < sizeTexture.cy; y++)
+      {
+
+         auto prow = (::image32_t *)((::u8 *)pixmap.m_pimage32Raw
+            + y * pixmap.m_iScan);
+
+         for (auto x = 0; x < sizeTexture.cx; x++)
+         {
+
+            auto & pixel = prow[x];
+            auto uRed = (::u32)pixel.u8_red(colorindexes);
+            auto uGreen = (::u32)pixel.u8_green(colorindexes);
+            auto uBlue = (::u32)pixel.u8_blue(colorindexes);
+            auto uAlpha = (::u32)pixel.u8_opacity(colorindexes);
+
+            uAlphaMinimum = minimum(uAlphaMinimum, uAlpha);
+            uAlphaMaximum = maximum(uAlphaMaximum, uAlpha);
+
+            if (uAlpha == 0)
+            {
+
+               uTransparentPixels++;
+
+            }
+            else if (uAlpha == 255)
+            {
+
+               uOpaquePixels++;
+
+            }
+            else
+            {
+
+               uPartialAlphaPixels++;
+
+            }
+
+            if (uRed || uGreen || uBlue)
+            {
+
+               uNonzeroRgbPixels++;
+
+            }
+            else if (uAlpha == 255)
+            {
+
+               uBlackOpaquePixels++;
+
+            }
+
+            if (uRed > uAlpha || uGreen > uAlpha || uBlue > uAlpha)
+            {
+
+               uPremultipliedViolations++;
+
+            }
+
+         }
+
+      }
+
+      information() << "[gpu.performance.nanovg_image_boundary] stage=render"
+         << " diagnostic=" << uDiagnosticIndex
+         << " texture=" << pgputexture->m_gluTextureID
+         << " fbo=" << pgputexture->frame_buffer_object()
+         << " size=" << sizeTexture.cx << "x" << sizeTexture.cy
+         << " pixels=" << uPixelCount
+         << " alpha_min=" << uAlphaMinimum
+         << " alpha_max=" << uAlphaMaximum
+         << " transparent=" << uTransparentPixels
+         << " opaque=" << uOpaquePixels
+         << " partial_alpha=" << uPartialAlphaPixels
+         << " nonzero_rgb=" << uNonzeroRgbPixels
+         << " black_opaque=" << uBlackOpaquePixels
+         << " premult_violations=" << uPremultipliedViolations;
+
+   }
+
+
+   void graphics::diagnose_sampled_gpu_image(
+      ::gpu_opengl::texture * pgputexture,
+      const ::f64_rectangle & rectangleTarget)
+   {
+
+      if (!pgputexture || !m_papplication
+         || !m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
+            ::std::memory_order_relaxed))
+      {
+
+         return;
+
+      }
+
+      auto uGeneration =
+         m_papplication->m_gpu.m_uPerformanceDiagnosticsGeneration.load(
+            ::std::memory_order_relaxed);
+
+      if (uGeneration != m_uPerformanceDiagnosticsGenerationLast.load(
+         ::std::memory_order_relaxed))
+      {
+
+         reset_gpu_image_performance_diagnostics();
+
+      }
+
+      auto uDiagnosticIndex =
+         m_uPerformanceSampledTextureDiagnostics.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+
+      if (uDiagnosticIndex >= 8)
+      {
+
+         return;
+
+      }
+
+      auto sizeTexture = pgputexture->size();
+
+      information() << "[gpu.performance.nanovg_image_boundary] stage=sample"
+         << " diagnostic=" << uDiagnosticIndex
+         << " texture=" << pgputexture->m_gluTextureID
+         << " size=" << sizeTexture.cx << "x" << sizeTexture.cy
+         << " target=" << rectangleTarget.left << "," << rectangleTarget.top
+         << "," << rectangleTarget.right << "," << rectangleTarget.bottom
+         << " same_context=" << (pgputexture->context() == gpu_context());
 
    }
 
@@ -8584,6 +8783,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          pgputexture->wait_fence();
 
       }
+
+      diagnose_sampled_gpu_image(pgputexture, rectangleTarget);
 
       _synchronous_lock synchronouslock(::draw2d_nanovg::mutex());
 
@@ -9238,6 +9439,21 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::on_end_layer(::gpu::layer* pgpulayer)
    {
 
+      auto pgpucontext = gpu_context();
+      auto pgputextureTarget = pgpucontext
+         ? pgpucontext->current_target_texture(pgpulayer)
+         : nullptr;
+
+      if (!pgputextureTarget)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG has no current GPU target at the end-frame flush boundary.");
+
+      }
+
+      pgputextureTarget->bind_render_target();
       nvgEndFrame(m_pdc);
 
       auto pgpuimage = dynamic_cast < ::gpu::image * >(m_pimage);
@@ -9245,6 +9461,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (pgpuimage && pgpuimage->gpu_texture())
       {
 
+         ::cast < ::gpu_opengl::texture > ptextureDiagnostic =
+            pgputextureTarget;
+
+         diagnose_rendered_gpu_image(ptextureDiagnostic);
          pgpuimage->gpu_texture()->defer_fence();
 
       }
@@ -9593,13 +9813,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          //   //m_pgpucontextOutput->create_window_buffer(pwindow);
 
          //}
-
-         if (!m_bHadEndLayer)
-         {
-
-            nvgEndFrame(m_pdc);
-
-         }
 
          {
 
