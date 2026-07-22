@@ -386,12 +386,6 @@ namespace draw2d_nanovg
                pgpucontext->on_resize(size);
                ::opengl::resize(size, false);
 
-               start_frame();
-               m_bMemoryGraphicsLeaseFrameOpen = true;
-
-               start_layer(true);
-               m_bMemoryGraphicsLeaseLayerOpen = true;
-
             });
 
       }
@@ -427,24 +421,10 @@ namespace draw2d_nanovg
       {
 
          pgpucontext->send(
-            [this]()
+            [this, pgpucontext]()
             {
 
-               if (m_bMemoryGraphicsLeaseLayerOpen)
-               {
-
-                  end_layer(true);
-                  m_bMemoryGraphicsLeaseLayerOpen = false;
-
-               }
-
-               if (m_bMemoryGraphicsLeaseFrameOpen)
-               {
-
-                  end_frame();
-                  m_bMemoryGraphicsLeaseFrameOpen = false;
-
-               }
+               ::gpu::context_lock contextlock(pgpucontext);
 
                glFlush();
                ::opengl::check_error("");

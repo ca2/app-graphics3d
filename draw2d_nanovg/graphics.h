@@ -38,8 +38,6 @@ namespace draw2d_nanovg
    public:
 
       bool                             m_bHadEndLayer;
-      bool                             m_bMemoryGraphicsLeaseFrameOpen = false;
-      bool                             m_bMemoryGraphicsLeaseLayerOpen = false;
       //VkvgDevice                       m_nanovgdevice;
       //VkvgSurface                      m_nanovgsurface;
       NVGcontext *                     m_pdc = nullptr;

@@ -52,6 +52,10 @@ int main()
       nanovgSource,
       "void graphics::_create_memory_graphics(",
       "void graphics::create_window_graphics(");
+   const auto nanovgAcquire = section(
+      nanovgSource,
+      "void graphics::on_acquire_memory_graphics(",
+      "void graphics::on_release_memory_graphics()");
    const auto nanovgRelease = section(
       nanovgSource,
       "void graphics::on_release_memory_graphics()",
@@ -64,6 +68,10 @@ int main()
    assert(nanovgHeader.find("on_release_memory_graphics") != std::string::npos);
    assert(nanovgRelease.find("defer_fence") != std::string::npos);
    assert(nanovgRelease.find("m_pimage = nullptr") != std::string::npos);
+   assert(nanovgAcquire.find("start_frame(") == std::string::npos);
+   assert(nanovgAcquire.find("start_layer(") == std::string::npos);
+   assert(nanovgRelease.find("end_layer(") == std::string::npos);
+   assert(nanovgRelease.find("end_frame(") == std::string::npos);
 
    return 0;
 
