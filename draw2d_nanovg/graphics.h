@@ -104,7 +104,6 @@ namespace draw2d_nanovg
       //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
 
-      void defer_load_font_by_family_name(const ::scoped_string& scopedstrName);
       //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
       //virtual bool Attach(HDC hdc);   // attach/detach affects only the Output DC

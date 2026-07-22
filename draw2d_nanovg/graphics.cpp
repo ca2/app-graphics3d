@@ -8025,11 +8025,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      ::string strFamilyName = pfontParam->m_pfontfamily->family_name(this);
+      auto strFontKey = ::draw2d_nanovg::get()->defer_load_font(m_pdc, pfontParam);
 
-      defer_load_font_by_family_name(strFamilyName);
-
-      nvgFontFace(m_pdc, strFamilyName);
+      nvgFontFace(m_pdc, strFontKey);
 
       //nanovg_font_face_t* pfontface = (nanovg_font_face_t*)posdata;
 
@@ -9899,15 +9897,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       };
 
    }
-
-
-   void graphics::defer_load_font_by_family_name(const ::scoped_string& scopedstrName)
-   {
-
-      ::draw2d_nanovg::get()->defer_load_font_by_family_name(m_pdc, scopedstrName);
-
-   }
-
 
 
 } // namespace draw2d_nanovg

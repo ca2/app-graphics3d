@@ -2,6 +2,7 @@
 #include "gpu_opengl/_gpu_opengl.h"
 #include "draw2d.h"
 #include "acme/exception/resource.h"
+#include "acme/filesystem/filesystem/file_context.h"
 #include "acme/platform/application.h"
 #include "acme/platform/node.h"
 #include "acme/prototype/prototype/memory.h"
@@ -246,34 +247,74 @@ namespace draw2d_nanovg
    }
 
 
-   void draw2d::defer_load_font_by_family_name(NVGcontext * pdc, const ::scoped_string& scopedstrName)
+   ::string draw2d::defer_load_font(NVGcontext * pdc, ::write_text::font * pfont)
    {
 
       _synchronous_lock lock(m_pmutex);
 
-      auto& font = m_mapFont[scopedstrName];
+      ::write_text::font_face_request request;
+      request.m_strFamily = pfont->family_name();
+      request.m_fontweight = pfont->m_fontweight;
+      request.m_bItalic = pfont->m_bItalic;
 
-      if (!font.m_bLoaded)
+      ::string strFontKey;
+      strFontKey.formatf(
+         "family=%s;weight=%d;italic=%d",
+         request.m_strFamily.c_str(),
+         request.m_fontweight.as_i32(),
+         request.m_bItalic ? 1 : 0);
+
+      auto iFont = nvgFindFont(pdc, strFontKey);
+
+      if (iFont >= 0)
       {
 
-         font.m_bLoaded = true;
-
-         ::file::path pathFont = node()->get_font_path_from_name(scopedstrName);
-
-         nvgCreateFont(pdc, scopedstrName, pathFont);
-
-         //nanovg_load_font_from_path(pdc, pathFont, scopedstrName);
-
-         //auto status = nanovg_status(pdc);
-
-         //if (status)
-         //{
-
-         //   warning() << "oh no";
-
-         //}
+         return strFontKey;
 
       }
+
+      ::write_text::font_face_source source;
+
+      if (system()->draw2d()->write_text()->resolve_font_face(source, request))
+      {
+
+         iFont = nvgCreateFontAtIndex(
+            pdc,
+            strFontKey,
+            source.m_path,
+            source.m_iFaceIndex);
+
+      }
+
+      if (iFont < 0)
+      {
+
+         const auto bExists = source.m_path.has_character() && file()->exists(source.m_path);
+         const auto strExtension = ::string(source.m_path.final_extension());
+         ::string strMessage;
+
+         strMessage.formatf(
+            "NanoVG failed to load the requested font into the current graphics context. "
+            "family=\"%s\" weight=%d italic=%s resolved_family=\"%s\" "
+            "path=\"%s\" face_index=%d exists=%s extension=\"%s\".",
+            request.m_strFamily.c_str(),
+            request.m_fontweight.as_i32(),
+            request.m_bItalic ? "true" : "false",
+            source.m_strResolvedFamily.c_str(),
+            source.m_path.c_str(),
+            source.m_iFaceIndex,
+            bExists ? "true" : "false",
+            strExtension.c_str());
+
+         information() << "[draw2d_nanovg.font] " << strMessage;
+
+         throw ::exception(
+            error_failed,
+            strMessage);
+
+      }
+
+      return strFontKey;
 
    }
 

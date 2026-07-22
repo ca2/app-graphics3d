@@ -45,15 +45,6 @@ namespace draw2d_nanovg
 
       ::pointer< ::mutex > m_pmutex;
 
-      struct font_t
-      {
-
-         bool m_bLoaded = false;
-
-      };
-
-      ::string_map < font_t > m_mapFont;
-
       draw2d();
       ~draw2d() override;
 
@@ -75,7 +66,7 @@ namespace draw2d_nanovg
       virtual int  opengl_init();
 
 
-      virtual void defer_load_font_by_family_name(NVGcontext* pdc, const ::scoped_string& scopedstrName);
+      virtual ::string defer_load_font(NVGcontext * pdc, ::write_text::font * pfont);
 
 
 
