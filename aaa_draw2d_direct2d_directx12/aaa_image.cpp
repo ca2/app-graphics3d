@@ -362,12 +362,12 @@ namespace draw2d_direct2d_directx12
 
          ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
 
-         pimage2->get_graphics()->draw(imagedrawing);
+         pgraphicsImage2->draw(imagedrawing);
 
       }
 
 //#else
-//      pimage2->get_graphics()->DrawIcon(
+//      pgraphicsImage2->DrawIcon(
 //      0, 0,
 //      picon,
 //      cx, cy,

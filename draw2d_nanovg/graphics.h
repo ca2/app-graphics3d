@@ -128,6 +128,11 @@ namespace draw2d_nanovg
       //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
 
+
+      
+      void begin_draw() override;
+      void end_draw() override;
+
       //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
       //virtual bool Attach(HDC hdc);   // attach/detach affects only the Output DC

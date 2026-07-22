@@ -298,7 +298,7 @@ namespace draw2d_nanovg
       if (!context_lease())
       {
 
-         auto contextlease = pgpudevice->acquire_draw2d_context(
+         auto contextlease = pgpudevice->acquire_gpu_context(
             ::gpu::e_output_gpu_buffer,
             size);
 
@@ -4006,6 +4006,13 @@ namespace draw2d_nanovg
    void graphics::draw(::draw2d::path* ppath)
    {
 
+      if (::is_null(ppath) || ppath->m_itema.is_empty())
+      {
+
+         throw ::exception(error_bad_argument);
+
+      }
+
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
       if (!_set(ppath))
@@ -4036,6 +4043,7 @@ namespace draw2d_nanovg
       draw(ppen);
 
    }
+
 
    bool graphics::_set(::draw2d::path* ppath)
    {
@@ -4781,6 +4789,13 @@ namespace draw2d_nanovg
 
    void graphics::fill(::draw2d::path* ppath)
    {
+
+      if (::is_null(ppath) || ppath->m_itema.is_empty())
+      {
+
+         throw ::exception(error_bad_argument);
+
+      }
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
@@ -8989,10 +9004,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      auto pgputexture = dynamic_cast < ::gpu_opengl::texture * >(
-         pgpuimage->gpu_texture());
+      auto pgputexture = pgpuimage->gpu_texture();
 
-      if (!pgputexture || !pgputexture->m_gluTextureID)
+      auto pgpuopengltexture = dynamic_cast < ::gpu_opengl::texture * >(pgputexture);
+
+      if (!pgpuopengltexture || !pgpuopengltexture->m_gluTextureID)
       {
 
          throw ::exception(
@@ -9001,7 +9017,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      auto pgpucontextTexture = pgputexture->context();
+      auto pgpucontextTexture = pgpuopengltexture->context();
       auto pgpucontextCurrent = gpu_context();
 
       if (!pgpucontextTexture || !pgpucontextCurrent ||
@@ -9035,13 +9051,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          }
 
-         bPendingFence = pgputexture->has_pending_fence();
+         bPendingFence = pgpuopengltexture->has_pending_fence();
 
          if (bPendingFence)
          {
 
             auto timeFenceStart = ::std::chrono::steady_clock::now();
-            pgputexture->wait_fence();
+            pgpuopengltexture->wait_fence();
             uFenceMicroseconds = (::u64)::std::chrono::duration_cast<
                ::std::chrono::microseconds>(
                   ::std::chrono::steady_clock::now() - timeFenceStart).count();
@@ -9050,7 +9066,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          else
          {
 
-            pgputexture->wait_fence();
+            pgpuopengltexture->wait_fence();
 
          }
 
@@ -9058,11 +9074,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       else
       {
 
-         pgputexture->wait_fence();
+         pgpuopengltexture->wait_fence();
 
       }
 
-      diagnose_sampled_gpu_image(pgputexture, rectangleTarget);
+      diagnose_sampled_gpu_image(pgpuopengltexture, rectangleTarget);
 
       _synchronous_lock synchronouslock(::draw2d_nanovg::mutex());
 
@@ -9077,8 +9093,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       }
 
       auto bCreatedWrapper = false;
-      auto iImage = acquire_nanovg_gpu_image_wrapper(
-         pgputexture,
+      auto iImage = acquire_nanovg_gpu_image_wrapper(pgpuopengltexture,
          sizeImage,
          bCreatedWrapper);
       auto uWrapperMicroseconds = (::u64)0;
@@ -9776,6 +9791,28 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
+   }
+
+   void graphics::begin_draw() 
+   {
+
+      ::gpu::graphics::begin_draw();
+      
+      auto size = m_size;
+
+      nvgBeginFrame(m_pdc, (float)size.width(), (float)size.height(), 1.0f); 
+   
+   }
+
+
+   void graphics::end_draw() 
+   {
+   
+      nvgEndFrame(m_pdc);
+
+
+      ::gpu::graphics::end_draw();
+   
    }
 
 

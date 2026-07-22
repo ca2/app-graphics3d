@@ -237,7 +237,7 @@ namespace gpu_directx12
          pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, texturedata);
 
       }
-      else if (texturedata.is_raw_scoped_data())
+      else if (texturedata.is_raw_scoped_pixmap())
       {
 
 
@@ -667,7 +667,12 @@ namespace gpu_directx12
       }
 
       auto pstaticuploadbuffer = _get_static_upload_buffer();
-      ::gpu::texture_data texturedata(src);
+
+      pixmap_t pixmap;
+      pixmap.m_pimage32 = (image32_t *) src;
+      pixmap.m_pimage32Raw = (image32_t *)src;
+
+      ::gpu::texture_data texturedata(pixmap);
       pcommandbuffer->m_particleaHold.add(pstaticuploadbuffer);
 
       pstaticuploadbuffer->update_with_texture_data(pcommandbuffer, texturedata);
@@ -1528,7 +1533,7 @@ namespace gpu_directx12
       else
       {
 
-         subresources[0].pData = texturedata.raw_scoped_data();
+         subresources[0].pData = texturedata.raw_scoped_pixmap().m_pimage32Raw;
          subresources[0].RowPitch = m_ptexture->m_resourcedesc.Width * m_ptexture->m_textureattributes.m_iBitsPerChannel
             * m_ptexture->m_textureattributes.m_iChannelCount/8;
          subresources[0].SlicePitch = subresources[0].RowPitch * m_ptexture->m_resourcedesc.Height;

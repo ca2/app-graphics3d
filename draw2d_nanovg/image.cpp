@@ -79,15 +79,21 @@ namespace draw2d_nanovg
 
       _synchronous_lock synchronouslock(pgpudevice->synchronization());
 
-      ::gpu::context_lock contextlock(pgpudevice->m_pgpucontextMain);
+      auto pgpucontext = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
 
-      initialize_gpu_image(pgpudevice->m_pgpucontextMain, size);
+      ::gpu::context_lock contextlock(pgpucontext);
+
+      pixmap_t pixmap;
+
+      pixmap.initialize_pixmap(size, pimage32, iScan);
+
+      initialize_gpu_image(pgpucontext, size, pixmap);
 
       m_eflagElement = eflagCreate;
       m_estatus = ::success;
       set_ok_flag();
 
-      m_pgputexture->write_pixels(size, pimage32, iScan);
+//      m_pgputexture->write_pixels(size, pimage32, iScan);
 
    }
 
@@ -119,7 +125,9 @@ namespace draw2d_nanovg
 
       _synchronous_lock synchronouslock(pgpudevice->synchronization());
 
-      initialize_gpu_image(pgpudevice->m_pgpucontextMain, size);
+      auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
+
+      initialize_gpu_image(pgpucontextlease, size, {});
 
       m_eflagElement = eobjectCreate;
       m_estatus = ::success;
@@ -1734,7 +1742,7 @@ namespace draw2d_nanovg
    //   pimage2 = create_image({cx,  cy});
    //   pimage2->Fill(0, 0, 0, 0);
 
-   //   pimage2->get_graphics()->DrawIcon(
+   //   pgraphicsImage2->DrawIcon(
    //   0, 0,
    //   picon,
    //   cx, cy,
@@ -2678,7 +2686,7 @@ namespace draw2d_nanovg
 //         if(!image = create_image(rectangleWindow.bottom_right()))
 //            return false;
 //
-//         ::draw2d::graphics * pgraphics = pimage->get_graphics();
+//         ::draw2d::graphics * pgraphics = pgraphicsImage;
 //
 //         if(pgraphics->get_os_data() == nullptr)
 //            return false;
@@ -2689,10 +2697,10 @@ namespace draw2d_nanovg
 //         rectanglePaint = rectangleWindow;
 //         rectanglePaint.offset(-rectanglePaint.top_left());
 //         m_pgraphics->SelectClipRgn(nullptr);
-//         puserinteraction->_001OnDeferPaintLayeredWindowBackground(pimage->get_graphics());
+//         puserinteraction->_001OnDeferPaintLayeredWindowBackground(pgraphicsImage);
 //         m_pgraphics->SelectClipRgn(nullptr);
 //         m_pgraphics-> set_origin(::i32_point());
-//         puserinteraction->_000OnDraw(pimage->get_graphics());
+//         puserinteraction->_000OnDraw(pgraphicsImage);
 //         m_pgraphics->set_origin(::i32_point());
 //         //(dynamic_cast<::win::graphics * >(pgraphics))->FillSolidRect(rectangleUpdate.left, rectangleUpdate.top, 100, 100, 255);
 //         m_pgraphics->SelectClipRgn(nullptr);

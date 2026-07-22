@@ -1733,7 +1733,7 @@ namespace draw2d_opengl
    //   pimage2 = create_image({cx,  cy});
    //   pimage2->Fill(0, 0, 0, 0);
 
-   //   pimage2->get_graphics()->DrawIcon(
+   //   pgraphicsImage2->DrawIcon(
    //   0, 0,
    //   picon,
    //   cx, cy,
@@ -2706,7 +2706,7 @@ namespace draw2d_opengl
 //         if(!image = create_image(rectangleWindow.bottom_right()))
 //            return false;
 //
-//         ::draw2d::graphics * pgraphics = pimage->get_graphics();
+//         ::draw2d::graphics * pgraphics = pgraphicsImage;
 //
 //         if(pgraphics->get_os_data() == nullptr)
 //            return false;
@@ -2717,10 +2717,10 @@ namespace draw2d_opengl
 //         rectanglePaint = rectangleWindow;
 //         rectanglePaint.offset(-rectanglePaint.top_left());
 //         m_pgraphics->SelectClipRgn(nullptr);
-//         puserinteraction->_001OnDeferPaintLayeredWindowBackground(pimage->get_graphics());
+//         puserinteraction->_001OnDeferPaintLayeredWindowBackground(pgraphicsImage);
 //         m_pgraphics->SelectClipRgn(nullptr);
 //         m_pgraphics-> set_origin(::i32_point());
-//         puserinteraction->_000OnDraw(pimage->get_graphics());
+//         puserinteraction->_000OnDraw(pgraphicsImage);
 //         m_pgraphics->set_origin(::i32_point());
 //         //(dynamic_cast<::win::graphics * >(pgraphics))->FillSolidRect(rectangleUpdate.left, rectangleUpdate.top, 100, 100, 255);
 //         m_pgraphics->SelectClipRgn(nullptr);
