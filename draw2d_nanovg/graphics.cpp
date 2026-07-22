@@ -24,6 +24,10 @@
 #include "gpu_opengl/approach.h"
 #include "gpu_opengl/renderer.h"
 #include "gpu_opengl/texture.h"
+#if defined(WINDOWS_DESKTOP)
+#include "gpu_opengl/wgl_context.h"
+#pragma comment(lib, "opengl32.lib")
+#endif
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/layer.h"
@@ -8362,16 +8366,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::diagnose_rendered_gpu_image(
-      ::gpu_opengl::texture * pgputexture)
+   ::i64 graphics::reserve_rendered_gpu_image_diagnostic()
    {
 
-      if (!pgputexture || !m_papplication
+      if (!m_papplication
          || !m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
             ::std::memory_order_relaxed))
       {
 
-         return;
+         return -1;
 
       }
 
@@ -8393,6 +8396,85 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             ::std::memory_order_relaxed);
 
       if (uDiagnosticIndex >= 8)
+      {
+
+         return -1;
+
+      }
+
+      return (::i64)uDiagnosticIndex;
+
+   }
+
+
+   void graphics::diagnose_gpu_image_target_state(
+      ::i64 iDiagnosticIndex,
+      ::gpu::context * pgpucontext,
+      ::gpu::layer * pgpulayer,
+      ::gpu_opengl::texture * pgputexture,
+      ::i32 iDrawFramebufferBefore)
+   {
+
+      if (iDiagnosticIndex < 0 || !pgputexture)
+      {
+
+         return;
+
+      }
+
+      GLint iDrawFramebufferAfter = 0;
+      GLint iaViewport[4]{};
+      glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &iDrawFramebufferAfter);
+      glGetIntegerv(GL_VIEWPORT, iaViewport);
+      auto uTargetFramebuffer = pgputexture->frame_buffer_object();
+
+#if defined(WINDOWS_DESKTOP)
+      auto pwglcontext =
+         dynamic_cast < ::gpu_opengl::wgl_context * >(pgpucontext);
+      auto hglrcExpected = pwglcontext ? pwglcontext->m_hglrc : nullptr;
+      auto hdcExpected = pwglcontext ? pwglcontext->m_hdc : nullptr;
+      auto hglrcCurrent = ::wglGetCurrentContext();
+      auto hdcCurrent = ::wglGetCurrentDC();
+      auto bContextMatch = hglrcExpected && hglrcExpected == hglrcCurrent;
+      auto bDeviceContextMatch = hdcExpected && hdcExpected == hdcCurrent;
+#else
+      auto bContextMatch = true;
+      auto bDeviceContextMatch = true;
+#endif
+
+      information() << "[gpu.performance.nanovg_image_boundary] stage=target_state"
+         << " diagnostic=" << iDiagnosticIndex
+         << " graphics=" << (::uptr)this
+         << " image=" << (::uptr)m_pimage
+         << " context=" << (::uptr)pgpucontext
+         << " layer=" << (::uptr)pgpulayer
+         << " texture_object=" << (::uptr)pgputexture
+         << " texture=" << pgputexture->m_gluTextureID
+#if defined(WINDOWS_DESKTOP)
+         << " expected_context=" << (::uptr)hglrcExpected
+         << " current_context=" << (::uptr)hglrcCurrent
+         << " expected_dc=" << (::uptr)hdcExpected
+         << " current_dc=" << (::uptr)hdcCurrent
+#endif
+         << " context_match=" << bContextMatch
+         << " dc_match=" << bDeviceContextMatch
+         << " framebuffer_before=" << iDrawFramebufferBefore
+         << " target_framebuffer=" << uTargetFramebuffer
+         << " framebuffer_after=" << iDrawFramebufferAfter
+         << " framebuffer_match="
+            << (iDrawFramebufferAfter == (GLint)uTargetFramebuffer)
+         << " viewport=" << iaViewport[0] << "," << iaViewport[1]
+            << "," << iaViewport[2] << "," << iaViewport[3];
+
+   }
+
+
+   void graphics::diagnose_rendered_gpu_image(
+      ::gpu_opengl::texture * pgputexture,
+      ::i64 iDiagnosticIndex)
+   {
+
+      if (!pgputexture || iDiagnosticIndex < 0)
       {
 
          return;
@@ -8490,7 +8572,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       }
 
       information() << "[gpu.performance.nanovg_image_boundary] stage=render"
-         << " diagnostic=" << uDiagnosticIndex
+         << " diagnostic=" << iDiagnosticIndex
          << " texture=" << pgputexture->m_gluTextureID
          << " fbo=" << pgputexture->frame_buffer_object()
          << " size=" << sizeTexture.cx << "x" << sizeTexture.cy
@@ -9453,18 +9535,38 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      pgputextureTarget->bind_render_target();
-      nvgEndFrame(m_pdc);
-
       auto pgpuimage = dynamic_cast < ::gpu::image * >(m_pimage);
+      ::cast < ::gpu_opengl::texture > ptextureDiagnostic =
+         pgputextureTarget;
+      auto iDiagnosticIndex = pgpuimage && pgpuimage->gpu_texture()
+         ? reserve_rendered_gpu_image_diagnostic()
+         : -1;
+      GLint iDrawFramebufferBefore = 0;
+
+      if (iDiagnosticIndex >= 0)
+      {
+
+         glGetIntegerv(
+            GL_DRAW_FRAMEBUFFER_BINDING,
+            &iDrawFramebufferBefore);
+
+      }
+
+      pgputextureTarget->bind_render_target();
+      diagnose_gpu_image_target_state(
+         iDiagnosticIndex,
+         pgpucontext,
+         pgpulayer,
+         ptextureDiagnostic,
+         iDrawFramebufferBefore);
+      nvgEndFrame(m_pdc);
 
       if (pgpuimage && pgpuimage->gpu_texture())
       {
 
-         ::cast < ::gpu_opengl::texture > ptextureDiagnostic =
-            pgputextureTarget;
-
-         diagnose_rendered_gpu_image(ptextureDiagnostic);
+         diagnose_rendered_gpu_image(
+            ptextureDiagnostic,
+            iDiagnosticIndex);
          pgpuimage->gpu_texture()->defer_fence();
 
       }

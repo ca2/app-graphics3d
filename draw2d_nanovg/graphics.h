@@ -145,7 +145,16 @@ namespace draw2d_nanovg
          ::u64 uWrapperMicroseconds);
       void record_gpu_image_cpu_fallback();
       void report_gpu_image_performance_diagnostics_if_due();
-      void diagnose_rendered_gpu_image(::gpu_opengl::texture * pgputexture);
+      ::i64 reserve_rendered_gpu_image_diagnostic();
+      void diagnose_gpu_image_target_state(
+         ::i64 iDiagnosticIndex,
+         ::gpu::context * pgpucontext,
+         ::gpu::layer * pgpulayer,
+         ::gpu_opengl::texture * pgputexture,
+         ::i32 iDrawFramebufferBefore);
+      void diagnose_rendered_gpu_image(
+         ::gpu_opengl::texture * pgputexture,
+         ::i64 iDiagnosticIndex);
       void diagnose_sampled_gpu_image(
          ::gpu_opengl::texture * pgputexture,
          const ::f64_rectangle & rectangleTarget);
