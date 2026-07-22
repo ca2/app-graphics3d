@@ -55,6 +55,15 @@ int main()
    assert(header.find("m_mapFont") == std::string::npos);
    assert(header.find("m_bLoaded") == std::string::npos);
 
+   assert(header.find("write_text_supports_raster_fonts() override") != std::string::npos);
+
+   const auto rasterCapability = section(
+      source,
+      "bool draw2d::write_text_supports_raster_fonts()",
+      "bool draw2d::graphics_context_supports_single_buffer_mode()");
+
+   assert(rasterCapability.find("return false;") != std::string::npos);
+
    assert(header.find("defer_load_font(NVGcontext * pdc, ::write_text::font * pfont)") != std::string::npos);
    assert(loadFont.find("resolve_font_face") != std::string::npos);
    assert(loadFont.find("node()->get_font_path_from_name") == std::string::npos);

@@ -52,6 +52,7 @@ namespace draw2d_nanovg
       void initialize(::particle * pparticle) override;
 
 
+      bool write_text_supports_raster_fonts() override;
       bool graphics_context_supports_single_buffer_mode() override;
       bool graphics_context_does_full_redraw() override;
 
