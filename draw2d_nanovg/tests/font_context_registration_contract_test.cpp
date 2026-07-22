@@ -56,13 +56,19 @@ int main()
    assert(header.find("m_bLoaded") == std::string::npos);
 
    assert(header.find("write_text_supports_raster_fonts() override") != std::string::npos);
+   assert(header.find("write_text_supports_legacy_gdi_fonts() override") != std::string::npos);
 
    const auto rasterCapability = section(
       source,
       "bool draw2d::write_text_supports_raster_fonts()",
+      "bool draw2d::write_text_supports_legacy_gdi_fonts()");
+   const auto legacyCapability = section(
+      source,
+      "bool draw2d::write_text_supports_legacy_gdi_fonts()",
       "bool draw2d::graphics_context_supports_single_buffer_mode()");
 
    assert(rasterCapability.find("return false;") != std::string::npos);
+   assert(legacyCapability.find("return false;") != std::string::npos);
 
    assert(header.find("defer_load_font(NVGcontext * pdc, ::write_text::font * pfont)") != std::string::npos);
    assert(loadFont.find("resolve_font_face") != std::string::npos);

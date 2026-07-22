@@ -110,6 +110,14 @@ namespace draw2d_nanovg
    }
 
 
+   bool draw2d::write_text_supports_legacy_gdi_fonts()
+   {
+
+      return false;
+
+   }
+
+
    bool draw2d::graphics_context_supports_single_buffer_mode()
    {
 
