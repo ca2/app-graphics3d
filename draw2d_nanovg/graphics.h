@@ -8,6 +8,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <vector>
 
 
 
@@ -58,6 +59,21 @@ namespace draw2d_nanovg
       ::i32_size                    m_sizeWindow;
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
+      struct nanovg_gpu_image_wrapper_cache_entry
+      {
+
+         ::collection::index                 m_iTextureSerial = -1;
+         ::u32                               m_uOpenGlTexture = 0;
+         ::i32_size                          m_size;
+         int                                 m_iNanovgImage = 0;
+         ::pointer < ::gpu::texture >        m_pgputexture;
+         ::u64                               m_uLastUsedFrame = 0;
+
+      };
+
+      ::std::vector < nanovg_gpu_image_wrapper_cache_entry >
+         m_nanovgGpuImageWrapperCache;
+      ::u64 m_uNanovgGpuImageWrapperFrameSerial = 0;
       ::std::atomic_bool m_bPerformanceDiagnosticsEnabledLast{false};
       ::std::atomic<::u64> m_uPerformanceDiagnosticsGenerationLast{0};
       ::std::atomic<::u64> m_uPerformanceGpuImageDraws{0};
@@ -138,9 +154,17 @@ namespace draw2d_nanovg
          const ::image::image_drawing_options & imagedrawingoptions,
          const ::f64_point & pointSrc);
 
+      int acquire_nanovg_gpu_image_wrapper(
+         ::gpu_opengl::texture * pgputexture,
+         const ::i32_size & sizeImage,
+         bool & bCreatedWrapper);
+      void maintain_nanovg_gpu_image_wrapper_cache();
+      void clear_nanovg_gpu_image_wrapper_cache();
+
       void reset_gpu_image_performance_diagnostics();
       void record_gpu_image_fast_path(
          bool bWaitedForFence,
+         bool bCreatedWrapper,
          ::u64 uFenceMicroseconds,
          ::u64 uWrapperMicroseconds);
       void record_gpu_image_cpu_fallback();

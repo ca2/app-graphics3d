@@ -8642,13 +8642,22 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::record_gpu_image_fast_path(
       bool bWaitedForFence,
+      bool bCreatedWrapper,
       ::u64 uFenceMicroseconds,
       ::u64 uWrapperMicroseconds)
    {
 
       m_uPerformanceGpuImageDraws.fetch_add(1, ::std::memory_order_relaxed);
-      m_uPerformanceWrapperCreations.fetch_add(1, ::std::memory_order_relaxed);
-      m_uPerformanceWrapperDeletions.fetch_add(1, ::std::memory_order_relaxed);
+
+      if (bCreatedWrapper)
+      {
+
+         m_uPerformanceWrapperCreations.fetch_add(
+            1,
+            ::std::memory_order_relaxed);
+
+      }
+
       m_uPerformanceWrapperMicroseconds.fetch_add(
          uWrapperMicroseconds,
          ::std::memory_order_relaxed);
@@ -8777,6 +8786,63 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
+   int graphics::acquire_nanovg_gpu_image_wrapper(
+      ::gpu_opengl::texture * pgputexture,
+      const ::i32_size & sizeImage,
+      bool & bCreatedWrapper)
+   {
+
+      for (auto & entry : m_nanovgGpuImageWrapperCache)
+      {
+
+         if (entry.m_iTextureSerial == pgputexture->m_iTextureSerial
+            && entry.m_uOpenGlTexture == pgputexture->m_gluTextureID
+            && entry.m_size.cx == sizeImage.cx
+            && entry.m_size.cy == sizeImage.cy)
+         {
+
+            entry.m_uLastUsedFrame = m_uNanovgGpuImageWrapperFrameSerial;
+            bCreatedWrapper = false;
+
+            return entry.m_iNanovgImage;
+
+         }
+
+      }
+
+      auto iImage = nvglCreateImageFromHandleGL3(
+         m_pdc,
+         pgputexture->m_gluTextureID,
+         sizeImage.cx,
+         sizeImage.cy,
+         NVG_IMAGE_NODELETE |
+            NVG_IMAGE_PREMULTIPLIED |
+            NVG_IMAGE_FLIPY);
+
+      if (iImage == 0)
+      {
+
+         throw ::exception(
+            error_failed,
+            "NanoVG failed to wrap the OpenGL GPU image texture.");
+
+      }
+
+      nanovg_gpu_image_wrapper_cache_entry entry;
+      entry.m_iTextureSerial = pgputexture->m_iTextureSerial;
+      entry.m_uOpenGlTexture = pgputexture->m_gluTextureID;
+      entry.m_size = sizeImage;
+      entry.m_iNanovgImage = iImage;
+      entry.m_pgputexture = pgputexture;
+      entry.m_uLastUsedFrame = m_uNanovgGpuImageWrapperFrameSerial;
+      m_nanovgGpuImageWrapperCache.push_back(entry);
+      bCreatedWrapper = true;
+
+      return iImage;
+
+   }
+
+
    bool graphics::_draw_gpu_image(
       const ::f64_rectangle & rectangleTarget,
       ::image::image * pimage,
@@ -8880,14 +8946,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      auto iImage = nvglCreateImageFromHandleGL3(
-         m_pdc,
-         pgputexture->m_gluTextureID,
-         sizeImage.cx,
-         sizeImage.cy,
-         NVG_IMAGE_NODELETE |
-            NVG_IMAGE_PREMULTIPLIED |
-            NVG_IMAGE_FLIPY);
+      auto bCreatedWrapper = false;
+      auto iImage = acquire_nanovg_gpu_image_wrapper(
+         pgputexture,
+         sizeImage,
+         bCreatedWrapper);
       auto uWrapperMicroseconds = (::u64)0;
 
       if (bPerformanceDiagnostics)
@@ -8896,15 +8959,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          uWrapperMicroseconds = (::u64)::std::chrono::duration_cast<
             ::std::chrono::microseconds>(
                ::std::chrono::steady_clock::now() - timeWrapperStart).count();
-
-      }
-
-      if (iImage == 0)
-      {
-
-         throw ::exception(
-            error_failed,
-            "NanoVG failed to wrap the OpenGL GPU image texture.");
 
       }
 
@@ -8918,20 +8972,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (bPerformanceDiagnostics)
       {
 
-         timeWrapperStart = ::std::chrono::steady_clock::now();
-
-      }
-
-      nvgDeleteImage(m_pdc, iImage);
-
-      if (bPerformanceDiagnostics)
-      {
-
-         uWrapperMicroseconds += (::u64)::std::chrono::duration_cast<
-            ::std::chrono::microseconds>(
-               ::std::chrono::steady_clock::now() - timeWrapperStart).count();
          record_gpu_image_fast_path(
             bPendingFence,
+            bCreatedWrapper,
             uFenceMicroseconds,
             uWrapperMicroseconds);
 
