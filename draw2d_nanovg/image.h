@@ -27,12 +27,12 @@ namespace draw2d_nanovg
 
 
       image();
-      virtual ~image();
+      ~image() override;
 
 
-      virtual ::draw2d::graphics * _get_graphics() const;
-      virtual ::draw2d::bitmap_pointer get_bitmap() const;
-      virtual ::draw2d::bitmap_pointer detach_bitmap();
+      //virtual ::draw2d::graphics * _get_graphics() const;
+      ::draw2d::bitmap_pointer get_bitmap() const override;
+      ::draw2d::bitmap_pointer detach_bitmap() override;
 
       //virtual ::draw2d::graphics * get_graphics();
 
@@ -44,9 +44,10 @@ namespace draw2d_nanovg
 
       using ::image::image::create;
 
-      void create_from_data(const ::i32_size &size, ::image32_t *pimage32, ::i32 iScan, ::enum_flag eflagCreate,
-                                   bool bPreserve) override;
-      void create(const ::i32_size& size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1, bool bPreserve = false) override;
+      void create_from_data(const ::i32_size &size, const ::image32_t *pimage32, ::i32 iScan,
+                            ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, bool bPreserve = false) override;
+      void create(const ::i32_size &size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1,
+                  bool bPreserve = false) override;
 
       virtual void create(::draw2d::graphics* pgraphics);
 

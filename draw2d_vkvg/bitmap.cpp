@@ -128,7 +128,7 @@ namespace draw2d_vkvg
 
 #endif
 
-   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, void** ppcolorref, int* piScan)
+   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::image32_t** ppimage32, const ::image32_t* pimage32, int* piScan)
    {
 
       __UNREFERENCED_PARAMETER(pgraphics);
@@ -138,6 +138,15 @@ namespace draw2d_vkvg
       m_sizeOut.cy = size.cy;
 
       m_iStride = 4 * size.cx;
+
+      int iScan = m_iStride;
+
+      if (piScan && *piScan > iScan)
+      {
+
+         iScan = *piScan;
+
+      }
 
       m_memOut.set_size(abs(m_iStride * size.cy));
 
@@ -150,10 +159,19 @@ namespace draw2d_vkvg
 
       }
 
-      if(ppcolorref != nullptr)
+      auto pimage32Target = (::image32_t *)m_memOut.data();
+
+      if (pimage32)
+      {
+
+         pimage32Target->copy(size, m_iStride, pimage32, iScan);
+
+      }
+
+      if(ppimage32 != nullptr)
       {
          
-         *ppcolorref = m_memOut.data();
+         *ppimage32 = pimage32Target;
 
       }
 

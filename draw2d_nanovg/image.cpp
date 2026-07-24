@@ -53,8 +53,8 @@ namespace draw2d_nanovg
    }
 
 
-   void image::create_from_data(const ::i32_size & size, ::image32_t * pimage32, ::i32 iScan, ::enum_flag eflagCreate,
-                   bool bPreserve)
+   void image::create_from_data(const ::i32_size &size, const ::image32_t *pimage32, ::i32 iScan,
+                         ::enum_flag eflagCreate, bool bPreserve) 
    {
 
       // if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
@@ -85,7 +85,7 @@ namespace draw2d_nanovg
 
       pixmap_t pixmap;
 
-      pixmap.initialize_pixmap(size, pimage32, iScan);
+      pixmap.initialize_pixmap(size, (::image32_t*) pimage32, iScan);
 
       initialize_gpu_image(pgpucontext, size, pixmap);
 
@@ -156,27 +156,27 @@ namespace draw2d_nanovg
 
       ::memory_copy((::pixmap *) this, ppixmap, sizeof(::pixmap));
 
-      //constructø(m_pbitmap);
-      defer_constructø(m_pgraphics);
-      //m_pgraphics->set(m_pbitmap);
+      ////constructø(m_pbitmap);
+      //defer_constructø(m_pgraphics);
+      ////m_pgraphics->set(m_pbitmap);
 
-      if (m_papplication->m_gpu.m_bUseSwapChainWindow)
-      {
+      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      //{
 
-         m_pgraphics->create_window_graphics(pwindow);
+      //   m_pgraphics->create_window_graphics(pwindow);
 
-      }
-      else
-      {
+      //}
+      //else
+      //{
 
-         m_pgraphics->create_memory_graphics(ppixmap->m_size);
+      //   m_pgraphics->create_memory_graphics(ppixmap->m_size);
 
-      }
+      //}
 
 
       m_eflagElement = DEFAULT_CREATE_IMAGE_FLAG;
 
-      m_pgraphics->m_pimage = this;
+      //m_pgraphics->m_pimage = this;
 
       set_ok_flag();
 
@@ -2401,7 +2401,7 @@ namespace draw2d_nanovg
       
       pimage->unmap();
 
-      m_pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
+      //m_pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
 
       //((plusplus::Graphics * ) m_pgraphics->get_os_data())->DrawImage(((plusplus::Bitmap *)pimage->get_bitmap()->get_os_data()), rectangleDest, rectangleSource, plusplus::UnitPixel);
 
@@ -2410,30 +2410,30 @@ namespace draw2d_nanovg
    }
 
 
-   ::draw2d::graphics * image::_get_graphics() const
-   {
+   //::draw2d::graphics * image::_get_graphics() const
+   //{
 
-      if (!m_pgraphics)
-      {
+   //   if (!m_pgraphics)
+   //   {
 
-         ((::image::image *)this)->constructø(((::image::image*)this)->m_pgraphics);
-         m_pgraphics->m_pimage = (::image::image*)this;
-         m_pgraphics->create_memory_graphics(m_size);
+   //      ((::image::image *)this)->constructø(((::image::image*)this)->m_pgraphics);
+   //      m_pgraphics->m_pimage = (::image::image*)this;
+   //      m_pgraphics->create_memory_graphics(m_size);
 
-         ::cast<::draw2d_nanovg::graphics> pgraphics = m_pgraphics;
+   //      ::cast<::draw2d_nanovg::graphics> pgraphics = m_pgraphics;
 
-         if (!pgraphics || !pgraphics->gpu_context())
-         {
+   //      if (!pgraphics || !pgraphics->gpu_context())
+   //      {
 
-            ((::image::image*)this)->destroy();
-            throw ::exception(error_wrong_state, "NanoVG GPU image has no OpenGL graphics context.");
-         }
+   //         ((::image::image*)this)->destroy();
+   //         throw ::exception(error_wrong_state, "NanoVG GPU image has no OpenGL graphics context.");
+   //      }
 
-      }
+   //   }
 
-      return m_pgraphics;
+   //   return m_pgraphics;
 
-   }
+   //}
 
 
    // double image::pi()

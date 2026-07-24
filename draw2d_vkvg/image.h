@@ -31,7 +31,7 @@ namespace draw2d_vkvg
       virtual ~image();
 
 
-      virtual ::draw2d::graphics * _get_graphics() const;
+      //virtual ::draw2d::graphics * _get_graphics() const;
       virtual ::draw2d::bitmap_pointer get_bitmap() const;
       virtual ::draw2d::bitmap_pointer detach_bitmap();
 
@@ -147,9 +147,10 @@ namespace draw2d_vkvg
 
       //double pi();
 
+      protected:
 
-      void map(bool bApplyAlphaTransform = true) const override; // some implementations may requrire to map to m_pcolorref before manipulate it
-      void unmap() const override; // some implementations may require to unmap from m_pcolorref to update *os* bitmap
+      void _map(bool bApplyAlphaTransform = true) override; // some implementations may requrire to map to m_pcolorref before manipulate it
+      void _unmap(bool bDoUnmap = false) override; // some implementations may require to unmap from m_pcolorref to update *os* bitmap
 
       //virtual bool update_window(::aura::draw_interface * puserinteraction, ::message::message * pmessage, bool bTransferBuffer = true) override;
       //virtual bool print_window(::aura::draw_interface * puserinteraction, ::message::message * pmessage) override;

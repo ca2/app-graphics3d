@@ -18,7 +18,7 @@ namespace gpu_vulkan
 {
 
 
-   ::pointer < ::gpu::context > allocate_system_context(::particle * pparticle)
+   ::gpu::context_pointer allocate_system_context(::particle * pparticle)
    {
 
       return pparticle->__create_new <context_win32>();

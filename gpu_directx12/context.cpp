@@ -1008,7 +1008,7 @@ namespace gpu_directx12
 
    }
 
-   ::pointer < ::gpu::context > allocate_system_context(::particle* pparticle)
+   ::gpu::context_pointer allocate_system_context(::particle* pparticle)
    {
 
       return pparticle->create_newø <context>();

@@ -260,7 +260,7 @@ namespace gpu_directx12
       virtual void getEnabledFeatures();
 
 
-      //::pointer < ::gpu::context > start_gpu_context(const ::gpu::start_context_t & startcontext) override;
+      //::gpu::context_pointer start_gpu_context(const ::gpu::start_context_t & startcontext) override;
 
 
       int fread(void * data, int c, int s ,::file::file* pfile);

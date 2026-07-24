@@ -106,7 +106,7 @@ namespace draw2d_directx12
 
       pgraphics->create_memory_graphics(size);
 
-      pbitmap->create_bitmap(pgraphics, size, (void**)&pimage32, &iScan);
+      pbitmap->create_bitmap(pgraphics, size, &pimage32, nullptr, &iScan);
 
       //if (!pbitmap->create_bitmap(pgraphics, size, (void **)&pimage32, &iScan))
       //{
@@ -133,7 +133,7 @@ namespace draw2d_directx12
 
       //}
 
-      m_pgraphics = pgraphics;
+      //m_pgraphics = pgraphics;
 
       m_pbitmap = pbitmap;
 
@@ -147,7 +147,7 @@ namespace draw2d_directx12
 
       m_hrEndDraw = S_OK;
 
-      m_pgraphics->m_pimage = this;
+      //m_pgraphics->m_pimage = this;
 
       set_flag(eflagCreate);
 
@@ -295,7 +295,7 @@ namespace draw2d_directx12
 
       m_pbitmap.release();
 
-      m_pgraphics.release();
+//      m_pgraphics.release();
 
    }
 
@@ -340,13 +340,15 @@ namespace draw2d_directx12
 
       {
 
+         auto pgraphicsImage1 = pimage1->acquire_graphics();
+
          ::image::image_source imagesource(picon);
 
          ::image::image_drawing_options imagedrawingoptions(::f64_size(cx, cy));
 
          ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
 
-         pimage1->g()->draw(imagedrawing);
+         pgraphicsImage1->draw(imagedrawing);
 
       }
 
@@ -384,13 +386,15 @@ namespace draw2d_directx12
 
       {
 
+         auto pgraphicsImageM = pimageM->acquire_graphics();
+
          ::image::image_source imagesource(picon);
 
          ::image::image_drawing_options imagedrawingoptions(::f64_size(cx, cy));
 
          ::image::image_drawing imagedrawing(imagedrawingoptions, imagesource);
 
-         pimageM->g()->draw(imagedrawing);
+         pgraphicsImageM->draw(imagedrawing);
 
       }
 
@@ -1064,12 +1068,12 @@ namespace draw2d_directx12
    //}
 
 
-   ::draw2d::graphics * image::_get_graphics() const
-   {
+   //::draw2d::graphics * image::_get_graphics() const
+   //{
 
-      return m_pgraphics;
+   //   return m_pgraphics;
 
-   }
+   //}
 
 
    void image::_map(bool bApplyAlphaTransform)
@@ -1093,7 +1097,7 @@ namespace draw2d_directx12
 
       }
 
-      auto pgraphics2d = m_pgraphics.cast < ::draw2d_directx12::graphics>();
+      //auto pgraphics2d = m_pgraphics.cast < ::draw2d_directx12::graphics>();
 
       //D2D1_SIZE_U size;
 
@@ -1173,7 +1177,7 @@ namespace draw2d_directx12
    }
 
 
-   void image::_unmap()
+   void image::_unmap(bool bDoUnmap)
    {
 
       //::draw2d::lock draw2dlock;
@@ -1428,8 +1432,8 @@ namespace draw2d_directx12
    bool image::is_realized() const
    {
 
-      if (((image *) this)->get_graphics2() == nullptr || ((image *) this)->get_graphics2()->get_os_data() == nullptr)
-         return false;
+      //if (((image *) this)->get_graphics2() == nullptr || ((image *) this)->get_graphics2()->get_os_data() == nullptr)
+        // return false;
 
       return true;
 

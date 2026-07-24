@@ -2617,7 +2617,9 @@ namespace draw2d_directx12
 
                   pimageTarget->create(m_pimage->size());
 
-                  pimageTarget->g()->_stretch_raw(rectangleTarget, pimageSource, imagedrawingoptions, rectangleSource);
+                  auto pgraphicsImageTarget = pimageTarget->acquire_graphics();
+
+                  pgraphicsImageTarget->_stretch_raw(rectangleTarget, pimageSource, imagedrawingoptions, rectangleSource);
 
                }
 

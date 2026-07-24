@@ -21,6 +21,7 @@
 #include "texture.h"
 #include "bred/gpu/cpu_buffer.h"
 #include "bred/gpu/frame.h"
+#include "bred/gpu/semaphore.h"
 #include "app-graphics3d/gpu_vulkan/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"

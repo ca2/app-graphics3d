@@ -27,10 +27,10 @@ namespace draw2d_opengl
 
 
       image();
-      virtual ~image();
+      ~image() override;
 
 
-      ::draw2d::graphics * _get_graphics() const override;
+      //::draw2d::graphics * _get_graphics() const override;
       ::draw2d::bitmap_pointer get_bitmap() const override;
       ::draw2d::bitmap_pointer detach_bitmap() override;
 
@@ -146,9 +146,9 @@ namespace draw2d_opengl
 
       //double pi();
 
-
-      void map(bool bApplyAlphaTransform = true) const override; // some implementations may requrire to map to m_pcolorref before manipulate it
-      void unmap() const override; // some implementations may require to unmap from m_pcolorref to update *os* bitmap
+      protected:
+      void _map(bool bApplyAlphaTransform = true) override; // some implementations may requrire to map to m_pcolorref before manipulate it
+      void _unmap(bool bDoUnmap = false) override; // some implementations may require to unmap from m_pcolorref to update *os* bitmap
 
       //virtual bool update_window(::aura::draw_interface * puserinteraction, ::message::message * pmessage, bool bTransferBuffer = true) override;
       //virtual bool print_window(::aura::draw_interface * puserinteraction, ::message::message * pmessage) override;

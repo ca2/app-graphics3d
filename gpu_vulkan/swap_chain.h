@@ -17,7 +17,7 @@ namespace gpu_vulkan
 
       VkSwapchainKHR                            m_vkswapchain;
       //int                                       m_iCurrentSwapChainImage;
-      ::pointer < ::gpu::context >              m_pgpucontextSwapChain;
+      ::gpu::context_pointer              m_pgpucontextSwapChain;
       ::pointer < ::gpu::shader >               m_pshaderPresent;
       ::pointer < ::gpu_vulkan::render_pass >   m_prenderpass;
 

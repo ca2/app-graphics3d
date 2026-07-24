@@ -12,6 +12,7 @@
 #include "queue.h"
 #include "render_target.h"
 #include "renderer.h"
+#include "semaphore.h"
 #include "shader.h"
 #include "bred/gpu/frame.h"
 #include "acme/filesystem/file/exception.h"
