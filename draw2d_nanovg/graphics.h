@@ -194,6 +194,15 @@ namespace draw2d_nanovg
          ::gpu_opengl::texture * pgputexture,
          const ::f64_rectangle & rectangleTarget);
 
+   private:
+
+
+      void prepare_nanovg_render_target(::gpu::texture * pgputexture);
+
+
+   public:
+
+
       virtual void _draw_nanovg_image(
          int iImage,
          const ::i32_size & sizeImage,

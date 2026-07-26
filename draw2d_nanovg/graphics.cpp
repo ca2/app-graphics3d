@@ -9713,6 +9713,80 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
+   void graphics::prepare_nanovg_render_target(
+      ::gpu::texture * pgputexture)
+   {
+
+      if (!pgputexture)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG has no GPU render target to prepare.");
+
+      }
+
+      ::cast < ::gpu_opengl::texture > popengltexture = pgputexture;
+
+      if (!popengltexture)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG requires an OpenGL render-target texture.");
+
+      }
+
+      if (!popengltexture->m_gluDepthStencilRBO)
+      {
+
+         popengltexture->create_depth_resources();
+
+      }
+
+      auto uFramebuffer = popengltexture->frame_buffer_object();
+
+      if (!uFramebuffer)
+      {
+
+         throw ::exception(
+            error_wrong_state,
+            "NanoVG could not acquire its OpenGL framebuffer.");
+
+      }
+
+      glBindFramebuffer(GL_FRAMEBUFFER, uFramebuffer);
+      ::opengl::check_error("");
+
+      auto sizeTarget = popengltexture->size();
+      glViewport(0, 0, sizeTarget.cx, sizeTarget.cy);
+      ::opengl::check_error("");
+
+      GLint iStencilWriteMask = 0;
+      GLint iStencilBackWriteMask = 0;
+      glGetIntegerv(GL_STENCIL_WRITEMASK, &iStencilWriteMask);
+      glGetIntegerv(GL_STENCIL_BACK_WRITEMASK, &iStencilBackWriteMask);
+      auto bScissorEnabled = glIsEnabled(GL_SCISSOR_TEST);
+
+      glStencilMask(0xffffffffu);
+      glDisable(GL_SCISSOR_TEST);
+      glClearStencil(0);
+      glClear(GL_STENCIL_BUFFER_BIT);
+
+      glStencilMaskSeparate(GL_FRONT, (::u32)iStencilWriteMask);
+      glStencilMaskSeparate(GL_BACK, (::u32)iStencilBackWriteMask);
+      if (bScissorEnabled)
+      {
+
+         glEnable(GL_SCISSOR_TEST);
+
+      }
+
+      ::opengl::check_error("");
+
+   }
+
+
    void graphics::on_start_layer(::gpu::layer* pgpulayer)
    {
 
@@ -9726,6 +9800,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       if (playerPrevious)
       {
+
+         prepare_nanovg_render_target(
+            pgpucontext->current_target_texture(::gpu::current_layer()));
 
          nvgBeginFrame(m_pdc, pgpucontext->m_rectangle.width(),
             pgpucontext->m_rectangle.height(), 1.f);
@@ -9852,9 +9929,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             if (popengltexture)
             {
 
-               glBindFramebuffer(GL_FRAMEBUFFER, popengltexture->frame_buffer_object());
-
-               glViewport(0, 0, m_pimage->m_size.cx, m_pimage->m_size.cy);
+               prepare_nanovg_render_target(popengltexture);
 
             }
 
@@ -9943,6 +10018,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
                                  -1, strMessage);
          }
+
+         prepare_nanovg_render_target(
+            gpu_context()->current_target_texture(::gpu::current_layer()));
 
          nvgBeginFrame(m_pdc, (float)size.width(), (float)size.height(), 1.0f);
 
