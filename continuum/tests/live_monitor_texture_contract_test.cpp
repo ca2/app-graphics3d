@@ -127,29 +127,23 @@ int main()
    {
 
       const std::string overlaySource(pszOverlaySource);
-      const auto backgroundUv = overlaySource.find(
-         "vec2 backgroundUv = vec2(");
-      const auto backgroundUvX = overlaySource.find(
-         "viewportUv.x,", backgroundUv);
-      const auto backgroundUvY = overlaySource.find(
-         "1.0 - viewportUv.y);", backgroundUvX);
-      const auto backgroundSample = overlaySource.find(
-         "texture(backgroundTexture, backgroundUv);", backgroundUv);
-      const auto overlayUv = overlaySource.find(
-         "vec2 viewportTopLeftUv = vec2(");
-      const auto overlayUvX = overlaySource.find(
-         "viewportUv.x,", overlayUv);
-      const auto overlayUvY = overlaySource.find(
-         "1.0 - viewportUv.y);", overlayUvX);
+      const std::string backgroundBlock =
+         "vec2 backgroundUv = vec2(\r\n"
+         "        viewportUv.x,\r\n"
+         "        1.0 - viewportUv.y);\r\n"
+         "\r\n"
+         "    vec4 backgroundColor =\r\n"
+         "        texture(backgroundTexture, backgroundUv);";
+      const std::string overlayBlock =
+         "vec2 overlayUv = vec2(\r\n"
+         "        overlayTopLeftUv.x,\r\n"
+         "        1.0 - overlayTopLeftUv.y);\r\n"
+         "\r\n"
+         "    vec4 overlayColor =\r\n"
+         "        texture(overlayTexture, overlayUv);";
 
-      assert(backgroundUv != std::string::npos);
-      assert(backgroundUvX != std::string::npos);
-      assert(backgroundUvY != std::string::npos);
-      assert(backgroundSample != std::string::npos);
-      assert(overlayUv != std::string::npos);
-      assert(overlayUvX != std::string::npos);
-      assert(overlayUvY != std::string::npos);
-      assert(backgroundUv < backgroundSample);
+      assert(overlaySource.find(backgroundBlock) != std::string::npos);
+      assert(overlaySource.find(overlayBlock) != std::string::npos);
       assert(overlaySource.find("texture(backgroundTexture, viewportUv)") ==
          std::string::npos);
 
