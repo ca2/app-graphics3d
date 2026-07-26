@@ -44,12 +44,14 @@ namespace draw2d_nanovg
       //::pointer<::opengl::context>          m_popenglcontext;
 
       ::pointer< ::mutex > m_pmutex;
+      bool m_bNanoVGGeometryAntialias = true;
 
       draw2d();
       ~draw2d() override;
 
 
       void initialize(::particle * pparticle) override;
+      int nanovg_create_flags() const;
 
 
       bool write_text_supports_raster_fonts() override;

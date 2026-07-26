@@ -109,6 +109,23 @@ namespace draw2d_nanovg
 {
 
 
+   int draw2d::nanovg_create_flags() const
+   {
+
+      int iFlags = NVG_STENCIL_STROKES | NVG_DEBUG;
+
+      if (m_bNanoVGGeometryAntialias)
+      {
+
+         iFlags |= NVG_ANTIALIAS;
+
+      }
+
+      return iFlags;
+
+   }
+
+
    static ::i64 performance_steady_nanoseconds()
    {
 
@@ -335,7 +352,7 @@ namespace draw2d_nanovg
          {
 
             clear_nanovg_gpu_image_wrapper_cache();
-            m_pdc = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+            m_pdc = nvgCreateGL3(::draw2d_nanovg::get()->nanovg_create_flags());
 
             if (!m_pdc)
             {
@@ -524,7 +541,7 @@ namespace draw2d_nanovg
 
       }
 
-      m_pdc = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
+      m_pdc = nvgCreateGL3(::draw2d_nanovg::get()->nanovg_create_flags());
 
       if (!m_pdc)
       {

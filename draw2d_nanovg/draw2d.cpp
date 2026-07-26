@@ -71,6 +71,8 @@ namespace draw2d_nanovg
 
       ::gpu::draw2d::initialize(pparticle);
 
+      m_bNanoVGGeometryAntialias =
+         !m_papplication->m_gpu.m_bMultisample;
 
       //application()->create_gpu();
       //if (!estatus)

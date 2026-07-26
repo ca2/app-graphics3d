@@ -83,7 +83,7 @@ int main()
    const auto ensureRenderer = backendCreation.find(
       "pgpucontextNew->get_gpu_renderer();", assignCompositor);
    const auto createNanoVg = backendCreation.find(
-      "nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG)",
+      "nvgCreateGL3(::draw2d_nanovg::get()->nanovg_create_flags())",
       ensureRenderer);
 
    assert(deleteOldNanoVg == std::string::npos);
