@@ -9764,8 +9764,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       GLint iStencilWriteMask = 0;
       GLint iStencilBackWriteMask = 0;
+      GLint iStencilClearValue = 0;
       glGetIntegerv(GL_STENCIL_WRITEMASK, &iStencilWriteMask);
       glGetIntegerv(GL_STENCIL_BACK_WRITEMASK, &iStencilBackWriteMask);
+      glGetIntegerv(GL_STENCIL_CLEAR_VALUE, &iStencilClearValue);
       auto bScissorEnabled = glIsEnabled(GL_SCISSOR_TEST);
 
       glStencilMask(0xffffffffu);
@@ -9773,6 +9775,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       glClearStencil(0);
       glClear(GL_STENCIL_BUFFER_BIT);
 
+      glClearStencil(iStencilClearValue);
       glStencilMaskSeparate(GL_FRONT, (::u32)iStencilWriteMask);
       glStencilMaskSeparate(GL_BACK, (::u32)iStencilBackWriteMask);
       if (bScissorEnabled)
@@ -9916,26 +9919,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::gpu::graphics::begin_draw();
 
-      if (m_pimage)
-      {
+      auto pgputextureTarget = current_target_texture(
+         ::gpu::current_layer());
 
-         ::cast<::draw2d_nanovg::image> pnanovgimage = m_pimage;
-
-         if (pnanovgimage)
-         {
-
-            ::cast<::gpu_opengl::texture> popengltexture = pnanovgimage->m_pgputexture;
-
-            if (popengltexture)
-            {
-
-               prepare_nanovg_render_target(popengltexture);
-
-            }
-
-         }
-
-      }
+      prepare_nanovg_render_target(pgputextureTarget);
       
       auto size = m_size;
 

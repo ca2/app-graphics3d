@@ -89,10 +89,14 @@ int main()
    assert(prepareTarget.find("glViewport(") != std::string::npos);
    assert(prepareTarget.find("GL_STENCIL_WRITEMASK") !=
       std::string::npos);
+   assert(prepareTarget.find("GL_STENCIL_CLEAR_VALUE") !=
+      std::string::npos);
    assert(prepareTarget.find("GL_SCISSOR_TEST") != std::string::npos);
    assert(prepareTarget.find("glStencilMask(0xffffffffu);") !=
       std::string::npos);
    assert(prepareTarget.find("glDisable(GL_SCISSOR_TEST);") !=
+      std::string::npos);
+   assert(prepareTarget.find("glClearStencil(iStencilClearValue);") !=
       std::string::npos);
    assert(prepareTarget.find("GL_COLOR_BUFFER_BIT") == std::string::npos);
    assert(prepareTarget.find("GL_DEPTH_BUFFER_BIT") == std::string::npos);
@@ -120,6 +124,11 @@ int main()
       assert(prepare < begin);
 
    }
+
+   assert(beginDraw.find(
+      "auto pgputextureTarget = current_target_texture(") !=
+      std::string::npos);
+   assert(beginDraw.find("if (m_pimage)") == std::string::npos);
 
    return 0;
 
