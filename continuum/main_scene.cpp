@@ -579,6 +579,11 @@ namespace app_graphics3d_continuum
 
                      pgpucommandbuffer->begin_render(m_pgpushaderBlend, m_pgputextureMonitorMultisample);
 
+                     auto rectangleMonitor = m_pgputextureMonitorMultisample->rectangle();
+
+                     pgpucommandbuffer->set_viewport(rectangleMonitor);
+                     pgpucommandbuffer->set_scissor(rectangleMonitor);
+
                      auto pbindingsetTextureScreen = m_pgpushaderBlend->binding_set(1);
 
                      auto pbindingslotsetTextureScreen = m_pgputextureHelloMultiverseScreen->binding_slot_set(

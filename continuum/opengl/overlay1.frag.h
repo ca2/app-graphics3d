@@ -39,8 +39,12 @@ void main()
         viewportUv uses the OpenGL convention:
         y=0 at the bottom and y=1 at the top.
     */
+    vec2 backgroundUv = vec2(
+        viewportUv.x,
+        1.0 - viewportUv.y);
+
     vec4 backgroundColor =
-        texture(backgroundTexture, viewportUv);
+        texture(backgroundTexture, backgroundUv);
 
     /*
         Convert the viewport coordinate to a top-left-origin coordinate
