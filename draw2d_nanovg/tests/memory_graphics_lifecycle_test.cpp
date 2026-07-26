@@ -72,7 +72,7 @@ int main()
       "void graphics::create_window_graphics(");
 
    const auto deleteOldNanoVg = backendCreation.find("nvgDeleteGL3(pdcOld);");
-   const auto acquireGpuContext = backendCreation.find("acquire_draw2d_context(");
+   const auto acquireGpuContext = backendCreation.find("acquire_gpu_context(");
    const auto createGpuContext = backendCreation.find("create_draw2d_context(");
    const auto gpuBufferOutput = backendCreation.find(
       "::gpu::e_output_gpu_buffer", acquireGpuContext);

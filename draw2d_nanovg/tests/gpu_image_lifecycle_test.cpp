@@ -64,22 +64,18 @@ int main()
    assert(create.find("create_bitmap") == std::string::npos);
    assert(create.find("::pixmap::initialize") == std::string::npos);
 
-   const auto getGraphics = section(
-      imageSource,
-      "::draw2d::graphics * image::_get_graphics() const",
-      "double image::pi()");
-   assert(getGraphics.find("return m_pgraphics;") != std::string::npos);
-   assert(getGraphics.find("m_pbitmap") == std::string::npos);
-
-   const auto getGpuGraphics = section(
+   const auto getGpuTexture = section(
       gpuImageSource,
-      "::draw2d::graphics * image::get_graphics() const",
-      "::gpu::texture * image::gpu_texture() const");
-   const auto unmapBeforeGraphics = getGpuGraphics.find("unmap();");
-   const auto returnGpuGraphics = getGpuGraphics.find("return _get_graphics();");
-   assert(unmapBeforeGraphics != std::string::npos);
-   assert(returnGpuGraphics != std::string::npos);
-   assert(unmapBeforeGraphics < returnGpuGraphics);
+      "::gpu::texture * image::gpu_texture() const",
+      "void image::initialize_gpu_image(");
+   const auto requireTexture = getGpuTexture.find("if (!m_pgputexture)");
+   const auto createTexture = getGpuTexture.find("create_gpu_texture();");
+   const auto returnTexture = getGpuTexture.find("return m_pgputexture;");
+   assert(requireTexture != std::string::npos);
+   assert(createTexture != std::string::npos);
+   assert(returnTexture != std::string::npos);
+   assert(requireTexture < createTexture);
+   assert(createTexture < returnTexture);
 
    const auto destroy = section(
       imageSource,

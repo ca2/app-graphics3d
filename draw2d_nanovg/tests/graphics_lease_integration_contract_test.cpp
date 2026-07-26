@@ -61,9 +61,13 @@ int main()
       "void graphics::on_release_memory_graphics()",
       "void graphics::create_window_graphics(");
 
-   assert(gpuGraphicsHeader.find("::gpu::context_lease m_contextlease") != std::string::npos);
-   assert(nanovgCreate.find("acquire_draw2d_context") != std::string::npos);
+   assert(gpuGraphicsHeader.find("::gpu::context_lease") != std::string::npos);
+   assert(gpuGraphicsHeader.find("m_pgpucontextLease;") != std::string::npos);
+   assert(nanovgCreate.find("acquire_gpu_context") != std::string::npos);
    assert(nanovgCreate.find("create_draw2d_context") == std::string::npos);
+   assert(nanovgCreate.find("if (!context_lease())") != std::string::npos);
+   assert(nanovgCreate.find(
+      "set_context_lease(::transfer(contextlease));") != std::string::npos);
    assert(nanovgHeader.find("on_acquire_memory_graphics") != std::string::npos);
    assert(nanovgHeader.find("on_release_memory_graphics") != std::string::npos);
    assert(nanovgRelease.find("defer_fence") != std::string::npos);
