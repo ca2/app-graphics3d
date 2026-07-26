@@ -47,18 +47,18 @@ void main()
         texture(backgroundTexture, backgroundUv);
 
     /*
-        Convert the viewport coordinate to a top-left-origin coordinate
-        so it can be compared with overlayTopLeft/overlayBottomRight.
+        The monitor quad vertically reverses this composition texture.
+        Use viewportUv directly for desktop placement so a desktop-top
+        overlay is written at the offscreen bottom and appears at the
+        quad's visual top.
     */
-    vec2 viewportTopLeftUv = vec2(
-        viewportUv.x,
-        1.0 - viewportUv.y);
+    vec2 overlayPlacementUv = viewportUv;
 
     bool insideOverlay =
-        viewportTopLeftUv.x >= overlayTopLeft.x &&
-        viewportTopLeftUv.y >= overlayTopLeft.y &&
-        viewportTopLeftUv.x <= overlayBottomRight.x &&
-        viewportTopLeftUv.y <= overlayBottomRight.y;
+        overlayPlacementUv.x >= overlayTopLeft.x &&
+        overlayPlacementUv.y >= overlayTopLeft.y &&
+        overlayPlacementUv.x <= overlayBottomRight.x &&
+        overlayPlacementUv.y <= overlayBottomRight.y;
 
     if (!insideOverlay)
     {
@@ -77,19 +77,19 @@ void main()
         vec2(0.000001));
 
     /*
-        Coordinates relative to the overlay rectangle, using a
-        top-left origin.
+        Coordinates relative to the overlay rectangle in the
+        quad-precompensated placement domain.
     */
-    vec2 overlayTopLeftUv =
-        (viewportTopLeftUv - overlayTopLeft) /
+    vec2 overlayLocalUv =
+        (overlayPlacementUv - overlayTopLeft) /
         rectangleSize;
 
     /*
         Convert to the normal OpenGL texture-coordinate convention.
     */
     vec2 overlayUv = vec2(
-        overlayTopLeftUv.x,
-        1.0 - overlayTopLeftUv.y);
+        overlayLocalUv.x,
+        1.0 - overlayLocalUv.y);
 
     vec4 overlayColor =
         texture(overlayTexture, overlayUv);

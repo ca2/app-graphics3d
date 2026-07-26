@@ -134,16 +134,34 @@ int main()
          "\r\n"
          "    vec4 backgroundColor =\r\n"
          "        texture(backgroundTexture, backgroundUv);";
-      const std::string overlayBlock =
+      const std::string overlayPlacementDeclaration =
+         "vec2 overlayPlacementUv = viewportUv;";
+      const std::string insideOverlayBlock =
+         "bool insideOverlay =\r\n"
+         "        overlayPlacementUv.x >= overlayTopLeft.x &&\r\n"
+         "        overlayPlacementUv.y >= overlayTopLeft.y &&\r\n"
+         "        overlayPlacementUv.x <= overlayBottomRight.x &&\r\n"
+         "        overlayPlacementUv.y <= overlayBottomRight.y;";
+      const std::string overlayLocalBlock =
+         "vec2 overlayLocalUv =\r\n"
+         "        (overlayPlacementUv - overlayTopLeft) /\r\n"
+         "        rectangleSize;";
+      const std::string overlaySampleBlock =
          "vec2 overlayUv = vec2(\r\n"
-         "        overlayTopLeftUv.x,\r\n"
-         "        1.0 - overlayTopLeftUv.y);\r\n"
+         "        overlayLocalUv.x,\r\n"
+         "        1.0 - overlayLocalUv.y);\r\n"
          "\r\n"
          "    vec4 overlayColor =\r\n"
          "        texture(overlayTexture, overlayUv);";
 
       assert(overlaySource.find(backgroundBlock) != std::string::npos);
-      assert(overlaySource.find(overlayBlock) != std::string::npos);
+      assert(overlaySource.find(overlayPlacementDeclaration) !=
+         std::string::npos);
+      assert(overlaySource.find(insideOverlayBlock) != std::string::npos);
+      assert(overlaySource.find(overlayLocalBlock) != std::string::npos);
+      assert(overlaySource.find(overlaySampleBlock) != std::string::npos);
+      assert(overlaySource.find("viewportTopLeftUv") == std::string::npos);
+      assert(overlaySource.find("overlayTopLeftUv") == std::string::npos);
       assert(overlaySource.find("texture(backgroundTexture, viewportUv)") ==
          std::string::npos);
 
