@@ -90,6 +90,12 @@
     <ClInclude Include="main_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="opengl\overlay1.frag.h">
+      <Filter>Header Files\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="opengl\overlay1.vert.h">
+      <Filter>Header Files\opengl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -101,5 +107,19 @@
     <Filter Include="Header Files\graphics3d">
       <UniqueIdentifier>{4f7d92d7-443f-4dca-8930-cb18c9455114}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\opengl">
+      <UniqueIdentifier>{d228d1bb-03e7-41c2-888f-e7476a39690a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\opengl">
+      <UniqueIdentifier>{1be12548-a22c-4eef-817c-c969843fc04c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="opengl\overlay1.frag">
+      <Filter>Source Files\opengl</Filter>
+    </CustomBuild>
+    <CustomBuild Include="opengl\overlay1.vert">
+      <Filter>Source Files\opengl</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

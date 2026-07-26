@@ -32,6 +32,9 @@ namespace app_graphics3d_continuum
    application::application()
    {
 
+      m_gpu.m_bMultisample = true;
+      m_gpu.m_iSampleCount = 4;
+
       m_pmainscene = nullptr;
       m_bAbsoluteMousePosition = false;
       m_ppaneimpact = nullptr;

@@ -9004,6 +9004,30 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
+      //if (m_pimage)
+      //{
+
+      //   // m_pimage is set, so assume the reason for existence of
+      //   // this graphics context, is to draw in this m_pimage.
+
+      //   // we have a pgpuimage to be set in m_pimage owned texture.
+      //   // this pgpuimage may be not a texture yet, but just a 
+      //   // pixmap buffer.
+      //   // to avoid creating a texture just to set the image in
+      //   // pixmap to the target texture(m_pimage), we can try
+      //   // to bit blit the pixmap directly to m_pimage, without
+      //   // creating intermediate texture having the pixmap image.
+      //   //
+
+      //   // Example: Modifying the CPU buffer and updating the NanoVG image
+      //   // 1. Alter your raw CPU pixel data buffer (e.g., myCpuBuffer)
+      //   // 2. Push the entire buffer back to the GPU handle
+      //   nvgUpdateImage(vg, nvgImageHandle, myCpuBuffer);
+
+      //   return;
+
+      //}
+
       auto pgputexture = pgpuimage->gpu_texture();
 
       auto pgpuopengltexture = dynamic_cast < ::gpu_opengl::texture * >(pgputexture);
@@ -9797,6 +9821,29 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    {
 
       ::gpu::graphics::begin_draw();
+
+      if (m_pimage)
+      {
+
+         ::cast<::draw2d_nanovg::image> pnanovgimage = m_pimage;
+
+         if (pnanovgimage)
+         {
+
+            ::cast<::gpu_opengl::texture> popengltexture = pnanovgimage->m_pgputexture;
+
+            if (popengltexture)
+            {
+
+               glBindFramebuffer(GL_FRAMEBUFFER, popengltexture->frame_buffer_object());
+
+               glViewport(0, 0, m_pimage->m_size.cx, m_pimage->m_size.cy);
+
+            }
+
+         }
+
+      }
       
       auto size = m_size;
 

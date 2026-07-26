@@ -99,7 +99,7 @@ namespace draw2d_nanovg
 
 
 
-   void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int, bool)
+   void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int, bool bPreserve)
    {
 
       //if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
@@ -110,7 +110,15 @@ namespace draw2d_nanovg
 
       }
 
-      destroy();
+      auto pgputextureDestroy = ::transfer(m_pgputexture);
+      auto pixmapDestroy = *(pixmap_t *)this;
+      auto pixmapMemoryDestroy = ::transfer(m_memoryPixmap);
+      m_phost = nullptr;
+      //if (!bPrepgputextureDestroy)
+      //{
+      //auto pimageToDestroy = ::as_pointer(this);
+
+      //destroy();
 
       if (size.is_empty())
       {
@@ -127,7 +135,24 @@ namespace draw2d_nanovg
 
       auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
 
-      initialize_gpu_image(pgpucontextlease, size, {});
+      if (bPreserve && pgputextureDestroy)
+      {
+
+         initialize_gpu_image(pgpucontextlease, size, pgputextureDestroy.get());
+
+      }
+      else if (bPreserve && pixmapMemoryDestroy.data())
+      {
+
+         initialize_gpu_image(pgpucontextlease, size, pixmapDestroy);
+
+      }
+      else
+      {
+
+         initialize_gpu_image(pgpucontextlease, size, {});
+
+      }
 
       m_eflagElement = eobjectCreate;
       m_estatus = ::success;

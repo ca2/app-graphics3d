@@ -813,6 +813,8 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="main_frame.h" />
     <ClInclude Include="main_scene.h" />
+    <ClInclude Include="opengl\overlay1.frag.h" />
+    <ClInclude Include="opengl\overlay1.vert.h" />
     <ClInclude Include="pane_impact.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="_.h" />
@@ -847,6 +849,46 @@
     <ProjectReference Include="..\graphics3d\graphics3d.vcxproj">
       <Project>{beca2c96-6cfd-4793-a2b8-1fce9bd31682}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="opengl\overlay1.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="opengl\overlay1.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

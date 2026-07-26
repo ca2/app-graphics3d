@@ -38,7 +38,7 @@ namespace gpu_directx12
 {
 
 
-   extern thread_local device* t_pgpudevice;
+   //extern thread_local device* t_pgpudevice;
 
    context::context()
    {

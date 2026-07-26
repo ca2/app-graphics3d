@@ -746,6 +746,7 @@
     <ClCompile Include="render_system\gltf_render_system.cpp" />
     <ClCompile Include="render_system\scene_render_system.cpp" />
     <ClCompile Include="render_system\skybox_render_system.cpp" />
+    <ClCompile Include="render_system\texture_render_system.cpp" />
     <ClCompile Include="render_system\wavefront_obj_render_system.cpp" />
     <ClCompile Include="_.cpp" />
     <ClCompile Include="_factory.cpp" />
@@ -770,9 +771,12 @@
     <ClInclude Include="render_system\shader\skybox.frag.h" />
     <ClInclude Include="render_system\shader\skybox.vert.h" />
     <ClInclude Include="render_system\shader\skybox_hdr.frag.h" />
+    <ClInclude Include="render_system\shader\texture.frag.h" />
+    <ClInclude Include="render_system\shader\texture.vert.h" />
     <ClInclude Include="render_system\shader\wavefront.frag.h" />
     <ClInclude Include="render_system\shader\wavefront.vert.h" />
     <ClInclude Include="render_system\skybox_render_system.h" />
+    <ClInclude Include="render_system\texture_render_system.h" />
     <ClInclude Include="render_system\wavefront_obj_render_system.h" />
     <ClInclude Include="scene_object.h" />
     <ClInclude Include="shapes.h" />
@@ -1002,6 +1006,46 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="render_system\shader\texture.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+    </CustomBuild>
+    <CustomBuild Include="render_system\shader\texture.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">%(RelativeDir)%(Filename)%(Extension).h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">application_build_helper --inline-text %(RelativeDir)%(Filename)%(Extension)</Command>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

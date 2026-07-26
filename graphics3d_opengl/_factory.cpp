@@ -10,6 +10,7 @@
 #include "render_system/scene_render_system.h"
 #include "render_system/wavefront_obj_render_system.h"
 #include "render_system/skybox_render_system.h"
+#include "render_system/texture_render_system.h"
 #include "aura/platform/application.h"
 #include "bred/graphics3d/scene_object.h"
 //#include "networking.h"
@@ -40,6 +41,7 @@ IMPLEMENT_FACTORY(graphics3d_opengl)
    pfactory->add_factory_item<::graphics3d_opengl::scene_render_system, ::graphics3d::scene_render_system>();
    pfactory->add_factory_item<::graphics3d_opengl::wavefront_obj_render_system, ::graphics3d::wavefront_obj_render_system>();
    pfactory->add_factory_item<::graphics3d_opengl::skybox_render_system, ::graphics3d::skybox_render_system>();
+   pfactory->add_factory_item<::graphics3d_opengl::texture_render_system, ::graphics3d::texture_render_system>();
 
 
 }
