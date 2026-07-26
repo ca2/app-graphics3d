@@ -622,6 +622,20 @@ namespace app_graphics3d_continuum
 
                      pgpucontext->copy(m_pgputextureMonitor2, m_pgputextureMonitorMultisample, nullptr);
 
+                     if (m_prenderable)
+                     {
+
+                        auto prenderableMonitor = m_prenderable->renderable();
+
+                        if (prenderableMonitor)
+                        {
+
+                           prenderableMonitor->m_ptextureTexture = m_pgputextureMonitor2;
+
+                        }
+
+                     }
+
                      pgpucommandbuffer->end_render();
                   }
 
