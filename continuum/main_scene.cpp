@@ -6,6 +6,9 @@
 #include "impact.h"
 #include "input.h"
 #include "main_scene.h"
+#include "acme/filesystem/filesystem/directory_context.h"
+#include "acme/filesystem/filesystem/directory_system.h"
+#include "acme/filesystem/filesystem/file_context.h"
 #include "aura/windowing/display.h"
 #include "aura/windowing/windowing.h"
 #include "bred/graphics3d/camera.h"
@@ -250,7 +253,18 @@ namespace app_graphics3d_continuum
          //screen.m_prenderable->m_pimageTextureNew = image()->path_image("dropbox://Photos/weather/clear/day/ocean.jpg");
       }
 
-      m_pimageHelloMultiverseScreen = image()->path_image("dropbox://Photos/weather/day/clear/ocean.jpg");
+      //m_pimageHelloMultiverseScreen = image()->path_image("dropbox://Photos/weather/day/clear/ocean.jpg");
+      
+      auto pathBackground = directory_system()->roaming() / "app-core/ambient/background.png";
+
+      if (!file()->exists(pathBackground))
+      {
+
+         pathBackground = "dropbox://Photos/weather/day/clear/ocean.jpg";
+
+      }
+
+      m_pimageHelloMultiverseScreen = image()->path_image(pathBackground);
       
       construct_newø(m_pbitmapsourcebuffer);
 
