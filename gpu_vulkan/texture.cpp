@@ -200,87 +200,87 @@ namespace gpu_vulkan
    }
 
 
-   ::gpu::fence * texture_synchronization::in_flight_fence()
-   {
+   //::gpu::fence * texture_synchronization::in_flight_fence()
+   //{
 
-      if (!m_pgpufenceInFlight)
-      {
+   //   if (!m_pgpufenceInFlight)
+   //   {
 
-         ::cast<::gpu_vulkan::context> pcontext = m_ptexture->m_pgpucontext;
+   //      ::cast<::gpu_vulkan::context> pcontext = m_ptexture->m_pgpucontext;
 
-         construct_newø(m_pgpufenceInFlight);
+   //      construct_newø(m_pgpufenceInFlight);
 
-         m_pgpufenceInFlight->initialize_gpu_fence(pcontext, true);
+   //      m_pgpufenceInFlight->initialize_gpu_fence(pcontext, true);
 
-         //return m_pgpufenceInFlight;
+   //      //return m_pgpufenceInFlight;
 
-         //VkFenceCreateInfo fenceInfo = {};
-         //fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-         //fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+   //      //VkFenceCreateInfo fenceInfo = {};
+   //      //fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+   //      //fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-         //if (vkCreateFence(pcontext->logicalDevice(), &fenceInfo, nullptr, &m_vkfenceInFlight2) != VK_SUCCESS)
-         //{
+   //      //if (vkCreateFence(pcontext->logicalDevice(), &fenceInfo, nullptr, &m_vkfenceInFlight2) != VK_SUCCESS)
+   //      //{
 
-         //   throw ::exception(error_failed, "failed to create fence!");
-         //}
-      }
+   //      //   throw ::exception(error_failed, "failed to create fence!");
+   //      //}
+   //   }
 
-      //return m_vkfenceInFlight2;
+   //   //return m_vkfenceInFlight2;
 
-      return m_pgpufenceInFlight;
+   //   return m_pgpufenceInFlight;
 
-   }
+   //}
 
 
-   texture_synchronization *texture::synchronization()
-   {
+   //texture_synchronization *texture::synchronization()
+   //{
 
-      //::cast<::gpu_vulkan::render_target> prendertarget = pgpurendertarget;
+   //   //::cast<::gpu_vulkan::render_target> prendertarget = pgpurendertarget;
 
-      auto &psynchronization = this->m_ptexturesynchronization;
+   //   auto &psynchronization = this->m_ptexturesynchronization;
 
-      // auto& synchronization = this->m_mapSynchronization[prendertarget];
+   //   // auto& synchronization = this->m_mapSynchronization[prendertarget];
 
-      if (!psynchronization)
-      {
+   //   if (!psynchronization)
+   //   {
 
-         construct_newø(psynchronization);
+   //      construct_newø(psynchronization);
 
-         ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
+   //      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
-         // synchronization.m_prendertarget = nullptr;
+   //      // synchronization.m_prendertarget = nullptr;
 
-         psynchronization->m_ptexture = this;
+   //      psynchronization->m_ptexture = this;
 
-         constructø(psynchronization->m_pgpusemaphoreAvailable);
+   //      constructø(psynchronization->m_pgpusemaphoreAvailable);
 
-         psynchronization->m_pgpusemaphoreAvailable->initialize_gpu_semaphore(pcontext);
+   //      psynchronization->m_pgpusemaphoreAvailable->initialize_gpu_semaphore(pcontext);
 
-         constructø(psynchronization->m_pgpusemaphoreRenderFinished);
+   //      constructø(psynchronization->m_pgpusemaphoreRenderFinished);
 
-         psynchronization->m_pgpusemaphoreRenderFinished->initialize_gpu_semaphore(pcontext);
+   //      psynchronization->m_pgpusemaphoreRenderFinished->initialize_gpu_semaphore(pcontext);
 
-         //VkSemaphoreCreateInfo semaphoreInfo = {};
-         //semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+   //      //VkSemaphoreCreateInfo semaphoreInfo = {};
+   //      //semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-         psynchronization->m_iImageAvailable = 0;
+   //      psynchronization->m_iImageAvailable = 0;
 
-         //if (vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr,
-         //                      &psynchronization->m_vksemaphoreAvailable) != VK_SUCCESS
+   //      //if (vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr,
+   //      //                      &psynchronization->m_vksemaphoreAvailable) != VK_SUCCESS
 
-         //    ||
+   //      //    ||
 
-         //    vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr,
-         //                      &psynchronization->m_vksemaphoreRenderFinished) != VK_SUCCESS)
+   //      //    vkCreateSemaphore(pcontext->logicalDevice(), &semaphoreInfo, nullptr,
+   //      //                      &psynchronization->m_vksemaphoreRenderFinished) != VK_SUCCESS)
 
-         //{
+   //      //{
 
-         //   throw ::exception(error_failed, "failed to create synchronization objects for a frame!");
-         //}
-      }
+   //      //   throw ::exception(error_failed, "failed to create synchronization objects for a frame!");
+   //      //}
+   //   }
 
-      return psynchronization;
-   }
+   //   return psynchronization;
+   //}
 
 
    texture::texture()

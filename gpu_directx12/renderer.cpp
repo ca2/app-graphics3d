@@ -11,7 +11,7 @@
 #include "physical_device.h"
 #include "swap_chain.h"
 #include "initializers.h"
-#include "bred/gpu/cpu_buffer.h"
+#include "bred/gpu/aaa_cpu_buffer.h"
 #include "bred/gpu/layer.h"
 //#include "bred/gpu/layer.h"
 #include "bred/gpu/frame.h"
@@ -20,7 +20,7 @@
 #include "gpu_directx12/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
-#include "aura/graphics/image/target.h"
+#include "aura/graphics/image/aaa_target.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
 
@@ -178,10 +178,12 @@ float4 main(PSInput input) : SV_TARGET {
       HRESULT hrCreateDescriptorHeapCbv = pd3d12device->CreateDescriptorHeap(&cbvHeapDesc, __interface_of(m_pheapCbv));
       pgpudevice->defer_throw_hresult(hrCreateDescriptorHeapCbv);
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
       {
 
-         pgpucontext->create_cpu_buffer(pgpucontext->rectangle().size());
+         throw todo;
+
+         pgpucontext->create_cpu_buffer21(pgpucontext->rectangle().size());
 
          construct_newø(m_pcpubuffersampler);
 
@@ -1330,7 +1332,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::cpu_buffer_sampler::send_sample()
+   void renderer::cpu_buffer_sampler::send_sample2()
    {
 
       void* data = nullptr;
@@ -1351,7 +1353,10 @@ float4 main(PSInput input) : SV_TARGET {
       UINT h = 0;
       UINT s = 0;
       GetTextureSizeInfo(pdevice->m_pd3d12device, presourceOffscreenTexture, w, h, s);
-      auto pcpubuffer = m_pgpucontext->m_pcpubuffer;
+
+      throw todo;
+      
+      auto pcpubuffer = m_pgpucontext->m_pcpubuffer2;
 
       if (pcpubuffer && w > 0 && h > 0 && s >0)
       {
@@ -1514,7 +1519,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::sample_to_cpu_buffer()
+   void renderer::sample_to_cpu_buffer21()
    {
 
       sample();
@@ -1875,7 +1880,7 @@ float4 main(PSInput input) : SV_TARGET {
       //      //vkMapMemory(m_pgpucontext->logicalDevice(), dstImageMemory, 0, VK_WHOLE_SIZE, 0, (void**)&imagedata);
       //      //imagedata += subResourceLayout.offset;
 
-      m_pcpubuffersampler->send_sample();
+      m_pcpubuffersampler->send_sample2();
 
       //      ///*
       //      //	Save host visible framebuffer image to disk (ppm format)
@@ -2330,7 +2335,7 @@ float4 main(PSInput input) : SV_TARGET {
       //   //	throw ::exception(error_failed, "failed to present swap chain image!");
       //   //}
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
       {
          sample();
       }

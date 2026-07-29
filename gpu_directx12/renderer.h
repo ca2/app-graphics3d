@@ -70,7 +70,7 @@ namespace gpu_directx12
 
          void sample(texture * ptexture);
 
-         void send_sample();
+         void send_sample2();
 
       };
 
@@ -200,7 +200,7 @@ namespace gpu_directx12
       void on_end_layer(::gpu::layer * pgpulayer);
 
       void sample();
-      void sample_to_cpu_buffer() override;
+      void sample_to_cpu_buffer21() override;
       void gpu_blend(::draw2d::graphics * pgraphics);
       //void resolve_color_and_alpha_accumulation_buffers();
       //void _resolve_color_and_alpha_accumulation_buffers();

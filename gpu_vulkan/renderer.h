@@ -144,7 +144,7 @@ namespace gpu_vulkan
 //      virtual ::gpu_vulkan::render_pass *render_pass2(::gpu::texture * pgputexture);
 
       void sample();
-      void sample_to_cpu_buffer() override;
+      void sample_to_cpu_buffer21() override;
       //void resolve_color_and_alpha_accumulation_buffers();
       //void _resolve_color_and_alpha_accumulation_buffers();
       //void swap_chain();

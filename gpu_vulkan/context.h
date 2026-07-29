@@ -129,9 +129,9 @@ namespace gpu_vulkan
       virtual void _create_window_context(::acme::windowing::window *pwindow);
 
       //virtual void _create_window_buffer();
-      void _create_cpu_buffer(const ::i32_size & size) override;
-      void resize_cpu_buffer(const ::i32_size & size) override;
-      void destroy_cpu_buffer() override;
+      void _create_cpu_buffer21(const ::i32_size & size) override;
+      void resize_cpu_buffer21(const ::i32_size & size) override;
+      void destroy_cpu_buffer21() override;
 
       //void make_current() override;
 

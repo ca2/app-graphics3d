@@ -108,8 +108,8 @@ namespace gpu_vulkan
       else
       {
 
-         m_papplication->m_gpu.m_eoutputDraw2d = ::gpu::e_output_cpu_buffer;
-         m_papplication->m_gpu.m_eoutputEngine = ::gpu::e_output_cpu_buffer;
+         m_papplication->m_gpu.m_eoutputDraw2d = ::gpu::e_output_aaa_cpu_buffer;
+         m_papplication->m_gpu.m_eoutputEngine = ::gpu::e_output_aaa_cpu_buffer;
 
       }
 

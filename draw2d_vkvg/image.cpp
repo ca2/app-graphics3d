@@ -57,79 +57,79 @@ namespace draw2d_vkvg
 
 
 
-   void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int iGoodStride, bool bPreserve)
-   {
-
-      if (m_pbitmap.is_set()
-            && m_pbitmap->get_os_data() != nullptr
-            && m_size == size)
-         //return true;
-         return;
-
-      destroy();
-
-      if (size.is_empty())
-      {
-
-         //return true;
-
-         return;
-
-      }
-
-      int iStride = size.cx * 4;
-
-#if defined(WINDOWS_DESKTOP)
-      m_bitmapinfo = {};
-
-      //{
-      //   iGoodStride
-      //}
-
-      m_bitmapinfo.bmiHeader.biSize          = sizeof (BITMAPINFOHEADER);
-      m_bitmapinfo.bmiHeader.biWidth         = size.cx;
-      m_bitmapinfo.bmiHeader.biHeight        =- size.cy;
-      m_bitmapinfo.bmiHeader.biPlanes        = 1;
-      m_bitmapinfo.bmiHeader.biBitCount      = 32;
-      m_bitmapinfo.bmiHeader.biCompression   = BI_RGB;
-      m_bitmapinfo.bmiHeader.biSizeImage     = iStride  * size.cy;
-
-#endif
-
-      constructø(m_pbitmap);
-
-      image32_t * pimage32 = nullptr;
-      m_pbitmap->create_bitmap(nullptr, size, &pimage32, nullptr, &iStride);
-      //if(!m_pbitmap->create_bitmap(nullptr, size, (void **) & pimage32, &iStride))
-      //{
-
-        // return false;
-
-      //}
-
-      if(m_pbitmap->get_os_data() == nullptr)
-      {
-
-         destroy();
-
-         //return false;
-
-         return;
-
-      }
-
-
-      this->initialize_pixmap(size, pimage32, iStride);
-
-      m_eflagElement = eobjectCreate;
-
-      set_ok_flag();
-
-      m_estatus = ::success;
-
-      //return true;
-
-   }
+//   void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int iGoodStride, bool bPreserve)
+//   {
+//
+//      if (m_pbitmap.is_set()
+//            && m_pbitmap->get_os_data() != nullptr
+//            && m_size == size)
+//         //return true;
+//         return;
+//
+//      destroy();
+//
+//      if (size.is_empty())
+//      {
+//
+//         //return true;
+//
+//         return;
+//
+//      }
+//
+//      int iStride = size.cx * 4;
+//
+//#if defined(WINDOWS_DESKTOP)
+//      m_bitmapinfo = {};
+//
+//      //{
+//      //   iGoodStride
+//      //}
+//
+//      m_bitmapinfo.bmiHeader.biSize          = sizeof (BITMAPINFOHEADER);
+//      m_bitmapinfo.bmiHeader.biWidth         = size.cx;
+//      m_bitmapinfo.bmiHeader.biHeight        =- size.cy;
+//      m_bitmapinfo.bmiHeader.biPlanes        = 1;
+//      m_bitmapinfo.bmiHeader.biBitCount      = 32;
+//      m_bitmapinfo.bmiHeader.biCompression   = BI_RGB;
+//      m_bitmapinfo.bmiHeader.biSizeImage     = iStride  * size.cy;
+//
+//#endif
+//
+//      constructø(m_pbitmap);
+//
+//      image32_t * pimage32 = nullptr;
+//      m_pbitmap->create_bitmap(nullptr, size, &pimage32, nullptr, &iStride);
+//      //if(!m_pbitmap->create_bitmap(nullptr, size, (void **) & pimage32, &iStride))
+//      //{
+//
+//        // return false;
+//
+//      //}
+//
+//      if(m_pbitmap->get_os_data() == nullptr)
+//      {
+//
+//         destroy();
+//
+//         //return false;
+//
+//         return;
+//
+//      }
+//
+//
+//      this->initialize_pixmap(size, pimage32, iStride);
+//
+//      m_eflagElement = eobjectCreate;
+//
+//      set_ok_flag();
+//
+//      m_estatus = ::success;
+//
+//      //return true;
+//
+//   }
 
 
    bool image::host(::pixmap_t * ppixmap, ::windowing::window * pwindow)
@@ -198,7 +198,7 @@ namespace draw2d_vkvg
    }
 
 
-   void image::create(::draw2d::graphics * pgraphics)
+   void image::create_from_graphics(::draw2d::graphics * pgraphics)
    {
 
       ::draw2d::bitmap * pbitmap = (dynamic_cast<::draw2d_vkvg::graphics * >(pgraphics))->get_current_bitmap();
@@ -212,10 +212,10 @@ namespace draw2d_vkvg
       }
 
       //if (!create(pbitmap->get_size()))
-      create(pbitmap->get_size());
-      {
-         //return false;//
-      }
+      create_as_descriptor(pbitmap->get_size());
+      //{
+      //   //return false;//
+      //}
 
       from(pgraphics);
 
@@ -267,7 +267,7 @@ namespace draw2d_vkvg
       ::i32_size size = pgraphics->m_pimage->get_size();
 
       //if(!create(size))
-      create(size);
+      create_as_descriptor(size);
       //{
 
       //   return false;

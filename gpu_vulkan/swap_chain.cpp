@@ -195,14 +195,21 @@ namespace gpu_vulkan
 
       uint32_t uImageIndex = 0;
 
+      auto vkSemaphoreImageAvailable = psemaphoreImageAvailable->m_vksemaphore;
+
       VkResult result = vkAcquireNextImageKHR(
           device,
           m_vkswapchain,
           UINT64_MAX,
-         psemaphoreImageAvailable->m_vksemaphore, // signal when image is ready
+                                              vkSemaphoreImageAvailable, // signal when image is ready
           VK_NULL_HANDLE,         // no fence (GPU-GPU sync only)
           &uImageIndex);
 
+      //informationf("acquire semaphore=%p currentFrame=%u imageIndex=%u image=%p", (void *)vkSemaphoreImageAvailable,
+        //           frameIndex, uImageIndex, (void *)swapchainImages[imageIndex]);
+
+      informationf("acquire semaphore=%p currentFrame=%u imageIndex=%u", (void *)vkSemaphoreImageAvailable,
+                   frameIndex, uImageIndex);
       m_iCurrentSwapChainImage = uImageIndex;
 
       pdevice->m_iCurrentImage = m_iCurrentSwapChainImage;
@@ -1207,7 +1214,6 @@ namespace gpu_vulkan
       //acquireNextImage();
       //VkResult vkresultAcquireNextImage = pswapchain->acquireNextImage();
 
-
       defer_check_swap_chain();
 
       ::cast <::gpu_vulkan::texture> ptextureSwapChain = pswapchain->current_swap_chain_texture();
@@ -1266,7 +1272,23 @@ namespace gpu_vulkan
       //::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+      auto psynchronization = ptexture->synchronization();
 
+      if (psynchronization->m_pgpusemaphoreRenderFinished)
+      {
+
+         ::cast<::gpu_vulkan::semaphore> pgpuvulkansemaphore = psynchronization->m_pgpusemaphoreRenderFinished;
+
+         auto vksemaphore = pgpuvulkansemaphore->m_vksemaphore;
+
+         if (pcommandbuffer->m_semaphoreaWait.add_unique(psynchronization->m_pgpusemaphoreRenderFinished))
+         {
+
+            pcommandbuffer->m_epipelinestageaWait.add(::gpu::e_pipeline_stage_fragment_shader_bit);
+         }
+      }
+
+      
       //pcommandbuffer->begin_command_buffer(false);
 
       //auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
@@ -1302,12 +1324,13 @@ namespace gpu_vulkan
       //}
 
       //pgpurenderer->m_pgpucontext->m_iOverrideFrame = get_image_index();
-
+      ptextureSwapChain->m_state2a.mip_layer_state(0, 0).m_vkpipelinestageflags =
+         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
       ptextureSwapChain->_set_state(
          pcommandbuffer,
          {
-         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
          VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
          }
@@ -1386,8 +1409,7 @@ namespace gpu_vulkan
 
       pcommandbuffer->end_render();
 
-                  ptextureSwapChain->_set_state(pcommandbuffer,
-                                    {0, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT});
+                  ptextureSwapChain->_set_state(pcommandbuffer, {0, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
 
       //{

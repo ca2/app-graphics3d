@@ -43,11 +43,12 @@ namespace draw2d_vkvg
 
       void dc_select(bool bSelect = true) override;
 
-      using ::image::image::create;
+      //using ::image::image::create;
 
-      virtual void create(const ::i32_size& size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1, bool bPreserve = false) override;
+      // void create(const ::i32_size &size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1,
+        //          bool bPreserve = false) override;
 
-      virtual void create(::draw2d::graphics* pgraphics);
+      void create_from_graphics(::draw2d::graphics* pgraphics);
 
       void destroy() override;
 

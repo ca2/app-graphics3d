@@ -90,10 +90,10 @@
     <ClInclude Include="main_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="opengl\overlay1.frag.h">
+    <ClInclude Include="opengl\aaa_overlay1.frag.h">
       <Filter>Header Files\opengl</Filter>
     </ClInclude>
-    <ClInclude Include="opengl\overlay1.vert.h">
+    <ClInclude Include="opengl\aaa_overlay1.vert.h">
       <Filter>Header Files\opengl</Filter>
     </ClInclude>
   </ItemGroup>
@@ -115,10 +115,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="opengl\overlay1.frag">
+    <CustomBuild Include="opengl\aaa_overlay1.frag">
       <Filter>Source Files\opengl</Filter>
     </CustomBuild>
-    <CustomBuild Include="opengl\overlay1.vert">
+    <CustomBuild Include="opengl\aaa_overlay1.vert">
       <Filter>Source Files\opengl</Filter>
     </CustomBuild>
   </ItemGroup>

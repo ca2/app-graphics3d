@@ -319,16 +319,17 @@ namespace gpu_vulkan
       ::comparable_array<VkSemaphore> vksemaphoreaWait;
       ::array_base<VkPipelineStageFlags> vkpipelinestageflagsaWait;
       ::comparable_array<VkSemaphore> vksemaphoreaSignal;
-      for (auto & pgpusemaphore : m_semaphoreaWait)
+      for(::collection::index i = 0; i < m_semaphoreaWait.get_count(); i++)
       {
-         ::cast < ::gpu_vulkan::semaphore > psemaphore = pgpusemaphore;
+         ::cast < ::gpu_vulkan::semaphore > psemaphore = m_semaphoreaWait[i];
+         auto epipelinestage = m_epipelinestageaWait.atø(i);
          if (psemaphore)
          {
             auto vksemaphore = psemaphore->m_vksemaphore;
             if (vksemaphore != VK_NULL_HANDLE)
             {
                vksemaphoreaWait.add(vksemaphore);
-               vkpipelinestageflagsaWait.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+               vkpipelinestageflagsaWait.add(::vulkan::to_vk_pipeline_stage(epipelinestage));
             }
          }
       }
@@ -553,6 +554,12 @@ namespace gpu_vulkan
       //}
 
       //::cast < ::gpu_vulkan::queue > pqueue = m_pgpuqueue;
+         if (submitInfo.pWaitSemaphores && submitInfo.pWaitDstStageMask)
+         {
+            informationf("submit wait semaphore=%p commandBuffer=%p waitStage=0x%08x",
+                         (void *)submitInfo.pWaitSemaphores[0], (void *)m_vkcommandbuffer,
+                         submitInfo.pWaitDstStageMask[0]);
+         }
 
       //if (vkQueueSubmit(queueGraphics, 1, &submitInfo, inFlightFences[m_pgpurenderer->get_frame_index()]) != VK_SUCCESS)
       auto vkresultQueueSubmit = pqueue->submit(1, &submitInfo, vkfence, m_strName, m_strAnnotation);
@@ -753,7 +760,8 @@ namespace gpu_vulkan
 
       ptextureTarget->_set_state(this,
 
-                                       {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                       {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+                                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
       ::gpu::command_buffer::begin_render(pgpushader, pgputextureTarget);

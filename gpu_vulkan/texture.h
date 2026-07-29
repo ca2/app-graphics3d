@@ -4,6 +4,7 @@
 
 
 #include "bred/gpu/texture.h"
+#include "bred/gpu/texture_synchronization.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 
 namespace tinygltf
@@ -18,7 +19,7 @@ namespace gpu_vulkan
    class binding_slot_set;
 
    class texture_synchronization :
-      virtual public ::particle
+      virtual public ::gpu::texture_synchronization
    {
    public:
 
@@ -34,10 +35,10 @@ namespace gpu_vulkan
       //VkSemaphore                   m_vksemaphoreRenderFinished = VK_NULL_HANDLE;
       //VkFence                       m_vkfenceInFlight2 = VK_NULL_HANDLE;
       //VkFence                       m_vkfenceImageInFlight = VK_NULL_HANDLE;
-      ::pointer<::gpu::semaphore> m_pgpusemaphoreAvailable;
-      ::pointer<::gpu::semaphore> m_pgpusemaphoreRenderFinished;
-      ::pointer<::gpu::fence> m_pgpufenceInFlight;
-      ::pointer<::gpu::fence> m_pgpufenceImageInFlight;
+      //::pointer<::gpu::semaphore> m_pgpusemaphoreAvailable;
+      //::pointer<::gpu::semaphore> m_pgpusemaphoreRenderFinished;
+      //::pointer<::gpu::fence> m_pgpufenceInFlight;
+      //::pointer<::gpu::fence> m_pgpufenceImageInFlight;
 
       texture_synchronization();
       ~texture_synchronization();
@@ -47,7 +48,7 @@ namespace gpu_vulkan
 
       //VkFence in_flight_fence();
 
-      ::gpu::fence *in_flight_fence();
+      //::gpu::fence *in_flight_fence();
 
       //virtual texture_synchronization& synchronization(::gpu::render_target * prendertarget);
 
@@ -264,7 +265,6 @@ namespace gpu_vulkan
       //VkDeviceMemory             m_vkdevicememoryDepth;
       VkImageView                m_vkimageview;
       //VkImageView                m_vkimageviewDepth;
-      ::pointer < texture_synchronization >           m_ptexturesynchronization;
       map<VkRenderPass, VkFramebuffer >             m_mapFramebuffer;
       map<::gpu_vulkan::shader *, ::pointer<::gpu_vulkan::descriptor_set_array>> m_mapShaderDescriptorSetArray;
       map<::gpu_vulkan::shader *, ::pointer<::gpu_vulkan::binding_slot_set>> m_mapBindingSlotSet1;
@@ -382,7 +382,9 @@ namespace gpu_vulkan
       void _LoadCubeMap(const ::pointer_array < ::pixmap >& pixmapa);
 
 
-      virtual texture_synchronization * synchronization();
+      //;
+      //;
+      //virtual texture_synchronization *synchronization();
       //virtual texture_synchronization* synchronization(::gpu::render_target* prendertarget);
       void set_pixels(const ::i32_rectangle& rectangle, const void* data) override;
 

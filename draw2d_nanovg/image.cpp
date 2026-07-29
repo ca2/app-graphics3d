@@ -1,4 +1,5 @@
 #include "framework.h"
+#include "bitmap.h"
 #include "image.h"
 #include "acme/platform/application.h"
 #include "apex/gpu/approach.h"
@@ -32,7 +33,9 @@ namespace draw2d_nanovg
 
    ::draw2d::bitmap_pointer image::detach_bitmap()
    {
+      
       return m_pbitmap.detach();
+
    }
 
 
@@ -58,11 +61,6 @@ namespace draw2d_nanovg
    {
 
       // if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
-      if (m_pgputexture && m_pgputexture->size() == size)
-      {
-
-         return;
-      }
 
       destroy();
 
@@ -73,24 +71,42 @@ namespace draw2d_nanovg
 
       }
 
+      auto pbitmap = createø<::draw2d::bitmap>();
+
+      ::cast<::gpu::bitmap> pgpubitmap = pbitmap;
+
+      //auto pacmewindowingwindow = m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+
+      //auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+
+      //_synchronous_lock synchronouslock(pgpudevice->synchronization());
+
+      auto pixmap = this->pixmap::map();
+
       auto pacmewindowingwindow = m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
       auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
 
       _synchronous_lock synchronouslock(pgpudevice->synchronization());
 
-      auto pgpucontext = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
+      auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, m_size);
 
-      ::gpu::context_lock contextlock(pgpucontext);
+      pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, size, pixmap);
 
-      pixmap_t pixmap;
+      //auto pgpucontext = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
 
-      pixmap.initialize_pixmap(size, (::image32_t*) pimage32, iScan);
+      //::gpu::context_lock contextlock(pgpucontext);
 
-      initialize_gpu_image(pgpucontext, size, pixmap);
+      //pixmap_t pixmap;
+
+      //pixmap.initialize_pixmap(size, (::image32_t*) pimage32, iScan);
+
+      //pgputexture->initialize_gpu_pimage(pgpucontext, size, pixmap);
 
       m_eflagElement = eflagCreate;
+
       m_estatus = ::success;
+
       set_ok_flag();
 
 //      m_pgputexture->write_pixels(size, pimage32, iScan);
@@ -99,66 +115,78 @@ namespace draw2d_nanovg
 
 
 
-   void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int, bool bPreserve)
-   {
+   //void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int, bool bPreserve)
+   //{
 
-      //if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
-      if (m_pgputexture && m_pgputexture->size() == size)
-      {
+   //   auto pbitmap = m_pbitmap;
 
-         return;
+   //   //if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
+   //   if (m_pbitmap && m_pbitmap->size() == size)
+   //   {
 
-      }
+   //      return;
 
-      auto pgputextureDestroy = ::transfer(m_pgputexture);
-      auto pixmapDestroy = *(pixmap_t *)this;
-      auto pixmapMemoryDestroy = ::transfer(m_memoryPixmap);
-      m_phost = nullptr;
-      //if (!bPrepgputextureDestroy)
-      //{
-      //auto pimageToDestroy = ::as_pointer(this);
+   //   }
 
-      //destroy();
+   //   auto pbitmapDestroy = ::transfer(m_pbitmap);
+   //   
+   //   auto pixmapDestroy = *(pixmap_t *)this;
+   //   
+   //   auto pixmapMemoryDestroy = ::transfer(m_memoryPixmap);
+   //   
+   //   m_phost = nullptr;
 
-      if (size.is_empty())
-      {
+   //   //if (!bPrepgputextureDestroy)
+   //   //{
+   //   //auto pimageToDestroy = ::as_pointer(this);
 
-         return;
+   //   //destroy();
 
-      }
+   //   if (size.is_empty())
+   //   {
 
-      auto pacmewindowingwindow = m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+   //      return;
 
-      auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+   //   }
 
-      _synchronous_lock synchronouslock(pgpudevice->synchronization());
+   //   constructø(m_pbitmap);
 
-      auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
+   //   auto pacmewindowingwindow = m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
-      if (bPreserve && pgputextureDestroy)
-      {
+   //   auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
 
-         initialize_gpu_image(pgpucontextlease, size, pgputextureDestroy.get());
+   //   _synchronous_lock synchronouslock(pgpudevice->synchronization());
 
-      }
-      else if (bPreserve && pixmapMemoryDestroy.data())
-      {
+   //   auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
 
-         initialize_gpu_image(pgpucontextlease, size, pixmapDestroy);
+   //   ::cast<::gpu::bitmap> pgpubitmapDestroy = pbitmapDestroy;
 
-      }
-      else
-      {
+   //   ::cast<::gpu::bitmap> pgpubitmap = m_pbitmap;
 
-         initialize_gpu_image(pgpucontextlease, size, {});
+   //   if (bPreserve && pbitmapDestroy && pgpubitmapDestroy->m_pgputexture)
+   //   {
 
-      }
+   //      pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, size, pgpubitmapDestroy->m_pgputexture.get());
 
-      m_eflagElement = eobjectCreate;
-      m_estatus = ::success;
-      set_ok_flag();
+   //   }
+   //   else if (bPreserve && pixmapMemoryDestroy.data())
+   //   {
 
-   }
+   //      pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, size, pixmapDestroy);
+
+   //   }
+   //   else
+   //   {
+
+   //      pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, size, {});
+
+   //   }
+
+   //   m_eflagElement = eobjectCreate;
+   //   m_estatus = ::success;
+   //   set_ok_flag();
+
+   //}
 
 
    bool image::host(::pixmap_t * ppixmap, ::windowing::window * pwindow)
@@ -241,7 +269,7 @@ namespace draw2d_nanovg
       }
 
       //if (!create(pbitmap->get_size()))
-      create(pbitmap->get_size());
+      create_as_descriptor(pbitmap->get_size());
       {
          //return false;//
       }
@@ -291,7 +319,7 @@ namespace draw2d_nanovg
       ::i32_size size = pgraphics->m_pimage->get_size();
 
       //if(!create(size))
-      create(size);
+      create_as_descriptor(size);
       //{
 
       //   return false;

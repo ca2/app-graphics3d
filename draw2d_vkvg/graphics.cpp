@@ -24,9 +24,9 @@
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "app-graphics3d/gpu_vulkan/texture.h"
 #include "bred/gpu/command_buffer.h"
-#include "bred/gpu/cpu_buffer.h"
-#include "bred/gpu/render.h"
-#include "aura/graphics/image/target.h"
+#include "bred/gpu/aaa_cpu_buffer.h"
+#include "bred/gpu/aaa_render.h"
+#include "aura/graphics/image/aaa_target.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #include "bred/gpu/layer.h"
@@ -272,7 +272,9 @@ namespace draw2d_vkvg
 
       //pcontext->defer_create_window_context(pwindow);
 
-      pcontext->create_cpu_buffer(size);
+      throw todo;
+
+      pcontext->create_cpu_buffer21(size);
 
       ::cast < ::gpu_vulkan::context > pcontextVulkan = pcontext;
       ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;

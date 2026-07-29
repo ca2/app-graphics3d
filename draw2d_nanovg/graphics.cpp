@@ -29,13 +29,13 @@
 #pragma comment(lib, "opengl32.lib")
 #endif
 #include "bred/gpu/context_lock.h"
-#include "bred/gpu/cpu_buffer.h"
+#include "bred/gpu/aaa_cpu_buffer.h"
 #include "bred/gpu/layer.h"
-#include "bred/gpu/render.h"
+#include "bred/gpu/aaa_render.h"
 #include "aura/graphics/draw2d/clip.h"
 #include "aura/graphics/graphics/context.h"
 #include "aura/graphics/image/drawing.h"
-#include "aura/graphics/image/target.h"
+#include "aura/graphics/image/aaa_target.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #include "bred/gpu/layer.h"
@@ -8465,7 +8465,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       GLint iaViewport[4]{};
       glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &iDrawFramebufferAfter);
       glGetIntegerv(GL_VIEWPORT, iaViewport);
-      auto uTargetFramebuffer = pgputexture->frame_buffer_object();
+      auto uTargetFramebuffer = pgputexture->target_frame_buffer_object();
 
 #if defined(WINDOWS_DESKTOP)
       auto pwglcontext =
@@ -8532,9 +8532,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       ::memory memoryPixmap;
       ::pixmap pixmap;
 
-      pixmap.pixmap_t::create(
-         memoryPixmap,
+      pixmap.create_as_descriptor(
          sizeTexture,
+         DEFAULT_CREATE_IMAGE_FLAG, 
          sizeTexture.cx * (int)sizeof(::image32_t));
       pgputexture->read_pixels(&pixmap);
 
@@ -8613,7 +8613,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       information() << "[gpu.performance.nanovg_image_boundary] stage=render"
          << " diagnostic=" << iDiagnosticIndex
          << " texture=" << pgputexture->m_gluTextureID
-         << " fbo=" << pgputexture->frame_buffer_object()
+         << " fbo=" << pgputexture->target_frame_buffer_object()
          << " size=" << sizeTexture.cx << "x" << sizeTexture.cy
          << " pixels=" << uPixelCount
          << " alpha_min=" << uAlphaMinimum
@@ -8669,12 +8669,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       auto sizeTexture = pgputexture->size();
 
       information() << "[gpu.performance.nanovg_image_boundary] stage=sample"
-         << " diagnostic=" << uDiagnosticIndex
-         << " texture=" << pgputexture->m_gluTextureID
-         << " size=" << sizeTexture.cx << "x" << sizeTexture.cy
-         << " target=" << rectangleTarget.left << "," << rectangleTarget.top
-         << "," << rectangleTarget.right << "," << rectangleTarget.bottom
-         << " same_context=" << (pgputexture->context() == gpu_context());
+                    << " diagnostic=" << uDiagnosticIndex << " texture=" << pgputexture->m_gluTextureID
+                    << " size=" << sizeTexture.cx << "x" << sizeTexture.cy << " target=" << rectangleTarget.left << ","
+                    << rectangleTarget.top << "," << rectangleTarget.right << "," << rectangleTarget.bottom;
+         //;<< " same_context=" << (pgputexture->context() == gpu_context());
 
    }
 
@@ -9058,18 +9056,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      auto pgpucontextTexture = pgpuopengltexture->context();
+      //auto pgpucontextTexture = pgpuopengltexture->context();
       auto pgpucontextCurrent = gpu_context();
 
-      if (!pgpucontextTexture || !pgpucontextCurrent ||
-          pgpucontextTexture->m_pgpudevice != pgpucontextCurrent->m_pgpudevice)
-      {
+      //if (!pgpucontextTexture || !pgpucontextCurrent ||
+      //    pgpucontextTexture->m_pgpudevice != pgpucontextCurrent->m_pgpudevice)
+      //{
 
-         throw ::exception(
-            error_wrong_state,
-            "NanoVG GPU image belongs to a different GPU device.");
+      //   throw ::exception(
+      //      error_wrong_state,
+      //      "NanoVG GPU image belongs to a different GPU device.");
 
-      }
+      //}
 
       auto bPerformanceDiagnostics = m_papplication
          && m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
@@ -9744,7 +9742,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      auto uFramebuffer = popengltexture->frame_buffer_object();
+      auto uFramebuffer = popengltexture->target_frame_buffer_object();
 
       if (!uFramebuffer)
       {
@@ -9982,7 +9980,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             auto uTexture = ptexture->m_gluTextureID;
 
-            auto uFbo = ptexture->frame_buffer_object();
+            auto uFbo = ptexture->target_frame_buffer_object();
 
             strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
 
@@ -10287,7 +10285,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             auto uTexture = ptexture->m_gluTextureID;
 
-            auto uFbo = ptexture->frame_buffer_object();
+            auto uFbo = ptexture->target_frame_buffer_object();
 
             strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
 

@@ -1723,10 +1723,12 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_cpu_buffer(const ::i32_size &size)
+   void context::_create_cpu_buffer21(const ::i32_size &size)
    {
+      
+      throw todo;
 
-      _create_offscreen_window(size);
+      //_create_offscreen_window2(size);
 
       //_create_window_buffer();
 
@@ -1754,8 +1756,10 @@ namespace gpu_vulkan
    void context::_defer_create_window_context(::acme::windowing::window *pwindow) { _create_window_context(pwindow); }
 
 
-   void context::resize_cpu_buffer(const ::i32_size &sizeParam)
+   void context::resize_cpu_buffer21(const ::i32_size &sizeParam)
    {
+
+      throw todo;
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
@@ -1770,7 +1774,7 @@ namespace gpu_vulkan
          {
             // if (!m_pcpubuffer)
 
-            create_cpu_buffer(size);
+            create_cpu_buffer21(size);
 
 
             /// m_pcpubuffer->m_pixmap.create(m_pcpubuffer->m_memory, size);
@@ -1838,7 +1842,7 @@ namespace gpu_vulkan
    //}
 
 
-   void context::destroy_cpu_buffer()
+   void context::destroy_cpu_buffer21()
    {
 
       // ASSERT(is_current_task());
@@ -3367,9 +3371,11 @@ namespace gpu_vulkan
          ////m_pcontext->ClearRenderTargetView(ptextureDst->m_prendertargetview, clearColor);
          // float clearColor[4] = { 0.f, 0.f, 0.f, 0.f }; // Clear to transparent
          // pcommandlist->ClearRenderTargetView(ptextureDst->m_handleRenderTargetView, clearColor, 0, nullptr);
-         auto scopedstate = ptextureDst->_scoped_state(pcommandbuffer, {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+         auto scopedstate = ptextureDst->_scoped_state(pcommandbuffer, {
+            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
                                                                         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                                                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+                                                                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+             });
 
          int iH = ptextureDst->m_pgpucontext->m_rectangle.height();
 

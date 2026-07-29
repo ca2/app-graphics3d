@@ -1,0 +1,308 @@
+// From V0idsEmbrace@Twich hello_space project
+// by camilo on 2025-05-17 20:12 <3ThomasBorregaardSorensen!!
+#include "framework.h"
+#include "camera.h"
+#include <cmath>
+//
+//
+//
+#include "aura/platform/application.h"
+#include "bred/gpu/context.h"
+#include "bred/graphics3d/engine.h"
+#include "acme/prototype/geometry2d/angle.h"
+
+
+
+namespace app_graphics3d_hello_space
+{
+
+
+   camera::camera() {}
+
+
+   camera::~camera() {}
+
+
+   void camera::initialize_camera(const ::floating_sequence3 & position, const f32_angle & yaw, const f32_angle & pitch)
+   {
+
+      m_sequence3Position = position;
+
+      //m_angleYaw = yaw;
+
+      //m_anglePitch = pitch;
+
+      m_rotation.set(yaw, pitch);
+
+      //m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
+
+      m_angleFovY = 75_degrees;
+
+      m_fMovementSpeed = 8.0f;
+
+      //UpdateCameraVectors();
+   }
+
+
+   void camera::initialize_camera(floating_sequence3 target, floating_sequence3 camera)
+   {
+
+      m_sequence3Position = camera;
+
+      auto direction = (target - camera).normalized();
+
+      auto yaw = geometry::atan2(direction.z, direction.x);
+
+      auto pitch = geometry::asin(direction.y);
+
+      m_rotation.set(yaw, pitch);
+
+      //m_sequence3WorldUp = {0.0f, 1.0f, 0.0f};
+
+      m_angleFovY = 75_f_degrees;
+
+      m_fMovementSpeed = 8.0f;
+
+      //UpdateCameraVectors();
+   }
+
+
+   // Mouse movement processing
+   void camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch)
+   {
+
+      const f32_angle angleCursorPixel = 0.1_f_degrees; // Adjust this value to your liking
+      auto angleΔYaw = xoffset * angleCursorPixel;
+      auto angleΔPitch = yoffset * angleCursorPixel;
+
+      m_rotation.offset(angleΔYaw, angleΔPitch, -89_f_degrees, 89_f_degrees);
+
+      //m_angleYaw += ::radians(xoffset);
+      //m_anglePitch += ::radians(yoffset);
+
+      //if (constrainPitch)
+      //{
+
+      //   m_anglePitch = minimum_maximum(m_anglePitch, ::radians(-89.0f), ::radians(89.0f));
+      //}
+
+      //UpdateCameraVectors();
+   }
+
+
+   void camera::ProcessKeyboardInput(int direction, float deltaTime)
+   {
+
+      auto velocity = m_fMovementSpeed * deltaTime; // Use movement speed
+
+      if (direction == FORWARD)
+         m_sequence3Position += m_sequence3Front * velocity;
+      if (direction == BACKWARD)
+         m_sequence3Position -= m_sequence3Front * velocity;
+      if (direction == LEFT)
+         m_sequence3Position -= m_sequence3Right * velocity;
+      if (direction == RIGHT)
+         m_sequence3Position += m_sequence3Right * velocity;
+   }
+
+
+   void camera::setOrthographicProjection(float left, float right, float top, float bottom, float fNear, float fFar)
+   {
+
+      m_matrixProjection = floating_matrix4{1.0f};
+      m_matrixProjection[0][0] = 2.f / (right - left);
+      m_matrixProjection[1][1] = 2.f / (bottom - top);
+      m_matrixProjection[2][2] = 1.f / (fFar - fNear);
+      m_matrixProjection[3][0] = -(right + left) / (right - left);
+      m_matrixProjection[3][1] = -(bottom + top) / (bottom - top);
+      m_matrixProjection[3][2] = -fNear / (fFar - fNear);
+   }
+
+
+   //// This is the method being used below as opposed to ortho ^
+   //void camera::setPerspectiveProjection(const f32_angle & angleFovY, float aspect, float fNear, float fFar)
+   //{
+
+   //   auto pgpucontext = m_pengine->get_gpu_context();
+   //   
+   //   m_matrixProjection = pgpucontext->m_pengine->perspective(angleFovY, aspect, fNear, fFar);
+
+
+   //   //if (m_pengine->m_fYScale < 0.f)
+   //   //{
+
+   //      //m_matrixProjection = glm::perspectiveRH_ZO(fovy, aspect, fNear, fFar);
+   //   //}
+   //   //else
+   //   //{
+
+   //     // m_matrixProjection = glm::perspective(fovy, aspect, fNear, fFar);
+   //   //}
+
+   //   /*assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
+   //   const float tanHalfFovy = tan(fovy / 2.f);
+   //   m_matrixProjection = floating_matrix4{ 0.0f };
+   //   m_matrixProjection[0][0] = 1.f / (aspect * tanHalfFovy);
+   //   m_matrixProjection[1][1] = 1.f / (tanHalfFovy);
+   //   m_matrixProjection[2][2] = fFar / (fFar - fNear);
+   //   m_matrixProjection[2][3] = 1.f;
+   //   m_matrixProjection[3][2] = -(fFar * fNear) / (fFar - fNear);*/
+   //}
+
+
+   void camera::setViewDirection(const ::floating_sequence3 & position, const ::floating_sequence3 & direction, const ::floating_sequence3 & up)
+   {
+
+      const auto w = direction.normalized();
+      const auto u = w.crossed(up).normalized();
+      const auto v = w.crossed(u);
+
+      m_matrixImpact = floating_matrix4{1.f};
+      m_matrixImpact[0][0] = u.x;
+      m_matrixImpact[1][0] = u.y;
+      m_matrixImpact[2][0] = u.z;
+      m_matrixImpact[0][1] = v.x;
+      m_matrixImpact[1][1] = v.y;
+      m_matrixImpact[2][1] = v.z;
+      m_matrixImpact[0][2] = w.x;
+      m_matrixImpact[1][2] = w.y;
+      m_matrixImpact[2][2] = w.z;
+      m_matrixImpact[3][0] = -u.dotted(position);
+      m_matrixImpact[3][1] = -v.dotted(position);
+      m_matrixImpact[3][2] = -w.dotted(position);
+      m_matrixInversedImpact = floating_matrix4{1.f};
+      m_matrixInversedImpact[0][0] = u.x;
+      m_matrixInversedImpact[0][1] = u.y;
+      m_matrixInversedImpact[0][2] = u.z;
+      m_matrixInversedImpact[1][0] = v.x;
+      m_matrixInversedImpact[1][1] = v.y;
+      m_matrixInversedImpact[1][2] = v.z;
+      m_matrixInversedImpact[2][0] = w.x;
+      m_matrixInversedImpact[2][1] = w.y;
+      m_matrixInversedImpact[2][2] = w.z;
+      m_matrixInversedImpact[3][0] = position.x;
+      m_matrixInversedImpact[3][1] = position.y;
+      m_matrixInversedImpact[3][2] = position.z;
+   }
+
+
+   void camera::setViewTarget(const ::floating_sequence3 & position, const ::floating_sequence3 & target, const ::floating_sequence3 & up)
+   {
+
+      setViewDirection(position, target - position, up);
+   }
+
+
+   // void camera::setViewYXZ(const ::floating_sequence3 & position, floating_sequence3 rotation)
+   //{
+
+   //   m_sequence3Position = position;
+
+   //   m_anglePitch = rotation.x;
+
+   //   m_angleYaw = rotation.y;
+
+   //   UpdateCameraVectors();
+
+   //   m_matrixImpact = GetViewMatrix();
+
+   //   m_matrixInversedImpact = glm::inverse(m_matrixImpact);
+
+   //}
+
+
+   //void camera::UpdateCameraVectors()
+   //{
+
+   //   // Calculate the new front vector based on yaw and pitch
+   //   floating_sequence3 front;
+   //   front.x = cos(m_anglePitch) * cos(m_angleYaw);
+   //   front.y = sin(m_anglePitch);
+   //   front.z = cos(m_anglePitch) * sin(m_angleYaw);
+   //   this->m_sequence3Front = front.normalized();
+
+   //   // Re-calculate the right and up vector
+   //   this->m_sequence3Right = this->m_sequence3Front.crossed(m_sequence3WorldUp).normalized();
+   //   this->m_sequence3Up = this->m_sequence3Right.crossed(this->m_sequence3Front).normalized();
+   //}
+
+
+   //// Get the camera's zoom (field of view)
+   //float camera::GetZoom() const { return m_fZoom; }
+
+
+   //// Set the movement speed of the camera
+   //void camera::SetMovementSpeed(float speed) { m_fMovementSpeed = speed; }
+
+
+   //// Get the view matrix
+   //floating_matrix4 camera::GetViewMatrix() const
+   //{
+
+   //   // if (m_pengine->m_fYScale < 0.f)
+   //   //{
+   //   //    return glm::lookAtRH(m_sequence3Position, m_sequence3Position + m_sequence3Front, m_sequence3Up);
+   //   // }
+   //   // else
+   //   {
+   //      auto pgpucontext = m_pengine->get_gpu_context();
+   //      return pgpucontext->lookAt(m_sequence3Position, m_sequence3Position + m_sequence3Front, m_sequence3Up);
+   //   }
+   //}
+
+   //// Get the camera position
+   //floating_sequence3 camera::GetPosition() const { return m_sequence3Position; }
+
+   void camera::Jump(float jumpHeight)
+   {
+      m_sequence3Position.y += jumpHeight; // Move up by jumpHeight units
+   }
+
+   void camera::TeleportDownward(float distance)
+   {
+      m_sequence3Position.y -= distance; // Move down by the specified distance
+   }
+
+   void camera::TeleportInDirection(int direction)
+   {
+      const float teleportDistance = 0.40f; // Set teleport distance to 50 units
+
+      if (direction == FORWARD)
+      {
+         m_sequence3Position += m_sequence3Front * teleportDistance;
+      }
+      else if (direction == BACKWARD)
+      {
+         m_sequence3Position -= m_sequence3Front * teleportDistance;
+      }
+      else if (direction == LEFT)
+      {
+         m_sequence3Position -= m_sequence3Right * teleportDistance;
+      }
+      else if (direction == RIGHT)
+      {
+         m_sequence3Position += m_sequence3Right * teleportDistance;
+      }
+   }
+
+   // Function to update idle movement
+   void camera::UpdateIdleMovement(float deltaTime)
+   {
+      static float elapsedTime = 0.0f;
+      elapsedTime += deltaTime;
+
+      // Subtle oscillation parameters
+      float amplitude = 0.1f; // Amplitude of the movement
+      float frequency = 1.0f; // Frequency of the oscillation
+
+      // Calculate oscillation
+      float offsetX = amplitude * sin(frequency * elapsedTime);
+      float offsetY = amplitude * cos(frequency * elapsedTime);
+
+      // Apply the oscillation to the camera position
+      m_sequence3Position.x += offsetX;
+      m_sequence3Position.y += offsetY;
+   }
+
+
+} // namespace app_graphics3d_hello_space

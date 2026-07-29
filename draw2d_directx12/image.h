@@ -33,11 +33,11 @@ namespace draw2d_directx12
       void dc_select(bool bSelect = true);
 
 
-      using ::image::image::create;
-      void create(const ::i32_size & size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iStride = -1, bool bPreserve = false) override;
+      //using ::image::image::create;
+      //void create(const ::i32_size & size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iStride = -1, bool bPreserve = false) override;
       using ::image::image::initialize;
       void initialize(const ::i32_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG) override;
-      bool _create(::draw2d::graphics * pgraphics);
+      void create_from_graphics(::draw2d::graphics * pgraphics) override;
       void destroy() override;
       void destroy_os_data() override;
 

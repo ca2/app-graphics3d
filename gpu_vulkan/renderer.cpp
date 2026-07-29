@@ -19,13 +19,13 @@
 #include "render_target.h"
 #include "swap_chain.h"
 #include "texture.h"
-#include "bred/gpu/cpu_buffer.h"
+#include "bred/gpu/aaa_cpu_buffer.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/semaphore.h"
 #include "app-graphics3d/gpu_vulkan/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "acme/platform/application.h"
-#include "aura/graphics/image/target.h"
+#include "aura/graphics/image/aaa_target.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
 #include "bred/gpu/types.h"
@@ -128,12 +128,14 @@ namespace gpu_vulkan
 
       m_pgpucontext = pgpucontext;
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
       {
 
          //m_pimpact = pgpucontext->m_pimpact;
 
-         pgpucontext->create_cpu_buffer(pgpucontext->rectangle().size());
+         throw todo;
+
+         pgpucontext->create_cpu_buffer21(pgpucontext->rectangle().size());
 
          construct_newø(m_pcpubuffersampler);
 
@@ -853,7 +855,10 @@ namespace gpu_vulkan
          if (psynchronization->m_pgpusemaphoreRenderFinished)
          {
 
-            pcommandbuffer->m_semaphoreaWait.add_unique(psynchronization->m_pgpusemaphoreRenderFinished);
+            if (pcommandbuffer->m_semaphoreaWait.add_unique(psynchronization->m_pgpusemaphoreRenderFinished))
+            {
+               pcommandbuffer->m_epipelinestageaWait.add(::gpu::e_pipeline_stage_fragment_shader_bit);
+            }
 
          }
 
@@ -1297,7 +1302,7 @@ namespace gpu_vulkan
 
       auto pgpucontext = m_pcontext;
 
-      auto pcpubuffer = pgpucontext->m_pcpubuffer;
+      auto pcpubuffer = pgpucontext->m_pcpubuffer2;
 
       pcpubuffer->set_pixels(
          pData,
@@ -1374,7 +1379,7 @@ namespace gpu_vulkan
 
 
 
-   void renderer::sample_to_cpu_buffer()
+   void renderer::sample_to_cpu_buffer21()
    {
 
       sample();
@@ -2010,7 +2015,7 @@ namespace gpu_vulkan
       //   //	throw ::exception(error_failed, "failed to present swap chain image!");
       //   //}
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_cpu_buffer)
+      if (m_pgpucontext->m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
       {
          sample();
       }
@@ -4495,7 +4500,7 @@ namespace gpu_vulkan
 
          layer_end_after_submit();
 
-         if (eoutput == ::gpu::e_output_cpu_buffer)
+         if (eoutput == ::gpu::e_output_aaa_cpu_buffer)
          {
 
             sample();
@@ -5012,7 +5017,11 @@ namespace gpu_vulkan
          if (::is_set(psemaphore))
          {
 
-            pcommandbuffer->m_semaphoreaWait.add_unique(psemaphore);
+            if (pcommandbuffer->m_semaphoreaWait.add_unique(psemaphore))
+            {
+
+               pcommandbuffer->m_epipelinestageaWait.add(::gpu::e_pipeline_stage_fragment_shader_bit);
+            }
 
          }
 
@@ -5227,7 +5236,11 @@ namespace gpu_vulkan
       {
          ///waitSemaphores.add(psynchronizationSource->m_vksemaphoreRenderFinished);
 
-         pcommandbuffer->m_semaphoreaWait.add_unique(psynchronizationSource->m_pgpusemaphoreRenderFinished);
+         if (pcommandbuffer->m_semaphoreaWait.add_unique(psynchronizationSource->m_pgpusemaphoreRenderFinished))
+         {
+
+            pcommandbuffer->m_epipelinestageaWait.add(::gpu::e_pipeline_stage_fragment_shader_bit);
+         }
 
       }
       

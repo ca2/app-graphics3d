@@ -650,6 +650,20 @@ namespace vulkan
       configInfo.attributeDescriptions = getAttributeDescriptions2();
    }
    
+      CLASS_DECL_GPU_VULKAN VkPipelineStageFlagBits to_vk_pipeline_stage(::gpu::enum_pipeline_stage epipelinestage)
+   {
+         switch (epipelinestage)
+         {
+            case ::gpu::e_pipeline_stage_color_attachment_output_bit:
+               return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            case ::gpu::e_pipeline_stage_fragment_shader_bit:
+               return VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+            default:
+               return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+         }
+      
+      
+   }
 
 
 } // namespace vulkan

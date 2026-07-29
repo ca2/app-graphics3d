@@ -1131,7 +1131,7 @@ namespace gpu_directx12
 
       //::defer_throw_hresult(pgpudevice->m_pd3d12devicecontext.as(m_pcontext1));
 
-      if (m_eoutput == ::gpu::e_output_cpu_buffer)
+      if (m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
       {
 
 
@@ -1428,7 +1428,7 @@ namespace gpu_directx12
    }
 
 
-   void context::_create_cpu_buffer(const ::i32_size& size)
+   void context::_create_cpu_buffer21(const ::i32_size& size)
    {
 
       _create_offscreen_window(size);
@@ -1488,8 +1488,10 @@ if (m_itask.is_null())
    }
 
 
-   void context::resize_cpu_buffer(const ::i32_size& sizeParam)
+   void context::resize_cpu_buffer21(const ::i32_size& sizeParam)
    {
+
+      throw todo;
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
@@ -1504,7 +1506,7 @@ if (m_itask.is_null())
          {
             //if (!m_pcpubuffer)
 
-            create_cpu_buffer(size);
+            create_cpu_buffer21(size);
 
 
             ///m_pcpubuffer->m_pixmap.create(m_pcpubuffer->m_memory, size);
@@ -1543,8 +1545,10 @@ if (m_itask.is_null())
 
 
 
-   void context::destroy_cpu_buffer()
+   void context::destroy_cpu_buffer21()
    {
+
+      throw todo;
 
       //ASSERT(is_current_task());
 
