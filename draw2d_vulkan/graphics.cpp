@@ -7038,7 +7038,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       if (::is_null(pacmewindowingwindow))
       {
 
-         pacmewindowingwindow = ::system()->m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+         pacmewindowingwindow = ::system()->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
       }
 

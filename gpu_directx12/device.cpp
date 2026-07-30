@@ -1000,7 +1000,7 @@ namespace gpu_directx12
 
    //      m_pcontextMainDraw2d->m_eoutput = ::gpu::e_output_gpu_buffer;
 
-   //      ::cast < ::user::interaction > puserinteraction = m_papplication->m_pacmeuserinteractionMain;
+   //      ::cast < ::user::interaction > puserinteraction = m_pacmeuserinteractionMain;
 
    //      if (!m_pcontextMainDraw2d->m_itask
    //         && puserinteraction->m_pacmewindowingwindow)

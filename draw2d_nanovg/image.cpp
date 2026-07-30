@@ -75,7 +75,7 @@ namespace draw2d_nanovg
 
       ::cast<::gpu::bitmap> pgpubitmap = pbitmap;
 
-      //auto pacmewindowingwindow = m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+      //auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
       //auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
 
@@ -83,7 +83,7 @@ namespace draw2d_nanovg
 
       auto pixmap = this->pixmap::map();
 
-      auto pacmewindowingwindow = m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+      auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
       auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
 
@@ -151,7 +151,7 @@ namespace draw2d_nanovg
 
    //   constructø(m_pbitmap);
 
-   //   auto pacmewindowingwindow = m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+   //   auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
    //   auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
 

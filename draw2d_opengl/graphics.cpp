@@ -312,7 +312,7 @@ namespace draw2d_opengl
       if (m_puserinteractionDraw2dGraphics == nullptr)
       {
 
-         m_puserinteractionDraw2dGraphics = dynamic_cast <::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+         m_puserinteractionDraw2dGraphics = dynamic_cast <::user::interaction*>(pacmeuserinteractionMain.m_p);
 
          if (m_puserinteractionDraw2dGraphics == nullptr)
          {
@@ -385,7 +385,7 @@ namespace draw2d_opengl
       if (m_puserinteractionDraw2dGraphics == nullptr)
       {
 
-         m_puserinteractionDraw2dGraphics = dynamic_cast <::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+         m_puserinteractionDraw2dGraphics = dynamic_cast <::user::interaction*>(pacmeuserinteractionMain.m_p);
 
          if (m_puserinteractionDraw2dGraphics == nullptr)
          {

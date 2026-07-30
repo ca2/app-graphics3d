@@ -354,7 +354,7 @@ namespace draw2d_vkvg
       {
 
          m_puserinteractionDraw2dGraphics =
-            dynamic_cast<::user::interaction *>(application()->m_pacmeuserinteractionMain.m_p);
+            dynamic_cast<::user::interaction *>(pacmeuserinteractionMain.m_p);
 
          if (m_puserinteractionDraw2dGraphics == nullptr)
          {
@@ -383,7 +383,7 @@ namespace draw2d_vkvg
       //   if (!m_puserinteractionDraw2dGraphics)
       //   {
 
-      //      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+      //      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(pacmeuserinteractionMain.m_p);
 
       //   }
 

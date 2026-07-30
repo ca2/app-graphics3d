@@ -274,7 +274,7 @@ namespace draw2d_nanovg
       {
 
          puserinteraction = dynamic_cast < ::user::interaction * >(
-            application()->m_pacmeuserinteractionMain.m_p);
+            pacmeuserinteractionMain.m_p);
 
       }
 
@@ -635,7 +635,7 @@ namespace draw2d_nanovg
    //   ////   if (!m_puserinteractionDraw2dGraphics)
    //   ////   {
 
-   //   ////      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(application()->m_pacmeuserinteractionMain.m_p);
+   //   ////      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(pacmeuserinteractionMain.m_p);
 
    //   ////   }
 

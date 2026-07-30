@@ -35,7 +35,7 @@ namespace write_text_directx12
 
       auto papproach = m_papplication->get_gpu_approach();
 
-      auto pdevice = papproach->get_gpu_device(::system()->m_papplication->m_pacmeuserinteractionMain->m_pacmewindowingwindow);
+      auto pdevice = papproach->get_gpu_device(::system()->m_pacmeuserinteractionMain->m_pacmewindowingwindow);
 
       //auto pdirectx12 = ::gpu_directx12::from_gpu_device(pdevice);
 
