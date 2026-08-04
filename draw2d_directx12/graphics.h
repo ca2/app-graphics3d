@@ -167,8 +167,9 @@ namespace draw2d_directx12
       //              const_char_pointer lpszOutput, const void * lpInitData) override;
       //bool CreateIC(const ::scoped_string & scopedstrDriverName, const ::scoped_string & scopedstrDeviceName,
       //              const_char_pointer lpszOutput, const void * lpInitData) override;
-      void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
-      void _create_memory_graphics(const ::i32_size& size = {}) override;
+      //void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
+      //void _create_memory_graphics(const ::i32_size& size = {}) override;
+      void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
       void defer_set_size(const ::i32_size& size = {}) override;
 
       //void create_offscreen_graphics_for_swap_chain_blitting(const ::i32_size& size) override;

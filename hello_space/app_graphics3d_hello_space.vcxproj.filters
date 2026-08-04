@@ -122,4 +122,9 @@
       <Filter>Source Files\opengl</Filter>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app_graphics3d_hello_space.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

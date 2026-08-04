@@ -35,14 +35,14 @@ namespace draw2d_directx12
 
       //using ::image::image::create;
       //void create(const ::i32_size & size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iStride = -1, bool bPreserve = false) override;
-      using ::image::image::initialize;
-      void initialize(const ::i32_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG) override;
+      //using ::image::image::initialize;
+      //void initialize(const ::i32_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG) override;
       void create_from_graphics(::draw2d::graphics * pgraphics) override;
       void destroy() override;
       void destroy_os_data() override;
 
 
-      virtual void create_ex(const ::i32_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iStride = -1, bool bPreserve = false);
+      //virtual void create_ex(const ::i32_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iStride = -1, bool bPreserve = false);
 
       //virtual bool _draw_raw(const ::i32_rectangle & rectangleTarget, ::image::image * pimage, const ::i32_point & pointSrc) override;
 

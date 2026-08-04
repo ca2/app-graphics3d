@@ -702,6 +702,7 @@
     <ClInclude Include="descriptors.h" />
     <ClInclude Include="device.h" />
     <ClInclude Include="aaa_direct2d_draw2d_swap_chain.h" />
+    <ClInclude Include="draw2d_window_attachment.h" />
     <ClInclude Include="dxgi_debug.h" />
     <ClInclude Include="fence.h" />
     <ClInclude Include="semaphore.h" />
@@ -748,6 +749,7 @@
     </ClCompile>
     <ClCompile Include="block.cpp" />
     <ClCompile Include="context_ktx.cpp" />
+    <ClCompile Include="draw2d_window_attachment.cpp" />
     <ClCompile Include="fence.cpp" />
     <ClCompile Include="semaphore.cpp" />
     <ClCompile Include="frame_storage.cpp" />

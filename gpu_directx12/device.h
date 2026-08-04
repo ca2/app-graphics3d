@@ -309,7 +309,7 @@ namespace gpu_directx12
       //::gpu_directx12::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);
 
       
-      void on_end_frame() override;
+      //void on_end_frame() override;
       //void on_top_end_frame() override;
 
 

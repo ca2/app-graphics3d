@@ -8,6 +8,7 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "descriptors.h"
+#include "draw2d_window_attachment.h"
 #include "input_layout.h"
 #include "offscreen_render_target_view.h"
 #include "renderer.h"
@@ -610,7 +611,9 @@ namespace gpu_directx12
 
          if (m_pbindingslotseta)
          {
-            int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+
+            auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+            int iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
             for (int iFrame = 0; iFrame < iFrameCount; iFrame++)
             {
                // auto &pheap = pbindingset->m_heapa1.ø(iFrame);

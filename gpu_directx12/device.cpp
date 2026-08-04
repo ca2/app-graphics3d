@@ -48,7 +48,7 @@ namespace gpu_directx12
 
       m_estatus = error_not_initialized;
 
-      m_iCurrentImage = 0;
+      //m_iCurrentImage = 0;
 
    }
 
@@ -970,22 +970,6 @@ namespace gpu_directx12
    }
 
 
-//   void device::on_top_end_frame()
-   void device::on_end_frame()
-   {
-
-      ::gpu::device::on_end_frame();
-
-      //auto procedureaOnTopFrameEnd = ::transfer(m_procedureaOnTopFrameEnd);
-
-      //for (auto& procedure : procedureaOnTopFrameEnd)
-      //{
-
-      //   procedure();
-
-      //}
-
-   }
 
 
    //::gpu::context* device::main_draw2d_context()

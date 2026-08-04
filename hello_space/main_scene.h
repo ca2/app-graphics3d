@@ -37,7 +37,7 @@ namespace app_graphics3d_hello_space
       ::pointer<::gpu::shader> m_pgpushaderBlend;
       ::pointer<::gpu::model_buffer> m_pmodelbufferDummy;
       ::graphics3d::scene_renderable *m_prenderable = nullptr;
-      ::pointer<::graphics::bitmap_source_buffer> m_pbitmapsourcebuffer;
+      ::pointer<::graphics::bitmap_source_buffer_graphics> m_pbitmapsourcebuffergraphics;
 
       //floating_sequence3 m_initialCameraPosition{0.f};
       //floating_sequence3 m_initialCameraRotation{0.f};

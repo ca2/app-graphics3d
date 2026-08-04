@@ -20,6 +20,7 @@
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "bred/gpu/aaa_cpu_buffer.h"
+#include "bred/gpu/draw2d_window_attachment.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/aaa_render.h"
 #include "bred/gpu/renderer.h"
@@ -172,12 +173,13 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::create_memory_graphics(const ::i32_size& size)
+   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   //void graphics::create_memory_graphics(const ::i32_size& size)
    {
 
       ::i32_rectangle rectanglePlacement;
 
-      if (size.is_empty())
+      if (sizeParameter.is_empty())
       {
 
          rectanglePlacement.set_size({ 1920, 1080 });
@@ -186,7 +188,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
       else
       {
 
-         rectanglePlacement.set_size(size);
+         rectanglePlacement.set_size(sizeParameter);
 
       }
 
@@ -207,9 +209,11 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
-      auto pgpucontextNew = pgpudevice->main_draw2d_context();
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
+
+      auto pgpucontextNew = pgpudraw2dwindowattachment->draw2d_context();
 
       set_gpu_context(pgpucontextNew);
 
@@ -242,12 +246,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
-   void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
-   {
+   //void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
+   //{
 
-      vulkan_create_offscreen_buffer({ 0, 0, 1920, 1080 });
+   //   vulkan_create_offscreen_buffer({ 0, 0, 1920, 1080 });
 
-   }
+   //}
 
 
    bool graphics::vulkan_create_offscreen_buffer(const ::i32_rectangle& rectanglePlacement)
@@ -6891,71 +6895,71 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
 
 
-   void graphics::create_window_graphics(const ::operating_system::window & operatingwindowingwindow)
-   {
+  // void graphics::create_window_graphics(const ::operating_system::window & operatingwindowingwindow)
+  // {
 
-      // http://stackoverflow.com/questions/4052940/how-to-make-an-vulkan-rendering-context-with-transparent-background
-      //
+  //    // http://stackoverflow.com/questions/4052940/how-to-make-an-vulkan-rendering-context-with-transparent-background
+  //    //
 
-      //PIXELFORMATDESCRIPTOR pfd =
-      //{
-      //   sizeof(PIXELFORMATDESCRIPTOR),
-      //   1,                                // Version Number
-      //   PFD_DRAW_TO_WINDOW |         // Format Must Support Window
-      //   PFD_SUPPORT_VULKAN |         // Format Must Support Vulkan
-      //   PFD_SUPPORT_COMPOSITION |         // Format Must Support Composition
-      //   PFD_DOUBLEBUFFER,                 // Must Support Double Buffering
-      //   PFD_TYPE_RGBA,                    // Request An RGBA Format
-      //   32,                               // Select Our Color Depth
-      //   0, 0, 0, 0, 0, 0,                 // Color Bits Ignored
-      //   8,                                // An Alpha Buffer
-      //   0,                                // Shift Bit Ignored
-      //   0,                                // No Accumulation Buffer
-      //   0, 0, 0, 0,                       // Accumulation Bits Ignored
-      //   24,                               // 16Bit Z-Buffer (Depth Buffer)
-      //   8,                                // Some Stencil Buffer
-      //   0,                                // No Auxiliary Buffer
-      //   PFD_MAIN_PLANE,                   // Main Drawing Layer
-      //   0,                                // Reserved
-      //   0, 0, 0                           // Layer Masks Ignored
-      //};
-
-
-      //DWM_BLURBEHIND bb = { 0 };
-      ////HRGN hRgn = CreateRectRgn(0, 0, -1, -1);
-      ////bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-      //bb.dwFlags = DWM_BB_ENABLE;
-      ////bb.hRgnBlur = hRgn;
-      //bb.fEnable = true;
-      //DwmEnableBlurBehindWindow(wnd, &bb);
+  //    //PIXELFORMATDESCRIPTOR pfd =
+  //    //{
+  //    //   sizeof(PIXELFORMATDESCRIPTOR),
+  //    //   1,                                // Version Number
+  //    //   PFD_DRAW_TO_WINDOW |         // Format Must Support Window
+  //    //   PFD_SUPPORT_VULKAN |         // Format Must Support Vulkan
+  //    //   PFD_SUPPORT_COMPOSITION |         // Format Must Support Composition
+  //    //   PFD_DOUBLEBUFFER,                 // Must Support Double Buffering
+  //    //   PFD_TYPE_RGBA,                    // Request An RGBA Format
+  //    //   32,                               // Select Our Color Depth
+  //    //   0, 0, 0, 0, 0, 0,                 // Color Bits Ignored
+  //    //   8,                                // An Alpha Buffer
+  //    //   0,                                // Shift Bit Ignored
+  //    //   0,                                // No Accumulation Buffer
+  //    //   0, 0, 0, 0,                       // Accumulation Bits Ignored
+  //    //   24,                               // 16Bit Z-Buffer (Depth Buffer)
+  //    //   8,                                // Some Stencil Buffer
+  //    //   0,                                // No Auxiliary Buffer
+  //    //   PFD_MAIN_PLANE,                   // Main Drawing Layer
+  //    //   0,                                // Reserved
+  //    //   0, 0, 0                           // Layer Masks Ignored
+  //    //};
 
 
-      //m_hdc = GetDC(wnd);
-      //int PixelFormat = ChoosePixelFormat(m_hdc, &pfd);
-      //if (PixelFormat == 0)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
+  //    //DWM_BLURBEHIND bb = { 0 };
+  //    ////HRGN hRgn = CreateRectRgn(0, 0, -1, -1);
+  //    ////bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+  //    //bb.dwFlags = DWM_BB_ENABLE;
+  //    ////bb.hRgnBlur = hRgn;
+  //    //bb.fEnable = true;
+  //    //DwmEnableBlurBehindWindow(wnd, &bb);
 
-      //BOOL bResult = SetPixelFormat(m_hdc, PixelFormat, &pfd);
-      //if (bResult == false)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
 
-      //m_hglrc = wglCreateContext(m_hdc);
-      //if (!m_hglrc)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
+  //    //m_hdc = GetDC(wnd);
+  //    //int PixelFormat = ChoosePixelFormat(m_hdc, &pfd);
+  //    //if (PixelFormat == 0)
+  //    //{
+  //    //   ASSERT(0);
+  //    //   return false;
+  //    //}
 
-  //      return true;
-      //return false;
+  //    //BOOL bResult = SetPixelFormat(m_hdc, PixelFormat, &pfd);
+  //    //if (bResult == false)
+  //    //{
+  //    //   ASSERT(0);
+  //    //   return false;
+  //    //}
 
-   }
+  //    //m_hglrc = wglCreateContext(m_hdc);
+  //    //if (!m_hglrc)
+  //    //{
+  //    //   ASSERT(0);
+  //    //   return false;
+  //    //}
+
+  ////      return true;
+  //    //return false;
+
+  // }
 
 
    //oswindow graphics::get_window_handle() const
@@ -7028,17 +7032,17 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       ::acme::windowing::window *pacmewindowingwindow = nullptr;
       
-      if (::is_set(m_puserinteractionDraw2dGraphics))
+      if (::is_set(m_pacmeuserinteractionAffinity))
       {
          
-         pacmewindowingwindow = m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow.m_p;
+         pacmewindowingwindow = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow.m_p;
 
       }
 
       if (::is_null(pacmewindowingwindow))
       {
 
-         pacmewindowingwindow = ::system()->m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+         pacmewindowingwindow = m_papplication->main_acme_user_interaction()->m_pacmewindowingwindow;
 
       }
 

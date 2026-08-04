@@ -1,6 +1,7 @@
 // Created by camilo on 2025-06-11 02:34 <3ThomasBorregaardSørensen!!
 #include "framework.h"
 #include "command_buffer.h"
+#include "draw2d_window_attachment.h"
 #include "frame.h"
 #include "renderer.h"
 #include "shader.h"
@@ -383,7 +384,9 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       //m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
       m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
 
-      gpu::render_target::m_pgpurenderer->m_pgpucontext->m_pgpudevice->m_iCurrentImage = m_iSwapChainIndex;
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+
+      pgpudraw2dwindowattachment->m_iCurrentImage = m_iSwapChainIndex;
 
       if (m_iSwapChainIndex < 0)
       {

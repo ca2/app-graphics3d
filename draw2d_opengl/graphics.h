@@ -120,7 +120,8 @@ namespace draw2d_opengl
       unsigned int SetLayout(unsigned int dwLayout) override;
 
 
-      void _create_memory_graphics(const ::i32_size & size) override;
+      //void _create_memory_graphics(const ::i32_size & size) override;
+      void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
 
 
       //HDC get_hdc();
@@ -135,19 +136,20 @@ namespace draw2d_opengl
                     const char * lpszOutput, const void * lpInitData);
       bool CreateIC(const ::scoped_string & lpszDriverName, const ::scoped_string & lpszDeviceName,
                     const char * lpszOutput, const void * lpInitData);
-      void create_memory_graphics(const ::i32_size & size = {}) override;
-      void create_window_graphics(::windowing::window * pwindow) override;
-      void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
+      //void create_memory_graphics(const ::i32_size & size = {}) override;
+      //void create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+      //void create_window_graphics(::windowing::window * pwindow) override;
+      //void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
 
       //void set_hint_window_output() override;
 
       //virtual bool opengl_create_offscreen_buffer(const ::function< void(::image::target* ptarget) >& callbackOnImagePixels, const ::i32_rectangle & rectanglePlacement);
-      virtual bool opengl_create_offscreen_buffer(const ::i32_size& rectanglePlacement);
-      virtual bool opengl_delete_offscreen_buffer();
+      //virtual bool opengl_create_offscreen_buffer(const ::i32_size& rectanglePlacement);
+      //virtual bool opengl_delete_offscreen_buffer();
 
       void create_for_window_draw2d(::user::interaction * puserinteraction, const ::i32_size& size) override;
 
-      virtual bool opengl_defer_create_window_context(::windowing::window * pwindow);
+      //virtual bool opengl_defer_create_window_context(::windowing::window * pwindow);
 
       void DeleteDC() override;
 
@@ -626,7 +628,7 @@ namespace draw2d_opengl
       virtual void set(::draw2d::bitmap* pbitmap) override;
       virtual ::draw2d::object* set_stock_object(int nIndex) override;
 
-      void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
+      //void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
       void is_valid_update_window_thread() override;
 
 

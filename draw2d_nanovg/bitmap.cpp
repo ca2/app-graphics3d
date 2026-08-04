@@ -2,6 +2,7 @@
 #include "_nanovg.h"
 #include "bitmap.h"
 #include "acme/exception/interface_only.h"
+#include "bred/gpu/texture.h"
 
 
 void resizeBilinear(memory & m, int w2, int h2, int * pixels, int w, int h);
@@ -107,7 +108,7 @@ namespace draw2d_nanovg
    // }
 
 
-   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::image32_t** ppimage32, const ::image32_t* pimage32,  int* piScan)
+   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::memory & memory,  int* piScan)
    {
 
       __UNREFERENCED_PARAMETER(pgraphics);
@@ -140,19 +141,28 @@ namespace draw2d_nanovg
 
       auto pimage32Target = (::image32_t *)m_memOut.data();
 
-      if (pimage32)
+      //if (pimage32)
+      //{
+
+      //   pimage32Target->copy(size, m_iStride, pimage32, iScan);
+
+      //}
+
+      if (memory.data() && memory.size() > iScan * size.cy)
       {
 
-         pimage32Target->copy(size, m_iStride, pimage32, iScan);
+         pimage32Target->copy(size, m_iStride, (::image32_t *)memory.data(), iScan);
 
       }
 
-      if(ppimage32 != nullptr)
-      {
-         
-         *ppimage32 = pimage32Target;
+      memory.reference_data(m_memOut);
 
-      }
+      //if(ppimage32 != nullptr)
+      //{
+      //   
+      //   *ppimage32 = pimage32Target;
+
+      //}
 
       if(piScan != nullptr)
       {
@@ -211,6 +221,13 @@ namespace draw2d_nanovg
 
    i32_size bitmap::GetBitmapDimension() const
    {
+
+      if (m_pgputexture)
+      {
+
+         return m_pgputexture->size();
+
+      }
 
       //if(m_pbitmap == nullptr)
       //   return ::i32_size(0, 0);

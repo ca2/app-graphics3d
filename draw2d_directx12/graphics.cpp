@@ -29,6 +29,7 @@
 #include "bred/gpu/context.h"
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/device.h"
+#include "bred/gpu/draw2d_window_attachment.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/swap_chain.h"
@@ -160,12 +161,12 @@ namespace draw2d_directx12
    //}
 
    
-   void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
-   {
+   //void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
+   //{
 
-      _create_memory_graphics({ 256, 256 });
+   //   _create_memory_graphics({ 256, 256 });
 
-   }
+   //}
 
    void graphics::defer_set_size(const ::i32_size& size)
    {
@@ -185,11 +186,13 @@ namespace draw2d_directx12
 
       auto pgpuapproach = m_papplication->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
+
+      //auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
       //m_pdirectx12 = ::directx12::from_gpu_device(pgpudevice);
 
-      auto pgpucontextNew = pgpudevice->main_draw2d_context();
+      auto pgpucontextNew = pgpudraw2dwindowattachment->draw2d_context();
 
       pgpucontextNew->m_pgpucompositor = this;
 
@@ -206,14 +209,14 @@ namespace draw2d_directx12
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
-         auto pcontextMain = pgpudevice->main_context();
+         auto pgpucontextWindow = pgpudraw2dwindowattachment->window_context();
 
-         auto pswapchain = pcontextMain->get_swap_chain();
+         auto pswapchain = pgpucontextWindow->get_swap_chain();
 
          if (!pswapchain->m_bSwapChainInitialized)
          {
 
-            pswapchain->initialize_swap_chain_window(pcontextMain, puserinteraction->window());
+            pswapchain->initialize_swap_chain_window(pgpucontextWindow, puserinteraction->window());
 
          }
 
@@ -275,16 +278,18 @@ namespace draw2d_directx12
    }
 
 
-
-   void graphics::_create_memory_graphics(const ::i32_size & size)
+   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity)
+   //void graphics::_create_memory_graphics(const ::i32_size & size)
    {
+
+      m_pacmeuserinteractionAffinity = pacmeuserinteractionAffinity;
 
       auto pcontext = gpu_context();
 
       if (pcontext)
       {
 
-         if (pcontext->m_rectangle.size() == size)
+         if (pcontext->m_rectangle.size() == sizeParameter)
          {
 
             return;
@@ -304,12 +309,12 @@ namespace draw2d_directx12
 
       }
 
-      ::user::interaction* puserinteraction = m_puserinteractionDraw2dGraphics;
+      ::cast < ::user::interaction > puserinteraction = m_pacmeuserinteractionAffinity;
 
       if (::is_null(puserinteraction))
       {
 
-         puserinteraction = dynamic_cast <::user::interaction*>(m_pacmeuserinteractionMain.m_p);
+         puserinteraction = m_papplication->main_acme_user_interaction();
 
       }
 
@@ -321,9 +326,10 @@ namespace draw2d_directx12
 
       auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
 
-      auto pgpucontextNew = pgpudevice->create_draw2d_context(
-         ::gpu::e_output_gpu_buffer,
-         size);
+      auto pgpucontextNew = pgpudevice->create_draw2d_gpu_context(
+         //::gpu::e_output_gpu_buffer,
+         m_pacmeuserinteractionAffinity->acme_windowing_window(),
+         sizeParameter);
 
       set_gpu_context(pgpucontextNew);
 
@@ -359,7 +365,7 @@ namespace draw2d_directx12
 
       //auto pcontext = gpu_context();
 
-      pcontext->send([this, size]()
+      pcontext->send([this, sizeParameter]()
          {
 
             auto pcontext = gpu_context();
@@ -2351,14 +2357,16 @@ namespace draw2d_directx12
    //}
 
 
-   void graphics::_draw_raw(const ::f64_rectangle & rectangleTarget, ::image::image * pimage, const ::image::image_drawing_options & imagedrawingoptions, const ::f64_point & pointSrc)
+   void graphics::_draw_raw(const ::f64_rectangle & rectangleTarget, ::image::image * pimageSource, const ::image::image_drawing_options & imagedrawingoptions, const ::f64_point & pointSrc)
    {
 
       //::draw2d::lock draw2dlock;
 
       // ::draw2d::device_lock devicelock(this);
 
-      pimage->defer_update_image();
+      //pimage->defer_update_image();
+
+      auto pimage = pimageSource->get_source_image();
 
       //try
       //{

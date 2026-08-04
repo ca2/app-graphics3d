@@ -11,6 +11,7 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
+#include "draw2d_window_attachment.h"
 #include "gpu_directx12/descriptors.h"
 #include "offscreen_render_target_view.h"
 #include "physical_device.h"
@@ -103,7 +104,9 @@ namespace gpu_directx12
 
             ::cast<::gpu_directx12::device> pdevice = m_pgpudevice;
 
-            ::cast<context> pcontextMain = pdevice->main_context();
+            auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
+
+            ::cast<context> pcontextMain = pgpudraw2dwindowattachment->window_context();
 
             if (pcontextMain != this)
             {
@@ -424,12 +427,14 @@ namespace gpu_directx12
    class context::d3d11on12* context::d3d11on12()
    {
 
-      if (this != m_pgpudevice->m_pgpucontextMain)
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
+
+      if (this != pgpudraw2dwindowattachment->window_context())
       {
 
-         ::cast < context > pcontextMain = m_pgpudevice->m_pgpucontextMain;
+         ::cast < context > pgpucontextWindow = pgpudraw2dwindowattachment->window_context();
 
-         return pcontextMain->d3d11on12();
+         return pgpucontextWindow->d3d11on12();
 
       }
 
@@ -452,7 +457,9 @@ namespace gpu_directx12
 
             ::cast < device> pdevice = m_pgpudevice;
 
-            ::cast < context > pcontextMainDraw2d = pdevice->main_draw2d_context();
+            auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
+
+            ::cast < context > pcontextMainDraw2d = pgpudraw2dwindowattachment->draw2d_context();
 
             D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
 
@@ -1838,7 +1845,9 @@ namespace gpu_directx12
 
          auto pgpurendertarget = m_pgpurenderer->render_target();
 
-         auto iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+
+         auto iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
 
          auto etypeRenderer = m_pgpurenderer->m_pgpucontext->m_etype;
 
@@ -1846,7 +1855,7 @@ namespace gpu_directx12
 
          auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
 
-         ::cast < context > pcontextMain = m_pgpudevice->main_context();
+         ::cast < context > pcontextMain = pgpudraw2dwindowattachment->window_context();
 
          if (!ptexture->d3d11()->wrappedResource)
          {
@@ -1921,7 +1930,9 @@ namespace gpu_directx12
 
       auto pgpurendertarget = m_pgpurenderer->render_target();
 
-      auto iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+
+      auto iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
 
       auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
 
@@ -2174,16 +2185,18 @@ namespace gpu_directx12
 
       }
 
-      auto pcontextMain = m_pgpudevice->m_pgpucontextMain;
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
 
-      if (!pcontextMain)
+      auto pgpucontextWindow = pgpudraw2dwindowattachment->window_context();
+
+      if (!pgpucontextWindow)
       {
 
          return;
 
       }
 
-      auto pswapchain = pcontextMain->get_swap_chain();
+      auto pswapchain = pgpucontextWindow->get_swap_chain();
 
       if (pswapchain)
       {
@@ -2688,10 +2701,12 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
    IDXGIDevice* context::_get_dxgi_device()
    {
 
-      if (m_pgpudevice->m_pgpucontextMain != this)
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
+
+      if (pgpudraw2dwindowattachment->window_context() != this)
       {
 
-         ::cast < context > pcontextMain = m_pgpudevice->m_pgpucontextMain;
+         ::cast < context > pcontextMain = pgpudraw2dwindowattachment->window_context();
 
          return pcontextMain->_get_dxgi_device();
 

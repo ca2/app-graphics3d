@@ -2665,21 +2665,7 @@ namespace gpu_vulkan
    }
 
 
-   void device::on_end_frame()
-   {
 
-      ::gpu::device::on_end_frame();
-
-      //auto procedureaOnTopFrameEnd = ::transfer(m_procedureaOnTopFrameEnd);
-
-      //for (auto& procedure : procedureaOnTopFrameEnd)
-      //{
-
-      //   procedure();
-
-      //}
-
-   }
 
 
    ::file::path device::shader_path(const ::file::path& pathShader)

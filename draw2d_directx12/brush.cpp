@@ -11,7 +11,7 @@ namespace draw2d_directx12
    brush::brush()
    {
       
-      m_pthis = this;
+      //m_pthis = this;
 
    }
 

@@ -54,7 +54,8 @@ namespace draw2d_directx12
       virtual bool CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap);
       virtual void CreateCompatibleBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       virtual void CreateDiscardableBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
-      virtual void create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size & size, ::image32_t **ppimage32, const ::image32_t *pimage32,  int * piScan) override;
+      //virtual void create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size & size, ::image32_t **ppimage32, const ::image32_t *pimage32,  int * piScan) override;
+      void create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size & size, ::memory & memory, int * piScan) override;
       virtual void CreateDIBitmap(::draw2d::graphics * pgraphics, int cx, int cy, unsigned int flInit, const void *pjBits, unsigned int iUsage) override;
 
 

@@ -268,9 +268,9 @@ namespace app_graphics3d_hello_space
 
       m_pimageHelloMultiverseScreen = image()->path_image(pathBackground);
       
-      construct_newø(m_pbitmapsourcebuffer);
+      construct_newø(m_pbitmapsourcebuffergraphics);
 
-      m_pbitmapsourcebuffer->set_bitmap_source("HelloMultiverse!!", false);
+      m_pbitmapsourcebuffergraphics->set_bitmap_source("HelloMultiverse!!", false);
 
       //float fLo = 0.5f;
 
@@ -525,18 +525,18 @@ namespace app_graphics3d_hello_space
 
       }
 
-      if (m_pbitmapsourcebuffer)
+      if (m_pbitmapsourcebuffergraphics)
       {
 
-         if (m_pbitmapsourcebuffer->m_pmemorymap)
+         if (m_pbitmapsourcebuffergraphics->m_pmemorymap)
          {
 
-            void *pdata = m_pbitmapsourcebuffer->m_pmemorymap->get_data();
+            void *pdata = m_pbitmapsourcebuffergraphics->m_pmemorymap->get_data();
 
             if (pdata != nullptr)
             {
 
-               synchronous_lock synchronouslock(m_pbitmapsourcebuffer->m_pmutexBitmapSource,
+               synchronous_lock synchronouslock(m_pbitmapsourcebuffergraphics->m_pmutexBitmapSource,
                                                 DEFAULT_SYNCHRONOUS_LOCK_SUFFIX);
 
                try

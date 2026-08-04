@@ -77,10 +77,11 @@ namespace draw2d_vulkan
          const char* lpszOutput, const void* lpInitData);
       bool CreateIC(const ::scoped_string& lpszDriverName, const ::scoped_string& lpszDeviceName,
          const char* lpszOutput, const void* lpInitData);
-      void create_memory_graphics(const ::i32_size& size = {}) override;
+      //void create_memory_graphics(const ::i32_size& size = {}) override;
+      void _create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
       //void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
-      void create_compatible_graphics(::draw2d::graphics* pgraphics) override;
+      //void create_compatible_graphics(::draw2d::graphics* pgraphics) override;
 
       virtual bool vulkan_create_offscreen_buffer(const ::i32_rectangle& rectanglePlacement);
       virtual bool vulkan_delete_offscreen_buffer();
@@ -582,7 +583,7 @@ namespace draw2d_vulkan
       virtual void set(::draw2d::bitmap* pbitmap) override;
       virtual ::draw2d::object* set_stock_object(int nIndex) override;
 
-      void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
+      //void create_window_graphics(const ::operating_system::window & operatingsystemwindow) override;
       void is_valid_update_window_thread() override;
 
 

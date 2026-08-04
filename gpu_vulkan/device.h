@@ -278,7 +278,6 @@ namespace gpu_vulkan
       //::gpu_vulkan::descriptor_pool* get_global_pool(::gpu::context* pgpucontext, int iFrameCount);
 
       
-      void on_end_frame() override;
 
 
       ::file::path shader_path(const ::file::path& pathShader) override;

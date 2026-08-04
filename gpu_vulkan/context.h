@@ -113,20 +113,21 @@ namespace gpu_vulkan
       VkCommandPool getPresentCommandPool() { return m_vkcommandpoolPresent; }
 
 
+      void _create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, const ::i32_size & size) override;
 
-      virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::i32_size& size);
+      //virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::i32_size& size);
 
-      void on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
-                             ::acme::windowing::window *pwindow, const ::i32_size &size) override;
+      //void on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
+        //                     ::acme::windowing::window *pwindow, const ::i32_size &size) override;
 
 
       VkDevice logicalDevice();
 
       virtual void _create_offscreen_window(const ::i32_size & size);
 
-      void defer_create_window_context(::acme::windowing::window *pwindow) override;
-      void _defer_create_window_context(::acme::windowing::window * pwindow) override;
-      virtual void _create_window_context(::acme::windowing::window *pwindow);
+      //void defer_create_window_context(::acme::windowing::window *pwindow) override;
+      //void _defer_create_window_context(::acme::windowing::window * pwindow) override;
+      //virtual void _create_window_context(::acme::windowing::window *pwindow);
 
       //virtual void _create_window_buffer();
       void _create_cpu_buffer21(const ::i32_size & size) override;

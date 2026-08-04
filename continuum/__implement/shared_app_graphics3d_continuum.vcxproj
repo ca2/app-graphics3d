@@ -143,6 +143,9 @@
     <Image Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\operating_system\operating_system-windows_common\gpu_directx11\gpu_directx11.vcxproj">
+      <Project>{f693b649-3301-4d73-9469-f004ea94708d}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\app\acme\acme.vcxproj">
       <Project>{638b242f-0f21-41c3-9f66-724660046133}</Project>
     </ProjectReference>
@@ -160,6 +163,12 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\app\core\core.vcxproj">
       <Project>{29c1eb5b-060e-4021-ae12-d1bcfb1b1359}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\app\gpu\gpu.vcxproj">
+      <Project>{d728fd54-84d0-4b93-9d34-43338f285886}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\draw2d_nanovg\draw2d_nanovg.vcxproj">
+      <Project>{c3f1395f-888d-4bf1-aafa-35db42b483a1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\app_graphics3d_continuum.vcxproj">
       <Project>{f1161227-5818-45cc-99ba-5e3195ba1a2f}</Project>

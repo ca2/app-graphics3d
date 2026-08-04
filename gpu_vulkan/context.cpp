@@ -6,6 +6,7 @@
 #include "command_buffer.h"
 #include "debug.h"
 #include "device.h"
+#include "draw2d_window_attachment.h"
 #include "gltf/model.h"
 #include "memory_buffer.h"
 #include "physical_device.h"
@@ -798,16 +799,16 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_context_win32(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
-                                       ::acme::windowing::window *pwindow, const ::i32_size &size)
-   {
+   //void context::_create_context_win32(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
+   //                                    ::acme::windowing::window *pwindow, const ::i32_size &size)
+   //{
 
-      if (!pgpudevice)
-      {
+   //   if (!pgpudevice)
+   //   {
 
-         throw ::exception(error_failed);
-      }
-   }
+   //      throw ::exception(error_failed);
+   //   }
+   //}
 
 
    void context::layout_push_constants(::gpu::properties & properties, bool bGlobalUbo)
@@ -950,8 +951,9 @@ namespace gpu_vulkan
    }
 
 
-   void context::on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
-                                   ::acme::windowing::window *pwindow, const ::i32_size &size)
+   void context::_create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, const ::i32_size & size) 
+   //void context::on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
+     //                              ::acme::windowing::window *pwindow, const ::i32_size &size)
    {
 
       // m_itaskGpu = ::current_itask();
@@ -994,7 +996,7 @@ namespace gpu_vulkan
 
       }
 
-      _create_context_win32(pgpudevice, eoutput, pwindow, size);
+      //_create_context_win32(pgpudevice, eoutput, pwindow, size);
 
    }
 
@@ -1497,230 +1499,230 @@ namespace gpu_vulkan
    //}
 
 
-   void context::_create_window_context(::acme::windowing::window *pwindowParam)
-   {
+   //void context::_create_window_context(::acme::windowing::window *pwindowParam)
+   //{
 
-      // m_itaskGpu = ::current_itask();
+   //   // m_itaskGpu = ::current_itask();
 
-      //   ::cast < ::windowing_win32::window > pwindow = pwindowParam;
+   //   //   ::cast < ::windowing_win32::window > pwindow = pwindowParam;
 
-      //   if (!m_hdc || !m_hrc)
-      //   {
+   //   //   if (!m_hdc || !m_hrc)
+   //   //   {
 
-      //      auto psystem = system();
+   //   //      auto psystem = system();
 
-      //      auto pgpu = application()->get_gpu();
+   //   //      auto pgpu = application()->get_gpu();
 
-      //      ::pointer < ::vulkan::vulkan > pvulkan = pgpu;
+   //   //      ::pointer < ::vulkan::vulkan > pvulkan = pgpu;
 
-      //      //if (!pvulkan->m_atomClass)
-      //      //{
+   //   //      //if (!pvulkan->m_atomClass)
+   //   //      //{
 
-      //      //   informationf("MS GDI - RegisterClass failed");
+   //   //      //   informationf("MS GDI - RegisterClass failed");
 
-      //      //   informationf("last-error code: %d\n", GetLastError());
+   //   //      //   informationf("last-error code: %d\n", GetLastError());
 
-      //      //   throw ::exception(error_failed);
+   //   //      //   throw ::exception(error_failed);
 
-      //      //}
+   //   //      //}
 
-      //      if (!m_hwnd)
-      //      {
+   //   //      if (!m_hwnd)
+   //   //      {
 
-      //         auto hwnd = pwindow->m_hwnd;
+   //   //         auto hwnd = pwindow->m_hwnd;
 
 
-      //         m_hwnd = hwnd;
+   //   //         m_hwnd = hwnd;
 
 
-      //         //// create WGL context, make current
+   //   //         //// create WGL context, make current
 
-      //         //PIXELFORMATDESCRIPTOR pixformat;
+   //   //         //PIXELFORMATDESCRIPTOR pixformat;
 
-      //         //int chosenformat;
+   //   //         //int chosenformat;
 
-      //         HDC hdc = GetDC(m_hwnd);
+   //   //         HDC hdc = GetDC(m_hwnd);
 
-      //         //if (!hdc)
-      //         //{
+   //   //         //if (!hdc)
+   //   //         //{
 
-      //         //   informationf("MS GDI - GetDC failed");
+   //   //         //   informationf("MS GDI - GetDC failed");
 
-      //         //   informationf("last-error code: %d\n", GetLastError());
+   //   //         //   informationf("last-error code: %d\n", GetLastError());
 
-      //         //   throw ::exception(error_failed);
+   //   //         //   throw ::exception(error_failed);
 
-      //         //}
+   //   //         //}
 
-      //         //zero(pixformat);
-      //         //pixformat.nSize = sizeof(pixformat);
-      //         //pixformat.nVersion = 1;
-      //         //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_VULKAN | PFD_DOUBLEBUFFER;
-      //         //pixformat.iPixelType = PFD_TYPE_RGBA;
-      //         //pixformat.cColorBits = 32;
-      //         //pixformat.cRedShift = 16;
-      //         //pixformat.cGreenShift = 8;
-      //         //pixformat.cBlueShift = 0;
-      //         //pixformat.cAlphaShift = 24;
-      //         //pixformat.cAlphaBits = 8;
-      //         //pixformat.cDepthBits = 24;
-      //         //pixformat.cStencilBits = 8;
+   //   //         //zero(pixformat);
+   //   //         //pixformat.nSize = sizeof(pixformat);
+   //   //         //pixformat.nVersion = 1;
+   //   //         //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_VULKAN | PFD_DOUBLEBUFFER;
+   //   //         //pixformat.iPixelType = PFD_TYPE_RGBA;
+   //   //         //pixformat.cColorBits = 32;
+   //   //         //pixformat.cRedShift = 16;
+   //   //         //pixformat.cGreenShift = 8;
+   //   //         //pixformat.cBlueShift = 0;
+   //   //         //pixformat.cAlphaShift = 24;
+   //   //         //pixformat.cAlphaBits = 8;
+   //   //         //pixformat.cDepthBits = 24;
+   //   //         //pixformat.cStencilBits = 8;
 
-      //         //chosenformat = ChoosePixelFormat(hdc, &pixformat);
+   //   //         //chosenformat = ChoosePixelFormat(hdc, &pixformat);
 
-      //         //if (chosenformat == 0)
-      //         //{
+   //   //         //if (chosenformat == 0)
+   //   //         //{
 
-      //         //   informationf("MS GDI - ChoosePixelFormat failed");
+   //   //         //   informationf("MS GDI - ChoosePixelFormat failed");
 
-      //         //   informationf("last-error code: %d\n", GetLastError());
+   //   //         //   informationf("last-error code: %d\n", GetLastError());
 
-      //         //   ReleaseDC(m_hwnd, hdc);
+   //   //         //   ReleaseDC(m_hwnd, hdc);
 
-      //         //   throw ::exception(error_failed);
+   //   //         //   throw ::exception(error_failed);
 
-      //         //}
+   //   //         //}
 
-      //         //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
+   //   //         //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
 
-      //         //if (!spfok)
-      //         //{
+   //   //         //if (!spfok)
+   //   //         //{
 
-      //         //   informationf("MS GDI - SetPixelFormat failed");
+   //   //         //   informationf("MS GDI - SetPixelFormat failed");
 
-      //         //   informationf("last-error code: %d\n", GetLastError());
+   //   //         //   informationf("last-error code: %d\n", GetLastError());
 
-      //         //   ReleaseDC(m_hwnd, hdc);
+   //   //         //   ReleaseDC(m_hwnd, hdc);
 
-      //         //   throw ::exception(error_failed);
+   //   //         //   throw ::exception(error_failed);
 
-      //         //}
+   //   //         //}
 
-      ////         auto hglrc = wglCreateContext(hdc);
+   //   ////         auto hglrc = wglCreateContext(hdc);
 
-      ////         pwindow->m_hglrcProto = hglrc;
+   //   ////         pwindow->m_hglrcProto = hglrc;
 
-      //////         int context_attribs[] = {
-      //////WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
-      //////WGL_CONTEXT_MINOR_VERSION_ARB, 1,
-      //////0, 0
-      //////         };
-      //////         auto hglrc = wglCreateContextAttribsARB(hdc, NULL, context_attribs);
-      //////         if (!hglrc) {
-      //////            //ReleaseDC(hWnd, hDC);
-      //////            //DestroyWindow(hWnd);
+   //   //////         int context_attribs[] = {
+   //   //////WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
+   //   //////WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+   //   //////0, 0
+   //   //////         };
+   //   //////         auto hglrc = wglCreateContextAttribsARB(hdc, NULL, context_attribs);
+   //   //////         if (!hglrc) {
+   //   //////            //ReleaseDC(hWnd, hDC);
+   //   //////            //DestroyWindow(hWnd);
 
-      //////            throw ::exception(error_failed);
-      //////         }
-      //////         //ReleaseDC(hWnd, hDC);
+   //   //////            throw ::exception(error_failed);
+   //   //////         }
+   //   //////         //ReleaseDC(hWnd, hDC);
 
-      ////         if (!pwindow->m_hglrcProto)
-      ////         {
+   //   ////         if (!pwindow->m_hglrcProto)
+   //   ////         {
 
-      ////            informationf("MS WGL - wglCreateContext failed");
+   //   ////            informationf("MS WGL - wglCreateContext failed");
 
-      ////            informationf("last-error code: %d\n", GetLastError());
+   //   ////            informationf("last-error code: %d\n", GetLastError());
 
-      ////            ReleaseDC(m_hwnd, hdc);
+   //   ////            ReleaseDC(m_hwnd, hdc);
 
-      ////            throw ::exception(error_failed);
+   //   ////            throw ::exception(error_failed);
 
-      ////         }
+   //   ////         }
 
-      ////         bool bMakeCurrentOk = wglMakeCurrent(hdc, pwindow->m_hglrcProto);
+   //   ////         bool bMakeCurrentOk = wglMakeCurrent(hdc, pwindow->m_hglrcProto);
 
-      ////         if (!bMakeCurrentOk)
-      ////         {
+   //   ////         if (!bMakeCurrentOk)
+   //   ////         {
 
-      ////            informationf("MS WGL - wglMakeCurrent failed");
+   //   ////            informationf("MS WGL - wglMakeCurrent failed");
 
-      ////            informationf("last-error code: %d\n", GetLastError());
+   //   ////            informationf("last-error code: %d\n", GetLastError());
 
-      ////            ReleaseDC(m_hwnd, hdc);
+   //   ////            ReleaseDC(m_hwnd, hdc);
 
-      ////            throw ::exception(error_failed);
+   //   ////            throw ::exception(error_failed);
 
-      ////         }
+   //   ////         }
 
 
-      ////         pvulkan->defer_init_gpu_library();
+   //   ////         pvulkan->defer_init_gpu_library();
 
-      //         //auto pszVersion = (const char *)glGetString(GL_VERSION);
-      //         ////::e_status estatus =
+   //   //         //auto pszVersion = (const char *)glGetString(GL_VERSION);
+   //   //         ////::e_status estatus =
 
-      //         //::string strVersion(pszVersion);
+   //   //         //::string strVersion(pszVersion);
 
-      //         //if (strVersion.case_insensitive_contains("mesa"))
-      //         //{
+   //   //         //if (strVersion.case_insensitive_contains("mesa"))
+   //   //         //{
 
-      //         //   m_bMesa = true;
+   //   //         //   m_bMesa = true;
 
-      //         //}
+   //   //         //}
 
-      //         ////if (!estatus)
-      //         ////{
+   //   //         ////if (!estatus)
+   //   //         ////{
 
-      //         ////   ReleaseDC(window, hdc);
+   //   //         ////   ReleaseDC(window, hdc);
 
-      //         ////   return estatus;
+   //   //         ////   return estatus;
 
-      //         ////}
+   //   //         ////}
 
-      //         m_hwnd = m_hwnd;
-      //         m_hdc = hdc;
-      //         m_hrc = pwindow->m_hglrcProto;
+   //   //         m_hwnd = m_hwnd;
+   //   //         m_hdc = hdc;
+   //   //         m_hrc = pwindow->m_hglrcProto;
 
-      //      }
+   //   //      }
 
-      //   }
+   //   //   }
 
-      //   RECT rectClient;
+   //   //   RECT rectClient;
 
-      //   ::GetClientRect(m_hwnd, &rectClient);
+   //   //   ::GetClientRect(m_hwnd, &rectClient);
 
-      //   ::i32_size sizeNew = { rectClient.right - rectClient.left,
-      // rectClient.bottom - rectClient.top };
-      //
-      //   if (m_size != sizeNew)
-      //   {
-      //      m_size = sizeNew;
+   //   //   ::i32_size sizeNew = { rectClient.right - rectClient.left,
+   //   // rectClient.bottom - rectClient.top };
+   //   //
+   //   //   if (m_size != sizeNew)
+   //   //   {
+   //   //      m_size = sizeNew;
 
 
-      //      //HDC pdcDIB;                      // контекст устройства в памяти
-      //      //HBITMAP hbmpDIB;                 // и его текущий битмапvoid *pBitsDIB(NULL);            // содержимое
-      //      битмапаint cxDIB(200); int cyDIB(300);  // его размеры (например для окна 200х300)
-      //      //auto &BIH=pwindow->m_bitmapinfoheaderProto;            // и заголовок// …// создаем DIB section//
-      //      создаем структуру BITMAPINFOHEADER, описывающую наш DIBint iSize = sizeof(BITMAPINFOHEADER);  // размер
-      //      //memset(&BIH, 0, sizeof(pwindow->m_bitmapinfoheaderProto));
+   //   //      //HDC pdcDIB;                      // контекст устройства в памяти
+   //   //      //HBITMAP hbmpDIB;                 // и его текущий битмапvoid *pBitsDIB(NULL);            // содержимое
+   //   //      битмапаint cxDIB(200); int cyDIB(300);  // его размеры (например для окна 200х300)
+   //   //      //auto &BIH=pwindow->m_bitmapinfoheaderProto;            // и заголовок// …// создаем DIB section//
+   //   //      создаем структуру BITMAPINFOHEADER, описывающую наш DIBint iSize = sizeof(BITMAPINFOHEADER);  // размер
+   //   //      //memset(&BIH, 0, sizeof(pwindow->m_bitmapinfoheaderProto));
 
-      //      //BIH.biSize = sizeof(pwindow->m_bitmapinfoheaderProto);        // размер структуры
-      //      //BIH.biWidth = m_size.cx;       // геометрия
-      //      //BIH.biHeight = m_size.cy;      // битмапа
-      //      //BIH.biPlanes = 1;          // один план
-      //      //BIH.biBitCount = 32;       // 24 bits per pixel
-      //      //BIH.biCompression = BI_RGB;// без сжатия// создаем новый DC в памяти
-      //      ////pdcDIB = create_compatible_graphics(NULL);
-      //      ////void * pBits = nullptr;
-      //      //// создаем DIB-секцию
-      //      //pwindow->m_hbitmapProto = CreateDIBSection(
-      //      //  m_hdc,                  // контекст устройства
-      //      //  (BITMAPINFO *)&BIH,       // информация о битмапе
-      //      //  DIB_RGB_COLORS,          // параметры цвета
-      //      //  &pwindow->m_pbitsProto,               // местоположение буфера (память выделяет система)
-      //      //  NULL,                    // не привязываемся к отображаемым в память файлам
-      //      //  0);
+   //   //      //BIH.biSize = sizeof(pwindow->m_bitmapinfoheaderProto);        // размер структуры
+   //   //      //BIH.biWidth = m_size.cx;       // геометрия
+   //   //      //BIH.biHeight = m_size.cy;      // битмапа
+   //   //      //BIH.biPlanes = 1;          // один план
+   //   //      //BIH.biBitCount = 32;       // 24 bits per pixel
+   //   //      //BIH.biCompression = BI_RGB;// без сжатия// создаем новый DC в памяти
+   //   //      ////pdcDIB = create_compatible_graphics(NULL);
+   //   //      ////void * pBits = nullptr;
+   //   //      //// создаем DIB-секцию
+   //   //      //pwindow->m_hbitmapProto = CreateDIBSection(
+   //   //      //  m_hdc,                  // контекст устройства
+   //   //      //  (BITMAPINFO *)&BIH,       // информация о битмапе
+   //   //      //  DIB_RGB_COLORS,          // параметры цвета
+   //   //      //  &pwindow->m_pbitsProto,               // местоположение буфера (память выделяет система)
+   //   //      //  NULL,                    // не привязываемся к отображаемым в память файлам
+   //   //      //  0);
 
-      //      //// выберем новый битмап (DIB section) для контекста устройства в памяти
-      //      //SelectObject(m_hdc, pwindow->m_hbitmapProto);
-      //      //pwindow->m_hdcProto = m_hdc;
-      //   }
+   //   //      //// выберем новый битмап (DIB section) для контекста устройства в памяти
+   //   //      //SelectObject(m_hdc, pwindow->m_hbitmapProto);
+   //   //      //pwindow->m_hdcProto = m_hdc;
+   //   //   }
 
-      //   m_itaskGpu = ::current_itask();
+   //   //   m_itaskGpu = ::current_itask();
 
-      //   m_estatus = ::success;
+   //   //   m_estatus = ::success;
 
-      //   set_ok_flag();
-   }
+   //   //   set_ok_flag();
+   //}
 
 
    void context::_create_cpu_buffer21(const ::i32_size &size)
@@ -1736,24 +1738,24 @@ namespace gpu_vulkan
    }
 
 
-   void context::defer_create_window_context(::acme::windowing::window *pacmewindowingwindow)
-   {
+   //void context::defer_create_window_context(::acme::windowing::window *pacmewindowingwindow)
+   //{
 
-      // if (m_hrc)
-      //{
+   //   // if (m_hrc)
+   //   //{
 
-      //   return;
+   //   //   return;
 
-      //}
+   //   //}
 
-      ::cast<::windowing::window> pwindow = pacmewindowingwindow;
+   //   ::cast<::windowing::window> pwindow = pacmewindowingwindow;
 
-      create_window_context(m_pgpudevice, pwindow);
+   //   create_window_context(m_pgpudevice, pwindow);
 
-   }
+   //}
 
 
-   void context::_defer_create_window_context(::acme::windowing::window *pwindow) { _create_window_context(pwindow); }
+   //void context::_defer_create_window_context(::acme::windowing::window *pwindow) { _create_window_context(pwindow); }
 
 
    void context::resize_cpu_buffer21(const ::i32_size &sizeParam)
@@ -3653,8 +3655,10 @@ void context::on_end_layer(::gpu::layer *player)
 
 void context::draw2d_on_end_draw(::gpu::graphics *pgpugraphics) 
 {
+
+   auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
    
-   auto pgpuswapchain = m_pgpudevice->m_pgpucontextMain->get_swap_chain();
+   auto pgpuswapchain = pgpudraw2dwindowattachment->window_context()->get_swap_chain();
 
    pgpuswapchain->swap_buffers(); 
 
@@ -3669,9 +3673,11 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
 
    auto pgpurendertarget = m_pgpurenderer->render_target();
 
-   int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+   auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
 
-   int iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+   int iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
+
+   int iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
 
    ::pointer<command_buffer> pcommandbuffer;
 

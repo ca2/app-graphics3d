@@ -7,6 +7,7 @@
 #include "context.h"
 #include "descriptors.h"
 #include "device.h"
+#include "draw2d_window_attachment.h"
 #include "initializers.h"
 #include "physical_device.h"
 #include "queue.h"
@@ -2040,7 +2041,9 @@ namespace gpu_vulkan
       if (defer_construct_newø(m_p_001OnAfterEndFrame))
       {
 
-         m_pgpucontext->m_pgpudevice->current_frame()->post_on_after_end_frame(
+         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+
+         pgpudraw2dwindowattachment->current_frame()->post_on_after_end_frame(
             [this, pcontext]()
             {
                auto p = ::transfer(m_p_001OnAfterEndFrame);
@@ -2081,7 +2084,9 @@ namespace gpu_vulkan
       if (defer_construct_newø(m_p_001OnNextFrameStart))
       {
 
-         m_pgpucontext->m_pgpudevice->current_frame()->post_on_just_before_frame_next_start(
+         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+
+         pgpudraw2dwindowattachment->current_frame()->post_on_just_before_frame_next_start(
             [this, pcontext]()
             {
 
@@ -2258,8 +2263,10 @@ namespace gpu_vulkan
 
       auto iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
+
       auto iFrameCount =
-         pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+         pgpudraw2dwindowattachment->get_frame_count();
 
       auto iSerial = pgpucommandbuffer->m_iSerial;
 

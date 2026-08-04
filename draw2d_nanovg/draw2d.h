@@ -50,6 +50,11 @@ namespace draw2d_nanovg
       ~draw2d() override;
 
 
+      ::draw2d::graphics_pointer do_allocation_strategy(::acme::user::interaction * pacmeuserinteractionAffinity, ::image::image * pimage,
+                                                       const ::i32_size & size) override;
+
+
+
       void initialize(::particle * pparticle) override;
       int nanovg_create_flags() const;
 

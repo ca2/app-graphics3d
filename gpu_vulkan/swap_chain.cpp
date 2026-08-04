@@ -2,6 +2,7 @@
 #include "binding.h"
 #include "command_buffer.h"
 #include "context.h"
+#include "draw2d_window_attachment.h"
 #include "physical_device.h"
 #include "queue.h"
 #include "renderer.h"
@@ -212,7 +213,9 @@ namespace gpu_vulkan
                    frameIndex, uImageIndex);
       m_iCurrentSwapChainImage = uImageIndex;
 
-      pdevice->m_iCurrentImage = m_iCurrentSwapChainImage;
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pcontext);
+
+      pgpudraw2dwindowattachment->m_iCurrentImage = m_iCurrentSwapChainImage;
 
       //      if (vkresultAcquireNextImage == VK_ERROR_OUT_OF_DATE_KHR || vkresultAcquireNextImage == VK_SUBOPTIMAL_KHR)
       //{
@@ -671,8 +674,9 @@ namespace gpu_vulkan
 
       m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % iSize;
 
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
 
-      m_pgpucontext->m_pgpudevice->m_iCurrentFrame3 = m_iCurrentSwapChainFrame;
+      pgpudraw2dwindowattachment->m_iCurrentFrame3 = m_iCurrentSwapChainFrame;
 
       ///return res;
 

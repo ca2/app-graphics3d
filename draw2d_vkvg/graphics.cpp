@@ -29,6 +29,7 @@
 #include "aura/graphics/image/aaa_target.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
+#include "bred/gpu/draw2d_window_attachment.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/swap_chain.h"
 #include "aura/graphics/write_text/text_out.h"
@@ -212,12 +213,15 @@ namespace draw2d_vkvg
    }
 
 
-   void graphics::create_memory_graphics(const ::i32_size& size)
+   //void graphics::create_memory_graphics(const ::i32_size& size)
+   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity)
    {
+
+
 
       ::i32_rectangle rectanglePlacement;
 
-      if (size.is_empty())
+      if (sizeParameter.is_empty())
       {
 
          rectanglePlacement.set_size({ 1920, 1080 });
@@ -226,148 +230,34 @@ namespace draw2d_vkvg
       else
       {
 
-         rectanglePlacement.set_size(size);
+         rectanglePlacement.set_size(sizeParameter);
 
       }
 
-      vulkan_create_offscreen_buffer(rectanglePlacement);
+      //vulkan_create_offscreen_buffer(rectanglePlacement);
 
-   }
+      m_pacmeuserinteractionAffinity = pacmeuserinteractionAffinity;
 
-
-   void graphics::create_window_graphics(::windowing::window* pwindow)
-   {
-
-      m_pwindow = pwindow;
-
-      vulkan_defer_create_window_context(pwindow);
-
-      set_ok_flag();
-
-   }
-
-
-   void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size)
-   {
-
-      ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
-
-      auto pwindow = puserinteraction->window();
-
-      //vulkan_defer_create_window_context(pwindow);
-
-      auto psystem = system();
-
-      auto pgpuapproach = application()->get_gpu_approach();
-
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
-
-      auto pgpucontextNew = pgpudevice->main_draw2d_context();
-
-      set_gpu_context(pgpucontextNew);
-
-      auto pcontext = gpu_context();
-
-      pcontext->m_pgpucompositor = this;
-
-      //pcontext->defer_create_window_context(pwindow);
-
-      throw todo;
-
-      pcontext->create_cpu_buffer21(size);
-
-      ::cast < ::gpu_vulkan::context > pcontextVulkan = pcontext;
-      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
-
-      vkvg_device_create_info_t createinfo;
-      createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      createinfo.deferredResolve = true;
-      createinfo.inst = papproachVulkan->m_vkinstance;
-      createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
-      createinfo.vkdev = pcontextVulkan->logicalDevice();
-      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
-      createinfo.qIndex = 0;
-      createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
-
-      m_vkvgdevice = vkvg_device_create(&createinfo);
-
-      vkvg_device_reference(m_vkvgdevice);
-
-      auto sizeWindow = pwindow->m_sizeWindow;
-
-      m_vkvgsurface = vkvg_surface_create(
-         m_vkvgdevice,
-         sizeWindow.cx,
-         sizeWindow.cy
-      );
-
-      m_bSetStateExternally = false;
-
-      m_vkvgcontext = vkvg_create(m_vkvgsurface);
-
-      if (!m_vkvgcontext)
-      {
-
-         throw ::exception(error_failed);
-
-      }
-
-      defer_create_swap_chain(puserinteraction);
-
-      //      ::vulkan::resize(size);
-
-
-      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      //if (m_puserinteractionDraw2dGraphics == nullptr)
       //{
 
-      //    auto pcontextMain = pgpudevice->main_context();
+      //   m_puserinteractionDraw2dGraphics =
+      //      dynamic_cast<::user::interaction *>(pacmeuserinteractionMain.m_p);
 
-      //    auto pswapchain = pcontextMain->get_swap_chain();
+      //   if (m_puserinteractionDraw2dGraphics == nullptr)
+      //   {
 
-      //    if (!pswapchain->m_bSwapChainInitialized)
-      //    {
+      //      informationf("No user interaction available for OpenGL offscreen buffer creation.");
 
-      //        pswapchain->initialize_swap_chain_window(pcontextMain, puserinteraction->window());
+      //      //return false;
 
-      //    }
+      //      return;
+
+      //   }
 
       //}
 
-      set_ok_flag();
-
-   }
-
-
-   void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
-   {
-
-      vulkan_create_offscreen_buffer({ 0, 0, 1920, 1080 });
-      //vulkan_create_offscreen_buffer(pgraphics->m_pimage->size());
-
-   }
-
-
-   bool graphics::vulkan_create_offscreen_buffer(const ::i32_rectangle& rectanglePlacement)
-   {
-
-      if (m_puserinteractionDraw2dGraphics == nullptr)
-      {
-
-         m_puserinteractionDraw2dGraphics =
-            dynamic_cast<::user::interaction *>(pacmeuserinteractionMain.m_p);
-
-         if (m_puserinteractionDraw2dGraphics == nullptr)
-         {
-
-            informationf("No user interaction available for OpenGL offscreen buffer creation.");
-
-            return false;
-
-         }
-
-      }
-
-      on_gpu_context_placement_change(rectanglePlacement,  m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+      on_gpu_context_placement_change(rectanglePlacement, m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
       //if (!draw2d_vkvg()->m_pvulkancontext) {
       //   informationf("MS GDI - RegisterClass failed");
@@ -397,7 +287,9 @@ namespace draw2d_vkvg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+      //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
 
       ::cast < ::gpu_vulkan::context > pcontextVulkan = gpu_context();
@@ -568,32 +460,373 @@ namespace draw2d_vkvg
 
       ::vulkan::resize(rectanglePlacement.size(), bYSwap);
 
-      return true;
+//      return true;
+
 
    }
 
 
-   bool graphics::vulkan_delete_offscreen_buffer()
+   void graphics::create_window_graphics(::windowing::window* pwindow)
    {
 
-      //if (m_hglrc == NULL && m_hdc == NULL && m_hwnd == NULL)
+      m_pwindow = pwindow;
+
+      vulkan_defer_create_window_context(pwindow);
+
+      set_ok_flag();
+
+   }
+
+
+   void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size)
+   {
+
+      ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
+
+      auto pwindow = puserinteraction->window();
+
+      //vulkan_defer_create_window_context(pwindow);
+
+      auto psystem = system();
+
+      auto pgpuapproach = application()->get_gpu_approach();
+
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
+
+      auto pgpucontextNew = pgpudraw2dwindowattachment->draw2d_context();
+
+      set_gpu_context(pgpucontextNew);
+
+      auto pcontext = gpu_context();
+
+      pcontext->m_pgpucompositor = this;
+
+      //pcontext->defer_create_window_context(pwindow);
+
+      throw todo;
+
+      pcontext->create_cpu_buffer21(size);
+
+      ::cast < ::gpu_vulkan::context > pcontextVulkan = pcontext;
+      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
+
+      vkvg_device_create_info_t createinfo;
+      createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      createinfo.deferredResolve = true;
+      createinfo.inst = papproachVulkan->m_vkinstance;
+      createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
+      createinfo.vkdev = pcontextVulkan->logicalDevice();
+      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
+      createinfo.qIndex = 0;
+      createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+
+      m_vkvgdevice = vkvg_device_create(&createinfo);
+
+      vkvg_device_reference(m_vkvgdevice);
+
+      auto sizeWindow = pwindow->m_sizeWindow;
+
+      m_vkvgsurface = vkvg_surface_create(
+         m_vkvgdevice,
+         sizeWindow.cx,
+         sizeWindow.cy
+      );
+
+      m_bSetStateExternally = false;
+
+      m_vkvgcontext = vkvg_create(m_vkvgsurface);
+
+      if (!m_vkvgcontext)
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+      defer_create_swap_chain(puserinteraction);
+
+      //      ::vulkan::resize(size);
+
+
+      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       //{
 
-      //   return true;
+      //    auto pcontextMain = pgpudevice->main_context();
+
+      //    auto pswapchain = pcontextMain->get_swap_chain();
+
+      //    if (!pswapchain->m_bSwapChainInitialized)
+      //    {
+
+      //        pswapchain->initialize_swap_chain_window(pcontextMain, puserinteraction->window());
+
+      //    }
 
       //}
 
-      //wglMakeCurrent(nullptr, nullptr);
-      //wglDeleteContext(m_hglrc);
-      //::ReleaseDC(m_hwnd, m_hdc);
-      //::DestroyWindow(m_hwnd);
-      m_size.set(0, 0);
-      //m_hglrc = NULL;
-      //m_hwnd = NULL;
-      //m_hdc = NULL;
-      return true;
+      set_ok_flag();
 
    }
+
+
+   //void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
+   //{
+
+   //   vulkan_create_offscreen_buffer({ 0, 0, 1920, 1080 });
+   //   //vulkan_create_offscreen_buffer(pgraphics->m_pimage->size());
+
+   //}
+
+
+   //bool graphics::vulkan_create_offscreen_buffer(const ::i32_rectangle& rectanglePlacement)
+   //{
+
+   //   if (m_puserinteractionDraw2dGraphics == nullptr)
+   //   {
+
+   //      m_puserinteractionDraw2dGraphics =
+   //         dynamic_cast<::user::interaction *>(pacmeuserinteractionMain.m_p);
+
+   //      if (m_puserinteractionDraw2dGraphics == nullptr)
+   //      {
+
+   //         informationf("No user interaction available for OpenGL offscreen buffer creation.");
+
+   //         return false;
+
+   //      }
+
+   //   }
+
+   //   on_gpu_context_placement_change(rectanglePlacement,  m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+
+   //   //if (!draw2d_vkvg()->m_pvulkancontext) {
+   //   //   informationf("MS GDI - RegisterClass failed");
+   //   //   informationf("last-error code: %d\n", GetLastError());
+   //   //   return false;
+   //   //}
+
+   //   //if (!m_pgpucontext)
+   //   //{
+
+   //   //   auto pgpuapproach = application()->get_gpu_approach();
+
+   //   //   if (!m_puserinteractionDraw2dGraphics)
+   //   //   {
+
+   //   //      m_puserinteractionDraw2dGraphics = dynamic_cast < ::user::interaction*>(pacmeuserinteractionMain.m_p);
+
+   //   //   }
+
+   //   //   ASSERT(m_puserinteractionDraw2dGraphics);
+
+   //   //   auto pgpudevice = pgpuapproach->get_gpu_device();
+
+   //   //   m_pgpucontext = pgpudevice->start_cpu_buffer_context(this, {}, rectanglePlacement);
+
+   //   //}
+
+   //   auto pgpuapproach = application()->get_gpu_approach();
+
+   //   auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+
+
+   //   ::cast < ::gpu_vulkan::context > pcontextVulkan = gpu_context();
+   //   ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
+
+   //   vkvg_device_create_info_t createinfo;
+   //   createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+   //   createinfo.deferredResolve = true;
+   //   createinfo.inst = papproachVulkan->m_vkinstance;
+   //   createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
+   //   createinfo.vkdev = pcontextVulkan->logicalDevice();
+   //   createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
+   //   createinfo.qIndex = 0;
+   //   createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+
+   //   m_vkvgdevice = vkvg_device_create(&createinfo);
+
+   //   m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, rectanglePlacement.width(), rectanglePlacement.height());
+
+   //   m_bSetStateExternally = false;
+
+   //   m_vkvgcontext = vkvg_create(m_vkvgsurface);
+
+   //   //if (!m_pgpucontext)
+   //   //{
+
+   //   //   return false;
+
+   //   //}
+
+   //   //      ::vulkan::resize(size);
+
+   //   //}
+
+   //   //LPCTSTR lpClassName = L"draw2d_vkvg_offscreen_buffer_window";
+   //   //LPCTSTR lpWindowName = L"draw2d_vkvg_offscreen_buffer_window";
+   //   ////unsigned int dwStyle = WS_CAPTION | WS_POPUPWINDOW; // | WS_VISIBLE
+   //   //unsigned int dwExStyle = 0;
+   //   //unsigned int dwStyle = WS_OVERLAPPEDWINDOW;
+   //   //dwStyle |= WS_POPUP;
+   //   ////dwStyle |= WS_VISIBLE;
+   //   ////dwStyle |= WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+   //   //dwStyle &= ~WS_CAPTION;
+   //   ////dwStyle = 0;
+   //   //dwStyle &= ~WS_THICKFRAME;
+   //   //dwStyle &= ~WS_BORDER;
+   //   //int x = 0;
+   //   //int y = 0;
+   //   //int nWidth = size.cx;
+   //   //int nHeight = size.cy;
+   //   //HWND hWndParent = nullptr;
+   //   //HMENU hMenu = nullptr;
+   //   /////HINSTANCE hInstance = psystem->m_hinstance;
+   //   //LPVOID lpParam = nullptr;
+
+   //   ////HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y,  nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+   //   //HWND window = CreateWindowExW(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, nullptr, lpParam);
+
+   //   //if (window == nullptr) 
+   //   //{
+   //   //   informationf("MS GDI - CreateWindow failed");
+   //   //   informationf("last-error code: %d\n", GetLastError());
+   //   //   return false;
+   //   //}
+
+   //   //// create WGL context, make current
+
+   //   //PIXELFORMATDESCRIPTOR pixformat;
+   //   //int chosenformat;
+   //   //HDC hdc = GetDC(window);
+   //   //if (hdc == nullptr)
+   //   //{
+   //   //   informationf("MS GDI - GetDC failed");
+   //   //   informationf("last-error code: %d\n", GetLastError());
+   //   //   return false;
+   //   //}
+
+   //   //ZeroMemory(&pixformat, sizeof(pixformat));
+   //   //pixformat.nSize = sizeof(pixformat);
+   //   //pixformat.nVersion = 1;
+   //   //pixformat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_VULKAN | PFD_DOUBLEBUFFER;
+   //   //pixformat.iPixelType = PFD_TYPE_RGBA;
+   //   //pixformat.cColorBits = 24;
+   //   //pixformat.cAlphaBits = 8;
+   //   //pixformat.cDepthBits = 24;
+   //   //pixformat.cStencilBits = 8;
+
+   //   //chosenformat = ChoosePixelFormat(hdc, &pixformat);
+   //   //if (chosenformat == 0) 
+   //   //{
+   //   //   informationf("MS GDI - ChoosePixelFormat failed");
+   //   //   informationf("last-error code: %d\n", GetLastError());
+   //   //   return false;
+   //   //}
+
+   //   //bool spfok = SetPixelFormat(hdc, chosenformat, &pixformat);
+   //   //if (!spfok) 
+   //   //{
+   //   //   informationf("MS GDI - SetPixelFormat failed");
+   //   //   informationf("last-error code: %d\n", GetLastError());
+   //   //   return false;
+   //   //}
+
+   //   //HGLRC hglrcTime = wglCreateContext(hdc);
+   //   //if (hglrcTime == nullptr)
+   //   //{
+   //   //   informationf("MS WGL - wglCreateContext failed");
+   //   //   informationf("last-error code: %d\n", GetLastError());
+   //   //   ReleaseDC(m_hwnd, m_hdc);
+   //   //   return false;
+   //   //}
+
+   //   //bool okMakeCurrent = wglMakeCurrent(hdc, hglrcTime);
+   //   //if (!okMakeCurrent)
+   //   //{
+   //   //   informationf("MS WGL - wglMakeCurrent failed");
+   //   //   informationf("last-error code: %d\n", GetLastError());
+   //   //   return false;
+   //   //}
+   //   ////vkfwInit();
+   //   //// ... <snip> ... setup a window and a context
+   //   //
+   //   //auto wglCurrentContext = wglGetCurrentContext();
+
+   //   //// Load all Vulkan functions using the vkfw loader function
+   //   //// If you use SDL you can use: https://wiki.libsdl.org/SDL_GL_GetProcAddress
+   //   ////if (!vkadLoadGLLoader((VKADloadproc)vkfwGetProcAddress)) {
+   //   ////   std::cout << "Failed to initialize Vulkan context" << std::endl;
+   //   ////   return -1;
+   //   ////}
+   //   //if (!vkadLoadWGL(hdc))
+   //   //{
+   //   //   // Problem: vkewInit failed, something is seriously wrong.
+   //   //   informationf("vkadLoadWGL failed");
+   //   //   //return false;
+   //   //   //throw resource_exception();
+
+   //   //   return false;
+
+   //   //}
+   //   //int attribs[] =
+   //   //{
+   //   //   WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+   //   //   WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+   //   //   WGL_CONTEXT_FLAGS_ARB, 0,
+   //   //   WGL_CONTEXT_PROFILE_MASK_ARB,
+   //   //   WGL_CONTEXT_COREPROFILE_BIT_ARB, 0
+   //   //};
+
+   //   ////PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = NULL;
+   //   ////wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+
+   //   //auto hglrc =  wglCreateContextAttribsARB(hdc, 0, attribs);
+   //   //wglMakeCurrent(nullptr, nullptr);
+   //   //wglDeleteContext(hglrcTime);
+   //   //   wglMakeCurrent(hdc, m_hglrc);
+   //   ////draw2d_vkvg()->defer_initialize_glew();
+   //   //
+   //   ////draw2d_vkvg()->defer_initialize_glew();
+
+
+   //   //m_hwnd = window;
+   //   //m_hdc = hdc;
+   //   //m_hglrc = hglrc;
+   //   //m_size = size;
+
+   //   bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+
+   //   ::vulkan::resize(rectanglePlacement.size(), bYSwap);
+
+   //   return true;
+
+   //}
+
+
+   //bool graphics::vulkan_delete_offscreen_buffer()
+   //{
+
+   //   //if (m_hglrc == NULL && m_hdc == NULL && m_hwnd == NULL)
+   //   //{
+
+   //   //   return true;
+
+   //   //}
+
+   //   //wglMakeCurrent(nullptr, nullptr);
+   //   //wglDeleteContext(m_hglrc);
+   //   //::ReleaseDC(m_hwnd, m_hdc);
+   //   //::DestroyWindow(m_hwnd);
+   //   m_size.set(0, 0);
+   //   //m_hglrc = NULL;
+   //   //m_hwnd = NULL;
+   //   //m_hdc = NULL;
+   //   return true;
+
+   //}
 
 
    bool graphics::vulkan_defer_create_window_context(::windowing::window* pwindow)
@@ -603,9 +836,13 @@ namespace draw2d_vkvg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+      //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
 
-      auto pgpucontext = pgpudevice->main_context();
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
+
+      auto pgpucontext = pgpudraw2dwindowattachment->window_context();
 
       ////if (!m_pgpucontext)
       ////{
@@ -714,14 +951,14 @@ namespace draw2d_vkvg
 
       }
 
-      vulkan_delete_offscreen_buffer();
+      //vulkan_delete_offscreen_buffer();
 
-      if (!vulkan_create_offscreen_buffer(pbitmap->get_size()))
-      {
+      //if (!vulkan_create_offscreen_buffer(pbitmap->get_size()))
+      //{
 
-         return NULL;
+      //   return NULL;
 
-      }
+      //}
 
       bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
@@ -7644,14 +7881,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      if (::is_set(m_puserinteractionDraw2dGraphics))
+      if (::is_set(m_pacmeuserinteractionAffinity))
       {
 
-         fPreferredDpiX = m_puserinteractionDraw2dGraphics->preferred_dpi_x();
+         fPreferredDpiX = m_pacmeuserinteractionAffinity->preferred_dpi_x();
 
-         fPreferredDpiY = m_puserinteractionDraw2dGraphics->preferred_dpi_y();
+         fPreferredDpiY = m_pacmeuserinteractionAffinity->preferred_dpi_y();
 
-         fPreferredDensity = m_puserinteractionDraw2dGraphics->preferred_density();
+         fPreferredDensity = m_pacmeuserinteractionAffinity->preferred_density();
 
       }
 
@@ -8211,71 +8448,71 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 
 
-   void graphics::create_window_graphics(const ::operating_system::window & operatingsystemwindow)
-   {
-
-      // http://stackoverflow.com/questions/4052940/how-to-make-an-vulkan-rendering-context-with-transparent-background
-      //
-
-      //PIXELFORMATDESCRIPTOR pfd =
-      //{
-      //   sizeof(PIXELFORMATDESCRIPTOR),
-      //   1,                                // Version Number
-      //   PFD_DRAW_TO_WINDOW |         // Format Must Support Window
-      //   PFD_SUPPORT_VULKAN |         // Format Must Support Vulkan
-      //   PFD_SUPPORT_COMPOSITION |         // Format Must Support Composition
-      //   PFD_DOUBLEBUFFER,                 // Must Support Double Buffering
-      //   PFD_TYPE_RGBA,                    // Request An RGBA Format
-      //   32,                               // Select Our Color Depth
-      //   0, 0, 0, 0, 0, 0,                 // Color Bits Ignored
-      //   8,                                // An Alpha Buffer
-      //   0,                                // Shift Bit Ignored
-      //   0,                                // No Accumulation Buffer
-      //   0, 0, 0, 0,                       // Accumulation Bits Ignored
-      //   24,                               // 16Bit Z-Buffer (Depth Buffer)
-      //   8,                                // Some Stencil Buffer
-      //   0,                                // No Auxiliary Buffer
-      //   PFD_MAIN_PLANE,                   // Main Drawing Layer
-      //   0,                                // Reserved
-      //   0, 0, 0                           // Layer Masks Ignored
-      //};
-
-
-      //DWM_BLURBEHIND bb = { 0 };
-      ////HRGN hRgn = CreateRectRgn(0, 0, -1, -1);
-      ////bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-      //bb.dwFlags = DWM_BB_ENABLE;
-      ////bb.hRgnBlur = hRgn;
-      //bb.fEnable = true;
-      //DwmEnableBlurBehindWindow(wnd, &bb);
-
-
-      //m_hdc = GetDC(wnd);
-      //int PixelFormat = ChoosePixelFormat(m_hdc, &pfd);
-      //if (PixelFormat == 0)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
-
-      //BOOL bResult = SetPixelFormat(m_hdc, PixelFormat, &pfd);
-      //if (bResult == false)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
-
-      //m_hglrc = wglCreateContext(m_hdc);
-      //if (!m_hglrc)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
-
-//      return true;
-      //return false;
-
-   }
+//   void graphics::create_window_graphics(const ::operating_system::window & operatingsystemwindow)
+//   {
+//
+//      // http://stackoverflow.com/questions/4052940/how-to-make-an-vulkan-rendering-context-with-transparent-background
+//      //
+//
+//      //PIXELFORMATDESCRIPTOR pfd =
+//      //{
+//      //   sizeof(PIXELFORMATDESCRIPTOR),
+//      //   1,                                // Version Number
+//      //   PFD_DRAW_TO_WINDOW |         // Format Must Support Window
+//      //   PFD_SUPPORT_VULKAN |         // Format Must Support Vulkan
+//      //   PFD_SUPPORT_COMPOSITION |         // Format Must Support Composition
+//      //   PFD_DOUBLEBUFFER,                 // Must Support Double Buffering
+//      //   PFD_TYPE_RGBA,                    // Request An RGBA Format
+//      //   32,                               // Select Our Color Depth
+//      //   0, 0, 0, 0, 0, 0,                 // Color Bits Ignored
+//      //   8,                                // An Alpha Buffer
+//      //   0,                                // Shift Bit Ignored
+//      //   0,                                // No Accumulation Buffer
+//      //   0, 0, 0, 0,                       // Accumulation Bits Ignored
+//      //   24,                               // 16Bit Z-Buffer (Depth Buffer)
+//      //   8,                                // Some Stencil Buffer
+//      //   0,                                // No Auxiliary Buffer
+//      //   PFD_MAIN_PLANE,                   // Main Drawing Layer
+//      //   0,                                // Reserved
+//      //   0, 0, 0                           // Layer Masks Ignored
+//      //};
+//
+//
+//      //DWM_BLURBEHIND bb = { 0 };
+//      ////HRGN hRgn = CreateRectRgn(0, 0, -1, -1);
+//      ////bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+//      //bb.dwFlags = DWM_BB_ENABLE;
+//      ////bb.hRgnBlur = hRgn;
+//      //bb.fEnable = true;
+//      //DwmEnableBlurBehindWindow(wnd, &bb);
+//
+//
+//      //m_hdc = GetDC(wnd);
+//      //int PixelFormat = ChoosePixelFormat(m_hdc, &pfd);
+//      //if (PixelFormat == 0)
+//      //{
+//      //   ASSERT(0);
+//      //   return false;
+//      //}
+//
+//      //BOOL bResult = SetPixelFormat(m_hdc, PixelFormat, &pfd);
+//      //if (bResult == false)
+//      //{
+//      //   ASSERT(0);
+//      //   return false;
+//      //}
+//
+//      //m_hglrc = wglCreateContext(m_hdc);
+//      //if (!m_hglrc)
+//      //{
+//      //   ASSERT(0);
+//      //   return false;
+//      //}
+//
+////      return true;
+//      //return false;
+//
+//   }
 
 
    //oswindow graphics::get_window_handle() const

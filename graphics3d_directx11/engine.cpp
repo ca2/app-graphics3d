@@ -596,7 +596,7 @@ namespace graphics3d_directx11
          //   nullptr // source rect (optional)
          //);
 
-         auto puserinteration = pgraphics2d->m_puserinteractionDraw2dGraphics;
+         auto puserinteration = pgraphics2d->m_pacmeuserinteractionAffinity;
 
          
 

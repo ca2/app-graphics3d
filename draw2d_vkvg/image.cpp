@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "image.h"
 #include "acme/platform/application.h"
+#include "aura/windowing/window_buffer.h"
 
 
 namespace draw2d_vkvg
@@ -132,25 +133,45 @@ namespace draw2d_vkvg
 //   }
 
 
-   bool image::host(::pixmap_t * ppixmap, ::windowing::window * pwindow)
+   //bool image::host(::pixmap_t * ppixmap, ::windowing::window * pwindow)
+   bool image::host(::windowing::window_buffer * pwindowbuffer, ::windowing::window * pwindow, const ::i32_size & sizeRaw)
    {
 
-      if (::is_null(ppixmap) || ppixmap->nok())
+      //if (::is_null(ppixmap) || ppixmap->nok())
+      //{
+
+      //   return false;
+
+      //}
+      //   
+      //if (ppixmap->m_pimage32Raw == m_pimage32Raw
+      //   && m_size == ppixmap->m_size)
+      //{
+
+      //   return true;
+
+      //}
+
+      //::memory_copy((::pixmap *) this, ppixmap, sizeof(::pixmap));
+
+      if (::is_null(pwindowbuffer)
+   || ::is_null(pwindowbuffer->m_ppixmapWindowBuffer)
+   || pwindowbuffer->m_ppixmapWindowBuffer.nok())
       {
 
          return false;
 
       }
-         
-      if (ppixmap->m_pimage32Raw == m_pimage32Raw
-         && m_size == ppixmap->m_size)
+
+      if (pwindowbuffer->m_ppixmapWindowBuffer->m_pimage32Raw == m_pimage32Raw
+         && m_size == pwindowbuffer->m_ppixmapWindowBuffer->m_size)
       {
 
          return true;
 
       }
 
-      ::memory_copy((::pixmap *) this, ppixmap, sizeof(::pixmap));
+      ::memory_copy((::pixmap *)this, pwindowbuffer->m_ppixmapWindowBuffer->m_pimage32, sizeof(::pixmap));
 
       ////constructø(m_pbitmap);
       //defer_constructø(m_pgraphics);
@@ -2398,9 +2419,9 @@ namespace draw2d_vkvg
 
       //plusplus::rectF rectangleSource(0, 0, (plusplus::REAL) pimage->width(), (plusplus::REAL) pimage->height());
 
-      unmap();
+      //unmap();
       
-      pimage->unmap();
+      //pimage->unmap();
 
       //m_pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
 

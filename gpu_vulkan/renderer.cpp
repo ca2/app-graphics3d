@@ -5,6 +5,7 @@
 #include "buffer.h"
 #include "command_buffer.h"
 #include "descriptors.h"
+#include "draw2d_window_attachment.h"
 #include "frame.h"
 #include "initializers.h"
 #include "input_layout.h"
@@ -556,7 +557,9 @@ namespace gpu_vulkan
       else
       {
 
-         iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+
+         iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
 
       }
 
@@ -644,7 +647,9 @@ namespace gpu_vulkan
 
       }
 
-      assert(m_pgpucontext->m_pgpudevice->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+
+      assert(pgpudraw2dwindowattachment->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
              "Can't call beginRender while not in began_frame gpu_frame_state");
 
       //if (m_bOffScreen)
@@ -775,8 +780,10 @@ namespace gpu_vulkan
          * static_cast<VkDeviceSize>(size.height())
          * 4;
 
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+
       auto & pbuffer =
-         m_buffera.element_at_grow(pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3());
+         m_buffera.element_at_grow(pgpudraw2dwindowattachment->get_frame_index3());
 
       if (pbuffer && pbuffer->m_size == sizeReadback)
       {
@@ -827,7 +834,9 @@ namespace gpu_vulkan
 
       auto pgpurendertarget = m_prenderer->render_target();
 
-      auto iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+
+      auto iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
 
       auto & pbufferRef = m_buffera.element_at_grow(iFrameIndex);
 
@@ -1256,8 +1265,10 @@ namespace gpu_vulkan
 
       auto pgpurendertarget = m_prenderer->render_target();
 
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+
       auto & pbufferRef =
-         m_buffera.element_at_grow(pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3());
+         m_buffera.element_at_grow(pgpudraw2dwindowattachment->get_frame_index3());
 
       if (!pbufferRef)
       {
@@ -1429,6 +1440,8 @@ namespace gpu_vulkan
 
          ::cast < texture > ptextureFrameTarget = prendertarget->current_texture(nullptr);
 
+         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(prendertarget);
+
          auto pgpulayer = ::gpu::current_layer();
 
          if (m_pcpubuffersampler->m_uSampleSerial < 12)
@@ -1439,7 +1452,7 @@ namespace gpu_vulkan
                "selected_texture={} frame_target_texture={} selected_extent={}x{} "
                "frame_target_extent={}x{}",
                (unsigned long long)(m_pcpubuffersampler->m_uSampleSerial + 1),
-               m_pgpucontext->m_pgpudevice->get_frame_index3(),
+               pgpudraw2dwindowattachment->get_frame_index3(),
                (::uptr)pgpulayer,
                pgpulayer ? pgpulayer->m_iLayerIndex : -1,
                (::uptr)ptexture.m_p,
@@ -3521,9 +3534,11 @@ namespace gpu_vulkan
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
-         ::cast < context > pcontextMain = m_pgpucontext->m_pgpudevice->main_context();
+         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
 
-         ::cast < ::gpu_vulkan::swap_chain > pswapchain = pcontextMain->get_swap_chain();
+         ::cast < context > pgpucontextWindow = pgpudraw2dwindowattachment->window_context();
+
+         ::cast < ::gpu_vulkan::swap_chain > pswapchain = pgpucontextWindow->get_swap_chain();
 
          if (pswapchain)
          {
@@ -4031,7 +4046,9 @@ namespace gpu_vulkan
 
       ::cast<command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
-      assert(m_pgpucontext->m_pgpudevice->current_frame()->m_egpuframestate ==
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+
+      assert(pgpudraw2dwindowattachment->current_frame()->m_egpuframestate ==
                 ::gpu::e_gpu_frame_state_began_frame &&
              "Can't call beginRender while not in began_frame gpu_frame_state");
       assert(pgpulayer->m_egpulayerstate == ::gpu::e_gpu_layer_state_began_render &&
@@ -4051,9 +4068,11 @@ namespace gpu_vulkan
 
          auto pgpurendertarget = this->render_target();
 
-         int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
 
-         int iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+         int iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
+
+         int iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
 
          ::pointer<command_buffer> pcommandbuffer;
 
@@ -5228,8 +5247,9 @@ namespace gpu_vulkan
       ::array<VkPipelineStageFlags> waitStages;
       waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
       ::cast<::gpu_vulkan::texture> ptextureSource = prendertargetSource->m_ptexturea->element_at(
-         prendertargetSource->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3());
+         pgpudraw2dwindowattachment->get_frame_index3());
       auto psynchronizationSource = ptextureSource->synchronization();
       if (psynchronizationSource
          && psynchronizationSource->m_pgpusemaphoreRenderFinished)

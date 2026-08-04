@@ -30,6 +30,7 @@
 #endif
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/aaa_cpu_buffer.h"
+#include "bred/gpu/draw2d_window_attachment.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/aaa_render.h"
 #include "aura/graphics/draw2d/clip.h"
@@ -248,46 +249,54 @@ namespace draw2d_nanovg
    }
 
 
-   void graphics::create_memory_graphics(const ::i32_size& size)
+   //void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+   ////void graphics::create_memory_graphics(const ::i32_size& size)
+   //{
+
+   //   ::i32_size sizeMemory(sizeParameter);
+
+   //   if (sizeMemory.is_empty())
+   //   {
+
+   //      sizeMemory = { 1920, 1080 };
+
+   //   }
+
+   //   ::gpu::graphics::create_memory_graphics(sizeMemory);
+
+   //}
+
+   void graphics::create_bitmap_graphics(::draw2d::bitmap * pbitmap)
    {
 
-      ::i32_size sizeMemory(size);
-
-      if (sizeMemory.is_empty())
-      {
-
-         sizeMemory = { 1920, 1080 };
-
-      }
-
-      ::gpu::graphics::create_memory_graphics(sizeMemory);
+      _create_memory_graphics(pbitmap->size(), nullptr);
 
    }
 
 
-   void graphics::_create_memory_graphics(const ::i32_size& size)
+   //void graphics::_create_memory_graphics(const ::i32_size& size)
+   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) 
    {
 
-      auto puserinteraction = m_puserinteractionDraw2dGraphics;
+      auto puserinteraction = pacmeuserinteractionAffinity;
 
-      if (!puserinteraction)
+      if (puserinteraction)
       {
 
-         puserinteraction = dynamic_cast < ::user::interaction * >(
-            pacmeuserinteractionMain.m_p);
+         m_pacmeuserinteractionAffinity = puserinteraction;
 
       }
 
-      if (!puserinteraction)
+      if (!m_pacmeuserinteractionAffinity)
       {
 
          throw ::exception(
             error_wrong_state,
-            "No main interaction is available for NanoVG memory graphics.");
+            "No user interaction is available to acquire the OpenGL GPU device.");
 
       }
 
-      auto pwindow = puserinteraction->window();
+      auto pwindow = m_pacmeuserinteractionAffinity->window();
 
       if (!pwindow)
       {
@@ -298,7 +307,7 @@ namespace draw2d_nanovg
 
       }
 
-      m_puserinteractionDraw2dGraphics = puserinteraction;
+      m_pacmeuserinteractionAffinity = puserinteraction;
 
       auto pgpuapproach = application()->get_gpu_approach();
       auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
@@ -317,7 +326,8 @@ namespace draw2d_nanovg
 
          auto contextlease = pgpudevice->acquire_gpu_context(
             ::gpu::e_output_gpu_buffer,
-            size);
+            //m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+            sizeParameter);
 
          set_context_lease(::transfer(contextlease));
 
@@ -337,16 +347,16 @@ namespace draw2d_nanovg
       pgpucontextNew->m_pgpucompositor = this;
 
       m_sizeScaleOutput = { 1.0, -1.0 };
-      m_pointTranslateOutput = { 0.0, (double)size.cy };
-      m_size = size;
-      m_sizeWindow = size;
+      m_pointTranslateOutput = { 0.0, (double)sizeParameter.cy };
+      m_size = sizeParameter;
+      m_sizeWindow = sizeParameter;
 
       {
 
          ::gpu::context_lock contextlockNew(pgpucontextNew);
 
          pgpucontextNew->get_gpu_renderer();
-         ::opengl::resize(size, false);
+         ::opengl::resize(sizeParameter, false);
 
          if (!m_pdc)
          {
@@ -370,9 +380,13 @@ namespace draw2d_nanovg
    }
 
 
+   //void graphics::on_acquire_memory_graphics(
+     // ::image::image * pimage,
+     // const ::i32_size & size)
    void graphics::on_acquire_memory_graphics(
       ::image::image * pimage,
-      const ::i32_size & size)
+      const ::i32_size & size,
+      ::acme::user::interaction * pacmeuserinteractionAffinity)
    {
 
       auto pgpucontext = gpu_context();
@@ -392,10 +406,10 @@ namespace draw2d_nanovg
       {
 
          pgpucontext->send(
-            [this, pgpucontext, pimage, size]()
+            [this, pgpucontext, pimage, size, pacmeuserinteractionAffinity]()
             {
 
-               ::gpu::graphics::on_acquire_memory_graphics(pimage, size);
+               ::gpu::graphics::on_acquire_memory_graphics(pimage, size, pacmeuserinteractionAffinity);
 
                m_egraphics = ::e_graphics_draw;
                m_sizeScaleOutput = { 1.0, -1.0 };
@@ -506,7 +520,9 @@ namespace draw2d_nanovg
 
       auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
 
-      auto pgpucontextNew = pgpudevice->main_draw2d_context();
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pwindow);
+
+      auto pgpucontextNew = pgpudraw2dwindowattachment->draw2d_context();
 
       set_gpu_context(pgpucontextNew);
 
@@ -514,7 +530,9 @@ namespace draw2d_nanovg
 
       pcontext->m_pgpucompositor = this;
 
-      pcontext->defer_create_window_context(pwindow);
+      //pcontext->defer_create_window_context(pwindow);
+
+      pcontext->create_draw2d_gpu_context(pgpudevice, pwindow, size);
 
       ::cast < ::gpu_opengl::context > pcontextOpengl = pcontext;
       ::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
@@ -593,14 +611,14 @@ namespace draw2d_nanovg
    }
 
 
-   void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
-   {
+   //void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
+   //{
 
-      ::gpu::graphics::create_compatible_graphics(pgraphics);
-      //opengl_create_offscreen_buffer({ 920, 1080 });
-      //opengl_create_offscreen_buffer(pgraphics->m_pimage->size());
+   //   ::gpu::graphics::create_compatible_graphics(pgraphics);
+   //   //opengl_create_offscreen_buffer({ 920, 1080 });
+   //   //opengl_create_offscreen_buffer(pgraphics->m_pimage->size());
 
-   }
+   //}
 
 
    //bool graphics::opengl_create_offscreen_buffer(const ::i32_size & sizePlacement)
@@ -854,9 +872,13 @@ namespace draw2d_nanovg
 
       auto pgpuapproach = application()->get_gpu_approach();
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+      //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
 
-      auto pgpucontext = pgpudevice->main_context();
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
+
+      auto pgpucontextWindow = pgpudraw2dwindowattachment->window_context();
 
       ////if (!m_pgpucontext)
       ////{
@@ -868,7 +890,7 @@ namespace draw2d_nanovg
 
       //pgpucontext->defer_create_window_context(pwindow);
 
-      ::cast < ::gpu_opengl::context > pcontextOpengl = pgpucontext;
+      ::cast < ::gpu_opengl::context > pcontextOpengl = pgpucontextWindow;
       ::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
 
       //nanovg_device_create_info_t createinfo;
@@ -958,7 +980,7 @@ namespace draw2d_nanovg
 
       }
 
-      create_memory_graphics(pbitmap->get_size());
+      create_memory_graphics(pbitmap->get_size(), m_pacmeuserinteractionAffinity);
 
       //vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
 
@@ -8116,14 +8138,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      if (::is_set(m_puserinteractionDraw2dGraphics))
+      if (::is_set(m_pacmeuserinteractionAffinity))
       {
 
-         fPreferredDpiX = m_puserinteractionDraw2dGraphics->preferred_dpi_x();
+         fPreferredDpiX = m_pacmeuserinteractionAffinity->preferred_dpi_x();
 
-         fPreferredDpiY = m_puserinteractionDraw2dGraphics->preferred_dpi_y();
+         fPreferredDpiY = m_pacmeuserinteractionAffinity->preferred_dpi_y();
 
-         fPreferredDensity = m_puserinteractionDraw2dGraphics->preferred_density();
+         fPreferredDensity = m_pacmeuserinteractionAffinity->preferred_density();
 
       }
 
@@ -9171,19 +9193,21 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::_draw_raw(
       const ::f64_rectangle & rectangleTarget,
-      ::image::image * pimage,
+      ::image::image * pimageSource,
       const ::image::image_drawing_options & imagedrawingoptions,
       const ::f64_point & pointSrc)
    {
 
-      if (!m_pdc || !pimage || rectangleTarget.is_empty() || pimage->is_empty())
+      if (!m_pdc || !pimageSource || rectangleTarget.is_empty() || pimageSource->is_empty())
       {
 
          return;
 
       }
 
-      pimage->defer_update_image();
+      //pimage->defer_update_image();
+
+      auto pimage = pimageSource->get_source_image();
 
       if (_draw_gpu_image(
          rectangleTarget,
@@ -9601,71 +9625,71 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   void graphics::create_window_graphics(const ::operating_system::window & window)
-   {
-
-      // http://stackoverflow.com/questions/4052940/how-to-make-an-opengl-rendering-context-with-transparent-background
-      //
-
-      //PIXELFORMATDESCRIPTOR pfd =
-      //{
-      //   sizeof(PIXELFORMATDESCRIPTOR),
-      //   1,                                // Version Number
-      //   PFD_DRAW_TO_WINDOW |         // Format Must Support Window
-      //   PFD_SUPPORT_OPENGL |         // Format Must Support Opengl
-      //   PFD_SUPPORT_COMPOSITION |         // Format Must Support Composition
-      //   PFD_DOUBLEBUFFER,                 // Must Support Double Buffering
-      //   PFD_TYPE_RGBA,                    // Request An RGBA Format
-      //   32,                               // Select Our Color Depth
-      //   0, 0, 0, 0, 0, 0,                 // Color Bits Ignored
-      //   8,                                // An Alpha Buffer
-      //   0,                                // Shift Bit Ignored
-      //   0,                                // No Accumulation Buffer
-      //   0, 0, 0, 0,                       // Accumulation Bits Ignored
-      //   24,                               // 16Bit Z-Buffer (Depth Buffer)
-      //   8,                                // Some Stencil Buffer
-      //   0,                                // No Auxiliary Buffer
-      //   PFD_MAIN_PLANE,                   // Main Drawing Layer
-      //   0,                                // Reserved
-      //   0, 0, 0                           // Layer Masks Ignored
-      //};
-
-
-      //DWM_BLURBEHIND bb = { 0 };
-      ////HRGN hRgn = CreateRectRgn(0, 0, -1, -1);
-      ////bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
-      //bb.dwFlags = DWM_BB_ENABLE;
-      ////bb.hRgnBlur = hRgn;
-      //bb.fEnable = true;
-      //DwmEnableBlurBehindWindow(wnd, &bb);
-
-
-      //m_hdc = GetDC(wnd);
-      //int PixelFormat = ChoosePixelFormat(m_hdc, &pfd);
-      //if (PixelFormat == 0)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
-
-      //BOOL bResult = SetPixelFormat(m_hdc, PixelFormat, &pfd);
-      //if (bResult == false)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
-
-      //m_hglrc = wglCreateContext(m_hdc);
-      //if (!m_hglrc)
-      //{
-      //   ASSERT(0);
-      //   return false;
-      //}
-
-//      return true;
-      //return false;
-
-   }
+//   void graphics::create_window_graphics(const ::operating_system::window & window)
+//   {
+//
+//      // http://stackoverflow.com/questions/4052940/how-to-make-an-opengl-rendering-context-with-transparent-background
+//      //
+//
+//      //PIXELFORMATDESCRIPTOR pfd =
+//      //{
+//      //   sizeof(PIXELFORMATDESCRIPTOR),
+//      //   1,                                // Version Number
+//      //   PFD_DRAW_TO_WINDOW |         // Format Must Support Window
+//      //   PFD_SUPPORT_OPENGL |         // Format Must Support Opengl
+//      //   PFD_SUPPORT_COMPOSITION |         // Format Must Support Composition
+//      //   PFD_DOUBLEBUFFER,                 // Must Support Double Buffering
+//      //   PFD_TYPE_RGBA,                    // Request An RGBA Format
+//      //   32,                               // Select Our Color Depth
+//      //   0, 0, 0, 0, 0, 0,                 // Color Bits Ignored
+//      //   8,                                // An Alpha Buffer
+//      //   0,                                // Shift Bit Ignored
+//      //   0,                                // No Accumulation Buffer
+//      //   0, 0, 0, 0,                       // Accumulation Bits Ignored
+//      //   24,                               // 16Bit Z-Buffer (Depth Buffer)
+//      //   8,                                // Some Stencil Buffer
+//      //   0,                                // No Auxiliary Buffer
+//      //   PFD_MAIN_PLANE,                   // Main Drawing Layer
+//      //   0,                                // Reserved
+//      //   0, 0, 0                           // Layer Masks Ignored
+//      //};
+//
+//
+//      //DWM_BLURBEHIND bb = { 0 };
+//      ////HRGN hRgn = CreateRectRgn(0, 0, -1, -1);
+//      ////bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+//      //bb.dwFlags = DWM_BB_ENABLE;
+//      ////bb.hRgnBlur = hRgn;
+//      //bb.fEnable = true;
+//      //DwmEnableBlurBehindWindow(wnd, &bb);
+//
+//
+//      //m_hdc = GetDC(wnd);
+//      //int PixelFormat = ChoosePixelFormat(m_hdc, &pfd);
+//      //if (PixelFormat == 0)
+//      //{
+//      //   ASSERT(0);
+//      //   return false;
+//      //}
+//
+//      //BOOL bResult = SetPixelFormat(m_hdc, PixelFormat, &pfd);
+//      //if (bResult == false)
+//      //{
+//      //   ASSERT(0);
+//      //   return false;
+//      //}
+//
+//      //m_hglrc = wglCreateContext(m_hdc);
+//      //if (!m_hglrc)
+//      //{
+//      //   ASSERT(0);
+//      //   return false;
+//      //}
+//
+////      return true;
+//      //return false;
+//
+//   }
 
 
    //oswindow graphics::get_window_handle() const
@@ -9797,7 +9821,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       pgpucontext->clear(pgpucontext->current_target_texture(::gpu::current_layer()), ::color::transparent);
 
-      ::cast < ::gpu::layer > playerPrevious = pgpucontext->m_pgpudevice->get_previous_layer(pgpulayer);
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpucontext);
+
+      ::cast < ::gpu::layer > playerPrevious = pgpudraw2dwindowattachment->get_previous_layer(pgpulayer);
 
       if (playerPrevious)
       {
@@ -9956,7 +9982,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (m_egraphics == e_graphics_draw)
       {
 
-         auto size = total_size();
+         auto size = this->size();
 
          ::i32_rectangle rectangle;
 
@@ -10234,10 +10260,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          ::i32_rectangle rectangle;
 
-         if (m_puserinteractionDraw2dGraphics && !m_puserinteractionDraw2dGraphics->host_rectangle().size().is_empty())
+         ::cast < ::user::interaction > puserinteraction = m_pacmeuserinteractionAffinity;
+
+         if (puserinteraction && !puserinteraction->host_rectangle().size().is_empty())
          {
 
-            rectangle = m_puserinteractionDraw2dGraphics->host_rectangle();
+            rectangle = puserinteraction->host_rectangle();
 
          }
          else

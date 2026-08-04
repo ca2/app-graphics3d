@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "font.h"
 //#include "gpu_directx12/directx12.h"
-#include "aura/graphics/draw2d/host.h"
+//#include "aura/graphics/draw2d/host.h"
 
 
 #include "acme_windows_common/_.h"
@@ -16,7 +16,7 @@ namespace draw2d_directx12
    font::font()
    {
 
-      m_pthis = this;
+      //m_pthis = this;
 
    }
 
@@ -88,13 +88,13 @@ namespace draw2d_directx12
       if (m_fontsize.eunit() == ::e_unit_point)
       {
 
-         fFontSize = (float)pgraphics->m_pdraw2dhost->point_dpi(m_fontsize.as_f64());
+         fFontSize = (float)pgraphics->m_pacmeuserinteractionAffinity->point_dpi(m_fontsize.as_f64());
 
       }
       else
       {
 
-         fFontSize = (float)pgraphics->m_pdraw2dhost->dpiy(m_fontsize.as_f64());
+         fFontSize = (float)pgraphics->m_pacmeuserinteractionAffinity->dpiy(m_fontsize.as_f64());
 
       }
 

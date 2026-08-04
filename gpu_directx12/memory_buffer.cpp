@@ -2,6 +2,7 @@
 // camilo on 2025-07-16 06:23 <3ThomasBorregaardSørensen!!
 #include "framework.h"
 #include "device.h"
+#include "draw2d_window_attachment.h"
 #include "frame_storage.h"
 #include "gpu_directx12/context.h"
 #include "model_buffer.h"
@@ -251,7 +252,9 @@ namespace gpu_directx12
 
       ::cast < device > pdevice = m_pcontext->m_pgpudevice;
 
-      ::cast < frame_storage > pframestorage = pdevice->current_frame_storage();
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pcontext);
+
+      ::cast < frame_storage > pframestorage = pgpudraw2dwindowattachment->current_frame_storage();
 
       pframestorage->map_allocate(this, count);
 

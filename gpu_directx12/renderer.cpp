@@ -3,6 +3,7 @@
 #include "command_buffer.h"
 #include "depth_stencil.h"
 #include "descriptors.h"
+#include "draw2d_window_attachment.h"
 #include "frame.h"
 #include "input_layout.h"
 #include "renderer.h"
@@ -544,7 +545,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
-      m_commandbuffera.set_size(pdevice->get_frame_count());
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pcontext);
+
+      m_commandbuffera.set_size(pgpudraw2dwindowattachment->get_frame_count());
 
       //for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
       for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
@@ -696,7 +699,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < render_target_view > pgpurendertargetview = pgpurendertarget;
 
-      assert(m_pgpucontext->m_pgpudevice->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+
+      assert(pgpudraw2dwindowattachment->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
              "Can't call beginRender while not in began_frame gpu_frame_state");
 
       //if (m_bOffScreen)
@@ -4145,9 +4150,11 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pgpurendertarget = this->render_target();
 
-      int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
 
-      int iFrameIndex = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_index3();
+      int iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
+
+      int iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
 
       bool bIsFrameInProgress = isFrameInProgress();
 

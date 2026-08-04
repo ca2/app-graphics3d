@@ -7,6 +7,7 @@
 #include "acme/platform/node.h"
 #include "acme/prototype/prototype/memory.h"
 #include "fontstash.h"
+#include "aura/graphics/image/image.h"
 
 //CLASS_DECL_DRAW2D_NANOVG void initialize_opengl();
 //CLASS_DECL_DRAW2D_NANOVG void terminate_opengl();
@@ -60,6 +61,66 @@ namespace draw2d_nanovg
       //m_mapPrivateFont.clear();
 
       //terminate_opengl();
+
+   }
+
+
+   ::draw2d::graphics_pointer draw2d::do_allocation_strategy(::acme::user::interaction * pacmeuserinteractionAffinity, ::image::image * pimage,
+                                                          const ::i32_size & size)
+   {
+
+      if (::is_set(pimage))
+      {
+
+         auto pgraphicsOwned = pimage->m_pgraphicsOwned;
+
+         if (pgraphicsOwned)
+         {
+
+            return pgraphicsOwned;
+
+         }
+
+         auto pgraphics = allocate_graphics(pacmeuserinteractionAffinity);
+
+         pgraphics->create_for_image(pimage);
+
+         return pgraphics;
+
+         //auto pbitmap = pimage->get_bitmap();
+
+         //if (::is_set(pbitmap))
+         //{
+
+         //   pgraphics->create_bitmap_graphics(pbitmap);
+         //}
+         //else
+         //{
+
+         //   throw ::exception(error_wrong_state);
+         //}
+      }
+      else
+      {
+         auto pgraphics = allocate_graphics(pacmeuserinteractionAffinity);
+         pgraphics->create_memory_graphics(size, pacmeuserinteractionAffinity);
+         return pgraphics;
+      }
+
+
+
+      //return ::draw2d::draw2d::do_allocation_strategy(pdraw2dhost, pimage, size);
+
+      //auto pgraphics = create_memory_graphics(pdraw2dhost, size);
+
+      //if (::is_set(pimage))
+      //{
+
+      //   pimage->create_from_graphics(pgraphics);
+
+      //}
+
+      //return pgraphics;
 
    }
 

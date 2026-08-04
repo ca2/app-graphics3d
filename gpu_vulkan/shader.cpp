@@ -12,6 +12,7 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "descriptors.h"
+#include "draw2d_window_attachment.h"
 #include "input_layout.h"
 #include "pipeline.h"
 #include "render_target.h"
@@ -375,7 +376,9 @@ namespace gpu_vulkan
       ::pointer_array<::gpu_vulkan::descriptor_set_layout> descriptorsetlayouta;
       ::pointer_array<::gpu_vulkan::descriptor_pool> descriptorpoola;
 
-      int iFrameCount = pgpurendertarget->m_pgpurenderer->m_pgpucontext->m_pgpudevice->get_frame_count();
+      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
+
+      int iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
 
       if (m_pbindingslotseta)
       {
@@ -1115,7 +1118,9 @@ namespace gpu_vulkan
                             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, iPushConstantsOffset,
                             uBlockSizeWithoutSamplers, pmemory->data());
 
-         auto pframestorage = prenderer->m_pgpucontext->m_pgpudevice->current_frame_storage();
+         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
+
+         auto pframestorage = pgpudraw2dwindowattachment->current_frame_storage();
 
          pframestorage->m_memorya.add(pmemory);
 
