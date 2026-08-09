@@ -45,7 +45,7 @@ namespace gpu_vulkan
 
             ::cast < context > pcontext = m_pcontext;
 
-            m_pbuffer = pcontext->create_buffer(
+            m_pbuffer = pcontext->_create_buffer(
                block.size(),
                VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                m_bDynamic ?
@@ -86,7 +86,7 @@ namespace gpu_vulkan
 
             ::cast < context > pcontext = m_pcontext;
 
-            m_pbuffer = pcontext->create_buffer(
+            m_pbuffer = pcontext->_create_buffer(
                block.size(),
                VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                m_bDynamic ?
@@ -277,7 +277,7 @@ namespace gpu_vulkan
 
       ::cast < context > pcontext = m_pcontext;
 
-      auto pbuffer = pcontext->create_buffer(
+      auto pbuffer = pcontext->_create_buffer(
          m_size,
          m_vkbufferusageflags,
          m_vkmemorypropertyflags);

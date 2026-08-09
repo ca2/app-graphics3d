@@ -61,7 +61,7 @@ namespace draw2d_nanovg
 
       bool write_text_supports_raster_fonts() override;
       bool write_text_supports_legacy_gdi_fonts() override;
-      bool graphics_context_supports_single_buffer_mode() override;
+      //bool graphics_context_supports_single_buffer_mode() override;
       bool graphics_context_does_full_redraw() override;
 
       /*void on_create_window(::windowing::window * pwindow) override;*/

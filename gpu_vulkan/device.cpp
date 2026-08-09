@@ -14,6 +14,7 @@
 #include "vkresult_exception.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/platform/application.h"
+#include "aura/graphics/draw2d/draw2d.h"
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/types.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
@@ -896,7 +897,7 @@ namespace gpu_vulkan
 //      features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
     m_physicaldevicefeaturesCreate.samplerAnisotropy = VK_TRUE;
   //    vulkan13Features.pNext = &indexingFeatures;
-
+    draw2d()->get_required_gpu_device_extensions((::u64)physicaldevice, pgpuapproach->m_pszaEnabledDeviceExtensions);
 
       //pgpuapproach->m_pDeviceCreatepNextChain = &features2;
       VkResult result = createLogicalDevice(
@@ -993,6 +994,8 @@ namespace gpu_vulkan
 
       //m_itaskGpu = ::current_itask();
 
+      draw2d()->get_required_gpu_device_extensions((::u64)physicaldevice, pgpuapproach->m_pszaEnabledDeviceExtensions);
+
       VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutSupport = {
 .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
       .scalarBlockLayout = TRUE };
@@ -1054,236 +1057,1039 @@ namespace gpu_vulkan
    //   _create_context_win32(startcontext);
 
    //}
-
-
-   VkResult device::createLogicalDevice(
-      VkPhysicalDeviceFeatures enabledFeatures,
-      ::array<const char*> enabledExtensions,
-      void* pNextChain,
-      bool useSwapChain,
-      VkQueueFlags requestedQueueTypes)
+   static VkBaseOutStructure *
+      find_pnext_structure(
+         void * pNext,
+         VkStructureType sType)
    {
 
-      ::cast < approach > pgpuapproach = application()->get_gpu_approach();
+      auto pStructure =
+         reinterpret_cast <VkBaseOutStructure *>(pNext);
 
-      ::cast < physical_device > pphysicaldevice = pgpuapproach->m_pphysicaldevice;
-
-      // Desired queues need to be requested upon logical device creation
-      // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application
-      // requests different queue types
-
-      ::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
-
-      // Get queue family indexes for the requested queue family types
-      // Note that the indexes may overlap depending on the implementation
-
-      const float defaultQueuePriority(0.0f);
-
-      m_queuefamilyindexes = pphysicaldevice->findQueueFamilies();
-
-      // Graphics queue
-      if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT
-         && m_queuefamilyindexes.graphicsFamilyHasValue)
+      while (pStructure)
       {
-         //m_queuefamilyindexes.graphics = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
+
+         if (pStructure->sType == sType)
+         {
+
+            return pStructure;
+
+         }
+
+         pStructure = pStructure->pNext;
+
+      }
+
+      return nullptr;
+
+   }
+
+//   VkResult device::createLogicalDevice(
+//      VkPhysicalDeviceFeatures enabledFeatures,
+//      ::array<const char*> enabledExtensions,
+//      void* pNextChain,
+//      bool useSwapChain,
+//      VkQueueFlags requestedQueueTypes)
+//   {
+//
+//      ::cast < approach > pgpuapproach = application()->get_gpu_approach();
+//
+//      ::cast < physical_device > pphysicaldevice = pgpuapproach->m_pphysicaldevice;
+//
+//      // Desired queues need to be requested upon logical device creation
+//      // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application
+//      // requests different queue types
+//
+//      ::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
+//
+//      // Get queue family indexes for the requested queue family types
+//      // Note that the indexes may overlap depending on the implementation
+//
+//      const float defaultQueuePriority(0.0f);
+//
+//      m_queuefamilyindexes = pphysicaldevice->findQueueFamilies();
+//
+//      // Graphics queue
+//      if (requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT
+//         && m_queuefamilyindexes.graphicsFamilyHasValue)
+//      {
+//         //m_queuefamilyindexes.graphics = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
+//         VkDeviceQueueCreateInfo queueInfo{};
+//         queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+//         queueInfo.queueFamilyIndex = m_queuefamilyindexes.graphicsFamily;
+//         queueInfo.queueCount = 1;
+//         queueInfo.pQueuePriorities = &defaultQueuePriority;
+//         queueCreateInfos.add(queueInfo);
+//      }
+//      else
+//      {
+//         m_queuefamilyindexes.graphicsFamily = 0;
+//      }
+//
+//      // Dedicated compute queue
+//      if (requestedQueueTypes & VK_QUEUE_COMPUTE_BIT
+//         && m_queuefamilyindexes.computeFamilyHasValue)
+//      {
+//         //m_queuefamilyindexes.compute = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
+//         if (m_queuefamilyindexes.computeFamily != m_queuefamilyindexes.graphicsFamily)
+//         {
+//            // If compute family index differs, we need an additional queue create info for the compute queue
+//            VkDeviceQueueCreateInfo queueInfo{};
+//            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+//            queueInfo.queueFamilyIndex = m_queuefamilyindexes.computeFamily;
+//            queueInfo.queueCount = 1;
+//            queueInfo.pQueuePriorities = &defaultQueuePriority;
+//            queueCreateInfos.add(queueInfo);
+//         }
+//      }
+//      else
+//      {
+//         // Else we use the same queue
+//         m_queuefamilyindexes.computeFamily = m_queuefamilyindexes.graphicsFamily;
+//      }
+//
+//      // Dedicated transfer queue
+//      if (requestedQueueTypes & VK_QUEUE_TRANSFER_BIT
+//         && m_queuefamilyindexes.transferFamilyHasValue)
+//      {
+//         //m_queuefamilyindexes.transfer = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_TRANSFER_BIT);
+//         if ((m_queuefamilyindexes.transferFamily != m_queuefamilyindexes.graphicsFamily)
+//            && (m_queuefamilyindexes.transferFamily != m_queuefamilyindexes.computeFamily))
+//         {
+//            // If transfer family index differs, we need an additional queue create info for the transfer queue
+//            VkDeviceQueueCreateInfo queueInfo{};
+//            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+//            queueInfo.queueFamilyIndex = m_queuefamilyindexes.transferFamily;
+//            queueInfo.queueCount = 1;
+//            queueInfo.pQueuePriorities = &defaultQueuePriority;
+//            queueCreateInfos.add(queueInfo);
+//         }
+//      }
+//      else
+//      {
+//         // Else we use the same queue
+//         m_queuefamilyindexes.transferFamily = m_queuefamilyindexes.graphicsFamily;
+//      }
+//
+//      // Create the logical device representation
+//      ::array<const char*> deviceExtensions(enabledExtensions);
+//      if (useSwapChain)
+//      {
+//
+//         // If the device will be used for presenting to a display via a swapchain we need to request the swapchain extension
+//         deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+//
+//      }
+//
+//      //deviceExtensions.add(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
+//
+//      //deviceExtensions.add(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+//
+//      VkDeviceCreateInfo deviceCreateInfo = {};
+//      deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+//      deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());;
+//      deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
+//      deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
+//
+//      const void * pDraw2dNextChain =
+//         draw2d()->get_gpu_physical_device_features(
+//            &enabledFeatures);
+//
+//
+//      // If a pNext(Chain) has been passed, we need to add it to the device creation info
+//      VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
+//      if (pNextChain) {
+//         physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+//         physicalDeviceFeatures2.features = enabledFeatures;
+//         physicalDeviceFeatures2.pNext = pNextChain;
+//         deviceCreateInfo.pEnabledFeatures = nullptr;
+//         deviceCreateInfo.pNext = &physicalDeviceFeatures2;
+//      }
+//
+//      VkPhysicalDeviceVulkan12Features draw2dFeatures12{};
+//      bool bAddDraw2dFeatures12 = false;
+//
+//      if (pDraw2dNextChain)
+//      {
+//
+//         auto pDraw2dBase =
+//            reinterpret_cast <const VkBaseInStructure *>(
+//               pDraw2dNextChain);
+//
+//         if (pDraw2dBase->sType ==
+//            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES)
+//         {
+//
+//            auto pVkvgFeatures12 =
+//               reinterpret_cast <
+//               const VkPhysicalDeviceVulkan12Features *
+//               >(pDraw2dBase);
+//
+//            auto pExistingBase =
+//               find_pnext_structure(
+//                  pNextChain,
+//                  VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES);
+//
+//            if (pExistingBase)
+//            {
+//
+//               auto pExistingFeatures12 =
+//                  reinterpret_cast <
+//                  VkPhysicalDeviceVulkan12Features *
+//                  >(pExistingBase);
+//
+//               // Current vkvg requirements.
+//               if (pVkvgFeatures12->scalarBlockLayout)
+//               {
+//
+//                  pExistingFeatures12->scalarBlockLayout = VK_TRUE;
+//
+//               }
+//
+//               if (pVkvgFeatures12->timelineSemaphore)
+//               {
+//
+//                  pExistingFeatures12->timelineSemaphore = VK_TRUE;
+//
+//               }
+//
+//            }
+//            else
+//            {
+//
+//               draw2dFeatures12 = *pVkvgFeatures12;
+//
+//               draw2dFeatures12.pNext =
+//                  physicalDeviceFeatures2.pNext;
+//
+//               physicalDeviceFeatures2.pNext =
+//                  &draw2dFeatures12;
+//
+//               bAddDraw2dFeatures12 = true;
+//
+//            }
+//
+//         }
+//
+//      }
+//
+//#if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_METAL_EXT)) && defined(VK_KHR_portability_subset)
+//      // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
+//      if (extensionSupported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
+//      {
+//         deviceExtensions.add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+//      }
+//#endif
+//
+//      if (deviceExtensions.size() > 0)
+//      {
+//         for (const char* enabledExtension : deviceExtensions)
+//         {
+//            if (!isExtensionSupported(enabledExtension)) {
+//               information() << "Enabled device extension \"" << enabledExtension << "\" is not present at device level\n";
+//            }
+//         }
+//
+//         deviceCreateInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
+//         deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+//      }
+//
+//      this->m_physicaldevicefeaturesEnabled = enabledFeatures;
+//
+//      auto physicaldevice = pphysicaldevice->m_vkphysicaldevice;
+//
+//      VkResult result = vkCreateDevice(physicaldevice, &deviceCreateInfo, nullptr, &m_vkdevice);
+//      if (result != VK_SUCCESS)
+//      {
+//         return result;
+//      }
+//
+//      auto graphicsFamily = m_queuefamilyindexes.graphicsFamily;
+//
+//      VkQueue queueGraphics = VK_NULL_HANDLE;
+//
+//      if (graphicsFamily >= 0)
+//      {
+//
+//         auto pqueueGraphics = create_newø<::gpu_vulkan::queue>();
+//
+//         pqueueGraphics->initialize_gpu_queue(this);
+//
+//         vkGetDeviceQueue(this->logicalDevice(), graphicsFamily, 0, &queueGraphics);
+//
+//         pqueueGraphics->m_vkqueue = queueGraphics;
+//         pqueueGraphics->m_pqueuehostcalldiagnosticstate =
+//            m_queuehostcalldiagnosticregistry.state_for((std::uintptr_t)queueGraphics);
+//
+//         m_pqueueGraphics = pqueueGraphics;
+//
+//      }
+//
+//      auto transferFamily = m_queuefamilyindexes.transferFamily;
+//
+//      VkQueue queueTransfer = VK_NULL_HANDLE;
+//
+//      if (transferFamily >= 0)
+//      {
+//
+//         auto pqueueTransfer = create_newø<::gpu_vulkan::queue>();
+//
+//         pqueueTransfer->initialize_gpu_queue(this);
+//
+//         vkGetDeviceQueue(this->logicalDevice(), transferFamily, 0, &queueTransfer);
+//
+//         pqueueTransfer->m_vkqueue = queueTransfer;
+//         pqueueTransfer->m_pqueuehostcalldiagnosticstate =
+//            m_queuehostcalldiagnosticregistry.state_for((std::uintptr_t)queueTransfer);
+//
+//         m_pqueueTransfer = pqueueTransfer;
+//
+//      }
+//
+//      auto presentFamily = m_queuefamilyindexes.presentFamily;
+//
+//      VkQueue queuePresent = VK_NULL_HANDLE;
+//
+//      if (presentFamily >= 0)
+//      {
+//
+//         auto pqueuePresent = create_newø<::gpu_vulkan::queue>();
+//
+//         pqueuePresent->initialize_gpu_queue(this);
+//
+//         vkGetDeviceQueue(this->logicalDevice(), presentFamily, 0, &queuePresent);
+//
+//         pqueuePresent->m_vkqueue = queuePresent;
+//         pqueuePresent->m_pqueuehostcalldiagnosticstate =
+//            m_queuehostcalldiagnosticregistry.state_for((std::uintptr_t)queuePresent);
+//
+//         m_pqueuePresent = pqueuePresent;
+//
+//      }
+//
+//      information(
+//         "gpu_vulkan queue topology: graphics_family={} transfer_family={} present_family={} "
+//         "graphics_queue={} transfer_queue={} present_queue={} graphics_transfer_shared={} graphics_present_shared={}",
+//         graphicsFamily,
+//         transferFamily,
+//         presentFamily,
+//         (::uptr)queueGraphics,
+//         (::uptr)queueTransfer,
+//         (::uptr)queuePresent,
+//         queueGraphics != VK_NULL_HANDLE && queueGraphics == queueTransfer,
+//         queueGraphics != VK_NULL_HANDLE && queueGraphics == queuePresent);
+//
+//      return result;
+//
+//   }
+
+
+VkResult device::createLogicalDevice(
+   VkPhysicalDeviceFeatures enabledFeatures,
+   ::array<const char *> enabledExtensions,
+   void * pNextChain,
+   bool useSwapChain,
+   VkQueueFlags requestedQueueTypes)
+{
+
+   ::cast<approach> pgpuapproach =
+      application()->get_gpu_approach();
+
+   ::cast<physical_device> pphysicaldevice =
+      pgpuapproach->m_pphysicaldevice;
+
+
+   //
+   // Desired queues need to be requested upon logical device creation.
+   //
+
+   ::array<VkDeviceQueueCreateInfo> queueCreateInfos{};
+
+   const float defaultQueuePriority(0.0f);
+
+   m_queuefamilyindexes =
+      pphysicaldevice->findQueueFamilies();
+
+
+   //
+   // Graphics queue
+   //
+
+   if ((requestedQueueTypes & VK_QUEUE_GRAPHICS_BIT)
+      && m_queuefamilyindexes.graphicsFamilyHasValue)
+   {
+
+      VkDeviceQueueCreateInfo queueInfo{};
+
+      queueInfo.sType =
+         VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+
+      queueInfo.queueFamilyIndex =
+         m_queuefamilyindexes.graphicsFamily;
+
+      queueInfo.queueCount = 1;
+
+      queueInfo.pQueuePriorities =
+         &defaultQueuePriority;
+
+      queueCreateInfos.add(queueInfo);
+
+   }
+   else
+   {
+
+      m_queuefamilyindexes.graphicsFamily = 0;
+
+   }
+
+
+   //
+   // Dedicated compute queue
+   //
+
+   if ((requestedQueueTypes & VK_QUEUE_COMPUTE_BIT)
+      && m_queuefamilyindexes.computeFamilyHasValue)
+   {
+
+      if (m_queuefamilyindexes.computeFamily !=
+         m_queuefamilyindexes.graphicsFamily)
+      {
+
          VkDeviceQueueCreateInfo queueInfo{};
-         queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-         queueInfo.queueFamilyIndex = m_queuefamilyindexes.graphicsFamily;
+
+         queueInfo.sType =
+            VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+
+         queueInfo.queueFamilyIndex =
+            m_queuefamilyindexes.computeFamily;
+
          queueInfo.queueCount = 1;
-         queueInfo.pQueuePriorities = &defaultQueuePriority;
+
+         queueInfo.pQueuePriorities =
+            &defaultQueuePriority;
+
          queueCreateInfos.add(queueInfo);
-      }
-      else
-      {
-         m_queuefamilyindexes.graphicsFamily = 0;
+
       }
 
-      // Dedicated compute queue
-      if (requestedQueueTypes & VK_QUEUE_COMPUTE_BIT
-         && m_queuefamilyindexes.computeFamilyHasValue)
+   }
+   else
+   {
+
+      m_queuefamilyindexes.computeFamily =
+         m_queuefamilyindexes.graphicsFamily;
+
+   }
+
+
+   //
+   // Dedicated transfer queue
+   //
+
+   if ((requestedQueueTypes & VK_QUEUE_TRANSFER_BIT)
+      && m_queuefamilyindexes.transferFamilyHasValue)
+   {
+
+      if ((m_queuefamilyindexes.transferFamily !=
+         m_queuefamilyindexes.graphicsFamily)
+         &&
+         (m_queuefamilyindexes.transferFamily !=
+            m_queuefamilyindexes.computeFamily))
       {
-         //m_queuefamilyindexes.compute = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
-         if (m_queuefamilyindexes.computeFamily != m_queuefamilyindexes.graphicsFamily)
+
+         VkDeviceQueueCreateInfo queueInfo{};
+
+         queueInfo.sType =
+            VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+
+         queueInfo.queueFamilyIndex =
+            m_queuefamilyindexes.transferFamily;
+
+         queueInfo.queueCount = 1;
+
+         queueInfo.pQueuePriorities =
+            &defaultQueuePriority;
+
+         queueCreateInfos.add(queueInfo);
+
+      }
+
+   }
+   else
+   {
+
+      m_queuefamilyindexes.transferFamily =
+         m_queuefamilyindexes.graphicsFamily;
+
+   }
+
+
+   //
+   // Device extensions
+   //
+
+   ::array<const char *> deviceExtensions(
+      enabledExtensions);
+
+   if (useSwapChain)
+   {
+
+      deviceExtensions.add(
+         VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+   }
+
+
+   auto physicaldevice =
+      pphysicaldevice->m_vkphysicaldevice;
+
+
+   //
+   // Let draw2d/vkvg add the Vulkan 1.0 feature bits it needs.
+   //
+   // vkvg_get_device_requirements() modifies enabledFeatures and
+   // may return a Vulkan extended-feature pNext chain.
+   //
+
+   const void * pDraw2dNextChain =
+      draw2d()->get_gpu_physical_device_features(
+         &enabledFeatures);
+
+
+   //
+   // vkvg currently expresses some of its extended requirements
+   // through VkPhysicalDeviceVulkan12Features.
+   //
+   // We DO NOT directly insert that structure into pNextChain.
+   //
+   // The application chain may already use promoted individual
+   // Vulkan 1.2 feature structures such as:
+   //
+   //    VkPhysicalDeviceScalarBlockLayoutFeatures
+   //    VkPhysicalDeviceDescriptorIndexingFeatures
+   //    VkPhysicalDeviceTimelineSemaphoreFeatures
+   //
+   // Vulkan forbids combining those structures with
+   // VkPhysicalDeviceVulkan12Features.
+   //
+   // Extract the actual feature requirements from vkvg first.
+   //
+
+   VkBool32 draw2dRequiresScalarBlockLayout =
+      VK_FALSE;
+
+   VkBool32 draw2dRequiresTimelineSemaphore =
+      VK_FALSE;
+
+
+   auto pDraw2dFeature =
+      reinterpret_cast<const VkBaseInStructure *>(
+         pDraw2dNextChain);
+
+   while (pDraw2dFeature)
+   {
+
+      switch (pDraw2dFeature->sType)
+      {
+
+      case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES:
+      {
+
+         auto pfeatures12 =
+            reinterpret_cast<
+            const VkPhysicalDeviceVulkan12Features *>(
+               pDraw2dFeature);
+
+         if (pfeatures12->scalarBlockLayout)
          {
-            // If compute family index differs, we need an additional queue create info for the compute queue
-            VkDeviceQueueCreateInfo queueInfo{};
-            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queueInfo.queueFamilyIndex = m_queuefamilyindexes.computeFamily;
-            queueInfo.queueCount = 1;
-            queueInfo.pQueuePriorities = &defaultQueuePriority;
-            queueCreateInfos.add(queueInfo);
-         }
-      }
-      else
-      {
-         // Else we use the same queue
-         m_queuefamilyindexes.computeFamily = m_queuefamilyindexes.graphicsFamily;
-      }
 
-      // Dedicated transfer queue
-      if (requestedQueueTypes & VK_QUEUE_TRANSFER_BIT
-         && m_queuefamilyindexes.transferFamilyHasValue)
-      {
-         //m_queuefamilyindexes.transfer = pphysicaldevice->getQueueFamilyIndex(VK_QUEUE_TRANSFER_BIT);
-         if ((m_queuefamilyindexes.transferFamily != m_queuefamilyindexes.graphicsFamily)
-            && (m_queuefamilyindexes.transferFamily != m_queuefamilyindexes.computeFamily))
+            draw2dRequiresScalarBlockLayout =
+               VK_TRUE;
+
+         }
+
+         if (pfeatures12->timelineSemaphore)
          {
-            // If transfer family index differs, we need an additional queue create info for the transfer queue
-            VkDeviceQueueCreateInfo queueInfo{};
-            queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queueInfo.queueFamilyIndex = m_queuefamilyindexes.transferFamily;
-            queueInfo.queueCount = 1;
-            queueInfo.pQueuePriorities = &defaultQueuePriority;
-            queueCreateInfos.add(queueInfo);
+
+            draw2dRequiresTimelineSemaphore =
+               VK_TRUE;
+
          }
-      }
-      else
-      {
-         // Else we use the same queue
-         m_queuefamilyindexes.transferFamily = m_queuefamilyindexes.graphicsFamily;
+
+         break;
+
       }
 
-      // Create the logical device representation
-      ::array<const char*> deviceExtensions(enabledExtensions);
-      if (useSwapChain)
+      case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES:
       {
 
-         // If the device will be used for presenting to a display via a swapchain we need to request the swapchain extension
-         deviceExtensions.add(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+         auto pfeatures =
+            reinterpret_cast<
+            const VkPhysicalDeviceScalarBlockLayoutFeatures *>(
+               pDraw2dFeature);
+
+         if (pfeatures->scalarBlockLayout)
+         {
+
+            draw2dRequiresScalarBlockLayout =
+               VK_TRUE;
+
+         }
+
+         break;
 
       }
 
-      //deviceExtensions.add(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
-
-      //deviceExtensions.add(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
-
-      VkDeviceCreateInfo deviceCreateInfo = {};
-      deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-      deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());;
-      deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
-      deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
-
-      // If a pNext(Chain) has been passed, we need to add it to the device creation info
-      VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
-      if (pNextChain) {
-         physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-         physicalDeviceFeatures2.features = enabledFeatures;
-         physicalDeviceFeatures2.pNext = pNextChain;
-         deviceCreateInfo.pEnabledFeatures = nullptr;
-         deviceCreateInfo.pNext = &physicalDeviceFeatures2;
-      }
-
-#if (defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_METAL_EXT)) && defined(VK_KHR_portability_subset)
-      // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
-      if (extensionSupported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
+      case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES:
       {
-         deviceExtensions.add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+
+         auto pfeatures =
+            reinterpret_cast<
+            const VkPhysicalDeviceTimelineSemaphoreFeatures *>(
+               pDraw2dFeature);
+
+         if (pfeatures->timelineSemaphore)
+         {
+
+            draw2dRequiresTimelineSemaphore =
+               VK_TRUE;
+
+         }
+
+         break;
+
       }
+
+      default:
+         break;
+
+      }
+
+      pDraw2dFeature =
+         pDraw2dFeature->pNext;
+
+   }
+
+
+   //
+   // VkPhysicalDeviceFeatures2 becomes the root of all feature
+   // configuration.
+   //
+   // Using this unconditionally also handles the case where
+   //
+   //    pNextChain == nullptr
+   //
+   // but draw2d/vkvg requires an extended feature.
+   //
+
+   VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
+
+   physicalDeviceFeatures2.sType =
+      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+
+   physicalDeviceFeatures2.features =
+      enabledFeatures;
+
+   physicalDeviceFeatures2.pNext =
+      pNextChain;
+
+
+   //
+   // Local structures that may be inserted into the chain.
+   //
+   // Their lifetime is valid until vkCreateDevice() below returns.
+   //
+
+   VkPhysicalDeviceScalarBlockLayoutFeatures
+      draw2dScalarBlockLayoutFeatures{};
+
+   VkPhysicalDeviceTimelineSemaphoreFeatures
+      draw2dTimelineSemaphoreFeatures{};
+
+
+   //
+   // First determine whether the application's existing chain
+   // already uses the unified Vulkan 1.2 structure.
+   //
+
+   auto pExistingVulkan12 =
+      reinterpret_cast<VkPhysicalDeviceVulkan12Features *>(
+         find_pnext_structure(
+            physicalDeviceFeatures2.pNext,
+            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES));
+
+
+   if (pExistingVulkan12)
+   {
+
+      //
+      // The application already chose the Vulkan12Features
+      // representation.
+      //
+      // Merge vkvg's requirements into it.
+      //
+
+      if (draw2dRequiresScalarBlockLayout)
+      {
+
+         pExistingVulkan12->scalarBlockLayout =
+            VK_TRUE;
+
+      }
+
+      if (draw2dRequiresTimelineSemaphore)
+      {
+
+         pExistingVulkan12->timelineSemaphore =
+            VK_TRUE;
+
+      }
+
+   }
+   else
+   {
+
+      //
+      // There is no VkPhysicalDeviceVulkan12Features in the
+      // application's chain.
+      //
+      // Therefore use the individual promoted feature structures.
+      //
+      // This is compatible with existing structures such as
+      // VkPhysicalDeviceDescriptorIndexingFeatures.
+      //
+
+
+      //
+      // scalarBlockLayout
+      //
+
+      if (draw2dRequiresScalarBlockLayout)
+      {
+
+         auto pExistingScalarBlockLayout =
+            reinterpret_cast<
+            VkPhysicalDeviceScalarBlockLayoutFeatures *>(
+               find_pnext_structure(
+                  physicalDeviceFeatures2.pNext,
+                  VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES));
+
+         if (pExistingScalarBlockLayout)
+         {
+
+            pExistingScalarBlockLayout->scalarBlockLayout =
+               VK_TRUE;
+
+         }
+         else
+         {
+
+            draw2dScalarBlockLayoutFeatures.sType =
+               VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES;
+
+            draw2dScalarBlockLayoutFeatures.scalarBlockLayout =
+               VK_TRUE;
+
+            draw2dScalarBlockLayoutFeatures.pNext =
+               physicalDeviceFeatures2.pNext;
+
+            physicalDeviceFeatures2.pNext =
+               &draw2dScalarBlockLayoutFeatures;
+
+         }
+
+      }
+
+
+      //
+      // timelineSemaphore
+      //
+
+      if (draw2dRequiresTimelineSemaphore)
+      {
+
+         auto pExistingTimelineSemaphore =
+            reinterpret_cast<
+            VkPhysicalDeviceTimelineSemaphoreFeatures *>(
+               find_pnext_structure(
+                  physicalDeviceFeatures2.pNext,
+                  VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES));
+
+         if (pExistingTimelineSemaphore)
+         {
+
+            pExistingTimelineSemaphore->timelineSemaphore =
+               VK_TRUE;
+
+         }
+         else
+         {
+
+            draw2dTimelineSemaphoreFeatures.sType =
+               VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES;
+
+            draw2dTimelineSemaphoreFeatures.timelineSemaphore =
+               VK_TRUE;
+
+            draw2dTimelineSemaphoreFeatures.pNext =
+               physicalDeviceFeatures2.pNext;
+
+            physicalDeviceFeatures2.pNext =
+               &draw2dTimelineSemaphoreFeatures;
+
+         }
+
+      }
+
+   }
+
+
+   //
+   // Create info
+   //
+
+   VkDeviceCreateInfo deviceCreateInfo{};
+
+   deviceCreateInfo.sType =
+      VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+   deviceCreateInfo.queueCreateInfoCount =
+      static_cast<uint32_t>(
+         queueCreateInfos.size());
+
+   deviceCreateInfo.pQueueCreateInfos =
+      queueCreateInfos.data();
+
+
+   //
+   // Because VkPhysicalDeviceFeatures2 is in the pNext chain,
+   // pEnabledFeatures MUST be null.
+   //
+
+   deviceCreateInfo.pEnabledFeatures =
+      nullptr;
+
+   deviceCreateInfo.pNext =
+      &physicalDeviceFeatures2;
+
+
+#if (defined(VK_USE_PLATFORM_IOS_MVK) || \
+     defined(VK_USE_PLATFORM_MACOS_MVK) || \
+     defined(VK_USE_PLATFORM_METAL_EXT)) && \
+     defined(VK_KHR_portability_subset)
+
+   //
+   // When running on iOS/macOS with MoltenVK and
+   // VK_KHR_portability_subset is defined and supported,
+   // enable the extension.
+   //
+
+   if (extensionSupported(
+      VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
+   {
+
+      deviceExtensions.add(
+         VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+
+   }
+
 #endif
 
-      if (deviceExtensions.size() > 0)
+
+   //
+   // Check requested extensions.
+   //
+
+   if (deviceExtensions.size() > 0)
+   {
+
+      for (const char * enabledExtension :
+         deviceExtensions)
       {
-         for (const char* enabledExtension : deviceExtensions)
+
+         if (!isExtensionSupported(
+            enabledExtension))
          {
-            if (!isExtensionSupported(enabledExtension)) {
-               information() << "Enabled device extension \"" << enabledExtension << "\" is not present at device level\n";
-            }
+
+            information()
+               << "Enabled device extension \""
+               << enabledExtension
+               << "\" is not present at device level\n";
+
          }
 
-         deviceCreateInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
-         deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
       }
 
-      this->m_physicaldevicefeaturesEnabled = enabledFeatures;
+      deviceCreateInfo.enabledExtensionCount =
+         (uint32_t)deviceExtensions.size();
 
-      auto physicaldevice = pphysicaldevice->m_vkphysicaldevice;
+      deviceCreateInfo.ppEnabledExtensionNames =
+         deviceExtensions.data();
 
-      VkResult result = vkCreateDevice(physicaldevice, &deviceCreateInfo, nullptr, &m_vkdevice);
-      if (result != VK_SUCCESS)
-      {
-         return result;
-      }
+   }
 
-      auto graphicsFamily = m_queuefamilyindexes.graphicsFamily;
 
-      VkQueue queueGraphics = VK_NULL_HANDLE;
+   //
+   // Save the resulting Vulkan 1.0 features.
+   //
 
-      if (graphicsFamily >= 0)
-      {
+   this->m_physicaldevicefeaturesEnabled =
+      enabledFeatures;
 
-         auto pqueueGraphics = create_newø<::gpu_vulkan::queue>();
 
-         pqueueGraphics->initialize_gpu_queue(this);
+   //
+   // Create logical device.
+   //
 
-         vkGetDeviceQueue(this->logicalDevice(), graphicsFamily, 0, &queueGraphics);
+   VkResult result =
+      vkCreateDevice(
+         physicaldevice,
+         &deviceCreateInfo,
+         nullptr,
+         &m_vkdevice);
 
-         pqueueGraphics->m_vkqueue = queueGraphics;
-         pqueueGraphics->m_pqueuehostcalldiagnosticstate =
-            m_queuehostcalldiagnosticregistry.state_for((std::uintptr_t)queueGraphics);
-
-         m_pqueueGraphics = pqueueGraphics;
-
-      }
-
-      auto transferFamily = m_queuefamilyindexes.transferFamily;
-
-      VkQueue queueTransfer = VK_NULL_HANDLE;
-
-      if (transferFamily >= 0)
-      {
-
-         auto pqueueTransfer = create_newø<::gpu_vulkan::queue>();
-
-         pqueueTransfer->initialize_gpu_queue(this);
-
-         vkGetDeviceQueue(this->logicalDevice(), transferFamily, 0, &queueTransfer);
-
-         pqueueTransfer->m_vkqueue = queueTransfer;
-         pqueueTransfer->m_pqueuehostcalldiagnosticstate =
-            m_queuehostcalldiagnosticregistry.state_for((std::uintptr_t)queueTransfer);
-
-         m_pqueueTransfer = pqueueTransfer;
-
-      }
-
-      auto presentFamily = m_queuefamilyindexes.presentFamily;
-
-      VkQueue queuePresent = VK_NULL_HANDLE;
-
-      if (presentFamily >= 0)
-      {
-
-         auto pqueuePresent = create_newø<::gpu_vulkan::queue>();
-
-         pqueuePresent->initialize_gpu_queue(this);
-
-         vkGetDeviceQueue(this->logicalDevice(), presentFamily, 0, &queuePresent);
-
-         pqueuePresent->m_vkqueue = queuePresent;
-         pqueuePresent->m_pqueuehostcalldiagnosticstate =
-            m_queuehostcalldiagnosticregistry.state_for((std::uintptr_t)queuePresent);
-
-         m_pqueuePresent = pqueuePresent;
-
-      }
-
-      information(
-         "gpu_vulkan queue topology: graphics_family={} transfer_family={} present_family={} "
-         "graphics_queue={} transfer_queue={} present_queue={} graphics_transfer_shared={} graphics_present_shared={}",
-         graphicsFamily,
-         transferFamily,
-         presentFamily,
-         (::uptr)queueGraphics,
-         (::uptr)queueTransfer,
-         (::uptr)queuePresent,
-         queueGraphics != VK_NULL_HANDLE && queueGraphics == queueTransfer,
-         queueGraphics != VK_NULL_HANDLE && queueGraphics == queuePresent);
+   if (result != VK_SUCCESS)
+   {
 
       return result;
 
    }
 
 
+   //
+   // Graphics queue
+   //
+
+   auto graphicsFamily =
+      m_queuefamilyindexes.graphicsFamily;
+
+   VkQueue queueGraphics =
+      VK_NULL_HANDLE;
+
+   if (graphicsFamily >= 0)
+   {
+
+      auto pqueueGraphics =
+         create_newø<::gpu_vulkan::queue>();
+
+      pqueueGraphics->initialize_gpu_queue(
+         this);
+
+      vkGetDeviceQueue(
+         this->logicalDevice(),
+         graphicsFamily,
+         0,
+         &queueGraphics);
+
+      pqueueGraphics->m_vkqueue =
+         queueGraphics;
+
+      pqueueGraphics->m_pqueuehostcalldiagnosticstate =
+         m_queuehostcalldiagnosticregistry.state_for(
+            (std::uintptr_t)queueGraphics);
+
+      m_pqueueGraphics =
+         pqueueGraphics;
+
+   }
+
+
+   //
+   // Transfer queue
+   //
+
+   auto transferFamily =
+      m_queuefamilyindexes.transferFamily;
+
+   VkQueue queueTransfer =
+      VK_NULL_HANDLE;
+
+   if (transferFamily >= 0)
+   {
+
+      auto pqueueTransfer =
+         create_newø<::gpu_vulkan::queue>();
+
+      pqueueTransfer->initialize_gpu_queue(
+         this);
+
+      vkGetDeviceQueue(
+         this->logicalDevice(),
+         transferFamily,
+         0,
+         &queueTransfer);
+
+      pqueueTransfer->m_vkqueue =
+         queueTransfer;
+
+      pqueueTransfer->m_pqueuehostcalldiagnosticstate =
+         m_queuehostcalldiagnosticregistry.state_for(
+            (std::uintptr_t)queueTransfer);
+
+      m_pqueueTransfer =
+         pqueueTransfer;
+
+   }
+
+
+   //
+   // Present queue
+   //
+
+   auto presentFamily =
+      m_queuefamilyindexes.presentFamily;
+
+   VkQueue queuePresent =
+      VK_NULL_HANDLE;
+
+   if (presentFamily >= 0)
+   {
+
+      auto pqueuePresent =
+         create_newø<::gpu_vulkan::queue>();
+
+      pqueuePresent->initialize_gpu_queue(
+         this);
+
+      vkGetDeviceQueue(
+         this->logicalDevice(),
+         presentFamily,
+         0,
+         &queuePresent);
+
+      pqueuePresent->m_vkqueue =
+         queuePresent;
+
+      pqueuePresent->m_pqueuehostcalldiagnosticstate =
+         m_queuehostcalldiagnosticregistry.state_for(
+            (std::uintptr_t)queuePresent);
+
+      m_pqueuePresent =
+         pqueuePresent;
+
+   }
+
+
+   information(
+      "gpu_vulkan queue topology: "
+      "graphics_family={} transfer_family={} present_family={} "
+      "graphics_queue={} transfer_queue={} present_queue={} "
+      "graphics_transfer_shared={} graphics_present_shared={}",
+      graphicsFamily,
+      transferFamily,
+      presentFamily,
+      (::uptr)queueGraphics,
+      (::uptr)queueTransfer,
+      (::uptr)queuePresent,
+      queueGraphics != VK_NULL_HANDLE
+         && queueGraphics == queueTransfer,
+      queueGraphics != VK_NULL_HANDLE
+         && queueGraphics == queuePresent);
+
+
+   return result;
+
+}
    ::gpu::queue *device::transfer_queue() { return m_pqueueTransfer; }
 
 

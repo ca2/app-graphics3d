@@ -13,21 +13,22 @@
 #include "acme/parallelization/task.h"
 #include "acme/platform/application.h"
 #include "acme/prototype/mathematics/mathematics.h"
+#include "aura/graphics/graphics/buffer_item.h"
+#include "aura/graphics/write_text/font_enumeration_item.h"
+#include "aura/user/user/interaction.h"
 #include "app-graphics3d/gpu_vulkan/approach.h"
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
 #include "app-graphics3d/gpu_vulkan/descriptors.h"
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
-#include "bred/gpu/aaa_cpu_buffer.h"
-#include "bred/gpu/draw2d_window_attachment.h"
+#include "bred/gpu/buffer.h"
+#include "bred/gpu/window_attachment.h"
 #include "bred/gpu/layer.h"
-#include "bred/gpu/aaa_render.h"
+//#include "bred/gpu/aaa_render.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/frame.h"
 #include "bred/graphics3d/types.h"
-#include "aura/graphics/write_text/font_enumeration_item.h"
-#include "aura/user/user/interaction.h"
 #include "gpu_vulkan/device.h"
 #include "gpu_vulkan/model_buffer.h"
 #include "gpu_vulkan/swap_chain.h"
@@ -81,7 +82,7 @@ namespace draw2d_vulkan
 p.y = iContextHeight - p.y
 
 #define __USES_TRANSFORM(pcontext) \
-auto iContextHeight = pcontext->m_rectangle.height()
+auto iContextHeight = pcontext->height()
 
 
 
@@ -197,51 +198,144 @@ auto iContextHeight = pcontext->m_rectangle.height()
    }
 
 
+   void graphics::set_target_image(::image::image * pimage)
+   {
+
+      
+
+   }
+
+
 
    void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size)
    {
 
+      if (!puserinteraction)
+      {
+
+         throw ::exception(error_bad_argument, "No user interaction available for OpenGL offscreen buffer creation.");
+
+         return;
+
+      }
+
       ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
 
-      auto pwindow = puserinteraction->window();
-
-      auto psystem = system();
-
-      auto pgpuapproach = application()->get_gpu_approach();
-
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
-
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
-
-      auto pgpucontextNew = pgpudraw2dwindowattachment->draw2d_context();
-
-      set_gpu_context(pgpucontextNew);
-
-      auto pcontext = gpu_context();
-
-      pcontext->m_pgpucompositor = this;
-
-      //pcontext->create_gpu_context(pgpudevice, );
-
-      //::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
-
-      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      //if (m_puserinteractionDraw2dGraphics == nullptr)
       //{
 
-      //   auto pcontextMain = pgpudevice->main_context();
+      //   m_puserinteractionDraw2dGraphics = dynamic_cast <::user::interaction*>(pacmeuserinteractionMain.m_p);
 
-      //   auto pswapchain = pcontextMain->get_swap_chain();
-
-      //   if (!pswapchain->m_bSwapChainInitialized)
+      //   if (m_puserinteractionDraw2dGraphics == nullptr)
       //   {
 
-      //      pswapchain->initialize_swap_chain_window(pcontextMain, puserinteraction->window());
+      //      informationf("No user interaction available for OpenGL offscreen buffer creation.");
+
+      //      return;
 
       //   }
 
       //}
 
+      if (m_pgraphicsbufferitem)
+      {
+
+         constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
+
+         m_pgraphicsbufferitem->m_pimageBufferItem->create_as_render_target(size, puserinteraction, this);
+
+      }
+
+
+      auto pgpuapproach = application()->get_gpu_approach();
+
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+
+
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
+
+      auto pgpucontextMain = pgpuwindowattachment->window_context();
+
+      auto pgpucontextNew = pgpudevice->create_draw2d_gpu_context(
+         // ::gpu::e_output_gpu_buffer
+         m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         size);
+
+      auto r = pgpucontextMain->get_placement();
+
+      m_sizeScaleOutput = { 1.0, -1.0 };
+
+      m_pointTranslateOutput = { 0.0, (double)r.height() };
+
+      if (!pgpucontextNew)
+      {
+
+         return;
+
+      }
+
+      set_gpu_context(pgpucontextNew);
+
+      auto pcontext = gpu_context();
+
+      ///      ::gpu::context_lock contextlock(pcontext);
+
+      pcontext->m_pgpucompositor = this;
+
+      if (!pcontext->m_pgpurenderer)
+      {
+
+         pcontext->get_gpu_renderer();
+
+      }
+
+      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+
+      //::opengl::resize(size, bYSwap);
+
       set_ok_flag();
+
+      //::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
+
+      //auto pwindow = puserinteraction->window();
+
+      //auto psystem = system();
+
+      //auto pgpuapproach = application()->get_gpu_approach();
+
+      //auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+
+      //auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
+
+      //auto pgpucontextNew = pgpuwindowattachment->draw2d_context();
+
+      //set_gpu_context(pgpucontextNew);
+
+      //auto pcontext = gpu_context();
+
+      //pcontext->m_pgpucompositor = this;
+
+      ////pcontext->create_gpu_context(pgpudevice, );
+
+      ////::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
+
+      ////if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      ////{
+
+      ////   auto pcontextMain = pgpudevice->main_context();
+
+      ////   auto pswapchain = pcontextMain->get_swap_chain();
+
+      ////   if (!pswapchain->m_bSwapChainInitialized)
+      ////   {
+
+      ////      pswapchain->initialize_swap_chain_window(pcontextMain, puserinteraction->window());
+
+      ////   }
+
+      ////}
+
+      //set_ok_flag();
 
    }
 
@@ -1691,12 +1785,12 @@ auto iContextHeight = pcontext->m_rectangle.height()
    //   //editQuadVertexBuffer(
    //   //   pgpucontext->logicalDevice(),
    //   //   pmodel->m_vertexMemory,
-   //   //   quad, color, pgpucontext->rectangle().size());
+   //   //   quad, color, pgpucontext->size());
 
    //   pmodelbufferRectangle->sequence2_color_set_rectangle(
    //      quad,
    //      color,
-   //      pgpucontext->m_rectangle.size());
+   //      pgpucontext->size());
 
 
    //   pshader->bind();
@@ -1907,7 +2001,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
    //      pmodel->m_vertexBuffer = createRectVertexBuffer(pgpucontext->logicalDevice(),
    //         pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-   //         &pmodel->m_vertexMemory, r, pbrush->m_color, pgpucontext->rectangle().size());
+   //         &pmodel->m_vertexMemory, r, pbrush->m_color, pgpucontext->size());
 
    //      pmodel->m_indexBuffer = nullptr;
    //      pmodel->m_indexMemory = nullptr;
@@ -7183,7 +7277,7 @@ auto iContextHeight = pcontext->m_rectangle.height()
 
       auto pcontext = gpu_context();
 
-      auto size = pcontext->m_rectangle.size();
+      auto size = pcontext->size();
 
       ::geometry2d::matrix contextmatrix;
 

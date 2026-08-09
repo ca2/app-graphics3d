@@ -43,7 +43,7 @@ namespace draw2d_nanovg
       void dc_select(bool bSelect = true) override;
 
       //using ::image::image::create;
-      void create_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve) override;
+      void create_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d) override;
       void create_from_data(const ::i32_size &size, const ::image32_t *pimage32, ::i32 iScan,
                             ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, bool bPreserve = false) override;
       //void create(const ::i32_size &size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1,

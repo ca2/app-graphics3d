@@ -3,7 +3,7 @@
 #include "binding.h"
 #include "block.h"
 #include "command_buffer.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "descriptors.h"
 #include "render_target.h"
 #include "renderer.h"
@@ -136,10 +136,10 @@ namespace gpu_vulkan
 
          construct_newø(m_pvkdescriptorseta);
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
 
          auto iFrameCount =
-            pgpudraw2dwindowattachment->get_frame_count();
+            pgpuwindowattachment->get_frame_count();
 
          m_pvkdescriptorseta->set_size(iFrameCount);
 
@@ -369,10 +369,10 @@ namespace gpu_vulkan
 
          auto pdescriptorpoolbuilder = allocateø::gpu_vulkan::descriptor_pool::Builder();
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpucontext);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucontext);
 
          int iFrameCount =
-            pgpudraw2dwindowattachment->get_frame_count();
+            pgpuwindowattachment->get_frame_count();
 
          pdescriptorpoolbuilder->initialize_builder(pgpucontext);
 

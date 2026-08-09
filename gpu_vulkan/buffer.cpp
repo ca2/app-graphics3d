@@ -1,5 +1,7 @@
 // From gpu_directx12/buffer.cpp by camilo on 2025-07-17 00:05 <3ThomasBorregaardSørensen!!
 #include "framework.h"
+#include "context.h"
+#include "physical_device.h"
 #include "gpu_vulkan/context.h"
 #include "aura/graphics/image/image.h"
 /*
@@ -13,11 +15,14 @@
 #include "cube_map_upload.h"
 #include <assert.h>
 
+
 namespace gpu_vulkan
 {
 
+
    buffer::buffer()
    {
+
       m_pgpucontext = nullptr;
       m_vkbuffer = VK_NULL_HANDLE;
       m_vkdevicememory = VK_NULL_HANDLE;
@@ -33,7 +38,9 @@ namespace gpu_vulkan
    }
 
 
-   buffer::~buffer() {
+   buffer::~buffer()
+   {
+
       //unmap();
 
       ::cast < context > pcontext = m_pgpucontext;
@@ -66,6 +73,104 @@ namespace gpu_vulkan
 
       return m_vkdevicememory != VK_NULL_HANDLE && m_vkbuffer != VK_NULL_HANDLE;
 
+   }
+   
+   void buffer::_create_buffer(
+      ::gpu_vulkan::context * pcontext, 
+      VkDeviceSize size, VkBufferUsageFlags usage,
+                                         VkMemoryPropertyFlags properties)
+   {
+
+
+      if (size <= 0)
+      {
+
+         throw ::exception(error_failed, "size must be greater than zero!");
+
+      }
+
+      VkBufferCreateInfo bufferInfo{};
+      bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+      bufferInfo.size = size;
+      bufferInfo.usage = usage;
+      bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+      //auto pbuffer = create_newø<buffer>();
+
+      m_pgpucontext = pcontext;
+
+      m_size = size;
+
+      if (vkCreateBuffer(pcontext->logicalDevice(), &bufferInfo, nullptr, &m_vkbuffer) != VK_SUCCESS)
+      {
+
+         throw ::exception(error_failed, "failed to create vertex buffer!");
+      }
+
+      if (((::uptr)m_vkbuffer & 0xffff) == 0x019b)
+      {
+
+         information("~buffer (m_vkbuffer & 0xffff) == 0x019b");
+      }
+
+
+
+      VkMemoryRequirements memRequirements;
+      vkGetBufferMemoryRequirements(pcontext->logicalDevice(), m_vkbuffer, &memRequirements);
+
+      VkMemoryAllocateInfo allocInfo{};
+      allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+      allocInfo.allocationSize = memRequirements.size;
+      allocInfo.memoryTypeIndex =
+         pcontext->m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
+
+      const auto & memoryProperties =
+         pcontext->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevicememoryproperties;
+
+      m_vkdevicesizeAllocation = memRequirements.size;
+      m_vkdevicesizeAlignment = memRequirements.alignment;
+      m_uMemoryTypeBits = memRequirements.memoryTypeBits;
+      m_uMemoryTypeIndex = allocInfo.memoryTypeIndex;
+      m_vkmemorypropertyflagsRequested = properties;
+      m_vkmemorypropertyflagsSelected =
+         memoryProperties.memoryTypes[allocInfo.memoryTypeIndex].propertyFlags;
+
+      if (vkAllocateMemory(pcontext->logicalDevice(), &allocInfo, nullptr, &m_vkdevicememory) != VK_SUCCESS)
+      {
+
+         throw ::exception(error_failed, "failed to allocate vertex buffer memory!");
+
+      }
+
+      auto vkbuffer = m_vkbuffer;
+
+      auto vkdevicememory = m_vkdevicememory;
+
+      auto vkresultBind = vkBindBufferMemory(pcontext->logicalDevice(), vkbuffer, vkdevicememory, 0);
+
+      if (vkresultBind != VK_SUCCESS)
+      {
+
+         information(
+            "gpu_vulkan buffer memory bind failed: result={} buffer={} memory={} requested_bytes={} "
+            "allocation_bytes={} alignment={} memory_type_bits={} memory_type_index={} "
+            "memory_flags_requested={} memory_flags_selected={}",
+            (int)vkresultBind,
+            (::uptr)vkbuffer,
+            (::uptr)vkdevicememory,
+            (::u64)size,
+            (::u64)m_vkdevicesizeAllocation,
+            (::u64)m_vkdevicesizeAlignment,
+            (::u64)m_uMemoryTypeBits,
+            m_uMemoryTypeIndex,
+            (::u64)m_vkmemorypropertyflagsRequested,
+            (::u64)m_vkmemorypropertyflagsSelected);
+
+         throw ::exception(error_failed, "failed to bind buffer memory!");
+
+      }
+
+      //return pbuffer;
    }
 
 
@@ -195,12 +300,13 @@ namespace gpu_vulkan
 
    void buffer::defer_stage(const ::function<void(buffer* pbuffer)>& functionAssign)
    {
+
       ::cast < context > pcontext = m_pgpucontext;
 
       if (m_size > 2_KiB)
       {
 
-         auto pbufferStaging = pcontext->create_buffer(
+         auto pbufferStaging = pcontext->_create_buffer(
             m_size,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
@@ -313,6 +419,83 @@ namespace gpu_vulkan
          static_cast < image32_t * >(data), w, h, psourcefaces, sourcescana);
 
       vkUnmapMemory(pcontext->logicalDevice(), m_vkdevicememory);
+
+   }
+
+
+
+   void buffer::gpu_read()
+   {
+
+      _synchronous_lock synchronouslock(this->synchronization());
+
+      if (m_ppixmap.nok())
+      {
+
+         return;
+
+      }
+
+      //m_pixmap.map();
+
+      auto cx = m_ppixmap->width();
+
+      auto cy = m_ppixmap->height();
+
+      //auto sizeNeeded = cx * cy * 4;
+
+      //m_pixmap.create(m_memory, sizeNeeded);
+
+      auto data = m_ppixmap->data();
+
+      {
+
+         auto dst = (unsigned char *)data;
+         auto size = cx * cy;
+
+         while (size > 0)
+         {
+            dst[0] = byte_clip(((int)dst[0] * (int)dst[3]) / 255);
+            dst[1] = byte_clip(((int)dst[1] * (int)dst[3]) / 255);
+            dst[2] = byte_clip(((int)dst[2] * (int)dst[3]) / 255);
+            dst += 4;
+            size--;
+         }
+
+      }
+
+      //::copy_image32(m_pixmap.m_pimage32,
+      //   cx, cy,
+      //   m_pixmap.m_iScan,
+      //   (const ::image32_t*) data, cx * 4);
+
+   }
+
+
+   void buffer::gpu_write()
+   {
+
+      synchronous_lock synchronouslock(this->synchronization());
+
+      if (m_ppixmap.nok())
+      {
+
+         return;
+
+      }
+
+      // //     m_pixmap.map();
+      //      //
+      ////      glDrawPixels(
+      ////         m_pixmap.m_size.cx, m_pixmap.m_size.cy,
+      ////         GL_BGRA,
+      ////         GL_UNSIGNED_BYTE,
+      ////         m_pixmap.m_pimage32Raw);
+      //      
+      //      glTexImage2D(GL_TEXTURE_2D, 0, 0, 0,
+      //                   m_pixmap.m_size.cx, m_pixmap.m_size.cy,
+      //                   GL_RGBA, GL_UNSIGNED_BYTE,
+      //                   m_pixmap.m_pimage32Raw);
 
    }
 

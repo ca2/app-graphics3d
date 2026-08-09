@@ -2,7 +2,7 @@
 
 
 #include "acme/prototype/prototype/memory.h"
-#include "aura/graphics/draw2d/bitmap.h"
+#include "bred/gpu/bitmap.h"
 
 
 //#include <VK/vk.h>
@@ -104,7 +104,7 @@ namespace draw2d_vkvg
 
 
    class CLASS_DECL_DRAW2D_VKVG bitmap : 
-      virtual public ::draw2d::bitmap
+      virtual public ::gpu::bitmap
    {
    public:
 

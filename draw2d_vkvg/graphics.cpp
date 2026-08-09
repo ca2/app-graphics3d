@@ -21,21 +21,24 @@
 #include "acme/prototype/string/str.h"
 #include "app-graphics3d/gpu_vulkan/approach.h"
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
+#include "app-graphics3d/gpu_vulkan/queue.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
 #include "app-graphics3d/gpu_vulkan/texture.h"
+#include "aura/graphics/graphics/buffer_item.h"
 #include "bred/gpu/command_buffer.h"
-#include "bred/gpu/aaa_cpu_buffer.h"
-#include "bred/gpu/aaa_render.h"
-#include "aura/graphics/image/aaa_target.h"
+#include "bred/gpu/buffer.h"
+#include "bred/gpu/render.h"
+//#include "aura/graphics/image/target.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
-#include "bred/gpu/draw2d_window_attachment.h"
+#include "bred/gpu/window_attachment.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/swap_chain.h"
 #include "aura/graphics/write_text/text_out.h"
 #include "aura/graphics/write_text/draw_text.h"
 #include "acme/prototype/geometry2d/_defer_item.h"
 #include "aura/graphics/write_text/_defer_geometry2d_item.h"
+
 
 #if defined(WINDOWS_DESKTOP)
 #include "windowing_win32/window.h"
@@ -100,6 +103,21 @@ public:
 namespace draw2d_vkvg
 {
 
+   void check_vkvg(VkvgContext ctx)
+   {
+      vkvg_status_t status = vkvg_status(ctx);
+
+      if (status != VKVG_STATUS_SUCCESS)
+      {
+         fprintf(stderr,
+            "VKVG error: %d: %s\n",
+            status,
+            vkvg_status_to_string(status));
+         fflush(stderr);
+      }
+   }
+
+
 
    graphics* thread_graphics()
    {
@@ -125,6 +143,9 @@ namespace draw2d_vkvg
       //m_hwnd = nullptr;
       //m_hglrc = nullptr;
       //_m_bYFlip = true;
+      m_vkvgdevice2 = nullptr;
+      m_vkvgcontext = nullptr;
+      m_vkvgsurface = nullptr;
       m_pointTranslate = ::i32_point();
       m_bPrinting = false;
       m_pimageAlphaBlend = nullptr;
@@ -213,6 +234,58 @@ namespace draw2d_vkvg
    }
 
 
+   VkvgDevice graphics::get_vkvg_device()
+   {
+
+      if (m_vkvgdevice2)
+      {
+
+         return m_vkvgdevice2;
+
+      }
+
+      auto pgpuapproach = application()->get_gpu_approach();
+
+      //auto pgpudevice = pgpuapproach->get_gpu_device(m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow);
+
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+
+
+
+      auto & uVkVg = pgpudevice->property_set()["vkvgdevice"].u64_reference();
+
+      if (uVkVg)
+      {
+
+         m_vkvgdevice2 = (VkvgDevice) uVkVg;
+
+      }
+      else
+      {
+
+         ::cast < ::gpu_vulkan::context > pcontextVulkan = gpu_context();
+         ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
+
+         vkvg_device_create_info_t createinfo{};
+         createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+         createinfo.deferredResolve = false;
+         createinfo.inst = papproachVulkan->m_vkinstance;
+         createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
+         createinfo.vkdev = pcontextVulkan->logicalDevice();
+         createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
+         createinfo.qIndex = 0;
+         createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+
+
+         uVkVg = (::u64) vkvg_device_create(&createinfo);
+         m_vkvgdevice2 = (VkvgDevice)uVkVg;
+
+      }
+
+      return m_vkvgdevice2;
+
+   }
+
    //void graphics::create_memory_graphics(const ::i32_size& size)
    void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity)
    {
@@ -292,22 +365,32 @@ namespace draw2d_vkvg
       auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
 
-      ::cast < ::gpu_vulkan::context > pcontextVulkan = gpu_context();
-      ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
 
-      vkvg_device_create_info_t createinfo;
-      createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      createinfo.deferredResolve = true;
-      createinfo.inst = papproachVulkan->m_vkinstance;
-      createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
-      createinfo.vkdev = pcontextVulkan->logicalDevice();
-      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
-      createinfo.qIndex = 0;
-      createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+      //auto & uVkVg = pgpudevice->property_set()["vkvgdevice"].u64_reference();
 
-      m_vkvgdevice = vkvg_device_create(&createinfo);
+//      if (uVkVg)
+      {
 
-      m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, rectanglePlacement.width(), rectanglePlacement.height());
+         m_vkvgdevice2 = get_vkvg_device();
+
+      }
+
+      //::cast < ::gpu_vulkan::context > pcontextVulkan = gpu_context();
+      //::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
+
+      //vkvg_device_create_info_t createinfo;
+      //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      //createinfo.deferredResolve = true;
+      //createinfo.inst = papproachVulkan->m_vkinstance;
+      //createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
+      //createinfo.vkdev = pcontextVulkan->logicalDevice();
+      //createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
+      //createinfo.qIndex = 0;
+      //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+
+      //m_vkvgdevice = vkvg_device_create(&createinfo);
+
+      m_vkvgsurface = vkvg_surface_create(m_vkvgdevice2, rectanglePlacement.width(), rectanglePlacement.height());
 
       m_bSetStateExternally = false;
 
@@ -478,10 +561,28 @@ namespace draw2d_vkvg
    }
 
 
+   void graphics::set_target_image(::image::image * pimage)
+   {
+
+
+
+   }
+
+
    void graphics::create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size)
    {
 
       ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
+
+      if (m_pgraphicsbufferitem)
+      {
+
+         constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
+
+         m_pgraphicsbufferitem->m_pimageBufferItem->create_as_render_target(size, puserinteraction, this);
+
+      }
+
 
       auto pwindow = puserinteraction->window();
 
@@ -493,9 +594,9 @@ namespace draw2d_vkvg
 
       auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
 
-      auto pgpucontextNew = pgpudraw2dwindowattachment->draw2d_context();
+      auto pgpucontextNew = pgpuwindowattachment->draw2d_context();
 
       set_gpu_context(pgpucontextNew);
 
@@ -505,31 +606,33 @@ namespace draw2d_vkvg
 
       //pcontext->defer_create_window_context(pwindow);
 
-      throw todo;
+      //sthrow todo;
 
-      pcontext->create_cpu_buffer21(size);
+      pcontext->create_cpu_buffer(size);
 
       ::cast < ::gpu_vulkan::context > pcontextVulkan = pcontext;
       ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
 
-      vkvg_device_create_info_t createinfo;
-      createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      createinfo.deferredResolve = true;
-      createinfo.inst = papproachVulkan->m_vkinstance;
-      createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
-      createinfo.vkdev = pcontextVulkan->logicalDevice();
-      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
-      createinfo.qIndex = 0;
-      createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+      //vkvg_device_create_info_t createinfo;
+      //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      //createinfo.deferredResolve = true;
+      //createinfo.inst = papproachVulkan->m_vkinstance;
+      //createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
+      //createinfo.vkdev = pcontextVulkan->logicalDevice();
+      //createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
+      //createinfo.qIndex = 0;
+      //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
-      m_vkvgdevice = vkvg_device_create(&createinfo);
+      //m_vkvgdevice = vkvg_device_create(&createinfo);
 
-      vkvg_device_reference(m_vkvgdevice);
+      m_vkvgdevice2 = get_vkvg_device();
+
+      vkvg_device_reference(m_vkvgdevice2);
 
       auto sizeWindow = pwindow->m_sizeWindow;
 
       m_vkvgsurface = vkvg_surface_create(
-         m_vkvgdevice,
+         m_vkvgdevice2,
          sizeWindow.cx,
          sizeWindow.cy
       );
@@ -545,7 +648,7 @@ namespace draw2d_vkvg
 
       }
 
-      defer_create_swap_chain(puserinteraction);
+      //defer_create_swap_chain(puserinteraction);
 
       //      ::vulkan::resize(size);
 
@@ -840,9 +943,9 @@ namespace draw2d_vkvg
 
       auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
 
-      auto pgpucontext = pgpudraw2dwindowattachment->window_context();
+      auto pgpucontext = pgpuwindowattachment->window_context();
 
       ////if (!m_pgpucontext)
       ////{
@@ -857,19 +960,20 @@ namespace draw2d_vkvg
       ::cast < ::gpu_vulkan::context > pcontextVulkan = pgpucontext;
       ::cast < ::gpu_vulkan::approach > papproachVulkan = pgpuapproach;
 
-      vkvg_device_create_info_t createinfo;
-      createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
-      createinfo.deferredResolve = true;
-      createinfo.inst = papproachVulkan->m_vkinstance;
-      createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
-      createinfo.vkdev = pcontextVulkan->logicalDevice();
-      createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
-      createinfo.qIndex = 0;
-      createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
+      //vkvg_device_create_info_t createinfo;
+      //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      //createinfo.deferredResolve = true;
+      //createinfo.inst = papproachVulkan->m_vkinstance;
+      //createinfo.phy = pcontextVulkan->m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevice;
+      //createinfo.vkdev = pcontextVulkan->logicalDevice();
+      //createinfo.qFamIdx = pcontextVulkan->m_pgpudevice->m_queuefamilyindexes.graphicsFamily;
+      //createinfo.qIndex = 0;
+      //createinfo.threadAware = false; /**< if true, mutex is created and guard device queue and caches access */
 
-      m_vkvgdevice = vkvg_device_create(&createinfo);
+      //m_vkvgdevice = vkvg_device_create(&createinfo);
+      m_vkvgdevice2 = get_vkvg_device();
 
-      m_vkvgsurface = vkvg_surface_create(m_vkvgdevice, pwindow->m_sizeWindow.cx, pwindow->m_sizeWindow.cy);
+      m_vkvgsurface = vkvg_surface_create(m_vkvgdevice2, pwindow->m_sizeWindow.cx, pwindow->m_sizeWindow.cy);
 
       m_bSetStateExternally = false;
 
@@ -1283,12 +1387,12 @@ namespace draw2d_vkvg
       auto vkvgcontext = vkvg_context();
 
       vkvg_new_sub_path(vkvgcontext);
-      vkvg_move_to(vkvgcontext, lpPoints[0].x, lpPoints[0].y);
+      vkvg_move_to(vkvgcontext, (float)lpPoints[0].x, (float)lpPoints[0].y);
 
       for (::collection::index i = 1; i < nCount; i++)
       {
 
-         vkvg_line_to(vkvgcontext, lpPoints[i].x, lpPoints[i].y);
+         vkvg_line_to(vkvgcontext, (float)lpPoints[i].x, (float)lpPoints[i].y);
 
       }
 
@@ -1397,6 +1501,7 @@ namespace draw2d_vkvg
       _fill1(pbrush, xOrg, yOrg);
 
       vkvg_fill(vkvgcontext);
+      check_vkvg(vkvgcontext);
 
       _fill2(pbrush, xOrg, yOrg);
 
@@ -1447,17 +1552,23 @@ namespace draw2d_vkvg
       if (pbrush->m_ebrush == ::draw2d::e_brush_radial_gradient_color)
       {
 
-         VkvgPattern ppattern = vkvg_pattern_create_radial(pbrush->m_point.x - x, pbrush->m_point.y - y, 0,
-            pbrush->m_point.x - x, pbrush->m_point.y - y,
-            maximum(pbrush->m_size.cx, pbrush->m_size.cy));
+         VkvgPattern ppattern = vkvg_pattern_create_radial
+         (
+            (float)(pbrush->m_point.x - x),
+            (float)(pbrush->m_point.y - y),
+            0,
+            (float)(pbrush->m_point.x - x),
+            (float)(pbrush->m_point.y - y),
+            (float)maximum(pbrush->m_size.cx, pbrush->m_size.cy));
 
          vkvg_pattern_add_color_stop(ppattern, 0., __expand_f32_rgba(pbrush->m_color1));
 
          vkvg_pattern_add_color_stop(ppattern, 1., __expand_f32_rgba(pbrush->m_color2));
 
          vkvg_set_source(vkvgcontext, ppattern);
+         check_vkvg(vkvgcontext);
 
-         //vkvg_pattern_destroy(ppattern);
+         vkvg_pattern_destroy(ppattern);
 
       }
       else if (pbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
@@ -1471,15 +1582,16 @@ namespace draw2d_vkvg
 
          double y1 = pbrush->m_point2.y - y;
 
-         VkvgPattern ppattern = vkvg_pattern_create_linear(x0, y0, x1, y1);
+         VkvgPattern ppattern = vkvg_pattern_create_linear((float)x0, (float)y0, (float)x1, (float)y1);
 
          vkvg_pattern_add_color_stop(ppattern, 0., __expand_f32_rgba(pbrush->m_color1));
 
          vkvg_pattern_add_color_stop(ppattern, 1., __expand_f32_rgba(pbrush->m_color2));
 
          vkvg_set_source(vkvgcontext, ppattern);
+         check_vkvg(vkvgcontext);
 
-         // vkvg_pattern_destroy(ppattern);
+         vkvg_pattern_destroy(ppattern);
 
 
       }
@@ -1727,6 +1839,7 @@ namespace draw2d_vkvg
       {
 
          vkvg_set_source_rgba(vkvgcontext, __expand_f32_rgba(pbrush->m_color));
+         check_vkvg(vkvgcontext);
 
       }
 
@@ -1780,13 +1893,29 @@ namespace draw2d_vkvg
 
       }
 
+      vkvg_keep keep(vkvgcontext);
+
+      vkvg_new_sub_path(vkvgcontext);
+      check_vkvg(vkvgcontext);
+
       vkvg_rectangle(vkvgcontext, 
-         rectangle.left, 
-         rectangle.top, 
-         rectangle.right - rectangle.left,
-         rectangle.bottom - rectangle.top);
+         (float)rectangle.left,
+         (float)rectangle.top,
+         (float)(rectangle.right - rectangle.left),
+         (float)(rectangle.bottom - rectangle.top));
+      check_vkvg(vkvgcontext);
 
       fill(pbrush);
+
+
+      vkvg_flush(vkvgcontext);
+      check_vkvg(vkvgcontext);
+
+
+      //vkvg_surface_write_to_png(m_vkvgsurface, "C:\\collection\\vkvg-test.png");
+
+      //information("write png");
+
       //vkBegin(VK_QUADS);
 
       //set(pbrush);
@@ -1837,7 +1966,11 @@ namespace draw2d_vkvg
       vkvg_keep keep(vkvgcontext);
 
       vkvg_new_sub_path(vkvgcontext);
-      vkvg_rectangle(vkvgcontext, rectangleParam.left, rectangleParam.top, rectangleParam.width(), rectangleParam.height());
+      vkvg_rectangle(vkvgcontext,
+         (float)rectangleParam.left,
+         (float)rectangleParam.top,
+         (float)rectangleParam.width(),
+         (float)rectangleParam.height());
       _set(pBrush);
       vkvg_set_line_width(vkvgcontext, 1.0f);
       vkvg_stroke(vkvgcontext);
@@ -2324,9 +2457,9 @@ namespace draw2d_vkvg
 
       vkvg_new_sub_path(vkvgcontext);
 
-      vkvg_translate(vkvgcontext, centerx, centery);
+      vkvg_translate(vkvgcontext, (float)centerx, (float)centery);
 
-      vkvg_scale(vkvgcontext, radiusx, radiusy);
+      vkvg_scale(vkvgcontext, (float)radiusx, (float)radiusy);
 
       //vkvg_arc(vkvgcontext, 0.0, 0.0, 1.0, 0.0, 2.0 * M_PI);
       vkvg_arc(vkvgcontext, 0.0, 0.0, 1.0, 0.0, 6.28);
@@ -2372,22 +2505,24 @@ namespace draw2d_vkvg
 
       vkvg_new_sub_path(vkvgcontext);
 
-      vkvg_translate(vkvgcontext, centerx, centery);
+      vkvg_translate(vkvgcontext, (float)centerx, (float)centery);
 
       if (m_ppen->m_epenalign == ::draw2d::e_pen_align_inset)
       {
 
-         vkvg_scale(vkvgcontext, radiusx - m_ppen->m_dWidth / 2.0, radiusy - m_ppen->m_dWidth / 2.0);
+         vkvg_scale(vkvgcontext,
+            (float)(radiusx - m_ppen->m_dWidth / 2.0),
+            (float)(radiusy - m_ppen->m_dWidth / 2.0));
 
       }
       else
       {
 
-         vkvg_scale(vkvgcontext, radiusx, radiusy);
+         vkvg_scale(vkvgcontext, (float)radiusx, (float)radiusy);
 
       }
 
-      vkvg_arc(vkvgcontext, 0.0, 0.0, 1.0, 0.0, 2.0 * 3.1415);
+      vkvg_arc(vkvgcontext, 0.f, 0.f, 1.f, 0.f, 2_πf);
 
       keep.pulse();
 
@@ -4205,7 +4340,7 @@ namespace draw2d_vkvg
          if (is_different(x, line.m_p1.x, 0.0001) || is_different(y, line.m_p1.y, 0.0001))
          {
 
-            vkvg_move_to(vkvgcontext, line.m_p1.x, line.m_p1.y);
+            vkvg_line_to(vkvgcontext, line.m_p1.x, line.m_p1.y);
 
          }
 
@@ -4454,10 +4589,10 @@ namespace draw2d_vkvg
 
       vkvg_rectangle(
          vkvgcontext,
-         rectangle.left,
-         rectangle.top,
-         rectangle.width(),
-         rectangle.height());
+         (float)rectangle.left,
+         (float)rectangle.top,
+         (float)rectangle.width(),
+         (float)rectangle.height());
 
       return true;
 
@@ -4594,7 +4729,6 @@ namespace draw2d_vkvg
 
       }
 
-      //return
       fill();
 
    }
@@ -7132,16 +7266,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //}
 
-   ::f64_size graphics::get_text_extent(const ::scoped_string& scopedstr)
+   ::f64_size graphics::_get_text_extent(const ::scoped_string& scopedstr)
    {
 
-      return get_text_extent(scopedstr, scopedstr.size());
+      return _get_text_extent(scopedstr, scopedstr.size());
 
    }
 
 
    //f64_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
-   ::f64_size graphics::get_text_extent(const ::scoped_string& scopedstr, character_count iIndex)
+   ::f64_size graphics::_get_text_extent(const ::scoped_string& scopedstr, character_count iIndex)
    {
 
       string str(scopedstr.m_begin, minimum_non_negative(iIndex, scopedstr.size()));
@@ -8610,16 +8744,41 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       thread_select();
 
-      ::gpu::graphics::start_layer(bFirstLayer);
+      ::cast < ::gpu_vulkan::context > pcontextVulkan = gpu_context();
+      ::cast < ::gpu_vulkan::queue > pqueueGraphics =
+         pcontextVulkan->m_pgpudevice->graphics_queue();
 
-      if (m_egraphics & e_graphics_draw)
+      m_queuehostcalllock = std::unique_lock<std::recursive_mutex>(
+         pqueueGraphics->m_pqueuehostcalldiagnosticstate->m_mutexHostCall);
+
+      try
       {
 
-         reset_clip();
+         ::gpu::graphics::start_layer(bFirstLayer);
 
-         reset_impact_area();
+         if (m_egraphics & e_graphics_draw)
+         {
 
-         set_alpha_mode(::draw2d::e_alpha_mode_blend);
+            reset_clip();
+
+            reset_impact_area();
+
+            set_alpha_mode(::draw2d::e_alpha_mode_blend);
+
+         }
+
+      }
+      catch (...)
+      {
+
+         if (m_queuehostcalllock.owns_lock())
+         {
+
+            m_queuehostcalllock.unlock();
+
+         }
+
+         throw;
 
       }
 
@@ -8629,42 +8788,71 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::end_layer(bool bClosingLayer)
    {
 
-      if (m_egraphics & e_graphics_draw)
+      try
       {
 
-         auto vkvgcontext = vkvg_context();
-
-         vkvg_flush(vkvgcontext);
-
-         //::i32_rectangle rectangle;
-
-         //if (m_puserinteractionDraw2dGraphics && !m_puserinteractionDraw2dGraphics->host_rectangle().size().is_empty())
-         //{
-
-         //   rectangle = m_puserinteractionDraw2dGraphics->host_rectangle();
-
-         //}
-         //else
-         //{
-
-         //   rectangle = { 0, 0, 1920, 1080 };
-
-         //}
-
-         if (!m_pgpucontextOutput)
+         if (m_egraphics & e_graphics_draw)
          {
 
-            //constructø(m_pgpucontextOutput);
+            auto vkvgcontext = vkvg_context();
 
-            //::cast < ::windowing::window > pwindow = m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow;
+            vkvg_flush(vkvgcontext);
 
-            //m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device()->create_window_context(pwindow);
+            //::i32_rectangle rectangle;
+
+            //if (m_puserinteractionDraw2dGraphics && !m_puserinteractionDraw2dGraphics->host_rectangle().size().is_empty())
+            //{
+
+            //   rectangle = m_puserinteractionDraw2dGraphics->host_rectangle();
+
+            //}
+            //else
+            //{
+
+            //   rectangle = { 0, 0, 1920, 1080 };
+
+            //}
+
+            if (!m_pgpucontextOutput)
+            {
+
+               //constructø(m_pgpucontextOutput);
+
+               //::cast < ::windowing::window > pwindow = m_puserinteractionDraw2dGraphics->m_pacmewindowingwindow;
+
+               //m_pgpucontextOutput = m_papplication->get_gpu_approach()->get_gpu_device()->create_window_context(pwindow);
+
+            }
 
          }
 
+         // Keep the shared Vulkan queue locked across the handoff from Vkvg's
+         // final flush to the layer copy.  Otherwise the compositor can submit
+         // work that samples the layer while the copy still contains only a
+         // prefix of the current frame.
+         ::gpu::graphics::end_layer(bClosingLayer);
+
+      }
+      catch (...)
+      {
+
+         if (m_queuehostcalllock.owns_lock())
+         {
+
+            m_queuehostcalllock.unlock();
+
+         }
+
+         throw;
+
       }
 
-      ::gpu::graphics::end_layer(bClosingLayer);
+      if (m_queuehostcalllock.owns_lock())
+      {
+
+         m_queuehostcalllock.unlock();
+
+      }
 
    }
 

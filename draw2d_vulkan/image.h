@@ -4,7 +4,7 @@
 #include "acme/_operating_system.h"
 
 
-#include "aura/graphics/image/image.h"
+#include "bred/gpu/image.h"
 #if defined(WITH_X11)
 #include <X11/Xlib.h>
 #endif
@@ -18,7 +18,7 @@ namespace draw2d_vulkan
 
 
    class CLASS_DECL_DRAW2D_VULKAN image :
-      virtual public ::image::image
+      virtual public ::gpu::image
    {
    public:
 
@@ -54,6 +54,8 @@ namespace draw2d_vulkan
       //using ::image::image::create;
 
       //void create(const ::i32_size& size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1, bool bPreserve = false) override;
+
+      void create_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d) override;
 
       void create_from_graphics(::draw2d::graphics* pgraphics) override;
 

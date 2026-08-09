@@ -2,7 +2,7 @@
 #include "binding.h"
 #include "command_buffer.h"
 #include "context.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "physical_device.h"
 #include "queue.h"
 #include "renderer.h"
@@ -213,9 +213,9 @@ namespace gpu_vulkan
                    frameIndex, uImageIndex);
       m_iCurrentSwapChainImage = uImageIndex;
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pcontext);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pcontext);
 
-      pgpudraw2dwindowattachment->m_iCurrentImage = m_iCurrentSwapChainImage;
+      pgpuwindowattachment->m_iCurrentImage = m_iCurrentSwapChainImage;
 
       //      if (vkresultAcquireNextImage == VK_ERROR_OUT_OF_DATE_KHR || vkresultAcquireNextImage == VK_SUBOPTIMAL_KHR)
       //{
@@ -674,9 +674,9 @@ namespace gpu_vulkan
 
       m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % iSize;
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
 
-      pgpudraw2dwindowattachment->m_iCurrentFrame3 = m_iCurrentSwapChainFrame;
+      pgpuwindowattachment->m_iCurrentFrame3 = m_iCurrentSwapChainFrame;
 
       ///return res;
 
@@ -819,6 +819,10 @@ namespace gpu_vulkan
 
       m_ptextureaSwapChain->set_size(imageCount);
 
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pcontext);
+
+      pgpuwindowattachment->m_iFrameCount = imageCount;
+
       ::array < VkImage> imagea;
 
       imagea.set_size(m_ptextureaSwapChain->size());
@@ -853,7 +857,7 @@ namespace gpu_vulkan
 
       //m_formatImage = surfaceFormat.format;
       //m_extent = extent;
-      pcontext->m_rectangle.set_size({ (int)extent.width, (int)extent.height });
+      pcontext->set_size({ (int)extent.width, (int)extent.height });
 
    }
 
@@ -1211,7 +1215,9 @@ namespace gpu_vulkan
 
       ::cast < render_target > prendertarget = pgpurenderer->render_target();
 
-      ::cast < ::gpu_vulkan::texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
+      //::cast < ::gpu_vulkan::texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
+
+      ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
 
       ::cast < swap_chain > pswapchain = pgpucontext->m_pgpuswapchain;
 
@@ -1356,9 +1362,9 @@ namespace gpu_vulkan
 //      pcommandbuffer->m_semaphoreaWaitToSubmit.add(ptextureSrc->synchronization()->m_vksemaphoreRenderFinished);
   //    pcommandbuffer->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
-      pcommandbuffer->set_viewport(pgpucontext->m_rectangle.size());
+      pcommandbuffer->set_viewport(pgpucontext->size());
 
-      pcommandbuffer->set_scissor(pgpucontext->m_rectangle.size());
+      pcommandbuffer->set_scissor(pgpucontext->size());
 
 
       //pgpucontext->_001BeginRenderPass(pcommandbuffer, ptextureSwapChain);

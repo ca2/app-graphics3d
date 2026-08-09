@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "_draw2d_opengl.h"
 #include "_draw2d.h"
+#include "bitmap.h"
 #include "draw2d.h"
 #include "pen.h"
 #include "path.h"
@@ -13,17 +14,18 @@
 #include "acme/platform/application.h"
 #include "acme/prototype/geometry2d/item.h"
 #include "acme/prototype/mathematics/mathematics.h"
+#include "aura/graphics/graphics/buffer_item.h"
 #include "bred/gpu/_model.h"
 #include "bred/gpu/bred_approach.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context_lock.h"
-#include "bred/gpu/aaa_cpu_buffer.h"
+#include "bred/gpu/buffer.h"
 #include "bred/gpu/device.h"
-#include "bred/gpu/draw2d_window_attachment.h"
+#include "bred/gpu/window_attachment.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/model_buffer.h"
 #include "bred/gpu/pixmap.h"
-#include "bred/gpu/aaa_render.h"
+//#include "bred/gpu/aaa_render.h"
 #include "bred/gpu/render_target.h"
 #include "bred/graphics3d/types.h"
 #ifdef WINDOWS_DESKTOP
@@ -31,6 +33,7 @@
 #endif
 #include "gpu_opengl/lock.h"
 #include "gpu_opengl/renderer.h"
+#include "gpu_opengl/texture.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #ifdef WINDOWS_DESKTOP
@@ -335,21 +338,31 @@ namespace draw2d_opengl
 
       //}
 
+      if (m_pgraphicsbufferitem)
+      {
+
+         constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
+
+         m_pgraphicsbufferitem->m_pimageBufferItem->create_as_render_target(size, puserinteraction, this);
+
+      }
+
+
       auto pgpuapproach = application()->get_gpu_approach();
 
       auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
 
-      auto pgpucontextMain = pgpudraw2dwindowattachment->window_context();
+      auto pgpucontextMain = pgpuwindowattachment->window_context();
 
       auto pgpucontextNew = pgpudevice->create_draw2d_gpu_context(
          // ::gpu::e_output_gpu_buffer
          m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
          size);
 
-      auto r = pgpucontextMain->m_rectangle;
+      auto r = pgpucontextMain->get_placement();
 
       m_sizeScaleOutput = {1.0, -1.0};
 
@@ -1396,12 +1409,12 @@ namespace draw2d_opengl
    //   //editQuadVertexBuffer(
    //   //   pgpucontext->logicalDevice(),
    //   //   pmodel->m_vertexMemory,
-   //   //   quad, color, pgpucontext->rectangle().size());
+   //   //   quad, color, pgpucontext->size());
 
    //   pmodelbufferRectangle->sequence2_color_set_rectangle(
    //      quad,
    //      color,
-   //      pgpucontext->m_rectangle.size());
+   //      pgpucontext->size());
 
 
    //   pshader->bind();
@@ -3096,6 +3109,20 @@ namespace draw2d_opengl
    //    return false;
    //
    // }
+
+
+   void graphics::set_target_image(::image::image * pimage)
+   {
+
+      ::cast < ::draw2d_opengl::image > popenglimage = pimage;
+
+      ::cast < ::draw2d_opengl::bitmap > pbitmap = popenglimage->m_pbitmap;
+
+      ::cast < ::gpu_opengl::texture > ptexture = pbitmap->m_pgputexture;
+
+      ptexture->bind_render_target();
+
+   }
 
 
    ::draw2d::pen* graphics::get_current_pen()
@@ -5582,7 +5609,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //__transform(points1[0]);
       //__transform(points1[1]);
 
-      //auto size = pcontext->m_rectangle.size();
+      //auto size = pcontext->size();
 
       ////::geometry2d::matrix m;
       ////m.translate(0.5, -0.5);
@@ -5726,8 +5753,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //
 //      floating_matrix4 projection = glm::ortho(
 //         0.0f, 
-//         static_cast<float>(pcontext->m_rectangle.width()),
-//         static_cast<float>(pcontext->m_rectangle.height()),
+//         static_cast<float>(pcontext->width()),
+//         static_cast<float>(pcontext->height()),
 //         0.0f);
 //      pshader->_set_matrix4("projection", projection);
 //
@@ -5783,7 +5810,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //
 //      //auto pcontext = gpu_context();
 //
-//      point.y = pcontext->m_rectangle.height() - point.y - pface->m_iPixelSize;
+//      point.y = pcontext->height() - point.y - pface->m_iPixelSize;
 //
 //      glDisable(GL_CULL_FACE);
 //      ::opengl::check_error("");
@@ -5951,8 +5978,8 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       floating_matrix4 projection = gpu_context()->ortho(
          0.0f,
-         static_cast<float>(pcontext->m_rectangle.width()),
-         static_cast<float>(pcontext->m_rectangle.height()),
+         static_cast<float>(pcontext->width()),
+         static_cast<float>(pcontext->height()),
          0.0f);
       pshader->_set_matrix4("projection", projection);
 
@@ -6009,7 +6036,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       //auto pcontext = gpu_context();
 
-      point.y = pcontext->m_rectangle.height() - point.y - pface->m_iPixelSize;
+      point.y = pcontext->height() - point.y - pface->m_iPixelSize;
       auto pgpurenderer = pcontext->m_pgpurenderer;
       glDisable(GL_CULL_FACE);
       ::opengl::check_error("");
@@ -6695,7 +6722,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       auto pcontext = gpu_context();
 
-      auto size = pcontext->m_rectangle.size();
+      auto size = pcontext->size();
 
       ::geometry2d::matrix contextmatrix;
 

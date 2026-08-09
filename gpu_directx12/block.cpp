@@ -6,7 +6,7 @@
 #include "context.h"
 //#include "render_target.h"
 #include "renderer.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 
 
 namespace gpu_directx12
@@ -141,9 +141,9 @@ namespace gpu_directx12
 
       auto pgpurendertarget = pgpurenderer->render_target();
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurenderer);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurenderer);
 
-         auto iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
+         auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
 
          //MyGlobalData globalData = { /* your values */ };

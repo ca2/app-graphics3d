@@ -75,8 +75,8 @@ namespace graphics3d_directx11
 
       //VkRenderPassBeginInfo renderPassBeginInfo = vkinit::renderPassBeginInfo();
       //renderPassBeginInfo.renderPass = vkrenderpass;
-      //renderPassBeginInfo.renderArea.extent.width = pgpucontext->m_rectangle.width();
-      //renderPassBeginInfo.renderArea.extent.height = pgpucontext->m_rectangle.height();
+      //renderPassBeginInfo.renderArea.extent.width = pgpucontext->width();
+      //renderPassBeginInfo.renderArea.extent.height = pgpucontext->height();
       //renderPassBeginInfo.clearValueCount = 0;
       ////renderPassBeginInfo.pClearValues = clearValues;
       //renderPassBeginInfo.pClearValues = nullptr;
@@ -89,8 +89,8 @@ namespace graphics3d_directx11
 
       //   pgpulayer->m_bRenderTargetFramebufferInitialized = true;
 
-      //   auto width = pcontext->m_rectangle.width();
-      //   auto height = pcontext->m_rectangle.height();
+      //   auto width = pcontext->width();
+      //   auto height = pcontext->height();
 
       //   VkViewport vp = {0, 0, (float)width, (float)height, 0.0f, 1.0f};
       //   VkRect2D sc = {{0, 0}, {width, height}};

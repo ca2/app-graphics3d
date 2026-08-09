@@ -1,6 +1,9 @@
 #include "../queue_host_call_diagnostics.h"
 
+#include <atomic>
 #include <cassert>
+#include <chrono>
+#include <thread>
 
 
 int main()
@@ -50,6 +53,80 @@ int main()
    }
 
    assert(pstateGraphics->m_uActiveCallCount.load() == 0);
+
+   std::atomic<bool> bWorkerStarted{false};
+   std::atomic<bool> bWorkerEnteredQueueCall{false};
+   std::thread worker;
+
+   {
+
+      gpu_vulkan::scoped_queue_host_call scopedGraphics(pstateGraphics);
+
+      worker = std::thread(
+         [&]()
+         {
+
+            bWorkerStarted = true;
+
+            gpu_vulkan::scoped_queue_host_call scopedTransfer(pstateTransfer);
+
+            bWorkerEnteredQueueCall = true;
+
+         });
+
+      while (!bWorkerStarted)
+      {
+
+         std::this_thread::yield();
+
+      }
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+      assert(!bWorkerEnteredQueueCall);
+
+   }
+
+   worker.join();
+
+   assert(bWorkerEnteredQueueCall);
+
+   bWorkerStarted = false;
+   bWorkerEnteredQueueCall = false;
+
+   {
+
+      std::unique_lock<std::recursive_mutex> externalQueueOwner(
+         pstateGraphics->m_mutexHostCall);
+
+      worker = std::thread(
+         [&]()
+         {
+
+            bWorkerStarted = true;
+
+            gpu_vulkan::scoped_queue_host_call scopedPresent(pstateGraphics);
+
+            bWorkerEnteredQueueCall = true;
+
+         });
+
+      while (!bWorkerStarted)
+      {
+
+         std::this_thread::yield();
+
+      }
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+      assert(!bWorkerEnteredQueueCall);
+
+   }
+
+   worker.join();
+
+   assert(bWorkerEnteredQueueCall);
 
    return 0;
 

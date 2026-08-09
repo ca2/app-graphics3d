@@ -3,7 +3,7 @@
 #include "command_buffer.h"
 #include "depth_stencil.h"
 #include "descriptors.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "frame.h"
 #include "input_layout.h"
 #include "renderer.h"
@@ -12,7 +12,7 @@
 #include "physical_device.h"
 #include "swap_chain.h"
 #include "initializers.h"
-#include "bred/gpu/aaa_cpu_buffer.h"
+#include "bred/gpu/buffer.h"
 #include "bred/gpu/layer.h"
 //#include "bred/gpu/layer.h"
 #include "bred/gpu/frame.h"
@@ -182,9 +182,9 @@ float4 main(PSInput input) : SV_TARGET {
       if (m_pgpucontext->m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
       {
 
-         throw todo;
+         //throw todo;
 
-         pgpucontext->create_cpu_buffer21(pgpucontext->rectangle().size());
+         pgpucontext->create_cpu_buffer(pgpucontext->size());
 
          construct_newø(m_pcpubuffersampler);
 
@@ -545,9 +545,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pcontext);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pcontext);
 
-      m_commandbuffera.set_size(pgpudraw2dwindowattachment->get_frame_count());
+      m_commandbuffera.set_size(pgpuwindowattachment->get_frame_count());
 
       //for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
       for (int iFrame = 0; iFrame < m_commandbuffera.size(); iFrame++)
@@ -686,7 +686,7 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::on_begin_draw()
    {
 
-      if (m_pgpucontext->m_rectangle.is_empty())
+      if (m_pgpucontext->size().is_empty())
       {
 
          throw ::exception(error_wrong_state, "please call set size before at least once with no empty preferrably good initial size");
@@ -699,9 +699,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       ::cast < render_target_view > pgpurendertargetview = pgpurendertarget;
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
 
-      assert(pgpudraw2dwindowattachment->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
+      assert(pgpuwindowattachment->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
              "Can't call beginRender while not in began_frame gpu_frame_state");
 
       //if (m_bOffScreen)
@@ -827,16 +827,16 @@ float4 main(PSInput input) : SV_TARGET {
                D3D12_VIEWPORT viewport = {};
                viewport.TopLeftX = 0.0f;
                viewport.TopLeftY = 0.0f;
-               viewport.Width = static_cast<float>(m_pgpucontext->m_rectangle.width());
-               viewport.Height = static_cast<float>(m_pgpucontext->m_rectangle.height());
+               viewport.Width = static_cast<float>(m_pgpucontext->width());
+               viewport.Height = static_cast<float>(m_pgpucontext->height());
                viewport.MinDepth = 0.0f;
                viewport.MaxDepth = 1.0f;
 
                D3D12_RECT scissorRect = {};
                scissorRect.left = 0;
                scissorRect.top = 0;
-               scissorRect.right = m_pgpucontext->m_rectangle.width();
-               scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+               scissorRect.right = m_pgpucontext->width();
+               scissorRect.bottom = m_pgpucontext->height();
 
                if (ptextureCurrent->m_pheapDepthStencilView)
                {
@@ -1361,24 +1361,21 @@ float4 main(PSInput input) : SV_TARGET {
 
       throw todo;
       
-      auto pcpubuffer = m_pgpucontext->m_pcpubuffer2;
+      auto pcpubuffer = m_pgpucontext->m_pbuffer;
 
       if (pcpubuffer && w > 0 && h > 0 && s >0)
       {
 
-         auto pimagetarget = pcpubuffer->m_pimagetarget;
+         auto ppixmap = pcpubuffer->m_ppixmap;
 
-         if (pimagetarget)
+         if (ppixmap)
          {
 
-            //auto size = m_pgpucontext->m_rectangle.size();
+            //auto size = m_pgpucontext->size();
 
-            pimagetarget->set_image_pixels(
-               (const ::image32_t *) data,
-               w,
-               h,
-               s,
-               false);
+            ppixmap->copy({w, h},
+               (const ::image32_t *)data,
+               s);
 
          }
 
@@ -3364,7 +3361,7 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::blend(::gpu::layer * pgpulayer)
    {
 
-      ::cast < texture > ptexture = pgpulayer->texture();
+      ::cast < texture > ptexture = pgpulayer->texture(false);
 
       auto pshader = get_image_blend_shader();
 
@@ -3379,9 +3376,9 @@ float4 main(PSInput input) : SV_TARGET {
       pshader->bind(pcommandbuffer, ptextureTarget);
       pshader->bind_source(pcommandbuffer, ptexture);
 
-      auto sizeHost = m_pgpucontext->m_rectangle.size();
+      auto sizeHost = m_pgpucontext->size();
 
-      const auto& rect = pgpulayer->texture()->rectangle();
+      const auto& rect = pgpulayer->texture(false)->rectangle();
       float left = ((float)rect.left / (float) sizeHost.width()) * 2.0f - 1.0f;
       float right = ((float)rect.right / (float) sizeHost.width()) * 2.0f - 1.0f;
       float top = 1.0f - ((float)rect.top / (float) sizeHost.height()) * 2.0f;
@@ -3971,16 +3968,16 @@ float4 main(PSInput input) : SV_TARGET {
                D3D12_VIEWPORT viewport = {};
                viewport.TopLeftX = 0.0f;
                viewport.TopLeftY = 0.0f;
-               viewport.Width = static_cast<float>(m_pgpucontext->m_rectangle.width());
-               viewport.Height = static_cast<float>(m_pgpucontext->m_rectangle.height());
+               viewport.Width = static_cast<float>(m_pgpucontext->width());
+               viewport.Height = static_cast<float>(m_pgpucontext->height());
                viewport.MinDepth = 0.0f;
                viewport.MaxDepth = 1.0f;
 
                D3D12_RECT scissorRect = {};
                scissorRect.left = 0;
                scissorRect.top = 0;
-               scissorRect.right = m_pgpucontext->m_rectangle.width();
-               scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+               scissorRect.right = m_pgpucontext->width();
+               scissorRect.bottom = m_pgpucontext->height();
 
                pcommandlist->RSSetViewports(1, &viewport);
                pcommandlist->RSSetScissorRects(1, &scissorRect);
@@ -4150,11 +4147,11 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pgpurendertarget = this->render_target();
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
 
-      int iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
+      int iFrameCount = pgpuwindowattachment->get_frame_count();
 
-      int iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
+      int iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
       bool bIsFrameInProgress = isFrameInProgress();
 
@@ -4197,7 +4194,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pgpurendertarget = this->render_target();
 
-      ::cast<::gpu_directx12::texture> ptexture = pgpulayer->texture();
+      ::cast<::gpu_directx12::texture> ptexture = pgpulayer->texture(true);
 
       ::cast<command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
@@ -4395,16 +4392,16 @@ float4 main(PSInput input) : SV_TARGET {
    //            D3D12_VIEWPORT viewport = {};
    //            viewport.TopLeftX = 0.0f;
    //            viewport.TopLeftY = 0.0f;
-   //            viewport.Width = static_cast<float>(m_pgpucontext->m_rectangle.width());
-   //            viewport.Height = static_cast<float>(m_pgpucontext->m_rectangle.height());
+   //            viewport.Width = static_cast<float>(m_pgpucontext->width());
+   //            viewport.Height = static_cast<float>(m_pgpucontext->height());
    //            viewport.MinDepth = 0.0f;
    //            viewport.MaxDepth = 1.0f;
 
    //            D3D12_RECT scissorRect = {};
    //            scissorRect.left = 0;
    //            scissorRect.top = 0;
-   //            scissorRect.right = m_pgpucontext->m_rectangle.width();
-   //            scissorRect.bottom = m_pgpucontext->m_rectangle.height();
+   //            scissorRect.right = m_pgpucontext->width();
+   //            scissorRect.bottom = m_pgpucontext->height();
 
    //            pcommandlist->RSSetViewports(1, &viewport);
    //            pcommandlist->RSSetScissorRects(1, &scissorRect);
@@ -4874,7 +4871,7 @@ float4 main(PSInput input) : SV_TARGET {
       //      // Create the vertex buffer.
       //      {
 
-      //         float aspectRatio = (float)m_pgpucontext->m_rectangle.width() / (float)m_pgpucontext->m_rectangle.height();
+      //         float aspectRatio = (float)m_pgpucontext->width() / (float)m_pgpucontext->height();
       //         // Define the geometry for a triangle.
       //         HelloTriangleVertex triangleVertices[] =
       //         {
@@ -5529,7 +5526,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       }
 
-      m_pgpucontext->set_placement(prenderer->m_pgpucontext->rectangle());
+      m_pgpucontext->set_placement(prenderer->m_pgpucontext->get_placement());
 
       //VkImage image = prenderer->m_prendertargetview->m_images[prenderer->get_frame_index()];
 

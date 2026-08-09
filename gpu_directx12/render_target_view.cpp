@@ -356,8 +356,8 @@ namespace gpu_directx12
 
       }
 
-      int width = m_pgpurenderer->m_pgpucontext->m_rectangle.width();
-      int height = m_pgpurenderer->m_pgpucontext->m_rectangle.height();
+      int width = m_pgpurenderer->m_pgpucontext->width();
+      int height = m_pgpurenderer->m_pgpucontext->height();
 
       //UINT width,
       //   UINT height,
@@ -368,7 +368,7 @@ namespace gpu_directx12
 
       //defer_construct_newø(m_pdepthstencil);
 
-      //m_pdepthstencil->initialize_depth_stencil(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->m_rectangle.size());
+      //m_pdepthstencil->initialize_depth_stencil(m_pgpurenderer, m_pgpurenderer->m_pgpucontext->size());
 
       //// 4. Create DSV
       //D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};

@@ -13,7 +13,7 @@
 #include "physical_device.h"
 #include "swap_chain.h"
 #include "initializers.h"
-#include "bred/gpu/aaa_cpu_buffer.h"
+#include "bred/gpu/buffer.h"
 #include "bred/gpu/layer.h"
 //#include "bred/gpu/render_state.h"
 #include "gpu_directx12/shader.h"

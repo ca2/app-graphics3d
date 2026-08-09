@@ -150,6 +150,8 @@ namespace draw2d_nanovg
 
       //bool IsPrinting() const;            // true if being used for printing
 
+      void set_target_image(::image::image * pimage) override;
+
       ::draw2d::pen *     get_current_pen() override;
       ::draw2d::brush *   get_current_brush() override;
       //::draw2d::palette_pointer get_current_palette() const;

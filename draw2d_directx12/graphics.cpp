@@ -29,7 +29,7 @@
 #include "bred/gpu/context.h"
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/device.h"
-#include "bred/gpu/draw2d_window_attachment.h"
+#include "bred/gpu/window_attachment.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/swap_chain.h"
@@ -186,13 +186,13 @@ namespace draw2d_directx12
 
       auto pgpuapproach = m_papplication->get_gpu_approach();
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
 
       //auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
       //m_pdirectx12 = ::directx12::from_gpu_device(pgpudevice);
 
-      auto pgpucontextNew = pgpudraw2dwindowattachment->draw2d_context();
+      auto pgpucontextNew = pgpuwindowattachment->draw2d_context();
 
       pgpucontextNew->m_pgpucompositor = this;
 
@@ -209,7 +209,7 @@ namespace draw2d_directx12
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
-         auto pgpucontextWindow = pgpudraw2dwindowattachment->window_context();
+         auto pgpucontextWindow = pgpuwindowattachment->window_context();
 
          auto pswapchain = pgpucontextWindow->get_swap_chain();
 
@@ -289,7 +289,7 @@ namespace draw2d_directx12
       if (pcontext)
       {
 
-         if (pcontext->m_rectangle.size() == sizeParameter)
+         if (pcontext->size() == sizeParameter)
          {
 
             return;
@@ -6242,8 +6242,8 @@ namespace draw2d_directx12
 //         r.top,
 //         r.right,
 //         r.bottom,  // rectangle in pixels (left, top, right, bottom)
-//         pcontext->m_rectangle.width(),
-//         pcontext->m_rectangle.height(),            // viewport size in pixels (width, height)
+//         pcontext->width(),
+//         pcontext->height(),            // viewport size in pixels (width, height)
 //         color.f32_red() * color.f32_opacity(),
 //         color.f32_green() * color.f32_opacity(),
 //         color.f32_blue() * color.f32_opacity(),
@@ -8008,7 +8008,7 @@ namespace draw2d_directx12
 
       auto pcontext = gpu_context();
 
-      auto size = pcontext->m_rectangle.size();
+      auto size = pcontext->size();
 
       ::geometry2d::matrix contextmatrix;
 

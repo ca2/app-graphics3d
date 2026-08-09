@@ -1,7 +1,7 @@
 // Created by camilo on 2025-06-08 18:14 < 3ThomasBorregaardSørensen!!
 #include "framework.h"
 #include "command_buffer.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "texture.h"
 #include "renderer.h"
 #include "acme/graphics/image/pixmap.h"
@@ -1631,9 +1631,9 @@ namespace gpu_directx12
 
       ::cast < ::gpu_directx12::device > pdevice = prenderer->m_pgpucontext->m_pgpudevice;
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(prenderer);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(prenderer);
 
-      auto pframestorage = pgpudraw2dwindowattachment->current_frame_storage();
+      auto pframestorage = pgpuwindowattachment->current_frame_storage();
 
       auto& pobject = pframestorage->m_mapObject[this][::gpu::e_resource_upload_buffer];
 

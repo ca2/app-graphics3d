@@ -1,5 +1,5 @@
 #include "framework.h"
-#include "aaa_cpu_buffer.h"
+#include "buffer.h"
 #include "acme/parallelization/synchronous_lock.h"
 #include "aura/graphics/image/image.h"
 #include "aura/graphics/image/aaa_target.h"
@@ -10,24 +10,24 @@ namespace gpu_vulkan
 {
 
 
-   aaa_cpu_buffer::aaa_cpu_buffer()
+   buffer::buffer()
    {
 
    }
 
 
-   aaa_cpu_buffer::~aaa_cpu_buffer()
+   buffer::~buffer()
    {
 
    }
 
 
-   void aaa_cpu_buffer::gpu_read()
+   void buffer::gpu_read()
    {
 
       _synchronous_lock synchronouslock(this->synchronization());
 
-      if (m_pimagetarget->m_pimage.nok())
+      if (m_ppixmap.nok())
       {
 
          return;
@@ -36,15 +36,15 @@ namespace gpu_vulkan
 
       //m_pixmap.map();
 
-      auto cx = m_pimagetarget->m_pimage->width();
+      auto cx = m_ppixmap->width();
 
-      auto cy = m_pimagetarget->m_pimage->height();
+      auto cy = m_ppixmap->height();
 
       //auto sizeNeeded = cx * cy * 4;
 
       //m_pixmap.create(m_memory, sizeNeeded);
       
-      auto data = m_pimagetarget->m_pimage->data();
+      auto data = m_ppixmap->data();
       
       {
 
@@ -70,12 +70,12 @@ namespace gpu_vulkan
    }
 
 
-   void aaa_cpu_buffer::gpu_write()
+   void buffer::gpu_write()
    {
 
       synchronous_lock synchronouslock(this->synchronization());
 
-      if (m_pimagetarget->m_pimage.nok())
+      if (m_ppixmap.nok())
       {
 
          return;

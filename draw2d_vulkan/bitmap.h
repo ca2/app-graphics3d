@@ -2,7 +2,7 @@
 
 
 #include "acme/prototype/prototype/memory.h"
-#include "aura/graphics/draw2d/bitmap.h"
+#include "bred/gpu/bitmap.h"
 
 
 //#include <VK/vk.h>
@@ -103,7 +103,7 @@ namespace draw2d_vulkan
 
 
    class CLASS_DECL_DRAW2D_VULKAN bitmap : 
-      virtual public ::draw2d::bitmap
+      virtual public ::gpu::bitmap
    {
    public:
 
@@ -193,6 +193,7 @@ namespace draw2d_vulkan
       void CreateCompatibleBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       void CreateDiscardableBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       
+      void _create_gpu_bitmap(const ::i32_size & size, pixmap_t * ppixmap =nullptr) override;
       void create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::memory & memory, int* piScan) override;
       void CreateDIBitmap(::draw2d::graphics * pgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
 

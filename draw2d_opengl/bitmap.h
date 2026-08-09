@@ -2,7 +2,7 @@
 
 
 #include "acme/prototype/prototype/memory.h"
-#include "aura/graphics/draw2d/bitmap.h"
+#include "bred/gpu/bitmap.h"
 
 #ifdef WINDOWS_DESKTOP
 
@@ -109,13 +109,13 @@ namespace draw2d_opengl
 
 
    class CLASS_DECL_DRAW2D_OPENGL bitmap : 
-      virtual public ::draw2d::bitmap
+      virtual public ::gpu::bitmap
    {
    public:
 
 
-      bool                 m_bTexture;
-      GLuint               m_texture;
+      //bool                 m_bTexture;
+      //GLuint               m_texture;
       memory               m_memIn;
       memory               m_memOut;
 

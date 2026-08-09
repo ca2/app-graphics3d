@@ -643,7 +643,7 @@ namespace app_graphics3d_hello_space
 
                      m_pgpushaderBlend->unbind(pgpucommandbuffer);
 
-                     pgpucontext->copy(m_pgputextureMonitor2, m_pgputextureMonitorMultisample, nullptr);
+                     pgpucontext->copy(m_pgputextureMonitor2, m_pgputextureMonitorMultisample, nullptr, nullptr);
 
                      if (m_prenderable)
                      {

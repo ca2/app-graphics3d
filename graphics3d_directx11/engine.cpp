@@ -528,6 +528,8 @@ namespace graphics3d_directx11
    void engine::on_after_done_frame_step(::draw2d::graphics_pointer& pgraphics)
    {
 
+      ::graphics3d::engine::on_after_done_frame_step(pgraphics);
+
       return;
 
       ::cast < ::draw2d_direct2d::graphics > pgraphics2d = pgraphics;
@@ -586,7 +588,7 @@ namespace graphics3d_directx11
          // 4. Draw into the D2D1RenderTarget
          //d2dDeviceContext->BeginDraw();
 
-         auto r = pgpucontext->m_rectangle;
+         auto r = pgpucontext->get_placement();
 
          //pgraphics2d->m_pdevicecontext->DrawBitmap(
          //   bitmap,

@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "gpu_opengl/_gpu_opengl.h"
 #include "_nanovg.h"
+#include "bitmap.h"
 #include "draw2d.h"
 #include "pen.h"
 #include "font.h"
@@ -21,6 +22,7 @@
 #include "acme/prototype/geometry2d/item.h"
 #include "acme/prototype/mathematics/mathematics.h"
 #include "acme/prototype/string/str.h"
+#include "aura/graphics/graphics/buffer_item.h"
 #include "gpu_opengl/approach.h"
 #include "gpu_opengl/renderer.h"
 #include "gpu_opengl/texture.h"
@@ -29,10 +31,10 @@
 #pragma comment(lib, "opengl32.lib")
 #endif
 #include "bred/gpu/context_lock.h"
-#include "bred/gpu/aaa_cpu_buffer.h"
-#include "bred/gpu/draw2d_window_attachment.h"
+#include "bred/gpu/buffer.h"
+#include "bred/gpu/window_attachment.h"
 #include "bred/gpu/layer.h"
-#include "bred/gpu/aaa_render.h"
+#include "bred/gpu/render.h"
 #include "aura/graphics/draw2d/clip.h"
 #include "aura/graphics/graphics/context.h"
 #include "aura/graphics/image/drawing.h"
@@ -321,15 +323,16 @@ namespace draw2d_nanovg
 
       }
 
-      if (!context_lease())
+      if (!m_pgpucontextOwned)
       {
 
-         auto contextlease = pgpudevice->acquire_gpu_context(
-            ::gpu::e_output_gpu_buffer,
-            //m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         m_pgpucontextOwned = pgpudevice->create_draw2d_gpu_context(pacmeuserinteractionAffinity->m_pacmewindowingwindow,
             sizeParameter);
+         //   ::gpu::e_output_gpu_buffer,
+         //   //m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         //   sizeParameter);
 
-         set_context_lease(::transfer(contextlease));
+         //set_context_lease(::transfer(contextlease));
 
       }
 
@@ -394,7 +397,7 @@ namespace draw2d_nanovg
       if (!pgpucontext || !m_pdc)
       {
 
-         context_lease().mark_damaged();
+//         context_lease().mark_damaged();
 
          throw ::exception(
             error_wrong_state,
@@ -429,7 +432,7 @@ namespace draw2d_nanovg
       catch (...)
       {
 
-         context_lease().mark_damaged();
+         //context_lease().mark_damaged();
 
          throw;
 
@@ -446,7 +449,7 @@ namespace draw2d_nanovg
       if (!pgpucontext)
       {
 
-         context_lease().mark_damaged();
+         //context_lease().mark_damaged();
 
          throw ::exception(
             error_wrong_state,
@@ -466,7 +469,7 @@ namespace draw2d_nanovg
                glFlush();
                ::opengl::check_error("");
 
-               auto pgpuimage = dynamic_cast<::gpu::image *>(m_pimage);
+               ::cast < ::gpu::image > pgpuimage = m_pimage;
 
                if (pgpuimage && pgpuimage->gpu_texture())
                {
@@ -484,7 +487,7 @@ namespace draw2d_nanovg
       catch (...)
       {
 
-         context_lease().mark_damaged();
+         //context_lease().mark_damaged();
 
          throw;
 
@@ -520,24 +523,33 @@ namespace draw2d_nanovg
 
       auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pwindow);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pwindow);
 
-      auto pgpucontextNew = pgpudraw2dwindowattachment->draw2d_context();
+      auto pgpucontextNew = pgpuwindowattachment->draw2d_context();
 
-      set_gpu_context(pgpucontextNew);
+      m_pgpucontextOwned = pgpucontextNew;
 
-      auto pcontext = gpu_context();
+      m_pgpucontextOwned->m_pgpucompositor = this;
 
-      pcontext->m_pgpucompositor = this;
+      if (m_pgraphicsbufferitem)
+      {
+
+         constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
+
+         m_pgraphicsbufferitem->m_pimageBufferItem->create_as_render_target(size, puserinteraction, this);
+
+      }
+
+
 
       //pcontext->defer_create_window_context(pwindow);
 
-      pcontext->create_draw2d_gpu_context(pgpudevice, pwindow, size);
+      //pcontext->create_draw2d_gpu_context(pgpudevice, pwindow, size);
 
-      ::cast < ::gpu_opengl::context > pcontextOpengl = pcontext;
+      ::cast < ::gpu_opengl::context > pcontextOpengl = m_pgpucontextOwned;
       ::cast < ::gpu_opengl::approach > papproachOpengl = pgpuapproach;
 
-      ::gpu::context_lock contextlock(pcontext);
+      ::gpu::context_lock contextlock(m_pgpucontextOwned);
 
       //nanovg_device_create_info_t createinfo;
       //createinfo.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -605,7 +617,7 @@ namespace draw2d_nanovg
       //    }
 
       //}
-
+      m_estatus = success;
       set_ok_flag();
 
    }
@@ -876,9 +888,9 @@ namespace draw2d_nanovg
 
       auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pacmeuserinteractionAffinity);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
 
-      auto pgpucontextWindow = pgpudraw2dwindowattachment->window_context();
+      auto pgpucontextWindow = pgpuwindowattachment->window_context();
 
       ////if (!m_pgpucontext)
       ////{
@@ -3801,6 +3813,19 @@ namespace draw2d_nanovg
    //
    // }
 
+   void graphics::set_target_image(::image::image * pimage)
+   {
+
+      ::cast < ::draw2d_nanovg::image > popenglimage = pimage;
+
+      ::cast < ::draw2d_nanovg::bitmap > pbitmap = popenglimage->m_pbitmap;
+
+      ::cast < ::gpu_opengl::texture > ptexture = pbitmap->m_pgputexture;
+
+      ptexture->bind_render_target();
+
+   }
+
 
    ::draw2d::pen* graphics::get_current_pen()
    {
@@ -6407,7 +6432,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    ::gpu::texture* graphics::current_target_texture(::gpu::layer * pgpulayer)
    {
 
-      auto pgpuimage = dynamic_cast < ::gpu::image * >(m_pimage);
+      ::cast < ::gpu::image > pgpuimage =m_pimage;
 
       if (pgpuimage)
       {
@@ -8506,7 +8531,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       information() << "[gpu.performance.nanovg_image_boundary] stage=target_state"
          << " diagnostic=" << iDiagnosticIndex
          << " graphics=" << (::uptr)this
-         << " image=" << (::uptr)m_pimage
+         << " image=" << (::uptr)m_pimage.m_p
          << " context=" << (::uptr)pgpucontext
          << " layer=" << (::uptr)pgpulayer
          << " texture_object=" << (::uptr)pgputexture
@@ -8558,7 +8583,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          sizeTexture,
          DEFAULT_CREATE_IMAGE_FLAG, 
          sizeTexture.cx * (int)sizeof(::image32_t));
-      pgputexture->read_pixels(&pixmap);
+
+      auto mapPixmap = pixmap.map();
+
+      auto pgpucommandbuffer = ::gpu::current_layer()->getCurrentCommandBuffer4();
+
+      pgputexture->read_pixels(pgpucommandbuffer, &mapPixmap);
 
       auto uPixelCount = (::u64)sizeTexture.cx * (::u64)sizeTexture.cy;
       auto uTransparentPixels = (::u64)0;
@@ -9821,9 +9851,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       pgpucontext->clear(pgpucontext->current_target_texture(::gpu::current_layer()), ::color::transparent);
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpucontext);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucontext);
 
-      ::cast < ::gpu::layer > playerPrevious = pgpudraw2dwindowattachment->get_previous_layer(pgpulayer);
+      ::cast < ::gpu::layer > playerPrevious = pgpuwindowattachment->get_previous_layer(pgpulayer);
 
       if (playerPrevious)
       {
@@ -9831,8 +9861,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          prepare_nanovg_render_target(
             pgpucontext->current_target_texture(::gpu::current_layer()));
 
-         nvgBeginFrame(m_pdc, pgpucontext->m_rectangle.width(),
-            pgpucontext->m_rectangle.height(), 1.f);
+         nvgBeginFrame(m_pdc, pgpucontext->width(),
+            pgpucontext->height(), 1.f);
 
       }
 
@@ -9868,7 +9898,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      auto pgpuimage = dynamic_cast < ::gpu::image * >(m_pimage);
+      ::cast <::gpu::image >pgpuimage =m_pimage;
       ::cast < ::gpu_opengl::texture > ptextureDiagnostic =
          pgputextureTarget;
       auto iDiagnosticIndex = pgpuimage && pgpuimage->gpu_texture()
@@ -10462,7 +10492,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //return ::is_set(this) & ::is_set(m_hglrc);
 
-      return ::is_set(this) && m_pgpucontextCompositor2;
+      return ::is_set(this) && (
+         m_pgpucontextCompositor2 || m_pgpucontextOwned);
 
    }
 

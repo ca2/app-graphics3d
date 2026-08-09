@@ -51,7 +51,7 @@ namespace draw2d_vulkan
       void initialize(::particle * pparticle) override;
 
 
-      bool graphics_context_supports_single_buffer_mode() override;
+      //bool graphics_context_supports_single_buffer_mode() override;
       bool graphics_context_does_full_redraw() override;
 
       /*void on_create_window(::windowing::window * pwindow) override;*/

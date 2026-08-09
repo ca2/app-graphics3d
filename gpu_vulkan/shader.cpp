@@ -12,7 +12,7 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "descriptors.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "input_layout.h"
 #include "pipeline.h"
 #include "render_target.h"
@@ -376,9 +376,9 @@ namespace gpu_vulkan
       ::pointer_array<::gpu_vulkan::descriptor_set_layout> descriptorsetlayouta;
       ::pointer_array<::gpu_vulkan::descriptor_pool> descriptorpoola;
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
 
-      int iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
+      int iFrameCount = pgpuwindowattachment->get_frame_count();
 
       if (m_pbindingslotseta)
       {
@@ -742,8 +742,8 @@ namespace gpu_vulkan
       //   renderPassBeginInfo.renderArea.offset = { 0, 0 };
       //   renderPassBeginInfo.renderArea.extent =
       //   {
-      //      (uint32_t)pgpucontext->m_rectangle.width(),
-      //      (uint32_t)pgpucontext->m_rectangle.height()
+      //      (uint32_t)pgpucontext->width(),
+      //      (uint32_t)pgpucontext->height()
       //   };
 
       //}
@@ -850,8 +850,8 @@ namespace gpu_vulkan
 
 
    //   renderPassBeginInfo.renderArea.offset = {0, 0};
-   //   renderPassBeginInfo.renderArea.extent = {(uint32_t)pgpucontext->m_rectangle.width(),
-   //                                            (uint32_t)pgpucontext->m_rectangle.height()};
+   //   renderPassBeginInfo.renderArea.extent = {(uint32_t)pgpucontext->width(),
+   //                                            (uint32_t)pgpucontext->height()};
 
 
    //   /*vkCmdBeginRenderPass(
@@ -944,7 +944,7 @@ namespace gpu_vulkan
 
    //   m_ppipeline->bind(pcommandbuffer);
 
-   //   auto rectangle = pgpucontext->m_rectangle;
+   //   auto rectangle = pgpucontext->get_placement();
    //   auto size = rectangle.size();
    //   VkViewport vp = {
    //      (float)0.f,
@@ -1118,9 +1118,9 @@ namespace gpu_vulkan
                             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, iPushConstantsOffset,
                             uBlockSizeWithoutSamplers, pmemory->data());
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
 
-         auto pframestorage = pgpudraw2dwindowattachment->current_frame_storage();
+         auto pframestorage = pgpuwindowattachment->current_frame_storage();
 
          pframestorage->m_memorya.add(pmemory);
 

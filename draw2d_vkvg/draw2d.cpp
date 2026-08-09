@@ -62,12 +62,97 @@ namespace draw2d_vkvg
    }
 
 
+   const void * draw2d::get_gpu_physical_device_features(void * p)
+   {
+
+      auto prequiredFeatures = (VkPhysicalDeviceFeatures *) p;
+
+      const void * vkvgPNext =
+         vkvg_get_device_requirements(
+            prequiredFeatures);
+
+      return vkvgPNext;
+
+   }
+
+
+
+
+   void draw2d::get_required_gpu_device_extensions(::u64 uPhysicalDevice, ::array<const char *> & pszaRequiredDeviceExtensions)
+   {
+
+      VkPhysicalDevice vkphysicaldevice = (VkPhysicalDevice)uPhysicalDevice;
+      uint32_t extensionCount = 0;
+
+      vkvg_get_required_device_extensions(
+         vkphysicaldevice,
+         nullptr,
+         &extensionCount);
+
+      ::array<const char *> vkvgExtensions;
+      vkvgExtensions.set_size(extensionCount);
+      
+
+      vkvg_get_required_device_extensions(
+         vkphysicaldevice,
+         vkvgExtensions.data(),
+         &extensionCount);
+
+      
+
+      for (int i = 0; i < vkvgExtensions.size(); i++)
+      {
+
+         auto ext = vkvgExtensions[i];
+
+         if (ext)
+         {
+
+            bool bFound = false;
+
+            for(int j = 0; j < pszaRequiredDeviceExtensions.size(); j++)
+            {
+
+               auto existing = pszaRequiredDeviceExtensions[j];
+
+               if (existing)
+               {
+
+                  if (!strcmp(existing, ext))
+                  {
+
+                     bFound = true;
+
+                     break;
+
+                  }
+
+               }
+            
+            }
+
+            if (!bFound)
+            {
+
+               pszaRequiredDeviceExtensions.add(ext);
+
+            }
+
+         }
+
+      }
+
+   }
+
+
+
    void draw2d::initialize(::particle * pparticle)
    {
 
       //auto estatus = 
 
       ::gpu::draw2d::initialize(pparticle);
+
 
 
       //application()->create_gpu();
@@ -82,6 +167,8 @@ namespace draw2d_vkvg
 
       m_pmutex = node()->create_mutex();
       vulkan_init();
+
+
 
 
 
@@ -100,12 +187,12 @@ namespace draw2d_vkvg
    }
 
 
-   bool draw2d::graphics_context_supports_single_buffer_mode()
-   {
+   //bool draw2d::graphics_context_supports_single_buffer_mode()
+   //{
 
-      return true;
+   //   return true;
 
-   }
+   //}
 
 
    bool draw2d::graphics_context_does_full_redraw()

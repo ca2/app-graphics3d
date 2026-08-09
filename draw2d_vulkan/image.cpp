@@ -219,6 +219,23 @@ namespace draw2d_vulkan
    }
 
 
+   void image::create_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d)
+   {
+
+      ::gpu::image::create_as_render_target(sizeRaw, puserinteraction, pdraw2dgraphics, eflagCreate, iGoodStride, bPreserve, bTopDraw2d);
+
+      //create_as_descriptor(sizeRaw, eflagCreate);
+
+      //constructø(m_pbitmap);
+
+
+
+      //m_pbitmap-
+
+
+   }
+
+
    void image::create_from_graphics(::draw2d::graphics * pgraphics)
    {
 

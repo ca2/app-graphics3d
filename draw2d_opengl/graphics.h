@@ -58,7 +58,7 @@ namespace draw2d_opengl
 
 
 //#define __USES_TRANSFORM(pcontext) \
-//auto iContextHeight = pcontext->m_rectangle.height()
+//auto iContextHeight = pcontext->height()
 
       //plusplus::Graphics & g()
       //{
@@ -84,7 +84,7 @@ namespace draw2d_opengl
       //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
 
-
+      void set_target_image(::image::image * pimage) override;
       //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
       //virtual bool Attach(HDC hdc);   // attach/detach affects only the Output DC

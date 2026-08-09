@@ -11,7 +11,7 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "gpu_directx12/descriptors.h"
 #include "offscreen_render_target_view.h"
 #include "physical_device.h"
@@ -104,9 +104,9 @@ namespace gpu_directx12
 
             ::cast<::gpu_directx12::device> pdevice = m_pgpudevice;
 
-            auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
+            auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
 
-            ::cast<context> pcontextMain = pgpudraw2dwindowattachment->window_context();
+            ::cast<context> pcontextMain = pgpuwindowattachment->window_context();
 
             if (pcontextMain != this)
             {
@@ -427,12 +427,12 @@ namespace gpu_directx12
    class context::d3d11on12* context::d3d11on12()
    {
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
 
-      if (this != pgpudraw2dwindowattachment->window_context())
+      if (this != pgpuwindowattachment->window_context())
       {
 
-         ::cast < context > pgpucontextWindow = pgpudraw2dwindowattachment->window_context();
+         ::cast < context > pgpucontextWindow = pgpuwindowattachment->window_context();
 
          return pgpucontextWindow->d3d11on12();
 
@@ -457,9 +457,9 @@ namespace gpu_directx12
 
             ::cast < device> pdevice = m_pgpudevice;
 
-            auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
+            auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
 
-            ::cast < context > pcontextMainDraw2d = pgpudraw2dwindowattachment->draw2d_context();
+            ::cast < context > pcontextMainDraw2d = pgpuwindowattachment->draw2d_context();
 
             D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
 
@@ -714,7 +714,7 @@ namespace gpu_directx12
 
 
    void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource,
-                      ::pointer<::gpu::fence> *pgpufence)
+                      ::pointer<::gpu::fence> *pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
    {
 
       ::cast < ::gpu_directx12::texture > ptextureDst = ptextureTarget;
@@ -1475,7 +1475,7 @@ namespace gpu_directx12
    //}
 
 
-   void context::_create_cpu_buffer21(const ::i32_size& size)
+   void context::_create_cpu_buffer(const ::i32_size& size)
    {
 
       _create_offscreen_window(size);
@@ -1535,10 +1535,10 @@ namespace gpu_directx12
    //}
 
 
-   void context::resize_cpu_buffer21(const ::i32_size& sizeParam)
+   void context::resize_cpu_buffer(const ::i32_size& sizeParam)
    {
 
-      throw todo;
+      // throw todo;
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
@@ -1553,7 +1553,7 @@ namespace gpu_directx12
          {
             //if (!m_pcpubuffer)
 
-            create_cpu_buffer21(size);
+            create_cpu_buffer(size);
 
 
             ///m_pcpubuffer->m_pixmap.create(m_pcpubuffer->m_memory, size);
@@ -1591,11 +1591,10 @@ namespace gpu_directx12
    }
 
 
-
-   void context::destroy_cpu_buffer21()
+   void context::destroy_cpu_buffer()
    {
 
-      throw todo;
+      //throw todo;
 
       //ASSERT(is_current_task());
 
@@ -1845,9 +1844,9 @@ namespace gpu_directx12
 
          auto pgpurendertarget = m_pgpurenderer->render_target();
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
 
-         auto iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
+         auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
          auto etypeRenderer = m_pgpurenderer->m_pgpucontext->m_etype;
 
@@ -1855,7 +1854,7 @@ namespace gpu_directx12
 
          auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
 
-         ::cast < context > pcontextMain = pgpudraw2dwindowattachment->window_context();
+         ::cast < context > pcontextMain = pgpuwindowattachment->window_context();
 
          if (!ptexture->d3d11()->wrappedResource)
          {
@@ -1930,9 +1929,9 @@ namespace gpu_directx12
 
       auto pgpurendertarget = m_pgpurenderer->render_target();
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
 
-      auto iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
+      auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
       auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
 
@@ -2185,9 +2184,9 @@ namespace gpu_directx12
 
       }
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
 
-      auto pgpucontextWindow = pgpudraw2dwindowattachment->window_context();
+      auto pgpucontextWindow = pgpuwindowattachment->window_context();
 
       if (!pgpucontextWindow)
       {
@@ -2464,7 +2463,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
             //if (iLayer == 2)
             {
 
-               ::cast < ::gpu_directx12::texture > ptextureSrc = pgpulayer->texture();
+               ::cast < ::gpu_directx12::texture > ptextureSrc = pgpulayer->texture(false);
 
                ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 
@@ -2525,7 +2524,7 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
       for (auto pgpulayer : *pgpulayera)
       {
 
-         ::cast<::gpu_directx12::texture> ptextureSrc = pgpulayer->texture();
+         ::cast<::gpu_directx12::texture> ptextureSrc = pgpulayer->texture(false);
 
          ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
@@ -2701,12 +2700,12 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_TARGET
    IDXGIDevice* context::_get_dxgi_device()
    {
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
 
-      if (pgpudraw2dwindowattachment->window_context() != this)
+      if (pgpuwindowattachment->window_context() != this)
       {
 
-         ::cast < context > pcontextMain = pgpudraw2dwindowattachment->window_context();
+         ::cast < context > pcontextMain = pgpuwindowattachment->window_context();
 
          return pcontextMain->_get_dxgi_device();
 

@@ -7,7 +7,7 @@
 #include "context.h"
 #include "descriptors.h"
 #include "device.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "initializers.h"
 #include "physical_device.h"
 #include "queue.h"
@@ -314,7 +314,7 @@ namespace gpu_vulkan
    }
 
    
-   class texture::layer &texture::current_layer(::gpu_vulkan::render_pass *prenderpass)
+   struct texture::layer &texture::current_layer(::gpu_vulkan::render_pass *prenderpass)
    {
 
       //ASSERT(m_textureattributes.m_etexture == ::gpu::e_texture_cube_map);
@@ -824,8 +824,12 @@ namespace gpu_vulkan
 
          information("((((::uptr)m_vkimage) & 0xffff) == 0x000f)");
       }
-      
-      
+      else if ((((::uptr)m_vkimage) & 0xffff) == 0x045f)
+      {
+
+         information("((((::uptr)m_vkimage) & 0xffff) == 0x045f)");
+      }
+
       
       _set_data(data);
       //if (data.is_image_array())
@@ -932,7 +936,7 @@ namespace gpu_vulkan
       VkDeviceSize totalSize = layerSize * 6;
 
       auto pbufferStaging =
-         pcontext->create_buffer(totalSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+         pcontext->_create_buffer(totalSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
       pbufferStaging->_assign_cube_map(pixmapa);
@@ -2033,7 +2037,7 @@ namespace gpu_vulkan
       ::pointer<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
       auto pbufferStaging =
-         pcontext->create_buffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+         pcontext->_create_buffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
       pbufferStaging->_assign(data, size);
@@ -2041,9 +2045,9 @@ namespace gpu_vulkan
       if (defer_construct_newø(m_p_001OnAfterEndFrame))
       {
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
 
-         pgpudraw2dwindowattachment->current_frame()->post_on_after_end_frame(
+         pgpuwindowattachment->current_frame()->post_on_after_end_frame(
             [this, pcontext]()
             {
                auto p = ::transfer(m_p_001OnAfterEndFrame);
@@ -2084,9 +2088,9 @@ namespace gpu_vulkan
       if (defer_construct_newø(m_p_001OnNextFrameStart))
       {
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
 
-         pgpudraw2dwindowattachment->current_frame()->post_on_just_before_frame_next_start(
+         pgpuwindowattachment->current_frame()->post_on_just_before_frame_next_start(
             [this, pcontext]()
             {
 
@@ -2263,10 +2267,10 @@ namespace gpu_vulkan
 
       auto iFrame = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucommandbuffer->m_pgpurendertarget);
 
       auto iFrameCount =
-         pgpudraw2dwindowattachment->get_frame_count();
+         pgpuwindowattachment->get_frame_count();
 
       auto iSerial = pgpucommandbuffer->m_iSerial;
 
@@ -2751,7 +2755,7 @@ void texture::create_sampler()
 
       VkDeviceSize imageSize = static_cast<VkDeviceSize>(texWidth) * texHeight * 4;
 
-      pbuffer = pcontext->create_buffer(
+      pbuffer = pcontext->_create_buffer(
          imageSize,
 
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -5022,6 +5026,339 @@ void texture::create_sampler()
 
    //}
 
+//   void record_image_readback(
+//VkCommandBuffer commandBuffer,
+//VkImage image,
+//VkBuffer readbackBuffer,
+//uint32_t width,
+//uint32_t height,
+//uint32_t mipLevel,
+//uint32_t arrayLayer,
+//VkImageLayout currentLayout,
+//VkPipelineStageFlags2 producerStage,
+//VkAccessFlags2 producerAccess,
+//VkPipelineStageFlags2 restoredStage,
+//VkAccessFlags2 restoredAccess)
+//   {
+
+
+   void texture::read_to_buffer(::gpu::command_buffer * pgpucommandbuffer, ::gpu::buffer * pgpubuffer)
+   {
+
+      ::cast < ::gpu_vulkan::command_buffer > pcommandbuffer = pgpucommandbuffer;
+      ::cast < ::gpu_vulkan::buffer > pbuffer = pgpubuffer;
+
+      auto scopedstate = 
+         _scoped_state(
+            pcommandbuffer, 
+            {
+               VK_ACCESS_TRANSFER_READ_BIT,
+               VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+               VK_PIPELINE_STAGE_TRANSFER_BIT
+            });
+
+
+      //VkImageSubresourceRange subresourceRange{
+      //   .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //   .baseMipLevel = mipLevel,
+      //   .levelCount = 1,
+      //   .baseArrayLayer = arrayLayer,
+      //   .layerCount = 1,
+      //};
+
+      //// Make previous rendering/writes visible to the copy and put
+      //// the image in a transfer-source layout.
+      //VkImageMemoryBarrier2 imageToTransfer{
+      //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+      //   .srcStageMask = producerStage,
+      //   .srcAccessMask = producerAccess,
+      //   .dstStageMask = VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+      //   .dstAccessMask = VK_ACCESS_2_TRANSFER_READ_BIT,
+      //   .oldLayout = currentLayout,
+      //   .newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+      //   .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //   .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //   .image = image,
+      //   .subresourceRange = subresourceRange,
+      //};
+
+      //VkDependencyInfo beforeCopy{
+      //   .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+      //   .imageMemoryBarrierCount = 1,
+      //   .pImageMemoryBarriers = &imageToTransfer,
+      //};
+
+      //vkCmdPipelineBarrier2(commandBuffer, &beforeCopy);
+
+      VkBufferImageCopy copyRegion{
+         .bufferOffset = 0,
+
+         // Zero means tightly packed according to imageExtent.
+         .bufferRowLength = 0,
+         .bufferImageHeight = 0,
+
+         .imageSubresource = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .mipLevel = (uint32_t)maximum(0, m_iCurrentMip),
+            .baseArrayLayer = (uint32_t)maximum(0, m_iCurrentLayer),
+            .layerCount = 1,
+         },
+
+         .imageOffset = {
+            .x = 0,
+            .y = 0,
+            .z = 0,
+         },
+
+         .imageExtent = {
+            .width = (uint32_t)m_textureattributes.m_rectangleTarget.width(),
+            .height = (uint32_t)m_textureattributes.m_rectangleTarget.height(),
+            .depth = 1,
+         },
+      };
+
+      vkCmdCopyImageToBuffer(
+         pcommandbuffer->m_vkcommandbuffer,
+         m_vkimage,
+         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+         pbuffer->m_vkbuffer,
+         1,
+         &copyRegion);
+
+      //// Restore the texture layout.
+      //VkImageMemoryBarrier2 restoreImage{
+      //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+      //   .srcStageMask = VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+      //   .srcAccessMask = VK_ACCESS_2_TRANSFER_READ_BIT,
+      //   .dstStageMask = restoredStage,
+      //   .dstAccessMask = restoredAccess,
+      //   .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+      //   .newLayout = currentLayout,
+      //   .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //   .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //   .image = image,
+      //   .subresourceRange = subresourceRange,
+      //};
+
+      //// Make the transfer write available to CPU host reads.
+      //VkBufferMemoryBarrier2 bufferToHost{
+      //   .sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2,
+      //   .srcStageMask = VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+      //   .srcAccessMask = VK_ACCESS_2_TRANSFER_WRITE_BIT,
+      //   .dstStageMask = VK_PIPELINE_STAGE_2_HOST_BIT,
+      //   .dstAccessMask = VK_ACCESS_2_HOST_READ_BIT,
+      //   .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //   .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      //   .buffer = readbackBuffer,
+      //   .offset = 0,
+      //   .size = VK_WHOLE_SIZE,
+      //};
+
+      //VkDependencyInfo afterCopy{
+      //   .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+      //   .bufferMemoryBarrierCount = 1,
+      //   .pBufferMemoryBarriers = &bufferToHost,
+      //   .imageMemoryBarrierCount = 1,
+      //   .pImageMemoryBarriers = &restoreImage,
+      //};
+
+      //vkCmdPipelineBarrier2(commandBuffer, &afterCopy);
+   //}
+
+   }
+
+
+   ::gpu::buffer * texture::get_read_back_buffer()
+   {
+
+      if (!m_pgpubufferReadBack)
+      {
+
+         constructø(m_pgpubufferReadBack);
+
+         m_pgpubufferReadBack->initialize_buffer(m_pgpucontext);
+
+         auto sizeThis = this->size();
+
+         ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+
+         const VkDeviceSize sizeReadback =
+            static_cast<VkDeviceSize>(sizeThis.width())
+            * static_cast<VkDeviceSize>(sizeThis.height())
+            * 4;
+
+         ::cast < ::gpu_vulkan::buffer > pbuffer = m_pgpubufferReadBack;
+
+         pbuffer->_create_buffer(
+            pcontext, 
+            sizeReadback,
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+            );
+
+      }
+
+      return m_pgpubufferReadBack;
+
+   }
+
+   
+   void texture::read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap)
+   {
+
+      ::cast < ::gpu_vulkan::command_buffer > pcommandbuffer = pgpucommandbuffer;
+
+      ::cast < ::gpu_vulkan::buffer > pbuffer = get_read_back_buffer();
+
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+
+      read_to_buffer(pgpucommandbuffer, pbuffer);
+
+      void * mapped = nullptr;
+
+      VkResult mapResult = vkMapMemory(
+         pcontext->logicalDevice(),
+         pbuffer->m_vkdevicememory,
+         0,
+         pbuffer->m_size,
+         0,
+         &mapped);
+
+      if (mapResult != VK_SUCCESS)
+      {
+         throw std::runtime_error("vkMapMemory failed");
+      }
+
+      VkMappedMemoryRange mappedRange{
+   .sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
+   .memory = pbuffer->m_vkdevicememory,
+   .offset = 0,
+   .size = VK_WHOLE_SIZE,
+      };
+
+      vkInvalidateMappedMemoryRanges(
+         pcontext->logicalDevice(),
+         1,
+         &mappedRange);
+
+      ///std::vector<uint8_t> pixels(
+   //static_cast<size_t>(pbuffer->m_size));
+
+      ppixmap->copy(ppixmap->size(), (const ::image32_t *) mapped, ppixmap->size().cx * 4);
+         //mapped,
+        // static_cast<size_t>(pbuffer->m_size));
+
+      vkUnmapMemory(pcontext->logicalDevice(), pbuffer->m_vkdevicememory);
+
+         //VkImageSubresourceRange subresourceRange{
+         //   .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+         //   .baseMipLevel = mipLevel,
+         //   .levelCount = 1,
+         //   .baseArrayLayer = arrayLayer,
+         //   .layerCount = 1,
+         //};
+
+         //// Make previous rendering/writes visible to the copy and put
+         //// the image in a transfer-source layout.
+         //VkImageMemoryBarrier2 imageToTransfer{
+         //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+         //   .srcStageMask = producerStage,
+         //   .srcAccessMask = producerAccess,
+         //   .dstStageMask = VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+         //   .dstAccessMask = VK_ACCESS_2_TRANSFER_READ_BIT,
+         //   .oldLayout = currentLayout,
+         //   .newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+         //   .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //   .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //   .image = image,
+         //   .subresourceRange = subresourceRange,
+         //};
+
+         //VkDependencyInfo beforeCopy{
+         //   .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+         //   .imageMemoryBarrierCount = 1,
+         //   .pImageMemoryBarriers = &imageToTransfer,
+         //};
+
+         //vkCmdPipelineBarrier2(commandBuffer, &beforeCopy);
+
+         //VkBufferImageCopy copyRegion{
+         //   .bufferOffset = 0,
+
+         //   // Zero means tightly packed according to imageExtent.
+         //   .bufferRowLength = 0,
+         //   .bufferImageHeight = 0,
+
+         //   .imageSubresource = {
+         //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+         //      .mipLevel = m_iCurrentMip,
+         //      .baseArrayLayer = m_iCurrentLayer,
+         //      .layerCount = 1,
+         //   },
+
+         //   .imageOffset = {
+         //      .x = 0,
+         //      .y = 0,
+         //      .z = 0,
+         //   },
+
+         //   .imageExtent = {
+         //      .width = m_textureattributes.m_rectangleTarget.width(),
+         //      .height = m_textureattributes.m_rectangleTarget.height(),
+         //      .depth = 1,
+         //   },
+         //};
+
+         //vkCmdCopyImageToBuffer(
+         //   pcommandbuffer->m_vkcommandbuffer,
+         //   m_vkimage,
+         //   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+         //   readbackBuffer,
+         //   1,
+         //   &copyRegion);
+
+         //// Restore the texture layout.
+         //VkImageMemoryBarrier2 restoreImage{
+         //   .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+         //   .srcStageMask = VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+         //   .srcAccessMask = VK_ACCESS_2_TRANSFER_READ_BIT,
+         //   .dstStageMask = restoredStage,
+         //   .dstAccessMask = restoredAccess,
+         //   .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+         //   .newLayout = currentLayout,
+         //   .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //   .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //   .image = image,
+         //   .subresourceRange = subresourceRange,
+         //};
+
+         //// Make the transfer write available to CPU host reads.
+         //VkBufferMemoryBarrier2 bufferToHost{
+         //   .sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2,
+         //   .srcStageMask = VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+         //   .srcAccessMask = VK_ACCESS_2_TRANSFER_WRITE_BIT,
+         //   .dstStageMask = VK_PIPELINE_STAGE_2_HOST_BIT,
+         //   .dstAccessMask = VK_ACCESS_2_HOST_READ_BIT,
+         //   .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //   .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+         //   .buffer = readbackBuffer,
+         //   .offset = 0,
+         //   .size = VK_WHOLE_SIZE,
+         //};
+
+         //VkDependencyInfo afterCopy{
+         //   .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+         //   .bufferMemoryBarrierCount = 1,
+         //   .pBufferMemoryBarriers = &bufferToHost,
+         //   .imageMemoryBarrierCount = 1,
+         //   .pImageMemoryBarriers = &restoreImage,
+         //};
+
+         //vkCmdPipelineBarrier2(commandBuffer, &afterCopy);
+      //}
+
+   }
+
    
    void texture::generate_mipmap(::gpu::command_buffer *pgpucommandbuffer)
    {
@@ -5050,7 +5387,6 @@ void texture::create_sampler()
       vkCmdPipelineBarrier(cmd, m_state2a.mip_layer_state(0, 0).m_vkpipelinestageflags,
          VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
                            nullptr, 1, &barrierStart);
-
 
       for (uint32_t i = 1; i < m_textureattributes.m_iMipCount; i++)
       {

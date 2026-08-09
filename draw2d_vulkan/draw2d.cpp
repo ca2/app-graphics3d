@@ -84,12 +84,12 @@ namespace draw2d_vulkan
    }
 
 
-   bool draw2d::graphics_context_supports_single_buffer_mode()
-   {
+   //bool draw2d::graphics_context_supports_single_buffer_mode()
+   //{
 
-      return true;
+   //   return true;
 
-   }
+   //}
 
 
    bool draw2d::graphics_context_does_full_redraw()

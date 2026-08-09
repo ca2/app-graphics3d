@@ -108,6 +108,26 @@ namespace app_graphics3d_continuum
 
       }
 
+      ////if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+      ////{
+
+      ////   auto prendererBackBuffer = draw2d_context()->m_pgpurenderer;
+
+      ////   return prendererBackBuffer->render_target();
+
+      ////}
+      ////else
+      ////{
+
+      //   auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
+
+
+
+      //   auto prendererEngine = m_pengine->m_pgpucontext->m_pgpurenderer;
+
+      //   pgpuwindowattachment->set_render_target(prendererEngine->render_target());
+
+      //}
 
       //application()->show_about_box();
     

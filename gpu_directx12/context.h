@@ -268,9 +268,9 @@ namespace gpu_directx12
       //virtual void _create_window_context(::acme::windowing::window *pwindow);
 
       //virtual void _create_window_buffer();
-      void _create_cpu_buffer21(const ::i32_size & size) override;
-      void resize_cpu_buffer21(const ::i32_size & size) override;
-      void destroy_cpu_buffer21() override;
+      void _create_cpu_buffer(const ::i32_size & size) override;
+      void resize_cpu_buffer(const ::i32_size & size) override;
+      void destroy_cpu_buffer() override;
 
       //void make_current() override;
 
@@ -320,7 +320,7 @@ namespace gpu_directx12
       //void submitWork(VkCommandBuffer cmdBuffer, VkQueue queue);
 
       void copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource,
-                ::pointer<::gpu::fence> *pgpufence) override;
+                ::pointer<::gpu::fence> * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
 
       //public:
       //void _createInstance();

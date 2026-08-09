@@ -4,7 +4,7 @@
 #include "acme/_operating_system.h"
 
 
-#include "aura/graphics/image/image.h"
+#include "bred/gpu/image.h"
 
 
 struct OffscreenContext;
@@ -15,7 +15,7 @@ namespace draw2d_vkvg
 
 
    class CLASS_DECL_DRAW2D_VKVG image :
-      virtual public ::image::image
+      virtual public ::gpu::image
    {
    public:
 

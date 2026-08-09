@@ -10,7 +10,7 @@
 #include "path.h"
 #include "draw2d.h"
 //#include "aura/graphics/draw2d/window_attachment.h"
-#include "gpu_opengl/draw2d_window_attachment.h"
+#include "gpu_opengl/window_attachment.h"
 
 
 __FACTORY_EXPORT void draw2d_nanovg_factory(::factory::factory * pfactory)
@@ -27,7 +27,7 @@ __FACTORY_EXPORT void draw2d_nanovg_factory(::factory::factory * pfactory)
 
 
    //pfactory->add_factory_item < ::draw2d::window_attachment >();
-   pfactory->add_factory_item < ::gpu_opengl::draw2d_window_attachment, ::draw2d::window_attachment >();
+   pfactory->add_factory_item < ::gpu_opengl::window_attachment, ::apex::gpu::window_attachment > ();
 
 
    pfactory->add_factory_item < ::draw2d_nanovg::draw2d, ::draw2d::draw2d >();

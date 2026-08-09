@@ -288,7 +288,7 @@ namespace graphics3d_directx12
 
       //      //pgpucontext->endSingleTimeCommands(copyCmd);
 
-      //      //prendererUpper->_blend_image(vkimage, pgpucontext->m_rectangle, true);
+      //      //prendererUpper->_blend_image(vkimage, pgpucontext->get_placement(), true);
 
       //      //auto rectangleUpper = pcontextUpper->rectangle();
 

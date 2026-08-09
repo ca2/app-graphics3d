@@ -5,7 +5,7 @@
 #include "buffer.h"
 #include "command_buffer.h"
 #include "descriptors.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "frame.h"
 #include "initializers.h"
 #include "input_layout.h"
@@ -20,7 +20,7 @@
 #include "render_target.h"
 #include "swap_chain.h"
 #include "texture.h"
-#include "bred/gpu/aaa_cpu_buffer.h"
+#include "bred/gpu/buffer.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/semaphore.h"
 #include "app-graphics3d/gpu_vulkan/shader.h"
@@ -129,22 +129,22 @@ namespace gpu_vulkan
 
       m_pgpucontext = pgpucontext;
 
-      if (m_pgpucontext->m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
-      {
+      //if (m_pgpucontext->m_eoutput == ::gpu::e_output_aaa_cpu_buffer)
+      //{
 
-         //m_pimpact = pgpucontext->m_pimpact;
+      //   //m_pimpact = pgpucontext->m_pimpact;
 
-         throw todo;
+      //   throw todo;
 
-         pgpucontext->create_cpu_buffer21(pgpucontext->rectangle().size());
+      //   pgpucontext->create_cpu_buffer21(pgpucontext->size());
 
-         construct_newø(m_pcpubuffersampler);
+      //   construct_newø(m_pcpubuffersampler);
 
-         m_pcpubuffersampler->initialize_cpu_buffer_sampler(pgpucontext);
+      //   m_pcpubuffersampler->initialize_cpu_buffer_sampler(pgpucontext);
 
-         m_pcpubuffersampler->m_prenderer = this;
+      //   m_pcpubuffersampler->m_prenderer = this;
 
-      }
+      //}
 
       //m_poffscreensampler->set_storing_flag
 
@@ -557,9 +557,9 @@ namespace gpu_vulkan
       else
       {
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
 
-         iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
+         iFrameCount = pgpuwindowattachment->get_frame_count();
 
       }
 
@@ -638,7 +638,7 @@ namespace gpu_vulkan
    void renderer::on_begin_draw()
    {
 
-      if (m_pgpucontext->m_rectangle.is_empty())
+      if (m_pgpucontext->size().is_empty())
       {
 
          throw ::exception(error_wrong_state, "please call set size before at least once with no empty preferrably good initial size");
@@ -647,9 +647,9 @@ namespace gpu_vulkan
 
       }
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
 
-      assert(pgpudraw2dwindowattachment->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
+      assert(pgpuwindowattachment->current_frame()->m_egpuframestate == ::gpu::e_gpu_frame_state_began_frame &&
              "Can't call beginRender while not in began_frame gpu_frame_state");
 
       //if (m_bOffScreen)
@@ -780,10 +780,10 @@ namespace gpu_vulkan
          * static_cast<VkDeviceSize>(size.height())
          * 4;
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
 
       auto & pbuffer =
-         m_buffera.element_at_grow(pgpudraw2dwindowattachment->get_frame_index3());
+         m_buffera.element_at_grow(pgpuwindowattachment->get_frame_index3());
 
       if (pbuffer && pbuffer->m_size == sizeReadback)
       {
@@ -801,7 +801,7 @@ namespace gpu_vulkan
 
       }
 
-      pbuffer = m_pcontext->create_buffer(
+      pbuffer = m_pcontext->_create_buffer(
          sizeReadback,
          VK_BUFFER_USAGE_TRANSFER_DST_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -834,9 +834,9 @@ namespace gpu_vulkan
 
       auto pgpurendertarget = m_prenderer->render_target();
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
 
-      auto iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
+      auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
       auto & pbufferRef = m_buffera.element_at_grow(iFrameIndex);
 
@@ -1265,10 +1265,10 @@ namespace gpu_vulkan
 
       auto pgpurendertarget = m_prenderer->render_target();
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
 
       auto & pbufferRef =
-         m_buffera.element_at_grow(pgpudraw2dwindowattachment->get_frame_index3());
+         m_buffera.element_at_grow(pgpuwindowattachment->get_frame_index3());
 
       if (!pbufferRef)
       {
@@ -1313,7 +1313,7 @@ namespace gpu_vulkan
 
       auto pgpucontext = m_pcontext;
 
-      auto pcpubuffer = pgpucontext->m_pcpubuffer2;
+      auto pcpubuffer = pgpucontext->m_pbuffer;
 
       pcpubuffer->set_pixels(
          pData,
@@ -1440,7 +1440,7 @@ namespace gpu_vulkan
 
          ::cast < texture > ptextureFrameTarget = prendertarget->current_texture(nullptr);
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(prendertarget);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(prendertarget);
 
          auto pgpulayer = ::gpu::current_layer();
 
@@ -1452,7 +1452,7 @@ namespace gpu_vulkan
                "selected_texture={} frame_target_texture={} selected_extent={}x{} "
                "frame_target_extent={}x{}",
                (unsigned long long)(m_pcpubuffersampler->m_uSampleSerial + 1),
-               pgpudraw2dwindowattachment->get_frame_index3(),
+               pgpuwindowattachment->get_frame_index3(),
                (::uptr)pgpulayer,
                pgpulayer ? pgpulayer->m_iLayerIndex : -1,
                (::uptr)ptexture.m_p,
@@ -3059,7 +3059,7 @@ namespace gpu_vulkan
 
       ::cast < texture > ptexture = prendertargetSrc->current_texture(::gpu::current_layer());
 
-      auto rectanglePlacement = prendererSrc->m_pgpucontext->m_rectangle;
+      auto rectanglePlacement = prendererSrc->m_pgpucontext->get_placement();
 
       //// Image Blend descriptors
       //if (!m_psetdescriptorlayoutImageBlend)
@@ -3476,7 +3476,7 @@ namespace gpu_vulkan
 
       auto pgpurendertarget = this->render_target();
 
-      ::cast<::gpu_vulkan::texture> ptexture = pgpulayer->texture();
+      ::cast<::gpu_vulkan::texture> ptexture = pgpulayer->texture(true);
 
       ::cast<command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
@@ -3534,9 +3534,9 @@ namespace gpu_vulkan
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
 
-         ::cast < context > pgpucontextWindow = pgpudraw2dwindowattachment->window_context();
+         ::cast < context > pgpucontextWindow = pgpuwindowattachment->window_context();
 
          ::cast < ::gpu_vulkan::swap_chain > pswapchain = pgpucontextWindow->get_swap_chain();
 
@@ -3780,8 +3780,8 @@ namespace gpu_vulkan
 
 
          renderPassBeginInfo.renderArea.offset = {0, 0};
-         renderPassBeginInfo.renderArea.extent = {(uint32_t)pgpucontext->m_rectangle.width(),
-                                                  (uint32_t)pgpucontext->m_rectangle.height()};
+         renderPassBeginInfo.renderArea.extent = {(uint32_t)pgpucontext->width(),
+                                                  (uint32_t)pgpucontext->height()};
 
          auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
@@ -3827,14 +3827,14 @@ namespace gpu_vulkan
          VkViewport viewport{};
          viewport.x = 0.0f;
          viewport.y = 0.0f;
-         viewport.width = static_cast<float>(pcontext->m_rectangle.width());
-         viewport.height = static_cast<float>(pcontext->m_rectangle.height());
+         viewport.width = static_cast<float>(pcontext->width());
+         viewport.height = static_cast<float>(pcontext->height());
          viewport.minDepth = 0.0f;
          viewport.maxDepth = 1.0f;
          VkRect2D scissor{ {0, 0},
             {
-               (uint32_t) pcontext->m_rectangle.width(),
-            (uint32_t) pcontext->m_rectangle.height()
+               (uint32_t) pcontext->width(),
+            (uint32_t) pcontext->height()
          
          } };
          vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
@@ -4046,9 +4046,9 @@ namespace gpu_vulkan
 
       ::cast<command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
 
-      assert(pgpudraw2dwindowattachment->current_frame()->m_egpuframestate ==
+      assert(pgpuwindowattachment->current_frame()->m_egpuframestate ==
                 ::gpu::e_gpu_frame_state_began_frame &&
              "Can't call beginRender while not in began_frame gpu_frame_state");
       assert(pgpulayer->m_egpulayerstate == ::gpu::e_gpu_layer_state_began_render &&
@@ -4068,11 +4068,11 @@ namespace gpu_vulkan
 
          auto pgpurendertarget = this->render_target();
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
 
-         int iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
+         int iFrameCount = pgpuwindowattachment->get_frame_count();
 
-         int iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
+         int iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
          ::pointer<command_buffer> pcommandbuffer;
 
@@ -4950,7 +4950,7 @@ namespace gpu_vulkan
 
       }
 
-      m_pgpucontext->set_placement(prenderer->m_pgpucontext->rectangle());
+      m_pgpucontext->set_placement(prenderer->m_pgpucontext->get_placement());
 
       ::cast < ::gpu_vulkan::render_target > prendertarget = prenderer->render_target();
 
@@ -5095,7 +5095,7 @@ namespace gpu_vulkan
 
          //m_pscene->on_render(m_pgpucontext);
 
-         _blend_image(ptexture, m_pgpucontext->rectangle(), false);
+         _blend_image(ptexture, m_pgpucontext->get_placement(), false);
 
          //aaaxyz on_end_render(pframe);
 
@@ -5247,9 +5247,9 @@ namespace gpu_vulkan
       ::array<VkPipelineStageFlags> waitStages;
       waitStages.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
       ::cast<::gpu_vulkan::texture> ptextureSource = prendertargetSource->m_ptexturea->element_at(
-         pgpudraw2dwindowattachment->get_frame_index3());
+         pgpuwindowattachment->get_frame_index3());
       auto psynchronizationSource = ptextureSource->synchronization();
       if (psynchronizationSource
          && psynchronizationSource->m_pgpusemaphoreRenderFinished)
@@ -5272,7 +5272,7 @@ namespace gpu_vulkan
 
       //m_pgpucontext->endSingleTimeCommands(pcommandbuffer, 1, &submitInfo);
 
-      auto rectangle = prendererSource->m_pgpucontext->rectangle();
+      auto rectangle = prendererSource->m_pgpucontext->get_placement();
 
       _blend_image(ptexture, rectangle, true);
 
@@ -5282,7 +5282,7 @@ namespace gpu_vulkan
    void renderer::soft_restore_context()
    {
 
-      auto rectangle = m_pgpucontext->rectangle();
+      auto rectangle = m_pgpucontext->get_placement();
 
       VkViewport vp = {
          (float)rectangle.left,

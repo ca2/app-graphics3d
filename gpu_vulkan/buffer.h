@@ -2,7 +2,8 @@
 #pragma once
 
 
-#include "context.h"
+#include "bred/gpu/buffer.h"
+//#include "context.h"
 
 
 namespace gpu_vulkan
@@ -10,12 +11,12 @@ namespace gpu_vulkan
 
 
    class CLASS_DECL_GPU_VULKAN buffer :
-      virtual public ::particle
+      virtual public ::gpu::buffer
    {
    public:
 
 
-      context *         m_pgpucontext;
+      //context *         m_pgpucontext;
       VkBuffer          m_vkbuffer;
       VkDeviceMemory    m_vkdevicememory;
       VkDeviceSize      m_size;
@@ -36,6 +37,12 @@ namespace gpu_vulkan
       buffer();
       ~buffer();
 
+
+      virtual void _create_buffer(::gpu_vulkan::context *pcontext, 
+         VkDeviceSize size, VkBufferUsageFlags usage,
+                                      VkMemoryPropertyFlags properties);
+
+
       virtual bool is_initialized() const;
 
       virtual void* map();
@@ -54,11 +61,14 @@ namespace gpu_vulkan
       virtual void assign_cube_map(const ::pointer_array < ::pixmap >& pixmapa);
       virtual void _assign_cube_map(const ::pointer_array < ::pixmap >& pixmapa);
 
+      void gpu_read() override;
+      void gpu_write() override;
+
 
    };
 
 
-}  // namespace gpu_directx12
+}  // namespace gpu_vulkan
 
 
 

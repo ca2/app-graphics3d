@@ -5,6 +5,8 @@
 #include "bred/gpu/graphics.h"
 #include "bred/gpu/renderer.h"
 
+#include <mutex>
+
 
 typedef void FN_VKVG_TEXT(VkvgContext, const char*);
 typedef FN_VKVG_TEXT* PFN_VKVG_TEXT;
@@ -33,7 +35,7 @@ namespace draw2d_vkvg
    public:
 
       bool                             m_bBeginDrawEndDrawMode;
-      VkvgDevice                       m_vkvgdevice;
+      VkvgDevice                       m_vkvgdevice2;
       VkvgSurface                      m_vkvgsurface;
       VkvgContext                      m_vkvgcontext;
       ::pointer < ::gpu::texture >     m_ptextureCurrent;
@@ -55,6 +57,7 @@ namespace draw2d_vkvg
       ::pointer < ::windowing::window >   m_pwindow;
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       ::pointer<::gpu::context>             m_pgpucontextOutput;
+      std::unique_lock<std::recursive_mutex> m_queuehostcalllock;
 
    
 
@@ -77,6 +80,8 @@ namespace draw2d_vkvg
       //}
       //oswindow get_window_handle() const;
 //      ::windowing::window * GetWindow() const;
+      VkvgDevice get_vkvg_device();
+
 
 
       ::gpu::texture* current_target_texture(::gpu::layer * pgpulayer) override;
@@ -143,7 +148,7 @@ namespace draw2d_vkvg
       void create_window_graphics(::windowing::window * pwindow) override;
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
       //void create_compatible_graphics(::draw2d::graphics * pgraphics) override;
-
+      void set_target_image(::image::image * pimage) override;
       //virtual bool vulkan_create_offscreen_buffer(const ::i32_rectangle & rectanglePlacement);
       //virtual bool vulkan_delete_offscreen_buffer();
 
@@ -460,8 +465,8 @@ namespace draw2d_vkvg
 
       //virtual f64_size get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex) override;
       using ::gpu::graphics::get_text_extent;
-      ::f64_size get_text_extent(const ::scoped_string& scopedstr) override;
-      ::f64_size get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
+      ::f64_size _get_text_extent(const ::scoped_string& scopedstr) override;
+      ::f64_size _get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
 //      virtual f64_size get_text_extent(const ::scoped_string & str) override;
       //virtual bool get_text_extent(f64_size & size, const ::scoped_string & lpszString, character_count nCount, character_count iIndex);
       //virtual bool get_text_extent(f64_size & size, const ::scoped_string & lpszString, character_count nCount);

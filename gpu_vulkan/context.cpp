@@ -6,13 +6,14 @@
 #include "command_buffer.h"
 #include "debug.h"
 #include "device.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "gltf/model.h"
 #include "memory_buffer.h"
 #include "physical_device.h"
 #include "program.h"
 #include "render_target.h"
 #include "renderer.h"
+#include "semaphore.h"
 #include "shader.h"
 #include "swap_chain.h"
 #include "texture.h"
@@ -956,8 +957,16 @@ namespace gpu_vulkan
      //                              ::acme::windowing::window *pwindow, const ::i32_size &size)
    {
 
+      ::gpu::context::_create_gpu_context(pgpudevice, eoutput, escene, pacmewindowingwindow, size);
+
       // m_itaskGpu = ::current_itask();
       m_pgpudevice = pgpudevice;
+
+      m_eoutput = eoutput;
+
+      m_escene = escene;
+
+      m_pacmeuserinteractionAffinity = pacmewindowingwindow->m_pacmeuserinteraction;
 
       ::cast<::gpu_vulkan::device> pdevice = pgpudevice;
 
@@ -1725,10 +1734,10 @@ namespace gpu_vulkan
    //}
 
 
-   void context::_create_cpu_buffer21(const ::i32_size &size)
+   void context::_create_cpu_buffer(const ::i32_size &size)
    {
       
-      throw todo;
+      //throw todo;
 
       //_create_offscreen_window2(size);
 
@@ -1758,15 +1767,16 @@ namespace gpu_vulkan
    //void context::_defer_create_window_context(::acme::windowing::window *pwindow) { _create_window_context(pwindow); }
 
 
-   void context::resize_cpu_buffer21(const ::i32_size &sizeParam)
+   void context::resize_cpu_buffer(const ::i32_size &sizeParam)
    {
 
-      throw todo;
+      //throw todo;
 
       if (m_papplication->m_gpu.m_bUseSwapChainWindow)
       {
 
          return;
+
       }
 
       auto size(sizeParam);
@@ -1776,7 +1786,7 @@ namespace gpu_vulkan
          {
             // if (!m_pcpubuffer)
 
-            create_cpu_buffer21(size);
+            create_cpu_buffer(size);
 
 
             /// m_pcpubuffer->m_pixmap.create(m_pcpubuffer->m_memory, size);
@@ -1844,7 +1854,7 @@ namespace gpu_vulkan
    //}
 
 
-   void context::destroy_cpu_buffer21()
+   void context::destroy_cpu_buffer()
    {
 
       // ASSERT(is_current_task());
@@ -2511,99 +2521,104 @@ namespace gpu_vulkan
    //}
 
 
-   ::pointer<buffer> context::create_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
+   ::pointer<buffer> context::_create_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
                                             VkMemoryPropertyFlags properties)
    {
 
-
-      if (size <= 0)
-      {
-
-         throw ::exception(error_failed, "size must be greater than zero!");
-
-      }
-
-      VkBufferCreateInfo bufferInfo{};
-      bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-      bufferInfo.size = size;
-      bufferInfo.usage = usage;
-      bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
       auto pbuffer = create_newø<buffer>();
 
-      pbuffer->m_pgpucontext = this;
-
-      pbuffer->m_size = size;
-
-      if (vkCreateBuffer(this->logicalDevice(), &bufferInfo, nullptr, &pbuffer->m_vkbuffer) != VK_SUCCESS)
-      {
-
-         throw ::exception(error_failed, "failed to create vertex buffer!");
-      }
-
-            if (((::uptr)pbuffer->m_vkbuffer & 0xffff) == 0x019b)
-      {
-
-         information("~buffer (m_vkbuffer & 0xffff) == 0x019b");
-      }
-
-
-
-      VkMemoryRequirements memRequirements;
-      vkGetBufferMemoryRequirements(this->logicalDevice(), pbuffer->m_vkbuffer, &memRequirements);
-
-      VkMemoryAllocateInfo allocInfo{};
-      allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-      allocInfo.allocationSize = memRequirements.size;
-      allocInfo.memoryTypeIndex =
-         m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
-
-      const auto & memoryProperties =
-         m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevicememoryproperties;
-
-      pbuffer->m_vkdevicesizeAllocation = memRequirements.size;
-      pbuffer->m_vkdevicesizeAlignment = memRequirements.alignment;
-      pbuffer->m_uMemoryTypeBits = memRequirements.memoryTypeBits;
-      pbuffer->m_uMemoryTypeIndex = allocInfo.memoryTypeIndex;
-      pbuffer->m_vkmemorypropertyflagsRequested = properties;
-      pbuffer->m_vkmemorypropertyflagsSelected =
-         memoryProperties.memoryTypes[allocInfo.memoryTypeIndex].propertyFlags;
-
-      if (vkAllocateMemory(this->logicalDevice(), &allocInfo, nullptr, &pbuffer->m_vkdevicememory) != VK_SUCCESS)
-      {
-
-         throw ::exception(error_failed, "failed to allocate vertex buffer memory!");
-      }
-
-      auto vkbuffer = pbuffer->m_vkbuffer;
-
-      auto vkdevicememory = pbuffer->m_vkdevicememory;
-
-      auto vkresultBind = vkBindBufferMemory(this->logicalDevice(), vkbuffer, vkdevicememory, 0);
-
-      if (vkresultBind != VK_SUCCESS)
-      {
-
-         information(
-            "gpu_vulkan buffer memory bind failed: result={} buffer={} memory={} requested_bytes={} "
-            "allocation_bytes={} alignment={} memory_type_bits={} memory_type_index={} "
-            "memory_flags_requested={} memory_flags_selected={}",
-            (int)vkresultBind,
-            (::uptr)vkbuffer,
-            (::uptr)vkdevicememory,
-            (::u64)size,
-            (::u64)pbuffer->m_vkdevicesizeAllocation,
-            (::u64)pbuffer->m_vkdevicesizeAlignment,
-            (::u64)pbuffer->m_uMemoryTypeBits,
-            pbuffer->m_uMemoryTypeIndex,
-            (::u64)pbuffer->m_vkmemorypropertyflagsRequested,
-            (::u64)pbuffer->m_vkmemorypropertyflagsSelected);
-
-         throw ::exception(error_failed, "failed to bind buffer memory!");
-
-      }
+      pbuffer->_create_buffer(this, size, usage, properties);
 
       return pbuffer;
+
+      //if (size <= 0)
+      //{
+
+      //   throw ::exception(error_failed, "size must be greater than zero!");
+
+      //}
+
+      //VkBufferCreateInfo bufferInfo{};
+      //bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+      //bufferInfo.size = size;
+      //bufferInfo.usage = usage;
+      //bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+      //auto pbuffer = create_newø<buffer>();
+
+      //pbuffer->m_pgpucontext = this;
+
+      //pbuffer->m_size = size;
+
+      //if (vkCreateBuffer(this->logicalDevice(), &bufferInfo, nullptr, &pbuffer->m_vkbuffer) != VK_SUCCESS)
+      //{
+
+      //   throw ::exception(error_failed, "failed to create vertex buffer!");
+      //}
+
+      //      if (((::uptr)pbuffer->m_vkbuffer & 0xffff) == 0x019b)
+      //{
+
+      //   information("~buffer (m_vkbuffer & 0xffff) == 0x019b");
+      //}
+
+
+
+      //VkMemoryRequirements memRequirements;
+      //vkGetBufferMemoryRequirements(this->logicalDevice(), pbuffer->m_vkbuffer, &memRequirements);
+
+      //VkMemoryAllocateInfo allocInfo{};
+      //allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+      //allocInfo.allocationSize = memRequirements.size;
+      //allocInfo.memoryTypeIndex =
+      //   m_pgpudevice->m_pphysicaldevice->findMemoryType(memRequirements.memoryTypeBits, properties);
+
+      //const auto & memoryProperties =
+      //   m_pgpudevice->m_pphysicaldevice->m_vkphysicaldevicememoryproperties;
+
+      //pbuffer->m_vkdevicesizeAllocation = memRequirements.size;
+      //pbuffer->m_vkdevicesizeAlignment = memRequirements.alignment;
+      //pbuffer->m_uMemoryTypeBits = memRequirements.memoryTypeBits;
+      //pbuffer->m_uMemoryTypeIndex = allocInfo.memoryTypeIndex;
+      //pbuffer->m_vkmemorypropertyflagsRequested = properties;
+      //pbuffer->m_vkmemorypropertyflagsSelected =
+      //   memoryProperties.memoryTypes[allocInfo.memoryTypeIndex].propertyFlags;
+
+      //if (vkAllocateMemory(this->logicalDevice(), &allocInfo, nullptr, &pbuffer->m_vkdevicememory) != VK_SUCCESS)
+      //{
+
+      //   throw ::exception(error_failed, "failed to allocate vertex buffer memory!");
+      //}
+
+      //auto vkbuffer = pbuffer->m_vkbuffer;
+
+      //auto vkdevicememory = pbuffer->m_vkdevicememory;
+
+      //auto vkresultBind = vkBindBufferMemory(this->logicalDevice(), vkbuffer, vkdevicememory, 0);
+
+      //if (vkresultBind != VK_SUCCESS)
+      //{
+
+      //   information(
+      //      "gpu_vulkan buffer memory bind failed: result={} buffer={} memory={} requested_bytes={} "
+      //      "allocation_bytes={} alignment={} memory_type_bits={} memory_type_index={} "
+      //      "memory_flags_requested={} memory_flags_selected={}",
+      //      (int)vkresultBind,
+      //      (::uptr)vkbuffer,
+      //      (::uptr)vkdevicememory,
+      //      (::u64)size,
+      //      (::u64)pbuffer->m_vkdevicesizeAllocation,
+      //      (::u64)pbuffer->m_vkdevicesizeAlignment,
+      //      (::u64)pbuffer->m_uMemoryTypeBits,
+      //      pbuffer->m_uMemoryTypeIndex,
+      //      (::u64)pbuffer->m_vkmemorypropertyflagsRequested,
+      //      (::u64)pbuffer->m_vkmemorypropertyflagsSelected);
+
+      //   throw ::exception(error_failed, "failed to bind buffer memory!");
+
+      //}
+
+      //return pbuffer;
    }
 
 
@@ -2966,6 +2981,12 @@ namespace gpu_vulkan
          ::information() << "image 0xe300000000e3";
 
       }
+      else if ((::iptr)image == 0x450000000045)
+      {
+
+         ::information() << "image 0x450000000045";
+
+      }
 
       VkMemoryRequirements memRequirements;
       vkGetImageMemoryRequirements(this->logicalDevice(), image, &memRequirements);
@@ -3261,6 +3282,8 @@ namespace gpu_vulkan
 
       ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
 
+      informationf("merge_layers target vkimage=%p", ptexture->m_vkimage);
+
       // ::cast<swap_chain> pswapchain = m_pgpuswapchain;
       //
       // //auto psynchronization = ptexture->synchronization();
@@ -3342,16 +3365,17 @@ namespace gpu_vulkan
       ptextureDst->_set_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                                VK_PIPELINE_STAGE_TRANSFER_BIT});
 
-      pcommandbuffer->set_viewport(m_rectangle.size());
+      pcommandbuffer->set_viewport(this->size());
 
-      pcommandbuffer->set_scissor(m_rectangle.size());
+      pcommandbuffer->set_scissor(this->size());
 
       ::pointer_array<::gpu::texture> textureaSrc;
 
       {
 
-         // 2. Clear
-         VkClearColorValue clearColor = {.float32 = {0.5f, 0.5f, 0.0f, 0.5f}};
+         // Debug clear used while diagnosing missing fills:
+         // VkClearColorValue clearColor = {.float32 = {0.5f, 0.5f, 0.0f, 0.5f}};
+         VkClearColorValue clearColor = {.float32 = {0.0f, 0.0f, 0.0f, 0.0f}};
          VkImageSubresourceRange range = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -3367,6 +3391,15 @@ namespace gpu_vulkan
 
       auto gpulayera = *pgpulayera;
 
+      //::pointer_array<::gpu::texture> textureaLayerSnapshot;
+
+      //for (auto pgpulayer : gpulayera)
+      //{
+
+      //   textureaLayerSnapshot.add(pgpulayer->composition_texture());
+
+      //}
+
       {
 
          ////float clearColor[4] = { 0.95f * 0.5f, 0.95f * 0.5f, 0.25f * 0.5f, 0.5f }; // Clear to transparent
@@ -3379,7 +3412,7 @@ namespace gpu_vulkan
                                                                         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
              });
 
-         int iH = ptextureDst->m_pgpucontext->m_rectangle.height();
+         int iH = ptextureDst->m_pgpucontext->height();
 
          // if (!ptextureDst->m_handleRenderTargetView.ptr)
          //{
@@ -3414,105 +3447,130 @@ namespace gpu_vulkan
 
          information("merge_layers : going to set source textures state to shader read only optimal");
 
-         for (auto pgpulayer: gpulayera)
-         {
+      //   for (auto & ptextureLayerSnapshot : textureaLayerSnapshot)
+      //   {
 
-            //// if (iLayer == 2)
-            //{
-            //   ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
-            //   ptextureSrc->_set_state(
-            //      pcommandbuffer,  {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT});
+      //      //// if (iLayer == 2)
+      //      //{
+      //      //   ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
+      //      //   ptextureSrc->_set_state(
+      //      //      pcommandbuffer,  {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT});
 
-            //}
-            //{
-            //   ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
-            //   // 2. Clear
-            //   VkClearColorValue clearColor = {.float32 = {0.1f, 0.5f, 0.25f, 0.8f}};
-            //   VkImageSubresourceRange range = {
-            //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            //      .baseMipLevel = 0,
-            //      .levelCount = 1,
-            //      .baseArrayLayer = 0,
-            //      .layerCount = 1,
-            //   };
+      //      //}
+      //      //{
+      //      //   ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
+      //      //   // 2. Clear
+      //      //   VkClearColorValue clearColor = {.float32 = {0.1f, 0.5f, 0.25f, 0.8f}};
+      //      //   VkImageSubresourceRange range = {
+      //      //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      //      //      .baseMipLevel = 0,
+      //      //      .levelCount = 1,
+      //      //      .baseArrayLayer = 0,
+      //      //      .layerCount = 1,
+      //      //   };
 
-            //   vkCmdClearColorImage(vkcommandbuffer, ptextureSrc->m_vkimage,
-            //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            //                        &clearColor, 1, &range);
-            //}
+      //      //   vkCmdClearColorImage(vkcommandbuffer, ptextureSrc->m_vkimage,
+      //      //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      //      //                        &clearColor, 1, &range);
+      //      //}
 
-            {
+      //      {
 
-               ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
+      //         ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureLayerSnapshot;
 
-               ptextureSrc->_set_state(
-               pcommandbuffer,
-          {
-             0,
-             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-                  }
-               );
+      //         if (!ptextureSrc)
+      //         {
 
-            }
+      //            continue;
 
-         }
+      //         }
 
-         if (1)
-         {
+      //         ptextureSrc->_set_state(
+      //         pcommandbuffer,
+      //    {
+      //       0,
+      //       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      //       VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+      //            }
+      //         );
 
-            int iLayer = 0;
+      //      }
 
-            pcommandbuffer->begin_render(m_pshaderBlend3, ptextureDst);
+      //   }
 
-            for (auto pgpulayer: gpulayera)
-            {
+      //   if (1)
+      //   {
 
-               // if (iLayer == 2)
-               {
+      //      int iLayer = 0;
 
-                  ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
+      //      pcommandbuffer->begin_render(m_pshaderBlend3, ptextureDst);
 
-                  textureaSrc.add(ptextureSrc.m_p);
+      //      for (auto & ptextureLayerSnapshot : textureaLayerSnapshot)
+      //      {
 
-                  pcommandbuffer->set_source(ptextureSrc);
+      //         // if (iLayer == 2)
+      //         {
 
-                  auto r = ptextureSrc->rectangle();
+      //            ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureLayerSnapshot;
 
-                  pcommandbuffer->set_viewport(r);
+      //            if (!ptextureSrc)
+      //            {
 
-                  pcommandbuffer->set_scissor(r);
+      //               iLayer++;
 
-                  pcommandbuffer->draw_vertexes(3);
+      //               continue;
 
-               }
+      //            }
 
-               iLayer++;
+      //            informationf("merge_layers source%d vkimage=%p", iLayer, ptextureSrc->m_vkimage);
 
-            }
+      //            textureaSrc.add(ptextureSrc.m_p);
 
-            pcommandbuffer->end_render();
+      //            pcommandbuffer->set_source(ptextureSrc);
 
-         }
+      //            auto r = ptextureSrc->rectangle();
 
-      }
+      //            pcommandbuffer->set_viewport(r);
 
-      for (auto pgpulayer: gpulayera)
-      {
+      //            pcommandbuffer->set_scissor(r);
 
-         // if (iLayer == 2)
-         {
+      //            pcommandbuffer->draw_vertexes(3);
 
-            ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
+      //         }
 
-            ptextureSrc->_set_state(
-               pcommandbuffer,
-               {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+      //         iLayer++;
 
-         }
+      //      }
 
-      }
+      //      pcommandbuffer->end_render();
+
+      //   }
+
+      //}
+
+      //for (auto & ptextureLayerSnapshot : textureaLayerSnapshot)
+      //{
+
+      //   // if (iLayer == 2)
+      //   {
+
+      //      ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureLayerSnapshot;
+
+      //      if (!ptextureSrc)
+      //      {
+
+      //         continue;
+
+      //      }
+
+      //      ptextureSrc->_set_state(
+      //         pcommandbuffer,
+      //         {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+      //                               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+
+      //   }
+
+      //}
 
       // // if (!m_pgpurenderer->isFrameStarted)
       // {
@@ -3534,7 +3592,7 @@ namespace gpu_vulkan
       //
       //    //vkQueueWaitIdle(pqueue->m_vkqueue);
       //
-      //}
+      }
 
    }
 
@@ -3656,42 +3714,43 @@ void context::on_end_layer(::gpu::layer *player)
 void context::draw2d_on_end_draw(::gpu::graphics *pgpugraphics) 
 {
 
-   auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(this);
-   
-   auto pgpuswapchain = pgpudraw2dwindowattachment->window_context()->get_swap_chain();
-
-   pgpuswapchain->swap_buffers(); 
-
 }
 
 
 
-void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource, ::pointer < ::gpu::fence > * pgpufence)
+void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * ptextureTarget, ::gpu::texture * ptextureSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
 {
 
-//      throw todo;
+   //      throw todo;
 
    auto pgpurendertarget = m_pgpurenderer->render_target();
 
-   auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(pgpurendertarget);
+   auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
 
-   int iFrameCount = pgpudraw2dwindowattachment->get_frame_count();
+   int iFrameCount = pgpuwindowattachment->get_frame_count();
 
-   int iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
+   int iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
-   ::pointer<command_buffer> pcommandbuffer;
+   ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-   bool bIsFrameInProgress = m_pgpurenderer->isFrameInProgress();
+   //bool bIsFrameInProgress = m_pgpurenderer->isFrameInProgress();
 
-   if (bIsFrameInProgress)
+   //if (bIsFrameInProgress)
+   //{
+
+   //   pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+   //}
+   //else
+   //{
+
+   //   pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
+   //}
+
+   if (pgpusemaphoreReady)
    {
 
-      pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
-   }
-   else
-   {
+      pgpucommandbuffer->m_semaphoreaSignal.add_unique(*pgpusemaphoreReady);
 
-      pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
    }
 
    {
@@ -3701,8 +3760,8 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
       ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureSource;
 
       auto scopedstateDst =
-         ptextureDst->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                                      VK_PIPELINE_STAGE_TRANSFER_BIT});
+         ptextureDst->_scoped_state(pcommandbuffer, { VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                                      VK_PIPELINE_STAGE_TRANSFER_BIT });
 
       auto vkimageSrc = ptextureSrc->m_vkimage;
 
@@ -3713,8 +3772,8 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
       }
 
       auto scopedstateSrc =
-         ptextureSrc->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                                                      VK_PIPELINE_STAGE_TRANSFER_BIT});
+         ptextureSrc->_scoped_state(pcommandbuffer, { VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                                      VK_PIPELINE_STAGE_TRANSFER_BIT });
 
       auto srcImage = ptextureSrc->m_vkimage;
 
@@ -3738,12 +3797,130 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
                .layerCount = 1,
             },
          .dstOffset = {0, 0, 0},
-         .extent = {(uint32_t)m_rectangle.width(), (uint32_t)m_rectangle.height(), 1},
+         .extent = {(uint32_t)this->width(), (uint32_t)this->height(), 1},
       };
 
       vkCmdCopyImage(pcommandbuffer->m_vkcommandbuffer, srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage,
                      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
    }
+
+   //if (!m_pgpurenderer->isFrameInProgress())
+   //{
+
+   //   if (vkEndCommandBuffer(pcommandbuffer->m_vkcommandbuffer) != VK_SUCCESS)
+   //   {
+
+   //      throw ::exception(error_failed);
+   //   }
+
+   //   if (::is_set(pgpufence))
+   //   {
+
+   //      *pgpufence = pcommandbuffer->insert_gpu_fence(true);
+
+   //   }
+
+   //   //VkFence fence = VK_NULL_HANDLE;
+   //   //pcommandbuffer->submitCommandBuffers(ptextureTarget, {ptextureSource}, {}, {}, {});
+
+   //   pcommandbuffer->submit_command_buffer(nullptr);
+
+   //   // if (fence)
+   //   // {
+   //   //
+   //   //    vkWaitForFences(this->logicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+   //   // }
+
+   //   ::cast<::gpu_vulkan::queue> pqueue = pcommandbuffer->m_pgpuqueue;
+
+   //   pqueue->wait_idle();
+
+   //}
+
+}
+
+
+void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
+{
+
+//      throw todo;
+
+   auto pgpurendertarget = m_pgpurenderer->render_target();
+
+   auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
+
+   int iFrameCount = pgpuwindowattachment->get_frame_count();
+
+   int iFrameIndex = pgpuwindowattachment->get_frame_index3();
+
+   ::pointer<command_buffer> pcommandbuffer;
+
+   bool bIsFrameInProgress = m_pgpurenderer->isFrameInProgress();
+
+   if (bIsFrameInProgress)
+   {
+
+      pcommandbuffer = m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+   }
+   else
+   {
+
+      pcommandbuffer = this->beginSingleTimeCommands(m_pgpudevice->graphics_queue());
+   }
+
+
+   copy(pcommandbuffer, ptextureTarget, ptextureSource, pgpufence, pgpusemaphoreReady);
+
+   //{
+
+   //   ::cast<::gpu_vulkan::texture> ptextureDst = ptextureTarget;
+
+   //   ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureSource;
+
+   //   auto scopedstateDst =
+   //      ptextureDst->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+   //                                                   VK_PIPELINE_STAGE_TRANSFER_BIT});
+
+   //   auto vkimageSrc = ptextureSrc->m_vkimage;
+
+   //   if ((::iptr)vkimageSrc == 0xe300000000e3)
+   //   {
+
+   //      ::information() << "image 0xe300000000e3";
+   //   }
+
+   //   auto scopedstateSrc =
+   //      ptextureSrc->_scoped_state(pcommandbuffer, {VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+   //                                                   VK_PIPELINE_STAGE_TRANSFER_BIT});
+
+   //   auto srcImage = ptextureSrc->m_vkimage;
+
+   //   auto dstImage = ptextureDst->m_vkimage;
+
+   //   // Copy region
+   //   VkImageCopy copyRegion = {
+   //      .srcSubresource =
+   //         {
+   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+   //            .mipLevel = 0,
+   //            .baseArrayLayer = 0,
+   //            .layerCount = 1,
+   //         },
+   //      .srcOffset = {0, 0, 0},
+   //      .dstSubresource =
+   //         {
+   //            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+   //            .mipLevel = 0,
+   //            .baseArrayLayer = 0,
+   //            .layerCount = 1,
+   //         },
+   //      .dstOffset = {0, 0, 0},
+   //      .extent = {(uint32_t)this->width(), (uint32_t)this->height(), 1},
+   //   };
+
+   //   vkCmdCopyImage(pcommandbuffer->m_vkcommandbuffer, srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage,
+   //                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
+   //}
 
    if (!m_pgpurenderer->isFrameInProgress())
    {

@@ -88,7 +88,9 @@ namespace gpu_vulkan
 
       void merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera) override;
 
-      void copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource, ::pointer < ::gpu::fence > * pgpufence) override;
+      void copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * ptextureTarget, ::gpu::texture * ptextureSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
+
+      void copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
 
       
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;
@@ -130,9 +132,9 @@ namespace gpu_vulkan
       //virtual void _create_window_context(::acme::windowing::window *pwindow);
 
       //virtual void _create_window_buffer();
-      void _create_cpu_buffer21(const ::i32_size & size) override;
-      void resize_cpu_buffer21(const ::i32_size & size) override;
-      void destroy_cpu_buffer21() override;
+      void _create_cpu_buffer(const ::i32_size & size) override;
+      void resize_cpu_buffer(const ::i32_size & size) override;
+      void destroy_cpu_buffer() override;
 
       //void make_current() override;
 
@@ -161,7 +163,7 @@ namespace gpu_vulkan
 
 
       // Buffer Helper Functions
-      ::pointer < buffer > create_buffer(
+      ::pointer < buffer >_create_buffer(
          VkDeviceSize size,
          VkBufferUsageFlags usage,
          VkMemoryPropertyFlags properties);

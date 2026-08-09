@@ -4,6 +4,7 @@
 #include "acme/exception/interface_only.h"
 #include "acme/windowing/display.h"
 #include "acme/windowing/windowing.h"
+#include "gpu_opengl/texture.h"
 
 
 void resizeBilinear(memory & m, int w2, int h2, int * pixels, int w, int h);
@@ -66,7 +67,7 @@ namespace draw2d_opengl
    bitmap::bitmap()
    {
 
-      m_bTexture = false;
+      //m_bTexture = false;
       m_bPBuffer = false;
       m_bFlashed = false;
 
@@ -352,7 +353,8 @@ namespace draw2d_opengl
    void bitmap::destroy_bitmap()
    {
 
-      m_bTexture = false;
+      m_pgputexture.release();
+      //m_bTexture = false;
       m_bPBuffer = false;
 
       // if (g_hDC)
@@ -394,12 +396,16 @@ namespace draw2d_opengl
 
       resizeBilinear(m_memIn, m_sizeIn.cx, m_sizeIn.cy, (int*)m_memOut.data(), m_sizeOut.cx, m_sizeOut.cy);
 
-      glGenTextures(1, &m_texture);
+      constructø(m_pgputexture);
+
+      ::cast < ::gpu_opengl::texture > popengltexture = m_pgputexture;
+
+      glGenTextures(1, &popengltexture->m_gluTextureID);
 
       GLenum e = glGetError();
 
       // Create Nearest Filtered Texture
-      glBindTexture(GL_TEXTURE_2D, m_texture);
+      glBindTexture(GL_TEXTURE_2D, popengltexture->m_gluTextureID);
       e = glGetError();
       if (iResampleQuality == 2)
       {
@@ -838,10 +844,12 @@ namespace draw2d_opengl
 
    void bitmap::Cleanup()
    {
-      if (m_texture)
+
+      ::cast < ::gpu_opengl::texture > popengltexture = m_pgputexture;
+      if (popengltexture && popengltexture->m_gluTextureID)
       {
-         glDeleteTextures(1, &m_texture);
-         m_texture = 0;
+         glDeleteTextures(1, &popengltexture->m_gluTextureID);
+         popengltexture->m_gluTextureID = 0;
       }
 
 #ifdef WINDOWS

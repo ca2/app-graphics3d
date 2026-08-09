@@ -256,6 +256,7 @@ namespace gpu_vulkan
       VkDeviceMemory             m_vkdevicememory;
       state_array_2d             m_state2a;
       state_array_2d             m_state2aExternal;
+      ::pointer < ::gpu::buffer >   m_pgpubufferReadBack;
       //int                        m_iMipCount;
       /// Does every texture needs its own sampler?
       VkSampler                  m_vksampler3;
@@ -282,7 +283,7 @@ namespace gpu_vulkan
 
       void _set_data(const ::gpu::texture_data &data);
       void _create_texture(const ::gpu::texture_data & texturedata) override;
-
+      ::gpu::buffer * get_read_back_buffer();
       struct texture::layer &current_layer(::gpu_vulkan::render_pass * prenderpass);
       // void initialize_image_texture(::gpu::renderer* prenderer,
       //    const ::i32_rectangle& rectangleTarget,
@@ -426,6 +427,9 @@ namespace gpu_vulkan
 
       void generate_mipmap(::gpu::command_buffer *pgpucommandbuffer) override;
 
+      void read_to_buffer(::gpu::command_buffer * pgpucommandbuffer, ::gpu::buffer * pgpubuffer) override;
+
+      void read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap) override;
 
       static state_t _s_state_from_texture_state(::gpu::enum_texture_state etexturestate);
 

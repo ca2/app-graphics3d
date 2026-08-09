@@ -114,6 +114,8 @@ namespace draw2d_vulkan
 
       ::draw2d_vulkan::draw2d* draw2d_vulkan();
 
+      void set_target_image(::image::image * pimage) override;
+
 
       virtual ::draw2d::object* SelectStockObject(int nIndex);
       ::draw2d::pen* SelectObject(::draw2d::pen* pPen);

@@ -55,8 +55,8 @@ namespace gpu_directx12
    {
 
       
-      int width = m_pgpurenderer->m_pgpucontext->m_rectangle.width();
-      int height = m_pgpurenderer->m_pgpucontext->m_rectangle.height();
+      int width = m_pgpurenderer->m_pgpucontext->width();
+      int height = m_pgpurenderer->m_pgpucontext->height();
 
 
       ::cast < device>pdevice = m_pgpurenderer->m_pgpucontext->m_pgpudevice;

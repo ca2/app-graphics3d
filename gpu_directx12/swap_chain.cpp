@@ -1,7 +1,7 @@
 // Created by camilo on 2025-06-11 02:34 <3ThomasBorregaardSørensen!!
 #include "framework.h"
 #include "command_buffer.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "frame.h"
 #include "renderer.h"
 #include "shader.h"
@@ -81,7 +81,7 @@ namespace gpu_directx12
 
       ::cast < context > pgpucontext = pgpurenderer->m_pgpucontext;
 
-      m_size = pgpucontext->m_rectangle.size();
+      m_size = pgpucontext->size();
 
       if (m_iSwapChainCount < 0)
       {
@@ -384,9 +384,9 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       //m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
       m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpucontext);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
 
-      pgpudraw2dwindowattachment->m_iCurrentImage = m_iSwapChainIndex;
+      pgpuwindowattachment->m_iCurrentImage = m_iSwapChainIndex;
 
       if (m_iSwapChainIndex < 0)
       {

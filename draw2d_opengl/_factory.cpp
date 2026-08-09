@@ -10,7 +10,7 @@
 #include "path.h"
 #include "draw2d.h"
 //#include "aura/graphics/draw2d/window_attachment.h"
-#include "gpu_opengl/draw2d_window_attachment.h"
+#include "gpu_opengl/window_attachment.h"
 //#ifdef WINDOWS_DESKTOP
 //#include "face_gdiplus.h"
 //#else
@@ -30,7 +30,7 @@ __FACTORY_EXPORT void draw2d_opengl_factory(::factory::factory * pfactory)
    pfactory->add_factory_item < ::draw2d_opengl::path, ::draw2d::path >();
 
 
-   pfactory->add_factory_item < ::gpu_opengl::draw2d_window_attachment, ::draw2d::window_attachment >();
+   pfactory->add_factory_item < ::gpu_opengl::window_attachment, ::apex::gpu::window_attachment >();
 
 
 //#ifdef WINDOWS_DESKTOP

@@ -698,7 +698,7 @@
     <ClInclude Include="cpu_buffer_sampling_sync.h" />
     <ClInclude Include="context_cgl.h" />
     <ClInclude Include="context_fbo.h" />
-    <ClInclude Include="draw2d_window_attachment.h" />
+    <ClInclude Include="window_attachment.h" />
     <ClInclude Include="fence.h" />
     <ClInclude Include="gltf\material.h" />
     <ClInclude Include="gltf\mesh.h" />
@@ -837,7 +837,7 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
     <ClCompile Include="block.cpp" />
     <ClCompile Include="buffer.cpp" />
     <ClCompile Include="context_ktx.cpp" />
-    <ClCompile Include="draw2d_window_attachment.cpp" />
+    <ClCompile Include="window_attachment.cpp" />
     <ClCompile Include="fence.cpp" />
     <ClCompile Include="gltf\mesh.cpp" />
     <ClCompile Include="gltf\model.cpp" />
@@ -887,7 +887,16 @@ application_build_helper --binary-to-unsigned-int "%(RelativeDir)%(Filename)%(Ex
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="command_buffer.cpp" />
     <ClCompile Include="context_object.cpp" />
-    <ClCompile Include="aaa_cpu_buffer.cpp" />
+    <ClCompile Include="aaa_aaa_cpu_buffer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='StaticRelease|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="context.cpp" />
     <ClCompile Include="aaa_context_win32.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

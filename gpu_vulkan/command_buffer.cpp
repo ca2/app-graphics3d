@@ -3,7 +3,7 @@
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "frame.h"
 #include "layer.h"
 #include "model_buffer.h"
@@ -151,9 +151,9 @@ namespace gpu_vulkan
 
          }
 
-         auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpurendertarget);
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurendertarget);
 
-         ::cast < layer > playerPrevious = pgpudraw2dwindowattachment->get_previous_layer(player);
+         ::cast < layer > playerPrevious = pgpuwindowattachment->get_previous_layer(player);
 
 
          ::comparable_array< VkSemaphore > vksemaphoreaWait;
@@ -777,7 +777,7 @@ namespace gpu_vulkan
 
       ::gpu::command_buffer::end_render();
 
-      m_pgpurendertarget->m_pgpurenderer->m_pgpucontext->end_render(this);
+      
 
    }
 

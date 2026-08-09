@@ -124,6 +124,16 @@ namespace draw2d_vulkan
    }
 
 #endif
+
+
+   void bitmap::_create_gpu_bitmap(const ::i32_size & size, pixmap_t * ppixmap)
+   {
+
+      ::gpu::bitmap::_create_gpu_bitmap(size, ppixmap);
+
+   }
+
+
    void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::memory & memory, int* piScan)
    {
 

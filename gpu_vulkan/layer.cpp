@@ -2,7 +2,7 @@
 // Created by camilo on 2025-06-12 21:08 <3ThomasBorregaardSørensen!!
 #include "framework.h"
 #include "command_buffer.h"
-#include "draw2d_window_attachment.h"
+#include "window_attachment.h"
 #include "layer.h"
 #include "render_target.h"
 #include "renderer.h"
@@ -95,9 +95,9 @@ namespace gpu_vulkan
 
       auto prendertarget = m_pgpurenderer->render_target();
 
-      auto pgpudraw2dwindowattachment = ::gpu::draw2d_window_attachment::get(m_pgpurenderer);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurenderer);
 
-      auto iFrameIndex = pgpudraw2dwindowattachment->get_frame_index3();
+      auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
 
       if (iFrameIndex < 0)
       {

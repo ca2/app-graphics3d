@@ -288,7 +288,7 @@ namespace app_graphics3d_continuum
          auto ppointlight = create_point_light(1.0f, 0.1f, lightColors[i]);
          auto rotateLight =
             floating_matrix4(1.f).rotated(
-            ::radians((i * _2πf) / lightColors.size()),
+            ::radians((i * 2 * πf) / lightColors.size()),
             { 0.f, 1.f, 0.f });
           ::floating_sequence3 hand(1.0f, 0.f, 0.f);
           auto rotated_hand = rotateLight * hand;

@@ -4,7 +4,7 @@
 #include "acme/_operating_system.h"
 
 
-#include "aura/graphics/image/image.h"
+#include "bred/gpu/image.h"
 
 
 struct OffscreenContext;
@@ -15,7 +15,7 @@ namespace draw2d_opengl
 
 
    class CLASS_DECL_DRAW2D_OPENGL image :
-      virtual public ::image::image
+      virtual public ::gpu::image
    {
    public:
 
@@ -45,7 +45,7 @@ namespace draw2d_opengl
       //using ::image::image::create;
 
       //void create(const ::i32_size& size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1, bool bPreserve = false) override;
-
+      
       void create_from_graphics(::draw2d::graphics* pgraphics) override;
 
       void destroy() override;

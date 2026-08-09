@@ -56,12 +56,14 @@ namespace draw2d_vkvg
 
       draw2d();
       ~draw2d() override;
-
+      
+      const void * get_gpu_physical_device_features(void * p) override;
+      void get_required_gpu_device_extensions(::u64 uPhysicalDevice, ::array<const char *> & pszaRequiredDeviceExtensions) override;
 
       void initialize(::particle * pparticle) override;
 
 
-      bool graphics_context_supports_single_buffer_mode() override;
+      //bool graphics_context_supports_single_buffer_mode() override;
       bool graphics_context_does_full_redraw() override;
 
       /*void on_create_window(::windowing::window * pwindow) override;*/
