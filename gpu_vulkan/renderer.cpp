@@ -3581,7 +3581,7 @@ namespace gpu_vulkan
             }
          );
 
-         VkClearColorValue clearColor = { .float32 = { 0.0f, 0.0f, 0.0f, 0.0f } };
+         VkClearColorValue clearColor = { .float32 = { 0.0f, 0.0f, 0.5f, 0.5f } };
 
          VkImageSubresourceRange range = {
              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -3759,7 +3759,7 @@ namespace gpu_vulkan
          if (bClearColor)
          {
 
-            ::color::color colorClear(color::transparent);
+            ::color::color colorClear(color::green);
 
             auto fR = colorClear.f32_red();
             auto fG = colorClear.f32_green();
@@ -3779,7 +3779,7 @@ namespace gpu_vulkan
          }
 
 
-         renderPassBeginInfo.renderArea.offset = {0, 0};
+         renderPassBeginInfo.renderArea.offset = {pgpucontext->left(), pgpucontext->top()};
          renderPassBeginInfo.renderArea.extent = {(uint32_t)pgpucontext->width(),
                                                   (uint32_t)pgpucontext->height()};
 
@@ -3825,18 +3825,20 @@ namespace gpu_vulkan
          ::cast < context > pcontext = m_pgpucontext;
 
          VkViewport viewport{};
-         viewport.x = 0.0f;
-         viewport.y = 0.0f;
+         viewport.x = pcontext->left();
+         viewport.y = pcontext->top();
          viewport.width = static_cast<float>(pcontext->width());
          viewport.height = static_cast<float>(pcontext->height());
          viewport.minDepth = 0.0f;
          viewport.maxDepth = 1.0f;
-         VkRect2D scissor{ {0, 0},
+         VkRect2D scissor
+         { 
+            {pcontext->left(), pcontext->top()},
             {
                (uint32_t) pcontext->width(),
-            (uint32_t) pcontext->height()
-         
-         } };
+               (uint32_t) pcontext->height()
+            }
+         };
          vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &viewport);
          vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &scissor);
 

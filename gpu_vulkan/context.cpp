@@ -3788,7 +3788,7 @@ void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * p
                .baseArrayLayer = 0,
                .layerCount = 1,
             },
-         .srcOffset = {0, 0, 0},
+         .srcOffset = {ptextureSrc->left(), ptextureSrc->top(), 0},
          .dstSubresource =
             {
                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -3796,8 +3796,8 @@ void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * p
                .baseArrayLayer = 0,
                .layerCount = 1,
             },
-         .dstOffset = {0, 0, 0},
-         .extent = {(uint32_t)this->width(), (uint32_t)this->height(), 1},
+         .dstOffset = {ptextureDst->left(), ptextureDst->top(), 0},
+         .extent = {(uint32_t)ptextureDst->width(), (uint32_t)ptextureDst->height(), 1},
       };
 
       vkCmdCopyImage(pcommandbuffer->m_vkcommandbuffer, srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage,

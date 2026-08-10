@@ -50,7 +50,7 @@ namespace graphics3d_vulkan
 
       auto pcontext = gpu_context();
 
-      ::cast < ::gpu_vulkan::renderer> prenderer = pcontext->m_pgpurenderer;
+      ::cast < ::gpu_vulkan::renderer> prenderer = pcontext->get_gpu_renderer();
 
       prenderer->defer_update_renderer();
 

@@ -896,11 +896,11 @@ namespace gpu_vulkan
 
       auto rectangle = pgputexture->m_textureattributes.m_rectangleTarget;
       auto size = rectangle.size();
-      VkViewport vp = {(float)0.f, (float)0.f, (float)size.width(), (float)size.height(), 0.0f, 1.0f};
+      VkViewport vp = {(float)rectangle.left, (float)rectangle.top, (float)size.width(), (float)size.height(), 0.0f, 1.0f};
 
       VkRect2D sc = {{
-                        0,
-                        0,
+                        rectangle.left,
+                        rectangle.top,
                      },
                      {
                         (uint32_t)size.width(),

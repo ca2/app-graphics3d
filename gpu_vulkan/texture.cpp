@@ -710,8 +710,12 @@ namespace gpu_vulkan
       }
 
       imagecreateinfo.format = m_vkformat;
-      imagecreateinfo.extent.width = this->width();
-      imagecreateinfo.extent.height = this->height();
+      //imagecreateinfo.extent.width = this->width();
+      //imagecreateinfo.extent.height = this->height();
+      imagecreateinfo.extent.width = this->m_textureattributes.m_sizeRaw.cx > 0 ? this->m_textureattributes.m_sizeRaw.cx :
+         this->width();
+      imagecreateinfo.extent.height = this->m_textureattributes.m_sizeRaw.cy > 0 ? this->m_textureattributes.m_sizeRaw.cy :
+         this->height();
       imagecreateinfo.extent.depth = 1;
       imagecreateinfo.mipLevels = this->mip_count();
       if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
@@ -960,30 +964,34 @@ namespace gpu_vulkan
    }
 
 
-   void texture::initialize_depth_texture(::gpu::context *pgpucontext, const ::i32_rectangle &rectangleTarget)
+   void texture::initialize_depth_texture(::gpu::context *pgpucontext, const ::i32_size & size)
    {
 
-      if (m_textureattributes.m_rectangleTarget == rectangleTarget && m_pgpucontext == pgpucontext)
+      if (m_textureattributes.m_sizeRaw == size && m_pgpucontext == pgpucontext)
       {
 
          return;
       }
 
-      auto currentSize = m_textureattributes.m_rectangleTarget.size();
+      //auto currentSize = m_textureattributes.m_sizeRaw;
 
-      ::gpu::texture::initialize_depth_texture(pgpucontext, rectangleTarget);
+      ::gpu::texture::initialize_depth_texture(pgpucontext, size);
 
-      if (currentSize == rectangleTarget.size() && m_pgpucontext == pgpucontext)
-      {
+      //if (currentSize == rectangleTarget.size() && m_pgpucontext == pgpucontext)
+      //{
 
-         return;
+      //   return;
 
-      }
+      //}
 
-      ASSERT(m_textureattributes.m_etexture & ::gpu::e_texture_depth);
+      //if (!(m_textureattributes.m_etexture & ::gpu::e_texture_depth))
+      //{
 
+      //   throw ::exception(error_wrong_state);
 
-      get_depth_image();
+      //}
+
+      //get_depth_image();
 
       ////}
       ////else
@@ -1589,8 +1597,8 @@ namespace gpu_vulkan
 
          imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
          imageInfo.imageType = VK_IMAGE_TYPE_2D;
-         imageInfo.extent.width = this->width();
-         imageInfo.extent.height = this->height();
+         imageInfo.extent.width = this->raw_width();
+         imageInfo.extent.height = this->raw_height();
          imageInfo.extent.depth = 1;
          imageInfo.mipLevels = 1;
          imageInfo.arrayLayers = 1;
@@ -5105,8 +5113,8 @@ void texture::create_sampler()
          },
 
          .imageOffset = {
-            .x = 0,
-            .y = 0,
+            .x = (int32_t)m_textureattributes.m_rectangleTarget.left,
+            .y = (int32_t)m_textureattributes.m_rectangleTarget.top,
             .z = 0,
          },
 

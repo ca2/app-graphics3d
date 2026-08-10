@@ -296,7 +296,7 @@ namespace gpu_vulkan
 
       void _set_image_data(const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat);
       
-      void initialize_depth_texture(::gpu::context *pgpucontext, const ::i32_rectangle &rectangleTarget) override;
+      void initialize_depth_texture(::gpu::context *pgpucontext, const ::i32_size & size) override;
       void initialize_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path & path, bool bIsSrgb);
       void initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
       //virtual void load_Cubemap(const ::file::path & path);
