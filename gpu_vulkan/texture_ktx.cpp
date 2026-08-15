@@ -1,5 +1,5 @@
 // Created by camilo on 2025-12-23 14:56 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "command_buffer.h"
 #include "physical_device.h"
 #include "renderer.h"
@@ -54,11 +54,11 @@ namespace gpu_vulkan
       auto pphysicaldevice = pdevice->m_pphysicaldevice;
 
       // this->m_pDevice = device;
-      m_textureattributes.m_rectangleTarget.left = 0;
-      m_textureattributes.m_rectangleTarget.top = 0;
+      //m_textureattributes.m_rectangleTarget.left = 0;
+      //m_textureattributes.m_rectangleTarget.top = 0;
       // this->m_pDevice = pdevice;
-      m_textureattributes.m_rectangleTarget.right = pktxtexture->baseWidth;
-      m_textureattributes.m_rectangleTarget.bottom = pktxtexture->baseHeight;
+      m_textureattributes.m_size.cx = pktxtexture->baseWidth;
+      m_textureattributes.m_size.cy = pktxtexture->baseHeight;
       m_textureattributes.m_iMipCount = pktxtexture->numLevels;
 
       ktx_uint8_t *ktxTextureData = ktxTexture_GetData(pktxtexture);
@@ -142,8 +142,8 @@ namespace gpu_vulkan
          imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
          imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
          imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-         imageCreateInfo.extent = {(uint32_t)m_textureattributes.m_rectangleTarget.width(),
-                                   (uint32_t)m_textureattributes.m_rectangleTarget.height(), 1};
+         imageCreateInfo.extent = {(uint32_t)m_textureattributes.m_size.width(),
+                                   (uint32_t)m_textureattributes.m_size.height(), 1};
          imageCreateInfo.usage = imageUsageFlags;
          // Ensure that the TRANSFER_DST bit is set for staging
          if (!(imageCreateInfo.usage & VK_IMAGE_USAGE_TRANSFER_DST_BIT))
@@ -212,8 +212,8 @@ namespace gpu_vulkan
          VkImageCreateInfo imageCreateInfo = vkinit::imageCreateInfo();
          imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
          imageCreateInfo.format = vkformat;
-         imageCreateInfo.extent = {(uint32_t)m_textureattributes.m_rectangleTarget.width(),
-                                   (uint32_t)m_textureattributes.m_rectangleTarget.height(), 1};
+         imageCreateInfo.extent = {(uint32_t)m_textureattributes.m_size.width(),
+                                   (uint32_t)m_textureattributes.m_size.height(), 1};
          imageCreateInfo.mipLevels = 1;
          imageCreateInfo.arrayLayers = 1;
          imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;

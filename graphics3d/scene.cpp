@@ -1,11 +1,12 @@
 // From bred/graphics3d/scene.cpp by camilo on 2025-09-29 03:46 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "scene.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "bred/gpu/binding.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/device.h"
 #include "bred/gpu/texture.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/immersion_layer.h"
@@ -87,7 +88,8 @@ namespace graphics3d
    void scene::generateIblBRDFlut()
    {
 
-      m_ptextureLuBrdf = generate_ibl_brdf_lut();
+      defer_construct_newø(m_ptexturesiteLuBrdf);
+      m_ptexturesiteLuBrdf->m_pgputextureSite = generate_ibl_brdf_lut();
 
    }
 
@@ -95,7 +97,8 @@ namespace graphics3d
    void scene::generateIblIrradianceMap()
    {
 
-      m_ptextureIrradianceCube = generate_ibl_irradiance_map(m_prenderableSkyboxModel);
+      defer_construct_newø(m_ptexturesiteIrradianceCube);
+      m_ptexturesiteIrradianceCube->m_pgputextureSite = generate_ibl_irradiance_map(m_prenderableSkyboxModel);
 
    }
 
@@ -103,7 +106,8 @@ namespace graphics3d
    void scene::generateIblPrefilteredEnvMap()
    {
 
-      m_ptexturePrefilteredCube = generate_ibl_prefiltered_env_map(m_prenderableSkyboxModel);
+      defer_construct_newø(m_ptexturesitePrefilteredCube);
+      m_ptexturesitePrefilteredCube->m_pgputextureSite = generate_ibl_prefiltered_env_map(m_prenderableSkyboxModel);
 
    }
 
@@ -174,7 +178,7 @@ namespace graphics3d
    }
 
 
-   ::pointer<::gpu::texture> scene::generate_ibl_prefiltered_env_map(
+   ::pointer<::gpu::texture_site> scene::generate_ibl_prefiltered_env_map(
                                                                 ::graphics3d::renderable *prenderableSkybox)
    {
 
@@ -188,12 +192,12 @@ namespace graphics3d
          m_pgpucontext->end_debug_happening(pcommandbuffer);
       }
 
-      return piblspecularmap->m_ptexturePrefilteredEnvMapCubemap;
+      return piblspecularmap->m_ptexturesitePrefilteredEnvMapCubemap;
    }
 
    /// generate irradianceCube
    /// @return irradianceCube
-   ::pointer<::gpu::texture> scene::generate_ibl_irradiance_map(
+   ::pointer<::gpu::texture_site> scene::generate_ibl_irradiance_map(
       //         ::gpu::texture * irradianceCube,
       //::gpu::texture *environmentCube,
       ::graphics3d::renderable *prenderableSkybox)
@@ -222,7 +226,7 @@ namespace graphics3d
 
       }
 
-      return m_pibldiffuseirradiancemap->m_ptextureDiffuseIrradianceCubemap;
+      return m_pibldiffuseirradiancemap->m_ptexturesiteDiffuseIrradianceCubemap;
    }
    // ::pointer<::gpu::texture> loadCubemap(
    //    const ::scoped_string& name,
@@ -253,7 +257,7 @@ namespace graphics3d
 
       }
 
-      return piblspecularmap->m_ptextureBrdfConvolutionMap;
+      return piblspecularmap->m_ptexturesiteBrdfConvolutionMap;
 
    }
 
@@ -264,9 +268,9 @@ namespace graphics3d
       if (!m_pbindingslotsetIbl1)
       {
 
-         ASSERT(::is_ok(m_ptextureIrradianceCube));
-         ASSERT(::is_ok(m_ptexturePrefilteredCube));
-         ASSERT(::is_ok(m_ptextureLuBrdf));
+         ASSERT(::is_ok(m_ptexturesiteIrradianceCube));
+         ASSERT(::is_ok(m_ptexturesitePrefilteredCube));
+         ASSERT(::is_ok(m_ptexturesiteLuBrdf));
 
          constructø(m_pbindingslotsetIbl1);
 
@@ -275,13 +279,13 @@ namespace graphics3d
          m_pbindingslotsetIbl1->initialize_binding_slot_set(pbindingset);
 
          auto pbindingslot0 = m_pbindingslotsetIbl1->binding_slot(0);
-         pbindingslot0->m_ptexture = m_ptextureIrradianceCube;
+         pbindingslot0->m_ptexturesite = m_ptexturesiteIrradianceCube;
 
          auto pbindingslot1 = m_pbindingslotsetIbl1->binding_slot(1);
-         pbindingslot1->m_ptexture = m_ptexturePrefilteredCube;
+         pbindingslot1->m_ptexturesite = m_ptexturesitePrefilteredCube;
 
          auto pbindingslot2 = m_pbindingslotsetIbl1->binding_slot(2);
-         pbindingslot2->m_ptexture = m_ptextureLuBrdf;
+         pbindingslot2->m_ptexturesite = m_ptexturesiteLuBrdf;
 
       }
 

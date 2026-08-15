@@ -1,5 +1,5 @@
 // Created by camilo on 2025-04-24 21:26 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "render_system.h"
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"
@@ -10,6 +10,7 @@
 #include "app-graphics3d/gpu_vulkan/vk_init.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 
 
 namespace graphics3d_vulkan
@@ -66,7 +67,9 @@ namespace graphics3d_vulkan
 
       
 
-      ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
+      auto ptexturesite = prendertarget->current_texture(::gpu::current_layer(), true);
+
+      ::cast<::gpu_vulkan::texture> ptexture = ptexturesite->gpu_texture();
 
       if (ptexture->mip_layer_state(0, 0).m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       {
@@ -89,8 +92,10 @@ namespace graphics3d_vulkan
       renderPassBeginInfo.clearValueCount = 0;
       //renderPassBeginInfo.pClearValues = clearValues;
       renderPassBeginInfo.pClearValues = nullptr;
+
       auto & layer = ptexture->current_layer(prenderpass);
-      renderPassBeginInfo.framebuffer = layer.m_vkframebuffer;
+
+      renderPassBeginInfo.framebuffer = layer.m_vkframebufferLayer;
 
       ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 

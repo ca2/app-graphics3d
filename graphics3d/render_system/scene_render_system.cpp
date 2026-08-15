@@ -1,5 +1,5 @@
 // Changed by camilo on 2025-12-06 21:36 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "scene_render_system.h"
 #include "bred/gltf/vertex.h"
 #include "bred/gpu/command_buffer.h"

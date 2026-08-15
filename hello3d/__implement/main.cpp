@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #define APPLICATION_NAMESPACE graphics3d_hello3d
 #include "acme/inline/application/main.inl"
 

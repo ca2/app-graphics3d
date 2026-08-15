@@ -1,10 +1,12 @@
 // From vk_swapchain by camilo on 2025-05-09 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "offscreen_render_target_view.h"
 #include "initializers.h"
 #include "physical_device.h"
 #include "renderer.h"
 #include "texture.h"
+#include "bred/gpu/texture_site.h"
+
 
 using namespace directx12;
 
@@ -156,28 +158,30 @@ namespace gpu_directx12
 
       {
 
-         defer_construct_newø(m_ptexturea);
+         defer_construct_newø(m_ptexturesitea);
 
          //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-         m_ptexturea->set_size(m_pgpurenderer->m_iDefaultFrameCount);
+         m_ptexturesitea->set_size(m_pgpurenderer->m_iDefaultFrameCount);
 
-         for (int i = 0; i < m_ptexturea->size(); i++)
+         for (int i = 0; i < m_ptexturesitea->size(); i++)
          {
 
-            auto& ptexture = m_ptexturea->element_at(i);
+            auto& ptexturesite = m_ptexturesitea->element_at(i);
 
-            defer_constructø(ptexture);
+            defer_construct_newø(ptexturesite);
 
-            ::i32_rectangle rectangleRenderTarget(sizeRenderTarget);
+            defer_constructø(ptexturesite->m_pgputextureSite);
 
-            ::gpu::texture_attributes textureattributes(rectangleRenderTarget);
+            //::i32_rectangle rectangleRenderTarget(sizeRenderTarget);
+
+            ::gpu::texture_attributes textureattributes(sizeRenderTarget);
 
             ::gpu::texture_flags textureflags;
             textureflags.m_bRenderTarget = true;
             textureflags.m_bWithDepth = m_bWithDepth;
 
-            ptexture->initialize_texture(m_pgpurenderer->m_pgpucontext,  textureattributes, textureflags);
+            ptexturesite->m_pgputextureSite->create_texture(m_pgpurenderer->m_pgpucontext,  textureattributes, textureflags);
 
             ////if (bCreateRenderTargetView)
             //{

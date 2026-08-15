@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "gltf_render_system.h"
 #include "bred/gltf/vertex.h"
 #include "bred/gpu/binding.h"

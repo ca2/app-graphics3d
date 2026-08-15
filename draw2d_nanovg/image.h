@@ -31,7 +31,7 @@ namespace draw2d_nanovg
 
 
       //virtual ::draw2d::graphics * _get_graphics() const;
-      ::draw2d::bitmap_pointer get_bitmap() const override;
+      ::draw2d::bitmap_pointer get_bitmap(::draw2d::graphics * pdraw2dgraphics = nullptr) const override;
       ::draw2d::bitmap_pointer detach_bitmap() override;
 
       //virtual ::draw2d::graphics * get_graphics();

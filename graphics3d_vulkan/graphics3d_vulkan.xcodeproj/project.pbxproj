@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		070533EF1C90B2CF00F31B3F /* libgcom.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 070533E61C90B2A100F31B3F /* libgcom.dylib */; };
-		07B65520190F3001002DAADE /* framework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AEB75BE16F78E600085103B /* framework.cpp */; };
+		07B65520190F3001002DAADE /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AEB75BE16F78E600085103B /* platform.cpp */; };
 		07C6AA1F1CA4F1A000B4E555 /* libaura.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 07C6AA1E1CA4F1A000B4E555 /* libaura.dylib */; };
 		07C6AA211CA4F2D300B4E555 /* libbase.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 07C6AA201CA4F2D300B4E555 /* libbase.dylib */; };
 		07C6AA231CA4F2E800B4E555 /* libaxis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 07C6AA221CA4F2E800B4E555 /* libaxis.dylib */; };
@@ -78,8 +78,8 @@
 		9AE24EA11904CFFD001AEFFB /* libios_app_graphics3d_hellomultiverse.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AE24E8A1904CFFD001AEFFB /* libios_app_graphics3d_hellomultiverse.dylib */; };
 		9AE24EA71904CFFD001AEFFB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9AE24EA51904CFFD001AEFFB /* InfoPlist.strings */; };
 		9AE24EA91904CFFD001AEFFB /* app_graphics3d_hellomultiverse_iosTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AE24EA81904CFFD001AEFFB /* app_graphics3d_hellomultiverse_iosTests.m */; };
-		9AEB75DD16F78E600085103B /* framework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AEB75BE16F78E600085103B /* framework.cpp */; };
-		9AEB75DE16F78E600085103B /* framework.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AEB75BF16F78E600085103B /* framework.h */; };
+		9AEB75DD16F78E600085103B /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AEB75BE16F78E600085103B /* platform.cpp */; };
+		9AEB75DE16F78E600085103B /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AEB75BF16F78E600085103B /* platform.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -230,8 +230,8 @@
 		9AE24EA61904CFFD001AEFFB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		9AE24EA81904CFFD001AEFFB /* app_graphics3d_hellomultiverse_iosTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = app_graphics3d_hellomultiverse_iosTests.m; sourceTree = "<group>"; };
 		9AEB75A316F78DF10085103B /* libapp_graphics3d_vulken.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libapp_graphics3d_vulken.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		9AEB75BE16F78E600085103B /* framework.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = framework.cpp; sourceTree = "<group>"; };
-		9AEB75BF16F78E600085103B /* framework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = framework.h; sourceTree = "<group>"; };
+		9AEB75BE16F78E600085103B /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
+		9AEB75BF16F78E600085103B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -415,8 +415,8 @@
 				9ACBD9512C572D1E00480D13 /* application.h */,
 				9ACBD9542C572D1F00480D13 /* document.cpp */,
 				9ACBD9552C572D1F00480D13 /* document.h */,
-				9AEB75BE16F78E600085103B /* framework.cpp */,
-				9AEB75BF16F78E600085103B /* framework.h */,
+				9AEB75BE16F78E600085103B /* platform.cpp */,
+				9AEB75BF16F78E600085103B /* platform.h */,
 			);
 			name = vulken;
 			sourceTree = "<group>";
@@ -433,7 +433,7 @@
 				9ACBD9C12C57311A00480D13 /* shared.h in Headers */,
 				9ACBD9642C572D6600480D13 /* _.h in Headers */,
 				9ACBD9602C572D3000480D13 /* frame.h in Headers */,
-				9AEB75DE16F78E600085103B /* framework.h in Headers */,
+				9AEB75DE16F78E600085103B /* platform.h in Headers */,
 				9ACBD9D22C57311A00480D13 /* VulkanInitializers.h in Headers */,
 				9ACBD9C42C57311A00480D13 /* vulkan_example_base_no_swap_chain.h in Headers */,
 				9ACBD9B42C57311A00480D13 /* CommandLineParser.hpp in Headers */,
@@ -651,7 +651,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				07B65520190F3001002DAADE /* framework.cpp in Sources */,
+				07B65520190F3001002DAADE /* platform.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -687,7 +687,7 @@
 				9ACBD9572C572D1F00480D13 /* application.cpp in Sources */,
 				9ACBD9D62C57311A00480D13 /* VulkanSwapChain.cpp in Sources */,
 				9ACBD9C32C57311A00480D13 /* vulkan_example_base_no_swap_chain.cpp in Sources */,
-				9AEB75DD16F78E600085103B /* framework.cpp in Sources */,
+				9AEB75DD16F78E600085103B /* platform.cpp in Sources */,
 				9ACBD9B02C57311A00480D13 /* application.cpp in Sources */,
 				9ACBD95F2C572D3000480D13 /* frame.cpp in Sources */,
 			);
@@ -864,7 +864,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = framework.h;
+				GCC_PREFIX_HEADER = platform.h;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -959,7 +959,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = framework.h;
+				GCC_PREFIX_HEADER = platform.h;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;

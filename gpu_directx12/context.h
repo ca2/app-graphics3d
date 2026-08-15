@@ -15,8 +15,7 @@ namespace gpu_directx12
 
    class CLASS_DECL_GPU_DIRECTX12 context :
       virtual public ::gpu::hlsl_context,
-      virtual public ::gpu_gpu::context,
-      virtual public ::dxgi_device_source
+      virtual public ::gpu_gpu::context
    {
    public:
 
@@ -24,6 +23,8 @@ namespace gpu_directx12
 
       ::comptr<ID3D12CommandQueue>                                m_pcommandqueue;
       ::comptr<ID3D12CommandQueue>                                m_pcommandqueueCopy;
+
+      ::comptr<ID3D11DeviceContext>                               m_pd3d1devicecontext;
 
       // Create an empty root signature.
    /*{
@@ -63,8 +64,8 @@ namespace gpu_directx12
 
          /** @brief Physical device representation */
       //VkPhysicalDevice m_physicaldevice;
-      ::pointer < device >                m_pgpudevice;
-      ::pointer < context >               m_pgpucontextMain;
+      //::pointer < device >                m_pgpudevice;
+      //::pointer < context >               m_pgpucontextMain;
 
 
       class snapshot :
@@ -141,40 +142,16 @@ namespace gpu_directx12
       ::pointer <::gpu_directx12::descriptor_pool>                m_pdescriptorpoolGlobal;
 
 
-      ::pointer <::gpu_directx12::shader>                m_pshaderBlend3;
+      //::pointer <::gpu_directx12::shader>                m_pshaderBlend3;
       //::comptr < ID3D12BlendState >                      m_pd3d11blendstateBlend3;
 
-
-      // For IDXGIDevice
-      class d3d11on12 :
-         virtual public particle
-      {
-      public:
-
-         ::comptr<ID3D11Device> m_pd3d11device;
-         ::comptr<ID3D11DeviceContext> m_pd3d11context;
-         ::comptr<ID3D11On12Device> m_pd3d11on12;
-         ::comptr<IDXGIDevice> m_pdxgidevice;
-
-
-         ::comptr<ID3D12Fence> dx12Fence;
-         UINT64 fenceValue = 0;
-         ::comptr<ID3D11Fence> dx11Fence;
-         ::comptr<ID3D11Device5> dx11Device5;
-         ::comptr<ID3D11DeviceContext4> dx11Context4;
-         HANDLE fenceEvent = NULL;
-         HANDLE sharedFenceHandle = nullptr;
-
-      };
-      //::pointer_array < class d3d11on12 > >     m_d3d11on12a;
-      ::pointer < class d3d11on12 > m_pd3d11on12;
 
 
       context();
       ~context() override;
 
 
-      void _create_gpu_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, const ::gpu::enum_scene& escene, ::acme::windowing::window* pacmewindowingwindow, const ::i32_size& size) override;
+      void _create_gpu_context(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, const ::gpu::enum_scene& escene, ::acme::windowing::window* pacmewindowingwindow, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw) override;
 
       virtual void _initialize_gpu_context_swap_chain(::gpu::device* pgpudevice, ::acme::windowing::window* pacmewindowingwindow);
 
@@ -192,12 +169,12 @@ namespace gpu_directx12
       void on_end_layer(::gpu::layer * pgpulayer);
       void set_bitmap_1(::image::image *pimage) override;
 
-      virtual ID3D12CommandQueue* command_queue();
-      virtual ID3D12CommandQueue* copy_command_queue();
+      //virtual ID3D12CommandQueue* command_queue();
+      
+
+      ::comptr < ID3D11DeviceContext > _d3d11_device_context();
+
       virtual void _construct_new(::pointer<d3d12_resource> &pd3d12resource);
-
-      virtual d3d11on12* d3d11on12();
-
 
       void layout_global_ubo(::gpu::properties *pproperties) override;
 
@@ -319,7 +296,7 @@ namespace gpu_directx12
 
       //void submitWork(VkCommandBuffer cmdBuffer, VkQueue queue);
 
-      void copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource,
+      void copy(::gpu::texture_site *ptexturesiteOutput, ::gpu::texture_site *ptexturesiteInput,
                 ::pointer<::gpu::fence> * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
 
       //public:
@@ -380,26 +357,26 @@ namespace gpu_directx12
       void draw2d_on_end_draw(::gpu::graphics* pgpugraphics) override;
 
       bool defer_bind2(::gpu::command_buffer *pgpucommandbuffer, ::gpu::shader *pgpushader,
-                       ::gpu::texture *pgputexture) override;
+                       ::gpu::texture_site *pgputexturesite) override;
       bool defer_bind3(::gpu::command_buffer *pgpucommandbuffer, ::gpu::shader *pgpushader) override;
       
 
       void on_create_texture(::gpu::texture* pgputext) override;
       //void on_take_snapshot(::gpu::layer* pgpulayer) override;
       floating_matrix4 defer_transpose(const floating_matrix4 &m) override;
-      void merge_layers(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptextureTarget,
+      void merge_layers(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *ptexturesiteOutput,
                         ::pointer_array<::gpu::layer> *playera) override;
 
       //void swap_buffers();
-      IDXGIDevice* _get_dxgi_device() override;
+      //IDXGIDevice* _get_dxgi_device() override;
       ::gpu::swap_chain* get_swap_chain() override;
 
 
       floating_sequence3 front(const ::graphics3d::floating_rotation &rotation) override;
 
 
-      void set_viewport(::gpu::command_buffer *pgpucommandbuffer, const ::i32_rectangle &rectangle) override;
-      void set_scissor(::gpu::command_buffer *pgpucommandbuffer, const ::i32_rectangle &rectangle) override;
+      void set_viewport(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const ::i32_size & sizeRaw = {}) override;
+      void set_scissor(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const ::i32_size & sizeRaw = {}) override;
 
       void load_ktxTexture(::gpu::texture *pgputexture, void *p_ktxTexture) override;
       void load_ktxTexture_cube_map(::gpu::texture *pgputexture, void *p_ktxTexture) override;

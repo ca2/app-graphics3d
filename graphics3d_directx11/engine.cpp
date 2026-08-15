@@ -1,5 +1,5 @@
 // From application_object by camilo on 2025-05-17 01:10 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "buffer.h"
 #include "engine.h"
 #include "frame.h"
@@ -8,6 +8,7 @@
 #include "swap_chain_render_pass.h"
 #include "aura/platform/application.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/user/user/graphics3d.h"
 #include "gpu_directx11/approach.h"
 #include "gpu_directx11/context.h"
@@ -546,7 +547,8 @@ namespace graphics3d_directx11
          ::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
          ID3D11Device* device = pgpudevice->m_pd3d11device;
          ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-         ::cast < ::gpu_directx11::texture > ptexture = poffscreenrendertargetview->current_texture(::gpu::current_layer());
+         auto ptexturesite = poffscreenrendertargetview->current_texture(::gpu::current_layer(), true);
+         ::cast < ::gpu_directx11::texture > ptexture = ptexturesite->gpu_texture();
          ID3D11Texture2D* offscreenTexture = ptexture->m_ptextureOffscreen;
          if (!device || !context || !offscreenTexture)
          {
@@ -588,7 +590,7 @@ namespace graphics3d_directx11
          // 4. Draw into the D2D1RenderTarget
          //d2dDeviceContext->BeginDraw();
 
-         auto r = pgpucontext->get_placement();
+         auto r = pgpucontext->output_placement();
 
          //pgraphics2d->m_pdevicecontext->DrawBitmap(
          //   bitmap,

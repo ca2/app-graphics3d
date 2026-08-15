@@ -15,14 +15,14 @@ namespace gpu_directx12
    public:
 
 
-      ::comptr<ID3D12Fence>                     m_pfence;
-      UINT64                                    m_fenceValue;
-      HANDLE                                    m_hFenceEvent;
+      //::comptr<ID3D12Fence>                     m_pfence;
+      
+      //HANDLE                                    m_hFenceEvent;
       ::comptr<ID3D12CommandAllocator >         m_pcommandallocator;
       ::comptr < ID3D12GraphicsCommandList >    m_pcommandlist;
-      ::comptr < ID3D12CommandQueue >           m_pcommandqueue;
+      //::comptr < ID3D12CommandQueue >           m_pcommandqueue;
       ::pointer < ::gpu_directx12::renderer >   m_prenderer;
-      D3D12_COMMAND_LIST_TYPE                   m_ecommandlisttype;
+      
 
       ::array <comptr <IUnknown > >             m_comptraHold;
 
@@ -31,7 +31,12 @@ namespace gpu_directx12
       ~command_buffer() override;
 
       void initialize_command_buffer(::gpu::render_target* prendertarget,::gpu::queue * pqueue, ::gpu::enum_command_buffer ecommandbuffer) override;
-      virtual void _initialize_command_buffer(ID3D12CommandQueue * pcommandqueue, D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer);
+      ///virtual void _initialize_command_buffer(ID3D12CommandQueue * pcommandqueue, D3D12_COMMAND_LIST_TYPE ecommandlisttype, ::gpu_directx12::renderer* prenderer);
+
+
+      virtual void _clear(::gpu::texture * pgputexture, const ::i32_rectangle & rectangle, const ::color::color & color);
+
+      void clear(::gpu::texture * pgputexture, const ::color::color & color) override;
 
       void submit_command_buffer(::gpu::layer* pgpulayer) override;
 

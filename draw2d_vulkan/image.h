@@ -160,7 +160,7 @@ namespace draw2d_vulkan
       //double pi();
 
       protected:
-      void _map(bool bApplyAlphaTransform = true) override; // some implementations may requrire to map to m_pcolorref before manipulate it
+      void _map(const ::i32_rectangle & rectangle, bool bApplyAlphaTransform = true) override; // some implementations may requrire to map to m_pcolorref before manipulate it
       void _unmap(bool bDoUnmap=false) override; // some implementations may require to unmap from m_pcolorref to update *os* bitmap
 
       //virtual bool update_window(::aura::draw_interface * puserinteraction, ::message::message * pmessage, bool bTransferBuffer = true) override;

@@ -1,5 +1,5 @@
 // Created by camilo on 2025-06-08 18:14 < 3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "command_buffer.h"
 #include "window_attachment.h"
 #include "texture.h"
@@ -12,6 +12,7 @@
 
 namespace gpu_directx12
 {
+
    ::comptr<ID3DBlob> create_computer_shader_blob(const ::block &block);
 
    texture::texture()
@@ -50,8 +51,8 @@ namespace gpu_directx12
       auto &textureDesc = m_resourcedesc;
       ::zero(textureDesc);
       textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-      textureDesc.Width = this->width();
-      textureDesc.Height = this->height();
+      textureDesc.Width = this->raw_width();
+      textureDesc.Height = this->raw_height();
       if (m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
       {
          if (textureDesc.Width != textureDesc.Height)
@@ -87,43 +88,6 @@ namespace gpu_directx12
       textureDesc.SampleDesc.Count = 1;
       textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 
-      if (m_textureflags.m_bRenderTarget)
-      {
-
-         textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-
-      }
-
-      if (textureDesc.MipLevels > 1)
-      {
-
-         textureDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-
-      }
-
-      D3D12_CLEAR_VALUE* pclearvalue = nullptr;
-
-      D3D12_CLEAR_VALUE clearValue = {};
-
-      if (m_textureflags.m_bRenderTarget)
-      {
-
-         pclearvalue = &clearValue;
-
-         clearValue.Format = format;
-         //clearValue.Color[0] = 0.5f * 0.5f;
-         //clearValue.Color[1] = 0.75f * 0.5f;
-         //clearValue.Color[2] = 0.9f * 0.5f;
-         //clearValue.Color[3] = 0.5f;
-         clearValue.Color[0] = 0.f * 0.5f;
-         clearValue.Color[1] = 0.f * 0.5f;
-         clearValue.Color[2] = 0. * 0.5f;
-         clearValue.Color[3] = 0.f;
-
-      }
-
-      //clearValue.Color = { 0.5f, 0.75f, 0.9f, 0.5f };
-
       ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
 
       CD3DX12_HEAP_PROPERTIES heapproperties(D3D12_HEAP_TYPE_DEFAULT);
@@ -133,20 +97,24 @@ namespace gpu_directx12
       if (m_pgpucontext->m_bD3D11On12Shared)
       {
 
-         eheap = D3D12_HEAP_FLAG_NONE;
+         //eheap = D3D12_HEAP_FLAG_NONE;
+         eheap = D3D12_HEAP_FLAG_SHARED;
 
          textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
          //textureDesc.Width = width;
          //textureDesc.Height = height;
-            //textureDesc.DepthOrArraySize = 1;
+         //textureDesc.DepthOrArraySize = 1;
          textureDesc.MipLevels = 1;
          textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  // MUST be D3D11-compatible format
          textureDesc.SampleDesc.Count = 1;
          textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 
-         m_textureflags.m_bRenderTarget = false;
+         //m_textureflags.m_bRenderTarget = false;
 
-         m_textureflags.m_bShaderResource = false;
+         informationf("m_textureflags.m_bShaderResource %d", m_textureflags.m_bShaderResource);
+         //m_textureflags.m_bShaderResource = false;
+
+         //textureDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
       }
       else
@@ -176,6 +144,43 @@ namespace gpu_directx12
          stateInitial = D3D12_RESOURCE_STATE_COPY_DEST;
 
       }
+
+      if (m_textureflags.m_bRenderTarget)
+      {
+
+         textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+      }
+
+      if (textureDesc.MipLevels > 1)
+      {
+
+         textureDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+      }
+
+      D3D12_CLEAR_VALUE * pclearvalue = nullptr;
+
+      D3D12_CLEAR_VALUE clearValue = {};
+
+      if (m_textureflags.m_bRenderTarget)
+      {
+
+         pclearvalue = &clearValue;
+
+         clearValue.Format = format;
+         //clearValue.Color[0] = 0.5f * 0.5f;
+         //clearValue.Color[1] = 0.75f * 0.5f;
+         //clearValue.Color[2] = 0.9f * 0.5f;
+         //clearValue.Color[3] = 0.5f;
+         clearValue.Color[0] = 0.f * 0.5f;
+         clearValue.Color[1] = 0.f * 0.5f;
+         clearValue.Color[2] = 0. * 0.5f;
+         clearValue.Color[3] = 0.f;
+
+      }
+
+      //clearValue.Color = { 0.5f, 0.75f, 0.9f, 0.5f };
 
       ::cast<::gpu_directx12::context> pcontext = m_pgpucontext;
 
@@ -525,7 +530,7 @@ namespace gpu_directx12
 
 
 
-   void texture::initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block)
+   void texture::create_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block)
    {
       //Dx12Texture out = {};
 
@@ -548,9 +553,9 @@ namespace gpu_directx12
          throw ::exception(error_failed, "stbi_loadf_from_memory failed");
       }
 
-      m_textureattributes.m_rectangleTarget.left = 0;
-      m_textureattributes.m_rectangleTarget.top = 0;
-      m_textureattributes.m_rectangleTarget.set_size(width, height);
+      //m_textureattributes.m_rectangleTarget.left = 0;
+      //m_textureattributes.m_rectangleTarget.top = 0;
+      m_textureattributes.m_size = { width, height };
       m_textureattributes.m_iLayerCount = 1;
       m_textureattributes.m_iMipCount = 1;
       m_textureattributes.m_iBitsPerChannel = 32;
@@ -734,8 +739,8 @@ namespace gpu_directx12
 
       if (ptexture->m_iCurrentLayer < 0)
       {
-         m_size.cx = ptexture->rectangle().width();
-         m_size.cy = ptexture->rectangle().height();
+         m_size.cx = ptexture->width();
+         m_size.cy = ptexture->height();
          m_iLayerCount = ptexture->m_textureattributes.m_iLayerCount;
       }
       else
@@ -850,7 +855,33 @@ namespace gpu_directx12
       return rtvHandle;
 
    }
-      class texture::layer &texture::current_layer()
+
+
+   IDXGISurface * texture::_dxgi_surface()
+   {
+
+      auto & pdxgisurface = d3d11()->m_pdxgisurface;
+
+      if (!pdxgisurface)
+      {
+
+         if (!d3d11()->m_pd3d11resourceWrapped)
+         {
+
+            throw ::exception(error_failed);
+
+         }
+
+         d3d11()->m_pd3d11resourceWrapped.as(pdxgisurface);
+
+      }
+
+      return pdxgisurface;
+
+   }
+      
+   
+   struct texture::layer &texture::current_layer()
    {
 
       // ASSERT(m_textureattributes.m_etexture == ::gpu::e_texture_cube_map);
@@ -1049,10 +1080,62 @@ namespace gpu_directx12
    class texture::d3d11* texture::d3d11()
    {
 
+      informationf("DX12 D2D_WRAP_STAGE enter helper=%p", m_pd3d11.m_p);
+
       if (!m_pd3d11)
       {
 
          construct_newø(m_pd3d11);
+
+         informationf("DX12 D2D_WRAP_STAGE helper-created");
+
+         if (!m_pd3d11->m_pd3d11resourceWrapped)
+         {
+
+            assert(!m_pheapDepthStencilView);
+            //assert(!ptexture->m_pheapRenderTargetView);
+            //assert(!ptexture->m_pheapShaderResourceView);
+            //assert(!ptexture->m_pheapSampler);
+
+            //auto & sharedHandle= ptexture->d3d11()->sharedHandle;
+
+            //::defer_throw_hresult(pdevice->m_pd3d12device->CreateSharedHandle(
+            //   ptexture->m_presource, nullptr, GENERIC_ALL, nullptr, 
+            //   &sharedHandle));
+
+            D3D11_RESOURCE_FLAGS flags = {};
+            //flags.BindFlags = D3D11_BIND_RENDER_TARGET;
+            flags.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+            assert(m_pd3d12resourceTexture->m_presource); // Confirm it’s non-null
+            ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+
+            informationf("DX12 D2D_WRAP_STAGE device-ready");
+
+            auto pd3d11on12 = pdevice->d3d11on12();
+
+            informationf("DX12 D2D_WRAP_STAGE d3d11on12-ready");
+
+            auto pgpud3d11on12 = pdevice->d3d11on12()->m_pd3d11on12;
+
+            HRESULT hrCreateWrappedResource = pgpud3d11on12->CreateWrappedResource(
+               m_pd3d12resourceTexture->m_presource,
+               &flags,
+               D3D12_RESOURCE_STATE_RENDER_TARGET,
+               D3D12_RESOURCE_STATE_RENDER_TARGET,
+               __interface_of(m_pd3d11->m_pd3d11resourceWrapped)
+            );
+
+            informationf(
+               "DX12 D2D_WRAP hr=0x%08x resourceFlags=0x%x initialState=0x%x",
+               (unsigned int)hrCreateWrappedResource,
+               (unsigned int)m_resourcedesc.Flags,
+               (unsigned int)m_pd3d12resourceTexture->m_state.m_resourcestates);
+
+            ::defer_throw_hresult(hrCreateWrappedResource);
+
+         }
+
+         m_pd3d11->m_d3d11resourceaWrapped[0] = { m_pd3d11->m_pd3d11resourceWrapped };
 
       }
 
@@ -1746,7 +1829,9 @@ namespace gpu_directx12
 
          ::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
 
-         auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(nullptr);
+         auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(
+            pcontext->m_pgpudevice->graphics_queue(),
+            ::gpu::e_command_buffer_graphics);
 
          ::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
 
@@ -1859,6 +1944,202 @@ namespace gpu_directx12
 
       //puploadbuffer->map();
 
+
+   }
+
+
+   void texture::read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap, const ::i32_point & pointOutput)
+   {
+
+      (void)pgpucommandbuffer;
+
+      if (!ppixmap || ppixmap->size() != size() ||
+          ppixmap->m_iScan < width() * (int)sizeof(::image32_t) ||
+          !ppixmap->m_pimage32 || !m_pd3d12resourceTexture ||
+          !m_pd3d12resourceTexture->m_presource || !m_pgpucontext ||
+          pointOutput.x < 0 || pointOutput.y < 0)
+      {
+
+         throw ::exception(error_bad_argument);
+
+      }
+
+      if (!m_pgpucontext->m_pgpudevice)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      auto psource = m_pd3d12resourceTexture->m_presource;
+
+      auto desc = psource->GetDesc();
+
+      if (desc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D ||
+          desc.SampleDesc.Count != 1 ||
+          (desc.Format != DXGI_FORMAT_B8G8R8A8_UNORM &&
+           desc.Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB &&
+           desc.Format != DXGI_FORMAT_B8G8R8A8_TYPELESS))
+      {
+
+         throw ::exception(error_failed, "Unsupported DirectX 12 texture format for pixel readback.");
+
+      }
+
+      auto iMip = maximum(0, m_iCurrentMip);
+
+      auto iLayer = maximum(0, m_iCurrentLayer);
+
+      if (iMip >= desc.MipLevels || iLayer >= desc.DepthOrArraySize)
+      {
+
+         throw ::exception(error_bad_argument);
+
+      }
+
+      auto uMipWidth = desc.Width >> iMip;
+
+      auto uMipHeight = ((UINT64)desc.Height) >> iMip;
+
+      if (uMipWidth == 0)
+      {
+
+         uMipWidth = 1;
+
+      }
+
+      if (uMipHeight == 0)
+      {
+
+         uMipHeight = 1;
+
+      }
+
+      auto uWidth = (UINT64)ppixmap->size().width();
+
+      auto uHeight = (UINT64)ppixmap->size().height();
+
+      if (uWidth == 0 || uHeight == 0 ||
+          (UINT64)pointOutput.x + uWidth > uMipWidth ||
+          (UINT64)pointOutput.y + uHeight > uMipHeight)
+      {
+
+         throw ::exception(error_bad_argument);
+
+      }
+
+      ::cast < ::gpu_directx12::context > pcontext = m_pgpucontext;
+
+      ::cast < ::gpu_directx12::device > pdevice = m_pgpucontext->m_pgpudevice;
+
+      auto uSubresource = (UINT)iMip + (UINT)iLayer * (UINT)desc.MipLevels;
+
+      D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint{};
+
+      UINT64 uReadbackSize = 0;
+
+      pdevice->m_pd3d12device->GetCopyableFootprints(
+         &desc,
+         uSubresource,
+         1,
+         0,
+         &footprint,
+         nullptr,
+         nullptr,
+         &uReadbackSize);
+
+      auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_READBACK);
+
+      auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uReadbackSize);
+
+      ::comptr < ID3D12Resource > preadback;
+
+      auto hrCreateReadback = pdevice->m_pd3d12device->CreateCommittedResource(
+         &heapProperties,
+         D3D12_HEAP_FLAG_NONE,
+         &bufferDesc,
+         D3D12_RESOURCE_STATE_COPY_DEST,
+         nullptr,
+         __interface_of(preadback));
+
+      pdevice->defer_throw_hresult(hrCreateReadback);
+
+      auto pgpucommandbufferReadback = pcontext->beginSingleTimeCommands(
+         pcontext->m_pgpudevice->graphics_queue());
+
+      ::cast < ::gpu_directx12::command_buffer > pcommandbufferReadback =
+         pgpucommandbufferReadback;
+
+      auto pd3d12commandlist = pcommandbufferReadback->m_pcommandlist;
+
+      auto locationTarget = CD3DX12_TEXTURE_COPY_LOCATION(preadback, footprint);
+
+      auto locationSource = CD3DX12_TEXTURE_COPY_LOCATION(psource, uSubresource);
+
+      auto boxSource = CD3DX12_BOX(
+         pointOutput.x,
+         pointOutput.y,
+         0,
+         (LONG)((UINT64)pointOutput.x + uWidth),
+         (LONG)((UINT64)pointOutput.y + uHeight),
+         1);
+
+      {
+
+         resource_state_guard state(
+            pd3d12commandlist,
+            m_pd3d12resourceTexture,
+            D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+         pd3d12commandlist->CopyTextureRegion(
+            &locationTarget,
+            0,
+            0,
+            0,
+            &locationSource,
+            &boxSource);
+
+      }
+
+      pcontext->endSingleTimeCommands(pcommandbufferReadback);
+
+      D3D12_RANGE rangeRead{
+         (SIZE_T)footprint.Offset,
+         (SIZE_T)uReadbackSize
+      };
+
+      void * pMapped = nullptr;
+
+      auto hrMap = preadback->Map(0, &rangeRead, &pMapped);
+
+      pdevice->defer_throw_hresult(hrMap);
+
+      try
+      {
+
+         auto pimage32Source = (const ::image32_t *)
+            ((const unsigned char *)pMapped + footprint.Offset);
+
+         ppixmap->copy(
+            ppixmap->size(),
+            pimage32Source,
+            (int)footprint.Footprint.RowPitch);
+
+      }
+      catch (...)
+      {
+
+         D3D12_RANGE rangeWritten{0, 0};
+
+         preadback->Unmap(0, &rangeWritten);
+
+         throw;
+
+      }
+
+      D3D12_RANGE rangeWritten{0, 0};
+
+      preadback->Unmap(0, &rangeWritten);
 
    }
 
@@ -2055,8 +2336,8 @@ namespace gpu_directx12
       cmd->SetDescriptorHeaps(1, heaps);
       m_ptexture->m_pd3d12resourceTexture->_set_state(pcommandbuffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
-      int w = m_ptexture->m_textureattributes.m_rectangleTarget.width();
-      int h = m_ptexture->m_textureattributes.m_rectangleTarget.height();
+      int w = m_ptexture->m_textureattributes.m_size.width();
+      int h = m_ptexture->m_textureattributes.m_size.height();
       for (UINT mip = 1; mip < m_iMipCount; mip++)
       {
          for (UINT face = 0; face < m_iLayerCount; face++)

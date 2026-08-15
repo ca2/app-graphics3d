@@ -1,6 +1,6 @@
 // From hello_space (V0idsEmbrace@Twitch)
 // by camilo on 2025-05-07 02:18 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "application.h"
 #include "camera.h"
 #include "impact.h"
@@ -21,6 +21,7 @@
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/render_target.h"
 #include "bred/gpu/texture.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/graphics3d/asset_manager.h"
 #include "bred/graphics3d/camera.h"
 #include "bred/graphics3d/engine.h"
@@ -491,33 +492,41 @@ namespace app_graphics3d_hello_space
 
       auto sizeMainMonitor = system()->windowing()->display()->get_main_monitor_size();
 
+
+      defer_construct_newø(m_pgputexturesiteHelloMultiverseScreen);
+      defer_construct_newø(m_pgputexturesiteHelloMultiverse);
+      defer_construct_newø(m_pgputexturesiteMonitorMultisample);
+      defer_construct_newø(m_pgputexturesiteMonitor2);
+
+
       if (m_pimageHelloMultiverseScreen.ok())
       {
 
-         if (!m_pgputextureHelloMultiverseScreen)
+         if (!m_pgputexturesiteHelloMultiverseScreen->gpu_texture())
          {
 
-            if (defer_constructø(m_pgputextureHelloMultiverseScreen))
+            if (defer_constructø(m_pgputexturesiteHelloMultiverseScreen->m_pgputextureSite))
             {
 
-               m_pgputextureHelloMultiverseScreen->initialize_texture(
-                  pgpucontext, ::i32_rectangle(0, 0, m_pimageHelloMultiverseScreen->width(),
-                                               m_pimageHelloMultiverseScreen->height())); //
+               auto pgputextureHelloMultiverseScreen = m_pgputexturesiteHelloMultiverseScreen->gpu_texture();
 
-               m_pgputextureHelloMultiverseScreen->write_pixels(m_pimageHelloMultiverseScreen);
+               pgputextureHelloMultiverseScreen->create_texture(pgpucontext, m_pimageHelloMultiverseScreen->size());
 
-               constructø(m_pgputextureMonitorMultisample);
+               pgputextureHelloMultiverseScreen->write_pixels(m_pimageHelloMultiverseScreen, {});
 
-               m_pgputextureMonitorMultisample->m_bMultisample = true;
+               constructø(m_pgputexturesiteMonitorMultisample->m_pgputextureSite);
 
-               m_pgputextureMonitorMultisample->initialize_texture(
-                  pgpucontext,
-                                                        ::i32_rectangle(0, 0, sizeMainMonitor.cx, sizeMainMonitor.cy));
+               auto pgputextureMonitorMultisample = m_pgputexturesiteMonitorMultisample->gpu_texture();
 
-               constructø(m_pgputextureMonitor2);
+               pgputextureMonitorMultisample->m_bMultisample = true;
 
-               m_pgputextureMonitor2->initialize_texture(
-                  pgpucontext, ::i32_rectangle(0, 0, sizeMainMonitor.cx, sizeMainMonitor.cy));
+               pgputextureMonitorMultisample->create_texture(pgpucontext, sizeMainMonitor);
+
+               constructø(m_pgputexturesiteMonitor2->m_pgputextureSite);
+               
+               auto pgputextureMonitor2 = m_pgputexturesiteMonitor2->gpu_texture();
+
+               pgputextureMonitor2->create_texture(pgpucontext, sizeMainMonitor);
 
             }
 
@@ -565,10 +574,10 @@ namespace app_graphics3d_hello_space
                   // m_pimageHelloMultiverse->pixmap_t::copy(&pixmap);
                   // m_pimageHelloMultiverse->write_pixels(pixmap);
 
-                  if (defer_constructø(m_pgputextureHelloMultiverse))
+                  if (defer_constructø(m_pgputexturesiteHelloMultiverse->m_pgputextureSite))
                   {
 
-                     m_pgputextureHelloMultiverse->initialize_texture(pgpucontext, ::i32_rectangle(0, 0, cx, cy)); 
+                     m_pgputexturesiteHelloMultiverse->gpu_texture()->create_texture(pgpucontext, { (::i32) cx,(::i32) cy });
                      
                      // (pgpucontext, {ppixmap});
 
@@ -576,35 +585,42 @@ namespace app_graphics3d_hello_space
                   else
                   {
 
-                     auto iTextureWidth = m_pgputextureHelloMultiverse->width();
-                     auto iTextureHeight = m_pgputextureHelloMultiverse->height();
+                     auto iTextureWidth = m_pgputexturesiteHelloMultiverse->width();
+
+                     auto iTextureHeight = m_pgputexturesiteHelloMultiverse->height();
+
                      if (iTextureWidth != cx || iTextureHeight != cy)
                      {
 
-                        m_pgputextureHelloMultiverse->initialize_texture(
-                           pgpucontext, ::i32_rectangle(0, 0, cx, cy));
+                        m_pgputexturesiteHelloMultiverse->gpu_texture()->create_texture(pgpucontext, { (::i32) cx, (::i32) cy });
+
                      }
+
                   }
 
 
-                  if (m_pgputextureHelloMultiverse)
+                  if (m_pgputexturesiteHelloMultiverse)
                   {
 
-                     m_pgputextureHelloMultiverse->write_pixels(ppixmap);
+                     m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(ppixmap, {});
 
 
                      // pgpucontext->copy(m_pgputextureMonitor, m_pgputextureHelloMultiverseScreen, nullptr);
 
-                     pgpucommandbuffer->begin_render(m_pgpushaderBlend, m_pgputextureMonitorMultisample);
+                     auto pgputextureMonitorMultisample = m_pgputexturesiteMonitorMultisample->gpu_texture();
 
-                     auto rectangleMonitor = m_pgputextureMonitorMultisample->rectangle();
+                     pgpucommandbuffer->begin_render(m_pgpushaderBlend, m_pgputexturesiteMonitorMultisample);
+
+                     auto rectangleMonitor = m_pgputexturesiteMonitorMultisample->output_placement();
 
                      pgpucommandbuffer->set_viewport(rectangleMonitor);
                      pgpucommandbuffer->set_scissor(rectangleMonitor);
 
                      auto pbindingsetTextureScreen = m_pgpushaderBlend->binding_set(1);
 
-                     auto pbindingslotsetTextureScreen = m_pgputextureHelloMultiverseScreen->binding_slot_set(
+                     auto pgputextureHelloMultiverseScreen = m_pgputexturesiteHelloMultiverseScreen->gpu_texture();
+
+                     auto pbindingslotsetTextureScreen = pgputextureHelloMultiverseScreen->binding_slot_set(
                         pgpucommandbuffer, pbindingsetTextureScreen);
 
                      pgpucommandbuffer->bind_slot_set(1, pbindingslotsetTextureScreen);
@@ -612,8 +628,10 @@ namespace app_graphics3d_hello_space
 
                      auto pbindingsetTexture = m_pgpushaderBlend->binding_set(2);
 
+                     auto pgputextureHelloMultiverse = m_pgputexturesiteHelloMultiverse->gpu_texture();
+
                      auto pbindingslotsetTexture =
-                        m_pgputextureHelloMultiverse->binding_slot_set(pgpucommandbuffer, pbindingsetTexture);
+                        pgputextureHelloMultiverse->binding_slot_set(pgpucommandbuffer, pbindingsetTexture);
 
                      pgpucommandbuffer->bind_slot_set(2, pbindingslotsetTexture);
 
@@ -643,7 +661,7 @@ namespace app_graphics3d_hello_space
 
                      m_pgpushaderBlend->unbind(pgpucommandbuffer);
 
-                     pgpucontext->copy(m_pgputextureMonitor2, m_pgputextureMonitorMultisample, nullptr, nullptr);
+                     pgpucontext->copy(m_pgputexturesiteMonitor2, m_pgputexturesiteMonitorMultisample, nullptr, nullptr);
 
                      if (m_prenderable)
                      {
@@ -653,7 +671,7 @@ namespace app_graphics3d_hello_space
                         if (prenderableMonitor)
                         {
 
-                           prenderableMonitor->m_ptextureTexture = m_pgputextureMonitor2;
+                           prenderableMonitor->m_ptextureTexture = m_pgputexturesiteMonitor2->gpu_texture();
 
                         }
 

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "image.h"
 #include "graphics.h"
 #include "aura/graphics/draw2d/lock.h"

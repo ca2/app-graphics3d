@@ -1,6 +1,6 @@
 // Merge gpu_opengl/diffuse_irradiance_map.h with gpu_vulkan::context::generatePreFilteredEnvMap by
 // camilo on 2025-09-29 18:34 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "specular_map.h"
 #include "app-graphics3d/gpu_vulkan/command_buffer.h"
 #include "app-graphics3d/gpu_vulkan/context.h"

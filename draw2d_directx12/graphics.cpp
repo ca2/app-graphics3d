@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "graphics.h"
 #include "bitmap.h"
 #include "path.h"
@@ -33,6 +33,7 @@
 #include "bred/gpu/layer.h"
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/swap_chain.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/gpu/types.h"
 #include "bred/graphics3d/types.h"
 #include "gpu_directx12/context.h"
@@ -320,16 +321,26 @@ namespace draw2d_directx12
 
       auto pwindow = puserinteraction->window();
 
-      auto rectanglePlacement = pwindow->get_window_rectangle();
+      //auto rectanglePlacement = pwindow->get_window_rectangle();
 
       auto pgpuapproach = m_papplication->get_gpu_approach();
 
       auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
 
-      auto pgpucontextNew = pgpudevice->create_draw2d_gpu_context(
+      auto pgpucontextNew = pgpudevice->allocate_gpu_context();
+
+      //::i32_rectangle rectanglePlacement(sizeParameter);
+
+      ::i32_size sizeRaw = pwindow->get_raw_buffer_size().maximum(sizeParameter);
+
+      pgpucontextNew->create_draw2d_gpu_context(
          //::gpu::e_output_gpu_buffer,
+         pgpudevice, 
          m_pacmeuserinteractionAffinity->acme_windowing_window(),
-         sizeParameter);
+         {},
+         {},
+         sizeParameter,
+         sizeRaw);
 
       set_gpu_context(pgpucontextNew);
 
@@ -5523,7 +5534,9 @@ namespace draw2d_directx12
 
          auto prendertarget = prenderer->render_target();
 
-         ::cast < ::gpu_directx12::texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
+         auto ptexturesite = prendertarget->current_texture(::gpu::current_layer(), true);
+
+         ::cast < ::gpu_directx12::texture > ptexture = ptexturesite->gpu_texture();
 
          //if (!ptexture->m_prendertargetview)
          //{
@@ -7798,7 +7811,7 @@ namespace draw2d_directx12
 
          //return false;
 
-         throw ::exception(error_null_pointer);
+         //throw ::exception(error_null_pointer);
 
       }
 

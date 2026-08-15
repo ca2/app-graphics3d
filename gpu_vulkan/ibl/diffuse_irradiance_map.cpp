@@ -1,6 +1,6 @@
 // Merge gpu_opengl/diffuse_irradiance_map.h with gpu_vulkan::context::generateIrradianceMap by
 // camilo on 2025-09-29 18:21 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "diffuse_irradiance_map.h"
 #include "acme/prototype/mathematics/mathematics.h"
 #include "bred/graphics3d/_functions.h"

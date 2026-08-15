@@ -2,7 +2,7 @@
 // camilo on 2025-07-16 06:10 <3ThomasBorregaardSørensen!!
 // From V0idsEmbrace@Twich continuum project
 // by camilo on 2025-05-17 02:40 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "memory_buffer.h"
 #include "model_buffer.h"
 //#include "utilities.h"
@@ -15,6 +15,7 @@
 #include "aura/platform/application.h"
 //#include "bred/user/user/graphics3d.h"
 #include "bred/gpu/model_buffer.h"
+#include "bred/gpu/model_data.h"
 //#include "gpu_directx12/buffer.h"
 #include "gpu_directx12/context.h"
 #include "gpu_directx12/renderer.h"
@@ -237,6 +238,13 @@ namespace gpu_directx12
    void model_buffer::bind2(::gpu::command_buffer* pgpucommandbuffer)
    {
 
+      if (m_pmodeldatabase2 && m_pmodeldatabase2->is_dummy())
+      {
+
+         return;
+
+      }
+
       if (!m_pbufferVertex && !m_pbufferIndex)
       {
 
@@ -376,7 +384,7 @@ namespace gpu_directx12
 
       }
 
-      if (m_bNew)
+      if (m_bNew && !(m_pmodeldatabase2 && m_pmodeldatabase2->is_dummy()))
       {
 
          return;

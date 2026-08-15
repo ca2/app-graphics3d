@@ -86,16 +86,16 @@ namespace gpu_vulkan
       void draw2d_on_end_draw(::gpu::graphics *pgpugraphics) override;
       
 
-      void merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture* ptextureTarget, ::pointer_array < ::gpu::layer >* playera) override;
+      void merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site* ptexturesiteOutput, ::pointer_array < ::gpu::layer >* playera) override;
 
-      void copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * ptextureTarget, ::gpu::texture * ptextureSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
+      void copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site * ptexturesiteOutput, ::gpu::texture_site * ptexturesiteInput, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
 
-      void copy(::gpu::texture* ptextureTarget, ::gpu::texture* ptextureSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
+      void copy(::gpu::texture_site* ptexturesiteOutput, ::gpu::texture_site* ptexturesiteInput, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady) override;
 
       
       void set_matrix_uniform(const ::gpu::payload & uniformMatrix) override;
 
-      void _001BeginRenderPass(::gpu::command_buffer *pcommandbuffer, ::gpu::texture * pgputexture = nullptr);
+      void _001BeginRenderPass(::gpu::command_buffer *pcommandbuffer, ::gpu::texture_site * pgputexturesite = nullptr);
       //void _001BeginRenderPassWithCubemap(::gpu::command_buffer *pcommandbuffer, ::gpu::texture * pgputexture, int iFace, ::gpu::enum_scene escene);
       void _001EndRenderPass(::gpu::command_buffer *pcommandbuffer);
 
@@ -115,7 +115,7 @@ namespace gpu_vulkan
       VkCommandPool getPresentCommandPool() { return m_vkcommandpoolPresent; }
 
 
-      void _create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, const ::i32_size & size) override;
+      void _create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw) override;
 
       //virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::i32_size& size);
 
@@ -155,7 +155,7 @@ namespace gpu_vulkan
 
       //graphics3d_vulkan::context
 
-      void begin_render(::gpu::command_buffer *pgpucommandbuffer,::gpu::texture * pgputexture = nullptr)override;
+      void begin_render(::gpu::command_buffer *pgpucommandbuffer,::gpu::texture_site * pgputexturesite = nullptr)override;
       void end_render(::gpu::command_buffer *pgpucommandbuffer)override;
 
       //VkCommandPool getCommandPool() { return m_vkcommandpool; }
@@ -243,7 +243,7 @@ namespace gpu_vulkan
       void onBeforePreloadGlobalAssets() override;
 
 
-      ::pointer<::gpu::texture> create_empty_texture() override;
+      ::pointer<::gpu::texture_site> create_empty_texture() override;
 
 
       //void copy(::gpu::texture* ptexture) override;
@@ -312,7 +312,7 @@ namespace gpu_vulkan
     ::memory rgba_from_b_g_vert_memory() override;
     ::memory rgba_from_b_g_frag_memory() override;
 
-   ::pointer < ::gpu::texture> rgba_from_b_g(::gpu::texture * pgputextureMetallic, ::gpu::texture * pgputextureRoughness) override;
+   ::pointer < ::gpu::texture_site> rgba_from_b_g(::gpu::texture * pgputextureMetallic, ::gpu::texture * pgputextureRoughness) override;
 
    };
 

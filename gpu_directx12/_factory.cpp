@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "approach.h"
 #include "binding.h"
 #include "block.h"
@@ -13,6 +13,7 @@
 #include "model_buffer.h"
 #include "object.h"
 #include "offscreen_render_target_view.h"
+#include "queue.h"
 #include "renderer.h"
 #include "semaphore.h"
 #include "frame.h"
@@ -24,6 +25,7 @@
 #include "bred/gpu/frame_ephemeral.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
+#include "bred/gpu/texture_synchronization.h"
 //#include "direct2d_draw2d_swap_chain.h"
 #include "ibl/diffuse_irradiance_map.h"
 #include "ibl/equirectangular_cubemap.h"
@@ -49,6 +51,8 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
 
    pfactory->add_factory_item < ::gpu_directx12::device, ::gpu::device >();
 
+   pfactory->add_factory_item < ::gpu_directx12::queue, ::gpu::queue >();
+
    pfactory->add_factory_item < ::gpu_directx12::offscreen_render_target_view, ::gpu::render_target >();
    pfactory->add_factory_item < ::gpu_directx12::swap_chain, ::gpu::swap_chain >();
 
@@ -60,6 +64,8 @@ __FACTORY_EXPORT void gpu_directx12_factory(::factory::factory * pfactory)
    pfactory->add_factory_item<::gpu_directx12::fence, ::gpu::fence>();
    pfactory->add_factory_item<::gpu_directx12::semaphore, ::gpu::semaphore>();
    pfactory->add_factory_item < ::gpu::layer >();
+
+   pfactory->add_factory_item<::gpu::texture_synchronization>();
 
    pfactory->add_factory_item < ::gpu::pixmap >();
 

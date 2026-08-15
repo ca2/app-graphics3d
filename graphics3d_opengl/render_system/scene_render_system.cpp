@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "scene_render_system.h"
 #include "bred/gpu/render_target.h"
 #include "bred/graphics3d/engine.h"

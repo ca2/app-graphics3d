@@ -233,10 +233,10 @@ namespace gpu_vulkan
       void on_new_frame() override;
 
 
-      void _set_image(::gpu::texture * pgputexture, const ::i32_rectangle& rectangle, bool bYSwap);
+      void _set_image(::gpu::texture_site * pgputexturesite, const ::i32_rectangle& rectangle, bool bYSwap);
 
-      void _blend_image(::gpu::texture* pgputexture, const ::i32_rectangle& rectangle, bool bYSwap);
-      void _on_graphics_end_draw(::gpu::texture* pgputexture, const ::i32_rectangle& rectangle);
+      void _blend_image(::gpu::texture_site* pgputexturesite, const ::i32_rectangle& rectangle, bool bYSwap);
+      void _on_graphics_end_draw(::gpu::texture_site* pgputexturesite, const ::i32_rectangle& rectangle);
 
       void _blend_renderer(::gpu_vulkan::renderer* prendererSrc, bool bYSwap);
       void _on_graphics_end_draw(::gpu_vulkan::renderer * prendererSrc);

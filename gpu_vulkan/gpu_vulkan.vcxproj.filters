@@ -44,7 +44,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
+    <ClInclude Include="platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="_.h">
@@ -241,7 +241,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="framework.cpp">
+    <ClCompile Include="platform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="_factory.cpp">
@@ -470,6 +470,12 @@
     <CustomBuild Include="shader\rgba_from_b_g.vert">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="shader\merge_layer.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\merge_layer.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\image_blend.frag.spv.inl">
@@ -530,6 +536,12 @@
       <Filter>Header Files\shader</Filter>
     </None>
     <None Include="shader\rgba_from_b_g.vert.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\merge_layer.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\merge_layer.vert.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
   </ItemGroup>

@@ -1,6 +1,6 @@
 // From gpu_directx11/memory_buffer.cpp by
 // camilo on 2025-07-16 06:23 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "device.h"
 #include "window_attachment.h"
 #include "frame_storage.h"

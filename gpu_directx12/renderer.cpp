@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "approach.h"
 #include "command_buffer.h"
 #include "depth_stencil.h"
@@ -17,6 +17,7 @@
 //#include "bred/gpu/layer.h"
 #include "bred/gpu/frame.h"
 #include "bred/gpu/types.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/graphics3d/types.h"
 #include "gpu_directx12/shader.h"
 #include "acme/parallelization/synchronous_lock.h"
@@ -786,7 +787,9 @@ float4 main(PSInput input) : SV_TARGET {
          if (pgpurendertargetview)
          {
 
-            ::cast < texture > ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_layer());
+            auto ptexturesiteCurrent = pgpurendertargetview->current_texture(::gpu::current_layer(), true);
+
+            ::cast < texture > ptextureCurrent = ptexturesiteCurrent->gpu_texture();
 
             auto presourceTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
 
@@ -1186,7 +1189,9 @@ float4 main(PSInput input) : SV_TARGET {
       // Setup footprint
       UINT64 totalBytes = 0;
 
-      m_pgpucontext->m_pgpudevice->m_pd3d12device->GetCopyableFootprints(
+      ::cast < ::gpu_directx12::device > pgpudevice = m_pgpucontext->m_pgpudevice;
+
+      pgpudevice->m_pd3d12device->GetCopyableFootprints(
          &m_desc,
          0, 1, 0,
          &m_footprint, nullptr, nullptr, &totalBytes);
@@ -1347,7 +1352,8 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast < ::gpu_directx12::renderer > prenderer = m_pgpucontext->m_pgpurenderer;
       ::cast < render_target_view > prendertargetview = prenderer->render_target();
       ::cast < offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
-      ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_layer());
+      auto ptexturesiteCurrent = poffscreenrendertargetview->current_texture(::gpu::current_layer(), true);
+      ::cast < texture > ptextureCurrent = ptexturesiteCurrent->gpu_texture();
       ID3D12Resource *presourceOffscreenTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
 
 
@@ -1546,7 +1552,8 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast< device > pgpudevice = pgpucontext->m_pgpudevice;
       ID3D12Device* device = pgpudevice->m_pd3d12device;
       //ID3D11DeviceContext* context = pgpucontext->m_pcontext;
-      ::cast < texture > ptextureCurrent = poffscreenrendertargetview->current_texture(::gpu::current_layer());
+      auto ptexturesiteCurrent = poffscreenrendertargetview->current_texture(::gpu::current_layer(), true);
+      ::cast < texture > ptextureCurrent = ptexturesiteCurrent->gpu_texture();
       ID3D12Resource *presourceOffscreenTexture = ptextureCurrent->m_pd3d12resourceTexture->m_presource;
       //if (!pdevice || !context || !offscreenTexture)
       if (!device || !presourceOffscreenTexture)
@@ -3361,7 +3368,9 @@ float4 main(PSInput input) : SV_TARGET {
    void renderer::blend(::gpu::layer * pgpulayer)
    {
 
-      ::cast < texture > ptexture = pgpulayer->texture(false);
+      auto ptexturesite = pgpulayer->texture(false);
+
+      ::cast < texture > ptexture = ptexturesite->gpu_texture();
 
       auto pshader = get_image_blend_shader();
 
@@ -3371,14 +3380,14 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pgpurendertarget = this->render_target();
 
-      auto ptextureTarget = pgpurendertarget->current_texture(::gpu::current_layer());
+      auto ptexturesiteTarget = pgpurendertarget->current_texture(::gpu::current_layer(), true);
 
-      pshader->bind(pcommandbuffer, ptextureTarget);
-      pshader->bind_source(pcommandbuffer, ptexture);
+      pshader->bind(pcommandbuffer, ptexturesiteTarget);
+      pshader->bind_source(pcommandbuffer, ptexturesite);
 
       auto sizeHost = m_pgpucontext->size();
 
-      const auto& rect = pgpulayer->texture(false)->rectangle();
+      const auto& rect = pgpulayer->texture(false)->output_placement();
       float left = ((float)rect.left / (float) sizeHost.width()) * 2.0f - 1.0f;
       float right = ((float)rect.right / (float) sizeHost.width()) * 2.0f - 1.0f;
       float top = 1.0f - ((float)rect.top / (float) sizeHost.height()) * 2.0f;
@@ -3756,13 +3765,13 @@ float4 main(PSInput input) : SV_TARGET {
       if (pgpulayer)
       {
 
-         ptextureCurrent = pgpulayer->source_texture();
+         ptextureCurrent = pgpulayer->texture(true)->gpu_texture();
 
       }
       else
       {
 
-         ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_layer());
+         ptextureCurrent = pgpurendertargetview->current_texture(::gpu::current_layer(), true)->gpu_texture();
 
       } 
 
@@ -3771,6 +3780,17 @@ float4 main(PSInput input) : SV_TARGET {
       ::cast < command_buffer > pcommandbuffer = getCurrentCommandBuffer2(pgpulayer2);
 
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
+
+      // D3D11-on-12 owns the state transitions for Direct2D layers.  Recording
+      // a D3D12 color-attachment transition here is too early: this command
+      // list is submitted only after Direct2D releases the wrapped resource.
+      if (m_pgpucontext->m_bD3D11On12Shared
+         && m_pgpucontext->m_escene == ::gpu::e_scene_2d)
+      {
+
+         return;
+
+      }
 
       ptextureCurrent->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
@@ -3936,14 +3956,12 @@ float4 main(PSInput input) : SV_TARGET {
                         nullptr
                      );
 
-
                      float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
                      pcommandlist->ClearRenderTargetView(
-   ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
-   clearColor,
-   0,
-   nullptr
-);
+                        ptextureCurrent->m_pheapRenderTargetView->GetCPUDescriptorHandleForHeapStart(),
+                        clearColor,
+                        0,
+                        nullptr);
 
                   }
                //}
@@ -4194,7 +4212,9 @@ float4 main(PSInput input) : SV_TARGET {
 
       auto pgpurendertarget = this->render_target();
 
-      ::cast<::gpu_directx12::texture> ptexture = pgpulayer->texture(true);
+      auto ptexturesite = pgpulayer->texture(true);
+
+      ::cast<::gpu_directx12::texture> ptexture = ptexturesite->gpu_texture();
 
       ::cast<command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 
@@ -5526,7 +5546,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       }
 
-      m_pgpucontext->set_placement(prenderer->m_pgpucontext->get_placement());
+      m_pgpucontext->set_input_placement(prenderer->m_pgpucontext->output_placement());
 
       //VkImage image = prenderer->m_prendertargetview->m_images[prenderer->get_frame_index()];
 

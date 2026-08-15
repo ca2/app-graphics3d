@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 //#include "basic_render_system.h"
 //// libs
 //	

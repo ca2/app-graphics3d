@@ -1,11 +1,13 @@
 // From gpu_directx12::device by
 // camilo on 2025-05-27 04:54 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "approach.h"
 //#include "buffer.h"
 #include "device.h"
+#include "fence.h"
 #include "physical_device.h"
 #include "program.h"
+#include "queue.h"
 #include "renderer.h"
 #include "shader.h"
 #include "swap_chain.h"
@@ -1435,6 +1437,233 @@ namespace gpu_directx12
 
    }
 
+   class device::d3d11on12 * device::d3d11on12()
+   {
+
+      //auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
+
+      //if (this != pgpuwindowattachment->window_context())
+      //{
+
+      //   ::cast < context > pgpucontextWindow = pgpuwindowattachment->window_context();
+
+      //   return pgpucontextWindow->d3d11on12();
+
+      //}
+
+      {
+
+         defer_construct_newø(m_pd3d11on12);
+
+         if (!m_pd3d11on12->m_pdxgidevice)
+         {
+
+            //          {
+
+          //      ::gpu_directx12::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
+
+                //m_pgpudevice = ::gpu::swap_chain::m_pgpudevice;
+
+                ///::cast < ::gpu_directx12::device > pdevice = m_pgpudevice;
+
+            ::cast < ::gpu_directx12::queue > pqueueMain = graphics_queue();
+
+            auto pd3d12commandqueueMain = pqueueMain->m_pd3d12commandqueue;
+
+            assert(pd3d12commandqueueMain && "Command queue must be initialized before D3D11On12CreateDevice");
+
+            //auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pac);
+
+            //::cast < context > pcontextMainDraw2d = pgpuwindowattachment->draw2d_context();
+
+            D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
+
+            UINT numFeatureLevels = _countof(featureLevels);
+
+            IUnknown * unknowna[] =
+            {
+               pd3d12commandqueueMain
+            };
+
+            HRESULT hrD3D11On12 = D3D11On12CreateDevice(
+               m_pd3d12device,
+               D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+               featureLevels,
+               numFeatureLevels,
+               unknowna,
+               1,
+               0,
+               &m_pd3d11on12->m_pd3d11device,
+               &m_pd3d11on12->m_pd3d11devicecontextMain,
+               nullptr
+            );
+
+            ::defer_throw_hresult(hrD3D11On12);
+
+            ::defer_throw_hresult(m_pd3d11on12->m_pd3d11device.as(m_pd3d11on12->m_pd3d11on12)); // Query interface
+
+            ::defer_throw_hresult(m_pd3d11on12->m_pd3d11device.as(m_pd3d11on12->m_pdxgidevice));
+
+            //::defer_throw_hresult(m_pdxgiswapchain3.as(m_pdxgiswapchain1));
+
+            //DXGI_SWAP_CHAIN_DESC swapchaindesc1{};
+
+            //int FrameCount = 2;
+
+            //if (SUCCEEDED(m_pdxgiswapchain3->GetDesc(&swapchaindesc1)))
+            //{
+
+            //   FrameCount = swapchaindesc1.BufferCount;
+
+            //}
+
+            //m_frameIndex = m_pdxgiswapchain3->GetCurrentBackBufferIndex();
+
+            //// Create synchronization objects and wait until assets have been uploaded to the GPU.
+            //{
+            //   ::defer_throw_hresult(pd3d12device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __interface_of(m_fence)));
+            //   m_fenceValue = 1;
+
+            //   // Create an event handle to use for frame synchronization.
+            //   m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+            //   if (m_fenceEvent == nullptr)
+            //   {
+            //      ::defer_throw_hresult(HRESULT_FROM_WIN32(GetLastError()));
+            //   }
+
+            //}
+
+            ////_defer_d3d11on12_wrapped_resources();
+            //// Create descriptor heaps.
+
+            //{
+            //   // Describe and create a render target view (RTV) descriptor heap.
+            //   D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+            //   rtvHeapDesc.NumDescriptors = FrameCount;
+            //   rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+            //   rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+            //   ::defer_throw_hresult(pd3d12device->CreateDescriptorHeap(&rtvHeapDesc, __interface_of(m_rtvHeap)));
+
+            //   m_rtvDescriptorSize = pd3d12device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+            //}
+
+            //// Create frame resources.
+            //{
+
+            //   CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+
+            //   // Create a RTV for each frame.
+            //   for (UINT n = 0; n < FrameCount; n++)
+            //   {
+
+            //      auto & prendertarget = m_renderTargets[n];
+
+            //      ::defer_throw_hresult(
+            //         m_pdxgiswapchain1->GetBuffer(
+            //            n, __interface_of(prendertarget)));
+
+            //      pd3d12device->CreateRenderTargetView(prendertarget, nullptr, rtvHandle);
+
+            //      rtvHandle.Offset(1, m_rtvDescriptorSize);
+
+            //   }
+
+            //}
+
+            //::draw2d_direct2d::swap_chain::initialize_gpu_swap_chain(pgpudevice, pwindow);
+
+
+
+         }
+
+
+
+      }
+      return m_pd3d11on12;
+
+   }
+
+
+   IDXGIDevice * device::_get_dxgi_device()
+   {
+
+      return d3d11on12()->m_pdxgidevice;
+
+   }
+
+   
+   ::pointer< ::gpu::queue > device::create_queue(bool bCopy)
+   {
+
+      ::pointer < ::gpu_directx12::queue>  pqueue;
+
+      pqueue = createø<::gpu::queue>();
+
+      D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+
+      if (bCopy)
+      {
+
+         pqueue->m_ecommandlisttype = D3D12_COMMAND_LIST_TYPE_COPY;
+
+         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_COPY;
+
+      }
+      else
+      {
+
+         pqueue->m_ecommandlisttype = D3D12_COMMAND_LIST_TYPE_DIRECT;
+
+         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT; // or COMPUTE, COPY
+         queueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
+         queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE; // Use NONE or D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT
+         queueDesc.NodeMask = 0; // For single-GPU systems
+
+      }
+
+      //::cast < device > pdevice = m_pgpudevice;
+
+      HRESULT hr = m_pd3d12device->CreateCommandQueue(
+         &queueDesc, __interface_of(pqueue->m_pd3d12commandqueue));
+
+      ::defer_throw_hresult(hr);
+
+      return pqueue;
+
+   }
+
+
+   ::gpu::queue * device::transfer_queue()
+   {
+
+      if (!m_pqueueCopy)
+      {
+
+         m_pqueueCopy = create_queue(true);
+
+      }
+
+      return m_pqueueCopy;
+
+   }
+
+
+   ::gpu::queue * device::graphics_queue()
+   {
+
+      if (!m_pqueueMain)
+      {
+
+         m_pqueueMain = create_queue(false);
+
+      }
+
+      return m_pqueueMain;
+
+   }
+
+
 
    int device::get_type_size(::gpu::enum_type etype)
    {
@@ -1599,6 +1828,26 @@ namespace gpu_directx12
       return pathShader;
 
    }
+
+
+   //::pointer < ::gpu::fence > device::create_gpu_fence(::u32 uInitialPayload)
+   //{
+
+   //   auto pgpufence = createø<::gpu::fence>();
+
+   //   pgpufence->initialize_gpu_fence(this, false);
+
+   //   //::cast < ::gpu_directx12::fence > pfence = pgpufence;
+
+   //   //HRESULT hrCreateFeence =
+   //   //   m_pd3d12device->CreateFence(uInitialPayload, D3D12_FENCE_FLAG_NONE,
+   //   //      __interface_of(pfence->m_pfence));
+
+   //   //::defer_throw_hresult(hrCreateFeence);
+
+   //   return pgpufence;
+
+   //}
 
 
 } // namespace gpu_directx12

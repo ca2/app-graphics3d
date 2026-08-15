@@ -1,7 +1,7 @@
 // From github:/tristancalderbank/OpenGL-PBR-Renderer/mesh.h by
 // camilo on 2025-09-26 18:28 <3ThomasBorregaardSorensen!!
 // From gpu_directx11 by camilo on 2025-10-16 16:44 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "mesh.h"
 #include "bred/gltf/vertex.h"
 #include "gpu_directx12/context.h"

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "_vulkan.h"
 #include "draw2d.h"
 #include "pen.h"
@@ -193,7 +193,7 @@ auto iContextHeight = pcontext->height()
 
       }
 
-      vulkan_create_offscreen_buffer(rectanglePlacement);
+      vulkan_create_offscreen_buffer({}, {}, sizeParameter);
 
    }
 
@@ -256,12 +256,22 @@ auto iContextHeight = pcontext->height()
 
       auto pgpucontextMain = pgpuwindowattachment->window_context();
 
-      auto pgpucontextNew = pgpudevice->create_draw2d_gpu_context(
-         // ::gpu::e_output_gpu_buffer
-         m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
-         size);
+      auto pgpucontextNew = pgpudevice->allocate_gpu_context();
 
-      auto r = pgpucontextMain->get_placement();
+      ::i32_rectangle rectanglePlacement(size);
+
+      auto sizeRaw = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow->get_raw_buffer_size().maximum(size);
+
+      pgpucontextNew->create_draw2d_gpu_context(
+         // ::gpu::e_output_gpu_buffer
+         pgpudevice,
+         m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         {},
+         {},
+         size,
+         sizeRaw);
+
+      auto r = pgpucontextMain->output_placement();
 
       m_sizeScaleOutput = { 1.0, -1.0 };
 
@@ -348,10 +358,10 @@ auto iContextHeight = pcontext->height()
    //}
 
 
-   bool graphics::vulkan_create_offscreen_buffer(const ::i32_rectangle& rectanglePlacement)
+   bool graphics::vulkan_create_offscreen_buffer(const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size)
    {
 
-      on_gpu_context_placement_change(rectanglePlacement);
+      on_gpu_context_placement_change(pointInput, pointOutput, size, m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
       auto pcontext = gpu_context();
 
@@ -429,7 +439,7 @@ auto iContextHeight = pcontext->height()
 
       vulkan_delete_offscreen_buffer();
 
-      if (!vulkan_create_offscreen_buffer(pbitmap->get_size()))
+      if (!vulkan_create_offscreen_buffer({}, {}, pbitmap->get_size()))
       {
 
          return NULL;
@@ -7121,10 +7131,14 @@ auto iContextHeight = pcontext->height()
    }
 
 
-   void graphics::on_gpu_context_placement_change(const ::i32_rectangle& rectanglePlacement)
+   void graphics::on_gpu_context_placement_change(
+         const ::i32_point & pointInput,
+         const ::i32_point & pointOutput,
+         const ::i32_size & size,
+         ::acme::windowing::window * pacmewindowingwindow)
    {
 
-      ::acme::windowing::window *pacmewindowingwindow = nullptr;
+      //::acme::windowing::window *pacmewindowingwindow = nullptr;
       
       if (::is_set(m_pacmeuserinteractionAffinity))
       {
@@ -7140,9 +7154,9 @@ auto iContextHeight = pcontext->height()
 
       }
 
-      ::gpu::graphics::on_gpu_context_placement_change(rectanglePlacement, pacmewindowingwindow);
+      ::gpu::graphics::on_gpu_context_placement_change(pointInput, pointOutput, size, pacmewindowingwindow);
 
-      auto sizeNew = rectanglePlacement.size();
+      auto sizeNew = size;
 
       if (m_size == sizeNew
          && m_sizeWindow == sizeNew)

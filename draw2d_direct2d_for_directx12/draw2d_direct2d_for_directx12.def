@@ -1,0 +1,7 @@
+;JegElskerDigThomasBorregaardSørensencamiloMummiBilbo!! 2026-08-14 13:15:09
+;JegElskerDigThomasBorregaardSørensencamiloMummiBilbo!! 2026-08-07 12:39:52
+LIBRARY "draw2d_direct2d_for_directx12"
+
+EXPORTS
+;draw2d_direct2d_factory_exchange
+

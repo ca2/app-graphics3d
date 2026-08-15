@@ -39,7 +39,11 @@ namespace draw2d_vulkan
       long long decrement_reference_count() override;
 #endif
 
-      void on_gpu_context_placement_change(const ::i32_rectangle& rectanglePlacement);
+      void on_gpu_context_placement_change(
+         const ::i32_point & pointInput,
+         const ::i32_point & pointOutput,
+         const ::i32_size & size,
+         ::acme::windowing::window * pacmewindowingwindow);
 
       void on_set_gpu_context() override;
 
@@ -83,7 +87,7 @@ namespace draw2d_vulkan
       void create_for_window_draw2d(::user::interaction* puserinteraction, const ::i32_size& size) override;
       //void create_compatible_graphics(::draw2d::graphics* pgraphics) override;
 
-      virtual bool vulkan_create_offscreen_buffer(const ::i32_rectangle& rectanglePlacement);
+      virtual bool vulkan_create_offscreen_buffer(const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size);
       virtual bool vulkan_delete_offscreen_buffer();
 
       //virtual bool vulkan_defer_create_window_context(::windowing::window * pwindow);

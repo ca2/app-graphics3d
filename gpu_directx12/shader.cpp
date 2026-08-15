@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 // Co-creating with V0idsEmbrace@Twitch with
 // camilo on 2025-05-19 04:59 <3ThomasBorregaardSorensen!!
 #include "approach.h"
@@ -16,6 +16,7 @@
 #include "texture.h"
 #include "bred/gpu/binding.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/gpu/types.h"
 #include "acme/operating_system/windows_common/com/hresult_exception.h"
 #include <d3dcompiler.h>
@@ -959,9 +960,9 @@ namespace gpu_directx12
    //}
 
 
-   void shader::_defer_set_current_pipeline(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * pgputexture)
+   void shader::_defer_set_current_pipeline(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site * pgputexturesite)
    {
-      ::cast<::gpu_directx12::texture> ptexture = pgputexture;
+      ::cast<::gpu_directx12::texture> ptexture = pgputexturesite->gpu_texture();
       if (m_ppipelinestate &&
          m_dxgiformatRenderTargetView == ptexture->m_resourcedesc.Format &&
          m_bPipelineBlendEnabled == m_bEnableBlend)
@@ -1243,14 +1244,15 @@ namespace gpu_directx12
    //}
 
 
-   void shader::bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
+   void shader::bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesiteTarget)
    {
-      _defer_set_current_pipeline(pgpucommandbuffer, pgputextureTarget);
+      
+      _defer_set_current_pipeline(pgpucommandbuffer, pgputexturesiteTarget);
 
       _bind(pgpucommandbuffer);
 
 
-      ::cast < ::gpu_directx12::texture > ptextureDst = pgputextureTarget;
+      ::cast < ::gpu_directx12::texture > ptextureDst = pgputexturesiteTarget->gpu_texture();
 
       if (!ptextureDst->m_pheapRenderTargetView)
       {
@@ -1299,10 +1301,10 @@ namespace gpu_directx12
 
 
       void shader::defer_bind_frame_buffer_layer(::gpu::command_buffer *pgpucommandbuffer,
-                                              ::gpu::texture *pgputextureTarget)
+                                              ::gpu::texture_site *pgputexturesiteTarget)
    {
 
-      ::cast<texture> ptexture = pgputextureTarget;
+      ::cast<texture> ptexture = pgputexturesiteTarget->gpu_texture();
 
       if (ptexture->m_textureattributes.m_etexture == ::gpu::e_texture_cube_map)
       {
@@ -1332,18 +1334,18 @@ namespace gpu_directx12
       }
    }
 
-      void shader::on_bind_already_bound(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
+      void shader::on_bind_already_bound(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesiteTarget)
    {
 
-      defer_bind_frame_buffer_layer(pgpucommandbuffer, pgputextureTarget);
+      defer_bind_frame_buffer_layer(pgpucommandbuffer, pgputexturesiteTarget);
    }
 
-   void shader::bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptextureSource, int iSlot)
+   void shader::bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *ptexturesiteSource, int iSlot)
    {
 
       int iFrameIndex = pgpucommandbuffer->m_iCommandBufferFrameIndex2;
 
-      if (ptextureSource == m_pgputextureBound && 
+      if (ptexturesiteSource->gpu_texture() == m_pgputextureBound &&
          iFrameIndex == m_iFrameBound &&
          pgpucommandbuffer->m_iSerial == m_iCommandBufferSerialSourceBound)
       {
@@ -1352,7 +1354,7 @@ namespace gpu_directx12
 
       }
 
-      ::cast < ::gpu_directx12::texture > ptextureSrc = ptextureSource;
+      ::cast < ::gpu_directx12::texture > ptextureSrc = ptexturesiteSource->gpu_texture();
 
       if (!ptextureSrc->m_pheapShaderResourceView)
       {
@@ -1452,7 +1454,7 @@ namespace gpu_directx12
 
       uSet = pbindingslot->m_iSet;
 
-      pbindingslot->m_ptexture = ptextureSrc;
+      pbindingslot->m_ptexturesite = ptextureSrc;
 
       // if (m_bindingSampler.is_set())
       //    uSet = m_bindingSampler.m_uSet;
@@ -1601,7 +1603,7 @@ namespace gpu_directx12
 
       //}
 
-      m_pgputextureBound = ptextureSource;
+      m_pgputextureBound = ptexturesiteSource->gpu_texture();
 
       m_iFrameBound = iFrameIndex;
 
@@ -1662,6 +1664,8 @@ namespace gpu_directx12
          m_iPush = 0;
 
          m_iHeapIndex = 0;
+
+         m_iHeapSamplerIndex = 0;
 
       }
 
@@ -1862,7 +1866,7 @@ namespace gpu_directx12
                auto &bindingslot = pgpubindingslotset->element_at(i);
                if (bindingslot.m_pbinding->is_image_sampler())
                {
-                  ::cast<::gpu_directx12::texture> ptexture = bindingslot.m_ptexture;
+                  ::cast<::gpu_directx12::texture> ptexture = bindingslot.m_ptexturesite->gpu_texture();
                   if (!ptexture->m_pheapShaderResourceView)
                   {
 
@@ -1911,7 +1915,7 @@ namespace gpu_directx12
 
             //auto &pheapSampler = pbindingset->m_heapaSampler[iFrame];
             auto &bindingslot = pgpubindingslotset->element_at(0);
-            ::cast<::gpu_directx12::texture> ptexture = bindingslot.m_ptexture;
+            ::cast<::gpu_directx12::texture> ptexture = bindingslot.m_ptexturesite->gpu_texture();
             // if (!ptexture->m_pheapSampler)
             //{
 

@@ -1,5 +1,5 @@
 // Created by camilo on 2025-06-11 02:34 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "command_buffer.h"
 #include "window_attachment.h"
 #include "frame.h"
@@ -10,6 +10,7 @@
 #include "windowing_win32/window.h"
 #include "bred/gpu/binding.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
 
@@ -74,7 +75,7 @@ namespace gpu_directx12
    //}
 
 
-   void swap_chain::present(::gpu::texture *pgputexture, ::gpu::command_buffer *pgpucommandbuffer)
+   void swap_chain::present(::gpu::texture_site *pgputexturesite, ::gpu::command_buffer *pgpucommandbuffer)
    {
 
       ::cast < renderer > pgpurenderer = ::gpu::swap_chain::m_pgpurenderer;
@@ -104,12 +105,24 @@ namespace gpu_directx12
 
       //UINT currentBackBufferIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
 
-      auto& ptextureSwapChain = m_textureaSwapChain.element_at_grow(m_iSwapChainIndex);
+      defer_construct_newø(m_ptexturesiteaSwapChain);
+
+      auto& ptexturesiteSwapChain = m_ptexturesiteaSwapChain->element_at_grow(m_iSwapChainIndex);
+
+      defer_construct_newø(ptexturesiteSwapChain);
+
+      ::pointer < ::gpu_directx12::texture > ptextureSwapChain;
+
+      ptextureSwapChain = ptexturesiteSwapChain->gpu_texture();
+
+      //auto & ptextureSwapChain = m_textureaSwapChain.element_at_grow(m_iSwapChainIndex);
 
       if (!ptextureSwapChain)
       {
 
-         construct_newø(ptextureSwapChain);
+         constructø(ptexturesiteSwapChain->m_pgputextureSite);
+
+         ptextureSwapChain = ptexturesiteSwapChain->gpu_texture();
 
          ptextureSwapChain->m_textureflags.m_bRenderTarget = true;
 
@@ -165,65 +178,69 @@ namespace gpu_directx12
       //
       //pgpucontext->m_pcontext->OMSetRenderTargets(1, rendertargetviewa, nullptr);
 
+      dummy_model_buffer();
+
+      present_shader();
+
       // 2. Set viewport
 
-      if (!m_pshaderPresent)
-      {
-
-         construct_newø(m_pshaderPresent);
-
-         auto pbindingSampler = m_pshaderPresent->binding();
-         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
-         m_pshaderPresent->m_bDisableDepthTest = true;
-         m_pshaderPresent->m_ecullmode = ::gpu::e_cull_mode_none;
-         const char* fullscreen_vertex_shader = R"shader(// fullscreen_vs.hlsl
-      struct VSOut {
-         float4 pos : SV_POSITION;
-         float2 uv : TEXCOORD0;
-      };
-
-      VSOut main(uint vid : SV_VertexID) {
-         float2 verts[3] = {
-             float2(-1, -1),
-             float2(-1, +3),
-             float2(+3, -1)
-         };
-         float2 uvs[3] = {
-             float2(0, 1),
-             float2(0, -1),
-             float2(2, 1)
-         };
-
-         VSOut o;
-         o.pos = float4(verts[vid], 0, 1);
-         o.uv = 0.5 * (verts[vid] + 1.0);
-         return o;
-      }
-)shader";
-
-         const char* fullscreen_pixel_shader = R"shader(// fullscreen_ps.hlsl
-Texture2D tex : register(t0);
-SamplerState samp : register(s0);
-
-float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_Target {
-    
-//if(uv.x >0.5)
+//      if (!m_pshaderPresent)
+//      {
+//
+//         construct_newø(m_pshaderPresent);
+//
+//         auto pbindingSampler = m_pshaderPresent->binding();
+//         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
+//         m_pshaderPresent->m_bDisableDepthTest = true;
+//         m_pshaderPresent->m_ecullmode = ::gpu::e_cull_mode_none;
+//         const char* fullscreen_vertex_shader = R"shader(// fullscreen_vs.hlsl
+//      struct VSOut {
+//         float4 pos : SV_POSITION;
+//         float2 uv : TEXCOORD0;
+//      };
+//
+//      VSOut main(uint vid : SV_VertexID) {
+//         float2 verts[3] = {
+//             float2(-1, -1),
+//             float2(-1, +3),
+//             float2(+3, -1)
+//         };
+//         float2 uvs[3] = {
+//             float2(0, 1),
+//             float2(0, -1),
+//             float2(2, 1)
+//         };
+//
+//         VSOut o;
+//         o.pos = float4(verts[vid], 0, 1);
+//         o.uv = 0.5 * (verts[vid] + 1.0);
+//         return o;
+//      }
+//)shader";
+//
+//         const char* fullscreen_pixel_shader = R"shader(// fullscreen_ps.hlsl
+//Texture2D tex : register(t0);
+//SamplerState samp : register(s0);
+//
+//float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD0) : SV_Target {
+//    
+////if(uv.x >0.5)
+////{
+//// return float4(0.1*0.5, 0.8*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
+////}
+////else
 //{
-// return float4(0.1*0.5, 0.8*0.5, 0.98*0.5, 0.5); // test if the shader pipeline is running
+//return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 //}
-//else
-{
-return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
-}
-}
-)shader";
-
-         m_pshaderPresent->initialize_shader_with_block(
-            pgpurenderer,
-            as_block(fullscreen_vertex_shader),
-            as_block(fullscreen_pixel_shader));
-
-      }
+//}
+//)shader";
+//
+//         m_pshaderPresent->initialize_shader_with_block(
+//            pgpurenderer,
+//            as_block(fullscreen_vertex_shader),
+//            as_block(fullscreen_pixel_shader));
+//
+//      }
 
       //::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
@@ -251,7 +268,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       //}
 
-      ::cast<::gpu_directx12::texture> ptextureSrc = pgputexture;
+      ::cast<::gpu_directx12::texture> ptextureSrc = pgputexturesite->gpu_texture();
 
       // ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_color_attachment);
 
@@ -274,51 +291,53 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
       ptextureSrc->set_state(pcommandbuffer, ::gpu::e_texture_state_shader_read);
 
-      //m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain, ptextureSrc);
-      m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain);
-      m_pshaderPresent->bind_source(pcommandbuffer, ptextureSrc, 0);
-      //pgpucontext->m_pcontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
-      //pgpucontext->m_pcontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
+      _present(ptexturesiteSwapChain, pgputexturesite, pgpucommandbuffer);
 
-      //pgpucontext->m_pcontext->PSSetShaderResources(
-      //   0, 1, m_ptextureSwapChain->m_pshaderresourceview.pp());
-      //pgpucontext->m_pcontext->PSSetSamplers(
-      //   0, 1, m_ptextureSwapChain->m_psamplerstate.pp());
+ //     //m_pshaderPresent->bind(pcommandbuffer, ptextureSwapChain, ptextureSrc);
+ //     m_pshaderPresent->bind(pcommandbuffer, ptexturesiteSwapChain);
+ //     m_pshaderPresent->bind_source(pcommandbuffer, pgputexturesite, 0);
+ //     //pgpucontext->m_pcontext->VSSetShader(m_pvertexshaderFullscreen, nullptr, 0);
+ //     //pgpucontext->m_pcontext->PSSetShader(m_ppixelshaderFullscreen, nullptr, 0);
 
- /*     D3D11_VIEWPORT vp = {};
-      vp.TopLeftX = 0;
-      vp.TopLeftY = 0;
-      vp.Width = static_cast<float>(m_size.cx);
-      vp.Height = static_cast<float>(m_size.cy);
-      vp.MinDepth = 0.0f;
-      vp.MaxDepth = 1.0f;
-      pgpucontext->m_pcontext->RSSetViewports(1, &vp);*/
+ //     //pgpucontext->m_pcontext->PSSetShaderResources(
+ //     //   0, 1, m_ptextureSwapChain->m_pshaderresourceview.pp());
+ //     //pgpucontext->m_pcontext->PSSetSamplers(
+ //     //   0, 1, m_ptextureSwapChain->m_psamplerstate.pp());
 
-      D3D12_VIEWPORT viewport = {};
-      viewport.TopLeftX = 0;
-      viewport.TopLeftY = 0;
-      viewport.Width = static_cast<float>(m_size.cx);
-      viewport.Height = static_cast<float>(m_size.cy);
-      viewport.MinDepth = 0.0f;
-      viewport.MaxDepth = 1.0f;
+ ///*     D3D11_VIEWPORT vp = {};
+ //     vp.TopLeftX = 0;
+ //     vp.TopLeftY = 0;
+ //     vp.Width = static_cast<float>(m_size.cx);
+ //     vp.Height = static_cast<float>(m_size.cy);
+ //     vp.MinDepth = 0.0f;
+ //     vp.MaxDepth = 1.0f;
+ //     pgpucontext->m_pcontext->RSSetViewports(1, &vp);*/
 
-      D3D12_RECT scissorRect = {};
-      scissorRect.left = 0;
-      scissorRect.top = 0;
-      scissorRect.right = m_size.cx;
-      scissorRect.bottom = m_size.cy;
+ //     D3D12_VIEWPORT viewport = {};
+ //     viewport.TopLeftX = 0;
+ //     viewport.TopLeftY = 0;
+ //     viewport.Width = static_cast<float>(m_size.cx);
+ //     viewport.Height = static_cast<float>(m_size.cy);
+ //     viewport.MinDepth = 0.0f;
+ //     viewport.MaxDepth = 1.0f;
 
-      //::cast < renderer > prenderer = m_pgpurenderer;
+ //     D3D12_RECT scissorRect = {};
+ //     scissorRect.left = 0;
+ //     scissorRect.top = 0;
+ //     scissorRect.right = m_size.cx;
+ //     scissorRect.bottom = m_size.cy;
 
-
-      //// 4. Set the viewport and scissor
-      pcommandlist->RSSetViewports(1, &viewport);
-      pcommandlist->RSSetScissorRects(1, &scissorRect);
-      pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      pcommandlist->DrawInstanced(3, 1, 0, 0);
+ //     //::cast < renderer > prenderer = m_pgpurenderer;
 
 
-      m_pshaderPresent->unbind(pcommandbuffer);
+ //     //// 4. Set the viewport and scissor
+ //     pcommandlist->RSSetViewports(1, &viewport);
+ //     pcommandlist->RSSetScissorRects(1, &scissorRect);
+ //     pcommandlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+ //     pcommandlist->DrawInstanced(3, 1, 0, 0);
+
+
+ //     m_pshaderPresent->unbind(pcommandbuffer);
 
 
       //FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };
@@ -355,7 +374,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       if (pgpurenderer)
       {
 
-         auto& ptextureSwapChain = m_textureaSwapChain[m_iSwapChainIndex];
+         auto& ptexturesiteSwapChain = m_ptexturesiteaSwapChain->element_at(m_iSwapChainIndex);
 
          //::cast < command_buffer > pcommandbuffer = pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
@@ -363,7 +382,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
 
          auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
-         ptextureSwapChain->set_state(pcommandbuffer,::gpu::e_texture_state_present );
+         ptexturesiteSwapChain->gpu_texture()->set_state(pcommandbuffer, ::gpu::e_texture_state_present);
 
       }
 
@@ -373,7 +392,24 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
    void swap_chain::swap_buffers()
    {
 
-      m_pdxgiswapchain->Present(1, 0);
+      auto hrPresent = m_pdxgiswapchain->Present(1, 0);
+
+      ::defer_throw_hresult(hrPresent);
+
+      // Keep ca2's frame resources in step with the DXGI back buffer.  Without
+      // this update every frame reused frame slot zero, so shader-visible
+      // descriptor heaps and Direct2D layer targets eventually wrapped while
+      // they were still the active frame resources.  The result was a
+      // periodic transparent 2D frame (most visibly, blinking tabs).
+      m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
+
+      m_iCurrentSwapChainFrame = m_iSwapChainIndex;
+
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurenderer->m_pgpucontext);
+
+      pgpuwindowattachment->m_iCurrentImage = m_iSwapChainIndex;
+
+      pgpuwindowattachment->m_iCurrentFrame3 = m_iCurrentSwapChainFrame;
 
    }
 
@@ -384,7 +420,7 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       //m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
       m_iSwapChainIndex = m_pdxgiswapchain->GetCurrentBackBufferIndex();
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurenderer->m_pgpucontext);
 
       pgpuwindowattachment->m_iCurrentImage = m_iSwapChainIndex;
 
@@ -420,7 +456,9 @@ return tex.Sample(samp, float2(uv.x, 1.0 - uv.y));
       auto& pdcompositiontarget = m_pdcompositiontarget;
       auto& pdcompositionvisual = m_pdcompositionvisual;
 
-      auto pdxgidevice = pcontext->_get_dxgi_device();
+      ::cast < device > pgpudevice = pcontext->m_pgpudevice;
+
+      auto pdxgidevice = pgpudevice->_get_dxgi_device();
 
       ::defer_throw_hresult(DCompositionCreateDevice(
          pdxgidevice,

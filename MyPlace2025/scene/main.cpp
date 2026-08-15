@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "main.h"
 #include "aura/platform/application.h"
 #include "bred/gpu/renderer.h"

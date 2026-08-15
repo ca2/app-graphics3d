@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "_draw2d_opengl.h"
 #include "_draw2d.h"
 #include "bitmap.h"
@@ -308,7 +308,7 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::create_for_window_draw2d(::user::interaction * puserinteraction, const ::i32_size& size)
+   void graphics::create_for_window_draw2d(::user::interaction * puserinteraction, const ::i32_size& sizeRawParameter)
    {
 
       if (!puserinteraction)
@@ -320,7 +320,7 @@ namespace draw2d_opengl
 
       }
 
-      ::gpu::graphics::create_for_window_draw2d(puserinteraction, size);
+      ::gpu::graphics::create_for_window_draw2d(puserinteraction, sizeRawParameter);
 
       //if (m_puserinteractionDraw2dGraphics == nullptr)
       //{
@@ -338,12 +338,20 @@ namespace draw2d_opengl
 
       //}
 
+      auto rectangleOutput = puserinteraction->m_pacmewindowingwindow->get_window_rectangle();
+
+      auto pointOutput = rectangleOutput.origin();
+
+      auto size = rectangleOutput.size();
+
+      auto sizeRaw = sizeRawParameter.maximum(size);
+
       if (m_pgraphicsbufferitem)
       {
 
          constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
 
-         m_pgraphicsbufferitem->m_pimageBufferItem->create_as_render_target(size, puserinteraction, this);
+         m_pgraphicsbufferitem->m_pimageBufferItem->create_as_render_target(sizeRaw, puserinteraction, this);
 
       }
 
@@ -352,21 +360,26 @@ namespace draw2d_opengl
 
       auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
-
       auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
 
       auto pgpucontextMain = pgpuwindowattachment->window_context();
 
-      auto pgpucontextNew = pgpudevice->create_draw2d_gpu_context(
-         // ::gpu::e_output_gpu_buffer
-         m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
-         size);
+      auto pgpucontextNew = pgpudevice->allocate_gpu_context();
 
-      auto r = pgpucontextMain->get_placement();
+      pgpucontextNew->create_draw2d_gpu_context(
+         // ::gpu::e_output_gpu_buffer
+         pgpudevice, 
+         m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         {},
+         pointOutput,
+         size, 
+         sizeRaw);
+
+      //auto r = pgpucontextMain->get_placement();
 
       m_sizeScaleOutput = {1.0, -1.0};
 
-      m_pointTranslateOutput = { 0.0, (double)r.height()};
+      m_pointTranslateOutput = { 0.0, (double)rectangleOutput.height()};
 
       if (!pgpucontextNew)
       {
@@ -392,7 +405,7 @@ namespace draw2d_opengl
 
       bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
-      ::opengl::resize(size, bYSwap);
+      //::opengl::resize(recta, bYSwap);
 
       set_ok_flag();
 
@@ -433,10 +446,20 @@ namespace draw2d_opengl
 
       auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
-      auto pgpucontextNew = pgpudevice->create_draw2d_gpu_context(
+      auto pgpucontextNew = pgpudevice->allocate_gpu_context();
+
+      //::i32_rectangle rectanglePlacement(size);
+
+      auto sizeRaw = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow->get_raw_buffer_size().maximum(size);
+
+      pgpucontextNew->create_draw2d_gpu_context(
          //::gpu::e_output_gpu_buffer,
+         pgpudevice,
          m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
-         size);
+         {},
+         {},
+         size,
+         sizeRaw);
 
       pgpucontextNew->m_pgpucompositor = this;  
 

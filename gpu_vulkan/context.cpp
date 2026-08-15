@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "binding.h"
 #include "block.h"
 #include "context.h"
@@ -26,8 +26,8 @@
 #include "aura/windowing/window.h"
 #include "bred/gpu/compositor.h"
 #include "bred/gpu/layer.h"
-#include "bred/gpu/layer.h"
 #include "bred/gpu/pixmap.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/gpu/types.h"
 #include "bred/graphics3d/engine.h"
 
@@ -952,12 +952,12 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, const ::i32_size & size) 
+   void context::_create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw)
    //void context::on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
      //                              ::acme::windowing::window *pwindow, const ::i32_size &size)
    {
 
-      ::gpu::context::_create_gpu_context(pgpudevice, eoutput, escene, pacmewindowingwindow, size);
+      ::gpu::context::_create_gpu_context(pgpudevice, eoutput, escene, pacmewindowingwindow, pointInput, pointOutput, size, sizeRaw);
 
       // m_itaskGpu = ::current_itask();
       m_pgpudevice = pgpudevice;
@@ -1945,15 +1945,17 @@ namespace gpu_vulkan
    }
 
 
-   void context::begin_render(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *ptexture)
+   void context::begin_render(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *ptexturesite)
    {
 
       auto pgpurendertarget = m_pgpurenderer->render_target();
 
-      if (::is_null(ptexture))
+      if (::is_null(ptexturesite))
       {
 
-         ptexture = pgpurendertarget->current_texture(::gpu::current_layer());
+         ptexturesite = pgpurendertarget->current_texture(::gpu::current_layer(), true);
+
+         // ptexturesite = ptexturesite->gpu_texture();
 
       }
 
@@ -1966,7 +1968,7 @@ namespace gpu_vulkan
       //else
       {
 
-         _001BeginRenderPass(pgpucommandbuffer, ptexture);
+         _001BeginRenderPass(pgpucommandbuffer, ptexturesite);
 
       }
 
@@ -3269,7 +3271,7 @@ namespace gpu_vulkan
 
    int g_iMergeLayersSerial = -1;
 
-   void context::merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture *ptextureTarget, ::pointer_array<::gpu::layer> *pgpulayera)
+   void context::merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site *ptexturesiteTarget, ::pointer_array<::gpu::layer> *pgpulayera)
    {
 
       g_iMergeLayersSerial++;
@@ -3280,7 +3282,9 @@ namespace gpu_vulkan
 
       ::cast<render_target> prendertarget = pgpurendertarget;
 
-      ::cast<::gpu_vulkan::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
+      auto ptexturesite = prendertarget->current_texture(::gpu::current_layer(), true);
+
+      ::cast<::gpu_vulkan::texture> ptexture = ptexturesite->gpu_texture();
 
       informationf("merge_layers target vkimage=%p", ptexture->m_vkimage);
 
@@ -3316,11 +3320,11 @@ namespace gpu_vulkan
       {
 
          unsigned int full_screen_triangle_vertex_shader[] = {
-#include "shader/blend2.vert.spv.inl"
+#include "shader/merge_layer.vert.spv.inl"
          };
 
          unsigned int full_screen_triangle_fragment_shader[] = {
-#include "shader/blend2.frag.spv.inl"
+#include "shader/merge_layer.frag.spv.inl"
          };
 
          constructø(m_pshaderBlend3);
@@ -3332,15 +3336,25 @@ namespace gpu_vulkan
          // m_pshaderBlend3->m_pgpurenderer = this;
          //m_pshaderBlend3->m_bindingSampler.set();
          //
-         auto pbindingSampler = m_pshaderBlend3->binding();
+         //auto pbindingSampler = m_pshaderBlend3->binding();
 
-         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
+         //pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
          // Image Blend descriptors
          // if (!m_psetdescriptorlayoutImageBlend)
 
          // m_pshaderBlend3->m_bClearColor = true;
          // m_pshaderBlend3->m_colorClear = ::color::transparent;
-
+         auto pbindingSampler = m_pshaderBlend3->binding();
+         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
+         pbindingSampler->m_iTextureUnit = 0;
+         //m_pshaderBlend3->m_bT
+         //m_pshaderBlend3->m_pgpurenderer = this;
+         //m_pshaderBlend3->m_setbindingSampler = 0;
+         // Image Blend descriptors
+         //if (!m_psetdescriptorlayoutImageBlend)
+         m_pshaderBlend3->m_propertiesPushShared.set_properties(
+::gpu_properties<::gpu::quad>());
+         layout_push_constants(m_pshaderBlend3->m_propertiesPushShared, false);
          m_pshaderBlend3->m_bClearColor = false;
          // m_pshaderBlend3->m_colorClear = ::color::transparent;
 
@@ -3360,7 +3374,7 @@ namespace gpu_vulkan
 
       auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
-      ::cast<::gpu_vulkan::texture> ptextureDst = ptextureTarget;
+      ::cast<::gpu_vulkan::texture> ptextureDst = ptexturesiteTarget->gpu_texture();
 
       ptextureDst->_set_state(pcommandbuffer, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                                VK_PIPELINE_STAGE_TRANSFER_BIT});
@@ -3391,14 +3405,14 @@ namespace gpu_vulkan
 
       auto gpulayera = *pgpulayera;
 
-      //::pointer_array<::gpu::texture> textureaLayerSnapshot;
+      ::pointer_array<::gpu::texture_site> textureaLayerSnapshot;
 
-      //for (auto pgpulayer : gpulayera)
-      //{
+      for (auto pgpulayer : gpulayera)
+      {
 
-      //   textureaLayerSnapshot.add(pgpulayer->composition_texture());
+         textureaLayerSnapshot.add(pgpulayer->texture(false));
 
-      //}
+      }
 
       {
 
@@ -3447,130 +3461,160 @@ namespace gpu_vulkan
 
          information("merge_layers : going to set source textures state to shader read only optimal");
 
-      //   for (auto & ptextureLayerSnapshot : textureaLayerSnapshot)
-      //   {
+         for (auto & ptextureLayerSnapshot : textureaLayerSnapshot)
+         {
 
-      //      //// if (iLayer == 2)
-      //      //{
-      //      //   ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
-      //      //   ptextureSrc->_set_state(
-      //      //      pcommandbuffer,  {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT});
+            //// if (iLayer == 2)
+            //{
+            //   ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
+            //   ptextureSrc->_set_state(
+            //      pcommandbuffer,  {VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT});
 
-      //      //}
-      //      //{
-      //      //   ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
-      //      //   // 2. Clear
-      //      //   VkClearColorValue clearColor = {.float32 = {0.1f, 0.5f, 0.25f, 0.8f}};
-      //      //   VkImageSubresourceRange range = {
-      //      //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-      //      //      .baseMipLevel = 0,
-      //      //      .levelCount = 1,
-      //      //      .baseArrayLayer = 0,
-      //      //      .layerCount = 1,
-      //      //   };
+            //}
+            //{
+            //   ::cast<::gpu_vulkan::texture> ptextureSrc = pgpulayer->texture();
+            //   // 2. Clear
+            //   VkClearColorValue clearColor = {.float32 = {0.1f, 0.5f, 0.25f, 0.8f}};
+            //   VkImageSubresourceRange range = {
+            //      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            //      .baseMipLevel = 0,
+            //      .levelCount = 1,
+            //      .baseArrayLayer = 0,
+            //      .layerCount = 1,
+            //   };
 
-      //      //   vkCmdClearColorImage(vkcommandbuffer, ptextureSrc->m_vkimage,
-      //      //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      //      //                        &clearColor, 1, &range);
-      //      //}
+            //   vkCmdClearColorImage(vkcommandbuffer, ptextureSrc->m_vkimage,
+            //      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            //                        &clearColor, 1, &range);
+            //}
 
-      //      {
+            {
 
-      //         ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureLayerSnapshot;
+               ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureLayerSnapshot->gpu_texture();
 
-      //         if (!ptextureSrc)
-      //         {
+               if (!ptextureSrc)
+               {
 
-      //            continue;
+                  continue;
 
-      //         }
+               }
 
-      //         ptextureSrc->_set_state(
-      //         pcommandbuffer,
-      //    {
-      //       0,
-      //       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      //       VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-      //            }
-      //         );
+               ptextureSrc->_set_state(
+               pcommandbuffer,
+          {
+             0,
+             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+                  }
+               );
 
-      //      }
+            }
 
-      //   }
+         }
 
-      //   if (1)
-      //   {
+         if (1)
+         {
 
-      //      int iLayer = 0;
+            int iLayer = 0;
 
-      //      pcommandbuffer->begin_render(m_pshaderBlend3, ptextureDst);
+            pcommandbuffer->begin_render(m_pshaderBlend3, ptexturesiteTarget);
 
-      //      for (auto & ptextureLayerSnapshot : textureaLayerSnapshot)
-      //      {
+            for (auto & ptexturesiteSrc : textureaLayerSnapshot)
+            {
 
-      //         // if (iLayer == 2)
-      //         {
+               // if (iLayer == 2)
+               {
 
-      //            ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureLayerSnapshot;
+                  ::cast<::gpu_vulkan::texture> ptextureSrc = ptexturesiteSrc->gpu_texture();
 
-      //            if (!ptextureSrc)
-      //            {
+                  if (!ptextureSrc)
+                  {
 
-      //               iLayer++;
+                     iLayer++;
 
-      //               continue;
+                     continue;
 
-      //            }
+                  }
 
-      //            informationf("merge_layers source%d vkimage=%p", iLayer, ptextureSrc->m_vkimage);
+                  informationf("merge_layers source%d vkimage=%p", iLayer, ptextureSrc->m_vkimage);
 
-      //            textureaSrc.add(ptextureSrc.m_p);
+                  textureaSrc.add(ptextureSrc.m_p);
 
-      //            pcommandbuffer->set_source(ptextureSrc);
+                  pcommandbuffer->set_source(ptexturesiteSrc);
 
-      //            auto r = ptextureSrc->rectangle();
+                  //auto r = ptextureLayerSnapshot->output_placement();
+                  auto rectangleSourceOutput = ptexturesiteSrc->output_placement();
 
-      //            pcommandbuffer->set_viewport(r);
+                  ::f32_rectangle rectangleOutput = rectangleSourceOutput;
 
-      //            pcommandbuffer->set_scissor(r);
+                  ::f32_size sizeSrc = ptexturesiteSrc->size();
 
-      //            pcommandbuffer->draw_vertexes(3);
+                  ::f32_size sizeSrcRaw = ptexturesiteSrc->raw_size();
 
-      //         }
 
-      //         iLayer++;
+                  auto u0 = 0.0f;
+                  auto v0 = 0.0f;
 
-      //      }
+                  auto u1 = sizeSrc.cx / sizeSrcRaw.cx;
+                  auto v1 = sizeSrc.cy / sizeSrcRaw.cy;
 
-      //      pcommandbuffer->end_render();
 
-      //   }
+                  ::floating_sequence4 quad
+                  {
+                     u0,
+                     v0,
+                     u1,
+                     v1
+                  };
 
-      //}
 
-      //for (auto & ptextureLayerSnapshot : textureaLayerSnapshot)
-      //{
+                  m_pshaderBlend3->set_sequence4("quad", quad);
 
-      //   // if (iLayer == 2)
-      //   {
 
-      //      ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureLayerSnapshot;
+                  m_pshaderBlend3->push_properties(pgpucommandbuffer);
 
-      //      if (!ptextureSrc)
-      //      {
 
-      //         continue;
+                  pcommandbuffer->set_viewport(rectangleSourceOutput, sizeSrcRaw);
 
-      //      }
+                  pcommandbuffer->set_scissor(rectangleSourceOutput, sizeSrcRaw);
 
-      //      ptextureSrc->_set_state(
-      //         pcommandbuffer,
-      //         {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      //                               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+                  pcommandbuffer->draw_vertexes(3);
 
-      //   }
+               }
 
-      //}
+               iLayer++;
+
+            }
+
+            pcommandbuffer->end_render();
+
+         }
+
+      }
+
+      for (auto & ptextureLayerSnapshot : textureaLayerSnapshot)
+      {
+
+         // if (iLayer == 2)
+         {
+
+            ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureLayerSnapshot;
+
+            if (!ptextureSrc)
+            {
+
+               continue;
+
+            }
+
+            ptextureSrc->_set_state(
+               pcommandbuffer,
+               {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+
+         }
+
+      }
 
       // // if (!m_pgpurenderer->isFrameStarted)
       // {
@@ -3584,7 +3628,7 @@ namespace gpu_vulkan
       //
       //    //auto pgpufence = pcommandbuffer->insert_gpu_fence();
       //
-      //    pcommandbuffer->submitCommandBuffers(ptextureTarget, textureaSrc, {}, {}, {});
+      //    pcommandbuffer->submitCommandBuffers(ptexturesiteTarget->gpu_texture(), textureaSrc, {}, {}, {});
       //
       //    //pgpufence->wait_gpu_fence();
       //
@@ -3592,7 +3636,7 @@ namespace gpu_vulkan
       //
       //    //vkQueueWaitIdle(pqueue->m_vkqueue);
       //
-      }
+      //}
 
    }
 
@@ -3718,7 +3762,7 @@ void context::draw2d_on_end_draw(::gpu::graphics *pgpugraphics)
 
 
 
-void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * ptextureTarget, ::gpu::texture * ptextureSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
+void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site * ptexturesiteTarget, ::gpu::texture_site * ptexturesiteSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
 {
 
    //      throw todo;
@@ -3755,9 +3799,9 @@ void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * p
 
    {
 
-      ::cast<::gpu_vulkan::texture> ptextureDst = ptextureTarget;
+      ::cast<::gpu_vulkan::texture> ptextureDst = ptexturesiteTarget->gpu_texture();
 
-      ::cast<::gpu_vulkan::texture> ptextureSrc = ptextureSource;
+      ::cast<::gpu_vulkan::texture> ptextureSrc = ptexturesiteSource->gpu_texture();
 
       auto scopedstateDst =
          ptextureDst->_scoped_state(pcommandbuffer, { VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -3788,7 +3832,7 @@ void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * p
                .baseArrayLayer = 0,
                .layerCount = 1,
             },
-         .srcOffset = {ptextureSrc->left(), ptextureSrc->top(), 0},
+         .srcOffset = {ptexturesiteSource->output_left(), ptexturesiteSource->output_top(), 0},
          .dstSubresource =
             {
                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -3796,7 +3840,7 @@ void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * p
                .baseArrayLayer = 0,
                .layerCount = 1,
             },
-         .dstOffset = {ptextureDst->left(), ptextureDst->top(), 0},
+         .dstOffset = {ptexturesiteTarget->input_left(), ptexturesiteTarget->input_top(), 0},
          .extent = {(uint32_t)ptextureDst->width(), (uint32_t)ptextureDst->height(), 1},
       };
 
@@ -3840,7 +3884,7 @@ void context::copy(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * p
 }
 
 
-void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
+void context::copy(::gpu::texture_site *ptexturesiteTarget, ::gpu::texture_site *ptexturesiteSource, ::pointer < ::gpu::fence > * pgpufence, ::pointer < ::gpu::semaphore > * pgpusemaphoreReady)
 {
 
 //      throw todo;
@@ -3869,7 +3913,7 @@ void context::copy(::gpu::texture *ptextureTarget, ::gpu::texture *ptextureSourc
    }
 
 
-   copy(pcommandbuffer, ptextureTarget, ptextureSource, pgpufence, pgpusemaphoreReady);
+   copy(pcommandbuffer, ptexturesiteTarget, ptexturesiteSource, pgpufence, pgpusemaphoreReady);
 
    //{
 
@@ -5291,7 +5335,7 @@ VkFormat context::findDepthFormat()
 
 
 
-void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture * pgputexture)
+void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site * pgputexturesite)
 {
 
    
@@ -5327,18 +5371,21 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
       //renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
       // if (prenderer->m_pgpulayer)
       //{
-         ::cast<::gpu_vulkan::texture> ptexture;
+
+      ::cast<::gpu_vulkan::texture> ptexture;
+
+
          
-         if (pgputexture) 
+         if (pgputexturesite && pgputexturesite->gpu_texture()) 
          {
             
-            ptexture = pgputexture; 
+            ptexture = pgputexturesite->gpu_texture(); 
          
          }
          else
          {
             
-            ptexture = prendertarget->current_texture(::gpu::current_layer());
+            ptexture = prendertarget->current_texture(::gpu::current_layer(), true)->gpu_texture();
 
          }
 
@@ -5354,7 +5401,7 @@ void context::_001BeginRenderPass(::gpu::command_buffer * pgpucommandbuffer, ::g
 
          auto & layer = ptexture->current_layer(prenderpass);
 
-         renderPassBeginInfo.framebuffer = layer.m_vkframebuffer;
+         renderPassBeginInfo.framebuffer = layer.m_vkframebufferLayer;
       //}
       // else
       //{
@@ -6298,7 +6345,7 @@ void context::load_generic_texture(::pointer<::gpu::texture> &ptexture, const ::
 
    auto ptextureNew = createø<::gpu::texture>();
 
-   ptextureNew->initialize_texture_from_file_path(this, path, bSrgb);
+   ptextureNew->create_texture_from_file_path(this, path, bSrgb);
    
    if (ptextureNew->is_ok())
    {
@@ -6333,13 +6380,17 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
 }
 
 
-::pointer<::gpu::texture> context::create_empty_texture()
+::pointer<::gpu::texture_site> context::create_empty_texture()
 {
 
       //void gltf::Model::createEmptyTexture(VkQueue transferQueue)
 //   {
 
+   auto pgputexturesiteEmpty = create_newø< ::gpu::texture_site>();
+
       auto pgputextureEmpty = createø< ::gpu::texture>();
+      pgputexturesiteEmpty->m_pgputextureSite
+         = pgputextureEmpty;
 
       ::cast<::gpu_vulkan::texture> ptextureEmpty = pgputextureEmpty;
       
@@ -6347,8 +6398,8 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
       // Define the static member here (outside any class/function)
 
       ptextureEmpty->m_pgpucontext = this;
-      ptextureEmpty->m_textureattributes.m_rectangleTarget.set_width(1);
-      ptextureEmpty->m_textureattributes.m_rectangleTarget.set_height(1);
+      ptextureEmpty->m_textureattributes.m_size.cx = 1;
+      ptextureEmpty->m_textureattributes.m_size.cy = 1;
       ptextureEmpty->m_textureattributes.m_iLayerCount = 1;
       ptextureEmpty->m_textureattributes.m_iMipCount = 1;
 
@@ -6357,7 +6408,7 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
       auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
 
-      size_t bufferSize = ptextureEmpty->m_textureattributes.m_rectangleTarget.area() * 4;
+      size_t bufferSize = ptextureEmpty->m_textureattributes.m_size.area() * 4;
       //::memory memory;
       //memory.set_size(bufferSize);
       //memory.zeroe();
@@ -6472,7 +6523,7 @@ floating_sequence3 context::front(const ::graphics3d::floating_rotation &rotatio
    //   ptextureEmpty->m_descriptor3.imageView = ptextureEmpty->m_vkimageview;
    //   ptextureEmpty->m_descriptor3.sampler = ptextureEmpty->m_vksampler3;
    //}
-      return ::transfer(pgputextureEmpty);
+      return ::transfer(pgputexturesiteEmpty);
 
 }
 
@@ -6496,7 +6547,7 @@ return (::block)p_rgba_from_b_g_vert_memory;
           return (::block)p_rgba_from_b_g_frag_memory;
     }
 
-::pointer<::gpu::texture> context::rgba_from_b_g(::gpu::texture * pgputextureMetallic,
+::pointer<::gpu::texture_site> context::rgba_from_b_g(::gpu::texture * pgputextureMetallic,
                                         ::gpu::texture * pgputextureRoughness)
 {
 

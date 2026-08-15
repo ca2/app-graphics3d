@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "image.h"
 #include "acme/platform/application.h"
 #include "aura/windowing/window_buffer.h"
@@ -2777,7 +2777,7 @@ namespace draw2d_vkvg
 
 
 
-   void image::_map(bool bApplyTransform)
+   void image::_map(const ::i32_rectangle & rectangle, bool bApplyTransform)
    {
 
       return;

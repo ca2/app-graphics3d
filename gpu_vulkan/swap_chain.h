@@ -17,7 +17,7 @@ namespace gpu_vulkan
 
       VkSwapchainKHR                            m_vkswapchain;
       //int                                       m_iCurrentSwapChainImage;
-      ::gpu::context_pointer              m_pgpucontextSwapChain;
+      //::gpu::context_pointer              m_pgpucontextSwapChain;
       ::pointer < ::gpu::shader >               m_pshaderPresent;
       ::pointer < ::gpu_vulkan::render_pass >   m_prenderpass;
 
@@ -87,7 +87,7 @@ namespace gpu_vulkan
       //   command_buffer* pcommandbuffer,
       //   ::gpu::texture* pgputexture);
 
-      void present(::gpu::texture *pgputexture, ::gpu::command_buffer *pgpucommandbuffer) override;
+      void present(::gpu::texture_site *pgputexturesite, ::gpu::command_buffer *pgpucommandbuffer) override;
 
       virtual int get_image_index() const;
 

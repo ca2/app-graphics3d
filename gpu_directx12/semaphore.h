@@ -30,8 +30,12 @@ namespace gpu_directx12
 
       void initialize_gpu_semaphore(::gpu::context *pgpucontext) override;
 
-      void wait(ID3D12CommandQueue *pcommandqueue);
-      void signal(ID3D12CommandQueue *pcommandqueue);
+      void _wait(ID3D12CommandQueue *pcommandqueue);
+      void _signal(ID3D12CommandQueue *pcommandqueue);
+
+
+      void wait(::gpu::queue * pgpuqueue) override;
+      void signal(::gpu::queue * pgpuqueue) override;
 
 
    };

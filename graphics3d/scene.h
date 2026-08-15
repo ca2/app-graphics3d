@@ -20,9 +20,9 @@ namespace graphics3d
       pointer<::gpu::ibl::specular_map> m_piblspecularmap;
 
             // caches
-      ::pointer<::gpu::texture> m_ptextureLuBrdf;
-      ::pointer<::gpu::texture> m_ptextureIrradianceCube;
-      ::pointer<::gpu::texture> m_ptexturePrefilteredCube;
+      ::pointer<::gpu::texture_site> m_ptexturesiteLuBrdf;
+      ::pointer<::gpu::texture_site> m_ptexturesiteIrradianceCube;
+      ::pointer<::gpu::texture_site> m_ptexturesitePrefilteredCube;
       ::pointer<::gpu::binding_slot_set> m_pbindingslotsetIbl1;
 
 
@@ -40,12 +40,12 @@ namespace graphics3d
 
       //virtual ::gpu::ibl::equirectangular_cubemap *equirectangular_cubemap();
       virtual ::gpu::ibl::specular_map *ibl_specular_map();
-      virtual ::pointer<::gpu::texture> generate_ibl_prefiltered_env_map(
+      virtual ::pointer<::gpu::texture_site> generate_ibl_prefiltered_env_map(
          ::graphics3d::renderable *prenderableSkybox);
 
       /// generate irradianceCube
       /// @return irradianceCube
-      virtual ::pointer<::gpu::texture> generate_ibl_irradiance_map(
+      virtual ::pointer<::gpu::texture_site> generate_ibl_irradiance_map(
          //         ::gpu::texture * irradianceCube,
          //::gpu::texture *environmentCube, ::graphics3d::renderable *prenderableSkybox);
           ::graphics3d::renderable *prenderableSkybox);

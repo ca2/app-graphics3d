@@ -1,14 +1,9 @@
-#include "framework.h"
+#include "platform.h"
 // Co-creating with V0idsEmbrace@Twitch with
 // camilo on 2025-05-19 04:59 <3ThomasBorregaardSorensen!!
 #include "approach.h"
 #include "binding.h"
 #include "block.h"
-#include "bred/gpu/layer.h"
-#include "bred/gpu/frame_storage.h"
-#include "bred/graphics3d/engine.h"
-#include "bred/graphics3d/immersion_layer.h"
-#include "bred/graphics3d/scene_base.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "descriptors.h"
@@ -19,6 +14,13 @@
 #include "renderer.h"
 #include "shader.h"
 #include "texture.h"
+#include "bred/gpu/layer.h"
+#include "bred/gpu/frame_storage.h"
+#include "bred/gpu/texture_site.h"
+#include "bred/graphics3d/engine.h"
+#include "bred/graphics3d/immersion_layer.h"
+#include "bred/graphics3d/scene_base.h"
+
 
 
 namespace gpu_vulkan
@@ -40,39 +42,7 @@ namespace gpu_vulkan
    bool shader::need_rebuild()
    {
 
-      ::cast<::gpu_vulkan::texture> ptextureTarget = m_ptextureTarget;
-
-      auto prenderpass = ptextureTarget->get_render_pass();
-
-      if (::is_null(prenderpass))
-      {
-
-         // Shader doesn't have a render pass. Won't bother
-         // the shader to recreate it if prerequesite (the render pass)
-         // is not present.
-
-         return false;
-      }
-
-      auto vkrenderpass = prenderpass->m_vkrenderpass;
-
-      if (!vkrenderpass)
-      {
-
-         // Shader doesn't have a render pass. Won't bother
-         // the shader to recreate it if prerequesite (the render pass)
-         // is not present.
-
-         return false;
-      }
-
-      if (vkrenderpass == m_vkrenderpassCurrent)
-      {
-
-         return false;
-      }
-
-      return true;
+      return false;
    }
 
 
@@ -132,7 +102,7 @@ namespace gpu_vulkan
    void shader::on_initialize_shader() {}
 
 
-   ::pointer<pipeline> shader::_create_pipeline(::gpu::texture *pgputextureTarget, ::gpu::command_buffer *pgpucommandbuffer)
+   ::pointer<pipeline> shader::_create_pipeline(::gpu::texture_site *pgputexturesiteTarget, ::gpu::command_buffer *pgpucommandbuffer)
    {
 
       ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
@@ -337,7 +307,7 @@ namespace gpu_vulkan
 
       ::cast<render_target> prendertarget = pgpurendertarget;
 
-      ::cast<::gpu_vulkan::texture> ptextureTarget = pgputextureTarget;
+      ::cast<::gpu_vulkan::texture> ptextureTarget = pgputexturesiteTarget->gpu_texture();
 
       auto prenderpass = ptextureTarget->get_render_pass();
 
@@ -634,135 +604,136 @@ namespace gpu_vulkan
    //}
 
 
-   void shader::bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
+   void shader::bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesiteTarget)
    {
 
-      _defer_set_current_pipeline(pgpucommandbuffer, pgputextureTarget);
+      _defer_set_current_pipeline(pgpucommandbuffer, pgputexturesiteTarget);
 
-      _bind(pgpucommandbuffer, pgputextureTarget);
+      _bind(pgpucommandbuffer, pgputexturesiteTarget);
 
       //_bind(pgpucommandbuffer, ::gpu::e_scene_none);
    }
 
 
-   void shader::_bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputextureTarget)
+   void shader::_bind(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesiteTarget)
    {
 
-      m_ptextureTarget = pgputextureTarget;
+      //m_ptextureTarget = pgputextureTarget;
 
-      ::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
+      //::cast<context> pgpucontext = m_pgpurenderer->m_pgpucontext;
 
-      ::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
+      //::cast<device> pgpudevice = pgpucontext->m_pgpudevice;
 
-      ::cast<renderer> prenderer = m_pgpurenderer;
+      //::cast<renderer> prenderer = m_pgpurenderer;
 
-      ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
+      //::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      auto pgpurendertarget = m_pgpurenderer->render_target();
+      //auto pgpurendertarget = m_pgpurenderer->render_target();
 
-      ::cast<render_target> prendertarget = pgpurendertarget;
+      //::cast<render_target> prendertarget = pgpurendertarget;
 
-      ::cast<::gpu_vulkan::texture> ptextureTarget = m_ptextureTarget;
+      //::cast<::gpu_vulkan::texture> ptextureTarget = m_ptextureTarget;
 
-      auto prenderpass = ptextureTarget->get_render_pass();
+      //auto prenderpass = ptextureTarget->get_render_pass();
 
-      VkRenderPassBeginInfo renderPassBeginInfo{};
+      //VkRenderPassBeginInfo renderPassBeginInfo{};
 
-      renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+      //renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 
-      // if (!has_shader_sampler())
+      //// if (!has_shader_sampler())
+      ////{
+
+      ////   throw ::exception(error_wrong_state, "use bind()");
+
+      ////}
+
+      //// bind_source(pgputextureSource);
+
+      //::cast<texture> ptextureDst = pgputextureTarget;
+
+      //// auto pshadertextureDst = shader_texture(ptextureDst, false);
+
+      //renderPassBeginInfo.renderPass = prenderpass->m_vkrenderpass;
+
+      //auto &layer = ptextureDst->current_layer(prenderpass);
+
+      //renderPassBeginInfo.framebuffer = layer.m_vkframebufferLayer;
+
+      //uint32_t w = ptextureDst->width();
+      //uint32_t h = ptextureDst->height();
+      //int x = ptextureDst->rectangle().left;
+      ////int bottom = ptextureDst->rectangle().bottom;
+      ////int y = h - bottom;
+      //int y = ptextureDst->rectangle().top;
+
+      //renderPassBeginInfo.renderArea.offset = {x, y};
+      ////renderPassBeginInfo.renderArea.offset = {0, 0};
+      //renderPassBeginInfo.renderArea.extent = {w, h};
+
+      //debug() << "has_shader_sampler";
+
+      ////}
+      //// else
+      ////{
+
+      ////   ::cast <render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
+
+      //VkClearValue clearValues[2];
+
+      //if (prenderpass->m_bLoadClearOp)
       //{
 
-      //   throw ::exception(error_wrong_state, "use bind()");
+      //   clearValues[0].color = {m_colorClear.f32_red() * m_colorClear.f32_opacity(),
+      //                           m_colorClear.f32_green() * m_colorClear.f32_opacity(),
+      //                           m_colorClear.f32_blue() * m_colorClear.f32_opacity(), m_colorClear.f32_opacity()};
 
-      //}
-
-      // bind_source(pgputextureSource);
-
-      ::cast<texture> ptextureDst = pgputextureTarget;
-
-      // auto pshadertextureDst = shader_texture(ptextureDst, false);
-
-      renderPassBeginInfo.renderPass = prenderpass->m_vkrenderpass;
-
-      auto &layer = ptextureDst->current_layer(prenderpass);
-
-      renderPassBeginInfo.framebuffer = layer.m_vkframebuffer;
-
-      uint32_t w = ptextureDst->width();
-      uint32_t h = ptextureDst->height();
-      int x = ptextureDst->rectangle().left;
-      int bottom = ptextureDst->rectangle().bottom;
-      int y = h - bottom;
-
-      renderPassBeginInfo.renderArea.offset = {x, y};
-      renderPassBeginInfo.renderArea.offset = {0, 0};
-      renderPassBeginInfo.renderArea.extent = {w, h};
-
-      debug() << "has_shader_sampler";
-
-      //}
-      // else
-      //{
-
-      //   ::cast <render_pass> prenderpass = m_pgpurenderer->m_pgpurendertarget;
-
-      VkClearValue clearValues[2];
-
-      if (prenderpass->m_bLoadClearOp)
-      {
-
-         clearValues[0].color = {m_colorClear.f32_red() * m_colorClear.f32_opacity(),
-                                 m_colorClear.f32_green() * m_colorClear.f32_opacity(),
-                                 m_colorClear.f32_blue() * m_colorClear.f32_opacity(), m_colorClear.f32_opacity()};
-
-         if (m_bDisableDepthTest)
-         {
-
-            renderPassBeginInfo.clearValueCount = 1;
-         }
-         else
-         {
-
-            clearValues[1].depthStencil = {1.0f, 0};
-            renderPassBeginInfo.clearValueCount = 2;
-         }
-
-         renderPassBeginInfo.pClearValues = clearValues;
-      }
-      else
-      {
-
-         renderPassBeginInfo.clearValueCount = 0;
-         renderPassBeginInfo.pClearValues = nullptr;
-      }
-
-      //   renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
-      //   renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->get_frame_index());
-      //   renderPassBeginInfo.renderArea.offset = { 0, 0 };
-      //   renderPassBeginInfo.renderArea.extent =
+      //   if (m_bDisableDepthTest)
       //   {
-      //      (uint32_t)pgpucontext->width(),
-      //      (uint32_t)pgpucontext->height()
-      //   };
 
+      //      renderPassBeginInfo.clearValueCount = 1;
+      //   }
+      //   else
+      //   {
+
+      //      clearValues[1].depthStencil = {1.0f, 0};
+      //      renderPassBeginInfo.clearValueCount = 2;
+      //   }
+
+      //   renderPassBeginInfo.pClearValues = clearValues;
+      //}
+      //else
+      //{
+
+      //   renderPassBeginInfo.clearValueCount = 0;
+      //   renderPassBeginInfo.pClearValues = nullptr;
       //}
 
-      ::cast<texture> ptexture = ptextureDst;
+      ////   renderPassBeginInfo.renderPass = prenderpass->getRenderPass();
+      ////   renderPassBeginInfo.framebuffer = prenderpass->getFrameBuffer(prenderer->get_frame_index());
+      ////   renderPassBeginInfo.renderArea.offset = { 0, 0 };
+      ////   renderPassBeginInfo.renderArea.extent =
+      ////   {
+      ////      (uint32_t)pgpucontext->width(),
+      ////      (uint32_t)pgpucontext->height()
+      ////   };
 
-      if (ptexture->mip_layer_state(0, 0).m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
-      {
+      ////}
 
-         warning() << "what?";
-      }
+      //::cast<texture> ptexture = ptextureDst;
+
+      //if (ptexture->mip_layer_state(0, 0).m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
+      //{
+
+      //   warning() << "what?";
+      //}
 
 
-      // vkCmdBeginRenderPass(
-      //  pcommandbuffer->m_vkcommandbuffer,
-      //&renderPassBeginInfo,
-      // VK_SUBPASS_CONTENTS_INLINE);
+      //// vkCmdBeginRenderPass(
+      ////  pcommandbuffer->m_vkcommandbuffer,
+      ////&renderPassBeginInfo,
+      //// VK_SUBPASS_CONTENTS_INLINE);
 
-      //_bind();
+      ////_bind();
    }
 
 
@@ -863,10 +834,10 @@ namespace gpu_vulkan
    //}
 
    
-   void shader::_defer_set_current_pipeline(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputexture)
+   void shader::_defer_set_current_pipeline(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesite)
    {
 
-      ::cast<texture> ptexture = pgputexture;
+      ::cast<texture> ptexture = pgputexturesite->gpu_texture();
 
       auto prenderpass = ptexture->get_render_pass();
 
@@ -877,7 +848,7 @@ namespace gpu_vulkan
       if (!ppipeline)
       {
 
-         ppipeline = _create_pipeline(pgputexture, pgpucommandbuffer);
+         ppipeline = _create_pipeline(pgputexturesite, pgpucommandbuffer);
 
       }
 
@@ -894,22 +865,22 @@ namespace gpu_vulkan
 
       m_ppipelineCurrent->bind(pcommandbuffer);
 
-      auto rectangle = pgputexture->m_textureattributes.m_rectangleTarget;
-      auto size = rectangle.size();
-      VkViewport vp = {(float)rectangle.left, (float)rectangle.top, (float)size.width(), (float)size.height(), 0.0f, 1.0f};
+      //auto rectangle = pgputexture->m_textureattributes.m_rectangleTarget;
+      //auto size = rectangle.size();
+      //VkViewport vp = {(float)rectangle.left, (float)rectangle.top, (float)size.width(), (float)size.height(), 0.0f, 1.0f};
 
-      VkRect2D sc = {{
-                        rectangle.left,
-                        rectangle.top,
-                     },
-                     {
-                        (uint32_t)size.width(),
-                        (uint32_t)size.height(),
-                     }};
+      //VkRect2D sc = {{
+      //                  rectangle.left,
+      //                  rectangle.top,
+      //               },
+      //               {
+      //                  (uint32_t)size.width(),
+      //                  (uint32_t)size.height(),
+      //               }};
 
-      vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
+      //vkCmdSetViewport(pcommandbuffer->m_vkcommandbuffer, 0, 1, &vp);
 
-      vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
+      //vkCmdSetScissor(pcommandbuffer->m_vkcommandbuffer, 0, 1, &sc);
 
 
       // if (m_edescriptorsetslota.contains(e_descriptor_set_slot_global))
@@ -1682,10 +1653,10 @@ namespace gpu_vulkan
    //}
 
 
-   void shader::bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture *pgputexture, int iSlot)
+   void shader::bind_source(::gpu::command_buffer *pgpucommandbuffer, ::gpu::texture_site *pgputexturesite, int iSlot)
    {
 
-      ::cast<texture> ptexture = pgputexture;
+      ::cast<texture> ptexture = pgputexturesite->gpu_texture();
 
       ::cast<command_buffer> pcommandbuffer = pgpucommandbuffer;
 
@@ -1723,7 +1694,7 @@ namespace gpu_vulkan
 
       uSet = pbindingslot->m_iSet;
 
-      pbindingslot->m_ptexture = ptexture;
+      pbindingslot->m_ptexturesite = ptexture;
 
       // if (m_bindingSampler.is_set())
       //    uSet = m_bindingSampler.m_uSet;

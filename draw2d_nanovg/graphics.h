@@ -118,7 +118,7 @@ namespace draw2d_nanovg
 //      ::windowing::window * GetWindow() const;
 
 
-      ::gpu::texture* current_target_texture(::gpu::layer * pgpulayer) override;
+      ::gpu::texture_site * current_target_texture(::gpu::layer * pgpulayer) override;
 
       bool is_gpu_oriented() override;
 

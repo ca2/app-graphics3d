@@ -1,6 +1,6 @@
 // From gpu_vulkan::device by
 // camilo on 2025-05-27 04:54 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "approach.h"
 #include "device.h"
 #include "initializers.h"

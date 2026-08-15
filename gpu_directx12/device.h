@@ -10,13 +10,17 @@
 #include <dcomp.h>
 #include <d3d11.h>
 #include <d3d11on12.h>
+#include <d3d11_3.h>
+#include <d3d11_4.h>
+#include <d3d12compatibility.h>
 
 namespace gpu_directx12
 {
 
 
    class CLASS_DECL_GPU_DIRECTX12 device :
-      virtual public ::gpu::device
+      virtual public ::gpu::device,
+      virtual public ::dxgi_device_source
    {
    public:
 
@@ -44,7 +48,7 @@ namespace gpu_directx12
       //::comptr<ID3D11DeviceContext>  m_pd3d11context;
       //::comptr<ID3D11On12Device>  m_pd3d11on12;
       //::comptr<IDXGIDevice>  m_pdxgidevice;
-
+      ::comptr < ID3D12CompatibilityDevice >          m_pd3d12compatibiltydevice;
 
       //comptr<IDCompositionDevice> m_pdcompositiondevice;
       //comptr<IDCompositionTarget> m_pdcompositiontarget;
@@ -135,6 +139,33 @@ namespace gpu_directx12
 
 
 
+      // For IDXGIDevice
+      class d3d11on12 :
+         virtual public particle
+      {
+      public:
+
+         ::comptr<ID3D11Device> m_pd3d11device;
+         ::comptr<ID3D11DeviceContext> m_pd3d11devicecontextMain;
+         ::comptr<ID3D11On12Device> m_pd3d11on12;
+         ::comptr<IDXGIDevice> m_pdxgidevice;
+
+
+         ::comptr<ID3D12Fence> dx12Fence;
+         UINT64 fenceValue = 0;
+         ::comptr<ID3D11Fence> dx11Fence;
+         ::comptr<ID3D11Device5> dx11Device5;
+         ::comptr<ID3D11DeviceContext4> m_pd3d11devicecontext4;
+         HANDLE fenceEvent = NULL;
+         HANDLE sharedFenceHandle = nullptr;
+
+      };
+      //::pointer_array < class d3d11on12 > >     m_d3d11on12a;
+      ::pointer < class d3d11on12 > m_pd3d11on12;
+      //::comptr < ID3D12CommandQueue > m_pcommandqueueMain;
+
+      ::pointer < ::gpu::queue > m_pqueueMain;
+      ::pointer < ::gpu::queue > m_pqueueCopy;
 
       device();
       ~device() override;
@@ -163,6 +194,22 @@ namespace gpu_directx12
          bool requestHighPerformanceAdapter = false);
 
       void _create_d3d12_device();
+
+
+      virtual d3d11on12 * d3d11on12();
+
+      IDXGIDevice* _get_dxgi_device() override;
+
+      virtual ::pointer < ::gpu::queue > create_queue(bool bCopy);
+
+      //ID3D12CommandQueue * _main_d3d12_command_queue();
+
+      //ID3D12CommandQueue * _copy_d3d12_command_queue();
+
+      ::gpu::queue * transfer_queue() override;
+      ::gpu::queue * graphics_queue() override;
+
+
       //string _001GetIntroProjection() override;
       //string _001GetIntroFragment() override;
 
@@ -321,6 +368,8 @@ namespace gpu_directx12
       ::gpu::payload load_dds(const ::scoped_string& scopedstrImagePath) override;
       ::file::path shader_path(const ::file::path& pathShader) override;
 
+
+      //::pointer <::gpu::fence > create_gpu_fence(::u32 uInitialPayload) override;
 
    };
 

@@ -1,6 +1,6 @@
 // From mnk_controller from V0idsEmbrace@Twich continuum project
 // by camilo on 2025-05-18 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "camera.h"
 #include "immersion.h"
 #include "input.h"

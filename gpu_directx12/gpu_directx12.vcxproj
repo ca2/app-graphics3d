@@ -702,6 +702,7 @@
     <ClInclude Include="descriptors.h" />
     <ClInclude Include="device.h" />
     <ClInclude Include="aaa_direct2d_draw2d_swap_chain.h" />
+    <ClInclude Include="queue.h" />
     <ClInclude Include="window_attachment.h" />
     <ClInclude Include="dxgi_debug.h" />
     <ClInclude Include="fence.h" />
@@ -732,7 +733,7 @@
     <ClInclude Include="aaa_swap_chain_render_target_view.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="_.h" />
-    <ClInclude Include="framework.h" />
+    <ClInclude Include="platform.h" />
     <ClInclude Include="_d3dx12.h" />
     <ClInclude Include="_gpu_directx12.h" />
   </ItemGroup>
@@ -749,6 +750,7 @@
     </ClCompile>
     <ClCompile Include="block.cpp" />
     <ClCompile Include="context_ktx.cpp" />
+    <ClCompile Include="queue.cpp" />
     <ClCompile Include="window_attachment.cpp" />
     <ClCompile Include="fence.cpp" />
     <ClCompile Include="semaphore.cpp" />
@@ -810,7 +812,7 @@
     </ClCompile>
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="_factory.cpp" />
-    <ClCompile Include="framework.cpp">
+    <ClCompile Include="platform.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='StaticDebug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

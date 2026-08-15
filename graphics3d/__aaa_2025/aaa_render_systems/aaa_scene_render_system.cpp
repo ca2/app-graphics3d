@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "scene_render_system.h"
 //#include <spdlog/spdlog.h>
 //#include "vulkan_wrapper/render_systems/scene_rs.h"

@@ -161,14 +161,14 @@ namespace gpu_vulkan
       struct layer
       {
          /// @brief [0] -> color, [1] -> depth
-         VkImageView m_vkimageviewaAttachment[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
-         VkFramebuffer m_vkframebuffer = VK_NULL_HANDLE;
+         VkImageView m_vkimageviewaLayer[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+         VkFramebuffer m_vkframebufferLayer = VK_NULL_HANDLE;
          ::i32_size m_size{-1, -1};
          int m_iLayerCount = -1;
          bool is_empty() const
          {
 
-            return m_vkimageviewaAttachment[0] == VK_NULL_HANDLE || m_vkframebuffer == VK_NULL_HANDLE;
+            return m_vkimageviewaLayer[0] == VK_NULL_HANDLE || m_vkframebufferLayer == VK_NULL_HANDLE;
 
          }
 
@@ -296,9 +296,9 @@ namespace gpu_vulkan
 
       void _set_image_data(const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat);
       
-      void initialize_depth_texture(::gpu::context *pgpucontext, const ::i32_size & size) override;
-      void initialize_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path & path, bool bIsSrgb);
-      void initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
+      void create_depth_texture(::gpu::context *pgpucontext, const ::i32_size & size) override;
+      void create_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path & path, bool bIsSrgb);
+      void create_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
       //virtual void load_Cubemap(const ::file::path & path);
       //void blend(::gpu::texture* ptexture, const ::i32_rectangle& rectangleTarget) override;
       //void TransitionImageLayout(
@@ -427,9 +427,9 @@ namespace gpu_vulkan
 
       void generate_mipmap(::gpu::command_buffer *pgpucommandbuffer) override;
 
-      void read_to_buffer(::gpu::command_buffer * pgpucommandbuffer, ::gpu::buffer * pgpubuffer) override;
+      void read_to_buffer(::gpu::command_buffer * pgpucommandbuffer, ::gpu::buffer * pgpubuffer, const ::i32_point & pointOutput) override;
 
-      void read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap) override;
+      void read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap, const ::i32_point & pointOutput) override;
 
       static state_t _s_state_from_texture_state(::gpu::enum_texture_state etexturestate);
 

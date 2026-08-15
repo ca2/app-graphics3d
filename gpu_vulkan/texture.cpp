@@ -1,5 +1,5 @@
 // Created by camilo on 2025-06-08 18:14 < 3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "binding.h"
 #include "texture.h"
 #include "buffer.h"
@@ -15,13 +15,14 @@
 #include "renderer.h"
 #include "semaphore.h"
 #include "shader.h"
-#include "bred/gpu/frame.h"
 #include "acme/filesystem/file/exception.h"
 #include "acme/filesystem/filesystem/file_context.h"
 #include "acme/graphics/image/pixmap.h"
 #include "aura/graphics/image/context.h"
 #include "aura/graphics/image/image.h"
 #include "bred/gpu/context_lock.h"
+#include "bred/gpu/frame.h"
+#include "bred/gpu/texture_site.h"
 #include "vk_init.h"
 #include "gpu/_ktx.h"
 #include "gpu_vulkan/offscreen_render_pass.h"
@@ -964,7 +965,7 @@ namespace gpu_vulkan
    }
 
 
-   void texture::initialize_depth_texture(::gpu::context *pgpucontext, const ::i32_size & size)
+   void texture::create_depth_texture(::gpu::context *pgpucontext, const ::i32_size & size)
    {
 
       if (m_textureattributes.m_sizeRaw == size && m_pgpucontext == pgpucontext)
@@ -975,7 +976,7 @@ namespace gpu_vulkan
 
       //auto currentSize = m_textureattributes.m_sizeRaw;
 
-      ::gpu::texture::initialize_depth_texture(pgpucontext, size);
+      ::gpu::texture::create_depth_texture(pgpucontext, size);
 
       //if (currentSize == rectangleTarget.size() && m_pgpucontext == pgpucontext)
       //{
@@ -1674,12 +1675,24 @@ namespace gpu_vulkan
       framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
       framebufferInfo.renderPass = prenderpass->getRenderPass();
       framebufferInfo.attachmentCount = iAttachmentCount;
-      framebufferInfo.pAttachments = m_vkimageviewaAttachment;
+      framebufferInfo.pAttachments = m_vkimageviewaLayer;
 
       if (ptexture->m_iCurrentLayer < 0)
       {
 
-         m_size = ptexture->rectangle().size();
+         if (ptexture->m_textureattributes.m_sizeRaw.is_empty())
+         {
+            
+            m_size = ptexture->size();
+
+         }
+         else
+         {
+
+            m_size = ptexture->m_textureattributes.m_sizeRaw;
+
+         }
+
          m_iLayerCount = ptexture->m_textureattributes.m_iLayerCount;
 
       }
@@ -1687,7 +1700,9 @@ namespace gpu_vulkan
       {
 
          m_size.cx = ptexture->mip_width();
+
          m_size.cy = ptexture->mip_height();
+
          m_iLayerCount = 1;
 
       }
@@ -1696,7 +1711,7 @@ namespace gpu_vulkan
       framebufferInfo.height = m_size.cy;
       framebufferInfo.layers = m_iLayerCount;
 
-      VkCheckResult(vkCreateFramebuffer(pcontext->logicalDevice(), &framebufferInfo, nullptr, &m_vkframebuffer));
+      VkCheckResult(vkCreateFramebuffer(pcontext->logicalDevice(), &framebufferInfo, nullptr, &m_vkframebufferLayer));
 
    }
 
@@ -1706,14 +1721,14 @@ namespace gpu_vulkan
 
       int iAttachmentCount = 1;
 
-      if (!m_vkimageviewaAttachment[0])
+      if (!m_vkimageviewaLayer[0])
       {
 
          create_color_attachment(ptexture);
 
       }
 
-      if (!m_vkimageviewaAttachment[1] && prenderpass->m_bWithDepth)
+      if (!m_vkimageviewaLayer[1] && prenderpass->m_bWithDepth)
       {
 
          create_depth_attachment(ptexture);
@@ -1722,7 +1737,7 @@ namespace gpu_vulkan
 
       }
 
-      if (!m_vkframebuffer)
+      if (!m_vkframebufferLayer)
       {
 
          _create_framebuffer(ptexture, prenderpass, iAttachmentCount);
@@ -1747,7 +1762,7 @@ namespace gpu_vulkan
       faceView.subresourceRange.levelCount = ptexture->m_iCurrentLayer < 0 ? ptexture->m_textureattributes.m_iMipCount : 1;
       faceView.subresourceRange.baseArrayLayer = maximum(0, ptexture->m_iCurrentLayer); // <--- select the cube face
       faceView.subresourceRange.layerCount = ptexture->m_iCurrentLayer < 0 ? ptexture->m_textureattributes.m_iLayerCount : 1;
-      VkCheckResult(vkCreateImageView(pcontext->logicalDevice(), &faceView, nullptr, &m_vkimageviewaAttachment[0]));
+      VkCheckResult(vkCreateImageView(pcontext->logicalDevice(), &faceView, nullptr, &m_vkimageviewaLayer[0]));
 
    }
 
@@ -1769,7 +1784,7 @@ namespace gpu_vulkan
       faceView.subresourceRange.levelCount = ptexture->m_iCurrentLayer < 0 ? ptexture->m_textureattributes.m_iMipCount : 1;
       faceView.subresourceRange.baseArrayLayer = maximum(0, ptexture->m_iCurrentLayer); // <--- select the cube face
       faceView.subresourceRange.layerCount = ptexture->m_iCurrentLayer < 0 ? ptexture->m_textureattributes.m_iLayerCount : 1;
-      VkCheckResult(vkCreateImageView(pcontext->logicalDevice(), &faceView, nullptr, &m_vkimageviewaAttachment[1]));
+      VkCheckResult(vkCreateImageView(pcontext->logicalDevice(), &faceView, nullptr, &m_vkimageviewaLayer[1]));
 
    }
 
@@ -2423,7 +2438,9 @@ namespace gpu_vulkan
 
       bindingslot.m_iSlot = 0;
 
-      bindingslot.m_ptexture = this;
+      defer_construct_newø(bindingslot.m_ptexturesite);
+
+      bindingslot.m_ptexturesite->m_pgputextureSite = this;
 
       return pbindingslotset;
 
@@ -3583,11 +3600,11 @@ void texture::create_sampler()
 
       auto pphysicaldevice = pgpudevice->m_pphysicaldevice;
 
-      m_textureattributes.m_rectangleTarget.left = 0;
-      m_textureattributes.m_rectangleTarget.top = 0;
+      //m_textureattributes.m_rectangleTarget.left = 0;
+      //m_textureattributes.m_rectangleTarget.top = 0;
       //this->m_pDevice = pdevice;
-      m_textureattributes.m_rectangleTarget.right = pktxtexture->baseWidth;
-      m_textureattributes.m_rectangleTarget.bottom = pktxtexture->baseHeight;
+      m_textureattributes.m_size.cx = pktxtexture->baseWidth;
+      m_textureattributes.m_size.cy = pktxtexture->baseHeight;
       m_textureattributes.m_iMipCount = pktxtexture->numLevels;
 
       ktx_uint8_t *ktxTextureData = ktxTexture_GetData(pktxtexture);
@@ -3661,8 +3678,8 @@ void texture::create_sampler()
       imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
       imageCreateInfo.extent = 
       {
-         (uint32_t) m_textureattributes.m_rectangleTarget.width(),
-         (uint32_t) m_textureattributes.m_rectangleTarget.height(),
+         (uint32_t) m_textureattributes.m_size.width(),
+         (uint32_t) m_textureattributes.m_size.height(),
          1
       };
       imageCreateInfo.usage = imageUsageFlags;
@@ -3835,7 +3852,7 @@ void texture::create_sampler()
    }
 
 
-   void texture::initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block)
+   void texture::create_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block)
    {
 
       ::gpu::context_lock contextlock(pgpucontext);
@@ -3868,7 +3885,7 @@ void texture::create_sampler()
 
       }
 
-      m_textureattributes.m_rectangleTarget = ::i32_rectangle(::i32_size(width, height));
+      m_textureattributes.m_size = { width, height };
 
       m_textureflags.m_bWithDepth = false;
 
@@ -4418,7 +4435,7 @@ void texture::create_sampler()
 //   }
 
 
-   void texture::initialize_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path &pathImage, bool isSrgb)
+   void texture::create_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path &pathImage, bool isSrgb)
    {
 
       this->m_pgpucontext = pgpucontext;
@@ -4441,7 +4458,7 @@ void texture::create_sampler()
 
             pixmapa.add(ppixmap);
 
-            initialize_texture_from_pixmap(m_pgpucontext, pixmapa);
+            create_texture_from_pixmap(m_pgpucontext, pixmapa);
 
          }
 
@@ -5050,7 +5067,7 @@ void texture::create_sampler()
 //   {
 
 
-   void texture::read_to_buffer(::gpu::command_buffer * pgpucommandbuffer, ::gpu::buffer * pgpubuffer)
+   void texture::read_to_buffer(::gpu::command_buffer * pgpucommandbuffer, ::gpu::buffer * pgpubuffer, const ::i32_point & pointOutput)
    {
 
       ::cast < ::gpu_vulkan::command_buffer > pcommandbuffer = pgpucommandbuffer;
@@ -5113,17 +5130,27 @@ void texture::create_sampler()
          },
 
          .imageOffset = {
-            .x = (int32_t)m_textureattributes.m_rectangleTarget.left,
-            .y = (int32_t)m_textureattributes.m_rectangleTarget.top,
+            .x = (int32_t)pointOutput.x,
+            .y = (int32_t)pointOutput.y,
             .z = 0,
          },
 
          .imageExtent = {
-            .width = (uint32_t)m_textureattributes.m_rectangleTarget.width(),
-            .height = (uint32_t)m_textureattributes.m_rectangleTarget.height(),
+            .width = (uint32_t)m_textureattributes.m_size.width(),
+            .height = (uint32_t)m_textureattributes.m_size.height(),
             .depth = 1,
          },
       };
+
+      informationf(
+   "READBACK imageOffset=(%d,%d) "
+   "imageExtent=(%u,%u) "
+   "bufferSize=%lld",
+   copyRegion.imageOffset.x,
+   copyRegion.imageOffset.y,
+   copyRegion.imageExtent.width,
+   copyRegion.imageExtent.height,
+   (long long)pbuffer->m_size);
 
       vkCmdCopyImageToBuffer(
          pcommandbuffer->m_vkcommandbuffer,
@@ -5211,7 +5238,7 @@ void texture::create_sampler()
    }
 
    
-   void texture::read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap)
+   void texture::read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap, const ::i32_point & pointOutput)
    {
 
       ::cast < ::gpu_vulkan::command_buffer > pcommandbuffer = pgpucommandbuffer;
@@ -5220,7 +5247,7 @@ void texture::create_sampler()
 
       ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
 
-      read_to_buffer(pgpucommandbuffer, pbuffer);
+      read_to_buffer(pgpucommandbuffer, pbuffer, pointOutput);
 
       void * mapped = nullptr;
 
@@ -5251,6 +5278,14 @@ void texture::create_sampler()
 
       ///std::vector<uint8_t> pixels(
    //static_cast<size_t>(pbuffer->m_size));
+
+      informationf(
+   "READBACK CPU source=(%dx%d stride=%d) destination=(%dx%d)",
+   m_textureattributes.m_size.width(),
+   m_textureattributes.m_size.height(),
+   m_textureattributes.m_size.width() * 4,
+   ppixmap->size().cx,
+   ppixmap->size().cy);
 
       ppixmap->copy(ppixmap->size(), (const ::image32_t *) mapped, ppixmap->size().cx * 4);
          //mapped,

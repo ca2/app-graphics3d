@@ -2,7 +2,7 @@
 ////  camilo on 2025-07-29 07:57 <3ThomasBorregaardSørensen!!
 //// From bred/gpu/pixmap.cpp by
 ////  camilo on 2025-07-01 14:39 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 //#include "pixmap.h"
 //
 //

@@ -40,7 +40,7 @@ int main()
        !(flush < handoff && handoff < unlock))
    {
 
-      std::cerr << "The shared Vulkan queue lock must cover VKVG flush and the completed layer-copy handoff.\n";
+      std::cerr << "The shared Vulkan queue lock must cover VKVG flush and the completed direct layer handoff.\n";
       return 1;
 
    }

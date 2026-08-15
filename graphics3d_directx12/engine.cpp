@@ -1,5 +1,5 @@
 // From application_object by camilo on 2025-05-17 01:10 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "buffer.h"
 #include "engine.h"
 #include "frame.h"
@@ -577,8 +577,8 @@ namespace graphics3d_directx12
 
    void engine::on_after_done_frame_step(::draw2d::graphics_pointer& pgraphics)
    {
-
       
+      ::graphics3d::engine::on_after_done_frame_step(pgraphics);
 
       //on_after_done_frame_step2(pgraphics);
 

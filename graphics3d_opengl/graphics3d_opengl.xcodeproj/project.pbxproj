@@ -16,7 +16,7 @@
 		9A4334CE2F232D9A00705FD8 /* _.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334072F232D1500705FD8 /* _.cpp */; };
 		9A4334CF2F232DAB00705FD8 /* input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334282F232D1500705FD8 /* input.cpp */; };
 		9A4334D02F232DAB00705FD8 /* engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A43341E2F232D1500705FD8 /* engine.cpp */; };
-		9A4334D12F232DAB00705FD8 /* framework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334212F232D1500705FD8 /* framework.cpp */; };
+		9A4334D12F232DAB00705FD8 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334212F232D1500705FD8 /* platform.cpp */; };
 		9A4334D22F232DAB00705FD8 /* buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334142F232D1500705FD8 /* buffer.cpp */; };
 		9A4334D32F232DAB00705FD8 /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334162F232D1500705FD8 /* camera.cpp */; };
 		9A4334D42F232DAB00705FD8 /* mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A4334372F232D1500705FD8 /* mesh.cpp */; };
@@ -80,8 +80,8 @@
 		9A43341C2F232D1500705FD8 /* descriptors.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = descriptors.cpp; sourceTree = "<group>"; };
 		9A43341D2F232D1500705FD8 /* engine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = engine.h; sourceTree = "<group>"; };
 		9A43341E2F232D1500705FD8 /* engine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = engine.cpp; sourceTree = "<group>"; };
-		9A4334202F232D1500705FD8 /* framework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = framework.h; sourceTree = "<group>"; };
-		9A4334212F232D1500705FD8 /* framework.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = framework.cpp; sourceTree = "<group>"; };
+		9A4334202F232D1500705FD8 /* platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		9A4334212F232D1500705FD8 /* platform.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
 		9A4334272F232D1500705FD8 /* input.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = input.h; sourceTree = "<group>"; };
 		9A4334282F232D1500705FD8 /* input.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = input.cpp; sourceTree = "<group>"; };
 		9A4334362F232D1500705FD8 /* mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mesh.h; sourceTree = "<group>"; };
@@ -208,8 +208,8 @@
 				9A43341C2F232D1500705FD8 /* descriptors.cpp */,
 				9A43341D2F232D1500705FD8 /* engine.h */,
 				9A43341E2F232D1500705FD8 /* engine.cpp */,
-				9A4334202F232D1500705FD8 /* framework.h */,
-				9A4334212F232D1500705FD8 /* framework.cpp */,
+				9A4334202F232D1500705FD8 /* platform.h */,
+				9A4334212F232D1500705FD8 /* platform.cpp */,
 				9A4334272F232D1500705FD8 /* input.h */,
 				9A4334282F232D1500705FD8 /* input.cpp */,
 				9A4334362F232D1500705FD8 /* mesh.h */,
@@ -440,7 +440,7 @@
 				9A4334CE2F232D9A00705FD8 /* _.cpp in Sources */,
 				9A4334CF2F232DAB00705FD8 /* input.cpp in Sources */,
 				9A4334D02F232DAB00705FD8 /* engine.cpp in Sources */,
-				9A4334D12F232DAB00705FD8 /* framework.cpp in Sources */,
+				9A4334D12F232DAB00705FD8 /* platform.cpp in Sources */,
 				9A4334D22F232DAB00705FD8 /* buffer.cpp in Sources */,
 				9A4334D32F232DAB00705FD8 /* camera.cpp in Sources */,
 				9A4334D42F232DAB00705FD8 /* mesh.cpp in Sources */,
@@ -525,7 +525,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = framework.h;
+				GCC_PREFIX_HEADER = platform.h;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
@@ -631,7 +631,7 @@
 				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = framework.h;
+				GCC_PREFIX_HEADER = platform.h;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;

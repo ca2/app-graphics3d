@@ -28,18 +28,45 @@ namespace draw2d_vkvg
    class draw2d;
 
 
+   class direct_target :
+      virtual public ::particle
+   {
+   public:
+
+      ::pointer<::gpu_vulkan::texture> m_ptexture;
+      VkImage m_vkimage = VK_NULL_HANDLE;
+      VkFormat m_vkformat = VK_FORMAT_UNDEFINED;
+      ::i32_size m_size;
+      VkhImage m_vkhimage = nullptr;
+      VkvgSurface m_vkvgsurface = nullptr;
+      VkvgContext m_vkvgcontext = nullptr;
+      ::u64 m_uFrameSerial = 0;
+
+   };
+
+
+   class saved_vkvg_context
+   {
+   public:
+
+      VkvgContext                         m_vkvgcontext = nullptr;
+      ::pointer<direct_target>              m_pdirecttarget;
+
+   };
+
+
    class CLASS_DECL_DRAW2D_VKVG graphics :
       virtual public ::gpu::graphics
       //,virtual public ::gpu::renderer
    {
    public:
 
-      bool                             m_bBeginDrawEndDrawMode;
-      VkvgDevice                       m_vkvgdevice2;
-      VkvgSurface                      m_vkvgsurface;
-      VkvgContext                      m_vkvgcontext;
-      ::pointer < ::gpu::texture >     m_ptextureCurrent;
-      bool                             m_bSetStateExternally;
+      bool                                m_bBeginDrawEndDrawMode;
+      VkvgDevice                          m_vkvgdevice2;
+      VkvgSurface                         m_vkvgsurface;
+      VkvgContext                         m_vkvgcontext;
+      ::pointer < ::gpu::texture_site >   m_ptexturesiteCurrent;
+      bool                                m_bSetStateExternally;
       //::plusplus::Matrix *           m_pm;
       //::plusplus::Graphics *         m_pgraphics;
       //::plusplus::GraphicsPath *     m_ppath;
@@ -58,6 +85,10 @@ namespace draw2d_vkvg
       //::pointer<::gpu::context>          m_pgpucontextVulkan;
       ::pointer<::gpu::context>             m_pgpucontextOutput;
       std::unique_lock<std::recursive_mutex> m_queuehostcalllock;
+      ::pointer_array<direct_target>       m_directtargeta;
+      ::pointer<direct_target>             m_pdirecttargetActive;
+      ::u64                                m_uDirectTargetFrameSerial = 0;
+      ::array<saved_vkvg_context>            m_savedvkvgcontexta;
 
    
 
@@ -84,7 +115,15 @@ namespace draw2d_vkvg
 
 
 
-      ::gpu::texture* current_target_texture(::gpu::layer * pgpulayer) override;
+      ::gpu::texture_site * current_target_texture(::gpu::layer * pgpulayer) override;
+
+      bool renders_layer_externally(::gpu::layer * pgpulayer) override;
+      void prepare_vkvg_render_target(::gpu::texture * pgputexture);
+      void maintain_vkvg_direct_target_cache();
+      bool is_vkvg_direct_target_saved(direct_target * pdirecttarget);
+      void clear_saved_vkvg_contexts();
+      void destroy_vkvg_direct_target(direct_target * pdirecttarget);
+      void clear_vkvg_direct_target_cache();
 
       bool is_gpu_oriented() override;
 

@@ -56,8 +56,8 @@ namespace gpu_vulkan
       virtual void defer_stage(const ::function<void(buffer * pbuffer)> & functionAssign);
 
 
-      virtual void assign(const void* data, int size);
-      virtual void _assign(const void* data, int size);
+      virtual void assign(const void* data, memsize size);
+      virtual void _assign(const void* data, memsize size);
       virtual void assign_cube_map(const ::pointer_array < ::pixmap >& pixmapa);
       virtual void _assign_cube_map(const ::pointer_array < ::pixmap >& pixmapa);
 

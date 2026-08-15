@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "scene_render_system.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/scene_base.h"

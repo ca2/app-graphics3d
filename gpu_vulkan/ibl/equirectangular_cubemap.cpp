@@ -2,7 +2,7 @@
 // camilo on 2025-09-26 19:53 <3ThomasBorregaardSorensen!!
 // From gpu_opengl/ibl/equirectangular_cubemap.h by
 // camilo on 2025-10-10 22:03 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "equirectangular_cubemap.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context.h"

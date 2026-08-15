@@ -1,5 +1,5 @@
 // Created by camilo on 2025-04-24 21:26 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "render_system.h"
 #include "app/gpu_opengl/command_buffer.h"
 #include "app/gpu_opengl/context.h"
@@ -10,6 +10,7 @@
 //#include "app/gpu_opengl/vk_init.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 
 
 namespace graphics3d_opengl
@@ -67,7 +68,11 @@ namespace graphics3d_opengl
 
       auto prendertarget = prenderer->render_target();
 
-      ::cast<::gpu_opengl::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
+      //::cast<::gpu_opengl::texture> ptexture = prendertarget->current_texture(::gpu::current_layer());
+
+      auto ptexturesite = prendertarget->current_texture(::gpu::current_layer(), true);
+
+      auto ptexture = ptexturesite->gpu_texture();
 
       ::cast<::gpu_opengl::command_buffer> pcommandbuffer = pgpulayer->getCurrentCommandBuffer4();
 

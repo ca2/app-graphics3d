@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "gpu_opengl/_gpu_opengl.h"
 #include "draw2d.h"
 #include "acme/exception/resource.h"

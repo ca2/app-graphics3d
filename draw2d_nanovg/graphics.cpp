@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "gpu_opengl/_gpu_opengl.h"
 #include "_nanovg.h"
 #include "bitmap.h"
@@ -35,6 +35,7 @@
 #include "bred/gpu/window_attachment.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/render.h"
+#include "bred/gpu/texture_site.h"
 #include "aura/graphics/draw2d/clip.h"
 #include "aura/graphics/graphics/context.h"
 #include "aura/graphics/image/drawing.h"
@@ -326,8 +327,19 @@ namespace draw2d_nanovg
       if (!m_pgpucontextOwned)
       {
 
-         m_pgpucontextOwned = pgpudevice->create_draw2d_gpu_context(pacmeuserinteractionAffinity->m_pacmewindowingwindow,
-            sizeParameter);
+         m_pgpucontextOwned = pgpudevice->allocate_gpu_context();
+
+         //::i32_rectangle rectanglePlacement(sizeParameter);
+
+         auto sizeRaw = pacmeuserinteractionAffinity->m_pacmewindowingwindow->get_raw_buffer_size().maximum(sizeParameter);
+
+         m_pgpucontextOwned->create_draw2d_gpu_context(
+            pgpudevice,
+            pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+            {},
+            {},
+            sizeParameter,
+            sizeRaw);
          //   ::gpu::e_output_gpu_buffer,
          //   //m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
          //   sizeParameter);
@@ -3816,6 +3828,15 @@ namespace draw2d_nanovg
    void graphics::set_target_image(::image::image * pimage)
    {
 
+      auto pgpulayer = ::gpu::current_layer();
+
+      if (pgpulayer && pgpulayer->m_bIncludeInFrameComposition)
+      {
+
+         return;
+
+      }
+
       ::cast < ::draw2d_nanovg::image > popenglimage = pimage;
 
       ::cast < ::draw2d_nanovg::bitmap > pbitmap = popenglimage->m_pbitmap;
@@ -6429,8 +6450,26 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   ::gpu::texture* graphics::current_target_texture(::gpu::layer * pgpulayer)
+   ::gpu::texture_site* graphics::current_target_texture(::gpu::layer * pgpulayer)
    {
+
+      if (pgpulayer && pgpulayer->m_bIncludeInFrameComposition)
+      {
+
+         auto pgpucontext = gpu_context();
+
+         if (!pgpucontext)
+         {
+
+            throw ::exception(
+               error_wrong_state,
+               "NanoVG has no GPU context for the active composition layer.");
+
+         }
+
+         return pgpucontext->get_gpu_renderer()->current_render_target_texture(pgpulayer);
+
+      }
 
       ::cast < ::gpu::image > pgpuimage =m_pimage;
 
@@ -6442,7 +6481,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          if (pgputexture)
          {
 
-            return pgputexture;
+            defer_construct_newø(m_pgputexturesiteTarget);
+
+            m_pgputexturesiteTarget->m_pgputextureSite = pgputexture;
+
+            m_pgputexturesiteTarget->m_pointOutput = m_point;
+
+            return m_pgputexturesiteTarget;
 
          }
 
@@ -8588,7 +8633,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto pgpucommandbuffer = ::gpu::current_layer()->getCurrentCommandBuffer4();
 
-      pgputexture->read_pixels(pgpucommandbuffer, &mapPixmap);
+      pgputexture->read_pixels(pgpucommandbuffer, &mapPixmap, {});
 
       auto uPixelCount = (::u64)sizeTexture.cx * (::u64)sizeTexture.cy;
       auto uTransparentPixels = (::u64)0;
@@ -9810,9 +9855,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       glBindFramebuffer(GL_FRAMEBUFFER, uFramebuffer);
       ::opengl::check_error("");
 
-      auto sizeTarget = popengltexture->size();
-      glViewport(0, 0, sizeTarget.cx, sizeTarget.cy);
-      ::opengl::check_error("");
+      //auto sizeTarget = popengltexture->size();
+      //glViewport(0, 0, sizeTarget.cx, sizeTarget.cy);
+      //::opengl::check_error("");
 
       GLint iStencilWriteMask = 0;
       GLint iStencilBackWriteMask = 0;
@@ -9849,7 +9894,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // Clear buffers
       auto pgpucontext = gpu_context();
 
-      pgpucontext->clear(pgpucontext->current_target_texture(::gpu::current_layer()), ::color::transparent);
+      pgpucontext->clear(pgpucontext->current_target_texture(::gpu::current_layer())->gpu_texture(), ::color::transparent);
 
       auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpucontext);
 
@@ -9859,7 +9904,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       {
 
          prepare_nanovg_render_target(
-            pgpucontext->current_target_texture(::gpu::current_layer()));
+            pgpucontext->current_target_texture(::gpu::current_layer())->gpu_texture());
 
          nvgBeginFrame(m_pdc, pgpucontext->width(),
             pgpucontext->height(), 1.f);
@@ -9885,11 +9930,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    {
 
       auto pgpucontext = gpu_context();
-      auto pgputextureTarget = pgpucontext
+      auto pgputexturesiteTarget = pgpucontext
          ? pgpucontext->current_target_texture(pgpulayer)
          : nullptr;
 
-      if (!pgputextureTarget)
+      if (!pgputexturesiteTarget || !pgputexturesiteTarget->gpu_texture())
       {
 
          throw ::exception(
@@ -9897,6 +9942,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             "NanoVG has no current GPU target at the end-frame flush boundary.");
 
       }
+
+      auto pgputextureTarget = pgputexturesiteTarget->gpu_texture();
 
       ::cast <::gpu::image >pgpuimage =m_pimage;
       ::cast < ::gpu_opengl::texture > ptextureDiagnostic =
@@ -9948,6 +9995,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       m_bHadEndLayer = true;
 
+
       //glClearColor(r, g, b, a);  // Set background color
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // Clear buffers
       //auto pgpucontext = gpu_context();
@@ -9973,10 +10021,10 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::gpu::graphics::begin_draw();
 
-      auto pgputextureTarget = current_target_texture(
+      auto pgputexturesiteTarget = current_target_texture(
          ::gpu::current_layer());
 
-      prepare_nanovg_render_target(pgputextureTarget);
+      prepare_nanovg_render_target(pgputexturesiteTarget->gpu_texture());
       
       auto size = m_size;
 
@@ -10032,7 +10080,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::string strMessage;
 
-            ::cast<::gpu_opengl::texture> ptexture = gpu_context()->current_target_texture(::gpu::current_layer());
+            auto ptexturesite = gpu_context()->current_target_texture(::gpu::current_layer());
+
+            ::cast<::gpu_opengl::texture> ptexture = ptexturesite->gpu_texture();
 
             auto uTexture = ptexture->m_gluTextureID;
 
@@ -10061,7 +10111,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          }
 
          prepare_nanovg_render_target(
-            gpu_context()->current_target_texture(::gpu::current_layer()));
+            gpu_context()->current_target_texture(::gpu::current_layer())->gpu_texture());
 
          nvgBeginFrame(m_pdc, (float)size.width(), (float)size.height(), 1.0f);
 
@@ -10339,7 +10389,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             ::string strMessage;
 
-            ::cast < ::gpu_opengl::texture > ptexture = gpu_context()->current_target_texture(::gpu::current_layer());
+            auto ptexturesite = gpu_context()->current_target_texture(::gpu::current_layer());
+
+            ::cast < ::gpu_opengl::texture > ptexture = ptexturesite->gpu_texture();
 
             auto uTexture = ptexture->m_gluTextureID;
 

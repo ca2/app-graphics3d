@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "wavefront_obj_render_system.h"
 #include "bred/gpu/renderable.h"
 #include "bred/graphics3d/scene_renderable.h"

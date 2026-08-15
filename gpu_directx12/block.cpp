@@ -1,5 +1,5 @@
 // From gpu_directx11/block.cpp by camilo on 2025-12-11 19:04 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 //#include "binding.h"
 #include "block.h"
 //#include "command_buffer.h"

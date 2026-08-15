@@ -1,4 +1,4 @@
-#include "../framework.h"
+#include "../platform.h"
 //#include "context.h"
 //#include "gpu_opengl/context.h"
 //#include "gpu_opengl/cpu_buffer.h"

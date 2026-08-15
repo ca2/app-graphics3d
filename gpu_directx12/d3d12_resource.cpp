@@ -1,7 +1,7 @@
 // From gpu_vulkan/memory_buffer.cpp by
 // camilo on 2025-06-29 06:58 <3ThomasBorregaardSørensen!!
 // Created by camilo on 2025-06-11 00:50 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
@@ -116,13 +116,52 @@ namespace gpu_directx12
       
       auto pd3d12device = pdevice->m_pd3d12device;
 
-      auto hrCreateCommittedResource =
-         pd3d12device->CreateCommittedResource(
-         pHeapProperties, HeapFlags,
-         pDesc, m_state.m_resourcestates,
-         pOptimizedClearValue, __interface_of(m_presource));
+      HRESULT hrCreateResource = E_FAIL;
 
-      pdevice->defer_throw_hresult(hrCreateCommittedResource);
+      if (m_pcontext->m_bD3D11On12Shared)
+      {
+
+         D3D11_RESOURCE_FLAGS flags11{};
+
+         flags11.BindFlags =
+            D3D11_BIND_RENDER_TARGET |
+            D3D11_BIND_SHADER_RESOURCE;
+
+         flags11.MiscFlags =
+            D3D11_RESOURCE_MISC_SHARED |
+            D3D11_RESOURCE_MISC_SHARED_NTHANDLE;
+
+         if (!pdevice->m_pd3d12compatibiltydevice)
+         {
+
+            pdevice->m_pd3d12device.as(pdevice->m_pd3d12compatibiltydevice);
+
+         }
+
+         hrCreateResource = pdevice->m_pd3d12compatibiltydevice->CreateSharedResource(
+             pHeapProperties,
+             HeapFlags,
+             pDesc,
+             m_state.m_resourcestates,
+             pOptimizedClearValue,                    // optimized clear value
+             &flags11,                   // <-- D3D11 description
+             D3D12_COMPATIBILITY_SHARED_FLAG_NONE,
+             nullptr,                    // lifetime tracker
+             nullptr,                    // owning swapchain
+             __interface_of(m_presource));
+
+      }
+      else
+      {
+         hrCreateResource =
+            pd3d12device->CreateCommittedResource(
+            pHeapProperties, HeapFlags,
+            pDesc, m_state.m_resourcestates,
+            pOptimizedClearValue, __interface_of(m_presource));
+
+      }
+
+      pdevice->defer_throw_hresult(hrCreateResource);
 
    }
 

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "app-graphics3d/gpu_directx11/context.h"
 /*
  * Encapsulates a directx11 buffer

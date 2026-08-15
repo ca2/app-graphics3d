@@ -238,12 +238,12 @@ namespace gpu_directx12
       {
       public:
 
-         ID3D11Resource* m_d3d11wrappedresources[1];
+         ID3D11Resource* m_d3d11resourceaWrapped[1];
 
          //::comptr<ID3D12Resource> d3d12Resource;
-         ::comptr<ID3D11Resource> wrappedResource;
-         ::comptr<IDXGISurface> dxgiSurface;
-         ::comptr<ID2D1Bitmap1> d2dBitmap;
+         ::comptr<ID3D11Resource> m_pd3d11resourceWrapped;
+         ::comptr<IDXGISurface> m_pdxgisurface;
+         ::comptr<ID2D1Bitmap1> m_pd2dbitmap;
          HANDLE sharedHandle = NULL;
 
          d3d11() {}
@@ -265,6 +265,9 @@ namespace gpu_directx12
 
       class d3d11* d3d11();
 
+
+      virtual IDXGISurface * _dxgi_surface();
+
       //void blend(::gpu::texture* ptexture) override;
 
       struct texture::layer &current_layer();
@@ -283,9 +286,9 @@ namespace gpu_directx12
 
       virtual static_upload_buffer *_get_static_upload_buffer(int iResourceCount = -1);
 
-      void initialize_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
+      void create_hdr_texture_on_memory(::gpu::context *pgpucontext, const ::block &block) override;
 
-
+      void read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap, const ::i32_point & pointOutput) override;
       void set_state(::gpu::command_buffer *pgpucommandbuffer, ::gpu::enum_texture_state etexturestate) override;
       void generate_mipmap(::gpu::command_buffer *pgpucommandbuffer) override;
 

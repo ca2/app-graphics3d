@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "pbr_with_ibl_render_system.h"
 #include "bred/gpu/block.h"
 #include "bred/gpu/command_buffer.h"
@@ -7,6 +7,7 @@
 #include "bred/gpu/renderer.h"
 #include "bred/gpu/render_target.h"
 #include "bred/gpu/texture.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/graphics3d/scene_base.h"
 #include "bred/graphics3d/scene_renderable.h"
@@ -360,7 +361,7 @@ namespace graphics3d
       
                 pshader->set_matrix4("modelMatrix", world);
                 pshader->set_matrix4("normalMatrix", normalMat);
-                bool bAlbedo = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_albedo].is_set();
+                bool bAlbedo = pmesh->m_pmaterial->m_texturesiteaPbr[::gpu::model::e_texture_albedo].ok();
                 bAlbedo = bAlbedo && !m_bDisableAlbedo;
                 pshader->set_i32("useTextureAlbedo", bAlbedo ? 1 : 0);
 
@@ -378,7 +379,7 @@ namespace graphics3d
                    }
                 }
 
-                pshader->set_f32("prefilteredEnvMapMaxLod", pscene->m_ptexturePrefilteredCube->m_textureattributes.m_iMipCount - 1);
+                pshader->set_f32("prefilteredEnvMapMaxLod", (::f32) pscene->m_ptexturesitePrefilteredCube->gpu_texture()->m_textureattributes.m_iMipCount - 1);
       
                     floating_sequence3 seq3Albedo = {};
                 if (prendersystem->m_bForceDefaultAlbedo)
@@ -395,13 +396,13 @@ namespace graphics3d
       
                 pshader->set_sequence3("albedo", seq3Albedo);
       
-                bool bMetallicRoughness = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_metallic_roughness].is_set();
+                bool bMetallicRoughness = pmesh->m_pmaterial->m_texturesiteaPbr[::gpu::model::e_texture_metallic_roughness].ok();
                 bMetallicRoughness = bMetallicRoughness && !m_bDisableMetallicRoughness;
                 if (m_bImplMetallic)
                 {
                    pshader->set_i32("useTextureMetallicRoughness", bMetallicRoughness ? 1 : 0);
                 }
-                bool bNormal = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_normal].is_set();
+                bool bNormal = pmesh->m_pmaterial->m_texturesiteaPbr[::gpu::model::e_texture_normal].ok();
       
                 float fMetallic = 0.0f;
                 if (prendersystem->m_bForceDefaultMetallicFactor)
@@ -430,7 +431,7 @@ namespace graphics3d
       
                 bNormal = bNormal && !m_bDisableNormal;
                 pshader->set_i32("useTextureNormal", bNormal ? 1 : 0);
-                bool bAmbientOcclusion = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_ambient_occlusion].is_set();
+                bool bAmbientOcclusion = pmesh->m_pmaterial->m_texturesiteaPbr[::gpu::model::e_texture_ambient_occlusion].ok();
                 bAmbientOcclusion = bAmbientOcclusion && !m_bDisableAmbientOcclusion;
                 if (m_bImplAO)
                 {
@@ -474,7 +475,7 @@ namespace graphics3d
                 pshader->set_sequence3("multiplier", seq3);
       
       
-                bool bEmissive = pmesh->m_pmaterial->m_textureaPbr[::gpu::model::e_texture_emissive].is_set();
+                bool bEmissive = pmesh->m_pmaterial->m_texturesiteaPbr[::gpu::model::e_texture_emissive].ok();
                 bEmissive = bEmissive && !m_bDisableEmissive;
                 if (m_bImplEmissive)
                 {

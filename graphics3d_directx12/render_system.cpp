@@ -1,5 +1,5 @@
 // Created by camilo on 2025-04-24 21:26 <3ThomasBorregaardSorensen!!
-#include "framework.h"
+#include "platform.h"
 #include "render_system.h"
 //#include "gpu_directx11/command_buffer.h"
 #include "gpu_directx12/context.h"
@@ -10,6 +10,7 @@
 //#include "gpu_directx11/vk_init.h"
 #include "bred/graphics3d/engine.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
 
 
 namespace graphics3d_directx12
@@ -66,7 +67,9 @@ namespace graphics3d_directx12
 
       //auto vkrenderpass = prenderpass->m_vkrenderpass;
 
-      ::cast<::gpu_directx12::texture> ptexture = prendertarget->current_texture(pgpulayer);
+      auto ptexturesite = prendertarget->current_texture(pgpulayer, true);
+
+      ::cast<::gpu_directx12::texture> ptexture = ptexturesite->gpu_texture();
 
       //if (ptexture->m_state.m_vkimagelayout == VK_IMAGE_LAYOUT_UNDEFINED)
       //{

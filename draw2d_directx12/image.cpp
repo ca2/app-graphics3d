@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "bitmap.h"
 #include "image.h"
 #include "graphics.h"
@@ -31,7 +31,7 @@ namespace draw2d_directx12
    }
 
 
-   ::draw2d::bitmap_pointer image::get_bitmap() const
+   ::draw2d::bitmap_pointer image::get_bitmap(::draw2d::graphics * pdraw2dgraphics) const
    {
 
       return m_pbitmap;
@@ -1076,7 +1076,7 @@ namespace draw2d_directx12
    //}
 
 
-   void image::_map(bool bApplyAlphaTransform)
+   void image::_map(const ::i32_rectangle & rectangle, bool bApplyAlphaTransform)
    {
 
       //::draw2d::lock draw2dlock;

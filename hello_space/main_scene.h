@@ -30,10 +30,10 @@ namespace app_graphics3d_hello_space
       ///::pointer < ::graphics3d::skybox_render_system >		   m_pskyboxrendersystem;
       ::pointer<::graphics3d::texture_render_system> m_ptexturerendersystem;
       ::image::image_pointer m_pimageHelloMultiverseScreen;
-      ::pointer<::gpu::texture> m_pgputextureHelloMultiverseScreen;
-      ::pointer<::gpu::texture> m_pgputextureHelloMultiverse;
-      ::pointer<::gpu::texture> m_pgputextureMonitorMultisample;
-      ::pointer<::gpu::texture> m_pgputextureMonitor2;
+      ::pointer<::gpu::texture_site> m_pgputexturesiteHelloMultiverseScreen;
+      ::pointer<::gpu::texture_site> m_pgputexturesiteHelloMultiverse;
+      ::pointer<::gpu::texture_site> m_pgputexturesiteMonitorMultisample;
+      ::pointer<::gpu::texture_site> m_pgputexturesiteMonitor2;
       ::pointer<::gpu::shader> m_pgpushaderBlend;
       ::pointer<::gpu::model_buffer> m_pmodelbufferDummy;
       ::graphics3d::scene_renderable *m_prenderable = nullptr;

@@ -26,7 +26,7 @@ namespace draw2d_directx12
 
 
       //virtual ::draw2d::graphics * _get_graphics() const override;
-      ::draw2d::bitmap_pointer get_bitmap() const override;
+      ::draw2d::bitmap_pointer get_bitmap(::draw2d::graphics * pdraw2dgraphics = nullptr) const override;
       ::draw2d::bitmap_pointer detach_bitmap() override;
 
 
@@ -62,7 +62,7 @@ namespace draw2d_directx12
       virtual void tint(::image::image * pimage, ::color::color color32) override;
 
       protected:
-            void _map(bool bApplyAlphaTransform = true) override;
+            void _map(const ::i32_rectangle & rectangle, bool bApplyAlphaTransform = true) override;
       void _unmap(bool bDoUnmap = false) override;
 
 

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "_vkvg.h"
 #include "draw2d.h"
 #include "pen.h"
@@ -20,6 +20,8 @@
 #include "acme/prototype/mathematics/mathematics.h"
 #include "acme/prototype/string/str.h"
 #include "app-graphics3d/gpu_vulkan/approach.h"
+#include "app-graphics3d/gpu_vulkan/context.h"
+#include "app-graphics3d/gpu_vulkan/device.h"
 #include "app-graphics3d/gpu_vulkan/physical_device.h"
 #include "app-graphics3d/gpu_vulkan/queue.h"
 #include "app-graphics3d/gpu_vulkan/renderer.h"
@@ -34,6 +36,7 @@
 #include "bred/gpu/window_attachment.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/swap_chain.h"
+#include "bred/gpu/texture_site.h"
 #include "aura/graphics/write_text/text_out.h"
 #include "aura/graphics/write_text/draw_text.h"
 #include "acme/prototype/geometry2d/_defer_item.h"
@@ -185,6 +188,10 @@ namespace draw2d_vkvg
 
       //vulkan_delete_offscreen_buffer();
 
+      clear_saved_vkvg_contexts();
+
+      clear_vkvg_direct_target_cache();
+
       DeleteDC();
 
    }
@@ -330,7 +337,7 @@ namespace draw2d_vkvg
 
       //}
 
-      on_gpu_context_placement_change(rectanglePlacement, m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      on_gpu_context_placement_change({}, {}, sizeParameter, m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
 
       //if (!draw2d_vkvg()->m_pvulkancontext) {
       //   informationf("MS GDI - RegisterClass failed");
@@ -6003,20 +6010,51 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto vkvgcontext = vkvg_context();
 
+      auto iSavedContext = m_savedvkvgcontexta.get_size();
+
+      saved_vkvg_context savedcontext;
+
+      savedcontext.m_vkvgcontext = vkvgcontext;
+
+      if (m_pdirecttargetActive &&
+          m_pdirecttargetActive->m_vkvgcontext == vkvgcontext)
+      {
+
+         savedcontext.m_pdirecttarget = m_pdirecttargetActive;
+
+      }
+
+      m_savedvkvgcontexta.add(savedcontext);
+
       vkvg_save(vkvgcontext);
-      //      return m_pgraphics->Save();
-      return 0;
+
+      return (int)iSavedContext;
 
    }
 
 
    void graphics::restore_graphics_context(int iSavedContext)
    {
-      auto vkvgcontext = vkvg_context();
 
-      vkvg_restore(vkvgcontext);
-      //return m_pgraphics->Restore(nSavedDC) != false;
-      //return true;
+      if (iSavedContext < 0 || iSavedContext >= m_savedvkvgcontexta.get_count())
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+      for (::collection::index iContext = m_savedvkvgcontexta.get_upper_bound();
+         iContext >= iSavedContext;
+         --iContext)
+      {
+
+         auto vkvgcontext = m_savedvkvgcontexta[iContext].m_vkvgcontext;
+
+         vkvg_restore(vkvgcontext);
+
+      }
+
+      m_savedvkvgcontexta.set_size(iSavedContext);
 
    }
 
@@ -6292,19 +6330,39 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   ::gpu::texture* graphics::current_target_texture(::gpu::layer * pgpulayer)
+   ::gpu::texture_site* graphics::current_target_texture(::gpu::layer * pgpulayer)
    {
 
-      defer_constructø(m_ptextureCurrent);
-
-      if (!m_ptextureCurrent->m_pgpucontext)
+      if (pgpulayer && pgpulayer->m_bIncludeInFrameComposition)
       {
 
-         m_ptextureCurrent->m_pgpucontext = gpu_context();
+         auto pgpucontext = gpu_context();
+
+         if (!pgpucontext)
+         {
+
+            throw ::exception(
+               error_wrong_state,
+               "VKVG has no GPU context for the active composition layer.");
+
+         }
+
+         return pgpucontext->get_gpu_renderer()->current_render_target_texture(pgpulayer);
 
       }
 
-      ::cast < ::gpu_vulkan::texture > ptextureCurrent = m_ptextureCurrent;
+      defer_construct_newø(m_ptexturesiteCurrent);
+
+      defer_constructø(m_ptexturesiteCurrent->m_pgputextureSite);
+
+      if (!m_ptexturesiteCurrent->m_pgputextureSite->m_pgpucontext)
+      {
+
+         m_ptexturesiteCurrent->m_pgputextureSite->m_pgpucontext = gpu_context();
+
+      }
+
+      ::cast < ::gpu_vulkan::texture > ptextureCurrent = m_ptexturesiteCurrent->m_pgputextureSite;
 
       auto vkimage = vkvg_surface_get_vk_image(m_vkvgsurface);
 
@@ -6314,16 +6372,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          if (ptextureCurrent->m_vkimage)
          {
 
-            constructø(m_ptextureCurrent);
+            construct_newø(m_ptexturesiteCurrent);
 
-            if (!m_ptextureCurrent->m_pgpucontext)
+            constructø(m_ptexturesiteCurrent->m_pgputextureSite);
+
+            if (!m_ptexturesiteCurrent->m_pgputextureSite->m_pgpucontext)
             {
 
-               m_ptextureCurrent->m_pgpucontext = gpu_context()->m_pgpurenderer;
+               m_ptexturesiteCurrent->m_pgputextureSite->m_pgpucontext = gpu_context()->m_pgpurenderer;
 
             }
 
-            ptextureCurrent = m_ptextureCurrent;
+            ptextureCurrent = m_ptexturesiteCurrent->m_pgputextureSite;
 
          }
 
@@ -6336,7 +6396,409 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      return m_ptextureCurrent;
+      return m_ptexturesiteCurrent;
+
+   }
+
+
+   bool graphics::renders_layer_externally(::gpu::layer * pgpulayer)
+   {
+
+      return pgpulayer && pgpulayer->m_bIncludeInFrameComposition;
+
+   }
+
+
+   void graphics::prepare_vkvg_render_target(::gpu::texture * pgputexture)
+   {
+
+      m_pdirecttargetActive.release();
+
+      if (!pgputexture)
+      {
+
+         throw ::exception(error_wrong_state, "VKVG has no composed layer texture.");
+
+      }
+
+      ::cast<::gpu_vulkan::texture> ptexture = pgputexture;
+
+      if (!ptexture || ptexture->m_vkimage == VK_NULL_HANDLE)
+      {
+
+         throw ::exception(error_wrong_state, "VKVG requires a valid Vulkan layer texture.");
+
+      }
+
+      if (ptexture->m_vkformat != VK_FORMAT_B8G8R8A8_UNORM)
+      {
+
+         throw ::exception(error_not_supported, "VKVG direct layers require BGRA8 UNORM.");
+
+      }
+
+      const auto usage = ptexture->m_vkimageusageflags;
+      const auto requiredUsage =
+         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+
+      auto pgpucontext = gpu_context();
+
+      if ((usage & requiredUsage) != requiredUsage ||
+          ptexture->mip_count() != 1 || ptexture->layer_count() != 1 ||
+          ptexture->size().is_empty() ||
+          ptexture->size() != pgpucontext->size())
+      {
+
+         throw ::exception(error_wrong_state, "VKVG composed layer texture is incompatible.");
+
+      }
+
+      auto psynchronization = ptexture->synchronization();
+      auto pfence = psynchronization ? psynchronization->in_flight_fence() : nullptr;
+
+      if (pfence)
+      {
+
+         pfence->wait_gpu_fence();
+
+      }
+
+      bool bCacheHit = false;
+      ::pointer<direct_target> pdirecttarget;
+
+      for (auto pdirecttargetCandidate : m_directtargeta)
+      {
+
+         if (pdirecttargetCandidate->m_ptexture == ptexture)
+         {
+
+            if (pdirecttargetCandidate->m_vkimage == ptexture->m_vkimage &&
+                pdirecttargetCandidate->m_vkformat == ptexture->m_vkformat &&
+                pdirecttargetCandidate->m_size == ptexture->size())
+            {
+
+               pdirecttarget = pdirecttargetCandidate;
+               bCacheHit = true;
+               break;
+
+            }
+
+            if (is_vkvg_direct_target_saved(pdirecttargetCandidate))
+            {
+
+               continue;
+
+            }
+
+            destroy_vkvg_direct_target(pdirecttargetCandidate);
+            m_directtargeta.erase(pdirecttargetCandidate);
+            break;
+
+         }
+
+      }
+
+      if (bCacheHit)
+      {
+
+         auto pgpucommandbuffer = pgpucontext->beginSingleTimeCommands(
+            pgpucontext->m_pgpudevice->graphics_queue());
+         ptexture->set_state(
+            pgpucommandbuffer,
+            ::gpu::e_texture_state_color_attachment);
+         pgpucontext->endSingleTimeCommands(pgpucommandbuffer);
+
+         pdirecttarget->m_uFrameSerial = ++m_uDirectTargetFrameSerial;
+         m_pdirecttargetActive = pdirecttarget;
+
+      }
+      else
+      {
+
+         ::cast<::gpu_vulkan::context> pcontextVulkan = pgpucontext;
+
+         if (!pcontextVulkan)
+         {
+
+            throw ::exception(error_wrong_state, "VKVG requires a Vulkan GPU context.");
+
+         }
+
+         auto pgpudeviceVulkan = pcontextVulkan->m_pgpudevice;
+         auto vkhdevice = reinterpret_cast<VkhDevice>(&pgpudeviceVulkan->m_vkdevice);
+
+         VkhImage vkhimage = nullptr;
+         VkvgSurface vkvgsurface = nullptr;
+         VkvgContext vkvgcontext = nullptr;
+         bool bDirectTargetPublished = false;
+
+         try
+         {
+
+            vkhimage = vkh_image_import(
+               vkhdevice,
+               ptexture->m_vkimage,
+               ptexture->m_vkformat,
+               (::u32)ptexture->width(),
+               (::u32)ptexture->height());
+
+            if (!vkhimage || vkh_image_status(vkhimage) != VK_SUCCESS)
+            {
+
+               throw ::exception(error_failed, "VKVG could not import the composed layer image.");
+
+            }
+
+            vkh_image_create_view(
+               vkhimage,
+               VK_IMAGE_VIEW_TYPE_2D,
+               VK_IMAGE_ASPECT_COLOR_BIT);
+
+            vkvgsurface = vkvg_surface_create_for_VkhImage(
+               get_vkvg_device(),
+               vkhimage);
+
+            if (!vkvgsurface || vkvg_surface_status(vkvgsurface) != VKVG_STATUS_SUCCESS)
+            {
+
+               throw ::exception(error_failed, "VKVG could not wrap the composed layer image.");
+
+            }
+
+            vkvgcontext = vkvg_create(vkvgsurface);
+
+            if (!vkvgcontext || vkvg_status(vkvgcontext) != VKVG_STATUS_SUCCESS)
+            {
+
+               throw ::exception(error_failed, "VKVG could not create a context for the composed layer image.");
+
+            }
+
+            auto pdirecttargetNew = allocateø direct_target();
+            pdirecttargetNew->m_ptexture = ptexture;
+            pdirecttargetNew->m_vkimage = ptexture->m_vkimage;
+            pdirecttargetNew->m_vkformat = ptexture->m_vkformat;
+            pdirecttargetNew->m_size = ptexture->size();
+            pdirecttargetNew->m_uFrameSerial = ++m_uDirectTargetFrameSerial;
+            m_directtargeta.add(pdirecttargetNew);
+            pdirecttargetNew->m_vkhimage = vkhimage;
+            pdirecttargetNew->m_vkvgsurface = vkvgsurface;
+            pdirecttargetNew->m_vkvgcontext = vkvgcontext;
+            bDirectTargetPublished = true;
+            m_pdirecttargetActive = pdirecttargetNew;
+
+            ptexture->from_external_state(
+               ::gpu::e_texture_state_color_attachment,
+               ::gpu::e_texture_state_color_attachment);
+
+         }
+         catch (...)
+         {
+
+            if (!bDirectTargetPublished)
+            {
+
+               if (vkvgcontext)
+               {
+
+                  vkvg_destroy(vkvgcontext);
+
+               }
+
+               if (vkvgsurface)
+               {
+
+                  vkvg_surface_destroy(vkvgsurface);
+
+               }
+
+               if (vkhimage)
+               {
+
+                  vkh_image_destroy(vkhimage);
+
+               }
+
+            }
+
+            throw;
+
+         }
+
+      }
+
+      maintain_vkvg_direct_target_cache();
+
+#ifdef _DEBUG
+
+      auto pgpulayer = ::gpu::current_layer();
+
+      informationf(
+         "draw2d_vkvg direct start layer=%d composed=%d texture=%p image=0x%llx surface=%p context=%p cache=%s layout=%d access=0x%llx bypass=1",
+         pgpulayer ? pgpulayer->m_iLayerIndex : -1,
+         pgpulayer && pgpulayer->m_bIncludeInFrameComposition ? 1 : 0,
+         ptexture.m_p,
+         (::u64)ptexture->m_vkimage,
+         m_pdirecttargetActive->m_vkvgsurface,
+         m_pdirecttargetActive->m_vkvgcontext,
+         bCacheHit ? "hit" : "miss",
+         (::i32)ptexture->mip_layer_state(0, 0).m_vkimagelayout,
+         (::u64)ptexture->mip_layer_state(0, 0).m_vkaccessflags);
+
+#endif
+
+   }
+
+
+   void graphics::maintain_vkvg_direct_target_cache()
+   {
+
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(gpu_context());
+      auto iFrameCount = pgpuwindowattachment->get_frame_count();
+      auto cComposedLayer = 0;
+
+      if (pgpuwindowattachment->m_pgpulayera)
+      {
+
+         for (auto pgpulayer : *pgpuwindowattachment->m_pgpulayera)
+         {
+
+            if (pgpulayer && pgpulayer->m_bIncludeInFrameComposition)
+            {
+
+               ++cComposedLayer;
+
+            }
+
+         }
+
+      }
+
+      auto cMaximum = iFrameCount * maximum(1, cComposedLayer) + 1;
+
+      while (m_directtargeta.size() > cMaximum)
+      {
+
+         direct_target * pdirecttargetOldest = nullptr;
+
+         for (auto pdirecttarget : m_directtargeta)
+         {
+
+            if (pdirecttarget == m_pdirecttargetActive ||
+                is_vkvg_direct_target_saved(pdirecttarget))
+            {
+
+               continue;
+
+            }
+
+            if (!pdirecttargetOldest ||
+                pdirecttarget->m_uFrameSerial < pdirecttargetOldest->m_uFrameSerial)
+            {
+
+               pdirecttargetOldest = pdirecttarget;
+
+            }
+
+         }
+
+         if (!pdirecttargetOldest)
+         {
+
+            break;
+
+         }
+
+         destroy_vkvg_direct_target(pdirecttargetOldest);
+         m_directtargeta.erase(pdirecttargetOldest);
+
+      }
+
+   }
+
+
+   bool graphics::is_vkvg_direct_target_saved(direct_target * pdirecttarget)
+   {
+
+      for (auto & savedcontext : m_savedvkvgcontexta)
+      {
+
+         if (savedcontext.m_pdirecttarget == pdirecttarget)
+         {
+
+            return true;
+
+         }
+
+      }
+
+      return false;
+
+   }
+
+
+   void graphics::clear_saved_vkvg_contexts()
+   {
+
+      for (::collection::index iContext = m_savedvkvgcontexta.get_upper_bound();
+         iContext >= 0;
+         --iContext)
+      {
+
+         vkvg_restore(m_savedvkvgcontexta[iContext].m_vkvgcontext);
+
+      }
+
+      m_savedvkvgcontexta.clear();
+
+   }
+
+
+   void graphics::destroy_vkvg_direct_target(direct_target * pdirecttarget)
+   {
+
+      if (pdirecttarget->m_vkvgcontext)
+      {
+
+         vkvg_destroy(pdirecttarget->m_vkvgcontext);
+         pdirecttarget->m_vkvgcontext = nullptr;
+
+      }
+
+      if (pdirecttarget->m_vkvgsurface)
+      {
+
+         vkvg_surface_destroy(pdirecttarget->m_vkvgsurface);
+         pdirecttarget->m_vkvgsurface = nullptr;
+
+      }
+
+      if (pdirecttarget->m_vkhimage)
+      {
+
+         vkh_image_destroy(pdirecttarget->m_vkhimage);
+         pdirecttarget->m_vkhimage = nullptr;
+
+      }
+
+      pdirecttarget->m_ptexture.release();
+
+   }
+
+
+   void graphics::clear_vkvg_direct_target_cache()
+   {
+
+      m_pdirecttargetActive.release();
+
+      for (auto pdirecttarget : m_directtargeta)
+      {
+
+         destroy_vkvg_direct_target(pdirecttarget);
+
+      }
+
+      m_directtargeta.clear();
 
    }
 
@@ -8798,6 +9260,33 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             vkvg_flush(vkvgcontext);
 
+            if (m_pdirecttargetActive)
+            {
+
+               auto ptexture = m_pdirecttargetActive->m_ptexture;
+               ptexture->from_external_state(
+                  ::gpu::e_texture_state_color_attachment,
+                  ::gpu::e_texture_state_color_attachment);
+
+#ifdef _DEBUG
+
+               auto pgpulayer = ::gpu::current_layer();
+
+               informationf(
+                  "draw2d_vkvg direct end layer=%d composed=%d texture=%p image=0x%llx surface=%p context=%p layout=%d access=0x%llx bypass=1",
+                  pgpulayer ? pgpulayer->m_iLayerIndex : -1,
+                  pgpulayer && pgpulayer->m_bIncludeInFrameComposition ? 1 : 0,
+                  ptexture.m_p,
+                  (::u64)ptexture->m_vkimage,
+                  m_pdirecttargetActive->m_vkvgsurface,
+                  m_pdirecttargetActive->m_vkvgcontext,
+                  (::i32)ptexture->mip_layer_state(0, 0).m_vkimagelayout,
+                  (::u64)ptexture->mip_layer_state(0, 0).m_vkaccessflags);
+
+#endif
+
+            }
+
             //::i32_rectangle rectangle;
 
             //if (m_puserinteractionDraw2dGraphics && !m_puserinteractionDraw2dGraphics->host_rectangle().size().is_empty())
@@ -8956,6 +9445,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    VkvgContext graphics::vkvg_context()
    {
 
+      if (m_pdirecttargetActive)
+      {
+
+         return m_pdirecttargetActive->m_vkvgcontext;
+
+      }
+
       if (m_bSetStateExternally)
       {
 
@@ -8963,7 +9459,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          auto pgpucommandbuffer = ::gpu::current_command_buffer();
 
-         m_ptextureCurrent->to_external_state(pgpucommandbuffer);
+         m_ptexturesiteCurrent->gpu_texture()->to_external_state(pgpucommandbuffer);
 
       }
 
@@ -8974,6 +9470,28 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    void graphics::on_start_layer_before_begin_render(::gpu::layer * pgpulayer)
    {
+
+      if (pgpulayer && pgpulayer->m_bIncludeInFrameComposition)
+      {
+
+         auto pgputexturesite = current_target_texture(pgpulayer);
+
+         if (!pgputexturesite || !pgputexturesite->gpu_texture())
+         {
+
+            throw ::exception(error_wrong_state, "VKVG composed layer has no target texture.");
+
+         }
+
+         prepare_vkvg_render_target(pgputexturesite->gpu_texture());
+
+      }
+      else
+      {
+
+         m_pdirecttargetActive.release();
+
+      }
 
       auto vkvgcontext = vkvg_context();
 

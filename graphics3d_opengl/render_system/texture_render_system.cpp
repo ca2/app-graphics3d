@@ -1,5 +1,5 @@
 // From wavefront_obj_render_system.cpp by camilo on 2026-07-25 01:23 <3ThomasBorregaardSørensen!! Mummi!! Bilbo!!
-#include "framework.h"
+#include "platform.h"
 #include "bred/gpu/renderable.h"
 #include "bred/graphics3d/scene_renderable.h"
 #include "shader/texture.frag.h"

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "edit_impact.h"
 #include "impact.h"
 #include "main_impact.h"

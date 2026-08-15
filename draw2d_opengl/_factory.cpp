@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "_draw2d_opengl.h"
 #include "image.h"
 #include "graphics.h"

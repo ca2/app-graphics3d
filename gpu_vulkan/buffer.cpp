@@ -1,5 +1,5 @@
 // From gpu_directx12/buffer.cpp by camilo on 2025-07-17 00:05 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "context.h"
 #include "physical_device.h"
 #include "gpu_vulkan/context.h"
@@ -303,7 +303,7 @@ namespace gpu_vulkan
 
       ::cast < context > pcontext = m_pgpucontext;
 
-      if (m_size > 2_KiB)
+      if ((memsize) m_size > 2_KiB)
       {
 
          auto pbufferStaging = pcontext->_create_buffer(
@@ -337,7 +337,7 @@ namespace gpu_vulkan
    }
 
 
-   void buffer::assign(const void* dataSrc, int size)
+   void buffer::assign(const void* dataSrc, memsize size)
    {
 
       defer_stage([&](buffer* pbuffer)
@@ -352,7 +352,7 @@ namespace gpu_vulkan
 
 
 
-   void buffer::_assign(const void* dataSrc, int size)
+   void buffer::_assign(const void* dataSrc, memsize size)
    {
       ::cast < context > pcontext = m_pgpucontext;
       // copy all 6 faces into the staging buffer, one after another

@@ -13,7 +13,7 @@
 // *
 // * If you are looking for a complete gltf implementation, check out https://github.com/SaschaWillems/Vulkan-gltf-PBR/
 // */
-#include "framework.h"
+#include "platform.h"
 #include "binding.h"
 #include "command_buffer.h"
 #include "context.h"

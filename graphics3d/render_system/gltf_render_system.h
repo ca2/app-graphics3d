@@ -15,7 +15,7 @@ namespace graphics3d
 	{
 	public:
 
-            struct push_constants
+            struct CLASS_DECL_GRAPHICS3D push_constants
       {
 
          floating_matrix4 modelMatrix;
@@ -96,6 +96,6 @@ namespace graphics3d
 
 
 
-DECLARE_GPU_PROPERTIES(CLASS_DECL_BRED, ::graphics3d::gltf_render_system::push_constants);
+DECLARE_GPU_PROPERTIES(CLASS_DECL_GRAPHICS3D, ::graphics3d::gltf_render_system::push_constants);
 
 

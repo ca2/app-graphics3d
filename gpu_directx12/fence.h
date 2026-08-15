@@ -18,20 +18,26 @@ namespace gpu_directx12
 
       ::comptr<ID3D12Fence> m_pfence;
       HANDLE m_hevent;
-      UINT64 m_uFenceValue;
+      //UINT64 m_uFenceValue;
 
 
       fence();
       ~fence() override;
 
 
-      void initialize_gpu_fence(::gpu::context *pgpucontext, bool bCreateSignaled) override;
+      void initialize_gpu_fence(::gpu::device *pgpucdevice, bool bCreateSignaled) override;
 
       void reset_gpu_fence() override;
 
       void wait_gpu_fence() override;
 
-      void signal(ID3D12CommandQueue *pcommandqueue);
+      void signal_gpu_fence(::gpu::queue * pgpuqueue) override;
+
+      void _signal(ID3D12CommandQueue *pcommandqueue);
+
+      bool has_finished() override;
+
+
    };
 
 

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "gpu_opengl/_gpu_opengl.h"
 #include "image.h"
 #include "graphics.h"

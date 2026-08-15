@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "buffer.h"
 #include "context.h"
 #include "physical_device.h"
@@ -103,7 +103,7 @@ namespace gpu_vulkan
       if (m_pbuffer && ::is_set(block.data()))
       {
 
-         m_pbuffer->assign(block.data(), block.size());
+         m_pbuffer->assign(block.data(),  block.size());
 
 
       }

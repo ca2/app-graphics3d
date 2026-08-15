@@ -1,5 +1,5 @@
 // Created by camilo on 2025-06-16 04:42 <3ThomasBorregaardSørensen!!
-#include "framework.h"
+#include "platform.h"
 #include "command_buffer.h"
 #include "context.h"
 #include "device.h"
@@ -13,6 +13,7 @@
 #include "texture.h"
 #include "fence.h"
 #include "semaphore.h"
+#include "bred/gpu/texture_site.h"
 
 
 namespace gpu_vulkan
@@ -685,7 +686,7 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::set_viewport(const ::i32_rectangle& rectangle)
+   void command_buffer::set_viewport(const ::i32_rectangle& rectangle, const ::i32_size & sizeRaw)
    {
 
       VkViewport viewport =
@@ -702,7 +703,7 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::set_scissor(const ::i32_rectangle& rectangle)
+   void command_buffer::set_scissor(const ::i32_rectangle& rectangle, const ::i32_size & sizeRaw)
    {
 
       VkRect2D rect2d =
@@ -743,6 +744,17 @@ namespace gpu_vulkan
    void command_buffer::draw_vertexes(int iVertexCount)
    {
 
+      if (::gpu::trace_flags().m_bVulkanPipelineTrace)
+      {
+
+         information(
+            "VULKAN_PIPELINE_TRACE vkCmdDraw command_buffer_object={} vk_command_buffer={} vertex_count={}",
+            (::uptr)this,
+            (::uptr)m_vkcommandbuffer,
+            iVertexCount);
+
+      }
+
       vkCmdDraw(m_vkcommandbuffer, iVertexCount, 1, 0, 0);
 
    }
@@ -756,10 +768,10 @@ namespace gpu_vulkan
    }
 
 
-   void command_buffer::begin_render(::gpu::shader *pgpushader, ::gpu::texture *pgputextureTarget)
+   void command_buffer::begin_render(::gpu::shader *pgpushader, ::gpu::texture_site *pgputexturesiteTarget)
    {
 
-      ::cast<::gpu_vulkan::texture> ptextureTarget = pgputextureTarget;
+      ::cast<::gpu_vulkan::texture> ptextureTarget = pgputexturesiteTarget->gpu_texture();
 
       ptextureTarget->_set_state(this,
 
@@ -767,7 +779,7 @@ namespace gpu_vulkan
                                   VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
-      ::gpu::command_buffer::begin_render(pgpushader, pgputextureTarget);
+      ::gpu::command_buffer::begin_render(pgpushader, pgputexturesiteTarget);
 
    }
 

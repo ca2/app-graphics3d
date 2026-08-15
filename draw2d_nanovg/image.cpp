@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "bitmap.h"
 #include "image.h"
 #include "acme/platform/application.h"
@@ -26,10 +26,10 @@ namespace draw2d_nanovg
    }
 
 
-   ::draw2d::bitmap_pointer image::get_bitmap() const
+   ::draw2d::bitmap_pointer image::get_bitmap(::draw2d::graphics * pdraw2dgraphics) const
    {
 
-      return ::image::image::get_bitmap();
+      return ::image::image::get_bitmap(pdraw2dgraphics);
 
       //return m_pbitmap;
 

@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 //#include "context.h"
 #include "engine.h"
 #include "bred/graphics3d/input.h"

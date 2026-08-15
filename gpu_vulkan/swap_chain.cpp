@@ -1,4 +1,4 @@
-#include "framework.h"
+#include "platform.h"
 #include "binding.h"
 #include "command_buffer.h"
 #include "context.h"
@@ -15,6 +15,8 @@
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
 #include "bred/gpu/layer.h"
+#include "bred/gpu/texture_site.h"
+#include "bred/gpu/types.h"
 
 
 namespace gpu_vulkan
@@ -34,7 +36,7 @@ namespace gpu_vulkan
    swap_chain::~swap_chain()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
       //for (auto imageView : m_imageviews) {
       //   vkDestroyImageView(pcontext->logicalDevice(), imageView, nullptr);
@@ -173,7 +175,7 @@ namespace gpu_vulkan
    void swap_chain::acquireNextImage()
    {
       
-      ::cast<::gpu_vulkan::context> pcontext = m_pgpucontext;
+      ::cast<::gpu_vulkan::context> pcontext = m_pgpurenderer->m_pgpucontext;
 
       auto pdevice = pcontext->m_pgpudevice;
 
@@ -665,16 +667,16 @@ namespace gpu_vulkan
     presentInfo.pSwapchains        = &m_vkswapchain;
     ::uint32_t uImageIndex = m_iCurrentSwapChainImage;
     presentInfo.pImageIndices = &uImageIndex;
-      ::cast < ::gpu_vulkan::queue > pqueuePresent = m_pgpucontext->m_pgpudevice->present_queue();
+      ::cast < ::gpu_vulkan::queue > pqueuePresent = m_pgpurenderer->m_pgpucontext->m_pgpudevice->present_queue();
 
     VkResult  res = pqueuePresent->present(&presentInfo);
 
       // Advance frame
-      int iSize = m_ptextureaSwapChain->size();
+      int iSize = m_ptexturesiteaSwapChain->size();
 
       m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % iSize;
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
+      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurenderer->m_pgpucontext);
 
       pgpuwindowattachment->m_iCurrentFrame3 = m_iCurrentSwapChainFrame;
 
@@ -686,14 +688,14 @@ namespace gpu_vulkan
    int swap_chain::swap_chain_frame_count()
    {
 
-      if (::is_null(m_ptextureaSwapChain))
+      if (::is_null(m_ptexturesiteaSwapChain))
       {
 
          return 0;
 
       }
 
-      return m_ptextureaSwapChain->size();
+      return m_ptexturesiteaSwapChain->size();
 
    }
 
@@ -709,25 +711,25 @@ namespace gpu_vulkan
    void swap_chain::create_images()
    {
 
-      auto ptextureaOld = m_ptextureaSwapChain;
+      auto ptexturesiteaOld = m_ptexturesiteaSwapChain;
 
-      if (ptextureaOld)
+      if (ptexturesiteaOld)
       {
 
-         m_papplication->post([this, ptextureaOld]()
+         m_papplication->post([this, ptexturesiteaOld]()
             {
 
                preempt(1_s);
 
-               ptextureaOld->destroy();
+               ptexturesiteaOld->destroy();
 
             });
 
       }
 
-      construct_newø(m_ptextureaSwapChain);
+      construct_newø(m_ptexturesiteaSwapChain);
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
       auto prenderer = pcontext->m_pgpurenderer;
 
@@ -817,7 +819,7 @@ namespace gpu_vulkan
 
       //m_pgpurenderer->m_pgpurendertarget->m_iFrameCountRequest = imageCount;
 
-      m_ptextureaSwapChain->set_size(imageCount);
+      m_ptexturesiteaSwapChain->set_size(imageCount);
 
       auto pgpuwindowattachment = ::gpu::window_attachment::get(pcontext);
 
@@ -825,31 +827,35 @@ namespace gpu_vulkan
 
       ::array < VkImage> imagea;
 
-      imagea.set_size(m_ptextureaSwapChain->size());
+      imagea.set_size(m_ptexturesiteaSwapChain->size());
 
       vkGetSwapchainImagesKHR(pcontext->logicalDevice(), m_vkswapchain, &imageCount, imagea.data());
       
       for (int i = 0; i < imagea.size(); i++)
       {
 
-         auto & pgputexture = m_ptextureaSwapChain->element_at(i);
+         auto & pgputexturesite = m_ptexturesiteaSwapChain->element_at(i);
 
-         defer_constructø(pgputexture);
+         defer_construct_newø(pgputexturesite);
 
-         ::i32_rectangle rectangleTarget;
+         defer_constructø(pgputexturesite->m_pgputextureSite);
 
-         rectangleTarget.left = 0;
-         rectangleTarget.top = 0;
-         rectangleTarget.set_width(extent.width);
-         rectangleTarget.set_height(extent.height);
+         //::i32_rectangle rectangleTarget;
 
-         pgputexture->m_textureflags.m_bTransferTarget = true;
+         //rectangleTarget.left = 0;
+         //rectangleTarget.top = 0;
+         //rectangleTarget.set_width(extent.width);
+         //rectangleTarget.set_height(extent.height);
+
+         ::i32_size size(extent.width, extent.height);
+
+         pgputexturesite->gpu_texture()->m_textureflags.m_bTransferTarget = true;
 
          bool bWithDepth = false;
 
-         pgputexture->initialize_texture(m_pgpucontext, rectangleTarget, bWithDepth);
+         pgputexturesite->gpu_texture()->create_texture(m_pgpurenderer->m_pgpucontext, size, bWithDepth);
 
-         ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
+         ::cast < ::gpu_vulkan::texture > ptexture = pgputexturesite->gpu_texture();
 
          ptexture->m_vkimage = imagea[i];
 
@@ -1162,7 +1168,7 @@ namespace gpu_vulkan
       else
       {
 
-         ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+         ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
          auto prenderer = pcontext->m_pgpurenderer;
 
@@ -1170,8 +1176,8 @@ namespace gpu_vulkan
 
          VkExtent2D actualExtent;
 
-         actualExtent.width = m_ptextureaSwapChain->element_at(0)->width();
-         actualExtent.height = m_ptextureaSwapChain->element_at(0)->height();
+         actualExtent.width = m_ptexturesiteaSwapChain->element_at(0)->width();
+         actualExtent.height = m_ptexturesiteaSwapChain->element_at(0)->height();
 
          actualExtent.width = std::max(
             capabilities.minImageExtent.width,
@@ -1188,7 +1194,7 @@ namespace gpu_vulkan
    VkFormat swap_chain::findDepthFormat()
    {
 
-      ::cast < ::gpu_vulkan::context > pcontext = m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = m_pgpurenderer->m_pgpucontext;
 
       return pcontext->m_pgpudevice->m_pphysicaldevice->findSupportedFormat(
          { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
@@ -1198,7 +1204,7 @@ namespace gpu_vulkan
    }
 
 
-   void swap_chain::present(::gpu::texture *pgputexture, ::gpu::command_buffer *pgpucommandbuffer)
+   void swap_chain::present(::gpu::texture_site *pgputexturesite, ::gpu::command_buffer *pgpucommandbuffer)
    {
 
       //if (!m_papplication->m_gpu.m_bUseSwapChainWindow
@@ -1209,7 +1215,7 @@ namespace gpu_vulkan
 
       //}
 
-      ::cast < ::gpu_vulkan::context > pgpucontext = m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pgpucontext = m_pgpurenderer->m_pgpucontext;
 
       ::cast < renderer > pgpurenderer = pgpucontext->m_pgpurenderer;
 
@@ -1217,7 +1223,7 @@ namespace gpu_vulkan
 
       //::cast < ::gpu_vulkan::texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
 
-      ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
+      ::cast < ::gpu_vulkan::texture > ptexture = pgputexturesite->gpu_texture();
 
       ::cast < swap_chain > pswapchain = pgpucontext->m_pgpuswapchain;
 
@@ -1226,7 +1232,9 @@ namespace gpu_vulkan
 
       defer_check_swap_chain();
 
-      ::cast <::gpu_vulkan::texture> ptextureSwapChain = pswapchain->current_swap_chain_texture();
+      auto ptexturesiteSwapChain = pswapchain->current_swap_chain_texture();
+
+      ::cast <::gpu_vulkan::texture> ptextureSwapChain = ptexturesiteSwapChain->gpu_texture();
 
       if (::nok(m_pshaderPresent))
       {
@@ -1235,18 +1243,20 @@ namespace gpu_vulkan
 
          //m_pshaderPresent->m_bindingSampler.set();
 
-         auto pbindingSampler = m_pshaderPresent->binding();
+         //auto pbindingSampler = m_pshaderPresent->binding();
 
-         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
+         //pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
 
          m_pshaderPresent->m_bDisableDepthTest = true;
 
          unsigned int fullscreen_vertex_shader[] = {
-#include "shader/fullscreen.vert.spv.inl"
+//#include "shader/fullscreen.vert.spv.inl"
+            #include "shader/merge_layer.vert.spv.inl"
          };
 
          unsigned int fullscreen_fragment_shader[] = {
-#include "shader/fullscreen.frag.spv.inl"
+//#include "shader/fullscreen.frag.spv.inl"
+            #include "shader/merge_layer.frag.spv.inl"
          };
 
          m_pshaderPresent->m_bEnableBlend = false;
@@ -1260,6 +1270,17 @@ namespace gpu_vulkan
          //auto &bindingSampler = m_pshaderPresent->binding();
 
          //bindingSampler.m_bImageSampler = true;
+         auto pbindingSampler = m_pshaderPresent->binding();
+         pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
+         pbindingSampler->m_iTextureUnit = 0;
+         //m_pshaderBlend3->m_bT
+         //m_pshaderBlend3->m_pgpurenderer = this;
+         //m_pshaderBlend3->m_setbindingSampler = 0;
+         // Image Blend descriptors
+         //if (!m_psetdescriptorlayoutImageBlend)
+         m_pshaderPresent->m_propertiesPushShared.set_properties(
+::gpu_properties<::gpu::quad>());
+         pgpucontext->layout_push_constants(m_pshaderPresent->m_propertiesPushShared, false);
 
          m_pshaderPresent->m_bClearColor = true;
 
@@ -1304,7 +1325,7 @@ namespace gpu_vulkan
       //auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
       auto vkcommandbuffer = pcommandbuffer->m_vkcommandbuffer;
 
-      ::cast < ::gpu_vulkan::texture > ptextureSrc = pgputexture;
+      ::cast < ::gpu_vulkan::texture > ptextureSrc = pgputexturesite->gpu_texture();
 
       //{
 
@@ -1356,15 +1377,93 @@ namespace gpu_vulkan
          }
       );
 
-      pcommandbuffer->begin_render(m_pshaderPresent, ptextureSwapChain);
-      pcommandbuffer->set_source(ptextureSrc);
+
+      if (::gpu::trace_flags().m_bVulkanPipelineTrace)
+      {
+
+         information(
+            "VULKAN_PIPELINE_TRACE present_begin command_buffer_object={} vk_command_buffer={} "
+            "present_shader={} cached_shader={} image_index={} shader_frame_bound={} source_site={} target_site={}",
+            (::uptr)pcommandbuffer.m_p,
+            (::uptr)pcommandbuffer->m_vkcommandbuffer,
+            (::uptr)m_pshaderPresent.m_p,
+            (::uptr)pgpucontext->m_pshaderBound.m_p,
+            pcommandbuffer->m_iCommandBufferImageIndex,
+            m_pshaderPresent->m_iFrameBound,
+            (::uptr)pgputexturesite,
+            (::uptr)ptexturesiteSwapChain);
+
+      }
+
+      pcommandbuffer->begin_render(m_pshaderPresent, ptexturesiteSwapChain);
+      pcommandbuffer->set_source(pgputexturesite);
 
 //      pcommandbuffer->m_semaphoreaWaitToSubmit.add(ptextureSrc->synchronization()->m_vksemaphoreRenderFinished);
   //    pcommandbuffer->m_stageaWaitToSubmit.add(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
-      pcommandbuffer->set_viewport(pgpucontext->size());
+      auto rectangleSourceOutput = pgputexturesite->output_placement();
 
-      pcommandbuffer->set_scissor(pgpucontext->size());
+      ::f32_rectangle rectangleOutput = rectangleSourceOutput;
+
+      ::f32_size sizeSrc = pgputexturesite->size();
+
+      ::f32_size sizeSrcRaw = pgputexturesite->raw_size();
+
+      //::i32 h = r.height();
+
+      //::i32 iH = ptextureDst->height();
+
+      //r.top = iH - r.bottom;
+
+      //r.bottom = r.top + h;
+
+      auto size = pgpucontext->size();
+
+      pcommandbuffer->set_viewport(size, size);
+
+      pcommandbuffer->set_scissor(size, size);
+
+
+      /* float uLeft =
+          100.0f / 1920.0f;
+
+       float uRight =
+          1380.0f / 1920.0f;
+
+       float vBottom =
+          (1080.0f - 800.0f) / 1080.0f;
+
+       float vTop =
+          (1080.0f - 80.0f) / 1080.0f;*/
+
+          //auto left = rectangleOutput.left / sizeSrcRaw.cx;
+          //auto bottom = (sizeSrcRaw.cy - rectangleOutput.bottom) / sizeSrcRaw.cy;
+          //auto right = rectangleOutput.right / sizeSrcRaw.cx;
+          //auto top = (sizeSrcRaw.cy - rectangleOutput.top) / sizeSrcRaw.cy;
+
+      auto u0 = rectangleOutput.left / sizeSrcRaw.cx;
+      auto v0 = rectangleOutput.top / sizeSrcRaw.cy;
+
+      auto u1 = rectangleOutput.right / sizeSrcRaw.cx;
+      auto v1 = rectangleOutput.bottom / sizeSrcRaw.cy;
+
+
+      ::floating_sequence4 quad
+      {
+         u0,
+         v0,
+         u1,
+         v1
+      };
+
+
+      m_pshaderPresent->set_sequence4("quad", quad);
+
+
+      //m_pmodelbufferDummy->bind(pcommandbuffer);
+
+      m_pshaderPresent->push_properties(pgpucommandbuffer);
+
 
 
       //pgpucontext->_001BeginRenderPass(pcommandbuffer, ptextureSwapChain);
@@ -1412,6 +1511,19 @@ namespace gpu_vulkan
       //pcommandlist->DrawInstanced(3, 1, 0, 0);
       //vkCmdDraw(vkcommandbuffer, 3, 1, 0, 0);
 
+      if (::gpu::trace_flags().m_bVulkanPipelineTrace)
+      {
+
+         information(
+            "VULKAN_PIPELINE_TRACE present_draw command_buffer_object={} vk_command_buffer={} "
+            "present_shader={} cached_shader={}",
+            (::uptr)pcommandbuffer.m_p,
+            (::uptr)pcommandbuffer->m_vkcommandbuffer,
+            (::uptr)m_pshaderPresent.m_p,
+            (::uptr)pgpucontext->m_pshaderBound.m_p);
+
+      }
+
       pcommandbuffer->draw_vertexes(3);
 
 
@@ -1447,6 +1559,20 @@ namespace gpu_vulkan
 
 
       m_pshaderPresent->unbind(pcommandbuffer);
+
+
+      if (::gpu::trace_flags().m_bVulkanPipelineTrace)
+      {
+
+         information(
+            "VULKAN_PIPELINE_TRACE present_unbind command_buffer_object={} vk_command_buffer={} "
+            "present_shader={} cached_shader={}",
+            (::uptr)pcommandbuffer.m_p,
+            (::uptr)pcommandbuffer->m_vkcommandbuffer,
+            (::uptr)m_pshaderPresent.m_p,
+            (::uptr)pgpucontext->m_pshaderBound.m_p);
+
+      }
 
       //pgpurenderer->m_pgpucontext->m_iOverrideFrame = -1;
       //FLOAT colorRGBA2[] = { 0.5f * 0.5f,0.75f * 0.5f, 0.95f * 0.5f, 0.5f };

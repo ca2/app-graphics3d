@@ -39,7 +39,7 @@
 		9A8F90D5240C09F10097E249 /* document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A8F90C9240C09F10097E249 /* document.cpp */; };
 		9A8F90D6240C09F10097E249 /* application.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A8F90CA240C09F10097E249 /* application.h */; };
 		9AE24EA11904CFFD001AEFFB /* libgraphics3d_impact3d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AE24E8A1904CFFD001AEFFB /* libgraphics3d_impact3d.a */; };
-		9AEB75DE16F78E600085103B /* framework.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AEB75BF16F78E600085103B /* framework.h */; };
+		9AEB75DE16F78E600085103B /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AEB75BF16F78E600085103B /* platform.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,7 +115,7 @@
 		9AE24E8A1904CFFD001AEFFB /* libgraphics3d_impact3d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgraphics3d_impact3d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AE24E991904CFFD001AEFFB /* graphics3d_impact3d_iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = graphics3d_impact3d_iosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AEB75A316F78DF10085103B /* libgraphics3d_impact3d.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libgraphics3d_impact3d.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		9AEB75BF16F78E600085103B /* framework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = framework.h; sourceTree = "<group>"; };
+		9AEB75BF16F78E600085103B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,7 +208,7 @@
 				9A8F90C5240C09F00097E249 /* document.h */,
 				9A449BBA24775E120002A827 /* frame.cpp */,
 				9A449BB524775E110002A827 /* frame.h */,
-				9AEB75BF16F78E600085103B /* framework.h */,
+				9AEB75BF16F78E600085103B /* platform.h */,
 				9A8F90C3240C09F00097E249 /* main_frame.cpp */,
 				9A8F90C7240C09F00097E249 /* main_frame.h */,
 				9A449BB724775E110002A827 /* pane_impact.cpp */,
@@ -234,7 +234,7 @@
 				9A8F90D4240C09F10097E249 /* impact.h in Headers */,
 				9A8F90D6240C09F10097E249 /* application.h in Headers */,
 				9A8F90D3240C09F10097E249 /* main_frame.h in Headers */,
-				9AEB75DE16F78E600085103B /* framework.h in Headers */,
+				9AEB75DE16F78E600085103B /* platform.h in Headers */,
 				9A8B643324CBE70000A93185 /* render.h in Headers */,
 				9A8F90D1240C09F10097E249 /* document.h in Headers */,
 			);
@@ -579,7 +579,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = framework.h;
+				GCC_PREFIX_HEADER = platform.h;
 				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -672,7 +672,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = framework.h;
+				GCC_PREFIX_HEADER = platform.h;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
