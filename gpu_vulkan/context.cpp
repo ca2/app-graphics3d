@@ -1920,6 +1920,30 @@ namespace gpu_vulkan
    }
 
 
+   ::memory context::_001BlendVertexShaderMemory()
+   {
+
+      unsigned int pvertexshader[] = {
+    #include "shader/_001Blend.vert.spv.inl"
+      };
+
+      return ::as_memory_block(pvertexshader);
+
+   }
+
+
+   ::memory context::_001BlendFragmentShaderMemory()
+   {
+
+      unsigned int pfragmentshader[] = {
+#include "shader/_001Blend.frag.spv.inl"
+      };
+
+      return ::as_memory_block(pfragmentshader);
+
+
+   }
+
    string context::get_shader_version_text() { return "#version 330 core"; }
 
 
@@ -2695,7 +2719,7 @@ namespace gpu_vulkan
 
 
    void context::copyBufferToImage(::gpu::command_buffer *pgpucommandbuffer, ::gpu_vulkan::texture *ptexture,
-                                   ::gpu_vulkan::buffer *pbuffer, const ::i32_rectangle &rectangleSubImage)
+                                   ::gpu_vulkan::buffer *pbuffer, const ::i32_rectangle &rectangleSubImage, ::i32 iScan)
    // VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
    {
 
@@ -2735,7 +2759,7 @@ namespace gpu_vulkan
             memset(&region, 0, sizeof(region));
 
             region.bufferOffset = layerarea * face;
-            region.bufferRowLength = 0;
+            region.bufferRowLength = iScan / 4;
             region.bufferImageHeight = 0;
             region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             region.imageSubresource.mipLevel = 0;
@@ -2755,7 +2779,7 @@ namespace gpu_vulkan
          memset(&region, 0, sizeof(region));
 
          region.bufferOffset = 0;
-         region.bufferRowLength = 0;
+         region.bufferRowLength = iScan / 4;
          region.bufferImageHeight = 0;
 
          region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;

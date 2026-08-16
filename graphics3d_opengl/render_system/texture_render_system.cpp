@@ -41,7 +41,7 @@ namespace graphics3d_opengl
       {
 
          // s.x = -s.x;
-         // s.y = -s.y;
+          //s.y = -s.y;
          // s.z = -s.z;
       }
 

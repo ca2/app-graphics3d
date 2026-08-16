@@ -31,8 +31,6 @@
 #include "bred/graphics3d/render_system/point_light_render_system.h"
 #include "bred/graphics3d/render_system/skybox_render_system.h"
 #include "bred/graphics3d/render_system/texture_render_system.h"
-#include "opengl/overlay1.frag.h"
-#include "opengl/overlay1.vert.h"
 
 
 namespace app_graphics3d_hello_space
@@ -330,15 +328,9 @@ namespace app_graphics3d_hello_space
 
       m_ptexturerendersystem->prepare(pgpucontext);
 
-      ::string strVert;
-      ::string strFrag;
-      if (system()->component_factory_implementation_name("gpu") == "opengl")
-      {
-         strVert = g_psz_overlay1_vert;
-         strFrag = g_psz_overlay1_frag;
-      }
+
       constructø(m_pgpushaderBlend);
-      m_pgpushaderBlend->m_propertiesPushShared.set_properties(overlay1_properties());
+      /*m_pgpushaderBlend->m_propertiesPushShared.set_properties(overlay1_properties());
       pgpucontext->layout_push_constants(m_pgpushaderBlend->m_propertiesPushShared, false);
       m_pgpushaderBlend->m_bEnableBlend = true;
       m_pgpushaderBlend->m_bDisableDepthTest = true;
@@ -349,9 +341,25 @@ namespace app_graphics3d_hello_space
       auto pbindingTexture2 = m_pgpushaderBlend->binding(2, 0);
       pbindingTexture2->m_strUniform = "overlayTexture";
       pbindingTexture2->m_ebinding = ::gpu::e_binding_sampler2d;
-      pbindingTexture2->m_iTextureUnit = 1;
+      pbindingTexture2->m_iTextureUnit = 1;*/
 
-      m_pgpushaderBlend->initialize_shader_with_block(pgpucontext->m_pgpurenderer, strVert, strFrag);
+      m_pgpushaderBlend->m_bEnableBlend = true;
+      //m_pshaderBlend3->m_bindingSampler.set();
+      m_pgpushaderBlend->m_bDisableDepthTest = true;
+
+      auto pbindingSampler = m_pgpushaderBlend->binding();
+      pbindingSampler->m_ebinding = ::gpu::e_binding_sampler2d;
+      pbindingSampler->m_iTextureUnit = 0;
+      //m_pgpushaderBlend->m_bT
+      //m_pgpushaderBlend->m_pgpurenderer = this;
+      //m_pgpushaderBlend->m_setbindingSampler = 0;
+      // Image Blend descriptors
+      //if (!m_psetdescriptorlayoutImageBlend)
+      m_pgpushaderBlend->m_propertiesPushShared.set_properties(::gpu_properties<::gpu::quad>());
+
+      pgpucontext->layout_push_constants(m_pgpushaderBlend->m_propertiesPushShared, false);
+
+      pgpucontext->_001InitializeBlendShader(m_pgpushaderBlend);
 
 
    }
@@ -510,9 +518,12 @@ namespace app_graphics3d_hello_space
 
                auto pgputextureHelloMultiverseScreen = m_pgputexturesiteHelloMultiverseScreen->gpu_texture();
 
-               pgputextureHelloMultiverseScreen->create_texture(pgpucontext, m_pimageHelloMultiverseScreen->size());
+               ::gpu::texture_flags flagsHelloMultiverseScreen;
+               flagsHelloMultiverseScreen.m_bShaderResource = true;
 
-               pgputextureHelloMultiverseScreen->write_pixels(m_pimageHelloMultiverseScreen, {});
+               pgputextureHelloMultiverseScreen->create_texture(pgpucontext, m_pimageHelloMultiverseScreen->size(), flagsHelloMultiverseScreen);
+
+               pgputextureHelloMultiverseScreen->write_pixels(pgpucommandbuffer, m_pimageHelloMultiverseScreen, {});
 
                constructø(m_pgputexturesiteMonitorMultisample->m_pgputextureSite);
 
@@ -520,7 +531,10 @@ namespace app_graphics3d_hello_space
 
                pgputextureMonitorMultisample->m_bMultisample = true;
 
-               pgputextureMonitorMultisample->create_texture(pgpucontext, sizeMainMonitor);
+               ::gpu::texture_flags flagsMonitorMultisample;
+               flagsMonitorMultisample.m_bRenderTarget = true;
+
+               pgputextureMonitorMultisample->create_texture(pgpucontext, sizeMainMonitor, flagsMonitorMultisample);
 
                constructø(m_pgputexturesiteMonitor2->m_pgputextureSite);
                
@@ -557,16 +571,23 @@ namespace app_graphics3d_hello_space
                   auto y = *p++;
                   auto cx = *p++;
                   auto cy = *p++;
+                  auto cxRaw = *p++;
+                  auto cyRaw = *p++;
                   auto iScan = *p++;
 
                   //::copy_image32((::color32_t*)p, ppixmap->size(), iScan, ppixmap);
 
                   auto ppixmap = create_newø<::pixmap>();
                   ppixmap->m_pimage32Raw = (::image32_t *)p;
-                  ppixmap->m_pimage32 = (::image32_t *)p;
+                  ppixmap->m_pimage32 = (::image32_t *)nullptr;
+                  ppixmap->m_point.x = x;
+                  ppixmap->m_point.y = y;
                   ppixmap->m_size.cx = cx;
                   ppixmap->m_size.cy = cy;
+                  ppixmap->m_sizeRaw.cx = cxRaw;
+                  ppixmap->m_sizeRaw.cy = cyRaw;
                   ppixmap->m_iScan = iScan;
+                  ppixmap->pixmap_map();
 
                   // m_pimageHelloMultiverse->create({cx, cy},e_flag_success, iScan);
 
@@ -574,94 +595,159 @@ namespace app_graphics3d_hello_space
                   // m_pimageHelloMultiverse->pixmap_t::copy(&pixmap);
                   // m_pimageHelloMultiverse->write_pixels(pixmap);
 
-                  if (defer_constructø(m_pgputexturesiteHelloMultiverse->m_pgputextureSite))
+                  defer_constructø(m_pgputexturesiteHelloMultiverse->m_pgputextureSite);
+                  //{
+
+                  if (ppixmap->m_sizeRaw != m_pgputexturesiteHelloMultiverse->gpu_texture()->raw_size())
                   {
 
-                     m_pgputexturesiteHelloMultiverse->gpu_texture()->create_texture(pgpucontext, { (::i32) cx,(::i32) cy });
+                     m_pgputexturesiteHelloMultiverse->gpu_texture()->destroy();
+
+                     m_pgputexturesiteHelloMultiverse->gpu_texture()->create_texture(pgpucontext, ppixmap->m_sizeRaw);
+
+                     m_pgputexturesiteHelloMultiverse->gpu_texture()->m_textureattributes.m_sizeRaw = ppixmap->m_sizeRaw;
+
+                  }
+
+                  m_pgputexturesiteHelloMultiverse->m_pointOutput = { x, y };
+                  m_pgputexturesiteHelloMultiverse->gpu_texture()->m_textureattributes.m_size = ppixmap->m_size;
+
+
+                  
+                  //ppixmap->pixmap_map();
                      
                      // (pgpucontext, {ppixmap});
 
-                  }
-                  else
-                  {
+                  //}
+                  //else
+                  //{
 
-                     auto iTextureWidth = m_pgputexturesiteHelloMultiverse->width();
+                  //   auto iTextureWidth = m_pgputexturesiteHelloMultiverse->width();
 
-                     auto iTextureHeight = m_pgputexturesiteHelloMultiverse->height();
+                  //   auto iTextureHeight = m_pgputexturesiteHelloMultiverse->height();
 
-                     if (iTextureWidth != cx || iTextureHeight != cy)
-                     {
+                  //   if (iTextureWidth != cx || iTextureHeight != cy)
+                  //   {
 
-                        m_pgputexturesiteHelloMultiverse->gpu_texture()->create_texture(pgpucontext, { (::i32) cx, (::i32) cy });
+                  //      m_pgputexturesiteHelloMultiverse->gpu_texture()->create_texture(pgpucontext, { (::i32) cx, (::i32) cy });
 
-                     }
+                  //   }
 
-                  }
+                  //}
 
 
                   if (m_pgputexturesiteHelloMultiverse)
                   {
 
-                     m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(ppixmap, {});
+                     pgpucommandbuffer->clear(m_pgputexturesiteHelloMultiverse->gpu_texture(), color::transparent);
+
+                     m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(pgpucommandbuffer, ppixmap, {x, y});
 
 
                      // pgpucontext->copy(m_pgputextureMonitor, m_pgputextureHelloMultiverseScreen, nullptr);
 
                      auto pgputextureMonitorMultisample = m_pgputexturesiteMonitorMultisample->gpu_texture();
 
+                     //m_pgputexturesiteMonitorMultisample->gpu_texture()->set_state(
+                       // pgpucommandbuffer, ::gpu::e_texture_state_color_attachment
+                     //);
+
+                     m_pgputexturesiteHelloMultiverse->gpu_texture()->set_state(pgpucommandbuffer, ::gpu::e_texture_state_shader_read);
+                     m_pgputexturesiteHelloMultiverseScreen->gpu_texture()->set_state(pgpucommandbuffer, ::gpu::e_texture_state_shader_read);
+
+                     pgpucommandbuffer->m_iCommandBufferFrameIndex2 = 0;
+
                      pgpucommandbuffer->begin_render(m_pgpushaderBlend, m_pgputexturesiteMonitorMultisample);
 
-                     auto rectangleMonitor = m_pgputexturesiteMonitorMultisample->output_placement();
 
-                     pgpucommandbuffer->set_viewport(rectangleMonitor);
-                     pgpucommandbuffer->set_scissor(rectangleMonitor);
+                     m_pgpushaderBlend->bind_source(pgpucommandbuffer, m_pgputexturesiteHelloMultiverseScreen);
 
-                     auto pbindingsetTextureScreen = m_pgpushaderBlend->binding_set(1);
+                     //auto pbindingsetTextureScreen = m_pgpushaderBlend->binding_set(1);
 
-                     auto pgputextureHelloMultiverseScreen = m_pgputexturesiteHelloMultiverseScreen->gpu_texture();
+                     //auto pgputextureHelloMultiverseScreen = m_pgputexturesiteHelloMultiverseScreen->gpu_texture();
 
-                     auto pbindingslotsetTextureScreen = pgputextureHelloMultiverseScreen->binding_slot_set(
-                        pgpucommandbuffer, pbindingsetTextureScreen);
+                     //auto pbindingslotsetTextureScreen = pgputextureHelloMultiverseScreen->binding_slot_set(
+                     //   pgpucommandbuffer, pbindingsetTextureScreen);
 
-                     pgpucommandbuffer->bind_slot_set(1, pbindingslotsetTextureScreen);
+                     //pgpucommandbuffer->bind_slot_set(1, pbindingslotsetTextureScreen);
 
 
-                     auto pbindingsetTexture = m_pgpushaderBlend->binding_set(2);
+                     //auto pbindingsetTexture = m_pgpushaderBlend->binding_set(2);
 
-                     auto pgputextureHelloMultiverse = m_pgputexturesiteHelloMultiverse->gpu_texture();
+                     //auto pgputextureHelloMultiverse = m_pgputexturesiteHelloMultiverse->gpu_texture();
 
-                     auto pbindingslotsetTexture =
-                        pgputextureHelloMultiverse->binding_slot_set(pgpucommandbuffer, pbindingsetTexture);
+                     //auto pbindingslotsetTexture =
+                       /// pgputextureHelloMultiverse->binding_slot_set(pgpucommandbuffer, pbindingsetTexture);
 
-                     pgpucommandbuffer->bind_slot_set(2, pbindingslotsetTexture);
+                     //pgpucommandbuffer->bind_slot_set(2, pbindingslotsetTexture);
 
 
-                     floating_sequence2 seq2TopLeft;
+                     auto rectangleMonitor = m_pgputexturesiteHelloMultiverseScreen->output_placement();
 
-                     seq2TopLeft.cx = ((double)x / (double)sizeMainMonitor.cx);
-                     seq2TopLeft.cy = ((double)y / (double)sizeMainMonitor.cy);
+                     pgpucommandbuffer->set_viewport(rectangleMonitor, ppixmap->m_sizeRaw);
+                     pgpucommandbuffer->set_scissor(rectangleMonitor, ppixmap->m_sizeRaw);
 
-                     floating_sequence2 seq2BottomRight;
-
-                     seq2BottomRight.cx = ((double)(x + cx) / (double)sizeMainMonitor.cx);
-                     seq2BottomRight.cy = ((double)(y + cy) / (double)sizeMainMonitor.cy);
-
-                     m_pgpushaderBlend->m_propertiesPushShared.seq2("overlayTopLeft") = seq2TopLeft;
-                     m_pgpushaderBlend->m_propertiesPushShared.seq2("overlayBottomRight") = seq2BottomRight;
-                     m_pgpushaderBlend->m_propertiesPushShared.seq2("overlayOpacity") = 1.0;
+                     m_pgpushaderBlend->set_impact_quad(rectangleMonitor.size(), ppixmap->m_sizeRaw);
 
                      m_pgpushaderBlend->push_properties(pgpucommandbuffer);
-                     
 
-                     m_pmodelbufferDummy->bind2(pgpucommandbuffer);
+                     pgpucommandbuffer->draw(m_pmodelbufferDummy);
 
-                     pgpucommandbuffer->draw_vertexes(3);
+                     m_pgpushaderBlend->bind_source(pgpucommandbuffer, m_pgputexturesiteHelloMultiverse);
 
-                     m_pmodelbufferDummy->unbind(pgpucommandbuffer);
+                     auto rectangleHelloMultiverse = m_pgputexturesiteHelloMultiverse->output_placement();
+
+                     if (0)
+                     {
+
+                        pgpucommandbuffer->set_viewport(rectangleHelloMultiverse, ppixmap->m_sizeRaw);
+                        pgpucommandbuffer->set_scissor(rectangleHelloMultiverse, ppixmap->m_sizeRaw);
+
+                        m_pgpushaderBlend->set_impact_quad(rectangleHelloMultiverse, rectangleMonitor.size());
+
+                     }
+                     //else
+                     //{
+
+                     //   pgpucommandbuffer->set_viewport(rectangleMonitor, ppixmap->m_sizeRaw);
+                     //   pgpucommandbuffer->set_scissor(rectangleMonitor, ppixmap->m_sizeRaw);
+
+                     //   m_pgpushaderBlend->set_impact_quad(rectangleMonitor.size(), rectangleMonitor.size());
+
+                     //}
+
+
+                     m_pgpushaderBlend->push_properties(pgpucommandbuffer);
+
+                     pgpucommandbuffer->draw(m_pmodelbufferDummy);
+
+
+                     //floating_sequence2 seq2TopLeft;
+
+                     //seq2TopLeft.cx = ((double)x / (double)sizeMainMonitor.cx);
+                     //seq2TopLeft.cy = ((double)y / (double)sizeMainMonitor.cy);
+
+                     //floating_sequence2 seq2BottomRight;
+
+                     //seq2BottomRight.cx = ((double)(x + cx) / (double)sizeMainMonitor.cx);
+                     //seq2BottomRight.cy = ((double)(y + cy) / (double)sizeMainMonitor.cy);
+
+                     //m_pgpushaderBlend->m_propertiesPushShared.seq2("overlayTopLeft") = seq2TopLeft;
+                     //m_pgpushaderBlend->m_propertiesPushShared.seq2("overlayBottomRight") = seq2BottomRight;
+                     //m_pgpushaderBlend->m_propertiesPushShared.seq2("overlayOpacity") = 1.0;
+
+                     //m_pgpushaderBlend->push_properties(pgpucommandbuffer);
+                     //
+
+                     //m_pmodelbufferDummy->bind2(pgpucommandbuffer);
+
+                     //pgpucommandbuffer->draw_vertexes(3);
+
+                     //m_pmodelbufferDummy->unbind(pgpucommandbuffer);
 
                      m_pgpushaderBlend->unbind(pgpucommandbuffer);
 
-                     pgpucontext->copy(m_pgputexturesiteMonitor2, m_pgputexturesiteMonitorMultisample, nullptr, nullptr);
+                     pgpucontext->copy(pgpucommandbuffer, m_pgputexturesiteMonitor2, m_pgputexturesiteMonitorMultisample, nullptr, nullptr);
 
                      if (m_prenderable)
                      {

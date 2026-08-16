@@ -686,6 +686,38 @@ namespace gpu_vulkan
    }
 
 
+   void command_buffer::clear(::gpu::texture * pgputexture, const ::color::color & color)
+   {
+
+
+      VkClearColorValue clearColor = { .float32 = { 
+         color.f32_red() * color.f32_opacity(),
+         color.f32_green() * color.f32_opacity(),
+         color.f32_blue() * color.f32_opacity(),
+         color.f32_opacity()} };
+
+      VkImageSubresourceRange range = {
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1,
+      };
+
+      ::cast < ::gpu_vulkan::texture > ptexture = pgputexture;
+
+      vkCmdClearColorImage(
+         m_vkcommandbuffer,
+         ptexture->m_vkimage,
+         ptexture->m_state2a.mip_layer_state(0, 0).m_vkimagelayout,
+         &clearColor,
+         1, // rangeCount
+         &range
+      );
+
+   }
+
+
    void command_buffer::set_viewport(const ::i32_rectangle& rectangle, const ::i32_size & sizeRaw)
    {
 
@@ -771,13 +803,15 @@ namespace gpu_vulkan
    void command_buffer::begin_render(::gpu::shader *pgpushader, ::gpu::texture_site *pgputexturesiteTarget)
    {
 
-      ::cast<::gpu_vulkan::texture> ptextureTarget = pgputexturesiteTarget->gpu_texture();
+      auto ptextureTarget = pgputexturesiteTarget->gpu_texture();
 
-      ptextureTarget->_set_state(this,
+      //ptextureTarget->_set_state(this,
 
-                                       {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
-                                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+         //                              {VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+            //                      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+              //                          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
+
+      ptextureTarget->set_state(this, ::gpu::e_texture_state_color_attachment);
 
       ::gpu::command_buffer::begin_render(pgpushader, pgputexturesiteTarget);
 

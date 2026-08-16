@@ -146,6 +146,10 @@ namespace gpu_vulkan
       ::memory white_to_color_sampler_vert() override;
       ::memory white_to_color_sampler_frag() override;
 
+      ::memory _001BlendVertexShaderMemory() override;
+      ::memory _001BlendFragmentShaderMemory() override;
+
+
       string get_shader_version_text() override;
 
       void _translate_shader(string_array_base & straFragment) override;
@@ -172,7 +176,7 @@ namespace gpu_vulkan
       void endSingleTimeCommands(::gpu::command_buffer * pcommandbuffer);
       //void endSingleTimeCommands(command_buffer * pcommandbuffer, int iSubmitCount, VkSubmitInfo * psubmitinfo);
       void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-      void copyBufferToImage(::gpu::command_buffer* pcommandbuffer, ::gpu_vulkan::texture* ptexture, ::gpu_vulkan::buffer* pbuffer, const ::i32_rectangle& rectangleSubImage = {});
+      void copyBufferToImage(::gpu::command_buffer* pcommandbuffer, ::gpu_vulkan::texture* ptexture, ::gpu_vulkan::buffer* pbuffer, const ::i32_rectangle& rectangleSubImage = {}, ::i32 iScan = 0);
 ///      void copyBufferToImage(::gpu::command_buffer* pcommandbuffer, ::gpu::pixmap* pixmap, ::gpu_vulkan::buffer* pbuffer);
       //(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
       void createImageWithInfo(

@@ -1,8 +1,10 @@
 #include "platform.h"
 #include "_draw2d_opengl.h"
+#include "bitmap.h"
 #include "image.h"
 #include "acme/platform/application.h"
 #include "aura/windowing/window_buffer.h"
+#include "gpu_opengl/texture.h"
 
 
 namespace draw2d_opengl
@@ -2752,16 +2754,47 @@ namespace draw2d_opengl
    void image::_map(const ::i32_rectangle & rectangle, bool bApplyTransform)
    {
 
+      ::gpu::image::_map(rectangle, bApplyTransform);
+
       return;
 
-      if (m_bMapped)
-      {
+      //if (m_bMapped)
+      //{
 
-         //return true;
+      //   //return true;
 
-         return;
+      //   return;
 
-      }
+      //}
+
+      //::cast < ::gpu_opengl::texture > ptexture;
+
+      //::cast < ::draw2d_opengl::bitmap > pbitmap = m_pbitmap;
+
+      //if (pbitmap)
+      //{
+
+      //   ptexture = pbitmap->m_pgputexture;
+
+      //}
+
+      //if (ptexture)
+      //{
+
+      //   pixmap::_map(rectangle, bApplyTransform);
+
+      //   ptexture->read_pixels(nullptr, this, m_point);
+
+      //}
+      //else
+      //{
+
+      //   ::gpu::image::_map(rectangle, bApplyTransform);
+
+      //}
+
+      //return;
+
 
       //if (!m_pgraphics)
       //{

@@ -14,8 +14,9 @@
 //#include "sockets/basic/listen_socket_impl.h"
 #include "render_system/gltf_render_system.h"
 #include "render_system/scene_render_system.h"
-#include "render_system/wavefront_obj_render_system.h"
 #include "render_system/skybox_render_system.h"
+#include "render_system/texture_render_system.h"
+#include "render_system/wavefront_obj_render_system.h"
 
 
 IMPLEMENT_FACTORY(graphics3d_vulkan)
@@ -39,8 +40,9 @@ IMPLEMENT_FACTORY(graphics3d_vulkan)
 
    pfactory->add_factory_item< ::graphics3d_vulkan::gltf_render_system, ::graphics3d::gltf_render_system>();
    pfactory->add_factory_item<::graphics3d_vulkan::scene_render_system, ::graphics3d::scene_render_system>();
-   pfactory->add_factory_item<::graphics3d_vulkan::wavefront_obj_render_system, ::graphics3d::wavefront_obj_render_system>();
    pfactory->add_factory_item<::graphics3d_vulkan::skybox_render_system, ::graphics3d::skybox_render_system>();
+   pfactory->add_factory_item<::graphics3d_vulkan::texture_render_system, ::graphics3d::texture_render_system>();
+   pfactory->add_factory_item<::graphics3d_vulkan::wavefront_obj_render_system, ::graphics3d::wavefront_obj_render_system>();
 
 }
 

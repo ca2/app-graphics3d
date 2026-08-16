@@ -175,6 +175,126 @@ namespace draw2d_nanovg
    }
 
 
+   void image::_map(const ::i32_rectangle & rectangle, bool bApplyAlphaTransform)
+   {
+
+
+      ::gpu::image::_map(rectangle, bApplyAlphaTransform);
+
+      return;
+//
+//      //if (m_bMapped)
+//      //{
+//
+//      //   //return true;
+//
+//      //   return;
+//
+//      //}
+//
+//      //::cast < ::gpu_opengl::texture > ptexture;
+//
+//      //::cast < ::draw2d_opengl::bitmap > pbitmap = m_pbitmap;
+//
+//      //if (pbitmap)
+//      //{
+//
+//      //   ptexture = pbitmap->m_pgputexture;
+//
+//      //}
+//
+//      //if (ptexture)
+//      //{
+//
+//      //   pixmap::_map(rectangle, bApplyTransform);
+//
+//      //   ptexture->read_pixels(nullptr, this, m_point);
+//
+//      //}
+//      //else
+//      //{
+//
+//      //   ::gpu::image::_map(rectangle, bApplyTransform);
+//
+//      //}
+//
+//      //return;
+//
+//
+//      //if (!m_pgraphics)
+//      //{
+//
+//      //   //return false;
+//
+//      //   return;
+//
+//      //}
+//
+//      if (m_size.is_empty())
+//      {
+//
+//         //return false;
+//
+//         return;
+//
+//      }
+//
+//      if (::is_null(m_pimage32Raw))
+//      {
+//
+//         //return false;
+//
+//         return;
+//
+//      }
+//
+//      //m_pgraphics->thread_select();
+//
+//      //int hasAlphaBits = 0;
+//
+//      //glGetIntegerv(GL_ALPHA_BITS, &hasAlphaBits);
+//
+//      glFlush();
+//
+//      //glReadBuffer(GL_BACK);
+//      //glReadBuffer(GL_FRONT);
+//
+//
+//
+//      //::pointer < graphics > pgraphics = m_pgraphics;
+//
+//      //int cx = pgraphics->m_sizeWindow.cx;
+//
+//      //int cy = pgraphics->m_sizeWindow.cy;
+//
+//      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+//
+//      //      ::opengl::resize(pgraphics->m_sizeWindow, bYSwap);
+//
+//      glReadBuffer(GL_BACK);
+//
+//      glPixelStorei(GL_PACK_SWAP_BYTES, 0);
+//
+//      glPixelStorei(GL_PACK_ROW_LENGTH, m_iScan / 4);
+//
+//      //glReadPixels(0, 0, cx, cy, GL_BGRA, GL_UNSIGNED_BYTE, m_pimage32Raw);
+//
+//      //glReadPixels(0, 0, m_size.cx, m_size.cy, GL_ARGB, GL_UNSIGNED_BYTE, m_pimage32Raw);
+//
+////      int i1280 = GL_INVALID_ENUM;
+////
+////      int i1281 = GL_INVALID_VALUE;
+////
+////      int iError = glGetError();
+//
+//      m_bMapped = true;
+//
+//      //return true;
+
+   }
+
+
+
    void image::create_from_data(const ::i32_size &size, const ::image32_t *pimage32, ::i32 iScan,
                          ::enum_flag eflagCreate, bool bPreserve) 
    {

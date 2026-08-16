@@ -2055,7 +2055,26 @@ namespace gpu_vulkan
    void texture::set_pixels(const ::i32_rectangle &rectangle, const void *data)
    {
 
-      VkDeviceSize size = rectangle.area() * 4;
+      ::pixmap_t pixmap;
+
+      pixmap.m_point = rectangle.origin();
+      pixmap.m_size = rectangle.size();
+      pixmap.m_iScan = pixmap.m_size.cx * 4;
+
+      pixmap.m_pimage32 = (::image32_t *) data;
+      pixmap.m_pimage32Raw = (::image32_t *)data;
+
+      write_pixels(&pixmap, {});
+
+   }
+
+
+   void texture::write_pixels(const ::pixmap_t * ppixmap, const ::i32_point & pointInput)
+   {
+
+      VkDeviceSize size = ppixmap->scan_area_in_bytes();
+
+      int iScan = ppixmap->m_iScan;
 
       ::pointer<::gpu_vulkan::context> pcontext = m_pgpucontext;
 
@@ -2063,84 +2082,204 @@ namespace gpu_vulkan
          pcontext->_create_buffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-      pbufferStaging->_assign(data, size);
+      pbufferStaging->_assign(ppixmap->m_pimage32, size);
 
-      if (defer_construct_newø(m_p_001OnAfterEndFrame))
-      {
+         if (defer_construct_newø(m_p_001OnAfterEndFrame))
+         {
 
-         auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
+            auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
 
-         pgpuwindowattachment->current_frame()->post_on_after_end_frame(
-            [this, pcontext]()
-            {
-               auto p = ::transfer(m_p_001OnAfterEndFrame);
+            pgpuwindowattachment->current_frame()->post_on_after_end_frame(
+               [this, pcontext]()
+               {
+                     auto p = ::transfer(m_p_001OnAfterEndFrame);
 
-               auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+                     auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
-               for (auto &pitem: p->m_itema)
+                     for (auto & pitem : p->m_itema)
+                     {
+
+                        pcontext->copyBufferToImage(pcommandbuffer, pitem->m_ptexture, pitem->m_pbufferStaging,
+                                                    pitem->m_rectangle, pitem->m_iScan);
+                     }
+
+                     pcontext->endSingleTimeCommands(pcommandbuffer);
+
+               });
+
+         }
+
+         auto ponafterendframeitem = create_newø<_001OnAfterEndFrameItem>();
+         ponafterendframeitem->m_ptexture = this;
+         ponafterendframeitem->m_pcontext = pcontext;
+         ponafterendframeitem->m_pbufferStaging = pbufferStaging;
+         ponafterendframeitem->m_rectangle = ppixmap->rectangle();
+         ponafterendframeitem->m_iScan = iScan;
+         m_p_001OnAfterEndFrame->m_itema.add(ponafterendframeitem);
+
+         //m_pgpucontext->post_on_after_end_frame(
+         //   [this, pcontext, pbufferStaging, rectangle]()
+         //   {
+
+         //      auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+
+         //      pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging, rectangle);
+
+         //      pcontext->endSingleTimeCommands(pcommandbuffer);
+
+         //   });
+
+         if (defer_construct_newø(m_p_001OnNextFrameStart))
+         {
+
+            auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
+
+            pgpuwindowattachment->current_frame()->post_on_just_before_frame_next_start(
+               [this, pcontext]()
                {
 
-                  pcontext->copyBufferToImage(pcommandbuffer, pitem->m_ptexture, pitem->m_pbufferStaging,
-                                              pitem->m_rectangle);
-               }
+                     auto p = ::transfer(m_p_001OnNextFrameStart);
+                     auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
-               pcontext->endSingleTimeCommands(pcommandbuffer);
-            });
+                     ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
 
-      }
+                     for (auto & ptexture : p->m_texturea)
+                     {
 
-      auto ponafterendframeitem = create_newø<_001OnAfterEndFrameItem>();
-      ponafterendframeitem->m_ptexture=this;
-      ponafterendframeitem->m_pcontext = pcontext;
-      ponafterendframeitem->m_pbufferStaging = pbufferStaging;
-      ponafterendframeitem->m_rectangle = rectangle;
-      m_p_001OnAfterEndFrame->m_itema.add(ponafterendframeitem);
+                        ptexture->_set_state(pcommandbuffer,
+                                           {
 
-      //m_pgpucontext->post_on_after_end_frame(
-      //   [this, pcontext, pbufferStaging, rectangle]()
+                                                      VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                                      VK_PIPELINE_STAGE_TRANSFER_BIT
+
+                                                   });
+                     }
+
+
+                     pcontext->endSingleTimeCommands(pcommandbuffer);
+               });
+         }
+
+         m_p_001OnNextFrameStart->m_texturea.add_unique(this);
+
+
+      
+   }
+
+
+   void texture::write_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::pixmap_t * ppixmap, const ::i32_point & pointInput)
+   {
+
+      VkDeviceSize size = ppixmap->scan_area_in_bytes();
+
+      int iScan = ppixmap->m_iScan;
+
+      //::pointer<::gpu_vulkan::context> pcontext = m_pgpucontext;
+      ::cast < ::gpu_vulkan::context > pcontext = pgpucommandbuffer->m_pgpurendertarget->m_pgpurenderer->m_pgpucontext;
+
+
+      auto pbufferStaging =
+         pcontext->_create_buffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+      pbufferStaging->_assign(ppixmap->m_pimage32, size);
+
+      //if (bWriteNow)
+      //{
+
+        // auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+
+
+      pcontext->copyBufferToImage(pgpucommandbuffer, this, pbufferStaging,
+                            ppixmap->rectangle(), iScan);
+
+
+         //pcontext->endSingleTimeCommands(pcommandbuffer);
+
+      //}
+      //else
+      //{
+
+      //   if (defer_construct_newø(m_p_001OnAfterEndFrame))
       //   {
 
-      //      auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+      //      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
 
-      //      pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging, rectangle);
+      //      pgpuwindowattachment->current_frame()->post_on_after_end_frame(
+      //         [this, pcontext]()
+      //         {
+      //            auto p = ::transfer(m_p_001OnAfterEndFrame);
 
-      //      pcontext->endSingleTimeCommands(pcommandbuffer);
+      //            auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
-      //   });
+      //            for (auto & pitem : p->m_itema)
+      //            {
 
-      if (defer_construct_newø(m_p_001OnNextFrameStart))
-      {
+      //               pcontext->copyBufferToImage(pcommandbuffer, pitem->m_ptexture, pitem->m_pbufferStaging,
+      //                                           pitem->m_rectangle, pitem->m_iScan);
+      //            }
 
-         auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
+      //            pcontext->endSingleTimeCommands(pcommandbuffer);
 
-         pgpuwindowattachment->current_frame()->post_on_just_before_frame_next_start(
-            [this, pcontext]()
-            {
+      //         });
 
-               auto p = ::transfer(m_p_001OnNextFrameStart);
-               auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+      //   }
 
-               ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
+      //   auto ponafterendframeitem = create_newø<_001OnAfterEndFrameItem>();
+      //   ponafterendframeitem->m_ptexture = this;
+      //   ponafterendframeitem->m_pcontext = pcontext;
+      //   ponafterendframeitem->m_pbufferStaging = pbufferStaging;
+      //   ponafterendframeitem->m_rectangle = ppixmap->rectangle();
+      //   ponafterendframeitem->m_iScan = iScan;
+      //   m_p_001OnAfterEndFrame->m_itema.add(ponafterendframeitem);
 
-               for (auto &ptexture: p->m_texturea)
-               {
+      //   //m_pgpucontext->post_on_after_end_frame(
+      //   //   [this, pcontext, pbufferStaging, rectangle]()
+      //   //   {
 
-                  ptexture->_set_state(pcommandbuffer,
-                                     {
+      //   //      auto pcommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
-                                                VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                                                VK_PIPELINE_STAGE_TRANSFER_BIT
+      //   //      pcontext->copyBufferToImage(pcommandbuffer, this, pbufferStaging, rectangle);
 
-                                             });
-               }
+      //   //      pcontext->endSingleTimeCommands(pcommandbuffer);
+
+      //   //   });
+
+      //   if (defer_construct_newø(m_p_001OnNextFrameStart))
+      //   {
+
+      //      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpucontext);
+
+      //      pgpuwindowattachment->current_frame()->post_on_just_before_frame_next_start(
+      //         [this, pcontext]()
+      //         {
+
+      //            auto p = ::transfer(m_p_001OnNextFrameStart);
+      //            auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+
+      //            ::cast<::gpu_vulkan::command_buffer> pcommandbuffer = pgpucommandbuffer;
+
+      //            for (auto & ptexture : p->m_texturea)
+      //            {
+
+      //               ptexture->_set_state(pcommandbuffer,
+      //                                  {
+
+      //                                             VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      //                                             VK_PIPELINE_STAGE_TRANSFER_BIT
+
+      //                                          });
+      //            }
 
 
-               pcontext->endSingleTimeCommands(pcommandbuffer);
-            });
-      }
+      //            pcontext->endSingleTimeCommands(pcommandbuffer);
+      //         });
+      //   }
 
-      m_p_001OnNextFrameStart->m_texturea.add_unique(this);
+      //   m_p_001OnNextFrameStart->m_texturea.add_unique(this);
 
+
+      //}
    }
 
 
@@ -5531,7 +5670,8 @@ void texture::create_sampler()
 
          return {
 
-            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
+            , VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 
       }

@@ -79,6 +79,13 @@ namespace gpu_directx12
 
          void update_pixels(const ::i32_rectangle& rectangle, const void* data);
 
+         void update_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data);
+
+         void _fill_new_damage(damage & damageNew, const ::i32_rectangle & rectangle, const void * data);
+         
+
+           
+
       };
 
       class static_upload_buffer : virtual public ::particle
@@ -281,7 +288,7 @@ namespace gpu_directx12
 
 
       void set_pixels(const ::i32_rectangle& rectangle, const void* data) override;
-
+      void set_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data) override;
       virtual upload_buffer * _get_upload_buffer();
 
       virtual static_upload_buffer *_get_static_upload_buffer(int iResourceCount = -1);

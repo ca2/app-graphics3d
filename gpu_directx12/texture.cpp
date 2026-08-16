@@ -1869,7 +1869,7 @@ namespace gpu_directx12
    }
 
 
-   void texture::upload_buffer::update_pixels(const ::i32_rectangle& rectangle, const void* data)
+   void texture::upload_buffer::_fill_new_damage(damage & damageNew, const ::i32_rectangle & rectangle, const void * data)
    {
 
       map();
@@ -1883,7 +1883,7 @@ namespace gpu_directx12
       //subresource.SlicePitch = rectangle.width() * 4 * rectangle.height();  // total size of region
 
       UINT srcRowPitch = rectangle.width() * bytesPerPixel;
-      BYTE* dst = (BYTE *) m_pMap + m_footprint.Offset + 
+      BYTE * dst = (BYTE *)m_pMap + m_footprint.Offset +
          rectangle.left * bytesPerPixel
          + rectangle.top * m_footprint.Footprint.RowPitch;
 
@@ -1893,12 +1893,12 @@ namespace gpu_directx12
       {
          memcpy(
             dst + y * m_footprint.Footprint.RowPitch,
-            (const BYTE*)cpuPixels + y * srcRowPitch,
+            (const BYTE *)cpuPixels + y * srcRowPitch,
             srcRowPitch
          );
       }
 
-      auto & damageNew = m_damagea.add_new();
+      //auto & damageNew = m_damagea.add_new();
       //damage damage;
       // Copy into texture
       //D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
@@ -1926,6 +1926,104 @@ namespace gpu_directx12
    }
 
 
+   void texture::upload_buffer::update_pixels(const ::i32_rectangle& rectangle, const void* data)
+   {
+
+      auto & damageNew = m_damagea.add_new();
+
+      _fill_new_damage(damageNew, rectangle, data);
+
+      //map();
+
+      //auto bytesPerPixel = 4;
+
+      ////// 1. Describe the subresource we want to update
+      ////D3D12_SUBRESOURCE_DATA subresource = {};
+      ////subresource.pData = data;
+      ////subresource.RowPitch = rectangle.width() * 4;          // bytes per row in CPU buffer
+      ////subresource.SlicePitch = rectangle.width() * 4 * rectangle.height();  // total size of region
+
+      //UINT srcRowPitch = rectangle.width() * bytesPerPixel;
+      //BYTE* dst = (BYTE *) m_pMap + m_footprint.Offset + 
+      //   rectangle.left * bytesPerPixel
+      //   + rectangle.top * m_footprint.Footprint.RowPitch;
+
+      //auto cpuPixels = data;
+
+      //for (UINT y = 0; y < rectangle.height(); y++)
+      //{
+      //   memcpy(
+      //      dst + y * m_footprint.Footprint.RowPitch,
+      //      (const BYTE*)cpuPixels + y * srcRowPitch,
+      //      srcRowPitch
+      //   );
+      //}
+
+      //auto & damageNew = m_damagea.add_new();
+      ////damage damage;
+      //// Copy into texture
+      ////D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
+      //damageNew.m_copylocationTarget.pResource = m_ptexture->m_pd3d12resourceTexture->m_presource;
+      //damageNew.m_copylocationTarget.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+      //damageNew.m_copylocationTarget.SubresourceIndex = 0;
+
+      ////D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
+      //damageNew.m_copylocationSource.pResource = m_presourceUpload;
+      //damageNew.m_copylocationSource.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+      //damageNew.m_copylocationSource.PlacedFootprint = m_footprint;
+
+      //damageNew.m_boxSource = CD3DX12_BOX(
+      //   rectangle.left, rectangle.top,
+      //   0, rectangle.right, rectangle.bottom, 1);
+
+      //damageNew.m_iLeft = rectangle.left;
+      //damageNew.m_iTop = rectangle.top;
+
+      //// ⚠️ caller is responsible for:
+      //// - Transitioning dstTexture into COPY_DEST before this call
+      //// - Transitioning dstTexture back to usable state after this call
+
+
+   }
+
+
+   void texture::upload_buffer::update_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data)
+   {
+
+      damage damage;
+
+      _fill_new_damage(damage, rectangle, data);
+
+
+      //::cast < renderer > prenderer = m_ptexture->m_pgpucontext->m_pgpurenderer;
+
+      //::cast < ::gpu_directx12::context > pcontext = prenderer->m_pgpucontext;
+
+      //auto pgpucommandbuffer = pcontext->beginSingleTimeCommands(
+      //   pcontext->m_pgpudevice->graphics_queue(),
+      //   ::gpu::e_command_buffer_graphics);
+
+      ::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
+
+      //{
+
+         resource_state_guard guard(
+            pcommandbuffer->m_pcommandlist,
+            m_ptexture->m_pd3d12resourceTexture,
+            D3D12_RESOURCE_STATE_COPY_DEST);
+
+         //for (auto & damage : m_damagea)
+         //{
+
+           // try
+            //{
+
+               damage.update_copyable_region(pcommandbuffer->m_pcommandlist);
+
+
+   }
+
+
    void texture::set_pixels(const ::i32_rectangle& rectangle, const void* data)
    {
 
@@ -1939,10 +2037,57 @@ namespace gpu_directx12
 
       //D3D12_RESOURCE_DESC texDesc = m_presourceTexture->GetDesc();
 
-
       puploadbuffer->update_pixels(rectangle, data);
 
+
+      //::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
+
+      //{
+
+      //   resource_state_guard guard(
+      //      pcommandbuffer->m_pcommandlist,
+      //      m_ptexture->m_pd3d12resourceTexture,
+      //      D3D12_RESOURCE_STATE_COPY_DEST);
+
+      //   for (auto & damage : m_damagea)
+      //   {
+
+      //      try
+      //      {
+
+      //         damage.update_copyable_region(pcommandbuffer->m_pcommandlist);
+
+      //      }
+      //      catch (...)
+      //      {
+
+      //      }
+
+      //   }
+
+      //   m_damagea.clear();
+
+      //}
+
+      //pcontext->endSingleTimeCommands(pcommandbuffer);
+
+   //}
+
       //puploadbuffer->map();
+
+
+   }
+
+
+   void texture::set_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data)
+   {
+
+
+      auto puploadbuffer = _get_upload_buffer();
+
+      //D3D12_RESOURCE_DESC texDesc = m_presourceTexture->GetDesc();
+
+      puploadbuffer->update_pixels(pgpucommandbuffer, rectangle, data);
 
 
    }

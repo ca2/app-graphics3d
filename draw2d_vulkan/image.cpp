@@ -2793,8 +2793,10 @@ namespace draw2d_vulkan
 //
 
 
-   void image::_map(const ::i32_rectangle & rectangle, bool bApplyTransform)
+   void image::_map(const ::i32_rectangle & rectangle, bool bApplyAlphaTransform)
    {
+
+      ::gpu::image::_map(rectangle, bApplyAlphaTransform);
 
       return;
 

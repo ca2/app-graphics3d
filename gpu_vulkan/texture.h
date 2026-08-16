@@ -76,7 +76,7 @@ namespace gpu_vulkan
          ::pointer<::gpu_vulkan::context> m_pcontext;
          ::pointer<buffer> m_pbufferStaging;
          ::i32_rectangle m_rectangle;
-
+         ::i32 m_iScan;
       };
       class _001OnAfterEndFrame : virtual public ::particle
       {
@@ -388,7 +388,9 @@ namespace gpu_vulkan
       //virtual texture_synchronization *synchronization();
       //virtual texture_synchronization* synchronization(::gpu::render_target* prendertarget);
       void set_pixels(const ::i32_rectangle& rectangle, const void* data) override;
+      void write_pixels(const ::pixmap_t * ppixmap, const ::i32_point & pointInput) override;
 
+      void write_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::pixmap_t * ppixmap, const ::i32_point & pointInput) override;
 
       virtual VkDeviceMemory AllocateMemory(VkMemoryRequirements memRequirements, VkMemoryPropertyFlags properties);
 

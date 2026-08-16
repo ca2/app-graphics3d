@@ -55,6 +55,9 @@
     <ClCompile Include="render_system\wavefront_obj_render_system.cpp">
       <Filter>Source Files\render_system</Filter>
     </ClCompile>
+    <ClCompile Include="render_system\texture_render_system.cpp">
+      <Filter>Source Files\render_system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="platform.h">
@@ -93,6 +96,9 @@
     <ClInclude Include="render_system\gltf_render_system.h">
       <Filter>Header Files\render_system</Filter>
     </ClInclude>
+    <ClInclude Include="render_system\texture_render_system.h">
+      <Filter>Header Files\render_system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="render_system\shader\tonemapping.glsl">
@@ -128,6 +134,12 @@
     <None Include="render_system\shader\wavefront.vert.spv.inl">
       <Filter>Header Files\render_system\shader</Filter>
     </None>
+    <None Include="render_system\shader\texture.frag.spv.inl">
+      <Filter>Header Files\render_system\shader</Filter>
+    </None>
+    <None Include="render_system\shader\texture.vert.spv.inl">
+      <Filter>Header Files\render_system\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="render_system\shader\gltf.frag">
@@ -158,6 +170,12 @@
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
     <CustomBuild Include="render_system\shader\wavefront.vert">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="render_system\shader\texture.frag">
+      <Filter>Source Files\render_system\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="render_system\shader\texture.vert">
       <Filter>Source Files\render_system\shader</Filter>
     </CustomBuild>
   </ItemGroup>

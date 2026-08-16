@@ -476,6 +476,12 @@
     <CustomBuild Include="shader\merge_layer.vert">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="shader\_001Blend.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\_001Blend.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\image_blend.frag.spv.inl">
@@ -542,6 +548,10 @@
       <Filter>Header Files\shader</Filter>
     </None>
     <None Include="shader\merge_layer.vert.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="_001Blend.vert" />
+    <None Include="shader\_001Blend.vert.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
   </ItemGroup>

@@ -43,6 +43,8 @@ namespace gpu_vulkan
 
       virtual void set_line_width(float fLineWidth);
 
+      void clear(::gpu::texture * pgputexture, const ::color::color & color) override;
+
       void set_viewport(const ::i32_rectangle & rectangle, const ::i32_size & sizeRaw = {}) override;
 
       void set_scissor(const ::i32_rectangle & rectangle, const ::i32_size & sizeRaw = {}) override;

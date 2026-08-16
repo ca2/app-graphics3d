@@ -154,6 +154,9 @@ namespace draw2d_nanovg
       //virtual bool update_window(::aura::draw_interface * puserinteraction, ::message::message * pmessage, bool bTransferBuffer = true) override;
       //virtual bool print_window(::aura::draw_interface * puserinteraction, ::message::message * pmessage) override;
 
+      protected:
+
+         void _map(const ::i32_rectangle & rectangle, bool bApplyAlphaTransform) override;
 
    };
 
