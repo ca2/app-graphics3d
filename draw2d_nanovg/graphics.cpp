@@ -548,7 +548,7 @@ namespace draw2d_nanovg
 
          constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
 
-         m_pgraphicsbufferitem->m_pimageBufferItem->create_as_render_target(size, puserinteraction, this);
+         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(size, puserinteraction, this);
 
       }
 
@@ -1004,7 +1004,7 @@ namespace draw2d_nanovg
 
       }
 
-      create_memory_graphics(pbitmap->get_size(), m_pacmeuserinteractionAffinity);
+      create_memory_graphics(pbitmap->size(), m_pacmeuserinteractionAffinity);
 
       //vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
 
@@ -4481,9 +4481,9 @@ namespace draw2d_nanovg
       if (m_bHasCurrentPoint)
       {
 
-         float x = (float)m_point.x;
+         float x = (float)m_pointCurrent.x;
 
-         float y = (float)m_point.y;
+         float y = (float)m_pointCurrent.y;
 
          //nanovg_get_current_point(m_pdc, &x, &y);
 
@@ -4504,9 +4504,9 @@ namespace draw2d_nanovg
 
       nvgLineTo(m_pdc, (float)line.m_p2.x, (float)line.m_p2.y);
 
-      m_point.x = line.m_p2.x;
+      m_pointCurrent.x = line.m_p2.x;
 
-      m_point.y = line.m_p2.y;
+      m_pointCurrent.y = line.m_p2.y;
 
       m_bHasCurrentPoint = true;
 
@@ -4530,9 +4530,9 @@ namespace draw2d_nanovg
       if (m_bHasCurrentPoint)
       {
 
-         float x = (float)m_point.x;
+         float x = (float)m_pointCurrent.x;
 
-         float y = (float)m_point.y;
+         float y = (float)m_pointCurrent.y;
 
          //nanovg_get_current_point(m_pdc, &x, &y);
 
@@ -4584,9 +4584,9 @@ namespace draw2d_nanovg
       if (m_bHasCurrentPoint)
       {
 
-         float x = (float)m_point.x;
+         float x = (float)m_pointCurrent.x;
 
-         float y = (float)m_point.y;
+         float y = (float)m_pointCurrent.y;
 
          if (x != pointa[0].x || y != pointa[0].y)
          {
@@ -6485,7 +6485,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             m_pgputexturesiteTarget->m_pgputextureSite = pgputexture;
 
-            m_pgputexturesiteTarget->m_pointOutput = m_point;
+            m_pgputexturesiteTarget->m_pointOutput = m_pointCurrent;
 
             return m_pgputexturesiteTarget;
 
@@ -7829,8 +7829,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       vkEnd();*/
 
-      m_point.x = point2.x;
-      m_point.y = point2.y;
+      m_pointCurrent.x = point2.x;
+      m_pointCurrent.y = point2.y;
 
       //return true;
 
@@ -7858,9 +7858,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       draw();
 
-      m_point.x = x2;
+      m_pointCurrent.x = x2;
 
-      m_point.y = y2;
+      m_pointCurrent.y = y2;
 
    }
 
@@ -8629,11 +8629,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          DEFAULT_CREATE_IMAGE_FLAG, 
          sizeTexture.cx * (int)sizeof(::image32_t));
 
-      auto mapPixmap = pixmap.map();
+      auto ppixmapPixmap = pixmap.map();
 
       auto pgpucommandbuffer = ::gpu::current_layer()->getCurrentCommandBuffer4();
 
-      pgputexture->read_pixels(pgpucommandbuffer, &mapPixmap, {});
+      pgputexture->read_pixels(pgpucommandbuffer, ppixmapPixmap, {});
 
       auto uPixelCount = (::u64)sizeTexture.cx * (::u64)sizeTexture.cy;
       auto uTransparentPixels = (::u64)0;
@@ -9273,7 +9273,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       const ::f64_point & pointSrc)
    {
 
-      if (!m_pdc || !pimageSource || rectangleTarget.is_empty() || pimageSource->is_empty())
+      if (!m_pdc || !pimageSource || rectangleTarget.is_empty())
       {
 
          return;
@@ -9306,12 +9306,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       memoryRgba.set_size(sizeImage.area() * 4);
 
       auto ptarget = memoryRgba.data();
-      auto colorindexes = pimage->color_indexes();
+
+      auto ppixmapImage = pimage->map();
+
+      auto colorindexes = ppixmapImage->color_indexes();
 
       for (int y = 0; y < sizeImage.cy; y++)
       {
 
-         auto psource = pimage->line_data(y);
+         auto psource = ppixmapImage->line_data(y);
 
          for (int x = 0; x < sizeImage.cx; x++)
          {
@@ -10060,7 +10063,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (m_egraphics == e_graphics_draw)
       {
 
-         auto size = this->size();
+         auto size = this->m_sizeTarget;
 
          ::i32_rectangle rectangle;
 
@@ -10125,7 +10128,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          reset_clip();
 
-         reset_impact_area();
+         set_target_rectangle({ m_pimage->m_point, m_pimage->m_size    });
 
          update_matrix();
 

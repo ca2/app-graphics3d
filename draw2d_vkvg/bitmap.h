@@ -197,7 +197,7 @@ namespace draw2d_vkvg
       void CreateCompatibleBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       void CreateDiscardableBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       
-      void create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::memory & memory,  int* piScan) override;
+      void create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::pixmap * ppixmap) override;
       void CreateDIBitmap(::draw2d::graphics * pgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
 
 #if defined(WINDOWS_DESKTOP)
@@ -209,7 +209,7 @@ namespace draw2d_vkvg
       unsigned int SetBitmapBits(unsigned int dwCount, const void * lpBits);
       unsigned int GetBitmapBits(unsigned int dwCount, void * lpBits) const;
       ::i32_size SetBitmapDimension(int nWidth, int nHeight);
-      ::i32_size GetBitmapDimension() const;
+      ::i32_size size() const override;
 
       // void dump(dump_context & dumpcontext) const override;
 

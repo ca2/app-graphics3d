@@ -1,6 +1,7 @@
 #include "platform.h"
 #include "_vkvg.h"
 #include "bitmap.h"
+#include "acme/graphics/image/pixmap.h"
 #include "acme/exception/interface_only.h"
 #include "acme/windowing/display.h"
 #include "acme/windowing/windowing.h"
@@ -128,7 +129,8 @@ namespace draw2d_vkvg
 
 #endif
 
-   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::memory & memory, int* piScan)
+
+   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::pixmap * ppixmap)
    {
 
       __UNREFERENCED_PARAMETER(pgraphics);
@@ -141,10 +143,10 @@ namespace draw2d_vkvg
 
       int iScan = m_iStride;
 
-      if (piScan && *piScan > iScan)
+      if (ppixmap && ppixmap->m_iScan > iScan)
       {
 
-         iScan = *piScan;
+         iScan = ppixmap->m_iScan;
 
       }
 
@@ -161,14 +163,19 @@ namespace draw2d_vkvg
 
       auto pimage32Target = (::image32_t *)m_memOut.data();
 
-      if (memory.data() && memory.size() > iScan * size.cy)
+      if (ppixmap && ppixmap->m_memoryPixmap.size() > iScan * size.cy)
       {
 
-         pimage32Target->copy(size, m_iStride, (::image32_t *)memory.data(), iScan);
+         pimage32Target->copy(size, m_iStride, ppixmap->image32(), iScan);
 
       }
 
-      memory.reference_data(m_memOut);
+      if (ppixmap)
+      {
+         
+         ppixmap->m_memoryPixmap.reference_data(m_memOut);
+
+      }
 
       //if (pimage32)
       //{
@@ -184,9 +191,11 @@ namespace draw2d_vkvg
 
       //}
 
-      if(piScan != nullptr)
+      if(ppixmap != nullptr)
       {
-         *piScan = size.cx * sizeof(color32_t);
+         
+         ppixmap->m_iScan = size.cx * sizeof(color32_t);
+
       }
 
       m_osdata[0] = (void *) 1;
@@ -237,7 +246,8 @@ namespace draw2d_vkvg
 
    }
 
-   i32_size bitmap::GetBitmapDimension() const
+
+   i32_size bitmap::size() const
    {
 
       //if(m_pbitmap == nullptr)
@@ -248,6 +258,7 @@ namespace draw2d_vkvg
       return m_sizeOut;
 
    }
+
 
    bool bitmap::LoadBitmap(unsigned int nIDResource)
    {

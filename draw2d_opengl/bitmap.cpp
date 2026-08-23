@@ -108,7 +108,7 @@ namespace draw2d_opengl
    // }
 
 
-   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::memory & memory,  int* piScan)
+   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::pixmap * ppixmap)
    {
 
       __UNREFERENCED_PARAMETER(pgraphics);
@@ -121,10 +121,10 @@ namespace draw2d_opengl
 
       auto iScan = m_iStride;
 
-      if (piScan && *piScan > iScan)
+      if (ppixmap && ppixmap->m_iScan > iScan)
       {
 
-         iScan = *piScan;
+         iScan = ppixmap->m_iScan;
 
       }
 
@@ -141,19 +141,19 @@ namespace draw2d_opengl
 
       auto pimage32Target = (::image32_t *)m_memOut.data();
 
-      if (memory.data() && memory.size() > iScan * size.cy)
+      if (ppixmap && ppixmap->m_memoryPixmap.size() > iScan * size.cy)
       {
 
-         pimage32Target->copy(size, m_iStride, (::image32_t *)memory.data(), iScan);
+         pimage32Target->copy(size, m_iStride, ppixmap->image32(), iScan);
 
       }
 
 
-      memory.reference_data(m_memOut);
+      ppixmap->m_memoryPixmap.reference_data(m_memOut);
 
-      if(piScan != nullptr)
+      if(ppixmap != nullptr)
       {
-         *piScan = m_iStride;
+         ppixmap->m_iScan = m_iStride;
       }
 
       m_osdata[0] = (void *) 1;
@@ -204,7 +204,8 @@ namespace draw2d_opengl
 
    }
 
-   i32_size bitmap::GetBitmapDimension() const
+
+   i32_size bitmap::size() const
    {
 
       //if(m_pbitmap == nullptr)
@@ -215,6 +216,7 @@ namespace draw2d_opengl
       return m_sizeOut;
 
    }
+
 
    bool bitmap::LoadBitmap(unsigned int nIDResource)
    {

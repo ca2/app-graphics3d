@@ -2932,15 +2932,21 @@ void texture::create_sampler()
       //                      ,
       //                      stagingMemory);
 
-      void *data = pbuffer->map();
+      //void *data = pbuffer->map();
+
+      auto ppixmapImage = pimage->map();
+
+
       
       //vkMapMemory(pcontext->logicalDevice(), stagingMemory, 0, imageSize, 0, &data);
       
-      auto pimage32 = (image32_t *)data;
-      pimage32->copy(pimage->size(), pimage->width() * 4, pimage);
+      auto pimage32 = ppixmapImage->image32();
 
-      pbuffer->unmap();
+      pimage32->copy(ppixmapImage);
+
+      //pbuffer->unmap();
       //vkUnmapMemory(pcontext->logicalDevice(), stagingMemory);
+
    }
       //stbi_image_free(pixels);
 

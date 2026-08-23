@@ -31,19 +31,20 @@ namespace draw2d_nanovg
 
 
       //virtual ::draw2d::graphics * _get_graphics() const;
-      ::draw2d::bitmap_pointer get_bitmap(::draw2d::graphics * pdraw2dgraphics = nullptr) const override;
+      ::draw2d::bitmap_pointer get_bitmap_as_target(::draw2d::graphics * pdraw2dgraphics = nullptr) const override;
+      ::draw2d::bitmap_pointer get_bitmap_as_source(::draw2d::graphics * pdraw2dgraphics = nullptr) const override;
       ::draw2d::bitmap_pointer detach_bitmap() override;
 
       //virtual ::draw2d::graphics * get_graphics();
 
       bool host(const ::pixmap* ppixmap);
 
-      void stretch_image(::image::image *pimage) override;
+      //void stretch_image(::image::image *pimage) override;
 
-      void dc_select(bool bSelect = true) override;
+      //void dc_select(bool bSelect = true) override;
 
       //using ::image::image::create;
-      void create_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d) override;
+      void update_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d) override;
       void create_from_data(const ::i32_size &size, const ::image32_t *pimage32, ::i32 iScan,
                             ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, bool bPreserve = false) override;
       //void create(const ::i32_size &size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1,
@@ -54,7 +55,7 @@ namespace draw2d_nanovg
       void destroy() override;
 
       //bool host(::pixmap_t * ppixmap, ::windowing::window * pwindow) override;
-      bool host(::windowing::window_buffer * pwindowbuffer, ::windowing::window * pwindow, const ::i32_size & sizeRaw) override;
+      //sbool host(::windowing::window_buffer * pwindowbuffer, ::windowing::window * pwindow, const ::i32_size & sizeRaw) override;
 
       bool from(::draw2d::graphics * pgraphics);
       //bool from(i32_point ptDest, ::draw2d::graphics * pgraphics, const ::i32_point & point, ::i32_size sz);
@@ -64,7 +65,7 @@ namespace draw2d_nanovg
 
       //void SetIconMask(::image::icon * picon, int cx, int cy);
 
-      bool on_host_read_pixels(::pixmap_t * ppixmap) const override;
+      //bool on_host_read_pixels(::pixmap_t * ppixmap) const override;
 
       //bool color_blend(color32_t color32, unsigned char bAlpha);
       //bool Blend(imagepimage, ::image::image *pimageA, int A);
@@ -156,7 +157,7 @@ namespace draw2d_nanovg
 
       protected:
 
-         void _map(const ::i32_rectangle & rectangle, bool bApplyAlphaTransform) override;
+         ::image_pixmap_lease _map(const ::i32_rectangle & rectangle) override;
 
    };
 

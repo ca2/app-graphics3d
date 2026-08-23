@@ -242,7 +242,7 @@ auto iContextHeight = pcontext->height()
 
          constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
 
-         m_pgraphicsbufferitem->m_pimageBufferItem->create_as_render_target(size, puserinteraction, this);
+         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(size, puserinteraction, this);
 
       }
 
@@ -439,7 +439,7 @@ auto iContextHeight = pcontext->height()
 
       vulkan_delete_offscreen_buffer();
 
-      if (!vulkan_create_offscreen_buffer({}, {}, pbitmap->get_size()))
+      if (!vulkan_create_offscreen_buffer({}, {}, pbitmap->size()))
       {
 
          return NULL;

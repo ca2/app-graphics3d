@@ -586,7 +586,7 @@ namespace draw2d_vkvg
 
          constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
 
-         m_pgraphicsbufferitem->m_pimageBufferItem->create_as_render_target(size, puserinteraction, this);
+         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(size, puserinteraction, this);
 
       }
 
@@ -1073,7 +1073,7 @@ namespace draw2d_vkvg
 
       bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
-      ::vulkan::resize(pbitmap->get_size(), bYSwap);
+      ::vulkan::resize(pbitmap->size(), bYSwap);
 
       //vkClear(VK_COLOR_BUFFER_BIT | VK_DEPTH_BUFFER_BIT);
 
@@ -8116,7 +8116,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       vkvg_line_to(vkvgcontext, point2.x, point2.y);
       draw(ppen);
 
-      m_point = point2;
+      m_pointCurrent = point2;
 
    }
 
@@ -8155,9 +8155,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       draw();
 
-      m_point.x = x2;
+      m_pointCurrent.x = x2;
 
-      m_point.y = y2;
+      m_pointCurrent.y = y2;
 
       //return true;
 
@@ -9223,7 +9223,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             reset_clip();
 
-            reset_impact_area();
+            set_target_rectangle(pcontextVulkan->input_placement());
 
             set_alpha_mode(::draw2d::e_alpha_mode_blend);
 

@@ -523,7 +523,9 @@ namespace app_graphics3d_hello_space
 
                pgputextureHelloMultiverseScreen->create_texture(pgpucontext, m_pimageHelloMultiverseScreen->size(), flagsHelloMultiverseScreen);
 
-               pgputextureHelloMultiverseScreen->write_pixels(pgpucommandbuffer, m_pimageHelloMultiverseScreen, {});
+               auto ppixmapImageHelloMultiverseScreen = m_pimageHelloMultiverseScreen->map();
+
+               pgputextureHelloMultiverseScreen->write_pixels(pgpucommandbuffer, ppixmapImageHelloMultiverseScreen, {});
 
                constructø(m_pgputexturesiteMonitorMultisample->m_pgputextureSite);
 

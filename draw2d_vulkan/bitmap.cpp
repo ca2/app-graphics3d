@@ -2,6 +2,7 @@
 #include "_vulkan.h"
 #include "bitmap.h"
 #include "acme/exception/interface_only.h"
+#include "acme/graphics/image/pixmap.h"
 #include "acme/windowing/display.h"
 #include "acme/windowing/windowing.h"
 
@@ -134,7 +135,7 @@ namespace draw2d_vulkan
    }
 
 
-   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::memory & memory, int* piScan)
+   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::pixmap * ppixmap)
    {
 
       __UNREFERENCED_PARAMETER(pgraphics);
@@ -147,10 +148,10 @@ namespace draw2d_vulkan
 
       int iScan = m_iStride;
 
-      if (piScan && *piScan > iScan)
+      if (ppixmap && ppixmap->m_iScan > iScan)
       {
 
-         iScan = *piScan;
+         iScan = ppixmap->m_iScan;
 
       }
 
@@ -167,14 +168,19 @@ namespace draw2d_vulkan
 
       auto pimage32Target = (::image32_t *)m_memOut.data();
 
-      if (memory.data() && memory.size() > iScan * size.cy)
+      if (ppixmap && ppixmap->m_memoryPixmap.size() > iScan * size.cy)
       {
 
-         pimage32Target->copy(size, m_iStride, (::image32_t *)memory.data(), iScan);
+         pimage32Target->copy(size, m_iStride, ppixmap->image32(), iScan);
 
       }
 
-      memory.reference_data(m_memOut);
+      if (ppixmap)
+      {
+       
+         ppixmap->m_memoryPixmap.reference_data(m_memOut);
+
+      }
 
       //if (pimage32)
       //{
@@ -190,9 +196,11 @@ namespace draw2d_vulkan
 
       //}
 
-      if(piScan != nullptr)
+      if(ppixmap)
       {
-         *piScan = m_iStride;
+         
+         ppixmap->m_iScan = m_iStride;
+
       }
 
       m_osdata[0] = (void *) 1;

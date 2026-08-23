@@ -92,7 +92,7 @@ namespace draw2d_directx12
    }
 
 
-   void bitmap::create_bitmap(::draw2d::graphics* pgraphics, const ::i32_size & size, ::memory & memory, int * piScan)
+   void bitmap::create_bitmap(::draw2d::graphics* pgraphics, const ::i32_size & size, ::pixmap * ppixmap)
    {
 
       //::draw2d::lock draw2dlock;

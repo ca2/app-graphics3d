@@ -351,7 +351,7 @@ namespace draw2d_opengl
 
          constructø(m_pgraphicsbufferitem->m_pimageBufferItem);
 
-         m_pgraphicsbufferitem->m_pimageBufferItem->create_as_render_target(sizeRaw, puserinteraction, this);
+         m_pgraphicsbufferitem->m_pimageBufferItem->update_as_render_target(sizeRaw, puserinteraction, this);
 
       }
 
@@ -805,7 +805,7 @@ namespace draw2d_opengl
 
       bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
-      ::opengl::resize(pbitmap->get_size(), bYSwap);
+      ::opengl::resize(pbitmap->size(), bYSwap);
 
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

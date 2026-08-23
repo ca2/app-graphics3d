@@ -133,105 +133,102 @@ namespace draw2d_vulkan
 //   }
 
 
-   bool image::host(::windowing::window_buffer * pwindowbuffer, ::windowing::window * pwindow, const ::i32_size & sizeRaw)
-   //bool image::host(::pixmap_t * ppixmap, ::windowing::window * pwindow)
+   //bool image::host(::windowing::window_buffer * pwindowbuffer, ::windowing::window * pwindow, const ::i32_size & sizeRaw)
+   ////bool image::host(::pixmap_t * ppixmap, ::windowing::window * pwindow)
+   //{
+
+   //   if (::is_null(pwindowbuffer)
+   //|| ::is_null(pwindowbuffer->m_ppixmapWindowBuffer)
+   //|| pwindowbuffer->m_ppixmapWindowBuffer.nok())
+   //   {
+
+   //      return false;
+
+   //   }
+
+   //   if (pwindowbuffer->m_ppixmapWindowBuffer->m_pimage32Raw == m_pimage32Raw
+   //      && m_size == pwindowbuffer->m_ppixmapWindowBuffer->m_size)
+   //   {
+
+   //      return true;
+
+   //   }
+
+   //   ::memory_copy((::pixmap *)this, pwindowbuffer->m_ppixmapWindowBuffer->m_pimage32, sizeof(::pixmap));
+
+   //   //if (::is_null(ppixmap) || ppixmap->nok())
+   //   //{
+
+   //   //   return false;
+
+   //   //}
+   //   //   
+   //   //if (ppixmap->m_pimage32Raw == m_pimage32Raw
+   //   //   && m_size == ppixmap->m_size)
+   //   //{
+
+   //   //   return true;
+
+   //   //}
+
+   //   //::memory_copy((::pixmap *) this, ppixmap, sizeof(::pixmap));
+
+   //   ////constructø(m_pbitmap);
+   //   //defer_constructø(m_pgraphics);
+   //   ////m_pgraphics->set(m_pbitmap);
+
+   //   //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
+   //   //{
+
+   //   //   m_pgraphics->create_window_graphics(pwindow);
+
+   //   //}
+   //   //else
+   //   //{
+
+   //   //   m_pgraphics->create_memory_graphics(ppixmap->m_size);
+
+   //   //}
+
+
+   //   m_eflagElement = DEFAULT_CREATE_IMAGE_FLAG;
+
+   //   //m_pgraphics->m_pimage = this;
+
+   //   set_ok_flag();
+
+   //   m_estatus = ::success;
+
+   //   return true;
+
+   //}
+
+   //void image::dc_select(bool bSelect)
+   //{
+   //   /*      if(bSelect)
+   //         {
+   //            return m_pgraphics->set(m_pbitmap) != nullptr;
+   //         }
+   //         else
+   //         {
+   //            return m_pgraphics->set(m_hbitmapOriginal) != nullptr;
+   //         }*/
+
+   //   //return true;
+
+   //}
+
+
+   void image::update_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d)
    {
 
-      if (::is_null(pwindowbuffer)
-   || ::is_null(pwindowbuffer->m_ppixmapWindowBuffer)
-   || pwindowbuffer->m_ppixmapWindowBuffer.nok())
-      {
-
-         return false;
-
-      }
-
-      if (pwindowbuffer->m_ppixmapWindowBuffer->m_pimage32Raw == m_pimage32Raw
-         && m_size == pwindowbuffer->m_ppixmapWindowBuffer->m_size)
-      {
-
-         return true;
-
-      }
-
-      ::memory_copy((::pixmap *)this, pwindowbuffer->m_ppixmapWindowBuffer->m_pimage32, sizeof(::pixmap));
-
-      //if (::is_null(ppixmap) || ppixmap->nok())
-      //{
-
-      //   return false;
-
-      //}
-      //   
-      //if (ppixmap->m_pimage32Raw == m_pimage32Raw
-      //   && m_size == ppixmap->m_size)
-      //{
-
-      //   return true;
-
-      //}
-
-      //::memory_copy((::pixmap *) this, ppixmap, sizeof(::pixmap));
-
-      ////constructø(m_pbitmap);
-      //defer_constructø(m_pgraphics);
-      ////m_pgraphics->set(m_pbitmap);
-
-      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
-      //{
-
-      //   m_pgraphics->create_window_graphics(pwindow);
-
-      //}
-      //else
-      //{
-
-      //   m_pgraphics->create_memory_graphics(ppixmap->m_size);
-
-      //}
-
-
-      m_eflagElement = DEFAULT_CREATE_IMAGE_FLAG;
-
-      //m_pgraphics->m_pimage = this;
-
-      set_ok_flag();
-
-      m_estatus = ::success;
-
-      return true;
-
-   }
-
-   void image::dc_select(bool bSelect)
-   {
-      /*      if(bSelect)
-            {
-               return m_pgraphics->set(m_pbitmap) != nullptr;
-            }
-            else
-            {
-               return m_pgraphics->set(m_hbitmapOriginal) != nullptr;
-            }*/
-
-      //return true;
-
-   }
-
-
-   void image::create_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d)
-   {
-
-      ::gpu::image::create_as_render_target(sizeRaw, puserinteraction, pdraw2dgraphics, eflagCreate, iGoodStride, bPreserve, bTopDraw2d);
+      ::gpu::image::update_as_render_target(sizeRaw, puserinteraction, pdraw2dgraphics, eflagCreate, iGoodStride, bPreserve, bTopDraw2d);
 
       //create_as_descriptor(sizeRaw, eflagCreate);
 
       //constructø(m_pbitmap);
 
-
-
       //m_pbitmap-
-
 
    }
 
@@ -250,7 +247,8 @@ namespace draw2d_vulkan
       }
 
       //if (!create(pbitmap->get_size()))
-      create_as_descriptor(pbitmap->get_size());
+      create_as_descriptor(pbitmap->size());
+      
       {
          //return false;//
       }
@@ -2421,33 +2419,33 @@ namespace draw2d_vulkan
    //   }
    //}
 
-
-   void image::stretch_image(::image::image *pimage)
-   {
-
-      if (::is_null(pimage))
-      {
-
-         return;
-
-      }
-
-      //plusplus::rectF rectangleDest(0, 0, (plusplus::REAL) m_size.cx, (plusplus::REAL) m_size.cy);
-
-      //plusplus::rectF rectangleSource(0, 0, (plusplus::REAL) pimage->width(), (plusplus::REAL) pimage->height());
-
-      //unmap();
-      
-      //pimage->unmap();
-
-//      m_pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
-
-      //((plusplus::Graphics * ) m_pgraphics->get_os_data())->DrawImage(((plusplus::Bitmap *)pimage->get_bitmap()->get_os_data()), rectangleDest, rectangleSource, plusplus::UnitPixel);
-
-      //return true;
-
-   }
-
+//
+//   void image::stretch_image(::image::image *pimage)
+//   {
+//
+//      if (::is_null(pimage))
+//      {
+//
+//         return;
+//
+//      }
+//
+//      //plusplus::rectF rectangleDest(0, 0, (plusplus::REAL) m_size.cx, (plusplus::REAL) m_size.cy);
+//
+//      //plusplus::rectF rectangleSource(0, 0, (plusplus::REAL) pimage->width(), (plusplus::REAL) pimage->height());
+//
+//      //unmap();
+//      
+//      //pimage->unmap();
+//
+////      m_pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
+//
+//      //((plusplus::Graphics * ) m_pgraphics->get_os_data())->DrawImage(((plusplus::Bitmap *)pimage->get_bitmap()->get_os_data()), rectangleDest, rectangleSource, plusplus::UnitPixel);
+//
+//      //return true;
+//
+//   }
+//
 
   // ::draw2d::graphics * image::_get_graphics() const
   // {
@@ -2793,23 +2791,32 @@ namespace draw2d_vulkan
 //
 
 
-   void image::_map(const ::i32_rectangle & rectangle, bool bApplyAlphaTransform)
+   ::image_pixmap_lease image::_map(const ::i32_rectangle & rectangle)
    {
 
-      ::gpu::image::_map(rectangle, bApplyAlphaTransform);
+      return ::transfer(::gpu::image::_map(rectangle));
 
-      return;
+      //return;
 
-      if (m_bMapped)
-      {
+      //if (m_bMapped)
+      //{
 
-         //return true;
+      //   //return true;
 
-         return;
+      //   return;
 
-      }
+      //}
 
-      //if (!m_pgraphics)
+      ////if (!m_pgraphics)
+      ////{
+
+      ////   //return false;
+
+      ////   return;
+
+      ////}
+
+      //if (m_size.is_empty())
       //{
 
       //   //return false;
@@ -2818,60 +2825,51 @@ namespace draw2d_vulkan
 
       //}
 
-      if (m_size.is_empty())
-      {
+      //if (::is_null(m_pimage32Raw))
+      //{
 
-         //return false;
+      //   //return false;
 
-         return;
+      //   return;
 
-      }
+      //}
 
-      if (::is_null(m_pimage32Raw))
-      {
+      ////m_pgraphics->thread_select();
 
-         //return false;
+      //int hasAlphaBits = 0;
 
-         return;
+      //////xxxopengl>>>>vulkan vkGetIntegerv(VK_ALPHA_BITS, &hasAlphaBits);
 
-      }
+      ////vkFlush();
 
-      //m_pgraphics->thread_select();
+      ////vkReadBuffer(VK_BACK);
+      ////vkReadBuffer(VK_FRONT);
 
-      int hasAlphaBits = 0;
+      ////::pointer < graphics > pgraphics = m_pgraphics;
 
-      ////xxxopengl>>>>vulkan vkGetIntegerv(VK_ALPHA_BITS, &hasAlphaBits);
+      ////int cx = pgraphics->m_sizeWindow.cx;
 
-      //vkFlush();
+      ////int cy = pgraphics->m_sizeWindow.cy;
 
-      //vkReadBuffer(VK_BACK);
-      //vkReadBuffer(VK_FRONT);
-
-      //::pointer < graphics > pgraphics = m_pgraphics;
-
-      //int cx = pgraphics->m_sizeWindow.cx;
-
-      //int cy = pgraphics->m_sizeWindow.cy;
-
-      //bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
+      ////bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
 
 
 
-      m_bMapped = true;
+      //m_bMapped = true;
 
    }
 
 
-   void image::_unmap(bool bDoUnmap) 
+   void image::_unmap(::image_pixmap_lease * pimagepixmaplease) 
    {
 
-      if (!m_bMapped)
-      {
+      //if (!m_bMapped)
+      //{
 
-         return;
+      //   return;
 
-      }
+      //}
 
       //if (!m_pgraphics)
       //{
@@ -2887,21 +2885,21 @@ namespace draw2d_vulkan
 
       }
 
-      if (::is_null(m_pimage32Raw))
-      {
+      //if (::is_null(m_pimage32Raw))
+      //{
 
-         //return false;
+      //   //return false;
 
-         return;
+      //   return;
 
-      }
+      //}
 
       //m_pgraphics->thread_select();
 
       //xxxopengl>>>>vulkan 
       //vkDrawPixels(m_size.cx, m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, m_pimage32Raw);
 
-      m_bMapped = false;
+      //m_bMapped = false;
 
       //return true;
 
@@ -2921,41 +2919,41 @@ namespace draw2d_vulkan
    }
 
 
-   bool image::on_host_read_pixels(::pixmap_t* ppixmap) const
-   {
-
-      return false;
-
-/*      if (!m_pgraphics)
-      {
-
-         return false;
-
-      }
-
-      if (!ppixmap->m_size)
-      {
-
-         return false;
-
-      }
-
-      if (::is_null(ppixmap->m_pimage32Raw))
-      {
-
-         return false;
-
-      }
-
-      m_pgraphics->thread_select();
-
-      vkReadBuffer(VK_BACK);
-
-      vkReadPixels(0, 0, ppixmap->m_size.cx, ppixmap.m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, ppixmap.m_pimage32);
-
-      *///return true;
-
-   }
+//   bool image::on_host_read_pixels(::pixmap_t* ppixmap) const
+//   {
+//
+//      return false;
+//
+///*      if (!m_pgraphics)
+//      {
+//
+//         return false;
+//
+//      }
+//
+//      if (!ppixmap->m_size)
+//      {
+//
+//         return false;
+//
+//      }
+//
+//      if (::is_null(ppixmap->m_pimage32Raw))
+//      {
+//
+//         return false;
+//
+//      }
+//
+//      m_pgraphics->thread_select();
+//
+//      vkReadBuffer(VK_BACK);
+//
+//      vkReadPixels(0, 0, ppixmap->m_size.cx, ppixmap.m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, ppixmap.m_pimage32);
+//
+//      *///return true;
+//
+//   }
 
 
 } // namespace draw2d_vulkan
