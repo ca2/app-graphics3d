@@ -340,7 +340,7 @@ namespace draw2d_nanovg
 
       _synchronous_lock synchronouslock(pgpudevice->synchronization());
 
-      auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, m_size);
+      auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, m_size, m_pgraphicsOwned);
 
       ::pixmap_t pixmap;
 

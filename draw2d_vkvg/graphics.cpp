@@ -337,7 +337,7 @@ namespace draw2d_vkvg
 
       //}
 
-      on_gpu_context_placement_change({}, {}, sizeParameter, m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      on_gpu_context_placement_change({}, {}, sizeParameter, m_pacmeuserinteractionAffinity->m_pacmewindowingwindow, this);
 
       //if (!draw2d_vkvg()->m_pvulkancontext) {
       //   informationf("MS GDI - RegisterClass failed");
@@ -1936,7 +1936,6 @@ namespace draw2d_vkvg
    }
 
 
-
    void graphics::_set(const ::geometry2d::matrix& matrix)
    {
 
@@ -2456,6 +2455,13 @@ namespace draw2d_vkvg
 
       }
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       auto vkvgcontext = vkvg_context();
 
       vkvg_keep keep(vkvgcontext);
@@ -2503,6 +2509,13 @@ namespace draw2d_vkvg
          //return false;
 
          return;
+
+      }
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
 
       }
 
@@ -2948,6 +2961,13 @@ namespace draw2d_vkvg
       {
 
          return;
+
+      }
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
 
       }
 
@@ -4268,6 +4288,13 @@ namespace draw2d_vkvg
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       auto vkvgcontext = vkvg_context();
 
       vkvg_move_to(vkvgcontext, arc.m_pointBegin.x, arc.m_pointBegin.y);
@@ -4333,6 +4360,13 @@ namespace draw2d_vkvg
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       auto vkvgcontext = vkvg_context();
 
       if (vkvg_has_current_point(vkvgcontext))
@@ -4377,6 +4411,13 @@ namespace draw2d_vkvg
       }
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       auto vkvgcontext = vkvg_context();
 
@@ -4433,6 +4474,13 @@ namespace draw2d_vkvg
       }
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       auto vkvgcontext = vkvg_context();
 
@@ -4511,6 +4559,13 @@ namespace draw2d_vkvg
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       auto vkvgcontext = vkvg_context();
 
       vkvg_new_sub_path(vkvgcontext);
@@ -4557,6 +4612,13 @@ namespace draw2d_vkvg
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       auto vkvgcontext = vkvg_context();
 
       vkvg_new_sub_path(vkvgcontext);
@@ -4592,6 +4654,13 @@ namespace draw2d_vkvg
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       auto vkvgcontext = vkvg_context();
 
       vkvg_rectangle(
@@ -4610,6 +4679,13 @@ namespace draw2d_vkvg
    {
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       auto vkvgcontext = vkvg_context();
 
@@ -8121,7 +8197,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::line(double x1, double y1, double x2, double y2)
+   void graphics::line(double x1, double y1, double x2, double y2, ::draw2d::pen * ppen)
    {
 
       //if (::is_set(m_ppen))
@@ -8147,13 +8223,21 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       _synchronous_lock ml(::draw2d_vkvg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+
       auto vkvgcontext = vkvg_context();
 
       vkvg_move_to(vkvgcontext, x1, y1);
 
       vkvg_line_to(vkvgcontext, x2, y2);
 
-      draw();
+      draw(ppen);
 
       m_pointCurrent.x = x2;
 
@@ -8184,6 +8268,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       {
 
          throw ::exception(error_wrong_state);
+
+      }
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
 
       }
 
@@ -8249,6 +8340,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       {
 
          throw ::exception(error_wrong_state);
+
+      }
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
 
       }
 
@@ -9201,7 +9299,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::start_layer(bool bFirstLayer)
+   void graphics::start_layer(bool bFirstLayer, ::user::interaction * puserinteraction)
    {
 
       thread_select();
@@ -9216,14 +9314,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       try
       {
 
-         ::gpu::graphics::start_layer(bFirstLayer);
+         ::gpu::graphics::start_layer(bFirstLayer, puserinteraction);
 
          if (m_egraphics & e_graphics_draw)
          {
 
             reset_clip();
 
-            set_target_rectangle(pcontextVulkan->input_placement());
+            //set_target_rectangle(pcontextVulkan->input_placement());
+
+            m_pointTarget = puserinteraction->host_origin();
+
+            update_matrix();
 
             set_alpha_mode(::draw2d::e_alpha_mode_blend);
 

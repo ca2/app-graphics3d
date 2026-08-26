@@ -193,7 +193,7 @@ namespace draw2d_vulkan
       void CreateCompatibleBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       void CreateDiscardableBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
       
-      void _create_gpu_bitmap(const ::i32_size & size, pixmap_t * ppixmap =nullptr) override;
+      void _create_gpu_bitmap(const ::i32_size & size, ::draw2d::graphics * pdraw2dgraphics, pixmap_t * ppixmap =nullptr) override;
       void create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::pixmap * ppixmap) override;
       void CreateDIBitmap(::draw2d::graphics * pgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
 

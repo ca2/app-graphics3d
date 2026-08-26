@@ -349,7 +349,7 @@ namespace draw2d_vkvg
       // i32_point GetCurrentPosition() const;
 //      i32_point MoveTo(int x, int y);
       //    i32_point MoveTo(const ::i32_point & point);
-      void line(double x1, double y1, double x2, double y2) override;
+      void line(double x1, double y1, double x2, double y2, ::draw2d::pen * ppen) override;
       //bool LineTo(int x,int y);
       //  bool LineTo(const ::i32_point & point);
       void polyline(const ::f64_point* ppoints,::collection::count nCount) override;
@@ -768,7 +768,7 @@ namespace draw2d_vkvg
       //void on_end_layer(::gpu::layer *pgpulayer) override;
       //void start_layer(::e_graphics egpugraphics) override;
       //void end_layer(::e_graphics egpugraphics) override;
-      void start_layer(bool bFirstLayer = false) override;
+      void start_layer(bool bFirstLayer = false, ::user::interaction * puserinteraction = nullptr) override;
       void end_layer(bool bClosingLayer = false) override;
       // void on_begin_draw() override;
       //void on_end_draw() override;

@@ -73,7 +73,8 @@ namespace gpu_vulkan
          m_vkcommandpool = pcontext->getGraphicsCommandPool();
 
       }
-      else if (m_ecommandbuffer == ::gpu::e_command_buffer_transfer)
+      else if (m_ecommandbuffer == ::gpu::e_command_buffer_transfer
+         || m_ecommandbuffer == ::gpu::e_command_buffer_copy)
       {
 
          m_vkcommandpool = pcontext->getTransferCommandPool();

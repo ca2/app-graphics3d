@@ -142,105 +142,105 @@ namespace draw2d_direct2d_for_directx12
 
    }
 
-   HRESULT pen::s_RenderPatternToCommandList(ID2D1RenderTarget * pgraphics,D2D1_COLOR_F *pcr)
-   {
+   //HRESULT pen::s_RenderPatternToCommandList(ID2D1RenderTarget * pgraphics,D2D1_COLOR_F *pcr)
+   //{
 
-      HRESULT hr = S_OK;
+   //   HRESULT hr = S_OK;
 
-      //pgraphics->BeginDraw();
+   //   //pgraphics->BeginDraw();
 
-      pgraphics->Clear(pcr);
+   //   pgraphics->Clear(pcr);
 
-      ID2D1SolidColorBrush * pbr = nullptr;
+   //   ID2D1SolidColorBrush * pbr = nullptr;
 
-      //hr = pgraphics->CreateSolidColorBrush(*pcr, &pbr);
+   //   //hr = pgraphics->CreateSolidColorBrush(*pcr, &pbr);
 
-      //pgraphics->DrawRectangle(D2D1::RectF(0.f, 0.f, 256.f, 256.f), pbr, 0.f);
+   //   //pgraphics->DrawRectangle(D2D1::RectF(0.f, 0.f, 256.f, 256.f), pbr, 0.f);
 
-      //pbr->Release();
+   //   //pbr->Release();
 
-      ///hr = pgraphics->EndDraw();
+   //   ///hr = pgraphics->EndDraw();
 
-      return hr;
+   //   return hr;
 
-   }
+   //}
 
-   HRESULT pen::s_CreatePatternBrush(ID2D1DeviceContext *pDeviceContext, D2D1_COLOR_F * pcr, ID2D1ImageBrush **ppImageBrush)
-   {
+   //HRESULT pen::s_CreatePatternBrush(ID2D1DeviceContext *pDeviceContext, D2D1_COLOR_F * pcr, ID2D1ImageBrush **ppImageBrush)
+   //{
 
-      //HRESULT hrEndDraw = pDeviceContext->EndDraw();
+   //   //HRESULT hrEndDraw = pDeviceContext->EndDraw();
 
-      HRESULT hr = S_OK;
-      ID2D1Image *pOldTarget = nullptr;
-      pDeviceContext->GetTarget(&pOldTarget);
+   //   HRESULT hr = S_OK;
+   //   ID2D1Image *pOldTarget = nullptr;
+   //   pDeviceContext->GetTarget(&pOldTarget);
 
-      ID2D1CommandList *pCommandList = nullptr;
-      hr = pDeviceContext->CreateCommandList(&pCommandList);
+   //   ID2D1CommandList *pCommandList = nullptr;
+   //   hr = pDeviceContext->CreateCommandList(&pCommandList);
 
-      if(SUCCEEDED(hr))
-      {
-         pDeviceContext->SetTarget(pCommandList);
-         hr = s_RenderPatternToCommandList(pDeviceContext,pcr);
-      }
+   //   if(SUCCEEDED(hr))
+   //   {
+   //      pDeviceContext->SetTarget(pCommandList);
+   //      hr = s_RenderPatternToCommandList(pDeviceContext,pcr);
+   //   }
 
-      pDeviceContext->SetTarget(pOldTarget);
+   //   pDeviceContext->SetTarget(pOldTarget);
 
-      ID2D1ImageBrush *pImageBrush = nullptr;
+   //   ID2D1ImageBrush *pImageBrush = nullptr;
 
-      if(SUCCEEDED(hr))
-      {
-         hr = pCommandList->Close();
-      }
+   //   if(SUCCEEDED(hr))
+   //   {
+   //      hr = pCommandList->Close();
+   //   }
 
-      if(SUCCEEDED(hr))
-      {
+   //   if(SUCCEEDED(hr))
+   //   {
 
-         D2D1_IMAGE_BRUSH_PROPERTIES props;
+   //      D2D1_IMAGE_BRUSH_PROPERTIES props;
 
-         props.sourceRectangle.left = 0.f;
-         props.sourceRectangle.top = 0.f;
-         props.sourceRectangle.right = 256.f;
-         props.sourceRectangle.bottom = 256.f;
+   //      props.sourceRectangle.left = 0.f;
+   //      props.sourceRectangle.top = 0.f;
+   //      props.sourceRectangle.right = 256.f;
+   //      props.sourceRectangle.bottom = 256.f;
 
-         props.extendModeX = D2D1_EXTEND_MODE_WRAP;
-         props.extendModeY = D2D1_EXTEND_MODE_WRAP;
+   //      props.extendModeX = D2D1_EXTEND_MODE_WRAP;
+   //      props.extendModeY = D2D1_EXTEND_MODE_WRAP;
 
-         props.interpolationMode = D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR;
+   //      props.interpolationMode = D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR;
 
-         hr = pDeviceContext->CreateImageBrush(
-              pCommandList,&props,nullptr,&pImageBrush);
-      }
+   //      hr = pDeviceContext->CreateImageBrush(
+   //           pCommandList,&props,nullptr,&pImageBrush);
+   //   }
 
-      // Fill a i32_rectangle with the image brush.
-      /*if (SUCCEEDED(hr))
-      {
-      pDeviceContext->fill_rectangle(
-      D2D1::RectF(0, 0, 100, 100), pImageBrush);
-      }*/
+   //   // Fill a i32_rectangle with the image brush.
+   //   /*if (SUCCEEDED(hr))
+   //   {
+   //   pDeviceContext->fill_rectangle(
+   //   D2D1::RectF(0, 0, 100, 100), pImageBrush);
+   //   }*/
 
-      //pImageBrush->Release();
-      pCommandList->Release();
-      pOldTarget->Release();
+   //   //pImageBrush->Release();
+   //   pCommandList->Release();
+   //   pOldTarget->Release();
 
-      //if(hrEndDraw == S_OK)
-      //{
-      //   pDeviceContext->BeginDraw();
-      //}
+   //   //if(hrEndDraw == S_OK)
+   //   //{
+   //   //   pDeviceContext->BeginDraw();
+   //   //}
 
-      if(SUCCEEDED(hr))
-      {
+   //   if(SUCCEEDED(hr))
+   //   {
 
-         *ppImageBrush = pImageBrush;
+   //      *ppImageBrush = pImageBrush;
 
-      }
-      else
-      {
+   //   }
+   //   else
+   //   {
 
-         *ppImageBrush = nullptr;
-      }
+   //      *ppImageBrush = nullptr;
+   //   }
 
-      return hr;
-   }
+   //   return hr;
+   //}
 
 } // namespace draw2d_direct2d_for_directx12
 

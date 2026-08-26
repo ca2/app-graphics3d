@@ -47,15 +47,15 @@ namespace draw2d_direct2d_for_directx12
 
       ::cast < ::draw2d_direct2d_for_directx12::bitmap > pbitmap = pdraw2dbitmap;
 
-      ::cast < ::draw2d_direct2d_for_directx12::graphics > pgraphics = pgpugraphics;
+      //::cast < ::draw2d_direct2d_for_directx12::graphics > pgraphics = pgpugraphics;
 
-      ::comptr < IDXGISurface > pdxgisurface;
+      //::comptr < IDXGISurface > pdxgisurface;
+//
+  //    pbitmap->m_pgputexture = ptexture;
 
-      pbitmap->m_pgputexture = ptexture;
+      //pdxgisurface = ptexture->_dxgi_surface();
 
-      pdxgisurface = ptexture->_dxgi_surface();
-
-      pbitmap->_create_from_dxgi_surface(0, 0, pdxgisurface, pgraphics);
+      pbitmap->update_bitmap_as_backed_by_gpu_texture(pgputexture, pgpugraphics);
 
       m_pbitmap = pbitmap;
 

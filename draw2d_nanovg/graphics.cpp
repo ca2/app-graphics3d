@@ -336,6 +336,7 @@ namespace draw2d_nanovg
          m_pgpucontextOwned->create_draw2d_gpu_context(
             pgpudevice,
             pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+            this,
             {},
             {},
             sizeParameter,
@@ -1375,6 +1376,13 @@ namespace draw2d_nanovg
 
       nanovg_keep keep(m_pdc);
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       nvgTranslate(m_pdc, (float) centerx, (float)centery);
 
       nvgScale(m_pdc, (float)radiusx, (float)radiusy);
@@ -1884,6 +1892,14 @@ namespace draw2d_nanovg
 
       }
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+
       nvgBeginPath(m_pdc);
 
       nvgRect(m_pdc,
@@ -2257,7 +2273,7 @@ namespace draw2d_nanovg
 
       ::draw2d::graphics::draw_ellipse(rectangleParam);
 
-      _synchronous_lock ml(::draw2d_nanovg::mutex());
+      //_synchronous_lock ml(::draw2d_nanovg::mutex());
 
       //double centerx = (x2 + x1) / 2.0;
 
@@ -2410,6 +2426,14 @@ namespace draw2d_nanovg
 
       }
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+
       nanovg_keep keep(m_pdc);
 
       _fill1();
@@ -2460,6 +2484,14 @@ namespace draw2d_nanovg
 
       }
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+
       nanovg_keep keep(m_pdc);
 
       nvgBeginPath(m_pdc);
@@ -2486,6 +2518,16 @@ namespace draw2d_nanovg
       _set(m_ppen);
 
       nvgStroke(m_pdc);
+
+      float xform[6];
+      nvgCurrentTransform(m_pdc, xform);
+
+      // NanoVG matrix layout:
+      // [ xform[0]  xform[2]  xform[4] ]  ->  [ a  c  e ]  ->  [ sx  kx  tx ]
+      // [ xform[1]  xform[3]  xform[5] ]  ->  [ b  d  f ]  ->  [ ky  sy  ty ]
+
+      float scaleX = sqrtf(xform[0] * xform[0] + xform[1] * xform[1]);
+      float scaleY = sqrtf(xform[2] * xform[2] + xform[3] * xform[3]);
 
       //return true;
 
@@ -2566,6 +2608,21 @@ namespace draw2d_nanovg
       }
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      nvgBeginPath(m_pdc);
+      nvgMoveTo(m_pdc, (float)lpPoints[0].x, (float)lpPoints[0].y);
+
+      for (::collection::index i = 1; i < nCount; i++)
+      {
+
+         nvgLineTo(m_pdc, (float)lpPoints[i].x, (float)lpPoints[i].y);
+
+      }
+
+      nvgClosePath(m_pdc);
+
+      draw();
+
 
       nvgBeginPath(m_pdc);
       nvgMoveTo(m_pdc, (float)lpPoints[0].x, (float)lpPoints[0].y);
@@ -2680,6 +2737,14 @@ namespace draw2d_nanovg
       }
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
 
       nvgBeginPath(m_pdc);
       nvgMoveTo(m_pdc, (float)lpPoints[0].x, (float)lpPoints[0].y);
@@ -3013,6 +3078,14 @@ namespace draw2d_nanovg
          throw ::exception(error_wrong_state);
 
       }
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+
 
       nvgBeginPath(m_pdc);
 
@@ -4407,6 +4480,13 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       nanovg_keep keep(m_pdc);
 
       nvgTranslate(m_pdc, (float)arc.center().x, (float)arc.center().y);
@@ -4478,6 +4558,13 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       if (m_bHasCurrentPoint)
       {
 
@@ -4526,6 +4613,13 @@ namespace draw2d_nanovg
       }
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       if (m_bHasCurrentPoint)
       {
@@ -4580,6 +4674,13 @@ namespace draw2d_nanovg
       }
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       if (m_bHasCurrentPoint)
       {
@@ -4654,6 +4755,13 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       nvgBeginPath(m_pdc);
 
       _set((const ::f64_point_array&)lines);
@@ -4698,6 +4806,13 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       nvgBeginPath(m_pdc);
 
       _set((const ::f64_point_array&)int_polygon);
@@ -4731,6 +4846,13 @@ namespace draw2d_nanovg
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
 
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
       nvgRect(
          m_pdc,
          (float)rectangle.left,
@@ -4747,6 +4869,13 @@ namespace draw2d_nanovg
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       double Δx = ellipse.center_x();
 
@@ -4782,6 +4911,13 @@ namespace draw2d_nanovg
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       auto rectangle = ::f64_rectangle(textout.m_point, f64_size(65535.0, 65535.0));
 
@@ -7416,16 +7552,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //}
 
-   ::f64_size graphics::get_text_extent(const ::scoped_string& scopedstr)
+   ::f64_size graphics::_get_text_extent(const ::scoped_string& scopedstr)
    {
 
-      return get_text_extent(scopedstr, scopedstr.size());
+      return _get_text_extent(scopedstr, scopedstr.size());
 
    }
 
 
    //f64_size graphics::get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex)
-   ::f64_size graphics::get_text_extent(const ::scoped_string& scopedstr, character_count iIndex)
+   ::f64_size graphics::_get_text_extent(const ::scoped_string& scopedstr, character_count iIndex)
    {
 
       string str(scopedstr.m_begin, minimum_non_negative(iIndex, scopedstr.size()));
@@ -7581,6 +7717,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       return size;
 
    }
+
+
+   //::f64_size graphics::_get_text_extent(const ::scoped_string & scopedstr)
+   //{
+
+   //   return get_text_extent(scopedstr);
+
+   //}
 
 
    //f64_size graphics::get_text_extent(const ::string & lpszString, character_count nCount)
@@ -7813,10 +7957,18 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    void graphics::draw_line(const i32_point& point1, const i32_point& point2, ::draw2d::pen* ppen)
    {
 
-      ::opengl::line(point1.x, point1.y, point2.x, point2.y, (float)(ppen->m_dWidth),
-         ppen->m_color.f32_red(), ppen->m_color.f32_green(),
-         ppen->m_color.f32_blue(),
-         ppen->m_color.f32_opacity(), 0.f, 0.f, true);
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+
+      //::opengl::line(point1.x, point1.y, point2.x, point2.y, (float)(ppen->m_dWidth),
+      //   ppen->m_color.f32_red(), ppen->m_color.f32_green(),
+      //   ppen->m_color.f32_blue(),
+      //   ppen->m_color.f32_opacity(), 0.f, 0.f, true);
 
       /*vkLineWidth(ppen->m_dWidth);
 
@@ -7828,6 +7980,21 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       vkVertex2f(point2.x, point2.y);
 
       vkEnd();*/
+
+      nvgBeginPath(m_pdc);
+      nvgMoveTo(m_pdc, (float)point1.x, (float)point1.y);
+
+      //for (::collection::index i = 1; i < nCount; i++)
+      {
+
+         nvgLineTo(m_pdc, (float)point2.x, (float)point2.y);
+
+      }
+
+      nvgClosePath(m_pdc);
+
+      draw();
+
 
       m_pointCurrent.x = point2.x;
       m_pointCurrent.y = point2.y;
@@ -7845,10 +8012,17 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   void graphics::line(double x1, double y1, double x2, double y2)
+   void graphics::line(double x1, double y1, double x2, double y2, ::draw2d::pen * ppen)
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
 
       nvgBeginPath(m_pdc);
 
@@ -7856,7 +8030,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       nvgLineTo(m_pdc, (float) x2, (float) y2);
 
-      draw();
+      draw(ppen);
 
       m_pointCurrent.x = x2;
 
@@ -7948,6 +8122,20 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       {
 
          throw ::exception(error_wrong_state);
+
+      }
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+      else
+      {
+     
+
+         on_target_rectangle_update();
 
       }
 
@@ -8062,7 +8250,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       {
 
          // Match draw2d's reference top-origin placement while preserving NanoVG's line metrics.
-         y += nvgTextBaselineOffset(m_pdc);
+         //auto f1= nvgTextBaselineOffset(m_pdc);
+         //auto f2 = lineh;
+         // y += (f2 - f1);
 
       }
 
@@ -8146,6 +8336,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       {
 
          return false;
+
+      }
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
 
       }
 
@@ -9153,18 +9350,28 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      //auto pgpucontextTexture = pgpuopengltexture->context();
       auto pgpucontextCurrent = gpu_context();
 
-      //if (!pgpucontextTexture || !pgpucontextCurrent ||
-      //    pgpucontextTexture->m_pgpudevice != pgpucontextCurrent->m_pgpudevice)
-      //{
+      auto pgpucontextTexture = pgpuopengltexture->m_pgpucontext;
 
-      //   throw ::exception(
-      //      error_wrong_state,
-      //      "NanoVG GPU image belongs to a different GPU device.");
+      if (!pgpucontextTexture || !pgpucontextCurrent
+         || pgpucontextTexture->m_pgpudevice
+            != pgpucontextCurrent->m_pgpudevice)
+      {
 
-      //}
+         return false;
+
+      }
+
+      if ((pgpuopengltexture->m_gluType != GL_TEXTURE_2D
+            && pgpuopengltexture->m_gluType
+               != GL_TEXTURE_2D_MULTISAMPLE)
+         || glIsTexture(pgpuopengltexture->m_gluTextureID) != GL_TRUE)
+      {
+
+         return false;
+
+      }
 
       auto bPerformanceDiagnostics = m_papplication
          && m_papplication->m_gpu.m_bPerformanceDiagnostics.load(
@@ -9214,11 +9421,48 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
+      auto sizeImage = pgpuimage->size();
+
+      // nvglCreateImageFromHandleGL3 always samples the supplied name as a
+      // GL_TEXTURE_2D. Binding a multisample texture name to that target is
+      // GL_INVALID_OPERATION, but NanoVG defers the bind until nvgEndFrame().
+      // Resolve it to a single-sample texture before creating the wrapper.
+      if (pgpuopengltexture->m_gluType == GL_TEXTURE_2D_MULTISAMPLE)
+      {
+
+         try
+         {
+
+            auto pgputextureResolved = pgpuopengltexture->resolved_texture(
+               ::i32_rectangle(sizeImage));
+
+            pgpuopengltexture = dynamic_cast < ::gpu_opengl::texture * >(
+               pgputextureResolved);
+
+         }
+         catch (...)
+         {
+
+            return false;
+
+         }
+
+      }
+
+      if (!pgpuopengltexture
+         || pgpuopengltexture->m_gluType != GL_TEXTURE_2D
+         || !pgpuopengltexture->m_gluTextureID
+         || glIsTexture(pgpuopengltexture->m_gluTextureID) != GL_TRUE)
+      {
+
+         return false;
+
+      }
+
       diagnose_sampled_gpu_image(pgpuopengltexture, rectangleTarget);
 
       _synchronous_lock synchronouslock(::draw2d_nanovg::mutex());
 
-      auto sizeImage = pgpuimage->size();
       auto timeWrapperStart = ::std::chrono::steady_clock::time_point{};
 
       if (bPerformanceDiagnostics)
@@ -9933,6 +10177,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    {
 
       auto pgpucontext = gpu_context();
+      ::gpu::context_lock contextlock(pgpucontext);
       auto pgputexturesiteTarget = pgpucontext
          ? pgpucontext->current_target_texture(pgpulayer)
          : nullptr;
@@ -10019,6 +10264,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    }
 
+
+   //void graphics::on_set_target_rectangle(::image::image * pimage)
+   //{
+
+   //}
+
+
    void graphics::begin_draw() 
    {
 
@@ -10047,7 +10299,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::start_layer(bool bFirstLayer)
+   void graphics::start_layer(bool bFirstLayer, ::user::interaction * puserinteractionContext)
    {
 
       thread_select();
@@ -10056,12 +10308,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::gpu::context_lock contextlock(gpu_context());
 
-      ::gpu::graphics::start_layer(bFirstLayer);
+      ::gpu::graphics::start_layer(bFirstLayer, puserinteractionContext);
 
       //auto pgraphics = pgraphicscontext->draw2d_graphics();
 
       if (m_egraphics == e_graphics_draw)
       {
+
+         auto rectangleGpuContext = gpu_context()->input_placement();
 
          auto size = this->m_sizeTarget;
 
@@ -10116,7 +10370,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          prepare_nanovg_render_target(
             gpu_context()->current_target_texture(::gpu::current_layer())->gpu_texture());
 
-         nvgBeginFrame(m_pdc, (float)size.width(), (float)size.height(), 1.0f);
+         nvgBeginFrame(m_pdc, (float)rectangleGpuContext.width(), (float)rectangleGpuContext.height(), 1.0f);
 
          set_alpha_mode(::draw2d::e_alpha_mode_set);
 
@@ -10128,7 +10382,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
          reset_clip();
 
-         set_target_rectangle({ m_pimage->m_point, m_pimage->m_size    });
+         //set_target_rectangle({ m_pimage->m_point, m_pimage->m_size    });
+         //on_set_target_rectangle(m_pimage);
+         //set_target_rectangle({ puserinteractionContext->host_origin(), puserinteractionContext->size() });
+
+         m_pointTarget = puserinteractionContext->host_origin();
 
          update_matrix();
 
@@ -10559,6 +10817,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    {
 
       _synchronous_lock ml(::draw2d_nanovg::mutex());
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
 
       nvgIntersectScissor(
          m_pdc,

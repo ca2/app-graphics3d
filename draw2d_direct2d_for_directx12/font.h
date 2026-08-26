@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "aura/graphics/write_text/font.h"
+#include "draw2d_direct2d_for_directx11/font.h"
 #include "object.h"
 
 
@@ -11,7 +11,7 @@ namespace draw2d_direct2d_for_directx12
 
    class CLASS_DECL_DRAW2D_DIRECT2D_FOR_DIRECTX12 font :
       virtual public ::draw2d_direct2d_for_directx12::object,
-      virtual public ::write_text::font
+      virtual public ::draw2d_direct2d_for_directx11::font
    {
    public:
 

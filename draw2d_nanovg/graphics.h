@@ -128,7 +128,7 @@ namespace draw2d_nanovg
       //void attach(void * pgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
 
-
+      //void on_set_target_rectangle(::image::image * pimage) override;
       
       void begin_draw() override;
       void end_draw() override;
@@ -393,7 +393,7 @@ namespace draw2d_nanovg
 //      i32_point MoveTo(int x, int y);
       //    i32_point MoveTo(const ::i32_point & point);
       //void set_current_point(double x, double y) override;
-      void line(double x1, double y1, double x2, double y2) override;
+      void line(double x1, double y1, double x2, double y2, ::draw2d::pen * ppen) override;
       //bool LineTo(int x,int y);
       //  bool LineTo(const ::i32_point & point);
       void polyline(const ::f64_point* ppoints,::collection::count nCount) override;
@@ -544,9 +544,10 @@ namespace draw2d_nanovg
 
 
       //virtual f64_size get_text_extent(const ::scoped_string & lpszString, character_count nCount, character_count iIndex) override;
-      using ::gpu::graphics::get_text_extent;
-      ::f64_size get_text_extent(const ::scoped_string& scopedstr) override;
-      ::f64_size get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
+      using ::gpu::graphics::_get_text_extent;
+      ::f64_size _get_text_extent(const ::scoped_string& scopedstr) override;
+      ::f64_size _get_text_extent(const ::scoped_string & lpszString, character_count nCount) override;
+      //::f64_size _get_text_extent(const ::scoped_string & scopedstr) override;
 //      virtual f64_size get_text_extent(const ::scoped_string & str) override;
       //virtual bool get_text_extent(f64_size & size, const ::scoped_string & lpszString, character_count nCount, character_count iIndex);
       //virtual bool get_text_extent(f64_size & size, const ::scoped_string & lpszString, character_count nCount);
@@ -803,7 +804,7 @@ namespace draw2d_nanovg
       void on_end_layer(::gpu::layer* pgpulayer) override;
       //void start_layer(::e_graphics egraphics) override;
       //void end_layer(::e_graphics egraphics) override;
-      void start_layer(bool bFirstLayer = false) override;
+      void start_layer(bool bFirstLayer = false, ::user::interaction * puserinteraction = nullptr) override;
       void end_layer(bool bClosingLayer = false) override;
       // void on_begin_layout1() override;
       //void on_end_layout1() override;

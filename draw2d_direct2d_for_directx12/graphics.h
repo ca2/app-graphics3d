@@ -13,9 +13,7 @@ namespace draw2d_direct2d_for_directx12
 
 
    class CLASS_DECL_DRAW2D_DIRECT2D_FOR_DIRECTX12 graphics :
-      virtual public ::gpu::graphics,
-      virtual public ::draw2d_direct2d_for_directx11::graphics,
-      virtual public ::dxgi_surface_bindable
+      virtual public ::draw2d_direct2d_for_directx11::graphics
    {
    public:
       //i32_array_base m_iaPushLayer;
@@ -31,8 +29,8 @@ namespace draw2d_direct2d_for_directx12
 
       //};
 
-      ::pointer < ::particle > m_pSwapChainForBlitting;
-      ::array < ::array < ::comptr < IDXGISurface > > > m_dxgisurfaceaBound;
+      //::pointer < ::particle > m_pSwapChainForBlitting;
+      //::array < ::array < ::comptr < IDXGISurface > > > m_dxgisurfaceaBound;
 
       //::i32                                                m_iLayerCount;
 
@@ -44,14 +42,14 @@ namespace draw2d_direct2d_for_directx12
       //comptr<ID2D1DCRenderTarget>                        m_pdcrendertarget; // 3
       //comptr<ID2D1DeviceContext1>                        m_pdevicecontext1; // 4
 
-      comptr<IDXGISurface>                               m_pdxgisurface;
+      //comptr<IDXGISurface>                               m_pdxgisurface;
       bool                                               m_bLayerResourceAcquired;
       //comptr < ID2D1Bitmap1>                              m_pd2d1bitmap;
 
       //::array<::array <comptr < ID2D1Bitmap1>   > >          m_d2d1bitmapa;
 
-      comptr<IDXGIAdapter>                               m_padapter;
-      comptr<IDXGIFactory2>                              m_pfactory2;
+      //comptr<IDXGIAdapter>                               m_padapter;
+      //comptr<IDXGIFactory2>                              m_pfactory2;
       //comptr<ID2D1Layer>                                 m_player;
       //comptr<ID2D1PathGeometry>                          m_ppathgeometryClip;
 
@@ -95,7 +93,7 @@ namespace draw2d_direct2d_for_directx12
 
       //void start_layer(::e_graphics egraphics) override;
       //void end_layer(::e_graphics egraphics) override;
-      void start_layer(bool bFirstLayer = false) override;
+      void start_layer(bool bFirstLayer = false, ::user::interaction * puserinteraction = nullptr) override;
       void end_layer(bool bClosingLayer = false) override;
 
 
@@ -154,6 +152,9 @@ namespace draw2d_direct2d_for_directx12
       ::draw2d::bitmap *get_target_bitmap() override;
 
       void defer_text_primitive_blend();
+
+
+      bool use_deferred_gpu_context() override;
 
       // for bidi and mirrored localization
       ::u32 GetLayout() override;

@@ -676,9 +676,9 @@ namespace gpu_vulkan
 
       m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % iSize;
 
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurenderer->m_pgpucontext);
+      //auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pgpurenderer->m_pgpucontext);
 
-      pgpuwindowattachment->m_iCurrentFrame3 = m_iCurrentSwapChainFrame;
+      //pgpuwindowattachment->m_iCurrentFrame3 = m_iCurrentSwapChainFrame;
 
       ///return res;
 

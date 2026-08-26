@@ -129,7 +129,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="draw2d_direct2d_for_directx11.def">
+    <None Include="draw2d_direct2d_for_directx12.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

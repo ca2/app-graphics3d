@@ -637,36 +637,38 @@ float4 main(PSInput input) : SV_TARGET {
    ::gpu::command_buffer* renderer::getLoadAssetsCommandBuffer()
    {
 
-      if (m_pgpucontext->m_pcommandbufferMain)
-      {
+      return ::gpu::renderer::getLoadAssetsCommandBuffer();
 
-         return m_pgpucontext->m_pcommandbufferMain;
+      //if (m_pgpucontext->m_pcommandbufferMain)
+      //{
 
-      }
+      //   return m_pgpucontext->m_pcommandbufferMain;
 
-      if (!m_pcommandbufferLoadAssets)
-      {
+      //}
 
-         defer_constructø(m_pcommandbufferLoadAssets);
+      //if (!m_pcommandbufferLoadAssets)
+      //{
 
-         ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
+      //   defer_constructø(m_pcommandbufferLoadAssets);
 
-         ::cast < command_buffer > pcommandbuffer = m_pcommandbufferLoadAssets;
+      //   ::cast<gpu_directx12::device> pdevice = m_pgpucontext->m_pgpudevice;
 
-         auto pgpurendertarget = this->render_target();
+      //   ::cast < command_buffer > pcommandbuffer = m_pcommandbufferLoadAssets;
 
-         pcommandbuffer->initialize_command_buffer(
-            pgpurendertarget,
-            m_pgpucontext->m_pgpudevice->transfer_queue(),
-            ::gpu::e_command_buffer_copy);
-            //m_pcommandqueueCopy, D3D12_COMMAND_LIST_TYPE_COPY, this);
+      //   auto pgpurendertarget = this->render_target();
 
-         pcommandbuffer->reset();
+      //   pcommandbuffer->initialize_command_buffer(
+      //      pgpurendertarget,
+      //      m_pgpucontext->m_pgpudevice->transfer_queue(),
+      //      ::gpu::e_command_buffer_copy);
+      //      //m_pcommandqueueCopy, D3D12_COMMAND_LIST_TYPE_COPY, this);
+
+      //   pcommandbuffer->reset();
 
 
-      }
+      //}
 
-      return m_pcommandbufferLoadAssets;
+      //return m_pcommandbufferLoadAssets;
 
    }
 

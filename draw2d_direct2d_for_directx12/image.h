@@ -10,8 +10,7 @@ namespace draw2d_direct2d_for_directx12
 
 
    class CLASS_DECL_DRAW2D_DIRECT2D_FOR_DIRECTX12 image :
-      virtual public ::draw2d_direct2d_for_directx11::image,
-      virtual public ::gpu::image
+      virtual public ::draw2d_direct2d_for_directx11::image
    {
    public:
 

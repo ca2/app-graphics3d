@@ -115,7 +115,7 @@ namespace gpu_vulkan
       VkCommandPool getPresentCommandPool() { return m_vkcommandpoolPresent; }
 
 
-      void _create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw) override;
+      void _create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw) override;
 
       //virtual void _create_context_win32(::gpu::device* pgpudevice, const ::gpu::enum_output& eoutput, ::acme::windowing::window* pwindow, const ::i32_size& size);
 
@@ -145,6 +145,11 @@ namespace gpu_vulkan
 
       ::memory white_to_color_sampler_vert() override;
       ::memory white_to_color_sampler_frag() override;
+
+
+      ::memory circle_shader_vert() override;
+      ::memory circle_shader_frag() override;
+
 
       ::memory _001BlendVertexShaderMemory() override;
       ::memory _001BlendFragmentShaderMemory() override;

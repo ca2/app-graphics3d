@@ -266,6 +266,7 @@ auto iContextHeight = pcontext->height()
          // ::gpu::e_output_gpu_buffer
          pgpudevice,
          m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         this,
          {},
          {},
          size,
@@ -361,7 +362,7 @@ auto iContextHeight = pcontext->height()
    bool graphics::vulkan_create_offscreen_buffer(const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size)
    {
 
-      on_gpu_context_placement_change(pointInput, pointOutput, size, m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      on_gpu_context_placement_change(pointInput, pointOutput, size, m_pacmeuserinteractionAffinity->m_pacmewindowingwindow, this);
 
       auto pcontext = gpu_context();
 
@@ -2385,6 +2386,7 @@ auto iContextHeight = pcontext->height()
    void graphics::draw_ellipse(const ::f64_rectangle& rectangleParam)
    {
 
+      ::gpu::graphics::draw_ellipse(rectangleParam);
       //set_smooth_mode(::draw2d::e_smooth_mode_high);
 
       //return (m_pgraphics->DrawEllipse(vk2d_pen(),rectangleParam.left,rectangleParam.top,rectangleParam.right - rectangleParam.left,rectangleParam.bottom - rectangleParam.top)) == plusplus::Status::Ok;
@@ -7107,10 +7109,10 @@ auto iContextHeight = pcontext->height()
    }
 
 
-   void graphics::start_layer(bool bFirstLayer)
+   void graphics::start_layer(bool bFirstLayer, ::user::interaction * puserinteraction)
    {
 
-      ::gpu::graphics::start_layer(bFirstLayer);
+      ::gpu::graphics::start_layer(bFirstLayer, puserinteraction);
 
    }
 
@@ -7135,7 +7137,8 @@ auto iContextHeight = pcontext->height()
          const ::i32_point & pointInput,
          const ::i32_point & pointOutput,
          const ::i32_size & size,
-         ::acme::windowing::window * pacmewindowingwindow)
+         ::acme::windowing::window * pacmewindowingwindow, 
+         ::draw2d::graphics * pdraw2dgraphics)
    {
 
       //::acme::windowing::window *pacmewindowingwindow = nullptr;
@@ -7154,7 +7157,7 @@ auto iContextHeight = pcontext->height()
 
       }
 
-      ::gpu::graphics::on_gpu_context_placement_change(pointInput, pointOutput, size, pacmewindowingwindow);
+      ::gpu::graphics::on_gpu_context_placement_change(pointInput, pointOutput, size, pacmewindowingwindow, this);
 
       auto sizeNew = size;
 

@@ -48,6 +48,7 @@ int main()
    const auto source = read_file("draw2d_nanovg/graphics.cpp");
    const auto textureHeader = read_file("../app/gpu_opengl/texture.h");
    const auto textureSource = read_file("../app/gpu_opengl/texture.cpp");
+   const auto nanovgGl = read_file("../../port/include/nanovg_gl.h");
 
    assert(header.find("bool _draw_gpu_image(") != std::string::npos);
    assert(header.find("void _draw_nanovg_image(") != std::string::npos);
@@ -76,6 +77,28 @@ int main()
       std::string::npos);
    assert(gpuPath.find("dynamic_cast < ::gpu_opengl::texture * >") !=
       std::string::npos);
+   const auto compatibleDevice = gpuPath.find(
+      "pgpucontextTexture->m_pgpudevice");
+   const auto supportedTargetCheck = gpuPath.find(
+      "!= GL_TEXTURE_2D_MULTISAMPLE");
+   const auto liveTextureCheck = gpuPath.find(
+      "glIsTexture(pgpuopengltexture->m_gluTextureID) != GL_TRUE");
+   const auto waitFence = gpuPath.find("wait_fence();");
+   const auto resolveTexture = gpuPath.find("resolved_texture(", waitFence);
+   const auto texture2dCheck = gpuPath.find(
+      "pgpuopengltexture->m_gluType != GL_TEXTURE_2D", resolveTexture);
+   const auto wrapper = gpuPath.find("acquire_nanovg_gpu_image_wrapper(");
+   assert(compatibleDevice != std::string::npos);
+   assert(supportedTargetCheck != std::string::npos);
+   assert(texture2dCheck != std::string::npos);
+   assert(liveTextureCheck != std::string::npos);
+   assert(resolveTexture != std::string::npos);
+   assert(compatibleDevice < waitFence);
+   assert(supportedTargetCheck < waitFence);
+   assert(liveTextureCheck < waitFence);
+   assert(waitFence < resolveTexture);
+   assert(resolveTexture < texture2dCheck);
+   assert(texture2dCheck < wrapper);
    assert(gpuPath.find("wait_fence();") != std::string::npos);
    assert(gpuPath.find("acquire_nanovg_gpu_image_wrapper(") !=
       std::string::npos);
@@ -103,6 +126,28 @@ int main()
    assert(source.find("gpu.performance.nanovg_image") !=
       std::string::npos);
    assert(drawRaw.find("record_gpu_image_cpu_fallback();") < cpuMap);
+
+   const auto nanovgCreate = section(
+      nanovgGl,
+      "static int glnvg__renderCreate(void* uptr)",
+      "static int glnvg__renderCreateTexture(");
+   const auto nanovgFlush = section(
+      nanovgGl,
+      "static void glnvg__renderFlush(void* uptr)",
+      "static int glnvg__maxVertCount(");
+   const auto generateFrameVao = nanovgFlush.find(
+      "glGenVertexArrays(1, &vertArr);");
+   const auto bindFrameVao = nanovgFlush.find(
+      "glBindVertexArray(vertArr);");
+   const auto deleteFrameVao = nanovgFlush.find(
+      "glDeleteVertexArrays(1, &vertArr);");
+   assert(nanovgCreate.find("glGenVertexArrays(1, &gl->vertArr);") ==
+      std::string::npos);
+   assert(generateFrameVao != std::string::npos);
+   assert(bindFrameVao != std::string::npos);
+   assert(deleteFrameVao != std::string::npos);
+   assert(generateFrameVao < bindFrameVao);
+   assert(bindFrameVao < deleteFrameVao);
 
    return 0;
 

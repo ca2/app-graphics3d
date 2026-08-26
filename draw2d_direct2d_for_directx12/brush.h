@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "aura/graphics/draw2d/brush.h"
+#include "draw2d_direct2d_for_directx11/brush.h"
 #include "object.h"
 
 
@@ -11,16 +11,16 @@ namespace draw2d_direct2d_for_directx12
 
    class CLASS_DECL_DRAW2D_DIRECT2D_FOR_DIRECTX12 brush :
       virtual public ::draw2d_direct2d_for_directx12::object,
-      virtual public ::draw2d::brush
+      virtual public ::draw2d_direct2d_for_directx11::brush
    {
    public:
 
 
-      comptr<ID2D1Brush>                 m_pbrush;
-      comptr<ID2D1SolidColorBrush>       m_psolidbrush;
-      comptr<ID2D1LinearGradientBrush>   m_plineargradientbrush;
-      comptr<ID2D1RadialGradientBrush>   m_pradialgradientbrush;
-      comptr<ID2D1ImageBrush>            m_pimagebrush;
+      //comptr<ID2D1Brush>                 m_pbrush;
+      //comptr<ID2D1SolidColorBrush>       m_psolidbrush;
+      //comptr<ID2D1LinearGradientBrush>   m_plineargradientbrush;
+      //comptr<ID2D1RadialGradientBrush>   m_pradialgradientbrush;
+      //comptr<ID2D1ImageBrush>            m_pimagebrush;
 
 
       brush();

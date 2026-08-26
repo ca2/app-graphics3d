@@ -952,12 +952,12 @@ namespace gpu_vulkan
    }
 
 
-   void context::_create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw)
+   void context::_create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw)
    //void context::on_create_context(::gpu::device *pgpudevice, const ::gpu::enum_output &eoutput,
      //                              ::acme::windowing::window *pwindow, const ::i32_size &size)
    {
 
-      ::gpu::context::_create_gpu_context(pgpudevice, eoutput, escene, pacmewindowingwindow, pointInput, pointOutput, size, sizeRaw);
+      ::gpu::context::_create_gpu_context(pgpudevice, eoutput, escene, pacmewindowingwindow, pdraw2dgraphics, pointInput, pointOutput, size, sizeRaw);
 
       // m_itaskGpu = ::current_itask();
       m_pgpudevice = pgpudevice;
@@ -1918,6 +1918,31 @@ namespace gpu_vulkan
 
       return ::as_memory_block(pfragmentshader);
    }
+
+
+
+   ::memory context::circle_shader_vert()
+   {
+      unsigned int pvertexshader[] = {
+#include "shader/_001Circle.vert.spv.inl"
+      };
+
+      return ::as_memory_block(pvertexshader);
+   }
+
+
+   ::memory context::circle_shader_frag()
+   {
+
+
+      unsigned int pfragmentshader[] = {
+#include "shader/_001Circle.frag.spv.inl"
+      };
+
+      return ::as_memory_block(pfragmentshader);
+
+   }
+
 
 
    ::memory context::_001BlendVertexShaderMemory()

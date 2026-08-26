@@ -44,6 +44,11 @@ namespace gpu_directx12
 
          return "TEXCOORD";
       }
+      else if (scopedstr.case_insensitive_equals("local_position"))
+      {
+
+         return "TEXCOORD";
+      }
       else
       {
 

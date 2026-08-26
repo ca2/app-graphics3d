@@ -171,7 +171,7 @@ namespace draw2d_directx12
 
    void graphics::defer_set_size(const ::i32_size& size)
    {
-      _create_memory_graphics(size);
+      //_create_memory_graphics(size);
       /*m_pgpucontextCompositor->_send([this, size]()
          {
             m_pgpucontextCompositor->_send([this, size]()
@@ -337,6 +337,7 @@ namespace draw2d_directx12
          //::gpu::e_output_gpu_buffer,
          pgpudevice, 
          m_pacmeuserinteractionAffinity->acme_windowing_window(),
+         this,
          {},
          {},
          sizeParameter,
@@ -1941,14 +1942,16 @@ namespace draw2d_directx12
    void graphics::draw_ellipse(const ::f64_rectangle & rectangle)
    {
 
-      if (m_ppen.is_null())
-      {
+      ::gpu::graphics::draw_ellipse(rectangle);
 
-         //return false;
+      //if (m_ppen.is_null())
+      //{
 
-         throw ::exception(error_null_pointer);
+      //   //return false;
 
-      }
+      //   throw ::exception(error_null_pointer);
+
+      //}
 
       //auto pbrush = m_ppen->get_os_data < ID2D1Brush * >(this);
 
@@ -6575,7 +6578,7 @@ namespace draw2d_directx12
    }
 
 
-   void graphics::start_layer(bool bFirstLayer)
+   void graphics::start_layer(bool bFirstLayer, ::user::interaction * puserinteraction)
    {
 
       reset_clip();
@@ -6586,7 +6589,7 @@ namespace draw2d_directx12
 
       set_smooth_mode(::draw2d::e_smooth_mode_high);
 
-      ::gpu::graphics::start_layer(bFirstLayer);
+      ::gpu::graphics::start_layer(bFirstLayer, puserinteraction);
 
       //if (m_egraphics == ::e_graphics_draw)
       //{

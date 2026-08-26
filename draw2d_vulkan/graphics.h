@@ -43,7 +43,8 @@ namespace draw2d_vulkan
          const ::i32_point & pointInput,
          const ::i32_point & pointOutput,
          const ::i32_size & size,
-         ::acme::windowing::window * pacmewindowingwindow);
+         ::acme::windowing::window * pacmewindowingwindow, 
+         ::draw2d::graphics * pdraw2dgraphics) override;
 
       void on_set_gpu_context() override;
 
@@ -598,7 +599,7 @@ namespace draw2d_vulkan
 
       //void start_layer(::e_graphics egraphics) override;
       //void end_layer(::e_graphics egraphics) override;
-      void start_layer(bool bFirstLayer = false) override;
+      void start_layer(bool bFirstLayer = false, ::user::interaction * puserinteraction = nullptr) override;
       void end_layer(bool bClosingLayer = false) override;
       // void on_end_draw() override;
       //void on_end_draw() override;

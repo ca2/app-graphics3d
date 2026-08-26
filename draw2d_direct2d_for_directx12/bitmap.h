@@ -10,8 +10,7 @@ namespace draw2d_direct2d_for_directx12
 
 
    class CLASS_DECL_DRAW2D_DIRECT2D_FOR_DIRECTX12 bitmap :
-      virtual public ::draw2d_direct2d_for_directx11::bitmap,
-      virtual public ::gpu::bitmap
+      virtual public ::draw2d_direct2d_for_directx11::bitmap
 
    {
    public:
@@ -48,8 +47,8 @@ namespace draw2d_direct2d_for_directx12
       bool LoadBitmap(::u32 nIDResource);
       bool LoadOEMBitmap(::u32 nIDBitmap); // for OBM_/OCR_/OIC_
 
-
-      void _create_from_dxgi_surface(::i32 iIndex, ::i32 iLayerIndex, IDXGISurface * pdxgisurface, ::draw2d_direct2d_for_directx12::graphics * pgraphics);
+      ::comptr < IDXGISurface> _get_dxgi_surface(::gpu::texture * pgputexture) override;
+      //void _create_from_dxgi_surface(::i32 iIndex, ::i32 iLayerIndex, IDXGISurface * pdxgisurface, ::draw2d_direct2d_for_directx12::graphics * pgraphics);
       void update_bitmap_as_image_render_target(
          ::image::image * pimage,
          ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr,
@@ -70,7 +69,7 @@ namespace draw2d_direct2d_for_directx12
       ::u32 SetBitmapBits(::u32 dwCount, const void * lpBits);
       ::u32 GetBitmapBits(::u32 dwCount, LPVOID lpBits) const;
       //::i32_size SetBitmapDimension(::i32 nWidth, ::i32 nHeight);
-      ::i32_size GetBitmapDimension() const;
+      //::i32_size GetBitmapDimension() const;
 
       
 

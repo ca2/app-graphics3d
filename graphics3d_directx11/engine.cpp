@@ -546,7 +546,7 @@ namespace graphics3d_directx11
          ::cast < ::gpu_directx11::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
          ::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
          ID3D11Device* device = pgpudevice->m_pd3d11device;
-         ID3D11DeviceContext* context = pgpucontext->m_pcontext;
+         ID3D11DeviceContext* context = pgpucontext->m_pd3d11devicecontext;
          auto ptexturesite = poffscreenrendertargetview->current_texture(::gpu::current_layer(), true);
          ::cast < ::gpu_directx11::texture > ptexture = ptexturesite->gpu_texture();
          ID3D11Texture2D* offscreenTexture = ptexture->m_ptextureOffscreen;
@@ -581,7 +581,7 @@ namespace graphics3d_directx11
             );
 
          comptr<ID2D1Bitmap1> bitmap;
-         pgraphics2d->m_pdevicecontext->CreateBitmapFromDxgiSurface(
+         pgraphics2d->m_pd2d1devicecontext->CreateBitmapFromDxgiSurface(
             dxgiSurface,
             &bitmapProps,
             &bitmap
@@ -627,7 +627,7 @@ namespace graphics3d_directx11
 
             int iNewTop = iHostBottom - iBottom;
 
-         pgraphics2d->m_pdevicecontext->DrawImage(
+         pgraphics2d->m_pd2d1devicecontext->DrawImage(
             bitmap,
             D2D1::Point2F(0.f, 0.f),
             D2D1::RectF(

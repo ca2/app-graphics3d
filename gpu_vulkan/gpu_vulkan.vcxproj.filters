@@ -482,6 +482,12 @@
     <CustomBuild Include="shader\_001Blend.vert">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="shader\_001Circle.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\_001Circle.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\image_blend.frag.spv.inl">
@@ -552,6 +558,15 @@
     </None>
     <None Include="_001Blend.vert" />
     <None Include="shader\_001Blend.vert.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\_001Blend.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\_001Circle.frag.spv.inl">
+      <Filter>Header Files\shader</Filter>
+    </None>
+    <None Include="shader\_001Circle.vert.spv.inl">
       <Filter>Header Files\shader</Filter>
     </None>
   </ItemGroup>

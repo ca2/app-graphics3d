@@ -370,6 +370,7 @@ namespace draw2d_opengl
          // ::gpu::e_output_gpu_buffer
          pgpudevice, 
          m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         this,
          {},
          pointOutput,
          size, 
@@ -456,6 +457,7 @@ namespace draw2d_opengl
          //::gpu::e_output_gpu_buffer,
          pgpudevice,
          m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         this,
          {},
          {},
          size,
@@ -678,6 +680,23 @@ namespace draw2d_opengl
       ::opengl::resize(size, bYSwap);
 
       //return true;
+
+   }
+
+
+
+   void graphics::on_begin_draw(::acme::windowing::window * pacmewindowingwindow, const ::f64_size & size)
+   {
+
+      ::gpu::graphics::on_begin_draw(pacmewindowingwindow, size);
+
+   }
+
+
+   void graphics::on_end_draw(::acme::windowing::window * pacmewindowingwindow)
+   {
+
+      ::gpu::graphics::on_end_draw(pacmewindowingwindow);
 
    }
 
@@ -1833,7 +1852,63 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::draw_ellipse(const ::f64_rectangle& rectangleParam)
+   struct Vertex {
+      float x, y;
+   };
+
+   // Generates vertices for a thick circle using a triangle list.
+   void  graphics::_createThickCircle(::array<::floating_sequence2> & vertices, float centerX, float centerY, float radiusPixels, float thicknessPixels, int numSegments)
+   {
+
+      vertices.erase_all();
+
+      if (numSegments < 3 || radiusPixels <= 0.0f || thicknessPixels <= 0.0f)
+      {
+
+         return;
+
+      }
+
+      const float rOuter = radiusPixels + thicknessPixels * 0.5f;
+      const float rInner = ::maximum(0.0f, radiusPixels - thicknessPixels * 0.5f);
+      const float angleStep = 2.0f * 3.14159265f / (float) numSegments;
+
+      for (int i = 0; i < numSegments; ++i)
+      {
+
+         const float angle0 = (float) i * angleStep;
+         const float angle1 = (float) (i + 1) * angleStep;
+
+         const float cos0 = std::cos(angle0);
+         const float sin0 = std::sin(angle0);
+         const float cos1 = std::cos(angle1);
+         const float sin1 = std::sin(angle1);
+
+         const ::floating_sequence2 outer0 =
+            { centerX + cos0 * rOuter, centerY + sin0 * rOuter };
+         const ::floating_sequence2 inner0 =
+            { centerX + cos0 * rInner, centerY + sin0 * rInner };
+         const ::floating_sequence2 outer1 =
+            { centerX + cos1 * rOuter, centerY + sin1 * rOuter };
+         const ::floating_sequence2 inner1 =
+            { centerX + cos1 * rInner, centerY + sin1 * rInner };
+
+         vertices.add(outer0);
+         vertices.add(inner0);
+         vertices.add(outer1);
+
+         vertices.add(outer1);
+         vertices.add(inner0);
+         vertices.add(inner1);
+
+      }
+
+
+   }
+
+   
+
+   void graphics::draw_ellipse_1(const ::f64_rectangle& rectangleParam)
    {
 
       //set_smooth_mode(::draw2d::e_smooth_mode_high);
@@ -1842,8 +1917,311 @@ namespace draw2d_opengl
 
       //return true;
 
+      // Setup Buffers (Run once during initialization)
+   // Note: Ensure your Projection Matrix translates pixel coordinates into NDC.
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+      auto pcontext = gpu_context();
+
+      auto prenderer = pcontext->m_pgpurenderer;
+
+      ::gpu::context_lock contextlock(pcontext);
+
+
+      auto pshader = sequence2_with_uniform_color_shader();
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+
+
+      pcommandbuffer->set_shader(pshader);
+
+
+            // 1. Calculate optimal number of segments based on radius
+      int numSegments = static_cast<int>(::ceil(2.0f * 3.14159265f * ::sqrt(rectangleParam.width() / 2.0)));
+      numSegments = ::maximum(numSegments, 16); // Safety floor for tiny circles
+
+      
+      //unsigned int VAO, VBO;
+      //glGenVertexArrays(1, &VAO);
+      //glGenBuffers(1, &VBO);
+
+      //glBindVertexArray(VAO);
+      //glBindBuffer(GL_ARRAY_BUFFER, VBO);
+      //glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(Vertex), circleVertices.data(), GL_STATIC_DRAW);
+
+      //glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
+      //glEnableVertexAttribArray(0);
+
+      //// Rendering Loop Call:
+      //// Each segment adds 2 vertices; loops back around adding 2 final matching vertices.
+      //int totalVertices = (numSegments + 1) * 2;
+      //glDrawArrays(GL_TRIANGLE_STRIP, 0, totalVertices);
+
+
+      
+      auto contextmatrix = this->context_matrix(e_transform_context_geometry);
+
+      ::array <::floating_sequence2> vertices;
+
+      auto pmodelbuffer = createø<::gpu::model_buffer>();
+
+      pmodelbuffer->initialize_gpu_context_object(pcontext);
+
+      pmodelbuffer->create_vertexes< ::floating_sequence2>(numSegments * 6);
+
+
+      ::array< ::f64_point > seq2aCenter;
+
+      seq2aCenter.set_size(1);
+      
+      seq2aCenter[0].x = rectangleParam.center_x();
+      
+      seq2aCenter[0].y = rectangleParam.center_y();
+
+      __transform(seq2aCenter);
+
+      _createThickCircle(
+         vertices, 
+         seq2aCenter[0].x,
+         seq2aCenter[0].y,
+         rectangleParam.minimum_dimension()/2.0, 
+         m_ppen->m_dWidth, 
+         numSegments);
+
+      contextmatrix.transform(vertices);
+
+      pmodelbuffer->_set_vertexes(vertices);
+
+      auto color = m_ppen->m_color;
+
+      //::array<::graphics3d::sequence2_color> quadVertices;
+      //for (auto & point : pointa)
+      //   quadVertices.add({ {(float)point.x, (float)point.y}, {fR, fG, fB, fA} });
+
+      pmodelbuffer->initialize_gpu_context_object(pcontext);
+
+
+      //auto ptextureTarget = pcommandbuffer->m_pgpurendertarget->current_texture(::gpu::current_layer());
+
+      ::floating_sequence4 seq4Color;
+      seq4Color.a = color.f32_opacity();
+      seq4Color.r = color.f32_red() * seq4Color.a;
+      seq4Color.g = color.f32_green() * seq4Color.a;
+      seq4Color.b = color.f32_blue() * seq4Color.a;
+
+
+      pshader->set_sequence4("uniformFragmentColor", seq4Color);
+
+      pshader->push_properties(pcommandbuffer);
+
+
+      //pmodelbuffer->bind(pcommandbuffer);
+
+      pcommandbuffer->draw(pmodelbuffer);
+      //
+            //      pmodelbuffer->unbind(pcommandbuffer);
+
+      pcontext->defer_unbind(pshader);
+
    }
 
+
+   void graphics::draw_ellipse(const ::f64_rectangle & rectangleParam)
+   {
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
+
+      }
+
+      auto pcontext = gpu_context();
+
+      auto prenderer = pcontext->m_pgpurenderer;
+
+      ::gpu::context_lock contextlock(pcontext);
+
+
+      auto pshader = circle_shader();
+
+      auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+
+
+      pcommandbuffer->set_shader(pshader);
+
+
+      // 1. Calculate optimal number of segments based on radius
+      int numSegments = static_cast<int>(::ceil(2.0f * 3.14159265f * ::sqrt(rectangleParam.width() / 2.0)));
+      numSegments = ::maximum(numSegments, 16); // Safety floor for tiny circles
+
+
+      //unsigned int VAO, VBO;
+      //glGenVertexArrays(1, &VAO);
+      //glGenBuffers(1, &VBO);
+
+      //glBindVertexArray(VAO);
+      //glBindBuffer(GL_ARRAY_BUFFER, VBO);
+      //glBufferData(GL_ARRAY_BUFFER, circleVertices.size() * sizeof(Vertex), circleVertices.data(), GL_STATIC_DRAW);
+
+      //glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
+      //glEnableVertexAttribArray(0);
+
+      //// Rendering Loop Call:
+      //// Each segment adds 2 vertices; loops back around adding 2 final matching vertices.
+      //int totalVertices = (numSegments + 1) * 2;
+      //glDrawArrays(GL_TRIANGLE_STRIP, 0, totalVertices);
+
+
+
+      auto contextmatrix = this->context_matrix(e_transform_context_geometry);
+
+      ::array <::floating_sequence2> vertices;
+
+      auto pmodelbuffer = createø<::gpu::model_buffer>();
+
+      pmodelbuffer->initialize_gpu_context_object(pcontext);
+
+      auto radius = rectangleParam.minimum_dimension() / 2.0;
+
+      auto thickness = m_ppen->m_dWidth;
+
+      auto extent = radius + thickness / 2.0f + 2.0f;
+
+      pmodelbuffer->create_vertexes< ::gpu::circle_vertex>(6);
+      
+      auto centerX = rectangleParam.center_x();
+
+      auto centerY = rectangleParam.center_y();
+
+      ::array<::gpu::circle_vertex> vertexa =
+      {
+         // Triangle 1
+         {{centerX - extent, centerY - extent}, {-extent, -extent}},
+         {{centerX + extent, centerY - extent}, { extent, -extent}},
+         {{centerX + extent, centerY + extent}, { extent,  extent}},
+
+         // Triangle 2
+         {{centerX - extent, centerY - extent}, {-extent, -extent}},
+         {{centerX + extent, centerY + extent}, { extent,  extent}},
+         {{centerX - extent, centerY + extent}, {-extent,  extent}},
+      };
+
+      // These operations must transform circle_vertex::position only.
+      // circle_vertex::local_position must remain unchanged.
+      __transform(vertexa);
+      contextmatrix.global_transform(vertexa);
+
+      //pmodelbuffer->_set_vertexes(vertexa);
+
+      //::array< ::gpu::circle_vertex > vertexa=
+      //   {
+      //      {{centerX, centerY}, {0, 0}},
+      //      {{centerX, centerY}, {0, 0}},
+      //      {{centerX, centerY}, {0, 0}},
+
+      //      {{centerX, centerY}, {0, 0}},
+      //      {{centerX, centerY}, {0, 0}},
+      //      {{centerX, centerY}, {0, 0}},
+      //   };
+      //   //{
+      ////   {{centerX - extent, centerY - extent}, {-extent, -extent}},
+      ////   {{centerX + extent, centerY - extent}, {+extent, -extent}},
+      ////   {{centerX + extent, centerY + extent}, {+extent, +extent}},
+      //__transform(vertexa);
+
+      //contextmatrix.global_transform(vertexa);
+
+      //auto & circlevertex0 = vertexa[0];
+      //circlevertex0.position.x -= extent;
+      //circlevertex0.position.y -= extent;
+      //circlevertex0.local_position.x = -extent;
+      //circlevertex0.local_position.y = -extent;
+      //vertexa[1].position.x += extent;
+      //vertexa[1].position.y -= extent;
+      //vertexa[1].local_position.x =  extent;
+      //vertexa[1].local_position.y = -extent;
+      //vertexa[2].position.x += extent;
+      //vertexa[2].position.y += extent;
+      //vertexa[2].local_position.x = extent;
+      //vertexa[2].local_position.y =  extent;
+
+
+      ////   {{centerX - extent, centerY - extent}, {-extent, -extent}},
+      ////   {{centerX + extent, centerY + extent}, {+extent, +extent}},
+      ////   {{centerX - extent, centerY + extent}, {-extent, +extent}},
+      ////};
+
+
+      //vertexa[3].position.x -= extent;
+      //vertexa[3].position.y -= extent;
+      //vertexa[3].local_position.x = -extent;
+      //vertexa[3].local_position.y = -extent;
+      //vertexa[4].position.x += extent;
+      //vertexa[4].position.y += extent;
+      //vertexa[4].local_position.x = extent;
+      //vertexa[4].local_position.y = extent;
+      //vertexa[5].position.x -= extent;
+      //vertexa[5].position.y += extent;
+      //vertexa[5].local_position.x = -extent;
+      //vertexa[5].local_position.y = extent;
+
+
+      //seq2aCenter.set_size(1);
+
+      //seq2aCenter[0].x = rectangleParam.center_x();
+
+      //seq2aCenter[0].y = rectangleParam.center_y();
+
+      //_createThickCircle(
+      //   vertices,
+      //   seq2aCenter[0].x,
+      //   seq2aCenter[0].y,
+      //   rectangleParam.minimum_dimension() / 2.0,
+      //   m_ppen->m_dWidth,
+//         numSegments);
+
+      
+      pmodelbuffer->_set_vertexes(vertexa);
+
+      auto color = m_ppen->m_color;
+
+      //::array<::graphics3d::sequence2_color> quadVertices;
+      //for (auto & point : pointa)
+      //   quadVertices.add({ {(float)point.x, (float)point.y}, {fR, fG, fB, fA} });
+
+
+
+      //auto ptextureTarget = pcommandbuffer->m_pgpurendertarget->current_texture(::gpu::current_layer());
+
+      ::floating_sequence4 seq4Color;
+      seq4Color.a = color.f32_opacity();
+      seq4Color.r = color.f32_red() * seq4Color.a;
+      seq4Color.g = color.f32_green() * seq4Color.a;
+      seq4Color.b = color.f32_blue() * seq4Color.a;
+
+
+      pshader->set_sequence4("uniformFragmentColor", seq4Color);
+      pshader->set_f32("radius", radius);
+      pshader->set_f32("thickness", thickness);
+      pshader->push_properties(pcommandbuffer);
+
+
+      //pmodelbuffer->bind(pcommandbuffer);
+
+      pcommandbuffer->draw(pmodelbuffer);
+      //
+            //      pmodelbuffer->unbind(pcommandbuffer);
+
+      pcontext->defer_unbind(pshader);
+
+   }
 
    //bool graphics::FillEllipse(double x1, double y1, double x2, double y2)
    //{
@@ -2294,6 +2672,13 @@ namespace draw2d_opengl
       {
 
          return;
+
+      }
+
+      if (m_bTargetRectangleModified)
+      {
+
+         defer_on_target_rectangle_update();
 
       }
 

@@ -108,7 +108,7 @@ namespace draw2d_opengl
       ::write_text::font *    get_current_font() override;
       ::draw2d::bitmap *  get_current_bitmap() override;
 
-
+      void  _createThickCircle(::array<::floating_sequence2> & vertices, float centerX, float centerY, float radiusPixels, float thicknessPixels, int numSegments);
       void _draw_raw(const ::f64_rectangle & rectangleTarget, ::image::image *pimage, const ::image::image_drawing_options & imagedrawingoptionsParam, const ::f64_point & pointSrc) override;
 
       //plusplus::Pen *       gl2d_pen();
@@ -124,6 +124,10 @@ namespace draw2d_opengl
       void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
 
 
+      void on_begin_draw(::acme::windowing::window * pacmewindowingwindow, const ::f64_size & sz) override;
+      
+      void on_end_draw(::acme::windowing::window * pacmewindowingwindow) override;
+    
       //HDC get_hdc();
       //void release_hdc(HDC hdc);
 
@@ -364,6 +368,7 @@ namespace draw2d_opengl
       //bool FillEllipse(const ::i32_rectangle & i32_rectangle);
 
       //virtual bool DrawEllipse(double x1,double y1,double x2,double y2);
+      virtual void draw_ellipse_1(const ::f64_rectangle & rectangle);
       void draw_ellipse(const ::f64_rectangle & rectangle) override;
       //virtual bool fill_ellipse(double x1,double y1,double x2,double y2);
       void fill_ellipse(const ::f64_rectangle & rectangle) override;

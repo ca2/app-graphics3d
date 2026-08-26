@@ -44,70 +44,85 @@ namespace draw2d_direct2d_for_directx12
    }
 
 
-   void bitmap::_create_from_dxgi_surface(::i32 iIndex, ::i32 iLayerIndex, IDXGISurface * pdxgisurface, ::draw2d_direct2d_for_directx12::graphics * pdraw2dgraphics)
+   ::comptr < IDXGISurface> bitmap::_get_dxgi_surface(::gpu::texture * pgputexture)
    {
 
-      ::cast < ::draw2d_direct2d_for_directx12::graphics > pgraphics = pdraw2dgraphics;
-      ::cast < ::gpu_directx12::approach > papproach = m_papplication->gpu_approach();
-      ::cast < ::gpu_directx12::device > pgpudevice = papproach->get_gpu_device(pgraphics->m_pacmeuserinteractionAffinity->acme_windowing_window());
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgraphics->m_pacmeuserinteractionAffinity);
-      ::cast < ::gpu_directx12::context > pgpucontextWindow = pgpuwindowattachment->m_pgpucontextWindow;
-      //::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
-      //::cast< ::gpu_directx11::renderer > prenderer = pgraphics->m_pgpucontextOwned->get_gpu_renderer();
-      //auto prendertarget = prenderer->render_target();
-      //::cast < ::gpu_directx11::render_target_view > prendertargetview = prenderer->render_target();
-      //::cast < ::gpu_directx11::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
-      //::cast< ::gpu_directx11::device > pgpudevice = pgraphics->m_pgpucontextLease.m_p->m_pgpudevice;
-      ID3D11Device * pd3d11device = pgpudevice->d3d11on12()->m_pd3d11device;
-      ID3D11DeviceContext * pd3d11devicecontextMain = pgpudevice->d3d11on12()->m_pd3d11devicecontextMain;
-      //::cast < ::gpu_directx11::texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
-      //ID3D11Texture2D * offscreenTexture = ptexture->m_ptextureOffscreen;
-      if (!pd3d11device || !pd3d11devicecontextMain || !pdxgisurface)
-      {
-         throw ::exception(error_wrong_state);
-      }
 
+      ::cast < ::gpu_directx12::texture > ptexture = pgputexture;
 
+      auto * pdxgisurface = ptexture->_dxgi_surface();
 
-      //D3D11_TEXTURE2D_DESC texDesc = {};
-      //texDesc.Width = width;
-      //texDesc.Height = height;
-      //texDesc.MipLevels = 1;
-      //texDesc.ArraySize = 1;
-      //texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-      //texDesc.SampleDesc.Count = 1;
-      //texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-      //texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
-
-      // ... Create texture using device->CreateTexture2D
-
-      // 2. Wrap the texture in a DXGI surface
-      //comptr<IDXGISurface> dxgiSurface;
-      //offscreenTexture->QueryInterface(IID_PPV_ARGS(&dxgiSurface));
-
-      // 3. Create the Direct2D bitmap
-      D2D1_BITMAP_PROPERTIES1 bitmapProps =
-         D2D1::BitmapProperties1(
-            D2D1_BITMAP_OPTIONS_TARGET,
-            D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
-         );
-
-      auto hrCreateBitmapFromDxgiSurface = pgraphics->m_pdevicecontext->CreateBitmapFromDxgiSurface(
-         pdxgisurface,
-         &bitmapProps,
-         &m_pbitmap1
-      );
-
-      if (FAILED(hrCreateBitmapFromDxgiSurface))
-      {
-
-         throw ::hresult_exception(hrCreateBitmapFromDxgiSurface);
-
-      }
-
-      m_pbitmap1.as(m_pbitmap);
+      return pdxgisurface;
 
    }
+
+
+
+
+   //void bitmap::_create_from_dxgi_surface(::i32 iIndex, ::i32 iLayerIndex, IDXGISurface * pdxgisurface, ::draw2d_direct2d_for_directx12::graphics * pdraw2dgraphics)
+   //{
+
+   //   ::cast < ::draw2d_direct2d_for_directx12::graphics > pgraphics = pdraw2dgraphics;
+   //   ::cast < ::gpu_directx12::approach > papproach = m_papplication->gpu_approach();
+   //   ::cast < ::gpu_directx12::device > pgpudevice = papproach->get_gpu_device(pgraphics->m_pacmeuserinteractionAffinity->acme_windowing_window());
+   //   auto pgpuwindowattachment = ::gpu::window_attachment::get(pgraphics->m_pacmeuserinteractionAffinity);
+   //   ::cast < ::gpu_directx12::context > pgpucontextWindow = pgpuwindowattachment->m_pgpucontextWindow;
+   //   //::cast< ::gpu_directx11::device > pgpudevice = pgpucontext->m_pgpudevice;
+   //   //::cast< ::gpu_directx11::renderer > prenderer = pgraphics->m_pgpucontextOwned->get_gpu_renderer();
+   //   //auto prendertarget = prenderer->render_target();
+   //   //::cast < ::gpu_directx11::render_target_view > prendertargetview = prenderer->render_target();
+   //   //::cast < ::gpu_directx11::offscreen_render_target_view > poffscreenrendertargetview = prendertargetview;
+   //   //::cast< ::gpu_directx11::device > pgpudevice = pgraphics->m_pgpucontextLease.m_p->m_pgpudevice;
+   //   ID3D11Device * pd3d11device = pgpudevice->d3d11on12()->m_pd3d11device;
+   //   ID3D11DeviceContext * pd3d11devicecontextMain = pgpudevice->d3d11on12()->m_pd3d11devicecontextMain;
+   //   //::cast < ::gpu_directx11::texture > ptexture = prendertarget->current_texture(::gpu::current_layer());
+   //   //ID3D11Texture2D * offscreenTexture = ptexture->m_ptextureOffscreen;
+   //   if (!pd3d11device || !pd3d11devicecontextMain || !pdxgisurface)
+   //   {
+   //      throw ::exception(error_wrong_state);
+   //   }
+
+
+
+   //   //D3D11_TEXTURE2D_DESC texDesc = {};
+   //   //texDesc.Width = width;
+   //   //texDesc.Height = height;
+   //   //texDesc.MipLevels = 1;
+   //   //texDesc.ArraySize = 1;
+   //   //texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+   //   //texDesc.SampleDesc.Count = 1;
+   //   //texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+   //   //texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
+
+   //   // ... Create texture using device->CreateTexture2D
+
+   //   // 2. Wrap the texture in a DXGI surface
+   //   //comptr<IDXGISurface> dxgiSurface;
+   //   //offscreenTexture->QueryInterface(IID_PPV_ARGS(&dxgiSurface));
+
+   //   // 3. Create the Direct2D bitmap
+   //   D2D1_BITMAP_PROPERTIES1 bitmapProps =
+   //      D2D1::BitmapProperties1(
+   //         D2D1_BITMAP_OPTIONS_TARGET,
+   //         D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
+   //      );
+
+   //   auto hrCreateBitmapFromDxgiSurface = pgraphics->m_pd2d1devicecontext->CreateBitmapFromDxgiSurface(
+   //      pdxgisurface,
+   //      &bitmapProps,
+   //      &m_pd2d1bitmap1
+   //   );
+
+   //   if (FAILED(hrCreateBitmapFromDxgiSurface))
+   //   {
+
+   //      throw ::hresult_exception(hrCreateBitmapFromDxgiSurface);
+
+   //   }
+
+   //   m_pd2d1bitmap1.as(m_pd2d1bitmap);
+
+   //}
 
 
    void bitmap::CreateBitmap(::draw2d::graphics* pdraw2dgraphics, const ::i32_size& sizeParam, ::u32 nPlanes, ::u32 nBitcount, const void * lpBits, ::i32 stride)
@@ -117,7 +132,7 @@ namespace draw2d_direct2d_for_directx12
 
       ::draw2d::device_lock devicelock(this);
 
-      if (m_pbitmap != nullptr)
+      if (m_pd2d1bitmap != nullptr)
       {
 
          destroy();
@@ -135,13 +150,13 @@ namespace draw2d_direct2d_for_directx12
          pixmap.m_pimage32 = (::image32_t *)lpBits;
          pixmap.m_pimage32Raw = (::image32_t *)lpBits;
 
-         _create_gpu_bitmap(sizeParam, &pixmap);
+         _create_gpu_bitmap(sizeParam, pdraw2dgraphics, &pixmap);
 
       }
       else
       {
 
-         _create_gpu_bitmap(sizeParam);
+         _create_gpu_bitmap(sizeParam, pdraw2dgraphics);
 
       }
 
@@ -151,7 +166,7 @@ namespace draw2d_direct2d_for_directx12
 
       ::cast < ::draw2d_direct2d_for_directx12::graphics > pgraphics = pdraw2dgraphics;
 
-      _create_from_dxgi_surface(0, 0, pdxgisurface, pgraphics);
+      update_bitmap_as_backed_by_gpu_texture(ptexture, pgraphics);
 
       //D2D1_SIZE_U size;
 
@@ -217,7 +232,7 @@ namespace draw2d_direct2d_for_directx12
 
       ::draw2d::device_lock devicelock(this);
 
-      if (m_pbitmap != nullptr)
+      if (m_pd2d1bitmap != nullptr)
       {
 
          destroy();
@@ -260,16 +275,16 @@ namespace draw2d_direct2d_for_directx12
 
       props.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET;
 
-      HRESULT hr = ((ID2D1DeviceContext *)pgraphics->get_os_data())->CreateBitmap(usize, nullptr, 0, props, &m_pbitmap1);
+      HRESULT hr = ((ID2D1DeviceContext *)pgraphics->get_os_data())->CreateBitmap(usize, nullptr, 0, props, &m_pd2d1bitmap1);
 
-      if (FAILED(hr) || m_pbitmap1 == nullptr)
+      if (FAILED(hr) || m_pd2d1bitmap1 == nullptr)
       {
 
          throw ::exception(error_failed);
 
       }
 
-      if (FAILED(m_pbitmap1.as(m_pbitmap)))
+      if (FAILED(m_pd2d1bitmap1.as(m_pd2d1bitmap)))
       {
 
          throw ::exception(error_failed);
@@ -298,15 +313,15 @@ namespace draw2d_direct2d_for_directx12
 
          rectangleDst.bottom = size.cy;
 
-         hrResultCopyBitmap = m_pbitmap->CopyFromMemory(&rectangleDst, ppixmap->image32(), iScan);
+         hrResultCopyBitmap = m_pd2d1bitmap->CopyFromMemory(&rectangleDst, ppixmap->image32(), iScan);
 
       }
 
       m_size = size;
 
-      m_osdata[0] = m_pbitmap;
+      m_osdata[0] = m_pd2d1bitmap;
 
-      m_osdata[1] = m_pbitmap1;
+      m_osdata[1] = m_pd2d1bitmap1;
 
       //return true;
 
@@ -351,21 +366,21 @@ namespace draw2d_direct2d_for_directx12
 
    //}
 
-   i32_size bitmap::GetBitmapDimension() const
-   {
+   //i32_size bitmap::GetBitmapDimension() const
+   //{
 
-      if (!m_pbitmap)
-      {
+   //   if (!m_pd2d1bitmap)
+   //   {
 
-         return ::i32_size(0, 0);
+   //      return ::i32_size(0, 0);
 
-      }
+   //   }
 
-      D2D1_SIZE_U size = m_pbitmap->GetPixelSize();
+   //   D2D1_SIZE_U size = m_pd2d1bitmap->GetPixelSize();
 
-      return ::i32_size(size.width, size.height);
+   //   return ::i32_size(size.width, size.height);
 
-   }
+   //}
 
 
    bool bitmap::LoadBitmap(::u32 nIDResource)
@@ -393,7 +408,7 @@ namespace draw2d_direct2d_for_directx12
 
       ::draw2d::device_lock devicelock(this);
 
-      if (m_pbitmap != nullptr)
+      if (m_pd2d1bitmap != nullptr)
       {
 
          destroy();
@@ -423,13 +438,13 @@ namespace draw2d_direct2d_for_directx12
       //else
       //      ID2D1Bitmap1 * pbitmap1;
       {
-         ((ID2D1DeviceContext *)pgraphics->get_os_data())->CreateBitmap(size, nullptr, size.width * sizeof(::color32_t), props, &m_pbitmap1);
+         ((ID2D1DeviceContext *)pgraphics->get_os_data())->CreateBitmap(size, nullptr, size.width * sizeof(::color32_t), props, &m_pd2d1bitmap1);
       }
-      m_pbitmap = m_pbitmap1;
+      m_pd2d1bitmap = m_pd2d1bitmap1;
 
-      m_osdata[0] = m_pbitmap;
+      m_osdata[0] = m_pd2d1bitmap;
 
-      m_osdata[1] = m_pbitmap1;
+      m_osdata[1] = m_pd2d1bitmap1;
 
       //return true;
 
@@ -443,7 +458,7 @@ namespace draw2d_direct2d_for_directx12
 
       ::draw2d::device_lock devicelock(this);
 
-      if (m_pbitmap != nullptr)
+      if (m_pd2d1bitmap != nullptr)
       {
 
          destroy();
@@ -472,13 +487,13 @@ namespace draw2d_direct2d_for_directx12
       }
       //else
       {
-         ((ID2D1DeviceContext *)pgraphics->get_os_data())->CreateBitmap(size, nullptr, size.width * sizeof(::color32_t), &props, &m_pbitmap1);
+         ((ID2D1DeviceContext *)pgraphics->get_os_data())->CreateBitmap(size, nullptr, size.width * sizeof(::color32_t), &props, &m_pd2d1bitmap1);
       }
-      m_pbitmap = m_pbitmap1;
+      m_pd2d1bitmap = m_pd2d1bitmap1;
 
-      m_osdata[0] = m_pbitmap;
+      m_osdata[0] = m_pd2d1bitmap;
 
-      m_osdata[1] = m_pbitmap1;
+      m_osdata[1] = m_pd2d1bitmap1;
 
       //m_pbitmap->Map(D2D1_MAP_OPTIONS_READ | D2D1_MAP_OPTIONS_WRITE, &m_map);
 
@@ -512,20 +527,20 @@ namespace draw2d_direct2d_for_directx12
    void bitmap::attach(void * hbitmap)
    {
 
-      if (m_pbitmap != nullptr)
+      if (m_pd2d1bitmap != nullptr)
       {
 
          destroy();
 
       }
 
-      m_pbitmap = (ID2D1Bitmap *)hbitmap;
+      m_pd2d1bitmap = (ID2D1Bitmap *)hbitmap;
 
-      m_pbitmap.as(m_pbitmap1);
+      m_pd2d1bitmap.as(m_pd2d1bitmap1);
 
-      m_osdata[0] = m_pbitmap;
+      m_osdata[0] = m_pd2d1bitmap;
 
-      m_osdata[1] = m_pbitmap1;
+      m_osdata[1] = m_pd2d1bitmap1;
 
       //return true;
 
@@ -537,9 +552,9 @@ namespace draw2d_direct2d_for_directx12
 
       clear_os_data();
 
-      m_pbitmap1 = nullptr;
+      m_pd2d1bitmap1 = nullptr;
 
-      return m_pbitmap.detach();
+      return m_pd2d1bitmap.detach();
 
    }
 
@@ -557,9 +572,9 @@ namespace draw2d_direct2d_for_directx12
    void bitmap::destroy_os_data()
    {
 
-      m_pbitmap = nullptr;
+      m_pd2d1bitmap = nullptr;
 
-      m_pbitmap1 = nullptr;
+      m_pd2d1bitmap1 = nullptr;
 
       object::destroy_os_data();
 
