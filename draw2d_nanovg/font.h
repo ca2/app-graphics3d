@@ -27,7 +27,7 @@ namespace draw2d_nanovg
       // void dump(dump_context & dumpcontext) const override;
 
 
-      void create(::draw2d::graphics* pgraphics, char iCreate) override;
+      void update(::draw2d::graphics * pdraw2dgraphics) override;
       void destroy() override;
 
 

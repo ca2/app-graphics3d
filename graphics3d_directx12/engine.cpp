@@ -575,12 +575,12 @@ namespace graphics3d_directx12
    }
 
 
-   void engine::on_after_done_frame_step(::draw2d::graphics_pointer& pgraphics)
+   void engine::on_after_done_frame_step(::draw2d::graphics_pointer& pdraw2dgraphics)
    {
       
-      ::graphics3d::engine::on_after_done_frame_step(pgraphics);
+      ::graphics3d::engine::on_after_done_frame_step(pdraw2dgraphics);
 
-      //on_after_done_frame_step2(pgraphics);
+      //on_after_done_frame_step2(pdraw2dgraphics);
 
    }
 

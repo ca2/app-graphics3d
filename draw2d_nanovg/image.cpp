@@ -31,7 +31,7 @@ namespace draw2d_nanovg
 
       return ::image::image::get_bitmap_as_target(pdraw2dgraphics);
 
-      //return m_pbitmap;
+      //return m_pdraw2dbitmap;
 
    }
 
@@ -41,7 +41,7 @@ namespace draw2d_nanovg
 
       return ::image::image::get_bitmap_as_source(pdraw2dgraphics);
 
-      //return m_pbitmap;
+      //return m_pdraw2dbitmap;
 
    }
 
@@ -49,7 +49,7 @@ namespace draw2d_nanovg
    ::draw2d::bitmap_pointer image::detach_bitmap()
    {
       
-      return m_pbitmap.detach();
+      return m_pdraw2dbitmap.detach();
 
    }
 
@@ -98,11 +98,11 @@ namespace draw2d_nanovg
 
       //create_as_descriptor(sizeRaw, eflagCreate, iGoodStride);
 
-      //auto pbitmap = createø<::draw2d::bitmap>();
+      //auto pdraw2dbitmap = createø<::draw2d::bitmap>();
 
-      //::cast<::gpu::bitmap> pgpubitmap = pbitmap;
+      //::cast<::gpu::bitmap> pgpubitmap = pdraw2dbitmap;
 
-      //m_pbitmap = pgpubitmap;
+      //m_pdraw2dbitmap = pgpubitmap;
 
       ////auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
@@ -142,11 +142,11 @@ namespace draw2d_nanovg
 
       ////   pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, sizeRaw, {});
 
-      ////   m_pbitmap = pgpubitmap;
+      ////   m_pdraw2dbitmap = pgpubitmap;
 
       ////}
 
-      //////auto pgraphics = system()->draw2d()->allocate_graphics(m_pacmeuserinteractionAffinity);
+      //////auto pdraw2dgraphics = system()->draw2d()->allocate_graphics(m_pacmeuserinteractionAffinity);
 
       ////if (bTopDraw2d)
       ////{
@@ -162,7 +162,7 @@ namespace draw2d_nanovg
       ////}
 
 
-      ////m_pgraphicsOwned = pgraphics;
+      ////m_pgraphicsOwned = pdraw2dgraphics;
 
       ////auto pgpucontext = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
 
@@ -204,12 +204,12 @@ namespace draw2d_nanovg
 //
 //      //::cast < ::gpu_opengl::texture > ptexture;
 //
-//      //::cast < ::draw2d_opengl::bitmap > pbitmap = m_pbitmap;
+//      //::cast < ::draw2d_opengl::bitmap > pdraw2dbitmap = m_pdraw2dbitmap;
 //
-//      //if (pbitmap)
+//      //if (pdraw2dbitmap)
 //      //{
 //
-//      //   ptexture = pbitmap->m_pgputexture;
+//      //   ptexture = pdraw2dbitmap->m_pgputexture;
 //
 //      //}
 //
@@ -271,15 +271,15 @@ namespace draw2d_nanovg
 //
 //
 //
-//      //::pointer < graphics > pgraphics = m_pgraphics;
+//      //::pointer < graphics > pdraw2dgraphics = m_pgraphics;
 //
-//      //int cx = pgraphics->m_sizeWindow.cx;
+//      //int cx = pdraw2dgraphics->m_sizeWindow.cx;
 //
-//      //int cy = pgraphics->m_sizeWindow.cy;
+//      //int cy = pdraw2dgraphics->m_sizeWindow.cy;
 //
 //      bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 //
-//      //      ::opengl::resize(pgraphics->m_sizeWindow, bYSwap);
+//      //      ::opengl::resize(pdraw2dgraphics->m_sizeWindow, bYSwap);
 //
 //      glReadBuffer(GL_BACK);
 //
@@ -322,9 +322,9 @@ namespace draw2d_nanovg
 
       create_as_descriptor(size, eflagCreate, iScan);
 
-      auto pbitmap = createø<::draw2d::bitmap>();
+      auto pdraw2dbitmap = createø<::draw2d::bitmap>();
 
-      ::cast<::gpu::bitmap> pgpubitmap = pbitmap;
+      ::cast<::gpu::bitmap> pgpubitmap = pdraw2dbitmap;
 
       //auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
@@ -381,17 +381,17 @@ namespace draw2d_nanovg
    //void image::create(const ::i32_size& size, ::enum_flag eobjectCreate, int, bool bPreserve)
    //{
 
-   //   auto pbitmap = m_pbitmap;
+   //   auto pdraw2dbitmap = m_pdraw2dbitmap;
 
    //   //if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
-   //   if (m_pbitmap && m_pbitmap->size() == size)
+   //   if (m_pdraw2dbitmap && m_pdraw2dbitmap->size() == size)
    //   {
 
    //      return;
 
    //   }
 
-   //   auto pbitmapDestroy = ::transfer(m_pbitmap);
+   //   auto pbitmapDestroy = ::transfer(m_pdraw2dbitmap);
    //   
    //   auto pixmapDestroy = *(pixmap_t *)this;
    //   
@@ -412,7 +412,7 @@ namespace draw2d_nanovg
 
    //   }
 
-   //   constructø(m_pbitmap);
+   //   constructø(m_pdraw2dbitmap);
 
    //   auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
@@ -424,7 +424,7 @@ namespace draw2d_nanovg
 
    //   ::cast<::gpu::bitmap> pgpubitmapDestroy = pbitmapDestroy;
 
-   //   ::cast<::gpu::bitmap> pgpubitmap = m_pbitmap;
+   //   ::cast<::gpu::bitmap> pgpubitmap = m_pdraw2dbitmap;
 
    //   if (bPreserve && pbitmapDestroy && pgpubitmapDestroy->m_pgputexture)
    //   {
@@ -492,9 +492,9 @@ namespace draw2d_nanovg
 //
 //      ::memory_copy((::pixmap *)this, pwindowbuffer->m_ppixmapWindowBuffer->m_pimage32, sizeof(::pixmap));
 //
-//      ////constructø(m_pbitmap);
+//      ////constructø(m_pdraw2dbitmap);
 //      //defer_constructø(m_pgraphics);
-//      ////m_pgraphics->set(m_pbitmap);
+//      ////m_pgraphics->set(m_pdraw2dbitmap);
 //
 //      //if (m_papplication->m_gpu.m_bUseSwapChainWindow)
 //      //{
@@ -526,7 +526,7 @@ namespace draw2d_nanovg
 //   {
 //      /*      if(bSelect)
 //            {
-//               return m_pgraphics->set(m_pbitmap) != nullptr;
+//               return m_pgraphics->set(m_pdraw2dbitmap) != nullptr;
 //            }
 //            else
 //            {
@@ -538,12 +538,12 @@ namespace draw2d_nanovg
 //   }
 
 
-   void image::create(::draw2d::graphics * pgraphics)
+   void image::create(::draw2d::graphics * pdraw2dgraphics)
    {
 
-      ::draw2d::bitmap * pbitmap = (dynamic_cast<::draw2d_nanovg::graphics * >(pgraphics))->get_current_bitmap();
+      ::draw2d::bitmap * pdraw2dbitmap = (dynamic_cast<::draw2d_nanovg::graphics * >(pdraw2dgraphics))->get_current_bitmap();
 
-      if (pbitmap == nullptr)
+      if (pdraw2dbitmap == nullptr)
       {
 
          return;
@@ -551,13 +551,13 @@ namespace draw2d_nanovg
 
       }
 
-      //if (!create(pbitmap->get_size()))
-      create_as_descriptor(pbitmap->size());
+      //if (!create(pdraw2dbitmap->get_size()))
+      create_as_descriptor(pdraw2dbitmap->size());
       {
          //return false;//
       }
 
-      from(pgraphics);
+      from(pdraw2dgraphics);
 
       //return true;
 
@@ -573,24 +573,24 @@ namespace draw2d_nanovg
    }
 
 
-   //bool image::to(::draw2d::graphics * pgraphics, const ::i32_point& point, const ::i32_size& size, const ::i32_point& pointSrc)
+   //bool image::to(::draw2d::graphics * pdraw2dgraphics, const ::i32_point& point, const ::i32_size& size, const ::i32_point& pointSrc)
    //{
 
-   //   return pgraphics->draw(point, size, get_graphics(), point);
+   //   return pdraw2dgraphics->draw(point, size, get_graphics(), point);
 
    //  
    //}
 
 
-   bool image::from(::draw2d::graphics * pgraphics)
+   bool image::from(::draw2d::graphics * pdraw2dgraphics)
    {
 
       ::draw2d::bitmap_pointer bitmap;
 
-      bitmap->CreateCompatibleBitmap(pgraphics, 1, 1);
+      bitmap->CreateCompatibleBitmap(pdraw2dgraphics, 1, 1);
 
       //auto estatus =
-      VK2D_GRAPHICS(pgraphics)->set(bitmap);
+      VK2D_GRAPHICS(pdraw2dgraphics)->set(bitmap);
 
       //if (!estatus)
       //{
@@ -599,7 +599,7 @@ namespace draw2d_nanovg
 
       //}
 
-      ::i32_size size = pgraphics->m_pimage->get_size();
+      ::i32_size size = pdraw2dgraphics->m_pimage->get_size();
 
       //if(!create(size))
       create_as_descriptor(size);
@@ -611,22 +611,22 @@ namespace draw2d_nanovg
 
       throw ::exception(todo, "::opengl::image::image");
 
-      //bool bOk = GetDIBits(VK2D_HDC(pgraphics), (HBITMAP) pbitmap->get_os_data(), 0, m_size.cy, get_data(), &(m_bitmapinfo), DIB_RGB_COLORS) != false;
+      //bool bOk = GetDIBits(VK2D_HDC(pdraw2dgraphics), (HBITMAP) pdraw2dbitmap->get_os_data(), 0, m_size.cy, get_data(), &(m_bitmapinfo), DIB_RGB_COLORS) != false;
 
-      //VK2D_GRAPHICS(pgraphics)->set(pbitmap);
+      //VK2D_GRAPHICS(pdraw2dgraphics)->set(pdraw2dbitmap);
 
       //return bOk;
 
    }
 
 
-   //bool image::from(i32_point ptDest, ::draw2d::graphics * pgraphics, const ::i32_point & point, ::i32_size sz)
+   //bool image::from(i32_point ptDest, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & point, ::i32_size sz)
    //{
 
    //   if (m_pgraphics.is_null())
    //      return false;
 
-   //   return m_pgraphics->BitBlt(ptDest, sz, pgraphics, i32_point) != false;
+   //   return m_pgraphics->BitBlt(ptDest, sz, pdraw2dgraphics, i32_point) != false;
 
    //}
 
@@ -2756,9 +2756,9 @@ namespace draw2d_nanovg
    //      m_pgraphics->m_pimage = (::image::image*)this;
    //      m_pgraphics->create_memory_graphics(m_size);
 
-   //      ::cast<::draw2d_nanovg::graphics> pgraphics = m_pgraphics;
+   //      ::cast<::draw2d_nanovg::graphics> pdraw2dgraphics = m_pgraphics;
 
-   //      if (!pgraphics || !pgraphics->gpu_context())
+   //      if (!pdraw2dgraphics || !pdraw2dgraphics->gpu_context())
    //      {
 
    //         ((::image::image*)this)->destroy();
@@ -2955,7 +2955,7 @@ namespace draw2d_nanovg
 //
 //      vkFlush();
 //
-//      ::pointer<bitmap>b = m_pbitmap;
+//      ::pointer<bitmap>b = m_pdraw2dbitmap;
 //
 //      b->defer_reveal();
 //
@@ -2998,12 +2998,12 @@ namespace draw2d_nanovg
 //
 //      ::i32_rectangle rectx;
 //
-//      ::draw2d::bitmap * pbitmap = m_pgraphics->get_current_bitmap();
+//      ::draw2d::bitmap * pdraw2dbitmap = m_pgraphics->get_current_bitmap();
 //
 //      ::GetCurrentObject((HDC) pusermessage->m_wparam, OBJ_BITMAP);
 //
 //      //      unsigned int dw = ::get_last_error();
-//      ::i32_size size = pbitmap->get_size();
+//      ::i32_size size = pdraw2dbitmap->get_size();
 //
 //      rectx.left = 0;
 //      rectx.top = 0;
@@ -3022,9 +3022,9 @@ namespace draw2d_nanovg
 //         if(!image = create_image(rectangleWindow.bottom_right()))
 //            return false;
 //
-//         ::draw2d::graphics * pgraphics = pgraphicsImage;
+//         ::draw2d::graphics * pdraw2dgraphics = pgraphicsImage;
 //
-//         if(pgraphics->get_os_data() == nullptr)
+//         if(pdraw2dgraphics->nok())
 //            return false;
 //
 //         ::i32_rectangle rectanglePaint;
@@ -3038,14 +3038,14 @@ namespace draw2d_nanovg
 //         m_pgraphics-> set_origin(::i32_point());
 //         puserinteraction->_000OnDraw(pgraphicsImage);
 //         m_pgraphics->set_origin(::i32_point());
-//         //(dynamic_cast<::win::graphics * >(pgraphics))->FillSolidRect(rectangleUpdate.left, rectangleUpdate.top, 100, 100, 255);
+//         //(dynamic_cast<::win::graphics * >(pdraw2dgraphics))->FillSolidRect(rectangleUpdate.left, rectangleUpdate.top, 100, 100, 255);
 //         m_pgraphics->SelectClipRgn(nullptr);
 //         m_pgraphics->set_origin(::i32_point());
 //
 //         m_pgraphics->SelectClipRgn( nullptr);
 //         m_pgraphics->BitBlt(rectanglePaint.left, rectanglePaint.top,
 //            rectanglePaint.width(), rectanglePaint.height(),
-//            pgraphics, rectangleUpdate.left, rectangleUpdate.top,
+//            pdraw2dgraphics, rectangleUpdate.left, rectangleUpdate.top,
 //            SRCCOPY);
 //
 //      }

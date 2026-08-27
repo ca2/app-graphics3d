@@ -75,7 +75,7 @@ namespace draw2d_nanovg
       virtual int  opengl_init();
 
 
-      virtual ::string defer_load_font(NVGcontext * pdc, ::write_text::font * pfont);
+      virtual ::string defer_load_font(NVGcontext * pdc, ::write_text::font * pwritetextfont);
 
 
 

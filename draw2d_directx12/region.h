@@ -24,8 +24,8 @@ namespace draw2d_directx12
       //void defer_update();
 
       void destroy() override;
-      void destroy_os_data() override;
-      void create(::draw2d::graphics * pgraphics, char iCreate) override;
+      // void destroy_os_data() override;
+      void update(::draw2d::graphics * pdraw2dgraphics) override;
 
 
       void SetRectRgn(int x1, int y1, int x2, int y2);
@@ -36,18 +36,18 @@ namespace draw2d_directx12
       int OffsetRgn(int x, int y);
       int OffsetRgn(const ::i32_point & point);
       int GetRgnBox(::i32_rectangle * prectangle) const;
-      bool contains(::draw2d::graphics * pgraphics, int x, int y) const;
-      bool contains(::draw2d::graphics * pgraphics, const ::i32_point & point) const;
+      bool contains(::draw2d::graphics * pdraw2dgraphics, int x, int y) const;
+      bool contains(::draw2d::graphics * pdraw2dgraphics, const ::i32_point & point) const;
       bool RectInRegion(const ::i32_rectangle & rectangle) const;
       int GetRegionData(LPRGNDATA lpRgnData, int nCount) const;
 
 
-      //ID2D1Geometry * get(::draw2d::graphics * pgraphics);
-      //ID2D1Geometry * get_rectangle(::draw2d::graphics * pgraphics);
-      //ID2D1Geometry * get_ellipse(::draw2d::graphics * pgraphics);
-      //ID2D1Geometry * get_polygon(::draw2d::graphics * pgraphics);
-      //ID2D1Geometry * get_poly_polygon(::draw2d::graphics * pgraphics);
-      //ID2D1Geometry * get_combine(::draw2d::graphics * pgraphics);
+      //ID2D1Geometry * get(::draw2d::graphics * pdraw2dgraphics);
+      //ID2D1Geometry * get_rectangle(::draw2d::graphics * pdraw2dgraphics);
+      //ID2D1Geometry * get_ellipse(::draw2d::graphics * pdraw2dgraphics);
+      //ID2D1Geometry * get_polygon(::draw2d::graphics * pdraw2dgraphics);
+      //ID2D1Geometry * get_poly_polygon(::draw2d::graphics * pdraw2dgraphics);
+      //ID2D1Geometry * get_combine(::draw2d::graphics * pdraw2dgraphics);
 
    };
 

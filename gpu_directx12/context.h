@@ -340,7 +340,7 @@ namespace gpu_directx12
       //ID3D11DeviceContext* draw_get_d3d11_device_context();
       //ID3D11DeviceContext1* draw_get_d3d11_device_context1();
 
-      //bool create_offscreen_graphics_for_swap_chain_blitting(::gpu::graphics* pgraphics, const ::i32_size& size = {}) override;
+      //bool create_offscreen_graphics_for_swap_chain_blitting(::gpu::graphics* pdraw2dgraphics, const ::i32_size& size = {}) override;
 
       
       void __bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer) override;

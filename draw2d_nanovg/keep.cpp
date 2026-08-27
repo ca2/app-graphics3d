@@ -7,12 +7,12 @@
 #include "acme/parallelization/synchronous_lock.h"
 
 
-nanovg_keep::nanovg_keep(NVGcontext* pgraphics, bool bSave)
+nanovg_keep::nanovg_keep(NVGcontext* pdraw2dgraphics, bool bSave)
 {
 
    m_bSave = false;
 
-   if (pgraphics == nullptr)
+   if (pdraw2dgraphics == nullptr)
    {
 
       m_pdc = nullptr;
@@ -21,7 +21,7 @@ nanovg_keep::nanovg_keep(NVGcontext* pgraphics, bool bSave)
 
    }
 
-   m_pdc = pgraphics;
+   m_pdc = pdraw2dgraphics;
 
    if (bSave)
    {

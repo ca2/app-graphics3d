@@ -1459,7 +1459,7 @@ namespace gpu_vulkan
                (unsigned long long)(m_pcpubuffersampler->m_uSampleSerial + 1),
                pgpuwindowattachment->get_frame_index3(),
                (::uptr)pgpulayer,
-               pgpulayer ? pgpulayer->m_iLayerIndex : -1,
+               pgpulayer ? pgpulayer->m_iGpuLayerIndex : -1,
                (::uptr)ptexture.m_p,
                (::uptr)ptextureFrameTarget.m_p,
                sizeSample.width(),
@@ -3764,8 +3764,8 @@ namespace gpu_vulkan
       ::cast < context > pcontext = m_pgpucontext;
 
       VkViewport viewport{};
-      viewport.x = pcontext->input_left();
-      viewport.y = pcontext->input_top();
+      viewport.x = (float)pcontext->input_left();
+      viewport.y = (float) pcontext->input_top();
       viewport.width = static_cast<float>(pcontext->width());
       viewport.height = static_cast<float>(pcontext->height());
       viewport.minDepth = 0.0f;
@@ -5079,7 +5079,7 @@ namespace gpu_vulkan
    //}
 
 
-   //void renderer::endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction)
+   //void renderer::endDraw(::draw2d_gpu::graphics* pdraw2dgraphics, ::user::interaction* puserinteraction)
    //{
 
    //   ::cast < renderer > prenderer = this;
@@ -5120,7 +5120,7 @@ namespace gpu_vulkan
 
    //   ::cast < ::gpu_vulkan::swap_chain > pswapchain = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
-   //   pswapchain->endDraw(pgraphics, puserinteraction, this);
+   //   pswapchain->endDraw(pdraw2dgraphics, puserinteraction, this);
 
    //   //defer_update_renderer();
 

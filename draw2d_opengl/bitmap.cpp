@@ -74,7 +74,7 @@ namespace draw2d_opengl
       m_memOut.m_bAligned = true;
       m_memIn.m_bAligned = true;
 
-      //m_pbitmap   = nullptr;
+      //m_pdraw2dbitmap   = nullptr;
       m_iStride   = 0;
 
    }
@@ -82,36 +82,36 @@ namespace draw2d_opengl
    bitmap::~bitmap()
    {
 
-      //::acme::del(m_pbitmap);
+      //::acme::del(m_pdraw2dbitmap);
 
    }
 
-   bool bitmap::CreateBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight, unsigned int nPlanes, unsigned int nBitcount, const void * lpBits, int stride)
+   bool bitmap::CreateBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight, unsigned int nPlanes, unsigned int nBitcount, const void * lpBits, int stride)
    {
 
-      __UNREFERENCED_PARAMETER(pgraphics);
+      __UNREFERENCED_PARAMETER(pdraw2dgraphics);
 
-      //::acme::del(m_pbitmap);
+      //::acme::del(m_pdraw2dbitmap);
 
-      //m_pbitmap = ___new ::plusplus::Bitmap (nWidth, nHeight, plusplus::PixelOffsetModeHighQuality);
+      //m_pdraw2dbitmap = ___new ::plusplus::Bitmap (nWidth, nHeight, plusplus::PixelOffsetModeHighQuality);
 
       return true;
 
    }
 
-   // bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap)
+   // bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pdraw2dgraphics, LPBITMAP lpBitmap)
    // {
    //
-   //    __UNREFERENCED_PARAMETER(pgraphics);
+   //    __UNREFERENCED_PARAMETER(pdraw2dgraphics);
    //
    //    return false;
    // }
 
 
-   void bitmap::create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::pixmap * ppixmap)
+   void bitmap::create_bitmap(::draw2d::graphics * pdraw2dgraphics, const ::i32_size& size, ::pixmap * ppixmap)
    {
 
-      __UNREFERENCED_PARAMETER(pgraphics);
+      __UNREFERENCED_PARAMETER(pdraw2dgraphics);
 
       m_sizeOut.cx = size.cx;
 
@@ -156,14 +156,14 @@ namespace draw2d_opengl
          ppixmap->m_iScan = m_iStride;
       }
 
-      m_osdata[0] = (void *) 1;
+      //m_osdata[0] = (void *) 1;
 
       //return true;
 
    }
 
 
-   void bitmap::CreateDIBitmap(::draw2d::graphics * pgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage)
+   void bitmap::CreateDIBitmap(::draw2d::graphics * pdraw2dgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage)
    {
       
       // return false;
@@ -208,10 +208,10 @@ namespace draw2d_opengl
    i32_size bitmap::size() const
    {
 
-      //if(m_pbitmap == nullptr)
+      //if(m_pdraw2dbitmap == nullptr)
       //   return ::i32_size(0, 0);
 
-      //return ::i32_size(m_pbitmap->GetWidth(), m_pbitmap->GetHeight());
+      //return ::i32_size(m_pdraw2dbitmap->GetWidth(), m_pdraw2dbitmap->GetHeight());
 
       return m_sizeOut;
 
@@ -230,24 +230,24 @@ namespace draw2d_opengl
    }
    
    
-   void bitmap::CreateCompatibleBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight)
+   void bitmap::CreateCompatibleBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight)
    {
 
-//      ::acme::del(m_pbitmap);
+//      ::acme::del(m_pdraw2dbitmap);
 
-      //    m_pbitmap = ___new ::plusplus::Bitmap (nWidth, nHeight, plusplus::PixelOffsetModeHighQuality);
+      //    m_pdraw2dbitmap = ___new ::plusplus::Bitmap (nWidth, nHeight, plusplus::PixelOffsetModeHighQuality);
 
       //return true;
 
    }
 
 
-   void bitmap::CreateDiscardableBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight)
+   void bitmap::CreateDiscardableBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight)
    {
 
-//      ::acme::del(m_pbitmap);
+//      ::acme::del(m_pdraw2dbitmap);
 
-      //    m_pbitmap = ___new ::plusplus::Bitmap (nWidth, nHeight, plusplus::PixelOffsetModeHighQuality);
+      //    m_pdraw2dbitmap = ___new ::plusplus::Bitmap (nWidth, nHeight, plusplus::PixelOffsetModeHighQuality);
 
       //return true;
    }
@@ -297,16 +297,16 @@ namespace draw2d_opengl
    void * bitmap::get_os_data() const
    {
 
-//      return (void *) (plusplus::Bitmap *) m_pbitmap;
+//      return (void *) (plusplus::Bitmap *) m_pdraw2dbitmap;
       return m_memOut.data();
 
    }
 
    //bool bitmap::attach(void * posdata)
    //{
-   //   //::acme::del(m_pbitmap);
+   //   //::acme::del(m_pdraw2dbitmap);
    //   //
-   //   //m_pbitmap = (plusplus::Bitmap *) posdata;
+   //   //m_pdraw2dbitmap = (plusplus::Bitmap *) posdata;
 
 
    //   return true;
@@ -316,11 +316,11 @@ namespace draw2d_opengl
    void * bitmap::detach()
    {
 
-      //plusplus::Bitmap * pbitmap = m_pbitmap;
+      //plusplus::Bitmap * pdraw2dbitmap = m_pdraw2dbitmap;
 
-      //m_pbitmap = nullptr;
+      //m_pdraw2dbitmap = nullptr;
 
-//      return m_pbitmap;
+//      return m_pdraw2dbitmap;
       return nullptr;
 
    }
@@ -329,14 +329,14 @@ namespace draw2d_opengl
    // HBITMAP bitmap::_GetHBITMAP()
    // {
    //
-   //    //if(m_pbitmap == nullptr)
+   //    //if(m_pdraw2dbitmap == nullptr)
    //    //   return nullptr;
    //    //
    //    //HBITMAP hbitmap = nullptr;
    //
    //    //plusplus::Color colorBk(0,0,0,0);
    //
-   //    //m_pbitmap->GetHBITMAP(colorBk,&hbitmap);
+   //    //m_pdraw2dbitmap->GetHBITMAP(colorBk,&hbitmap);
    //
    //    //return hbitmap;
    //    return nullptr;

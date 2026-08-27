@@ -50,17 +50,17 @@ namespace draw2d_nanovg
       //void create(const ::i32_size &size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1,
          //         bool bPreserve = false) override;
 
-      virtual void create(::draw2d::graphics* pgraphics);
+      virtual void create(::draw2d::graphics * pdraw2dgraphics);
 
       void destroy() override;
 
       //bool host(::pixmap_t * ppixmap, ::windowing::window * pwindow) override;
       //sbool host(::windowing::window_buffer * pwindowbuffer, ::windowing::window * pwindow, const ::i32_size & sizeRaw) override;
 
-      bool from(::draw2d::graphics * pgraphics);
-      //bool from(i32_point ptDest, ::draw2d::graphics * pgraphics, const ::i32_point & point, ::i32_size sz);
+      bool from(::draw2d::graphics * pdraw2dgraphics);
+      //bool from(i32_point ptDest, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & point, ::i32_size sz);
 
-      //void to(::draw2d::graphics * pgraphics, const ::i32_point& point, const ::i32_size& size, const ::i32_point& pointSrc) override;
+      //void to(::draw2d::graphics * pdraw2dgraphics, const ::i32_point& point, const ::i32_size& size, const ::i32_point& pointSrc) override;
 
 
       //void SetIconMask(::image::icon * picon, int cx, int cy);

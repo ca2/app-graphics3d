@@ -24,12 +24,12 @@ namespace draw2d_directx12
    }
 
 
-   void object::initialize_draw2d_directx12_object(::draw2d_directx12::graphics* pgraphics)
+   void object::initialize_draw2d_directx12_object(::draw2d_directx12::graphics* pdraw2dgraphics)
    {
 
-      initialize(pgraphics);
+      initialize(pdraw2dgraphics);
 
-      //initialize_directx12_object(pgraphics->gpu_context()->m_pgpudevice);
+      //initialize_directx12_object(pdraw2dgraphics->gpu_context()->m_pgpudevice);
 
    }
 
@@ -79,7 +79,7 @@ namespace draw2d_directx12
 
    //bool object::delete_object()
    //{
-   //   //if (get_os_data() == nullptr)
+   //   //if (nok())
    //   // return false;
    //   //return ::DeleteObject(Detach());
    //   return false;
@@ -123,19 +123,19 @@ namespace draw2d_directx12
    //}
 
 
-   void object::defer_update(::draw2d::graphics* pgraphics, char i) const
+   void object::defer_update(::draw2d::graphics * pdraw2dgraphics)
    {
 
       //if (!m_pgpudevice)
       //{
 
-      //   ::cast < graphics> pdirectx12graphics = pgraphics;
+      //   ::cast < graphics> pdirectx12graphics = pdraw2dgraphics;
 
       //   ((object*)this)->initialize_draw2d_directx12_object(pdirectx12graphics);
 
       //}
 
-      ::draw2d::object::defer_update(pgraphics, i);
+      ::draw2d::object::defer_update(pdraw2dgraphics);
 
    }
 

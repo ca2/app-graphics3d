@@ -582,13 +582,13 @@ namespace app_graphics3d_hello_space
                   auto ppixmap = create_newø<::pixmap>();
                   ppixmap->m_pimage32Raw = (::image32_t *)p;
                   ppixmap->m_pimage32 = (::image32_t *)nullptr;
-                  ppixmap->m_point.x = x;
-                  ppixmap->m_point.y = y;
-                  ppixmap->m_size.cx = cx;
-                  ppixmap->m_size.cy = cy;
-                  ppixmap->m_sizeRaw.cx = cxRaw;
-                  ppixmap->m_sizeRaw.cy = cyRaw;
-                  ppixmap->m_iScan = iScan;
+                  ppixmap->m_point.x = (::i32)x;
+                  ppixmap->m_point.y = (::i32)y;
+                  ppixmap->m_size.cx = (::i32)cx;
+                  ppixmap->m_size.cy = (::i32)cy;
+                  ppixmap->m_sizeRaw.cx = (::i32)cxRaw;
+                  ppixmap->m_sizeRaw.cy = (::i32)cyRaw;
+                  ppixmap->m_iScan = (::i32) iScan;
                   ppixmap->pixmap_map();
 
                   // m_pimageHelloMultiverse->create({cx, cy},e_flag_success, iScan);

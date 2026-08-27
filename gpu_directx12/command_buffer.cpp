@@ -270,7 +270,9 @@ namespace gpu_directx12
 
       //pcommandlist->ClearRenderTargetView(ptextureDst->current_layer().m_handleRenderTargetView, clearColor, 0, r2);
 
-      m_pcommandlist->ClearRenderTargetView(ptexture->current_layer().m_handleRenderTargetView, clearColor, 0, nullptr);
+      auto handleRenderTargetView = ptexture->current_layer().m_handleRenderTargetView;
+
+      m_pcommandlist->ClearRenderTargetView(handleRenderTargetView, clearColor, 0, nullptr);
 
    }
 

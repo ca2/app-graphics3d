@@ -12,7 +12,7 @@ namespace draw2d_opengl
 
    font::font()
    {
-      //m_pfont     = nullptr;
+      //m_pwritetextfont     = nullptr;
       //m_bUpdated = false;
       //m_hdcFont = nullptr;
       //m_hfont = nullptr;
@@ -25,7 +25,7 @@ namespace draw2d_opengl
    //   ::object(font.get_app())
    //{
 
-   //   //m_pfont     = nullptr;
+   //   //m_pwritetextfont     = nullptr;
    //   m_bUpdated = false;
 
    //   ::write_text::font::operator = (font);
@@ -52,17 +52,17 @@ namespace draw2d_opengl
    void font::construct(const ::write_text::font & pfontParam)
    {
       //class font & font = const_cast < ::draw2d_opengl::font & > (dynamic_cast < const ::draw2d_opengl::font & > (pfontParam));
-      //if(font.m_pfont == nullptr)
+      //if(font.m_pwritetextfont == nullptr)
       //{
-      //   if(m_pfont != nullptr)
+      //   if(m_pwritetextfont != nullptr)
       //   {
-      //      delete m_pfont;
-      //      m_pfont = nullptr;
+      //      delete m_pwritetextfont;
+      //      m_pwritetextfont = nullptr;
       //   }
       //}
       //else
       //{
-      //   m_pfont = font.m_pfont->Clone();
+      //   m_pwritetextfont = font.m_pwritetextfont->Clone();
       //}
    }
 
@@ -85,7 +85,7 @@ namespace draw2d_opengl
    }
 
 
-   void font::create(::draw2d::graphics * pgraphics, char iCreate)
+   void font::update(::draw2d::graphics * pdraw2dgraphics)
    {
 
       //if (m_hdcFont == nullptr || is_modified(iCreate))
@@ -135,12 +135,12 @@ namespace draw2d_opengl
 
 
 
-   //   if(m_pfont != nullptr)
+   //   if(m_pwritetextfont != nullptr)
    //   {
    //      ((font *) this)->m_bUpdated = true;
    //   }
 
-   //   return (void *) (plusplus::Font *) m_pfont;
+   //   return (void *) (plusplus::Font *) m_pwritetextfont;
 
    //}
 

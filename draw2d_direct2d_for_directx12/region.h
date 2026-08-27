@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include "draw2d_direct2d_for_directx11/region.h"
 #include "object.h"
 
 
@@ -10,12 +11,12 @@ namespace draw2d_direct2d_for_directx12
 
    class region :
       virtual public ::draw2d_direct2d_for_directx12::object,
-      virtual public ::draw2d::region
+      virtual public ::draw2d_direct2d_for_directx11::region
    {
    public:
 
 
-      comptr<ID2D1Geometry>            m_pgeometry;
+      //comptr<ID2D1Geometry>            m_pd2d1geometry;
 
 
       region();
@@ -24,8 +25,8 @@ namespace draw2d_direct2d_for_directx12
       //void defer_update();
 
       void destroy() override;
-      void destroy_os_data() override;
-      void create(::draw2d::graphics * pgraphics, ::i8 iCreate) override;
+      // void destroy_os_data() override;
+      void update(::draw2d::graphics * pdraw2dgraphics) override;
 
 
       void SetRectRgn(::i32 x1, ::i32 y1, ::i32 x2, ::i32 y2);
@@ -36,18 +37,18 @@ namespace draw2d_direct2d_for_directx12
       ::i32 OffsetRgn(::i32 x, ::i32 y);
       ::i32 OffsetRgn(const ::i32_point & point);
       ::i32 GetRgnBox(::i32_rectangle * prectangle) const;
-      bool contains(::draw2d::graphics * pgraphics, ::i32 x, ::i32 y) const;
-      bool contains(::draw2d::graphics * pgraphics, const ::i32_point & point) const;
+      bool contains(::draw2d::graphics * pdraw2dgraphics, ::i32 x, ::i32 y) const;
+      bool contains(::draw2d::graphics * pdraw2dgraphics, const ::i32_point & point) const;
       bool RectInRegion(const ::i32_rectangle & rectangle) const;
       ::i32 GetRegionData(LPRGNDATA lpRgnData, ::i32 nCount) const;
 
 
-      ID2D1Geometry * get(::draw2d::graphics * pgraphics);
-      ID2D1Geometry * get_rectangle(::draw2d::graphics * pgraphics);
-      ID2D1Geometry * get_ellipse(::draw2d::graphics * pgraphics);
-      ID2D1Geometry * get_polygon(::draw2d::graphics * pgraphics);
-      ID2D1Geometry * get_poly_polygon(::draw2d::graphics * pgraphics);
-      ID2D1Geometry * get_combine(::draw2d::graphics * pgraphics);
+      //ID2D1Geometry * get(::draw2d::graphics * pdraw2dgraphics);
+      //ID2D1Geometry * get_rectangle(::draw2d::graphics * pdraw2dgraphics);
+      //ID2D1Geometry * get_ellipse(::draw2d::graphics * pdraw2dgraphics);
+      //ID2D1Geometry * get_polygon(::draw2d::graphics * pdraw2dgraphics);
+      //ID2D1Geometry * get_poly_polygon(::draw2d::graphics * pdraw2dgraphics);
+      //ID2D1Geometry * get_combine(::draw2d::graphics * pdraw2dgraphics);
 
    };
 

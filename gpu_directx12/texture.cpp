@@ -2483,12 +2483,12 @@ namespace gpu_directx12
 
       int w = m_ptexture->m_textureattributes.m_size.width();
       int h = m_ptexture->m_textureattributes.m_size.height();
-      for (UINT mip = 1; mip < m_iMipCount; mip++)
+      for (int mip = 1; mip < m_iMipCount; mip++)
       {
-         for (UINT face = 0; face < m_iLayerCount; face++)
+         for (int face = 0; face < m_iLayerCount; face++)
          {
-            UINT srcIndex = idx(mip - 1, face);
-            UINT dstIndex = idx(mip, face);
+            auto srcIndex = idx(mip - 1, face);
+            auto dstIndex = idx(mip, face);
 
             //auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
               // m_ptexture->m_pd3d12resourceTexture->m_presource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,

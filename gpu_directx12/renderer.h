@@ -201,7 +201,7 @@ namespace gpu_directx12
 
       void sample();
       void sample_to_cpu_buffer21() override;
-      void gpu_blend(::draw2d::graphics * pgraphics);
+      void gpu_blend(::draw2d::graphics * pdraw2dgraphics);
       //void resolve_color_and_alpha_accumulation_buffers();
       //void _resolve_color_and_alpha_accumulation_buffers();
       void swap_chain();
@@ -281,7 +281,7 @@ namespace gpu_directx12
       //virtual void on_begin_render1(::gpu::layer * pgpulayer);
       void on_end_render(::gpu::layer * pgpulayer) override;
       //void endFrame() override;
-      void endDraw(::gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
+      void endDraw(::gpu::graphics * pdraw2dgraphics, ::user::interaction * puserinteraction) override;
       //void on_begin_frame() override;
       void on_begin_draw() override;
       void _on_begin_render(::gpu::layer* pgpulayer) override;

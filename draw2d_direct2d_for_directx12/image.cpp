@@ -41,42 +41,42 @@ namespace draw2d_direct2d_for_directx12
    void image::create_gpu_texture_image(::gpu::texture * pgputexture, ::gpu::graphics * pgpugraphics)
    {
 
-      ::cast < ::gpu_directx12::texture > ptexture = pgputexture;
+      //::cast < ::gpu_directx12::texture > ptexture = pgputexture;
 
       auto pdraw2dbitmap = createø<::draw2d::bitmap>();
 
-      ::cast < ::draw2d_direct2d_for_directx12::bitmap > pbitmap = pdraw2dbitmap;
+      //::cast < ::draw2d_direct2d_for_directx12::bitmap > pdraw2ddirect2dfordirectx12bitmap = pdraw2dbitmap;
 
-      //::cast < ::draw2d_direct2d_for_directx12::graphics > pgraphics = pgpugraphics;
+      //::cast < ::draw2d_direct2d_for_directx12::graphics > pdraw2dgraphics = pgpugraphics;
 
       //::comptr < IDXGISurface > pdxgisurface;
 //
-  //    pbitmap->m_pgputexture = ptexture;
+  //    pdraw2dbitmap->m_pgputexture = ptexture;
 
       //pdxgisurface = ptexture->_dxgi_surface();
 
-      pbitmap->update_bitmap_as_backed_by_gpu_texture(pgputexture, pgpugraphics);
+      pdraw2dbitmap->update_bitmap_as_backed_by_gpu_texture(pgputexture, pgpugraphics);
 
-      m_pbitmap = pbitmap;
+      m_pdraw2dbitmap = pdraw2dbitmap;
 
    }
 
 
-   void image::create_from_graphics(::draw2d::graphics * pgraphics)
+   void image::create_from_graphics(::draw2d::graphics * pdraw2dgraphics)
    {
 
-      auto pbitmap = pgraphics->get_target_bitmap();
+      auto pdraw2dbitmap = pdraw2dgraphics->get_target_bitmap();
 
-      if (::is_null(pbitmap))
+      if (::is_null(pdraw2dbitmap))
       {
 
          throw ::exception(error_wrong_state);
 
       }
 
-      m_pbitmap = pbitmap;
+      m_pdraw2dbitmap = pdraw2dbitmap;
 
-      m_size = m_pbitmap->size();
+      m_size = m_pdraw2dbitmap->size();
 
       m_sizeRaw = m_size;
 
@@ -92,7 +92,7 @@ namespace draw2d_direct2d_for_directx12
    ::draw2d::bitmap_pointer image::get_bitmap_as_target(::draw2d::graphics * pdraw2dgraphics) const
    {
 
-      return m_pbitmap;
+      return m_pdraw2dbitmap;
 
    }
 
@@ -100,7 +100,7 @@ namespace draw2d_direct2d_for_directx12
    ::draw2d::bitmap_pointer image::get_bitmap_as_source(::draw2d::graphics * pdraw2dgraphics) const
    {
 
-      return m_pbitmap;
+      return m_pdraw2dbitmap;
 
    }
 
@@ -108,7 +108,7 @@ namespace draw2d_direct2d_for_directx12
    ::draw2d::bitmap_pointer image::detach_bitmap()
    {
    
-      return m_pbitmap.detach();
+      return m_pdraw2dbitmap.detach();
 
    }
 
@@ -122,7 +122,7 @@ namespace draw2d_direct2d_for_directx12
 //
 //      auto sizeCurrent = this->size();
 //
-//      if (m_pbitmap.is_set() && size == sizeCurrent)
+//      if (m_pdraw2dbitmap.is_set() && size == sizeCurrent)
 //      {
 //
 //         //return true;
@@ -157,33 +157,33 @@ namespace draw2d_direct2d_for_directx12
 //      //m_info.bmiHeader.biCompression = BI_RGB;
 //      //m_info.bmiHeader.biSizeImage = iStride * size.cy;
 //
-//      ::draw2d::bitmap_pointer         pbitmap;
-//      ::draw2d::graphics_pointer       pgraphics;
+//      ::draw2d::bitmap_pointer         pdraw2dbitmap;
+//      ::draw2d::graphics_pointer       pdraw2dgraphics;
 //
-//      constructø(pbitmap);
-//      constructø(pgraphics);
+//      constructø(pdraw2dbitmap);
+//      constructø(pdraw2dgraphics);
 //
-//      if (::is_null(pbitmap) || ::is_null(pgraphics))
+//      if (::is_null(pdraw2dbitmap) || ::is_null(pdraw2dgraphics))
 //      {
 //
 //         throw ::exception(error_failed);
 //
 //      }
 //
-//      pgraphics->create_memory_graphics(size);
+//      pdraw2dgraphics->create_memory_graphics(size);
 //
-//      create_from_graphics(pgraphics);
+//      create_from_graphics(pdraw2dgraphics);
 //
-//      //pbitmap->create_bitmap(pgraphics, size, &pimage32,nullptr, &iScan);
+//      //pdraw2dbitmap->create_bitmap(pdraw2dgraphics, size, &pimage32,nullptr, &iScan);
 //
-//      //if (!pbitmap->create_bitmap(pgraphics, size, (void **)&pimage32, &iScan))
+//      //if (!pdraw2dbitmap->create_bitmap(pdraw2dgraphics, size, (void **)&pimage32, &iScan))
 //      //{
 //
 //      //   return false;
 //
 //      //}
 //
-//      //if (pbitmap->m_osdata[0] == nullptr)
+//      //if (pdraw2dbitmap->m_osdata[0] == nullptr)
 //      //{
 //
 //      //   return;
@@ -192,7 +192,7 @@ namespace draw2d_direct2d_for_directx12
 //
 //      ////auto estatus = 
 //      //
-//      //pgraphics->set(pbitmap);
+//      //pdraw2dgraphics->set(pdraw2dbitmap);
 //
 //      //if (!estatus)
 //      //{
@@ -201,9 +201,9 @@ namespace draw2d_direct2d_for_directx12
 //
 //      //}
 //
-//      //m_pgraphics = pgraphics;
+//      //m_pgraphics = pdraw2dgraphics;
 //
-//      m_pbitmap = pbitmap;
+//      m_pdraw2dbitmap = pdraw2dbitmap;
 //
 //      m_sizeRaw = size;
 //
@@ -249,9 +249,9 @@ namespace draw2d_direct2d_for_directx12
 
       create_as_descriptor(sizeRaw, eflagCreate, iStride);
 
-      //auto pbitmap = createø<::draw2d::bitmap>();
+      //auto pdraw2dbitmap = createø<::draw2d::bitmap>();
 
-      //::cast<::gpu::bitmap> pgpubitmap = pbitmap;
+      //::cast<::gpu::bitmap> pgpubitmap = pdraw2dbitmap;
 
       //auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
 
@@ -291,28 +291,28 @@ namespace draw2d_direct2d_for_directx12
 
       //   pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, sizeRaw, {});
 
-      //   m_pbitmap = pgpubitmap;
+      //   m_pdraw2dbitmap = pgpubitmap;
 
       //}
 
-      //auto pgraphics = system()->draw2d()->allocate_graphics(m_pacmeuserinteractionAffinity);
+      //auto pdraw2dgraphics = system()->draw2d()->allocate_graphics(m_pacmeuserinteractionAffinity);
 
       //if (bTopDraw2d)
       //{
 
-      //   pgraphics->create_for_window_draw2d(puserinteraction, sizeRaw);
+      //   pdraw2dgraphics->create_for_window_draw2d(puserinteraction, sizeRaw);
 
       //}
       //else
       //{
 
-      //   pgraphics->create_for_image(this);
+      //   pdraw2dgraphics->create_for_image(this);
 
       //}
 
-      ////m_pgraphicsOwned = pgraphics;
+      ////m_pgraphicsOwned = pdraw2dgraphics;
 
-      //pgraphics->m_pimage = this;
+      //pdraw2dgraphics->m_pimage = this;
 
       //auto pgpucontext = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
 
@@ -327,17 +327,17 @@ namespace draw2d_direct2d_for_directx12
 
       auto pdraw2dbitmap = createø<::draw2d::bitmap>();
 
-      ::cast < ::draw2d_direct2d_for_directx12::bitmap > pbitmap = pdraw2dbitmap;
+      ::cast < ::draw2d_direct2d_for_directx12::bitmap > pdraw2ddirect2dfordirectx12bitmap = pdraw2dbitmap;
 
-      pbitmap->CreateBitmap(pdraw2dgraphics, sizeRaw, 0, 32, nullptr, 0);
+      pdraw2ddirect2dfordirectx12bitmap->CreateBitmap(pdraw2dgraphics, sizeRaw, 0, 32, nullptr, 0);
 
-      m_pbitmap = pbitmap;
+      m_pdraw2dbitmap = pdraw2dbitmap;
 
-      //::cast <::draw2d_direct2d_for_directx12::graphics > pgraphics = m_pgraphicsOwned;
+      //::cast <::draw2d_direct2d_for_directx12::graphics > pdraw2dgraphics = m_pgraphicsOwned;
 
-      //auto & pd2d1bitmap = pbitmap->m_pbitmap;
+      //auto & pd2d1bitmap = pdraw2dbitmap->m_pdraw2dbitmap;
 
-      //pgraphics->m_pdevicecontext->SetTarget(pd2d1bitmap);
+      //pdraw2dgraphics->m_pdevicecontext->SetTarget(pd2d1bitmap);
 
       //auto estatus = 
       
@@ -391,19 +391,21 @@ namespace draw2d_direct2d_for_directx12
    //}
 
 
-   bool image::_create(::draw2d::graphics* pgraphicsParam)
+   bool image::_create(::draw2d::graphics * pdraw2dgraphics)
    {
 
-      ::draw2d::bitmap * pbitmap = dynamic_cast<::draw2d_direct2d_for_directx12::graphics *>(pgraphicsParam)->get_current_bitmap();
+      //::cast < ::draw2d_direct2d_for_directx12::graphics > pdraw2ddirect2dfordirectx12graphics = pdraw2dgraphics;
 
-      if (pbitmap == nullptr)
+      ::draw2d::bitmap * pdraw2dbitmap = pdraw2dgraphics->get_current_bitmap();
+
+      if (pdraw2dbitmap == nullptr)
       {
 
          return false;
 
       }
 
-      ::i32_size size = pbitmap->size();
+      ::i32_size size = pdraw2dbitmap->size();
 
       create_as_descriptor(size);
 
@@ -414,7 +416,7 @@ namespace draw2d_direct2d_for_directx12
 
       //}
 
-      copy_from(pgraphicsParam->m_pimage);
+      copy_from(pdraw2dgraphics->m_pimage);
 
       return true;
 
@@ -462,15 +464,15 @@ namespace draw2d_direct2d_for_directx12
    //}
 
 
+   //void image::destroy()
+   //{
+
+   //   destroy_os_data();
+
+   //}
+
+
    void image::destroy()
-   {
-
-      destroy_os_data();
-
-   }
-
-
-   void image::destroy_os_data()
    {
 
       //::draw2d::device_lock devicelock(this);
@@ -482,7 +484,7 @@ namespace draw2d_direct2d_for_directx12
 
       //}
 
-      m_pbitmap.release();
+      m_pdraw2dbitmap.release();
 
       //m_pgraphics.release();
 
@@ -491,10 +493,10 @@ namespace draw2d_direct2d_for_directx12
 
 
 
-   //bool image::draw(::draw2d::graphics* pgraphics, const ::i32_point & point, const ::i32_size & size, const ::i32_point & pointSrc)
+   //bool image::draw(::draw2d::graphics * pdraw2dgraphics, const ::i32_point & point, const ::i32_size & size, const ::i32_point & pointSrc)
    //{
 
-   //   return pgraphics->BitBlt(point.x, point.y, size.cx, size.cy, get_graphics(), pointSrc.x, pointSrc.y) != false;
+   //   return pdraw2dgraphics->BitBlt(point.x, point.y, size.cx, size.cy, get_graphics(), pointSrc.x, pointSrc.y) != false;
 
    //}
 
@@ -1286,7 +1288,7 @@ namespace draw2d_direct2d_for_directx12
 
       //}
 
-      if (m_pbitmap.is_null())
+      if (m_pdraw2dbitmap.is_null())
       {
 
          throw ::exception(error_invalid_empty_argument);
@@ -1320,13 +1322,13 @@ namespace draw2d_direct2d_for_directx12
 
       //}
 
-      //auto pbitmap = m_pbitmap->get_os_data < ID2D1Bitmap * >(data_bitmap);
+      //auto pdraw2dbitmap = m_pdraw2dbitmap->get_os_data < ID2D1Bitmap * >(data_bitmap);
 
       //D2D1_BITMAP_OPTIONS options = 
       //   D2D1_BITMAP_OPTIONS_CPU_READ |
       //   D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
 
-      //auto props = D2D1::BitmapProperties1(options, pbitmap->GetPixelFormat());
+      //auto props = D2D1::BitmapProperties1(options, pdraw2dbitmap->GetPixelFormat());
 
       //HRESULT hr = pgraphics2d->m_pdevicecontext->CreateBitmap(size, nullptr, 0, props, &m_pbitmap1Map);
 
@@ -1345,7 +1347,7 @@ namespace draw2d_direct2d_for_directx12
 
       //srcRect.bottom = height();
 
-      //hr = m_pbitmap1Map->CopyFromBitmap(&pointDst, pbitmap, &srcRect);
+      //hr = m_pbitmap1Map->CopyFromBitmap(&pointDst, pdraw2dbitmap, &srcRect);
 
       //D2D1_MAPPED_RECT map_base = {};
 
@@ -1370,7 +1372,7 @@ namespace draw2d_direct2d_for_directx12
 
       //m_bMapped = true;
 
-      //return true;
+      return ::transfer(::draw2d_direct2d_for_directx11::image::_map(rectangle));
 
    }
 
@@ -1387,7 +1389,7 @@ namespace draw2d_direct2d_for_directx12
 
       //}
 
-      if (m_pbitmap.is_null())
+      if (m_pdraw2dbitmap.is_null())
       {
 
          throw ::exception(error_wrong_state);
@@ -1405,9 +1407,11 @@ namespace draw2d_direct2d_for_directx12
 
          srcRect.bottom = this->height();
 
-         auto pbitmap = m_pbitmap->get_os_data < ID2D1Bitmap * >(data_bitmap);
+         ::cast < ::draw2d_direct2d::bitmap > pdirect2dbitmap = m_pdraw2dbitmap;
 
-         auto hr = pbitmap->CopyFromMemory(&srcRect, pimagepixmaplease->m_p->image32(), m_iScan);
+         auto pdraw2dbitmap = pdirect2dbitmap->m_pd2d1bitmap;
+
+         auto hr = pdraw2dbitmap->CopyFromMemory(&srcRect, pimagepixmaplease->m_p->image32(), m_iScan);
 
          m_pbitmap1Map->Unmap();
 
@@ -1460,7 +1464,7 @@ namespace draw2d_direct2d_for_directx12
    }*/
 
 
-   void image::defer_realize(::draw2d::graphics* pgraphics) const
+   void image::defer_realize(::draw2d::graphics * pdraw2dgraphics) const
    {
 
       if (is_realized())
@@ -1472,7 +1476,7 @@ namespace draw2d_direct2d_for_directx12
 
       }
 
-      return realize(pgraphics);
+      return realize(pdraw2dgraphics);
 
    }
 
@@ -1496,7 +1500,7 @@ namespace draw2d_direct2d_for_directx12
 
    ////   }
 
-   ////   if (m_pbitmap.is_null()
+   ////   if (m_pdraw2dbitmap.is_null()
    ////         || m_pbitmapMap.is_null()
    ////         || m_pgraphics.is_null()
    ////         || m_pgraphicsMap.is_null())
@@ -1508,13 +1512,13 @@ namespace draw2d_direct2d_for_directx12
 
    ////   //::pointer<::draw2d_direct2d_for_directx12::graphics>pgraphicsMap = m_pgraphicsMap;
 
-   ////   ::pointer<::draw2d_direct2d_for_directx12::graphics>pgraphics = m_pgraphics;
+   ////   ::pointer<::draw2d_direct2d_for_directx12::graphics>pdraw2dgraphics = m_pgraphics;
 
-   ////   ::pointer<::draw2d_direct2d_for_directx12::bitmap>pbitmap = m_pbitmap;
+   ////   ::pointer<::draw2d_direct2d_for_directx12::bitmap>pdraw2dbitmap = m_pdraw2dbitmap;
 
-   ////   pgraphics->m_pbitmaprendertarget = nullptr;
+   ////   pdraw2dgraphics->m_pbitmaprendertarget = nullptr;
 
-   ////   pgraphics->m_iType = 11;
+   ////   pdraw2dgraphics->m_iType = 11;
 
    ////   ::i32_size size = m_pbitmapMap->GetBitmapDimension();
 
@@ -1528,38 +1532,38 @@ namespace draw2d_direct2d_for_directx12
 
    ////   auto prendertarget = pgraphicsMap->m_prendertarget;
 
-   ////   HRESULT hr = prendertarget->CreateCompatibleRenderTarget(nullptr, &sizeu, &pixelformat, D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE, &pgraphics->m_pbitmaprendertarget);
+   ////   HRESULT hr = prendertarget->CreateCompatibleRenderTarget(nullptr, &sizeu, &pixelformat, D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE, &pdraw2dgraphics->m_pbitmaprendertarget);
 
-   ////   if (pgraphics->m_pbitmaprendertarget == nullptr)
+   ////   if (pdraw2dgraphics->m_pbitmaprendertarget == nullptr)
    ////   {
 
    ////      return false;
 
    ////   }
 
-   ////   if (FAILED(pgraphics->m_pbitmaprendertarget.as(pgraphics->m_prendertarget)))
+   ////   if (FAILED(pdraw2dgraphics->m_pbitmaprendertarget.as(pdraw2dgraphics->m_prendertarget)))
    ////   {
 
-   ////      pgraphics->m_pbitmaprendertarget = nullptr;
+   ////      pdraw2dgraphics->m_pbitmaprendertarget = nullptr;
 
    ////      return false;
 
    ////   }
 
-   ////   if (FAILED(pgraphics->m_pbitmaprendertarget.as(pgraphics->m_pdevicecontext)))
+   ////   if (FAILED(pdraw2dgraphics->m_pbitmaprendertarget.as(pdraw2dgraphics->m_pdevicecontext)))
    ////   {
 
-   ////      pgraphics->m_pbitmaprendertarget = nullptr;
+   ////      pdraw2dgraphics->m_pbitmaprendertarget = nullptr;
 
-   ////      pgraphics->m_prendertarget = nullptr;
+   ////      pdraw2dgraphics->m_prendertarget = nullptr;
 
    ////      return false;
 
    ////   }
 
-   ////   pgraphics->m_pbitmaprendertarget->GetBitmap(&pbitmap->m_pbitmap);
+   ////   pdraw2dgraphics->m_pbitmaprendertarget->GetBitmap(&pdraw2dbitmap->m_pdraw2dbitmap);
 
-   ////   if (pbitmap->m_pbitmap == nullptr)
+   ////   if (pdraw2dbitmap->m_pdraw2dbitmap == nullptr)
    ////   {
 
    ////      ((image *) this)->m_pgraphics.release();
@@ -1568,19 +1572,19 @@ namespace draw2d_direct2d_for_directx12
 
    ////   }
 
-   ////   //pgraphics->m_pplugin = pgraphicsMap->m_pplugin;
+   ////   //pdraw2dgraphics->m_pplugin = pgraphicsMap->m_pplugin;
 
-   ////   pgraphics->m_pbitmap = pbitmap;
+   ////   pdraw2dgraphics->m_pdraw2dbitmap = pdraw2dbitmap;
 
-   ////   pbitmap->m_pbitmap.As(&pbitmap->m_pbitmap1);
+   ////   pdraw2dbitmap->m_pdraw2dbitmap.As(&pdraw2dbitmap->m_pbitmap1);
 
-   ////   pbitmap->m_osdata[0] = pbitmap->m_pbitmap.Get();
+   ////   pdraw2dbitmap->m_osdata[0] = pdraw2dbitmap->m_pdraw2dbitmap.Get();
 
-   ////   pbitmap->m_osdata[1] = pbitmap->m_pbitmap1.Get();
+   ////   pdraw2dbitmap->m_osdata[1] = pdraw2dbitmap->m_pbitmap1.Get();
 
-   ////   pgraphics->m_osdata[0] = pgraphics->m_pdevicecontext.Get();
+   ////   pdraw2dgraphics->m_osdata[0] = pdraw2dgraphics->m_pdevicecontext.Get();
 
-   ////   pgraphics->m_osdata[1] = pgraphics->m_prendertarget.Get();
+   ////   pdraw2dgraphics->m_osdata[1] = pdraw2dgraphics->m_prendertarget.Get();
 
    ////   //D2D1_POINT_2U p;
 
@@ -1619,7 +1623,7 @@ namespace draw2d_direct2d_for_directx12
       //srcRect.top = 0;
       //srcRect.bottom = this->height();
 
-      //HRESULT hr = ((ID2D1Bitmap *)((image *) this)->m_pbitmap->m_osdata[0])->CopyFromBitmap(&p, ((ID2D1Bitmap *)((image *) this)->m_pbitmap->m_osdata[0]), &srcRect);
+      //HRESULT hr = ((ID2D1Bitmap *)((image *) this)->m_pdraw2dbitmap->m_osdata[0])->CopyFromBitmap(&p, ((ID2D1Bitmap *)((image *) this)->m_pdraw2dbitmap->m_osdata[0]), &srcRect);
 
       //((image *) this)->m_pgraphics.release();
 
@@ -1631,7 +1635,7 @@ namespace draw2d_direct2d_for_directx12
    bool image::is_realized() const
    {
 
-      //if (((image *) this)->get_graphics2() == nullptr || ((image *) this)->get_graphics2()->get_os_data() == nullptr)
+      //if (((image *) this)->get_graphics2() == nullptr || ((image *) this)->get_graphics2()->nok())
       //   return false;
 
       return true;
@@ -1698,7 +1702,7 @@ namespace draw2d_direct2d_for_directx12
 
    //   //   }
 
-   //   //   if (pgraphicsMap->get_current_bitmap()->get_os_data() == nullptr)
+   //   //   if (pgraphicsMap->get_current_bitmap()->nok())
    //   //   {
 
    //   //      return false;
@@ -1765,9 +1769,9 @@ namespace draw2d_direct2d_for_directx12
 
    //   //   HRESULT hr = ((ID2D1DeviceContext *)pgraphicsMap->get_os_data())->EndDraw();
 
-   //   //   ::draw2d_direct2d_for_directx12::graphics * pgraphics = dynamic_cast <::draw2d_direct2d_for_directx12::graphics *> (get_graphics());
+   //   //   ::draw2d_direct2d_for_directx12::graphics * pdraw2dgraphics = dynamic_cast <::draw2d_direct2d_for_directx12::graphics *> (get_graphics());
 
-   //   //   pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
+   //   //   pdraw2dgraphics->set_alpha_mode(::draw2d::e_alpha_mode_set);
 
    //   //   {
 
@@ -1775,14 +1779,14 @@ namespace draw2d_direct2d_for_directx12
    //   //      p.x = rectangleTarget.left;
    //   //      p.y = rectangleTarget.top;
 
-   //   //      pgraphics->m_pdevicecontext->DrawImage((ID2D1Bitmap *)pgraphicsMap->get_current_bitmap()->get_os_data(), p, rectangleSource, pgraphics->m_interpolationmode, D2D1_COMPOSITE_MODE_DESTINATION_IN);
+   //   //      pdraw2dgraphics->m_pdevicecontext->DrawImage((ID2D1Bitmap *)pgraphicsMap->get_current_bitmap()->get_os_data(), p, rectangleSource, pdraw2dgraphics->m_interpolationmode, D2D1_COMPOSITE_MODE_DESTINATION_IN);
 
    //   //   }
 
    //   //   if(bSmallerSourceRegion)
    //   //   {
 
-   //   //      ::draw2d::savedc k1(pgraphics);
+   //   //      ::draw2d::savedc k1(pdraw2dgraphics);
 
    //   //      ::i32_rectangle rDst;
    //   //      rDst.left = pointDst.x;
@@ -1790,7 +1794,7 @@ namespace draw2d_direct2d_for_directx12
    //   //      rDst.right = pointDst.x + size.cx;
    //   //      rDst.bottom = pointDst.y + size.cy;
 
-   //   //      pgraphics->ExcludeClipRect(rDst);
+   //   //      pdraw2dgraphics->ExcludeClipRect(rDst);
 
    //   //      D2D1_RECT_F r1;
    //   //      r1.left = (FLOAT) (pointDst.x);
@@ -1804,7 +1808,7 @@ namespace draw2d_direct2d_for_directx12
    //   //      r2.right = (FLOAT)(pointSrc.x + sizeParam.cx);
    //   //      r2.bottom = (FLOAT)(pointSrc.y + sizeParam.cy);
 
-   //   //      pgraphics->m_pdevicecontext->DrawBitmap((ID2D1Bitmap *)pgraphicsMap->get_current_bitmap()->get_os_data(), r1,bA / 255.0f, pgraphics->m_interpolationmode, r2);
+   //   //      pdraw2dgraphics->m_pdevicecontext->DrawBitmap((ID2D1Bitmap *)pgraphicsMap->get_current_bitmap()->get_os_data(), r1,bA / 255.0f, pdraw2dgraphics->m_interpolationmode, r2);
 
    //   //   }
    //   //   else
@@ -1815,7 +1819,7 @@ namespace draw2d_direct2d_for_directx12
    //   //   }
 
    //   //   //hr = m_prendertarget->Flush();
-   //   //   pgraphics->flush();
+   //   //   pdraw2dgraphics->flush();
 
    //   //   if (SUCCEEDED(hr))
    //   //   {

@@ -38,9 +38,9 @@ namespace draw2d_directx12
       //void create(const ::i32_size & size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iStride = -1, bool bPreserve = false) override;
       //using ::image::image::initialize;
       //void initialize(const ::i32_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG) override;
-      void create_from_graphics(::draw2d::graphics * pgraphics) override;
+      void create_from_graphics(::draw2d::graphics * pdraw2dgraphics) override;
       void destroy() override;
-      void destroy_os_data() override;
+      // void destroy_os_data() override;
 
 
       //virtual void create_ex(const ::i32_size & size, ::image32_t * pimage32, int iScan, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iStride = -1, bool bPreserve = false);
@@ -51,8 +51,8 @@ namespace draw2d_directx12
       virtual void set_image_icon(::image::icon * picon, int cx, int cy) override;
 
 
-      virtual void defer_realize(::draw2d::graphics * pgraphics) const;
-      //virtual bool realize(::draw2d::graphics * pgraphics) const;
+      virtual void defer_realize(::draw2d::graphics * pdraw2dgraphics) const;
+      //virtual bool realize(::draw2d::graphics * pdraw2dgraphics) const;
       virtual void unrealize() const;
       virtual bool is_realized() const;
 

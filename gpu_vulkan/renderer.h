@@ -227,7 +227,7 @@ namespace gpu_vulkan
       //void endFrame() override;
       void end_layer(bool bClosingLayer = false) override;
       //void end_frame() override;
-      //void endDraw(::draw2d_gpu::graphics * pgraphics, ::user::interaction * puserinteraction) override;
+      //void endDraw(::draw2d_gpu::graphics * pdraw2dgraphics, ::user::interaction * puserinteraction) override;
 
 
       void on_new_frame() override;

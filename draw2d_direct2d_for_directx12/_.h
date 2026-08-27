@@ -68,11 +68,11 @@ namespace draw2d_direct2d_for_directx12
 } // namespace draw2d_direct2d_for_directx12
 
 
-#define __graphics(pgraphics) ((::draw2d_direct2d_for_directx12::graphics *) pgraphics->m_pthis)
-#define __pen(ppen) ((::draw2d_direct2d_for_directx12::pen *) ppen->m_pthis)
-#define __brush(pbrush) ((::draw2d_direct2d_for_directx12::brush *) pbrush->m_pthis)
-#define __font(pfont) ((::draw2d_direct2d_for_directx12::font *) pfont->m_pthis)
-#define __graphics_path(ppath) ((::draw2d_direct2d_for_directx12::path *) ppath->m_pthis)
+#define __graphics(pdraw2dgraphics) ((::draw2d_direct2d_for_directx12::graphics *) pdraw2dgraphics->m_pthis)
+#define __pen(pdraw2dpen) ((::draw2d_direct2d_for_directx12::pen *) pdraw2dpen->m_pthis)
+#define __brush(pdraw2dbrush) ((::draw2d_direct2d_for_directx12::brush *) pdraw2dbrush->m_pthis)
+#define __font(pwritetextfont) ((::draw2d_direct2d_for_directx12::font *) pwritetextfont->m_pthis)
+#define __graphics_path(pdraw2dpath) ((::draw2d_direct2d_for_directx12::path *) pdraw2dpath->m_pthis)
 
 
 

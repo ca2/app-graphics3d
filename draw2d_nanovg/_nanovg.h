@@ -24,8 +24,8 @@
 #include "graphics.h"
 
 
-#define VK2D_GRAPHICS(pgraphics) (dynamic_cast < ::draw2d_nanovg::graphics * > (pgraphics))
-#define VK2D_HDC(pgraphics) (VK2D_GRAPHICS(pgraphics)->m_hdc)
+#define VK2D_GRAPHICS(pdraw2dgraphics) (dynamic_cast < ::draw2d_nanovg::graphics * > (pdraw2dgraphics))
+#define VK2D_HDC(pdraw2dgraphics) (VK2D_GRAPHICS(pdraw2dgraphics)->m_hdc)
 
 
 namespace opengl

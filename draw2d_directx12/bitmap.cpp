@@ -24,14 +24,14 @@ namespace draw2d_directx12
    }
 
 
-   void bitmap::CreateBitmap(::draw2d::graphics* pgraphics, const ::i32_size& sizeParam, unsigned int nPlanes, unsigned int nBitcount, const void * lpBits, int stride)
+   void bitmap::CreateBitmap(::draw2d::graphics * pdraw2dgraphics, const ::i32_size& sizeParam, unsigned int nPlanes, unsigned int nBitcount, const void * lpBits, int stride)
    {
 
       //::draw2d::lock draw2dlock;
 
       ::draw2d::device_lock devicelock(this);
 
-      //if (m_pbitmap != nullptr)
+      //if (m_pdraw2dbitmap != nullptr)
       //{
 
       //   destroy();
@@ -48,7 +48,7 @@ namespace draw2d_directx12
       //props.pixelFormat.alphaMode = D2D1_ALPHA_MODE_PREMULTIPLIED;
       //props.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM;
 
-      //draw2d_directx12::graphics * pgraphics2d = dynamic_cast < ::draw2d_directx12::graphics * > (pgraphics);
+      //draw2d_directx12::graphics * pgraphics2d = dynamic_cast < ::draw2d_directx12::graphics * > (pdraw2dgraphics);
 
       //pgraphics2d->m_pd2d1rendertarget->GetDpi(&props.dpiX, &props.dpiY); // Thank you https://repo.anl-external.org/repos/BlueTBB/tbb41_20130314oss/examples/common/gui/d2dvideo.cpp
 
@@ -57,11 +57,11 @@ namespace draw2d_directx12
 
       ////if(ppdata != nullptr)
       //{
-      //   // g.m_pdc->CreateBitmap(size, *ppdata, cx * sizeof(::color32_t), props, &m_pbitmap);
+      //   // g.m_pdc->CreateBitmap(size, *ppdata, cx * sizeof(::color32_t), props, &m_pdraw2dbitmap);
       //}
       ////else
       ////{
-      //HRESULT hr = ((ID2D1DeviceContext *)pgraphics->get_os_data())->CreateBitmap(size, lpBits, stride, props, &m_pbitmap);
+      //HRESULT hr = ((ID2D1DeviceContext *)pdraw2dgraphics->get_os_data())->CreateBitmap(size, lpBits, stride, props, &m_pdraw2dbitmap);
 
       ////}
 
@@ -73,18 +73,18 @@ namespace draw2d_directx12
       //}
 
       //zero(m_map);
-      //    m_pbitmap->Map(D2D1_MAP_OPTIONS_READ | D2D1_MAP_OPTIONS_WRITE, &m_map);
+      //    m_pdraw2dbitmap->Map(D2D1_MAP_OPTIONS_READ | D2D1_MAP_OPTIONS_WRITE, &m_map);
       //
       //if(ppdata != nullptr)
       // *ppdata = (::color::color *) m_map.bits;
-      //m_osdata[0] = m_pbitmap;
+      //m_osdata[0] = m_pdraw2dbitmap;
 
       //return true;
 
    }
 
    
-   bool bitmap::CreateBitmapIndirect(::draw2d::graphics* pgraphics, LPBITMAP lpBitmap)
+   bool bitmap::CreateBitmapIndirect(::draw2d::graphics * pdraw2dgraphics, LPBITMAP lpBitmap)
    {
       
       return false;
@@ -92,7 +92,7 @@ namespace draw2d_directx12
    }
 
 
-   void bitmap::create_bitmap(::draw2d::graphics* pgraphics, const ::i32_size & size, ::pixmap * ppixmap)
+   void bitmap::create_bitmap(::draw2d::graphics * pdraw2dgraphics, const ::i32_size & size, ::pixmap * ppixmap)
    {
 
       //::draw2d::lock draw2dlock;
@@ -101,7 +101,7 @@ namespace draw2d_directx12
       m_memory.set_size(size.area() * 4);
       m_size = size;
       m_iStride = size.cx * 4;
-      //if (m_pbitmap != nullptr)
+      //if (m_pdraw2dbitmap != nullptr)
       //{
 
       //   destroy();
@@ -120,7 +120,7 @@ namespace draw2d_directx12
 
       //props.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM;
 
-      //draw2d_directx12::graphics * pgraphics2d = dynamic_cast < ::draw2d_directx12::graphics * > (pgraphics);
+      //draw2d_directx12::graphics * pgraphics2d = dynamic_cast < ::draw2d_directx12::graphics * > (pdraw2dgraphics);
 
       //if (!::is_set(pgraphics2d))
       //{
@@ -144,7 +144,7 @@ namespace draw2d_directx12
 
       //props.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET;
 
-      //HRESULT hr = ((ID2D1DeviceContext *)pgraphics->get_os_data())->CreateBitmap(usize, nullptr, 0, props, &m_pbitmap1);
+      //HRESULT hr = ((ID2D1DeviceContext *)pdraw2dgraphics->get_os_data())->CreateBitmap(usize, nullptr, 0, props, &m_pbitmap1);
 
       //if (FAILED(hr) || m_pbitmap1 == nullptr)
       //{
@@ -153,7 +153,7 @@ namespace draw2d_directx12
 
       //}
 
-      //if (FAILED(m_pbitmap1.as(m_pbitmap)))
+      //if (FAILED(m_pbitmap1.as(m_pdraw2dbitmap)))
       //{
 
       //   throw ::exception(error_failed);
@@ -175,13 +175,13 @@ namespace draw2d_directx12
 
       //   rectangleDst.bottom = size.cy;
 
-      //   hrResultCopyBitmap = m_pbitmap->CopyFromMemory(&rectangleDst, pimage32, iScan);
+      //   hrResultCopyBitmap = m_pdraw2dbitmap->CopyFromMemory(&rectangleDst, pimage32, iScan);
 
       //}
 
       //m_size = size;
 
-      //m_osdata[0] = m_pbitmap;
+      //m_osdata[0] = m_pdraw2dbitmap;
 
       //m_osdata[1] = m_pbitmap1;
 
@@ -190,7 +190,7 @@ namespace draw2d_directx12
    }
 
 
-   void bitmap::CreateDIBitmap(::draw2d::graphics* pgraphics, int cx, int cy, unsigned int flInit, const void *pjBits, unsigned int iUsage)
+   void bitmap::CreateDIBitmap(::draw2d::graphics * pdraw2dgraphics, int cx, int cy, unsigned int flInit, const void *pjBits, unsigned int iUsage)
    {
 
       //return false;
@@ -231,14 +231,14 @@ namespace draw2d_directx12
    i32_size bitmap::GetBitmapDimension() const
    {
 
-      //if (!m_pbitmap)
+      //if (!m_pdraw2dbitmap)
       //{
 
       //   return ::i32_size(0, 0);
 
       //}
 
-      //D2D1_SIZE_U size = m_pbitmap->GetPixelSize();
+      //D2D1_SIZE_U size = m_pdraw2dbitmap->GetPixelSize();
 
       //return ::i32_size(size.width, size.height);
       return {};
@@ -264,14 +264,14 @@ namespace draw2d_directx12
    }
 
 
-   void bitmap::CreateCompatibleBitmap(::draw2d::graphics* pgraphics, int nWidth, int nHeight)
+   void bitmap::CreateCompatibleBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight)
    {
 
       //::draw2d::lock draw2dlock;
 
       ::draw2d::device_lock devicelock(this);
 
-      //if (m_pbitmap != nullptr)
+      //if (m_pdraw2dbitmap != nullptr)
       //{
 
       //   destroy();
@@ -288,7 +288,7 @@ namespace draw2d_directx12
       //props.pixelFormat.alphaMode = D2D1_ALPHA_MODE_PREMULTIPLIED;
       //props.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 
-      //draw2d_directx12::graphics * pgraphics2d = dynamic_cast < ::draw2d_directx12::graphics * > (pgraphics);
+      //draw2d_directx12::graphics * pgraphics2d = dynamic_cast < ::draw2d_directx12::graphics * > (pdraw2dgraphics);
 
       //pgraphics2d->m_pd2d1rendertarget->GetDpi(&props.dpiX, &props.dpiY); // Thanks again and a third time https://repo.anl-external.org/repos/BlueTBB/tbb41_20130314oss/examples/common/gui/d2dvideo.cpp      props.bitmapOptions = D2D1_BITMAP_OPTIONS_CPU_READ | D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
 
@@ -296,16 +296,16 @@ namespace draw2d_directx12
 
       ////if(ppdata != nullptr)
       //{
-      //   // g.m_pdc->CreateBitmap(size, *ppdata, cx * sizeof(::color32_t), props, &m_pbitmap);
+      //   // g.m_pdc->CreateBitmap(size, *ppdata, cx * sizeof(::color32_t), props, &m_pdraw2dbitmap);
       //}
       ////else
       ////      ID2D1Bitmap1 * pbitmap1;
       //{
-      //   ((ID2D1DeviceContext *)pgraphics->get_os_data())->CreateBitmap(size, nullptr, size.width * sizeof(::color32_t), props, &m_pbitmap1);
+      //   ((ID2D1DeviceContext *)pdraw2dgraphics->get_os_data())->CreateBitmap(size, nullptr, size.width * sizeof(::color32_t), props, &m_pbitmap1);
       //}
-      //m_pbitmap = m_pbitmap1;
+      //m_pdraw2dbitmap = m_pbitmap1;
 
-      //m_osdata[0] = m_pbitmap;
+      //m_osdata[0] = m_pdraw2dbitmap;
 
       //m_osdata[1] = m_pbitmap1;
 
@@ -314,14 +314,14 @@ namespace draw2d_directx12
    }
 
 
-   void bitmap::CreateDiscardableBitmap(::draw2d::graphics* pgraphics, int nWidth, int nHeight)
+   void bitmap::CreateDiscardableBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight)
    {
 
       //::draw2d::lock draw2dlock;
 
       ::draw2d::device_lock devicelock(this);
 
-      //if (m_pbitmap != nullptr)
+      //if (m_pdraw2dbitmap != nullptr)
       //{
 
       //   destroy();
@@ -338,7 +338,7 @@ namespace draw2d_directx12
       //props.pixelFormat.alphaMode = D2D1_ALPHA_MODE_PREMULTIPLIED;
       //props.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 
-      //draw2d_directx12::graphics * pgraphics2d = dynamic_cast < ::draw2d_directx12::graphics * > (pgraphics);
+      //draw2d_directx12::graphics * pgraphics2d = dynamic_cast < ::draw2d_directx12::graphics * > (pdraw2dgraphics);
 
       //pgraphics2d->m_pd2d1rendertarget->GetDpi(&props.dpiX, &props.dpiY); // One more time, Thank you very much https://repo.anl-external.org/repos/BlueTBB/tbb41_20130314oss/examples/common/gui/d2dvideo.cpp      props.bitmapOptions = D2D1_BITMAP_OPTIONS_CPU_READ | D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
 
@@ -346,19 +346,19 @@ namespace draw2d_directx12
 
       ////if(ppdata != nullptr)
       //{
-      //   // g.m_pdc->CreateBitmap(size, *ppdata, cx * sizeof(::color32_t), props, &m_pbitmap);
+      //   // g.m_pdc->CreateBitmap(size, *ppdata, cx * sizeof(::color32_t), props, &m_pdraw2dbitmap);
       //}
       ////else
       //{
-      //   ((ID2D1DeviceContext *)pgraphics->get_os_data())->CreateBitmap(size, nullptr, size.width * sizeof(::color32_t), &props, &m_pbitmap1);
+      //   ((ID2D1DeviceContext *)pdraw2dgraphics->get_os_data())->CreateBitmap(size, nullptr, size.width * sizeof(::color32_t), &props, &m_pbitmap1);
       //}
-      //m_pbitmap = m_pbitmap1;
+      //m_pdraw2dbitmap = m_pbitmap1;
 
-      //m_osdata[0] = m_pbitmap;
+      //m_osdata[0] = m_pdraw2dbitmap;
 
       //m_osdata[1] = m_pbitmap1;
 
-      ////m_pbitmap->Map(D2D1_MAP_OPTIONS_READ | D2D1_MAP_OPTIONS_WRITE, &m_map);
+      ////m_pdraw2dbitmap->Map(D2D1_MAP_OPTIONS_READ | D2D1_MAP_OPTIONS_WRITE, &m_map);
 
       ////if(ppdata != nullptr)
       //// *ppdata = (::color::color *) m_map.bits;
@@ -381,7 +381,7 @@ namespace draw2d_directx12
 
 
 
-   void bitmap::defer_update(::draw2d::graphics* pgraphics) const
+   void bitmap::defer_update(::draw2d::graphics * pdraw2dgraphics) const
    {
 
    }
@@ -390,18 +390,18 @@ namespace draw2d_directx12
    void bitmap::attach(void * hbitmap)
    {
 
-      //if (m_pbitmap != nullptr)
+      //if (m_pdraw2dbitmap != nullptr)
       //{
 
       //   destroy();
 
       //}
 
-      //m_pbitmap = (ID2D1Bitmap *)hbitmap;
+      //m_pdraw2dbitmap = (ID2D1Bitmap *)hbitmap;
 
-      //m_pbitmap.as(m_pbitmap1);
+      //m_pdraw2dbitmap.as(m_pbitmap1);
 
-      //m_osdata[0] = m_pbitmap;
+      //m_osdata[0] = m_pdraw2dbitmap;
 
       //m_osdata[1] = m_pbitmap1;
 
@@ -413,35 +413,35 @@ namespace draw2d_directx12
    void * bitmap::detach()
    {
 
-      clear_os_data();
+      //clear_os_data();
 
       //m_pbitmap1 = nullptr;
 
-      //return m_pbitmap.detach();
+      //return m_pdraw2dbitmap.detach();
 
       return nullptr;
 
    }
 
 
+   //void bitmap::destroy()
+   //{
+
+   //   destroy_os_data();
+
+   //   ::draw2d::bitmap::destroy();
+
+   //}
+
+
    void bitmap::destroy()
    {
 
-      destroy_os_data();
-
-      ::draw2d::bitmap::destroy();
-
-   }
-
-
-   void bitmap::destroy_os_data()
-   {
-
-      //m_pbitmap = nullptr;
+      //m_pdraw2dbitmap = nullptr;
 
       //m_pbitmap1 = nullptr;
 
-      object::destroy_os_data();
+      object::destroy();
 
    }
 

@@ -25,9 +25,9 @@ namespace write_text_directx12
    ::write_text::font_pointer write_text::font(const ::write_text::font_family_pointer& pfontfamily, const ::write_text::font_size& fontsize, int iFontWeight)
    {
 
-      auto pfont = ::write_text::write_text::font(pfontfamily, fontsize, iFontWeight);
+      auto pwritetextfont = ::write_text::write_text::font(pfontfamily, fontsize, iFontWeight);
 
-      //::cast < ::gpu_directx12::object > pdirectx12object = pfont;
+      //::cast < ::gpu_directx12::object > pdirectx12object = pwritetextfont;
 
       //if (pdirectx12object)
       //{
@@ -36,7 +36,7 @@ namespace write_text_directx12
 
       //}
 
-      return pfont;
+      return pwritetextfont;
 
    }
 

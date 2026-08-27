@@ -57,11 +57,13 @@ namespace gpu_directx12
 
       void on_init() override;
 
+      void on_new_frame() override;
+
       void initialize_swap_chain_window(::gpu::context* pcontext, ::acme::windowing::window* pwindow) override;
 
       bool create_frame_sync(frame_sync &frame) override;
 
-      //void endDraw(::draw2d_gpu::graphics* pgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc) override;
+      //void endDraw(::draw2d_gpu::graphics* pdraw2dgraphics, ::user::interaction* puserinteraction, ::gpu::renderer* prendererSrc) override;
       void present(::gpu::texture_site * pgputexturesite, ::gpu::command_buffer * pgpucommandbuffer) override;
       void set_present_state(::gpu::command_buffer *pgpucommandbuffer) override;
       void swap_buffers() override;

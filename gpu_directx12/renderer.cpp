@@ -1737,7 +1737,7 @@ float4 main(PSInput input) : SV_TARGET {
 
    }
 
-   void renderer::gpu_blend(::draw2d::graphics* pgraphics)
+   void renderer::gpu_blend(::draw2d::graphics * pdraw2dgraphics)
    {
 
       //::cast < ::gpu_directx12::offscreen_render_target_view > ptargetview = m_prendertargetview;
@@ -1760,7 +1760,7 @@ float4 main(PSInput input) : SV_TARGET {
       //   throw ::exception(error_wrong_state);
       //}
 
-      //::cast < ::draw2d_direct2d::graphics > pgraphics2d = pgraphics;
+      //::cast < ::draw2d_direct2d::graphics > pgraphics2d = pdraw2dgraphics;
 
       ////D3D11_TEXTURE2D_DESC texDesc = {};
       ////texDesc.Width = width;
@@ -5703,7 +5703,7 @@ float4 main(PSInput input) : SV_TARGET {
    }
 
 
-   void renderer::endDraw(::gpu::graphics * pgraphics, ::user::interaction* puserinteraction)
+   void renderer::endDraw(::gpu::graphics * pdraw2dgraphics, ::user::interaction* puserinteraction)
    {
 
       ::cast < renderer > prenderer = this;
@@ -5720,7 +5720,7 @@ float4 main(PSInput input) : SV_TARGET {
 
       //   auto pswapchain = m_pgpucontext->m_pgpudevice->get_swap_chain();
 
-      //   pswapchain->endDraw(pgraphics, puserinteraction, this);
+      //   pswapchain->endDraw(pdraw2dgraphics, puserinteraction, this);
 
       //}
 

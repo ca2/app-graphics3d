@@ -6,12 +6,12 @@
 #include "acme/parallelization/synchronous_lock.h"
 
 
-vkvg_keep::vkvg_keep(VkvgContext pgraphics, bool bSave)
+vkvg_keep::vkvg_keep(VkvgContext pdraw2dgraphics, bool bSave)
 {
 
    m_bSave = false;
 
-   if (pgraphics == nullptr)
+   if (pdraw2dgraphics == nullptr)
    {
 
       m_pdc = nullptr;
@@ -20,7 +20,7 @@ vkvg_keep::vkvg_keep(VkvgContext pgraphics, bool bSave)
 
    }
 
-   m_pdc = pgraphics;
+   m_pdc = pdraw2dgraphics;
 
    if (bSave)
    {

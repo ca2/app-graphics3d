@@ -160,14 +160,14 @@ namespace app_graphics3d_continuum
    }
 
 
-   void impact::_001OnClip(::draw2d::graphics_pointer & pgraphics)
+   void impact::_001OnClip(::draw2d::graphics_pointer & pdraw2dgraphics)
    {
 
 
    }
 
 
-   void impact::_001OnDraw(::draw2d::graphics_pointer & pgraphics)
+   void impact::_001OnDraw(::draw2d::graphics_pointer & pdraw2dgraphics)
    {
       
       auto rectangleX = this->rectangle();
@@ -183,29 +183,29 @@ namespace app_graphics3d_continuum
 
       ::f64_rectangle rectangleClipBox;
 
-      // pgraphics->reset_clip();
+      // pdraw2dgraphics->reset_clip();
 
-      // pgraphics->get_clip_box(rectangleClipBox);
+      // pdraw2dgraphics->get_clip_box(rectangleClipBox);
 
-      auto matrix = pgraphics->m_matrix;
+      auto matrix = pdraw2dgraphics->m_matrix;
 
-      // auto origin = pgraphics->origin();
+      // auto origin = pdraw2dgraphics->origin();
 
-      pgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
+      pdraw2dgraphics->set_alpha_mode(::draw2d::e_alpha_mode_blend);
       ::get_task()->payload("debug") = 123;
-      pgraphics->fill_rectangle(rectangleX, argb(108, 128, 128, 128));
+      pdraw2dgraphics->fill_rectangle(rectangleX, argb(108, 128, 128, 128));
       ::get_task()->payload("debug") = 0;
 
-      ::user::graphics3d::_001OnDraw(pgraphics);
+      ::user::graphics3d::_001OnDraw(pdraw2dgraphics);
 
 #endif
       
-      draw_gpu_statistics(pgraphics);
+      draw_gpu_statistics(pdraw2dgraphics);
 
    }
 
 
-   void impact::on_layout(::draw2d::graphics_pointer & pgraphics)
+   void impact::on_layout(::draw2d::graphics_pointer & pdraw2dgraphics)
    {
 
       auto rectangleX = this->rectangle();
@@ -217,7 +217,7 @@ namespace app_graphics3d_continuum
 
       }
 
-      ::user::graphics3d::on_layout(pgraphics);
+      ::user::graphics3d::on_layout(pdraw2dgraphics);
       
       setup_default_client_area_user_item();
 

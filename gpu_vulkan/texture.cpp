@@ -3792,7 +3792,7 @@ void texture::create_sampler()
 
       for (uint32_t face = 0; face < 6; face++)
       {
-         for (uint32_t level = 0; level < m_textureattributes.m_iMipCount; level++)
+         for (::i32 level = 0; level < m_textureattributes.m_iMipCount; level++)
          {
             ktx_size_t offset;
             KTX_error_code result = ktxTexture_GetImageOffset(pktxtexture, level, 0, face, &offset);
@@ -4017,7 +4017,7 @@ void texture::create_sampler()
       //stbi_set_flip_vertically_on_load(true);
 
       auto imagedata = stbi_loadf_from_memory(
-         blockData, blockSize, &width, &height, &channels, 0);
+         blockData, (int) blockSize, &width, &height, &channels, 0);
 
       if (!imagedata)
       {
@@ -5576,7 +5576,7 @@ void texture::create_sampler()
          VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
                            nullptr, 1, &barrierStart);
 
-      for (uint32_t i = 1; i < m_textureattributes.m_iMipCount; i++)
+      for (::i32 i = 1; i < m_textureattributes.m_iMipCount; i++)
       {
 
          VkImageMemoryBarrier barrierTransition{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};

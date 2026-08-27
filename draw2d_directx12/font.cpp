@@ -72,36 +72,36 @@ namespace draw2d_directx12
    //}
 
 
-   float font::_dwrite_font_size(::draw2d::graphics * pgraphics)
+   float font::_dwrite_font_size(::draw2d::graphics * pdraw2dgraphics)
    {
       float fFontSize;
 
       //oswindow oswindow = nullptr;
       //
-      //if (::is_set(pgraphics))
+      //if (::is_set(pdraw2dgraphics))
       //{
       // 
-      //   oswindow = pgraphics->get_window_handle();
+      //   oswindow = pdraw2dgraphics->get_window_handle();
 
       //}
 
       if (m_fontsize.eunit() == ::e_unit_point)
       {
 
-         fFontSize = (float)pgraphics->m_pacmeuserinteractionAffinity->point_dpi(m_fontsize.as_f64());
+         fFontSize = (float)pdraw2dgraphics->m_pacmeuserinteractionAffinity->point_dpi(m_fontsize.as_f64());
 
       }
       else
       {
 
-         fFontSize = (float)pgraphics->m_pacmeuserinteractionAffinity->dpiy(m_fontsize.as_f64());
+         fFontSize = (float)pdraw2dgraphics->m_pacmeuserinteractionAffinity->dpiy(m_fontsize.as_f64());
 
       }
 
-      if (::is_set(pgraphics))
+      if (::is_set(pdraw2dgraphics))
       {
 
-         fFontSize *= (float)pgraphics->m_dSizeScaler;
+         fFontSize *= (float)pdraw2dgraphics->m_dSizeScaler;
 
       }
 
@@ -119,7 +119,7 @@ namespace draw2d_directx12
    }
 
 
-   void font::create(::draw2d::graphics * pgraphics, char iCreate)
+   void font::update(::draw2d::graphics * pdraw2dgraphics)
    {
 
       //if(m_pformat == nullptr || is_modified(::draw2d::e_default_object))
@@ -134,7 +134,7 @@ namespace draw2d_directx12
 
       //   IDWriteFactory * pfactory = m_pdirectx12->dwrite_factory();
 
-      //   if (!defer_load_internal_font(pgraphics))
+      //   if (!defer_load_internal_font(pdraw2dgraphics))
       //   {
 
       //      HRESULT hr = pfactory->CreateTextFormat(
@@ -143,7 +143,7 @@ namespace draw2d_directx12
       //         _dwrite_font_weight(),
       //         _dwrite_font_style(),
       //         _dwrite_font_stretch(),
-      //         _dwrite_font_size(pgraphics),
+      //         _dwrite_font_size(pdraw2dgraphics),
       //         L"",
       //         &m_pformat);
 
@@ -160,25 +160,25 @@ namespace draw2d_directx12
 
       //   }
 
-      //   create_text_metrics(pgraphics);
+      //   create_text_metrics(pdraw2dgraphics);
 
       //}
 
       //m_osdata[0] = m_pformat;
 
-      m_baCalculated[0] = true;
+      // m_baCalculated[0] = true;
 
       //return (IDWriteTextFormat *) m_pformat;
 
    }
 
 
-   void font::create_text_metrics(::draw2d::graphics * pgraphics)
+   void font::create_text_metrics(::draw2d::graphics * pdraw2dgraphics)
    {
 
-      WCHAR name[256];
-      unsigned int findex;
-      BOOL exists;
+      //WCHAR name[256];
+      //unsigned int findex;
+      //BOOL exists;
 
       //if (::is_null(m_pformat))
       //{
@@ -269,7 +269,7 @@ namespace draw2d_directx12
 
       //HRESULT hrFindFont = E_FAIL;
 
-      //if (!m_pfont)
+      //if (!m_pwritetextfont)
       //{
 
       //   auto weight = m_pformat->GetFontWeight();
@@ -284,9 +284,9 @@ namespace draw2d_directx12
       //      hrFindFont = m_pfamily->GetFirstMatchingFont(
       //        weight,
       //        stretch,
-      //        style, &m_pfont);
+      //        style, &m_pwritetextfont);
 
-      //      if (SUCCEEDED(hrFindFont) && m_pfont)
+      //      if (SUCCEEDED(hrFindFont) && m_pwritetextfont)
       //      {
 
       //         break;
@@ -345,7 +345,7 @@ namespace draw2d_directx12
 
       //}
 
-      //if (FAILED(hrFindFont) || !m_pfont)
+      //if (FAILED(hrFindFont) || !m_pwritetextfont)
       //{
 
       //   m_textmetric2.m_dAscent = 0;
@@ -362,7 +362,7 @@ namespace draw2d_directx12
 
       //DWRITE_FONT_METRICS metrics;
 
-      //m_pfont->GetMetrics(&metrics);
+      //m_pwritetextfont->GetMetrics(&metrics);
 
       //double ratio = m_pformat->GetFontSize() / (float)metrics.designUnitsPerEm;
 
@@ -375,22 +375,22 @@ namespace draw2d_directx12
    }
 
 
+   //void font::destroy()
+   //{
+
+   //   destroy_os_data();
+
+   //   ::write_text::font::destroy();
+
+   //}
+
+
    void font::destroy()
-   {
-
-      destroy_os_data();
-
-      ::write_text::font::destroy();
-
-   }
-
-
-   void font::destroy_os_data()
    {
 
       //m_pformat = nullptr;
 
-      object::destroy_os_data();
+      object::destroy();
 
    }
 

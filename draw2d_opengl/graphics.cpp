@@ -299,11 +299,11 @@ namespace draw2d_opengl
    //}
 
 
-   //void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
+   //void graphics::create_compatible_graphics(::draw2d::graphics * pdraw2dgraphics)
    //{
 
    //   opengl_create_offscreen_buffer({ 1920, 1080 });
-   //   //opengl_create_offscreen_buffer(pgraphics->m_pimage->size());
+   //   //opengl_create_offscreen_buffer(pdraw2dgraphics->m_pimage->size());
 
    //}
 
@@ -803,19 +803,19 @@ namespace draw2d_opengl
    //    return 0;
    // }
 
-   ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pbitmap)
+   ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pdraw2dbitmap)
    {
 
-      if (m_pbitmap == pbitmap)
+      if (m_pdraw2dbitmap == pdraw2dbitmap)
       {
 
-         return m_pbitmap;
+         return m_pdraw2dbitmap;
 
       }
 
       //opengl_delete_offscreen_buffer();
 
-      //if (!opengl_create_offscreen_buffer(pbitmap->get_size()))
+      //if (!opengl_create_offscreen_buffer(pdraw2dbitmap->get_size()))
       //{
 
       //   return NULL;
@@ -824,13 +824,13 @@ namespace draw2d_opengl
 
       bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
-      ::opengl::resize(pbitmap->size(), bYSwap);
+      ::opengl::resize(pdraw2dbitmap->size(), bYSwap);
 
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      m_pbitmap = pbitmap;
+      m_pdraw2dbitmap = pdraw2dbitmap;
 
-      return m_pbitmap;
+      return m_pdraw2dbitmap;
 
    }
 
@@ -854,13 +854,13 @@ namespace draw2d_opengl
 
    //      HBITMAP hbitmap = (HBITMAP) hObject;
 
-   //      if(m_pbitmap.is_null())
-   //         m_pbitmap.create();
+   //      if(m_pdraw2dbitmap.is_null())
+   //         m_pdraw2dbitmap.create();
 
-   //      if(m_pbitmap.is_null())
+   //      if(m_pdraw2dbitmap.is_null())
    //         return nullptr;
 
-   //      //(dynamic_cast < ::draw2d_opengl::bitmap * > (m_pbitmap.m_p))->m_pbitmap = ___new plusplus::Bitmap (hbitmap, nullptr);
+   //      //(dynamic_cast < ::draw2d_opengl::bitmap * > (m_pdraw2dbitmap.m_p))->m_pdraw2dbitmap = ___new plusplus::Bitmap (hbitmap, nullptr);
 
    //      //if(m_pgraphics != nullptr)
    //      //{
@@ -882,7 +882,7 @@ namespace draw2d_opengl
 
    //      //}
 
-   //      //m_pgraphics = allocateø< plusplus::Graphics((plusplus::Bitmap *) m_pbitmap->get_os_data >());
+   //      //m_pgraphics = allocateø< plusplus::Graphics((plusplus::Bitmap *) m_pdraw2dbitmap->get_os_data >());
 
    //      //m_pgraphics->SetPageUnit(plusplus::UnitPixel);
 
@@ -1488,7 +1488,7 @@ namespace draw2d_opengl
 
    }
 
-   void graphics::fill_rectangle_2025_06(const ::f64_rectangle& rectangle, ::draw2d::brush* pbrush)
+   void graphics::fill_rectangle_2025_06(const ::f64_rectangle& rectangle, ::draw2d::brush* pdraw2dbrush)
    {
 
       auto pcontext = gpu_context();
@@ -1496,7 +1496,7 @@ namespace draw2d_opengl
       ::gpu::context_lock contextlock(pcontext);
       //thread_select();
 
-      ::opengl::color(pbrush->m_color);
+      ::opengl::color(pdraw2dbrush->m_color);
 
       ::f64_polygon polygon;
 
@@ -1521,10 +1521,10 @@ namespace draw2d_opengl
    }
 
 
-   void graphics::fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pbrush)
+   void graphics::fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pdraw2dbrush)
    {
 
-      fill_rectangle(rectangle, pbrush->m_color);
+      fill_rectangle(rectangle, pdraw2dbrush->m_color);
 
    }
 
@@ -1991,14 +1991,14 @@ namespace draw2d_opengl
          seq2aCenter[0].x,
          seq2aCenter[0].y,
          rectangleParam.minimum_dimension()/2.0, 
-         m_ppen->m_dWidth, 
+         m_pdraw2dpen->m_dWidth, 
          numSegments);
 
       contextmatrix.transform(vertices);
 
       pmodelbuffer->_set_vertexes(vertices);
 
-      auto color = m_ppen->m_color;
+      auto color = m_pdraw2dpen->m_color;
 
       //::array<::graphics3d::sequence2_color> quadVertices;
       //for (auto & point : pointa)
@@ -2090,7 +2090,7 @@ namespace draw2d_opengl
 
       auto radius = rectangleParam.minimum_dimension() / 2.0;
 
-      auto thickness = m_ppen->m_dWidth;
+      auto thickness = m_pdraw2dpen->m_dWidth;
 
       auto extent = radius + thickness / 2.0f + 2.0f;
 
@@ -2184,13 +2184,13 @@ namespace draw2d_opengl
       //   seq2aCenter[0].x,
       //   seq2aCenter[0].y,
       //   rectangleParam.minimum_dimension() / 2.0,
-      //   m_ppen->m_dWidth,
+      //   m_pdraw2dpen->m_dWidth,
 //         numSegments);
 
       
       pmodelbuffer->_set_vertexes(vertexa);
 
-      auto color = m_ppen->m_color;
+      auto color = m_pdraw2dpen->m_color;
 
       //::array<::graphics3d::sequence2_color> quadVertices;
       //for (auto & point : pointa)
@@ -2658,17 +2658,17 @@ namespace draw2d_opengl
    }
 
    
-   void graphics::draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen* ppen)
+   void graphics::draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen* pdraw2dpen)
    {
 
-      if (::is_null(ppen) || ppen->m_epen == ::draw2d::e_pen_null)
+      if (::is_null(pdraw2dpen) || pdraw2dpen->m_epen == ::draw2d::e_pen_null)
       {
 
          return;
 
       }
 
-      if (ppen->m_epen == ::draw2d::e_pen_solid && ppen->m_dWidth <= 0.0)
+      if (pdraw2dpen->m_epen == ::draw2d::e_pen_solid && pdraw2dpen->m_dWidth <= 0.0)
       {
 
          return;
@@ -2698,7 +2698,7 @@ namespace draw2d_opengl
 
       for(auto & item : pointa1) __transform(item);
 
-      ::f64_point pointPen(ppen->m_dWidth, ppen->m_dWidth);
+      ::f64_point pointPen(pdraw2dpen->m_dWidth, pdraw2dpen->m_dWidth);
 
       ::f64_point_array pointa;
 
@@ -2712,7 +2712,7 @@ namespace draw2d_opengl
       contextmatrix.transform(pointa);
 
 
-      auto color = m_ppen->m_color;
+      auto color = m_pdraw2dpen->m_color;
 
       float fA = color.f32_opacity();
       float fR = color.f32_red() * fA;
@@ -2755,7 +2755,7 @@ namespace draw2d_opengl
    void graphics::draw_rectangle(const ::f64_rectangle& rectangle)
    {
 
-      draw_rectangle(rectangle, m_ppen);
+      draw_rectangle(rectangle, m_pdraw2dpen);
 
    }
 
@@ -2763,7 +2763,7 @@ namespace draw2d_opengl
    void graphics::fill_rectangle(const ::f64_rectangle& rectangle)
    {
 
-      fill_rectangle(rectangle, m_pbrush);
+      fill_rectangle(rectangle, m_pdraw2dbrush);
 
    }
 
@@ -2820,9 +2820,9 @@ namespace draw2d_opengl
    //         if (pgraphicsSrc->get_current_bitmap()->get_os_data() == nullptr)
    //            return false;
    //
-   //         ::pointer<bitmap>pbitmap = pgraphicsSrc->get_current_bitmap();
+   //         ::pointer<bitmap>pdraw2dbitmap = pgraphicsSrc->get_current_bitmap();
    //
-   //         //pbitmap->create_texture(0);
+   //         //pdraw2dbitmap->create_texture(0);
    //
    //         //glBegin(GL_QUADS);
    //         //// Front Face
@@ -3059,19 +3059,19 @@ namespace draw2d_opengl
      
       ::gpu::graphics::get_text_metrics(lpMetrics);
 
-      //set(m_pfont);
-      ////if (!set(m_pfont))
+      //set(m_pwritetextfont);
+      ////if (!set(m_pwritetextfont))
       ////{
 
       ////   return false;
 
       ////}
 
-      ////::pointer<font>pfont = m_pfont;
+      ////::pointer<font>pwritetextfont = m_pwritetextfont;
 
       ////TEXTMETRIC tm;
 
-      ////GetTextMetrics(pfont->m_hdcFont, &tm);
+      ////GetTextMetrics(pwritetextfont->m_hdcFont, &tm);
 
       ////lpMetrics->m_dAscent = tm.tmAscent;
       ////lpMetrics->m_dHeight = tm.tmHeight;
@@ -3081,24 +3081,24 @@ namespace draw2d_opengl
       //////if (m_pgraphics == nullptr)
       ////   return false;
 
-      ////graphics * pgraphics = ((graphics *)this);
+      ////graphics * pdraw2dgraphics = ((graphics *)this);
 
-      ////if(pgraphics->gl2d_font() == nullptr)
+      ////if(pdraw2dgraphics->gl2d_font() == nullptr)
       ////   return false;
 
-      ////plusplus::Font * pfont = pgraphics->gl2d_font();
+      ////plusplus::Font * pwritetextfont = pdraw2dgraphics->gl2d_font();
 
       ////plusplus::FontFamily family;
 
-      ////pfont->GetFamily(&family);
+      ////pwritetextfont->GetFamily(&family);
 
-      ////::double iStyle = pfont->GetStyle();
+      ////::double iStyle = pwritetextfont->GetStyle();
 
       ////double dHeight = family.GetEmHeight(iStyle);
 
-      ////double dSize = pfont->GetSize();
+      ////double dSize = pwritetextfont->GetSize();
 
-      ////double dFontHeight = pfont->GetHeight((plusplus::REAL) pgraphics->get_dpiy());
+      ////double dFontHeight = pwritetextfont->GetHeight((plusplus::REAL) pdraw2dgraphics->get_dpiy());
 
       ////lpMetrics->tmAscent              = (::double) (dSize * family.GetCellAscent(iStyle) / dHeight);
       ////lpMetrics->tmDescent             = (::double) (dSize * family.GetCellDescent(iStyle) / dHeight);
@@ -3122,7 +3122,7 @@ namespace draw2d_opengl
 
 
       /////*wstr = L"";
-      ////m_pgraphics->MeasureString(wstr.m_pwsz, -1, (plusplus::Font *) m_pfont->get_os_data(), origin, &rect2);*/
+      ////m_pgraphics->MeasureString(wstr.m_pwsz, -1, (plusplus::Font *) m_pwritetextfont->get_os_data(), origin, &rect2);*/
 
       ////lpMetrics->tmAveCharWidth = (::double) (rectangle.Width * get_current_font()->m_dFontWidth / (double) wstr.get_length());
 
@@ -3524,9 +3524,9 @@ namespace draw2d_opengl
 
       ::cast < ::draw2d_opengl::image > popenglimage = pimage;
 
-      ::cast < ::draw2d_opengl::bitmap > pbitmap = popenglimage->m_pbitmap;
+      ::cast < ::draw2d_opengl::bitmap > pdraw2dbitmap = popenglimage->m_pdraw2dbitmap;
 
-      ::cast < ::gpu_opengl::texture > ptexture = pbitmap->m_pgputexture;
+      ::cast < ::gpu_opengl::texture > ptexture = pdraw2dbitmap->m_pgputexture;
 
       ptexture->bind_render_target();
 
@@ -3536,14 +3536,14 @@ namespace draw2d_opengl
    ::draw2d::pen* graphics::get_current_pen()
    {
 
-      return m_ppen;
+      return m_pdraw2dpen;
 
    }
 
    ::draw2d::brush* graphics::get_current_brush()
    {
 
-      return m_pbrush;
+      return m_pdraw2dbrush;
 
    }
 
@@ -3557,14 +3557,14 @@ namespace draw2d_opengl
    ::write_text::font* graphics::get_current_font()
    {
 
-      return m_pfont;
+      return m_pwritetextfont;
 
    }
 
    ::draw2d::bitmap* graphics::get_current_bitmap()
    {
 
-      return m_pbitmap;
+      return m_pdraw2dbitmap;
 
    }
 
@@ -3773,27 +3773,27 @@ namespace draw2d_opengl
    //}
 
 
-   void graphics::draw(::draw2d::path* ppath)
+   void graphics::draw(::draw2d::path* pdraw2dpath)
    {
 
-      draw(ppath, m_ppen);
+      draw(pdraw2dpath, m_pdraw2dpen);
       //m_pgraphics->SetSmoothingMode(plusplus::SmoothingModeAntiAlias);
       //m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
 
 
-      //return m_pgraphics->DrawPath(gl2d_pen(),(dynamic_cast < ::draw2d_opengl::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      //return m_pgraphics->DrawPath(gl2d_pen(),(dynamic_cast < ::draw2d_opengl::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
       //return true;
 
    }
 
 
-   void graphics::draw(::draw2d::path* ppath, ::draw2d::pen* ppen)
+   void graphics::draw(::draw2d::path* pdraw2dpath, ::draw2d::pen* pdraw2dpen)
    {
       //bool bLastPoint = false;
       ::f64_point pointLast;
-      for (int i = 0; i < ppath->m_itema.size(); i++)
+      for (int i = 0; i < pdraw2dpath->m_itema.size(); i++)
       {
-         auto& pitem = ppath->m_itema[i];
+         auto& pitem = pdraw2dpath->m_itema[i];
 
          auto etype = pitem->type();
 
@@ -3824,27 +3824,27 @@ namespace draw2d_opengl
          }
 
       }
-      //return m_pgraphics->DrawPath((::plusplus::Pen *) ppen->get_os_data(),(dynamic_cast < ::draw2d_opengl::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      //return m_pgraphics->DrawPath((::plusplus::Pen *) pdraw2dpen->get_os_data(),(dynamic_cast < ::draw2d_opengl::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
 
       //return true;
 
    }
 
 
-   void graphics::fill(::draw2d::path* ppath)
+   void graphics::fill(::draw2d::path* pdraw2dpath)
    {
 
-      //return m_pgraphics->FillPath(gl2d_brush(),(dynamic_cast < ::draw2d_opengl::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      //return m_pgraphics->FillPath(gl2d_brush(),(dynamic_cast < ::draw2d_opengl::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
 
       //return true;
 
    }
 
 
-   void graphics::fill(::draw2d::path* ppath, ::draw2d::brush* pbrush)
+   void graphics::fill(::draw2d::path* pdraw2dpath, ::draw2d::brush* pdraw2dbrush)
    {
 
-      //return m_pgraphics->FillPath((::plusplus::Brush *) pbrush->get_os_data(),(dynamic_cast < ::draw2d_opengl::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      //return m_pgraphics->FillPath((::plusplus::Brush *) pdraw2dbrush->get_os_data(),(dynamic_cast < ::draw2d_opengl::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
 
       //return true;
 
@@ -4033,22 +4033,22 @@ namespace draw2d_opengl
 ////      if(pgraphicsSrc->get_current_bitmap() == nullptr)
 ////         return false;
 ////
-////      plusplus::Bitmap * pbitmap = nullptr;
+////      plusplus::Bitmap * pdraw2dbitmap = nullptr;
 ////
 ////      try
 ////      {
 ////
-////         pbitmap = (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data();
+////         pdraw2dbitmap = (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data();
 ////
 ////      }
 ////      catch(...)
 ////      {
 ////      }
 ////
-////      if(pbitmap != nullptr)
+////      if(pdraw2dbitmap != nullptr)
 ////      {
 ////
-////         m_pgraphics->DrawImage(pbitmap,dstRect,(plusplus::REAL) xSrc,(plusplus::REAL) ySrc,(plusplus::REAL) nSrcWidth,(plusplus::REAL) nSrcHeight,plusplus::UnitPixel,&attributes);
+////         m_pgraphics->DrawImage(pdraw2dbitmap,dstRect,(plusplus::REAL) xSrc,(plusplus::REAL) ySrc,(plusplus::REAL) nSrcWidth,(plusplus::REAL) nSrcHeight,plusplus::UnitPixel,&attributes);
 ////
 ////      }
 ////
@@ -4509,9 +4509,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //{
 //hdc_map* pMap = ::windows_definition::MapHDC(true); //create map if not exist
 //ASSERT(pMap != nullptr);
-//      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)pMap->from_handle(hDC);
-   //    ASSERT(pgraphics == nullptr || (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc == hDC);
-   //  return pgraphics;
+//      ::draw2d::graphics * pdraw2dgraphics = (::draw2d::graphics *)pMap->from_handle(hDC);
+   //    ASSERT(pdraw2dgraphics == nullptr || (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->m_hdc == hDC);
+   //  return pdraw2dgraphics;
    // return nullptr;
    //}
 
@@ -4837,8 +4837,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if(m_hdc != nullptr)
          hOldObj = ::SelectObject(m_hdc, pPen->get_os_data());
       return dynamic_cast < pen * > (::draw2d_opengl::object::from_handle(get_app(), hOldObj));*/
-      m_ppen = pPen;
-      return m_ppen;
+      m_pdraw2dpen = pPen;
+      return m_pdraw2dpen;
 
    }
 
@@ -4853,14 +4853,14 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             if(m_hdc != nullptr)
                hOldObj = ::SelectObject(m_hdc, pBrush->get_os_data());
             return dynamic_cast < ::draw2d::brush * > (::draw2d_opengl::object::from_handle(get_app(), hOldObj));*/
-      m_pbrush = pBrush;
+      m_pdraw2dbrush = pBrush;
 
-      return m_pbrush;
+      return m_pdraw2dbrush;
 
    }
 
 
-   ::write_text::font* graphics::SelectObject(::write_text::font* pfont)
+   ::write_text::font* graphics::SelectObject(::write_text::font* pwritetextfont)
    {
       /*      HGDIOBJ hOldObj = nullptr;
             if(pFont == nullptr)
@@ -4879,12 +4879,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             m_fontxyz = *pFont;
             return &m_fontxyz;*/
 
-            //if(!set(pfont))
+            //if(!set(pwritetextfont))
               // return nullptr;
 
-      set(pfont);
+      set(pwritetextfont);
 
-      return m_pfont;
+      return m_pwritetextfont;
 
    }
 
@@ -5549,63 +5549,63 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //    HANDLETABLE* pHandleTable, METARECORD* pMetaRec, double nHandles, LPARAM lParam)
    // {
    //    return 1;
-   //    //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)lParam;
-   //    //      ASSERT_VALID(pgraphics);
+   //    //      ::draw2d::graphics * pdraw2dgraphics = (::draw2d::graphics *)lParam;
+   //    //      ASSERT_VALID(pdraw2dgraphics);
    //    //
    //    //      switch (pMetaRec->rdFunction)
    //    //      {
    //    //      // these records have effects different for each graphics derived class
    //    //      case META_SETMAPMODE:
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SETWINDOWEXT:
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_window_ext(
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->set_window_ext(
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SETWINDOWORG:
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SetWindowOrg(
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->SetWindowOrg(
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SETVIEWPORTEXT:
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_context_extents(
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->set_context_extents(
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SETVIEWPORTORG:
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->set_origin(
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->set_origin(
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SCALEWINDOWEXT:
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->scale_window_ext(
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->scale_window_ext(
    //    //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SCALEVIEWPORTEXT:
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->scale_context_extents(
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->scale_context_extents(
    //    //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_OFFSETVIEWPORTORG:
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->offset_origin(
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->offset_origin(
    //    //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SAVEDC:
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SaveDC();
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->SaveDC();
    //    //         break;
    //    //      case META_RESTOREDC:
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
    //    //         break;
    //    //      case META_SETBKCOLOR:
    //    //      {
-   //    //         auto pbrush = createø < ::draw2d::brush >();
+   //    //         auto pdraw2dbrush = createø < ::draw2d::brush >();
    //    //
-   //    //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
+   //    //         pdraw2dbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->SelectObject(brush);
    //    //      }
    //    //      break;
    //    //      case META_SETTEXTCOLOR:
    //    //      {
-   //    //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
-   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(brush);
+   //    //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
+   //    //         (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->SelectObject(brush);
    //    //      }
    //    //      break;
    //    //
@@ -5618,27 +5618,27 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //    //         {
    //    //            // object type is unknown, determine if it is a font
    //    //            HFONT hStockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
-   //    //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hStockFont);
-   //    //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hObject);
+   //    //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->m_hdc, hStockFont);
+   //    //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->m_hdc, hObject);
    //    //            if (hObjOld == hStockFont)
    //    //            {
    //    //               // got the stock object back, so must be selecting a font
    //    //               throw ::not_implemented();
-   //    ////                  (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+   //    ////                  (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pdraw2dgraphics->get_app(), (HFONT)hObject));
    //    //               break;  // don't play the default record
    //    //            }
    //    //            else
    //    //            {
    //    //               // didn't get the stock object back, so restore everything
-   //    //               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hFontOld);
-   //    //               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->m_hdc, hObjOld);
+   //    //               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->m_hdc, hFontOld);
+   //    //               ::SelectObject((dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->m_hdc, hObjOld);
    //    //            }
    //    //            // and fall through to PlayMetaFileRecord...
    //    //         }
    //    //         else if (nObjType == OBJ_FONT)
    //    //         {
    //    //            // play back as graphics::SelectObject(::write_text::font*)
-   //    ////               (dynamic_cast<::draw2d_opengl::graphics * >(pgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+   //    ////               (dynamic_cast<::draw2d_opengl::graphics * >(pdraw2dgraphics))->SelectObject(::draw2d_opengl::font::from_handle(pdraw2dgraphics->get_app(), (HFONT)hObject));
    //    //            throw ::not_implemented();
    //    //            break;  // don't play the default record
    //    //         }
@@ -5662,7 +5662,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   //   return ::PlayMetaFile(m_hdc, hMF) != false;
    //   //}
 
-   //   //// for special playback, lParam == pgraphics
+   //   //// for special playback, lParam == pdraw2dgraphics
    //   //return ::EnumMetaFile(m_hdc, hMF, __enum_meta_file_procedure, (LPARAM)this) != false;
    //   return false;
 
@@ -5810,9 +5810,9 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
 
       //   pmNew->Translate((plusplus::REAL) rectangleParam.left,(plusplus::REAL) rectangleParam.top);
-      //   pmNew->Scale((plusplus::REAL) m_pfont->m_dFontWidth,(plusplus::REAL) 1.0,plusplus::MatrixOrderAppend);
+      //   pmNew->Scale((plusplus::REAL) m_pwritetextfont->m_dFontWidth,(plusplus::REAL) 1.0,plusplus::MatrixOrderAppend);
 
-      //   plusplus::rectF float_rectangle(0,0,(plusplus::REAL) ((rectangleParam.right - rectangleParam.left) * m_pfont->m_dFontWidth),(plusplus::REAL) (rectangleParam.bottom - rectangleParam.top));
+      //   plusplus::rectF float_rectangle(0,0,(plusplus::REAL) ((rectangleParam.right - rectangleParam.left) * m_pwritetextfont->m_dFontWidth),(plusplus::REAL) (rectangleParam.bottom - rectangleParam.top));
 
       //   m_pgraphics->SetTransform(pmNew);
 
@@ -5869,13 +5869,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ////if(lpszString.is_empty())
       ////   return i32_size(0, 0);
-      //set(m_pfont);
+      //set(m_pwritetextfont);
 
-      //::pointer<font>pfont = m_pfont;
+      //::pointer<font>pwritetextfont = m_pwritetextfont;
 
       //::cast < draw2d_opengl::draw2d>pdraw2d = draw2d();
 
-      //::pointer <::typeface::face> pface = pdraw2d->get_face(pfont);
+      //::pointer <::typeface::face> pface = pdraw2d->get_face(pwritetextfont);
 
       //if (!pface->m_pgpurenderer)
       //{
@@ -5884,7 +5884,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      //   //glBindVertexArray(pfont->m_VAO);
+      //   //glBindVertexArray(pwritetextfont->m_VAO);
 
       //// iterate through all characters
       //::string strChar;
@@ -5935,7 +5935,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //         //glBindTexture(GL_TEXTURE_2D, ch.TextureID);
       //      //// update content of VBO memory
-      //      //glBindBuffer(GL_ARRAY_BUFFER, pfont->m_VBO);
+      //      //glBindBuffer(GL_ARRAY_BUFFER, pwritetextfont->m_VBO);
       //      //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertexes), vertexes); // be sure to use glBufferSubData and not glBufferData
 
       //      //auto pcommandbuffer = gpu_context()->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
@@ -5975,23 +5975,23 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       ////      break;
       ////}
 
-      ////set(m_pfont);
+      ////set(m_pwritetextfont);
 
-      ////::pointer<font>pfont = m_pfont;
+      ////::pointer<font>pwritetextfont = m_pwritetextfont;
 
       ////::i32_size s = { 0 };
 
-      ////::GetTextExtentPointW(pfont->m_hdcFont, wstr, wstr.get_length(), &s);
+      ////::GetTextExtentPointW(pwritetextfont->m_hdcFont, wstr, wstr.get_length(), &s);
 
       ////return s;
 
    }
 
 
-   void graphics::line(double x1, double y1, double x2, double y2, ::draw2d::pen * ppen)
+   void graphics::line(double x1, double y1, double x2, double y2, ::draw2d::pen * pdraw2dpen)
    {
 
-      ::gpu::graphics::line(x1, y1, x2, y2, ppen);
+      ::gpu::graphics::line(x1, y1, x2, y2, pdraw2dpen);
 
       return;
 
@@ -6026,7 +6026,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //::f64_point_array pointa;
 
-      //::f64_point pointPen(ppen->m_dWidth, ppen->m_dWidth);
+      //::f64_point pointPen(pdraw2dpen->m_dWidth, pdraw2dpen->m_dWidth);
 
       //::draw2d::make_line_triangles_cap_butt_square(
       //   pointa,
@@ -6036,7 +6036,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //
       //context_matrix().transform(pointa);
 
-      //auto color = m_ppen->m_color;
+      //auto color = m_pdraw2dpen->m_color;
 
       //float fA = color.f32_opacity();
       //float fR = color.f32_red() * fA;
@@ -6151,7 +6151,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //      }
 //
 //      pcontext->defer_bind(m_pgpushaderTextOut);
-//      auto color = m_pbrush->m_color;
+//      auto color = m_pdraw2dbrush->m_color;
 //      //shader.use();
 //      ::cast<::gpu_opengl::shader>pshader = m_pgpushaderTextOut;
 //      pshader->_set_vec4("textColor", { __expand_float_pre_rgba(color) });
@@ -6166,11 +6166,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //         0.0f);
 //      pshader->_set_matrix4("projection", projection);
 //
-//      set(m_pfont);
+//      set(m_pwritetextfont);
 //      
-//      ::pointer<font>pfont = m_pfont;
+//      ::pointer<font>pwritetextfont = m_pwritetextfont;
 //      
-//      auto pgpuface = get_face(pfont);
+//      auto pgpuface = get_face(pwritetextfont);
 //
 //      ::cast < ::typeface::face>pface = pgpuface;
 //
@@ -6200,13 +6200,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //
 //      }
 //      //float scale;
-//      //if (pfont->m_fontsize.eunit() == e_unit_point)
+//      //if (pwritetextfont->m_fontsize.eunit() == e_unit_point)
 //      //{
-//      //   scale = pfont->m_fontsize.as_float() / FONT_POINT_DENOMINATOR;
+//      //   scale = pwritetextfont->m_fontsize.as_float() / FONT_POINT_DENOMINATOR;
 //      //}
 //      //else
 //      //{
-//      //   scale = pfont->m_fontsize.as_float() / FONT_PIXEL_DENOMINATOR;
+//      //   scale = pwritetextfont->m_fontsize.as_float() / FONT_PIXEL_DENOMINATOR;
 //      //}
 //      //auto y = m_pgpucontextCompositor->m_rectangle.height() - yParam - pface->m_iPixelSize;
 //      auto y = yParam;
@@ -6376,7 +6376,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       //pcontext->defer_bind(m_pgpushaderTextOut);
 
-      auto color = m_pbrush->m_color;
+      auto color = m_pdraw2dbrush->m_color;
       //shader.use();
       ::cast<::gpu_opengl::shader>pshader = m_pgpushaderTextOut;
       pshader->_set_sequence4("textColor", { __expand_float_pre_rgba(color) });
@@ -6391,12 +6391,12 @@ color = vec4(c.r,c.g, c.b, c.a);
          0.0f);
       pshader->_set_matrix4("projection", projection);
 
-      set(m_pfont);
+      set(m_pwritetextfont);
 
-      ::pointer<font>pfont = m_pfont;
+      ::pointer<font>pwritetextfont = m_pwritetextfont;
 
 
-      auto pgpuface = get_face(pfont);
+      auto pgpuface = get_face(pwritetextfont);
 
       ::cast < ::typeface::face>pface = pgpuface;
 
@@ -6426,13 +6426,13 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       }
       //float scale;
-      //if (pfont->m_fontsize.eunit() == e_unit_point)
+      //if (pwritetextfont->m_fontsize.eunit() == e_unit_point)
       //{
-      //   scale = pfont->m_fontsize.as_float() / FONT_POINT_DENOMINATOR;
+      //   scale = pwritetextfont->m_fontsize.as_float() / FONT_POINT_DENOMINATOR;
       //}
       //else
       //{
-      //   scale = pfont->m_fontsize.as_float() / FONT_PIXEL_DENOMINATOR;
+      //   scale = pwritetextfont->m_fontsize.as_float() / FONT_PIXEL_DENOMINATOR;
       //}
       //auto y = m_pgpucontextCompositor->m_rectangle.height() - yParam - pface->m_iPixelSize;
       auto y = yParam;
@@ -6543,7 +6543,7 @@ color = vec4(c.r,c.g, c.b, c.a);
    //void graphics::text_out_2024_and_before(double x, double y, const ::scoped_string& scopedstr)
    //{
 
-   //   if (m_pfont.is_null())
+   //   if (m_pwritetextfont.is_null())
    //   {
 
    //      return;
@@ -6560,23 +6560,23 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //   //return true;
 
-   //   set(m_pfont);
+   //   set(m_pwritetextfont);
 
-   //   ::pointer<font>pfont = m_pfont;
+   //   ::pointer<font>pwritetextfont = m_pwritetextfont;
 
    //   float length = 0.f;
 
    //   for (unsigned int loop = 0; loop < scopedstr.size(); loop++)	// Loop To Find Text Length
    //   {
 
-   //      length += pfont->m_gmf[scopedstr[loop]].gmfCellIncX;			// Increase Length By Each Characters Width
+   //      length += pwritetextfont->m_gmf[scopedstr[loop]].gmfCellIncX;			// Increase Length By Each Characters Width
 
    //   }
 
    //   glTranslatef((float)(x), (float)(y), 0.0f);					// Center Our Text On The Screen
 
    //   glPushAttrib(GL_LIST_BIT);							// Pushes The Display List Bits
-   //   glListBase(pfont->m_baseFont);									// Sets The Base Character to 0
+   //   glListBase(pwritetextfont->m_baseFont);									// Sets The Base Character to 0
    //   glCallLists((GLsizei)scopedstr.size(), GL_UNSIGNED_BYTE, scopedstr.begin());	// Draws The Display List Text
    //   glPopAttrib();										// Pops The Display List Bits      }
 
@@ -6595,13 +6595,13 @@ color = vec4(c.r,c.g, c.b, c.a);
    }
 
 
-   void graphics::set(::draw2d::pen* ppen)
+   void graphics::set(::draw2d::pen* pdraw2dpen)
    {
 
-      ::draw2d::graphics::set(ppen);
-      //glLineWidth(ppen->m_dWidth);
+      ::draw2d::graphics::set(pdraw2dpen);
+      //glLineWidth(pdraw2dpen->m_dWidth);
 
-      //::opengl::color(ppen->m_color);
+      //::opengl::color(pdraw2dpen->m_color);
 
       //return ::success;
 
@@ -6609,11 +6609,11 @@ color = vec4(c.r,c.g, c.b, c.a);
 
 
 
-   void graphics::set(::draw2d::brush* pbrush)
+   void graphics::set(::draw2d::brush* pdraw2dbrush)
    {
 
-      ::draw2d::graphics::set(pbrush);
-      //::opengl::color(pbrush->m_color);
+      ::draw2d::graphics::set(pdraw2dbrush);
+      //::opengl::color(pdraw2dbrush->m_color);
 
       //return ::success;
 
@@ -6621,10 +6621,10 @@ color = vec4(c.r,c.g, c.b, c.a);
 
 
 
-   void graphics::set(::write_text::font* pfont)
+   void graphics::set(::write_text::font* pwritetextfont)
    {
 
-      if (::is_null(pfont))
+      if (::is_null(pwritetextfont))
       {
 
          //return ::error_failed;
@@ -6632,16 +6632,16 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       }
 
-      ::draw2d::graphics::set(pfont);
+      ::draw2d::graphics::set(pwritetextfont);
 
-      //pfont->get_os_data(this);
+      //pwritetextfont->get_os_data(this);
 
       //return ::success;
 
    }
 
 
-   void graphics::set(::draw2d::bitmap* pbitmap)
+   void graphics::set(::draw2d::bitmap* pdraw2dbitmap)
    {
 
       //return ::success;
@@ -6879,13 +6879,13 @@ color = vec4(c.r,c.g, c.b, c.a);
    void* graphics::detach()
    {
 
-      //plusplus::Graphics * pgraphics = m_pgraphics;
+      //plusplus::Graphics * pdraw2dgraphics = m_pgraphics;
 
       //m_pgraphics = nullptr;
 
       //m_hdc = nullptr;
 
-      //return pgraphics;
+      //return pdraw2dgraphics;
 
       return nullptr;
 
@@ -6893,36 +6893,36 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //plusplus::Font * graphics::gl2d_font()
    //{
-   //   if(m_pfont.is_null())
+   //   if(m_pwritetextfont.is_null())
    //   {
-   //      m_pfont.create(this);
-   //      if(m_pfont.is_set())
+   //      m_pwritetextfont.create(this);
+   //      if(m_pwritetextfont.is_set())
    //      {
-   //         m_pfont->m_powner = this;
+   //         m_pwritetextfont->m_powner = this;
    //      }
    //   }
-   //   if(m_pfont.is_null())
+   //   if(m_pwritetextfont.is_null())
    //   {
    //      return nullptr;
    //   }
-   //   return (plusplus::Font *) m_pfont->get_os_data();
+   //   return (plusplus::Font *) m_pwritetextfont->get_os_data();
    //}
 
    //plusplus::Brush * graphics::gl2d_brush()
    //{
-   //   if(m_pbrush.is_null())
+   //   if(m_pdraw2dbrush.is_null())
    //   {
-   //      m_pbrush.create(this);
-   //      if(m_pbrush.is_set())
+   //      m_pdraw2dbrush.create(this);
+   //      if(m_pdraw2dbrush.is_set())
    //      {
-   //         m_pbrush->m_powner = this;
+   //         m_pdraw2dbrush->m_powner = this;
    //      }
    //   }
-   //   if(m_pbrush.is_null())
+   //   if(m_pdraw2dbrush.is_null())
    //   {
    //      return nullptr;
    //   }
-   //   return (plusplus::Brush *) m_pbrush->get_os_data();
+   //   return (plusplus::Brush *) m_pdraw2dbrush->get_os_data();
    //}
 
    //plusplus::Pen * graphics::gl2d_pen()
@@ -6930,19 +6930,19 @@ color = vec4(c.r,c.g, c.b, c.a);
 
    //   synchronous_lock synchronouslock(this->synchronization());
 
-   //   if(m_ppen.is_null())
+   //   if(m_pdraw2dpen.is_null())
    //   {
-   //      m_ppen.create(this);
-   //      if(m_ppen.is_set())
+   //      m_pdraw2dpen.create(this);
+   //      if(m_pdraw2dpen.is_set())
    //      {
-   //         m_ppen->m_powner = this;
+   //         m_pdraw2dpen->m_powner = this;
    //      }
    //   }
-   //   if(m_ppen.is_null())
+   //   if(m_pdraw2dpen.is_null())
    //   {
    //      return nullptr;
    //   }
-   //   return (plusplus::Pen *) m_ppen->get_os_data();
+   //   return (plusplus::Pen *) m_pdraw2dpen->get_os_data();
    //}
 
    //plusplus::FillMode graphics::gl2d_get_fill_mode()
@@ -6956,7 +6956,7 @@ color = vec4(c.r,c.g, c.b, c.a);
 
       //   // Commented Out for Running in cosan machine running Windows 2008
 
-      //   //if(m_pbitmap.is_null() || m_pbitmap->get_os_data() == nullptr)
+      //   //if(m_pdraw2dbitmap.is_null() || m_pdraw2dbitmap->get_os_data() == nullptr)
       //   //   return false;
 
       //   //plusplus::BlurParams myBlurParams;
@@ -6990,9 +6990,9 @@ color = vec4(c.r,c.g, c.b, c.a);
       //   //rectangle.right     = (::double) points[1].X;
       //   //rectangle.bottom    = (::double) points[1].Y;
 
-      //   //plusplus::Bitmap * pbitmap = ((plusplus::Bitmap *) m_pbitmap->get_os_data());
+      //   //plusplus::Bitmap * pdraw2dbitmap = ((plusplus::Bitmap *) m_pdraw2dbitmap->get_os_data());
 
-      //   //pbitmap->ApplyEffect(&myBlur, &rectangle);
+      //   //pdraw2dbitmap->ApplyEffect(&myBlur, &rectangle);
 
       //   return true;
 

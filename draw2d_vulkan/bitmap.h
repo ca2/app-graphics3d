@@ -186,16 +186,16 @@ namespace draw2d_vulkan
       bool LoadBitmap(const ::string & lpszResourceName);
       bool LoadBitmap(unsigned int nIDResource);
       bool LoadOEMBitmap(unsigned int nIDBitmap); // for OBM_/OCR_/OIC_
-      bool CreateBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight, unsigned int nPlanes, unsigned int nBitcount, const void * lpBits, int stride);
+      bool CreateBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight, unsigned int nPlanes, unsigned int nBitcount, const void * lpBits, int stride);
 #if defined(WINDOWS_DESKTOP)
-      bool CreateBitmapIndirect(::draw2d::graphics * pgraphics, LPBITMAP lpBitmap);
+      bool CreateBitmapIndirect(::draw2d::graphics * pdraw2dgraphics, LPBITMAP lpBitmap);
 #endif
-      void CreateCompatibleBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
-      void CreateDiscardableBitmap(::draw2d::graphics * pgraphics, int nWidth, int nHeight);
+      void CreateCompatibleBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight);
+      void CreateDiscardableBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight);
       
       void _create_gpu_bitmap(const ::i32_size & size, ::draw2d::graphics * pdraw2dgraphics, pixmap_t * ppixmap =nullptr) override;
-      void create_bitmap(::draw2d::graphics * pgraphics, const ::i32_size& size, ::pixmap * ppixmap) override;
-      void CreateDIBitmap(::draw2d::graphics * pgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
+      void create_bitmap(::draw2d::graphics * pdraw2dgraphics, const ::i32_size& size, ::pixmap * ppixmap) override;
+      void CreateDIBitmap(::draw2d::graphics * pdraw2dgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
 
 #if defined(WINDOWS_DESKTOP)
 

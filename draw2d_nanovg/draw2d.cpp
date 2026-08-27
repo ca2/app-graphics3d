@@ -81,18 +81,18 @@ namespace draw2d_nanovg
 
          }
 
-         auto pgraphics = allocate_graphics(pacmeuserinteractionAffinity);
+         auto pdraw2dgraphics = allocate_graphics(pacmeuserinteractionAffinity);
 
-         pgraphics->update_as_image_render_target(pimage);
+         pdraw2dgraphics->update_as_image_render_target(pimage);
 
-         return pgraphics;
+         return pdraw2dgraphics;
 
-         //auto pbitmap = pimage->get_bitmap();
+         //auto pdraw2dbitmap = pimage->get_bitmap();
 
-         //if (::is_set(pbitmap))
+         //if (::is_set(pdraw2dbitmap))
          //{
 
-         //   pgraphics->create_bitmap_graphics(pbitmap);
+         //   pdraw2dgraphics->create_bitmap_graphics(pdraw2dbitmap);
          //}
          //else
          //{
@@ -102,25 +102,25 @@ namespace draw2d_nanovg
       }
       else
       {
-         auto pgraphics = allocate_graphics(pacmeuserinteractionAffinity);
-         pgraphics->create_memory_graphics(size, pacmeuserinteractionAffinity);
-         return pgraphics;
+         auto pdraw2dgraphics = allocate_graphics(pacmeuserinteractionAffinity);
+         pdraw2dgraphics->create_memory_graphics(size, pacmeuserinteractionAffinity);
+         return pdraw2dgraphics;
       }
 
 
 
       //return ::draw2d::draw2d::do_allocation_strategy(pdraw2dhost, pimage, size);
 
-      //auto pgraphics = create_memory_graphics(pdraw2dhost, size);
+      //auto pdraw2dgraphics = create_memory_graphics(pdraw2dhost, size);
 
       //if (::is_set(pimage))
       //{
 
-      //   pimage->create_from_graphics(pgraphics);
+      //   pimage->create_from_graphics(pdraw2dgraphics);
 
       //}
 
-      //return pgraphics;
+      //return pdraw2dgraphics;
 
    }
 
@@ -237,40 +237,40 @@ namespace draw2d_nanovg
    //draw2d::private_font * draw2d::get_file_private_font(::platform::context * pcontext, const ::file::path & path)
    //{
 
-   //   auto & pfont = m_mapPrivateFont[path];
+   //   auto & pwritetextfont = m_mapPrivateFont[path];
 
-   //   if (::is_set(pfont))
+   //   if (::is_set(pwritetextfont))
    //   {
 
-   //      return pfont;
+   //      return pwritetextfont;
 
    //   }
 
-   //   construct_newø(pfont);
+   //   construct_newø(pwritetextfont);
 
-   //   pfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
+   //   pwritetextfont->m_pcollection = ___new Gdiplus::PrivateFontCollection();
 
    //   auto pmemory = system()->draw2d()->write_text()->get_file_memory(pcontext, path);
 
    //   if (pmemory->has_data())
    //   {
 
-   //      pfont->m_pcollection->AddMemoryFont(pmemory->data(), (INT)pmemory->size());
+   //      pwritetextfont->m_pcollection->AddMemoryFont(pmemory->data(), (INT)pmemory->size());
 
-   //      auto & fontCollection = *pfont->m_pcollection;
+   //      auto & fontCollection = *pwritetextfont->m_pcollection;
 
    //      auto iFamilyCount = fontCollection.GetFamilyCount();
 
-   //      pfont->m_familya.set_size(iFamilyCount);
+   //      pwritetextfont->m_familya.set_size(iFamilyCount);
 
-   //      fontCollection.GetFamilies(iFamilyCount, pfont->m_familya.data(), &pfont->m_iFamilyCount);
+   //      fontCollection.GetFamilies(iFamilyCount, pwritetextfont->m_familya.data(), &pwritetextfont->m_iFamilyCount);
 
-   //      pfont->m_familya.set_size(iFamilyCount);
+   //      pwritetextfont->m_familya.set_size(iFamilyCount);
 
    //      for (int iFamily = 0; iFamily < iFamilyCount; iFamily++)
    //      {
 
-   //         if (pfont->m_familya[iFamily].GetLastStatus() != Gdiplus::Ok)
+   //         if (pwritetextfont->m_familya[iFamily].GetLastStatus() != Gdiplus::Ok)
    //         {
 
    //            warningf("font family nok");
@@ -281,7 +281,7 @@ namespace draw2d_nanovg
 
    //   }
 
-   //   return pfont;
+   //   return pwritetextfont;
 
    //}
 
@@ -326,15 +326,15 @@ namespace draw2d_nanovg
    }
 
 
-   ::string draw2d::defer_load_font(NVGcontext * pdc, ::write_text::font * pfont)
+   ::string draw2d::defer_load_font(NVGcontext * pdc, ::write_text::font * pwritetextfont)
    {
 
       _synchronous_lock lock(m_pmutex);
 
       ::write_text::font_face_request request;
-      request.m_strFamily = pfont->family_name();
-      request.m_fontweight = pfont->m_fontweight;
-      request.m_bItalic = pfont->m_bItalic;
+      request.m_strFamily = pwritetextfont->family_name();
+      request.m_fontweight = pwritetextfont->m_fontweight;
+      request.m_bItalic = pwritetextfont->m_bItalic;
 
       ::string strFontKey;
       strFontKey.formatf(

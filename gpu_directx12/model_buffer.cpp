@@ -196,7 +196,7 @@ namespace gpu_directx12
       ::cast < memory_buffer > pbufferVertex = m_pbufferVertex;
 
       m_vertexbufferview.BufferLocation = pbufferVertex->m_pd3d12resourceMemoryBuffer->gpu_address();
-      m_vertexbufferview.StrideInBytes = m_pmodeldatabase2->vertex_type_size();
+      m_vertexbufferview.StrideInBytes = (UINT) m_pmodeldatabase2->vertex_type_size();
       m_vertexbufferview.SizeInBytes = (UINT) block.size();
 
 
@@ -401,7 +401,7 @@ namespace gpu_directx12
       auto pcommandlist = pcommandbuffer->m_pcommandlist;
 
 
-      int iIndexCount = m_pmodeldatabase2->index_count();
+      int iIndexCount = (int)  m_pmodeldatabase2->index_count();
 
       if (iIndexCount > 0)
       {
@@ -421,7 +421,7 @@ namespace gpu_directx12
       
          auto iVertexCount = m_pmodeldatabase2->vertex_count();
          //   vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
-         pcommandlist->DrawInstanced(iVertexCount, // Number of vertexes to draw
+         pcommandlist->DrawInstanced((UINT) iVertexCount, // Number of vertexes to draw
             1,
             0,                  // Start vertex location
             0

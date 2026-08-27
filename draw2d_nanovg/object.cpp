@@ -54,7 +54,7 @@ namespace draw2d_nanovg
 
    bool object::delete_object()
    {
-      //if (get_os_data() == nullptr)
+      //if (nok())
         // return false;
       //return ::DeleteObject(detach());
       return false;

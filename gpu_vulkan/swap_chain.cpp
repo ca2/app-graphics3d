@@ -659,7 +659,7 @@ namespace gpu_vulkan
        }
     }
     m_gpusemaphoreaWait.clear();
-    presentInfo.waitSemaphoreCount = vksemaphoreaWait.size();
+    presentInfo.waitSemaphoreCount = (uint32_t) vksemaphoreaWait.size();
     presentInfo.pWaitSemaphores = vksemaphoreaWait.data();
 
 
@@ -672,7 +672,7 @@ namespace gpu_vulkan
     VkResult  res = pqueuePresent->present(&presentInfo);
 
       // Advance frame
-      int iSize = m_ptexturesiteaSwapChain->size();
+      int iSize = (int) m_ptexturesiteaSwapChain->size();
 
       m_iCurrentSwapChainFrame = (m_iCurrentSwapChainFrame + 1) % iSize;
 
@@ -695,7 +695,7 @@ namespace gpu_vulkan
 
       }
 
-      return m_ptexturesiteaSwapChain->size();
+      return (int) m_ptexturesiteaSwapChain->size();
 
    }
 

@@ -24,7 +24,7 @@ namespace draw2d_vkvg
    }
 
 
-   //plusplus::GraphicsPath * path::get_os_path(plusplus::Graphics * pgraphics)
+   //plusplus::GraphicsPath * path::get_os_path(plusplus::Graphics * pdraw2dgraphics)
    //{
 
    //   if(m_bUpdated)
@@ -32,7 +32,7 @@ namespace draw2d_vkvg
 
    //   destroy();
 
-   //   create(pgraphics);
+   //   create(pdraw2dgraphics);
 
    //   return m_ppath;
 
@@ -202,7 +202,7 @@ namespace draw2d_vkvg
    }
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_arc& parc)
+   bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::f64_arc& parc)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -212,7 +212,7 @@ namespace draw2d_vkvg
    }
 
         
-   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_line& pline)
+   bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::f64_line& pline)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -222,7 +222,7 @@ namespace draw2d_vkvg
    }
 
 
-   //bool path::_set(::draw2d::graphics* pgraphics, const ::lined& pline)
+   //bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::lined& pline)
    //{
 
    //   throw ::exception(todo("::vulkan::path"));
@@ -232,7 +232,7 @@ namespace draw2d_vkvg
    //}
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_lines& pline)
+   bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::f64_lines& pline)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -242,7 +242,7 @@ namespace draw2d_vkvg
    }
 
 
-   //bool path::_set(::draw2d::graphics* pgraphics, const ::linesd& pline)
+   //bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::linesd& pline)
    //{
 
    //   throw ::exception(todo("::vulkan::path"));
@@ -252,7 +252,7 @@ namespace draw2d_vkvg
    //}
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_rectangle & prectangle)
+   bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::f64_rectangle & prectangle)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -262,7 +262,7 @@ namespace draw2d_vkvg
    }
 
 
-   //bool path::_set(::draw2d::graphics* pgraphics, const ::f64_rectangle& prectangle)
+   //bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::f64_rectangle& prectangle)
    //{
 
    //   throw ::exception(todo("::vulkan::path"));
@@ -272,7 +272,7 @@ namespace draw2d_vkvg
    //}
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::f64_polygon& ppolygon)
+   bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::f64_polygon& ppolygon)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -282,7 +282,7 @@ namespace draw2d_vkvg
    }
 
 
-   //bool path::_set(::draw2d::graphics* pgraphics, const ::f64_polygon& ppolygond)
+   //bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::f64_polygon& ppolygond)
    //{
 
    //   throw ::exception(todo("::vulkan::path"));
@@ -292,7 +292,7 @@ namespace draw2d_vkvg
    //}
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::write_text::text_out& ptextout)
+   bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::write_text::text_out& ptextout)
    {
 
       throw ::exception(todo, "::vulkan::path");
@@ -302,7 +302,7 @@ namespace draw2d_vkvg
    }
 
 
-   bool path::_set(::draw2d::graphics* pgraphics, const ::write_text::draw_text& pdrawtext)
+   bool path::_set(::draw2d::graphics * pdraw2dgraphics, const ::write_text::draw_text& pdrawtext)
    {
 
       throw ::exception(todo, "::vulkan::path");

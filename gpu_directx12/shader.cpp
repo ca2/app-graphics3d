@@ -320,12 +320,12 @@ namespace gpu_directx12
 
                   rootParameters.add_new().InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-                  pbindingset->m_iXYZ_Index = rootParameters.get_upper_bound();
+                  pbindingset->m_iXYZ_Index = (::i32) rootParameters.get_upper_bound();
 
                   rootParameters.add_new().InitAsDescriptorTable(1, &samplerRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
 
-                  pbindingset->m_iXYZ_IndexSampler = rootParameters.get_upper_bound();
+                  pbindingset->m_iXYZ_IndexSampler =(::i32) rootParameters.get_upper_bound();
 
                   //               CD3DX12_ROOT_SIGNATURE_DESC rsDesc(_countof(params), params, 0, nullptr,
                   //                                                D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);

@@ -73,6 +73,14 @@ namespace app_graphics3d_continuum
    void application::init_instance()
    {
 
+      auto pcontext = m_papplication;
+
+      auto psession = pcontext->m_psession;
+
+      auto puser = psession->m_puser;
+
+      puser->will_use_impact_hint("font_selection_impact");
+      puser->will_use_impact_hint("color_selection_impact");
 
       factory()->add_factory_item <::app_graphics3d_continuum::document >();
       factory()->add_factory_item <::app_graphics3d_continuum::main_frame >();
@@ -208,9 +216,9 @@ namespace app_graphics3d_continuum
 
       auto pstillTitle = create_label<::user::still>(pparent, "graphics3d continuum Options");
 
-      defer_constructø(pstillTitle->m_pfont);
+      defer_constructø(pstillTitle->m_pwritetextfont);
 
-      pstillTitle->m_pfont->create_font(e_font_sans_ui, 24_pt);
+      pstillTitle->m_pwritetextfont->create_font(e_font_sans_ui, 24_pt);
 
       auto playoutLine = create_line_layout(pparent, e_orientation_horizontal);
 

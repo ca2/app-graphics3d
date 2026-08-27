@@ -71,36 +71,36 @@ namespace draw2d_direct2d_for_directx12
    }
 
 
-   ::f32 font::_dwrite_font_size(::draw2d::graphics * pgraphics)
+   ::f32 font::_dwrite_font_size(::draw2d::graphics * pdraw2dgraphics)
    {
       ::f32 fFontSize;
 
       //::acme::windowing::window * pacmewindowingwindow = nullptr;
       //
-      //if (::is_set(pgraphics))
+      //if (::is_set(pdraw2dgraphics))
       //{
       // 
-      //   oswindow = pgraphics->get_window_handle();
+      //   oswindow = pdraw2dgraphics->get_window_handle();
 
       //}
 
       if (m_fontsize.eunit() == ::e_unit_point)
       {
 
-         fFontSize = (::f32)pgraphics->m_pacmeuserinteractionAffinity->point_dpi(m_fontsize.as_f64());
+         fFontSize = (::f32)pdraw2dgraphics->m_pacmeuserinteractionAffinity->point_dpi(m_fontsize.as_f64());
 
       }
       else
       {
 
-         fFontSize = (::f32)pgraphics->m_pacmeuserinteractionAffinity->dpiy(m_fontsize.as_f64());
+         fFontSize = (::f32)pdraw2dgraphics->m_pacmeuserinteractionAffinity->dpiy(m_fontsize.as_f64());
 
       }
 
-      if (::is_set(pgraphics))
+      if (::is_set(pdraw2dgraphics))
       {
 
-         fFontSize *= (::f32)pgraphics->m_dSizeScaler;
+         fFontSize *= (::f32)pdraw2dgraphics->m_dSizeScaler;
 
       }
 
@@ -118,61 +118,63 @@ namespace draw2d_direct2d_for_directx12
    }
 
 
-   void font::create(::draw2d::graphics * pgraphics, ::i8 iCreate)
+   void font::update(::draw2d::graphics * pdraw2dgraphics)
    {
 
-      if(m_pformat == nullptr || is_modified(::draw2d::e_default_object))
-      {
+      ::draw2d_direct2d_for_directx12::font::update(pdraw2dgraphics);
 
-         if(m_pformat)
-         {
+      //if(m_pformat == nullptr || is_modified())
+      //{
 
-            destroy();
+      //   if(m_pformat)
+      //   {
 
-         }
+      //      destroy();
 
-         IDWriteFactory * pfactory = direct2d()->dwrite_factory();
+      //   }
 
-         if (!defer_load_internal_font(pgraphics))
-         {
+      //   IDWriteFactory * pfactory = direct2d()->dwrite_factory();
 
-            HRESULT hr = pfactory->CreateTextFormat(
-               wstring(m_pfontfamily->family_name(this)),
-               nullptr,
-               _dwrite_font_weight(),
-               _dwrite_font_style(),
-               _dwrite_font_stretch(),
-               _dwrite_font_size(pgraphics),
-               L"",
-               &m_pformat);
+      //   if (!defer_load_internal_font(pdraw2dgraphics))
+      //   {
 
-            if (FAILED(hr) || m_pformat == nullptr)
-            {
+      //      HRESULT hr = pfactory->CreateTextFormat(
+      //         wstring(m_pfontfamily->family_name(this)),
+      //         nullptr,
+      //         _dwrite_font_weight(),
+      //         _dwrite_font_style(),
+      //         _dwrite_font_stretch(),
+      //         _dwrite_font_size(pdraw2dgraphics),
+      //         L"",
+      //         &m_pformat);
 
-               warning() << "font::get_os_font: " << hresult_text(hr);
+      //      if (FAILED(hr) || m_pformat == nullptr)
+      //      {
 
-               //return false;
+      //         warning() << "font::get_os_font: " << hresult_text(hr);
 
-               throw ::exception(error_failed);
+      //         //return false;
 
-            }
+      //         throw ::exception(error_failed);
 
-         }
+      //      }
 
-         create_text_metrics(pgraphics);
+      //   }
 
-      }
+      //   create_text_metrics(pdraw2dgraphics);
 
-      m_osdata[0] = m_pformat;
+      //}
 
-      m_baCalculated[0] = true;
+      //m_osdata[0] = m_pformat;
 
-      //return (IDWriteTextFormat *) m_pformat;
+      //m_baCalculated[0] = true;
+
+      ////return (IDWriteTextFormat *) m_pformat;
 
    }
 
 
-   void font::create_text_metrics(::draw2d::graphics * pgraphics)
+   void font::create_text_metrics(::draw2d::graphics * pdraw2dgraphics)
    {
 
       WCHAR name[256];
@@ -268,7 +270,7 @@ namespace draw2d_direct2d_for_directx12
 
       HRESULT hrFindFont = E_FAIL;
 
-      if (!m_pfont)
+      if (!m_pwritetextfont)
       {
 
          auto weight = m_pformat->GetFontWeight();
@@ -283,9 +285,9 @@ namespace draw2d_direct2d_for_directx12
             hrFindFont = m_pfamily->GetFirstMatchingFont(
               weight,
               stretch,
-              style, &m_pfont);
+              style, &m_pwritetextfont);
 
-            if (SUCCEEDED(hrFindFont) && m_pfont)
+            if (SUCCEEDED(hrFindFont) && m_pwritetextfont)
             {
 
                break;
@@ -344,7 +346,7 @@ namespace draw2d_direct2d_for_directx12
 
       }
 
-      if (FAILED(hrFindFont) || !m_pfont)
+      if (FAILED(hrFindFont) || !m_pwritetextfont)
       {
 
          m_textmetric2.m_dAscent = 0;
@@ -361,7 +363,7 @@ namespace draw2d_direct2d_for_directx12
 
       DWRITE_FONT_METRICS metrics;
 
-      m_pfont->GetMetrics(&metrics);
+      m_pwritetextfont->GetMetrics(&metrics);
 
       ::f64 ratio = m_pformat->GetFontSize() / (::f32)metrics.designUnitsPerEm;
 
@@ -374,22 +376,23 @@ namespace draw2d_direct2d_for_directx12
    }
 
 
+   //void font::destroy()
+   //{
+
+   //   destroy_os_data();
+
+   //   ::write_text::font::destroy();
+
+   //}
+
+
    void font::destroy()
    {
 
-      destroy_os_data();
+      ::draw2d_direct2d_for_directx11::font::destroy();
+      //m_pformat = nullptr;
 
-      ::write_text::font::destroy();
-
-   }
-
-
-   void font::destroy_os_data()
-   {
-
-      m_pformat = nullptr;
-
-      object::destroy_os_data();
+      //object::destroy();
 
    }
 

@@ -102,10 +102,10 @@ auto iContextHeight = pcontext->height()
 
    }
 
-   void thread_graphics(graphics* pgraphics)
+   void thread_graphics(graphics* pdraw2dgraphics)
    {
 
-      ::get_task()->payload("draw2d_vulkan::graphics") = pgraphics;
+      ::get_task()->payload("draw2d_vulkan::graphics") = pdraw2dgraphics;
 
    }
 
@@ -351,7 +351,7 @@ auto iContextHeight = pcontext->height()
    }
 
 
-   //void graphics::create_compatible_graphics(::draw2d::graphics* pgraphics)
+   //void graphics::create_compatible_graphics(::draw2d::graphics * pdraw2dgraphics)
    //{
 
    //   vulkan_create_offscreen_buffer({ 0, 0, 1920, 1080 });
@@ -428,19 +428,19 @@ auto iContextHeight = pcontext->height()
 
 #endif
 
-   ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pbitmap)
+   ::draw2d::bitmap* graphics::SelectObject(::draw2d::bitmap* pdraw2dbitmap)
    {
 
-      if (m_pbitmap == pbitmap)
+      if (m_pdraw2dbitmap == pdraw2dbitmap)
       {
 
-         return m_pbitmap;
+         return m_pdraw2dbitmap;
 
       }
 
       vulkan_delete_offscreen_buffer();
 
-      if (!vulkan_create_offscreen_buffer({}, {}, pbitmap->size()))
+      if (!vulkan_create_offscreen_buffer({}, {}, pdraw2dbitmap->size()))
       {
 
          return NULL;
@@ -449,9 +449,9 @@ auto iContextHeight = pcontext->height()
 
       bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
-      m_pbitmap = pbitmap;
+      m_pdraw2dbitmap = pdraw2dbitmap;
 
-      return m_pbitmap;
+      return m_pdraw2dbitmap;
 
    }
 
@@ -796,33 +796,33 @@ auto iContextHeight = pcontext->height()
    //}
 
 
-   bool graphics::fill(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   bool graphics::fill(::draw2d::brush* pdraw2dbrush, double xOrg, double yOrg)
    {
 
       //_synchronous_lock ml(::draw2d_cairo::mutex());
 
-      if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+      if (pdraw2dbrush == nullptr || pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
       {
 
          return true;
 
       }
 
-      _fill1(pbrush, xOrg, yOrg);
+      _fill1(pdraw2dbrush, xOrg, yOrg);
 
       //vkvg_fill(m_pdc);
 
-      _fill2(pbrush, xOrg, yOrg);
+      _fill2(pdraw2dbrush, xOrg, yOrg);
 
       return true;
 
    }
 
 
-   bool graphics::_fill1(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   bool graphics::_fill1(::draw2d::brush* pdraw2dbrush, double xOrg, double yOrg)
    {
 
-      if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+      if (pdraw2dbrush == nullptr || pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
       {
 
          return true;
@@ -836,13 +836,13 @@ auto iContextHeight = pcontext->height()
 
       //   cairo_push_group(m_pdc);
 
-      //   _set(pbrush, xOrg, yOrg);
+      //   _set(pdraw2dbrush, xOrg, yOrg);
 
       //}
       //else
       {
 
-         _set(pbrush, xOrg, yOrg);
+         _set(pdraw2dbrush, xOrg, yOrg);
 
       }
 
@@ -850,43 +850,43 @@ auto iContextHeight = pcontext->height()
 
    }
 
-   bool graphics::_set(::draw2d::brush* pbrush, double x, double y)
+   bool graphics::_set(::draw2d::brush* pdraw2dbrush, double x, double y)
    {
 
       //_synchronous_lock ml(::draw2d_cairo::mutex());
 
-      //vkvg todo if (pbrush->m_ebrush == ::draw2d::e_brush_radial_gradient_color)
+      //vkvg todo if (pdraw2dbrush->m_ebrush == ::draw2d::e_brush_radial_gradient_color)
       //{
 
-      //   cairo_pattern_t* ppattern = cairo_pattern_create_radial(pbrush->m_point.x - x, pbrush->m_point.y - y, 0,
-      //      pbrush->m_point.x - x, pbrush->m_point.y - y,
-      //      maximum(pbrush->m_size.cx, pbrush->m_size.cy));
+      //   cairo_pattern_t* ppattern = cairo_pattern_create_radial(pdraw2dbrush->m_point.x - x, pdraw2dbrush->m_point.y - y, 0,
+      //      pdraw2dbrush->m_point.x - x, pdraw2dbrush->m_point.y - y,
+      //      maximum(pdraw2dbrush->m_size.cx, pdraw2dbrush->m_size.cy));
 
-      //   cairo_pattern_add_color_stop_rgba(ppattern, 0., __expand_float_rgba(pbrush->m_color1));
+      //   cairo_pattern_add_color_stop_rgba(ppattern, 0., __expand_float_rgba(pdraw2dbrush->m_color1));
 
-      //   cairo_pattern_add_color_stop_rgba(ppattern, 1., __expand_float_rgba(pbrush->m_color2));
+      //   cairo_pattern_add_color_stop_rgba(ppattern, 1., __expand_float_rgba(pdraw2dbrush->m_color2));
 
       //   cairo_set_source(m_pdc, ppattern);
 
       //   cairo_pattern_destroy(ppattern);
 
       //}
-      //else if (pbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
+      //else if (pdraw2dbrush->m_ebrush == ::draw2d::e_brush_linear_gradient_point_color)
       //{
 
-      //   double x0 = pbrush->m_point1.x - x;
+      //   double x0 = pdraw2dbrush->m_point1.x - x;
 
-      //   double y0 = pbrush->m_point1.y - y;
+      //   double y0 = pdraw2dbrush->m_point1.y - y;
 
-      //   double x1 = pbrush->m_point2.x - x;
+      //   double x1 = pdraw2dbrush->m_point2.x - x;
 
-      //   double y1 = pbrush->m_point2.y - y;
+      //   double y1 = pdraw2dbrush->m_point2.y - y;
 
       //   cairo_pattern_t* ppattern = cairo_pattern_create_linear(x0, y0, x1, y1);
 
-      //   cairo_pattern_add_color_stop_rgba(ppattern, 0., __expand_double_rgba(pbrush->m_color1));
+      //   cairo_pattern_add_color_stop_rgba(ppattern, 0., __expand_double_rgba(pdraw2dbrush->m_color1));
 
-      //   cairo_pattern_add_color_stop_rgba(ppattern, 1., __expand_double_rgba(pbrush->m_color2));
+      //   cairo_pattern_add_color_stop_rgba(ppattern, 1., __expand_double_rgba(pdraw2dbrush->m_color2));
 
       //   cairo_set_source(m_pdc, ppattern);
 
@@ -894,14 +894,14 @@ auto iContextHeight = pcontext->height()
 
 
       //}
-      //else if (pbrush->m_ebrush == ::draw2d::e_brush_box_gradient)
+      //else if (pdraw2dbrush->m_ebrush == ::draw2d::e_brush_box_gradient)
       //{
 
-      //   f64_rectangle outer(pbrush->m_point, pbrush->m_size);
+      //   f64_rectangle outer(pdraw2dbrush->m_point, pdraw2dbrush->m_size);
       //   f64_rectangle inner(outer);
-      //   inner.deflate(pbrush->m_dRadius);
+      //   inner.deflate(pdraw2dbrush->m_dRadius);
       //   double K = 0.5522847498; // For HalfPi arc (90 degrees)
-      //   double KR = K * pbrush->m_dRadius;
+      //   double KR = K * pdraw2dbrush->m_dRadius;
 
 
       //   //https://stackoverflow.com/questions/734076/how-to-best-approximate-a-geometrical-arc-with-a-bezier-curve
@@ -933,10 +933,10 @@ auto iContextHeight = pcontext->height()
       //   //cairo_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
       //   //cairo_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
       //   //cairo_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   cairo_mesh_pattern_end_patch(ppattern);
       //   int iStatus = cairo_pattern_status(ppattern);
 
@@ -946,10 +946,10 @@ auto iContextHeight = pcontext->height()
       //   cairo_mesh_pattern_line_to(ppattern, outer.right, inner.top);
       //   cairo_mesh_pattern_line_to(ppattern, outer.right, inner.bottom);
       //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   cairo_mesh_pattern_end_patch(ppattern);
 
       //   ///* Add a Coons patch */
@@ -990,10 +990,10 @@ auto iContextHeight = pcontext->height()
       //   cairo_mesh_pattern_curve_to(ppattern, outer.right, inner.bottom + KR, inner.right + KR, outer.bottom,
       //      inner.right, outer.bottom);
       //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   cairo_mesh_pattern_end_patch(ppattern);
 
 
@@ -1002,10 +1002,10 @@ auto iContextHeight = pcontext->height()
       //   cairo_mesh_pattern_line_to(ppattern, inner.right, outer.bottom);
       //   cairo_mesh_pattern_line_to(ppattern, inner.left, outer.bottom);
       //   cairo_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   cairo_mesh_pattern_end_patch(ppattern);
 
 
@@ -1014,10 +1014,10 @@ auto iContextHeight = pcontext->height()
       //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.top);
       //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.bottom);
       //   cairo_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   cairo_mesh_pattern_end_patch(ppattern);
 
       //   // clockwise bottom-left
@@ -1034,10 +1034,10 @@ auto iContextHeight = pcontext->height()
       //   cairo_mesh_pattern_curve_to(ppattern, inner.left - KR, outer.bottom, outer.left, inner.bottom + KR, outer.left,
       //      inner.bottom);
       //   cairo_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   cairo_mesh_pattern_end_patch(ppattern);
 
 
@@ -1046,10 +1046,10 @@ auto iContextHeight = pcontext->height()
       //   cairo_mesh_pattern_line_to(ppattern, outer.left, inner.top);
       //   cairo_mesh_pattern_line_to(ppattern, outer.left, inner.bottom);
       //   cairo_mesh_pattern_line_to(ppattern, inner.left, inner.bottom);
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   cairo_mesh_pattern_end_patch(ppattern);
 
 
@@ -1069,10 +1069,10 @@ auto iContextHeight = pcontext->height()
       //   cairo_mesh_pattern_curve_to(ppattern, outer.left, inner.top - KR, inner.left - KR, outer.top, inner.left,
       //      outer.top);
       //   cairo_mesh_pattern_line_to(ppattern, inner.left, inner.top);
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   cairo_mesh_pattern_end_patch(ppattern);
 
 
@@ -1081,10 +1081,10 @@ auto iContextHeight = pcontext->height()
       //   cairo_mesh_pattern_line_to(ppattern, inner.left, outer.top);
       //   cairo_mesh_pattern_line_to(ppattern, inner.right, outer.top);
       //   cairo_mesh_pattern_line_to(ppattern, inner.right, inner.top);
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pbrush->m_color1));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pbrush->m_color2));
-      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 0, __expand_double_rgba(pdraw2dbrush->m_color1));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 1, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 2, __expand_double_rgba(pdraw2dbrush->m_color2));
+      //   cairo_mesh_pattern_set_corner_color_rgba(ppattern, 3, __expand_double_rgba(pdraw2dbrush->m_color1));
       //   cairo_mesh_pattern_end_patch(ppattern);
 
 
@@ -1092,17 +1092,17 @@ auto iContextHeight = pcontext->height()
 
 
       //}
-      //else if (pbrush->m_ebrush == ::draw2d::e_brush_pattern)
+      //else if (pdraw2dbrush->m_ebrush == ::draw2d::e_brush_pattern)
       //{
 
-      //   if (pbrush->m_pimage.nok())
+      //   if (pdraw2dbrush->m_pimage.nok())
       //   {
 
       //      return false;
 
       //   }
 
-      //   cairo_surface_t* psurface = cairo_get_target((cairo_t*)pbrush->m_pimage->g()->get_os_data());
+      //   cairo_surface_t* psurface = cairo_get_target((cairo_t*)pdraw2dbrush->m_pimage->g()->get_os_data());
 
       //   if (psurface == nullptr)
       //   {
@@ -1137,7 +1137,7 @@ auto iContextHeight = pcontext->height()
       //else
       {
 
-         //vkvg_set_source_rgba(m_pdc, __expand_double_rgba(pbrush->m_color));
+         //vkvg_set_source_rgba(m_pdc, __expand_double_rgba(pdraw2dbrush->m_color));
 
       }
 
@@ -1147,10 +1147,10 @@ auto iContextHeight = pcontext->height()
 
 
 
-   bool graphics::_fill2(::draw2d::brush* pbrush, double xOrg, double yOrg)
+   bool graphics::_fill2(::draw2d::brush* pdraw2dbrush, double xOrg, double yOrg)
    {
 
-      if (pbrush == nullptr || pbrush->m_ebrush == ::draw2d::e_brush_null)
+      if (pdraw2dbrush == nullptr || pdraw2dbrush->m_ebrush == ::draw2d::e_brush_null)
       {
 
          return true;
@@ -1856,7 +1856,7 @@ auto iContextHeight = pcontext->height()
    }
 
 
-   //void graphics::_fill_rectangle_2025_05_29(const ::f64_rectangle& rectangle, ::draw2d::brush* pbrush)
+   //void graphics::_fill_rectangle_2025_05_29(const ::f64_rectangle& rectangle, ::draw2d::brush* pdraw2dbrush)
    //{
 
    //   ::cast < ::gpu_vulkan::renderer >pgpurenderer = m_pgpucontextCompositor->m_pgpurenderer;
@@ -2012,7 +2012,7 @@ auto iContextHeight = pcontext->height()
 
    //      pmodel->m_vertexBuffer = createRectVertexBuffer(pgpucontext->logicalDevice(),
    //         pgpucontext->m_pgpudevice->m_pphysicaldevice->m_physicaldevice,
-   //         &pmodel->m_vertexMemory, r, pbrush->m_color, pgpucontext->size());
+   //         &pmodel->m_vertexMemory, r, pdraw2dbrush->m_color, pgpucontext->size());
 
    //      pmodel->m_indexBuffer = nullptr;
    //      pmodel->m_indexMemory = nullptr;
@@ -2045,10 +2045,10 @@ auto iContextHeight = pcontext->height()
    //      });
 
 
-   //   ///fill(pbrush);
+   //   ///fill(pdraw2dbrush);
    //   //vkBegin(VK_QUADS);
 
-   //   //set(pbrush);
+   //   //set(pdraw2dbrush);
 
    //   //::vulkan::vertex2f(rectangle);
 
@@ -2831,23 +2831,23 @@ auto iContextHeight = pcontext->height()
    }
 
 
-   void graphics::draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen* ppen)
+   void graphics::draw_rectangle(const ::f64_rectangle& rectangle, ::draw2d::pen* pdraw2dpen)
    {
 
-      ::gpu::graphics::draw_rectangle(rectangle, ppen);
-      //if (::is_set(ppen))
+      ::gpu::graphics::draw_rectangle(rectangle, pdraw2dpen);
+      //if (::is_set(pdraw2dpen))
       //{
 
-      //   vkLineWidth((float)(ppen->m_dWidth));
+      //   vkLineWidth((float)(pdraw2dpen->m_dWidth));
 
       //}
 
       //vkBegin(VK_LINE_LOOP);
 
-      //if (::is_set(ppen))
+      //if (::is_set(pdraw2dpen))
       //{
 
-      //   ::vulkan::color(ppen->m_color);
+      //   ::vulkan::color(pdraw2dpen->m_color);
 
       //}
       //
@@ -2863,7 +2863,7 @@ auto iContextHeight = pcontext->height()
    void graphics::draw_rectangle(const ::f64_rectangle& rectangle)
    {
 
-      draw_rectangle(rectangle, m_ppen);
+      draw_rectangle(rectangle, m_pdraw2dpen);
 
       //return true;
 
@@ -2873,7 +2873,7 @@ auto iContextHeight = pcontext->height()
    void graphics::fill_rectangle(const ::f64_rectangle& rectangle)
    {
 
-      fill_rectangle(rectangle, m_pbrush);
+      fill_rectangle(rectangle, m_pdraw2dbrush);
 
    }
 
@@ -2927,12 +2927,12 @@ auto iContextHeight = pcontext->height()
    //         if (pgraphicsSrc->get_current_bitmap() == nullptr)
    //            return false;
    //
-   //         if (pgraphicsSrc->get_current_bitmap()->get_os_data() == nullptr)
+   //         if (pgraphicsSrc->get_current_bitmap()->nok())
    //            return false;
    //
-   //         ::pointer<bitmap>pbitmap = pgraphicsSrc->get_current_bitmap();
+   //         ::pointer<bitmap>pdraw2dbitmap = pgraphicsSrc->get_current_bitmap();
    //
-   //         //pbitmap->create_texture(0);
+   //         //pdraw2dbitmap->create_texture(0);
    //
    //         //vkBegin(VK_QUADS);
    //         //// Front Face
@@ -3168,19 +3168,19 @@ auto iContextHeight = pcontext->height()
    {
 
       ::gpu::graphics::get_text_metrics(lpMetrics);
-      //set(m_pfont);
-      ////if (!set(m_pfont))
+      //set(m_pwritetextfont);
+      ////if (!set(m_pwritetextfont))
       ////{
 
       ////   return false;
 
       ////}
 
-      //::pointer<font>pfont = m_pfont;
+      //::pointer<font>pwritetextfont = m_pwritetextfont;
 
       //TEXTMETRIC tm;
 
-      //GetTextMetrics(pfont->m_hdcFont, &tm);
+      //GetTextMetrics(pwritetextfont->m_hdcFont, &tm);
 
       //lpMetrics->m_dAscent = tm.tmAscent;
       //lpMetrics->m_dHeight = tm.tmHeight;
@@ -3190,24 +3190,24 @@ auto iContextHeight = pcontext->height()
       ////if (m_pgraphics == nullptr)
       ////   return false;
 
-      ////graphics * pgraphics = ((graphics *)this);
+      ////graphics * pdraw2dgraphics = ((graphics *)this);
 
-      ////if(pgraphics->vk2d_font() == nullptr)
+      ////if(pdraw2dgraphics->vk2d_font() == nullptr)
       ////   return false;
 
-      ////plusplus::Font * pfont = pgraphics->vk2d_font();
+      ////plusplus::Font * pwritetextfont = pdraw2dgraphics->vk2d_font();
 
       ////plusplus::FontFamily family;
 
-      ////pfont->GetFamily(&family);
+      ////pwritetextfont->GetFamily(&family);
 
-      ////::double iStyle = pfont->GetStyle();
+      ////::double iStyle = pwritetextfont->GetStyle();
 
       ////double dHeight = family.GetEmHeight(iStyle);
 
-      ////double dSize = pfont->GetSize();
+      ////double dSize = pwritetextfont->GetSize();
 
-      ////double dFontHeight = pfont->GetHeight((plusplus::REAL) pgraphics->get_dpiy());
+      ////double dFontHeight = pwritetextfont->GetHeight((plusplus::REAL) pdraw2dgraphics->get_dpiy());
 
       ////lpMetrics->tmAscent              = (::double) (dSize * family.GetCellAscent(iStyle) / dHeight);
       ////lpMetrics->tmDescent             = (::double) (dSize * family.GetCellDescent(iStyle) / dHeight);
@@ -3231,7 +3231,7 @@ auto iContextHeight = pcontext->height()
 
 
       /////*wstr = L"";
-      ////m_pgraphics->MeasureString(wstr.m_pwsz, -1, (plusplus::Font *) m_pfont->get_os_data(), origin, &rect2);*/
+      ////m_pgraphics->MeasureString(wstr.m_pwsz, -1, (plusplus::Font *) m_pwritetextfont->get_os_data(), origin, &rect2);*/
 
       ////lpMetrics->tmAveCharWidth = (::double) (rectangle.Width * get_current_font()->m_dFontWidth / (double) wstr.get_length());
 
@@ -3478,7 +3478,7 @@ auto iContextHeight = pcontext->height()
    //         if(pgraphicsSrc->get_current_bitmap() == nullptr)
    //            return false;
    //
-   //         if(pgraphicsSrc->get_current_bitmap()->get_os_data() == nullptr)
+   //         if(pgraphicsSrc->get_current_bitmap()->nok())
    //            return false;
    //
    //         plusplus::Point p[3];
@@ -3578,14 +3578,14 @@ auto iContextHeight = pcontext->height()
    ::draw2d::pen* graphics::get_current_pen()
    {
 
-      return m_ppen;
+      return m_pdraw2dpen;
 
    }
 
    ::draw2d::brush* graphics::get_current_brush()
    {
 
-      return m_pbrush;
+      return m_pdraw2dbrush;
 
    }
 
@@ -3599,14 +3599,14 @@ auto iContextHeight = pcontext->height()
    ::write_text::font* graphics::get_current_font()
    {
 
-      return m_pfont;
+      return m_pwritetextfont;
 
    }
 
    ::draw2d::bitmap* graphics::get_current_bitmap()
    {
 
-      return m_pbitmap;
+      return m_pdraw2dbitmap;
 
    }
 
@@ -3815,45 +3815,45 @@ auto iContextHeight = pcontext->height()
    //}
 
 
-   void graphics::draw(::draw2d::path* ppath)
+   void graphics::draw(::draw2d::path* pdraw2dpath)
    {
 
-      ::gpu::graphics::draw(ppath);
+      ::gpu::graphics::draw(pdraw2dpath);
       //m_pgraphics->SetSmoothingMode(plusplus::SmoothingModeAntiAlias);
       //m_pgraphics->SetInterpolationMode(plusplus::InterpolationModeHighQualityBicubic);
 
 
-      //return m_pgraphics->DrawPath(vk2d_pen(),(dynamic_cast < ::draw2d_vulkan::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      //return m_pgraphics->DrawPath(vk2d_pen(),(dynamic_cast < ::draw2d_vulkan::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
       //return true;
 
    }
 
 
-   void graphics::draw(::draw2d::path* ppath, ::draw2d::pen* ppen)
+   void graphics::draw(::draw2d::path* pdraw2dpath, ::draw2d::pen* pdraw2dpen)
    {
 
-      ::gpu::graphics::draw(ppath, ppen);
-      //return m_pgraphics->DrawPath((::plusplus::Pen *) ppen->get_os_data(),(dynamic_cast < ::draw2d_vulkan::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
-
-      //return true;
-
-   }
-
-
-   void graphics::fill(::draw2d::path* ppath)
-   {
-
-      //return m_pgraphics->FillPath(vk2d_brush(),(dynamic_cast < ::draw2d_vulkan::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      ::gpu::graphics::draw(pdraw2dpath, pdraw2dpen);
+      //return m_pgraphics->DrawPath((::plusplus::Pen *) pdraw2dpen->get_os_data(),(dynamic_cast < ::draw2d_vulkan::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
 
       //return true;
 
    }
 
 
-   void graphics::fill(::draw2d::path* ppath, ::draw2d::brush* pbrush)
+   void graphics::fill(::draw2d::path* pdraw2dpath)
    {
 
-      //return m_pgraphics->FillPath((::plusplus::Brush *) pbrush->get_os_data(),(dynamic_cast < ::draw2d_vulkan::path * > (ppath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+      //return m_pgraphics->FillPath(vk2d_brush(),(dynamic_cast < ::draw2d_vulkan::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
+
+      //return true;
+
+   }
+
+
+   void graphics::fill(::draw2d::path* pdraw2dpath, ::draw2d::brush* pdraw2dbrush)
+   {
+
+      //return m_pgraphics->FillPath((::plusplus::Brush *) pdraw2dbrush->get_os_data(),(dynamic_cast < ::draw2d_vulkan::path * > (pdraw2dpath))->get_os_path(m_pgraphics)) == plusplus::Status::Ok;
 
       //return true;
 
@@ -4042,22 +4042,22 @@ auto iContextHeight = pcontext->height()
  ////      if(pgraphicsSrc->get_current_bitmap() == nullptr)
  ////         return false;
  ////
- ////      plusplus::Bitmap * pbitmap = nullptr;
+ ////      plusplus::Bitmap * pdraw2dbitmap = nullptr;
  ////
  ////      try
  ////      {
  ////
- ////         pbitmap = (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data();
+ ////         pdraw2dbitmap = (plusplus::Bitmap *) pgraphicsSrc->get_current_bitmap()->get_os_data();
  ////
  ////      }
  ////      catch(...)
  ////      {
  ////      }
  ////
- ////      if(pbitmap != nullptr)
+ ////      if(pdraw2dbitmap != nullptr)
  ////      {
  ////
- ////         m_pgraphics->DrawImage(pbitmap,dstRect,(plusplus::REAL) xSrc,(plusplus::REAL) ySrc,(plusplus::REAL) nSrcWidth,(plusplus::REAL) nSrcHeight,plusplus::UnitPixel,&attributes);
+ ////         m_pgraphics->DrawImage(pdraw2dbitmap,dstRect,(plusplus::REAL) xSrc,(plusplus::REAL) ySrc,(plusplus::REAL) nSrcWidth,(plusplus::REAL) nSrcHeight,plusplus::UnitPixel,&attributes);
  ////
  ////      }
  ////
@@ -4529,9 +4529,9 @@ auto iContextHeight = pcontext->height()
  //{
  //hdc_map* pMap = ::windows_definition::MapHDC(true); //create map if not exist
  //ASSERT(pMap != nullptr);
- //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)pMap->from_handle(hDC);
-   //    ASSERT(pgraphics == nullptr || (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc == hDC);
-   //  return pgraphics;
+ //      ::draw2d::graphics * pdraw2dgraphics = (::draw2d::graphics *)pMap->from_handle(hDC);
+   //    ASSERT(pdraw2dgraphics == nullptr || (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->m_hdc == hDC);
+   //  return pdraw2dgraphics;
    // return nullptr;
    //}
 
@@ -4862,8 +4862,8 @@ auto iContextHeight = pcontext->height()
       if(m_hdc != nullptr)
          hOldObj = ::SelectObject(m_hdc, pPen->get_os_data());
       return dynamic_cast < pen * > (::draw2d_vulkan::object::from_handle(get_app(), hOldObj));*/
-      m_ppen = pPen;
-      return m_ppen;
+      m_pdraw2dpen = pPen;
+      return m_pdraw2dpen;
 
    }
 
@@ -4878,14 +4878,14 @@ auto iContextHeight = pcontext->height()
            if(m_hdc != nullptr)
              hOldObj = ::SelectObject(m_hdc, pBrush->get_os_data());
            return dynamic_cast < ::draw2d::brush * > (::draw2d_vulkan::object::from_handle(get_app(), hOldObj));*/
-      m_pbrush = pBrush;
+      m_pdraw2dbrush = pBrush;
 
-      return m_pbrush;
+      return m_pdraw2dbrush;
 
    }
 
 
-   ::write_text::font* graphics::SelectObject(::write_text::font* pfont)
+   ::write_text::font* graphics::SelectObject(::write_text::font* pwritetextfont)
    {
       /*      HGDIOBJ hOldObj = nullptr;
            if(pFont == nullptr)
@@ -4904,12 +4904,12 @@ auto iContextHeight = pcontext->height()
            m_fontxyz = *pFont;
            return &m_fontxyz;*/
 
-           //if(!set(pfont))
+           //if(!set(pwritetextfont))
             // return nullptr;
 
-      set(pfont);
+      set(pwritetextfont);
 
-      return m_pfont;
+      return m_pwritetextfont;
 
    }
 
@@ -5670,63 +5670,63 @@ auto iContextHeight = pcontext->height()
       HANDLETABLE* pHandleTable, METARECORD* pMetaRec, double nHandles, LPARAM lParam)
    {
       return 1;
-      //      ::draw2d::graphics * pgraphics = (::draw2d::graphics *)lParam;
-      //      ASSERT_VALID(pgraphics);
+      //      ::draw2d::graphics * pdraw2dgraphics = (::draw2d::graphics *)lParam;
+      //      ASSERT_VALID(pdraw2dgraphics);
       //
       //      switch (pMetaRec->rdFunction)
       //      {
       //      // these records have effects different for each graphics derived class
       //      case META_SETMAPMODE:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->SetMapMode((double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SETWINDOWEXT:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->set_window_ext(
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->set_window_ext(
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SETWINDOWORG:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SetWindowOrg(
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->SetWindowOrg(
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SETVIEWPORTEXT:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->set_context_extents(
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->set_context_extents(
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SETVIEWPORTORG:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->set_origin(
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->set_origin(
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SCALEWINDOWEXT:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->scale_window_ext(
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->scale_window_ext(
       //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SCALEVIEWPORTEXT:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->scale_context_extents(
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->scale_context_extents(
       //         (double)(short)pMetaRec->rdParm[3], (double)(short)pMetaRec->rdParm[2],
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_OFFSETVIEWPORTORG:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->offset_origin(
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->offset_origin(
       //         (double)(short)pMetaRec->rdParm[1], (double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SAVEDC:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SaveDC();
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->SaveDC();
       //         break;
       //      case META_RESTOREDC:
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->RestoreDC((double)(short)pMetaRec->rdParm[0]);
       //         break;
       //      case META_SETBKCOLOR:
       //      {
-      //         auto pbrush = createø < ::draw2d::brush >();
+      //         auto pdraw2dbrush = createø < ::draw2d::brush >();
       //         
-      //         pbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SelectObject(brush);
+      //         pdraw2dbrush->create_solid(*(UNALIGNED color32_t*)& pMetaRec->rdParm[0]);
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->SelectObject(brush);
       //      }
       //      break;
       //      case META_SETTEXTCOLOR:
       //      {
-      //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
-      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SelectObject(brush);
+      //         ::draw2d::brush_pointer brush((dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->create_new, this, *(UNALIGNED color32_t*)&pMetaRec->rdParm[0]);
+      //         (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->SelectObject(brush);
       //      }
       //      break;
       //
@@ -5739,27 +5739,27 @@ auto iContextHeight = pcontext->height()
       //         {
       //            // object type is unknown, determine if it is a font
       //            HFONT hStockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
-      //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc, hStockFont);
-      //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc, hObject);
+      //            HFONT hFontOld = (HFONT)::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->m_hdc, hStockFont);
+      //            HGDIOBJ hObjOld = ::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->m_hdc, hObject);
       //            if (hObjOld == hStockFont)
       //            {
       //               // got the stock object back, so must be selecting a font
       //               throw ::not_implemented();
-      ////                  (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SelectObject(::draw2d_vulkan::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+      ////                  (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->SelectObject(::draw2d_vulkan::font::from_handle(pdraw2dgraphics->get_app(), (HFONT)hObject));
       //               break;  // don't play the default record
       //            }
       //            else
       //            {
       //               // didn't get the stock object back, so restore everything
-      //               ::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc, hFontOld);
-      //               ::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->m_hdc, hObjOld);
+      //               ::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->m_hdc, hFontOld);
+      //               ::SelectObject((dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->m_hdc, hObjOld);
       //            }
       //            // and fall through to PlayMetaFileRecord...
       //         }
       //         else if (nObjType == OBJ_FONT)
       //         {
       //            // play back as graphics::SelectObject(::write_text::font*)
-      ////               (dynamic_cast<::draw2d_vulkan::graphics * >(pgraphics))->SelectObject(::draw2d_vulkan::font::from_handle(pgraphics->get_app(), (HFONT)hObject));
+      ////               (dynamic_cast<::draw2d_vulkan::graphics * >(pdraw2dgraphics))->SelectObject(::draw2d_vulkan::font::from_handle(pdraw2dgraphics->get_app(), (HFONT)hObject));
       //            throw ::not_implemented();
       //            break;  // don't play the default record
       //         }
@@ -5785,7 +5785,7 @@ auto iContextHeight = pcontext->height()
    //   //   return ::PlayMetaFile(m_hdc, hMF) != false;
    //   //}
 
-   //   //// for special playback, lParam == pgraphics
+   //   //// for special playback, lParam == pdraw2dgraphics
    //   //return ::EnumMetaFile(m_hdc, hMF, __enum_meta_file_procedure, (LPARAM)this) != false;
    //   return false;
 
@@ -5935,9 +5935,9 @@ auto iContextHeight = pcontext->height()
 
 
       //   pmNew->Translate((plusplus::REAL) rectangleParam.left,(plusplus::REAL) rectangleParam.top);
-      //   pmNew->Scale((plusplus::REAL) m_pfont->m_dFontWidth,(plusplus::REAL) 1.0,plusplus::MatrixOrderAppend);
+      //   pmNew->Scale((plusplus::REAL) m_pwritetextfont->m_dFontWidth,(plusplus::REAL) 1.0,plusplus::MatrixOrderAppend);
 
-      //   plusplus::rectF float_rectangle(0,0,(plusplus::REAL) ((rectangleParam.right - rectangleParam.left) * m_pfont->m_dFontWidth),(plusplus::REAL) (rectangleParam.bottom - rectangleParam.top));
+      //   plusplus::rectF float_rectangle(0,0,(plusplus::REAL) ((rectangleParam.right - rectangleParam.left) * m_pwritetextfont->m_dFontWidth),(plusplus::REAL) (rectangleParam.bottom - rectangleParam.top));
 
       //   m_pgraphics->SetTransform(pmNew);
 
@@ -6009,13 +6009,13 @@ auto iContextHeight = pcontext->height()
       ////      break;
       ////}
 
-      ////set(m_pfont);
+      ////set(m_pwritetextfont);
 
-      ////::pointer<font>pfont = m_pfont;
+      ////::pointer<font>pwritetextfont = m_pwritetextfont;
 
       ////::i32_size s = { 0 };
 
-      ////::GetTextExtentPointW(pfont->m_hdcFont, wstr, wstr.get_length(), &s);
+      ////::GetTextExtentPointW(pwritetextfont->m_hdcFont, wstr, wstr.get_length(), &s);
 
       ////return s;
 
@@ -6081,15 +6081,15 @@ auto iContextHeight = pcontext->height()
  //
  //      //// ASSERT(m_hdc != nullptr);
  //
- //      set(m_pfont);
+ //      set(m_pwritetextfont);
  //
- //      ::pointer<font>pfont = m_pfont;
+ //      ::pointer<font>pwritetextfont = m_pwritetextfont;
  //
  //      ::i32_size s;
  //
  //      wstring wstr = utf8_to_unicode(string(&lpszString[iIndex], nCount));
  //
- //      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
+ //      //if (!::GetTextExtentPoint32W(pwritetextfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
  ////         return false;
  //
  //      //// FreeType
@@ -6166,15 +6166,15 @@ auto iContextHeight = pcontext->height()
  //
  //      //// ASSERT(m_hdc != nullptr);
  //
- //      set(m_pfont);
+ //      set(m_pwritetextfont);
  //
- //      ::pointer<font>pfont = m_pfont;
+ //      ::pointer<font>pwritetextfont = m_pwritetextfont;
  //
  //      ::i32_size s;
  //
  //      wstring wstr = utf8_to_unicode(lpszString, nCount);
  //
- //      //if (!::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
+ //      //if (!::GetTextExtentPoint32W(pwritetextfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
  //        // return false;
  //
  //      size.cx = s.cx;
@@ -6191,15 +6191,15 @@ auto iContextHeight = pcontext->height()
  //
  //      //// ASSERT(m_hdc != nullptr);
  //
- //      set(m_pfont);
+ //      set(m_pwritetextfont);
  //
- //      ::pointer<font>pfont = m_pfont;
+ //      ::pointer<font>pwritetextfont = m_pwritetextfont;
  //
  //      ::i32_size s;
  //
  //      wstring wstr = utf8_to_unicode(str);
  //
- //      //if (::GetTextExtentPoint32W(pfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
+ //      //if (::GetTextExtentPoint32W(pwritetextfont->m_hdcFont, wstr, (double)wstr.get_length(), &s))
  //        // return false;
  //
  //      size.cx = s.cx;
@@ -6217,11 +6217,11 @@ auto iContextHeight = pcontext->height()
    //   try
    //   {
 
-   //      if (m_pbitmap.is_set())
+   //      if (m_pdraw2dbitmap.is_set())
    //      {
 
 
-   //         ::i32_size s = m_pbitmap.cast < bitmap>()->m_sizeOut;
+   //         ::i32_size s = m_pdraw2dbitmap.cast < bitmap>()->m_sizeOut;
 
    //         if (s.area() <= 0)
    //         {
@@ -6249,21 +6249,21 @@ auto iContextHeight = pcontext->height()
    //}
 
 
-   void graphics::line(double x1, double y1, double x2, double y2, ::draw2d::pen* ppen)
+   void graphics::line(double x1, double y1, double x2, double y2, ::draw2d::pen* pdraw2dpen)
    {
 
-      ::gpu::graphics::line(x1, y1, x2, y2, ppen);
+      ::gpu::graphics::line(x1, y1, x2, y2, pdraw2dpen);
 
-      // ::vulkan::line(point1.x, point1.y, point2.x, point2.y, (float)(ppen->m_dWidth),
-      //    ppen->m_color.f32_red(), ppen->m_color.f32_green(),
-      //    ppen->m_color.f32_blue(),
-      //    ppen->m_color.f32_opacity(), 0.f, 0.f, true);
+      // ::vulkan::line(point1.x, point1.y, point2.x, point2.y, (float)(pdraw2dpen->m_dWidth),
+      //    pdraw2dpen->m_color.f32_red(), pdraw2dpen->m_color.f32_green(),
+      //    pdraw2dpen->m_color.f32_blue(),
+      //    pdraw2dpen->m_color.f32_opacity(), 0.f, 0.f, true);
 
-      /*vkLineWidth(ppen->m_dWidth);
+      /*vkLineWidth(pdraw2dpen->m_dWidth);
 
       vkBegin(VK_LINES);
 
-      ::vulkan::color(ppen->m_color);
+      ::vulkan::color(pdraw2dpen->m_color);
 
       vkVertex2f(point1.x, point1.y);
       vkVertex2f(point2.x, point2.y);
@@ -6296,16 +6296,16 @@ auto iContextHeight = pcontext->height()
       //
       // //f64_point points[4];
       //
-      // //points[0].x = x0 - cosangle * m_ppen->m_dWidth / 2.0;
-      // //points[0].y = y0 - sinangle * m_ppen->m_dWidth / 2.0;
-      // //points[1].x = x0 + cosangle * m_ppen->m_dWidth / 2.0;
-      // //points[1].y = y0 + sinangle * m_ppen->m_dWidth / 2.0;
-      // //points[2].x = x1 + cosangle * m_ppen->m_dWidth / 2.0;
-      // //points[2].y = y1 + sinangle * m_ppen->m_dWidth / 2.0;
-      // //points[3].x = x1 - cosangle * m_ppen->m_dWidth / 2.0;
-      // //points[3].y = y1 - sinangle * m_ppen->m_dWidth / 2.0;
+      // //points[0].x = x0 - cosangle * m_pdraw2dpen->m_dWidth / 2.0;
+      // //points[0].y = y0 - sinangle * m_pdraw2dpen->m_dWidth / 2.0;
+      // //points[1].x = x0 + cosangle * m_pdraw2dpen->m_dWidth / 2.0;
+      // //points[1].y = y0 + sinangle * m_pdraw2dpen->m_dWidth / 2.0;
+      // //points[2].x = x1 + cosangle * m_pdraw2dpen->m_dWidth / 2.0;
+      // //points[2].y = y1 + sinangle * m_pdraw2dpen->m_dWidth / 2.0;
+      // //points[3].x = x1 - cosangle * m_pdraw2dpen->m_dWidth / 2.0;
+      // //points[3].y = y1 - sinangle * m_pdraw2dpen->m_dWidth / 2.0;
       //
-      // //_fill_quad(points, m_ppen->m_color);
+      // //_fill_quad(points, m_pdraw2dpen->m_color);
       //
       // {
       //
@@ -6359,7 +6359,7 @@ auto iContextHeight = pcontext->height()
       // auto x0 = m_point.x;
       // auto y0 = m_point.y;
       //
-      // auto color = m_ppen->m_color;
+      // auto color = m_pdraw2dpen->m_color;
       //
       // f64_point points[2];
       //
@@ -6411,7 +6411,7 @@ auto iContextHeight = pcontext->height()
       //
       // ::cast <::gpu_vulkan::command_buffer > pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
       //
-      // pcommandbuffer->set_line_width(m_ppen->m_dWidth);
+      // pcommandbuffer->set_line_width(m_pdraw2dpen->m_dWidth);
       //
       // //VkDeviceSize offset = 0;
       // //vkCmdBindPipeline(pcommandbuffer->m_vkcommandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
@@ -6445,7 +6445,7 @@ auto iContextHeight = pcontext->height()
 
       ::gpu::graphics::text_out(x, y, scopedstr);
 
-      //if (m_pfont.is_null())
+      //if (m_pwritetextfont.is_null())
       //{
 
       //   return;
@@ -6462,23 +6462,23 @@ auto iContextHeight = pcontext->height()
 
       ////return true;
 
-      //set(m_pfont);
+      //set(m_pwritetextfont);
 
-      ////::pointer<font>pfont = m_pfont;
+      ////::pointer<font>pwritetextfont = m_pwritetextfont;
 
       ////float length = 0.f;
 
       ////for (unsigned int loop = 0; loop < scopedstr.size(); loop++)	// Loop To Find Text Length
       ////{
 
-      ////   length += pfont->m_gmf[scopedstr[loop]].gmfCellIncX;			// Increase Length By Each Characters Width
+      ////   length += pwritetextfont->m_gmf[scopedstr[loop]].gmfCellIncX;			// Increase Length By Each Characters Width
 
       ////}
 
       ////vkTranslatef((float)(x), (float)(y), 0.0f);					// Center Our Text On The Screen
 
       ////vkPushAttrib(VK_LIST_BIT);							// Pushes The Display List Bits
-      ////vkListBase(pfont->m_baseFont);									// Sets The Base Character to 0
+      ////vkListBase(pwritetextfont->m_baseFont);									// Sets The Base Character to 0
       ////vkCallLists((VKsizei)scopedstr.size(), VK_UNSIGNED_BYTE, scopedstr.begin());	// Draws The Display List Text
       ////vkPopAttrib();										// Pops The Display List Bits      }
 
@@ -6497,14 +6497,14 @@ auto iContextHeight = pcontext->height()
    }
 
 
-   void graphics::set(::draw2d::pen* ppen)
+   void graphics::set(::draw2d::pen* pdraw2dpen)
    {
 
-      m_ppen = ppen;
+      m_pdraw2dpen = pdraw2dpen;
 
-      //vkLineWidth(ppen->m_dWidth);
+      //vkLineWidth(pdraw2dpen->m_dWidth);
 
-      //::vulkan::color(ppen->m_color);
+      //::vulkan::color(pdraw2dpen->m_color);
 
       //return ::success;
 
@@ -6512,12 +6512,12 @@ auto iContextHeight = pcontext->height()
 
 
 
-   void graphics::set(::draw2d::brush* pbrush)
+   void graphics::set(::draw2d::brush* pdraw2dbrush)
    {
 
 
-      ::gpu::graphics::set(pbrush);
-      //::vulkan::color(pbrush->m_color);
+      ::gpu::graphics::set(pdraw2dbrush);
+      //::vulkan::color(pdraw2dbrush->m_color);
 
       //return ::success;
 
@@ -6525,12 +6525,12 @@ auto iContextHeight = pcontext->height()
 
 
 
-   void graphics::set(::write_text::font* pfont)
+   void graphics::set(::write_text::font* pwritetextfont)
    {
 
-      ::gpu::graphics::set(pfont);
+      ::gpu::graphics::set(pwritetextfont);
 
-      //if (::is_null(pfont))
+      //if (::is_null(pwritetextfont))
       //{
 
       //   //return ::error_failed;
@@ -6538,14 +6538,14 @@ auto iContextHeight = pcontext->height()
 
       //}
 
-      //pfont->get_os_data(this);
+      //pwritetextfont->get_os_data(this);
 
       //return ::success;
 
    }
 
 
-   void graphics::set(::draw2d::bitmap* pbitmap)
+   void graphics::set(::draw2d::bitmap* pdraw2dbitmap)
    {
 
       //return ::success;
@@ -6775,13 +6775,13 @@ auto iContextHeight = pcontext->height()
    void* graphics::detach()
    {
 
-      //plusplus::Graphics * pgraphics = m_pgraphics;
+      //plusplus::Graphics * pdraw2dgraphics = m_pgraphics;
 
       //m_pgraphics = nullptr;
 
       //m_hdc = nullptr;
 
-      //return pgraphics;
+      //return pdraw2dgraphics;
 
       return nullptr;
 
@@ -6789,36 +6789,36 @@ auto iContextHeight = pcontext->height()
 
    //plusplus::Font * graphics::vk2d_font()
    //{
-   //   if(m_pfont.is_null())
+   //   if(m_pwritetextfont.is_null())
    //   {
-   //      m_pfont.create(this);
-   //      if(m_pfont.is_set())
+   //      m_pwritetextfont.create(this);
+   //      if(m_pwritetextfont.is_set())
    //      {
-   //         m_pfont->m_powner = this;
+   //         m_pwritetextfont->m_powner = this;
    //      }
    //   }
-   //   if(m_pfont.is_null())
+   //   if(m_pwritetextfont.is_null())
    //   {
    //      return nullptr;
    //   }
-   //   return (plusplus::Font *) m_pfont->get_os_data();
+   //   return (plusplus::Font *) m_pwritetextfont->get_os_data();
    //}
 
    //plusplus::Brush * graphics::vk2d_brush()
    //{
-   //   if(m_pbrush.is_null())
+   //   if(m_pdraw2dbrush.is_null())
    //   {
-   //      m_pbrush.create(this);
-   //      if(m_pbrush.is_set())
+   //      m_pdraw2dbrush.create(this);
+   //      if(m_pdraw2dbrush.is_set())
    //      {
-   //         m_pbrush->m_powner = this;
+   //         m_pdraw2dbrush->m_powner = this;
    //      }
    //   }
-   //   if(m_pbrush.is_null())
+   //   if(m_pdraw2dbrush.is_null())
    //   {
    //      return nullptr;
    //   }
-   //   return (plusplus::Brush *) m_pbrush->get_os_data();
+   //   return (plusplus::Brush *) m_pdraw2dbrush->get_os_data();
    //}
 
    //plusplus::Pen * graphics::vk2d_pen()
@@ -6826,19 +6826,19 @@ auto iContextHeight = pcontext->height()
 
    //   synchronous_lock synchronouslock(this->synchronization());
 
-   //   if(m_ppen.is_null())
+   //   if(m_pdraw2dpen.is_null())
    //   {
-   //      m_ppen.create(this);
-   //      if(m_ppen.is_set())
+   //      m_pdraw2dpen.create(this);
+   //      if(m_pdraw2dpen.is_set())
    //      {
-   //         m_ppen->m_powner = this;
+   //         m_pdraw2dpen->m_powner = this;
    //      }
    //   }
-   //   if(m_ppen.is_null())
+   //   if(m_pdraw2dpen.is_null())
    //   {
    //      return nullptr;
    //   }
-   //   return (plusplus::Pen *) m_ppen->get_os_data();
+   //   return (plusplus::Pen *) m_pdraw2dpen->get_os_data();
    //}
 
    //plusplus::FillMode graphics::vk2d_get_fill_mode()
@@ -6852,7 +6852,7 @@ auto iContextHeight = pcontext->height()
 
       //   // Commented Out for Running in cosan machine running Windows 2008
 
-      //   //if(m_pbitmap.is_null() || m_pbitmap->get_os_data() == nullptr)
+      //   //if(m_pdraw2dbitmap.is_null() || m_pdraw2dbitmap->nok())
       //   //   return false;
 
       //   //plusplus::BlurParams myBlurParams;
@@ -6886,9 +6886,9 @@ auto iContextHeight = pcontext->height()
       //   //rectangle.right     = (::double) points[1].X;
       //   //rectangle.bottom    = (::double) points[1].Y;
 
-      //   //plusplus::Bitmap * pbitmap = ((plusplus::Bitmap *) m_pbitmap->get_os_data());
+      //   //plusplus::Bitmap * pdraw2dbitmap = ((plusplus::Bitmap *) m_pdraw2dbitmap->get_os_data());
 
-      //   //pbitmap->ApplyEffect(&myBlur, &rectangle);
+      //   //pdraw2dbitmap->ApplyEffect(&myBlur, &rectangle);
 
       //   return true;
 
