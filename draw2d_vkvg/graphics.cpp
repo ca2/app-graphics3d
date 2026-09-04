@@ -8558,8 +8558,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       float fPreferredDpiX = 96.0f;
 
-      float fPreferredDpiY = 96.0f;
-
       float fPreferredDensity = 1.0f;
 
       //double dFontScaler = 1.0;
@@ -8576,8 +8574,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       {
 
          fPreferredDpiX = m_pacmeuserinteractionAffinity->preferred_dpi_x();
-
-         fPreferredDpiY = m_pacmeuserinteractionAffinity->preferred_dpi_y();
 
          fPreferredDensity = m_pacmeuserinteractionAffinity->preferred_density();
 
