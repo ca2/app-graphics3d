@@ -30,7 +30,8 @@ int main()
    const auto draw2dSource = read_file("draw2d_vkvg/draw2d.cpp");
    const auto graphicsSource = read_file("draw2d_vkvg/graphics.cpp");
 
-   assert(draw2dHeader.find("defer_load_font(VkvgContext") != std::string::npos);
+   assert(draw2dHeader.find("defer_load_font(") != std::string::npos);
+   assert(draw2dHeader.find("VkvgDevice pdevice") != std::string::npos);
    assert(draw2dSource.find("font_face_request request") != std::string::npos);
    assert(draw2dSource.find("request.m_fontweight = pwritetextfont->m_fontweight") != std::string::npos);
    assert(draw2dSource.find("request.m_bItalic = pwritetextfont->m_bItalic") != std::string::npos);
