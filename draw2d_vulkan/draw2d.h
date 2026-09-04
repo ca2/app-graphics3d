@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "acme/platform/auto_pointer.h"
+//#include "acme/platform/auto_pointer.h"
 #include "bred/gpu/draw2d.h"
 #include "gpu_vulkan/context.h"
 
@@ -56,6 +56,11 @@ namespace draw2d_vulkan
 
       /*void on_create_window(::windowing::window * pwindow) override;*/
       //void defer_initialize_glad();
+
+
+      bool write_text_supports_raster_fonts() override;
+
+      bool write_text_supports_legacy_gdi_fonts() override;
 
 
       virtual string write_text_get_default_implementation_name() override;

@@ -73,6 +73,7 @@ int main()
       "VK_FORMAT_B8G8R8A8_UNORM",
       "VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT",
       "VK_IMAGE_USAGE_SAMPLED_BIT",
+      "auto sizeRaw = ptexture->raw_size();",
       "vkh_image_import",
       "vkh_image_create_view",
       "vkvg_surface_create_for_VkhImage",
@@ -86,6 +87,13 @@ int main()
       assert(prepare.find(required) != std::string::npos);
 
    }
+
+   const auto import = section(
+      prepare,
+      "vkhimage = vkh_image_import(",
+      "if (!vkhimage");
+   assert(import.find("(::u32)sizeRaw.cx") != std::string::npos);
+   assert(import.find("(::u32)sizeRaw.cy") != std::string::npos);
 
    const auto activeClear = prepare.find("m_pdirecttargetActive.release();");
    const auto firstFalliblePreparation = prepare.find("if (!pgputexture)");

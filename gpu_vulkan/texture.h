@@ -81,7 +81,9 @@ namespace gpu_vulkan
       class _001OnAfterEndFrame : virtual public ::particle
       {
       public:
+         class ::time m_timeStart;
          ::pointer_array<_001OnAfterEndFrameItem> m_itema;
+         ::procedure_array m_procedurea;
       };
       class _001OnNextFrameStart : virtual public ::particle
       {
@@ -281,7 +283,34 @@ namespace gpu_vulkan
       texture();
       ~texture() override;
 
-      void _set_data(const ::gpu::texture_data &data);
+      using ::gpu::texture::write_pixels;
+      void write_pixels(bool bSync,
+//         ::gpu::command_buffer * pgpucommandbuffer,
+const void * pData,
+const ::i32_size & size,
+::i32 iScan,
+::i32 iBytesPerPixel,
+const ::i32_point & point) override;
+//      void write_pixels(
+//         ::gpu::command_buffer * pgpucommandbuffer,
+//const void * pData,
+//const ::i32_size & size,
+//::i32 iScan,
+//::i32 iBytesPerPixel,
+//const ::i32_point & point) override;
+//      void write_pixels(
+//          ::gpu::command_buffer * pgpucommandbuffer,
+//const ::pixmap_t * ppixmap,
+//const ::i32_point & point) override;
+
+      void write_pixels(bool bSync,
+          //::gpu::command_buffer * pgpucommandbuffer,
+const ::pixmap_t * ppixmap,
+const ::i32_point & point) override;
+
+
+      void copy_from(::gpu::texture * pgputexture);
+      void _set_data(bool bSync, const ::gpu::texture_data &data);
       void _create_texture(const ::gpu::texture_data & texturedata) override;
       ::gpu::buffer * get_read_back_buffer();
       struct texture::layer &current_layer(::gpu_vulkan::render_pass * prenderpass);
@@ -294,7 +323,7 @@ namespace gpu_vulkan
       //                                                           const ::i32_rectangle &rectangleTarget, int iMipCount,
       //                                                           bool bRenderTarget, bool bShaderResourceView) override;
 
-      void _set_image_data(const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat);
+      void _set_image_data(bool bSync, const void *p, int w, int h, int channel_count, int bit_count_per_channel, bool bFloat);
       
       void create_depth_texture(::gpu::context *pgpucontext, const ::i32_size & size) override;
       void create_texture_from_file_path(::gpu::context *pgpucontext, const ::file::path & path, bool bIsSrgb);
@@ -387,10 +416,10 @@ namespace gpu_vulkan
       //;
       //virtual texture_synchronization *synchronization();
       //virtual texture_synchronization* synchronization(::gpu::render_target* prendertarget);
-      void set_pixels(const ::i32_rectangle& rectangle, const void* data) override;
-      void write_pixels(const ::pixmap_t * ppixmap, const ::i32_point & pointInput) override;
+      void set_pixels(bool bSync, const ::i32_rectangle& rectangle, const void* data) override;
+      //void write_pixels(const ::pixmap_t * ppixmap, const ::i32_point & pointInput) override;
 
-      void write_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::pixmap_t * ppixmap, const ::i32_point & pointInput) override;
+      ////void write_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::pixmap_t * ppixmap, const ::i32_point & pointInput) override;
 
       virtual VkDeviceMemory AllocateMemory(VkMemoryRequirements memRequirements, VkMemoryPropertyFlags properties);
 

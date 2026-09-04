@@ -34,9 +34,9 @@ namespace gpu_vulkan
       //VkQueue m_vkqueueTransfer3;
 
       
-      VkCommandPool m_vkcommandpoolGraphics;
-      VkCommandPool m_vkcommandpoolTransfer;
-      VkCommandPool m_vkcommandpoolPresent;
+      map < task_index, VkCommandPool > m_vkcommandpoolGraphics;
+      map < task_index, VkCommandPool > m_vkcommandpoolTransfer;
+      map < task_index, VkCommandPool > m_vkcommandpoolPresent;
 
 
       //::pointer<::gpu_vulkan::descriptor_set_layout>           m_psetdescriptorlayoutGlobal;
@@ -83,7 +83,7 @@ namespace gpu_vulkan
       void on_start_layer(::gpu::layer * pgpulayer) override;
       void on_end_layer(::gpu::layer *player) override;
 
-      void draw2d_on_end_draw(::gpu::graphics *pgpugraphics) override;
+      //void draw2d_on_end_draw(::gpu::graphics *pgpugraphics) override;
       
 
       void merge_layers(::gpu::command_buffer * pgpucommandbuffer, ::gpu::texture_site* ptexturesiteOutput, ::pointer_array < ::gpu::layer >* playera) override;
@@ -110,9 +110,9 @@ namespace gpu_vulkan
                         VkCommandPoolCreateFlags createFlags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
 
-      VkCommandPool getGraphicsCommandPool() { return m_vkcommandpoolGraphics; }
-      VkCommandPool getTransferCommandPool() { return m_vkcommandpoolTransfer; }
-      VkCommandPool getPresentCommandPool() { return m_vkcommandpoolPresent; }
+      VkCommandPool getGraphicsCommandPool();
+      VkCommandPool getTransferCommandPool();
+      VkCommandPool getPresentCommandPool();
 
 
       void _create_gpu_context(::gpu::device * pgpudevice, const ::gpu::enum_output & eoutput, const ::gpu::enum_scene & escene, ::acme::windowing::window * pacmewindowingwindow, ::draw2d::graphics * pdraw2dgraphics, const ::i32_point & pointInput, const ::i32_point & pointOutput, const ::i32_size & size, const ::i32_size & sizeRaw) override;
@@ -155,6 +155,11 @@ namespace gpu_vulkan
       ::memory _001BlendFragmentShaderMemory() override;
 
 
+      ::memory _001ImageVertexShaderMemory() override;
+      ::memory _001ImageFragmentShaderMemory() override;
+
+
+
       string get_shader_version_text() override;
 
       void _translate_shader(string_array_base & straFragment) override;
@@ -177,8 +182,8 @@ namespace gpu_vulkan
          VkBufferUsageFlags usage,
          VkMemoryPropertyFlags properties);
 
-      ::pointer < ::gpu::command_buffer > beginSingleTimeCommands(::gpu::queue * pgpuqueue, ::gpu::enum_command_buffer ecommandbuffer = ::gpu::e_command_buffer_graphics) override;
-      void endSingleTimeCommands(::gpu::command_buffer * pcommandbuffer);
+      ::pointer < ::gpu::command_buffer > _beginSingleTimeCommands(::gpu::queue * pgpuqueue, ::gpu::enum_command_buffer ecommandbuffer = ::gpu::e_command_buffer_graphics) override;
+      void _endSingleTimeCommands(::gpu::command_buffer * pcommandbuffer) override;
       //void endSingleTimeCommands(command_buffer * pcommandbuffer, int iSubmitCount, VkSubmitInfo * psubmitinfo);
       void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
       void copyBufferToImage(::gpu::command_buffer* pcommandbuffer, ::gpu_vulkan::texture* ptexture, ::gpu_vulkan::buffer* pbuffer, const ::i32_rectangle& rectangleSubImage = {}, ::i32 iScan = 0);

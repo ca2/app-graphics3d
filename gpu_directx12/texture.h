@@ -287,8 +287,8 @@ namespace gpu_directx12
       virtual void _initialize_gpu_texture(::gpu::context * pgpucontext, UINT uCurrentBufferIndex, IDXGISwapChain3* pdxgiswapchain);
 
 
-      void set_pixels(const ::i32_rectangle& rectangle, const void* data) override;
-      void set_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data) override;
+      void set_pixels(bool bSync, const ::i32_rectangle& rectangle, const void* data) override;
+      //void set_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data) override;
       virtual upload_buffer * _get_upload_buffer();
 
       virtual static_upload_buffer *_get_static_upload_buffer(int iResourceCount = -1);

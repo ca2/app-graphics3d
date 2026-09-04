@@ -14,6 +14,7 @@
 #include "acme/platform/application.h"
 #include "acme/prototype/mathematics/mathematics.h"
 #include "aura/graphics/graphics/buffer_item.h"
+#include "aura/graphics/image/drawing.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
 #include "aura/user/user/interaction.h"
 #include "app-graphics3d/gpu_vulkan/approach.h"
@@ -1831,12 +1832,12 @@ auto iContextHeight = pcontext->height()
    //   //g_z -= 0.0001;
 
    //}
-   void graphics::gpu_layer_on_before_end_render()
-   {
+   //void graphics::gpu_layer_on_before_end_render()
+   //{
 
-      ::gpu::graphics::gpu_layer_on_before_end_render();
+   //   ::gpu::graphics::gpu_layer_on_before_end_render();
 
-   }
+   //}
 
 
    void graphics::fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pBrush)
@@ -6651,6 +6652,20 @@ auto iContextHeight = pcontext->height()
    void graphics::_draw_raw(const ::f64_rectangle& rectangleTarget, ::image::image* pimage, const ::image::image_drawing_options& imagedrawingoptionsParam, const ::f64_point& pointSrc)
    {
 
+      ::image::image_source imagesource(
+         pimage,
+         { pointSrc, rectangleTarget.size() });
+
+      ::image::image_drawing_options imagedrawingoptions(
+         imagedrawingoptionsParam);
+
+      imagedrawingoptions.m_rectangleTarget = rectangleTarget;
+
+      ::image::image_drawing imagedrawing(
+         imagedrawingoptions,
+         imagesource);
+
+      ::gpu::graphics::_draw_raw(imagedrawing);
 
    }
 

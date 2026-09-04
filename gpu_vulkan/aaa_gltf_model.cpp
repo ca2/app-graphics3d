@@ -1551,7 +1551,7 @@ namespace gpu_vulkan
 
       // pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, transferQueue, true);
 
-      pcontext->endSingleTimeCommands(pcommandbufferCopy);
+      pgpucommandbufferCopy.commit();
 
       vkDestroyBuffer(pcontext->logicalDevice(), vertexStaging.buffer, nullptr);
       vkFreeMemory(pcontext->logicalDevice(), vertexStaging.memory, nullptr);
@@ -1954,7 +1954,7 @@ namespace gpu_vulkan
                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                              subresourceRange);
       // pcontext->flushCommandBuffer(pcommandbufferCopy->m_vkcommandbuffer, transferQueue);
-      pcontext->endSingleTimeCommands(pcommandbufferCopy);
+      pgpucommandbufferCopy.commit();
       emptyTexture->m_state.m_vkimagelayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
       // Clean up staging resources

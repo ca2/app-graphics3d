@@ -25,6 +25,7 @@
 #include "aura/graphics/image/aaa_target.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
+#include "bred/gpu/fence.h"
 
 
 using namespace directx12;

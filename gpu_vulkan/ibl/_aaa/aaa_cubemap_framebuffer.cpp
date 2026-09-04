@@ -368,7 +368,7 @@ namespace gpu_vulkan
             ptexture->rectangle().width(), ptexture->rectangle().height(),
             ptexture->m_textureattributes.m_iMipCount);
 
-         pcontext->endSingleTimeCommands(pcommandbufferCopy);
+         pgpucommandbufferCopy.commit();
 
 
          VkImageViewCreateInfo imageViewCreateInfo = {};

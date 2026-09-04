@@ -80,11 +80,12 @@ namespace draw2d_directx12
       graphics();
       ~graphics() override;
 
-      ::gpu_directx12::context* gpu_context();
+      
+      ::gpu::context* gpu_context() override;
     
 
-      void gpu_layer_on_after_begin_render() override;
-      void gpu_layer_on_before_end_render() override;
+      //void gpu_layer_on_after_begin_render() override;
+      //void gpu_layer_on_before_end_render() override;
 
 
 
@@ -104,7 +105,7 @@ namespace draw2d_directx12
       //void on_end_draw1() override;
 
 
-      void just_after_new_frame() override;
+      //void just_after_new_frame() override;
 
 
       void _bind(int iIndex, int iLayerIndex, IDXGISurface* psurface) override;

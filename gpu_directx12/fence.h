@@ -25,7 +25,7 @@ namespace gpu_directx12
       ~fence() override;
 
 
-      void initialize_gpu_fence(::gpu::device *pgpucdevice, bool bCreateSignaled) override;
+      void initialize_gpu_fence(::gpu::context *pgpucontext, bool bCreateSignaled) override;
 
       void reset_gpu_fence() override;
 

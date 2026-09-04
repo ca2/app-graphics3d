@@ -45,8 +45,7 @@ namespace draw2d_nanovg
 
       //using ::image::image::create;
       void update_as_render_target(const ::i32_size & sizeRaw, ::user::interaction * puserinteraction, ::draw2d::graphics * pdraw2dgraphics, ::enum_flag eflagCreate, ::i32 iGoodStride, bool bPreserve, bool bTopDraw2d) override;
-      void create_from_data(const ::i32_size &size, const ::image32_t *pimage32, ::i32 iScan,
-                            ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, bool bPreserve = false) override;
+      void create_from_data(const ::pixmap_t & pixmap, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, bool bPreserve = false) override;
       //void create(const ::i32_size &size, ::enum_flag eflagCreate = DEFAULT_CREATE_IMAGE_FLAG, int iGoodStride = -1,
          //         bool bPreserve = false) override;
 
@@ -157,7 +156,7 @@ namespace draw2d_nanovg
 
       protected:
 
-         ::image_pixmap_lease _map(const ::i32_rectangle & rectangle) override;
+         ::image_pixmap_lease _map(::image::enum_map emap, const ::i32_rectangle & rectangle) override;
 
    };
 

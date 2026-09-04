@@ -83,7 +83,7 @@ namespace draw2d_nanovg
 
          auto pdraw2dgraphics = allocate_graphics(pacmeuserinteractionAffinity);
 
-         pdraw2dgraphics->update_as_image_render_target(pimage);
+         pdraw2dgraphics->update_as_image_render_target(pimage, pacmeuserinteractionAffinity);
 
          return pdraw2dgraphics;
 

@@ -179,8 +179,8 @@ namespace gpu_directx12
       void layout_global_ubo(::gpu::properties *pproperties) override;
 
 
-      ::pointer < ::gpu::command_buffer > beginSingleTimeCommands(::gpu::queue * pgpuqueue, ::gpu::enum_command_buffer ecommandbuffer = ::gpu::e_command_buffer_graphics) override;
-      void endSingleTimeCommands(::gpu::command_buffer* pcommandbuffer) override;
+      ::pointer < ::gpu::command_buffer > _beginSingleTimeCommands(::gpu::queue * pgpuqueue, ::gpu::enum_command_buffer ecommandbuffer = ::gpu::e_command_buffer_graphics) override;
+      void _endSingleTimeCommands(::gpu::command_buffer* pcommandbuffer) override;
 //      void endSingleTimeCommands(command_buffer* pcommandbuffer, int iSubmitCount, VkSubmitInfo* psubmitinfo);
 
 
@@ -343,8 +343,8 @@ namespace gpu_directx12
       //bool create_offscreen_graphics_for_swap_chain_blitting(::gpu::graphics* pdraw2dgraphics, const ::i32_size& size = {}) override;
 
       
-      void __bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer) override;
-      void __defer_soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer) override;
+      //void __bind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer) override;
+      //void __defer_soft_unbind_draw2d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer) override;
 
 
       virtual void __bind_graphics3d_compositor(::gpu::compositor* pgpucompositor, ::gpu::layer * pgpulayer);
@@ -352,9 +352,9 @@ namespace gpu_directx12
       ::gpu::enum_output get_eoutput() override;
 
 
-      void on_begin_draw_attach(::gpu::graphics* pgpugraphics) override;
-      void draw2d_on_begin_draw(::gpu::graphics* pgpugraphics) override;
-      void draw2d_on_end_draw(::gpu::graphics* pgpugraphics) override;
+      //void on_begin_draw_attach(::gpu::graphics* pgpugraphics) override;
+      //void draw2d_on_begin_draw(::gpu::graphics* pgpugraphics) override;
+      //void draw2d_on_end_draw(::gpu::graphics* pgpugraphics) override;
 
       bool defer_bind2(::gpu::command_buffer *pgpucommandbuffer, ::gpu::shader *pgpushader,
                        ::gpu::texture_site *pgputexturesite) override;

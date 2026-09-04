@@ -19,6 +19,10 @@ namespace gpu_vulkan
       VkCommandBuffer         m_vkcommandbuffer;
       VkCommandBufferLevel    m_vkcommandbufferlevel;
       VkCommandPool           m_vkcommandpool;
+      VkViewport              m_vkviewport;
+      VkRect2D                m_vkrect2dScissor;
+      bool                    m_bViewportSet;
+      bool                    m_bScissorSet;
       bool                    m_bFenceWaitIfNoPreexistingFence = false;
 
       //bool m_bPresentQueue;

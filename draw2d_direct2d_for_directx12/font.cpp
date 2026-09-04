@@ -121,7 +121,7 @@ namespace draw2d_direct2d_for_directx12
    void font::update(::draw2d::graphics * pdraw2dgraphics)
    {
 
-      ::draw2d_direct2d_for_directx12::font::update(pdraw2dgraphics);
+      ::draw2d_direct2d_for_directx11::font::update(pdraw2dgraphics);
 
       //if(m_pformat == nullptr || is_modified())
       //{

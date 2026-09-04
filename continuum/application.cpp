@@ -85,6 +85,7 @@ namespace app_graphics3d_continuum
       factory()->add_factory_item <::app_graphics3d_continuum::document >();
       factory()->add_factory_item <::app_graphics3d_continuum::main_frame >();
       factory()->add_factory_item <::app_graphics3d_continuum::impact >();
+      factory()->add_factory_item <::app_graphics3d_continuum::switcher_impact >();
       factory()->add_factory_item <::app_graphics3d_continuum::pane_impact >();
 
       ::core::application::init_instance();
@@ -108,6 +109,13 @@ namespace app_graphics3d_continuum
             ::type<document>(),
             ::type<main_frame>(),
             ::type<impact>()));
+
+      add_impact_system(
+   "switcher_impact", __initialize_new::user::single_document_template(
+      "impact",
+      ::type<document>(),
+      ::type<main_frame>(),
+      ::type<switcher_impact>()));
 
 #if defined(APPLE_IOS)
 
@@ -218,7 +226,7 @@ namespace app_graphics3d_continuum
 
       defer_constructø(pstillTitle->m_pwritetextfont);
 
-      pstillTitle->m_pwritetextfont->create_font(e_font_sans_ui, 24_pt);
+      pstillTitle->m_pwritetextfont->create_font(e_font_sans_ui, 24_pt, ::e_font_weight_bold);
 
       auto playoutLine = create_line_layout(pparent, e_orientation_horizontal);
 

@@ -122,6 +122,9 @@
     <ClInclude Include="command_buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="viewport_scissor_restore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -486,6 +489,12 @@
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
     <CustomBuild Include="shader\_001Circle.vert">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\_001Image.frag">
+      <Filter>Source Files\shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader\_001Image.vert">
       <Filter>Source Files\shader</Filter>
     </CustomBuild>
   </ItemGroup>

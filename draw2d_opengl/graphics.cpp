@@ -27,6 +27,7 @@
 #include "bred/gpu/pixmap.h"
 //#include "bred/gpu/aaa_render.h"
 #include "bred/gpu/render_target.h"
+#include "bred/gpu/texture_site.h"
 #include "bred/graphics3d/types.h"
 #ifdef WINDOWS_DESKTOP
 #include "gpu_opengl/device_win32.h"
@@ -445,18 +446,18 @@ namespace draw2d_opengl
 
       //   ASSERT(m_puserinteractionDraw2dGraphics);
 
-      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->m_pacmewindowingwindow);
+      auto pgpudevice = pgpuapproach->get_gpu_device(m_pacmeuserinteractionAffinity->acme_windowing_window());
 
       auto pgpucontextNew = pgpudevice->allocate_gpu_context();
 
       //::i32_rectangle rectanglePlacement(size);
 
-      auto sizeRaw = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow->get_raw_buffer_size().maximum(size);
+      auto sizeRaw = m_pacmeuserinteractionAffinity->acme_windowing_window()->get_raw_buffer_size().maximum(size);
 
       pgpucontextNew->create_draw2d_gpu_context(
          //::gpu::e_output_gpu_buffer,
          pgpudevice,
-         m_pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+         m_pacmeuserinteractionAffinity->acme_windowing_window(),
          this,
          {},
          {},
@@ -684,19 +685,187 @@ namespace draw2d_opengl
    }
 
 
-
-   void graphics::on_begin_draw(::acme::windowing::window * pacmewindowingwindow, const ::f64_size & size)
+   void graphics::create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity)
    {
 
-      ::gpu::graphics::on_begin_draw(pacmewindowingwindow, size);
+      throw ::interface_only();
 
    }
 
 
-   void graphics::on_end_draw(::acme::windowing::window * pacmewindowingwindow)
+   void graphics::begin_draw(bool bExternalRendering, ::user::interaction * puserinteraction, const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget)
    {
 
-      ::gpu::graphics::on_end_draw(pacmewindowingwindow);
+      ::gpu::graphics::begin_draw(bExternalRendering, puserinteraction, rectangleFrame, pimageTarget);
+
+      ::gpu::context_lock contextlock(m_pgpucontextOwned);
+
+      auto pcommandbuffer = m_pgpucontextOwned->m_pgpurenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+
+      auto rectangleOutput = rectangleFrame;
+
+      rectangleOutput.offset(-rectangleOutput.origin());
+
+      pcommandbuffer->set_viewport(rectangleOutput, m_pgpucontextOwned->m_sizeRaw);
+
+      pcommandbuffer->set_scissor(rectangleOutput, m_pgpucontextOwned->m_sizeRaw);
+
+   }
+
+
+   void graphics::on_acquire_memory_graphics(
+      bool bExternalRendering,
+      ::image::image * pimage,
+      const ::i32_size & size,
+      ::acme::user::interaction * pacmeuserinteractionAffinity)
+   {
+
+      ::gpu::texture * pgputextureActiveLayer = nullptr;
+
+      if (pimage)
+      {
+
+         ::gpu::context_lock contextlock(gpu_context());
+
+         auto pgpucommandbuffer = ::gpu::current_command_buffer();
+
+         if (pgpucommandbuffer && pgpucommandbuffer->m_pgpurendertarget)
+         {
+
+            auto pgputexturesiteActiveLayer =
+               pgpucommandbuffer->m_pgpurendertarget->current_texture(
+                  ::gpu::current_layer(),
+                  false);
+
+            if (pgputexturesiteActiveLayer)
+            {
+
+               pgputextureActiveLayer = pgputexturesiteActiveLayer->gpu_texture();
+
+            }
+
+         }
+
+         glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &m_iDrawFramebufferBeforeImageTarget);
+         glGetIntegerv(GL_DRAW_BUFFER, &m_iDrawBufferBeforeImageTarget);
+         glGetIntegerv(GL_VIEWPORT, m_iViewportBeforeImageTarget);
+         glGetIntegerv(GL_SCISSOR_BOX, m_iScissorBoxBeforeImageTarget);
+         m_bScissorTestBeforeImageTarget = glIsEnabled(GL_SCISSOR_TEST) == GL_TRUE;
+         m_bImageTargetStateSaved = true;
+
+      }
+
+      ::gpu::graphics::on_acquire_memory_graphics(
+         bExternalRendering,
+         pimage,
+         size,
+         pacmeuserinteractionAffinity);
+
+      if (pimage)
+      {
+
+         ::gpu::context_lock contextlock(gpu_context());
+
+         ::gpu::texture * pgputextureImageTarget = m_pgputexturesiteTarget
+            ? m_pgputexturesiteTarget->gpu_texture()
+            : nullptr;
+
+         auto bNestedImageTarget = !pgputextureActiveLayer
+            || pgputextureImageTarget != pgputextureActiveLayer;
+
+         if (bNestedImageTarget)
+         {
+
+            auto sizeRaw = pimage->raw_size();
+
+            glViewport(0, 0, sizeRaw.cx, sizeRaw.cy);
+            ::opengl::check_error("");
+            glEnable(GL_SCISSOR_TEST);
+            ::opengl::check_error("");
+            glScissor(0, 0, sizeRaw.cx, sizeRaw.cy);
+            ::opengl::check_error("");
+
+         }
+         else
+         {
+
+            // The window UI lease is backed by the active layer texture itself.
+            // Its framebuffer must remain current through layer finalization.
+            m_bImageTargetStateSaved = false;
+
+         }
+
+      }
+
+   }
+
+
+   void graphics::on_release_memory_graphics()
+   {
+
+      if (m_bImageTargetStateSaved)
+      {
+
+         ::gpu::context_lock contextlock(gpu_context());
+
+         gpu_context()->defer_unbind_shader();
+
+         if (m_pgputexturesiteTarget)
+         {
+
+            auto pgputextureTarget = m_pgputexturesiteTarget->gpu_texture();
+
+            if (pgputextureTarget)
+            {
+
+               // The image can be sampled immediately by another shared OpenGL
+               // context, so publish completion before restoring the UI target.
+               pgputextureTarget->defer_fence();
+
+            }
+
+         }
+
+         glBindFramebuffer(
+            GL_DRAW_FRAMEBUFFER,
+            (GLuint)m_iDrawFramebufferBeforeImageTarget);
+         ::opengl::check_error("");
+         glDrawBuffer((GLenum)m_iDrawBufferBeforeImageTarget);
+         ::opengl::check_error("");
+         glViewport(
+            m_iViewportBeforeImageTarget[0],
+            m_iViewportBeforeImageTarget[1],
+            m_iViewportBeforeImageTarget[2],
+            m_iViewportBeforeImageTarget[3]);
+         ::opengl::check_error("");
+         glScissor(
+            m_iScissorBoxBeforeImageTarget[0],
+            m_iScissorBoxBeforeImageTarget[1],
+            m_iScissorBoxBeforeImageTarget[2],
+            m_iScissorBoxBeforeImageTarget[3]);
+         ::opengl::check_error("");
+
+         if (!m_bScissorTestBeforeImageTarget)
+         {
+
+            glDisable(GL_SCISSOR_TEST);
+            ::opengl::check_error("");
+
+         }
+
+         m_bImageTargetStateSaved = false;
+
+      }
+
+      ::gpu::graphics::on_release_memory_graphics();
+
+   }
+
+
+   void graphics::end_draw()
+   {
+
+      ::gpu::graphics::end_draw();
 
    }
 
@@ -1939,7 +2108,7 @@ namespace draw2d_opengl
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
 
-      pcommandbuffer->set_shader(pshader);
+      set_gpu_shader(pcommandbuffer, pshader);
 
 
             // 1. Calculate optimal number of segments based on radius
@@ -2054,7 +2223,7 @@ namespace draw2d_opengl
       auto pcommandbuffer = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
 
-      pcommandbuffer->set_shader(pshader);
+      set_gpu_shader(pcommandbuffer, pshader);
 
 
       // 1. Calculate optimal number of segments based on radius
@@ -2740,7 +2909,7 @@ namespace draw2d_opengl
 
       //auto ptextureTarget = pcommandbuffer->m_pgpurendertarget->current_texture(::gpu::current_layer());
 
-      pcommandbuffer->set_shader(pshader);
+      set_gpu_shader(pcommandbuffer, pshader);
 
       //pmodelbuffer->bind(pcommandbuffer);
 
@@ -3524,9 +3693,30 @@ namespace draw2d_opengl
 
       ::cast < ::draw2d_opengl::image > popenglimage = pimage;
 
+      if (!popenglimage)
+      {
+
+         throw ::exception(error_wrong_state, "OpenGL target image has an incompatible backend type");
+
+      }
+
       ::cast < ::draw2d_opengl::bitmap > pdraw2dbitmap = popenglimage->m_pdraw2dbitmap;
 
+      if (!pdraw2dbitmap)
+      {
+
+         throw ::exception(error_wrong_state, "OpenGL target image has no OpenGL bitmap");
+
+      }
+
       ::cast < ::gpu_opengl::texture > ptexture = pdraw2dbitmap->m_pgputexture;
+
+      if (!ptexture)
+      {
+
+         throw ::exception(error_wrong_state, "OpenGL target bitmap has no GPU texture");
+
+      }
 
       ptexture->bind_render_target();
 
@@ -6308,7 +6498,39 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //      pcontext->defer_unbind(m_pgpushaderTextOut);
    }
 
-   
+
+   ::gpu::enum_topology graphics::image_draw_topology() const
+   {
+
+      return ::gpu::e_topology_triangle_strip;
+
+   }
+
+
+   ::i32 graphics::image_draw_vertex_count() const
+   {
+
+      return 4;
+
+   }
+
+
+   ::gpu::enum_topology graphics::text_draw_topology() const
+   {
+
+      return ::gpu::e_topology_triangle_list;
+
+   }
+
+
+   ::i32 graphics::text_draw_vertex_count() const
+   {
+
+      return 6;
+
+   }
+
+
    void graphics::text_out_2025_06(double x, double yParam, const ::scoped_string& scopedstr)
    {
 
@@ -7284,10 +7506,10 @@ color = vec4(c.r,c.g, c.b, c.a);
    //}
 
 
-   ::gpu_opengl::context* graphics::gpu_context()
+   ::gpu::context* graphics::gpu_context()
    {
 
-      return dynamic_cast <::gpu_opengl::context*>(::gpu::graphics::gpu_context());
+      return  ::gpu::graphics::gpu_context();
 
    }
 

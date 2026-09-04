@@ -226,7 +226,7 @@ namespace app_graphics3d_hello_space
          auto &lcdMonitor = scene_renderable("matter://models/MicrosoftMonitor.obj", false);
          lcdMonitor.translate({-1.4f, 0.f, -1.0f});
          lcdMonitor.scale({0.03f, 0.03f, 0.03f});
-         lcdMonitor.m_matrixRotation.rotate({0.0, 1.0, 0.0}, 25_degrees);
+         lcdMonitor.m_matrixRotation.rotate({0.0f, 1.0f, 0.0f}, 25_degrees);
             
          //lcdMonitor.m_ecoordinatesystem = ::gpu::e_coordinate_system_vulkan;
          // woodBarrel.m_ecoordinatesystem = ::gpu::e_coordinate_system_znf;
@@ -487,6 +487,8 @@ namespace app_graphics3d_hello_space
 
       auto pgpucommandbuffer = pgpucontext->beginSingleTimeCommands(pgpucontext->m_pgpudevice->graphics_queue());
 
+      bool bCommandBufferRecordingSucceeded = true;
+
             if (!m_pmodelbufferDummy)
       {
 
@@ -525,7 +527,9 @@ namespace app_graphics3d_hello_space
 
                auto ppixmapImageHelloMultiverseScreen = m_pimageHelloMultiverseScreen->map();
 
-               pgputextureHelloMultiverseScreen->write_pixels(pgpucommandbuffer, ppixmapImageHelloMultiverseScreen, {});
+               //pgputextureHelloMultiverseScreen->write_pixels(pgpucommandbuffer, ppixmapImageHelloMultiverseScreen, {});
+
+               pgputextureHelloMultiverseScreen->write_pixels(true, ppixmapImageHelloMultiverseScreen, {});
 
                constructø(m_pgputexturesiteMonitorMultisample->m_pgputextureSite);
 
@@ -643,7 +647,8 @@ namespace app_graphics3d_hello_space
 
                      pgpucommandbuffer->clear(m_pgputexturesiteHelloMultiverse->gpu_texture(), color::transparent);
 
-                     m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(pgpucommandbuffer, ppixmap, {x, y});
+                     //m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(pgpucommandbuffer, ppixmap, {x, y});
+                     m_pgputexturesiteHelloMultiverse->gpu_texture()->write_pixels(true, ppixmap, { x, y });
 
 
                      // pgpucontext->copy(m_pgputextureMonitor, m_pgputextureHelloMultiverseScreen, nullptr);
@@ -772,13 +777,25 @@ namespace app_graphics3d_hello_space
                }
                catch (...)
                {
+                  bCommandBufferRecordingSucceeded = false;
                }
             }
          }
       }
 
 
-      pgpucontext->endSingleTimeCommands(pgpucommandbuffer);
+      if (bCommandBufferRecordingSucceeded)
+      {
+
+         pgpucommandbuffer.commit();
+
+      }
+      else
+      {
+
+         pgpucommandbuffer.cancel();
+
+      }
    }
 
 

@@ -42,6 +42,11 @@ namespace draw2d_nanovg
       //VkvgDevice                       m_nanovgdevice;
       //VkvgSurface                      m_nanovgsurface;
       NVGcontext *                     m_pdc = nullptr;
+      ::pointer < ::gpu::texture >     m_pgputextureNvgBeginFrame;
+      ::i32_size                       m_sizeNvgBeginFrame;
+      bool                             m_bNvgBeginFrameExternalRendering = false;
+      //::i32_size                       m_sizeRawNvgBeginFrame;
+
       bool                             m_bHasCurrentPoint;
       //::pointer < ::gpu::texture >     m_ptextureTarget;
       //::plusplus::Matrix *           m_pm;
@@ -117,6 +122,13 @@ namespace draw2d_nanovg
       //oswindow get_window_handle() const;
 //      ::windowing::window * GetWindow() const;
 
+      //void on_begin_draw(::acme::windowing::window * pacmewindowingwindow, const ::f64_rectangle & rectangleFrame) override;
+
+      void begin_draw(bool bExternalRendering, ::user::interaction * puserinteraction, const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget) override;
+      void end_draw() override;
+
+      virtual void _nvg_begin_frame(bool bExternalRendering, ::gpu::texture * pgputexture, const ::i32_size & size);
+      virtual void _nvg_end_frame(bool bExternalRendering);
 
       ::gpu::texture_site * current_target_texture(::gpu::layer * pgpulayer) override;
 
@@ -129,9 +141,9 @@ namespace draw2d_nanovg
       void * detach() override;
 
       //void on_set_target_rectangle(::image::image * pimage) override;
-      
-      void begin_draw() override;
-      void end_draw() override;
+      bool is_y_flip() override;
+      //void begin_draw() override;
+      //void end_draw() override;
 
       //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
@@ -159,13 +171,20 @@ namespace draw2d_nanovg
       ::draw2d::bitmap *  get_current_bitmap() override;
       //::gpu::frame* end_gpu_layer(::gpu::layer * pgpulayer) override;
 
+      void _draw_raw(const ::image::image_drawing & imagedrawing) override;
       void _draw_raw(const ::f64_rectangle & rectangleTarget, ::image::image *pimage, const ::image::image_drawing_options & imagedrawingoptionsParam, const ::f64_point & pointSrc) override;
+
+      void _draw_raw_with_source_rectangle(
+         const ::f64_rectangle & rectangleTarget,
+         ::image::image * pimage,
+         const ::image::image_drawing_options & imagedrawingoptions,
+         const ::f64_rectangle & rectangleSource);
 
       virtual bool _draw_gpu_image(
          const ::f64_rectangle & rectangleTarget,
          ::image::image * pimage,
          const ::image::image_drawing_options & imagedrawingoptions,
-         const ::f64_point & pointSrc);
+         const ::f64_rectangle & rectangleSource);
 
       int acquire_nanovg_gpu_image_wrapper(
          ::gpu_opengl::texture * pgputexture,
@@ -210,7 +229,7 @@ namespace draw2d_nanovg
          const ::i32_size & sizeImage,
          const ::f64_rectangle & rectangleTarget,
          const ::image::image_drawing_options & imagedrawingoptions,
-         const ::f64_point & pointSrc);
+         const ::f64_rectangle & rectangleSource);
 
       //plusplus::Pen *       vk2d_pen();
       //plusplus::Brush *     vk2d_brush();
@@ -235,9 +254,10 @@ namespace draw2d_nanovg
                     const char * lpszOutput, const void * lpInitData);
       //void create_memory_graphics(const ::i32_size & size = {}) override;
       //void _create_memory_graphics(const ::i32_size & size) override;
-      void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap);
+      void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
       void _create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
       void on_acquire_memory_graphics(
+         bool bExternalRendering,
          ::image::image * pimage,
          const ::i32_size & size,
          ::acme::user::interaction * pacmeuserinteractionAffinity) override;

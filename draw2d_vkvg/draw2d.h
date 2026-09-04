@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "acme/platform/auto_pointer.h"
+//#include "acme/platform/auto_pointer.h"
 #include "bred/gpu/draw2d.h"
 #include "gpu_vulkan/context.h"
 
@@ -77,7 +77,10 @@ namespace draw2d_vkvg
       virtual int  vulkan_init();
 
 
-      virtual void defer_load_font_by_family_name(VkvgContext pdc, const ::scoped_string& scopedstrName);
+      virtual ::string defer_load_font(
+         VkvgContext pdc,
+         VkvgDevice pdevice,
+         ::write_text::font * pwritetextfont);
 
 
 

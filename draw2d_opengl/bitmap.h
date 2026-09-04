@@ -116,19 +116,19 @@ namespace draw2d_opengl
 
       //bool                 m_bTexture;
       //GLuint               m_texture;
-      memory               m_memIn;
-      memory               m_memOut;
+      //memory               m_memIn;
+      //memory               m_memOut;
 
-      bool                 m_bFlashed;
-      bool                 m_bPBuffer;
+      //bool                 m_bFlashed;
+      //bool                 m_bPBuffer;
 #ifdef WINDOWS
 
-      HWND  g_hWnd;
-      HDC   g_hDC;
-      HGLRC g_hRC;
-      HDC   g_hPBufferDC;
-      HGLRC g_hPBufferRC;
-      HPBUFFERARB g_hPBuffer;
+      //HWND  g_hWnd;
+      //HDC   g_hDC;
+      //HGLRC g_hRC;
+      //HDC   g_hPBufferDC;
+      //HGLRC g_hPBufferRC;
+      //HPBUFFERARB g_hPBuffer;
 
 #elif defined(LINUX) || defined(__BSD__)
       Display *dpy;
@@ -150,8 +150,8 @@ namespace draw2d_opengl
 #endif
 
 
-      ::i32_size               m_sizeOut;
-      ::i32_size               m_sizeIn;
+      //::i32_size               m_sizeOut;
+      //::i32_size               m_sizeIn;
 
 
       bitmap();
@@ -159,25 +159,25 @@ namespace draw2d_opengl
 
       void destroy_bitmap();
 
-      // Resample Quality
-      // 0 - low
-      // 1 - good
-      // 2 - excelent
-      void create_texture(int iResampleQuality);
-      //bool flash();
-      void defer_reveal();
+      //// Resample Quality
+      //// 0 - low
+      //// 1 - good
+      //// 2 - excelent
+      //void create_texture(int iResampleQuality);
+      ////bool flash();
+      //void defer_reveal();
 
-      bool Init();
-      bool InitGL();
-      bool InitGLExtensions();
-      bool InitPBuffer();
-      void Cleanup();
+      //bool Init();
+      //bool InitGL();
+      //bool InitGLExtensions();
+      //bool InitPBuffer();
+      //void Cleanup();
 
-      
+      //pixmap_t get_pixmap() override;
 
-      void * get_os_data() const;
-
-
+      //void * get_os_data() const;
+      void preserve_image(const ::i32_size & size, ::image::image * pimage);
+      void update_bitmap_as_backed_by_gpu_texture(::gpu::texture * pgputexture, ::draw2d::graphics * pdraw2graphics) override;
       bool LoadBitmap(const ::string & lpszResourceName);
       bool LoadBitmap(unsigned int nIDResource);
       bool LoadOEMBitmap(unsigned int nIDBitmap); // for OBM_/OCR_/OIC_
@@ -186,11 +186,20 @@ namespace draw2d_opengl
       void CreateCompatibleBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight) override;
       void CreateDiscardableBitmap(::draw2d::graphics * pdraw2dgraphics, int nWidth, int nHeight) override;
       
+      void update_bitmap_as_image_render_target(
+         ::image::image * pimage,
+         ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr,
+         ::draw2d::graphics * pdraw2dgraphics = nullptr) override;
       void create_bitmap(::draw2d::graphics * pdraw2dgraphics, const ::i32_size& size, ::pixmap * ppixmap) override;
       void CreateDIBitmap(::draw2d::graphics * pdraw2dgraphics, int cx, int cy, unsigned int flInit, const void* pjBits, unsigned int iUsage) override;
 
 
       //int GetBitmap(BITMAP* pBitMap);
+      void write_pixels(
+   const ::i32_size & size,
+   const ::i32_point & point,
+   const ::image32_t * pimage32,
+   ::i32 iScan, bool bTopDown) override;
 
 
       unsigned int SetBitmapBits(unsigned int dwCount, const void * lpBits) override;

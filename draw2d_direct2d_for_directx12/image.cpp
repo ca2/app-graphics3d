@@ -416,7 +416,7 @@ namespace draw2d_direct2d_for_directx12
 
       //}
 
-      copy_from(pdraw2dgraphics->m_pimage);
+      copy_from(pdraw2dgraphics->m_pimageTarget);
 
       return true;
 
@@ -1274,7 +1274,7 @@ namespace draw2d_direct2d_for_directx12
    //}
 
 
-   ::image_pixmap_lease image::_map(const ::i32_rectangle & rectangle)
+   ::image_pixmap_lease image::_map(::image::enum_map emap, const ::i32_rectangle & rectangle)
    {
 
       //::draw2d::lock draw2dlock;
@@ -1372,7 +1372,7 @@ namespace draw2d_direct2d_for_directx12
 
       //m_bMapped = true;
 
-      return ::transfer(::draw2d_direct2d_for_directx11::image::_map(rectangle));
+      return ::transfer(::draw2d_direct2d_for_directx11::image::_map(emap, rectangle));
 
    }
 

@@ -270,7 +270,7 @@ namespace draw2d_vulkan
       //virtual void _fill_quad(const ::f64_point points[4], const ::color::color & color);
       //virtual void _fill_rectangle_2025_05_29(const ::f64_rectangle& rectangle, ::draw2d::brush* pBrush);
 
-      void gpu_layer_on_before_end_render() override;
+      //svoid gpu_layer_on_before_end_render() override;
       // Simple Drawing Functions
       void fill_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pBrush) override;
       void frame_rectangle(const ::f64_rectangle& rectangle, ::draw2d::brush* pBrush) override;

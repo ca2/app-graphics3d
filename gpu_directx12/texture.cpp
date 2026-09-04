@@ -1833,7 +1833,7 @@ namespace gpu_directx12
             pcontext->m_pgpudevice->graphics_queue(),
             ::gpu::e_command_buffer_graphics);
 
-         ::cast < command_buffer > pcommandbuffer = pgpucommandbuffer;
+         ::cast < command_buffer > pcommandbuffer = pgpucommandbuffer.operator gpu::command_buffer *();
 
          {
 
@@ -1862,7 +1862,7 @@ namespace gpu_directx12
 
          }
 
-         pcontext->endSingleTimeCommands(pcommandbuffer);
+         pgpucommandbuffer.commit();
 
       }
 
@@ -2024,7 +2024,7 @@ namespace gpu_directx12
    }
 
 
-   void texture::set_pixels(const ::i32_rectangle& rectangle, const void* data)
+   void texture::set_pixels(bool bSync, const ::i32_rectangle& rectangle, const void* data)
    {
 
       //::cast < renderer > prenderer = m_pgpurenderer;
@@ -2079,18 +2079,19 @@ namespace gpu_directx12
    }
 
 
-   void texture::set_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data)
-   {
+   ////void texture::set_pixels(::gpu::command_buffer * pgpucommandbuffer, const ::i32_rectangle & rectangle, const void * data)
+   //void texture::set_pixels(const ::i32_rectangle & rectangle, const void * data)
+   //{
 
 
-      auto puploadbuffer = _get_upload_buffer();
+   //   auto puploadbuffer = _get_upload_buffer();
 
-      //D3D12_RESOURCE_DESC texDesc = m_presourceTexture->GetDesc();
+   //   //D3D12_RESOURCE_DESC texDesc = m_presourceTexture->GetDesc();
 
-      puploadbuffer->update_pixels(pgpucommandbuffer, rectangle, data);
+   //   puploadbuffer->update_pixels(rectangle, data);
 
 
-   }
+   //}
 
 
    void texture::read_pixels(::gpu::command_buffer * pgpucommandbuffer, ::pixmap_t * ppixmap, const ::i32_point & pointOutput)
@@ -2209,44 +2210,47 @@ namespace gpu_directx12
 
       pdevice->defer_throw_hresult(hrCreateReadback);
 
-      auto pgpucommandbufferReadback = pcontext->beginSingleTimeCommands(
-         pcontext->m_pgpudevice->graphics_queue());
-
-      ::cast < ::gpu_directx12::command_buffer > pcommandbufferReadback =
-         pgpucommandbufferReadback;
-
-      auto pd3d12commandlist = pcommandbufferReadback->m_pcommandlist;
-
-      auto locationTarget = CD3DX12_TEXTURE_COPY_LOCATION(preadback, footprint);
-
-      auto locationSource = CD3DX12_TEXTURE_COPY_LOCATION(psource, uSubresource);
-
-      auto boxSource = CD3DX12_BOX(
-         pointOutput.x,
-         pointOutput.y,
-         0,
-         (LONG)((UINT64)pointOutput.x + uWidth),
-         (LONG)((UINT64)pointOutput.y + uHeight),
-         1);
-
       {
 
-         resource_state_guard state(
-            pd3d12commandlist,
-            m_pd3d12resourceTexture,
-            D3D12_RESOURCE_STATE_COPY_SOURCE);
+         auto pgpucommandbufferReadback = pcontext->beginSingleTimeCommands(
+            pcontext->m_pgpudevice->graphics_queue());
 
-         pd3d12commandlist->CopyTextureRegion(
-            &locationTarget,
+         ::cast < ::gpu_directx12::command_buffer >pcommandbufferReadback = pgpucommandbufferReadback.operator gpu::command_buffer * ();
+
+         auto pd3d12commandlist = pcommandbufferReadback->m_pcommandlist;
+
+         auto locationTarget = CD3DX12_TEXTURE_COPY_LOCATION(preadback, footprint);
+
+         auto locationSource = CD3DX12_TEXTURE_COPY_LOCATION(psource, uSubresource);
+
+         auto boxSource = CD3DX12_BOX(
+            pointOutput.x,
+            pointOutput.y,
             0,
-            0,
-            0,
-            &locationSource,
-            &boxSource);
+            (LONG)((UINT64)pointOutput.x + uWidth),
+            (LONG)((UINT64)pointOutput.y + uHeight),
+            1);
+
+         {
+
+            resource_state_guard state(
+               pd3d12commandlist,
+               m_pd3d12resourceTexture,
+               D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+            pd3d12commandlist->CopyTextureRegion(
+               &locationTarget,
+               0,
+               0,
+               0,
+               &locationSource,
+               &boxSource);
+
+         }
+
+         pgpucommandbufferReadback.commit();
 
       }
-
-      pcontext->endSingleTimeCommands(pcommandbufferReadback);
 
       D3D12_RANGE rangeRead{
          (SIZE_T)footprint.Offset,

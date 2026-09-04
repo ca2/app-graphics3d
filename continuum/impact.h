@@ -20,6 +20,8 @@ namespace app_graphics3d_continuum
       string                           m_strFont1;
       int                              m_iSequence;
 
+      int                              m_iImpactSerial;
+
 
       impact();
       ~impact() override;
@@ -67,6 +69,15 @@ namespace app_graphics3d_continuum
 
    };
 
+   class CLASS_DECL_APP_GRAPHICS3D_CONTINUUM switcher_impact :
+      virtual public impact
+   {
+   public:
+
+      switcher_impact();
+      ~switcher_impact() override;
+
+   };
 
 } // namespace app_graphics3d_continuum
 

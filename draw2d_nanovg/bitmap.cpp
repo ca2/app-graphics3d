@@ -65,17 +65,17 @@ namespace draw2d_nanovg
    bitmap::bitmap()
    {
 
-      //m_hwnd = nullptr;
-      //m_hinstance = nullptr;
-      m_bTexture = false;
-      m_bPBuffer = false;
-      m_bFlashed = false;
+      ////m_hwnd = nullptr;
+      ////m_hinstance = nullptr;
+      //m_bTexture = false;
+      //m_bPBuffer = false;
+      //m_bFlashed = false;
 
-      m_memOut.m_bAligned = true;
-      m_memIn.m_bAligned = true;
+      //m_memOut.m_bAligned = true;
+      //m_memIn.m_bAligned = true;
 
-      //m_pdraw2dbitmap   = nullptr;
-      m_iStride   = 0;
+      ////m_pdraw2dbitmap   = nullptr;
+      //m_iStride   = 0;
 
    }
 
@@ -111,69 +111,72 @@ namespace draw2d_nanovg
    void bitmap::create_bitmap(::draw2d::graphics * pdraw2dgraphics, const ::i32_size& size, ::pixmap * ppixmap)
    {
 
-      __UNREFERENCED_PARAMETER(pdraw2dgraphics);
+      ::gpu::bitmap::create_bitmap(pdraw2dgraphics, size, ppixmap);
 
-      m_sizeOut.cx = size.cx;
+      //__UNREFERENCED_PARAMETER(pdraw2dgraphics);
 
-      m_sizeOut.cy = size.cy;
+      //m_size = size;
 
-      m_iStride = 4 * size.cx;
+      //m_iStride = 4 * size.cx;
 
-      int iScan = m_iStride;
+      //int iScan = m_iStride;
 
-      if (ppixmap && ppixmap->m_iScan > iScan)
-      {
-
-         iScan = ppixmap->m_iScan;
-
-      }
-
-      m_memOut.set_size(abs(m_iStride * size.cy));
-
-      if (m_memOut.data() == nullptr)
-      {
-
-         return;
-
-         //return false;
-
-      }
-
-      auto pimage32Target = (::image32_t *)m_memOut.data();
-
-      //if (pimage32)
+      //if (ppixmap && ppixmap->m_iScan >= iScan)
       //{
 
-      //   pimage32Target->copy(size, m_iStride, pimage32, iScan);
+      //   iScan = ppixmap->m_iScan;
 
       //}
 
-      if (ppixmap && ppixmap->m_memoryPixmap.size() > iScan * size.cy)
-      {
 
-         pimage32Target->copy(size, m_iStride, ppixmap->image32(), iScan);
+      ////if (pimage32)
+      ////{
 
-      }
+      ////   pimage32Target->copy(size, m_iStride, pimage32, iScan);
 
-      ppixmap->m_memoryPixmap.reference_data(m_memOut);
+      ////}
 
-      //if(ppimage32 != nullptr)
+      //if (ppixmap && ppixmap->m_memoryPixmap.size() >= iScan * size.cy)
       //{
-      //   
-      //   *ppimage32 = pimage32Target;
+
+      //   m_memOut.set_size(abs(m_iStride * size.cy));
+
+      //   if (m_memOut.data() == nullptr)
+      //   {
+
+      //      return;
+
+      //      //return false;
+
+      //   }
+
+      //   auto pimage32Target = (::image32_t *)m_memOut.data();
+
+      //   pimage32Target->copy(size, m_iStride, ppixmap->image32(), iScan);
+
+      //   ppixmap->m_memoryPixmap.reference_data(m_memOut);
+
+      //   ppixmap->m_iScan = m_iStride;
+
+
 
       //}
 
-      if(ppixmap != nullptr)
-      {
+      ////if(ppimage32 != nullptr)
+      ////{
+      ////   
+      ////   *ppimage32 = pimage32Target;
 
-         ppixmap->m_iScan = m_iStride;
+      ////}
 
-      }
+      ////if(::is_set(ppixmap))
+      ////{
 
-      //m_osdata[0] = (void *) 1;
+      ////}
 
-      //return true;
+      ////m_osdata[0] = (void *) 1;
+
+      ////return true;
 
    }
 
@@ -235,7 +238,7 @@ namespace draw2d_nanovg
 
       //return ::i32_size(m_pdraw2dbitmap->GetWidth(), m_pdraw2dbitmap->GetHeight());
 
-      return m_sizeOut;
+      return m_size;
 
    }
 
@@ -314,13 +317,13 @@ namespace draw2d_nanovg
 
 
 
-   void * bitmap::get_os_data() const
-   {
-
-//      return (void *) (plusplus::Bitmap *) m_pdraw2dbitmap;
-      return m_memOut.data();
-
-   }
+//   void * bitmap::get_os_data() const
+//   {
+//
+////      return (void *) (plusplus::Bitmap *) m_pdraw2dbitmap;
+//      return ::gpu::bitmap::get_os_data();
+//
+//   }
 
    //bool bitmap::attach(void * posdata)
    //{
@@ -376,8 +379,8 @@ namespace draw2d_nanovg
    void bitmap::destroy_bitmap()
    {
 
-      m_bTexture = false;
-      m_bPBuffer = false;
+      //m_bTexture = false;
+      //m_bPBuffer = false;
 
       //if (g_hDC)
       //{
@@ -396,66 +399,66 @@ namespace draw2d_nanovg
    }
 
 
-   void bitmap::create_texture(int iResampleQuality)
-   {
+   //void bitmap::create_texture(int iResampleQuality)
+   //{
 
-      //m_sizeIn.cx = 1;
-      //m_sizeIn.cy = 1;
+   //   //m_sizeIn.cx = 1;
+   //   //m_sizeIn.cy = 1;
 
-      //while (m_sizeIn.cx < m_sizeOut.cx)
-      //{
+   //   //while (m_sizeIn.cx < m_sizeOut.cx)
+   //   //{
 
-      //   m_sizeIn.cx *= 2;
+   //   //   m_sizeIn.cx *= 2;
 
-      //}
+   //   //}
 
-      //while(m_sizeIn.cy < m_sizeOut.cy)
-      //{
+   //   //while(m_sizeIn.cy < m_sizeOut.cy)
+   //   //{
 
-      //   m_sizeIn.cy *= 2;
+   //   //   m_sizeIn.cy *= 2;
 
-      //}
-
-
-      //resizeBilinear(m_memIn, m_sizeIn.cx, m_sizeIn.cy, (int*)m_memOut.data(), m_sizeOut.cx, m_sizeOut.cy);
-
-      //vkGenTextures(1, &m_texture);
-
-      //VKenum e = vkGetError();
-
-      //// Create Nearest Filtered Texture
-      //vkBindTexture(VK_TEXTURE_2D, m_texture);
-      //e = vkGetError();
-      //if (iResampleQuality == 2)
-      //{
-      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MAG_FILTER, VK_LINEAR);
-      //   e = vkGetError();
-      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MIN_FILTER, VK_LINEAR_MIPMAP_NEAREST);
-      //   e = vkGetError();
-      //}
-      //else if (iResampleQuality == 1)
-      //{
-      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MAG_FILTER, VK_LINEAR);
-      //   e = vkGetError();
-      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MIN_FILTER, VK_LINEAR);
-      //   e = vkGetError();
-      //}
-      //else
-      //{
-
-      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MAG_FILTER, VK_NEAREST);
-      //   e = vkGetError();
-      //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MIN_FILTER, VK_NEAREST);
-      //   e = vkGetError();
-
-      //}
-
-      //vkTexImage2D(VK_TEXTURE_2D, 0, 4, m_sizeIn.cx, m_sizeIn.cy, 0, VK_BGRA_EXT, VK_UNSIGNED_BYTE, m_memIn.data());
-      //e = vkGetError();
+   //   //}
 
 
+   //   //resizeBilinear(m_memIn, m_sizeIn.cx, m_sizeIn.cy, (int*)m_memOut.data(), m_sizeOut.cx, m_sizeOut.cy);
 
-   }
+   //   //vkGenTextures(1, &m_texture);
+
+   //   //VKenum e = vkGetError();
+
+   //   //// Create Nearest Filtered Texture
+   //   //vkBindTexture(VK_TEXTURE_2D, m_texture);
+   //   //e = vkGetError();
+   //   //if (iResampleQuality == 2)
+   //   //{
+   //   //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MAG_FILTER, VK_LINEAR);
+   //   //   e = vkGetError();
+   //   //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MIN_FILTER, VK_LINEAR_MIPMAP_NEAREST);
+   //   //   e = vkGetError();
+   //   //}
+   //   //else if (iResampleQuality == 1)
+   //   //{
+   //   //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MAG_FILTER, VK_LINEAR);
+   //   //   e = vkGetError();
+   //   //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MIN_FILTER, VK_LINEAR);
+   //   //   e = vkGetError();
+   //   //}
+   //   //else
+   //   //{
+
+   //   //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MAG_FILTER, VK_NEAREST);
+   //   //   e = vkGetError();
+   //   //   vkTexParameteri(VK_TEXTURE_2D, VK_TEXTURE_MIN_FILTER, VK_NEAREST);
+   //   //   e = vkGetError();
+
+   //   //}
+
+   //   //vkTexImage2D(VK_TEXTURE_2D, 0, 4, m_sizeIn.cx, m_sizeIn.cy, 0, VK_BGRA_EXT, VK_UNSIGNED_BYTE, m_memIn.data());
+   //   //e = vkGetError();
+
+
+
+   //}
 
 //#ifdef WINDOWS
 //   LRESULT CALLBACK WindowProc(HWND hWnd, unsigned int msg, WPARAM wParam, LPARAM lParam)
@@ -592,218 +595,218 @@ namespace draw2d_nanovg
 //      return true;
 //
 //   }
+//
+//   void bitmap::defer_reveal()
+//   {
+//
+////      if (m_bFlashed)
+////      {
+////
+////         m_bFlashed = false;
+////
+////         //wglMakeCurrent(g_hDC, g_hRC);
+////
+////         wglMakeCurrent(g_hPBufferDC, g_hPBufferRC);
+////         VKenum e = vkGetError();
+////
+//////         vkFlush();
+////
+////         //m_mem.set_size(cxDIB * cyDIB * 4);
+////         //m_mem.zero();
+////         vkPixelStorei(VK_PACK_ALIGNMENT, 1);
+////         e = vkGetError();
+////
+////         color32_t * pdata = (color32_t *) m_memOut.data();
+////
+////         vkReadPixels(0, 0, m_sizeOut.cx, m_sizeOut.cy, VK_BGRA_EXT, VK_UNSIGNED_BYTE, pdata);
+////         e = vkGetError();
+////
+////         information("error " + ::as_string((int)e));
+////
+////      }
+//
+//   }
 
-   void bitmap::defer_reveal()
-   {
-
-//      if (m_bFlashed)
-//      {
 //
-//         m_bFlashed = false;
+//   bool bitmap::InitGL()
+//   {
 //
-//         //wglMakeCurrent(g_hDC, g_hRC);
-//
-//         wglMakeCurrent(g_hPBufferDC, g_hPBufferRC);
-//         VKenum e = vkGetError();
-//
-////         vkFlush();
-//
-//         //m_mem.set_size(cxDIB * cyDIB * 4);
-//         //m_mem.zero();
-//         vkPixelStorei(VK_PACK_ALIGNMENT, 1);
-//         e = vkGetError();
-//
-//         color32_t * pdata = (color32_t *) m_memOut.data();
-//
-//         vkReadPixels(0, 0, m_sizeOut.cx, m_sizeOut.cy, VK_BGRA_EXT, VK_UNSIGNED_BYTE, pdata);
-//         e = vkGetError();
-//
-//         information("error " + ::as_string((int)e));
-//
-//      }
-
-   }
-
-
-   bool bitmap::InitGL()
-   {
-
-//#ifdef WINDOWS
-//      
-//      
-//      // Creating Vulkan Surface / SwapChain
-//      VkWin32SurfaceCreateInfoKHR createInfo = {};
-//      createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-//      createInfo.hwnd = m_hwnd;
-//      createInfo.hinstance = m_hinstance;
-//
-//      VkSurfaceKHR surface;
-//      VkResult result = vkCreateWin32SurfaceKHR(m_vkinstance, &createInfo, nullptr, &surface);
-//
+////#ifdef WINDOWS
+////      
+////      
+////      // Creating Vulkan Surface / SwapChain
+////      VkWin32SurfaceCreateInfoKHR createInfo = {};
+////      createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+////      createInfo.hwnd = m_hwnd;
+////      createInfo.hinstance = m_hinstance;
+////
+////      VkSurfaceKHR surface;
+////      VkResult result = vkCreateWin32SurfaceKHR(m_vkinstance, &createInfo, nullptr, &surface);
+////
+////      return true;
+////#else
+////
+////
+////
+////      if (!(dpy = x11_get_display()))
+////      {
+////         fprintf(stderr, "could not open display");
+////         return false;
+////      }
+////
+////      fprintf(stdout, "Info:VKX Extensions:%s\n", vkXQueryExtensionsString(dpy, DefaultScreen(dpy)));
+////
+////      if (!vkXQueryExtension(dpy, &dummy, &dummy))
+////      {
+////         fprintf(stderr, "Error:VKX extensions not supported");
+////         return false;
+////      }
+////
+////      fbc = vkXChooseFBConfig(dpy, DefaultScreen(dpy), sbAttrib, &nElements);
+////      fprintf(stdout, "Info:Number of FBConfigs: %d\n", nElements);
+////      if (nElements == 0)
+////      {
+////         fprintf(stderr, "Error: No valid framebuffers configurations found\n");
+////         return false;
+////      }
+////      /*
+////      * For simplicities sake, select the first. This however may not be the right one
+////      * for the purpose of an example this will suffice.
+////      */
+////      vi = vkXGetVisualFromFBConfig(dpy, fbc[0]);
+////
+////      if (!(WinCtx = vkXCreateContext(dpy, vi,
+////                                      None, /* no sharing of display lists */
+////                                      True /* direct rendering if possible */
+////                                     )))
+////      {
+////         fprintf(stderr, "Cound not create rendering context\n");
+////         return false;
+////      }
+////
+////      PBuffer = vkXCreatePbuffer(dpy, fbc[0], pbAttrib);
+////      PBufferCtx = vkXCreateNewContext(dpy, fbc[0], VKX_RGBA_TYPE, 0, VK_TRUE);
+////
+////      cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen), vi->draw2d, AllocNone);
+////      swa.colormap = cmap;
+////      swa.border_pixel = 0;
+////      swa.event_mask = ExposureMask | ButtonPressMask | StructureNotifyMask;
+////      win = XCreateWindow(dpy, RootWindow(dpy, vi->screen), 0, 0, WIDTH, HEIGHT,
+////                          0, vi->depth, InputOutput, vi->draw2d,
+////                          CWBorderPixel | CWColormap | CWEventMask,
+////                          &swa);
+////
+////      vkXMakeContextCurrent(dpy, PBuffer, PBuffer, PBufferCtx);
+////
+////#endif
 //      return true;
-//#else
-//
-//
-//
-//      if (!(dpy = x11_get_display()))
-//      {
-//         fprintf(stderr, "could not open display");
-//         return false;
-//      }
-//
-//      fprintf(stdout, "Info:VKX Extensions:%s\n", vkXQueryExtensionsString(dpy, DefaultScreen(dpy)));
-//
-//      if (!vkXQueryExtension(dpy, &dummy, &dummy))
-//      {
-//         fprintf(stderr, "Error:VKX extensions not supported");
-//         return false;
-//      }
-//
-//      fbc = vkXChooseFBConfig(dpy, DefaultScreen(dpy), sbAttrib, &nElements);
-//      fprintf(stdout, "Info:Number of FBConfigs: %d\n", nElements);
-//      if (nElements == 0)
-//      {
-//         fprintf(stderr, "Error: No valid framebuffers configurations found\n");
-//         return false;
-//      }
-//      /*
-//      * For simplicities sake, select the first. This however may not be the right one
-//      * for the purpose of an example this will suffice.
-//      */
-//      vi = vkXGetVisualFromFBConfig(dpy, fbc[0]);
-//
-//      if (!(WinCtx = vkXCreateContext(dpy, vi,
-//                                      None, /* no sharing of display lists */
-//                                      True /* direct rendering if possible */
-//                                     )))
-//      {
-//         fprintf(stderr, "Cound not create rendering context\n");
-//         return false;
-//      }
-//
-//      PBuffer = vkXCreatePbuffer(dpy, fbc[0], pbAttrib);
-//      PBufferCtx = vkXCreateNewContext(dpy, fbc[0], VKX_RGBA_TYPE, 0, VK_TRUE);
-//
-//      cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen), vi->draw2d, AllocNone);
-//      swa.colormap = cmap;
-//      swa.border_pixel = 0;
-//      swa.event_mask = ExposureMask | ButtonPressMask | StructureNotifyMask;
-//      win = XCreateWindow(dpy, RootWindow(dpy, vi->screen), 0, 0, WIDTH, HEIGHT,
-//                          0, vi->depth, InputOutput, vi->draw2d,
-//                          CWBorderPixel | CWColormap | CWEventMask,
-//                          &swa);
-//
-//      vkXMakeContextCurrent(dpy, PBuffer, PBuffer, PBufferCtx);
-//
-//#endif
-      return true;
-   }
+//   }
 
-   bool bitmap::Init()
-   {
-      if (!InitGL())
-      {
-         Cleanup();
-         return false;
-      }
+   //bool bitmap::Init()
+   //{
+   //   if (!InitGL())
+   //   {
+   //      Cleanup();
+   //      return false;
+   //   }
 
-      //if (!d->create(cxDIB, cyDIB))
+   //   //if (!d->create(cxDIB, cyDIB))
 
-      //   //      if (!ImageCreate(&g_image, cxDIB, cyDIB))
-      //{
-      //   Cleanup();
-      //   return false;
-      //}
-      //::DestroyWindow(m_hwnd);
-      return true;
-   }
+   //   //   //      if (!ImageCreate(&g_image, cxDIB, cyDIB))
+   //   //{
+   //   //   Cleanup();
+   //   //   return false;
+   //   //}
+   //   //::DestroyWindow(m_hwnd);
+   //   return true;
+   //}
+//
+//
+//   bool bitmap::InitGLExtensions()
+//   {
+//
+////#ifdef WINDOWS
+////#define GPA(x) wglGetProcAddress(x)
+////
+////      // WGL_ARB_pbuffer.
+////      wglDestroyPbufferARB = (PFNWGLDESTROYPBUFFERARBPROC)GPA("wglDestroyPbufferARB");
+////      wglQueryPbufferARB = (PFNWGLQUERYPBUFFERARBPROC)GPA("wglQueryPbufferARB");
+////      wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC)GPA("wglGetPbufferDCARB");
+////      wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC)GPA("wglCreatePbufferARB");
+////      wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)GPA("wglReleasePbufferDCARB");
+////
+////      // WGL_ARB_pixel_format.
+////      wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)GPA("wglChoosePixelFormatARB");
+////      wglGetPixelFormatAttribfvARB = (PFNWGLGETPIXELFORMATATTRIBFVARBPROC)GPA("wglGetPixelFormatAttribfvARB");
+////      wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)GPA("wglGetPixelFormatAttribivARB");
+////
+////#undef GPA
+////
+////      if (!wglDestroyPbufferARB || !wglQueryPbufferARB || !wglGetPbufferDCARB || !wglCreatePbufferARB || !wglReleasePbufferDCARB)
+////      {
+////         MessageBox(0, _T("Required extension WGL_ARB_pbuffer not supported"), _T("Error"), e_message_box_icon_stop);
+////         return false;
+////      }
+////
+////      if (!wglChoosePixelFormatARB || !wglGetPixelFormatAttribfvARB || !wglGetPixelFormatAttribivARB)
+////      {
+////         MessageBox(0, _T("Required extension WGL_ARB_pixel_format not supported"), _T("Error"), e_message_box_icon_stop);
+////         return false;
+////      }
+////#endif
+//      return true;
+//   }
 
-
-   bool bitmap::InitGLExtensions()
-   {
-
-//#ifdef WINDOWS
-//#define GPA(x) wglGetProcAddress(x)
-//
-//      // WGL_ARB_pbuffer.
-//      wglDestroyPbufferARB = (PFNWGLDESTROYPBUFFERARBPROC)GPA("wglDestroyPbufferARB");
-//      wglQueryPbufferARB = (PFNWGLQUERYPBUFFERARBPROC)GPA("wglQueryPbufferARB");
-//      wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC)GPA("wglGetPbufferDCARB");
-//      wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC)GPA("wglCreatePbufferARB");
-//      wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)GPA("wglReleasePbufferDCARB");
-//
-//      // WGL_ARB_pixel_format.
-//      wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)GPA("wglChoosePixelFormatARB");
-//      wglGetPixelFormatAttribfvARB = (PFNWGLGETPIXELFORMATATTRIBFVARBPROC)GPA("wglGetPixelFormatAttribfvARB");
-//      wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)GPA("wglGetPixelFormatAttribivARB");
-//
-//#undef GPA
-//
-//      if (!wglDestroyPbufferARB || !wglQueryPbufferARB || !wglGetPbufferDCARB || !wglCreatePbufferARB || !wglReleasePbufferDCARB)
-//      {
-//         MessageBox(0, _T("Required extension WGL_ARB_pbuffer not supported"), _T("Error"), e_message_box_icon_stop);
-//         return false;
-//      }
-//
-//      if (!wglChoosePixelFormatARB || !wglGetPixelFormatAttribfvARB || !wglGetPixelFormatAttribivARB)
-//      {
-//         MessageBox(0, _T("Required extension WGL_ARB_pixel_format not supported"), _T("Error"), e_message_box_icon_stop);
-//         return false;
-//      }
-//#endif
-      return true;
-   }
-
-   bool bitmap::InitPBuffer()
-   {
-//#ifdef WINDOWS
-//      // Create a pbuffer for off-screen rendering. Notice that since we aren't
-//      // going to be using the pbuffer for dynamic texturing (i.e., using the
-//      // pbuffer containing our rendered scene as a texture) we don't need to
-//      // request for WGL_BIND_TO_TEXTURE_RGBA_ARB support in the attribute list.
-//
-//      int attribList[] =
-//      {
-//         WGL_DRAW_TO_PBUFFER_ARB, true,      // allow rendering to the pbuffer
-//         WGL_SUPPORT_OPENGL_ARB,  true,      // associate with Vulkan
-//         WGL_DOUBLE_BUFFER_ARB,   false,     // single buffered
-//         WGL_RED_BITS_ARB,   8,              // minimum 8-bits for red channel
-//         WGL_GREEN_BITS_ARB, 8,              // minimum 8-bits for green channel
-//         WGL_BLUE_BITS_ARB, 8,              // minimum 8-bits for blue channel
-//         WGL_ALPHA_BITS_ARB, 8,              // minimum 8-bits for alpha channel
-//         WGL_DEPTH_BITS_ARB, 16,             // minimum 16-bits for depth buffer
-//         0
-//      };
-//
-//      int format = 0;
-//      unsigned int matchingFormats = 0;
-//
-//      if (!wglChoosePixelFormatARB(g_hDC, attribList, 0, 1, &format, &matchingFormats))
-//      {
-//         MessageBox(0, _T("wglChoosePixelFormatARB() failed"), _T("Error"), e_message_box_icon_stop);
-//         return false;
-//      }
-//
-//      if (!(g_hPBuffer = wglCreatePbufferARB(g_hDC, format, m_sizeOut.cx, m_sizeOut.cy, 0)))
-//      {
-//         MessageBox(0, _T("wglCreatePbufferARB() failed"), _T("Error"), e_message_box_icon_stop);
-//         return false;
-//      }
-//
-//      if (!(g_hPBufferDC = wglGetPbufferDCARB(g_hPBuffer)))
-//      {
-//         MessageBox(0, _T("wglGetPbufferDCARB() failed"), _T("Error"), e_message_box_icon_stop);
-//         return false;
-//      }
-//
-//      if (!(g_hPBufferRC = wglCreateContext(g_hPBufferDC)))
-//      {
-//         MessageBox(0, _T("wglCreateContext() failed for PBuffer"), _T("Error"), e_message_box_icon_stop);
-//         return false;
-//      }
-//#endif
-      return true;
-   }
+//   bool bitmap::InitPBuffer()
+//   {
+////#ifdef WINDOWS
+////      // Create a pbuffer for off-screen rendering. Notice that since we aren't
+////      // going to be using the pbuffer for dynamic texturing (i.e., using the
+////      // pbuffer containing our rendered scene as a texture) we don't need to
+////      // request for WGL_BIND_TO_TEXTURE_RGBA_ARB support in the attribute list.
+////
+////      int attribList[] =
+////      {
+////         WGL_DRAW_TO_PBUFFER_ARB, true,      // allow rendering to the pbuffer
+////         WGL_SUPPORT_OPENGL_ARB,  true,      // associate with Vulkan
+////         WGL_DOUBLE_BUFFER_ARB,   false,     // single buffered
+////         WGL_RED_BITS_ARB,   8,              // minimum 8-bits for red channel
+////         WGL_GREEN_BITS_ARB, 8,              // minimum 8-bits for green channel
+////         WGL_BLUE_BITS_ARB, 8,              // minimum 8-bits for blue channel
+////         WGL_ALPHA_BITS_ARB, 8,              // minimum 8-bits for alpha channel
+////         WGL_DEPTH_BITS_ARB, 16,             // minimum 16-bits for depth buffer
+////         0
+////      };
+////
+////      int format = 0;
+////      unsigned int matchingFormats = 0;
+////
+////      if (!wglChoosePixelFormatARB(g_hDC, attribList, 0, 1, &format, &matchingFormats))
+////      {
+////         MessageBox(0, _T("wglChoosePixelFormatARB() failed"), _T("Error"), e_message_box_icon_stop);
+////         return false;
+////      }
+////
+////      if (!(g_hPBuffer = wglCreatePbufferARB(g_hDC, format, m_sizeOut.cx, m_sizeOut.cy, 0)))
+////      {
+////         MessageBox(0, _T("wglCreatePbufferARB() failed"), _T("Error"), e_message_box_icon_stop);
+////         return false;
+////      }
+////
+////      if (!(g_hPBufferDC = wglGetPbufferDCARB(g_hPBuffer)))
+////      {
+////         MessageBox(0, _T("wglGetPbufferDCARB() failed"), _T("Error"), e_message_box_icon_stop);
+////         return false;
+////      }
+////
+////      if (!(g_hPBufferRC = wglCreateContext(g_hPBufferDC)))
+////      {
+////         MessageBox(0, _T("wglCreateContext() failed for PBuffer"), _T("Error"), e_message_box_icon_stop);
+////         return false;
+////      }
+////#endif
+//      return true;
+//   }
 
 
    //int pitch = d->m_iScan / 4;
@@ -813,51 +816,51 @@ namespace draw2d_nanovg
    //   ::memory_copy(&d->m_pcolorref[pitch * i], &m_mem.get_data()[((cyDIB - 1) - i) * iScan], iScan);
    //}
 
-   void bitmap::Cleanup()
-   {
-//      if (m_texture)
-//      {
-//         vkDeleteTextures(1, &m_texture);
-//         m_texture = 0;
-//      }
-//
-//#ifdef WINDOWS
-//      if (g_hPBuffer)
-//      {
-//         wglDeleteContext(g_hPBufferRC);
-//         //wglReleasePbufferDCARB(g_hPBuffer, g_hPBufferDC);
-//         //wglDestroyPbufferARB(g_hPBuffer);
-//         g_hPBufferRC = 0;
-//         g_hPBufferDC = 0;
-//         g_hPBuffer = 0;
-//      }
-//      if (g_hDC)
-//      {
-//         if (g_hRC)
-//         {
-//            wglMakeCurrent(g_hDC, 0);
-//            wglDeleteContext(g_hRC);
-//            g_hRC = 0;
-//         }
-//
-//         DeleteDC(g_hDC);
-//         g_hDC = 0;
-//      }
-//#else
-//      //      if (g_hPBuffer)
-//      //      {
-//      //         vkDeleteContext(g_hPBufferRC);
-//      //         wglReleasePbufferDCARB(g_hPBuffer, g_hPBufferDC);
-//      //         vkDestroyPbufferARB(g_hPBuffer);
-//      //         g_hPBufferRC = 0;
-//      //         g_hPBufferDC = 0;
-//      //         g_hPBuffer = 0;
-//      //      }
-//#endif
-//
-//
-//      //      ImageDestroy(&g_image);
-   }
+//   void bitmap::Cleanup()
+//   {
+////      if (m_texture)
+////      {
+////         vkDeleteTextures(1, &m_texture);
+////         m_texture = 0;
+////      }
+////
+////#ifdef WINDOWS
+////      if (g_hPBuffer)
+////      {
+////         wglDeleteContext(g_hPBufferRC);
+////         //wglReleasePbufferDCARB(g_hPBuffer, g_hPBufferDC);
+////         //wglDestroyPbufferARB(g_hPBuffer);
+////         g_hPBufferRC = 0;
+////         g_hPBufferDC = 0;
+////         g_hPBuffer = 0;
+////      }
+////      if (g_hDC)
+////      {
+////         if (g_hRC)
+////         {
+////            wglMakeCurrent(g_hDC, 0);
+////            wglDeleteContext(g_hRC);
+////            g_hRC = 0;
+////         }
+////
+////         DeleteDC(g_hDC);
+////         g_hDC = 0;
+////      }
+////#else
+////      //      if (g_hPBuffer)
+////      //      {
+////      //         vkDeleteContext(g_hPBufferRC);
+////      //         wglReleasePbufferDCARB(g_hPBuffer, g_hPBufferDC);
+////      //         vkDestroyPbufferARB(g_hPBuffer);
+////      //         g_hPBufferRC = 0;
+////      //         g_hPBufferDC = 0;
+////      //         g_hPBuffer = 0;
+////      //      }
+////#endif
+////
+////
+////      //      ImageDestroy(&g_image);
+//   }
 
 
 

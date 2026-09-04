@@ -18,6 +18,7 @@
 #include "semaphore.h"
 #include "swap_chain.h"
 #include "texture.h"
+#include "viewport_scissor_restore.h"
 #include "bred/gpu/pixmap.h"
 #include "bred/gpu/frame_ephemeral.h"
 #include "bred/gpu/frame_storage.h"
@@ -44,6 +45,10 @@
 
 __FACTORY_EXPORT void gpu_vulkan_factory(::factory::factory * pfactory)
 {
+
+   pfactory->add_factory_item <
+      ::gpu_vulkan::viewport_scissor_restore,
+      ::gpu::viewport_scissor_restore >();
 
    pfactory->add_factory_item < ::gpu_vulkan::approach, ::gpu::approach >();
    pfactory->add_factory_item < ::gpu_vulkan::context, ::gpu::context >();

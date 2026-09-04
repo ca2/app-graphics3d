@@ -79,7 +79,7 @@ namespace app_graphics3d_continuum
       set_tab("Options", APP_OPTIONS_IMPACT);
       set_tab("GPU", "options_impact_handler://gpu");
       //set_tab("gcom", GCOM_IMPACT);
-      set_tab("hello_multiverse", MAIN_IMPACT);
+      set_tab("app_graphics3d/continuum", MAIN_IMPACT);
       set_tab("switcher", MAIN_SWITCHER_IMPACT);
       set_tab("Font", "font_selection_impact");
       set_tab("Color", "color_selection_impact");
@@ -221,6 +221,15 @@ namespace app_graphics3d_continuum
 
             //m_pimpactLastImpact = ptabpaneMain->m_pplaceholder->get_typed_child<::app_core_hello_multiverse::impact>();
 
+            auto ptabpaneMainSwitcher = get_tab_by_id(MAIN_SWITCHER_IMPACT);
+
+            if (ptabpaneMainSwitcher && ptabpaneMainSwitcher->m_pplaceholder)
+            {
+
+               ptabpaneMainSwitcher->m_pplaceholder->display(::e_display_hide, {});
+
+            }
+
          }
          else if (get_impact_id() == MAIN_SWITCHER_IMPACT)
          {
@@ -232,6 +241,16 @@ namespace app_graphics3d_continuum
             m_strTopicTitle = ptabpaneMainSwitcher->m_straTitle.implode(" ");
 
             //m_pimpactLastImpact = ptabpaneMainSwitcher->m_pplaceholder->get_typed_child<::app_core_hello_multiverse::impact>();
+
+            auto ptabpaneMain = get_tab_by_id(MAIN_IMPACT);
+
+            if (ptabpaneMain && ptabpaneMain->m_pplaceholder)
+            {
+
+               ptabpaneMain->m_pplaceholder->display(::e_display_hide, {});
+
+            }
+
 
          }
          else if (stra.contains(::as_string((int)MAIN_IMPACT))
@@ -353,6 +372,16 @@ namespace app_graphics3d_continuum
             break;
             case MAIN_SWITCHER_IMPACT:
             {
+               auto prequest = m_pusersystem->m_prequest;
+
+               auto & payloadFile = prequest->m_payloadFile;
+
+               auto papp = get_app();
+
+               information() << "pane_impact::on_create_impact MAIN_SWITCHER_IMPACT";
+
+               get_app()->impact_system("switcher_impact")->open_document_file(papp, payloadFile, true,
+                                                                      pimpactdata->m_pplaceholder);
 
                // create_impact < switcher_impact >(
                //    get_app()->impact_system("impact")->get_document(),

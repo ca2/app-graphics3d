@@ -30,6 +30,7 @@
 #include "gpu_opengl/wgl_context.h"
 #pragma comment(lib, "opengl32.lib")
 #endif
+#include "bred/gpu/command_buffer.h"
 #include "bred/gpu/context_lock.h"
 #include "bred/gpu/buffer.h"
 #include "bred/gpu/window_attachment.h"
@@ -186,7 +187,7 @@ namespace draw2d_nanovg
 
    //void graphics::dump(dump_context& dumpcontext) const
    //{
-   //   
+   //
    //   object::dump(dumpcontext);
 
    //   dumpcontext << "m_hdc = " << (iptr) m_hdc;
@@ -269,16 +270,17 @@ namespace draw2d_nanovg
 
    //}
 
-   void graphics::create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap)
+
+   void graphics::create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity)
    {
 
-      _create_memory_graphics(pdraw2dbitmap->size(), nullptr);
+      _create_memory_graphics(pdraw2dbitmap->size(), pacmeuserinteractionAffinity);
 
    }
 
 
    //void graphics::_create_memory_graphics(const ::i32_size& size)
-   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity) 
+   void graphics::_create_memory_graphics(const ::i32_size & sizeParameter, ::acme::user::interaction * pacmeuserinteractionAffinity)
    {
 
       auto puserinteraction = pacmeuserinteractionAffinity;
@@ -310,7 +312,12 @@ namespace draw2d_nanovg
 
       }
 
-      m_pacmeuserinteractionAffinity = puserinteraction;
+      if (::is_set(puserinteraction))
+      {
+
+         m_pacmeuserinteractionAffinity = puserinteraction;
+
+      }
 
       auto pgpuapproach = application()->get_gpu_approach();
       auto pgpudevice = pgpuapproach->get_gpu_device(pwindow);
@@ -330,12 +337,18 @@ namespace draw2d_nanovg
          m_pgpucontextOwned = pgpudevice->allocate_gpu_context();
 
          //::i32_rectangle rectanglePlacement(sizeParameter);
+         ::i32_size sizeRaw = sizeParameter;
 
-         auto sizeRaw = pacmeuserinteractionAffinity->m_pacmewindowingwindow->get_raw_buffer_size().maximum(sizeParameter);
+         if (::is_set(pacmeuserinteractionAffinity))
+         {
+
+            sizeRaw = pacmeuserinteractionAffinity->acme_windowing_window()->get_raw_buffer_size().maximum(sizeParameter);
+
+         }
 
          m_pgpucontextOwned->create_draw2d_gpu_context(
             pgpudevice,
-            pacmeuserinteractionAffinity->m_pacmewindowingwindow,
+            ::is_set(pacmeuserinteractionAffinity) ? pacmeuserinteractionAffinity->acme_windowing_window() : nullptr,
             this,
             {},
             {},
@@ -348,6 +361,11 @@ namespace draw2d_nanovg
          //set_context_lease(::transfer(contextlease));
 
       }
+
+      // NanoVG owns context-local OpenGL objects (in particular its VAO).
+      // Keep the compositor context identical to the context used to create
+      // m_pdc; a WGL share group does not make VAOs shareable.
+      set_gpu_context(m_pgpucontextOwned);
 
       auto pgpucontextNew = gpu_context();
 
@@ -400,6 +418,7 @@ namespace draw2d_nanovg
      // ::image::image * pimage,
      // const ::i32_size & size)
    void graphics::on_acquire_memory_graphics(
+      bool bExternalRendering,
       ::image::image * pimage,
       const ::i32_size & size,
       ::acme::user::interaction * pacmeuserinteractionAffinity)
@@ -421,11 +440,11 @@ namespace draw2d_nanovg
       try
       {
 
-         pgpucontext->send(
-            [this, pgpucontext, pimage, size, pacmeuserinteractionAffinity]()
-            {
+         //pgpucontext->send(
+           // [this, pgpucontext, pimage, size, pacmeuserinteractionAffinity]()
+            //{
 
-               ::gpu::graphics::on_acquire_memory_graphics(pimage, size, pacmeuserinteractionAffinity);
+               ::gpu::graphics::on_acquire_memory_graphics(bExternalRendering, pimage, size, pacmeuserinteractionAffinity);
 
                m_egraphics = ::e_graphics_draw;
                m_sizeScaleOutput = { 1.0, -1.0 };
@@ -435,11 +454,26 @@ namespace draw2d_nanovg
 
                ::gpu::context_lock contextlock(pgpucontext);
 
-               pgpucontext->m_pgpucompositor = this;
-               pgpucontext->on_resize(size);
-               ::opengl::resize(size, false);
+                pgpucontext->m_pgpucompositor = this;
 
-            });
+                if (::draw2d::is_debug_flag_set(0))
+                {
+
+                   informationf("draw2d::debug_flag(0) about to call ::gpu::context::on_resize");
+
+                }
+
+                pgpucontext->on_resize(size);
+
+
+                ::i32_rectangle rectangleFrame;
+
+                rectangleFrame.set(::i32_point(), size);
+
+                begin_draw(bExternalRendering, pacmeuserinteractionAffinity->user_interaction(), rectangleFrame, pimage);
+                ///::opengl::resize(size, false);
+
+             //});
 
       }
       catch (...)
@@ -477,12 +511,15 @@ namespace draw2d_nanovg
             [this, pgpucontext]()
             {
 
-               ::gpu::context_lock contextlock(pgpucontext);
+                ::gpu::context_lock contextlock(pgpucontext);
 
-               glFlush();
+                end_draw();
+
+
+                glFlush();
                ::opengl::check_error("");
 
-               ::cast < ::gpu::image > pgpuimage = m_pimage;
+               ::cast < ::gpu::image > pgpuimage = m_pimageTarget;
 
                if (pgpuimage && pgpuimage->gpu_texture())
                {
@@ -491,8 +528,9 @@ namespace draw2d_nanovg
 
                }
 
+
                ::gpu::graphics::on_release_memory_graphics();
-               m_pimage = nullptr;
+               m_pimageTarget = nullptr;
 
             });
 
@@ -542,7 +580,10 @@ namespace draw2d_nanovg
 
       m_pgpucontextOwned = pgpucontextNew;
 
-      m_pgpucontextOwned->m_pgpucompositor = this;
+      // update_as_render_target can cause a compositor placement update. Set
+      // its context first so that update cannot allocate a second WGL context
+      // and later flush a NanoVG VAO in the wrong native context.
+      set_gpu_context(m_pgpucontextOwned);
 
       if (m_pgraphicsbufferitem)
       {
@@ -3424,7 +3465,7 @@ namespace draw2d_nanovg
       //   return false;
 
       //}
-      
+
 
 
       float ascender = 0.f;
@@ -3442,7 +3483,7 @@ namespace draw2d_nanovg
       lpMetrics->m_dInternalLeading = 0.0;
       lpMetrics->m_dExternalLeading =
          maximum(0.0, (double)lineh - ((double)ascender - (double)descender));
-       
+
 //#if defined(WINDOWS_DESKTOP)
 //      ::pointer<font>pwritetextfont = m_pwritetextfont;
 //
@@ -3455,7 +3496,7 @@ namespace draw2d_nanovg
 //      lpMetrics->m_dDescent = tm.tmDescent;
 //
 //#endif
-      
+
       //lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
 
       //if (m_pgraphics == nullptr)
@@ -3599,7 +3640,7 @@ namespace draw2d_nanovg
    //                        const ::f64_rectangle & lpRectScroll,const ::f64_rectangle & rectangleClip,
    //                        ::draw2d::region* pRgnUpdate, ::f64_rectangle * lpRectUpdate)
    //{
-   //   
+   //
    //   // ASSERT(m_hdc != nullptr);
    //   //return ::ScrollDC(m_hdc,Δx,Δy,&rectangleClip,
    //     //                &rectangleClip, (HRGN)pRgnUpdate->get_os_data(), lpRectUpdate) != false;
@@ -5730,7 +5771,7 @@ namespace draw2d_nanovg
       //      }
       //      else
       //      {
-      //         
+      //
       //         double cxPerInch, cyPerInch;
       //         if (this != nullptr)
       //         {
@@ -5765,7 +5806,7 @@ namespace draw2d_nanovg
       //      }
       //      else
       //      {
-      //         
+      //
       //         double cxPerInch, cyPerInch;
       //         if (this != nullptr)
       //         {
@@ -6586,6 +6627,218 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
+   //void graphics::begin_draw(const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget)
+   //{
+
+   //   ::gpu::graphics::begin_draw(rectangleFrame, pimageTarget);
+
+   //   //auto pgpucontext = gpu_context();
+
+   //   //::gpu::context_lock contextlock(pgpucontext);
+
+   //   //auto pgputextureTarget = pgpucontext->current_target_texture(::gpu::current_layer())->gpu_texture();
+
+   //   //prepare_nanovg_render_target(pgputextureTarget);
+
+   //   //_nvg_begin_frame(pgputextureTarget, rectangleFrame.size());
+
+   //}
+
+
+   void graphics::begin_draw(bool bExternalRendering, ::user::interaction * puserinteraction, const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget)
+   {
+
+      ::i32_rectangle rectangle(rectangleFrame.size());
+
+      if (!m_bBeginDraw)
+      {
+
+         m_bBeginDraw = true;
+
+         if (::is_set(pimageTarget))
+         {
+
+            m_pimageTarget = pimageTarget;
+
+         }
+
+         auto pgpucontext = gpu_context();
+
+         ::gpu::context_lock contextlock(pgpucontext);
+
+         auto pgputextureTarget = m_pimageTarget->get_gpu_texture_as_target(pgpucontext);
+
+         prepare_nanovg_render_target(pgputextureTarget);
+
+         auto sizeTarget = pgputextureTarget->size();
+
+         if (sizeTarget.is_empty())
+         {
+
+            sizeTarget = rectangle.size();
+
+         }
+
+         _nvg_begin_frame(bExternalRendering, pgputextureTarget, sizeTarget);
+
+      }
+
+      ::gpu::graphics::begin_draw(bExternalRendering, puserinteraction, rectangle, m_pimageTarget);
+
+   }
+
+
+   void graphics::end_draw()
+   {
+
+      ::gpu::graphics::end_draw();
+
+      if (m_bBeginDraw)
+      {
+
+         m_bBeginDraw = false;
+
+         _nvg_end_frame(m_bNvgBeginFrameExternalRendering);
+
+      }
+
+   }
+
+
+   void graphics::_nvg_begin_frame(bool bExternalRendering, ::gpu::texture * pgputexture, const ::i32_size & size)
+   {
+
+      if (::is_null(pgputexture))
+      {
+
+         throw ::exception(error_bad_argument);
+
+      }
+
+      if (m_pgputextureNvgBeginFrame)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      auto pgpucontext = gpu_context();
+
+      ::gpu::context_lock contextlock(pgpucontext);
+
+      m_pgputextureNvgBeginFrame = pgputexture;
+
+      m_sizeNvgBeginFrame = size;
+
+      m_bNvgBeginFrameExternalRendering = bExternalRendering;
+
+      m_pgputextureNvgBeginFrame->bind_render_target();
+
+      if (bExternalRendering)
+      {
+
+         // Memory-image rendering is independent of a compositor frame. Do
+         // not request its current frame command buffer here: icon and
+         // thumbnail workers legitimately reach this path without
+         // begin_frame().
+         glViewport(0, 0, m_sizeNvgBeginFrame.cx, m_sizeNvgBeginFrame.cy);
+         ::opengl::check_error("glViewport for NanoVG target");
+
+         glEnable(GL_SCISSOR_TEST);
+         ::opengl::check_error("glEnable(GL_SCISSOR_TEST) for NanoVG target");
+
+         glScissor(0, 0, m_sizeNvgBeginFrame.cx, m_sizeNvgBeginFrame.cy);
+         ::opengl::check_error("glScissor for NanoVG target");
+
+      }
+      else
+      {
+
+         auto pcommandbuffer = m_pgpucontextOwned->m_pgpurenderer
+            ->getCurrentCommandBuffer2(::gpu::current_layer());
+
+         ::i32_rectangle rectangleOutput(m_sizeNvgBeginFrame);
+
+         pcommandbuffer->set_viewport(
+            rectangleOutput,
+            m_pgpucontextOwned->m_sizeRaw);
+
+         pcommandbuffer->set_scissor(
+            rectangleOutput,
+            m_pgpucontextOwned->m_sizeRaw);
+
+      }
+
+      nvgBeginFrame(
+         m_pdc,
+         (float)m_sizeNvgBeginFrame.cx,
+         (float)m_sizeNvgBeginFrame.cy,
+         1.0f);
+
+   }
+
+
+   void graphics::_nvg_end_frame(bool bExternalRendering)
+   {
+
+      if (!m_pgputextureNvgBeginFrame)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      auto pgpucontext = gpu_context();
+
+      ::gpu::context_lock contextlock(pgpucontext);
+
+      m_pgputextureNvgBeginFrame->bind_render_target();
+
+      // NanoVG defers its OpenGL work until nvgEndFrame. The viewport must
+      // therefore describe this render target, not the affinity window. This
+      // is essential for small offscreen targets such as font previews.
+
+      if (bExternalRendering)
+      {
+
+         glViewport(0, 0, m_sizeNvgBeginFrame.cx, m_sizeNvgBeginFrame.cy);
+         ::opengl::check_error("glViewport for NanoVG end frame");
+
+         glEnable(GL_SCISSOR_TEST);
+         ::opengl::check_error("glEnable(GL_SCISSOR_TEST) for NanoVG end frame");
+
+         glScissor(0, 0, m_sizeNvgBeginFrame.cx, m_sizeNvgBeginFrame.cy);
+         ::opengl::check_error("glScissor for NanoVG end frame");
+
+      }
+      else
+      {
+
+         auto pcommandbuffer = m_pgpucontextOwned->m_pgpurenderer
+            ->getCurrentCommandBuffer2(::gpu::current_layer());
+
+         ::i32_rectangle rectangleOutput(m_sizeNvgBeginFrame);
+
+         pcommandbuffer->set_viewport(
+            rectangleOutput,
+            m_pgpucontextOwned->m_sizeRaw);
+
+         pcommandbuffer->set_scissor(
+            rectangleOutput,
+            m_pgpucontextOwned->m_sizeRaw);
+
+      }
+
+      nvgEndFrame(m_pdc);
+
+      m_pgputextureNvgBeginFrame = nullptr;
+      m_sizeNvgBeginFrame = {};
+      m_bNvgBeginFrameExternalRendering = false;
+
+   }
+
+
+
    ::gpu::texture_site* graphics::current_target_texture(::gpu::layer * pgpulayer)
    {
 
@@ -6607,7 +6860,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      ::cast < ::gpu::image > pgpuimage =m_pimage;
+      ::cast < ::gpu::image > pgpuimage =m_pimageTarget;
 
       if (pgpuimage)
       {
@@ -6959,7 +7212,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //int graphics::SetTextJustification(int nBreakExtra, int nBreakCount)
    //{
-   // 
+   //
    //   double nRetVal = 0;
 
    //   //if(m_hdc != nullptr && m_hdc != m_hdc)
@@ -6974,11 +7227,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //double graphics::SetTextCharacterExtra(double nCharExtra)
    //{
-   //   
+   //
    //   // ASSERT(m_hdc != nullptr);
 
    //   double nRetVal = 0x8000000;
-   //   
+   //
    //   //if(m_hdc != nullptr && m_hdc != m_hdc)
    //   //   nRetVal = ::SetTextCharacterExtra(m_hdc, nCharExtra);
    //   //if(m_hdc != nullptr)
@@ -6991,7 +7244,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
    //unsigned int graphics::SetMapperFlags(unsigned int dwFlag)
    //{
-   //   
+   //
    //   // ASSERT(m_hdc != nullptr);
 
    //   unsigned int dwRetVal = GDI_ERROR;
@@ -7539,7 +7792,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   //ASSERT((nFormat & (DT_PATH_ELLIPSIS | DT_MODIFYSTRING)) != (DT_PATH_ELLIPSIS | DT_MODIFYSTRING));
    //   //wstring wstr = utf8_to_unicode(str);
    //   //return ::DrawTextExW(m_hdc,const_cast<wchar_t *>((const wchar_t *)wstr),(double)wcslen(wstr),(::f64_rectangle *) &rectangleParam,nFormat,lpDTParams);
-   //   
+   //
    //   //return false;
 
    //}
@@ -7817,7 +8070,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 //      //// Load first 128 characters of ASCII set
 //      //for (VKubyte c = 0; c < 128; c++)
 //      //{
-//      //   // Load character vkyph 
+//      //   // Load character vkyph
 //      //   if (FT_Load_Char(face, c, FT_LOAD_RENDER))
 //      //   {
 //      //      std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
@@ -7948,7 +8201,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //   }
    //   catch(...)
    //   {
-   //      
+   //
    //   }
 
    //}
@@ -8133,7 +8386,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       }
       else
       {
-     
+
 
          on_target_rectangle_update();
 
@@ -8291,7 +8544,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          }
          else
          {
-            
+
             nvgText(m_pdc, (float)x, (float)y, strLine.m_begin, strLine.m_end);
 
          }
@@ -8622,17 +8875,20 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       const ::i32_size & sizeImage,
       const ::f64_rectangle & rectangleTarget,
       const ::image::image_drawing_options & imagedrawingoptions,
-      const ::f64_point & pointSrc)
+      const ::f64_rectangle & rectangleSource)
    {
 
       nanovg_keep keep(m_pdc);
 
+      auto dScaleX = rectangleTarget.width() / rectangleSource.width();
+      auto dScaleY = rectangleTarget.height() / rectangleSource.height();
+
       auto paint = nvgImagePattern(
          m_pdc,
-         (float)(rectangleTarget.left - pointSrc.x),
-         (float)(rectangleTarget.top - pointSrc.y),
-         (float)sizeImage.cx,
-         (float)sizeImage.cy,
+         (float)(rectangleTarget.left - rectangleSource.left * dScaleX),
+         (float)(rectangleTarget.top - rectangleSource.top * dScaleY),
+         (float)(sizeImage.cx * dScaleX),
+         (float)(sizeImage.cy * dScaleY),
          0.f,
          iImage,
          imagedrawingoptions.opacity().f32_opacity());
@@ -8773,7 +9029,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       information() << "[gpu.performance.nanovg_image_boundary] stage=target_state"
          << " diagnostic=" << iDiagnosticIndex
          << " graphics=" << (::uptr)this
-         << " image=" << (::uptr)m_pimage.m_p
+         << " image=" << (::uptr)m_pimageTarget.m_p
          << " context=" << (::uptr)pgpucontext
          << " layer=" << (::uptr)pgpulayer
          << " texture_object=" << (::uptr)pgputexture
@@ -8823,7 +9079,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       pixmap.create_as_descriptor(
          sizeTexture,
-         DEFAULT_CREATE_IMAGE_FLAG, 
+         DEFAULT_CREATE_IMAGE_FLAG,
          sizeTexture.cx * (int)sizeof(::image32_t));
 
       auto ppixmapPixmap = pixmap.map();
@@ -9297,11 +9553,19 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
+   bool graphics::is_y_flip()
+   {
+
+      return false;
+
+   }
+
+
    bool graphics::_draw_gpu_image(
       const ::f64_rectangle & rectangleTarget,
       ::image::image * pimage,
       const ::image::image_drawing_options & imagedrawingoptions,
-      const ::f64_point & pointSrc)
+      const ::f64_rectangle & rectangleSource)
    {
 
       auto pgpuimage = dynamic_cast < ::gpu::image * >(pimage);
@@ -9320,7 +9584,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //   // this graphics context, is to draw in this m_pimage.
 
       //   // we have a pgpuimage to be set in m_pimage owned texture.
-      //   // this pgpuimage may be not a texture yet, but just a 
+      //   // this pgpuimage may be not a texture yet, but just a
       //   // pixmap buffer.
       //   // to avoid creating a texture just to set the image in
       //   // pixmap to the target texture(m_pimage), we can try
@@ -9339,14 +9603,31 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto pgputexture = pgpuimage->gpu_texture();
 
+      if (!pgputexture)
+      {
+
+         ::cast < ::gpu::bitmap > pbitmap =
+            pgpuimage->get_bitmap_as_source(this);
+
+         if (!pbitmap)
+         {
+
+            return false;
+
+         }
+
+         auto pgpucontext = gpu_context();
+
+         pgputexture = pbitmap->gpu_texture(pgpucontext);
+
+      }
+
       auto pgpuopengltexture = dynamic_cast < ::gpu_opengl::texture * >(pgputexture);
 
       if (!pgpuopengltexture || !pgpuopengltexture->m_gluTextureID)
       {
 
-         throw ::exception(
-            error_wrong_state,
-            "NanoVG GPU image has no compatible OpenGL texture.");
+         return false;
 
       }
 
@@ -9492,7 +9773,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          sizeImage,
          rectangleTarget,
          imagedrawingoptions,
-         pointSrc);
+         rectangleSource);
 
       if (bPerformanceDiagnostics)
       {
@@ -9510,6 +9791,58 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
+   void graphics::_draw_raw(const ::image::image_drawing & imagedrawing)
+   {
+
+      auto pimage = imagedrawing.image();
+
+      if (!::is_ok(pimage))
+      {
+
+         throw ::exception(error_failed);
+
+      }
+
+      auto rectangleSource = imagedrawing.source_rectangle();
+      ::f64_rectangle rectangleTarget(imagedrawing.target_rectangle());
+
+      if (rectangleSource.is_empty() || rectangleTarget.is_empty())
+      {
+
+         return;
+
+      }
+
+      if (imagedrawing.m_bIntegerPlacement)
+      {
+
+         rectangleTarget.left = (::f64)(::i32)rectangleTarget.left;
+         rectangleTarget.top = (::f64)(::i32)rectangleTarget.top;
+         rectangleTarget.right = (::f64)(::i32)rectangleTarget.right;
+         rectangleTarget.bottom = (::f64)(::i32)rectangleTarget.bottom;
+
+      }
+
+      auto pcontext = gpu_context();
+
+      if (!pcontext)
+      {
+
+         throw ::exception(error_wrong_state);
+
+      }
+
+      ::gpu::context_lock contextlock(pcontext);
+
+      _draw_raw_with_source_rectangle(
+         rectangleTarget,
+         pimage,
+         imagedrawing,
+         rectangleSource);
+
+   }
+
+
    void graphics::_draw_raw(
       const ::f64_rectangle & rectangleTarget,
       ::image::image * pimageSource,
@@ -9517,7 +9850,24 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       const ::f64_point & pointSrc)
    {
 
-      if (!m_pdc || !pimageSource || rectangleTarget.is_empty())
+      _draw_raw_with_source_rectangle(
+         rectangleTarget,
+         pimageSource,
+         imagedrawingoptions,
+         ::f64_rectangle(pointSrc, rectangleTarget.size()));
+
+   }
+
+
+   void graphics::_draw_raw_with_source_rectangle(
+      const ::f64_rectangle & rectangleTarget,
+      ::image::image * pimageSource,
+      const ::image::image_drawing_options & imagedrawingoptions,
+      const ::f64_rectangle & rectangleSource)
+   {
+
+      if (!m_pdc || !pimageSource
+         || rectangleTarget.is_empty() || rectangleSource.is_empty())
       {
 
          return;
@@ -9532,7 +9882,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          rectangleTarget,
          pimage,
          imagedrawingoptions,
-         pointSrc))
+         rectangleSource))
       {
 
          return;
@@ -9595,7 +9945,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          sizeImage,
          rectangleTarget,
          imagedrawingoptions,
-         pointSrc);
+         rectangleSource);
 
       nvgDeleteImage(m_pdc, iImage);
 
@@ -10150,11 +10500,13 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (playerPrevious)
       {
 
-         prepare_nanovg_render_target(
-            pgpucontext->current_target_texture(::gpu::current_layer())->gpu_texture());
+         auto pgputextureTarget = pgpucontext->current_target_texture(::gpu::current_layer())->gpu_texture();
 
-         nvgBeginFrame(m_pdc,(float) pgpucontext->width(),
-            (float) pgpucontext->height(), 1.f);
+         prepare_nanovg_render_target(pgputextureTarget);
+
+         _nvg_begin_frame(false, pgputextureTarget, pgpucontext->size());
+         //nvgBeginFrame(m_pdc,(float) pgpucontext->width(),
+           // (float) pgpucontext->height(), 1.f);
 
       }
 
@@ -10193,7 +10545,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       auto pgputextureTarget = pgputexturesiteTarget->gpu_texture();
 
-      ::cast <::gpu::image >pgpuimage =m_pimage;
+      ::cast <::gpu::image >pgpuimage =m_pimageTarget;
       ::cast < ::gpu_opengl::texture > ptextureDiagnostic =
          pgputextureTarget;
       auto iDiagnosticIndex = pgpuimage && pgpuimage->gpu_texture()
@@ -10210,14 +10562,17 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      pgputextureTarget->bind_render_target();
+      //pgputextureTarget->bind_render_target();
       diagnose_gpu_image_target_state(
          iDiagnosticIndex,
          pgpucontext,
          pgpulayer,
          ptextureDiagnostic,
          iDrawFramebufferBefore);
-      nvgEndFrame(m_pdc);
+
+      end_draw();
+      //_nvg_end_frame();
+      //nvgEndFrame(m_pdc);
 
       {
 
@@ -10271,32 +10626,36 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    //}
 
 
-   void graphics::begin_draw() 
-   {
+   //void graphics::begin_draw()
+   //{
 
-      ::gpu::graphics::begin_draw();
+   //   ::gpu::graphics::begin_draw();
 
-      auto pgputexturesiteTarget = current_target_texture(
-         ::gpu::current_layer());
+   //   auto pgputexturesiteTarget = current_target_texture(
+   //      ::gpu::current_layer());
 
-      prepare_nanovg_render_target(pgputexturesiteTarget->gpu_texture());
-      
-      auto size = m_size;
+   //   prepare_nanovg_render_target(pgputexturesiteTarget->gpu_texture());
+   //
+   //   auto size = m_size;
 
-      nvgBeginFrame(m_pdc, (float)size.width(), (float)size.height(), 1.0f); 
-   
-   }
+   //   _nvg_begin_frame(pgputexturesiteTarget->gpu_texture(), size);
 
-
-   void graphics::end_draw() 
-   {
-   
-      nvgEndFrame(m_pdc);
+   //   //nvgBeginFrame(m_pdc, (float)size.width(), (float)size.height(), 1.0f);
+   //
+   //}
 
 
-      ::gpu::graphics::end_draw();
-   
-   }
+   //void graphics::end_draw()
+   //{
+   //
+   //   //nvgEndFrame(m_pdc);
+
+   //   _nvg_end_frame();
+
+
+   //   ::gpu::graphics::end_draw();
+   //
+   //}
 
 
    void graphics::start_layer(bool bFirstLayer, ::user::interaction * puserinteractionContext)
@@ -10310,87 +10669,90 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       ::gpu::graphics::start_layer(bFirstLayer, puserinteractionContext);
 
-      //auto pdraw2dgraphics = pgraphicscontext->draw2d_graphics();
+      ////auto pdraw2dgraphics = pgraphicscontext->draw2d_graphics();
 
-      if (m_egraphics == e_graphics_draw)
-      {
+      //if (m_egraphics == e_graphics_draw)
+      //{
 
-         auto rectangleGpuContext = gpu_context()->input_placement();
+      //   auto rectangleGpuContext = gpu_context()->input_placement();
 
-         auto size = this->m_sizeTarget;
+      //   auto size = this->m_sizeTarget;
 
-         ::i32_rectangle rectangle;
+      //   ::i32_rectangle rectangle;
 
-         rectangle.set_size(size);
+      //   rectangle.set_size(size);
 
-         {
+      //   {
 
-            ::string strMessage;
+      //      ::string strMessage;
 
-            strMessage.formatf("ø on_begin_draw");
+      //      strMessage.formatf("ø on_begin_draw");
 
-            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
-                                 -1, strMessage);
-         }
+      //      glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
+      //                           -1, strMessage);
+      //   }
 
-         {
+      //   {
 
-            ::string strMessage;
+      //      ::string strMessage;
 
-            auto ptexturesite = gpu_context()->current_target_texture(::gpu::current_layer());
+      //      auto ptexturesite = gpu_context()->current_target_texture(::gpu::current_layer());
 
-            ::cast<::gpu_opengl::texture> ptexture = ptexturesite->gpu_texture();
+      //      ::cast<::gpu_opengl::texture> ptexture = ptexturesite->gpu_texture();
 
-            auto uTexture = ptexture->m_gluTextureID;
+      //      auto uTexture = ptexture->m_gluTextureID;
 
-            auto uFbo = ptexture->target_frame_buffer_object();
+      //      auto uFbo = ptexture->target_frame_buffer_object();
 
-            strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
+      //      strMessage.formatf("ø texture=%d fbo=%d", uTexture, uFbo);
 
-            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
-                                 -1, strMessage);
-         }
+      //      glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
+      //                           -1, strMessage);
+      //   }
 
-         {
+      //   {
 
-            GLint drawFbo = 0;
-            glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFbo);
+      //      GLint drawFbo = 0;
+      //      glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFbo);
 
-            GLint readFbo = 0;
-            glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFbo);
+      //      GLint readFbo = 0;
+      //      glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFbo);
 
-            ::string strMessage;
+      //      ::string strMessage;
 
-            strMessage.formatf("ø drawFbo=%d readFbo=%d", drawFbo, readFbo);
+      //      strMessage.formatf("ø drawFbo=%d readFbo=%d", drawFbo, readFbo);
 
-            glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
-                                 -1, strMessage);
-         }
+      //      glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, 0, GL_DEBUG_SEVERITY_NOTIFICATION,
+      //                           -1, strMessage);
+      //   }
 
-         prepare_nanovg_render_target(
-            gpu_context()->current_target_texture(::gpu::current_layer())->gpu_texture());
+      //   auto pgputextureTarget = gpu_context()->current_target_texture(::gpu::current_layer())->gpu_texture();
 
-         nvgBeginFrame(m_pdc, (float)rectangleGpuContext.width(), (float)rectangleGpuContext.height(), 1.0f);
+      //   prepare_nanovg_render_target(pgputextureTarget);
 
-         set_alpha_mode(::draw2d::e_alpha_mode_set);
+      //   _nvg_begin_frame(pgputextureTarget, rectangleGpuContext.size());
 
-         fill_rectangle(rectangle, ::color::transparent);
+      //   //nvgBeginFrame(m_pdc, (float)rectangleGpuContext.width(), (float)rectangleGpuContext.height(), 1.0f);
 
-         set_alpha_mode(::draw2d::e_alpha_mode_blend);
+      //   set_alpha_mode(::draw2d::e_alpha_mode_set);
 
-         nvgResetScissor(m_pdc);
+      //   fill_rectangle(rectangle, ::color::transparent);
 
-         reset_clip();
+      //   set_alpha_mode(::draw2d::e_alpha_mode_blend);
 
-         //set_target_rectangle({ m_pimage->m_point, m_pimage->m_size    });
-         //on_set_target_rectangle(m_pimage);
-         //set_target_rectangle({ puserinteractionContext->host_origin(), puserinteractionContext->size() });
+      //   nvgResetScissor(m_pdc);
 
-         m_pointTarget = puserinteractionContext->host_origin();
+      //   reset_clip();
 
-         update_matrix();
+      //   //set_target_rectangle({ m_pimage->m_point, m_pimage->m_size    });
+      //   //on_set_target_rectangle(m_pimage);
+      //   //set_target_rectangle({ puserinteractionContext->host_origin(), puserinteractionContext->size() });
 
-      }
+      //   m_pointTarget = puserinteractionContext->host_origin();
+
+      //   update_matrix();
+
+      //}
 
       // bool bYSwap = m_papplication->m_gpu.m_bUseSwapChainWindow;
 
@@ -10806,7 +11168,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       //return ::is_set(this) & ::is_set(m_hglrc);
 
       return ::is_set(this) && (
-         m_pgpucontextCompositor2 || m_pgpucontextOwned);
+         m_pgpucontextOwned || m_pgpucontextOwned);
 
    }
 

@@ -1,15 +1,18 @@
 #include "platform.h"
 #include "_vulkan.h"
+#include "bitmap.h"
 #include "image.h"
 #include "acme/platform/application.h"
+#include "apex/gpu/approach.h"
 #include "aura/windowing/window_buffer.h"
+#include "app-graphics3d/gpu_vulkan/texture.h"
 
 
 namespace draw2d_vulkan
 {
 
 
-   image::image::image()
+   image::image()
    {
 
 #if defined(WINDOWS_DESKTOP)
@@ -300,7 +303,7 @@ namespace draw2d_vulkan
 
       //}
 
-      ::i32_size size = pdraw2dgraphics->m_pimage->get_size();
+      ::i32_size size = pdraw2dgraphics->m_pimageTarget->get_size();
 
       //if(!create(size))
       create_as_descriptor(size);
@@ -2791,10 +2794,10 @@ namespace draw2d_vulkan
 //
 
 
-   ::image_pixmap_lease image::_map(const ::i32_rectangle & rectangle)
+   ::image_pixmap_lease image::_map(::image::enum_map emap, const ::i32_rectangle & rectangle)
    {
 
-      return ::transfer(::gpu::image::_map(rectangle));
+      return ::transfer(::gpu::image::_map(emap, rectangle));
 
       //return;
 
@@ -2864,44 +2867,46 @@ namespace draw2d_vulkan
    void image::_unmap(::image_pixmap_lease * pimagepixmaplease) 
    {
 
-      //if (!m_bMapped)
+      ::gpu::image::_unmap(pimagepixmaplease);
+
+      ////if (!m_bMapped)
+      ////{
+
+      ////   return;
+
+      ////}
+
+      ////if (!m_pgraphics)
+      ////{
+
+      ////   return;
+
+      ////}
+
+      //if (m_size.is_empty())
       //{
 
       //   return;
 
       //}
 
-      //if (!m_pgraphics)
-      //{
+      ////if (::is_null(m_pimage32Raw))
+      ////{
 
-      //   return;
+      ////   //return false;
 
-      //}
+      ////   return;
 
-      if (m_size.is_empty())
-      {
+      ////}
 
-         return;
+      ////m_pgraphics->thread_select();
 
-      }
+      ////xxxopengl>>>>vulkan 
+      ////vkDrawPixels(m_size.cx, m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, m_pimage32Raw);
 
-      //if (::is_null(m_pimage32Raw))
-      //{
+      ////m_bMapped = false;
 
-      //   //return false;
-
-      //   return;
-
-      //}
-
-      //m_pgraphics->thread_select();
-
-      //xxxopengl>>>>vulkan 
-      //vkDrawPixels(m_size.cx, m_size.cy, VK_BGRA, VK_UNSIGNED_BYTE, m_pimage32Raw);
-
-      //m_bMapped = false;
-
-      //return true;
+      ////return true;
 
    }
 
@@ -2954,6 +2959,98 @@ namespace draw2d_vulkan
 //      *///return true;
 //
 //   }
+   //::cast < ::gpu::image> pgpuimageSource = pimageSource;
+   
+
+
+   //auto pgputextureSource = pgpubitmapSource->gpu_texture(m_pgpucontextOwned);
+
+
+   void image::if_or_when_image_ok(::draw2d::graphics * pdraw2dgraphics, const ::procedure & procedure)
+   {
+
+      if (m_ppixmapOwned)
+      {
+
+         get_bitmap_as_source(pdraw2dgraphics);
+
+         if (!m_pdraw2dbitmap)
+         {
+
+            throw ::exception(error_failed);
+
+         }
+
+      }
+
+      if (m_pdraw2dbitmap)
+      {
+
+         ::cast < ::draw2d_vulkan::bitmap > pbitmap = m_pdraw2dbitmap;
+
+         if (::is_set(pbitmap))
+         {
+
+            if (m_ppixmapOwned)
+            {
+
+               ::cast < ::draw2d_vulkan::graphics > pgraphics = pdraw2dgraphics;
+
+               ::cast < ::gpu_vulkan::context > pcontext = pgraphics->m_pgpucontextOwned;
+
+               pbitmap->gpu_texture(pcontext);
+
+               if (::is_null(pbitmap->m_pgputexture))
+               {
+
+                  throw ::exception(error_failed);
+
+               }
+
+            }
+
+            ::cast < ::gpu_vulkan::texture > ptexture = pbitmap->m_pgputexture;
+
+            if (::is_set(ptexture))
+            {
+               
+               auto pgpuapproach = m_papplication->m_pgpuapproach;
+
+               {
+
+                  synchronous_lock synchronouslock(pgpuapproach->m_pparticle_001OnFrameSynchronization);
+
+                  if (m_ppixmapOwned)
+                  {
+
+                     defer_construct_newø(ptexture->m_p_001OnAfterEndFrame);
+
+                  }
+
+                  if (ptexture->m_p_001OnAfterEndFrame)
+                  {
+
+                     ptexture->m_p_001OnAfterEndFrame->m_procedurea.add(procedure);
+
+                     return;
+
+                  }
+
+               }
+
+            }
+
+         }
+
+      }
+
+      procedure();
+
+      //auto pgpudevice = m_pgpucontext->m_pgpudevice;
+
+      //synchronous_lock synchronouslock(pgpudevice->m_pparticle_001OnFrameSynchronization);
+
+   }
 
 
 } // namespace draw2d_vulkan

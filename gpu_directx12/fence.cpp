@@ -33,12 +33,12 @@ namespace gpu_directx12
    }
 
 
-   void fence::initialize_gpu_fence(::gpu::device *pgpudevice, bool bCreateSignaled)
+   void fence::initialize_gpu_fence(::gpu::context *pgpucontext, bool bCreateSignaled)
    {
 
-      ::gpu::fence::initialize_gpu_fence(pgpudevice, bCreateSignaled);
+      ::gpu::fence::initialize_gpu_fence(pgpucontext, bCreateSignaled);
 
-      ::cast<::gpu_directx12::device> pdevice = pgpudevice;
+      ::cast<::gpu_directx12::device> pdevice = pgpucontext->m_pgpudevice;
 
       m_uFence = 1;
 

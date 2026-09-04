@@ -110,7 +110,7 @@ namespace gpu_directx12
       ::defer_throw_hresult(m_pcommandlist->Close()); // Must be closed before Reset()
 
 
-      m_pgpufence = pdevice->create_gpu_fence();
+      m_pgpufence = pcontext->create_gpu_fence();
 
       // 5. Create fence + event for GPU sync
       //m_hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);

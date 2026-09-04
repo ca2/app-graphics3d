@@ -3,7 +3,7 @@
 
 
 #include "bred/gpu/draw2d.h"
-#include "acme/platform/auto_pointer.h"
+//#include "acme/platform/auto_pointer.h"
 #include "aura/graphics/draw2d/draw2d.h"
 #include "gpu_opengl/context.h"
 #include "face.h"
@@ -53,6 +53,9 @@ namespace draw2d_opengl
       void initialize(::particle * pparticle) override;
 
       //face* get_face(::write_text::font * pwritetextfont);
+
+      bool write_text_supports_raster_fonts() override;
+      bool write_text_supports_legacy_gdi_fonts() override;
 
       //bool graphics_context_supports_single_buffer_mode() override;
       bool graphics_context_does_full_redraw() override;

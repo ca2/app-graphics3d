@@ -25,11 +25,25 @@ namespace app_graphics3d_continuum
 {
 
 
+   switcher_impact::switcher_impact()
+   {
+
+      m_iImpactSerial = 2;
+
+   }
+
+
+   switcher_impact::~switcher_impact()
+   {
+
+
+   }
 
 
    impact::impact()
    {
 
+      m_iImpactSerial = 1;
       
       m_enonclient -= ::user::e_non_client_background;
       m_iSequence = 0;

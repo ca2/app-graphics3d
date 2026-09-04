@@ -100,6 +100,25 @@ namespace draw2d_vulkan
    }
 
 
+
+   bool draw2d::write_text_supports_raster_fonts()
+   {
+
+      return false;
+
+   }
+
+
+
+   bool draw2d::write_text_supports_legacy_gdi_fonts()
+   {
+
+      return false;
+
+   }
+
+
+
    //void draw2d::defer_initialize_glad()
    //{
 

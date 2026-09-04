@@ -27,7 +27,7 @@ namespace gpu_vulkan
       if (m_vkfence != VK_NULL_HANDLE)
       {
 
-         ::cast < ::gpu_vulkan::device > pdevice = m_pgpudevice;
+         ::cast < ::gpu_vulkan::device > pdevice = m_pgpucontextGpuFence->m_pgpudevice;
 
          vkDestroyFence(pdevice->m_vkdevice, m_vkfence, nullptr);
 
@@ -36,12 +36,12 @@ namespace gpu_vulkan
    }
 
 
-   void fence::initialize_gpu_fence(::gpu::device *pgpudevice, bool bCreateSignaled)
+   void fence::initialize_gpu_fence(::gpu::context *pgpucontext, bool bCreateSignaled)
    {
 
-      ::gpu::fence::initialize_gpu_fence(pgpudevice, bCreateSignaled);
+      ::gpu::fence::initialize_gpu_fence(pgpucontext, bCreateSignaled);
 
-      ::cast<::gpu_vulkan::device> pdevice = pgpudevice;
+      ::cast<::gpu_vulkan::device> pdevice = m_pgpucontextGpuFence->m_pgpudevice;
 
       VkFenceCreateInfo fenceCreateInfo = {};
 
@@ -69,7 +69,7 @@ namespace gpu_vulkan
    bool fence::has_finished()
    {
 
-      ::cast < ::gpu_vulkan::device > pdevice = m_pgpudevice;
+      ::cast < ::gpu_vulkan::device > pdevice = m_pgpucontextGpuFence->m_pgpudevice;
 
       auto vkdevice = pdevice->logicalDevice();
 
@@ -112,7 +112,7 @@ namespace gpu_vulkan
    void fence::wait_gpu_fence()
    {
 
-      ::cast < ::gpu_vulkan::device > pdevice = m_pgpudevice;
+      ::cast < ::gpu_vulkan::device > pdevice = m_pgpucontextGpuFence->m_pgpudevice;
 
       auto vkdevice = pdevice->logicalDevice();
 

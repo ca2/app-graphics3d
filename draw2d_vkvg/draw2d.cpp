@@ -1,5 +1,6 @@
 #include "platform.h"
 #include "draw2d.h"
+#include "acme/filesystem/filesystem/file_context.h"
 #include "acme/exception/resource.h"
 #include "acme/platform/application.h"
 #include "acme/platform/node.h"
@@ -332,32 +333,88 @@ namespace draw2d_vkvg
    }
 
 
-   void draw2d::defer_load_font_by_family_name(VkvgContext pdc, const ::scoped_string& scopedstrName)
+   ::string draw2d::defer_load_font(
+      VkvgContext pdc,
+      VkvgDevice pdevice,
+      ::write_text::font * pwritetextfont)
    {
 
       _synchronous_lock lock(m_pmutex);
 
-      auto& font = m_mapFont[scopedstrName];
+      ::write_text::font_face_request request;
+      request.m_strFamily = pwritetextfont->family_name();
+      request.m_fontweight = pwritetextfont->m_fontweight;
+      request.m_bItalic = pwritetextfont->m_bItalic;
+
+      ::string strFontKey;
+      strFontKey.formatf(
+         "family=%s;weight=%d;italic=%d",
+         request.m_strFamily.c_str(),
+         request.m_fontweight.as_i32(),
+         request.m_bItalic ? 1 : 0);
+
+      ::string strDeviceFontKey;
+      strDeviceFontKey.formatf("device=%p;%s", pdevice, strFontKey.c_str());
+
+      auto& font = m_mapFont[strDeviceFontKey];
 
       if (!font.m_bLoaded)
       {
 
-         font.m_bLoaded = true;
+         ::write_text::font_face_source source;
 
-         ::file::path pathFont = node()->get_font_path_from_name(scopedstrName);
-
-         vkvg_load_font_from_path(pdc, pathFont, scopedstrName);
-
-         auto status = vkvg_status(pdc);
-
-         if (status)
+         if (!system()->draw2d()->write_text()->resolve_font_face(source, request))
          {
 
-            warning() << "oh no";
+            ::string strMessage;
+
+            strMessage.formatf(
+               "VKVG could not resolve the requested font face. family=\"%s\" weight=%d italic=%s.",
+               request.m_strFamily.c_str(),
+               request.m_fontweight.as_i32(),
+               request.m_bItalic ? "true" : "false");
+
+            information() << "[draw2d_vkvg.font] " << strMessage;
+
+            throw ::exception(error_failed, strMessage);
 
          }
 
+         vkvg_load_font_from_path(pdc, source.m_path, strFontKey);
+
+         auto status = vkvg_status(pdc);
+
+         if (status != VKVG_STATUS_SUCCESS)
+         {
+
+            const auto bExists = source.m_path.has_character() && file()->exists(source.m_path);
+            const auto strExtension = ::string(source.m_path.final_extension());
+            ::string strMessage;
+
+            strMessage.formatf(
+               "VKVG failed to load the requested font face. family=\"%s\" weight=%d italic=%s "
+               "resolved_family=\"%s\" path=\"%s\" face_index=%d exists=%s extension=\"%s\" status=%d.",
+               request.m_strFamily.c_str(),
+               request.m_fontweight.as_i32(),
+               request.m_bItalic ? "true" : "false",
+               source.m_strResolvedFamily.c_str(),
+               source.m_path.c_str(),
+               source.m_iFaceIndex,
+               bExists ? "true" : "false",
+               strExtension.c_str(),
+               (int)status);
+
+            information() << "[draw2d_vkvg.font] " << strMessage;
+
+            throw ::exception(error_failed, strMessage);
+
+         }
+
+         font.m_bLoaded = true;
+
       }
+
+      return strFontKey;
 
    }
 

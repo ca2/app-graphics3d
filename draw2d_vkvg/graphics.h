@@ -36,7 +36,7 @@ namespace draw2d_vkvg
       ::pointer<::gpu_vulkan::texture> m_ptexture;
       VkImage m_vkimage = VK_NULL_HANDLE;
       VkFormat m_vkformat = VK_FORMAT_UNDEFINED;
-      ::i32_size m_size;
+      ::i32_size m_sizeRaw;
       VkhImage m_vkhimage = nullptr;
       VkvgSurface m_vkvgsurface = nullptr;
       VkvgContext m_vkvgcontext = nullptr;
@@ -133,7 +133,7 @@ namespace draw2d_vkvg
       //void attach(void * pdraw2dgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
 
-      void defer_load_font_by_family_name(const ::scoped_string& scopedstrName);
+      ::string defer_load_font(::write_text::font * pwritetextfont);
       //void defer_add_graphics_render(::graphics::render * pgpurender) override;
 
       //virtual bool Attach(HDC hdc);   // attach/detach affects only the Output DC

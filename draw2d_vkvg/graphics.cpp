@@ -29,6 +29,7 @@
 #include "aura/graphics/graphics/buffer_item.h"
 #include "bred/gpu/command_buffer.h"
 #include "bred/gpu/buffer.h"
+#include "bred/gpu/fence.h"
 #include "bred/gpu/render.h"
 //#include "aura/graphics/image/target.h"
 #include "aura/graphics/write_text/font_enumeration_item.h"
@@ -3287,26 +3288,31 @@ namespace draw2d_vkvg
    void graphics::get_text_metrics(::write_text::text_metric* lpMetrics)
    {
 
-      set(m_pwritetextfont);
-      //if (!set(m_pwritetextfont))
-      //{
+      if (::is_null(lpMetrics) || ::is_null(m_pwritetextfont))
+      {
 
-      //   return false;
+         throw ::exception(error_null_pointer);
 
-      //}
+      }
 
-      ::pointer<font>pwritetextfont = m_pwritetextfont;
+      _set(m_pwritetextfont);
 
-#if defined(WINDOWS_DESKTOP)
-      TEXTMETRIC tm;
+      auto vkvgcontext = vkvg_context();
 
-      GetTextMetrics(pwritetextfont->m_hdcFont, &tm);
+      vkvg_font_extents_t fontextents{};
 
-      lpMetrics->m_dAscent = tm.tmAscent;
-      lpMetrics->m_dHeight = tm.tmHeight;
-      lpMetrics->m_dDescent = tm.tmDescent;
+      vkvg_font_extents(vkvgcontext, &fontextents);
 
-#endif
+      lpMetrics->m_dAscent = fontextents.ascent;
+      lpMetrics->m_dHeight = fontextents.height;
+      lpMetrics->m_dDescent = fontextents.descent;
+      lpMetrics->m_dInternalLeading = 0.0;
+      lpMetrics->m_dExternalLeading =
+         maximum(0.0, (double)fontextents.height - ((double)fontextents.ascent + (double)fontextents.descent));
+      lpMetrics->m_dWeight = m_pwritetextfont->m_fontweight.as_i32();
+      lpMetrics->m_bItalic = m_pwritetextfont->m_bItalic;
+      lpMetrics->m_bUnderlined = m_pwritetextfont->m_bUnderline;
+      lpMetrics->m_bStruckOut = m_pwritetextfont->m_bStrikeout;
       //lpMetrics->tmAveCharWidth = tm.tmAveCharWidth;
 
       //if (m_pgraphics == nullptr)
@@ -4372,13 +4378,26 @@ namespace draw2d_vkvg
       if (vkvg_has_current_point(vkvgcontext))
       {
 
-         float x;
+         float xCurrent;
 
-         float y;
+         float yCurrent;
 
-         vkvg_get_current_point(vkvgcontext, &x, &y);
+         vkvg_get_current_point(vkvgcontext, &xCurrent, &yCurrent);
 
-         if (is_different(x, line.m_p1.x, 0.0001) || is_different(y, line.m_p1.y, 0.0001))
+         float xStart = (::f32)line.m_p1.x;
+         float yStart = (::f32)line.m_p1.y;
+         vkvg_matrix_t matrix;
+         vkvg_get_matrix(vkvgcontext, &matrix);
+         vkvg_matrix_transform_point(&matrix, &xStart, &yStart);
+
+         // VKVG stores and reports the current point after applying its
+         // matrix. Compare it with the transformed line start. Comparing the
+         // device-space current point with the untransformed draw2d point
+         // inserts a duplicate vertex at every joined line when the graphics
+         // has a target translation. Those zero-length segments break VKVG's
+         // stroke tessellation for paths such as the tab outline.
+         if (is_different(xCurrent, xStart, 0.0001) ||
+             is_different(yCurrent, yStart, 0.0001))
          {
 
             vkvg_line_to(vkvgcontext, (::f32)line.m_p1.x, (::f32)line.m_p1.y);
@@ -6518,10 +6537,12 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
          VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 
       auto pgpucontext = gpu_context();
+      auto sizeRaw = ptexture->raw_size();
 
       if ((usage & requiredUsage) != requiredUsage ||
           ptexture->mip_count() != 1 || ptexture->layer_count() != 1 ||
           ptexture->size().is_empty() ||
+          sizeRaw.is_empty() ||
           ptexture->size() != pgpucontext->size())
       {
 
@@ -6550,7 +6571,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
             if (pdirecttargetCandidate->m_vkimage == ptexture->m_vkimage &&
                 pdirecttargetCandidate->m_vkformat == ptexture->m_vkformat &&
-                pdirecttargetCandidate->m_size == ptexture->size())
+                pdirecttargetCandidate->m_sizeRaw == sizeRaw)
             {
 
                pdirecttarget = pdirecttargetCandidate;
@@ -6577,12 +6598,16 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
       if (bCacheHit)
       {
 
-         auto pgpucommandbuffer = pgpucontext->beginSingleTimeCommands(
+         {         auto pgpucommandbuffer = pgpucontext->beginSingleTimeCommands(
             pgpucontext->m_pgpudevice->graphics_queue());
          ptexture->set_state(
             pgpucommandbuffer,
             ::gpu::e_texture_state_color_attachment);
-         pgpucontext->endSingleTimeCommands(pgpucommandbuffer);
+
+         pgpucommandbuffer.commit();
+
+      }
+         //pgpucontext->endSingleTimeCommands(pgpucommandbuffer);
 
          pdirecttarget->m_uFrameSerial = ++m_uDirectTargetFrameSerial;
          m_pdirecttargetActive = pdirecttarget;
@@ -6615,8 +6640,8 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
                vkhdevice,
                ptexture->m_vkimage,
                ptexture->m_vkformat,
-               (::u32)ptexture->width(),
-               (::u32)ptexture->height());
+               (::u32)sizeRaw.cx,
+               (::u32)sizeRaw.cy);
 
             if (!vkhimage || vkh_image_status(vkhimage) != VK_SUCCESS)
             {
@@ -6654,7 +6679,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
             pdirecttargetNew->m_ptexture = ptexture;
             pdirecttargetNew->m_vkimage = ptexture->m_vkimage;
             pdirecttargetNew->m_vkformat = ptexture->m_vkformat;
-            pdirecttargetNew->m_size = ptexture->size();
+            pdirecttargetNew->m_sizeRaw = sizeRaw;
             pdirecttargetNew->m_uFrameSerial = ++m_uDirectTargetFrameSerial;
             m_directtargeta.add(pdirecttargetNew);
             pdirecttargetNew->m_vkhimage = vkhimage;
@@ -8521,13 +8546,11 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //}
 
-      ::string strFamilyName = pfontParam->m_pfontfamily->family_name(this);
-
-      defer_load_font_by_family_name(strFamilyName);
+      auto strFontKey = defer_load_font(pfontParam);
 
       auto vkvgcontext = vkvg_context();
 
-      vkvg_select_font_face(vkvgcontext, strFamilyName);
+      vkvg_select_font_face(vkvgcontext, strFontKey);
 
       //vkvg_font_face_t* pfontface = (vkvg_font_face_t*)posdata;
 
@@ -9484,7 +9507,7 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       //return ::is_set(this) & ::is_set(m_hglrc);
 
-      return ::is_set(this) && m_pgpucontextCompositor2;
+      return ::is_set(this) && m_pgpucontextOwned;
 
    }
 
@@ -9534,12 +9557,15 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
    }
 
 
-   void graphics::defer_load_font_by_family_name(const ::scoped_string& scopedstrName)
+   ::string graphics::defer_load_font(::write_text::font * pwritetextfont)
    {
 
       auto vkvgcontext = vkvg_context();
 
-      ::draw2d_vkvg::get()->defer_load_font_by_family_name(vkvgcontext, scopedstrName);
+      return ::draw2d_vkvg::get()->defer_load_font(
+         vkvgcontext,
+         get_vkvg_device(),
+         pwritetextfont);
 
    }
 

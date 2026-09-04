@@ -443,18 +443,18 @@ namespace gpu_directx12
    //}
 
 
-   ::pointer < ::gpu::command_buffer > context::beginSingleTimeCommands(::gpu::queue * pqueue, ::gpu::enum_command_buffer ecommandbuffer)
+   ::pointer < ::gpu::command_buffer > context::_beginSingleTimeCommands(::gpu::queue * pqueue, ::gpu::enum_command_buffer ecommandbuffer)
    {
 
-      return ::gpu::context::beginSingleTimeCommands(pqueue, ecommandbuffer);
+      return ::gpu::context::_beginSingleTimeCommands(pqueue, ecommandbuffer);
 
    }
 
 
-   void context::endSingleTimeCommands(::gpu::command_buffer * pcommandbuffer)
+   void context::_endSingleTimeCommands(::gpu::command_buffer * pcommandbuffer)
    {
 
-      ::gpu::context::endSingleTimeCommands(pcommandbuffer);
+      ::gpu::context::_endSingleTimeCommands(pcommandbuffer);
 
    }
 
@@ -1713,151 +1713,151 @@ namespace gpu_directx12
    //}
 
 
-   void context::__bind_draw2d_compositor(::gpu::compositor * pgpucompositor, ::gpu::layer * pgpulayer)
-   {
-
-      ASSERT(m_etype == e_type_draw2d);
-
-      if (pgpucompositor->m_bDraw2dNeedsD3D11onD12)
-      {
-
-         ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
-
-         auto ptexturesite = pgpulayer->texture(true);
-
-         ::cast < ::gpu_directx12::texture > ptexture = ptexturesite->gpu_texture();
-
-#if defined(_DEBUG)
-         informationf(
-            "DX12 D2D_BIND layer=%d layerFrame=%d currentFrame=%d resource=%p",
-            pgpulayer->m_iGpuLayerIndex,
-            pgpulayer->m_iGpuLayerFrameIndex,
-            ::gpu::window_attachment::get(m_pgpurenderer)->get_frame_index3(),
-            ptexture->m_pd3d12resourceTexture->m_presource.m_p);
-#endif
-
-         auto pgpurendertarget = m_pgpurenderer->render_target();
-
-         auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
-
-         auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
-
-         auto & pdxgisurface = ptexture->d3d11()->m_pdxgisurface;
-
-         informationf("DX12 D2D_BIND_STAGE wrapped-ready");
-
-
-         ::cast < device > pdevice = m_pgpudevice;
-
-         //if (!ptexture->d3d11()->m_pd3d11resourceWrapped)
-         //{
-
-         //   assert(!ptexture->m_pheapDepthStencilView);
-         //   //assert(!ptexture->m_pheapRenderTargetView);
-         //   //assert(!ptexture->m_pheapShaderResourceView);
-         //   //assert(!ptexture->m_pheapSampler);
-
-         //   //auto & sharedHandle= ptexture->d3d11()->sharedHandle;
-
-         //   //::defer_throw_hresult(pdevice->m_pd3d12device->CreateSharedHandle(
-         //   //   ptexture->m_presource, nullptr, GENERIC_ALL, nullptr, 
-         //   //   &sharedHandle));
-
-         //   D3D11_RESOURCE_FLAGS flags = {};
-         //   //flags.BindFlags = D3D11_BIND_RENDER_TARGET;
-         //   flags.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-         //   assert(ptexture->m_pd3d12resourceTexture->m_presource); // Confirm it’s non-null
-         //   HRESULT hrCreateWrappedResource = d3d11on12()->m_pd3d11on12->CreateWrappedResource(
-         //      ptexture->m_pd3d12resourceTexture->m_presource,
-         //      &flags,
-         //      D3D12_RESOURCE_STATE_RENDER_TARGET,
-         //      D3D12_RESOURCE_STATE_RENDER_TARGET,
-         //      __interface_of(ptexture->d3d11()->m_pd3d11resourceWrapped)
-         //   );
-
-         //   ::defer_throw_hresult(hrCreateWrappedResource);
-
-         //}
-
-         //ptexture->d3d11()->m_d3d11resourceaWrapped[0] = { ptexture->d3d11()->m_pd3d11resourceWrapped };
-
-         //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
-
-         //ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_layer())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-         pdevice->d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
-            ptexture->d3d11()->m_d3d11resourceaWrapped,
-            _countof(ptexture->d3d11()->m_d3d11resourceaWrapped));
-
-         informationf("DX12 D2D_BIND_STAGE acquired");
-
-         m_iResourceWrappingCount++;
-
-         ASSERT(m_iResourceWrappingCount == 1);
-
-         //::defer_throw_hresult(m_pd3d11device.as(m_pd3d11on12)); // Query interface
-
-         //::defer_throw_hresult(ptexture->d3d11()->m_pd3d11resourceWrapped.as(pdxgisurface)); // Get IDXGISurface
-
-         //informationf("DX12 D2D_BIND_STAGE surface-ready");
-
-         //pdxgisurfacebindable->_bind(iFrameIndex, pgpulayer->m_iGpuLayerIndex, pdxgisurface);
-
-         //informationf("DX12 D2D_BIND_STAGE target-bound");
-
-      }
-
-   }
-
-
-   void context::__defer_soft_unbind_draw2d_compositor(::gpu::compositor * pgpucompositor, ::gpu::layer * pgpulayer)
-   {
-
-      ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
-
-      auto ptexturesite = pgpulayer->texture(false);
-
-      ::cast < ::gpu_directx12::texture > ptexture = ptexturesite->gpu_texture();
-
-      ::cast < device > pgpudevice = m_pgpudevice;
-
-      auto pdxgidevice = pgpudevice->_get_dxgi_device();
-
-      auto pgpurendertarget = m_pgpurenderer->render_target();
-
-      auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
-
-      auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
-
-      auto & pdxgisurface = ptexture->d3d11()->m_pdxgisurface;
-
-      if (ptexture->d3d11()->m_pd3d11resourceWrapped)
-      {
-
-         pgpudevice->d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
-            ptexture->d3d11()->m_d3d11resourceaWrapped, 1);
-
-         // ReleaseWrappedResources queues the D3D11-on-12 ownership handoff.
-         // Flush the immediate context so that handoff and all Direct2D work
-         // reach the shared D3D12 queue before merge_layers samples it.
-         pgpudevice->d3d11on12()->m_pd3d11devicecontextMain->Flush();
-
-         // The wrapped resource's OutState is shader-readable.  Keep ca2's
-         // D3D12 state tracker synchronized with that implicit transition.
-         //ptexture->m_pd3d12resourceTexture->m_state.m_resourcestates =
-           // D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-
-         m_iResourceWrappingCount--;
-
-         //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
-
-      }
-
-      ASSERT(m_iResourceWrappingCount == 0);
+//   void context::__bind_draw2d_compositor(::gpu::compositor * pgpucompositor, ::gpu::layer * pgpulayer)
+//   {
+//
+//      ASSERT(m_etype == e_type_draw2d);
+//
+//      if (pgpucompositor->m_bDraw2dNeedsD3D11onD12)
+//      {
+//
+//         ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
+//
+//         auto ptexturesite = pgpulayer->texture(true);
+//
+//         ::cast < ::gpu_directx12::texture > ptexture = ptexturesite->gpu_texture();
+//
+//#if defined(_DEBUG)
+//         informationf(
+//            "DX12 D2D_BIND layer=%d layerFrame=%d currentFrame=%d resource=%p",
+//            pgpulayer->m_iGpuLayerIndex,
+//            pgpulayer->m_iGpuLayerFrameIndex,
+//            ::gpu::window_attachment::get(m_pgpurenderer)->get_frame_index3(),
+//            ptexture->m_pd3d12resourceTexture->m_presource.m_p);
+//#endif
+//
+//         auto pgpurendertarget = m_pgpurenderer->render_target();
+//
+//         auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
+//
+//         auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
+//
+//         auto & pdxgisurface = ptexture->d3d11()->m_pdxgisurface;
+//
+//         informationf("DX12 D2D_BIND_STAGE wrapped-ready");
+//
+//
+//         ::cast < device > pdevice = m_pgpudevice;
+//
+//         //if (!ptexture->d3d11()->m_pd3d11resourceWrapped)
+//         //{
+//
+//         //   assert(!ptexture->m_pheapDepthStencilView);
+//         //   //assert(!ptexture->m_pheapRenderTargetView);
+//         //   //assert(!ptexture->m_pheapShaderResourceView);
+//         //   //assert(!ptexture->m_pheapSampler);
+//
+//         //   //auto & sharedHandle= ptexture->d3d11()->sharedHandle;
+//
+//         //   //::defer_throw_hresult(pdevice->m_pd3d12device->CreateSharedHandle(
+//         //   //   ptexture->m_presource, nullptr, GENERIC_ALL, nullptr, 
+//         //   //   &sharedHandle));
+//
+//         //   D3D11_RESOURCE_FLAGS flags = {};
+//         //   //flags.BindFlags = D3D11_BIND_RENDER_TARGET;
+//         //   flags.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+//         //   assert(ptexture->m_pd3d12resourceTexture->m_presource); // Confirm it’s non-null
+//         //   HRESULT hrCreateWrappedResource = d3d11on12()->m_pd3d11on12->CreateWrappedResource(
+//         //      ptexture->m_pd3d12resourceTexture->m_presource,
+//         //      &flags,
+//         //      D3D12_RESOURCE_STATE_RENDER_TARGET,
+//         //      D3D12_RESOURCE_STATE_RENDER_TARGET,
+//         //      __interface_of(ptexture->d3d11()->m_pd3d11resourceWrapped)
+//         //   );
+//
+//         //   ::defer_throw_hresult(hrCreateWrappedResource);
+//
+//         //}
+//
+//         //ptexture->d3d11()->m_d3d11resourceaWrapped[0] = { ptexture->d3d11()->m_pd3d11resourceWrapped };
+//
+//         //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+//
+//         //ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_layer())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+//
+//         pdevice->d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
+//            ptexture->d3d11()->m_d3d11resourceaWrapped,
+//            _countof(ptexture->d3d11()->m_d3d11resourceaWrapped));
+//
+//         informationf("DX12 D2D_BIND_STAGE acquired");
+//
+//         m_iResourceWrappingCount++;
+//
+//         ASSERT(m_iResourceWrappingCount == 1);
+//
+//         //::defer_throw_hresult(m_pd3d11device.as(m_pd3d11on12)); // Query interface
+//
+//         //::defer_throw_hresult(ptexture->d3d11()->m_pd3d11resourceWrapped.as(pdxgisurface)); // Get IDXGISurface
+//
+//         //informationf("DX12 D2D_BIND_STAGE surface-ready");
+//
+//         //pdxgisurfacebindable->_bind(iFrameIndex, pgpulayer->m_iGpuLayerIndex, pdxgisurface);
+//
+//         //informationf("DX12 D2D_BIND_STAGE target-bound");
+//
+//      }
+//
+//   }
 
 
+   //void context::__defer_soft_unbind_draw2d_compositor(::gpu::compositor * pgpucompositor, ::gpu::layer * pgpulayer)
+   //{
 
-   }
+   //   ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
+
+   //   auto ptexturesite = pgpulayer->texture(false);
+
+   //   ::cast < ::gpu_directx12::texture > ptexture = ptexturesite->gpu_texture();
+
+   //   ::cast < device > pgpudevice = m_pgpudevice;
+
+   //   auto pdxgidevice = pgpudevice->_get_dxgi_device();
+
+   //   auto pgpurendertarget = m_pgpurenderer->render_target();
+
+   //   auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
+
+   //   auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
+
+   //   auto & pdxgisurface = ptexture->d3d11()->m_pdxgisurface;
+
+   //   if (ptexture->d3d11()->m_pd3d11resourceWrapped)
+   //   {
+
+   //      pgpudevice->d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
+   //         ptexture->d3d11()->m_d3d11resourceaWrapped, 1);
+
+   //      // ReleaseWrappedResources queues the D3D11-on-12 ownership handoff.
+   //      // Flush the immediate context so that handoff and all Direct2D work
+   //      // reach the shared D3D12 queue before merge_layers samples it.
+   //      pgpudevice->d3d11on12()->m_pd3d11devicecontextMain->Flush();
+
+   //      // The wrapped resource's OutState is shader-readable.  Keep ca2's
+   //      // D3D12 state tracker synchronized with that implicit transition.
+   //      //ptexture->m_pd3d12resourceTexture->m_state.m_resourcestates =
+   //        // D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+
+   //      m_iResourceWrappingCount--;
+
+   //      //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+
+   //   }
+
+   //   ASSERT(m_iResourceWrappingCount == 0);
+
+
+
+   //}
 
 
    void context::__bind_graphics3d_compositor(::gpu::compositor * pgpucompositor, ::gpu::layer * pgpulayer)
@@ -2000,53 +2000,227 @@ namespace gpu_directx12
    //}
 
 
-   void context::on_begin_draw_attach(::gpu::graphics * pgpugraphics)
+   void context::on_start_layer(::gpu::layer * pgpulayer)
    {
 
-      ::gpu::context::on_begin_draw_attach(pgpugraphics);
+      ::gpu::context::on_start_layer(pgpulayer);
+
+      auto pgpucompositor = m_pgpucompositor;
+
+      if(m_etype == e_type_draw2d)
+      {
+
+      //void context::__bind_draw2d_compositor(::gpu::compositor * pgpucompositor, ::gpu::layer * pgpulayer)
+      //{
+
+         ASSERT(m_etype == e_type_draw2d);
+
+         if (pgpucompositor->m_bDraw2dNeedsD3D11onD12)
+         {
+
+            ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
+
+            auto ptexturesite = pgpulayer->texture(true);
+
+            ::cast < ::gpu_directx12::texture > ptexture = ptexturesite->gpu_texture();
+
+#if defined(_DEBUG)
+            informationf(
+               "DX12 D2D_BIND layer=%d layerFrame=%d currentFrame=%d resource=%p",
+               pgpulayer->m_iGpuLayerIndex,
+               pgpulayer->m_iGpuLayerFrameIndex,
+               ::gpu::window_attachment::get(m_pgpurenderer)->get_frame_index3(),
+               ptexture->m_pd3d12resourceTexture->m_presource.m_p);
+#endif
+
+            auto pgpurendertarget = m_pgpurenderer->render_target();
+
+            auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
+
+            auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
+
+            auto & pdxgisurface = ptexture->d3d11()->m_pdxgisurface;
+
+            informationf("DX12 D2D_BIND_STAGE wrapped-ready");
+
+
+            ::cast < device > pdevice = m_pgpudevice;
+
+            //if (!ptexture->d3d11()->m_pd3d11resourceWrapped)
+            //{
+
+            //   assert(!ptexture->m_pheapDepthStencilView);
+            //   //assert(!ptexture->m_pheapRenderTargetView);
+            //   //assert(!ptexture->m_pheapShaderResourceView);
+            //   //assert(!ptexture->m_pheapSampler);
+
+            //   //auto & sharedHandle= ptexture->d3d11()->sharedHandle;
+
+            //   //::defer_throw_hresult(pdevice->m_pd3d12device->CreateSharedHandle(
+            //   //   ptexture->m_presource, nullptr, GENERIC_ALL, nullptr, 
+            //   //   &sharedHandle));
+
+            //   D3D11_RESOURCE_FLAGS flags = {};
+            //   //flags.BindFlags = D3D11_BIND_RENDER_TARGET;
+            //   flags.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+            //   assert(ptexture->m_pd3d12resourceTexture->m_presource); // Confirm it’s non-null
+            //   HRESULT hrCreateWrappedResource = d3d11on12()->m_pd3d11on12->CreateWrappedResource(
+            //      ptexture->m_pd3d12resourceTexture->m_presource,
+            //      &flags,
+            //      D3D12_RESOURCE_STATE_RENDER_TARGET,
+            //      D3D12_RESOURCE_STATE_RENDER_TARGET,
+            //      __interface_of(ptexture->d3d11()->m_pd3d11resourceWrapped)
+            //   );
+
+            //   ::defer_throw_hresult(hrCreateWrappedResource);
+
+            //}
+
+            //ptexture->d3d11()->m_d3d11resourceaWrapped[0] = { ptexture->d3d11()->m_pd3d11resourceWrapped };
+
+            //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+
+            //ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_layer())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+            pdevice->d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
+               ptexture->d3d11()->m_d3d11resourceaWrapped,
+               _countof(ptexture->d3d11()->m_d3d11resourceaWrapped));
+
+            informationf("DX12 D2D_BIND_STAGE acquired");
+
+            m_iResourceWrappingCount++;
+
+            ASSERT(m_iResourceWrappingCount == 1);
+
+            //::defer_throw_hresult(m_pd3d11device.as(m_pd3d11on12)); // Query interface
+
+            //::defer_throw_hresult(ptexture->d3d11()->m_pd3d11resourceWrapped.as(pdxgisurface)); // Get IDXGISurface
+
+            //informationf("DX12 D2D_BIND_STAGE surface-ready");
+
+            //pdxgisurfacebindable->_bind(iFrameIndex, pgpulayer->m_iGpuLayerIndex, pdxgisurface);
+
+            //informationf("DX12 D2D_BIND_STAGE target-bound");
+
+         }
+
+      }
 
    }
 
 
-   void context::draw2d_on_begin_draw(::gpu::graphics * pgpugraphics)
+   void context::on_end_layer(::gpu::layer * pgpulayer)
    {
 
-      ::gpu::context::draw2d_on_begin_draw(pgpugraphics);
+      auto pgpucompositor = m_pgpucompositor;
+
+      if (m_etype == e_type_draw2d)
+      {
+
+         //void context::__bind_draw2d_compositor(::gpu::compositor * pgpucompositor, ::gpu::layer * pgpulayer)
+         //{
+
+         ASSERT(m_etype == e_type_draw2d);
+
+
+
+         ::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = pgpucompositor;
+
+         auto ptexturesite = pgpulayer->texture(false);
+
+         ::cast < ::gpu_directx12::texture > ptexture = ptexturesite->gpu_texture();
+
+         ::cast < device > pgpudevice = m_pgpudevice;
+
+         auto pdxgidevice = pgpudevice->_get_dxgi_device();
+
+         auto pgpurendertarget = m_pgpurenderer->render_target();
+
+         auto pgpuwindowattachment = ::gpu::window_attachment::get(pgpurendertarget);
+
+         auto iFrameIndex = pgpuwindowattachment->get_frame_index3();
+
+         auto & pdxgisurface = ptexture->d3d11()->m_pdxgisurface;
+
+         if (ptexture->d3d11()->m_pd3d11resourceWrapped)
+         {
+
+            pgpudevice->d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
+               ptexture->d3d11()->m_d3d11resourceaWrapped, 1);
+
+            // ReleaseWrappedResources queues the D3D11-on-12 ownership handoff.
+            // Flush the immediate context so that handoff and all Direct2D work
+            // reach the shared D3D12 queue before merge_layers samples it.
+            pgpudevice->d3d11on12()->m_pd3d11devicecontextMain->Flush();
+
+            // The wrapped resource's OutState is shader-readable.  Keep ca2's
+            // D3D12 state tracker synchronized with that implicit transition.
+            //ptexture->m_pd3d12resourceTexture->m_state.m_resourcestates =
+              // D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+
+            m_iResourceWrappingCount--;
+
+            //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+
+         }
+
+         ASSERT(m_iResourceWrappingCount == 0);
+
+      }
+
+      ::gpu::context::on_end_layer(pgpulayer);
 
    }
 
 
-   void context::draw2d_on_end_draw(::gpu::graphics * pgpugraphics)
-   {
 
-      //if (!m_papplication->m_gpu.m_bUseSwapChainWindow)
-      //{
+   //void context::on_begin_draw_attach(::gpu::graphics * pgpugraphics)
+   //{
 
-      //   return;
+   //   ::gpu::context::on_begin_draw_attach(pgpugraphics);
 
-      //}
+   //}
 
-      //auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
 
-      //auto pgpucontextWindow = pgpuwindowattachment->window_context();
+   //void context::draw2d_on_begin_draw(::gpu::graphics * pgpugraphics)
+   //{
 
-      //if (!pgpucontextWindow)
-      //{
+   //   ::gpu::context::draw2d_on_begin_draw(pgpugraphics);
 
-      //   return;
+   //}
 
-      //}
 
-      //auto pswapchain = pgpucontextWindow->get_swap_chain();
+   //void context::draw2d_on_end_draw(::gpu::graphics * pgpugraphics)
+   //{
 
-      //if (pswapchain)
-      //{
+   //   //if (!m_papplication->m_gpu.m_bUseSwapChainWindow)
+   //   //{
 
-      //   pswapchain->swap_buffers();
+   //   //   return;
 
-      //}
+   //   //}
 
-   }
+   //   //auto pgpuwindowattachment = ::gpu::window_attachment::get(this);
+
+   //   //auto pgpucontextWindow = pgpuwindowattachment->window_context();
+
+   //   //if (!pgpucontextWindow)
+   //   //{
+
+   //   //   return;
+
+   //   //}
+
+   //   //auto pswapchain = pgpucontextWindow->get_swap_chain();
+
+   //   //if (pswapchain)
+   //   //{
+
+   //   //   pswapchain->swap_buffers();
+
+   //   //}
+
+   //}
 
 
    bool context::defer_bind2(::gpu::command_buffer * pgpucommandbuffer, ::gpu::shader * pgpushader,
@@ -2429,141 +2603,141 @@ namespace gpu_directx12
    }
 
 
-   void context::on_start_layer(::gpu::layer * pgpulayer)
-   {
+   //void context::on_start_layer(::gpu::layer * pgpulayer)
+   //{
 
-      ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
+   //   ::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-      //if (pgpulayer->getCurrentCommandBuffer4() != prenderer->getCurrentCommandBuffer2(::gpu::current_layer()))
-      //{
+   //   //if (pgpulayer->getCurrentCommandBuffer4() != prenderer->getCurrentCommandBuffer2(::gpu::current_layer()))
+   //   //{
 
-      //   pgpulayer->getCurrentCommandBuffer4() = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
+   //   //   pgpulayer->getCurrentCommandBuffer4() = prenderer->getCurrentCommandBuffer2(::gpu::current_layer());
 
-      //   //auto pcommanbuffer=create_newø < ::gpu_directx12::command_buffer>();
+   //   //   //auto pcommanbuffer=create_newø < ::gpu_directx12::command_buffer>();
 
-      //   //::comptr < ID3D12CommandQueue > pcommandqueue;
+   //   //   //::comptr < ID3D12CommandQueue > pcommandqueue;
 
-      //   //::cast < device > pdevice = m_pgpudevice;
+   //   //   //::cast < device > pdevice = m_pgpudevice;
 
-      //   //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-      //   //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-      //   //HRESULT hrCreateCommandQueue = 
-      //   //   pdevice->m_pd3d12device->CreateCommandQueue(
-      //   //      &queueDesc, __interface_of(pcommandqueue));
+   //   //   //D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+   //   //   //queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+   //   //   //HRESULT hrCreateCommandQueue = 
+   //   //   //   pdevice->m_pd3d12device->CreateCommandQueue(
+   //   //   //      &queueDesc, __interface_of(pcommandqueue));
 
-      //   //::defer_throw_hresult(hrCreateCommandQueue);
+   //   //   //::defer_throw_hresult(hrCreateCommandQueue);
 
-      //   //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
+   //   //   //::cast < ::gpu_directx12::renderer > prenderer = m_pgpurenderer;
 
-      //   //pcommanbuffer->initialize_command_buffer(
-      //   //   pcommandqueue, D3D12_COMMAND_LIST_TYPE_DIRECT, prenderer);
+   //   //   //pcommanbuffer->initialize_command_buffer(
+   //   //   //   pcommandqueue, D3D12_COMMAND_LIST_TYPE_DIRECT, prenderer);
 
-      //   //player->m_pcommandbuffer = pcommanbuffer;
+   //   //   //player->m_pcommandbuffer = pcommanbuffer;
 
-      //}
+   //   //}
 
-      //if (m_pgpurenderer->m_iSentLayerCount)
-      //{
+   //   //if (m_pgpurenderer->m_iSentLayerCount)
+   //   //{
 
-      //   pgpulayer->getCurrentCommandBuffer4()->wait_commands_to_execute();
+   //   //   pgpulayer->getCurrentCommandBuffer4()->wait_commands_to_execute();
 
-      //}
+   //   //}
 
-      //player->m_pcommandbufferLayer->reset();
+   //   //player->m_pcommandbufferLayer->reset();
 
-      if (m_pgpucompositor)
-      {
+   //   if (m_pgpucompositor)
+   //   {
 
-         if (m_etype == e_type_draw2d)
-         {
+   //      if (m_etype == e_type_draw2d)
+   //      {
 
-            //::cast < device > pdevice = m_pgpudevice;
-            //::cast < renderer > prenderer = m_pgpurenderer;
-            //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+   //         //::cast < device > pdevice = m_pgpudevice;
+   //         //::cast < renderer > prenderer = m_pgpurenderer;
+   //         //::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
 
-            //_get_dxgi_device();
+   //         //_get_dxgi_device();
 
-            ////ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_layer())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
+   //         ////ptexture->_new_state(prenderer->getCurrentCommandBuffer2(::gpu::current_layer())->m_pcommandlist, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-            //// 4. Release wrapped resource to allow access from D3D12
+   //         //// 4. Release wrapped resource to allow access from D3D12
 
-            //d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
-            //   d3d11on12()->m_d3d11wrappedresources, 1);
+   //         //d3d11on12()->m_pd3d11on12->AcquireWrappedResources(
+   //         //   d3d11on12()->m_d3d11wrappedresources, 1);
 
-            //m_iResourceWrappingCount++;
+   //         //m_iResourceWrappingCount++;
 
-            //ASSERT(m_iResourceWrappingCount == 1);
-            //
-            ////::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = m_pgpucompositor;
+   //         //ASSERT(m_iResourceWrappingCount == 1);
+   //         //
+   //         ////::cast < ::dxgi_surface_bindable > pdxgisurfacebindable = m_pgpucompositor;
 
-            ////::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
+   //         ////::cast < texture > ptexture = m_pgpurenderer->m_pgpurendertarget->current_texture();
 
-            ////auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
+   //         ////auto& pdxgisurface = ptexture->d3d11()->dxgiSurface;
 
-            ////::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
+   //         ////::defer_throw_hresult(ptexture->d3d11()->wrappedResource.as(pdxgisurface)); // Get IDXGISurface
 
-            ////int iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
+   //         ////int iFrameIndex = m_pgpurenderer->m_pgpurendertarget->get_frame_index();
 
-            ////pdxgisurfacebindable->_bind(iFrameIndex, pdxgisurface);
+   //         ////pdxgisurfacebindable->_bind(iFrameIndex, pdxgisurface);
 
-            __bind_draw2d_compositor(m_pgpucompositor, pgpulayer);
+   //         __bind_draw2d_compositor(m_pgpucompositor, pgpulayer);
 
-         }
-         else
-         {
+   //      }
+   //      else
+   //      {
 
-            __bind_graphics3d_compositor(m_pgpucompositor, pgpulayer);
+   //         __bind_graphics3d_compositor(m_pgpucompositor, pgpulayer);
 
-         }
+   //      }
 
-         m_pgpucompositor->on_start_layer(pgpulayer);
+   //      m_pgpucompositor->on_start_layer(pgpulayer);
 
-      }
+   //   }
 
-   }
+   //}
 
 
-   void context::on_end_layer(::gpu::layer * pgpulayer)
-   {
+   //void context::on_end_layer(::gpu::layer * pgpulayer)
+   //{
 
-      ::gpu::context::on_end_layer(pgpulayer);
+   //   ::gpu::context::on_end_layer(pgpulayer);
 
-      //if (m_pgpucompositor)
-      //{
+   //   //if (m_pgpucompositor)
+   //   //{
 
-      //   m_pgpucompositor->on_end_layer(player);
+   //   //   m_pgpucompositor->on_end_layer(player);
 
-      //   if (m_etype == e_type_draw2d)
-      //   {
+   //   //   if (m_etype == e_type_draw2d)
+   //   //   {
 
-      //      __soft_unbind_draw2d_compositor(m_pgpucompositor, player);
+   //   //      __soft_unbind_draw2d_compositor(m_pgpucompositor, player);
 
-      //      //::cast < device > pdevice = m_pgpudevice;
+   //   //      //::cast < device > pdevice = m_pgpudevice;
 
-      //      //if (m_etype == e_type_draw2d)
-      //      //{
+   //   //      //if (m_etype == e_type_draw2d)
+   //   //      //{
 
-      //      //   d3d11on12()->m_pd3d11context->Flush(); // ✅ Ensures D3D11 commands are issued
+   //   //      //   d3d11on12()->m_pd3d11context->Flush(); // ✅ Ensures D3D11 commands are issued
 
-      //      //   // 4. Release wrapped resource to allow access from D3D12
-      //      //   d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
-      //      //      d3d11on12()->m_d3d11wrappedresources, 1);
+   //   //      //   // 4. Release wrapped resource to allow access from D3D12
+   //   //      //   d3d11on12()->m_pd3d11on12->ReleaseWrappedResources(
+   //   //      //      d3d11on12()->m_d3d11wrappedresources, 1);
 
-      //      //   m_iResourceWrappingCount--;
+   //   //      //   m_iResourceWrappingCount--;
 
-      //      //   ASSERT(m_iResourceWrappingCount == 0);
+   //   //      //   ASSERT(m_iResourceWrappingCount == 0);
 
-      //      //   ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
+   //   //      //   ::cast < texture > ptexture = get_gpu_renderer()->m_pgpurendertarget->current_texture();
 
-      //      //   //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
+   //   //      //   //ptexture->m_estate = D3D12_RESOURCE_STATE_COPY_SOURCE;
 
-      //      //}
+   //   //      //}
 
-      //   }
+   //   //   }
 
-      //}
+   //   //}
 
-   }
+   //}
 
 
 

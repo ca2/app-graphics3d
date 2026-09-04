@@ -1662,6 +1662,8 @@ namespace gpu_vulkan
 
       auto vkimage = ptexture->m_vkimage;
 
+      //ptexture->set_state(pgpucommandbuffer, ::gpu::e_texture_state_shader_read);
+
       auto vkimagelayoutSourceTexture = ptexture->mip_layer_state(0, 0).m_vkimagelayout;
 
       if (vkimagelayoutSourceTexture != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)

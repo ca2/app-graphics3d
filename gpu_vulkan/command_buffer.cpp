@@ -27,6 +27,10 @@ namespace gpu_vulkan
       m_vkcommandbuffer = VK_NULL_HANDLE;
       m_vkcommandbufferlevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
       m_vkcommandpool = VK_NULL_HANDLE;
+      m_vkviewport = {};
+      m_vkrect2dScissor = {};
+      m_bViewportSet = false;
+      m_bScissorSet = false;
 
 
    }
@@ -67,7 +71,8 @@ namespace gpu_vulkan
          m_vkcommandpool = pcontext->getPresentCommandPool();
 
       }
-      else if (m_ecommandbuffer == ::gpu::e_command_buffer_graphics)
+      else if (m_ecommandbuffer == ::gpu::e_command_buffer_graphics
+         || m_ecommandbuffer == ::gpu::e_command_buffer_graphics_no_layer)
       {
          
          m_vkcommandpool = pcontext->getGraphicsCommandPool();
@@ -118,6 +123,8 @@ namespace gpu_vulkan
       }
 
       m_estate = ::gpu::command_buffer::e_state_recording;
+      m_bViewportSet = false;
+      m_bScissorSet = false;
 
    }
 
@@ -722,7 +729,7 @@ namespace gpu_vulkan
    void command_buffer::set_viewport(const ::i32_rectangle& rectangle, const ::i32_size & sizeRaw)
    {
 
-      VkViewport viewport =
+      m_vkviewport =
       {
          (float)rectangle.left,
          (float)rectangle.top,
@@ -731,7 +738,9 @@ namespace gpu_vulkan
          0.0f, 1.0f
       };
 
-      vkCmdSetViewport(m_vkcommandbuffer, 0, 1, &viewport);
+      vkCmdSetViewport(m_vkcommandbuffer, 0, 1, &m_vkviewport);
+
+      m_bViewportSet = true;
 
    }
 
@@ -739,7 +748,7 @@ namespace gpu_vulkan
    void command_buffer::set_scissor(const ::i32_rectangle& rectangle, const ::i32_size & sizeRaw)
    {
 
-      VkRect2D rect2d =
+      m_vkrect2dScissor =
       {
 
          {
@@ -753,7 +762,9 @@ namespace gpu_vulkan
 
       };
 
-      vkCmdSetScissor(m_vkcommandbuffer, 0, 1, &rect2d);
+      vkCmdSetScissor(m_vkcommandbuffer, 0, 1, &m_vkrect2dScissor);
+
+      m_bScissorSet = true;
 
    }
 

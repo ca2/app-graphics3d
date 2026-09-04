@@ -42,6 +42,12 @@ namespace draw2d_opengl
       ::i32_size                          m_sizeWindow;
       //HGLRC m_hrc;
       ::pointer < ::windowing::window >   m_pwindow;
+      bool                                m_bImageTargetStateSaved = false;
+      bool                                m_bScissorTestBeforeImageTarget = false;
+      int                                 m_iDrawFramebufferBeforeImageTarget = 0;
+      int                                 m_iDrawBufferBeforeImageTarget = 0;
+      int                                 m_iViewportBeforeImageTarget[4] = {};
+      int                                 m_iScissorBoxBeforeImageTarget[4] = {};
       //::pointer<::gpu::context>          m_pgpucontextOpenGL;
       //::pointer < ::gpu::shader >         m_pgpushaderTextOut;
 
@@ -79,7 +85,7 @@ namespace draw2d_opengl
       //void start_gpu_layer(::gpu::layer * pgpulayer) override;
       //::gpu::frame * end_gpu_layer(::gpu::layer * pgpulayer) override;
 
-      ::gpu_opengl::context* gpu_context();
+      ::gpu::context* gpu_context() override;
 
       //void attach(void * pdraw2dgraphics) override;   // attach/detach affects only the Output DC
       void * detach() override;
@@ -123,10 +129,19 @@ namespace draw2d_opengl
       //void _create_memory_graphics(const ::i32_size & size) override;
       void _create_memory_graphics(const ::i32_size & size = {}, ::acme::user::interaction * pacmeuserinteractionAffinity = nullptr) override;
 
+      void create_bitmap_graphics(::draw2d::bitmap * pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity) override;
 
-      void on_begin_draw(::acme::windowing::window * pacmewindowingwindow, const ::f64_size & sz) override;
+      void begin_draw(bool bExternalRendering, ::user::interaction * puserinteraction, const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget = nullptr) override;
       
-      void on_end_draw(::acme::windowing::window * pacmewindowingwindow) override;
+      void end_draw() override;
+
+      void on_acquire_memory_graphics(
+         bool bExternalRendering,
+         ::image::image * pimage,
+         const ::i32_size & size,
+         ::acme::user::interaction * pacmeuserinteractionAffinity) override;
+
+      void on_release_memory_graphics() override;
     
       //HDC get_hdc();
       //void release_hdc(HDC hdc);
@@ -291,6 +306,14 @@ namespace draw2d_opengl
 
 
       void text_out(double x, double y, const ::scoped_string & scopedstr) override;
+
+      ::gpu::enum_topology image_draw_topology() const override;
+
+      ::i32 image_draw_vertex_count() const override;
+
+      ::gpu::enum_topology text_draw_topology() const override;
+
+      ::i32 text_draw_vertex_count() const override;
 
       virtual void text_out_2025_06(double x, double y, const ::scoped_string& scopedstr);
       //virtual void text_out_2024_and_before(double x, double y, const ::scoped_string& scopedstr);

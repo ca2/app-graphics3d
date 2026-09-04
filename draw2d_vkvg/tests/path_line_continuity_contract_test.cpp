@@ -32,16 +32,27 @@ int main()
    }
 
    const auto function = text.substr(functionBegin, functionEnd - functionBegin);
-   const auto discontinuity = function.find("if (is_different(x, line.m_p1.x, 0.0001)");
+   const auto currentPoint = function.find(
+      "vkvg_get_current_point(vkvgcontext, &xCurrent, &yCurrent);");
+   const auto getMatrix = function.find(
+      "vkvg_get_matrix(vkvgcontext, &matrix);", currentPoint);
+   const auto transformStart = function.find(
+      "vkvg_matrix_transform_point(&matrix, &xStart, &yStart);", getMatrix);
+   const auto discontinuity = function.find(
+      "if (is_different(xCurrent, xStart, 0.0001)", transformStart);
    const auto fallback = function.find("else", discontinuity);
-   const auto connect = function.find("vkvg_line_to(vkvgcontext, line.m_p1.x, line.m_p1.y);", discontinuity);
+   const auto connect = function.find(
+      "vkvg_line_to(vkvgcontext, (::f32)line.m_p1.x, (::f32)line.m_p1.y);",
+      discontinuity);
 
-   if (discontinuity == std::string::npos || fallback == std::string::npos ||
+   if (currentPoint == std::string::npos || getMatrix == std::string::npos ||
+       transformStart == std::string::npos || discontinuity == std::string::npos ||
+       fallback == std::string::npos ||
        connect == std::string::npos || connect > fallback)
    {
 
-      std::cerr << "A line item whose first point differs from VKVG's current point must connect to it "
-                   "instead of starting a new two-point subpath.\n";
+      std::cerr << "A line item must compare its transformed start with VKVG's device-space current "
+                   "point and connect discontinuities without inserting translated duplicate vertices.\n";
       return 1;
 
    }

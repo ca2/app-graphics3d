@@ -26,7 +26,7 @@ namespace draw2d_opengl
    ::draw2d::bitmap_pointer image::get_bitmap_as_target(::draw2d::graphics * pdraw2dgraphics) const
    {
 
-      return m_pdraw2dbitmap;
+      return ::gpu::image::get_bitmap_as_target(pdraw2dgraphics);
 
    }
 
@@ -34,7 +34,7 @@ namespace draw2d_opengl
    ::draw2d::bitmap_pointer image::get_bitmap_as_source(::draw2d::graphics * pdraw2dgraphics) const
    {
 
-      return m_pdraw2dbitmap;
+      return ::gpu::image::get_bitmap_as_source(pdraw2dgraphics);
 
    }
 
@@ -269,7 +269,7 @@ namespace draw2d_opengl
 
       //}
 
-      ::i32_size size = pdraw2dgraphics->m_pimage->get_size();
+      ::i32_size size = pdraw2dgraphics->m_pimageTarget->get_size();
 
       //if(!create(size))
       create_as_descriptor(size);
@@ -2759,10 +2759,10 @@ namespace draw2d_opengl
 //
 
 
-   ::image_pixmap_lease image::_map(const ::i32_rectangle & rectangle)
+   ::image_pixmap_lease image::_map(::image::enum_map emap, const ::i32_rectangle & rectangle)
    {
 
-      return ::transfer(::gpu::image::_map(rectangle));
+      return ::transfer(::gpu::image::_map(emap, rectangle));
 
       // return;
 
@@ -2880,6 +2880,7 @@ namespace draw2d_opengl
    void image::_unmap(::image_pixmap_lease * pimagepixmaplease)
    {
 
+      ::gpu::image::_unmap(pimagepixmaplease);
       //if (!m_bMapped)
       //{
 

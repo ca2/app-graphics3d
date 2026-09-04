@@ -75,7 +75,7 @@ namespace gpu_vulkan
       // VkCommandBuffer pcommandbufferCmd->m_vkcommandbuffer =
       // device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
-      auto pgpucommandbufferCmd = pcontext->beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
+      auto pgpucommandbufferCmd = pcontext->_beginSingleTimeCommands(pcontext->m_pgpudevice->transfer_queue());
 
       ::cast<::gpu_vulkan::command_buffer> pcommandbufferCmd = pgpucommandbufferCmd;
 
@@ -191,7 +191,7 @@ namespace gpu_vulkan
 
          // device->flushCommandBuffer(pcommandbufferCmd->m_vkcommandbuffer, copyQueue);
 
-         pcontext->endSingleTimeCommands(pcommandbufferCmd);
+         pcontext->_endSingleTimeCommands(pcommandbufferCmd);
 
          // Clean up staging resources
          vkDestroyBuffer(pcontext->logicalDevice(), stagingBuffer, nullptr);
@@ -274,7 +274,7 @@ namespace gpu_vulkan
          // vulkan::setImageLayout(pcommandbufferCmd->m_vkcommandbuffer, m_vkimage, VK_IMAGE_ASPECT_COLOR_BIT,
          // VK_IMAGE_LAYOUT_UNDEFINED, imageLayout);
 
-         pcontext->endSingleTimeCommands(pcommandbufferCmd);
+         //pcontext->endSingleTimeCommands(pcommandbufferCmd);
       }
       //ktxTexture_Destroy(pktxtexture);
       // Create sampler with anisotropic filtering

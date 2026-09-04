@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "acme/platform/auto_pointer.h"
+//#include "acme/platform/auto_pointer.h"
 #include "bred/gpu/draw2d.h"
 #include "gpu_opengl/context.h"
 

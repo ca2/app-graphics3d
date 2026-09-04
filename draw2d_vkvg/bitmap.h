@@ -109,13 +109,13 @@ namespace draw2d_vkvg
    public:
 
 
-      bool                 m_bTexture;
-//      VKuint               m_texture;
-      memory               m_memIn;
-      memory               m_memOut;
-
-      bool                 m_bFlashed;
-      bool                 m_bPBuffer;
+//      bool                 m_bTexture;
+////      VKuint               m_texture;
+//      memory               m_memIn;
+//      memory               m_memOut;
+//
+//      bool                 m_bFlashed;
+//      bool                 m_bPBuffer;
 
       VkInstance           m_vkinstance;
 #if defined(WINDOWS_DESKTOP)
@@ -165,23 +165,23 @@ namespace draw2d_vkvg
 
       void destroy_bitmap();
 
-      // Resample Quality
-      // 0 - low
-      // 1 - good
-      // 2 - excelent
-      void create_texture(int iResampleQuality);
-      //bool flash();
-      void defer_reveal();
+      //// Resample Quality
+      //// 0 - low
+      //// 1 - good
+      //// 2 - excelent
+      //void create_texture(int iResampleQuality);
+      ////bool flash();
+      //void defer_reveal();
 
-      bool Init();
-      bool InitGL();
-      bool InitGLExtensions();
-      bool InitPBuffer();
-      void Cleanup();
+      //bool Init();
+      //bool InitGL();
+      //bool InitGLExtensions();
+      //bool InitPBuffer();
+      //void Cleanup();
 
       
 
-      void * get_os_data() const;
+      //void * get_os_data() const;
 
 
       bool LoadBitmap(const ::string & lpszResourceName);

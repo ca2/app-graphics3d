@@ -76,9 +76,13 @@ inline void _nvgcopy(float* p, const ::geometry2d::matrix * pmatrix)
 {
 
 
+   // geometry2d transforms points as:
+   // x' = x * a1 + y * b1 + c1; y' = x * a2 + y * b2 + c2.
+   // NanoVG's six values are [a, b, c, d, e, f], where:
+   // x' = x * a + y * c + e; y' = x * b + y * d + f.
    p[0] = (float) pmatrix->a1;
-   p[1] = (float) pmatrix->b1;
-   p[2] = (float) pmatrix->a2;
+   p[1] = (float) pmatrix->a2;
+   p[2] = (float) pmatrix->b1;
    p[3] = (float) pmatrix->b2;
    p[4] = (float) pmatrix->c1;
    p[5] = (float) pmatrix->c2;

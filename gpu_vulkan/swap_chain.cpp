@@ -14,6 +14,7 @@
 #include "acme/platform/application.h"
 #include "aura/user/user/interaction.h"
 #include "aura/windowing/window.h"
+#include "bred/gpu/fence.h"
 #include "bred/gpu/layer.h"
 #include "bred/gpu/texture_site.h"
 #include "bred/gpu/types.h"

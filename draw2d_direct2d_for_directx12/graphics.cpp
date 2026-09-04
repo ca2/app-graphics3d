@@ -187,7 +187,7 @@ namespace draw2d_direct2d_for_directx12
 
       //m_pdirect2d_ = ::direct2d::from_gpu_device(pgpudevice);
 
-      m_pdirect2d_ = ::direct2d::get();
+      //m_pdirect2d_ = ::direct2d::get();
 
       auto pgpuwindowattachment = ::gpu::window_attachment::get(m_pacmeuserinteractionAffinity);
 
@@ -397,7 +397,7 @@ namespace draw2d_direct2d_for_directx12
    }
 
 
-   void graphics::create_bitmap_graphics(::draw2d::bitmap *pdraw2dbitmap)
+   void graphics::create_bitmap_graphics(::draw2d::bitmap *pdraw2dbitmap, ::acme::user::interaction * pacmeuserinteractionAffinity)
    {
 
       throw ::interface_only();
@@ -773,9 +773,9 @@ namespace draw2d_direct2d_for_directx12
 
          pcontext->m_pgpucompositor = this;
 
-         auto pdirect2d = ::direct2d::get();
+         //auto pdirect2d = ::direct2d::get();
 
-         m_pdirect2d_ = pdirect2d;
+         //m_pdirect2d_ = pdirect2d;
 
       }
 
@@ -1025,36 +1025,36 @@ namespace draw2d_direct2d_for_directx12
    //}
 
 
-   void graphics::gpu_layer_on_after_begin_render()
-   {
-      
-      ////m_bInLayer = true;
-      //
-      //m_pdirect2d->m_pd2d1multithread->Enter();
+   //void graphics::gpu_layer_on_after_begin_render()
+   //{
+   //   
+   //   ////m_bInLayer = true;
+   //   //
+   //   //m_pdirect2d->m_pd2d1multithread->Enter();
 
-      //bind_draw2d_compositor();
+   //   //bind_draw2d_compositor();
 
-      //m_pdevicecontext->BeginDraw();
+   //   //m_pdevicecontext->BeginDraw();
 
-      //m_pdevicecontext->Clear();
+   //   //m_pdevicecontext->Clear();
 
-   }
+   //}
 
 
-   void graphics::gpu_layer_on_before_end_render()
-   {
+   //void graphics::gpu_layer_on_before_end_render()
+   //{
 
-      //m_pdevicecontext->EndDraw();
+   //   //m_pdevicecontext->EndDraw();
 
-      ////m_pdevicecontext->Clear();
+   //   ////m_pdevicecontext->Clear();
 
-      //soft_unbind_draw2d_compositor();
+   //   //soft_unbind_draw2d_compositor();
 
-      //m_pdirect2d->m_pd2d1multithread->Leave();
+   //   //m_pdirect2d->m_pd2d1multithread->Leave();
 
-      ////m_bInLayer = false;
+   //   ////m_bInLayer = false;
 
-   }
+   //}
 
 
    ::f64_point graphics::GetBrushOrg()
@@ -5573,10 +5573,10 @@ namespace draw2d_direct2d_for_directx12
 
    //}
 
-   void graphics::intersect_clip(const ::draw2d::clip_group& clipgroup)
+   void graphics::intersect_clip(::draw2d::clip_group * pclipgroup)
    {
 
-      ::draw2d_direct2d_for_directx11::graphics::intersect_clip(clipgroup);
+      ::draw2d_direct2d_for_directx11::graphics::intersect_clip(pclipgroup);
 
       //comptr<ID2D1PathGeometry> ppathgeometry;
 
@@ -6822,11 +6822,12 @@ namespace draw2d_direct2d_for_directx12
 
 
    void graphics::on_acquire_memory_graphics(
+      bool bExternalRendering,
    ::image::image * pimage,
    const ::i32_size & size,
    ::acme::user::interaction * pacmeuserinteractionAffinity)
    {
-      ::draw2d_direct2d_for_directx11::graphics::on_acquire_memory_graphics(pimage, size, pacmeuserinteractionAffinity);
+      ::draw2d_direct2d_for_directx11::graphics::on_acquire_memory_graphics(bExternalRendering, pimage, size, pacmeuserinteractionAffinity);
 
       ////if (::is_set(pimage))
       ////{
@@ -7393,12 +7394,12 @@ namespace draw2d_direct2d_for_directx12
    }
 
 
-   void graphics::just_after_new_frame()
-   {
+   //void graphics::just_after_new_frame()
+   //{
 
-      ::gpu::graphics::just_after_new_frame();
+   //   ::gpu::graphics::just_after_new_frame();
 
-   }
+   //}
 
 
    //void graphics::start_gpu_layer(::gpu::layer * pgpulayer)
@@ -7464,10 +7465,10 @@ namespace draw2d_direct2d_for_directx12
    //}
 
 
-   void graphics::begin_draw()
+   void graphics::begin_draw(bool bExternalRendering, ::user::interaction * puserinteraction, const ::i32_rectangle & rectangleFrame, ::image::image * pimageTarget)
    {
 
-      ::draw2d_direct2d_for_directx11::graphics::begin_draw();
+      ::draw2d_direct2d_for_directx11::graphics::begin_draw(bExternalRendering, puserinteraction, rectangleFrame, pimageTarget);
 
       //::gpu::graphics::begin_draw();
 

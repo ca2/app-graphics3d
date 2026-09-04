@@ -185,11 +185,11 @@ namespace draw2d_nanovg
    }
 
 
-   ::image_pixmap_lease image::_map(const ::i32_rectangle & rectangle)
+   ::image_pixmap_lease image::_map(::image::enum_map emap, const ::i32_rectangle & rectangle)
    {
 
 
-      return ::transfer(::gpu::image::_map(rectangle));
+      return ::transfer(::gpu::image::_map(emap, rectangle));
 
       //return;
 //
@@ -305,74 +305,94 @@ namespace draw2d_nanovg
 
 
 
-   void image::create_from_data(const ::i32_size &size, const ::image32_t *pimage32, ::i32 iScan,
-                         ::enum_flag eflagCreate, bool bPreserve) 
+   void image::create_from_data(const ::pixmap_t & pixmap, ::enum_flag eflagCreate, bool bPreserve)
    {
 
       // if (m_pgputexture && m_pgraphics && m_pgputexture->size() == size)
 
-      destroy();
+      ::gpu::image::create_from_data(pixmap, eflagCreate, bPreserve);
 
-      if (size.is_empty())
-      {
-
-         return;
-
-      }
-
-      create_as_descriptor(size, eflagCreate, iScan);
-
-      auto pdraw2dbitmap = createø<::draw2d::bitmap>();
-
-      ::cast<::gpu::bitmap> pgpubitmap = pdraw2dbitmap;
-
-      //auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
-
-      //auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
-
-      //_synchronous_lock synchronouslock(pgpudevice->synchronization());
-
-      //auto pixmap = this->pixmap::map();
-
-      auto pacmewindowingwindow = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow;
-
-      auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
-
-      _synchronous_lock synchronouslock(pgpudevice->synchronization());
-
-      auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, m_size, m_pgraphicsOwned);
-
-      ::pixmap_t pixmap;
-
-      pixmap.m_pimage32Raw = (::image32_t *) pimage32;
-
-      pixmap.m_pimage32 = (::image32_t *) pimage32;
-
-      pixmap.m_size = size;
-
-      pixmap.m_sizeRaw = size;
-
-      pixmap.m_iScan = iScan;
-
-      pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, size, pixmap);
-
-      //auto pgpucontext = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
-
-      //::gpu::context_lock contextlock(pgpucontext);
-
-      //pixmap_t pixmap;
-
-      //pixmap.initialize_pixmap(size, (::image32_t*) pimage32, iScan);
-
-      //pgputexture->initialize_gpu_pimage(pgpucontext, size, pixmap);
-
-      m_eflagElement = eflagCreate;
-
-      m_estatus = ::success;
-
-      set_ok_flag();
-
-//      m_pgputexture->write_pixels(size, pimage32, iScan);
+//      destroy();
+//
+//      if (size.is_empty())
+//      {
+//
+//         return;
+//
+//      }
+//
+//      create_as_descriptor(size, eflagCreate, iScan);
+//
+//      auto pdraw2dbitmap = createø<::draw2d::bitmap>();
+//
+//      ::cast<::gpu::bitmap> pgpubitmap = pdraw2dbitmap;
+//
+//      //auto pacmewindowingwindow = m_pacmeuserinteractionMain->m_pacmewindowingwindow;
+//
+//      //auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+//
+//      //_synchronous_lock synchronouslock(pgpudevice->synchronization());
+//
+//      //auto pixmap = this->pixmap::map();
+//
+//      if (::is_null(m_pacmeuserinteractionAffinity))
+//      {
+//
+//         if (::is_set(::get_task()))
+//         {
+//
+//            m_pacmeuserinteractionAffinity = ::get_task()->main_acme_user_interaction();
+//
+//         }
+//
+//         if (::is_null(m_pacmeuserinteractionAffinity))
+//         {
+//
+//            m_pacmeuserinteractionAffinity = m_papplication->main_acme_user_interaction();
+//
+//         }
+//
+//      }
+//
+//      auto pacmewindowingwindow = m_pacmeuserinteractionAffinity->m_pacmewindowingwindow;
+//
+//      auto pgpudevice = m_papplication->get_gpu_approach()->get_gpu_device(pacmewindowingwindow);
+//
+//      _synchronous_lock synchronouslock(pgpudevice->synchronization());
+//
+//      auto pgpucontextlease = pgpudevice->acquire_gpu_context(::gpu::e_output_none, m_size, m_pgraphicsOwned);
+//
+//      ::pixmap_t pixmap;
+//
+//      pixmap.m_pimage32Raw = (::image32_t *) pimage32;
+//
+//      pixmap.m_pimage32 = (::image32_t *) pimage32;
+//
+//      pixmap.m_size = size;
+//
+//      pixmap.m_sizeRaw = size;
+//
+//      pixmap.m_iScan = iScan;
+//
+//      pgpubitmap->initialize_gpu_bitmap(pgpucontextlease, size, pixmap);
+//
+//      //auto pgpucontext = pgpudevice->acquire_gpu_context(::gpu::e_output_none, size);
+//
+//      //::gpu::context_lock contextlock(pgpucontext);
+//
+//      //pixmap_t pixmap;
+//
+//      //pixmap.initialize_pixmap(size, (::image32_t*) pimage32, iScan);
+//
+//      //pgputexture->initialize_gpu_pimage(pgpucontext, size, pixmap);
+//
+//      m_eflagElement = eflagCreate;
+//
+//      m_estatus = ::success;
+//
+//      set_ok_flag();
+//
+////      m_pgputexture->write_pixels(size, pimage32, iScan);
 
    }
 
@@ -599,7 +619,7 @@ namespace draw2d_nanovg
 
       //}
 
-      ::i32_size size = pdraw2dgraphics->m_pimage->get_size();
+      ::i32_size size = pdraw2dgraphics->m_pimageTarget->get_size();
 
       //if(!create(size))
       create_as_descriptor(size);

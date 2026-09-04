@@ -45,7 +45,7 @@ namespace gpu_directx12
 
       }
 
-      int iBufferSize = this->size(false);
+      int iBufferSize = (int) this->size(false);
 
       ::cast < renderer > prenderer = m_pgpucontext->m_pgpurenderer;
 
