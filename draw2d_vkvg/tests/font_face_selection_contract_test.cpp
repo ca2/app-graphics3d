@@ -40,6 +40,8 @@ int main()
    assert(draw2dSource.find("m_mapFont[strDeviceFontKey]") != std::string::npos);
    assert(draw2dSource.find("vkvg_load_font_from_path(pdc, source.m_path, strFontKey)") != std::string::npos);
    assert(graphicsSource.find("vkvg_select_font_face(vkvgcontext, strFontKey)") != std::string::npos);
+   assert(graphicsSource.find("vkvg_device_get_dpy(get_vkvg_device()") != std::string::npos);
+   assert(graphicsSource.find("dPixelSize * 72.0 / (double)iVkvgDpi") != std::string::npos);
    assert(graphicsSource.find("vkvg_font_extents(vkvgcontext, &fontextents)") != std::string::npos);
    assert(graphicsSource.find("GetTextMetrics(pwritetextfont->m_hdcFont, &tm)") == std::string::npos);
 

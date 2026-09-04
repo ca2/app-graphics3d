@@ -8562,32 +8562,6 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       float fPreferredDensity = 1.0f;
 
-      float fDenominatorDpi;
-
-#ifdef __ANDROID__
-
-      fDenominatorDpi = 160.0;
-
-#elif defined(MACOS)
-
-      fDenominatorDpi = 72.0;
-
-#else
-
-      #define VKVG_USING_FREE_TYPE
-
-//#ifdef VKVG_USING_FREE_TYPE
-
-         //fDenominatorDpi = 96.0;
-
-//#else
-
-         fDenominatorDpi = 72.0;
-
-//#endif
-
-#endif
-
       //double dFontScaler = 1.0;
 
 
@@ -8609,30 +8583,41 @@ void graphics::FillSolidRect(double x, double y, double cx, double cy, color32_t
 
       }
 
-      float fDpi = maximum(fPreferredDpiX, fPreferredDpiY);
-
       float fDensity = fPreferredDensity;
+
+      double dPixelSize;
 
       if (pfontParam->m_fontsize.eunit() == ::e_unit_pixel)
       {
 
-         //vkvg_set_font_size(vkvgcontext, pfontParam->m_dFontSize * dFontScaler * fDensity);
-
-         vkvg_set_font_size(vkvgcontext,(uint32_t) ( pfontParam->m_fontsize.as_f64() * fDensity));
+         dPixelSize = pfontParam->m_fontsize.as_f64() * fDensity;
 
       }
       else
       {
 
-         //vkvg_set_font_size(vkvgcontext, pfontParam->m_dFontSize * dFontScaler * fPreferredDpiX / fDenominatorDpi);
-
          auto dFontSize = pfontParam->m_fontsize.as_f64();
 
-         double dSize = dFontSize * fPreferredDpiX / fDenominatorDpi;
-
-         vkvg_set_font_size(vkvgcontext, (::uint32_t)dSize);
+         dPixelSize = dFontSize * fPreferredDpiX / 72.0;
 
       }
+
+      int iVkvgDpiX = 96;
+      int iVkvgDpiY = 96;
+
+      vkvg_device_get_dpy(get_vkvg_device(), &iVkvgDpiX, &iVkvgDpiY);
+
+      const auto iVkvgDpi = maximum(1, maximum(iVkvgDpiX, iVkvgDpiY));
+
+      // vkvg_set_font_size uses point units when VKVG is backed by
+      // FreeType. Convert the desired draw2d pixel height back to the point
+      // size for VKVG's own device DPI so it does not apply DPI twice.
+      const auto dVkvgPointSize = dPixelSize * 72.0 / (double)iVkvgDpi;
+
+      vkvg_set_font_size(
+         vkvgcontext,
+         (::uint32_t)maximum(1.0, dVkvgPointSize + 0.5));
+
 
       m_pwritetextfontDevice = m_pwritetextfont;
 
